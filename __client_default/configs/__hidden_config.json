@@ -1,0 +1,80 @@
+[
+  {
+    "prop": "doc_type",
+    "type": "dropdown",
+    "label": "Document type",
+    "__value": "static-page",
+
+    "_for": {
+      "section_configs": {
+        "static-page": {
+          "label": "Static page",
+          "value": "static-page",
+          "_dependency_allowed_values": null
+        },
+        "blog-post": {
+          "label": "Blog post",
+          "value": "blog-post",
+          "_dependency_allowed_values": null
+        },
+        "legal-page": {
+          "label": "Legal page",
+          "value": "legal-page",
+          "_dependency_allowed_values": null
+        },
+        "product-rich-content": {
+          "label": "Product rich content",
+          "value": "product-rich-content",
+          "_dependency_allowed_values": null
+        },
+        "category-rich-content": {
+          "label": "Category rich content",
+          "value": "category-rich-content",
+          "_dependency_allowed_values": null
+        }
+      },
+      "tile_configs": {
+        "static-page": {
+          "label": "Static page",
+          "value": "static-page",
+          "_dependency_allowed_values": null
+        },
+        "blog-post": {
+          "label": "Blog post",
+          "value": "blog-post",
+          "_dependency_allowed_values": null
+        },
+        "legal-page": {
+          "label": "Legal page",
+          "value": "legal-page",
+          "_dependency_allowed_values": null
+        },
+        "product-rich-content": {
+          "label": "Product rich content",
+          "value": "product-rich-content",
+          "_dependency_allowed_values": null
+        },
+        "category-rich-content": {
+          "label": "Category rich content",
+          "value": "category-rich-content",
+          "_dependency_allowed_values": null
+        }
+      }
+    },
+    "_dependent": null,
+    "hidden": true
+  },
+  {
+    "prop": "section_core_type",
+    "type": "dropdown",
+    "label": "section dependency",
+    "__value": null,
+
+    "_for": {
+      "section_configs": null,
+      "tile_configs": null
+    },
+    "_dependent": null,
+    "hidden": true
+  }
+]

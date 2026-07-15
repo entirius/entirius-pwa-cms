@@ -1,0 +1,291 @@
+[
+  {
+    "prop": "core_type",
+    "label": "Type",
+    "type": "dropdown",
+    "__value": null,
+    "_for": {
+      "section_configs": [
+        {
+          "label": "Hero slider",
+          "value": "section-hero-slider",
+          "variants": [
+            ["doc_type:static-page"],
+            ["doc_type:blog-post"],
+            ["doc_type:product-rich-content"],
+            ["doc_type:category-rich-content"]
+          ]
+        },
+        {
+          "label": "Mini banner",
+          "value": "section-mini-banner",
+          "variants": [
+            ["doc_type:static-page"],
+            ["doc_type:blog-post"],
+            ["doc_type:product-rich-content"],
+            ["doc_type:category-rich-content"]
+          ]
+        },
+        {
+          "label": "Content slider",
+          "value": "section-content-slider",
+          "variants": [
+            ["doc_type:static-page"],
+            ["doc_type:blog-post"],
+            ["doc_type:product-rich-content"],
+            ["doc_type:category-rich-content"]
+          ]
+        },
+        {
+          "label": "Product slider (category)",
+          "value": "section-product-slider-category",
+          "variants": [
+            ["doc_type:static-page"],
+            ["doc_type:blog-post"],
+            ["doc_type:product-rich-content"],
+            ["doc_type:category-rich-content"]
+          ]
+        },
+        {
+          "label": "Product slider (via sku)",
+          "value": "section-product-slider-via-sku",
+          "variants": [
+            ["doc_type:static-page"],
+            ["doc_type:blog-post"],
+            ["doc_type:product-rich-content"],
+            ["doc_type:category-rich-content"]
+          ]
+        },
+        {
+          "label": "Banner",
+          "value": "section-banner",
+          "variants": [
+            ["doc_type:static-page"],
+            ["doc_type:blog-post"],
+            ["doc_type:product-rich-content"],
+            ["doc_type:category-rich-content"]
+          ]
+        },
+        {
+          "label": "Image & text",
+          "value": "section-image-text",
+          "variants": [
+            ["doc_type:static-page"],
+            ["doc_type:blog-post"],
+            ["doc_type:product-rich-content"],
+            ["doc_type:category-rich-content"]
+          ]
+        },
+        {
+          "label": "Image grid",
+          "value": "section-image-grid",
+          "variants": [
+            ["doc_type:static-page"],
+            ["doc_type:blog-post"],
+            ["doc_type:product-rich-content"],
+            ["doc_type:category-rich-content"]
+          ]
+        },
+        {
+          "label": "Text",
+          "value": "section-text",
+          "variants": [
+            ["doc_type:static-page"],
+            ["doc_type:blog-post"],
+            ["doc_type:product-rich-content"],
+            ["doc_type:category-rich-content"]
+          ]
+        },
+        {
+          "label": "Accordion",
+          "value": "section-accordion",
+          "variants": [
+            ["doc_type:static-page"],
+            ["doc_type:blog-post"],
+            ["doc_type:product-rich-content"],
+            ["doc_type:category-rich-content"]
+          ]
+        },
+        {
+          "label": "Table",
+          "value": "section-table",
+          "variants": [
+            ["doc_type:static-page"],
+            ["doc_type:blog-post"],
+            ["doc_type:product-rich-content"],
+            ["doc_type:category-rich-content"]
+          ]
+        },
+        {
+          "label": "Icon grid",
+          "value": "section-icon-grid",
+          "variants": [
+            ["doc_type:static-page"],
+            ["doc_type:blog-post"],
+            ["doc_type:product-rich-content"],
+            ["doc_type:category-rich-content"]
+          ]
+        },
+        {
+          "label": "Video",
+          "value": "section-video",
+          "variants": [
+            ["doc_type:static-page"],
+            ["doc_type:blog-post"],
+            ["doc_type:product-rich-content"],
+            ["doc_type:category-rich-content"]
+          ]
+        },
+        {
+          "label": "Testimonial",
+          "value": "section-testimonial",
+          "variants": [
+            ["doc_type:static-page"],
+            ["doc_type:blog-post"],
+            ["doc_type:product-rich-content"],
+            ["doc_type:category-rich-content"]
+          ]
+        },
+        {
+          "label": "Chart",
+          "value": "section-chart",
+          "variants": [
+            ["doc_type:static-page"],
+            ["doc_type:blog-post"],
+            ["doc_type:product-rich-content"],
+            ["doc_type:category-rich-content"]
+          ]
+        },
+        {
+          "label": "Blog",
+          "value": "section-blog",
+          "variants": [
+            ["doc_type:static-page"],
+            ["doc_type:blog-post"],
+            ["doc_type:product-rich-content"],
+            ["doc_type:category-rich-content"]
+          ]
+        },
+        {
+          "label": "Form",
+          "value": "section-form",
+          "variants": [
+            ["doc_type:static-page"],
+            ["doc_type:blog-post"],
+            ["doc_type:product-rich-content"],
+            ["doc_type:category-rich-content"]
+          ]
+        }
+      ],
+      "tile_configs": [
+        {
+          "label": "Hero tile",
+          "value": "tile-hero",
+          "variants": [["section_core_type:section-hero-slider"]]
+        },
+        {
+          "label": "Image + button",
+          "value": "tile-img-btn",
+          "variants": [
+            ["section_core_type:section-content-slider"],
+            ["section_core_type:section-image-grid"],
+            ["section_core_type:section-video"]
+          ]
+        },
+        {
+          "label": "Product (sku)",
+          "value": "tile-product",
+          "variants": [["section_core_type:section-product-slider-via-sku"]]
+        },
+        {
+          "label": "Image",
+          "value": "tile-image",
+          "variants": [["section_core_type:section-image-text"]]
+        },
+        {
+          "label": "Video",
+          "value": "tile-video",
+          "variants": [["section_core_type:section-image-text"]]
+        },
+        {
+          "label": "Text + button",
+          "value": "tile-txt-btn",
+          "variants": [
+            ["section_core_type:section-image-text"],
+            ["section_core_type:section-text"]
+          ]
+        },
+        {
+          "label": "Tile accordion",
+          "value": "tile-accordion",
+          "variants": [["section_core_type:section-accordion"]]
+        },
+        {
+          "label": "Title + desc + img",
+          "value": "tile-title-desc-img",
+          "variants": [["section_core_type:section-icon-grid"]]
+        },
+        {
+          "label": "Text",
+          "value": "tile-text",
+          "variants": [["section_core_type:section-table"]]
+        },
+        {
+          "label": "Testimonial tile",
+          "value": "tile-testimonial",
+          "variants": [["section_core_type:section-testimonial"]]
+        },
+        {
+          "label": "Chart tile",
+          "value": "tile-chart",
+          "variants": [["section_core_type:section-chart"]]
+        },
+        {
+          "label": "Tile blog",
+          "value": "tile-blog-extension",
+          "variants": [["doc_type:blog-post"]]
+        },
+        {
+          "label": "Tile form",
+          "value": "tile-form",
+          "variants": [["section_core_type:section-form"]]
+        }
+      ]
+    },
+    "_dependent": null,
+    "hidden": false
+  },
+  {
+    "prop": "variant",
+    "label": "Variant",
+    "type": "dropdown",
+    "__value": null,
+    "_for": {
+      "section_configs": [
+        {
+          "label": "variant 1",
+          "value": 1,
+          "variants": []
+        },
+        {
+          "label": "variant 2",
+          "value": 2,
+          "variants": []
+        },
+        {
+          "label": "variant 3",
+          "value": 3,
+          "variants": []
+        },
+        {
+          "label": "variant 4",
+          "value": 4,
+          "variants": []
+        }
+      ],
+      "tile_configs": null
+    },
+    "_dependent": null,
+    "hidden": false
+  }
+]

@@ -1,0 +1,11 @@
+{
+  "text": "BasicInput",
+  "wysiwyg": "BasicWysiwyg",
+  "dropdown": "Dropdown",
+  "buttons": "ButtonsController",
+  "images": "ImagesController",
+  "group-fields": "GroupFieldsController",
+  "date-picker": "BasicDatePicker",
+  "switcher": "Switcher",
+  "stance-switcher": "StanceSwitcher"
+}

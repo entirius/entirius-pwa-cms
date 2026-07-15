@@ -1,0 +1,172 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+## [1.6.0] (2026-07-02)
+
+### Fixed
+
+- **Real API error messages reach the operator everywhere** (fixes a regression
+  where empty error toasts were shown): the token-refresh interceptor rejects non-401 errors with
+  the unwrapped response body, so every view-level `err.response?.data` read
+  was dead code and the operator got a generic "Something went wrong" toast
+  instead of the backend message. All ~195 ad-hoc handlers across every panel
+  (PIM, Points, Faq, Authors, Agreements, Emails, ContactForms, Accounts,
+  CheckoutOrders, LayoutExtenders, PriceManager, Promo, Suppliers, Stock,
+  Enrichment) now go through `extractApiMessage(err, fallback)`.
+- **`useFormErrors` understands every backend error shape**: v2 envelope,
+  legacy `{detail}` (string and pydantic list), DRF-in-envelope
+  `{meta, data: {field: [msg]}}` and raw DRF `{field: [msg]}` — wrapped and
+  unwrapped — with a guaranteed non-empty per-field message.
+- **No more empty error UI**: `BasicInput` renders the error line only with a
+  non-empty message, `spawnNotification` falls back to a localized message on
+  an empty toast (and unwraps refs — `formErrors.summary` passed raw is a
+  ComputedRef, always truthy, which silently defeated `||` fallbacks).
+- **Promo custom error parsers removed**: `filterErrorMessage`,
+  `codeErrorMessage` and the `extractError` helpers now delegate to
+  `extractApiMessage`; `handleApiError` re-wrap workarounds dropped.
+
+### Added
+
+- **Promo panel**: full discount/voucher management — discount rules
+  with modifiers and per-rule discount codes (`PromoList`/`PromoEdit`),
+  campaigns, vouchers (list, detail with code reveal, product vouchers),
+  product/threshold/customer filter drawer, and per-channel promo settings.
+  Ships a new `promo` + `voucher` API client pair and a `checkoutChannel`
+  store; order list gained discount/voucher context.
+- **AI translations**: bulk product translation in PIM
+  (`TranslateDialog`, `TranslateStoreDialog`), translate-all for content
+  (`TranslateAllContentModal` in Builder), and a Translation Dashboard for
+  monitoring jobs (`translationJobs` store + `pim`/`contentDB` translator API
+  clients). Both the translate actions and the Promo panel are gated on their
+  backend modules being enabled (Munin).
+- **`Dropdown` field-error support**: new `validate` prop (`{status, msg}`,
+  same shape as `BasicInput`) renders an invalid border + message; used for
+  the feature-set picker on Product create. `TextAreaBasic` unified to the
+  same `{status, msg}` shape.
+- **Error-feedback e2e suite** (`tests/e2e/16-error-feedback.spec.js`): live
+  required-field and duplicate-SKU scenarios plus six mocked backend error
+  shapes (v2, DRF envelope, raw DRF, `{detail}`, 500 HTML, network abort)
+  assert the operator always sees a concrete, non-empty message.
+
+## [1.5.2] (2026-06-25)
+
+### Fixed
+
+- **Layout-extender publish persists the draft first**: publishing a
+  layout-extender now saves the pending draft before the publish call, so the
+  published layout reflects the latest edits instead of the last saved state.
+- **Category links now point to real storefront pages**: the category picker
+  (`useCategoryFetch`) saves the category `url_key` into `link_value` instead of
+  `idx`. Affects every storefront-routing picker -- megamenu items, banners,
+  links, and FAQ associations. Previously, categories whose `idx` differed from
+  their `url_key` produced catalog links that resolved to zero products. Falls
+  back to `idx` when the backend doesn't yet supply `url_key` (requires
+  django-pim with the `url_key` field on the admin category list). Internal PIM
+  pickers (product-to-category assignment, supplier mapping) keep using `idx`
+  and are unaffected.
+
+## [1.1.0] (2026-03-03)
+
+### WYSIWYG Editor Improvements
+
+- **Paste sanitization**: Strip inline `color`, `font-family`, `font-size`, `font-weight`, `background-color`, `line-height`, `letter-spacing` from pasted HTML via `transformPastedHTML`. Toolbar color button still works -- only paste-time styles are removed.
+- **Focus mode**: Distraction-free writing via `<Teleport to="body">`. Blurred backdrop, centered card (z-201, above HandyKit), Escape to close, body scroll lock. Expand/compress button in top-right corner of editor (appears on hover, always visible in focus mode).
+- **Line-height**: Set to 1.7 for body text, 1.3 for headings, 1.4 for table cells. Applied to both editor and preview.
+- **Cursor**: `cursor: text` on `.ProseMirror` in normal mode.
+- **Icons**: Registered `faExpand` and `faCompress` in FA icon library.
+- **Dark mode cleanup**: Removed `!important` color override from editor (paste sanitization handles it). Kept override in Builder.vue for legacy saved content in read-only previews.
+
+## [Unreleased]
+
+### Vue 3 Migration (2026-01-31 to 2026-02-08)
+
+**Major Upgrade**
+- Vue 2.6 → Vue 3.5
+- Vuex 3 → Vuex 4
+- Vue Router 3 → Vue Router 4
+- TipTap 2.2 → TipTap 3.19
+- Removed compatibility layer - pure Vue 3 implementation
+
+**Architecture**
+- Extracted variant matching to reusable composable (`useVariantMatching`)
+- Migrated all components to Composition API where beneficial
+- Updated component lifecycle hooks (Vue 3 syntax)
+- Fixed universal-cookie integration (replaced deprecated vue-cookies)
+
+**UI/UX Improvements**
+- Added i18n system with EN/PL locale support
+- Collapsible sidebar with material-style polish
+- Empty-state placeholders for content list and content sets
+- Improved confirmation modal with blur backdrop effect
+- Added tile deletion confirmation (previously missing)
+- FloatingActions component with proper z-index layering
+
+**Components**
+- BasicWysiwyg migrated to TipTap's official `useEditor()` hook
+- Updated all global components for Vue 3 compatibility
+- Fixed route title resolution for nested routes
+
+**Developer Experience**
+- Added comprehensive migration documentation
+- Testing infrastructure with Playwright e2e tests
+- Debug console helper for development
+- Updated build configuration for Vue 3
+
+### Pre-Migration (2026-01-28 to 2026-01-31)
+
+**Gallery Enhancements**
+- Gallery tag system implementation
+- Tag filtering and management UI
+- Bug fixes for image selection and display
+- Empty gallery state messaging
+
+**Bug Fixes**
+- Fixed configuration loading issues
+- Removed debugging artifacts
+- General stability improvements
+
+### Feature Development (2025-12 to 2026-01)
+
+**Content Management**
+- Document copy functionality
+- Delete confirmation for routes and sections
+- Vimeo integration (in progress)
+- Document configuration options
+
+**UI Components**
+- Gallery controller improvements
+- Group field controller updates and edition fixes
+- Notification system added
+- Route list kit enhancements
+
+**Multi-Client Support**
+- Multi-client deployment infrastructure
+- Client configs moved to gitignore
+- Multi-path feature for flexible routing
+
+**Authentication & Security**
+- Refresh token expiration handling
+- Improved session management
+
+### Core Features (2025 Q3-Q4)
+
+**Builder System**
+- Layout extender for custom layouts
+- Section creation and management
+- Config system with dynamic UI generation
+- Vertical scroll improvements
+
+**Content Types**
+- Document type dropdown remodel
+- Category system improvements
+- Gallery integration with content builder
+
+**Developer Tools**
+- Config validation and debugging
+- Client context improvements
+- Build system optimizations
+
+## Version History
+
+Migration completed successfully with no breaking changes to data structures or API contracts.

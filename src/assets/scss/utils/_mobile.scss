@@ -1,0 +1,35 @@
+@import "./media-query";
+
+// Mobile bottom bar height (consumed by layout calculations)
+:root {
+  --bottom-bar-height: 0px;
+
+  @include max-tablet {
+    --bottom-bar-height: 56px;
+  }
+}
+
+// Visibility utilities
+.hide-mobile {
+  @include max-tablet {
+    display: none !important;
+  }
+}
+
+.show-mobile {
+  display: none !important;
+  @include max-tablet {
+    display: flex !important;
+  }
+}
+
+// Buttons: show icon only on mobile, hide text
+.icon-only-mobile {
+  @include max-tablet {
+    .btn-text {
+      display: none !important;
+    }
+    padding: 0 0.5rem !important;
+  }
+}
+

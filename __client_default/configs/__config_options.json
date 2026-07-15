@@ -1,0 +1,12 @@
+{
+  "section-content-slider": { "max_tiles": 24 },
+  "section-product-slider-category": { "max_tiles": 0 },
+  "section-banner": { "max_tiles": 0 },
+  "section-image-text": { "max_tiles": 2 },
+  "section-image-grid": { "max_tiles": 6 },
+  "section-text": { "max_tiles": 3 },
+  "section-accordion": { "max_tiles": 1 },
+  "section-icon-grid": { "max_tiles": 6 },
+  "section-video": { "max_tiles": 2 },
+  "section-table": { "max_tiles": 1 }
+}

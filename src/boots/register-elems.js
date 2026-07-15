@@ -1,0 +1,43 @@
+import { defineAsyncComponent } from "vue";
+
+export default function registerBootComponents(app) {
+  app.component("Accordion", defineAsyncComponent(() => import("./Accordion/index.vue")));
+  app.component("BasicButton", defineAsyncComponent(() => import("./BasicButton/index.vue")));
+  app.component("BasicSwiper", defineAsyncComponent(() => import("./BasicSwiper/index.vue")));
+  app.component("BasicCheckbox", defineAsyncComponent(() => import("./BasicCheckbox/index.vue")));
+  app.component("BasicImage", defineAsyncComponent(() => import("./BasicImage/index.vue")));
+  app.component("BasicInput", defineAsyncComponent(() => import("./BasicInput/index.vue")));
+  app.component("ColorInput", defineAsyncComponent(() => import("./ColorInput/index.vue")));
+  app.component("NumberInput", defineAsyncComponent(() => import("./NumberInput/index.vue")));
+  app.component("BasicWysiwyg", defineAsyncComponent(() => import("./BasicWysiwyg/index.vue")));
+  app.component("BasicDatePicker", defineAsyncComponent(() => import("./BasicDatePicker/index.vue")));
+  app.component("BasicTabs", defineAsyncComponent(() => import("./BasicTabs/index.vue")));
+  app.component("StanceSwitcher", defineAsyncComponent(() => import("./StanceSwitcher/index.vue")));
+  app.component("NoticeMe", defineAsyncComponent(() => import("./NoticeMe/index.vue")));
+  app.component("HoverMe", defineAsyncComponent(() => import("./HoverMe/index.vue")));
+  app.component("DataTable", defineAsyncComponent(() => import("./DataTable/index.vue")));
+  app.component("Dropdown", defineAsyncComponent(() => import("./Dropdown/index.vue")));
+  app.component("Loader", defineAsyncComponent(() => import("./Loader/index.vue")));
+  app.component("BasicLogo", defineAsyncComponent(() => import("./BasicLogo/index.vue")));
+  app.component("Pagination", defineAsyncComponent(() => import("./Pagination/index.vue")));
+  app.component("SubscriberSetter", defineAsyncComponent(() => import("./SubscriberSetter/index.vue")));
+  app.component("Switcher", defineAsyncComponent(() => import("./Switcher/Switcher.vue")));
+  app.component("TextAreaBasic", defineAsyncComponent(() => import("./TextArea/TextAreaBasic.vue")));
+  app.component("LazyScroll", defineAsyncComponent(() => import("./LazyScroll/LazyScroll.vue")));
+  app.component("ToolTip", defineAsyncComponent(() => import("./ToolTip/ToolTip.vue")));
+  app.component("FloatingActions", defineAsyncComponent(() => import("./FloatingActions/index.vue")));
+  app.component("MobileFilterPanel", defineAsyncComponent(() => import("./MobileFilterPanel/index.vue")));
+  app.component("BackBar", defineAsyncComponent(() => import("./BackBar/index.vue")));
+  app.component("StatusBadge", defineAsyncComponent(() => import("./StatusBadge/index.vue")));
+  app.component("FilterChip", defineAsyncComponent(() => import("./FilterChip/index.vue")));
+  app.component("LockedField", defineAsyncComponent(() => import("./LockedField/index.vue")));
+  app.component("SegmentedControl", defineAsyncComponent(() => import("./SegmentedControl/index.vue")));
+  app.component("SideDrawer", defineAsyncComponent(() => import("./SideDrawer/index.vue")));
+  app.component("TranslationsDrawer", defineAsyncComponent(() => import("./TranslationsDrawer/index.vue")));
+  app.component("HelpTooltip", defineAsyncComponent(() => import("./HelpTooltip/index.vue")));
+  app.component("EntitySearchPicker", defineAsyncComponent(() => import("./EntitySearchPicker/index.vue")));
+  app.component("FormField", defineAsyncComponent(() => import("./FormField/index.vue")));
+  app.component("EmptyState", defineAsyncComponent(() => import("./EmptyState/index.vue")));
+  app.component("ChannelMultiSelect", defineAsyncComponent(() => import("./ChannelMultiSelect/index.vue")));
+  app.component("BulkActionBar", defineAsyncComponent(() => import("./BulkActionBar/index.vue")));
+}

@@ -1,0 +1,157 @@
+{
+  "simple_button": {
+    "fields": {
+      "label": {
+        "type": "text",
+        "label": "set label"
+      },
+      "url": {
+        "type": "text",
+        "label": "set url"
+      },
+      "type": {
+        "type": "dropdown",
+        "label": "link type",
+        "options": [
+          { "label": "internal", "value": "internal" },
+          { "label": "external", "value": "external" }
+        ]
+      }
+    },
+    "group_rules": {
+      "max": 1
+    }
+  },
+  "accordion_tile": {
+    "fields": {
+      "label": {
+        "type": "text",
+        "label": "Headline"
+      },
+      "wysiwyg": {
+        "type": "wysiwyg",
+        "label": "Content"
+      }
+    },
+    "group_rules": {
+      "max": 15
+    }
+  },
+  "chart_tile": {
+    "fields": {
+      "label": {
+        "type": "text",
+        "label": "Label"
+      },
+      "percent": {
+        "type": "text",
+        "label": "Percent"
+      }
+    },
+    "group_rules": {
+      "max": 15
+    }
+  },
+  "form_tile": {
+    "fields": {
+      "type": {
+        "type": "dropdown",
+        "label": "Add field",
+        "options": [
+          { "label": "Title (text)", "value": "title" },
+          { "label": "Email address (text)", "value": "email" },
+          { "label": "Full name (text)", "value": "name" },
+          { "label": "Phone number (text)", "value": "number" },
+          { "label": "Shop category (select)", "value": "category-shop" },
+          { "label": "Blog category (select)", "value": "category-blog" },
+          { "label": "Product model (select)", "value": "model" },
+          { "label": "Message content (textarea)", "value": "message-content" },
+          { "label": "Purchase date (datepicker)", "value": "datapicker" },
+          { "label": "Advice content (textarea)", "value": "advice-content" },
+          { "label": "Attachment", "value": "attachment" }
+        ]
+      },
+      "own_name": {
+        "type": "text",
+        "label": "Own name"
+      }
+    },
+    "group_rules": {
+      "max": 15
+    }
+  },
+  "consents": {
+    "fields": {
+      "consent": {
+        "type": "wysiwyg",
+        "label": "Consent"
+      }
+    },
+    "group_rules": {
+      "max": 15
+    }
+  },
+  "blog_section": {
+    "fields": {
+      "label": {
+        "type": "text",
+        "label": "Blog post route"
+      }
+    },
+    "group_rules": {
+      "max": 3
+    }
+  },
+  "custom_buttons_variant_2": {
+    "fields": {
+      "label": {
+        "type": "text",
+        "label": "set label"
+      },
+      "url": {
+        "type": "text",
+        "label": "set url"
+      },
+      "type": {
+        "type": "dropdown",
+        "label": "link type",
+        "options": [
+          { "label": "internal", "value": "internal" },
+          { "label": "external", "value": "external" }
+        ]
+      },
+      "decorator": {
+        "type": "dropdown",
+        "label": "icon (optional)",
+        "options": [
+          { "label": "Arrow right", "value": "arrow-right" },
+          { "label": "Arrow left", "value": "arrow-left" }
+        ]
+      },
+      "rtl": {
+        "type": "switcher",
+        "label": "RTL (optional)",
+        "options": {
+          "default_state": false
+        }
+      }
+    },
+    "group_rules": {
+      "max": 1
+    }
+  },
+  "date_example": {
+    "mode": "range",
+    "wrap": true,
+    "inline": true,
+    "enableTime": false,
+    "noCalendar": false
+  },
+  "time_example": {
+    "wrap": true,
+    "inline": true,
+    "enableTime": true,
+    "noCalendar": true,
+    "dateFormat": "H:i"
+  }
+}

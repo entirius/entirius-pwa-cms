@@ -1,0 +1,437 @@
+[
+  {
+    "prop": "custom_field",
+    "type": "text",
+    "label": "Url-key (ex. some-route)",
+    "__value": null,
+    "_for": {
+      "section_configs": [
+        {
+          "variants_group": [["core_type:section-product-slider-category"]],
+          "related_options": null
+        }
+      ],
+      "tile_configs": [
+        {
+          "variants_group": [["core_type:tile-hero"]],
+          "related_options": null
+        }
+      ]
+    }
+  },
+  {
+    "prop": "video_field",
+    "type": "text",
+    "label": "Video field",
+    "__value": null,
+    "_for": {
+      "section_configs": [
+        {
+          "variants_group": [["core_type:section-video"]],
+          "related_options": null
+        }
+      ],
+      "tile_configs": [
+        {
+          "variants_group": [["core_type:tile-video"]],
+          "related_options": null
+        }
+      ]
+    }
+  },
+  {
+    "prop": "button_text",
+    "type": "text",
+    "label": "Button text",
+    "__value": null,
+    "_for": {
+      "section_configs": [
+        {
+          "variants_group": [],
+          "related_options": null
+        }
+      ],
+      "tile_configs": [
+        {
+          "variants_group": [["core_type:tile-form"]],
+          "related_options": null
+        }
+      ]
+    }
+  },
+  {
+    "prop": "title",
+    "type": "text",
+    "label": "Title",
+    "__value": null,
+    "_for": {
+      "section_configs": [
+        {
+          "variants_group": [
+            ["core_type:section-content-slider"],
+            ["core_type:section-product-slider-via-sku"],
+            ["core_type:section-product-slider-category"],
+            ["core_type:section-banner"],
+            ["core_type:section-mini-banner"],
+            ["core_type:section-image-grid"],
+            ["core_type:section-text"],
+            ["core_type:section-accordion"],
+            ["core_type:section-table"],
+            ["core_type:section-icon-grid"],
+            ["core_type:section-video"],
+            ["core_type:section-blog"]
+          ],
+          "related_options": null
+        }
+      ],
+      "tile_configs": [
+        {
+          "variants_group": [
+            ["core_type:tile-hero"],
+            ["core_type:tile-title-desc-img"],
+            ["core_type:tile-testimonial"],
+            ["core_type:tile-chart"],
+            ["core_type:tile-blog-extension"],
+            ["core_type:tile-form"]
+          ],
+          "related_options": null
+        }
+      ]
+    }
+  },
+  {
+    "prop": "video_url",
+    "type": "text",
+    "label": "Video url",
+    "__value": null,
+    "_for": {
+      "section_configs": [
+        {
+          "variants_group": [
+            ["core_type:section-banner"]
+          ],
+          "related_options": null
+        }
+      ],
+      "tile_configs": [
+        {
+          "variants_group": [
+            ["core_type:tile-hero"]
+          ],
+          "related_options": null
+        }
+      ]
+    }
+  },
+  {
+    "prop": "product_sku",
+    "type": "text",
+    "label": "Product sku",
+    "__value": null,
+    "_for": {
+      "section_configs": [
+        {
+          "variants_group": [
+            ["core_type:section-banner"]
+          ],
+          "related_options": null
+        }
+      ],
+      "tile_configs": [
+        {
+          "variants_group": [
+            ["core_type:tile-hero"]
+          ],
+          "related_options": null
+        }
+      ]
+    }
+  },
+  {
+    "prop": "author",
+    "type": "text",
+    "label": "Author",
+    "__value": null,
+    "_for": {
+      "section_configs": [
+        {
+          "variants_group": [],
+          "related_options": null
+        }
+      ],
+      "tile_configs": [
+        {
+          "variants_group": [["core_type:tile-testimonial"]],
+          "related_options": null
+        }
+      ]
+    }
+  },
+  {
+    "prop": "description",
+    "type": "wysiwyg",
+    "label": "Description",
+    "__value": null,
+    "_for": {
+      "section_configs": [
+        {
+          "variants_group": [
+            ["core_type:section-content-slider"],
+            ["core_type:section-product-slider-via-sku"],
+            ["core_type:section-product-slider-category"],
+            ["core_type:section-banner"],
+            ["core_type:section-mini-banner"],
+            ["core_type:section-image-grid"],
+            ["core_type:section-text"],
+            ["core_type:section-accordion"],
+            ["core_type:section-table"]
+          ],
+          "related_options": null
+        }
+      ],
+      "tile_configs": [
+        {
+          "variants_group": [
+            ["core_type:tile-hero"],
+            ["core_type:tile-txt-btn"],
+            ["core_type:tile-text"],
+            ["core_type:tile-title-desc-img"],
+            ["core_type:tile-testimonial"],
+            ["core_type:tile-chart"],
+            ["core_type:tile-blog-extension"]
+          ],
+          "related_options": null
+        }
+      ]
+    }
+  },
+  {
+    "prop": "header_area",
+    "type": "wysiwyg",
+    "label": "Header area",
+    "__value": null,
+    "_for": {
+      "section_configs": [
+        {
+          "variants_group": [],
+          "related_options": null
+        }
+      ],
+      "tile_configs": [
+        {
+          "variants_group": [["core_type:tile-form"]],
+          "related_options": null
+        }
+      ]
+    }
+  },
+  {
+    "prop": "footer_area",
+    "type": "wysiwyg",
+    "label": "Footer area",
+    "__value": null,
+    "_for": {
+      "section_configs": [
+        {
+          "variants_group": [],
+          "related_options": null
+        }
+      ],
+      "tile_configs": [
+        {
+          "variants_group": [["core_type:tile-form"]],
+          "related_options": null
+        }
+      ]
+    }
+  },
+  {
+    "prop": "images_set",
+    "type": "images",
+    "label": "Images",
+    "__value": null,
+    "_for": {
+      "section_configs": [
+        {
+          "variants_group": [
+            ["core_type:section-banner"],
+            ["core_type:section-mini-banner"]
+          ],
+          "related_options": null
+        }
+      ],
+      "tile_configs": [
+        {
+          "variants_group": [
+            ["core_type:tile-hero"],
+            ["core_type:tile-img-btn"],
+            ["core_type:tile-image"],
+            ["core_type:tile-title-desc-img"],
+            ["core_type:tile-testimonial"],
+            ["core_type:tile-blog-extension"]
+          ],
+          "related_options": null
+        }
+      ]
+    }
+  },
+  {
+    "prop": "custom_buttons",
+    "type": "group-fields",
+    "label": "Buttons",
+    "__value": null,
+    "_for": {
+      "section_configs": [
+        {
+          "variants_group": [
+            ["core_type:section-content-slider"],
+            ["core_type:section-product-slider-via-sku"],
+            ["core_type:section-product-slider-category"],
+            ["core_type:section-banner"],
+            ["core_type:section-mini-banner"],
+            ["core_type:section-image-grid"],
+            ["core_type:section-accordion"],
+            ["core_type:section-table"],
+            ["core_type:section-blog"]
+          ],
+          "related_options": "simple_button"
+        }
+      ],
+      "tile_configs": [
+        {
+          "variants_group": [
+            ["core_type:tile-hero"],
+            ["core_type:tile-img-btn"],
+            ["core_type:tile-txt-btn"],
+            ["core_type:tile-blog-extension"]
+          ],
+          "related_options": "simple_button"
+        }
+      ]
+    }
+  },
+  {
+    "prop": "accordion_tile",
+    "type": "group-fields",
+    "label": "Accordion tile",
+    "__value": null,
+    "_for": {
+      "section_configs": [
+        {
+          "variants_group": [],
+          "related_options": "accordion_tile"
+        }
+      ],
+      "tile_configs": [
+        {
+          "variants_group": [["core_type:tile-accordion"]],
+          "related_options": "accordion_tile"
+        }
+      ]
+    }
+  },
+  {
+    "prop": "chart_tile",
+    "type": "group-fields",
+    "label": "Chart tile",
+    "__value": null,
+    "_for": {
+      "tile_configs": [
+        {
+          "variants_group": [["doc_type:static-page", "core_type:tile-chart"]],
+          "related_options": "chart_tile"
+        }
+      ]
+    }
+  },
+  {
+    "prop": "form_tile",
+    "type": "group-fields",
+    "label": "Fields",
+    "__value": null,
+    "_for": {
+      "section_configs": [
+        {
+          "variants_group": [],
+          "related_options": "form_tile"
+        }
+      ],
+      "tile_configs": [
+        {
+          "variants_group": [["core_type:tile-form"]],
+          "related_options": "form_tile"
+        }
+      ]
+    }
+  },
+  {
+    "prop": "consents",
+    "type": "group-fields",
+    "label": "Consents",
+    "__value": null,
+    "_for": {
+      "section_configs": [
+        {
+          "variants_group": [],
+          "related_options": "consents"
+        }
+      ],
+      "tile_configs": [
+        {
+          "variants_group": [["core_type:tile-form"]],
+          "related_options": "consents"
+        }
+      ]
+    }
+  },
+  {
+    "prop": "blog_section",
+    "type": "group-fields",
+    "label": "Blog tiles",
+    "__value": null,
+    "_for": {
+      "section_configs": [
+        {
+          "variants_group": [["core_type:section-blog"]],
+          "related_options": "blog_section"
+        }
+      ],
+      "tile_configs": [
+        {
+          "variants_group": [],
+          "related_options": null
+        }
+      ]
+    }
+  },
+  {
+    "prop": "number_of_reviews",
+    "type": "text",
+    "label": "Number of reviews (ex. 58)",
+    "__value": null,
+    "_for": {
+      "section_configs": [],
+      "tile_configs": [
+        {
+          "variants_group": [["core_type:tile-blog-extension"]],
+          "related_options": null
+        }
+      ]
+    }
+  },
+  {
+    "prop": "sku",
+    "type": "text",
+    "label": "Sku",
+    "__value": null,
+    "_for": {
+      "section_configs": null,
+      "tile_configs": [
+        {
+          "variants_group": [["core_type:tile-product"]],
+          "related_options": null
+        }
+      ]
+    }
+  }
+]

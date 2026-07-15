@@ -1,0 +1,320 @@
+@import "./media-query";
+
+.container {
+  max-width: 80rem;
+}
+.m-auto {
+  margin: 0 auto;
+}
+
+.flex {
+  display: flex;
+}
+
+.inline-flex {
+  display: inline-flex;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.wrap {
+  flex-wrap: wrap;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.row-reverse {
+  flex-direction: row-reverse;
+}
+
+.ai-ct {
+  align-items: center;
+}
+
+.ta-ct {
+  text-align: center;
+}
+
+.ai-fe {
+  align-items: flex-end;
+}
+
+.ai-s {
+  align-items: stretch;
+}
+
+.ai-st {
+  align-items: start;
+}
+
+.jc-sb {
+  justify-content: space-between;
+}
+
+.jc-ct {
+  justify-content: center;
+}
+.jc-fe {
+  justify-content: flex-end;
+}
+
+.as-s {
+  align-self: start;
+}
+
+.as-c {
+  align-self: center;
+}
+
+.as-e {
+  align-self: end;
+}
+
+.as-fe {
+  align-self: flex-end;
+}
+.js-s {
+  justify-self: start;
+}
+.js-c {
+  justify-self: center;
+}
+.js-e {
+  justify-self: end;
+}
+.js-fe {
+  justify-self: flex-end;
+}
+.js-fs {
+  justify-self: flex-start;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.fg-0 {
+  flex-grow: 0;
+}
+
+.fg-1 {
+  flex-grow: 1;
+}
+
+.fs-0 {
+  flex-shrink: 0;
+}
+
+.fs-1 {
+  flex-shrink: 1;
+}
+
+.ov-h {
+  overflow: hidden;
+}
+
+.ovx-h {
+  overflow-x: hidden;
+}
+
+.ovy-auto {
+  overflow-y: auto;
+}
+
+.fixed {
+  position: fixed;
+}
+
+.relative {
+  position: relative;
+}
+
+.absolute {
+  position: absolute;
+  &-ct {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  &-bottom {
+    bottom: 0;
+    left: 0;
+  }
+}
+
+.sticky {
+  position: sticky;
+}
+
+.block {
+  display: block;
+}
+
+.inline-block {
+  display: inline-block;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.h-100 {
+  height: 100%;
+}
+
+.mh-100vh {
+  min-height: 100vh;
+}
+
+.h-auto {
+  height: auto;
+}
+
+.w-0 {
+  width: 0;
+}
+.w-25 {
+  width: 25%;
+}
+.w-50 {
+  width: 50%;
+}
+.w-100 {
+  width: 100%;
+}
+
+.w-100-d {
+  @media screen and (min-width: 40rem) {
+    width: 100%;
+  }
+}
+
+.w-100-m {
+  @media screen and (max-width: 40rem) {
+    width: 100%;
+  }
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
+}
+.inline-grid {
+  display: inline-grid;
+}
+.grid {
+  display: grid;
+
+  .grid-square {
+    aspect-ratio: 1/1;
+  }
+
+  @for $i from 1 through 17 {
+    &-col {
+      @media screen and (max-width: 40rem) {
+        &-#{$i}-m {
+          //grid-template-columns: repeat($i, minmax(10px, 1fr));
+          grid-template-columns: repeat(#{$i}, 1fr);
+        }
+      }
+    }
+
+    &-custom {
+      &-#{$i}-m {
+        // grid-auto-flow: column;
+        // grid-template-columns: repeat(4, 1fr);
+        .grid-item:nth-child(1) {
+          grid-column-end: span #{$i};
+          grid-row-end: span #{$i};
+        }
+      }
+    }
+
+    .gr-s-#{$i}-m {
+      grid-row-start: #{$i};
+    }
+    .gr-e-#{$i}-m {
+      grid-row-end: #{$i};
+    }
+    .gc-s-#{$i}-m {
+      grid-column-start: #{$i};
+    }
+    .gc-e-#{$i}-m {
+      grid-column-end: #{$i};
+    }
+
+    @media screen and (min-width: 40rem) {
+      &-col {
+        &-#{$i} {
+          grid-template-columns: repeat($i, minmax(10px, 1fr));
+        }
+      }
+
+      &-custom {
+        &-#{$i} {
+          grid-template-columns: repeat(4, 1fr);
+
+          .grid-item:nth-child(1) {
+            grid-column-end: span #{$i};
+            grid-row-end: span #{$i};
+          }
+        }
+      }
+
+      .gr-s-#{$i} {
+        grid-row-start: #{$i};
+      }
+      .gr-e-#{$i} {
+        grid-row-end: #{$i};
+      }
+      .gc-s-#{$i} {
+        grid-column-start: #{$i};
+      }
+      .gc-e-#{$i} {
+        grid-column-end: #{$i};
+      }
+    }
+  }
+}
+
+.rtl-direction {
+  direction: rtl;
+}
+
+.mvo {
+  display: none;
+  @media screen and (max-width: 768px) {
+    display: block;
+  }
+}
+
+.dvo {
+  display: none;
+  @media screen and (min-width: 40rem) {
+    display: block;
+  }
+}
+
+.lc-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@for $i from 1 through 10 {
+  .lc-#{$i} {
+    display: -webkit-box;
+    -webkit-line-clamp: #{$i};
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+.color-inherit {
+  color: inherit;
+}

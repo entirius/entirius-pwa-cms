@@ -1,0 +1,63 @@
+@font-face {
+  font-family: "wys-icons";
+  src: url("~@/assets/scss/typo/wysiwyg-icons/wys-icons.eot") format("embedded-opentype"),
+    url("~@/assets/scss/typo/wysiwyg-icons/wys-icons.woff2") format("woff2"),
+    url("~@/assets/scss/typo/wysiwyg-icons/wys-icons.woff") format("woff"),
+    url("~@/assets/scss/typo/wysiwyg-icons/wys-icons.ttf") format("truetype"),
+    url("~@/assets/scss/typo/wysiwyg-icons/wys-icons.svg") format("svg");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^="wi-"],
+[class*="wi-"] {
+  font-family: "wys-icons" !important;
+  font-style: normal;
+  font-size: 1.25rem;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.wi-bold:before {
+  content: "\ead1";
+}
+.wi-italic:before {
+  content: "\ee6b";
+}
+.wi-underline:before {
+  content: "\f244";
+}
+.wi-h1:before {
+  content: "\ede6";
+}
+.wi-h2:before {
+  content: "\ede7";
+}
+.wi-h3:before {
+  content: "\ede8";
+}
+.wi-link:before {
+  content: "\eeaf";
+}
+.wi-orderedList:before {
+  content: "\eebb";
+}
+.wi-bulletList:before {
+  content: "\eebe";
+}
+.wi-blockquote:before {
+  content: "\ec51";
+}
+.wi-highlight:before {
+  content: "\ef1b";
+}
+.wi-align-left:before {
+  content: "\ea27";
+}
+.wi-align-center:before {
+  content: "\ea25";
+}
+.wi-align-right:before {
+  content: "\ea28";
+}
