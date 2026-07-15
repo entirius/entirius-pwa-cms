@@ -71,7 +71,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",
-    "@vitejs/plugin-vue": "^5.0.4",
+    "@vitejs/plugin-vue": "^6.0.8",
     "@vue/cli-plugin-babel": "~5.0.8",
     "@vue/cli-service": "~5.0.8",
     "@vue/test-utils": "^2.4.6",
@@ -79,6 +79,6 @@
     "raw-loader": "^4.0.2",
     "sass": "^1.72.0",
     "sass-loader": "^10.2.0",
-    "vitest": "^1.6.0"
+    "vitest": "^4.1.10"
   }
 }
