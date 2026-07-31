@@ -85,8 +85,12 @@ function attachTokenRefresh(client) {
 
         const cookieOpts = { path: '/', maxAge: 7 * 24 * 60 * 60 }
         cookies.set('token', access, cookieOpts)
-        cookies.set('refresh', refresh, cookieOpts)
         cookies.set('expiryDate', expiryDate, cookieOpts)
+        // The API only returns a new refresh token when rotation is enabled server-side.
+        // Overwriting the cookie with undefined logs the user out on the next refresh.
+        if (refresh) {
+          cookies.set('refresh', refresh, cookieOpts)
+        }
 
         client.defaults.headers.common.Authorization = `Bearer ${access}`
         isRefreshing = false
