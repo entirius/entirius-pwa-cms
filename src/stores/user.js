@@ -95,12 +95,17 @@ export const useUserStore = defineStore('user', () => {
       const newExpiry = new Date(Date.now() + 15 * 60 * 1000)
 
       token.value = access
-      refresh.value = newRefresh
       expiryDate.value = newExpiry
 
       cookies.set('token', access, COOKIE_OPTS)
-      cookies.set('refresh', newRefresh, COOKIE_OPTS)
       cookies.set('expiryDate', newExpiry, COOKIE_OPTS)
+
+      // The API only returns a new refresh token when rotation is enabled server-side.
+      // Overwriting the cookie with undefined logs the user out on the next refresh.
+      if (newRefresh) {
+        refresh.value = newRefresh
+        cookies.set('refresh', newRefresh, COOKIE_OPTS)
+      }
 
       startSessionMonitor()
     } catch {
