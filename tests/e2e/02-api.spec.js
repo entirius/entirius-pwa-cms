@@ -8,7 +8,7 @@ const { test, expect } = require('@playwright/test');
 test.describe('API Health Checks', () => {
 
   test('API responds to languages endpoint', async ({ request }) => {
-    const apiUrl = process.env.VUE_APP_API_URL || 'http://localhost:8100';
+    const apiUrl = process.env.VUE_APP_API_URL || 'http://localhost:8000';
 
     const response = await request.get(`${apiUrl}/api/contentdb/v1/languages/`).catch(() => null);
 

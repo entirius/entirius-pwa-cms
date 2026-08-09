@@ -8,7 +8,7 @@
 const { test, expect } = require("@playwright/test");
 const { login } = require("../helpers/auth");
 
-const API_BASE = process.env.VUE_APP_API_URL || "http://localhost:8100";
+const API_BASE = process.env.VUE_APP_API_URL || "http://localhost:8000";
 const CHANNEL = process.env.VUE_APP_CHANNEL || "default-local";
 
 // ---------------------------------------------------------------------------

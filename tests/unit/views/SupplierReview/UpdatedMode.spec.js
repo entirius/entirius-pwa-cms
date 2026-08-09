@@ -25,8 +25,8 @@ function makeRow(overrides = {}) {
     id: 1,
     real_product_sku: "SKU-1",
     external_id: "K-1",
-    supplier_idx: "acme",
-    supplier_name: "Acme",
+    supplier_idx: "kinghoff",
+    supplier_name: "Kinghoff",
     name: "Test",
     status: "pushed",
     cost: 1.23,
@@ -107,22 +107,22 @@ describe("UpdatedMode — etap-07 SupplierReview 4th mode", () => {
     mockGetSupplierProducts.mockResolvedValue({ data: { results: [] } });
 
     mount(UpdatedMode, {
-      props: { filters: { ...baseFilters, supplier: "acme" } },
+      props: { filters: { ...baseFilters, supplier: "kinghoff" } },
       global: { stubs: globalStubs },
     });
     await flushPromises();
 
     const params = mockGetSupplierProducts.mock.calls[0][0];
-    expect(params.supplier).toBe("acme");
+    expect(params.supplier).toBe("kinghoff");
   });
 
   it("groups visibleRows by supplier into perSupplierCounts (sorted desc)", async () => {
     mockGetSupplierProducts.mockResolvedValue({
       data: {
         results: [
-          makeRow({ id: 1, supplier_idx: "acme", supplier_name: "Acme" }),
-          makeRow({ id: 2, supplier_idx: "acme", supplier_name: "Acme" }),
-          makeRow({ id: 3, supplier_idx: "globex", supplier_name: "Globex" }),
+          makeRow({ id: 1, supplier_idx: "kinghoff", supplier_name: "Kinghoff" }),
+          makeRow({ id: 2, supplier_idx: "kinghoff", supplier_name: "Kinghoff" }),
+          makeRow({ id: 3, supplier_idx: "fortrade", supplier_name: "Fortrade" }),
         ],
       },
     });
@@ -134,8 +134,8 @@ describe("UpdatedMode — etap-07 SupplierReview 4th mode", () => {
     await flushPromises();
 
     expect(wrapper.vm.perSupplierCounts).toEqual([
-      { idx: "acme", name: "Acme", count: 2 },
-      { idx: "globex", name: "Globex", count: 1 },
+      { idx: "kinghoff", name: "Kinghoff", count: 2 },
+      { idx: "fortrade", name: "Fortrade", count: 1 },
     ]);
   });
 

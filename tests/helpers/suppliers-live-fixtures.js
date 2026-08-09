@@ -2,7 +2,7 @@
  * Live-backend fixtures helper for suppliers E2E tests.
  *
  * Inverse of suppliers-mock.js: NO route interception. Tests hit the real
- * Django backend at process.env.ENTIRIUS_API_BASE (default http://localhost:8100)
+ * Django backend at process.env.VOLKANOS_API_BASE (default http://localhost:8000)
  * via the CMS's own fetch layer. Pre-condition: docker is up + seed-fresh ran.
  *
  * Helpers:
@@ -11,7 +11,7 @@
  *   - getJwt: acquires JWT token via /api/token/ (used for direct HTTP probes).
  */
 
-const API_BASE = process.env.ENTIRIUS_API_BASE || 'http://localhost:8100';
+const API_BASE = process.env.VOLKANOS_API_BASE || 'http://localhost:8000';
 
 /**
  * Acquire JWT token from real backend. Used for direct API probes that bypass

@@ -20,8 +20,8 @@ function makeRow(overrides = {}) {
     sku: "FT-001",
     ean: "5900000000001",
     suppliers: [
-      { idx: "globex", name: "Globex", is_preferred: true },
-      { idx: "acme", name: "Acme", is_preferred: false },
+      { idx: "fortrade", name: "Fortrade", is_preferred: true },
+      { idx: "kinghoff", name: "Kinghoff", is_preferred: false },
     ],
     has_tolerance_violation: false,
     has_manual_override: false,

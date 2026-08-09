@@ -27,7 +27,7 @@ const baseData = {
   real_product_sku: "TEST-SKU",
   has_supplier: true,
   supplier_product_id: 1,
-  supplier: { idx: "acme", name: "Acme" },
+  supplier: { idx: "kinghoff", name: "Kinghoff" },
   unseen_count: 2,
   last_change_at: "2026-05-23T06:00:00+00:00",
   cost: 0.13,
@@ -111,7 +111,7 @@ describe("SupplierTab", () => {
   it("reset-to-auto calls API and emits refreshed when switch happened", async () => {
     mockGetSkuChanges.mockResolvedValue({ data: baseData });
     mockPostResetToAuto.mockResolvedValueOnce({
-      data: { switched: true, new_preferred_supplier_idx: "globex" },
+      data: { switched: true, new_preferred_supplier_idx: "fortrade" },
     });
 
     const wrapper = mount(SupplierTab, { props: { sku: "TEST-SKU" } });

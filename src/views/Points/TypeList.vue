@@ -278,6 +278,11 @@ export default {
           type: "positive",
           msg: this.$t("dp.type_created"),
         });
+        this.notify.spawnNotification({
+          type: "informative",
+          msg: this.$t("dp.type_created_order_warning"),
+          timeout: 12000,
+        });
         this.newType = { code: "", name: "", is_carrier: false };
         await this.fetchTypes();
       } catch (err) {

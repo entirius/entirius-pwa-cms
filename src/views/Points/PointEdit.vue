@@ -112,7 +112,7 @@
                 :values="typeOptions"
                 :selected="form.type_id ? [form.type_id] : []"
                 :placeholder="$t('common.select')"
-                :isDisabled="isEdit"
+                :isDisabled="isCarrier || (isEdit && !typeChangeSupported)"
                 :class="{
                   'b-negative-200': formErrors.getFieldError('type_id'),
                 }"
@@ -289,8 +289,8 @@
           </div>
         </div>
 
-        <!-- Translations section (edit mode only) -->
-        <div v-if="isEdit" class="detail-section mb-400">
+        <!-- Translations section (edit mode only, hidden for single-language setups) -->
+        <div v-if="isEdit && showTranslations" class="detail-section mb-400">
           <div class="flex ai-ct jc-sb mb-300">
             <h2 class="fs-500 fw-600">{{ $t("dp.translations") }}</h2>
             <div
@@ -389,6 +389,7 @@
 
 <script>
 import { useLoaderStore } from "@/stores/loader";
+import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
 import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
 import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
@@ -414,10 +415,11 @@ export default {
   components: { UnsavedChangesModal, ConfirmationModal },
   setup() {
     const loader = useLoaderStore();
+    const munin = useMuninStore();
     const notify = useNotifyStore();
     const unsaved = useUnsavedChanges();
     const formErrors = useFormErrors();
-    return { loader, notify, ...unsaved, formErrors };
+    return { loader, munin, notify, ...unsaved, formErrors };
   },
   data() {
     return {
@@ -463,6 +465,11 @@ export default {
       const typeObj = this.types.find((t) => t.id === this.form.type_id);
       return typeObj?.is_carrier ?? false;
     },
+    // Backend accepts type_id on PATCH since deliverypoints 1.1.0 —
+    // older backends silently drop it, so keep the dropdown locked there.
+    typeChangeSupported() {
+      return this.munin.isModuleAtLeast("deliverypoints", "1.1.0");
+    },
     typeOptions() {
       return this.types
         .filter((t) => !t.is_carrier)
@@ -479,6 +486,15 @@ export default {
         label: `${c.iso2} — ${c.name}`,
         value: c.iso2,
       }));
+    },
+    // Single-language setups have nothing to translate into — hide the whole
+    // section unless legacy translations already exist (so they stay manageable).
+    showTranslations() {
+      const codes = new Set();
+      for (const ch of this.channels) {
+        for (const code of ch.language_codes || []) codes.add(code);
+      }
+      return codes.size > 1 || this.translations.length > 0;
     },
     availableLanguageCodes() {
       const usedCodes = new Set(this.translations.map((t) => t.language));
@@ -715,18 +731,18 @@ export default {
         name: this.form.name,
         type_id: this.form.type_id,
         channel_ids: this.form.channel_ids,
-        street: this.form.street || null,
-        city: this.form.city || null,
-        state: this.form.state || null,
-        post_code: this.form.post_code || null,
-        country: this.form.country || null,
+        street: this.form.street || "",
+        city: this.form.city || "",
+        state: this.form.state || "",
+        post_code: this.form.post_code || "",
+        country: this.form.country || "",
         latitude: this.form.latitude || null,
         longitude: this.form.longitude || null,
-        phone: this.form.phone || null,
-        email: this.form.email || null,
-        website: this.form.website || null,
-        opening_hours: this.form.opening_hours || null,
-        hint: this.form.hint || null,
+        phone: this.form.phone || "",
+        email: this.form.email || "",
+        website: this.form.website || "",
+        opening_hours: this.form.opening_hours || "",
+        hint: this.form.hint || "",
         is_active: this.form.is_active,
       };
     },
@@ -747,6 +763,7 @@ export default {
             type: "positive",
             msg: this.$t("dp.point_created"),
           });
+          this.snapshot(this.form);
           this.$router.push(`/points/${data.id}`);
         }
       } catch (err) {

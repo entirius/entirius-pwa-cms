@@ -108,7 +108,7 @@ test.describe('Suppliers panel — live backend', () => {
   }) => {
     // Direct API probe before action: confirm DEMO-003 is queued
     const resp = await fetch(
-      'http://localhost:8100/api/suppliers/v2/admin/products/3/',
+      'http://localhost:8000/api/suppliers/v2/admin/products/3/',
       { headers: { Authorization: `Bearer ${jwt}` } }
     );
     expect(resp.ok).toBeTruthy();
@@ -121,7 +121,7 @@ test.describe('Suppliers panel — live backend', () => {
     await page.waitForLoadState('networkidle', { timeout: 15000 });
     // Approve via API direct (UI button selectors vary; this guarantees DB transition)
     const approveResp = await fetch(
-      'http://localhost:8100/api/suppliers/v2/admin/products/3/approve/',
+      'http://localhost:8000/api/suppliers/v2/admin/products/3/approve/',
       {
         method: 'POST',
         headers: { Authorization: `Bearer ${jwt}`, 'Content-Type': 'application/json' },
@@ -131,7 +131,7 @@ test.describe('Suppliers panel — live backend', () => {
     expect([200, 400]).toContain(approveResp.status);
     // 400 only if already approved — both are acceptable
     const verify = await fetch(
-      'http://localhost:8100/api/suppliers/v2/admin/products/3/',
+      'http://localhost:8000/api/suppliers/v2/admin/products/3/',
       { headers: { Authorization: `Bearer ${jwt}` } }
     );
     const after = await verify.json();
@@ -142,7 +142,7 @@ test.describe('Suppliers panel — live backend', () => {
 
   test('7. Push DEMO-004 (approved) -> waits for pushed/pushed_pending_images status', async () => {
     const pushResp = await fetch(
-      'http://localhost:8100/api/suppliers/v2/admin/products/4/push/',
+      'http://localhost:8000/api/suppliers/v2/admin/products/4/push/',
       {
         method: 'POST',
         headers: { Authorization: `Bearer ${jwt}`, 'Content-Type': 'application/json' },

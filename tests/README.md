@@ -42,6 +42,7 @@ tests/
 ├── helpers/                       # Test utilities
 │   ├── auth.js                   # Login/logout helpers
 │   └── error-collector.js        # Console/network error capture
+├── chrome-mcp-setup.md           # Chrome MCP setup guide
 └── README.md                     # This file
 ```
 
@@ -109,7 +110,7 @@ Backend health checks:
 Create `.env.test` file (optional):
 
 ```bash
-VUE_APP_API_URL=http://localhost:8100
+VUE_APP_API_URL=http://localhost:8000
 VUE_APP_USERNAME=admin
 VUE_APP_PASSWORD=admin
 ```
@@ -142,7 +143,23 @@ npm run test:e2e:debug
 
 Step through tests line-by-line, inspect selectors, see network requests.
 
-### Option 3: Test Artifacts
+### Option 3: Chrome MCP (Claude Integration)
+
+For Claude Code to investigate failures:
+
+1. **Setup Chrome MCP** (see `chrome-mcp-setup.md`)
+2. **Start Chrome with debugging**:
+   ```bash
+   /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \
+     --remote-debugging-port=9222 \
+     --user-data-dir="/Users/kloczi/Library/Application Support/Google/Chrome/Kloczidev"
+   ```
+3. **Run tests**
+4. **Ask Claude**: "Check the browser state using Chrome MCP"
+
+Claude can then inspect the DOM, console logs, network requests, etc.
+
+### Option 4: Test Artifacts
 
 After test failures, check:
 
@@ -210,6 +227,20 @@ test('page loads cleanly', async ({ page }) => {
 **API:** `reset()`, `hasErrors()`, `getErrors()`, `getSummary()`, `assertNoErrors(expect, context)`
 
 Default whitelist: `favicon.ico`, `hot-update`, `sockjs-node`, `__webpack_hmr`
+
+## Interactive Browser (Layer 2)
+
+When automated tests fail and text output isn't clear enough, use `/browser`:
+
+```
+/browser http://localhost:8080/pim/features
+```
+
+Claude gets MCP tools: `browser_navigate`, `browser_snapshot`, `browser_screenshot`,
+`browser_click`, `browser_type`, `browser_console_messages`.
+
+**Setup:** Run `/browser-setup` once per machine.
+**Verify:** `claude mcp list` should show `playwright-firefox: ✓ Connected`.
 
 ## Adding Tests for New Panels
 
@@ -297,8 +328,9 @@ test('New feature works', async ({ page }) => {
 ## Resources
 
 - [Playwright Documentation](https://playwright.dev)
+- [Chrome MCP Setup](./chrome-mcp-setup.md)
 - [Testing Best Practices](https://playwright.dev/docs/best-practices)
 
 ---
 
-**Need help?** Check the Playwright docs.
+**Need help?** Check the Playwright docs or ask Claude to debug using Chrome MCP!

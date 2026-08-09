@@ -125,6 +125,17 @@ export const useMuninStore = defineStore("munin", () => {
     return modules.value.some(m => m.key === moduleKey)
   }
 
+  // Version gate for backend feature detection. "1.1.0rc0" counts as 1.1.0
+  // (parseInt drops the rc suffix). Unknown module/version -> false (safe lock).
+  function isModuleAtLeast(moduleKey, minVersion) {
+    const mod = modules.value.find((m) => m.key === moduleKey);
+    if (!mod?.version) return false;
+    const parse = (v) => v.split(".").map((p) => parseInt(p, 10) || 0);
+    const [maj, min, pat] = parse(mod.version);
+    const [rMaj, rMin, rPat] = parse(minVersion);
+    return maj !== rMaj ? maj > rMaj : min !== rMin ? min > rMin : pat >= rPat;
+  }
+
   return {
     modules,
     loaded,
@@ -133,6 +144,7 @@ export const useMuninStore = defineStore("munin", () => {
     isPanelEnabled,
     isModuleInstalled,
     isModuleEnabled,
+    isModuleAtLeast,
     fetchModules,
     ensureLoaded,
   };

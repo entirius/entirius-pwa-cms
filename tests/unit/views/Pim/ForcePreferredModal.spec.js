@@ -14,10 +14,10 @@ import ForcePreferredModal from "@/views/Pim/components/supplier/ForcePreferredM
 
 const baseProps = {
   visible: true,
-  autoPreferredName: "Acme",
+  autoPreferredName: "Kinghoff",
   autoPreferredReason: "lowest_cost",
-  targetSupplierName: "Globex",
-  targetSupplierIdx: "globex",
+  targetSupplierName: "Fortrade",
+  targetSupplierIdx: "fortrade",
 };
 
 describe("ForcePreferredModal", () => {
@@ -35,7 +35,7 @@ describe("ForcePreferredModal", () => {
     await flushPromises();
     expect(wrapper.emitted("confirmed")).toBeTruthy();
     expect(wrapper.emitted("confirmed")[0][0]).toEqual({
-      supplierIdx: "globex",
+      supplierIdx: "fortrade",
       reason: "strategic partner",
     });
   });

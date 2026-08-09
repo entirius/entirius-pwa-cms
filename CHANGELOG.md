@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6.1] (2026-07-22)
+
+### Added
+
+- **Delivery point type change** (Points panel): the Type dropdown is editable
+  for custom points when the backend supports it (django-deliverypoints >=
+  1.1.0, detected via the Munin module version — `isModuleAtLeast` in the munin
+  store). Carrier points stay locked. Older backends keep the dropdown locked
+  so a change is never silently dropped.
+- **Order-impact warning on type creation**: creating a new delivery point type
+  shows an informative notification that types are stored inside orders and
+  cannot be changed or deleted later without developer assistance.
+
+### Fixed
+
+- **Point create no longer rejects empty optional fields**: `buildPayload`
+  sent `null` for empty strings, which the create endpoint rejects ("Input
+  should be a valid string" on 8 fields). Empty strings are sent as `""`,
+  which also makes clearing a field on edit actually persist (PATCH `null`
+  means "unchanged" on the backend).
+- **No spurious "Unsaved changes" modal after creating a point**: the create
+  path now snapshots the form before redirecting, and `useUnsavedChanges`
+  recomputes `isDirty` when the snapshot baseline changes (watch covered only
+  `current` before, so `snapshot()` after save never reset the dirty flag —
+  affects all 9 views using the composable).
+- **Translations section hidden on single-language setups** (Point detail):
+  nothing to translate into when channels expose one language; the section
+  still shows if legacy translations exist.
+
 ## [1.6.0] (2026-07-02)
 
 ### Fixed

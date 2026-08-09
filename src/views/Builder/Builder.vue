@@ -685,7 +685,7 @@
                       v-for="(t_uid, index) in tiles_order[s_uid]"
                       :key="t_uid"
                     >
-                      <div v-if="tiles[t_uid]" class="swiper-slide pointer">
+                      <div v-if="tiles[t_uid] && tiles[t_uid].core_type" class="swiper-slide pointer">
                         <div
                           class="bg-basic-300 t-basic-700 br-50 pl-100 pr-100 pt-100 pb-100 ai-ct grid gap-50"
                         >
@@ -804,7 +804,7 @@
                     v-for="(t_uid, index) in tiles_order[s_uid]"
                     :key="t_uid"
                   >
-                    <div v-if="tiles[t_uid]">
+                    <div v-if="tiles[t_uid] && tiles[t_uid].core_type">
                       <div
                         class="br-50 p-100 bg-basic-300 grid gap-100 b-basic-400"
                       >
@@ -1094,6 +1094,7 @@ export default {
   },
   methods: {
     formatCoreType(coreType) {
+      if (!coreType) return "";
       return coreType
         .replace(/^(section|tile)-/, "")
         .split("-")

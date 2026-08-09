@@ -1186,6 +1186,7 @@
     "point_deleted": "Punkt usunięty",
     "type_saved": "Typ zapisany",
     "type_created": "Typ utworzony",
+    "type_created_order_warning": "Uwaga: ten typ służy do realizacji zamówień i jest w nich przechowywany. Nie będzie można go później zmienić ani usunąć bez zgłoszenia do programisty.",
     "type_deleted": "Typ usunięty",
     "confirm_delete_point": "Czy na pewno chcesz usunąć ten punkt odbioru?",
     "confirm_delete_type": "Czy na pewno chcesz usunąć ten typ punktu?",
