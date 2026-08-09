@@ -30,15 +30,18 @@
     "pm_currencies": "Waluty",
     "accounts_customers": "Klienci",
     "checkout_orders": "Zamówienia",
-    "suppliers_list": "Dostawcy",
-    "suppliers_auto_matched": "Auto-połączone",
-    "suppliers_duplicates": "Duplikaty",
-    "supplier_review_queue": "Kolejka recenzji",
+    "atlas_list": "Dostawcy",
+    "atlas_auto_matched": "Auto-połączone",
+    "atlas_duplicates": "Duplikaty",
+    "atlas_review_queue": "Kolejka recenzji",
     "enrichment_review": "Wzbogacanie treści",
     "enrichment_spawn_rules": "Reguły spawnu",
     "enrichment_tasks": "Zadania",
     "translation_jobs": "Zadania tłumaczenia",
-    "promo_list": "Promocje"
+    "promo_list": "Promocje",
+    "pricefighter_gap_table": "Tabela luk cenowych",
+    "pricefighter_strategies": "Strategie",
+    "pricefighter_history": "Historia"
   },
   "login": {
     "welcome": "Witaj!",
@@ -531,16 +534,16 @@
     "accounts_desc": "Konta klientów -- profile, adresy, grupy",
     "checkout_orders": "Zamówienia",
     "checkout_orders_desc": "Zamówienia -- przeglądanie, statusy, płatności",
-    "suppliers": "Dostawcy",
-    "suppliers_desc": "Rejestr dostawców, feedy, mapowania, produkty i logi integracji",
-    "supplier_review": "Recenzja dostawców",
-    "supplier_review_desc": "Międzydostawcza kolejka recenzji, przesuwane zatwierdzenia, panel zdarzeń integracji",
+    "atlas": "Dostawcy",
+    "atlas_desc": "Rejestr dostawców, feedy, mapowania, produkty i logi integracji",
     "enricher": "Wzbogacanie",
     "enricher_desc": "Kolejka wzbogacania treści -- recenzja propozycji AI, akceptacja do PIM, zlecanie zadań",
     "translation": "Tłumaczenia",
     "translation_desc": "Panel tłumaczeń -- śledzenie postępu tłumaczeń PIM i treści",
     "promo": "Promocje",
-    "promo_desc": "Kampanie promocyjne i zarządzanie rabatami"
+    "promo_desc": "Kampanie promocyjne i zarządzanie rabatami",
+    "pricefighter": "PriceFighter",
+    "pricefighter_desc": "Konkurencyjne ceny -- analiza luk, strategie, wsadowe zastosowanie"
   },
   "stock": {
     "manage": "Stany",
@@ -1799,7 +1802,7 @@
     "faq_no_results": "Brak wyników",
     "faq_cancel": "Anuluj"
   },
-  "suppliers": {
+  "atlas": {
     "list_title": "Dostawcy",
     "detail_title": "Dostawca",
     "detail_not_found": "Nie znaleziono dostawcy.",
@@ -2254,78 +2257,78 @@
       "products": "Produkty",
       "linked": "Powiązane",
       "logs": "Logi"
-    }
-  },
-  "supplier_review": {
-    "title": "Recenzja dostawców",
-    "modes": {
-      "swipe": "Przesuwanie",
-      "list": "Lista",
-      "events": "Zdarzenia",
-      "updated": "Zaktualizowane"
     },
-    "updated": {
-      "title": "Wypchnięte produkty z niezobaczonymi zmianami",
-      "help": "Lista cross-supplier pushed produktów, których dane zmieniły się od ostatniego pusha. Użyj akcji zbiorczych, aby ponownie wypchnąć lub oznaczyć jako przejrzane.",
-      "counter": "{updated} z {total} na tej stronie ma niezobaczone zmiany",
-      "empty": "Brak pushed produktów z niezobaczonymi zmianami.",
-      "empty_message": "Gdy delta sync wykryje nowe dane od dostawcy, wiersze pojawią się tutaj.",
-      "col": {
-        "last_change": "Ostatnia zmiana"
-      }
-    },
-    "approve_button": "Zatwierdź",
-    "reject_button": "Odrzuć",
-    "skip_button": "Pomiń",
-    "view_at_supplier": "Zobacz u dostawcy",
-    "show_raw_data": "Pokaż surowe dane",
-    "raw_data_title": "Surowe dane produktu",
-    "show_gallery": "Pokaż galerię",
-    "gallery_title": "Galeria produktu",
-    "gallery_prev": "Poprzedni obraz",
-    "gallery_next": "Następny obraz",
-    "raw_panel": {
-      "core_section": "Pola podstawowe",
-      "attributes_section": "Atrybuty dostawcy",
-      "images_section": "Obrazki",
-      "expand": "Rozwiń",
-      "collapse": "Zwiń"
-    },
-    "empty_state_title": "Kolejka jest pusta",
-    "empty_state_message": "Wszystkie produkty zostały zrecenzowane.",
-    "status": {
-      "new": "Nowy",
-      "queued": "W kolejce",
-      "approved": "Zatwierdzony",
-      "rejected": "Odrzucony",
-      "pushed": "Wysłany"
-    },
-    "list": {
-      "col": {
-        "external_id": "ID zewn.",
-        "supplier": "Dostawca",
-        "name": "Nazwa",
-        "cost": "Koszt",
-        "stock": "Stan"
+    "review": {
+      "title": "Kolejka przeglądu",
+      "modes": {
+        "swipe": "Przesuwanie",
+        "list": "Lista",
+        "events": "Zdarzenia",
+        "updated": "Zaktualizowane"
       },
-      "selected_count": "Zaznaczono: {count}",
-      "bulk_approve": "Zatwierdź zbiorczo",
-      "bulk_reject": "Odrzuć zbiorczo",
-      "bulk_requeue": "Przywróć odrzucone",
-      "push_approved": "Wyślij zatwierdzone",
-      "confirm_title": "Potwierdź akcję zbiorczą",
-      "confirm_approve": "Zatwierdzić {count} produktów?",
-      "confirm_reject": "Odrzucić {count} produktów?",
-      "confirm_requeue": "Przywrócić {count} odrzuconych produktów do kolejki?",
-      "toast": {
-        "bulk_success": "Zaktualizowano {count} produktów.",
-        "push_dispatched": "Wysyłka rozpoczęta."
+      "updated": {
+        "title": "Wypchnięte produkty z niezobaczonymi zmianami",
+        "help": "Lista cross-supplier pushed produktów, których dane zmieniły się od ostatniego pusha. Użyj akcji zbiorczych, aby ponownie wypchnąć lub oznaczyć jako przejrzane.",
+        "counter": "{updated} z {total} na tej stronie ma niezobaczone zmiany",
+        "empty": "Brak pushed produktów z niezobaczonymi zmianami.",
+        "empty_message": "Gdy delta sync wykryje nowe dane od dostawcy, wiersze pojawią się tutaj.",
+        "col": {
+          "last_change": "Ostatnia zmiana"
+        }
+      },
+      "approve_button": "Zatwierdź",
+      "reject_button": "Odrzuć",
+      "skip_button": "Pomiń",
+      "view_at_supplier": "Zobacz u dostawcy",
+      "show_raw_data": "Pokaż surowe dane",
+      "raw_data_title": "Surowe dane produktu",
+      "show_gallery": "Pokaż galerię",
+      "gallery_title": "Galeria produktu",
+      "gallery_prev": "Poprzedni obraz",
+      "gallery_next": "Następny obraz",
+      "raw_panel": {
+        "core_section": "Pola podstawowe",
+        "attributes_section": "Atrybuty dostawcy",
+        "images_section": "Obrazki",
+        "expand": "Rozwiń",
+        "collapse": "Zwiń"
+      },
+      "empty_state_title": "Kolejka jest pusta",
+      "empty_state_message": "Wszystkie produkty zostały zrecenzowane.",
+      "status": {
+        "new": "Nowy",
+        "queued": "W kolejce",
+        "approved": "Zatwierdzony",
+        "rejected": "Odrzucony",
+        "pushed": "Wysłany"
+      },
+      "list": {
+        "col": {
+          "external_id": "ID zewn.",
+          "supplier": "Dostawca",
+          "name": "Nazwa",
+          "cost": "Koszt",
+          "stock": "Stan"
+        },
+        "selected_count": "Zaznaczono: {count}",
+        "bulk_approve": "Zatwierdź zbiorczo",
+        "bulk_reject": "Odrzuć zbiorczo",
+        "bulk_requeue": "Przywróć odrzucone",
+        "push_approved": "Wyślij zatwierdzone",
+        "confirm_title": "Potwierdź akcję zbiorczą",
+        "confirm_approve": "Zatwierdzić {count} produktów?",
+        "confirm_reject": "Odrzucić {count} produktów?",
+        "confirm_requeue": "Przywrócić {count} odrzuconych produktów do kolejki?",
+        "toast": {
+          "bulk_success": "Zaktualizowano {count} produktów.",
+          "push_dispatched": "Wysyłka rozpoczęta."
+        }
+      },
+      "events": {
+        "title": "Zdarzenia integracji",
+        "empty_state": "Brak zdarzeń pasujących do filtrów.",
+        "acknowledge_button": "Zatwierdź"
       }
-    },
-    "events": {
-      "title": "Zdarzenia integracji",
-      "empty_state": "Brak zdarzeń pasujących do filtrów.",
-      "acknowledge_button": "Zatwierdź"
     }
   },
   "enrichment": {
@@ -2829,5 +2832,99 @@
     "cfg_require_approval_tip": "Bony SALE startują w stanie Oczekuje na zatwierdzenie (nieużywalne, bez maila z kodem), dopóki administrator ich nie zatwierdzi.",
     "cfg_max_failed_tip": "Liczba błędnych prób kodu/PIN, zanim bon zostanie tymczasowo zablokowany.",
     "cfg_lockout_minutes_tip": "Jak długo (minuty) bon pozostaje zablokowany po zbyt wielu nieudanych próbach."
+  },
+  "pricefighter": {
+    "gap_table": "Tabela luk cenowych",
+    "all_channels": "Wszystkie kanały",
+    "all_recommendations": "Wszystkie rekomendacje",
+    "competitor_only": "Ma konkurenta",
+    "no_decisions": "Brak decyzji do wyświetlenia",
+    "no_decisions_desc": "Żaden wiersz sku x rynek nie pasuje do bieżących filtrów.",
+    "sku": "SKU",
+    "market": "Rynek",
+    "current_price": "Nasza cena",
+    "cost": "Koszt",
+    "competitor_price": "Konkurent",
+    "gap": "Luka",
+    "gap_current": "Luka vs bieżąca",
+    "gap_baseline_short": "vs cena bazowa",
+    "suggested_price": "Sugerowana",
+    "clamped_floor": "Przycięto do ceny minimalnej",
+    "clamped_step": "Przycięto przez maksymalny krok",
+    "recommendation": "Rekomendacja",
+    "recommendation_compete": "Konkuruj",
+    "recommendation_raise": "Podnieś",
+    "recommendation_hold": "Trzymaj",
+    "recommendation_revert_baseline": "Wróć do ceny bazowej",
+    "recommendation_hold_at_floor": "Trzymaj przy cenie minimalnej",
+    "recommendation_no_recommendation": "Brak rekomendacji",
+    "detail_components": "Składowe rekomendacji",
+    "reference_price": "Cena referencyjna",
+    "baseline": "Cena bazowa",
+    "floor": "Cena minimalna",
+    "margin": "Marża",
+    "reason": "Powód",
+    "strategy": "Strategia",
+    "mode": "Tryb",
+    "price_war": "Wojna cenowa",
+    "observations": "Obserwacje",
+    "valid": "ważne",
+    "no_observations": "Brak obserwacji dla tego sku x rynek.",
+    "source": "Źródło",
+    "price": "Cena",
+    "stock": "Stan magazynowy",
+    "observed_at": "Zaobserwowano",
+    "status": "Status",
+    "flag_valid": "Ważne",
+    "flag_stale": "Nieaktualne",
+    "flag_untrusted": "Niezaufane źródło",
+    "flag_oos": "Brak w magazynie",
+    "flag_currency_mismatch": "Niezgodność walut",
+    "strategies": "Strategie",
+    "history": "Historia decyzji",
+    "search_sku": "Szukaj po SKU...",
+    "apply_selected": "Zastosuj zaznaczone",
+    "rows_selected": "zaznaczono",
+    "clear_selection": "Wyczyść zaznaczenie",
+    "apply_preview_title": "Zastosuj {count} zmian(ę) ceny",
+    "confirm_apply": "Potwierdź zastosowanie",
+    "applying": "Stosowanie...",
+    "apply_report_title": "Raport zastosowania",
+    "applied": "Zastosowano",
+    "clamped": "Przycięto",
+    "skipped": "Pominięto",
+    "failed": "Błąd",
+    "stale": "Nieaktualne",
+    "stale_note": "Te pozycje zmieniły się od otwarcia podglądu — odśwież i spróbuj ponownie.",
+    "new_rule": "Nowa reguła",
+    "edit_rule": "Edytuj regułę",
+    "no_rules": "Brak reguł cenowych",
+    "no_rules_desc": "Utwórz regułę, aby kontrolować strategię dla sku, kategorii lub kanału.",
+    "scope_type": "Zakres",
+    "scope": "Zakres",
+    "scope_sku": "SKU",
+    "scope_category_idx": "Kategoria",
+    "scope_channel": "Kanał",
+    "category": "Kategoria",
+    "mode_authoritative": "Tryb autorytatywny",
+    "mode_v2_note": "Dostępne z autopilotem (v2)",
+    "confirm_delete_title": "Usuń regułę",
+    "confirm_delete_rule": "Ta reguła cenowa zostanie trwale usunięta.",
+    "no_history": "Brak decyzji",
+    "no_history_desc": "Zastosowane zmiany cen pojawią się tutaj.",
+    "price_change": "Zmiana ceny",
+    "applied_by": "Zastosował(a)",
+    "system": "System",
+    "scope_value_required": "Podaj wartość dla wybranego zakresu.",
+    "recommendation_hold_desc": "Zostaw obecną cenę — konkurent mieści się w neutralnym paśmie wokół baseline.",
+    "recommendation_compete_desc": "Zejdź poniżej ceny konkurenta (R − undercut), przycięte do ceny minimalnej (floor).",
+    "recommendation_raise_desc": "Podnieś w stronę ceny konkurenta (R − headroom), gdy jesteśmy wycenieni za nisko.",
+    "strategy_tooltip": "Co robi silnik dla (SKU × rynek): Trzymaj zostawia cenę, Konkuruj schodzi pod konkurenta, Podnieś podnosi zbyt tani produkt. Zawsze obowiązują granice (floor/MAP) i maks. krok.",
+    "scope_type_tooltip": "Które produkty obejmuje reguła. Gdy pasuje kilka, pierwszeństwo: SKU > Kategoria > Kanał (wygrywa najbardziej szczegółowa).",
+    "market_tooltip": "Kanał, którego dotyczy reguła o zasięgu kanału. Węższe reguły SKU/Kategoria mają nad nią pierwszeństwo.",
+    "no_change": "bez zmiany",
+    "no_snapshot": "Brak zapisanego snapshotu decyzji.",
+    "active": "Aktywna",
+    "search_category": "Szukaj kategorii..."
   }
 }

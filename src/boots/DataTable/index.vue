@@ -3,6 +3,11 @@
     <div class="data-table__grid" :style="gridStyle">
       <div class="data-table__header" role="row">
         <div
+          v-if="expandable"
+          class="data-table__header-cell data-table__header-cell--expand"
+          role="columnheader"
+        ></div>
+        <div
           v-if="selectable"
           class="data-table__header-cell data-table__header-cell--checkbox"
           role="columnheader"
@@ -47,46 +52,72 @@
       </div>
 
       <template v-if="rows && rows.length">
-        <div
-          v-for="(row, index) in rows"
-          :key="row[rowKey] ?? index"
-          class="data-table__row"
-          :class="{
-            'data-table__row--selected': selectable && isSelected(row),
-          }"
-          role="row"
-          @click="handleRowClick(row, index, $event)"
-        >
+        <template v-for="(row, index) in rows" :key="row[rowKey] ?? index">
           <div
-            v-if="selectable"
-            class="data-table__cell data-table__cell--checkbox"
-            role="gridcell"
+            class="data-table__row"
+            :class="{
+              'data-table__row--selected': selectable && isSelected(row),
+            }"
+            role="row"
+            @click="handleRowClick(row, index, $event)"
           >
-            <input
-              type="checkbox"
-              :checked="isSelected(row)"
-              aria-label="Select row"
-              @click.stop="toggleSelect(row, index, $event)"
-            />
-          </div>
-          <div
-            v-for="col in columns"
-            :key="col.key"
-            class="data-table__cell"
-            :style="alignStyle(col)"
-            :data-column="col.key"
-            role="gridcell"
-          >
-            <slot
-              :name="'cell-' + col.key"
-              :row="row"
-              :value="row[col.key]"
-              :index="index"
+            <div
+              v-if="expandable"
+              class="data-table__cell data-table__cell--expand"
+              role="gridcell"
             >
-              {{ row[col.key] }}
-            </slot>
+              <button
+                type="button"
+                class="data-table__expand-toggle"
+                :aria-expanded="isExpanded(row)"
+                aria-label="Toggle row details"
+                @click.stop="toggleExpand(row)"
+              >
+                <FontAwesomeIcon
+                  :icon="isExpanded(row) ? 'chevron-down' : 'chevron-right'"
+                />
+              </button>
+            </div>
+            <div
+              v-if="selectable"
+              class="data-table__cell data-table__cell--checkbox"
+              role="gridcell"
+            >
+              <input
+                type="checkbox"
+                :checked="isSelected(row)"
+                aria-label="Select row"
+                @click.stop="toggleSelect(row, index, $event)"
+              />
+            </div>
+            <div
+              v-for="col in columns"
+              :key="col.key"
+              class="data-table__cell"
+              :style="alignStyle(col)"
+              :data-column="col.key"
+              role="gridcell"
+            >
+              <slot
+                :name="'cell-' + col.key"
+                :row="row"
+                :value="row[col.key]"
+                :index="index"
+              >
+                {{ row[col.key] }}
+              </slot>
+            </div>
           </div>
-        </div>
+          <div
+            v-if="expandable && isExpanded(row)"
+            class="data-table__expand-row"
+            role="row"
+          >
+            <div class="data-table__expand-cell" role="gridcell">
+              <slot name="expand" :row="row" :index="index" />
+            </div>
+          </div>
+        </template>
       </template>
 
       <div v-else class="data-table__empty" role="row">
@@ -130,9 +161,15 @@ const props = defineProps({
     type: String,
     default: "uid",
   },
+  // Opt-in inline expand row. Renders the #expand slot in a full-width row below the
+  // clicked row. Default off — existing panels (PIM, PriceManager) keep prior behavior.
+  expandable: {
+    type: Boolean,
+    default: false,
+  },
 });
 
-const emit = defineEmits(["sort", "select", "row-click"]);
+const emit = defineEmits(["sort", "select", "row-click", "expand-toggle"]);
 
 const ALIGN_MAP = { left: "flex-start", center: "center", right: "flex-end" };
 
@@ -144,10 +181,28 @@ function alignStyle(col) {
 
 const gridStyle = computed(() => {
   const widths = [];
+  if (props.expandable) widths.push("32px");
   if (props.selectable) widths.push("40px");
   widths.push(...props.columns.map((col) => col.width || "auto"));
   return { gridTemplateColumns: widths.join(" ") };
 });
+
+// --- Expand ---
+
+const expandedKeys = ref(new Set());
+
+function isExpanded(row) {
+  return expandedKeys.value.has(row[props.rowKey]);
+}
+
+function toggleExpand(row) {
+  const key = row[props.rowKey];
+  const next = new Set(expandedKeys.value);
+  if (next.has(key)) next.delete(key);
+  else next.add(key);
+  expandedKeys.value = next;
+  emit("expand-toggle", { row, expanded: next.has(key) });
+}
 
 // --- Sort ---
 
@@ -225,6 +280,16 @@ function emitSelect() {
   );
   emit("select", selected);
 }
+
+// Clear selection from the parent (e.g. a "Clear selection" bulk-bar button or
+// after a bulk action completes). Resets internal checkbox state and re-emits.
+function clearSelection() {
+  selectedKeys.value = new Set();
+  lastSelectedIndex = null;
+  emitSelect();
+}
+
+defineExpose({ clearSelection });
 
 // --- Row click ---
 
@@ -351,5 +416,39 @@ function handleRowClick(row, index, event) {
   text-align: center;
   color: var(--c-basic-500);
   font-size: 13px;
+}
+
+.data-table__header-cell--expand,
+.data-table__cell--expand {
+  justify-content: center;
+}
+
+.data-table__expand-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--c-basic-500);
+  cursor: pointer;
+  transition: background-color 0.1s ease, color 0.1s ease;
+
+  &:hover {
+    background-color: var(--c-basic-300);
+    color: var(--c-basic-700);
+  }
+}
+
+.data-table__expand-row {
+  grid-column: 1 / -1;
+  border-bottom: 1px solid var(--c-basic-200);
+  background-color: var(--c-basic-200);
+}
+
+.data-table__expand-cell {
+  padding: 12px 16px;
 }
 </style>

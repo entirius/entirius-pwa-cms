@@ -9,12 +9,12 @@ const mockPostSetPreferred = vi.fn();
 const mockPostResetToAuto = vi.fn();
 const mockSpawnNotification = vi.fn();
 
-vi.mock("@/api/suppliers/api", () => ({
+vi.mock("@/api/atlas/api", () => ({
   GET_SkuChanges: (...args) => mockGetSkuChanges(...args),
   POST_AcknowledgeSku: (...args) => mockPostAcknowledge(...args),
   POST_ForceRepushSku: (...args) => mockPostForceRepush(...args),
-  POST_SetPreferredSupplier: (...args) => mockPostSetPreferred(...args),
-  POST_ResetPreferredToAuto: (...args) => mockPostResetToAuto(...args),
+  POST_SetPrimarySource: (...args) => mockPostSetPreferred(...args),
+  POST_ResetPrimaryToAuto: (...args) => mockPostResetToAuto(...args),
 }));
 
 vi.mock("@/stores/notify", () => ({
@@ -25,9 +25,9 @@ import SupplierTab from "@/views/Pim/components/SupplierTab.vue";
 
 const baseData = {
   real_product_sku: "TEST-SKU",
-  has_supplier: true,
-  supplier_product_id: 1,
-  supplier: { idx: "kinghoff", name: "Kinghoff" },
+  has_source: true,
+  source_product_id: 1,
+  source: { idx: "kinghoff", name: "Kinghoff" },
   unseen_count: 2,
   last_change_at: "2026-05-23T06:00:00+00:00",
   cost: 0.13,
@@ -111,7 +111,7 @@ describe("SupplierTab", () => {
   it("reset-to-auto calls API and emits refreshed when switch happened", async () => {
     mockGetSkuChanges.mockResolvedValue({ data: baseData });
     mockPostResetToAuto.mockResolvedValueOnce({
-      data: { switched: true, new_preferred_supplier_idx: "fortrade" },
+      data: { switched: true, new_primary_source_idx: "fortrade" },
     });
 
     const wrapper = mount(SupplierTab, { props: { sku: "TEST-SKU" } });

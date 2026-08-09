@@ -95,6 +95,7 @@ import {
   faBullseye,
   faSquareCheck,
   faWandMagicSparkles,
+  faScaleBalanced,
 } from "@fortawesome/free-solid-svg-icons";
 
 /* import font awesome icon component */
@@ -194,7 +195,8 @@ export default function registerFontAwesome(app) {
     faCalendarDays,
     faBullseye,
     faSquareCheck,
-    faWandMagicSparkles
+    faWandMagicSparkles,
+    faScaleBalanced
   );
 
   /* add font awesome icon component */

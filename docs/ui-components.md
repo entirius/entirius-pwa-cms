@@ -53,7 +53,9 @@ CSS Grid table for all list views. Uses `<script setup>`.
 
 Sort: prop-gated, header click cycles null -> asc -> desc -> null, emits only
 (parent handles sorting).
-Selection: prop-gated, Shift+click range, Ctrl/Cmd+click toggle.
+Selection: prop-gated, Shift+click range, Ctrl/Cmd+click toggle. The
+component exposes `clearSelection()` (via `defineExpose`) for parent-driven
+deselect after bulk actions — call it through a template ref.
 
 ## Custom Directives
 
