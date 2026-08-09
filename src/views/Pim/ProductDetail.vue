@@ -861,7 +861,7 @@ import {
   POST_ToggleOverride,
   GET_FeatureSetsGlobal,
 } from "@/api/pim/api";
-import { GET_BulkHasChanges } from "@/api/suppliers/api";
+import { GET_BulkHasChanges } from "@/api/atlas/api";
 import { hasQualityFields } from "./quality";
 import { extractApiMessage } from "@/composables/useFormErrors";
 
@@ -978,8 +978,8 @@ export default {
     },
     hasSupplierTab() {
       return (
-        this.munin.isPanelEnabled("suppliers") &&
-        this.supplierStatus?.has_supplier === true
+        this.munin.isPanelEnabled("atlas") &&
+        this.supplierStatus?.has_source === true
       );
     },
     hasQualityData() {
@@ -1408,7 +1408,7 @@ export default {
       }
     },
     async fetchSupplierStatus() {
-      if (!this.munin.isPanelEnabled("suppliers")) {
+      if (!this.munin.isPanelEnabled("atlas")) {
         this.supplierStatus = null;
         return;
       }

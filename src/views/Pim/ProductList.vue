@@ -285,7 +285,7 @@ import {
   GET_FeatureAttributes,
   GET_BulkProductGaps,
 } from "@/api/pim/api";
-import { GET_BulkHasChanges } from "@/api/suppliers/api";
+import { GET_BulkHasChanges } from "@/api/atlas/api";
 import { getLang } from "@/i18n";
 import {
   gapBadgeVariant,
@@ -360,7 +360,7 @@ export default {
       return this.munin.isModuleInstalled("pim_translator");
     },
     hasSuppliersPanel() {
-      return this.munin.isPanelEnabled("suppliers");
+      return this.munin.isPanelEnabled("atlas");
     },
     hasEnricherPanel() {
       return this.munin.isPanelEnabled("enricher");

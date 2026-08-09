@@ -84,7 +84,7 @@
 
       <ForcePreferredModal
         :visible="showForceModal"
-        :auto-preferred-name="data.supplier?.name || ''"
+        :auto-preferred-name="data.source?.name || ''"
         :auto-preferred-reason="autoStrategyReason"
         :target-supplier-name="forceTargetName"
         :target-supplier-idx="forceTargetIdx"
@@ -102,9 +102,9 @@ import {
   GET_SkuChanges,
   POST_AcknowledgeSku,
   POST_ForceRepushSku,
-  POST_ResetPreferredToAuto,
-  POST_SetPreferredSupplier,
-} from "@/api/suppliers/api";
+  POST_ResetPrimaryToAuto,
+  POST_SetPrimarySource,
+} from "@/api/atlas/api";
 import LinkedSuppliersPanel from "./supplier/LinkedSuppliersPanel.vue";
 import SupplierTimeline from "./supplier/SupplierTimeline.vue";
 import ForcePreferredModal from "./supplier/ForcePreferredModal.vue";
@@ -136,12 +136,12 @@ export default {
   },
   computed: {
     linkedSuppliers() {
-      if (!this.data?.supplier) return [];
+      if (!this.data?.source) return [];
       return [
         {
-          sp_id: this.data.supplier_product_id,
-          supplier_idx: this.data.supplier.idx,
-          supplier_name: this.data.supplier.name,
+          sp_id: this.data.source_product_id,
+          supplier_idx: this.data.source.idx,
+          supplier_name: this.data.source.name,
           cost: this.data.cost ?? null,
           stock: this.data.stock ?? null,
           is_preferred: true,
@@ -241,16 +241,16 @@ export default {
       }
     },
     onForcePreferredClick() {
-      this.forceTargetName = this.data?.supplier?.name || "";
-      this.forceTargetIdx = this.data?.supplier?.idx || "";
+      this.forceTargetName = this.data?.source?.name || "";
+      this.forceTargetIdx = this.data?.source?.idx || "";
       this.showForceModal = true;
     },
     async onForcePreferredConfirmed({ supplierIdx, reason }) {
       if (this.forcing || !supplierIdx) return;
       this.forcing = true;
       try {
-        await POST_SetPreferredSupplier(this.sku, {
-          supplier_idx: supplierIdx,
+        await POST_SetPrimarySource(this.sku, {
+          source_idx: supplierIdx,
           reason,
         });
         this.notify.spawnNotification({
@@ -276,10 +276,10 @@ export default {
       if (this.resetting) return;
       this.resetting = true;
       try {
-        const { data } = await POST_ResetPreferredToAuto(this.sku);
+        const { data } = await POST_ResetPrimaryToAuto(this.sku);
         const msg = data?.switched
           ? this.$t("pim.supplier.toast.reset_to_auto_switched", {
-              supplier: data?.new_preferred_supplier_idx || "",
+              supplier: data?.new_primary_source_idx || "",
             })
           : this.$t("pim.supplier.toast.reset_to_auto_no_change");
         this.notify.spawnNotification({ type: "positive", msg });

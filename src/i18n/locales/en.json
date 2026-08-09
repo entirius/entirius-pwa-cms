@@ -30,15 +30,18 @@
     "pm_currencies": "Currencies",
     "accounts_customers": "Customers",
     "checkout_orders": "Orders",
-    "suppliers_list": "Suppliers",
-    "suppliers_auto_matched": "Auto-matched",
-    "suppliers_duplicates": "Duplicates",
-    "supplier_review_queue": "Review Queue",
+    "atlas_list": "Suppliers",
+    "atlas_auto_matched": "Auto-matched",
+    "atlas_duplicates": "Duplicates",
+    "atlas_review_queue": "Review Queue",
     "enrichment_review": "Enrichment Review",
     "enrichment_spawn_rules": "Spawn Rules",
     "enrichment_tasks": "Tasks",
     "translation_jobs": "Translation Jobs",
-    "promo_list": "Promotions"
+    "promo_list": "Promotions",
+    "pricefighter_gap_table": "Gap Table",
+    "pricefighter_strategies": "Strategies",
+    "pricefighter_history": "History"
   },
   "login": {
     "welcome": "Welcome!",
@@ -531,16 +534,16 @@
     "accounts_desc": "Customer accounts -- profiles, addresses, groups",
     "checkout_orders": "Orders",
     "checkout_orders_desc": "Checkout orders -- view orders, statuses, payments",
-    "suppliers": "Suppliers",
-    "suppliers_desc": "Supplier registry, feeds, mappings, products and integration logs",
-    "supplier_review": "Supplier Review",
-    "supplier_review_desc": "Cross-supplier review queue, swipe approval, integration events dashboard",
+    "atlas": "Suppliers",
+    "atlas_desc": "Supplier registry, feeds, mappings, products and integration logs",
     "enricher": "Enricher",
     "enricher_desc": "Content enrichment queue -- review AI proposals, accept into PIM, spawn tasks",
     "translation": "Translation",
     "translation_desc": "Translation job dashboard -- progress tracking for PIM and content translations",
     "promo": "Promotions",
-    "promo_desc": "Discount rules and promotion management"
+    "promo_desc": "Discount rules and promotion management",
+    "pricefighter": "PriceFighter",
+    "pricefighter_desc": "Competitive pricing -- gap analysis, strategies, batch apply"
   },
   "stock": {
     "manage": "Stocks",
@@ -1800,7 +1803,7 @@
     "faq_no_results": "No results",
     "faq_cancel": "Cancel"
   },
-  "suppliers": {
+  "atlas": {
     "list_title": "Suppliers",
     "detail_title": "Supplier",
     "detail_not_found": "Supplier not found.",
@@ -2255,78 +2258,78 @@
       "products": "Products",
       "linked": "Linked",
       "logs": "Logs"
-    }
-  },
-  "supplier_review": {
-    "title": "Supplier review",
-    "modes": {
-      "swipe": "Swipe",
-      "list": "List",
-      "events": "Events",
-      "updated": "Updated"
     },
-    "updated": {
-      "title": "Pushed products with unseen changes",
-      "help": "Cross-supplier list of pushed products whose data has changed since the last push. Use bulk actions to re-push or acknowledge.",
-      "counter": "{updated} of {total} on this page have unseen changes",
-      "empty": "No pushed products have unseen changes.",
-      "empty_message": "Once delta sync detects new vendor data the rows will appear here.",
-      "col": {
-        "last_change": "Last change"
-      }
-    },
-    "approve_button": "Approve",
-    "reject_button": "Reject",
-    "skip_button": "Skip",
-    "view_at_supplier": "View at supplier",
-    "show_raw_data": "Show raw data",
-    "raw_data_title": "Raw product data",
-    "show_gallery": "Show gallery",
-    "gallery_title": "Product gallery",
-    "gallery_prev": "Previous image",
-    "gallery_next": "Next image",
-    "raw_panel": {
-      "core_section": "Core fields",
-      "attributes_section": "Vendor attributes",
-      "images_section": "Images",
-      "expand": "Read more",
-      "collapse": "Show less"
-    },
-    "empty_state_title": "Queue is empty",
-    "empty_state_message": "All products have been reviewed.",
-    "status": {
-      "new": "New",
-      "queued": "Queued",
-      "approved": "Approved",
-      "rejected": "Rejected",
-      "pushed": "Pushed"
-    },
-    "list": {
-      "col": {
-        "external_id": "External ID",
-        "supplier": "Supplier",
-        "name": "Name",
-        "cost": "Cost",
-        "stock": "Stock"
+    "review": {
+      "title": "Review Queue",
+      "modes": {
+        "swipe": "Swipe",
+        "list": "List",
+        "events": "Events",
+        "updated": "Updated"
       },
-      "selected_count": "Selected: {count}",
-      "bulk_approve": "Bulk approve",
-      "bulk_reject": "Bulk reject",
-      "bulk_requeue": "Re-queue rejected",
-      "push_approved": "Push approved",
-      "confirm_title": "Confirm bulk action",
-      "confirm_approve": "Approve {count} products?",
-      "confirm_reject": "Reject {count} products?",
-      "confirm_requeue": "Re-queue {count} rejected products to the review queue?",
-      "toast": {
-        "bulk_success": "{count} products updated.",
-        "push_dispatched": "Push dispatched."
+      "updated": {
+        "title": "Pushed products with unseen changes",
+        "help": "Cross-supplier list of pushed products whose data has changed since the last push. Use bulk actions to re-push or acknowledge.",
+        "counter": "{updated} of {total} on this page have unseen changes",
+        "empty": "No pushed products have unseen changes.",
+        "empty_message": "Once delta sync detects new vendor data the rows will appear here.",
+        "col": {
+          "last_change": "Last change"
+        }
+      },
+      "approve_button": "Approve",
+      "reject_button": "Reject",
+      "skip_button": "Skip",
+      "view_at_supplier": "View at supplier",
+      "show_raw_data": "Show raw data",
+      "raw_data_title": "Raw product data",
+      "show_gallery": "Show gallery",
+      "gallery_title": "Product gallery",
+      "gallery_prev": "Previous image",
+      "gallery_next": "Next image",
+      "raw_panel": {
+        "core_section": "Core fields",
+        "attributes_section": "Vendor attributes",
+        "images_section": "Images",
+        "expand": "Read more",
+        "collapse": "Show less"
+      },
+      "empty_state_title": "Queue is empty",
+      "empty_state_message": "All products have been reviewed.",
+      "status": {
+        "new": "New",
+        "queued": "Queued",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "pushed": "Pushed"
+      },
+      "list": {
+        "col": {
+          "external_id": "External ID",
+          "supplier": "Supplier",
+          "name": "Name",
+          "cost": "Cost",
+          "stock": "Stock"
+        },
+        "selected_count": "Selected: {count}",
+        "bulk_approve": "Bulk approve",
+        "bulk_reject": "Bulk reject",
+        "bulk_requeue": "Re-queue rejected",
+        "push_approved": "Push approved",
+        "confirm_title": "Confirm bulk action",
+        "confirm_approve": "Approve {count} products?",
+        "confirm_reject": "Reject {count} products?",
+        "confirm_requeue": "Re-queue {count} rejected products to the review queue?",
+        "toast": {
+          "bulk_success": "{count} products updated.",
+          "push_dispatched": "Push dispatched."
+        }
+      },
+      "events": {
+        "title": "Integration events",
+        "empty_state": "No events match the current filters.",
+        "acknowledge_button": "Acknowledge"
       }
-    },
-    "events": {
-      "title": "Integration events",
-      "empty_state": "No events match the current filters.",
-      "acknowledge_button": "Acknowledge"
     }
   },
   "enrichment": {
@@ -2830,5 +2833,99 @@
     "cfg_require_approval_tip": "SALE vouchers start in Pending approval (unusable, no code email) until an admin approves them.",
     "cfg_max_failed_tip": "Number of wrong code/PIN attempts before a voucher is temporarily locked.",
     "cfg_lockout_minutes_tip": "How long (minutes) a voucher stays locked after too many failed attempts."
+  },
+  "pricefighter": {
+    "gap_table": "Gap Table",
+    "all_channels": "All channels",
+    "all_recommendations": "All recommendations",
+    "competitor_only": "Has competitor",
+    "no_decisions": "No decisions to show",
+    "no_decisions_desc": "No sku x market rows match the current filters.",
+    "sku": "SKU",
+    "market": "Market",
+    "current_price": "Our price",
+    "cost": "Cost",
+    "competitor_price": "Competitor",
+    "gap": "Gap",
+    "gap_current": "Gap vs current",
+    "gap_baseline_short": "vs baseline",
+    "suggested_price": "Suggested",
+    "clamped_floor": "Clamped to floor",
+    "clamped_step": "Clamped by max step",
+    "recommendation": "Recommendation",
+    "recommendation_compete": "Compete",
+    "recommendation_raise": "Raise",
+    "recommendation_hold": "Hold",
+    "recommendation_revert_baseline": "Revert to baseline",
+    "recommendation_hold_at_floor": "Hold at floor",
+    "recommendation_no_recommendation": "No recommendation",
+    "detail_components": "Recommendation components",
+    "reference_price": "Reference price",
+    "baseline": "Baseline",
+    "floor": "Floor",
+    "margin": "Margin",
+    "reason": "Reason",
+    "strategy": "Strategy",
+    "mode": "Mode",
+    "price_war": "Price war",
+    "observations": "Observations",
+    "valid": "valid",
+    "no_observations": "No observations for this sku x market.",
+    "source": "Source",
+    "price": "Price",
+    "stock": "Stock",
+    "observed_at": "Observed at",
+    "status": "Status",
+    "flag_valid": "Valid",
+    "flag_stale": "Stale",
+    "flag_untrusted": "Untrusted source",
+    "flag_oos": "Out of stock",
+    "flag_currency_mismatch": "Currency mismatch",
+    "strategies": "Strategies",
+    "history": "Decision History",
+    "search_sku": "Search by SKU...",
+    "apply_selected": "Apply selected",
+    "rows_selected": "selected",
+    "clear_selection": "Clear selection",
+    "apply_preview_title": "Apply {count} price change(s)",
+    "confirm_apply": "Confirm apply",
+    "applying": "Applying...",
+    "apply_report_title": "Apply report",
+    "applied": "Applied",
+    "clamped": "Clamped",
+    "skipped": "Skipped",
+    "failed": "Failed",
+    "stale": "Stale",
+    "stale_note": "These items changed since you opened the preview — refresh and try again.",
+    "new_rule": "New rule",
+    "edit_rule": "Edit rule",
+    "no_rules": "No pricing rules yet",
+    "no_rules_desc": "Create a rule to control strategy for a sku, category, or channel.",
+    "scope_type": "Scope",
+    "scope": "Scope",
+    "scope_sku": "SKU",
+    "scope_category_idx": "Category",
+    "scope_channel": "Channel",
+    "category": "Category",
+    "mode_authoritative": "Authoritative mode",
+    "mode_v2_note": "Available with autopilot (v2)",
+    "confirm_delete_title": "Delete rule",
+    "confirm_delete_rule": "This pricing rule will be permanently deleted.",
+    "no_history": "No decisions yet",
+    "no_history_desc": "Applied price changes will show up here.",
+    "price_change": "Price change",
+    "applied_by": "Applied by",
+    "system": "System",
+    "scope_value_required": "Enter a value for the selected scope.",
+    "recommendation_hold_desc": "Keep the current price — competitor is within the neutral band around baseline.",
+    "recommendation_compete_desc": "Go below the competitor reference (R − undercut), clamped to the price floor.",
+    "recommendation_raise_desc": "Raise toward the competitor reference (R − headroom) when we're priced too low.",
+    "strategy_tooltip": "What the engine does per (SKU × market): Hold keeps price, Compete undercuts the competitor, Raise lifts an underpriced item. Bounds (floor/MAP) and max step always apply.",
+    "scope_type_tooltip": "Which products this rule targets. Precedence when several match: SKU > Category > Channel (most specific wins).",
+    "market_tooltip": "The channel this channel-scoped rule applies to. Narrower SKU/Category rules override it.",
+    "no_change": "no change",
+    "no_snapshot": "No decision snapshot recorded.",
+    "active": "Active",
+    "search_category": "Search category..."
   }
 }

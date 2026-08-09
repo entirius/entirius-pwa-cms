@@ -57,7 +57,7 @@
 // GalleryModal for fullscreen. The "after" image is the staged binary served by an admin-only
 // endpoint, so it is fetched as a blob and turned into an objectURL (an <img src> can't send the
 // Bearer token). The objectURL is revoked on unmount/refetch to avoid leaks.
-import GalleryModal from "@/views/SupplierReview/GalleryModal.vue";
+import GalleryModal from "@/views/Atlas/Review/GalleryModal.vue";
 import { GET_StagedFile } from "@/api/enrichment/api";
 
 export default {

@@ -82,7 +82,7 @@ components keep using stores directly via the `setup()` return pattern.
 - **`useSearchDebounce(delay = 300)`** — debounced search input for list
   views. Returns `{ search, debouncedFetch(fetchFn) }`; timer auto-cleans on
   unmount.
-- **`useSupplierBulkActions`** — bulk operations on supplier rows:
+- **`useAtlasBulkActions`** — bulk operations on supplier rows:
   `forceRepushSps(rows)`, `acknowledgeSps(rows)`. Both run in parallel and
   return `{ succeeded, failed }`.
 - **`useUnsavedChanges`** — dirty-tracking for edit forms: `snapshot(data)`,
