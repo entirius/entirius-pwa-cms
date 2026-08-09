@@ -17,7 +17,10 @@ const MODULE_TO_PANEL = {
   faq: "faq",
   pricemanager: "pricing",
   qms: "stock",
-  checkout: "checkout",
+  // Promo hosts Discounts (served by django-checkout) with Vouchers as an
+  // optional sub-feature — the panel must not disappear when only the
+  // voucher module is missing.
+  checkout: ["checkout", "promo"],
   checkout_voucher: "promo",
   suppliers: "suppliers",
   enrichment: "enricher",

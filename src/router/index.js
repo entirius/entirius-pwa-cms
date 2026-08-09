@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 
 import { useUserStore } from "@/stores/user";
 import { useMuninStore } from "@/stores/munin";
+import { panels } from "@/configs/access";
 
 import Home from "../views/Home/index.vue";
 import rv_builds from "../views/Builder/index.vue";
@@ -1031,6 +1032,9 @@ const routes = [
           requiresAuth: true,
           titleKey: "nav.promo_list",
           panel: "promo",
+          // The view fetches /api/checkout-voucher/* on mount — without the
+          // module the route must not resolve even when the panel is enabled.
+          module: "checkout_voucher",
         },
       },
       {
@@ -1119,6 +1123,13 @@ router.beforeEach(async (to, from, next) => {
 
     if (!munin.isPanelEnabled(panel)) {
       next('/');
+      return;
+    }
+    // Routes tied to an optional backend module (meta.module) stay dormant
+    // when the module is absent, even if their panel is enabled.
+    const module = to.meta?.module;
+    if (module && !munin.isModuleEnabled(module)) {
+      next(panels.find((p) => p.idx === panel)?.root || "/");
       return;
     }
     userStore.activeApp = panel;
