@@ -244,10 +244,13 @@ export default {
       return this.munin.isModuleEnabled("checkout_voucher");
     },
     tabOptions() {
-      return [
-        { value: "discounts", label: this.$t("promo.tab_discounts") },
-        { value: "vouchers", label: this.$t("promo.tab_vouchers") },
-      ];
+      const tabs = [{ value: "discounts", label: this.$t("promo.tab_discounts") }];
+      // Without the voucher module the segment stays hidden; deep links to
+      // ?tab=vouchers still land on the locked EmptyState below.
+      if (this.vouchersEnabled) {
+        tabs.push({ value: "vouchers", label: this.$t("promo.tab_vouchers") });
+      }
+      return tabs;
     },
     statusTabs() {
       return [
