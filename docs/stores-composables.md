@@ -1,23 +1,97 @@
-# Stores and Composables -- CMS Blueprint
+# Stores and Composables
 
 ## Pinia Stores
 
-All stores use composition (setup) syntax with `defineStore`.
+All 11 stores (`src/stores/`) use composition (setup) syntax with `defineStore`.
 
-- **`useLoaderStore`** (`loader.js`) -- `loaderStart()`/`loaderFinish()`, `handyLoaderStart()`/`handyLoaderFinish()`. Auto-timeout 10s.
-- **`useNotifyStore`** (`notify.js`) -- `spawnNotification({ title, msg, type, timeout })`. Types: `informative`, `positive`, `negative`, `warning`.
-- **`useHandyStore`** (`handy.js`) -- Builder panel state. `open_Handykit()`, `pass_Asset()`, `changeState()`. Subscriber pattern via `triggerListener`.
-- **`useUserStore`** (`user.js`) -- Auth, theme (`"default"`/`"dark"`), sidebar, `activeApp`. Cookie persistence via `universal-cookie`.
+- **`useCheckoutChannelStore`** (`checkoutChannel.js`) — active checkout/promo
+  channel, persisted per-user in `localStorage` (`checkout:lastSelectedChannel`),
+  falls back to `VUE_APP_CHANNEL`. `fetchChannels()`, `setActiveChannel(idx)`.
+  Own model (`checkout.Channel`) — never conflate with `pimChannel`.
+- **`useContentDBChannelStore`** (`contentDBChannel.js`) — ContentDB channels
+  and languages. `fetchChannelsAndLanguages()`; `defaultLanguage`,
+  `availableLanguages` computeds.
+- **`useHandyStore`** (`handy.js`) — Builder panel (Handy-kit) state:
+  `open_Handykit()`, `pass_Asset()`, `changeState()`. Subscriber pattern via
+  `triggerListener`.
+- **`useLoaderStore`** (`loader.js`) — `loaderStart()`/`loaderFinish()`,
+  `handyLoaderStart()`/`handyLoaderFinish()`. Auto-timeout 10s.
+- **`useMuninStore`** (`munin.js`) — module/panel enablement. See below.
+- **`useNotifyStore`** (`notify.js`) — `spawnNotification({ title, msg, type,
+  timeout })`. Types: `informative`, `positive`, `negative`, `warning`. Queues
+  beyond 3 visible toasts (`MAX_VISIBLE`), pause/resume timers on hover.
+- **`usePimChannelStore`** (`pimChannel.js`) — active PIM channel, persisted
+  per-user in `localStorage` (`pim:lastSelectedChannel`). `fetchChannels()`,
+  `setActiveChannel(idx)`; `activeChannelLanguages`, `allLanguages`,
+  `isDefaultChannel` computeds.
+- **`useQualityStore`** (`quality.js`) — soft-compat probe for the PIM gap-rules
+  API (a layer inside django-pim, not a munin panel). `available` is `null`
+  (unprobed) / `true` / `false`; `probe()` calls the gaps endpoint once and
+  caches the result for concurrent callers.
+- **`useRegionalStore`** (`regional.js`) — reference data from django-regional
+  (languages, currencies, countries), cached for the session. `fetchAll()`;
+  `languageById`/`currencyById`/`countryById` lookups.
+- **`useTranslationJobsStore`** (`translationJobs.js`) — merges PIM and
+  ContentDB translation jobs. `fetchJobs(channelIdx)`, `startPolling()` (polls
+  while `hasActiveJobs`), `stopPolling()`, `setStatusFilter()`.
+- **`useUserStore`** (`user.js`) — auth (JWT + refresh), session-expiry
+  monitor, theme (`"default"`/`"dark"`), sidebar, `activeApp`, language,
+  preferences. Cookie persistence via `universal-cookie`.
+
+### `useMuninStore` API
+
+Backs panel/module gating (see `docs/panels-routing.md` for the full model).
+
+- **`isPanelEnabled(panelIdx)`** — true if any Munin module mapped to that
+  panel (via `MODULE_TO_PANEL`) has `enabled_in_cms: true`, OR the panel is
+  in the `VUE_APP_PANELS` env fallback and Munin does not report it at all.
+- **`isModuleInstalled(moduleKey)`** — true if Munin reports the module at
+  all (installed), regardless of `enabled_in_cms`. Always `false` before
+  `loaded` — no env fallback (there's no reliable "installed" signal pre-login).
+- **`isModuleEnabled(moduleKey)`** — true if the module is enabled in CMS.
+  Before `loaded`, falls back to membership in the `VUE_APP_MODULES` env set.
+- **`isModuleAtLeast(moduleKey, minVersion)`** — version-gate for backend
+  feature detection (e.g. `"1.1.0rc0"` counts as `1.1.0`). Unknown
+  module/version → `false` (safe lock). Never falls back to env — needs live
+  module data.
+- **`loaded`** — `true` once a Munin fetch returns admin data
+  (`enabled_in_cms` present, i.e. an authenticated response). Until then, all
+  panel/module checks run on the env fallback (`VUE_APP_PANELS`/`VUE_APP_MODULES`).
+- **`ensureLoaded()`** — starts (or reuses) an in-flight `fetchModules()` call;
+  the router guard awaits this before evaluating `meta.panel`.
 
 ## Composables
 
-Located in `src/composables/`. Opt-in for new code. Existing components keep using stores via `setup()` return pattern.
+Located in `src/composables/` (9 total). Opt-in for new code; existing
+components keep using stores directly via the `setup()` return pattern.
 
-- **`useApi`** -- Wraps async with loader + error notification. `{ handy: true }` for builder context.
-- **`useLoader`** -- Thin wrapper over loader store. Returns `{ start, finish, handyStart, handyFinish }`.
-- **`useNotify`** -- Notification shortcuts: `{ success, error, info, warning, hide }`.
-- **`useHandyKitSubscriber`** -- Watches `handy.triggerListener` to bind HandyKit payloads to component data.
-- **`useVariantMatching`** -- Config variant matching logic.
+- **`useEntityFetch`** — factories for async-search inputs:
+  `useCategoryFetch(channelIdx)`, `useProductFetch(channelIdx)` (PIM admin
+  API), `usePageFetch()` (ContentDB navigation, client-filtered).
+- **`useFormErrors`** — normalizes API error responses (v2 envelope, legacy
+  `detail`, DRF field dicts) into per-field errors. Returns `errors`,
+  `hasErrors`, `summary`, `handleApiError(err)`, `getFieldError`,
+  `clearErrors`, `validateRequired(form, rules)`.
+- **`useHandyKitSubscriber`** — watches `handy.triggerListener` to bind
+  Handy-kit payloads onto component data (`instance`/`flat`/`custom`/`mixed`
+  bind modes). Returns `{ setupSubscriber, open_Handykit }`.
+- **`useLoader`** — thin wrapper over `useLoaderStore`. Returns `{ loading,
+  handyLoading, start, finish, handyStart, handyFinish }`.
+- **`useNotify`** — notification shortcuts over `useNotifyStore`: `{ success,
+  error, info, warning, hide }`.
+- **`useSearchDebounce(delay = 300)`** — debounced search input for list
+  views. Returns `{ search, debouncedFetch(fetchFn) }`; timer auto-cleans on
+  unmount.
+- **`useSupplierBulkActions`** — bulk operations on supplier rows:
+  `forceRepushSps(rows)`, `acknowledgeSps(rows)`. Both run in parallel and
+  return `{ succeeded, failed }`.
+- **`useUnsavedChanges`** — dirty-tracking for edit forms: `snapshot(data)`,
+  `track(formData)`, `isDirty`, `guardNavigation(to, from, next)`,
+  `confirmLeave()`/`cancelLeave()`. Warns on `beforeunload` while dirty.
+- **`useVariantMatching`** — pure functions for variant-based conditional
+  field visibility in config-driven UIs (Pages builder config-kit):
+  `buildSettedConfigsValues`, `checkCoresDependency`, `checkPropsDependency`,
+  `isAllOptionsDisabled`.
 
 ## Store Usage Pattern (Options API)
 

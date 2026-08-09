@@ -43,7 +43,7 @@ On `npm run serve` or `npm run build`, missing configs are auto-generated from `
 npm run init:client
 ```
 
-To customize, edit the 7 JSON files in `__client/`. See `__client_default/` for the template structure and `CLAUDE.md` for the full config reference.
+To customize, edit the 7 JSON files in `__client/`. See `__client_default/` for the template structure and `docs/config-system.md` for the full config reference.
 
 ## Environment Configuration
 
@@ -59,9 +59,9 @@ Then fill in the required values:
 # Required
 VUE_APP_API_URL=http://localhost:8100
 VUE_APP_CHANNEL=your-channel-name
-VUE_APP_PANELS=pages,pim,points
 
 # Optional
+VUE_APP_PANELS=pages,pim,points
 VUE_APP_DEBUG=false
 VUE_APP_LANG=EN
 VUE_APP_USERNAME=your-username
@@ -72,15 +72,19 @@ VUE_APP_PASSWORD=your-password
 
 | Variable           | Required | Default | Description                                |
 |--------------------|----------|---------|--------------------------------------------|
-| `VUE_APP_API_URL`  | Yes      | --      | Backend API base URL (ContentDB + PIM)     |
-| `VUE_APP_CHANNEL`  | Yes      | --      | Content channel identifier                 |
+| `VUE_APP_API_URL`  | Yes      | --      | Backend API base URL                       |
+| `VUE_APP_CHANNEL`  | Yes      | --      | Active sales channel                       |
 | `VUE_APP_DEBUG`    | No       | `false` | Enable API debug logging                   |
 | `VUE_APP_LANG`     | No       | `EN`    | Language (EN or PL)                        |
 | `VUE_APP_USERNAME` | No       | --      | Dev auto-login username                    |
 | `VUE_APP_PASSWORD` | No       | --      | Dev auto-login password                    |
-| `VUE_APP_PANELS`   | Yes      | --      | Comma-separated panel IDs to enable. Available: `pages`, `pim`, `points` |
+| `VUE_APP_PANELS`   | No       | --      | Fallback panel IDs when the backend module registry is unavailable. See `docs/panels-routing.md` for the full 15-panel registry and gating model |
 
 If required variables are missing, the app shows a "Configuration Required" screen listing what needs to be set. Build output also prints warnings in the terminal.
+
+Which panels are actually usable is decided at runtime by the backend's
+django-munin module registry, not by `VUE_APP_PANELS` alone — see
+`docs/panels-routing.md`.
 
 ## Deployment Modes
 
@@ -170,7 +174,7 @@ npm run test:e2e:debug
 
 ### Extending Tests
 
-See `CLAUDE.md` - Testing Workflow section for detailed guide on:
+See `docs/testing.md` for a detailed guide on:
 - Adding new test scenarios
 - Creating test helpers
 - Debugging failed tests
@@ -229,18 +233,18 @@ Located in: `src/configs/builder/components/`
 
 ### Multi-App Architecture
 
-The system supports multiple apps/modules:
-
-- **Pages** - Content management (default)
-- **PIM** - Product information management
-
-Apps are configured in `src/configs/access.js` and filtered based on user permissions.
+The system supports 15 self-contained panels (Pages, PIM, Points, Forms,
+Accounts, Checkout, Agreements, Emails, FAQ, Pricing, Stock, Translation,
+Suppliers, Enricher, Promo), each enabled per backend deployment via the
+django-munin module registry. Panels are configured in `src/configs/access.js`
+and filtered based on user permissions. See `docs/panels-routing.md` for the
+full registry and gating model.
 
 ### Adding New Features
 
-1. Read `CLAUDE.md` for architectural guidelines
+1. Read `AGENTS.md` and the `docs/` reference files for architectural guidelines
 2. Run tests before making changes: `npm run test:smoke`
-3. Make your changes following the patterns in `CLAUDE.md`
+3. Make your changes following the patterns in `AGENTS.md` and `docs/`
 4. Add tests for new functionality
 5. Run full test suite: `npm test`
 6. Format code: `npm run pretty`
@@ -255,10 +259,15 @@ Additional documentation available in the app:
 
 ## Architecture
 
-For detailed architectural guidelines, component patterns, and development rules, refer to `CLAUDE.md`.
+For detailed architectural guidelines, component patterns, and development rules, refer to `AGENTS.md` and the `docs/` directory:
 
-Key architectural documents:
 - `AGENTS.md` - Development rules and patterns
+- `docs/panels-routing.md` - Panel registry and routing/gating model
+- `docs/stores-composables.md` - Pinia stores and composables
+- `docs/ui-components.md` - Boot components, theming, RWD
+- `docs/config-system.md` - `__client/` config reference
+- `docs/testing.md` - Test commands and suite structure
+- `docs/gotchas.md` - Repo-specific traps
 
 ## Version
 

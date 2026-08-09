@@ -1,39 +1,83 @@
-# UI Components -- CMS Blueprint
+# UI Components
 
 ## Global Components (Boots)
 
-Registered globally in `src/boots/register-elems.js`:
+39 components registered globally in `src/boots/register-elems.js` (plus
+FontAwesome icon registration in `src/boots/Icons/fa-icons.js`, loaded
+separately in `main.js` — not a component).
 
-BasicInput, BasicWysiwyg (TipTap), BasicDatePicker (Flatpickr), BasicSwiper, BasicImage, BasicButton, BasicCheckbox, DataTable (CSS Grid, `<script setup>`), Dropdown, Accordion, Pagination, Loader, NoticeMe, LazyScroll, ToolTip, FloatingActions, MobileFilterPanel, Icons (FontAwesome)
+Full list: Accordion, BackBar, BasicButton, BasicCheckbox, BasicDatePicker
+(Flatpickr), BasicImage, BasicInput, BasicLogo, BasicSwiper, BasicTabs,
+BasicWysiwyg (TipTap), BulkActionBar, ChannelMultiSelect, ColorInput,
+DataTable (CSS Grid, `<script setup>`), Dropdown, EmptyState,
+EntitySearchPicker, FilterChip, FloatingActions, FormField, HelpTooltip,
+HoverMe, LazyScroll, Loader, LockedField, MobileFilterPanel, NoticeMe,
+NumberInput, Pagination, SegmentedControl, SideDrawer, StanceSwitcher,
+StatusBadge, SubscriberSetter, Switcher, TextAreaBasic, ToolTip,
+TranslationsDrawer.
 
-New boots use `<script setup>` (plain JS). See `FloatingActions/index.vue` and `DataTable/index.vue` as patterns.
+New boots use `<script setup>` (plain JS). See `FloatingActions/index.vue` and
+`DataTable/index.vue` as patterns.
+
+Notable ones for list/form views:
+
+- **`DataTable`** — see API below.
+- **`FormField`** — label/description/tooltip/required wrapper for form
+  inputs. Props: `label`, `description`, `tooltip`, `required`.
+- **`EmptyState`** — placeholder for empty lists. Props: `title`, `message`,
+  `icon`.
+- **`ChannelMultiSelect`** — multi-select for channel scoping (`v-model`
+  array of channel idx). Props: `modelValue`, `channels`, `label`, `allLabel`.
+- **`HelpTooltip`** — inline `?` icon with a hover bubble. Props: `text`
+  (required).
+- **`BulkActionBar`** — sticky bar for bulk row actions. Props: `count`
+  (required), `actions` (required), `selectedLabelKey`, `clearLabelKey`.
+- **`SegmentedControl`** — single-choice toggle group. Props: `options`
+  (required), `modelValue`; emits `update:modelValue`.
+- **`StatusBadge`** — colored status pill. Props: `label` (required),
+  `variant` (`positive`/`negative`/`warning`/`informative`/`neutral`).
+- **`MobileFilterPanel`** — collapsible filter drawer for small screens.
+  Props: `activeCount`, `triggerLabel`.
+- **`FilterChip`** — toggleable filter pill. Props: `label` (required),
+  `active`, `count`; emits `click`. A global component — do not redefine
+  `.filter-chip` styles locally.
 
 ### DataTable
 
 CSS Grid table for all list views. Uses `<script setup>`.
 
-**Props:** `columns` (required), `rows`, `emptyText`, `sortable`, `selectable`, `multiSelect`, `rowKey` (default `'uid'`)
+**Props:** `columns` (required), `rows`, `emptyText`, `sortable`,
+`selectable`, `multiSelect`, `rowKey` (default `'uid'`)
 **Events:** `sort`, `select`, `row-click`
 **Slots:** `cell-{key}`, `header-{key}`, `empty`
 
-Sort: prop-gated, header click cycles null -> asc -> desc -> null, emits only (parent handles sorting).
+Sort: prop-gated, header click cycles null -> asc -> desc -> null, emits only
+(parent handles sorting).
 Selection: prop-gated, Shift+click range, Ctrl/Cmd+click toggle.
 
 ## Custom Directives
 
-**`v-out`** -- Click-outside detection. Pass string literal (`v-out="'open'"`) or callback. Never pass boolean directly.
+Defined in `src/utils/directives/`.
 
-**`v-ripple-effect`** -- Material ripple. Uses `var(--overlay-ripple)`.
+**`v-out`** — Click-outside detection. Pass a string literal
+(`v-out="'open'"`, sets that data key to `false`) or a callback function.
+Never pass a boolean directly.
+
+**`v-ripple-effect`** — Material ripple. Injects a `.ripple-effect-class`
+span on click.
 
 ## Theme System
 
 - **Attribute:** `data-theme="default"|"dark"` on `<html>`
 - **Store:** `useUserStore().theme`, `useUserStore().setTheme(theme)`
-- **Persistence:** `localStorage` key `cms_theme`, falls back to `prefers-color-scheme: dark`
+- **Persistence:** `localStorage` key `cms_theme`, falls back to
+  `prefers-color-scheme: dark`
 
 ### Color Palettes
 
-Defined in `src/assets/scss/themes/` (`__default.scss`, `__dark.scss`). Groups: `basic` (100-900), `support`, `primary`, `positive`, `negative`, `warning`, `informative`, `notice`.
+Defined in `src/assets/scss/themes/` (`__default.scss`, `__dark.scss`).
+Groups: `basic` (100-900), `support`, `primary`, `positive`, `negative`,
+`warning`, `informative`, `notice`.
 
 Light: `basic-100` = lightest. Dark: scale inverts.
 
@@ -47,15 +91,20 @@ Per `[data-theme]` in `src/assets/scss/main.scss`:
 
 ### Focus Styles
 
-`:focus-visible` uses `outline: 2px solid var(--c-support-400)` with `offset: 2px`. Defined in `src/assets/scss/utils/_reset.scss`.
+`:focus-visible` uses `outline: 2px solid var(--c-support-400)` with
+`offset: 2px`. Defined in `src/assets/scss/utils/_reset.scss`.
 
 ## Mobile / RWD
 
-**Breakpoints:** `768px` (mobile/tablet), `1279px` (desktop). Mixins: `max-tablet`, `min-tablet`, `max-desktop`, `min-desktop`.
+**Breakpoints:** `768px` (mobile/tablet), `1279px` (desktop). Mixins:
+`max-tablet`, `min-tablet`, `max-desktop`, `min-desktop`
+(`src/assets/scss/utils/_media-query.scss`).
 
-**Grid gotcha:** Utility grid classes only apply at `min-width: 40rem` (640px). Below that, use `display: flex; flex-direction: column`.
+**Grid gotcha:** Utility grid classes only apply at `min-width: 40rem`
+(640px). Below that, use `display: flex; flex-direction: column`.
 
-**`--bottom-bar-height`:** `0px` desktop, `56px` mobile. Use for fixed-bottom elements.
+**`--bottom-bar-height`:** `0px` desktop, `56px` mobile
+(`src/assets/scss/utils/_mobile.scss`). Use for fixed-bottom elements.
 
 ## Reusable UI Patterns
 
@@ -70,4 +119,6 @@ Per `[data-theme]` in `src/assets/scss/main.scss`:
 
 ### Filter Chips
 
-`.filter-chip` / `.filter-chip--active` defined in `Builds.vue` unscoped styles. Only load when content list is visited. Duplicate styles if using in other views.
+Use the `FilterChip` boot component (`src/boots/FilterChip/index.vue`) —
+`label`, `active`, `count` props, `click` event. Do not hand-roll
+`.filter-chip` styles in a view; the global component owns that CSS.
