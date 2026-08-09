@@ -31,6 +31,7 @@
     "test:suppliers": "playwright test tests/e2e/09-suppliers-smoke.spec.js tests/e2e/10-supplier-review-smoke.spec.js",
     "test:suppliers:live": "playwright test tests/e2e/11-suppliers-live.spec.js --workers=1",
     "test:comprehensive": "playwright test tests/e2e/03-content-builder.spec.js tests/e2e/04-gallery-upload.spec.js tests/e2e/05-theme-and-layout.spec.js tests/e2e/06-content-list.spec.js",
+    "pretest:unit": "node scripts/init-client.js",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
     "test:pim-bridge": "playwright test tests/e2e/12-pim-suppliers-bridge.spec.js"
