@@ -106,7 +106,7 @@ All notable changes to this project will be documented in this file.
 - **Icons**: Registered `faExpand` and `faCompress` in FA icon library.
 - **Dark mode cleanup**: Removed `!important` color override from editor (paste sanitization handles it). Kept override in Builder.vue for legacy saved content in read-only previews.
 
-## [Unreleased]
+## Earlier development (pre-1.1.0)
 
 ### Vue 3 Migration (2026-01-31 to 2026-02-08)
 
@@ -196,6 +196,3 @@ All notable changes to this project will be documented in this file.
 - Client context improvements
 - Build system optimizations
 
-## Version History
-
-Migration completed successfully with no breaking changes to data structures or API contracts.

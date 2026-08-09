@@ -1,99 +1,108 @@
-# Panels and Routing -- CMS Blueprint
+# Panels and Routing
 
-## Multipanel Architecture
+15 self-contained panels, each gated by a django-munin backend module. Panel
+metadata lives in `src/configs/access.js`; route gating lives in
+`src/router/index.js` and `src/stores/munin.js`.
 
-Six panels: Pages, PIM, Points, Forms, Agreements, Emails. Each self-contained.
+## Panel Registry
 
-### Panel Registry
+`src/configs/access.js` exports `panels` (the `apps` array). Each entry:
+`{ name, idx, icon, root, labelKey, descriptionKey, access }`. `icon` is a
+Font Awesome icon name rendered via `FontAwesomeIcon`.
 
-In `src/configs/access.js` `apps` array. Each entry: `{ name, idx, icon, root, labelKey, access }`. This is static metadata only -- enablement is determined at runtime by the Munin store.
+| idx | Name | Root | Icon |
+|---|---|---|---|
+| `pages` | Pages | `/pages/content` | `file-code` |
+| `pim` | PIM | `/pim/products` | `boxes-stacked` |
+| `points` | Points | `/points/list` | `location-dot` |
+| `forms` | Forms | `/forms/list` | `envelope` |
+| `accounts` | Accounts | `/accounts/customers` | `users` |
+| `checkout` | Orders | `/checkout-orders/orders` | `shopping-cart` |
+| `agreements` | Agreements | `/agreements/list` | `file-contract` |
+| `emails` | Emails | `/emails` | `at` |
+| `faq` | FAQ | `/faq/groups` | `circle-question` |
+| `pricing` | Pricing | `/pricing/prices` | `money-bill-wave` |
+| `stock` | Stock | `/stock/manage` | `warehouse` |
+| `translation` | Translation | `/translation-jobs` | `language` |
+| `suppliers` | Suppliers | `/suppliers/list` | `truck` |
+| `enricher` | Enricher | `/enrichment` | `wand-magic-sparkles` |
+| `promo` | Promo | `/promo/list` | `tags` |
 
-### Panel Enablement (Munin-Driven)
+This array is static metadata only. Whether a panel is *usable* is decided at
+runtime by `useMuninStore().isPanelEnabled(idx)`.
 
-Panel visibility is controlled by `django-munin`, not by environment variables.
+## Route Table
 
-**How it works:**
-1. Admin toggles `enabled_in_cms` on Module records in Django admin
-2. `GET /api/munin/v2/` returns all modules with their `enabled_in_cms` flag
-3. `useMuninStore` maps module keys to panel idx values via `MODULE_TO_PANEL`
-4. Router guard and Home view check `munin.isPanelEnabled(panelIdx)`
+Every route belongs to a panel via `meta.panel`. Routes are namespaced by
+path prefix and lazy-loaded (`() => import(...)`). Grouped by panel:
 
-**MODULE_TO_PANEL mapping** (in `src/stores/munin.js`):
-
-| Munin module key | CMS panel idx |
+| Path prefix | Views |
 |---|---|
-| `contentdb` | `pages` |
-| `pim` | `pim` |
-| `deliverypoints` | `points` |
-| `contact_forms` | `forms` |
-| `agreements` | `agreements` |
-| `email` | `emails` |
+| `/` | Home (panel selector cards) |
+| `/pages/...`, `/gallery`, `/content-sets`, `/doc`, `/content`, `/layout-extender` | Builder, Gallery, ContentSets, Docs, Authors, LayoutExtenders/NavigationEditor (legacy paths redirect into `/pages/...`) |
+| `/pim/...` | ProductList/Create/Detail, CategoryList/Create/Detail, FeatureSetList/Edit, FeatureList/Edit, GapDefinitionList/Edit |
+| `/points/...` | PointList, PointEdit, TypeList |
+| `/forms/...` | ContactFormList/Detail, BookingList/Detail, LeadList/Detail |
+| `/agreements/...` | AgreementList/Edit, ConsentPeople, ConsentPersonDetail |
+| `/accounts/...` | CustomerList, CustomerDetail |
+| `/checkout-orders/...` | OrderList, OrderDetail |
+| `/emails/...` | EmailsDashboard, EmailChannelEdit, EmailLangConfigEdit, EmailTemplateList/Edit |
+| `/faq/...` | GroupList/Edit, ItemList/Edit |
+| `/pricing/...` | PriceList/Detail, TaxClassList/Detail, ChannelList/Detail |
+| `/stock/...` | WarehouseStockTable |
+| `/translation-jobs` | TranslationDashboard |
+| `/suppliers/...`, `/supplier-review` (legacy redirect) | SupplierList/Detail, AutoMatched, Duplicates, SupplierReview |
+| `/enrichment/...` | EnrichmentReview, EnrichmentSpawnRules List/Edit, EnrichmentTasks |
+| `/promo/...` | PromoList/Edit, VoucherDetail |
+| `/change-password`, `/password-reset` | ChangePassword (authenticated), PasswordReset (unauthenticated, from email link) |
 
-Modules not in this map (regional, accounts, etc.) have no CMS panel and are ignored.
+Details for every child route are in `src/router/index.js` — this table maps
+prefixes to view components, not individual paths.
 
-**Fallback chain:**
-1. **Munin API** -- primary source (admin-controlled, runtime)
-2. **`VUE_APP_PANELS` env var** -- fallback if API unavailable or not yet loaded
-3. **Empty set** -- if neither source is available, no panels enabled
+## Gating Model
 
-**Fetch timing:**
-- After login: `Login-wall.vue` calls `munin.fetchModules()` with fresh JWT
-- On page refresh: `App.vue` fires `munin.fetchModules()` if already authenticated (fire-and-forget, env fallback covers the gap)
+### `meta.panel` — panel-level gate
 
-### Layout Rules
+The router's `beforeEach` guard (`src/router/index.js`) reads `to.meta.panel`.
+If set, and the user is authenticated but Munin data has not loaded yet, the
+guard awaits `munin.ensureLoaded()` before deciding. If
+`munin.isPanelEnabled(panel)` is false, the guard redirects to `/`.
 
-- **Home (`/`)** -- No sidebar, no route title. Panel selector cards.
-- **Panel pages** (`meta.panel` set) -- Sidebar with panel-specific links.
-- Controlled by `hasPanel` in `App.vue`: `!!this.$route.meta?.panel`
+`isPanelEnabled` (in `useMuninStore`, `src/stores/munin.js`) checks a
+`Set` computed from three sources, in priority order:
 
-### Key Components
+1. **Munin API** — for each module Munin reports, `MODULE_TO_PANEL[mod.key]`
+   maps it to one or more panel idx values. A module maps to a panel only if
+   `mod.enabled_in_cms` is true. A module key can map to an array of panels
+   (OR semantics): e.g. `checkout` maps to both `checkout` and `promo`, so
+   the Promo panel stays visible even when only Vouchers is disabled.
+2. **`VUE_APP_PANELS` gap-filler** — a comma-separated env var. It force-enables
+   a panel only if Munin does **not report that panel at all** (module not yet
+   registered with Munin, e.g. `enricher`). It never overrides an explicit
+   admin "off" for a module Munin does report.
+3. **Pre-login** — before Munin data loads, `enabledPanels` is exactly the
+   `VUE_APP_PANELS` set.
 
-| Component | Location | Role |
-|---|---|---|
-| `HeaderControls` | `src/components/Navigation/HeaderControls.vue` | Panel switcher, theme toggle, user, logout |
-| `Navigation` | `src/components/Navigation/Navigation.vue` | Sidebar links filtered by `activeApp` |
-| `Home` | `src/views/Home/index.vue` | Panel selector cards |
+### `meta.module` — module-level gate (in-panel feature)
 
-### Adding a New Panel
+A route can require an optional module beyond its panel. Example:
+`/promo/voucher/:pk` (`VoucherDetail`) sets `meta.module: "checkout_voucher"`
+because the view calls `/api/checkout-voucher/*` on mount — it must not
+resolve even when the `promo` panel itself is enabled via `checkout`. If
+`munin.isModuleEnabled(module)` is false, the guard redirects to the panel's
+`root` (from the registry), not to `/`.
 
-1. Register in `src/configs/access.js` `apps` array
-2. Add entry to `MODULE_TO_PANEL` in `src/stores/munin.js`
-3. Add i18n keys (`panels.{name}`, `panels.{name}_desc`) to `en.json` and `pl.json`
-4. Create view: `src/views/{PanelName}/index.vue`
-5. Add route in `src/router/index.js` with `meta: { panel: "{idx}" }`
-6. Add sidebar routes in `Navigation.vue` with `app: ["{idx}"]`
-7. Ensure the corresponding django-munin module has `enabled_in_cms = True`
+### `VUE_APP_HIDE_DISABLED_PANELS`
 
-## Routing
+Controls how locked panels render in the UI (not routing — the guard always
+blocks disabled panels regardless of this flag):
 
-Routes namespaced by panel. Every route has `meta: { panel: "idx" }`. Lazy-loaded via `() => import(...)`.
+- **Unset / not `"TRUE"`** (default) — locked panels render grayed out with a
+  lock icon (`Home/index.vue` panel cards, `HeaderControls.vue` panel
+  switcher dropdown), non-interactive.
+- **`"TRUE"`** — locked panels are filtered out of the list entirely; only
+  enabled panels appear.
 
-| Route | Panel | Description |
-|---|---|---|
-| `/` | -- | Home (panel selector) |
-| `/pages/content?lg=pl` | pages | Content list |
-| `/pages/:content_type/:type/:uid?` | pages | Builder |
-| `/pages/gallery` | pages | Gallery |
-| `/pages/content-sets?lg=pl` | pages | Content sets |
-| `/pages/doc` | pages | Internal docs |
-| `/pim` | pim | PIM panel |
-| `/points` | points | Points panel |
-| `/forms` | forms | Contact forms |
-| `/agreements` | agreements | Agreements |
-| `/emails` | emails | Email templates |
-
-Legacy routes (`/gallery`, `/content-sets`, `/doc`, `/content`) redirect to `/pages/...`.
-
-### Access Control
-
-Role-based system in `src/configs/access.js`. Roles: `admin`, `moderator`, `user`. Routes filtered by `grantAccess()`.
-
-Panel-level access controlled by Munin (admin toggles modules). Route-level access controlled by roles in `access.js`.
-
-## Internationalization
-
-Plugin at `src/i18n/index.js`. Language via `VUE_APP_LANG` (`EN`/`PL`). Files: `src/i18n/locales/en.json`, `pl.json`.
-
-**Namespaces:** `nav`, `login`, `builder`, `gallery`, `config`, `config_option`, `prop`, `prop_option`, `common`, `notifications`, `images`, `meta`, `attrs`, `routes`, `categories`, `controllers`, `order`, `content_sets`, `content_role`, `app`, `panels`
-
-Add strings to both `en.json` and `pl.json`.
+Both `src/views/Home/index.vue` and `src/components/Navigation/HeaderControls.vue`
+implement this independently: each maps the panel registry through
+`munin.isPanelEnabled`, then filters by the env flag if hiding is enabled.
