@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.0] (2026-08-09)
+
+First release from this repository — now the canonical home of the CMS.
+The 1.x line was released from the previous internal repository (through
+1.6.1); this release restores full feature parity with that line and adds
+the changes below.
+
+### Added
+
+- **Multi-method payment rendering** (Checkout orders): `payment_method` is
+  rendered as a list — a voucher settling alongside the gateway shows every
+  method on the order detail. Orders holding the legacy single dict still
+  render.
+- **Voucher dormancy without the backend module**: the Promo panel now stays
+  available when the backend lacks `checkout_voucher` — Discounts (served by
+  `django-checkout`) remain usable, the Vouchers segment hides, voucher
+  routes redirect to the panel root via the new `meta.module` route gating,
+  and `?tab=vouchers` deep links land on a locked EmptyState.
+
+### Fixed
+
+- **Refresh token no longer clobbered**: when the backend does not rotate
+  refresh tokens, the stored token is kept instead of being overwritten with
+  `undefined` (users stayed logged in only until the first refresh).
+- **Unit suite is self-contained**: `pretest:unit` generates `__client/`, so
+  the suite passes in clean environments (CI).
+
+### Changed
+
+- **Documentation refactored to the handbook convention**: compact AGENTS.md
+  plus a verified `docs/` reference set (panels/routing, stores/composables,
+  UI components, testing, supplier bridges, gotchas, operator guides).
+- **Repository identity**: package `entirius-pwa-cms` 2.0.0, MPL-2.0,
+  pre-commit secret scanning, GitHub Actions CI.
+
 ## [1.6.1] (2026-07-22)
 
 ### Added
