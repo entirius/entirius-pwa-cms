@@ -327,7 +327,7 @@ async function installSuppliersMock(page, { seed, muninEnabled = true } = {}) {
     logRequest(route);
     await route.fulfill(
       ok({
-        platform: { name: 'Entirius', version: 'test' },
+        platform: { name: 'Volkanos', version: 'test' },
         modules: {
           suppliers: {
             key: 'suppliers',

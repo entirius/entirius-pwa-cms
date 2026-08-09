@@ -51,10 +51,12 @@
           <p class="t-basic-500 fs-200">{{ body.shipping_method.code }}</p>
           <p v-if="shippingPrice" class="t-basic-600 mt-100">{{ shippingPrice }}</p>
         </div>
-        <div v-if="body.payment_method" class="order-detail__card">
+        <div v-if="paymentMethods.length" class="order-detail__card">
           <div class="section-label mb-100">{{ $t("checkout_orders.payment_method") }}</div>
-          <p class="fw-600 t-basic-700">{{ body.payment_method.name || body.payment_method.code }}</p>
-          <p class="t-basic-500 fs-200">{{ body.payment_method.code }}</p>
+          <div v-for="method in paymentMethods" :key="method.code" class="order-detail__payment-method">
+            <p class="fw-600 t-basic-700">{{ method.name || method.code }}</p>
+            <p class="t-basic-500 fs-200">{{ method.code }}</p>
+          </div>
         </div>
       </div>
 
@@ -138,6 +140,13 @@ export default {
     items() { return this.body.cart?.items || []; },
     billing() { return this.body.addresses?.billing_address || null; },
     shipping() { return this.body.addresses?.shipping_address || null; },
+    // payment_method became a list with the multi-method (voucher) refactor — a voucher
+    // settles alongside the gateway. Orders placed before it still hold a single dict.
+    paymentMethods() {
+      const pm = this.body.payment_method;
+      if (Array.isArray(pm)) return pm.filter((entry) => entry && entry.code);
+      return pm && pm.code ? [pm] : [];
+    },
     shippingPrice() {
       const sm = this.body.shipping_method;
       if (!sm) return null;
@@ -240,6 +249,10 @@ export default {
   p {
     line-height: 1.5;
   }
+}
+
+.order-detail__payment-method + .order-detail__payment-method {
+  margin-top: var(--space-200);
 }
 
 @media only screen and (max-width: 768px) {

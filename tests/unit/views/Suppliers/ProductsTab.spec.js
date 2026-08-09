@@ -30,7 +30,7 @@ vi.mock("@/stores/munin", () => ({
 
 import ProductsTab from "@/views/Suppliers/tabs/ProductsTab.vue";
 
-const supplier = { idx: "acme", name: "Acme" };
+const supplier = { idx: "kinghoff", name: "Kinghoff" };
 
 function makeRow(overrides = {}) {
   return {

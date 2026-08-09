@@ -1,14 +1,14 @@
 import { describe, it, expect } from "vitest"
 import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors"
 
-// Covers a regression where creating a delivery point showed an empty error toast.
+// Redmine 33398-2 — "pusty czerwony błąd" przy tworzeniu punktu w panelu Points.
 //
-// The deliverypoints backend (POST /api/deliverypoints/v2/admin/points/) does NOT return
-// the v2 shape { details:[{field,description}] }. It returns:
-//   (A) missing required field → { meta:{...,message:{field:[msg]}}, data:{field:[msg]} }
-//   (B) duplicate (type, code) → { detail: "Point with code 'X' already exists for this type." }
-// These tests assert useFormErrors always yields a readable message for the operator
-// (per-field where the backend names a field, and always a non-empty toast/summary).
+// Backend django-deliverypoints (POST /api/deliverypoints/v2/admin/points/) NIE zwraca
+// kształtu v2 { details:[{field,description}] }. Zwraca (zweryfikowane w źródle):
+//   (A) brak wymaganego pola  → { meta:{...,message:{field:[msg]}}, data:{field:[msg]} }
+//   (B) duplikat (type, code) → { detail: "Point with code 'X' already exists for this type." }
+// Te testy pilnują, że po naprawie useFormErrors operator dostaje czytelny komunikat
+// (per-pole tam gdzie backend podaje pole, i zawsze niepusty toast/summary).
 
 const MISSING_FIELD_BODY = {
   meta: { status: "BAD_REQUEST", status_code: 400, message: { name: ["required"] } },

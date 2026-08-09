@@ -104,7 +104,7 @@ async function mountWithCosts(prices, purchaseCosts) {
   return wrapper;
 }
 
-const PLN_COST = { country: "PL", currency: "PLN", net_cost: "0.50", supplier_idx: "globex", updated_at: null };
+const PLN_COST = { country: "PL", currency: "PLN", net_cost: "0.50", supplier_idx: "fortrade", updated_at: null };
 
 describe("PriceDetail — purchase cost + margin", () => {
   it("shows purchase cost and a positive margin when both cost and sell price exist", async () => {
@@ -112,7 +112,7 @@ describe("PriceDetail — purchase cost + margin", () => {
 
     expect(wrapper.text()).toContain("pm.purchase_cost");
     expect(wrapper.text()).toContain("0.50");
-    expect(wrapper.text()).toContain("globex");
+    expect(wrapper.text()).toContain("fortrade");
     const marginBadge = wrapper
       .findAll("status-badge-stub")
       .find((b) => (b.attributes("label") || "").startsWith("pm.margin_percent"));
@@ -124,7 +124,7 @@ describe("PriceDetail — purchase cost + margin", () => {
   it("renders a negative margin badge when cost exceeds the sell price", async () => {
     const wrapper = await mountWithCosts(
       [buildPriceRow({ net: "0.50", source: null })],
-      [{ country: "PL", currency: "PLN", net_cost: "1.00", supplier_idx: "globex", modified_at: null }]
+      [{ country: "PL", currency: "PLN", net_cost: "1.00", supplier_idx: "fortrade", modified_at: null }]
     );
 
     const marginBadge = wrapper

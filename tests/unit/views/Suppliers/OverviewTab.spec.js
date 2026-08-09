@@ -31,8 +31,8 @@ import OverviewTab from "@/views/Suppliers/tabs/OverviewTab.vue";
 
 function makeSupplier(overrides = {}) {
   return {
-    idx: "globex",
-    name: "Globex",
+    idx: "fortrade",
+    name: "Fortrade",
     supplier_role: "trade",
     supplier_type: "feed",
     review_mode: "manual",
@@ -114,7 +114,7 @@ describe("OverviewTab — allow_physical_writes_from_non_preferred (etap-10)", (
 
     expect(mockPatchSupplier).toHaveBeenCalledTimes(1);
     const [idx, payload] = mockPatchSupplier.mock.calls[0];
-    expect(idx).toBe("globex");
+    expect(idx).toBe("fortrade");
     expect(payload).toHaveProperty("allow_physical_writes_from_non_preferred", true);
     // Only changed fields go on the wire — name/role/etc must not leak.
     expect(payload).not.toHaveProperty("name");

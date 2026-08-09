@@ -16,7 +16,7 @@ const { createErrorCollector } = require('../helpers/error-collector');
  * Needs the docker dev backend on :8000 (seeded) and CMS on :8080.
  */
 
-const API_URL = process.env.VUE_APP_API_URL || 'http://localhost:8100';
+const API_URL = process.env.VUE_APP_API_URL || 'http://localhost:8000';
 const CHANNEL = process.env.VUE_APP_CHANNEL || 'default-europe';
 const USER = process.env.VUE_APP_USERNAME || 'admin';
 const PASS = process.env.VUE_APP_PASSWORD || 'admin';
@@ -91,8 +91,7 @@ test.describe('Scenario A — required-field validation', () => {
     expect(collector.getErrors().exceptions).toEqual([]);
   });
 
-  // covers a regression where a backend validation error produced an empty error toast
-  test('Points create: backend validation error reaches the operator', async ({ page }) => {
+  test('Points create: backend validation error reaches the operator (Redmine #33398-2)', async ({ page }) => {
     await login(page);
     const collector = createErrorCollector(page);
 

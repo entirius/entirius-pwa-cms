@@ -14,7 +14,7 @@ export function useUnsavedChanges() {
     current.value = formData
   }
 
-  watch(current, () => {
+  watch([current, original], () => {
     if (!original.value) return
     isDirty.value = JSON.stringify(current.value) !== JSON.stringify(original.value)
   }, { deep: true })

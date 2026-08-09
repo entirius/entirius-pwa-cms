@@ -23,7 +23,7 @@ const { test, expect, request } = require('@playwright/test');
 const { login } = require('../helpers/auth');
 const { createErrorCollector } = require('../helpers/error-collector');
 
-const API_BASE = process.env.VUE_APP_API_URL || 'http://localhost:8100';
+const API_BASE = process.env.VUE_APP_API_URL || 'http://localhost:8000';
 const CHANNEL = 'england';
 const PRODUCT_SKU = '1100-69';
 const LINKED_SKU = '1310-31';
