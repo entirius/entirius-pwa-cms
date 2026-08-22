@@ -92,7 +92,7 @@ test.describe('Gallery Upload Workflow', () => {
     if (paginationExists) {
       // Click next page button if available
       const nextButton = page.locator('[class*="pagination"] button').last();
-      if (await nextButton.isVisible()) {
+      if ((await nextButton.isVisible()) && (await nextButton.isEnabled())) {
         await nextButton.click();
         await page.waitForLoadState('networkidle');
         await page.waitForTimeout(1000);
@@ -101,7 +101,7 @@ test.describe('Gallery Upload Workflow', () => {
 
         // Go back to first page
         const prevButton = page.locator('[class*="pagination"] button').first();
-        if (await prevButton.isVisible()) {
+        if ((await prevButton.isVisible()) && (await prevButton.isEnabled())) {
           await prevButton.click();
           await page.waitForLoadState('networkidle');
         }
