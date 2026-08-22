@@ -146,7 +146,7 @@ export default {
       }
     },
     goBack() {
-      this.$router.push("/suppliers/list");
+      this.$router.push("/atlas/list");
     },
   },
 };
