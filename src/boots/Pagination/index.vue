@@ -1,43 +1,56 @@
 <template>
-  <div class="pagination inline-flex ai-ct jc-ct gap-100">
-    <div
-      class="navigation-icon relative pointer inline-flex jc-ct ai-ct"
-      :class="[pagination.page <= 1 ? 'inactive' : '']"
-      :style="`height: ${nav_size}px; width: ${nav_size}px`"
+  <nav
+    class="pagination inline-flex ai-ct gap-50"
+    :style="`--cell-size: ${nav_size}px`"
+    aria-label="pagination"
+  >
+    <button
+      type="button"
+      class="page-cell"
+      :disabled="pagination.page <= 1"
+      aria-label="previous page"
       @click="
         changePage({ num: pagination.page - 1, isDisabled: false }, 'prev')
       "
     >
       <i class="icon-arrow-right-2 rotate-180"></i>
-    </div>
+    </button>
 
-    <div
-      class="pagination-element txt-center grid-square inline-flex jc-ct ai-ct"
-      :class="[
-        {
-          'pagination-element__active bb-basic-500':
-            pagination.page === num.num,
-        },
-        Number.isInteger(num.num) ? 'pointer' : '',
-      ]"
+    <template
       v-for="(num, i) in calculatePages"
       :key="`unique-key-pagination-${i}`"
-      @click="changePage(num)"
     >
-      <span class=""> {{ num.num }}</span>
-    </div>
+      <span
+        v-if="!Number.isInteger(num.num)"
+        class="page-cell page-cell--gap"
+        aria-hidden="true"
+      >
+        {{ num.num }}
+      </span>
+      <button
+        v-else
+        type="button"
+        class="page-cell"
+        :class="{ 'page-cell--active': pagination.page === num.num }"
+        :aria-current="pagination.page === num.num ? 'page' : null"
+        @click="changePage(num)"
+      >
+        {{ num.num }}
+      </button>
+    </template>
 
-    <div
-      class="navigation-icon relative pointer inline-flex jc-ct ai-ct"
-      :class="[pagination.page >= pagination.pages ? 'inactive' : '']"
-      :style="`height: ${nav_size}px; width: ${nav_size}px`"
+    <button
+      type="button"
+      class="page-cell"
+      :disabled="pagination.page >= pagination.pages"
+      aria-label="next page"
       @click="
         changePage({ num: pagination.page + 1, isDisabled: false }, 'next')
       "
     >
       <i class="icon-arrow-right-2"></i>
-    </div>
-  </div>
+    </button>
+  </nav>
 </template>
 
 <script>
@@ -110,23 +123,46 @@ export default {
 <style lang="scss" scoped>
 .pagination {
   max-width: fit-content;
-  color: var(--c-basic-700);
-  .pagination-element {
-    &__active {
-      position: relative;
-      background-color: var(--c-basic-100);
-      border-radius: 5px;
-      border: 1px solid var(--c-basic-400);
+
+  .page-cell {
+    min-width: var(--cell-size, 2rem);
+    height: var(--cell-size, 2rem);
+    padding: 0 6px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--c-basic-700);
+    font-size: inherit;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    &:hover:not(:disabled):not(.page-cell--active):not(.page-cell--gap) {
+      background: var(--c-basic-200);
     }
-  }
-  .navigation-icon {
-    height: 2rem;
-    width: 2rem;
-    border-radius: 50%;
-    color: var(--c-basic-600);
-  }
-  .inactive {
-    opacity: 0.5;
+
+    &:focus-visible {
+      outline: 2px solid var(--c-support-400);
+      outline-offset: 1px;
+    }
+
+    &--active {
+      background: var(--c-support-100);
+      color: var(--c-primary-100);
+      font-weight: 600;
+    }
+
+    &--gap {
+      cursor: default;
+      color: var(--c-basic-500);
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
   }
 }
 </style>

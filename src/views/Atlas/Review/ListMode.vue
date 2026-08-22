@@ -300,7 +300,7 @@ export default {
     },
     hasMonitoringSelected() {
       // Approve/push are PIM-bound; the backend refuses them for monitoring atlas.
-      return this.selectedRows.some((r) => r.supplier_role === "monitoring");
+      return this.selectedRows.some((r) => r.kind === "monitoring");
     },
   },
   watch: {
@@ -417,7 +417,7 @@ export default {
     },
     isDetailMonitoring(p) {
       // approve + skip(=queue) are PIM-bound and backend-refused for monitoring.
-      return p?.supplier_role === "monitoring";
+      return p?.kind === "monitoring";
     },
     canApprove(p) {
       return (

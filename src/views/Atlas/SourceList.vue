@@ -21,15 +21,15 @@
           :active-count="activeFilterCount"
           :trigger-label="$t('builder.filters')"
         >
-          <p class="fs-200 t-basic-600">{{ $t("atlas.filter.role") }}</p>
+          <p class="fs-200 t-basic-600">{{ $t("atlas.filter.kind") }}</p>
           <div class="flex ai-ct flex-wrap gap-100">
             <FilterChip
-              v-for="opt in roleOptions"
+              v-for="opt in kindOptions"
               :key="opt.value"
               :label="opt.label"
-              :active="roleFilter === opt.value"
-              :data-testid="`suppliers-filter-role-${opt.value}`"
-              @click="setRoleFilter(opt.value)"
+              :active="kindFilter === opt.value"
+              :data-testid="`suppliers-filter-kind-${opt.value}`"
+              @click="setKindFilter(opt.value)"
             />
           </div>
           <p class="fs-200 t-basic-600">
@@ -77,13 +77,10 @@
         <template #cell-name="{ value }">
           <span class="cell-truncate" :title="value">{{ value }}</span>
         </template>
-        <template #cell-role="{ value }">
-          <StatusBadge
-            :label="$t(`atlas.role.${value || 'trade'}`)"
-            :variant="roleVariant(value)"
-          />
+        <template #cell-kind="{ value }">
+          <StatusBadge :label="$t(`atlas.kind.${value}`)" :variant="kindVariant(value)" />
         </template>
-        <template #cell-supplier_type="{ value }">
+        <template #cell-source_type="{ value }">
           <StatusBadge
             :label="$t(`atlas.type.${value || 'feed'}`)"
             variant="neutral"
@@ -158,20 +155,20 @@
             {{ errors.name.msg }}
           </p>
         </FormField>
-        <FormField :label="$t('atlas.form.role_label')">
+        <FormField :label="$t('atlas.form.kind_label')">
           <Dropdown
-            :values="roleDropdownOptions"
-            :selected="[createForm.supplier_role]"
-            data-testid="suppliers-create-role"
-            @onSelect="(val) => (createForm.supplier_role = val)"
+            :values="kindDropdownOptions"
+            :selected="[createForm.kind]"
+            data-testid="suppliers-create-kind"
+            @onSelect="(val) => (createForm.kind = val)"
           />
         </FormField>
         <FormField :label="$t('atlas.form.type_label')">
           <Dropdown
             :values="typeDropdownOptions"
-            :selected="[createForm.supplier_type]"
+            :selected="[createForm.source_type]"
             data-testid="suppliers-create-type"
-            @onSelect="(val) => (createForm.supplier_type = val)"
+            @onSelect="(val) => (createForm.source_type = val)"
           />
         </FormField>
         <FormField :label="$t('atlas.form.default_language_label')">
@@ -324,30 +321,30 @@ import { useSearchDebounce } from "@/composables/useSearchDebounce";
 import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
 import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import {
-  GET_Suppliers,
-  POST_Supplier,
-  DELETE_Supplier,
+  GET_Sources,
+  POST_Source,
+  DELETE_Source,
   GET_SupplierDeleteImpact,
 } from "@/api/atlas/api";
 
-const ROLE_VARIANTS = {
-  trade: "positive",
-  data: "informative",
-  monitoring: "neutral",
+const KIND_VARIANTS = {
+  procurement: "positive",
+  monitoring: "informative",
+  enrichment: "neutral",
 };
 
 const EMPTY_FORM = () => ({
   idx: "",
   name: "",
-  supplier_role: "trade",
-  supplier_type: "feed",
+  kind: "procurement",
+  source_type: "feed",
   default_language_id: null,
   default_currency_id: null,
   sku_prefix: "",
 });
 
 export default {
-  name: "SupplierList",
+  name: "SourceList",
   components: { ConfirmationModal },
   setup() {
     const notify = useNotifyStore();
@@ -373,7 +370,7 @@ export default {
       pageSize: 20,
       ordering: null,
       loading: false,
-      roleFilter: "__all",
+      kindFilter: "__all",
       statusFilter: "__all",
       // Create
       createVisible: false,
@@ -390,16 +387,16 @@ export default {
   computed: {
     activeFilterCount() {
       let n = 0;
-      if (this.roleFilter !== "__all") n += 1;
+      if (this.kindFilter !== "__all") n += 1;
       if (this.statusFilter !== "__all") n += 1;
       return n;
     },
-    roleOptions() {
+    kindOptions() {
       return [
         { value: "__all", label: this.$t("common.all") },
-        { value: "trade", label: this.$t("atlas.role.trade") },
-        { value: "data", label: this.$t("atlas.role.data") },
-        { value: "monitoring", label: this.$t("atlas.role.monitoring") },
+        { value: "procurement", label: this.$t("atlas.kind.procurement") },
+        { value: "monitoring", label: this.$t("atlas.kind.monitoring") },
+        { value: "enrichment", label: this.$t("atlas.kind.enrichment") },
       ];
     },
     statusOptions() {
@@ -409,11 +406,11 @@ export default {
         { value: "inactive", label: this.$t("common.inactive") },
       ];
     },
-    roleDropdownOptions() {
+    kindDropdownOptions() {
       return [
-        { value: "trade", label: this.$t("atlas.role.trade") },
-        { value: "data", label: this.$t("atlas.role.data") },
-        { value: "monitoring", label: this.$t("atlas.role.monitoring") },
+        { value: "procurement", label: this.$t("atlas.kind.procurement") },
+        { value: "monitoring", label: this.$t("atlas.kind.monitoring") },
+        { value: "enrichment", label: this.$t("atlas.kind.enrichment") },
       ];
     },
     typeDropdownOptions() {
@@ -438,13 +435,13 @@ export default {
           width: "minmax(180px, 1fr)",
         },
         {
-          key: "role",
-          label: this.$t("atlas.col.role"),
+          key: "kind",
+          label: this.$t("atlas.col.kind"),
           sortable: false,
           width: "120px",
         },
         {
-          key: "supplier_type",
+          key: "source_type",
           label: this.$t("atlas.col.type"),
           sortable: false,
           width: "100px",
@@ -488,8 +485,8 @@ export default {
     this.fetchSuppliers();
   },
   methods: {
-    roleVariant(role) {
-      return ROLE_VARIANTS[role] || "neutral";
+    kindVariant(kind) {
+      return KIND_VARIANTS[kind] || "neutral";
     },
     async fetchSuppliers() {
       this.loading = true;
@@ -497,10 +494,10 @@ export default {
         const params = { page: this.currentPage, page_size: this.pageSize };
         if (this.search) params.search = this.search;
         if (this.ordering) params.ordering = this.ordering;
-        if (this.roleFilter !== "__all") params.role = this.roleFilter;
+        if (this.kindFilter !== "__all") params.kind = this.kindFilter;
         if (this.statusFilter === "active") params.is_active = true;
         if (this.statusFilter === "inactive") params.is_active = false;
-        const { data } = await GET_Suppliers(params);
+        const { data } = await GET_Sources(params);
         this.suppliers = data.results || [];
         this.totalCount = data.count || 0;
       } catch (err) {
@@ -512,8 +509,8 @@ export default {
         this.loading = false;
       }
     },
-    setRoleFilter(value) {
-      this.roleFilter = value;
+    setKindFilter(value) {
+      this.kindFilter = value;
       this.currentPage = 1;
       this.fetchSuppliers();
     },
@@ -537,10 +534,10 @@ export default {
       });
     },
     onRowClick(row) {
-      this.$router.push(`/suppliers/${row.idx}`);
+      this.$router.push(`/atlas/${row.idx}`);
     },
     onEdit(row) {
-      this.$router.push(`/suppliers/${row.idx}`);
+      this.$router.push(`/atlas/${row.idx}`);
     },
     openCreate() {
       this.createForm = EMPTY_FORM();
@@ -558,7 +555,7 @@ export default {
         Object.keys(payload).forEach((k) => {
           if (payload[k] === "") delete payload[k];
         });
-        const { data } = await POST_Supplier(payload);
+        const { data } = await POST_Source(payload);
         this.notify.spawnNotification({
           type: "positive",
           msg: this.$t("atlas.toast.created", {
@@ -603,7 +600,7 @@ export default {
       if (!this.deleteTarget) return;
       this.deleting = true;
       try {
-        await DELETE_Supplier(this.deleteTarget.idx, {
+        await DELETE_Source(this.deleteTarget.idx, {
           force: this.deleteForce,
         });
         this.notify.spawnNotification({

@@ -2,6 +2,25 @@ import { atlasApi } from './client'
 
 const ATLAS = '/api/atlas/v2/admin'
 
+// --- Sources (full registry: kind = procurement / monitoring / enrichment) ---
+
+export const GET_Sources = (params) =>
+  atlasApi.get(`${ATLAS}/sources/`, { params })
+
+export const GET_Source = (idx) =>
+  atlasApi.get(`${ATLAS}/sources/${idx}/`)
+
+export const POST_Source = (data) =>
+  atlasApi.post(`${ATLAS}/sources/`, data)
+
+export const PATCH_Source = (idx, data) =>
+  atlasApi.patch(`${ATLAS}/sources/${idx}/`, data)
+
+export const DELETE_Source = (idx, { force = false } = {}) =>
+  atlasApi.delete(`${ATLAS}/sources/${idx}/`, {
+    params: force ? { force: true } : undefined,
+  })
+
 // --- Suppliers (facade: kind=procurement projection of Source) ---
 
 export const GET_Suppliers = (params) =>

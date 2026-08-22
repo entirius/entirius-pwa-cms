@@ -30,7 +30,7 @@
     "pm_currencies": "Currencies",
     "accounts_customers": "Customers",
     "checkout_orders": "Orders",
-    "atlas_list": "Suppliers",
+    "atlas_list": "Sources",
     "atlas_auto_matched": "Auto-matched",
     "atlas_duplicates": "Duplicates",
     "atlas_review_queue": "Review Queue",
@@ -534,8 +534,8 @@
     "accounts_desc": "Customer accounts -- profiles, addresses, groups",
     "checkout_orders": "Orders",
     "checkout_orders_desc": "Checkout orders -- view orders, statuses, payments",
-    "atlas": "Suppliers",
-    "atlas_desc": "Supplier registry, feeds, mappings, products and integration logs",
+    "atlas": "Atlas",
+    "atlas_desc": "Sources, feeds, mappings, products and integration logs",
     "enricher": "Enricher",
     "enricher_desc": "Content enrichment queue -- review AI proposals, accept into PIM, spawn tasks",
     "translation": "Translation",
@@ -1804,15 +1804,15 @@
     "faq_cancel": "Cancel"
   },
   "atlas": {
-    "list_title": "Suppliers",
-    "detail_title": "Supplier",
-    "detail_not_found": "Supplier not found.",
-    "create_button": "Add supplier",
-    "empty_state_title": "No suppliers yet",
-    "empty_state_message": "Create the first supplier to start configuring feeds and mappings.",
+    "list_title": "Sources",
+    "detail_title": "Source",
+    "detail_not_found": "Source not found.",
+    "create_button": "Add source",
+    "empty_state_title": "No sources yet",
+    "empty_state_message": "Create the first source to start configuring feeds and mappings.",
     "auto_matched": {
       "title": "Auto-matched RealProducts",
-      "subtitle": "RealProducts touched by the auto-EAN-match path (etap-13a).",
+      "subtitle": "RealProducts linked automatically by EAN match.",
       "empty_title": "No auto-matched RealProducts yet",
       "empty_message": "Auto-link audit rows appear here once a supplier feed import attaches a SupplierProduct to an existing RealProduct by EAN.",
       "filter": {
@@ -1865,22 +1865,17 @@
       }
     },
     "filter": {
-      "role": "Role",
-      "status": "Status"
+      "status": "Status",
+      "kind": "Kind"
     },
     "col": {
       "idx": "ID",
       "name": "Name",
-      "role": "Role",
       "type": "Type",
       "currency": "Currency",
       "warehouse": "Warehouse",
-      "status": "Status"
-    },
-    "role": {
-      "trade": "Trade",
-      "data": "Data",
-      "monitoring": "Monitoring"
+      "status": "Status",
+      "kind": "Kind"
     },
     "type": {
       "feed": "Feed",
@@ -1892,8 +1887,6 @@
       "idx_tooltip": "Stable slug used in API URLs and as part of generated SKUs. Lowercase letters, digits and hyphens only. Cannot be changed after creation.",
       "name_label": "Name",
       "name_tooltip": "Display name shown across the CMS. Free-form.",
-      "role_label": "Role",
-      "role_tooltip": "Trade — vendor sells stock through your store (only role implemented today). Data — analytics-only feed. Monitoring — competitor watch.",
       "type_label": "Type",
       "type_tooltip": "Feed — automated XML/scraper import. Manual — operator adds products by hand. Dropship — fetch at order time (not implemented yet).",
       "review_mode_label": "Review mode",
@@ -1940,7 +1933,9 @@
       "eval_frequency_label": "Auto-eval frequency",
       "eval_frequency_tooltip": "How often the cron evaluates auto-preferred for this supplier. 'Manual' opts out of cron — inline triggers still fire.",
       "allow_physical_writes_from_non_preferred_label": "Allow physical writes when not preferred",
-      "allow_physical_writes_from_non_preferred_tooltip": "When ON, this supplier's delta sync overwrites RealProduct weight, EAN, and dimensions even if another supplier is preferred. Default OFF — preferred is the single source of truth. Use only for vendor-tested measurements (audited as a warning event)."
+      "allow_physical_writes_from_non_preferred_tooltip": "When ON, this supplier's delta sync overwrites RealProduct weight, EAN, and dimensions even if another supplier is preferred. Default OFF — preferred is the single source of truth. Use only for vendor-tested measurements (audited as a warning event).",
+      "kind_label": "Kind",
+      "kind_tooltip": "Procurement — cost/stock feed, the only kind that pushes to PIM. Monitoring — competitor price watch (read-only). Enrichment — data signal feed (read-only)."
     },
     "review_mode": {
       "manual": "Manual",
@@ -2330,6 +2325,11 @@
         "empty_state": "No events match the current filters.",
         "acknowledge_button": "Acknowledge"
       }
+    },
+    "kind": {
+      "procurement": "Procurement",
+      "monitoring": "Monitoring",
+      "enrichment": "Enrichment"
     }
   },
   "enrichment": {
@@ -2908,7 +2908,7 @@
     "scope_channel": "Channel",
     "category": "Category",
     "mode_authoritative": "Authoritative mode",
-    "mode_v2_note": "Available with autopilot (v2)",
+    "mode_v2_note": "Requires autopilot mode",
     "confirm_delete_title": "Delete rule",
     "confirm_delete_rule": "This pricing rule will be permanently deleted.",
     "no_history": "No decisions yet",

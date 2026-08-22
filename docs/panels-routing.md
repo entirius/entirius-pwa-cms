@@ -24,7 +24,7 @@ Font Awesome icon name rendered via `FontAwesomeIcon`.
 | `pricing` | Pricing | `/pricing/prices` | `money-bill-wave` |
 | `stock` | Stock | `/stock/manage` | `warehouse` |
 | `translation` | Translation | `/translation-jobs` | `language` |
-| `atlas` | Atlas | `/atlas/list` | `truck` |
+| `atlas` | Atlas | `/atlas/list` | `globe` |
 | `pricefighter` | PriceFighter | `/pricefighter/gap` | `scale-balanced` |
 | `enricher` | Enricher | `/enrichment` | `wand-magic-sparkles` |
 | `promo` | Promo | `/promo/list` | `tags` |

@@ -141,7 +141,7 @@ export default {
     },
     isMonitoringRow() {
       // Monitoring suppliers never push — approve is meaningless and backend-refused.
-      return this.current?.supplier_role === "monitoring";
+      return this.current?.kind === "monitoring";
     },
   },
   watch: {

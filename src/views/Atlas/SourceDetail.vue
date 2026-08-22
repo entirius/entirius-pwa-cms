@@ -39,12 +39,14 @@ import ProductsTab from "./tabs/ProductsTab.vue";
 import LinkedTab from "./tabs/LinkedTab.vue";
 import LogsTab from "./tabs/LogsTab.vue";
 import { useNotifyStore } from "@/stores/notify";
-import { GET_Supplier } from "@/api/atlas/api";
+// GET_Source, not the supplier facade — the list shows every kind, and a
+// monitoring/enrichment source opened from it would 404 on /suppliers/{idx}/.
+import { GET_Source } from "@/api/atlas/api";
 
 const TABS = ["overview", "feeds", "mappings", "products", "linked", "logs"];
 
 export default {
-  name: "SupplierDetail",
+  name: "SourceDetail",
   components: {
     OverviewTab,
     FeedsTab,
@@ -75,7 +77,7 @@ export default {
       return `${this.supplier.name} (${this.supplier.idx})`;
     },
     isMonitoringSupplier() {
-      return this.supplier?.supplier_role === "monitoring";
+      return this.supplier?.kind === "monitoring";
     },
     tabOptions() {
       // Mappings only run at push time — monitoring suppliers never push, so the tab is dead.
@@ -131,7 +133,7 @@ export default {
     async fetchSupplier() {
       this.loading = true;
       try {
-        const { data } = await GET_Supplier(this.supplierIdx);
+        const { data } = await GET_Source(this.supplierIdx);
         this.supplier = data;
       } catch (err) {
         this.supplier = null;
@@ -144,7 +146,7 @@ export default {
       }
     },
     goBack() {
-      this.$router.push("/suppliers/list");
+      this.$router.push("/atlas/list");
     },
   },
 };

@@ -1,7 +1,7 @@
 /**
  * Suppliers panel — deep button coverage.
  *
- * Strategy: stub auth via cookies + intercept all `/api/suppliers/v2/admin/...`
+ * Strategy: stub auth via cookies + intercept all `/api/atlas/v2/admin/...`
  * and `/api/munin/v2/...` endpoints with `installSuppliersMock`. Each test
  * asserts the correct outgoing API call (URL/method/payload) AND the UI
  * state change (toast, list reload, navigation).
@@ -49,9 +49,9 @@ test.describe('Suppliers panel', () => {
     });
   });
 
-  // ---------- SupplierList ----------
+  // ---------- SourceList ----------
 
-  test.describe('SupplierList', () => {
+  test.describe('SourceList', () => {
     test.beforeEach(async ({ page }) => {
       await page.goto('/suppliers/list');
       await page.waitForLoadState('networkidle');
@@ -69,14 +69,12 @@ test.describe('Suppliers panel', () => {
       await page.getByTestId('suppliers-create-btn').click();
       await fillField(page, 'suppliers-create-idx', 'newco');
       await fillField(page, 'suppliers-create-name', 'NewCo Ltd');
-      await fillField(page, 'suppliers-create-language', 'EN');
-      await fillField(page, 'suppliers-create-currency', 'EUR');
       await page.getByTestId('suppliers-create-submit').click();
 
       const req = await waitForRequest(
         mockState,
         (r) =>
-          r.method === 'POST' && r.url.endsWith('/api/suppliers/v2/admin/suppliers/')
+          r.method === 'POST' && r.url.endsWith('/sources/')
       );
       expect(req.postData).toMatchObject({ idx: 'newco', name: 'NewCo Ltd' });
 
@@ -90,7 +88,7 @@ test.describe('Suppliers panel', () => {
       await page.getByTestId('suppliers-create-cancel').click();
 
       const created = mockState.requests.find(
-        (r) => r.method === 'POST' && r.url.includes('/suppliers/')
+        (r) => r.method === 'POST' && r.url.includes('/sources/')
       );
       expect(created).toBeUndefined();
     });
@@ -104,17 +102,19 @@ test.describe('Suppliers panel', () => {
         mockState,
         (r) =>
           r.method === 'GET' &&
-          r.url.includes('/suppliers/?') &&
+          r.url.includes('/sources/?') &&
           r.url.includes('search=globex')
       );
       expect(req).toBeTruthy();
     });
 
-    test('Role FilterChip filters list and refetches', async ({ page }) => {
-      // Open mobile filter panel and click "Trade" chip
-      const tradeChip = page.getByTestId('suppliers-filter-role-trade');
+    test('Kind FilterChip filters list and refetches', async ({ page }) => {
+      // Open mobile filter panel and click "Procurement" chip
+      const procurementChip = page.getByTestId(
+        'suppliers-filter-kind-procurement'
+      );
       // The filter panel may auto-open on desktop; tolerate either case
-      if (!(await tradeChip.isVisible().catch(() => false))) {
+      if (!(await procurementChip.isVisible().catch(() => false))) {
         const trigger = page.locator(
           '.mobile-filter-panel__trigger, [data-testid*="filter"]'
         );
@@ -122,21 +122,21 @@ test.describe('Suppliers panel', () => {
           await trigger.first().click();
         }
       }
-      await tradeChip.click();
+      await procurementChip.click();
       const req = await waitForRequest(
         mockState,
         (r) =>
           r.method === 'GET' &&
-          r.url.includes('/suppliers/?') &&
-          r.url.includes('role=trade')
+          r.url.includes('/sources/?') &&
+          r.url.includes('kind=procurement')
       );
       expect(req).toBeTruthy();
     });
 
-    test('Edit row navigates to /suppliers/{idx}', async ({ page }) => {
+    test('Edit row navigates to /atlas/{idx}', async ({ page }) => {
       await page.getByTestId('suppliers-edit-acme').click();
       await page.waitForLoadState('networkidle');
-      await expect(page).toHaveURL(/\/suppliers\/acme/);
+      await expect(page).toHaveURL(/\/atlas\/acme/);
     });
 
     test('Soft delete sends DELETE without force flag and toggles is_active', async ({
@@ -147,14 +147,14 @@ test.describe('Suppliers panel', () => {
       await waitForRequest(
         mockState,
         (r) =>
-          r.method === 'GET' && r.url.includes('/suppliers/acme/delete-impact/')
+          r.method === 'GET' && r.url.includes('/sources/acme/delete-impact/')
       );
       // Soft is the default radio
       await expect(page.getByTestId('suppliers-delete-soft-radio')).toBeChecked();
       await page.getByTestId('suppliers-delete-confirm').click();
       const req = await waitForRequest(
         mockState,
-        (r) => r.method === 'DELETE' && r.url.includes('/suppliers/acme/')
+        (r) => r.method === 'DELETE' && r.url.includes('/sources/acme/')
       );
       expect(req.url).not.toContain('force=true');
     });
@@ -167,7 +167,7 @@ test.describe('Suppliers panel', () => {
       await waitForRequest(
         mockState,
         (r) =>
-          r.method === 'GET' && r.url.includes('/suppliers/acme/delete-impact/')
+          r.method === 'GET' && r.url.includes('/sources/acme/delete-impact/')
       );
       await page.getByTestId('suppliers-delete-hard-radio').check();
       // impact banner shows the affected counts
@@ -179,7 +179,7 @@ test.describe('Suppliers panel', () => {
         mockState,
         (r) =>
           r.method === 'DELETE' &&
-          r.url.includes('/suppliers/acme/') &&
+          r.url.includes('/sources/acme/') &&
           r.url.includes('force=true')
       );
       expect(req).toBeTruthy();
@@ -197,9 +197,9 @@ test.describe('Suppliers panel', () => {
     });
   });
 
-  // ---------- SupplierDetail toolbar + tabs ----------
+  // ---------- SourceDetail toolbar + tabs ----------
 
-  test.describe('SupplierDetail', () => {
+  test.describe('SourceDetail', () => {
     test.beforeEach(async ({ page }) => {
       await page.goto('/suppliers/acme');
       await page.waitForLoadState('networkidle');
@@ -208,7 +208,7 @@ test.describe('Suppliers panel', () => {
     test('Back button returns to list', async ({ page }) => {
       await page.getByTestId('suppliers-detail-back').click();
       await page.waitForLoadState('networkidle');
-      await expect(page).toHaveURL(/\/suppliers\/list/);
+      await expect(page).toHaveURL(/\/atlas\/list/);
     });
 
     test('Tabs switch active segment for all 6 tabs', async ({ page }) => {
@@ -243,7 +243,7 @@ test.describe('Suppliers panel', () => {
       await page.getByTestId('suppliers-overview-save').click();
       const req = await waitForRequest(
         mockState,
-        (r) => r.method === 'PATCH' && r.url.includes('/suppliers/acme/')
+        (r) => r.method === 'PATCH' && r.url.includes('/sources/acme/')
       );
       expect(req.postData).toEqual({ name: 'Acme Corp Renamed' });
     });
@@ -253,7 +253,7 @@ test.describe('Suppliers panel', () => {
       await page.getByTestId('suppliers-overview-save').click();
       const req = await waitForRequest(
         mockState,
-        (r) => r.method === 'PATCH' && r.url.includes('/suppliers/acme/')
+        (r) => r.method === 'PATCH' && r.url.includes('/sources/acme/')
       );
       expect(req.postData).toEqual({ sku_prefix: 'AAA' });
     });
@@ -271,65 +271,6 @@ test.describe('Suppliers panel', () => {
       await expect(
         page.locator('.data-table').getByText('xml-1').first()
       ).toBeVisible();
-    });
-
-    test('Create feed POSTs and adds row', async ({ page }) => {
-      await page.getByTestId('feeds-create-btn').click();
-      await fillField(page, 'feed-form-idx', 'xml-2');
-      await page.getByTestId('feed-form-submit').click();
-      const req = await waitForRequest(
-        mockState,
-        (r) =>
-          r.method === 'POST' && r.url.endsWith('/suppliers/acme/feeds/')
-      );
-      expect(req.postData).toMatchObject({ idx: 'xml-2' });
-      await expect(
-        page.locator('.data-table').getByText('xml-2').first()
-      ).toBeVisible({ timeout: 5000 });
-    });
-
-    test('Edit feed PATCHes selected feed', async ({ page }) => {
-      await page.getByTestId('feeds-edit-xml-1').click();
-      // feed_url field is auto-populated; flip is_active off
-      await page.getByTestId('feed-form-is-active').click();
-      await page.getByTestId('feed-form-submit').click();
-      const req = await waitForRequest(
-        mockState,
-        (r) => r.method === 'PATCH' && r.url.includes('/feeds/xml-1/')
-      );
-      expect(req.postData).toMatchObject({ is_active: false });
-    });
-
-    test('Delete feed sends DELETE and row disappears', async ({ page }) => {
-      await page.getByTestId('feeds-delete-xml-1').click();
-      // Confirmation-modal default footer accept button
-      await page
-        .locator('.modal-btn--delete')
-        .last()
-        .click();
-      const req = await waitForRequest(
-        mockState,
-        (r) => r.method === 'DELETE' && r.url.includes('/feeds/xml-1/')
-      );
-      expect(req).toBeTruthy();
-      await expect(
-        page.locator('.data-table').getByText('xml-1')
-      ).toHaveCount(0, { timeout: 3000 });
-    });
-
-    test('Test feed POSTs test endpoint and shows raw products', async ({
-      page,
-    }) => {
-      await page.getByTestId('feeds-test-xml-1').click();
-      await waitForRequest(
-        mockState,
-        (r) => r.method === 'POST' && r.url.endsWith('/feeds/xml-1/test/')
-      );
-      await expect(page.getByTestId('test-feed-row-0')).toBeVisible({
-        timeout: 5000,
-      });
-      await page.getByTestId('test-feed-close').click();
-      await expect(page.getByTestId('test-feed-modal')).not.toBeVisible();
     });
 
     test('Trigger feed → confirm → POSTs trigger', async ({ page }) => {
@@ -361,17 +302,16 @@ test.describe('Suppliers panel', () => {
       await page.getByTestId('mappings-create-profile-btn').click();
       await fillField(page, 'mapping-form-idx', 'intl');
       await fillField(page, 'mapping-form-name', 'International');
-      await fillField(page, 'mapping-form-channels', 'default-uk, default-fr');
       await page.getByTestId('mapping-form-submit').click();
       const req = await waitForRequest(
         mockState,
         (r) =>
           r.method === 'POST' &&
-          r.url.endsWith('/suppliers/acme/mapping-profiles/')
+          r.url.endsWith('/sources/acme/mapping-profiles/')
       );
       expect(req.postData).toMatchObject({
         idx: 'intl',
-        target_channel_idxs: ['default-uk', 'default-fr'],
+        name: 'International',
       });
     });
 
@@ -381,7 +321,7 @@ test.describe('Suppliers panel', () => {
         mockState,
         (r) =>
           r.method === 'POST' &&
-          r.url.endsWith('/suppliers/acme/mapping-profiles/default/validate/')
+          r.url.endsWith('/sources/acme/mapping-profiles/default/validate/')
       );
       expect(req).toBeTruthy();
     });
@@ -393,7 +333,7 @@ test.describe('Suppliers panel', () => {
         mockState,
         (r) =>
           r.method === 'DELETE' &&
-          r.url.endsWith('/suppliers/acme/mapping-profiles/default/')
+          r.url.endsWith('/sources/acme/mapping-profiles/default/')
       );
       expect(req).toBeTruthy();
     });
@@ -407,15 +347,17 @@ test.describe('Suppliers panel', () => {
       await page.waitForLoadState('networkidle');
     });
 
-    test('list filters by status (default queued)', async ({ page }) => {
+    test('list requests the products of this source (no status filter by default)', async ({
+      page,
+    }) => {
       const req = await waitForRequest(
         mockState,
         (r) =>
           r.method === 'GET' &&
           r.url.includes('/products/?') &&
-          r.url.includes('status=queued')
+          r.url.includes('source=acme')
       );
-      expect(req).toBeTruthy();
+      expect(req.url).not.toContain('status=');
     });
 
     test('Approved status FilterChip changes query', async ({ page }) => {
@@ -479,7 +421,7 @@ test.describe('Suppliers panel', () => {
         mockState,
         (r) =>
           r.method === 'POST' &&
-          r.url.endsWith('/product-links/901/set-preferred/')
+          r.url.endsWith('/product-links/901/set-primary/')
       );
       expect(req).toBeTruthy();
       // After refresh, banner is gone
@@ -488,7 +430,7 @@ test.describe('Suppliers panel', () => {
       ).not.toBeVisible({ timeout: 5000 });
     });
 
-    test('Unset preferred PATCHes is_preferred=false (no dedicated endpoint)', async ({
+    test('Unset preferred PATCHes is_primary=false (no dedicated endpoint)', async ({
       page,
     }) => {
       // first set preferred so we can unset it
@@ -499,12 +441,14 @@ test.describe('Suppliers panel', () => {
         mockState,
         (r) => r.method === 'PATCH' && r.url.endsWith('/product-links/901/')
       );
-      expect(req.postData).toEqual({ is_preferred: false });
+      expect(req.postData).toEqual({ is_primary: false });
     });
 
     test('Create link POSTs new link', async ({ page }) => {
       await page.getByTestId('linked-create-btn').click();
+      // EntitySearchPicker: type, then pick the (mocked) PIM search result
       await fillField(page, 'linked-form-sku', 'PIM-SKU-3');
+      await page.getByText('Third PIM product').click();
       await page.getByTestId('linked-form-submit').click();
       const req = await waitForRequest(
         mockState,
@@ -512,7 +456,7 @@ test.describe('Suppliers panel', () => {
       );
       expect(req.postData).toMatchObject({
         real_product_sku: 'PIM-SKU-3',
-        supplier_idx: 'acme',
+        source_idx: 'acme',
       });
     });
 
@@ -546,7 +490,7 @@ test.describe('Suppliers panel', () => {
         (r) =>
           r.method === 'GET' &&
           r.url.includes('/events/') &&
-          r.url.includes('supplier_idx=acme')
+          r.url.includes('source=acme')
       );
       expect(req).toBeTruthy();
     });

@@ -164,7 +164,7 @@ const accesses = {
     {
       name: "Atlas",
       idx: "atlas",
-      icon: "truck",
+      icon: "globe",
       root: "/atlas/list",
       labelKey: "panels.atlas",
       descriptionKey: "panels.atlas_desc",

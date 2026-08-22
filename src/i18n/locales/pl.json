@@ -30,7 +30,7 @@
     "pm_currencies": "Waluty",
     "accounts_customers": "Klienci",
     "checkout_orders": "Zamówienia",
-    "atlas_list": "Dostawcy",
+    "atlas_list": "Źródła",
     "atlas_auto_matched": "Auto-połączone",
     "atlas_duplicates": "Duplikaty",
     "atlas_review_queue": "Kolejka recenzji",
@@ -534,8 +534,8 @@
     "accounts_desc": "Konta klientów -- profile, adresy, grupy",
     "checkout_orders": "Zamówienia",
     "checkout_orders_desc": "Zamówienia -- przeglądanie, statusy, płatności",
-    "atlas": "Dostawcy",
-    "atlas_desc": "Rejestr dostawców, feedy, mapowania, produkty i logi integracji",
+    "atlas": "Atlas",
+    "atlas_desc": "Źródła, feedy, mapowania, produkty i logi integracji",
     "enricher": "Wzbogacanie",
     "enricher_desc": "Kolejka wzbogacania treści -- recenzja propozycji AI, akceptacja do PIM, zlecanie zadań",
     "translation": "Tłumaczenia",
@@ -1803,15 +1803,15 @@
     "faq_cancel": "Anuluj"
   },
   "atlas": {
-    "list_title": "Dostawcy",
-    "detail_title": "Dostawca",
-    "detail_not_found": "Nie znaleziono dostawcy.",
-    "create_button": "Dodaj dostawcę",
-    "empty_state_title": "Brak dostawców",
-    "empty_state_message": "Utwórz pierwszego dostawcę, aby rozpocząć konfigurację feedów i mapowań.",
+    "list_title": "Źródła",
+    "detail_title": "Źródło",
+    "detail_not_found": "Nie znaleziono źródła.",
+    "create_button": "Dodaj źródło",
+    "empty_state_title": "Brak źródeł",
+    "empty_state_message": "Utwórz pierwsze źródło, aby rozpocząć konfigurację feedów i mapowań.",
     "auto_matched": {
       "title": "Auto-połączone RealProdukty",
-      "subtitle": "RealProdukty zmodyfikowane przez ścieżkę auto-EAN (etap-13a).",
+      "subtitle": "RealProdukty połączone automatycznie po dopasowaniu EAN.",
       "empty_title": "Brak auto-połączonych RealProduktów",
       "empty_message": "Wpisy w audicie auto-link pojawiają się tutaj po podpięciu SupplierProduct do istniejącego RealProduct przez EAN.",
       "filter": {
@@ -1864,22 +1864,17 @@
       }
     },
     "filter": {
-      "role": "Rola",
-      "status": "Status"
+      "status": "Status",
+      "kind": "Rodzaj"
     },
     "col": {
       "idx": "Identyfikator",
       "name": "Nazwa",
-      "role": "Rola",
       "type": "Typ",
       "currency": "Waluta",
       "warehouse": "Magazyn",
-      "status": "Status"
-    },
-    "role": {
-      "trade": "Handlowy",
-      "data": "Dane",
-      "monitoring": "Monitoring"
+      "status": "Status",
+      "kind": "Rodzaj"
     },
     "type": {
       "feed": "Feed",
@@ -1891,8 +1886,6 @@
       "idx_tooltip": "Stabilny slug używany w URL-ach API oraz przy generowaniu SKU. Małe litery, cyfry i myślniki. Nie można zmienić po utworzeniu.",
       "name_label": "Nazwa",
       "name_tooltip": "Nazwa wyświetlana w CMS-ie. Dowolny tekst.",
-      "role_label": "Rola",
-      "role_tooltip": "Trade — dostawca sprzedaje towar przez Twój sklep (jedyna zaimplementowana). Data — feed tylko analityczny. Monitoring — obserwacja konkurencji.",
       "type_label": "Typ",
       "type_tooltip": "Feed — automatyczny import XML/scraper. Manual — operator dodaje produkty ręcznie. Dropship — pobieranie przy zamówieniu (jeszcze nie zaimplementowane).",
       "review_mode_label": "Tryb recenzji",
@@ -1939,7 +1932,9 @@
       "eval_frequency_label": "Częstotliwość auto-ewaluacji",
       "eval_frequency_tooltip": "Jak często cron ocenia auto-preferred dla tego dostawcy. 'Ręczna' wyłącza cron — wyzwalacze inline nadal działają.",
       "allow_physical_writes_from_non_preferred_label": "Pozwól na zapisy fizyczne mimo braku preferencji",
-      "allow_physical_writes_from_non_preferred_tooltip": "Gdy włączone, synchronizacja delta tego dostawcy nadpisuje wagę, EAN i wymiary RealProduktu nawet gdy preferowany jest inny dostawca. Domyślnie wyłączone — preferowany jest jedynym źródłem prawdy. Używaj tylko dla certyfikowanych pomiarów dostawcy (audytowane jako zdarzenie ostrzeżenia)."
+      "allow_physical_writes_from_non_preferred_tooltip": "Gdy włączone, synchronizacja delta tego dostawcy nadpisuje wagę, EAN i wymiary RealProduktu nawet gdy preferowany jest inny dostawca. Domyślnie wyłączone — preferowany jest jedynym źródłem prawdy. Używaj tylko dla certyfikowanych pomiarów dostawcy (audytowane jako zdarzenie ostrzeżenia).",
+      "kind_label": "Rodzaj",
+      "kind_tooltip": "Zaopatrzenie — feed kosztów/stanów, jedyny rodzaj pushujący do PIM. Monitoring — obserwacja cen konkurencji (tylko odczyt). Wzbogacanie — feed sygnałów danych (tylko odczyt)."
     },
     "review_mode": {
       "manual": "Ręczny",
@@ -2329,6 +2324,11 @@
         "empty_state": "Brak zdarzeń pasujących do filtrów.",
         "acknowledge_button": "Zatwierdź"
       }
+    },
+    "kind": {
+      "procurement": "Zaopatrzenie",
+      "monitoring": "Monitoring",
+      "enrichment": "Wzbogacanie"
     }
   },
   "enrichment": {
@@ -2907,7 +2907,7 @@
     "scope_channel": "Kanał",
     "category": "Kategoria",
     "mode_authoritative": "Tryb autorytatywny",
-    "mode_v2_note": "Dostępne z autopilotem (v2)",
+    "mode_v2_note": "Wymaga trybu autopilota",
     "confirm_delete_title": "Usuń regułę",
     "confirm_delete_rule": "Ta reguła cenowa zostanie trwale usunięta.",
     "no_history": "Brak decyzji",
