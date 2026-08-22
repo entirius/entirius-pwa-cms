@@ -1,0 +1,26 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    target-branch: develop
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+    ignore:
+      # vue-cli 5 / webpack 5 toolchain — majors are a build migration, not a bump
+      - dependency-name: "@vue/cli-service"
+        update-types: [version-update:semver-major]
+      - dependency-name: "@vue/cli-plugin-babel"
+        update-types: [version-update:semver-major]
+      - dependency-name: sass-loader
+        update-types: [version-update:semver-major]
+      - dependency-name: webpack
+        update-types: [version-update:semver-major]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    target-branch: develop
