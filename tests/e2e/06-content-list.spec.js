@@ -95,19 +95,18 @@ test.describe('Content List Table', () => {
     await page.goto('/pages/content?lg=pl');
     await page.waitForLoadState('networkidle');
 
-    // Pagination uses div elements (navigation-icon, pagination-element), not buttons
-    const pagination = page.locator('.pagination').first();
+    const pagination = page.locator('nav.pagination').first();
     const hasPagination = await pagination.isVisible({ timeout: 5000 }).catch(() => false);
 
     if (hasPagination) {
       // Should have navigation arrows and page numbers
-      const navIcons = pagination.locator('.navigation-icon');
-      const navCount = await navIcons.count();
-      expect(navCount).toBeGreaterThanOrEqual(2); // prev + next arrows
+      const arrows = pagination.locator(
+        'button[aria-label="previous page"], button[aria-label="next page"]'
+      );
+      expect(await arrows.count()).toBe(2); // prev + next arrows
 
-      const pageElements = pagination.locator('.pagination-element');
-      const pageCount = await pageElements.count();
-      expect(pageCount).toBeGreaterThanOrEqual(1); // at least one page number
+      const pageButtons = pagination.locator('button.page-cell:not([aria-label])');
+      expect(await pageButtons.count()).toBeGreaterThanOrEqual(1); // at least one page number
     } else {
       console.log('Content fits on single page -- no pagination to verify');
     }

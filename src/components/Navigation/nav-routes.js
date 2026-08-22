@@ -234,7 +234,7 @@ export function buildNavRoutes() {
     {
       route: "/atlas/list",
       labelKey: "nav.atlas_list",
-      icon: "truck",
+      icon: "layer-group",
       query: {},
       app: ["atlas"],
     },

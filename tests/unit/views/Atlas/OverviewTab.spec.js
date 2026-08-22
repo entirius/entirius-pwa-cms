@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
 
-const mockPatchSupplier = vi.fn();
+const mockPatchSource = vi.fn();
 
 vi.mock("@/api/atlas/api", () => ({
-  PATCH_Supplier: (...args) => mockPatchSupplier(...args),
+  PATCH_Source: (...args) => mockPatchSource(...args),
 }));
 
 // Pinia stores used by setup() — stub to no-op.
@@ -33,8 +33,8 @@ function makeSupplier(overrides = {}) {
   return {
     idx: "fortrade",
     name: "Fortrade",
-    supplier_role: "trade",
-    supplier_type: "feed",
+    kind: "procurement",
+    source_type: "feed",
     review_mode: "manual",
     is_active: true,
     default_language_id: 1,
@@ -51,10 +51,10 @@ function makeSupplier(overrides = {}) {
     contact_person: "",
     notes: "",
     lead_time_days: null,
-    allow_physical_writes_from_non_preferred: false,
-    preferred_strategy: "lowest_cost_with_stock",
-    preferred_switch_cooldown_hours: 24,
-    preferred_switch_hysteresis_pct: 2,
+    allow_physical_writes_from_non_primary: false,
+    primary_strategy: "lowest_cost_with_stock",
+    primary_switch_cooldown_hours: 24,
+    primary_switch_hysteresis_pct: 2,
     eval_frequency: "daily",
     ...overrides,
   };
@@ -76,59 +76,59 @@ const globalStubs = {
   FontAwesomeIcon: true,
 };
 
-describe("OverviewTab — allow_physical_writes_from_non_preferred (etap-10)", () => {
+describe("OverviewTab — allow_physical_writes_from_non_primary (etap-10)", () => {
   beforeEach(() => {
-    mockPatchSupplier.mockReset();
+    mockPatchSource.mockReset();
   });
 
-  it("seeds form.allow_physical_writes_from_non_preferred from the supplier prop", () => {
-    const supplier = makeSupplier({ allow_physical_writes_from_non_preferred: true });
+  it("seeds form.allow_physical_writes_from_non_primary from the supplier prop", () => {
+    const supplier = makeSupplier({ allow_physical_writes_from_non_primary: true });
     const wrapper = mount(OverviewTab, {
       props: { supplier },
       global: { stubs: globalStubs },
     });
-    expect(wrapper.vm.form.allow_physical_writes_from_non_preferred).toBe(true);
+    expect(wrapper.vm.form.allow_physical_writes_from_non_primary).toBe(true);
   });
 
   it("defaults to false when supplier prop omits the field", () => {
     const supplier = makeSupplier();
-    delete supplier.allow_physical_writes_from_non_preferred;
+    delete supplier.allow_physical_writes_from_non_primary;
     const wrapper = mount(OverviewTab, {
       props: { supplier },
       global: { stubs: globalStubs },
     });
-    expect(wrapper.vm.form.allow_physical_writes_from_non_preferred).toBe(false);
+    expect(wrapper.vm.form.allow_physical_writes_from_non_primary).toBe(false);
   });
 
   it("PATCHes the flag when toggled and save() is called", async () => {
-    const supplier = makeSupplier({ allow_physical_writes_from_non_preferred: false });
-    mockPatchSupplier.mockResolvedValue({ data: { ...supplier, allow_physical_writes_from_non_preferred: true } });
+    const supplier = makeSupplier({ allow_physical_writes_from_non_primary: false });
+    mockPatchSource.mockResolvedValue({ data: { ...supplier, allow_physical_writes_from_non_primary: true } });
 
     const wrapper = mount(OverviewTab, {
       props: { supplier },
       global: { stubs: globalStubs },
     });
-    wrapper.vm.form.allow_physical_writes_from_non_preferred = true;
+    wrapper.vm.form.allow_physical_writes_from_non_primary = true;
     await wrapper.vm.save();
     await flushPromises();
 
-    expect(mockPatchSupplier).toHaveBeenCalledTimes(1);
-    const [idx, payload] = mockPatchSupplier.mock.calls[0];
+    expect(mockPatchSource).toHaveBeenCalledTimes(1);
+    const [idx, payload] = mockPatchSource.mock.calls[0];
     expect(idx).toBe("fortrade");
-    expect(payload).toHaveProperty("allow_physical_writes_from_non_preferred", true);
+    expect(payload).toHaveProperty("allow_physical_writes_from_non_primary", true);
     // Only changed fields go on the wire — name/role/etc must not leak.
     expect(payload).not.toHaveProperty("name");
-    expect(payload).not.toHaveProperty("supplier_role");
+    expect(payload).not.toHaveProperty("kind");
   });
 
   it("skips the PATCH when no field changed (isDirty=false guard)", async () => {
-    const supplier = makeSupplier({ allow_physical_writes_from_non_preferred: false });
+    const supplier = makeSupplier({ allow_physical_writes_from_non_primary: false });
     const wrapper = mount(OverviewTab, {
       props: { supplier },
       global: { stubs: globalStubs },
     });
     await wrapper.vm.save();
     await flushPromises();
-    expect(mockPatchSupplier).not.toHaveBeenCalled();
+    expect(mockPatchSource).not.toHaveBeenCalled();
   });
 });

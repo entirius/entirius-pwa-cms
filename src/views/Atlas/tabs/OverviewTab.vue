@@ -34,14 +34,14 @@
         </p>
       </FormField>
       <FormField
-        :label="$t('atlas.form.role_label')"
-        :tooltip="$t('atlas.form.role_tooltip')"
+        :label="$t('atlas.form.kind_label')"
+        :tooltip="$t('atlas.form.kind_tooltip')"
       >
         <Dropdown
-          :values="roleOptions"
-          :selected="[form.supplier_role]"
-          data-testid="overview-role"
-          @onSelect="(val) => (form.supplier_role = val)"
+          :values="kindOptions"
+          :selected="[form.kind]"
+          data-testid="overview-kind"
+          @onSelect="(val) => (form.kind = val)"
         />
       </FormField>
       <FormField
@@ -50,9 +50,9 @@
       >
         <Dropdown
           :values="typeOptions"
-          :selected="[form.supplier_type]"
+          :selected="[form.source_type]"
           data-testid="overview-type"
-          @onSelect="(val) => (form.supplier_type = val)"
+          @onSelect="(val) => (form.source_type = val)"
         />
       </FormField>
       <FormField
@@ -236,11 +236,11 @@
         class="overview-grid__wide"
       >
         <Switcher
-          :selected="form.allow_physical_writes_from_non_preferred"
+          :selected="form.allow_physical_writes_from_non_primary"
           data-testid="overview-allow-physical-writes-non-preferred"
           @onSelect="
-            form.allow_physical_writes_from_non_preferred =
-              !form.allow_physical_writes_from_non_preferred
+            form.allow_physical_writes_from_non_primary =
+              !form.allow_physical_writes_from_non_primary
           "
         />
       </FormField>
@@ -253,7 +253,7 @@
         :tooltip="$t('atlas.form.preferred_strategy_tooltip')"
       >
         <Dropdown
-          v-model="form.preferred_strategy"
+          v-model="form.primary_strategy"
           :options="preferredStrategyOptions"
           data-testid="overview-preferred-strategy"
         />
@@ -264,7 +264,7 @@
         :tooltip="$t('atlas.form.preferred_switch_cooldown_hours_tooltip')"
       >
         <NumberInput
-          v-model="form.preferred_switch_cooldown_hours"
+          v-model="form.primary_switch_cooldown_hours"
           :min="0"
           :max="720"
           data-testid="overview-cooldown-hours"
@@ -276,7 +276,7 @@
         :tooltip="$t('atlas.form.preferred_switch_hysteresis_pct_tooltip')"
       >
         <NumberInput
-          v-model="form.preferred_switch_hysteresis_pct"
+          v-model="form.primary_switch_hysteresis_pct"
           :min="0"
           :max="100"
           data-testid="overview-hysteresis-pct"
@@ -301,12 +301,12 @@
 import { useNotifyStore } from "@/stores/notify";
 import { useRegionalStore } from "@/stores/regional";
 import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
-import { PATCH_Supplier } from "@/api/atlas/api";
+import { PATCH_Source } from "@/api/atlas/api";
 
 const FIELDS = [
   "name",
-  "supplier_role",
-  "supplier_type",
+  "kind",
+  "source_type",
   "review_mode",
   "is_active",
   "default_language_id",
@@ -323,12 +323,12 @@ const FIELDS = [
   "contact_person",
   "company_name",
   "notes",
-  // etap-10 (Dziura #31) — preferred-only physical writes opt-in.
-  "allow_physical_writes_from_non_preferred",
-  // etap-13b auto-preferred config
-  "preferred_strategy",
-  "preferred_switch_cooldown_hours",
-  "preferred_switch_hysteresis_pct",
+  // etap-10 (Dziura #31) — primary-only physical writes opt-in.
+  "allow_physical_writes_from_non_primary",
+  // etap-13b auto-primary config
+  "primary_strategy",
+  "primary_switch_cooldown_hours",
+  "primary_switch_hysteresis_pct",
   "eval_frequency",
 ];
 
@@ -359,16 +359,16 @@ export default {
   },
   computed: {
     isMonitoringSupplier() {
-      return this.supplier?.supplier_role === "monitoring";
+      return this.supplier?.kind === "monitoring";
     },
     isDirty() {
       return FIELDS.some((k) => this.form[k] !== this.original[k]);
     },
-    roleOptions() {
+    kindOptions() {
       return [
-        { value: "trade", label: this.$t("atlas.role.trade") },
-        { value: "data", label: this.$t("atlas.role.data") },
-        { value: "monitoring", label: this.$t("atlas.role.monitoring") },
+        { value: "procurement", label: this.$t("atlas.kind.procurement") },
+        { value: "monitoring", label: this.$t("atlas.kind.monitoring") },
+        { value: "enrichment", label: this.$t("atlas.kind.enrichment") },
       ];
     },
     typeOptions() {
@@ -429,14 +429,14 @@ export default {
       if (["qty_subtract", "qty_minimum", "lead_time_days"].includes(field))
         return 0;
       if (field === "is_active") return true;
-      if (field === "supplier_role") return "trade";
-      if (field === "supplier_type") return "feed";
+      if (field === "kind") return "procurement";
+      if (field === "source_type") return "feed";
       if (field === "review_mode") return "manual";
-      if (field === "preferred_strategy") return "lowest_cost_with_stock";
-      if (field === "preferred_switch_cooldown_hours") return 24;
-      if (field === "preferred_switch_hysteresis_pct") return 2;
+      if (field === "primary_strategy") return "lowest_cost_with_stock";
+      if (field === "primary_switch_cooldown_hours") return 24;
+      if (field === "primary_switch_hysteresis_pct") return 2;
       if (field === "eval_frequency") return "daily";
-      if (field === "allow_physical_writes_from_non_preferred") return false;
+      if (field === "allow_physical_writes_from_non_primary") return false;
       if (
         ["default_language_id", "default_currency_id", "country_id"].includes(
           field
@@ -458,7 +458,7 @@ export default {
           this.saving = false;
           return;
         }
-        const { data } = await PATCH_Supplier(this.supplier.idx, payload);
+        const { data } = await PATCH_Source(this.supplier.idx, payload);
         this.original = this.buildForm(data);
         this.form = this.buildForm(data);
         this.notify.spawnNotification({

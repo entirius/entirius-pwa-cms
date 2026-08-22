@@ -1,7 +1,7 @@
 /**
  * Suppliers panel mock helper.
  *
- * Intercepts all `/api/suppliers/v2/admin/...` and `/api/munin/v2/...`
+ * Intercepts all `/api/atlas/v2/admin/...` and `/api/munin/v2/...`
  * endpoints with deterministic in-memory state so the CMS Suppliers
  * and SupplierReview panels can be exercised end-to-end without a
  * live backend.
@@ -12,7 +12,7 @@
  * can assert exact API calls were made.
  */
 
-const ADMIN = '/api/suppliers/v2/admin';
+const ADMIN = '/api/atlas/v2/admin';
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -61,8 +61,8 @@ function defaultSeed() {
       {
         idx: 'acme',
         name: 'Acme Corp',
-        supplier_role: 'trade',
-        supplier_type: 'feed',
+        kind: 'procurement',
+        source_type: 'feed',
         review_mode: 'manual',
         is_active: true,
         default_language_code: 'EN',
@@ -83,8 +83,8 @@ function defaultSeed() {
       {
         idx: 'globex',
         name: 'Globex Industries',
-        supplier_role: 'trade',
-        supplier_type: 'feed',
+        kind: 'procurement',
+        source_type: 'feed',
         review_mode: 'auto',
         is_active: false,
         default_language_code: 'EN',
@@ -329,9 +329,9 @@ async function installSuppliersMock(page, { seed, muninEnabled = true } = {}) {
       ok({
         platform: { name: 'Volkanos', version: 'test' },
         modules: {
-          suppliers: {
-            key: 'suppliers',
-            label: 'Suppliers',
+          atlas: {
+            key: 'atlas',
+            label: 'Atlas',
             enabled_in_cms: muninEnabled,
             has_admin_api: true,
           },
@@ -372,12 +372,12 @@ async function installSuppliersMock(page, { seed, muninEnabled = true } = {}) {
     }
 
     // --- Suppliers list / create ---
-    let m = urlMatches(url, `${ADMIN}/suppliers/`);
+    let m = urlMatches(url, `${ADMIN}/sources/`);
     if (m) {
       if (method === 'GET') {
         let rows = state.suppliers.slice();
         if (m.query.role) {
-          rows = rows.filter((r) => r.supplier_role === m.query.role);
+          rows = rows.filter((r) => r.kind === m.query.kind);
         }
         if (m.query.is_active !== undefined) {
           const flag = m.query.is_active === 'true';
@@ -407,7 +407,7 @@ async function installSuppliersMock(page, { seed, muninEnabled = true } = {}) {
     }
 
     // --- Supplier delete-impact ---
-    m = urlMatches(url, `${ADMIN}/suppliers/:idx/delete-impact/`);
+    m = urlMatches(url, `${ADMIN}/sources/:idx/delete-impact/`);
     if (m && method === 'GET') {
       const supplier = state.suppliers.find((s) => s.idx === m.params.idx);
       if (!supplier) return route.fulfill(notFound());
@@ -430,7 +430,7 @@ async function installSuppliersMock(page, { seed, muninEnabled = true } = {}) {
     }
 
     // --- Supplier detail / patch / delete ---
-    m = urlMatches(url, `${ADMIN}/suppliers/:idx/`);
+    m = urlMatches(url, `${ADMIN}/sources/:idx/`);
     if (m) {
       const i = state.suppliers.findIndex((s) => s.idx === m.params.idx);
       if (i < 0) return route.fulfill(notFound());
@@ -456,7 +456,7 @@ async function installSuppliersMock(page, { seed, muninEnabled = true } = {}) {
     }
 
     // --- Feeds list / create ---
-    m = urlMatches(url, `${ADMIN}/suppliers/:supplierIdx/feeds/`);
+    m = urlMatches(url, `${ADMIN}/sources/:supplierIdx/feeds/`);
     if (m) {
       const supplierIdx = m.params.supplierIdx;
       state.feeds[supplierIdx] = state.feeds[supplierIdx] || [];
@@ -485,7 +485,7 @@ async function installSuppliersMock(page, { seed, muninEnabled = true } = {}) {
     }
 
     // --- Feeds detail / patch / delete ---
-    m = urlMatches(url, `${ADMIN}/suppliers/:supplierIdx/feeds/:feedIdx/`);
+    m = urlMatches(url, `${ADMIN}/sources/:supplierIdx/feeds/:feedIdx/`);
     if (m) {
       const list = state.feeds[m.params.supplierIdx] || [];
       const i = list.findIndex((f) => f.idx === m.params.feedIdx);
@@ -507,7 +507,7 @@ async function installSuppliersMock(page, { seed, muninEnabled = true } = {}) {
     }
 
     // --- Feed test ---
-    m = urlMatches(url, `${ADMIN}/suppliers/:supplierIdx/feeds/:feedIdx/test/`);
+    m = urlMatches(url, `${ADMIN}/sources/:supplierIdx/feeds/:feedIdx/test/`);
     if (m && method === 'POST') {
       await route.fulfill(
         ok({
@@ -530,7 +530,7 @@ async function installSuppliersMock(page, { seed, muninEnabled = true } = {}) {
     }
 
     // --- Feed trigger ---
-    m = urlMatches(url, `${ADMIN}/suppliers/:supplierIdx/feeds/:feedIdx/trigger/`);
+    m = urlMatches(url, `${ADMIN}/sources/:supplierIdx/feeds/:feedIdx/trigger/`);
     if (m && method === 'POST') {
       await route.fulfill(
         ok({
@@ -544,7 +544,7 @@ async function installSuppliersMock(page, { seed, muninEnabled = true } = {}) {
     // --- Mapping profile validate ---
     m = urlMatches(
       url,
-      `${ADMIN}/suppliers/:supplierIdx/mapping-profiles/:profileIdx/validate/`
+      `${ADMIN}/sources/:supplierIdx/mapping-profiles/:profileIdx/validate/`
     );
     if (m && method === 'POST') {
       await route.fulfill(ok({ ok: true, errors: [], warnings: [] }));
@@ -552,7 +552,7 @@ async function installSuppliersMock(page, { seed, muninEnabled = true } = {}) {
     }
 
     // --- Mapping profiles list / create ---
-    m = urlMatches(url, `${ADMIN}/suppliers/:supplierIdx/mapping-profiles/`);
+    m = urlMatches(url, `${ADMIN}/sources/:supplierIdx/mapping-profiles/`);
     if (m) {
       const supplierIdx = m.params.supplierIdx;
       state.profiles[supplierIdx] = state.profiles[supplierIdx] || [];
@@ -579,7 +579,7 @@ async function installSuppliersMock(page, { seed, muninEnabled = true } = {}) {
     // --- Mapping profile detail/patch/delete ---
     m = urlMatches(
       url,
-      `${ADMIN}/suppliers/:supplierIdx/mapping-profiles/:profileIdx/`
+      `${ADMIN}/sources/:supplierIdx/mapping-profiles/:profileIdx/`
     );
     if (m) {
       const list = state.profiles[m.params.supplierIdx] || [];
@@ -764,7 +764,7 @@ async function installSuppliersMock(page, { seed, muninEnabled = true } = {}) {
     }
 
     // --- Set preferred ---
-    m = urlMatches(url, `${ADMIN}/product-links/:pk/set-preferred/`);
+    m = urlMatches(url, `${ADMIN}/product-links/:pk/set-primary/`);
     if (m && method === 'POST') {
       const target = state.productLinks.find(
         (l) => String(l.id) === m.params.pk

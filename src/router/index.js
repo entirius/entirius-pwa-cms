@@ -864,9 +864,9 @@ const routes = [
       },
       {
         path: "list",
-        name: "SupplierList",
+        name: "SourceList",
         component: () =>
-          import(/* webpackChunkName: "atlas" */ "../views/Atlas/SupplierList.vue"),
+          import(/* webpackChunkName: "atlas" */ "../views/Atlas/SourceList.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "atlas.list_title",
@@ -911,9 +911,9 @@ const routes = [
       },
       {
         path: ":idx",
-        name: "SupplierDetail",
+        name: "SourceDetail",
         component: () =>
-          import(/* webpackChunkName: "atlas" */ "../views/Atlas/SupplierDetail.vue"),
+          import(/* webpackChunkName: "atlas" */ "../views/Atlas/SourceDetail.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "atlas.detail_title",
