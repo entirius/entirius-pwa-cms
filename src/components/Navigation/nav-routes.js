@@ -262,6 +262,14 @@ export function buildNavRoutes() {
       app: ["atlas"],
     },
     {
+      // single-box text/image search across PIM + atlas fingerprints
+      route: "/atlas/find",
+      labelKey: "nav.atlas_find",
+      icon: "magnifying-glass",
+      query: {},
+      app: ["atlas"],
+    },
+    {
       route: "/enrichment",
       labelKey: "nav.enrichment_review",
       icon: "wand-magic-sparkles",
