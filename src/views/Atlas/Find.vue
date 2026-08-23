@@ -12,6 +12,7 @@
         :initial-query="initialQuery"
         data-testid="atlas-find-box"
         @results="onResults"
+        @error="onSearchError"
       />
 
       <p v-if="understoodLine" class="fs-200 t-basic-500 mt-300">
@@ -87,6 +88,14 @@ export default {
       this.warnings = response.warnings || [];
       this.lastQuery = response.q || "";
       this.searched = true;
+    },
+    // A failed search must not leave the previous, now-stale, result list
+    // on screen next to the box's own error banner.
+    onSearchError() {
+      this.hits = [];
+      this.queryParsed = null;
+      this.warnings = [];
+      this.searched = false;
     },
     goCreateProduct() {
       this.$router.push({

@@ -71,7 +71,7 @@ export default {
     initialQuery: { type: String, default: "" },
     imageUrl: { type: String, default: "" },
   },
-  emits: ["results"],
+  emits: ["results", "error"],
   setup(props) {
     return {
       ...useImagePicker(computed(() => props.imageUrl)),
@@ -122,6 +122,7 @@ export default {
         });
       } catch (err) {
         this.error = extractApiMessage(err, this.$t("notifications.error"));
+        this.$emit("error", this.error);
       } finally {
         this.loading = false;
       }

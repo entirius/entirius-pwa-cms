@@ -76,7 +76,7 @@ describe("DedupSearchBox.vue", () => {
     expect(emitted[0][0].q).toBe("5901234123457");
   });
 
-  it("sends a multipart request once an image is set from a paste event", async () => {
+  it("sends a multipart request once an image is set from a paste event, scope as repeated keys", async () => {
     mockDownscaleImage.mockResolvedValue(
       new Blob(["x"], { type: "image/jpeg" })
     );
@@ -98,18 +98,87 @@ describe("DedupSearchBox.vue", () => {
     const payload = mockLookupCheck.mock.calls[0][0];
     expect(payload).toBeInstanceOf(FormData);
     expect(payload.get("image")).toBeInstanceOf(Blob);
+    // Django reads scope via request.POST.getlist("scope") — repeated keys,
+    // not a single comma-joined or JSON-encoded value.
+    expect(payload.getAll("scope")).toEqual([
+      "pim_product",
+      "atlas_source_product",
+    ]);
   });
 
-  it("toggles scope chips without dropping below one active catalog", async () => {
+  it("toggles scope chips without dropping below one active catalog (DOM state)", async () => {
     const wrapper = mountBox();
     const chips = wrapper.findAll(".stub-chip");
     expect(chips).toHaveLength(2);
+    expect(chips[0].attributes("data-active")).toBe("true");
+    expect(chips[1].attributes("data-active")).toBe("true");
 
     await chips[0].trigger("click");
-    expect(wrapper.vm.activeScope).toEqual(["atlas_source_product"]);
+    expect(wrapper.findAll(".stub-chip")[0].attributes("data-active")).toBe(
+      "false"
+    );
+    expect(wrapper.findAll(".stub-chip")[1].attributes("data-active")).toBe(
+      "true"
+    );
 
     // The last remaining scope cannot be toggled off.
-    await chips[1].trigger("click");
-    expect(wrapper.vm.activeScope).toEqual(["atlas_source_product"]);
+    await wrapper.findAll(".stub-chip")[1].trigger("click");
+    expect(wrapper.findAll(".stub-chip")[0].attributes("data-active")).toBe(
+      "false"
+    );
+    expect(wrapper.findAll(".stub-chip")[1].attributes("data-active")).toBe(
+      "true"
+    );
+  });
+
+  it("shows an error banner and emits error when the API call rejects", async () => {
+    mockLookupCheck.mockRejectedValue({
+      response: {
+        status: 500,
+        data: { detail: "Internal server error [abc]" },
+      },
+    });
+    const wrapper = mountBox({ initialQuery: "5901234123457" });
+
+    await wrapper.find(".stub-button").trigger("click");
+    await flushPromises();
+
+    expect(wrapper.emitted("results")).toBeUndefined();
+    expect(wrapper.emitted("error")).toHaveLength(1);
+    const banner = wrapper.find(".dedup-search-box__error");
+    expect(banner.exists()).toBe(true);
+    expect(banner.text()).toContain("Internal server error [abc]");
+  });
+
+  it("shows an error banner when downscaling a picked image fails, without calling the API", async () => {
+    mockDownscaleImage.mockRejectedValue(new Error("bad image"));
+    const wrapper = mountBox();
+
+    const imageFile = new File(["bytes"], "photo.png", { type: "image/png" });
+    await wrapper.find(".stub-input").trigger("paste", {
+      clipboardData: { files: [imageFile], items: [] },
+    });
+    await flushPromises();
+
+    const banner = wrapper.find(".dedup-search-box__error");
+    expect(banner.exists()).toBe(true);
+    expect(banner.text()).toBe("lookup.box.image_error");
+    expect(mockLookupCheck).not.toHaveBeenCalled();
+  });
+
+  it("rejects an oversized image before ever calling downscaleImage", async () => {
+    const wrapper = mountBox();
+    const hugeFile = new File(["bytes"], "huge.png", { type: "image/png" });
+    Object.defineProperty(hugeFile, "size", { value: 21 * 1024 * 1024 });
+
+    await wrapper.find(".stub-input").trigger("paste", {
+      clipboardData: { files: [hugeFile], items: [] },
+    });
+    await flushPromises();
+
+    expect(mockDownscaleImage).not.toHaveBeenCalled();
+    expect(wrapper.find(".dedup-search-box__error").text()).toBe(
+      "lookup.box.image_too_large"
+    );
   });
 });
