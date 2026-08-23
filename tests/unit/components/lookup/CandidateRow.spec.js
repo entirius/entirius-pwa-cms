@@ -109,4 +109,50 @@ describe("CandidateRow.vue", () => {
       query: { tab: "products" },
     });
   });
+
+  it("resolves a relative main_image_url against VUE_APP_API_URL", () => {
+    const originalApiUrl = process.env.VUE_APP_API_URL;
+    process.env.VUE_APP_API_URL = "http://localhost:8100";
+    const hit = makeHit({
+      basic: { ...makeHit().basic, main_image_url: "/media/products/x.jpg" },
+    });
+    const wrapper = mountRow(hit);
+    expect(wrapper.find("img").attributes("src")).toBe(
+      "http://localhost:8100/media/products/x.jpg"
+    );
+    process.env.VUE_APP_API_URL = originalApiUrl;
+  });
+
+  it("does not rewrite an absolute main_image_url (e.g. an atlas source photo)", () => {
+    const hit = makeHit({
+      basic: {
+        ...makeHit().basic,
+        main_image_url: "https://cdn.example.com/x.jpg",
+      },
+    });
+    const wrapper = mountRow(hit);
+    expect(wrapper.find("img").attributes("src")).toBe(
+      "https://cdn.example.com/x.jpg"
+    );
+  });
+
+  it("falls back to a literal label for an unknown kind/decision instead of an i18n key lookup", () => {
+    const hit = makeHit({ kind: "__proto__", decision: "constructor" });
+    const wrapper = mountRow(hit);
+    expect(wrapper.find(".stub-badge").text()).toBe("__proto__");
+    const badge = wrapper.find("[data-testid='candidate-row-decision']");
+    expect(badge.text()).toBe("constructor");
+    expect(badge.attributes("data-variant")).toBe("neutral");
+  });
+
+  it("does not push a route when basic.sku is missing on a pim_product hit", async () => {
+    const push = vi.fn();
+    const hit = makeHit({ basic: { ...makeHit().basic, sku: undefined } });
+    const wrapper = mountRow(hit, push);
+    await wrapper.find("[data-testid='candidate-row-open']").trigger("click");
+    expect(push).toHaveBeenCalledWith({
+      name: "PimProductDetail",
+      params: { sku: undefined },
+    });
+  });
 });
