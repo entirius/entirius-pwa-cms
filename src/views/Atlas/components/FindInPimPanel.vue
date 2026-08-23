@@ -5,7 +5,8 @@
   >
     <DedupSearchBox
       :scope="['pim_product']"
-      :initial-query="supplier?.name || ''"
+      :initial-query="initialQuery"
+      :image-url="imageUrl"
       inline
       data-testid="find-in-pim-box"
       @results="onResults"
@@ -21,9 +22,9 @@
           <button
             type="button"
             class="row-action-btn bg-positive-100 t-positive-300"
-            :disabled="linkingSku === hit.basic.sku"
+            :disabled="linkingSku === hit.basic?.sku"
             :title="$t('lookup.row.link')"
-            :data-testid="`find-in-pim-link-${hit.basic.sku}`"
+            :data-testid="`find-in-pim-link-${hit.basic?.sku}`"
             @click="link(hit)"
           >
             <FontAwesomeIcon icon="link" />
@@ -53,7 +54,14 @@ export default {
   name: "FindInPimPanel",
   components: { DedupSearchBox, CandidateRow },
   props: {
-    supplier: { type: Object, required: true },
+    // The atlas Source this SourceProduct belongs to — SourceProductLink is
+    // keyed by (real_product_sku, source), not by the individual product.
+    sourceIdx: { type: String, required: true },
+    // SourceProduct identifiers seeding the search and the link payload.
+    name: { type: String, default: "" },
+    ean: { type: String, default: "" },
+    imageUrl: { type: String, default: "" },
+    externalId: { type: String, default: "" },
   },
   emits: ["linked"],
   setup() {
@@ -66,6 +74,11 @@ export default {
       linkingSku: "",
     };
   },
+  computed: {
+    initialQuery() {
+      return [this.name, this.ean].filter(Boolean).join(" ").trim();
+    },
+  },
   methods: {
     onResults(response) {
       this.hits = response.hits || [];
@@ -77,8 +90,9 @@ export default {
       this.linkingSku = sku;
       try {
         await POST_ProductLink({
-          source_idx: this.supplier.idx,
+          source_idx: this.sourceIdx,
           real_product_sku: sku,
+          external_id: this.externalId,
         });
         this.notify.spawnNotification({
           type: "positive",

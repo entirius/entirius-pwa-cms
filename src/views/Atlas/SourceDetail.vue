@@ -18,30 +18,13 @@
       {{ $t("atlas.detail_not_found") }}
     </div>
     <div v-else class="supplier-detail__body">
-      <div
-        class="supplier-detail__tabs p-300 b-basic-300 bb-100 flex ai-ct jc-sb"
-      >
+      <div class="supplier-detail__tabs p-300 b-basic-300 bb-100">
         <SegmentedControl
           v-model="activeTab"
           :options="tabOptions"
           data-testid="suppliers-detail-tabs"
         />
-        <button
-          class="suppliers-toolbar-btn"
-          data-testid="suppliers-detail-find-in-pim-toggle"
-          @click="showFindInPim = !showFindInPim"
-        >
-          <FontAwesomeIcon icon="magnifying-glass" />
-          <span class="ml-100">{{
-            $t("lookup.source_detail.find_in_pim")
-          }}</span>
-        </button>
       </div>
-      <FindInPimPanel
-        v-if="showFindInPim"
-        :supplier="supplier"
-        @linked="onProductLinked"
-      />
       <component :is="activeTabComponent" :supplier="supplier" />
     </div>
   </div>
@@ -55,7 +38,6 @@ import MappingsTab from "./tabs/MappingsTab.vue";
 import ProductsTab from "./tabs/ProductsTab.vue";
 import LinkedTab from "./tabs/LinkedTab.vue";
 import LogsTab from "./tabs/LogsTab.vue";
-import FindInPimPanel from "./components/FindInPimPanel.vue";
 import { useNotifyStore } from "@/stores/notify";
 // GET_Source, not the supplier facade — the list shows every kind, and a
 // monitoring/enrichment source opened from it would 404 on /suppliers/{idx}/.
@@ -72,7 +54,6 @@ export default {
     ProductsTab,
     LinkedTab,
     LogsTab,
-    FindInPimPanel,
   },
   setup() {
     return { notify: useNotifyStore() };
@@ -81,7 +62,6 @@ export default {
     return {
       supplier: null,
       loading: false,
-      showFindInPim: false,
       activeTab:
         this.$route.query.tab && TABS.includes(this.$route.query.tab)
           ? this.$route.query.tab
@@ -167,12 +147,6 @@ export default {
     },
     goBack() {
       this.$router.push("/atlas/list");
-    },
-    // Land on the Linked tab so the freshly created SourceProductLink is
-    // visible right away (it remounts LinkedTab, which fetches on its own).
-    onProductLinked() {
-      this.showFindInPim = false;
-      this.activeTab = "linked";
     },
   },
 };

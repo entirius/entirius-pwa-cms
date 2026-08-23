@@ -79,11 +79,7 @@ const routes = [
         path: "create",
         name: "AuthorCreate",
         component: () => import("../views/Authors/AuthorEdit.vue"),
-        meta: {
-          requiresAuth: true,
-          titleKey: "authors.create",
-          panel: "pages",
-        },
+        meta: { requiresAuth: true, titleKey: "authors.create", panel: "pages" },
       },
       {
         path: ":uid",
@@ -103,24 +99,14 @@ const routes = [
       {
         path: "",
         name: "LayoutExtenders",
-        component: () =>
-          import("../views/LayoutExtenders/LayoutExtenderList.vue"),
-        meta: {
-          requiresAuth: true,
-          titleKey: "layout_extender.list_title",
-          panel: "pages",
-        },
+        component: () => import("../views/LayoutExtenders/LayoutExtenderList.vue"),
+        meta: { requiresAuth: true, titleKey: "layout_extender.list_title", panel: "pages" },
       },
       {
         path: ":type/:uid?",
         name: "NavigationEditor",
-        component: () =>
-          import("../views/LayoutExtenders/NavigationEditor.vue"),
-        meta: {
-          requiresAuth: true,
-          titleKey: "layout_extender.title",
-          panel: "pages",
-        },
+        component: () => import("../views/LayoutExtenders/NavigationEditor.vue"),
+        meta: { requiresAuth: true, titleKey: "layout_extender.title", panel: "pages" },
       },
     ],
   },
@@ -186,9 +172,7 @@ const routes = [
         path: "products/create",
         name: "PimProductCreate",
         component: () =>
-          import(
-            /* webpackChunkName: "pim" */ "../views/Pim/ProductCreate.vue"
-          ),
+          import(/* webpackChunkName: "pim" */ "../views/Pim/ProductCreate.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "pim.create_product",
@@ -199,9 +183,7 @@ const routes = [
         path: "products/:sku(.*)",
         name: "PimProductDetail",
         component: () =>
-          import(
-            /* webpackChunkName: "pim" */ "../views/Pim/ProductDetail.vue"
-          ),
+          import(/* webpackChunkName: "pim" */ "../views/Pim/ProductDetail.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "pim.product_detail",
@@ -223,9 +205,7 @@ const routes = [
         path: "categories/create",
         name: "PimCategoryCreate",
         component: () =>
-          import(
-            /* webpackChunkName: "pim" */ "../views/Pim/CategoryCreate.vue"
-          ),
+          import(/* webpackChunkName: "pim" */ "../views/Pim/CategoryCreate.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "pim.create_category",
@@ -236,9 +216,7 @@ const routes = [
         path: "categories/:idx",
         name: "PimCategoryDetail",
         component: () =>
-          import(
-            /* webpackChunkName: "pim" */ "../views/Pim/CategoryDetail.vue"
-          ),
+          import(/* webpackChunkName: "pim" */ "../views/Pim/CategoryDetail.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "pim.category_detail",
@@ -249,9 +227,7 @@ const routes = [
         path: "feature-sets",
         name: "PimFeatureSets",
         component: () =>
-          import(
-            /* webpackChunkName: "pim" */ "../views/Pim/FeatureSetList.vue"
-          ),
+          import(/* webpackChunkName: "pim" */ "../views/Pim/FeatureSetList.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "pim.feature_sets",
@@ -262,9 +238,7 @@ const routes = [
         path: "feature-sets/:idx",
         name: "PimFeatureSetDetail",
         component: () =>
-          import(
-            /* webpackChunkName: "pim" */ "../views/Pim/FeatureSetEdit.vue"
-          ),
+          import(/* webpackChunkName: "pim" */ "../views/Pim/FeatureSetEdit.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "pim.feature_set_detail",
@@ -288,9 +262,7 @@ const routes = [
         path: "gap-definitions",
         name: "PimGapDefinitions",
         component: () =>
-          import(
-            /* webpackChunkName: "pim" */ "../views/Pim/GapDefinitionList.vue"
-          ),
+          import(/* webpackChunkName: "pim" */ "../views/Pim/GapDefinitionList.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "pim.gap_definitions",
@@ -301,9 +273,7 @@ const routes = [
         path: "gap-definitions/create",
         name: "PimGapDefinitionCreate",
         component: () =>
-          import(
-            /* webpackChunkName: "pim" */ "../views/Pim/GapDefinitionEdit.vue"
-          ),
+          import(/* webpackChunkName: "pim" */ "../views/Pim/GapDefinitionEdit.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "pim.create_gap_definition",
@@ -314,9 +284,7 @@ const routes = [
         path: "gap-definitions/:key",
         name: "PimGapDefinitionDetail",
         component: () =>
-          import(
-            /* webpackChunkName: "pim" */ "../views/Pim/GapDefinitionEdit.vue"
-          ),
+          import(/* webpackChunkName: "pim" */ "../views/Pim/GapDefinitionEdit.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "pim.gap_definition_detail",
@@ -355,9 +323,7 @@ const routes = [
         path: "list",
         name: "PointsList",
         component: () =>
-          import(
-            /* webpackChunkName: "points" */ "../views/Points/PointList.vue"
-          ),
+          import(/* webpackChunkName: "points" */ "../views/Points/PointList.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "dp.points",
@@ -368,9 +334,7 @@ const routes = [
         path: "create",
         name: "PointCreate",
         component: () =>
-          import(
-            /* webpackChunkName: "points" */ "../views/Points/PointEdit.vue"
-          ),
+          import(/* webpackChunkName: "points" */ "../views/Points/PointEdit.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "dp.create_point",
@@ -381,9 +345,7 @@ const routes = [
         path: "types",
         name: "PointTypes",
         component: () =>
-          import(
-            /* webpackChunkName: "points" */ "../views/Points/TypeList.vue"
-          ),
+          import(/* webpackChunkName: "points" */ "../views/Points/TypeList.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "dp.types",
@@ -406,9 +368,7 @@ const routes = [
         path: ":id",
         name: "PointDetail",
         component: () =>
-          import(
-            /* webpackChunkName: "points" */ "../views/Points/PointEdit.vue"
-          ),
+          import(/* webpackChunkName: "points" */ "../views/Points/PointEdit.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "dp.point_detail",
@@ -436,9 +396,7 @@ const routes = [
         path: "list",
         name: "ContactFormList",
         component: () =>
-          import(
-            /* webpackChunkName: "forms" */ "../views/ContactForms/ContactFormList.vue"
-          ),
+          import(/* webpackChunkName: "forms" */ "../views/ContactForms/ContactFormList.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "cf.submissions",
@@ -449,9 +407,7 @@ const routes = [
         path: "bookings",
         name: "BookingList",
         component: () =>
-          import(
-            /* webpackChunkName: "forms" */ "../views/ContactForms/BookingList.vue"
-          ),
+          import(/* webpackChunkName: "forms" */ "../views/ContactForms/BookingList.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "cf.bookings",
@@ -462,9 +418,7 @@ const routes = [
         path: "bookings/:id",
         name: "BookingDetail",
         component: () =>
-          import(
-            /* webpackChunkName: "forms" */ "../views/ContactForms/BookingDetail.vue"
-          ),
+          import(/* webpackChunkName: "forms" */ "../views/ContactForms/BookingDetail.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "cf.booking_detail",
@@ -475,9 +429,7 @@ const routes = [
         path: "leads",
         name: "LeadList",
         component: () =>
-          import(
-            /* webpackChunkName: "forms" */ "../views/ContactForms/LeadList.vue"
-          ),
+          import(/* webpackChunkName: "forms" */ "../views/ContactForms/LeadList.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "cf.leads",
@@ -488,9 +440,7 @@ const routes = [
         path: "leads/:id",
         name: "LeadDetail",
         component: () =>
-          import(
-            /* webpackChunkName: "forms" */ "../views/ContactForms/LeadDetail.vue"
-          ),
+          import(/* webpackChunkName: "forms" */ "../views/ContactForms/LeadDetail.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "cf.lead_detail",
@@ -501,9 +451,7 @@ const routes = [
         path: ":id",
         name: "ContactFormDetail",
         component: () =>
-          import(
-            /* webpackChunkName: "forms" */ "../views/ContactForms/ContactFormDetail.vue"
-          ),
+          import(/* webpackChunkName: "forms" */ "../views/ContactForms/ContactFormDetail.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "cf.submission_detail",
@@ -517,9 +465,7 @@ const routes = [
   {
     path: "/agreements",
     component: () =>
-      import(
-        /* webpackChunkName: "agreements" */ "../views/Agreements/index.vue"
-      ),
+      import(/* webpackChunkName: "agreements" */ "../views/Agreements/index.vue"),
     meta: {
       requiresAuth: true,
       panel: "agreements",
@@ -533,9 +479,7 @@ const routes = [
         path: "list",
         name: "AgreementList",
         component: () =>
-          import(
-            /* webpackChunkName: "agreements" */ "../views/Agreements/AgreementList.vue"
-          ),
+          import(/* webpackChunkName: "agreements" */ "../views/Agreements/AgreementList.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "agm.definitions",
@@ -546,9 +490,7 @@ const routes = [
         path: "create",
         name: "AgreementCreate",
         component: () =>
-          import(
-            /* webpackChunkName: "agreements" */ "../views/Agreements/AgreementEdit.vue"
-          ),
+          import(/* webpackChunkName: "agreements" */ "../views/Agreements/AgreementEdit.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "agm.create_definition",
@@ -559,9 +501,7 @@ const routes = [
         path: "consents",
         name: "ConsentPeople",
         component: () =>
-          import(
-            /* webpackChunkName: "agreements" */ "../views/Agreements/ConsentPeople.vue"
-          ),
+          import(/* webpackChunkName: "agreements" */ "../views/Agreements/ConsentPeople.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "agm.people_list",
@@ -572,9 +512,7 @@ const routes = [
         path: "consents/:email",
         name: "ConsentPersonDetail",
         component: () =>
-          import(
-            /* webpackChunkName: "agreements" */ "../views/Agreements/ConsentPersonDetail.vue"
-          ),
+          import(/* webpackChunkName: "agreements" */ "../views/Agreements/ConsentPersonDetail.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "agm.person_detail",
@@ -585,9 +523,7 @@ const routes = [
         path: ":slug",
         name: "AgreementDetail",
         component: () =>
-          import(
-            /* webpackChunkName: "agreements" */ "../views/Agreements/AgreementEdit.vue"
-          ),
+          import(/* webpackChunkName: "agreements" */ "../views/Agreements/AgreementEdit.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "agm.definition_detail",
@@ -615,9 +551,7 @@ const routes = [
         path: "customers",
         name: "CustomerList",
         component: () =>
-          import(
-            /* webpackChunkName: "accounts" */ "../views/Accounts/CustomerList.vue"
-          ),
+          import(/* webpackChunkName: "accounts" */ "../views/Accounts/CustomerList.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "accounts.customers",
@@ -628,9 +562,7 @@ const routes = [
         path: "customers/:uid",
         name: "CustomerDetail",
         component: () =>
-          import(
-            /* webpackChunkName: "accounts" */ "../views/Accounts/CustomerDetail.vue"
-          ),
+          import(/* webpackChunkName: "accounts" */ "../views/Accounts/CustomerDetail.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "accounts.customer_detail",
@@ -644,9 +576,7 @@ const routes = [
   {
     path: "/checkout-orders",
     component: () =>
-      import(
-        /* webpackChunkName: "checkout-orders" */ "../views/CheckoutOrders/index.vue"
-      ),
+      import(/* webpackChunkName: "checkout-orders" */ "../views/CheckoutOrders/index.vue"),
     meta: {
       requiresAuth: true,
       panel: "checkout",
@@ -660,9 +590,7 @@ const routes = [
         path: "orders",
         name: "OrderList",
         component: () =>
-          import(
-            /* webpackChunkName: "checkout-orders" */ "../views/CheckoutOrders/OrderList.vue"
-          ),
+          import(/* webpackChunkName: "checkout-orders" */ "../views/CheckoutOrders/OrderList.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "checkout_orders.orders",
@@ -673,9 +601,7 @@ const routes = [
         path: "orders/:uid",
         name: "OrderDetail",
         component: () =>
-          import(
-            /* webpackChunkName: "checkout-orders" */ "../views/CheckoutOrders/OrderDetail.vue"
-          ),
+          import(/* webpackChunkName: "checkout-orders" */ "../views/CheckoutOrders/OrderDetail.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "checkout_orders.order_detail",
@@ -699,9 +625,7 @@ const routes = [
         path: "",
         name: "EmailsDashboard",
         component: () =>
-          import(
-            /* webpackChunkName: "emails" */ "../views/Emails/EmailsDashboard.vue"
-          ),
+          import(/* webpackChunkName: "emails" */ "../views/Emails/EmailsDashboard.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "emails.dashboard",
@@ -712,9 +636,7 @@ const routes = [
         path: "channels/:channelPk",
         name: "EmailChannelEdit",
         component: () =>
-          import(
-            /* webpackChunkName: "emails" */ "../views/Emails/EmailChannelEdit.vue"
-          ),
+          import(/* webpackChunkName: "emails" */ "../views/Emails/EmailChannelEdit.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "emails.channel",
@@ -725,9 +647,7 @@ const routes = [
         path: "lang-configs/:pk",
         name: "EmailLangConfigEdit",
         component: () =>
-          import(
-            /* webpackChunkName: "emails" */ "../views/Emails/EmailLangConfigEdit.vue"
-          ),
+          import(/* webpackChunkName: "emails" */ "../views/Emails/EmailLangConfigEdit.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "emails.lang_config",
@@ -738,9 +658,7 @@ const routes = [
         path: "templates/:emailType",
         name: "EmailTemplateList",
         component: () =>
-          import(
-            /* webpackChunkName: "emails" */ "../views/Emails/EmailTemplateList.vue"
-          ),
+          import(/* webpackChunkName: "emails" */ "../views/Emails/EmailTemplateList.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "emails.template_types",
@@ -751,9 +669,7 @@ const routes = [
         path: "templates/:emailType/:pk",
         name: "EmailTemplateEdit",
         component: () =>
-          import(
-            /* webpackChunkName: "emails" */ "../views/Emails/EmailTemplateEdit.vue"
-          ),
+          import(/* webpackChunkName: "emails" */ "../views/Emails/EmailTemplateEdit.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "emails.edit_template",
@@ -849,108 +765,57 @@ const routes = [
   // Pricing panel
   {
     path: "/pricing",
-    component: () =>
-      import(
-        /* webpackChunkName: "pricing" */ "../views/PriceManager/index.vue"
-      ),
+    component: () => import(/* webpackChunkName: "pricing" */ "../views/PriceManager/index.vue"),
     meta: { requiresAuth: true, panel: "pricing" },
     children: [
       { path: "", redirect: "/pricing/prices" },
       {
         path: "prices",
         name: "PmPriceList",
-        component: () =>
-          import(
-            /* webpackChunkName: "pricing" */ "../views/PriceManager/PriceList.vue"
-          ),
+        component: () => import(/* webpackChunkName: "pricing" */ "../views/PriceManager/PriceList.vue"),
         meta: { requiresAuth: true, titleKey: "pm.prices", panel: "pricing" },
       },
       {
         path: "prices/:sku",
         name: "PmPriceDetail",
-        component: () =>
-          import(
-            /* webpackChunkName: "pricing" */ "../views/PriceManager/PriceDetail.vue"
-          ),
-        meta: {
-          requiresAuth: true,
-          titleKey: "pm.price_detail",
-          panel: "pricing",
-        },
+        component: () => import(/* webpackChunkName: "pricing" */ "../views/PriceManager/PriceDetail.vue"),
+        meta: { requiresAuth: true, titleKey: "pm.price_detail", panel: "pricing" },
       },
       {
         path: "tax-classes",
         name: "PmTaxClassList",
-        component: () =>
-          import(
-            /* webpackChunkName: "pricing" */ "../views/PriceManager/TaxClassList.vue"
-          ),
-        meta: {
-          requiresAuth: true,
-          titleKey: "pm.tax_classes",
-          panel: "pricing",
-        },
+        component: () => import(/* webpackChunkName: "pricing" */ "../views/PriceManager/TaxClassList.vue"),
+        meta: { requiresAuth: true, titleKey: "pm.tax_classes", panel: "pricing" },
       },
       {
         path: "tax-classes/create",
         name: "PmTaxClassCreate",
-        component: () =>
-          import(
-            /* webpackChunkName: "pricing" */ "../views/PriceManager/TaxClassDetail.vue"
-          ),
-        meta: {
-          requiresAuth: true,
-          titleKey: "pm.create_tax_class",
-          panel: "pricing",
-        },
+        component: () => import(/* webpackChunkName: "pricing" */ "../views/PriceManager/TaxClassDetail.vue"),
+        meta: { requiresAuth: true, titleKey: "pm.create_tax_class", panel: "pricing" },
       },
       {
         path: "tax-classes/:idx",
         name: "PmTaxClassDetail",
-        component: () =>
-          import(
-            /* webpackChunkName: "pricing" */ "../views/PriceManager/TaxClassDetail.vue"
-          ),
-        meta: {
-          requiresAuth: true,
-          titleKey: "pm.tax_class_detail",
-          panel: "pricing",
-        },
+        component: () => import(/* webpackChunkName: "pricing" */ "../views/PriceManager/TaxClassDetail.vue"),
+        meta: { requiresAuth: true, titleKey: "pm.tax_class_detail", panel: "pricing" },
       },
       {
         path: "channels",
         name: "PmChannelList",
-        component: () =>
-          import(
-            /* webpackChunkName: "pricing" */ "../views/PriceManager/ChannelList.vue"
-          ),
+        component: () => import(/* webpackChunkName: "pricing" */ "../views/PriceManager/ChannelList.vue"),
         meta: { requiresAuth: true, titleKey: "pm.channels", panel: "pricing" },
       },
       {
         path: "channels/create",
         name: "PmChannelCreate",
-        component: () =>
-          import(
-            /* webpackChunkName: "pricing" */ "../views/PriceManager/ChannelDetail.vue"
-          ),
-        meta: {
-          requiresAuth: true,
-          titleKey: "pm.create_channel",
-          panel: "pricing",
-        },
+        component: () => import(/* webpackChunkName: "pricing" */ "../views/PriceManager/ChannelDetail.vue"),
+        meta: { requiresAuth: true, titleKey: "pm.create_channel", panel: "pricing" },
       },
       {
         path: "channels/:idx",
         name: "PmChannelDetail",
-        component: () =>
-          import(
-            /* webpackChunkName: "pricing" */ "../views/PriceManager/ChannelDetail.vue"
-          ),
-        meta: {
-          requiresAuth: true,
-          titleKey: "pm.channel_detail",
-          panel: "pricing",
-        },
+        component: () => import(/* webpackChunkName: "pricing" */ "../views/PriceManager/ChannelDetail.vue"),
+        meta: { requiresAuth: true, titleKey: "pm.channel_detail", panel: "pricing" },
       },
     ],
   },
@@ -958,51 +823,27 @@ const routes = [
   // PriceFighter panel
   {
     path: "/pricefighter",
-    component: () =>
-      import(
-        /* webpackChunkName: "pricefighter" */ "../views/PriceFighter/index.vue"
-      ),
+    component: () => import(/* webpackChunkName: "pricefighter" */ "../views/PriceFighter/index.vue"),
     meta: { requiresAuth: true, panel: "pricefighter" },
     children: [
       { path: "", redirect: "/pricefighter/gap" },
       {
         path: "gap",
         name: "PfGapTable",
-        component: () =>
-          import(
-            /* webpackChunkName: "pricefighter" */ "../views/PriceFighter/GapTable.vue"
-          ),
-        meta: {
-          requiresAuth: true,
-          titleKey: "pricefighter.gap_table",
-          panel: "pricefighter",
-        },
+        component: () => import(/* webpackChunkName: "pricefighter" */ "../views/PriceFighter/GapTable.vue"),
+        meta: { requiresAuth: true, titleKey: "pricefighter.gap_table", panel: "pricefighter" },
       },
       {
         path: "strategies",
         name: "PfStrategies",
-        component: () =>
-          import(
-            /* webpackChunkName: "pricefighter" */ "../views/PriceFighter/Strategies.vue"
-          ),
-        meta: {
-          requiresAuth: true,
-          titleKey: "pricefighter.strategies",
-          panel: "pricefighter",
-        },
+        component: () => import(/* webpackChunkName: "pricefighter" */ "../views/PriceFighter/Strategies.vue"),
+        meta: { requiresAuth: true, titleKey: "pricefighter.strategies", panel: "pricefighter" },
       },
       {
         path: "history",
         name: "PfDecisionHistory",
-        component: () =>
-          import(
-            /* webpackChunkName: "pricefighter" */ "../views/PriceFighter/DecisionHistory.vue"
-          ),
-        meta: {
-          requiresAuth: true,
-          titleKey: "pricefighter.history",
-          panel: "pricefighter",
-        },
+        component: () => import(/* webpackChunkName: "pricefighter" */ "../views/PriceFighter/DecisionHistory.vue"),
+        meta: { requiresAuth: true, titleKey: "pricefighter.history", panel: "pricefighter" },
       },
     ],
   },
@@ -1025,9 +866,7 @@ const routes = [
         path: "list",
         name: "SourceList",
         component: () =>
-          import(
-            /* webpackChunkName: "atlas" */ "../views/Atlas/SourceList.vue"
-          ),
+          import(/* webpackChunkName: "atlas" */ "../views/Atlas/SourceList.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "atlas.list_title",
@@ -1039,9 +878,7 @@ const routes = [
         path: "auto-matched",
         name: "SuppliersAutoMatched",
         component: () =>
-          import(
-            /* webpackChunkName: "atlas" */ "../views/Atlas/AutoMatched.vue"
-          ),
+          import(/* webpackChunkName: "atlas" */ "../views/Atlas/AutoMatched.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "atlas.auto_matched.title",
@@ -1053,9 +890,7 @@ const routes = [
         path: "duplicates",
         name: "SuppliersDuplicates",
         component: () =>
-          import(
-            /* webpackChunkName: "atlas" */ "../views/Atlas/Duplicates.vue"
-          ),
+          import(/* webpackChunkName: "atlas" */ "../views/Atlas/Duplicates.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "atlas.duplicates.title",
@@ -1067,9 +902,7 @@ const routes = [
         path: "review",
         name: "SupplierReview",
         component: () =>
-          import(
-            /* webpackChunkName: "atlas" */ "../views/Atlas/Review/SupplierReview.vue"
-          ),
+          import(/* webpackChunkName: "atlas" */ "../views/Atlas/Review/SupplierReview.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "atlas.review.title",
@@ -1077,24 +910,10 @@ const routes = [
         },
       },
       {
-        // Single-box text/image search across PIM + atlas fingerprints
-        path: "find",
-        name: "AtlasFind",
-        component: () =>
-          import(/* webpackChunkName: "atlas" */ "../views/Atlas/Find.vue"),
-        meta: {
-          requiresAuth: true,
-          titleKey: "lookup.find.title",
-          panel: "atlas",
-        },
-      },
-      {
         path: ":idx",
         name: "SourceDetail",
         component: () =>
-          import(
-            /* webpackChunkName: "atlas" */ "../views/Atlas/SourceDetail.vue"
-          ),
+          import(/* webpackChunkName: "atlas" */ "../views/Atlas/SourceDetail.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "atlas.detail_title",
@@ -1126,9 +945,7 @@ const routes = [
     path: "/enrichment",
     name: "EnrichmentReview",
     component: () =>
-      import(
-        /* webpackChunkName: "enrichment" */ "../views/EnrichmentReview/index.vue"
-      ),
+      import(/* webpackChunkName: "enrichment" */ "../views/EnrichmentReview/index.vue"),
     meta: {
       requiresAuth: true,
       titleKey: "enrichment.review.title",
@@ -1141,9 +958,7 @@ const routes = [
     path: "/enrichment/spawn-rules",
     name: "EnrichmentSpawnRules",
     component: () =>
-      import(
-        /* webpackChunkName: "enrichment" */ "../views/EnrichmentSpawnRules/SpawnRuleList.vue"
-      ),
+      import(/* webpackChunkName: "enrichment" */ "../views/EnrichmentSpawnRules/SpawnRuleList.vue"),
     meta: {
       requiresAuth: true,
       titleKey: "enrichment.spawn_rules.title",
@@ -1154,9 +969,7 @@ const routes = [
     path: "/enrichment/spawn-rules/new",
     name: "EnrichmentSpawnRuleCreate",
     component: () =>
-      import(
-        /* webpackChunkName: "enrichment" */ "../views/EnrichmentSpawnRules/SpawnRuleEdit.vue"
-      ),
+      import(/* webpackChunkName: "enrichment" */ "../views/EnrichmentSpawnRules/SpawnRuleEdit.vue"),
     meta: {
       requiresAuth: true,
       titleKey: "enrichment.spawn_rules.create",
@@ -1167,9 +980,7 @@ const routes = [
     path: "/enrichment/spawn-rules/:key",
     name: "EnrichmentSpawnRuleEdit",
     component: () =>
-      import(
-        /* webpackChunkName: "enrichment" */ "../views/EnrichmentSpawnRules/SpawnRuleEdit.vue"
-      ),
+      import(/* webpackChunkName: "enrichment" */ "../views/EnrichmentSpawnRules/SpawnRuleEdit.vue"),
     meta: {
       requiresAuth: true,
       titleKey: "enrichment.spawn_rules.title",
@@ -1182,9 +993,7 @@ const routes = [
     path: "/enrichment/tasks",
     name: "EnrichmentTasks",
     component: () =>
-      import(
-        /* webpackChunkName: "enrichment" */ "../views/EnrichmentTasks/TaskList.vue"
-      ),
+      import(/* webpackChunkName: "enrichment" */ "../views/EnrichmentTasks/TaskList.vue"),
     meta: {
       requiresAuth: true,
       titleKey: "enrichment.tasks.title",
@@ -1196,9 +1005,7 @@ const routes = [
   {
     path: "/translation-jobs",
     component: () =>
-      import(
-        /* webpackChunkName: "translation" */ "../views/TranslationDashboard/index.vue"
-      ),
+      import(/* webpackChunkName: "translation" */ "../views/TranslationDashboard/index.vue"),
     meta: {
       requiresAuth: true,
       panel: "translation",
@@ -1208,9 +1015,7 @@ const routes = [
         path: "",
         name: "TranslationDashboard",
         component: () =>
-          import(
-            /* webpackChunkName: "translation" */ "../views/TranslationDashboard/Dashboard.vue"
-          ),
+          import(/* webpackChunkName: "translation" */ "../views/TranslationDashboard/Dashboard.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "translation.jobs",
@@ -1238,9 +1043,7 @@ const routes = [
         path: "list",
         name: "PromoList",
         component: () =>
-          import(
-            /* webpackChunkName: "promo" */ "../views/Promo/PromoList.vue"
-          ),
+          import(/* webpackChunkName: "promo" */ "../views/Promo/PromoList.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "nav.promo_list",
@@ -1251,9 +1054,7 @@ const routes = [
         path: "create",
         name: "PromoCreate",
         component: () =>
-          import(
-            /* webpackChunkName: "promo" */ "../views/Promo/PromoEdit.vue"
-          ),
+          import(/* webpackChunkName: "promo" */ "../views/Promo/PromoEdit.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "nav.promo_list",
@@ -1264,9 +1065,7 @@ const routes = [
         path: "voucher/:pk",
         name: "VoucherDetail",
         component: () =>
-          import(
-            /* webpackChunkName: "promo" */ "../views/Promo/VoucherDetail.vue"
-          ),
+          import(/* webpackChunkName: "promo" */ "../views/Promo/VoucherDetail.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "nav.promo_list",
@@ -1280,9 +1079,7 @@ const routes = [
         path: ":id",
         name: "PromoDetail",
         component: () =>
-          import(
-            /* webpackChunkName: "promo" */ "../views/Promo/PromoEdit.vue"
-          ),
+          import(/* webpackChunkName: "promo" */ "../views/Promo/PromoEdit.vue"),
         meta: {
           requiresAuth: true,
           titleKey: "nav.promo_list",
@@ -1295,18 +1092,14 @@ const routes = [
   // Stock Management
   {
     path: "/stock",
-    component: () =>
-      import(/* webpackChunkName: "stock" */ "../views/Stock/index.vue"),
+    component: () => import(/* webpackChunkName: "stock" */ "../views/Stock/index.vue"),
     meta: { requiresAuth: true, panel: "stock" },
     children: [
       { path: "", redirect: "/stock/manage" },
       {
         path: "manage",
         name: "StockManage",
-        component: () =>
-          import(
-            /* webpackChunkName: "stock" */ "../views/Stock/WarehouseStockTable.vue"
-          ),
+        component: () => import(/* webpackChunkName: "stock" */ "../views/Stock/WarehouseStockTable.vue"),
         meta: { requiresAuth: true, titleKey: "stock.manage", panel: "stock" },
       },
     ],
@@ -1317,9 +1110,7 @@ const routes = [
     path: "/change-password",
     name: "ChangePassword",
     component: () =>
-      import(
-        /* webpackChunkName: "auth" */ "../views/ChangePassword/ChangePassword.vue"
-      ),
+      import(/* webpackChunkName: "auth" */ "../views/ChangePassword/ChangePassword.vue"),
     meta: {
       requiresAuth: true,
       fullscreen: true,
@@ -1331,9 +1122,7 @@ const routes = [
     path: "/password-reset",
     name: "PasswordReset",
     component: () =>
-      import(
-        /* webpackChunkName: "auth" */ "../views/PasswordReset/PasswordReset.vue"
-      ),
+      import(/* webpackChunkName: "auth" */ "../views/PasswordReset/PasswordReset.vue"),
     meta: {
       requiresAuth: false,
     },
@@ -1371,7 +1160,7 @@ router.beforeEach(async (to, from, next) => {
     }
 
     if (!munin.isPanelEnabled(panel)) {
-      next("/");
+      next('/');
       return;
     }
     // Routes tied to an optional backend module (meta.module) stay dormant
