@@ -41,6 +41,7 @@
 <script>
 import { useUserStore } from "@/stores/user";
 import { useQualityStore } from "@/stores/quality";
+import { useMuninStore } from "@/stores/munin";
 import { buildNavRoutes, filterNavRoutes } from "./nav-routes";
 
 export default {
@@ -53,7 +54,8 @@ export default {
   setup() {
     const userStore = useUserStore();
     const qualityStore = useQualityStore();
-    return { userStore, qualityStore };
+    const munin = useMuninStore();
+    return { userStore, qualityStore, munin };
   },
   data() {
     return {
@@ -74,6 +76,7 @@ export default {
       return filterNavRoutes(this.routes, {
         activeApp: this.activeApp,
         qualityAvailable: this.qualityStore.available,
+        isModuleEnabled: this.munin.isModuleEnabled,
       });
     },
   },

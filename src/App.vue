@@ -80,7 +80,10 @@
       </div>
       <Loading v-if="loading" />
       <handy-kit v-if="handyType" />
-      <nav v-if="hasPanel && showPanelNav" class="mobile-bottom-bar show-mobile">
+      <nav
+        v-if="hasPanel && showPanelNav"
+        class="mobile-bottom-bar show-mobile"
+      >
         <Navigation :mobile="true" />
       </nav>
     </template>
@@ -96,7 +99,10 @@ import { useUserStore } from "@/stores/user";
 import { useHandyStore } from "@/stores/handy";
 import { useMuninStore } from "@/stores/munin";
 import { useQualityStore } from "@/stores/quality";
-import { buildNavRoutes, filterNavRoutes } from "./components/Navigation/nav-routes";
+import {
+  buildNavRoutes,
+  filterNavRoutes,
+} from "./components/Navigation/nav-routes";
 
 import { envStatus } from "@/utils/env-check";
 import "@/utils/client-config-check";
@@ -147,6 +153,7 @@ export default {
         filterNavRoutes(this.navRoutes, {
           activeApp: this.userStore.activeApp,
           qualityAvailable: this.quality.available,
+          isModuleEnabled: this.munin.isModuleEnabled,
         }).length > 1
       );
     },
