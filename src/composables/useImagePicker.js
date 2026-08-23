@@ -1,6 +1,10 @@
 import { ref, computed, onBeforeUnmount } from "vue";
 import { downscaleImage } from "@/utils/imageDownscale";
 
+// Precedent: ProductFiles.vue MAX_FILE_SIZE. Rejected before the browser
+// ever decodes the file (canvas decode of a huge file is the expensive part).
+const MAX_FILE_SIZE = 20 * 1024 * 1024;
+
 // Exported for unit testing — pulls the first pasted image out of a
 // ClipboardEvent's clipboardData, trying `.files` before `.items`.
 export function extractImageFile(clipboardData) {
@@ -52,6 +56,10 @@ export function useImagePicker(remoteImageUrl) {
   async function setImage(file) {
     if (!file || !file.type?.startsWith("image/")) return;
     imageError.value = "";
+    if (file.size > MAX_FILE_SIZE) {
+      imageError.value = "lookup.box.image_too_large";
+      return;
+    }
     try {
       const blob = await downscaleImage(file);
       revokeLocalPreview();

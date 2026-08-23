@@ -2348,7 +2348,8 @@
       "drop_hint": "Drop, paste or click to add a photo",
       "scope_pim": "PIM",
       "scope_atlas": "Atlas",
-      "image_error": "Could not read that image."
+      "image_error": "Could not read that image.",
+      "image_too_large": "That image is too large (max 20 MB)."
     },
     "kind": {
       "pim_product": "PIM",

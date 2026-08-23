@@ -5,6 +5,10 @@
 const MAX_DIMENSION = 1024;
 const JPEG_QUALITY = 0.85;
 const JPEG_TYPE = "image/jpeg";
+// Guards the canvas backing-store allocation against a decompression-bomb
+// image (huge dimensions, tiny file) — 40 MP comfortably covers real phone
+// photos while capping worst-case memory use.
+const MAX_MEGAPIXELS = 40_000_000;
 
 /**
  * Longest side clamped to maxDimension, aspect ratio preserved. Images
@@ -63,9 +67,14 @@ export async function downscaleImage(
 ) {
   const { img, objectUrl } = await loadImage(file);
   try {
+    const sourceWidth = img.naturalWidth || img.width;
+    const sourceHeight = img.naturalHeight || img.height;
+    if (sourceWidth * sourceHeight > MAX_MEGAPIXELS) {
+      throw new Error("Image dimensions exceed the allowed pixel count");
+    }
     const { width, height } = computeTargetSize(
-      img.naturalWidth || img.width,
-      img.naturalHeight || img.height,
+      sourceWidth,
+      sourceHeight,
       maxDimension
     );
     const canvas = drawScaled(img, width, height);

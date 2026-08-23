@@ -2347,7 +2347,8 @@
       "drop_hint": "Upuść, wklej lub kliknij, aby dodać zdjęcie",
       "scope_pim": "PIM",
       "scope_atlas": "Atlas",
-      "image_error": "Nie udało się odczytać tego zdjęcia."
+      "image_error": "Nie udało się odczytać tego zdjęcia.",
+      "image_too_large": "To zdjęcie jest za duże (maks. 20 MB)."
     },
     "kind": {
       "pim_product": "PIM",
