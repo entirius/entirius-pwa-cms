@@ -1,0 +1,112 @@
+import { describe, it, expect, vi } from "vitest";
+import { mount } from "@vue/test-utils";
+import CandidateRow from "@/components/lookup/CandidateRow.vue";
+
+const globalStubs = {
+  StatusBadge: {
+    name: "StatusBadge",
+    props: ["label", "variant"],
+    template:
+      "<span class='stub-badge' :data-variant='variant'>{{ label }}</span>",
+  },
+  FontAwesomeIcon: true,
+};
+
+function makeHit(overrides = {}) {
+  return {
+    kind: "pim_product",
+    ref: "SKU-123",
+    similarity: 82,
+    reasons: [
+      { code: "gtin_exact", label: "GTIN identical", score: 60 },
+      { code: "brand_equal", label: "brand equal", score: 10 },
+      { code: "color_mismatch", label: "color ≠", score: -40 },
+    ],
+    basic: {
+      sku: "SKU-123",
+      name: "Bosch GSR 12V-15",
+      brand: "Bosch",
+      ean: "5901234123457",
+      main_image_url: "",
+      detail_url: "/api/pim/v2/admin/default/products/SKU-123/",
+    },
+    ...overrides,
+  };
+}
+
+describe("CandidateRow.vue", () => {
+  function mountRow(hit, routerPush = vi.fn()) {
+    return mount(CandidateRow, {
+      props: { hit },
+      global: {
+        stubs: globalStubs,
+        mocks: { $router: { push: routerPush } },
+      },
+    });
+  }
+
+  it("falls back to similarity when score is absent (plain /search hit)", () => {
+    const wrapper = mountRow(makeHit());
+    expect(wrapper.find("[data-testid='candidate-row-score']").text()).toBe(
+      "82"
+    );
+  });
+
+  it("prefers score over similarity when both are present (/check hit)", () => {
+    const wrapper = mountRow(makeHit({ score: 61, decision: "review" }));
+    expect(wrapper.find("[data-testid='candidate-row-score']").text()).toBe(
+      "61"
+    );
+  });
+
+  it("renders a reason chip per reason, signed score included", () => {
+    const wrapper = mountRow(makeHit());
+    const chips = wrapper.findAll(".candidate-row__reason-chip");
+    expect(chips).toHaveLength(3);
+    expect(chips[0].text()).toBe("GTIN identical (+60)");
+    expect(chips[2].text()).toBe("color ≠ (-40)");
+  });
+
+  it("shows no decision badge for a plain search hit (no decision field)", () => {
+    const wrapper = mountRow(makeHit());
+    expect(
+      wrapper.find("[data-testid='candidate-row-decision']").exists()
+    ).toBe(false);
+  });
+
+  it.each([
+    ["match", "positive"],
+    ["review", "warning"],
+    ["no_match", "neutral"],
+  ])("maps decision %s to StatusBadge variant %s", (decision, variant) => {
+    const wrapper = mountRow(makeHit({ score: 82, decision }));
+    const badge = wrapper.find("[data-testid='candidate-row-decision']");
+    expect(badge.attributes("data-variant")).toBe(variant);
+  });
+
+  it("opens PimProductDetail by sku for a pim_product hit", async () => {
+    const push = vi.fn();
+    const wrapper = mountRow(makeHit(), push);
+    await wrapper.find("[data-testid='candidate-row-open']").trigger("click");
+    expect(push).toHaveBeenCalledWith({
+      name: "PimProductDetail",
+      params: { sku: "SKU-123" },
+    });
+  });
+
+  it("opens SourceDetail's products tab by source idx for an atlas_source_product hit", async () => {
+    const push = vi.fn();
+    const hit = makeHit({
+      kind: "atlas_source_product",
+      ref: "tme:88123",
+      basic: { ...makeHit().basic, sku: "tme:88123" },
+    });
+    const wrapper = mountRow(hit, push);
+    await wrapper.find("[data-testid='candidate-row-open']").trigger("click");
+    expect(push).toHaveBeenCalledWith({
+      name: "SourceDetail",
+      params: { idx: "tme" },
+      query: { tab: "products" },
+    });
+  });
+});
