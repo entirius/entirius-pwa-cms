@@ -86,3 +86,15 @@ tests/            # unit/ (Vitest) + e2e/ (Playwright) + helpers/
 | `docs/gotchas.md` | repo-specific traps (read before touching configs/i18n/panels) |
 | `docs/navigation-editor.md` | operator guide: navigation editor |
 | `docs/rich-content-building.md` | operator guide: rich content building |
+
+## Product Lookup ("Find product")
+
+`/atlas/find` (nav: Atlas → Find product) is a single-box search — type an
+EAN/name/MPN or drop/paste/pick a product photo — that calls the
+`django-lookup` module's admin `search`/`check` API and shows ranked PIM +
+atlas candidates with match reasons. Client code: `src/api/lookup/`,
+`src/components/lookup/` (`DedupSearchBox`, `CandidateRow`), `src/utils/imageDownscale.js`
+(client-side JPEG downscale, image never leaves the browser un-downscaled),
+`src/views/Atlas/Find.vue`. The same box is reused inline in
+`SourceDetail.vue` ("Find in PIM" → `src/views/Atlas/components/FindInPimPanel.vue`)
+to link an atlas Source to a PIM SKU (`SourceProductLink`).
