@@ -31,8 +31,8 @@ import OverviewTab from "@/views/Atlas/tabs/OverviewTab.vue";
 
 function makeSupplier(overrides = {}) {
   return {
-    idx: "fortrade",
-    name: "Fortrade",
+    idx: "nordwind",
+    name: "Nordwind",
     kind: "procurement",
     source_type: "feed",
     review_mode: "manual",
@@ -114,7 +114,7 @@ describe("OverviewTab — allow_physical_writes_from_non_primary (etap-10)", () 
 
     expect(mockPatchSource).toHaveBeenCalledTimes(1);
     const [idx, payload] = mockPatchSource.mock.calls[0];
-    expect(idx).toBe("fortrade");
+    expect(idx).toBe("nordwind");
     expect(payload).toHaveProperty("allow_physical_writes_from_non_primary", true);
     // Only changed fields go on the wire — name/role/etc must not leak.
     expect(payload).not.toHaveProperty("name");
