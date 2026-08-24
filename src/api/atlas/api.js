@@ -153,6 +153,11 @@ export const POST_PushProduct = (pk) =>
 export const POST_ForceRepushProduct = (pk) =>
   atlasApi.post(`${ATLAS}/products/${pk}/force-repush/`)
 
+// Attaches the SourceProduct itself (real_product + SourceProductLink in one
+// transaction) — a bare POST_ProductLink would leave the SP unmatched.
+export const POST_LinkToRealProduct = (pk, data) =>
+  atlasApi.post(`${ATLAS}/products/${pk}/link-to-realproduct/`, data)
+
 export const POST_BulkApproveProducts = (data) =>
   atlasApi.post(`${ATLAS}/products/bulk-approve/`, data)
 

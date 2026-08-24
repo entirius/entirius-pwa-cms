@@ -240,11 +240,10 @@
             </button>
             <FindInPimPanel
               v-if="showFindInPim"
-              :source-idx="supplier?.idx"
+              :product-id="detailProduct.id"
               :name="detailProduct.name"
               :ean="detailProduct.ean"
               :image-url="detailProduct.image_urls?.[0] || ''"
-              :external-id="detailProduct.external_id"
               data-testid="drawer-find-in-pim-panel"
               @linked="onProductLinked"
             />
@@ -747,10 +746,12 @@ export default {
     canFindInPim(p) {
       return !p?.real_product_sku;
     },
-    // SourceProductLink doesn't touch this SourceProduct row, so there's
-    // nothing on `detailProduct` to refresh — just collapse the panel.
-    onProductLinked() {
+    // The link attached this SourceProduct to the SKU, so the row is matched
+    // now: reflect it in the open drawer (hides the Find button) and refresh.
+    onProductLinked(sku) {
       this.showFindInPim = false;
+      this.detailProduct = { ...this.detailProduct, real_product_sku: sku };
+      this.fetchProducts();
     },
     onDetailShowRaw() {
       this.rawProduct = this.detailProduct;

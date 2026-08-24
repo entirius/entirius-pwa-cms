@@ -70,7 +70,7 @@ const globalStubs = {
   "Confirmation-modal": true,
   FindInPimPanel: {
     name: "FindInPimPanel",
-    props: ["sourceIdx", "name", "ean", "imageUrl", "externalId"],
+    props: ["productId", "name", "ean", "imageUrl"],
     emits: ["linked"],
     template: "<div class='stub-find-in-pim' />",
   },
@@ -120,7 +120,7 @@ describe("ProductsTab — Find in PIM (source product scope)", () => {
     ).toBe(false);
   });
 
-  it("opens FindInPimPanel seeded with this SourceProduct's name/ean/image/external_id", async () => {
+  it("opens FindInPimPanel seeded with this SourceProduct's pk/name/ean/image", async () => {
     mockGetSupplierProducts.mockResolvedValue({
       data: { results: [makeRow({ id: 1 })], count: 1 },
     });
@@ -135,15 +135,14 @@ describe("ProductsTab — Find in PIM (source product scope)", () => {
     const panel = wrapper.findComponent({ name: "FindInPimPanel" });
     expect(panel.exists()).toBe(true);
     expect(panel.props()).toEqual({
-      sourceIdx: "kinghoff",
+      productId: 1,
       name: "Bosch GSR 12V-15",
       ean: "5901234123457",
       imageUrl: "/media/atlas/photo.jpg",
-      externalId: "K-1",
     });
   });
 
-  it("collapses the panel again once FindInPimPanel emits linked", async () => {
+  it("marks the row matched and re-fetches once FindInPimPanel emits linked", async () => {
     mockGetSupplierProducts.mockResolvedValue({
       data: { results: [makeRow({ id: 1 })], count: 1 },
     });
@@ -158,9 +157,19 @@ describe("ProductsTab — Find in PIM (source product scope)", () => {
       true
     );
 
-    await wrapper.findComponent({ name: "FindInPimPanel" }).vm.$emit("linked");
+    mockGetSupplierProducts.mockClear();
+    await wrapper
+      .findComponent({ name: "FindInPimPanel" })
+      .vm.$emit("linked", "SKU-1");
+    await flushPromises();
+
+    // The SP is matched now: panel collapsed, toggle gone, list re-fetched.
     expect(wrapper.findComponent({ name: "FindInPimPanel" }).exists()).toBe(
       false
     );
+    expect(
+      wrapper.find("[data-testid='drawer-find-in-pim-toggle']").exists()
+    ).toBe(false);
+    expect(mockGetSupplierProducts).toHaveBeenCalledTimes(1);
   });
 });

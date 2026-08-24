@@ -101,5 +101,7 @@ JPEG downscale, image never leaves the browser un-downscaled),
 origin prefixed), `src/views/Atlas/Find.vue`. The same box is reused inline
 per SourceProduct in `ProductsTab.vue`'s detail drawer ("Find in PIM" →
 `src/views/Atlas/components/FindInPimPanel.vue`, seeded from that row's
-name/ean/image/external_id) to create a `SourceProductLink` for the owning
-Source + chosen PIM SKU.
+name/ean/image). Its "Link" action posts to atlas
+`products/<pk>/link-to-realproduct/`, which attaches the SourceProduct itself
+(`real_product` + `SourceProductLink` in one transaction) — a bare
+product-links create would leave the row unmatched and re-proposed.

@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
 
-const mockProductLink = vi.fn();
+const mockLinkToRealProduct = vi.fn();
 const mockSpawnNotification = vi.fn();
 
 vi.mock("@/api/atlas/api", () => ({
-  POST_ProductLink: (...args) => mockProductLink(...args),
+  POST_LinkToRealProduct: (...args) => mockLinkToRealProduct(...args),
 }));
 
 vi.mock("@/stores/notify", () => ({
@@ -43,18 +43,17 @@ function makeHit(overrides = {}) {
 
 describe("FindInPimPanel.vue", () => {
   beforeEach(() => {
-    mockProductLink.mockReset();
+    mockLinkToRealProduct.mockReset();
     mockSpawnNotification.mockReset();
   });
 
   function mountPanel(props = {}) {
     return mount(FindInPimPanel, {
       props: {
-        sourceIdx: "kinghoff",
+        productId: 42,
         name: "Bosch GSR 12V-15",
         ean: "5901234123457",
         imageUrl: "/media/atlas/photo.jpg",
-        externalId: "K-1",
         ...props,
       },
       global: { stubs: globalStubs },
@@ -69,8 +68,8 @@ describe("FindInPimPanel.vue", () => {
     expect(box.props("scope")).toEqual(["pim_product"]);
   });
 
-  it("link() success: posts source_idx/real_product_sku/external_id, notifies, emits linked", async () => {
-    mockProductLink.mockResolvedValue({ data: {} });
+  it("link() success: attaches the SP by pk, notifies, emits linked with the sku", async () => {
+    mockLinkToRealProduct.mockResolvedValue({ data: {} });
     const wrapper = mountPanel();
     await wrapper
       .findComponent({ name: "DedupSearchBox" })
@@ -81,19 +80,19 @@ describe("FindInPimPanel.vue", () => {
       .trigger("click");
     await flushPromises();
 
-    expect(mockProductLink).toHaveBeenCalledWith({
-      source_idx: "kinghoff",
+    // The SP-attaching endpoint, not a bare product-links create: only this
+    // sets real_product and takes the row out of the dedup pool.
+    expect(mockLinkToRealProduct).toHaveBeenCalledWith(42, {
       real_product_sku: "SKU-1",
-      external_id: "K-1",
     });
     expect(mockSpawnNotification).toHaveBeenCalledWith(
       expect.objectContaining({ type: "positive" })
     );
-    expect(wrapper.emitted("linked")).toHaveLength(1);
+    expect(wrapper.emitted("linked")).toEqual([["SKU-1"]]);
   });
 
   it("link() failure: notifies negative and does not emit linked", async () => {
-    mockProductLink.mockRejectedValue({
+    mockLinkToRealProduct.mockRejectedValue({
       response: { data: { detail: "Conflict" } },
     });
     const wrapper = mountPanel();
@@ -114,7 +113,7 @@ describe("FindInPimPanel.vue", () => {
 
   it("disables the Link button for the in-flight sku until the request settles", async () => {
     let resolveLink;
-    mockProductLink.mockReturnValue(
+    mockLinkToRealProduct.mockReturnValue(
       new Promise((resolve) => {
         resolveLink = resolve;
       })

@@ -48,20 +48,18 @@ import DedupSearchBox from "@/components/lookup/DedupSearchBox.vue";
 import CandidateRow from "@/components/lookup/CandidateRow.vue";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { useNotifyStore } from "@/stores/notify";
-import { POST_ProductLink } from "@/api/atlas/api";
+import { POST_LinkToRealProduct } from "@/api/atlas/api";
 
 export default {
   name: "FindInPimPanel",
   components: { DedupSearchBox, CandidateRow },
   props: {
-    // The atlas Source this SourceProduct belongs to — SourceProductLink is
-    // keyed by (real_product_sku, source), not by the individual product.
-    sourceIdx: { type: String, required: true },
-    // SourceProduct identifiers seeding the search and the link payload.
+    // The SourceProduct being matched — the link endpoint addresses it by pk.
+    productId: { type: [Number, String], required: true },
+    // SourceProduct identifiers seeding the search.
     name: { type: String, default: "" },
     ean: { type: String, default: "" },
     imageUrl: { type: String, default: "" },
-    externalId: { type: String, default: "" },
   },
   emits: ["linked"],
   setup() {
@@ -89,16 +87,16 @@ export default {
       if (!sku || this.linkingSku) return;
       this.linkingSku = sku;
       try {
-        await POST_ProductLink({
-          source_idx: this.sourceIdx,
+        // Attaches the SourceProduct itself (sets real_product), which is what
+        // takes it out of the dedup pool — a bare product-link would not.
+        await POST_LinkToRealProduct(this.productId, {
           real_product_sku: sku,
-          external_id: this.externalId,
         });
         this.notify.spawnNotification({
           type: "positive",
           msg: this.$t("lookup.source_detail.link_success", { sku }),
         });
-        this.$emit("linked");
+        this.$emit("linked", sku);
       } catch (err) {
         this.notify.spawnNotification({
           type: "negative",
