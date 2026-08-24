@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
 
-const mockLookupCheck = vi.fn();
+const mockLookupSearch = vi.fn();
 const mockDownscaleImage = vi.fn();
 
 vi.mock("@/api/lookup/api", () => ({
-  POST_LookupCheck: (...args) => mockLookupCheck(...args),
+  POST_LookupSearch: (...args) => mockLookupSearch(...args),
 }));
 
 vi.mock("@/utils/imageDownscale", () => ({
@@ -41,7 +41,7 @@ const globalStubs = {
 
 describe("DedupSearchBox.vue", () => {
   beforeEach(() => {
-    mockLookupCheck.mockReset();
+    mockLookupSearch.mockReset();
     mockDownscaleImage.mockReset();
   });
 
@@ -52,8 +52,8 @@ describe("DedupSearchBox.vue", () => {
     });
   }
 
-  it("seeds the query from initialQuery and emits results on search", async () => {
-    mockLookupCheck.mockResolvedValue({
+  it("calls POST_LookupSearch (/search/) and seeds the query from initialQuery", async () => {
+    mockLookupSearch.mockResolvedValue({
       data: {
         hits: [{ kind: "pim_product", ref: "SKU-1" }],
         query_parsed: {},
@@ -66,7 +66,7 @@ describe("DedupSearchBox.vue", () => {
     await wrapper.find(".stub-button").trigger("click");
     await flushPromises();
 
-    expect(mockLookupCheck).toHaveBeenCalledWith({
+    expect(mockLookupSearch).toHaveBeenCalledWith({
       scope: ["pim_product", "atlas_source_product"],
       q: "5901234123457",
     });
@@ -76,11 +76,30 @@ describe("DedupSearchBox.vue", () => {
     expect(emitted[0][0].q).toBe("5901234123457");
   });
 
+  it("reads only the `hits` field — /search/'s response has no `candidates`", async () => {
+    // A caller relying on `data.hits || data.candidates` would silently pass
+    // through an unrelated `candidates` field. /search/ never sends one, so
+    // the box must not look for it.
+    mockLookupSearch.mockResolvedValue({
+      data: {
+        candidates: [{ kind: "pim_product", ref: "SKU-STALE" }],
+        query_parsed: {},
+        warnings: [],
+      },
+    });
+    const wrapper = mountBox({ initialQuery: "5901234123457" });
+
+    await wrapper.find(".stub-button").trigger("click");
+    await flushPromises();
+
+    expect(wrapper.emitted("results")[0][0].hits).toEqual([]);
+  });
+
   it("sends a multipart request once an image is set from a paste event, scope as repeated keys", async () => {
     mockDownscaleImage.mockResolvedValue(
       new Blob(["x"], { type: "image/jpeg" })
     );
-    mockLookupCheck.mockResolvedValue({
+    mockLookupSearch.mockResolvedValue({
       data: { hits: [], query_parsed: {}, warnings: [] },
     });
     const wrapper = mountBox();
@@ -95,7 +114,7 @@ describe("DedupSearchBox.vue", () => {
     await flushPromises();
 
     expect(mockDownscaleImage).toHaveBeenCalledWith(imageFile);
-    const payload = mockLookupCheck.mock.calls[0][0];
+    const payload = mockLookupSearch.mock.calls[0][0];
     expect(payload).toBeInstanceOf(FormData);
     expect(payload.get("image")).toBeInstanceOf(Blob);
     // Django reads scope via request.POST.getlist("scope") — repeated keys,
@@ -132,7 +151,7 @@ describe("DedupSearchBox.vue", () => {
   });
 
   it("shows an error banner and emits error when the API call rejects", async () => {
-    mockLookupCheck.mockRejectedValue({
+    mockLookupSearch.mockRejectedValue({
       response: {
         status: 500,
         data: { detail: "Internal server error [abc]" },
@@ -163,7 +182,7 @@ describe("DedupSearchBox.vue", () => {
     const banner = wrapper.find(".dedup-search-box__error");
     expect(banner.exists()).toBe(true);
     expect(banner.text()).toBe("lookup.box.image_error");
-    expect(mockLookupCheck).not.toHaveBeenCalled();
+    expect(mockLookupSearch).not.toHaveBeenCalled();
   });
 
   it("rejects an oversized image before ever calling downscaleImage", async () => {

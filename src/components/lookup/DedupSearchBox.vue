@@ -48,7 +48,7 @@
 
 <script>
 import { computed } from "vue";
-import { POST_LookupCheck } from "@/api/lookup/api";
+import { POST_LookupSearch } from "@/api/lookup/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { useImagePicker } from "@/composables/useImagePicker";
 import { buildLookupPayload } from "@/utils/lookupPayload";
@@ -114,10 +114,10 @@ export default {
         imageRemoved: this.imageRemoved,
       });
       try {
-        const { data } = await POST_LookupCheck(payload);
+        const { data } = await POST_LookupSearch(payload);
         this.$emit("results", {
           ...data,
-          hits: data.hits || data.candidates || [],
+          hits: data.hits || [],
           q: this.q,
         });
       } catch (err) {

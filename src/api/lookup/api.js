@@ -9,11 +9,14 @@ const requestConfig = (payload) =>
     ? { headers: { "Content-Type": "multipart/form-data" } }
     : undefined;
 
-// Ranked candidates plus a match/review/no_match decision per candidate and
-// an overall decision. { q, ean, brand, mpn, sku, name, attrs, scope, limit,
-// image_url } as JSON, or the same fields + `image` file as FormData.
+// Ranked candidates with the evidence behind each one, no verdict. { q, ean,
+// brand, mpn, sku, name, attrs, scope, limit, image_url } as JSON, or the
+// same fields + `image` file as FormData. This is what exploratory search
+// (DedupSearchBox) uses — it must not log a DedupDecision per keystroke.
 //
-// The plain, decision-less /search/ endpoint has no CMS caller yet — add
-// POST_LookupSearch back here if/when one needs it (YAGNI).
-export const POST_LookupCheck = (payload) =>
-  lookupApi.post(`${LOOKUP}/check/`, payload, requestConfig(payload));
+// /check/ additionally scores + decides + logs a DedupDecision per
+// candidate; it is for the backend's own create hook and the SpawnRule
+// path, not for CMS exploratory search — no CMS caller today (YAGNI, add
+// POST_LookupCheck back if/when one needs a verdict client-side).
+export const POST_LookupSearch = (payload) =>
+  lookupApi.post(`${LOOKUP}/search/`, payload, requestConfig(payload));
