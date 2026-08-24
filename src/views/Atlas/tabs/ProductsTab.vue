@@ -226,6 +226,28 @@
             data-testid="drawer-mapping-section"
             @open-mappings="onOpenMappingsTab"
           />
+          <div
+            v-if="canFindInPim(detailProduct)"
+            class="products-detail__find-in-pim"
+          >
+            <button
+              class="detail-btn detail-btn--find"
+              data-testid="drawer-find-in-pim-toggle"
+              @click="showFindInPim = !showFindInPim"
+            >
+              <FontAwesomeIcon icon="magnifying-glass" />
+              {{ $t("lookup.source_detail.find_in_pim") }}
+            </button>
+            <FindInPimPanel
+              v-if="showFindInPim"
+              :product-id="detailProduct.id"
+              :name="detailProduct.name"
+              :ean="detailProduct.ean"
+              :image-url="detailProduct.image_urls?.[0] || ''"
+              data-testid="drawer-find-in-pim-panel"
+              @linked="onProductLinked"
+            />
+          </div>
         </div>
         <div class="products-detail__actions">
           <button
@@ -318,6 +340,7 @@ import ProductCard from "../Review/ProductCard.vue";
 import RawDataPanel from "../Review/RawDataPanel.vue";
 import SupplierProductTimelineSection from "../components/SupplierProductTimelineSection.vue";
 import SupplierProductMappingSection from "../components/SupplierProductMappingSection.vue";
+import FindInPimPanel from "../components/FindInPimPanel.vue";
 import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import { useNotifyStore } from "@/stores/notify";
 import { useMuninStore } from "@/stores/munin";
@@ -358,6 +381,7 @@ export default {
     RawDataPanel,
     SupplierProductTimelineSection,
     SupplierProductMappingSection,
+    FindInPimPanel,
     ConfirmationModal,
   },
   props: {
@@ -397,6 +421,7 @@ export default {
       detailVisible: false,
       detailProduct: null,
       detailBusy: false,
+      showFindInPim: false,
       repushVisible: false,
       repushTarget: null,
     };
@@ -588,6 +613,7 @@ export default {
     onUpdatedBadgeClick(row) {
       this.detailProduct = row;
       this.detailVisible = true;
+      this.showFindInPim = false;
     },
     onOpenMappingsTab() {
       this.closeDetail();
@@ -709,10 +735,23 @@ export default {
     onRowClick(row) {
       this.detailProduct = row;
       this.detailVisible = true;
+      this.showFindInPim = false;
     },
     closeDetail() {
       this.detailVisible = false;
       this.detailProduct = null;
+      this.showFindInPim = false;
+    },
+    // A product doesn't need this once it already has a PIM match.
+    canFindInPim(p) {
+      return !p?.real_product_sku;
+    },
+    // The link attached this SourceProduct to the SKU, so the row is matched
+    // now: reflect it in the open drawer (hides the Find button) and refresh.
+    onProductLinked(sku) {
+      this.showFindInPim = false;
+      this.detailProduct = { ...this.detailProduct, real_product_sku: sku };
+      this.fetchProducts();
     },
     onDetailShowRaw() {
       this.rawProduct = this.detailProduct;
@@ -1020,6 +1059,17 @@ export default {
   background: var(--c-warning-100);
   border-color: var(--c-warning-300);
   color: var(--c-warning-300);
+}
+.detail-btn--find {
+  background: var(--c-basic-100);
+  border-color: var(--c-basic-400);
+  color: var(--c-basic-700);
+}
+.products-detail__find-in-pim {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+  align-items: flex-start;
 }
 
 .row-action-btn {

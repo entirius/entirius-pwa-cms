@@ -262,6 +262,16 @@ export function buildNavRoutes() {
       app: ["atlas"],
     },
     {
+      // single-box text/image search across PIM + atlas fingerprints —
+      // optional django-lookup backend module, see requiresModule below
+      route: "/atlas/find",
+      labelKey: "nav.atlas_find",
+      icon: "magnifying-glass",
+      query: {},
+      app: ["atlas"],
+      requiresModule: "lookup",
+    },
+    {
       route: "/enrichment",
       labelKey: "nav.enrichment_review",
       icon: "wand-magic-sparkles",
@@ -287,10 +297,16 @@ export function buildNavRoutes() {
 
 // Routes visible for the active panel. `requiresQuality` items are hidden until the backend's gaps
 // capability probe resolves true (old backends never see the quality-rules nav item).
-export function filterNavRoutes(routes, { activeApp, qualityAvailable }) {
+// `requiresModule` items are hidden until that optional django-munin module reports enabled
+// (mirrors the router guard's `meta.module` gate — see router/index.js).
+export function filterNavRoutes(
+  routes,
+  { activeApp, qualityAvailable, isModuleEnabled }
+) {
   return routes.filter((r) => {
     if (r.app.indexOf(activeApp) === -1) return false;
     if (r.requiresQuality && qualityAvailable !== true) return false;
+    if (r.requiresModule && !isModuleEnabled?.(r.requiresModule)) return false;
     return true;
   });
 }

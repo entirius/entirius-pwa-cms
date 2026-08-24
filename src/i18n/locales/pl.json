@@ -34,6 +34,7 @@
     "atlas_auto_matched": "Auto-połączone",
     "atlas_duplicates": "Duplikaty",
     "atlas_review_queue": "Kolejka recenzji",
+    "atlas_find": "Znajdź produkt",
     "enrichment_review": "Wzbogacanie treści",
     "enrichment_spawn_rules": "Reguły spawnu",
     "enrichment_tasks": "Zadania",
@@ -2329,6 +2330,42 @@
       "procurement": "Zaopatrzenie",
       "monitoring": "Monitoring",
       "enrichment": "Wzbogacanie"
+    }
+  },
+  "lookup": {
+    "find": {
+      "title": "Znajdź produkt",
+      "subtitle": "Szukaj w PIM i atlas po tekście lub zdjęciu produktu.",
+      "understood_prefix": "Zrozumiano jako:",
+      "empty_title": "Brak dopasowań",
+      "empty_message": "Nic w PIM ani atlas nie przypomina jeszcze tego produktu.",
+      "create_product": "Utwórz produkt"
+    },
+    "box": {
+      "placeholder": "EAN, nazwa, marka, MPN…",
+      "search_button": "Szukaj",
+      "drop_hint": "Upuść, wklej lub kliknij, aby dodać zdjęcie",
+      "scope_pim": "PIM",
+      "scope_atlas": "Atlas",
+      "image_error": "Nie udało się odczytać tego zdjęcia.",
+      "image_too_large": "To zdjęcie jest za duże (maks. 20 MB)."
+    },
+    "kind": {
+      "pim_product": "PIM",
+      "atlas_source_product": "Atlas"
+    },
+    "decision": {
+      "match": "Dopasowanie",
+      "review": "Do weryfikacji",
+      "no_match": "Brak dopasowania"
+    },
+    "row": {
+      "open": "Otwórz",
+      "link": "Połącz"
+    },
+    "source_detail": {
+      "find_in_pim": "Znajdź w PIM",
+      "link_success": "Połączono z {sku}."
     }
   },
   "enrichment": {

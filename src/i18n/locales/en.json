@@ -34,6 +34,7 @@
     "atlas_auto_matched": "Auto-matched",
     "atlas_duplicates": "Duplicates",
     "atlas_review_queue": "Review Queue",
+    "atlas_find": "Find product",
     "enrichment_review": "Enrichment Review",
     "enrichment_spawn_rules": "Spawn Rules",
     "enrichment_tasks": "Tasks",
@@ -2330,6 +2331,42 @@
       "procurement": "Procurement",
       "monitoring": "Monitoring",
       "enrichment": "Enrichment"
+    }
+  },
+  "lookup": {
+    "find": {
+      "title": "Find product",
+      "subtitle": "Search PIM and atlas by text or a product photo.",
+      "understood_prefix": "Understood as:",
+      "empty_title": "No matches",
+      "empty_message": "Nothing in PIM or atlas looks like this yet.",
+      "create_product": "Create product"
+    },
+    "box": {
+      "placeholder": "EAN, name, brand, MPN…",
+      "search_button": "Search",
+      "drop_hint": "Drop, paste or click to add a photo",
+      "scope_pim": "PIM",
+      "scope_atlas": "Atlas",
+      "image_error": "Could not read that image.",
+      "image_too_large": "That image is too large (max 20 MB)."
+    },
+    "kind": {
+      "pim_product": "PIM",
+      "atlas_source_product": "Atlas"
+    },
+    "decision": {
+      "match": "Match",
+      "review": "Review",
+      "no_match": "No match"
+    },
+    "row": {
+      "open": "Open",
+      "link": "Link"
+    },
+    "source_detail": {
+      "find_in_pim": "Find in PIM",
+      "link_success": "Linked to {sku}."
     }
   },
   "enrichment": {

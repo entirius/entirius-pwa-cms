@@ -25,8 +25,8 @@ function makeRow(overrides = {}) {
     id: 1,
     real_product_sku: "SKU-1",
     external_id: "K-1",
-    source_idx: "kinghoff",
-    source_name: "Kinghoff",
+    source_idx: "acme-tools",
+    source_name: "Acme Tools",
     name: "Test",
     status: "pushed",
     cost: 1.23,
@@ -107,22 +107,22 @@ describe("UpdatedMode — Atlas SupplierReview 4th mode", () => {
     mockGetSupplierProducts.mockResolvedValue({ data: { results: [] } });
 
     mount(UpdatedMode, {
-      props: { filters: { ...baseFilters, supplier: "kinghoff" } },
+      props: { filters: { ...baseFilters, supplier: "acme-tools" } },
       global: { stubs: globalStubs },
     });
     await flushPromises();
 
     const params = mockGetSupplierProducts.mock.calls[0][0];
-    expect(params.source).toBe("kinghoff");
+    expect(params.source).toBe("acme-tools");
   });
 
   it("groups visibleRows by source into perSupplierCounts (sorted desc)", async () => {
     mockGetSupplierProducts.mockResolvedValue({
       data: {
         results: [
-          makeRow({ id: 1, source_idx: "kinghoff", source_name: "Kinghoff" }),
-          makeRow({ id: 2, source_idx: "kinghoff", source_name: "Kinghoff" }),
-          makeRow({ id: 3, source_idx: "fortrade", source_name: "Fortrade" }),
+          makeRow({ id: 1, source_idx: "acme-tools", source_name: "Acme Tools" }),
+          makeRow({ id: 2, source_idx: "acme-tools", source_name: "Acme Tools" }),
+          makeRow({ id: 3, source_idx: "nordwind", source_name: "Nordwind" }),
         ],
       },
     });
@@ -134,8 +134,8 @@ describe("UpdatedMode — Atlas SupplierReview 4th mode", () => {
     await flushPromises();
 
     expect(wrapper.vm.perSupplierCounts).toEqual([
-      { idx: "kinghoff", name: "Kinghoff", count: 2 },
-      { idx: "fortrade", name: "Fortrade", count: 1 },
+      { idx: "acme-tools", name: "Acme Tools", count: 2 },
+      { idx: "nordwind", name: "Nordwind", count: 1 },
     ]);
   });
 
