@@ -3,10 +3,9 @@
     <button
       type="button"
       class="image-picker-thumb__button"
+      :class="{ 'image-picker-thumb__button--dragover': dragActive }"
       data-testid="dedup-search-dropzone"
       @click="$refs.fileInput.click()"
-      @dragover.prevent
-      @drop.prevent="onDrop"
     >
       <img v-if="previewUrl" :src="previewUrl" :alt="altText" />
       <FontAwesomeIcon v-else icon="upload" />
@@ -36,6 +35,10 @@ export default {
   props: {
     previewUrl: { type: String, default: "" },
     altText: { type: String, default: "" },
+    // Highlight driven by the parent: the whole search box is the drop target
+    // (DedupSearchBox owns the dragenter/leave bookkeeping), this thumb only
+    // mirrors that state so the eye lands on where the photo will end up.
+    dragActive: { type: Boolean, default: false },
   },
   emits: ["pick", "remove"],
   methods: {
@@ -43,10 +46,6 @@ export default {
       const file = event.target.files?.[0];
       if (file) this.$emit("pick", file);
       event.target.value = "";
-    },
-    onDrop(event) {
-      const file = event.dataTransfer?.files?.[0];
-      if (file) this.$emit("pick", file);
     },
   },
 };
@@ -74,6 +73,14 @@ export default {
       width: 100%;
       height: 100%;
       object-fit: cover;
+    }
+
+    // Same tokens as ProductFiles.vue __dropzone--dragover, so a drag reads the
+    // same here as it does on the PIM file and gallery upload areas.
+    &--dragover {
+      border-color: var(--c-support-400);
+      background: var(--c-basic-200);
+      color: var(--c-support-400);
     }
   }
   &__remove {

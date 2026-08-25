@@ -1,5 +1,15 @@
 <template>
-  <div class="dedup-search-box" :class="{ 'dedup-search-box--inline': inline }">
+  <div
+    class="dedup-search-box"
+    :class="{
+      'dedup-search-box--inline': inline,
+      'dedup-search-box--dragover': isDragging,
+    }"
+    @dragenter="onDragEnter"
+    @dragover="onDragOver"
+    @dragleave="onDragLeave"
+    @drop="onDrop"
+  >
     <div class="dedup-search-box__row">
       <BasicInput
         v-model="q"
@@ -12,6 +22,7 @@
       <ImagePickerThumb
         :preview-url="previewUrl"
         :alt-text="q"
+        :drag-active="isDragging"
         @pick="setImage"
         @remove="removeImage"
       />
@@ -23,6 +34,17 @@
       />
     </div>
 
+    <!-- Directly under the picker it describes, not stranded in the filter row. -->
+    <span
+      class="dedup-search-box__hint fs-200"
+      :class="isDragging ? 't-support-400' : 't-basic-500'"
+      data-testid="dedup-search-drop-hint"
+    >
+      {{
+        isDragging ? $t("lookup.box.drop_active") : $t("lookup.box.drop_hint")
+      }}
+    </span>
+
     <div class="dedup-search-box__scope">
       <FilterChip
         v-for="opt in scopeOptions"
@@ -32,9 +54,6 @@
         :data-testid="`dedup-search-scope-${opt.value}`"
         @click="toggleScope(opt.value)"
       />
-      <span class="dedup-search-box__hint fs-200 t-basic-500">
-        {{ $t("lookup.box.drop_hint") }}
-      </span>
     </div>
 
     <p
@@ -84,9 +103,17 @@ export default {
       activeScope: [...this.scope],
       loading: false,
       error: "",
+      // Depth counter, not a boolean: dragging across the input, the chips or the
+      // thumb fires dragleave on the element being left before dragenter on the one
+      // being entered, so a boolean would flicker off over every child. ProductFiles
+      // gets away with a boolean because its dropzone label has no real children.
+      dragDepth: 0,
     };
   },
   computed: {
+    isDragging() {
+      return this.dragDepth > 0;
+    },
     canSearch() {
       return !!this.q.trim() || !!this.previewUrl;
     },
@@ -95,6 +122,34 @@ export default {
     },
   },
   methods: {
+    // Only a file drag concerns us — dragging selected text or a link over the box
+    // must not light it up, and must not have its drop swallowed.
+    dragCarriesFiles(event) {
+      const types = event.dataTransfer?.types;
+      return !!types && Array.from(types).includes("Files");
+    },
+    onDragEnter(event) {
+      if (!this.dragCarriesFiles(event)) return;
+      this.dragDepth += 1;
+    },
+    onDragOver(event) {
+      if (!this.dragCarriesFiles(event)) return;
+      // Without preventDefault the browser treats the box as an invalid target and
+      // never fires drop at all — this is what made the old hint a lie.
+      event.preventDefault();
+      if (this.dragDepth === 0) this.dragDepth = 1;
+    },
+    onDragLeave(event) {
+      if (!this.dragCarriesFiles(event)) return;
+      this.dragDepth = Math.max(0, this.dragDepth - 1);
+    },
+    onDrop(event) {
+      if (!this.dragCarriesFiles(event)) return;
+      event.preventDefault();
+      this.dragDepth = 0;
+      const file = event.dataTransfer.files?.[0];
+      if (file) this.setImage(file);
+    },
     toggleScope(value) {
       const has = this.activeScope.includes(value);
       if (has && this.activeScope.length === 1) return; // keep at least one catalog
@@ -136,6 +191,17 @@ export default {
   display: flex;
   flex-direction: column;
   gap: var(--space-200);
+  // Transparent by default so the box does not shift by 2px the moment a drag starts.
+  border: 1px dashed transparent;
+  border-radius: var(--radius-sm);
+  padding: var(--space-100);
+  transition: border-color 0.12s ease, background 0.12s ease;
+
+  // Same tokens as ProductFiles.vue / MediaGallery.vue / Gallery.vue dropzones.
+  &--dragover {
+    border-color: var(--c-support-400);
+    background: var(--c-basic-200);
+  }
 
   &__row,
   &__scope {

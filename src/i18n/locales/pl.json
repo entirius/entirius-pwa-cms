@@ -2345,6 +2345,7 @@
       "placeholder": "EAN, nazwa, marka, MPN…",
       "search_button": "Szukaj",
       "drop_hint": "Upuść, wklej lub kliknij, aby dodać zdjęcie",
+      "drop_active": "Upuść zdjęcie tutaj",
       "scope_pim": "PIM",
       "scope_atlas": "Atlas",
       "image_error": "Nie udało się odczytać tego zdjęcia.",

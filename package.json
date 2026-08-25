@@ -34,7 +34,8 @@
     "pretest:unit": "node scripts/init-client.js",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
-    "test:pim-bridge": "playwright test tests/e2e/12-pim-suppliers-bridge.spec.js"
+    "test:pim-bridge": "playwright test tests/e2e/12-pim-suppliers-bridge.spec.js",
+    "test:lookup": "playwright test tests/e2e/13-lookup-dropzone.spec.js"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.3.0",

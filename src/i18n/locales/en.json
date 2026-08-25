@@ -2346,6 +2346,7 @@
       "placeholder": "EAN, name, brand, MPN…",
       "search_button": "Search",
       "drop_hint": "Drop, paste or click to add a photo",
+      "drop_active": "Drop the photo here",
       "scope_pim": "PIM",
       "scope_atlas": "Atlas",
       "image_error": "Could not read that image.",

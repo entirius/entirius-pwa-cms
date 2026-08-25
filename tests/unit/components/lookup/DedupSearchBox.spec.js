@@ -200,4 +200,80 @@ describe("DedupSearchBox.vue", () => {
       "lookup.box.image_too_large"
     );
   });
+
+  describe("drag and drop", () => {
+    const fileDrag = (files = []) => ({
+      dataTransfer: { types: ["Files"], files },
+    });
+
+    it("highlights the whole box, not just the thumb, while a file is dragged over", async () => {
+      const wrapper = mountBox();
+      const box = wrapper.find(".dedup-search-box");
+
+      expect(box.classes()).not.toContain("dedup-search-box--dragover");
+
+      await box.trigger("dragenter", fileDrag());
+
+      expect(box.classes()).toContain("dedup-search-box--dragover");
+      // the thumb mirrors the same state, so the eye lands on the target
+      expect(
+        wrapper.findComponent({ name: "ImagePickerThumb" }).props("dragActive")
+      ).toBe(true);
+    });
+
+    it("keeps the highlight while the drag crosses child elements", async () => {
+      const wrapper = mountBox();
+      const box = wrapper.find(".dedup-search-box");
+
+      // enter the box, then enter a child: two enters, one leave when the child
+      // is left. A boolean flag would drop the highlight here — the counter must not.
+      await box.trigger("dragenter", fileDrag());
+      await wrapper.find(".stub-input").trigger("dragenter", fileDrag());
+      await wrapper.find(".stub-input").trigger("dragleave", fileDrag());
+
+      expect(box.classes()).toContain("dedup-search-box--dragover");
+
+      // leaving the box itself clears it
+      await box.trigger("dragleave", fileDrag());
+      expect(box.classes()).not.toContain("dedup-search-box--dragover");
+    });
+
+    it("accepts a file dropped anywhere on the box", async () => {
+      mockDownscaleImage.mockResolvedValue(
+        new Blob(["small"], { type: "image/png" })
+      );
+      const wrapper = mountBox();
+      const box = wrapper.find(".dedup-search-box");
+      const imageFile = new File(["bytes"], "photo.png", { type: "image/png" });
+
+      await box.trigger("dragenter", fileDrag([imageFile]));
+      await box.trigger("drop", fileDrag([imageFile]));
+      await flushPromises();
+
+      expect(mockDownscaleImage).toHaveBeenCalledWith(imageFile);
+      expect(box.classes()).not.toContain("dedup-search-box--dragover");
+    });
+
+    it("ignores a drag that carries no files", async () => {
+      const wrapper = mountBox();
+      const box = wrapper.find(".dedup-search-box");
+
+      await box.trigger("dragenter", {
+        dataTransfer: { types: ["text/plain"], files: [] },
+      });
+
+      expect(box.classes()).not.toContain("dedup-search-box--dragover");
+    });
+
+    it("swaps the hint to the active wording while dragging", async () => {
+      const wrapper = mountBox();
+      const box = wrapper.find(".dedup-search-box");
+      const hint = () =>
+        wrapper.find("[data-testid='dedup-search-drop-hint']").text();
+
+      expect(hint()).toBe("lookup.box.drop_hint");
+      await box.trigger("dragenter", fileDrag());
+      expect(hint()).toBe("lookup.box.drop_active");
+    });
+  });
 });
