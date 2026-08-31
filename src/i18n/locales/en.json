@@ -2340,7 +2340,8 @@
       "understood_prefix": "Understood as:",
       "empty_title": "No matches",
       "empty_message": "Nothing in PIM or atlas looks like this yet.",
-      "create_product": "Create product"
+      "create_product": "Create product",
+      "empty_image": "Nothing looks like this photo — add a name or EAN."
     },
     "box": {
       "placeholder": "EAN, name, brand, MPN…",
@@ -2360,6 +2361,12 @@
       "match": "Match",
       "review": "Review",
       "no_match": "No match"
+    },
+    "match": {
+      "exact": "Exact matches",
+      "similar": "Similar",
+      "none": "Other candidates ({n})",
+      "exact_badge": "Exact"
     },
     "row": {
       "open": "Open",

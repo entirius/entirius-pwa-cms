@@ -2339,7 +2339,8 @@
       "understood_prefix": "Zrozumiano jako:",
       "empty_title": "Brak dopasowań",
       "empty_message": "Nic w PIM ani atlas nie przypomina jeszcze tego produktu.",
-      "create_product": "Utwórz produkt"
+      "create_product": "Utwórz produkt",
+      "empty_image": "Nic nie przypomina tego zdjęcia — dodaj nazwę lub EAN."
     },
     "box": {
       "placeholder": "EAN, nazwa, marka, MPN…",
@@ -2359,6 +2360,12 @@
       "match": "Dopasowanie",
       "review": "Do weryfikacji",
       "no_match": "Brak dopasowania"
+    },
+    "match": {
+      "exact": "Dokładne dopasowania",
+      "similar": "Podobne",
+      "none": "Pozostali kandydaci ({n})",
+      "exact_badge": "Dokładne"
     },
     "row": {
       "open": "Otwórz",

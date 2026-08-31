@@ -87,6 +87,53 @@ describe("Find.vue (AtlasFind)", () => {
     });
   });
 
+  it("groups hits into exact and similar and folds the rest away", async () => {
+    const wrapper = mountFind();
+    await wrapper
+      .findComponent({ name: "DedupSearchBox" })
+      .vm.$emit("results", {
+        hits: [
+          makeHit({ ref: "SKU-NONE", similarity: 0, match: "none", basic: { sku: "SKU-NONE" } }),
+          makeHit({ ref: "SKU-SIM", similarity: 72, match: "similar", basic: { sku: "SKU-SIM" } }),
+          makeHit({ ref: "SKU-EXACT", similarity: 100, match: "exact", basic: { sku: "SKU-EXACT" } }),
+        ],
+        query_parsed: {},
+        warnings: [],
+        q: "",
+        hasImage: true,
+      });
+
+    expect(wrapper.find("[data-testid='atlas-find-group-exact']").exists()).toBe(true);
+    expect(wrapper.find("[data-testid='atlas-find-group-similar']").exists()).toBe(true);
+    const rows = wrapper.findAll(".stub-row").map((row) => row.text());
+    // Exact first, then similar, then the folded rest — never mixed.
+    expect(rows).toEqual(["SKU-EXACT", "SKU-SIM", "SKU-NONE"]);
+    const rest = wrapper.find("[data-testid='atlas-find-rest']");
+    expect(rest.exists()).toBe(true);
+    expect(rest.findAll(".stub-row")).toHaveLength(1);
+    expect(wrapper.find(".stub-empty").exists()).toBe(false);
+  });
+
+  it("shows the photo-specific empty state when only unmatched neighbours came back from an image query", async () => {
+    const wrapper = mountFind();
+    await wrapper
+      .findComponent({ name: "DedupSearchBox" })
+      .vm.$emit("results", {
+        hits: [makeHit({ similarity: 0, match: "none" })],
+        query_parsed: {},
+        warnings: [],
+        q: "",
+        hasImage: true,
+      });
+
+    const empty = wrapper.find(".stub-empty");
+    expect(empty.exists()).toBe(true);
+    expect(wrapper.findComponent({ name: "EmptyState" }).props("message")).toBe(
+      "lookup.find.empty_image"
+    );
+    expect(wrapper.find("[data-testid='atlas-find-rest']").exists()).toBe(true);
+  });
+
   it("does not show the empty state before any search has run", () => {
     const wrapper = mountFind();
     expect(wrapper.find(".stub-empty").exists()).toBe(false);

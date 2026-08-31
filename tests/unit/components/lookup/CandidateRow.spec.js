@@ -45,17 +45,37 @@ describe("CandidateRow.vue", () => {
     });
   }
 
-  it("falls back to similarity when score is absent (plain /search hit)", () => {
+  it("shows similarity as a percentage for a plain /search hit (relevance to the query)", () => {
     const wrapper = mountRow(makeHit());
     expect(wrapper.find("[data-testid='candidate-row-score']").text()).toBe(
-      "82"
+      "82 %"
     );
   });
 
-  it("prefers score over similarity when both are present (/check hit)", () => {
+  it("shows the bare dedup score, no percent, when a decision is present (/check hit)", () => {
     const wrapper = mountRow(makeHit({ score: 61, decision: "review" }));
     expect(wrapper.find("[data-testid='candidate-row-score']").text()).toBe(
       "61"
+    );
+  });
+
+  it("flags an exact match with a badge and leaves a similar one plain", () => {
+    const exact = mountRow(makeHit({ similarity: 100, match: "exact" }));
+    const badge = exact.find("[data-testid='candidate-row-exact']");
+    expect(badge.exists()).toBe(true);
+    expect(badge.attributes("data-variant")).toBe("positive");
+    expect(badge.text()).toBe("lookup.match.exact_badge");
+
+    const similar = mountRow(makeHit({ similarity: 95, match: "similar" }));
+    expect(similar.find("[data-testid='candidate-row-exact']").exists()).toBe(
+      false
+    );
+  });
+
+  it("treats a 100 % hit from a backend without `match` as exact", () => {
+    const wrapper = mountRow(makeHit({ similarity: 100 }));
+    expect(wrapper.find("[data-testid='candidate-row-exact']").exists()).toBe(
+      true
     );
   });
 
