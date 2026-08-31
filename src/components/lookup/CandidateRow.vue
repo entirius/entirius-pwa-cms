@@ -24,8 +24,14 @@
           class="candidate-row__score fs-300 fw-600"
           data-testid="candidate-row-score"
         >
-          {{ score }}
+          {{ scoreText }}
         </span>
+        <StatusBadge
+          v-if="isExact"
+          :label="$t('lookup.match.exact_badge')"
+          variant="positive"
+          data-testid="candidate-row-exact"
+        />
         <StatusBadge
           v-if="hit.decision"
           :label="decisionLabel"
@@ -61,6 +67,7 @@
 
 <script>
 import { resolveMediaUrl } from "@/utils/resolveMediaUrl";
+import { matchKind } from "@/utils/lookupMatch";
 
 // Response fields the backend controls, but never trust them blindly as
 // i18n/object keys or as a source of arbitrary property lookups.
@@ -81,6 +88,14 @@ export default {
   computed: {
     score() {
       return this.hit.score ?? this.hit.similarity;
+    },
+    // A /search/ hit's `similarity` is 0-100 relevance to the query — a percentage. A /check/
+    // candidate's `score` is the dedup point total, which is not.
+    scoreText() {
+      return this.hit.decision ? String(this.score) : `${this.score} %`;
+    },
+    isExact() {
+      return matchKind(this.hit) === "exact";
     },
     thumbUrl() {
       return resolveMediaUrl(this.hit.basic?.main_image_url);

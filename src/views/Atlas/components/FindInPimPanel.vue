@@ -14,7 +14,7 @@
 
     <div class="find-in-pim-panel__results mt-300">
       <CandidateRow
-        v-for="hit in hits"
+        v-for="hit in matched"
         :key="`${hit.kind}-${hit.ref}`"
         :hit="hit"
       >
@@ -33,12 +33,42 @@
       </CandidateRow>
 
       <p
-        v-if="searched && hits.length === 0"
+        v-if="searched && matched.length === 0"
         class="fs-200 t-basic-500 mt-200"
         data-testid="find-in-pim-empty"
       >
         {{ $t("lookup.find.empty_message") }}
       </p>
+
+      <details
+        v-if="groups.none.length"
+        class="mt-200"
+        data-testid="find-in-pim-rest"
+      >
+        <summary class="fs-200 t-basic-500">
+          {{ $t("lookup.match.none", { n: groups.none.length }) }}
+        </summary>
+        <div class="mt-200">
+          <CandidateRow
+            v-for="hit in groups.none"
+            :key="`${hit.kind}-${hit.ref}`"
+            :hit="hit"
+          >
+            <template #actions>
+              <button
+                type="button"
+                class="row-action-btn bg-positive-100 t-positive-300"
+                :disabled="linkingSku === hit.basic?.sku"
+                :title="$t('lookup.row.link')"
+                :data-testid="`find-in-pim-link-${hit.basic?.sku}`"
+                @click="link(hit)"
+              >
+                <FontAwesomeIcon icon="link" />
+              </button>
+            </template>
+          </CandidateRow>
+        </div>
+      </details>
     </div>
   </div>
 </template>
@@ -49,6 +79,7 @@ import CandidateRow from "@/components/lookup/CandidateRow.vue";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { useNotifyStore } from "@/stores/notify";
 import { POST_LinkToRealProduct } from "@/api/atlas/api";
+import { groupHits } from "@/utils/lookupMatch";
 
 export default {
   name: "FindInPimPanel",
@@ -75,6 +106,12 @@ export default {
   computed: {
     initialQuery() {
       return [this.name, this.ean].filter(Boolean).join(" ").trim();
+    },
+    groups() {
+      return groupHits(this.hits);
+    },
+    matched() {
+      return [...this.groups.exact, ...this.groups.similar];
     },
   },
   methods: {

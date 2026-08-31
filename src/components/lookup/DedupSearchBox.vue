@@ -174,6 +174,8 @@ export default {
           ...data,
           hits: data.hits || [],
           q: this.q,
+          // Mirrors buildLookupPayload: whether the request carried a picture.
+          hasImage: !!this.imageBlob || (!this.imageRemoved && !!this.imageUrl),
         });
       } catch (err) {
         this.error = extractApiMessage(err, this.$t("notifications.error"));

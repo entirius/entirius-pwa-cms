@@ -74,6 +74,7 @@ describe("DedupSearchBox.vue", () => {
     expect(emitted).toHaveLength(1);
     expect(emitted[0][0].hits).toHaveLength(1);
     expect(emitted[0][0].q).toBe("5901234123457");
+    expect(emitted[0][0].hasImage).toBe(false);
   });
 
   it("reads only the `hits` field — /search/'s response has no `candidates`", async () => {
@@ -123,6 +124,8 @@ describe("DedupSearchBox.vue", () => {
       "pim_product",
       "atlas_source_product",
     ]);
+    // The view needs to know the query carried a picture to word its empty state.
+    expect(wrapper.emitted("results")[0][0].hasImage).toBe(true);
   });
 
   it("toggles scope chips without dropping below one active catalog (DOM state)", async () => {

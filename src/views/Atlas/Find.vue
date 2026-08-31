@@ -28,16 +28,29 @@
       </div>
 
       <div class="mt-400">
-        <CandidateRow
-          v-for="hit in hits"
-          :key="`${hit.kind}-${hit.ref}`"
-          :hit="hit"
-        />
+        <template v-for="kind in ['exact', 'similar']" :key="kind">
+          <h2
+            v-if="groups[kind].length"
+            class="fs-400 fw-600 mt-300 mb-200"
+            :data-testid="`atlas-find-group-${kind}`"
+          >
+            {{ $t(`lookup.match.${kind}`) }}
+          </h2>
+          <CandidateRow
+            v-for="hit in groups[kind]"
+            :key="`${hit.kind}-${hit.ref}`"
+            :hit="hit"
+          />
+        </template>
 
         <EmptyState
-          v-if="searched && hits.length === 0"
+          v-if="searched && matched.length === 0"
           :title="$t('lookup.find.empty_title')"
-          :message="$t('lookup.find.empty_message')"
+          :message="
+            hasImage
+              ? $t('lookup.find.empty_image')
+              : $t('lookup.find.empty_message')
+          "
           icon="magnifying-glass"
         >
           <BasicButton
@@ -46,6 +59,23 @@
             @click="goCreateProduct"
           />
         </EmptyState>
+
+        <details
+          v-if="groups.none.length"
+          class="mt-300"
+          data-testid="atlas-find-rest"
+        >
+          <summary class="fs-200 t-basic-500">
+            {{ $t("lookup.match.none", { n: groups.none.length }) }}
+          </summary>
+          <div class="mt-200">
+            <CandidateRow
+              v-for="hit in groups.none"
+              :key="`${hit.kind}-${hit.ref}`"
+              :hit="hit"
+            />
+          </div>
+        </details>
       </div>
     </div>
   </div>
@@ -54,6 +84,7 @@
 <script>
 import DedupSearchBox from "@/components/lookup/DedupSearchBox.vue";
 import CandidateRow from "@/components/lookup/CandidateRow.vue";
+import { groupHits } from "@/utils/lookupMatch";
 
 export default {
   name: "AtlasFind",
@@ -65,11 +96,20 @@ export default {
       warnings: [],
       searched: false,
       lastQuery: "",
+      hasImage: false,
     };
   },
   computed: {
     initialQuery() {
       return this.$route.query.q || "";
+    },
+    // Exact / similar are shown as results; `none` rows (blocking neighbours nothing agreed
+    // on) are folded under a disclosure so the top neighbour stays a click away.
+    groups() {
+      return groupHits(this.hits);
+    },
+    matched() {
+      return [...this.groups.exact, ...this.groups.similar];
     },
     understoodLine() {
       const parsed = this.queryParsed;
@@ -87,6 +127,7 @@ export default {
       this.queryParsed = response.query_parsed || null;
       this.warnings = response.warnings || [];
       this.lastQuery = response.q || "";
+      this.hasImage = !!response.hasImage;
       this.searched = true;
     },
     // A failed search must not leave the previous, now-stale, result list
@@ -95,6 +136,7 @@ export default {
       this.hits = [];
       this.queryParsed = null;
       this.warnings = [];
+      this.hasImage = false;
       this.searched = false;
     },
     goCreateProduct() {
