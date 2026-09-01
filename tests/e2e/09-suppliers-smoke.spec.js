@@ -446,9 +446,18 @@ test.describe('Suppliers panel', () => {
 
     test('Create link POSTs new link', async ({ page }) => {
       await page.getByTestId('linked-create-btn').click();
-      // EntitySearchPicker: type, then pick the (mocked) PIM search result
-      await fillField(page, 'linked-form-sku', 'PIM-SKU-3');
-      await page.getByText('Third PIM product').click();
+      // EntitySearchPicker renders its input only after the trigger opens it
+      // (same interaction as 12-pim-product-links.spec.js).
+      await page
+        .locator('[data-testid="linked-form-sku"] .entity-picker__trigger')
+        .click();
+      await page
+        .locator('[data-testid="linked-form-sku"] .entity-picker__inline-input input')
+        .fill('PIM-SKU-3');
+      await page
+        .locator('[data-testid="linked-form-sku"] .entity-picker__result')
+        .first()
+        .click();
       await page.getByTestId('linked-form-submit').click();
       const req = await waitForRequest(
         mockState,
