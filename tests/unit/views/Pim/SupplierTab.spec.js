@@ -27,7 +27,7 @@ const baseData = {
   real_product_sku: "TEST-SKU",
   has_source: true,
   source_product_id: 1,
-  source: { idx: "kinghoff", name: "Kinghoff" },
+  source: { idx: "acme-tools", name: "Acme Tools" },
   unseen_count: 2,
   last_change_at: "2026-05-23T06:00:00+00:00",
   cost: 0.13,
@@ -111,7 +111,7 @@ describe("SupplierTab", () => {
   it("reset-to-auto calls API and emits refreshed when switch happened", async () => {
     mockGetSkuChanges.mockResolvedValue({ data: baseData });
     mockPostResetToAuto.mockResolvedValueOnce({
-      data: { switched: true, new_primary_source_idx: "fortrade" },
+      data: { switched: true, new_primary_source_idx: "nordwind" },
     });
 
     const wrapper = mount(SupplierTab, { props: { sku: "TEST-SKU" } });

@@ -1,0 +1,216 @@
+import { describe, it, expect, vi } from "vitest";
+import { mount } from "@vue/test-utils";
+import { createPinia } from "pinia";
+import Find from "@/views/Atlas/Find.vue";
+
+const globalStubs = {
+  DedupSearchBox: {
+    name: "DedupSearchBox",
+    props: ["initialQuery", "initialImage", "scope"],
+    emits: ["results", "error"],
+    template: "<div class='stub-box' />",
+  },
+  CandidateRow: {
+    name: "CandidateRow",
+    props: ["hit"],
+    template: "<div class='stub-row'>{{ hit.basic.sku }}</div>",
+  },
+  EmptyState: {
+    name: "EmptyState",
+    props: ["title", "message"],
+    template: "<div class='stub-empty' :data-title='title'><slot /></div>",
+  },
+  BasicButton: {
+    name: "BasicButton",
+    props: ["text"],
+    emits: ["click"],
+    template:
+      "<button class='stub-button' @click=\"$emit('click')\">{{ text }}</button>",
+  },
+};
+
+function makeHit(overrides = {}) {
+  return {
+    kind: "pim_product",
+    ref: "SKU-1",
+    similarity: 80,
+    reasons: [],
+    basic: { sku: "SKU-1", name: "Bosch", detail_url: "/x" },
+    ...overrides,
+  };
+}
+
+describe("Find.vue (AtlasFind)", () => {
+  function mountFind(routerPush = vi.fn(), pinia = createPinia()) {
+    return mount(Find, {
+      global: {
+        plugins: [pinia],
+        stubs: globalStubs,
+        mocks: { $router: { push: routerPush }, $route: { query: {} } },
+      },
+    });
+  }
+
+  it("renders the understood-as line from query_parsed once results arrive", async () => {
+    const wrapper = mountFind();
+    await wrapper
+      .findComponent({ name: "DedupSearchBox" })
+      .vm.$emit("results", {
+        hits: [makeHit()],
+        query_parsed: { gtin14: "05901234123457", brand_norm: "bosch" },
+        warnings: [],
+        q: "5901234123457",
+      });
+
+    expect(wrapper.text()).toContain("GTIN 05901234123457");
+    expect(wrapper.text()).toContain("brand bosch");
+  });
+
+  it("shows the empty state with a create-product CTA when a search returns no hits", async () => {
+    const push = vi.fn();
+    const wrapper = mountFind(push);
+    await wrapper
+      .findComponent({ name: "DedupSearchBox" })
+      .vm.$emit("results", {
+        hits: [],
+        query_parsed: {},
+        warnings: [],
+        q: "no such product",
+      });
+
+    const empty = wrapper.find(".stub-empty");
+    expect(empty.exists()).toBe(true);
+    await wrapper
+      .find("[data-testid='atlas-find-create-product']")
+      .trigger("click");
+    expect(push).toHaveBeenCalledWith({
+      name: "PimProductCreate",
+      query: { q: "no such product" },
+    });
+  });
+
+  it("groups hits into exact and similar and folds the rest away", async () => {
+    const wrapper = mountFind();
+    await wrapper
+      .findComponent({ name: "DedupSearchBox" })
+      .vm.$emit("results", {
+        hits: [
+          makeHit({ ref: "SKU-NONE", similarity: 0, match: "none", basic: { sku: "SKU-NONE" } }),
+          makeHit({ ref: "SKU-SIM", similarity: 72, match: "similar", basic: { sku: "SKU-SIM" } }),
+          makeHit({ ref: "SKU-EXACT", similarity: 100, match: "exact", basic: { sku: "SKU-EXACT" } }),
+        ],
+        query_parsed: {},
+        warnings: [],
+        q: "",
+        hasImage: true,
+      });
+
+    expect(wrapper.find("[data-testid='atlas-find-group-exact']").exists()).toBe(true);
+    expect(wrapper.find("[data-testid='atlas-find-group-similar']").exists()).toBe(true);
+    const rows = wrapper.findAll(".stub-row").map((row) => row.text());
+    // Exact first, then similar, then the folded rest — never mixed.
+    expect(rows).toEqual(["SKU-EXACT", "SKU-SIM", "SKU-NONE"]);
+    const rest = wrapper.find("[data-testid='atlas-find-rest']");
+    expect(rest.exists()).toBe(true);
+    expect(rest.findAll(".stub-row")).toHaveLength(1);
+    expect(wrapper.find(".stub-empty").exists()).toBe(false);
+  });
+
+  it("shows the photo-specific empty state when only unmatched neighbours came back from an image query", async () => {
+    const wrapper = mountFind();
+    await wrapper
+      .findComponent({ name: "DedupSearchBox" })
+      .vm.$emit("results", {
+        hits: [makeHit({ similarity: 0, match: "none" })],
+        query_parsed: {},
+        warnings: [],
+        q: "",
+        hasImage: true,
+      });
+
+    const empty = wrapper.find(".stub-empty");
+    expect(empty.exists()).toBe(true);
+    expect(wrapper.findComponent({ name: "EmptyState" }).props("message")).toBe(
+      "lookup.find.empty_image"
+    );
+    expect(wrapper.find("[data-testid='atlas-find-rest']").exists()).toBe(true);
+  });
+
+  it("does not show the empty state before any search has run", () => {
+    const wrapper = mountFind();
+    expect(wrapper.find(".stub-empty").exists()).toBe(false);
+  });
+
+  it("clears stale hits and suppresses the empty state when a search errors", async () => {
+    const wrapper = mountFind();
+    const box = wrapper.findComponent({ name: "DedupSearchBox" });
+
+    await box.vm.$emit("results", {
+      hits: [makeHit()],
+      query_parsed: { gtin14: "05901234123457" },
+      warnings: ["image_layer_unavailable"],
+      q: "5901234123457",
+    });
+    expect(wrapper.findAll(".stub-row")).toHaveLength(1);
+
+    await box.vm.$emit("error", "Internal server error");
+    expect(wrapper.findAll(".stub-row")).toHaveLength(0);
+    expect(wrapper.find("[data-testid='atlas-find-warnings']").exists()).toBe(
+      false
+    );
+    expect(wrapper.find(".stub-empty").exists()).toBe(false);
+  });
+
+  it("restores the last search — results, query and photo — after the view remounts", async () => {
+    // Opening a hit leaves the atlas subtree (PimProductDetail), unmounting the
+    // view; coming back must not present a clean slate and demand the photo again.
+    const pinia = createPinia();
+    const blob = new Blob(["img"], { type: "image/jpeg" });
+    const first = mountFind(vi.fn(), pinia);
+    await first.findComponent({ name: "DedupSearchBox" }).vm.$emit("results", {
+      hits: [
+        makeHit({
+          ref: "SKU-EXACT",
+          similarity: 100,
+          match: "exact",
+          basic: { sku: "SKU-EXACT" },
+        }),
+      ],
+      query_parsed: { gtin14: "05901234123457" },
+      warnings: [],
+      q: "5901234123457",
+      hasImage: true,
+      scope: ["pim_product"],
+      imageBlob: blob,
+    });
+    first.unmount();
+
+    const wrapper = mountFind(vi.fn(), pinia);
+    expect(wrapper.findAll(".stub-row").map((row) => row.text())).toEqual([
+      "SKU-EXACT",
+    ]);
+    expect(wrapper.text()).toContain("GTIN 05901234123457");
+    const box = wrapper.findComponent({ name: "DedupSearchBox" });
+    expect(box.props("initialQuery")).toBe("5901234123457");
+    expect(box.props("initialImage")).toBe(blob);
+    expect(box.props("scope")).toEqual(["pim_product"]);
+  });
+
+  it("a failed search clears the saved state too — the next visit starts clean", async () => {
+    const pinia = createPinia();
+    const first = mountFind(vi.fn(), pinia);
+    const box = first.findComponent({ name: "DedupSearchBox" });
+    await box.vm.$emit("results", {
+      hits: [makeHit()],
+      query_parsed: {},
+      warnings: [],
+      q: "x",
+    });
+    await box.vm.$emit("error", "boom");
+    first.unmount();
+
+    const wrapper = mountFind(vi.fn(), pinia);
+    expect(wrapper.findAll(".stub-row")).toHaveLength(0);
+    expect(wrapper.find(".stub-empty").exists()).toBe(false);
+  });
+});

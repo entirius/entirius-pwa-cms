@@ -220,7 +220,7 @@ function defaultSeed() {
         supplier_idx: 'acme',
         external_id: 'ACME-001',
         priority: 0,
-        is_preferred: false,
+        is_primary: false,
         is_active: true,
         notes: '',
       },
@@ -230,7 +230,7 @@ function defaultSeed() {
         supplier_idx: 'acme',
         external_id: 'ACME-002',
         priority: 0,
-        is_preferred: false,
+        is_primary: false,
         is_active: true,
         notes: '',
       },
@@ -321,6 +321,25 @@ async function installSuppliersMock(page, { seed, muninEnabled = true } = {}) {
       postData,
     });
   }
+
+  // --- PIM (LinkedTab SKU picker: channel list + product search) ---
+  await page.route('**/api/pim/v2/admin/**', async (route) => {
+    logRequest(route);
+    const path = new URL(route.request().url()).pathname;
+    if (path.endsWith('/channels/')) {
+      await route.fulfill(
+        ok(paged([{ idx: 'default', name: 'Default', is_default: true }]))
+      );
+      return;
+    }
+    if (path.endsWith('/products/')) {
+      await route.fulfill(
+        ok(paged([{ sku: 'PIM-SKU-3', name: 'Third PIM product' }]))
+      );
+      return;
+    }
+    await route.fulfill(notFound(`Unmocked PIM endpoint: ${path}`));
+  });
 
   // --- Munin (gates panel visibility) ---
   await page.route('**/api/munin/v2/**', async (route) => {
@@ -737,8 +756,8 @@ async function installSuppliersMock(page, { seed, muninEnabled = true } = {}) {
     m = urlMatches(url, `${ADMIN}/products/`);
     if (m && method === 'GET') {
       let rows = state.products.slice();
-      if (m.query.supplier_idx) {
-        rows = rows.filter((r) => r.supplier_idx === m.query.supplier_idx);
+      if (m.query.source) {
+        rows = rows.filter((r) => r.supplier_idx === m.query.source);
       }
       if (m.query.status) rows = rows.filter((r) => r.status === m.query.status);
       if (m.query.search) {
@@ -773,7 +792,7 @@ async function installSuppliersMock(page, { seed, muninEnabled = true } = {}) {
       // Mirror backend: unset others for the same SKU; set this one.
       state.productLinks.forEach((l) => {
         if (l.real_product_sku === target.real_product_sku) {
-          l.is_preferred = l.id === target.id;
+          l.is_primary = l.id === target.id;
         }
       });
       await route.fulfill(ok(target));
@@ -785,8 +804,8 @@ async function installSuppliersMock(page, { seed, muninEnabled = true } = {}) {
     if (m) {
       if (method === 'GET') {
         let rows = state.productLinks.slice();
-        if (m.query.supplier_idx) {
-          rows = rows.filter((r) => r.supplier_idx === m.query.supplier_idx);
+        if (m.query.source) {
+          rows = rows.filter((r) => r.supplier_idx === m.query.source);
         }
         await route.fulfill(ok(paged(rows)));
         return;
@@ -795,7 +814,7 @@ async function installSuppliersMock(page, { seed, muninEnabled = true } = {}) {
         const created = {
           id: state.nextId++,
           priority: 0,
-          is_preferred: false,
+          is_primary: false,
           is_active: true,
           notes: '',
           external_id: '',
@@ -844,8 +863,8 @@ async function installSuppliersMock(page, { seed, muninEnabled = true } = {}) {
     m = urlMatches(url, `${ADMIN}/events/`);
     if (m && method === 'GET') {
       let rows = state.events.slice();
-      if (m.query.supplier_idx) {
-        rows = rows.filter((r) => r.supplier_idx === m.query.supplier_idx);
+      if (m.query.source) {
+        rows = rows.filter((r) => r.supplier_idx === m.query.source);
       }
       if (m.query.severity) rows = rows.filter((r) => r.severity === m.query.severity);
       if (m.query.acknowledged === 'false') {

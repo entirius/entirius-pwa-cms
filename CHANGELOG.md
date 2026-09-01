@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- **Find product: grouped results** (`/atlas/find` and "Find in PIM"): hits split
+  into *Exact matches* / *Similar* by the backend's `match` kind (django-lookup
+  ≥ 0.2.0; `src/utils/lookupMatch.js` falls back on `similarity` for an older
+  backend), `none` neighbours folded behind a disclosure, relevance shown as
+  `NN %` with an "Exact" badge, and a photo-specific empty state.
+
+### Fixed
+
+- **Find product keeps its search across back-navigation**: opening a hit's
+  details unmounted the view and wiped results, query and the uploaded photo —
+  the operator had to re-upload the picture to inspect a second candidate. The
+  last search now lives in the `lookupFind` store and is restored on return.
+
 ## [2.0.0] (2026-08-09)
 
 First release from this repository — now the canonical home of the CMS.

@@ -910,6 +910,21 @@ const routes = [
         },
       },
       {
+        // Single-box text/image search across PIM + atlas fingerprints
+        path: "find",
+        name: "AtlasFind",
+        component: () =>
+          import(/* webpackChunkName: "atlas" */ "../views/Atlas/Find.vue"),
+        meta: {
+          requiresAuth: true,
+          titleKey: "lookup.find.title",
+          panel: "atlas",
+          // Optional django-lookup backend module — the view calls its
+          // search/check API and must stay dormant without it.
+          module: "lookup",
+        },
+      },
+      {
         path: ":idx",
         name: "SourceDetail",
         component: () =>

@@ -118,7 +118,9 @@ test.describe('SupplierReview panel', () => {
       expect(req).toBeTruthy();
     });
 
-    test('Show raw data opens modal with JSON', async ({ page }) => {
+    test('Show raw data opens modal with JSON (mobile layout)', async ({ page }) => {
+      // The button only renders below 769px — desktop shows a permanent side panel.
+      await page.setViewportSize({ width: 600, height: 900 });
       await page.getByTestId('product-card-raw-data-btn').click();
       await expect(page.getByTestId('raw-data-modal')).toBeVisible();
       await page.getByTestId('raw-data-modal-close').click();

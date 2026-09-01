@@ -2,7 +2,7 @@
 
 ## Pinia Stores
 
-All 11 stores (`src/stores/`) use composition (setup) syntax with `defineStore`.
+All 12 stores (`src/stores/`) use composition (setup) syntax with `defineStore`.
 
 - **`useCheckoutChannelStore`** (`checkoutChannel.js`) — active checkout/promo
   channel, persisted per-user in `localStorage` (`checkout:lastSelectedChannel`),
@@ -16,6 +16,10 @@ All 11 stores (`src/stores/`) use composition (setup) syntax with `defineStore`.
   `triggerListener`.
 - **`useLoaderStore`** (`loader.js`) — `loaderStart()`/`loaderFinish()`,
   `handyLoaderStart()`/`handyLoaderFinish()`. Auto-timeout 10s.
+- **`useLookupFindStore`** (`lookupFind.js`) — the Find view's last lookup
+  search (hits, query, scope, the downscaled photo Blob), restored on mount so
+  back-navigation from a hit's details does not wipe the results. One search,
+  no history, in-memory only.
 - **`useMuninStore`** (`munin.js`) — module/panel enablement. See below.
 - **`useNotifyStore`** (`notify.js`) — `spawnNotification({ title, msg, type,
   timeout })`. Types: `informative`, `positive`, `negative`, `warning`. Queues
