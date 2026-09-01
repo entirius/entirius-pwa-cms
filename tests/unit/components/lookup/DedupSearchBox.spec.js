@@ -75,6 +75,9 @@ describe("DedupSearchBox.vue", () => {
     expect(emitted[0][0].hits).toHaveLength(1);
     expect(emitted[0][0].q).toBe("5901234123457");
     expect(emitted[0][0].hasImage).toBe(false);
+    // Everything the Find view needs to restore this search after back-navigation.
+    expect(emitted[0][0].scope).toEqual(["pim_product", "atlas_source_product"]);
+    expect(emitted[0][0].imageBlob).toBeNull();
   });
 
   it("reads only the `hits` field — /search/'s response has no `candidates`", async () => {
@@ -125,6 +128,26 @@ describe("DedupSearchBox.vue", () => {
       "atlas_source_product",
     ]);
     // The view needs to know the query carried a picture to word its empty state.
+    expect(wrapper.emitted("results")[0][0].hasImage).toBe(true);
+    expect(wrapper.emitted("results")[0][0].imageBlob).toBeInstanceOf(Blob);
+  });
+
+  it("seeds the picker from initialImage and sends that blob on search", async () => {
+    // Restoring the Find view after back-navigation: the blob was downscaled on
+    // the original pick, so it goes straight into the payload — no second pass.
+    mockLookupSearch.mockResolvedValue({
+      data: { hits: [], query_parsed: {}, warnings: [] },
+    });
+    const blob = new Blob(["restored"], { type: "image/jpeg" });
+    const wrapper = mountBox({ initialImage: blob });
+
+    await wrapper.find(".stub-button").trigger("click");
+    await flushPromises();
+
+    expect(mockDownscaleImage).not.toHaveBeenCalled();
+    const payload = mockLookupSearch.mock.calls[0][0];
+    expect(payload).toBeInstanceOf(FormData);
+    expect(payload.get("image")).toBeInstanceOf(Blob);
     expect(wrapper.emitted("results")[0][0].hasImage).toBe(true);
   });
 
