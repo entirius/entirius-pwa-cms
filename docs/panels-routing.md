@@ -1,6 +1,6 @@
 # Panels and Routing
 
-15 self-contained panels, each gated by a django-munin backend module. Panel
+16 self-contained panels, each gated by a django-munin backend module. Panel
 metadata lives in `src/configs/access.js`; route gating lives in
 `src/router/index.js` and `src/stores/munin.js`.
 
@@ -24,7 +24,8 @@ Font Awesome icon name rendered via `FontAwesomeIcon`.
 | `pricing` | Pricing | `/pricing/prices` | `money-bill-wave` |
 | `stock` | Stock | `/stock/manage` | `warehouse` |
 | `translation` | Translation | `/translation-jobs` | `language` |
-| `suppliers` | Suppliers | `/suppliers/list` | `truck` |
+| `atlas` | Atlas | `/atlas/list` | `globe` |
+| `pricefighter` | PriceFighter | `/pricefighter/gap` | `scale-balanced` |
 | `enricher` | Enricher | `/enrichment` | `wand-magic-sparkles` |
 | `promo` | Promo | `/promo/list` | `tags` |
 
@@ -51,7 +52,8 @@ path prefix and lazy-loaded (`() => import(...)`). Grouped by panel:
 | `/pricing/...` | PriceList/Detail, TaxClassList/Detail, ChannelList/Detail |
 | `/stock/...` | WarehouseStockTable |
 | `/translation-jobs` | TranslationDashboard |
-| `/suppliers/...`, `/supplier-review` (legacy redirect) | SupplierList/Detail, AutoMatched, Duplicates, SupplierReview |
+| `/atlas/...`, `/suppliers/*` + `/supplier-review` (legacy redirects) | SupplierList/Detail, AutoMatched, Duplicates, SupplierReview (Review/) |
+| `/pricefighter/...` | GapTable, Strategies, DecisionHistory |
 | `/enrichment/...` | EnrichmentReview, EnrichmentSpawnRules List/Edit, EnrichmentTasks |
 | `/promo/...` | PromoList/Edit, VoucherDetail |
 | `/change-password`, `/password-reset` | ChangePassword (authenticated), PasswordReset (unauthenticated, from email link) |

@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0] (2026-09-01)
+
+### Added
+
+- **Find product: grouped results** (`/atlas/find` and "Find in PIM"): hits split
+  into *Exact matches* / *Similar* by the backend's `match` kind (django-lookup
+  ≥ 0.2.0; `src/utils/lookupMatch.js` falls back on `similarity` for an older
+  backend), `none` neighbours folded behind a disclosure, relevance shown as
+  `NN %` with an "Exact" badge, and a photo-specific empty state.
+
+### Security
+
+- **Dependency refresh closing the open Dependabot alerts** (#23, #24, #25): unit-test
+  toolchain (vitest 4, happy-dom 20, @vitejs/plugin-vue 6), runtime deps (axios 1.x,
+  swiper 14, uuid 11, lodash, sass), and `package.json` `overrides` pinning the patched
+  transitive vue-cli 5 / webpack 5 toolchain. Dependabot config added.
+- **New CI job `test-e2e-mocked`**: backend-free Playwright smoke of the Atlas panels
+  (cookie-stubbed auth, mocked APIs) on every PR.
+
+### Fixed
+
+- **Find product keeps its search across back-navigation**: opening a hit's
+  details unmounted the view and wiped results, query and the uploaded photo —
+  the operator had to re-upload the picture to inspect a second candidate. The
+  last search now lives in the `lookupFind` store and is restored on return.
+
 ## [2.0.0] (2026-08-09)
 
 First release from this repository — now the canonical home of the CMS.

@@ -820,86 +820,139 @@ const routes = [
     ],
   },
 
-  // Suppliers panel
+  // PriceFighter panel
   {
-    path: "/suppliers",
+    path: "/pricefighter",
+    component: () => import(/* webpackChunkName: "pricefighter" */ "../views/PriceFighter/index.vue"),
+    meta: { requiresAuth: true, panel: "pricefighter" },
+    children: [
+      { path: "", redirect: "/pricefighter/gap" },
+      {
+        path: "gap",
+        name: "PfGapTable",
+        component: () => import(/* webpackChunkName: "pricefighter" */ "../views/PriceFighter/GapTable.vue"),
+        meta: { requiresAuth: true, titleKey: "pricefighter.gap_table", panel: "pricefighter" },
+      },
+      {
+        path: "strategies",
+        name: "PfStrategies",
+        component: () => import(/* webpackChunkName: "pricefighter" */ "../views/PriceFighter/Strategies.vue"),
+        meta: { requiresAuth: true, titleKey: "pricefighter.strategies", panel: "pricefighter" },
+      },
+      {
+        path: "history",
+        name: "PfDecisionHistory",
+        component: () => import(/* webpackChunkName: "pricefighter" */ "../views/PriceFighter/DecisionHistory.vue"),
+        meta: { requiresAuth: true, titleKey: "pricefighter.history", panel: "pricefighter" },
+      },
+    ],
+  },
+
+  // Atlas panel (formerly Suppliers — django-atlas replaces django-suppliers)
+  {
+    path: "/atlas",
     component: () =>
-      import(/* webpackChunkName: "suppliers" */ "../views/Suppliers/index.vue"),
+      import(/* webpackChunkName: "atlas" */ "../views/Atlas/index.vue"),
     meta: {
       requiresAuth: true,
-      panel: "suppliers",
+      panel: "atlas",
     },
     children: [
       {
         path: "",
-        redirect: "/suppliers/list",
+        redirect: "/atlas/list",
       },
       {
         path: "list",
-        name: "SupplierList",
+        name: "SourceList",
         component: () =>
-          import(/* webpackChunkName: "suppliers" */ "../views/Suppliers/SupplierList.vue"),
+          import(/* webpackChunkName: "atlas" */ "../views/Atlas/SourceList.vue"),
         meta: {
           requiresAuth: true,
-          titleKey: "suppliers.list_title",
-          panel: "suppliers",
+          titleKey: "atlas.list_title",
+          panel: "atlas",
         },
       },
       {
-        // etap-07b: Auto-matched dashboard (cross-supplier RealProducts with auto-EAN link history)
+        // Cross-source dashboard (RealProducts with auto-EAN link history)
         path: "auto-matched",
         name: "SuppliersAutoMatched",
         component: () =>
-          import(/* webpackChunkName: "suppliers" */ "../views/Suppliers/AutoMatched.vue"),
+          import(/* webpackChunkName: "atlas" */ "../views/Atlas/AutoMatched.vue"),
         meta: {
           requiresAuth: true,
-          titleKey: "suppliers.auto_matched.title",
-          panel: "suppliers",
+          titleKey: "atlas.auto_matched.title",
+          panel: "atlas",
         },
       },
       {
-        // etap-07b: Duplicates dashboard (operator triage for find_duplicates_by_ean groups)
+        // Operator triage UI for find_duplicates_by_ean groups
         path: "duplicates",
         name: "SuppliersDuplicates",
         component: () =>
-          import(/* webpackChunkName: "suppliers" */ "../views/Suppliers/Duplicates.vue"),
+          import(/* webpackChunkName: "atlas" */ "../views/Atlas/Duplicates.vue"),
         meta: {
           requiresAuth: true,
-          titleKey: "suppliers.duplicates.title",
-          panel: "suppliers",
+          titleKey: "atlas.duplicates.title",
+          panel: "atlas",
         },
       },
       {
-        // Cross-supplier review queue — folded in from the former standalone Supplier Review panel
+        // Cross-source review queue — folded in from the former standalone Supplier Review panel
         path: "review",
         name: "SupplierReview",
         component: () =>
-          import(/* webpackChunkName: "suppliers" */ "../views/SupplierReview/SupplierReview.vue"),
+          import(/* webpackChunkName: "atlas" */ "../views/Atlas/Review/SupplierReview.vue"),
         meta: {
           requiresAuth: true,
-          titleKey: "supplier_review.title",
-          panel: "suppliers",
+          titleKey: "atlas.review.title",
+          panel: "atlas",
+        },
+      },
+      {
+        // Single-box text/image search across PIM + atlas fingerprints
+        path: "find",
+        name: "AtlasFind",
+        component: () =>
+          import(/* webpackChunkName: "atlas" */ "../views/Atlas/Find.vue"),
+        meta: {
+          requiresAuth: true,
+          titleKey: "lookup.find.title",
+          panel: "atlas",
+          // Optional django-lookup backend module — the view calls its
+          // search/check API and must stay dormant without it.
+          module: "lookup",
         },
       },
       {
         path: ":idx",
-        name: "SupplierDetail",
+        name: "SourceDetail",
         component: () =>
-          import(/* webpackChunkName: "suppliers" */ "../views/Suppliers/SupplierDetail.vue"),
+          import(/* webpackChunkName: "atlas" */ "../views/Atlas/SourceDetail.vue"),
         meta: {
           requiresAuth: true,
-          titleKey: "suppliers.detail_title",
-          panel: "suppliers",
+          titleKey: "atlas.detail_title",
+          panel: "atlas",
         },
       },
     ],
   },
 
-  // Legacy redirect: Supplier Review was folded into the Suppliers panel.
+  // Legacy redirect: Supplier Review was folded into the Suppliers/Atlas panel.
   // Function form preserves query params (e.g. ?mode=, ?sp_id=) across the redirect.
   {
     path: "/supplier-review",
-    redirect: (to) => ({ path: "/suppliers/review", query: to.query }),
+    redirect: (to) => ({ path: "/atlas/review", query: to.query }),
+  },
+
+  // Legacy redirect: Suppliers panel was renamed to Atlas (django-suppliers -> django-atlas).
+  // Function form preserves the sub-path and query params (e.g. /suppliers/list -> /atlas/list).
+  {
+    path: "/suppliers/:pathMatch(.*)*",
+    redirect: (to) => ({
+      path: `/atlas/${to.params.pathMatch.join("/")}`,
+      query: to.query,
+    }),
   },
 
   // Enrichment review panel (etap-06 / etap-06b)

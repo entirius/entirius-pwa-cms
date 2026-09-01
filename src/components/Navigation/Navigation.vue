@@ -13,14 +13,10 @@
             v-for="(r, i) in filteredRoutes"
             :key="`${r.labelKey}-${i}`"
             :to="{ path: r.route, query: r.query }"
-            class="nav-link bg-basic-200-hover t-basic-600 pt-100 pb-100 flex ai-ct"
-            :class="isSidebarCollapsed ? '' : 'pl-200 pr-200'"
+            class="nav-link"
+            :class="isSidebarCollapsed ? 'nav-link--collapsed' : ''"
           >
-            <FontAwesomeIcon
-              :icon="r.icon"
-              class="nav-icon"
-              :style="isSidebarCollapsed ? { marginRight: 0 } : {}"
-            />
+            <FontAwesomeIcon :icon="r.icon" class="nav-icon" />
             <span v-if="!isSidebarCollapsed" class="nav-label">{{
               $t(r.labelKey)
             }}</span>
@@ -45,6 +41,7 @@
 <script>
 import { useUserStore } from "@/stores/user";
 import { useQualityStore } from "@/stores/quality";
+import { useMuninStore } from "@/stores/munin";
 import { buildNavRoutes, filterNavRoutes } from "./nav-routes";
 
 export default {
@@ -57,7 +54,8 @@ export default {
   setup() {
     const userStore = useUserStore();
     const qualityStore = useQualityStore();
-    return { userStore, qualityStore };
+    const munin = useMuninStore();
+    return { userStore, qualityStore, munin };
   },
   data() {
     return {
@@ -78,6 +76,7 @@ export default {
       return filterNavRoutes(this.routes, {
         activeApp: this.activeApp,
         qualityAvailable: this.qualityStore.available,
+        isModuleEnabled: this.munin.isModuleEnabled,
       });
     },
   },
@@ -100,15 +99,73 @@ export default {
   display: flex;
   flex-direction: column;
 }
+.nav-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 8px 12px;
+  margin-bottom: 2px;
+  border-radius: 8px;
+  color: var(--c-basic-600);
+  font-weight: 500;
+  line-height: 1.4;
+  text-decoration: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: var(--c-basic-200);
+    color: var(--c-basic-800);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--c-support-300);
+    outline-offset: -2px;
+  }
+  // The global .router-link-active decorator bumps the font a size up with
+  // !important, which clipped labels and shifted the layout on every route
+  // change — pin the size back, scoped to the sidebar.
+  &.router-link-active {
+    font-size: inherit !important;
+    color: var(--c-support-400) !important;
+    font-weight: 600;
+    background: color-mix(in srgb, var(--c-support-400) 10%, transparent);
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 18px;
+      border-radius: 999px;
+      background: var(--c-support-400);
+    }
+  }
+}
+.nav-link--collapsed {
+  justify-content: center;
+  width: 40px;
+  padding: 8px 0;
+}
 .nav-icon {
   width: 18px;
+  font-size: 15px;
   text-align: center;
   flex-shrink: 0;
-  margin-right: 10px;
+  color: var(--c-basic-500);
+  transition: color 0.15s ease;
+
+  .nav-link:hover &,
+  .nav-link.router-link-active & {
+    color: inherit;
+  }
 }
 .nav-label {
   white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 .mobile-nav {
   display: flex;

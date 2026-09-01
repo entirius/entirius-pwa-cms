@@ -13,7 +13,7 @@ vi.mock("@/api/pim/api", () => ({
   GET_FeatureAttributes: () => Promise.resolve({ data: { results: [] } }),
   GET_BulkProductGaps: (...a) => mockGetGaps(...a),
 }));
-vi.mock("@/api/suppliers/api", () => ({
+vi.mock("@/api/atlas/api", () => ({
   GET_BulkHasChanges: () => Promise.resolve({ data: { skus: {} } }),
 }));
 

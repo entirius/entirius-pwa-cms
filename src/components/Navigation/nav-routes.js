@@ -85,6 +85,27 @@ export function buildNavRoutes() {
       requiresQuality: true,
     },
     {
+      route: "/pricefighter/gap",
+      labelKey: "nav.pricefighter_gap_table",
+      icon: "scale-balanced",
+      query: {},
+      app: ["pricefighter"],
+    },
+    {
+      route: "/pricefighter/strategies",
+      labelKey: "nav.pricefighter_strategies",
+      icon: "gears",
+      query: {},
+      app: ["pricefighter"],
+    },
+    {
+      route: "/pricefighter/history",
+      labelKey: "nav.pricefighter_history",
+      icon: "clock-rotate-left",
+      query: {},
+      app: ["pricefighter"],
+    },
+    {
       route: "/points/list",
       labelKey: "nav.dp_points",
       icon: "location-dot",
@@ -211,34 +232,44 @@ export function buildNavRoutes() {
       app: ["translation"],
     },
     {
-      route: "/suppliers/list",
-      labelKey: "nav.suppliers_list",
-      icon: "truck",
+      route: "/atlas/list",
+      labelKey: "nav.atlas_list",
+      icon: "layer-group",
       query: {},
-      app: ["suppliers"],
+      app: ["atlas"],
     },
     {
-      // etap-07b: cross-supplier dashboard — RealProducts touched by auto-EAN-match
-      route: "/suppliers/auto-matched",
-      labelKey: "nav.suppliers_auto_matched",
+      // cross-source dashboard — RealProducts touched by auto-EAN-match
+      route: "/atlas/auto-matched",
+      labelKey: "nav.atlas_auto_matched",
       icon: "link",
       query: {},
-      app: ["suppliers"],
+      app: ["atlas"],
     },
     {
-      // etap-07b: operator triage UI for find_duplicates_by_ean groups
-      route: "/suppliers/duplicates",
-      labelKey: "nav.suppliers_duplicates",
+      // operator triage UI for find_duplicates_by_ean groups
+      route: "/atlas/duplicates",
+      labelKey: "nav.atlas_duplicates",
       icon: "copy",
       query: {},
-      app: ["suppliers"],
+      app: ["atlas"],
     },
     {
-      route: "/suppliers/review",
-      labelKey: "nav.supplier_review_queue",
+      route: "/atlas/review",
+      labelKey: "nav.atlas_review_queue",
       icon: "square-check",
       query: {},
-      app: ["suppliers"],
+      app: ["atlas"],
+    },
+    {
+      // single-box text/image search across PIM + atlas fingerprints —
+      // optional django-lookup backend module, see requiresModule below
+      route: "/atlas/find",
+      labelKey: "nav.atlas_find",
+      icon: "magnifying-glass",
+      query: {},
+      app: ["atlas"],
+      requiresModule: "lookup",
     },
     {
       route: "/enrichment",
@@ -266,10 +297,16 @@ export function buildNavRoutes() {
 
 // Routes visible for the active panel. `requiresQuality` items are hidden until the backend's gaps
 // capability probe resolves true (old backends never see the quality-rules nav item).
-export function filterNavRoutes(routes, { activeApp, qualityAvailable }) {
+// `requiresModule` items are hidden until that optional django-munin module reports enabled
+// (mirrors the router guard's `meta.module` gate — see router/index.js).
+export function filterNavRoutes(
+  routes,
+  { activeApp, qualityAvailable, isModuleEnabled }
+) {
   return routes.filter((r) => {
     if (r.app.indexOf(activeApp) === -1) return false;
     if (r.requiresQuality && qualityAvailable !== true) return false;
+    if (r.requiresModule && !isModuleEnabled?.(r.requiresModule)) return false;
     return true;
   });
 }
