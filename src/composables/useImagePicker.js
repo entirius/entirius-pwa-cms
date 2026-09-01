@@ -28,16 +28,20 @@ export function extractImageFile(clipboardData) {
  * Drop/paste/pick an image, downscale it client-side (never uploaded at full
  * resolution) and expose a preview. `remoteImageUrl` is an optional ref to a
  * pre-existing remote picture (e.g. an atlas source photo) shown until the
- * operator picks a local file or removes it.
+ * operator picks a local file or removes it. `initialImage` is an optional,
+ * already-downscaled Blob restoring an earlier pick (Find after back-navigation);
+ * its preview object-URL is created fresh — the previous one was revoked on unmount.
  *
  * Usage (Options API — setup return pattern):
  *   setup(props) {
  *     return useImagePicker(computed(() => props.imageUrl))
  *   }
  */
-export function useImagePicker(remoteImageUrl) {
-  const imageBlob = ref(null);
-  const localPreviewUrl = ref("");
+export function useImagePicker(remoteImageUrl, initialImage = null) {
+  const imageBlob = ref(initialImage);
+  const localPreviewUrl = ref(
+    initialImage ? URL.createObjectURL(initialImage) : ""
+  );
   const imageRemoved = ref(false);
   const imageError = ref("");
 

@@ -10,6 +10,8 @@
 
       <DedupSearchBox
         :initial-query="initialQuery"
+        :initial-image="initialImage"
+        :scope="initialScope"
         data-testid="atlas-find-box"
         @results="onResults"
         @error="onSearchError"
@@ -85,23 +87,39 @@
 import DedupSearchBox from "@/components/lookup/DedupSearchBox.vue";
 import CandidateRow from "@/components/lookup/CandidateRow.vue";
 import { groupHits } from "@/utils/lookupMatch";
+import { markRaw } from "vue";
+import { useLookupFindStore } from "@/stores/lookupFind";
+
+const DEFAULT_SCOPE = ["pim_product", "atlas_source_product"];
 
 export default {
   name: "AtlasFind",
   components: { DedupSearchBox, CandidateRow },
+  setup() {
+    return { findStore: useLookupFindStore() };
+  },
+  // Opening a hit leaves the atlas subtree, so the view unmounts — data() seeds
+  // from the store's last search (if any) to survive the back-navigation.
   data() {
+    const saved = this.findStore.saved;
     return {
-      hits: [],
-      queryParsed: null,
-      warnings: [],
-      searched: false,
-      lastQuery: "",
-      hasImage: false,
+      hits: saved?.hits ?? [],
+      queryParsed: saved?.queryParsed ?? null,
+      warnings: saved?.warnings ?? [],
+      searched: !!saved,
+      lastQuery: saved?.q ?? "",
+      hasImage: !!saved?.hasImage,
     };
   },
   computed: {
     initialQuery() {
-      return this.$route.query.q || "";
+      return this.findStore.saved?.q ?? (this.$route.query.q || "");
+    },
+    initialImage() {
+      return this.findStore.saved?.imageBlob ?? null;
+    },
+    initialScope() {
+      return this.findStore.saved?.scope ?? DEFAULT_SCOPE;
     },
     // Exact / similar are shown as results; `none` rows (blocking neighbours nothing agreed
     // on) are folded under a disclosure so the top neighbour stays a click away.
@@ -129,15 +147,28 @@ export default {
       this.lastQuery = response.q || "";
       this.hasImage = !!response.hasImage;
       this.searched = true;
+      this.findStore.save({
+        hits: this.hits,
+        queryParsed: this.queryParsed,
+        warnings: this.warnings,
+        q: this.lastQuery,
+        hasImage: this.hasImage,
+        scope: response.scope,
+        // markRaw: the store's ref would deep-wrap the Blob in a reactive proxy,
+        // and a proxied Blob breaks identity (and FormData internals) on restore.
+        imageBlob: response.imageBlob ? markRaw(response.imageBlob) : null,
+      });
     },
     // A failed search must not leave the previous, now-stale, result list
-    // on screen next to the box's own error banner.
+    // on screen next to the box's own error banner — nor come back from the
+    // store on the next visit.
     onSearchError() {
       this.hits = [];
       this.queryParsed = null;
       this.warnings = [];
       this.hasImage = false;
       this.searched = false;
+      this.findStore.clear();
     },
     goCreateProduct() {
       this.$router.push({

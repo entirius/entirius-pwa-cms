@@ -89,11 +89,13 @@ export default {
     inline: { type: Boolean, default: false },
     initialQuery: { type: String, default: "" },
     imageUrl: { type: String, default: "" },
+    // Already-downscaled Blob restoring an earlier pick (Find after back-navigation).
+    initialImage: { type: Object, default: null },
   },
   emits: ["results", "error"],
   setup(props) {
     return {
-      ...useImagePicker(computed(() => props.imageUrl)),
+      ...useImagePicker(computed(() => props.imageUrl), props.initialImage),
       scopeOptions: SCOPE_OPTIONS,
     };
   },
@@ -176,6 +178,10 @@ export default {
           q: this.q,
           // Mirrors buildLookupPayload: whether the request carried a picture.
           hasImage: !!this.imageBlob || (!this.imageRemoved && !!this.imageUrl),
+          // What the caller needs to restore this exact search later (Find keeps
+          // the last one in the lookupFind store to survive back-navigation).
+          scope: [...this.activeScope],
+          imageBlob: this.imageBlob,
         });
       } catch (err) {
         this.error = extractApiMessage(err, this.$t("notifications.error"));
