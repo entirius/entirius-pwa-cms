@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [2.1.0] (2026-09-01)
 
 ### Added
 
@@ -11,6 +11,15 @@ All notable changes to this project will be documented in this file.
   ≥ 0.2.0; `src/utils/lookupMatch.js` falls back on `similarity` for an older
   backend), `none` neighbours folded behind a disclosure, relevance shown as
   `NN %` with an "Exact" badge, and a photo-specific empty state.
+
+### Security
+
+- **Dependency refresh closing the open Dependabot alerts** (#23, #24, #25): unit-test
+  toolchain (vitest 4, happy-dom 20, @vitejs/plugin-vue 6), runtime deps (axios 1.x,
+  swiper 14, uuid 11, lodash, sass), and `package.json` `overrides` pinning the patched
+  transitive vue-cli 5 / webpack 5 toolchain. Dependabot config added.
+- **New CI job `test-e2e-mocked`**: backend-free Playwright smoke of the Atlas panels
+  (cookie-stubbed auth, mocked APIs) on every PR.
 
 ### Fixed
 
