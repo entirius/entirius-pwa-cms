@@ -1,12 +1,18 @@
 import { defineAsyncComponent } from "vue";
 
+import BasicButton from "./BasicButton/index.vue";
+import BasicInput from "./BasicInput/index.vue";
+import BasicLogo from "./BasicLogo/index.vue";
+
 export default function registerBootComponents(app) {
+  app.component("BasicButton", BasicButton);
+  app.component("BasicInput", BasicInput);
+  app.component("BasicLogo", BasicLogo);
+
   app.component("Accordion", defineAsyncComponent(() => import("./Accordion/index.vue")));
-  app.component("BasicButton", defineAsyncComponent(() => import("./BasicButton/index.vue")));
   app.component("BasicSwiper", defineAsyncComponent(() => import("./BasicSwiper/index.vue")));
   app.component("BasicCheckbox", defineAsyncComponent(() => import("./BasicCheckbox/index.vue")));
   app.component("BasicImage", defineAsyncComponent(() => import("./BasicImage/index.vue")));
-  app.component("BasicInput", defineAsyncComponent(() => import("./BasicInput/index.vue")));
   app.component("ColorInput", defineAsyncComponent(() => import("./ColorInput/index.vue")));
   app.component("NumberInput", defineAsyncComponent(() => import("./NumberInput/index.vue")));
   app.component("BasicWysiwyg", defineAsyncComponent(() => import("./BasicWysiwyg/index.vue")));
@@ -18,7 +24,6 @@ export default function registerBootComponents(app) {
   app.component("DataTable", defineAsyncComponent(() => import("./DataTable/index.vue")));
   app.component("Dropdown", defineAsyncComponent(() => import("./Dropdown/index.vue")));
   app.component("Loader", defineAsyncComponent(() => import("./Loader/index.vue")));
-  app.component("BasicLogo", defineAsyncComponent(() => import("./BasicLogo/index.vue")));
   app.component("Pagination", defineAsyncComponent(() => import("./Pagination/index.vue")));
   app.component("SubscriberSetter", defineAsyncComponent(() => import("./SubscriberSetter/index.vue")));
   app.component("Switcher", defineAsyncComponent(() => import("./Switcher/Switcher.vue")));
