@@ -2,11 +2,24 @@
   <div
     class="switcher inline-flex gap-100 ai-ct"
     :class="{ active: selected, disabled: prevent }"
+    role="switch"
+    :tabindex="prevent ? -1 : 0"
+    :aria-checked="selected"
+    :aria-disabled="prevent"
+    :aria-label="label || undefined"
     @click="onSwitch"
+    @keydown.enter.prevent="onSwitch"
+    @keydown.space.prevent="onSwitch"
   >
+    <!-- role/tabindex/keydown, not just @click: this is a plain div, so without them the
+         switcher is unreachable from the keyboard and reads as nothing to a screen reader.
+         Space is .prevent because it scrolls the page by default. Keep this comment inside
+         the root element — above it the component becomes a multi-root fragment. -->
     <p v-if="label">
       {{ label }}
-      <HelpTooltip v-if="hint" :text="hint" @click.stop />
+      <!-- .stop on keydown for the same reason as on click: the tooltip is focusable, so
+           Enter/Space on the "?" would otherwise bubble up and flip the switch. -->
+      <HelpTooltip v-if="hint" :text="hint" @click.stop @keydown.stop />
     </p>
     <p class="block relative toggler" />
   </div>
@@ -79,6 +92,11 @@ export default {
   .toggler {
     cursor: pointer;
   }
+}
+.switcher:focus-visible {
+  outline: 2px solid var(--c-support-400);
+  outline-offset: 2px;
+  border-radius: 0.25rem;
 }
 .active {
   .toggler {
