@@ -41,3 +41,47 @@ export const GET_Replies = (params) =>
 
 export const POST_ConfirmOptout = (replyId) =>
   communicatorApi.post(`${base()}/replies/${replyId}/confirm-optout/`, {});
+
+// Plan 14 — templates, sequences, send settings.
+export const GET_Templates = () => communicatorApi.get(`${base()}/templates/`);
+
+export const GET_Template = (id) => communicatorApi.get(`${base()}/templates/${id}/`);
+
+export const PUT_Template = (id, body) => communicatorApi.put(`${base()}/templates/${id}/`, body);
+
+export const GET_TemplateVersions = (id) => communicatorApi.get(`${base()}/templates/${id}/versions/`);
+
+export const POST_TestGenerate = (id, context) =>
+  communicatorApi.post(`${base()}/templates/${id}/test-generate/`, { context });
+
+export const GET_Models = () => communicatorApi.get(`${base()}/models/`);
+
+export const GET_Sequences = () => communicatorApi.get(`${base()}/sequences/`);
+
+export const POST_Sequence = (body) => communicatorApi.post(`${base()}/sequences/`, body);
+
+export const GET_SequenceTexts = (id) => communicatorApi.get(`${base()}/sequences/${id}/texts/`);
+
+export const POST_SequenceText = (id, body) => communicatorApi.post(`${base()}/sequences/${id}/texts/`, body);
+
+export const GET_Policy = () => communicatorApi.get(`${base()}/policy/`);
+
+export const PUT_Policy = (body) => communicatorApi.put(`${base()}/policy/`, body);
+
+export const GET_Channel = () => communicatorApi.get(`${base()}/channel/`);
+
+// Never sends live_enabled: that flag is Grappelli-only.
+export const PATCH_Channel = ({ mode, sandbox_mailbox }) =>
+  communicatorApi.patch(`${base()}/channel/`, { mode, sandbox_mailbox });
+
+export const GET_Suppressions = () => communicatorApi.get(`${base()}/suppressions/`);
+
+export const POST_Suppression = (body) => communicatorApi.post(`${base()}/suppressions/`, body);
+
+export const DELETE_Suppression = (id) => communicatorApi.delete(`${base()}/suppressions/${id}/`);
+
+// params: { status, page }
+export const GET_Messages = (params) => communicatorApi.get(`${base()}/messages/`, { params });
+
+// C-31: moves scheduled_at to the channel clock only; the next beat run sends.
+export const POST_SendNow = (id) => communicatorApi.post(`${base()}/messages/${id}/send-now/`, {});
