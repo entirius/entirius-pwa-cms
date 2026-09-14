@@ -1,0 +1,81 @@
+/* Shared look of the leads desktop screens (plan 14): buttons, tables, form rows. */
+.ld-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-300);
+  padding: var(--space-300);
+}
+.ld-title {
+  margin: 0;
+  font-size: var(--fs-400);
+}
+.ld-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-200);
+}
+.ld-btn {
+  min-height: 36px;
+  padding: 0 var(--space-300);
+  border: 1px solid var(--c-basic-300);
+  border-radius: 6px;
+  background: var(--c-basic-100);
+  color: var(--c-basic-800);
+  cursor: pointer;
+}
+.ld-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.ld-btn--primary {
+  border-color: var(--c-support-400);
+  background: var(--c-support-400);
+  color: var(--c-basic-100);
+}
+.ld-btn--danger {
+  border-color: var(--c-negative-300);
+  color: var(--c-negative-300);
+}
+.ld-input {
+  min-height: 36px;
+  padding: 0 var(--space-200);
+  border: 1px solid var(--c-basic-300);
+  border-radius: 6px;
+  background: var(--c-basic-100);
+  color: var(--c-basic-800);
+}
+textarea.ld-input {
+  padding: var(--space-200);
+  font-family: monospace;
+}
+.ld-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.ld-table th,
+.ld-table td {
+  padding: var(--space-200);
+  border-bottom: 1px solid var(--c-basic-300);
+  text-align: left;
+}
+.ld-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-100);
+}
+.ld-error {
+  margin: 0;
+  color: var(--c-negative-300);
+}
+.ld-muted {
+  margin: 0;
+  color: var(--c-basic-500);
+}
+.ld-badge {
+  display: inline-block;
+  padding: 0 var(--space-100);
+  border-radius: 4px;
+  background: var(--c-basic-200);
+  font-size: var(--fs-100);
+}

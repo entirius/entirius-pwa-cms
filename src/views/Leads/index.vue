@@ -1,5 +1,8 @@
 <template>
-  <div class="leads" :class="{ 'leads--detail': hasDetail }" data-testid="leads-layout">
+  <DesktopOnly v-if="route.meta?.desktop">
+    <router-view />
+  </DesktopOnly>
+  <div v-else class="leads" :class="{ 'leads--detail': hasDetail }" data-testid="leads-layout">
     <aside class="leads__inbox">
       <Inbox />
     </aside>
@@ -15,8 +18,10 @@
 <script setup>
 import { computed } from "vue";
 import { useRoute } from "vue-router";
+import DesktopOnly from "./DesktopOnly.vue";
 import Inbox from "./Inbox.vue";
 
+// Desktop-only screens (board, import, stages) take the full width.
 // Mobile stacks the screens (Inbox, or the open draft/thread); >= 1024 px shows both as columns.
 const route = useRoute();
 const hasDetail = computed(() => route.name !== "LeadsInbox");

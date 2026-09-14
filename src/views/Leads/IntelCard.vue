@@ -31,8 +31,11 @@
 import { computed, ref } from "vue";
 
 // Intel and hooks of a company (render_context of a draft or the leads company payload).
-const props = defineProps({ context: { type: Object, default: () => ({}) } });
-const open = ref(false);
+const props = defineProps({
+  context: { type: Object, default: () => ({}) },
+  expanded: { type: Boolean, default: false },
+});
+const open = ref(props.expanded);
 const hooks = computed(() => props.context?.hooks || []);
 </script>
 
