@@ -120,6 +120,6 @@ and `communicator`; `siteintel` (intel card) and `notifications` (header bell, `
 gate in-view with `isModuleEnabled` — never map them in `MODULE_TO_PANEL`. Every leads-family call takes the
 channel from `src/stores/leadsChannel.js` (`VUE_APP_LEADS_CHANNEL`, default `default-europe`), never
 `VUE_APP_CHANNEL`. Review has no detail endpoint: the view finds the draft in `review/?status=review_required`.
-The thread view shows the newest thread of `leads.Company:<id>`. The toolbox teaser
+The thread view merges every thread of `leads.Company:<id>` into one company timeline. The toolbox teaser
 (`ToolboxBanner.vue`) reads munin `platform.toolbox_status` (`munin.toolboxStatus`). `data-testid`s are the contract of the
 emporium page objects (`src/entirius_tests/cms_pages/`) — rename both together.

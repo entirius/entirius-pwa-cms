@@ -22,6 +22,16 @@ describe("ThreadTimeline", () => {
     expect(wrapper.findAll(".tl__tag")).toHaveLength(1);
   });
 
+  it("the first outbound message of every merged thread is not a follow-up", () => {
+    const merged = [
+      { ...messages[1], thread: 1 },
+      { ...messages[2], thread: 1 },
+      { ...messages[1], at: "2026-09-25T08:00:00Z", subject: "New draft", thread: 2 },
+    ];
+    const wrapper = mount(ThreadTimeline, { props: { messages: merged } });
+    expect(wrapper.findAll(".tl__tag")).toHaveLength(1);
+  });
+
   it("offers opt-out confirmation on a suspected opt-out reply", async () => {
     const optouts = [{ id: 3, received_at: "2026-09-21T09:00:00Z", optout_confirmed_at: null }];
     const wrapper = mount(ThreadTimeline, { props: { messages, optouts } });

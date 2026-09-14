@@ -48,6 +48,15 @@ const props = defineProps({
 });
 defineEmits(["confirm-optout"]);
 
+// Index of the first outbound message of each thread; later ones are follow-ups.
+function firstOutIndexes(messages) {
+  const first = new Map();
+  messages.forEach((m, i) => {
+    if (m.direction === "out" && !first.has(m.thread)) first.set(m.thread, i);
+  });
+  return new Set(first.values());
+}
+
 function messageEntry(item, index, firstOut) {
   const out = item.direction === "out";
   return {
@@ -56,13 +65,13 @@ function messageEntry(item, index, firstOut) {
     subject: item.subject,
     text: item.body_text,
     status: out ? item.status : "",
-    tag: out && index !== firstOut ? t("leads.thread.followup") : "",
+    tag: out && !firstOut.has(index) ? t("leads.thread.followup") : "",
     optout: out ? null : props.optouts.find((reply) => reply.received_at === item.at) || null,
   };
 }
 
 const entries = computed(() => {
-  const firstOut = props.messages.findIndex((m) => m.direction === "out");
+  const firstOut = firstOutIndexes(props.messages);
   const notes = props.activities.map((a) => ({ at: a.created_at, side: "note", text: a.message }));
   const bubbles = props.messages.map((m, i) => messageEntry(m, i, firstOut));
   return [...bubbles, ...notes].sort((a, b) => new Date(a.at) - new Date(b.at));

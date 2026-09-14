@@ -64,7 +64,7 @@ function formatAge(iso) {
   width: min(32rem, 100vw);
   max-height: 70vh;
   overflow-y: auto;
-  padding-bottom: env(safe-area-inset-bottom);
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
   background: var(--c-basic-100);
   border-radius: 1rem 1rem 0 0;
   box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.16);

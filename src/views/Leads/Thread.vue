@@ -38,18 +38,24 @@ const activities = ref([]);
 const optouts = ref([]);
 const loading = ref(false);
 
-// The company payload carries no threads: the newest thread of the subject (an older one left open must not
-// hide the conversation that just got a reply).
+// The company payload carries no threads: every thread of the subject merges into one company timeline
+// (a new draft opens a new thread — it must not hide the conversation that already got a reply).
+async function loadThreadParts(threadId) {
+  const [detail, replies] = await Promise.all([
+    GET_Thread(threadId),
+    GET_Replies({ thread: threadId, kind: "suspected_optout" }),
+  ]);
+  const timeline = (detail.data.timeline || []).map((item) => ({ ...item, thread: threadId }));
+  return { timeline, optouts: replies.data.results || [] };
+}
+
 async function loadThread(companyId) {
   const { data } = await GET_Threads({ subject_ref: `leads.Company:${companyId}` });
-  const picked = [...(data.results || [])].sort((a, b) => b.id - a.id)[0];
-  if (!picked) return null;
-  const [detail, replies] = await Promise.all([
-    GET_Thread(picked.id),
-    GET_Replies({ thread: picked.id, kind: "suspected_optout" }),
-  ]);
-  optouts.value = replies.data.results || [];
-  return detail.data;
+  const threads = data.results || [];
+  if (!threads.length) return null;
+  const parts = await Promise.all(threads.map((item) => loadThreadParts(item.id)));
+  optouts.value = parts.flatMap((part) => part.optouts);
+  return { timeline: parts.flatMap((part) => part.timeline) };
 }
 
 async function load() {

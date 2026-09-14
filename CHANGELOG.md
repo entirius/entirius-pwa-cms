@@ -9,8 +9,8 @@ All notable changes to this project will be documented in this file.
 - **Leads panel** (`/leads/inbox`, `/leads/inbox/:id`, `/leads/companies/:id`; munin keys `leads`,
   `communicator`): mobile-first Inbox and one-draft Review (Send / Not now docked in thumb reach, swipe with
   button fallback, "more" menu with rewrite-with-note, edit, skip company; "Scheduled HH:MM" after Send; empty
-  queue says how many are scheduled and when the next goes out), a company thread as a chat timeline
-  (messages, replies, follow-ups, activity notes, opt-out confirm) with a collapsible intel card, and a
+  queue says how many are scheduled and when the next goes out), a company thread as one chat timeline over
+  every thread of the company (messages, replies, follow-ups, activity notes, opt-out confirm) with a collapsible intel card, and a
   two-column layout at ≥ 1024 px. Channel from `VUE_APP_LEADS_CHANNEL` (default `default-europe`).
 - **Toolbox teaser** on Review and the company thread, driven by munin `platform.toolbox_status`:
   `unconfigured` disables AI actions under one "available with the Entirius AI Toolbox" banner, `unreachable`
