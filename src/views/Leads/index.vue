@@ -28,10 +28,13 @@ const hasDetail = computed(() => route.name !== "LeadsInbox");
 </script>
 
 <style scoped>
+/* The app content column clips (overflow: hidden) — the layout is its own scroller, so long threads
+   and the Review edit form stay reachable and the sticky Review actions pin to its bottom. */
 .leads {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  min-height: 100%;
+  height: 100%;
+  overflow-y: auto;
 }
 .leads__placeholder {
   display: none;
@@ -44,9 +47,14 @@ const hasDetail = computed(() => route.name !== "LeadsInbox");
 @media (min-width: 1024px) {
   .leads {
     grid-template-columns: 360px minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    overflow: hidden;
   }
   .leads__inbox {
     border-right: 1px solid var(--c-basic-300);
+  }
+  .leads__inbox,
+  .leads__detail {
     overflow-y: auto;
   }
   .leads__placeholder {
