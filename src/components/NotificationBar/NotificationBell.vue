@@ -1,5 +1,5 @@
 <template>
-  <div class="relative" v-out="() => (isOpen = false)">
+  <div class="relative">
     <button
       class="notif-bell"
       :class="{ 'notif-bell--active': isOpen }"
@@ -12,7 +12,9 @@
         {{ store.unread > 99 ? "99+" : store.unread }}
       </span>
     </button>
-    <NotificationList v-if="isOpen" @navigate="isOpen = false" />
+    <Teleport to="body">
+      <NotificationList v-if="isOpen" @close="isOpen = false" />
+    </Teleport>
   </div>
 </template>
 

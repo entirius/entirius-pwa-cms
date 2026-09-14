@@ -3047,6 +3047,7 @@
     }
   },
   "notification_bar": {
+    "close": "Zamknij powiadomienia",
     "title": "Powiadomienia",
     "open": "Powiadomienia",
     "unread": "Nieprzeczytane: {count}",

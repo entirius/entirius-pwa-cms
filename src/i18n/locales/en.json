@@ -3048,6 +3048,7 @@
     }
   },
   "notification_bar": {
+    "close": "Close notifications",
     "title": "Notifications",
     "open": "Notifications",
     "unread": "{count} unread",

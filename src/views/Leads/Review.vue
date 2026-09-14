@@ -8,7 +8,7 @@
         {{ scheduledLabel }}
       </p>
 
-      <p v-if="toolboxBanner" class="review__banner" data-testid="toolbox-banner">{{ toolboxBanner }}</p>
+      <ToolboxBanner />
 
       <article
         v-if="message && !scheduledLabel"
@@ -74,6 +74,7 @@ import { formatTime } from "@/utils/leadsTime";
 import IntelCard from "./IntelCard.vue";
 import ReviewActions from "./ReviewActions.vue";
 import RewriteModal from "./RewriteModal.vue";
+import ToolboxBanner from "./ToolboxBanner.vue";
 
 const SCHEDULED_MS = 2000;
 
@@ -98,10 +99,6 @@ const companyName = computed(
   () => message.value?.render_context?.company_name || message.value?.thread?.recipient_name || ""
 );
 const aiDisabled = computed(() => munin.toolboxStatus === "unconfigured");
-const toolboxBanner = computed(() => {
-  const status = munin.toolboxStatus;
-  return ["unconfigured", "unreachable"].includes(status) ? t(`leads.toolbox.${status}`) : "";
-});
 
 async function load() {
   loading.value = true;
@@ -224,13 +221,6 @@ onBeforeUnmount(() => clearTimeout(nextTimer));
   font-size: var(--fs-400);
   font-weight: 600;
   text-align: center;
-}
-.review__banner {
-  margin: 0;
-  padding: var(--space-200) var(--space-300);
-  border-radius: 8px;
-  background: var(--c-warning-100);
-  color: var(--c-basic-800);
 }
 .review__draft {
   display: flex;

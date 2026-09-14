@@ -3,6 +3,7 @@
     <BackBar class="thread__back" :label="$t('leads.thread.back')" @back="goBack" />
     <Loader v-show="loading" />
     <h3 v-if="company" class="thread__company" data-testid="thread-company">{{ company.name }}</h3>
+    <ToolboxBanner v-if="company" />
     <IntelCard v-if="company && munin.isModuleEnabled('siteintel')" :context="company" />
     <p v-if="!loading && !thread" class="thread__none">{{ $t("leads.thread.no_thread") }}</p>
     <ThreadTimeline
@@ -24,6 +25,7 @@ import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
 import IntelCard from "./IntelCard.vue";
 import ThreadTimeline from "./ThreadTimeline.vue";
+import ToolboxBanner from "./ToolboxBanner.vue";
 
 const route = useRoute();
 const router = useRouter();

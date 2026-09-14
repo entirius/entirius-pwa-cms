@@ -12,8 +12,11 @@ All notable changes to this project will be documented in this file.
   queue says how many are scheduled and when the next goes out), a company thread as a chat timeline
   (messages, replies, follow-ups, activity notes, opt-out confirm) with a collapsible intel card, and a
   two-column layout at ≥ 1024 px. Channel from `VUE_APP_LEADS_CHANNEL` (default `default-europe`).
+- **Toolbox teaser** on Review and the company thread, driven by munin `platform.toolbox_status`:
+  `unconfigured` disables AI actions under one "available with the Entirius AI Toolbox" banner, `unreachable`
+  keeps them enabled with an inline error.
 - **Notification bar** in the header (django-notifications): unread badge polled every 30 s while logged in
-  and the tab is visible, list, one tap marks read and jumps to the subject (`src/utils/subjectRef.js`).
+  and the tab is visible, list as a bottom sheet (thumb reach on a phone), one tap marks read and jumps to the subject (`src/utils/subjectRef.js`).
 
 ### Fixed
 

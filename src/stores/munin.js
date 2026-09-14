@@ -53,7 +53,7 @@ export const useMuninStore = defineStore("munin", () => {
   // modules stored as array of { key, label, enabled_in_cms, ... }
   const modules = ref([]);
   const loaded = ref(false);
-  // django_utils.toolbox.status(): "" (not reported) | ok | unconfigured | unreachable
+  // munin platform.toolbox_status: "" (not reported) | configured | unconfigured | unreachable
   const toolboxStatus = ref("");
   const loading = ref(false);
 
@@ -108,7 +108,7 @@ export const useMuninStore = defineStore("munin", () => {
       const hasAdminData = parsed.some((m) => "enabled_in_cms" in m);
       if (hasAdminData) {
         modules.value = parsed;
-        toolboxStatus.value = data.toolbox_status || "";
+        toolboxStatus.value = data.platform?.toolbox_status || "";
         loaded.value = true;
       }
     } catch (err) {

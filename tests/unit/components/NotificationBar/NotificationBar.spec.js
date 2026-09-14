@@ -23,7 +23,7 @@ vi.mock("vue-router", () => ({ useRouter: () => ({ push }) }));
 import { useNotificationsStore } from "@/stores/notifications";
 import NotificationBell from "@/components/NotificationBar/NotificationBell.vue";
 
-const mountBell = () => mount(NotificationBell, { global: { directives: { out: {} } } });
+const mountBell = () => mount(NotificationBell, { global: { stubs: { teleport: true } } });
 
 describe("notification bar", () => {
   beforeEach(() => {
@@ -60,6 +60,15 @@ describe("notification bar", () => {
     await wrapper.get('[data-testid="notif-bell"]').trigger("click");
     await flushPromises();
     expect(wrapper.findAll('[data-testid="notif-row"]')).toHaveLength(2);
+  });
+
+  it("opens as a bottom sheet that the backdrop closes", async () => {
+    const wrapper = mountBell();
+    await wrapper.get('[data-testid="notif-bell"]').trigger("click");
+    await flushPromises();
+    expect(wrapper.find('[data-testid="notif-sheet"]').exists()).toBe(true);
+    await wrapper.get('[data-testid="notif-backdrop"]').trigger("click");
+    expect(wrapper.find('[data-testid="notif-sheet"]').exists()).toBe(false);
   });
 
   it("one tap on a row marks it read and jumps to the thread", async () => {
