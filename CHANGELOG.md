@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- **Leads panel** (`/leads/inbox`, `/leads/inbox/:id`, `/leads/companies/:id`; munin keys `leads`,
+  `communicator`): mobile-first Inbox and one-draft Review (Send / Not now docked in thumb reach, swipe with
+  button fallback, "more" menu with rewrite-with-note, edit, skip company; "Scheduled HH:MM" after Send; empty
+  queue says how many are scheduled and when the next goes out), a company thread as a chat timeline
+  (messages, replies, follow-ups, activity notes, opt-out confirm) with a collapsible intel card, and a
+  two-column layout at ≥ 1024 px. Channel from `VUE_APP_LEADS_CHANNEL` (default `default-europe`).
+- **Notification bar** in the header (django-notifications): unread badge polled every 30 s while logged in
+  and the tab is visible, list, one tap marks read and jumps to the subject (`src/utils/subjectRef.js`).
+
+### Fixed
+
+- Router `meta.module` guard no longer loops when the panel root itself needs the missing module.
+
 ## [2.1.0] (2026-09-01)
 
 ### Added

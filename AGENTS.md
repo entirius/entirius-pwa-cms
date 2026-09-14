@@ -1,9 +1,9 @@
 # AGENTS.md
 
 entirius-pwa-cms — admin CMS for the Entirius platform: a Vue 3 SPA with a
-visual page builder and 16 self-contained panels (Pages, PIM, Points, Forms,
+visual page builder and 17 self-contained panels (Pages, PIM, Points, Forms,
 Accounts, Checkout, Agreements, Emails, FAQ, Pricing, Stock, Translation,
-Atlas, Enricher, Promo, PriceFighter), each enabled per backend by the
+Atlas, Enricher, Promo, PriceFighter, Leads), each enabled per backend by the
 django-munin module registry. Backend for local dev: entirius-zeno at `http://localhost:8100`.
 
 ## Commands
@@ -111,3 +111,14 @@ name/ean/image). Its "Link" action posts to atlas
 `products/<pk>/link-to-realproduct/`, which attaches the SourceProduct itself
 (`real_product` + `SourceProductLink` in one transaction) — a bare
 product-links create would leave the row unmatched and re-proposed.
+
+## Leads panel
+
+Salesperson screens for django-leads + django-communicator, mobile first (one thumb at 390 px), desktop =
+same screens in two columns (`src/views/Leads/index.vue`, CSS grid only). Panel gated by munin keys `leads`
+and `communicator`; `siteintel` (intel card) and `notifications` (header bell, `src/components/NotificationBar/`)
+gate in-view with `isModuleEnabled` — never map them in `MODULE_TO_PANEL`. Every leads-family call takes the
+channel from `src/stores/leadsChannel.js` (`VUE_APP_LEADS_CHANNEL`, default `default-europe`), never
+`VUE_APP_CHANNEL`. Review has no detail endpoint: the view finds the draft in `review/?status=review_required`.
+The thread view shows the newest thread of `leads.Company:<id>`. `data-testid`s are the contract of the
+emporium page objects (`src/entirius_tests/cms_pages/`) — rename both together.
