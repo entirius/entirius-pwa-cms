@@ -981,8 +981,61 @@ const routes = [
         path: "companies/:id",
         name: "LeadsThread",
         component: () =>
-          import(/* webpackChunkName: "leads" */ "../views/Leads/Thread.vue"),
+          import(/* webpackChunkName: "leads" */ "../views/Leads/Company.vue"),
         meta: { requiresAuth: true, titleKey: "leads.thread.title", panel: "leads", module: "leads" },
+      },
+      // Plan 14 desktop screens: full width, "Open on a desktop" below 1024 px
+      {
+        path: "board",
+        name: "LeadsBoard",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Board.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.board.title", panel: "leads", module: "leads", desktop: true },
+      },
+      {
+        path: "import",
+        name: "LeadsImport",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Import.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.import.title", panel: "leads", module: "leads", desktop: true },
+      },
+      {
+        path: "stages",
+        name: "LeadsStages",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Stages.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.stages.title", panel: "leads", module: "leads", desktop: true },
+      },
+    ],
+  },
+
+  // Communicator panel (plan 14): templates, sequences, send settings — desktop only
+  {
+    path: "/communicator",
+    component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/index.vue"),
+    meta: { requiresAuth: true, panel: "communicator" },
+    children: [
+      { path: "", redirect: "/communicator/templates" },
+      {
+        path: "templates",
+        name: "CommunicatorTemplates",
+        component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/TemplateList.vue"),
+        meta: { requiresAuth: true, titleKey: "communicator.templates.title", panel: "communicator", module: "communicator" },
+      },
+      {
+        path: "templates/:id",
+        name: "CommunicatorTemplateEdit",
+        component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/TemplateEdit.vue"),
+        meta: { requiresAuth: true, titleKey: "communicator.template.title", panel: "communicator", module: "communicator" },
+      },
+      {
+        path: "sequences",
+        name: "CommunicatorSequences",
+        component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/SequenceList.vue"),
+        meta: { requiresAuth: true, titleKey: "communicator.sequences.title", panel: "communicator", module: "communicator" },
+      },
+      {
+        path: "settings",
+        name: "CommunicatorSettings",
+        component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/Settings.vue"),
+        meta: { requiresAuth: true, titleKey: "communicator.settings.title", panel: "communicator", module: "communicator" },
       },
     ],
   },

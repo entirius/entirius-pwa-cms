@@ -30,7 +30,7 @@ const MODULE_TO_PANEL = {
   // siteintel and notifications gate in-view (isModuleEnabled) — mapping them would
   // show the Leads panel without leads/communicator.
   leads: "leads",
-  communicator: "leads",
+  communicator: ["leads", "communicator"],
 };
 
 // Env fallback: parse VUE_APP_PANELS the same way access.js used to

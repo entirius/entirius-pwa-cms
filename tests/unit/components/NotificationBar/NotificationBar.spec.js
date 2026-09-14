@@ -79,7 +79,7 @@ describe("notification bar", () => {
     await wrapper.findAll('[data-testid="notif-row"]')[0].trigger("click");
     await flushPromises();
     expect(api.POST_MarkRead).toHaveBeenCalledWith(1);
-    expect(push).toHaveBeenCalledWith({ name: "LeadsThread", params: { id: 153 } });
+    expect(push).toHaveBeenCalledWith({ name: "LeadsThread", params: { id: 153 }, query: { tab: "timeline" } });
     expect(wrapper.get('[data-testid="notif-count"]').text()).toBe("1");
   });
 

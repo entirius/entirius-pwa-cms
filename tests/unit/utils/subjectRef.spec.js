@@ -3,7 +3,7 @@ import { companyIdFromSubjectRef, routeForSubjectRef } from "@/utils/subjectRef"
 
 describe("routeForSubjectRef", () => {
   it("maps a leads company to its thread", () => {
-    expect(routeForSubjectRef("leads.Company:42")).toEqual({ name: "LeadsThread", params: { id: 42 } });
+    expect(routeForSubjectRef("leads.Company:42")).toEqual({ name: "LeadsThread", params: { id: 42 }, query: { tab: "timeline" } });
     expect(companyIdFromSubjectRef("leads.Company:42")).toBe(42);
   });
 

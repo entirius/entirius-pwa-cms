@@ -43,7 +43,13 @@
     "pricefighter_gap_table": "Tabela luk cenowych",
     "pricefighter_strategies": "Strategie",
     "pricefighter_history": "Historia",
-    "leads_inbox": "Skrzynka"
+    "leads_inbox": "Skrzynka",
+    "leads_board": "Tablica etapów",
+    "leads_import": "Import",
+    "leads_stages": "Etapy",
+    "communicator_templates": "Szablony",
+    "communicator_sequences": "Sekwencje",
+    "communicator_settings": "Ustawienia wysyłki"
   },
   "login": {
     "welcome": "Witaj!",
@@ -547,7 +553,9 @@
     "pricefighter": "PriceFighter",
     "pricefighter_desc": "Konkurencyjne ceny -- analiza luk, strategie, wsadowe zastosowanie",
     "leads": "Leady",
-    "leads_desc": "Skrzynka sprzedaży — przegląd szkiców, odpowiedzi, wątki firm"
+    "leads_desc": "Skrzynka sprzedaży — przegląd szkiców, odpowiedzi, wątki firm",
+    "communicator": "Communicator",
+    "communicator_desc": "Szablony wiadomości, sekwencje follow-upów, polityka wysyłki i tryb kanału"
   },
   "stock": {
     "manage": "Stany",
@@ -3044,6 +3052,76 @@
     "toolbox": {
       "unconfigured": "Funkcje AI są dostępne z Entirius AI Toolbox",
       "unreachable": "AI Toolbox nie odpowiada — spróbuj później"
+    },
+    "desktop_only": {
+      "title": "Otwórz na komputerze",
+      "message": "Ten ekran wymaga co najmniej 1024 px szerokości.",
+      "back": "Wróć do skrzynki"
+    },
+    "board": {
+      "title": "Tablica etapów",
+      "search": "Szukaj nazwy lub domeny",
+      "rules": "Reguły: {count}",
+      "more": "Załaduj więcej",
+      "move_to": "Przenieś do etapu",
+      "move_failed": "Nie udało się przenieść firmy"
+    },
+    "company": {
+      "do_not_contact": "Nie kontaktować",
+      "communicate": "Napisz",
+      "reaudit": "Ponów audyt",
+      "reaudit_done": "Audyt uruchomiony ponownie: raporty się odświeżą, szkic powstaje tylko z reguły intel_ready",
+      "mark_dnc": "Oznacz: nie kontaktować",
+      "dnc_confirm": "Nigdy więcej nie kontaktować {domain}? Reguły i ręczne wiadomości ją pominą.",
+      "dnc_done": "Oznaczono: nie kontaktować",
+      "create_customer": "Utwórz klienta",
+      "customer_done": "Klient powiązany",
+      "tabs": {
+        "overview": "Przegląd",
+        "intel": "Wywiad",
+        "contacts": "Kontakty",
+        "timeline": "Oś czasu"
+      },
+      "name": "Nazwa",
+      "stage": "Etap",
+      "type": "Typ leada",
+      "last_activity": "Ostatnia aktywność",
+      "customer": "Klient",
+      "activities": "Ostatnie zdarzenia"
+    },
+    "communicate": {
+      "template": "Szablon",
+      "contact": "Kontakt",
+      "no_contacts": "Brak kontaktu z adresem e-mail",
+      "submit": "Poproś o szkic",
+      "done": "Szkic zamówiony — trafi do skrzynki"
+    },
+    "contacts": {
+      "primary": "Główny",
+      "name": "Imię i nazwisko",
+      "email": "E-mail",
+      "legal_basis": "Podstawa prawna",
+      "suppressed": "Zablokowany",
+      "yes": "tak"
+    },
+    "import": {
+      "title": "Import firm",
+      "hint": "CSV z kolumnami company_name, domain, danymi kontaktu i legal_basis. Istniejące domeny są dopasowane, nie duplikowane.",
+      "upload": "Wyślij",
+      "status": "Status",
+      "counts": "utworzone: {created}, dopasowane: {matched}, pominięte: {skipped}",
+      "row": "Wiersz {row}",
+      "to_board": "Otwórz tablicę etapów",
+      "failed": "Wysyłka pliku nie powiodła się"
+    },
+    "stages": {
+      "title": "Etapy",
+      "label": "Etykieta",
+      "up": "W górę",
+      "down": "W dół",
+      "delete": "Usuń",
+      "key": "Klucz",
+      "add": "Dodaj etap"
     }
   },
   "notification_bar": {
@@ -3053,5 +3131,82 @@
     "unread": "Nieprzeczytane: {count}",
     "empty": "Wszystko przeczytane",
     "mark_all": "Oznacz wszystkie jako przeczytane"
+  },
+  "communicator": {
+    "templates": {
+      "title": "Szablony",
+      "back": "Szablony"
+    },
+    "template": {
+      "title": "Szablon",
+      "key": "Klucz",
+      "kind": "Rodzaj",
+      "language": "Język",
+      "version": "Id bieżącej wersji",
+      "is_active": "Aktywny",
+      "versions": "Wersje",
+      "test_generate": "Testowe generowanie",
+      "subject": "Temat",
+      "body": "Treść",
+      "model": "Model",
+      "json_schema": "Schemat JSON",
+      "requires_legal_footer": "Wymaga stopki prawnej",
+      "auto_approve": "Automatyczna akceptacja",
+      "grappelli": "ustawiane w Grappelli",
+      "save": "Zapisz",
+      "saved": "Zapisano",
+      "schema_object": "Schemat JSON musi być obiektem",
+      "schema_invalid": "Niepoprawny JSON"
+    },
+    "test": {
+      "search": "Znajdź firmę",
+      "generating": "Generowanie…",
+      "not_saved": "Tylko podgląd — nic nie jest zapisywane"
+    },
+    "sequences": {
+      "title": "Sekwencje",
+      "inactive": "nieaktywna",
+      "days": "Dni po poprzedniej",
+      "texts": "Pula tekstów follow-up",
+      "new_text": "Nowy tekst follow-up",
+      "add_text": "Dodaj tekst",
+      "add": "Nowa sekwencja",
+      "add_step": "Dodaj krok",
+      "save": "Utwórz sekwencję"
+    },
+    "settings": {
+      "title": "Ustawienia wysyłki"
+    },
+    "policy": {
+      "title": "Polityka wysyłki",
+      "zone": "Godziny w strefie {timezone}, święta: {country}",
+      "business_days": "Tylko dni robocze (bez weekendów i świąt)",
+      "spread": "Rozłóż dzienny limit na okna",
+      "daily_cap": "Dzienny limit",
+      "remove_window": "Usuń",
+      "add_window": "Dodaj okno"
+    },
+    "channel": {
+      "title": "Tryb kanału",
+      "sandbox_mailbox": "Skrzynka sandbox",
+      "live_gate": "Tryb live wysyła tylko przy ENVIRONMENT=production i ustawionym live_enabled na kanale.",
+      "mailbox_required": "Tryb sandbox wymaga skrzynki sandbox"
+    },
+    "suppressions": {
+      "title": "Blokady",
+      "value": "E-mail lub domena",
+      "reason": "Powód",
+      "add": "Zablokuj"
+    },
+    "scheduled": {
+      "title": "Czeka na wysyłkę",
+      "note": "„Wyślij teraz” tylko przesuwa czas wysyłki na teraz — wysyła najbliższy beat, a tryb kanału i dzienny limit nadal obowiązują.",
+      "empty": "Nic nie czeka na wysyłkę",
+      "status": "Status",
+      "at": "Zaplanowano na",
+      "next_slot": "Najbliższy slot",
+      "next_beat": "najbliższy beat",
+      "send_now": "Wyślij teraz"
+    }
   }
 }

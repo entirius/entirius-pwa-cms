@@ -1,6 +1,7 @@
 // Maps an opaque `subject_ref` ("<app>.<Model>:<id>") to a CMS route; unknown prefixes → null.
 const ROUTES = {
-  "leads.Company": (id) => ({ name: "LeadsThread", params: { id: Number(id) } }),
+  // A notification is about the conversation: the company card opens on its timeline tab (desktop).
+  "leads.Company": (id) => ({ name: "LeadsThread", params: { id: Number(id) }, query: { tab: "timeline" } }),
 };
 
 export function routeForSubjectRef(subjectRef) {

@@ -4,6 +4,13 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 /* import specific icons */
 import {
   faInbox,
+  faTableColumns,
+  faGear,
+  faFileLines,
+  faRepeat,
+  faArrowUp,
+  faArrowDown,
+  faTrash,
   faBell,
   faEllipsisVertical,
   faPaperPlane,
@@ -109,6 +116,13 @@ export default function registerFontAwesome(app) {
   /* add icons to the library */
   library.add(
     faInbox,
+    faTableColumns,
+    faGear,
+    faFileLines,
+    faRepeat,
+    faArrowUp,
+    faArrowDown,
+    faTrash,
     faBell,
     faEllipsisVertical,
     faPaperPlane,

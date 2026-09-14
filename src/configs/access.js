@@ -206,6 +206,15 @@ const accesses = {
       descriptionKey: "panels.leads_desc",
       access: ["admin"],
     },
+    {
+      name: "Communicator",
+      idx: "communicator",
+      icon: "paper-plane",
+      root: "/communicator/templates",
+      labelKey: "panels.communicator",
+      descriptionKey: "panels.communicator_desc",
+      access: ["admin"],
+    },
   ],
 };
 

@@ -43,7 +43,13 @@
     "pricefighter_gap_table": "Gap Table",
     "pricefighter_strategies": "Strategies",
     "pricefighter_history": "History",
-    "leads_inbox": "Inbox"
+    "leads_inbox": "Inbox",
+    "leads_board": "Stage board",
+    "leads_import": "Import",
+    "leads_stages": "Stages",
+    "communicator_templates": "Templates",
+    "communicator_sequences": "Sequences",
+    "communicator_settings": "Send settings"
   },
   "login": {
     "welcome": "Welcome!",
@@ -547,7 +553,9 @@
     "pricefighter": "PriceFighter",
     "pricefighter_desc": "Competitive pricing -- gap analysis, strategies, batch apply",
     "leads": "Leads",
-    "leads_desc": "Sales inbox — review drafts, read replies, company threads"
+    "leads_desc": "Sales inbox — review drafts, read replies, company threads",
+    "communicator": "Communicator",
+    "communicator_desc": "Outreach templates, follow-up sequences, send policy and channel mode"
   },
   "stock": {
     "manage": "Stocks",
@@ -3045,6 +3053,76 @@
     "toolbox": {
       "unconfigured": "AI features are available with the Entirius AI Toolbox",
       "unreachable": "AI Toolbox is not responding — try again later"
+    },
+    "desktop_only": {
+      "title": "Open on a desktop",
+      "message": "This screen needs at least 1024 px of width.",
+      "back": "Back to the Inbox"
+    },
+    "board": {
+      "title": "Stage board",
+      "search": "Search name or domain",
+      "rules": "{count} rules",
+      "more": "Load more",
+      "move_to": "Move to stage",
+      "move_failed": "The company could not be moved"
+    },
+    "company": {
+      "do_not_contact": "Do not contact",
+      "communicate": "Communicate",
+      "reaudit": "Re-audit",
+      "reaudit_done": "Audit re-run started: reports refresh, a draft only comes from an intel_ready rule",
+      "mark_dnc": "Mark do not contact",
+      "dnc_confirm": "Never contact {domain} again? Rules and manual outreach will skip it.",
+      "dnc_done": "Marked do not contact",
+      "create_customer": "Create customer",
+      "customer_done": "Customer linked",
+      "tabs": {
+        "overview": "Overview",
+        "intel": "Intel",
+        "contacts": "Contacts",
+        "timeline": "Timeline"
+      },
+      "name": "Name",
+      "stage": "Stage",
+      "type": "Lead type",
+      "last_activity": "Last activity",
+      "customer": "Customer",
+      "activities": "Recent activity"
+    },
+    "communicate": {
+      "template": "Template",
+      "contact": "Contact",
+      "no_contacts": "No contact with an email",
+      "submit": "Request draft",
+      "done": "Draft requested — it lands in the Inbox"
+    },
+    "contacts": {
+      "primary": "Primary",
+      "name": "Name",
+      "email": "Email",
+      "legal_basis": "Legal basis",
+      "suppressed": "Suppressed",
+      "yes": "yes"
+    },
+    "import": {
+      "title": "Import companies",
+      "hint": "CSV with company_name, domain, contact and legal_basis columns. Existing domains are matched, not duplicated.",
+      "upload": "Upload",
+      "status": "Status",
+      "counts": "{created} created, {matched} matched, {skipped} skipped",
+      "row": "Row {row}",
+      "to_board": "Open the stage board",
+      "failed": "Upload failed"
+    },
+    "stages": {
+      "title": "Stages",
+      "label": "Label",
+      "up": "Move up",
+      "down": "Move down",
+      "delete": "Delete",
+      "key": "Key",
+      "add": "Add stage"
     }
   },
   "notification_bar": {
@@ -3054,5 +3132,82 @@
     "unread": "{count} unread",
     "empty": "You are all caught up",
     "mark_all": "Mark all read"
+  },
+  "communicator": {
+    "templates": {
+      "title": "Templates",
+      "back": "Templates"
+    },
+    "template": {
+      "title": "Template",
+      "key": "Key",
+      "kind": "Kind",
+      "language": "Language",
+      "version": "Current version id",
+      "is_active": "Active",
+      "versions": "Versions",
+      "test_generate": "Test generate",
+      "subject": "Subject",
+      "body": "Body",
+      "model": "Model",
+      "json_schema": "JSON schema",
+      "requires_legal_footer": "Requires a legal footer",
+      "auto_approve": "Auto approve",
+      "grappelli": "set in Grappelli",
+      "save": "Save",
+      "saved": "Saved",
+      "schema_object": "The JSON schema must be an object",
+      "schema_invalid": "Invalid JSON"
+    },
+    "test": {
+      "search": "Find a company",
+      "generating": "Generating…",
+      "not_saved": "Preview only — nothing is saved"
+    },
+    "sequences": {
+      "title": "Sequences",
+      "inactive": "inactive",
+      "days": "Days after previous",
+      "texts": "Follow-up text pool",
+      "new_text": "New follow-up text",
+      "add_text": "Add text",
+      "add": "New sequence",
+      "add_step": "Add step",
+      "save": "Create sequence"
+    },
+    "settings": {
+      "title": "Send settings"
+    },
+    "policy": {
+      "title": "Send policy",
+      "zone": "Times in {timezone}, holidays of {country}",
+      "business_days": "Business days only (weekends and holidays skipped)",
+      "spread": "Spread the daily cap over the windows",
+      "daily_cap": "Daily cap",
+      "remove_window": "Remove",
+      "add_window": "Add window"
+    },
+    "channel": {
+      "title": "Channel mode",
+      "sandbox_mailbox": "Sandbox mailbox",
+      "live_gate": "Live sends only when ENVIRONMENT=production and live_enabled is set on the channel.",
+      "mailbox_required": "Sandbox mode needs a sandbox mailbox"
+    },
+    "suppressions": {
+      "title": "Suppressions",
+      "value": "Email or domain",
+      "reason": "Reason",
+      "add": "Suppress"
+    },
+    "scheduled": {
+      "title": "Waiting to be sent",
+      "note": "Send now only moves the send time to now — the next beat sends it, and the channel mode and daily cap still apply.",
+      "empty": "Nothing is waiting to be sent",
+      "status": "Status",
+      "at": "Scheduled at",
+      "next_slot": "Next slot",
+      "next_beat": "next beat",
+      "send_now": "Send now"
+    }
   }
 }
