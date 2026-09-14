@@ -3,7 +3,7 @@
     class="auth-card fs-300 p-400 t-basic-700 br-50 bg-basic-100 b-basic-300 shadow-down"
   >
     <!-- Forgot password mode -->
-    <template v-if="showForgotPassword">
+    <template v-if="showForgotPassword && !ssoOnly">
       <p class="fs-700 fw-600 txt-center mb-50">
         {{ $t("login.forgot_title") }}
       </p>
@@ -50,8 +50,27 @@
       </div>
       <p class="fs-700 fw-600 txt-center mb-50">{{ $t("login.welcome") }}</p>
       <p class="fs-300 t-basic-600 txt-center mb-500">
-        {{ $t("login.subtitle") }}
+        {{ ssoOnly ? $t("login.sso_only_subtitle") : $t("login.subtitle") }}
       </p>
+
+      <!-- SSO-only: the account has no password, so no password form is rendered. -->
+      <template v-if="ssoOnly">
+        <p
+          v-if="autoStarting"
+          class="fs-300 t-basic-600 txt-center mb-300"
+          data-test="sso-redirecting"
+        >
+          {{ $t("login.sso_signing_in") }}
+        </p>
+        <BasicButton
+          data-test="sso-login"
+          :text="$t('login.sso_submit')"
+          @click="ssoLogin"
+          class="bg-support-400 b-support-400 jc-ct t-basic-100 w-100 br-50"
+        />
+      </template>
+
+      <template v-else>
       <BasicInput
         v-model="username"
         class="bg-basic-200 mb-400 lh-base-elem"
@@ -79,9 +98,18 @@
         class="bg-support-400 b-support-400 jc-ct t-basic-100 w-100 br-50"
       />
 
+      <BasicButton
+        v-if="ssoEnabled"
+        data-test="sso-login"
+        :text="$t('login.sso_submit')"
+        @click="ssoLogin"
+        class="bg-basic-200 b-basic-300 jc-ct t-basic-700 w-100 br-50 mt-300"
+      />
+
       <button class="auth-card__link mt-300" @click="showForgotPassword = true">
         {{ $t("login.forgot_password") }}
       </button>
+      </template>
     </template>
   </div>
 </template>
@@ -102,6 +130,16 @@ import { useNotifyStore } from "@/stores/notify";
 import { useUserStore } from "@/stores/user";
 import { useMuninStore } from "@/stores/munin";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { POST_SsoLoginUrl } from "@/api/sso/api";
+import {
+  SSO_STATE_KEY,
+  allowAutoLogin,
+  blockAutoLogin,
+  isAutoLoginBlocked,
+  isSsoEnabled,
+  isSsoOnly,
+  ssoRedirectUri,
+} from "@/configs/sso";
 export default {
   setup() {
     const notify = useNotifyStore();
@@ -118,15 +156,73 @@ export default {
       showForgotPassword: false,
       resetEmail: "",
       resetEmailSent: false,
+      autoStarting: false,
     };
+  },
+  computed: {
+    ssoEnabled() {
+      return isSsoEnabled();
+    },
+    ssoOnly() {
+      return isSsoOnly();
+    },
   },
   mounted() {
     if (localStorage.getItem("session_expired") === "1") {
       this.sessionExpired = true;
       localStorage.removeItem("session_expired");
     }
+    // SSO-only: there is no form to fill in, so do not make the user click through an
+    // empty page. Skipped after a failed attempt, or this becomes a redirect loop that
+    // never shows the error long enough to read.
+    if (this.ssoOnly && !isAutoLoginBlocked()) {
+      this.autoStarting = true;
+      this.ssoLogin();
+    }
   },
   methods: {
+    /**
+     * Hand off to the identity provider. The response is FLAT —
+     * { authorization_url, state } — not the { data, meta } envelope the password path
+     * returns, so it is read one level up. `state` is parked in session storage and
+     * compared when the provider redirects back: that comparison is what makes a code
+     * this browser never asked for unusable.
+     */
+    async ssoLogin() {
+      // A click is a deliberate retry; clear any block from the previous attempt.
+      allowAutoLogin();
+      try {
+        const { data } = await POST_SsoLoginUrl({
+          redirect_uri: ssoRedirectUri(),
+        });
+        const { authorization_url, state } = data || {};
+
+        if (!authorization_url || !state) {
+          throw new Error("sso-login-url-incomplete");
+        }
+
+        try {
+          sessionStorage.setItem(SSO_STATE_KEY, state);
+        } catch {
+          // Private-mode browsers refuse session storage; without the stash the
+          // callback cannot verify state, so stop here rather than start a login
+          // that is guaranteed to be rejected on return.
+          throw new Error("sso-state-unstorable");
+        }
+
+        window.location.assign(authorization_url);
+      } catch (error) {
+        // In SSO-only mode this page is the only thing between the user and a loop:
+        // without the block, mounted() would start the same failing login again.
+        blockAutoLogin();
+        this.autoStarting = false;
+        this.notify.spawnNotification({
+          title: extractApiMessage(error, this.$t("login.sso_error_generic")),
+          type: "negative",
+          timeout: "2500",
+        });
+      }
+    },
     async login() {
       this.sessionExpired = false;
       try {
