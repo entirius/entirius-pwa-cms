@@ -284,6 +284,7 @@ export function buildNavRoutes() {
       icon: "table-columns",
       query: {},
       app: ["leads"],
+      desktopOnly: true,
     },
     {
       route: "/leads/import",
@@ -291,6 +292,7 @@ export function buildNavRoutes() {
       icon: "file-import",
       query: {},
       app: ["leads"],
+      desktopOnly: true,
     },
     {
       route: "/leads/stages",
@@ -298,6 +300,7 @@ export function buildNavRoutes() {
       icon: "list-ol",
       query: {},
       app: ["leads"],
+      desktopOnly: true,
     },
     {
       route: "/communicator/templates",
@@ -305,6 +308,7 @@ export function buildNavRoutes() {
       icon: "file-lines",
       query: {},
       app: ["communicator"],
+      desktopOnly: true,
     },
     {
       route: "/communicator/sequences",
@@ -312,6 +316,7 @@ export function buildNavRoutes() {
       icon: "repeat",
       query: {},
       app: ["communicator"],
+      desktopOnly: true,
     },
     {
       route: "/communicator/settings",
@@ -319,6 +324,7 @@ export function buildNavRoutes() {
       icon: "gear",
       query: {},
       app: ["communicator"],
+      desktopOnly: true,
     },
     {
       route: "/enrichment",
@@ -348,14 +354,17 @@ export function buildNavRoutes() {
 // capability probe resolves true (old backends never see the quality-rules nav item).
 // `requiresModule` items are hidden until that optional django-munin module reports enabled
 // (mirrors the router guard's `meta.module` gate — see router/index.js).
+// `desktopOnly` items are hidden below the desktop breakpoint (useIsDesktop) — on a phone the
+// leads panel keeps its plan-13 shape: no bottom bar over the Inbox/Review sticky actions.
 export function filterNavRoutes(
   routes,
-  { activeApp, qualityAvailable, isModuleEnabled }
+  { activeApp, qualityAvailable, isModuleEnabled, isDesktop }
 ) {
   return routes.filter((r) => {
     if (r.app.indexOf(activeApp) === -1) return false;
     if (r.requiresQuality && qualityAvailable !== true) return false;
     if (r.requiresModule && !isModuleEnabled?.(r.requiresModule)) return false;
+    if (r.desktopOnly && !isDesktop) return false;
     return true;
   });
 }

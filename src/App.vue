@@ -100,6 +100,7 @@ import { useHandyStore } from "@/stores/handy";
 import { useMuninStore } from "@/stores/munin";
 import { useNotificationsStore } from "@/stores/notifications";
 import { useQualityStore } from "@/stores/quality";
+import { useIsDesktop } from "@/composables/useIsDesktop";
 import {
   buildNavRoutes,
   filterNavRoutes,
@@ -124,7 +125,8 @@ export default {
     const munin = useMuninStore();
     const quality = useQualityStore();
     const notificationBar = useNotificationsStore();
-    return { loader, userStore, handy, munin, quality, notificationBar };
+    const isDesktop = useIsDesktop();
+    return { loader, userStore, handy, munin, quality, notificationBar, isDesktop };
   },
   data() {
     return { envStatus, navRoutes: buildNavRoutes() };
@@ -159,6 +161,7 @@ export default {
           activeApp: this.userStore.activeApp,
           qualityAvailable: this.quality.available,
           isModuleEnabled: this.munin.isModuleEnabled,
+          isDesktop: this.isDesktop,
         }).length > 1
       );
     },

@@ -42,6 +42,7 @@
 import { useUserStore } from "@/stores/user";
 import { useQualityStore } from "@/stores/quality";
 import { useMuninStore } from "@/stores/munin";
+import { useIsDesktop } from "@/composables/useIsDesktop";
 import { buildNavRoutes, filterNavRoutes } from "./nav-routes";
 
 export default {
@@ -55,7 +56,8 @@ export default {
     const userStore = useUserStore();
     const qualityStore = useQualityStore();
     const munin = useMuninStore();
-    return { userStore, qualityStore, munin };
+    const isDesktop = useIsDesktop();
+    return { userStore, qualityStore, munin, isDesktop };
   },
   data() {
     return {
@@ -77,6 +79,7 @@ export default {
         activeApp: this.activeApp,
         qualityAvailable: this.qualityStore.available,
         isModuleEnabled: this.munin.isModuleEnabled,
+        isDesktop: this.isDesktop,
       });
     },
   },
