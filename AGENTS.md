@@ -1,9 +1,9 @@
 # AGENTS.md
 
 entirius-pwa-cms — admin CMS for the Entirius platform: a Vue 3 SPA with a
-visual page builder and 17 self-contained panels (Pages, PIM, Points, Forms,
+visual page builder and 18 self-contained panels (Pages, PIM, Points, Forms,
 Accounts, Checkout, Agreements, Emails, FAQ, Pricing, Stock, Translation,
-Atlas, Enricher, Promo, PriceFighter, Leads), each enabled per backend by the
+Atlas, Enricher, Promo, PriceFighter, Leads, Communicator), each enabled per backend by the
 django-munin module registry. Backend for local dev: entirius-zeno at `http://localhost:8100`.
 
 ## Commands
@@ -123,3 +123,19 @@ channel from `src/stores/leadsChannel.js` (`VUE_APP_LEADS_CHANNEL`, default `def
 The thread view merges every thread of `leads.Company:<id>` into one company timeline. The toolbox teaser
 (`ToolboxBanner.vue`) reads munin `platform.toolbox_status` (`munin.toolboxStatus`). `data-testid`s are the contract of the
 emporium page objects (`src/entirius_tests/cms_pages/`) — rename both together.
+
+Desktop screens (≥ 1024 px; below that `DesktopOnly.vue` shows "Open on a desktop"): `/leads/board` (stage columns,
+drag or the card's stage select → `companies/<id>/transition/`, refused move snaps back; rule badges from
+`GET rules/` — the stages payload carries none), `/leads/import` (`POST imports/`, polls the batch),
+`/leads/stages` (reorder = `PATCH stages/<id>/ {order}` per moved stage — there is no bulk order endpoint;
+delete 409 inline). `/leads/companies/:id` on desktop is the company card (`Company.vue`, tabs via `?tab=`
+overview | intel | contacts | timeline; timeline = the plan-13 thread, which a phone still gets alone);
+notification jumps open `?tab=timeline`.
+
+## Communicator panel
+
+`/communicator/{templates,templates/:id,sequences,settings}`, munin key `communicator` (mapped to both Leads and
+Communicator), desktop only. Template edit sends `auto_approve` back unchanged (Grappelli-only), test-generate
+never saves. Settings: send policy, channel mode (`PATCH channel/` never carries `live_enabled`; sandbox needs a
+mailbox, C-30), suppressions, waiting messages (`approved` + `scheduled`) with Send now =
+`messages/<id>/send-now/` (moves `scheduled_at` only, C-31). Sequences: create + text pool only (no step edit API).

@@ -6,6 +6,15 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- **Leads desktop screens** (plan 14, ≥ 1024 px, "Open on a desktop" below): stage board with drag-and-drop
+  and a stage select per card, type / do-not-contact / search filters and rule badges; company card with
+  overview, intel (lighthouse score per strategy, audit sources), contacts and timeline tabs plus Communicate,
+  Re-audit, Mark do not contact and Create customer (only for `won` with `accounts` installed); CSV import with
+  the batch report; stages admin with drag or up/down reorder, inline rename and the delete refusal inline.
+- **Communicator panel** (`/communicator/*`, munin key `communicator`): templates list and edit (model list,
+  validated JSON schema, versions drawer, test generate without saving), sequences with the follow-up text
+  pool, send settings (policy windows and cap, channel mode with the sandbox mailbox rule and the live gate text,
+  suppressions, waiting messages with Send now that only reschedules).
 - **Leads panel** (`/leads/inbox`, `/leads/inbox/:id`, `/leads/companies/:id`; munin keys `leads`,
   `communicator`): mobile-first Inbox and one-draft Review (Send / Not now docked in thumb reach, swipe with
   button fallback, "more" menu with rewrite-with-note, edit, skip company; "Scheduled HH:MM" after Send; empty
