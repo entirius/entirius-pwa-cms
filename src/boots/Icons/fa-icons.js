@@ -3,6 +3,10 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 
 /* import specific icons */
 import {
+  faInbox,
+  faBell,
+  faEllipsisVertical,
+  faPaperPlane,
   faClipboardCheck,
   faFloppyDisk,
   faUpload,
@@ -104,6 +108,10 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 export default function registerFontAwesome(app) {
   /* add icons to the library */
   library.add(
+    faInbox,
+    faBell,
+    faEllipsisVertical,
+    faPaperPlane,
     faClipboardCheck,
     faFloppyDisk,
     faUpload,

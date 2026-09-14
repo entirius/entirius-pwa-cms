@@ -272,6 +272,13 @@ export function buildNavRoutes() {
       requiresModule: "lookup",
     },
     {
+      route: "/leads/inbox",
+      labelKey: "nav.leads_inbox",
+      icon: "inbox",
+      query: {},
+      app: ["leads"],
+    },
+    {
       route: "/enrichment",
       labelKey: "nav.enrichment_review",
       icon: "wand-magic-sparkles",

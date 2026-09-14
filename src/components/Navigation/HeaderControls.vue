@@ -52,6 +52,9 @@
     <!-- Separator -->
     <div class="hc-sep"></div>
 
+    <!-- Notification bar (django-notifications) -->
+    <NotificationBell v-if="munin.isModuleEnabled('notifications')" />
+
     <!-- User Menu -->
     <div class="relative" v-out="'isUserMenuOpen'">
       <button
@@ -155,10 +158,12 @@ import { useNotifyStore } from "@/stores/notify";
 import { useMuninStore } from "@/stores/munin";
 import { panels } from "../../configs/access";
 import { POST_Logout } from "../../api/contentDB/api";
+import NotificationBell from "@/components/NotificationBar/NotificationBell.vue";
 
 const HIDE_DISABLED = (process.env.VUE_APP_HIDE_DISABLED_PANELS || "").toUpperCase() === "TRUE";
 
 export default {
+  components: { NotificationBell },
   setup() {
     const userStore = useUserStore();
     const notify = useNotifyStore();

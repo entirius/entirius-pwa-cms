@@ -955,6 +955,38 @@ const routes = [
     }),
   },
 
+  // Leads panel (plan 13): Inbox as the left column, Review/Thread on the right at >= 1024 px
+  {
+    path: "/leads",
+    component: () =>
+      import(/* webpackChunkName: "leads" */ "../views/Leads/index.vue"),
+    meta: { requiresAuth: true, panel: "leads" },
+    children: [
+      { path: "", redirect: "/leads/inbox" },
+      {
+        path: "inbox",
+        name: "LeadsInbox",
+        component: () =>
+          import(/* webpackChunkName: "leads" */ "../views/Leads/Inbox.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.inbox.title", panel: "leads", module: "communicator" },
+      },
+      {
+        path: "inbox/:id",
+        name: "LeadsReview",
+        component: () =>
+          import(/* webpackChunkName: "leads" */ "../views/Leads/Review.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.review.title", panel: "leads", module: "communicator" },
+      },
+      {
+        path: "companies/:id",
+        name: "LeadsThread",
+        component: () =>
+          import(/* webpackChunkName: "leads" */ "../views/Leads/Thread.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.thread.title", panel: "leads", module: "leads" },
+      },
+    ],
+  },
+
   // Enrichment review panel (etap-06 / etap-06b)
   {
     path: "/enrichment",
@@ -1182,7 +1214,9 @@ router.beforeEach(async (to, from, next) => {
     // when the module is absent, even if their panel is enabled.
     const module = to.meta?.module;
     if (module && !munin.isModuleEnabled(module)) {
-      next(panels.find((p) => p.idx === panel)?.root || "/");
+      // The panel root itself may need the module (Leads inbox) — go home instead of looping.
+      const root = panels.find((p) => p.idx === panel)?.root || "/";
+      next(to.path === root ? "/" : root);
       return;
     }
     userStore.activeApp = panel;

@@ -197,6 +197,15 @@ const accesses = {
       descriptionKey: "panels.pricefighter_desc",
       access: ["admin"],
     },
+    {
+      name: "Leads",
+      idx: "leads",
+      icon: "inbox",
+      root: "/leads/inbox",
+      labelKey: "panels.leads",
+      descriptionKey: "panels.leads_desc",
+      access: ["admin"],
+    },
   ],
 };
 

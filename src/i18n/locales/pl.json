@@ -42,7 +42,8 @@
     "promo_list": "Promocje",
     "pricefighter_gap_table": "Tabela luk cenowych",
     "pricefighter_strategies": "Strategie",
-    "pricefighter_history": "Historia"
+    "pricefighter_history": "Historia",
+    "leads_inbox": "Skrzynka"
   },
   "login": {
     "welcome": "Witaj!",
@@ -544,7 +545,9 @@
     "promo": "Promocje",
     "promo_desc": "Kampanie promocyjne i zarządzanie rabatami",
     "pricefighter": "PriceFighter",
-    "pricefighter_desc": "Konkurencyjne ceny -- analiza luk, strategie, wsadowe zastosowanie"
+    "pricefighter_desc": "Konkurencyjne ceny -- analiza luk, strategie, wsadowe zastosowanie",
+    "leads": "Leady",
+    "leads_desc": "Skrzynka sprzedaży — przegląd szkiców, odpowiedzi, wątki firm"
   },
   "stock": {
     "manage": "Stany",
@@ -2971,5 +2974,83 @@
     "no_snapshot": "Brak zapisanego snapshotu decyzji.",
     "active": "Aktywna",
     "search_category": "Szukaj kategorii..."
+  },
+  "leads": {
+    "inbox": {
+      "title": "Skrzynka",
+      "to_review": "Do przejrzenia: {count}",
+      "next_at": "następna wysyłka o {time}",
+      "empty_title": "Brak szkiców do przejrzenia",
+      "empty_message": "Zaplanowane: {count}, następna wysyłka o {time}",
+      "empty_message_none": "Nic nie jest zaplanowane — nowe szkice pojawią się, gdy firma wejdzie w etap kontaktu",
+      "refresh": "Odśwież",
+      "untitled": "(bez tematu)",
+      "pick": "Wybierz szkic do przejrzenia"
+    },
+    "review": {
+      "title": "Przegląd",
+      "back": "Skrzynka",
+      "to": "Do",
+      "send": "Wyślij",
+      "not_now": "Nie teraz",
+      "more": "Więcej akcji",
+      "rewrite": "Przepisz z uwagą",
+      "edit": "Edytuj",
+      "skip_company": "Pomiń firmę",
+      "save": "Zapisz",
+      "cancel": "Anuluj",
+      "subject": "Temat",
+      "body": "Wiadomość",
+      "scheduled": "Zaplanowano na {time}",
+      "sent_now": "Wysyłka od razu",
+      "open_thread": "Wątek firmy",
+      "swipe_hint": "Przeciągnij w prawo, aby wysłać, w lewo — nie teraz",
+      "error": "Akcja nie powiodła się — spróbuj ponownie",
+      "conflict": "Ten szkic został już obsłużony — wczytuję kolejny",
+      "not_found": "Nie znaleziono szkicu"
+    },
+    "rewrite": {
+      "title": "Przepisz z uwagą",
+      "placeholder": "np. krócej, wspomnij o koszyku",
+      "submit": "Przepisz"
+    },
+    "intel": {
+      "title": "Wywiad i haczyki",
+      "platform": "Platforma",
+      "industry": "Branża",
+      "no_hooks": "Brak haczyków"
+    },
+    "thread": {
+      "title": "Wątek firmy",
+      "back": "Wstecz",
+      "empty": "Brak wiadomości z tą firmą",
+      "note": "Notatka",
+      "followup": "Przypomnienie",
+      "optout_suspected": "Wygląda na rezygnację",
+      "confirm_optout": "Potwierdź rezygnację",
+      "optout_confirmed": "Rezygnacja potwierdzona",
+      "no_thread": "Brak rozmowy"
+    },
+    "status": {
+      "sent": "wysłana",
+      "scheduled": "zaplanowana",
+      "failed": "błąd",
+      "approved": "zaplanowana",
+      "review_required": "do przejrzenia",
+      "skipped": "pominięta",
+      "rejected": "pominięta",
+      "suppressed": "zablokowana"
+    },
+    "toolbox": {
+      "unconfigured": "Funkcje AI są dostępne z Entirius AI Toolbox",
+      "unreachable": "AI Toolbox nie odpowiada — spróbuj później"
+    }
+  },
+  "notification_bar": {
+    "title": "Powiadomienia",
+    "open": "Powiadomienia",
+    "unread": "Nieprzeczytane: {count}",
+    "empty": "Wszystko przeczytane",
+    "mark_all": "Oznacz wszystkie jako przeczytane"
   }
 }

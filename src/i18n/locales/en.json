@@ -42,7 +42,8 @@
     "promo_list": "Promotions",
     "pricefighter_gap_table": "Gap Table",
     "pricefighter_strategies": "Strategies",
-    "pricefighter_history": "History"
+    "pricefighter_history": "History",
+    "leads_inbox": "Inbox"
   },
   "login": {
     "welcome": "Welcome!",
@@ -544,7 +545,9 @@
     "promo": "Promotions",
     "promo_desc": "Discount rules and promotion management",
     "pricefighter": "PriceFighter",
-    "pricefighter_desc": "Competitive pricing -- gap analysis, strategies, batch apply"
+    "pricefighter_desc": "Competitive pricing -- gap analysis, strategies, batch apply",
+    "leads": "Leads",
+    "leads_desc": "Sales inbox — review drafts, read replies, company threads"
   },
   "stock": {
     "manage": "Stocks",
@@ -2972,5 +2975,83 @@
     "no_snapshot": "No decision snapshot recorded.",
     "active": "Active",
     "search_category": "Search category..."
+  },
+  "leads": {
+    "inbox": {
+      "title": "Inbox",
+      "to_review": "{count} to review",
+      "next_at": "next goes out at {time}",
+      "empty_title": "No drafts to review",
+      "empty_message": "{count} scheduled, next goes out at {time}",
+      "empty_message_none": "Nothing scheduled — new drafts appear when a company reaches an outreach stage",
+      "refresh": "Refresh",
+      "untitled": "(no subject)",
+      "pick": "Pick a draft to review"
+    },
+    "review": {
+      "title": "Review",
+      "back": "Inbox",
+      "to": "To",
+      "send": "Send",
+      "not_now": "Not now",
+      "more": "More actions",
+      "rewrite": "Rewrite with a note",
+      "edit": "Edit",
+      "skip_company": "Skip company",
+      "save": "Save",
+      "cancel": "Cancel",
+      "subject": "Subject",
+      "body": "Message",
+      "scheduled": "Scheduled {time}",
+      "sent_now": "Goes out now",
+      "open_thread": "Company thread",
+      "swipe_hint": "Swipe right to send, left for not now",
+      "error": "Action failed — try again",
+      "conflict": "This draft was already handled — loading the next one",
+      "not_found": "Draft not found"
+    },
+    "rewrite": {
+      "title": "Rewrite with a note",
+      "placeholder": "e.g. shorter, mention the checkout",
+      "submit": "Rewrite"
+    },
+    "intel": {
+      "title": "Intel & hooks",
+      "platform": "Platform",
+      "industry": "Industry",
+      "no_hooks": "No hooks yet"
+    },
+    "thread": {
+      "title": "Company thread",
+      "back": "Back",
+      "empty": "No messages with this company yet",
+      "note": "Note",
+      "followup": "Follow-up",
+      "optout_suspected": "Looks like an opt-out",
+      "confirm_optout": "Confirm opt-out",
+      "optout_confirmed": "Opt-out confirmed",
+      "no_thread": "No conversation yet"
+    },
+    "status": {
+      "sent": "sent",
+      "scheduled": "scheduled",
+      "failed": "failed",
+      "approved": "scheduled",
+      "review_required": "to review",
+      "skipped": "skipped",
+      "rejected": "skipped",
+      "suppressed": "blocked"
+    },
+    "toolbox": {
+      "unconfigured": "AI features are available with the Entirius AI Toolbox",
+      "unreachable": "AI Toolbox is not responding — try again later"
+    }
+  },
+  "notification_bar": {
+    "title": "Notifications",
+    "open": "Notifications",
+    "unread": "{count} unread",
+    "empty": "You are all caught up",
+    "mark_all": "Mark all read"
   }
 }

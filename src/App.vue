@@ -98,6 +98,7 @@ import { useLoaderStore } from "@/stores/loader";
 import { useUserStore } from "@/stores/user";
 import { useHandyStore } from "@/stores/handy";
 import { useMuninStore } from "@/stores/munin";
+import { useNotificationsStore } from "@/stores/notifications";
 import { useQualityStore } from "@/stores/quality";
 import {
   buildNavRoutes,
@@ -122,7 +123,8 @@ export default {
     const handy = useHandyStore();
     const munin = useMuninStore();
     const quality = useQualityStore();
-    return { loader, userStore, handy, munin, quality };
+    const notificationBar = useNotificationsStore();
+    return { loader, userStore, handy, munin, quality, notificationBar };
   },
   data() {
     return { envStatus, navRoutes: buildNavRoutes() };
@@ -139,6 +141,9 @@ export default {
     },
     isAuth() {
       return this.userStore.isAuth;
+    },
+    notificationsActive() {
+      return this.userStore.isAuth && this.munin.isModuleEnabled("notifications");
     },
     isSidebarCollapsed() {
       return this.userStore.isSidebarCollapsed;
@@ -172,6 +177,16 @@ export default {
         }
       }
       return this.$t("app.no_title");
+    },
+  },
+  watch: {
+    // Notification bar polling runs only while logged in and the module is on.
+    notificationsActive: {
+      handler(active) {
+        if (active) this.notificationBar.start();
+        else this.notificationBar.stop();
+      },
+      immediate: true,
     },
   },
   methods: {
