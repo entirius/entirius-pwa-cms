@@ -46,7 +46,7 @@ const error = ref("");
 const formatDate = (iso) => (iso ? new Date(iso).toLocaleString() : "—");
 
 async function load() {
-  const pages = await Promise.all(WAITING.map((status) => GET_Messages({ status })));
+  const pages = await Promise.all(WAITING.map((status) => GET_Messages({ status, page_size: 100 })));
   rows.value = pages.flatMap((page) => page.data.results);
 }
 
