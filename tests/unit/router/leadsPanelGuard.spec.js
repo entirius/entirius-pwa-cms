@@ -44,11 +44,21 @@ describe("Leads panel routing", () => {
     expect(router.currentRoute.value.path).toBe("/");
   });
 
-  it("keeps the review route dormant without the communicator module", async () => {
+  it("leads-only: the review route stays dormant and the panel opens the company board, not home", async () => {
     mockIsModuleEnabled.mockImplementation((m) => m !== "communicator");
     await router.push("/leads/companies/43");
     await router.push("/leads/inbox/9");
     expect(mockIsModuleEnabled).toHaveBeenCalledWith("communicator");
+    expect(router.currentRoute.value.name).toBe("LeadsBoard");
+    await router.push("/leads/companies/44");
+    await router.push("/leads");
+    expect(router.currentRoute.value.name).toBe("LeadsBoard");
+  });
+
+  it("without leads and communicator the panel root goes home instead of looping", async () => {
+    await router.push("/leads/companies/45");
+    mockIsModuleEnabled.mockReturnValue(false);
+    await router.push("/leads/inbox");
     expect(router.currentRoute.value.path).toBe("/");
   });
 });

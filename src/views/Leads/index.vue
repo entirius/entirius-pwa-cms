@@ -2,8 +2,8 @@
   <DesktopOnly v-if="route.meta?.desktop">
     <router-view />
   </DesktopOnly>
-  <div v-else class="leads" :class="{ 'leads--detail': hasDetail }" data-testid="leads-layout">
-    <aside class="leads__inbox">
+  <div v-else class="leads" :class="{ 'leads--detail': hasDetail, 'leads--solo': !hasInbox }" data-testid="leads-layout">
+    <aside v-if="hasInbox" class="leads__inbox">
       <Inbox />
     </aside>
     <section v-if="hasDetail" class="leads__detail">
@@ -16,15 +16,31 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
+import { GET_Policy } from "@/api/communicator/api";
+import { useMuninStore } from "@/stores/munin";
+import { channelTimeZone } from "@/utils/leadsTime";
 import DesktopOnly from "./DesktopOnly.vue";
 import Inbox from "./Inbox.vue";
 
 // Desktop-only screens (board, import, stages) take the full width.
 // Mobile stacks the screens (Inbox, or the open draft/thread); >= 1024 px shows both as columns.
+// The Inbox is communicator data — without that module the detail takes the whole width.
 const route = useRoute();
+const munin = useMuninStore();
 const hasDetail = computed(() => route.name !== "LeadsInbox");
+const hasInbox = computed(() => munin.isModuleEnabled("communicator"));
+
+// Times read in the channel's zone (the send policy's); without it they stay in the browser's.
+onMounted(async () => {
+  if (!hasInbox.value) return;
+  try {
+    channelTimeZone.value = (await GET_Policy()).data.timezone || undefined;
+  } catch {
+    channelTimeZone.value = undefined;
+  }
+});
 </script>
 
 <style scoped>
@@ -49,6 +65,9 @@ const hasDetail = computed(() => route.name !== "LeadsInbox");
     grid-template-columns: 360px minmax(0, 1fr);
     grid-template-rows: minmax(0, 1fr);
     overflow: hidden;
+  }
+  .leads--solo {
+    grid-template-columns: minmax(0, 1fr);
   }
   .leads__inbox {
     border-right: 1px solid var(--c-basic-300);

@@ -4,7 +4,7 @@
       <span class="tg__subject" data-testid="earlier-thread-subject">{{ title }}</span>
       <span class="tg__meta">
         {{ $t(`leads.thread.state.${thread.status}`) }}<template v-if="thread.last_message_at">
-          · {{ formatDateTime(thread.last_message_at) }}</template>
+          · {{ formatTime(thread.last_message_at) }}</template>
       </span>
       <span v-if="pending" class="tg__badge" data-testid="earlier-thread-optout">{{ $t("leads.thread.optout_suspected") }}</span>
     </button>
@@ -14,6 +14,7 @@
       :messages="detail.timeline || []"
       :optouts="detail.optouts"
       :waiting="waiting"
+      :busy="optoutBusy"
       @confirm-optout="confirmOptout"
     />
   </article>
@@ -25,7 +26,7 @@ import { t } from "@/i18n";
 import { GET_ThreadWithOptouts, POST_ConfirmOptout } from "@/api/communicator/api";
 import { useNotifyStore } from "@/stores/notify";
 import { threadSubject } from "@/utils/leadsThread";
-import { formatDateTime } from "@/utils/leadsTime";
+import { formatTime } from "@/utils/leadsTime";
 import ThreadTimeline from "./ThreadTimeline.vue";
 
 // One older thread of the company, collapsed to its header; the conversation loads when opened.
@@ -40,6 +41,7 @@ const notify = useNotifyStore();
 const open = ref(false);
 const loading = ref(false);
 const detail = ref(null);
+const optoutBusy = ref(false);
 
 const title = computed(
   () => threadSubject(detail.value?.timeline) || props.thread.recipient_name || props.thread.recipient_email
@@ -60,12 +62,16 @@ async function toggle() {
 }
 
 async function confirmOptout(replyId) {
+  if (optoutBusy.value) return;
+  optoutBusy.value = true;
   try {
     await POST_ConfirmOptout(replyId);
     await loadDetail();
     emit("changed");
   } catch {
     notify.spawnNotification({ msg: t("leads.review.error"), type: "negative" });
+  } finally {
+    optoutBusy.value = false;
   }
 }
 </script>

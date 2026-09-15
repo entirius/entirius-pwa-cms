@@ -1242,6 +1242,14 @@ const router = createRouter({
   routes,
 });
 
+// A route whose module is absent goes to its panel root; the root itself (Leads inbox) goes to the panel
+// fallback (Leads board), and the fallback home — never a loop.
+function moduleFallback(panel, path) {
+  if (path === panel?.root) return panel.fallback || "/";
+  if (path === panel?.fallback) return "/";
+  return panel?.root || "/";
+}
+
 router.beforeEach(async (to, from, next) => {
   // Allow unauthenticated routes (password reset)
   if (to.meta?.requiresAuth === false) {
@@ -1267,9 +1275,7 @@ router.beforeEach(async (to, from, next) => {
     // when the module is absent, even if their panel is enabled.
     const module = to.meta?.module;
     if (module && !munin.isModuleEnabled(module)) {
-      // The panel root itself may need the module (Leads inbox) — go home instead of looping.
-      const root = panels.find((p) => p.idx === panel)?.root || "/";
-      next(to.path === root ? "/" : root);
+      next(moduleFallback(panels.find((p) => p.idx === panel), to.path));
       return;
     }
     userStore.activeApp = panel;

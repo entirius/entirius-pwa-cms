@@ -3,15 +3,23 @@
     <BackBar class="thread__back" :label="$t('leads.thread.back')" @back="goBack" />
     <Loader v-show="loading" />
     <h3 v-if="company" class="thread__company" data-testid="thread-company">{{ company.name }}</h3>
+    <p v-if="companyMissing" class="thread__none" role="status" data-testid="thread-company-missing">
+      {{ $t("leads.thread.company_unavailable") }}
+    </p>
     <p v-if="desktopHint" class="thread__none" data-testid="thread-desktop-hint">{{ $t("leads.thread.desktop_hint") }}</p>
     <ToolboxBanner v-if="company" />
     <IntelCard v-if="company && munin.isModuleEnabled('siteintel')" :context="company" />
-    <p v-if="!loading && !newest" class="thread__none">{{ $t("leads.thread.no_thread") }}</p>
+    <p v-if="mailMissing" class="thread__none" role="status" data-testid="thread-mail-missing">
+      {{ $t("leads.thread.mail_unavailable") }}
+    </p>
+    <p v-else-if="!loading && !newest" class="thread__none">{{ $t("leads.thread.no_thread") }}</p>
     <p v-if="newest" class="thread__subject" data-testid="thread-subject">
       <strong>{{ threadSubject(newest.timeline) }}</strong>
       <span class="thread__state"> · {{ $t(`leads.thread.state.${newest.status}`) }}</span>
     </p>
     <ThreadTimeline
+      v-if="!mailMissing"
+      :busy="optoutBusy"
       :messages="newest?.timeline || []"
       :optouts="newest?.optouts || []"
       :waiting="newest ? waitingOf(waiting, newest.id) : []"
@@ -76,6 +84,9 @@ const pendingOptouts = ref([]);
 const waiting = ref([]);
 const activities = ref([]);
 const loading = ref(false);
+const companyMissing = ref(false);
+const mailMissing = ref(false);
+const optoutBusy = ref(false);
 
 const subjectRef = computed(() => `leads.Company:${route.params.id}`);
 const pendingThreads = computed(
@@ -99,30 +110,39 @@ async function loadActivities(id) {
   activities.value = (await GET_CompanyActivities(id, { page_size: 100 })).data.results || [];
 }
 
+async function loadCompany(id) {
+  company.value = (await GET_Company(id)).data;
+}
+
+// The mail side needs the communicator module; without it (or when it fails) the company still renders.
+async function loadMail() {
+  if (!munin.isModuleEnabled("communicator")) throw new Error("communicator module disabled");
+  const [waitingList] = await Promise.all([GET_WaitingMessages(), loadThreads(), loadPendingOptouts()]);
+  waiting.value = waitingList;
+}
+
 async function load() {
   const id = route.params.id;
   loading.value = true;
   try {
-    const [companyRes, waitingList] = await Promise.all([
-      GET_Company(id),
-      GET_WaitingMessages(),
-      loadThreads(),
-      loadPendingOptouts(),
-      loadActivities(id),
-    ]);
-    company.value = companyRes.data;
-    waiting.value = waitingList;
+    const [companyResult, mailResult] = await Promise.allSettled([loadCompany(id), loadMail(), loadActivities(id)]);
+    companyMissing.value = companyResult.status === "rejected";
+    mailMissing.value = mailResult.status === "rejected";
   } finally {
     loading.value = false;
   }
 }
 
 async function confirmOptout(replyId) {
+  if (optoutBusy.value) return;
+  optoutBusy.value = true;
   try {
     await POST_ConfirmOptout(replyId);
     await load();
   } catch {
     notify.spawnNotification({ msg: t("leads.review.error"), type: "negative" });
+  } finally {
+    optoutBusy.value = false;
   }
 }
 

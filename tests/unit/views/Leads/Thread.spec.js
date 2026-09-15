@@ -22,12 +22,15 @@ const api = vi.hoisted(() => ({
   POST_ConfirmOptout: vi.fn(),
 }));
 vi.mock("@/api/communicator/api", () => api);
+const leadsApi = vi.hoisted(() => ({ GET_Company: vi.fn() }));
 vi.mock("@/api/leads/api", () => ({
-  GET_Company: () => Promise.resolve({ data: { id: 42, name: "Example Shop 5" } }),
+  GET_Company: leadsApi.GET_Company,
   GET_CompanyActivities: () => Promise.resolve({ data: { results: [{ id: 1, created_at: "2026-09-21T08:00:00Z", message: "stage new -> contacted" }] } }),
 }));
-vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ toolboxStatus: "", isModuleEnabled: () => false }) }));
-vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification: vi.fn() }) }));
+const modules = vi.hoisted(() => new Set());
+vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ toolboxStatus: "", isModuleEnabled: (key) => modules.has(key) }) }));
+const spawnNotification = vi.hoisted(() => vi.fn());
+vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification }) }));
 vi.mock("vue-router", () => ({ useRoute: () => ({ params: { id: "42" } }), useRouter: () => ({}) }));
 
 import Thread from "@/views/Leads/Thread.vue";
@@ -37,6 +40,9 @@ const mountThread = (props = {}) => mount(Thread, { props, global: { stubs } });
 
 beforeEach(() => {
   vi.clearAllMocks();
+  modules.clear();
+  modules.add("leads").add("communicator");
+  leadsApi.GET_Company.mockResolvedValue({ data: { id: 42, name: "Example Shop 5" } });
   api.GET_Threads.mockResolvedValue({ data: { count: 3, next: null, results: summaries } });
   api.GET_ThreadWithOptouts.mockImplementation((id) => Promise.resolve(detail(id)));
   api.GET_Replies.mockResolvedValue({ data: { results: [] } });
@@ -104,5 +110,54 @@ describe("Leads Thread", () => {
     expect(phone.get('[data-testid="thread-timeline"]').text()).not.toContain("stage new");
     expect(desktop.find('[data-testid="thread-activity"]').exists()).toBe(false);
     expect(phone.get('[data-testid="thread-desktop-hint"]').text()).toBe("leads.thread.desktop_hint");
+  });
+
+  it("leads-only: the company renders with a mail notice and no communicator call", async () => {
+    modules.delete("communicator");
+    const wrapper = mountThread({ desktopHint: true });
+    await flushPromises();
+    expect(wrapper.get('[data-testid="thread-company"]').text()).toBe("Example Shop 5");
+    expect(wrapper.find('[data-testid="thread-mail-missing"]').exists()).toBe(true);
+    expect(wrapper.find('[data-testid="thread-timeline"]').exists()).toBe(false);
+    expect(api.GET_Threads).not.toHaveBeenCalled();
+    expect(api.GET_WaitingMessages).not.toHaveBeenCalled();
+  });
+
+  it("a communicator 404 does not hide the company", async () => {
+    api.GET_Threads.mockRejectedValue({ error: "NOT_FOUND" });
+    const wrapper = mountThread();
+    await flushPromises();
+    expect(wrapper.get('[data-testid="thread-company"]').text()).toBe("Example Shop 5");
+    expect(wrapper.find('[data-testid="thread-mail-missing"]').exists()).toBe(true);
+  });
+
+  it("a failing company call still shows the conversation with a company notice", async () => {
+    leadsApi.GET_Company.mockRejectedValue({ error: "INTERNAL_ERROR" });
+    const wrapper = mountThread();
+    await flushPromises();
+    expect(wrapper.find('[data-testid="thread-company-missing"]').exists()).toBe(true);
+    expect(wrapper.get('[data-testid="thread-subject"]').text()).toContain("Subject 9");
+  });
+
+  it("Confirm opt-out is single-flight: a double tap posts once and the button is busy meanwhile", async () => {
+    let resolve;
+    api.POST_ConfirmOptout.mockReturnValue(new Promise((r) => (resolve = r)));
+    api.GET_ThreadWithOptouts.mockImplementation((id) =>
+      Promise.resolve({
+        ...detail(id),
+        timeline: [{ at: "2026-09-22T08:00:00Z", direction: "in", body_text: "stop" }],
+        optouts: [{ id: 3, received_at: "2026-09-22T08:00:00Z", optout_confirmed_at: null }],
+      })
+    );
+    const wrapper = mountThread();
+    await flushPromises();
+    const button = wrapper.get('[data-testid="confirm-optout"]');
+    await button.trigger("click");
+    await button.trigger("click");
+    expect(api.POST_ConfirmOptout).toHaveBeenCalledTimes(1);
+    expect(button.attributes("disabled")).toBeDefined();
+    resolve({ data: {} });
+    await flushPromises();
+    expect(wrapper.get('[data-testid="confirm-optout"]').attributes("disabled")).toBeUndefined();
   });
 });

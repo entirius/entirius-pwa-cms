@@ -202,6 +202,8 @@ const accesses = {
       idx: "leads",
       icon: "inbox",
       root: "/leads/inbox",
+      // the Inbox needs django-communicator; a leads-only backend opens the company board
+      fallback: "/leads/board",
       labelKey: "panels.leads",
       descriptionKey: "panels.leads_desc",
       access: ["admin"],
