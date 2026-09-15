@@ -79,6 +79,7 @@ import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vu
 import { t } from "@/i18n";
 import { isConflict } from "@/api/createClient";
 import * as api from "@/api/communicator/api";
+import { extractApiMessage } from "@/composables/useFormErrors";
 import { useLeadsReviewStore } from "@/stores/leadsReview";
 import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
@@ -156,18 +157,18 @@ async function act(call, after) {
     reviewQueue.queueChanged();
     await after(data);
   } catch (err) {
-    if (isConflict(err)) return await onConflict();
+    if (isConflict(err)) return await onConflict(err);
     notify.spawnNotification({ msg: t("leads.review.error"), type: "negative" });
   } finally {
     busy.value = false;
   }
 }
 
-// The service's 409 body is the same generic error for both cases, so the draft's state decides: gone from the
-// queue → someone else handled it, move on; still waiting → the action does not apply to it, stay on the draft.
-async function onConflict() {
-  if (await api.GET_ReviewMessage(message.value.id)) {
-    notify.spawnNotification({ msg: t("leads.review.refused"), type: "negative" });
+// The 409 `error` code (communicator docs/api.md) decides: ALREADY_REVIEWED → someone else handled it, move on;
+// any other conflict → the service refused the action, show its message and stay on the draft.
+async function onConflict(err) {
+  if (err.error !== "ALREADY_REVIEWED") {
+    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.review.refused")), type: "negative" });
     return;
   }
   notify.spawnNotification({ msg: t("leads.review.conflict"), type: "warning" });

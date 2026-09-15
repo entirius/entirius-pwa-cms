@@ -6,7 +6,7 @@ import ThreadTimeline from "@/views/Leads/ThreadTimeline.vue";
 const messages = [
   { kind: "reply", at: "2026-09-21T09:00:00Z", direction: "in", status: "", subject: "Re: audit", body_text: "Thanks" },
   { kind: "message", at: "2026-09-21T08:00:00Z", direction: "out", status: "sent", subject: "Audit", body_text: "Hello" },
-  { kind: "message", at: "2026-09-24T08:00:00Z", direction: "out", status: "scheduled", subject: "Follow", body_text: "Ping" },
+  { kind: "message", message_id: 7, at: "2026-09-24T08:00:00Z", direction: "out", status: "scheduled", subject: "Follow", body_text: "Ping" },
 ];
 
 describe("ThreadTimeline", () => {
@@ -24,19 +24,19 @@ describe("ThreadTimeline", () => {
 
   it("a waiting bubble shows its scheduled slot — the time the Send toast named", () => {
     const slot = "2026-09-24T09:04:30Z";
-    const waiting = [{ subject: "Follow", created_at: messages[2].at, scheduled_at: slot }];
+    const waiting = [{ id: 7, subject: "Follow", scheduled_at: slot }];
     const wrapper = mount(ThreadTimeline, { props: { messages: [messages[2]], waiting } });
     expect(wrapper.get('[data-testid="timeline-time"]').text()).toBe(formatTime(slot));
   });
 
-  it("two waiting follow-ups with the same subject each show their own slot and held state", () => {
+  it("two waiting follow-ups with the same subject and created_at each show their own slot by message id", () => {
     const past = new Date(Date.now() - 7 * 60000).toISOString();
     const future = "2099-01-02T08:00:00Z";
-    const first = { ...messages[2], at: "2026-09-24T08:00:00.123456Z" };
-    const second = { ...messages[2], at: "2026-09-25T08:00:00Z" };
+    const first = { ...messages[2], message_id: 11 };
+    const second = { ...messages[2], message_id: 12 };
     const waiting = [
-      { id: 12, subject: "Follow", created_at: "2026-09-25T08:00:00+00:00", scheduled_at: future },
-      { id: 11, subject: "Follow", created_at: "2026-09-24T08:00:00.123456+00:00", scheduled_at: past },
+      { id: 12, subject: "Follow", created_at: messages[2].at, scheduled_at: future },
+      { id: 11, subject: "Follow", created_at: messages[2].at, scheduled_at: past },
     ];
     const wrapper = mount(ThreadTimeline, { props: { messages: [first, second], waiting } });
     const times = wrapper.findAll('[data-testid="timeline-time"]').map((node) => node.text());
@@ -48,7 +48,7 @@ describe("ThreadTimeline", () => {
   it("a mail waiting for its window says scheduled for <day> <HH:MM>", () => {
     channelTimeZone.value = "UTC";
     const slot = "2099-01-02T08:00:00Z";
-    const wrapper = mount(ThreadTimeline, { props: { messages: [messages[2]], waiting: [{ subject: "Follow", created_at: messages[2].at, scheduled_at: slot }] } });
+    const wrapper = mount(ThreadTimeline, { props: { messages: [messages[2]], waiting: [{ id: 7, subject: "Follow", scheduled_at: slot }] } });
     expect(wrapper.get('[data-testid="timeline-time"]').text()).toBe("02.01 08:00");
     expect(wrapper.get('[data-testid="status-scheduled"]').text()).not.toContain("leads.status.held");
     channelTimeZone.value = undefined;
@@ -56,7 +56,7 @@ describe("ThreadTimeline", () => {
 
   it("a scheduled message whose first send beat has passed says the send policy holds it", () => {
     const slot = new Date(Date.now() - 7 * 60000).toISOString();
-    const waiting = [{ subject: "Follow", created_at: messages[2].at, scheduled_at: slot }];
+    const waiting = [{ id: 7, subject: "Follow", scheduled_at: slot }];
     const wrapper = mount(ThreadTimeline, { props: { messages: [messages[2]], waiting } });
     expect(wrapper.get('[data-testid="status-scheduled"]').text()).toContain("leads.status.held");
   });

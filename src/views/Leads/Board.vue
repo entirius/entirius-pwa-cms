@@ -76,14 +76,20 @@ function activeFilters() {
   return Object.fromEntries(Object.entries(filters).filter(([, value]) => value));
 }
 
+// Every full reload starts a new run; a column response from an older run (a slower, earlier filter) is dropped.
+let latestRun = 0;
+
 async function loadColumn(key, page = 1) {
+  const run = latestRun;
   const params = { stage: key, search: search.value, sort: "-last_activity_at", page, ...activeFilters() };
   const { data } = await GET_Companies(params);
+  if (run !== latestRun) return;
   const previous = page > 1 ? columns[key].cards : [];
   columns[key] = { cards: [...previous, ...data.results], count: data.count, next: data.next, page };
 }
 
 function loadColumns() {
+  latestRun += 1;
   return Promise.all(stages.value.map((stage) => loadColumn(stage.key)));
 }
 

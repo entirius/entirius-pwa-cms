@@ -40,15 +40,18 @@ enableAutoUnmount(afterEach);
 import ReviewActions from "@/views/Leads/ReviewActions.vue";
 
 const ok = (data = {}) => Promise.resolve({ data });
-// A request through the real token-refresh client, answered by the service's actual 409 body.
-const conflictClient = createApiClient("http://service.test", { tokenRefresh: true });
-conflictClient.defaults.adapter = (config) =>
-  Promise.reject(
-    Object.assign(new Error("409"), {
-      config,
-      response: { status: 409, config, data: { error: "INVALID_REQUEST", message: "An error occurred.", debug_id: "a08a83ef", details: [] } },
-    })
-  );
+// A request through the real token-refresh client, answered by the service's 409 body with the given code.
+const conflictClient = (error, message) => {
+  const client = createApiClient("http://service.test", { tokenRefresh: true });
+  client.defaults.adapter = (config) =>
+    Promise.reject(
+      Object.assign(new Error("409"), {
+        config,
+        response: { status: 409, config, data: { error, message, debug_id: "a08a83ef", details: [] } },
+      })
+    );
+  return client;
+};
 const mountReview = async () => {
   const wrapper = mount(Review, {
     global: { directives: { out: {} }, stubs: { BackBar: true, IntelCard: true, RouterLink: { template: "<a><slot /></a>" } } },
@@ -170,9 +173,8 @@ describe("Leads Review", () => {
     expect(wrapper.get('[data-testid="toolbox-banner"]').text()).toContain("Entirius AI Toolbox");
   });
 
-  it("409 from the real client shape moves to next", async () => {
-    api.POST_ReviewAccept.mockImplementation(() => conflictClient.post("/accept/"));
-    api.GET_ReviewMessage.mockResolvedValueOnce(draft).mockResolvedValueOnce(null);
+  it("409 ALREADY_REVIEWED from the real client shape moves to next", async () => {
+    api.POST_ReviewAccept.mockImplementation(() => conflictClient("ALREADY_REVIEWED", "Message is approved.").post("/accept/"));
     api.GET_ReviewNext.mockResolvedValue({ data: { id: 6 } });
     const wrapper = await mountReview();
     await wrapper.get('[data-testid="review-send"]').trigger("click");
@@ -182,16 +184,16 @@ describe("Leads Review", () => {
     expect(replace).toHaveBeenCalledWith({ name: "LeadsReview", params: { id: 6 } });
   });
 
-  it("409 for an action that does not apply (ReviewError) keeps the reviewer on the draft", async () => {
-    api.POST_ReviewRewrite.mockImplementation(() => conflictClient.post("/rewrite/"));
+  it("409 REVIEW_REFUSED shows the service's message and keeps the reviewer on the draft", async () => {
+    api.POST_ReviewRewrite.mockImplementation(() => conflictClient("REVIEW_REFUSED", "Only AI drafts can be rewritten.").post("/rewrite/"));
     const wrapper = await mountReview();
     wrapper.findComponent(ReviewActions).vm.$emit("rewrite");
     await flushPromises();
     await wrapper.get('[data-testid="rewrite-notes"]').setValue("shorter");
     await wrapper.get('[data-testid="rewrite-submit"]').trigger("click");
     await flushPromises();
-    expect(api.GET_ReviewMessage).toHaveBeenLastCalledWith(5);
-    expect(spawnNotification).toHaveBeenCalledWith({ msg: "This action does not apply to this draft — it stays in review", type: "negative" });
+    expect(api.GET_ReviewMessage).toHaveBeenCalledTimes(1);
+    expect(spawnNotification).toHaveBeenCalledWith({ msg: "Only AI drafts can be rewritten.", type: "negative" });
     expect(api.GET_ReviewNext).not.toHaveBeenCalled();
     expect(replace).not.toHaveBeenCalled();
     expect(useLeadsReviewStore().changes).toBe(0);

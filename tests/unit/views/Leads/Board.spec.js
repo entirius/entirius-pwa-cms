@@ -78,6 +78,24 @@ describe("Leads Board", () => {
     expect(column(wrapper, "new").props("cards")).toEqual([]);
   });
 
+  it("two quick filter toggles: the late response of the first does not overwrite the second", async () => {
+    const wrapper = await mountBoard();
+    const late = [];
+    api.GET_Companies.mockImplementation((params) =>
+      params.has_reply
+        ? new Promise((resolve) => late.push(() => resolve({ data: { results: [company()], count: 1, next: null } })))
+        : Promise.resolve({ data: { results: [], count: 0, next: null } })
+    );
+    const chip = wrapper.find('[data-testid="board-filter-reply"]');
+    await chip.trigger("click");
+    await chip.trigger("click");
+    await flushPromises();
+    late.forEach((resolve) => resolve());
+    await flushPromises();
+    expect(column(wrapper, "new").props("count")).toBe(0);
+    expect(column(wrapper, "new").props("cards")).toEqual([]);
+  });
+
   it("a cleared filter is omitted from the query", async () => {
     const wrapper = await mountBoard();
     const chip = wrapper.find('[data-testid="board-filter-reply"]');
