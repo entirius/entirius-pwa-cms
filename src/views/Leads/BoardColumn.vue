@@ -15,7 +15,7 @@
       @change="onChange"
     >
       <template #item="{ element }">
-        <CompanyCard v-show="visible(element)" :company="element" :stages="stages" @move="forwardMove" />
+        <CompanyCard :company="element" :stages="stages" @move="forwardMove" />
       </template>
     </draggable>
     <button v-if="hasMore" class="ld-btn" data-testid="board-column-more" @click="$emit('more')">
@@ -36,7 +36,6 @@ const props = defineProps({
   count: { type: Number, default: 0 },
   hasMore: { type: Boolean, default: false },
   rules: { type: Array, default: () => [] },
-  visible: { type: Function, default: () => true },
 });
 const emit = defineEmits(["move", "more"]);
 

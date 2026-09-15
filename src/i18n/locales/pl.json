@@ -3094,6 +3094,7 @@
       "search": "Szukaj nazwy lub domeny",
       "rules": "Reguły: {count}",
       "more": "Załaduj więcej",
+      "has_reply": "Z odpowiedzią",
       "move_to": "Przenieś do etapu",
       "move_failed": "Nie udało się przenieść firmy"
     },

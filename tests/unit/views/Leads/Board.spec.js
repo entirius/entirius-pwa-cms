@@ -64,11 +64,26 @@ describe("Leads Board", () => {
     expect(notify.spawnNotification).toHaveBeenCalledWith({ msg: "Stage not found.", type: "negative" });
   });
 
-  it("filters cards by do_not_contact", async () => {
+  it.each([
+    ["board-filter-reply", "has_reply"],
+    ["board-filter-dnc", "do_not_contact"],
+  ])("chip %s reloads columns from page 1 with %s and the server count", async (testid, param) => {
     const wrapper = await mountBoard();
-    const visible = column(wrapper, "new").props("visible");
-    expect(visible(company())).toBe(true);
-    await wrapper.find('[data-testid="board-filter-dnc"]').trigger("click");
-    expect(column(wrapper, "new").props("visible")(company())).toBe(false);
+    api.GET_Companies.mockClear();
+    api.GET_Companies.mockResolvedValue({ data: { results: [], count: 0, next: null } });
+    await wrapper.find(`[data-testid="${testid}"]`).trigger("click");
+    await flushPromises();
+    expect(api.GET_Companies).toHaveBeenCalledWith({ stage: "new", search: "", sort: "-last_activity_at", page: 1, [param]: true });
+    expect(column(wrapper, "new").props("count")).toBe(0);
+    expect(column(wrapper, "new").props("cards")).toEqual([]);
+  });
+
+  it("a cleared filter is omitted from the query", async () => {
+    const wrapper = await mountBoard();
+    const chip = wrapper.find('[data-testid="board-filter-reply"]');
+    await chip.trigger("click");
+    await chip.trigger("click");
+    await flushPromises();
+    expect(api.GET_Companies).toHaveBeenLastCalledWith({ stage: "contacted", search: "", sort: "-last_activity_at", page: 1 });
   });
 });

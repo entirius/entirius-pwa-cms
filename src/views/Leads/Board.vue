@@ -14,14 +14,20 @@
         v-for="type in COMPANY_TYPES"
         :key="type"
         :label="type"
-        :active="typeFilter === type"
-        @click="typeFilter = typeFilter === type ? '' : type"
+        :active="filters.company_type === type"
+        @click="setFilter('company_type', filters.company_type === type ? '' : type)"
+      />
+      <FilterChip
+        :label="$t('leads.board.has_reply')"
+        :active="filters.has_reply"
+        data-testid="board-filter-reply"
+        @click="setFilter('has_reply', !filters.has_reply)"
       />
       <FilterChip
         :label="$t('leads.company.do_not_contact')"
-        :active="dncOnly"
+        :active="filters.do_not_contact"
         data-testid="board-filter-dnc"
-        @click="dncOnly = !dncOnly"
+        @click="setFilter('do_not_contact', !filters.do_not_contact)"
       />
     </div>
     <div class="board">
@@ -34,7 +40,6 @@
         :count="columns[stage.key]?.count || 0"
         :has-more="Boolean(columns[stage.key]?.next)"
         :rules="rulesByStage[stage.id] || []"
-        :visible="matchesFilters"
         @move="move"
         @more="loadColumn(stage.key, columns[stage.key].page + 1)"
       />
@@ -56,8 +61,7 @@ const stages = ref([]);
 const rules = ref([]);
 const columns = reactive({});
 const search = ref("");
-const typeFilter = ref("");
-const dncOnly = ref(false);
+const filters = reactive({ company_type: "", has_reply: false, do_not_contact: false });
 
 // Rules come from `GET rules/` (the stages payload carries none), grouped per stage for the column badge.
 const rulesByStage = computed(() =>
@@ -67,23 +71,32 @@ const rulesByStage = computed(() =>
   }, {})
 );
 
-function matchesFilters(company) {
-  if (typeFilter.value && company.company_type !== typeFilter.value) return false;
-  return !dncOnly.value || company.do_not_contact;
+// Filters are server-side so counts and paging match; a cleared filter is omitted (a blank boolean is a 400).
+function activeFilters() {
+  return Object.fromEntries(Object.entries(filters).filter(([, value]) => value));
 }
 
 async function loadColumn(key, page = 1) {
-  const params = { stage: key, search: search.value, sort: "-last_activity_at", page };
+  const params = { stage: key, search: search.value, sort: "-last_activity_at", page, ...activeFilters() };
   const { data } = await GET_Companies(params);
   const previous = page > 1 ? columns[key].cards : [];
   columns[key] = { cards: [...previous, ...data.results], count: data.count, next: data.next, page };
+}
+
+function loadColumns() {
+  return Promise.all(stages.value.map((stage) => loadColumn(stage.key)));
+}
+
+function setFilter(name, value) {
+  filters[name] = value;
+  return loadColumns();
 }
 
 async function load() {
   const [stageRes, ruleRes] = await Promise.all([GET_Stages(), GET_Rules()]);
   stages.value = stageRes.data.results;
   rules.value = ruleRes.data.results || [];
-  await Promise.all(stages.value.map((stage) => loadColumn(stage.key)));
+  await loadColumns();
 }
 
 function relocate(company, fromKey, toKey) {

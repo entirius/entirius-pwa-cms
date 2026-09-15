@@ -3095,6 +3095,7 @@
       "search": "Search name or domain",
       "rules": "{count} rules",
       "more": "Load more",
+      "has_reply": "Has reply",
       "move_to": "Move to stage",
       "move_failed": "The company could not be moved"
     },
