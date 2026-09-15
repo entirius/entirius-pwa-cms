@@ -120,7 +120,7 @@ and `communicator`; `siteintel` (intel card) and `notifications` (header bell, `
 gate in-view with `isModuleEnabled` — never map them in `MODULE_TO_PANEL`. Every leads-family call takes the
 channel from `src/stores/leadsChannel.js` (`VUE_APP_LEADS_CHANNEL`, default `default-europe`), never
 `VUE_APP_CHANNEL`. Review has no detail endpoint: the view finds the draft in `review/?status=review_required`.
-The thread view opens the newest thread of `leads.Company:<id>` (closed or not); older threads sit behind one "Earlier threads" expander (first `threads/` page, more pages on demand, a thread's detail loads when opened) that badges an undecided opt-out. Bubble time of a waiting mail = its `scheduled_at`; it reads as held once the first 5-minute send beat after the slot has passed (`src/utils/leadsTime.js`). The toolbox teaser
+The thread view opens the newest thread of `leads.Company:<id>` (closed or not); older threads sit behind one "Earlier threads" expander (first `threads/` page, more pages on demand, a thread's detail loads when opened) that badges an undecided opt-out. Bubble time of a waiting mail = its `scheduled_at`, found by the message's `created_at` (= the timeline `at` of an unsent message; the timeline payload has no message id, and follow-ups share a subject); it reads as held once the first 5-minute send beat after the slot has passed (`src/utils/leadsTime.js`). The toolbox teaser
 (`ToolboxBanner.vue`) reads munin `platform.toolbox_status` (`munin.toolboxStatus`). `data-testid`s are the contract of the
 emporium page objects (`src/entirius_tests/cms_pages/`) — rename both together.
 

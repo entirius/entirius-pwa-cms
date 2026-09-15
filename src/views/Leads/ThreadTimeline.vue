@@ -50,8 +50,11 @@ defineEmits(["confirm-optout"]);
 
 const WAITING_STATUSES = ["approved", "scheduled"];
 
+// The timeline payload carries no message id; an unsent message's `at` is its `created_at`, which identifies it
+// (follow-ups share a subject, so the subject cannot).
 function slotOf(item) {
-  return props.waiting.find((message) => message.subject === item.subject)?.scheduled_at || item.at;
+  const created = Date.parse(item.at);
+  return props.waiting.find((message) => Date.parse(message.created_at) === created)?.scheduled_at || item.at;
 }
 
 function messageEntry(item, index, firstOut) {
