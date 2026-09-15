@@ -3,7 +3,8 @@
     <button class="tg__head" :aria-expanded="String(open)" data-testid="earlier-thread-toggle" @click="toggle">
       <span class="tg__subject" data-testid="earlier-thread-subject">{{ title }}</span>
       <span class="tg__meta">
-        {{ $t(`leads.thread.state.${thread.status}`) }} · {{ formatDateTime(thread.last_message_at) }}
+        {{ $t(`leads.thread.state.${thread.status}`) }}<template v-if="thread.last_message_at">
+          · {{ formatDateTime(thread.last_message_at) }}</template>
       </span>
       <span v-if="pending" class="tg__badge" data-testid="earlier-thread-optout">{{ $t("leads.thread.optout_suspected") }}</span>
     </button>
