@@ -3033,7 +3033,15 @@
       "title": "Intel & hooks",
       "platform": "Platform",
       "industry": "Industry",
-      "no_hooks": "No hooks yet"
+      "no_hooks": "No hooks yet",
+      "no_audit": "No site audit yet",
+      "audit_status": "Audit status",
+      "strategy": {
+        "desktop": "Desktop performance",
+        "mobile": "Mobile performance"
+      },
+      "sources": "Sources",
+      "unavailable": "Not available"
     },
     "thread": {
       "title": "Company thread",

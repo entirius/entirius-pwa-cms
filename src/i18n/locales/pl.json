@@ -3032,7 +3032,15 @@
       "title": "Wywiad i haczyki",
       "platform": "Platforma",
       "industry": "Branża",
-      "no_hooks": "Brak haczyków"
+      "no_hooks": "Brak haczyków",
+      "no_audit": "Brak audytu strony",
+      "audit_status": "Status audytu",
+      "strategy": {
+        "desktop": "Wydajność na komputerze",
+        "mobile": "Wydajność na telefonie"
+      },
+      "sources": "Źródła",
+      "unavailable": "Niedostępne"
     },
     "thread": {
       "title": "Wątek firmy",
