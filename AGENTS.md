@@ -136,6 +136,8 @@ notification jumps open `?tab=timeline`.
 
 `/communicator/{templates,templates/:id,sequences,settings}`, munin key `communicator` (mapped to both Leads and
 Communicator), desktop only. Template edit sends `auto_approve` back unchanged (Grappelli-only), test-generate
-never saves. Settings: send policy, channel mode (`PATCH channel/` never carries `live_enabled`; sandbox needs a
+never saves. `GET templates/` is unpaginated (every template of the channel in `results`) and takes no `is_active`
+filter, so the Communicate modal filters the full list client-side. Settings: send policy (holiday country is set
+per channel — the SendPolicy API has no country field, so it is read-only here), channel mode (`PATCH channel/` never carries `live_enabled`; sandbox needs a
 mailbox, C-30), suppressions, waiting messages (`approved` + `scheduled`) with Send now =
 `messages/<id>/send-now/` (moves `scheduled_at` only, C-31). Sequences: create + text pool only (no step edit API).
