@@ -19,6 +19,8 @@
 </template>
 
 <script setup>
+import { formatTime } from "@/utils/leadsTime";
+
 defineProps({ company: { type: Object, required: true } });
-const formatDate = (iso) => (iso ? new Date(iso).toLocaleString() : "—");
+const formatDate = (iso) => formatTime(iso) || "—";
 </script>

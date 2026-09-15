@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { mount } from "@vue/test-utils";
+import { channelTimeZone, formatTime } from "@/utils/leadsTime";
 import ThreadTimeline from "@/views/Leads/ThreadTimeline.vue";
 
 const messages = [
@@ -25,8 +26,16 @@ describe("ThreadTimeline", () => {
     const slot = "2026-09-24T09:04:30Z";
     const waiting = [{ subject: "Follow", scheduled_at: slot }];
     const wrapper = mount(ThreadTimeline, { props: { messages: [messages[2]], waiting } });
-    const time = new Date(slot).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
-    expect(wrapper.get('[data-testid="timeline-time"]').text()).toBe(time);
+    expect(wrapper.get('[data-testid="timeline-time"]').text()).toBe(formatTime(slot));
+  });
+
+  it("a mail waiting for its window says scheduled for <day> <HH:MM>", () => {
+    channelTimeZone.value = "UTC";
+    const slot = "2099-01-02T08:00:00Z";
+    const wrapper = mount(ThreadTimeline, { props: { messages: [messages[2]], waiting: [{ subject: "Follow", scheduled_at: slot }] } });
+    expect(wrapper.get('[data-testid="timeline-time"]').text()).toBe("02.01 08:00");
+    expect(wrapper.get('[data-testid="status-scheduled"]').text()).not.toContain("leads.status.held");
+    channelTimeZone.value = undefined;
   });
 
   it("a scheduled message whose first send beat has passed says the send policy holds it", () => {
