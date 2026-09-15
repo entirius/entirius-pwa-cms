@@ -2989,8 +2989,10 @@
       "title": "Inbox",
       "to_review": "{count} to review",
       "next_at": "next goes out at {time}",
+      "held": "the next one waits for the send window or the daily cap",
       "empty_title": "No drafts to review",
       "empty_message": "{count} scheduled, next goes out at {time}",
+      "empty_message_held": "{count} scheduled, waiting for the send window or the daily cap",
       "empty_message_none": "Nothing scheduled — new drafts appear when a company reaches an outreach stage",
       "refresh": "Refresh",
       "untitled": "(no subject)",
@@ -3042,6 +3044,7 @@
       "desktop_hint": "Stage, Communicate and do-not-contact are available on desktop"
     },
     "status": {
+      "held": "waiting for the send window or daily cap",
       "sent": "sent",
       "scheduled": "scheduled",
       "failed": "failed",

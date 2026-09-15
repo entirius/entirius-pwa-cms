@@ -10,6 +10,7 @@ vi.mock("vue-router", () => ({ useRoute: () => ({ fullPath: "/leads/inbox", para
 import Inbox from "@/views/Leads/Inbox.vue";
 
 const draft = { id: 5, subject: "Your shop audit", created_at: "2026-09-21T08:00:00Z", thread: { recipient_name: "Anna" }, render_context: { company_name: "Example Shop 1" } };
+const inMinutes = (minutes) => new Date(Date.now() + minutes * 60000).toISOString();
 const mountInbox = () =>
   mount(Inbox, { global: { stubs: { EmptyState: { props: ["title", "message"], template: "<div data-testid='inbox-empty'>{{ title }} {{ message }}<slot /></div>" }, RouterLink: { template: "<a><slot /></a>" } } } });
 
@@ -29,13 +30,21 @@ describe("Leads Inbox", () => {
   });
 
   it("empty queue says how many wait and when the next goes out", async () => {
-    const at = "2026-09-21T08:07:00Z";
+    const at = inMinutes(60);
     const time = new Date(at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
-    lists.approved = [{ id: 1, scheduled_at: at }, { id: 2, scheduled_at: "2026-09-21T09:00:00Z" }];
+    lists.approved = [{ id: 1, scheduled_at: at }, { id: 2, scheduled_at: inMinutes(120) }];
     const wrapper = mountInbox();
     await flushPromises();
     expect(wrapper.get('[data-testid="inbox-empty"]').text()).toContain(`2 scheduled, next goes out at ${time}`);
     expect(wrapper.find('[data-testid="inbox-refresh"]').exists()).toBe(true);
+  });
+
+  it("a slot past the send beat says the send window or the daily cap holds it", async () => {
+    lists.scheduled = [{ id: 1, scheduled_at: inMinutes(-6) }];
+    const wrapper = mountInbox();
+    await flushPromises();
+    expect(wrapper.get('[data-testid="inbox-empty"]').text()).toContain("1 scheduled, waiting for the send window or the daily cap");
+    expect(wrapper.find('[data-testid="inbox-held"]').exists()).toBe(true);
   });
 
   it("empty queue with nothing scheduled still offers an action", async () => {

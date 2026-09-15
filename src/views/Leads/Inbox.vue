@@ -2,7 +2,8 @@
   <div class="inbox" data-testid="leads-inbox">
     <p class="inbox__summary" data-testid="inbox-summary">
       <strong>{{ $t("leads.inbox.to_review", { count: drafts.length }) }}</strong>
-      <span v-if="nextAt"> · {{ $t("leads.inbox.next_at", { time: nextAt }) }}</span>
+      <span v-if="held" data-testid="inbox-held"> · {{ $t("leads.inbox.held") }}</span>
+      <span v-else-if="nextAt"> · {{ $t("leads.inbox.next_at", { time: nextAt }) }}</span>
     </p>
 
     <Loader v-show="loading" />
@@ -39,22 +40,23 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { t } from "@/i18n";
 import { GET_ReviewList } from "@/api/communicator/api";
-import { formatTime } from "@/utils/leadsTime";
+import { formatTime, isOverdue } from "@/utils/leadsTime";
 
 const route = useRoute();
 const drafts = ref([]);
 const waiting = ref([]);
 const loading = ref(false);
 
-const nextAt = computed(() => {
-  const slots = waiting.value.map((m) => m.scheduled_at).filter(Boolean).sort();
-  return slots.length ? formatTime(slots[0]) : "";
-});
+const firstSlot = computed(() => waiting.value.map((m) => m.scheduled_at).filter(Boolean).sort()[0] || "");
+const nextAt = computed(() => formatTime(firstSlot.value));
+const held = computed(() => isOverdue(firstSlot.value));
 
 const emptyMessage = computed(() =>
-  waiting.value.length
-    ? t("leads.inbox.empty_message", { count: waiting.value.length, time: nextAt.value })
-    : t("leads.inbox.empty_message_none")
+  !waiting.value.length
+    ? t("leads.inbox.empty_message_none")
+    : held.value
+      ? t("leads.inbox.empty_message_held", { count: waiting.value.length })
+      : t("leads.inbox.empty_message", { count: waiting.value.length, time: nextAt.value })
 );
 
 function companyName(draft) {

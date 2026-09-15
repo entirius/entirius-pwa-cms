@@ -22,6 +22,12 @@ describe("ThreadTimeline", () => {
     expect(wrapper.findAll(".tl__tag")).toHaveLength(1);
   });
 
+  it("a scheduled message past the send beat says the send policy holds it", () => {
+    const past = new Date(Date.now() - 6 * 60000).toISOString();
+    const wrapper = mount(ThreadTimeline, { props: { messages: [{ ...messages[2], at: past }] } });
+    expect(wrapper.get('[data-testid="status-scheduled"]').text()).toContain("leads.status.held");
+  });
+
   it("the first outbound message of every merged thread is not a follow-up", () => {
     const merged = [
       { ...messages[1], thread: 1 },

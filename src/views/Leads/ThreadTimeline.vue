@@ -18,7 +18,7 @@
         <p class="tl__meta">
           <span>{{ formatTime(entry.at) }}</span>
           <span v-if="entry.status" class="tl__status" :data-testid="`status-${entry.status}`">
-            {{ $t(`leads.status.${entry.status}`) }}
+            {{ $t(`leads.status.${entry.status}`) }}<template v-if="entry.held"> · {{ $t("leads.status.held") }}</template>
           </span>
         </p>
         <div v-if="entry.optout" class="tl__optout">
@@ -38,7 +38,7 @@
 <script setup>
 import { computed } from "vue";
 import { t } from "@/i18n";
-import { formatTime } from "@/utils/leadsTime";
+import { formatTime, isOverdue } from "@/utils/leadsTime";
 
 // One chat timeline per company: thread messages and replies (communicator) plus leads activities as notes.
 const props = defineProps({
@@ -65,6 +65,7 @@ function messageEntry(item, index, firstOut) {
     subject: item.subject,
     text: item.body_text,
     status: out ? item.status : "",
+    held: out && ["approved", "scheduled"].includes(item.status) && isOverdue(item.at),
     tag: out && !firstOut.has(index) ? t("leads.thread.followup") : "",
     optout: out ? null : props.optouts.find((reply) => reply.received_at === item.at) || null,
   };

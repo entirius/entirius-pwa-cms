@@ -2988,8 +2988,10 @@
       "title": "Skrzynka",
       "to_review": "Do przejrzenia: {count}",
       "next_at": "następna wysyłka o {time}",
+      "held": "kolejna czeka na okno wysyłki lub dzienny limit",
       "empty_title": "Brak szkiców do przejrzenia",
       "empty_message": "Zaplanowane: {count}, następna wysyłka o {time}",
+      "empty_message_held": "Zaplanowane: {count}, czekają na okno wysyłki lub dzienny limit",
       "empty_message_none": "Nic nie jest zaplanowane — nowe szkice pojawią się, gdy firma wejdzie w etap kontaktu",
       "refresh": "Odśwież",
       "untitled": "(bez tematu)",
@@ -3041,6 +3043,7 @@
       "desktop_hint": "Zmiana etapu, „Napisz” i „Nie kontaktować” są dostępne na komputerze"
     },
     "status": {
+      "held": "czeka na okno wysyłki lub dzienny limit",
       "sent": "wysłana",
       "scheduled": "zaplanowana",
       "failed": "błąd",
