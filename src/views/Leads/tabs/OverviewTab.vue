@@ -12,7 +12,7 @@
     <h3>{{ $t("leads.company.activities") }}</h3>
     <ul class="ld-field">
       <li v-for="activity in company.activities" :key="activity.id">
-        <span class="ld-muted">{{ formatDate(activity.created_at) }}</span> {{ activity.kind }}: {{ activity.message }}
+        <span class="ld-muted">{{ formatDate(activity.created_at) }}</span> {{ activity.message }}
       </li>
     </ul>
   </section>
