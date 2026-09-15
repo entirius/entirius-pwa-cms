@@ -3080,6 +3080,7 @@
       "dnc_confirm": "Never contact {domain} again? Rules and manual outreach will skip it.",
       "dnc_done": "Marked do not contact",
       "create_customer": "Create customer",
+      "known_customer": "Known customer",
       "customer_done": "Customer linked",
       "tabs": {
         "overview": "Overview",

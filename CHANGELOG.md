@@ -12,6 +12,8 @@ All notable changes to this project will be documented in this file.
   Re-audit, Mark do not contact and Create customer (only for `won` with `accounts` installed); CSV import with
   the batch report; stages admin with drag or up/down reorder, inline rename and the delete refusal inline.
   On a phone the company thread says stage, Communicate and do-not-contact are available on desktop.
+  A company linked to a shop customer carries a "Known customer" badge linking to the customer; a scheduled
+  mail past the send beat says the send window or the daily cap holds it (Inbox and timeline).
 - **Communicator panel** (`/communicator/*`, munin key `communicator`): templates list and edit (model list,
   validated JSON schema, versions drawer, test generate without saving), sequences with the follow-up text
   pool, send settings (policy windows and cap, channel mode with the sandbox mailbox rule and the live gate text,

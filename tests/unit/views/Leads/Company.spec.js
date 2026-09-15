@@ -13,7 +13,8 @@ vi.mock("@/stores/notify", () => ({ useNotifyStore: () => notify }));
 import CompanyActions from "@/views/Leads/CompanyActions.vue";
 
 const company = (kind = "open") => ({ id: 7, domain: "shop.test", do_not_contact: false, customer_uid: null, stage: { key: kind, kind }, contacts: [] });
-const mountActions = (props) => mount(CompanyActions, { props, global: { stubs: { CommunicateModal: true } } });
+const mountActions = (props) =>
+  mount(CompanyActions, { props, global: { stubs: { CommunicateModal: true, RouterLink: { props: ["to"], template: "<a :data-to='to.name'><slot /></a>" } } } });
 const has = (wrapper, id) => wrapper.find(`[data-testid="${id}"]`).exists();
 
 describe("Company card actions", () => {
@@ -27,6 +28,16 @@ describe("Company card actions", () => {
     munin.isModuleInstalled.mockReturnValue(installed);
     expect(has(mountActions({ company: company(kind) }), "company-create-customer")).toBe(visible);
     expect(munin.isModuleInstalled).toHaveBeenCalledWith("accounts");
+  });
+
+  it.each([
+    [true, "CustomerDetail"],
+    [false, undefined],
+  ])("a linked shop customer is badged, linked when accounts=%s (L-15)", (installed, target) => {
+    munin.isModuleInstalled.mockReturnValue(installed);
+    const badge = mountActions({ company: { ...company("won"), customer_uid: "u-1" } }).get('[data-testid="company-known-customer"]');
+    expect(badge.attributes("data-to")).toBe(target);
+    expect(has(mountActions({ company: company("won") }), "company-known-customer")).toBe(false);
   });
 
   it("do not contact asks first and patches only after the confirm", async () => {

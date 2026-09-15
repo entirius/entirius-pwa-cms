@@ -3079,6 +3079,7 @@
       "dnc_confirm": "Nigdy więcej nie kontaktować {domain}? Reguły i ręczne wiadomości ją pominą.",
       "dnc_done": "Oznaczono: nie kontaktować",
       "create_customer": "Utwórz klienta",
+      "known_customer": "Znany klient",
       "customer_done": "Klient powiązany",
       "tabs": {
         "overview": "Przegląd",

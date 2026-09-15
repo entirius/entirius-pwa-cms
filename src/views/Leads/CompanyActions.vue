@@ -1,5 +1,16 @@
 <template>
   <div class="ld-row" data-testid="company-actions">
+    <router-link
+      v-if="company.customer_uid && hasAccounts"
+      class="ld-badge"
+      :to="{ name: 'CustomerDetail', params: { uid: company.customer_uid } }"
+      data-testid="company-known-customer"
+    >
+      {{ $t("leads.company.known_customer") }}
+    </router-link>
+    <span v-else-if="company.customer_uid" class="ld-badge" data-testid="company-known-customer">
+      {{ $t("leads.company.known_customer") }}
+    </span>
     <button class="ld-btn ld-btn--primary" data-testid="company-communicate" @click="communicating = true">
       {{ $t("leads.company.communicate") }}
     </button>
@@ -45,9 +56,10 @@ const notify = useNotifyStore();
 const communicating = ref(false);
 const confirming = ref(false);
 
+const hasAccounts = computed(() => munin.isModuleInstalled("accounts"));
 // L-15: the won seam exists only with accounts installed.
 const canCreateCustomer = computed(
-  () => munin.isModuleInstalled("accounts") && props.company.stage.kind === "won" && !props.company.customer_uid
+  () => hasAccounts.value && props.company.stage.kind === "won" && !props.company.customer_uid
 );
 
 async function run(call, successKey) {
