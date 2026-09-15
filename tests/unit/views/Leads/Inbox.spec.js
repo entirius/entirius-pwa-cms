@@ -40,7 +40,7 @@ describe("Leads Inbox", () => {
   });
 
   it("a slot past the send beat says the send window or the daily cap holds it", async () => {
-    lists.scheduled = [{ id: 1, scheduled_at: inMinutes(-6) }];
+    lists.scheduled = [{ id: 1, scheduled_at: inMinutes(-7) }];
     const wrapper = mountInbox();
     await flushPromises();
     expect(wrapper.get('[data-testid="inbox-empty"]').text()).toContain("1 scheduled, waiting for the send window or the daily cap");
