@@ -19,6 +19,12 @@ const api = vi.hoisted(() => ({
 vi.mock("@/api/notifications/api", () => api);
 const push = vi.fn();
 vi.mock("vue-router", () => ({ useRouter: () => ({ push }) }));
+const spawnNotification = vi.hoisted(() => vi.fn());
+vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification }) }));
+
+const GET_Company = vi.hoisted(() => vi.fn((id) => Promise.resolve({ data: { id, name: `Example Shop ${id}` } })));
+vi.mock("@/api/leads/api", () => ({ GET_Company }));
+vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isModuleEnabled: (key) => key === "leads" }) }));
 
 import { useNotificationsStore } from "@/stores/notifications";
 import NotificationBell from "@/components/NotificationBar/NotificationBell.vue";
@@ -91,5 +97,82 @@ describe("notification bar", () => {
     await flushPromises();
     expect(api.POST_MarkRead).toHaveBeenCalledWith(2);
     expect(push).not.toHaveBeenCalled();
+  });
+
+  it("a tab becoming visible polls at once", async () => {
+    const visibility = vi.spyOn(document, "visibilityState", "get").mockReturnValue("visible");
+    const store = useNotificationsStore();
+    store.start();
+    await flushPromises();
+    document.dispatchEvent(new Event("visibilitychange"));
+    await flushPromises();
+    expect(api.GET_UnreadCount).toHaveBeenCalledTimes(2);
+    store.stop();
+    document.dispatchEvent(new Event("visibilitychange"));
+    expect(api.GET_UnreadCount).toHaveBeenCalledTimes(2);
+    visibility.mockRestore();
+  });
+
+  it("a double tap on a row reads once and drops the badge by one", async () => {
+    useNotificationsStore().unread = 2;
+    const wrapper = mountBell();
+    await wrapper.get('[data-testid="notif-bell"]').trigger("click");
+    await flushPromises();
+    const row = wrapper.findAll('[data-testid="notif-row"]')[0];
+    await row.trigger("click");
+    await row.trigger("click");
+    await flushPromises();
+    expect(api.POST_MarkRead).toHaveBeenCalledTimes(1);
+    expect(push).toHaveBeenCalledTimes(1);
+    expect(wrapper.get('[data-testid="notif-count"]').text()).toBe("1");
+  });
+
+  it("a failed read shows a toast and keeps the badge", async () => {
+    api.POST_MarkRead.mockRejectedValueOnce({ error: "INTERNAL_ERROR" });
+    useNotificationsStore().unread = 2;
+    const wrapper = mountBell();
+    await wrapper.get('[data-testid="notif-bell"]').trigger("click");
+    await flushPromises();
+    await wrapper.findAll('[data-testid="notif-row"]')[0].trigger("click");
+    await flushPromises();
+    expect(spawnNotification).toHaveBeenCalledWith(expect.objectContaining({ type: "negative" }));
+    expect(push).not.toHaveBeenCalled();
+    expect(wrapper.get('[data-testid="notif-count"]').text()).toBe("2");
+  });
+
+  it("a failing list load is caught and leaves the list empty", async () => {
+    api.GET_Notifications.mockRejectedValueOnce({ error: "INTERNAL_ERROR" });
+    const wrapper = mountBell();
+    await wrapper.get('[data-testid="notif-bell"]').trigger("click");
+    await flushPromises();
+    expect(wrapper.findAll('[data-testid="notif-row"]')).toHaveLength(0);
+  });
+
+  it("notification rows carry the company name (and the company for Possible opt-out), not the raw address", async () => {
+    api.GET_Notifications.mockResolvedValueOnce({
+      data: {
+        results: [
+          { id: 3, title: "Reply from anna@example-shop-5.test", severity: "medium", subject_ref: "leads.Company:5", created_at: "2026-09-14T08:00:00Z" },
+          { id: 4, title: "Possible opt-out", severity: "medium", subject_ref: "leads.Company:6", created_at: "2026-09-14T08:01:00Z" },
+        ],
+      },
+    });
+    const wrapper = mountBell();
+    await wrapper.get('[data-testid="notif-bell"]').trigger("click");
+    await flushPromises();
+    const titles = wrapper.findAll(".notif-row__title").map((row) => row.text());
+    expect(titles).toEqual(["Reply from Example Shop 5", "Possible opt-out · Example Shop 6"]);
+  });
+
+  it("on desktop the bell opens an anchored popover that Escape closes", async () => {
+    const wrapper = mountBell();
+    await wrapper.get('[data-testid="notif-bell"]').trigger("click");
+    await flushPromises();
+    const style = wrapper.get('[data-testid="notif-sheet"]').attributes("style");
+    expect(style).toContain("--notif-top");
+    expect(style).toContain("--notif-right");
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    await flushPromises();
+    expect(wrapper.find('[data-testid="notif-sheet"]').exists()).toBe(false);
   });
 });

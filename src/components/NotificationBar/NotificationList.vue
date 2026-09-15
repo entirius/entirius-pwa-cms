@@ -1,5 +1,5 @@
 <template>
-  <div class="notif-sheet" data-testid="notif-sheet">
+  <div class="notif-sheet" :style="anchorStyle" data-testid="notif-sheet">
     <div class="notif-sheet__backdrop" data-testid="notif-backdrop" @click="emit('close')"></div>
     <div class="notif-list" role="dialog" :aria-label="$t('notification_bar.title')" data-testid="notif-list">
       <div class="notif-list__head">
@@ -20,7 +20,7 @@
       >
         <span class="notif-row__dot" aria-hidden="true"></span>
         <span class="notif-row__text">
-          <span class="notif-row__title">{{ item.title }}</span>
+          <span class="notif-row__title">{{ rowTitle(item) }}</span>
           <span class="notif-row__age">{{ formatAge(item.created_at) }}</span>
         </span>
       </button>
@@ -29,13 +29,48 @@
 </template>
 
 <script setup>
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
+import { GET_Company } from "@/api/leads/api";
+import { useMuninStore } from "@/stores/munin";
 import { useNotificationsStore } from "@/stores/notifications";
+import { formatTime } from "@/utils/leadsTime";
+import { companyIdFromSubjectRef } from "@/utils/subjectRef";
 
-// Bottom sheet: the rows sit in thumb reach on a phone; the same sheet serves desktop.
+// Phone: a bottom sheet, rows in thumb reach. Desktop (>= 1024 px): a popover anchored under the bell
+// (`anchor` = viewport offsets of the bell). Escape closes both.
+const props = defineProps({ anchor: { type: Object, default: null } });
 const emit = defineEmits(["close"]);
 const store = useNotificationsStore();
+const munin = useMuninStore();
 const router = useRouter();
+const companyNames = ref({});
+const EMAIL = /\S+@\S+/;
+
+const anchorStyle = computed(() =>
+  props.anchor ? { "--notif-top": `${props.anchor.top}px`, "--notif-right": `${props.anchor.right}px` } : {}
+);
+
+// A leads notification names its company, never a bare address ("Possible opt-out · Example Shop 6").
+function rowTitle(item) {
+  const name = companyNames.value[companyIdFromSubjectRef(item.subject_ref)];
+  if (!name || item.title.includes(name)) return item.title;
+  return EMAIL.test(item.title) ? item.title.replace(EMAIL, name) : `${item.title} · ${name}`;
+}
+
+async function loadCompanyNames(items) {
+  if (!munin.isModuleEnabled("leads")) return;
+  const ids = [...new Set(items.map((item) => companyIdFromSubjectRef(item.subject_ref)).filter(Boolean))];
+  const results = await Promise.allSettled(ids.map((id) => GET_Company(id)));
+  results.forEach((result, i) => {
+    if (result.status === "fulfilled") companyNames.value[ids[i]] = result.value.data.name;
+  });
+}
+watch(() => store.items, loadCompanyNames, { immediate: true });
+
+const onKey = (event) => event.key === "Escape" && emit("close");
+onMounted(() => document.addEventListener("keydown", onKey));
+onBeforeUnmount(() => document.removeEventListener("keydown", onKey));
 
 async function openItem(item) {
   const route = await store.open(item);
@@ -44,9 +79,7 @@ async function openItem(item) {
   router.push(route);
 }
 
-function formatAge(iso) {
-  return new Date(iso).toLocaleString([], { dateStyle: "short", timeStyle: "short" });
-}
+const formatAge = (iso) => formatTime(iso);
 </script>
 
 <style scoped>
@@ -148,5 +181,25 @@ function formatAge(iso) {
 .notif-row__age {
   font-size: var(--fs-100);
   color: var(--c-basic-500);
+}
+@media (min-width: 1024px) {
+  .notif-sheet__backdrop {
+    background: transparent;
+  }
+  .notif-list {
+    top: var(--notif-top, 3.5rem);
+    right: var(--notif-right, 1rem);
+    bottom: auto;
+    left: auto;
+    transform: none;
+    width: 24rem;
+    max-height: 60vh;
+    padding-bottom: 0;
+    border-radius: 0.75rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+  }
+  .notif-list__grip {
+    display: none;
+  }
 }
 </style>

@@ -1,6 +1,7 @@
 <template>
   <div class="relative">
     <button
+      ref="bell"
       class="notif-bell"
       :class="{ 'notif-bell--active': isOpen }"
       :aria-label="$t('notification_bar.open')"
@@ -13,7 +14,7 @@
       </span>
     </button>
     <Teleport to="body">
-      <NotificationList v-if="isOpen" @close="isOpen = false" />
+      <NotificationList v-if="isOpen" :anchor="anchor" @close="isOpen = false" />
     </Teleport>
   </div>
 </template>
@@ -25,9 +26,13 @@ import NotificationList from "./NotificationList.vue";
 
 const store = useNotificationsStore();
 const isOpen = ref(false);
+const bell = ref(null);
+const anchor = ref(null);
 
 function toggle() {
   isOpen.value = !isOpen.value;
+  const rect = bell.value.getBoundingClientRect();
+  anchor.value = { top: Math.round(rect.bottom + 8), right: Math.round(window.innerWidth - rect.right) };
   if (isOpen.value) store.loadItems();
 }
 </script>
