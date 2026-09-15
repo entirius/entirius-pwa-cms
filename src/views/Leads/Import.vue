@@ -45,8 +45,19 @@ function pick(event) {
   file.value = event.target.files?.[0] || null;
 }
 
+function fail(err) {
+  clearTimeout(timer);
+  busy.value = false;
+  error.value = extractApiMessage(err, t("leads.import.failed"));
+}
+
+// Every poll handles its own failure: a later poll runs from the timer, outside upload()'s try.
 async function poll() {
-  batch.value = (await GET_Import(batch.value.id)).data;
+  try {
+    batch.value = (await GET_Import(batch.value.id)).data;
+  } catch (err) {
+    return fail(err);
+  }
   if (FINISHED.includes(batch.value.status)) busy.value = false;
   else timer = setTimeout(poll, POLL_MS);
 }
@@ -56,11 +67,10 @@ async function upload() {
   busy.value = true;
   try {
     batch.value = (await POST_Import(file.value)).data;
-    await poll();
   } catch (err) {
-    busy.value = false;
-    error.value = extractApiMessage(err, t("leads.import.failed"));
+    return fail(err);
   }
+  await poll();
 }
 
 onBeforeUnmount(() => clearTimeout(timer));
