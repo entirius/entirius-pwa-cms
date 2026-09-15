@@ -6,30 +6,63 @@
     <p v-if="desktopHint" class="thread__none" data-testid="thread-desktop-hint">{{ $t("leads.thread.desktop_hint") }}</p>
     <ToolboxBanner v-if="company" />
     <IntelCard v-if="company && munin.isModuleEnabled('siteintel')" :context="company" />
-    <p v-if="!loading && !thread" class="thread__none">{{ $t("leads.thread.no_thread") }}</p>
+    <p v-if="!loading && !newest" class="thread__none">{{ $t("leads.thread.no_thread") }}</p>
+    <p v-if="newest" class="thread__subject" data-testid="thread-subject">
+      <strong>{{ threadSubject(newest.timeline) }}</strong>
+      <span class="thread__state"> · {{ $t(`leads.thread.state.${newest.status}`) }}</span>
+    </p>
     <ThreadTimeline
-      :messages="thread?.timeline || []"
-      :activities="activities"
-      :optouts="optouts"
+      :messages="newest?.timeline || []"
+      :optouts="newest?.optouts || []"
+      :waiting="newest ? waitingOf(waiting, newest.id) : []"
       @confirm-optout="confirmOptout"
     />
+    <EarlierThreads
+      v-if="older.count"
+      :key="subjectRef"
+      :subject-ref="subjectRef"
+      :threads="older.threads"
+      :count="older.count"
+      :next="older.next"
+      :page-size="PAGE_SIZE"
+      :pending-threads="pendingThreads"
+      :waiting="waiting"
+      @changed="loadPendingOptouts"
+    />
+    <details v-if="desktopHint && activities.length" class="thread__activity" data-testid="thread-activity">
+      <summary>{{ $t("leads.thread.activity", { count: activities.length }) }}</summary>
+      <ul>
+        <li v-for="activity in activities" :key="activity.id">{{ formatTime(activity.created_at) }} · {{ activity.message }}</li>
+      </ul>
+    </details>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { t } from "@/i18n";
 import { GET_Company, GET_CompanyActivities } from "@/api/leads/api";
-import { GET_Replies, GET_Thread, GET_Threads, POST_ConfirmOptout } from "@/api/communicator/api";
+import {
+  GET_Replies,
+  GET_ThreadWithOptouts,
+  GET_Threads,
+  GET_WaitingMessages,
+  POST_ConfirmOptout,
+} from "@/api/communicator/api";
 import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
+import { threadSubject, waitingOf } from "@/utils/leadsThread";
+import { formatTime } from "@/utils/leadsTime";
+import EarlierThreads from "./EarlierThreads.vue";
 import IntelCard from "./IntelCard.vue";
 import ThreadTimeline from "./ThreadTimeline.vue";
 import ToolboxBanner from "./ToolboxBanner.vue";
 
-// On a phone the company card is only this thread: stage, Communicate and do-not-contact stay on desktop.
-defineProps({ desktopHint: { type: Boolean, default: false } });
+// The company thread: the newest conversation (closed or not); older ones sit behind one expander.
+// On a phone this is the whole company card — its activity log stays apart from the mail, collapsed below.
+const props = defineProps({ desktopHint: { type: Boolean, default: false } });
+const PAGE_SIZE = 20;
 
 const route = useRoute();
 const router = useRouter();
@@ -37,43 +70,48 @@ const munin = useMuninStore();
 const notify = useNotifyStore();
 
 const company = ref(null);
-const thread = ref(null);
+const newest = ref(null);
+const older = ref({ threads: [], count: 0, next: false });
+const pendingOptouts = ref([]);
+const waiting = ref([]);
 const activities = ref([]);
-const optouts = ref([]);
 const loading = ref(false);
 
-// The company payload carries no threads: every thread of the subject merges into one company timeline
-// (a new draft opens a new thread — it must not hide the conversation that already got a reply).
-async function loadThreadParts(threadId) {
-  const [detail, replies] = await Promise.all([
-    GET_Thread(threadId),
-    GET_Replies({ thread: threadId, kind: "suspected_optout" }),
-  ]);
-  const timeline = (detail.data.timeline || []).map((item) => ({ ...item, thread: threadId }));
-  return { timeline, optouts: replies.data.results || [] };
+const subjectRef = computed(() => `leads.Company:${route.params.id}`);
+const pendingThreads = computed(
+  () => new Set(pendingOptouts.value.filter((reply) => !reply.optout_confirmed_at).map((reply) => reply.thread_id))
+);
+
+async function loadThreads() {
+  const { data } = await GET_Threads({ subject_ref: subjectRef.value, page_size: PAGE_SIZE });
+  const [first, ...rest] = data.results || [];
+  older.value = { threads: rest, count: Math.max((data.count || 0) - 1, 0), next: Boolean(data.next) };
+  newest.value = first ? await GET_ThreadWithOptouts(first.id) : null;
 }
 
-async function loadThread(companyId) {
-  const { data } = await GET_Threads({ subject_ref: `leads.Company:${companyId}` });
-  const threads = data.results || [];
-  if (!threads.length) return null;
-  const parts = await Promise.all(threads.map((item) => loadThreadParts(item.id)));
-  optouts.value = parts.flatMap((part) => part.optouts);
-  return { timeline: parts.flatMap((part) => part.timeline) };
+async function loadPendingOptouts() {
+  const { data } = await GET_Replies({ kind: "suspected_optout", page_size: 100 });
+  pendingOptouts.value = data.results || [];
+}
+
+async function loadActivities(id) {
+  if (!props.desktopHint) return;
+  activities.value = (await GET_CompanyActivities(id, { page_size: 100 })).data.results || [];
 }
 
 async function load() {
   const id = route.params.id;
   loading.value = true;
   try {
-    const [companyRes, activityRes, threadData] = await Promise.all([
+    const [companyRes, waitingList] = await Promise.all([
       GET_Company(id),
-      GET_CompanyActivities(id, { page_size: 100 }),
-      loadThread(id),
+      GET_WaitingMessages(),
+      loadThreads(),
+      loadPendingOptouts(),
+      loadActivities(id),
     ]);
     company.value = companyRes.data;
-    activities.value = activityRes.data.results || [];
-    thread.value = threadData;
+    waiting.value = waitingList;
   } finally {
     loading.value = false;
   }
@@ -117,5 +155,27 @@ watch(() => route.params.id, (id) => id && load());
 .thread__none {
   margin: 0;
   color: var(--c-basic-500);
+}
+.thread__subject {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.thread__state {
+  color: var(--c-basic-600);
+  font-size: var(--fs-100);
+}
+.thread__activity {
+  color: var(--c-basic-600);
+  font-size: var(--fs-100);
+}
+.thread__activity summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.thread__activity ul {
+  margin: 0;
+  padding-left: 1.1rem;
 }
 </style>

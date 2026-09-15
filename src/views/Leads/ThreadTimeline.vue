@@ -8,15 +8,12 @@
       :class="`tl__entry--${entry.side}`"
       :data-testid="`timeline-${entry.side}`"
     >
-      <template v-if="entry.side === 'note'">
-        <span class="tl__note">{{ entry.text }} · {{ formatTime(entry.at) }}</span>
-      </template>
-      <div v-else class="tl__bubble">
+      <div class="tl__bubble">
         <p v-if="entry.tag" class="tl__tag">{{ entry.tag }}</p>
         <p v-if="entry.subject" class="tl__subject">{{ entry.subject }}</p>
         <p class="tl__body">{{ entry.text }}</p>
         <p class="tl__meta">
-          <span>{{ formatTime(entry.at) }}</span>
+          <span data-testid="timeline-time">{{ formatTime(entry.at) }}</span>
           <span v-if="entry.status" class="tl__status" :data-testid="`status-${entry.status}`">
             {{ $t(`leads.status.${entry.status}`) }}<template v-if="entry.held"> · {{ $t("leads.status.held") }}</template>
           </span>
@@ -40,42 +37,40 @@ import { computed } from "vue";
 import { t } from "@/i18n";
 import { formatTime, isOverdue } from "@/utils/leadsTime";
 
-// One chat timeline per company: thread messages and replies (communicator) plus leads activities as notes.
+// The chat timeline of ONE communicator thread: our messages and the replies, oldest first.
 const props = defineProps({
   messages: { type: Array, default: () => [] },
-  activities: { type: Array, default: () => [] },
   optouts: { type: Array, default: () => [] },
+  // approved/scheduled messages of this thread — their `scheduled_at` is the time a waiting bubble shows
+  waiting: { type: Array, default: () => [] },
 });
 defineEmits(["confirm-optout"]);
 
-// Index of the first outbound message of each thread; later ones are follow-ups.
-function firstOutIndexes(messages) {
-  const first = new Map();
-  messages.forEach((m, i) => {
-    if (m.direction === "out" && !first.has(m.thread)) first.set(m.thread, i);
-  });
-  return new Set(first.values());
+const WAITING_STATUSES = ["approved", "scheduled"];
+
+function slotOf(item) {
+  return props.waiting.find((message) => message.subject === item.subject)?.scheduled_at || item.at;
 }
 
 function messageEntry(item, index, firstOut) {
   const out = item.direction === "out";
+  const waiting = out && WAITING_STATUSES.includes(item.status);
+  const at = waiting ? slotOf(item) : item.at;
   return {
-    at: item.at,
+    at,
     side: out ? "out" : "in",
     subject: item.subject,
     text: item.body_text,
     status: out ? item.status : "",
-    held: out && ["approved", "scheduled"].includes(item.status) && isOverdue(item.at),
-    tag: out && !firstOut.has(index) ? t("leads.thread.followup") : "",
+    held: waiting && isOverdue(at),
+    tag: out && index !== firstOut ? t("leads.thread.followup") : "",
     optout: out ? null : props.optouts.find((reply) => reply.received_at === item.at) || null,
   };
 }
 
 const entries = computed(() => {
-  const firstOut = firstOutIndexes(props.messages);
-  const notes = props.activities.map((a) => ({ at: a.created_at, side: "note", text: a.message }));
-  const bubbles = props.messages.map((m, i) => messageEntry(m, i, firstOut));
-  return [...bubbles, ...notes].sort((a, b) => new Date(a.at) - new Date(b.at));
+  const firstOut = props.messages.findIndex((message) => message.direction === "out");
+  return props.messages.map((message, i) => messageEntry(message, i, firstOut));
 });
 </script>
 
@@ -98,9 +93,6 @@ const entries = computed(() => {
 .tl__entry--out {
   justify-content: flex-end;
 }
-.tl__entry--note {
-  justify-content: center;
-}
 .tl__bubble {
   max-width: 85%;
   padding: var(--space-200) var(--space-300);
@@ -114,11 +106,6 @@ const entries = computed(() => {
 }
 .tl__entry--in .tl__bubble {
   border-bottom-left-radius: 4px;
-}
-.tl__note {
-  font-size: var(--fs-100);
-  color: var(--c-basic-500);
-  text-align: center;
 }
 .tl__tag,
 .tl__meta {

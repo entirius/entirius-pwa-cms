@@ -3040,7 +3040,16 @@
       "confirm_optout": "Potwierdź rezygnację",
       "optout_confirmed": "Rezygnacja potwierdzona",
       "no_thread": "Brak rozmowy",
-      "desktop_hint": "Zmiana etapu, „Napisz” i „Nie kontaktować” są dostępne na komputerze"
+      "desktop_hint": "Zmiana etapu, „Napisz” i „Nie kontaktować” są dostępne na komputerze",
+      "earlier": "Wcześniejsze wątki ({count})",
+      "earlier_optout": "możliwa rezygnacja: {count}",
+      "earlier_more": "Pokaż więcej wątków",
+      "activity": "Aktywność ({count})",
+      "state": {
+        "open": "otwarty",
+        "replied": "z odpowiedzią",
+        "closed": "zamknięty"
+      }
     },
     "status": {
       "held": "czeka na okno wysyłki lub dzienny limit",

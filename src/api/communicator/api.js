@@ -31,10 +31,22 @@ export const POST_ReviewSkip = (id, { reject_reason = "" } = {}) =>
 export const POST_ReviewSkipCompany = (id) =>
   communicatorApi.post(`${base()}/review/${id}/skip-company/`, {});
 
-export const GET_Threads = ({ subject_ref }) =>
-  communicatorApi.get(`${base()}/threads/`, { params: { subject_ref } });
+// params: { subject_ref, page, page_size } — newest first
+export const GET_Threads = (params) => communicatorApi.get(`${base()}/threads/`, { params });
 
 export const GET_Thread = (id) => communicatorApi.get(`${base()}/threads/${id}/`);
+
+// One thread with its timeline and its suspected opt-out replies (confirmed or not).
+export const GET_ThreadWithOptouts = async (id) => {
+  const [detail, replies] = await Promise.all([GET_Thread(id), GET_Replies({ thread: id, kind: "suspected_optout" })]);
+  return { ...detail.data, optouts: replies.data.results || [] };
+};
+
+// Approved and scheduled messages — the mails waiting for the send beat, with their `scheduled_at` slot.
+export const GET_WaitingMessages = async () => {
+  const lists = await Promise.all(["approved", "scheduled"].map((status) => GET_ReviewList({ status, page_size: 100 })));
+  return lists.flatMap(({ data }) => data.results || []);
+};
 
 export const GET_Replies = (params) =>
   communicatorApi.get(`${base()}/replies/`, { params });

@@ -3041,7 +3041,16 @@
       "confirm_optout": "Confirm opt-out",
       "optout_confirmed": "Opt-out confirmed",
       "no_thread": "No conversation yet",
-      "desktop_hint": "Stage, Communicate and do-not-contact are available on desktop"
+      "desktop_hint": "Stage, Communicate and do-not-contact are available on desktop",
+      "earlier": "Earlier threads ({count})",
+      "earlier_optout": "possible opt-out: {count}",
+      "earlier_more": "Show more threads",
+      "activity": "Activity ({count})",
+      "state": {
+        "open": "open",
+        "replied": "replied",
+        "closed": "closed"
+      }
     },
     "status": {
       "held": "waiting for the send window or daily cap",
