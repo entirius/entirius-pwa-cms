@@ -40,8 +40,11 @@ import draggable from "vuedraggable";
 import { t } from "@/i18n";
 import { DELETE_Stage, GET_Stages, PATCH_Stage, POST_Stage } from "@/api/leads/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { useNotifyStore } from "@/stores/notify";
 
 // Stages admin: order by drag or up/down (PATCH `order` per moved stage), rename inline, delete with the 409 inline (L-18).
+const ORDER_STEP = 10;
+const notify = useNotifyStore();
 const stages = ref([]);
 const errors = reactive({});
 const draft = reactive({ key: "", label: "" });
@@ -61,9 +64,16 @@ async function attempt(errorKey, call) {
   }
 }
 
+// Renumbers in steps of 10, one PATCH at a time; the first refusal stops the run and reloads the server order.
 async function saveOrder() {
-  const moved = stages.value.map((stage, order) => ({ stage, order })).filter(({ stage, order }) => stage.order !== order);
-  await Promise.all(moved.map(({ stage, order }) => attempt(stage.id, () => PATCH_Stage(stage.id, { order }))));
+  const moved = stages.value
+    .map((stage, index) => ({ stage, order: index * ORDER_STEP }))
+    .filter(({ stage, order }) => stage.order !== order);
+  try {
+    for (const { stage, order } of moved) await PATCH_Stage(stage.id, { order });
+  } catch (err) {
+    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.stages.order_failed")), type: "negative" });
+  }
   await load();
 }
 
@@ -80,7 +90,7 @@ async function remove(stage) {
 }
 
 async function add() {
-  const order = stages.value.length;
+  const order = Math.max(-ORDER_STEP, ...stages.value.map((stage) => stage.order)) + ORDER_STEP;
   if (await attempt("add", () => POST_Stage({ key: draft.key, label: draft.label, order }))) {
     Object.assign(draft, { key: "", label: "" });
     await load();

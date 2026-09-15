@@ -3155,7 +3155,8 @@
       "down": "Move down",
       "delete": "Delete",
       "key": "Key",
-      "add": "Add stage"
+      "add": "Add stage",
+      "order_failed": "The stage order could not be saved — reloaded the current order"
     }
   },
   "notification_bar": {

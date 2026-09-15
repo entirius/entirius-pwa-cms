@@ -3154,7 +3154,8 @@
       "down": "W dół",
       "delete": "Usuń",
       "key": "Klucz",
-      "add": "Dodaj etap"
+      "add": "Dodaj etap",
+      "order_failed": "Nie udało się zapisać kolejności etapów — wczytano aktualną kolejność"
     }
   },
   "notification_bar": {
