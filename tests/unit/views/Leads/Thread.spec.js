@@ -29,4 +29,11 @@ describe("Leads Thread", () => {
     const messages = wrapper.findComponent(ThreadTimeline).props("messages");
     expect(messages.map((m) => [m.subject, m.thread])).toEqual([["T7", 7], ["T9", 9]]);
   });
+
+  it("shows the desktop hint only when asked (phone company card)", async () => {
+    const stubs = { BackBar: true, Loader: true, ThreadTimeline: true };
+    const hint = (props) => mount(Thread, { props, global: { stubs } }).find('[data-testid="thread-desktop-hint"]');
+    expect(hint({ desktopHint: true }).text()).toBe("leads.thread.desktop_hint");
+    expect(hint({}).exists()).toBe(false);
+  });
 });

@@ -3038,7 +3038,8 @@
       "optout_suspected": "Looks like an opt-out",
       "confirm_optout": "Confirm opt-out",
       "optout_confirmed": "Opt-out confirmed",
-      "no_thread": "No conversation yet"
+      "no_thread": "No conversation yet",
+      "desktop_hint": "Stage, Communicate and do-not-contact are available on desktop"
     },
     "status": {
       "sent": "sent",

@@ -3,6 +3,7 @@
     <BackBar class="thread__back" :label="$t('leads.thread.back')" @back="goBack" />
     <Loader v-show="loading" />
     <h3 v-if="company" class="thread__company" data-testid="thread-company">{{ company.name }}</h3>
+    <p v-if="desktopHint" class="thread__none" data-testid="thread-desktop-hint">{{ $t("leads.thread.desktop_hint") }}</p>
     <ToolboxBanner v-if="company" />
     <IntelCard v-if="company && munin.isModuleEnabled('siteintel')" :context="company" />
     <p v-if="!loading && !thread" class="thread__none">{{ $t("leads.thread.no_thread") }}</p>
@@ -26,6 +27,9 @@ import { useNotifyStore } from "@/stores/notify";
 import IntelCard from "./IntelCard.vue";
 import ThreadTimeline from "./ThreadTimeline.vue";
 import ToolboxBanner from "./ToolboxBanner.vue";
+
+// On a phone the company card is only this thread: stage, Communicate and do-not-contact stay on desktop.
+defineProps({ desktopHint: { type: Boolean, default: false } });
 
 const route = useRoute();
 const router = useRouter();

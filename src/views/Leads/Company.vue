@@ -1,5 +1,5 @@
 <template>
-  <Thread v-if="!isDesktop" />
+  <Thread v-if="!isDesktop" desktop-hint />
   <div v-else class="ld-page" data-testid="company-card">
     <header v-if="company" class="ld-row">
       <h2 class="ld-title" data-testid="company-domain">{{ company.domain }}</h2>

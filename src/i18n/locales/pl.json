@@ -3037,7 +3037,8 @@
       "optout_suspected": "Wygląda na rezygnację",
       "confirm_optout": "Potwierdź rezygnację",
       "optout_confirmed": "Rezygnacja potwierdzona",
-      "no_thread": "Brak rozmowy"
+      "no_thread": "Brak rozmowy",
+      "desktop_hint": "Zmiana etapu, „Napisz” i „Nie kontaktować” są dostępne na komputerze"
     },
     "status": {
       "sent": "wysłana",
