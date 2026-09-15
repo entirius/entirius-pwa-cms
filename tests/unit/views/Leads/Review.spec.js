@@ -172,6 +172,7 @@ describe("Leads Review", () => {
 
   it("409 from the real client shape moves to next", async () => {
     api.POST_ReviewAccept.mockImplementation(() => conflictClient.post("/accept/"));
+    api.GET_ReviewMessage.mockResolvedValueOnce(draft).mockResolvedValueOnce(null);
     api.GET_ReviewNext.mockResolvedValue({ data: { id: 6 } });
     const wrapper = await mountReview();
     await wrapper.get('[data-testid="review-send"]').trigger("click");
@@ -179,6 +180,22 @@ describe("Leads Review", () => {
     expect(spawnNotification).toHaveBeenCalledWith({ msg: "This draft was already handled — loading the next one", type: "warning" });
     expect(useLeadsReviewStore().changes).toBe(1);
     expect(replace).toHaveBeenCalledWith({ name: "LeadsReview", params: { id: 6 } });
+  });
+
+  it("409 for an action that does not apply (ReviewError) keeps the reviewer on the draft", async () => {
+    api.POST_ReviewRewrite.mockImplementation(() => conflictClient.post("/rewrite/"));
+    const wrapper = await mountReview();
+    wrapper.findComponent(ReviewActions).vm.$emit("rewrite");
+    await flushPromises();
+    await wrapper.get('[data-testid="rewrite-notes"]').setValue("shorter");
+    await wrapper.get('[data-testid="rewrite-submit"]').trigger("click");
+    await flushPromises();
+    expect(api.GET_ReviewMessage).toHaveBeenLastCalledWith(5);
+    expect(spawnNotification).toHaveBeenCalledWith({ msg: "This action does not apply to this draft — it stays in review", type: "negative" });
+    expect(api.GET_ReviewNext).not.toHaveBeenCalled();
+    expect(replace).not.toHaveBeenCalled();
+    expect(useLeadsReviewStore().changes).toBe(0);
+    expect(wrapper.get('[data-testid="review-subject"]').text()).toBe("Audit");
   });
 
   it("the action buttons are disabled while a request is in flight", async () => {

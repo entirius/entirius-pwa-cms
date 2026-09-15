@@ -11,9 +11,14 @@ export const GET_ReviewNext = () => communicatorApi.get(`${base()}/review/next/`
 export const GET_ReviewList = (params) =>
   communicatorApi.get(`${base()}/review/`, { params });
 
+// A draft waiting for review, by id; null once it left the queue. The admin API has no message-detail route,
+// so this walks the review pages until the id turns up (a deep link beyond the first page still opens).
 export const GET_ReviewMessage = async (id) => {
-  const { data } = await GET_ReviewList({ status: "review_required", page_size: 100 });
-  return data.results.find((m) => m.id === Number(id)) || null;
+  for (let page = 1; ; page += 1) {
+    const { data } = await GET_ReviewList({ status: "review_required", page_size: 100, page });
+    const message = data.results.find((m) => m.id === Number(id));
+    if (message || !data.next) return message || null;
+  }
 };
 
 export const POST_ReviewAccept = (id) =>

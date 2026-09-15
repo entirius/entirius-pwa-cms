@@ -147,7 +147,7 @@ function goInbox() {
   router.replace({ name: "LeadsInbox" });
 }
 
-// Runs one review call; a 409 means someone else handled the draft → reload the queue and move on.
+// Runs one review call; a 409 is either "already handled" or a refused action (see onConflict).
 async function act(call, after) {
   if (busy.value || !message.value) return;
   busy.value = true;
@@ -156,15 +156,23 @@ async function act(call, after) {
     reviewQueue.queueChanged();
     await after(data);
   } catch (err) {
-    if (isConflict(err)) {
-      notify.spawnNotification({ msg: t("leads.review.conflict"), type: "warning" });
-      reviewQueue.queueChanged();
-      return goNext();
-    }
+    if (isConflict(err)) return await onConflict();
     notify.spawnNotification({ msg: t("leads.review.error"), type: "negative" });
   } finally {
     busy.value = false;
   }
+}
+
+// The service's 409 body is the same generic error for both cases, so the draft's state decides: gone from the
+// queue → someone else handled it, move on; still waiting → the action does not apply to it, stay on the draft.
+async function onConflict() {
+  if (await api.GET_ReviewMessage(message.value.id)) {
+    notify.spawnNotification({ msg: t("leads.review.refused"), type: "negative" });
+    return;
+  }
+  notify.spawnNotification({ msg: t("leads.review.conflict"), type: "warning" });
+  reviewQueue.queueChanged();
+  return goNext();
 }
 
 function accept() {
