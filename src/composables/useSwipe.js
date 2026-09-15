@@ -1,15 +1,23 @@
 import { ref } from "vue";
 
-// Horizontal swipe on pointer events: past `threshold` px → onRight / onLeft. A mostly vertical
-// move is a scroll and cancels the gesture. Every swipe has a visible button in the caller.
+// Horizontal touch swipe: past `threshold` px at release → onRight / onLeft. A mostly vertical move is a
+// scroll and cancels the gesture. Touch only — a mouse drag selects text and never acts; a gesture that starts
+// in an editable field or inside selected text is ignored. Every swipe has a visible button in the caller.
 export const SWIPE_THRESHOLD = 80;
 const SCROLL_SLOP = 10;
+
+function startsInTextWork(event) {
+  if (event.target?.closest?.("input, textarea, select, [contenteditable]")) return true;
+  const selection = window.getSelection?.();
+  return Boolean(selection && !selection.isCollapsed && event.target && selection.containsNode?.(event.target, true));
+}
 
 export function useSwipe({ onLeft, onRight, threshold = SWIPE_THRESHOLD }) {
   const offset = ref(0);
   let start = null;
 
   function onPointerDown(event) {
+    if (event.pointerType !== "touch" || startsInTextWork(event)) return;
     start = { x: event.clientX, y: event.clientY };
   }
 
@@ -21,9 +29,9 @@ export function useSwipe({ onLeft, onRight, threshold = SWIPE_THRESHOLD }) {
     offset.value = dx;
   }
 
-  function onPointerUp() {
+  function onPointerUp(event) {
     if (!start) return;
-    const dx = offset.value;
+    const dx = (event.clientX ?? start.x) - start.x;
     cancel();
     if (dx >= threshold) onRight();
     else if (dx <= -threshold) onLeft();
