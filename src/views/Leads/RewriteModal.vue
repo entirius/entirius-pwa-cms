@@ -81,4 +81,8 @@ const notes = ref("");
   background: var(--c-support-400);
   color: var(--c-basic-100);
 }
+.rw__btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
 </style>

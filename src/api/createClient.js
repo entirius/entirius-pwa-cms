@@ -33,6 +33,18 @@ function sessionExpiredRedirect() {
   window.location.href = '/'
 }
 
+// The unwrapped v2 body carries no HTTP status (a 409 reads INVALID_REQUEST) — keep it as a
+// non-enumerable `httpStatus` so callers can tell a conflict apart (isConflict).
+function rejectWithBody(err) {
+  const body = err.response.data
+  if (body && typeof body === 'object') {
+    Object.defineProperty(body, 'httpStatus', { value: err.response.status, configurable: true })
+  }
+  return Promise.reject(body || err)
+}
+
+export const isConflict = (err) => (err?.httpStatus ?? err?.response?.status) === 409
+
 function attachTokenRefresh(client) {
   client.interceptors.response.use(
     (res) => res,
@@ -43,11 +55,11 @@ function attachTokenRefresh(client) {
 
       // 403 = permission denied (not session expired) — do NOT logout
       if (err.response.status === 403) {
-        return Promise.reject(err.response?.data || err)
+        return rejectWithBody(err)
       }
 
       if (err.response.status !== 401 || originalConfig._retry) {
-        return Promise.reject(err.response?.data || err)
+        return rejectWithBody(err)
       }
 
       // 401 — attempt token refresh

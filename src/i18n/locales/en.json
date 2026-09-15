@@ -3018,6 +3018,9 @@
       "swipe_hint": "Swipe right to send, left for not now",
       "error": "Action failed — try again",
       "conflict": "This draft was already handled — loading the next one",
+      "rewrite_failed": "Rewrite failed: {reason}",
+      "discard_confirm": "Discard your unsaved changes to this draft?",
+      "retry": "Retry",
       "not_found": "Draft not found"
     },
     "rewrite": {
@@ -3041,6 +3044,8 @@
       "confirm_optout": "Confirm opt-out",
       "optout_confirmed": "Opt-out confirmed",
       "no_thread": "No conversation yet",
+      "company_unavailable": "Company details are unavailable right now",
+      "mail_unavailable": "Mail history is unavailable — the conversation cannot be shown",
       "desktop_hint": "Stage, Communicate and do-not-contact are available on desktop",
       "earlier": "Earlier threads ({count})",
       "earlier_optout": "possible opt-out: {count}",
@@ -3140,6 +3145,7 @@
     }
   },
   "notification_bar": {
+    "read_failed": "Could not mark the notification as read — try again",
     "close": "Close notifications",
     "title": "Notifications",
     "open": "Notifications",

@@ -1,6 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { mount, flushPromises } from "@vue/test-utils";
-import { reactive } from "vue";
+import { mount, flushPromises, enableAutoUnmount } from "@vue/test-utils";
+import { createPinia, setActivePinia } from "pinia";
+import { createApiClient } from "@/api/createClient";
+import { useLeadsReviewStore } from "@/stores/leadsReview";
+import { channelTimeZone } from "@/utils/leadsTime";
 
 const draft = { id: 5, subject: "Audit", body_text: "Hello", thread: { subject_ref: "leads.Company:153", recipient_email: "anna@example-shop-1.test" }, render_context: { company_name: "Example Shop 1", hooks: [] } };
 const api = vi.hoisted(() => ({
@@ -17,14 +20,35 @@ const munin = vi.hoisted(() => ({ toolboxStatus: "", isModuleEnabled: () => true
 vi.mock("@/stores/munin", () => ({ useMuninStore: () => munin }));
 const spawnNotification = vi.fn();
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification }) }));
-const route = vi.hoisted(() => ({ params: { id: "5" } }));
+const route = vi.hoisted(() => ({ current: null }));
 const replace = vi.fn();
-vi.mock("vue-router", () => ({ useRoute: () => route, useRouter: () => ({ replace }) }));
+const guards = vi.hoisted(() => ({ leave: null }));
+vi.mock("vue-router", async () => {
+  const { reactive } = await import("vue");
+  route.current = reactive({ params: { id: "5" } });
+  return {
+    useRoute: () => route.current,
+    useRouter: () => ({ replace }),
+    onBeforeRouteLeave: (guard) => (guards.leave = guard),
+    onBeforeRouteUpdate: () => {},
+  };
+});
 
 import Review from "@/views/Leads/Review.vue";
+
+enableAutoUnmount(afterEach);
 import ReviewActions from "@/views/Leads/ReviewActions.vue";
 
 const ok = (data = {}) => Promise.resolve({ data });
+// A request through the real token-refresh client, answered by the service's actual 409 body.
+const conflictClient = createApiClient("http://service.test", { tokenRefresh: true });
+conflictClient.defaults.adapter = (config) =>
+  Promise.reject(
+    Object.assign(new Error("409"), {
+      config,
+      response: { status: 409, config, data: { error: "INVALID_REQUEST", message: "An error occurred.", debug_id: "a08a83ef", details: [] } },
+    })
+  );
 const mountReview = async () => {
   const wrapper = mount(Review, {
     global: { directives: { out: {} }, stubs: { BackBar: true, IntelCard: true, RouterLink: { template: "<a><slot /></a>" } } },
@@ -36,21 +60,28 @@ const mountReview = async () => {
 describe("Leads Review", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    setActivePinia(createPinia());
     api.GET_ReviewMessage.mockResolvedValue(draft);
     api.GET_ReviewNext.mockRejectedValue({ response: { status: 404 } });
     munin.toolboxStatus = "";
   });
   afterEach(() => vi.useRealTimers());
 
-  it("Send accepts, shows the slot, then loads the next draft", async () => {
+  it("after Send the screen confirms Scheduled HH:MM for ~2 s before it moves on", async () => {
     vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-09-21T06:00:00Z"));
+    channelTimeZone.value = "UTC";
     api.POST_ReviewAccept.mockReturnValue(ok({ status: "approved", scheduled_at: "2026-09-21T08:07:00Z" }));
     const wrapper = await mountReview();
     await wrapper.get('[data-testid="review-send"]').trigger("click");
     await flushPromises();
     expect(api.POST_ReviewAccept).toHaveBeenCalledWith(5);
-    expect(wrapper.get('[data-testid="review-scheduled"]').text()).toMatch(/^Scheduled \d\d:\d\d$/);
-    vi.advanceTimersByTime(2000);
+    expect(wrapper.get('[data-testid="review-scheduled"]').text()).toBe("Scheduled 08:07");
+    vi.advanceTimersByTime(1900);
+    await flushPromises();
+    expect(api.GET_ReviewNext).not.toHaveBeenCalled();
+    expect(wrapper.find('[data-testid="review-scheduled"]').exists()).toBe(true);
+    vi.advanceTimersByTime(100);
     await flushPromises();
     expect(api.GET_ReviewNext).toHaveBeenCalled();
     expect(replace).toHaveBeenCalledWith({ name: "LeadsInbox" });
@@ -76,6 +107,39 @@ describe("Leads Review", () => {
     await flushPromises();
     expect(api.POST_ReviewRewrite).toHaveBeenCalledWith(5, { notes: "shorter" });
     expect(replace).toHaveBeenCalledWith({ name: "LeadsReview", params: { id: 9 } });
+  });
+
+  it("a new version beyond the first review page is shown from the action's answer, not looked up", async () => {
+    api.POST_ReviewRewrite.mockReturnValue(ok({ ...draft, id: 9, subject: "Rewritten", status: "review_required" }));
+    const wrapper = await mountReview();
+    wrapper.findComponent(ReviewActions).vm.$emit("rewrite");
+    await flushPromises();
+    await wrapper.get('[data-testid="rewrite-notes"]').setValue("shorter");
+    await wrapper.get('[data-testid="rewrite-submit"]').trigger("click");
+    route.current.params.id = "9";
+    await flushPromises();
+    expect(api.GET_ReviewMessage).toHaveBeenCalledTimes(1);
+    expect(api.GET_ReviewNext).not.toHaveBeenCalled();
+    expect(wrapper.get('[data-testid="review-subject"]').text()).toBe("Rewritten");
+    route.current.params.id = "5";
+  });
+
+  it("a failed rewrite shows its reason with Retry and Back, never another draft", async () => {
+    api.POST_ReviewRewrite.mockReturnValue(ok({ ...draft, id: 9, status: "failed", failure_code: "upstream", failure_detail: "ToolboxError: 503" }));
+    const wrapper = await mountReview();
+    wrapper.findComponent(ReviewActions).vm.$emit("rewrite");
+    await flushPromises();
+    await wrapper.get('[data-testid="rewrite-notes"]').setValue("shorter");
+    await wrapper.get('[data-testid="rewrite-submit"]').trigger("click");
+    await flushPromises();
+    expect(wrapper.get('[data-testid="review-failed"]').text()).toContain("ToolboxError: 503");
+    expect(replace).not.toHaveBeenCalled();
+    expect(api.GET_ReviewNext).not.toHaveBeenCalled();
+    await wrapper.get('[data-testid="failed-retry"]').trigger("click");
+    expect(wrapper.find('[data-testid="rewrite-notes"]').exists()).toBe(true);
+    wrapper.findComponent({ name: "RewriteModal" }).vm.$emit("close");
+    await flushPromises();
+    expect(wrapper.get('[data-testid="review-subject"]').text()).toBe("Audit");
   });
 
   it("edit saves subject and body through edit/", async () => {
@@ -106,23 +170,75 @@ describe("Leads Review", () => {
     expect(wrapper.get('[data-testid="toolbox-banner"]').text()).toContain("Entirius AI Toolbox");
   });
 
-  it("a 409 tells the reviewer and moves on", async () => {
-    api.POST_ReviewAccept.mockRejectedValue({ response: { status: 409 } });
+  it("409 from the real client shape moves to next", async () => {
+    api.POST_ReviewAccept.mockImplementation(() => conflictClient.post("/accept/"));
+    api.GET_ReviewNext.mockResolvedValue({ data: { id: 6 } });
     const wrapper = await mountReview();
     await wrapper.get('[data-testid="review-send"]').trigger("click");
     await flushPromises();
-    expect(spawnNotification).toHaveBeenCalled();
-    expect(replace).toHaveBeenCalledWith({ name: "LeadsInbox" });
+    expect(spawnNotification).toHaveBeenCalledWith({ msg: "This draft was already handled — loading the next one", type: "warning" });
+    expect(useLeadsReviewStore().changes).toBe(1);
+    expect(replace).toHaveBeenCalledWith({ name: "LeadsReview", params: { id: 6 } });
+  });
+
+  it("the action buttons are disabled while a request is in flight", async () => {
+    let resolve;
+    api.POST_ReviewSkip.mockReturnValue(new Promise((r) => (resolve = r)));
+    const wrapper = await mountReview();
+    await wrapper.get('[data-testid="review-skip"]').trigger("click");
+    expect(wrapper.get('[data-testid="review-send"]').attributes("disabled")).toBeDefined();
+    await wrapper.get('[data-testid="review-skip"]').trigger("click");
+    expect(api.POST_ReviewSkip).toHaveBeenCalledTimes(1);
+    resolve({ data: {} });
+    await flushPromises();
   });
 
   it("swipe right on the draft sends", async () => {
     api.POST_ReviewAccept.mockReturnValue(ok({ scheduled_at: null }));
     const wrapper = await mountReview();
     const card = wrapper.get('[data-testid="review-draft"]');
-    await card.trigger("pointerdown", { clientX: 0, clientY: 0 });
-    await card.trigger("pointermove", { clientX: 120, clientY: 0 });
-    await card.trigger("pointerup");
+    await card.trigger("pointerdown", { pointerType: "touch", clientX: 0, clientY: 0 });
+    await card.trigger("pointermove", { pointerType: "touch", clientX: 120, clientY: 0 });
+    await card.trigger("pointerup", { pointerType: "touch", clientX: 120, clientY: 0 });
     await flushPromises();
     expect(api.POST_ReviewAccept).toHaveBeenCalledWith(5);
+  });
+
+  it("a mouse drag across the draft text does not send", async () => {
+    const wrapper = await mountReview();
+    const card = wrapper.get('[data-testid="review-draft"]');
+    await card.trigger("pointerdown", { pointerType: "mouse", clientX: 0, clientY: 0 });
+    await card.trigger("pointermove", { pointerType: "mouse", clientX: 300, clientY: 0 });
+    await card.trigger("pointerup", { pointerType: "mouse", clientX: 300, clientY: 0 });
+    await flushPromises();
+    expect(api.POST_ReviewAccept).not.toHaveBeenCalled();
+  });
+
+  it("leaving Edit with unsaved changes asks before discarding", async () => {
+    const confirm = vi.spyOn(window, "confirm").mockReturnValue(false);
+    const wrapper = await mountReview();
+    wrapper.findComponent(ReviewActions).vm.$emit("edit");
+    await flushPromises();
+    expect(guards.leave()).toBe(true);
+    expect(confirm).not.toHaveBeenCalled();
+    await wrapper.get('[data-testid="edit-body"]').setValue("Changed");
+    expect(guards.leave()).toBe(false);
+    await wrapper.get('[data-testid="edit-cancel"]').trigger("click");
+    expect(confirm).toHaveBeenCalledTimes(2);
+    expect(wrapper.find('[data-testid="edit-body"]').exists()).toBe(true);
+    confirm.mockReturnValue(true);
+    await wrapper.get('[data-testid="edit-cancel"]').trigger("click");
+    expect(wrapper.find('[data-testid="edit-body"]').exists()).toBe(false);
+    confirm.mockRestore();
+  });
+
+  it("the disabled Rewrite button renders disabled", async () => {
+    const wrapper = await mountReview();
+    wrapper.findComponent(ReviewActions).vm.$emit("rewrite");
+    await flushPromises();
+    const submit = wrapper.get('[data-testid="rewrite-submit"]');
+    expect(submit.attributes("disabled")).toBeDefined();
+    await submit.trigger("click");
+    expect(api.POST_ReviewRewrite).not.toHaveBeenCalled();
   });
 });

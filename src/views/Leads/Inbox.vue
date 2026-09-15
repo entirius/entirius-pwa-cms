@@ -37,12 +37,12 @@
 
 <script setup>
 import { computed, onMounted, ref, watch } from "vue";
-import { useRoute } from "vue-router";
 import { t } from "@/i18n";
 import { GET_ReviewList } from "@/api/communicator/api";
+import { useLeadsReviewStore } from "@/stores/leadsReview";
 import { formatTime, isOverdue } from "@/utils/leadsTime";
 
-const route = useRoute();
+const reviewQueue = useLeadsReviewStore();
 const drafts = ref([]);
 const waiting = ref([]);
 const loading = ref(false);
@@ -82,8 +82,8 @@ async function load() {
 }
 
 onMounted(load);
-// Desktop keeps the Inbox column mounted while Review acts — refresh on every navigation.
-watch(() => route.fullPath, load);
+// The Inbox column stays mounted while Review acts — reload when a review action changed the queue.
+watch(() => reviewQueue.changes, load);
 
 defineExpose({ load });
 </script>

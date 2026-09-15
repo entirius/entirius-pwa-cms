@@ -10,8 +10,20 @@
 
       <ToolboxBanner />
 
+      <div v-if="failedVersion" class="review__failed" role="alert" data-testid="review-failed">
+        <p class="review__failed-text">
+          {{ $t("leads.review.rewrite_failed", { reason: failedVersion.failure_detail || failedVersion.failure_code }) }}
+        </p>
+        <div class="review__edit-actions">
+          <button class="review__btn" data-testid="failed-back" @click="failedVersion = null">{{ $t("leads.review.cancel") }}</button>
+          <button class="review__btn review__btn--primary" data-testid="failed-retry" @click="retryRewrite">
+            {{ $t("leads.review.retry") }}
+          </button>
+        </div>
+      </div>
+
       <article
-        v-if="message && !scheduledLabel"
+        v-else-if="message && !scheduledLabel"
         class="review__draft"
         :style="{ transform: `translateX(${offset}px)` }"
         data-testid="review-draft"
@@ -35,8 +47,8 @@
             <textarea v-model="draft.body_text" class="review__input" rows="12" data-testid="edit-body"></textarea>
           </label>
           <div class="review__edit-actions">
-            <button class="review__btn" data-testid="edit-cancel" @click="editing = false">{{ $t("leads.review.cancel") }}</button>
-            <button class="review__btn review__btn--primary" data-testid="edit-save" @click="saveEdit">{{ $t("leads.review.save") }}</button>
+            <button class="review__btn" data-testid="edit-cancel" @click="cancelEdit">{{ $t("leads.review.cancel") }}</button>
+            <button class="review__btn review__btn--primary" :disabled="busy" data-testid="edit-save" @click="saveEdit">{{ $t("leads.review.save") }}</button>
           </div>
         </template>
         <template v-else>
@@ -48,7 +60,7 @@
     </div>
 
     <ReviewActions
-      v-if="message && !editing && !scheduledLabel"
+      v-if="message && !editing && !scheduledLabel && !failedVersion"
       :busy="busy"
       :ai-disabled="aiDisabled"
       @send="accept"
@@ -63,9 +75,11 @@
 
 <script setup>
 import { computed, onBeforeUnmount, ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 import { t } from "@/i18n";
+import { isConflict } from "@/api/createClient";
 import * as api from "@/api/communicator/api";
+import { useLeadsReviewStore } from "@/stores/leadsReview";
 import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
 import { useSwipe } from "@/composables/useSwipe";
@@ -82,6 +96,7 @@ const route = useRoute();
 const router = useRouter();
 const munin = useMuninStore();
 const notify = useNotifyStore();
+const reviewQueue = useLeadsReviewStore();
 
 const message = ref(null);
 const loading = ref(false);
@@ -89,6 +104,7 @@ const busy = ref(false);
 const editing = ref(false);
 const rewriteOpen = ref(false);
 const scheduledLabel = ref("");
+const failedVersion = ref(null);
 const draft = ref({ subject: "", body_text: "" });
 let nextTimer = null;
 
@@ -99,6 +115,14 @@ const companyName = computed(
   () => message.value?.render_context?.company_name || message.value?.thread?.recipient_name || ""
 );
 const aiDisabled = computed(() => munin.toolboxStatus === "unconfigured");
+const unsaved = computed(
+  () => editing.value && (draft.value.subject !== message.value?.subject || draft.value.body_text !== message.value?.body_text)
+);
+
+// Leaving Edit (Cancel, Inbox, another draft) with unsaved changes asks first.
+const confirmDiscard = () => !unsaved.value || window.confirm(t("leads.review.discard_confirm"));
+onBeforeRouteLeave(confirmDiscard);
+onBeforeRouteUpdate(confirmDiscard);
 
 async function load() {
   loading.value = true;
@@ -123,15 +147,18 @@ function goInbox() {
   router.replace({ name: "LeadsInbox" });
 }
 
-// Runs one review call; a 409 means someone else handled the draft → move on.
+// Runs one review call; a 409 means someone else handled the draft → reload the queue and move on.
 async function act(call, after) {
   if (busy.value || !message.value) return;
   busy.value = true;
   try {
-    await after((await call()).data);
+    const { data } = await call();
+    reviewQueue.queueChanged();
+    await after(data);
   } catch (err) {
-    if (err?.response?.status === 409) {
+    if (isConflict(err)) {
       notify.spawnNotification({ msg: t("leads.review.conflict"), type: "warning" });
+      reviewQueue.queueChanged();
       return goNext();
     }
     notify.spawnNotification({ msg: t("leads.review.error"), type: "negative" });
@@ -159,8 +186,20 @@ function skipCompany() {
   return act(() => api.POST_ReviewSkipCompany(message.value.id), goNext);
 }
 
+// The action answers with the new version itself — show it directly (it may sit beyond the first review page);
+// a failed rewrite stays on the reviewed draft with its reason.
 function openVersion(data) {
+  if (data.status === "failed") {
+    failedVersion.value = data;
+    return;
+  }
+  message.value = data;
   router.replace({ name: "LeadsReview", params: { id: data.id } });
+}
+
+function retryRewrite() {
+  failedVersion.value = null;
+  rewriteOpen.value = true;
 }
 
 function rewrite(notes) {
@@ -171,6 +210,10 @@ function rewrite(notes) {
 function startEdit() {
   draft.value = { subject: message.value.subject, body_text: message.value.body_text };
   editing.value = true;
+}
+
+function cancelEdit() {
+  if (confirmDiscard()) editing.value = false;
 }
 
 function saveEdit() {
@@ -186,8 +229,9 @@ watch(
     if (!id) return;
     clearTimeout(nextTimer);
     scheduledLabel.value = "";
+    failedVersion.value = null;
     editing.value = false;
-    load();
+    if (message.value?.id !== Number(id)) load();
   },
   { immediate: true }
 );
@@ -221,6 +265,19 @@ onBeforeUnmount(() => clearTimeout(nextTimer));
   font-size: var(--fs-400);
   font-weight: 600;
   text-align: center;
+}
+.review__failed {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+  padding: var(--space-300);
+  border-radius: 8px;
+  background: var(--c-negative-100);
+}
+.review__failed-text {
+  margin: 0;
+  color: var(--c-basic-800);
+  overflow-wrap: anywhere;
 }
 .review__draft {
   display: flex;

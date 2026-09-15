@@ -3017,6 +3017,9 @@
       "swipe_hint": "Przeciągnij w prawo, aby wysłać, w lewo — nie teraz",
       "error": "Akcja nie powiodła się — spróbuj ponownie",
       "conflict": "Ten szkic został już obsłużony — wczytuję kolejny",
+      "rewrite_failed": "Przepisanie nie powiodło się: {reason}",
+      "discard_confirm": "Odrzucić niezapisane zmiany w tym szkicu?",
+      "retry": "Spróbuj ponownie",
       "not_found": "Nie znaleziono szkicu"
     },
     "rewrite": {
@@ -3040,6 +3043,8 @@
       "confirm_optout": "Potwierdź rezygnację",
       "optout_confirmed": "Rezygnacja potwierdzona",
       "no_thread": "Brak rozmowy",
+      "company_unavailable": "Dane firmy są teraz niedostępne",
+      "mail_unavailable": "Historia korespondencji jest niedostępna — nie można pokazać rozmowy",
       "desktop_hint": "Zmiana etapu, „Napisz” i „Nie kontaktować” są dostępne na komputerze",
       "earlier": "Wcześniejsze wątki ({count})",
       "earlier_optout": "możliwa rezygnacja: {count}",
@@ -3139,6 +3144,7 @@
     }
   },
   "notification_bar": {
+    "read_failed": "Nie udało się oznaczyć powiadomienia jako przeczytane — spróbuj ponownie",
     "close": "Zamknij powiadomienia",
     "title": "Powiadomienia",
     "open": "Powiadomienia",
