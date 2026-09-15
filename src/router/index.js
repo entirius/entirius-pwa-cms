@@ -977,6 +977,13 @@ const routes = [
           import(/* webpackChunkName: "leads" */ "../views/Leads/Review.vue"),
         meta: { requiresAuth: true, titleKey: "leads.review.title", panel: "leads", module: "communicator" },
       },
+      // Leads-only entry (the panel fallback): a company list that works on a phone
+      {
+        path: "companies",
+        name: "LeadsCompanies",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Companies.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.companies.title", panel: "leads", module: "leads" },
+      },
       {
         path: "companies/:id",
         name: "LeadsThread",
@@ -1243,7 +1250,7 @@ const router = createRouter({
 });
 
 // A route whose module is absent goes to its panel root; the root itself (Leads inbox) goes to the panel
-// fallback (Leads board), and the fallback home — never a loop.
+// fallback (Leads company list), and the fallback home — never a loop.
 function moduleFallback(panel, path) {
   if (path === panel?.root) return panel.fallback || "/";
   if (path === panel?.fallback) return "/";

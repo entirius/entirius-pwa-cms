@@ -3017,6 +3017,7 @@
       "swipe_hint": "Przeciągnij w prawo, aby wysłać, w lewo — nie teraz",
       "error": "Akcja nie powiodła się — spróbuj ponownie",
       "conflict": "Ten szkic został już obsłużony — wczytuję kolejny",
+      "refused": "Ta akcja nie dotyczy tego szkicu — pozostaje do przeglądu",
       "rewrite_failed": "Przepisanie nie powiodło się: {reason}",
       "discard_confirm": "Odrzucić niezapisane zmiany w tym szkicu?",
       "retry": "Spróbuj ponownie",
@@ -3075,6 +3076,10 @@
       "title": "Otwórz na komputerze",
       "message": "Ten ekran wymaga co najmniej 1024 px szerokości.",
       "back": "Wróć do skrzynki"
+    },
+    "companies": {
+      "title": "Firmy",
+      "empty": "Nie znaleziono firm"
     },
     "board": {
       "title": "Tablica etapów",

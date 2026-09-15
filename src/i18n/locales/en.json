@@ -3018,6 +3018,7 @@
       "swipe_hint": "Swipe right to send, left for not now",
       "error": "Action failed — try again",
       "conflict": "This draft was already handled — loading the next one",
+      "refused": "This action does not apply to this draft — it stays in review",
       "rewrite_failed": "Rewrite failed: {reason}",
       "discard_confirm": "Discard your unsaved changes to this draft?",
       "retry": "Retry",
@@ -3076,6 +3077,10 @@
       "title": "Open on a desktop",
       "message": "This screen needs at least 1024 px of width.",
       "back": "Back to the Inbox"
+    },
+    "companies": {
+      "title": "Companies",
+      "empty": "No companies found"
     },
     "board": {
       "title": "Stage board",
