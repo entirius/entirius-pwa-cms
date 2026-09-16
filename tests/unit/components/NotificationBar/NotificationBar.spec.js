@@ -205,6 +205,29 @@ describe("notification bar", () => {
     expect(previews).toEqual(["Proszę o telefon.", "Send the offer.", "On Monday I am free. Call me then."]);
   });
 
+  // FIX-17e item 1: a quote header must end with ":" before quoted lines; a reply opening "On …"/"W dniu …" keeps its words.
+  it("a reply that begins with On or W dniu keeps its own text while the real quote is still stripped", async () => {
+    const reply = (id, body) => ({ id, title: "Reply from Example Shop 5", severity: "high", subject_ref: "leads.Company:5", body, created_at: "2026-09-14T11:55:00Z" });
+    api.GET_Notifications.mockResolvedValueOnce({
+      data: {
+        results: [
+          reply(11, "On Monday we can talk.\nOn Mon, 14 Sep 2026 Anna wrote:\n> Your shop audit"),
+          reply(12, "W dniu podpisania umowy zapłacimy.\n\nW dniu pon., 14 wrz 2026 Anna napisał(a):\n> Audyt sklepu"),
+          reply(13, "Thanks.\nOn Friday Anna wrote: it is fine\nregards"),
+        ],
+      },
+    });
+    const wrapper = mountBell();
+    await wrapper.get('[data-testid="notif-bell"]').trigger("click");
+    await flushPromises();
+    const previews = wrapper.findAll('[data-testid="notif-preview"]').map((node) => node.text());
+    expect(previews).toEqual([
+      "On Monday we can talk.",
+      "W dniu podpisania umowy zapłacimy.",
+      "Thanks. On Friday Anna wrote: it is fine regards",
+    ]);
+  });
+
   it("on desktop the bell opens an anchored popover that Escape closes", async () => {
     const wrapper = mountBell();
     await wrapper.get('[data-testid="notif-bell"]').trigger("click");
