@@ -1,5 +1,5 @@
 <template>
-  <article ref="root" class="tg" :class="{ 'tg--reply': holdsReply }" data-testid="earlier-thread">
+  <article class="tg" :class="{ 'tg--reply': holdsReply }" data-testid="earlier-thread">
     <button class="tg__head" :aria-expanded="String(open)" data-testid="earlier-thread-toggle" @click="toggle">
       <span class="tg__subject" data-testid="earlier-thread-subject">{{ title }}</span>
       <span class="tg__meta" data-testid="earlier-thread-to">{{ $t("leads.review.to") }}: {{ recipient }}</span>
@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-import { computed, nextTick, onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { t } from "@/i18n";
 import { GET_ThreadWithOptouts, POST_ConfirmOptout } from "@/api/communicator/api";
 import { useNotifyStore } from "@/stores/notify";
@@ -37,13 +37,13 @@ const props = defineProps({
   thread: { type: Object, required: true },
   pending: { type: Boolean, default: false },
   waiting: { type: Array, default: () => [] },
-  // the thread holding the reply the bell announced: opened, marked and scrolled into view on arrival
+  // the thread holding the reply the bell announced: opened and marked on arrival, never scrolled to — the newest
+  // thread above stays on screen (FIX-17c item 5)
   holdsReply: { type: Boolean, default: false },
 });
 const emit = defineEmits(["changed"]);
 const notify = useNotifyStore();
 
-const root = ref(null);
 const open = ref(props.holdsReply);
 const loading = ref(false);
 const detail = ref(null);
@@ -69,12 +69,7 @@ function toggle() {
   open.value = !open.value;
 }
 
-onMounted(async () => {
-  await loadDetail();
-  if (!props.holdsReply) return;
-  await nextTick();
-  root.value?.scrollIntoView?.({ block: "start", behavior: "smooth" });
-});
+onMounted(loadDetail);
 
 async function confirmOptout(replyId) {
   if (optoutBusy.value) return;

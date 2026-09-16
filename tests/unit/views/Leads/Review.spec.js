@@ -3,7 +3,7 @@ import { mount, flushPromises, enableAutoUnmount } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 import { createApiClient } from "@/api/createClient";
 import { useLeadsReviewStore } from "@/stores/leadsReview";
-import { channelTimeZone } from "@/utils/leadsTime";
+import { applyPolicy, channelTimeZone } from "@/utils/leadsTime";
 
 const draft = { id: 5, subject: "Audit", body_text: "Hello", thread: { subject_ref: "leads.Company:153", recipient_email: "anna@example-shop-1.test" }, render_context: { company_name: "Example Shop 1", hooks: [] } };
 const api = vi.hoisted(() => ({
@@ -96,6 +96,34 @@ describe("Leads Review", () => {
     await flushPromises();
     expect(api.GET_ReviewNext).toHaveBeenCalled();
     expect(replace).toHaveBeenCalledWith({ name: "LeadsInbox" });
+  });
+
+  // FIX-17c item 1: a closed window says so with its hours and the real next slot, in one sentence.
+  it("after Send a held mail names the window and the next slot", async () => {
+    vi.setSystemTime(new Date("2026-09-16T20:00:00Z"));
+    applyPolicy({ timezone: "UTC", sent_today: 0, daily_cap: 10, windows: [{ start_time: "08:00:00", end_time: "17:00:00" }] });
+    api.POST_ReviewAccept.mockReturnValue(ok({ id: 5, status: "approved" }));
+    api.GET_WaitingMessages.mockResolvedValue([{ id: 5, next_slot: "2026-09-17T08:00:00Z" }]);
+    const wrapper = await mountReview();
+    await wrapper.get('[data-testid="review-send"]').trigger("click");
+    await flushPromises();
+    expect(wrapper.get('[data-testid="review-scheduled"]').text()).toBe(
+      "Accepted — waiting for the send window (08:00–17:00), next slot 17.09 08:00"
+    );
+    applyPolicy(null);
+  });
+
+  // FIX-17c item 2: a schedule the screen could not fetch is not stated as a fact.
+  it.each([
+    ["the waiting list fails", () => api.GET_WaitingMessages.mockRejectedValue(new Error("500"))],
+    ["the mail is not in the waiting list", () => api.GET_WaitingMessages.mockResolvedValue([{ id: 99, next_slot: "" }])],
+  ])("after Send, when %s, the confirmation says the schedule is unknown", async (_, arrange) => {
+    arrange();
+    api.POST_ReviewAccept.mockReturnValue(ok({ id: 5, status: "approved" }));
+    const wrapper = await mountReview();
+    await wrapper.get('[data-testid="review-send"]').trigger("click");
+    await flushPromises();
+    expect(wrapper.get('[data-testid="review-scheduled"]').text()).toBe("Accepted — could not check when it goes out");
   });
 
   it("Not now skips and moves to the next draft", async () => {
@@ -269,7 +297,7 @@ describe("Leads Review", () => {
     api.GET_ReviewMessage.mockResolvedValue(null);
     await mountReview();
     expect(spawnNotification).toHaveBeenCalledWith({
-      msg: "That draft is already scheduled or sent — showing the next one",
+      msg: "That draft is already scheduled or sent.",
       type: "warning",
     });
     expect(replace).toHaveBeenCalledWith({ name: "LeadsInbox" });

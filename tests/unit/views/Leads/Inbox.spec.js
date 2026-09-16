@@ -59,7 +59,7 @@ describe("Leads Inbox", () => {
     lists.waiting = [{ id: 1, next_slot: inMinutes(-7) }];
     const wrapper = mountInbox();
     await flushPromises();
-    expect(wrapper.get('[data-testid="inbox-next"]').text()).toContain("due — waiting for the send run");
+    expect(wrapper.get('[data-testid="inbox-next"]').text()).toContain("goes out within minutes — the send window is open");
     applyPolicy({ sent_today: 10, daily_cap: 10 });
     lists.review_required = [];
     useLeadsReviewStore().queueChanged();

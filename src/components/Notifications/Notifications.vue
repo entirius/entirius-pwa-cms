@@ -8,8 +8,8 @@
         :class="`bg-${notification.type}-100 t-${notification.type}-300 notification--${notification.type}`"
         :role="severityRole(notification.type)"
         :aria-live="severityAriaLive(notification.type)"
-        @mouseenter="notify.pauseTimer(notification.uuid)"
-        @mouseleave="notify.resumeTimer(notification.uuid)"
+        @pointerenter="onPointer($event, notify.pauseTimer, notification.uuid)"
+        @pointerleave="onPointer($event, notify.resumeTimer, notification.uuid)"
       >
         <div class="notification__msg">
           <p
@@ -46,6 +46,10 @@ export default {
     },
   },
   methods: {
+    // Only a hovering mouse holds a toast: a tap never leaves, so it would pin the toast over the page.
+    onPointer(event, action, uuid) {
+      if (event.pointerType === "mouse") action(uuid);
+    },
     severityRole(type) {
       return type === "negative" || type === "warning" ? "alert" : "status";
     },
@@ -57,17 +61,6 @@ export default {
 </script>
 
 <style lang="scss">
-@media screen and (max-width: 768px) {
-  .notifications {
-    top: 0;
-    right: 0;
-    left: 0;
-    width: 100%;
-  }
-  .notification {
-    width: 100%;
-  }
-}
 .notifications {
   position: fixed;
   z-index: 101;
@@ -107,6 +100,8 @@ export default {
   margin-left: var(--space-100);
   opacity: 0.7;
   transition: opacity 120ms ease;
+  min-width: 44px;
+  min-height: 44px;
 }
 .notification__close:hover {
   opacity: 1;
@@ -115,5 +110,19 @@ export default {
   opacity: 1;
   outline: 2px solid var(--c-support-400);
   outline-offset: 2px;
+}
+/* Phone: after the base rules so it wins — the toast fits the screen and sits at the bottom, clear of the header
+   and the page's Back. */
+@media screen and (max-width: 768px) {
+  .notifications {
+    top: auto;
+    right: var(--space-200);
+    bottom: max(var(--space-200), env(safe-area-inset-bottom));
+    left: var(--space-200);
+    width: auto;
+  }
+  .notification {
+    width: 100%;
+  }
 }
 </style>

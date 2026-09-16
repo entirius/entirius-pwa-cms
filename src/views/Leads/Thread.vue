@@ -17,6 +17,7 @@
       <strong>{{ threadSubject(newest.timeline) }}</strong>
       <span class="thread__state"> · {{ $t(`leads.thread.state.${newest.status}`) }}</span>
     </p>
+    <p v-if="replyThreadId" class="thread__none" data-testid="thread-reply-below">{{ $t("leads.thread.reply_below") }}</p>
     <ThreadTimeline
       v-if="!mailMissing && !loading"
       :busy="optoutBusy"

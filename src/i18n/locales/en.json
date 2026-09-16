@@ -3025,7 +3025,7 @@
       "retry": "Retry",
       "not_found": "Draft not found",
       "queue_position": "Draft {index} of {count}",
-      "already_handled": "That draft is already scheduled or sent — showing the next one",
+      "already_handled": "That draft is already scheduled or sent.",
       "discard_title": "Discard unsaved changes?",
       "discard_keep": "Keep editing",
       "discard_yes": "Discard"
@@ -3074,14 +3074,17 @@
         "closed": "closed"
       },
       "earlier_reply": "The reply is in this thread",
+      "reply_below": "The reply is in an earlier thread, opened below.",
       "quote_show": "Show quoted text",
       "quote_hide": "Hide quoted text"
     },
     "send_state": {
       "at": "goes out at {time}",
-      "due": "due — waiting for the send run",
+      "due": "goes out within minutes — the send window is open",
       "held": "waiting for the send window",
       "cap": "daily cap reached — nothing else goes out today",
+      "unknown": "could not check when it goes out",
+      "with_next": "{state}, next slot {time}",
       "held_window": "waiting for the send window ({window})"
     },
     "status": {
@@ -3192,6 +3195,7 @@
       "order_failed": "The stage order could not be saved — reloaded the current order",
       "delete_title": "Delete stage",
       "delete_confirm": "Delete the stage “{label}”? It holds no companies.",
+      "delete_uncounted": "Delete the stage “{label}”? Could not count its companies — a stage that still holds companies cannot be deleted.",
       "help": "Drag or use the arrows to order the stages as the board shows them. Rename a stage in its field; the tag shows its key and kind.",
       "key_help": "Key — the fixed name rules and imports use; it cannot change later",
       "label_help": "Label — the name shown on the board",
@@ -3296,7 +3300,8 @@
       "remove_window": "Remove",
       "add_window": "Add window",
       "window_start": "From",
-      "window_end": "To"
+      "window_end": "To",
+      "time_format": "HH:MM"
     },
     "channel": {
       "title": "Channel mode",
@@ -3319,7 +3324,7 @@
     },
     "scheduled": {
       "title": "Waiting to be sent",
-      "note": "Send now only moves the send time to now — the next send run takes it, and the channel mode, the send window and the daily cap still apply.",
+      "note": "Send now only moves the send time to now — the mail goes out with the next send, and the channel mode, the send window and the daily cap still apply.",
       "empty": "Nothing is waiting to be sent",
       "status": "Status",
       "goes_out": "Goes out",

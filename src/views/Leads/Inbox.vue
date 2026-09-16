@@ -45,7 +45,7 @@ import { computed, onMounted, ref, watch } from "vue";
 import { t } from "@/i18n";
 import { GET_ReviewList, GET_WaitingMessages } from "@/api/communicator/api";
 import { useLeadsReviewStore } from "@/stores/leadsReview";
-import { sendStateLabel } from "@/utils/leadsLabels";
+import { sendStateSentence } from "@/utils/leadsLabels";
 import { formatTime, sendState } from "@/utils/leadsTime";
 
 const reviewQueue = useLeadsReviewStore();
@@ -55,7 +55,7 @@ const loading = ref(false);
 
 // The earliest slot the send policy allows, read from the same `next_slot` the waiting table reads.
 const firstSlot = computed(() => waiting.value.map((m) => m.next_slot).filter(Boolean).sort()[0] || "");
-const stateLabel = computed(() => sendStateLabel(sendState(firstSlot.value)));
+const stateLabel = computed(() => sendStateSentence(sendState(firstSlot.value)));
 
 const emptyMessage = computed(() =>
   waiting.value.length

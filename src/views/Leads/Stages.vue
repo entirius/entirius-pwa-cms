@@ -95,12 +95,16 @@ async function loadRules() {
 
 const rulesText = (rules) => rules.map((rule) => `${rule.action} ${rule.template_key}`).join("\n");
 
-// The question names how many companies the stage holds — a stage that holds any cannot be deleted.
+// The question names how many companies the stage holds — a stage that holds any cannot be deleted. A failed
+// count is never read as zero: the question says the count is unknown.
 async function askDelete(stage) {
-  const { data } = await GET_Companies({ stage: stage.key, page_size: 1 }).catch(() => ({ data: {} }));
-  const count = data.count || 0;
-  const key = count ? `leads.stages.delete_busy_${pluralKey(count)}` : "leads.stages.delete_confirm";
-  confirming.value = { stage, message: t(key, { label: stage.label, count }) };
+  const count = await GET_Companies({ stage: stage.key, page_size: 1 }).then(({ data }) => data.count || 0, () => null);
+  confirming.value = { stage, message: t(deleteQuestionKey(count), { label: stage.label, count }) };
+}
+
+function deleteQuestionKey(count) {
+  if (count === null) return "leads.stages.delete_uncounted";
+  return count ? `leads.stages.delete_busy_${pluralKey(count)}` : "leads.stages.delete_confirm";
 }
 
 async function attempt(errorKey, call) {

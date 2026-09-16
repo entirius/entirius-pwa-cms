@@ -164,6 +164,28 @@ describe("notification bar", () => {
     expect(titles).toEqual(["Reply from Example Shop 5", "Possible opt-out · Example Shop 6"]);
   });
 
+  // FIX-17c item 4: three replies from one company are three different rows — the reply's words and its day.
+  it("rows with the same title differ by a preview of the body and a day-and-time", async () => {
+    const reply = (id, body, created_at) => ({ id, title: "Reply from Example Shop 5", severity: "high", subject_ref: "leads.Company:5", body, created_at });
+    api.GET_Notifications.mockResolvedValueOnce({
+      data: {
+        results: [
+          reply(5, "Yes, call me tomorrow.\n\nOn Mon, 14 Sep 2026 Anna wrote:\n> Your shop audit", "2026-09-14T11:55:00Z"),
+          reply(6, "Not interested", "2026-09-15T09:10:00Z"),
+          reply(7, "", "2026-09-15T09:12:00Z"),
+        ],
+      },
+    });
+    const wrapper = mountBell();
+    await wrapper.get('[data-testid="notif-bell"]').trigger("click");
+    await flushPromises();
+    const rows = wrapper.findAll('[data-testid="notif-row"]');
+    expect(rows[0].get('[data-testid="notif-preview"]').text()).toBe("Yes, call me tomorrow.");
+    expect(rows[1].get('[data-testid="notif-preview"]').text()).toBe("Not interested");
+    expect(rows[2].find('[data-testid="notif-preview"]').exists()).toBe(false);
+    expect(rows[0].get(".notif-row__age").text()).toMatch(/^14\.09 \d\d:55$/);
+  });
+
   it("on desktop the bell opens an anchored popover that Escape closes", async () => {
     const wrapper = mountBell();
     await wrapper.get('[data-testid="notif-bell"]').trigger("click");

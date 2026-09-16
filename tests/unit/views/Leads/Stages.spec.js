@@ -69,6 +69,18 @@ describe("Leads Stages", () => {
     expect(wrapper.get('[data-testid="confirm-sheet"]').text()).toContain("The stage “New” holds 3 companies.");
   });
 
+  // FIX-17c item 3: a failed count is not "no companies" — the question says the count is unknown.
+  it("a failed company count asks without claiming the stage is empty", async () => {
+    api.GET_Companies.mockRejectedValue({ response: { status: 500 } });
+    const wrapper = mount(Stages, { global: { stubs } });
+    await flushPromises();
+    await wrapper.findAll('[data-testid="stage-delete"]')[0].trigger("click");
+    await flushPromises();
+    const text = wrapper.get('[data-testid="confirm-sheet"]').text();
+    expect(text).toContain("Could not count its companies");
+    expect(text).not.toContain("holds no companies");
+  });
+
   // FIX-17 item 16: the stage kind is a word, never the raw enum value.
   it("the key tag reads the stage kind as a label", async () => {
     const wrapper = mount(Stages, { global: { stubs } });

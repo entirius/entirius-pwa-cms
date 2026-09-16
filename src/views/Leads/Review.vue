@@ -97,7 +97,7 @@ import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
 import { useSwipe } from "@/composables/useSwipe";
 import { companyIdFromSubjectRef } from "@/utils/subjectRef";
-import { sendStateLabel } from "@/utils/leadsLabels";
+import { sendStateSentence } from "@/utils/leadsLabels";
 import { sendState } from "@/utils/leadsTime";
 import ConfirmSheet from "./ConfirmSheet.vue";
 import IntelCard from "./IntelCard.vue";
@@ -224,16 +224,18 @@ async function onConflict(err) {
 }
 
 // The confirmation reads the same `next_slot` the Inbox and the waiting table read — one source for the slot.
-async function nextSlotOf(accepted) {
+// A failed list, or a mail it does not hold, is an unknown schedule — never "waiting for the send window".
+async function acceptedState(accepted) {
   const waiting = await api.GET_WaitingMessages().catch(() => []);
-  return waiting.find((mail) => mail.id === accepted.id)?.next_slot || "";
+  const mail = waiting.find((item) => item.id === accepted.id);
+  return mail ? sendStateSentence(sendState(mail.next_slot)) : t("leads.send_state.unknown");
 }
 
 function accept() {
   return act(
     () => api.POST_ReviewAccept(message.value.id),
     async (data) => {
-      scheduledLabel.value = t("leads.review.accepted", { state: sendStateLabel(sendState(await nextSlotOf(data))) });
+      scheduledLabel.value = t("leads.review.accepted", { state: await acceptedState(data) });
       nextTimer = setTimeout(goNext, SCHEDULED_MS);
     }
   );

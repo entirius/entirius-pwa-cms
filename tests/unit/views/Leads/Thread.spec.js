@@ -95,10 +95,12 @@ describe("Leads Thread", () => {
     expect(groups).toHaveLength(2);
     expect(groups[0].find('[data-testid="thread-timeline"]').exists()).toBe(true);
     expect(groups[1].find('[data-testid="thread-timeline"]').exists()).toBe(false);
-    // FIX-17b item 2: the thread holding the reply is marked and scrolled into view.
+    // FIX-17b item 2: the thread holding the reply is marked.
     expect(groups[0].find('[data-testid="earlier-thread-reply"]').exists()).toBe(true);
     expect(groups[1].find('[data-testid="earlier-thread-reply"]').exists()).toBe(false);
-    expect(scrolled).toEqual([groups[0].element]);
+    // FIX-17c item 5: nothing scrolls past the newest thread; it says the reply is opened below.
+    expect(scrolled).toEqual([]);
+    expect(wrapper.get('[data-testid="thread-reply-below"]').exists()).toBe(true);
   });
 
   it("the older threads stay collapsed when the newest one holds the reply itself", async () => {
@@ -110,6 +112,7 @@ describe("Leads Thread", () => {
     const wrapper = mountThread();
     await flushPromises();
     expect(wrapper.findAll('[data-testid="earlier-thread"]')).toHaveLength(0);
+    expect(wrapper.find('[data-testid="thread-reply-below"]').exists()).toBe(false);
   });
 
   // FIX-17 item 6: no "No messages with this company yet" before the first response.

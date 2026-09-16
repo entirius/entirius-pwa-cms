@@ -47,28 +47,29 @@ describe("sendState — a state, never a clock that slides forward", () => {
   it("with today's cap used up nothing leaves today, whatever the slot says", () => {
     applyPolicy({ timezone: "UTC", sent_today: 10, daily_cap: 10 });
     expect(capReached.value).toBe(true);
-    expect(sendState("2026-09-15T09:08:00Z", now)).toEqual({ state: "cap" });
+    expect(sendState("2026-09-15T09:08:00Z", now)).toEqual({ state: "cap", next: "" });
     applyPolicy(null);
     expect(capReached.value).toBe(false);
     channelTimeZone.value = undefined;
   });
 
   it("no slot at all means the policy has no open moment ahead", () => {
-    expect(sendState("", now)).toEqual({ state: "held", window: "" });
+    expect(sendState("", now)).toEqual({ state: "held", window: "", next: "" });
   });
 
   // FIX-17b item 12: the cap wins even over a later slot of the same channel day.
   it("with the cap used up a later slot today is no promise either", () => {
     applyPolicy({ timezone: "UTC", sent_today: 3, daily_cap: 3, windows: [{ start_time: "08:00:00", end_time: "17:00:00" }] });
-    expect(sendState("2026-09-15T14:00:00Z", now)).toEqual({ state: "cap" });
+    expect(sendState("2026-09-15T14:00:00Z", now)).toEqual({ state: "cap", next: "" });
+    expect(sendState("2026-09-16T08:00:00Z", now)).toEqual({ state: "cap", next: "16.09 08:00" });
     applyPolicy(null);
   });
 
   // FIX-17b item 14: a closed window names its hours instead of a clock, with or without a slot.
   it("a closed window says it waits for the window and names the hours", () => {
     applyPolicy({ timezone: "UTC", sent_today: 0, daily_cap: 10, windows: [{ start_time: "08:00:00", end_time: "17:00:00" }] });
-    expect(sendState("2026-09-16T08:00:00Z", at("22:00"))).toEqual({ state: "held", window: "08:00–17:00" });
-    expect(sendState("", at("22:00"))).toEqual({ state: "held", window: "08:00–17:00" });
+    expect(sendState("2026-09-16T08:00:00Z", at("22:00"))).toEqual({ state: "held", window: "08:00–17:00", next: "16.09 08:00" });
+    expect(sendState("", at("22:00"))).toEqual({ state: "held", window: "08:00–17:00", next: "" });
     expect(sendState("2026-09-15T14:00:00Z", now)).toEqual({ state: "at", time: "14:00" });
     applyPolicy(null);
   });

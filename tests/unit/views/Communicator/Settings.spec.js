@@ -12,6 +12,7 @@ vi.mock("@/api/communicator/api", () => api);
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification: vi.fn() }) }));
 
 import SettingsChannel from "@/views/Communicator/settings/SettingsChannel.vue";
+import SettingsPolicy from "@/views/Communicator/settings/SettingsPolicy.vue";
 import SettingsScheduled from "@/views/Communicator/settings/SettingsScheduled.vue";
 import { t } from "@/i18n";
 import { channelTimeZone } from "@/utils/leadsTime";
@@ -39,6 +40,21 @@ describe("Communicator settings", () => {
     await flushPromises();
     return wrapper;
   }
+
+  // FIX-17c item 8: the send-window fields read and take 24 h times, never the browser's "08:00 AM".
+  it("send-window fields are 24 h text fields with the policy's hours", async () => {
+    api.GET_Policy.mockResolvedValue({
+      data: { timezone: "UTC", country: "PL", business_days_only: true, spread: true, daily_cap: 10, windows: [{ start_time: "08:00:00", end_time: "17:00:00" }] },
+    });
+    const wrapper = mount(SettingsPolicy);
+    await flushPromises();
+    const [start, end] = [wrapper.get('[data-testid="policy-window-start"]'), wrapper.get('[data-testid="policy-window-end"]')];
+    expect([start.element.value, end.element.value]).toEqual(["08:00", "17:00"]);
+    expect(start.attributes("type")).toBe("text");
+    const pattern = new RegExp(`^(?:${end.attributes("pattern")})$`);
+    expect(["00:00", "17:00", "23:59"].every((value) => pattern.test(value))).toBe(true);
+    expect(["5:00 PM", "24:00", "08:60", "8:00"].some((value) => pattern.test(value))).toBe(false);
+  });
 
   it("sandbox without a mailbox is refused in the form (C-30)", async () => {
     const wrapper = await mountChannel();
@@ -76,7 +92,7 @@ describe("Communicator settings", () => {
     await flushPromises();
     expect(api.POST_SendNow).toHaveBeenCalledWith(5);
     expect(api.GET_WaitingMessages).toHaveBeenCalledTimes(2);
-    expect(wrapper.get('[data-testid="scheduled-state"]').text()).toBe("due — waiting for the send run");
+    expect(wrapper.get('[data-testid="scheduled-state"]').text()).toBe("goes out within minutes — the send window is open");
     expect(wrapper.find('[data-testid="scheduled-send-now"]').exists()).toBe(false);
     expect(wrapper.find('[data-testid="scheduled-asap"]').exists()).toBe(true);
   });

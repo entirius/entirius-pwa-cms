@@ -9,10 +9,10 @@
     </label>
     <div v-for="(window, i) in form.windows" :key="i" class="ld-row" data-testid="policy-window">
       <label class="ld-field">{{ $t("communicator.policy.window_start") }}
-        <input v-model="window.start_time" class="ld-input" type="time" required />
+        <input v-model="window.start_time" v-bind="TIME_INPUT" :placeholder="$t('communicator.policy.time_format')" data-testid="policy-window-start" />
       </label>
       <label class="ld-field">{{ $t("communicator.policy.window_end") }}
-        <input v-model="window.end_time" class="ld-input" type="time" required />
+        <input v-model="window.end_time" v-bind="TIME_INPUT" :placeholder="$t('communicator.policy.time_format')" data-testid="policy-window-end" />
       </label>
       <button class="ld-btn" type="button" @click="form.windows.splice(i, 1)">{{ $t("communicator.policy.remove_window") }}</button>
     </div>
@@ -40,6 +40,10 @@ const meta = reactive({ timezone: "", country: "" });
 const error = ref("");
 
 const hhmm = (value) => (value || "").slice(0, 5);
+
+// A text field, not `type="time"`: the browser's time picker follows the OS locale and may show "08:00 AM", while
+// the panel reads 24 h everywhere.
+const TIME_INPUT = { class: "ld-input", type: "text", inputmode: "numeric", maxlength: 5, pattern: "([01]\\d|2[0-3]):[0-5]\\d", required: true };
 
 function apply(data) {
   Object.assign(form, {

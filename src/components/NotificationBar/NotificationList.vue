@@ -21,7 +21,8 @@
         <span class="notif-row__dot" aria-hidden="true"></span>
         <span class="notif-row__text">
           <span class="notif-row__title">{{ rowTitle(item) }}</span>
-          <span class="notif-row__age">{{ formatAge(item.created_at) }}</span>
+          <span v-if="preview(item.body)" class="notif-row__preview" data-testid="notif-preview">{{ preview(item.body) }}</span>
+          <span class="notif-row__age">{{ formatDayTime(item.created_at) }}</span>
         </span>
       </button>
     </div>
@@ -34,7 +35,7 @@ import { useRouter } from "vue-router";
 import { GET_Company } from "@/api/leads/api";
 import { useMuninStore } from "@/stores/munin";
 import { useNotificationsStore } from "@/stores/notifications";
-import { formatTime } from "@/utils/leadsTime";
+import { formatDayTime } from "@/utils/leadsTime";
 import { companyIdFromSubjectRef } from "@/utils/subjectRef";
 
 // Phone: a bottom sheet, rows in thumb reach. Desktop (>= 1024 px): a popover anchored under the bell
@@ -79,7 +80,16 @@ async function openItem(item) {
   router.push(route);
 }
 
-const formatAge = (iso) => formatTime(iso);
+// Rows with the same title ("Reply from Example Shop 5") differ by what was written: the body's own words, without
+// the quoted history of earlier mails.
+const QUOTED = /^\s*(>|On .+wrote:)/;
+const preview = (body) =>
+  (body || "")
+    .split("\n")
+    .filter((line) => !QUOTED.test(line))
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim();
 </script>
 
 <style scoped>
@@ -177,6 +187,14 @@ const formatAge = (iso) => formatTime(iso);
 }
 .notif-row__title {
   overflow-wrap: anywhere;
+}
+.notif-row__preview {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: var(--fs-100);
+  color: var(--c-basic-600);
 }
 .notif-row__age {
   font-size: var(--fs-100);

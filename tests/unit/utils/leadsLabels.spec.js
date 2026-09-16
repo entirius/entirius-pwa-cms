@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { activityText, companyTypeLabel, legalBasisLabel, sendStateLabel, stageKindLabel } from "@/utils/leadsLabels";
+import { activityText, companyTypeLabel, legalBasisLabel, sendStateLabel, sendStateSentence, stageKindLabel } from "@/utils/leadsLabels";
 import { pluralKey } from "@/utils/plural";
 
 // FIX-17 items 14-16: enum values, statuses and counts read as words on every leads screen.
@@ -37,6 +37,18 @@ describe("leads labels", () => {
   it("a held state names the window hours when known", () => {
     expect(sendStateLabel({ state: "held", window: "08:00–17:00" })).toBe("waiting for the send window (08:00–17:00)");
     expect(sendStateLabel({ state: "held", window: "" })).toBe("waiting for the send window");
+  });
+
+  // FIX-17c item 1: one sentence, no jargon — a held or capped mail names the slot it waits for.
+  it("the send sentence adds the next slot of a held mail and never says send run", () => {
+    expect(sendStateSentence({ state: "held", window: "08:00–17:00", next: "17.09 08:00" })).toBe(
+      "waiting for the send window (08:00–17:00), next slot 17.09 08:00"
+    );
+    expect(sendStateSentence({ state: "cap", next: "17.09 08:00" })).toBe(
+      "daily cap reached — nothing else goes out today, next slot 17.09 08:00"
+    );
+    expect(sendStateSentence({ state: "at", time: "14:00" })).toBe("goes out at 14:00");
+    expect(sendStateSentence({ state: "due" })).not.toMatch(/send run|^due/);
   });
 
   it("picks the plural form: one, few (2-4 outside the teens) and many", () => {

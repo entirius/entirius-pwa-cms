@@ -3024,7 +3024,7 @@
       "retry": "Spróbuj ponownie",
       "not_found": "Nie znaleziono szkicu",
       "queue_position": "Szkic {index} z {count}",
-      "already_handled": "Ten szkic jest już zaplanowany lub wysłany — pokazuję kolejny",
+      "already_handled": "Ten szkic jest już zaplanowany lub wysłany.",
       "discard_title": "Odrzucić niezapisane zmiany?",
       "discard_keep": "Wróć do edycji",
       "discard_yes": "Odrzuć"
@@ -3073,14 +3073,17 @@
         "closed": "zamknięty"
       },
       "earlier_reply": "Odpowiedź jest w tym wątku",
+      "reply_below": "Odpowiedź jest we wcześniejszym wątku, otwartym poniżej.",
       "quote_show": "Pokaż cytowany tekst",
       "quote_hide": "Ukryj cytowany tekst"
     },
     "send_state": {
       "at": "wysyłka o {time}",
-      "due": "gotowa — czeka na najbliższą wysyłkę",
+      "due": "wyjdzie w ciągu kilku minut — okno wysyłki jest otwarte",
       "held": "czeka na okno wysyłki",
       "cap": "dzienny limit wyczerpany — dziś nic więcej nie wyjdzie",
+      "unknown": "nie udało się sprawdzić, kiedy wyjdzie",
+      "with_next": "{state}, najbliższy termin {time}",
       "held_window": "czeka na okno wysyłki ({window})"
     },
     "status": {
@@ -3191,6 +3194,7 @@
       "order_failed": "Nie udało się zapisać kolejności etapów — wczytano aktualną kolejność",
       "delete_title": "Usuń etap",
       "delete_confirm": "Usunąć etap „{label}”? Nie ma w nim firm.",
+      "delete_uncounted": "Usunąć etap „{label}”? Nie udało się policzyć jego firm — etapu, w którym są firmy, nie można usunąć.",
       "help": "Przeciągnij lub użyj strzałek, aby ułożyć etapy w kolejności tablicy. Nazwę etapu zmienisz w jego polu; znacznik pokazuje klucz i rodzaj etapu.",
       "key_help": "Klucz — stała nazwa używana przez reguły i importy; nie można jej później zmienić",
       "label_help": "Etykieta — nazwa widoczna na tablicy",
@@ -3295,7 +3299,8 @@
       "remove_window": "Usuń",
       "add_window": "Dodaj okno",
       "window_start": "Od",
-      "window_end": "Do"
+      "window_end": "Do",
+      "time_format": "GG:MM"
     },
     "channel": {
       "title": "Tryb kanału",

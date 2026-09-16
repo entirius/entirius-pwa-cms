@@ -15,6 +15,10 @@ export const statusLabel = (value) => label(`leads.status.${value}`, value);
 export const sendStateLabel = ({ state, time, window }) =>
   t(`leads.send_state.${window ? "held_window" : state}`, { time, window });
 
+// The same state as one sentence with the slot a held mail waits for — the confirmation after Send and the Inbox.
+export const sendStateSentence = (sendState) =>
+  sendState.next ? t("leads.send_state.with_next", { state: sendStateLabel(sendState), time: sendState.next }) : sendStateLabel(sendState);
+
 // A raw service word ("no_eligible_contact", "None") read as words: a label when there is one, else spaced out.
 const humanize = (value) => String(value).replace(/_/g, " ");
 const blockReasonLabel = (value) => label(`leads.block_reason.${value}`, humanize(value));

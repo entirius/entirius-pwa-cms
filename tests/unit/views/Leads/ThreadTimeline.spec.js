@@ -33,7 +33,7 @@ describe("ThreadTimeline", () => {
     ];
     const wrapper = mount(ThreadTimeline, { props: { messages: [first, second], waiting } });
     const states = wrapper.findAll('[data-testid="status-scheduled"]').map((node) => node.text());
-    expect(states[0]).toContain("due — waiting for the send run");
+    expect(states[0]).toContain("goes out within minutes — the send window is open");
     expect(states[1]).toContain("goes out at 02.01 08:00");
     expect(wrapper.find('[data-testid="timeline-time"]').exists()).toBe(false);
     channelTimeZone.value = undefined;

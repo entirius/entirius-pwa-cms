@@ -29,12 +29,20 @@ function windowOpen(now) {
 
 const windowHours = () => sendWindows.value.map(({ start, end }) => `${start}–${end}`).join(", ");
 
+// A cap reached today makes a slot of today no promise; a slot on a later channel day still is.
+function slotAfterToday(slot, now) {
+  if (!slot) return "";
+  const later = dayKey(new Date(slot), channelTimeZone.value) !== dayKey(new Date(now), channelTimeZone.value);
+  return later ? formatTime(slot, new Date(now)) : "";
+}
+
 // What a waiting mail may honestly say about its departure — the one helper every screen uses. `slot` is the
 // backend's `next_slot`, which ignores the daily cap: a used-up cap wins over any slot, a closed window names its
-// hours, and only a future slot inside an open window is a clock; a slot that is now or past is due.
+// hours, and only a future slot inside an open window is a clock; a slot that is now or past is due. A held mail
+// carries the slot it waits for as `next`.
 export function sendState(slot, now = Date.now()) {
-  if (capReached.value) return { state: "cap" };
-  if (!slot || !windowOpen(now)) return { state: "held", window: windowHours() };
+  if (capReached.value) return { state: "cap", next: slotAfterToday(slot, now) };
+  if (!slot || !windowOpen(now)) return { state: "held", window: windowHours(), next: slot ? formatTime(slot, new Date(now)) : "" };
   if (new Date(slot).getTime() - now > SEND_RUN_GRACE_MS) return { state: "at", time: formatTime(slot, new Date(now)) };
   return { state: "due" };
 }
