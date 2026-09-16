@@ -21,7 +21,7 @@ import { useRoute } from "vue-router";
 import { GET_Policy } from "@/api/communicator/api";
 import { useLeadsReviewStore } from "@/stores/leadsReview";
 import { useMuninStore } from "@/stores/munin";
-import { channelTimeZone } from "@/utils/leadsTime";
+import { applyPolicy } from "@/utils/leadsTime";
 import DesktopOnly from "./DesktopOnly.vue";
 import Inbox from "./Inbox.vue";
 
@@ -34,13 +34,14 @@ const reviewQueue = useLeadsReviewStore();
 const hasDetail = computed(() => route.name !== "LeadsInbox");
 const hasInbox = computed(() => munin.isModuleEnabled("communicator"));
 
-// Times read in the channel's zone (the send policy's); without it they stay in the browser's.
+// Times read in the channel's zone (the send policy's); without it they stay in the browser's. The same
+// answer says whether today's cap is used up — what a waiting mail needs before it names an hour.
 onMounted(async () => {
   if (!hasInbox.value) return;
   try {
-    channelTimeZone.value = (await GET_Policy()).data.timezone || undefined;
+    applyPolicy((await GET_Policy()).data);
   } catch {
-    channelTimeZone.value = undefined;
+    applyPolicy(null);
   }
 });
 </script>

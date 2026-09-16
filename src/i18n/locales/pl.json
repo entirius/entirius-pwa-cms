@@ -2987,11 +2987,9 @@
     "inbox": {
       "title": "Skrzynka",
       "to_review": "Do przejrzenia: {count}",
-      "next_at": "następna wysyłka o {time}",
-      "held": "kolejna czeka na okno wysyłki lub dzienny limit",
+      "next": "następna: {state}",
       "empty_title": "Brak szkiców do przejrzenia",
-      "empty_message": "Zaplanowane: {count}, następna wysyłka o {time}",
-      "empty_message_held": "Zaplanowane: {count}, czekają na okno wysyłki lub dzienny limit",
+      "empty_message": "Zaplanowane: {count}, {state}",
       "empty_message_none": "Nic nie jest zaplanowane — nowe szkice pojawią się, gdy firma wejdzie w etap kontaktu",
       "refresh": "Odśwież",
       "untitled": "(bez tematu)",
@@ -3012,8 +3010,7 @@
       "cancel": "Anuluj",
       "subject": "Temat",
       "body": "Wiadomość",
-      "scheduled": "Zaplanowano na {time}",
-      "sent_now": "Wysyłka od razu",
+      "accepted": "Zaakceptowano — {state}",
       "open_thread": "Wątek firmy",
       "swipe_hint": "Przeciągnij w prawo, aby wysłać, w lewo — nie teraz",
       "error": "Akcja nie powiodła się — spróbuj ponownie",
@@ -3071,6 +3068,12 @@
         "closed": "zamknięty"
       },
       "earlier_reply": "jest odpowiedź"
+    },
+    "send_state": {
+      "at": "wysyłka o {time}",
+      "due": "gotowa — czeka na najbliższą wysyłkę",
+      "held": "czeka na okno wysyłki",
+      "cap": "dzienny limit wyczerpany — dziś nic więcej nie wyjdzie"
     },
     "status": {
       "held": "czeka na okno wysyłki lub dzienny limit",
@@ -3289,13 +3292,11 @@
       "note": "„Wyślij teraz” tylko przesuwa czas wysyłki na teraz — zabiera ją najbliższa wysyłka, a tryb kanału, okno wysyłki i dzienny limit nadal obowiązują.",
       "empty": "Nic nie czeka na wysyłkę",
       "status": "Status",
-      "at": "Zaplanowano na",
-      "next_slot": "Najbliższy slot",
+      "goes_out": "Wysyłka",
       "send_now": "Wyślij teraz",
+      "asap": "najwcześniej jak się da",
       "company": "Firma",
-      "recipient": "Odbiorca",
-      "due": "Gotowe — wyjdzie {time}",
-      "due_unknown": "Gotowe — wyjdzie w najbliższej wysyłce"
+      "recipient": "Odbiorca"
     }
   }
 }

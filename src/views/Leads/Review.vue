@@ -97,7 +97,8 @@ import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
 import { useSwipe } from "@/composables/useSwipe";
 import { companyIdFromSubjectRef } from "@/utils/subjectRef";
-import { formatTime } from "@/utils/leadsTime";
+import { sendStateLabel } from "@/utils/leadsLabels";
+import { sendState } from "@/utils/leadsTime";
 import ConfirmSheet from "./ConfirmSheet.vue";
 import IntelCard from "./IntelCard.vue";
 import ReviewActions from "./ReviewActions.vue";
@@ -226,8 +227,9 @@ function accept() {
   return act(
     () => api.POST_ReviewAccept(message.value.id),
     (data) => {
-      const time = formatTime(data.scheduled_at);
-      scheduledLabel.value = time ? t("leads.review.scheduled", { time }) : t("leads.review.sent_now");
+      // Accepting sets `scheduled_at` to the policy slot the send run will use — the same state the Inbox
+      // and the waiting table read from `next_slot`, so the confirmation promises nothing that slides.
+      scheduledLabel.value = t("leads.review.accepted", { state: sendStateLabel(sendState(data.scheduled_at)) });
       nextTimer = setTimeout(goNext, SCHEDULED_MS);
     }
   );

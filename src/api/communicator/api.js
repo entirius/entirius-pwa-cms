@@ -48,9 +48,10 @@ export const GET_ThreadWithOptouts = async (id) => {
   return { ...detail.data, optouts: replies.data.results || [] };
 };
 
-// Approved and scheduled messages — the mails waiting for the send beat, with their `scheduled_at` slot.
+// Approved and scheduled messages — the mails waiting for the send beat. The outbox endpoint is the one source
+// of the slot: it adds `next_slot`, the earliest moment the send policy allows, so no two screens disagree.
 export const GET_WaitingMessages = async () => {
-  const lists = await Promise.all(["approved", "scheduled"].map((status) => GET_ReviewList({ status, page_size: 100 })));
+  const lists = await Promise.all(["approved", "scheduled"].map((status) => GET_Messages({ status, page_size: 100 })));
   return lists.flatMap(({ data }) => data.results || []);
 };
 

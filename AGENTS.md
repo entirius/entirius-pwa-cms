@@ -140,5 +140,8 @@ never saves. `GET templates/` is unpaginated (every template of the channel in `
 filter, so the Communicate modal filters the full list client-side. Settings: send policy (holiday country is set
 per channel — the SendPolicy API has no country field, so it is read-only here), channel mode (`PATCH channel/` never carries `live_enabled`; sandbox needs a
 mailbox, C-30), suppressions, waiting messages (`approved` + `scheduled`) with Send now =
-`messages/<id>/send-now/` (moves `scheduled_at` only, C-31; the row then reads "due" from its own slot, so a reload
-keeps the state and no second Send now is offered). Sequences: create + text pool only (no step edit API).
+`messages/<id>/send-now/` (moves `scheduled_at` only, C-31; a mail already at the channel clock cannot be pulled
+any earlier, so it offers no second Send now — a reload keeps that). The departure column is a state, never a
+clock that slides: `sendState` (`src/utils/leadsTime.js`) names an hour only for a `next_slot` in the future,
+else it says due / daily cap reached / waiting for the window. `next_slot` (outbox endpoint, `GET_WaitingMessages`)
+is the one slot the Inbox summary, the Review confirmation and this table all read, so no two screens disagree. Sequences: create + text pool only (no step edit API).

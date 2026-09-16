@@ -2,8 +2,7 @@
   <div class="inbox" data-testid="leads-inbox">
     <p v-if="drafts.length" class="inbox__summary" data-testid="inbox-summary">
       <strong>{{ $t("leads.inbox.to_review", { count: drafts.length }) }}</strong>
-      <span v-if="held" data-testid="inbox-held"> · {{ $t("leads.inbox.held") }}</span>
-      <span v-else-if="nextAt"> · {{ $t("leads.inbox.next_at", { time: nextAt }) }}</span>
+      <span v-if="waiting.length" data-testid="inbox-next"> · {{ $t("leads.inbox.next", { state: stateLabel }) }}</span>
     </p>
 
     <Loader v-show="loading" />
@@ -44,25 +43,24 @@
 <script setup>
 import { computed, onMounted, ref, watch } from "vue";
 import { t } from "@/i18n";
-import { GET_ReviewList } from "@/api/communicator/api";
+import { GET_ReviewList, GET_WaitingMessages } from "@/api/communicator/api";
 import { useLeadsReviewStore } from "@/stores/leadsReview";
-import { formatTime, isOverdue } from "@/utils/leadsTime";
+import { sendStateLabel } from "@/utils/leadsLabels";
+import { formatTime, sendState } from "@/utils/leadsTime";
 
 const reviewQueue = useLeadsReviewStore();
 const drafts = ref([]);
 const waiting = ref([]);
 const loading = ref(false);
 
-const firstSlot = computed(() => waiting.value.map((m) => m.scheduled_at).filter(Boolean).sort()[0] || "");
-const nextAt = computed(() => formatTime(firstSlot.value));
-const held = computed(() => isOverdue(firstSlot.value));
+// The earliest slot the send policy allows, read from the same `next_slot` the waiting table reads.
+const firstSlot = computed(() => waiting.value.map((m) => m.next_slot).filter(Boolean).sort()[0] || "");
+const stateLabel = computed(() => sendStateLabel(sendState(firstSlot.value)));
 
 const emptyMessage = computed(() =>
-  !waiting.value.length
-    ? t("leads.inbox.empty_message_none")
-    : held.value
-      ? t("leads.inbox.empty_message_held", { count: waiting.value.length })
-      : t("leads.inbox.empty_message", { count: waiting.value.length, time: nextAt.value })
+  waiting.value.length
+    ? t("leads.inbox.empty_message", { count: waiting.value.length, state: stateLabel.value })
+    : t("leads.inbox.empty_message_none")
 );
 
 function companyName(draft) {
@@ -82,11 +80,9 @@ async function listStatus(status) {
 async function load() {
   loading.value = true;
   try {
-    const [review, approved, scheduled] = await Promise.all(
-      ["review_required", "approved", "scheduled"].map(listStatus)
-    );
+    const [review, mails] = await Promise.all([listStatus("review_required"), GET_WaitingMessages()]);
     drafts.value = review;
-    waiting.value = [...approved, ...scheduled];
+    waiting.value = mails;
     reviewQueue.setCount(review.length);
   } finally {
     loading.value = false;

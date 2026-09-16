@@ -73,7 +73,8 @@ describe("Leads Review", () => {
   afterEach(() => vi.useRealTimers());
 
   // FIX-17 item 5: the confirmation stays readable (>= 4 s), it is not gone before the eye reaches it.
-  it("after Send the screen confirms Scheduled HH:MM for 4 s before it moves on", async () => {
+  // FIX-17a item 2: it confirms the slot the send run will use — never a time that has already passed.
+  it("after Send the screen confirms the send state for 4 s before it moves on", async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-09-21T06:00:00Z"));
     channelTimeZone.value = "UTC";
@@ -82,7 +83,7 @@ describe("Leads Review", () => {
     await wrapper.get('[data-testid="review-send"]').trigger("click");
     await flushPromises();
     expect(api.POST_ReviewAccept).toHaveBeenCalledWith(5);
-    expect(wrapper.get('[data-testid="review-scheduled"]').text()).toBe("Scheduled 08:07");
+    expect(wrapper.get('[data-testid="review-scheduled"]').text()).toBe("Accepted — goes out at 08:07");
     vi.advanceTimersByTime(3900);
     await flushPromises();
     expect(api.GET_ReviewNext).not.toHaveBeenCalled();

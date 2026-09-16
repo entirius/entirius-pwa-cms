@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { channelTimeZone, formatTime, isOverdue } from "@/utils/leadsTime";
+import { applyPolicy, capReached, channelTimeZone, formatTime, isOverdue, sendState } from "@/utils/leadsTime";
 
 const at = (hhmm) => new Date(`2026-09-15T${hhmm}:00Z`).getTime();
 
@@ -34,5 +34,34 @@ describe("one date/time format everywhere (24 h, the channel's timezone, with a 
 
   it("a missing timestamp is empty", () => {
     expect(formatTime("", now)).toBe("");
+  });
+});
+
+// FIX-17a items 2-4: a waiting mail names an hour only when that hour is the slot the backend will use.
+describe("sendState — a state, never a clock that slides forward", () => {
+  const now = at("09:08");
+
+  it("a slot in the future is the one promise worth making", () => {
+    channelTimeZone.value = "UTC";
+    expect(sendState("2026-09-15T14:00:00Z", now)).toEqual({ state: "at", time: "14:00" });
+    channelTimeZone.value = undefined;
+  });
+
+  it("a slot at the current minute is due — the window is open, the send run owes it", () => {
+    expect(sendState("2026-09-15T09:08:00Z", now)).toEqual({ state: "due" });
+    expect(sendState("2026-09-15T09:00:00Z", now)).toEqual({ state: "due" });
+  });
+
+  it("with today's cap used up nothing leaves today, whatever the slot says", () => {
+    applyPolicy({ timezone: "UTC", sent_today: 10, daily_cap: 10 });
+    expect(capReached.value).toBe(true);
+    expect(sendState("2026-09-15T09:08:00Z", now)).toEqual({ state: "cap" });
+    applyPolicy(null);
+    expect(capReached.value).toBe(false);
+    channelTimeZone.value = undefined;
+  });
+
+  it("no slot at all means the policy has no open moment ahead", () => {
+    expect(sendState("", now)).toEqual({ state: "held" });
   });
 });

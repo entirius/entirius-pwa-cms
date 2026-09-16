@@ -2,13 +2,14 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 
-const lists = vi.hoisted(() => ({ review_required: [], approved: [], scheduled: [] }));
+const lists = vi.hoisted(() => ({ review_required: [], waiting: [] }));
 const GET_ReviewList = vi.hoisted(() => vi.fn(({ status }) => Promise.resolve({ data: { results: lists[status] } })));
-vi.mock("@/api/communicator/api", () => ({ GET_ReviewList }));
+const GET_WaitingMessages = vi.hoisted(() => vi.fn(() => Promise.resolve(lists.waiting)));
+vi.mock("@/api/communicator/api", () => ({ GET_ReviewList, GET_WaitingMessages }));
 
 import Inbox from "@/views/Leads/Inbox.vue";
 import { useLeadsReviewStore } from "@/stores/leadsReview";
-import { channelTimeZone, formatTime } from "@/utils/leadsTime";
+import { applyPolicy, channelTimeZone, formatTime } from "@/utils/leadsTime";
 
 const draft = { id: 5, subject: "Your shop audit", created_at: "2026-09-21T08:00:00Z", thread: { recipient_name: "Anna" }, render_context: { company_name: "Example Shop 1" } };
 const inMinutes = (minutes) => new Date(Date.now() + minutes * 60000).toISOString();
@@ -19,9 +20,9 @@ describe("Leads Inbox", () => {
   beforeEach(() => {
     setActivePinia(createPinia());
     GET_ReviewList.mockClear();
+    GET_WaitingMessages.mockClear();
     lists.review_required = [];
-    lists.approved = [];
-    lists.scheduled = [];
+    lists.waiting = [];
   });
 
   it("lists drafts to review", async () => {
@@ -35,34 +36,38 @@ describe("Leads Inbox", () => {
   it("empty queue says how many wait and when the next goes out", async () => {
     const at = inMinutes(60);
     const time = formatTime(at);
-    lists.approved = [{ id: 1, scheduled_at: at }, { id: 2, scheduled_at: inMinutes(120) }];
+    lists.waiting = [{ id: 1, next_slot: at }, { id: 2, next_slot: inMinutes(120) }];
     const wrapper = mountInbox();
     await flushPromises();
-    expect(wrapper.get('[data-testid="inbox-empty"]').text()).toContain(`2 scheduled, next goes out at ${time}`);
+    expect(wrapper.get('[data-testid="inbox-empty"]').text()).toContain(`2 scheduled, goes out at ${time}`);
     expect(wrapper.find('[data-testid="inbox-refresh"]').exists()).toBe(true);
   });
 
-  it("a mail waiting for its window on another day says scheduled for <day> <HH:MM>", async () => {
+  it("a mail waiting for its window on another day says goes out at <day> <HH:MM>", async () => {
     channelTimeZone.value = "UTC";
     lists.review_required = [draft];
-    lists.approved = [{ id: 1, scheduled_at: "2099-01-02T08:00:00Z" }];
+    lists.waiting = [{ id: 1, next_slot: "2099-01-02T08:00:00Z" }];
     const wrapper = mountInbox();
     await flushPromises();
-    expect(wrapper.get('[data-testid="inbox-summary"]').text()).toContain(`"time":"02.01 08:00"`);
-    expect(wrapper.find('[data-testid="inbox-held"]').exists()).toBe(false);
+    expect(wrapper.get('[data-testid="inbox-next"]').text()).toContain(`"state":"goes out at 02.01 08:00"`);
     channelTimeZone.value = undefined;
   });
 
-  it("a slot past the send beat says the send window or the daily cap holds it", async () => {
+  // FIX-17a items 2-4: a slot the send run has already passed is a state, never a time that moves every minute.
+  it("a slot at the current minute is due, and a used-up cap says so", async () => {
     lists.review_required = [draft];
-    lists.scheduled = [{ id: 1, scheduled_at: inMinutes(-7) }];
+    lists.waiting = [{ id: 1, next_slot: inMinutes(-7) }];
     const wrapper = mountInbox();
     await flushPromises();
-    expect(wrapper.find('[data-testid="inbox-held"]').exists()).toBe(true);
+    expect(wrapper.get('[data-testid="inbox-next"]').text()).toContain("due — waiting for the send run");
+    applyPolicy({ sent_today: 10, daily_cap: 10 });
     lists.review_required = [];
     useLeadsReviewStore().queueChanged();
     await flushPromises();
-    expect(wrapper.get('[data-testid="inbox-empty"]').text()).toContain("1 scheduled, waiting for the send window or the daily cap");
+    expect(wrapper.get('[data-testid="inbox-empty"]').text()).toContain(
+      "1 scheduled, daily cap reached — nothing else goes out today"
+    );
+    applyPolicy(null);
   });
 
   // FIX-17 item 4: two drafts to the same company differ by recipient and by where they sit in the queue.
@@ -81,7 +86,7 @@ describe("Leads Inbox", () => {
 
   // FIX-17 item 8: the empty Inbox says it once — the summary line is not repeated above the empty state.
   it("an empty queue drops the summary line and publishes the count", async () => {
-    lists.approved = [{ id: 1, scheduled_at: inMinutes(60) }];
+    lists.waiting = [{ id: 1, next_slot: inMinutes(60) }];
     const wrapper = mountInbox();
     await flushPromises();
     expect(wrapper.find('[data-testid="inbox-summary"]').exists()).toBe(false);
@@ -100,15 +105,17 @@ describe("Leads Inbox", () => {
     expect(wrapper.find('[data-testid="inbox-refresh"]').exists()).toBe(true);
   });
 
-  it("reloads its three lists after a review action, not on navigation", async () => {
+  it("reloads the queue and the waiting mails after a review action, not on navigation", async () => {
     const wrapper = mountInbox();
     await flushPromises();
-    expect(GET_ReviewList).toHaveBeenCalledTimes(3);
+    expect(GET_ReviewList).toHaveBeenCalledTimes(1);
+    expect(GET_WaitingMessages).toHaveBeenCalledTimes(1);
     await wrapper.setProps({});
     await flushPromises();
-    expect(GET_ReviewList).toHaveBeenCalledTimes(3);
+    expect(GET_ReviewList).toHaveBeenCalledTimes(1);
     useLeadsReviewStore().queueChanged();
     await flushPromises();
-    expect(GET_ReviewList).toHaveBeenCalledTimes(6);
+    expect(GET_ReviewList).toHaveBeenCalledTimes(2);
+    expect(GET_WaitingMessages).toHaveBeenCalledTimes(2);
   });
 });

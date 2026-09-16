@@ -2988,11 +2988,9 @@
     "inbox": {
       "title": "Inbox",
       "to_review": "{count} to review",
-      "next_at": "next goes out at {time}",
-      "held": "the next one waits for the send window or the daily cap",
+      "next": "next: {state}",
       "empty_title": "No drafts to review",
-      "empty_message": "{count} scheduled, next goes out at {time}",
-      "empty_message_held": "{count} scheduled, waiting for the send window or the daily cap",
+      "empty_message": "{count} scheduled, {state}",
       "empty_message_none": "Nothing scheduled — new drafts appear when a company reaches an outreach stage",
       "refresh": "Refresh",
       "untitled": "(no subject)",
@@ -3013,8 +3011,7 @@
       "cancel": "Cancel",
       "subject": "Subject",
       "body": "Message",
-      "scheduled": "Scheduled {time}",
-      "sent_now": "Goes out now",
+      "accepted": "Accepted — {state}",
       "open_thread": "Company thread",
       "swipe_hint": "Swipe right to send, left for not now",
       "error": "Action failed — try again",
@@ -3072,6 +3069,12 @@
         "closed": "closed"
       },
       "earlier_reply": "has a reply"
+    },
+    "send_state": {
+      "at": "goes out at {time}",
+      "due": "due — waiting for the send run",
+      "held": "waiting for the send window",
+      "cap": "daily cap reached — nothing else goes out today"
     },
     "status": {
       "held": "waiting for the send window or daily cap",
@@ -3290,13 +3293,11 @@
       "note": "Send now only moves the send time to now — the next send run takes it, and the channel mode, the send window and the daily cap still apply.",
       "empty": "Nothing is waiting to be sent",
       "status": "Status",
-      "at": "Scheduled at",
-      "next_slot": "Next slot",
+      "goes_out": "Goes out",
       "send_now": "Send now",
+      "asap": "as early as possible",
       "company": "Company",
-      "recipient": "Recipient",
-      "due": "Due — goes out {time}",
-      "due_unknown": "Due — goes out in the next send run"
+      "recipient": "Recipient"
     }
   }
 }

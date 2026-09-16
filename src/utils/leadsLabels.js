@@ -11,6 +11,9 @@ export const stageKindLabel = (value) => label(`leads.stage_kind.${value}`, valu
 
 export const statusLabel = (value) => label(`leads.status.${value}`, value);
 
+// One wording for a waiting mail's departure: Review, the Inbox summary and the waiting table say the same.
+export const sendStateLabel = ({ state, time }) => t(`leads.send_state.${state}`, { time });
+
 // Activity messages are written by the service ("draft review_required"); the status word is the only raw part.
 export function activityText(message) {
   const draft = /^draft (\w+)$/.exec(message || "");
