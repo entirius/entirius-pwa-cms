@@ -186,6 +186,25 @@ describe("notification bar", () => {
     expect(rows[0].get(".notif-row__age").text()).toMatch(/^14\.09 \d\d:55$/);
   });
 
+  // FIX-17d item 3: a Polish or wrapped quote header is history too; the reply's own first line stays.
+  it("the preview drops Polish and multi-line quote headers but keeps the reply's own words", async () => {
+    const reply = (id, body) => ({ id, title: "Reply from Example Shop 5", severity: "high", subject_ref: "leads.Company:5", body, created_at: "2026-09-14T11:55:00Z" });
+    api.GET_Notifications.mockResolvedValueOnce({
+      data: {
+        results: [
+          reply(8, "Proszę o telefon.\n\nW dniu pon., 14 wrz 2026 o 10:00 Anna <anna@example-shop-5.test> napisał(a):\n> Audyt sklepu"),
+          reply(9, "Send the offer.\n\nOn Mon, 14 Sep 2026 at 10:00, Anna Nowak <\nanna@example-shop-5.test> wrote:\n> Your shop audit"),
+          reply(10, "On Monday I am free.\nCall me then."),
+        ],
+      },
+    });
+    const wrapper = mountBell();
+    await wrapper.get('[data-testid="notif-bell"]').trigger("click");
+    await flushPromises();
+    const previews = wrapper.findAll('[data-testid="notif-preview"]').map((node) => node.text());
+    expect(previews).toEqual(["Proszę o telefon.", "Send the offer.", "On Monday I am free. Call me then."]);
+  });
+
   it("on desktop the bell opens an anchored popover that Escape closes", async () => {
     const wrapper = mountBell();
     await wrapper.get('[data-testid="notif-bell"]').trigger("click");

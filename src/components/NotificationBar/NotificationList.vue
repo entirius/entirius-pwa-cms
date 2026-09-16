@@ -81,12 +81,14 @@ async function openItem(item) {
 }
 
 // Rows with the same title ("Reply from Example Shop 5") differ by what was written: the body's own words, without
-// the quoted history of earlier mails.
-const QUOTED = /^\s*(>|On .+wrote:)/;
+// the quoted history of earlier mails. A quote header ("On … wrote:", "W dniu … napisał(a):") may wrap over up to three
+// lines; a line starting with "On" that never ends in "wrote:" stays the reply's own words.
+const QUOTE_HEADER = /^[ \t]*(On|W dniu)\b[^\n]*(\n[^\n]*){0,2}?(wrote|napisał\(a\)|napisała?):[ \t]*$/gm;
 const preview = (body) =>
   (body || "")
+    .replace(QUOTE_HEADER, "")
     .split("\n")
-    .filter((line) => !QUOTED.test(line))
+    .filter((line) => !/^\s*>/.test(line))
     .join(" ")
     .replace(/\s+/g, " ")
     .trim();
