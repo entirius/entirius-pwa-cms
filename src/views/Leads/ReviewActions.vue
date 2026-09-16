@@ -1,5 +1,5 @@
 <template>
-  <div class="ra" data-testid="review-actions">
+  <div ref="bar" class="ra" data-testid="review-actions">
     <button class="ra-btn ra-btn--secondary" :disabled="busy" data-testid="review-skip" @click="$emit('skip')">
       {{ $t("leads.review.not_now") }}
     </button>
@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 
 defineProps({
   busy: { type: Boolean, default: false },
@@ -42,6 +42,12 @@ defineProps({
 });
 const emit = defineEmits(["send", "skip", "rewrite", "edit", "skip-company"]);
 const menuOpen = ref(false);
+const bar = ref(null);
+
+// A phone toast sits above this bar (Notifications.vue), so Send / Not now stay reachable while one is on screen.
+const root = document.documentElement.style;
+onMounted(() => root.setProperty("--action-bar-height", `${bar.value.offsetHeight}px`));
+onBeforeUnmount(() => root.removeProperty("--action-bar-height"));
 
 function pick(name) {
   menuOpen.value = false;

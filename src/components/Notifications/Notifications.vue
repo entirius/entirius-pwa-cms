@@ -112,12 +112,13 @@ export default {
   outline-offset: 2px;
 }
 /* Phone: after the base rules so it wins — the toast fits the screen and sits at the bottom, clear of the header
-   and the page's Back. */
+   and the page's Back, and above a sticky action bar (`--action-bar-height`, set by ReviewActions) so it never covers
+   the action it explains. */
 @media screen and (max-width: 768px) {
   .notifications {
     top: auto;
     right: var(--space-200);
-    bottom: max(var(--space-200), env(safe-area-inset-bottom));
+    bottom: calc(max(var(--space-200), env(safe-area-inset-bottom)) + var(--action-bar-height, 0px));
     left: var(--space-200);
     width: auto;
   }

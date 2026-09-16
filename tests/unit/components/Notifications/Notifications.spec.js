@@ -3,6 +3,8 @@ import { mount } from "@vue/test-utils";
 import { setActivePinia, createPinia } from "pinia";
 import { useNotifyStore } from "@/stores/notify";
 import Notifications from "@/components/Notifications/Notifications.vue";
+import notificationsSource from "@/components/Notifications/Notifications.vue?raw";
+import ReviewActions from "@/views/Leads/ReviewActions.vue";
 
 // FIX-17c item 6: a tap on a phone never pins the toast over the page — only a hovering mouse holds it.
 describe("toasts", () => {
@@ -34,5 +36,22 @@ describe("toasts", () => {
     await wrapper.get(".notification").trigger("pointerleave", { pointerType: "mouse" });
     vi.advanceTimersByTime(5000);
     expect(useNotifyStore().notifications).toHaveLength(0);
+  });
+
+  // FIX-17d item 1: happy-dom lays nothing out, so the geometry is the stylesheet's — the phone toast's bottom edge
+  // is lifted by the measured bar height, which leaves the whole Send / Not now bar outside the toast.
+  it("at 390 px a toast leaves the Review action bar hit-testable", async () => {
+    window.innerWidth = 390;
+    const height = vi.spyOn(HTMLElement.prototype, "offsetHeight", "get").mockReturnValue(81);
+    const bar = mount(ReviewActions, { global: { directives: { out: {} } } });
+    const wrapper = showToast();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.find(".notification").exists()).toBe(true);
+    expect(document.documentElement.style.getPropertyValue("--action-bar-height")).toBe("81px");
+    const phoneRule = notificationsSource.slice(notificationsSource.indexOf("@media screen and (max-width: 768px)"));
+    expect(phoneRule).toMatch(/\.notifications \{[^}]*bottom: calc\([^;]*\+ var\(--action-bar-height, 0px\)\);/);
+    bar.unmount();
+    expect(document.documentElement.style.getPropertyValue("--action-bar-height")).toBe("");
+    height.mockRestore();
   });
 });
