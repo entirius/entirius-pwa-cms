@@ -45,7 +45,7 @@ describe("leads labels", () => {
       "waiting for the send window (08:00–17:00), next slot 17.09 08:00"
     );
     expect(sendStateSentence({ state: "cap", next: "17.09 08:00" })).toBe(
-      "daily cap reached — nothing else goes out today, next slot 17.09 08:00"
+      "daily cap reached, next slot 17.09 08:00"
     );
     expect(sendStateSentence({ state: "at", time: "14:00" })).toBe("goes out at 14:00");
     expect(sendStateSentence({ state: "due" })).not.toMatch(/send run|^due/);

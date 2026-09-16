@@ -44,10 +44,10 @@ describe("sendState — a state, never a clock that slides forward", () => {
     expect(sendState("2026-09-15T09:00:00Z", now)).toEqual({ state: "due" });
   });
 
-  it("with today's cap used up nothing leaves today, whatever the slot says", () => {
+  it("with today's cap used up no clock is promised, whatever the slot says", () => {
     applyPolicy({ timezone: "UTC", sent_today: 10, daily_cap: 10 });
     expect(capReached.value).toBe(true);
-    expect(sendState("2026-09-15T09:08:00Z", now)).toEqual({ state: "cap", next: "" });
+    expect(sendState("", now)).toEqual({ state: "cap", next: "" });
     applyPolicy(null);
     expect(capReached.value).toBe(false);
     channelTimeZone.value = undefined;
@@ -57,10 +57,11 @@ describe("sendState — a state, never a clock that slides forward", () => {
     expect(sendState("", now)).toEqual({ state: "held", window: "", next: "" });
   });
 
-  // FIX-17b item 12: the cap wins even over a later slot of the same channel day.
-  it("with the cap used up a later slot today is no promise either", () => {
+  // FIX-17b item 12: the cap wins over a clock even for a slot of the same channel day; FIX-17d item 2: the capped
+  // mail still names the backend's next slot, today or not.
+  it("with the cap used up the mail names its next slot, today or later", () => {
     applyPolicy({ timezone: "UTC", sent_today: 3, daily_cap: 3, windows: [{ start_time: "08:00:00", end_time: "17:00:00" }] });
-    expect(sendState("2026-09-15T14:00:00Z", now)).toEqual({ state: "cap", next: "" });
+    expect(sendState("2026-09-15T14:00:00Z", now)).toEqual({ state: "cap", next: "14:00" });
     expect(sendState("2026-09-16T08:00:00Z", now)).toEqual({ state: "cap", next: "16.09 08:00" });
     applyPolicy(null);
   });

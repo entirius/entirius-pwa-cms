@@ -64,9 +64,7 @@ describe("Leads Inbox", () => {
     lists.review_required = [];
     useLeadsReviewStore().queueChanged();
     await flushPromises();
-    expect(wrapper.get('[data-testid="inbox-empty"]').text()).toContain(
-      "1 scheduled, daily cap reached — nothing else goes out today"
-    );
+    expect(wrapper.get('[data-testid="inbox-empty"]').text()).toContain("1 scheduled, daily cap reached");
     applyPolicy(null);
   });
 

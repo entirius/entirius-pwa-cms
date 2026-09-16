@@ -3081,7 +3081,7 @@
       "at": "wysyłka o {time}",
       "due": "wyjdzie w ciągu kilku minut — okno wysyłki jest otwarte",
       "held": "czeka na okno wysyłki",
-      "cap": "dzienny limit wyczerpany — dziś nic więcej nie wyjdzie",
+      "cap": "dzienny limit wyczerpany",
       "unknown": "nie udało się sprawdzić, kiedy wyjdzie",
       "with_next": "{state}, najbliższy termin {time}",
       "held_window": "czeka na okno wysyłki ({window})"

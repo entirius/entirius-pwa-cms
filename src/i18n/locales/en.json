@@ -3082,7 +3082,7 @@
       "at": "goes out at {time}",
       "due": "goes out within minutes — the send window is open",
       "held": "waiting for the send window",
-      "cap": "daily cap reached — nothing else goes out today",
+      "cap": "daily cap reached",
       "unknown": "could not check when it goes out",
       "with_next": "{state}, next slot {time}",
       "held_window": "waiting for the send window ({window})"
