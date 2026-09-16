@@ -9,7 +9,8 @@ const summaries = [
 ];
 const detail = (id) => ({
   id,
-  status: summaries.find((s) => s.id === id).status,
+  // Threads from the next list page are not in `summaries` — they are closed like every older thread.
+  status: (summaries.find((s) => s.id === id) || { status: "closed" }).status,
   timeline: [{ at: "2026-09-21T08:00:00Z", direction: "out", status: "sent", subject: `Subject ${id}`, body_text: "Hi" }],
   optouts: [],
 });
