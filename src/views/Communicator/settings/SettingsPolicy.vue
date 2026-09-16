@@ -8,9 +8,12 @@
       <input v-model.number="form.daily_cap" class="ld-input" type="number" min="0" max="10000" required data-testid="policy-cap" />
     </label>
     <div v-for="(window, i) in form.windows" :key="i" class="ld-row" data-testid="policy-window">
-      <input v-model="window.start_time" class="ld-input" type="time" required />
-      <span>–</span>
-      <input v-model="window.end_time" class="ld-input" type="time" required />
+      <label class="ld-field">{{ $t("communicator.policy.window_start") }}
+        <input v-model="window.start_time" class="ld-input" type="time" required />
+      </label>
+      <label class="ld-field">{{ $t("communicator.policy.window_end") }}
+        <input v-model="window.end_time" class="ld-input" type="time" required />
+      </label>
       <button class="ld-btn" type="button" @click="form.windows.splice(i, 1)">{{ $t("communicator.policy.remove_window") }}</button>
     </div>
     <div class="ld-row">

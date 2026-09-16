@@ -1,9 +1,10 @@
 <template>
   <article class="card" :data-company="company.domain" data-testid="board-card">
-    <router-link :to="{ name: 'LeadsThread', params: { id: company.id } }" class="card__domain">
-      {{ company.domain }}
+    <router-link :to="{ name: 'LeadsThread', params: { id: company.id } }" class="card__name" data-testid="board-card-name">
+      {{ company.name || company.domain }}
     </router-link>
-    <p class="ld-muted">{{ company.company_type }} · {{ lastActivity }}</p>
+    <p class="card__domain ld-muted">{{ company.domain }}</p>
+    <p class="ld-muted">{{ companyTypeLabel(company.company_type) }} · {{ lastActivity }}</p>
     <span v-if="company.do_not_contact" class="ld-badge">{{ $t("leads.company.do_not_contact") }}</span>
     <select
       class="ld-input card__stage"
@@ -19,16 +20,17 @@
 
 <script setup>
 import { computed } from "vue";
+import { companyTypeLabel } from "@/utils/leadsLabels";
+import { formatTime } from "@/utils/leadsTime";
 
-// Board card: domain link to the company card, type, last activity; the select is the keyboard alternative to drag.
+// Board card: the company name links to its card, the domain sits below it; type and last activity read as words
+// and Leads times. The select is the keyboard alternative to drag.
 const props = defineProps({
   company: { type: Object, required: true },
   stages: { type: Array, default: () => [] },
 });
 defineEmits(["move"]);
-const lastActivity = computed(() =>
-  props.company.last_activity_at ? new Date(props.company.last_activity_at).toLocaleDateString() : "—"
-);
+const lastActivity = computed(() => formatTime(props.company.last_activity_at) || "\u2014");
 </script>
 
 <style scoped>
@@ -42,8 +44,13 @@ const lastActivity = computed(() =>
   background: var(--c-basic-100);
   cursor: grab;
 }
-.card__domain {
+.card__name {
   font-weight: 600;
+  overflow-wrap: break-word;
+}
+.card__domain {
+  margin: 0;
+  font-size: var(--fs-100);
   overflow-wrap: anywhere;
 }
 .card__stage {

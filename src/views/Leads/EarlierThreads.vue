@@ -13,6 +13,7 @@
         :key="thread.id"
         :thread="thread"
         :pending="pendingThreads.has(thread.id)"
+        :initially-open="thread.id === openThreadId"
         :waiting="waitingOf(waiting, thread.id)"
         @changed="$emit('changed')"
       />
@@ -24,7 +25,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { GET_Threads } from "@/api/communicator/api";
 import { waitingOf } from "@/utils/leadsThread";
 import ThreadGroup from "./ThreadGroup.vue";
@@ -38,6 +39,7 @@ const props = defineProps({
   pageSize: { type: Number, required: true },
   pendingThreads: { type: Set, default: () => new Set() }, // thread ids with an undecided opt-out
   waiting: { type: Array, default: () => [] },
+  openThreadId: { type: Number, default: null }, // the thread holding a reply — expanded and opened on arrival
 });
 defineEmits(["changed"]);
 
@@ -50,6 +52,9 @@ const extraNext = ref(null);
 const allThreads = computed(() => [...props.threads, ...extra.value]);
 const hasMore = computed(() => (extraNext.value === null ? props.next : extraNext.value));
 const pendingCount = computed(() => allThreads.value.filter((thread) => props.pendingThreads.has(thread.id)).length);
+
+// The list arrives after this component is created — a reply thread expands the section whenever it shows up.
+watch(() => props.openThreadId, (id) => id && (open.value = true), { immediate: true });
 
 async function loadMore() {
   loading.value = true;

@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount } from "@vue/test-utils";
+import { createPinia, setActivePinia } from "pinia";
+import { useLeadsReviewStore } from "@/stores/leadsReview";
 
 const route = vi.hoisted(() => ({ name: "LeadsInbox" }));
 vi.mock("vue-router", () => ({ useRoute: () => route }));
@@ -15,7 +17,10 @@ const mountLayout = () => mount(Layout, { global: { stubs: { Inbox: { template: 
 const enable = (...keys) => keys.forEach((key) => modules.add(key));
 
 describe("Leads layout", () => {
-  beforeEach(() => modules.clear());
+  beforeEach(() => {
+    setActivePinia(createPinia());
+    modules.clear();
+  });
 
   it("on the inbox route renders only the inbox column", () => {
     enable("leads", "communicator", "notifications");
@@ -24,6 +29,15 @@ describe("Leads layout", () => {
     expect(wrapper.find('[data-testid="inbox"]').exists()).toBe(true);
     expect(wrapper.find('[data-testid="detail"]').exists()).toBe(false);
     expect(wrapper.classes()).not.toContain("leads--detail");
+  });
+
+  // FIX-17 item 8: nothing to pick, no "Pick a draft to review" — the empty state of the Inbox says it once.
+  it("the desktop placeholder appears only while drafts wait", () => {
+    enable("leads", "communicator");
+    route.name = "LeadsInbox";
+    expect(mountLayout().find(".leads__placeholder").exists()).toBe(false);
+    useLeadsReviewStore().setCount(2);
+    expect(mountLayout().find(".leads__placeholder").exists()).toBe(true);
   });
 
   it("leads + communicator: a draft or thread open renders both columns and marks the detail state", () => {

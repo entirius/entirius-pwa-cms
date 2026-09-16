@@ -35,6 +35,9 @@
           </router-link>
           <span v-else class="review__company">{{ companyName }}</span>
           <span class="review__to">{{ $t("leads.review.to") }}: {{ message.thread?.recipient_email }}</span>
+          <span v-if="queueTotal" class="review__position" data-testid="review-position">
+            {{ $t("leads.review.queue_position", { index: queueIndex, count: queueTotal }) }}
+          </span>
         </header>
 
         <IntelCard v-if="munin.isModuleEnabled('siteintel')" :context="message.render_context" />
@@ -70,6 +73,15 @@
       @skip-company="skipCompany"
     />
     <RewriteModal v-if="rewriteOpen" @submit="rewrite" @close="rewriteOpen = false" />
+    <ConfirmSheet
+      v-if="discarding"
+      :title="$t('leads.review.discard_title')"
+      :message="$t('leads.review.discard_confirm')"
+      :confirm-label="$t('leads.review.discard_yes')"
+      :cancel-label="$t('leads.review.discard_keep')"
+      @confirm="settleDiscard(true)"
+      @cancel="settleDiscard(false)"
+    />
   </div>
 </template>
 
@@ -86,12 +98,13 @@ import { useNotifyStore } from "@/stores/notify";
 import { useSwipe } from "@/composables/useSwipe";
 import { companyIdFromSubjectRef } from "@/utils/subjectRef";
 import { formatTime } from "@/utils/leadsTime";
+import ConfirmSheet from "./ConfirmSheet.vue";
 import IntelCard from "./IntelCard.vue";
 import ReviewActions from "./ReviewActions.vue";
 import RewriteModal from "./RewriteModal.vue";
 import ToolboxBanner from "./ToolboxBanner.vue";
 
-const SCHEDULED_MS = 2000;
+const SCHEDULED_MS = 4000;
 
 const route = useRoute();
 const router = useRouter();
@@ -107,7 +120,11 @@ const rewriteOpen = ref(false);
 const scheduledLabel = ref("");
 const failedVersion = ref(null);
 const draft = ref({ subject: "", body_text: "" });
+const queueIndex = ref(0);
+const queueTotal = ref(0);
+const discarding = ref(false);
 let nextTimer = null;
+let settle = null;
 
 const { offset, handlers } = useSwipe({ onRight: accept, onLeft: skip });
 
@@ -120,8 +137,21 @@ const unsaved = computed(
   () => editing.value && (draft.value.subject !== message.value?.subject || draft.value.body_text !== message.value?.body_text)
 );
 
-// Leaving Edit (Cancel, Inbox, another draft) with unsaved changes asks first.
-const confirmDiscard = () => !unsaved.value || window.confirm(t("leads.review.discard_confirm"));
+// Leaving Edit (Cancel, Inbox, another draft) with unsaved changes asks first — in the app sheet, not the browser's.
+function confirmDiscard() {
+  if (!unsaved.value) return Promise.resolve(true);
+  discarding.value = true;
+  return new Promise((resolve) => {
+    settle = resolve;
+  });
+}
+
+function settleDiscard(discard) {
+  discarding.value = false;
+  settle?.(discard);
+  settle = null;
+}
+
 onBeforeRouteLeave(confirmDiscard);
 onBeforeRouteUpdate(confirmDiscard);
 
@@ -129,9 +159,25 @@ async function load() {
   loading.value = true;
   try {
     message.value = await api.GET_ReviewMessage(route.params.id);
-    if (!message.value) await goNext();
+    if (!message.value) {
+      notify.spawnNotification({ msg: t("leads.review.already_handled"), type: "warning" });
+      return await goNext();
+    }
+    await loadQueuePosition();
   } finally {
     loading.value = false;
+  }
+}
+
+// "Draft 2 of 3": after a send the next draft is visibly another one, not the same screen again.
+async function loadQueuePosition() {
+  try {
+    const { data } = await api.GET_ReviewList({ status: "review_required", page_size: 100 });
+    const ids = (data.results || []).map((item) => item.id);
+    queueTotal.value = ids.length;
+    queueIndex.value = ids.indexOf(message.value.id) + 1;
+  } catch {
+    queueTotal.value = 0;
   }
 }
 
@@ -221,8 +267,8 @@ function startEdit() {
   editing.value = true;
 }
 
-function cancelEdit() {
-  if (confirmDiscard()) editing.value = false;
+async function cancelEdit() {
+  if (await confirmDiscard()) editing.value = false;
 }
 
 function saveEdit() {
@@ -306,7 +352,8 @@ onBeforeUnmount(() => clearTimeout(nextTimer));
   color: var(--c-basic-800);
   overflow-wrap: anywhere;
 }
-.review__to {
+.review__to,
+.review__position {
   color: var(--c-basic-600);
   overflow-wrap: anywhere;
 }
@@ -323,8 +370,8 @@ onBeforeUnmount(() => clearTimeout(nextTimer));
 }
 .review__hint {
   margin: 0;
-  font-size: var(--fs-100);
-  color: var(--c-basic-500);
+  font-size: var(--fs-200);
+  color: var(--c-basic-600);
 }
 .review__label {
   display: flex;

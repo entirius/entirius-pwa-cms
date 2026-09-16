@@ -6,21 +6,25 @@
         <div class="stage" :data-stage="element.key" data-testid="stage-row">
           <FontAwesomeIcon icon="grip-vertical" class="stage__handle" />
           <input v-model="element.label" class="ld-input" :aria-label="$t('leads.stages.label')" @change="rename(element)" />
-          <span class="ld-badge">{{ element.key }} · {{ element.kind }}</span>
-          <button class="ld-btn" :disabled="index === 0" :aria-label="$t('leads.stages.up')" @click="shift(index, -1)">
-            <FontAwesomeIcon icon="arrow-up" />
-          </button>
-          <button
-            class="ld-btn"
-            :disabled="index === stages.length - 1"
-            :aria-label="$t('leads.stages.down')"
-            @click="shift(index, 1)"
-          >
-            <FontAwesomeIcon icon="arrow-down" />
-          </button>
-          <button class="ld-btn ld-btn--danger" data-testid="stage-delete" @click="remove(element)">
-            <FontAwesomeIcon icon="trash" /> {{ $t("leads.stages.delete") }}
-          </button>
+          <span class="ld-badge stage__key" :title="element.key">
+            {{ element.key }} · {{ stageKindLabel(element.kind) }}
+          </span>
+          <div class="stage__controls">
+            <button class="ld-btn" :disabled="index === 0" :aria-label="$t('leads.stages.up')" @click="shift(index, -1)">
+              <FontAwesomeIcon icon="arrow-up" />
+            </button>
+            <button
+              class="ld-btn"
+              :disabled="index === stages.length - 1"
+              :aria-label="$t('leads.stages.down')"
+              @click="shift(index, 1)"
+            >
+              <FontAwesomeIcon icon="arrow-down" />
+            </button>
+            <button class="ld-btn ld-btn--danger" data-testid="stage-delete" @click="confirming = element">
+              <FontAwesomeIcon icon="trash" /> {{ $t("leads.stages.delete") }}
+            </button>
+          </div>
           <p v-if="errors[element.id]" class="ld-error" data-testid="stage-error">{{ errors[element.id] }}</p>
         </div>
       </template>
@@ -31,6 +35,15 @@
       <button class="ld-btn ld-btn--primary" type="submit">{{ $t("leads.stages.add") }}</button>
     </form>
     <p v-if="errors.add" class="ld-error">{{ errors.add }}</p>
+    <ConfirmSheet
+      v-if="confirming"
+      :title="$t('leads.stages.delete_title')"
+      :message="$t('leads.stages.delete_confirm', { label: confirming.label })"
+      :confirm-label="$t('leads.stages.delete')"
+      :cancel-label="$t('leads.review.cancel')"
+      @confirm="remove(confirming)"
+      @cancel="confirming = null"
+    />
   </div>
 </template>
 
@@ -41,6 +54,8 @@ import { t } from "@/i18n";
 import { DELETE_Stage, GET_Stages, PATCH_Stage, POST_Stage } from "@/api/leads/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { useNotifyStore } from "@/stores/notify";
+import { stageKindLabel } from "@/utils/leadsLabels";
+import ConfirmSheet from "./ConfirmSheet.vue";
 
 // Stages admin: order by drag or up/down (PATCH `order` per moved stage), rename inline, delete with the 409 inline (L-18).
 const ORDER_STEP = 10;
@@ -48,6 +63,7 @@ const notify = useNotifyStore();
 const stages = ref([]);
 const errors = reactive({});
 const draft = reactive({ key: "", label: "" });
+const confirming = ref(null);
 
 async function load() {
   stages.value = (await GET_Stages()).data.results;
@@ -86,6 +102,7 @@ function shift(index, delta) {
 const rename = (stage) => attempt(stage.id, () => PATCH_Stage(stage.id, { label: stage.label }));
 
 async function remove(stage) {
+  confirming.value = null;
   if (await attempt(stage.id, () => DELETE_Stage(stage.id))) await load();
 }
 
@@ -101,13 +118,26 @@ onMounted(load);
 </script>
 
 <style scoped>
+/* A grid, not a flex row: the controls line up down the list whatever the key tag is long. */
 .stage {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: auto minmax(8rem, 1fr) minmax(0, 16rem) auto;
   align-items: center;
   gap: var(--space-200);
 }
 .stage__handle {
   cursor: grab;
+}
+.stage__key {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.stage__controls {
+  display: flex;
+  gap: var(--space-200);
+}
+.stage .ld-error {
+  grid-column: 1 / -1;
 }
 </style>

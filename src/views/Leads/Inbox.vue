@@ -1,6 +1,6 @@
 <template>
   <div class="inbox" data-testid="leads-inbox">
-    <p class="inbox__summary" data-testid="inbox-summary">
+    <p v-if="drafts.length" class="inbox__summary" data-testid="inbox-summary">
       <strong>{{ $t("leads.inbox.to_review", { count: drafts.length }) }}</strong>
       <span v-if="held" data-testid="inbox-held"> · {{ $t("leads.inbox.held") }}</span>
       <span v-else-if="nextAt"> · {{ $t("leads.inbox.next_at", { time: nextAt }) }}</span>
@@ -21,7 +21,7 @@
     </EmptyState>
 
     <router-link
-      v-for="draft in drafts"
+      v-for="(draft, index) in drafts"
       :key="draft.id"
       :to="{ name: 'LeadsReview', params: { id: draft.id } }"
       class="inbox-card"
@@ -29,8 +29,14 @@
       data-testid="inbox-item"
     >
       <span class="inbox-card__company">{{ companyName(draft) }}</span>
-      <span class="inbox-card__subject">{{ draft.subject || $t("leads.inbox.untitled") }}</span>
       <span class="inbox-card__age">{{ formatTime(draft.created_at) }}</span>
+      <span class="inbox-card__to" data-testid="inbox-item-to">
+        {{ $t("leads.review.to") }}: {{ recipient(draft) }}
+      </span>
+      <span class="inbox-card__subject">{{ draft.subject || $t("leads.inbox.untitled") }}</span>
+      <span class="inbox-card__position" data-testid="inbox-item-position">
+        {{ $t("leads.inbox.position", { index: index + 1, count: drafts.length }) }}
+      </span>
     </router-link>
   </div>
 </template>
@@ -63,6 +69,11 @@ function companyName(draft) {
   return draft.render_context?.company_name || draft.thread?.recipient_name || draft.thread?.recipient_email;
 }
 
+// Two drafts to the same company differ by their recipient — the row says who gets this one.
+function recipient(draft) {
+  return draft.thread?.recipient_email || draft.thread?.recipient_name || "";
+}
+
 async function listStatus(status) {
   const { data } = await GET_ReviewList({ status, page_size: 100 });
   return data.results || [];
@@ -76,6 +87,7 @@ async function load() {
     );
     drafts.value = review;
     waiting.value = [...approved, ...scheduled];
+    reviewQueue.setCount(review.length);
   } finally {
     loading.value = false;
   }
@@ -127,10 +139,16 @@ defineExpose({ load });
   font-weight: 600;
   overflow-wrap: anywhere;
 }
+.inbox-card__to,
 .inbox-card__subject {
   grid-column: 1 / -1;
   color: var(--c-basic-600);
   overflow-wrap: anywhere;
+}
+.inbox-card__position {
+  grid-column: 1 / -1;
+  font-size: var(--fs-100);
+  color: var(--c-basic-500);
 }
 .inbox-card__age {
   grid-row: 1;

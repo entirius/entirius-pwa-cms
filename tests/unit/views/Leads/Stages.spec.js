@@ -17,13 +17,38 @@ describe("Leads Stages", () => {
     api.GET_Stages.mockImplementation(() => Promise.resolve({ data: { results: stages() } }));
   });
 
+  async function deleteFirstStage(wrapper) {
+    await wrapper.findAll('[data-testid="stage-delete"]')[0].trigger("click");
+    await wrapper.get('[data-testid="confirm-ok"]').trigger("click");
+    await flushPromises();
+  }
+
   it("shows a 409 on delete inline, not as a toast (L-18)", async () => {
     api.DELETE_Stage.mockRejectedValue({ response: { status: 409, data: { detail: "move 3 companies first" } } });
     const wrapper = mount(Stages, { global: { stubs } });
     await flushPromises();
-    await wrapper.findAll('[data-testid="stage-delete"]')[0].trigger("click");
-    await flushPromises();
+    await deleteFirstStage(wrapper);
     expect(wrapper.find('[data-testid="stage-error"]').text()).toBe("move 3 companies first");
+  });
+
+  // FIX-17 item 16: Delete asks first and says what happens to the companies of the stage.
+  it("delete asks in a sheet naming the stage and its companies", async () => {
+    const wrapper = mount(Stages, { global: { stubs } });
+    await flushPromises();
+    await wrapper.findAll('[data-testid="stage-delete"]')[0].trigger("click");
+    const sheet = wrapper.get('[data-testid="confirm-sheet"]');
+    expect(sheet.text()).toContain('leads.stages.delete_confirm::{"label":"New"}');
+    expect(api.DELETE_Stage).not.toHaveBeenCalled();
+    await sheet.get('[data-testid="confirm-cancel"]').trigger("click");
+    expect(wrapper.find('[data-testid="confirm-sheet"]').exists()).toBe(false);
+    expect(api.DELETE_Stage).not.toHaveBeenCalled();
+  });
+
+  // FIX-17 item 16: the stage kind is a word, never the raw enum value.
+  it("the key tag reads the stage kind as a label", async () => {
+    const wrapper = mount(Stages, { global: { stubs } });
+    await flushPromises();
+    expect(wrapper.findAll('[data-testid="stage-row"]')[1].text()).toContain("won · won");
   });
 
   async function moveFirstDown() {

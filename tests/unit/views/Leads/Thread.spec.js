@@ -3,9 +3,9 @@ import { mount, flushPromises } from "@vue/test-utils";
 
 // Three threads of the company, newest first (the list order of the API).
 const summaries = [
-  { id: 9, status: "open", recipient_email: "anna@shop.test", last_message_at: "2026-09-23T08:00:00Z" },
-  { id: 8, status: "replied", recipient_email: "jan@shop.test", last_message_at: "2026-09-22T08:00:00Z" },
-  { id: 7, status: "closed", recipient_email: "jan@shop.test", last_message_at: "2026-09-21T08:00:00Z" },
+  { id: 9, status: "open", recipient_name: "Anna", recipient_email: "anna@shop.test", last_message_at: "2026-09-23T08:00:00Z" },
+  { id: 8, status: "closed", recipient_name: "Anna", recipient_email: "jan@shop.test", last_message_at: "2026-09-22T08:00:00Z" },
+  { id: 7, status: "closed", recipient_name: "Anna", recipient_email: "jan@shop.test", last_message_at: "2026-09-21T08:00:00Z" },
 ];
 const detail = (id) => ({
   id,
@@ -62,21 +62,54 @@ describe("Leads Thread", () => {
     expect(wrapper.find('[data-testid="earlier-thread"]').exists()).toBe(false);
   });
 
-  it("the expander lists older threads grouped; opening one loads exactly its conversation", async () => {
+  // FIX-17 item 2: a collapsed row is told apart by its subject and recipient, without opening it.
+  it("the expander lists older threads by subject and recipient; opening one shows its conversation", async () => {
     const wrapper = mountThread();
     await flushPromises();
     await wrapper.get('[data-testid="earlier-toggle"]').trigger("click");
+    await flushPromises();
     const groups = wrapper.findAll('[data-testid="earlier-thread"]');
     expect(groups).toHaveLength(2);
-    expect(api.GET_ThreadWithOptouts).toHaveBeenCalledTimes(1);
+    expect(api.GET_ThreadWithOptouts.mock.calls.map(([id]) => id)).toEqual([9, 8, 7]);
+    expect(groups[1].get('[data-testid="earlier-thread-subject"]').text()).toBe("Subject 7");
+    expect(groups[1].get('[data-testid="earlier-thread-to"]').text()).toContain("jan@shop.test");
+    expect(groups[1].find('[data-testid="thread-timeline"]').exists()).toBe(false);
 
     await groups[1].get('[data-testid="earlier-thread-toggle"]').trigger("click");
-    await flushPromises();
-    expect(api.GET_ThreadWithOptouts).toHaveBeenCalledTimes(2);
-    expect(api.GET_ThreadWithOptouts).toHaveBeenLastCalledWith(7);
-    expect(groups[1].get('[data-testid="earlier-thread-subject"]').text()).toBe("Subject 7");
     expect(groups[1].findAll('[data-testid="timeline-out"]')).toHaveLength(1);
     expect(groups[0].find('[data-testid="thread-timeline"]').exists()).toBe(false);
+  });
+
+  // FIX-17 item 1: the reply is in an older thread — the card opens that thread, the bell never lands on our own mail.
+  it("a reply in an older thread expands the section and opens that thread", async () => {
+    const replied = summaries.map((thread) => (thread.id === 8 ? { ...thread, status: "replied" } : thread));
+    api.GET_Threads.mockResolvedValue({ data: { count: 3, next: null, results: replied } });
+    const wrapper = mountThread();
+    await flushPromises();
+    const groups = wrapper.findAll('[data-testid="earlier-thread"]');
+    expect(groups).toHaveLength(2);
+    expect(groups[0].find('[data-testid="thread-timeline"]').exists()).toBe(true);
+    expect(groups[1].find('[data-testid="thread-timeline"]').exists()).toBe(false);
+  });
+
+  it("the older threads stay collapsed when the newest one holds the reply itself", async () => {
+    const replied = summaries.map((thread) => (thread.id === 8 ? { ...thread, status: "replied" } : thread));
+    api.GET_Threads.mockResolvedValue({ data: { count: 3, next: null, results: replied } });
+    api.GET_ThreadWithOptouts.mockImplementation((id) =>
+      Promise.resolve({ ...detail(id), timeline: [{ at: "2026-09-23T08:00:00Z", direction: "in", body_text: "yes" }] })
+    );
+    const wrapper = mountThread();
+    await flushPromises();
+    expect(wrapper.findAll('[data-testid="earlier-thread"]')).toHaveLength(0);
+  });
+
+  // FIX-17 item 6: no "No messages with this company yet" before the first response.
+  it("shows no empty state while the thread loads", async () => {
+    const wrapper = mountThread();
+    expect(wrapper.find('[data-testid="thread-timeline"]').exists()).toBe(false);
+    expect(wrapper.text()).not.toContain("leads.thread.empty");
+    await flushPromises();
+    expect(wrapper.find('[data-testid="thread-timeline"]').exists()).toBe(true);
   });
 
   it("further older threads load with one request for the next list page", async () => {
@@ -125,7 +158,7 @@ describe("Leads Thread", () => {
 
   it("a communicator 404 does not hide the company", async () => {
     api.GET_Threads.mockRejectedValue({ error: "NOT_FOUND" });
-    const wrapper = mountThread();
+    const wrapper = mountThread({ desktopHint: true });
     await flushPromises();
     expect(wrapper.get('[data-testid="thread-company"]').text()).toBe("Example Shop 5");
     expect(wrapper.find('[data-testid="thread-mail-missing"]').exists()).toBe(true);

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
 
-const company = () => ({ id: 1, domain: "a.test", company_type: "RETAILER", do_not_contact: false, stage: { key: "new" } });
+const company = () => ({ id: 1, name: "Example Shop 1", domain: "a.test", company_type: "RETAILER", do_not_contact: false, stage: { key: "new" } });
 const api = vi.hoisted(() => ({
   GET_Stages: vi.fn(),
   GET_Rules: vi.fn(),
@@ -15,7 +15,10 @@ vi.mock("@/stores/notify", () => ({ useNotifyStore: () => notify }));
 import Board from "@/views/Leads/Board.vue";
 import BoardColumn from "@/views/Leads/BoardColumn.vue";
 
-const stubs = { draggable: { props: ["list"], template: "<div><slot v-for='el in list' name='item' :element='el' /></div>" }, RouterLink: true };
+const stubs = {
+  draggable: { props: ["list"], template: "<div><slot v-for='el in list' name='item' :element='el' /></div>" },
+  RouterLink: { template: "<a><slot /></a>" },
+};
 
 async function mountBoard() {
   const wrapper = mount(Board, { global: { stubs } });
@@ -103,5 +106,16 @@ describe("Leads Board", () => {
     await chip.trigger("click");
     await flushPromises();
     expect(api.GET_Companies).toHaveBeenLastCalledWith({ stage: "contacted", search: "", sort: "-last_activity_at", page: 1 });
+  });
+
+  // FIX-17 item 15: a card is read by its company name; the domain sits below it, dates and counts read as words.
+  it("a card names the company, keeps the domain below it and counts rules in grammar", async () => {
+    const wrapper = await mountBoard();
+    const card = wrapper.get('[data-testid="board-card"]');
+    expect(card.get('[data-testid="board-card-name"]').text()).toBe("Example Shop 1");
+    expect(card.text()).toContain("a.test");
+    expect(card.text()).toContain("Retailer");
+    expect(card.text()).not.toContain("RETAILER");
+    expect(wrapper.get('[data-testid="board-column-rules"]').text()).toBe("leads.board.rules_one::{\"count\":1}");
   });
 });

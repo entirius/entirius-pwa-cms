@@ -9,7 +9,7 @@
     <section v-if="hasDetail" class="leads__detail">
       <router-view />
     </section>
-    <section v-else class="leads__placeholder">
+    <section v-else-if="reviewQueue.count" class="leads__placeholder">
       <p>{{ $t("leads.inbox.pick") }}</p>
     </section>
   </div>
@@ -19,6 +19,7 @@
 import { computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { GET_Policy } from "@/api/communicator/api";
+import { useLeadsReviewStore } from "@/stores/leadsReview";
 import { useMuninStore } from "@/stores/munin";
 import { channelTimeZone } from "@/utils/leadsTime";
 import DesktopOnly from "./DesktopOnly.vue";
@@ -29,6 +30,7 @@ import Inbox from "./Inbox.vue";
 // The Inbox is communicator data — without that module the detail takes the whole width.
 const route = useRoute();
 const munin = useMuninStore();
+const reviewQueue = useLeadsReviewStore();
 const hasDetail = computed(() => route.name !== "LeadsInbox");
 const hasInbox = computed(() => munin.isModuleEnabled("communicator"));
 

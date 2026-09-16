@@ -7,7 +7,7 @@
     </label>
     <p v-if="mode === 'live'" class="ld-muted" data-testid="channel-live-gate">{{ $t("communicator.channel.live_gate") }}</p>
     <p class="ld-muted" data-testid="channel-live-enabled">
-      live_enabled: {{ liveEnabled ? "✓" : "✗" }} — {{ $t("communicator.template.grappelli") }}
+      {{ liveEnabled ? $t("communicator.channel.live_enabled_on") : $t("communicator.channel.live_enabled_off") }}
     </p>
     <p v-if="error" class="ld-error" data-testid="channel-error">{{ error }}</p>
     <button class="ld-btn ld-btn--primary" type="submit" data-testid="channel-save">{{ $t("communicator.template.save") }}</button>
@@ -24,7 +24,11 @@ import { useNotifyStore } from "@/stores/notify";
 // C-30: sandbox needs a mailbox — refused here first, and the API's 409 is shown verbatim. live_enabled is never written.
 const MODES = ["dry_run", "sandbox", "live"];
 const notify = useNotifyStore();
-const modeOptions = MODES.map((value) => ({ value, label: value, testid: `channel-mode-${value}` }));
+const modeOptions = MODES.map((value) => ({
+  value,
+  label: t(`communicator.channel.mode.${value}`),
+  testid: `channel-mode-${value}`,
+}));
 const mode = ref("dry_run");
 const mailbox = ref("");
 const liveEnabled = ref(false);

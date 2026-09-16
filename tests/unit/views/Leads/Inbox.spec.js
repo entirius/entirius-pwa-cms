@@ -44,6 +44,7 @@ describe("Leads Inbox", () => {
 
   it("a mail waiting for its window on another day says scheduled for <day> <HH:MM>", async () => {
     channelTimeZone.value = "UTC";
+    lists.review_required = [draft];
     lists.approved = [{ id: 1, scheduled_at: "2099-01-02T08:00:00Z" }];
     const wrapper = mountInbox();
     await flushPromises();
@@ -53,11 +54,43 @@ describe("Leads Inbox", () => {
   });
 
   it("a slot past the send beat says the send window or the daily cap holds it", async () => {
+    lists.review_required = [draft];
     lists.scheduled = [{ id: 1, scheduled_at: inMinutes(-7) }];
     const wrapper = mountInbox();
     await flushPromises();
-    expect(wrapper.get('[data-testid="inbox-empty"]').text()).toContain("1 scheduled, waiting for the send window or the daily cap");
     expect(wrapper.find('[data-testid="inbox-held"]').exists()).toBe(true);
+    lists.review_required = [];
+    useLeadsReviewStore().queueChanged();
+    await flushPromises();
+    expect(wrapper.get('[data-testid="inbox-empty"]').text()).toContain("1 scheduled, waiting for the send window or the daily cap");
+  });
+
+  // FIX-17 item 4: two drafts to the same company differ by recipient and by where they sit in the queue.
+  it("a row names the recipient and its place in the queue", async () => {
+    lists.review_required = [
+      { ...draft, id: 5, thread: { recipient_email: "anna@example-shop-5.test" } },
+      { ...draft, id: 6, thread: { recipient_email: "jan@example-shop-5.test" } },
+    ];
+    const wrapper = mountInbox();
+    await flushPromises();
+    const rows = wrapper.findAll('[data-testid="inbox-item"]');
+    expect(rows[0].get('[data-testid="inbox-item-to"]').text()).toContain("anna@example-shop-5.test");
+    expect(rows[1].get('[data-testid="inbox-item-to"]').text()).toContain("jan@example-shop-5.test");
+    expect(rows[1].get('[data-testid="inbox-item-position"]').text()).toContain('{"index":2,"count":2}');
+  });
+
+  // FIX-17 item 8: the empty Inbox says it once — the summary line is not repeated above the empty state.
+  it("an empty queue drops the summary line and publishes the count", async () => {
+    lists.approved = [{ id: 1, scheduled_at: inMinutes(60) }];
+    const wrapper = mountInbox();
+    await flushPromises();
+    expect(wrapper.find('[data-testid="inbox-summary"]').exists()).toBe(false);
+    expect(useLeadsReviewStore().count).toBe(0);
+    lists.review_required = [draft];
+    useLeadsReviewStore().queueChanged();
+    await flushPromises();
+    expect(wrapper.find('[data-testid="inbox-summary"]').exists()).toBe(true);
+    expect(useLeadsReviewStore().count).toBe(1);
   });
 
   it("empty queue with nothing scheduled still offers an action", async () => {

@@ -1,8 +1,8 @@
 <template>
   <div class="thread" data-testid="leads-thread">
-    <BackBar class="thread__back" :label="$t('leads.thread.back')" @back="goBack" />
+    <BackBar v-if="desktopHint" class="thread__back" :label="$t('leads.thread.back')" @back="goBack" />
     <Loader v-show="loading" />
-    <h3 v-if="company" class="thread__company" data-testid="thread-company">{{ company.name }}</h3>
+    <h3 v-if="company && desktopHint" class="thread__company" data-testid="thread-company">{{ company.name }}</h3>
     <p v-if="companyMissing" class="thread__none" role="status" data-testid="thread-company-missing">
       {{ $t("leads.thread.company_unavailable") }}
     </p>
@@ -18,7 +18,7 @@
       <span class="thread__state"> · {{ $t(`leads.thread.state.${newest.status}`) }}</span>
     </p>
     <ThreadTimeline
-      v-if="!mailMissing"
+      v-if="!mailMissing && !loading"
       :busy="optoutBusy"
       :messages="newest?.timeline || []"
       :optouts="newest?.optouts || []"
@@ -35,12 +35,15 @@
       :page-size="PAGE_SIZE"
       :pending-threads="pendingThreads"
       :waiting="waiting"
+      :open-thread-id="replyThreadId"
       @changed="loadPendingOptouts"
     />
     <details v-if="desktopHint && activities.length" class="thread__activity" data-testid="thread-activity">
       <summary>{{ $t("leads.thread.activity", { count: activities.length }) }}</summary>
       <ul>
-        <li v-for="activity in activities" :key="activity.id">{{ formatTime(activity.created_at) }} · {{ activity.message }}</li>
+        <li v-for="activity in activities" :key="activity.id">
+        {{ formatTime(activity.created_at) }} · {{ activityText(activity.message) }}
+      </li>
       </ul>
     </details>
   </div>
@@ -60,6 +63,7 @@ import {
 } from "@/api/communicator/api";
 import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
+import { activityText } from "@/utils/leadsLabels";
 import { threadSubject, waitingOf } from "@/utils/leadsThread";
 import { formatTime } from "@/utils/leadsTime";
 import EarlierThreads from "./EarlierThreads.vue";
@@ -83,7 +87,7 @@ const older = ref({ threads: [], count: 0, next: false });
 const pendingOptouts = ref([]);
 const waiting = ref([]);
 const activities = ref([]);
-const loading = ref(false);
+const loading = ref(true);
 const companyMissing = ref(false);
 const mailMissing = ref(false);
 const optoutBusy = ref(false);
@@ -92,6 +96,13 @@ const subjectRef = computed(() => `leads.Company:${route.params.id}`);
 const pendingThreads = computed(
   () => new Set(pendingOptouts.value.filter((reply) => !reply.optout_confirmed_at).map((reply) => reply.thread_id))
 );
+
+// A reply that landed before our newest mail sits in an older thread (plan 13 decision c keeps the structure).
+// The card opens that thread itself, so the bell never lands on a screen holding only our own mail.
+const replyThreadId = computed(() => {
+  if (!newest.value || newest.value.timeline?.some((entry) => entry.direction === "in")) return null;
+  return older.value.threads.find((thread) => thread.status === "replied")?.id || null;
+});
 
 async function loadThreads() {
   const { data } = await GET_Threads({ subject_ref: subjectRef.value, page_size: PAGE_SIZE });

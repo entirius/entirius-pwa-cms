@@ -3,8 +3,8 @@
     <h2 class="ld-title">{{ $t("communicator.settings.title") }}</h2>
     <SettingsPolicy />
     <SettingsChannel />
-    <SettingsSuppressions />
     <SettingsScheduled />
+    <SettingsSuppressions />
   </div>
 </template>
 

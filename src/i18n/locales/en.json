@@ -2996,7 +2996,8 @@
       "empty_message_none": "Nothing scheduled — new drafts appear when a company reaches an outreach stage",
       "refresh": "Refresh",
       "untitled": "(no subject)",
-      "pick": "Pick a draft to review"
+      "pick": "Pick a draft to review",
+      "position": "{index} of {count}"
     },
     "review": {
       "title": "Review",
@@ -3022,7 +3023,12 @@
       "rewrite_failed": "Rewrite failed: {reason}",
       "discard_confirm": "Discard your unsaved changes to this draft?",
       "retry": "Retry",
-      "not_found": "Draft not found"
+      "not_found": "Draft not found",
+      "queue_position": "Draft {index} of {count}",
+      "already_handled": "That draft is already scheduled or sent — showing the next one",
+      "discard_title": "Discard unsaved changes?",
+      "discard_keep": "Keep editing",
+      "discard_yes": "Discard"
     },
     "rewrite": {
       "title": "Rewrite with a note",
@@ -3055,7 +3061,7 @@
       "no_thread": "No conversation yet",
       "company_unavailable": "Company details are unavailable right now",
       "mail_unavailable": "Mail history is unavailable — the conversation cannot be shown",
-      "desktop_hint": "Stage, Communicate and do-not-contact are available on desktop",
+      "desktop_hint": "Stage, Communicate, Re-audit and do-not-contact are available on desktop",
       "earlier": "Earlier threads ({count})",
       "earlier_optout": "possible opt-out: {count}",
       "earlier_more": "Show more threads",
@@ -3064,7 +3070,8 @@
         "open": "open",
         "replied": "replied",
         "closed": "closed"
-      }
+      },
+      "earlier_reply": "has a reply"
     },
     "status": {
       "held": "waiting for the send window or daily cap",
@@ -3093,11 +3100,13 @@
     "board": {
       "title": "Stage board",
       "search": "Search name or domain",
-      "rules": "{count} rules",
       "more": "Load more",
       "has_reply": "Has reply",
       "move_to": "Move to stage",
-      "move_failed": "The company could not be moved"
+      "move_failed": "The company could not be moved",
+      "rules_one": "1 rule",
+      "rules_few": "{count} rules",
+      "rules_many": "{count} rules"
     },
     "company": {
       "do_not_contact": "Do not contact",
@@ -3121,7 +3130,8 @@
       "type": "Lead type",
       "last_activity": "Last activity",
       "customer": "Customer",
-      "activities": "Recent activity"
+      "activities": "Recent activity",
+      "title": "Company"
     },
     "communicate": {
       "template": "Template",
@@ -3140,13 +3150,23 @@
     },
     "import": {
       "title": "Import companies",
-      "hint": "CSV with company_name, domain, contact and legal_basis columns. Existing domains are matched, not duplicated.",
+      "hint": "One row per company, a header row naming the columns. Existing domains are matched, not duplicated; unknown columns are ignored.",
       "upload": "Upload",
       "status": "Status",
       "counts": "{created} created, {matched} matched, {skipped} skipped",
       "row": "Row {row}",
       "to_board": "Open the stage board",
-      "failed": "Upload failed"
+      "failed": "Upload failed",
+      "columns_title": "Columns",
+      "column_company": "company_name — the company name",
+      "column_domain": "domain — the shop domain (or website, or the contact's email host)",
+      "column_contact": "first_name, last_name, email — the contact",
+      "column_legal_basis": "legal_basis — one of: consent, legitimate_interest, contract",
+      "after_title": "After the upload",
+      "after": "Every company lands in the first stage of the board. Stage rules take it from there — a site audit, or a draft that waits for you in the Inbox. Nothing is sent without your review.",
+      "sample": "Download a sample CSV",
+      "choose": "Choose a CSV file",
+      "no_file": "No file chosen yet"
     },
     "stages": {
       "title": "Stages",
@@ -3156,7 +3176,29 @@
       "delete": "Delete",
       "key": "Key",
       "add": "Add stage",
-      "order_failed": "The stage order could not be saved — reloaded the current order"
+      "order_failed": "The stage order could not be saved — reloaded the current order",
+      "delete_title": "Delete stage",
+      "delete_confirm": "Delete the stage “{label}”? Move its companies to another stage first — a stage that still holds companies cannot be deleted."
+    },
+    "company_type": {
+      "MANUFACTURER": "Manufacturer",
+      "WHOLESALE": "Wholesale",
+      "RETAILER": "Retailer",
+      "UNKNOWN": "Lead type unknown"
+    },
+    "legal_basis": {
+      "consent": "Consent",
+      "legitimate_interest": "Legitimate interest",
+      "contract": "Contract"
+    },
+    "stage_kind": {
+      "open": "in progress",
+      "won": "won",
+      "lost": "lost",
+      "unresponsive": "unresponsive"
+    },
+    "activity": {
+      "draft": "Draft — {status}"
     }
   },
   "notification_bar": {
@@ -3220,13 +3262,22 @@
       "spread": "Spread the daily cap over the windows",
       "daily_cap": "Daily cap",
       "remove_window": "Remove",
-      "add_window": "Add window"
+      "add_window": "Add window",
+      "window_start": "From",
+      "window_end": "To"
     },
     "channel": {
       "title": "Channel mode",
       "sandbox_mailbox": "Sandbox mailbox",
       "live_gate": "Live sends only when ENVIRONMENT=production and live_enabled is set on the channel.",
-      "mailbox_required": "Sandbox mode needs a sandbox mailbox"
+      "mailbox_required": "Sandbox mode needs a sandbox mailbox",
+      "mode": {
+        "dry_run": "Test only",
+        "sandbox": "Sandbox",
+        "live": "Live"
+      },
+      "live_enabled_on": "Live sending is unlocked for this channel.",
+      "live_enabled_off": "Live sending is not unlocked for this channel — an administrator unlocks it in the admin panel."
     },
     "suppressions": {
       "title": "Suppressions",
@@ -3236,13 +3287,16 @@
     },
     "scheduled": {
       "title": "Waiting to be sent",
-      "note": "Send now only moves the send time to now — the next beat sends it, and the channel mode and daily cap still apply.",
+      "note": "Send now only moves the send time to now — the next send run takes it, and the channel mode, the send window and the daily cap still apply.",
       "empty": "Nothing is waiting to be sent",
       "status": "Status",
       "at": "Scheduled at",
       "next_slot": "Next slot",
-      "next_beat": "next beat",
-      "send_now": "Send now"
+      "send_now": "Send now",
+      "company": "Company",
+      "recipient": "Recipient",
+      "due": "Due — goes out {time}",
+      "due_unknown": "Due — goes out in the next send run"
     }
   }
 }

@@ -2,6 +2,7 @@
   <article class="tg" data-testid="earlier-thread">
     <button class="tg__head" :aria-expanded="String(open)" data-testid="earlier-thread-toggle" @click="toggle">
       <span class="tg__subject" data-testid="earlier-thread-subject">{{ title }}</span>
+      <span class="tg__meta" data-testid="earlier-thread-to">{{ $t("leads.review.to") }}: {{ recipient }}</span>
       <span class="tg__meta">
         {{ $t(`leads.thread.state.${thread.status}`) }}<template v-if="thread.last_message_at">
           · {{ formatTime(thread.last_message_at) }}</template>
@@ -21,7 +22,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { t } from "@/i18n";
 import { GET_ThreadWithOptouts, POST_ConfirmOptout } from "@/api/communicator/api";
 import { useNotifyStore } from "@/stores/notify";
@@ -29,22 +30,27 @@ import { threadSubject } from "@/utils/leadsThread";
 import { formatTime } from "@/utils/leadsTime";
 import ThreadTimeline from "./ThreadTimeline.vue";
 
-// One older thread of the company, collapsed to its header; the conversation loads when opened.
+// One older thread of the company, collapsed to its header. The conversation loads with the header: collapsed rows
+// of the same company are told apart by their subject and recipient, not by opening them one by one.
 const props = defineProps({
   thread: { type: Object, required: true },
   pending: { type: Boolean, default: false },
   waiting: { type: Array, default: () => [] },
+  initiallyOpen: { type: Boolean, default: false },
 });
 const emit = defineEmits(["changed"]);
 const notify = useNotifyStore();
 
-const open = ref(false);
+const open = ref(props.initiallyOpen);
 const loading = ref(false);
 const detail = ref(null);
 const optoutBusy = ref(false);
 
 const title = computed(
   () => threadSubject(detail.value?.timeline) || props.thread.recipient_name || props.thread.recipient_email
+);
+const recipient = computed(() =>
+  [props.thread.recipient_name, props.thread.recipient_email].filter(Boolean).join(" · ")
 );
 
 async function loadDetail() {
@@ -56,10 +62,11 @@ async function loadDetail() {
   }
 }
 
-async function toggle() {
+function toggle() {
   open.value = !open.value;
-  if (open.value && !detail.value) await loadDetail();
 }
+
+onMounted(loadDetail);
 
 async function confirmOptout(replyId) {
   if (optoutBusy.value) return;

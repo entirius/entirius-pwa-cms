@@ -69,4 +69,14 @@ describe("Company card actions", () => {
     await flushPromises();
     expect(leads.POST_RequestAudit).toHaveBeenCalledWith(7);
   });
+
+  // FIX-17 item 14: the link target is at least 24 px and the card names the customer, never the bare uid.
+  it("the known-customer link is a 32 px target and carries the customer name", () => {
+    munin.isModuleInstalled.mockReturnValue(true);
+    const linked = { ...company(), customer_uid: "91010000-0000", customer_name: "Jan Kowalski" };
+    const link = mountActions({ company: linked }).get('[data-testid="company-known-customer"]');
+    expect(link.classes()).toContain("ld-badge--link");
+    expect(link.text()).toContain("Jan Kowalski");
+    expect(link.text()).not.toContain("91010000");
+  });
 });

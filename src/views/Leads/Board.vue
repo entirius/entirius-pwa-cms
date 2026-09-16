@@ -13,7 +13,7 @@
       <FilterChip
         v-for="type in COMPANY_TYPES"
         :key="type"
-        :label="type"
+        :label="companyTypeLabel(type)"
         :active="filters.company_type === type"
         @click="setFilter('company_type', filters.company_type === type ? '' : type)"
       />
@@ -52,6 +52,7 @@ import { computed, onMounted, reactive, ref } from "vue";
 import { t } from "@/i18n";
 import { GET_Companies, GET_Rules, GET_Stages, POST_Transition } from "@/api/leads/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { companyTypeLabel } from "@/utils/leadsLabels";
 import { useNotifyStore } from "@/stores/notify";
 import BoardColumn from "./BoardColumn.vue";
 

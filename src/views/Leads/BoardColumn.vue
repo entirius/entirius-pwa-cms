@@ -4,7 +4,7 @@
       <strong>{{ stage.label }}</strong>
       <span class="ld-badge" data-testid="board-column-count">{{ count }}</span>
       <span v-if="rules.length" class="ld-badge" :title="rulesTooltip" data-testid="board-column-rules">
-        {{ $t("leads.board.rules", { count: rules.length }) }}
+        {{ $t(`leads.board.rules_${pluralKey(rules.length)}`, { count: rules.length }) }}
       </span>
     </header>
     <draggable
@@ -27,6 +27,7 @@
 <script setup>
 import { computed } from "vue";
 import draggable from "vuedraggable";
+import { pluralKey } from "@/utils/plural";
 import CompanyCard from "./CompanyCard.vue";
 
 const props = defineProps({

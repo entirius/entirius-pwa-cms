@@ -5,6 +5,7 @@ const api = vi.hoisted(() => ({ POST_Import: vi.fn(), GET_Import: vi.fn() }));
 vi.mock("@/api/leads/api", () => api);
 
 import Import from "@/views/Leads/Import.vue";
+import { t } from "@/i18n";
 
 function mountWithFile() {
   const wrapper = mount(Import, { global: { stubs: { RouterLink: true } } });
@@ -46,5 +47,21 @@ describe("Leads Import", () => {
     expect(api.POST_Import).toHaveBeenCalledWith(file);
     expect(wrapper.find('[data-testid="import-status"]').text()).toBe("done");
     expect(wrapper.find('[data-testid="import-counts"]').text()).toContain('"created":2');
+  });
+
+  // FIX-17 item 13: the screen says which columns, which legal bases and what happens next, and offers a sample.
+  it("explains the columns, the legal bases and what happens after the upload", () => {
+    const wrapper = mount(Import, { global: { stubs: { RouterLink: true } } });
+    expect(wrapper.findAll('[data-testid="import-columns"] li')).toHaveLength(4);
+    expect(t("leads.import.column_company")).toContain("company_name");
+    expect(t("leads.import.column_legal_basis")).toContain("consent, legitimate_interest, contract");
+    expect(t("leads.import.after")).toContain("first stage");
+    expect(wrapper.find('[data-testid="import-sample"]').exists()).toBe(true);
+    expect(wrapper.get('[data-testid="import-file-name"]').text()).toBe("leads.import.no_file");
+  });
+
+  it("naming the picked file replaces the bare browser control", async () => {
+    const wrapper = await mountWithFile();
+    expect(wrapper.get('[data-testid="import-file-name"]').text()).toBe("leads.csv");
   });
 });

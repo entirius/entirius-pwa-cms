@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
+import { createPinia, setActivePinia } from "pinia";
 
 const mockIsPanelEnabled = vi.fn();
 const mockIsModuleEnabled = vi.fn();
@@ -26,6 +27,7 @@ import { panels } from "@/configs/access";
 describe("Leads panel routing", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    setActivePinia(createPinia());
     mockIsPanelEnabled.mockImplementation((p) => p === "leads");
     mockIsModuleEnabled.mockReturnValue(true);
   });

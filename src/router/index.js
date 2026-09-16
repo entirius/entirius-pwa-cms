@@ -989,7 +989,7 @@ const routes = [
         name: "LeadsThread",
         component: () =>
           import(/* webpackChunkName: "leads" */ "../views/Leads/Company.vue"),
-        meta: { requiresAuth: true, titleKey: "leads.thread.title", panel: "leads", module: "leads" },
+        meta: { requiresAuth: true, titleKey: "leads.company.title", panel: "leads", module: "leads" },
       },
       // Plan 14 desktop screens: full width, "Open on a desktop" below 1024 px
       {

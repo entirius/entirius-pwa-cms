@@ -7,6 +7,7 @@ import { channelTimeZone } from "@/utils/leadsTime";
 
 const draft = { id: 5, subject: "Audit", body_text: "Hello", thread: { subject_ref: "leads.Company:153", recipient_email: "anna@example-shop-1.test" }, render_context: { company_name: "Example Shop 1", hooks: [] } };
 const api = vi.hoisted(() => ({
+  GET_ReviewList: vi.fn(),
   GET_ReviewMessage: vi.fn(),
   GET_ReviewNext: vi.fn(),
   POST_ReviewAccept: vi.fn(),
@@ -65,12 +66,14 @@ describe("Leads Review", () => {
     vi.clearAllMocks();
     setActivePinia(createPinia());
     api.GET_ReviewMessage.mockResolvedValue(draft);
+    api.GET_ReviewList.mockResolvedValue({ data: { results: [{ id: 5 }] } });
     api.GET_ReviewNext.mockRejectedValue({ response: { status: 404 } });
     munin.toolboxStatus = "";
   });
   afterEach(() => vi.useRealTimers());
 
-  it("after Send the screen confirms Scheduled HH:MM for ~2 s before it moves on", async () => {
+  // FIX-17 item 5: the confirmation stays readable (>= 4 s), it is not gone before the eye reaches it.
+  it("after Send the screen confirms Scheduled HH:MM for 4 s before it moves on", async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-09-21T06:00:00Z"));
     channelTimeZone.value = "UTC";
@@ -80,7 +83,7 @@ describe("Leads Review", () => {
     await flushPromises();
     expect(api.POST_ReviewAccept).toHaveBeenCalledWith(5);
     expect(wrapper.get('[data-testid="review-scheduled"]').text()).toBe("Scheduled 08:07");
-    vi.advanceTimersByTime(1900);
+    vi.advanceTimersByTime(3900);
     await flushPromises();
     expect(api.GET_ReviewNext).not.toHaveBeenCalled();
     expect(wrapper.find('[data-testid="review-scheduled"]').exists()).toBe(true);
@@ -233,22 +236,46 @@ describe("Leads Review", () => {
     expect(api.POST_ReviewAccept).not.toHaveBeenCalled();
   });
 
-  it("leaving Edit with unsaved changes asks before discarding", async () => {
-    const confirm = vi.spyOn(window, "confirm").mockReturnValue(false);
+  // FIX-17 item 9: the in-app sheet asks, never the browser's confirm().
+  it("leaving Edit with unsaved changes asks in the app sheet before discarding", async () => {
+    const confirm = vi.spyOn(window, "confirm");
     const wrapper = await mountReview();
     wrapper.findComponent(ReviewActions).vm.$emit("edit");
     await flushPromises();
-    expect(guards.leave()).toBe(true);
-    expect(confirm).not.toHaveBeenCalled();
+    await expect(guards.leave()).resolves.toBe(true);
+    expect(wrapper.find('[data-testid="confirm-sheet"]').exists()).toBe(false);
+
     await wrapper.get('[data-testid="edit-body"]').setValue("Changed");
-    expect(guards.leave()).toBe(false);
     await wrapper.get('[data-testid="edit-cancel"]').trigger("click");
-    expect(confirm).toHaveBeenCalledTimes(2);
+    expect(wrapper.find('[data-testid="confirm-sheet"]').exists()).toBe(true);
+    await wrapper.get('[data-testid="confirm-cancel"]').trigger("click");
     expect(wrapper.find('[data-testid="edit-body"]').exists()).toBe(true);
-    confirm.mockReturnValue(true);
+
     await wrapper.get('[data-testid="edit-cancel"]').trigger("click");
+    await wrapper.get('[data-testid="confirm-ok"]').trigger("click");
+    await flushPromises();
     expect(wrapper.find('[data-testid="edit-body"]').exists()).toBe(false);
+    expect(confirm).not.toHaveBeenCalled();
     confirm.mockRestore();
+  });
+
+  // FIX-17 item 7: a draft that is already scheduled or sent says so instead of a silent redirect.
+  it("an already handled draft says so before the Inbox takes over", async () => {
+    api.GET_ReviewMessage.mockResolvedValue(null);
+    await mountReview();
+    expect(spawnNotification).toHaveBeenCalledWith({
+      msg: "That draft is already scheduled or sent — showing the next one",
+      type: "warning",
+    });
+    expect(replace).toHaveBeenCalledWith({ name: "LeadsInbox" });
+  });
+
+  // FIX-17 item 4: after a send the next draft is visibly another one.
+  it("the draft header says where it sits in the review queue", async () => {
+    api.GET_ReviewList.mockResolvedValue({ data: { results: [{ id: 4 }, { id: 5 }, { id: 6 }] } });
+    const wrapper = await mountReview();
+    expect(api.GET_ReviewList).toHaveBeenCalledWith({ status: "review_required", page_size: 100 });
+    expect(wrapper.get('[data-testid="review-position"]').text()).toContain('{"index":2,"count":3}');
   });
 
   it("the disabled Rewrite button renders disabled", async () => {

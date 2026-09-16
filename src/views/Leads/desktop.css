@@ -79,3 +79,11 @@ textarea.ld-input {
   background: var(--c-basic-200);
   font-size: var(--fs-100);
 }
+/* WCAG 2.2 AA (2.5.8): a link or control target is at least 24 px in both directions. */
+.ld-badge--link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 var(--space-200);
+  font-size: var(--fs-200);
+}

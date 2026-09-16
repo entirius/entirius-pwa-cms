@@ -2,7 +2,10 @@
   <Thread v-if="!isDesktop" desktop-hint />
   <div v-else class="ld-page" data-testid="company-card">
     <header v-if="company" class="ld-row">
-      <h2 class="ld-title" data-testid="company-domain">{{ company.domain }}</h2>
+      <div class="ld-field">
+        <h2 class="ld-title" data-testid="thread-company">{{ company.name }}</h2>
+        <span class="ld-muted" data-testid="company-domain">{{ company.domain }}</span>
+      </div>
       <select
         class="ld-input"
         :value="company.stage.key"

@@ -2,11 +2,11 @@
   <div class="ld-row" data-testid="company-actions">
     <router-link
       v-if="company.customer_uid && hasAccounts"
-      class="ld-badge"
+      class="ld-badge ld-badge--link"
       :to="{ name: 'CustomerDetail', params: { uid: company.customer_uid } }"
       data-testid="company-known-customer"
     >
-      {{ $t("leads.company.known_customer") }}
+      {{ $t("leads.company.known_customer") }}<template v-if="company.customer_name">: {{ company.customer_name }}</template>
     </router-link>
     <span v-else-if="company.customer_uid" class="ld-badge" data-testid="company-known-customer">
       {{ $t("leads.company.known_customer") }}

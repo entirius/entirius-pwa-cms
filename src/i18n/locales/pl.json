@@ -2995,7 +2995,8 @@
       "empty_message_none": "Nic nie jest zaplanowane — nowe szkice pojawią się, gdy firma wejdzie w etap kontaktu",
       "refresh": "Odśwież",
       "untitled": "(bez tematu)",
-      "pick": "Wybierz szkic do przejrzenia"
+      "pick": "Wybierz szkic do przejrzenia",
+      "position": "{index} z {count}"
     },
     "review": {
       "title": "Przegląd",
@@ -3021,7 +3022,12 @@
       "rewrite_failed": "Przepisanie nie powiodło się: {reason}",
       "discard_confirm": "Odrzucić niezapisane zmiany w tym szkicu?",
       "retry": "Spróbuj ponownie",
-      "not_found": "Nie znaleziono szkicu"
+      "not_found": "Nie znaleziono szkicu",
+      "queue_position": "Szkic {index} z {count}",
+      "already_handled": "Ten szkic jest już zaplanowany lub wysłany — pokazuję kolejny",
+      "discard_title": "Odrzucić niezapisane zmiany?",
+      "discard_keep": "Wróć do edycji",
+      "discard_yes": "Odrzuć"
     },
     "rewrite": {
       "title": "Przepisz z uwagą",
@@ -3054,7 +3060,7 @@
       "no_thread": "Brak rozmowy",
       "company_unavailable": "Dane firmy są teraz niedostępne",
       "mail_unavailable": "Historia korespondencji jest niedostępna — nie można pokazać rozmowy",
-      "desktop_hint": "Zmiana etapu, „Napisz” i „Nie kontaktować” są dostępne na komputerze",
+      "desktop_hint": "Zmiana etapu, „Napisz”, „Ponów audyt” i „Nie kontaktować” są dostępne na komputerze",
       "earlier": "Wcześniejsze wątki ({count})",
       "earlier_optout": "możliwa rezygnacja: {count}",
       "earlier_more": "Pokaż więcej wątków",
@@ -3063,7 +3069,8 @@
         "open": "otwarty",
         "replied": "z odpowiedzią",
         "closed": "zamknięty"
-      }
+      },
+      "earlier_reply": "jest odpowiedź"
     },
     "status": {
       "held": "czeka na okno wysyłki lub dzienny limit",
@@ -3092,11 +3099,13 @@
     "board": {
       "title": "Tablica etapów",
       "search": "Szukaj nazwy lub domeny",
-      "rules": "Reguły: {count}",
       "more": "Załaduj więcej",
       "has_reply": "Z odpowiedzią",
       "move_to": "Przenieś do etapu",
-      "move_failed": "Nie udało się przenieść firmy"
+      "move_failed": "Nie udało się przenieść firmy",
+      "rules_one": "1 reguła",
+      "rules_few": "{count} reguły",
+      "rules_many": "{count} reguł"
     },
     "company": {
       "do_not_contact": "Nie kontaktować",
@@ -3120,7 +3129,8 @@
       "type": "Typ leada",
       "last_activity": "Ostatnia aktywność",
       "customer": "Klient",
-      "activities": "Ostatnie zdarzenia"
+      "activities": "Ostatnie zdarzenia",
+      "title": "Firma"
     },
     "communicate": {
       "template": "Szablon",
@@ -3139,13 +3149,23 @@
     },
     "import": {
       "title": "Import firm",
-      "hint": "CSV z kolumnami company_name, domain, danymi kontaktu i legal_basis. Istniejące domeny są dopasowane, nie duplikowane.",
+      "hint": "Jeden wiersz na firmę, pierwszy wiersz nazywa kolumny. Istniejące domeny są dopasowywane, nie duplikowane; nieznane kolumny są pomijane.",
       "upload": "Wyślij",
       "status": "Status",
       "counts": "utworzone: {created}, dopasowane: {matched}, pominięte: {skipped}",
       "row": "Wiersz {row}",
       "to_board": "Otwórz tablicę etapów",
-      "failed": "Wysyłka pliku nie powiodła się"
+      "failed": "Wysyłka pliku nie powiodła się",
+      "columns_title": "Kolumny",
+      "column_company": "company_name — nazwa firmy",
+      "column_domain": "domain — domena sklepu (albo website, albo host adresu e-mail kontaktu)",
+      "column_contact": "first_name, last_name, email — dane kontaktu",
+      "column_legal_basis": "legal_basis — jedna z wartości: consent, legitimate_interest, contract",
+      "after_title": "Po wysłaniu pliku",
+      "after": "Każda firma trafia do pierwszego etapu tablicy. Dalej działają reguły etapu — audyt strony albo szkic czekający w skrzynce. Nic nie wychodzi bez Twojego przeglądu.",
+      "sample": "Pobierz przykładowy plik CSV",
+      "choose": "Wybierz plik CSV",
+      "no_file": "Nie wybrano jeszcze pliku"
     },
     "stages": {
       "title": "Etapy",
@@ -3155,7 +3175,29 @@
       "delete": "Usuń",
       "key": "Klucz",
       "add": "Dodaj etap",
-      "order_failed": "Nie udało się zapisać kolejności etapów — wczytano aktualną kolejność"
+      "order_failed": "Nie udało się zapisać kolejności etapów — wczytano aktualną kolejność",
+      "delete_title": "Usuń etap",
+      "delete_confirm": "Usunąć etap „{label}”? Najpierw przenieś jego firmy do innego etapu — etapu, w którym są firmy, nie można usunąć."
+    },
+    "company_type": {
+      "MANUFACTURER": "Producent",
+      "WHOLESALE": "Hurtownia",
+      "RETAILER": "Sprzedawca detaliczny",
+      "UNKNOWN": "Nieznany typ leada"
+    },
+    "legal_basis": {
+      "consent": "Zgoda",
+      "legitimate_interest": "Uzasadniony interes",
+      "contract": "Umowa"
+    },
+    "stage_kind": {
+      "open": "w toku",
+      "won": "wygrany",
+      "lost": "przegrany",
+      "unresponsive": "bez odzewu"
+    },
+    "activity": {
+      "draft": "Szkic — {status}"
     }
   },
   "notification_bar": {
@@ -3219,13 +3261,22 @@
       "spread": "Rozłóż dzienny limit na okna",
       "daily_cap": "Dzienny limit",
       "remove_window": "Usuń",
-      "add_window": "Dodaj okno"
+      "add_window": "Dodaj okno",
+      "window_start": "Od",
+      "window_end": "Do"
     },
     "channel": {
       "title": "Tryb kanału",
       "sandbox_mailbox": "Skrzynka sandbox",
       "live_gate": "Tryb live wysyła tylko przy ENVIRONMENT=production i ustawionym live_enabled na kanale.",
-      "mailbox_required": "Tryb sandbox wymaga skrzynki sandbox"
+      "mailbox_required": "Tryb sandbox wymaga skrzynki sandbox",
+      "mode": {
+        "dry_run": "Tylko test",
+        "sandbox": "Sandbox",
+        "live": "Live"
+      },
+      "live_enabled_on": "Wysyłka live jest odblokowana dla tego kanału.",
+      "live_enabled_off": "Wysyłka live nie jest odblokowana dla tego kanału — odblokowuje ją administrator w panelu administracyjnym."
     },
     "suppressions": {
       "title": "Blokady",
@@ -3235,13 +3286,16 @@
     },
     "scheduled": {
       "title": "Czeka na wysyłkę",
-      "note": "„Wyślij teraz” tylko przesuwa czas wysyłki na teraz — wysyła najbliższy beat, a tryb kanału i dzienny limit nadal obowiązują.",
+      "note": "„Wyślij teraz” tylko przesuwa czas wysyłki na teraz — zabiera ją najbliższa wysyłka, a tryb kanału, okno wysyłki i dzienny limit nadal obowiązują.",
       "empty": "Nic nie czeka na wysyłkę",
       "status": "Status",
       "at": "Zaplanowano na",
       "next_slot": "Najbliższy slot",
-      "next_beat": "najbliższy beat",
-      "send_now": "Wyślij teraz"
+      "send_now": "Wyślij teraz",
+      "company": "Firma",
+      "recipient": "Odbiorca",
+      "due": "Gotowe — wyjdzie {time}",
+      "due_unknown": "Gotowe — wyjdzie w najbliższej wysyłce"
     }
   }
 }
