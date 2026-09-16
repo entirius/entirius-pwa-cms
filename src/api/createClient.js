@@ -26,8 +26,9 @@ function clearAllCookies() {
   })
 }
 
+// Only a visit that held a session was logged out: a first visit (no token cookie) meets a plain login screen.
 function sessionExpiredRedirect() {
-  localStorage.setItem('session_expired', '1')
+  if (cookies.get('token')) localStorage.setItem('session_expired', '1')
   localStorage.setItem('cms_return_route', window.location.pathname + window.location.search)
   clearAllCookies()
   window.location.href = '/'

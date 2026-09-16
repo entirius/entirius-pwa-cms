@@ -30,25 +30,30 @@
         @click="setFilter('do_not_contact', !filters.do_not_contact)"
       />
     </div>
-    <div class="board">
-      <BoardColumn
-        v-for="stage in stages"
-        :key="stage.key"
-        :stage="stage"
-        :stages="stages"
-        :cards="columns[stage.key]?.cards || []"
-        :count="columns[stage.key]?.count || 0"
-        :has-more="Boolean(columns[stage.key]?.next)"
-        :rules="rulesByStage[stage.id] || []"
-        @move="move"
-        @more="loadColumn(stage.key, columns[stage.key].page + 1)"
-      />
+    <div class="board__wrap">
+      <div ref="boardEl" class="board" data-testid="board-columns" @scroll="measure">
+        <BoardColumn
+          v-for="stage in stages"
+          :key="stage.key"
+          :stage="stage"
+          :stages="stages"
+          :cards="columns[stage.key]?.cards || []"
+          :count="columns[stage.key]?.count || 0"
+          :has-more="Boolean(columns[stage.key]?.next)"
+          :rules="rulesByStage[stage.id] || []"
+          @move="move"
+          @more="loadColumn(stage.key, columns[stage.key].page + 1)"
+        />
+      </div>
+      <button v-if="moreRight" class="board__more" data-testid="board-scroll-right" @click="scrollRight">
+        {{ $t("leads.board.more_stages") }} <FontAwesomeIcon icon="chevron-right" />
+      </button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from "vue";
 import { t } from "@/i18n";
 import { GET_Companies, GET_Rules, GET_Stages, POST_Transition } from "@/api/leads/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
@@ -129,12 +134,53 @@ async function move(company, stageKey, dragged) {
   }
 }
 
-onMounted(load);
+// Columns past the right edge are announced by a button on that edge, never left to a scrollbar that may not show.
+const boardEl = ref(null);
+const moreRight = ref(false);
+const COLUMN_STEP_PX = 260;
+
+function measure() {
+  const el = boardEl.value;
+  moreRight.value = Boolean(el) && el.scrollLeft + el.clientWidth < el.scrollWidth - 1;
+}
+
+function scrollRight() {
+  boardEl.value?.scrollBy({ left: COLUMN_STEP_PX, behavior: "smooth" });
+}
+
+onMounted(async () => {
+  window.addEventListener("resize", measure);
+  await load();
+  await nextTick();
+  measure();
+});
+onBeforeUnmount(() => window.removeEventListener("resize", measure));
 </script>
 
 <style scoped>
+.board__wrap {
+  position: relative;
+}
+.board__more {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-100);
+  min-height: 44px;
+  padding: 0 var(--space-300);
+  border: 1px solid var(--c-basic-300);
+  border-radius: 8px;
+  background: var(--c-basic-100);
+  box-shadow: -12px 0 16px var(--c-basic-100);
+  color: var(--c-basic-800);
+  font-weight: 600;
+  cursor: pointer;
+}
 .board {
   display: flex;
+  padding-bottom: var(--space-200);
   gap: var(--space-300);
   align-items: flex-start;
   overflow-x: auto;

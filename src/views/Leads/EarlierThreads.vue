@@ -13,7 +13,7 @@
         :key="thread.id"
         :thread="thread"
         :pending="pendingThreads.has(thread.id)"
-        :initially-open="thread.id === openThreadId"
+        :holds-reply="thread.id === openThreadId"
         :waiting="waitingOf(waiting, thread.id)"
         @changed="$emit('changed')"
       />
@@ -103,6 +103,11 @@ async function loadMore() {
   flex-direction: column;
   gap: var(--space-200);
   padding: 0 var(--space-300) var(--space-300);
+}
+@media (max-width: 1023px) {
+  .earlier__list {
+    padding: 0 var(--space-200) var(--space-200);
+  }
 }
 .earlier__more {
   min-height: 44px;

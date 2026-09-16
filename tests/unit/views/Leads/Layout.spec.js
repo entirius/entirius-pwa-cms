@@ -32,12 +32,17 @@ describe("Leads layout", () => {
   });
 
   // FIX-17 item 8: nothing to pick, no "Pick a draft to review" — the empty state of the Inbox says it once.
-  it("the desktop placeholder appears only while drafts wait", () => {
+  // FIX-17b item 5: the empty right pane is not blank — it points at the stage board instead.
+  it("the desktop pane asks to pick a draft only while drafts wait, else points at the board", () => {
     enable("leads", "communicator");
     route.name = "LeadsInbox";
-    expect(mountLayout().find(".leads__placeholder").exists()).toBe(false);
+    const empty = mountLayout();
+    expect(empty.text()).not.toContain("leads.inbox.pick");
+    expect(empty.find('[data-testid="leads-detail-empty"]').exists()).toBe(true);
     useLeadsReviewStore().setCount(2);
-    expect(mountLayout().find(".leads__placeholder").exists()).toBe(true);
+    const waiting = mountLayout();
+    expect(waiting.text()).toContain("leads.inbox.pick");
+    expect(waiting.find('[data-testid="leads-detail-empty"]').exists()).toBe(false);
   });
 
   it("leads + communicator: a draft or thread open renders both columns and marks the detail state", () => {

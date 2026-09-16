@@ -169,8 +169,11 @@ export default {
         this.loading = false;
       }
     },
+    // Opened from another panel (a Leads company card) the arrow returns there; only an in-app path is followed.
     goBack() {
-      this.$router.push("/accounts/customers");
+      const back = this.$route.query.back;
+      const internal = typeof back === "string" && back.startsWith("/") && !back.startsWith("//");
+      this.$router.push(internal ? back : "/accounts/customers");
     },
   },
 };

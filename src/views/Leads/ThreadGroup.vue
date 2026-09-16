@@ -1,5 +1,5 @@
 <template>
-  <article class="tg" data-testid="earlier-thread">
+  <article ref="root" class="tg" :class="{ 'tg--reply': holdsReply }" data-testid="earlier-thread">
     <button class="tg__head" :aria-expanded="String(open)" data-testid="earlier-thread-toggle" @click="toggle">
       <span class="tg__subject" data-testid="earlier-thread-subject">{{ title }}</span>
       <span class="tg__meta" data-testid="earlier-thread-to">{{ $t("leads.review.to") }}: {{ recipient }}</span>
@@ -7,6 +7,7 @@
         {{ $t(`leads.thread.state.${thread.status}`) }}<template v-if="thread.last_message_at">
           · {{ formatTime(thread.last_message_at) }}</template>
       </span>
+      <span v-if="holdsReply" class="tg__reply" data-testid="earlier-thread-reply">{{ $t("leads.thread.earlier_reply") }}</span>
       <span v-if="pending" class="tg__badge" data-testid="earlier-thread-optout">{{ $t("leads.thread.optout_suspected") }}</span>
     </button>
     <Loader v-show="loading" />
@@ -22,7 +23,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import { computed, nextTick, onMounted, ref } from "vue";
 import { t } from "@/i18n";
 import { GET_ThreadWithOptouts, POST_ConfirmOptout } from "@/api/communicator/api";
 import { useNotifyStore } from "@/stores/notify";
@@ -36,12 +37,14 @@ const props = defineProps({
   thread: { type: Object, required: true },
   pending: { type: Boolean, default: false },
   waiting: { type: Array, default: () => [] },
-  initiallyOpen: { type: Boolean, default: false },
+  // the thread holding the reply the bell announced: opened, marked and scrolled into view on arrival
+  holdsReply: { type: Boolean, default: false },
 });
 const emit = defineEmits(["changed"]);
 const notify = useNotifyStore();
 
-const open = ref(props.initiallyOpen);
+const root = ref(null);
+const open = ref(props.holdsReply);
 const loading = ref(false);
 const detail = ref(null);
 const optoutBusy = ref(false);
@@ -66,7 +69,12 @@ function toggle() {
   open.value = !open.value;
 }
 
-onMounted(loadDetail);
+onMounted(async () => {
+  await loadDetail();
+  if (!props.holdsReply) return;
+  await nextTick();
+  root.value?.scrollIntoView?.({ block: "start", behavior: "smooth" });
+});
 
 async function confirmOptout(replyId) {
   if (optoutBusy.value) return;
@@ -112,6 +120,14 @@ async function confirmOptout(replyId) {
 .tg__meta {
   font-size: var(--fs-100);
   color: var(--c-basic-600);
+}
+.tg--reply {
+  border-top: 2px solid var(--c-support-400);
+}
+.tg__reply {
+  font-size: var(--fs-100);
+  font-weight: 600;
+  color: var(--c-support-400);
 }
 .tg__badge {
   font-size: var(--fs-100);

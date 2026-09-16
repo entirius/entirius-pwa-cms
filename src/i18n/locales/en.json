@@ -516,11 +516,11 @@
   },
   "panels": {
     "pages": "Pages",
-    "pages_desc": "Content management -- static pages, blog posts, product and category content",
+    "pages_desc": "Content management — static pages, blog posts, product and category content",
     "pim": "PIM",
-    "pim_desc": "Product information management -- attributes, catalogs, product data",
+    "pim_desc": "Product information management — attributes, catalogs, product data",
     "points": "Delivery Points",
-    "points_desc": "Delivery points -- pickup lockers, showrooms, custom locations",
+    "points_desc": "Delivery points — pickup lockers, showrooms, custom locations",
     "forms": "Contact Forms",
     "forms_desc": "Contact form submissions and notification settings",
     "agreements": "Agreements",
@@ -531,27 +531,27 @@
     "contact_admin": "Contact your administrator to enable this module",
     "panel_locked": "Panel locked",
     "emails": "Emails",
-    "emails_desc": "Email template configuration -- branding, content, channel settings",
+    "emails_desc": "Email template configuration — branding, content, channel settings",
     "faq": "FAQ",
-    "faq_desc": "FAQ groups and items -- questions, answers, channel scoping",
+    "faq_desc": "FAQ groups and items — questions, answers, channel scoping",
     "pricing": "Pricing",
     "pricing_desc": "Price management: bulk editing, tax classes, channels, currencies",
     "stock": "Stock Management",
-    "stock_desc": "Warehouse stock management -- inventory levels, CSV import",
+    "stock_desc": "Warehouse stock management — inventory levels, CSV import",
     "accounts": "Accounts",
-    "accounts_desc": "Customer accounts -- profiles, addresses, groups",
+    "accounts_desc": "Customer accounts — profiles, addresses, groups",
     "checkout_orders": "Orders",
-    "checkout_orders_desc": "Checkout orders -- view orders, statuses, payments",
+    "checkout_orders_desc": "Checkout orders — view orders, statuses, payments",
     "atlas": "Atlas",
     "atlas_desc": "Sources, feeds, mappings, products and integration logs",
     "enricher": "Enricher",
-    "enricher_desc": "Content enrichment queue -- review AI proposals, accept into PIM, spawn tasks",
+    "enricher_desc": "Content enrichment queue — review AI proposals, accept into PIM, spawn tasks",
     "translation": "Translation",
-    "translation_desc": "Translation job dashboard -- progress tracking for PIM and content translations",
+    "translation_desc": "Translation job dashboard — progress tracking for PIM and content translations",
     "promo": "Promotions",
     "promo_desc": "Discount rules and promotion management",
     "pricefighter": "PriceFighter",
-    "pricefighter_desc": "Competitive pricing -- gap analysis, strategies, batch apply",
+    "pricefighter_desc": "Competitive pricing — gap analysis, strategies, batch apply",
     "leads": "Leads",
     "leads_desc": "Sales inbox — review drafts, read replies, company threads",
     "communicator": "Communicator",
@@ -2995,7 +2995,10 @@
       "refresh": "Refresh",
       "untitled": "(no subject)",
       "pick": "Pick a draft to review",
-      "position": "{index} of {count}"
+      "position": "{index} of {count}",
+      "detail_empty_title": "While the queue is empty",
+      "detail_empty": "The stage board shows every company and where it stands — open a card to write to it or re-audit it.",
+      "open_board": "Open the stage board"
     },
     "review": {
       "title": "Review",
@@ -3030,13 +3033,15 @@
     "rewrite": {
       "title": "Rewrite with a note",
       "placeholder": "e.g. shorter, mention the checkout",
-      "submit": "Rewrite"
+      "submit": "Rewrite",
+      "label": "What should change?",
+      "hint": "Write a note to enable Rewrite — the draft is rewritten along it."
     },
     "intel": {
       "title": "Intel & hooks",
       "platform": "Platform",
       "industry": "Industry",
-      "no_hooks": "No hooks yet",
+      "no_hooks": "No hooks yet — they appear once the site audit of this company is analysed. If none come, run Re-audit on the company card (desktop).",
       "no_audit": "No site audit yet",
       "audit_status": "Audit status",
       "strategy": {
@@ -3068,16 +3073,18 @@
         "replied": "replied",
         "closed": "closed"
       },
-      "earlier_reply": "has a reply"
+      "earlier_reply": "The reply is in this thread",
+      "quote_show": "Show quoted text",
+      "quote_hide": "Hide quoted text"
     },
     "send_state": {
       "at": "goes out at {time}",
       "due": "due — waiting for the send run",
       "held": "waiting for the send window",
-      "cap": "daily cap reached — nothing else goes out today"
+      "cap": "daily cap reached — nothing else goes out today",
+      "held_window": "waiting for the send window ({window})"
     },
     "status": {
-      "held": "waiting for the send window or daily cap",
       "sent": "sent",
       "scheduled": "scheduled",
       "failed": "failed",
@@ -3109,7 +3116,10 @@
       "move_failed": "The company could not be moved",
       "rules_one": "1 rule",
       "rules_few": "{count} rules",
-      "rules_many": "{count} rules"
+      "rules_many": "{count} rules",
+      "more_stages": "More stages",
+      "last_activity": "last activity {time}",
+      "no_activity": "No activity yet"
     },
     "company": {
       "do_not_contact": "Do not contact",
@@ -3161,10 +3171,10 @@
       "to_board": "Open the stage board",
       "failed": "Upload failed",
       "columns_title": "Columns",
-      "column_company": "company_name — the company name",
-      "column_domain": "domain — the shop domain (or website, or the contact's email host)",
-      "column_contact": "first_name, last_name, email — the contact",
-      "column_legal_basis": "legal_basis — one of: consent, legitimate_interest, contract",
+      "column_company": "company_name (optional) — the company name",
+      "column_domain": "domain (required) — the shop domain; website or the contact's email host also work",
+      "column_contact": "first_name, last_name, email (optional) — the contact",
+      "column_legal_basis": "legal_basis (optional) — one of: consent, legitimate_interest, contract",
       "after_title": "After the upload",
       "after": "Every company lands in the first stage of the board. Stage rules take it from there — a site audit, or a draft that waits for you in the Inbox. Nothing is sent without your review.",
       "sample": "Download a sample CSV",
@@ -3181,7 +3191,13 @@
       "add": "Add stage",
       "order_failed": "The stage order could not be saved — reloaded the current order",
       "delete_title": "Delete stage",
-      "delete_confirm": "Delete the stage “{label}”? Move its companies to another stage first — a stage that still holds companies cannot be deleted."
+      "delete_confirm": "Delete the stage “{label}”? It holds no companies.",
+      "help": "Drag or use the arrows to order the stages as the board shows them. Rename a stage in its field; the tag shows its key and kind.",
+      "key_help": "Key — the fixed name rules and imports use; it cannot change later",
+      "label_help": "Label — the name shown on the board",
+      "delete_busy_one": "The stage “{label}” holds 1 company. Move it to another stage first — a stage that still holds companies cannot be deleted.",
+      "delete_busy_few": "The stage “{label}” holds {count} companies. Move them to another stage first — a stage that still holds companies cannot be deleted.",
+      "delete_busy_many": "The stage “{label}” holds {count} companies. Move them to another stage first — a stage that still holds companies cannot be deleted."
     },
     "company_type": {
       "MANUFACTURER": "Manufacturer",
@@ -3201,7 +3217,20 @@
       "unresponsive": "unresponsive"
     },
     "activity": {
-      "draft": "Draft — {status}"
+      "draft": "Draft — {status}",
+      "stage": "Stage: {from} → {to}",
+      "legal_basis_set": "Legal basis set to {to}",
+      "legal_basis_changed": "Legal basis changed from {from} to {to}",
+      "blocked": "Blocked: {reason}"
+    },
+    "block_reason": {
+      "no_eligible_contact": "no eligible contact",
+      "do_not_contact": "marked do not contact",
+      "no_email": "the contact has no email",
+      "no_legal_basis": "the contact has no legal basis",
+      "opted_out": "the contact opted out",
+      "anonymised": "the contact was anonymised",
+      "no_contact": "no contact"
     }
   },
   "notification_bar": {

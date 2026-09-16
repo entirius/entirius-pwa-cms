@@ -73,7 +73,8 @@ export const useUserStore = defineStore('user', () => {
 
   function sessionExpiredLogout() {
     stopSessionMonitor()
-    localStorage.setItem('session_expired', '1')
+    // a first visit holds no token — it never hears that a session expired
+    if (token.value || cookies.get('token')) localStorage.setItem('session_expired', '1')
     localStorage.setItem('cms_return_route', window.location.pathname + window.location.search)
     clearAuth()
     window.location.href = '/'

@@ -120,7 +120,7 @@ and `communicator`; `siteintel` (intel card) and `notifications` (header bell, `
 gate in-view with `isModuleEnabled` — never map them in `MODULE_TO_PANEL`. Every leads-family call takes the
 channel from `src/stores/leadsChannel.js` (`VUE_APP_LEADS_CHANNEL`, default `default-europe`), never
 `VUE_APP_CHANNEL`. Review has no detail endpoint: the view finds the draft in `review/?status=review_required`.
-The thread view opens the newest thread of `leads.Company:<id>` (closed or not); older threads sit behind one "Earlier threads" expander (first `threads/` page, more pages on demand, a row's detail loads with the row so its subject and recipient are readable collapsed) that badges an undecided opt-out; a reply that landed before our newest mail expands that section and opens its thread. Bubble time of a waiting mail = its `scheduled_at`, found by the message's `created_at` (= the timeline `at` of an unsent message; the timeline payload has no message id, and follow-ups share a subject); it reads as held once the first 5-minute send beat after the slot has passed (`src/utils/leadsTime.js`). The toolbox teaser
+The thread view opens the newest thread of `leads.Company:<id>` (closed or not); older threads sit behind one "Earlier threads" expander (first `threads/` page, more pages on demand, a row's detail loads with the row so its subject and recipient are readable collapsed) that badges an undecided opt-out; a reply that landed before our newest mail expands that section and opens its thread. A reply that sits in an older thread is marked ("The reply is in this thread") and scrolled into view on arrival (the bell carries only `subject_ref`). A waiting bubble shows no clock of its own: it states `sendState(next_slot)` like the Inbox (`src/utils/leadsTime.js`); a reply's quoted history (from its first `>` line) folds behind a toggle. Activity messages are service strings — `activityText` (`src/utils/leadsLabels.js`) turns the known shapes into sentences. The toolbox teaser
 (`ToolboxBanner.vue`) reads munin `platform.toolbox_status` (`munin.toolboxStatus`). `data-testid`s are the contract of the
 emporium page objects (`src/entirius_tests/cms_pages/`) — rename both together.
 
@@ -143,5 +143,6 @@ mailbox, C-30), suppressions, waiting messages (`approved` + `scheduled`) with S
 `messages/<id>/send-now/` (moves `scheduled_at` only, C-31; a mail already at the channel clock cannot be pulled
 any earlier, so it offers no second Send now — a reload keeps that). The departure column is a state, never a
 clock that slides: `sendState` (`src/utils/leadsTime.js`) names an hour only for a `next_slot` in the future,
-else it says due / daily cap reached / waiting for the window. `next_slot` (outbox endpoint, `GET_WaitingMessages`)
-is the one slot the Inbox summary, the Review confirmation and this table all read, so no two screens disagree. Sequences: create + text pool only (no step edit API).
+else it says due / daily cap reached / waiting for the window with its hours; a used-up cap wins over any slot and
+a closed window (policy `windows`, channel time zone) never shows a clock. `next_slot` (outbox endpoint, `GET_WaitingMessages`)
+is the one slot the Inbox summary, the Review confirmation (looked up after accept), the thread bubbles and this table all read, so no two screens disagree. Sequences: create + text pool only (no step edit API).

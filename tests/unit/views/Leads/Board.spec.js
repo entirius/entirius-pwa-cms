@@ -11,6 +11,8 @@ const api = vi.hoisted(() => ({
 const notify = vi.hoisted(() => ({ spawnNotification: vi.fn() }));
 vi.mock("@/api/leads/api", () => api);
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => notify }));
+const push = vi.hoisted(() => vi.fn());
+vi.mock("vue-router", () => ({ useRouter: () => ({ push }) }));
 
 import Board from "@/views/Leads/Board.vue";
 import BoardColumn from "@/views/Leads/BoardColumn.vue";
@@ -18,6 +20,7 @@ import BoardColumn from "@/views/Leads/BoardColumn.vue";
 const stubs = {
   draggable: { props: ["list"], template: "<div><slot v-for='el in list' name='item' :element='el' /></div>" },
   RouterLink: { template: "<a><slot /></a>" },
+  FontAwesomeIcon: true,
 };
 
 async function mountBoard() {
@@ -117,5 +120,16 @@ describe("Leads Board", () => {
     expect(card.text()).toContain("Retailer");
     expect(card.text()).not.toContain("RETAILER");
     expect(wrapper.get('[data-testid="board-column-rules"]').text()).toBe("leads.board.rules_one::{\"count\":1}");
+  });
+
+  // FIX-17b item 6: the whole card opens the company; no activity is said in words, never a bare dash.
+  it("a click anywhere on the card opens the company, the stage select does not", async () => {
+    const wrapper = await mountBoard();
+    const card = wrapper.get('[data-testid="board-card"]');
+    expect(card.get('[data-testid="board-card-activity"]').text()).toContain("No activity yet");
+    await card.get('[data-testid="board-card-stage"]').trigger("click");
+    expect(push).not.toHaveBeenCalled();
+    await card.get(".card__domain").trigger("click");
+    expect(push).toHaveBeenCalledWith({ name: "LeadsThread", params: { id: 1 } });
   });
 });

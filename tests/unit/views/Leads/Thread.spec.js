@@ -85,12 +85,20 @@ describe("Leads Thread", () => {
   it("a reply in an older thread expands the section and opens that thread", async () => {
     const replied = summaries.map((thread) => (thread.id === 8 ? { ...thread, status: "replied" } : thread));
     api.GET_Threads.mockResolvedValue({ data: { count: 3, next: null, results: replied } });
+    const scrolled = [];
+    Element.prototype.scrollIntoView = function () {
+      scrolled.push(this);
+    };
     const wrapper = mountThread();
     await flushPromises();
     const groups = wrapper.findAll('[data-testid="earlier-thread"]');
     expect(groups).toHaveLength(2);
     expect(groups[0].find('[data-testid="thread-timeline"]').exists()).toBe(true);
     expect(groups[1].find('[data-testid="thread-timeline"]').exists()).toBe(false);
+    // FIX-17b item 2: the thread holding the reply is marked and scrolled into view.
+    expect(groups[0].find('[data-testid="earlier-thread-reply"]').exists()).toBe(true);
+    expect(groups[1].find('[data-testid="earlier-thread-reply"]').exists()).toBe(false);
+    expect(scrolled).toEqual([groups[0].element]);
   });
 
   it("the older threads stay collapsed when the newest one holds the reply itself", async () => {
@@ -140,7 +148,7 @@ describe("Leads Thread", () => {
     const phone = mountThread({ desktopHint: true });
     const desktop = mountThread();
     await flushPromises();
-    expect(phone.get('[data-testid="thread-activity"]').text()).toContain("stage new -> contacted");
+    expect(phone.get('[data-testid="thread-activity"]').text()).toContain("Stage: new → contacted");
     expect(phone.get('[data-testid="thread-timeline"]').text()).not.toContain("stage new");
     expect(desktop.find('[data-testid="thread-activity"]').exists()).toBe(false);
     expect(phone.get('[data-testid="thread-desktop-hint"]').text()).toBe("leads.thread.desktop_hint");

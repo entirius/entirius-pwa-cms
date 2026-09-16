@@ -22,7 +22,7 @@
           <span v-if="hook.business_cost"> — {{ hook.business_cost }}</span>
         </li>
       </ul>
-      <p v-else class="intel__fact">{{ $t("leads.intel.no_hooks") }}</p>
+      <p v-else class="intel__fact" data-testid="intel-no-hooks">{{ $t("leads.intel.no_hooks") }}</p>
     </div>
   </section>
 </template>

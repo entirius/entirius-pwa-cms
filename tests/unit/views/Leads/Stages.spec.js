@@ -1,7 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
 
-const api = vi.hoisted(() => ({ GET_Stages: vi.fn(), PATCH_Stage: vi.fn(), DELETE_Stage: vi.fn(), POST_Stage: vi.fn() }));
+const api = vi.hoisted(() => ({
+  GET_Stages: vi.fn(),
+  GET_Rules: vi.fn(),
+  GET_Companies: vi.fn(),
+  PATCH_Stage: vi.fn(),
+  DELETE_Stage: vi.fn(),
+  POST_Stage: vi.fn(),
+}));
 const notify = vi.hoisted(() => ({ spawnNotification: vi.fn() }));
 vi.mock("@/api/leads/api", () => api);
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => notify }));
@@ -15,10 +22,13 @@ describe("Leads Stages", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     api.GET_Stages.mockImplementation(() => Promise.resolve({ data: { results: stages() } }));
+    api.GET_Rules.mockResolvedValue({ data: { results: [{ id: 5, stage_id: 1, is_active: true, action: "communicate", template_key: "cold" }] } });
+    api.GET_Companies.mockResolvedValue({ data: { count: 0, results: [] } });
   });
 
   async function deleteFirstStage(wrapper) {
     await wrapper.findAll('[data-testid="stage-delete"]')[0].trigger("click");
+    await flushPromises();
     await wrapper.get('[data-testid="confirm-ok"]').trigger("click");
     await flushPromises();
   }
@@ -36,12 +46,27 @@ describe("Leads Stages", () => {
     const wrapper = mount(Stages, { global: { stubs } });
     await flushPromises();
     await wrapper.findAll('[data-testid="stage-delete"]')[0].trigger("click");
+    await flushPromises();
     const sheet = wrapper.get('[data-testid="confirm-sheet"]');
-    expect(sheet.text()).toContain('leads.stages.delete_confirm::{"label":"New"}');
+    expect(sheet.text()).toContain("Delete the stage “New”? It holds no companies.");
     expect(api.DELETE_Stage).not.toHaveBeenCalled();
     await sheet.get('[data-testid="confirm-cancel"]').trigger("click");
     expect(wrapper.find('[data-testid="confirm-sheet"]').exists()).toBe(false);
     expect(api.DELETE_Stage).not.toHaveBeenCalled();
+  });
+
+  // FIX-17b item 8: the question counts the companies of the stage; the rules the Board badges show here too.
+  it("delete names how many companies the stage holds, and the rows show their rules", async () => {
+    api.GET_Companies.mockResolvedValue({ data: { count: 3, results: [] } });
+    const wrapper = mount(Stages, { global: { stubs } });
+    await flushPromises();
+    expect(wrapper.findAll('[data-testid="stage-row"]')[0].get('[data-testid="stage-rules"]').text()).toBe(
+      'leads.board.rules_one::{"count":1}'
+    );
+    await wrapper.findAll('[data-testid="stage-delete"]')[0].trigger("click");
+    await flushPromises();
+    expect(api.GET_Companies).toHaveBeenCalledWith({ stage: "new", page_size: 1 });
+    expect(wrapper.get('[data-testid="confirm-sheet"]').text()).toContain("The stage “New” holds 3 companies.");
   });
 
   // FIX-17 item 16: the stage kind is a word, never the raw enum value.

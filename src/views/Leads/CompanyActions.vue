@@ -2,8 +2,8 @@
   <div class="ld-row" data-testid="company-actions">
     <router-link
       v-if="company.customer_uid && hasAccounts"
-      class="ld-badge ld-badge--link"
-      :to="{ name: 'CustomerDetail', params: { uid: company.customer_uid } }"
+      class="ld-link"
+      :to="{ name: 'CustomerDetail', params: { uid: company.customer_uid }, query: { back: $route.fullPath } }"
       data-testid="company-known-customer"
     >
       {{ $t("leads.company.known_customer") }}<template v-if="company.customer_name">: {{ company.customer_name }}</template>

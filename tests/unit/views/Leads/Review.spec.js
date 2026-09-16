@@ -15,6 +15,7 @@ const api = vi.hoisted(() => ({
   POST_ReviewSkipCompany: vi.fn(),
   POST_ReviewRewrite: vi.fn(),
   POST_ReviewEdit: vi.fn(),
+  GET_WaitingMessages: vi.fn(),
 }));
 vi.mock("@/api/communicator/api", () => api);
 const munin = vi.hoisted(() => ({ toolboxStatus: "", isModuleEnabled: () => true }));
@@ -68,17 +69,20 @@ describe("Leads Review", () => {
     api.GET_ReviewMessage.mockResolvedValue(draft);
     api.GET_ReviewList.mockResolvedValue({ data: { results: [{ id: 5 }] } });
     api.GET_ReviewNext.mockRejectedValue({ response: { status: 404 } });
+    api.GET_WaitingMessages.mockResolvedValue([]);
     munin.toolboxStatus = "";
   });
   afterEach(() => vi.useRealTimers());
 
   // FIX-17 item 5: the confirmation stays readable (>= 4 s), it is not gone before the eye reaches it.
   // FIX-17a item 2: it confirms the slot the send run will use — never a time that has already passed.
+  // FIX-17b item 13: that slot is the waiting list's `next_slot`, the one the Inbox reads, not `scheduled_at`.
   it("after Send the screen confirms the send state for 4 s before it moves on", async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-09-21T06:00:00Z"));
     channelTimeZone.value = "UTC";
-    api.POST_ReviewAccept.mockReturnValue(ok({ status: "approved", scheduled_at: "2026-09-21T08:07:00Z" }));
+    api.POST_ReviewAccept.mockReturnValue(ok({ id: 5, status: "approved", scheduled_at: "2026-09-21T07:00:00Z" }));
+    api.GET_WaitingMessages.mockResolvedValue([{ id: 5, next_slot: "2026-09-21T08:07:00Z" }]);
     const wrapper = await mountReview();
     await wrapper.get('[data-testid="review-send"]').trigger("click");
     await flushPromises();

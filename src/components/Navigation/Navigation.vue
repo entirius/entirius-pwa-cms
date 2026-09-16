@@ -14,7 +14,7 @@
             :key="`${r.labelKey}-${i}`"
             :to="{ path: r.route, query: r.query }"
             class="nav-link"
-            :class="isSidebarCollapsed ? 'nav-link--collapsed' : ''"
+            :class="[isSidebarCollapsed ? 'nav-link--collapsed' : '', { 'router-link-active': isNavActive(r, $route?.path) }]"
           >
             <FontAwesomeIcon :icon="r.icon" class="nav-icon" />
             <span v-if="!isSidebarCollapsed" class="nav-label">{{
@@ -31,6 +31,7 @@
       :key="`mobile-${r.labelKey}-${i}`"
       :to="{ path: r.route, query: r.query }"
       class="mobile-nav__item t-basic-600"
+      :class="{ 'router-link-active': isNavActive(r, $route?.path) }"
     >
       <FontAwesomeIcon :icon="r.icon" class="mobile-nav__icon" />
       <span class="mobile-nav__label">{{ $t(r.labelKey) }}</span>
@@ -43,7 +44,7 @@ import { useUserStore } from "@/stores/user";
 import { useQualityStore } from "@/stores/quality";
 import { useMuninStore } from "@/stores/munin";
 import { useIsDesktop } from "@/composables/useIsDesktop";
-import { buildNavRoutes, filterNavRoutes } from "./nav-routes";
+import { buildNavRoutes, filterNavRoutes, isNavActive } from "./nav-routes";
 
 export default {
   props: {
@@ -63,6 +64,9 @@ export default {
     return {
       routes: buildNavRoutes(),
     };
+  },
+  methods: {
+    isNavActive,
   },
   computed: {
     user() {

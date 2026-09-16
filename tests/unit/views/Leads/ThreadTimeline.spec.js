@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { mount } from "@vue/test-utils";
-import { channelTimeZone, formatTime } from "@/utils/leadsTime";
+import { applyPolicy, channelTimeZone } from "@/utils/leadsTime";
 import ThreadTimeline from "@/views/Leads/ThreadTimeline.vue";
 
 const messages = [
@@ -22,43 +22,44 @@ describe("ThreadTimeline", () => {
     expect(wrapper.findAll(".tl__tag")).toHaveLength(1);
   });
 
-  it("a waiting bubble shows its scheduled slot — the time the Send toast named", () => {
-    const slot = "2026-09-24T09:04:30Z";
-    const waiting = [{ id: 7, subject: "Follow", scheduled_at: slot }];
-    const wrapper = mount(ThreadTimeline, { props: { messages: [messages[2]], waiting } });
-    expect(wrapper.get('[data-testid="timeline-time"]').text()).toBe(formatTime(slot));
-  });
-
-  it("two waiting follow-ups with the same subject and created_at each show their own slot by message id", () => {
-    const past = new Date(Date.now() - 7 * 60000).toISOString();
-    const future = "2099-01-02T08:00:00Z";
+  // FIX-17b item 15: a waiting bubble says what the Inbox says — the shared send state of its own `next_slot`.
+  it("two waiting follow-ups with the same subject each state their own next_slot by message id", () => {
+    channelTimeZone.value = "UTC";
     const first = { ...messages[2], message_id: 11 };
     const second = { ...messages[2], message_id: 12 };
     const waiting = [
-      { id: 12, subject: "Follow", created_at: messages[2].at, scheduled_at: future },
-      { id: 11, subject: "Follow", created_at: messages[2].at, scheduled_at: past },
+      { id: 12, subject: "Follow", next_slot: "2099-01-02T08:00:00Z" },
+      { id: 11, subject: "Follow", next_slot: new Date(Date.now() - 7 * 60000).toISOString() },
     ];
     const wrapper = mount(ThreadTimeline, { props: { messages: [first, second], waiting } });
-    const times = wrapper.findAll('[data-testid="timeline-time"]').map((node) => node.text());
-    expect(times).toEqual([formatTime(past), formatTime(future)]);
-    const statuses = wrapper.findAll('[data-testid="status-scheduled"]').map((node) => node.text().includes("leads.status.held"));
-    expect(statuses).toEqual([true, false]);
-  });
-
-  it("a mail waiting for its window says scheduled for <day> <HH:MM>", () => {
-    channelTimeZone.value = "UTC";
-    const slot = "2099-01-02T08:00:00Z";
-    const wrapper = mount(ThreadTimeline, { props: { messages: [messages[2]], waiting: [{ id: 7, subject: "Follow", scheduled_at: slot }] } });
-    expect(wrapper.get('[data-testid="timeline-time"]').text()).toBe("02.01 08:00");
-    expect(wrapper.get('[data-testid="status-scheduled"]').text()).not.toContain("leads.status.held");
+    const states = wrapper.findAll('[data-testid="status-scheduled"]').map((node) => node.text());
+    expect(states[0]).toContain("due — waiting for the send run");
+    expect(states[1]).toContain("goes out at 02.01 08:00");
+    expect(wrapper.find('[data-testid="timeline-time"]').exists()).toBe(false);
     channelTimeZone.value = undefined;
   });
 
-  it("a scheduled message whose first send beat has passed says the send policy holds it", () => {
-    const slot = new Date(Date.now() - 7 * 60000).toISOString();
-    const waiting = [{ id: 7, subject: "Follow", scheduled_at: slot }];
-    const wrapper = mount(ThreadTimeline, { props: { messages: [messages[2]], waiting } });
-    expect(wrapper.get('[data-testid="status-scheduled"]').text()).toContain("leads.status.held");
+  it("a waiting mail with the cap used up says so, whatever its slot", () => {
+    applyPolicy({ timezone: "UTC", sent_today: 5, daily_cap: 5 });
+    const wrapper = mount(ThreadTimeline, { props: { messages: [messages[2]], waiting: [{ id: 7, next_slot: "2099-01-02T08:00:00Z" }] } });
+    expect(wrapper.get('[data-testid="status-scheduled"]').text()).toContain("daily cap reached");
+    applyPolicy(null);
+  });
+
+  it("a sent message keeps its own time", () => {
+    const wrapper = mount(ThreadTimeline, { props: { messages: [messages[1]] } });
+    expect(wrapper.find('[data-testid="timeline-time"]').exists()).toBe(true);
+  });
+
+  // FIX-17b item 3: a reply's quoted history is folded behind a toggle.
+  it("folds the quoted history of a reply behind a toggle", async () => {
+    const body = "Hello,\n\nthanks.\n\n> On Mon, 14 Sep 2026 at 09:00, Outreach wrote:\n> Here is what we found.";
+    const reply = { ...messages[0], body_text: body };
+    const wrapper = mount(ThreadTimeline, { props: { messages: [reply] } });
+    expect(wrapper.get(".tl__body").text()).toBe("Hello,\n\nthanks.");
+    expect(wrapper.find('[data-testid="timeline-quote"]').exists()).toBe(false);
+    await wrapper.get('[data-testid="timeline-quote-toggle"]').trigger("click");
+    expect(wrapper.get('[data-testid="timeline-quote"]').text()).toContain("Here is what we found.");
   });
 
   it("offers opt-out confirmation on a suspected opt-out reply", async () => {

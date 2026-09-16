@@ -223,13 +223,17 @@ async function onConflict(err) {
   return goNext();
 }
 
+// The confirmation reads the same `next_slot` the Inbox and the waiting table read — one source for the slot.
+async function nextSlotOf(accepted) {
+  const waiting = await api.GET_WaitingMessages().catch(() => []);
+  return waiting.find((mail) => mail.id === accepted.id)?.next_slot || "";
+}
+
 function accept() {
   return act(
     () => api.POST_ReviewAccept(message.value.id),
-    (data) => {
-      // Accepting sets `scheduled_at` to the policy slot the send run will use — the same state the Inbox
-      // and the waiting table read from `next_slot`, so the confirmation promises nothing that slides.
-      scheduledLabel.value = t("leads.review.accepted", { state: sendStateLabel(sendState(data.scheduled_at)) });
+    async (data) => {
+      scheduledLabel.value = t("leads.review.accepted", { state: sendStateLabel(sendState(await nextSlotOf(data))) });
       nextTimer = setTimeout(goNext, SCHEDULED_MS);
     }
   );

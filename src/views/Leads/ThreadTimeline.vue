@@ -11,11 +11,22 @@
       <div class="tl__bubble">
         <p v-if="entry.tag" class="tl__tag">{{ entry.tag }}</p>
         <p v-if="entry.subject" class="tl__subject">{{ entry.subject }}</p>
-        <p class="tl__body">{{ entry.text }}</p>
+        <p class="tl__body">{{ entry.text.own }}</p>
+        <template v-if="entry.text.quoted">
+          <button
+            class="tl__quote-toggle"
+            :aria-expanded="String(quotesOpen.has(i))"
+            data-testid="timeline-quote-toggle"
+            @click="toggleQuote(i)"
+          >
+            {{ $t(quotesOpen.has(i) ? "leads.thread.quote_hide" : "leads.thread.quote_show") }}
+          </button>
+          <p v-if="quotesOpen.has(i)" class="tl__body tl__quote" data-testid="timeline-quote">{{ entry.text.quoted }}</p>
+        </template>
         <p class="tl__meta">
-          <span data-testid="timeline-time">{{ formatTime(entry.at) }}</span>
+          <span v-if="!entry.sendState" data-testid="timeline-time">{{ formatTime(entry.at) }}</span>
           <span v-if="entry.status" class="tl__status" :data-testid="`status-${entry.status}`">
-            {{ $t(`leads.status.${entry.status}`) }}<template v-if="entry.held"> · {{ $t("leads.status.held") }}</template>
+            {{ $t(`leads.status.${entry.status}`) }}<template v-if="entry.sendState"> · {{ entry.sendState }}</template>
           </span>
         </p>
         <div v-if="entry.optout" class="tl__optout">
@@ -33,15 +44,17 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, reactive } from "vue";
 import { t } from "@/i18n";
-import { formatTime, isOverdue } from "@/utils/leadsTime";
+import { sendStateLabel } from "@/utils/leadsLabels";
+import { splitQuote } from "@/utils/leadsThread";
+import { formatTime, sendState } from "@/utils/leadsTime";
 
 // The chat timeline of ONE communicator thread: our messages and the replies, oldest first.
 const props = defineProps({
   messages: { type: Array, default: () => [] },
   optouts: { type: Array, default: () => [] },
-  // approved/scheduled messages of this thread — their `scheduled_at` is the time a waiting bubble shows
+  // approved/scheduled messages of this thread — their `next_slot` is what a waiting bubble says, as in the Inbox
   waiting: { type: Array, default: () => [] },
   // an opt-out confirmation is in flight — the button stays disabled until it settles
   busy: { type: Boolean, default: false },
@@ -49,23 +62,28 @@ const props = defineProps({
 defineEmits(["confirm-optout"]);
 
 const WAITING_STATUSES = ["approved", "scheduled"];
+const quotesOpen = reactive(new Set());
+
+function toggleQuote(index) {
+  if (!quotesOpen.delete(index)) quotesOpen.add(index);
+}
 
 // A message entry carries its `message_id`, which names the waiting message (follow-ups share a subject).
-function slotOf(item) {
-  return props.waiting.find((message) => message.id === item.message_id)?.scheduled_at || item.at;
+function waitingState(item) {
+  const waiting = props.waiting.find((message) => message.id === item.message_id);
+  return sendStateLabel(sendState(waiting?.next_slot || ""));
 }
 
 function messageEntry(item, index, firstOut) {
   const out = item.direction === "out";
   const waiting = out && WAITING_STATUSES.includes(item.status);
-  const at = waiting ? slotOf(item) : item.at;
   return {
-    at,
+    at: item.at,
     side: out ? "out" : "in",
     subject: item.subject,
-    text: item.body_text,
+    text: splitQuote(item.body_text),
     status: out ? item.status : "",
-    held: waiting && isOverdue(at),
+    sendState: waiting ? waitingState(item) : "",
     tag: out && index !== firstOut ? t("leads.thread.followup") : "",
     optout: out ? null : props.optouts.find((reply) => reply.received_at === item.at) || null,
   };
@@ -133,6 +151,28 @@ const entries = computed(() => {
   margin: 0;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+}
+.tl__quote-toggle {
+  min-height: 24px;
+  margin-top: var(--space-100);
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--c-support-400);
+  font-size: var(--fs-100);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.tl__quote {
+  margin-top: var(--space-100);
+  color: var(--c-basic-600);
+}
+/* A phone has no width to spare: bubbles take nearly the whole line and a slimmer padding. */
+@media (max-width: 1023px) {
+  .tl__bubble {
+    max-width: 95%;
+    padding: var(--space-200);
+  }
 }
 .tl__optout {
   display: flex;

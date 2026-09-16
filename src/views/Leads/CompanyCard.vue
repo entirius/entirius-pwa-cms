@@ -1,10 +1,10 @@
 <template>
-  <article class="card" :data-company="company.domain" data-testid="board-card">
+  <article class="card" :data-company="company.domain" data-testid="board-card" @click="openCard">
     <router-link :to="{ name: 'LeadsThread', params: { id: company.id } }" class="card__name" data-testid="board-card-name">
       {{ company.name || company.domain }}
     </router-link>
     <p class="card__domain ld-muted">{{ company.domain }}</p>
-    <p class="ld-muted">{{ companyTypeLabel(company.company_type) }} · {{ lastActivity }}</p>
+    <p class="ld-muted" data-testid="board-card-activity">{{ companyTypeLabel(company.company_type) }} · {{ lastActivity }}</p>
     <span v-if="company.do_not_contact" class="ld-badge">{{ $t("leads.company.do_not_contact") }}</span>
     <select
       class="ld-input card__stage"
@@ -20,17 +20,29 @@
 
 <script setup>
 import { computed } from "vue";
+import { useRouter } from "vue-router";
+import { t } from "@/i18n";
 import { companyTypeLabel } from "@/utils/leadsLabels";
-import { formatTime } from "@/utils/leadsTime";
+import { formatDayTime } from "@/utils/leadsTime";
 
-// Board card: the company name links to its card, the domain sits below it; type and last activity read as words
-// and Leads times. The select is the keyboard alternative to drag.
+// Board card: the whole card opens the company (the name stays the keyboard link); type and last activity read as
+// words and one "DD.MM HH:MM" format. The select is the keyboard alternative to drag.
 const props = defineProps({
   company: { type: Object, required: true },
   stages: { type: Array, default: () => [] },
 });
 defineEmits(["move"]);
-const lastActivity = computed(() => formatTime(props.company.last_activity_at) || "\u2014");
+const router = useRouter();
+const lastActivity = computed(() =>
+  props.company.last_activity_at
+    ? t("leads.board.last_activity", { time: formatDayTime(props.company.last_activity_at) })
+    : t("leads.board.no_activity")
+);
+
+function openCard(event) {
+  if (event.target.closest("a, select")) return;
+  router.push({ name: "LeadsThread", params: { id: props.company.id } });
+}
 </script>
 
 <style scoped>
@@ -42,7 +54,10 @@ const lastActivity = computed(() => formatTime(props.company.last_activity_at) |
   border: 1px solid var(--c-basic-300);
   border-radius: 6px;
   background: var(--c-basic-100);
-  cursor: grab;
+  cursor: pointer;
+}
+.card:hover {
+  border-color: var(--c-support-400);
 }
 .card__name {
   font-weight: 600;

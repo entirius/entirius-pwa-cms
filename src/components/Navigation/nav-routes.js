@@ -277,6 +277,8 @@ export function buildNavRoutes() {
       icon: "inbox",
       query: {},
       app: ["leads"],
+      // a company card has no entry of its own — it is opened from the Inbox work, so the Inbox stays lit
+      activeOn: ["/leads/companies"],
     },
     {
       route: "/leads/board",
@@ -356,6 +358,11 @@ export function buildNavRoutes() {
 // (mirrors the router guard's `meta.module` gate — see router/index.js).
 // `desktopOnly` items are hidden below the desktop breakpoint (useIsDesktop) — on a phone the
 // leads panel keeps its plan-13 shape: no bottom bar over the Inbox/Review sticky actions.
+// An entry is also lit on the pages it owns without a nav item of their own (`activeOn` path prefixes).
+export function isNavActive(route, path = "") {
+  return (route.activeOn || []).some((prefix) => path.startsWith(prefix));
+}
+
 export function filterNavRoutes(
   routes,
   { activeApp, qualityAvailable, isModuleEnabled, isDesktop }

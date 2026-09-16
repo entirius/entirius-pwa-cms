@@ -71,11 +71,19 @@ describe("Company card actions", () => {
   });
 
   // FIX-17 item 14: the link target is at least 24 px and the card names the customer, never the bare uid.
-  it("the known-customer link is a 32 px target and carries the customer name", () => {
+  // FIX-17b item 4: it looks like a link, and the customer page's back arrow returns to this card.
+  it("the known-customer link is a 32 px link that carries the customer name and the way back", () => {
     munin.isModuleInstalled.mockReturnValue(true);
     const linked = { ...company(), customer_uid: "91010000-0000", customer_name: "Jan Kowalski" };
-    const link = mountActions({ company: linked }).get('[data-testid="company-known-customer"]');
-    expect(link.classes()).toContain("ld-badge--link");
+    const link = mount(CompanyActions, {
+      props: { company: linked },
+      global: {
+        mocks: { $route: { fullPath: "/leads/companies/7" } },
+        stubs: { CommunicateModal: true, RouterLink: { props: ["to"], template: "<a :data-back='to.query.back'><slot /></a>" } },
+      },
+    }).get('[data-testid="company-known-customer"]');
+    expect(link.classes()).toContain("ld-link");
+    expect(link.attributes("data-back")).toBe("/leads/companies/7");
     expect(link.text()).toContain("Jan Kowalski");
     expect(link.text()).not.toContain("91010000");
   });

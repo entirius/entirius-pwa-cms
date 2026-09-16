@@ -2,13 +2,17 @@
   <div class="rw" role="dialog" :aria-label="$t('leads.rewrite.title')" data-testid="rewrite-modal">
     <div class="rw__sheet">
       <p class="rw__title">{{ $t("leads.rewrite.title") }}</p>
+      <label class="rw__label" for="rewrite-notes">{{ $t("leads.rewrite.label") }}</label>
       <textarea
+        id="rewrite-notes"
         v-model="notes"
         class="rw__notes"
+        aria-describedby="rewrite-hint"
         rows="4"
         :placeholder="$t('leads.rewrite.placeholder')"
         data-testid="rewrite-notes"
       ></textarea>
+      <p id="rewrite-hint" class="rw__hint" data-testid="rewrite-hint">{{ $t("leads.rewrite.hint") }}</p>
       <div class="rw__actions">
         <button class="rw__btn" data-testid="rewrite-cancel" @click="$emit('close')">
           {{ $t("leads.review.cancel") }}
@@ -34,6 +38,14 @@ const notes = ref("");
 </script>
 
 <style scoped>
+.rw__label {
+  font-weight: 600;
+}
+.rw__hint {
+  margin: 0;
+  font-size: var(--fs-100);
+  color: var(--c-basic-600);
+}
 .rw {
   position: fixed;
   inset: 0;

@@ -516,11 +516,11 @@
   },
   "panels": {
     "pages": "Pages",
-    "pages_desc": "Zarządzanie treścią -- strony statyczne, wpisy blogowe, treści produktowe i kategorie",
+    "pages_desc": "Zarządzanie treścią — strony statyczne, wpisy blogowe, treści produktowe i kategorie",
     "pim": "PIM",
-    "pim_desc": "Zarządzanie informacją produktową -- atrybuty, katalogi, dane produktowe",
+    "pim_desc": "Zarządzanie informacją produktową — atrybuty, katalogi, dane produktowe",
     "points": "Punkty Odbioru",
-    "points_desc": "Punkty odbioru -- paczkomaty, salony, lokalizacje",
+    "points_desc": "Punkty odbioru — paczkomaty, salony, lokalizacje",
     "forms": "Formularze Kontaktowe",
     "forms_desc": "Zgloszenia z formularzy kontaktowych i ustawienia powiadomień",
     "agreements": "Zgody",
@@ -531,27 +531,27 @@
     "contact_admin": "Skontaktuj się z administratorem, aby włączyć ten moduł",
     "panel_locked": "Panel zablokowany",
     "emails": "E-maile",
-    "emails_desc": "Konfiguracja szablonow email -- branding, tresc, ustawienia kanalow",
+    "emails_desc": "Konfiguracja szablonow email — branding, tresc, ustawienia kanalow",
     "faq": "FAQ",
-    "faq_desc": "Grupy i pytania FAQ -- pytania, odpowiedzi, przypisanie do kanałów",
+    "faq_desc": "Grupy i pytania FAQ — pytania, odpowiedzi, przypisanie do kanałów",
     "pricing": "Ceny",
     "pricing_desc": "Zarządzanie cenami: edycja hurtowa, klasy podatkowe, kanały, waluty",
     "stock": "Stany magazynowe",
-    "stock_desc": "Zarządzanie stanami magazynowymi -- ilości, import CSV",
+    "stock_desc": "Zarządzanie stanami magazynowymi — ilości, import CSV",
     "accounts": "Konta",
-    "accounts_desc": "Konta klientów -- profile, adresy, grupy",
+    "accounts_desc": "Konta klientów — profile, adresy, grupy",
     "checkout_orders": "Zamówienia",
-    "checkout_orders_desc": "Zamówienia -- przeglądanie, statusy, płatności",
+    "checkout_orders_desc": "Zamówienia — przeglądanie, statusy, płatności",
     "atlas": "Atlas",
     "atlas_desc": "Źródła, feedy, mapowania, produkty i logi integracji",
     "enricher": "Wzbogacanie",
-    "enricher_desc": "Kolejka wzbogacania treści -- recenzja propozycji AI, akceptacja do PIM, zlecanie zadań",
+    "enricher_desc": "Kolejka wzbogacania treści — recenzja propozycji AI, akceptacja do PIM, zlecanie zadań",
     "translation": "Tłumaczenia",
-    "translation_desc": "Panel tłumaczeń -- śledzenie postępu tłumaczeń PIM i treści",
+    "translation_desc": "Panel tłumaczeń — śledzenie postępu tłumaczeń PIM i treści",
     "promo": "Promocje",
     "promo_desc": "Kampanie promocyjne i zarządzanie rabatami",
     "pricefighter": "PriceFighter",
-    "pricefighter_desc": "Konkurencyjne ceny -- analiza luk, strategie, wsadowe zastosowanie",
+    "pricefighter_desc": "Konkurencyjne ceny — analiza luk, strategie, wsadowe zastosowanie",
     "leads": "Leady",
     "leads_desc": "Skrzynka sprzedaży — przegląd szkiców, odpowiedzi, wątki firm",
     "communicator": "Communicator",
@@ -2994,7 +2994,10 @@
       "refresh": "Odśwież",
       "untitled": "(bez tematu)",
       "pick": "Wybierz szkic do przejrzenia",
-      "position": "{index} z {count}"
+      "position": "{index} z {count}",
+      "detail_empty_title": "Kolejka jest pusta",
+      "detail_empty": "Tablica etapów pokazuje każdą firmę i jej etap — otwórz kartę, aby do niej napisać lub ponowić audyt.",
+      "open_board": "Otwórz tablicę etapów"
     },
     "review": {
       "title": "Przegląd",
@@ -3029,13 +3032,15 @@
     "rewrite": {
       "title": "Przepisz z uwagą",
       "placeholder": "np. krócej, wspomnij o koszyku",
-      "submit": "Przepisz"
+      "submit": "Przepisz",
+      "label": "Co zmienić?",
+      "hint": "Wpisz uwagę, aby włączyć „Przepisz” — szkic zostanie przepisany zgodnie z nią."
     },
     "intel": {
       "title": "Wywiad i haczyki",
       "platform": "Platforma",
       "industry": "Branża",
-      "no_hooks": "Brak haczyków",
+      "no_hooks": "Brak haczyków — pojawią się po analizie audytu strony tej firmy. Jeśli się nie pojawią, uruchom „Ponów audyt” na karcie firmy (komputer).",
       "no_audit": "Brak audytu strony",
       "audit_status": "Status audytu",
       "strategy": {
@@ -3067,16 +3072,18 @@
         "replied": "z odpowiedzią",
         "closed": "zamknięty"
       },
-      "earlier_reply": "jest odpowiedź"
+      "earlier_reply": "Odpowiedź jest w tym wątku",
+      "quote_show": "Pokaż cytowany tekst",
+      "quote_hide": "Ukryj cytowany tekst"
     },
     "send_state": {
       "at": "wysyłka o {time}",
       "due": "gotowa — czeka na najbliższą wysyłkę",
       "held": "czeka na okno wysyłki",
-      "cap": "dzienny limit wyczerpany — dziś nic więcej nie wyjdzie"
+      "cap": "dzienny limit wyczerpany — dziś nic więcej nie wyjdzie",
+      "held_window": "czeka na okno wysyłki ({window})"
     },
     "status": {
-      "held": "czeka na okno wysyłki lub dzienny limit",
       "sent": "wysłana",
       "scheduled": "zaplanowana",
       "failed": "błąd",
@@ -3108,7 +3115,10 @@
       "move_failed": "Nie udało się przenieść firmy",
       "rules_one": "1 reguła",
       "rules_few": "{count} reguły",
-      "rules_many": "{count} reguł"
+      "rules_many": "{count} reguł",
+      "more_stages": "Więcej etapów",
+      "last_activity": "ostatnia aktywność {time}",
+      "no_activity": "Brak aktywności"
     },
     "company": {
       "do_not_contact": "Nie kontaktować",
@@ -3160,10 +3170,10 @@
       "to_board": "Otwórz tablicę etapów",
       "failed": "Wysyłka pliku nie powiodła się",
       "columns_title": "Kolumny",
-      "column_company": "company_name — nazwa firmy",
-      "column_domain": "domain — domena sklepu (albo website, albo host adresu e-mail kontaktu)",
-      "column_contact": "first_name, last_name, email — dane kontaktu",
-      "column_legal_basis": "legal_basis — jedna z wartości: consent, legitimate_interest, contract",
+      "column_company": "company_name (opcjonalna) — nazwa firmy",
+      "column_domain": "domain (wymagana) — domena sklepu; może być też website albo host adresu e-mail kontaktu",
+      "column_contact": "first_name, last_name, email (opcjonalne) — dane kontaktu",
+      "column_legal_basis": "legal_basis (opcjonalna) — jedna z wartości: consent, legitimate_interest, contract",
       "after_title": "Po wysłaniu pliku",
       "after": "Każda firma trafia do pierwszego etapu tablicy. Dalej działają reguły etapu — audyt strony albo szkic czekający w skrzynce. Nic nie wychodzi bez Twojego przeglądu.",
       "sample": "Pobierz przykładowy plik CSV",
@@ -3180,7 +3190,13 @@
       "add": "Dodaj etap",
       "order_failed": "Nie udało się zapisać kolejności etapów — wczytano aktualną kolejność",
       "delete_title": "Usuń etap",
-      "delete_confirm": "Usunąć etap „{label}”? Najpierw przenieś jego firmy do innego etapu — etapu, w którym są firmy, nie można usunąć."
+      "delete_confirm": "Usunąć etap „{label}”? Nie ma w nim firm.",
+      "help": "Przeciągnij lub użyj strzałek, aby ułożyć etapy w kolejności tablicy. Nazwę etapu zmienisz w jego polu; znacznik pokazuje klucz i rodzaj etapu.",
+      "key_help": "Klucz — stała nazwa używana przez reguły i importy; nie można jej później zmienić",
+      "label_help": "Etykieta — nazwa widoczna na tablicy",
+      "delete_busy_one": "Etap „{label}” zawiera 1 firmę. Najpierw przenieś ją do innego etapu — etapu, w którym są firmy, nie można usunąć.",
+      "delete_busy_few": "Etap „{label}” zawiera {count} firmy. Najpierw przenieś je do innego etapu — etapu, w którym są firmy, nie można usunąć.",
+      "delete_busy_many": "Etap „{label}” zawiera {count} firm. Najpierw przenieś je do innego etapu — etapu, w którym są firmy, nie można usunąć."
     },
     "company_type": {
       "MANUFACTURER": "Producent",
@@ -3200,7 +3216,20 @@
       "unresponsive": "bez odzewu"
     },
     "activity": {
-      "draft": "Szkic — {status}"
+      "draft": "Szkic — {status}",
+      "stage": "Etap: {from} → {to}",
+      "legal_basis_set": "Podstawa prawna ustawiona: {to}",
+      "legal_basis_changed": "Podstawa prawna zmieniona z {from} na {to}",
+      "blocked": "Zablokowano: {reason}"
+    },
+    "block_reason": {
+      "no_eligible_contact": "brak kontaktu, do którego można pisać",
+      "do_not_contact": "oznaczono: nie kontaktować",
+      "no_email": "kontakt nie ma adresu e-mail",
+      "no_legal_basis": "kontakt nie ma podstawy prawnej",
+      "opted_out": "kontakt zrezygnował",
+      "anonymised": "kontakt zanonimizowano",
+      "no_contact": "brak kontaktu"
     }
   },
   "notification_bar": {

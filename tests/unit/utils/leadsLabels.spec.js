@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { activityText, companyTypeLabel, legalBasisLabel, stageKindLabel } from "@/utils/leadsLabels";
+import { activityText, companyTypeLabel, legalBasisLabel, sendStateLabel, stageKindLabel } from "@/utils/leadsLabels";
 import { pluralKey } from "@/utils/plural";
 
 // FIX-17 items 14-16: enum values, statuses and counts read as words on every leads screen.
@@ -14,10 +14,29 @@ describe("leads labels", () => {
     expect(companyTypeLabel("FRANCHISE")).toBe("FRANCHISE");
   });
 
-  it("translates the status of a draft activity, leaves other messages alone", () => {
+  it("translates the status of a draft activity", () => {
     expect(activityText("draft review_required")).toBe("Draft — to review");
-    expect(activityText("stage new -> contacted")).toBe("stage new -> contacted");
     expect(activityText("")).toBe("");
+  });
+
+  // FIX-17b item 1: activity lines are sentences built from labels, never raw codes.
+  it("builds sentences for stage, legal basis and blocked activities", () => {
+    expect(activityText("stage new -> contacted")).toBe("Stage: new → contacted");
+    expect(activityText("legal basis None -> legitimate_interest")).toBe("Legal basis set to legitimate interest");
+    expect(activityText("legal basis  -> consent")).toBe("Legal basis set to consent");
+    expect(activityText("legal basis consent -> contract")).toBe("Legal basis changed from consent to contract");
+    expect(activityText("blocked: no_eligible_contact")).toBe("Blocked: no eligible contact");
+    expect(activityText("blocked: some_new_reason")).toBe("Blocked: some new reason");
+  });
+
+  it("any other message keeps its words without snake_case or ASCII arrows", () => {
+    expect(activityText("reply received")).toBe("Reply received");
+    expect(activityText("rule error: value_error -> retry")).toBe("Rule error: value error → retry");
+  });
+
+  it("a held state names the window hours when known", () => {
+    expect(sendStateLabel({ state: "held", window: "08:00–17:00" })).toBe("waiting for the send window (08:00–17:00)");
+    expect(sendStateLabel({ state: "held", window: "" })).toBe("waiting for the send window");
   });
 
   it("picks the plural form: one, few (2-4 outside the teens) and many", () => {

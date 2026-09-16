@@ -12,6 +12,14 @@
     <section v-else-if="reviewQueue.count" class="leads__placeholder">
       <p>{{ $t("leads.inbox.pick") }}</p>
     </section>
+    <!-- desktop, empty queue: the right pane says why it is empty and where the work is -->
+    <section v-else class="leads__placeholder" data-testid="leads-detail-empty">
+      <p class="leads__placeholder-title">{{ $t("leads.inbox.detail_empty_title") }}</p>
+      <p>{{ $t("leads.inbox.detail_empty") }}</p>
+      <router-link v-if="isDesktop" class="ld-link" :to="{ name: 'LeadsBoard' }" data-testid="leads-open-board">
+        {{ $t("leads.inbox.open_board") }}
+      </router-link>
+    </section>
   </div>
 </template>
 
@@ -19,6 +27,7 @@
 import { computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { GET_Policy } from "@/api/communicator/api";
+import { useIsDesktop } from "@/composables/useIsDesktop";
 import { useLeadsReviewStore } from "@/stores/leadsReview";
 import { useMuninStore } from "@/stores/munin";
 import { applyPolicy } from "@/utils/leadsTime";
@@ -31,6 +40,7 @@ import Inbox from "./Inbox.vue";
 const route = useRoute();
 const munin = useMuninStore();
 const reviewQueue = useLeadsReviewStore();
+const isDesktop = useIsDesktop();
 const hasDetail = computed(() => route.name !== "LeadsInbox");
 const hasInbox = computed(() => munin.isModuleEnabled("communicator"));
 
@@ -81,9 +91,27 @@ onMounted(async () => {
   }
   .leads__placeholder {
     display: flex;
+    flex-direction: column;
+    gap: var(--space-200);
     align-items: center;
     justify-content: center;
-    color: var(--c-basic-500);
+    padding: var(--space-400);
+    color: var(--c-basic-600);
+    text-align: center;
+  }
+  .leads__placeholder p {
+    margin: 0;
+  }
+  .leads__placeholder-title {
+    font-weight: 600;
+    color: var(--c-basic-800);
+  }
+  .ld-link {
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
+    color: var(--c-support-400);
+    text-decoration: underline;
   }
 }
 </style>

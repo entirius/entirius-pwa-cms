@@ -1,39 +1,53 @@
 import { ref } from "vue";
 
-// The send beat runs on every 5-minute boundary; once the first beat after the slot has run (plus a grace
-// for the beat itself) a mail still waiting is held by the send policy (window or daily cap).
-const SEND_BEAT_MS = 5 * 60 * 1000;
-const BEAT_GRACE_MS = 60 * 1000;
-
-export function isOverdue(iso, now = Date.now()) {
-  if (!iso) return false;
-  const firstBeat = Math.ceil(new Date(iso).getTime() / SEND_BEAT_MS) * SEND_BEAT_MS;
-  return now > firstBeat + BEAT_GRACE_MS;
-}
+// A slot this close to now is the send run's to take — no clock is promised for it.
+const SEND_RUN_GRACE_MS = 60 * 1000;
 
 // The channel's send policy (send settings), read by the Leads layout and by the waiting table.
 export const channelTimeZone = ref(undefined); // unset = the browser's
 export const capReached = ref(false);
+export const sendWindows = ref([]); // [{ start: "08:00", end: "17:00" }] in the channel time zone
+
+const hhmm = (value) => String(value).slice(0, 5);
 
 // The backend's slots ignore the daily cap, so only the policy tells a waiting mail nothing leaves today.
 export function applyPolicy(policy) {
   channelTimeZone.value = policy?.timezone || undefined;
   capReached.value = Boolean(policy) && policy.sent_today >= policy.daily_cap;
+  sendWindows.value = (policy?.windows || []).map((w) => ({ start: hhmm(w.start_time), end: hhmm(w.end_time) }));
 }
 
-// What a waiting mail may honestly say about its departure. `slot` is the backend's `next_slot` — the earliest
-// moment its policy allows. Only a slot in the future is a promise; a slot that is now or past means the window
-// is open and the mail waits for the send run, so the screens show a state and never a clock that slides forward.
+const localHhmm = (now) =>
+  new Date(now).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone: channelTimeZone.value });
+
+// Without known windows nothing claims the window is closed.
+function windowOpen(now) {
+  if (!sendWindows.value.length) return true;
+  const time = localHhmm(now);
+  return sendWindows.value.some(({ start, end }) => start <= time && time < end);
+}
+
+const windowHours = () => sendWindows.value.map(({ start, end }) => `${start}–${end}`).join(", ");
+
+// What a waiting mail may honestly say about its departure — the one helper every screen uses. `slot` is the
+// backend's `next_slot`, which ignores the daily cap: a used-up cap wins over any slot, a closed window names its
+// hours, and only a future slot inside an open window is a clock; a slot that is now or past is due.
 export function sendState(slot, now = Date.now()) {
-  if (!slot) return { state: "held" };
-  if (new Date(slot).getTime() - now > BEAT_GRACE_MS) return { state: "at", time: formatTime(slot, new Date(now)) };
-  return capReached.value ? { state: "cap" } : { state: "due" };
+  if (capReached.value) return { state: "cap" };
+  if (!slot || !windowOpen(now)) return { state: "held", window: windowHours() };
+  if (new Date(slot).getTime() - now > SEND_RUN_GRACE_MS) return { state: "at", time: formatTime(slot, new Date(now)) };
+  return { state: "due" };
 }
 
 const dayKey = (date, timeZone) => date.toLocaleDateString("en-CA", { timeZone }); // "2026-09-15"
 
 // One format for every Leads/notification timestamp: 24 h "HH:MM" in the channel time zone, with "DD.MM" in
 // front when the day is not today there; empty for a missing timestamp.
+// Lists that compare days (the board) always carry "DD.MM HH:MM", so today and another day read alike.
+export function formatDayTime(iso) {
+  return iso ? formatTime(iso, new Date(0)) : "";
+}
+
 export function formatTime(iso, now = new Date()) {
   if (!iso) return "";
   const timeZone = channelTimeZone.value;

@@ -1,6 +1,5 @@
 <template>
   <div class="ld-page" data-testid="leads-import">
-    <h2 class="ld-title">{{ $t("leads.import.title") }}</h2>
     <p>{{ $t("leads.import.hint") }}</p>
     <section class="ld-field" data-testid="import-columns">
       <h3 class="import__head">{{ $t("leads.import.columns_title") }}</h3>
