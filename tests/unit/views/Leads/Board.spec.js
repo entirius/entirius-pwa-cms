@@ -48,6 +48,23 @@ describe("Leads Board", () => {
     expect(column(wrapper, "contacted").props("rules")).toHaveLength(0);
   });
 
+  // FIX-17b item 6 / FIX-17c item 7: "More stages" follows the measured overflow of the columns, not a guess.
+  it("the More stages button shows while columns run past the right edge and hides at the end", async () => {
+    const wrapper = await mountBoard();
+    const board = wrapper.get('[data-testid="board-columns"]');
+    expect(wrapper.find('[data-testid="board-scroll-right"]').exists()).toBe(false);
+    const layout = { clientWidth: 1000, scrollWidth: 1400, scrollLeft: 0 };
+    Object.keys(layout).forEach((key) => Object.defineProperty(board.element, key, { get: () => layout[key], configurable: true }));
+    board.element.scrollBy = vi.fn();
+    window.dispatchEvent(new Event("resize"));
+    await flushPromises();
+    await wrapper.get('[data-testid="board-scroll-right"]').trigger("click");
+    expect(board.element.scrollBy).toHaveBeenCalledWith({ left: 260, behavior: "smooth" });
+    layout.scrollLeft = 400;
+    await board.trigger("scroll");
+    expect(wrapper.find('[data-testid="board-scroll-right"]').exists()).toBe(false);
+  });
+
   it("a drop calls transition and keeps the card in the target column", async () => {
     api.POST_Transition.mockResolvedValue({ data: { stage: { key: "contacted" } } });
     const wrapper = await mountBoard();
