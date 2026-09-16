@@ -46,8 +46,16 @@ const bar = ref(null);
 
 // A phone toast sits above this bar (Notifications.vue), so Send / Not now stay reachable while one is on screen.
 const root = document.documentElement.style;
-onMounted(() => root.setProperty("--action-bar-height", `${bar.value.offsetHeight}px`));
-onBeforeUnmount(() => root.removeProperty("--action-bar-height"));
+// Re-measured on every resize: orientation, text wrap, a late web font or a language switch change the bar's height.
+const measure = () => root.setProperty("--action-bar-height", `${bar.value.offsetHeight}px`);
+onMounted(() => {
+  measure();
+  window.addEventListener("resize", measure);
+});
+onBeforeUnmount(() => {
+  window.removeEventListener("resize", measure);
+  root.removeProperty("--action-bar-height");
+});
 
 function pick(name) {
   menuOpen.value = false;

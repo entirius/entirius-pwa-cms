@@ -54,4 +54,18 @@ describe("toasts", () => {
     expect(document.documentElement.style.getPropertyValue("--action-bar-height")).toBe("");
     height.mockRestore();
   });
+
+  // FIX-17e item 2: the bar height changes after mount (orientation, wrap, font, language) — the offset follows it.
+  it("the toast offset follows the Review action bar height after a resize", async () => {
+    const height = vi.spyOn(HTMLElement.prototype, "offsetHeight", "get").mockReturnValue(81);
+    const bar = mount(ReviewActions, { global: { directives: { out: {} } } });
+    height.mockReturnValue(122);
+    window.dispatchEvent(new Event("resize"));
+    expect(document.documentElement.style.getPropertyValue("--action-bar-height")).toBe("122px");
+    bar.unmount();
+    height.mockReturnValue(40);
+    window.dispatchEvent(new Event("resize"));
+    expect(document.documentElement.style.getPropertyValue("--action-bar-height")).toBe("");
+    height.mockRestore();
+  });
 });
