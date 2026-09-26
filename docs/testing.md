@@ -68,6 +68,11 @@ npm run test:e2e:ui         # Playwright UI mode
 npm run test:smoke          # quick sanity (~2 min)
 ```
 
+The suite starts `npm run serve` on `:8080` unless `CMS_BASE_URL` points it at a running CMS (zeno:
+`CMS_BASE_URL=http://localhost:8180`, then no dev server starts). Against zeno also set `VUE_APP_API_URL=http://localhost:8100`,
+`VUE_APP_USERNAME=admin`, `VUE_APP_PASSWORD=admin123` and `VUE_APP_CHANNEL=default-europe`; the defaults (`admin` /
+`admin`, `default-local`) never pass the zeno login.
+
 Helpers: `tests/helpers/auth.js` (`login(page)`, `logout(page)`),
 `error-collector.js`, `suppliers-mock.js`, `suppliers-live-fixtures.js`.
 Fixture data: `tests/fixtures/`.
