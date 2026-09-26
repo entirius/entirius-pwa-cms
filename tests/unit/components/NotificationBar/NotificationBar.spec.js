@@ -135,9 +135,13 @@ describe("notification bar", () => {
     const wrapper = mountBell();
     await wrapper.get('[data-testid="notif-bell"]').trigger("click");
     await flushPromises();
+    // The second tap lands while the first read is still in flight.
+    let finishRead;
+    api.POST_MarkRead.mockImplementationOnce(() => new Promise((resolve) => (finishRead = resolve)));
     const row = wrapper.findAll('[data-testid="notif-row"]')[0];
     await row.trigger("click");
     await row.trigger("click");
+    finishRead({ data: {} });
     await flushPromises();
     expect(api.POST_MarkRead).toHaveBeenCalledTimes(1);
     expect(push).toHaveBeenCalledTimes(1);

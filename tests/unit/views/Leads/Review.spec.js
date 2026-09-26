@@ -282,7 +282,9 @@ describe("Leads Review", () => {
 
   // FIX-17 item 9: the in-app sheet asks, never the browser's confirm().
   it("leaving Edit with unsaved changes asks in the app sheet before discarding", async () => {
-    const confirm = vi.spyOn(window, "confirm");
+    // happy-dom has no window.confirm: stub it so a call would be seen.
+    const confirm = vi.fn();
+    vi.stubGlobal("confirm", confirm);
     const wrapper = await mountReview();
     wrapper.findComponent(ReviewActions).vm.$emit("edit");
     await flushPromises();
@@ -300,7 +302,7 @@ describe("Leads Review", () => {
     await flushPromises();
     expect(wrapper.find('[data-testid="edit-body"]').exists()).toBe(false);
     expect(confirm).not.toHaveBeenCalled();
-    confirm.mockRestore();
+    vi.unstubAllGlobals();
   });
 
   // FIX-17 item 7: a draft that is already scheduled or sent says so instead of a silent redirect.
