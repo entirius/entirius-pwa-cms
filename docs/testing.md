@@ -160,16 +160,19 @@ baseline file name. Tests are named `<id>-<viewport>-<theme>`. P1 policy: dark o
 on the rows of Figma frames S1, S4, S6 and S9. Rows marked `needsData` (a review draft, a booking) skip with the reason
 when the seed has no such row. Take and check baselines on a fresh `make seed` with no BDD run since: BDD adds rows.
 
-**Deterministic state** (`support/state.js`): a login at most 4 minutes old (the access JWT lives 300 s), theme,
-language `PL` and sidebar pinned through `localStorage` and a rewritten profile GET, clock frozen at
-`2026-09-26T10:00:00+02:00`, transitions, animations and the caret off, notification and config-health polls
-answered with fixed bodies. Every write to the API is answered `200 {}` (login and token refresh pass through),
-so a run changes no data on the shared stack. The harness never clicks the theme toggle or the language switch:
-both PATCH the admin profile every parallel session shares.
+**Deterministic state** (`support/state.js`): a login at most 3 minutes old (the access JWT lives 300 s) with its
+`expiryDate` cookie rebased on the frozen clock (`2026-09-26T10:00:00+02:00`), theme, language `PL` and sidebar
+pinned through `localStorage` on every page load (the profile GET is rewritten too, so the shared profile never
+leaks in at login), transitions, animations and the caret off, notification and config-health polls answered with
+fixed bodies. Every write to the API is answered `200 {}` (only login and token refresh pass through), so a run
+changes no data on the shared stack. The harness never clicks the theme toggle or the language switch: both PATCH
+the admin profile every parallel session shares.
 
-**Exit contract.** A screenshot or parity assertion that fails is a real difference (exit 1). A test that throws an
-error starting with `INFRA:` (deep link redirected, expired session, login failed, a detail the UI cannot reach) is
-infrastructure; a wrapper maps it to exit 2 and never sends it back to the coder.
+**Exit contract.** A failing screenshot, parity assertion or state action (a FAB, menu or button that is no longer
+there) is a real difference. A test that throws an error starting with `INFRA:` (stack down, login failed, deep link
+redirected, login wall instead of the screen, a list with no row to open) is infrastructure. `npm run visual` exits 1
+for both; the zeno wrapper (`make visual-check`, an operator step still to come) maps a run whose failures are all
+`INFRA:` to exit 2, so infrastructure never goes back to the coder.
 
 **Approving baselines** (operator only; agents never update baselines). The config has `updateSnapshots: "none"`, so a
 missing baseline fails instead of being written silently. On a fresh seed, review the HTML report (expected / actual /
