@@ -7,7 +7,7 @@
       {{ $t("leads.thread.company_unavailable") }}
     </p>
     <p v-if="desktopHint" class="thread__none" data-testid="thread-desktop-hint">{{ $t("leads.thread.desktop_hint") }}</p>
-    <ToolboxBanner v-if="company" />
+    <ConfigBanner v-if="company" code="toolbox.status" />
     <IntelCard v-if="company && munin.isModuleEnabled('siteintel')" :context="company" />
     <p v-if="mailMissing" class="thread__none" role="status" data-testid="thread-mail-missing">
       {{ $t("leads.thread.mail_unavailable") }}
@@ -67,10 +67,10 @@ import { useNotifyStore } from "@/stores/notify";
 import { activityText } from "@/utils/leadsLabels";
 import { threadSubject, waitingOf } from "@/utils/leadsThread";
 import { formatTime } from "@/utils/leadsTime";
+import ConfigBanner from "@/components/ConfigHealth/ConfigBanner.vue";
 import EarlierThreads from "./EarlierThreads.vue";
 import IntelCard from "./IntelCard.vue";
 import ThreadTimeline from "./ThreadTimeline.vue";
-import ToolboxBanner from "./ToolboxBanner.vue";
 
 // The company thread: the newest conversation (closed or not); older ones sit behind one expander.
 // On a phone this is the whole company card — its activity log stays apart from the mail, collapsed below.

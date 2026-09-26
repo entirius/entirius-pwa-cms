@@ -1,119 +1,242 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 
-const lists = vi.hoisted(() => ({ review_required: [], waiting: [] }));
-const GET_ReviewList = vi.hoisted(() => vi.fn(({ status }) => Promise.resolve({ data: { results: lists[status] } })));
-const GET_WaitingMessages = vi.hoisted(() => vi.fn(() => Promise.resolve(lists.waiting)));
-vi.mock("@/api/communicator/api", () => ({ GET_ReviewList, GET_WaitingMessages }));
+const route = vi.hoisted(() => ({ name: "LeadsInbox", params: {} }));
+vi.mock("vue-router", () => ({ useRoute: () => route }));
+
+// `threads/` answers per `state`; counts come with every page (UX-002c).
+const server = vi.hoisted(() => ({ rows: [], counts: { all: 0, draft: 0, waiting: 0, replied: 0 }, waiting: [] }));
+const holds = {
+  draft: (row) => Boolean(row.draft),
+  waiting: (row) => Boolean(row.waiting),
+  replied: (row) => row.status === "replied",
+};
+const threadsFromServer = ({ state }) => {
+  const results = state ? server.rows.filter((row) => holds[state](row)) : server.rows;
+  return Promise.resolve({ data: { results, next: null, counts: server.counts } });
+};
+const GET_Threads = vi.hoisted(() => vi.fn());
+const GET_WaitingMessages = vi.hoisted(() => vi.fn(() => Promise.resolve(server.waiting)));
+const POST_SendNow = vi.hoisted(() => vi.fn(() => Promise.resolve({ data: {} })));
+vi.mock("@/api/communicator/api", () => ({ GET_Threads, GET_WaitingMessages, POST_SendNow }));
+const GET_Company = vi.hoisted(() => vi.fn((id) => Promise.resolve({ data: { id, name: `Example Shop ${id}` } })));
+vi.mock("@/api/leads/api", () => ({ GET_Company }));
+const modules = vi.hoisted(() => new Set());
+vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isModuleEnabled: (key) => modules.has(key) }) }));
 
 import Inbox from "@/views/Leads/Inbox.vue";
 import { useLeadsReviewStore } from "@/stores/leadsReview";
-import { applyPolicy, channelTimeZone, formatTime } from "@/utils/leadsTime";
+import { applyPolicy, formatTime } from "@/utils/leadsTime";
+import { clearCompanyNames } from "@/utils/leadsCompanyNames";
 
-const draft = { id: 5, subject: "Your shop audit", created_at: "2026-09-21T08:00:00Z", thread: { recipient_name: "Anna" }, render_context: { company_name: "Example Shop 1" } };
 const inMinutes = (minutes) => new Date(Date.now() + minutes * 60000).toISOString();
-const mountInbox = () =>
-  mount(Inbox, { global: { mocks: { $route: { params: {} } }, stubs: { EmptyState: { props: ["title", "message"], template: "<div data-testid='inbox-empty'>{{ title }} {{ message }}<slot /></div>" }, RouterLink: { template: "<a><slot /></a>" } } } });
+const base = (id, extra) => ({
+  id,
+  subject_ref: `leads.Company:${id}`,
+  recipient_name: "",
+  recipient_email: `anna@example-shop-${id}.test`,
+  status: "open",
+  activity_at: "2026-09-26T08:00:00Z",
+  subject: "Your shop audit",
+  last_text: "",
+  draft: null,
+  waiting: null,
+  ...extra,
+});
+const draftRow = base(5, { draft: { id: 51, subject: "Draft for shop 5" }, last_text: "Hello" });
+const waitingAt = inMinutes(90);
+const waitingRow = base(6, { waiting: { id: 61, status: "scheduled", scheduled_at: waitingAt, next_slot: waitingAt } });
+const repliedRow = base(7, { status: "replied", subject_ref: "bdd:toolbox-down", recipient_name: "Jan", last_text: "Yes, call me\n\n> Hi" });
 
-describe("Leads Inbox", () => {
+const RouterLink = { props: ["to"], template: "<a :data-to='JSON.stringify(to)'><slot /></a>" };
+const mountInbox = () =>
+  mount(Inbox, {
+    global: {
+      stubs: {
+        RouterLink,
+        Loader: true,
+        FontAwesomeIcon: true,
+        FilterChip: { props: ["label", "count", "active"], emits: ["click"], template: "<button :class='{ on: active }' @click=\"$emit('click')\">{{ label }} {{ count }}</button>" },
+        EmptyState: { props: ["title", "message"], template: "<div data-testid='inbox-empty'>{{ title }} {{ message }}<slot /></div>" },
+      },
+    },
+  });
+const ids = (wrapper) => wrapper.findAll('[data-testid="inbox-item"]').map((row) => Number(row.attributes("data-thread")));
+const chip = (wrapper, key) => wrapper.get(`[data-testid="inbox-filter-${key}"]`);
+
+describe("Leads Inbox (one list: drafts, waiting mails, conversations)", () => {
   beforeEach(() => {
     setActivePinia(createPinia());
-    GET_ReviewList.mockClear();
-    GET_WaitingMessages.mockClear();
-    lists.review_required = [];
-    lists.waiting = [];
+    vi.clearAllMocks();
+    GET_Threads.mockImplementation(threadsFromServer); // a test may swap in its own answers
+    route.name = "LeadsInbox";
+    route.params = {};
+    server.rows = [draftRow, waitingRow, repliedRow];
+    server.counts = { all: 3, draft: 1, waiting: 1, replied: 1 };
+    server.waiting = [];
+    modules.clear();
+    modules.add("leads");
+    modules.add("communicator");
+    clearCompanyNames();
   });
-
-  it("lists drafts to review", async () => {
-    lists.review_required = [draft];
-    const wrapper = mountInbox();
-    await flushPromises();
-    expect(wrapper.findAll('[data-testid="inbox-item"]')).toHaveLength(1);
-    expect(wrapper.text()).toContain("Example Shop 1");
-  });
-
-  it("empty queue says how many wait and when the next goes out", async () => {
-    const at = inMinutes(60);
-    const time = formatTime(at);
-    lists.waiting = [{ id: 1, next_slot: at }, { id: 2, next_slot: inMinutes(120) }];
-    const wrapper = mountInbox();
-    await flushPromises();
-    expect(wrapper.get('[data-testid="inbox-empty"]').text()).toContain(`2 scheduled, goes out at ${time}`);
-    expect(wrapper.find('[data-testid="inbox-refresh"]').exists()).toBe(true);
-  });
-
-  it("a mail waiting for its window on another day says goes out at <day> <HH:MM>", async () => {
-    channelTimeZone.value = "UTC";
-    lists.review_required = [draft];
-    lists.waiting = [{ id: 1, next_slot: "2099-01-02T08:00:00Z" }];
-    const wrapper = mountInbox();
-    await flushPromises();
-    expect(wrapper.get('[data-testid="inbox-next"]').text()).toContain(`"state":"goes out at 02.01 08:00"`);
-    channelTimeZone.value = undefined;
-  });
-
-  // FIX-17a items 2-4: a slot the send run has already passed is a state, never a time that moves every minute.
-  it("a slot at the current minute is due, and a used-up cap says so", async () => {
-    lists.review_required = [draft];
-    lists.waiting = [{ id: 1, next_slot: inMinutes(-7) }];
-    const wrapper = mountInbox();
-    await flushPromises();
-    expect(wrapper.get('[data-testid="inbox-next"]').text()).toContain("goes out within minutes — the send window is open");
-    applyPolicy({ sent_today: 10, daily_cap: 10 });
-    lists.review_required = [];
-    useLeadsReviewStore().queueChanged();
-    await flushPromises();
-    expect(wrapper.get('[data-testid="inbox-empty"]').text()).toContain("1 scheduled, daily cap reached");
+  afterEach(() => {
     applyPolicy(null);
+    vi.useRealTimers();
   });
 
-  // FIX-17 item 4: two drafts to the same company differ by recipient and by where they sit in the queue.
-  it("a row names the recipient and its place in the queue", async () => {
-    lists.review_required = [
-      { ...draft, id: 5, thread: { recipient_email: "anna@example-shop-5.test" } },
-      { ...draft, id: 6, thread: { recipient_email: "jan@example-shop-5.test" } },
-    ];
+  it("opens on Drafts when drafts wait, with counts on the chips, and publishes the draft count", async () => {
     const wrapper = mountInbox();
     await flushPromises();
-    const rows = wrapper.findAll('[data-testid="inbox-item"]');
-    expect(rows[0].get('[data-testid="inbox-item-to"]').text()).toContain("anna@example-shop-5.test");
-    expect(rows[1].get('[data-testid="inbox-item-to"]').text()).toContain("jan@example-shop-5.test");
-    expect(rows[1].get('[data-testid="inbox-item-position"]').text()).toContain('{"index":2,"count":2}');
-  });
-
-  // FIX-17 item 8: the empty Inbox says it once — the summary line is not repeated above the empty state.
-  it("an empty queue drops the summary line and publishes the count", async () => {
-    lists.waiting = [{ id: 1, next_slot: inMinutes(60) }];
-    const wrapper = mountInbox();
-    await flushPromises();
-    expect(wrapper.find('[data-testid="inbox-summary"]').exists()).toBe(false);
-    expect(useLeadsReviewStore().count).toBe(0);
-    lists.review_required = [draft];
-    useLeadsReviewStore().queueChanged();
-    await flushPromises();
-    expect(wrapper.find('[data-testid="inbox-summary"]').exists()).toBe(true);
+    expect(chip(wrapper, "draft").classes()).toContain("on");
+    expect(chip(wrapper, "draft").text()).toBe("leads.inbox.filter.draft 1");
+    expect(ids(wrapper)).toEqual([5]);
+    expect(GET_Threads).toHaveBeenCalledWith({ sort: "activity", page: 1, page_size: 20, state: "draft" });
     expect(useLeadsReviewStore().count).toBe(1);
   });
 
-  it("empty queue with nothing scheduled still offers an action", async () => {
+  it("opens on All when no draft waits; a chip with 0 stays, dimmed", async () => {
+    server.rows = [waitingRow, repliedRow];
+    server.counts = { all: 2, draft: 0, waiting: 1, replied: 1 };
     const wrapper = mountInbox();
     await flushPromises();
-    expect(wrapper.get('[data-testid="inbox-empty"]').text()).toContain("Nothing scheduled");
-    expect(wrapper.find('[data-testid="inbox-refresh"]').exists()).toBe(true);
+    expect(chip(wrapper, "all").classes()).toContain("on");
+    expect(chip(wrapper, "draft").classes()).toContain("inbox__chip--empty");
+    expect(ids(wrapper)).toEqual([6, 7]);
   });
 
-  it("reloads the queue and the waiting mails after a review action, not on navigation", async () => {
+  it("each row carries one marker: a draft opens Review, a waiting mail says when it leaves, a reply its first line", async () => {
     const wrapper = mountInbox();
     await flushPromises();
-    expect(GET_ReviewList).toHaveBeenCalledTimes(1);
-    expect(GET_WaitingMessages).toHaveBeenCalledTimes(1);
-    await wrapper.setProps({});
+    await chip(wrapper, "all").trigger("click");
     await flushPromises();
-    expect(GET_ReviewList).toHaveBeenCalledTimes(1);
+    const [draft, waiting, replied] = wrapper.findAll('[data-testid="inbox-item"]');
+    expect(draft.find('[data-testid="inbox-marker-draft"]').exists()).toBe(true);
+    expect(draft.get('[data-testid="inbox-item-subject"]').text()).toBe("Draft for shop 5");
+    expect(draft.get('[data-testid="inbox-item-to"]').text()).toContain("anna@example-shop-5.test");
+    expect(JSON.parse(draft.get("a").attributes("data-to"))).toEqual({ name: "LeadsReview", params: { id: 51 } });
+    expect(waiting.get('[data-testid="inbox-marker-waiting"]').text()).toContain(`goes out at ${formatTime(waitingAt)}`);
+    expect(JSON.parse(waiting.get("a").attributes("data-to"))).toEqual({ name: "LeadsThread", params: { id: 6 }, query: { tab: "timeline" } });
+    expect(replied.get('[data-testid="inbox-item-state"]').text()).toContain("Yes, call me");
+    expect(replied.text()).not.toContain("> Hi");
+    expect(replied.get('[data-testid="inbox-item-name"]').text()).toBe("Jan");
+    expect(JSON.parse(replied.get("a").attributes("data-to"))).toEqual({ name: "LeadsConversation", params: { id: 7 } });
+    expect(wrapper.get('[data-thread="6"] [data-testid="inbox-item-name"]').text()).toBe("Example Shop 6");
+  });
+
+  it("a waiting mail says why it waits and offers Send now only while it can still move", async () => {
+    applyPolicy({ sent_today: 5, daily_cap: 5 });
+    server.rows = [waitingRow, base(8, { waiting: { id: 81, status: "approved", scheduled_at: inMinutes(-5), next_slot: inMinutes(-1) } })];
+    server.counts = { all: 2, draft: 0, waiting: 2, replied: 0 };
+    const wrapper = mountInbox();
+    await flushPromises();
+    const rows = wrapper.findAll('[data-testid="inbox-item"]');
+    expect(rows[0].text()).toContain("daily cap reached");
+    expect(rows[1].find('[data-testid="inbox-item-send-now"]').exists()).toBe(false);
+    await rows[0].get('[data-testid="inbox-item-send-now"]').trigger("click");
+    await flushPromises();
+    expect(POST_SendNow).toHaveBeenCalledWith(61);
+    expect(GET_Threads).toHaveBeenCalledTimes(3); // all (no drafts) → again after Send now
+  });
+
+  it("an accepted draft moves from Drafts to Waiting without a reload of the page", async () => {
+    const wrapper = mountInbox();
+    await flushPromises();
+    server.rows = [base(5, { waiting: { id: 51, status: "approved", scheduled_at: null, next_slot: waitingAt } }), repliedRow];
+    server.counts = { all: 2, draft: 0, waiting: 1, replied: 1 };
+    server.waiting = [{ id: 51, next_slot: waitingAt }];
     useLeadsReviewStore().queueChanged();
     await flushPromises();
-    expect(GET_ReviewList).toHaveBeenCalledTimes(2);
-    expect(GET_WaitingMessages).toHaveBeenCalledTimes(2);
+    // the user stays on Drafts: empty, it says what waits and when it leaves — the e2e contract (inbox-empty)
+    expect(wrapper.get('[data-testid="inbox-empty"]').text()).toContain(`1 scheduled, goes out at ${formatTime(waitingAt)}`);
+    expect(chip(wrapper, "waiting").text()).toBe("leads.inbox.filter.waiting 1");
+    expect(useLeadsReviewStore().count).toBe(0);
+  });
+
+  it("the chips are always there (inbox-summary) and other empty filters say one quiet sentence", async () => {
+    server.rows = [];
+    server.counts = { all: 0, draft: 0, waiting: 0, replied: 0 };
+    const wrapper = mountInbox();
+    await flushPromises();
+    expect(wrapper.find('[data-testid="inbox-summary"]').exists()).toBe(true);
+    expect(wrapper.get('[data-testid="inbox-empty"]').text()).toBe("No conversation yet");
+    await chip(wrapper, "replied").trigger("click");
+    await flushPromises();
+    expect(wrapper.get('[data-testid="inbox-empty"]').text()).toBe("No replies yet");
+  });
+
+  it("polls every 30 s while the tab is visible, so a new reply shows up under Replies", async () => {
+    vi.useFakeTimers();
+    const wrapper = mountInbox();
+    await flushPromises();
+    const calls = GET_Threads.mock.calls.length;
+    await vi.advanceTimersByTimeAsync(30000);
+    expect(GET_Threads.mock.calls.length).toBe(calls + 1);
+    wrapper.unmount();
+    vi.useRealTimers();
+  });
+
+  it("the open draft or thread is highlighted in the list", async () => {
+    route.name = "LeadsReview";
+    route.params = { id: "51" };
+    const wrapper = mountInbox();
+    await flushPromises();
+    expect(wrapper.get('[data-thread="5"]').classes()).toContain("inbox-row--active");
+  });
+
+  it("with leads off (communicator alone) a company's thread opens by id and no company is looked up", async () => {
+    modules.delete("leads");
+    server.rows = [waitingRow];
+    server.counts = { all: 1, draft: 0, waiting: 1, replied: 0 };
+    const wrapper = mountInbox();
+    await flushPromises();
+    expect(JSON.parse(wrapper.get('[data-thread="6"] a').attributes("data-to"))).toEqual({ name: "LeadsConversation", params: { id: 6 } });
+    expect(wrapper.get('[data-thread="6"] [data-testid="inbox-item-name"]').text()).toBe("anna@example-shop-6.test");
+    expect(GET_Company).not.toHaveBeenCalled();
+  });
+
+  it("a late answer to an older request never overwrites the newer one; loading follows the latest", async () => {
+    const wrapper = mountInbox();
+    await flushPromises();
+    const answers = [];
+    GET_Threads.mockImplementation(() => new Promise((resolve) => answers.push(resolve)));
+    const reply = (rows) => ({ data: { results: rows, next: null, counts: server.counts } });
+    const loaderHidden = () => wrapper.get("loader-stub").attributes("style")?.includes("display: none");
+    await chip(wrapper, "replied").trigger("click");
+    await chip(wrapper, "waiting").trigger("click");
+    answers[0](reply([repliedRow])); // the older request answers first
+    await flushPromises();
+    expect(ids(wrapper)).toEqual([]);
+    expect(loaderHidden()).toBeFalsy(); // the newer one still runs
+    answers[1](reply([waitingRow]));
+    await flushPromises();
+    expect(ids(wrapper)).toEqual([6]);
+    expect(loaderHidden()).toBe(true);
+    expect(chip(wrapper, "waiting").classes()).toContain("on");
+  });
+
+  it("the poll refreshes every page Show more opened instead of collapsing the list to page one", async () => {
+    vi.useFakeTimers();
+    const pageOf = { 1: [waitingRow], 2: [repliedRow] };
+    server.counts = { all: 2, draft: 0, waiting: 1, replied: 1 };
+    GET_Threads.mockImplementation(({ page }) => Promise.resolve({ data: { results: pageOf[page], next: page === 1 ? "p2" : null, counts: server.counts } }));
+    const wrapper = mountInbox();
+    await flushPromises();
+    await wrapper.get('[data-testid="inbox-more"]').trigger("click");
+    await flushPromises();
+    expect(ids(wrapper)).toEqual([6, 7]);
+    GET_Threads.mockClear();
+    await vi.advanceTimersByTimeAsync(30000);
+    expect(GET_Threads.mock.calls.map(([params]) => params.page)).toEqual([1, 2]);
+    expect(ids(wrapper)).toEqual([6, 7]);
+    wrapper.unmount();
+  });
+
+  it("a failed first load says so and falls back to All, without an unhandled rejection", async () => {
+    GET_Threads.mockRejectedValueOnce({ status: 500 });
+    const wrapper = mountInbox();
+    await flushPromises();
+    expect(chip(wrapper, "all").classes()).toContain("on");
+    expect(wrapper.get(".inbox__error").text()).toBe("Could not load the inbox — it tries again on the next refresh");
   });
 });

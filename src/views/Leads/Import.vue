@@ -28,6 +28,9 @@
         {{ $t("leads.import.upload") }}
       </button>
       <button class="ld-btn" data-testid="import-sample" @click="downloadSample">{{ $t("leads.import.sample") }}</button>
+      <router-link :to="{ name: 'LeadsCompanyNew' }" class="ld-btn import__one" data-testid="import-add-one">
+        {{ $t("leads.add.one") }}
+      </router-link>
     </div>
     <p v-if="error" class="ld-error" data-testid="import-error">{{ error }}</p>
     <section v-if="batch" class="ld-field" data-testid="import-report">
@@ -114,6 +117,11 @@ onBeforeUnmount(() => clearTimeout(timer));
 </script>
 
 <style scoped>
+.import__one {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
 .import__head {
   margin: 0;
   font-size: var(--fs-300);

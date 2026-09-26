@@ -17,6 +17,14 @@
       <label class="ld-field">{{ $t("communicator.template.language") }}
         <input v-model="form.language" class="ld-input" maxlength="2" required />
       </label>
+      <!-- the lead type this variant is for (audience cascade); without leads the value travels back unchanged -->
+      <label v-if="hasLeads" class="ld-field">{{ $t("communicator.template.audience") }}
+        <select v-model="form.audience" class="ld-input" data-testid="template-audience">
+          <option value="">{{ $t("communicator.template.audience_all") }}</option>
+          <option v-for="type in audiences" :key="type.code" :value="type.code">{{ type.label }}</option>
+        </select>
+        <span class="ld-muted">{{ $t("communicator.template.audience_help") }}</span>
+      </label>
       <label class="ld-field">{{ $t("communicator.template.subject") }}
         <input v-model="form.subject" class="ld-input" data-testid="template-subject" />
       </label>
@@ -58,14 +66,25 @@ import { useRoute } from "vue-router";
 import { t } from "@/i18n";
 import { GET_Models, GET_Template, PUT_Template } from "@/api/communicator/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { useLeadTypesStore } from "@/stores/leadTypes";
+import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
 import TemplateVersions from "./TemplateVersions.vue";
 import TestGenerate from "./TestGenerate.vue";
 
 // auto_approve is read-only here (set in Grappelli); it is sent back unchanged.
-const FIELDS = ["key", "kind", "language", "subject", "body", "model", "requires_legal_footer", "auto_approve", "is_active"];
+const FIELDS = ["key", "kind", "language", "audience", "subject", "body", "model", "requires_legal_footer", "auto_approve", "is_active"];
 const route = useRoute();
 const notify = useNotifyStore();
+const leadTypes = useLeadTypesStore();
+// A communicator before template audiences sends none and refuses the field (extra="forbid") — then it is never shown.
+const supportsAudience = ref(false);
+const hasLeads = computed(() => supportsAudience.value && useMuninStore().isModuleEnabled("leads"));
+// Active lead types, plus the template's own audience when that type was deactivated (it stays selectable).
+const audiences = computed(() => {
+  const own = form.audience && !leadTypes.active.some((type) => type.code === form.audience);
+  return own ? [...leadTypes.active, { code: form.audience, label: leadTypes.label(form.audience) }] : leadTypes.active;
+});
 const templateId = computed(() => route.params.id);
 const form = reactive({});
 const schemaText = ref("");
@@ -99,7 +118,9 @@ async function save() {
 
 onMounted(async () => {
   const [tpl, modelRes] = await Promise.all([GET_Template(templateId.value), GET_Models().catch(() => ({ data: { results: [] } }))]);
-  FIELDS.forEach((field) => (form[field] = tpl.data[field]));
+  supportsAudience.value = "audience" in tpl.data;
+  FIELDS.filter((field) => field in tpl.data).forEach((field) => (form[field] = tpl.data[field]));
+  if (hasLeads.value) leadTypes.load();
   schemaText.value = tpl.data.json_schema ? JSON.stringify(tpl.data.json_schema, null, 2) : "";
   models.value = modelRes.data.results;
   loaded.value = true;

@@ -1,5 +1,6 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount } from "@vue/test-utils";
+import { createPinia, setActivePinia } from "pinia";
 
 const munin = vi.hoisted(() => ({ isModuleInstalled: vi.fn(() => false) }));
 vi.mock("@/stores/munin", () => ({ useMuninStore: () => munin }));
@@ -10,7 +11,7 @@ import OverviewTab from "@/views/Leads/tabs/OverviewTab.vue";
 const company = {
   name: "Example Shop 2",
   domain: "example-shop-2.test",
-  company_type: "UNKNOWN",
+  lead_type: "UNKNOWN",
   stage: { label: "New" },
   last_activity_at: null,
   customer_uid: "91010000-0000-0000-0000-000000000000",
@@ -25,11 +26,13 @@ const company = {
 
 // FIX-17 item 14: no raw uid, no raw status and no raw enum value on the Overview tab.
 describe("Company overview tab", () => {
+  beforeEach(() => setActivePinia(createPinia()));
+
   it("names the customer, the lead type and the activity status", () => {
     const text = mount(OverviewTab, { props: { company } }).text();
     expect(text).toContain("Jan Kowalski");
     expect(text).not.toContain("91010000");
-    expect(text).toContain("Lead type unknown");
+    expect(text).toContain("Type unknown");
     expect(text).toContain("Draft — to review");
     expect(text).not.toContain("review_required");
   });

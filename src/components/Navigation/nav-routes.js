@@ -277,8 +277,18 @@ export function buildNavRoutes() {
       icon: "inbox",
       query: {},
       app: ["leads"],
-      // a company card has no entry of its own — it is opened from the Inbox work, so the Inbox stays lit
-      activeOn: ["/leads/companies"],
+      requiresModule: "communicator",
+      // Review and a thread without a company are opened from the Inbox work, so the Inbox stays lit
+      activeOn: ["/leads/inbox/", "/leads/conversations"],
+    },
+    {
+      route: "/leads/companies",
+      labelKey: "nav.leads_companies",
+      icon: "building",
+      query: {},
+      app: ["leads"],
+      requiresModule: "leads",
+      activeOn: ["/leads/companies/"], // a company card
     },
     {
       route: "/leads/board",
@@ -286,6 +296,7 @@ export function buildNavRoutes() {
       icon: "table-columns",
       query: {},
       app: ["leads"],
+      requiresModule: "leads",
       desktopOnly: true,
     },
     {
@@ -294,39 +305,17 @@ export function buildNavRoutes() {
       icon: "file-import",
       query: {},
       app: ["leads"],
+      requiresModule: "leads",
       desktopOnly: true,
     },
     {
-      route: "/leads/stages",
-      labelKey: "nav.leads_stages",
-      icon: "list-ol",
-      query: {},
-      app: ["leads"],
-      desktopOnly: true,
-    },
-    {
-      route: "/communicator/templates",
-      labelKey: "nav.communicator_templates",
-      icon: "file-lines",
-      query: {},
-      app: ["communicator"],
-      desktopOnly: true,
-    },
-    {
-      route: "/communicator/sequences",
-      labelKey: "nav.communicator_sequences",
-      icon: "repeat",
-      query: {},
-      app: ["communicator"],
-      desktopOnly: true,
-    },
-    {
-      route: "/communicator/settings",
-      labelKey: "nav.communicator_settings",
+      // Stages, templates, sequences and send settings live here as sections (UX-002d) — one entry fits a phone
+      route: "/leads/settings",
+      labelKey: "nav.leads_settings",
       icon: "gear",
       query: {},
-      app: ["communicator"],
-      desktopOnly: true,
+      app: ["leads"],
+      activeOn: ["/leads/settings/"], // every section
     },
     {
       route: "/enrichment",

@@ -41,6 +41,9 @@ export function sendState(slot, now = Date.now()) {
   return { state: "due" };
 }
 
+// C-31: Send now only pulls `scheduled_at` to the channel clock — a mail already at the clock cannot move earlier.
+export const canSendNow = (message) => Boolean(message.scheduled_at) && new Date(message.scheduled_at) > new Date();
+
 const dayKey = (date, timeZone) => date.toLocaleDateString("en-CA", { timeZone }); // "2026-09-15"
 
 // One format for every Leads/notification timestamp: 24 h "HH:MM" in the channel time zone, with "DD.MM" in

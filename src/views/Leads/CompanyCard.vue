@@ -4,7 +4,7 @@
       {{ company.name || company.domain }}
     </router-link>
     <p class="card__domain ld-muted">{{ company.domain }}</p>
-    <p class="ld-muted" data-testid="board-card-activity">{{ companyTypeLabel(company.company_type) }} · {{ lastActivity }}</p>
+    <p class="ld-muted" data-testid="board-card-activity">{{ leadTypes.label(company.lead_type) }} · {{ lastActivity }}</p>
     <span v-if="company.do_not_contact" class="ld-badge">{{ $t("leads.company.do_not_contact") }}</span>
     <select
       class="ld-input card__stage"
@@ -22,11 +22,12 @@
 import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { t } from "@/i18n";
-import { companyTypeLabel } from "@/utils/leadsLabels";
+import { useLeadTypesStore } from "@/stores/leadTypes";
 import { formatDayTime } from "@/utils/leadsTime";
 
 // Board card: the whole card opens the company (the name stays the keyboard link); type and last activity read as
 // words and one "DD.MM HH:MM" format. The select is the keyboard alternative to drag.
+const leadTypes = useLeadTypesStore();
 const props = defineProps({
   company: { type: Object, required: true },
   stages: { type: Array, default: () => [] },

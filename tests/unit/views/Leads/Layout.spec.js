@@ -4,7 +4,7 @@ import { createPinia, setActivePinia } from "pinia";
 import { useLeadsReviewStore } from "@/stores/leadsReview";
 
 const route = vi.hoisted(() => ({ name: "LeadsInbox" }));
-vi.mock("vue-router", () => ({ useRoute: () => route }));
+vi.mock("vue-router", () => ({ useRoute: () => route, useRouter: () => ({ push: vi.fn() }) }));
 const modules = vi.hoisted(() => new Set());
 vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isModuleEnabled: (key) => modules.has(key) }) }));
 
@@ -69,5 +69,19 @@ describe("Leads layout", () => {
     const wrapper = mountLayout();
     expect(wrapper.find('[data-testid="inbox"]').exists()).toBe(true);
     expect(wrapper.find('[data-testid="detail"]').exists()).toBe(true);
+  });
+
+  // UX-002d: Settings and its sections take the full width in one scroller — no Inbox column, no DesktopOnly wall.
+  it("a settings page renders alone, with a way back to the hub from a section", () => {
+    enable("leads", "communicator");
+    route.name = "LeadsSettings";
+    route.meta = { page: true };
+    const hub = mountLayout();
+    expect(hub.find('[data-testid="leads-page"]').exists()).toBe(true);
+    expect(hub.find('[data-testid="inbox"]').exists()).toBe(false);
+    expect(hub.findComponent({ name: "BackBar" }).exists()).toBe(false);
+    route.name = "CommunicatorSequences";
+    expect(mountLayout().find(".leads-page__back").exists()).toBe(true);
+    route.meta = undefined;
   });
 });

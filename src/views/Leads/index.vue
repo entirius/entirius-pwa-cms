@@ -2,6 +2,17 @@
   <DesktopOnly v-if="route.meta?.desktop">
     <router-view />
   </DesktopOnly>
+  <!-- Settings and its sections: full width, one scroller, usable on a phone (wide tables scroll in their box) -->
+  <div v-else-if="route.meta?.page" class="desktop-page leads-page" data-testid="leads-page">
+    <!-- a section leads back to the hub; a template edit has its own link back to the template list -->
+    <BackBar
+      v-if="!NO_BACK_BAR.includes(route.name)"
+      class="leads-page__back"
+      :label="$t('leads.thread.back')"
+      @back="router.push({ name: 'LeadsSettings' })"
+    />
+    <router-view />
+  </div>
   <div v-else class="leads" :class="{ 'leads--detail': hasDetail, 'leads--solo': !hasInbox }" data-testid="leads-layout">
     <aside v-if="hasInbox" class="leads__inbox">
       <Inbox />
@@ -25,7 +36,7 @@
 
 <script setup>
 import { computed, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { GET_Policy } from "@/api/communicator/api";
 import { useIsDesktop } from "@/composables/useIsDesktop";
 import { useLeadsReviewStore } from "@/stores/leadsReview";
@@ -38,6 +49,8 @@ import Inbox from "./Inbox.vue";
 // Mobile stacks the screens (Inbox, or the open draft/thread); >= 1024 px shows both as columns.
 // The Inbox is communicator data — without that module the detail takes the whole width.
 const route = useRoute();
+const router = useRouter();
+const NO_BACK_BAR = ["LeadsSettings", "CommunicatorTemplateEdit"];
 const munin = useMuninStore();
 const reviewQueue = useLeadsReviewStore();
 const isDesktop = useIsDesktop();
@@ -56,7 +69,17 @@ onMounted(async () => {
 });
 </script>
 
+<style src="./desktop.css"></style>
+
 <style scoped>
+.leads-page__back {
+  min-height: 44px;
+  margin: var(--space-200) var(--space-300) 0;
+}
+.leads-page :deep(.ld-table) {
+  display: block;
+  overflow-x: auto;
+}
 /* The app content column clips (overflow: hidden) — the layout is its own scroller, so long threads
    and the Review edit form stay reachable and the sticky Review actions pin to its bottom. */
 .leads {

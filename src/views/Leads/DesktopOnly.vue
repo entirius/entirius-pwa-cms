@@ -1,5 +1,8 @@
 <template>
-  <slot v-if="isDesktop" />
+  <!-- the app content column clips (overflow: hidden): a desktop screen scrolls in its own box, one per layout -->
+  <div v-if="isDesktop" class="desktop-page" data-testid="desktop-page">
+    <slot />
+  </div>
   <EmptyState
     v-else
     icon="table-columns"

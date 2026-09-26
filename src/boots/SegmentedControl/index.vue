@@ -3,6 +3,8 @@
     <button
       v-for="option in options"
       :key="option.value"
+      type="button"
+      :disabled="disabled"
       class="segmented-control__option"
       :class="{
         'segmented-control__option--active': modelValue === option.value,
@@ -24,6 +26,10 @@ defineProps({
   modelValue: {
     type: [String, Number],
     default: null,
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
   },
 });
 
@@ -65,6 +71,11 @@ defineEmits(["update:modelValue"]);
       color: var(--c-basic-800);
       font-weight: 600;
       box-shadow: var(--shadow-sm);
+    }
+
+    &:disabled {
+      cursor: default;
+      opacity: 0.6;
     }
   }
 }

@@ -44,6 +44,8 @@
     "pricefighter_strategies": "Strategies",
     "pricefighter_history": "History",
     "leads_inbox": "Inbox",
+    "leads_companies": "Companies",
+    "leads_settings": "Settings",
     "leads_board": "Stage board",
     "leads_import": "Import",
     "leads_stages": "Stages",
@@ -2987,18 +2989,24 @@
   "leads": {
     "inbox": {
       "title": "Inbox",
-      "to_review": "{count} to review",
-      "next": "next: {state}",
       "empty_title": "No drafts to review",
       "empty_message": "{count} scheduled, {state}",
       "empty_message_none": "Nothing scheduled — new drafts appear when a company reaches an outreach stage",
       "refresh": "Refresh",
       "untitled": "(no subject)",
       "pick": "Pick a draft to review",
-      "position": "{index} of {count}",
       "detail_empty_title": "While the queue is empty",
       "detail_empty": "The stage board shows every company and where it stands — open a card to write to it or re-audit it.",
-      "open_board": "Open the stage board"
+      "open_board": "Open the stage board",
+      "filter": {
+        "all": "All",
+        "draft": "Drafts",
+        "waiting": "Waiting",
+        "replied": "Replies"
+      },
+      "marker_draft": "Draft",
+      "empty_replied": "No replies yet",
+      "load_error": "Could not load the inbox — it tries again on the next refresh"
     },
     "review": {
       "title": "Review",
@@ -3096,10 +3104,6 @@
       "skipped": "skipped",
       "rejected": "skipped",
       "suppressed": "blocked"
-    },
-    "toolbox": {
-      "unconfigured": "AI features are available with the Entirius AI Toolbox",
-      "unreachable": "AI Toolbox is not responding — try again later"
     },
     "desktop_only": {
       "title": "Open on a desktop",
@@ -3203,12 +3207,6 @@
       "delete_busy_few": "The stage “{label}” holds {count} companies. Move them to another stage first — a stage that still holds companies cannot be deleted.",
       "delete_busy_many": "The stage “{label}” holds {count} companies. Move them to another stage first — a stage that still holds companies cannot be deleted."
     },
-    "company_type": {
-      "MANUFACTURER": "Manufacturer",
-      "WHOLESALE": "Wholesale",
-      "RETAILER": "Retailer",
-      "UNKNOWN": "Lead type unknown"
-    },
     "legal_basis": {
       "consent": "Consent",
       "legitimate_interest": "Legitimate interest",
@@ -3235,6 +3233,36 @@
       "opted_out": "the contact opted out",
       "anonymised": "the contact was anonymised",
       "no_contact": "no contact"
+    },
+    "add": {
+      "title": "Add lead",
+      "open": "Add lead",
+      "one": "Add one lead by hand",
+      "company": "Company",
+      "domain": "Domain",
+      "domain_hint": "shop.com or https://shop.com",
+      "name": "Name",
+      "lead_type": "Lead type",
+      "contact": "Contact",
+      "first_name": "First name",
+      "last_name": "Last name",
+      "basis_none": "Not set yet",
+      "basis_hint": "Without a legal basis the contact gets no mail until one is set on the company card.",
+      "consent_ref": "Where consent was given",
+      "save": "Add lead",
+      "save_contact": "Save contact",
+      "exists": "Already in Leads:",
+      "company_saved": "Company added — the contact was not saved yet:"
+    },
+    "lead_types": {
+      "title": "Lead types",
+      "help": "The kinds of lead this channel works with. Board chips, the company card and template audiences read this list. A type in use can be deactivated, not deleted.",
+      "label": "Label",
+      "code": "Code",
+      "code_help": "Upper-case, e.g. RETAILER — fixed after it is added",
+      "active": "Active",
+      "add": "Add type",
+      "unknown": "Type unknown"
     }
   },
   "notification_bar": {
@@ -3270,7 +3298,10 @@
       "save": "Save",
       "saved": "Saved",
       "schema_object": "The JSON schema must be an object",
-      "schema_invalid": "Invalid JSON"
+      "schema_invalid": "Invalid JSON",
+      "audience": "Audience",
+      "audience_all": "All types",
+      "audience_help": "The lead type this variant is for; the other types get the “All types” template."
     },
     "test": {
       "search": "Find a company",
@@ -3332,6 +3363,73 @@
       "asap": "as early as possible",
       "company": "Company",
       "recipient": "Recipient"
+    },
+    "pool": {
+      "save": "Save",
+      "inactive": "Inactive",
+      "remove": "Remove",
+      "remove_title": "Remove this follow-up text?",
+      "restore": "Restore",
+      "saved": "Text saved — future follow-ups use it",
+      "restored": "Text restored",
+      "removed": "Text removed",
+      "deactivated": "Text was already used — deactivated"
+    },
+    "footer": {
+      "title": "Mail footer",
+      "help": "One HTML block per language under every mail — signature, logo, company data. {{ legal }} marks where the legal text of the contact's legal basis goes; it must be there exactly once.",
+      "html": "Footer HTML ({language})",
+      "placeholder": "<p>Anna Nowak · Example Ltd</p>\n{{ legal }}",
+      "needs_legal": "Add {{ legal }} where the legal text goes — the footer is refused without it.",
+      "preview": "Preview (sample legal text)",
+      "saved": "Footer saved — the next mail uses it",
+      "sample_legal": "The controller of your data is Example Ltd. We write under legitimate interest.\n\nReply “no” and we will not write again.",
+      "discard_confirm": "Switching the language discards your unsaved changes to this footer.",
+      "remove": "Remove footer",
+      "remove_title": "Remove the {language} footer?",
+      "remove_message": "Mail in this language then uses the default language's footer, else the legal text alone.",
+      "removed": "Footer removed",
+      "load_error": "Could not load the saved footers — reload the page before editing"
+    }
+  },
+  "config_health": {
+    "title": "Configuration health",
+    "open": "Configuration problems: {count}",
+    "fixed": "Configuration fixed",
+    "close": "Close configuration health",
+    "all_ok": "Everything checked is configured.",
+    "fix": "How to fix",
+    "check_again": "Check again",
+    "checked_now": "Checked just now",
+    "checked_ago": "Checked {minutes} min ago",
+    "names": {
+      "toolbox_status": "AI toolbox",
+      "email_smtp": "Email SMTP entries",
+      "communicator_smtp": "Outreach mail (SMTP)",
+      "siteintel_sources": "Site audit sources",
+      "siteintel_keys": "Site audit API keys"
+    },
+    "checks": {
+      "toolbox_status": {
+        "unconfigured": "AI features are available with the Entirius AI Toolbox",
+        "unreachable": "AI Toolbox is not responding — try again later"
+      },
+      "email_smtp": {
+        "unconfigured": "The SMTP entry of channel {scope} is incomplete — its mail goes through the global server",
+        "unreachable": "The SMTP server of channel {scope} does not answer",
+        "auth_failed": "The SMTP server of channel {scope} rejects the login"
+      },
+      "communicator_smtp": {
+        "unconfigured": "Outgoing mail is not configured for channel {scope} — nothing will be sent"
+      },
+      "siteintel_sources": {
+        "recording": "Site audits ({scope}) read recorded test answers — real sites are not audited",
+        "unconfigured": "No active {scope} API key — its site audits fail or hit the free quota"
+      },
+      "siteintel_keys": {
+        "unreachable": "The {scope} API does not answer — site audits of this source fail",
+        "auth_failed": "The {scope} API rejects the key — site audits of this source fail"
+      }
     }
   }
 }

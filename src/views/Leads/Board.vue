@@ -11,11 +11,12 @@
         @keydown.enter="load"
       />
       <FilterChip
-        v-for="type in COMPANY_TYPES"
-        :key="type"
-        :label="companyTypeLabel(type)"
-        :active="filters.company_type === type"
-        @click="setFilter('company_type', filters.company_type === type ? '' : type)"
+        v-for="type in leadTypes.active"
+        :key="type.code"
+        :label="type.label"
+        :active="filters.lead_type === type.code"
+        :data-testid="`board-filter-type-${type.code}`"
+        @click="setFilter('lead_type', filters.lead_type === type.code ? '' : type.code)"
       />
       <FilterChip
         :label="$t('leads.board.has_reply')"
@@ -57,17 +58,18 @@ import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from "v
 import { t } from "@/i18n";
 import { GET_Companies, GET_Rules, GET_Stages, POST_Transition } from "@/api/leads/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
-import { companyTypeLabel } from "@/utils/leadsLabels";
+import { useLeadTypesStore } from "@/stores/leadTypes";
 import { useNotifyStore } from "@/stores/notify";
 import BoardColumn from "./BoardColumn.vue";
 
-const COMPANY_TYPES = ["RETAILER", "WHOLESALE", "MANUFACTURER"];
+// Chips = the channel's active lead types in their order (configuration: a type no company uses still shows).
+const leadTypes = useLeadTypesStore();
 const notify = useNotifyStore();
 const stages = ref([]);
 const rules = ref([]);
 const columns = reactive({});
 const search = ref("");
-const filters = reactive({ company_type: "", has_reply: false, do_not_contact: false });
+const filters = reactive({ lead_type: "", has_reply: false, do_not_contact: false });
 
 // Rules come from `GET rules/` (the stages payload carries none), grouped per stage for the column badge.
 const rulesByStage = computed(() =>
@@ -105,7 +107,7 @@ function setFilter(name, value) {
 }
 
 async function load() {
-  const [stageRes, ruleRes] = await Promise.all([GET_Stages(), GET_Rules()]);
+  const [stageRes, ruleRes] = await Promise.all([GET_Stages(), GET_Rules(), leadTypes.load()]);
   stages.value = stageRes.data.results;
   rules.value = ruleRes.data.results || [];
   await loadColumns();

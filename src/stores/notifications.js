@@ -5,6 +5,7 @@ import {
   GET_UnreadCount,
   POST_MarkRead,
 } from "@/api/notifications/api";
+import { GET_Threads } from "@/api/communicator/api";
 import { t } from "@/i18n";
 import { useNotifyStore } from "@/stores/notify";
 import { routeForSubjectRef } from "@/utils/subjectRef";
@@ -59,6 +60,19 @@ export const useNotificationsStore = defineStore("notifications", () => {
     unread.value = Math.max(0, unread.value - 1);
   }
 
+  // A reply about something that is not a company (a test reference, …) still has a screen: its newest thread.
+  // Nothing found (not a conversation, or no communicator) = no link, as before.
+  async function conversationRoute(subjectRef) {
+    if (!subjectRef) return null;
+    try {
+      const { data } = await GET_Threads({ subject_ref: subjectRef, page_size: 1 });
+      const thread = data.results?.[0];
+      return thread ? { name: "LeadsConversation", params: { id: thread.id } } : null;
+    } catch {
+      return null;
+    }
+  }
+
   // Opening a row marks it read; returns the route to jump to (null = no link, a repeated tap or a failed read).
   // Single-flight per id: a double tap never drops the badge twice; a failed read keeps the badge.
   async function open(item) {
@@ -66,7 +80,7 @@ export const useNotificationsStore = defineStore("notifications", () => {
     reading.add(item.id);
     try {
       await markRead(item.id);
-      return routeForSubjectRef(item.subject_ref);
+      return routeForSubjectRef(item.subject_ref) || (await conversationRoute(item.subject_ref));
     } catch {
       useNotifyStore().spawnNotification({ msg: t("notification_bar.read_failed"), type: "negative" });
       return null;

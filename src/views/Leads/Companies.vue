@@ -1,6 +1,11 @@
 <template>
   <div class="ld-page" data-testid="leads-companies">
-    <h2 class="ld-title">{{ $t("leads.companies.title") }}</h2>
+    <div class="companies__head">
+      <h2 class="ld-title">{{ $t("leads.companies.title") }}</h2>
+      <router-link :to="{ name: 'LeadsCompanyNew' }" class="ld-btn ld-btn--primary companies__add" data-testid="companies-add">
+        {{ $t("leads.add.open") }}
+      </router-link>
+    </div>
     <input
       v-model="search"
       class="ld-input"
@@ -57,6 +62,18 @@ onMounted(() => load());
 
 <style src="./desktop.css"></style>
 <style scoped>
+.companies__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-200);
+}
+.companies__add {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  text-decoration: none;
+}
 .company-row {
   display: flex;
   flex-direction: column;

@@ -2,7 +2,7 @@
   <div
     id="app"
     class="main-bg-theme flex-column ai-ct jc-ct"
-    :class="{ 'app--no-panel-nav': hasPanel && !showPanelNav }"
+    :class="{ 'app--no-panel-nav': hasPanel && !showBottomBar }"
   >
     <EnvMissing v-if="!envValid" :status="envStatus" />
     <router-view v-else-if="isAuth && isFullscreen" />
@@ -81,7 +81,7 @@
       <Loading v-if="loading" />
       <handy-kit v-if="handyType" />
       <nav
-        v-if="hasPanel && showPanelNav"
+        v-if="hasPanel && showBottomBar"
         class="mobile-bottom-bar show-mobile"
       >
         <Navigation :mobile="true" />
@@ -99,6 +99,8 @@ import { useUserStore } from "@/stores/user";
 import { useHandyStore } from "@/stores/handy";
 import { useMuninStore } from "@/stores/munin";
 import { useNotificationsStore } from "@/stores/notifications";
+import { useConfigHealthStore } from "@/stores/configHealth";
+import { useLeadTypesStore } from "@/stores/leadTypes";
 import { useQualityStore } from "@/stores/quality";
 import { useIsDesktop } from "@/composables/useIsDesktop";
 import {
@@ -107,6 +109,7 @@ import {
 } from "./components/Navigation/nav-routes";
 
 import { envStatus } from "@/utils/env-check";
+import { clearCompanyNames } from "@/utils/leadsCompanyNames";
 import "@/utils/client-config-check";
 import EnvMissing from "./components/EnvMissing.vue";
 import LoginWall from "./functionals/Login-wall/Login-wall.vue";
@@ -125,8 +128,10 @@ export default {
     const munin = useMuninStore();
     const quality = useQualityStore();
     const notificationBar = useNotificationsStore();
+    const configHealth = useConfigHealthStore();
+    const leadTypes = useLeadTypesStore();
     const isDesktop = useIsDesktop();
-    return { loader, userStore, handy, munin, quality, notificationBar, isDesktop };
+    return { loader, userStore, handy, munin, quality, notificationBar, configHealth, leadTypes, isDesktop };
   },
   data() {
     return { envStatus, navRoutes: buildNavRoutes() };
@@ -147,6 +152,10 @@ export default {
     notificationsActive() {
       return this.userStore.isAuth && this.munin.isModuleEnabled("notifications");
     },
+    // Health polling needs admin data (`munin.loaded`) — the endpoint is admin-only.
+    configHealthActive() {
+      return this.userStore.isAuth && this.munin.loaded && this.munin.isModuleEnabled("munin");
+    },
     isSidebarCollapsed() {
       return this.userStore.isSidebarCollapsed;
     },
@@ -155,6 +164,10 @@ export default {
     },
     // A panel with a single nav entry (enrichment, emails, accounts, checkout, stock) needs no
     // sub-navigation — hide the sidebar + edge toggle + mobile bottom bar and let content fill.
+    // A screen with its own sticky actions at the bottom (Leads Review) keeps the phone's bottom bar off it.
+    showBottomBar() {
+      return this.showPanelNav && !this.$route.meta?.noBottomBar;
+    },
     showPanelNav() {
       return (
         filterNavRoutes(this.navRoutes, {
@@ -190,6 +203,19 @@ export default {
         else this.notificationBar.stop();
       },
       immediate: true,
+    },
+    configHealthActive: {
+      handler(active) {
+        if (active) this.configHealth.start();
+        else this.configHealth.stop();
+      },
+      immediate: true,
+    },
+    // Logout drops the leads caches that outlive a view — the next user may work another channel.
+    isAuth(auth) {
+      if (auth) return;
+      this.leadTypes.reset();
+      clearCompanyNames();
     },
   },
   methods: {

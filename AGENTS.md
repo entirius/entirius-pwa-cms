@@ -1,9 +1,9 @@
 # AGENTS.md
 
 entirius-pwa-cms — admin CMS for the Entirius platform: a Vue 3 SPA with a
-visual page builder and 18 self-contained panels (Pages, PIM, Points, Forms,
+visual page builder and 17 self-contained panels (Pages, PIM, Points, Forms,
 Accounts, Checkout, Agreements, Emails, FAQ, Pricing, Stock, Translation,
-Atlas, Enricher, Promo, PriceFighter, Leads, Communicator), each enabled per backend by the
+Atlas, Enricher, Promo, PriceFighter, Leads — communicator included), each enabled per backend by the
 django-munin module registry. Backend for local dev: entirius-zeno at `http://localhost:8100`.
 
 ## Commands
@@ -115,29 +115,36 @@ product-links create would leave the row unmatched and re-proposed.
 ## Leads panel
 
 Salesperson screens for django-leads + django-communicator, mobile first (one thumb at 390 px), desktop =
-same screens in two columns (`src/views/Leads/index.vue`, CSS grid only). Panel gated by munin keys `leads`
-and `communicator`; `siteintel` (intel card) and `notifications` (header bell, `src/components/NotificationBar/`)
+same screens in two columns (`src/views/Leads/index.vue`, CSS grid only). One panel for both backends (there is no
+Communicator panel, UX-002d): munin keys `leads` and `communicator` both map to it, and every nav entry, route and
+Settings section carries the module it needs (`requiresModule` / `meta.module` / the hub's filter) — a section of
+a module that is off is simply not there. Nav: Inbox (communicator) · Companies · Board · Import (leads) · Settings;
+a phone gets Inbox · Companies · Settings in the bottom bar, which Review (`meta.noBottomBar`) keeps off its sticky
+actions. `siteintel` (intel card) and `notifications` (header bell, `src/components/NotificationBar/`)
 gate in-view with `isModuleEnabled` — never map them in `MODULE_TO_PANEL`. Every leads-family call takes the
 channel from `src/stores/leadsChannel.js` (`VUE_APP_LEADS_CHANNEL`, default `default-europe`), never
 `VUE_APP_CHANNEL`. Review has no detail endpoint: the view finds the draft in `review/?status=review_required`.
-The thread view opens the newest thread of `leads.Company:<id>` (closed or not); older threads sit behind one "Earlier threads" expander (first `threads/` page, more pages on demand, a row's detail loads with the row so its subject and recipient are readable collapsed) that badges an undecided opt-out; a reply that landed before our newest mail expands that section and opens its thread. A reply that sits in an older thread is marked ("The reply is in this thread") and scrolled into view on arrival (the bell carries only `subject_ref`). A waiting bubble shows no clock of its own: it states `sendState(next_slot)` like the Inbox (`src/utils/leadsTime.js`); a reply's quoted history (from its first `>` line) folds behind a toggle. Activity messages are service strings — `activityText` (`src/utils/leadsLabels.js`) turns the known shapes into sentences. The toolbox teaser
-(`ToolboxBanner.vue`) reads munin `platform.toolbox_status` (`munin.toolboxStatus`). `data-testid`s are the contract of the
+The thread view opens the newest thread of `leads.Company:<id>` (closed or not); older threads sit behind one "Earlier threads" expander (first `threads/` page, more pages on demand, a row's detail loads with the row so its subject and recipient are readable collapsed) that badges an undecided opt-out; a reply that landed before our newest mail expands that section and opens its thread. A reply that sits in an older thread is marked ("The reply is in this thread") and scrolled into view on arrival (the bell carries only `subject_ref`). A waiting bubble shows no clock of its own: it states `sendState(next_slot)` like the Inbox (`src/utils/leadsTime.js`); a reply's quoted history (from its first `>` line) folds behind a toggle. `/leads/inbox` is one list of every thread of the channel (`threads/?sort=activity`, 20 per page, a 30 s poll like the bell) behind four `FilterChip`s whose counts come with the list (`counts`): All · Drafts · Waiting · Replies — Drafts is the default while drafts wait. A row keeps one layout and one marker (`InboxRow.vue`; the chip decides it for a thread in several states): a draft opens Review, a waiting mail shows a clock + `sendState(next_slot)` and Send now while `canSendNow`, a reply its first own line. Other rows open the company thread, and a thread without a company opens `/leads/conversations/:id`. The bell falls back to that view for an unmapped `subject_ref`. The empty Drafts filter keeps the old empty state ("N scheduled, <state>", `inbox-empty`), and the chip bar is `inbox-summary` — both are the emporium `InboxPage` contract. Activity messages are service strings — `activityText` (`src/utils/leadsLabels.js`) turns the known shapes into sentences. Config problems of the screen
+(toolbox, outgoing SMTP) show as `ConfigBanner code="…"` (`src/components/ConfigHealth/`), fed by the munin `health/`
+store `configHealth` — see "Configuration health". `data-testid`s are the contract of the
 emporium page objects (`src/entirius_tests/cms_pages/`) — rename both together.
 
 Desktop screens (≥ 1024 px; below that `DesktopOnly.vue` shows "Open on a desktop"): `/leads/board` (stage columns,
 drag or the card's stage select → `companies/<id>/transition/`, refused move snaps back; rule badges from
-`GET rules/` — the stages payload carries none), `/leads/import` (`POST imports/`, polls the batch),
-`/leads/stages` (reorder = `PATCH stages/<id>/ {order}` per moved stage — there is no bulk order endpoint;
-delete 409 inline). `/leads/companies/:id` on desktop is the company card (`Company.vue`, tabs via `?tab=`
+`GET rules/` — the stages payload carries none), `/leads/import` (`POST imports/`, polls the batch).
+Settings (`meta.page`: full width, one scroller, no DesktopOnly wall — wide `.ld-table`s scroll in their own box):
+`/leads/settings` lists the sections, each its own route — `settings/stages` (reorder = `PATCH stages/<id>/ {order}`
+per moved stage — there is no bulk order endpoint; delete 409 inline), `settings/templates` (+ `/:id`),
+`settings/sequences`, `settings/sending`, `settings/lead-types` (the Stages pattern: rename, reorder by PATCH `order`, deactivate, delete 409 inline; the code is fixed after create); a section has a Back bar to the hub. Lead types are one list for the whole panel — `src/stores/leadTypes.js` (loaded once — a failed load is retried, logout resets it in `App.vue` together with the Inbox company-name cache `src/utils/leadsCompanyNames.js` — `label(code)`, `UNKNOWN` built in): Board chips = the active types in order, the company card's type select, the add-lead form and the template Audience (list column + edit select, shown only with the `leads` module; an audience a communicator does not send is never sent back). `/communicator/*` and `/leads/stages`
+redirect there; the route names (`CommunicatorTemplates`, `CommunicatorSettings`, `LeadsStages`, …) did not change. `/leads/companies/:id` on desktop is the company card (`Company.vue`, tabs via `?tab=`
 overview | intel | contacts | timeline; timeline = the plan-13 thread, which a phone still gets alone);
 notification jumps open `?tab=timeline`.
 
-## Communicator panel
+### Communicator sections of Settings
 
-`/communicator/{templates,templates/:id,sequences,settings}`, munin key `communicator` (mapped to both Leads and
-Communicator), desktop only. Template edit sends `auto_approve` back unchanged (Grappelli-only), test-generate
+Template edit sends `auto_approve` back unchanged (Grappelli-only), test-generate
 never saves. `GET templates/` is unpaginated (every template of the channel in `results`) and takes no `is_active`
-filter, so the Communicate modal filters the full list client-side. Settings: send policy (holiday country is set
+filter, so the Communicate modal filters the full list client-side. Settings: mail footer per language (`SettingsFooter.vue`: HTML around `{{ legal }}` — the agreements text at send time; the server sanitises on save and answers with the cleaned HTML, which goes back into the field; languages = footers + template languages; preview in an empty-sandbox `<iframe srcdoc>` with a sample legal text; no footer = the legal text alone), send policy (holiday country is set
 per channel — the SendPolicy API has no country field, so it is read-only here), channel mode (`PATCH channel/` never carries `live_enabled`; sandbox needs a
 mailbox, C-30), suppressions, waiting messages (`approved` + `scheduled`) with Send now =
 `messages/<id>/send-now/` (moves `scheduled_at` only, C-31; a mail already at the channel clock cannot be pulled
@@ -145,4 +152,18 @@ any earlier, so it offers no second Send now — a reload keeps that). The depar
 clock that slides: `sendState` (`src/utils/leadsTime.js`) names an hour only for a `next_slot` in the future,
 else it says due / daily cap reached / waiting for the window with its hours; a used-up cap wins over any slot and
 a closed window (policy `windows`, channel time zone) never shows a clock. `next_slot` (outbox endpoint, `GET_WaitingMessages`)
-is the one slot the Inbox summary, the Review confirmation (looked up after accept), the thread bubbles and this table all read, so no two screens disagree. Sequences: create + text pool only (no step edit API).
+is the one slot the Inbox rows, the Review confirmation (looked up after accept), the thread bubbles and this table all read, so no two screens disagree. Sequences: create (no step edit API) + the text pool: add, edit in place (future follow-ups only), remove — a text a thread already got is deactivated, not deleted (DELETE answers 200 with the row instead of 204), listed dimmed with Restore (`TextPool.vue`).
+
+## Configuration health
+
+`src/stores/configHealth.js` polls munin `GET health/` (admin-only, 30 s, like the bell) while `munin.loaded` and
+the `munin` module is on; "Check again" = `POST health/check/` (adds the live probes). State, not events: nothing is
+marked read, a fixed config clears on the next poll. The header triangle (`ConfigHealthButton.vue`, next to the bell)
+exists only while a check fails — plus ~10 s of green "fixed" after a bad → good flip; the user menu always opens the
+panel (green grid on demand). Text lives once in `config_health.checks.<code with _>.<state>` (`{scope}` = channel),
+read by panel and `ConfigBanner`; an unknown code falls back to the backend `title`. `fix_url` starting with `/` is a
+router link, anything else opens in a new tab. Probe failures (rows with `probe: true`, from "Check again") stay
+until the next "Check again" — a plain poll never repeats a probe. Needs django-munin with `health/` (the release
+after 2.1.0): against 2.1.0 the poll 404s quietly and Review no longer disables AI actions without a toolbox —
+release munin first. The new munin still sends the deprecated `platform.toolbox_status` (removed in 3.0.0), so an
+older CMS keeps working against it.

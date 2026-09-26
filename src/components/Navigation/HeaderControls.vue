@@ -52,6 +52,9 @@
     <!-- Separator -->
     <div class="hc-sep"></div>
 
+    <!-- Configuration health (django-munin health/) — icon only while a check fails -->
+    <ConfigHealthButton v-if="configHealthEnabled" />
+
     <!-- Notification bar (django-notifications) -->
     <NotificationBell v-if="munin.isModuleEnabled('notifications')" />
 
@@ -120,6 +123,19 @@
             </button>
           </div>
 
+          <!-- Configuration health: the panel is always reachable, green state included -->
+          <button
+            v-if="configHealthEnabled"
+            class="hc-dropdown-item"
+            tabindex="0"
+            data-testid="config-health-menu"
+            @click="openConfigHealth"
+            @keydown.enter="openConfigHealth"
+          >
+            <FontAwesomeIcon icon="circle-check" class="hc-dropdown-icon" />
+            <span>{{ $t("config_health.title") }}</span>
+          </button>
+
           <!-- Change password -->
           <button
             class="hc-dropdown-item"
@@ -159,16 +175,19 @@ import { useMuninStore } from "@/stores/munin";
 import { panels } from "../../configs/access";
 import { POST_Logout } from "../../api/contentDB/api";
 import NotificationBell from "@/components/NotificationBar/NotificationBell.vue";
+import ConfigHealthButton from "@/components/ConfigHealth/ConfigHealthButton.vue";
+import { useConfigHealthStore } from "@/stores/configHealth";
 
 const HIDE_DISABLED = (process.env.VUE_APP_HIDE_DISABLED_PANELS || "").toUpperCase() === "TRUE";
 
 export default {
-  components: { NotificationBell },
+  components: { NotificationBell, ConfigHealthButton },
   setup() {
     const userStore = useUserStore();
     const notify = useNotifyStore();
     const munin = useMuninStore();
-    return { userStore, notify, munin };
+    const configHealth = useConfigHealthStore();
+    return { userStore, notify, munin, configHealth };
   },
   data() {
     return {
@@ -182,6 +201,10 @@ export default {
     };
   },
   computed: {
+    // Admin data loaded (the health endpoint is admin-only) and munin itself enabled — the bell's gate.
+    configHealthEnabled() {
+      return this.munin.loaded && this.munin.isModuleEnabled("munin");
+    },
     panels() {
       const all = panels.map((p) => ({
         ...p,
@@ -232,6 +255,10 @@ export default {
     handleGoHome() {
       this.isPanelSwitcherOpen = false;
       this.$router.push("/");
+    },
+    openConfigHealth() {
+      this.isUserMenuOpen = false;
+      this.configHealth.panelOpen = true;
     },
     goToChangePassword() {
       this.isUserMenuOpen = false;

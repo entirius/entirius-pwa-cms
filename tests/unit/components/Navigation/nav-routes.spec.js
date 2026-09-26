@@ -34,12 +34,15 @@ describe("filterNavRoutes — requiresModule gating", () => {
   });
 });
 
-// FIX-17b item 5: a company card lights the Leads Inbox entry — the sidebar never shows nothing selected.
+// FIX-17b item 5: a page without an entry of its own lights the entry it belongs to — never nothing selected.
 describe("isNavActive — pages without an entry of their own", () => {
-  it("the Inbox entry is active on a company card, the board entry is not", () => {
+  it.each([
+    ["/leads/conversations/23", "/leads/inbox"],
+    ["/leads/inbox/51", "/leads/inbox"],
+    ["/leads/companies/100", "/leads/companies"],
+    ["/leads/settings/sending", "/leads/settings"],
+  ])("%s lights %s only", (path, entry) => {
     const leads = buildNavRoutes().filter((route) => route.app.includes("leads"));
-    const active = leads.filter((route) => isNavActive(route, "/leads/companies/100")).map((route) => route.route);
-    expect(active).toEqual(["/leads/inbox"]);
-    expect(isNavActive(leads[0], "/leads/board")).toBe(false);
+    expect(leads.filter((route) => isNavActive(route, path)).map((route) => route.route)).toEqual([entry]);
   });
 });

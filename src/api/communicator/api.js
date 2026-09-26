@@ -83,6 +83,12 @@ export const GET_SequenceTexts = (id) => communicatorApi.get(`${base()}/sequence
 
 export const POST_SequenceText = (id, body) => communicatorApi.post(`${base()}/sequences/${id}/texts/`, body);
 
+// UX-005: a text edits in place (future follow-ups only); DELETE of a used text deactivates it (200) instead of 204.
+export const PATCH_SequenceText = (id, textId, body) =>
+  communicatorApi.patch(`${base()}/sequences/${id}/texts/${textId}/`, body);
+
+export const DELETE_SequenceText = (id, textId) => communicatorApi.delete(`${base()}/sequences/${id}/texts/${textId}/`);
+
 export const GET_Policy = () => communicatorApi.get(`${base()}/policy/`);
 
 export const PUT_Policy = (body) => communicatorApi.put(`${base()}/policy/`, body);
@@ -104,3 +110,10 @@ export const GET_Messages = (params) => communicatorApi.get(`${base()}/messages/
 
 // C-31: moves scheduled_at to the channel clock only; the next beat run sends.
 export const POST_SendNow = (id) => communicatorApi.post(`${base()}/messages/${id}/send-now/`, {});
+
+// UX-007 — the mail footer per language: HTML around `{{ legal }}` (the agreements text), sanitised on save.
+export const GET_Footers = () => communicatorApi.get(`${base()}/footers/`);
+
+export const PUT_Footer = (language, html) => communicatorApi.put(`${base()}/footers/${language}/`, { html });
+
+export const DELETE_Footer = (language) => communicatorApi.delete(`${base()}/footers/${language}/`);

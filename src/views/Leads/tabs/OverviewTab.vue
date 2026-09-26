@@ -4,7 +4,7 @@
       <tbody>
         <tr><th>{{ $t("leads.company.name") }}</th><td>{{ company.name }}</td></tr>
         <tr><th>{{ $t("leads.company.stage") }}</th><td data-testid="overview-stage">{{ company.stage.label }}</td></tr>
-        <tr><th>{{ $t("leads.company.type") }}</th><td>{{ companyTypeLabel(company.company_type) }}</td></tr>
+        <tr><th>{{ $t("leads.company.type") }}</th><td data-testid="overview-type">{{ leadTypes.label(company.lead_type) }}</td></tr>
         <tr><th>{{ $t("leads.company.last_activity") }}</th><td>{{ formatDate(company.last_activity_at) }}</td></tr>
         <tr v-if="company.customer_uid">
           <th>{{ $t("leads.company.customer") }}</th>
@@ -28,11 +28,13 @@
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 import { useMuninStore } from "@/stores/munin";
-import { activityText, companyTypeLabel } from "@/utils/leadsLabels";
+import { useLeadTypesStore } from "@/stores/leadTypes";
+import { activityText } from "@/utils/leadsLabels";
 import { formatTime } from "@/utils/leadsTime";
 
 const props = defineProps({ company: { type: Object, required: true } });
 const route = useRoute();
+const leadTypes = useLeadTypesStore();
 const hasAccounts = computed(() => useMuninStore().isModuleInstalled("accounts"));
 const customerName = computed(() => props.company.customer_name || props.company.customer_uid);
 // The customer page's back arrow returns here, to the card it was opened from.

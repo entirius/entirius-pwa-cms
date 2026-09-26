@@ -2,11 +2,15 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { mount } from "@vue/test-utils";
 import { setActivePinia, createPinia } from "pinia";
 import { buildNavRoutes, filterNavRoutes } from "@/components/Navigation/nav-routes";
+import { useMuninStore } from "@/stores/munin";
 import { useUserStore } from "@/stores/user";
 import Navigation from "@/components/Navigation/Navigation.vue";
 
-const routesFor = (activeApp, isDesktop) =>
-  filterNavRoutes(buildNavRoutes(), { activeApp, isDesktop }).map((r) => r.route);
+const LEADS_MODULES = new Set(["leads", "communicator"]);
+const routesFor = (activeApp, isDesktop, modules = LEADS_MODULES) =>
+  filterNavRoutes(buildNavRoutes(), { activeApp, isDesktop, isModuleEnabled: (key) => modules.has(key) }).map(
+    (r) => r.route
+  );
 
 const setViewport = (desktop) =>
   vi.stubGlobal("matchMedia", () => ({
@@ -21,37 +25,41 @@ const mountMobileNav = () =>
     global: { stubs: { RouterLink: { props: ["to"], template: "<a :data-to='to.path'><slot /></a>" } } },
   });
 
-describe("desktop-only nav entries", () => {
+describe("Leads nav (UX-002d: one panel, Settings instead of four entries)", () => {
   beforeEach(() => {
     setActivePinia(createPinia());
     useUserStore().activeApp = "leads";
+    const munin = useMuninStore();
+    munin.loaded = true;
+    munin.modules = [...LEADS_MODULES].map((key) => ({ key, enabled_in_cms: true }));
   });
   afterEach(() => vi.unstubAllGlobals());
 
-  it("phone: the leads panel keeps one entry (no bottom bar) and communicator has none", () => {
-    expect(routesFor("leads", false)).toEqual(["/leads/inbox"]);
-    expect(routesFor("communicator", false)).toEqual([]);
-  });
-
-  it("desktop: every leads and communicator entry is listed", () => {
+  it("desktop: Inbox · Companies · Board · Import · Settings; there is no Communicator panel nav", () => {
     expect(routesFor("leads", true)).toEqual([
       "/leads/inbox",
+      "/leads/companies",
       "/leads/board",
       "/leads/import",
-      "/leads/stages",
+      "/leads/settings",
     ]);
-    expect(routesFor("communicator", true)).toHaveLength(3);
+    expect(routesFor("communicator", true)).toEqual([]);
   });
 
-  it("phone viewport: the mobile nav renders only the inbox link", () => {
+  it("phone: Inbox · Companies · Settings — Settings is reachable from the bottom bar", () => {
+    expect(routesFor("leads", false)).toEqual(["/leads/inbox", "/leads/companies", "/leads/settings"]);
     setViewport(false);
     const links = mountMobileNav().findAll("a").map((a) => a.attributes("data-to"));
-    expect(links).toEqual(["/leads/inbox"]);
+    expect(links).toEqual(["/leads/inbox", "/leads/companies", "/leads/settings"]);
   });
 
-  it("desktop viewport: the nav renders the desktop-only links", () => {
-    setViewport(true);
-    const links = mountMobileNav().findAll("a").map((a) => a.attributes("data-to"));
-    expect(links).toHaveLength(4);
+  it("an entry whose backend module is off is not listed", () => {
+    expect(routesFor("leads", true, new Set(["leads"]))).toEqual([
+      "/leads/companies",
+      "/leads/board",
+      "/leads/import",
+      "/leads/settings",
+    ]);
+    expect(routesFor("leads", false, new Set(["communicator"]))).toEqual(["/leads/inbox", "/leads/settings"]);
   });
 });

@@ -1,4 +1,8 @@
 /* Shared look of the leads desktop screens (plan 14): buttons, tables, form rows. */
+.desktop-page {
+  height: 100%;
+  overflow-y: auto;
+}
 .ld-page {
   display: flex;
   flex-direction: column;

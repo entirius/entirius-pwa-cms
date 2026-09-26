@@ -4,8 +4,8 @@
       <p class="cs__title">{{ title }}</p>
       <p class="cs__text">{{ message }}</p>
       <div class="cs__actions">
-        <button class="cs__btn" data-testid="confirm-cancel" @click="$emit('cancel')">{{ cancelLabel }}</button>
-        <button class="cs__btn cs__btn--danger" data-testid="confirm-ok" @click="$emit('confirm')">
+        <button class="cs__btn" type="button" data-testid="confirm-cancel" @click="$emit('cancel')">{{ cancelLabel }}</button>
+        <button class="cs__btn cs__btn--danger" type="button" data-testid="confirm-ok" @click="$emit('confirm')">
           {{ confirmLabel }}
         </button>
       </div>

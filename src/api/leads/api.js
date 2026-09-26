@@ -42,3 +42,17 @@ export const PATCH_Stage = (id, body) => leadsApi.patch(`${base()}/stages/${id}/
 export const DELETE_Stage = (id) => leadsApi.delete(`${base()}/stages/${id}/`);
 
 export const GET_Rules = () => leadsApi.get(`${base()}/rules/`);
+
+// UX-006 — one lead by hand: the company, then its contact (the same two creates the API offers; no CSV).
+export const POST_Company = (body) => leadsApi.post(`${base()}/companies/`, body);
+
+export const POST_Contact = (body) => leadsApi.post(`${base()}/contacts/`, body);
+
+export const GET_LeadTypes = () => leadsApi.get(`${base()}/lead-types/`);
+
+// UX-004 — lead types of the channel (Leads → Settings); the code is fixed after create.
+export const POST_LeadType = (body) => leadsApi.post(`${base()}/lead-types/`, body);
+
+export const PATCH_LeadType = (id, body) => leadsApi.patch(`${base()}/lead-types/${id}/`, body);
+
+export const DELETE_LeadType = (id) => leadsApi.delete(`${base()}/lead-types/${id}/`);

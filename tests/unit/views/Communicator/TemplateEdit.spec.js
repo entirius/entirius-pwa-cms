@@ -1,8 +1,17 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
+import { createPinia, setActivePinia } from "pinia";
 
 const api = vi.hoisted(() => ({ GET_Template: vi.fn(), GET_Models: vi.fn(), PUT_Template: vi.fn(), POST_TestGenerate: vi.fn() }));
-const leads = vi.hoisted(() => ({ GET_Companies: vi.fn(), GET_Company: vi.fn() }));
+const leads = vi.hoisted(() => ({
+  GET_Companies: vi.fn(),
+  GET_Company: vi.fn(),
+  GET_LeadTypes: vi.fn(() =>
+    Promise.resolve({ data: { results: [{ code: "RETAILER", label: "Retailer", is_active: true }, { code: "OLD", label: "Old", is_active: false }] } })
+  ),
+}));
+const modules = vi.hoisted(() => new Set(["leads", "communicator"]));
+vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isModuleEnabled: (key) => modules.has(key) }) }));
 vi.mock("@/api/communicator/api", () => api);
 vi.mock("@/api/leads/api", () => leads);
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification: vi.fn() }) }));
@@ -15,6 +24,7 @@ const template = { key: "cold", kind: "ai_prompt", language: "pl", subject: "Hi"
 
 describe("Communicator TemplateEdit", () => {
   beforeEach(() => {
+    setActivePinia(createPinia());
     vi.clearAllMocks();
     api.GET_Template.mockResolvedValue({ data: template });
     api.GET_Models.mockResolvedValue({ data: { results: [{ provider: "fake", model_id: "fake-chat" }] } });
@@ -59,5 +69,40 @@ describe("Communicator TemplateEdit", () => {
     expect(wrapper.find('[data-testid="test-generate-subject"]').text()).toBe("Subj");
     expect(wrapper.findAll("article p")).toHaveLength(3);
     expect(api.PUT_Template).not.toHaveBeenCalled();
+  });
+
+  // UX-004: a template targets a lead type; blank = every type. Without leads the select is gone and the stored
+  // audience travels back unchanged; a communicator without audiences never gets the field.
+  it("the Audience select lists the active lead types and saves the choice", async () => {
+    api.GET_Template.mockResolvedValue({ data: { ...template, audience: "" } });
+    api.PUT_Template.mockResolvedValue({ data: { ...template, audience: "RETAILER" } });
+    const wrapper = await mountEdit();
+    const select = wrapper.get('[data-testid="template-audience"]');
+    expect(select.findAll("option").map((option) => option.text())).toEqual(["communicator.template.audience_all", "Retailer"]);
+    await select.setValue("RETAILER");
+    await wrapper.find("form").trigger("submit");
+    await flushPromises();
+    expect(api.PUT_Template).toHaveBeenCalledWith("3", expect.objectContaining({ audience: "RETAILER" }));
+  });
+
+  it("without the leads module there is no select and the audience goes back unchanged", async () => {
+    modules.delete("leads");
+    api.GET_Template.mockResolvedValue({ data: { ...template, audience: "OLD" } });
+    api.PUT_Template.mockResolvedValue({ data: template });
+    const wrapper = await mountEdit();
+    expect(wrapper.find('[data-testid="template-audience"]').exists()).toBe(false);
+    await wrapper.find("form").trigger("submit");
+    await flushPromises();
+    expect(api.PUT_Template).toHaveBeenCalledWith("3", expect.objectContaining({ audience: "OLD" }));
+    modules.add("leads");
+  });
+
+  it("a communicator without audiences never receives the field", async () => {
+    api.PUT_Template.mockResolvedValue({ data: template });
+    const wrapper = await mountEdit();
+    expect(wrapper.find('[data-testid="template-audience"]').exists()).toBe(false);
+    await wrapper.find("form").trigger("submit");
+    await flushPromises();
+    expect(api.PUT_Template.mock.calls[0][1]).not.toHaveProperty("audience");
   });
 });

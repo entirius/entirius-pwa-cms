@@ -24,6 +24,8 @@ vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification }
 
 const GET_Company = vi.hoisted(() => vi.fn((id) => Promise.resolve({ data: { id, name: `Example Shop ${id}` } })));
 vi.mock("@/api/leads/api", () => ({ GET_Company }));
+const GET_Threads = vi.hoisted(() => vi.fn(() => Promise.resolve({ data: { results: [] } })));
+vi.mock("@/api/communicator/api", () => ({ GET_Threads }));
 vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isModuleEnabled: (key) => key === "leads" }) }));
 
 import { useNotificationsStore } from "@/stores/notifications";
@@ -97,6 +99,21 @@ describe("notification bar", () => {
     await flushPromises();
     expect(api.POST_MarkRead).toHaveBeenCalledWith(2);
     expect(push).not.toHaveBeenCalled();
+  });
+
+  // UX-002: a reply about something that is not a company opens its thread by id — never a dead tap.
+  it("a reply outside any company opens its newest thread", async () => {
+    api.GET_Notifications.mockResolvedValueOnce({
+      data: { results: [{ id: 9, title: "Reply from jan@example-shop-1.test", severity: "high", subject_ref: "bdd:toolbox-down", created_at: "2026-09-26T07:08:00Z" }] },
+    });
+    GET_Threads.mockResolvedValueOnce({ data: { results: [{ id: 23 }] } });
+    const wrapper = mountBell();
+    await wrapper.get('[data-testid="notif-bell"]').trigger("click");
+    await flushPromises();
+    await wrapper.get('[data-testid="notif-row"]').trigger("click");
+    await flushPromises();
+    expect(GET_Threads).toHaveBeenCalledWith({ subject_ref: "bdd:toolbox-down", page_size: 1 });
+    expect(push).toHaveBeenCalledWith({ name: "LeadsConversation", params: { id: 23 } });
   });
 
   it("a tab becoming visible polls at once", async () => {

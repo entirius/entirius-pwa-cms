@@ -21,6 +21,7 @@ All 12 stores (`src/stores/`) use composition (setup) syntax with `defineStore`.
   back-navigation from a hit's details does not wipe the results. One search,
   no history, in-memory only.
 - **`useMuninStore`** (`munin.js`) — module/panel enablement. See below.
+- **`useConfigHealthStore`** (`configHealth.js`) — munin `health/` rows (`failing`, `passing`, `stateOf(code)`, `failingFor(code)`), 30 s poll, `recheck()` runs the probes. See AGENTS.md "Configuration health".
 - **`useNotifyStore`** (`notify.js`) — `spawnNotification({ title, msg, type,
   timeout })`. Types: `informative`, `positive`, `negative`, `warning`. Queues
   beyond 3 visible toasts (`MAX_VISIBLE`), pause/resume timers on hover.

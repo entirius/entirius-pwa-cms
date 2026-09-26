@@ -1,9 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
+import { createPinia, setActivePinia } from "pinia";
 
-const company = () => ({ id: 1, name: "Example Shop 1", domain: "a.test", company_type: "RETAILER", do_not_contact: false, stage: { key: "new" } });
+const company = () => ({ id: 1, name: "Example Shop 1", domain: "a.test", lead_type: "RETAILER", do_not_contact: false, stage: { key: "new" } });
 const api = vi.hoisted(() => ({
   GET_Stages: vi.fn(),
+  GET_LeadTypes: vi.fn(),
   GET_Rules: vi.fn(),
   GET_Companies: vi.fn(),
   POST_Transition: vi.fn(),
@@ -33,7 +35,15 @@ const column = (wrapper, key) => wrapper.findAllComponents(BoardColumn).find((c)
 
 describe("Leads Board", () => {
   beforeEach(() => {
+    setActivePinia(createPinia());
     vi.clearAllMocks();
+    api.GET_LeadTypes.mockResolvedValue({
+      data: { results: [
+        { code: "RETAILER", label: "Retailer", order: 0, is_active: true },
+        { code: "AGENCY", label: "Agency", order: 10, is_active: true },
+        { code: "OLD", label: "Old", order: 20, is_active: false },
+      ] },
+    });
     api.GET_Stages.mockResolvedValue({ data: { results: [{ id: 1, key: "new", label: "New" }, { id: 2, key: "contacted", label: "Contacted" }] } });
     api.GET_Rules.mockResolvedValue({ data: { results: [{ id: 5, stage_id: 1, is_active: true, action: "communicate", template_key: "cold", contact_strategy: "primary" }] } });
     api.GET_Companies.mockImplementation(({ stage }) =>
@@ -148,5 +158,17 @@ describe("Leads Board", () => {
     expect(push).not.toHaveBeenCalled();
     await card.get(".card__domain").trigger("click");
     expect(push).toHaveBeenCalledWith({ name: "LeadsThread", params: { id: 1 } });
+  });
+
+  // UX-004: the chips are the channel's active lead types in their order — configuration, not a hard-coded list.
+  it("type chips come from the channel's active lead types and filter by lead_type", async () => {
+    const wrapper = await mountBoard();
+    const chips = wrapper.findAll('[data-testid^="board-filter-type-"]').map((chip) => chip.attributes("data-testid"));
+    expect(chips).toEqual(["board-filter-type-RETAILER", "board-filter-type-AGENCY"]);
+    api.GET_Companies.mockClear();
+    await wrapper.get('[data-testid="board-filter-type-AGENCY"]').trigger("click");
+    await flushPromises();
+    expect(api.GET_Companies).toHaveBeenCalledWith(expect.objectContaining({ stage: "new", lead_type: "AGENCY", page: 1 }));
+    expect(wrapper.findComponent(BoardColumn).text()).toContain("Retailer");
   });
 });

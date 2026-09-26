@@ -1,17 +1,16 @@
 import { describe, it, expect } from "vitest";
-import { activityText, companyTypeLabel, legalBasisLabel, sendStateLabel, sendStateSentence, stageKindLabel } from "@/utils/leadsLabels";
+import { activityText, legalBasisLabel, sendStateLabel, sendStateSentence, stageKindLabel } from "@/utils/leadsLabels";
 import { pluralKey } from "@/utils/plural";
 
 // FIX-17 items 14-16: enum values, statuses and counts read as words on every leads screen.
 describe("leads labels", () => {
-  it("names company types, legal bases and stage kinds", () => {
-    expect(companyTypeLabel("RETAILER")).toBe("Retailer");
+  it("names legal bases and stage kinds", () => {
     expect(legalBasisLabel("legitimate_interest")).toBe("Legitimate interest");
     expect(stageKindLabel("won")).toBe("won");
   });
 
   it("falls back to the raw value for a value it does not know", () => {
-    expect(companyTypeLabel("FRANCHISE")).toBe("FRANCHISE");
+    expect(legalBasisLabel("franchise")).toBe("franchise");
   });
 
   it("translates the status of a draft activity", () => {

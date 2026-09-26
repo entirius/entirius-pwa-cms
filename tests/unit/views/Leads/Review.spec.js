@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { mount, flushPromises, enableAutoUnmount } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 import { createApiClient } from "@/api/createClient";
+import { useConfigHealthStore } from "@/stores/configHealth";
 import { useLeadsReviewStore } from "@/stores/leadsReview";
 import { applyPolicy, channelTimeZone } from "@/utils/leadsTime";
 
@@ -18,7 +19,7 @@ const api = vi.hoisted(() => ({
   GET_WaitingMessages: vi.fn(),
 }));
 vi.mock("@/api/communicator/api", () => api);
-const munin = vi.hoisted(() => ({ toolboxStatus: "", isModuleEnabled: () => true }));
+const munin = vi.hoisted(() => ({ isModuleEnabled: () => true }));
 vi.mock("@/stores/munin", () => ({ useMuninStore: () => munin }));
 const spawnNotification = vi.fn();
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification }) }));
@@ -70,7 +71,6 @@ describe("Leads Review", () => {
     api.GET_ReviewList.mockResolvedValue({ data: { results: [{ id: 5 }] } });
     api.GET_ReviewNext.mockRejectedValue({ response: { status: 404 } });
     api.GET_WaitingMessages.mockResolvedValue([]);
-    munin.toolboxStatus = "";
   });
   afterEach(() => vi.useRealTimers());
 
@@ -201,12 +201,23 @@ describe("Leads Review", () => {
   });
 
   it("more menu holds rewrite, edit and skip company; rewrite is disabled without a toolbox", async () => {
-    munin.toolboxStatus = "unconfigured";
+    useConfigHealthStore().checks = [{ code: "toolbox.status", state: "unconfigured", severity: "medium", scope: "" }];
     const wrapper = await mountReview();
     await wrapper.get('[data-testid="review-more"]').trigger("click");
     expect(wrapper.get('[data-testid="review-rewrite"]').attributes("disabled")).toBeDefined();
     expect(wrapper.find('[data-testid="review-edit"]').exists()).toBe(true);
-    expect(wrapper.get('[data-testid="toolbox-banner"]').text()).toContain("Entirius AI Toolbox");
+    expect(wrapper.get('[data-code="toolbox.status"]').text()).toContain("Entirius AI Toolbox");
+  });
+
+  it("a channel without outgoing mail is named on the Review screen before any send", async () => {
+    useConfigHealthStore().checks = [
+      { code: "communicator.smtp", state: "unconfigured", severity: "high", scope: "default-europe", fix_url: "https://docs.test/smtp" },
+    ];
+    const wrapper = await mountReview();
+    const banner = wrapper.get('[data-code="communicator.smtp"]');
+    expect(banner.text()).toContain("default-europe");
+    expect(banner.get("a").attributes("href")).toBe("https://docs.test/smtp");
+    expect(wrapper.get('[data-testid="review-send"]').attributes("disabled")).toBeUndefined();
   });
 
   it("409 ALREADY_REVIEWED from the real client shape moves to next", async () => {

@@ -975,7 +975,15 @@ const routes = [
         name: "LeadsReview",
         component: () =>
           import(/* webpackChunkName: "leads" */ "../views/Leads/Review.vue"),
-        meta: { requiresAuth: true, titleKey: "leads.review.title", panel: "leads", module: "communicator" },
+        meta: { requiresAuth: true, titleKey: "leads.review.title", panel: "leads", module: "communicator", noBottomBar: true },
+      },
+      // A thread by id — the screen of a conversation that belongs to no company, reached from the Inbox and the bell
+      { path: "conversations", redirect: "/leads/inbox" },
+      {
+        path: "conversations/:id",
+        name: "LeadsConversation",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Conversation.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.inbox.title", panel: "leads", module: "communicator" },
       },
       // Leads-only entry (the panel fallback): a company list that works on a phone
       {
@@ -983,6 +991,13 @@ const routes = [
         name: "LeadsCompanies",
         component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Companies.vue"),
         meta: { requiresAuth: true, titleKey: "leads.companies.title", panel: "leads", module: "leads" },
+      },
+      // UX-006: one lead by hand — company + its contact, phone-usable
+      {
+        path: "companies/new",
+        name: "LeadsCompanyNew",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/CompanyNew.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.add.title", panel: "leads", module: "leads" },
       },
       {
         path: "companies/:id",
@@ -1004,48 +1019,60 @@ const routes = [
         component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Import.vue"),
         meta: { requiresAuth: true, titleKey: "leads.import.title", panel: "leads", module: "leads", desktop: true },
       },
+      // Settings (UX-002d): one hub for the configuration of leads and communicator — each section its own route,
+      // shown only when its backend module is on; full width, reachable on a phone (`page`, no DesktopOnly wall)
+      { path: "stages", redirect: "/leads/settings/stages" },
       {
-        path: "stages",
+        path: "settings",
+        name: "LeadsSettings",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Settings.vue"),
+        meta: { requiresAuth: true, titleKey: "nav.leads_settings", panel: "leads", page: true },
+      },
+      {
+        path: "settings/stages",
         name: "LeadsStages",
         component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Stages.vue"),
-        meta: { requiresAuth: true, titleKey: "leads.stages.title", panel: "leads", module: "leads", desktop: true },
+        meta: { requiresAuth: true, titleKey: "leads.stages.title", panel: "leads", module: "leads", page: true },
+      },
+      {
+        path: "settings/lead-types",
+        name: "LeadsLeadTypes",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/LeadTypes.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.lead_types.title", panel: "leads", module: "leads", page: true },
+      },
+      {
+        path: "settings/templates",
+        name: "CommunicatorTemplates",
+        component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/TemplateList.vue"),
+        meta: { requiresAuth: true, titleKey: "communicator.templates.title", panel: "leads", module: "communicator", page: true },
+      },
+      {
+        path: "settings/templates/:id",
+        name: "CommunicatorTemplateEdit",
+        component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/TemplateEdit.vue"),
+        meta: { requiresAuth: true, titleKey: "communicator.template.title", panel: "leads", module: "communicator", page: true },
+      },
+      {
+        path: "settings/sequences",
+        name: "CommunicatorSequences",
+        component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/SequenceList.vue"),
+        meta: { requiresAuth: true, titleKey: "communicator.sequences.title", panel: "leads", module: "communicator", page: true },
+      },
+      {
+        path: "settings/sending",
+        name: "CommunicatorSettings",
+        component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/Settings.vue"),
+        meta: { requiresAuth: true, titleKey: "communicator.settings.title", panel: "leads", module: "communicator", page: true },
       },
     ],
   },
 
-  // Communicator panel (plan 14): templates, sequences, send settings — desktop only
-  {
-    path: "/communicator",
-    component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/index.vue"),
-    meta: { requiresAuth: true, panel: "communicator" },
-    children: [
-      { path: "", redirect: "/communicator/templates" },
-      {
-        path: "templates",
-        name: "CommunicatorTemplates",
-        component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/TemplateList.vue"),
-        meta: { requiresAuth: true, titleKey: "communicator.templates.title", panel: "communicator", module: "communicator" },
-      },
-      {
-        path: "templates/:id",
-        name: "CommunicatorTemplateEdit",
-        component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/TemplateEdit.vue"),
-        meta: { requiresAuth: true, titleKey: "communicator.template.title", panel: "communicator", module: "communicator" },
-      },
-      {
-        path: "sequences",
-        name: "CommunicatorSequences",
-        component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/SequenceList.vue"),
-        meta: { requiresAuth: true, titleKey: "communicator.sequences.title", panel: "communicator", module: "communicator" },
-      },
-      {
-        path: "settings",
-        name: "CommunicatorSettings",
-        component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/Settings.vue"),
-        meta: { requiresAuth: true, titleKey: "communicator.settings.title", panel: "communicator", module: "communicator" },
-      },
-    ],
-  },
+  // The Communicator panel became Leads → Settings (UX-002d): old deep links land on the same screens
+  { path: "/communicator", redirect: "/leads/settings" },
+  { path: "/communicator/templates", redirect: "/leads/settings/templates" },
+  { path: "/communicator/templates/:id", redirect: (to) => `/leads/settings/templates/${to.params.id}` },
+  { path: "/communicator/sequences", redirect: "/leads/settings/sequences" },
+  { path: "/communicator/settings", redirect: "/leads/settings/sending" },
 
   // Enrichment review panel (etap-06 / etap-06b)
   {

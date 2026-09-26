@@ -8,7 +8,8 @@
         {{ scheduledLabel }}
       </p>
 
-      <ToolboxBanner />
+      <ConfigBanner code="toolbox.status" />
+      <ConfigBanner code="communicator.smtp" />
 
       <div v-if="failedVersion" class="review__failed" role="alert" data-testid="review-failed">
         <p class="review__failed-text">
@@ -99,17 +100,19 @@ import { useSwipe } from "@/composables/useSwipe";
 import { companyIdFromSubjectRef } from "@/utils/subjectRef";
 import { sendStateSentence } from "@/utils/leadsLabels";
 import { sendState } from "@/utils/leadsTime";
+import ConfigBanner from "@/components/ConfigHealth/ConfigBanner.vue";
+import { useConfigHealthStore } from "@/stores/configHealth";
 import ConfirmSheet from "./ConfirmSheet.vue";
 import IntelCard from "./IntelCard.vue";
 import ReviewActions from "./ReviewActions.vue";
 import RewriteModal from "./RewriteModal.vue";
-import ToolboxBanner from "./ToolboxBanner.vue";
 
 const SCHEDULED_MS = 4000;
 
 const route = useRoute();
 const router = useRouter();
 const munin = useMuninStore();
+const configHealth = useConfigHealthStore();
 const notify = useNotifyStore();
 const reviewQueue = useLeadsReviewStore();
 
@@ -133,7 +136,7 @@ const companyId = computed(() => companyIdFromSubjectRef(message.value?.thread?.
 const companyName = computed(
   () => message.value?.render_context?.company_name || message.value?.thread?.recipient_name || ""
 );
-const aiDisabled = computed(() => munin.toolboxStatus === "unconfigured");
+const aiDisabled = computed(() => configHealth.stateOf("toolbox.status") === "unconfigured");
 const unsaved = computed(
   () => editing.value && (draft.value.subject !== message.value?.subject || draft.value.body_text !== message.value?.body_text)
 );

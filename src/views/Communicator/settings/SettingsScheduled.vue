@@ -42,7 +42,7 @@ import { t } from "@/i18n";
 import { GET_Policy, GET_WaitingMessages, POST_SendNow } from "@/api/communicator/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { sendStateLabel, statusLabel } from "@/utils/leadsLabels";
-import { applyPolicy, sendState } from "@/utils/leadsTime";
+import { applyPolicy, canSendNow, sendState } from "@/utils/leadsTime";
 
 // Waiting messages (approved + scheduled) with the one slot every screen reads, `next_slot`. C-31: Send now only
 // pulls `scheduled_at` to the channel clock; the next send run sends. A mail already at the clock cannot be moved
@@ -54,7 +54,7 @@ const rows = computed(() =>
   waiting.value.map((row) => ({
     ...row,
     state: sendState(row.next_slot),
-    movable: Boolean(row.scheduled_at) && new Date(row.scheduled_at) > new Date(),
+    movable: canSendNow(row),
   }))
 );
 

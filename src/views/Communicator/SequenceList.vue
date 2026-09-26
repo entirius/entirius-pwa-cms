@@ -14,9 +14,7 @@
         </tbody>
       </table>
       <h4>{{ $t("communicator.sequences.texts") }}</h4>
-      <ul>
-        <li v-for="text in texts[sequence.id] || []" :key="text.id">{{ text.body }}</li>
-      </ul>
+      <TextPool :sequence-id="sequence.id" :texts="texts[sequence.id] || []" @changed="load" />
       <form class="ld-row" @submit.prevent="addText(sequence.id)">
         <input v-model="newText[sequence.id]" class="ld-input" required maxlength="4000" :placeholder="$t('communicator.sequences.new_text')" />
         <button class="ld-btn" type="submit">{{ $t("communicator.sequences.add_text") }}</button>
@@ -44,8 +42,9 @@ import { onMounted, reactive, ref } from "vue";
 import { t } from "@/i18n";
 import { GET_SequenceTexts, GET_Sequences, POST_Sequence, POST_SequenceText } from "@/api/communicator/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import TextPool from "./TextPool.vue";
 
-// Sequences: steps (create only — the API has no step edit) and the follow-up text pool (add).
+// Sequences: steps (create only — the API has no step edit) and the follow-up text pool (add, edit, remove).
 const sequences = ref([]);
 const texts = reactive({});
 const newText = reactive({});

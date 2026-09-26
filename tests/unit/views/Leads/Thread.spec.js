@@ -29,14 +29,14 @@ vi.mock("@/api/leads/api", () => ({
   GET_CompanyActivities: () => Promise.resolve({ data: { results: [{ id: 1, created_at: "2026-09-21T08:00:00Z", message: "stage new -> contacted" }] } }),
 }));
 const modules = vi.hoisted(() => new Set());
-vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ toolboxStatus: "", isModuleEnabled: (key) => modules.has(key) }) }));
+vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isModuleEnabled: (key) => modules.has(key) }) }));
 const spawnNotification = vi.hoisted(() => vi.fn());
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification }) }));
 vi.mock("vue-router", () => ({ useRoute: () => ({ params: { id: "42" } }), useRouter: () => ({}) }));
 
 import Thread from "@/views/Leads/Thread.vue";
 
-const stubs = { BackBar: true, Loader: true, ToolboxBanner: true };
+const stubs = { BackBar: true, Loader: true, ConfigBanner: true };
 const mountThread = (props = {}) => mount(Thread, { props, global: { stubs } });
 
 beforeEach(() => {

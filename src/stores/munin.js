@@ -30,7 +30,8 @@ const MODULE_TO_PANEL = {
   // siteintel and notifications gate in-view (isModuleEnabled) — mapping them would
   // show the Leads panel without leads/communicator.
   leads: "leads",
-  communicator: ["leads", "communicator"],
+  // communicator's screens are sections of Leads → Settings (UX-002d); there is no Communicator panel
+  communicator: "leads",
 };
 
 // Env fallback: parse VUE_APP_PANELS the same way access.js used to
@@ -53,8 +54,6 @@ export const useMuninStore = defineStore("munin", () => {
   // modules stored as array of { key, label, enabled_in_cms, ... }
   const modules = ref([]);
   const loaded = ref(false);
-  // munin platform.toolbox_status: "" (not reported) | configured | unconfigured | unreachable
-  const toolboxStatus = ref("");
   const loading = ref(false);
 
   // Tracks the in-flight fetch so the router guard can await it
@@ -108,7 +107,6 @@ export const useMuninStore = defineStore("munin", () => {
       const hasAdminData = parsed.some((m) => "enabled_in_cms" in m);
       if (hasAdminData) {
         modules.value = parsed;
-        toolboxStatus.value = data.platform?.toolbox_status || "";
         loaded.value = true;
       }
     } catch (err) {
@@ -151,7 +149,6 @@ export const useMuninStore = defineStore("munin", () => {
     modules,
     loaded,
     loading,
-    toolboxStatus,
     enabledPanels,
     isPanelEnabled,
     isModuleInstalled,

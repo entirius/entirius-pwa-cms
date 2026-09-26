@@ -1,99 +1,198 @@
 <template>
-  <div class="inbox" data-testid="leads-inbox">
-    <p v-if="drafts.length" class="inbox__summary" data-testid="inbox-summary">
-      <strong>{{ $t("leads.inbox.to_review", { count: drafts.length }) }}</strong>
-      <span v-if="waiting.length" data-testid="inbox-next"> · {{ $t("leads.inbox.next", { state: stateLabel }) }}</span>
-    </p>
+  <div ref="root" class="inbox" data-testid="leads-inbox">
+    <div class="inbox__chips" data-testid="inbox-summary">
+      <FilterChip
+        v-for="key in FILTERS"
+        :key="key"
+        :label="$t(`leads.inbox.filter.${key}`)"
+        :count="key === 'all' ? null : counts[key]"
+        :active="filter === key"
+        :class="{ 'inbox__chip--empty': key !== 'all' && !counts[key] && filter !== key }"
+        :data-testid="`inbox-filter-${key}`"
+        @click="setFilter(key)"
+      />
+    </div>
 
     <Loader v-show="loading" />
 
+    <!-- Drafts is where the work starts: empty, it says what waits for the send beat and when it leaves -->
     <EmptyState
-      v-if="!loading && !drafts.length"
+      v-if="!loading && !rows.length && filter === 'draft'"
       icon="inbox"
       :title="$t('leads.inbox.empty_title')"
       :message="emptyMessage"
       data-testid="inbox-empty"
     >
-      <button class="inbox__refresh" data-testid="inbox-refresh" @click="load">
+      <button class="inbox__refresh" data-testid="inbox-refresh" @click="reload">
         {{ $t("leads.inbox.refresh") }}
       </button>
     </EmptyState>
+    <p v-else-if="!loading && !rows.length" class="inbox__none" data-testid="inbox-empty">{{ emptySentence }}</p>
 
-    <router-link
-      v-for="(draft, index) in drafts"
-      :key="draft.id"
-      :to="{ name: 'LeadsReview', params: { id: draft.id } }"
-      class="inbox-card"
-      :class="{ 'inbox-card--active': String(draft.id) === String($route.params.id) }"
-      data-testid="inbox-item"
-    >
-      <span class="inbox-card__company">{{ companyName(draft) }}</span>
-      <span class="inbox-card__age">{{ formatTime(draft.created_at) }}</span>
-      <span class="inbox-card__to" data-testid="inbox-item-to">
-        {{ $t("leads.review.to") }}: {{ recipient(draft) }}
-      </span>
-      <span class="inbox-card__subject">{{ draft.subject || $t("leads.inbox.untitled") }}</span>
-      <span class="inbox-card__position" data-testid="inbox-item-position">
-        {{ $t("leads.inbox.position", { index: index + 1, count: drafts.length }) }}
-      </span>
-    </router-link>
+    <InboxRow
+      v-for="row in rows"
+      :key="row.id"
+      :row="row"
+      :filter="filter"
+      :active="isActive(row)"
+      @send-now="sendNow"
+    />
+    <button v-if="next" class="inbox__more" :disabled="loading" data-testid="inbox-more" @click="loadPage(page + 1)">
+      {{ $t("leads.thread.earlier_more") }}
+    </button>
+    <p v-if="error" class="inbox__error">{{ error }}</p>
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { useRoute } from "vue-router";
 import { t } from "@/i18n";
-import { GET_ReviewList, GET_WaitingMessages } from "@/api/communicator/api";
+import { GET_Threads, GET_WaitingMessages, POST_SendNow } from "@/api/communicator/api";
+import { extractApiMessage } from "@/composables/useFormErrors";
 import { useLeadsReviewStore } from "@/stores/leadsReview";
 import { sendStateSentence } from "@/utils/leadsLabels";
-import { formatTime, sendState } from "@/utils/leadsTime";
+import { sendState } from "@/utils/leadsTime";
+import { companyIdFromSubjectRef } from "@/utils/subjectRef";
+import InboxRow from "./InboxRow.vue";
 
+// One Inbox: every thread of the channel, newest activity first, behind four chips — drafts to review, mails
+// waiting for the send beat, replies, all. The counts come with the list (`threads/` counts), so a chip never lies.
+const FILTERS = ["all", "draft", "waiting", "replied"];
+const PAGE_SIZE = 20;
+const POLL_MS = 30000; // the bell's cadence: a new reply shows up under Replies on the next poll
+
+const route = useRoute();
 const reviewQueue = useLeadsReviewStore();
-const drafts = ref([]);
-const waiting = ref([]);
+const root = ref(null);
+const filter = ref(null); // null until the first answer picks Drafts (when any wait) or All
+const rows = ref([]);
+const counts = ref({ all: 0, draft: 0, waiting: 0, replied: 0 });
+const page = ref(1);
+const next = ref(false);
 const loading = ref(false);
+const error = ref("");
+const waiting = ref([]); // the outbox — only the empty Drafts state reads it, for the next departure
 
-// The earliest slot the send policy allows, read from the same `next_slot` the waiting table reads.
 const firstSlot = computed(() => waiting.value.map((m) => m.next_slot).filter(Boolean).sort()[0] || "");
-const stateLabel = computed(() => sendStateSentence(sendState(firstSlot.value)));
-
 const emptyMessage = computed(() =>
   waiting.value.length
-    ? t("leads.inbox.empty_message", { count: waiting.value.length, state: stateLabel.value })
+    ? t("leads.inbox.empty_message", { count: waiting.value.length, state: sendStateSentence(sendState(firstSlot.value)) })
     : t("leads.inbox.empty_message_none")
 );
+const emptySentence = computed(
+  () =>
+    ({
+      all: t("leads.thread.no_thread"),
+      waiting: t("communicator.scheduled.empty"),
+      replied: t("leads.inbox.empty_replied"),
+    })[filter.value]
+);
 
-function companyName(draft) {
-  return draft.render_context?.company_name || draft.thread?.recipient_name || draft.thread?.recipient_email;
+function isActive(row) {
+  const id = String(route.params.id);
+  if (route.name === "LeadsReview") return String(row.draft?.id) === id;
+  if (route.name === "LeadsConversation") return String(row.id) === id;
+  return route.name === "LeadsThread" && String(companyIdFromSubjectRef(row.subject_ref)) === id;
 }
 
-// Two drafts to the same company differ by their recipient — the row says who gets this one.
-function recipient(draft) {
-  return draft.thread?.recipient_email || draft.thread?.recipient_name || "";
+async function fetchPage(state, number) {
+  const params = { sort: "activity", page: number, page_size: PAGE_SIZE, ...(state === "all" ? {} : { state }) };
+  return (await GET_Threads(params)).data;
 }
 
-async function listStatus(status) {
-  const { data } = await GET_ReviewList({ status, page_size: 100 });
-  return data.results || [];
+// Pages 1..count in one answer — a refresh keeps what "Show more" opened. A row that moved between two pages while
+// they were read shows once.
+async function fetchTop(state, count) {
+  const pages = await Promise.all(Array.from({ length: count }, (_, index) => fetchPage(state, index + 1)));
+  const seen = new Set();
+  const results = pages.flatMap((data) => data.results).filter((row) => !seen.has(row.id) && seen.add(row.id));
+  return { ...pages[pages.length - 1], results };
 }
 
-async function load() {
+// No filter yet (the first answer): Drafts when any wait, else All.
+async function fetchList(number, count) {
+  const state = filter.value;
+  if (state) return { state, data: number === 1 ? await fetchTop(state, count) : await fetchPage(state, number) };
+  const drafts = await fetchTop("draft", count);
+  return drafts.counts.draft ? { state: "draft", data: drafts } : { state: "all", data: await fetchTop("all", count) };
+}
+
+// Poll, chip, Show more and the review signal race each other: only the latest request writes the list, and
+// `loading` follows that one.
+let latest = 0;
+
+async function loadPage(number, count = 1) {
+  const request = ++latest;
   loading.value = true;
   try {
-    const [review, mails] = await Promise.all([listStatus("review_required"), GET_WaitingMessages()]);
-    drafts.value = review;
-    waiting.value = mails;
-    reviewQueue.setCount(review.length);
+    const { state, data } = await fetchList(number, count);
+    if (request !== latest) return;
+    filter.value = state;
+    rows.value = number === 1 ? data.results : [...rows.value, ...data.results];
+    counts.value = data.counts;
+    next.value = Boolean(data.next);
+    page.value = number === 1 ? count : number;
+    error.value = "";
+    reviewQueue.setCount(data.counts.draft);
+    if (state === "draft" && !data.counts.draft) waiting.value = await GET_WaitingMessages();
+  } catch (err) {
+    if (request !== latest) return;
+    filter.value = filter.value || "all";
+    error.value = extractApiMessage(err, t("leads.inbox.load_error"));
   } finally {
-    loading.value = false;
+    if (request === latest) loading.value = false;
   }
 }
 
-onMounted(load);
-// The Inbox column stays mounted while Review acts — reload when a review action changed the queue.
-watch(() => reviewQueue.changes, load);
+const reload = () => loadPage(1);
+const refresh = () => loadPage(1, page.value); // the list as far as it is open, scroll untouched
 
-defineExpose({ load });
+function setFilter(key) {
+  if (key === filter.value) return;
+  filter.value = key;
+  rows.value = [];
+  reload();
+}
+
+async function sendNow(messageId) {
+  error.value = "";
+  try {
+    await POST_SendNow(messageId);
+    await refresh();
+  } catch (err) {
+    error.value = extractApiMessage(err, t("leads.review.error"));
+  }
+}
+
+// On a phone the list hides (stays mounted) while a draft or thread is open; back puts the layout's scroller where
+// it was. Recorded while the list is on screen — hiding it clamps the scroller before any route watcher runs.
+let scroller = null;
+let scrollTop = 0;
+const remember = () => route.name === "LeadsInbox" && (scrollTop = scroller.scrollTop);
+watch(
+  () => route.name,
+  (name) => name === "LeadsInbox" && scroller && (scroller.scrollTop = scrollTop),
+  { flush: "post" }
+);
+
+let timer = null;
+const poll = () => document.visibilityState === "visible" && !loading.value && refresh();
+
+onMounted(() => {
+  scroller = root.value?.closest(".leads");
+  scroller?.addEventListener("scroll", remember, { passive: true });
+  timer = setInterval(poll, POLL_MS);
+  reload();
+});
+onBeforeUnmount(() => {
+  scroller?.removeEventListener("scroll", remember);
+  clearInterval(timer);
+});
+// The Inbox column stays mounted while Review acts — an accepted draft moves from Drafts to Waiting at once.
+watch(() => reviewQueue.changes, refresh);
+
+defineExpose({ reload });
 </script>
 
 <style scoped>
@@ -103,11 +202,20 @@ defineExpose({ load });
   gap: var(--space-200);
   padding: var(--space-300);
 }
-.inbox__summary {
-  margin: 0;
-  color: var(--c-basic-600);
+.inbox__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-100);
 }
-.inbox__refresh {
+.inbox__chip--empty {
+  opacity: 0.5;
+}
+.inbox__none {
+  margin: 0;
+  color: var(--c-basic-500);
+}
+.inbox__refresh,
+.inbox__more {
   min-height: 44px;
   padding: 0 var(--space-400);
   border: 1px solid var(--c-basic-300);
@@ -116,40 +224,8 @@ defineExpose({ load });
   color: var(--c-basic-800);
   cursor: pointer;
 }
-.inbox-card {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 0.15rem var(--space-200);
-  min-height: 56px;
-  padding: var(--space-200) var(--space-300);
-  border: 1px solid var(--c-basic-300);
-  border-radius: 8px;
-  background: var(--c-basic-100);
-  color: var(--c-basic-800);
-  text-decoration: none;
-}
-.inbox-card--active {
-  border-color: var(--c-support-400);
-}
-.inbox-card__company {
-  font-weight: 600;
-  overflow-wrap: anywhere;
-}
-.inbox-card__to,
-.inbox-card__subject {
-  grid-column: 1 / -1;
-  color: var(--c-basic-600);
-  overflow-wrap: anywhere;
-}
-.inbox-card__position {
-  grid-column: 1 / -1;
-  font-size: var(--fs-100);
-  color: var(--c-basic-500);
-}
-.inbox-card__age {
-  grid-row: 1;
-  grid-column: 2;
-  font-size: var(--fs-100);
-  color: var(--c-basic-500);
+.inbox__error {
+  margin: 0;
+  color: var(--c-negative-300);
 }
 </style>
