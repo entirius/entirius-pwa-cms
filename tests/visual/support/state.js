@@ -1,0 +1,247 @@
+const path = require("path");
+const base = require("@playwright/test");
+const { freeze: FREEZE, screens } = require("../capture-spec.json");
+
+// Deterministic state recipe (roadmap r04 tech-notes §2). The zeno stack is shared: this module never clicks
+// the theme toggle or the language switch, and every write the page tries is answered by a stub.
+const AUTH_MAX_AGE_MS = 4 * 60 * 1000; // the access JWT lives 300 s, the CMS assumes 15 min
+const API_URL = process.env.CMS_API_URL || "http://localhost:8100";
+const THEME_VALUES = { dark: "dark", light: "default" };
+const READ_METHODS = ["GET", "HEAD", "OPTIONS"];
+const AUTH_PATH = "/customer/tokens/";
+const PROBES = path.join(__dirname, "probes.browser.js");
+const FREEZE_CSS =
+  "*,*::before,*::after{transition:none!important;animation:none!important;caret-color:transparent!important}";
+const HEALTH_BODY = {
+  checked_at: FREEZE,
+  checks: [
+    {
+      code: "visual.fixture",
+      module: "munin",
+      state: "unconfigured",
+      severity: "low",
+      title: "Visual harness fixture check",
+      scope: "default-europe",
+    },
+  ],
+};
+
+class InfraError extends Error {
+  constructor(message) {
+    super(`INFRA: ${message}`);
+    this.name = "InfraError";
+  }
+}
+
+let auth = { state: null, at: 0 };
+
+async function idle(page, timeout = 15000) {
+  await page.waitForLoadState("networkidle", { timeout }).catch(() => {});
+}
+
+const json = (body) => ({
+  status: 200,
+  contentType: "application/json",
+  body: JSON.stringify(body),
+});
+const onApi = (url) => url.origin === new URL(API_URL).origin;
+const pathEnds = (suffix) => (url) => onApi(url) && url.pathname.endsWith(suffix);
+const isProfile = (url) => onApi(url) && /\/customer\/[^/]+\/profile\/$/.test(url.pathname);
+// Login and token refresh write no data; a stubbed `{}` would leave the session without a token.
+const isAuthCall = (url) => url.pathname.includes(AUTH_PATH);
+
+// Registered first = matched last: the specific stubs below win over this one.
+async function stubWrites(context) {
+  await context.route(onApi, (route) =>
+    READ_METHODS.includes(route.request().method()) || isAuthCall(new URL(route.request().url()))
+      ? route.fallback()
+      : route.fulfill(json({}))
+  );
+}
+
+// The `user` cookie lands only after profile + permissions resolve; without it the desktop sidebar renders empty.
+async function submitLogin(page) {
+  await page.goto("/");
+  await page.fill('input[type="text"]', process.env.CMS_USER || "admin");
+  await page.fill('input[type="password"]', process.env.CMS_PASSWORD || "admin123");
+  await page.click('button:has-text("Zaloguj"), button:has-text("Log in")');
+  await page.waitForFunction(() => document.cookie.includes("user="), null, { timeout: 30000 });
+  await idle(page);
+}
+
+async function login(browser, baseURL) {
+  if (auth.state && Date.now() - auth.at < AUTH_MAX_AGE_MS) return auth.state;
+  const context = await browser.newContext({ baseURL, locale: "pl-PL" });
+  try {
+    await stubWrites(context);
+    await submitLogin(await context.newPage());
+    auth = { state: await context.storageState(), at: Date.now() };
+    return auth.state;
+  } catch (err) {
+    throw new InfraError(`login failed (stack down or wrong credentials?): ${err.message.split("\n")[0]}`);
+  } finally {
+    await context.close();
+  }
+}
+
+async function profileRoute(route, prefs) {
+  if (route.request().method() !== "GET") return route.fulfill(json({}));
+  const response = await route.fetch();
+  const body = await response.json().catch(() => null);
+  if (!body) return route.fulfill({ response });
+  const target = body.data || body;
+  target.extra = { ...(target.extra || {}), ...prefs, cms_sidebar_collapsed: prefs.cms_sidebar_collapsed === "true" };
+  return route.fulfill({ response, json: body });
+}
+
+// Returns which fixed-body stubs answered; a badge whose stub was never hit gets masked.
+async function prepareContext(context, { theme, collapsed = false }) {
+  const prefs = { cms_theme: THEME_VALUES[theme], cms_lang: "PL", cms_sidebar_collapsed: String(collapsed) };
+  const stubs = { notifications: false, health: false };
+  await context.addInitScript((values) => {
+    for (const [key, value] of Object.entries(values)) localStorage.setItem(key, value);
+  }, prefs);
+  await stubWrites(context);
+  await context.route(isProfile, (route) => profileRoute(route, prefs));
+  await context.route(pathEnds("/notifications/"), (route) => route.fulfill(json({ count: 0, results: [] })));
+  await context.route(pathEnds("/notifications/unread-count/"), (route) => {
+    stubs.notifications = true;
+    return route.fulfill(json({ unread: 0 }));
+  });
+  await context.route(pathEnds("/api/munin/v2/health/"), (route) => {
+    if (route.request().method() !== "GET") return route.fallback();
+    stubs.health = true;
+    return route.fulfill(json(HEALTH_BODY));
+  });
+  return stubs;
+}
+
+function assertPath(page, route) {
+  const expected = new URL(route, page.url()).pathname;
+  const actual = new URL(page.url()).pathname;
+  if (actual !== expected) throw new InfraError(`expected ${expected}, landed on ${actual} (expired session?)`);
+}
+
+async function settle(page) {
+  await page.addStyleTag({ content: FREEZE_CSS });
+  await page
+    .waitForFunction(() => [...document.images].every((img) => img.complete), null, { timeout: 10000 })
+    .catch(() => {});
+}
+
+async function clickAndWaitForUrl(page, locator) {
+  const before = page.url();
+  await locator.click({ timeout: 5000 }).catch(() => {});
+  await page.waitForURL((url) => url.href !== before, { timeout: 5000 }).catch(() => {});
+  await idle(page);
+  return page.url() !== before;
+}
+
+async function resolveFirstRow(page) {
+  const row = page.locator('[role="row"]:has([role="gridcell"])').first();
+  if (!(await row.count())) return false;
+  if (await clickAndWaitForUrl(page, row)) return true;
+  const action = row.locator(".data-table__action-btn:not(.data-table__action-btn--danger)").first();
+  return (await action.count()) > 0 && clickAndWaitForUrl(page, action);
+}
+
+// First *visible* match; lists load after the route change, so wait for it.
+async function resolveFirstLink(page, css) {
+  const link = page.locator(css).filter({ visible: true }).first();
+  const found = await link.waitFor({ timeout: 5000 }).then(() => true, () => false);
+  return found && clickAndWaitForUrl(page, link);
+}
+
+async function resolveLinks(page, screen) {
+  for (const [step, css] of screen.links.entries()) {
+    if (await resolveFirstLink(page, css)) continue;
+    return step === 0 && screen.fallbackRow ? resolveFirstRow(page) : false;
+  }
+  return true;
+}
+
+async function resolveDetail(page, screen) {
+  if (screen.resolver === "fixed") return true;
+  const resolved = screen.resolver === "first-row" ? await resolveFirstRow(page) : await resolveLinks(page, screen);
+  if (resolved) await settle(page);
+  return resolved;
+}
+
+async function scrollToTiles(page) {
+  await page.evaluate(() => {
+    const header = document.querySelector(".section-header-row");
+    const tiles = [...document.querySelectorAll("*")].find(
+      (el) => el.children.length === 0 && /Kafelki \(1\//.test(el.textContent)
+    );
+    if (!header || !tiles) throw new Error("scrolled: anchor not found");
+    let box = header.parentElement;
+    while (box && !(box.scrollHeight > box.clientHeight && /(auto|scroll)/.test(getComputedStyle(box).overflowY))) {
+      box = box.parentElement;
+    }
+    if (box) box.scrollTop += tiles.getBoundingClientRect().top - 240; // desktop: nothing scrolls (r07)
+  });
+}
+
+async function openFab(page) {
+  const fab = page.locator(".floating-actions__trigger:visible").first();
+  if (!(await fab.count())) throw new Error("no FAB (.floating-actions__trigger) on this screen");
+  await fab.click();
+}
+
+const STATES = {
+  default: async () => {},
+  "switcher-open": (page) => page.locator(".hc-btn:visible").first().click(),
+  "user-menu-open": (page) => page.locator(".hc-btn:visible").last().click(),
+  "notif-open": (page) => page.locator('[data-testid="notif-bell"]:visible').first().click(),
+  "health-open": (page) => page.locator('[data-testid="config-health-button"]:visible').first().click(),
+  "fab-open": openFab,
+  scrolled: scrollToTiles,
+};
+
+// Returns a skip reason for rows whose data the seed may not hold (`needsData`), else null.
+async function openScreen(page, screen) {
+  await page.clock.setFixedTime(FREEZE);
+  await page.goto(screen.route).catch((err) => {
+    throw new InfraError(`${screen.route} did not load: ${err.message.split("\n")[0]}`);
+  });
+  await idle(page);
+  assertPath(page, screen.route);
+  await settle(page);
+  if (!(await resolveDetail(page, screen))) {
+    if (screen.needsData) return `${screen.id}: ${screen.note} (not in this seed)`;
+    throw new InfraError(`${screen.id}: ${screen.resolver} found no detail on ${screen.route}`);
+  }
+  await STATES[screen.state](page);
+  await idle(page, 5000);
+  return null;
+}
+
+function screenById(id) {
+  const screen = screens.find((row) => row.id === id);
+  if (!screen) throw new Error(`capture-spec.json has no screen "${id}"`);
+  return screen;
+}
+
+// Opens a spec screen in a fresh context: theme pinned, writes stubbed, probes injected.
+async function openPinned({ context, page }, id, theme) {
+  await prepareContext(context, { theme });
+  await openScreen(page, screenById(id));
+  await page.addScriptTag({ path: PROBES });
+}
+
+// `storageState` comes from a login at most 4 min old; `needsAuth: false` opens logged-out screens.
+const test = base.test.extend({
+  needsAuth: [true, { option: true }],
+  storageState: async ({ browser, baseURL, needsAuth }, use) => {
+    await use(needsAuth ? await login(browser, baseURL) : undefined);
+  },
+});
+
+module.exports = {
+  test,
+  expect: base.expect,
+  THEME_VALUES,
+  prepareContext,
+  openScreen,
+  openPinned,
+};

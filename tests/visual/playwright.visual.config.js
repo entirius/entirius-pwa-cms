@@ -1,0 +1,52 @@
+const path = require("path");
+const { defineConfig } = require("@playwright/test");
+const { REPORT_DIR } = require("./support/report");
+
+/**
+ * Visual fidelity harness (docs/testing.md → "Visual fidelity harness").
+ * Runs against an already running CMS (zeno :8180), never starts one.
+ * Baselines are written only by `npm run visual:approve` (operator).
+ */
+module.exports = defineConfig({
+  testDir: __dirname,
+  outputDir: path.join(__dirname, "test-results"),
+  snapshotPathTemplate: "{testDir}/__screenshots__/{projectName}/{arg}{ext}",
+  updateSnapshots: "none",
+  timeout: 90000,
+  fullyParallel: false,
+  workers: 1,
+  retries: 0,
+  reporter: [
+    ["list"],
+    ["html", { outputFolder: path.join(REPORT_DIR, "html"), open: "never" }],
+  ],
+  expect: {
+    toHaveScreenshot: { threshold: 0.1, maxDiffPixels: 20 },
+  },
+  use: {
+    baseURL: process.env.CMS_BASE_URL || "http://localhost:8180",
+    headless: true,
+    deviceScaleFactor: 1,
+    locale: "pl-PL",
+    timezoneId: "Europe/Warsaw",
+    reducedMotion: "reduce",
+    actionTimeout: 10000,
+    trace: "retain-on-failure",
+  },
+  projects: [
+    {
+      name: "desktop",
+      grepInvert: /@mobile\b/,
+      use: { viewport: { width: 1680, height: 1168 } },
+    },
+    {
+      name: "mobile",
+      grepInvert: /@desktop\b/,
+      use: {
+        viewport: { width: 393, height: 852 },
+        isMobile: true,
+        hasTouch: true,
+      },
+    },
+  ],
+});
