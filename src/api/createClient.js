@@ -7,7 +7,6 @@ const cookies = new Cookies()
 const _CHANNEL = process.env.VUE_APP_CHANNEL
 
 let refreshPromise = null
-let storeAuth = null
 
 function clearAllCookies() {
   const allCookies = cookies.getAll()
@@ -36,12 +35,6 @@ function rejectWithBody(err) {
 
 export const isConflict = (err) => (err?.httpStatus ?? err?.response?.status) === 409
 
-// The user store hands in its `setAuth`: every refresh stores the pair and re-arms the store's one refresh timer.
-// A callback, not an import — the store imports the API clients, which are built from this module at load time.
-export function onTokenRefresh(setAuth) {
-  storeAuth = setAuth
-}
-
 // The single token refresh: the 401 retry, the pre-request check and the user store's timer share one
 // in-flight call, so a rotated refresh token is never sent twice.
 export function refreshAccessToken() {
@@ -53,21 +46,28 @@ export function refreshAccessToken() {
   return refreshPromise
 }
 
+// Resolved at call time: the store imports the API clients, so a static import here would make building a client
+// depend on which module loaded first.
+async function userStore() {
+  const { useUserStore } = await import('@/stores/user')
+  return useUserStore()
+}
+
+// Every refresh lands in the store's `setAuth`, which stores the pair and re-arms the one refresh timer — unless
+// the user logged out while the request was in flight: then the answer is dropped and nothing is written.
 async function postRefresh() {
+  const store = await userStore()
+  const generation = store.currentSessionGeneration()
   const refreshCookie = cookies.get('refresh')
   if (!refreshCookie) throw new Error('No refresh token')
 
   const url = `${process.env.VUE_APP_API_URL}/api/accounts/v1/${_CHANNEL ?? ''}/customer/tokens/refresh/`
   const { data } = await axios.post(url, { refresh: refreshCookie })
+  if (store.currentSessionGeneration() !== generation) throw new Error('Logged out during the token refresh')
   const { access, refresh } = data.data || data
 
   // The API only returns a new refresh token when rotation is enabled server-side — keep the old one otherwise.
-  storeAuth({
-    token: access,
-    refresh: refresh || refreshCookie,
-    customer_id: cookies.get('customer_id'),
-    expiryDate: tokenExpiry(access),
-  })
+  store.setAuth({ token: access, refresh: refresh || refreshCookie, expiryDate: tokenExpiry(access) })
   return access
 }
 

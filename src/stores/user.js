@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import Cookies from 'universal-cookie'
 import { User } from '@/configs/access'
 import { PATCH_UserProfile } from '@/api/contentDB/api'
-import { onTokenRefresh, refreshAccessToken } from '@/api/createClient'
+import { refreshAccessToken } from '@/api/createClient'
 import { setLang, getLang } from '@/i18n'
 import { refreshDelay } from '@/utils/jwt'
 
@@ -11,9 +11,8 @@ const cookies = new Cookies()
 const COOKIE_OPTS = { path: '/', maxAge: 7 * 24 * 60 * 60 }
 
 let sessionTimer = null
-
-// Every refresh, whichever path triggered it, lands in `setAuth` and re-arms the one timer.
-onTokenRefresh((auth) => useUserStore().setAuth(auth))
+// Bumped by every logout: a refresh that started under an older generation drops its answer.
+let sessionGeneration = 0
 
 export const useUserStore = defineStore('user', () => {
   const user = ref(null)
@@ -42,7 +41,8 @@ export const useUserStore = defineStore('user', () => {
     cookies.set('user', user.value, COOKIE_OPTS)
   }
 
-  function setAuth({ token: t, refresh: r, customer_id: cid, expiryDate: exp }) {
+  // A token refresh carries no customer id: the current one stays, and an unknown one is never written.
+  function setAuth({ token: t, refresh: r, customer_id: cid = customer_id.value, expiryDate: exp }) {
     token.value = t
     refresh.value = r
     customer_id.value = cid
@@ -50,7 +50,7 @@ export const useUserStore = defineStore('user', () => {
 
     cookies.set('token', t, COOKIE_OPTS)
     cookies.set('refresh', r, COOKIE_OPTS)
-    cookies.set('customer_id', cid, COOKIE_OPTS)
+    if (cid != null) cookies.set('customer_id', cid, COOKIE_OPTS)
     cookies.set('expiryDate', exp, COOKIE_OPTS)
 
     startSessionMonitor()
@@ -63,6 +63,7 @@ export const useUserStore = defineStore('user', () => {
   }
 
   function clearAuth() {
+    sessionGeneration += 1
     stopSessionMonitor()
 
     user.value = null
@@ -85,6 +86,10 @@ export const useUserStore = defineStore('user', () => {
     localStorage.setItem('cms_return_route', window.location.pathname + window.location.search)
     clearAuth()
     window.location.href = '/'
+  }
+
+  function currentSessionGeneration() {
+    return sessionGeneration
   }
 
   async function proactiveRefresh() {
@@ -211,6 +216,6 @@ export const useUserStore = defineStore('user', () => {
     activeApp, isSidebarCollapsed, theme, lang, preferences,
     setAuth, markAuthenticated, clearAuth, setUser, toggleSidebar, setTheme,
     setLanguage, loadPreferences, savePreference,
-    readCookies, appInit, sessionExpiredLogout
+    readCookies, appInit, sessionExpiredLogout, currentSessionGeneration
   }
 })

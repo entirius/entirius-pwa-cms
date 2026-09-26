@@ -1,10 +1,14 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import axios from "axios";
+import Cookies from "universal-cookie";
 import { setActivePinia, createPinia } from "pinia";
 import { useUserStore } from "@/stores/user";
 import { createApiClient } from "@/api/createClient";
 import { tokenExpiry } from "@/utils/jwt";
 import { jwtExpiringIn } from "../helpers/jwt";
+
+const cookies = new Cookies();
+const SESSION_COOKIES = ["token", "refresh", "customer_id", "expiryDate"];
 
 // r04 §9 defect 1: the service issues 300 s access tokens, the client assumed 15 min and refreshed far too late.
 // The proactive refresh is scheduled from the lifetime the token carries: 60 s before expiry, never sooner than 10 s.
@@ -14,8 +18,8 @@ const login = (seconds, skewSeconds = 0) => {
 };
 
 // An API client whose first call to each URL answers 401 — its retry goes through the shared refresh.
-const clientWith401 = () => {
-  const client = createApiClient("http://service.test", { tokenRefresh: true });
+const clientWith401 = (build = createApiClient) => {
+  const client = build("http://service.test", { tokenRefresh: true });
   const seen = new Set();
   client.defaults.adapter = async (config) => {
     if (seen.has(config.url)) return { data: {}, status: 200, statusText: "OK", headers: {}, config };
@@ -120,5 +124,91 @@ describe("user store — proactive token refresh", () => {
     await request;
 
     expect(post).toHaveBeenCalledTimes(1);
+  });
+
+  // FIX-04 review: the refresh check before a request is the third trigger — it joins the same in-flight call.
+  it("the timer, the pre-request check and a 401 retry send one refresh request", async () => {
+    let answer;
+    post.mockImplementation(() => new Promise((resolve) => (answer = resolve)));
+    const fresh = jwtExpiringIn(300);
+    login(12);
+    const sent = [];
+    const expiring = createApiClient("http://service.test", {
+      authHeaderFn: () => `Bearer ${cookies.get("token")}`,
+      tokenRefresh: true,
+    });
+    expiring.defaults.adapter = async (config) => {
+      sent.push(config.headers.Authorization);
+      return { data: {}, status: 200, statusText: "OK", headers: {}, config };
+    };
+
+    await vi.advanceTimersByTimeAsync(10_000);
+    const requests = [expiring.get("/a/"), clientWith401().get("/me/")];
+    await vi.advanceTimersByTimeAsync(0);
+    answer({ data: { data: { access: fresh } } });
+    await Promise.all(requests);
+
+    expect(post).toHaveBeenCalledTimes(1);
+    expect(sent).toEqual([`Bearer ${fresh}`]);
+    await vi.advanceTimersByTimeAsync(100_000);
+    expect(post).toHaveBeenCalledTimes(1);
+  });
+
+  // FIX-04 review: a refresh answered after a logout wrote the session back and re-armed the timer.
+  it("a logout during an in-flight refresh stays logged out and writes no cookie", async () => {
+    let answer;
+    post.mockImplementation(() => new Promise((resolve) => (answer = resolve)));
+    login(30);
+    await vi.advanceTimersByTimeAsync(10_000);
+    expect(post).toHaveBeenCalledTimes(1);
+
+    useUserStore().clearAuth();
+    const set = vi.spyOn(Cookies.prototype, "set");
+    answer({ data: { data: { access: jwtExpiringIn(300), refresh: "rotated" } } });
+    await vi.advanceTimersByTimeAsync(600_000);
+
+    expect(set).not.toHaveBeenCalled();
+    expect(SESSION_COOKIES.map((name) => cookies.get(name))).toEqual([undefined, undefined, undefined, undefined]);
+    expect(useUserStore().token).toBeNull();
+    expect(post).toHaveBeenCalledTimes(1);
+  });
+
+  it("a refresh keeps the customer id and never writes an unknown one", async () => {
+    login(300);
+    cookies.remove("customer_id", { path: "/" });
+
+    await clientWith401().get("/me/");
+    expect(useUserStore().customer_id).toBe("cust-1");
+    expect(cookies.get("customer_id")).toBe("cust-1");
+
+    useUserStore().clearAuth();
+    useUserStore().setAuth({ token: jwtExpiringIn(300), refresh: "r-token", expiryDate: null });
+    expect(useUserStore().customer_id).toBeNull();
+    expect(cookies.get("customer_id")).toBeUndefined();
+  });
+});
+
+// Last in the file: it resets the module registry. FIX-04 review: a client built before the store module loaded
+// got `storeAuth is not a function` after a successful refresh and signed the user out.
+describe("token refresh — module load order", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    SESSION_COOKIES.forEach((name) => cookies.remove(name, { path: "/" }));
+  });
+
+  it("a client created before the user store is imported refreshes without error", async () => {
+    vi.resetModules();
+    setActivePinia(createPinia());
+    const { createApiClient: buildBeforeStore } = await import("@/api/createClient");
+    const fresh = jwtExpiringIn(300);
+    vi.spyOn(axios, "post").mockResolvedValue({ data: { data: { access: fresh } } });
+    cookies.set("refresh", "r-token", { path: "/" });
+
+    await clientWith401(buildBeforeStore).get("/me/");
+
+    const { useUserStore: loadedStore } = await import("@/stores/user");
+    expect(loadedStore().token).toBe(fresh);
+    expect(cookies.get("token")).toBe(fresh);
+    loadedStore().clearAuth();
   });
 });
