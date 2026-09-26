@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import Cookies from 'universal-cookie'
 import { User } from '@/configs/access'
 import { PATCH_UserProfile } from '@/api/contentDB/api'
-import { refreshAccessToken } from '@/api/createClient'
+import { endRefreshSession, refreshAccessToken, SessionEndedError } from '@/api/createClient'
 import { setLang, getLang } from '@/i18n'
 import { refreshDelay } from '@/utils/jwt'
 
@@ -11,8 +11,6 @@ const cookies = new Cookies()
 const COOKIE_OPTS = { path: '/', maxAge: 7 * 24 * 60 * 60 }
 
 let sessionTimer = null
-// Bumped by every logout: a refresh that started under an older generation drops its answer.
-let sessionGeneration = 0
 
 export const useUserStore = defineStore('user', () => {
   const user = ref(null)
@@ -63,7 +61,7 @@ export const useUserStore = defineStore('user', () => {
   }
 
   function clearAuth() {
-    sessionGeneration += 1
+    endRefreshSession()
     stopSessionMonitor()
 
     user.value = null
@@ -88,15 +86,11 @@ export const useUserStore = defineStore('user', () => {
     window.location.href = '/'
   }
 
-  function currentSessionGeneration() {
-    return sessionGeneration
-  }
-
   async function proactiveRefresh() {
     try {
       await refreshAccessToken()
-    } catch {
-      sessionExpiredLogout()
+    } catch (error) {
+      if (!(error instanceof SessionEndedError)) sessionExpiredLogout()
     }
   }
 
@@ -216,6 +210,6 @@ export const useUserStore = defineStore('user', () => {
     activeApp, isSidebarCollapsed, theme, lang, preferences,
     setAuth, markAuthenticated, clearAuth, setUser, toggleSidebar, setTheme,
     setLanguage, loadPreferences, savePreference,
-    readCookies, appInit, sessionExpiredLogout, currentSessionGeneration
+    readCookies, appInit, sessionExpiredLogout
   }
 })

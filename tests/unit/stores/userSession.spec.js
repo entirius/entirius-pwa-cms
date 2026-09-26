@@ -34,6 +34,7 @@ describe("user store — proactive token refresh", () => {
 
   beforeEach(() => {
     vi.useFakeTimers();
+    localStorage.clear();
     setActivePinia(createPinia());
     post = vi.spyOn(axios, "post").mockImplementation(async () => ({ data: { data: { access: jwtExpiringIn(300) } } }));
   });
@@ -171,6 +172,30 @@ describe("user store — proactive token refresh", () => {
     expect(SESSION_COOKIES.map((name) => cookies.get(name))).toEqual([undefined, undefined, undefined, undefined]);
     expect(useUserStore().token).toBeNull();
     expect(post).toHaveBeenCalledTimes(1);
+    // the dropped answer is not a session expiry: no second logout, no return route to the page left behind
+    expect(localStorage.getItem("cms_return_route")).toBeNull();
+  });
+
+  // Code review: a login right after the logout joined the still-pending old refresh and was wiped by its drop.
+  it("a login after a logout never joins the dropped refresh", async () => {
+    const answers = [];
+    post.mockImplementation(() => new Promise((resolve) => answers.push(resolve)));
+    const fresh = jwtExpiringIn(300);
+    login(30);
+    await vi.advanceTimersByTimeAsync(10_000);
+
+    useUserStore().clearAuth();
+    login(300);
+    const request = clientWith401().get("/me/");
+    await vi.advanceTimersByTimeAsync(0);
+    expect(post).toHaveBeenCalledTimes(2);
+
+    answers[0]({ data: { data: { access: jwtExpiringIn(300) } } });
+    answers[1]({ data: { data: { access: fresh } } });
+    await request;
+
+    expect(useUserStore().token).toBe(fresh);
+    expect(cookies.get("token")).toBe(fresh);
   });
 
   it("a refresh keeps the customer id and never writes an unknown one", async () => {
