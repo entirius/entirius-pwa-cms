@@ -18,7 +18,7 @@
           :text="!mode ? $t('routes.set_new') : $t('common.close')"
           class="b-default bg-base bg-hover-hover br-50 t-accent fs-200"
           :class="{
-            'bg-hover t-body bg-accent-fill-hover t-on-accent-fill-hover b-support-400-hover':
+            'bg-hover t-body bg-accent-fill-hover t-on-accent-fill-hover b-accent-fill-hover':
               mode,
           }"
           @click="!mode ? (mode = 'add') : (mode = null)"

@@ -173,7 +173,7 @@
               ? !(Boolean(routes && routes.length) && Boolean(custom_doc_name))
               : false
           "
-          :stroke_color_class="'stroke-basic-600'"
+          :stroke_color_class="'t-secondary'"
           class="flex jc-ct ai-ct"
         >
           <button
@@ -194,7 +194,7 @@
       class="builder-advanced-row flex ai-ct gap-200 bg-base"
     >
       <NoticeMe
-        :stroke_color_class="'stroke-basic-600'"
+        :stroke_color_class="'t-secondary'"
         :active="Boolean(!custom_doc_name)"
         :style="[!custom_doc_name ? { padding: '1px' } : {}]"
         class="lh-base-elem"
@@ -214,7 +214,7 @@
       >
         <NoticeMe
           :active="!routes || !routes.length"
-          :stroke_color_class="'stroke-basic-600'"
+          :stroke_color_class="'t-secondary'"
           class="pointer"
         >
           <div
@@ -372,7 +372,7 @@
           >
             <NoticeMe
               :active="!blog_extension"
-              :stroke_color_class="'stroke-warning-200'"
+              :stroke_color_class="'t-warning'"
             >
               <div
                 class="flex ai-ct gap-100 p-50 fs-200 pointer br-50"
@@ -1881,18 +1881,18 @@ const scroll_into = (id) => {
     }
 
     th {
-      color: var(--editor-table-header-text);
-      background: var(--editor-table-header-bg);
+      color: var(--text-strong);
+      background: var(--accent-subtle);
     }
     th:nth-child(odd) {
-      color: var(--editor-table-header-text);
-      background: var(--editor-table-header-bg-alt);
+      color: var(--text-strong);
+      background: var(--surface-raised);
     }
     tr {
       vertical-align: top;
     }
     tr:nth-child(even) {
-      background: var(--editor-table-even-row);
+      background: var(--surface-raised);
     }
   }
 }
@@ -2029,7 +2029,7 @@ const scroll_into = (id) => {
     font-weight: 700;
     border-radius: 50px;
     background: var(--accent-subtle);
-    color: var(--text-accent);
+    color: var(--text-strong);
   }
 
   &__body {

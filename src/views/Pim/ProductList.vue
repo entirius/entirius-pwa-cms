@@ -417,7 +417,7 @@ export default {
         actions.push({
           key: "send_to_enrichment",
           labelKey: "enrichment.spawn.send_selected",
-          buttonClass: "bg-accent-subtle t-accent",
+          buttonClass: "bg-accent-subtle t-strong",
         });
       }
       if (this.translatorAvailable) {
@@ -874,8 +874,8 @@ export default {
     productClassBadge(name) {
       const map = {
         productbase: "bg-raised t-secondary",
-        productsimple: "bg-accent-subtle t-accent",
-        productconfigurable: "bg-accent-fill t-accent",
+        productsimple: "bg-accent-subtle t-strong",
+        productconfigurable: "bg-accent-fill t-on-accent-fill",
         productbundle: "bg-warning-subtle t-warning",
       };
       return map[name?.toLowerCase()] || "bg-raised t-secondary";

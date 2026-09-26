@@ -28,7 +28,7 @@
             </span>
           </template>
           <template #cell-country_count="{ row }">
-            <span class="chip bg-accent-subtle t-accent">
+            <span class="chip bg-accent-subtle t-strong">
               {{ row.country_count ?? 0 }} {{ $t('pm.country_count') }}
             </span>
           </template>

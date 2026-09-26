@@ -1035,18 +1035,18 @@ export default {
       }
 
       th {
-        color: var(--editor-table-header-text);
-        background: var(--editor-table-header-bg);
+        color: var(--text-strong);
+        background: var(--accent-subtle);
       }
       th:nth-child(odd) {
-        color: var(--editor-table-header-text);
-        background: var(--editor-table-header-bg-alt);
+        color: var(--text-strong);
+        background: var(--surface-raised);
       }
       tr {
         vertical-align: top;
       }
       tr:nth-child(even) {
-        background: var(--editor-table-even-row);
+        background: var(--surface-raised);
       }
     }
   }
@@ -1060,7 +1060,7 @@ export default {
 }
 
 [data-theme="dark"] .ProseMirror mark {
-  color: #1a1d23 !important;
+  color: var(--text-inverse) !important;
 }
 
 .wysiwyg-btn-row {

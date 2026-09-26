@@ -1,7 +1,7 @@
 <template>
   <div
     id="app"
-    class="main-bg-theme flex-column ai-ct jc-ct"
+    class="bg-page flex-column ai-ct jc-ct"
     :class="{ 'app--no-panel-nav': hasPanel && !showBottomBar }"
   >
     <EnvMissing v-if="!envValid" :status="envStatus" />

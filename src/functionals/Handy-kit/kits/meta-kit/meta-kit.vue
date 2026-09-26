@@ -155,7 +155,7 @@
       class="grid grid-col-3 rtl-direction bg-raised pl-400 pr-400 pt-100 pb-100"
     >
       <BasicButton
-        class="bg-inverse br-50 bg-accent-fill fs-200 b-accent t-basic-100 w-100 jc-ct"
+        class="bg-inverse br-50 bg-accent-fill fs-200 b-accent t-on-accent-fill w-100 jc-ct"
         :text="$t('common.save')"
         @click="
           pass_asset({

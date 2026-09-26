@@ -267,7 +267,7 @@ export default {
 }
 
 .feed-detail__mono {
-  font-family: var(--ff-mono, monospace);
+  font-family: var(--font-mono);
   font-size: var(--fs-200);
 }
 
@@ -277,7 +277,7 @@ export default {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   padding: 12px;
-  font-family: var(--ff-mono, monospace);
+  font-family: var(--font-mono);
   font-size: var(--fs-200);
   margin: 0;
   max-height: 240px;

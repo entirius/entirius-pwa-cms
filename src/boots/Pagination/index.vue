@@ -150,7 +150,7 @@ export default {
 
     &--active {
       background: var(--accent-subtle);
-      color: var(--text-accent);
+      color: var(--text-strong);
       font-weight: 600;
     }
 

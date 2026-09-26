@@ -35,7 +35,7 @@
 
     <div
       v-if="mode === 'gallery'"
-      class="gallery-modal t-basic-100 flex flex-column ov-h br-50 ov-h"
+      class="gallery-modal t-body flex flex-column ov-h br-50 ov-h"
     >
       <nav
         class="grid grid-col-2 grid-col-2-m bg-raised t-secondary fs-300 pl-400 pr-400 pt-200 pb-200"
@@ -216,7 +216,7 @@
     </div>
     <div
       v-if="mode === 'new-picture'"
-      class="gallery-modal t-basic-100 flex flex-column ov-h br-50"
+      class="gallery-modal t-body flex flex-column ov-h br-50"
     >
       <nav
         class="flex bg-raised t-secondary fs-300 pl-400 pr-400 pt-200 pb-200"

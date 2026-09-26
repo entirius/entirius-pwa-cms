@@ -149,12 +149,12 @@ export default {
     font-size: inherit;
     font-family: inherit;
     border: 1px solid;
-    border-color: var(--border-default);
+    border-color: var(--border-control);
     border-radius: var(--space-50);
     transition: border-color 0.2s;
     outline: 0;
     color: inherit;
-    background-color: inherit;
+    background-color: var(--surface-sunken);
 
     &::placeholder {
       color: transparent;
@@ -195,7 +195,7 @@ export default {
   //     display: block;
   //     transition: 0.1s;
   //     background-color: var(--accent-subtle);
-  //     color: var(--c-basic-100);
+  //     color: var(--text-strong);
   //     //font-size: var(--fs-200);
   //   }
   // }

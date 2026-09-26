@@ -223,7 +223,7 @@ onBeforeUnmount(() => {
   height: 32px;
   border-radius: 50%;
   border: none;
-  color: var(--c-basic-100);
+  color: var(--text-on-accent-fill);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -249,9 +249,11 @@ onBeforeUnmount(() => {
 
 .floating-actions__action--secondary {
   background-color: var(--surface-inverse);
+  color: var(--text-inverse);
 }
 
 .floating-actions__action--danger {
   background-color: var(--negative-fill);
+  color: var(--text-on-status-fill);
 }
 </style>

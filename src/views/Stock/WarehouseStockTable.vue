@@ -26,7 +26,7 @@
     <!-- Integration warning -->
     <div
       v-if="!isManual"
-      class="flex ai-ct gap-200 mb-300 p-300 bg-accent-subtle br-50 t-accent fs-200"
+      class="flex ai-ct gap-200 mb-300 p-300 bg-accent-subtle br-50 t-strong fs-200"
     >
       <FontAwesomeIcon icon="lock" />
       <span>{{ $t("stock.integration_readonly") }}</span>

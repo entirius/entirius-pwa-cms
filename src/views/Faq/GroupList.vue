@@ -56,7 +56,7 @@
               <div class="flex ai-ct gap-100">
                 <span
                   v-if="(element.channel_ids || []).length"
-                  class="chip bg-accent-subtle t-accent"
+                  class="chip bg-accent-subtle t-strong"
                 >
                   {{ element.channel_ids.length }} {{ element.channel_ids.length === 1 ? 'channel' : 'channels' }}
                 </span>
@@ -67,7 +67,7 @@
                   {{ $t("faq.global") }}
                 </span>
               </div>
-              <span class="chip bg-accent-subtle t-accent">
+              <span class="chip bg-accent-subtle t-strong">
                 {{ element.item_count || 0 }} {{ $t("faq.items") }}
               </span>
               <StatusBadge

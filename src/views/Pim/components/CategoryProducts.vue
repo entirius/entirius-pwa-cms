@@ -23,7 +23,7 @@
             <div class="product-card__handle">
               <font-awesome-icon icon="grip-vertical" class="t-muted" />
             </div>
-            <span class="product-card__position bg-accent-subtle t-accent">
+            <span class="product-card__position bg-accent-subtle t-strong">
               #{{ index + 1 }}
             </span>
             <div

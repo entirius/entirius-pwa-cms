@@ -70,7 +70,7 @@
                 <span class="fg-1 fw-500 t-body fs-300">{{ element.label || "—" }}</span>
                 <span
                   class="fs-200 ph-100 br-50"
-                  :class="element.display_as === 'megamenu' ? 'bg-accent-subtle t-accent' : 'bg-hover t-body'"
+                  :class="element.display_as === 'megamenu' ? 'bg-accent-subtle t-strong' : 'bg-hover t-body'"
                   :data-testid="element.display_as === 'megamenu' ? 'nav-item-type-megamenu' : 'nav-item-type-link'"
                 >
                   {{ element.display_as === "megamenu" ? $t("layout_extender.mega_menu") : $t("layout_extender.simple_link") }}

@@ -118,7 +118,7 @@ export default {
   &--inherited {
     border-color: var(--accent);
     background: var(--accent-subtle);
-    color: var(--text-accent);
+    color: var(--text-strong);
   }
 }
 

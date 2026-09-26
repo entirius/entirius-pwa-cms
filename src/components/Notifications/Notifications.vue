@@ -5,7 +5,7 @@
         v-for="notification in notifications"
         :key="notification.uuid"
         class="notification flex jc-sb ai-ct mb-100 p-200 br-50 shadow-down"
-        :class="`bg-${notification.type}-100 t-${notification.type}-300 notification--${notification.type}`"
+        :class="[toneClasses(notification.type), `notification--${notification.type}`]"
         :role="severityRole(notification.type)"
         :aria-live="severityAriaLive(notification.type)"
         @pointerenter="onPointer($event, notify.pauseTimer, notification.uuid)"
@@ -35,6 +35,10 @@
 
 <script>
 import { useNotifyStore } from "@/stores/notify";
+
+// notify type → semantic status name (the semantic layer calls informative `info`)
+const TONES = { positive: "positive", negative: "negative", warning: "warning", informative: "info" };
+
 export default {
   setup() {
     const notify = useNotifyStore();
@@ -49,6 +53,10 @@ export default {
     // Only a hovering mouse holds a toast: a tap never leaves, so it would pin the toast over the page.
     onPointer(event, action, uuid) {
       if (event.pointerType === "mouse") action(uuid);
+    },
+    toneClasses(type) {
+      const tone = TONES[type] ?? "info";
+      return `bg-${tone}-subtle t-${tone}`;
     },
     severityRole(type) {
       return type === "negative" || type === "warning" ? "alert" : "status";

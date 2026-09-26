@@ -29,7 +29,7 @@
           v-if="translatorAvailable"
           :text="$t('builder.translate_all')"
           icon="language"
-          class="bg-accent-subtle t-accent"
+          class="bg-accent-subtle t-strong"
           @click="showTranslateModal = true"
         />
         <Dropdown

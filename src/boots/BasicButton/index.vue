@@ -93,7 +93,7 @@ button.button-basic {
       background-color: var(--accent-fill-hover);
     }
     .btn-text {
-      color: var(--c-basic-100);
+      color: var(--text-on-accent-fill);
     }
   }
   // -------------------------------------------------------------
@@ -159,11 +159,11 @@ button.button-basic {
       font-size: 0.975rem;
     }
     .btn-icon {
-      color: var(--c-basic-100);
+      color: var(--text-inverse);
     }
     .btn-text {
       font-size: 0.875rem;
-      color: var(--c-basic-100);
+      color: var(--text-inverse);
     }
   }
   // -------------------------------------------------------------

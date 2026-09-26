@@ -29,7 +29,7 @@
           >
           <span
             v-if="selected_contents.includes(doc_uid)"
-            class="ph-50 bg-accent-subtle t-basic-100 br-50 mr-50 fs-100"
+            class="ph-50 bg-accent-subtle t-strong br-50 mr-50 fs-100"
             >selected</span
           >
         </div>
@@ -60,7 +60,7 @@
             >
             <span
               v-if="selected_contents.includes(uid)"
-              class="ph-50 bg-accent-subtle t-basic-100 br-50 mr-50 fs-100"
+              class="ph-50 bg-accent-subtle t-strong br-50 mr-50 fs-100"
               >selected</span
             >
           </div>
@@ -73,7 +73,7 @@
         :class="[
           !selected_contents && !selected_contents.length
             ? 'bg-hover t-muted b-subtle'
-            : 'bg-inverse bg-accent-fill-hover b-support-400-hover b-strong t-basic-100',
+            : 'bg-inverse bg-accent-fill-hover b-accent-fill-hover b-strong t-inverse t-on-accent-fill-hover',
         ]"
         :text="$t('common.save')"
         :isDisabled="!selected_contents && !selected_contents.length"

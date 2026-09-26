@@ -347,6 +347,6 @@ export default {
 }
 .modifier-preview {
   display: inline-block;
-  font-family: var(--ff-mono, monospace);
+  font-family: var(--font-mono);
 }
 </style>

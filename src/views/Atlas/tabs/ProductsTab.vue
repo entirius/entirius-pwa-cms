@@ -122,7 +122,7 @@
           <!-- etap-12 #19: per-row quick actions for new/queued SPs, complementary to the bulk bar. -->
           <button
             v-if="canApprove(row)"
-            class="row-action-btn bg-accent-subtle t-accent"
+            class="row-action-btn bg-accent-subtle t-strong"
             :title="$t('atlas.products.row_actions.review')"
             :data-testid="`products-review-${row.id}`"
             @click="reviewProduct(row)"
@@ -1053,7 +1053,7 @@ export default {
 .detail-btn--push {
   background: var(--accent-subtle);
   border-color: var(--accent);
-  color: var(--text-accent);
+  color: var(--text-strong);
 }
 .detail-btn--repush {
   background: var(--warning-subtle);

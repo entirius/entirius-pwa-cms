@@ -41,7 +41,7 @@
 
         <div
           v-if="revealedCode"
-          class="voucher-detail__code bg-accent-subtle t-accent br-50 p-300 mb-400"
+          class="voucher-detail__code bg-accent-subtle t-strong br-50 p-300 mb-400"
         >
           <span class="fs-200">{{ $t("promo.voucher_code") }}:</span>
           <code class="fw-600">{{ revealedCode }}</code>

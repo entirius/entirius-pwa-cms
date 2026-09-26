@@ -76,7 +76,7 @@ defineEmits(["click"]);
 
   &--active &__count {
     background-color: rgba(255, 255, 255, 0.25);
-    color: var(--c-basic-100);
+    color: var(--text-on-accent-fill);
   }
 }
 </style>

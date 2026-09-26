@@ -34,7 +34,7 @@
         <!-- System feature notice -->
         <div
           v-if="isSystem && !isCreate"
-          class="flex ai-ct gap-200 mb-300 p-300 bg-accent-subtle br-50 t-accent fs-200"
+          class="flex ai-ct gap-200 mb-300 p-300 bg-accent-subtle br-50 t-strong fs-200"
         >
           <i class="icon icon-lock" />
           <span>{{ $t("pim.system_feature_notice") }}</span>
@@ -115,7 +115,7 @@
           <div class="grid grid-col-2 gap-300">
             <div v-for="(lang, index) in languages" :key="lang">
               <span
-                class="chip chip--sm bg-accent-subtle t-accent"
+                class="chip chip--sm bg-accent-subtle t-strong"
               >
                 {{ lang.toUpperCase() }}
               </span>

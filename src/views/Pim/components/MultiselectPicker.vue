@@ -302,7 +302,7 @@ onBeforeUnmount(() => {
     gap: 4px;
     padding: 2px 8px;
     background: var(--accent-subtle);
-    color: var(--text-accent);
+    color: var(--text-strong);
     border-radius: var(--radius-sm);
     font-size: var(--fs-200);
     font-weight: 600;

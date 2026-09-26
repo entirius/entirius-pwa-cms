@@ -211,7 +211,7 @@
                 "
                 class="info-card__inheritance mt-200"
               >
-                <span class="chip bg-accent-subtle t-accent">
+                <span class="chip bg-accent-subtle t-strong">
                   {{
                     $t("pim.channels_inherit", {
                       count: product.inheriting_channels_count,
@@ -1508,7 +1508,7 @@ export default {
   &--active {
     border-color: var(--accent);
     background: var(--accent-subtle);
-    color: var(--text-accent);
+    color: var(--text-strong);
   }
 }
 

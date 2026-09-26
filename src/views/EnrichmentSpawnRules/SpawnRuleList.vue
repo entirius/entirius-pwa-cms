@@ -36,7 +36,7 @@
         <template #cell-auto="{ value }">
           <span
             class="chip"
-            :class="value ? 'bg-accent-subtle t-accent' : 'bg-raised t-muted'"
+            :class="value ? 'bg-accent-subtle t-strong' : 'bg-raised t-muted'"
           >
             {{ value ? $t("common.yes") : $t("common.no") }}
           </span>

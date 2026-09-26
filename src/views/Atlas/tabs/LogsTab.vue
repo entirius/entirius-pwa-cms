@@ -61,7 +61,7 @@
         <template #cell-acknowledged_at="{ row }">
           <button
             v-if="!row.acknowledged_at"
-            class="logs-ack-btn bg-accent-subtle t-accent"
+            class="logs-ack-btn bg-accent-subtle t-strong"
             :data-testid="`logs-ack-${row.id}`"
             @click.stop="acknowledge(row)"
           >

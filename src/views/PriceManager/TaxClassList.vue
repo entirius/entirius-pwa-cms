@@ -15,7 +15,7 @@
             <span class="fw-600">{{ row.name }}</span>
           </template>
           <template #cell-rate_count="{ row }">
-            <span class="chip bg-accent-subtle t-accent">
+            <span class="chip bg-accent-subtle t-strong">
               {{ row.rate_count ?? 0 }} {{ $t('pm.rate_count') }}
             </span>
           </template>

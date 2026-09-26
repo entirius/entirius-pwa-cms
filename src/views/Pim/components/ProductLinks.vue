@@ -506,11 +506,11 @@ watch(
   cursor: grab;
 }
 .links-table__row--draggable:hover {
-  background: var(--surface-raised, var(--surface-raised));
+  background: var(--surface-raised);
 }
 .links-table__row--ghost {
   opacity: 0.4;
-  background: var(--accent-subtle, var(--surface-raised));
+  background: var(--accent-subtle);
 }
 .links-table__handle {
   display: inline-flex;

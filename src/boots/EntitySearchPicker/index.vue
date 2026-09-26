@@ -189,9 +189,9 @@ async function fetchResults(search) {
   align-items: center;
   height: var(--elem-height);
   padding: 0 var(--space-100);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-control);
   border-radius: var(--space-50);
-  background: var(--surface-base);
+  background: var(--surface-sunken);
   cursor: pointer;
   transition: border-color 0.15s;
 

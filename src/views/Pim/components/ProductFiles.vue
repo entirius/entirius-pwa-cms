@@ -414,7 +414,7 @@ onMounted(() => {
             <label class="product-files__label">
               {{ $t("pim.file_label") }}
               <span
-                class="chip chip--sm bg-accent-subtle t-accent"
+                class="chip chip--sm bg-accent-subtle t-strong"
                 >{{ lang.toUpperCase() }}</span
               >
             </label>
@@ -440,7 +440,7 @@ onMounted(() => {
               <label class="product-files__label">
                 {{ $t("pim.name") }}
                 <span
-                  class="chip chip--sm bg-accent-subtle t-accent"
+                  class="chip chip--sm bg-accent-subtle t-strong"
                   >{{ lang.toUpperCase() }}</span
                 >
               </label>
@@ -577,7 +577,7 @@ onMounted(() => {
                 <label class="product-files__label">
                   {{ $t("pim.file_label") }}
                   <span
-                    class="chip chip--sm bg-accent-subtle t-accent"
+                    class="chip chip--sm bg-accent-subtle t-strong"
                     >{{ lang.toUpperCase() }}</span
                   >
                 </label>
@@ -787,7 +787,7 @@ onMounted(() => {
 
     &:hover {
       background-color: var(--accent-subtle);
-      color: var(--text-accent);
+      color: var(--text-strong);
     }
   }
 

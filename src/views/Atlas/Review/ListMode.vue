@@ -500,7 +500,7 @@ export default {
 .bulk-btn--push {
   background: var(--accent-subtle);
   border-color: var(--accent);
-  color: var(--text-accent);
+  color: var(--text-strong);
 }
 
 /* Detail drawer: fill the body so content scrolls and the action bar pins to the bottom. */

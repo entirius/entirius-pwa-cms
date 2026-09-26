@@ -118,7 +118,7 @@
           :class="[
             attr_value.length < 5
               ? 'bg-raised t-muted'
-              : 't-muted bg-accent-fill',
+              : 't-on-accent-fill bg-accent-fill',
           ]"
         />
       </template>
@@ -181,7 +181,7 @@
       class="grid grid-col-3 gap-100 rtl-direction bg-raised pl-400 pr-400 pt-100 pb-100"
     >
       <BasicButton
-        class="bg-inverse br-50 bg-accent-fill-hover b-support-400-hover fs-200 b-strong t-basic-100 w-100 jc-ct"
+        class="bg-inverse br-50 bg-accent-fill-hover b-accent-fill-hover fs-200 b-strong t-inverse t-on-accent-fill-hover w-100 jc-ct"
         :text="$t('common.save')"
         @click="pass_asset({ ...document_attrs })"
       />

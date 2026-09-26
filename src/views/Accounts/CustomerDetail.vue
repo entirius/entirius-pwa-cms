@@ -28,7 +28,7 @@
             <p class="t-body">{{ customer.language || '---' }}</p>
           </FormField>
           <FormField :label="$t('accounts.group')">
-            <span v-if="customer.group" class="bg-accent-subtle t-accent fs-200 ph-100 br-50">
+            <span v-if="customer.group" class="bg-accent-subtle t-strong fs-200 ph-100 br-50">
               {{ customer.group.name }}
             </span>
             <span v-else class="t-muted">---</span>
@@ -100,7 +100,7 @@
               <span v-if="row.is_default_billing" class="bg-positive-subtle t-positive fs-100 ph-100 br-50">
                 {{ $t("accounts.default_billing") }}
               </span>
-              <span v-if="row.is_default_shipping" class="bg-accent-subtle t-accent fs-100 ph-100 br-50">
+              <span v-if="row.is_default_shipping" class="bg-accent-subtle t-strong fs-100 ph-100 br-50">
                 {{ $t("accounts.default_shipping") }}
               </span>
             </div>

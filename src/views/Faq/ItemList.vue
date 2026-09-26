@@ -47,7 +47,7 @@
           <span class="item-question">{{ row.question }}</span>
         </template>
         <template #cell-group_name="{ row }">
-          <span v-if="row.group_name" class="chip bg-accent-subtle t-accent">
+          <span v-if="row.group_name" class="chip bg-accent-subtle t-strong">
             {{ row.group_name }}
           </span>
           <span v-else class="t-muted">—</span>

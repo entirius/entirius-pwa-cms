@@ -85,8 +85,8 @@ function toggle(idx) {
   height: var(--elem-height);
   padding: 0 10px;
   border-radius: 5px;
-  border: 1px solid var(--border-default);
-  background-color: var(--surface-base);
+  border: 1px solid var(--border-control);
+  background-color: var(--surface-sunken);
   color: var(--text-secondary);
   font-size: 13px;
   transition: all 0.15s ease;

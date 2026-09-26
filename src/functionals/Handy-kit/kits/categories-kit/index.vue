@@ -51,7 +51,7 @@
               "
             />
             <BasicButton
-              class="bg-inverse br-50 bg-accent-fill fs-200 b-accent t-basic-100"
+              class="bg-inverse br-50 bg-accent-fill fs-200 b-accent t-on-accent-fill"
               :text="editing_category ? $t('common.save') : $t('common.post')"
               @click="
                 editing_category

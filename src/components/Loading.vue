@@ -14,8 +14,8 @@
       >
         <defs>
           <linearGradient id="MyGradient">
-            <stop offset="5%" stop-color="var(--c-basic-900)" />
-            <stop offset="95%" stop-color="var(--c-basic-400)" />
+            <stop offset="5%" stop-color="var(--text-strong)" />
+            <stop offset="95%" stop-color="var(--text-muted)" />
           </linearGradient>
         </defs>
         <path

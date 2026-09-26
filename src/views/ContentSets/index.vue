@@ -534,7 +534,7 @@ export default {
   &--selected {
     background: var(--accent-fill);
     border-color: var(--accent);
-    .fw-600, .fs-200 { color: var(--c-basic-100); }
+    .fw-600, .fs-200 { color: var(--text-on-accent-fill); }
   }
   &__badge {
     flex-shrink: 0;

@@ -3,7 +3,7 @@ import { mount } from "@vue/test-utils";
 
 import BulkActionBar from "@/boots/BulkActionBar/index.vue";
 
-const buttonAction = { key: "enable", labelKey: "pim.enable_all", buttonClass: "bg-positive-200 t-basic-100" };
+const buttonAction = { key: "enable", labelKey: "pim.enable_all", buttonClass: "bg-positive-fill t-on-status-fill" };
 const dropdownAction = {
   key: "visibility",
   labelKey: "pim.change_visibility",

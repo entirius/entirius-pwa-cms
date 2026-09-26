@@ -116,7 +116,7 @@ function onSave() {
     padding: 1px 6px;
     border-radius: 3px;
     background: var(--accent-subtle);
-    color: var(--text-accent);
+    color: var(--text-strong);
   }
 
   &__footer {

@@ -63,7 +63,8 @@ function onTextInput(e) {
 }
 
 .color-input {
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-control);
+  background-color: var(--surface-sunken);
   border-radius: var(--space-50);
   height: var(--elem-height);
   padding: 0;

@@ -967,7 +967,7 @@ watch(
     height: 18px;
     border-radius: 50%;
     background: rgba(0, 0, 0, 0.55);
-    color: #fff;
+    color: var(--text-on-accent-fill);
     display: flex;
     align-items: center;
     justify-content: center;

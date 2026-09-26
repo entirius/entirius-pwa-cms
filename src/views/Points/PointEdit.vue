@@ -43,7 +43,7 @@
         <!-- Carrier read-only banner -->
         <div
           v-if="isCarrier"
-          class="flex ai-ct gap-200 mb-300 p-300 bg-accent-subtle br-50 t-accent fs-200"
+          class="flex ai-ct gap-200 mb-300 p-300 bg-accent-subtle br-50 t-strong fs-200"
         >
           <font-awesome-icon icon="lock" />
           <span>{{ $t("dp.carrier_point_read_only") }}</span>
@@ -57,7 +57,7 @@
           <div v-if="!isCarrier" class="mb-300">
             <div
               v-if="!geocodeAvailable"
-              class="flex ai-ct gap-200 p-200 bg-accent-subtle br-50 t-accent fs-200 mb-200"
+              class="flex ai-ct gap-200 p-200 bg-accent-subtle br-50 t-strong fs-200 mb-200"
             >
               <font-awesome-icon icon="info-circle" />
               <span>{{ $t("dp.geocoding_unavailable") }}</span>

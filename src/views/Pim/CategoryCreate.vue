@@ -59,7 +59,7 @@
         <div class="grid grid-col-2 gap-300">
           <div v-for="lang in formLanguages" :key="`name-${lang}`">
             <span
-              class="chip chip--sm bg-accent-subtle t-accent"
+              class="chip chip--sm bg-accent-subtle t-strong"
               >{{ lang.toUpperCase() }}</span
             >
             <BasicInput
@@ -78,7 +78,7 @@
         <div class="grid grid-col-2 gap-300">
           <div v-for="lang in formLanguages" :key="`desc-${lang}`">
             <span
-              class="chip chip--sm bg-accent-subtle t-accent"
+              class="chip chip--sm bg-accent-subtle t-strong"
               >{{ lang.toUpperCase() }}</span
             >
             <TextAreaBasic
@@ -101,7 +101,7 @@
         <div class="grid grid-col-2 gap-300 mb-300">
           <div v-for="lang in formLanguages" :key="`meta-title-${lang}`">
             <span
-              class="chip chip--sm bg-accent-subtle t-accent"
+              class="chip chip--sm bg-accent-subtle t-strong"
               >{{ lang.toUpperCase() }}</span
             >
             <BasicInput
@@ -124,7 +124,7 @@
         <div class="grid grid-col-2 gap-300">
           <div v-for="lang in formLanguages" :key="`meta-desc-${lang}`">
             <span
-              class="chip chip--sm bg-accent-subtle t-accent"
+              class="chip chip--sm bg-accent-subtle t-strong"
               >{{ lang.toUpperCase() }}</span
             >
             <TextAreaBasic

@@ -851,7 +851,7 @@ $cols:
   &--active {
     background: var(--accent-subtle);
     border-color: var(--accent);
-    color: var(--text-accent);
+    color: var(--text-strong);
   }
 }
 

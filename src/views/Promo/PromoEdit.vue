@@ -1513,7 +1513,7 @@ export default {
   padding: 4px 12px;
   border-radius: var(--radius-sm);
   background: var(--accent-subtle);
-  color: var(--text-accent);
+  color: var(--text-strong);
   font-size: var(--fs-200);
   font-weight: 600;
 }

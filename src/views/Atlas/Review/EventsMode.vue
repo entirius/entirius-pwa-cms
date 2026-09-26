@@ -34,7 +34,7 @@
       <template #cell-acknowledged_at="{ row }">
         <button
           v-if="!row.acknowledged_at"
-          class="events-ack-btn bg-accent-subtle t-accent"
+          class="events-ack-btn bg-accent-subtle t-strong"
           :data-testid="`events-ack-${row.id}`"
           @click.stop="acknowledge(row)"
         >

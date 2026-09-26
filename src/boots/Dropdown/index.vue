@@ -211,9 +211,9 @@ function find_label({
   height: var(--elem-height);
   line-height: var(--elem-height);
   min-width: 180px;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-control);
   border-radius: var(--space-50);
-  background-color: var(--surface-base);
+  background-color: var(--surface-sunken);
   transition: border-color 0.2s;
 
   &:hover:not(.dropdown-disabled) {

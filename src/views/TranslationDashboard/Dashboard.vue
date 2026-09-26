@@ -304,7 +304,7 @@ export default {
 
 .tj-source-badge--pim {
   background: var(--accent-subtle);
-  color: var(--text-accent);
+  color: var(--text-strong);
 }
 
 .tj-source-badge--content {

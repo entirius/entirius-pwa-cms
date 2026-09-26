@@ -64,7 +64,7 @@
           {{ row.firstname }} {{ row.lastname }}
         </template>
         <template #cell-group="{ value }">
-          <span v-if="value" class="bg-accent-subtle t-accent fs-200 ph-100 br-50">
+          <span v-if="value" class="bg-accent-subtle t-strong fs-200 ph-100 br-50">
             {{ value }}
           </span>
           <span v-else class="t-muted">---</span>

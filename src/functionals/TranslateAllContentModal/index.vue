@@ -183,7 +183,7 @@ export default {
             <span
               v-for="lang in selectedLanguages"
               :key="lang"
-              class="td-chip bg-accent-subtle t-accent fs-200"
+              class="td-chip bg-accent-subtle t-strong fs-200"
               @click="removeLanguage(lang)"
             >
               {{ lang.toUpperCase() }}

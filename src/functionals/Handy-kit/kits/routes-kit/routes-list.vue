@@ -85,7 +85,7 @@
             :icon="!mode ? 'plus' : false"
             :text="!mode ? $t('routes.set_new') : $t('common.close')"
             :class="{ 'jc-ct': mode }"
-            class="as-s bg-hover b-default t-secondary t-on-accent-fill-hover bg-accent-fill-hover b-support-300-hover br-50"
+            class="as-s bg-hover b-default t-secondary t-on-accent-fill-hover bg-accent-fill-hover b-accent-fill-hover br-50"
             @click="
               () => {
                 error = null;

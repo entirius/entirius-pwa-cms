@@ -74,7 +74,7 @@
         <!-- Select-all-matching banner -->
         <div
           v-if="pageFullySelected && totalCount > rules.length && !selectAllMatching"
-          class="promo-list__select-banner bg-accent-subtle t-accent fs-200 ph-200 pv-100 br-50 mb-300"
+          class="promo-list__select-banner bg-accent-subtle t-strong fs-200 ph-200 pv-100 br-50 mb-300"
         >
           {{ $t("promo.bulk_select_all_page", { n: rules.length }) }}
           <button
@@ -86,7 +86,7 @@
         </div>
         <div
           v-else-if="selectAllMatching"
-          class="promo-list__select-banner bg-accent-subtle t-accent fs-200 ph-200 pv-100 br-50 mb-300"
+          class="promo-list__select-banner bg-accent-subtle t-strong fs-200 ph-200 pv-100 br-50 mb-300"
         >
           {{ $t("promo.bulk_all_selected", { total: totalCount }) }}
           <button
@@ -118,7 +118,7 @@
           </template>
           <template #cell-modifier="{ row }">
             <span
-              class="promo-modifier-badge bg-accent-subtle t-accent"
+              class="promo-modifier-badge bg-accent-subtle t-strong"
               :title="modifierLabel(row.modifier)"
             >{{ modifierShortLabel(row.modifier) }}</span>
           </template>

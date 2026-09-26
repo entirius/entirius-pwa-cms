@@ -120,7 +120,7 @@ function onDragEnd() {
       <span class="tree-node__name">{{ displayName }}</span>
       <span
         v-if="isRoot"
-        class="chip chip--sm bg-accent-subtle t-accent tree-node__root-badge"
+        class="chip chip--sm bg-accent-subtle t-strong tree-node__root-badge"
         >Root</span
       >
       <span class="chip chip--pill bg-raised t-secondary">{{

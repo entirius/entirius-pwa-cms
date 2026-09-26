@@ -98,7 +98,7 @@
         <template #cell-actions="{ row }">
           <div class="flex ai-ct gap-100" @click.stop>
             <button
-              class="row-action-btn bg-accent-subtle t-accent"
+              class="row-action-btn bg-accent-subtle t-strong"
               :title="$t('common.edit')"
               :data-testid="`suppliers-edit-${row.idx}`"
               @click="onEdit(row)"

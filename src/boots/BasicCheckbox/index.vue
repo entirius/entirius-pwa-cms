@@ -103,7 +103,7 @@ export default {
     outline: none;
     min-width: 1.25rem;
     margin-right: 16px;
-    border: 1px solid var(--border-default);
+    border: 1px solid var(--border-control);
     .checkbox-mark {
       z-index: 10;
       top: 65%;
@@ -112,7 +112,7 @@ export default {
     }
     &.basic-checkbox {
       border-radius: 0.125rem;
-      color: var(--c-basic-100);
+      color: var(--text-inverse);
       //  &.checked {
       //   background-color: var(--surface-inverse);
       //   border: 1px solid var(--border-strong);
@@ -138,7 +138,7 @@ export default {
     &.radio {
       border-radius: 50%;
       position: relative;
-      border: 1px solid var(--border-default);
+      border: 1px solid var(--border-control);
       &:hover {
         border: 1px solid var(--border-strong);
         &::after {
@@ -153,7 +153,7 @@ export default {
         }
       }
       &.checked {
-        border: 1px solid var(--border-default);
+        border: 1px solid var(--border-control);
         &::after {
           content: "";
           background-color: var(--surface-inverse);
@@ -175,7 +175,7 @@ export default {
     appearance: none;
   }
   .icon-check:before {
-    color: var(--c-basic-100);
+    color: var(--text-inverse);
     //font-size: 1.2rem;
   }
 }
