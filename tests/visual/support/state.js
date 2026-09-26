@@ -4,11 +4,16 @@ const { freeze: FREEZE, screens } = require("../capture-spec.json");
 
 // Deterministic state recipe (roadmap r04 tech-notes §2). The zeno stack is shared: this module never clicks
 // the theme toggle or the language switch, and every write the page tries is answered by a stub.
-const AUTH_MAX_AGE_MS = 4 * 60 * 1000; // the access JWT lives 300 s, the CMS assumes 15 min
+// The access JWT lives 300 s: a cached login plus one test (timeout 90 s) must stay inside it.
+const AUTH_MAX_AGE_MS = 3 * 60 * 1000;
+// The CMS sets `expiryDate` = login + 15 min and refreshes 2 min before it. Against the frozen clock a real-time
+// expiry drifts one day per day (and overflows setTimeout after ~25 days), so it is rebased on the freeze time.
+const PINNED_EXPIRY = new Date(Date.parse(FREEZE) + 15 * 60 * 1000).toISOString();
 const API_URL = process.env.CMS_API_URL || "http://localhost:8100";
 const THEME_VALUES = { dark: "dark", light: "default" };
 const READ_METHODS = ["GET", "HEAD", "OPTIONS"];
-const AUTH_PATH = "/customer/tokens/";
+const LOGIN_BUTTON = 'button:has-text("Zaloguj"), button:has-text("Log in")';
+const LOGIN_PREFS = { cms_theme: "dark", cms_lang: "PL", cms_sidebar_collapsed: "false" };
 const PROBES = path.join(__dirname, "probes.browser.js");
 const FREEZE_CSS =
   "*,*::before,*::after{transition:none!important;animation:none!important;caret-color:transparent!important}";
@@ -45,10 +50,13 @@ const json = (body) => ({
   body: JSON.stringify(body),
 });
 const onApi = (url) => url.origin === new URL(API_URL).origin;
-const pathEnds = (suffix) => (url) => onApi(url) && url.pathname.endsWith(suffix);
+const isNotifications = (suffix) => (url) =>
+  onApi(url) && url.pathname.startsWith("/api/notifications/") && url.pathname.endsWith(suffix);
+const isHealth = (url) => onApi(url) && url.pathname === "/api/munin/v2/health/";
 const isProfile = (url) => onApi(url) && /\/customer\/[^/]+\/profile\/$/.test(url.pathname);
 // Login and token refresh write no data; a stubbed `{}` would leave the session without a token.
-const isAuthCall = (url) => url.pathname.includes(AUTH_PATH);
+// Blacklist (logout) is a write and stays stubbed.
+const isAuthCall = (url) => /\/customer\/tokens\/(refresh\/)?$/.test(url.pathname);
 
 // Registered first = matched last: the specific stubs below win over this one.
 async function stubWrites(context) {
@@ -64,18 +72,26 @@ async function submitLogin(page) {
   await page.goto("/");
   await page.fill('input[type="text"]', process.env.CMS_USER || "admin");
   await page.fill('input[type="password"]', process.env.CMS_PASSWORD || "admin123");
-  await page.click('button:has-text("Zaloguj"), button:has-text("Log in")');
+  await page.click(LOGIN_BUTTON);
   await page.waitForFunction(() => document.cookie.includes("user="), null, { timeout: 30000 });
   await idle(page);
+}
+
+function withPinnedExpiry(state) {
+  const value = encodeURIComponent(JSON.stringify(PINNED_EXPIRY));
+  const cookies = state.cookies.map((cookie) => (cookie.name === "expiryDate" ? { ...cookie, value } : cookie));
+  return { ...state, cookies };
 }
 
 async function login(browser, baseURL) {
   if (auth.state && Date.now() - auth.at < AUTH_MAX_AGE_MS) return auth.state;
   const context = await browser.newContext({ baseURL, locale: "pl-PL" });
   try {
+    const startedAt = Date.now();
     await stubWrites(context);
+    await context.route(isProfile, (route) => profileRoute(route, LOGIN_PREFS));
     await submitLogin(await context.newPage());
-    auth = { state: await context.storageState(), at: Date.now() };
+    auth = { state: withPinnedExpiry(await context.storageState()), at: startedAt };
     return auth.state;
   } catch (err) {
     throw new InfraError(`login failed (stack down or wrong credentials?): ${err.message.split("\n")[0]}`);
@@ -103,12 +119,12 @@ async function prepareContext(context, { theme, collapsed = false }) {
   }, prefs);
   await stubWrites(context);
   await context.route(isProfile, (route) => profileRoute(route, prefs));
-  await context.route(pathEnds("/notifications/"), (route) => route.fulfill(json({ count: 0, results: [] })));
-  await context.route(pathEnds("/notifications/unread-count/"), (route) => {
+  await context.route(isNotifications("/notifications/"), (route) => route.fulfill(json({ count: 0, results: [] })));
+  await context.route(isNotifications("/notifications/unread-count/"), (route) => {
     stubs.notifications = true;
     return route.fulfill(json({ unread: 0 }));
   });
-  await context.route(pathEnds("/api/munin/v2/health/"), (route) => {
+  await context.route(isHealth, (route) => {
     if (route.request().method() !== "GET") return route.fallback();
     stubs.health = true;
     return route.fulfill(json(HEALTH_BODY));
@@ -116,10 +132,14 @@ async function prepareContext(context, { theme, collapsed = false }) {
   return stubs;
 }
 
-function assertPath(page, route) {
-  const expected = new URL(route, page.url()).pathname;
+// An expired session lands on `/` or renders the login wall in place (on `/` itself).
+async function assertLanded(page, screen) {
+  const expected = new URL(screen.route, page.url()).pathname;
   const actual = new URL(page.url()).pathname;
   if (actual !== expected) throw new InfraError(`expected ${expected}, landed on ${actual} (expired session?)`);
+  if (!screen.noAuth && (await page.locator(LOGIN_BUTTON).count())) {
+    throw new InfraError(`${screen.id}: login wall instead of the screen (expired session?)`);
+  }
 }
 
 async function settle(page) {
@@ -205,7 +225,7 @@ async function openScreen(page, screen) {
     throw new InfraError(`${screen.route} did not load: ${err.message.split("\n")[0]}`);
   });
   await idle(page);
-  assertPath(page, screen.route);
+  await assertLanded(page, screen);
   await settle(page);
   if (!(await resolveDetail(page, screen))) {
     if (screen.needsData) return `${screen.id}: ${screen.note} (not in this seed)`;
