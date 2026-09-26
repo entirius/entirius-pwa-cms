@@ -38,3 +38,7 @@ $spacing: (
     700: 120px,
   ),
 );
+
+// Brand scales (P2): @entirius/brand-tokens steps, emitted beside the old names until plan 08.
+$brand-space-steps: 0, 1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 30;
+$brand-radii: base, lg, xl, 2xl, 3xl, 4xl, full;

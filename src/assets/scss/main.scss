@@ -1,4 +1,8 @@
+@use "sass:list";
+@use "sass:map";
+
 @import "./themes/__config";
+@import "./themes/semantic.generated";
 @import "./variables/spacing";
 @import "./variables/fonts";
 
@@ -23,9 +27,21 @@
 
   --radius-sm: 4px;
   --radius-md: 6px;
-  --radius-lg: 8px;
+
+  // radius-lg is also a brand step (8px either way): the loop below defines it.
+  @each $radius in $brand-radii {
+    --radius-#{$radius}: var(--brand-radius-#{$radius});
+  }
+
+  @each $step in $brand-space-steps {
+    --space-#{$step}: var(--brand-space-#{$step});
+  }
 
   --label-gap: 6px;
+
+  --font-ui: var(--brand-font-family-ui);
+  --font-brand: var(--brand-font-family-brand);
+  --font-mono: var(--brand-font-family-mono);
 
   @each $device, $font-size in $fontsize {
     @if $device==m {
@@ -382,24 +398,85 @@
   }
 }
 
-// Theme-scoped variables (shadows, overlays, gradients, editor)
+// Semantic utility classes from $semantic-classes (themes/_semantic.generated.scss); values follow the theme via var().
+@mixin semantic-class($selector, $hover) {
+  @if $hover {
+    #{$selector},
+    #{$selector}-hover:hover {
+      @content;
+    }
+  } @else {
+    #{$selector} {
+      @content;
+    }
+  }
+}
+
+@each $token, $class in $semantic-classes {
+  $name: map.get($class, name);
+  $families: map.get($class, families);
+  $hover: map.get($class, hover);
+  $value: var(--#{$token});
+
+  @if list.index($families, t) {
+    @include semantic-class(".t-#{$name}", $hover) {
+      color: $value;
+    }
+  }
+  @if list.index($families, bg) {
+    @include semantic-class(".bg-#{$name}", $hover) {
+      #{map.get($class, background)}: $value;
+    }
+  }
+  @if list.index($families, b) {
+    @include semantic-class(".b-#{$name}", $hover) {
+      border: 1px solid $value;
+    }
+    @each $side, $prefix in (top: bt, bottom: bb, right: br, left: bl) {
+      .#{$prefix}-#{$name} {
+        border-#{$side}: 1px solid $value;
+      }
+    }
+  }
+}
+
+// Brand spacing and radius classes (P2) beside the old -50…-700 / radius-sm…lg ones until plan 08.
+$brand-space-properties: (
+  p: padding, pt: padding-top, pr: padding-right, pb: padding-bottom, pl: padding-left,
+  m: margin, mt: margin-top, mr: margin-right, mb: margin-bottom, ml: margin-left, gap: gap,
+);
+
+@each $step in $brand-space-steps {
+  $value: var(--space-#{$step});
+
+  @each $class, $property in $brand-space-properties {
+    .#{$class}-#{$step} {
+      #{$property}: $value;
+    }
+  }
+  .pv-#{$step} {
+    padding: $value 0;
+  }
+  .ph-#{$step} {
+    padding: 0 $value;
+  }
+  .mv-#{$step} {
+    margin: $value 0;
+  }
+  .mh-#{$step} {
+    margin: 0 $value;
+  }
+}
+
+@each $radius in $brand-radii {
+  .radius-#{$radius},
+  .br-#{$radius} {
+    border-radius: var(--radius-#{$radius});
+  }
+}
+
+// Theme-scoped variables (gradients, editor); shadows and overlays live in the semantic layer
 [data-theme="default"] {
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
-  --shadow-arrow: 0px 3px 6px rgba(52, 64, 84, 0.15);
-  --shadow-right: 27px 0 27px -35px rgba(66, 68, 90, 1);
-  --shadow-left: -27px 0 27px -35px rgba(66, 68, 90, 1);
-  --shadow-down: 0px 34px 10px -33px rgba(189, 189, 195, 1);
-  --shadow-top: 0 -27px 27px -35px rgba(66, 68, 90, 1);
-  --shadow-around: 0 0 20px 14px rgba(66, 68, 90, 0.3);
-
-  --overlay-backdrop: rgba(0, 0, 0, 0.5);
-  --overlay-heavy: rgba(0, 0, 0, 0.55);
-  --overlay-loading: rgba(255, 255, 255, 0.45);
-  --overlay-handy: rgba(17, 17, 17, 0.6);
-  --overlay-ripple: rgba(255, 255, 255, 0.7);
-
   --gradient-blue: linear-gradient(135deg, #2563EB 0%, #1E40AF 100%);
   --gradient-blue-light: linear-gradient(135deg, #60A5FA 0%, #3B82F6 100%);
   --gradient-tech: linear-gradient(135deg, #3B82F6 0%, #2563EB 50%, #1E40AF 100%);
@@ -413,22 +490,6 @@
 }
 
 [data-theme="dark"] {
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.5);
-  --shadow-arrow: 0px 3px 6px rgba(0, 0, 0, 0.35);
-  --shadow-right: 27px 0 27px -35px rgba(0, 0, 0, 0.8);
-  --shadow-left: -27px 0 27px -35px rgba(0, 0, 0, 0.8);
-  --shadow-down: 0px 34px 10px -33px rgba(0, 0, 0, 0.5);
-  --shadow-top: 0 -27px 27px -35px rgba(0, 0, 0, 0.8);
-  --shadow-around: 0 0 20px 14px rgba(0, 0, 0, 0.5);
-
-  --overlay-backdrop: rgba(0, 0, 0, 0.65);
-  --overlay-heavy: rgba(0, 0, 0, 0.7);
-  --overlay-loading: rgba(12, 16, 23, 0.6);
-  --overlay-handy: rgba(0, 0, 0, 0.7);
-  --overlay-ripple: rgba(255, 255, 255, 0.15);
-
   --gradient-blue: linear-gradient(135deg, #2563EB 0%, #1E40AF 100%);
   --gradient-blue-light: linear-gradient(135deg, #60A5FA 0%, #3B82F6 100%);
   --gradient-tech: linear-gradient(135deg, #3B82F6 0%, #2563EB 50%, #1E40AF 100%);
@@ -482,11 +543,10 @@
 body {
   font-size: var(--fs-400);
   color: var(--c-basic-800);
-  font-family: "Inter", sans-serif;
+  font-family: var(--font-ui);
   font-optical-sizing: auto;
   font-weight: 500;
   font-style: normal;
-  font-variation-settings: "slnt" 0;
   -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
   -moz-osx-font-smoothing: grayscale;
