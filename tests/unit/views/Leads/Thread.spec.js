@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import { createPinia, setActivePinia } from "pinia";
 import { mount, flushPromises } from "@vue/test-utils";
 
 // Three threads of the company, newest first (the list order of the API).
@@ -40,6 +41,7 @@ const stubs = { BackBar: true, Loader: true, ConfigBanner: true };
 const mountThread = (props = {}) => mount(Thread, { props, global: { stubs } });
 
 beforeEach(() => {
+  setActivePinia(createPinia());
   vi.clearAllMocks();
   modules.clear();
   modules.add("leads").add("communicator");

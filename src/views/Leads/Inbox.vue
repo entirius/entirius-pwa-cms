@@ -50,10 +50,10 @@ import { useRoute } from "vue-router";
 import { t } from "@/i18n";
 import { GET_Threads, GET_WaitingMessages, POST_SendNow } from "@/api/communicator/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { useLeadsThreadStore } from "@/stores/leadsThread";
 import { useLeadsReviewStore } from "@/stores/leadsReview";
 import { sendStateSentence } from "@/utils/leadsLabels";
 import { sendState } from "@/utils/leadsTime";
-import { companyIdFromSubjectRef } from "@/utils/subjectRef";
 import InboxRow from "./InboxRow.vue";
 
 // One Inbox: every thread of the channel, newest activity first, behind four chips — drafts to review, mails
@@ -64,6 +64,7 @@ const POLL_MS = 30000; // the bell's cadence: a new reply shows up under Replies
 
 const route = useRoute();
 const reviewQueue = useLeadsReviewStore();
+const shownThread = useLeadsThreadStore();
 const root = ref(null);
 const filter = ref(null); // null until the first answer picks Drafts (when any wait) or All
 const rows = ref([]);
@@ -93,7 +94,8 @@ function isActive(row) {
   const id = String(route.params.id);
   if (route.name === "LeadsReview") return String(row.draft?.id) === id;
   if (route.name === "LeadsConversation") return String(row.id) === id;
-  return route.name === "LeadsThread" && String(companyIdFromSubjectRef(row.subject_ref)) === id;
+  // A company card shows its newest thread only — mark that one row, not every thread of the company.
+  return route.name === "LeadsThread" && row.id === shownThread.shownId;
 }
 
 async function fetchPage(state, number) {

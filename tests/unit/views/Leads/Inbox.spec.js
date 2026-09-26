@@ -29,6 +29,7 @@ import Inbox from "@/views/Leads/Inbox.vue";
 import { useLeadsReviewStore } from "@/stores/leadsReview";
 import { applyPolicy, formatTime } from "@/utils/leadsTime";
 import { clearCompanyNames } from "@/utils/leadsCompanyNames";
+import { useLeadsThreadStore } from "@/stores/leadsThread";
 
 const inMinutes = (minutes) => new Date(Date.now() + minutes * 60000).toISOString();
 const base = (id, extra) => ({
@@ -182,6 +183,20 @@ describe("Leads Inbox (one list: drafts, waiting mails, conversations)", () => {
     const wrapper = mountInbox();
     await flushPromises();
     expect(wrapper.get('[data-thread="5"]').classes()).toContain("inbox-row--active");
+  });
+
+  it("on a company card only the thread the card shows (its newest) is highlighted, not every thread of the company", async () => {
+    const older = base(20, { subject_ref: "leads.Company:9", status: "replied" });
+    const newest = base(21, { subject_ref: "leads.Company:9", status: "replied" });
+    server.rows = [newest, older];
+    server.counts = { all: 2, draft: 0, waiting: 0, replied: 2 };
+    route.name = "LeadsThread";
+    route.params = { id: "9" };
+    useLeadsThreadStore().shownId = 21;
+    const wrapper = mountInbox();
+    await flushPromises();
+    expect(wrapper.get('[data-thread="21"]').classes()).toContain("inbox-row--active");
+    expect(wrapper.get('[data-thread="20"]').classes()).not.toContain("inbox-row--active");
   });
 
   it("with leads off (communicator alone) a company's thread opens by id and no company is looked up", async () => {

@@ -5,7 +5,7 @@
     :data-thread="row.id"
     data-testid="inbox-item"
   >
-    <router-link :to="target" class="inbox-row__link">
+    <router-link :to="target" class="inbox-row__link" active-class="" exact-active-class="">
       <span class="inbox-row__name" data-testid="inbox-item-name">{{ name }}</span>
       <span class="inbox-row__time">{{ formatTime(row.activity_at) }}</span>
       <!-- two drafts to one company differ by who gets them (FIX-17 item 4) -->
