@@ -249,7 +249,7 @@ async function openPinned({ context, page }, id, theme) {
   await page.addScriptTag({ path: PROBES });
 }
 
-// `storageState` comes from a login at most 4 min old; `needsAuth: false` opens logged-out screens.
+// `storageState` comes from a login at most 3 min old (AUTH_MAX_AGE_MS); `needsAuth: false` opens logged-out screens.
 const test = base.test.extend({
   needsAuth: [true, { option: true }],
   storageState: async ({ browser, baseURL, needsAuth }, use) => {

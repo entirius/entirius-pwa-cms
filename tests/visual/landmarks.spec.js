@@ -8,7 +8,11 @@ const { screens } = require("./capture-spec.json");
 // onto the code scale first (known difference KD09). Never fails in P1; no data-fid exists before the P4 shell.
 const GEOMETRY = ["x", "y", "width", "height"];
 
-const rowFor = (frame, viewport) => screens.find((row) => row.figma?.[viewport] === frame);
+function rowFor(frame, viewport) {
+  const row = screens.find((candidate) => candidate.figma?.[viewport] === frame);
+  if (!row) throw new Error(`INFRA: no capture-spec row for frame ${frame} on ${viewport}`);
+  return row;
+}
 const withinTolerance = (expected, actual) =>
   GEOMETRY.every((key) => Math.abs(expected[key] - actual[key]) <= tolerancePx);
 

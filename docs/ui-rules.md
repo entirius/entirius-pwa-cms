@@ -111,6 +111,8 @@ Traps:
 - **Locked / system entity.** Show a notice bar at the top. Pass the disabled prop of each boot (`Dropdown
   :isDisabled`, `Switcher :prevent`, `BasicButton` / `BasicInput :isDisabled`), or show the value as read-only text.
   Hide delete. Save stays for the fields that are not locked.
+- **Disabled button with a reason.** Wrap the disabled `BasicButton` in `ToolTip :is_wrapper="true"` carrying the
+  reason, and put the live button in the `v-else` branch.
 - **Delete.** Use an icon-only danger button with a trash icon, followed by a confirmation. Never a text "Delete" button.
 - **Drag and drop.** Use `vuedraggable` with `:force-fallback="true"` and `fallback-class="drag-ghost"`. The ghost
   style goes in an unscoped `<style>`, because the clone is appended to `<body>`.
