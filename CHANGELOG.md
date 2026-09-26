@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- UI rules in `docs/ui-rules.md` and `npm run lint:ui` (stylelint + eslint, warnings = debt).
 - **Leads desktop screens** (plan 14, ≥ 1024 px, "Open on a desktop" below): stage board with drag-and-drop
   and a stage select per card, type / do-not-contact / search filters and rule badges; company card with
   overview, intel (lighthouse score per strategy, audit sources), contacts and timeline tabs plus Communicate,
