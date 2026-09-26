@@ -1,0 +1,188 @@
+{
+  "source": "roadmap 00006-cms-redesign r04 tech-notes §6 (KD01–KD19), r05 decisions 1, 2, 4 (KD20–KD22). Figma is frozen; code wins (Q5).",
+  "treatments": {
+    "token": "parity checks the code token, not the Figma value",
+    "ignore-colour": "overlay and landmarks ignore colour in the scope",
+    "mask": "region excluded from the overlay heat map",
+    "geometry-tolerance": "landmark geometry compared within the tolerance",
+    "no-reference": "no Figma reference; parity and contrast only"
+  },
+  "differences": [
+    {
+      "id": "KD01",
+      "decision": "Q1",
+      "figma": "accent #239AAB (library var …/40:41)",
+      "code": "accent #00ACC1 for text, icons, borders, active indicator",
+      "scope": "everywhere",
+      "treatment": "token"
+    },
+    {
+      "id": "KD02",
+      "decision": "D1",
+      "figma": "teal fills with white text (primary button, FAB, tile \"+\", active chip) in #239AAB",
+      "code": "accent-fill #0E7C86 + white",
+      "scope": "buttons, FAB, chips",
+      "treatment": "token"
+    },
+    {
+      "id": "KD03",
+      "decision": "Q2",
+      "figma": "content areas in the old CMS blue-grey #0C1017 #1E2830 #2D3A48 #8899AB #B4C3D1",
+      "code": "basic-* surfaces, borders, muted text",
+      "scope": "tables, tiles, inputs, panels",
+      "treatment": "token + ignore-colour"
+    },
+    {
+      "id": "KD04",
+      "decision": "Q2/D2",
+      "figma": "shell warm greys #111111, #1A1A1A, #2B2B2B, #0E0B0A",
+      "code": "mapped by r01 onto black / basic-*",
+      "scope": "shell containers",
+      "treatment": "token"
+    },
+    {
+      "id": "KD05",
+      "decision": "D2",
+      "figma": "frame background gradient #0C1017 → #141A24 (leftover)",
+      "code": "page bg black #0D0A09",
+      "scope": "page background",
+      "treatment": "token + ignore-colour"
+    },
+    {
+      "id": "KD06",
+      "decision": "D2",
+      "figma": "card fill #161616 → #252525",
+      "code": "named gradient card (same values)",
+      "scope": "panel cards",
+      "treatment": "token (parity only)"
+    },
+    {
+      "id": "KD07",
+      "decision": "r01",
+      "figma": "muted text #727276, hairline #2B2B2B @ .50",
+      "code": "brand basic-700 / hairline token as r01 decides",
+      "scope": "text-muted, dividers",
+      "treatment": "token"
+    },
+    {
+      "id": "KD08",
+      "decision": "r01",
+      "figma": "status badge #10B981 on #0D2618",
+      "code": "status tokens from r01",
+      "scope": "status badges",
+      "treatment": "token"
+    },
+    {
+      "id": "KD09",
+      "decision": "D5",
+      "figma": "radii 2/3/4/5 → 4; 10/12/16 → xl/2xl; 19/22/50 → full; cards 24",
+      "code": "Tailwind-named scale 4/8/12/16/24/32/full",
+      "scope": "all radii",
+      "treatment": "token (radius after mapping)"
+    },
+    {
+      "id": "KD10",
+      "decision": "D4",
+      "figma": "off-grid spacing 14.5, 11.8, 12.77, 120.74, 5 px steps",
+      "code": "4 px grid --space-*",
+      "scope": "all spacing",
+      "treatment": "geometry-tolerance ±2 px"
+    },
+    {
+      "id": "KD11",
+      "decision": "D3",
+      "figma": "Lexend Deca / Inter rasterised by Figma",
+      "code": "same families rasterised by Chromium",
+      "scope": "all text",
+      "treatment": "never pixel-compared; font gate + parity"
+    },
+    {
+      "id": "KD12",
+      "decision": "C4",
+      "figma": "tables copied from a dev build",
+      "code": "DataTable structure, token restyle only",
+      "scope": "table internals (S4, S5, list screens)",
+      "treatment": "mask"
+    },
+    {
+      "id": "KD13",
+      "decision": "C9",
+      "figma": "content-builder section blocks and tiles as they were",
+      "code": "token-only restyle",
+      "scope": "section bodies and tiles (S6–S8)",
+      "treatment": "mask"
+    },
+    {
+      "id": "KD14",
+      "decision": "—",
+      "figma": "Figma copy and data (\"Hello\", sample rows, counts, \"Ultramarines Throne Sofa\")",
+      "code": "seed data, PL UI strings",
+      "scope": "all text content",
+      "treatment": "never compared"
+    },
+    {
+      "id": "KD15",
+      "decision": "r05",
+      "figma": "header has no theme toggle, no config-health or notification buttons",
+      "code": "header controls placed by r05",
+      "scope": "header right cluster",
+      "treatment": "mask until r05 lands"
+    },
+    {
+      "id": "KD16",
+      "decision": "—",
+      "figma": "sidebar lists a fixed panel set (incl. locked \"Stany magazynowe\")",
+      "code": "panels from Munin (17 enabled here)",
+      "scope": "sidebar",
+      "treatment": "geometry of an item, not the count"
+    },
+    {
+      "id": "KD17",
+      "decision": "Q3",
+      "figma": "no light theme",
+      "code": "derived light theme",
+      "scope": "every light capture",
+      "treatment": "no-reference (parity + contrast only)"
+    },
+    {
+      "id": "KD18",
+      "decision": "—",
+      "figma": "hidden GitHub text layers inside the docs Item component",
+      "code": "—",
+      "scope": "sidebar items",
+      "treatment": "ignore"
+    },
+    {
+      "id": "KD19",
+      "decision": "—",
+      "figma": "mobile frames' content runs past 852 px (Container h 3129)",
+      "code": "viewport capture",
+      "scope": "mobile S-screens",
+      "treatment": "compare the viewport only"
+    },
+    {
+      "id": "KD20",
+      "decision": "r05 d1",
+      "figma": "no sidebar collapse",
+      "code": "collapsed 64 px icon rail (user preference)",
+      "scope": "sidebar",
+      "treatment": "capture expanded only; the rail is checked by e2e, not image diff"
+    },
+    {
+      "id": "KD21",
+      "decision": "r05 d2",
+      "figma": "chevron on every panel row",
+      "code": "single-entry panels are leaf links without chevron",
+      "scope": "sidebar L1",
+      "treatment": "ignore chevron on those rows"
+    },
+    {
+      "id": "KD22",
+      "decision": "r05 d4",
+      "figma": "inactive sub-item text #727276",
+      "code": "basic-800 #9A9CAA, as the docs sidebar",
+      "scope": "sidebar L2",
+      "treatment": "token"
+    }
+  ]
+}
