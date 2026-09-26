@@ -3331,6 +3331,7 @@
       "inactive": "nieaktywna",
       "days": "Dni po poprzedniej",
       "texts": "Pula tekstów follow-up",
+      "texts_random": "Każdy follow-up dostaje losowy tekst, którego ten wątek jeszcze nie dostał — kolejność na liście nie ma znaczenia.",
       "new_text": "Nowy tekst follow-up",
       "add_text": "Dodaj tekst",
       "add": "Nowa sekwencja",

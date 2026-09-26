@@ -14,6 +14,7 @@
         </tbody>
       </table>
       <h4>{{ $t("communicator.sequences.texts") }}</h4>
+      <p class="ld-muted" data-testid="pool-random-hint">{{ $t("communicator.sequences.texts_random") }}</p>
       <TextPool :sequence-id="sequence.id" :texts="texts[sequence.id] || []" @changed="load" />
       <form class="ld-row" @submit.prevent="addText(sequence.id)">
         <input v-model="newText[sequence.id]" class="ld-input" required maxlength="4000" :placeholder="$t('communicator.sequences.new_text')" />

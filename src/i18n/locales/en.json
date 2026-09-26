@@ -3332,6 +3332,7 @@
       "inactive": "inactive",
       "days": "Days after previous",
       "texts": "Follow-up text pool",
+      "texts_random": "Each follow-up gets a random text this thread has not had yet — the list order does not matter.",
       "new_text": "New follow-up text",
       "add_text": "Add text",
       "add": "New sequence",
