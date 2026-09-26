@@ -5,9 +5,9 @@ import { expiresSoon, tokenExpiry } from '@/utils/jwt'
 const debugMode = JSON.parse((process.env.VUE_APP_DEBUG || 'false').toLowerCase())
 const cookies = new Cookies()
 const _CHANNEL = process.env.VUE_APP_CHANNEL
-const COOKIE_OPTS = { path: '/', maxAge: 7 * 24 * 60 * 60 }
 
 let refreshPromise = null
+let storeAuth = null
 
 function clearAllCookies() {
   const allCookies = cookies.getAll()
@@ -36,6 +36,12 @@ function rejectWithBody(err) {
 
 export const isConflict = (err) => (err?.httpStatus ?? err?.response?.status) === 409
 
+// The user store hands in its `setAuth`: every refresh stores the pair and re-arms the store's one refresh timer.
+// A callback, not an import — the store imports the API clients, which are built from this module at load time.
+export function onTokenRefresh(setAuth) {
+  storeAuth = setAuth
+}
+
 // The single token refresh: the 401 retry, the pre-request check and the user store's timer share one
 // in-flight call, so a rotated refresh token is never sent twice.
 export function refreshAccessToken() {
@@ -55,13 +61,13 @@ async function postRefresh() {
   const { data } = await axios.post(url, { refresh: refreshCookie })
   const { access, refresh } = data.data || data
 
-  cookies.set('token', access, COOKIE_OPTS)
-  cookies.set('expiryDate', tokenExpiry(access), COOKIE_OPTS)
-  // The API only returns a new refresh token when rotation is enabled server-side.
-  // Overwriting the cookie with undefined logs the user out on the next refresh.
-  if (refresh) {
-    cookies.set('refresh', refresh, COOKIE_OPTS)
-  }
+  // The API only returns a new refresh token when rotation is enabled server-side — keep the old one otherwise.
+  storeAuth({
+    token: access,
+    refresh: refresh || refreshCookie,
+    customer_id: cookies.get('customer_id'),
+    expiryDate: tokenExpiry(access),
+  })
   return access
 }
 

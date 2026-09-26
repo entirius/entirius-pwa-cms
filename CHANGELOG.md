@@ -76,6 +76,8 @@ All notable changes to this project will be documented in this file.
 
 - The session refreshes its access token a minute before it expires, whatever lifetime the service issues. The
   CMS assumed 15 minutes against a 5-minute token and refreshed far too late.
+- A token refreshed by a request (expired on page load, or a 401 retry) moves the next scheduled refresh too; the
+  CMS no longer sends a second refresh at the old token's time.
 - Opening the CMS after the access token expired (a tab reopened later) refreshes the session first. Panels outside
   `VUE_APP_PANELS` no longer bounce to the home page.
 - The desktop sidebar is no longer empty after a fast click right after login: the CMS leaves the login screen only

@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import Cookies from 'universal-cookie'
 import { User } from '@/configs/access'
 import { PATCH_UserProfile } from '@/api/contentDB/api'
-import { refreshAccessToken } from '@/api/createClient'
+import { onTokenRefresh, refreshAccessToken } from '@/api/createClient'
 import { setLang, getLang } from '@/i18n'
 import { refreshDelay } from '@/utils/jwt'
 
@@ -11,6 +11,9 @@ const cookies = new Cookies()
 const COOKIE_OPTS = { path: '/', maxAge: 7 * 24 * 60 * 60 }
 
 let sessionTimer = null
+
+// Every refresh, whichever path triggered it, lands in `setAuth` and re-arms the one timer.
+onTokenRefresh((auth) => useUserStore().setAuth(auth))
 
 export const useUserStore = defineStore('user', () => {
   const user = ref(null)
@@ -86,16 +89,13 @@ export const useUserStore = defineStore('user', () => {
 
   async function proactiveRefresh() {
     try {
-      token.value = await refreshAccessToken()
-      refresh.value = cookies.get('refresh')
-      expiryDate.value = cookies.get('expiryDate')
-      startSessionMonitor()
+      await refreshAccessToken()
     } catch {
       sessionExpiredLogout()
     }
   }
 
-  // Scheduled from the expiry the access token carried (`tokenExpiry`); the refresh is shared with the API clients.
+  // Scheduled from the expiry the access token carried (`tokenExpiry`); every refresh re-arms it through `setAuth`.
   function startSessionMonitor() {
     stopSessionMonitor()
 
