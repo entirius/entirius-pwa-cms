@@ -42,6 +42,14 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- **Brand token layer (P2, additive):** the CMS loads `@entirius/brand-tokens` and self-hosts Inter and Lexend Deca
+  (`@fontsource-variable`, wght axis, latin + latin-ext); Google Fonts is no longer requested. Body text renders in
+  Inter from the app bundle. New tokens beside the old ones: the semantic colour layer (`--surface-*`, `--text-*`,
+  `--border-*`, `--accent*`, status) for both themes with its `t-` / `bg-` / `b-` classes, generated from
+  `src/assets/tokens/semantic.json`; brand spacing `--space-0` … `--space-30`, radius `--radius-base` … `--radius-full`,
+  `--fs-150` / `--fs-250`, font families `--font-ui` / `--font-brand` / `--font-mono` and the `type-*` role classes.
+  Shadows and overlays now come from the semantic layer; the dark loading veil is black-based instead of blue.
+  The visual parity gate checks every semantic token in both themes and fails when body text is not Inter.
 - **Post-login session setup is shared** (`src/composables/useLoginSession.js`):
   password and SSO login run the same code after the token call.
 

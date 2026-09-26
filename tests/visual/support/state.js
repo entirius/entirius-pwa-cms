@@ -137,6 +137,7 @@ async function assertLanded(page, screen) {
 
 async function settle(page) {
   await page.addStyleTag({ content: FREEZE_CSS });
+  await page.evaluate(() => document.fonts.ready.then(() => true)); // self-hosted brand fonts (r01 § Fonts)
   await page
     .waitForFunction(() => [...document.images].every((img) => img.complete), null, { timeout: 10000 })
     .catch(() => {});

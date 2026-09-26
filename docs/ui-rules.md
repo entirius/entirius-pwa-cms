@@ -8,7 +8,7 @@ in `src/boots/`. This file names them and never restates a value. Lint enforces 
 
 | What | Where |
 |---|---|
-| Tokens (colour, spacing, type, radius, shadow, overlay) | `src/assets/scss/themes/`, `variables/`, `main.scss` (P2: `@entirius/brand-tokens` + the CMS semantic layer) |
+| Tokens (colour, spacing, type, radius, shadow, overlay) | `@entirius/brand-tokens` + `src/assets/tokens/semantic.json` (generated into `src/assets/scss/themes/_semantic.generated.scss`); the old layer in `themes/`, `variables/`, `main.scss` until P2 closes |
 | Components | `src/boots/` + `src/boots/register-elems.js`; API in `docs/ui-components.md`; catalogue page (P3) |
 | Icons | FontAwesome, registered in `src/boots/Icons/fa-icons.js` (P3: the `icons.js` meaning registry) |
 | Breakpoints | `src/assets/scss/utils/_media-query.scss` (mixins `max-tablet`, `min-tablet`, `max-desktop`, `min-desktop`) |
@@ -17,19 +17,34 @@ in `src/boots/`. This file names them and never restates a value. Lint enforces 
 
 ## Tokens
 
-- **T1 Colour comes from a token.** Use `var(--c-*)` or the utility classes `t-*`, `bg-*`, `b-*`, `bb-*`. No hex,
-  `rgb()`, `rgba()`, `hsl()` or named colours outside the token files. Use only shades the palette generates. A class
-  for a missing shade renders nothing.
-- **T2 No fallback on a token.** `var(--c-basic-100, #fff)` hides a missing token in one theme.
-- **T3 Spacing comes from `--space-*`.** This covers margin, padding and gap, through `var(--space-*)` or the
-  `p-*`, `m-*`, `gap-*` classes. When no step fits, ask for a token. Never write raw px or rem.
-- **T4 Radius comes from `--radius-*`.** Use `var(--radius-*)` or `radius-*`. Never take it from the spacing scale
-  (`br-*` classes, `var(--space-50)`).
-- **T5 Type size, shadow and overlay come from `--fs-*`, `--shadow-*` and `--overlay-*`.**
+New code uses the P2 layer: `@entirius/brand-tokens` (`--brand-*`, never used directly in views) and the CMS
+semantic layer on top of it. Its source is `src/assets/tokens/semantic.json`; `themes/_semantic.generated.scss` is
+generated from it (`node scripts/tokens/build-theme.mjs`, a unit test fails when it is stale), never edited by hand.
+
+- **T1 Colour comes from a semantic token.** Use `var(--surface-*)`, `--text-*`, `--border-*`, `--focus-ring`,
+  `--accent*`, `--positive*`, `--negative*`, `--warning*`, `--info*`, or the classes the map names: `bg-*` (surfaces),
+  `t-*` (text), `b-*` / `bt-*` / `bb-*` / `bl-*` / `br-*` (borders), all three for accent and status, most with a
+  `-hover` variant. Pick the token by the role the map gives it, never by a number. No hex, `rgb()`, `rgba()`,
+  `hsl()` or named colours outside the token files.
+- **T2 No fallback on a token.** `var(--text-body, #fff)` hides a missing token in one theme.
+- **T3 Spacing comes from `--space-*`.** New code uses the brand steps `--space-0` … `--space-30` and the `p-*`,
+  `m-*`, `gap-*` classes with the same numbers, for margin, padding and gap. When no step fits, ask for a token.
+  Never write raw px or rem.
+- **T4 Radius comes from `--radius-*`.** Use `--radius-base`, `-lg`, `-xl`, `-2xl`, `-3xl`, `-4xl`, `-full`, or the
+  `radius-<name>` / `br-<name>` classes. Never take it from the spacing scale (`br-50`, `br-100`, `var(--space-50)`).
+- **T5 Type comes from a type role.** New text uses a `type-*` class (the map's `type` group: family, weight, size,
+  line height, tracking). Font families are `--font-ui`, `--font-brand` and `--font-mono`; sizes outside a role use
+  `--fs-*`. Shadow and overlay come from `--shadow-*` and `--overlay-*`.
 - **T6 Every screen works in both themes.** `data-theme` on `<html>` is `default` (light) or `dark`. A screen that
   follows T1 is themed for free. Scope third-party dark overrides as `[data-theme="dark"] .x { }`.
 
+Being migrated in P2 (still defined, no new uses): `--c-*` and the `t-` / `bg-` / `b-` / `bb-` / `bt-` / `bl-` /
+`br-` / `o-` / `stroke-<colour>-<shade>` classes, `--space-50` … `--space-700` and their classes (with `-m` / `-d`),
+`--radius-sm` / `--radius-md` and `radius-sm` / `radius-md`, and the current values of `--fs-500` and `--fs-700`.
+
 Traps:
+- The old `basic-*` shades invert with the theme (dark `basic-100` is the darkest, light `basic-100` the lightest);
+  a semantic token keeps its role in both. Never map an old name to a new one by its number.
 - `ph-*` / `pv-*` are shorthands, and they reset the other two sides. Use `pl-*` + `pr-*` when you also set a vertical side.
 - Utility grid classes apply only from 640 px up. Below that, use flex.
 - Inputs and buttons share `--elem-height`, so never override it on one of them.

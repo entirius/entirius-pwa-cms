@@ -138,7 +138,7 @@ DPR 1, `pl-PL`, `Europe/Warsaw`, one worker).
 
 | Layer | Spec (tag) | Question | P1 mode |
 |---|---|---|---|
-| 1 Token parity | `parity.spec.js` (`@parity`) | Does every `--c-*`, `--space-*`, `--radius-*`, `--shadow-*` from the SCSS sources resolve on `/`, both themes? Plus census (off-token colours, radii, font sizes), font gate (CDP `CSS.getPlatformFontsForNode`) and axe `color-contrast` | token resolution gates; census, fonts, contrast are reports |
+| 1 Token parity | `parity.spec.js` (`@parity`) | Does every `--c-*`, `--space-*`, `--radius-*` from the SCSS sources and every semantic token of `src/assets/tokens/semantic.json` (colour, overlay, shadow) resolve on `/` to its `@entirius/brand-tokens` value, both themes? Does body text render in the UI font (CDP `CSS.getPlatformFontsForNode`, families read from the brand tokens)? Plus census (off-token colours, radii, font sizes), the other font targets and axe `color-contrast` | token resolution and the body-text font gate; census, other fonts, contrast are reports |
 | 2 Figma landmarks | `landmarks.spec.js` (`@landmarks`) | Do elements with `data-fid="<id>"` sit where `figma/figma-landmarks.json` puts them (±2 px)? | report ("0 matched" until the P4 shell adds `data-fid`) |
 | 3 Regression | `screens.spec.js` (`@screens`) | Did any screen of `capture-spec.json` change? `toHaveScreenshot`, `threshold 0.1`, `maxDiffPixels 20` | gate once baselines exist |
 

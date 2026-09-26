@@ -1,14 +1,17 @@
 const { AxeBuilder } = require("@axe-core/playwright");
 const { test, expect, THEME_VALUES, openPinned } = require("./support/state");
-const { expectedTokens, themeColors } = require("./support/tokens");
+const { expectedTokens, themeColors, brandFamilies } = require("./support/tokens");
 const { writeReport, mergeReport } = require("./support/report");
 
-// Layer 1 — token parity. Only token resolution is a gate in P1; census, fonts and contrast are reports.
+// Layer 1 — token parity. Gates: token resolution (old, semantic and brand-scale tokens) and body text in Inter.
+// Census, the other fonts and contrast are reports.
 const THEMES = ["dark", "light"];
 const CENSUS_SCREENS = ["g-home", "pages-content-list", "pages-content-editor", "pim-products-list"]; // S1, S4, S6, PIM
 const CONTRAST_SCREENS = ["g-home", "pages-content-list", "pages-content-editor"]; // S1, S4, S6
 const FONT_TARGETS = { title: ".route-title", navLabel: ".nav-label", button: ".data-table__action-btn" };
-const BRAND_FAMILIES = ["Lexend Deca", "Inter"];
+const FAMILIES = brandFamilies();
+const BRAND_FAMILIES = [FAMILIES.brand, FAMILIES.ui];
+const BODY_TEXT = ".data-table__cell"; // table cells carry the body font (Inter) on S4
 const REPORT = { tag: ["@parity", "@desktop"] };
 
 const colorScheme = (theme) => (theme === "dark" ? "dark" : "light");
@@ -48,6 +51,17 @@ async function platformFonts(page, selector) {
   const { fonts } = await cdp.send("CSS.getPlatformFontsForNode", { nodeId });
   return { selector, found: true, fonts: fonts.map((f) => ({ family: f.familyName, isCustomFont: f.isCustomFont })) };
 }
+
+test.describe("font gate", () => {
+  test.use({ colorScheme: "dark" });
+  test("body text renders in the UI font on S4", { tag: ["@parity", "@desktop"] }, async ({ context, page }) => {
+    await openPinned({ context, page }, "pages-content-list", "dark");
+    const { found, fonts } = await platformFonts(page, BODY_TEXT);
+    expect(found, `${BODY_TEXT} not on the page`).toBe(true);
+    expect(fonts.length).toBeGreaterThan(0);
+    expect(fonts).toEqual(fonts.map(() => ({ family: FAMILIES.ui, isCustomFont: true })));
+  });
+});
 
 test.describe("font gate (report)", () => {
   test.use({ colorScheme: "dark" });
