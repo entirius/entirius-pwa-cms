@@ -6,9 +6,8 @@ const { freeze: FREEZE, screens } = require("../capture-spec.json");
 // the theme toggle or the language switch, and every write the page tries is answered by a stub.
 // The access JWT lives 300 s: a cached login plus one test (timeout 90 s) must stay inside it.
 const AUTH_MAX_AGE_MS = 3 * 60 * 1000;
-// The CMS sets `expiryDate` = login + 15 min and refreshes 2 min before it. Against the frozen clock a real-time
-// expiry drifts one day per day (and overflows setTimeout after ~25 days), so it is rebased on the freeze time.
-const PINNED_EXPIRY = new Date(Date.parse(FREEZE) + 15 * 60 * 1000).toISOString();
+// The CMS refreshes from the JWT's `exp`. Against the frozen clock (before any real `exp`) no refresh comes due,
+// and the CMS caps the timer below the setTimeout overflow.
 const API_URL = process.env.CMS_API_URL || "http://localhost:8100";
 const THEME_VALUES = { dark: "dark", light: "default" };
 const READ_METHODS = ["GET", "HEAD", "OPTIONS"];
@@ -77,12 +76,6 @@ async function submitLogin(page) {
   await idle(page);
 }
 
-function withPinnedExpiry(state) {
-  const value = encodeURIComponent(JSON.stringify(PINNED_EXPIRY));
-  const cookies = state.cookies.map((cookie) => (cookie.name === "expiryDate" ? { ...cookie, value } : cookie));
-  return { ...state, cookies };
-}
-
 async function login(browser, baseURL) {
   if (auth.state && Date.now() - auth.at < AUTH_MAX_AGE_MS) return auth.state;
   const context = await browser.newContext({ baseURL, locale: "pl-PL" });
@@ -91,7 +84,7 @@ async function login(browser, baseURL) {
     await stubWrites(context);
     await context.route(isProfile, (route) => profileRoute(route, LOGIN_PREFS));
     await submitLogin(await context.newPage());
-    auth = { state: withPinnedExpiry(await context.storageState()), at: startedAt };
+    auth = { state: await context.storageState(), at: startedAt };
     return auth.state;
   } catch (err) {
     throw new InfraError(`login failed (stack down or wrong credentials?): ${err.message.split("\n")[0]}`);

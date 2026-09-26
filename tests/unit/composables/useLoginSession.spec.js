@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 const mockGetUser = vi.fn();
 const mockGetUserDetails = vi.fn();
 const setAuth = vi.fn();
+const markAuthenticated = vi.fn();
 const setUser = vi.fn();
 const loadPreferences = vi.fn();
 const fetchModules = vi.fn();
@@ -12,13 +13,14 @@ vi.mock("@/api/contentDB/api", () => ({
   GET_UserDetails: (...a) => mockGetUserDetails(...a),
 }));
 vi.mock("@/stores/user", () => ({
-  useUserStore: () => ({ setAuth, setUser, loadPreferences }),
+  useUserStore: () => ({ setAuth, markAuthenticated, setUser, loadPreferences }),
 }));
 vi.mock("@/stores/munin", () => ({
   useMuninStore: () => ({ fetchModules }),
 }));
 
 import { useLoginSession, consumeReturnRoute } from "@/composables/useLoginSession";
+import { jwtExpiringIn } from "../helpers/jwt";
 
 const TOKENS = { access: "a-token", refresh: "r-token", customer_id: "cust-1" };
 
@@ -32,15 +34,15 @@ describe("useLoginSession.completeLogin", () => {
     });
   });
 
-  it("stores the token pair with a 15-minute expiry", async () => {
-    const before = Date.now();
-    await useLoginSession().completeLogin(TOKENS);
+  it("stores the token pair with the expiry the access token carries", async () => {
+    const access = jwtExpiringIn(300);
+    await useLoginSession().completeLogin({ ...TOKENS, access });
 
     const auth = setAuth.mock.calls[0][0];
-    expect(auth).toMatchObject({ token: "a-token", refresh: "r-token", customer_id: "cust-1" });
-    const minutes = (auth.expiryDate.getTime() - before) / 60000;
-    expect(minutes).toBeGreaterThanOrEqual(14.9);
-    expect(minutes).toBeLessThanOrEqual(15.1);
+    expect(auth).toMatchObject({ token: access, refresh: "r-token", customer_id: "cust-1" });
+    const seconds = (auth.expiryDate.getTime() - Date.now()) / 1000;
+    expect(seconds).toBeGreaterThan(295);
+    expect(seconds).toBeLessThanOrEqual(300);
   });
 
   it("loads the profile, preferences, permissions and modules", async () => {

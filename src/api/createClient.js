@@ -1,23 +1,13 @@
 import axios from 'axios'
 import Cookies from 'universal-cookie'
+import { expiresSoon, tokenExpiry } from '@/utils/jwt'
 
 const debugMode = JSON.parse((process.env.VUE_APP_DEBUG || 'false').toLowerCase())
 const cookies = new Cookies()
 const _CHANNEL = process.env.VUE_APP_CHANNEL
+const COOKIE_OPTS = { path: '/', maxAge: 7 * 24 * 60 * 60 }
 
-let isRefreshing = false
-let failedQueue = []
-
-function processQueue(error, token = null) {
-  failedQueue.forEach(({ resolve, reject }) => {
-    if (error) {
-      reject(error)
-    } else {
-      resolve(token)
-    }
-  })
-  failedQueue = []
-}
+let refreshPromise = null
 
 function clearAllCookies() {
   const allCookies = cookies.getAll()
@@ -46,6 +36,52 @@ function rejectWithBody(err) {
 
 export const isConflict = (err) => (err?.httpStatus ?? err?.response?.status) === 409
 
+// The single token refresh: the 401 retry, the pre-request check and the user store's timer share one
+// in-flight call, so a rotated refresh token is never sent twice.
+export function refreshAccessToken() {
+  if (!refreshPromise) {
+    refreshPromise = postRefresh().finally(() => {
+      refreshPromise = null
+    })
+  }
+  return refreshPromise
+}
+
+async function postRefresh() {
+  const refreshCookie = cookies.get('refresh')
+  if (!refreshCookie) throw new Error('No refresh token')
+
+  const url = `${process.env.VUE_APP_API_URL}/api/accounts/v1/${_CHANNEL ?? ''}/customer/tokens/refresh/`
+  const { data } = await axios.post(url, { refresh: refreshCookie })
+  const { access, refresh } = data.data || data
+
+  cookies.set('token', access, COOKIE_OPTS)
+  cookies.set('expiryDate', new Date(tokenExpiry(access)), COOKIE_OPTS)
+  // The API only returns a new refresh token when rotation is enabled server-side.
+  // Overwriting the cookie with undefined logs the user out on the next refresh.
+  if (refresh) {
+    cookies.set('refresh', refresh, COOKIE_OPTS)
+  }
+  return access
+}
+
+async function refreshOrLogout() {
+  try {
+    return await refreshAccessToken()
+  } catch (error) {
+    sessionExpiredRedirect()
+    throw error
+  }
+}
+
+// A cold load can hold a token that expired while the tab was closed. Munin answers it anonymously instead of
+// with a 401, so the 401 retry never runs and admin panels vanish — refresh before sending instead.
+async function refreshIfExpiring() {
+  if (cookies.get('refresh') && expiresSoon(cookies.get('token'))) {
+    await refreshOrLogout()
+  }
+}
+
 function attachTokenRefresh(client) {
   client.interceptors.response.use(
     (res) => res,
@@ -65,58 +101,11 @@ function attachTokenRefresh(client) {
 
       // 401 — attempt token refresh
       originalConfig._retry = true
+      const access = await refreshOrLogout()
 
-      if (isRefreshing) {
-        // Another request already triggered refresh — wait for it
-        return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject })
-        }).then((token) => {
-          originalConfig.headers.Authorization = `Bearer ${token}`
-          return client(originalConfig)
-        })
-      }
-
-      isRefreshing = true
-
-      const refreshCookie = cookies.get('refresh')
-      if (!refreshCookie) {
-        isRefreshing = false
-        processQueue(new Error('No refresh token'), null)
-        sessionExpiredRedirect()
-        return
-      }
-
-      try {
-        const url = `/api/accounts/v1/${_CHANNEL ?? ''}/customer/tokens/refresh/`
-        const { data } = await axios.post(
-          `${client.defaults.baseURL}${url}`,
-          { refresh: refreshCookie }
-        )
-
-        const { access, refresh } = data.data || data
-        const expiryDate = new Date(Date.now() + 15 * 60 * 1000)
-
-        const cookieOpts = { path: '/', maxAge: 7 * 24 * 60 * 60 }
-        cookies.set('token', access, cookieOpts)
-        cookies.set('expiryDate', expiryDate, cookieOpts)
-        // The API only returns a new refresh token when rotation is enabled server-side.
-        // Overwriting the cookie with undefined logs the user out on the next refresh.
-        if (refresh) {
-          cookies.set('refresh', refresh, cookieOpts)
-        }
-
-        client.defaults.headers.common.Authorization = `Bearer ${access}`
-        isRefreshing = false
-        processQueue(null, access)
-
-        originalConfig.headers.Authorization = `Bearer ${access}`
-        return client(originalConfig)
-      } catch (_error) {
-        isRefreshing = false
-        processQueue(_error, null)
-        sessionExpiredRedirect()
-        return Promise.reject(_error)
-      }
+      client.defaults.headers.common.Authorization = `Bearer ${access}`
+      originalConfig.headers.Authorization = `Bearer ${access}`
+      return client(originalConfig)
     }
   )
 }
@@ -126,6 +115,7 @@ export function createApiClient(baseURL, { authHeaderFn = null, tokenRefresh = f
 
   if (authHeaderFn) {
     client.interceptors.request.use(async (request) => {
+      if (tokenRefresh) await refreshIfExpiring()
       const authHeader = authHeaderFn()
       if (authHeader) {
         request.headers.Authorization = authHeader

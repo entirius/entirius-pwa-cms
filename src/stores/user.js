@@ -1,14 +1,14 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import Cookies from 'universal-cookie'
-import axios from 'axios'
 import { User } from '@/configs/access'
 import { PATCH_UserProfile } from '@/api/contentDB/api'
+import { refreshAccessToken } from '@/api/createClient'
 import { setLang, getLang } from '@/i18n'
+import { refreshDelay } from '@/utils/jwt'
 
 const cookies = new Cookies()
 const COOKIE_OPTS = { path: '/', maxAge: 7 * 24 * 60 * 60 }
-const _CHANNEL = process.env.VUE_APP_CHANNEL
 
 let sessionTimer = null
 
@@ -44,15 +44,19 @@ export const useUserStore = defineStore('user', () => {
     refresh.value = r
     customer_id.value = cid
     expiryDate.value = exp
-    isAuth.value = true
 
     cookies.set('token', t, COOKIE_OPTS)
     cookies.set('refresh', r, COOKIE_OPTS)
     cookies.set('customer_id', cid, COOKIE_OPTS)
     cookies.set('expiryDate', exp, COOKIE_OPTS)
-    cookies.set('isAuth', true, COOKIE_OPTS)
 
     startSessionMonitor()
+  }
+
+  // The login flow calls this last: the app leaves the login wall only with the user already in the store.
+  function markAuthenticated() {
+    isAuth.value = true
+    cookies.set('isAuth', true, COOKIE_OPTS)
   }
 
   function clearAuth() {
@@ -81,62 +85,24 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function proactiveRefresh() {
-    const refreshCookie = cookies.get('refresh')
-    if (!refreshCookie) {
-      sessionExpiredLogout()
-      return
-    }
-
     try {
-      const baseURL = process.env.VUE_APP_API_URL
-      const url = `${baseURL}/api/accounts/v1/${_CHANNEL ?? ''}/customer/tokens/refresh/`
-      const { data } = await axios.post(url, { refresh: refreshCookie })
-
-      const { access, refresh: newRefresh } = data.data || data
-      const newExpiry = new Date(Date.now() + 15 * 60 * 1000)
-
-      token.value = access
-      expiryDate.value = newExpiry
-
-      cookies.set('token', access, COOKIE_OPTS)
-      cookies.set('expiryDate', newExpiry, COOKIE_OPTS)
-
-      // The API only returns a new refresh token when rotation is enabled server-side.
-      // Overwriting the cookie with undefined logs the user out on the next refresh.
-      if (newRefresh) {
-        refresh.value = newRefresh
-        cookies.set('refresh', newRefresh, COOKIE_OPTS)
-      }
-
+      token.value = await refreshAccessToken()
+      refresh.value = cookies.get('refresh')
+      expiryDate.value = cookies.get('expiryDate')
       startSessionMonitor()
     } catch {
       sessionExpiredLogout()
     }
   }
 
+  // Scheduled from the access token's own `exp`; the refresh is shared with the API clients, so no race.
   function startSessionMonitor() {
     stopSessionMonitor()
 
-    const exp = cookies.get('expiryDate')
-    if (!exp) return
+    const delay = refreshDelay(cookies.get('token'))
+    if (delay === null) return
 
-    const expiryTime = new Date(exp).getTime()
-    const now = Date.now()
-    // Refresh 2 minutes before expiry
-    const refreshAt = expiryTime - 2 * 60 * 1000
-    const delay = refreshAt - now
-
-    if (delay <= 0) {
-      // Token already expired — let the API interceptor handle refresh
-      // on the next request. Calling proactiveRefresh() here races with
-      // the interceptor (both send the same refresh token, server rotates
-      // on the first, second fails → forced logout).
-      return
-    }
-
-    sessionTimer = setTimeout(() => {
-      proactiveRefresh()
-    }, delay)
+    sessionTimer = setTimeout(proactiveRefresh, delay)
   }
 
   function stopSessionMonitor() {
@@ -243,7 +209,7 @@ export const useUserStore = defineStore('user', () => {
   return {
     user, token, refresh, customer_id, expiryDate, isAuth,
     activeApp, isSidebarCollapsed, theme, lang, preferences,
-    setAuth, clearAuth, setUser, toggleSidebar, setTheme,
+    setAuth, markAuthenticated, clearAuth, setUser, toggleSidebar, setTheme,
     setLanguage, loadPreferences, savePreference,
     readCookies, appInit, sessionExpiredLogout
   }

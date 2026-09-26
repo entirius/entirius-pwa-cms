@@ -40,7 +40,9 @@ All 12 stores (`src/stores/`) use composition (setup) syntax with `defineStore`.
   ContentDB translation jobs. `fetchJobs(channelIdx)`, `startPolling()` (polls
   while `hasActiveJobs`), `stopPolling()`, `setStatusFilter()`.
 - **`useUserStore`** (`user.js`) — auth (JWT + refresh), session-expiry
-  monitor, theme (`"default"`/`"dark"`), sidebar, `activeApp`, language,
+  monitor (refresh 60 s before the access token's `exp`, at least 10 s out,
+  through `refreshAccessToken()` in `api/createClient.js` — the one refresh
+  call, shared with the 401 retry and the pre-request check), theme (`"default"`/`"dark"`), sidebar, `activeApp`, language,
   preferences. Cookie persistence via `universal-cookie`.
 
 ### `useMuninStore` API
@@ -81,8 +83,9 @@ components keep using stores directly via the `setup()` return pattern.
   Handy-kit payloads onto component data (`instance`/`flat`/`custom`/`mixed`
   bind modes). Returns `{ setupSubscriber, open_Handykit }`.
 - **`useLoginSession`** — turns a token pair into a CMS session (cookies,
-  content permissions, profile + preferences, user, munin modules). Every
-  login method calls `completeLogin({ access, refresh, customer_id })`;
+  content permissions, profile + preferences, user, munin modules), then
+  `markAuthenticated()` — the app leaves the login wall only after all of it.
+  Every login method calls `completeLogin({ access, refresh, customer_id })`;
   `consumeReturnRoute()` returns and forgets the route a session-expired
   logout stored.
 - **`useLoader`** — thin wrapper over `useLoaderStore`. Returns `{ loading,

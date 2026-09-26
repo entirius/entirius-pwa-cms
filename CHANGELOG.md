@@ -47,6 +47,12 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- The session refreshes its access token a minute before it expires, whatever lifetime the service issues. The
+  CMS assumed 15 minutes against a 5-minute token and refreshed far too late.
+- Opening the CMS after the access token expired (a tab reopened later) refreshes the session first. Panels outside
+  `VUE_APP_PANELS` no longer bounce to the home page.
+- The desktop sidebar is no longer empty after a fast click right after login: the CMS leaves the login screen only
+  once the user profile is loaded.
 - Router `meta.module` guard no longer loops when the panel root itself needs the missing module.
 - Read-only fields are read-only again: `BasicInput`, `TextAreaBasic` and `Dropdown` take `isDisabled`, and the
   `disabled` passed by PIM product inherited fields, system agreement definitions (category, consent channel) and

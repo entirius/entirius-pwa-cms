@@ -1,9 +1,8 @@
 import { GET_User, GET_UserDetails } from "@/api/contentDB/api"
 import { useUserStore } from "@/stores/user"
 import { useMuninStore } from "@/stores/munin"
+import { tokenExpiry } from "@/utils/jwt"
 
-// Access tokens are short-lived; the user store refreshes 2 minutes before this.
-const SESSION_MINUTES = 15
 const RETURN_ROUTE_KEY = "cms_return_route"
 const LAYOUT_EXTENDERS = ["header", "footer"]
 
@@ -26,7 +25,7 @@ export function useLoginSession() {
   const munin = useMuninStore()
 
   async function completeLogin({ access, refresh, customer_id = null }) {
-    const expiryDate = new Date(Date.now() + SESSION_MINUTES * 60 * 1000)
+    const expiryDate = new Date(tokenExpiry(access))
     userStore.setAuth({ token: access, refresh, customer_id, expiryDate })
 
     const permissions = await fetchContentPermissions()
@@ -35,6 +34,8 @@ export function useLoginSession() {
     userStore.setUser({ ...profile, permissions: permissions.map(toBuildType) })
 
     await munin.fetchModules()
+    // Last: leaving the login wall earlier let a fast click outrun the user cookie (empty sidebar on reloads).
+    userStore.markAuthenticated()
   }
 
   return { completeLogin }
