@@ -10,6 +10,7 @@ const { REPORT_DIR } = require("./support/report");
 module.exports = defineConfig({
   testDir: __dirname,
   outputDir: path.join(__dirname, "test-results"),
+  globalSetup: require.resolve("./support/global-setup"),
   snapshotPathTemplate: "{testDir}/__screenshots__/{projectName}/{arg}{ext}",
   updateSnapshots: "none",
   timeout: 90000,

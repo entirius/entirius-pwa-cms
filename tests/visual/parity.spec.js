@@ -1,7 +1,7 @@
 const { AxeBuilder } = require("@axe-core/playwright");
 const { test, expect, THEME_VALUES, openPinned } = require("./support/state");
 const { expectedTokens, themeColors } = require("./support/tokens");
-const { writeReport } = require("./support/report");
+const { writeReport, mergeReport } = require("./support/report");
 
 // Layer 1 — token parity. Only token resolution is a gate in P1; census, fonts and contrast are reports.
 const THEMES = ["dark", "light"];
@@ -26,15 +26,14 @@ for (const theme of THEMES) {
   });
 }
 
-test.describe("census (report)", () => {
-  const results = {};
+test.describe("census (report, dark)", () => {
   test.use({ colorScheme: "dark" });
-  test.afterAll(() => writeReport("census.json", { theme: "dark", screens: results }));
   for (const id of CENSUS_SCREENS) {
     test(`census ${id}`, REPORT, async ({ context, page }) => {
       await openPinned({ context, page }, id, "dark");
       const names = Object.keys(themeColors("dark"));
-      results[id] = await page.evaluate((tokens) => window.visualProbes.census(tokens), names);
+      const census = await page.evaluate((tokens) => window.visualProbes.census(tokens), names);
+      mergeReport("census.json", id, census);
     });
   }
 });
@@ -64,8 +63,6 @@ test.describe("font gate (report)", () => {
 });
 
 test.describe("contrast (report)", () => {
-  const results = {};
-  test.afterAll(() => writeReport("contrast.json", results));
   for (const theme of THEMES) {
     test.describe(theme, () => {
       test.use({ colorScheme: colorScheme(theme) });
@@ -73,9 +70,10 @@ test.describe("contrast (report)", () => {
         test(`color-contrast ${id} (${theme})`, REPORT, async ({ context, page }) => {
           await openPinned({ context, page }, id, theme);
           const { violations } = await new AxeBuilder({ page }).withRules(["color-contrast"]).analyze();
-          results[`${id}-${theme}`] = violations.flatMap((v) =>
+          const nodes = violations.flatMap((v) =>
             v.nodes.map((node) => ({ target: node.target.join(" "), summary: node.failureSummary }))
           );
+          mergeReport("contrast.json", `${id}-${theme}`, nodes);
         });
       }
     });
