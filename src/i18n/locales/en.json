@@ -2989,6 +2989,7 @@
   "leads": {
     "inbox": {
       "title": "Inbox",
+      "conversations": "Conversations",
       "empty_title": "No drafts to review",
       "empty_message": "{count} scheduled, {state}",
       "empty_message_none": "Nothing scheduled — new drafts appear when a company reaches an outreach stage",
@@ -3114,6 +3115,7 @@
     },
     "companies": {
       "title": "Companies",
+      "pick": "Pick a company to open its card",
       "empty": "No companies found"
     },
     "board": {

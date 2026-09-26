@@ -15,10 +15,23 @@
   </div>
   <div v-else class="leads" :class="{ 'leads--detail': hasDetail, 'leads--solo': !hasInbox }" data-testid="leads-layout">
     <aside v-if="hasInbox" class="leads__inbox">
-      <Inbox />
+      <!-- Conversations | Companies: one nav entry, the toggle navigates between the two list routes -->
+      <SegmentedControl
+        v-if="hasCompanies"
+        class="leads__toggle"
+        :options="listOptions"
+        :model-value="list"
+        data-testid="leads-list-toggle"
+        @update:model-value="openList"
+      />
+      <Inbox v-show="list === 'conversations'" />
+      <Companies v-if="list === 'companies'" embedded />
     </aside>
     <section v-if="hasDetail" class="leads__detail">
       <router-view />
+    </section>
+    <section v-else-if="list === 'companies'" class="leads__placeholder">
+      <p>{{ $t("leads.companies.pick") }}</p>
     </section>
     <section v-else-if="reviewQueue.count" class="leads__placeholder">
       <p>{{ $t("leads.inbox.pick") }}</p>
@@ -35,13 +48,15 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { GET_Policy } from "@/api/communicator/api";
 import { useIsDesktop } from "@/composables/useIsDesktop";
 import { useLeadsReviewStore } from "@/stores/leadsReview";
 import { useMuninStore } from "@/stores/munin";
+import { t } from "@/i18n";
 import { applyPolicy } from "@/utils/leadsTime";
+import Companies from "./Companies.vue";
 import DesktopOnly from "./DesktopOnly.vue";
 import Inbox from "./Inbox.vue";
 
@@ -54,8 +69,24 @@ const NO_BACK_BAR = ["LeadsSettings", "CommunicatorTemplateEdit"];
 const munin = useMuninStore();
 const reviewQueue = useLeadsReviewStore();
 const isDesktop = useIsDesktop();
-const hasDetail = computed(() => route.name !== "LeadsInbox");
 const hasInbox = computed(() => munin.isModuleEnabled("communicator"));
+const hasCompanies = computed(() => munin.isModuleEnabled("leads"));
+
+// The left column lists conversations or companies. The two list routes pick it; a card, a draft or a thread opened
+// from a list keeps the list it came from, so the column never jumps. Without communicator there is no column: the
+// company list is the detail, full width.
+const LIST_ROUTES = { LeadsInbox: "conversations", LeadsCompanies: "companies" };
+const list = ref(LIST_ROUTES[route.name] || "conversations");
+watch(
+  () => route.name,
+  (name) => LIST_ROUTES[name] && (list.value = LIST_ROUTES[name])
+);
+const hasDetail = computed(() => !hasInbox.value || !LIST_ROUTES[route.name]);
+const listOptions = computed(() => [
+  { value: "conversations", label: t("leads.inbox.conversations"), testid: "leads-list-conversations" },
+  { value: "companies", label: t("leads.companies.title"), testid: "leads-list-companies" },
+]);
+const openList = (value) => router.push({ name: value === "companies" ? "LeadsCompanies" : "LeadsInbox" });
 
 // Times read in the channel's zone (the send policy's); without it they stay in the browser's. The same
 // answer says whether today's cap is used up — what a waiting mail needs before it names an hour.
@@ -90,6 +121,15 @@ onMounted(async () => {
 }
 .leads__placeholder {
   display: none;
+}
+.leads__toggle {
+  display: flex;
+  height: 44px;
+  margin: var(--space-300) var(--space-300) 0;
+}
+.leads__toggle :deep(.segmented-control__option) {
+  flex: 1;
+  font-size: var(--fs-300);
 }
 @media (max-width: 1023px) {
   .leads--detail .leads__inbox {

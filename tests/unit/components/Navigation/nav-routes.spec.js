@@ -35,14 +35,33 @@ describe("filterNavRoutes — requiresModule gating", () => {
 });
 
 // FIX-17b item 5: a page without an entry of its own lights the entry it belongs to — never nothing selected.
+// UX-010: with communicator the Inbox entry owns both lists, so opening a company card never moves the lit entry.
+const leadsEntries = (modules) =>
+  filterNavRoutes(buildNavRoutes(), {
+    activeApp: "leads",
+    isDesktop: true,
+    isModuleEnabled: (key) => modules.includes(key),
+  });
+const lit = (modules, path) =>
+  leadsEntries(modules)
+    .filter((route) => isNavActive(route, path))
+    .map((route) => route.route);
+
 describe("isNavActive — pages without an entry of their own", () => {
   it.each([
     ["/leads/conversations/23", "/leads/inbox"],
     ["/leads/inbox/51", "/leads/inbox"],
-    ["/leads/companies/100", "/leads/companies"],
+    ["/leads/companies", "/leads/inbox"],
+    ["/leads/companies/new", "/leads/inbox"],
+    ["/leads/companies/100", "/leads/inbox"],
     ["/leads/settings/sending", "/leads/settings"],
-  ])("%s lights %s only", (path, entry) => {
-    const leads = buildNavRoutes().filter((route) => route.app.includes("leads"));
-    expect(leads.filter((route) => isNavActive(route, path)).map((route) => route.route)).toEqual([entry]);
+  ])("leads + communicator: %s lights %s only", (path, entry) => {
+    expect(lit(["leads", "communicator"], path)).toEqual([entry]);
+  });
+
+  it("leads without communicator: a company card lights the Companies entry", () => {
+    expect(lit(["leads"], "/leads/companies/100")).toEqual([
+      "/leads/companies",
+    ]);
   });
 });

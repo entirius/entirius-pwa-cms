@@ -2988,6 +2988,7 @@
   "leads": {
     "inbox": {
       "title": "Skrzynka",
+      "conversations": "Rozmowy",
       "empty_title": "Brak szkiców do przejrzenia",
       "empty_message": "Zaplanowane: {count}, {state}",
       "empty_message_none": "Nic nie jest zaplanowane — nowe szkice pojawią się, gdy firma wejdzie w etap kontaktu",
@@ -3113,6 +3114,7 @@
     },
     "companies": {
       "title": "Firmy",
+      "pick": "Wybierz firmę, aby otworzyć jej kartę",
       "empty": "Nie znaleziono firm"
     },
     "board": {

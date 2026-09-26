@@ -35,10 +35,10 @@ describe("Leads nav (UX-002d: one panel, Settings instead of four entries)", () 
   });
   afterEach(() => vi.unstubAllGlobals());
 
-  it("desktop: Inbox · Companies · Board · Import · Settings; there is no Communicator panel nav", () => {
+  // UX-010: Companies is the other side of the Inbox toggle, not an entry of its own
+  it("desktop: Inbox · Board · Import · Settings; there is no Communicator panel nav", () => {
     expect(routesFor("leads", true)).toEqual([
       "/leads/inbox",
-      "/leads/companies",
       "/leads/board",
       "/leads/import",
       "/leads/settings",
@@ -46,20 +46,21 @@ describe("Leads nav (UX-002d: one panel, Settings instead of four entries)", () 
     expect(routesFor("communicator", true)).toEqual([]);
   });
 
-  it("phone: Inbox · Companies · Settings — Settings is reachable from the bottom bar", () => {
-    expect(routesFor("leads", false)).toEqual(["/leads/inbox", "/leads/companies", "/leads/settings"]);
+  it("phone: Inbox · Settings — Settings is reachable from the bottom bar", () => {
+    expect(routesFor("leads", false)).toEqual(["/leads/inbox", "/leads/settings"]);
     setViewport(false);
     const links = mountMobileNav().findAll("a").map((a) => a.attributes("data-to"));
-    expect(links).toEqual(["/leads/inbox", "/leads/companies", "/leads/settings"]);
+    expect(links).toEqual(["/leads/inbox", "/leads/settings"]);
   });
 
-  it("an entry whose backend module is off is not listed", () => {
+  it("an entry whose backend module is off is not listed; without communicator Companies is the entry", () => {
     expect(routesFor("leads", true, new Set(["leads"]))).toEqual([
       "/leads/companies",
       "/leads/board",
       "/leads/import",
       "/leads/settings",
     ]);
+    expect(routesFor("leads", false, new Set(["leads"]))).toEqual(["/leads/companies", "/leads/settings"]);
     expect(routesFor("leads", false, new Set(["communicator"]))).toEqual(["/leads/inbox", "/leads/settings"]);
   });
 });

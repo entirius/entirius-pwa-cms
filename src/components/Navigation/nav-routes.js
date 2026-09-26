@@ -278,16 +278,19 @@ export function buildNavRoutes() {
       query: {},
       app: ["leads"],
       requiresModule: "communicator",
-      // Review and a thread without a company are opened from the Inbox work, so the Inbox stays lit
-      activeOn: ["/leads/inbox/", "/leads/conversations"],
+      // One entry for both lists (UX-010): its Conversations | Companies toggle, Review, a thread without a company and
+      // a company card are all Inbox work, so the Inbox stays lit — the menu never jumps when a row opens a card
+      activeOn: ["/leads/inbox/", "/leads/conversations", "/leads/companies"],
     },
     {
+      // Leads without communicator: no Inbox, no toggle — the company list is the entry (the panel fallback)
       route: "/leads/companies",
       labelKey: "nav.leads_companies",
       icon: "building",
       query: {},
       app: ["leads"],
       requiresModule: "leads",
+      hiddenWithModule: "communicator",
       activeOn: ["/leads/companies/"], // a company card
     },
     {
@@ -344,7 +347,8 @@ export function buildNavRoutes() {
 // Routes visible for the active panel. `requiresQuality` items are hidden until the backend's gaps
 // capability probe resolves true (old backends never see the quality-rules nav item).
 // `requiresModule` items are hidden until that optional django-munin module reports enabled
-// (mirrors the router guard's `meta.module` gate — see router/index.js).
+// (mirrors the router guard's `meta.module` gate — see router/index.js); `hiddenWithModule` items give way
+// once that module is enabled (another entry covers their pages then).
 // `desktopOnly` items are hidden below the desktop breakpoint (useIsDesktop) — on a phone the
 // leads panel keeps its plan-13 shape: no bottom bar over the Inbox/Review sticky actions.
 // An entry is also lit on the pages it owns without a nav item of their own (`activeOn` path prefixes).
@@ -360,6 +364,7 @@ export function filterNavRoutes(
     if (r.app.indexOf(activeApp) === -1) return false;
     if (r.requiresQuality && qualityAvailable !== true) return false;
     if (r.requiresModule && !isModuleEnabled?.(r.requiresModule)) return false;
+    if (r.hiddenWithModule && isModuleEnabled?.(r.hiddenWithModule)) return false;
     if (r.desktopOnly && !isDesktop) return false;
     return true;
   });

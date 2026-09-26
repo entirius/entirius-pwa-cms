@@ -1,19 +1,21 @@
 <template>
   <div class="ld-page" data-testid="leads-companies">
-    <div class="companies__head">
-      <h2 class="ld-title">{{ $t("leads.companies.title") }}</h2>
+    <!-- embedded: search and Add share one row; alone: title + Add, the search below -->
+    <div class="companies__head" :class="{ 'companies__head--embedded': embedded }">
+      <!-- in the Inbox column the toggle above already says "Companies" -->
+      <h2 v-if="!embedded" class="ld-title">{{ $t("leads.companies.title") }}</h2>
       <router-link :to="{ name: 'LeadsCompanyNew' }" class="ld-btn ld-btn--primary companies__add" data-testid="companies-add">
         {{ $t("leads.add.open") }}
       </router-link>
+      <input
+        v-model="search"
+        class="ld-input companies__search"
+        type="search"
+        :placeholder="$t('leads.board.search')"
+        data-testid="companies-search"
+        @keyup.enter="load()"
+      />
     </div>
-    <input
-      v-model="search"
-      class="ld-input"
-      type="search"
-      :placeholder="$t('leads.board.search')"
-      data-testid="companies-search"
-      @keyup.enter="load()"
-    />
     <p v-if="!loading && !companies.length" class="ld-muted" data-testid="companies-empty">
       {{ $t("leads.companies.empty") }}
     </p>
@@ -22,6 +24,9 @@
       :key="company.id"
       :to="{ name: 'LeadsThread', params: { id: company.id } }"
       class="company-row"
+      :class="{ 'company-row--active': isActive(company) }"
+      active-class=""
+      exact-active-class=""
       data-testid="companies-item"
     >
       <span class="company-row__domain">{{ company.name || company.domain }}</span>
@@ -35,10 +40,15 @@
 
 <script setup>
 import { onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
 import { GET_Companies } from "@/api/leads/api";
 import { formatTime } from "@/utils/leadsTime";
 
-// Company list that works below 1024 px: the Leads entry when communicator (the Inbox) is absent.
+// Company list that works below 1024 px: the Leads entry when communicator (the Inbox) is absent, else the
+// Companies side of the Inbox column (`embedded`), next to the card it opened.
+defineProps({ embedded: { type: Boolean, default: false } });
+const route = useRoute();
+const isActive = (company) => route.name === "LeadsThread" && String(route.params.id) === String(company.id);
 const companies = ref([]);
 const search = ref("");
 const page = ref(1);
@@ -68,6 +78,27 @@ onMounted(() => load());
   justify-content: space-between;
   gap: var(--space-200);
 }
+.companies__head {
+  flex-wrap: wrap;
+}
+.companies__search {
+  order: 1;
+  flex: 1 0 100%;
+}
+.companies__head--embedded {
+  flex-wrap: nowrap;
+}
+.companies__head--embedded .companies__search {
+  order: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 44px;
+}
+.companies__head--embedded .companies__add {
+  order: 1;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
 .companies__add {
   display: inline-flex;
   align-items: center;
@@ -83,6 +114,10 @@ onMounted(() => load());
   border-bottom: 1px solid var(--c-basic-300);
   color: inherit;
   text-decoration: none;
+}
+.company-row--active {
+  box-shadow: inset 3px 0 0 var(--c-support-400);
+  background: var(--c-basic-200);
 }
 .company-row__domain {
   font-weight: 600;
