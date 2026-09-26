@@ -37,7 +37,7 @@ defineEmits(["confirm", "cancel"]);
 .cs__sheet {
   width: min(32rem, 100%);
   padding: var(--space-300);
-  background: var(--c-basic-100);
+  background: var(--surface-base);
   border-radius: 12px 12px 0 0;
 }
 .cs__title {
@@ -46,7 +46,7 @@ defineEmits(["confirm", "cancel"]);
 }
 .cs__text {
   margin: 0;
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
 }
 .cs__actions {
   display: flex;
@@ -56,16 +56,16 @@ defineEmits(["confirm", "cancel"]);
 .cs__btn {
   flex: 1;
   min-height: 48px;
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
-  background: var(--c-basic-100);
-  color: var(--c-basic-800);
+  background: var(--surface-base);
+  color: var(--text-body);
   font-weight: 600;
   cursor: pointer;
 }
 .cs__btn--danger {
-  border-color: var(--c-negative-300);
-  background: var(--c-negative-300);
-  color: var(--c-basic-100);
+  border-color: var(--negative);
+  background: var(--negative-fill);
+  color: var(--text-on-status-fill);
 }
 </style>

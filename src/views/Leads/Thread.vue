@@ -190,18 +190,18 @@ watch(() => route.params.id, (id) => id && load());
 }
 .thread__none {
   margin: 0;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 .thread__subject {
   margin: 0;
   overflow-wrap: anywhere;
 }
 .thread__state {
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
   font-size: var(--fs-100);
 }
 .thread__activity {
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
   font-size: var(--fs-100);
 }
 .thread__activity summary {

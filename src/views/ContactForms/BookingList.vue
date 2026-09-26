@@ -1,7 +1,7 @@
 <template>
-  <div class="cf-booking-list__wrapper p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="cf-booking-list__wrapper p-500 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
     >
       <div class="flex ai-ct mb-400">
         <h1 class="fs-700 fw-600">{{ $t("cf.bookings") }}</h1>
@@ -29,7 +29,7 @@
           :active-count="activeFilterCount"
           :trigger-label="$t('cf.filters')"
         >
-          <p class="fs-200 t-basic-600">{{ $t("cf.filters") }}</p>
+          <p class="fs-200 t-secondary">{{ $t("cf.filters") }}</p>
 
           <label class="cf-list__date-field">
             <span class="cf-list__date-label">{{ $t("cf.date_from") }}</span>
@@ -79,7 +79,7 @@
         </template>
         <template #cell-name="{ row }">
           <span v-if="row.name">{{ row.name }}</span>
-          <span v-else class="t-basic-400">---</span>
+          <span v-else class="t-muted">---</span>
         </template>
         <template #cell-linked_lead="{ value }">
           <StatusBadge
@@ -87,7 +87,7 @@
             :label="leadStatusLabel($t, value.status)"
             :variant="leadStatusVariant(value.status)"
           />
-          <span v-else class="t-basic-400">{{ $t("cf.no_linked_lead") }}</span>
+          <span v-else class="t-muted">{{ $t("cf.no_linked_lead") }}</span>
         </template>
         <template #cell-meet_link="{ value }">
           <a
@@ -101,7 +101,7 @@
           >
             <font-awesome-icon icon="video" />
           </a>
-          <span v-else class="t-basic-400">---</span>
+          <span v-else class="t-muted">---</span>
         </template>
       </DataTable>
 
@@ -301,7 +301,7 @@ export default {
 }
 
 .cf-list__date-label {
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   text-transform: uppercase;
   font-weight: 600;
 }
@@ -309,17 +309,17 @@ export default {
 .cf-list__date-input {
   height: var(--elem-height);
   padding: 0 var(--space-100);
-  border: 1px solid var(--c-basic-400);
+  border: 1px solid var(--border-default);
   border-radius: var(--space-50);
-  background: var(--c-basic-100);
-  color: var(--c-basic-800);
+  background: var(--surface-base);
+  color: var(--text-body);
   font-size: var(--fs-300);
   min-width: 150px;
 }
 
 .cf-list__date-input:focus {
   outline: none;
-  border-color: var(--c-support-400);
+  border-color: var(--accent);
 }
 
 .cf-list__meet-link {
@@ -329,12 +329,12 @@ export default {
   width: 28px;
   height: 28px;
   border-radius: var(--radius-sm);
-  color: var(--c-support-400);
+  color: var(--text-accent);
   text-decoration: none;
 }
 
 .cf-list__meet-link:hover {
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
 }
 
 @media only screen and (max-width: 768px) {

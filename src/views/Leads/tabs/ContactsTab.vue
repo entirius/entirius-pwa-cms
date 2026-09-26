@@ -399,14 +399,14 @@ onMounted(async () => {
   min-height: 44px;
   border: none;
   background: none;
-  color: var(--c-basic-300);
+  color: var(--text-muted);
   cursor: pointer;
 }
 .contacts__star--on {
-  color: var(--c-warning-300);
+  color: var(--warning);
 }
 .contacts__row--anonymised td {
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 .contacts__sr {
   position: absolute;

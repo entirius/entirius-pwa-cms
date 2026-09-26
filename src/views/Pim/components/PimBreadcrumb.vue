@@ -34,12 +34,12 @@ defineProps({
 <style lang="scss" scoped>
 .pim-breadcrumb {
   font-size: var(--fs-200);
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   margin-bottom: var(--space-200);
 }
 
 .pim-breadcrumb__link {
-  color: var(--c-support-400);
+  color: var(--text-accent);
   text-decoration: none;
 
   &:hover {
@@ -48,6 +48,6 @@ defineProps({
 }
 
 .pim-breadcrumb__current {
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 </style>

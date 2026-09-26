@@ -1,7 +1,7 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
     >
       <div class="flex ai-ct jc-sb mb-400 gap-300">
         <h1 class="fs-700 fw-600">{{ $t("atlas.list_title") }}</h1>
@@ -21,7 +21,7 @@
           :active-count="activeFilterCount"
           :trigger-label="$t('builder.filters')"
         >
-          <p class="fs-200 t-basic-600">{{ $t("atlas.filter.kind") }}</p>
+          <p class="fs-200 t-secondary">{{ $t("atlas.filter.kind") }}</p>
           <div class="flex ai-ct flex-wrap gap-100">
             <FilterChip
               v-for="opt in kindOptions"
@@ -32,7 +32,7 @@
               @click="setKindFilter(opt.value)"
             />
           </div>
-          <p class="fs-200 t-basic-600">
+          <p class="fs-200 t-secondary">
             {{ $t("atlas.filter.status") }}
           </p>
           <div class="flex ai-ct flex-wrap gap-100">
@@ -98,7 +98,7 @@
         <template #cell-actions="{ row }">
           <div class="flex ai-ct gap-100" @click.stop>
             <button
-              class="row-action-btn bg-support-100 t-support-400"
+              class="row-action-btn bg-accent-subtle t-accent"
               :title="$t('common.edit')"
               :data-testid="`suppliers-edit-${row.idx}`"
               @click="onEdit(row)"
@@ -106,7 +106,7 @@
               <FontAwesomeIcon icon="pen" />
             </button>
             <button
-              class="row-action-btn bg-negative-100 t-negative-300"
+              class="row-action-btn bg-negative-subtle t-negative"
               :title="$t('common.delete')"
               :data-testid="`suppliers-delete-${row.idx}`"
               @click="openDelete(row)"
@@ -140,7 +140,7 @@
           />
           <p
             v-if="errors.idx"
-            class="form-error t-negative-300 fs-200"
+            class="form-error t-negative fs-200"
             data-testid="suppliers-create-error-idx"
           >
             {{ errors.idx.msg }}
@@ -151,7 +151,7 @@
             v-model="createForm.name"
             data-testid="suppliers-create-name"
           />
-          <p v-if="errors.name" class="form-error t-negative-300 fs-200">
+          <p v-if="errors.name" class="form-error t-negative fs-200">
             {{ errors.name.msg }}
           </p>
         </FormField>
@@ -258,7 +258,7 @@
               v-model="deleteForce"
               data-testid="suppliers-delete-hard-radio"
             />
-            <span class="fs-300 t-negative-300 fw-600">{{
+            <span class="fs-300 t-negative fw-600">{{
               $t("atlas.delete.mode_hard_label")
             }}</span>
           </label>
@@ -283,7 +283,7 @@
             }}
           </p>
         </div>
-        <p v-if="!deleteForce" class="fs-200 t-basic-500 mt-200">
+        <p v-if="!deleteForce" class="fs-200 t-muted mt-200">
           {{ $t("atlas.delete.default_warning") }}
         </p>
       </template>
@@ -665,9 +665,9 @@ export default {
   white-space: nowrap;
 }
 .suppliers-primary-btn {
-  background: var(--c-support-400);
-  border-color: var(--c-support-400);
-  color: var(--c-basic-100);
+  background: var(--accent-fill);
+  border-color: var(--accent);
+  color: var(--text-on-accent-fill);
 }
 .suppliers-primary-btn:hover:not(:disabled) {
   filter: brightness(1.05);
@@ -677,13 +677,13 @@ export default {
   cursor: not-allowed;
 }
 .suppliers-secondary-btn {
-  background: var(--c-basic-100);
-  border-color: var(--c-basic-400);
-  color: var(--c-basic-700);
+  background: var(--surface-base);
+  border-color: var(--border-default);
+  color: var(--text-body);
 }
 .suppliers-secondary-btn:hover {
-  background: var(--c-basic-200);
-  border-color: var(--c-basic-500);
+  background: var(--surface-raised);
+  border-color: var(--border-default);
 }
 .row-action-btn {
   display: inline-flex;
@@ -700,19 +700,19 @@ export default {
   opacity: 0.85;
 }
 .suppliers-delete-impact {
-  background: var(--c-negative-100);
-  color: var(--c-negative-300);
+  background: var(--negative-subtle);
+  color: var(--negative);
   padding: var(--space-200);
   border-radius: var(--radius-sm);
 }
 .modal-btn--danger {
-  background: var(--c-negative-100);
-  border-color: var(--c-negative-300);
-  color: var(--c-negative-300);
+  background: var(--negative-subtle);
+  border-color: var(--negative);
+  color: var(--negative);
 }
 .modal-btn--danger:hover {
-  background: var(--c-negative-200);
-  color: var(--c-basic-100);
+  background: var(--negative-fill);
+  color: var(--text-on-status-fill);
 }
 .form-error {
   margin: 0;

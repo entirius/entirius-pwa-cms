@@ -1,11 +1,11 @@
 <template>
-  <div class="spawn-rule-edit p-500 fs-300 t-basic-800 h-100 ov-h">
-    <div class="bg-basic-100 b-basic-300 br-50 flex-1 ovy-auto p-500">
+  <div class="spawn-rule-edit p-500 fs-300 t-body h-100 ov-h">
+    <div class="bg-base b-subtle br-50 flex-1 ovy-auto p-500">
       <div class="flex ai-ct gap-200 mb-400">
         <BasicButton
           text=""
           icon="arrow-left"
-          class="bg-basic-200 t-basic-600"
+          class="bg-raised t-secondary"
           @click="$router.push('/enrichment/spawn-rules')"
         />
         <h1 class="fs-700 fw-600 m-0">
@@ -15,7 +15,7 @@
           <BasicButton
             v-if="!isCreate"
             :text="$t('enrichment.spawn_rules.run_now')"
-            class="bg-basic-200 t-basic-600"
+            class="bg-raised t-secondary"
             data-test="spawn-rule-run-btn"
             @click="runRule"
           />
@@ -23,13 +23,13 @@
             v-if="!isCreate"
             text=""
             icon="trash-can"
-            class="bg-negative-100 t-negative-300"
+            class="bg-negative-subtle t-negative"
             data-test="spawn-rule-delete-btn"
             @click="showDeleteConfirm = true"
           />
           <BasicButton
             :text="$t('common.save')"
-            class="bg-support-400 t-basic-100"
+            class="bg-accent-fill t-on-accent-fill"
             data-test="spawn-rule-save-btn"
             @click="save"
           />

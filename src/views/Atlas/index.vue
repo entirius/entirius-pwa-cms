@@ -1,6 +1,6 @@
 <template>
   <div class="suppliers-panel h-100">
-    <div class="suppliers-panel__toolbar flex ai-ct jc-sb bg-basic-200 fs-300">
+    <div class="suppliers-panel__toolbar flex ai-ct jc-sb bg-raised fs-300">
       <div id="suppliers-toolbar-left" class="flex ai-ct gap-200"></div>
       <div id="suppliers-toolbar-right" class="flex ai-ct gap-200"></div>
     </div>
@@ -22,7 +22,7 @@ export default {
 
 .suppliers-panel__toolbar {
   padding: 8px 20px;
-  border-bottom: 1px solid var(--c-basic-300);
+  border-bottom: 1px solid var(--border-subtle);
   flex-shrink: 0;
 }
 </style>

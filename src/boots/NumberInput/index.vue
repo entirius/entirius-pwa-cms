@@ -110,11 +110,11 @@ function onFocusout() {
 <style lang="scss">
 .number-input-wrapper {
   background-color: transparent;
-  color: var(--c-basic-700);
+  color: var(--text-body);
 }
 
 .number-input {
-  border: 1px solid var(--c-basic-400);
+  border: 1px solid var(--border-default);
   border-radius: var(--space-50);
   height: var(--elem-height);
   padding: 0;
@@ -122,7 +122,7 @@ function onFocusout() {
   overflow: hidden;
 
   &:focus-within {
-    border-color: var(--c-basic-600);
+    border-color: var(--border-strong);
   }
 }
 
@@ -132,7 +132,7 @@ function onFocusout() {
   height: 100%;
   border: none;
   background: transparent;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -141,12 +141,12 @@ function onFocusout() {
   padding: 0;
 
   &:hover:not(:disabled) {
-    background-color: var(--c-basic-200);
-    color: var(--c-basic-700);
+    background-color: var(--surface-raised);
+    color: var(--text-body);
   }
 
   &:active:not(:disabled) {
-    background-color: var(--c-basic-300);
+    background-color: var(--surface-hover);
   }
 
   &:disabled {
@@ -155,11 +155,11 @@ function onFocusout() {
   }
 
   &:first-child {
-    border-right: 1px solid var(--c-basic-400);
+    border-right: 1px solid var(--border-default);
   }
 
   &:last-of-type {
-    border-left: 1px solid var(--c-basic-400);
+    border-left: 1px solid var(--border-default);
   }
 }
 
@@ -187,7 +187,7 @@ function onFocusout() {
 .number-input__suffix {
   padding-right: var(--space-100);
   font-size: var(--fs-200);
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   user-select: none;
   white-space: nowrap;
 }

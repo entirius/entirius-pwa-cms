@@ -4,7 +4,7 @@
       <h3 class="fs-500 fw-600 mb-300">{{ $t("stock.import_title") }}</h3>
 
       <div v-if="!report" class="flex fd-col gap-200">
-        <p class="fs-300 t-basic-600">{{ $t("stock.import_select_file") }}</p>
+        <p class="fs-300 t-secondary">{{ $t("stock.import_select_file") }}</p>
         <input
           ref="fileInput"
           type="file"
@@ -15,22 +15,22 @@
       </div>
 
       <div v-else class="flex fd-col gap-100">
-        <p class="fs-300 fw-600 t-positive-300 mb-200">{{ $t("stock.import_success") }}</p>
+        <p class="fs-300 fw-600 t-positive mb-200">{{ $t("stock.import_success") }}</p>
         <div class="flex jc-sb fs-300">
           <span>{{ $t("stock.import_rows_parsed") }}:</span>
           <span class="fw-600">{{ report.rows_parsed }}</span>
         </div>
         <div class="flex jc-sb fs-300">
           <span>{{ $t("stock.import_rows_imported") }}:</span>
-          <span class="fw-600 t-positive-300">{{ report.rows_imported }}</span>
+          <span class="fw-600 t-positive">{{ report.rows_imported }}</span>
         </div>
         <div v-if="report.rows_skipped > 0" class="flex jc-sb fs-300">
           <span>{{ $t("stock.import_rows_skipped") }}:</span>
-          <span class="fw-600 t-warning-300">{{ report.rows_skipped }}</span>
+          <span class="fw-600 t-warning">{{ report.rows_skipped }}</span>
         </div>
         <div v-if="report.errors && report.errors.length" class="mt-200">
-          <p class="fs-200 fw-600 t-negative-300 mb-100">{{ $t("stock.import_errors") }}:</p>
-          <ul class="fs-200 t-basic-600">
+          <p class="fs-200 fw-600 t-negative mb-100">{{ $t("stock.import_errors") }}:</p>
+          <ul class="fs-200 t-secondary">
             <li v-for="(err, i) in report.errors.slice(0, 10)" :key="i">
               Row {{ err.row }}: {{ err.error }}
             </li>

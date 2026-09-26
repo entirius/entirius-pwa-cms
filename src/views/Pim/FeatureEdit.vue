@@ -1,31 +1,31 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
     <Teleport to="#pim-toolbar-left" defer>
       <BasicButton
         text=""
         icon="arrow-left"
-        class="bg-basic-200 t-basic-600"
+        class="bg-raised t-secondary"
         @click="$router.push('/pim/features')"
       />
     </Teleport>
     <Teleport to="#pim-toolbar-right" defer>
-      <span v-if="isDirty" class="chip bg-warning-100 t-warning-300">
+      <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
         {{ $t("unsaved.changes") }}
       </span>
       <BasicButton
         v-if="!isCreate && !isSystem"
         text=""
         icon="trash-can"
-        class="bg-negative-100 t-negative-300"
+        class="bg-negative-subtle t-negative"
         @click="showDeleteConfirm = true"
       />
       <BasicButton
         :text="$t('common.save')"
-        class="bg-support-400 t-basic-100"
+        class="bg-accent-fill t-on-accent-fill"
         @click="save"
       />
     </Teleport>
-    <div class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
       <!-- Breadcrumb -->
       <PimBreadcrumb :items="breadcrumbItems" />
       <Loader v-if="loading" />
@@ -34,7 +34,7 @@
         <!-- System feature notice -->
         <div
           v-if="isSystem && !isCreate"
-          class="flex ai-ct gap-200 mb-300 p-300 bg-support-100 br-50 t-support-400 fs-200"
+          class="flex ai-ct gap-200 mb-300 p-300 bg-accent-subtle br-50 t-accent fs-200"
         >
           <i class="icon icon-lock" />
           <span>{{ $t("pim.system_feature_notice") }}</span>
@@ -115,7 +115,7 @@
           <div class="grid grid-col-2 gap-300">
             <div v-for="(lang, index) in languages" :key="lang">
               <span
-                class="chip chip--sm bg-support-200 t-support-400"
+                class="chip chip--sm bg-accent-subtle t-accent"
               >
                 {{ lang.toUpperCase() }}
               </span>

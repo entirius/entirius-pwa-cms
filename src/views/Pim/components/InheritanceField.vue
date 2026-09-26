@@ -85,7 +85,7 @@ export default {
     </div>
     <div
       v-if="showToggle && isInherited && inheritedValue"
-      class="inheritance-field__preview t-basic-400 fs-200"
+      class="inheritance-field__preview t-muted fs-200"
     >
       {{ $t("pim.default_value", { value: inheritedValue }) }}
     </div>
@@ -109,16 +109,16 @@ export default {
   align-items: center;
   gap: 4px;
   background: none;
-  border: 1px solid var(--c-basic-200);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   padding: 2px 8px;
   font-size: 11px;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 
   &--inherited {
-    border-color: var(--c-support-300);
-    background: var(--c-support-100);
-    color: var(--c-support-400);
+    border-color: var(--accent);
+    background: var(--accent-subtle);
+    color: var(--text-accent);
   }
 }
 
@@ -130,11 +130,11 @@ export default {
   flex-shrink: 0;
 
   &--linked {
-    background: var(--c-support-400);
+    background: var(--accent-fill);
   }
 
   &--cut {
-    background: var(--c-basic-400);
+    background: var(--surface-hover);
   }
 }
 

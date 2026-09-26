@@ -24,7 +24,7 @@
               :label="$t('pim.supplier.status_no_unseen')"
               variant="positive"
             />
-            <span v-if="lastSync" class="t-basic-500 fs-200">
+            <span v-if="lastSync" class="t-muted fs-200">
               {{ $t("pim.supplier.status_last_sync", { date: lastSync }) }}
             </span>
           </div>
@@ -37,7 +37,7 @@
                 data-test="supplier-force-repush"
                 @click="onForceRepush"
               />
-              <span class="supplier-action__desc t-basic-500 fs-200">
+              <span class="supplier-action__desc t-muted fs-200">
                 {{ $t("pim.supplier.actions.force_repush_desc") }}
               </span>
             </div>
@@ -49,7 +49,7 @@
                 data-test="supplier-acknowledge"
                 @click="onAcknowledgeAll"
               />
-              <span class="supplier-action__desc t-basic-500 fs-200">
+              <span class="supplier-action__desc t-muted fs-200">
                 {{ $t("pim.supplier.actions.acknowledge_all_desc") }}
               </span>
             </div>
@@ -60,7 +60,7 @@
                 data-test="supplier-force-preferred"
                 @click="onForcePreferredClick"
               />
-              <span class="supplier-action__desc t-basic-500 fs-200">
+              <span class="supplier-action__desc t-muted fs-200">
                 {{ $t("pim.supplier.actions.force_preferred_desc") }}
               </span>
             </div>
@@ -72,7 +72,7 @@
                 data-test="supplier-reset-auto"
                 @click="onResetToAuto"
               />
-              <span class="supplier-action__desc t-basic-500 fs-200">
+              <span class="supplier-action__desc t-muted fs-200">
                 {{ $t("pim.supplier.actions.reset_to_auto_desc") }}
               </span>
             </div>
@@ -312,9 +312,9 @@ export default {
 }
 .supplier-tab__status {
   padding: var(--space-300);
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  background: var(--c-basic-100);
+  background: var(--surface-base);
   display: flex;
   flex-direction: column;
   gap: var(--space-200);

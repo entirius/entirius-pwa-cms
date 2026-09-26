@@ -1,5 +1,5 @@
 <template>
-  <div class="mapping-row b-basic-300 br-sm p-200 mb-100">
+  <div class="mapping-row b-subtle br-sm p-200 mb-100">
     <div class="mapping-row__grid">
       <FormField
         :label="$t('atlas.mappings.attribute.source_field')"
@@ -40,7 +40,7 @@
         />
         <span
           v-if="modifierPreview"
-          class="modifier-preview t-basic-500 fs-200 mt-100"
+          class="modifier-preview t-muted fs-200 mt-100"
           :data-testid="`attr-mapping-modifier-preview-${rowKey}`"
         >
           {{ modifierPreview }}
@@ -95,7 +95,7 @@
     <div class="flex ai-ct gap-100 mt-200 jc-end">
       <span
         v-if="rowWarnings.length"
-        class="row-warning t-warning-300"
+        class="row-warning t-warning"
         :title="warningTitle"
         :data-testid="`attr-mapping-warning-${rowKey}`"
       >
@@ -104,7 +104,7 @@
       </span>
       <button
         v-if="!isNew"
-        class="row-action-btn bg-negative-100 t-negative-300"
+        class="row-action-btn bg-negative-subtle t-negative"
         :title="$t('common.delete')"
         :data-testid="`attr-mapping-delete-${rowKey}`"
         @click="$emit('delete', mapping)"
@@ -304,7 +304,7 @@ export default {
 
 <style lang="scss" scoped>
 .mapping-row {
-  background: var(--c-basic-100);
+  background: var(--surface-base);
 }
 .mapping-row__grid {
   display: grid;
@@ -330,9 +330,9 @@ export default {
   font-size: var(--fs-200);
   font-weight: 600;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--c-support-400);
-  background: var(--c-support-400);
-  color: var(--c-basic-100);
+  border: 1px solid var(--accent);
+  background: var(--accent-fill);
+  color: var(--text-on-accent-fill);
   cursor: pointer;
 }
 .suppliers-primary-btn:disabled {

@@ -1,14 +1,14 @@
 <template>
   <ConfirmationModal :visible="true" @reject="onCancel">
     <template #header>
-      <h2 class="t-warning-300">
+      <h2 class="t-warning">
         <FontAwesomeIcon icon="triangle-exclamation" class="mr-100" />
         {{ $t("atlas.duplicates.merge_modal.title") }}
       </h2>
     </template>
     <template #description>
       <div class="merge-confirm__body">
-        <p class="t-basic-700">
+        <p class="t-body">
           {{ descriptionText }}
         </p>
         <FormField :label="$t('atlas.duplicates.merge_modal.reason_label')">
@@ -22,11 +22,11 @@
         </FormField>
         <p
           v-if="reasonTooShort"
-          class="merge-confirm__hint t-basic-500 fs-200"
+          class="merge-confirm__hint t-muted fs-200"
         >
           {{ $t("atlas.duplicates.merge_modal.reason_label") }}
         </p>
-        <div v-if="errorText" class="merge-confirm__error t-negative-300 fs-200">
+        <div v-if="errorText" class="merge-confirm__error t-negative fs-200">
           <FontAwesomeIcon icon="triangle-exclamation" class="mr-100" />
           {{ errorText }}
         </div>
@@ -126,8 +126,8 @@ export default {
 .merge-confirm__error {
   padding: var(--space-200);
   border-radius: var(--radius-sm);
-  background: var(--c-negative-100);
-  border-left: 3px solid var(--c-negative-300);
+  background: var(--negative-subtle);
+  border-left: 3px solid var(--negative);
 }
 .merge-confirm__hint {
   margin-top: calc(-1 * var(--space-100));

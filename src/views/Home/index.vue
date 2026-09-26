@@ -87,7 +87,7 @@ export default {
 .home-greeting {
   font-size: 13px;
   font-weight: 500;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   letter-spacing: 0.04em;
   text-transform: uppercase;
   margin-bottom: 6px;
@@ -95,7 +95,7 @@ export default {
 .home-title {
   font-size: 22px;
   font-weight: 600;
-  color: var(--c-basic-800);
+  color: var(--text-body);
   margin-bottom: 2rem;
 }
 .panel-grid {
@@ -117,7 +117,7 @@ export default {
   text-align: center;
   gap: 10px;
   padding: 20px 16px;
-  background: var(--c-basic-100);
+  background: var(--surface-base);
   border: 1px solid transparent;
   border-radius: 10px;
   cursor: pointer;
@@ -126,10 +126,10 @@ export default {
   transition: all 0.2s ease;
   &:hover,
   &:focus-visible {
-    border-color: var(--c-basic-300);
+    border-color: var(--border-subtle);
     box-shadow: var(--shadow-sm);
     .panel-card-icon-wrap {
-      background: var(--c-support-100);
+      background: var(--accent-subtle);
     }
   }
 }
@@ -140,22 +140,22 @@ export default {
   width: 44px;
   height: 44px;
   border-radius: 10px;
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
   flex-shrink: 0;
   transition: background 0.2s ease;
 }
 .panel-card-icon {
   font-size: 18px;
-  color: var(--c-support-400);
+  color: var(--text-accent);
 }
 .panel-card-name {
   font-size: 15px;
   font-weight: 600;
-  color: var(--c-basic-800);
+  color: var(--text-body);
 }
 .panel-card-desc {
   font-size: 11px;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   line-height: 1.4;
 }
 .panel-card--disabled {
@@ -166,13 +166,13 @@ export default {
     border-color: transparent;
     box-shadow: none;
     .panel-card-icon-wrap {
-      background: var(--c-basic-200);
+      background: var(--surface-raised);
     }
   }
 }
 .panel-card-locked-msg {
   font-size: 11px;
-  color: var(--c-basic-400);
+  color: var(--text-muted);
   line-height: 1.4;
   display: flex;
   align-items: center;

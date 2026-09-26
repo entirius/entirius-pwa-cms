@@ -93,7 +93,7 @@ export default {
   <div v-if="visible" class="add-dialog-overlay" @click.self="$emit('close')">
     <div class="add-dialog">
       <h3 class="add-dialog__title">{{ $t("pim.channel_presence") }}</h3>
-      <p class="add-dialog__desc t-basic-500 fs-200">
+      <p class="add-dialog__desc t-muted fs-200">
         {{ $t("pim.channel_presence_desc", { sku }) }}
       </p>
 
@@ -108,7 +108,7 @@ export default {
           >
             <span class="channel-item__check">&#10003;</span>
             <span class="channel-item__name">{{ ch.name }}</span>
-            <span class="channel-item__idx t-basic-400 fs-200">{{
+            <span class="channel-item__idx t-muted fs-200">{{
               ch.idx
             }}</span>
           </div>
@@ -133,7 +133,7 @@ export default {
               ></span>
             </span>
             <span class="channel-item__name">{{ ch.name }}</span>
-            <span class="channel-item__idx t-basic-400 fs-200">{{
+            <span class="channel-item__idx t-muted fs-200">{{
               ch.idx
             }}</span>
           </div>
@@ -146,7 +146,7 @@ export default {
       </div>
 
       <div v-else class="add-dialog__section">
-        <p class="t-basic-500 fs-200">
+        <p class="t-muted fs-200">
           {{ $t("pim.present_in_all_channels") }}
         </p>
       </div>
@@ -188,20 +188,20 @@ export default {
 }
 
 .add-dialog {
-  background: var(--c-basic-100);
+  background: var(--surface-base);
   border-radius: var(--radius-lg);
   padding: 24px;
   min-width: 360px;
   max-width: 480px;
   box-shadow: var(--shadow-lg);
-  border: 1px solid var(--c-basic-200);
+  border: 1px solid var(--border-subtle);
 }
 
 .add-dialog__title {
   margin: 0 0 8px;
   font-size: var(--fs-500);
   font-weight: 600;
-  color: var(--c-basic-800);
+  color: var(--text-body);
 }
 
 .add-dialog__desc {
@@ -218,7 +218,7 @@ export default {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   margin-bottom: 8px;
 }
 
@@ -239,29 +239,29 @@ export default {
 }
 
 .channel-item--present {
-  background: var(--c-basic-200);
-  color: var(--c-basic-500);
+  background: var(--surface-raised);
+  color: var(--text-muted);
 }
 
 .channel-item--available {
-  border: 1px solid var(--c-basic-200);
+  border: 1px solid var(--border-subtle);
   cursor: pointer;
-  color: var(--c-basic-700);
+  color: var(--text-body);
   transition: border-color 0.15s, background 0.15s;
 
   &:hover {
-    border-color: var(--c-support-300);
-    background: var(--c-support-100);
+    border-color: var(--accent);
+    background: var(--accent-subtle);
   }
 }
 
 .channel-item--selected {
-  border-color: var(--c-support-400);
-  background: var(--c-support-100);
+  border-color: var(--accent);
+  background: var(--accent-subtle);
 }
 
 .channel-item__check {
-  color: var(--c-positive-300);
+  color: var(--positive);
   font-size: 14px;
   font-weight: 600;
   flex-shrink: 0;
@@ -276,11 +276,11 @@ export default {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  border: 2px solid var(--c-basic-300);
+  border: 2px solid var(--border-subtle);
   flex-shrink: 0;
 
   .channel-item--selected & {
-    border-color: var(--c-support-400);
+    border-color: var(--accent);
   }
 }
 
@@ -288,7 +288,7 @@ export default {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--c-support-400);
+  background: var(--accent-fill);
 }
 
 .channel-item__name {
@@ -304,7 +304,7 @@ export default {
   align-items: center;
   gap: 8px;
   font-size: var(--fs-300);
-  color: var(--c-basic-700);
+  color: var(--text-body);
   cursor: pointer;
 }
 
@@ -317,20 +317,20 @@ export default {
 .pim-btn {
   padding: 8px 16px;
   border-radius: var(--radius-md);
-  border: 1px solid var(--c-basic-200);
+  border: 1px solid var(--border-subtle);
   cursor: pointer;
   font-size: var(--fs-300);
   font-weight: 500;
   transition: background 0.15s, border-color 0.15s;
 
   &--primary {
-    background: var(--c-support-400);
-    color: var(--c-basic-100);
-    border-color: var(--c-support-400);
+    background: var(--accent-fill);
+    color: var(--text-on-accent-fill);
+    border-color: var(--accent);
 
     &:hover:not(:disabled) {
-      background: var(--c-support-300);
-      border-color: var(--c-support-300);
+      background: var(--accent-fill);
+      border-color: var(--accent);
     }
 
     &:disabled {
@@ -340,11 +340,11 @@ export default {
   }
 
   &--secondary {
-    background: var(--c-basic-100);
-    color: var(--c-basic-700);
+    background: var(--surface-base);
+    color: var(--text-body);
 
     &:hover {
-      background: var(--c-basic-200);
+      background: var(--surface-raised);
     }
   }
 }

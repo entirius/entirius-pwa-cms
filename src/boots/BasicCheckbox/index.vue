@@ -103,7 +103,7 @@ export default {
     outline: none;
     min-width: 1.25rem;
     margin-right: 16px;
-    border: 1px solid var(--c-basic-500);
+    border: 1px solid var(--border-default);
     .checkbox-mark {
       z-index: 10;
       top: 65%;
@@ -114,15 +114,15 @@ export default {
       border-radius: 0.125rem;
       color: var(--c-basic-100);
       //  &.checked {
-      //   background-color: var(--c-basic-800);
-      //   border: 1px solid var(--c-basic-800);
+      //   background-color: var(--surface-inverse);
+      //   border: 1px solid var(--border-strong);
       //  }
       &.checked {
-        // background-color: var(--c-basic-800);
-        border: 1px solid var(--c-basic-700);
+        // background-color: var(--surface-inverse);
+        border: 1px solid var(--border-strong);
         &::after {
           content: "";
-          background-color: var(--c-basic-700);
+          background-color: var(--surface-inverse);
           position: absolute;
           transform: translate(-50%, -50%);
           top: 50%;
@@ -132,15 +132,15 @@ export default {
         }
       }
       &:hover {
-        border: 1px solid var(--c-basic-700);
+        border: 1px solid var(--border-strong);
       }
     }
     &.radio {
       border-radius: 50%;
       position: relative;
-      border: 1px solid var(--c-basic-500);
+      border: 1px solid var(--border-default);
       &:hover {
-        border: 1px solid var(--c-basic-700);
+        border: 1px solid var(--border-strong);
         &::after {
           content: "";
           position: absolute;
@@ -153,10 +153,10 @@ export default {
         }
       }
       &.checked {
-        border: 1px solid var(--c-basic-500);
+        border: 1px solid var(--border-default);
         &::after {
           content: "";
-          background-color: var(--c-basic-700);
+          background-color: var(--surface-inverse);
           position: absolute;
           transform: translate(-50%, -50%);
           top: 50%;

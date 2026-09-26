@@ -131,7 +131,7 @@ export default {
     border: 0;
     border-radius: 6px;
     background: transparent;
-    color: var(--c-basic-700);
+    color: var(--text-body);
     font-size: inherit;
     font-family: inherit;
     display: inline-flex;
@@ -140,23 +140,23 @@ export default {
     cursor: pointer;
 
     &:hover:not(:disabled):not(.page-cell--active):not(.page-cell--gap) {
-      background: var(--c-basic-200);
+      background: var(--surface-raised);
     }
 
     &:focus-visible {
-      outline: 2px solid var(--c-support-400);
+      outline: 2px solid var(--accent);
       outline-offset: 1px;
     }
 
     &--active {
-      background: var(--c-support-100);
-      color: var(--c-primary-100);
+      background: var(--accent-subtle);
+      color: var(--text-accent);
       font-weight: 600;
     }
 
     &--gap {
       cursor: default;
-      color: var(--c-basic-500);
+      color: var(--text-muted);
     }
 
     &:disabled {

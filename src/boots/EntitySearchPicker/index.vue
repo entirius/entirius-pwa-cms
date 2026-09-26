@@ -158,10 +158,10 @@ async function fetchResults(search) {
       <div v-if="open" class="entity-picker__results-panel">
         <!-- Loading shown inline at top so list still renders below if cached -->
         <div v-if="loading && !results.length" class="entity-picker__status">
-          <span class="fs-200 t-basic-500">{{ $t("layout_extender.searching") }}</span>
+          <span class="fs-200 t-muted">{{ $t("layout_extender.searching") }}</span>
         </div>
         <div v-else-if="!results.length" class="entity-picker__status">
-          <span class="fs-200 t-basic-500">
+          <span class="fs-200 t-muted">
             {{ query ? $t("layout_extender.no_results") : $t("layout_extender.searching") }}
           </span>
         </div>
@@ -189,23 +189,23 @@ async function fetchResults(search) {
   align-items: center;
   height: var(--elem-height);
   padding: 0 var(--space-100);
-  border: 1px solid var(--c-basic-400);
+  border: 1px solid var(--border-default);
   border-radius: var(--space-50);
-  background: var(--c-basic-100);
+  background: var(--surface-base);
   cursor: pointer;
   transition: border-color 0.15s;
 
   &:hover {
-    border-color: var(--c-basic-500);
+    border-color: var(--border-default);
   }
 
   &--empty {
     gap: 8px;
-    color: var(--c-basic-500);
+    color: var(--text-muted);
   }
 
   &--open {
-    border-color: var(--c-support-400);
+    border-color: var(--accent);
     cursor: default;
     padding: 0;
   }
@@ -213,13 +213,13 @@ async function fetchResults(search) {
 
 .entity-picker__search-icon {
   font-size: 12px;
-  color: var(--c-basic-400);
+  color: var(--text-muted);
 }
 
 .entity-picker__chevron {
   margin-left: auto;
   font-size: 11px;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   transition: transform 0.15s;
   flex-shrink: 0;
 }
@@ -234,7 +234,7 @@ async function fetchResults(search) {
 
 .entity-picker__placeholder {
   font-size: var(--fs-200);
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   flex: 1;
   min-width: 0;
   white-space: nowrap;
@@ -253,8 +253,8 @@ async function fetchResults(search) {
   padding: 4px 10px;
   border-radius: 4px;
   font-size: var(--fs-200);
-  background: var(--c-basic-200);
-  color: var(--c-basic-700);
+  background: var(--surface-raised);
+  color: var(--text-body);
 }
 
 .entity-picker__chip-label {
@@ -274,11 +274,11 @@ async function fetchResults(search) {
   cursor: pointer;
   font-size: 16px;
   line-height: 1;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   transition: color 0.15s;
 
   &:hover {
-    color: var(--c-negative-300);
+    color: var(--negative);
   }
 }
 
@@ -288,8 +288,8 @@ async function fetchResults(search) {
   left: 0;
   right: 0;
   z-index: 110;
-  background: var(--c-basic-100);
-  border: 1px solid var(--c-support-400);
+  background: var(--surface-base);
+  border: 1px solid var(--accent);
   border-radius: var(--space-50);
   box-shadow: var(--shadow-md);
   max-height: 240px;
@@ -311,10 +311,10 @@ async function fetchResults(search) {
   text-align: left;
   padding: 8px var(--space-200);
   font-size: var(--fs-200);
-  color: var(--c-basic-700);
+  color: var(--text-body);
   background: none;
   border: none;
-  border-bottom: 1px solid var(--c-basic-200);
+  border-bottom: 1px solid var(--border-subtle);
   cursor: pointer;
   transition: background 0.15s;
 
@@ -323,22 +323,22 @@ async function fetchResults(search) {
   }
 
   &:hover {
-    background: var(--c-basic-200);
+    background: var(--surface-raised);
   }
 
   &:focus-visible {
-    outline: 2px solid var(--c-support-400);
+    outline: 2px solid var(--accent);
     outline-offset: -2px;
   }
 }
 
 .entity-picker__result-label {
   font-weight: 600;
-  color: var(--c-basic-700);
+  color: var(--text-body);
 }
 
 .entity-picker__result-secondary {
   font-size: var(--fs-100);
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 </style>

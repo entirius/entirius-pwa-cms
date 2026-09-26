@@ -152,7 +152,7 @@ const BASES = ["legitimate_interest", "consent", "contract"];
   box-sizing: border-box;
 }
 .contact-fields .ld-input[readonly] {
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
 }
 .contact-fields__check {
   display: flex;

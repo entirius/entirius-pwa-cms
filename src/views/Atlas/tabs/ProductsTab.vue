@@ -115,14 +115,14 @@
         <span>{{ formatCost(row.cost, row.currency) }}</span>
       </template>
       <template #cell-last_synced_at="{ value }">
-        <span class="fs-200 t-basic-600">{{ formatDate(value) }}</span>
+        <span class="fs-200 t-secondary">{{ formatDate(value) }}</span>
       </template>
       <template #cell-actions="{ row }">
         <div class="flex ai-ct gap-100" @click.stop>
           <!-- etap-12 #19: per-row quick actions for new/queued SPs, complementary to the bulk bar. -->
           <button
             v-if="canApprove(row)"
-            class="row-action-btn bg-support-100 t-support-400"
+            class="row-action-btn bg-accent-subtle t-accent"
             :title="$t('atlas.products.row_actions.review')"
             :data-testid="`products-review-${row.id}`"
             @click="reviewProduct(row)"
@@ -131,7 +131,7 @@
           </button>
           <button
             v-if="canApprove(row)"
-            class="row-action-btn bg-positive-100 t-positive-300"
+            class="row-action-btn bg-positive-subtle t-positive"
             :title="$t('atlas.products.row_actions.approve')"
             :data-testid="`products-approve-${row.id}`"
             @click="quickApprove(row)"
@@ -140,7 +140,7 @@
           </button>
           <button
             v-if="canApprove(row)"
-            class="row-action-btn bg-negative-100 t-negative-300"
+            class="row-action-btn bg-negative-subtle t-negative"
             :title="$t('atlas.products.row_actions.reject')"
             :data-testid="`products-reject-${row.id}`"
             @click="quickReject(row)"
@@ -149,7 +149,7 @@
           </button>
           <button
             v-if="canPush(row)"
-            class="row-action-btn bg-positive-100 t-positive-300"
+            class="row-action-btn bg-positive-subtle t-positive"
             :title="$t('atlas.products.push_button')"
             :data-testid="`products-push-${row.id}`"
             @click="pushProduct(row)"
@@ -158,7 +158,7 @@
           </button>
           <button
             v-if="canForceRepush(row)"
-            class="row-action-btn bg-warning-100 t-warning-300"
+            class="row-action-btn bg-warning-subtle t-warning"
             :title="$t('atlas.products.force_repush_button')"
             :data-testid="`products-force-repush-${row.id}`"
             @click="confirmForceRepush(row)"
@@ -166,7 +166,7 @@
             <FontAwesomeIcon icon="rotate" />
           </button>
           <button
-            class="row-action-btn bg-basic-200 t-basic-700"
+            class="row-action-btn bg-raised t-body"
             :title="$t('atlas.review.show_raw_data')"
             :data-testid="`products-raw-${row.id}`"
             @click="showRaw(row)"
@@ -313,7 +313,7 @@
         </p>
         <div
           v-if="repushTarget?.pushed_to_channel_idxs?.length"
-          class="bg-warning-100 t-warning-300 p-200 br-sm mt-200"
+          class="bg-warning-subtle t-warning p-200 br-sm mt-200"
         >
           <p class="fs-200 fw-600 mb-100">
             {{ $t("atlas.products.affected_channels") }}
@@ -557,13 +557,13 @@ export default {
         actions.push({
           key: "force_repush",
           labelKey: "atlas.products.bulk.force_repush_selected",
-          buttonClass: "bg-warning-100 t-warning-300",
+          buttonClass: "bg-warning-subtle t-warning",
         });
       }
       actions.push({
         key: "acknowledge",
         labelKey: "atlas.products.bulk.acknowledge_selected",
-        buttonClass: "bg-positive-100 t-positive-300",
+        buttonClass: "bg-positive-subtle t-positive",
       });
       return actions;
     },
@@ -971,15 +971,15 @@ export default {
   align-items: center;
   gap: 4px;
   background: transparent;
-  border: 1px solid var(--c-basic-300);
-  color: var(--c-basic-600);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
   border-radius: var(--radius-sm);
   padding: 6px 12px;
   font-size: var(--fs-200);
   cursor: pointer;
 
   &:hover {
-    background: var(--c-basic-200);
+    background: var(--surface-raised);
   }
 }
 
@@ -1009,8 +1009,8 @@ export default {
   /* Negative margins make the footer span the panel's full width and sit flush
      against its bottom edge, past the panel padding. */
   margin: 0 calc(-1 * var(--space-300)) calc(-1 * var(--space-300));
-  background: var(--c-basic-100);
-  border-top: 1px solid var(--c-basic-300);
+  background: var(--surface-base);
+  border-top: 1px solid var(--border-subtle);
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.04);
 }
 
@@ -1036,34 +1036,34 @@ export default {
   }
 }
 .detail-btn--approve {
-  background: var(--c-positive-100);
-  border-color: var(--c-positive-300);
-  color: var(--c-positive-300);
+  background: var(--positive-subtle);
+  border-color: var(--positive);
+  color: var(--positive);
 }
 .detail-btn--skip {
-  background: var(--c-basic-100);
-  border-color: var(--c-basic-400);
-  color: var(--c-basic-700);
+  background: var(--surface-base);
+  border-color: var(--border-default);
+  color: var(--text-body);
 }
 .detail-btn--reject {
-  background: var(--c-negative-100);
-  border-color: var(--c-negative-300);
-  color: var(--c-negative-300);
+  background: var(--negative-subtle);
+  border-color: var(--negative);
+  color: var(--negative);
 }
 .detail-btn--push {
-  background: var(--c-support-100);
-  border-color: var(--c-support-400);
-  color: var(--c-support-400);
+  background: var(--accent-subtle);
+  border-color: var(--accent);
+  color: var(--text-accent);
 }
 .detail-btn--repush {
-  background: var(--c-warning-100);
-  border-color: var(--c-warning-300);
-  color: var(--c-warning-300);
+  background: var(--warning-subtle);
+  border-color: var(--warning);
+  color: var(--warning);
 }
 .detail-btn--find {
-  background: var(--c-basic-100);
-  border-color: var(--c-basic-400);
-  color: var(--c-basic-700);
+  background: var(--surface-base);
+  border-color: var(--border-default);
+  color: var(--text-body);
 }
 .products-detail__find-in-pim {
   display: flex;

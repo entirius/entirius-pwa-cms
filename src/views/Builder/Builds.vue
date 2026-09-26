@@ -1,12 +1,12 @@
 <template>
-  <div class="site-genator t-basic-700 fs-300 ph-500 h-100 ovy-auto">
+  <div class="site-genator t-body fs-300 ph-500 h-100 ovy-auto">
     <FloatingActions :actions="fabActions" />
     <div class="flex jc-sb ai-ct mv-300">
       <MobileFilterPanel
         :active-count="activeFilters.length"
         :trigger-label="$t('builder.filters')"
       >
-        <p class="fs-200 t-basic-600">{{ $t("builder.filters") }}</p>
+        <p class="fs-200 t-secondary">{{ $t("builder.filters") }}</p>
         <template v-if="user && user.buildTypes">
           <FilterChip
             v-for="t in user.buildTypes.filter(
@@ -29,7 +29,7 @@
           v-if="translatorAvailable"
           :text="$t('builder.translate_all')"
           icon="language"
-          class="bg-support-100 t-support-400"
+          class="bg-accent-subtle t-accent"
           @click="showTranslateModal = true"
         />
         <Dropdown
@@ -54,7 +54,7 @@
             }
           "
           :placeholder="$t('builder.language')"
-          class="bg-basic-100 b-basic-400 t-basic-600 fs-200 br-50"
+          class="bg-base b-default t-secondary fs-200 br-50"
         />
       </div>
     </div>
@@ -183,13 +183,13 @@
 
     <div
       v-if="contentTypes !== null && !hasVisibleContent"
-      class="flex ai-ct jc-ct gap-200 p-500 br-50 b-basic-300 bg-basic-100 t-basic-500"
+      class="flex ai-ct jc-ct gap-200 p-500 br-50 b-subtle bg-base t-muted"
       style="min-height: 14rem; flex-direction: column"
     >
-      <p class="fs-400 fw-600 t-basic-600">
+      <p class="fs-400 fw-600 t-secondary">
         {{ $t("builder.no_content_title") }}
       </p>
-      <p class="fs-200 t-basic-500 ta-ct" style="max-width: 30rem">
+      <p class="fs-200 t-muted ta-ct" style="max-width: 30rem">
         {{ $t("builder.no_content_msg") }}
       </p>
     </div>
@@ -491,7 +491,7 @@ export default {
 .doc-section {
   border-radius: 5px;
   overflow: hidden;
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
 }
 .doc-section__header {
   display: flex;
@@ -502,9 +502,9 @@ export default {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--c-basic-600);
-  background-color: var(--c-basic-100);
-  border-bottom: 1px solid var(--c-basic-300);
+  color: var(--text-secondary);
+  background-color: var(--surface-base);
+  border-bottom: 1px solid var(--border-subtle);
 }
 .doc-section__count {
   display: inline-flex;
@@ -516,20 +516,20 @@ export default {
   font-size: 11px;
   font-weight: 600;
   border-radius: 50px;
-  background-color: var(--c-basic-300);
-  color: var(--c-basic-600);
+  background-color: var(--surface-hover);
+  color: var(--text-secondary);
 }
 .data-table__name-link {
   display: block;
   min-width: 0;
-  color: var(--c-basic-700);
+  color: var(--text-body);
   text-decoration: none;
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   &:hover {
-    color: var(--c-support-400);
+    color: var(--text-accent);
   }
 }
 .data-table__action-btn {
@@ -538,7 +538,7 @@ export default {
   gap: 4px;
   padding: 4px 10px;
   font-size: 12px;
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
   background: none;
   border: 1px solid transparent;
   border-radius: 5px;
@@ -546,13 +546,13 @@ export default {
   white-space: nowrap;
   transition: all 0.15s ease;
   &:hover {
-    background-color: var(--c-basic-300);
-    border-color: var(--c-basic-400);
+    background-color: var(--surface-hover);
+    border-color: var(--border-default);
   }
   &--danger:hover {
-    color: var(--c-negative-200);
-    border-color: var(--c-negative-200);
-    background-color: var(--c-basic-100);
+    color: var(--negative);
+    border-color: var(--negative);
+    background-color: var(--surface-base);
   }
   &--disabled {
     opacity: 0.35;

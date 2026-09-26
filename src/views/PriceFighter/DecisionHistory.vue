@@ -1,6 +1,6 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
-    <div class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto p-500">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
+    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
       <div class="history__toolbar">
         <BasicInput
           v-model="search"
@@ -40,13 +40,13 @@
             :empty-text="$t('pricefighter.no_history')"
           >
             <template #cell-sku="{ row }">
-              <span class="fw-600 t-support-400">{{ row.sku }}</span>
+              <span class="fw-600 t-accent">{{ row.sku }}</span>
             </template>
             <template #cell-market="{ row }">
               {{ row.channel_idx }} · {{ row.country }} / {{ row.currency }}
             </template>
             <template #cell-change="{ row }">
-              <span v-if="row.old_price === row.new_price" class="t-basic-500">
+              <span v-if="row.old_price === row.new_price" class="t-muted">
                 {{ row.new_price }} <span class="fs-100">· {{ $t('pricefighter.no_change') }}</span>
               </span>
               <span v-else>{{ row.old_price }} &rarr; <span class="fw-600">{{ row.new_price }}</span></span>
@@ -66,7 +66,7 @@
                   <dt>{{ $t('pricefighter.reference_price') }} (R)</dt>
                   <dd>
                     {{ fmt(row.reason.reference_price) }}
-                    <span v-if="row.reason.estimator" class="t-basic-500 fs-100">({{ row.reason.estimator }})</span>
+                    <span v-if="row.reason.estimator" class="t-muted fs-100">({{ row.reason.estimator }})</span>
                   </dd>
                   <dt>{{ $t('pricefighter.baseline') }} (B)</dt>
                   <dd>{{ fmt(row.reason.baseline) }}</dd>
@@ -115,7 +115,7 @@
                   </table>
                 </div>
               </div>
-              <p v-else class="t-basic-500 fs-200">{{ $t('pricefighter.no_snapshot') }}</p>
+              <p v-else class="t-muted fs-200">{{ $t('pricefighter.no_snapshot') }}</p>
             </template>
           </DataTable>
 
@@ -256,11 +256,11 @@ export default {
   font-size: var(--fs-200);
 
   dt {
-    color: var(--c-basic-500);
+    color: var(--text-muted);
   }
   dd {
     margin: 0;
-    color: var(--c-basic-800);
+    color: var(--text-body);
     font-weight: 600;
   }
 }
@@ -273,7 +273,7 @@ export default {
 .history__obs-heading {
   margin: 0 0 var(--space-200);
   font-size: var(--fs-200);
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 
 .history__obs {
@@ -283,17 +283,17 @@ export default {
 
   th {
     text-align: left;
-    color: var(--c-basic-500);
+    color: var(--text-muted);
     font-weight: 500;
     padding: var(--space-50) var(--space-200) var(--space-50) 0;
   }
   td {
     padding: var(--space-50) var(--space-200) var(--space-50) 0;
-    color: var(--c-basic-800);
+    color: var(--text-body);
   }
 }
 
 .history__obs-row--invalid td {
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 </style>

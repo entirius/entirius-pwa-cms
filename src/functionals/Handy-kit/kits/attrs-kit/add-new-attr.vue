@@ -13,7 +13,7 @@
 
     <ButtonBasic
       :text="$t('common.add')"
-      class="bg-primary-100 txt-gray-700 w-full sticky-btn mt-md"
+      class="bg-accent-fill txt-gray-700 w-full sticky-btn mt-md"
       @click="addAttrVal"
     />
   </div>

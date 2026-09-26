@@ -19,7 +19,7 @@
       @row-click="openEdit"
     >
       <template #cell-typ="{ row }">
-        <span class="config-badge bg-basic-200 t-basic-600">{{
+        <span class="config-badge bg-raised t-secondary">{{
           typLabel(row.typ)
         }}</span>
       </template>

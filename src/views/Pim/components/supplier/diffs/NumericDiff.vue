@@ -1,8 +1,8 @@
 <template>
   <span class="numeric-diff">
-    <span class="t-basic-500">{{ formatVal(before) }}</span>
-    <span class="numeric-diff__arrow t-basic-500">→</span>
-    <strong class="t-basic-800">{{ formatVal(after) }}</strong>
+    <span class="t-muted">{{ formatVal(before) }}</span>
+    <span class="numeric-diff__arrow t-muted">→</span>
+    <strong class="t-body">{{ formatVal(after) }}</strong>
   </span>
 </template>
 

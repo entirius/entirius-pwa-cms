@@ -37,7 +37,7 @@
       >
 
       <p
-        class="validation-msg t-negative-200 fs-100 absolute"
+        class="validation-msg t-negative fs-100 absolute"
         v-if="validate && validate.status === 'error' && validate.msg"
       >
         {{ validate.msg }}
@@ -132,14 +132,14 @@ export default {
 <style lang="scss">
 .input-basic-wrapper {
   background-color: transparent;
-  color: var(--c-basic-700);
+  color: var(--text-body);
   &.positive input,
   &.positive input:focus {
-    border-color: var(--c-positive-200);
+    border-color: var(--positive);
   }
   &.negative input,
   &.negative input:focus {
-    border-color: var(--c-negative-200) !important;
+    border-color: var(--negative) !important;
   }
   .input-field {
     overflow: hidden;
@@ -149,7 +149,7 @@ export default {
     font-size: inherit;
     font-family: inherit;
     border: 1px solid;
-    border-color: var(--c-basic-400);
+    border-color: var(--border-default);
     border-radius: var(--space-50);
     transition: border-color 0.2s;
     outline: 0;
@@ -160,7 +160,7 @@ export default {
       color: transparent;
     }
     &.has-placeholder::placeholder {
-      color: var(--c-basic-500);
+      color: var(--text-muted);
     }
 
     &:placeholder-shown ~ .input-label {
@@ -179,14 +179,14 @@ export default {
     // left: var(--space-50);
     // transition: 0.1s;
     //font-size: var(--fs-100);
-    // background-color: var(--c-basic-300);
-    // color: var(--c-basic-800);
+    // background-color: var(--surface-hover);
+    // color: var(--text-body);
     // padding: 0 var(--space-50);
     // border-radius: var(--space-50);
   }
 
   // .input-field:focus {
-  //   border-color: var(--c-basic-600);
+  //   border-color: var(--border-strong);
   //   ~ .input-label {
   //     position: absolute;
   //     top: 0;
@@ -194,7 +194,7 @@ export default {
   //     transform: translate(0%, -40%);
   //     display: block;
   //     transition: 0.1s;
-  //     background-color: var(--c-support-100);
+  //     background-color: var(--accent-subtle);
   //     color: var(--c-basic-100);
   //     //font-size: var(--fs-200);
   //   }

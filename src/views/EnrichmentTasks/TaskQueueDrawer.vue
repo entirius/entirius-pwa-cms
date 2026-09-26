@@ -18,7 +18,7 @@
         <template #cell-sku="{ row }">
           <button
             type="button"
-            class="task-queue__sku t-primary-300"
+            class="task-queue__sku t-accent"
             :data-testid="`queue-sku-${row.sku}`"
             @click="goToPim(row.sku)"
           >
@@ -26,7 +26,7 @@
           </button>
         </template>
         <template #cell-priority="{ value }">
-          <span class="fs-200 t-basic-600">{{ value ?? "—" }}</span>
+          <span class="fs-200 t-secondary">{{ value ?? "—" }}</span>
         </template>
       </DataTable>
 
@@ -41,19 +41,19 @@
     <div class="task-queue__pager flex ai-ct jc-ct gap-200">
       <button
         type="button"
-        class="task-queue__btn bg-basic-200 t-basic-600"
+        class="task-queue__btn bg-raised t-secondary"
         :disabled="loading || page <= 1"
         data-testid="queue-prev"
         @click="prevPage"
       >
         {{ $t("enrichment.queue.prev") }}
       </button>
-      <span class="fs-200 t-basic-500">
+      <span class="fs-200 t-muted">
         {{ $t("enrichment.queue.page", { page }) }}
       </span>
       <button
         type="button"
-        class="task-queue__btn bg-basic-200 t-basic-600"
+        class="task-queue__btn bg-raised t-secondary"
         :disabled="loading || !hasMore"
         data-testid="queue-next"
         @click="nextPage"
@@ -185,7 +185,7 @@ export default {
 }
 .task-queue__pager {
   padding: var(--space-300);
-  border-top: 1px solid var(--c-basic-200);
+  border-top: 1px solid var(--border-subtle);
 }
 .task-queue__btn {
   display: inline-flex;

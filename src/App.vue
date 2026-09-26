@@ -8,12 +8,12 @@
     <router-view v-else-if="isAuth && isFullscreen" />
     <template v-else-if="isAuth">
       <div
-        class="app-header flex ai-ct bb-basic-300 w-100 bg-basic-100 relative"
+        class="app-header flex ai-ct bb-subtle w-100 bg-base relative"
         style="z-index: 10"
       >
         <div
           v-if="hasPanel && showPanelNav"
-          class="app-sidebar-col flex ai-ct br-basic-300"
+          class="app-sidebar-col flex ai-ct br-subtle"
           style="align-self: stretch"
           :class="
             isSidebarCollapsed ? 'sidebar-collapsed jc-ct' : 'p-100 pl-300'
@@ -40,7 +40,7 @@
           class="app-content-col p-100 pl-300 flex ai-ct jc-sb"
           style="overflow: visible"
         >
-          <h2 v-if="hasPanel" class="fs-400 fw-600 t-basic-800 route-title">
+          <h2 v-if="hasPanel" class="fs-400 fw-600 t-body route-title">
             {{ routeTitle }}
           </h2>
           <span v-else></span>
@@ -50,7 +50,7 @@
       <div class="layout flex relative">
         <template v-if="hasPanel && showPanelNav">
           <Navigation
-            class="app-sidebar-col bg-basic-100 br-basic-300"
+            class="app-sidebar-col bg-base br-subtle"
             :class="{
               'sidebar-collapsed': isSidebarCollapsed,
               'sidebar-disabled': handyType,
@@ -297,9 +297,9 @@ export default {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  border: 1px solid var(--c-basic-300);
-  background: var(--c-basic-100);
-  color: var(--c-basic-600);
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-base);
+  color: var(--text-secondary);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -307,7 +307,7 @@ export default {
   font-size: 12px;
   box-shadow: var(--shadow-sm);
   &:hover {
-    background: var(--c-basic-200);
+    background: var(--surface-raised);
   }
   &--disabled {
     opacity: 0.4;
@@ -332,8 +332,8 @@ export default {
   left: 0;
   right: 0;
   height: 56px;
-  background-color: var(--c-basic-100);
-  border-top: 1px solid var(--c-basic-300);
+  background-color: var(--surface-base);
+  border-top: 1px solid var(--border-subtle);
   z-index: 20;
 }
 @media only screen and (max-width: 768px) {

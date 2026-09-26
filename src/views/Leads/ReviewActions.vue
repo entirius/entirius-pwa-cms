@@ -70,8 +70,8 @@ function pick(name) {
   display: flex;
   gap: var(--space-200);
   padding: var(--space-200) var(--space-300);
-  background: var(--c-basic-100);
-  border-top: 1px solid var(--c-basic-300);
+  background: var(--surface-base);
+  border-top: 1px solid var(--border-subtle);
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.04);
 }
 .ra-btn {
@@ -81,9 +81,9 @@ function pick(name) {
   gap: var(--space-100);
   min-height: 48px;
   border-radius: 8px;
-  border: 1px solid var(--c-basic-300);
-  background: var(--c-basic-100);
-  color: var(--c-basic-800);
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-base);
+  color: var(--text-body);
   font-weight: 600;
   cursor: pointer;
 }
@@ -96,9 +96,9 @@ function pick(name) {
 }
 .ra-btn--primary {
   flex: 2;
-  border-color: var(--c-positive-300);
-  background: var(--c-positive-300);
-  color: var(--c-basic-100);
+  border-color: var(--positive);
+  background: var(--positive-fill);
+  color: var(--text-on-status-fill);
 }
 .ra-btn--icon {
   width: 48px;
@@ -113,8 +113,8 @@ function pick(name) {
   display: flex;
   flex-direction: column;
   min-width: 13rem;
-  background: var(--c-basic-100);
-  border: 1px solid var(--c-basic-300);
+  background: var(--surface-base);
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   z-index: 20;
@@ -124,7 +124,7 @@ function pick(name) {
   padding: 0 var(--space-300);
   border: none;
   background: none;
-  color: var(--c-basic-800);
+  color: var(--text-body);
   text-align: left;
   cursor: pointer;
 }

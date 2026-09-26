@@ -26,8 +26,8 @@ export default {
   .tip {
     display: none;
     position: absolute;
-    background-color: var(--c-support-100);
-    color: var(--c-basic-900);
+    background-color: var(--accent-subtle);
+    color: var(--text-strong);
     top: 0;
     left: 50%;
     transform: translate(-50%, -100%);
@@ -43,7 +43,7 @@ export default {
       transform: translate(-50%, 0);
       border-bottom: 5px solid transparent;
       border-right: 5px solid transparent;
-      border-top: 5px solid var(--c-support-100);
+      border-top: 5px solid var(--accent);
       border-left: 5px solid transparent;
     }
   }

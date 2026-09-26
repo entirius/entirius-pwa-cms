@@ -1,13 +1,13 @@
 <template>
-  <div class="fs-200 t-basic-600 flex-column gap-300 jc-sb">
+  <div class="fs-200 t-secondary flex-column gap-300 jc-sb">
     <nav
-      class="grid grid-col-2 grid-col-2-m ai-ct bg-basic-200 pl-400 pr-400 pt-200 pb-200 t-basic-600 br-tl-50 br-tr-50"
+      class="grid grid-col-2 grid-col-2-m ai-ct bg-raised pl-400 pr-400 pt-200 pb-200 t-secondary br-tl-50 br-tr-50"
     >
       <p class="fw-600 fs-400 uppercase">
         {{ handyType.label ? handyType.label : $t("common.click") }}
       </p>
       <p
-        class="js-fe t-basic-600"
+        class="js-fe t-secondary"
         @click="handy.open_Handykit({ typeId: false })"
       >
         <i class="icon-close-mini pointer" />
@@ -34,17 +34,17 @@
                 GET_ATTR_VALUES();
               }
             "
-            class="bg-basic-100 b-basic-400 br-50 shadow-down fs-200 t-basic-700 gc-s-1 gc-e-3"
+            class="bg-base b-default br-50 shadow-down fs-200 t-body gc-s-1 gc-e-3"
           />
           <BasicButton
             :text="$t('attrs.add_value')"
-            class="b-basic-400 br-50"
+            class="b-default br-50"
             @click="mode = 'add'"
             :isDisabled="!attr_to_edit"
             :class="[
               !attr_to_edit
-                ? 'bg-basic-200 t-basic-400'
-                : 'bg-support-400 t-basic-100 b-support-400',
+                ? 'bg-raised t-muted'
+                : 'bg-accent-fill t-on-accent-fill b-accent',
             ]"
           />
         </div>
@@ -62,8 +62,8 @@
           "
           :custom_droplist="true"
           :isDisabled="!attr_to_edit"
-          class="bg-basic-100 b-basic-400 br-50 shadow-down fs-200"
-          :class="[!attr_to_edit ? 'bg-basic-200 t-basic-500' : 't-basic-700']"
+          class="bg-base b-default br-50 shadow-down fs-200"
+          :class="[!attr_to_edit ? 'bg-raised t-muted' : 't-body']"
           :key="`${force_refresh}-key`"
         >
           <template v-slot:custom>
@@ -85,7 +85,7 @@
               <span>{{ label }}</span>
               <div>
                 <span
-                  class="t-support-300 mr-100"
+                  class="t-accent mr-100"
                   @click="
                     () => {
                       document_attrs[attr_to_edit] = [label];
@@ -95,7 +95,7 @@
                   >{{ $t("common.select") }}</span
                 >
                 <span
-                  class="t-negative-200"
+                  class="t-negative"
                   @click="DELETE_ATTR({ id: value })"
                   >{{ $t("common.delete") }}</span
                 >
@@ -106,34 +106,34 @@
       </template>
       <template v-if="mode === 'add'">
         <BasicInput
-          class="bg-basic-100 lh-base-elem mt-300"
+          class="bg-base lh-base-elem mt-300"
           :label="$t('attrs.attribute_value')"
           v-model="attr_value"
         />
         <BasicButton
-          class="br-50 mt-100 bb-basic-500"
+          class="br-50 mt-100 bb-default"
           :text="$t('common.save')"
           @click="POST_NEW_ATTR"
           :isDisabled="attr_value.length < 5"
           :class="[
             attr_value.length < 5
-              ? 'bg-basic-200 t-basic-400'
-              : 't-basic-200 bg-support-400',
+              ? 'bg-raised t-muted'
+              : 't-muted bg-accent-fill',
           ]"
         />
       </template>
-      <hr class="bb-basic-400 mv-300" />
+      <hr class="bb-default mv-300" />
       <Dropdown
         :placeholder="`Setted attrs for document (${
           Object.keys(document_attrs ?? {}).length
         })`"
         :custom_droplist="true"
         :complex_values="true"
-        class="bg-basic-100 b-basic-400 br-50 fs-200 mt-50"
+        class="bg-base b-default br-50 fs-200 mt-50"
         :class="[
           !Object.keys(document_attrs ?? {}).length
-            ? 'bg-basic-200 t-basic-500'
-            : 't-basic-700',
+            ? 'bg-raised t-muted'
+            : 't-body',
         ]"
         :key="`${force_refresh}-key-2`"
       >
@@ -159,7 +159,7 @@
             <p>{{ label }}</p>
             <div>
               <span
-                class="t-negative-200"
+                class="t-negative"
                 @click="
                   () => {
                     const { index, attr_to_edit } = value;
@@ -178,15 +178,15 @@
     </div>
 
     <div
-      class="grid grid-col-3 gap-100 rtl-direction bg-basic-200 pl-400 pr-400 pt-100 pb-100"
+      class="grid grid-col-3 gap-100 rtl-direction bg-raised pl-400 pr-400 pt-100 pb-100"
     >
       <BasicButton
-        class="bg-basic-700 br-50 bg-support-400-hover b-support-400-hover fs-200 b-basic-800 t-basic-100 w-100 jc-ct"
+        class="bg-inverse br-50 bg-accent-fill-hover b-support-400-hover fs-200 b-strong t-basic-100 w-100 jc-ct"
         :text="$t('common.save')"
         @click="pass_asset({ ...document_attrs })"
       />
       <BasicButton
-        class="bg-negative-100 br-50 fs-200 b-negative-200 t-negative-200 w-100 jc-ct"
+        class="bg-negative-subtle br-50 fs-200 b-negative t-negative w-100 jc-ct"
         :text="$t('common.cancel')"
         @click="handy.open_Handykit({})"
       />

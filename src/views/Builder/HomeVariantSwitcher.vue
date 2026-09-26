@@ -29,7 +29,7 @@
         <span class="home-switcher__name">{{ ch.name || ch.idx }}</span>
         <span class="home-switcher__status fs-100">
           <template v-if="isCurrent(ch.idx)">
-            <FontAwesomeIcon icon="check" class="t-support-400" />
+            <FontAwesomeIcon icon="check" class="t-accent" />
             {{ $t("builder.home_current") }}
           </template>
           <template v-else-if="variants[ch.idx]">
@@ -120,15 +120,15 @@ export default {
   height: var(--elem-height);
   padding: 0 10px;
   border-radius: 5px;
-  border: 1px solid var(--c-basic-400);
-  background-color: var(--c-basic-100);
-  color: var(--c-basic-600);
+  border: 1px solid var(--border-default);
+  background-color: var(--surface-base);
+  color: var(--text-secondary);
   font-size: 13px;
   transition: all 0.15s ease;
   white-space: nowrap;
   &:hover {
-    background-color: var(--c-basic-300);
-    color: var(--c-basic-800);
+    background-color: var(--surface-hover);
+    color: var(--text-body);
   }
 }
 
@@ -150,8 +150,8 @@ export default {
   left: 0;
   min-width: 240px;
   z-index: 10;
-  background: var(--c-basic-100);
-  border: 1px solid var(--c-basic-300);
+  background: var(--surface-base);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
   overflow: hidden;
@@ -161,10 +161,10 @@ export default {
   padding: 8px 12px;
   font-size: 11px;
   font-weight: 600;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  border-bottom: 1px solid var(--c-basic-300);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .home-switcher__item {
@@ -173,26 +173,26 @@ export default {
   justify-content: space-between;
   padding: 8px 12px;
   font-size: 13px;
-  color: var(--c-basic-700);
+  color: var(--text-body);
   cursor: pointer;
   transition: background-color 0.1s ease;
   &:hover {
-    background-color: var(--c-basic-200);
+    background-color: var(--surface-raised);
   }
   &--current {
-    background-color: var(--c-support-100);
+    background-color: var(--accent-subtle);
     cursor: default;
   }
   &--missing {
-    color: var(--c-basic-500);
+    color: var(--text-muted);
   }
   & + & {
-    border-top: 1px solid var(--c-basic-200);
+    border-top: 1px solid var(--border-subtle);
   }
 }
 
 .home-switcher__status {
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   display: flex;
   align-items: center;
   gap: 4px;

@@ -29,7 +29,7 @@
         required
       >
         <BasicInput v-model="form.name" data-testid="overview-name" />
-        <p v-if="errors.name" class="form-error t-negative-300 fs-200">
+        <p v-if="errors.name" class="form-error t-negative fs-200">
           {{ errors.name.msg }}
         </p>
       </FormField>
@@ -505,27 +505,27 @@ export default {
   display: inline-flex;
   align-items: center;
   background: transparent;
-  border: 1px solid var(--c-basic-300);
-  color: var(--c-basic-700);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-body);
   border-radius: var(--radius-sm);
   padding: 4px 10px;
   cursor: pointer;
   transition: background 0.15s ease;
 }
 .suppliers-toolbar-btn:hover:not(:disabled) {
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
 }
 .suppliers-toolbar-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 .suppliers-toolbar-btn--primary {
-  background: var(--c-support-400);
-  border-color: var(--c-support-400);
-  color: var(--c-basic-100);
+  background: var(--accent-fill);
+  border-color: var(--accent);
+  color: var(--text-on-accent-fill);
 }
 .suppliers-toolbar-btn--primary:hover:not(:disabled) {
   filter: brightness(1.05);
-  background: var(--c-support-400);
+  background: var(--accent-fill);
 }
 </style>

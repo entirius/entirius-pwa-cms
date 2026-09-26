@@ -326,8 +326,8 @@ onBeforeUnmount(() => clearTimeout(nextTimer));
   margin: var(--space-400) 0;
   padding: var(--space-300);
   border-radius: 8px;
-  background: var(--c-positive-100);
-  color: var(--c-basic-800);
+  background: var(--positive-subtle);
+  color: var(--text-body);
   font-size: var(--fs-400);
   font-weight: 600;
   text-align: center;
@@ -338,11 +338,11 @@ onBeforeUnmount(() => clearTimeout(nextTimer));
   gap: var(--space-200);
   padding: var(--space-300);
   border-radius: 8px;
-  background: var(--c-negative-100);
+  background: var(--negative-subtle);
 }
 .review__failed-text {
   margin: 0;
-  color: var(--c-basic-800);
+  color: var(--text-body);
   overflow-wrap: anywhere;
 }
 .review__draft {
@@ -360,12 +360,12 @@ onBeforeUnmount(() => clearTimeout(nextTimer));
 .review__company {
   font-weight: 600;
   font-size: var(--fs-400);
-  color: var(--c-basic-800);
+  color: var(--text-body);
   overflow-wrap: anywhere;
 }
 .review__to,
 .review__position {
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
   overflow-wrap: anywhere;
 }
 .review__subject {
@@ -382,7 +382,7 @@ onBeforeUnmount(() => clearTimeout(nextTimer));
 .review__hint {
   margin: 0;
   font-size: var(--fs-200);
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
 }
 .review__label {
   display: flex;
@@ -394,7 +394,7 @@ onBeforeUnmount(() => clearTimeout(nextTimer));
   box-sizing: border-box;
   width: 100%;
   padding: var(--space-200);
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
   font: inherit;
   font-weight: 400;
@@ -406,16 +406,16 @@ onBeforeUnmount(() => clearTimeout(nextTimer));
 .review__btn {
   flex: 1;
   min-height: 48px;
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
-  background: var(--c-basic-100);
-  color: var(--c-basic-800);
+  background: var(--surface-base);
+  color: var(--text-body);
   font-weight: 600;
   cursor: pointer;
 }
 .review__btn--primary {
-  border-color: var(--c-support-400);
-  background: var(--c-support-400);
-  color: var(--c-basic-100);
+  border-color: var(--accent);
+  background: var(--accent-fill);
+  color: var(--text-on-accent-fill);
 }
 </style>

@@ -1,11 +1,11 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
-    <div class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto p-500">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
+    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
       <div class="flex ai-ct mb-500">
         <BasicButton
           text=""
           icon="arrow-left"
-          class="bg-basic-200 t-basic-600"
+          class="bg-raised t-secondary"
           @click="$router.push('/points/list')"
         />
       </div>
@@ -23,16 +23,16 @@
             class="file-input"
             @change="onFileChange"
           />
-          <span v-if="!selectedFile" class="fs-200 t-basic-400">
+          <span v-if="!selectedFile" class="fs-200 t-muted">
             {{ $t("dp.import_file") }} (.csv)
           </span>
-          <span v-else class="fs-200 t-basic-700 fw-600">
+          <span v-else class="fs-200 t-body fw-600">
             {{ selectedFile.name }}
           </span>
           <BasicButton
             :text="$t('gallery.upload')"
             icon="file-arrow-up"
-            class="bg-basic-200 t-basic-700 mt-200"
+            class="bg-raised t-body mt-200"
             @click="$refs.fileInput.click()"
           />
         </div>
@@ -76,7 +76,7 @@
         <!-- Result summary -->
         <div v-if="importResult" class="import-result mb-400">
           <StatusBadge label="Import complete" variant="positive" />
-          <p class="fs-300 t-basic-700 mt-200">
+          <p class="fs-300 t-body mt-200">
             {{
               $t("dp.import_success", {
                 created: importResult.created || 0,
@@ -90,7 +90,7 @@
         <BasicButton
           :text="$t('dp.import_submit')"
           icon="file-import"
-          class="bg-support-400 t-basic-100"
+          class="bg-accent-fill t-on-accent-fill"
           :disabled="submitting || !selectedFile"
           @click="submitImport"
         />
@@ -191,7 +191,7 @@ export default {
 
 <style lang="scss" scoped>
 .import-card {
-  border: 1px solid var(--c-basic-200);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: 28px;
   max-width: 600px;
@@ -208,7 +208,7 @@ export default {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 
 .import-input {
@@ -228,8 +228,8 @@ export default {
 
 .import-result {
   padding: 16px;
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
 }
 </style>

@@ -1,15 +1,15 @@
 <template>
-  <div class="fs-200 t-basic-600 fg-1 relative p-500">
-    <div class="br-50 b-basic-300 bg-basic-100 p-500">
+  <div class="fs-200 t-secondary fg-1 relative p-500">
+    <div class="br-50 b-subtle bg-base p-500">
       <div
         v-if="isSingleLanguage"
-        class="flex ai-ct jc-ct gap-200 p-500 t-basic-500"
+        class="flex ai-ct jc-ct gap-200 p-500 t-muted"
         style="min-height: 14rem; flex-direction: column"
       >
-        <p class="fs-400 fw-600 t-basic-600">
+        <p class="fs-400 fw-600 t-secondary">
           {{ $t("content_sets.single_language_title") }}
         </p>
-        <p class="fs-200 t-basic-500 ta-ct" style="max-width: 30rem">
+        <p class="fs-200 t-muted ta-ct" style="max-width: 30rem">
           {{ $t("content_sets.single_language_msg") }}
         </p>
       </div>
@@ -19,7 +19,7 @@
             :active-count="1"
             :trigger-label="$t('builder.filters')"
           >
-            <p class="fs-200 t-basic-600">{{ $t("builder.filters") }}</p>
+            <p class="fs-200 t-secondary">{{ $t("builder.filters") }}</p>
             <FilterChip
               v-for="dt in docTypes"
               :key="dt.value"
@@ -44,7 +44,7 @@
             >
               <div class="flex jc-sb ai-ct">
                 <div>
-                  <p class="t-basic-600">{{ lang }}</p>
+                  <p class="t-secondary">{{ lang }}</p>
                 </div>
                 <Pagination
                   class="fs-200"
@@ -62,7 +62,7 @@
                 class="mt-100"
               />
               <div
-                class="br-50 fs-200 t-basic-600 mt-100 grid gap-200 doc-list"
+                class="br-50 fs-200 t-secondary mt-100 grid gap-200 doc-list"
                 :class="{ 'doc-list--loading': langLoading[lang] }"
               >
                 <template
@@ -107,7 +107,7 @@
                         class="doc-tile__badge"
                       >{{ $t("content_sets.linked") }}</span>
                     </div>
-                    <p class="fs-200 t-basic-500 lc-1 mt-50">
+                    <p class="fs-200 t-muted lc-1 mt-50">
                       /{{ page_value.routes && page_value.routes.length
                         ? page_value.routes.at(0)
                         : $t("content_sets.not_set") }}
@@ -115,14 +115,14 @@
                   </div>
                 </template>
                 <template v-else>
-                  <div class="p-100 br-50 b-basic-400 bg-basic-200 t-basic-500">
+                  <div class="p-100 br-50 b-default bg-raised t-muted">
                     <p>{{ $t("content_sets.no_docs") }}</p>
                   </div>
                 </template>
               </div>
             </div>
           </div>
-          <p class="fs-100 t-basic-500 mt-300 mb-100">
+          <p class="fs-100 t-muted mt-300 mb-100">
             {{ $t("content_sets.instruction") }}
           </p>
           <div class="flex gap-100">
@@ -134,13 +134,13 @@
             >
               <BasicButton
                 :text="$t('content_sets.set_ready')"
-                class="br-50 fs-200 bg-basic-300 t-basic-500"
+                class="br-50 fs-200 bg-hover t-muted"
               />
             </ToolTip>
             <BasicButton
               v-else
               :text="$t('content_sets.set_ready')"
-              class="br-50 fs-200 bg-support-400 b-support-400 t-basic-100"
+              class="br-50 fs-200 bg-accent-fill b-accent t-on-accent-fill"
               @click="
                 MODIFY_Set({
                   url: `/content-sets/${edit ? edit : ''}`,
@@ -156,23 +156,23 @@
             >
               <BasicButton
                 :text="$t('content_sets.clear_set')"
-                class="br-50 fs-200 bg-basic-300 b-basic-300 t-basic-500"
+                class="br-50 fs-200 bg-hover b-subtle t-muted"
               />
             </ToolTip>
             <BasicButton
               v-else
               :text="$t('content_sets.clear_set')"
-              class="br-50 fs-200 bg-negative-200 b-negative-200 t-basic-100"
+              class="br-50 fs-200 bg-negative-fill b-negative t-on-status-fill"
               @click="selected_set_members = null"
             />
           </div>
         </div>
         <div v-if="sets && mode === 'edit'" class="grid gap-200">
-          <div v-if="!sets.length" class="flex ai-ct jc-ct p-500 t-basic-500">
+          <div v-if="!sets.length" class="flex ai-ct jc-ct p-500 t-muted">
             <p class="fs-200">{{ $t("content_sets.no_sets") }}</p>
           </div>
           <div
-            class="set-card b-basic-300 br-50 p-200"
+            class="set-card b-subtle br-50 p-200"
             v-for="({ uid, members }, i) in sets"
             :key="`set-${uid}`"
           >
@@ -183,7 +183,7 @@
                   :key="`member-${uid}-${m_index}`"
                   class="set-card__member"
                   >{{ name || $t("content_sets.no_name") }}
-                  <span class="t-basic-500">({{ language }})</span></span
+                  <span class="t-muted">({{ language }})</span></span
                 >
               </div>
               <button
@@ -195,12 +195,12 @@
                 <FontAwesomeIcon icon="trash-can" />
               </button>
             </div>
-            <p class="fs-100 t-basic-500 mt-50 lc-1">{{ uid }}</p>
+            <p class="fs-100 t-muted mt-50 lc-1">{{ uid }}</p>
           </div>
           <!-- <div class="mb-300 grid grid-col-3 gap-200">
           <Dropdown
-            class="bg-basic-100 br-50 b-basic-400 fs-200"
-            :class="{ 'bg-basic-200 t-basic-500': !sets.length }"
+            class="bg-base br-50 b-default fs-200"
+            :class="{ 'bg-raised t-muted': !sets.length }"
             :placeholder="'Content sets list'"
             v-if="sets"
             :icon="edit ? 'close-mini' : 'arrow-right-2'"
@@ -216,7 +216,7 @@
                   label: _label,
                   value: uid,
                   label_ext: 'delete',
-                  label_ext_class: 't-negative-200',
+                  label_ext_class: 't-negative',
                 };
               })
             "
@@ -519,21 +519,21 @@ export default {
 }
 .doc-tile {
   padding: 12px var(--space-200);
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--space-50);
   cursor: pointer;
   transition: border-color 0.15s ease, background-color 0.15s ease;
   &:hover:not(.doc-tile--linked) {
-    border-color: var(--c-support-400);
+    border-color: var(--accent);
   }
   &--linked {
-    background: var(--c-basic-200);
+    background: var(--surface-raised);
     cursor: default;
-    .fw-600 { color: var(--c-basic-500); }
+    .fw-600 { color: var(--text-muted); }
   }
   &--selected {
-    background: var(--c-support-400);
-    border-color: var(--c-support-400);
+    background: var(--accent-fill);
+    border-color: var(--accent);
     .fw-600, .fs-200 { color: var(--c-basic-100); }
   }
   &__badge {
@@ -542,27 +542,27 @@ export default {
     line-height: 1;
     padding: 3px 6px;
     border-radius: var(--radius-sm);
-    background: var(--c-negative-100);
-    color: var(--c-negative-300);
+    background: var(--negative-subtle);
+    color: var(--negative);
     white-space: nowrap;
   }
 }
 .set-card {
   transition: border-color 0.15s ease;
   &:hover {
-    border-color: var(--c-basic-500);
+    border-color: var(--border-default);
   }
   &__member {
     display: inline-flex;
     align-items: center;
     gap: 2px;
     font-size: 13px;
-    color: var(--c-basic-700);
+    color: var(--text-body);
     white-space: nowrap;
     &:not(:last-child)::after {
       content: "+";
       margin: 0 4px;
-      color: var(--c-basic-500);
+      color: var(--text-muted);
     }
   }
   &__delete {
@@ -576,12 +576,12 @@ export default {
     border: 1px solid transparent;
     border-radius: var(--space-50);
     background: none;
-    color: var(--c-basic-500);
+    color: var(--text-muted);
     transition: all 0.15s ease;
     &:hover {
-      color: var(--c-negative-200);
-      border-color: var(--c-negative-200);
-      background-color: var(--c-basic-200);
+      color: var(--negative);
+      border-color: var(--negative);
+      background-color: var(--surface-raised);
     }
   }
 }

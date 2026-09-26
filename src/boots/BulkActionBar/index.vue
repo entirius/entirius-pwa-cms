@@ -1,9 +1,9 @@
 <template>
   <div
-    class="bulk-bar bg-support-100 flex ai-ct jc-sb pl-400 pr-400 pt-200 pb-200"
+    class="bulk-bar bg-accent-subtle flex ai-ct jc-sb pl-400 pr-400 pt-200 pb-200"
   >
     <div class="flex ai-ct gap-300">
-      <span class="fs-300 fw-600 t-support-400">
+      <span class="fs-300 fw-600 t-accent">
         {{ count }} {{ $t(selectedLabelKey) }}
       </span>
       <template v-for="action in actions" :key="action.key">
@@ -24,7 +24,7 @@
     </div>
     <BasicButton
       :text="$t(clearLabelKey)"
-      class="bg-basic-300 t-basic-700"
+      class="bg-hover t-body"
       @click="$emit('clear')"
     />
   </div>

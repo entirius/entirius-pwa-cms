@@ -1,12 +1,12 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
     <!-- Title shown by router titleKey in header bar -->
 
-    <div class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
       <Loader v-show="loading" />
 
       <div v-show="!loading">
-        <p v-if="!taxClasses.length" class="t-basic-500 fs-300">
+        <p v-if="!taxClasses.length" class="t-muted fs-300">
           {{ $t('pm.tax_classes') }}: —
         </p>
 
@@ -15,7 +15,7 @@
             <span class="fw-600">{{ row.name }}</span>
           </template>
           <template #cell-rate_count="{ row }">
-            <span class="chip bg-support-100 t-support-400">
+            <span class="chip bg-accent-subtle t-accent">
               {{ row.rate_count ?? 0 }} {{ $t('pm.rate_count') }}
             </span>
           </template>

@@ -19,11 +19,11 @@
         "
       />
       <div
-        class="t-basic-600 fg-1 ovy-auto flex-column gap-300"
+        class="t-secondary fg-1 ovy-auto flex-column gap-300"
         v-if="mode === 'tag'"
       >
         <div>
-          <p class="fs-200 t-basic-600 mb-100">{{ $t("gallery.tag_list") }}</p>
+          <p class="fs-200 t-secondary mb-100">{{ $t("gallery.tag_list") }}</p>
           <div class="flex wrap ai-ct gap-100 mb-200">
             <p
               v-for="tag in tags"
@@ -55,12 +55,12 @@
         </div>
         <div class="flex ai-ct gap-100" style="max-width: 400px">
           <BasicInput
-            class="bg-basic-100 lh-base-elem fg-1 tag-input"
+            class="bg-base lh-base-elem fg-1 tag-input"
             :label="$t('gallery.add_new_tag')"
             v-model="new_tag_input"
           />
           <button
-            class="tag-add-btn bg-support-400 t-basic-100 br-50 pointer"
+            class="tag-add-btn bg-accent-fill t-on-accent-fill br-50 pointer"
             @click="addNewTag()"
           >
             <FontAwesomeIcon icon="plus" />
@@ -69,7 +69,7 @@
       </div>
       <div v-if="mode === 'edit_tag'" class="flex-column gap-300">
         <div>
-          <p class="fs-200 t-basic-600 mb-100">
+          <p class="fs-200 t-secondary mb-100">
             {{ $t("gallery.select_tags") }}
           </p>
           <div v-if="tags.length" class="flex wrap ai-ct gap-100 mb-200">
@@ -100,11 +100,11 @@
               {{ tag.label }}
             </p>
           </div>
-          <div v-else class="flex ai-ct gap-100 p-200 br-50 b-basic-400 bg-basic-200 t-basic-500 fs-200">
+          <div v-else class="flex ai-ct gap-100 p-200 br-50 b-default bg-raised t-muted fs-200">
             <FontAwesomeIcon icon="circle-info" />
             <span>{{ $t("gallery.no_tags_yet") }}</span>
             <button
-              class="t-support-400 pointer"
+              class="t-accent pointer"
               style="background: none; border: none; text-decoration: underline; font-size: inherit"
               @click="mode = 'tag'"
             >{{ $t("gallery.go_to_manage_tags") }}</button>
@@ -112,13 +112,13 @@
         </div>
         <div class="flex ai-ct gap-100">
           <BasicInput
-            class="bg-basic-100 lh-base-elem fg-1 tag-input"
+            class="bg-base lh-base-elem fg-1 tag-input"
             :label="$t('gallery.quick_add_tag')"
             v-model="new_tag_input"
             @keydown.enter.native="quickAddTag"
           />
           <button
-            class="tag-add-btn bg-support-400 t-basic-100 br-50 pointer"
+            class="tag-add-btn bg-accent-fill t-on-accent-fill br-50 pointer"
             @click="quickAddTag"
           >
             <FontAwesomeIcon icon="plus" />
@@ -126,7 +126,7 @@
         </div>
         <div class="flex gap-100">
           <button
-            class="gallery-action-btn bg-support-400 b-support-400 t-basic-100"
+            class="gallery-action-btn bg-accent-fill b-accent t-on-accent-fill"
             @click="
               addTagToImg();
               mode = 'read';
@@ -136,7 +136,7 @@
             {{ $t("common.save") }}
           </button>
           <button
-            class="gallery-action-btn bg-basic-100 b-basic-400 t-basic-700"
+            class="gallery-action-btn bg-base b-default t-body"
             @click="mode = 'read'"
           >
             {{ $t("common.cancel") }}
@@ -144,7 +144,7 @@
         </div>
       </div>
       <div
-        class="br-50 t-basic-600 fg-1 ovy-auto flex-column"
+        class="br-50 t-secondary fg-1 ovy-auto flex-column"
         v-if="mode === 'add_new'"
       >
         <div class="mb-400">
@@ -160,9 +160,9 @@
             @dragleave="isDraggingOver = false"
             @drop.prevent="onDrop"
           >
-            <FontAwesomeIcon icon="upload" class="t-basic-400 fs-500" />
-            <span class="t-basic-500 fs-200">{{ $t('gallery.drop_files_here') }}</span>
-            <span class="t-basic-400 fs-100">{{ $t('gallery.or_click_to_browse') }}</span>
+            <FontAwesomeIcon icon="upload" class="t-muted fs-500" />
+            <span class="t-muted fs-200">{{ $t('gallery.drop_files_here') }}</span>
+            <span class="t-muted fs-100">{{ $t('gallery.or_click_to_browse') }}</span>
           </div>
           <input
             type="file"
@@ -175,7 +175,7 @@
           />
         </div>
         <div
-          class="fg-1 ovy-auto grid grid-col-2 gap-500 bg-basic-100 p-500 br-50 b-basic-300"
+          class="fg-1 ovy-auto grid grid-col-2 gap-500 bg-base p-500 br-50 b-subtle"
           v-if="filePreview"
         >
           <div>
@@ -183,13 +183,13 @@
           </div>
           <div class="flex-column">
             <div>
-              <p class="fs-100 t-informative-200">Optionals</p>
+              <p class="fs-100 t-info">Optionals</p>
               <BasicInput
-                class="bg-basic-100 br-50 t-basic-600 mt-300 lh-base-elem"
+                class="bg-base br-50 t-secondary mt-300 lh-base-elem"
                 :label="'Picture alt.'"
                 v-model="meta.alt"
               />
-              <p class="fs-200 t-basic-600 mt-200 mb-100">
+              <p class="fs-200 t-secondary mt-200 mb-100">
                 {{ $t("gallery.select_tags") }}
               </p>
               <div class="flex wrap ai-ct gap-100">
@@ -219,8 +219,8 @@
                 class="br-50 jc-ct mt-200"
                 :class="[
                   filePreview === null
-                    ? 't-basic-500 b-basic-400 bg-basic-200'
-                    : 't-basic-100 b-support-400 bg-support-400',
+                    ? 't-muted b-default bg-raised'
+                    : 't-on-accent-fill b-accent bg-accent-fill',
                 ]"
               />
               <div class="mt-200"></div>
@@ -239,7 +239,7 @@
             :active-count="mode === 'read' ? selected_tags.length : 0"
             :trigger-label="$t('gallery.filter_by_tag')"
           >
-            <p class="fs-200 t-basic-600">{{ $t("gallery.filter_by_tag") }}</p>
+            <p class="fs-200 t-secondary">{{ $t("gallery.filter_by_tag") }}</p>
             <p
               v-for="(t, idx) in tags"
               :key="`t-${idx}`"
@@ -276,7 +276,7 @@
           <div class="flex gap-100 fs-0">
             <Dropdown
               :placeholder="$t('common.sort_by')"
-              class="bg-basic-100 br-50 b-basic-400 t-basic-700 js-e shadow-down"
+              class="bg-base br-50 b-default t-body js-e shadow-down"
               :values="[
                 { label: $t('common.oldest_first'), value: 'created_at' },
                 { label: $t('common.newest_first'), value: '-created_at' },
@@ -293,7 +293,7 @@
               "
             />
             <Dropdown
-              class="bg-basic-100 br-50 b-basic-400 t-basic-700 js-e shadow-down"
+              class="bg-base br-50 b-default t-body js-e shadow-down"
               :values="[
                 { label: 18, value: 18 },
                 { label: 36, value: 36 },
@@ -313,7 +313,7 @@
           </div>
         </div>
         <div
-          class="gallery-grid bg-basic-100 b-basic-300 br-50 p-200"
+          class="gallery-grid bg-base b-subtle br-50 p-200"
           v-out="
             () => {
               selected = null;
@@ -324,7 +324,7 @@
           <div
             v-for="(image, index) in gallery[current_view_page]"
             :class="[
-              'gallery-card relative bg-basic-300 br-50 b-basic-400 b-basic-500-hover pointer',
+              'gallery-card relative bg-hover br-50 b-default b-default-hover pointer',
               { 'gallery-card--selected': selected === image.uid },
             ]"
             @click="selected = selected === image.uid ? null : image.uid"
@@ -360,7 +360,7 @@
                 @click.stop
               >
                 <button
-                  class="gallery-actions__btn t-negative-200 pointer"
+                  class="gallery-actions__btn t-negative pointer"
                   @click="
                     DELETE_Image({
                       url: `/images/${image.uid}`,
@@ -371,7 +371,7 @@
                   <FontAwesomeIcon icon="trash-can" />
                 </button>
                 <button
-                  class="gallery-actions__btn t-basic-600 pointer"
+                  class="gallery-actions__btn t-secondary pointer"
                   @click="
                     mode = 'edit_tag';
                     tag_img_uid = image.uid;
@@ -832,32 +832,32 @@ $radius: 5px;
   padding: 0 0.75rem;
   font-size: 12px;
   border-radius: 50px;
-  border: 1px solid var(--c-basic-400);
-  background-color: var(--c-basic-100);
-  color: var(--c-basic-700);
+  border: 1px solid var(--border-default);
+  background-color: var(--surface-base);
+  color: var(--text-body);
   white-space: nowrap;
   transition: all 0.15s ease;
   &:hover {
-    border-color: var(--c-basic-500);
-    background-color: var(--c-basic-200);
+    border-color: var(--border-default);
+    background-color: var(--surface-raised);
   }
   &--active {
-    background-color: var(--c-support-400);
-    border-color: var(--c-support-400);
-    color: var(--c-basic-100);
+    background-color: var(--accent-fill);
+    border-color: var(--accent);
+    color: var(--text-on-accent-fill);
     &:hover {
       filter: brightness(1.1);
-      background-color: var(--c-support-400);
-      border-color: var(--c-support-400);
+      background-color: var(--accent-fill);
+      border-color: var(--accent);
     }
   }
   &--danger {
-    color: var(--c-negative-200);
+    color: var(--negative);
     gap: 0.25rem;
     &:hover {
-      background-color: var(--c-negative-200);
-      border-color: var(--c-negative-200);
-      color: var(--c-basic-100);
+      background-color: var(--negative-fill);
+      border-color: var(--negative);
+      color: var(--text-on-status-fill);
     }
   }
 }
@@ -897,19 +897,19 @@ $radius: 5px;
   justify-content: center;
   gap: 6px;
   padding: 32px 16px;
-  border: 2px dashed var(--c-basic-400);
+  border: 2px dashed var(--border-default);
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: border-color 0.15s ease, background-color 0.15s ease;
   &:hover,
   &:focus-visible {
-    border-color: var(--c-support-400);
-    background: var(--c-basic-200);
+    border-color: var(--accent);
+    background: var(--surface-raised);
     outline: none;
   }
   &--dragover {
-    border-color: var(--c-support-400);
-    background: var(--c-support-100);
+    border-color: var(--accent);
+    background: var(--accent-subtle);
   }
 }
 .gallery-card {
@@ -940,12 +940,12 @@ $radius: 5px;
   line-height: 1;
   padding: 3px 8px;
   border-radius: 50px;
-  background-color: var(--c-basic-100);
-  color: var(--c-basic-800);
+  background-color: var(--surface-base);
+  color: var(--text-body);
   white-space: nowrap;
 }
 .gallery-card--selected {
-  outline: 2px solid var(--c-primary-200);
+  outline: 2px solid var(--accent);
   outline-offset: -2px;
 }
 .gallery-actions {
@@ -957,8 +957,8 @@ $radius: 5px;
   justify-content: center;
   gap: 4px;
   padding: 4px;
-  background: var(--c-basic-200);
-  border-top: 1px solid var(--c-basic-400);
+  background: var(--surface-raised);
+  border-top: 1px solid var(--border-default);
   border-radius: 0 0 $radius $radius;
 }
 .gallery-actions__btn {
@@ -973,7 +973,7 @@ $radius: 5px;
   background: none;
   transition: background-color 0.15s ease;
   &:hover {
-    background-color: var(--c-basic-300);
+    background-color: var(--surface-hover);
   }
 }
 .gallery-grid {

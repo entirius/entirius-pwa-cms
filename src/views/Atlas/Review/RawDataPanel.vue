@@ -1,5 +1,5 @@
 <template>
-  <aside class="raw-panel bg-basic-100 b-basic-300 br-100 p-300" v-if="product">
+  <aside class="raw-panel bg-base b-subtle br-100 p-300" v-if="product">
     <h3 class="raw-panel__heading">
       {{ $t("atlas.review.raw_data_title") }}
     </h3>
@@ -161,13 +161,13 @@ export default {
   font-size: var(--fs-400);
   font-weight: 600;
   margin: 0 0 var(--space-200);
-  color: var(--c-basic-700);
+  color: var(--text-body);
 }
 
 .raw-panel__section {
   display: flex;
   flex-direction: column;
-  border-bottom: 1px solid var(--c-basic-200);
+  border-bottom: 1px solid var(--border-subtle);
   padding-bottom: var(--space-200);
 
   &:last-child {
@@ -181,14 +181,14 @@ export default {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   margin: 0 0 8px;
 }
 
 .raw-panel__count {
   font-weight: 400;
   text-transform: none;
-  color: var(--c-basic-400);
+  color: var(--text-muted);
   margin-left: 4px;
 }
 
@@ -200,7 +200,7 @@ export default {
 
   dt {
     font-size: var(--fs-200);
-    color: var(--c-basic-500);
+    color: var(--text-muted);
     word-break: break-word;
     align-self: start;
   }
@@ -208,7 +208,7 @@ export default {
   dd {
     margin: 0;
     font-size: var(--fs-200);
-    color: var(--c-basic-700);
+    color: var(--text-body);
     word-break: break-all;
     min-width: 0;
   }
@@ -219,8 +219,8 @@ export default {
 }
 
 .raw-panel__json {
-  background: var(--c-basic-200);
-  border: 1px solid var(--c-basic-300);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   padding: 6px 8px;
   margin: 0;
@@ -245,7 +245,7 @@ export default {
   padding: 0;
   background: transparent;
   border: none;
-  color: var(--c-support-400);
+  color: var(--text-accent);
   font-size: var(--fs-200);
   font-weight: 500;
   cursor: pointer;
@@ -266,7 +266,7 @@ export default {
 
 .raw-panel__image-link {
   font-size: var(--fs-200);
-  color: var(--c-support-400);
+  color: var(--text-accent);
   text-decoration: none;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 

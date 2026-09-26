@@ -1,7 +1,7 @@
 <template>
-  <div class="agm-list__wrapper p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="agm-list__wrapper p-500 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
     >
       <div class="flex ai-ct mb-400">
         <h1 class="fs-700 fw-600">{{ $t("agm.definitions") }}</h1>
@@ -13,7 +13,7 @@
           :active-count="activeFilter !== 'all' ? 1 : 0"
           :trigger-label="$t('builder.filters')"
         >
-          <p class="fs-200 t-basic-600">{{ $t("builder.filters") }}</p>
+          <p class="fs-200 t-secondary">{{ $t("builder.filters") }}</p>
           <FilterChip
             v-for="tab in filterTabs"
             :key="tab.key"
@@ -47,10 +47,10 @@
         @row-click="onRowClick"
       >
         <template #cell-category="{ value }">
-          <span v-if="value" class="chip bg-support-100 t-support-400">
+          <span v-if="value" class="chip bg-accent-subtle t-accent">
             {{ value }}
           </span>
-          <span v-else class="t-basic-400">---</span>
+          <span v-else class="t-muted">---</span>
         </template>
         <template #cell-is_active="{ value }">
           <StatusBadge

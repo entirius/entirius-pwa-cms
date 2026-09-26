@@ -21,7 +21,7 @@
           &times;
         </button>
       </span>
-      <span v-if="!selected.length" class="ms-picker__empty t-basic-400 fs-200">
+      <span v-if="!selected.length" class="ms-picker__empty t-muted fs-200">
         {{ $t("pim.no_values_selected") }}
       </span>
     </div>
@@ -60,11 +60,11 @@
           </div>
           <div
             v-if="!filteredResults.length && !loadingMore"
-            class="ms-picker__empty-results t-basic-400 fs-200"
+            class="ms-picker__empty-results t-muted fs-200"
           >
             {{ $t("pim.no_results") }}
           </div>
-          <div v-if="loadingMore" class="ms-picker__loading t-basic-400 fs-200">
+          <div v-if="loadingMore" class="ms-picker__loading t-muted fs-200">
             Loading...
           </div>
           <div ref="sentinel" class="sentinel"></div>
@@ -251,16 +251,16 @@ onBeforeUnmount(() => {
     appearance: none;
     width: 16px;
     height: 16px;
-    border: 1px solid var(--c-basic-300);
+    border: 1px solid var(--border-subtle);
     border-radius: var(--radius-sm);
-    background: var(--c-basic-100);
+    background: var(--surface-base);
     cursor: pointer;
     flex-shrink: 0;
     position: relative;
 
     &:checked {
-      background: var(--c-support-400);
-      border-color: var(--c-support-400);
+      background: var(--accent-fill);
+      border-color: var(--accent);
     }
 
     &:checked::after {
@@ -270,7 +270,7 @@ onBeforeUnmount(() => {
       left: 5px;
       width: 4px;
       height: 8px;
-      border: solid var(--c-basic-100);
+      border: solid var(--border-subtle);
       border-width: 0 2px 2px 0;
       transform: rotate(45deg);
     }
@@ -278,7 +278,7 @@ onBeforeUnmount(() => {
 
   &__label {
     font-size: var(--fs-300);
-    color: var(--c-basic-800);
+    color: var(--text-body);
     user-select: none;
   }
 }
@@ -301,8 +301,8 @@ onBeforeUnmount(() => {
     align-items: center;
     gap: 4px;
     padding: 2px 8px;
-    background: var(--c-support-100);
-    color: var(--c-support-400);
+    background: var(--accent-subtle);
+    color: var(--text-accent);
     border-radius: var(--radius-sm);
     font-size: var(--fs-200);
     font-weight: 600;
@@ -311,14 +311,14 @@ onBeforeUnmount(() => {
   &__chip-remove {
     background: none;
     border: none;
-    color: var(--c-support-400);
+    color: var(--text-accent);
     cursor: pointer;
     font-size: 14px;
     line-height: 1;
     padding: 0 2px;
 
     &:hover {
-      color: var(--c-negative-300);
+      color: var(--negative);
     }
   }
 
@@ -335,16 +335,16 @@ onBeforeUnmount(() => {
     width: 100%;
     height: var(--elem-height);
     padding: 0 12px;
-    border: 1px solid var(--c-basic-300);
+    border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
-    background: var(--c-basic-100);
+    background: var(--surface-base);
     font-size: var(--fs-300);
-    color: var(--c-basic-800);
+    color: var(--text-body);
     outline: none;
     box-sizing: border-box;
 
     &:focus {
-      border-color: var(--c-support-400);
+      border-color: var(--accent);
     }
   }
 
@@ -353,9 +353,9 @@ onBeforeUnmount(() => {
     top: calc(100% + 4px);
     left: 0;
     right: 0;
-    border: 1px solid var(--c-basic-300);
+    border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
-    background: var(--c-basic-100);
+    background: var(--surface-base);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     z-index: 10;
 
@@ -374,10 +374,10 @@ onBeforeUnmount(() => {
     padding: 8px 12px;
     cursor: pointer;
     font-size: var(--fs-300);
-    color: var(--c-basic-800);
+    color: var(--text-body);
 
     &:hover {
-      background: var(--c-basic-200);
+      background: var(--surface-raised);
     }
   }
 

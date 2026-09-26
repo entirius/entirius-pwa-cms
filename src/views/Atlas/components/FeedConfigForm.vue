@@ -7,7 +7,7 @@
         placeholder="xml-1"
         data-testid="feed-form-idx"
       />
-      <p v-if="errors.idx" class="form-error t-negative-300 fs-200">
+      <p v-if="errors.idx" class="form-error t-negative fs-200">
         {{ errors.idx.msg }}
       </p>
     </FormField>
@@ -232,9 +232,9 @@ export default {
   white-space: nowrap;
 }
 .suppliers-primary-btn {
-  background: var(--c-support-400);
-  border-color: var(--c-support-400);
-  color: var(--c-basic-100);
+  background: var(--accent-fill);
+  border-color: var(--accent);
+  color: var(--text-on-accent-fill);
 }
 .suppliers-primary-btn:hover:not(:disabled) {
   filter: brightness(1.05);
@@ -244,12 +244,12 @@ export default {
   cursor: not-allowed;
 }
 .suppliers-secondary-btn {
-  background: var(--c-basic-100);
-  border-color: var(--c-basic-400);
-  color: var(--c-basic-700);
+  background: var(--surface-base);
+  border-color: var(--border-default);
+  color: var(--text-body);
 }
 .suppliers-secondary-btn:hover {
-  background: var(--c-basic-200);
-  border-color: var(--c-basic-500);
+  background: var(--surface-raised);
+  border-color: var(--border-default);
 }
 </style>

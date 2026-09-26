@@ -103,16 +103,16 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: var(--space-100);
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
-  background: var(--c-basic-100);
+  background: var(--surface-base);
 }
 .inbox-row--draft,
 .inbox-row--replied {
-  border-left: 3px solid var(--c-support-400);
+  border-left: 3px solid var(--accent);
 }
 .inbox-row--active {
-  border-color: var(--c-support-400);
+  border-color: var(--accent);
 }
 .inbox-row__link {
   display: grid;
@@ -120,7 +120,7 @@ onMounted(async () => {
   gap: 0.15rem var(--space-200);
   min-height: 56px;
   padding: var(--space-200) var(--space-300);
-  color: var(--c-basic-800);
+  color: var(--text-body);
   text-decoration: none;
 }
 .inbox-row__name {
@@ -129,7 +129,7 @@ onMounted(async () => {
 }
 .inbox-row__time {
   font-size: var(--fs-100);
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 .inbox-row__threads {
   white-space: nowrap;
@@ -141,31 +141,31 @@ onMounted(async () => {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
 }
 .inbox-row__state {
   font-size: var(--fs-100);
 }
 .inbox-row__marker {
-  color: var(--c-support-400);
+  color: var(--text-accent);
 }
 .inbox-row--waiting .inbox-row__marker {
   font-weight: 400;
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
 }
 .inbox-row__clock {
   margin-right: 0.25rem;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 .inbox-row__send {
   align-self: flex-start;
   min-height: 44px;
   margin: 0 var(--space-300) var(--space-200);
   padding: 0 var(--space-400);
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
-  background: var(--c-basic-100);
-  color: var(--c-basic-800);
+  background: var(--surface-base);
+  color: var(--text-body);
   cursor: pointer;
 }
 </style>

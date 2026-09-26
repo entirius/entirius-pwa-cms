@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="loaded"
-    class="quality-settings bg-basic-100 br-50"
+    class="quality-settings bg-base br-50"
     data-test="quality-settings-card"
   >
     <h2 class="fs-400 fw-600 mb-300">{{ $t("pim.quality_settings") }}</h2>
@@ -184,7 +184,7 @@ export default {
 .quality-settings {
   padding: var(--space-300);
   margin-bottom: var(--space-400);
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
 }
 .quality-settings__row {
   display: flex;

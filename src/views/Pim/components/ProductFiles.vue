@@ -353,7 +353,7 @@ onMounted(() => {
   <div class="product-files">
     <div class="product-files__header flex ai-ct jc-sb mb-300">
       <h3 class="fs-500 fw-600">{{ $t("pim.files") }}</h3>
-      <span v-if="files.length" class="fs-200 t-basic-500">
+      <span v-if="files.length" class="fs-200 t-muted">
         {{ files.length }} {{ files.length === 1 ? "file" : "files" }}
       </span>
     </div>
@@ -372,11 +372,11 @@ onMounted(() => {
         @dragleave="onDragLeave"
         @drop="onDrop"
       >
-        <FontAwesomeIcon icon="upload" class="t-basic-400 fs-500" />
-        <span class="t-basic-600 fs-200 mt-100">{{
+        <FontAwesomeIcon icon="upload" class="t-muted fs-500" />
+        <span class="t-secondary fs-200 mt-100">{{
           $t("pim.drop_files_here")
         }}</span>
-        <span class="t-basic-400 fs-200 mt-100">{{
+        <span class="t-muted fs-200 mt-100">{{
           $t("pim.files_supported_hint")
         }}</span>
       </label>
@@ -390,8 +390,8 @@ onMounted(() => {
       <!-- Upload popup (shown after file is staged) -->
       <div v-if="pendingFile" class="product-files__popup">
         <div class="product-files__popup-header flex ai-ct gap-200 mb-200">
-          <FontAwesomeIcon icon="file" class="t-support-400 fs-400" />
-          <span class="fs-300 fw-600 t-basic-800">{{ pendingFile.name }}</span>
+          <FontAwesomeIcon icon="file" class="t-accent fs-400" />
+          <span class="fs-300 fw-600 t-body">{{ pendingFile.name }}</span>
         </div>
 
         <div class="product-files__popup-fields">
@@ -414,7 +414,7 @@ onMounted(() => {
             <label class="product-files__label">
               {{ $t("pim.file_label") }}
               <span
-                class="chip chip--sm bg-support-200 t-support-400"
+                class="chip chip--sm bg-accent-subtle t-accent"
                 >{{ lang.toUpperCase() }}</span
               >
             </label>
@@ -440,7 +440,7 @@ onMounted(() => {
               <label class="product-files__label">
                 {{ $t("pim.name") }}
                 <span
-                  class="chip chip--sm bg-support-200 t-support-400"
+                  class="chip chip--sm bg-accent-subtle t-accent"
                   >{{ lang.toUpperCase() }}</span
                 >
               </label>
@@ -483,8 +483,8 @@ onMounted(() => {
 
       <!-- Empty state -->
       <div v-if="!files.length && !pendingFile" class="product-files__empty">
-        <FontAwesomeIcon icon="file" class="t-basic-400 fs-600" />
-        <span class="t-basic-500 fs-200 mt-200">{{ $t("pim.no_files") }}</span>
+        <FontAwesomeIcon icon="file" class="t-muted fs-600" />
+        <span class="t-muted fs-200 mt-200">{{ $t("pim.no_files") }}</span>
       </div>
 
       <!-- File list -->
@@ -494,7 +494,7 @@ onMounted(() => {
           <div class="product-files__row-top">
             <FontAwesomeIcon
               :icon="fileIcon(pf)"
-              class="product-files__icon t-basic-500"
+              class="product-files__icon t-muted"
             />
             <div class="product-files__meta">
               <a
@@ -502,18 +502,18 @@ onMounted(() => {
                 :href="fileUrl(pf)"
                 target="_blank"
                 rel="noopener"
-                class="product-files__name product-files__name--link t-basic-800 fs-300 fw-500"
+                class="product-files__name product-files__name--link t-body fs-300 fw-500"
               >
                 {{ fileName(pf) || "—" }}
               </a>
               <span
                 v-else
-                class="product-files__name t-basic-800 fs-300 fw-500"
+                class="product-files__name t-body fs-300 fw-500"
               >
                 {{ fileName(pf) || "—" }}
               </span>
               <div
-                class="product-files__details flex ai-ct gap-200 fs-200 t-basic-500"
+                class="product-files__details flex ai-ct gap-200 fs-200 t-muted"
               >
                 <StatusBadge
                   v-if="fileTypeBadge(pf)"
@@ -577,7 +577,7 @@ onMounted(() => {
                 <label class="product-files__label">
                   {{ $t("pim.file_label") }}
                   <span
-                    class="chip chip--sm bg-support-200 t-support-400"
+                    class="chip chip--sm bg-accent-subtle t-accent"
                     >{{ lang.toUpperCase() }}</span
                   >
                 </label>
@@ -616,7 +616,7 @@ onMounted(() => {
 <style lang="scss" scoped>
 .product-files {
   &__dropzone {
-    border: 2px dashed var(--c-basic-400);
+    border: 2px dashed var(--border-default);
     border-radius: 6px;
     padding: 24px;
     display: flex;
@@ -629,22 +629,22 @@ onMounted(() => {
 
     &:hover,
     &:focus-visible {
-      border-color: var(--c-support-300);
-      background: var(--c-basic-150);
+      border-color: var(--accent);
+      background: var(--surface-raised);
       outline: none;
     }
 
     &--dragover {
-      border-color: var(--c-support-400);
-      background: var(--c-basic-200);
+      border-color: var(--accent);
+      background: var(--surface-raised);
     }
   }
 
   &__popup {
     padding: 16px;
-    border: 1px solid var(--c-support-300);
+    border: 1px solid var(--accent);
     border-radius: 6px;
-    background: var(--c-basic-100);
+    background: var(--surface-base);
     box-shadow: var(--shadow-md);
   }
 
@@ -662,9 +662,9 @@ onMounted(() => {
 
   &__cat-create {
     padding: 12px;
-    border: 1px solid var(--c-support-200);
+    border: 1px solid var(--accent);
     border-radius: 6px;
-    background: var(--c-basic-150);
+    background: var(--surface-raised);
   }
 
   &__cat-create-fields {
@@ -692,7 +692,7 @@ onMounted(() => {
     font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
-    color: var(--c-basic-500);
+    color: var(--text-muted);
     margin-bottom: 4px;
   }
 
@@ -711,9 +711,9 @@ onMounted(() => {
   }
 
   &__row {
-    border: 1px solid var(--c-basic-200);
+    border: 1px solid var(--border-subtle);
     border-radius: 6px;
-    background: var(--c-basic-100);
+    background: var(--surface-base);
   }
 
   &__row-top {
@@ -725,7 +725,7 @@ onMounted(() => {
 
   &__row-edit {
     padding: 12px;
-    border-top: 1px solid var(--c-basic-200);
+    border-top: 1px solid var(--border-subtle);
   }
 
   &__row-edit-fields {
@@ -780,14 +780,14 @@ onMounted(() => {
     height: 32px;
     border: none;
     border-radius: var(--radius-sm);
-    background-color: var(--c-basic-200);
-    color: var(--c-basic-600);
+    background-color: var(--surface-raised);
+    color: var(--text-secondary);
     cursor: pointer;
     transition: background-color 0.15s;
 
     &:hover {
-      background-color: var(--c-support-200);
-      color: var(--c-support-400);
+      background-color: var(--accent-subtle);
+      color: var(--text-accent);
     }
   }
 
@@ -800,14 +800,14 @@ onMounted(() => {
     height: 32px;
     border: none;
     border-radius: var(--radius-sm);
-    background-color: var(--c-negative-100);
-    color: var(--c-negative-300);
+    background-color: var(--negative-subtle);
+    color: var(--negative);
     cursor: pointer;
     transition: background-color 0.15s;
 
     &:hover:not(:disabled) {
-      background-color: var(--c-negative-200);
-      color: var(--c-basic-100);
+      background-color: var(--negative-fill);
+      color: var(--text-on-status-fill);
     }
 
     &:disabled {

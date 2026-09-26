@@ -146,7 +146,7 @@ onMounted(async () => {
     grid-template-columns: minmax(0, 1fr);
   }
   .leads__inbox {
-    border-right: 1px solid var(--c-basic-300);
+    border-right: 1px solid var(--border-subtle);
   }
   .leads__inbox,
   .leads__detail {
@@ -159,7 +159,7 @@ onMounted(async () => {
     align-items: center;
     justify-content: center;
     padding: var(--space-400);
-    color: var(--c-basic-600);
+    color: var(--text-secondary);
     text-align: center;
   }
   .leads__placeholder p {
@@ -167,13 +167,13 @@ onMounted(async () => {
   }
   .leads__placeholder-title {
     font-weight: 600;
-    color: var(--c-basic-800);
+    color: var(--text-body);
   }
   .ld-link {
     min-height: 32px;
     display: inline-flex;
     align-items: center;
-    color: var(--c-support-400);
+    color: var(--text-accent);
     text-decoration: underline;
   }
 }

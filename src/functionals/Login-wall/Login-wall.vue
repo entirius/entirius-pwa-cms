@@ -1,13 +1,13 @@
 <template>
   <div
-    class="auth-card fs-300 p-400 t-basic-700 br-50 bg-basic-100 b-basic-300 shadow-down"
+    class="auth-card fs-300 p-400 t-body br-50 bg-base b-subtle shadow-down"
   >
     <!-- Forgot password mode -->
     <template v-if="showForgotPassword">
       <p class="fs-700 fw-600 txt-center mb-50">
         {{ $t("login.forgot_title") }}
       </p>
-      <p class="fs-300 t-basic-600 txt-center mb-500">
+      <p class="fs-300 t-secondary txt-center mb-500">
         {{ $t("login.forgot_subtitle") }}
       </p>
 
@@ -19,13 +19,13 @@
       <template v-else>
         <BasicInput
           v-model="resetEmail"
-          class="bg-basic-200 mb-300 lh-base-elem"
+          class="bg-raised mb-300 lh-base-elem"
           :label="$t('login.email')"
         />
         <BasicButton
           :text="$t('login.send_reset_link')"
           @click="sendResetLink"
-          class="bg-support-400 b-support-400 jc-ct t-basic-100 w-100 br-50"
+          class="bg-accent-fill b-accent jc-ct t-on-accent-fill w-100 br-50"
         />
       </template>
 
@@ -49,18 +49,18 @@
         <p class="fs-300 fw-500">{{ $t("login.session_expired") }}</p>
       </div>
       <p class="fs-700 fw-600 txt-center mb-50">{{ $t("login.welcome") }}</p>
-      <p class="fs-300 t-basic-600 txt-center mb-500">
+      <p class="fs-300 t-secondary txt-center mb-500">
         {{ $t("login.subtitle") }}
       </p>
       <BasicInput
         v-model="username"
-        class="bg-basic-200 mb-400 lh-base-elem"
+        class="bg-raised mb-400 lh-base-elem"
         :label="$t('login.username')"
       />
       <div class="auth-card__pw-field mb-300">
         <BasicInput
           v-model="password"
-          class="bg-basic-200 lh-base-elem"
+          class="bg-raised lh-base-elem"
           :label="$t('login.password')"
           :type="pwVisible ? 'text' : 'password'"
         />
@@ -76,18 +76,18 @@
       <BasicButton
         :text="$t('login.submit')"
         @click="login"
-        class="bg-support-400 b-support-400 jc-ct t-basic-100 w-100 br-50"
+        class="bg-accent-fill b-accent jc-ct t-on-accent-fill w-100 br-50"
       />
 
       <template v-if="ssoEnabled">
-        <p class="auth-card__divider fs-200 t-basic-500 mt-300 mb-300">
+        <p class="auth-card__divider fs-200 t-muted mt-300 mb-300">
           {{ $t("login.sso_or") }}
         </p>
         <BasicButton
           data-testid="sso-login"
           :text="$t('login.sso_submit')"
           @click="startSsoLogin"
-          class="bg-basic-100 b-support-400 jc-ct t-support-400 w-100 br-50"
+          class="bg-base b-accent jc-ct t-accent w-100 br-50"
         />
       </template>
 

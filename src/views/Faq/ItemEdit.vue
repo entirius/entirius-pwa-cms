@@ -1,33 +1,33 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
     <Teleport to="#faq-toolbar-left" defer>
       <BasicButton
         text=""
         icon="arrow-left"
-        class="bg-basic-200 t-basic-600"
+        class="bg-raised t-secondary"
         @click="$router.push('/faq/items')"
       />
       <span class="fw-600 fs-400">{{ isEdit ? item.question || item.url_key : $t("faq.create_item") }}</span>
     </Teleport>
     <Teleport to="#faq-toolbar-right" defer>
-      <span v-if="isDirty" class="chip bg-warning-100 t-warning-300">
+      <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
         {{ $t("unsaved.changes") }}
       </span>
       <BasicButton
         v-if="isEdit"
         text=""
         icon="trash-can"
-        class="bg-negative-100 t-negative-300"
+        class="bg-negative-subtle t-negative"
         @click="showDeleteConfirm = true"
       />
       <BasicButton
         :text="$t('common.save')"
-        class="bg-support-400 t-basic-100"
+        class="bg-accent-fill t-on-accent-fill"
         @click="saveItem"
       />
     </Teleport>
 
-    <div class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
       <Loader v-if="loading" />
 
       <template v-else>
@@ -136,7 +136,7 @@
               @click="addAssociation"
             />
           </div>
-          <p v-if="!associations.length" class="fs-200 t-basic-500">
+          <p v-if="!associations.length" class="fs-200 t-muted">
             {{ $t("faq.no_associations") }}
           </p>
           <div
@@ -197,14 +197,14 @@
             <BasicButton
               text=""
               icon="xmark"
-              class="bg-basic-200 t-basic-600"
+              class="bg-raised t-secondary"
               @click="removeAssociation(idx)"
             />
           </div>
           <div v-if="associationsDirty" class="flex jc-fe mt-200">
             <BasicButton
               :text="$t('faq.save_associations')"
-              class="bg-support-400 t-basic-100"
+              class="bg-accent-fill t-on-accent-fill"
               @click="saveAssociations"
             />
           </div>
@@ -596,7 +596,7 @@ export default {
 
 <style lang="scss" scoped>
 .detail-section {
-  border: 1px solid var(--c-basic-200);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: 20px;
 }
@@ -618,7 +618,7 @@ export default {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 
 .translation-field__btn {

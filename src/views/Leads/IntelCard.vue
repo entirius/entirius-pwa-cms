@@ -41,9 +41,9 @@ const hooks = computed(() => props.context?.hooks || []);
 
 <style scoped>
 .intel {
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
-  background: var(--c-basic-100);
+  background: var(--surface-base);
 }
 .intel__toggle {
   display: flex;
@@ -54,7 +54,7 @@ const hooks = computed(() => props.context?.hooks || []);
   padding: 0 var(--space-300);
   border: none;
   background: none;
-  color: var(--c-basic-800);
+  color: var(--text-body);
   font-weight: 600;
   cursor: pointer;
 }

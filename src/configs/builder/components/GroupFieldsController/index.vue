@@ -4,7 +4,7 @@
       <div class="flex jc-sb ai-ct mb-100">
         <p v-if="label">{{ label }}</p>
         <ToolTip
-          class="right t-support-300 fs-200"
+          class="right t-accent fs-200"
           :tip="
             Object.keys(groups).length
               ? $t('controllers.tooltip_select_group')
@@ -16,9 +16,9 @@
       <div class="flex gap-100">
         <BasicButton
           :text="!mode ? $t('routes.set_new') : $t('common.close')"
-          class="b-basic-400 bg-basic-100 bg-basic-300-hover br-50 t-support-400 fs-200"
+          class="b-default bg-base bg-hover-hover br-50 t-accent fs-200"
           :class="{
-            'bg-basic-300 t-basic-700 bg-support-400-hover t-basic-100-hover b-support-400-hover':
+            'bg-hover t-body bg-accent-fill-hover t-on-accent-fill-hover b-support-400-hover':
               mode,
           }"
           @click="!mode ? (mode = 'add') : (mode = null)"
@@ -36,8 +36,8 @@
           class="br-50 fs-200 fg-1"
           :class="[
             !Boolean(value)
-              ? 'bg-basic-200 t-basic-400 b-basic-300'
-              : 'bg-basic-100 b-basic-400 t-basic-600 ',
+              ? 'bg-raised t-muted b-subtle'
+              : 'bg-base b-default t-secondary ',
           ]"
           :values="
             !value
@@ -52,7 +52,7 @@
 
                     value: index,
                     label_ext: $t('common.delete'),
-                    label_ext_class: 't-negative-200',
+                    label_ext_class: 't-negative',
                   };
                 })
           "
@@ -74,7 +74,7 @@
             <div v-if="value && value.length">
               <draggable
                 v-model="value_cp"
-                ghost-class="bg-support-400"
+                ghost-class="bg-accent-fill"
                 handle=".dropdown-leaf-group-fields-controller"
                 :item-key="(_, idx) => `custom-dropdown-leaf-${idx}`"
               >
@@ -91,7 +91,7 @@
                     <p>{{ $t("controllers.position") }}: {{ idx + 1 }}</p>
                     <div class="grid grid-col-2 gap-50">
                       <p
-                        class="t-negative-200"
+                        class="t-negative"
                         @click.stop="
                           () => {
                             editing = idx;
@@ -102,7 +102,7 @@
                         {{ $t("common.delete") }}
                       </p>
                       <p
-                        class="t-basic-500 dropdown-leaf-group-fields-controller"
+                        class="t-muted dropdown-leaf-group-fields-controller"
                       >
                         {{ $t("controllers.drag") }}
                       </p>
@@ -136,7 +136,7 @@
             v-if="props_handlers[field.type] === 'BasicInput'"
             v-model="group[key]"
             :label="tFieldLabel(key, field.label)"
-            class="br-50 bg-basic-100 mt-300 lh-base-elem"
+            class="br-50 bg-base mt-300 lh-base-elem"
             :key="`${force_refresh}-${index}`"
           />
           <div
@@ -150,7 +150,7 @@
             <p class="mb-50">{{ tFieldLabel(key, field.label) }}</p>
             <Dropdown
               :selected="[group[key]]"
-              class="br-50 b-basic-400 bg-basic-100"
+              class="br-50 b-default bg-base"
               :values="field.options"
               @onSelect="
                 ($event) => {
@@ -178,7 +178,7 @@
         </div>
       </div>
       <BasicButton
-        class="bg-basic-300 bg-basic-400-hover br-50 t-basic-600 mt-200 b-basic-400"
+        class="bg-hover bg-hover-hover br-50 t-secondary mt-200 b-default"
         :text="mode === 'add' ? $t('controllers.add_group') : $t('common.save')"
         @click="set_group({ ...group })"
       />

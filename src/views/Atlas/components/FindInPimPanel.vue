@@ -1,6 +1,6 @@
 <template>
   <div
-    class="find-in-pim-panel p-300 b-basic-300 bb-100"
+    class="find-in-pim-panel p-300 b-subtle bb-100"
     data-testid="find-in-pim-panel"
   >
     <DedupSearchBox
@@ -21,7 +21,7 @@
         <template #actions>
           <button
             type="button"
-            class="row-action-btn bg-positive-100 t-positive-300"
+            class="row-action-btn bg-positive-subtle t-positive"
             :disabled="linkingSku === hit.basic?.sku"
             :title="$t('lookup.row.link')"
             :data-testid="`find-in-pim-link-${hit.basic?.sku}`"
@@ -34,7 +34,7 @@
 
       <p
         v-if="searched && matched.length === 0"
-        class="fs-200 t-basic-500 mt-200"
+        class="fs-200 t-muted mt-200"
         data-testid="find-in-pim-empty"
       >
         {{ $t("lookup.find.empty_message") }}
@@ -45,7 +45,7 @@
         class="mt-200"
         data-testid="find-in-pim-rest"
       >
-        <summary class="fs-200 t-basic-500">
+        <summary class="fs-200 t-muted">
           {{ $t("lookup.match.none", { n: groups.none.length }) }}
         </summary>
         <div class="mt-200">
@@ -57,7 +57,7 @@
             <template #actions>
               <button
                 type="button"
-                class="row-action-btn bg-positive-100 t-positive-300"
+                class="row-action-btn bg-positive-subtle t-positive"
                 :disabled="linkingSku === hit.basic?.sku"
                 :title="$t('lookup.row.link')"
                 :data-testid="`find-in-pim-link-${hit.basic?.sku}`"

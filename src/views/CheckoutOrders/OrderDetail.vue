@@ -1,22 +1,22 @@
 <template>
-  <div class="order-detail p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="order-detail p-500 fs-300 t-body h-100 ov-h">
     <Teleport to="#checkout-orders-toolbar-left" defer>
-      <BasicButton text="" icon="arrow-left" class="bg-basic-200 t-basic-600" @click="goBack" />
+      <BasicButton text="" icon="arrow-left" class="bg-raised t-secondary" @click="goBack" />
       <span class="fw-600">{{ order.pretty_id || $t("checkout_orders.order_detail") }}</span>
     </Teleport>
 
     <div v-if="loading" class="flex jc-ct p-500"><Loader /></div>
 
-    <div v-else-if="order.order_id" class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto p-500">
+    <div v-else-if="order.order_id" class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
       <!-- Header: status + total + dates in one compact row -->
       <div class="order-detail__header mb-400">
         <div class="order-detail__header-left">
           <StatusBadge :label="statusLabel(order.status)" :variant="statusVariant(order.status)" />
           <span class="fw-600 fs-500">{{ body.total || "0.00" }} {{ body.currency_code || "" }}</span>
         </div>
-        <div class="order-detail__header-right t-basic-500 fs-200">
+        <div class="order-detail__header-right t-muted fs-200">
           <span>{{ formatDate(order.created) }}</span>
-          <span v-if="order.billing_email" class="t-basic-600">{{ order.billing_email }}</span>
+          <span v-if="order.billing_email" class="t-secondary">{{ order.billing_email }}</span>
         </div>
       </div>
 
@@ -47,15 +47,15 @@
       <div class="order-detail__delivery mb-400">
         <div v-if="body.shipping_method" class="order-detail__card">
           <div class="section-label mb-100">{{ $t("checkout_orders.shipping_method") }}</div>
-          <p class="fw-600 t-basic-700">{{ body.shipping_method.name || body.shipping_method.code }}</p>
-          <p class="t-basic-500 fs-200">{{ body.shipping_method.code }}</p>
-          <p v-if="shippingPrice" class="t-basic-600 mt-100">{{ shippingPrice }}</p>
+          <p class="fw-600 t-body">{{ body.shipping_method.name || body.shipping_method.code }}</p>
+          <p class="t-muted fs-200">{{ body.shipping_method.code }}</p>
+          <p v-if="shippingPrice" class="t-secondary mt-100">{{ shippingPrice }}</p>
         </div>
         <div v-if="paymentMethods.length" class="order-detail__card">
           <div class="section-label mb-100">{{ $t("checkout_orders.payment_method") }}</div>
           <div v-for="method in paymentMethods" :key="method.code" class="order-detail__payment-method">
-            <p class="fw-600 t-basic-700">{{ method.name || method.code }}</p>
-            <p class="t-basic-500 fs-200">{{ method.code }}</p>
+            <p class="fw-600 t-body">{{ method.name || method.code }}</p>
+            <p class="t-muted fs-200">{{ method.code }}</p>
           </div>
         </div>
       </div>
@@ -64,21 +64,21 @@
       <div v-if="body.addresses" class="order-detail__delivery mb-400">
         <div v-if="billing" class="order-detail__card">
           <div class="section-label mb-100">{{ $t("checkout_orders.billing_address") }}</div>
-          <p class="fw-600 t-basic-700">{{ billing.firstname }} {{ billing.lastname }}</p>
-          <p class="t-basic-600 fs-200">{{ billing.street }}</p>
-          <p class="t-basic-600 fs-200">{{ billing.postcode }} {{ billing.city }}, {{ billing.country_code }}</p>
-          <p v-if="billing.email" class="t-basic-500 fs-200 mt-100">{{ billing.email }}</p>
-          <p v-if="billing.telephone" class="t-basic-500 fs-200">{{ billing.dialling_code }} {{ billing.telephone }}</p>
-          <p v-if="billing.company" class="t-basic-500 fs-200 mt-100">{{ billing.company }}</p>
+          <p class="fw-600 t-body">{{ billing.firstname }} {{ billing.lastname }}</p>
+          <p class="t-secondary fs-200">{{ billing.street }}</p>
+          <p class="t-secondary fs-200">{{ billing.postcode }} {{ billing.city }}, {{ billing.country_code }}</p>
+          <p v-if="billing.email" class="t-muted fs-200 mt-100">{{ billing.email }}</p>
+          <p v-if="billing.telephone" class="t-muted fs-200">{{ billing.dialling_code }} {{ billing.telephone }}</p>
+          <p v-if="billing.company" class="t-muted fs-200 mt-100">{{ billing.company }}</p>
         </div>
         <div class="order-detail__card">
           <div class="section-label mb-100">{{ $t("checkout_orders.shipping_address") }}</div>
           <template v-if="shipping">
-            <p class="fw-600 t-basic-700">{{ shipping.firstname }} {{ shipping.lastname }}</p>
-            <p class="t-basic-600 fs-200">{{ shipping.street }}</p>
-            <p class="t-basic-600 fs-200">{{ shipping.postcode }} {{ shipping.city }}, {{ shipping.country_code }}</p>
+            <p class="fw-600 t-body">{{ shipping.firstname }} {{ shipping.lastname }}</p>
+            <p class="t-secondary fs-200">{{ shipping.street }}</p>
+            <p class="t-secondary fs-200">{{ shipping.postcode }} {{ shipping.city }}, {{ shipping.country_code }}</p>
           </template>
-          <p v-else class="t-basic-400 fs-200">{{ $t("checkout_orders.same_as_billing") }}</p>
+          <p v-else class="t-muted fs-200">{{ $t("checkout_orders.same_as_billing") }}</p>
         </div>
       </div>
 
@@ -91,7 +91,7 @@
       <!-- Attachments (only if exists) -->
       <div v-if="order.attachments && order.attachments.length" class="mb-300">
         <div class="section-label mb-200">{{ $t("checkout_orders.attachments") }}</div>
-        <div v-for="att in order.attachments" :key="att.file_id" class="flex ai-ct gap-100 mb-100 t-basic-600 fs-200">
+        <div v-for="att in order.attachments" :key="att.file_id" class="flex ai-ct gap-100 mb-100 t-secondary fs-200">
           <span>{{ att.name || `File #${att.file_id}` }}</span>
         </div>
       </div>
@@ -193,7 +193,7 @@ export default {
   justify-content: space-between;
   padding-bottom: var(--space-300);
   margin-bottom: var(--space-300);
-  border-bottom: 1px solid var(--c-basic-300);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .order-detail__header-left {
@@ -225,14 +225,14 @@ export default {
   font-size: var(--fs-200);
   font-weight: 600;
   text-transform: uppercase;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   letter-spacing: 0.04em;
 }
 
 .order-detail__meta-value {
   font-size: var(--fs-400);
   font-weight: 600;
-  color: var(--c-basic-800);
+  color: var(--text-body);
 }
 
 .order-detail__delivery {
@@ -243,7 +243,7 @@ export default {
 
 .order-detail__card {
   padding: 16px var(--space-200);
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
   border-radius: var(--radius-md);
 
   p {

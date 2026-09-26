@@ -3,18 +3,18 @@
     <div class="timeline-entry__marker" :class="`timeline-entry__marker--${entry.applied_to_pim ? 'applied' : 'pending'}`" />
     <div class="timeline-entry__body">
       <div class="timeline-entry__row">
-        <span class="timeline-entry__date t-basic-700 fw-600">{{ formatDate(entry.created_at) }}</span>
+        <span class="timeline-entry__date t-body fw-600">{{ formatDate(entry.created_at) }}</span>
         <StatusBadge :label="sourceLabel" :variant="sourceVariant" />
         <StatusBadge
           :label="entry.applied_to_pim ? $t('pim.supplier.timeline.applied') : $t('pim.supplier.timeline.pending')"
           :variant="entry.applied_to_pim ? 'positive' : 'warning'"
         />
-        <span v-if="entry.triggered_by" class="timeline-entry__user fs-100 t-basic-500">
+        <span v-if="entry.triggered_by" class="timeline-entry__user fs-100 t-muted">
           {{ $t("pim.supplier.timeline.triggered_by", { user: entry.triggered_by }) }}
         </span>
       </div>
       <div class="timeline-entry__field-row">
-        <span class="t-basic-500 fs-200">{{ $t("pim.supplier.timeline.field") }}:</span>
+        <span class="t-muted fs-200">{{ $t("pim.supplier.timeline.field") }}:</span>
         <code class="timeline-entry__field">{{ entry.field_path || "—" }}</code>
         <span v-if="diffComponent === 'NumericDiff'" class="ml-200">
           <NumericDiff :before="entry.before" :after="entry.after" />
@@ -121,7 +121,7 @@ export default {
   grid-template-columns: 24px 1fr;
   gap: var(--space-200);
   padding: var(--space-200) 0;
-  border-bottom: 1px solid var(--c-basic-200);
+  border-bottom: 1px solid var(--border-subtle);
   list-style: none;
 }
 .timeline-entry:last-child {
@@ -135,10 +135,10 @@ export default {
   justify-self: center;
 }
 .timeline-entry__marker--applied {
-  background: var(--c-positive-300);
+  background: var(--positive-fill);
 }
 .timeline-entry__marker--pending {
-  background: var(--c-warning-300);
+  background: var(--warning-fill);
 }
 .timeline-entry__row {
   display: flex;
@@ -155,7 +155,7 @@ export default {
   font-size: var(--fs-200);
 }
 .timeline-entry__field {
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
   padding: 2px 6px;
   border-radius: var(--radius-sm);
   font-family: var(--font-mono, monospace);
@@ -166,7 +166,7 @@ export default {
   background: none;
   border: none;
   padding: 0;
-  color: var(--c-primary-300);
+  color: var(--text-accent);
   cursor: pointer;
   font-size: var(--fs-100);
   text-decoration: underline;

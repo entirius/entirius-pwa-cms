@@ -59,11 +59,11 @@ function onTextInput(e) {
 <style lang="scss">
 .color-input-wrapper {
   background-color: transparent;
-  color: var(--c-basic-700);
+  color: var(--text-body);
 }
 
 .color-input {
-  border: 1px solid var(--c-basic-400);
+  border: 1px solid var(--border-default);
   border-radius: var(--space-50);
   height: var(--elem-height);
   padding: 0;
@@ -71,7 +71,7 @@ function onTextInput(e) {
   overflow: hidden;
 
   &:focus-within {
-    border-color: var(--c-basic-600);
+    border-color: var(--border-strong);
   }
 }
 
@@ -80,7 +80,7 @@ function onTextInput(e) {
   min-width: 32px;
   height: 100%;
   border: none;
-  border-right: 1px solid var(--c-basic-400);
+  border-right: 1px solid var(--border-default);
   border-radius: 0;
   cursor: pointer;
   position: relative;

@@ -1,7 +1,7 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
     <Teleport to="#layout-extender-toolbar-left" defer>
-      <span class="fs-300 fw-600 t-basic-700">{{ $t("layout_extender.list_title") }}</span>
+      <span class="fs-300 fw-600 t-body">{{ $t("layout_extender.list_title") }}</span>
       <Dropdown
         v-if="channelOptions.length"
         :values="channelOptions"
@@ -12,7 +12,7 @@
       />
     </Teleport>
 
-    <div class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
       <Loader v-show="loading" />
 
       <DataTable
@@ -28,13 +28,13 @@
         </template>
 
         <template #cell-type="{ row }">
-          <span class="bg-basic-300 t-basic-700 fs-200 ph-100 br-50">
+          <span class="bg-hover t-body fs-200 ph-100 br-50">
             {{ row.type === "header" ? "Header" : "Footer" }}
           </span>
         </template>
 
         <template #cell-language="{ row }">
-          <span class="t-basic-600">{{ (row.language || "").toUpperCase() }}</span>
+          <span class="t-secondary">{{ (row.language || "").toUpperCase() }}</span>
         </template>
 
         <template #cell-channels="{ row }">
@@ -42,7 +42,7 @@
             <span
               v-for="ch in (row.channels || [])"
               :key="ch"
-              class="bg-basic-300 t-basic-700 fs-200 ph-100 br-50"
+              class="bg-hover t-body fs-200 ph-100 br-50"
             >{{ ch }}</span>
           </div>
         </template>
@@ -56,10 +56,10 @@
 
         <template #cell-updated_at="{ row }">
           <div>
-            <span class="t-basic-600 fs-300">
+            <span class="t-secondary fs-300">
               {{ row.updated_at ? new Date(row.updated_at).toLocaleDateString("en-GB") : "—" }}
             </span>
-            <p v-if="row.updated_by" class="t-basic-500 fs-200">by {{ row.updated_by }}</p>
+            <p v-if="row.updated_by" class="t-muted fs-200">by {{ row.updated_by }}</p>
           </div>
         </template>
 
@@ -120,13 +120,13 @@
       <template #footer>
         <BasicButton
           :text="$t('common.cancel')"
-          class="bg-basic-200 t-basic-600"
+          class="bg-raised t-secondary"
           @click="closeCopy"
         />
         <BasicButton
           :text="$t('layout_extender.copy_action')"
           icon="copy"
-          class="bg-support-400 t-basic-100"
+          class="bg-accent-fill t-on-accent-fill"
           :disabled="!copyTargetChannel || copying"
           @click="onCopyConfirm"
         />
@@ -376,7 +376,7 @@ export default {
 .le-copy__label {
   font-size: 12px;
   font-weight: 600;
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
 
   &:not(:first-child) {
     margin-top: var(--space-200);
@@ -398,17 +398,17 @@ export default {
   height: 32px;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   transition: background 0.1s, color 0.1s;
 
   &:hover {
-    background: var(--c-basic-200);
-    color: var(--c-basic-700);
+    background: var(--surface-raised);
+    color: var(--text-body);
   }
 
   &--danger:hover {
-    background: var(--c-negative-100);
-    color: var(--c-negative-200);
+    background: var(--negative-subtle);
+    color: var(--negative);
   }
 }
 

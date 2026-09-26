@@ -1,13 +1,13 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
     >
       <div class="flex ai-ct gap-200 mb-400">
         <BasicButton
           text=""
           icon="arrow-left"
-          class="bg-basic-200 t-basic-600"
+          class="bg-raised t-secondary"
           @click="goBack"
         />
         <h1 class="fs-700 fw-600">
@@ -66,7 +66,7 @@
         <h3 class="fs-400 fw-600 mt-400 mb-300">
           {{ $t("emails.footer_overrides") }}
         </h3>
-        <p class="fs-200 t-basic-600 mb-300">
+        <p class="fs-200 t-secondary mb-300">
           {{ $t("emails.footer_overrides_hint") }}
         </p>
         <div class="emails-form-grid">
@@ -106,7 +106,7 @@
         <div class="flex jc-fe mt-400">
           <BasicButton
             :text="$t('common.save')"
-            class="bg-support-400 t-basic-100"
+            class="bg-accent-fill t-on-accent-fill"
             @click="save"
           />
         </div>

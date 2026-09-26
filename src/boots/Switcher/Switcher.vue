@@ -54,9 +54,9 @@ export default {
   .toggler {
     width: 2.5rem;
     height: $baseSize;
-    background: var(--c-basic-100);
+    background: var(--surface-base);
     border-radius: 6.25rem;
-    border: 1px solid var(--c-basic-400);
+    border: 1px solid var(--border-default);
     transition: background $transition;
     &::after {
       content: "";
@@ -66,8 +66,8 @@ export default {
       transform: translate(0, -50%);
       width: $baseSize;
       height: $baseSize;
-      background: var(--c-basic-100);
-      border: 1px solid var(--c-basic-400);
+      background: var(--surface-base);
+      border: 1px solid var(--border-default);
       border-radius: 5.625rem;
       transition: $transition;
       box-shadow: var(--shadow-sm);
@@ -82,11 +82,11 @@ export default {
 }
 .active {
   .toggler {
-    background: var(--c-support-400);
-    border-color: var(--c-support-400);
+    background: var(--accent-fill);
+    border-color: var(--accent);
     &::after {
       transform: translate(100%, -50%);
-      border-color: var(--c-support-400);
+      border-color: var(--accent);
     }
   }
 }

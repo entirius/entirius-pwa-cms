@@ -1,15 +1,15 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
     <Teleport to="#pim-toolbar-left" defer>
       <BasicButton
         text=""
         icon="arrow-left"
-        class="bg-basic-200 t-basic-600"
+        class="bg-raised t-secondary"
         @click="$router.push('/pim/products')"
       />
     </Teleport>
     <Teleport to="#pim-toolbar-right" defer>
-      <span v-if="isDirty" class="chip bg-warning-100 t-warning-300">
+      <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
         {{ $t("unsaved.changes") }}
       </span>
       <button
@@ -120,17 +120,17 @@
       <BasicButton
         text=""
         icon="trash-can"
-        class="bg-negative-100 t-negative-300"
+        class="bg-negative-subtle t-negative"
         @click="showDeleteConfirm = true"
       />
     </Teleport>
-    <div class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
       <Loader v-if="loading" />
 
       <!-- etap-12 #25: 404 on the chosen channel auto-switches to default and warns. -->
       <div
         v-if="channelMismatchWarning"
-        class="channel-mismatch-warning bg-warning-100 t-warning-300 p-300 br-50 mb-300"
+        class="channel-mismatch-warning bg-warning-subtle t-warning p-300 br-50 mb-300"
         role="alert"
       >
         <font-awesome-icon icon="triangle-exclamation" class="mr-200" />
@@ -211,7 +211,7 @@
                 "
                 class="info-card__inheritance mt-200"
               >
-                <span class="chip bg-support-100 t-support-400">
+                <span class="chip bg-accent-subtle t-accent">
                   {{
                     $t("pim.channels_inherit", {
                       count: product.inheriting_channels_count,
@@ -262,7 +262,7 @@
 
               <!-- Physical properties (shared across channels) -->
               <div class="info-card__physical mt-300">
-                <p class="fs-200 t-warning-300 mb-200">
+                <p class="fs-200 t-warning mb-200">
                   {{ $t("pim.shared_warning") }}
                 </p>
                 <div class="physical-row mb-200">
@@ -626,7 +626,7 @@
             </div>
             <div class="translation-field mt-300">
               <label class="detail-label">{{ $t("pim.og_image_url") }}</label>
-              <p class="fs-200 t-basic-500 mb-100">{{ $t("pim.og_image_url_help") }}</p>
+              <p class="fs-200 t-muted mb-100">{{ $t("pim.og_image_url_help") }}</p>
               <BasicInput v-model="form.og_image" />
             </div>
           </div>
@@ -652,12 +652,12 @@
 
           <!-- Variants tab (placeholder) -->
           <div v-if="activeTab === 'variants'" class="tab-placeholder">
-            <p class="t-basic-500">{{ $t("pim.coming_soon") }}</p>
+            <p class="t-muted">{{ $t("pim.coming_soon") }}</p>
           </div>
 
           <!-- Audit Log tab (placeholder) -->
           <div v-if="activeTab === 'audit_log'" class="tab-placeholder">
-            <p class="t-basic-500">{{ $t("pim.coming_soon") }}</p>
+            <p class="t-muted">{{ $t("pim.coming_soon") }}</p>
           </div>
 
           <!-- Pricing tab -->
@@ -1000,12 +1000,12 @@ export default {
     productClassColor() {
       const name = this.product.product_class_name;
       const map = {
-        productbase: "t-basic-700",
-        productsimple: "t-support-400",
-        productconfigurable: "t-primary-300",
-        productbundle: "t-warning-300",
+        productbase: "t-body",
+        productsimple: "t-accent",
+        productconfigurable: "t-accent",
+        productbundle: "t-warning",
       };
-      return map[name?.toLowerCase()] || "t-basic-700";
+      return map[name?.toLowerCase()] || "t-body";
     },
     inheritanceCount() {
       let n = 0;
@@ -1470,7 +1470,7 @@ export default {
 }
 
 .info-card {
-  border: 1px solid var(--c-basic-200);
+  border: 1px solid var(--border-subtle);
   border-radius: 6px;
   padding: 20px;
 }
@@ -1492,23 +1492,23 @@ export default {
   gap: 6px;
   padding: 0 12px;
   height: var(--elem-height);
-  border: 1px solid var(--c-basic-200);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
-  background: var(--c-basic-100);
-  color: var(--c-basic-600);
+  background: var(--surface-base);
+  color: var(--text-secondary);
   font-size: var(--fs-300);
   font-weight: 500;
   cursor: pointer;
   transition: border-color 0.15s, background 0.15s;
 
   &:hover {
-    border-color: var(--c-support-300);
+    border-color: var(--accent);
   }
 
   &--active {
-    border-color: var(--c-support-300);
-    background: var(--c-support-100);
-    color: var(--c-support-400);
+    border-color: var(--accent);
+    background: var(--accent-subtle);
+    color: var(--text-accent);
   }
 }
 
@@ -1519,8 +1519,8 @@ export default {
   min-width: 18px;
   height: 18px;
   border-radius: 9px;
-  background: var(--c-support-400);
-  color: var(--c-basic-100);
+  background: var(--accent-fill);
+  color: var(--text-on-accent-fill);
   font-size: 11px;
   font-weight: 600;
 }
@@ -1530,8 +1530,8 @@ export default {
   top: calc(100% + 4px);
   right: 0;
   min-width: 200px;
-  background: var(--c-basic-100);
-  border: 1px solid var(--c-basic-200);
+  background: var(--surface-base);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
   z-index: 100;
@@ -1545,15 +1545,15 @@ export default {
   padding: 8px 12px;
   cursor: pointer;
   font-size: var(--fs-300);
-  color: var(--c-basic-700);
+  color: var(--text-body);
   transition: background 0.1s;
 
   &:hover {
-    background: var(--c-basic-200);
+    background: var(--surface-raised);
   }
 
   &--active {
-    color: var(--c-support-400);
+    color: var(--text-accent);
     font-weight: 500;
   }
 }
@@ -1565,14 +1565,14 @@ export default {
   width: 18px;
   height: 18px;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   font-size: 12px;
   flex-shrink: 0;
 
   .inheritance-picker__item--active & {
-    background: var(--c-support-400);
-    border-color: var(--c-support-400);
-    color: var(--c-basic-100);
+    background: var(--accent-fill);
+    border-color: var(--accent);
+    color: var(--text-on-accent-fill);
   }
 }
 
@@ -1582,17 +1582,17 @@ export default {
   gap: 6px;
   padding: 0 12px;
   height: var(--elem-height);
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
-  background: var(--c-basic-100);
-  color: var(--c-basic-600);
+  background: var(--surface-base);
+  color: var(--text-secondary);
   font-size: var(--fs-300);
   font-weight: 500;
   cursor: pointer;
   transition: border-color 0.15s, background 0.15s;
 
   &:hover {
-    border-color: var(--c-basic-500);
+    border-color: var(--border-default);
   }
 
   &__icon {
@@ -1602,11 +1602,11 @@ export default {
 
   &--save {
     border: none;
-    background: var(--c-support-400);
-    color: var(--c-basic-100);
+    background: var(--accent-fill);
+    color: var(--text-on-accent-fill);
 
     &:hover {
-      background: var(--c-support-300);
+      background: var(--accent-fill);
     }
   }
 }
@@ -1643,7 +1643,7 @@ export default {
 }
 
 .detail-section {
-  border: 1px solid var(--c-basic-200);
+  border: 1px solid var(--border-subtle);
   border-radius: 6px;
   padding: 20px;
 }
@@ -1665,16 +1665,16 @@ export default {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 
 .meta-item {
   font-size: var(--fs-200);
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 
   strong {
     font-weight: 600;
-    color: var(--c-basic-700);
+    color: var(--text-body);
   }
 }
 
@@ -1682,7 +1682,7 @@ export default {
   width: 3px;
   height: 3px;
   border-radius: 50%;
-  background: var(--c-basic-400);
+  background: var(--surface-hover);
   flex-shrink: 0;
 }
 
@@ -1700,13 +1700,13 @@ export default {
 
   &__label {
     font-size: var(--fs-200);
-    color: var(--c-basic-500);
+    color: var(--text-muted);
     font-weight: 500;
   }
 }
 
 .info-card__physical {
-  border-top: 1px solid var(--c-basic-200);
+  border-top: 1px solid var(--border-subtle);
   padding-top: var(--space-300);
 }
 

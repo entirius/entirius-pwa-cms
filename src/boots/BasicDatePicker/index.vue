@@ -6,7 +6,7 @@
         <BasicButton
           :icon="`${!value ? 'plus' : 'edit'}`"
           :text="`${value ?? $t('routes.set_new')}`"
-          class="bg-support-400 t-basic-100 fs-100 lh-init pl-100 pr-100 pt-50 pb-50 br-50"
+          class="bg-accent-fill t-on-accent-fill fs-100 lh-init pl-100 pr-100 pt-50 pb-50 br-50"
           @click="
             () => {
               visible = true;
@@ -15,7 +15,7 @@
         />
       </div>
       <div
-        class="picker-wrapper bg-inherit bg-basic-100"
+        class="picker-wrapper bg-inherit bg-base"
         v-show="visible"
         v-out="'visible'"
       >
@@ -106,14 +106,14 @@ export default {
     background-color: inherit;
     color: inherit;
     font-size: inherit;
-    border: 1px solid var(--c-basic-400);
+    border: 1px solid var(--border-default);
     border-radius: var(--space-50);
     box-shadow: unset;
   }
   .flatpickr-day.selected,
   .flatpickr-day.startRange,
   .flatpickr-day.endRange {
-    background-color: var(--c-support-400);
+    background-color: var(--accent-fill);
     border-radius: var(--space-50);
     box-shadow: unset;
   }
@@ -123,18 +123,18 @@ export default {
   }
 
   .flatpickr-day.today {
-    background: var(--c-support-300);
-    color: var(--c-basic-900);
+    background: var(--accent-fill);
+    color: var(--text-strong);
     font-weight: 600;
     border-radius: var(--space-50);
     border: none;
 
     &.inRange {
-      color: var(--c-support-400);
+      color: var(--text-accent);
     }
   }
   .flatpickr-day.inRange {
-    background: var(--c-basic-200);
+    background: var(--surface-raised);
     box-shadow: unset;
     border: none;
   }
@@ -153,36 +153,36 @@ export default {
 
 [data-theme="dark"] .basic-date-picker {
   .flatpickr-calendar {
-    background-color: var(--c-basic-200);
-    color: var(--c-basic-700);
+    background-color: var(--surface-raised);
+    color: var(--text-body);
   }
   .flatpickr-months .flatpickr-month,
   .flatpickr-current-month .flatpickr-monthDropdown-months {
-    background-color: var(--c-basic-200);
-    color: var(--c-basic-700);
+    background-color: var(--surface-raised);
+    color: var(--text-body);
   }
   .flatpickr-weekdays {
-    background-color: var(--c-basic-200);
+    background-color: var(--surface-raised);
   }
   span.flatpickr-weekday {
-    background-color: var(--c-basic-200);
-    color: var(--c-basic-500);
+    background-color: var(--surface-raised);
+    color: var(--text-muted);
   }
   .flatpickr-day {
-    color: var(--c-basic-700);
+    color: var(--text-body);
     &:hover {
-      background-color: var(--c-basic-300);
-      border-color: var(--c-basic-300);
+      background-color: var(--surface-hover);
+      border-color: var(--border-subtle);
     }
     &.flatpickr-disabled {
-      color: var(--c-basic-500);
+      color: var(--text-muted);
     }
   }
   .flatpickr-months .flatpickr-prev-month,
   .flatpickr-months .flatpickr-next-month {
-    fill: var(--c-basic-600);
+    fill: var(--text-secondary);
     &:hover svg {
-      fill: var(--c-basic-800);
+      fill: var(--text-body);
     }
   }
 }

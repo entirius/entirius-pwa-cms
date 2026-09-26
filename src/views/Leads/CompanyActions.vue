@@ -98,9 +98,9 @@ function createCustomer() {
   z-index: 20;
   transform: translateX(-50%);
   padding: var(--space-300);
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
-  background: var(--c-basic-100);
+  background: var(--surface-base);
   box-shadow: 0 8px 24px rgb(0 0 0 / 20%);
 }
 </style>

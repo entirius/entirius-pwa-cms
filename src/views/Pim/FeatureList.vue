@@ -1,7 +1,7 @@
 <template>
-  <div class="pim-list-layout p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="pim-list-layout p-500 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-basic-100 b-basic-300 br-50 flex-1 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle br-50 flex-1 ovy-auto pl-500 pt-500 pb-500 pr-500"
     >
       <div class="flex ai-ct mb-400">
         <h1 class="fs-700 fw-600">{{ $t("pim.features") }}</h1>
@@ -54,7 +54,7 @@
           </span>
         </template>
         <template #cell-feature_type="{ value }">
-          <span class="chip bg-basic-200 t-basic-600">
+          <span class="chip bg-raised t-secondary">
             {{ $t(featureTypeLabel(value)) }}
           </span>
         </template>

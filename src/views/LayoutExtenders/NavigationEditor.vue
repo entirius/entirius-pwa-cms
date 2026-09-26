@@ -1,15 +1,15 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
     <!-- Left toolbar -->
     <Teleport to="#layout-extender-toolbar-left" defer>
       <BasicButton
         text=""
         icon="arrow-left"
-        class="bg-basic-200 t-basic-600"
+        class="bg-raised t-secondary"
         @click="$router.push('/pages/layout-extender')"
       />
       <div v-if="!loading" class="nav-editor__toolbar-name">
-        <span class="fw-600 t-basic-700">{{ docName || $route.params.uid || "—" }}</span>
+        <span class="fw-600 t-body">{{ docName || $route.params.uid || "—" }}</span>
       </div>
       <ChannelMultiSelect
         v-if="!loading"
@@ -26,7 +26,7 @@
       <template v-if="!loading">
         <span
           v-if="isDirty"
-          class="chip bg-warning-100 t-warning-300"
+          class="chip bg-warning-subtle t-warning"
           data-testid="nav-editor-unsaved-badge"
         >
           {{ $t("layout_extender.unsaved") }}
@@ -38,7 +38,7 @@
         />
         <BasicButton
           :text="$t('layout_extender.publish')"
-          class="bg-support-400 t-basic-100"
+          class="bg-accent-fill t-on-accent-fill"
           data-testid="nav-editor-publish"
           :disabled="!uid"
           @click="publish"
@@ -47,7 +47,7 @@
     </Teleport>
 
     <!-- Content -->
-    <div class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
       <Loader v-show="loading" />
 
       <template v-if="!loading">
@@ -55,7 +55,7 @@
           v-model="navigationItems"
           item-key="id"
           handle=".handle"
-          ghost-class="bg-support-100"
+          ghost-class="bg-accent-subtle"
           :force-fallback="true"
           fallback-class="nav-drag-ghost"
           @change="markDirty"
@@ -64,13 +64,13 @@
             <div class="nav-item">
               <!-- Item header row -->
               <div class="nav-item__row">
-                <span class="handle t-basic-400 pointer">
+                <span class="handle t-muted pointer">
                   <FontAwesomeIcon icon="grip-vertical" />
                 </span>
-                <span class="fg-1 fw-500 t-basic-700 fs-300">{{ element.label || "—" }}</span>
+                <span class="fg-1 fw-500 t-body fs-300">{{ element.label || "—" }}</span>
                 <span
                   class="fs-200 ph-100 br-50"
-                  :class="element.display_as === 'megamenu' ? 'bg-support-100 t-support-400' : 'bg-basic-300 t-basic-700'"
+                  :class="element.display_as === 'megamenu' ? 'bg-accent-subtle t-accent' : 'bg-hover t-body'"
                   :data-testid="element.display_as === 'megamenu' ? 'nav-item-type-megamenu' : 'nav-item-type-link'"
                 >
                   {{ element.display_as === "megamenu" ? $t("layout_extender.mega_menu") : $t("layout_extender.simple_link") }}
@@ -135,7 +135,7 @@
                           </template>
                           <template v-else>
                             <span
-                              class="fw-600 fs-300 t-basic-700 pointer"
+                              class="fw-600 fs-300 t-body pointer"
                               @dblclick="startEditHeading(index, colIdx)"
                             >{{ col.heading || $t("layout_extender.heading") }}</span>
                             <span
@@ -155,16 +155,16 @@
                         v-model="col.links"
                         item-key="id"
                         handle=".link-handle"
-                        ghost-class="bg-support-100"
+                        ghost-class="bg-accent-subtle"
                         @change="markDirty"
                       >
                         <template #item="{ element: link, index: linkIdx }">
                           <div class="nav-link-row" @click="openEditLink(element, index, col, colIdx, link, linkIdx)">
-                            <span class="link-handle t-basic-400">
+                            <span class="link-handle t-muted">
                               <FontAwesomeIcon icon="grip-vertical" style="font-size: 10px" />
                             </span>
                             <span class="nav-link-row__text">
-                              <span class="t-basic-400">·</span> {{ link.label }}
+                              <span class="t-muted">·</span> {{ link.label }}
                             </span>
                             <span
                               class="nav-link-row__delete"
@@ -183,7 +183,7 @@
                     <!-- Banner column -->
                     <template v-else-if="col.type === 'banner'">
                       <div class="nav-column__header">
-                        <span class="fw-600 fs-300 t-basic-700">{{ $t("layout_extender.banner") }}</span>
+                        <span class="fw-600 fs-300 t-body">{{ $t("layout_extender.banner") }}</span>
                         <span class="nav-action nav-action--danger nav-action--sm" @click="removeColumn(index, colIdx)">
                           <FontAwesomeIcon icon="trash-can" />
                         </span>
@@ -197,10 +197,10 @@
                           @error="onImageError(col.media_url)"
                         />
                         <div v-else class="nav-banner-placeholder">
-                          <FontAwesomeIcon icon="image" class="t-basic-400" style="font-size: 20px" />
+                          <FontAwesomeIcon icon="image" class="t-muted" style="font-size: 20px" />
                         </div>
                       </div>
-                      <p v-if="col.caption" class="fs-200 t-basic-600 mb-100">{{ col.caption }}</p>
+                      <p v-if="col.caption" class="fs-200 t-secondary mb-100">{{ col.caption }}</p>
                       <button class="nav-btn-outline" @click="openEditColumn(element, index, col, colIdx)">
                         {{ $t("layout_extender.edit_banner") }}
                       </button>
@@ -237,7 +237,7 @@
         <BasicButton
           :text="$t('layout_extender.add_item')"
           icon="plus"
-          class="bg-support-400 t-basic-100 mt-300"
+          class="bg-accent-fill t-on-accent-fill mt-300"
           data-testid="nav-editor-add-item"
           @click="openAddItem"
         />
@@ -635,13 +635,13 @@ export default {
   align-items: center;
   gap: var(--space-200);
   padding: 12px var(--space-200);
-  background: var(--c-basic-100);
-  border: 1px solid var(--c-basic-300);
+  background: var(--surface-base);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   transition: background 0.1s;
 
   &:hover {
-    background: var(--c-basic-200);
+    background: var(--surface-raised);
   }
 }
 
@@ -653,18 +653,18 @@ export default {
   height: 36px;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   transition: background 0.1s, color 0.1s, transform 0.2s;
   flex-shrink: 0;
 
   &:hover {
-    background: var(--c-basic-300);
-    color: var(--c-basic-700);
+    background: var(--surface-hover);
+    color: var(--text-body);
   }
 
   &--danger:hover {
-    background: var(--c-negative-100);
-    color: var(--c-negative-200);
+    background: var(--negative-subtle);
+    color: var(--negative);
   }
 
   &--rotated {
@@ -682,7 +682,7 @@ export default {
   margin-top: 8px;
   margin-left: 40px;
   padding-left: var(--space-200);
-  border-left: 2px solid var(--c-basic-300);
+  border-left: 2px solid var(--border-subtle);
 }
 
 .nav-columns {
@@ -694,7 +694,7 @@ export default {
 .nav-column {
   min-width: 160px;
   flex: 1;
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: 12px var(--space-200);
 }
@@ -730,10 +730,10 @@ export default {
   padding: 4px 0;
   cursor: pointer;
   font-size: 13px;
-  color: var(--c-basic-700);
+  color: var(--text-body);
 
   &:hover {
-    color: var(--c-support-400);
+    color: var(--text-accent);
   }
 
   &:hover .nav-link-row__delete {
@@ -769,12 +769,12 @@ export default {
   width: 24px;
   height: 24px;
   border-radius: var(--radius-sm);
-  color: var(--c-basic-400);
+  color: var(--text-muted);
   cursor: pointer;
   transition: opacity 0.1s, color 0.1s;
 
   &:hover {
-    color: var(--c-negative-200);
+    color: var(--negative);
   }
 }
 
@@ -782,7 +782,7 @@ export default {
   display: inline-block;
   margin-top: 6px;
   font-size: 12px;
-  color: var(--c-support-400);
+  color: var(--text-accent);
   cursor: pointer;
   font-weight: 500;
 
@@ -804,9 +804,9 @@ export default {
   justify-content: center;
   width: 100%;
   height: 60px;
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
   border-radius: var(--radius-sm);
-  border: 1px dashed var(--c-basic-400);
+  border: 1px dashed var(--border-default);
 }
 
 .nav-btn-outline {
@@ -817,15 +817,15 @@ export default {
   font-size: 13px;
   font-weight: 500;
   font-family: inherit;
-  color: var(--c-basic-700);
-  background: var(--c-basic-100);
-  border: 1px solid var(--c-basic-400);
+  color: var(--text-body);
+  background: var(--surface-base);
+  border: 1px solid var(--border-default);
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: background 0.1s;
 
   &:hover {
-    background: var(--c-basic-200);
+    background: var(--surface-raised);
   }
 
   &:disabled {
@@ -840,8 +840,8 @@ export default {
   justify-content: center;
   padding: var(--space-400);
   border-radius: var(--radius-md);
-  border: 1px solid var(--c-basic-300);
-  color: var(--c-basic-500);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
   min-height: 8rem;
 }
 
@@ -856,8 +856,8 @@ export default {
 .nav-drag-ghost {
   max-width: 480px;
   opacity: 0.9;
-  background: var(--c-basic-100);
-  border: 1px solid var(--c-support-400);
+  background: var(--surface-base);
+  border: 1px solid var(--accent);
   border-radius: 6px;
   box-shadow: var(--shadow-md);
   padding: 12px var(--space-200);

@@ -1,21 +1,21 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
     <Teleport to="#pim-toolbar-left" defer>
       <BasicButton
         text=""
         icon="arrow-left"
-        class="bg-basic-200 t-basic-600"
+        class="bg-raised t-secondary"
         @click="$router.push('/pim/products')"
       />
     </Teleport>
     <Teleport to="#pim-toolbar-right" defer>
       <BasicButton
         :text="$t('common.save')"
-        class="bg-positive-200 t-basic-100"
+        class="bg-positive-fill t-on-status-fill"
         @click="createProduct"
       />
     </Teleport>
-    <div class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
       <div class="create-section mb-400">
         <h2 class="fs-500 fw-600 mb-200">{{ $t("pim.basic_info") }}</h2>
         <div class="create-grid">
@@ -61,7 +61,7 @@
         <h2 class="fs-500 fw-600 mb-200">
           {{ $t("pim.physical_properties") }}
         </h2>
-        <p class="fs-200 t-warning-300 mb-200">
+        <p class="fs-200 t-warning mb-200">
           {{ $t("pim.shared_warning") }}
         </p>
         <div class="create-grid">
@@ -310,7 +310,7 @@ export default {
 
 <style lang="scss" scoped>
 .create-section {
-  border: 1px solid var(--c-basic-200);
+  border: 1px solid var(--border-subtle);
   border-radius: 6px;
   padding: 20px;
 }
@@ -329,7 +329,7 @@ export default {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 .channel-list {
   display: flex;
@@ -341,7 +341,7 @@ export default {
   flex-direction: column;
   gap: 4px;
   padding: 8px 12px;
-  border: 1px solid var(--c-basic-200);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
 }
 .channel-item__options {

@@ -1,10 +1,10 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
     <Teleport to="#agreements-toolbar-left" defer>
       <BasicButton
         text=""
         icon="arrow-left"
-        class="bg-basic-200 t-basic-600"
+        class="bg-raised t-secondary"
         @click="$router.push('/agreements/list')"
       />
     </Teleport>
@@ -13,17 +13,17 @@
         v-if="isEdit && !definition.is_system"
         text=""
         icon="trash-can"
-        class="bg-negative-100 t-negative-300"
+        class="bg-negative-subtle t-negative"
         @click="showDeleteConfirm = true"
       />
       <BasicButton
         :text="$t('agm.save')"
-        class="bg-support-400 t-basic-100"
+        class="bg-accent-fill t-on-accent-fill"
         @click="saveDefinition"
       />
     </Teleport>
 
-    <div class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
       <Loader v-if="loading" />
 
       <template v-else>
@@ -113,7 +113,7 @@
                     <FontAwesomeIcon
                       v-if="form.channel_ids.includes(ch.value)"
                       icon="check"
-                      class="t-positive-200"
+                      class="t-positive"
                     />
                   </div>
                 </template>
@@ -136,7 +136,7 @@
                       !definition.display_contexts ||
                       !definition.display_contexts.length
                     "
-                    class="t-basic-500 fs-200"
+                    class="t-muted fs-200"
                   >
                     ---
                   </span>
@@ -167,7 +167,7 @@
                       <FontAwesomeIcon
                         v-if="form.display_contexts.includes(ctx.value)"
                         icon="check"
-                        class="t-positive-200"
+                        class="t-positive"
                       />
                     </div>
                   </template>
@@ -183,7 +183,7 @@
             <h2 class="fs-500 fw-600">{{ $t("agm.versions") }}</h2>
             <BasicButton
               :text="$t('agm.create_version')"
-              class="bg-support-400 t-basic-100"
+              class="bg-accent-fill t-on-accent-fill"
               @click="showVersionForm = !showVersionForm"
             />
           </div>
@@ -207,19 +207,19 @@
             <div class="flex jc-fe gap-200">
               <BasicButton
                 :text="$t('common.cancel')"
-                class="bg-basic-200 t-basic-600"
+                class="bg-raised t-secondary"
                 @click="cancelVersionForm"
               />
               <BasicButton
                 :text="$t('agm.create_version')"
-                class="bg-support-400 t-basic-100"
+                class="bg-accent-fill t-on-accent-fill"
                 @click="createVersion"
               />
             </div>
           </div>
 
           <!-- Versions table -->
-          <p v-if="!versions.length" class="fs-200 t-basic-500">
+          <p v-if="!versions.length" class="fs-200 t-muted">
             {{ $t("agm.no_definitions") }}
           </p>
           <table v-else class="agm-versions-table w-100">
@@ -259,7 +259,7 @@
                         v-if="!ver.published_at"
                         text=""
                         icon="pencil"
-                        class="bg-basic-200 t-basic-600"
+                        class="bg-raised t-secondary"
                         :title="$t('agm.edit_draft')"
                         @click="startEditDraft(ver)"
                       />
@@ -267,14 +267,14 @@
                         v-else
                         text=""
                         icon="pencil"
-                        class="bg-basic-200 t-basic-600"
+                        class="bg-raised t-secondary"
                         :title="$t('agm.create_draft_from_published')"
                         @click="startEditPublished(ver)"
                       />
                       <BasicButton
                         v-if="!ver.published_at"
                         :text="$t('agm.publish')"
-                        class="bg-support-400 t-basic-100"
+                        class="bg-accent-fill t-on-accent-fill"
                         @click="publishVersion(ver.id)"
                       />
                     </div>
@@ -305,12 +305,12 @@
                       <div class="flex jc-fe gap-200">
                         <BasicButton
                           :text="$t('common.cancel')"
-                          class="bg-basic-200 t-basic-600"
+                          class="bg-raised t-secondary"
                           @click="cancelEditVersion"
                         />
                         <BasicButton
                           :text="$t('common.save')"
-                          class="bg-support-400 t-basic-100"
+                          class="bg-accent-fill t-on-accent-fill"
                           @click="saveDraftVersion(ver.id)"
                         />
                       </div>
@@ -331,11 +331,11 @@
             class="flex ai-ct gap-200 pointer"
             @click="contentHistoryOpen = !contentHistoryOpen"
           >
-            <font-awesome-icon icon="clock-rotate-left" class="t-basic-500" />
+            <font-awesome-icon icon="clock-rotate-left" class="t-muted" />
             <h2 class="fs-500 fw-600">{{ $t("agm.content_history") }}</h2>
             <font-awesome-icon
               :icon="contentHistoryOpen ? 'chevron-up' : 'chevron-down'"
-              class="t-basic-500 fs-200"
+              class="t-muted fs-200"
             />
           </div>
 
@@ -375,7 +375,7 @@
               />
             </div>
 
-            <p v-if="!contentSnapshots.length" class="t-basic-500 fs-200">
+            <p v-if="!contentSnapshots.length" class="t-muted fs-200">
               {{ $t("agm.content_history_empty") }}
             </p>
 
@@ -423,7 +423,7 @@
                               ? 'chevron-up'
                               : 'chevron-down'
                           "
-                          class="t-basic-500"
+                          class="t-muted"
                         />
                       </div>
                     </td>
@@ -852,7 +852,7 @@ export default {
 
 <style lang="scss" scoped>
 .agm-section {
-  border: 1px solid var(--c-basic-200);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: 20px;
 }
@@ -864,10 +864,10 @@ export default {
 }
 
 .agm-version-form {
-  border: 1px solid var(--c-basic-200);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: 16px;
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
 }
 
 .agm-versions-table {
@@ -880,20 +880,20 @@ export default {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   padding: 8px 12px;
-  border-bottom: 2px solid var(--c-basic-200);
+  border-bottom: 2px solid var(--border-subtle);
 }
 
 .agm-tr:hover {
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
 }
 
 .agm-td {
   padding: 10px 12px;
-  border-bottom: 1px solid var(--c-basic-200);
+  border-bottom: 1px solid var(--border-subtle);
   font-size: var(--fs-300);
-  color: var(--c-basic-700);
+  color: var(--text-body);
 }
 
 .agm-td--summary {
@@ -905,8 +905,8 @@ export default {
 
 .agm-system-info {
   font-size: var(--fs-300);
-  color: var(--c-basic-500);
-  background: var(--c-basic-200);
+  color: var(--text-muted);
+  background: var(--surface-raised);
   border-radius: var(--radius-md);
   padding: 10px 16px;
 }
@@ -916,8 +916,8 @@ export default {
   align-items: center;
   padding: 2px 10px;
   border-radius: var(--radius-sm);
-  background: var(--c-basic-200);
-  color: var(--c-basic-700);
+  background: var(--surface-raised);
+  color: var(--text-body);
   font-size: var(--fs-200);
   font-weight: 600;
 }
@@ -926,10 +926,10 @@ export default {
   max-height: 400px;
   overflow-y: auto;
   padding: 16px;
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
   border-radius: var(--radius-md);
   font-size: var(--fs-300);
   line-height: 1.6;
-  color: var(--c-basic-700);
+  color: var(--text-body);
 }
 </style>

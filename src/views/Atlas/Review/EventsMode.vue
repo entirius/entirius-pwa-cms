@@ -1,7 +1,7 @@
 <template>
   <div class="events-mode">
     <div class="flex ai-ct flex-wrap gap-200 mb-300">
-      <span class="t-basic-600 fs-200">{{
+      <span class="t-secondary fs-200">{{
         $t("atlas.severity.label")
       }}</span>
       <FilterChip
@@ -34,14 +34,14 @@
       <template #cell-acknowledged_at="{ row }">
         <button
           v-if="!row.acknowledged_at"
-          class="events-ack-btn bg-support-100 t-support-400"
+          class="events-ack-btn bg-accent-subtle t-accent"
           :data-testid="`events-ack-${row.id}`"
           @click.stop="acknowledge(row)"
         >
           <FontAwesomeIcon icon="check" />
           {{ $t("atlas.review.events.acknowledge_button") }}
         </button>
-        <span v-else class="t-basic-500 fs-200">{{ row.acknowledged_at }}</span>
+        <span v-else class="t-muted fs-200">{{ row.acknowledged_at }}</span>
       </template>
     </DataTable>
   </div>

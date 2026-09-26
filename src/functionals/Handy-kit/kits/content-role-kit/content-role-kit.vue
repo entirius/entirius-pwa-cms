@@ -1,13 +1,13 @@
 <template>
-  <div class="fs-200 t-basic-600 flex-column gap-300 jc-sb">
+  <div class="fs-200 t-secondary flex-column gap-300 jc-sb">
     <nav
-      class="grid grid-col-2 grid-col-2-m ai-ct bg-basic-200 pl-400 pr-400 pt-200 pb-200 t-basic-600 br-tl-50 br-tr-50"
+      class="grid grid-col-2 grid-col-2-m ai-ct bg-raised pl-400 pr-400 pt-200 pb-200 t-secondary br-tl-50 br-tr-50"
     >
       <p class="fw-600 fs-400 uppercase">
         {{ handyType.label ? handyType.label : $t("common.click") }}
       </p>
       <p
-        class="js-fe t-basic-600"
+        class="js-fe t-secondary"
         @click="handy.open_Handykit({ typeId: false })"
       >
         <i class="icon-close-mini pointer" />
@@ -16,51 +16,51 @@
     <div class="fg-1">
       <Loader v-if="loading" />
       <template v-if="!loading && !setted_contents.length">
-        <p class="t-support-300">No setted other docs - can proceed.</p>
+        <p class="t-accent">No setted other docs - can proceed.</p>
       </template>
       <div
-        class="p-50 b-basic-300 bg-basic-300 br-50 pointer flex jc-sb ai-ct mb-200"
+        class="p-50 b-subtle bg-hover br-50 pointer flex jc-sb ai-ct mb-200"
         @click="selected_contents = [doc_uid]"
       >
         <p>{{ doc_uid }}</p>
         <div class="flex gap-50">
-          <span class="ph-50 bg-support-400 t-basic-100 br-50 fs-100"
+          <span class="ph-50 bg-accent-fill t-on-accent-fill br-50 fs-100"
             >current doc.</span
           >
           <span
             v-if="selected_contents.includes(doc_uid)"
-            class="ph-50 bg-support-100 t-basic-100 br-50 mr-50 fs-100"
+            class="ph-50 bg-accent-subtle t-basic-100 br-50 mr-50 fs-100"
             >selected</span
           >
         </div>
       </div>
       <template v-if="!loading && setted_contents.length">
-        <!-- <p class="t-support-300 mt-100">List of setted contents.</p> -->
+        <!-- <p class="t-accent mt-100">List of setted contents.</p> -->
         <p class="mb-50">
           Seems like at least one document is already in preview mode.
         </p>
-        <p class="fs-100 t-negative-200 mb-100">
+        <p class="fs-100 t-negative mb-100">
           Warning: any other than selected documents will become unpublished.
         </p>
         <div
           v-for="({ uid }, index) in setted_contents"
-          class="p-50 b-basic-300 br-50 pointer flex jc-sb ai-ct mb-50"
-          :class="{ 'b-basic-500': selected_contents.includes(uid) }"
+          class="p-50 b-subtle br-50 pointer flex jc-sb ai-ct mb-50"
+          :class="{ 'b-default': selected_contents.includes(uid) }"
           @click="selected_contents = [uid]"
         >
           <p>{{ uid }}</p>
           <div class="flex gap-50">
             <span
               v-if="doc_uid === uid"
-              class="ph-50 bg-support-400 t-basic-100 br-50 fs-100"
+              class="ph-50 bg-accent-fill t-on-accent-fill br-50 fs-100"
               >Current</span
             >
-            <span class="ph-50 bg-support-300 t-basic-100 br-50 fs-100"
+            <span class="ph-50 bg-accent-fill t-on-accent-fill br-50 fs-100"
               >setted</span
             >
             <span
               v-if="selected_contents.includes(uid)"
-              class="ph-50 bg-support-100 t-basic-100 br-50 mr-50 fs-100"
+              class="ph-50 bg-accent-subtle t-basic-100 br-50 mr-50 fs-100"
               >selected</span
             >
           </div>
@@ -72,15 +72,15 @@
         class="br-50 fs-200 w-100 jc-ct"
         :class="[
           !selected_contents && !selected_contents.length
-            ? 'bg-basic-300 t-basic-500 b-basic-300'
-            : 'bg-basic-700 bg-support-400-hover b-support-400-hover b-basic-800 t-basic-100',
+            ? 'bg-hover t-muted b-subtle'
+            : 'bg-inverse bg-accent-fill-hover b-support-400-hover b-strong t-basic-100',
         ]"
         :text="$t('common.save')"
         :isDisabled="!selected_contents && !selected_contents.length"
         @click="on_Save"
       />
       <BasicButton
-        class="bg-negative-200 br-50 fs-200 b-negative-200 t-basic-100 w-100 jc-ct"
+        class="bg-negative-fill br-50 fs-200 b-negative t-on-status-fill w-100 jc-ct"
         :text="$t('common.cancel')"
         @click="() => {}"
       />

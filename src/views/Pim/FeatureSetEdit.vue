@@ -1,34 +1,34 @@
 <template>
-  <div class="feature-set-edit fs-300 t-basic-800 h-100 ov-h flex">
+  <div class="feature-set-edit fs-300 t-body h-100 ov-h flex">
     <Teleport to="#pim-toolbar-left" defer>
       <BasicButton
         text=""
         icon="arrow-left"
-        class="bg-basic-200 t-basic-600"
+        class="bg-raised t-secondary"
         @click="$router.push('/pim/feature-sets')"
       />
     </Teleport>
     <Teleport to="#pim-toolbar-right" defer>
-      <span v-if="isDirty" class="chip bg-warning-100 t-warning-300">
+      <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
         {{ $t("unsaved.changes") }}
       </span>
       <BasicButton
         text=""
         icon="trash-can"
-        class="bg-negative-100 t-negative-300"
+        class="bg-negative-subtle t-negative"
         @click="showDeleteConfirm = true"
       />
       <BasicButton
         :text="$t('pim.save_set_config')"
-        class="bg-support-400 t-basic-100"
+        class="bg-accent-fill t-on-accent-fill"
         @click="save"
       />
     </Teleport>
     <div class="flex-1 ovy-auto p-500">
-      <div class="bg-basic-100 b-basic-300 br-50 p-500">
+      <div class="bg-base b-subtle br-50 p-500">
         <!-- Set identity -->
         <div class="set-identity mb-400">
-          <span class="fs-200 t-support-400 fw-600 tt-upper">{{
+          <span class="fs-200 t-accent fw-600 tt-upper">{{
             $t("pim.currently_editing")
           }}</span>
           <div class="flex ai-ct gap-200 mt-200">
@@ -40,7 +40,7 @@
               @onSelect="onSwitchSet"
             />
           </div>
-          <p v-if="form.desc" class="t-basic-500 fs-200 mt-200">
+          <p v-if="form.desc" class="t-muted fs-200 mt-200">
             {{ form.desc }}
           </p>
         </div>
@@ -80,7 +80,7 @@
             />
             <BasicButton
               :text="$t('pim.add_attribute_group')"
-              class="bg-basic-200 t-basic-600"
+              class="bg-raised t-secondary"
               @click="showAddGroup = true"
             />
           </div>
@@ -96,13 +96,13 @@
               />
               <BasicButton
                 :text="$t('pim.create_group')"
-                class="bg-support-400 t-basic-100"
+                class="bg-accent-fill t-on-accent-fill"
                 @click="createGroup"
               />
               <BasicButton
                 text=""
                 icon="xmark"
-                class="bg-basic-200 t-basic-600"
+                class="bg-raised t-secondary"
                 @click="
                   showAddGroup = false;
                   newGroupName = '';
@@ -110,14 +110,14 @@
               />
             </div>
             <div v-if="availableGroupOptions.length" class="mt-200">
-              <span class="fs-200 t-basic-500">{{
+              <span class="fs-200 t-muted">{{
                 $t("pim.or_add_existing")
               }}</span>
               <div class="flex gap-100 mt-100" style="flex-wrap: wrap">
                 <span
                   v-for="opt in availableGroupOptions"
                   :key="opt.value"
-                  class="chip bg-basic-200 t-basic-700"
+                  class="chip bg-raised t-body"
                   style="cursor: pointer"
                   @click="onSelectGroup(opt.value)"
                 >
@@ -130,7 +130,7 @@
           <!-- Default group (ungrouped features) -->
           <div class="feature-group mb-400">
             <div
-              class="feature-group__header bg-basic-200 t-basic-700 flex ai-ct jc-sb"
+              class="feature-group__header bg-raised t-body flex ai-ct jc-sb"
             >
               <div class="flex ai-ct gap-200">
                 <span
@@ -141,7 +141,7 @@
                 >
                 <span class="fw-600">{{ $t("pim.default_group") }}</span>
                 <span
-                  class="chip chip--pill bg-basic-200 t-basic-600"
+                  class="chip chip--pill bg-raised t-secondary"
                   >{{
                     $t("pim.attributes_in_group", {
                       count: ungroupedFeatures.length,
@@ -154,7 +154,7 @@
               <draggable
                 v-model="ungroupedFeatures"
                 group="features"
-                ghost-class="bg-support-100"
+                ghost-class="bg-accent-subtle"
                 :force-fallback="true"
                 fallback-class="drag-ghost"
                 :item-key="(el) => el.feature_idx"
@@ -166,7 +166,7 @@
                     class="feature-row flex ai-ct jc-sb"
                   >
                     <div class="flex ai-ct gap-200">
-                      <span class="drag-handle t-basic-400 cursor-grab"
+                      <span class="drag-handle t-muted cursor-grab"
                         >&#x2630;</span
                       >
                       <span class="fw-500">{{
@@ -178,7 +178,7 @@
                       <BasicButton
                         text=""
                         icon="pen"
-                        class="bg-basic-200 t-basic-600"
+                        class="bg-raised t-secondary"
                         @click="
                           $router.push(`/pim/features/${element.feature_idx}`)
                         "
@@ -186,7 +186,7 @@
                       <BasicButton
                         text=""
                         icon="xmark"
-                        class="bg-negative-100 t-negative-300"
+                        class="bg-negative-subtle t-negative"
                         @click="removeFeature(element.feature_idx)"
                       />
                     </div>
@@ -195,7 +195,7 @@
               </draggable>
               <div
                 v-if="!ungroupedFeatures.length"
-                class="t-basic-500 fs-200 p-300"
+                class="t-muted fs-200 p-300"
               >
                 {{ $t("pim.drag_to_add") }}
               </div>
@@ -205,17 +205,17 @@
           <!-- Named groups (drag to reorder) -->
           <draggable
             v-model="groups"
-            ghost-class="bg-support-100"
+            ghost-class="bg-accent-subtle"
             handle=".group-drag-handle"
             :item-key="(el) => el.idx"
           >
             <template #item="{ element: group }">
               <div class="feature-group mb-400">
                 <div
-                  class="feature-group__header bg-basic-200 t-basic-700 flex ai-ct jc-sb"
+                  class="feature-group__header bg-raised t-body flex ai-ct jc-sb"
                 >
                   <div class="flex ai-ct gap-200">
-                    <span class="group-drag-handle t-basic-400">&#x2630;</span>
+                    <span class="group-drag-handle t-muted">&#x2630;</span>
                     <span
                       class="collapse-chevron"
                       :class="{ 'is-collapsed': isCollapsed(group.idx) }"
@@ -236,7 +236,7 @@
                       @keydown.enter="finishRename(group)"
                     />
                     <span
-                      class="chip chip--pill bg-basic-200 t-basic-600"
+                      class="chip chip--pill bg-raised t-secondary"
                       >{{
                         $t("pim.attributes_in_group", {
                           count: group.features.length,
@@ -259,7 +259,7 @@
                         {{ $t("pim.rename") }}
                       </div>
                       <div
-                        class="pim-kebab__item t-negative-300"
+                        class="pim-kebab__item t-negative"
                         @click="
                           removeGroup(group.idx);
                           activeGroupMenu = null;
@@ -274,7 +274,7 @@
                   <draggable
                     v-model="group.features"
                     group="features"
-                    ghost-class="bg-support-100"
+                    ghost-class="bg-accent-subtle"
                     :force-fallback="true"
                     fallback-class="drag-ghost"
                     :item-key="(el) => el.feature_idx"
@@ -286,7 +286,7 @@
                         class="feature-row flex ai-ct jc-sb"
                       >
                         <div class="flex ai-ct gap-200">
-                          <span class="drag-handle t-basic-400 cursor-grab"
+                          <span class="drag-handle t-muted cursor-grab"
                             >&#x2630;</span
                           >
                           <span class="fw-500">{{
@@ -298,7 +298,7 @@
                           <BasicButton
                             text=""
                             icon="pen"
-                            class="bg-basic-200 t-basic-600"
+                            class="bg-raised t-secondary"
                             @click="
                               $router.push(
                                 `/pim/features/${element.feature_idx}`
@@ -308,7 +308,7 @@
                           <BasicButton
                             text=""
                             icon="xmark"
-                            class="bg-negative-100 t-negative-300"
+                            class="bg-negative-subtle t-negative"
                             @click="removeFeature(element.feature_idx)"
                           />
                         </div>
@@ -317,7 +317,7 @@
                   </draggable>
                   <div
                     v-if="!group.features.length"
-                    class="t-basic-500 fs-200 p-300"
+                    class="t-muted fs-200 p-300"
                   >
                     {{ $t("pim.drag_to_add") }}
                   </div>
@@ -875,13 +875,13 @@ export default {
 
 <style lang="scss" scoped>
 .set-identity {
-  border-left: 3px solid var(--c-support-400);
+  border-left: 3px solid var(--accent);
   padding-left: var(--space-300);
   padding-top: var(--space-200);
   padding-bottom: var(--space-200);
 }
 .feature-group {
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
   overflow: hidden;
 }
@@ -891,12 +891,12 @@ export default {
 }
 .feature-row {
   padding: 12px var(--space-200);
-  border-top: 1px solid var(--c-basic-200);
+  border-top: 1px solid var(--border-subtle);
   transition: background 0.15s;
   cursor: grab;
   user-select: none;
   &:hover {
-    background: var(--c-basic-200);
+    background: var(--surface-raised);
   }
   :deep(button),
   :deep(.basic-button) {
@@ -926,7 +926,7 @@ export default {
   font-size: var(--fs-300);
 }
 .add-group-panel {
-  border: 1px dashed var(--c-basic-300);
+  border: 1px dashed var(--border-subtle);
 }
 .modal-btn {
   display: inline-flex;
@@ -942,14 +942,14 @@ export default {
   cursor: pointer;
 }
 .modal-btn--secondary {
-  background: var(--c-basic-100);
-  border-color: var(--c-basic-400);
-  color: var(--c-basic-700);
+  background: var(--surface-base);
+  border-color: var(--border-default);
+  color: var(--text-body);
 }
 .modal-btn--confirm {
-  background: var(--c-support-400);
-  border-color: var(--c-support-400);
-  color: var(--c-basic-100);
+  background: var(--accent-fill);
+  border-color: var(--accent);
+  color: var(--text-on-accent-fill);
 }
 .rename-input {
   max-width: 200px;
@@ -962,17 +962,17 @@ export default {
     cursor: pointer;
     padding: 4px 8px;
     font-size: 16px;
-    color: var(--c-basic-500);
+    color: var(--text-muted);
     &:hover {
-      color: var(--c-basic-700);
+      color: var(--text-body);
     }
   }
   .pim-kebab__menu {
     position: absolute;
     right: 0;
     top: 100%;
-    background: var(--c-basic-100);
-    border: 1px solid var(--c-basic-300);
+    background: var(--surface-base);
+    border: 1px solid var(--border-subtle);
     border-radius: 6px;
     box-shadow: var(--shadow-md);
     z-index: 10;
@@ -982,7 +982,7 @@ export default {
       cursor: pointer;
       font-size: var(--fs-300);
       &:hover {
-        background: var(--c-basic-200);
+        background: var(--surface-raised);
       }
       &:first-child {
         border-radius: 6px 6px 0 0;
@@ -1015,7 +1015,7 @@ export default {
       flex: none !important;
       overflow: visible !important;
       border-left: none;
-      border-top: 1px solid var(--c-basic-300);
+      border-top: 1px solid var(--border-subtle);
     }
   }
 }
@@ -1025,8 +1025,8 @@ export default {
 /* Global (unscoped) — SortableJS clones are appended to <body>, unreachable by scoped styles */
 .drag-ghost {
   opacity: 0.9;
-  background: var(--c-basic-100);
-  border: 1px solid var(--c-support-400);
+  background: var(--surface-base);
+  border: 1px solid var(--accent);
   border-radius: 6px;
   box-shadow: var(--shadow-md);
   padding: 12px var(--space-200);

@@ -140,9 +140,9 @@ onBeforeUnmount(() => {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  border: 1px solid var(--c-basic-400);
-  background-color: var(--c-basic-100);
-  color: var(--c-basic-600);
+  border: 1px solid var(--border-default);
+  background-color: var(--surface-base);
+  color: var(--text-secondary);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -153,8 +153,8 @@ onBeforeUnmount(() => {
 }
 
 .floating-actions__back:hover {
-  background-color: var(--c-basic-200);
-  color: var(--c-basic-800);
+  background-color: var(--surface-raised);
+  color: var(--text-body);
 }
 
 .floating-actions__trigger {
@@ -162,8 +162,8 @@ onBeforeUnmount(() => {
   height: 44px;
   border-radius: 50%;
   border: none;
-  background-color: var(--c-support-400);
-  color: var(--c-basic-100);
+  background-color: var(--accent-fill);
+  color: var(--text-on-accent-fill);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -209,8 +209,8 @@ onBeforeUnmount(() => {
 }
 
 .floating-actions__label {
-  background-color: var(--c-basic-800);
-  color: var(--c-basic-100);
+  background-color: var(--surface-inverse);
+  color: var(--text-inverse);
   font-size: var(--fs-100);
   padding: 0.25rem 0.625rem;
   border-radius: 50px;
@@ -244,14 +244,14 @@ onBeforeUnmount(() => {
 }
 
 .floating-actions__action--primary {
-  background-color: var(--c-support-400);
+  background-color: var(--accent-fill);
 }
 
 .floating-actions__action--secondary {
-  background-color: var(--c-basic-600);
+  background-color: var(--surface-inverse);
 }
 
 .floating-actions__action--danger {
-  background-color: var(--c-negative-200);
+  background-color: var(--negative-fill);
 }
 </style>

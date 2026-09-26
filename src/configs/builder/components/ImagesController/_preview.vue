@@ -6,7 +6,7 @@
       <div class="flex gap-50">
         <div
           v-for="(v, k, i) in value"
-          class="relative p-300 br-50 b-basic-500 ov-h pointer shadow-down"
+          class="relative p-300 br-50 b-default ov-h pointer shadow-down"
         >
           <img
             :src="resolveImageUrl(v.image)"
@@ -20,14 +20,14 @@
             @error="(e) => (e.target.style.display = 'none')"
           />
           <span
-            class="fs-100 absolute image-badge ph-50 bg-support-400 t-basic-100 br-50"
+            class="fs-100 absolute image-badge ph-50 bg-accent-fill t-on-accent-fill br-50"
           >
             {{ `${k}` }}
           </span>
         </div>
         <div
           v-if="scale_src"
-          class="absolute scaled-image-preview br-50 b-basic-500 bg-basic-100 shadow-down"
+          class="absolute scaled-image-preview br-50 b-default bg-base shadow-down"
           @mouseleave="
             () => {
               image_scale = null;

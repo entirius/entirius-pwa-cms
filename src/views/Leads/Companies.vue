@@ -111,13 +111,13 @@ onMounted(() => load());
   gap: var(--space-100);
   min-height: 44px;
   padding: var(--space-200);
-  border-bottom: 1px solid var(--c-basic-300);
+  border-bottom: 1px solid var(--border-subtle);
   color: inherit;
   text-decoration: none;
 }
 .company-row--active {
-  box-shadow: inset 3px 0 0 var(--c-support-400);
-  background: var(--c-basic-200);
+  box-shadow: inset 3px 0 0 var(--focus-ring);
+  background: var(--surface-raised);
 }
 .company-row__domain {
   font-weight: 600;

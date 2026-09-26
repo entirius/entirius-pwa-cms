@@ -1,7 +1,7 @@
 <template>
-  <div class="spawn-rules-list p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="spawn-rules-list p-500 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-basic-100 b-basic-300 br-50 flex-1 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle br-50 flex-1 ovy-auto pl-500 pt-500 pb-500 pr-500"
     >
       <div class="flex ai-ct mb-400">
         <h1 class="fs-700 fw-600">{{ $t("enrichment.spawn_rules.title") }}</h1>
@@ -36,7 +36,7 @@
         <template #cell-auto="{ value }">
           <span
             class="chip"
-            :class="value ? 'bg-support-100 t-support-400' : 'bg-basic-200 t-basic-500'"
+            :class="value ? 'bg-accent-subtle t-accent' : 'bg-raised t-muted'"
           >
             {{ value ? $t("common.yes") : $t("common.no") }}
           </span>
@@ -44,7 +44,7 @@
         <template #cell-active="{ value }">
           <span
             class="chip"
-            :class="value ? 'bg-positive-100 t-positive-300' : 'bg-basic-200 t-basic-500'"
+            :class="value ? 'bg-positive-subtle t-positive' : 'bg-raised t-muted'"
           >
             {{ value ? $t("common.yes") : $t("common.no") }}
           </span>
@@ -55,12 +55,12 @@
             :label="$t('enrichment.spawn_rules.running')"
             variant="informative"
           />
-          <span v-else class="t-basic-400">—</span>
+          <span v-else class="t-muted">—</span>
         </template>
         <template #cell-actions="{ row }">
           <BasicButton
             :text="$t('enrichment.spawn_rules.run_now')"
-            class="bg-support-400 t-basic-100 fs-200"
+            class="bg-accent-fill t-on-accent-fill fs-200"
             :data-test="`spawn-rule-run-${row.key}`"
             @click="runRule(row)"
           />

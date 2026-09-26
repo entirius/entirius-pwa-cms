@@ -1,18 +1,18 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
     <Teleport to="#pricing-toolbar-right" defer>
       <div v-if="dirtyCount > 0" class="flex ai-ct gap-100">
         <StatusBadge :label="`${dirtyCount} ${$t('pm.unsaved')}`" variant="warning" />
         <BasicButton
           :text="saving ? $t('pm.saving') : $t('pm.save_all')"
-          class="bg-support-400 t-basic-100"
+          class="bg-accent-fill t-on-accent-fill"
           :disabled="saving"
           @click="saveAll"
         />
       </div>
     </Teleport>
 
-    <div class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
 
       <!-- Toolbar -->
       <div class="price-list__toolbar">
@@ -28,21 +28,21 @@
               v-for="code in availableCurrencies"
               :key="code"
               class="pointer flex jc-sb ai-ct ph-100 dropdown-list-el"
-              :class="{ 'bg-primary-100': selectedCurrencies.includes(code) }"
+              :class="{ 'bg-accent-fill': selectedCurrencies.includes(code) }"
               @click.stop="toggleCurrency(code)"
             >
               <span class="fw-600 ml-100">{{ code }}</span>
               <FontAwesomeIcon
                 v-if="selectedCurrencies.includes(code)"
                 icon="check"
-                class="t-positive-200"
+                class="t-positive"
               />
             </div>
           </template>
         </Dropdown>
 
         <!-- Default country (read-only) -->
-        <span v-if="defaultCountry" class="price-list__country-label t-basic-500 fs-200">
+        <span v-if="defaultCountry" class="price-list__country-label t-muted fs-200">
           {{ $t('pm.default_country_label', { country: defaultCountry }) }}
         </span>
 
@@ -87,7 +87,7 @@
           icon="tag"
         />
 
-        <p v-else-if="!rows.length && !loading" class="t-basic-500 fs-300">
+        <p v-else-if="!rows.length && !loading" class="t-muted fs-300">
           {{ $t('pm.no_prices') }}
         </p>
 
@@ -115,12 +115,12 @@
                 :class="{ 'pm-price-table__row--dirty': dirtyRows.has(rowKey(row)) }"
               >
                 <!-- SKU -->
-                <span class="fw-600 t-support-400 pointer text-truncate" @click="goToDetail(row.sku)">
+                <span class="fw-600 t-accent pointer text-truncate" @click="goToDetail(row.sku)">
                   {{ row.sku }}
                 </span>
 
                 <!-- Tax Class -->
-                <span class="t-basic-500 fs-200">{{ row.tax_class || '—' }}</span>
+                <span class="t-muted fs-200">{{ row.tax_class || '—' }}</span>
 
                 <!-- Currency -->
                 <span class="fw-700 fs-200">{{ row.currency || activeCurrency }}</span>
@@ -133,7 +133,7 @@
                 />
 
                 <!-- Calculated: Gross (or Net), read-only -->
-                <span class="t-basic-500">{{ formatPrice(calculatedValue(row)) }}</span>
+                <span class="t-muted">{{ formatPrice(calculatedValue(row)) }}</span>
 
                 <!-- Special -->
                 <BasicInput
@@ -143,7 +143,7 @@
                 />
 
                 <!-- Special Gross (read-only) -->
-                <span class="t-basic-500">{{ formatPrice(specialGrossValue(row)) }}</span>
+                <span class="t-muted">{{ formatPrice(specialGrossValue(row)) }}</span>
 
                 <!-- Special From -->
                 <input
@@ -225,10 +225,10 @@
                     class="pm-expand__row"
                   >
                     <span class="fw-600">{{ cr.country }}</span>
-                    <span class="t-basic-500">{{ cr.tax_rate != null ? cr.tax_rate + '%' : '—' }}</span>
+                    <span class="t-muted">{{ cr.tax_rate != null ? cr.tax_rate + '%' : '—' }}</span>
                     <span>{{ formatPrice(cr.net) }}</span>
                     <span>{{ formatPrice(cr.gross) }}</span>
-                    <span class="t-basic-500">
+                    <span class="t-muted">
                       <template v-if="cr.special_net">
                         {{ formatPrice(cr.special_net) }} → {{ formatPrice(cr.special_gross) }}
                       </template>
@@ -722,7 +722,7 @@ export default {
 // --- Table ---
 
 .pm-price-table {
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   overflow-x: auto;
   // min-width ensures horizontal scroll instead of crushing columns
@@ -749,12 +749,12 @@ $cols:
   grid-template-columns: $cols;
   gap: 6px;
   padding: 10px 12px;
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
   font-size: var(--fs-200);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 
 .pm-price-table__row {
@@ -762,17 +762,17 @@ $cols:
   grid-template-columns: $cols;
   gap: 6px;
   padding: 6px 12px;
-  border-top: 1px solid var(--c-basic-300);
+  border-top: 1px solid var(--border-subtle);
   align-items: center;
   min-height: 40px;
 
   &--dirty {
     background: rgba(255, 193, 7, 0.06);
-    border-left: 3px solid var(--c-warning-200);
+    border-left: 3px solid var(--warning);
   }
 
   &:hover {
-    background: var(--c-basic-200);
+    background: var(--surface-raised);
   }
 }
 
@@ -785,7 +785,7 @@ $cols:
 .pm-currency-tag {
   font-size: var(--fs-100);
   font-weight: 700;
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -798,10 +798,10 @@ $cols:
 .pm-date-native {
   height: var(--elem-height);
   padding: 2px 6px;
-  border: 1px solid var(--c-basic-400);
+  border: 1px solid var(--border-default);
   border-radius: var(--radius-sm);
-  background: var(--c-basic-100);
-  color: var(--c-basic-800);
+  background: var(--surface-base);
+  color: var(--text-body);
   font-size: var(--fs-100);
   width: 100%;
   max-width: 100%;
@@ -813,9 +813,9 @@ $cols:
   }
 
   [data-theme="dark"] & {
-    background: var(--c-basic-200);
-    border-color: var(--c-basic-400);
-    color: var(--c-basic-800);
+    background: var(--surface-raised);
+    border-color: var(--border-default);
+    color: var(--text-body);
     color-scheme: dark;
   }
 }
@@ -834,24 +834,24 @@ $cols:
   justify-content: center;
   width: 28px;
   height: 28px;
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
-  background: var(--c-basic-100);
-  color: var(--c-basic-500);
+  background: var(--surface-base);
+  color: var(--text-muted);
   cursor: pointer;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
   flex-shrink: 0;
 
   &:hover {
-    background: var(--c-basic-200);
-    border-color: var(--c-basic-400);
-    color: var(--c-basic-700);
+    background: var(--surface-raised);
+    border-color: var(--border-default);
+    color: var(--text-body);
   }
 
   &--active {
-    background: var(--c-support-100);
-    border-color: var(--c-support-400);
-    color: var(--c-support-400);
+    background: var(--accent-subtle);
+    border-color: var(--accent);
+    color: var(--text-accent);
   }
 }
 
@@ -871,13 +871,13 @@ $cols:
   &:hover { opacity: 1; }
 
   &--flush {
-    background: var(--c-basic-200);
-    color: var(--c-basic-600);
+    background: var(--surface-raised);
+    color: var(--text-secondary);
   }
 
   &--delete {
-    background: var(--c-negative-100);
-    color: var(--c-negative-300);
+    background: var(--negative-subtle);
+    color: var(--negative);
   }
 }
 
@@ -886,8 +886,8 @@ $cols:
 $expand-cols: 80px 80px 110px 110px 1fr;
 
 .pm-expand {
-  border-top: 1px solid var(--c-basic-300);
-  background: var(--c-basic-200);
+  border-top: 1px solid var(--border-subtle);
+  background: var(--surface-raised);
   padding: 10px var(--space-200) 10px 56px;
 }
 
@@ -899,9 +899,9 @@ $expand-cols: 80px 80px 110px 110px 1fr;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   padding-bottom: 6px;
-  border-bottom: 1px solid var(--c-basic-300);
+  border-bottom: 1px solid var(--border-subtle);
   margin-bottom: 4px;
 }
 
@@ -912,7 +912,7 @@ $expand-cols: 80px 80px 110px 110px 1fr;
   padding: 4px 0;
   font-size: var(--fs-300);
   align-items: center;
-  border-bottom: 1px solid var(--c-basic-200);
+  border-bottom: 1px solid var(--border-subtle);
 
   &:last-child {
     border-bottom: none;

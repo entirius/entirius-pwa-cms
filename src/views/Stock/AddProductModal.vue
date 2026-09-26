@@ -22,7 +22,7 @@
         <Loader />
       </div>
 
-      <div v-else-if="products.length === 0" class="pv-300 fs-300 t-basic-500">
+      <div v-else-if="products.length === 0" class="pv-300 fs-300 t-muted">
         {{ $t("stock.no_products_found") }}
       </div>
 
@@ -37,7 +37,7 @@
           <div class="flex ai-ct gap-200">
             <FontAwesomeIcon
               :icon="selectedSkus.has(p.sku) ? 'check-square' : 'square'"
-              :class="selectedSkus.has(p.sku) ? 't-support-400' : 't-basic-400'"
+              :class="selectedSkus.has(p.sku) ? 't-accent' : 't-muted'"
             />
             <span class="fw-500">{{ p.sku }}</span>
           </div>
@@ -46,7 +46,7 @@
             :label="String(p.quantity)"
             variant="neutral"
           />
-          <span v-else class="fs-200 t-basic-500">{{ $t("stock.no_stock_yet") }}</span>
+          <span v-else class="fs-200 t-muted">{{ $t("stock.no_stock_yet") }}</span>
         </div>
       </div>
 
@@ -153,13 +153,13 @@ export default {
 .add-product__list {
   max-height: 350px;
   overflow-y: auto;
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
 }
 
 .add-product__row {
   padding: 10px var(--space-200);
-  border-bottom: 1px solid var(--c-basic-300);
+  border-bottom: 1px solid var(--border-subtle);
   cursor: pointer;
 
   &:last-child {
@@ -167,11 +167,11 @@ export default {
   }
 
   &:hover {
-    background: var(--c-basic-200);
+    background: var(--surface-raised);
   }
 
   &--selected {
-    background: var(--c-support-100);
+    background: var(--accent-subtle);
   }
 }
 

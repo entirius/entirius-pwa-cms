@@ -1,6 +1,6 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
-    <div class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto p-500">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
+    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
       <!-- Toolbar -->
       <div class="gap-table__toolbar">
         <Dropdown
@@ -61,8 +61,8 @@
           >
             <template #cell-sku="{ row }">
               <div class="flex flex-column">
-                <span class="fw-600 t-support-400">{{ row.sku }}</span>
-                <span class="t-basic-500 fs-200">{{ row.name }}</span>
+                <span class="fw-600 t-accent">{{ row.sku }}</span>
+                <span class="t-muted fs-200">{{ row.name }}</span>
               </div>
             </template>
             <template #cell-market="{ row }">
@@ -173,7 +173,7 @@ export default {
   },
   computed: {
     bulkActions() {
-      return [{ key: 'apply', labelKey: 'pricefighter.apply_selected', buttonClass: 'bg-support-400 t-basic-100' }]
+      return [{ key: 'apply', labelKey: 'pricefighter.apply_selected', buttonClass: 'bg-accent-fill t-on-accent-fill' }]
     },
     recommendationFilterOptions() {
       return [
@@ -306,7 +306,7 @@ export default {
    badges ("Clamped by max step" / "Clamped to floor") wrap under the price
    instead of overflowing into the Gap column. */
 .gap-table__ccy {
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   font-size: var(--fs-100);
 }
 

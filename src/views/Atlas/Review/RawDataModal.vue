@@ -7,7 +7,7 @@
         @click.self="$emit('close')"
         data-testid="raw-data-modal"
       >
-        <div class="raw-modal-container bg-basic-100 b-basic-300 br-100 p-400">
+        <div class="raw-modal-container bg-base b-subtle br-100 p-400">
           <div class="flex ai-ct jc-sb mb-200">
             <h2 class="fs-400 fw-600">{{ $t("atlas.review.raw_data_title") }}</h2>
             <button
@@ -18,7 +18,7 @@
               <FontAwesomeIcon icon="xmark" />
             </button>
           </div>
-          <pre class="raw-modal__pre bg-basic-200 t-basic-800 p-200 br-sm">{{
+          <pre class="raw-modal__pre bg-raised t-body p-200 br-sm">{{
             formatted
           }}</pre>
         </div>
@@ -66,11 +66,11 @@ export default {
   background: transparent;
   border: none;
   font-size: 18px;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   cursor: pointer;
 }
 .raw-modal__close:hover {
-  color: var(--c-basic-700);
+  color: var(--text-body);
 }
 .raw-modal__pre {
   flex: 1;

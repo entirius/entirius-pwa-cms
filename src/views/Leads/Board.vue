@@ -172,11 +172,11 @@ onBeforeUnmount(() => window.removeEventListener("resize", measure));
   gap: var(--space-100);
   min-height: 44px;
   padding: 0 var(--space-300);
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
-  background: var(--c-basic-100);
-  box-shadow: -12px 0 16px var(--c-basic-100);
-  color: var(--c-basic-800);
+  background: var(--surface-base);
+  box-shadow: -12px 0 16px var(--surface-base);
+  color: var(--text-body);
   font-weight: 600;
   cursor: pointer;
 }

@@ -15,7 +15,7 @@
       <div class="candidate-row__title-line">
         <StatusBadge :label="kindLabel" variant="informative" />
         <span class="candidate-row__name">{{ hit.basic?.name }}</span>
-        <span class="candidate-row__sku fs-200 t-basic-500">{{
+        <span class="candidate-row__sku fs-200 t-muted">{{
           hit.basic?.sku
         }}</span>
       </div>
@@ -54,7 +54,7 @@
       <slot name="actions" :hit="hit" />
       <button
         type="button"
-        class="row-action-btn bg-basic-200 t-basic-700"
+        class="row-action-btn bg-raised t-body"
         :title="$t('lookup.row.open')"
         data-testid="candidate-row-open"
         @click="open"
@@ -149,7 +149,7 @@ export default {
   align-items: flex-start;
   gap: var(--space-300);
   padding: var(--space-300);
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   margin-bottom: var(--space-200);
 
@@ -160,9 +160,9 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--c-basic-200);
+    background: var(--surface-raised);
     border-radius: var(--radius-sm);
-    color: var(--c-basic-400);
+    color: var(--text-muted);
     overflow: hidden;
 
     img {
@@ -197,8 +197,8 @@ export default {
   }
   &__reason-chip {
     font-size: var(--fs-200);
-    color: var(--c-basic-600);
-    background: var(--c-basic-200);
+    color: var(--text-secondary);
+    background: var(--surface-raised);
     border-radius: 999px;
     padding: 2px 10px;
   }

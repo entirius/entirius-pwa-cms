@@ -62,7 +62,7 @@ function forwardMove(company, stageKey) {
   min-width: 240px;
   padding: var(--space-200);
   border-radius: 8px;
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
 }
 .column__head {
   display: flex;

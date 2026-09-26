@@ -28,7 +28,7 @@
                   <td>{{ item.sku }}</td>
                   <td>{{ item.channel }} · {{ item.country }} / {{ item.currency }}</td>
                   <td>{{ item.expected_new_price }}</td>
-                  <td class="t-basic-500">{{ item.reason }}</td>
+                  <td class="t-muted">{{ item.reason }}</td>
                 </tr>
               </tbody>
             </table>
@@ -36,7 +36,7 @@
         </div>
 
         <div class="apply-report__actions">
-          <BasicButton :text="$t('common.close')" class="bg-support-400 t-basic-100" @click="onClose" />
+          <BasicButton :text="$t('common.close')" class="bg-accent-fill t-on-accent-fill" @click="onClose" />
         </div>
       </div>
     </template>
@@ -99,8 +99,8 @@ export default {
 .apply-report__stale-note {
   padding: var(--space-200);
   border-radius: var(--radius-sm);
-  background: var(--c-negative-100);
-  color: var(--c-negative-300);
+  background: var(--negative-subtle);
+  color: var(--negative);
   font-size: var(--fs-200);
 }
 
@@ -109,7 +109,7 @@ export default {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   margin: 0 0 var(--space-100) 0;
 }
 
@@ -120,7 +120,7 @@ export default {
 
   td {
     padding: 4px 8px;
-    border-bottom: 1px solid var(--c-basic-200);
+    border-bottom: 1px solid var(--border-subtle);
   }
 }
 

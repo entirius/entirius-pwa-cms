@@ -1,7 +1,7 @@
 <template>
   <div class="enrichment-review h-100 ovy-auto">
     <div
-      class="enrichment-review__toolbar p-300 b-basic-300 bb-100 bg-basic-100"
+      class="enrichment-review__toolbar p-300 b-subtle bb-100 bg-base"
     >
       <div class="flex ai-ct gap-300 flex-wrap">
         <h1 class="fs-500 fw-600 m-0">{{ $t("enrichment.review.title") }}</h1>
@@ -28,7 +28,7 @@
             >
           </button>
           <button
-            class="enrichment-review__import bg-support-400 t-basic-100"
+            class="enrichment-review__import bg-accent-fill t-on-accent-fill"
             data-testid="enrichment-import-open"
             @click="importVisible = true"
           >
@@ -47,7 +47,7 @@
           @click="onFilterChange('status', opt.value)"
         />
         <span
-          class="enrichment-review__count fs-200 t-basic-500 ml-auto"
+          class="enrichment-review__count fs-200 t-muted ml-auto"
           data-testid="enrichment-count"
         >
           {{ $t("enrichment.review.matching", { count: totalCount }) }}
@@ -616,10 +616,10 @@ export default {
   gap: var(--space-50);
   height: var(--elem-height);
   padding: 0 14px;
-  border: 1px solid var(--c-basic-400);
+  border: 1px solid var(--border-default);
   border-radius: var(--radius-sm);
-  background-color: var(--c-basic-100);
-  color: var(--c-basic-600);
+  background-color: var(--surface-base);
+  color: var(--text-secondary);
   font-size: var(--fs-200);
   white-space: nowrap;
   flex-shrink: 0;
@@ -629,9 +629,9 @@ export default {
 }
 .enrichment-review__filters-toggle:hover,
 .enrichment-review__filters-toggle.is-active {
-  background-color: var(--c-basic-200);
-  border-color: var(--c-basic-500);
-  color: var(--c-basic-800);
+  background-color: var(--surface-raised);
+  border-color: var(--border-default);
+  color: var(--text-body);
 }
 .enrichment-review__filters-badge {
   min-width: 16px;
@@ -642,8 +642,8 @@ export default {
   line-height: 16px;
   text-align: center;
   border-radius: 50px;
-  background-color: var(--c-support-400);
-  color: var(--c-basic-100);
+  background-color: var(--accent-fill);
+  color: var(--text-on-accent-fill);
 }
 .enrichment-filters-enter-active,
 .enrichment-filters-leave-active {

@@ -92,7 +92,7 @@ async function confirmOptout(replyId) {
   flex-direction: column;
   gap: var(--space-200);
   padding-top: var(--space-200);
-  border-top: 1px solid var(--c-basic-300);
+  border-top: 1px solid var(--border-subtle);
 }
 .tg__head {
   display: flex;
@@ -103,7 +103,7 @@ async function confirmOptout(replyId) {
   padding: 0;
   border: none;
   background: none;
-  color: var(--c-basic-800);
+  color: var(--text-body);
   text-align: left;
   cursor: pointer;
 }
@@ -114,19 +114,19 @@ async function confirmOptout(replyId) {
 }
 .tg__meta {
   font-size: var(--fs-100);
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
 }
 .tg--reply {
-  border-top: 2px solid var(--c-support-400);
+  border-top: 2px solid var(--accent);
 }
 .tg__reply {
   font-size: var(--fs-100);
   font-weight: 600;
-  color: var(--c-support-400);
+  color: var(--text-accent);
 }
 .tg__badge {
   font-size: var(--fs-100);
   font-weight: 600;
-  color: var(--c-negative-300);
+  color: var(--negative);
 }
 </style>

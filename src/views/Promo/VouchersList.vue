@@ -27,7 +27,7 @@
         :active-count="activeFilterCount"
         :trigger-label="$t('builder.filters')"
       >
-        <p class="fs-200 t-basic-600">{{ $t("promo.voucher_status") }}</p>
+        <p class="fs-200 t-secondary">{{ $t("promo.voucher_status") }}</p>
         <FilterChip
           v-for="opt in statusOptions"
           :key="opt.key"
@@ -57,7 +57,7 @@
     >
       <template #cell-recipient_email="{ row }">
         <span v-if="row.recipient_email">{{ row.recipient_email }}</span>
-        <span v-else class="t-basic-400">—</span>
+        <span v-else class="t-muted">—</span>
       </template>
       <template #cell-status="{ row }">
         <StatusBadge
@@ -67,16 +67,16 @@
       </template>
       <template #cell-balance="{ row }">
         <span class="fw-600">{{ row.balance }}</span>
-        <span class="t-basic-400">
+        <span class="t-muted">
           / {{ row.face_value }} {{ row.currency }}</span
         >
       </template>
       <template #cell-expires_at="{ row }">
-        <span class="t-basic-600">{{ formatDate(row.expires_at) }}</span>
+        <span class="t-secondary">{{ formatDate(row.expires_at) }}</span>
       </template>
       <template #cell-voucher_campaign_id="{ row }">
         <span
-          class="vouchers-badge bg-basic-200 t-basic-600"
+          class="vouchers-badge bg-raised t-secondary"
           :title="campaignName(row.voucher_campaign_id)"
           >{{ campaignName(row.voucher_campaign_id) }}</span
         >

@@ -49,7 +49,7 @@
     <ButtonBasic
       :text="'Upload'"
       @click="uploadFile"
-      class="bg-primary-100 txt-gray-700 w-full sticky-btn mt-md"
+      class="bg-accent-fill txt-gray-700 w-full sticky-btn mt-md"
       v-if="filePreview"
     />
   </div>

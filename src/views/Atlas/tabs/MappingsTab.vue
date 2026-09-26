@@ -18,15 +18,15 @@
       <div
         v-for="profile in profiles"
         :key="profile.idx"
-        class="mapping-profile bg-basic-100 b-basic-300 br-sm p-300 mb-200"
+        class="mapping-profile bg-base b-subtle br-sm p-300 mb-200"
         :data-testid="`mapping-profile-${profile.idx}`"
       >
         <div class="flex ai-ct jc-sb gap-200 flex-wrap mb-200">
           <div class="flex ai-ct gap-200 flex-wrap">
-            <strong class="t-basic-700">{{
+            <strong class="t-body">{{
               profile.name || profile.idx
             }}</strong>
-            <span class="t-basic-500 fs-200">({{ profile.idx }})</span>
+            <span class="t-muted fs-200">({{ profile.idx }})</span>
             <StatusBadge
               v-for="ch in profile.target_channel_idxs || []"
               :key="ch"
@@ -70,7 +70,7 @@
               {{ $t("atlas.mappings.validate") }}
             </button>
             <button
-              class="row-action-btn bg-negative-100 t-negative-300"
+              class="row-action-btn bg-negative-subtle t-negative"
               :title="$t('common.delete')"
               :data-testid="`mapping-delete-profile-${profile.idx}`"
               @click="confirmDeleteProfile(profile)"
@@ -81,7 +81,7 @@
         </div>
         <div
           v-if="profile._expandValidation && profile._validation"
-          class="validation-detail mb-200 p-200 b-basic-300 br-sm"
+          class="validation-detail mb-200 p-200 b-subtle br-sm"
           :data-testid="`mapping-validation-detail-${profile.idx}`"
         >
           <div
@@ -89,21 +89,21 @@
             :key="kind"
             class="mb-100"
           >
-            <h4 class="fs-200 fw-600 t-basic-600 mb-50">
+            <h4 class="fs-200 fw-600 t-secondary mb-50">
               {{ kind }} ({{ group.length }})
             </h4>
             <ul class="validation-list">
               <li
                 v-for="(w, i) in group"
                 :key="i"
-                class="validation-entry fs-200 t-basic-700"
+                class="validation-entry fs-200 t-body"
                 :class="
-                  w.severity === 'error' ? 't-negative-300' : 't-warning-300'
+                  w.severity === 'error' ? 't-negative' : 't-warning'
                 "
               >
                 <strong>{{ w.code }}:</strong>
                 {{ w.message }}
-                <em v-if="w.details?.suggestion" class="t-basic-500">
+                <em v-if="w.details?.suggestion" class="t-muted">
                   ({{
                     $t(
                       "atlas.mappings.warning_codes.source_value_suggestion",
@@ -118,7 +118,7 @@
           </div>
         </div>
         <details class="mapping-profile__expand">
-          <summary class="t-basic-600 fs-200 pointer">
+          <summary class="t-secondary fs-200 pointer">
             {{ $t("atlas.mappings.expand_label") }}
           </summary>
           <div class="mt-200">
@@ -198,7 +198,7 @@
             data-testid="mapping-form-idx"
             @update:modelValue="onIdxInput"
           />
-          <p v-if="errors.idx" class="form-error t-negative-300 fs-200">
+          <p v-if="errors.idx" class="form-error t-negative fs-200">
             {{ errors.idx.msg }}
           </p>
         </FormField>
@@ -224,7 +224,7 @@
           />
           <p
             v-if="languageMismatchHint"
-            class="fs-200 t-warning-300 mt-50"
+            class="fs-200 t-warning mt-50"
             data-testid="mapping-form-language-mismatch-hint"
           >
             {{ languageMismatchHint }}
@@ -855,9 +855,9 @@ export default {
   font-size: 13px;
   font-weight: 500;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--c-support-400);
-  background: var(--c-support-400);
-  color: var(--c-basic-100);
+  border: 1px solid var(--accent);
+  background: var(--accent-fill);
+  color: var(--text-on-accent-fill);
   cursor: pointer;
 }
 .suppliers-primary-btn:disabled {
@@ -873,13 +873,13 @@ export default {
   font-size: var(--fs-200);
   font-weight: 500;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--c-basic-400);
-  background: var(--c-basic-100);
-  color: var(--c-basic-700);
+  border: 1px solid var(--border-default);
+  background: var(--surface-base);
+  color: var(--text-body);
   cursor: pointer;
 }
 .suppliers-secondary-btn:hover {
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
 }
 .row-action-btn {
   display: inline-flex;
@@ -905,7 +905,7 @@ export default {
   cursor: pointer;
 }
 .validation-detail {
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
 }
 .validation-list {
   list-style: none;

@@ -11,7 +11,7 @@
         <BasicButton @click="accept" :text="$t('common.copy')"></BasicButton>
         <BasicButton
           @click="reject"
-          class="bg-negative-200 t-basic-100 br-50"
+          class="bg-negative-fill t-on-status-fill br-50"
           :text="$t('common.cancel')"
         ></BasicButton>
       </div>
@@ -54,8 +54,8 @@ export default {
 }
 
 .modal-container {
-  background: var(--c-basic-100);
-  color: var(--c-basic-700);
+  background: var(--surface-base);
+  color: var(--text-body);
   padding: 20px;
   border-radius: 8px;
   box-shadow: var(--shadow-md);

@@ -71,15 +71,15 @@ onBeforeUnmount(() => {
   height: 32px;
   flex-shrink: 0;
   border-radius: 5px;
-  border: 1px solid var(--c-basic-400);
-  background-color: var(--c-basic-100);
-  color: var(--c-basic-600);
+  border: 1px solid var(--border-default);
+  background-color: var(--surface-base);
+  color: var(--text-secondary);
   font-size: 13px;
   cursor: pointer;
   transition: all 0.15s ease;
   &:hover {
-    background-color: var(--c-basic-200);
-    color: var(--c-basic-800);
+    background-color: var(--surface-raised);
+    color: var(--text-body);
   }
 }
 
@@ -94,8 +94,8 @@ onBeforeUnmount(() => {
   line-height: 16px;
   text-align: center;
   border-radius: 50px;
-  background-color: var(--c-support-400);
-  color: var(--c-basic-100);
+  background-color: var(--accent-fill);
+  color: var(--text-on-accent-fill);
   pointer-events: none;
 }
 
@@ -133,8 +133,8 @@ onBeforeUnmount(() => {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     padding: 8px;
-    background-color: var(--c-basic-200);
-    border: 1px solid var(--c-basic-300);
+    background-color: var(--surface-raised);
+    border: 1px solid var(--border-subtle);
     border-radius: 5px;
   }
 }

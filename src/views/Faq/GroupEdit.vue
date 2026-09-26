@@ -1,16 +1,16 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
     <Teleport to="#faq-toolbar-left" defer>
       <BasicButton
         text=""
         icon="arrow-left"
-        class="bg-basic-200 t-basic-600"
+        class="bg-raised t-secondary"
         @click="$router.push('/faq/groups')"
       />
       <span class="fw-600 fs-400">{{ isEdit ? group.name || group.idx : $t("faq.create_group") }}</span>
     </Teleport>
     <Teleport to="#faq-toolbar-right" defer>
-      <span v-if="isDirty" class="chip bg-warning-100 t-warning-300">
+      <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
         {{ $t("unsaved.changes") }}
       </span>
       <BasicButton
@@ -24,17 +24,17 @@
         v-if="isEdit"
         text=""
         icon="trash-can"
-        class="bg-negative-100 t-negative-300"
+        class="bg-negative-subtle t-negative"
         @click="showDeleteConfirm = true"
       />
       <BasicButton
         :text="$t('common.save')"
-        class="bg-support-400 t-basic-100"
+        class="bg-accent-fill t-on-accent-fill"
         @click="saveGroup"
       />
     </Teleport>
 
-    <div class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
       <Loader v-if="loading" />
 
       <template v-else>
@@ -90,7 +90,7 @@
                     <FontAwesomeIcon
                       v-if="form.channel_ids.includes(ch.value)"
                       icon="check"
-                      class="t-positive-200"
+                      class="t-positive"
                     />
                   </div>
                 </template>
@@ -114,7 +114,7 @@
             </div>
           </div>
 
-          <p v-if="!groupItems.length" class="fs-200 t-basic-500">
+          <p v-if="!groupItems.length" class="fs-200 t-muted">
             {{ $t("faq.no_items_in_group") }}
           </p>
 
@@ -123,7 +123,7 @@
             v-model="groupItems"
             item-key="id"
             handle=".drag-handle"
-            ghost-class="bg-support-100"
+            ghost-class="bg-accent-subtle"
             :force-fallback="true"
             fallback-class="drag-ghost"
             @end="onReorderItems"
@@ -132,7 +132,7 @@
               <div class="item-row flex ai-ct gap-200">
                 <font-awesome-icon
                   icon="grip-vertical"
-                  class="drag-handle t-basic-400"
+                  class="drag-handle t-muted"
                 />
                 <span
                   class="flex-1 item-row__question pointer"
@@ -147,7 +147,7 @@
                 <BasicButton
                   text=""
                   icon="xmark"
-                  class="bg-basic-200 t-basic-600"
+                  class="bg-raised t-secondary"
                   @click="removeItemFromGroup(element)"
                 />
               </div>
@@ -529,7 +529,7 @@ export default {
 
 <style lang="scss" scoped>
 .detail-section {
-  border: 1px solid var(--c-basic-200);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: 20px;
 }
@@ -551,7 +551,7 @@ export default {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 
 .add-item-select {
@@ -561,11 +561,11 @@ export default {
 
 .item-row {
   padding: 12px var(--space-200);
-  border-bottom: 1px solid var(--c-basic-300);
+  border-bottom: 1px solid var(--border-subtle);
   transition: background 0.1s;
 
   &:hover {
-    background: var(--c-basic-200);
+    background: var(--surface-raised);
   }
 }
 
@@ -590,8 +590,8 @@ export default {
 .drag-ghost {
   max-width: 600px;
   opacity: 0.9;
-  background: var(--c-basic-100);
-  border: 1px solid var(--c-support-400);
+  background: var(--surface-base);
+  border: 1px solid var(--accent);
   border-radius: 6px;
   box-shadow: var(--shadow-md);
   padding: 12px var(--space-200);

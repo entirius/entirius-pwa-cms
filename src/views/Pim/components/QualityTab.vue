@@ -27,10 +27,10 @@
           :variant="variant(f.severity)"
         />
         <span class="quality-tab__label">{{ label(f) }}</span>
-        <span v-if="f.language" class="quality-tab__lang t-basic-500">{{
+        <span v-if="f.language" class="quality-tab__lang t-muted">{{
           f.language
         }}</span>
-        <span v-if="f.inherited" class="quality-tab__inherited t-basic-500">
+        <span v-if="f.inherited" class="quality-tab__inherited t-muted">
           {{ $t("pim.quality_fix_on", { channel: f.source_channel }) }}
         </span>
       </li>
@@ -110,17 +110,17 @@ export default {
   align-items: center;
   gap: var(--space-200);
   padding: var(--space-200) var(--space-300);
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  background: var(--c-basic-100);
+  background: var(--surface-base);
 }
 .quality-tab__label {
-  color: var(--c-basic-700);
+  color: var(--text-body);
 }
 .quality-tab__lang {
   padding: 0 6px;
   border-radius: var(--radius-sm);
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
   font-size: 11px;
   text-transform: uppercase;
 }

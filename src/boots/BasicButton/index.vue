@@ -82,15 +82,15 @@ button.button-basic {
 
   &.btn-primary {
     color: inherit;
-    background-color: var(--c-primary-100);
+    background-color: var(--accent-fill);
 
     &:hover:not([disabled]) {
-      background-color: var(--c-primary-200);
+      background-color: var(--accent-fill-hover);
     }
 
     &[disabled] {
       //opacity: 0.3;
-      background-color: var(--c-primary-200);
+      background-color: var(--accent-fill-hover);
     }
     .btn-text {
       color: var(--c-basic-100);
@@ -101,24 +101,24 @@ button.button-basic {
   // -------------------------------------------------------------
   &.btn-outline {
     color: inherit;
-    //background-color: var(--c-basic-100);
-    border: 1px solid var(--c-basic-300);
+    //background-color: var(--surface-base);
+    border: 1px solid var(--border-subtle);
 
     &:hover {
-      border: 1px solid var(--c-basic-500);
+      border: 1px solid var(--border-default);
     }
     &[disabled] {
-      border: 1px solid var(--c-basic-400);
+      border: 1px solid var(--border-default);
       .btn-text {
-        color: var(--c-basic-500);
+        color: var(--text-muted);
       }
     }
 
     .btn-text {
-      color: var(--c-basic-600);
+      color: var(--text-secondary);
     }
     &.selected {
-      border-bottom: 2px solid var(--c-basic-800);
+      border-bottom: 2px solid var(--border-strong);
     }
   }
 
@@ -127,31 +127,31 @@ button.button-basic {
   // -------------------------------------------------------------
   &.btn-secondary {
     color: inherit;
-    background-color: var(--c-basic-200);
+    background-color: var(--surface-raised);
 
     &:hover {
-      background-color: var(--c-basic-300);
+      background-color: var(--surface-hover);
     }
 
     &[disabled] {
-      color: var(--c-basic-800);
-      background-color: var(--c-basic-200);
+      color: var(--text-body);
+      background-color: var(--surface-raised);
       .btn-text {
-        color: var(--c-basic-400);
+        color: var(--text-muted);
       }
     }
     .btn-text {
       position: relative;
       z-index: 1;
-      color: var(--c-basic-600);
+      color: var(--text-secondary);
     }
   }
   //
   //
   //
   &.filter-primary {
-    color: var(--c-basic-100);
-    background: var(--c-basic-900);
+    color: var(--text-inverse);
+    background: var(--surface-inverse);
     line-height: 1rem;
     padding: 0.5rem 1rem;
     min-width: 3rem;

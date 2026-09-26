@@ -26,7 +26,7 @@
         <FontAwesomeIcon
           v-if="modelValue.includes(ch.idx)"
           icon="check"
-          class="t-support-400"
+          class="t-accent"
         />
       </div>
     </div>
@@ -85,19 +85,19 @@ function toggle(idx) {
   height: var(--elem-height);
   padding: 0 10px;
   border-radius: 5px;
-  border: 1px solid var(--c-basic-400);
-  background-color: var(--c-basic-100);
-  color: var(--c-basic-600);
+  border: 1px solid var(--border-default);
+  background-color: var(--surface-base);
+  color: var(--text-secondary);
   font-size: 13px;
   transition: all 0.15s ease;
   white-space: nowrap;
   &:hover {
-    background-color: var(--c-basic-300);
-    color: var(--c-basic-800);
+    background-color: var(--surface-hover);
+    color: var(--text-body);
   }
   &--active {
-    border-color: var(--c-support-400);
-    color: var(--c-support-400);
+    border-color: var(--accent);
+    color: var(--text-accent);
   }
 }
 
@@ -119,8 +119,8 @@ function toggle(idx) {
   right: 0;
   min-width: 200px;
   z-index: 10;
-  background: var(--c-basic-100);
-  border: 1px solid var(--c-basic-300);
+  background: var(--surface-base);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
   overflow: hidden;
@@ -130,10 +130,10 @@ function toggle(idx) {
   padding: 8px 12px;
   font-size: 11px;
   font-weight: 600;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  border-bottom: 1px solid var(--c-basic-300);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .channel-select__item {
@@ -142,17 +142,17 @@ function toggle(idx) {
   justify-content: space-between;
   padding: 8px 12px;
   font-size: 13px;
-  color: var(--c-basic-700);
+  color: var(--text-body);
   cursor: pointer;
   transition: background-color 0.1s ease;
   &:hover {
-    background-color: var(--c-basic-200);
+    background-color: var(--surface-raised);
   }
   &--selected {
-    background-color: var(--c-support-100);
+    background-color: var(--accent-subtle);
   }
   & + & {
-    border-top: 1px solid var(--c-basic-200);
+    border-top: 1px solid var(--border-subtle);
   }
 }
 </style>

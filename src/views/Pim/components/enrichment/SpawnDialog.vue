@@ -7,13 +7,13 @@
         @click.self="$emit('close')"
       >
         <div
-          class="spawn-modal__box bg-basic-100"
+          class="spawn-modal__box bg-base"
           role="dialog"
           aria-modal="true"
           data-testid="enrichment-spawn-dialog"
         >
-          <div class="spawn-modal__header b-basic-300 bb-100">
-            <FontAwesomeIcon icon="wand-magic-sparkles" class="t-support-400" />
+          <div class="spawn-modal__header b-subtle bb-100">
+            <FontAwesomeIcon icon="wand-magic-sparkles" class="t-accent" />
             <h2 class="fs-400 fw-600 m-0">
               {{ $t("enrichment.spawn.title") }}
             </h2>
@@ -61,7 +61,7 @@
                 </label>
                 <span
                   v-if="!availableLanguages.length"
-                  class="fs-200 t-basic-500"
+                  class="fs-200 t-muted"
                   >{{ $t("enrichment.spawn.no_languages") }}</span
                 >
               </div>
@@ -107,21 +107,21 @@
               </div>
             </FormField>
 
-            <p class="spawn-modal__summary fs-200 t-basic-500">
+            <p class="spawn-modal__summary fs-200 t-muted">
               {{ summaryLine }}
             </p>
           </div>
 
-          <div class="spawn-modal__footer b-basic-300 bt-100">
+          <div class="spawn-modal__footer b-subtle bt-100">
             <button
-              class="spawn-modal__btn bg-basic-200 t-basic-600"
+              class="spawn-modal__btn bg-raised t-secondary"
               :disabled="busy"
               @click="$emit('close')"
             >
               {{ $t("common.cancel") }}
             </button>
             <button
-              class="spawn-modal__btn bg-support-400 t-basic-100"
+              class="spawn-modal__btn bg-accent-fill t-on-accent-fill"
               :disabled="busy || !canSpawn"
               data-testid="enrichment-spawn-submit"
               @click="spawn"
@@ -355,12 +355,12 @@ export default {
   align-items: center;
   gap: var(--space-50);
   padding: 4px 8px;
-  border: 1px solid var(--c-basic-400);
+  border: 1px solid var(--border-default);
   border-radius: var(--radius-sm);
   cursor: pointer;
   &--on {
-    border-color: var(--c-support-400);
-    color: var(--c-support-400);
+    border-color: var(--accent);
+    color: var(--text-accent);
   }
 }
 .spawn-modal__scope {

@@ -7,22 +7,22 @@
         @click.self="$emit('close')"
       >
         <div
-          class="drift-modal__box bg-basic-100"
+          class="drift-modal__box bg-base"
           role="dialog"
           aria-modal="true"
           data-testid="enrichment-drift-modal"
         >
-          <div class="drift-modal__header b-basic-300 bb-100">
+          <div class="drift-modal__header b-subtle bb-100">
             <FontAwesomeIcon
               icon="triangle-exclamation"
-              class="t-warning-300"
+              class="t-warning"
             />
             <h2 class="fs-400 fw-600 m-0">
               {{ $t("enrichment.drift.title") }}
             </h2>
           </div>
           <div class="drift-modal__body">
-            <p class="fs-200 t-basic-600 mt-0">
+            <p class="fs-200 t-secondary mt-0">
               {{ $t("enrichment.drift.intro") }}
             </p>
             <div v-if="active" class="drift-modal__diff">
@@ -34,7 +34,7 @@
                 :subject-label="active.subject_label || active.subject_ref"
               />
             </div>
-            <label class="drift-modal__reason-label fs-200 t-basic-500">{{
+            <label class="drift-modal__reason-label fs-200 t-muted">{{
               $t("enrichment.review.reject_reason")
             }}</label>
             <textarea
@@ -45,16 +45,16 @@
               data-testid="enrichment-drift-reason"
             />
           </div>
-          <div class="drift-modal__footer b-basic-300 bt-100">
+          <div class="drift-modal__footer b-subtle bt-100">
             <button
-              class="drift-modal__btn bg-basic-200 t-basic-600"
+              class="drift-modal__btn bg-raised t-secondary"
               :disabled="busy"
               @click="$emit('close')"
             >
               {{ $t("common.cancel") }}
             </button>
             <button
-              class="drift-modal__btn bg-negative-100 t-negative-300"
+              class="drift-modal__btn bg-negative-subtle t-negative"
               :disabled="busy"
               data-testid="enrichment-drift-reject"
               @click="$emit('reject', { proposal: active, reason })"
@@ -62,7 +62,7 @@
               {{ $t("common.reject") }}
             </button>
             <button
-              class="drift-modal__btn bg-positive-200 t-basic-100"
+              class="drift-modal__btn bg-positive-fill t-on-status-fill"
               :disabled="busy"
               data-testid="enrichment-drift-confirm"
               @click="$emit('confirm', active)"
@@ -149,10 +149,10 @@ export default {
 .drift-modal__reason {
   width: 100%;
   padding: var(--space-200);
-  border: 1px solid var(--c-basic-400);
+  border: 1px solid var(--border-default);
   border-radius: var(--radius-sm);
-  background: var(--c-basic-100);
-  color: var(--c-basic-800);
+  background: var(--surface-base);
+  color: var(--text-body);
   font-size: var(--fs-200);
   resize: vertical;
 }

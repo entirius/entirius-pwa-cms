@@ -1,9 +1,9 @@
 <template>
   <div class="handy-kit" @click.self="requestClose">
     <div
-      class="handy-kit-core fs-300 t-basic-700 flex flex-column b-basic-400 br-50"
+      class="handy-kit-core fs-300 t-body flex flex-column b-default br-50"
     >
-      <div class="handy-kit-body flex-column fg-1 ov-h bg-basic-100">
+      <div class="handy-kit-body flex-column fg-1 ov-h bg-base">
         <component :is="handyType.id" class="fg-1 ovy-auto" ref="activeKit" />
       </div>
       <Loading :isHandy="true" v-if="handyLoading" />

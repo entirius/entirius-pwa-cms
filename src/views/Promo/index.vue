@@ -1,10 +1,10 @@
 <template>
   <div class="promo-panel h-100">
-    <div class="promo-panel__toolbar flex ai-ct jc-sb bg-basic-200 fs-300">
+    <div class="promo-panel__toolbar flex ai-ct jc-sb bg-raised fs-300">
       <div class="flex ai-ct gap-300">
         <div id="promo-toolbar-left" class="flex ai-ct gap-200"></div>
         <div v-if="showChannelSelector" class="promo-channel-selector flex ai-ct gap-300">
-          <span class="fs-200 fw-600 t-basic-500">{{ $t("promo.channel") }}:</span>
+          <span class="fs-200 fw-600 t-muted">{{ $t("promo.channel") }}:</span>
           <Dropdown
             :values="channelOptions"
             :selected="[checkoutChannel.activeChannelIdx]"
@@ -69,7 +69,7 @@ export default {
 
 .promo-panel__toolbar {
   padding: var(--space-100) var(--space-200);
-  border-bottom: 1px solid var(--c-basic-300);
+  border-bottom: 1px solid var(--border-subtle);
   flex-shrink: 0;
 }
 

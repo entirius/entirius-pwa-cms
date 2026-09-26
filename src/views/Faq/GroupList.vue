@@ -1,6 +1,6 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
-    <div class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
+    <div class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500">
       <div class="group-list__toolbar">
         <BasicInput
           v-model="search"
@@ -13,7 +13,7 @@
           :active-count="activeFilter !== 'all' ? 1 : 0"
           :trigger-label="$t('builder.filters')"
         >
-          <p class="fs-200 t-basic-600">{{ $t("builder.filters") }}</p>
+          <p class="fs-200 t-secondary">{{ $t("builder.filters") }}</p>
           <FilterChip
             v-for="tab in filterTabs"
             :key="tab.key"
@@ -27,7 +27,7 @@
       <Loader v-show="loading" />
 
       <div v-show="!loading">
-        <p v-if="!groups.length" class="t-basic-500 fs-300">
+        <p v-if="!groups.length" class="t-muted fs-300">
           {{ $t("faq.no_groups") }}
         </p>
 
@@ -36,7 +36,7 @@
           v-model="groups"
           item-key="id"
           handle=".drag-handle"
-          ghost-class="bg-support-100"
+          ghost-class="bg-accent-subtle"
           :force-fallback="true"
           fallback-class="drag-ghost"
           @end="onReorder"
@@ -48,7 +48,7 @@
             >
               <font-awesome-icon
                 icon="grip-vertical"
-                class="drag-handle t-basic-400"
+                class="drag-handle t-muted"
               />
               <span class="group-row__name fw-600 flex-1">
                 {{ element.name || element.idx }}
@@ -56,18 +56,18 @@
               <div class="flex ai-ct gap-100">
                 <span
                   v-if="(element.channel_ids || []).length"
-                  class="chip bg-support-100 t-support-400"
+                  class="chip bg-accent-subtle t-accent"
                 >
                   {{ element.channel_ids.length }} {{ element.channel_ids.length === 1 ? 'channel' : 'channels' }}
                 </span>
                 <span
                   v-else
-                  class="chip bg-basic-200 t-basic-500"
+                  class="chip bg-raised t-muted"
                 >
                   {{ $t("faq.global") }}
                 </span>
               </div>
-              <span class="chip bg-support-100 t-support-400">
+              <span class="chip bg-accent-subtle t-accent">
                 {{ element.item_count || 0 }} {{ $t("faq.items") }}
               </span>
               <StatusBadge
@@ -228,11 +228,11 @@ export default {
 
 .group-row {
   padding: 12px var(--space-200);
-  border-bottom: 1px solid var(--c-basic-300);
+  border-bottom: 1px solid var(--border-subtle);
   transition: background 0.1s;
 
   &:hover {
-    background: var(--c-basic-200);
+    background: var(--surface-raised);
   }
 }
 
@@ -257,8 +257,8 @@ export default {
 .drag-ghost {
   max-width: 600px;
   opacity: 0.9;
-  background: var(--c-basic-100);
-  border: 1px solid var(--c-support-400);
+  background: var(--surface-base);
+  border: 1px solid var(--accent);
   border-radius: 6px;
   box-shadow: var(--shadow-md);
   padding: 12px var(--space-200);

@@ -105,7 +105,7 @@ const entries = computed(() => {
   list-style: none;
 }
 .tl__empty {
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   text-align: center;
 }
 .tl__entry {
@@ -118,11 +118,11 @@ const entries = computed(() => {
   max-width: 85%;
   padding: var(--space-200) var(--space-300);
   border-radius: 12px;
-  background: var(--c-basic-200);
-  color: var(--c-basic-800);
+  background: var(--surface-raised);
+  color: var(--text-body);
 }
 .tl__entry--out .tl__bubble {
-  background: var(--c-support-100);
+  background: var(--accent-subtle);
   border-bottom-right-radius: 4px;
 }
 .tl__entry--in .tl__bubble {
@@ -132,7 +132,7 @@ const entries = computed(() => {
 .tl__meta {
   margin: 0;
   font-size: var(--fs-100);
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
 }
 .tl__meta {
   display: flex;
@@ -158,14 +158,14 @@ const entries = computed(() => {
   padding: 0;
   border: none;
   background: none;
-  color: var(--c-support-400);
+  color: var(--text-accent);
   font-size: var(--fs-100);
   text-decoration: underline;
   cursor: pointer;
 }
 .tl__quote {
   margin-top: var(--space-100);
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
 }
 /* A phone has no width to spare: bubbles take nearly the whole line and a slimmer padding. */
 @media (max-width: 1023px) {
@@ -180,15 +180,15 @@ const entries = computed(() => {
   gap: var(--space-200);
   align-items: center;
   margin-top: var(--space-200);
-  color: var(--c-negative-300);
+  color: var(--negative);
 }
 .tl__confirm {
   min-height: 44px;
   padding: 0 var(--space-300);
-  border: 1px solid var(--c-negative-300);
+  border: 1px solid var(--negative);
   border-radius: 8px;
-  background: var(--c-basic-100);
-  color: var(--c-negative-300);
+  background: var(--surface-base);
+  color: var(--negative);
   font-weight: 600;
   cursor: pointer;
 }

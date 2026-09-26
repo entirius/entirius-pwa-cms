@@ -34,7 +34,7 @@ defineEmits(["update:modelValue"]);
 .basic-tabs {
   display: flex;
   gap: var(--space-100);
-  border-bottom: 1px solid var(--c-basic-200);
+  border-bottom: 1px solid var(--border-subtle);
 
   &__tab {
     padding: 8px 16px;
@@ -43,17 +43,17 @@ defineEmits(["update:modelValue"]);
     cursor: pointer;
     font-size: var(--fs-300);
     font-weight: 500;
-    color: var(--c-basic-500);
+    color: var(--text-muted);
     border-bottom: 2px solid transparent;
     transition: color 0.15s, border-color 0.15s;
 
     &:hover:not(&--active) {
-      color: var(--c-basic-700);
+      color: var(--text-body);
     }
 
     &--active {
-      color: var(--c-support-400);
-      border-bottom-color: var(--c-support-400);
+      color: var(--text-accent);
+      border-bottom-color: var(--accent);
     }
   }
 
@@ -65,8 +65,8 @@ defineEmits(["update:modelValue"]);
     height: 20px;
     padding: 0 6px;
     border-radius: 10px;
-    background: var(--c-basic-200);
-    color: var(--c-basic-600);
+    background: var(--surface-raised);
+    color: var(--text-secondary);
     font-size: var(--fs-100);
     font-weight: 600;
     margin-left: 4px;

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="fs-300 t-basic-700 fg-1 flex-column relative pl-500 pr-500 pt-200 pb-700 ovy-auto builder-wrap"
+    class="fs-300 t-body fg-1 flex-column relative pl-500 pr-500 pt-200 pb-700 ovy-auto builder-wrap"
     :id="`container-${componentId}`"
   >
     <ConfirmationModal
@@ -72,7 +72,7 @@
 
       <template #description>
         <BasicInput
-          class="bg-basic-100 lh-base-elem"
+          class="bg-base lh-base-elem"
           :label="$t('builder.document_name')"
           v-model="copy_doc_label"
           :key="`copy-name-label`"
@@ -84,12 +84,12 @@
       <BasicButton
         text=""
         icon="arrow-left"
-        class="bg-basic-200 t-basic-600"
+        class="bg-raised t-secondary"
         @click="$router.push(`/pages/${content_type}`)"
       />
       <div v-if="!loading" class="builder-toolbar-name">
-        <span class="fs-200 t-basic-500">{{ $t("builder.doc_name") }}</span>
-        <span class="fs-300 fw-600 t-basic-700">
+        <span class="fs-200 t-muted">{{ $t("builder.doc_name") }}</span>
+        <span class="fs-300 fw-600 t-body">
           {{ custom_doc_name || $t("builder.set_name") }}
         </span>
       </div>
@@ -115,7 +115,7 @@
     <!-- Right toolbar: unsaved badge, save, publish, duplicate, settings, advanced -->
     <Teleport to="#builder-toolbar-right" defer>
       <template v-if="!loading">
-        <span v-if="isDirty" class="chip bg-warning-100 t-warning-300">
+        <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
           {{ $t("unsaved.changes") }}
         </span>
         <button
@@ -179,7 +179,7 @@
           <button
             @click="advanced_options = !advanced_options"
             class="builder-toolbar-icon pointer"
-            :class="{ 't-negative-200': advanced_options }"
+            :class="{ 't-negative': advanced_options }"
             :title="$t('builder.advanced')"
           >
             <FontAwesomeIcon :icon="advanced_options ? 'xmark' : 'gears'" />
@@ -191,7 +191,7 @@
     <!-- Advanced options row (collapsible, below toolbar) -->
     <div
       v-if="advanced_options && !loading"
-      class="builder-advanced-row flex ai-ct gap-200 bg-basic-100"
+      class="builder-advanced-row flex ai-ct gap-200 bg-base"
     >
       <NoticeMe
         :stroke_color_class="'stroke-basic-600'"
@@ -201,7 +201,7 @@
       >
         <BasicInput
           :placeholder="$t('builder.custom_doc_name')"
-          class="fs-200 t-basic-600 h-100"
+          class="fs-200 t-secondary h-100"
           v-model="custom_doc_name"
         />
       </NoticeMe>
@@ -348,12 +348,12 @@
     </div>
 
     <nav
-      class="sections-options-menu flex ai-ct jc-fe pv-200 pt-200 pb-200 pl-500 pr-500 br-50 bb-basic-300 bg-basic-100 mb-600"
+      class="sections-options-menu flex ai-ct jc-fe pv-200 pt-200 pb-200 pl-500 pr-500 br-50 bb-subtle bg-base mb-600"
       v-if="type === 'blog-post'"
     >
       <div class="inline-flex ai-ct gap-100 mr-200">
         <ToolTip
-          class="right t-support-300 fs-200 relative"
+          class="right t-accent fs-200 relative"
           :tip="$t('builder.blog_repr_tip')"
           :is_wrapper="true"
         >
@@ -378,8 +378,8 @@
                 class="flex ai-ct gap-100 p-50 fs-200 pointer br-50"
                 :class="[
                   !blog_extension
-                    ? 'p-50 bg-basic-300 t-warning-200  bg-basic-800-hover'
-                    : 't-basic-600 bg-basic-400 b-basic-500',
+                    ? 'p-50 bg-hover t-warning  bg-inverse-hover'
+                    : 't-secondary bg-hover b-default',
                 ]"
               >
                 <span
@@ -390,7 +390,7 @@
                   <i
                     class="icon-cookie"
                     :class="{
-                      'pulse-animation t-warning-200': !blog_extension,
+                      'pulse-animation t-warning': !blog_extension,
                     }"
                   ></i>
                 </span>
@@ -407,29 +407,29 @@
     <div class="grid grid-col-12">
       <div class="grid gap-400 gc-s-1 gc-e-13">
         <div
-          class="fs-300 grid b-basic-300 br-50 ov-h"
+          class="fs-300 grid b-subtle br-50 ov-h"
           v-for="(s_uid, s_idx) in sections_order"
           :key="s_idx"
         >
-          <div class="grid grid-col-4 t-basic-600">
-            <div class="gc-s-1 gc-e-5 br-50 bb-basic-400">
-              <div class="pt-200 pb-200 pl-500 pr-500 bg-basic-100">
+          <div class="grid grid-col-4 t-secondary">
+            <div class="gc-s-1 gc-e-5 br-50 bb-default">
+              <div class="pt-200 pb-200 pl-500 pr-500 bg-base">
                 <div class="section-header-row flex jc-sb mb-200">
                   <div class="section-title-wrap">
-                    <p class="section-title fs-600 fw-600 t-basic-700">
+                    <p class="section-title fs-600 fw-600 t-body">
                       {{ formatCoreType(sections[s_uid]["core_type"]) }}
-                      <span class="fs-200 t-basic-500 fw-400 ml-100"
+                      <span class="fs-200 t-muted fw-400 ml-100"
                         >· {{ tileCountLabel(s_uid) }}</span
                       >
                     </p>
                     <p
                       v-if="sections[s_uid].title"
-                      class="fs-200 t-basic-600 lc-1"
+                      class="fs-200 t-secondary lc-1"
                     >
                       {{ sections[s_uid].title }}
                     </p>
                     <p
-                      class="section-uid fs-100 t-basic-400 pointer"
+                      class="section-uid fs-100 t-muted pointer"
                       @click="copyToClipboard(s_uid)"
                       :title="s_uid"
                     >
@@ -496,7 +496,7 @@
                     ) in core_properties"
                   >
                     <div v-if="sections[s_uid][prop]" class="mb-200">
-                      <p class="t-basic-500 fs-100 mb-50">
+                      <p class="t-muted fs-100 mb-50">
                         {{ props_dictionary[prop] }}:
                       </p>
                       <p v-if="type === 'text'" class="fs-200">
@@ -530,9 +530,9 @@
                 </div>
               </div>
             </div>
-            <div class="gc-s-1 gc-e-5 bg-basic-200 pt-200 pb-200 pl-500 pr-500">
+            <div class="gc-s-1 gc-e-5 bg-raised pt-200 pb-200 pl-500 pr-500">
               <div
-                class="t-basic-700 br-50"
+                class="t-body br-50"
                 v-if="
                   sections[s_uid]['core_type'] !== 'section-slider' ||
                   sections[s_uid]['slider_type'] === 'tiles'
@@ -687,15 +687,15 @@
                     >
                       <div v-if="tiles[t_uid] && tiles[t_uid].core_type" class="swiper-slide pointer">
                         <div
-                          class="bg-basic-300 t-basic-700 br-50 pl-100 pr-100 pt-100 pb-100 ai-ct grid gap-50"
+                          class="bg-hover t-body br-50 pl-100 pr-100 pt-100 pb-100 ai-ct grid gap-50"
                         >
                           <div class="flex-column ai-fe">
-                            <p class="fs-200 t-basic-700 fw-600 txt-right lc-1">
+                            <p class="fs-200 t-body fw-600 txt-right lc-1">
                               {{ formatCoreType(tiles[t_uid]["core_type"]) }}
                             </p>
                             <p
                               v-if="tiles[t_uid].title"
-                              class="fs-100 t-basic-500 lc-1 txt-right"
+                              class="fs-100 t-muted lc-1 txt-right"
                             >
                               {{ tiles[t_uid].title }}
                             </p>
@@ -703,7 +703,7 @@
                               v-else-if="
                                 tiles[t_uid].product_sku || tiles[t_uid].sku
                               "
-                              class="fs-100 t-support-400 lc-1 txt-right"
+                              class="fs-100 t-accent lc-1 txt-right"
                             >
                               SKU:
                               {{ tiles[t_uid].product_sku || tiles[t_uid].sku }}
@@ -797,7 +797,7 @@
                   </BasicSwiper>
                 </div>
                 <div
-                  class="grid grid-col-4 gap-100 bg-basic-200"
+                  class="grid grid-col-4 gap-100 bg-raised"
                   v-if="section_tiles_details === s_uid"
                 >
                   <template
@@ -806,19 +806,19 @@
                   >
                     <div v-if="tiles[t_uid] && tiles[t_uid].core_type">
                       <div
-                        class="br-50 p-100 bg-basic-300 grid gap-100 b-basic-400"
+                        class="br-50 p-100 bg-hover grid gap-100 b-default"
                       >
                         <div class="">
                           <div class="mb-200">
                             <div class="flex jc-sb ai-st">
                               <div>
-                                <p class="fs-200 fw-500 t-basic-600">
+                                <p class="fs-200 fw-500 t-secondary">
                                   {{
                                     formatCoreType(tiles[t_uid]["core_type"])
                                   }}
                                 </p>
                                 <p
-                                  class="fs-100 t-basic-400 pointer mt-50"
+                                  class="fs-100 t-muted pointer mt-50"
                                   @click="copyToClipboard(t_uid)"
                                   :title="t_uid"
                                 >
@@ -838,7 +838,7 @@
                               class="mb-100 fs-200"
                             >
                               <p
-                                class="t-basic-500 fw-600 underline fs-100 mb-50"
+                                class="t-muted fw-600 underline fs-100 mb-50"
                               >
                                 {{ props_dictionary[prop] }}:
                               </p>
@@ -1842,7 +1842,7 @@ const scroll_into = (id) => {
 }
 
 [data-theme="dark"] .wysiwyg-container-preview span[style*="color"] {
-  color: var(--c-basic-700) !important;
+  color: var(--text-body) !important;
 }
 
 .wysiwyg-container-preview {
@@ -1851,7 +1851,7 @@ const scroll_into = (id) => {
   table {
     table-layout: fixed;
     // border-radius: var(--space-50);
-    border: 1px solid var(--c-basic-500);
+    border: 1px solid var(--border-default);
     // overflow: hidden;
     font-size: var(--fs-100);
     font-weight: normal;
@@ -1861,7 +1861,7 @@ const scroll_into = (id) => {
     min-width: 100%;
     // max-width: 100%;
     // white-space: nowrap;
-    background-color: var(--c-basic-100);
+    background-color: var(--surface-base);
 
     td,
     th {
@@ -1876,7 +1876,7 @@ const scroll_into = (id) => {
       vertical-align: middle;
     }
     td {
-      border-bottom: 1px solid var(--c-basic-300);
+      border-bottom: 1px solid var(--border-subtle);
       width: 1%;
     }
 
@@ -1911,14 +1911,14 @@ const scroll_into = (id) => {
   width: 32px;
   height: 32px;
   border-radius: 5px;
-  border: 1px solid var(--c-basic-400);
-  background-color: var(--c-basic-100);
-  color: var(--c-basic-600);
+  border: 1px solid var(--border-default);
+  background-color: var(--surface-base);
+  color: var(--text-secondary);
   font-size: 13px;
   transition: all 0.15s ease;
   &:hover {
-    background-color: var(--c-basic-300);
-    color: var(--c-basic-800);
+    background-color: var(--surface-hover);
+    color: var(--text-body);
   }
 }
 .builder-tb-btn {
@@ -1935,18 +1935,18 @@ const scroll_into = (id) => {
   transition: all 0.15s ease;
 
   &--secondary {
-    background: var(--c-basic-100);
-    border-color: var(--c-basic-400);
-    color: var(--c-basic-700);
+    background: var(--surface-base);
+    border-color: var(--border-default);
+    color: var(--text-body);
     &:hover {
-      background: var(--c-basic-200);
+      background: var(--surface-raised);
     }
   }
 
   &--primary {
-    background: var(--c-support-400);
-    border-color: var(--c-support-400);
-    color: var(--c-basic-100);
+    background: var(--accent-fill);
+    border-color: var(--accent);
+    color: var(--text-on-accent-fill);
     &:hover {
       filter: brightness(1.08);
     }
@@ -1963,7 +1963,7 @@ const scroll_into = (id) => {
   padding: 12px 50px;
   margin-left: -50px;
   margin-right: -50px;
-  border-bottom: 1px solid var(--c-basic-300);
+  border-bottom: 1px solid var(--border-subtle);
 }
 .builder-adv-btn {
   display: inline-flex;
@@ -1973,14 +1973,14 @@ const scroll_into = (id) => {
   padding: 0 12px;
   font-size: var(--fs-200);
   border-radius: 5px;
-  border: 1px solid var(--c-basic-400);
-  background: var(--c-basic-200);
-  color: var(--c-basic-600);
+  border: 1px solid var(--border-default);
+  background: var(--surface-raised);
+  color: var(--text-secondary);
   white-space: nowrap;
   transition: all 0.15s ease;
   &:hover {
-    background: var(--c-basic-300);
-    color: var(--c-basic-800);
+    background: var(--surface-hover);
+    color: var(--text-body);
   }
   &--disabled {
     opacity: 0.4;
@@ -1991,8 +1991,8 @@ const scroll_into = (id) => {
   flex-shrink: 0;
   margin-left: -50px;
   margin-right: -50px;
-  border-bottom: 1px solid var(--c-basic-300);
-  background: var(--c-basic-100);
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--surface-base);
 
   &__header {
     display: flex;
@@ -2003,19 +2003,19 @@ const scroll_into = (id) => {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: var(--c-support-400);
+    color: var(--text-accent);
     cursor: pointer;
     user-select: none;
     transition: background-color 0.15s;
     &:hover {
-      background: var(--c-basic-200);
+      background: var(--surface-raised);
     }
   }
 
   &__chevron {
     margin-left: auto;
     font-size: 12px;
-    color: var(--c-basic-500);
+    color: var(--text-muted);
   }
 
   &__count {
@@ -2028,8 +2028,8 @@ const scroll_into = (id) => {
     font-size: 11px;
     font-weight: 700;
     border-radius: 50px;
-    background: var(--c-support-100);
-    color: var(--c-support-400);
+    background: var(--accent-subtle);
+    color: var(--text-accent);
   }
 
   &__body {
@@ -2037,7 +2037,7 @@ const scroll_into = (id) => {
     gap: var(--space-400);
     flex-wrap: wrap;
     padding: 16px 50px;
-    border-top: 1px solid var(--c-basic-200);
+    border-top: 1px solid var(--border-subtle);
   }
 
   @media only screen and (max-width: 768px) {
@@ -2054,28 +2054,28 @@ const scroll_into = (id) => {
   width: 32px;
   height: 32px;
   border-radius: 5px;
-  border: 1px solid var(--c-basic-400);
-  background-color: var(--c-basic-100);
-  color: var(--c-basic-600);
+  border: 1px solid var(--border-default);
+  background-color: var(--surface-base);
+  color: var(--text-secondary);
   font-size: 13px;
   transition: all 0.15s ease;
   &:hover {
-    background-color: var(--c-basic-300);
-    color: var(--c-basic-800);
+    background-color: var(--surface-hover);
+    color: var(--text-body);
   }
   &--primary {
-    background-color: var(--c-support-400);
-    border-color: var(--c-support-400);
-    color: var(--c-basic-100);
+    background-color: var(--accent-fill);
+    border-color: var(--accent);
+    color: var(--text-on-accent-fill);
     &:hover {
       filter: brightness(1.1);
     }
   }
   &--danger {
     &:hover {
-      color: var(--c-negative-200);
-      border-color: var(--c-negative-200);
-      background-color: var(--c-basic-100);
+      color: var(--negative);
+      border-color: var(--negative);
+      background-color: var(--surface-base);
     }
   }
   &:disabled {
@@ -2111,9 +2111,9 @@ const scroll_into = (id) => {
   height: 22px;
   padding: 0 8px;
   border-radius: 11px;
-  border: 1px solid var(--c-basic-400);
-  background: var(--c-basic-100);
-  color: var(--c-basic-600);
+  border: 1px solid var(--border-default);
+  background: var(--surface-base);
+  color: var(--text-secondary);
   font-size: var(--fs-100);
   max-width: 200px;
   overflow: hidden;
@@ -2134,9 +2134,9 @@ const scroll_into = (id) => {
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  border: 1px solid var(--c-basic-400);
-  background-color: var(--c-basic-100);
-  color: var(--c-basic-600);
+  border: 1px solid var(--border-default);
+  background-color: var(--surface-base);
+  color: var(--text-secondary);
   font-size: 14px;
   display: flex;
   align-items: center;
@@ -2144,8 +2144,8 @@ const scroll_into = (id) => {
   box-shadow: var(--shadow-sm);
   transition: all 0.15s ease;
   &:hover {
-    background-color: var(--c-basic-200);
-    color: var(--c-basic-800);
+    background-color: var(--surface-raised);
+    color: var(--text-body);
   }
 }
 @media only screen and (max-width: 768px) {

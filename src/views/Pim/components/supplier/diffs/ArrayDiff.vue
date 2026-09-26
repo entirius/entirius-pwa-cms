@@ -1,13 +1,13 @@
 <template>
   <div class="array-diff">
     <div class="array-diff__summary">
-      <span v-if="addedCount > 0" class="t-positive-300">
+      <span v-if="addedCount > 0" class="t-positive">
         {{ $t("pim.supplier.diff.added", { count: addedCount }) }}
       </span>
-      <span v-if="removedCount > 0" class="t-negative-300">
+      <span v-if="removedCount > 0" class="t-negative">
         {{ $t("pim.supplier.diff.removed", { count: removedCount }) }}
       </span>
-      <span v-if="addedCount === 0 && removedCount === 0" class="t-basic-500">
+      <span v-if="addedCount === 0 && removedCount === 0" class="t-muted">
         {{ $t("pim.supplier.diff.no_change") }}
       </span>
     </div>
@@ -20,10 +20,10 @@
     </button>
     <div v-if="expanded" class="array-diff__details">
       <ul v-if="addedItems.length" class="array-diff__list">
-        <li v-for="(item, i) in addedItems" :key="`a-${i}`" class="t-positive-300">+ {{ item }}</li>
+        <li v-for="(item, i) in addedItems" :key="`a-${i}`" class="t-positive">+ {{ item }}</li>
       </ul>
       <ul v-if="removedItems.length" class="array-diff__list">
-        <li v-for="(item, i) in removedItems" :key="`r-${i}`" class="t-negative-300">− {{ item }}</li>
+        <li v-for="(item, i) in removedItems" :key="`r-${i}`" class="t-negative">− {{ item }}</li>
       </ul>
     </div>
   </div>
@@ -75,7 +75,7 @@ export default {
   padding: 0;
   background: none;
   border: none;
-  color: var(--c-primary-300);
+  color: var(--text-accent);
   cursor: pointer;
   text-decoration: underline;
   font-size: var(--fs-100);

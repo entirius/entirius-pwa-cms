@@ -2,9 +2,9 @@
   <div class="category-products">
     <!-- Pinned products panel -->
     <div class="panel mb-400">
-      <h3 class="panel-title fs-400 fw-600 mb-200 t-basic-700">
+      <h3 class="panel-title fs-400 fw-600 mb-200 t-body">
         {{ $t("pim.pinned_products") }}
-        <span class="t-basic-500 fw-400">({{ positioned.length }})</span>
+        <span class="t-muted fw-400">({{ positioned.length }})</span>
       </h3>
       <draggable
         v-model="positioned"
@@ -21,9 +21,9 @@
         <template #item="{ element, index }">
           <div class="product-card product-card--pinned">
             <div class="product-card__handle">
-              <font-awesome-icon icon="grip-vertical" class="t-basic-400" />
+              <font-awesome-icon icon="grip-vertical" class="t-muted" />
             </div>
-            <span class="product-card__position bg-support-200 t-support-400">
+            <span class="product-card__position bg-accent-subtle t-accent">
               #{{ index + 1 }}
             </span>
             <div
@@ -32,13 +32,13 @@
               :style="{ backgroundImage: `url(${element.thumbnail_url})` }"
             />
             <div v-else class="product-card__thumb product-card__thumb--empty">
-              <font-awesome-icon icon="image" class="t-basic-300" />
+              <font-awesome-icon icon="image" class="t-muted" />
             </div>
             <div class="product-card__info">
-              <span class="product-card__sku fs-200 t-basic-500">{{
+              <span class="product-card__sku fs-200 t-muted">{{
                 element.sku
               }}</span>
-              <span class="product-card__name fs-300 t-basic-800">{{
+              <span class="product-card__name fs-300 t-body">{{
                 element.name || "---"
               }}</span>
             </div>
@@ -49,9 +49,9 @@
 
     <!-- Unpositioned products panel -->
     <div class="panel">
-      <h3 class="panel-title fs-400 fw-600 t-basic-700 mb-200">
+      <h3 class="panel-title fs-400 fw-600 t-body mb-200">
         {{ $t("pim.all_products") }}
-        <span class="t-basic-500 fw-400">({{ unpositionedCount }})</span>
+        <span class="t-muted fw-400">({{ unpositionedCount }})</span>
       </h3>
       <BasicInput
         v-model="searchQuery"
@@ -69,7 +69,7 @@
         <template #item="{ element }">
           <div class="product-card">
             <div class="product-card__handle">
-              <font-awesome-icon icon="grip-vertical" class="t-basic-400" />
+              <font-awesome-icon icon="grip-vertical" class="t-muted" />
             </div>
             <div
               v-if="element.thumbnail_url"
@@ -77,13 +77,13 @@
               :style="{ backgroundImage: `url(${element.thumbnail_url})` }"
             />
             <div v-else class="product-card__thumb product-card__thumb--empty">
-              <font-awesome-icon icon="image" class="t-basic-300" />
+              <font-awesome-icon icon="image" class="t-muted" />
             </div>
             <div class="product-card__info">
-              <span class="product-card__sku fs-200 t-basic-500">{{
+              <span class="product-card__sku fs-200 t-muted">{{
                 element.sku
               }}</span>
-              <span class="product-card__name fs-300 t-basic-800">{{
+              <span class="product-card__name fs-300 t-body">{{
                 element.name || "---"
               }}</span>
             </div>
@@ -92,7 +92,7 @@
       </draggable>
       <div
         v-if="!unpositioned.length && !loading"
-        class="empty-state t-basic-400 fs-300"
+        class="empty-state t-muted fs-300"
       >
         {{ $t("common.no_data") }}
       </div>
@@ -268,7 +268,7 @@ onMounted(() => fetchProducts());
 }
 
 .panel {
-  border: 1px solid var(--c-basic-200);
+  border: 1px solid var(--border-subtle);
   border-radius: 6px;
   padding: 20px;
 }
@@ -298,13 +298,13 @@ onMounted(() => fetchProducts());
     align-items: center;
     justify-content: center;
     min-height: 80px;
-    border: 2px dashed var(--c-basic-300);
+    border: 2px dashed var(--border-subtle);
     border-radius: var(--radius-md);
     transition: border-color 0.2s, background 0.2s;
 
     &::after {
       content: attr(data-empty-hint);
-      color: var(--c-basic-400);
+      color: var(--text-muted);
       font-size: var(--fs-300);
     }
   }
@@ -315,19 +315,19 @@ onMounted(() => fetchProducts());
   align-items: center;
   gap: 10px;
   padding: 10px 12px;
-  border: 1px solid var(--c-basic-200);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  background: var(--c-basic-100);
+  background: var(--surface-base);
   cursor: grab;
   user-select: none;
   transition: border-color 0.15s, box-shadow 0.15s;
 
   &:hover {
-    border-color: var(--c-basic-300);
+    border-color: var(--border-subtle);
   }
 
   &--pinned {
-    border-left: 3px solid var(--c-support-400);
+    border-left: 3px solid var(--accent);
   }
 
   &__handle {
@@ -350,7 +350,7 @@ onMounted(() => fetchProducts());
     border-radius: var(--radius-sm);
     background-size: cover;
     background-position: center;
-    background-color: var(--c-basic-200);
+    background-color: var(--surface-raised);
 
     &--empty {
       display: flex;
@@ -381,7 +381,7 @@ onMounted(() => fetchProducts());
 .empty-state {
   padding: 24px;
   text-align: center;
-  border: 2px dashed var(--c-basic-200);
+  border: 2px dashed var(--border-subtle);
   border-radius: var(--radius-md);
 }
 
@@ -396,27 +396,27 @@ onMounted(() => fetchProducts());
   min-width: 32px;
   height: 32px;
   padding: 0 8px;
-  border: 1px solid var(--c-basic-200);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
-  background: var(--c-basic-100);
-  color: var(--c-basic-600);
+  background: var(--surface-base);
+  color: var(--text-secondary);
   cursor: pointer;
   font-size: var(--fs-200);
   transition: all 0.15s;
 
   &:hover:not(:disabled) {
-    border-color: var(--c-basic-300);
-    background: var(--c-basic-200);
+    border-color: var(--border-subtle);
+    background: var(--surface-raised);
   }
 
   &--active {
-    background: var(--c-support-400);
-    color: var(--c-basic-100);
-    border-color: var(--c-support-400);
+    background: var(--accent-fill);
+    color: var(--text-on-accent-fill);
+    border-color: var(--accent);
 
     &:hover {
-      background: var(--c-support-400);
-      border-color: var(--c-support-400);
+      background: var(--accent-fill);
+      border-color: var(--accent);
     }
   }
 
@@ -431,7 +431,7 @@ onMounted(() => fetchProducts());
 <style>
 .product-card--ghost {
   opacity: 0.4;
-  border: 2px dashed var(--c-support-400) !important;
-  background: var(--c-support-100) !important;
+  border: 2px dashed var(--accent) !important;
+  background: var(--accent-subtle) !important;
 }
 </style>

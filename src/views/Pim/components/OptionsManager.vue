@@ -3,13 +3,13 @@
     <div class="flex ai-ct jc-sb mb-300">
       <h3 class="fs-400 fw-600">
         {{ $t("pim.options") }}
-        <span v-if="totalCount" class="t-basic-500 fw-400 fs-200"
+        <span v-if="totalCount" class="t-muted fw-400 fs-200"
           >({{ totalCount }})</span
         >
       </h3>
       <BasicButton
         :text="$t('pim.add_option')"
-        class="bg-support-400 t-basic-100"
+        class="bg-accent-fill t-on-accent-fill"
         @click="showAddForm = true"
       />
     </div>
@@ -40,12 +40,12 @@
       />
       <BasicButton
         :text="$t('common.save')"
-        class="bg-support-400 t-basic-100"
+        class="bg-accent-fill t-on-accent-fill"
         @click="createOption"
       />
       <BasicButton
         :text="$t('common.cancel')"
-        class="bg-basic-200 t-basic-600"
+        class="bg-raised t-secondary"
         @click="showAddForm = false"
       />
     </div>
@@ -54,14 +54,14 @@
 
     <div
       v-else-if="!options.length && !searchQuery"
-      class="t-basic-500 fs-200 p-300"
+      class="t-muted fs-200 p-300"
     >
       {{ $t("pim.no_options") }}
     </div>
 
     <div
       v-else-if="!options.length && searchQuery"
-      class="t-basic-500 fs-200 p-300"
+      class="t-muted fs-200 p-300"
     >
       {{ $t("pim.no_results") }}
     </div>
@@ -88,7 +88,7 @@
 
       <draggable
         v-model="options"
-        ghost-class="bg-support-100"
+        ghost-class="bg-accent-subtle"
         handle=".drag-handle"
         :item-key="(el) => el.idx"
         :disabled="!!searchQuery"
@@ -99,7 +99,7 @@
             <span class="options-table__col--num flex ai-ct gap-100">
               <span
                 v-if="!searchQuery"
-                class="drag-handle t-basic-400 cursor-grab"
+                class="drag-handle t-muted cursor-grab"
                 >&#x2630;</span
               >
               {{ pageOffset + index + 1 }}
@@ -107,20 +107,20 @@
             <span class="options-table__col--code fw-500">{{
               element.idx
             }}</span>
-            <span class="options-table__col--label t-basic-600 hide-mobile">{{
+            <span class="options-table__col--label t-secondary hide-mobile">{{
               getDefaultLabel(element)
             }}</span>
             <span class="options-table__col--actions flex ai-ct gap-100">
               <BasicButton
                 :text="$t('pim.translations')"
                 icon="language"
-                class="bg-basic-200 t-basic-600 icon-only-mobile"
+                class="bg-raised t-secondary icon-only-mobile"
                 @click="openTranslations(element)"
               />
               <BasicButton
                 text=""
                 icon="trash"
-                class="bg-negative-100 t-negative-300"
+                class="bg-negative-subtle t-negative"
                 @click="confirmDelete(element)"
               />
             </span>
@@ -429,23 +429,23 @@ export default {
 <style lang="scss" scoped>
 .options-manager__add-form {
   padding: 12px;
-  background: var(--c-basic-150);
+  background: var(--surface-raised);
   border-radius: 6px;
 }
 .options-table__header {
   padding: 8px 12px;
-  border-bottom: 2px solid var(--c-basic-300);
+  border-bottom: 2px solid var(--border-subtle);
   font-size: 11px;
   font-weight: 600;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   letter-spacing: 0.03em;
 }
 .options-table__row {
   padding: 8px 12px;
-  border-bottom: 1px solid var(--c-basic-200);
+  border-bottom: 1px solid var(--border-subtle);
   transition: background 0.15s;
   &:hover {
-    background: var(--c-basic-100);
+    background: var(--surface-base);
   }
 }
 .options-table__col--num {

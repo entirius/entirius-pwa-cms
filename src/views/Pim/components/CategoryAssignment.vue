@@ -80,7 +80,7 @@ function closeDropdown() {
   <div class="category-assignment">
     <!-- Current category chips -->
     <div class="category-assignment__chips">
-      <span v-if="!localCategories.length" class="fs-200 t-basic-500">
+      <span v-if="!localCategories.length" class="fs-200 t-muted">
         {{ $t("pim.no_categories") }}
       </span>
       <span v-for="cat in localCategories" :key="cat.idx" class="category-chip">
@@ -147,8 +147,8 @@ function closeDropdown() {
   padding: 4px 10px;
   border-radius: 4px;
   font-size: var(--fs-200);
-  background: var(--c-basic-200);
-  color: var(--c-basic-700);
+  background: var(--surface-raised);
+  color: var(--text-body);
 }
 
 .category-chip__link {
@@ -170,15 +170,15 @@ function closeDropdown() {
   cursor: pointer;
   font-size: 16px;
   line-height: 1;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   transition: color 0.15s;
 
   &:hover {
-    color: var(--c-negative-300);
+    color: var(--negative);
   }
 
   &:focus-visible {
-    outline: 2px solid var(--c-support-400);
+    outline: 2px solid var(--accent);
     border-radius: 2px;
   }
 }
@@ -193,8 +193,8 @@ function closeDropdown() {
   left: 0;
   right: 0;
   z-index: 10;
-  background: var(--c-basic-100);
-  border: 1px solid var(--c-basic-300);
+  background: var(--surface-base);
+  border: 1px solid var(--border-subtle);
   border-radius: 4px;
   max-height: 240px;
   overflow-y: auto;
@@ -207,18 +207,18 @@ function closeDropdown() {
   text-align: left;
   padding: 8px var(--space-200);
   font-size: var(--fs-200);
-  color: var(--c-basic-700);
+  color: var(--text-body);
   background: none;
   border: none;
   cursor: pointer;
   transition: background 0.15s;
 
   &:hover {
-    background: var(--c-basic-200);
+    background: var(--surface-raised);
   }
 
   &:focus-visible {
-    outline: 2px solid var(--c-support-400);
+    outline: 2px solid var(--accent);
     outline-offset: -2px;
   }
 }

@@ -31,8 +31,8 @@ defineProps({
   line-height: 1.5;
   white-space: nowrap;
   background: transparent;
-  border: 1px solid var(--c-basic-300);
-  color: var(--c-basic-700);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-body);
 
   // Small status dot replaces the old left bar — lighter, reads as premium.
   &::before {
@@ -42,46 +42,46 @@ defineProps({
     height: 6px;
     border-radius: 50%;
     flex-shrink: 0;
-    background: var(--c-basic-500);
+    background: var(--surface-disabled);
   }
 
   &--positive {
-    border-color: color-mix(in srgb, var(--c-positive-300) 32%, transparent);
-    color: var(--c-positive-300);
+    border-color: color-mix(in srgb, var(--positive) 32%, transparent);
+    color: var(--positive);
     &::before {
-      background: var(--c-positive-300);
+      background: var(--positive-fill);
     }
   }
 
   &--negative {
-    border-color: color-mix(in srgb, var(--c-negative-300) 32%, transparent);
-    color: var(--c-negative-300);
+    border-color: color-mix(in srgb, var(--negative) 32%, transparent);
+    color: var(--negative);
     &::before {
-      background: var(--c-negative-300);
+      background: var(--negative-fill);
     }
   }
 
   &--warning {
-    border-color: color-mix(in srgb, var(--c-warning-300) 38%, transparent);
-    color: var(--c-warning-300);
+    border-color: color-mix(in srgb, var(--warning) 38%, transparent);
+    color: var(--warning);
     &::before {
-      background: var(--c-warning-300);
+      background: var(--warning-fill);
     }
   }
 
   &--informative {
-    border-color: color-mix(in srgb, var(--c-informative-200) 32%, transparent);
-    color: var(--c-informative-200);
+    border-color: color-mix(in srgb, var(--info) 32%, transparent);
+    color: var(--info);
     &::before {
-      background: var(--c-informative-200);
+      background: var(--info-fill);
     }
   }
 
   &--neutral {
-    border-color: var(--c-basic-300);
-    color: var(--c-basic-600);
+    border-color: var(--border-subtle);
+    color: var(--text-secondary);
     &::before {
-      background: var(--c-basic-500);
+      background: var(--surface-disabled);
     }
   }
 }

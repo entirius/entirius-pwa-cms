@@ -9,10 +9,10 @@
     />
 
     <div class="flex ai-ct jc-sb mb-200">
-      <span class="fs-200 t-basic-500">{{
+      <span class="fs-200 t-muted">{{
         $t("pim.available_count", { count: totalCount })
       }}</span>
-      <span class="fs-200 t-basic-500">{{ $t("pim.drag_to_assign") }}</span>
+      <span class="fs-200 t-muted">{{ $t("pim.drag_to_assign") }}</span>
     </div>
 
     <Loader v-if="loading" />
@@ -22,7 +22,7 @@
       v-model="normalizedFeatures"
       :group="{ name: 'features', pull: 'clone', put: true }"
       :sort="false"
-      ghost-class="bg-support-100"
+      ghost-class="bg-accent-subtle"
       :force-fallback="true"
       fallback-class="drag-ghost"
       :item-key="(el) => el.feature_idx"
@@ -31,7 +31,7 @@
     >
       <template #item="{ element }">
         <div class="attribute-library__item flex ai-ct">
-          <span class="drag-handle t-basic-400">&#x2630;</span>
+          <span class="drag-handle t-muted">&#x2630;</span>
           <span class="fw-500 fs-200 attribute-library__name">{{
             element.feature_name || element.feature_idx
           }}</span>
@@ -41,7 +41,7 @@
     </draggable>
     <div
       v-if="!loading && !normalizedFeatures.length"
-      class="t-basic-500 fs-200 p-300"
+      class="t-muted fs-200 p-300"
     >
       {{ $t("pim.no_unassigned") }}
     </div>
@@ -185,15 +185,15 @@ export default {
 
 .attribute-library__item {
   padding: 12px var(--space-200);
-  background: var(--c-basic-100);
-  border: 1px solid var(--c-basic-300);
+  background: var(--surface-base);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   cursor: grab;
   user-select: none;
   gap: var(--space-100);
   transition: background 0.15s;
   &:hover {
-    background: var(--c-basic-200);
+    background: var(--surface-raised);
   }
 }
 

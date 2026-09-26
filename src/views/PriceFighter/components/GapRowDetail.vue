@@ -9,7 +9,7 @@
           <h4 class="gap-detail__heading">{{ $t('pricefighter.detail_components') }}</h4>
           <dl class="gap-detail__facts">
             <dt>{{ $t('pricefighter.reference_price') }} (R)</dt>
-            <dd>{{ fmt(row.reference_price) }} <span class="t-basic-500 fs-100">({{ row.estimator }})</span></dd>
+            <dd>{{ fmt(row.reference_price) }} <span class="t-muted fs-100">({{ row.estimator }})</span></dd>
             <dt>{{ $t('pricefighter.baseline') }} (B)</dt>
             <dd>{{ fmt(bounds ? bounds.baseline : row.baseline) }}</dd>
             <dt>{{ $t('pricefighter.floor') }} (F)</dt>
@@ -25,7 +25,7 @@
             <dt>{{ $t('pricefighter.reason') }}</dt>
             <dd>{{ row.reason }}</dd>
             <dt>{{ $t('pricefighter.strategy') }} / {{ $t('pricefighter.mode') }}</dt>
-            <dd>{{ row.strategy }} / {{ row.mode }}<span v-if="row.price_war" class="t-negative-300"> · {{ $t('pricefighter.price_war') }}</span></dd>
+            <dd>{{ row.strategy }} / {{ row.mode }}<span v-if="row.price_war" class="t-negative"> · {{ $t('pricefighter.price_war') }}</span></dd>
           </dl>
         </div>
 
@@ -35,8 +35,8 @@
             {{ $t('pricefighter.observations') }}
             <StatusBadge :label="`${validCount}/${observations.length} ${$t('pricefighter.valid')}`" variant="informative" />
           </h4>
-          <p v-if="loadError" class="t-negative-300 fs-200">{{ loadError }}</p>
-          <p v-else-if="!observations.length" class="t-basic-500 fs-200">{{ $t('pricefighter.no_observations') }}</p>
+          <p v-if="loadError" class="t-negative fs-200">{{ loadError }}</p>
+          <p v-else-if="!observations.length" class="t-muted fs-200">{{ $t('pricefighter.no_observations') }}</p>
           <table v-else class="gap-detail__obs">
             <thead>
               <tr>
@@ -142,7 +142,7 @@ onMounted(async () => {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   margin: 0 0 var(--space-200) 0;
 }
 
@@ -154,12 +154,12 @@ onMounted(async () => {
   font-size: var(--fs-300);
 
   dt {
-    color: var(--c-basic-500);
+    color: var(--text-muted);
   }
 
   dd {
     margin: 0;
-    color: var(--c-basic-800);
+    color: var(--text-body);
     font-weight: 600;
   }
 }
@@ -172,19 +172,19 @@ onMounted(async () => {
   th {
     text-align: left;
     padding: 4px 8px;
-    color: var(--c-basic-500);
+    color: var(--text-muted);
     text-transform: uppercase;
     font-size: var(--fs-100);
-    border-bottom: 1px solid var(--c-basic-300);
+    border-bottom: 1px solid var(--border-subtle);
   }
 
   td {
     padding: 4px 8px;
-    border-bottom: 1px solid var(--c-basic-200);
+    border-bottom: 1px solid var(--border-subtle);
   }
 }
 
 .gap-detail__obs-row--invalid {
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 </style>

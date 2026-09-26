@@ -1,7 +1,7 @@
 <template>
-  <div class="task-list p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="task-list p-500 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-basic-100 b-basic-300 br-50 flex-1 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle br-50 flex-1 ovy-auto pl-500 pt-500 pb-500 pr-500"
     >
       <div class="flex ai-ct mb-400">
         <h1 class="fs-700 fw-600">{{ $t("enrichment.tasks.title") }}</h1>
@@ -16,7 +16,7 @@
           :data-testid="`enrichment-task-status-${opt.value}`"
           @click="onFilterChange(opt.value)"
         />
-        <span class="fs-200 t-basic-500 ml-auto">
+        <span class="fs-200 t-muted ml-auto">
           {{ $t("enrichment.tasks.matching", { count: totalCount }) }}
         </span>
       </div>
@@ -38,10 +38,10 @@
           />
         </template>
         <template #cell-progress="{ row }">
-          <span class="t-basic-600">{{ formatCounts(row.counts) }}</span>
+          <span class="t-secondary">{{ formatCounts(row.counts) }}</span>
         </template>
         <template #cell-created="{ row }">
-          <span class="fs-200 t-basic-500">{{ formatDate(row.created_at) }}</span>
+          <span class="fs-200 t-muted">{{ formatDate(row.created_at) }}</span>
         </template>
       </DataTable>
     </div>

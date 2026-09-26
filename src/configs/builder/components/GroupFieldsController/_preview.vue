@@ -1,7 +1,7 @@
 <template>
   <div class="group-fields-preview">
     <Dropdown
-      class="bg-basic-100 b-basic-300 br-50 fs-100 t-basic-600"
+      class="bg-base b-subtle br-50 fs-100 t-secondary"
       :placeholder="`groups (${value.length})`"
       :values="
         value.map((obj, index) => {

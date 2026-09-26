@@ -132,14 +132,14 @@ function remove(text) {
   border: 1px solid transparent;
   border-radius: 6px;
   background: none;
-  color: var(--c-basic-800);
+  color: var(--text-body);
   font: inherit;
   text-align: left;
   cursor: text;
 }
 .pool__body:not(:disabled):focus-visible,
 .pool__body:not(:disabled):active {
-  border-color: var(--c-basic-300);
+  border-color: var(--border-subtle);
 }
 .pool__edit {
   display: flex;

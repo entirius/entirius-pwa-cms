@@ -1,6 +1,6 @@
 <template>
-  <div class="acc-list__wrapper p-500 fs-300 t-basic-800 h-100 ov-h">
-    <div class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500">
+  <div class="acc-list__wrapper p-500 fs-300 t-body h-100 ov-h">
+    <div class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500">
       <div class="flex ai-ct mb-400">
         <h1 class="fs-700 fw-600">{{ $t("accounts.customers") }}</h1>
       </div>
@@ -11,7 +11,7 @@
           :active-count="activeFilterCount"
           :trigger-label="$t('builder.filters')"
         >
-          <p class="fs-200 t-basic-600">{{ $t("builder.filters") }}</p>
+          <p class="fs-200 t-secondary">{{ $t("builder.filters") }}</p>
           <FilterChip
             v-for="tab in statusTabs"
             :key="tab.key"
@@ -64,14 +64,14 @@
           {{ row.firstname }} {{ row.lastname }}
         </template>
         <template #cell-group="{ value }">
-          <span v-if="value" class="bg-support-100 t-support-400 fs-200 ph-100 br-50">
+          <span v-if="value" class="bg-accent-subtle t-accent fs-200 ph-100 br-50">
             {{ value }}
           </span>
-          <span v-else class="t-basic-400">---</span>
+          <span v-else class="t-muted">---</span>
         </template>
         <template #cell-source_channel="{ value }">
-          <span v-if="value" class="t-basic-600 fs-200">{{ value }}</span>
-          <span v-else class="t-basic-400">---</span>
+          <span v-if="value" class="t-secondary fs-200">{{ value }}</span>
+          <span v-else class="t-muted">---</span>
         </template>
         <template #cell-status="{ row }">
           <div class="flex gap-100">

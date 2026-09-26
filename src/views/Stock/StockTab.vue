@@ -10,12 +10,12 @@
 
     <template v-else>
       <div v-if="dirtyCount > 0" class="stock-tab__actions flex ai-ct jc-fe gap-200 mb-200">
-        <span class="bg-warning-100 t-warning-300 fs-200 ph-100 br-50">
+        <span class="bg-warning-subtle t-warning fs-200 ph-100 br-50">
           {{ $t("stock.unsaved") }}: {{ dirtyCount }}
         </span>
         <BasicButton
           :text="$t('stock.save_all')"
-          class="bg-support-400 t-basic-100"
+          class="bg-accent-fill t-on-accent-fill"
           @click="saveAll"
         />
       </div>
@@ -44,7 +44,7 @@
                 :min="0"
                 @update:modelValue="(val) => onQtyChange(row.warehouse_code, val)"
               />
-              <span v-else class="t-basic-500">{{ row.quantity }}</span>
+              <span v-else class="t-muted">{{ row.quantity }}</span>
             </td>
           </tr>
         </tbody>
@@ -160,18 +160,18 @@ export default {
   td {
     padding: 10px 12px;
     text-align: left;
-    border-bottom: 1px solid var(--c-basic-300);
+    border-bottom: 1px solid var(--border-subtle);
   }
 
   th {
     font-size: var(--fs-200);
     font-weight: 600;
-    color: var(--c-basic-500);
+    color: var(--text-muted);
     text-transform: uppercase;
   }
 
   tr:hover td {
-    background: var(--c-basic-200);
+    background: var(--surface-raised);
   }
 }
 
@@ -185,7 +185,7 @@ export default {
 
 .stock-tab__actions {
   padding-bottom: var(--space-200);
-  border-bottom: 1px solid var(--c-basic-300);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .flex-center {

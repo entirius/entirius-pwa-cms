@@ -1,7 +1,7 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
     >
       <div class="flex ai-ct mb-400">
         <h1 class="fs-700 fw-600">{{ $t("dp.types") }}</h1>
@@ -31,7 +31,7 @@
         <BasicButton
           :text="$t('common.add')"
           icon="plus"
-          class="bg-support-400 t-basic-100"
+          class="bg-accent-fill t-on-accent-fill"
           @click="createType"
         />
       </div>
@@ -50,7 +50,7 @@
           <font-awesome-icon
             v-if="row.is_carrier"
             icon="lock"
-            class="t-basic-400"
+            class="t-muted"
           />
         </template>
         <template #cell-is_carrier="{ value }">
@@ -110,18 +110,18 @@
           <BasicButton
             text=""
             icon="trash-can"
-            class="bg-negative-100 t-negative-300"
+            class="bg-negative-subtle t-negative"
             @click="showDeleteConfirm = true"
           />
           <div class="flex ai-ct gap-200">
             <BasicButton
               :text="$t('common.cancel')"
-              class="bg-basic-200 t-basic-600"
+              class="bg-raised t-secondary"
               @click="cancelEdit"
             />
             <BasicButton
               :text="$t('common.save')"
-              class="bg-support-400 t-basic-100"
+              class="bg-accent-fill t-on-accent-fill"
               @click="saveType"
             />
           </div>
@@ -349,9 +349,9 @@ export default {
   align-items: center;
   gap: var(--space-200);
   padding: 16px;
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
   flex-wrap: wrap;
 }
 
@@ -380,8 +380,8 @@ export default {
 }
 
 .type-modal {
-  background: var(--c-basic-100);
-  border: 1px solid var(--c-basic-300);
+  background: var(--surface-base);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   padding: 28px;
   min-width: min(400px, 95vw);
@@ -406,6 +406,6 @@ export default {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
     >
       <Teleport v-if="toolbarReady" to="#forms-toolbar-left">
         <BasicButton
@@ -35,48 +35,48 @@
         <!-- Header info -->
         <div class="cf-header mb-400">
           <div class="cf-header__row">
-            <span class="cf-header__label t-basic-500 fs-200 fw-600 tt-upper">{{
+            <span class="cf-header__label t-muted fs-200 fw-600 tt-upper">{{
               $t("cf.id")
             }}</span>
-            <span class="t-basic-800">{{ submission.id }}</span>
+            <span class="t-body">{{ submission.id }}</span>
           </div>
           <div class="cf-header__row">
-            <span class="cf-header__label t-basic-500 fs-200 fw-600 tt-upper">{{
+            <span class="cf-header__label t-muted fs-200 fw-600 tt-upper">{{
               $t("cf.email")
             }}</span>
-            <span class="t-basic-800">{{ submission.email }}</span>
+            <span class="t-body">{{ submission.email }}</span>
           </div>
           <div class="cf-header__row">
-            <span class="cf-header__label t-basic-500 fs-200 fw-600 tt-upper">{{
+            <span class="cf-header__label t-muted fs-200 fw-600 tt-upper">{{
               $t("cf.channel")
             }}</span>
-            <span class="t-basic-800">{{ submission.channel_idx }}</span>
+            <span class="t-body">{{ submission.channel_idx }}</span>
           </div>
           <div class="cf-header__row">
-            <span class="cf-header__label t-basic-500 fs-200 fw-600 tt-upper">{{
+            <span class="cf-header__label t-muted fs-200 fw-600 tt-upper">{{
               $t("cf.type")
             }}</span>
-            <span :class="submission.type ? 't-basic-800' : 't-basic-400'">{{
+            <span :class="submission.type ? 't-body' : 't-muted'">{{
               submission.type || "---"
             }}</span>
           </div>
           <div class="cf-header__row">
-            <span class="cf-header__label t-basic-500 fs-200 fw-600 tt-upper">{{
+            <span class="cf-header__label t-muted fs-200 fw-600 tt-upper">{{
               $t("cf.slug")
             }}</span>
-            <span class="t-basic-800">{{ submission.slug || "---" }}</span>
+            <span class="t-body">{{ submission.slug || "---" }}</span>
           </div>
           <div class="cf-header__row">
-            <span class="cf-header__label t-basic-500 fs-200 fw-600 tt-upper">{{
+            <span class="cf-header__label t-muted fs-200 fw-600 tt-upper">{{
               $t("cf.code")
             }}</span>
-            <span class="t-basic-800">{{ submission.code || "---" }}</span>
+            <span class="t-body">{{ submission.code || "---" }}</span>
           </div>
           <div class="cf-header__row cf-header__row--full">
-            <span class="cf-header__label t-basic-500 fs-200 fw-600 tt-upper">{{
+            <span class="cf-header__label t-muted fs-200 fw-600 tt-upper">{{
               $t("cf.created_at")
             }}</span>
-            <span class="t-basic-800">{{
+            <span class="t-body">{{
               formatDate(submission.created_at)
             }}</span>
           </div>
@@ -86,7 +86,7 @@
             <h2 class="fs-400 fw-600 mb-200">{{ $t("cf.body") }}</h2>
             <div
               v-if="isRenderableObject(submission.body)"
-              class="cf-fields bg-basic-200 br-50 p-300"
+              class="cf-fields bg-raised br-50 p-300"
             >
               <div
                 v-for="(val, key) in submission.body"
@@ -95,22 +95,22 @@
                 :class="{ 'cf-field--full': key === 'message' }"
               >
                 <span
-                  class="cf-field__label t-basic-500 fs-200 fw-600 tt-upper"
+                  class="cf-field__label t-muted fs-200 fw-600 tt-upper"
                   >{{ humanizeKey(key) }}</span
                 >
-                <span v-if="isSimpleValue(val)" class="t-basic-800 fs-300">{{
+                <span v-if="isSimpleValue(val)" class="t-body fs-300">{{
                   val
                 }}</span>
                 <pre
                   v-else
-                  class="cf-body--nested bg-basic-100 br-50 p-200 fs-200 t-basic-700 mt-50"
+                  class="cf-body--nested bg-base br-50 p-200 fs-200 t-body mt-50"
                   >{{ JSON.stringify(val, null, 2) }}</pre
                 >
               </div>
             </div>
             <pre
               v-else
-              class="cf-body bg-basic-200 br-50 p-300 fs-200 t-basic-700"
+              class="cf-body bg-raised br-50 p-300 fs-200 t-body"
               >{{ formatBody(submission.body) }}</pre
             >
           </div>
@@ -123,13 +123,13 @@
             <div
               v-for="att in submission.attachments"
               :key="att.id"
-              class="cf-attachment flex ai-ct gap-200 p-200 bg-basic-200 br-50 mb-100"
+              class="cf-attachment flex ai-ct gap-200 p-200 bg-raised br-50 mb-100"
             >
-              <font-awesome-icon icon="paperclip" class="t-basic-500" />
-              <span class="t-basic-800 fs-200">{{ att.name }}</span>
+              <font-awesome-icon icon="paperclip" class="t-muted" />
+              <span class="t-body fs-200">{{ att.name }}</span>
               <BasicButton
                 :text="$t('cf.download_attachment')"
-                class="bg-basic-200 t-basic-800"
+                class="bg-raised t-body"
                 @click="downloadAttachment(att)"
               />
             </div>

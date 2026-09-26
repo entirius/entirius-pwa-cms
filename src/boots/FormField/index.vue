@@ -54,7 +54,7 @@ defineProps({
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   display: inline-flex;
   align-items: center;
   gap: 2px;
@@ -62,13 +62,13 @@ defineProps({
 
 .form-field__desc {
   font-size: var(--fs-200);
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   margin: 0;
 }
 
 .form-field__error {
   font-size: var(--fs-200);
-  color: var(--c-negative-300);
+  color: var(--negative);
   margin: 0;
   display: inline-flex;
   align-items: center;
@@ -83,6 +83,6 @@ defineProps({
 .form-field--invalid :deep(input),
 .form-field--invalid :deep(textarea),
 .form-field--invalid :deep(.dropdown__trigger) {
-  border-color: var(--c-negative-300);
+  border-color: var(--negative);
 }
 </style>

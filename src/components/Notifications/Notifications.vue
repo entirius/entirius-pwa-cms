@@ -78,16 +78,16 @@ export default {
   border-left: 3px solid currentColor;
 }
 .notification--positive {
-  border-left-color: var(--c-positive-300);
+  border-left-color: var(--positive);
 }
 .notification--negative {
-  border-left-color: var(--c-negative-300);
+  border-left-color: var(--negative);
 }
 .notification--informative {
-  border-left-color: var(--c-informative-300);
+  border-left-color: var(--info);
 }
 .notification--warning {
-  border-left-color: var(--c-warning-300);
+  border-left-color: var(--warning);
 }
 .notification__close {
   background: transparent;
@@ -108,7 +108,7 @@ export default {
 }
 .notification__close:focus-visible {
   opacity: 1;
-  outline: 2px solid var(--c-support-400);
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 /* Phone: after the base rules so it wins — the toast fits the screen and sits at the bottom, clear of the header

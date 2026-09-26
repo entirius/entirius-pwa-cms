@@ -45,7 +45,7 @@
               <FontAwesomeIcon
                 v-if="local.products.includes(p.sku)"
                 icon="check"
-                class="t-positive-200 mr-100"
+                class="t-positive mr-100"
               />
               <span>{{ p.sku }}{{ p.name ? ` — ${p.name}` : '' }}</span>
             </div>
@@ -85,10 +85,10 @@
                 <FontAwesomeIcon
                   v-if="local.categories.includes(c.idx)"
                   icon="check"
-                  class="t-positive-200"
+                  class="t-positive"
                 />
               </div>
-              <div v-if="!categoryOptions.length" class="ph-100 pv-100 t-basic-400 fs-200 ml-100">
+              <div v-if="!categoryOptions.length" class="ph-100 pv-100 t-muted fs-200 ml-100">
                 {{ $t('promo.filter_no_options') }}
               </div>
             </template>
@@ -113,10 +113,10 @@
                 <FontAwesomeIcon
                   v-if="local.attributes.includes(a.idx)"
                   icon="check"
-                  class="t-positive-200"
+                  class="t-positive"
                 />
               </div>
-              <div v-if="!attributeOptions.length" class="ph-100 pv-100 t-basic-400 fs-200 ml-100">
+              <div v-if="!attributeOptions.length" class="ph-100 pv-100 t-muted fs-200 ml-100">
                 {{ $t('promo.filter_no_options') }}
               </div>
             </template>
@@ -141,10 +141,10 @@
                 <FontAwesomeIcon
                   v-if="local.features_qty_greater_than_attr_value.includes(f.idx)"
                   icon="check"
-                  class="t-positive-200"
+                  class="t-positive"
                 />
               </div>
-              <div v-if="!featureOptions.length" class="ph-100 pv-100 t-basic-400 fs-200 ml-100">
+              <div v-if="!featureOptions.length" class="ph-100 pv-100 t-muted fs-200 ml-100">
                 {{ $t('promo.filter_no_options') }}
               </div>
             </template>
@@ -169,10 +169,10 @@
                 <FontAwesomeIcon
                   v-if="local.features_qty_is_multiple_of_attr_value.includes(f.idx)"
                   icon="check"
-                  class="t-positive-200"
+                  class="t-positive"
                 />
               </div>
-              <div v-if="!featureOptions.length" class="ph-100 pv-100 t-basic-400 fs-200 ml-100">
+              <div v-if="!featureOptions.length" class="ph-100 pv-100 t-muted fs-200 ml-100">
                 {{ $t('promo.filter_no_options') }}
               </div>
             </template>
@@ -227,7 +227,7 @@
               <FontAwesomeIcon
                 v-if="local.customers.includes(c.uid)"
                 icon="check"
-                class="t-positive-200 mr-100"
+                class="t-positive mr-100"
               />
               <span>{{ c.first_name || '' }} {{ c.last_name || '' }}{{ c.email ? ` (${c.email})` : '' }}</span>
             </div>
@@ -267,10 +267,10 @@
                 <FontAwesomeIcon
                   v-if="local.groups.includes(g.code)"
                   icon="check"
-                  class="t-positive-200"
+                  class="t-positive"
                 />
               </div>
-              <div v-if="!groupOptions.length" class="ph-100 pv-100 t-basic-400 fs-200 ml-100">
+              <div v-if="!groupOptions.length" class="ph-100 pv-100 t-muted fs-200 ml-100">
                 {{ $t('promo.filter_no_options') }}
               </div>
             </template>
@@ -282,12 +282,12 @@
       <div class="fed__footer mt-400">
         <BasicButton
           :text="$t('common.cancel')"
-          class="bg-basic-200 t-basic-600"
+          class="bg-raised t-secondary"
           @click="onClose"
         />
         <BasicButton
           :text="$t('common.save')"
-          class="bg-support-400 t-basic-100"
+          class="bg-accent-fill t-on-accent-fill"
           :disabled="saving"
           @click="onSave"
         />
@@ -575,14 +575,14 @@ function onClose() {
   display: flex;
   flex-direction: column;
   font-size: var(--fs-300);
-  color: var(--c-basic-800);
+  color: var(--text-body);
 
   &__results {
-    border: 1px solid var(--c-basic-300);
+    border: 1px solid var(--border-subtle);
     border-radius: var(--radius-sm);
     max-height: 180px;
     overflow-y: auto;
-    background: var(--c-basic-100);
+    background: var(--surface-base);
   }
 
   &__result-row {
@@ -590,11 +590,11 @@ function onClose() {
     align-items: center;
     padding: 6px 10px;
     font-size: var(--fs-200);
-    color: var(--c-basic-700);
+    color: var(--text-body);
     min-height: 36px;
 
     &:hover {
-      background: var(--c-basic-200);
+      background: var(--surface-raised);
     }
   }
 
@@ -610,8 +610,8 @@ function onClose() {
     gap: 4px;
     padding: 2px 8px;
     border-radius: var(--radius-sm);
-    background: var(--c-support-100);
-    color: var(--c-support-400);
+    background: var(--accent-subtle);
+    color: var(--text-accent);
     font-size: var(--fs-200);
     font-weight: 500;
 
@@ -626,23 +626,23 @@ function onClose() {
     border: none;
     padding: 0 2px;
     cursor: pointer;
-    color: var(--c-support-300);
+    color: var(--text-accent);
     line-height: 1;
     min-width: 16px;
     min-height: 16px;
 
     &:hover {
-      color: var(--c-negative-300);
+      color: var(--negative);
     }
 
     &:focus-visible {
-      outline: 2px solid var(--c-support-400);
+      outline: 2px solid var(--accent);
     }
   }
 
   &__empty-hint {
     font-size: var(--fs-200);
-    color: var(--c-basic-400);
+    color: var(--text-muted);
     margin-top: 4px;
   }
 
@@ -657,7 +657,7 @@ function onClose() {
     justify-content: flex-end;
     gap: var(--space-200);
     padding-top: var(--space-300);
-    border-top: 1px solid var(--c-basic-200);
+    border-top: 1px solid var(--border-subtle);
     flex-shrink: 0;
   }
 }

@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="isStale"
-    class="gap-status-alert bg-warning-100 t-warning-300 br-50 flex ai-ct jc-sb gap-300"
+    class="gap-status-alert bg-warning-subtle t-warning br-50 flex ai-ct jc-sb gap-300"
     :class="{ 'gap-status-alert--compact': compact }"
     data-test="gap-status-alert"
   >
@@ -12,7 +12,7 @@
     <BasicButton
       :text="recomputing ? $t('pim.gaps_recomputing') : $t('pim.gaps_recompute_now')"
       :isDisabled="recomputing"
-      class="bg-warning-300 t-basic-100"
+      class="bg-warning-fill t-on-status-fill"
       data-test="gap-recompute-btn"
       @click="recompute"
     />
@@ -142,7 +142,7 @@ export default {
 .gap-status-alert {
   padding: var(--space-300);
   margin-bottom: var(--space-400);
-  border: 1px solid var(--c-warning-200);
+  border: 1px solid var(--warning);
 }
 .gap-status-alert--compact {
   padding: var(--space-200) var(--space-300);

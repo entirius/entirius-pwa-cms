@@ -1,13 +1,13 @@
 <template>
   <div class="author-picker">
-    <p v-if="label" class="fs-200 fw-600 t-basic-500 tt-upper mb-200">
+    <p v-if="label" class="fs-200 fw-600 t-muted tt-upper mb-200">
       {{ label }}
     </p>
 
     <div v-if="selectedAuthors.length" class="author-picker__selected mb-200">
       <draggable
         v-model="selectedAuthors"
-        ghost-class="bg-support-100"
+        ghost-class="bg-accent-subtle"
         :force-fallback="true"
         fallback-class="drag-ghost"
         item-key="uid"
@@ -17,9 +17,9 @@
         <template #item="{ element }">
           <div class="author-picker__row flex ai-ct jc-sb">
             <div class="flex ai-ct gap-200">
-              <span class="drag-handle t-basic-400">&#x2630;</span>
+              <span class="drag-handle t-muted">&#x2630;</span>
               <span class="fw-500">{{ element.name }}</span>
-              <span v-if="element.role_t9n" class="fs-200 t-basic-500">
+              <span v-if="element.role_t9n" class="fs-200 t-muted">
                 {{ firstValue(element.role_t9n) }}
               </span>
             </div>
@@ -34,7 +34,7 @@
       </draggable>
     </div>
 
-    <div v-else class="t-basic-500 fs-200 mb-200 p-200 b-basic-200 br-50">
+    <div v-else class="t-muted fs-200 mb-200 p-200 b-subtle br-50">
       {{ placeholderEmpty }}
     </div>
 
@@ -55,13 +55,13 @@
           @click="addAuthor(author)"
         >
           <span class="fw-500">{{ author.name }}</span>
-          <span v-if="author.role_t9n" class="fs-200 t-basic-500">
+          <span v-if="author.role_t9n" class="fs-200 t-muted">
             {{ firstValue(author.role_t9n) }}
           </span>
         </div>
       </div>
       <div v-else-if="dropdownOpen && search && !loading" class="author-picker__dropdown">
-        <div class="author-picker__option t-basic-500">
+        <div class="author-picker__option t-muted">
           {{ $t("pim.no_results") }}
         </div>
       </div>
@@ -206,21 +206,21 @@ export default {
   letter-spacing: 0.05em;
 }
 .author-picker__selected {
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: 6px;
   overflow: hidden;
 }
 .author-picker__row {
   padding: 10px var(--space-200);
-  border-bottom: 1px solid var(--c-basic-200);
-  background: var(--c-basic-100);
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--surface-base);
   &:last-child {
     border-bottom: none;
   }
   .drag-handle {
     cursor: grab;
     user-select: none;
-    color: var(--c-basic-400);
+    color: var(--text-muted);
   }
 }
 .author-picker__remove {
@@ -231,14 +231,14 @@ export default {
   justify-content: center;
   border-radius: var(--radius-sm);
   border: none;
-  background: var(--c-negative-100);
-  color: var(--c-negative-300);
+  background: var(--negative-subtle);
+  color: var(--negative);
   font-size: 12px;
   transition: background-color 0.15s;
   flex-shrink: 0;
   &:hover {
-    background: var(--c-negative-200);
-    color: var(--c-basic-100);
+    background: var(--negative-fill);
+    color: var(--text-on-status-fill);
   }
 }
 .author-picker__search-wrap {
@@ -249,8 +249,8 @@ export default {
   top: calc(100% + 4px);
   left: 0;
   right: 0;
-  background: var(--c-basic-100);
-  border: 1px solid var(--c-basic-300);
+  background: var(--surface-base);
+  border: 1px solid var(--border-subtle);
   border-radius: 6px;
   box-shadow: var(--shadow-md);
   z-index: 10;
@@ -261,12 +261,12 @@ export default {
   padding: 10px var(--space-200);
   cursor: pointer;
   font-size: var(--fs-300);
-  border-bottom: 1px solid var(--c-basic-200);
+  border-bottom: 1px solid var(--border-subtle);
   &:last-child {
     border-bottom: none;
   }
   &:hover {
-    background: var(--c-basic-200);
+    background: var(--surface-raised);
   }
 }
 </style>
@@ -275,8 +275,8 @@ export default {
 /* Unscoped — SortableJS clones are appended to <body> */
 .drag-ghost {
   opacity: 0.9;
-  background: var(--c-basic-100);
-  border: 1px solid var(--c-support-400);
+  background: var(--surface-base);
+  border: 1px solid var(--accent);
   border-radius: 6px;
   box-shadow: var(--shadow-md);
   padding: 10px var(--space-200);

@@ -1,11 +1,11 @@
 <template>
   <div class="json-diff">
     <div class="json-diff__col">
-      <div class="json-diff__label t-basic-500">{{ $t("pim.supplier.diff.before") }}</div>
+      <div class="json-diff__label t-muted">{{ $t("pim.supplier.diff.before") }}</div>
       <pre class="json-diff__value json-diff__value--before">{{ format(before) }}</pre>
     </div>
     <div class="json-diff__col">
-      <div class="json-diff__label t-basic-500">{{ $t("pim.supplier.diff.after") }}</div>
+      <div class="json-diff__label t-muted">{{ $t("pim.supplier.diff.after") }}</div>
       <pre class="json-diff__value json-diff__value--after">{{ format(after) }}</pre>
     </div>
   </div>
@@ -46,7 +46,7 @@ export default {
 .json-diff__value {
   padding: var(--space-200);
   border-radius: var(--radius-sm);
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
   font-family: var(--font-mono, monospace);
   font-size: var(--fs-100);
   white-space: pre-wrap;
@@ -56,10 +56,10 @@ export default {
   margin: 0;
 }
 .json-diff__value--before {
-  border-left: 2px solid var(--c-negative-300);
+  border-left: 2px solid var(--negative);
 }
 .json-diff__value--after {
-  border-left: 2px solid var(--c-positive-300);
+  border-left: 2px solid var(--positive);
 }
 
 @media (max-width: 640px) {

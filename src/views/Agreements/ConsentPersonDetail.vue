@@ -1,11 +1,11 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
     >
       <div class="flex ai-ct gap-300 mb-400">
         <button
-          class="person-detail__back t-basic-600"
+          class="person-detail__back t-secondary"
           @click="$router.push('/agreements/consents')"
         >
           <font-awesome-icon icon="arrow-left" />
@@ -15,7 +15,7 @@
 
       <div class="flex ai-ct jc-sb mb-500">
         <div>
-          <p class="fs-200 fw-600 t-basic-500 mb-100">{{ $t("agm.email") }}</p>
+          <p class="fs-200 fw-600 t-muted mb-100">{{ $t("agm.email") }}</p>
           <h1 class="fs-600 fw-600">{{ email }}</h1>
         </div>
         <BasicTabs
@@ -40,9 +40,9 @@
               <div
                 v-for="item in marketingStatuses"
                 :key="item.slug"
-                class="person-detail__card bg-basic-200 b-basic-300 br-50 p-400"
+                class="person-detail__card bg-raised b-subtle br-50 p-400"
               >
-                <p class="fs-200 fw-600 t-basic-600 mb-200">
+                <p class="fs-200 fw-600 t-secondary mb-200">
                   {{ item.name || item.slug }}
                 </p>
                 <StatusBadge
@@ -57,7 +57,7 @@
                 />
               </div>
             </div>
-            <p v-else class="t-basic-500">{{ $t("agm.no_consents") }}</p>
+            <p v-else class="t-muted">{{ $t("agm.no_consents") }}</p>
           </section>
 
           <section>
@@ -132,7 +132,7 @@
                 <BasicButton
                   v-if="row.has_content_route"
                   :text="$t('agm.view_legal_text')"
-                  class="bg-basic-200 t-basic-600"
+                  class="bg-raised t-secondary"
                   @click="viewLegalText(row)"
                 />
               </template>
@@ -149,13 +149,13 @@
         class="agm-modal-overlay"
         @click.self="consentTextModal.visible = false"
       >
-        <div class="agm-modal bg-basic-100 b-basic-300">
+        <div class="agm-modal bg-base b-subtle">
           <div class="agm-modal__header flex ai-ct jc-sb p-400">
             <div>
               <h2 class="fs-500 fw-600">
                 {{ $t("agm.legal_text_at_consent") }}
               </h2>
-              <p v-if="consentTextModal.data" class="fs-200 t-basic-500 mt-100">
+              <p v-if="consentTextModal.data" class="fs-200 t-muted mt-100">
                 {{ consentTextModal.data.agreement_name }} — v{{
                   consentTextModal.data.version_number
                 }}
@@ -165,7 +165,7 @@
             <BasicButton
               text=""
               icon="xmark"
-              class="bg-basic-200 t-basic-600"
+              class="bg-raised t-secondary"
               @click="consentTextModal.visible = false"
             />
           </div>
@@ -175,7 +175,7 @@
               v-else-if="
                 !consentTextModal.data || !consentTextModal.data.text_html
               "
-              class="t-basic-500"
+              class="t-muted"
             >
               {{ $t("agm.no_legal_text") }}
             </p>
@@ -351,7 +351,7 @@ export default {
   padding: 0;
 
   &:hover {
-    color: var(--c-basic-800);
+    color: var(--text-body);
   }
 }
 
@@ -362,7 +362,7 @@ export default {
 }
 
 .person-detail__card {
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
 }
 
 .agm-modal-overlay {
@@ -386,7 +386,7 @@ export default {
 }
 
 .agm-modal__header {
-  border-bottom: 1px solid var(--c-basic-200);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .agm-modal__body {
@@ -398,10 +398,10 @@ export default {
   max-height: 60vh;
   overflow-y: auto;
   padding: 16px;
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
   border-radius: var(--radius-md);
   font-size: var(--fs-300);
   line-height: 1.6;
-  color: var(--c-basic-700);
+  color: var(--text-body);
 }
 </style>

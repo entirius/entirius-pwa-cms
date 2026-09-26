@@ -491,8 +491,8 @@ watch(
   <div class="media-gallery">
     <!-- Header -->
     <div class="media-gallery__header">
-      <h3 class="fs-400 fw-600 t-basic-800">{{ $t("pim.media_gallery") }}</h3>
-      <span v-if="totalAssets" class="media-gallery__count t-basic-500 fs-200">
+      <h3 class="fs-400 fw-600 t-body">{{ $t("pim.media_gallery") }}</h3>
+      <span v-if="totalAssets" class="media-gallery__count t-muted fs-200">
         {{ totalAssets }} {{ totalAssets === 1 ? "asset" : "assets" }}
       </span>
     </div>
@@ -524,7 +524,7 @@ watch(
             <a
               :href="selectedItem.imageUrl"
               target="_blank"
-              class="t-support-400 fs-200 mt-100"
+              class="t-accent fs-200 mt-100"
             >
               {{ selectedItem.altText || selectedItem.imageUrl }}
             </a>
@@ -540,13 +540,13 @@ watch(
             <div v-else class="media-gallery__video-link">
               <FontAwesomeIcon
                 icon="play-circle"
-                class="t-basic-400"
+                class="t-muted"
                 style="font-size: 48px"
               />
               <a
                 :href="selectedItem.videoUrl"
                 target="_blank"
-                class="t-support-400 fs-200 mt-100"
+                class="t-accent fs-200 mt-100"
               >
                 {{ selectedItem.videoUrl }}
               </a>
@@ -556,10 +556,10 @@ watch(
         <div v-else class="media-gallery__no-image">
           <FontAwesomeIcon
             icon="image"
-            class="t-basic-400"
+            class="t-muted"
             style="font-size: 32px"
           />
-          <span class="t-basic-500 fs-200 mt-100">{{
+          <span class="t-muted fs-200 mt-100">{{
             $t("pim.no_media")
           }}</span>
         </div>
@@ -567,11 +567,11 @@ watch(
         <!-- Edit panel (overlays preview) -->
         <div v-if="editingItem" class="media-gallery__edit-panel">
           <div class="media-gallery__edit-header">
-            <span class="fw-600 fs-300 t-basic-800">{{
+            <span class="fw-600 fs-300 t-body">{{
               $t("pim.edit_media")
             }}</span>
             <button class="media-gallery__close-btn" @click="closeEdit">
-              <FontAwesomeIcon icon="xmark" class="t-basic-500" />
+              <FontAwesomeIcon icon="xmark" class="t-muted" />
             </button>
           </div>
 
@@ -590,13 +590,13 @@ watch(
               <div class="media-gallery__edit-field">
                 <label class="media-gallery__field-label">
                   {{ $t("pim.alt_text") }}
-                  <span v-if="editAltFilledCount" class="t-basic-500">
+                  <span v-if="editAltFilledCount" class="t-muted">
                     ({{ editAltFilledCount }}/{{
                       pimChannel.activeChannelLanguages.length
                     }})
                   </span>
                 </label>
-                <span v-if="editAltPreview" class="t-basic-600 fs-200 lc-1">
+                <span v-if="editAltPreview" class="t-secondary fs-200 lc-1">
                   {{ editAltPreview }}
                 </span>
                 <BasicButton
@@ -621,7 +621,7 @@ watch(
                 <label class="media-gallery__field-label">{{
                   $t("pim.video_url")
                 }}</label>
-                <span class="t-basic-600 fs-200 lc-1">{{
+                <span class="t-secondary fs-200 lc-1">{{
                   editingItem.videoUrl
                 }}</span>
               </div>
@@ -744,21 +744,21 @@ watch(
           @dragleave="onDragLeave"
           @drop="onDrop"
         >
-          <span v-if="uploadingPicture" class="t-basic-500 fs-200">...</span>
+          <span v-if="uploadingPicture" class="t-muted fs-200">...</span>
           <template v-else>
-            <FontAwesomeIcon icon="upload" class="t-basic-400 fs-400" />
-            <span class="t-basic-500 fs-200 mt-100">{{
+            <FontAwesomeIcon icon="upload" class="t-muted fs-400" />
+            <span class="t-muted fs-200 mt-100">{{
               $t("pim.drop_files_here")
             }}</span>
           </template>
         </div>
         <div class="media-gallery__divider">
           <span class="media-gallery__divider-line" />
-          <span class="media-gallery__divider-text t-basic-400 fs-100">or</span>
+          <span class="media-gallery__divider-text t-muted fs-100">or</span>
           <span class="media-gallery__divider-line" />
         </div>
         <div class="media-gallery__video-inline">
-          <FontAwesomeIcon icon="link" class="t-basic-400" />
+          <FontAwesomeIcon icon="link" class="t-muted" />
           <input
             v-model="newVideoUrl"
             type="text"
@@ -830,7 +830,7 @@ watch(
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    background: var(--c-basic-900);
+    background: var(--surface-inverse);
     position: relative;
   }
 
@@ -872,7 +872,7 @@ watch(
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: var(--c-basic-400);
+    color: var(--text-muted);
     gap: 4px;
   }
 
@@ -901,14 +901,14 @@ watch(
     cursor: pointer;
     position: relative;
     transition: border-color 0.15s;
-    background: var(--c-basic-200);
+    background: var(--surface-raised);
 
     &:hover {
-      border-color: var(--c-basic-400);
+      border-color: var(--border-default);
     }
 
     &--active {
-      border-color: var(--c-support-400);
+      border-color: var(--accent);
     }
 
     &:hover .media-gallery__thumb-actions {
@@ -937,10 +937,10 @@ watch(
     position: relative;
     background: linear-gradient(
       135deg,
-      var(--c-basic-300) 0%,
-      var(--c-basic-200) 100%
+      var(--surface-hover) 0%,
+      var(--surface-raised) 100%
     );
-    color: var(--c-basic-500);
+    color: var(--text-muted);
     font-size: 18px;
   }
 
@@ -952,10 +952,10 @@ watch(
     justify-content: center;
     background: linear-gradient(
       135deg,
-      var(--c-basic-300) 0%,
-      var(--c-basic-200) 100%
+      var(--surface-hover) 0%,
+      var(--surface-raised) 100%
     );
-    color: var(--c-basic-500);
+    color: var(--text-muted);
     font-size: 18px;
   }
 
@@ -1001,8 +1001,8 @@ watch(
     height: 24px;
     border-radius: 50%;
     border: none;
-    background: var(--c-basic-100);
-    color: var(--c-basic-700);
+    background: var(--surface-base);
+    color: var(--text-body);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1011,14 +1011,14 @@ watch(
     transition: background 0.1s;
 
     &:hover {
-      background: var(--c-basic-200);
+      background: var(--surface-raised);
     }
 
     &--delete {
-      color: var(--c-negative-300);
+      color: var(--negative);
 
       &:hover {
-        background: var(--c-negative-100);
+        background: var(--negative-subtle);
       }
     }
   }
@@ -1031,7 +1031,7 @@ watch(
   // --- Unified add-media zone ---
   &__add-zone {
     margin-top: 8px;
-    border: 2px dashed var(--c-basic-400);
+    border: 2px dashed var(--border-default);
     border-radius: var(--radius-md);
     padding: 12px;
     display: flex;
@@ -1053,12 +1053,12 @@ watch(
 
     &:hover,
     &:focus-visible {
-      background: var(--c-basic-150);
+      background: var(--surface-raised);
       outline: none;
     }
 
     &--dragover {
-      background: var(--c-basic-200);
+      background: var(--surface-raised);
     }
   }
 
@@ -1073,7 +1073,7 @@ watch(
   &__divider-line {
     flex: 1;
     height: 1px;
-    background: var(--c-basic-300);
+    background: var(--surface-hover);
   }
 
   &__divider-text {
@@ -1090,21 +1090,21 @@ watch(
 
   &__video-input {
     flex: 1;
-    border: 1px solid var(--c-basic-300);
+    border: 1px solid var(--border-subtle);
     border-radius: var(--radius-sm);
     padding: 6px 8px;
     font-size: var(--fs-200);
-    background: var(--c-basic-100);
-    color: var(--c-basic-800);
+    background: var(--surface-base);
+    color: var(--text-body);
     outline: none;
     height: var(--elem-height);
 
     &::placeholder {
-      color: var(--c-basic-400);
+      color: var(--text-muted);
     }
 
     &:focus {
-      border-color: var(--c-support-400);
+      border-color: var(--accent);
     }
   }
 
@@ -1118,7 +1118,7 @@ watch(
     position: absolute;
     inset: 0;
     border-radius: var(--radius-md);
-    background: var(--c-basic-100);
+    background: var(--surface-base);
     display: flex;
     flex-direction: column;
     z-index: 2;
@@ -1129,7 +1129,7 @@ watch(
     align-items: center;
     justify-content: space-between;
     padding: 10px 12px;
-    border-bottom: 1px solid var(--c-basic-200);
+    border-bottom: 1px solid var(--border-subtle);
   }
 
   &__close-btn {
@@ -1163,14 +1163,14 @@ watch(
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.03em;
-    color: var(--c-basic-500);
+    color: var(--text-muted);
   }
 
   &__edit-actions {
     display: flex;
     gap: 8px;
     padding: 10px 12px;
-    border-top: 1px solid var(--c-basic-200);
+    border-top: 1px solid var(--border-subtle);
     margin-top: auto;
   }
 }
@@ -1201,7 +1201,7 @@ watch(
 /* Global (unscoped) — SortableJS drag clones are appended to <body> */
 .media-gallery__drag-clone {
   opacity: 0.9;
-  border: 2px solid var(--c-support-400);
+  border: 2px solid var(--accent);
   border-radius: 4px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }

@@ -14,7 +14,7 @@
 
     <div
       v-if="!loading && shouldShowNoPreferredBanner"
-      class="bg-warning-100 t-warning-300 p-200 br-sm mb-300"
+      class="bg-warning-subtle t-warning p-200 br-sm mb-300"
       data-testid="linked-no-preferred-banner"
     >
       <p class="fs-200">{{ $t("atlas.linked.no_preferred_warning") }}</p>
@@ -49,7 +49,7 @@
         <div class="flex ai-ct gap-100" @click.stop>
           <button
             v-if="!isMonitoringSupplier && !row.is_primary"
-            class="row-action-btn bg-positive-100 t-positive-300"
+            class="row-action-btn bg-positive-subtle t-positive"
             :title="$t('atlas.linked.set_preferred_button')"
             :data-testid="`linked-set-preferred-${row.id}`"
             @click="setPrimary(row)"
@@ -58,7 +58,7 @@
           </button>
           <button
             v-else-if="!isMonitoringSupplier"
-            class="row-action-btn bg-warning-100 t-warning-300"
+            class="row-action-btn bg-warning-subtle t-warning"
             :title="$t('atlas.linked.unset_preferred_button')"
             :data-testid="`linked-unset-preferred-${row.id}`"
             @click="unsetPrimary(row)"
@@ -66,7 +66,7 @@
             <FontAwesomeIcon icon="star" />
           </button>
           <button
-            class="row-action-btn bg-basic-200 t-basic-700"
+            class="row-action-btn bg-raised t-body"
             :title="$t('common.edit')"
             :data-testid="`linked-edit-${row.id}`"
             @click="openEdit(row)"
@@ -74,7 +74,7 @@
             <FontAwesomeIcon icon="pen" />
           </button>
           <button
-            class="row-action-btn bg-negative-100 t-negative-300"
+            class="row-action-btn bg-negative-subtle t-negative"
             :title="$t('common.delete')"
             :data-testid="`linked-delete-${row.id}`"
             @click="confirmDelete(row)"
@@ -113,7 +113,7 @@
             <button
               v-if="formData.real_product_sku"
               type="button"
-              class="row-action-btn bg-basic-200 t-basic-700"
+              class="row-action-btn bg-raised t-body"
               :title="$t('atlas.linked.sku_preview')"
               data-testid="linked-sku-preview-btn"
               @click="openPreview"
@@ -123,7 +123,7 @@
           </div>
           <p
             v-if="errors.real_product_sku"
-            class="form-error t-negative-300 fs-200"
+            class="form-error t-negative fs-200"
           >
             {{ errors.real_product_sku.msg }}
           </p>
@@ -554,18 +554,18 @@ export default {
   cursor: pointer;
 }
 .suppliers-primary-btn {
-  background: var(--c-support-400);
-  border-color: var(--c-support-400);
-  color: var(--c-basic-100);
+  background: var(--accent-fill);
+  border-color: var(--accent);
+  color: var(--text-on-accent-fill);
 }
 .suppliers-primary-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 .suppliers-secondary-btn {
-  background: var(--c-basic-100);
-  border-color: var(--c-basic-400);
-  color: var(--c-basic-700);
+  background: var(--surface-base);
+  border-color: var(--border-default);
+  color: var(--text-body);
 }
 .row-action-btn {
   display: inline-flex;
@@ -590,7 +590,7 @@ export default {
   justify-content: center;
   width: 100%;
   height: 220px;
-  background: var(--c-basic-100);
+  background: var(--surface-base);
   border-radius: var(--radius-sm);
   overflow: hidden;
   img {
@@ -601,14 +601,14 @@ export default {
 }
 .sku-preview__placeholder {
   font-size: 48px;
-  color: var(--c-basic-400);
+  color: var(--text-muted);
 }
 .sku-preview__meta {
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 4px 12px;
   dt {
-    color: var(--c-basic-600);
+    color: var(--text-secondary);
   }
   dd {
     margin: 0;

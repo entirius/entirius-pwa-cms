@@ -20,10 +20,10 @@
     >
       <template #cell-face_value="{ row }">
         <span class="fw-600">{{ row.face_value }}</span>
-        <span class="t-basic-400">{{ row.currency }}</span>
+        <span class="t-muted">{{ row.currency }}</span>
       </template>
       <template #cell-tax_type="{ row }">
-        <span class="config-badge bg-basic-200 t-basic-600">{{
+        <span class="config-badge bg-raised t-secondary">{{
           taxLabel(row.tax_type)
         }}</span>
       </template>
@@ -55,7 +55,7 @@
             :min="1"
             :max="9999999"
           />
-          <span v-else class="t-basic-600">#{{ form.product_id }}</span>
+          <span v-else class="t-secondary">#{{ form.product_id }}</span>
         </FormField>
 
         <div class="voucher-form__row">
@@ -83,7 +83,7 @@
               :placeholder="$t('promo.pv_currency')"
               @onSelect="(v) => (form.currency_iso3 = v)"
             />
-            <span v-else class="t-basic-600">{{ form.currency_iso3 }}</span>
+            <span v-else class="t-secondary">{{ form.currency_iso3 }}</span>
           </FormField>
         </div>
 
@@ -156,7 +156,7 @@
         <!-- Product filters (nested; INCLUSION / EXCLUSION) -->
         <div v-if="isEdit" class="voucher-form__filters">
           <h3 class="fs-300 fw-600 mb-200">{{ $t("promo.pv_filters") }}</h3>
-          <p class="fs-200 t-basic-500 mb-300">
+          <p class="fs-200 t-muted mb-300">
             {{ $t("promo.pv_filters_hint") }}
           </p>
 
@@ -166,7 +166,7 @@
             class="filter-row flex ai-ct jc-sb"
           >
             <span class="fs-200">
-              <span class="config-badge bg-basic-200 t-basic-600">{{
+              <span class="config-badge bg-raised t-secondary">{{
                 modeLabel(f.mode)
               }}</span>
               {{
@@ -206,7 +206,7 @@
               :key="kind.type"
               class="filter-picker"
             >
-              <label class="fs-200 t-basic-500">{{ $t(kind.labelKey) }}</label>
+              <label class="fs-200 t-muted">{{ $t(kind.labelKey) }}</label>
               <EntitySearchPicker
                 :model-value="null"
                 :fetch-fn="(s) => fetchEntities(kind.type, s)"
@@ -764,7 +764,7 @@ export default {
 }
 
 .voucher-form__filters {
-  border-top: 1px solid var(--c-basic-300);
+  border-top: 1px solid var(--border-subtle);
   padding-top: var(--space-300);
 }
 
@@ -777,7 +777,7 @@ export default {
 
 .filter-row {
   padding: var(--space-200) 0;
-  border-bottom: 1px solid var(--c-basic-200);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .filter-add {
@@ -807,8 +807,8 @@ export default {
   padding: 2px 8px;
   border-radius: var(--radius-sm);
   font-size: var(--fs-200);
-  background: var(--c-basic-200);
-  color: var(--c-basic-700);
+  background: var(--surface-raised);
+  color: var(--text-body);
 }
 
 .config-chip__x {
@@ -817,7 +817,7 @@ export default {
   cursor: pointer;
   font-size: 14px;
   line-height: 1;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   padding: 0;
 }
 

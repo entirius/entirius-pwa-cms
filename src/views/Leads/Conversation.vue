@@ -104,14 +104,14 @@ watch(() => route.params.id, (id) => id && route.name === "LeadsConversation" &&
 }
 .conversation__none {
   margin: 0;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 .conversation__subject {
   margin: 0;
   overflow-wrap: anywhere;
 }
 .conversation__state {
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
   font-size: var(--fs-100);
 }
 </style>

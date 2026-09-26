@@ -36,12 +36,12 @@
       <div class="translations-drawer__footer">
         <BasicButton
           text="Cancel"
-          class="bg-basic-200 t-basic-600"
+          class="bg-raised t-secondary"
           @click="onCancel"
         />
         <BasicButton
           text="Save"
-          class="bg-support-400 t-basic-100"
+          class="bg-accent-fill t-on-accent-fill"
           @click="onSave"
         />
       </div>
@@ -105,7 +105,7 @@ function onSave() {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.03em;
-    color: var(--c-basic-500);
+    color: var(--text-muted);
   }
 
   &__badge {
@@ -115,8 +115,8 @@ function onSave() {
     letter-spacing: 0;
     padding: 1px 6px;
     border-radius: 3px;
-    background: var(--c-support-100);
-    color: var(--c-support-400);
+    background: var(--accent-subtle);
+    color: var(--text-accent);
   }
 
   &__footer {
@@ -125,7 +125,7 @@ function onSave() {
     gap: var(--space-200);
     margin-top: var(--space-300);
     padding-top: var(--space-300);
-    border-top: 1px solid var(--c-basic-200);
+    border-top: 1px solid var(--border-subtle);
   }
 }
 </style>

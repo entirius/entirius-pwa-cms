@@ -1,10 +1,10 @@
 <template>
   <div class="pim-panel h-100">
-    <div class="pim-panel__channel-bar flex ai-ct jc-sb bg-basic-200 fs-300">
+    <div class="pim-panel__channel-bar flex ai-ct jc-sb bg-raised fs-300">
       <div class="flex ai-ct gap-300">
         <div id="pim-toolbar-left" class="flex ai-ct gap-200"></div>
         <div class="pim-channel-selector flex ai-ct gap-300">
-          <span class="fs-200 fw-600 t-basic-500"
+          <span class="fs-200 fw-600 t-muted"
             >{{ $t("pim.channel") }}:</span
           >
           <Dropdown
@@ -16,12 +16,12 @@
           />
           <span
             v-if="pimChannel.isDefaultChannel && !isGlobalScopeValue"
-            class="chip t-support-400 fs-200"
+            class="chip t-accent fs-200"
             >{{ $t("pim.default") }}</span
           >
           <span
             v-if="isGlobalScopeValue"
-            class="chip bg-basic-200 t-basic-500 fs-200"
+            class="chip bg-raised t-muted fs-200"
             >{{ $t("pim.global_scope") }}</span
           >
         </div>
@@ -31,7 +31,7 @@
           v-if="translatorAvailable"
           :text="$t('pim.translate_store')"
           icon="language"
-          class="bg-support-400 t-basic-100"
+          class="bg-accent-fill t-on-accent-fill"
           @click="showTranslateStore = true"
         />
       </div>
@@ -119,7 +119,7 @@ export default {
 
 .pim-panel__channel-bar {
   padding: 8px 20px;
-  border-bottom: 1px solid var(--c-basic-300);
+  border-bottom: 1px solid var(--border-subtle);
   flex-shrink: 0;
 }
 

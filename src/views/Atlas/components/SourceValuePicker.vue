@@ -17,27 +17,27 @@
     </div>
     <div
       v-if="open"
-      class="source-value-picker__panel bg-basic-100 b-basic-300"
+      class="source-value-picker__panel bg-base b-subtle"
       :data-testid="`${testId}-popover`"
     >
-      <div v-if="loading && !filteredValues.length" class="source-value-picker__state t-basic-500 p-100 fs-200">
+      <div v-if="loading && !filteredValues.length" class="source-value-picker__state t-muted p-100 fs-200">
         {{ $t("layout_extender.searching") }}
       </div>
       <div
         v-else-if="!sourceField"
-        class="source-value-picker__state t-basic-500 p-100 fs-200"
+        class="source-value-picker__state t-muted p-100 fs-200"
       >
         {{ $t("atlas.mappings.category.source_value_picker_no_source_field") }}
       </div>
       <div
         v-else-if="error"
-        class="source-value-picker__state t-negative-300 p-100 fs-200"
+        class="source-value-picker__state t-negative p-100 fs-200"
       >
         {{ error }}
       </div>
       <div
         v-else-if="!filteredValues.length"
-        class="source-value-picker__state t-basic-500 p-100 fs-200"
+        class="source-value-picker__state t-muted p-100 fs-200"
       >
         {{
           values.length
@@ -54,7 +54,7 @@
           @click="selectValue(item.value)"
         >
           <span class="source-value-picker__value">{{ item.value }}</span>
-          <span class="source-value-picker__count t-basic-500 fs-200">
+          <span class="source-value-picker__count t-muted fs-200">
             {{ item.count }}
             {{ $t("atlas.mappings.category.source_value_picker_count_suffix") }}
           </span>
@@ -175,7 +175,7 @@ export default {
   top: 50%;
   transform: translateY(-50%);
   font-size: 11px;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   transition: transform 0.15s;
   cursor: pointer;
   pointer-events: auto;
@@ -191,9 +191,9 @@ export default {
   z-index: 50;
   max-height: 280px;
   overflow-y: auto;
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  background: var(--c-basic-100);
+  background: var(--surface-base);
   box-shadow: var(--shadow-md);
 }
 .source-value-picker__state {
@@ -209,11 +209,11 @@ export default {
   transition: background 0.1s;
 }
 .source-value-picker__item:hover {
-  background: var(--c-support-100);
+  background: var(--accent-subtle);
 }
 .source-value-picker__value {
   font-size: var(--fs-300);
-  color: var(--c-basic-800);
+  color: var(--text-body);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

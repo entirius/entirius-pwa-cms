@@ -38,19 +38,19 @@ defineProps({
 
 .empty-state__icon {
   font-size: 2rem;
-  color: var(--c-basic-400);
+  color: var(--text-muted);
 }
 
 .empty-state__title {
   font-size: var(--fs-400);
   font-weight: 600;
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
   margin: 0;
 }
 
 .empty-state__message {
   font-size: var(--fs-200);
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   max-width: 30rem;
   margin: 0;
 }

@@ -7,7 +7,7 @@
         @click.self="$emit('close')"
         data-testid="test-feed-modal"
       >
-        <div class="test-feed-container bg-basic-100 b-basic-300 br-100 p-400">
+        <div class="test-feed-container bg-base b-subtle br-100 p-400">
           <div class="flex ai-ct jc-sb mb-200">
             <h2 class="fs-400 fw-600">{{ $t("atlas.feeds.test.title") }}</h2>
             <button
@@ -21,7 +21,7 @@
 
           <Loader v-show="busy" />
 
-          <div v-if="!busy && result?.is_async" class="t-basic-700 fs-300">
+          <div v-if="!busy && result?.is_async" class="t-body fs-300">
             <p>
               {{
                 $t("atlas.feeds.test.async_dispatched", {
@@ -31,12 +31,12 @@
             </p>
           </div>
 
-          <div v-else-if="!busy && result?.is_suppressed" class="t-warning-300 fs-300">
+          <div v-else-if="!busy && result?.is_suppressed" class="t-warning fs-300">
             <p>{{ $t("atlas.feeds.test.suppressed") }}</p>
           </div>
 
           <div v-else-if="!busy && Array.isArray(result?.raw_products)">
-            <p class="t-basic-500 fs-200 mb-200">
+            <p class="t-muted fs-200 mb-200">
               {{
                 $t("atlas.feeds.test.results_count", {
                   count: result.raw_products.length,
@@ -47,23 +47,23 @@
               <div
                 v-for="(p, i) in result.raw_products"
                 :key="i"
-                class="test-feed__row b-basic-300 br-sm p-200 mb-100"
+                class="test-feed__row b-subtle br-sm p-200 mb-100"
                 :data-testid="`test-feed-row-${i}`"
               >
                 <div class="flex ai-ct gap-200 flex-wrap fs-200">
                   <strong>{{ p.external_id }}</strong>
-                  <span class="t-basic-700">{{ p.name }}</span>
-                  <span v-if="p.cost" class="t-basic-600">
+                  <span class="t-body">{{ p.name }}</span>
+                  <span v-if="p.cost" class="t-secondary">
                     {{ formatCost(p.cost, p.currency) }}
                   </span>
-                  <span v-if="p.ean" class="t-basic-500">EAN: {{ p.ean }}</span>
-                  <span class="t-basic-500">stock: {{ p.stock ?? 0 }}</span>
+                  <span v-if="p.ean" class="t-muted">EAN: {{ p.ean }}</span>
+                  <span class="t-muted">stock: {{ p.stock ?? 0 }}</span>
                 </div>
               </div>
             </div>
           </div>
 
-          <div v-else-if="!busy && error" class="t-negative-300 fs-300">
+          <div v-else-if="!busy && error" class="t-negative fs-300">
             <p>{{ error }}</p>
           </div>
         </div>
@@ -109,11 +109,11 @@ export default {
   background: transparent;
   border: none;
   font-size: 18px;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   cursor: pointer;
 }
 .test-feed__close:hover {
-  color: var(--c-basic-700);
+  color: var(--text-body);
 }
 .test-feed__list {
   max-height: 50vh;

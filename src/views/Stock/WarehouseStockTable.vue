@@ -1,9 +1,9 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
     <Teleport to="#stock-toolbar-right" defer>
       <span
         v-if="dirtyCount > 0 && isManual"
-        class="bg-warning-100 t-warning-300 fs-200 ph-100 br-50"
+        class="bg-warning-subtle t-warning fs-200 ph-100 br-50"
       >
         {{ $t("stock.unsaved") }}: {{ dirtyCount }}
       </span>
@@ -17,7 +17,7 @@
       <BasicButton
         v-if="isManual"
         :text="$t('stock.save_all')"
-        class="bg-support-400 t-basic-100"
+        class="bg-accent-fill t-on-accent-fill"
         :disabled="dirtyCount === 0"
         @click="saveAll"
       />
@@ -26,13 +26,13 @@
     <!-- Integration warning -->
     <div
       v-if="!isManual"
-      class="flex ai-ct gap-200 mb-300 p-300 bg-support-100 br-50 t-support-400 fs-200"
+      class="flex ai-ct gap-200 mb-300 p-300 bg-accent-subtle br-50 t-accent fs-200"
     >
       <FontAwesomeIcon icon="lock" />
       <span>{{ $t("stock.integration_readonly") }}</span>
     </div>
 
-    <div class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
       <!-- Toolbar: search + filter chips -->
       <div class="stock-table__toolbar">
         <BasicInput
@@ -79,7 +79,7 @@
         </thead>
         <tbody>
           <tr v-for="item in rows" :key="item.sku">
-            <td class="stock-table__col-sku" :class="{ 't-negative-300': item.has_stock && item.quantity === 0 }">
+            <td class="stock-table__col-sku" :class="{ 't-negative': item.has_stock && item.quantity === 0 }">
               {{ item.sku }}
             </td>
             <td class="stock-table__col-qty">
@@ -95,13 +95,13 @@
               <span v-if="item.dispatch_resolved != null">
                 {{ $t("stock.dispatch_hours", { hours: item.dispatch_resolved }) }}
               </span>
-              <span v-else class="t-basic-500 fs-200">—</span>
+              <span v-else class="t-muted fs-200">—</span>
             </td>
             <td class="stock-table__col-status">
-              <span v-if="isDirty(item.sku)" class="bg-warning-100 t-warning-300 fs-200 ph-100 br-50">
+              <span v-if="isDirty(item.sku)" class="bg-warning-subtle t-warning fs-200 ph-100 br-50">
                 {{ $t("stock.unsaved") }}
               </span>
-              <span v-else-if="!item.has_stock" class="t-basic-500 fs-200">
+              <span v-else-if="!item.has_stock" class="t-muted fs-200">
                 {{ $t("stock.no_stock_label") }}
               </span>
             </td>
@@ -297,18 +297,18 @@ export default {
   td {
     padding: 8px 12px;
     text-align: left;
-    border-bottom: 1px solid var(--c-basic-300);
+    border-bottom: 1px solid var(--border-subtle);
   }
 
   th {
     font-size: var(--fs-200);
     font-weight: 600;
-    color: var(--c-basic-500);
+    color: var(--text-muted);
     text-transform: uppercase;
   }
 
   tr:hover td {
-    background: var(--c-basic-200);
+    background: var(--surface-raised);
   }
 }
 

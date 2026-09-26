@@ -27,21 +27,21 @@ defineProps({
 .locked-field__label {
   top: calc(-1 * var(--label-gap));
   transform: translate(0, -100%);
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
 }
 
 .locked-field__value {
   height: var(--elem-height);
   padding: 4px var(--space-100);
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--space-50);
-  background: var(--c-basic-200);
-  color: var(--c-basic-500);
+  background: var(--surface-raised);
+  color: var(--text-muted);
   font-size: inherit;
 }
 
 .locked-field__icon {
   font-size: 11px;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 </style>

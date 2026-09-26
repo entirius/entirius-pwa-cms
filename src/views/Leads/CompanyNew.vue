@@ -158,7 +158,7 @@ onMounted(() => leadTypes.load()); // a failed load leaves Unknown only
   margin: 0;
   padding: var(--space-200) var(--space-300);
   border-radius: 8px;
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
 }
 .add-lead__cancel {
   display: inline-flex;

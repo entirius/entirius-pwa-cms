@@ -92,7 +92,7 @@ function onSave() {
     <div v-if="visible" class="modal-overlay" @click.self="emit('close')">
       <div class="modal-container">
         <div class="modal-header">
-          <h2 class="fs-500 fw-600 t-basic-700">
+          <h2 class="fs-500 fw-600 t-body">
             {{ item ? $t("layout_extender.edit_item") : $t("layout_extender.add_item") }}
           </h2>
           <span class="modal-close" @click="emit('close')">
@@ -218,10 +218,10 @@ function onSave() {
 }
 
 .modal-container {
-  background: var(--c-basic-100);
+  background: var(--surface-base);
   padding: 24px;
   border-radius: 8px;
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-lg);
   width: min(480px, 95vw);
 }
@@ -232,7 +232,7 @@ function onSave() {
   justify-content: space-between;
   margin-bottom: 20px;
   padding-bottom: 12px;
-  border-bottom: 1px solid var(--c-basic-300);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .modal-close {
@@ -243,13 +243,13 @@ function onSave() {
   height: 32px;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   transition: background 0.1s, color 0.1s;
 }
 
 .modal-close:hover {
-  background: var(--c-basic-200);
-  color: var(--c-basic-700);
+  background: var(--surface-raised);
+  color: var(--text-body);
 }
 
 .modal-body {
@@ -280,13 +280,13 @@ function onSave() {
   gap: 8px;
   cursor: pointer;
   font-size: 14px;
-  color: var(--c-basic-700);
+  color: var(--text-body);
 }
 
 .radio-label input[type="radio"] {
   width: 18px;
   height: 18px;
-  accent-color: var(--c-support-400);
+  accent-color: var(--accent);
   margin: 0;
   cursor: pointer;
 }
@@ -308,19 +308,19 @@ function onSave() {
 }
 
 .modal-btn--secondary {
-  background: var(--c-basic-100);
-  border-color: var(--c-basic-400);
-  color: var(--c-basic-700);
+  background: var(--surface-base);
+  border-color: var(--border-default);
+  color: var(--text-body);
 }
 
 .modal-btn--secondary:hover {
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
 }
 
 .modal-btn--confirm {
-  background: var(--c-support-400);
-  border-color: var(--c-support-400);
-  color: var(--c-basic-100);
+  background: var(--accent-fill);
+  border-color: var(--accent);
+  color: var(--text-on-accent-fill);
 }
 
 .modal-btn--confirm:hover {

@@ -5,7 +5,7 @@
       class="image-diff__pane image-diff__pane--before"
       data-testid="image-diff-before"
     >
-      <figcaption class="image-diff__cap t-negative-300">
+      <figcaption class="image-diff__cap t-negative">
         {{ $t("enrichment.image.before") }}
       </figcaption>
       <img
@@ -16,7 +16,7 @@
         data-testid="image-diff-before-img"
         @click="openGallery(beforeUrl)"
       />
-      <span v-else class="image-diff__none t-basic-400">{{
+      <span v-else class="image-diff__none t-muted">{{
         $t("enrichment.image.none")
       }}</span>
     </figure>
@@ -26,7 +26,7 @@
       class="image-diff__pane image-diff__pane--after"
       data-testid="image-diff-after"
     >
-      <figcaption class="image-diff__cap t-positive-300">
+      <figcaption class="image-diff__cap t-positive">
         {{ $t("enrichment.image.after") }}
       </figcaption>
       <img
@@ -37,10 +37,10 @@
         data-testid="image-diff-after-img"
         @click="openGallery(afterSrc)"
       />
-      <span v-else-if="afterError" class="image-diff__none t-negative-300">
+      <span v-else-if="afterError" class="image-diff__none t-negative">
         {{ $t("enrichment.image.failed") }}
       </span>
-      <span v-else class="image-diff__none t-basic-400">…</span>
+      <span v-else class="image-diff__none t-muted">…</span>
     </figure>
 
     <GalleryModal
@@ -116,13 +116,13 @@ export default {
   flex-direction: column;
   gap: var(--space-50);
   padding-left: var(--space-100);
-  border-left: 3px solid var(--c-basic-300);
+  border-left: 3px solid var(--border-subtle);
 }
 .image-diff__pane--before {
-  border-left-color: var(--c-negative-300);
+  border-left-color: var(--negative);
 }
 .image-diff__pane--after {
-  border-left-color: var(--c-positive-300);
+  border-left-color: var(--positive);
 }
 .image-diff__cap {
   font-size: var(--fs-200);
@@ -134,7 +134,7 @@ export default {
   max-height: 120px;
   object-fit: contain;
   border-radius: var(--radius-sm);
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
   cursor: pointer;
 }
 .image-diff__none {

@@ -1,10 +1,10 @@
 <template>
-  <div class="images-controller t-basic-700 bg-basic-100">
+  <div class="images-controller t-body bg-base">
     <p class="mb-100" v-if="label">{{ label }}</p>
     <div class="flex gap-100">
       <BasicButton
         :text="$t('routes.set_new')"
-        class="t-support-400 b-basic-400 bg-basic-100 bg-basic-300-hover br-50"
+        class="t-accent b-default bg-base bg-hover-hover br-50"
         @click="
           () => {
             init();
@@ -15,8 +15,8 @@
         :placeholder="`${$t('controllers.setted')} (${
           Object.keys(value ?? {}).length
         })`"
-        class="b-basic-400 br-50 bg-basic-100 fg-1"
-        :class="[!Boolean(value) ? 'bg-basic-200 t-basic-400' : '']"
+        class="b-default br-50 bg-base fg-1"
+        :class="[!Boolean(value) ? 'bg-raised t-muted' : '']"
         :isDisabled="!Boolean(value)"
         :values="
           Object.entries(value ?? {}).map((entry) => {
@@ -25,7 +25,7 @@
               label: `${v.meta.fileName} (${key}) | ${v.width}px/${v.height}px`,
               value: entry,
               label_ext: $t('common.delete'),
-              label_ext_class: 't-negative-200',
+              label_ext_class: 't-negative',
             };
           })
         "
@@ -38,14 +38,14 @@
       class="gallery-modal t-basic-100 flex flex-column ov-h br-50 ov-h"
     >
       <nav
-        class="grid grid-col-2 grid-col-2-m bg-basic-200 t-basic-600 fs-300 pl-400 pr-400 pt-200 pb-200"
+        class="grid grid-col-2 grid-col-2-m bg-raised t-secondary fs-300 pl-400 pr-400 pt-200 pb-200"
       >
         <p class="fs-400 fw-600 uppercase">{{ $t("images.library") }}</p>
         <p class="js-fe" @click="mode = null">
           <i class="icon-close-mini pointer" />
         </p>
       </nav>
-      <div class="pl-400 pr-400 pt-300 pb-300 fg-1 relative bg-basic-100 flex flex-column ov-h">
+      <div class="pl-400 pr-400 pt-300 pb-300 fg-1 relative bg-base flex flex-column ov-h">
         <div class="flex ai-ct jc-sb pb-100 shadow-down">
           <Pagination
             v-if="pagination"
@@ -61,7 +61,7 @@
           <div class="flex gap-50">
             <Dropdown
               :placeholder="$t('common.sort_by')"
-              class="bg-basic-100 br-50 b-basic-400 t-basic-700 js-e shadow-down"
+              class="bg-base br-50 b-default t-body js-e shadow-down"
               :values="[
                 { label: $t('common.oldest_first'), value: 'created_at' },
                 { label: $t('common.newest_first'), value: '-created_at' },
@@ -75,7 +75,7 @@
               "
             />
             <Dropdown
-              class="bg-basic-100 br-50 b-basic-400 t-basic-700 js-e shadow-down"
+              class="bg-base br-50 b-default t-body js-e shadow-down"
               :values="[
                 { label: 10, value: 10 },
                 { label: 20, value: 20 },
@@ -94,7 +94,7 @@
           </div>
         </div>
         <div class="flex wrap ai-ct gap-50 pv-100">
-          <p class="fs-100 t-basic-500">{{ $t("gallery.filter_by_tag") }}</p>
+          <p class="fs-100 t-muted">{{ $t("gallery.filter_by_tag") }}</p>
           <p
             v-for="(t, idx) in tags"
             :key="`t-${idx}`"
@@ -131,7 +131,7 @@
           <div
             v-for="(g, i) in gallery"
             @click="selected_asset = i"
-            class="ic-gallery-card bg-basic-100 relative grid-square pointer br-50"
+            class="ic-gallery-card bg-base relative grid-square pointer br-50"
             :class="{ 'ic-gallery-card--selected': selected_asset === i }"
           >
             <HoverMe
@@ -169,7 +169,7 @@
           <BasicButton
             :text="$t('images.add_photo')"
             :icon="'plus'"
-            class="br-50 t-support-400 fs-200 jc-ct b-basic-400 bg-basic-300-hover"
+            class="br-50 t-accent fs-200 jc-ct b-default bg-hover-hover"
             @click="mode = 'new-picture'"
           />
           <div class="flex ai-ct gap-100">
@@ -204,8 +204,8 @@
               class="br-50 fs-100 shadow-down jc-ct"
               :class="[
                 !canAccept
-                  ? 't-basic-500 b-basic-400 bg-basic-200'
-                  : 't-basic-100 b-support-400 bg-support-400',
+                  ? 't-muted b-default bg-raised'
+                  : 't-on-accent-fill b-accent bg-accent-fill',
               ]"
               :isDisabled="!canAccept"
               @click="handleAccept"
@@ -219,14 +219,14 @@
       class="gallery-modal t-basic-100 flex flex-column ov-h br-50"
     >
       <nav
-        class="flex bg-basic-200 t-basic-600 fs-300 pl-400 pr-400 pt-200 pb-200"
+        class="flex bg-raised t-secondary fs-300 pl-400 pr-400 pt-200 pb-200"
       >
         <p class="mr-100 pointer" @click="mode = 'gallery'">
           <i class="icon-arrow-left" />
         </p>
         <p class="fw-600 uppercase">{{ $t("images.new_photo") }}</p>
       </nav>
-      <div class="pl-400 pr-400 bg-basic-100 fg-1 ovy-auto pt-400 pb-400">
+      <div class="pl-400 pr-400 bg-base fg-1 ovy-auto pt-400 pb-400">
         <div
           class="ic-dropzone"
           :class="{ 'ic-dropzone--dragover': isDraggingOver }"
@@ -235,9 +235,9 @@
           @dragleave="isDraggingOver = false"
           @drop.prevent="onDrop"
         >
-          <FontAwesomeIcon icon="upload" class="t-basic-400 fs-500" />
-          <span class="t-basic-500 fs-200">{{ $t('gallery.drop_files_here') }}</span>
-          <span class="t-basic-400 fs-100">{{ $t('gallery.or_click_to_browse') }}</span>
+          <FontAwesomeIcon icon="upload" class="t-muted fs-500" />
+          <span class="t-muted fs-200">{{ $t('gallery.drop_files_here') }}</span>
+          <span class="t-muted fs-100">{{ $t('gallery.or_click_to_browse') }}</span>
         </div>
         <input
           type="file"
@@ -248,15 +248,15 @@
         />
 
         <div v-if="filePreview" class="mt-300">
-          <div class="grid grid-col-2 gap-400 bg-basic-100 p-300 br-50 b-basic-300">
+          <div class="grid grid-col-2 gap-400 bg-base p-300 br-50 b-subtle">
             <img :src="filePreview" alt="" style="max-width: 100%; border-radius: 4px" />
             <div class="flex-column gap-200 ai-fs">
               <BasicInput
-                class="bg-basic-100 br-50 t-basic-600 lh-base-elem"
+                class="bg-base br-50 t-secondary lh-base-elem"
                 :label="'alt'"
                 v-model="meta.alt"
               />
-              <p class="fs-200 t-basic-600 mt-100">
+              <p class="fs-200 t-secondary mt-100">
                 {{ $t("images.choose_tags") }}
               </p>
               <div class="flex wrap gap-50">
@@ -282,7 +282,7 @@
               <BasicButton
                 :text="$t('gallery.upload')"
                 @click="upload_File({})"
-                class="br-50 jc-ct t-basic-100 b-support-400 bg-support-400"
+                class="br-50 jc-ct t-on-accent-fill b-accent bg-accent-fill"
               />
             </div>
           </div>
@@ -530,16 +530,16 @@ export default {
 }
 
 .ic-gallery-card {
-  border: 2px solid var(--c-basic-400);
+  border: 2px solid var(--border-default);
   transition: border-color 0.15s ease;
 
   &:hover {
-    border-color: var(--c-basic-600);
+    border-color: var(--border-strong);
   }
 
   &--selected {
-    border-color: var(--c-support-400);
-    box-shadow: 0 0 0 1px var(--c-support-400);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--focus-ring);
   }
 }
 
@@ -553,8 +553,8 @@ export default {
   align-items: center;
   justify-content: center;
   font-size: 20px;
-  color: var(--c-support-400);
-  background: var(--c-basic-100);
+  color: var(--text-accent);
+  background: var(--surface-base);
   border-radius: 50%;
   z-index: 1;
   pointer-events: none;
@@ -569,21 +569,21 @@ export default {
   font-size: 12px;
   font-weight: 500;
   border-radius: 50px;
-  border: 1px solid var(--c-basic-400);
+  border: 1px solid var(--border-default);
   background: transparent;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   transition: all 0.15s ease;
   text-decoration: line-through;
 
   &--active {
-    border-color: var(--c-support-400);
-    color: var(--c-basic-700);
+    border-color: var(--accent);
+    color: var(--text-body);
     text-decoration: none;
   }
 
   &__icon {
     font-size: 14px;
-    color: var(--c-support-400);
+    color: var(--text-accent);
   }
 }
 
@@ -594,19 +594,19 @@ export default {
   justify-content: center;
   gap: 6px;
   padding: 32px 16px;
-  border: 2px dashed var(--c-basic-400);
+  border: 2px dashed var(--border-default);
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: border-color 0.15s ease, background-color 0.15s ease;
 
   &:hover {
-    border-color: var(--c-support-400);
-    background: var(--c-basic-200);
+    border-color: var(--accent);
+    background: var(--surface-raised);
   }
 
   &--dragover {
-    border-color: var(--c-support-400);
-    background: var(--c-support-100);
+    border-color: var(--accent);
+    background: var(--accent-subtle);
   }
 }
 
@@ -632,16 +632,16 @@ export default {
   align-items: center;
   justify-content: center;
   gap: 4px;
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
 
   &__icon {
     font-size: 20px;
-    color: var(--c-basic-400);
+    color: var(--text-muted);
   }
 
   &__name {
     font-size: 10px;
-    color: var(--c-basic-500);
+    color: var(--text-muted);
     text-align: center;
     padding: 0 6px;
     overflow: hidden;
@@ -658,23 +658,23 @@ export default {
   padding: 0 10px;
   font-size: 12px;
   border-radius: 50px;
-  border: 1px solid var(--c-basic-400);
-  background: var(--c-basic-100);
-  color: var(--c-basic-700);
+  border: 1px solid var(--border-default);
+  background: var(--surface-base);
+  color: var(--text-body);
   transition: background-color 0.15s ease, border-color 0.15s ease;
   user-select: none;
 
   &:hover {
-    background: var(--c-basic-200);
+    background: var(--surface-raised);
   }
 
   &--active {
-    background: var(--c-support-400);
-    border-color: var(--c-support-400);
-    color: var(--c-basic-900);
+    background: var(--accent-fill);
+    border-color: var(--accent);
+    color: var(--text-strong);
 
     &:hover {
-      background: var(--c-support-400);
+      background: var(--accent-fill);
     }
   }
 }

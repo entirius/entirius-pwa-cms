@@ -44,7 +44,7 @@ const notes = ref("");
 .rw__hint {
   margin: 0;
   font-size: var(--fs-100);
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
 }
 .rw {
   position: fixed;
@@ -58,7 +58,7 @@ const notes = ref("");
 .rw__sheet {
   width: min(32rem, 100%);
   padding: var(--space-300);
-  background: var(--c-basic-100);
+  background: var(--surface-base);
   border-radius: 12px 12px 0 0;
 }
 .rw__title {
@@ -69,7 +69,7 @@ const notes = ref("");
   width: 100%;
   box-sizing: border-box;
   padding: var(--space-200);
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
   font: inherit;
 }
@@ -81,17 +81,17 @@ const notes = ref("");
 .rw__btn {
   flex: 1;
   min-height: 48px;
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
-  background: var(--c-basic-100);
-  color: var(--c-basic-800);
+  background: var(--surface-base);
+  color: var(--text-body);
   font-weight: 600;
   cursor: pointer;
 }
 .rw__btn--primary {
-  border-color: var(--c-support-400);
-  background: var(--c-support-400);
-  color: var(--c-basic-100);
+  border-color: var(--accent);
+  background: var(--accent-fill);
+  color: var(--text-on-accent-fill);
 }
 .rw__btn:disabled {
   opacity: 0.45;

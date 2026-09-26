@@ -5,7 +5,7 @@
       data-testid="list-bulk-toolbar"
     >
       <span
-        class="t-basic-600 fs-200"
+        class="t-secondary fs-200"
         data-testid="list-selected-count"
         :data-selected-count="selected.length"
       >
@@ -85,7 +85,7 @@
         <StatusBadge :label="value" :variant="statusVariant(value)" />
       </template>
       <template #cell-cost="{ row }">
-        <span class="t-basic-700 fw-600">
+        <span class="t-body fw-600">
           {{ formatCost(row.cost, row.currency) }}
         </span>
       </template>
@@ -483,24 +483,24 @@ export default {
   cursor: not-allowed;
 }
 .bulk-btn--approve {
-  background: var(--c-positive-100);
-  border-color: var(--c-positive-300);
-  color: var(--c-positive-300);
+  background: var(--positive-subtle);
+  border-color: var(--positive);
+  color: var(--positive);
 }
 .bulk-btn--reject {
-  background: var(--c-negative-100);
-  border-color: var(--c-negative-300);
-  color: var(--c-negative-300);
+  background: var(--negative-subtle);
+  border-color: var(--negative);
+  color: var(--negative);
 }
 .bulk-btn--requeue {
-  background: var(--c-warning-100);
-  border-color: var(--c-warning-300);
-  color: var(--c-warning-300);
+  background: var(--warning-subtle);
+  border-color: var(--warning);
+  color: var(--warning);
 }
 .bulk-btn--push {
-  background: var(--c-support-100);
-  border-color: var(--c-support-400);
-  color: var(--c-support-400);
+  background: var(--accent-subtle);
+  border-color: var(--accent);
+  color: var(--text-accent);
 }
 
 /* Detail drawer: fill the body so content scrolls and the action bar pins to the bottom. */
@@ -525,8 +525,8 @@ export default {
   gap: var(--space-200);
   padding: var(--space-200) var(--space-300);
   margin: 0 calc(-1 * var(--space-300)) calc(-1 * var(--space-300));
-  background: var(--c-basic-100);
-  border-top: 1px solid var(--c-basic-300);
+  background: var(--surface-base);
+  border-top: 1px solid var(--border-subtle);
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.04);
 }
 </style>

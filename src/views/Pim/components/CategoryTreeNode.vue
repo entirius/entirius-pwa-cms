@@ -108,22 +108,22 @@ function onDragEnd() {
     >
       <span
         v-if="isDraggable"
-        class="tree-node__drag-handle t-basic-400 cursor-grab"
+        class="tree-node__drag-handle t-muted cursor-grab"
         >&#x2630;</span
       >
       <span class="tree-node__toggle">
         <template v-if="hasChildren">{{ isExpanded ? "▼" : "▶" }}</template>
       </span>
-      <span class="tree-node__icon t-basic-500"
+      <span class="tree-node__icon t-muted"
         ><font-awesome-icon icon="folder"
       /></span>
       <span class="tree-node__name">{{ displayName }}</span>
       <span
         v-if="isRoot"
-        class="chip chip--sm bg-support-200 t-support-400 tree-node__root-badge"
+        class="chip chip--sm bg-accent-subtle t-accent tree-node__root-badge"
         >Root</span
       >
-      <span class="chip chip--pill bg-basic-200 t-basic-600">{{
+      <span class="chip chip--pill bg-raised t-secondary">{{
         node.product_count || 0
       }}</span>
       <span
@@ -136,7 +136,7 @@ function onDragEnd() {
       />
       <span
         v-if="!node.is_in_menu"
-        class="tree-node__hidden t-basic-500"
+        class="tree-node__hidden t-muted"
         :title="$t('pim.hidden_from_menu')"
       >
         <font-awesome-icon icon="eye-slash" />
@@ -174,12 +174,12 @@ function onDragEnd() {
   padding-right: 12px;
   padding-bottom: var(--space-100);
   cursor: pointer;
-  border-bottom: 1px solid var(--c-basic-200);
+  border-bottom: 1px solid var(--border-subtle);
   transition: background 0.15s;
   position: relative;
 
   &:hover {
-    background: var(--c-basic-100);
+    background: var(--surface-base);
   }
 }
 
@@ -195,7 +195,7 @@ function onDragEnd() {
     left: 0;
     right: 0;
     height: 2px;
-    background: var(--c-support-400);
+    background: var(--accent-fill);
   }
 }
 
@@ -207,12 +207,12 @@ function onDragEnd() {
     left: 0;
     right: 0;
     height: 2px;
-    background: var(--c-support-400);
+    background: var(--accent-fill);
   }
 }
 
 .tree-node__row--drop-inside {
-  background: var(--c-support-100);
+  background: var(--accent-subtle);
 }
 
 .tree-node__drag-handle {
@@ -226,7 +226,7 @@ function onDragEnd() {
   flex-shrink: 0;
   cursor: pointer;
   font-size: var(--fs-100);
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 
 .tree-node__icon {
@@ -245,7 +245,7 @@ function onDragEnd() {
   gap: 4px;
   padding: 4px 10px;
   font-size: 12px;
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
   background: none;
   border: 1px solid transparent;
   border-radius: 5px;
@@ -255,8 +255,8 @@ function onDragEnd() {
   transition: all 0.15s ease;
 
   &:hover {
-    background-color: var(--c-basic-300);
-    border-color: var(--c-basic-400);
+    background-color: var(--surface-hover);
+    border-color: var(--border-default);
   }
 }
 
@@ -279,10 +279,10 @@ function onDragEnd() {
 }
 
 .tree-node__status--active {
-  background: var(--c-positive-200);
+  background: var(--positive-fill);
 }
 
 .tree-node__status--inactive {
-  background: var(--c-negative-200);
+  background: var(--negative-fill);
 }
 </style>

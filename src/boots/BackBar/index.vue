@@ -24,13 +24,13 @@ defineEmits(["back"]);
 .back-bar {
   background: none;
   border: none;
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
   font-size: var(--fs-200);
   padding: 0.25rem 0;
   transition: color 0.15s ease;
 }
 .back-bar:hover {
-  color: var(--c-basic-800);
+  color: var(--text-body);
 }
 .back-bar__icon {
   font-size: 0.75rem;

@@ -75,7 +75,7 @@ export default {
   <div v-if="visible" class="copy-dialog-overlay" @click.self="$emit('close')">
     <div class="copy-dialog">
       <h3 class="copy-dialog__title">{{ $t("pim.copy_translations") }}</h3>
-      <p class="copy-dialog__desc t-basic-500 fs-200">
+      <p class="copy-dialog__desc t-muted fs-200">
         {{ $t("pim.copy_translations_desc", { channel: sourceChannelIdx }) }}
       </p>
 
@@ -138,20 +138,20 @@ export default {
 }
 
 .copy-dialog {
-  background: var(--c-basic-100);
+  background: var(--surface-base);
   border-radius: var(--radius-lg);
   padding: 24px;
   min-width: 360px;
   max-width: 480px;
   box-shadow: var(--shadow-lg);
-  border: 1px solid var(--c-basic-200);
+  border: 1px solid var(--border-subtle);
 }
 
 .copy-dialog__title {
   margin: 0 0 8px;
   font-size: var(--fs-500);
   font-weight: 600;
-  color: var(--c-basic-800);
+  color: var(--text-body);
 }
 
 .copy-dialog__desc {
@@ -171,7 +171,7 @@ export default {
   gap: 8px;
   cursor: pointer;
   font-size: var(--fs-300);
-  color: var(--c-basic-700);
+  color: var(--text-body);
 }
 
 .copy-dialog__lang-select {
@@ -180,10 +180,10 @@ export default {
 
 .copy-dialog__select {
   padding: 6px 10px;
-  border: 1px solid var(--c-basic-200);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
-  background: var(--c-basic-100);
-  color: var(--c-basic-800);
+  background: var(--surface-base);
+  color: var(--text-body);
   font-size: var(--fs-300);
 }
 
@@ -196,20 +196,20 @@ export default {
 .pim-btn {
   padding: 8px 16px;
   border-radius: var(--radius-md);
-  border: 1px solid var(--c-basic-200);
+  border: 1px solid var(--border-subtle);
   cursor: pointer;
   font-size: var(--fs-300);
   font-weight: 500;
   transition: background 0.15s, border-color 0.15s;
 
   &--primary {
-    background: var(--c-support-400);
-    color: var(--c-basic-100);
-    border-color: var(--c-support-400);
+    background: var(--accent-fill);
+    color: var(--text-on-accent-fill);
+    border-color: var(--accent);
 
     &:hover:not(:disabled) {
-      background: var(--c-support-300);
-      border-color: var(--c-support-300);
+      background: var(--accent-fill);
+      border-color: var(--accent);
     }
 
     &:disabled {
@@ -219,11 +219,11 @@ export default {
   }
 
   &--secondary {
-    background: var(--c-basic-100);
-    color: var(--c-basic-700);
+    background: var(--surface-base);
+    color: var(--text-body);
 
     &:hover {
-      background: var(--c-basic-200);
+      background: var(--surface-raised);
     }
   }
 }

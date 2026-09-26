@@ -1,7 +1,7 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
     >
       <div class="flex ai-ct mb-400">
         <h1 class="fs-700 fw-600">{{ $t("emails.dashboard") }}</h1>
@@ -13,14 +13,14 @@
         <!-- Channels -->
         <div class="mb-500">
           <h2 class="fs-500 fw-600 mb-300">{{ $t("emails.channels") }}</h2>
-          <div v-if="channels.length === 0" class="fs-300 t-basic-500">
+          <div v-if="channels.length === 0" class="fs-300 t-muted">
             {{ $t("emails.no_channels") }}
           </div>
           <div class="emails-grid">
             <div
               v-for="channel in channels"
               :key="channel.pk"
-              class="emails-card bg-basic-100 b-basic-300 br-50 p-400 pointer"
+              class="emails-card bg-base b-subtle br-50 p-400 pointer"
               @click="editChannel(channel.pk)"
             >
               <div class="flex ai-ct gap-200 mb-200">
@@ -28,15 +28,15 @@
                   class="emails-card__color-dot"
                   :style="{
                     backgroundColor:
-                      channel.main_background_color || 'var(--c-basic-300)',
+                      channel.main_background_color || 'var(--surface-hover)',
                   }"
                 ></div>
-                <span class="fs-400 fw-600 t-basic-800">{{
+                <span class="fs-400 fw-600 t-body">{{
                   channel.label
                 }}</span>
               </div>
-              <div class="fs-200 t-basic-500">{{ channel.idx }}</div>
-              <div v-if="channel.from_email" class="fs-200 t-basic-500 mt-100">
+              <div class="fs-200 t-muted">{{ channel.idx }}</div>
+              <div v-if="channel.from_email" class="fs-200 t-muted mt-100">
                 {{ channel.from_email }}
               </div>
             </div>
@@ -52,13 +52,13 @@
             <div
               v-for="emailType in emailTypes"
               :key="emailType.slug"
-              class="emails-card bg-basic-100 b-basic-300 br-50 p-400 pointer"
+              class="emails-card bg-base b-subtle br-50 p-400 pointer"
               @click="editTemplates(emailType.slug)"
             >
-              <div class="fs-400 fw-600 t-basic-800 mb-100">
+              <div class="fs-400 fw-600 t-body mb-100">
                 {{ emailType.label }}
               </div>
-              <div class="fs-200 t-basic-500">{{ emailType.description }}</div>
+              <div class="fs-200 t-muted">{{ emailType.description }}</div>
             </div>
           </div>
         </div>
@@ -188,7 +188,7 @@ export default {
   transition: border-color 0.15s;
 
   &:hover {
-    border-color: var(--c-support-300);
+    border-color: var(--accent);
   }
 }
 
@@ -196,7 +196,7 @@ export default {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   flex-shrink: 0;
 }
 </style>

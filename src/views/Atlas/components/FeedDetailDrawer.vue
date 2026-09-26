@@ -9,7 +9,7 @@
       <!-- Identity + status header -->
       <section class="feed-detail__section">
         <div class="flex ai-ct gap-200 flex-wrap mb-200">
-          <span class="fs-300 fw-600 t-basic-700">{{ feed.idx }}</span>
+          <span class="fs-300 fw-600 t-body">{{ feed.idx }}</span>
           <StatusBadge :label="feed.connector_kind" variant="informative" />
           <StatusBadge :label="feed.sync_mode" variant="neutral" />
           <StatusBadge
@@ -74,7 +74,7 @@
         <h3 class="feed-detail__heading">
           {{ $t("atlas.feeds.detail.config_section") }}
         </h3>
-        <p class="fs-200 t-basic-500 mb-200">
+        <p class="fs-200 t-muted mb-200">
           {{ $t("atlas.feeds.detail.config_hint") }}
         </p>
         <pre class="feed-detail__json">{{ feedConfigPretty }}</pre>
@@ -95,13 +95,13 @@
             <FontAwesomeIcon icon="rotate" :spin="previewBusy" />
           </button>
         </div>
-        <p v-if="previewBusy" class="fs-200 t-basic-500">
+        <p v-if="previewBusy" class="fs-200 t-muted">
           {{ $t("atlas.feeds.detail.preview_loading") }}
         </p>
-        <p v-else-if="previewError" class="fs-200 t-negative-300">
+        <p v-else-if="previewError" class="fs-200 t-negative">
           {{ previewError }}
         </p>
-        <p v-else-if="previewProducts.length === 0" class="fs-200 t-basic-500">
+        <p v-else-if="previewProducts.length === 0" class="fs-200 t-muted">
           {{ $t("atlas.feeds.detail.preview_empty") }}
         </p>
         <div v-else class="feed-detail__preview">
@@ -112,9 +112,9 @@
           >
             <div class="flex ai-ct gap-200 flex-wrap mb-100">
               <strong class="fs-200">{{ p.external_id }}</strong>
-              <span class="fs-300 t-basic-700">{{ p.name }}</span>
+              <span class="fs-300 t-body">{{ p.name }}</span>
             </div>
-            <div class="flex ai-ct gap-300 flex-wrap fs-200 t-basic-500">
+            <div class="flex ai-ct gap-300 flex-wrap fs-200 t-muted">
               <span v-if="p.cost">{{ formatCost(p.cost, p.currency) }}</span>
               <span>stock: {{ p.stock ?? 0 }}</span>
               <span v-if="p.ean">EAN: {{ p.ean }}</span>
@@ -123,7 +123,7 @@
                 :href="p.url"
                 target="_blank"
                 rel="noopener"
-                class="t-support-400"
+                class="t-accent"
               >
                 {{ $t("atlas.feeds.detail.preview_open_source") }}
               </a>
@@ -241,7 +241,7 @@ export default {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   margin: 0 0 8px;
 }
 
@@ -253,7 +253,7 @@ export default {
 
   dt {
     font-size: var(--fs-200);
-    color: var(--c-basic-500);
+    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.03em;
   }
@@ -261,7 +261,7 @@ export default {
   dd {
     margin: 0;
     font-size: var(--fs-300);
-    color: var(--c-basic-700);
+    color: var(--text-body);
     word-break: break-all;
   }
 }
@@ -272,9 +272,9 @@ export default {
 }
 
 .feed-detail__json {
-  background: var(--c-basic-200);
-  color: var(--c-basic-800);
-  border: 1px solid var(--c-basic-300);
+  background: var(--surface-raised);
+  color: var(--text-body);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   padding: 12px;
   font-family: var(--ff-mono, monospace);
@@ -292,7 +292,7 @@ export default {
 }
 
 .feed-detail__preview-row {
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   padding: 8px 12px;
 }
@@ -303,15 +303,15 @@ export default {
   justify-content: center;
   width: 28px;
   height: 28px;
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   background: transparent;
-  color: var(--c-basic-700);
+  color: var(--text-body);
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: background 0.15s ease;
 
   &:hover:not(:disabled) {
-    background: var(--c-basic-200);
+    background: var(--surface-raised);
   }
 
   &:disabled {

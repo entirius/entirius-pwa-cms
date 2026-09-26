@@ -22,10 +22,10 @@
 .ld-btn {
   min-height: 36px;
   padding: 0 var(--space-300);
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: 6px;
-  background: var(--c-basic-100);
-  color: var(--c-basic-800);
+  background: var(--surface-base);
+  color: var(--text-body);
   cursor: pointer;
 }
 .ld-btn:disabled {
@@ -33,21 +33,21 @@
   cursor: default;
 }
 .ld-btn--primary {
-  border-color: var(--c-support-400);
-  background: var(--c-support-400);
-  color: var(--c-basic-100);
+  border-color: var(--accent);
+  background: var(--accent-fill);
+  color: var(--text-on-accent-fill);
 }
 .ld-btn--danger {
-  border-color: var(--c-negative-300);
-  color: var(--c-negative-300);
+  border-color: var(--negative);
+  color: var(--negative);
 }
 .ld-input {
   min-height: 36px;
   padding: 0 var(--space-200);
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: 6px;
-  background: var(--c-basic-100);
-  color: var(--c-basic-800);
+  background: var(--surface-base);
+  color: var(--text-body);
 }
 textarea.ld-input {
   padding: var(--space-200);
@@ -60,7 +60,7 @@ textarea.ld-input {
 .ld-table th,
 .ld-table td {
   padding: var(--space-200);
-  border-bottom: 1px solid var(--c-basic-300);
+  border-bottom: 1px solid var(--border-subtle);
   text-align: left;
 }
 .ld-field {
@@ -70,17 +70,17 @@ textarea.ld-input {
 }
 .ld-error {
   margin: 0;
-  color: var(--c-negative-300);
+  color: var(--negative);
 }
 .ld-muted {
   margin: 0;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 .ld-badge {
   display: inline-block;
   padding: 0 var(--space-100);
   border-radius: 4px;
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
   font-size: var(--fs-100);
 }
 /* WCAG 2.2 AA (2.5.8): a link or control target is at least 24 px in both directions. */
@@ -88,7 +88,7 @@ textarea.ld-input {
   display: inline-flex;
   align-items: center;
   min-height: 32px;
-  color: var(--c-support-400);
+  color: var(--text-accent);
   font-size: var(--fs-200);
   text-decoration: underline;
 }

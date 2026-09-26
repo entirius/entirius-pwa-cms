@@ -7,13 +7,13 @@
         @click.self="$emit('close')"
       >
         <div
-          class="import-modal__box bg-basic-100"
+          class="import-modal__box bg-base"
           role="dialog"
           aria-modal="true"
           data-testid="enrichment-import-dialog"
         >
-          <div class="import-modal__header b-basic-300 bb-100">
-            <FontAwesomeIcon icon="file-csv" class="t-support-400" />
+          <div class="import-modal__header b-subtle bb-100">
+            <FontAwesomeIcon icon="file-csv" class="t-accent" />
             <h2 class="fs-400 fw-600 m-0">
               {{ $t("enrichment.import.title") }}
             </h2>
@@ -25,7 +25,7 @@
               :description="$t('enrichment.import.format_hint')"
             >
               <label
-                class="import-modal__drop b-basic-400 bb-100"
+                class="import-modal__drop b-default bb-100"
                 :class="{ 'import-modal__drop--on': dragging }"
                 data-testid="enrichment-import-drop"
                 @dragover.prevent="dragging = true"
@@ -39,12 +39,12 @@
                   data-testid="enrichment-import-file"
                   @change="onPick"
                 />
-                <FontAwesomeIcon icon="file-csv" class="t-basic-500" />
+                <FontAwesomeIcon icon="file-csv" class="t-muted" />
                 <span class="fs-200">{{ fileLabel }}</span>
               </label>
               <button
                 type="button"
-                class="import-modal__sample t-support-400 fs-200"
+                class="import-modal__sample t-accent fs-200"
                 data-testid="enrichment-import-sample"
                 @click="downloadSample"
               >
@@ -75,23 +75,23 @@
 
             <p
               v-if="error"
-              class="import-modal__error fs-200 t-negative-300"
+              class="import-modal__error fs-200 t-negative"
               data-testid="enrichment-import-error"
             >
               {{ error }}
             </p>
           </div>
 
-          <div class="import-modal__footer b-basic-300 bt-100">
+          <div class="import-modal__footer b-subtle bt-100">
             <button
-              class="import-modal__btn bg-basic-200 t-basic-600"
+              class="import-modal__btn bg-raised t-secondary"
               :disabled="busy"
               @click="$emit('close')"
             >
               {{ $t("common.cancel") }}
             </button>
             <button
-              class="import-modal__btn bg-support-400 t-basic-100"
+              class="import-modal__btn bg-accent-fill t-on-accent-fill"
               :disabled="busy || !canSubmit"
               data-testid="enrichment-import-submit"
               @click="submit"
@@ -286,13 +286,13 @@ export default {
   justify-content: center;
   gap: var(--space-100);
   min-height: 72px;
-  border: 1px dashed var(--c-basic-400);
+  border: 1px dashed var(--border-default);
   border-radius: var(--radius-sm);
   cursor: pointer;
   text-align: center;
   &--on {
-    border-color: var(--c-support-400);
-    color: var(--c-support-400);
+    border-color: var(--accent);
+    color: var(--text-accent);
   }
 }
 .import-modal__file-input {

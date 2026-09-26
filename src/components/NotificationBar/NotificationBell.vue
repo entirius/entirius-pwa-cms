@@ -48,14 +48,14 @@ function toggle() {
   border-radius: 8px;
   border: none;
   background: none;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   cursor: pointer;
   font-size: 13px;
 }
 .notif-bell:hover,
 .notif-bell--active {
-  background: var(--c-basic-200);
-  color: var(--c-basic-700);
+  background: var(--surface-raised);
+  color: var(--text-body);
 }
 .notif-bell__count {
   position: absolute;
@@ -65,8 +65,8 @@ function toggle() {
   height: 1.1rem;
   padding: 0 0.25rem;
   border-radius: 999px;
-  background: var(--c-negative-300);
-  color: var(--c-basic-100);
+  background: var(--negative-fill);
+  color: var(--text-on-status-fill);
   font-size: 0.65rem;
   font-weight: 700;
   line-height: 1.1rem;

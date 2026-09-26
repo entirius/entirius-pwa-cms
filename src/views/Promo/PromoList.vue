@@ -1,7 +1,7 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
     >
       <!-- Segment switcher: Discounts / Vouchers -->
       <div class="promo-list__tabs mb-400">
@@ -12,29 +12,29 @@
       <template v-if="activeTab === 'discounts'">
         <!-- Bulk action bar (visible only when selection exists) -->
         <div v-if="hasSelection" class="promo-list__bulk-bar mb-300">
-          <span class="promo-list__bulk-count t-basic-700 fw-600">
+          <span class="promo-list__bulk-count t-body fw-600">
             {{ $t("promo.bulk_selected", { n: selectionCount }) }}
           </span>
           <div class="promo-list__bulk-actions">
             <BasicButton
               :text="$t('promo.bulk_activate')"
-              class="bg-positive-200 t-basic-100"
+              class="bg-positive-fill t-on-status-fill"
               @click="startBulk('activate')"
             />
             <BasicButton
               :text="$t('promo.bulk_deactivate')"
-              class="bg-basic-200 t-basic-600"
+              class="bg-raised t-secondary"
               @click="startBulk('deactivate')"
             />
             <BasicButton
               :text="$t('promo.bulk_delete')"
               icon="trash-can"
-              class="bg-negative-100 t-negative-300"
+              class="bg-negative-subtle t-negative"
               @click="startBulk('delete')"
             />
             <BasicButton
               :text="$t('promo.bulk_clear')"
-              class="bg-basic-200 t-basic-600"
+              class="bg-raised t-secondary"
               @click="clearSelection"
             />
           </div>
@@ -53,7 +53,7 @@
             :active-count="activeFilterCount"
             :trigger-label="$t('builder.filters')"
           >
-            <p class="fs-200 t-basic-600">{{ $t("builder.filters") }}</p>
+            <p class="fs-200 t-secondary">{{ $t("builder.filters") }}</p>
             <FilterChip
               v-for="tab in statusTabs"
               :key="tab.key"
@@ -74,11 +74,11 @@
         <!-- Select-all-matching banner -->
         <div
           v-if="pageFullySelected && totalCount > rules.length && !selectAllMatching"
-          class="promo-list__select-banner bg-support-100 t-support-400 fs-200 ph-200 pv-100 br-50 mb-300"
+          class="promo-list__select-banner bg-accent-subtle t-accent fs-200 ph-200 pv-100 br-50 mb-300"
         >
           {{ $t("promo.bulk_select_all_page", { n: rules.length }) }}
           <button
-            class="promo-list__select-banner-link t-support-400 fw-600"
+            class="promo-list__select-banner-link t-accent fw-600"
             @click="selectAllMatching = true"
           >
             {{ $t("promo.bulk_select_all_matching", { total: totalCount }) }}
@@ -86,11 +86,11 @@
         </div>
         <div
           v-else-if="selectAllMatching"
-          class="promo-list__select-banner bg-support-100 t-support-400 fs-200 ph-200 pv-100 br-50 mb-300"
+          class="promo-list__select-banner bg-accent-subtle t-accent fs-200 ph-200 pv-100 br-50 mb-300"
         >
           {{ $t("promo.bulk_all_selected", { total: totalCount }) }}
           <button
-            class="promo-list__select-banner-link t-support-400 fw-600"
+            class="promo-list__select-banner-link t-accent fw-600"
             @click="clearSelection"
           >
             {{ $t("promo.bulk_clear_selection") }}
@@ -118,17 +118,17 @@
           </template>
           <template #cell-modifier="{ row }">
             <span
-              class="promo-modifier-badge bg-support-100 t-support-400"
+              class="promo-modifier-badge bg-accent-subtle t-accent"
               :title="modifierLabel(row.modifier)"
             >{{ modifierShortLabel(row.modifier) }}</span>
           </template>
           <template #cell-target="{ row }">
-            <span class="bg-basic-200 t-basic-600 fs-200 ph-100 br-50 fw-600">{{
+            <span class="bg-raised t-secondary fs-200 ph-100 br-50 fw-600">{{
               row.target
             }}</span>
           </template>
           <template #cell-code_count="{ row }">
-            <span class="bg-basic-200 t-basic-600 fs-200 ph-100 br-50 fw-600">{{
+            <span class="bg-raised t-secondary fs-200 ph-100 br-50 fw-600">{{
               row.code_count
             }}</span>
           </template>
@@ -144,10 +144,10 @@
               :label="$t('promo.automatic')"
               variant="neutral"
             />
-            <span v-else class="t-basic-400">—</span>
+            <span v-else class="t-muted">—</span>
           </template>
           <template #cell-priority="{ row }">
-            <span class="t-basic-600">{{ row.priority }}</span>
+            <span class="t-secondary">{{ row.priority }}</span>
           </template>
         </DataTable>
 
@@ -530,9 +530,9 @@ export default {
   gap: var(--space-200);
   flex-wrap: wrap;
   padding: var(--space-200);
-  background-color: var(--c-basic-200);
+  background-color: var(--surface-raised);
   border-radius: var(--radius-sm);
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
 }
 
 .promo-list__bulk-count {
@@ -563,7 +563,7 @@ export default {
   text-decoration: underline;
 
   &:focus-visible {
-    outline: 2px solid var(--c-support-400);
+    outline: 2px solid var(--accent);
   }
 }
 

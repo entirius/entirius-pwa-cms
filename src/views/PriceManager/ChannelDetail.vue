@@ -1,10 +1,10 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
     <Teleport to="#pricing-toolbar-left" defer>
       <BasicButton
         text=""
         icon="arrow-left"
-        class="bg-basic-200 t-basic-600"
+        class="bg-raised t-secondary"
         @click="$router.push('/pricing/channels')"
       />
       <span class="fw-600 fs-400">
@@ -16,17 +16,17 @@
         v-if="isEdit"
         text=""
         icon="trash-can"
-        class="bg-negative-100 t-negative-300"
+        class="bg-negative-subtle t-negative"
         @click="showDeleteConfirm = true"
       />
       <BasicButton
         :text="$t('pm.save')"
-        class="bg-support-400 t-basic-100"
+        class="bg-accent-fill t-on-accent-fill"
         @click="save"
       />
     </Teleport>
 
-    <div class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
       <Loader v-if="loading" />
 
       <template v-else>
@@ -67,14 +67,14 @@
                     v-for="c in countryOptions"
                     :key="c.value"
                     class="pointer flex jc-sb ai-ct ph-100 dropdown-list-el"
-                    :class="{ 'bg-primary-100': form.calculate_country_codes.includes(c.value) }"
+                    :class="{ 'bg-accent-fill': form.calculate_country_codes.includes(c.value) }"
                     @click.stop="toggleCountry(c.value)"
                   >
                     <span class="ml-100">{{ c.label }}</span>
                     <FontAwesomeIcon
                       v-if="form.calculate_country_codes.includes(c.value)"
                       icon="check"
-                      class="t-positive-200"
+                      class="t-positive"
                     />
                   </div>
                 </template>
@@ -286,7 +286,7 @@ export default {
 
 <style lang="scss" scoped>
 .pm-section {
-  border: 1px solid var(--c-basic-200);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: 20px;
 }
@@ -308,11 +308,11 @@ export default {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 
 .pm-hint {
   font-size: var(--fs-200);
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 </style>

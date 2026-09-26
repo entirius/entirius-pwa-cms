@@ -283,7 +283,7 @@ export default {
 .hc-sep {
   width: 1px;
   height: 16px;
-  background: var(--c-basic-300);
+  background: var(--surface-hover);
   margin: 0 4px;
 }
 .hc-btn {
@@ -295,17 +295,17 @@ export default {
   border-radius: 8px;
   border: none;
   background: none;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   cursor: pointer;
   font-size: 13px;
   transition: all 0.15s ease;
   &:hover {
-    background: var(--c-basic-200);
-    color: var(--c-basic-700);
+    background: var(--surface-raised);
+    color: var(--text-body);
   }
   &--active {
-    background: var(--c-basic-200);
-    color: var(--c-basic-800);
+    background: var(--surface-raised);
+    color: var(--text-body);
   }
 }
 
@@ -316,8 +316,8 @@ export default {
   right: 0;
   min-width: 220px;
   padding: 6px;
-  background: var(--c-basic-100);
-  border: 1px solid var(--c-basic-300);
+  background: var(--surface-base);
+  border: 1px solid var(--border-subtle);
   border-radius: 10px;
   box-shadow: var(--shadow-md);
   z-index: 100;
@@ -329,13 +329,13 @@ export default {
   padding: 6px 10px 4px;
   font-size: 11px;
   font-weight: 500;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   letter-spacing: 0.03em;
   text-transform: uppercase;
 }
 .hc-dropdown-sep {
   height: 1px;
-  background: var(--c-basic-300);
+  background: var(--surface-hover);
   margin: 4px 6px;
 }
 .hc-dropdown-item {
@@ -350,18 +350,18 @@ export default {
   border: none;
   font: inherit;
   font-size: 13px;
-  color: var(--c-basic-700);
+  color: var(--text-body);
   text-align: left;
   transition: background 0.12s ease;
   &:hover {
-    background: var(--c-basic-200);
+    background: var(--surface-raised);
   }
   &--active {
-    color: var(--c-support-400);
+    color: var(--text-accent);
     font-weight: 600;
-    background: var(--c-support-100);
+    background: var(--accent-subtle);
     &:hover {
-      background: var(--c-support-100);
+      background: var(--accent-subtle);
     }
   }
   &--disabled {
@@ -372,7 +372,7 @@ export default {
     }
   }
   &--danger:hover {
-    color: var(--c-negative-200);
+    color: var(--negative);
   }
 }
 .hc-dropdown-icon {
@@ -385,7 +385,7 @@ export default {
 .hc-dropdown-chevron {
   margin-left: auto;
   font-size: 10px;
-  color: var(--c-basic-400);
+  color: var(--text-muted);
 }
 .hc-lang-list {
   padding-left: 12px;

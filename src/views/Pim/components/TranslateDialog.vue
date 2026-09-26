@@ -211,10 +211,10 @@ export default {
 
       <!-- Step 1: Config -->
       <div v-if="step === 'config'">
-        <p class="t-basic-500 fs-200 mb-300">{{ itemsLabel }}</p>
+        <p class="t-muted fs-200 mb-300">{{ itemsLabel }}</p>
 
         <div class="td-dialog__field mb-300">
-          <label class="fs-200 fw-600 t-basic-500 mb-100">{{
+          <label class="fs-200 fw-600 t-muted mb-100">{{
             $t("pim.translate_source_language")
           }}</label>
           <Dropdown
@@ -227,7 +227,7 @@ export default {
 
         <div class="td-dialog__field mb-300">
           <div class="td-lang-header mb-100">
-            <label class="fs-200 fw-600 t-basic-500">{{
+            <label class="fs-200 fw-600 t-muted">{{
               $t("pim.translate_target_languages")
             }}</label>
             <button
@@ -270,7 +270,7 @@ export default {
             <span
               v-for="lang in selectedLanguages"
               :key="lang"
-              class="td-chip bg-support-100 t-support-400 fs-200"
+              class="td-chip bg-accent-subtle t-accent fs-200"
               @click="removeLanguage(lang)"
             >
               {{ lang.toUpperCase() }}
@@ -279,14 +279,14 @@ export default {
           </div>
           <p
             v-if="!targetLanguageOptions.length"
-            class="t-warning-200 fs-200 mt-100"
+            class="t-warning fs-200 mt-100"
           >
             {{ $t("pim.translate_no_languages") }}
           </p>
         </div>
 
         <div class="td-dialog__field mb-300">
-          <label class="td-checkbox fs-300 t-basic-700">
+          <label class="td-checkbox fs-300 t-body">
             <input type="checkbox" v-model="force" />
             {{ $t("pim.translate_force_all") }}
           </label>
@@ -315,16 +315,16 @@ export default {
         <table class="td-table mb-300">
           <thead>
             <tr>
-              <th class="fs-200 t-basic-500">
+              <th class="fs-200 t-muted">
                 {{ $t("pim.translate_target_languages") }}
               </th>
-              <th class="fs-200 t-basic-500">
+              <th class="fs-200 t-muted">
                 {{ $t("pim.translate_items") }}
               </th>
-              <th class="fs-200 t-basic-500">
+              <th class="fs-200 t-muted">
                 {{ $t("pim.translate_chars") }}
               </th>
-              <th class="fs-200 t-basic-500">
+              <th class="fs-200 t-muted">
                 {{ $t("pim.translate_cost") }}
               </th>
             </tr>
@@ -391,20 +391,20 @@ export default {
 }
 
 .td-dialog {
-  background: var(--c-basic-100);
+  background: var(--surface-base);
   border-radius: var(--radius-lg);
   padding: 24px;
   min-width: min(480px, 95vw);
   max-width: 560px;
   box-shadow: var(--shadow-lg);
-  border: 1px solid var(--c-basic-200);
+  border: 1px solid var(--border-subtle);
 }
 
 .td-dialog__title {
   margin: 0 0 16px;
   font-size: var(--fs-500);
   font-weight: 600;
-  color: var(--c-basic-800);
+  color: var(--text-body);
 }
 
 .td-dialog__field {
@@ -432,21 +432,21 @@ export default {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  border: 1px solid var(--c-support-400);
+  border: 1px solid var(--accent);
   background: transparent;
-  color: var(--c-support-400);
+  color: var(--text-accent);
   cursor: pointer;
   padding: 0;
   transition: background 0.15s;
 
   &:hover {
-    background: var(--c-support-100);
+    background: var(--accent-subtle);
   }
 }
 
 .td-add-lang-box {
-  background: var(--c-basic-200);
-  border: 1px solid var(--c-basic-300);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: 10px 12px;
   display: flex;
@@ -494,7 +494,7 @@ export default {
   td {
     text-align: left;
     padding: 8px 12px;
-    border-bottom: 1px solid var(--c-basic-300);
+    border-bottom: 1px solid var(--border-subtle);
   }
 
   thead th {
@@ -503,7 +503,7 @@ export default {
   }
 
   tfoot td {
-    border-top: 2px solid var(--c-basic-400);
+    border-top: 2px solid var(--border-default);
     border-bottom: none;
   }
 }
@@ -511,20 +511,20 @@ export default {
 .td-btn {
   padding: 8px 16px;
   border-radius: var(--radius-md);
-  border: 1px solid var(--c-basic-200);
+  border: 1px solid var(--border-subtle);
   cursor: pointer;
   font-size: var(--fs-300);
   font-weight: 500;
   transition: background 0.15s, border-color 0.15s;
 
   &--primary {
-    background: var(--c-support-400);
-    color: var(--c-basic-100);
-    border-color: var(--c-support-400);
+    background: var(--accent-fill);
+    color: var(--text-on-accent-fill);
+    border-color: var(--accent);
 
     &:hover:not(:disabled) {
-      background: var(--c-support-300);
-      border-color: var(--c-support-300);
+      background: var(--accent-fill);
+      border-color: var(--accent);
     }
 
     &:disabled {
@@ -534,11 +534,11 @@ export default {
   }
 
   &--secondary {
-    background: var(--c-basic-100);
-    color: var(--c-basic-700);
+    background: var(--surface-base);
+    color: var(--text-body);
 
     &:hover {
-      background: var(--c-basic-200);
+      background: var(--surface-raised);
     }
   }
 }

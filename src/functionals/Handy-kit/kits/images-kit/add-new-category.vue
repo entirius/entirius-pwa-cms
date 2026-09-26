@@ -11,7 +11,7 @@
       :text="$t('common.save')"
       :styles="'full'"
       @click="addNewTag"
-      class="bg-primary-100 txt-gray-700 w-full sticky-btn mt-md"
+      class="bg-accent-fill txt-gray-700 w-full sticky-btn mt-md"
     />
     <hr class="mv-lg" />
     <p class="mt-lg">{{ $t("images.photos") }}</p>

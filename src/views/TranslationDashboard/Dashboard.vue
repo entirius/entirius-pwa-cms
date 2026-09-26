@@ -26,7 +26,7 @@
       <BasicButton
         :text="$t('translation.refresh')"
         icon="arrows-rotate"
-        class="bg-basic-200 t-basic-600"
+        class="bg-raised t-secondary"
         @click="refresh"
       />
     </div>
@@ -82,10 +82,10 @@
         <span v-if="row.actual_cost_usd">
           ${{ Number(row.actual_cost_usd).toFixed(2) }}
         </span>
-        <span v-else-if="row.estimated_cost_usd" class="t-basic-500">
+        <span v-else-if="row.estimated_cost_usd" class="t-muted">
           {{ $t("translation.estimated") }} ${{ Number(row.estimated_cost_usd).toFixed(2) }}
         </span>
-        <span v-else class="t-basic-400">&mdash;</span>
+        <span v-else class="t-muted">&mdash;</span>
       </template>
 
       <template #cell-status="{ row }">
@@ -93,7 +93,7 @@
       </template>
 
       <template #cell-created="{ row }">
-        <span class="t-basic-500">{{ relativeTime(row.created_at) }}</span>
+        <span class="t-muted">{{ relativeTime(row.created_at) }}</span>
       </template>
     </DataTable>
   </div>
@@ -120,25 +120,25 @@ export default {
           key: "pending",
           label: this.$t("translation.stats_pending"),
           count: this.jobsStore.stats.pending,
-          colorClass: "t-informative-200",
+          colorClass: "t-info",
         },
         {
           key: "running",
           label: this.$t("translation.stats_running"),
           count: this.jobsStore.stats.running,
-          colorClass: "t-warning-200",
+          colorClass: "t-warning",
         },
         {
           key: "completed",
           label: this.$t("translation.stats_completed"),
           count: this.jobsStore.stats.completed,
-          colorClass: "t-positive-200",
+          colorClass: "t-positive",
         },
         {
           key: "failed",
           label: this.$t("translation.stats_failed"),
           count: this.jobsStore.stats.failed,
-          colorClass: "t-negative-200",
+          colorClass: "t-negative",
         },
       ];
     },
@@ -260,9 +260,9 @@ export default {
   align-items: center;
   gap: var(--space-50);
   padding: var(--space-200);
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
   border-radius: var(--radius-md);
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
 }
 
 .tj-stat-card__value {
@@ -273,7 +273,7 @@ export default {
 
 .tj-stat-card__label {
   font-size: var(--fs-200);
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   text-transform: uppercase;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -288,7 +288,7 @@ export default {
 .tj-mono {
   font-family: monospace;
   font-size: var(--fs-200);
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
 }
 
 /* Source badge */
@@ -303,20 +303,20 @@ export default {
 }
 
 .tj-source-badge--pim {
-  background: var(--c-support-100);
-  color: var(--c-support-400);
+  background: var(--accent-subtle);
+  color: var(--text-accent);
 }
 
 .tj-source-badge--content {
-  background: var(--c-positive-100);
-  color: var(--c-positive-300);
+  background: var(--positive-subtle);
+  color: var(--positive);
 }
 
 /* Progress bar */
 .tj-progress {
   position: relative;
   height: 22px;
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
   border-radius: var(--radius-sm);
   overflow: hidden;
   min-width: 120px;
@@ -327,7 +327,7 @@ export default {
   top: 0;
   left: 0;
   height: 100%;
-  background: var(--c-support-400);
+  background: var(--accent-fill);
   opacity: 0.2;
   border-radius: var(--radius-sm);
   transition: width 0.3s ease;
@@ -342,7 +342,7 @@ export default {
   height: 100%;
   font-size: var(--fs-200);
   font-weight: 600;
-  color: var(--c-basic-700);
+  color: var(--text-body);
 }
 
 @media only screen and (max-width: 768px) {

@@ -1,7 +1,7 @@
 <template>
-  <div class="doc-view fs-200 t-basic-700">
+  <div class="doc-view fs-200 t-body">
     <div>
-      <nav class="flex bb-basic-300 mb-200">
+      <nav class="flex bb-subtle mb-200">
         <BasicButton
           v-for="({ label, value }, i) in nav"
           :key="`nav-key-${i}`"
@@ -9,8 +9,8 @@
           class="br-tl-50 br-tr-50"
           :class="[
             selected_view === value
-              ? 'bg-support-300 t-basic-100 b-support-300'
-              : 'bg-basic-300 b-basic-400 t-basic-600',
+              ? 'bg-accent-fill t-on-accent-fill b-accent'
+              : 'bg-hover b-default t-secondary',
           ]"
           @click="selected_view = value"
         />
@@ -21,7 +21,7 @@
             style="max-width: 10rem"
             :values="docs_nav"
             :selected="[doc_prev]"
-            class="bg-basic-300 b-basic-400 br-50 fs-100"
+            class="bg-hover b-default br-50 fs-100"
             @onSelect="doc_prev = $event"
           />
         </div>
@@ -31,23 +31,23 @@
         </div>
       </div>
       <div v-if="selected_view === 'eg'">
-        <p class="fs-100 t-basic-500 mb-50">Wybierz przyklad</p>
+        <p class="fs-100 t-muted mb-50">Wybierz przyklad</p>
         <div class="flex mb-200">
           <Dropdown
             style="min-width: 10rem"
             :values="sub_nav"
             :selected="[eg_prev]"
-            class="bg-basic-300 b-basic-400 br-50 fs-100"
+            class="bg-hover b-default br-50 fs-100"
             @onSelect="eg_prev = $event"
           />
         </div>
         <div class="grid grid-col-3 gap-200">
           <pre
-            class="fs-100 b-basic-300 br-50 p-200 bg-basic-100 as-s"
+            class="fs-100 b-subtle br-50 p-200 bg-base as-s"
             v-for="(k, i) in ex_preview"
           >
             
-            <p class="t-support-400">"{{ k }}":</p>
+            <p class="t-accent">"{{ k }}":</p>
             <p>
               {{ v }}
             </p>
@@ -136,17 +136,17 @@ export default {
     h2,
     h3,
     strong {
-      color: var(--c-support-400) !important;
+      color: var(--text-accent) !important;
     }
     h4 {
-      color: var(--c-negative-200) !important;
+      color: var(--negative) !important;
     }
     a {
-      color: var(--c-positive-200);
+      color: var(--positive);
     }
 
     table {
-      border: 1px solid var(--c-basic-400);
+      border: 1px solid var(--border-default);
       border-radius: var(--space-50);
 
       th,
@@ -156,29 +156,29 @@ export default {
 
       th:nth-of-type(2n),
       td:nth-of-type(2n) {
-        background: var(--c-basic-100);
+        background: var(--surface-base);
       }
     }
     code,
     li,
     blockquote {
-      color: var(--c-basic-600);
+      color: var(--text-secondary);
       font-size: var(--fs-100);
     }
 
     blockquote {
       padding: var(--space-50);
-      background: var(--c-basic-100);
+      background: var(--surface-base);
       border-radius: var(--space-50);
     }
     code {
-      border: 1px solid var(--c-basic-400);
+      border: 1px solid var(--border-default);
       border-radius: var(--space-50);
       padding: var(--space-50);
-      background: var(--c-basic-300);
+      background: var(--surface-hover);
     }
     hr {
-      border-bottom: 1px solid var(--c-basic-400);
+      border-bottom: 1px solid var(--border-default);
     }
   }
 }

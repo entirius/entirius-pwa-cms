@@ -14,14 +14,14 @@
       </button>
     </header>
     <Loader v-if="loading" />
-    <p v-else-if="!profiles.length" class="fs-200 t-basic-500 m-0">
+    <p v-else-if="!profiles.length" class="fs-200 t-muted m-0">
       {{ $t("atlas.products.drawer.no_mapping_profiles") }}
     </p>
     <ul v-else class="sp-mapping-section__profiles">
       <li v-for="p in profiles" :key="p.id" class="sp-mapping-section__profile">
         <div class="flex ai-ct jc-sb gap-200 flex-wrap">
           <span class="fw-600">{{ p.name || p.idx }}</span>
-          <span class="fs-200 t-basic-500">
+          <span class="fs-200 t-muted">
             {{ $t("atlas.products.drawer.mapping_counts", {
               attrs: p._attrCount,
               cats: p._catCount,
@@ -97,7 +97,7 @@ export default {
 .sp-mapping-section {
   margin-top: var(--space-300);
   padding-top: var(--space-300);
-  border-top: 1px solid var(--c-basic-200);
+  border-top: 1px solid var(--border-subtle);
 }
 .sp-mapping-section__head {
   display: flex;
@@ -108,15 +108,15 @@ export default {
 }
 .sp-mapping-section__link {
   background: transparent;
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   padding: 4px 12px;
   font-size: var(--fs-200);
-  color: var(--c-basic-700);
+  color: var(--text-body);
   cursor: pointer;
 
   &:hover {
-    background: var(--c-basic-200);
+    background: var(--surface-raised);
   }
 }
 .sp-mapping-section__profiles {
@@ -126,7 +126,7 @@ export default {
 }
 .sp-mapping-section__profile {
   padding: var(--space-100) 0;
-  border-bottom: 1px solid var(--c-basic-200);
+  border-bottom: 1px solid var(--border-subtle);
 
   &:last-child {
     border-bottom: 0;

@@ -20,7 +20,7 @@
     </div>
 
     <p
-      class="t-basic-500 fs-100 mb-200"
+      class="t-muted fs-100 mb-200"
       data-testid="linked-sync-notice"
     >
       <FontAwesomeIcon icon="circle-info" />
@@ -71,7 +71,7 @@
             <span>{{ row.position }}</span>
             <span class="flex ai-ct gap-100" @click.stop>
               <button
-                class="row-action-btn bg-basic-200 t-basic-700"
+                class="row-action-btn bg-raised t-body"
                 :title="$t('common.edit')"
                 :data-testid="`linked-edit-${row.pk}`"
                 @click="openEdit(row)"
@@ -79,7 +79,7 @@
                 <FontAwesomeIcon icon="pen" />
               </button>
               <button
-                class="row-action-btn bg-negative-100 t-negative-300"
+                class="row-action-btn bg-negative-subtle t-negative"
                 :title="$t('common.delete')"
                 :data-testid="`linked-delete-${row.pk}`"
                 @click="confirmDelete(row)"
@@ -91,7 +91,7 @@
         </template>
       </draggable>
 
-      <p v-if="!links.length" class="t-basic-500 fs-200 p-300 ta-ct">
+      <p v-if="!links.length" class="t-muted fs-200 p-300 ta-ct">
         {{ $t("pim.links.empty") }}
       </p>
     </div>
@@ -118,7 +118,7 @@
             @update:displayValue="formData.linked_product_display = $event"
             @clear="formData.linked_product_sku = ''; formData.linked_product_display = ''"
           />
-          <p v-if="errors.linked_product_sku" class="form-error t-negative-300 fs-200">
+          <p v-if="errors.linked_product_sku" class="form-error t-negative fs-200">
             {{ errors.linked_product_sku.msg }}
           </p>
         </FormField>
@@ -133,7 +133,7 @@
               @onSelect="formData.link_type_idx = $event"
             />
           </div>
-          <p v-if="errors.link_type_idx" class="form-error t-negative-300 fs-200">
+          <p v-if="errors.link_type_idx" class="form-error t-negative fs-200">
             {{ errors.link_type_idx.msg }}
           </p>
         </FormField>
@@ -450,18 +450,18 @@ watch(
   cursor: pointer;
 }
 .links-primary-btn {
-  background: var(--c-support-400);
-  border-color: var(--c-support-400);
-  color: var(--c-basic-100);
+  background: var(--accent-fill);
+  border-color: var(--accent);
+  color: var(--text-on-accent-fill);
 }
 .links-primary-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 .links-secondary-btn {
-  background: var(--c-basic-100);
-  border-color: var(--c-basic-400);
-  color: var(--c-basic-700);
+  background: var(--surface-base);
+  border-color: var(--border-default);
+  color: var(--text-body);
 }
 .row-action-btn {
   display: inline-flex;
@@ -478,7 +478,7 @@ watch(
   margin-top: 2px;
 }
 .links-table {
-  border: 1px solid var(--c-basic-200);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   overflow: hidden;
 }
@@ -488,17 +488,17 @@ watch(
   align-items: center;
   gap: 12px;
   padding: 8px 12px;
-  border-bottom: 1px solid var(--c-basic-200);
-  background: var(--c-basic-100);
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--surface-base);
 }
 .links-table__row:last-child {
   border-bottom: none;
 }
 .links-table__row--header {
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
   font-weight: 600;
   font-size: 12px;
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -506,17 +506,17 @@ watch(
   cursor: grab;
 }
 .links-table__row--draggable:hover {
-  background: var(--c-basic-150, var(--c-basic-200));
+  background: var(--surface-raised, var(--surface-raised));
 }
 .links-table__row--ghost {
   opacity: 0.4;
-  background: var(--c-support-100, var(--c-basic-200));
+  background: var(--accent-subtle, var(--surface-raised));
 }
 .links-table__handle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--c-basic-400);
+  color: var(--text-muted);
 }
 .links-table__handle--disabled {
   cursor: not-allowed;

@@ -9,9 +9,9 @@
       >
         <div class="side-drawer-panel" :style="{ width: effectiveWidth }">
           <header class="side-drawer__header flex ai-ct jc-sb mb-300">
-            <span class="fs-300 fw-600 t-basic-800">{{ title }}</span>
+            <span class="fs-300 fw-600 t-body">{{ title }}</span>
             <button
-              class="side-drawer__close t-basic-500 pointer"
+              class="side-drawer__close t-muted pointer"
               @click="$emit('close')"
             >
               <FontAwesomeIcon icon="xmark" />
@@ -36,10 +36,10 @@
         v-if="title || closable"
         class="side-drawer__header flex ai-ct jc-sb mb-300"
       >
-        <span v-if="title" class="fs-300 fw-600 t-basic-800">{{ title }}</span>
+        <span v-if="title" class="fs-300 fw-600 t-body">{{ title }}</span>
         <button
           v-if="closable"
-          class="side-drawer__close t-basic-500 pointer"
+          class="side-drawer__close t-muted pointer"
           @click="$emit('close')"
         >
           <FontAwesomeIcon icon="xmark" />
@@ -117,7 +117,7 @@ onBeforeUnmount(() => {
   right: 0;
   top: 0;
   cursor: default;
-  background: var(--c-basic-100);
+  background: var(--surface-base);
   display: flex;
   flex-direction: column;
   overflow-y: auto;
@@ -130,7 +130,7 @@ onBeforeUnmount(() => {
 /* Sticky mode: full-height sidebar */
 .side-drawer-sticky {
   padding: var(--space-300);
-  border-left: 1px solid var(--c-basic-300);
+  border-left: 1px solid var(--border-subtle);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -148,7 +148,7 @@ onBeforeUnmount(() => {
   line-height: 1;
   padding: 4px;
   &:hover {
-    color: var(--c-basic-700);
+    color: var(--text-body);
   }
 }
 

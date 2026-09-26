@@ -29,7 +29,7 @@ export default {
   // transform: translate(-50%, -50%);
 
   &__circle {
-    border: 1px solid var(--c-primary-200);
+    border: 1px solid var(--accent);
     height: 100%;
     width: 100%;
     opacity: 1;
@@ -39,7 +39,7 @@ export default {
   }
 
   &__inner-circle {
-    border: 2px solid var(--c-primary-200);
+    border: 2px solid var(--accent);
     animation-delay: -0.5s;
   }
 

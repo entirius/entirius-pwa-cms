@@ -2,7 +2,7 @@
   <div class="attribute-editor">
     <div
       v-if="!featureSetIdx"
-      class="attribute-editor__empty t-basic-500 fs-300"
+      class="attribute-editor__empty t-muted fs-300"
     >
       {{ $t("pim.no_feature_set_attributes") }}
     </div>
@@ -19,13 +19,13 @@
         <div class="attribute-row__label">
           <router-link
             :to="'/pim/features/' + row.feature_idx"
-            class="fw-600 t-basic-800 attribute-row__link"
+            class="fw-600 t-body attribute-row__link"
           >
             {{ row.feature_name || row.feature_idx }}
           </router-link>
           <span
             v-if="row.is_required"
-            class="required-mark t-negative-300"
+            class="required-mark t-negative"
             :title="$t('pim.required_field')"
             >*</span
           >
@@ -64,7 +64,7 @@
           <template v-else-if="row.feature_type === 4">
             <div class="translation-field">
               <div class="translation-field__header">
-                <span class="lang-tag fs-200 t-basic-500">{{ defaultLang }}</span>
+                <span class="lang-tag fs-200 t-muted">{{ defaultLang }}</span>
                 <BasicButton
                   v-if="hasSecondaryLanguages"
                   :text="$t('pim.translations')"
@@ -98,7 +98,7 @@
           <template v-else-if="row.feature_type === 6">
             <div class="translation-field">
               <div class="translation-field__header">
-                <span class="lang-tag fs-200 t-basic-500">{{ defaultLang }}</span>
+                <span class="lang-tag fs-200 t-muted">{{ defaultLang }}</span>
                 <BasicButton
                   v-if="hasSecondaryLanguages"
                   :text="$t('pim.translations')"
@@ -166,7 +166,7 @@
           <template v-else-if="row.feature_type === 11">
             <div class="translation-field">
               <div class="translation-field__header">
-                <span class="lang-tag fs-200 t-basic-500">{{ defaultLang }}</span>
+                <span class="lang-tag fs-200 t-muted">{{ defaultLang }}</span>
                 <BasicButton
                   v-if="hasSecondaryLanguages"
                   :text="$t('pim.translations')"
@@ -192,7 +192,7 @@
                   (val) => updateField(row.feature_idx, 'value_decimal', val)
                 "
               />
-              <span class="unit-suffix t-basic-500">°C</span>
+              <span class="unit-suffix t-muted">°C</span>
             </div>
           </template>
           <template v-else-if="row.feature_type === 13">
@@ -204,7 +204,7 @@
                   (val) => updateField(row.feature_idx, 'value_decimal', val)
                 "
               />
-              <span class="unit-suffix t-basic-500">cm</span>
+              <span class="unit-suffix t-muted">cm</span>
             </div>
           </template>
           <template v-else-if="row.feature_type === 14">
@@ -216,7 +216,7 @@
                   (val) => updateField(row.feature_idx, 'value_decimal', val)
                 "
               />
-              <span class="unit-suffix t-basic-500">kg</span>
+              <span class="unit-suffix t-muted">kg</span>
             </div>
           </template>
         </div>
@@ -239,7 +239,7 @@
           >
           <span class="attribute-group__name">{{ group.name }}</span>
           <span
-            class="chip chip--pill bg-basic-200 t-basic-600 fs-200"
+            class="chip chip--pill bg-raised t-secondary fs-200"
           >
             {{ group.rows.length }}
           </span>
@@ -257,13 +257,13 @@
             <div class="attribute-row__label">
               <router-link
                 :to="'/pim/features/' + row.feature_idx"
-                class="fw-600 t-basic-800 attribute-row__link"
+                class="fw-600 t-body attribute-row__link"
               >
                 {{ row.feature_name || row.feature_idx }}
               </router-link>
               <span
                 v-if="row.is_required"
-                class="required-mark t-negative-300"
+                class="required-mark t-negative"
                 :title="$t('pim.required_field')"
                 >*</span
               >
@@ -302,7 +302,7 @@
               <template v-else-if="row.feature_type === 4">
                 <div class="translation-field">
                   <div class="translation-field__header">
-                    <span class="lang-tag fs-200 t-basic-500">{{ defaultLang }}</span>
+                    <span class="lang-tag fs-200 t-muted">{{ defaultLang }}</span>
                     <BasicButton
                       v-if="hasSecondaryLanguages"
                       :text="$t('pim.translations')"
@@ -336,7 +336,7 @@
               <template v-else-if="row.feature_type === 6">
                 <div class="translation-field">
                   <div class="translation-field__header">
-                    <span class="lang-tag fs-200 t-basic-500">{{ defaultLang }}</span>
+                    <span class="lang-tag fs-200 t-muted">{{ defaultLang }}</span>
                     <BasicButton
                       v-if="hasSecondaryLanguages"
                       :text="$t('pim.translations')"
@@ -404,7 +404,7 @@
               <template v-else-if="row.feature_type === 11">
                 <div class="translation-field">
                   <div class="translation-field__header">
-                    <span class="lang-tag fs-200 t-basic-500">{{ defaultLang }}</span>
+                    <span class="lang-tag fs-200 t-muted">{{ defaultLang }}</span>
                     <BasicButton
                       v-if="hasSecondaryLanguages"
                       :text="$t('pim.translations')"
@@ -431,7 +431,7 @@
                         updateField(row.feature_idx, 'value_decimal', val)
                     "
                   />
-                  <span class="unit-suffix t-basic-500">°C</span>
+                  <span class="unit-suffix t-muted">°C</span>
                 </div>
               </template>
               <template v-else-if="row.feature_type === 13">
@@ -444,7 +444,7 @@
                         updateField(row.feature_idx, 'value_decimal', val)
                     "
                   />
-                  <span class="unit-suffix t-basic-500">cm</span>
+                  <span class="unit-suffix t-muted">cm</span>
                 </div>
               </template>
               <template v-else-if="row.feature_type === 14">
@@ -457,7 +457,7 @@
                         updateField(row.feature_idx, 'value_decimal', val)
                     "
                   />
-                  <span class="unit-suffix t-basic-500">kg</span>
+                  <span class="unit-suffix t-muted">kg</span>
                 </div>
               </template>
             </div>
@@ -809,7 +809,7 @@ onMounted(() => {
 }
 
 .attribute-group {
-  border: 1px solid var(--c-basic-200);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   margin-bottom: var(--space-300);
 
@@ -818,9 +818,9 @@ onMounted(() => {
     align-items: center;
     gap: var(--space-200);
     padding: 10px 16px;
-    background: var(--c-basic-200);
+    background: var(--surface-raised);
     cursor: pointer;
-    border-left: 3px solid var(--c-support-400);
+    border-left: 3px solid var(--accent);
     user-select: none;
   }
 
@@ -828,7 +828,7 @@ onMounted(() => {
     font-weight: 600;
     text-transform: uppercase;
     font-size: var(--fs-200);
-    color: var(--c-support-400);
+    color: var(--text-accent);
   }
 
   &__body {
@@ -840,7 +840,7 @@ onMounted(() => {
   cursor: pointer;
   transition: transform 0.2s;
   font-size: 10px;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 
   &.is-collapsed {
     transform: rotate(-90deg);
@@ -853,7 +853,7 @@ onMounted(() => {
   gap: var(--space-300);
   align-items: start;
   padding: 14px 0;
-  border-bottom: 1px solid var(--c-basic-200);
+  border-bottom: 1px solid var(--border-subtle);
 
   &:last-child {
     border-bottom: none;
@@ -871,7 +871,7 @@ onMounted(() => {
     text-decoration: none;
     &:hover {
       text-decoration: underline;
-      color: var(--c-support-400);
+      color: var(--text-accent);
     }
   }
 
@@ -890,8 +890,8 @@ onMounted(() => {
   display: inline-block;
   padding: 2px 6px;
   border-radius: 3px;
-  background: var(--c-basic-200);
-  color: var(--c-basic-500);
+  background: var(--surface-raised);
+  color: var(--text-muted);
   font-weight: 600;
   text-transform: uppercase;
   min-width: 28px;

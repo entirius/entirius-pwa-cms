@@ -29,7 +29,7 @@
           </tbody>
         </table>
 
-        <div v-if="errorText" class="apply-preview__error t-negative-300 fs-200">
+        <div v-if="errorText" class="apply-preview__error t-negative fs-200">
           <FontAwesomeIcon icon="triangle-exclamation" class="mr-100" />
           {{ errorText }}
         </div>
@@ -37,13 +37,13 @@
         <div class="apply-preview__actions">
           <BasicButton
             :text="$t('common.cancel')"
-            class="bg-basic-200 t-basic-600"
+            class="bg-raised t-secondary"
             :disabled="loading"
             @click="onCancel"
           />
           <BasicButton
             :text="loading ? $t('pricefighter.applying') : $t('pricefighter.confirm_apply')"
-            class="bg-support-400 t-basic-100"
+            class="bg-accent-fill t-on-accent-fill"
             :disabled="loading || !items.length"
             @click="onConfirm"
           />
@@ -119,23 +119,23 @@ export default {
   th {
     text-align: left;
     padding: 4px 8px;
-    color: var(--c-basic-500);
+    color: var(--text-muted);
     text-transform: uppercase;
     font-size: var(--fs-100);
-    border-bottom: 1px solid var(--c-basic-300);
+    border-bottom: 1px solid var(--border-subtle);
   }
 
   td {
     padding: 6px 8px;
-    border-bottom: 1px solid var(--c-basic-200);
+    border-bottom: 1px solid var(--border-subtle);
   }
 }
 
 .apply-preview__error {
   padding: var(--space-200);
   border-radius: var(--radius-sm);
-  background: var(--c-negative-100);
-  border-left: 3px solid var(--c-negative-300);
+  background: var(--negative-subtle);
+  border-left: 3px solid var(--negative);
 }
 
 .apply-preview__actions {

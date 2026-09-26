@@ -45,7 +45,7 @@
           @click.stop="onSelect(el)"
         >
           <span class="dropdown-list-el__main">
-            <span class="ml-100 dropdown-list-el__label" :class="{ 't-basic-500': el.disabled }">{{
+            <span class="ml-100 dropdown-list-el__label" :class="{ 't-muted': el.disabled }">{{
               el.label
             }}</span>
             <span v-if="el.description" class="ml-100 dropdown-list-el__desc">{{
@@ -66,7 +66,7 @@
               >{{ el.label_ext_2 }}</span
             >
             <span
-              :class="[{ 't-basic-400': el.disabled }, el.label_ext_class]"
+              :class="[{ 't-muted': el.disabled }, el.label_ext_class]"
               v-if="el.label_ext"
               @click.stop="$emit('onExtension', el.value)"
               >{{ el.label_ext }}</span
@@ -77,7 +77,7 @@
       <slot name="custom" v-if="custom_droplist"></slot>
     </div>
     <p
-      class="validation-msg t-negative-200 fs-100 absolute"
+      class="validation-msg t-negative fs-100 absolute"
       v-if="validate && validate.status === 'error' && validate.msg"
     >
       {{ validate.msg }}
@@ -211,21 +211,21 @@ function find_label({
   height: var(--elem-height);
   line-height: var(--elem-height);
   min-width: 180px;
-  border: 1px solid var(--c-basic-400);
+  border: 1px solid var(--border-default);
   border-radius: var(--space-50);
-  background-color: var(--c-basic-100);
+  background-color: var(--surface-base);
   transition: border-color 0.2s;
 
   &:hover:not(.dropdown-disabled) {
-    border-color: var(--c-basic-500);
+    border-color: var(--border-default);
   }
 
   &.dropped {
-    border-color: var(--c-support-400);
+    border-color: var(--accent);
   }
 
   &.dropdown-invalid {
-    border-color: var(--c-negative-200) !important;
+    border-color: var(--negative) !important;
   }
 
   .validation-msg {
@@ -236,13 +236,13 @@ function find_label({
   }
 
   &.dropdown-disabled {
-    background-color: var(--c-basic-200);
-    border-color: var(--c-basic-300);
+    background-color: var(--surface-raised);
+    border-color: var(--border-subtle);
     opacity: 0.7;
     cursor: not-allowed;
 
     .selected-value-container {
-      color: var(--c-basic-500);
+      color: var(--text-muted);
     }
   }
 
@@ -286,10 +286,10 @@ function find_label({
     width: calc(100% + 2px);
 
     z-index: 20;
-    background-color: var(--c-basic-100);
+    background-color: var(--surface-base);
     max-height: 14rem;
     overflow-y: auto;
-    border: 1px solid var(--c-basic-400);
+    border: 1px solid var(--border-default);
     border-radius: var(--space-50);
     box-shadow: var(--shadow-md);
 
@@ -304,7 +304,7 @@ function find_label({
       transition: background-color 0.15s;
 
       &:hover {
-        background-color: var(--c-basic-200);
+        background-color: var(--surface-raised);
       }
 
       &:first-child {
@@ -317,7 +317,7 @@ function find_label({
     }
 
     .dropdown-list-el:not(:last-child) {
-      border-bottom: 1px solid var(--c-basic-300);
+      border-bottom: 1px solid var(--border-subtle);
     }
 
     // Options wrap to full text instead of truncating — long modifier/target
@@ -340,7 +340,7 @@ function find_label({
       margin-top: 2px;
       font-size: var(--fs-200);
       line-height: 1.3;
-      color: var(--c-basic-500);
+      color: var(--text-muted);
       white-space: normal;
       overflow-wrap: anywhere;
     }

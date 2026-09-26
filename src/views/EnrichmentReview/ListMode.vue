@@ -5,16 +5,16 @@
          backend contract. -->
     <div
       v-if="totalCount > 0 && (actionableFilter || undoableFilter)"
-      class="list-mode__bulk flex ai-ct gap-200 mb-300 p-200 bg-support-100 br-50 flex-wrap"
+      class="list-mode__bulk flex ai-ct gap-200 mb-300 p-200 bg-accent-subtle br-50 flex-wrap"
       data-testid="enrichment-bulk-bar"
     >
-      <span class="fs-200 t-support-400 fw-600">
+      <span class="fs-200 t-accent fw-600">
         {{ $t("enrichment.review.bulk.matching", { count: totalCount }) }}
       </span>
       <div class="flex ai-ct gap-100 ml-auto flex-wrap">
         <button
           v-if="actionableFilter"
-          class="list-mode__btn bg-positive-100 t-positive-300"
+          class="list-mode__btn bg-positive-subtle t-positive"
           :disabled="busy"
           data-testid="enrichment-bulk-accept"
           @click="$emit('bulk-accept')"
@@ -23,7 +23,7 @@
         </button>
         <button
           v-if="actionableFilter"
-          class="list-mode__btn bg-negative-100 t-negative-300"
+          class="list-mode__btn bg-negative-subtle t-negative"
           :disabled="busy"
           data-testid="enrichment-bulk-reject"
           @click="$emit('bulk-reject', '')"
@@ -32,7 +32,7 @@
         </button>
         <button
           v-if="undoableFilter"
-          class="list-mode__btn bg-basic-200 t-basic-600"
+          class="list-mode__btn bg-raised t-secondary"
           :disabled="busy"
           :title="$t('enrichment.review.undo_hint')"
           data-testid="enrichment-undo"
@@ -58,7 +58,7 @@
         <button
           v-if="isPimRow(row)"
           type="button"
-          class="list-mode__link list-mode__link--btn t-primary-300"
+          class="list-mode__link list-mode__link--btn t-accent"
           :data-testid="`enrichment-subject-${row.id}`"
           @click.stop="$emit('preview-product', row)"
         >
@@ -69,7 +69,7 @@
           :href="row.subject_url"
           target="_blank"
           rel="noopener"
-          class="list-mode__link t-primary-300"
+          class="list-mode__link t-accent"
           :data-testid="`enrichment-subject-${row.id}`"
           @click.stop
           >{{ row.subject_label || row.subject_ref }}</a
@@ -77,7 +77,7 @@
         <span v-else>{{ row.subject_label || row.subject_ref }}</span>
       </template>
       <template #cell-field="{ row }">
-        <span class="fs-200 t-basic-600">{{ fieldLabel(row) }}</span>
+        <span class="fs-200 t-secondary">{{ fieldLabel(row) }}</span>
       </template>
       <template #cell-change="{ row }">
         <DiffRenderer
@@ -98,13 +98,13 @@
         <span class="fs-200">{{ formatConfidence(value) }}</span>
       </template>
       <template #cell-age="{ row }">
-        <span class="fs-200 t-basic-500">{{ formatDate(row.created_at) }}</span>
+        <span class="fs-200 t-muted">{{ formatDate(row.created_at) }}</span>
       </template>
       <template #cell-actions="{ row }">
         <div v-if="isActionable(row)" class="flex ai-ct gap-100">
           <button
             v-if="row.status === 'drifted'"
-            class="list-mode__btn bg-warning-100 t-warning-300"
+            class="list-mode__btn bg-warning-subtle t-warning"
             :disabled="busy"
             :data-testid="`enrichment-reconfirm-${row.id}`"
             @click.stop="$emit('reconfirm', row)"
@@ -113,7 +113,7 @@
           </button>
           <button
             v-else
-            class="list-mode__btn bg-positive-100 t-positive-300"
+            class="list-mode__btn bg-positive-subtle t-positive"
             :disabled="busy"
             :data-testid="`enrichment-accept-${row.id}`"
             @click.stop="$emit('accept', row)"
@@ -121,7 +121,7 @@
             {{ $t("common.accept") }}
           </button>
           <button
-            class="list-mode__btn bg-negative-100 t-negative-300"
+            class="list-mode__btn bg-negative-subtle t-negative"
             :disabled="busy"
             :data-testid="`enrichment-reject-${row.id}`"
             @click.stop="$emit('reject', { proposal: row, reason: '' })"
@@ -129,7 +129,7 @@
             {{ $t("common.reject") }}
           </button>
         </div>
-        <span v-else class="fs-200 t-basic-400">—</span>
+        <span v-else class="fs-200 t-muted">—</span>
       </template>
     </DataTable>
 
@@ -145,17 +145,17 @@
       class="list-mode__pager flex ai-ct jc-ct gap-200 mt-300"
     >
       <button
-        class="list-mode__btn bg-basic-200 t-basic-600"
+        class="list-mode__btn bg-raised t-secondary"
         :disabled="page <= 1 || busy"
         @click="$emit('page', page - 1)"
       >
         {{ $t("enrichment.review.prev") }}
       </button>
-      <span class="fs-200 t-basic-500">{{
+      <span class="fs-200 t-muted">{{
         $t("enrichment.review.page_of", { page, total: totalPages })
       }}</span>
       <button
-        class="list-mode__btn bg-basic-200 t-basic-600"
+        class="list-mode__btn bg-raised t-secondary"
         :disabled="page >= totalPages || busy"
         @click="$emit('page', page + 1)"
       >

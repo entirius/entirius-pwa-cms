@@ -138,7 +138,7 @@ onBeforeUnmount(() => document.removeEventListener("keydown", onKey));
   max-height: 70vh;
   overflow-y: auto;
   padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
-  background: var(--c-basic-100);
+  background: var(--surface-base);
   border-radius: 1rem 1rem 0 0;
   box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.16);
   z-index: 91;
@@ -150,8 +150,8 @@ onBeforeUnmount(() => document.removeEventListener("keydown", onKey));
   align-items: center;
   justify-content: space-between;
   padding: 0.75rem 0.5rem 0.5rem 1rem;
-  background: var(--c-basic-100);
-  border-bottom: 1px solid var(--c-basic-300);
+  background: var(--surface-base);
+  border-bottom: 1px solid var(--border-subtle);
 }
 .cfg-panel__grip {
   position: absolute;
@@ -161,7 +161,7 @@ onBeforeUnmount(() => document.removeEventListener("keydown", onKey));
   height: 0.25rem;
   margin-left: -1.25rem;
   border-radius: 999px;
-  background: var(--c-basic-300);
+  background: var(--surface-hover);
 }
 .cfg-panel__title {
   margin: 0;
@@ -173,25 +173,25 @@ onBeforeUnmount(() => document.removeEventListener("keydown", onKey));
   border: none;
   border-radius: 8px;
   background: none;
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
   cursor: pointer;
 }
 .cfg-panel__ok {
   margin: 0;
   padding: 1rem;
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
 }
 .cfg-row {
   display: flex;
   gap: 0.75rem;
   align-items: flex-start;
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--c-basic-200);
-  border-left: 3px solid var(--c-warning-300);
-  color: var(--c-basic-800);
+  border-bottom: 1px solid var(--border-subtle);
+  border-left: 3px solid var(--warning);
+  color: var(--text-body);
 }
 .cfg-row--high {
-  border-left-color: var(--c-negative-300);
+  border-left-color: var(--negative);
 }
 .cfg-row__text {
   display: flex;
@@ -205,7 +205,7 @@ onBeforeUnmount(() => document.removeEventListener("keydown", onKey));
 }
 .cfg-row__detail {
   font-size: var(--fs-100);
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
   overflow-wrap: anywhere;
 }
 .cfg-row__fix {
@@ -214,7 +214,7 @@ onBeforeUnmount(() => document.removeEventListener("keydown", onKey));
   display: flex;
   align-items: center;
   font-weight: 600;
-  color: var(--c-support-400);
+  color: var(--text-accent);
 }
 .cfg-grid {
   display: flex;
@@ -224,11 +224,11 @@ onBeforeUnmount(() => document.removeEventListener("keydown", onKey));
   padding: 0.75rem 1rem;
   list-style: none;
   font-size: var(--fs-100);
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 .cfg-grid__tick {
   margin-right: 0.35rem;
-  color: var(--c-positive-300);
+  color: var(--positive);
 }
 .cfg-panel__foot {
   display: flex;
@@ -236,19 +236,19 @@ onBeforeUnmount(() => document.removeEventListener("keydown", onKey));
   justify-content: space-between;
   gap: 1rem;
   padding: 0.5rem 1rem;
-  border-top: 1px solid var(--c-basic-200);
+  border-top: 1px solid var(--border-subtle);
 }
 .cfg-panel__age {
   font-size: var(--fs-100);
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 .cfg-panel__again {
   min-height: 44px;
   padding: 0 0.75rem;
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
   background: none;
-  color: var(--c-basic-800);
+  color: var(--text-body);
   cursor: pointer;
 }
 .cfg-panel__again:disabled {

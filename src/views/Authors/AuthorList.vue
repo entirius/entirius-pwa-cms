@@ -1,7 +1,7 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
     >
       <div class="flex ai-ct mb-400">
         <h1 class="fs-700 fw-600">{{ $t("authors.title") }}</h1>
@@ -9,13 +9,13 @@
 
       <div
         v-if="unavailable"
-        class="flex ai-ct jc-ct gap-200 p-500 t-basic-500"
+        class="flex ai-ct jc-ct gap-200 p-500 t-muted"
         style="min-height: 14rem; flex-direction: column"
       >
-        <p class="fs-400 fw-600 t-basic-600">
+        <p class="fs-400 fw-600 t-secondary">
           {{ $t("authors.unavailable_title") }}
         </p>
-        <p class="fs-200 t-basic-500 ta-ct" style="max-width: 30rem">
+        <p class="fs-200 t-muted ta-ct" style="max-width: 30rem">
           {{ $t("authors.unavailable_msg") }}
         </p>
       </div>
@@ -26,7 +26,7 @@
           :active-count="activeFilterCount"
           :trigger-label="$t('builder.filters')"
         >
-          <p class="fs-200 t-basic-600">{{ $t("builder.filters") }}</p>
+          <p class="fs-200 t-secondary">{{ $t("builder.filters") }}</p>
           <FilterChip
             :label="$t('pim.all')"
             :active="isActiveFilter === null"
@@ -69,7 +69,7 @@
           <span class="author-list__name-cell">{{ row.name }}</span>
         </template>
         <template #cell-role="{ row }">
-          <span class="t-basic-600">{{ resolveRole(row) }}</span>
+          <span class="t-secondary">{{ resolveRole(row) }}</span>
         </template>
         <template #cell-is_active="{ value }">
           <StatusBadge
@@ -78,7 +78,7 @@
           />
         </template>
         <template #cell-post_count="{ value }">
-          <span class="t-basic-600">{{ value ?? 0 }}</span>
+          <span class="t-secondary">{{ value ?? 0 }}</span>
         </template>
       </DataTable>
 

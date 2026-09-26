@@ -1,5 +1,5 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
     <!-- Title shown by router titleKey in header bar -->
     <Teleport to="#pricing-toolbar-right" defer>
       <BasicButton
@@ -10,25 +10,25 @@
       />
     </Teleport>
 
-    <div class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
       <Loader v-show="loading" />
 
       <div v-show="!loading">
-        <p v-if="!channels.length" class="t-basic-500 fs-300">{{ $t('pm.channels') }}: —</p>
+        <p v-if="!channels.length" class="t-muted fs-300">{{ $t('pm.channels') }}: —</p>
 
         <DataTable v-else :columns="columns" :rows="channels" @row-click="onRowClick">
           <template #cell-idx="{ row }">
-            <span class="fw-600 t-support-400 pointer" @click.stop="$router.push(`/pricing/channels/${row.idx}`)">
+            <span class="fw-600 t-accent pointer" @click.stop="$router.push(`/pricing/channels/${row.idx}`)">
               {{ row.idx }}
             </span>
           </template>
           <template #cell-calculate_direction="{ row }">
-            <span class="chip bg-basic-200 t-basic-600">
+            <span class="chip bg-raised t-secondary">
               {{ row.calculate_direction === 'from_net_to_gross' ? $t('pm.from_net_to_gross') : $t('pm.from_gross_to_net') }}
             </span>
           </template>
           <template #cell-country_count="{ row }">
-            <span class="chip bg-support-100 t-support-400">
+            <span class="chip bg-accent-subtle t-accent">
               {{ row.country_count ?? 0 }} {{ $t('pm.country_count') }}
             </span>
           </template>

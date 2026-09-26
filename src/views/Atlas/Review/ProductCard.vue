@@ -1,5 +1,5 @@
 <template>
-  <div class="product-card bg-basic-100 b-basic-300 br-100 p-300 shadow-sm">
+  <div class="product-card bg-base b-subtle br-100 p-300 shadow-sm">
     <div class="product-card__hero" data-testid="product-card-hero">
       <img
         v-if="heroImage"
@@ -15,10 +15,10 @@
       {{ product?.name }}
     </h2>
     <div v-if="product?.ean" class="flex ai-ct gap-200 mt-100 flex-wrap">
-      <span class="t-basic-500 fs-200">EAN: {{ product.ean }}</span>
+      <span class="t-muted fs-200">EAN: {{ product.ean }}</span>
     </div>
     <div class="flex ai-ct gap-300 mt-200 flex-wrap">
-      <span class="fs-400 fw-600 t-basic-700">
+      <span class="fs-400 fw-600 t-body">
         {{ formatCost(product?.cost, product?.currency) }}
       </span>
       <StatusBadge
@@ -35,7 +35,7 @@
       >
         <FontAwesomeIcon icon="image" />
         {{ $t("atlas.review.show_gallery") }}
-        <span class="t-basic-500">({{ imagesCount }})</span>
+        <span class="t-muted">({{ imagesCount }})</span>
       </button>
       <a
         v-if="product?.url"
@@ -95,7 +95,7 @@ export default {
 .product-card__hero {
   width: 100%;
   aspect-ratio: 1;
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
@@ -110,13 +110,13 @@ export default {
 }
 .product-card__image--empty {
   font-size: 48px;
-  color: var(--c-basic-400);
+  color: var(--text-muted);
 }
 .product-card__link {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  color: var(--c-support-400);
+  color: var(--text-accent);
   text-decoration: none;
   font-size: var(--fs-200);
 }
@@ -127,8 +127,8 @@ export default {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: var(--c-basic-200);
-  color: var(--c-basic-700);
+  background: var(--surface-raised);
+  color: var(--text-body);
   border: none;
   border-radius: var(--radius-sm);
   padding: 4px 10px;
@@ -136,14 +136,14 @@ export default {
   cursor: pointer;
 }
 .product-card__raw-btn:hover {
-  background: var(--c-basic-300);
+  background: var(--surface-hover);
 }
 .product-card__gallery-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: var(--c-basic-200);
-  color: var(--c-basic-700);
+  background: var(--surface-raised);
+  color: var(--text-body);
   border: none;
   border-radius: var(--radius-sm);
   padding: 6px 12px;
@@ -152,7 +152,7 @@ export default {
   cursor: pointer;
 }
 .product-card__gallery-btn:hover {
-  background: var(--c-basic-300);
+  background: var(--surface-hover);
 }
 
 /* Desktop has a permanent side panel — mobile-only button to open modal. */

@@ -1,13 +1,13 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
     >
       <Teleport v-if="toolbarReady" to="#forms-toolbar-left">
         <BasicButton
           icon="arrow-left"
           :text="$t('cf.back_to_list')"
-          class="bg-basic-200 t-basic-600"
+          class="bg-raised t-secondary"
           @click="$router.push('/forms/leads')"
         />
         <span v-if="form.name" class="fw-600">{{ form.name }}</span>
@@ -22,7 +22,7 @@
           v-if="canMarkAsWon"
           icon="check"
           :text="$t('cf.mark_as_won')"
-          class="bg-positive-200 t-basic-100"
+          class="bg-positive-fill t-on-status-fill"
           @click="openMarkAsWon"
         />
         <Dropdown
@@ -32,12 +32,12 @@
           class="cf-detail__transitions"
           @onSelect="onTransition"
         />
-        <span v-if="isDirty" class="chip bg-warning-100 t-warning-300">
+        <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
           {{ $t("unsaved.changes") }}
         </span>
         <BasicButton
           :text="$t('cf.save')"
-          class="bg-support-400 t-basic-100"
+          class="bg-accent-fill t-on-accent-fill"
           :is-disabled="!isDirty || saving"
           @click="save"
         />
@@ -123,7 +123,7 @@
                   <code v-if="lead.gclid" class="cf-code">{{
                     lead.gclid
                   }}</code>
-                  <span v-else class="t-basic-400">---</span>
+                  <span v-else class="t-muted">---</span>
                 </dd>
               </div>
               <div class="cf-field-list__row">
@@ -144,7 +144,7 @@
                     <font-awesome-icon icon="check" />
                     {{ formatDateTime(lead.ads_imported_at) }}
                   </span>
-                  <span v-else class="t-basic-400">---</span>
+                  <span v-else class="t-muted">---</span>
                 </dd>
               </div>
             </dl>
@@ -210,14 +210,14 @@
         </FormField>
         <p
           v-if="integrations && integrations.google_ads_enabled"
-          class="fs-200 t-support-400 mt-200"
+          class="fs-200 t-accent mt-200"
         >
           <font-awesome-icon icon="circle-info" />
           {{ $t("cf.google_ads_push_hint") }}
         </p>
         <p
           v-else-if="integrations"
-          class="fs-200 t-basic-500 mt-200"
+          class="fs-200 t-muted mt-200"
         >
           <font-awesome-icon icon="circle-info" />
           {{ $t("cf.google_ads_off_hint") }}
@@ -500,15 +500,15 @@ export default {
 
 .cf-card {
   padding: var(--space-300);
-  background: var(--c-basic-100);
-  border: 1px solid var(--c-basic-300);
+  background: var(--surface-base);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
 }
 
 .cf-card__title {
   font-size: var(--fs-200);
   font-weight: 600;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   margin-bottom: var(--space-200);
@@ -531,14 +531,14 @@ export default {
 .cf-field-list__row > dt {
   font-size: var(--fs-200);
   font-weight: 600;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.02em;
 }
 
 .cf-field-list__row > dd {
   margin: 0;
-  color: var(--c-basic-800);
+  color: var(--text-body);
   word-break: break-word;
 }
 
@@ -546,16 +546,16 @@ export default {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: var(--fs-200);
   padding: 2px 6px;
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
   border-radius: var(--radius-sm);
-  color: var(--c-basic-700);
+  color: var(--text-body);
 }
 
 .cf-ads-imported {
   display: inline-flex;
   align-items: center;
   gap: var(--space-50);
-  color: var(--c-positive-300);
+  color: var(--positive);
 }
 
 .cf-detail__transitions {

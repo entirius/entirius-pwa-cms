@@ -16,7 +16,7 @@
 
       <div v-else-if="current" class="swipe-mode__content">
         <p
-          class="t-basic-500 fs-200 text-center mb-200"
+          class="t-muted fs-200 text-center mb-200"
           data-testid="swipe-counter"
         >
           {{ index + 1 }} / {{ queue.length }}
@@ -256,8 +256,8 @@ export default {
   gap: var(--space-200);
   flex-wrap: wrap;
   padding: var(--space-100) var(--space-300);
-  background: var(--c-basic-100);
-  border-top: 1px solid var(--c-basic-300);
+  background: var(--surface-base);
+  border-top: 1px solid var(--border-subtle);
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.04);
 }
 
@@ -279,19 +279,19 @@ export default {
   cursor: not-allowed;
 }
 .swipe-btn--reject {
-  background: var(--c-negative-100);
-  border-color: var(--c-negative-300);
-  color: var(--c-negative-300);
+  background: var(--negative-subtle);
+  border-color: var(--negative);
+  color: var(--negative);
 }
 .swipe-btn--skip {
-  background: var(--c-basic-100);
-  border-color: var(--c-basic-400);
-  color: var(--c-basic-700);
+  background: var(--surface-base);
+  border-color: var(--border-default);
+  color: var(--text-body);
 }
 .swipe-btn--approve {
-  background: var(--c-positive-100);
-  border-color: var(--c-positive-300);
-  color: var(--c-positive-300);
+  background: var(--positive-subtle);
+  border-color: var(--positive);
+  color: var(--positive);
 }
 .swipe-btn:hover:not(:disabled) {
   filter: brightness(0.97);

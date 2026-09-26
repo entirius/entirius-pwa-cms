@@ -1,12 +1,12 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
-    <div class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto p-500">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
+    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
       <div class="flex ai-ct jc-sb mb-400">
         <h1 class="fs-700 fw-600">{{ $t('pricefighter.strategies') }}</h1>
         <BasicButton
           :text="$t('pricefighter.new_rule')"
           icon="plus"
-          class="bg-support-400 t-basic-100"
+          class="bg-accent-fill t-on-accent-fill"
           @click="openCreate"
         />
       </div>
@@ -37,7 +37,7 @@
           </template>
           <template #cell-price_war="{ row }">
             <StatusBadge v-if="row.price_war" :label="$t('pricefighter.active')" variant="negative" />
-            <span v-else class="t-basic-500">—</span>
+            <span v-else class="t-muted">—</span>
           </template>
           <template #cell-mode="{ row }">
             {{ row.mode }}
@@ -136,19 +136,19 @@
             v-if="editingRule.id"
             text=""
             icon="trash-can"
-            class="bg-negative-100 t-negative-300"
+            class="bg-negative-subtle t-negative"
             @click="showDeleteConfirm = true"
           />
           <div v-else />
           <div class="flex ai-ct gap-200">
             <BasicButton
               :text="$t('common.cancel')"
-              class="bg-basic-200 t-basic-600"
+              class="bg-raised t-secondary"
               @click="closeModal"
             />
             <BasicButton
               :text="$t('common.save')"
-              class="bg-support-400 t-basic-100"
+              class="bg-accent-fill t-on-accent-fill"
               @click="saveRule"
             />
           </div>
@@ -358,8 +358,8 @@ export default {
 }
 
 .rule-modal {
-  background: var(--c-basic-100);
-  border: 1px solid var(--c-basic-300);
+  background: var(--surface-base);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   padding: 28px;
   min-width: min(420px, 95vw);

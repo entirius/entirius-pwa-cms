@@ -52,13 +52,13 @@ function openCard(event) {
   flex-direction: column;
   gap: var(--space-100);
   padding: var(--space-200);
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: 6px;
-  background: var(--c-basic-100);
+  background: var(--surface-base);
   cursor: pointer;
 }
 .card:hover {
-  border-color: var(--c-support-400);
+  border-color: var(--accent);
 }
 .card__name {
   font-weight: 600;

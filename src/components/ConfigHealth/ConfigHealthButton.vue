@@ -72,16 +72,16 @@ function toggle() {
   border-radius: 8px;
   border: none;
   background: none;
-  color: var(--c-warning-300);
+  color: var(--warning);
   cursor: pointer;
   font-size: 13px;
 }
 .cfg-btn:hover,
 .cfg-btn--active {
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
 }
 .cfg-btn--fixed {
-  color: var(--c-positive-300);
+  color: var(--positive);
 }
 .cfg-btn__count {
   position: absolute;
@@ -91,8 +91,8 @@ function toggle() {
   height: 1.1rem;
   padding: 0 0.25rem;
   border-radius: 999px;
-  background: var(--c-negative-300);
-  color: var(--c-basic-100);
+  background: var(--negative-fill);
+  color: var(--text-on-status-fill);
   font-size: 0.65rem;
   font-weight: 700;
   line-height: 1.1rem;

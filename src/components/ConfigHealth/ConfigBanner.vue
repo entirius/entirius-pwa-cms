@@ -47,11 +47,11 @@ const rows = computed(() => store.failingFor(props.code));
   margin: 0;
   padding: var(--space-200) var(--space-300);
   border-radius: 8px;
-  background: var(--c-warning-100);
-  color: var(--c-basic-800);
+  background: var(--warning-subtle);
+  color: var(--text-body);
 }
 .config-banner--high {
-  background: var(--c-negative-100);
+  background: var(--negative-subtle);
 }
 .config-banner__fix {
   font-weight: 600;

@@ -42,7 +42,7 @@ defineEmits(["update:modelValue"]);
   align-items: center;
   height: 28px;
   padding: 2px;
-  background-color: var(--c-basic-200);
+  background-color: var(--surface-raised);
   border-radius: 50px;
   gap: 2px;
 
@@ -58,17 +58,17 @@ defineEmits(["update:modelValue"]);
     border: none;
     border-radius: 50px;
     background: transparent;
-    color: var(--c-basic-600);
+    color: var(--text-secondary);
     cursor: pointer;
     transition: all 0.2s ease;
 
     &:hover:not(&--active) {
-      color: var(--c-basic-700);
+      color: var(--text-body);
     }
 
     &--active {
-      background-color: var(--c-basic-100);
-      color: var(--c-basic-800);
+      background-color: var(--surface-base);
+      color: var(--text-body);
       font-weight: 600;
       box-shadow: var(--shadow-sm);
     }

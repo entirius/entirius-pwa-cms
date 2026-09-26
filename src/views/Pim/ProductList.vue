@@ -1,7 +1,7 @@
 <template>
-  <div class="pim-list-layout p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="pim-list-layout p-500 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-basic-100 b-basic-300 br-50 flex-1 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle br-50 flex-1 ovy-auto pl-500 pt-500 pb-500 pr-500"
     >
       <div class="flex ai-ct mb-400">
         <h1 class="fs-700 fw-600">{{ $t("pim.products") }}</h1>
@@ -37,7 +37,7 @@
           <FontAwesomeIcon :icon="hideQualitySensor ? 'eye-slash' : 'eye'" />
         </button>
         <div class="flex-1" />
-        <span v-if="totalCount > 0" class="fs-200 t-basic-500"
+        <span v-if="totalCount > 0" class="fs-200 t-muted"
           >{{ totalCount }} {{ $t("pim.products").toLowerCase() }}</span
         >
       </div>
@@ -85,7 +85,7 @@
           @onSelect="(val) => onAttributeFilter(feat.idx, val)"
         />
         <template v-if="hasQualityData">
-          <span class="product-list__quality-filter-label t-basic-500 fs-200">
+          <span class="product-list__quality-filter-label t-muted fs-200">
             {{ $t("pim.quality_filter_label") }}
           </span>
           <FilterChip
@@ -148,7 +148,7 @@
             <FontAwesomeIcon
               v-else
               icon="image"
-              class="product-thumb__placeholder t-basic-400"
+              class="product-thumb__placeholder t-muted"
             />
           </div>
         </template>
@@ -163,7 +163,7 @@
           >
             {{ productClassLabel(row.product_class_name) }}
           </span>
-          <span v-else class="t-basic-400">---</span>
+          <span v-else class="t-muted">---</span>
         </template>
         <template #cell-is_enabled="{ value }">
           <StatusBadge
@@ -201,7 +201,7 @@
               />
               <FontAwesomeIcon
                 :icon="qualityPopover.pk === String(row.pk) ? 'chevron-up' : 'chevron-down'"
-                class="product-list__quality-caret fs-100 t-basic-500"
+                class="product-list__quality-caret fs-100 t-muted"
               />
             </button>
             <StatusBadge
@@ -209,7 +209,7 @@
               :label="$t('pim.quality_unevaluated')"
               variant="neutral"
             />
-            <span v-else class="t-basic-400 fs-200">{{ $t("pim.quality_ok") }}</span>
+            <span v-else class="t-muted fs-200">{{ $t("pim.quality_ok") }}</span>
           </div>
         </template>
       </DataTable>
@@ -246,7 +246,7 @@
     <Teleport to="body">
       <div
         v-if="qualityPopover.pk"
-        class="quality-popover bg-basic-100 b-basic-300 ba-100"
+        class="quality-popover bg-base b-subtle ba-100"
         :style="{ top: qualityPopover.top + 'px', left: qualityPopover.left + 'px' }"
         data-test="quality-popover"
         @click.stop
@@ -261,7 +261,7 @@
             <span v-if="f.language" class="product-list__gap-lang">{{
               f.language
             }}</span>
-            <span v-if="f.inherited" class="product-list__gap-inherited t-basic-500">
+            <span v-if="f.inherited" class="product-list__gap-inherited t-muted">
               {{ $t("pim.quality_fix_on", { channel: f.source_channel }) }}
             </span>
           </li>
@@ -395,12 +395,12 @@ export default {
         {
           key: "enable",
           labelKey: "pim.enable_all",
-          buttonClass: "bg-positive-200 t-basic-100",
+          buttonClass: "bg-positive-fill t-on-status-fill",
         },
         {
           key: "disable",
           labelKey: "pim.disable_all",
-          buttonClass: "bg-negative-200 t-basic-100",
+          buttonClass: "bg-negative-fill t-on-status-fill",
         },
         {
           key: "visibility",
@@ -417,14 +417,14 @@ export default {
         actions.push({
           key: "send_to_enrichment",
           labelKey: "enrichment.spawn.send_selected",
-          buttonClass: "bg-support-100 t-support-400",
+          buttonClass: "bg-accent-subtle t-accent",
         });
       }
       if (this.translatorAvailable) {
         actions.push({
           key: "translate",
           labelKey: "pim.translate",
-          buttonClass: "bg-support-400 t-basic-100",
+          buttonClass: "bg-accent-fill t-on-accent-fill",
         });
       }
       return actions;
@@ -873,12 +873,12 @@ export default {
     },
     productClassBadge(name) {
       const map = {
-        productbase: "bg-basic-200 t-basic-600",
-        productsimple: "bg-support-100 t-support-400",
-        productconfigurable: "bg-primary-100 t-primary-300",
-        productbundle: "bg-warning-100 t-warning-300",
+        productbase: "bg-raised t-secondary",
+        productsimple: "bg-accent-subtle t-accent",
+        productconfigurable: "bg-accent-fill t-accent",
+        productbundle: "bg-warning-subtle t-warning",
       };
-      return map[name?.toLowerCase()] || "bg-basic-200 t-basic-600";
+      return map[name?.toLowerCase()] || "bg-raised t-secondary";
     },
   },
 };
@@ -907,15 +907,15 @@ export default {
   position: relative;
   padding: 0 12px;
   height: var(--elem-height);
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  background: var(--c-basic-100);
-  color: var(--c-basic-700);
+  background: var(--surface-base);
+  color: var(--text-body);
   cursor: pointer;
   font-size: var(--fs-300);
 
   &:hover {
-    background: var(--c-basic-200);
+    background: var(--surface-raised);
   }
 }
 
@@ -927,8 +927,8 @@ export default {
   height: 18px;
   padding: 0 5px;
   border-radius: 9px;
-  background: var(--c-primary-200);
-  color: var(--c-basic-100);
+  background: var(--accent-fill-hover);
+  color: var(--text-on-accent-fill);
   font-size: 11px;
   font-weight: 600;
 }
@@ -940,7 +940,7 @@ export default {
   gap: var(--space-200);
   margin-bottom: var(--space-400);
   padding: var(--space-300);
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
   border-radius: var(--radius-md);
 }
 
@@ -965,13 +965,13 @@ export default {
   border: none;
   border-radius: var(--radius-md);
   background: none;
-  color: var(--c-negative-300);
+  color: var(--negative);
   cursor: pointer;
   font-size: var(--fs-200);
   font-weight: 600;
 
   &:hover {
-    background: var(--c-negative-100);
+    background: var(--negative-subtle);
   }
 }
 
@@ -993,13 +993,13 @@ export default {
   outline: none;
 
   &:focus-visible {
-    box-shadow: 0 0 0 2px var(--c-primary-200);
+    box-shadow: 0 0 0 2px var(--focus-ring);
     border-radius: var(--radius-sm);
   }
 }
 
 .product-list__filter-toggle.is-off {
-  color: var(--c-basic-400);
+  color: var(--text-muted);
 }
 
 .product-list__quality {
@@ -1057,14 +1057,14 @@ export default {
 }
 
 .product-list__gap-label {
-  color: var(--c-basic-700);
+  color: var(--text-body);
 }
 
 .product-list__gap-lang {
   padding: 0 6px;
   border-radius: var(--radius-sm);
-  background: var(--c-basic-200);
-  color: var(--c-basic-600);
+  background: var(--surface-raised);
+  color: var(--text-secondary);
   font-size: 11px;
   text-transform: uppercase;
 }
@@ -1081,7 +1081,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
 
   &__img {
     width: 100%;

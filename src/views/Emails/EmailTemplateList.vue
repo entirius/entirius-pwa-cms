@@ -1,13 +1,13 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
     >
       <div class="flex ai-ct gap-200 mb-400">
         <BasicButton
           text=""
           icon="arrow-left"
-          class="bg-basic-200 t-basic-600"
+          class="bg-raised t-secondary"
           @click="$router.push('/emails')"
         />
         <h1 class="fs-700 fw-600">{{ typeLabel }}</h1>
@@ -16,20 +16,20 @@
       <Loader v-show="loading" />
 
       <div v-show="!loading">
-        <div v-if="templates.length === 0" class="fs-300 t-basic-500">
+        <div v-if="templates.length === 0" class="fs-300 t-muted">
           {{ $t("emails.no_templates") }}
         </div>
         <div class="emails-grid">
           <div
             v-for="tpl in templates"
             :key="tpl.pk"
-            class="emails-card bg-basic-100 b-basic-300 br-50 p-400 pointer"
+            class="emails-card bg-base b-subtle br-50 p-400 pointer"
             @click="editTemplate(tpl.pk)"
           >
-            <div class="fs-400 fw-600 t-basic-800 mb-100">
+            <div class="fs-400 fw-600 t-body mb-100">
               {{ tpl.subject || $t("emails.default_subject") }}
             </div>
-            <div class="fs-200 t-basic-500">
+            <div class="fs-200 t-muted">
               {{ $t("emails.language") }}:
               {{ tpl.language_code || $t("emails.default_lang") }}
             </div>
@@ -123,7 +123,7 @@ export default {
   transition: border-color 0.15s;
 
   &:hover {
-    border-color: var(--c-support-300);
+    border-color: var(--accent);
   }
 }
 </style>

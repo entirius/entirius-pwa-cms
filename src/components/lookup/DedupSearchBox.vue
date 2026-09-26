@@ -37,7 +37,7 @@
     <!-- Directly under the picker it describes, not stranded in the filter row. -->
     <span
       class="dedup-search-box__hint fs-200"
-      :class="isDragging ? 't-support-400' : 't-basic-500'"
+      :class="isDragging ? 't-accent' : 't-muted'"
       data-testid="dedup-search-drop-hint"
     >
       {{
@@ -58,7 +58,7 @@
 
     <p
       v-if="displayError"
-      class="dedup-search-box__error fs-200 t-negative-300"
+      class="dedup-search-box__error fs-200 t-negative"
     >
       {{ displayError }}
     </p>
@@ -207,8 +207,8 @@ export default {
 
   // Same tokens as ProductFiles.vue / MediaGallery.vue / Gallery.vue dropzones.
   &--dragover {
-    border-color: var(--c-support-400);
-    background: var(--c-basic-200);
+    border-color: var(--accent);
+    background: var(--surface-raised);
   }
 
   &__row,

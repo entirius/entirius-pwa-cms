@@ -60,10 +60,10 @@ export default {
 }
 
 .modal-container {
-  background: var(--c-basic-100);
+  background: var(--surface-base);
   padding: 24px;
   border-radius: 8px;
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-lg);
   width: 420px;
   max-width: 100%;
@@ -76,7 +76,7 @@ export default {
 .modal-header h2 {
   font-size: 16px;
   font-weight: 600;
-  color: var(--c-basic-700);
+  color: var(--text-body);
   margin: 0;
 }
 
@@ -87,7 +87,7 @@ export default {
 .modal-body p {
   font-size: 14px;
   line-height: 1.5;
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
   margin: 0;
 }
 
@@ -115,26 +115,26 @@ export default {
 }
 
 .modal-btn--secondary {
-  background: var(--c-basic-100);
-  border-color: var(--c-basic-400);
-  color: var(--c-basic-700);
+  background: var(--surface-base);
+  border-color: var(--border-default);
+  color: var(--text-body);
 }
 
 .modal-btn--secondary:hover {
-  background: var(--c-basic-200);
-  border-color: var(--c-basic-500);
+  background: var(--surface-raised);
+  border-color: var(--border-default);
 }
 
 .modal-btn--delete {
-  background: var(--c-basic-100);
-  border-color: var(--c-basic-400);
-  color: var(--c-basic-700);
+  background: var(--surface-base);
+  border-color: var(--border-default);
+  color: var(--text-body);
 }
 
 .modal-btn--delete:hover {
-  background: var(--c-basic-200);
-  border-color: var(--c-basic-500);
-  color: var(--c-basic-800);
+  background: var(--surface-raised);
+  border-color: var(--border-default);
+  color: var(--text-body);
 }
 
 .modal-enter-active,

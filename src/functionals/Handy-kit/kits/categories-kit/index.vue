@@ -1,14 +1,14 @@
 <template>
-  <div class="categories-kit fs-200 t-basic-600 flex-column fg-1 jc-sb gap-300">
+  <div class="categories-kit fs-200 t-secondary flex-column fg-1 jc-sb gap-300">
     <div class="grid gap-300">
       <nav
-        class="grid grid-col-2 grid-col-2-m ai-ct bg-basic-200 pl-400 pr-400 pt-200 pb-200 t-basic-600 br-tl-50 br-tr-50"
+        class="grid grid-col-2 grid-col-2-m ai-ct bg-raised pl-400 pr-400 pt-200 pb-200 t-secondary br-tl-50 br-tr-50"
       >
         <p class="fw-600 fs-400 uppercase">
           {{ handyType.label ? handyType.label : $t("common.click") }}
         </p>
         <p
-          class="js-fe t-basic-600"
+          class="js-fe t-secondary"
           @click="handy.open_Handykit({ typeId: false })"
         >
           <i class="icon-close-mini pointer" />
@@ -17,17 +17,17 @@
       <div class="ph-300">
         <div
           :class="
-            editing_category ? 'p-200 br-50 bg-basic-200 b-support-400' : ''
+            editing_category ? 'p-200 br-50 bg-raised b-accent' : ''
           "
           :style="
             editing_category
-              ? 'border-left: 3px solid var(--c-support-400)'
+              ? 'border-left: 3px solid var(--accent)'
               : ''
           "
         >
           <p
             class="mb-100"
-            :class="{ 'fs-100 fw-600 t-support-400': editing_category }"
+            :class="{ 'fs-100 fw-600 t-accent': editing_category }"
           >
             {{
               editing_category
@@ -43,7 +43,7 @@
             />
             <BasicButton
               v-if="editing_category"
-              class="b-basic-400 t-basic-600 br-50 fs-200"
+              class="b-default t-secondary br-50 fs-200"
               :text="$t('common.cancel')"
               @click="
                 editing_category = null;
@@ -51,7 +51,7 @@
               "
             />
             <BasicButton
-              class="bg-basic-700 br-50 bg-support-400 fs-200 b-support-400 t-basic-100"
+              class="bg-inverse br-50 bg-accent-fill fs-200 b-accent t-basic-100"
               :text="editing_category ? $t('common.save') : $t('common.post')"
               @click="
                 editing_category
@@ -65,7 +65,7 @@
             />
           </div>
         </div>
-        <hr class="bb-basic-200 mv-300" />
+        <hr class="bb-subtle mv-300" />
         <p class="mb-100">
           {{
             ` ${
@@ -82,8 +82,8 @@
               ? $t('categories.select_category')
               : $t('categories.category')
           }`"
-          class="br-50 bg-basic-100 b-basic-400 override-dropdown"
-          :class="{ 'bg-basic-200': !c || (Array.isArray && !c.length) }"
+          class="br-50 bg-base b-default override-dropdown"
+          :class="{ 'bg-raised': !c || (Array.isArray && !c.length) }"
           :isDisabled="!c || (Array.isArray && !c.length)"
           :custom_droplist="true"
         >
@@ -106,7 +106,7 @@
                 <span>{{ label }} </span>
                 <span class="flex gap-200 ai-ct">
                   <span
-                    class="t-support-400 pointer"
+                    class="t-accent pointer"
                     @click.stop="
                       editing_category = { uid: value, name: label };
                       new_c = label;
@@ -114,7 +114,7 @@
                     >{{ $t("common.edit") }}</span
                   >
                   <span
-                    class="t-negative-200 pointer"
+                    class="t-negative pointer"
                     @click.stop="
                       confirmation_modal = true;
                       to_delete = value;
@@ -128,7 +128,7 @@
         </Dropdown>
         <template v-if="c_to_set">
           <div
-            class="mv-300 t-basic-600 bg-basic-200 p-100 br-50 b-basic-400 flex"
+            class="mv-300 t-secondary bg-raised p-100 br-50 b-default flex"
           >
             <div class="fg-1">
               <p class="fs-300 fw-600">{{ $t("categories.category") }}:</p>
@@ -138,7 +138,7 @@
             </div>
             <BasicButton
               :text="$t('categories.unset')"
-              class="b-negative-200 t-negative-200 br-50"
+              class="b-negative t-negative br-50"
               @click="pass_asset({ force_unset: true })"
             />
           </div>
@@ -169,15 +169,15 @@
     </ConfirmationModal>
 
     <div
-      class="grid grid-col-3 rtl-direction bg-basic-200 pl-400 pr-400 pt-100 pb-100"
+      class="grid grid-col-3 rtl-direction bg-raised pl-400 pr-400 pt-100 pb-100"
     >
       <BasicButton
         :text="$t('common.save')"
         class="br-50 w-100 jc-ct"
         :class="[
           !c_to_set
-            ? 'bg-basic-300 b-basic-300 t-basic-500'
-            : 'bg-support-400 b-support-400 t-basic-100 ',
+            ? 'bg-hover b-subtle t-muted'
+            : 'bg-accent-fill b-accent t-on-accent-fill ',
         ]"
         :isDisabled="!c_to_set"
         @click="pass_asset({})"

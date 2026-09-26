@@ -2,13 +2,13 @@
   <div class="flex-column gap-300 jc-sb fg-1">
     <div class="fg-1 pl-400 pr-400 ovy-auto pb-400 h-100">
       <div>
-        <p class="t-basic-600" v-if="type === 'static-page'">
+        <p class="t-secondary" v-if="type === 'static-page'">
           {{ $t("routes.paths_for_doc") }}
         </p>
-        <p class="t-basic-600" v-else-if="type === 'blog-post'">
+        <p class="t-secondary" v-else-if="type === 'blog-post'">
           {{ $t("routes.linked_paths") }}
         </p>
-        <p class="t-basic-600" v-else>{{ $t("routes.linked_paths") }}</p>
+        <p class="t-secondary" v-else>{{ $t("routes.linked_paths") }}</p>
 
         <hr class="mv-100" />
         <div class="flex gap-100">
@@ -45,8 +45,8 @@
                 to_delete = $event.url;
               "
               @onExtension2="ENTER_edit_mode({ ...$event })"
-              class="br-50 bg-basic-100 b-basic-400"
-              :class="{ 'b-negative-200 t-negative-200': error }"
+              class="br-50 bg-base b-default"
+              :class="{ 'b-negative t-negative': error }"
             />
             <template v-if="!['static-page', 'blog-post'].includes(type)">
               <p class="mt-300 mb-200">
@@ -61,7 +61,7 @@
                         return {
                           ..._selected,
                           label_ext: `(${$t('categories.unset')})`,
-                          label_ext_class: 't-negative-200',
+                          label_ext_class: 't-negative',
                         };
                       })
                 "
@@ -76,7 +76,7 @@
                     );
                   }
                 "
-                class="br-50 bg-basic-100 b-basic-400"
+                class="br-50 bg-base b-default"
               />
             </template>
           </div>
@@ -85,7 +85,7 @@
             :icon="!mode ? 'plus' : false"
             :text="!mode ? $t('routes.set_new') : $t('common.close')"
             :class="{ 'jc-ct': mode }"
-            class="as-s bg-basic-400 b-basic-400 t-basic-600 t-basic-100-hover bg-support-300-hover b-support-300-hover br-50"
+            class="as-s bg-hover b-default t-secondary t-on-accent-fill-hover bg-accent-fill-hover b-support-300-hover br-50"
             @click="
               () => {
                 error = null;
@@ -96,13 +96,13 @@
         </div>
         <hr class="mv-100" />
 
-        <p class="fs-100 t-basic-600" v-if="type === 'static-page'">
+        <p class="fs-100 t-secondary" v-if="type === 'static-page'">
           {{ $t("routes.static_page_help") }}
         </p>
-        <p class="fs-100 t-basic-600" v-else-if="type === 'blog-post'">
+        <p class="fs-100 t-secondary" v-else-if="type === 'blog-post'">
           {{ $t("routes.blog_post_help") }}
         </p>
-        <p class="fs-100 t-basic-600" v-else>
+        <p class="fs-100 t-secondary" v-else>
           {{ $t("routes.product_help") }}
         </p>
 
@@ -113,23 +113,23 @@
           class="mb-300 p-200 br-50"
           :class="
             mode === 'edit'
-              ? 'bg-basic-200 b-support-400'
-              : 'bg-basic-100 b-basic-400'
+              ? 'bg-raised b-accent'
+              : 'bg-base b-default'
           "
           :style="
-            mode === 'edit' ? 'border-left: 3px solid var(--c-support-400)' : ''
+            mode === 'edit' ? 'border-left: 3px solid var(--accent)' : ''
           "
           :key="force_refresh"
         >
           <div class="grid grid-col-2 gap-100">
             <BasicInput
               :label="$t('routes.route_value')"
-              class="br-50 bg-basic-100 lh-base-elem"
+              class="br-50 bg-base lh-base-elem"
               v-model="route_label"
             />
             <BasicInput
               :label="'URL'"
-              class="br-50 bg-basic-100 lh-base-elem"
+              class="br-50 bg-base lh-base-elem"
               v-model="route_url"
             />
           </div>
@@ -139,7 +139,7 @@
             <BasicButton
               v-if="mode === 'edit'"
               :text="$t('common.cancel')"
-              class="b-basic-400 t-basic-600 br-50"
+              class="b-default t-secondary br-50"
               @click="CLOSE_form"
             />
             <BasicButton
@@ -147,7 +147,7 @@
                 mode === 'edit' ? $t('common.save') : $t('routes.add_route')
               "
               :icon="mode === 'edit' ? false : 'plus'"
-              class="bg-support-400 b-support-400 t-basic-100 br-50"
+              class="bg-accent-fill b-accent t-on-accent-fill br-50"
               @click="SET_route({ label: route_label, url: route_url })"
             />
           </div>
@@ -177,15 +177,15 @@
     </ConfirmationModal>
 
     <div
-      class="grid grid-col-3 rtl-direction bg-basic-200 pl-400 pr-400 pt-100 pb-100"
+      class="grid grid-col-3 rtl-direction bg-raised pl-400 pr-400 pt-100 pb-100"
     >
       <BasicButton
         :text="$t('common.save')"
         class="br-50 w-100 jc-ct"
         :class="[
           !selected || selected.draft
-            ? 'bg-basic-300 b-basic-300 t-basic-500'
-            : 'bg-support-400 b-support-400 t-basic-100 ',
+            ? 'bg-hover b-subtle t-muted'
+            : 'bg-accent-fill b-accent t-on-accent-fill ',
         ]"
         @click="pass_asset(selected)"
         :isDisabled="!selected"
@@ -256,7 +256,7 @@ export default {
               label: url,
             },
             label_ext: `(${this.$t("routes.in_use")})`,
-            label_ext_class: "t-positive-200",
+            label_ext_class: "t-positive",
           }));
     },
     sortRoutes() {
@@ -293,9 +293,9 @@ export default {
                 label,
               },
               label_ext: this.$t("common.delete"),
-              label_ext_class: "t-negative-200",
+              label_ext_class: "t-negative",
               label_ext_2: this.$t("common.edit"),
-              label_ext_2_class: "t-support-400",
+              label_ext_2_class: "t-accent",
             };
 
             return model;
@@ -391,9 +391,9 @@ export default {
                 label,
                 value: { url, draft: route.value.draft, label },
                 label_ext: this.$t("common.delete"),
-                label_ext_class: "t-negative-200",
+                label_ext_class: "t-negative",
                 label_ext_2: this.$t("common.edit"),
-                label_ext_2_class: "t-support-400",
+                label_ext_2_class: "t-accent",
               };
             }
             return route;
@@ -406,7 +406,7 @@ export default {
                   label,
                   value: { url, draft: s.value.draft, label },
                   label_ext: `(${this.$t("routes.in_use")})`,
-                  label_ext_class: "t-positive-200",
+                  label_ext_class: "t-positive",
                 };
               }
               return s;
@@ -418,9 +418,9 @@ export default {
               label,
               value: { url, draft: null, label },
               label_ext: this.$t("common.delete"),
-              label_ext_class: "t-negative-200",
+              label_ext_class: "t-negative",
               label_ext_2: this.$t("common.edit"),
-              label_ext_2_class: "t-support-400",
+              label_ext_2_class: "t-accent",
             },
             ...this.routes,
           ];

@@ -1,6 +1,6 @@
 <template>
   <div class="linked-suppliers">
-    <h3 class="fs-200 fw-600 t-basic-500 mb-200 supplier-section__heading">
+    <h3 class="fs-200 fw-600 t-muted mb-200 supplier-section__heading">
       {{ $t("pim.supplier.linked_title") }}
     </h3>
     <ul class="linked-suppliers__list">
@@ -27,18 +27,18 @@
             />
           </div>
           <div class="linked-suppliers__metrics">
-            <span class="t-basic-500"
+            <span class="t-muted"
               >{{ $t("pim.supplier.cost") }}:
-              <strong class="t-basic-800">{{ formatCost(item.cost) }}</strong></span
+              <strong class="t-body">{{ formatCost(item.cost) }}</strong></span
             >
-            <span class="t-basic-500"
+            <span class="t-muted"
               >{{ $t("pim.supplier.stock") }}:
-              <strong class="t-basic-800">{{ formatStock(item.stock) }}</strong></span
+              <strong class="t-body">{{ formatStock(item.stock) }}</strong></span
             >
           </div>
         </div>
       </li>
-      <li v-if="!items.length" class="t-basic-500 fs-200">
+      <li v-if="!items.length" class="t-muted fs-200">
         {{ $t("pim.supplier.no_supplier") }}
       </li>
     </ul>
@@ -77,9 +77,9 @@ export default {
 
 .linked-suppliers__item {
   padding: var(--space-200) var(--space-300);
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  background: var(--c-basic-100);
+  background: var(--surface-base);
 }
 
 .linked-suppliers__row {
@@ -97,7 +97,7 @@ export default {
 }
 
 .linked-suppliers__star {
-  color: var(--c-warning-300);
+  color: var(--warning);
   font-size: var(--fs-400);
 }
 

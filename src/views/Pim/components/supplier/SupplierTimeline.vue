@@ -109,6 +109,6 @@ export default {
   list-style: none;
   margin: 0;
   padding: var(--space-200) 0;
-  border-top: 1px solid var(--c-basic-200);
+  border-top: 1px solid var(--border-subtle);
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="auth-card fs-300 p-400 t-basic-700 br-50 bg-basic-100 b-basic-300 shadow-down"
+    class="auth-card fs-300 p-400 t-body br-50 bg-base b-subtle shadow-down"
   >
     <template v-if="errorMessage">
       <p class="fs-700 fw-600 txt-center mb-50">{{ $t("login.sso_failed") }}</p>
@@ -10,7 +10,7 @@
       <BasicButton
         :text="$t('login.back_to_login')"
         @click="goToLogin"
-        class="bg-support-400 b-support-400 jc-ct t-basic-100 w-100 br-50"
+        class="bg-accent-fill b-accent jc-ct t-on-accent-fill w-100 br-50"
       />
     </template>
     <p v-else class="fs-500 fw-500 txt-center">

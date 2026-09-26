@@ -303,7 +303,7 @@ function handleRowClick(row, index, event) {
 
 <style lang="scss" scoped>
 .data-table {
-  background-color: var(--c-basic-100);
+  background-color: var(--surface-base);
   @media only screen and (max-width: 768px) {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -325,7 +325,7 @@ function handleRowClick(row, index, event) {
   display: grid;
   grid-template-columns: subgrid;
   grid-column: 1 / -1;
-  border-bottom: 1px solid var(--c-basic-300);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .data-table__header-cell {
@@ -337,13 +337,13 @@ function handleRowClick(row, index, event) {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--c-basic-700);
+  color: var(--text-body);
   user-select: none;
 
   &--sortable {
     cursor: pointer;
     &:hover {
-      color: var(--c-basic-800);
+      color: var(--text-body);
     }
   }
 
@@ -380,7 +380,7 @@ function handleRowClick(row, index, event) {
   display: grid;
   grid-template-columns: subgrid;
   grid-column: 1 / -1;
-  border-bottom: 1px solid var(--c-basic-200);
+  border-bottom: 1px solid var(--border-subtle);
   transition: background-color 0.1s ease;
 
   &:last-child {
@@ -388,11 +388,11 @@ function handleRowClick(row, index, event) {
   }
 
   &:hover {
-    background-color: var(--c-basic-200);
+    background-color: var(--surface-raised);
   }
 
   &--selected {
-    background-color: var(--c-support-200);
+    background-color: var(--accent-subtle);
   }
 }
 
@@ -402,7 +402,7 @@ function handleRowClick(row, index, event) {
   gap: 4px;
   padding: 10px 16px;
   font-size: 13px;
-  color: var(--c-basic-700);
+  color: var(--text-body);
   min-width: 0;
 
   &--checkbox {
@@ -414,7 +414,7 @@ function handleRowClick(row, index, event) {
   grid-column: 1 / -1;
   padding: 32px;
   text-align: center;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   font-size: 13px;
 }
 
@@ -432,20 +432,20 @@ function handleRowClick(row, index, event) {
   border: none;
   border-radius: var(--radius-sm);
   background: transparent;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   cursor: pointer;
   transition: background-color 0.1s ease, color 0.1s ease;
 
   &:hover {
-    background-color: var(--c-basic-300);
-    color: var(--c-basic-700);
+    background-color: var(--surface-hover);
+    color: var(--text-body);
   }
 }
 
 .data-table__expand-row {
   grid-column: 1 / -1;
-  border-bottom: 1px solid var(--c-basic-200);
-  background-color: var(--c-basic-200);
+  border-bottom: 1px solid var(--border-subtle);
+  background-color: var(--surface-raised);
 }
 
 .data-table__expand-cell {

@@ -1,31 +1,31 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
     <Teleport to="#points-toolbar-left" defer>
       <BasicButton
         text=""
         icon="arrow-left"
-        class="bg-basic-200 t-basic-600"
+        class="bg-raised t-secondary"
         @click="$router.push('/points/list')"
       />
     </Teleport>
     <Teleport to="#points-toolbar-right" defer>
-      <span v-if="isDirty" class="chip bg-warning-100 t-warning-300">
+      <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
         {{ $t("unsaved.changes") }}
       </span>
       <BasicButton
         v-if="isEdit && !isCarrier"
         text=""
         icon="trash-can"
-        class="bg-negative-100 t-negative-300"
+        class="bg-negative-subtle t-negative"
         @click="showDeleteConfirm = true"
       />
       <BasicButton
         :text="$t('common.save')"
-        class="bg-support-400 t-basic-100"
+        class="bg-accent-fill t-on-accent-fill"
         @click="savePoint"
       />
     </Teleport>
-    <div class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
       <Loader v-if="loading" />
 
       <template v-else>
@@ -43,7 +43,7 @@
         <!-- Carrier read-only banner -->
         <div
           v-if="isCarrier"
-          class="flex ai-ct gap-200 mb-300 p-300 bg-support-100 br-50 t-support-400 fs-200"
+          class="flex ai-ct gap-200 mb-300 p-300 bg-accent-subtle br-50 t-accent fs-200"
         >
           <font-awesome-icon icon="lock" />
           <span>{{ $t("dp.carrier_point_read_only") }}</span>
@@ -57,7 +57,7 @@
           <div v-if="!isCarrier" class="mb-300">
             <div
               v-if="!geocodeAvailable"
-              class="flex ai-ct gap-200 p-200 bg-support-100 br-50 t-support-400 fs-200 mb-200"
+              class="flex ai-ct gap-200 p-200 bg-accent-subtle br-50 t-accent fs-200 mb-200"
             >
               <font-awesome-icon icon="info-circle" />
               <span>{{ $t("dp.geocoding_unavailable") }}</span>
@@ -114,13 +114,13 @@
                 :placeholder="$t('common.select')"
                 :isDisabled="isCarrier || (isEdit && !typeChangeSupported)"
                 :class="{
-                  'b-negative-200': formErrors.getFieldError('type_id'),
+                  'b-negative': formErrors.getFieldError('type_id'),
                 }"
                 @onSelect="(val) => (form.type_id = val)"
               />
               <p
                 v-if="formErrors.getFieldError('type_id')"
-                class="t-negative-200 fs-100"
+                class="t-negative fs-100"
               >
                 {{ formErrors.getFieldError("type_id").msg }}
               </p>
@@ -154,7 +154,7 @@
                     <FontAwesomeIcon
                       v-if="form.channel_ids.includes(ch.value)"
                       icon="check"
-                      class="t-positive-200"
+                      class="t-positive"
                     />
                   </div>
                 </template>
@@ -206,13 +206,13 @@
                 :selected="form.country ? [form.country] : []"
                 :placeholder="$t('dp.select_country')"
                 :class="{
-                  'b-negative-200': formErrors.getFieldError('country'),
+                  'b-negative': formErrors.getFieldError('country'),
                 }"
                 @onSelect="(val) => (form.country = val)"
               />
               <p
                 v-if="formErrors.getFieldError('country')"
-                class="t-negative-200 fs-100"
+                class="t-negative fs-100"
               >
                 {{ formErrors.getFieldError("country").msg }}
               </p>
@@ -306,14 +306,14 @@
               />
               <BasicButton
                 :text="$t('dp.add_translation')"
-                class="bg-support-400 t-basic-100"
+                class="bg-accent-fill t-on-accent-fill"
                 :isDisabled="!addingLanguage"
                 @click="addTranslation"
               />
             </div>
           </div>
 
-          <p v-if="!translations.length" class="fs-200 t-basic-500">
+          <p v-if="!translations.length" class="fs-200 t-muted">
             {{ $t("dp.no_translations") }}
           </p>
 
@@ -323,13 +323,13 @@
             class="t9n-row mb-300"
           >
             <div class="t9n-lang-header flex ai-ct jc-sb mb-200">
-              <span class="detail-label t-support-400">{{
+              <span class="detail-label t-accent">{{
                 t9n.language.toUpperCase()
               }}</span>
               <BasicButton
                 text=""
                 icon="trash-can"
-                class="bg-negative-100 t-negative-300"
+                class="bg-negative-subtle t-negative"
                 @click="deleteTranslation(t9n.language)"
               />
             </div>
@@ -356,7 +356,7 @@
             <div class="flex jc-fe mt-200">
               <BasicButton
                 :text="$t('common.save')"
-                class="bg-support-400 t-basic-100"
+                class="bg-accent-fill t-on-accent-fill"
                 @click="saveTranslation(t9n)"
               />
             </div>
@@ -802,7 +802,7 @@ export default {
 
 <style lang="scss" scoped>
 .detail-section {
-  border: 1px solid var(--c-basic-200);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: 20px;
 }
@@ -824,17 +824,17 @@ export default {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 
 .t9n-row {
-  border: 1px solid var(--c-basic-200);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: 16px;
 }
 
 .t9n-lang-header {
-  border-bottom: 1px solid var(--c-basic-200);
+  border-bottom: 1px solid var(--border-subtle);
   padding-bottom: 8px;
 }
 
@@ -858,8 +858,8 @@ export default {
   left: 0;
   right: 0;
   z-index: 10;
-  background: var(--c-basic-100);
-  border: 1px solid var(--c-basic-400);
+  background: var(--surface-base);
+  border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
   margin-top: 4px;
@@ -870,15 +870,15 @@ export default {
 .geocode-search__result {
   padding: 10px var(--space-200);
   font-size: var(--fs-300);
-  color: var(--c-basic-800);
-  border-bottom: 1px solid var(--c-basic-200);
+  color: var(--text-body);
+  border-bottom: 1px solid var(--border-subtle);
 
   &:last-child {
     border-bottom: none;
   }
 
   &:hover {
-    background: var(--c-basic-200);
+    background: var(--surface-raised);
   }
 }
 </style>

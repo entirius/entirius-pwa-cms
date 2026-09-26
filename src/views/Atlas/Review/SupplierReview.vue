@@ -1,6 +1,6 @@
 <template>
   <div class="supplier-review h-100 ovy-auto">
-    <div class="supplier-review__toolbar p-300 b-basic-300 bb-100 bg-basic-100">
+    <div class="supplier-review__toolbar p-300 b-subtle bb-100 bg-base">
       <div class="flex ai-ct gap-300 flex-wrap">
         <SegmentedControl
           v-model="activeMode"

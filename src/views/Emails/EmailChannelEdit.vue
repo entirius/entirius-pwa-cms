@@ -1,19 +1,19 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
     >
       <div class="flex ai-ct gap-200 mb-400">
         <BasicButton
           text=""
           icon="arrow-left"
-          class="bg-basic-200 t-basic-600"
+          class="bg-raised t-secondary"
           @click="$router.push('/emails')"
         />
         <h1 class="fs-700 fw-600">
           {{ channel.label || $t("emails.channel") }}
         </h1>
-        <span v-if="channel.idx" class="fs-200 t-basic-500 ml-100"
+        <span v-if="channel.idx" class="fs-200 t-muted ml-100"
           >({{ channel.idx }})</span
         >
       </div>
@@ -58,12 +58,12 @@
                     class="font-option pointer flex flex-column jc-ct pl-200 pr-200"
                     @click.stop="channel.font_family = font.value"
                   >
-                    <span class="fs-200 t-basic-800 fw-700">{{
+                    <span class="fs-200 t-body fw-700">{{
                       font.label
                     }}</span>
                     <span
                       :style="{ fontFamily: font.value }"
-                      class="fs-300 t-basic-600"
+                      class="fs-300 t-secondary"
                       >Hello, your order has been confirmed!</span
                     >
                   </div>
@@ -83,7 +83,7 @@
           <div class="flex jc-fe mt-300">
             <BasicButton
               :text="$t('common.save')"
-              class="bg-support-400 t-basic-100"
+              class="bg-accent-fill t-on-accent-fill"
               @click="saveChannel"
             />
           </div>
@@ -92,20 +92,20 @@
         <!-- Language Configs Section -->
         <div>
           <h2 class="fs-500 fw-600 mb-300">{{ $t("emails.lang_configs") }}</h2>
-          <div v-if="langConfigs.length === 0" class="fs-300 t-basic-500">
+          <div v-if="langConfigs.length === 0" class="fs-300 t-muted">
             {{ $t("emails.no_lang_configs") }}
           </div>
           <div class="emails-grid">
             <div
               v-for="config in langConfigs"
               :key="config.pk"
-              class="emails-card bg-basic-100 b-basic-300 br-50 p-400 pointer"
+              class="emails-card bg-base b-subtle br-50 p-400 pointer"
               @click="editLangConfig(config.pk)"
             >
-              <div class="fs-400 fw-600 t-basic-800">
+              <div class="fs-400 fw-600 t-body">
                 {{ config.language || $t("emails.default_lang") }}
               </div>
-              <div v-if="config.shop_name" class="fs-200 t-basic-500 mt-100">
+              <div v-if="config.shop_name" class="fs-200 t-muted mt-100">
                 {{ config.shop_name }}
               </div>
             </div>
@@ -232,7 +232,7 @@ export default {
   transition: border-color 0.15s;
 
   &:hover {
-    border-color: var(--c-support-300);
+    border-color: var(--accent);
   }
 }
 
@@ -241,11 +241,11 @@ export default {
   transition: background-color 0.15s;
 
   &:hover {
-    background-color: var(--c-basic-200);
+    background-color: var(--surface-raised);
   }
 
   &:not(:last-child) {
-    border-bottom: 1px solid var(--c-basic-300);
+    border-bottom: 1px solid var(--border-subtle);
   }
 }
 </style>

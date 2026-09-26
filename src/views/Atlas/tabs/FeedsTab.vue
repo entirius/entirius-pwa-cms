@@ -2,7 +2,7 @@
   <div class="feeds-tab p-300 ovy-auto h-100">
     <div class="flex ai-ct jc-sb mb-300">
       <h2 class="fs-400 fw-600">{{ $t("atlas.tabs.feeds") }}</h2>
-      <p class="fs-200 t-basic-500 m-0">
+      <p class="fs-200 t-muted m-0">
         {{ $t("atlas.feeds.readonly_hint") }}
       </p>
     </div>
@@ -35,12 +35,12 @@
       </template>
       <template #cell-last_sync_at="{ value }">
         <span v-if="value">{{ formatDate(value) }}</span>
-        <span v-else class="t-basic-400">{{ dash }}</span>
+        <span v-else class="t-muted">{{ dash }}</span>
       </template>
       <template #cell-actions="{ row }">
         <div class="flex ai-ct gap-100" @click.stop>
           <button
-            class="row-action-btn bg-positive-100 t-positive-300"
+            class="row-action-btn bg-positive-subtle t-positive"
             :title="$t('atlas.feeds.trigger_button')"
             :data-testid="`feeds-trigger-${row.idx}`"
             @click="triggerFeed(row)"

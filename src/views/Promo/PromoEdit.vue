@@ -1,10 +1,10 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
     <Teleport to="#promo-toolbar-left" defer>
       <BasicButton
         text=""
         icon="arrow-left"
-        class="bg-basic-200 t-basic-600"
+        class="bg-raised t-secondary"
         @click="$router.push('/promo/list')"
       />
       <span class="fw-600 fs-400">
@@ -12,24 +12,24 @@
       </span>
     </Teleport>
     <Teleport to="#promo-toolbar-right" defer>
-      <span v-if="isDirty" class="bg-warning-100 t-warning-300 fs-200 ph-100 br-50 fw-600">
+      <span v-if="isDirty" class="bg-warning-subtle t-warning fs-200 ph-100 br-50 fw-600">
         {{ $t("unsaved.changes") }}
       </span>
       <BasicButton
         v-if="isEdit"
         text=""
         icon="trash-can"
-        class="bg-negative-100 t-negative-300"
+        class="bg-negative-subtle t-negative"
         @click="showDeleteConfirm = true"
       />
       <BasicButton
         :text="$t('common.save')"
-        class="bg-support-400 t-basic-100"
+        class="bg-accent-fill t-on-accent-fill"
         @click="saveRule"
       />
     </Teleport>
 
-    <div class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
       <Loader v-if="loading" />
 
       <template v-else>
@@ -114,14 +114,14 @@
                 <div
                   v-for="(group, groupIdx) in perCurrencyRows"
                   :key="group.iso3"
-                  class="currency-threshold-group b-basic-300 br-50 p-300 mb-300"
+                  class="currency-threshold-group b-subtle br-50 p-300 mb-300"
                 >
                   <div class="flex ai-ct jc-sb mb-200">
                     <span class="fw-600 fs-300">{{ group.iso3 }}</span>
                     <BasicButton
                       text=""
                       icon="xmark"
-                      class="bg-basic-200 t-basic-600"
+                      class="bg-raised t-secondary"
                       @click="removeCurrencyGroup(groupIdx)"
                     />
                   </div>
@@ -143,7 +143,7 @@
                     <BasicButton
                       text=""
                       icon="xmark"
-                      class="bg-basic-200 t-basic-600"
+                      class="bg-raised t-secondary"
                       @click="removeCurrencyRow(groupIdx, rowIdx)"
                     />
                   </div>
@@ -211,15 +211,15 @@
                     <FontAwesomeIcon
                       v-if="form.currencies.includes(opt.iso3)"
                       icon="check"
-                      class="t-positive-200"
+                      class="t-positive"
                     />
                   </div>
-                  <div v-if="!currencyOptions.length" class="ph-100 pv-100 t-basic-400 fs-200 ml-100">
+                  <div v-if="!currencyOptions.length" class="ph-100 pv-100 t-muted fs-200 ml-100">
                     {{ $t("promo.no_currencies") }}
                   </div>
                 </template>
               </Dropdown>
-              <p class="fs-200 t-basic-400 mt-100">{{ $t("promo.currencies_hint") }}</p>
+              <p class="fs-200 t-muted mt-100">{{ $t("promo.currencies_hint") }}</p>
             </FormField>
             <FormField :label="$t('promo.section_channels')">
               <Dropdown
@@ -236,20 +236,20 @@
                   >
                     <span class="ml-100">
                       {{ opt.name || opt.idx }}
-                      <span v-if="opt.idx === channel" class="t-basic-400 fs-200">({{ $t("promo.channel_active") }})</span>
+                      <span v-if="opt.idx === channel" class="t-muted fs-200">({{ $t("promo.channel_active") }})</span>
                     </span>
                     <FontAwesomeIcon
                       v-if="form.channels.includes(opt.idx)"
                       icon="check"
-                      class="t-positive-200"
+                      class="t-positive"
                     />
                   </div>
-                  <div v-if="!checkoutChannel.channels.length" class="ph-100 pv-100 t-basic-400 fs-200 ml-100">
+                  <div v-if="!checkoutChannel.channels.length" class="ph-100 pv-100 t-muted fs-200 ml-100">
                     {{ $t("promo.no_channels") }}
                   </div>
                 </template>
               </Dropdown>
-              <p class="fs-200 t-basic-400 mt-100">{{ $t("promo.channels_hint") }}</p>
+              <p class="fs-200 t-muted mt-100">{{ $t("promo.channels_hint") }}</p>
             </FormField>
           </div>
           <div v-if="form.free_shipping" class="detail-grid mt-300">
@@ -272,10 +272,10 @@
                     <FontAwesomeIcon
                       v-if="form.free_shipping_methods.includes(opt.code)"
                       icon="check"
-                      class="t-positive-200"
+                      class="t-positive"
                     />
                   </div>
-                  <div v-if="!shippingMethodOptions.length" class="ph-100 pv-100 t-basic-400 fs-200 ml-100">
+                  <div v-if="!shippingMethodOptions.length" class="ph-100 pv-100 t-muted fs-200 ml-100">
                     {{ $t("promo.no_shipping_methods") }}
                   </div>
                 </template>
@@ -366,7 +366,7 @@
           >
             <template #cell-code="{ row }">
               <span
-                class="promo-code-value fw-600 pointer t-support-400"
+                class="promo-code-value fw-600 pointer t-accent"
                 @click="openEditCode(row)"
               >{{ row.code }}</span>
             </template>
@@ -388,13 +388,13 @@
               <BasicButton
                 text=""
                 icon="pencil"
-                class="bg-basic-200 t-basic-600"
+                class="bg-raised t-secondary"
                 @click="openEditCode(row)"
               />
               <BasicButton
                 text=""
                 icon="trash-can"
-                class="bg-negative-100 t-negative-300"
+                class="bg-negative-subtle t-negative"
                 @click="confirmDeleteCode(row.id)"
               />
             </template>
@@ -437,12 +437,12 @@
             <div class="flex jc-fe gap-200 mt-300">
               <BasicButton
                 :text="$t('common.cancel')"
-                class="bg-basic-200 t-basic-600"
+                class="bg-raised t-secondary"
                 @click="showAddCode = false"
               />
               <BasicButton
                 :text="$t('promo.save_code')"
-                class="bg-support-400 t-basic-100"
+                class="bg-accent-fill t-on-accent-fill"
                 @click="saveNewCode"
               />
             </div>
@@ -452,7 +452,7 @@
         <!-- Section: Filters (edit only) -->
         <div v-if="isEdit" class="detail-section mb-400">
           <h2 class="fs-500 fw-600 mb-300">{{ $t("promo.section_filters") }}</h2>
-          <p class="fs-200 t-basic-500 mb-300">{{ $t("promo.filters_hint") }}</p>
+          <p class="fs-200 t-muted mb-300">{{ $t("promo.filters_hint") }}</p>
 
           <!-- Product filters -->
           <div class="mb-400">
@@ -479,20 +479,20 @@
                 />
               </template>
               <template #cell-summary="{ row }">
-                <span class="fs-200 pointer t-support-400" @click="openFilterDrawer('product', row)">{{ filterSummary(row, 'product') }}</span>
+                <span class="fs-200 pointer t-accent" @click="openFilterDrawer('product', row)">{{ filterSummary(row, 'product') }}</span>
               </template>
               <template #cell-actions="{ row }">
                 <div class="flex gap-100">
                   <BasicButton
                     text=""
                     icon="pencil"
-                    class="bg-basic-200 t-basic-600"
+                    class="bg-raised t-secondary"
                     @click="openFilterDrawer('product', row)"
                   />
                   <BasicButton
                     text=""
                     icon="trash-can"
-                    class="bg-negative-100 t-negative-300"
+                    class="bg-negative-subtle t-negative"
                     @click="confirmDeleteFilter(row.id, 'product')"
                   />
                 </div>
@@ -525,20 +525,20 @@
                 />
               </template>
               <template #cell-summary="{ row }">
-                <span class="fs-200 pointer t-support-400" @click="openFilterDrawer('customer', row)">{{ filterSummary(row, 'customer') }}</span>
+                <span class="fs-200 pointer t-accent" @click="openFilterDrawer('customer', row)">{{ filterSummary(row, 'customer') }}</span>
               </template>
               <template #cell-actions="{ row }">
                 <div class="flex gap-100">
                   <BasicButton
                     text=""
                     icon="pencil"
-                    class="bg-basic-200 t-basic-600"
+                    class="bg-raised t-secondary"
                     @click="openFilterDrawer('customer', row)"
                   />
                   <BasicButton
                     text=""
                     icon="trash-can"
-                    class="bg-negative-100 t-negative-300"
+                    class="bg-negative-subtle t-negative"
                     @click="confirmDeleteFilter(row.id, 'customer')"
                   />
                 </div>
@@ -571,20 +571,20 @@
                 />
               </template>
               <template #cell-summary="{ row }">
-                <span class="fs-200 pointer t-support-400" @click="openFilterDrawer('threshold', row)">{{ filterSummary(row, 'threshold') }}</span>
+                <span class="fs-200 pointer t-accent" @click="openFilterDrawer('threshold', row)">{{ filterSummary(row, 'threshold') }}</span>
               </template>
               <template #cell-actions="{ row }">
                 <div class="flex gap-100">
                   <BasicButton
                     text=""
                     icon="pencil"
-                    class="bg-basic-200 t-basic-600"
+                    class="bg-raised t-secondary"
                     @click="openFilterDrawer('threshold', row)"
                   />
                   <BasicButton
                     text=""
                     icon="trash-can"
-                    class="bg-negative-100 t-negative-300"
+                    class="bg-negative-subtle t-negative"
                     @click="confirmDeleteFilter(row.id, 'threshold')"
                   />
                 </div>
@@ -648,7 +648,7 @@
       </template>
       <template #description>
         <div class="edit-code-body">
-          <p class="fs-200 t-basic-500 mb-300">
+          <p class="fs-200 t-muted mb-300">
             {{ $t("promo.code_field_current_used") }}: <strong>{{ editCode.current_used }}</strong>
           </p>
           <FormField :label="$t('promo.code_field_code')" required class="mb-200">
@@ -674,12 +674,12 @@
       <template #footer>
         <BasicButton
           :text="$t('common.cancel')"
-          class="bg-basic-200 t-basic-600"
+          class="bg-raised t-secondary"
           @click="closeEditCodeModal"
         />
         <BasicButton
           :text="$t('common.save')"
-          class="bg-support-400 t-basic-100"
+          class="bg-accent-fill t-on-accent-fill"
           @click="saveEditCode"
         />
       </template>
@@ -1486,7 +1486,7 @@ export default {
 
 <style lang="scss" scoped>
 .detail-section {
-  border: 1px solid var(--c-basic-200);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: var(--space-200);
 }
@@ -1512,14 +1512,14 @@ export default {
   align-items: center;
   padding: 4px 12px;
   border-radius: var(--radius-sm);
-  background: var(--c-support-100);
-  color: var(--c-support-400);
+  background: var(--accent-subtle);
+  color: var(--text-accent);
   font-size: var(--fs-200);
   font-weight: 600;
 }
 
 .promo-code-row {
-  border: 1px solid var(--c-basic-200);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   padding: var(--space-100) var(--space-100);
 }
@@ -1539,7 +1539,7 @@ export default {
 }
 
 .currency-threshold-group {
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   padding: var(--space-300);
 }

@@ -25,8 +25,8 @@ defineProps({
     width: 14px;
     height: 14px;
     border-radius: 50%;
-    background: var(--c-basic-300);
-    color: var(--c-basic-600);
+    background: var(--surface-hover);
+    color: var(--text-secondary);
     font-size: 9px;
     font-weight: 700;
     line-height: 1;
@@ -43,8 +43,8 @@ defineProps({
     left: 50%;
     transform: translateX(-50%);
     padding: 8px 12px;
-    background: var(--c-basic-800);
-    color: var(--c-basic-100);
+    background: var(--surface-inverse);
+    color: var(--text-inverse);
     font-size: var(--fs-200);
     font-weight: 400;
     text-transform: none;
@@ -64,7 +64,7 @@ defineProps({
       left: 50%;
       transform: translateX(-50%);
       border: 5px solid transparent;
-      border-top-color: var(--c-basic-800);
+      border-top-color: var(--border-strong);
     }
   }
 

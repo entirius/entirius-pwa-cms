@@ -4,7 +4,7 @@
       <h3 class="fs-300 fw-600 m-0">
         {{ $t("atlas.products.drawer.timeline_title") }}
       </h3>
-      <span v-if="!loading && entries.length" class="fs-200 t-basic-500">
+      <span v-if="!loading && entries.length" class="fs-200 t-muted">
         {{ $t("atlas.products.drawer.timeline_count", { count: entries.length }) }}
       </span>
     </header>
@@ -58,7 +58,7 @@ export default {
 .sp-timeline-section {
   margin-top: var(--space-300);
   padding-top: var(--space-300);
-  border-top: 1px solid var(--c-basic-200);
+  border-top: 1px solid var(--border-subtle);
 }
 .sp-timeline-section__head {
   display: flex;

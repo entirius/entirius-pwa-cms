@@ -1,6 +1,6 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
-    <div class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
+    <div class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500">
       <div class="item-list__toolbar">
         <BasicInput
           v-model="search"
@@ -13,7 +13,7 @@
           :active-count="activeFilterCount"
           :trigger-label="$t('builder.filters')"
         >
-          <p class="fs-200 t-basic-600">{{ $t("builder.filters") }}</p>
+          <p class="fs-200 t-secondary">{{ $t("builder.filters") }}</p>
           <FilterChip
             v-for="tab in statusTabs"
             :key="tab.key"
@@ -47,13 +47,13 @@
           <span class="item-question">{{ row.question }}</span>
         </template>
         <template #cell-group_name="{ row }">
-          <span v-if="row.group_name" class="chip bg-support-100 t-support-400">
+          <span v-if="row.group_name" class="chip bg-accent-subtle t-accent">
             {{ row.group_name }}
           </span>
-          <span v-else class="t-basic-400">—</span>
+          <span v-else class="t-muted">—</span>
         </template>
         <template #cell-association_count="{ row }">
-          <span class="chip bg-basic-200 t-basic-600">
+          <span class="chip bg-raised t-secondary">
             {{ (row.associations || []).length }}
           </span>
         </template>

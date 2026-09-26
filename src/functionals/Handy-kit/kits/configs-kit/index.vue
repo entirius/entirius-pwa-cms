@@ -1,23 +1,23 @@
 <template>
   <div class="flex-column gap-200 jc-sb">
     <nav
-      class="flex ai-ct jc-sb bg-basic-200 pl-400 pr-400 pt-200 pb-200 t-basic-600 br-tl-50 br-tr-50"
+      class="flex ai-ct jc-sb bg-raised pl-400 pr-400 pt-200 pb-200 t-secondary br-tl-50 br-tr-50"
     >
       <p class="fw-600 fs-400 uppercase">
         {{ handyType.label ? handyType.label : $t("common.click") }}
       </p>
       <div class="flex ai-ct gap-200">
-        <span v-if="handy.isDirty" class="chip bg-warning-100 t-warning-300">
+        <span v-if="handy.isDirty" class="chip bg-warning-subtle t-warning">
           {{ $t("unsaved.changes") }}
         </span>
-        <i class="icon-close-mini pointer t-basic-600" @click="requestClose" />
+        <i class="icon-close-mini pointer t-secondary" @click="requestClose" />
       </div>
     </nav>
     <div class="fg-1 pl-400 pr-400 ovy-auto pb-400">
       <div>
-        <p class="fs-300 t-basic-600">{{ $t("config.config_part") }}</p>
+        <p class="fs-300 t-secondary">{{ $t("config.config_part") }}</p>
         <hr class="mv-100" />
-        <div class="grid grid-col-4 gap-100 t-basic-700">
+        <div class="grid grid-col-4 gap-100 t-body">
           <template
             v-for="(
               {
@@ -67,7 +67,7 @@
                 reset({ setter: prop, _in: 'core_config' });
                 reset({ setter: null, _in: 'optional_config' });
               "
-              class="bg-basic-100 b-basic-400 mb-50 br-50 shadow-down fs-200 t-basic-700"
+              class="bg-base b-default mb-50 br-50 shadow-down fs-200 t-body"
             ></component>
           </template>
         </div>
@@ -122,12 +122,12 @@
                 set_config('optional_config', { key: prop, value: $event })
               "
               :style="prop === 'dye' ? 'grid-column: span 2' : null"
-              class="bg-basic-100 b-basic-400 mb-50 br-50 shadow-down fs-200 t-basic-700"
+              class="bg-base b-default mb-50 br-50 shadow-down fs-200 t-body"
             ></component>
           </template>
         </div>
 
-        <p class="fs-300 t-basic-600 mt-200">
+        <p class="fs-300 t-secondary mt-200">
           {{ $t("config.props_handlers") }}
         </p>
         <hr class="mv-100" />
@@ -153,10 +153,10 @@
             class="mt-400"
           >
             <div class="flex ai-ct jc-sb mb-50">
-              <p class="fs-200 fw-600 t-basic-500 uppercase">{{ tProp(prop) }}</p>
+              <p class="fs-200 fw-600 t-muted uppercase">{{ tProp(prop) }}</p>
               <button
                 v-if="skuPickerChannel"
-                class="fs-100 t-support-400 pointer"
+                class="fs-100 t-accent pointer"
                 style="background: none; border: none; text-decoration: underline"
                 @click="skuManualMode = !skuManualMode"
               >
@@ -194,9 +194,9 @@
                     __value: property.prop === prop ? $event : property.__value,
                   })))
               "
-              class="br-50 bg-basic-100 lh-base-elem fs-200"
+              class="br-50 bg-base lh-base-elem fs-200"
             />
-            <p v-if="skuPickerDisabledMsg && !skuManualMode" class="fs-100 t-basic-500 mt-50">
+            <p v-if="skuPickerDisabledMsg && !skuManualMode" class="fs-100 t-muted mt-50">
               <FontAwesomeIcon icon="circle-info" class="mr-50" />
               {{ skuPickerDisabledMsg }}
             </p>
@@ -219,7 +219,7 @@
                   };
                 }))
             "
-            class="br-50 bg-basic-100 mt-400 lh-base-elem fs-200"
+            class="br-50 bg-base mt-400 lh-base-elem fs-200"
           />
           <div
             v-if="
@@ -229,7 +229,7 @@
           >
             <p class="mb-50 mt-200 fs-200" v-if="label">{{ tProp(prop) }}</p>
             <BasicWysiwyg
-              class="b-basic-400 br-50 p-100 bg-basic-100 fs-200"
+              class="b-default br-50 p-100 bg-base fs-200"
               @onFocusout="
                 ($event) =>
                   (core_properties = core_properties.map((property) => {
@@ -381,10 +381,10 @@
       </div>
     </div>
     <div
-      class="grid grid-col-3 rtl-direction bg-basic-200 pl-400 pr-400 pt-100 pb-100"
+      class="grid grid-col-3 rtl-direction bg-raised pl-400 pr-400 pt-100 pb-100"
     >
       <BasicButton
-        class="bg-basic-700 br-50 bg-support-400 b-support-400 fs-200 b-basic-800 t-basic-100 w-100 jc-ct"
+        class="bg-inverse br-50 bg-accent-fill b-accent fs-200 b-strong t-basic-100 w-100 jc-ct"
         :text="$t('common.save')"
         @click="pass_asset({})"
       />

@@ -10,15 +10,15 @@
         <FontAwesomeIcon icon="arrow-left" />
         <span class="ml-100">{{ $t("common.back") }}</span>
       </button>
-      <span class="t-basic-700 fw-600 fs-400">{{ headerLabel }}</span>
+      <span class="t-body fw-600 fs-400">{{ headerLabel }}</span>
     </Teleport>
 
     <Loader v-if="loading" />
-    <div v-else-if="!supplier" class="p-500 t-basic-500">
+    <div v-else-if="!supplier" class="p-500 t-muted">
       {{ $t("atlas.detail_not_found") }}
     </div>
     <div v-else class="supplier-detail__body">
-      <div class="supplier-detail__tabs p-300 b-basic-300 bb-100">
+      <div class="supplier-detail__tabs p-300 b-subtle bb-100">
         <SegmentedControl
           v-model="activeTab"
           :options="tabOptions"
@@ -170,14 +170,14 @@ export default {
   display: inline-flex;
   align-items: center;
   background: transparent;
-  border: 1px solid var(--c-basic-300);
-  color: var(--c-basic-700);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-body);
   border-radius: var(--radius-sm);
   padding: 4px 10px;
   cursor: pointer;
   transition: background 0.15s ease;
 }
 .suppliers-toolbar-btn:hover {
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
 }
 </style>

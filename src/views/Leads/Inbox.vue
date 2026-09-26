@@ -216,20 +216,20 @@ defineExpose({ reload });
 }
 .inbox__none {
   margin: 0;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 .inbox__refresh,
 .inbox__more {
   min-height: 44px;
   padding: 0 var(--space-400);
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
-  background: var(--c-basic-100);
-  color: var(--c-basic-800);
+  background: var(--surface-base);
+  color: var(--text-body);
   cursor: pointer;
 }
 .inbox__error {
   margin: 0;
-  color: var(--c-negative-300);
+  color: var(--negative);
 }
 </style>

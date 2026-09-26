@@ -5,14 +5,14 @@
         <h3 class="fs-300 fw-600 m-0">
           {{ $t("atlas.review.updated.title") }}
         </h3>
-        <p class="fs-200 t-basic-500 mt-100 mb-0">
+        <p class="fs-200 t-muted mt-100 mb-0">
           {{ $t("atlas.review.updated.help") }}
         </p>
       </div>
       <div class="flex ai-ct gap-200">
         <span
           v-if="!loading"
-          class="fs-200 t-basic-600"
+          class="fs-200 t-secondary"
           data-testid="updated-counter"
         >
           {{ $t("atlas.review.updated.counter", {
@@ -85,7 +85,7 @@
         <span>{{ formatCost(row.cost, row.currency) }}</span>
       </template>
       <template #cell-last_change="{ row }">
-        <span class="fs-200 t-basic-600">{{ formatDate(row.data_changed_at) }}</span>
+        <span class="fs-200 t-secondary">{{ formatDate(row.data_changed_at) }}</span>
       </template>
     </DataTable>
 
@@ -196,13 +196,13 @@ export default {
         actions.push({
           key: "force_repush",
           labelKey: "atlas.products.bulk.force_repush_selected",
-          buttonClass: "bg-warning-100 t-warning-300",
+          buttonClass: "bg-warning-subtle t-warning",
         });
       }
       actions.push({
         key: "acknowledge",
         labelKey: "atlas.products.bulk.acknowledge_selected",
-        buttonClass: "bg-positive-100 t-positive-300",
+        buttonClass: "bg-positive-subtle t-positive",
       });
       return actions;
     },
@@ -334,6 +334,6 @@ export default {
 }
 .updated-mode__sidebar {
   padding: var(--space-100) 0;
-  border-bottom: 1px solid var(--c-basic-200);
+  border-bottom: 1px solid var(--border-subtle);
 }
 </style>

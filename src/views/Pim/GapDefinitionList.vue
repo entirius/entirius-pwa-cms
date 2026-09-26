@@ -1,7 +1,7 @@
 <template>
-  <div class="pim-list-layout p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="pim-list-layout p-500 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-basic-100 b-basic-300 br-50 flex-1 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle br-50 flex-1 ovy-auto pl-500 pt-500 pb-500 pr-500"
     >
       <div class="flex ai-ct mb-400">
         <h1 class="fs-700 fw-600">{{ $t("pim.gap_definitions") }}</h1>
@@ -46,7 +46,7 @@
           />
         </template>
         <template #cell-check_key="{ value }">
-          <span class="t-basic-600">{{ checkLabel(value) }}</span>
+          <span class="t-secondary">{{ checkLabel(value) }}</span>
         </template>
         <template #cell-label_t9n="{ row }">
           <span>{{ resolveLabel(row) }}</span>
@@ -56,8 +56,8 @@
             class="chip"
             :class="
               value
-                ? 'bg-positive-100 t-positive-300'
-                : 'bg-basic-200 t-basic-500'
+                ? 'bg-positive-subtle t-positive'
+                : 'bg-raised t-muted'
             "
           >
             {{ value ? $t("pim.yes") : $t("pim.no") }}

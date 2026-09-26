@@ -73,7 +73,7 @@
     <div v-if="product" class="product-preview__actions">
       <button
         type="button"
-        class="product-preview__btn bg-support-400 t-basic-100"
+        class="product-preview__btn bg-accent-fill t-on-accent-fill"
         data-testid="enrichment-preview-go-pim"
         @click="goToPim"
       >
@@ -167,8 +167,8 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--c-basic-200);
-  color: var(--c-basic-400);
+  background: var(--surface-raised);
+  color: var(--text-muted);
   font-size: 2rem;
 }
 .product-preview__meta {
@@ -180,10 +180,10 @@ export default {
   gap: var(--space-200);
   align-items: center;
   padding: var(--space-100) 0;
-  border-bottom: 1px solid var(--c-basic-200);
+  border-bottom: 1px solid var(--border-subtle);
   dt {
     font-size: var(--fs-200);
-    color: var(--c-basic-500);
+    color: var(--text-muted);
   }
   dd {
     margin: 0;

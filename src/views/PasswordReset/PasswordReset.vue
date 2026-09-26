@@ -1,6 +1,6 @@
 <template>
   <div
-    class="auth-card fs-300 p-400 t-basic-700 br-50 bg-basic-100 b-basic-300 shadow-down"
+    class="auth-card fs-300 p-400 t-body br-50 bg-base b-subtle shadow-down"
   >
     <!-- Success state -->
     <template v-if="success">
@@ -13,7 +13,7 @@
       <BasicButton
         :text="$t('reset.back_to_login')"
         @click="goToLogin"
-        class="bg-support-400 b-support-400 jc-ct t-basic-100 w-100 br-50"
+        class="bg-accent-fill b-accent jc-ct t-on-accent-fill w-100 br-50"
       />
     </template>
 
@@ -28,20 +28,20 @@
       <BasicButton
         :text="$t('reset.back_to_login')"
         @click="goToLogin"
-        class="bg-support-400 b-support-400 jc-ct t-basic-100 w-100 br-50"
+        class="bg-accent-fill b-accent jc-ct t-on-accent-fill w-100 br-50"
       />
     </template>
 
     <!-- Reset form -->
     <template v-else>
       <p class="fs-700 fw-600 txt-center mb-50">{{ $t("reset.title") }}</p>
-      <p class="fs-300 t-basic-600 txt-center mb-500">
+      <p class="fs-300 t-secondary txt-center mb-500">
         {{ $t("reset.subtitle") }}
       </p>
       <div class="auth-card__pw-field mb-400">
         <BasicInput
           v-model="newPassword"
-          class="bg-basic-200 lh-base-elem"
+          class="bg-raised lh-base-elem"
           :label="$t('reset.new_password')"
           :type="pwVisible ? 'text' : 'password'"
         />
@@ -56,7 +56,7 @@
       <div class="auth-card__pw-field mb-300">
         <BasicInput
           v-model="confirmPassword"
-          class="bg-basic-200 lh-base-elem"
+          class="bg-raised lh-base-elem"
           :label="$t('reset.confirm_password')"
           :type="pwVisible ? 'text' : 'password'"
         />
@@ -71,7 +71,7 @@
       <BasicButton
         :text="$t('reset.submit')"
         @click="handleReset"
-        class="bg-support-400 b-support-400 jc-ct t-basic-100 w-100 br-50"
+        class="bg-accent-fill b-accent jc-ct t-on-accent-fill w-100 br-50"
       />
     </template>
   </div>

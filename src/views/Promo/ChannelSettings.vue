@@ -1,7 +1,7 @@
 <template>
   <div class="channel-settings">
     <Loader v-show="loading" />
-    <div v-show="!loading" class="bg-basic-100 b-basic-300 br-50 p-500">
+    <div v-show="!loading" class="bg-base b-subtle br-50 p-500">
       <div class="flex ai-ct jc-sb mb-400">
         <h3 class="fs-400 fw-600">
           {{ $t("promo.cfg_title") }} · {{ form.idx }}

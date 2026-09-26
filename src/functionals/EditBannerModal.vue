@@ -160,7 +160,7 @@ function onSave() {
     <div v-if="visible" class="modal-overlay" @click.self="emit('close')">
       <div class="modal-container">
         <div class="modal-header">
-          <h2 class="fs-500 fw-600 t-basic-700">
+          <h2 class="fs-500 fw-600 t-body">
             {{ banner ? $t("layout_extender.edit_banner") : $t("layout_extender.add_banner") }}
           </h2>
           <span class="modal-close" @click="emit('close')">
@@ -183,14 +183,14 @@ function onSave() {
 
             <!-- Choose from gallery button -->
             <button v-if="!galleryOpen" class="banner-gallery-btn" @click="openGallery">
-              <FontAwesomeIcon icon="image" class="t-basic-500" />
+              <FontAwesomeIcon icon="image" class="t-muted" />
               <span>{{ form.media_url ? $t("layout_extender.change_image") : $t("layout_extender.choose_from_gallery") }}</span>
             </button>
 
             <!-- Inline gallery grid -->
             <div v-if="galleryOpen" class="banner-gallery">
               <div v-if="galleryLoading" class="banner-gallery__loading">
-                <span class="t-basic-500 fs-200">Loading...</span>
+                <span class="t-muted fs-200">Loading...</span>
               </div>
               <template v-else>
                 <div class="banner-gallery__grid">
@@ -204,8 +204,8 @@ function onSave() {
                     <img :src="resolveMediaUrl(img.image)" :alt="img.meta?.fileName || ''" />
                   </div>
                   <div v-if="!galleryImages.length" class="banner-gallery__empty">
-                    <FontAwesomeIcon icon="image" class="t-basic-400" />
-                    <span class="fs-200 t-basic-500">No images in gallery</span>
+                    <FontAwesomeIcon icon="image" class="t-muted" />
+                    <span class="fs-200 t-muted">No images in gallery</span>
                   </div>
                 </div>
                 <!-- Pagination -->
@@ -213,7 +213,7 @@ function onSave() {
                   <button class="banner-gallery__page-btn" :disabled="galleryPage <= 1" @click="loadGallery(galleryPage - 1)">
                     <FontAwesomeIcon icon="chevron-left" />
                   </button>
-                  <span class="fs-200 t-basic-600">{{ galleryPage }}</span>
+                  <span class="fs-200 t-secondary">{{ galleryPage }}</span>
                   <button class="banner-gallery__page-btn" :disabled="galleryImages.length < 9" @click="loadGallery(galleryPage + 1)">
                     <FontAwesomeIcon icon="chevron-right" />
                   </button>
@@ -221,7 +221,7 @@ function onSave() {
               </template>
             </div>
 
-            <p class="fs-100 t-support-400">Recommended aspect ratio: 16:9</p>
+            <p class="fs-100 t-accent">Recommended aspect ratio: 16:9</p>
           </div>
 
           <div class="form-group mb-300">
@@ -353,10 +353,10 @@ function onSave() {
 }
 
 .modal-container {
-  background: var(--c-basic-100);
+  background: var(--surface-base);
   padding: 24px;
   border-radius: 8px;
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-lg);
   width: min(440px, 95vw);
   max-height: 90vh;
@@ -369,7 +369,7 @@ function onSave() {
   justify-content: space-between;
   margin-bottom: 20px;
   padding-bottom: 12px;
-  border-bottom: 1px solid var(--c-basic-300);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .modal-close {
@@ -380,13 +380,13 @@ function onSave() {
   height: 32px;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   transition: background 0.1s, color 0.1s;
 }
 
 .modal-close:hover {
-  background: var(--c-basic-200);
-  color: var(--c-basic-700);
+  background: var(--surface-raised);
+  color: var(--text-body);
 }
 
 .modal-body {
@@ -417,27 +417,27 @@ function onSave() {
   gap: 8px;
   cursor: pointer;
   font-size: 14px;
-  color: var(--c-basic-700);
+  color: var(--text-body);
 }
 
 .radio-label input[type="radio"] {
   width: 18px;
   height: 18px;
-  accent-color: var(--c-support-400);
+  accent-color: var(--accent);
   margin: 0;
   cursor: pointer;
 }
 
 .banner-image-area {
   position: relative;
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   overflow: hidden;
   min-height: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
 }
 
 .banner-image-preview {
@@ -455,17 +455,17 @@ function onSave() {
   justify-content: center;
   width: 28px;
   height: 28px;
-  background: var(--c-basic-100);
-  border: 1px solid var(--c-basic-300);
+  background: var(--surface-base);
+  border: 1px solid var(--border-subtle);
   border-radius: 50%;
   cursor: pointer;
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
   transition: background 0.1s;
 }
 
 .banner-image-remove:hover {
-  background: var(--c-negative-100);
-  color: var(--c-negative-200);
+  background: var(--negative-subtle);
+  color: var(--negative);
 }
 
 .banner-gallery-btn {
@@ -478,18 +478,18 @@ function onSave() {
   font-size: 13px;
   font-weight: 500;
   font-family: inherit;
-  color: var(--c-basic-700);
-  background: var(--c-basic-100);
-  border: 1px dashed var(--c-basic-400);
+  color: var(--text-body);
+  background: var(--surface-base);
+  border: 1px dashed var(--border-default);
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: background 0.1s, border-color 0.1s;
 }
 
 .banner-gallery-btn:hover {
-  background: var(--c-basic-200);
-  border-color: var(--c-support-400);
-  color: var(--c-support-400);
+  background: var(--surface-raised);
+  border-color: var(--accent);
+  color: var(--text-accent);
 }
 
 .banner-gallery {
@@ -501,7 +501,7 @@ function onSave() {
   align-items: center;
   justify-content: center;
   padding: 24px;
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
 }
 
@@ -512,7 +512,7 @@ function onSave() {
   max-height: 240px;
   overflow-y: auto;
   padding: 4px;
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
 }
 
@@ -526,11 +526,11 @@ function onSave() {
 }
 
 .banner-gallery__item:hover {
-  border-color: var(--c-support-400);
+  border-color: var(--accent);
 }
 
 .banner-gallery__item--selected {
-  border-color: var(--c-support-400);
+  border-color: var(--accent);
 }
 
 .banner-gallery__item img {
@@ -564,16 +564,16 @@ function onSave() {
   height: 28px;
   font-size: 12px;
   font-family: inherit;
-  background: var(--c-basic-100);
-  border: 1px solid var(--c-basic-400);
+  background: var(--surface-base);
+  border: 1px solid var(--border-default);
   border-radius: var(--radius-sm);
   cursor: pointer;
-  color: var(--c-basic-700);
+  color: var(--text-body);
   transition: background 0.1s;
 }
 
 .banner-gallery__page-btn:hover {
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
 }
 
 .banner-gallery__page-btn:disabled {
@@ -598,19 +598,19 @@ function onSave() {
 }
 
 .modal-btn--secondary {
-  background: var(--c-basic-100);
-  border-color: var(--c-basic-400);
-  color: var(--c-basic-700);
+  background: var(--surface-base);
+  border-color: var(--border-default);
+  color: var(--text-body);
 }
 
 .modal-btn--secondary:hover {
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
 }
 
 .modal-btn--confirm {
-  background: var(--c-support-400);
-  border-color: var(--c-support-400);
-  color: var(--c-basic-100);
+  background: var(--accent-fill);
+  border-color: var(--accent);
+  color: var(--text-on-accent-fill);
 }
 
 .modal-btn--confirm:hover {

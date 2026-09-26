@@ -11,7 +11,7 @@
 
     <div
       v-else-if="current"
-      class="focus-mode__card bg-basic-100 b-basic-300 br-50"
+      class="focus-mode__card bg-base b-subtle br-50"
     >
       <div class="focus-mode__head flex ai-ct jc-sb flex-wrap gap-200">
         <div>
@@ -20,16 +20,16 @@
             :href="current.subject_url"
             target="_blank"
             rel="noopener"
-            class="focus-mode__subject fs-400 fw-600 t-primary-300"
+            class="focus-mode__subject fs-400 fw-600 t-accent"
             >{{ current.subject_label || current.subject_ref }}</a
           >
           <span v-else class="focus-mode__subject fs-400 fw-600">{{
             current.subject_label || current.subject_ref
           }}</span>
-          <div class="fs-200 t-basic-500 mt-100">{{ metaLine }}</div>
+          <div class="fs-200 t-muted mt-100">{{ metaLine }}</div>
         </div>
         <span
-          class="fs-200 t-basic-600"
+          class="fs-200 t-secondary"
           data-testid="enrichment-focus-progress"
         >
           {{
@@ -43,7 +43,7 @@
 
       <div
         v-if="driftMode"
-        class="focus-mode__drift bg-warning-100 t-warning-300 br-50"
+        class="focus-mode__drift bg-warning-subtle t-warning br-50"
         data-testid="enrichment-focus-drift"
       >
         <FontAwesomeIcon icon="triangle-exclamation" />
@@ -70,7 +70,7 @@
 
       <div class="focus-mode__actions flex ai-ct gap-100 flex-wrap">
         <button
-          class="focus-mode__btn bg-positive-200 t-basic-100"
+          class="focus-mode__btn bg-positive-fill t-on-status-fill"
           :disabled="acting"
           data-testid="enrichment-focus-accept"
           @click="accept"
@@ -79,7 +79,7 @@
           <kbd>a</kbd>
         </button>
         <button
-          class="focus-mode__btn bg-negative-100 t-negative-300"
+          class="focus-mode__btn bg-negative-subtle t-negative"
           :disabled="acting"
           data-testid="enrichment-focus-reject"
           @click="reject"
@@ -87,14 +87,14 @@
           {{ $t("common.reject") }} <kbd>r</kbd>
         </button>
         <button
-          class="focus-mode__btn bg-basic-200 t-basic-600"
+          class="focus-mode__btn bg-raised t-secondary"
           :disabled="acting"
           data-testid="enrichment-focus-skip"
           @click="skip"
         >
           {{ $t("enrichment.review.skip") }} <kbd>s</kbd>
         </button>
-        <div class="ml-auto fs-100 t-basic-500">
+        <div class="ml-auto fs-100 t-muted">
           {{ $t("enrichment.review.shortcuts_hint") }}
         </div>
       </div>
@@ -322,15 +322,15 @@ export default {
 }
 .focus-mode__product {
   margin-top: var(--space-300);
-  border-top: 1px solid var(--c-basic-200);
+  border-top: 1px solid var(--border-subtle);
 }
 .focus-mode__reason {
   width: 100%;
   padding: var(--space-200);
-  border: 1px solid var(--c-basic-400);
+  border: 1px solid var(--border-default);
   border-radius: var(--radius-sm);
-  background: var(--c-basic-100);
-  color: var(--c-basic-800);
+  background: var(--surface-base);
+  color: var(--text-body);
   font-size: var(--fs-200);
   resize: vertical;
   margin-bottom: var(--space-300);
@@ -351,8 +351,8 @@ export default {
   }
   kbd {
     font-size: var(--fs-100);
-    background: var(--c-basic-100);
-    color: var(--c-basic-600);
+    background: var(--surface-base);
+    color: var(--text-secondary);
     border-radius: var(--radius-sm);
     padding: 0 4px;
     opacity: 0.8;

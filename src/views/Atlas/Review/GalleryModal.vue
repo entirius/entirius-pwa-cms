@@ -7,11 +7,11 @@
         @click.self="$emit('close')"
         data-testid="gallery-modal"
       >
-        <div class="gallery-container bg-basic-100 b-basic-300 br-100">
+        <div class="gallery-container bg-base b-subtle br-100">
           <header class="gallery-header">
             <h2 class="fs-400 fw-600">
               {{ $t("atlas.review.gallery_title") }}
-              <span class="t-basic-400 fw-400">({{ images.length }})</span>
+              <span class="t-muted fw-400">({{ images.length }})</span>
             </h2>
             <button
               class="gallery-close"
@@ -148,19 +148,19 @@ export default {
   align-items: center;
   justify-content: space-between;
   padding: var(--space-200) var(--space-300);
-  border-bottom: 1px solid var(--c-basic-300);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .gallery-close {
   background: transparent;
   border: none;
   font-size: 20px;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   cursor: pointer;
   padding: 0;
 
   &:hover {
-    color: var(--c-basic-700);
+    color: var(--text-body);
   }
 }
 
@@ -177,7 +177,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
   min-height: 0;
   overflow: hidden;
 }
@@ -237,8 +237,8 @@ export default {
   padding: var(--space-200) var(--space-300);
   overflow-x: auto;
   overflow-y: hidden;
-  border-top: 1px solid var(--c-basic-300);
-  background: var(--c-basic-100);
+  border-top: 1px solid var(--border-subtle);
+  background: var(--surface-base);
 }
 
 .gallery-thumb {
@@ -248,7 +248,7 @@ export default {
   padding: 0;
   border: 2px solid transparent;
   border-radius: var(--radius-sm);
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
   cursor: pointer;
   overflow: hidden;
   transition: border-color 0.15s ease;
@@ -261,11 +261,11 @@ export default {
   }
 
   &:hover {
-    border-color: var(--c-basic-400);
+    border-color: var(--border-default);
   }
 
   &--active {
-    border-color: var(--c-support-400);
+    border-color: var(--accent);
   }
 }
 

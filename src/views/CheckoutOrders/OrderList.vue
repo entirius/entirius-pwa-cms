@@ -1,9 +1,9 @@
 <template>
-  <div class="order-list p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="order-list p-500 fs-300 t-body h-100 ov-h">
     <!-- Channel selector in toolbar (matches PIM pattern) -->
     <Teleport to="#checkout-orders-toolbar-left" defer>
       <span v-if="channels.length > 1" class="flex ai-ct gap-100">
-        <span class="t-basic-500 fs-200"
+        <span class="t-muted fs-200"
           >{{ $t("checkout_orders.channel") }}:</span
         >
         <Dropdown
@@ -17,7 +17,7 @@
     </Teleport>
 
     <div
-      class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
     >
       <!-- Heading -->
       <div class="flex ai-ct mb-400">
@@ -30,7 +30,7 @@
           :active-count="activeFilterCount"
           :trigger-label="$t('checkout_orders.filters')"
         >
-          <p class="fs-200 t-basic-600">{{ $t("checkout_orders.filters") }}</p>
+          <p class="fs-200 t-secondary">{{ $t("checkout_orders.filters") }}</p>
           <FilterChip
             v-for="tab in statusTabs"
             :key="tab.key"
@@ -73,7 +73,7 @@
           <span v-if="row.total_gross"
             >{{ row.total_gross }} {{ row.currency }}</span
           >
-          <span v-else class="t-basic-500">-</span>
+          <span v-else class="t-muted">-</span>
         </template>
         <template #created="{ row }">
           {{ formatDate(row.created) }}

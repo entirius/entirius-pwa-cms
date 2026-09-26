@@ -1,5 +1,5 @@
 <template>
-  <nav v-if="!mobile" class="navigation-wrapper fs-300 t-basic-700 h-100 ov-h">
+  <nav v-if="!mobile" class="navigation-wrapper fs-300 t-body h-100 ov-h">
     <template v-if="user">
       <nav
         class="navigation pb-100 pt-700"
@@ -30,7 +30,7 @@
       v-for="(r, i) in filteredRoutes"
       :key="`mobile-${r.labelKey}-${i}`"
       :to="{ path: r.route, query: r.query }"
-      class="mobile-nav__item t-basic-600"
+      class="mobile-nav__item t-secondary"
       :class="{ 'router-link-active': isNavActive(r, $route?.path) }"
     >
       <FontAwesomeIcon :icon="r.icon" class="mobile-nav__icon" />
@@ -115,18 +115,18 @@ export default {
   padding: 8px 12px;
   margin-bottom: 2px;
   border-radius: 8px;
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
   font-weight: 500;
   line-height: 1.4;
   text-decoration: none;
   transition: background-color 0.15s ease, color 0.15s ease;
 
   &:hover {
-    background: var(--c-basic-200);
-    color: var(--c-basic-800);
+    background: var(--surface-raised);
+    color: var(--text-body);
   }
   &:focus-visible {
-    outline: 2px solid var(--c-support-300);
+    outline: 2px solid var(--accent);
     outline-offset: -2px;
   }
   // The global .router-link-active decorator bumps the font a size up with
@@ -134,9 +134,9 @@ export default {
   // change — pin the size back, scoped to the sidebar.
   &.router-link-active {
     font-size: inherit !important;
-    color: var(--c-support-400) !important;
+    color: var(--text-accent) !important;
     font-weight: 600;
-    background: color-mix(in srgb, var(--c-support-400) 10%, transparent);
+    background: color-mix(in srgb, var(--accent-fill) 10%, transparent);
 
     &::before {
       content: "";
@@ -147,7 +147,7 @@ export default {
       width: 3px;
       height: 18px;
       border-radius: 999px;
-      background: var(--c-support-400);
+      background: var(--accent-fill);
     }
   }
 }
@@ -161,7 +161,7 @@ export default {
   font-size: 15px;
   text-align: center;
   flex-shrink: 0;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
   transition: color 0.15s ease;
 
   .nav-link:hover &,
@@ -191,11 +191,11 @@ export default {
   min-height: 44px;
   padding: 0 4px;
   text-decoration: none;
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
   transition: color 0.15s ease;
   overflow: hidden;
   &.router-link-active {
-    color: var(--c-support-400);
+    color: var(--text-accent);
   }
 }
 .mobile-nav__icon {

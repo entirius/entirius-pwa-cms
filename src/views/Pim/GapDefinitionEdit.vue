@@ -1,10 +1,10 @@
 <template>
-  <div class="gap-def-edit fs-300 t-basic-800 h-100 ov-h">
+  <div class="gap-def-edit fs-300 t-body h-100 ov-h">
     <Teleport to="#pim-toolbar-left" defer>
       <BasicButton
         text=""
         icon="arrow-left"
-        class="bg-basic-200 t-basic-600"
+        class="bg-raised t-secondary"
         @click="$router.push('/pim/gap-definitions')"
       />
     </Teleport>
@@ -13,22 +13,22 @@
         v-if="!isCreate"
         text=""
         icon="trash-can"
-        class="bg-negative-100 t-negative-300"
+        class="bg-negative-subtle t-negative"
         data-test="gap-delete-btn"
         @click="showDeleteConfirm = true"
       />
       <BasicButton
         :text="$t('common.save')"
-        class="bg-support-400 t-basic-100"
+        class="bg-accent-fill t-on-accent-fill"
         data-test="gap-save-btn"
         @click="save"
       />
     </Teleport>
 
     <div class="flex-1 ovy-auto p-500">
-      <div class="bg-basic-100 b-basic-300 br-50 p-500">
+      <div class="bg-base b-subtle br-50 p-500">
         <div class="gap-def-identity mb-400">
-          <span class="fs-200 t-support-400 fw-600 tt-upper">
+          <span class="fs-200 t-accent fw-600 tt-upper">
             {{ isCreate ? $t("pim.create_gap_definition") : $t("pim.gap_definition_detail") }}
           </span>
         </div>
@@ -126,7 +126,7 @@
 
           <!-- label translations -->
           <div class="mt-400">
-            <span class="fs-200 t-basic-500 fw-600 tt-upper">{{ $t("pim.gap_label") }}</span>
+            <span class="fs-200 t-muted fw-600 tt-upper">{{ $t("pim.gap_label") }}</span>
             <div class="gap-def-t9n mt-200">
               <div v-for="lang in labelLangs" :key="lang" class="gap-def-t9n__row">
                 <span class="gap-def-t9n__lang">{{ lang }}</span>
@@ -142,7 +142,7 @@
           <!-- scope: languages + channels -->
           <div class="mt-400 flex gap-400" style="flex-wrap: wrap">
             <div>
-              <span class="fs-200 t-basic-500 fw-600 tt-upper">
+              <span class="fs-200 t-muted fw-600 tt-upper">
                 {{ $t("pim.gap_languages") }}
                 <HelpTooltip :text="$t('pim.gap_scope_all_hint')" />
               </span>
@@ -158,7 +158,7 @@
               </div>
             </div>
             <div>
-              <span class="fs-200 t-basic-500 fw-600 tt-upper">
+              <span class="fs-200 t-muted fw-600 tt-upper">
                 {{ $t("pim.gap_channels") }}
                 <HelpTooltip :text="$t('pim.gap_scope_all_hint')" />
               </span>
@@ -509,7 +509,7 @@ export default {
 
 <style lang="scss" scoped>
 .gap-def-identity {
-  border-left: 3px solid var(--c-support-400);
+  border-left: 3px solid var(--accent);
   padding-left: var(--space-300);
   padding-top: var(--space-200);
   padding-bottom: var(--space-200);
@@ -535,7 +535,7 @@ export default {
   width: 40px;
   text-transform: uppercase;
   font-weight: 600;
-  color: var(--c-support-400);
+  color: var(--text-accent);
   font-size: var(--fs-200);
 }
 .tt-upper {

@@ -170,7 +170,7 @@ onMounted(async () => {
 .footer__preview {
   width: 100%;
   min-height: 220px;
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
   background: #fff;
 }

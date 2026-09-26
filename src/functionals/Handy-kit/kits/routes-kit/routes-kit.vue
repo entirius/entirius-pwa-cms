@@ -1,13 +1,13 @@
 <template>
-  <div class="routes-kit fs-200 t-basic-600 flex-column gap-300">
+  <div class="routes-kit fs-200 t-secondary flex-column gap-300">
     <nav
-      class="grid grid-col-2 grid-col-2-m ai-ct bg-basic-200 pl-400 pr-400 pt-200 pb-200 t-basic-600 br-tl-50 br-tr-50"
+      class="grid grid-col-2 grid-col-2-m ai-ct bg-raised pl-400 pr-400 pt-200 pb-200 t-secondary br-tl-50 br-tr-50"
     >
       <p class="fw-600 fs-400 uppercase">
         {{ handyType.label ? handyType.label : "kliknij" }}
       </p>
       <p
-        class="js-fe t-basic-600"
+        class="js-fe t-secondary"
         @click="handy.open_Handykit({ typeId: false })"
       >
         <i class="icon-close-mini pointer" />

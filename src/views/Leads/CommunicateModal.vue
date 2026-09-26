@@ -83,6 +83,6 @@ onMounted(async () => {
   width: min(520px, 100%);
   padding: var(--space-300);
   border-radius: 8px;
-  background: var(--c-basic-100);
+  background: var(--surface-base);
 }
 </style>

@@ -22,7 +22,7 @@
           <StatusBadge :label="value" :variant="logStatusVariant(value)" />
         </template>
         <template #cell-mode="{ value }">
-          <span class="t-basic-600 fs-200">{{ value }}</span>
+          <span class="t-secondary fs-200">{{ value }}</span>
         </template>
       </DataTable>
     </div>
@@ -61,14 +61,14 @@
         <template #cell-acknowledged_at="{ row }">
           <button
             v-if="!row.acknowledged_at"
-            class="logs-ack-btn bg-support-100 t-support-400"
+            class="logs-ack-btn bg-accent-subtle t-accent"
             :data-testid="`logs-ack-${row.id}`"
             @click.stop="acknowledge(row)"
           >
             <FontAwesomeIcon icon="check" />
             {{ $t("atlas.logs.acknowledge") }}
           </button>
-          <span v-else class="t-basic-500 fs-200">{{
+          <span v-else class="t-muted fs-200">{{
             row.acknowledged_at
           }}</span>
         </template>

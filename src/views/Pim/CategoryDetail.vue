@@ -1,32 +1,32 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
     <Teleport to="#pim-toolbar-left" defer>
       <BasicButton
         text=""
         icon="arrow-left"
-        class="bg-basic-200 t-basic-600"
+        class="bg-raised t-secondary"
         @click="$router.push('/pim/categories')"
       />
     </Teleport>
     <Teleport to="#pim-toolbar-right" defer>
       <template v-if="activeTab === 'details'">
-        <span v-if="isDirty" class="chip bg-warning-100 t-warning-300">
+        <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
           {{ $t("unsaved.changes") }}
         </span>
         <BasicButton
           :text="$t('common.save')"
-          class="bg-support-400 t-basic-100"
+          class="bg-accent-fill t-on-accent-fill"
           @click="saveCategory"
         />
         <BasicButton
           text=""
           icon="trash-can"
-          class="bg-negative-100 t-negative-300"
+          class="bg-negative-subtle t-negative"
           @click="showDeleteConfirm = true"
         />
       </template>
     </Teleport>
-    <div class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
       <Loader v-if="loading" />
 
       <template v-else>
@@ -35,7 +35,7 @@
         <div v-if="activeTab === 'details'">
           <div
             v-if="category.breadcrumb_path"
-            class="detail-breadcrumb mb-400 t-basic-500 fs-200"
+            class="detail-breadcrumb mb-400 t-muted fs-200"
           >
             <font-awesome-icon icon="folder-tree" class="mr-100" />
             {{ category.breadcrumb_path }}
@@ -153,10 +153,10 @@
               @dragleave="isDraggingImage = false"
               @drop.prevent="onImageDrop"
             >
-              <span v-if="uploadingImage" class="t-basic-500 fs-200">...</span>
+              <span v-if="uploadingImage" class="t-muted fs-200">...</span>
               <template v-else>
-                <font-awesome-icon icon="upload" class="t-basic-400 fs-400" />
-                <span class="t-basic-500 fs-200 mt-100">{{ $t("pim.drop_files_here") }}</span>
+                <font-awesome-icon icon="upload" class="t-muted fs-400" />
+                <span class="t-muted fs-200 mt-100">{{ $t("pim.drop_files_here") }}</span>
               </template>
             </div>
             <input
@@ -557,7 +557,7 @@ export default {
 
 <style lang="scss" scoped>
 .detail-section {
-  border: 1px solid var(--c-basic-200);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: var(--space-200);
 }
@@ -576,16 +576,16 @@ export default {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 .detail-value {
   font-size: var(--fs-300);
-  color: var(--c-basic-800);
+  color: var(--text-body);
 }
 .detail-breadcrumb {
   padding: 8px 12px;
-  background: var(--c-basic-100);
-  border: 1px solid var(--c-basic-200);
+  background: var(--surface-base);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
 }
 .category-image {
@@ -596,7 +596,7 @@ export default {
     width: 200px;
     height: 140px;
     border-radius: var(--radius-md);
-    border: 1px solid var(--c-basic-300);
+    border: 1px solid var(--border-subtle);
     object-fit: cover;
     display: block;
   }
@@ -609,8 +609,8 @@ export default {
     height: 28px;
     border-radius: 50%;
     border: none;
-    background: var(--c-negative-100);
-    color: var(--c-negative-300);
+    background: var(--negative-subtle);
+    color: var(--negative);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -619,8 +619,8 @@ export default {
     box-shadow: var(--shadow-sm);
 
     &:hover {
-      background: var(--c-negative-200);
-      color: var(--c-basic-100);
+      background: var(--negative-fill);
+      color: var(--text-on-status-fill);
     }
   }
 
@@ -632,20 +632,20 @@ export default {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    border: 2px dashed var(--c-basic-300);
+    border: 2px dashed var(--border-subtle);
     border-radius: var(--radius-md);
     transition: background 0.15s, border-color 0.15s;
 
     &:hover,
     &:focus-visible {
-      background: var(--c-basic-200);
-      border-color: var(--c-basic-400);
+      background: var(--surface-raised);
+      border-color: var(--border-default);
       outline: none;
     }
 
     &--dragover {
-      background: var(--c-support-100);
-      border-color: var(--c-support-400);
+      background: var(--accent-subtle);
+      border-color: var(--accent);
     }
   }
 }

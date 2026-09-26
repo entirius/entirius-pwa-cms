@@ -1,12 +1,12 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
     >
       <div class="flex ai-ct jc-sb mb-400 gap-300">
         <h1 class="fs-700 fw-600">{{ $t("atlas.duplicates.title") }}</h1>
       </div>
-      <p class="fs-300 t-basic-700 mb-400">
+      <p class="fs-300 t-body mb-400">
         {{ $t("atlas.duplicates.subtitle") }}
       </p>
 
@@ -22,11 +22,11 @@
       <div
         v-for="group in groups"
         :key="group.ean"
-        class="bg-basic-100 b-basic-300 br-50 p-400 mb-300"
+        class="bg-base b-subtle br-50 p-400 mb-300"
       >
         <div class="flex ai-ct jc-sb mb-300 gap-200">
           <div>
-            <p class="fs-200 t-basic-500 fw-600">
+            <p class="fs-200 t-muted fw-600">
               {{ $t("atlas.duplicates.col.ean") }}
             </p>
             <p class="fs-500 fw-600">{{ group.ean }}</p>
@@ -37,7 +37,7 @@
             :data-testid="`duplicates-suggestion-${group.ean}`"
           />
         </div>
-        <p class="fs-200 t-basic-600 mb-300">{{ group.suggestion_detail }}</p>
+        <p class="fs-200 t-secondary mb-300">{{ group.suggestion_detail }}</p>
 
         <table class="duplicates-table">
           <thead>
@@ -179,13 +179,13 @@ export default {
   td {
     padding: var(--space-200);
     text-align: left;
-    border-bottom: 1px solid var(--c-basic-300);
+    border-bottom: 1px solid var(--border-subtle);
   }
 
   th {
     font-size: var(--fs-200);
     font-weight: 600;
-    color: var(--c-basic-500);
+    color: var(--text-muted);
   }
 }
 
@@ -194,8 +194,8 @@ export default {
   font-size: var(--fs-200);
   font-weight: 600;
   border-radius: var(--radius-sm);
-  background-color: var(--c-positive-100);
-  color: var(--c-positive-300);
+  background-color: var(--positive-subtle);
+  color: var(--positive);
   border: none;
   cursor: pointer;
 

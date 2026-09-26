@@ -42,21 +42,21 @@ const sections = computed(() => SECTIONS.filter((section) => munin.isModuleEnabl
   gap: var(--space-300);
   min-height: 56px;
   padding: 0 var(--space-300);
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
-  background: var(--c-basic-100);
-  color: var(--c-basic-800);
+  background: var(--surface-base);
+  color: var(--text-body);
   text-decoration: none;
 }
 .settings-row__icon {
   width: 1.25rem;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 .settings-row__label {
   flex: 1;
   font-weight: 600;
 }
 .settings-row__go {
-  color: var(--c-basic-400);
+  color: var(--text-muted);
 }
 </style>

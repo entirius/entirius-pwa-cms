@@ -21,8 +21,8 @@
     "
   >
     <div class="searchable-select__trigger" @click="toggle">
-      <span v-if="selectedLabel" class="t-basic-800">{{ selectedLabel }}</span>
-      <span v-else class="t-basic-400">{{ placeholder }}</span>
+      <span v-if="selectedLabel" class="t-body">{{ selectedLabel }}</span>
+      <span v-else class="t-muted">{{ placeholder }}</span>
       <span class="searchable-select__chevron" :class="{ 'is-open': open }"
         >&#x25BC;</span
       >
@@ -59,7 +59,7 @@
         </div>
         <div
           v-if="loadingMore"
-          class="searchable-select__loading t-basic-400 fs-200"
+          class="searchable-select__loading t-muted fs-200"
         >
           Loading...
         </div>
@@ -221,9 +221,9 @@ onBeforeUnmount(() => {
     justify-content: space-between;
     height: var(--elem-height);
     padding: 0 12px;
-    border: 1px solid var(--c-basic-300);
+    border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
-    background: var(--c-basic-100);
+    background: var(--surface-base);
     cursor: pointer;
     font-size: var(--fs-300);
   }
@@ -231,7 +231,7 @@ onBeforeUnmount(() => {
   &__chevron {
     font-size: 8px;
     transition: transform 0.2s;
-    color: var(--c-basic-500);
+    color: var(--text-muted);
     &.is-open {
       transform: rotate(180deg);
     }
@@ -242,9 +242,9 @@ onBeforeUnmount(() => {
     top: calc(100% + 4px);
     left: 0;
     right: 0;
-    border: 1px solid var(--c-basic-300);
+    border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
-    background: var(--c-basic-100);
+    background: var(--surface-base);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     z-index: 10;
 
@@ -259,10 +259,10 @@ onBeforeUnmount(() => {
     width: 100%;
     padding: 8px 12px;
     border: none;
-    border-bottom: 1px solid var(--c-basic-200);
+    border-bottom: 1px solid var(--border-subtle);
     background: transparent;
     font-size: var(--fs-300);
-    color: var(--c-basic-800);
+    color: var(--text-body);
     outline: none;
     box-sizing: border-box;
   }
@@ -276,17 +276,17 @@ onBeforeUnmount(() => {
     padding: 8px 12px;
     cursor: pointer;
     font-size: var(--fs-300);
-    color: var(--c-basic-800);
+    color: var(--text-body);
 
     &:hover {
-      background: var(--c-basic-200);
+      background: var(--surface-raised);
     }
     &.is-selected {
-      background: var(--c-support-100);
+      background: var(--accent-subtle);
       font-weight: 600;
     }
     &--clear {
-      color: var(--c-basic-500);
+      color: var(--text-muted);
       font-style: italic;
     }
   }

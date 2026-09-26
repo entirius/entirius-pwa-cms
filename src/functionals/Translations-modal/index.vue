@@ -119,10 +119,10 @@ async function save() {
 }
 
 .modal-container {
-  background: var(--c-basic-100);
+  background: var(--surface-base);
   padding: 24px;
   border-radius: 8px;
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-lg);
   width: 520px;
   max-width: 100%;
@@ -137,7 +137,7 @@ async function save() {
 .modal-header h2 {
   font-size: 16px;
   font-weight: 600;
-  color: var(--c-basic-700);
+  color: var(--text-body);
   margin: 0;
 }
 
@@ -158,7 +158,7 @@ async function save() {
   min-width: 60px;
   font-size: 13px;
   font-weight: 600;
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -167,8 +167,8 @@ async function save() {
 .lang-badge {
   font-size: 10px;
   font-weight: 500;
-  color: var(--c-basic-500);
-  background: var(--c-basic-200);
+  color: var(--text-muted);
+  background: var(--surface-raised);
   padding: 1px 5px;
   border-radius: 3px;
 }
@@ -183,7 +183,7 @@ async function save() {
   display: inline-block;
   width: 14px;
   height: 14px;
-  border: 2px solid var(--c-basic-400);
+  border: 2px solid var(--border-default);
   border-top-color: transparent;
   border-radius: 50%;
   animation: spin 0.6s linear infinite;

@@ -1,16 +1,16 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="p-500 fs-300 t-body h-100 ov-h">
     <Teleport v-if="!embedded" to="#pricing-toolbar-left" defer>
       <BasicButton
         text=""
         icon="arrow-left"
-        class="bg-basic-200 t-basic-600"
+        class="bg-raised t-secondary"
         @click="$router.push('/pricing/prices')"
       />
       <span class="fw-600 fs-400">{{ effectiveSku || $t('pm.price_detail') }}</span>
     </Teleport>
 
-    <div class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
       <Loader v-if="loading" />
 
       <template v-else>
@@ -49,8 +49,8 @@
             <div v-if="flatPurchaseCost" class="pm-meta-item">
               <span class="pm-label">{{ $t('pm.purchase_cost') }}</span>
               <span class="flex ai-ct gap-100">
-                <span class="t-basic-700 fw-600">{{ flatPurchaseCost.net_cost }} {{ flatPurchaseCost.currency }}</span>
-                <span v-if="flatPurchaseCost.supplier_idx" class="t-basic-500 fs-200">
+                <span class="t-body fw-600">{{ flatPurchaseCost.net_cost }} {{ flatPurchaseCost.currency }}</span>
+                <span v-if="flatPurchaseCost.supplier_idx" class="t-muted fs-200">
                   · {{ flatPurchaseCost.supplier_idx }}
                 </span>
                 <StatusBadge
@@ -58,7 +58,7 @@
                   :label="$t('pm.margin_percent', { value: marginPercent })"
                   :variant="Number(marginPercent) > 0 ? 'positive' : 'negative'"
                 />
-                <span v-else-if="!flatPrice" class="t-warning-300 fs-200">{{ $t('pm.unpriced_hint') }}</span>
+                <span v-else-if="!flatPrice" class="t-warning fs-200">{{ $t('pm.unpriced_hint') }}</span>
               </span>
             </div>
           </div>
@@ -82,7 +82,7 @@
               <div class="pm-field">
                 <label class="pm-label">
                   {{ isNetEditable ? $t('pm.gross') : $t('pm.net') }}
-                  <span class="pm-lock-icon t-basic-400 ml-50">
+                  <span class="pm-lock-icon t-muted ml-50">
                     <FontAwesomeIcon icon="lock" />
                   </span>
                 </label>
@@ -127,7 +127,7 @@
           <div class="flex gap-200 mb-400 flex-wrap ai-ct">
             <BasicButton
               :text="$t('pm.save')"
-              class="bg-support-400 t-basic-100"
+              class="bg-accent-fill t-on-accent-fill"
               @click="save"
             />
             <BasicButton
@@ -144,7 +144,7 @@
               <BasicButton
                 text=""
                 icon="broom"
-                class="bg-basic-200 t-basic-600"
+                class="bg-raised t-secondary"
                 @click="showFlushConfirm = true"
               />
             </span>
@@ -152,7 +152,7 @@
               <BasicButton
                 text=""
                 icon="trash-can"
-                class="bg-negative-100 t-negative-300"
+                class="bg-negative-subtle t-negative"
                 @click="showDeleteConfirm = true"
               />
             </span>
@@ -179,7 +179,7 @@
 
           <!-- All-countries breakdown (collapsible) -->
           <div v-if="showCountries" class="mb-400">
-            <h3 class="fs-400 fw-600 mb-200 t-basic-600">{{ $t('pm.all_countries') }}</h3>
+            <h3 class="fs-400 fw-600 mb-200 t-secondary">{{ $t('pm.all_countries') }}</h3>
             <div class="pm-country-table">
               <div class="pm-country-table__head">
                 <span>{{ $t('pm.country') }}</span>
@@ -199,7 +199,7 @@
                 <span>{{ row.tax_rate }}</span>
                 <span>{{ fmt2(row.net) }}</span>
                 <span>{{ fmt2(row.gross) }}</span>
-                <span class="t-basic-500">
+                <span class="t-muted">
                   {{ fmt2(row.special_net) || '—' }}
                   <template v-if="row.special_gross"> → {{ fmt2(row.special_gross) }}</template>
                 </span>
@@ -211,16 +211,16 @@
           <div v-if="showHistory" class="mt-200">
             <h3 class="fs-400 fw-600 mb-200">{{ $t('pm.history') }}</h3>
             <Loader v-if="historyLoading" />
-            <div v-else-if="!history.length" class="t-basic-500 fs-200">—</div>
+            <div v-else-if="!history.length" class="t-muted fs-200">—</div>
             <div
               v-for="entry in history"
               :key="entry.id"
               class="pm-history-row flex ai-ct gap-200"
             >
-              <span class="t-basic-500 fs-200">{{ entry.created_at }}</span>
+              <span class="t-muted fs-200">{{ entry.created_at }}</span>
               <span class="fw-600">{{ entry.country }}</span>
               <span>{{ entry.source }} — gross: {{ entry.gross_value }}, net: {{ entry.net_value }}</span>
-              <span class="t-basic-500 fs-200">{{ entry.changed_by }}</span>
+              <span class="t-muted fs-200">{{ entry.changed_by }}</span>
             </div>
           </div>
         </template>
@@ -545,10 +545,10 @@ export default {
 
 <style lang="scss" scoped>
 .pm-edit-form {
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: 20px;
-  background: var(--c-basic-100);
+  background: var(--surface-base);
 }
 
 .pm-edit-fields {
@@ -569,7 +569,7 @@ export default {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 
 .pm-lock-icon {
@@ -581,10 +581,10 @@ export default {
   display: flex;
   align-items: center;
   padding: 0 var(--space-100);
-  background: var(--c-basic-200);
-  border: 1px solid var(--c-basic-300);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
   font-size: var(--fs-300);
 }
 
@@ -595,7 +595,7 @@ export default {
 }
 
 .pm-country-table {
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   overflow: hidden;
 }
@@ -605,12 +605,12 @@ export default {
   grid-template-columns: 60px 60px 70px 1fr 1fr 1fr;
   gap: var(--space-100);
   padding: 8px var(--space-200);
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
   font-size: var(--fs-200);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 
 .pm-country-table__row {
@@ -618,23 +618,23 @@ export default {
   grid-template-columns: 60px 60px 70px 1fr 1fr 1fr;
   gap: var(--space-100);
   padding: 8px var(--space-200);
-  border-top: 1px solid var(--c-basic-300);
+  border-top: 1px solid var(--border-subtle);
   align-items: center;
 }
 
 .pm-history-row {
   padding: 8px var(--space-200);
-  border-bottom: 1px solid var(--c-basic-300);
+  border-bottom: 1px solid var(--border-subtle);
   font-size: var(--fs-200);
 }
 
 .pm-date-input {
   height: var(--elem-height);
   padding: 0 var(--space-100);
-  border: 1px solid var(--c-basic-400);
+  border: 1px solid var(--border-default);
   border-radius: var(--radius-sm);
-  background: var(--c-basic-100);
-  color: var(--c-basic-800);
+  background: var(--surface-base);
+  color: var(--text-body);
   font-size: var(--fs-300);
   font-family: inherit;
 

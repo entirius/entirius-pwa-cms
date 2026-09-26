@@ -62,10 +62,10 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px dashed var(--c-basic-400);
+    border: 1px dashed var(--border-default);
     border-radius: var(--radius-sm);
-    background: var(--c-basic-100);
-    color: var(--c-basic-500);
+    background: var(--surface-base);
+    color: var(--text-muted);
     cursor: pointer;
     overflow: hidden;
 
@@ -78,9 +78,9 @@ export default {
     // Same tokens as ProductFiles.vue __dropzone--dragover, so a drag reads the
     // same here as it does on the PIM file and gallery upload areas.
     &--dragover {
-      border-color: var(--c-support-400);
-      background: var(--c-basic-200);
-      color: var(--c-support-400);
+      border-color: var(--accent);
+      background: var(--surface-raised);
+      color: var(--text-accent);
     }
   }
   &__remove {
@@ -93,8 +93,8 @@ export default {
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    background: var(--c-negative-300);
-    color: var(--c-basic-100);
+    background: var(--negative-fill);
+    color: var(--text-on-status-fill);
     font-size: 10px;
   }
   &__file-input {

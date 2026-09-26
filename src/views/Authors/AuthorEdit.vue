@@ -1,19 +1,19 @@
 <template>
-  <div class="p-500 fs-300 t-basic-800 h-100 ov-h relative">
+  <div class="p-500 fs-300 t-body h-100 ov-h relative">
     <Teleport to="#authors-toolbar-left" defer>
       <BasicButton
         text=""
         icon="arrow-left"
-        class="bg-basic-200 t-basic-600"
+        class="bg-raised t-secondary"
         @click="$router.push('/pages/authors')"
       />
       <span v-if="!loading && form.name" class="fw-600">{{ form.name }}</span>
-      <span v-if="!loading && !form.name" class="t-basic-500">{{
+      <span v-if="!loading && !form.name" class="t-muted">{{
         $t("authors.create")
       }}</span>
     </Teleport>
     <Teleport to="#authors-toolbar-right" defer>
-      <span v-if="isDirty" class="chip bg-warning-100 t-warning-300">
+      <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
         {{ $t("unsaved.changes") }}
       </span>
       <button
@@ -25,12 +25,12 @@
       </button>
       <BasicButton
         :text="$t('common.save')"
-        class="bg-support-400 t-basic-100"
+        class="bg-accent-fill t-on-accent-fill"
         @click="save"
       />
     </Teleport>
 
-    <div class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto p-500 relative">
+    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500 relative">
       <Loader v-if="loading" />
 
       <template v-else>
@@ -60,7 +60,7 @@
 
           <!-- Photo -->
           <div class="mt-300">
-            <label class="fs-200 fw-600 t-basic-500 tt-upper mb-100 db">
+            <label class="fs-200 fw-600 t-muted tt-upper mb-100 db">
               {{ $t("authors.photo") }}
             </label>
             <div class="flex ai-ct gap-300">
@@ -72,7 +72,7 @@
                   class="author-photo-preview__img"
                 />
                 <div v-else class="author-photo-preview__placeholder">
-                  <FontAwesomeIcon icon="user" class="t-basic-400" style="font-size: 24px" />
+                  <FontAwesomeIcon icon="user" class="t-muted" style="font-size: 24px" />
                 </div>
               </div>
               <div class="flex ai-ct gap-100">
@@ -103,7 +103,7 @@
             class="translation-field mb-300"
           >
             <div class="translation-field__header">
-              <label class="fs-200 fw-600 t-basic-500 tt-upper">
+              <label class="fs-200 fw-600 t-muted tt-upper">
                 {{ field.label }} ({{ defaultLang.toUpperCase() }})
               </label>
               <BasicButton
@@ -193,7 +193,7 @@
     >
       <template #description>
         <p>{{ $t("authors.delete_confirm") }}</p>
-        <p v-if="form.post_count" class="mt-200 t-basic-600 fs-200">
+        <p v-if="form.post_count" class="mt-200 t-secondary fs-200">
           {{ $t("authors.post_count") }}: <strong>{{ form.post_count }}</strong>
         </p>
         <div v-if="reassignOptions.length" class="mt-300">
@@ -511,7 +511,7 @@ export default {
 
 <style lang="scss" scoped>
 .author-edit__section {
-  border: 1px solid var(--c-basic-200);
+  border: 1px solid var(--border-subtle);
   border-radius: 6px;
   padding: var(--space-300);
 }
@@ -540,7 +540,7 @@ export default {
   width: 80px;
   height: 80px;
   border-radius: var(--radius-md);
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   overflow: hidden;
   flex-shrink: 0;
 
@@ -556,7 +556,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--c-basic-200);
+    background: var(--surface-raised);
   }
 }
 
@@ -568,14 +568,14 @@ export default {
   justify-content: center;
   border-radius: var(--radius-sm);
   border: none;
-  background: var(--c-negative-100);
-  color: var(--c-negative-300);
+  background: var(--negative-subtle);
+  color: var(--negative);
   font-size: 14px;
   transition: background-color 0.15s;
 
   &:hover {
-    background: var(--c-negative-200);
-    color: var(--c-basic-100);
+    background: var(--negative-fill);
+    color: var(--text-on-status-fill);
   }
 }
 

@@ -1,7 +1,7 @@
 <template>
-  <div class="cf-lead-list__wrapper p-500 fs-300 t-basic-800 h-100 ov-h">
+  <div class="cf-lead-list__wrapper p-500 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-basic-100 b-basic-300 br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
     >
       <div class="flex ai-ct mb-400">
         <h1 class="fs-700 fw-600">{{ $t("cf.leads") }}</h1>
@@ -29,7 +29,7 @@
           :active-count="statusFilter === '__all' ? 0 : 1"
           :trigger-label="$t('cf.filters')"
         >
-          <p class="fs-200 t-basic-600">{{ $t("cf.filters") }}</p>
+          <p class="fs-200 t-secondary">{{ $t("cf.filters") }}</p>
           <FilterChip
             v-for="opt in statusFilterOptions"
             :key="opt.value"
@@ -58,7 +58,7 @@
         </template>
         <template #cell-deal_value="{ value }">
           <span v-if="value">{{ value }}</span>
-          <span v-else class="t-basic-400">---</span>
+          <span v-else class="t-muted">---</span>
         </template>
         <template #cell-contact_date="{ value }">
           {{ formatDateTime(value) }}
@@ -74,7 +74,7 @@
           >
             <font-awesome-icon icon="bullseye" />
           </span>
-          <span v-else class="t-basic-400">---</span>
+          <span v-else class="t-muted">---</span>
         </template>
       </DataTable>
 
@@ -269,8 +269,8 @@ export default {
   width: 28px;
   height: 28px;
   border-radius: var(--radius-sm);
-  background: var(--c-positive-100);
-  color: var(--c-positive-300);
+  background: var(--positive-subtle);
+  color: var(--positive);
 }
 
 @media only screen and (max-width: 768px) {

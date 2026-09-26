@@ -1,14 +1,14 @@
 <template>
   <ConfirmationModal :visible="visible" @reject="$emit('close')">
     <template #header>
-      <h2 class="t-warning-300">
+      <h2 class="t-warning">
         <FontAwesomeIcon icon="triangle-exclamation" class="mr-100" />
         {{ $t("pim.supplier.force_preferred_modal.title") }}
       </h2>
     </template>
     <template #description>
       <div class="force-preferred__body">
-        <p class="t-basic-700">
+        <p class="t-body">
           {{ introText }}
         </p>
         <FormField :label="forceLabel">
@@ -22,11 +22,11 @@
         </FormField>
         <p
           v-if="reasonTooShort"
-          class="force-preferred__hint t-basic-500 fs-200"
+          class="force-preferred__hint t-muted fs-200"
         >
           {{ $t("pim.supplier.force_preferred_modal.reason_min_hint") }}
         </p>
-        <p class="force-preferred__warning t-negative-300 fs-200">
+        <p class="force-preferred__warning t-negative fs-200">
           <FontAwesomeIcon icon="triangle-exclamation" class="mr-100" />
           {{ $t("pim.supplier.force_preferred_modal.warning") }}
         </p>
@@ -127,8 +127,8 @@ export default {
 .force-preferred__warning {
   padding: var(--space-200);
   border-radius: var(--radius-sm);
-  background: var(--c-negative-100);
-  border-left: 3px solid var(--c-negative-300);
+  background: var(--negative-subtle);
+  border-left: 3px solid var(--negative);
 }
 .force-preferred__hint {
   margin-top: calc(-1 * var(--space-100));

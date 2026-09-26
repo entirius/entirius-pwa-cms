@@ -113,7 +113,7 @@ const preview = (body) =>
   max-height: 70vh;
   overflow-y: auto;
   padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
-  background: var(--c-basic-100);
+  background: var(--surface-base);
   border-radius: 1rem 1rem 0 0;
   box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.16);
   z-index: 91;
@@ -125,8 +125,8 @@ const preview = (body) =>
   align-items: center;
   justify-content: space-between;
   padding: 0.75rem 0.5rem 0.5rem 1rem;
-  background: var(--c-basic-100);
-  border-bottom: 1px solid var(--c-basic-300);
+  background: var(--surface-base);
+  border-bottom: 1px solid var(--border-subtle);
 }
 .notif-list__grip {
   position: absolute;
@@ -136,7 +136,7 @@ const preview = (body) =>
   height: 0.25rem;
   margin-left: -1.25rem;
   border-radius: 999px;
-  background: var(--c-basic-300);
+  background: var(--surface-hover);
 }
 .notif-list__title {
   margin: 0;
@@ -148,13 +148,13 @@ const preview = (body) =>
   border: none;
   border-radius: 8px;
   background: none;
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
   cursor: pointer;
 }
 .notif-list__empty {
   margin: 0;
   padding: 1rem;
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 .notif-row {
   display: flex;
@@ -165,13 +165,13 @@ const preview = (body) =>
   padding: 0.75rem 1rem;
   background: none;
   border: none;
-  border-bottom: 1px solid var(--c-basic-200);
+  border-bottom: 1px solid var(--border-subtle);
   text-align: left;
-  color: var(--c-basic-800);
+  color: var(--text-body);
   cursor: pointer;
 }
 .notif-row:hover {
-  background: var(--c-basic-200);
+  background: var(--surface-raised);
 }
 .notif-row__dot {
   flex-shrink: 0;
@@ -179,10 +179,10 @@ const preview = (body) =>
   height: 0.5rem;
   margin-top: 0.4rem;
   border-radius: 50%;
-  background: var(--c-support-400);
+  background: var(--accent-fill);
 }
 .notif-row--high .notif-row__dot {
-  background: var(--c-negative-300);
+  background: var(--negative-fill);
 }
 .notif-row__text {
   display: flex;
@@ -199,11 +199,11 @@ const preview = (body) =>
   -webkit-box-orient: vertical;
   overflow: hidden;
   font-size: var(--fs-100);
-  color: var(--c-basic-600);
+  color: var(--text-secondary);
 }
 .notif-row__age {
   font-size: var(--fs-100);
-  color: var(--c-basic-500);
+  color: var(--text-muted);
 }
 @media (min-width: 1024px) {
   .notif-sheet__backdrop {

@@ -72,9 +72,9 @@ async function loadMore() {
 
 <style scoped>
 .earlier {
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
-  background: var(--c-basic-100);
+  background: var(--surface-base);
 }
 .earlier__toggle {
   display: flex;
@@ -86,7 +86,7 @@ async function loadMore() {
   padding: 0 var(--space-300);
   border: none;
   background: none;
-  color: var(--c-basic-800);
+  color: var(--text-body);
   font-weight: 600;
   cursor: pointer;
 }
@@ -95,7 +95,7 @@ async function loadMore() {
   text-align: left;
 }
 .earlier__badge {
-  color: var(--c-negative-300);
+  color: var(--negative);
   font-size: var(--fs-100);
 }
 .earlier__list {
@@ -111,10 +111,10 @@ async function loadMore() {
 }
 .earlier__more {
   min-height: 44px;
-  border: 1px solid var(--c-basic-300);
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
-  background: var(--c-basic-100);
-  color: var(--c-basic-800);
+  background: var(--surface-base);
+  color: var(--text-body);
   cursor: pointer;
 }
 </style>

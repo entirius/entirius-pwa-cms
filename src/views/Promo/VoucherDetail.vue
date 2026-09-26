@@ -1,5 +1,5 @@
 <template>
-  <div class="voucher-detail p-500 fs-300 t-basic-800 h-100 ovy-auto">
+  <div class="voucher-detail p-500 fs-300 t-body h-100 ovy-auto">
     <Teleport to="#promo-toolbar-left" defer>
       <BasicButton text="" icon="arrow-left" @click="navigateBack" />
       <span class="fw-600">{{ $t("promo.voucher_title") }} #{{ pk }}</span>
@@ -15,7 +15,7 @@
     <Loader v-if="loading" />
 
     <template v-else-if="voucher">
-      <div class="bg-basic-100 b-basic-300 br-50 p-500 mb-400">
+      <div class="bg-base b-subtle br-50 p-500 mb-400">
         <div class="flex ai-ct jc-sb mb-400">
           <StatusBadge
             :label="statusLabel(voucher.status)"
@@ -23,7 +23,7 @@
           />
           <span class="fs-400 fw-600">
             {{ voucher.balance }}
-            <span class="t-basic-400"
+            <span class="t-muted"
               >/ {{ voucher.face_value }} {{ voucher.currency }}</span
             >
           </span>
@@ -41,11 +41,11 @@
 
         <div
           v-if="revealedCode"
-          class="voucher-detail__code bg-support-100 t-support-400 br-50 p-300 mb-400"
+          class="voucher-detail__code bg-accent-subtle t-accent br-50 p-300 mb-400"
         >
           <span class="fs-200">{{ $t("promo.voucher_code") }}:</span>
           <code class="fw-600">{{ revealedCode }}</code>
-          <span v-if="hasPin" class="fs-200 t-basic-500"
+          <span v-if="hasPin" class="fs-200 t-muted"
             >({{ $t("promo.voucher_has_pin") }})</span
           >
         </div>
@@ -86,7 +86,7 @@
         </dl>
       </div>
 
-      <div class="bg-basic-100 b-basic-300 br-50 p-500">
+      <div class="bg-base b-subtle br-50 p-500">
         <SegmentedControl
           v-model="historyTab"
           :options="historyTabs"
@@ -479,7 +479,7 @@ export default {
 }
 
 .voucher-order-link {
-  color: var(--c-support-400);
+  color: var(--text-accent);
   text-decoration: underline;
   cursor: pointer;
 }
@@ -498,7 +498,7 @@ export default {
 
   dt {
     font-size: var(--fs-200);
-    color: var(--c-basic-500);
+    color: var(--text-muted);
     margin-bottom: 2px;
   }
 
