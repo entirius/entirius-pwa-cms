@@ -213,8 +213,8 @@ test.describe("Navigation Editor", () => {
     // --- Add items ---
 
     test("add simple link item via modal", async () => {
-      // Click "Add item" (the support-400 button with mt-300 in content area)
-      await page.locator("button.bg-support-400.mt-300").click();
+      // Click "Add item" (content area, below the list)
+      await page.getByTestId("nav-editor-add-item").click();
       await expect(page.locator(".modal-overlay")).toBeVisible({ timeout: 5000 });
 
       // Fill label
@@ -252,14 +252,14 @@ test.describe("Navigation Editor", () => {
       await expect(items.first().locator(".fg-1.fw-500")).toHaveText(
         "Test Link"
       );
-      // Link badge (bg-basic-300)
+      // Link badge
       await expect(
-        items.first().locator(".nav-item__row .bg-basic-300.t-basic-700")
+        items.first().getByTestId("nav-item-type-link")
       ).toBeVisible();
     });
 
     test("add megamenu item via modal", async () => {
-      await page.locator("button.bg-support-400.mt-300").click();
+      await page.getByTestId("nav-editor-add-item").click();
       await expect(page.locator(".modal-overlay")).toBeVisible({ timeout: 5000 });
 
       await page
@@ -279,14 +279,14 @@ test.describe("Navigation Editor", () => {
       const items = page.locator(".nav-item");
       await expect(items).toHaveCount(2);
 
-      // Second item has megamenu badge (bg-support-100)
+      // Second item has megamenu badge
       await expect(
-        items.nth(1).locator(".nav-item__row .bg-support-100.t-support-400")
+        items.nth(1).getByTestId("nav-item-type-megamenu")
       ).toBeVisible();
     });
 
     test("unsaved badge appears", async () => {
-      await expect(page.locator(".chip.bg-warning-100")).toBeVisible();
+      await expect(page.getByTestId("nav-editor-unsaved-badge")).toBeVisible();
     });
 
     // --- Expand megamenu & manage columns ---
@@ -461,13 +461,13 @@ test.describe("Navigation Editor", () => {
     // --- Save / Reload / Publish ---
 
     test("save draft clears unsaved badge", async () => {
-      await expect(page.locator(".chip.bg-warning-100")).toBeVisible();
+      await expect(page.getByTestId("nav-editor-unsaved-badge")).toBeVisible();
 
       // Save draft — btn-outline in the toolbar
       await page.locator("button.btn-outline").click();
       await page.waitForLoadState("networkidle", { timeout: 10000 });
 
-      await expect(page.locator(".chip.bg-warning-100")).not.toBeVisible({
+      await expect(page.getByTestId("nav-editor-unsaved-badge")).not.toBeVisible({
         timeout: 5000,
       });
     });
@@ -483,10 +483,8 @@ test.describe("Navigation Editor", () => {
     });
 
     test("publish shows success notification", async () => {
-      // Click Publish — the bg-support-400 button (not the Add-item button,
-      // which is also bg-support-400 but has mt-300 and is in content area).
       // Publish lives in the toolbar, rendered via Teleport.
-      await page.locator("button.bg-support-400:not(.mt-300)").click();
+      await page.getByTestId("nav-editor-publish").click();
       await page.waitForLoadState("networkidle", { timeout: 10000 });
 
       // Notification should appear (positive toast)
@@ -512,7 +510,7 @@ test.describe("Navigation Editor", () => {
         await page.waitForLoadState("networkidle", { timeout: 15000 });
 
         // Open Add item modal
-        await page.locator("button.bg-support-400.mt-300").click();
+        await page.getByTestId("nav-editor-add-item").click();
         await expect(page.locator(".modal-overlay")).toBeVisible({
           timeout: 5000,
         });
@@ -543,7 +541,7 @@ test.describe("Navigation Editor", () => {
         await page.goto(`/pages/layout-extender/header/${uid}`);
         await page.waitForLoadState("networkidle", { timeout: 15000 });
 
-        await page.locator("button.bg-support-400.mt-300").click();
+        await page.getByTestId("nav-editor-add-item").click();
         await expect(page.locator(".modal-overlay")).toBeVisible({
           timeout: 5000,
         });
@@ -574,7 +572,7 @@ test.describe("Navigation Editor", () => {
         await page.goto(`/pages/layout-extender/header/${uid}`);
         await page.waitForLoadState("networkidle", { timeout: 15000 });
 
-        await page.locator("button.bg-support-400.mt-300").click();
+        await page.getByTestId("nav-editor-add-item").click();
         await expect(page.locator(".modal-overlay")).toBeVisible({
           timeout: 5000,
         });
@@ -652,7 +650,7 @@ test.describe("Navigation Editor", () => {
         await page.waitForLoadState("networkidle", { timeout: 15000 });
 
         // Open add item modal
-        await page.locator("button.bg-support-400.mt-300").click();
+        await page.getByTestId("nav-editor-add-item").click();
         await expect(page.locator(".modal-overlay")).toBeVisible({
           timeout: 5000,
         });

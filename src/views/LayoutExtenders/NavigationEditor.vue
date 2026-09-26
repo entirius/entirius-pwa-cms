@@ -24,7 +24,11 @@
     <!-- Right toolbar -->
     <Teleport to="#layout-extender-toolbar-right" defer>
       <template v-if="!loading">
-        <span v-if="isDirty" class="chip bg-warning-100 t-warning-300">
+        <span
+          v-if="isDirty"
+          class="chip bg-warning-100 t-warning-300"
+          data-testid="nav-editor-unsaved-badge"
+        >
           {{ $t("layout_extender.unsaved") }}
         </span>
         <BasicButton
@@ -35,6 +39,7 @@
         <BasicButton
           :text="$t('layout_extender.publish')"
           class="bg-support-400 t-basic-100"
+          data-testid="nav-editor-publish"
           :disabled="!uid"
           @click="publish"
         />
@@ -66,6 +71,7 @@
                 <span
                   class="fs-200 ph-100 br-50"
                   :class="element.display_as === 'megamenu' ? 'bg-support-100 t-support-400' : 'bg-basic-300 t-basic-700'"
+                  :data-testid="element.display_as === 'megamenu' ? 'nav-item-type-megamenu' : 'nav-item-type-link'"
                 >
                   {{ element.display_as === "megamenu" ? $t("layout_extender.mega_menu") : $t("layout_extender.simple_link") }}
                 </span>
@@ -232,6 +238,7 @@
           :text="$t('layout_extender.add_item')"
           icon="plus"
           class="bg-support-400 t-basic-100 mt-300"
+          data-testid="nav-editor-add-item"
           @click="openAddItem"
         />
       </template>
