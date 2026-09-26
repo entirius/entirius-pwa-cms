@@ -3005,7 +3005,9 @@
       },
       "marker_draft": "Szkic",
       "empty_replied": "Brak odpowiedzi",
-      "load_error": "Nie udało się wczytać skrzynki — spróbujemy ponownie przy następnym odświeżeniu"
+      "load_error": "Nie udało się wczytać skrzynki — spróbujemy ponownie przy następnym odświeżeniu",
+      "threads_few": "{count} wątki",
+      "threads_many": "{count} wątków"
     },
     "review": {
       "title": "Przegląd",

@@ -40,6 +40,10 @@ export const POST_ReviewSkipCompany = (id) =>
 // params: { subject_ref, page, page_size } — newest first
 export const GET_Threads = (params) => communicatorApi.get(`${base()}/threads/`, { params });
 
+// The Inbox: one row per conversation (subject_ref) = its newest thread, state from any of its threads.
+// params: { state, page, page_size } — latest activity first; `counts` per state come with every page
+export const GET_Conversations = (params) => communicatorApi.get(`${base()}/conversations/`, { params });
+
 export const GET_Thread = (id) => communicatorApi.get(`${base()}/threads/${id}/`);
 
 // One thread with its timeline and its suspected opt-out replies (confirmed or not).

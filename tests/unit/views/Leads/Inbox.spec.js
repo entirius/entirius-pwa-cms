@@ -5,21 +5,21 @@ import { createPinia, setActivePinia } from "pinia";
 const route = vi.hoisted(() => ({ name: "LeadsInbox", params: {} }));
 vi.mock("vue-router", () => ({ useRoute: () => route }));
 
-// `threads/` answers per `state`; counts come with every page (UX-002c).
+// `conversations/` answers per `state`; counts come with every page (UX-002c, UX-009: one row per conversation).
 const server = vi.hoisted(() => ({ rows: [], counts: { all: 0, draft: 0, waiting: 0, replied: 0 }, waiting: [] }));
 const holds = {
   draft: (row) => Boolean(row.draft),
   waiting: (row) => Boolean(row.waiting),
-  replied: (row) => row.status === "replied",
+  replied: (row) => row.replied,
 };
 const threadsFromServer = ({ state }) => {
   const results = state ? server.rows.filter((row) => holds[state](row)) : server.rows;
   return Promise.resolve({ data: { results, next: null, counts: server.counts } });
 };
-const GET_Threads = vi.hoisted(() => vi.fn());
+const GET_Conversations = vi.hoisted(() => vi.fn());
 const GET_WaitingMessages = vi.hoisted(() => vi.fn(() => Promise.resolve(server.waiting)));
 const POST_SendNow = vi.hoisted(() => vi.fn(() => Promise.resolve({ data: {} })));
-vi.mock("@/api/communicator/api", () => ({ GET_Threads, GET_WaitingMessages, POST_SendNow }));
+vi.mock("@/api/communicator/api", () => ({ GET_Conversations, GET_WaitingMessages, POST_SendNow }));
 const GET_Company = vi.hoisted(() => vi.fn((id) => Promise.resolve({ data: { id, name: `Example Shop ${id}` } })));
 vi.mock("@/api/leads/api", () => ({ GET_Company }));
 const modules = vi.hoisted(() => new Set());
@@ -43,12 +43,14 @@ const base = (id, extra) => ({
   last_text: "",
   draft: null,
   waiting: null,
+  replied: false,
+  thread_count: 1,
   ...extra,
 });
-const draftRow = base(5, { draft: { id: 51, subject: "Draft for shop 5" }, last_text: "Hello" });
+const draftRow = base(5, { draft: { id: 51, subject: "Draft for shop 5", recipient_email: "anna@example-shop-5.test" }, last_text: "Hello" });
 const waitingAt = inMinutes(90);
 const waitingRow = base(6, { waiting: { id: 61, status: "scheduled", scheduled_at: waitingAt, next_slot: waitingAt } });
-const repliedRow = base(7, { status: "replied", subject_ref: "bdd:toolbox-down", recipient_name: "Jan", last_text: "Yes, call me\n\n> Hi" });
+const repliedRow = base(7, { status: "replied", replied: true, subject_ref: "bdd:toolbox-down", recipient_name: "Jan", last_text: "Yes, call me\n\n> Hi" });
 
 const RouterLink = { props: ["to"], template: "<a :data-to='JSON.stringify(to)'><slot /></a>" };
 const mountInbox = () =>
@@ -70,7 +72,7 @@ describe("Leads Inbox (one list: drafts, waiting mails, conversations)", () => {
   beforeEach(() => {
     setActivePinia(createPinia());
     vi.clearAllMocks();
-    GET_Threads.mockImplementation(threadsFromServer); // a test may swap in its own answers
+    GET_Conversations.mockImplementation(threadsFromServer); // a test may swap in its own answers
     route.name = "LeadsInbox";
     route.params = {};
     server.rows = [draftRow, waitingRow, repliedRow];
@@ -92,7 +94,7 @@ describe("Leads Inbox (one list: drafts, waiting mails, conversations)", () => {
     expect(chip(wrapper, "draft").classes()).toContain("on");
     expect(chip(wrapper, "draft").text()).toBe("leads.inbox.filter.draft 1");
     expect(ids(wrapper)).toEqual([5]);
-    expect(GET_Threads).toHaveBeenCalledWith({ sort: "activity", page: 1, page_size: 20, state: "draft" });
+    expect(GET_Conversations).toHaveBeenCalledWith({ page: 1, page_size: 20, state: "draft" });
     expect(useLeadsReviewStore().count).toBe(1);
   });
 
@@ -137,7 +139,7 @@ describe("Leads Inbox (one list: drafts, waiting mails, conversations)", () => {
     await rows[0].get('[data-testid="inbox-item-send-now"]').trigger("click");
     await flushPromises();
     expect(POST_SendNow).toHaveBeenCalledWith(61);
-    expect(GET_Threads).toHaveBeenCalledTimes(3); // all (no drafts) → again after Send now
+    expect(GET_Conversations).toHaveBeenCalledTimes(3); // all (no drafts) → again after Send now
   });
 
   it("an accepted draft moves from Drafts to Waiting without a reload of the page", async () => {
@@ -170,9 +172,9 @@ describe("Leads Inbox (one list: drafts, waiting mails, conversations)", () => {
     vi.useFakeTimers();
     const wrapper = mountInbox();
     await flushPromises();
-    const calls = GET_Threads.mock.calls.length;
+    const calls = GET_Conversations.mock.calls.length;
     await vi.advanceTimersByTimeAsync(30000);
-    expect(GET_Threads.mock.calls.length).toBe(calls + 1);
+    expect(GET_Conversations.mock.calls.length).toBe(calls + 1);
     wrapper.unmount();
     vi.useRealTimers();
   });
@@ -185,18 +187,33 @@ describe("Leads Inbox (one list: drafts, waiting mails, conversations)", () => {
     expect(wrapper.get('[data-thread="5"]').classes()).toContain("inbox-row--active");
   });
 
-  it("on a company card only the thread the card shows (its newest) is highlighted, not every thread of the company", async () => {
-    const older = base(20, { subject_ref: "leads.Company:9", status: "replied" });
-    const newest = base(21, { subject_ref: "leads.Company:9", status: "replied" });
-    server.rows = [newest, older];
+  it("a company with several threads is one row: highlighted on its card, with a quiet thread count", async () => {
+    const company = base(21, { subject_ref: "leads.Company:9", status: "open", replied: true, thread_count: 3 });
+    server.rows = [company, repliedRow];
     server.counts = { all: 2, draft: 0, waiting: 0, replied: 2 };
     route.name = "LeadsThread";
     route.params = { id: "9" };
-    useLeadsThreadStore().shownId = 21;
+    useLeadsThreadStore().shownId = 21; // the card shows the company's newest thread — the row's thread
     const wrapper = mountInbox();
     await flushPromises();
-    expect(wrapper.get('[data-thread="21"]').classes()).toContain("inbox-row--active");
-    expect(wrapper.get('[data-thread="20"]').classes()).not.toContain("inbox-row--active");
+    expect(ids(wrapper)).toEqual([21, 7]);
+    const row = wrapper.get('[data-thread="21"]');
+    expect(row.classes()).toContain("inbox-row--active");
+    expect(row.get('[data-testid="inbox-item-threads"]').text()).toBe("3 threads ·");
+    expect(row.find('[data-testid="inbox-marker-replied"]').exists()).toBe(true); // a reply in an older thread counts
+    expect(JSON.parse(row.get("a").attributes("data-to"))).toEqual({ name: "LeadsThread", params: { id: 9 }, query: { tab: "timeline" } });
+    expect(wrapper.find('[data-thread="7"] [data-testid="inbox-item-threads"]').exists()).toBe(false);
+  });
+
+  it("a draft that sits in an older thread opens Review with that draft and names its own recipient", async () => {
+    const older = { id: 90, subject: "Answer draft", recipient_email: "owner@shop-9.test" };
+    server.rows = [base(22, { subject_ref: "bdd:shop-9", recipient_email: "sales@shop-9.test", thread_count: 2, draft: older })];
+    server.counts = { all: 1, draft: 1, waiting: 0, replied: 0 };
+    const wrapper = mountInbox();
+    await flushPromises();
+    const row = wrapper.get('[data-thread="22"]');
+    expect(JSON.parse(row.get("a").attributes("data-to"))).toEqual({ name: "LeadsReview", params: { id: 90 } });
+    expect(row.get('[data-testid="inbox-item-to"]').text()).toContain("owner@shop-9.test");
   });
 
   it("with leads off (communicator alone) a company's thread opens by id and no company is looked up", async () => {
@@ -214,7 +231,7 @@ describe("Leads Inbox (one list: drafts, waiting mails, conversations)", () => {
     const wrapper = mountInbox();
     await flushPromises();
     const answers = [];
-    GET_Threads.mockImplementation(() => new Promise((resolve) => answers.push(resolve)));
+    GET_Conversations.mockImplementation(() => new Promise((resolve) => answers.push(resolve)));
     const reply = (rows) => ({ data: { results: rows, next: null, counts: server.counts } });
     const loaderHidden = () => wrapper.get("loader-stub").attributes("style")?.includes("display: none");
     await chip(wrapper, "replied").trigger("click");
@@ -234,21 +251,21 @@ describe("Leads Inbox (one list: drafts, waiting mails, conversations)", () => {
     vi.useFakeTimers();
     const pageOf = { 1: [waitingRow], 2: [repliedRow] };
     server.counts = { all: 2, draft: 0, waiting: 1, replied: 1 };
-    GET_Threads.mockImplementation(({ page }) => Promise.resolve({ data: { results: pageOf[page], next: page === 1 ? "p2" : null, counts: server.counts } }));
+    GET_Conversations.mockImplementation(({ page }) => Promise.resolve({ data: { results: pageOf[page], next: page === 1 ? "p2" : null, counts: server.counts } }));
     const wrapper = mountInbox();
     await flushPromises();
     await wrapper.get('[data-testid="inbox-more"]').trigger("click");
     await flushPromises();
     expect(ids(wrapper)).toEqual([6, 7]);
-    GET_Threads.mockClear();
+    GET_Conversations.mockClear();
     await vi.advanceTimersByTimeAsync(30000);
-    expect(GET_Threads.mock.calls.map(([params]) => params.page)).toEqual([1, 2]);
+    expect(GET_Conversations.mock.calls.map(([params]) => params.page)).toEqual([1, 2]);
     expect(ids(wrapper)).toEqual([6, 7]);
     wrapper.unmount();
   });
 
   it("a failed first load says so and falls back to All, without an unhandled rejection", async () => {
-    GET_Threads.mockRejectedValueOnce({ status: 500 });
+    GET_Conversations.mockRejectedValueOnce({ status: 500 });
     const wrapper = mountInbox();
     await flushPromises();
     expect(chip(wrapper, "all").classes()).toContain("on");

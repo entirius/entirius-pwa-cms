@@ -7,10 +7,13 @@
   >
     <router-link :to="target" class="inbox-row__link" active-class="" exact-active-class="">
       <span class="inbox-row__name" data-testid="inbox-item-name">{{ name }}</span>
-      <span class="inbox-row__time">{{ formatTime(row.activity_at) }}</span>
-      <!-- two drafts to one company differ by who gets them (FIX-17 item 4) -->
+      <span class="inbox-row__time">
+        <span v-if="row.thread_count > 1" class="inbox-row__threads" data-testid="inbox-item-threads">{{ threads }} · </span>
+        {{ formatTime(row.activity_at) }}
+      </span>
+      <!-- two drafts to one company differ by who gets them (FIX-17 item 4); the draft may sit in an older thread -->
       <span v-if="marker === 'draft'" class="inbox-row__to" data-testid="inbox-item-to">
-        {{ $t("leads.review.to") }}: {{ row.recipient_email || row.recipient_name }}
+        {{ $t("leads.review.to") }}: {{ row.draft.recipient_email || row.recipient_email || row.recipient_name }}
       </span>
       <span class="inbox-row__subject" data-testid="inbox-item-subject">{{ subject }}</span>
       <span class="inbox-row__state" data-testid="inbox-item-state">
@@ -38,12 +41,14 @@ import { loadCompanyName } from "@/utils/leadsCompanyNames";
 import { sendStateSentence } from "@/utils/leadsLabels";
 import { splitQuote } from "@/utils/leadsThread";
 import { canSendNow, formatTime, sendState } from "@/utils/leadsTime";
+import { pluralKey } from "@/utils/plural";
 import { companyIdFromSubjectRef, routeForSubjectRef } from "@/utils/subjectRef";
 
-// One thread of the Inbox. The row keeps one layout; a single marker says what it waits for: a draft to review,
-// a mail waiting for the send beat (clock + the `sendState` sentence, the one wording of a departure) or a reply.
+// One conversation of the Inbox (its newest thread; draft, waiting mail and reply from any of its threads). The row
+// keeps one layout; a single marker says what it waits for: a draft to review, a mail waiting for the send beat
+// (clock + the `sendState` sentence, the one wording of a departure) or a reply.
 const props = defineProps({
-  row: { type: Object, required: true }, // a `threads/` row: thread + subject, last_text, draft, waiting
+  row: { type: Object, required: true }, // a `conversations/` row: thread + subject, last_text, draft, waiting, replied, thread_count
   filter: { type: String, default: "all" },
   active: { type: Boolean, default: false },
 });
@@ -52,12 +57,12 @@ defineEmits(["send-now"]);
 const munin = useMuninStore();
 const companyName = ref("");
 
-// The chip the user looks through decides the marker of a thread that is in several states at once.
+// The chip the user looks through decides the marker of a conversation that is in several states at once.
 const MARKER_ORDER = { all: ["draft", "replied", "waiting"], draft: ["draft"], waiting: ["waiting"], replied: ["replied"] };
 const holds = {
   draft: (row) => Boolean(row.draft),
   waiting: (row) => Boolean(row.waiting),
-  replied: (row) => row.status === "replied",
+  replied: (row) => row.replied,
 };
 const marker = computed(() => (MARKER_ORDER[props.filter] || MARKER_ORDER.all).find((key) => holds[key](props.row)) || "none");
 
@@ -73,13 +78,14 @@ const markerText = computed(
 const firstLine = (text) => splitQuote(text).own.split("\n").find((line) => line.trim()) || "";
 const detail = computed(() => (marker.value === "waiting" ? "" : firstLine(props.row.last_text)));
 const subject = computed(() => (marker.value === "draft" ? props.row.draft.subject : props.row.subject) || t("leads.inbox.untitled"));
+const threads = computed(() => t(`leads.inbox.threads_${pluralKey(props.row.thread_count)}`, { count: props.row.thread_count }));
 const name = computed(() => companyName.value || props.row.recipient_name || props.row.recipient_email);
 
 // A company's thread lives in the leads module: with leads off (communicator alone) it opens as a thread by id, and
 // no company is looked up.
 const leadsOn = computed(() => munin.isModuleEnabled("leads"));
 
-// A draft opens Review; any other thread opens where it opens today — the company thread, else the thread by id.
+// A draft opens Review; any other row opens the company card, else its newest thread by id.
 const target = computed(() => {
   if (marker.value === "draft") return { name: "LeadsReview", params: { id: props.row.draft.id } };
   const company = leadsOn.value && routeForSubjectRef(props.row.subject_ref);
@@ -124,6 +130,9 @@ onMounted(async () => {
 .inbox-row__time {
   font-size: var(--fs-100);
   color: var(--c-basic-500);
+}
+.inbox-row__threads {
+  white-space: nowrap;
 }
 .inbox-row__to,
 .inbox-row__subject,

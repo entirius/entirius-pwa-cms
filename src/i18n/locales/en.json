@@ -3006,7 +3006,9 @@
       },
       "marker_draft": "Draft",
       "empty_replied": "No replies yet",
-      "load_error": "Could not load the inbox — it tries again on the next refresh"
+      "load_error": "Could not load the inbox — it tries again on the next refresh",
+      "threads_few": "{count} threads",
+      "threads_many": "{count} threads"
     },
     "review": {
       "title": "Review",
