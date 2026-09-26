@@ -37,6 +37,8 @@
     "test:unit:watch": "vitest",
     "test:pim-bridge": "playwright test tests/e2e/12-pim-suppliers-bridge.spec.js",
     "test:lookup": "playwright test tests/e2e/13-lookup-dropzone.spec.js"
+    "visual:parity": "playwright test -c tests/visual/playwright.visual.config.js --grep @parity"
+    "visual:approve": "playwright test -c tests/visual/playwright.visual.config.js --grep @screens --update-snapshots"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.3.0",
@@ -73,6 +75,7 @@
     "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@playwright/test": "^1.58.2",
     "@vitejs/plugin-vue": "^6.0.8",
     "@vue/cli-plugin-babel": "~5.0.8",
