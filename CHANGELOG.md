@@ -29,6 +29,18 @@ All notable changes to this project will be documented in this file.
   keeps them enabled with an inline error.
 - **Notification bar** in the header (django-notifications): unread badge polled every 30 s while logged in
   and the tab is visible, list as a bottom sheet (thumb reach on a phone), one tap marks read and jumps to the subject (`src/utils/subjectRef.js`).
+- **Optional SSO login** (login wall + `/sso/callback`): with
+  `VUE_APP_SSO_API_BASE` set, the login wall offers "Log in with SSO". The CMS
+  asks the backend for the provider's authorization URL, keeps the one-time
+  `state` in `sessionStorage`, and on return exchanges the code for the same
+  token pair the password login returns. Refresh and logout are unchanged. The
+  CMS knows no identity provider, only two backend endpoints; contract in
+  `docs/sso-login.md`. Unset, nothing changes.
+
+### Changed
+
+- **Post-login session setup is shared** (`src/composables/useLoginSession.js`):
+  password and SSO login run the same code after the token call.
 
 ### Fixed
 

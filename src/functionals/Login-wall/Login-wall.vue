@@ -79,6 +79,18 @@
         class="bg-support-400 b-support-400 jc-ct t-basic-100 w-100 br-50"
       />
 
+      <template v-if="ssoEnabled">
+        <p class="auth-card__divider fs-200 t-basic-500 mt-300 mb-300">
+          {{ $t("login.sso_or") }}
+        </p>
+        <BasicButton
+          data-testid="sso-login"
+          :text="$t('login.sso_submit')"
+          @click="startSsoLogin"
+          class="bg-basic-100 b-support-400 jc-ct t-support-400 w-100 br-50"
+        />
+      </template>
+
       <button class="auth-card__link mt-300" @click="showForgotPassword = true">
         {{ $t("login.forgot_password") }}
       </button>
@@ -92,22 +104,21 @@ const environment = process.env.NODE_ENV === "development";
 const username = process.env.VUE_APP_USERNAME;
 const password = process.env.VUE_APP_PASSWORD;
 
+import { POST_Login, POST_PasswordReset } from "../../api/contentDB/api";
 import {
-  POST_Login,
-  GET_User,
-  GET_UserDetails,
-  POST_PasswordReset,
-} from "../../api/contentDB/api";
+  POST_SsoLoginUrl,
+  SSO_STATE_KEY,
+  isSsoEnabled,
+  ssoRedirectUri,
+} from "@/api/sso/api";
 import { useNotifyStore } from "@/stores/notify";
-import { useUserStore } from "@/stores/user";
-import { useMuninStore } from "@/stores/munin";
+import { useLoginSession, consumeReturnRoute } from "@/composables/useLoginSession";
 import { extractApiMessage } from "@/composables/useFormErrors";
 export default {
   setup() {
     const notify = useNotifyStore();
-    const userStore = useUserStore();
-    const munin = useMuninStore();
-    return { notify, userStore, munin };
+    const { completeLogin } = useLoginSession();
+    return { notify, completeLogin };
   },
   data() {
     return {
@@ -119,6 +130,11 @@ export default {
       resetEmail: "",
       resetEmailSent: false,
     };
+  },
+  computed: {
+    ssoEnabled() {
+      return isSsoEnabled();
+    },
   },
   mounted() {
     if (localStorage.getItem("session_expired") === "1") {
@@ -142,83 +158,10 @@ export default {
           username: this.username,
           password: this.password,
         });
-        const { data: loginData = {}, meta: loginMeta = {} } = data;
-        const { access, refresh, customer_id = null } = loginData;
+        await this.completeLogin(data.data || {});
 
-        // SET EXPIRATION TIME
-        // ------------
-        // 15 mins
-        const remainingMilliseconds = 15 * 60 * 1000;
-
-        const expiryDate = new Date(
-          new Date().getTime() + remainingMilliseconds
-        );
-        // ------------
-
-        this.userStore.setAuth({
-          token: access,
-          refresh,
-          customer_id,
-          expiryDate: expiryDate,
-        });
-
-        // ------------------------
-        // Content permissions live in ContentDB (Pages panel). On lean stacks
-        // without contentdb this 404s — it must NOT abort login, otherwise
-        // setUser() never runs and the left menu renders empty. Default to [].
-        let permissions = [];
-        try {
-          const { data: userData } = await GET_User({});
-          permissions = userData?.data || [];
-        } catch (e) {
-          console.warn("content-permissions unavailable (contentdb not installed)", e);
-        }
-
-        let username = "";
-        let first_name = "";
-        let last_name = "";
-        let email = "";
-        let extra = null;
-        try {
-          const { data: userDetailsResponse } = await GET_UserDetails({
-            uid: customer_id,
-          });
-          const { data: userDetails } = userDetailsResponse;
-          ({
-            username = "",
-            first_name = "",
-            last_name = "",
-            email = "",
-            extra = null,
-          } = userDetails);
-        } catch (e) {
-          console.warn("Profile endpoint unavailable — using defaults", e);
-        }
-        this.userStore.loadPreferences(extra);
-        // TODO fix later
-        // permissions per content types
-        const layout_ext = ["header", "footer"];
-        const perms = permissions.map((p) => {
-          return {
-            ...p,
-            _for: layout_ext.includes(p.slug) ? "layout-extender" : "content",
-            _limit: layout_ext.includes(p.slug) ? 1 : null,
-          };
-        });
-
-        this.userStore.setUser({
-          username,
-          first_name,
-          last_name,
-          email,
-          permissions: perms,
-        });
-
-        await this.munin.fetchModules();
-
-        const returnRoute = localStorage.getItem("cms_return_route");
-        if (returnRoute && returnRoute !== "/") {
-          localStorage.removeItem("cms_return_route");
+        const returnRoute = consumeReturnRoute();
+        if (returnRoute) {
           this.$router.push(returnRoute);
         }
       } catch (error) {
@@ -228,6 +171,19 @@ export default {
         );
         this.notify.spawnNotification({
           title,
+          type: "negative",
+          timeout: "2500",
+        });
+      }
+    },
+    async startSsoLogin() {
+      try {
+        const { data } = await POST_SsoLoginUrl({ redirectUri: ssoRedirectUri() });
+        sessionStorage.setItem(SSO_STATE_KEY, data.state);
+        window.location.assign(data.authorization_url);
+      } catch (error) {
+        this.notify.spawnNotification({
+          title: extractApiMessage(error, this.$t("login.sso_failed")),
           type: "negative",
           timeout: "2500",
         });
