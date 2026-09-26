@@ -127,3 +127,62 @@ test('should do something', async ({ page }) => {
 
 Use `waitForLoadState('networkidle')` not `waitForTimeout`. Prefer
 `text=Button` selectors.
+
+## Visual fidelity harness
+
+`tests/visual/` proves what a redesign change did to the CMS, in three layers. It runs against an already running
+CMS (the zeno stack, `CMS_BASE_URL`, default `http://localhost:8180`, API `CMS_API_URL`, default
+`http://localhost:8100`), logs in as `CMS_USER` / `CMS_PASSWORD` (default `admin` / `admin123`) and never starts a
+server. Config: `tests/visual/playwright.visual.config.js` (projects `desktop` 1680×1168 and `mobile` 393×852,
+DPR 1, `pl-PL`, `Europe/Warsaw`, one worker).
+
+| Layer | Spec (tag) | Question | P1 mode |
+|---|---|---|---|
+| 1 Token parity | `parity.spec.js` (`@parity`) | Does every `--c-*`, `--space-*`, `--radius-*`, `--shadow-*` from the SCSS sources resolve on `/`, both themes? Plus census (off-token colours, radii, font sizes), font gate (CDP `CSS.getPlatformFontsForNode`) and axe `color-contrast` | token resolution gates; census, fonts, contrast are reports |
+| 2 Figma landmarks | `landmarks.spec.js` (`@landmarks`) | Do elements with `data-fid="<id>"` sit where `figma/figma-landmarks.json` puts them (±2 px)? | report ("0 matched" until the P4 shell adds `data-fid`) |
+| 3 Regression | `screens.spec.js` (`@screens`) | Did any screen of `capture-spec.json` change? `toHaveScreenshot`, `threshold 0.1`, `maxDiffPixels 20` | gate once baselines exist |
+
+```bash
+npm run visual              # all layers
+npm run visual:parity       # layer 1
+npm run visual:landmarks    # layer 2
+npm run visual:screens      # layer 3 against the approved baselines
+npm run visual:approve      # operator only: write layer-3 baselines
+```
+
+Reports land in `tests/visual/.report/` (`VISUAL_REPORT_DIR` overrides it): `census.json`, `fonts.json`,
+`contrast.json`, `landmarks/<S>.json` and the HTML report in `html/`. Test artefacts go to `tests/visual/test-results/`.
+Both are gitignored.
+
+**Screens.** `capture-spec.json` lists every screen: route, resolver (`fixed`, `first-row`, `first-link`), state
+(`default`, `switcher-open`, `user-menu-open`, `notif-open`, `health-open`, `fab-open`, `scrolled`), viewports and the
+baseline file name. Tests are named `<id>-<viewport>-<theme>`. P1 policy: dark on every screen and viewport, light only
+on the rows of Figma frames S1, S4, S6 and S9. Rows marked `needsData` (a review draft, a booking) skip with the reason
+when the seed has no such row. Take and check baselines on a fresh `make seed` with no BDD run since: BDD adds rows.
+
+**Deterministic state** (`support/state.js`): a login at most 4 minutes old (the access JWT lives 300 s), theme,
+language `PL` and sidebar pinned through `localStorage` and a rewritten profile GET, clock frozen at
+`2026-09-26T10:00:00+02:00`, transitions, animations and the caret off, notification and config-health polls
+answered with fixed bodies. Every write to the API is answered `200 {}` (login and token refresh pass through),
+so a run changes no data on the shared stack. The harness never clicks the theme toggle or the language switch:
+both PATCH the admin profile every parallel session shares.
+
+**Exit contract.** A screenshot or parity assertion that fails is a real difference (exit 1). A test that throws an
+error starting with `INFRA:` (deep link redirected, expired session, login failed, a detail the UI cannot reach) is
+infrastructure; a wrapper maps it to exit 2 and never sends it back to the coder.
+
+**Approving baselines** (operator only; agents never update baselines). The config has `updateSnapshots: "none"`, so a
+missing baseline fails instead of being written silently. On a fresh seed, review the HTML report (expected / actual /
+diff), then write the baselines, all or only some screens (the second `--grep` replaces the first):
+
+```bash
+npm run visual:approve                        # every screen
+npm run visual:approve -- --grep "g-home-"    # only g-home, both viewports and themes
+```
+
+Commit the PNGs from `tests/visual/__screenshots__/<project>/` in the same PR as the code that changed them.
+
+**Figma inputs.** `figma/S1.png` … `figma/S10.png` are the frozen Figma frames at @1x, and
+`figma/figma-landmarks.json` is generated from the Figma node JSON:
+`node tests/visual/scripts/figma-landmarks.mjs <cms.json>`. `known-differences.json` lists where the code
+deliberately differs from Figma (KD01–KD22) and how each layer treats it.
