@@ -2,16 +2,10 @@ const fs = require("fs");
 const path = require("path");
 
 // Expected token values, read from the token sources (not from the built CSS the parity check verifies):
-// the brand scale lists in SCSS, the CMS semantic map and the @entirius/brand-tokens CSS it points into.
+// the CMS semantic map and the @entirius/brand-tokens CSS it points into.
 const ROOT = path.resolve(__dirname, "../../..");
-const SCSS = path.join(ROOT, "src/assets/scss");
 const SEMANTIC = path.join(ROOT, "src/assets/tokens/semantic.json");
 const BRAND_CSS = require.resolve("@entirius/brand-tokens/tokens.css");
-// variables/_spacing.scss `$brand-space-steps` / `$brand-radii`: the brand scales the CMS emits by the same name
-const LIST = (name) => new RegExp(`\\$${name}:\\s*([^;]+);`);
-
-const read = (file) => fs.readFileSync(path.join(SCSS, file), "utf8");
-
 function declarations(block, prefix) {
   const pattern = new RegExp(`(--${prefix}-[\\w-]+):\\s*([^;]+);`, "g");
   return Object.fromEntries([...block.matchAll(pattern)].map((m) => [m[1], m[2].trim()]));
@@ -48,19 +42,12 @@ function semanticTokens(theme) {
   return tokens;
 }
 
-// `$brand-space-steps: 0, 1, …` → { "--space-1": "4px", … } from the brand values
-function brandScale(list, prefix) {
-  const match = read("variables/_spacing.scss").match(LIST(list));
-  if (!match) throw new Error(`_spacing.scss has no $${list}`);
-  const brand = brandValues();
-  const names = match[1].split(",").map((name) => name.trim());
-  return Object.fromEntries(names.map((name) => [`--${prefix}-${name}`, brand[`--brand-${prefix}-${name}`]]));
-}
-
-// semantic.json `font-size` → { "--fs-100": "10px", … }: the type scale _fonts.scss must emit
-function fontSizes() {
+// A theme-independent group of semantic.json (`space`, `radius`, `font-size`) → { "--space-1": "4px", … }:
+// the scales main.scss must emit, brand references resolved.
+function scale(group) {
   const map = JSON.parse(fs.readFileSync(SEMANTIC, "utf8"));
-  return Object.fromEntries(entries(map["font-size"]).map(([name, value]) => [`--${name}`, value]));
+  const brand = brandValues();
+  return Object.fromEntries(entries(map[group]).map(([name, value]) => [`--${name}`, brandValue(brand, value)]));
 }
 
 // kind → the CSS property a probe element normalises the value through. Fails closed: a source the parser
@@ -71,9 +58,9 @@ function expectedTokens(theme) {
     color: semantic.color,
     background: semantic.background,
     boxShadow: semantic.boxShadow,
-    borderTopLeftRadius: brandScale("brand-radii", "radius"),
-    marginLeft: brandScale("brand-space-steps", "space"),
-    fontSize: fontSizes(),
+    borderTopLeftRadius: scale("radius"),
+    marginLeft: scale("space"),
+    fontSize: scale("font-size"),
   };
   const empty = Object.keys(expected).filter((kind) => !Object.keys(expected[kind]).length);
   const unresolved = Object.values(expected).flatMap((tokens) => Object.keys(tokens).filter((name) => !tokens[name]));

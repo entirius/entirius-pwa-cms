@@ -17,7 +17,7 @@ django-munin module registry. Backend for local dev: entirius-zeno at `http://lo
 | `npm test` | build check + full Playwright e2e (needs a running backend) |
 | `npm run test:smoke` | quick e2e sanity (~2 min) |
 | `npm run pretty` | Prettier over `*.vue` |
-| `npm run lint:ui` | UI lint (stylelint + eslint), warnings = debt |
+| `npm run lint:ui` | UI lint (stylelint + eslint + the P2 scale codemod `--check`), warnings = debt, old token names fail |
 
 ## Conventions
 

@@ -75,7 +75,7 @@
   },
 
   "radius": {
-    "$description": "Same names and px as brand (D5 amended). Theme-independent; the generator emits the .rounded-<name> classes (.rounded = base).",
+    "$description": "Same names and px as brand (D5 amended). Theme-independent; main.scss emits them from $brand-radii with the .rounded-<name> classes (.rounded = base).",
     "radius-base": "{radius.base}",
     "radius-lg": "{radius.lg}",
     "radius-xl": "{radius.xl}",
@@ -86,7 +86,7 @@
   },
 
   "space": {
-    "$description": "D4 + Q-6: the brand steps under the brand names (space-1 = 4 px … space-30 = 120 px). Theme-independent; the generator emits the .p-/.m-/.gap-<step> classes.",
+    "$description": "D4 + Q-6: the brand steps under the brand names (space-1 = 4 px … space-30 = 120 px). Theme-independent; main.scss emits them from $brand-space-steps with the .p-/.m-/.gap-<step> classes.",
     "space-0": "{space.0}",
     "space-1": "{space.1}",
     "space-2": "{space.2}",

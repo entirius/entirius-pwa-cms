@@ -1,7 +1,7 @@
 // CMS UI lint, style side. Rule IDs (T1…) refer to docs/ui-rules.md § Tokens.
 // P1 ships it as warnings (debt report); P5 flips defaultSeverity to "error".
 // Old token and class names (removed in P2) are errors already: they no longer render.
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 
 const OLD_COLOUR_VAR = /var\(\s*--c-[a-z]+-\d/;
@@ -16,16 +16,18 @@ const MARGIN_PADDING = "/^(margin|padding)-(top|right|bottom|left|inline|block)(
 // T3 1–3 px hairline alignments (border compensation, focus offsets, icon nudges) have no step and stay raw
 const SPACING_VALUES = [...BASE_VALUES, "/^-?[1-3]px$/"];
 
-// Every custom property the CMS defines globally: the generated semantic layer, the literal :root tokens of main.scss
-// and the scales its loops emit. Local ones (declared in the same file) are known to the rule without this list.
+// Every custom property the CMS defines globally: the literal declarations of the global SCSS (semantic layer,
+// main.scss, utils) and the scales main.scss emits from loops. Local ones (declared in the same file) are known to
+// the rule without this list.
 function cmsCustomProperties() {
-  const scss = (file) => readFileSync(new URL(`src/assets/scss/${file}`, import.meta.url), "utf8");
+  const root = new URL("src/assets/scss/", import.meta.url);
+  const scss = (file) => readFileSync(new URL(file, root), "utf8");
   const declared = (text) => [...text.matchAll(/^\s*(--[\w-]+):/gm)].map((m) => m[1]);
   const list = (text, name) => text.match(new RegExp(`\\$${name}:\\s*([^;]+);`))[1].split(",").map((v) => v.trim());
   const spacing = scss("variables/_spacing.scss");
+  const files = readdirSync(root, { recursive: true }).filter((file) => file.endsWith(".scss"));
   const names = [
-    ...declared(scss("themes/_semantic.generated.scss")),
-    ...declared(scss("main.scss")),
+    ...files.flatMap((file) => declared(scss(file))),
     ...list(spacing, "brand-space-steps").map((step) => `--space-${step}`),
     ...list(spacing, "brand-radii").map((radius) => `--radius-${radius}`),
     ...[...scss("variables/_fonts.scss").matchAll(/^\s*(\d+):/gm)].map((m) => `--fs-${m[1]}`),
