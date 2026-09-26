@@ -4,7 +4,7 @@
       <li
         v-for="notification in notifications"
         :key="notification.uuid"
-        class="notification flex jc-sb ai-ct mb-100 p-200 br-50 shadow-down"
+        class="notification flex jc-sb ai-ct mb-2 p-5 rounded shadow-down"
         :class="[toneClasses(notification.type), `notification--${notification.type}`]"
         :role="severityRole(notification.type)"
         :aria-live="severityAriaLive(notification.type)"
@@ -15,7 +15,7 @@
           <p
             v-if="notification.title"
             class="fs-300 fw-600"
-            :class="notification.msg ? 'mb-50' : ''"
+            :class="notification.msg ? 'mb-1' : ''"
             v-text="notification.title"
           />
           <p v-if="notification.msg" class="fs-200" v-text="notification.msg" />
@@ -101,11 +101,11 @@ export default {
   background: transparent;
   border: 0;
   color: inherit;
-  font-size: 1.25rem;
+  font-size: var(--fs-500);
   line-height: 1;
   cursor: pointer;
-  padding: 0 var(--space-50);
-  margin-left: var(--space-100);
+  padding: 0 var(--space-1);
+  margin-left: var(--space-2);
   opacity: 0.7;
   transition: opacity 120ms ease;
   min-width: 44px;
@@ -125,9 +125,9 @@ export default {
 @media screen and (max-width: 768px) {
   .notifications {
     top: auto;
-    right: var(--space-200);
-    bottom: calc(max(var(--space-200), env(safe-area-inset-bottom)) + var(--action-bar-height, 0px));
-    left: var(--space-200);
+    right: var(--space-5);
+    bottom: calc(max(var(--space-5), env(safe-area-inset-bottom)) + var(--action-bar-height, 0px));
+    left: var(--space-5);
     width: auto;
   }
   .notification {

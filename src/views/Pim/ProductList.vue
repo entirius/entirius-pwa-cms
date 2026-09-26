@@ -1,9 +1,9 @@
 <template>
-  <div class="pim-list-layout p-500 fs-300 t-body h-100 ov-h">
+  <div class="pim-list-layout p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle br-50 flex-1 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle rounded flex-1 ovy-auto pl-12 pt-12 pb-12 pr-12"
     >
-      <div class="flex ai-ct mb-400">
+      <div class="flex ai-ct mb-10">
         <h1 class="fs-700 fw-600">{{ $t("pim.products") }}</h1>
       </div>
 
@@ -219,7 +219,7 @@
     <Pagination
       v-if="totalCount > pageSize"
       :pagination="paginationState"
-      class="mt-200"
+      class="mt-5"
       @onChangePage="onPageChange"
     />
 
@@ -892,8 +892,8 @@ export default {
 .product-list__toolbar {
   display: flex;
   align-items: center;
-  gap: var(--space-200);
-  margin-bottom: var(--space-400);
+  gap: var(--space-5);
+  margin-bottom: var(--space-10);
   flex-wrap: wrap;
 }
 .product-list__search {
@@ -903,12 +903,12 @@ export default {
 .product-list__filter-toggle {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-1);
   position: relative;
-  padding: 0 12px;
+  padding: 0 var(--space-3);
   height: var(--elem-height);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
   background: var(--surface-base);
   color: var(--text-body);
   cursor: pointer;
@@ -925,11 +925,11 @@ export default {
   justify-content: center;
   min-width: 18px;
   height: 18px;
-  padding: 0 5px;
-  border-radius: 9px;
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-lg);
   background: var(--accent-fill-hover);
   color: var(--text-on-accent-fill);
-  font-size: 11px;
+  font-size: var(--fs-150);
   font-weight: 600;
 }
 
@@ -937,17 +937,17 @@ export default {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-200);
-  margin-bottom: var(--space-400);
-  padding: var(--space-300);
+  gap: var(--space-5);
+  margin-bottom: var(--space-10);
+  padding: var(--space-8);
   background: var(--surface-raised);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
 }
 
 .product-list__filter-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-100);
+  gap: var(--space-2);
   flex-basis: 100%;
 }
 
@@ -960,10 +960,10 @@ export default {
 .product-list__clear-filters {
   display: flex;
   align-items: center;
-  padding: 0 12px;
+  padding: 0 var(--space-3);
   height: var(--elem-height);
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
   background: none;
   color: var(--negative);
   cursor: pointer;
@@ -994,7 +994,7 @@ export default {
 
   &:focus-visible {
     box-shadow: 0 0 0 2px var(--focus-ring);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-base);
   }
 }
 
@@ -1005,13 +1005,13 @@ export default {
 .product-list__quality {
   display: flex;
   flex-direction: column;
-  gap: var(--space-50);
+  gap: var(--space-1);
 }
 
 .product-list__quality-toggle {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-50);
+  gap: var(--space-1);
   padding: 0;
   border: none;
   background: none;
@@ -1025,7 +1025,7 @@ export default {
 
 .product-list__quality-filter-label {
   align-self: center;
-  margin-left: var(--space-100);
+  margin-left: var(--space-2);
   white-space: nowrap;
 }
 
@@ -1034,8 +1034,8 @@ export default {
   z-index: 1000;
   min-width: 180px;
   max-width: 240px;
-  padding: var(--space-200);
-  border-radius: var(--radius-sm);
+  padding: var(--space-5);
+  border-radius: var(--radius-base);
   box-shadow: var(--shadow-md);
 }
 
@@ -1045,14 +1045,14 @@ export default {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-50);
+  gap: var(--space-1);
 }
 
 .product-list__gap {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-50);
+  gap: var(--space-1);
   font-size: var(--fs-200);
 }
 
@@ -1061,11 +1061,11 @@ export default {
 }
 
 .product-list__gap-lang {
-  padding: 0 6px;
-  border-radius: var(--radius-sm);
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-base);
   background: var(--surface-raised);
   color: var(--text-secondary);
-  font-size: 11px;
+  font-size: var(--fs-150);
   text-transform: uppercase;
 }
 
@@ -1076,7 +1076,7 @@ export default {
 .product-thumb {
   width: 40px;
   height: 40px;
-  border-radius: 4px;
+  border-radius: var(--radius-base);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -1090,7 +1090,7 @@ export default {
   }
 
   &__placeholder {
-    font-size: 14px;
+    font-size: var(--fs-300);
   }
 }
 </style>

@@ -111,7 +111,7 @@ function remove(text) {
 .pool__list {
   display: flex;
   flex-direction: column;
-  gap: var(--space-200);
+  gap: var(--space-5);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -120,7 +120,7 @@ function remove(text) {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 .pool__item--inactive .pool__body {
   opacity: 0.5;
@@ -128,9 +128,9 @@ function remove(text) {
 .pool__body {
   flex: 1 1 16rem;
   min-height: 44px;
-  padding: var(--space-100) var(--space-200);
+  padding: var(--space-2) var(--space-5);
   border: 1px solid transparent;
-  border-radius: 6px;
+  border-radius: var(--radius-base);
   background: none;
   color: var(--text-body);
   font: inherit;
@@ -145,7 +145,7 @@ function remove(text) {
   display: flex;
   flex: 1 1 100%;
   flex-direction: column;
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 .pool__item .ld-btn {
   min-height: 44px;

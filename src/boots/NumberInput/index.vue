@@ -116,7 +116,7 @@ function onFocusout() {
 .number-input {
   border: 1px solid var(--border-control);
   background-color: var(--surface-sunken);
-  border-radius: var(--space-50);
+  border-radius: var(--radius-base);
   height: var(--elem-height);
   padding: 0;
   transition: border-color 0.2s;
@@ -165,7 +165,7 @@ function onFocusout() {
 }
 
 .number-input__icon {
-  font-size: 14px;
+  font-size: var(--fs-300);
   font-weight: 600;
   line-height: 1;
   user-select: none;
@@ -182,11 +182,11 @@ function onFocusout() {
   background: transparent;
   height: 100%;
   min-width: 0;
-  padding: 0 var(--space-50);
+  padding: 0 var(--space-1);
 }
 
 .number-input__suffix {
-  padding-right: var(--space-100);
+  padding-right: var(--space-2);
   font-size: var(--fs-200);
   color: var(--text-muted);
   user-select: none;

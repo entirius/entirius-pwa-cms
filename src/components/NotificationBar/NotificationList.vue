@@ -114,7 +114,7 @@ const preview = (body) =>
   overflow-y: auto;
   padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
   background: var(--surface-base);
-  border-radius: 1rem 1rem 0 0;
+  border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
   box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.16);
   z-index: 91;
 }
@@ -124,7 +124,7 @@ const preview = (body) =>
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75rem 0.5rem 0.5rem 1rem;
+  padding: var(--space-3) var(--space-2) var(--space-2) var(--space-4);
   background: var(--surface-base);
   border-bottom: 1px solid var(--border-subtle);
 }
@@ -135,7 +135,7 @@ const preview = (body) =>
   width: 2.5rem;
   height: 0.25rem;
   margin-left: -1.25rem;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: var(--surface-hover);
 }
 .notif-list__title {
@@ -146,23 +146,23 @@ const preview = (body) =>
   width: 44px;
   height: 44px;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   background: none;
   color: var(--text-secondary);
   cursor: pointer;
 }
 .notif-list__empty {
   margin: 0;
-  padding: 1rem;
+  padding: var(--space-4);
   color: var(--text-muted);
 }
 .notif-row {
   display: flex;
-  gap: 0.75rem;
+  gap: var(--space-3);
   align-items: flex-start;
   width: 100%;
   min-height: 3rem;
-  padding: 0.75rem 1rem;
+  padding: var(--space-3) var(--space-4);
   background: none;
   border: none;
   border-bottom: 1px solid var(--border-subtle);
@@ -177,8 +177,8 @@ const preview = (body) =>
   flex-shrink: 0;
   width: 0.5rem;
   height: 0.5rem;
-  margin-top: 0.4rem;
-  border-radius: 50%;
+  margin-top: var(--space-2);
+  border-radius: var(--radius-full);
   background: var(--accent-fill);
 }
 .notif-row--high .notif-row__dot {
@@ -218,7 +218,7 @@ const preview = (body) =>
     width: 24rem;
     max-height: 60vh;
     padding-bottom: 0;
-    border-radius: 0.75rem;
+    border-radius: var(--radius-xl);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
   }
   .notif-list__grip {

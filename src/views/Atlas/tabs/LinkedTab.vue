@@ -1,6 +1,6 @@
 <template>
-  <div class="linked-tab p-300 ovy-auto h-100">
-    <div class="flex ai-ct jc-sb mb-300 flex-wrap gap-200">
+  <div class="linked-tab p-8 ovy-auto h-100">
+    <div class="flex ai-ct jc-sb mb-8 flex-wrap gap-5">
       <h2 class="fs-400 fw-600">{{ $t("atlas.tabs.linked") }}</h2>
       <button
         class="suppliers-primary-btn"
@@ -14,7 +14,7 @@
 
     <div
       v-if="!loading && shouldShowNoPreferredBanner"
-      class="bg-warning-subtle t-warning p-200 br-sm mb-300"
+      class="bg-warning-subtle t-warning p-5 rounded mb-8"
       data-testid="linked-no-preferred-banner"
     >
       <p class="fs-200">{{ $t("atlas.linked.no_preferred_warning") }}</p>
@@ -46,7 +46,7 @@
         />
       </template>
       <template #cell-actions="{ row }">
-        <div class="flex ai-ct gap-100" @click.stop>
+        <div class="flex ai-ct gap-2" @click.stop>
           <button
             v-if="!isMonitoringSupplier && !row.is_primary"
             class="row-action-btn bg-positive-subtle t-positive"
@@ -93,12 +93,12 @@
       width="420px"
       @close="closeForm"
     >
-      <form class="flex flex-column gap-200" @submit.prevent="submitForm">
+      <form class="flex flex-column gap-5" @submit.prevent="submitForm">
         <FormField
           :label="$t('atlas.linked.real_product_sku_label')"
           required
         >
-          <div class="flex ai-ct gap-200">
+          <div class="flex ai-ct gap-5">
             <EntitySearchPicker
               v-model="formData.real_product_sku"
               :display-value="skuLabel"
@@ -165,7 +165,7 @@
             data-testid="linked-form-notes"
           />
         </FormField>
-        <div class="flex ai-ct jc-end gap-200 mt-300">
+        <div class="flex ai-ct jc-end gap-5 mt-8">
           <button
             type="button"
             class="suppliers-secondary-btn"
@@ -225,8 +225,8 @@
             class="sku-preview__placeholder"
           />
         </div>
-        <h3 class="fs-400 fw-600 mt-200">{{ previewProduct.name }}</h3>
-        <dl class="sku-preview__meta fs-200 mt-200">
+        <h3 class="fs-400 fw-600 mt-5">{{ previewProduct.name }}</h3>
+        <dl class="sku-preview__meta fs-200 mt-5">
           <dt>{{ $t("atlas.linked.col.sku") }}</dt>
           <dd>{{ previewProduct.sku }}</dd>
           <dt>EAN</dt>
@@ -544,12 +544,12 @@ export default {
 .suppliers-secondary-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   height: 36px;
-  padding: 0 16px;
-  font-size: 13px;
+  padding: 0 var(--space-4);
+  font-size: var(--fs-250);
   font-weight: 500;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   border: 1px solid;
   cursor: pointer;
 }
@@ -574,7 +574,7 @@ export default {
   width: 28px;
   height: 28px;
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   cursor: pointer;
 }
 .form-error {
@@ -591,7 +591,7 @@ export default {
   width: 100%;
   height: 220px;
   background: var(--surface-base);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   overflow: hidden;
   img {
     max-width: 100%;
@@ -606,7 +606,7 @@ export default {
 .sku-preview__meta {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 4px 12px;
+  gap: var(--space-1) var(--space-3);
   dt {
     color: var(--text-secondary);
   }

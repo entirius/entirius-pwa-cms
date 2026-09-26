@@ -2,12 +2,11 @@ const fs = require("fs");
 const path = require("path");
 
 // Expected token values, read from the token sources (not from the built CSS the parity check verifies):
-// the spacing/radius SCSS, the CMS semantic map and the @entirius/brand-tokens CSS it points into.
+// the brand scale lists in SCSS, the CMS semantic map and the @entirius/brand-tokens CSS it points into.
 const ROOT = path.resolve(__dirname, "../../..");
 const SCSS = path.join(ROOT, "src/assets/scss");
 const SEMANTIC = path.join(ROOT, "src/assets/tokens/semantic.json");
 const BRAND_CSS = require.resolve("@entirius/brand-tokens/tokens.css");
-const MOBILE_MAX_WIDTH = 640; // main.scss: `max-width: 40rem` switches --space-* to the `m` set
 // variables/_spacing.scss `$brand-space-steps` / `$brand-radii`: the brand scales the CMS emits by the same name
 const LIST = (name) => new RegExp(`\\$${name}:\\s*([^;]+);`);
 
@@ -58,27 +57,23 @@ function brandScale(list, prefix) {
   return Object.fromEntries(names.map((name) => [`--${prefix}-${name}`, brand[`--brand-${prefix}-${name}`]]));
 }
 
-// `$spacing: (m: (0: 0, 50: 5px, …), d: (…))` → the set for the viewport width
-function spacing(viewportWidth) {
-  const device = viewportWidth <= MOBILE_MAX_WIDTH ? "m" : "d";
-  const source = read("variables/_spacing.scss");
-  const start = source.indexOf(`${device}: (`);
-  if (start < 0) throw new Error(`_spacing.scss has no "${device}" set`);
-  const block = source.slice(start, source.indexOf(")", start));
-  const entries = [...block.matchAll(/^\s*(\d+):\s*([^,\n]+),/gm)];
-  return Object.fromEntries(entries.map((m) => [`--space-${m[1]}`, m[2].trim()]));
+// semantic.json `font-size` → { "--fs-100": "10px", … }: the type scale _fonts.scss must emit
+function fontSizes() {
+  const map = JSON.parse(fs.readFileSync(SEMANTIC, "utf8"));
+  return Object.fromEntries(entries(map["font-size"]).map(([name, value]) => [`--${name}`, value]));
 }
 
 // kind → the CSS property a probe element normalises the value through. Fails closed: a source the parser
 // no longer understands must break the gate, never shrink it to nothing.
-function expectedTokens(theme, viewportWidth) {
+function expectedTokens(theme) {
   const semantic = semanticTokens(theme);
   const expected = {
     color: semantic.color,
     background: semantic.background,
     boxShadow: semantic.boxShadow,
-    borderTopLeftRadius: { ...declarations(read("main.scss"), "radius"), ...brandScale("brand-radii", "radius") },
-    marginLeft: { ...spacing(viewportWidth), ...brandScale("brand-space-steps", "space") },
+    borderTopLeftRadius: brandScale("brand-radii", "radius"),
+    marginLeft: brandScale("brand-space-steps", "space"),
+    fontSize: fontSizes(),
   };
   const empty = Object.keys(expected).filter((kind) => !Object.keys(expected[kind]).length);
   const unresolved = Object.values(expected).flatMap((tokens) => Object.keys(tokens).filter((name) => !tokens[name]));

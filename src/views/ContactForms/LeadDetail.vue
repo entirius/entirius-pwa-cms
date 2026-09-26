@@ -1,7 +1,7 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
     >
       <Teleport v-if="toolbarReady" to="#forms-toolbar-left">
         <BasicButton
@@ -46,7 +46,7 @@
       <Loader v-if="loading" />
 
       <template v-else-if="lead">
-        <div class="flex ai-ct mb-300">
+        <div class="flex ai-ct mb-8">
           <h1 class="fs-700 fw-600">{{ $t("cf.lead_detail") }}</h1>
         </div>
 
@@ -199,7 +199,7 @@
         <h2 class="fs-500 fw-600">{{ $t("cf.mark_as_won_title") }}</h2>
       </template>
       <template #description>
-        <p class="mb-200">{{ $t("cf.mark_as_won_description") }}</p>
+        <p class="mb-5">{{ $t("cf.mark_as_won_description") }}</p>
         <FormField :label="$t('cf.deal_value')">
           <BasicInput
             v-model="markAsWonDealValue"
@@ -210,14 +210,14 @@
         </FormField>
         <p
           v-if="integrations && integrations.google_ads_enabled"
-          class="fs-200 t-accent mt-200"
+          class="fs-200 t-accent mt-5"
         >
           <font-awesome-icon icon="circle-info" />
           {{ $t("cf.google_ads_push_hint") }}
         </p>
         <p
           v-else-if="integrations"
-          class="fs-200 t-muted mt-200"
+          class="fs-200 t-muted mt-5"
         >
           <font-awesome-icon icon="circle-info" />
           {{ $t("cf.google_ads_off_hint") }}
@@ -495,14 +495,14 @@ export default {
 .cf-lead-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: var(--space-300);
+  gap: var(--space-8);
 }
 
 .cf-card {
-  padding: var(--space-300);
+  padding: var(--space-8);
   background: var(--surface-base);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
 }
 
 .cf-card__title {
@@ -511,20 +511,20 @@ export default {
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  margin-bottom: var(--space-200);
+  margin-bottom: var(--space-5);
 }
 
 .cf-field-list {
   display: flex;
   flex-direction: column;
-  gap: var(--space-100);
+  gap: var(--space-2);
   margin: 0;
 }
 
 .cf-field-list__row {
   display: grid;
   grid-template-columns: 140px 1fr;
-  gap: var(--space-200);
+  gap: var(--space-5);
   align-items: baseline;
 }
 
@@ -545,16 +545,16 @@ export default {
 .cf-code {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: var(--fs-200);
-  padding: 2px 6px;
+  padding: 2px var(--space-1);
   background: var(--surface-raised);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   color: var(--text-body);
 }
 
 .cf-ads-imported {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-50);
+  gap: var(--space-1);
   color: var(--positive);
 }
 

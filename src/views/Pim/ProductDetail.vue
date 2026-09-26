@@ -1,5 +1,5 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#pim-toolbar-left" defer>
       <BasicButton
         text=""
@@ -124,16 +124,16 @@
         @click="showDeleteConfirm = true"
       />
     </Teleport>
-    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
       <Loader v-if="loading" />
 
       <!-- etap-12 #25: 404 on the chosen channel auto-switches to default and warns. -->
       <div
         v-if="channelMismatchWarning"
-        class="channel-mismatch-warning bg-warning-subtle t-warning p-300 br-50 mb-300"
+        class="channel-mismatch-warning bg-warning-subtle t-warning p-8 rounded mb-8"
         role="alert"
       >
-        <font-awesome-icon icon="triangle-exclamation" class="mr-200" />
+        <font-awesome-icon icon="triangle-exclamation" class="mr-5" />
         {{ $t("pim.channel_mismatch_warning") }}
       </div>
 
@@ -148,11 +148,11 @@
           <!-- Right column: Info + Tabs -->
           <div class="product-layout__content">
             <!-- Product info card -->
-            <div class="info-card mb-400">
-              <h2 class="fs-600 fw-600 mb-200">
+            <div class="info-card mb-10">
+              <h2 class="fs-600 fw-600 mb-5">
                 {{ product.name || product.sku }}
               </h2>
-              <div class="info-card__meta flex flex-wrap ai-ct gap-200 mb-300">
+              <div class="info-card__meta flex flex-wrap ai-ct gap-5 mb-8">
                 <span class="meta-item"
                   >SKU: <strong>{{ product.sku }}</strong></span
                 >
@@ -209,7 +209,7 @@
                   pimChannel.isDefaultChannel &&
                   product.inheriting_channels_count
                 "
-                class="info-card__inheritance mt-200"
+                class="info-card__inheritance mt-5"
               >
                 <span class="chip bg-accent-subtle t-strong">
                   {{
@@ -221,7 +221,7 @@
               </div>
 
               <!-- Name field -->
-              <div class="translation-field mt-300">
+              <div class="translation-field mt-8">
                 <div class="translation-field__header">
                   <label class="detail-label"
                     >{{ $t("pim.name") }} ({{
@@ -261,11 +261,11 @@
               </div>
 
               <!-- Physical properties (shared across channels) -->
-              <div class="info-card__physical mt-300">
-                <p class="fs-200 t-warning mb-200">
+              <div class="info-card__physical mt-8">
+                <p class="fs-200 t-warning mb-5">
                   {{ $t("pim.shared_warning") }}
                 </p>
-                <div class="physical-row mb-200">
+                <div class="physical-row mb-5">
                   <div class="detail-field">
                     <label class="detail-label">EAN</label>
                     <BasicInput v-model="form.ean" />
@@ -295,7 +295,7 @@
         </div>
 
         <!-- Tabs (full width, below 2-column grid) -->
-        <BasicTabs v-model="activeTab" :options="tabs" class="mb-400 mt-400" />
+        <BasicTabs v-model="activeTab" :options="tabs" class="mb-10 mt-10" />
 
         <div class="tab-content">
           <!-- Attributes tab -->
@@ -352,7 +352,7 @@
                 v-model="form.short_description_t9n[defaultLang]"
               />
             </div>
-            <div class="translation-field mt-300">
+            <div class="translation-field mt-8">
               <div class="translation-field__header">
                 <label class="detail-label"
                   >{{ $t("pim.description") }} ({{
@@ -435,7 +435,7 @@
               </InheritanceField>
               <BasicInput v-else v-model="form.subname_t9n[defaultLang]" />
             </div>
-            <div class="translation-field mt-300">
+            <div class="translation-field mt-8">
               <div class="translation-field__header">
                 <label class="detail-label"
                   >Subname 2 ({{ defaultLang.toUpperCase() }})</label
@@ -511,7 +511,7 @@
               </InheritanceField>
               <BasicInput v-else v-model="form.url_key_t9n[defaultLang]" />
             </div>
-            <div class="translation-field mt-300">
+            <div class="translation-field mt-8">
               <div class="translation-field__header">
                 <label class="detail-label"
                   >Meta Title ({{ defaultLang.toUpperCase() }})</label
@@ -547,7 +547,7 @@
               </InheritanceField>
               <BasicInput v-else v-model="form.meta_title_t9n[defaultLang]" />
             </div>
-            <div class="translation-field mt-300">
+            <div class="translation-field mt-8">
               <div class="translation-field__header">
                 <label class="detail-label"
                   >Meta Description ({{ defaultLang.toUpperCase() }})</label
@@ -588,7 +588,7 @@
                 rows="3"
               />
             </div>
-            <div class="translation-field mt-300">
+            <div class="translation-field mt-8">
               <div class="translation-field__header">
                 <label class="detail-label"
                   >{{ $t("pim.canonical_url") }} ({{ defaultLang.toUpperCase() }})</label
@@ -624,9 +624,9 @@
               </InheritanceField>
               <BasicInput v-else v-model="form.canonical_url_t9n[defaultLang]" />
             </div>
-            <div class="translation-field mt-300">
+            <div class="translation-field mt-8">
               <label class="detail-label">{{ $t("pim.og_image_url") }}</label>
-              <p class="fs-200 t-muted mb-100">{{ $t("pim.og_image_url_help") }}</p>
+              <p class="fs-200 t-muted mb-2">{{ $t("pim.og_image_url_help") }}</p>
               <BasicInput v-model="form.og_image" />
             </div>
           </div>
@@ -1454,7 +1454,7 @@ export default {
 .product-layout {
   display: grid;
   grid-template-columns: 380px 1fr;
-  gap: var(--space-400);
+  gap: var(--space-10);
 
   @media (max-width: 960px) {
     grid-template-columns: 1fr;
@@ -1471,14 +1471,14 @@ export default {
 
 .info-card {
   border: 1px solid var(--border-subtle);
-  border-radius: 6px;
-  padding: 20px;
+  border-radius: var(--radius-base);
+  padding: var(--space-5);
 }
 
 .info-card__inheritance {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--space-1);
 }
 
 .inheritance-picker {
@@ -1489,11 +1489,11 @@ export default {
 .inheritance-picker__btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 0 12px;
+  gap: var(--space-2);
+  padding: 0 var(--space-3);
   height: var(--elem-height);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   background: var(--surface-base);
   color: var(--text-secondary);
   font-size: var(--fs-300);
@@ -1518,10 +1518,10 @@ export default {
   justify-content: center;
   min-width: 18px;
   height: 18px;
-  border-radius: 9px;
+  border-radius: var(--radius-lg);
   background: var(--accent-fill);
   color: var(--text-on-accent-fill);
-  font-size: 11px;
+  font-size: var(--fs-150);
   font-weight: 600;
 }
 
@@ -1532,17 +1532,17 @@ export default {
   min-width: 200px;
   background: var(--surface-base);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
   box-shadow: var(--shadow-lg);
   z-index: 100;
-  padding: 4px 0;
+  padding: var(--space-1) 0;
 }
 
 .inheritance-picker__item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
   cursor: pointer;
   font-size: var(--fs-300);
   color: var(--text-body);
@@ -1564,9 +1564,9 @@ export default {
   justify-content: center;
   width: 18px;
   height: 18px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   border: 1px solid var(--border-subtle);
-  font-size: 12px;
+  font-size: var(--fs-200);
   flex-shrink: 0;
 
   .inheritance-picker__item--active & {
@@ -1579,11 +1579,11 @@ export default {
 .toolbar-action {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 0 12px;
+  gap: var(--space-1);
+  padding: 0 var(--space-3);
   height: var(--elem-height);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   background: var(--surface-base);
   color: var(--text-secondary);
   font-size: var(--fs-300);
@@ -1596,7 +1596,7 @@ export default {
   }
 
   &__icon {
-    font-size: 14px;
+    font-size: var(--fs-300);
     flex-shrink: 0;
   }
 
@@ -1634,30 +1634,30 @@ export default {
 }
 
 .tab-content {
-  padding-top: var(--space-300);
+  padding-top: var(--space-8);
 }
 
 .tab-placeholder {
-  padding: 40px;
+  padding: var(--space-10);
   text-align: center;
 }
 
 .detail-section {
   border: 1px solid var(--border-subtle);
-  border-radius: 6px;
-  padding: 20px;
+  border-radius: var(--radius-base);
+  padding: var(--space-5);
 }
 
 .detail-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 
 .detail-field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .detail-label {
@@ -1681,7 +1681,7 @@ export default {
 .meta-dot {
   width: 3px;
   height: 3px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   background: var(--surface-hover);
   flex-shrink: 0;
 }
@@ -1689,13 +1689,13 @@ export default {
 .product-controls {
   display: flex;
   align-items: flex-end;
-  gap: var(--space-300);
+  gap: var(--space-8);
   flex-wrap: wrap;
 
   &__field {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: var(--space-1);
   }
 
   &__label {
@@ -1707,13 +1707,13 @@ export default {
 
 .info-card__physical {
   border-top: 1px solid var(--border-subtle);
-  padding-top: var(--space-300);
+  padding-top: var(--space-8);
 }
 
 .physical-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-200);
+  gap: var(--space-5);
 
   &--3 {
     grid-template-columns: 1fr 1fr 1fr;
@@ -1725,12 +1725,12 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 6px;
+    margin-bottom: var(--space-1);
   }
 
   &__btn {
     line-height: 1;
-    padding: 4px 10px;
+    padding: var(--space-1) var(--space-2);
     font-size: var(--fs-200);
   }
 }

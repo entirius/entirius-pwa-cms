@@ -1,9 +1,9 @@
 <template>
   <div class="basic-checkbox">
-    <p class="mb-100" v-if="label">{{ label }}</p>
+    <p class="mb-2" v-if="label">{{ label }}</p>
     <label
       class="pointer basic-checkbox-wrapper input-container"
-      :class="{ 'mb-50': values.length !== 1 && i !== values.length - 1 }"
+      :class="{ 'mb-1': values.length !== 1 && i !== values.length - 1 }"
       v-for="(c, i) in values"
       :key="`unique-checkbox-key-${i}`"
       @input="updateValue(c)"
@@ -102,7 +102,7 @@ export default {
     width: 1.25rem;
     outline: none;
     min-width: 1.25rem;
-    margin-right: 16px;
+    margin-right: var(--space-4);
     border: 1px solid var(--border-control);
     .checkbox-mark {
       z-index: 10;
@@ -111,7 +111,7 @@ export default {
       transform: translate(-50%, -70%);
     }
     &.basic-checkbox {
-      border-radius: 0.125rem;
+      border-radius: var(--radius-base);
       color: var(--text-inverse);
       //  &.checked {
       //   background-color: var(--surface-inverse);
@@ -136,7 +136,7 @@ export default {
       }
     }
     &.radio {
-      border-radius: 50%;
+      border-radius: var(--radius-full);
       position: relative;
       border: 1px solid var(--border-control);
       &:hover {
@@ -149,7 +149,7 @@ export default {
           left: 50%;
           height: 0.75rem;
           width: 0.75rem;
-          border-radius: 50%;
+          border-radius: var(--radius-full);
         }
       }
       &.checked {
@@ -163,7 +163,7 @@ export default {
           left: 50%;
           height: 0.8rem;
           width: 0.8rem;
-          border-radius: 50%;
+          border-radius: var(--radius-full);
         }
       }
     }
@@ -176,7 +176,7 @@ export default {
   }
   .icon-check:before {
     color: var(--text-inverse);
-    //font-size: 1.2rem;
+    //font-size: var(--fs-500);
   }
 }
 </style>

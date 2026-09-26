@@ -1,5 +1,5 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#pim-toolbar-left" defer>
       <BasicButton
         text=""
@@ -25,7 +25,7 @@
         @click="save"
       />
     </Teleport>
-    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
       <!-- Breadcrumb -->
       <PimBreadcrumb :items="breadcrumbItems" />
       <Loader v-if="loading" />
@@ -34,15 +34,15 @@
         <!-- System feature notice -->
         <div
           v-if="isSystem && !isCreate"
-          class="flex ai-ct gap-200 mb-300 p-300 bg-accent-subtle br-50 t-strong fs-200"
+          class="flex ai-ct gap-5 mb-8 p-8 bg-accent-subtle rounded t-strong fs-200"
         >
           <i class="icon icon-lock" />
           <span>{{ $t("pim.system_feature_notice") }}</span>
         </div>
 
         <!-- Section 1: General Information -->
-        <PimCard :title="$t('pim.general_info')" class="mb-400">
-          <div class="grid grid-col-2 gap-300 mb-300">
+        <PimCard :title="$t('pim.general_info')" class="mb-10">
+          <div class="grid grid-col-2 gap-8 mb-8">
             <FormField
               :label="$t('pim.feature_code')"
               :description="$t('pim.attribute_code_help')"
@@ -67,7 +67,7 @@
               />
             </FormField>
           </div>
-          <div class="grid grid-col-3 gap-300 mb-300">
+          <div class="grid grid-col-3 gap-8 mb-8">
             <FormField
               :label="$t('pim.scope')"
               :description="$t('pim.scope_help')"
@@ -91,7 +91,7 @@
               />
             </FormField>
           </div>
-          <div class="grid grid-col-3 gap-300">
+          <div class="grid grid-col-3 gap-8">
             <FormField :label="$t('pim.display_order')">
               <BasicInput v-model="form.display_order" type="number" />
             </FormField>
@@ -100,7 +100,7 @@
             v-if="hasDesc"
             :label="$t('pim.internal_desc_label')"
             :tooltip="$t('pim.internal_desc_tooltip')"
-            class="mt-300"
+            class="mt-8"
           >
             <TextAreaBasic v-model="form.desc" />
           </FormField>
@@ -110,9 +110,9 @@
         <PimCard
           :title="$t('pim.labels')"
           :subtitle="$t('pim.base_language')"
-          class="mb-400"
+          class="mb-10"
         >
-          <div class="grid grid-col-2 gap-300">
+          <div class="grid grid-col-2 gap-8">
             <div v-for="(lang, index) in languages" :key="lang">
               <span
                 class="chip chip--sm bg-accent-subtle t-strong"
@@ -122,7 +122,7 @@
               <BasicInput
                 :model-value="form.name_t9n[lang] || ''"
                 :placeholder="`${$t('pim.name')} (${lang})`"
-                class="mt-100"
+                class="mt-2"
                 @update:modelValue="(val) => (form.name_t9n[lang] = val)"
               />
             </div>
@@ -131,7 +131,7 @@
 
         <!-- Section 3: Flags & Options -->
         <PimCard :title="$t('pim.flags_and_options')">
-          <div class="grid grid-col-3 gap-300 mb-400">
+          <div class="grid grid-col-3 gap-8 mb-10">
             <Switcher
               :label="$t('pim.is_required')"
               :selected="form.is_required"
@@ -183,7 +183,7 @@
           </div>
 
           <!-- Options Manager (only for Select/Multi-select) -->
-          <div v-if="isSelectType" class="mt-300">
+          <div v-if="isSelectType" class="mt-8">
             <OptionsManager :feature-idx="form.idx" :languages="languages" />
           </div>
         </PimCard>

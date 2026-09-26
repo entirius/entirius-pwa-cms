@@ -198,11 +198,11 @@ export default {
 .dedup-search-box {
   display: flex;
   flex-direction: column;
-  gap: var(--space-200);
+  gap: var(--space-5);
   // Transparent by default so the box does not shift by 2px the moment a drag starts.
   border: 1px dashed transparent;
-  border-radius: var(--radius-sm);
-  padding: var(--space-100);
+  border-radius: var(--radius-base);
+  padding: var(--space-2);
   transition: border-color 0.12s ease, background 0.12s ease;
 
   // Same tokens as ProductFiles.vue / MediaGallery.vue / Gallery.vue dropzones.
@@ -215,7 +215,7 @@ export default {
   &__scope {
     display: flex;
     align-items: center;
-    gap: var(--space-200);
+    gap: var(--space-5);
   }
   &__input {
     flex: 1;

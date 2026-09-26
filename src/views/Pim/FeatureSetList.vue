@@ -1,9 +1,9 @@
 <template>
-  <div class="pim-list-layout p-500 fs-300 t-body h-100 ov-h">
+  <div class="pim-list-layout p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle br-50 flex-1 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle rounded flex-1 ovy-auto pl-12 pt-12 pb-12 pr-12"
     >
-      <div class="flex ai-ct mb-400">
+      <div class="flex ai-ct mb-10">
         <h1 class="fs-700 fw-600">{{ $t("pim.feature_sets") }}</h1>
       </div>
 
@@ -48,7 +48,7 @@
     <Pagination
       v-if="totalCount > pageSize"
       :pagination="paginationState"
-      class="mt-200"
+      class="mt-5"
       @onChangePage="onPageChange"
     />
   </div>
@@ -211,8 +211,8 @@ export default {
 .feature-set-list__toolbar {
   display: flex;
   align-items: center;
-  gap: var(--space-200);
-  margin-bottom: var(--space-400);
+  gap: var(--space-5);
+  margin-bottom: var(--space-10);
   flex-wrap: wrap;
 }
 .feature-set-list__search {

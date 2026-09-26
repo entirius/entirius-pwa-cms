@@ -1,16 +1,16 @@
 <template>
   <div class="enrichment-review h-100 ovy-auto">
     <div
-      class="enrichment-review__toolbar p-300 b-subtle bb-100 bg-base"
+      class="enrichment-review__toolbar p-8 b-subtle bb-100 bg-base"
     >
-      <div class="flex ai-ct gap-300 flex-wrap">
+      <div class="flex ai-ct gap-8 flex-wrap">
         <h1 class="fs-500 fw-600 m-0">{{ $t("enrichment.review.title") }}</h1>
         <SegmentedControl
           v-model="mode"
           :options="modeOptions"
           data-testid="enrichment-mode-switch"
         />
-        <div class="flex ai-ct gap-200 ml-auto">
+        <div class="flex ai-ct gap-5 ml-auto">
           <button
             class="enrichment-review__filters-toggle"
             :class="{ 'is-active': filtersOpen }"
@@ -37,7 +37,7 @@
           </button>
         </div>
       </div>
-      <div class="flex ai-ct flex-wrap gap-100 mt-200">
+      <div class="flex ai-ct flex-wrap gap-2 mt-5">
         <FilterChip
           v-for="opt in statusOptions"
           :key="opt.value"
@@ -57,7 +57,7 @@
       <Transition name="enrichment-filters">
         <div
           v-if="filtersOpen"
-          class="enrichment-review__filters flex ai-ct flex-wrap gap-200 mt-200"
+          class="enrichment-review__filters flex ai-ct flex-wrap gap-5 mt-5"
           data-testid="enrichment-filters-row"
         >
           <BasicInput
@@ -108,7 +108,7 @@
       </Transition>
     </div>
 
-    <div class="enrichment-review__body p-300">
+    <div class="enrichment-review__body p-8">
       <ListMode
         v-if="mode === 'list'"
         :rows="rows"
@@ -600,11 +600,11 @@ export default {
 .enrichment-review__import {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-50);
+  gap: var(--space-1);
   height: var(--elem-height);
-  padding: 0 18px;
+  padding: 0 var(--space-4);
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   font-size: var(--fs-200);
   white-space: nowrap;
   flex-shrink: 0;
@@ -613,11 +613,11 @@ export default {
 .enrichment-review__filters-toggle {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-50);
+  gap: var(--space-1);
   height: var(--elem-height);
-  padding: 0 14px;
+  padding: 0 var(--space-3);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   background-color: var(--surface-base);
   color: var(--text-secondary);
   font-size: var(--fs-200);
@@ -636,12 +636,12 @@ export default {
 .enrichment-review__filters-badge {
   min-width: 16px;
   height: 16px;
-  padding: 0 5px;
-  font-size: 10px;
+  padding: 0 var(--space-1);
+  font-size: var(--fs-100);
   font-weight: 600;
   line-height: 16px;
   text-align: center;
-  border-radius: 50px;
+  border-radius: var(--radius-full);
   background-color: var(--accent-fill);
   color: var(--text-on-accent-fill);
 }

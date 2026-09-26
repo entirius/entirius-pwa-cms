@@ -1,17 +1,17 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
     >
       <!-- Segment switcher: Discounts / Vouchers -->
-      <div class="promo-list__tabs mb-400">
+      <div class="promo-list__tabs mb-10">
         <SegmentedControl v-model="activeTab" :options="tabOptions" />
       </div>
 
       <!-- DISCOUNTS tab -->
       <template v-if="activeTab === 'discounts'">
         <!-- Bulk action bar (visible only when selection exists) -->
-        <div v-if="hasSelection" class="promo-list__bulk-bar mb-300">
+        <div v-if="hasSelection" class="promo-list__bulk-bar mb-8">
           <span class="promo-list__bulk-count t-body fw-600">
             {{ $t("promo.bulk_selected", { n: selectionCount }) }}
           </span>
@@ -74,7 +74,7 @@
         <!-- Select-all-matching banner -->
         <div
           v-if="pageFullySelected && totalCount > rules.length && !selectAllMatching"
-          class="promo-list__select-banner bg-accent-subtle t-strong fs-200 ph-200 pv-100 br-50 mb-300"
+          class="promo-list__select-banner bg-accent-subtle t-strong fs-200 ph-5 pv-2 rounded mb-8"
         >
           {{ $t("promo.bulk_select_all_page", { n: rules.length }) }}
           <button
@@ -86,7 +86,7 @@
         </div>
         <div
           v-else-if="selectAllMatching"
-          class="promo-list__select-banner bg-accent-subtle t-strong fs-200 ph-200 pv-100 br-50 mb-300"
+          class="promo-list__select-banner bg-accent-subtle t-strong fs-200 ph-5 pv-2 rounded mb-8"
         >
           {{ $t("promo.bulk_all_selected", { total: totalCount }) }}
           <button
@@ -123,12 +123,12 @@
             >{{ modifierShortLabel(row.modifier) }}</span>
           </template>
           <template #cell-target="{ row }">
-            <span class="bg-raised t-secondary fs-200 ph-100 br-50 fw-600">{{
+            <span class="bg-raised t-secondary fs-200 ph-2 rounded fw-600">{{
               row.target
             }}</span>
           </template>
           <template #cell-code_count="{ row }">
-            <span class="bg-raised t-secondary fs-200 ph-100 br-50 fw-600">{{
+            <span class="bg-raised t-secondary fs-200 ph-2 rounded fw-600">{{
               row.code_count
             }}</span>
           </template>
@@ -507,8 +507,8 @@ export default {
 .promo-list__toolbar {
   display: flex;
   align-items: center;
-  gap: var(--space-200);
-  margin-bottom: var(--space-400);
+  gap: var(--space-5);
+  margin-bottom: var(--space-10);
   flex-wrap: wrap;
 }
 
@@ -527,11 +527,11 @@ export default {
 .promo-list__bulk-bar {
   display: flex;
   align-items: center;
-  gap: var(--space-200);
+  gap: var(--space-5);
   flex-wrap: wrap;
-  padding: var(--space-200);
+  padding: var(--space-5);
   background-color: var(--surface-raised);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   border: 1px solid var(--border-subtle);
 }
 
@@ -542,14 +542,14 @@ export default {
 
 .promo-list__bulk-actions {
   display: flex;
-  gap: var(--space-100);
+  gap: var(--space-2);
   flex-wrap: wrap;
 }
 
 .promo-list__select-banner {
   display: flex;
   align-items: center;
-  gap: var(--space-100);
+  gap: var(--space-2);
   flex-wrap: wrap;
 }
 
@@ -577,8 +577,8 @@ export default {
 .promo-modifier-badge {
   display: inline-block;
   max-width: 100%;
-  padding: 2px 8px;
-  border-radius: var(--radius-sm);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-base);
   font-size: var(--fs-200);
   font-weight: 500;
   white-space: nowrap;

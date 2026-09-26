@@ -1,6 +1,6 @@
 <template>
   <div class="buttons-controller" :id="`buttons-controller-${componentId}`">
-    <div class="mb-50 flex jc-sb ai-ct">
+    <div class="mb-1 flex jc-sb ai-ct">
       <span v-if="label">{{ label }}</span>
 
       <ToolTip
@@ -14,7 +14,7 @@
       </ToolTip>
     </div>
 
-    <div class="grid grid-col-3 gap-100 mt-200" v-if="mode">
+    <div class="grid grid-col-3 gap-2 mt-5" v-if="mode">
       <BasicInput
         class="bg-base lh-base-elem"
         :label="tFieldLabel('label', $t('controllers.set_label'))"
@@ -28,7 +28,7 @@
         :key="`${force_refresh_v_model}-url`"
       />
       <Dropdown
-        class="bg-base br-50 b-default"
+        class="bg-base rounded b-default"
         :placeholder="$t('controllers.link_type')"
         :values="[
           { label: tFieldLabel('internal', 'In'), value: 'internal' },
@@ -39,11 +39,11 @@
       />
     </div>
 
-    <div class="grid grid-col-3 gap-100 mt-100 ai-ct" v-if="mode">
+    <div class="grid grid-col-3 gap-2 mt-2 ai-ct" v-if="mode">
       <Dropdown
         v-if="config && config.decorator && config.decorators.length"
         :placeholder="$t('controllers.select_decorator')"
-        class="bg-base br-50 b-default fs-200"
+        class="bg-base rounded b-default fs-200"
         :values="
           config.decorators.map((d) => {
             return { label: d, value: d };
@@ -57,13 +57,13 @@
         @onSelect="link_decorator = $event"
       />
       <div
-        class="inline-flex jc-sb ai-ct bg-base h-100 br-50 b-default ph-100"
+        class="inline-flex jc-sb ai-ct bg-base h-100 rounded b-default ph-2"
         v-if="
           config && config.decorator && config.decorators.length && config.rtl
         "
       >
         <Switcher
-          class="mr-50"
+          class="mr-1"
           :label="$t('controllers.rtl_label')"
           :selected="link_rtl"
           @onSelect="link_rtl = !link_rtl"
@@ -76,7 +76,7 @@
       <div class="grid">
         <BasicButton
           :text="mode === 'add' ? $t('common.add') : $t('common.save')"
-          class="bg-raised b-default bg-base-hover br-50"
+          class="bg-raised b-default bg-base-hover rounded"
           @click="
             set_button({
               link_url,
@@ -89,16 +89,16 @@
         />
       </div>
     </div>
-    <div class="mt-50">
+    <div class="mt-1">
       <div class="flex">
         <BasicButton
           :text="!mode ? $t('routes.set_new') : $t('common.close')"
-          class="b-default bg-base bg-hover-hover br-50 fs-100 mr-50"
+          class="b-default bg-base bg-hover-hover rounded fs-100 mr-1"
           :class="{ 'bg-inverse t-inverse bg-inverse-hover': mode }"
           @click="!mode ? (mode = 'add') : (mode = null)"
         />
         <Dropdown
-          class="bg-base br-50 b-default fg-1"
+          class="bg-base rounded b-default fg-1"
           :class="[!Boolean(value) ? 'bg-raised t-muted' : '']"
           :placeholder="`${$t('controllers.setted')} (${
             !value ? [].length : value.length

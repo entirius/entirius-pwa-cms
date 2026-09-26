@@ -1,7 +1,7 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
-    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
-      <div class="flex ai-ct mb-500">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
+    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
+      <div class="flex ai-ct mb-12">
         <BasicButton
           text=""
           icon="arrow-left"
@@ -10,11 +10,11 @@
         />
       </div>
 
-      <h1 class="fs-700 fw-600 mb-500">{{ $t("dp.import") }}</h1>
+      <h1 class="fs-700 fw-600 mb-12">{{ $t("dp.import") }}</h1>
 
       <div class="import-card">
         <!-- File input -->
-        <div class="detail-field mb-400">
+        <div class="detail-field mb-10">
           <label class="detail-label">{{ $t("dp.import_file") }}</label>
           <input
             ref="fileInput"
@@ -32,13 +32,13 @@
           <BasicButton
             :text="$t('gallery.upload')"
             icon="file-arrow-up"
-            class="bg-raised t-body mt-200"
+            class="bg-raised t-body mt-5"
             @click="$refs.fileInput.click()"
           />
         </div>
 
         <!-- Type selection -->
-        <div class="detail-field mb-400">
+        <div class="detail-field mb-10">
           <label class="detail-label">{{ $t("dp.import_type") }}</label>
           <Dropdown
             :values="typeOptions"
@@ -49,9 +49,9 @@
         </div>
 
         <!-- Mode selection -->
-        <div class="detail-field mb-400">
+        <div class="detail-field mb-10">
           <label class="detail-label">{{ $t("dp.import_mode") }}</label>
-          <div class="flex flex-column gap-200 mt-100">
+          <div class="flex flex-column gap-5 mt-2">
             <label class="radio-option">
               <input v-model="mode" type="radio" value="incremental" />
               <span class="fs-300">{{ $t("dp.import_mode_incremental") }}</span>
@@ -64,7 +64,7 @@
         </div>
 
         <!-- Optional channel -->
-        <div class="detail-field mb-500">
+        <div class="detail-field mb-12">
           <label class="detail-label">{{ $t("dp.import_channel") }}</label>
           <BasicInput
             v-model="channelIdx"
@@ -74,9 +74,9 @@
         </div>
 
         <!-- Result summary -->
-        <div v-if="importResult" class="import-result mb-400">
+        <div v-if="importResult" class="import-result mb-10">
           <StatusBadge label="Import complete" variant="positive" />
-          <p class="fs-300 t-body mt-200">
+          <p class="fs-300 t-body mt-5">
             {{
               $t("dp.import_success", {
                 created: importResult.created || 0,
@@ -192,15 +192,15 @@ export default {
 <style lang="scss" scoped>
 .import-card {
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 28px;
+  border-radius: var(--radius-base);
+  padding: var(--space-6);
   max-width: 600px;
 }
 
 .detail-field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .detail-label {
@@ -222,14 +222,14 @@ export default {
 .radio-option {
   display: flex;
   align-items: center;
-  gap: var(--space-200);
+  gap: var(--space-5);
   cursor: pointer;
 }
 
 .import-result {
-  padding: 16px;
+  padding: var(--space-4);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   background: var(--surface-raised);
 }
 </style>

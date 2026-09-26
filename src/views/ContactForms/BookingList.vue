@@ -1,13 +1,13 @@
 <template>
-  <div class="cf-booking-list__wrapper p-500 fs-300 t-body h-100 ov-h">
+  <div class="cf-booking-list__wrapper p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
     >
-      <div class="flex ai-ct mb-400">
+      <div class="flex ai-ct mb-10">
         <h1 class="fs-700 fw-600">{{ $t("cf.bookings") }}</h1>
       </div>
 
-      <div class="flex ai-ct gap-300 mb-400">
+      <div class="flex ai-ct gap-8 mb-10">
         <BasicInput
           v-model="search"
           :placeholder="$t('cf.search_placeholder')"
@@ -24,7 +24,7 @@
         />
       </div>
 
-      <div class="flex ai-ct mb-400">
+      <div class="flex ai-ct mb-10">
         <MobileFilterPanel
           :active-count="activeFilterCount"
           :trigger-label="$t('cf.filters')"
@@ -296,7 +296,7 @@ export default {
 .cf-list__date-field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
   font-size: var(--fs-200);
 }
 
@@ -308,9 +308,9 @@ export default {
 
 .cf-list__date-input {
   height: var(--elem-height);
-  padding: 0 var(--space-100);
+  padding: 0 var(--space-2);
   border: 1px solid var(--border-default);
-  border-radius: var(--space-50);
+  border-radius: var(--radius-base);
   background: var(--surface-base);
   color: var(--text-body);
   font-size: var(--fs-300);
@@ -328,7 +328,7 @@ export default {
   justify-content: center;
   width: 28px;
   height: 28px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   color: var(--text-accent);
   text-decoration: none;
 }
@@ -339,7 +339,7 @@ export default {
 
 @media only screen and (max-width: 768px) {
   .cf-booking-list__wrapper {
-    padding: 16px !important;
+    padding: var(--space-4) !important;
   }
 }
 </style>

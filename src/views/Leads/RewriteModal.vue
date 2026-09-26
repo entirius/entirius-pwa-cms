@@ -57,32 +57,32 @@ const notes = ref("");
 }
 .rw__sheet {
   width: min(32rem, 100%);
-  padding: var(--space-300);
+  padding: var(--space-8);
   background: var(--surface-base);
-  border-radius: 12px 12px 0 0;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 }
 .rw__title {
-  margin: 0 0 var(--space-200);
+  margin: 0 0 var(--space-5);
   font-weight: 600;
 }
 .rw__notes {
   width: 100%;
   box-sizing: border-box;
-  padding: var(--space-200);
+  padding: var(--space-5);
   border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   font: inherit;
 }
 .rw__actions {
   display: flex;
-  gap: var(--space-200);
-  margin-top: var(--space-200);
+  gap: var(--space-5);
+  margin-top: var(--space-5);
 }
 .rw__btn {
   flex: 1;
   min-height: 48px;
   border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   background: var(--surface-base);
   color: var(--text-body);
   font-weight: 600;

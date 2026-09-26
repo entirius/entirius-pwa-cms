@@ -1,9 +1,9 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
     >
-      <div class="flex ai-ct jc-sb mb-400 gap-300">
+      <div class="flex ai-ct jc-sb mb-10 gap-8">
         <h1 class="fs-700 fw-600">
           {{ $t("atlas.auto_matched.title") }}
         </h1>
@@ -13,7 +13,7 @@
       </div>
 
       <!-- Filter chip bar -->
-      <div class="flex ai-ct flex-wrap gap-100 mb-400">
+      <div class="flex ai-ct flex-wrap gap-2 mb-10">
         <FilterChip
           :label="$t('atlas.auto_matched.filter.all')"
           :active="!hasViolationsOnly && !manualOverrideOnly && !supplierFilter"
@@ -52,7 +52,7 @@
         @row-click="onRowClick"
       >
         <template #cell-suppliers="{ row }">
-          <div class="flex ai-ct flex-wrap gap-100">
+          <div class="flex ai-ct flex-wrap gap-2">
             <StatusBadge
               v-for="s in row.sources"
               :key="s.idx"
@@ -63,7 +63,7 @@
           </div>
         </template>
         <template #cell-flags="{ row }">
-          <div class="flex ai-ct gap-100">
+          <div class="flex ai-ct gap-2">
             <StatusBadge
               v-if="row.has_tolerance_violation"
               :label="$t('atlas.auto_matched.flag.violation')"
@@ -86,7 +86,7 @@
       <Pagination
         v-if="!loading && totalCount > pageSize"
         :pagination="paginationState"
-        class="mt-300"
+        class="mt-8"
         @onChangePage="onPageChange"
       />
     </div>

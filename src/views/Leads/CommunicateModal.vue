@@ -81,8 +81,8 @@ onMounted(async () => {
 }
 .cm__sheet {
   width: min(520px, 100%);
-  padding: var(--space-300);
-  border-radius: 8px;
+  padding: var(--space-8);
+  border-radius: var(--radius-lg);
   background: var(--surface-base);
 }
 </style>

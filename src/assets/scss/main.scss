@@ -23,10 +23,6 @@
   --elem-height: 31px;
   --header-height: 3.5rem;
 
-  --radius-sm: 4px;
-  --radius-md: 6px;
-
-  // radius-lg is also a brand step (8px either way): the loop below defines it.
   @each $radius in $brand-radii {
     --radius-#{$radius}: var(--brand-radius-#{$radius});
   }
@@ -35,313 +31,17 @@
     --space-#{$step}: var(--brand-space-#{$step});
   }
 
-  --label-gap: 6px;
+  --label-gap: var(--space-1);
 
   --font-ui: var(--brand-font-family-ui);
   --font-brand: var(--brand-font-family-brand);
   --font-mono: var(--brand-font-family-mono);
 
-  @each $device, $font-size in $fontsize {
-    @if $device==m {
-      @media screen and (max-width: 40rem) {
-        @each $size, $value in $font-size {
-          --fs-#{$size}: #{$value};
+  @each $size, $value in $fontsize {
+    --fs-#{$size}: #{$value};
 
-          .fs-#{$size} {
-            font-size: #{$value};
-            &-#{$device} {
-              font-size: #{$value} !important;
-            }
-          }
-        }
-      }
-    } @else {
-      @media screen and (min-width: 40rem) {
-        @each $size, $value in $font-size {
-          --fs-#{$size}: #{$value};
-
-          .fs-#{$size} {
-            font-size: #{$value};
-            &-#{$device} {
-              font-size: #{$value} !important;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  @each $device, $spaces in $spacing {
-    @each $space, $value in $spaces {
-      @if $device==m {
-        @media screen and (max-width: 40rem) {
-          --space-#{$space}: #{$value};
-
-          .pv-#{$space} {
-            padding: $value 0;
-            &-#{$device} {
-              padding: $value 0 !important;
-            }
-          }
-          .ph-#{$space} {
-            padding: 0 $value;
-            &-#{$device} {
-              padding: 0 $value !important;
-            }
-          }
-          .p-#{$space} {
-            padding: $value;
-            &-#{$device} {
-              padding: $value !important;
-            }
-          }
-          .pt-#{$space} {
-            padding-top: $value;
-            &-#{$device} {
-              padding-top: $value !important;
-            }
-          }
-          .pr-#{$space} {
-            padding-right: $value;
-            &-#{$device} {
-              padding-right: $value !important;
-            }
-          }
-          .pb-#{$space} {
-            padding-bottom: $value;
-            &-#{$device} {
-              padding-bottom: $value !important;
-            }
-          }
-          .pl-#{$space} {
-            padding-left: $value;
-            &-#{$device} {
-              padding-left: $value !important;
-            }
-          }
-          // margins --------------------
-          .mv-#{$space} {
-            margin: $value 0;
-            &-#{$device} {
-              margin: $value 0 !important;
-            }
-          }
-          .mh-#{$space} {
-            margin: 0 $value;
-            &-#{$device} {
-              margin: 0 $value !important;
-            }
-          }
-          .m-#{$space} {
-            margin: $value;
-            &-#{$device} {
-              margin: $value !important;
-            }
-          }
-          .mt-#{$space} {
-            margin-top: $value;
-            &-#{$device} {
-              margin-top: $value !important;
-            }
-          }
-          .mr-#{$space} {
-            margin-right: $value;
-            &-#{$device} {
-              margin-right: $value !important;
-            }
-          }
-          .mb-#{$space} {
-            margin-bottom: $value;
-            &-#{$device} {
-              margin-bottom: $value !important;
-            }
-          }
-          .ml-#{$space} {
-            margin-left: $value;
-            &-#{$device} {
-              margin-left: $value !important;
-            }
-          }
-
-          // supports
-          .gap-#{$space} {
-            gap: #{$value};
-            &-#{$device} {
-              gap: $value !important;
-            }
-          }
-
-          .br-#{$space} {
-            border-radius: #{$value};
-            &-#{$device} {
-              border-radius: #{$value} !important;
-            }
-          }
-
-          .br-tl-#{$space} {
-            border-top-left-radius: #{$value};
-
-            &-#{$device} {
-              border-top-left-radius: #{$value} !important;
-            }
-          }
-
-          .br-tr-#{$space} {
-            border-top-right-radius: #{$value};
-            &-#{$device} {
-              border-top-right-radius: #{$value} !important;
-            }
-          }
-
-          .br-bl-#{$space} {
-            border-bottom-left-radius: #{$value};
-            &-#{$device} {
-              border-bottom-left-radius: #{$value} !important;
-            }
-          }
-
-          .br-br-#{$space} {
-            border-bottom-right-radius: #{$value};
-            &-#{$device} {
-              border-bottom-right-radius: #{$value} !important;
-            }
-          }
-        }
-      } @else {
-        @media screen and (min-width: 40rem) {
-          --space-#{$space}: #{$value};
-
-          .pv-#{$space} {
-            padding: $value 0;
-            &-#{$device} {
-              padding: $value 0 !important;
-            }
-          }
-          .ph-#{$space} {
-            padding: 0 $value;
-            &-#{$device} {
-              padding: 0 $value !important;
-            }
-          }
-          .p-#{$space} {
-            padding: $value;
-            &-#{$device} {
-              padding: $value !important;
-            }
-          }
-          .pt-#{$space} {
-            padding-top: $value;
-            &-#{$device} {
-              padding-top: $value !important;
-            }
-          }
-          .pr-#{$space} {
-            padding-right: $value;
-            &-#{$device} {
-              padding-right: $value !important;
-            }
-          }
-          .pb-#{$space} {
-            padding-bottom: $value;
-            &-#{$device} {
-              padding-bottom: $value !important;
-            }
-          }
-          .pl-#{$space} {
-            padding-left: $value;
-            &-#{$device} {
-              padding-left: $value !important;
-            }
-          }
-          // margins --------------------
-          .mv-#{$space} {
-            margin: $value 0;
-            &-#{$device} {
-              margin: $value 0 !important;
-            }
-          }
-          .mh-#{$space} {
-            margin: 0 $value;
-            &-#{$device} {
-              margin: 0 $value !important;
-            }
-          }
-          .m-#{$space} {
-            margin: $value;
-            &-#{$device} {
-              margin: $value !important;
-            }
-          }
-          .mt-#{$space} {
-            margin-top: $value;
-            &-#{$device} {
-              margin-top: $value !important;
-            }
-          }
-          .mr-#{$space} {
-            margin-right: $value;
-            &-#{$device} {
-              margin-right: $value !important;
-            }
-          }
-          .mb-#{$space} {
-            margin-bottom: $value;
-            &-#{$device} {
-              margin-bottom: $value !important;
-            }
-          }
-          .ml-#{$space} {
-            margin-left: $value;
-            &-#{$device} {
-              margin-left: $value !important;
-            }
-          }
-
-          // supports
-          .gap-#{$space} {
-            gap: #{$value};
-            &-#{$device} {
-              gap: $value !important;
-            }
-          }
-
-          .br-#{$space} {
-            border-radius: #{$value};
-            &-#{$device} {
-              border-radius: #{$value} !important;
-            }
-          }
-
-          .br-tl-#{$space} {
-            border-top-left-radius: #{$value};
-
-            &-#{$device} {
-              border-top-left-radius: #{$value} !important;
-            }
-          }
-
-          .br-tr-#{$space} {
-            border-top-right-radius: #{$value};
-            &-#{$device} {
-              border-top-right-radius: #{$value} !important;
-            }
-          }
-
-          .br-bl-#{$space} {
-            border-bottom-left-radius: #{$value};
-            &-#{$device} {
-              border-bottom-left-radius: #{$value} !important;
-            }
-          }
-
-          .br-br-#{$space} {
-            border-bottom-right-radius: #{$value};
-            &-#{$device} {
-              border-bottom-right-radius: #{$value} !important;
-            }
-          }
-        }
-      }
+    .fs-#{$size} {
+      font-size: var(--fs-#{$size});
     }
   }
 }
@@ -394,17 +94,19 @@
   }
 }
 
-// Brand spacing and radius classes (P2) beside the old -50…-700 / radius-sm…lg ones until plan 08.
-$brand-space-properties: (
+// Spacing classes from the brand steps (.p-1 = 4 px …); radius classes from the radius scale (Tailwind names:
+// .rounded = base, .rounded-lg …), with the corner variants in use. `br-` is the border-right colour prefix only.
+$space-properties: (
   p: padding, pt: padding-top, pr: padding-right, pb: padding-bottom, pl: padding-left,
   m: margin, mt: margin-top, mr: margin-right, mb: margin-bottom, ml: margin-left, gap: gap,
 );
+$radius-corners: (tl: top-left, tr: top-right);
 
 :root {
   @each $step in $brand-space-steps {
     $value: var(--space-#{$step});
 
-    @each $class, $property in $brand-space-properties {
+    @each $class, $property in $space-properties {
       .#{$class}-#{$step} {
         #{$property}: $value;
       }
@@ -424,9 +126,17 @@ $brand-space-properties: (
   }
 
   @each $radius in $brand-radii {
-    .radius-#{$radius},
-    .br-#{$radius} {
+    $class: "rounded-#{$radius}";
+    @if $radius == base {
+      $class: "rounded";
+    }
+    .#{$class} {
       border-radius: var(--radius-#{$radius});
+    }
+  }
+  @each $corner, $side in $radius-corners {
+    .rounded-#{$corner} {
+      border-#{$side}-radius: var(--radius-base);
     }
   }
 }

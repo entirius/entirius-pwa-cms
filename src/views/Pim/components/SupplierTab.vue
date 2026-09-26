@@ -303,38 +303,38 @@ export default {
 
 <style lang="scss" scoped>
 .supplier-tab {
-  padding: var(--space-200) 0;
+  padding: var(--space-5) 0;
 }
 .supplier-tab__header {
   display: flex;
   flex-direction: column;
-  gap: var(--space-300);
+  gap: var(--space-8);
 }
 .supplier-tab__status {
-  padding: var(--space-300);
+  padding: var(--space-8);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
   background: var(--surface-base);
   display: flex;
   flex-direction: column;
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 .supplier-tab__status-line {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 .supplier-tab__actions {
   display: flex;
   flex-direction: column;
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 .supplier-action {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: var(--space-200) var(--space-300);
+  gap: var(--space-5) var(--space-8);
 }
 .supplier-action__btn {
   flex: 0 0 auto;

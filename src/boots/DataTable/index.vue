@@ -331,9 +331,9 @@ function handleRowClick(row, index, event) {
 .data-table__header-cell {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 8px 16px;
-  font-size: 12px;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--fs-200);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
@@ -356,7 +356,7 @@ function handleRowClick(row, index, event) {
   display: inline-block;
   width: 0;
   height: 0;
-  margin-left: 4px;
+  margin-left: var(--space-1);
   vertical-align: middle;
   border-left: 4px solid transparent;
   border-right: 4px solid transparent;
@@ -399,9 +399,9 @@ function handleRowClick(row, index, event) {
 .data-table__cell {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 10px 16px;
-  font-size: 13px;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--fs-250);
   color: var(--text-body);
   min-width: 0;
 
@@ -412,10 +412,10 @@ function handleRowClick(row, index, event) {
 
 .data-table__empty {
   grid-column: 1 / -1;
-  padding: 32px;
+  padding: var(--space-8);
   text-align: center;
   color: var(--text-muted);
-  font-size: 13px;
+  font-size: var(--fs-250);
 }
 
 .data-table__header-cell--expand,
@@ -430,7 +430,7 @@ function handleRowClick(row, index, event) {
   width: 24px;
   height: 24px;
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   background: transparent;
   color: var(--text-muted);
   cursor: pointer;
@@ -449,6 +449,6 @@ function handleRowClick(row, index, event) {
 }
 
 .data-table__expand-cell {
-  padding: 12px 16px;
+  padding: var(--space-3) var(--space-4);
 }
 </style>

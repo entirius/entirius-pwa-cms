@@ -1,5 +1,5 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#pim-toolbar-left" defer>
       <BasicButton
         text=""
@@ -15,9 +15,9 @@
         @click="createProduct"
       />
     </Teleport>
-    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
-      <div class="create-section mb-400">
-        <h2 class="fs-500 fw-600 mb-200">{{ $t("pim.basic_info") }}</h2>
+    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
+      <div class="create-section mb-10">
+        <h2 class="fs-500 fw-600 mb-5">{{ $t("pim.basic_info") }}</h2>
         <div class="create-grid">
           <div class="create-field">
             <label class="create-label required">SKU</label>
@@ -57,11 +57,11 @@
         </div>
       </div>
 
-      <div class="create-section mb-400">
-        <h2 class="fs-500 fw-600 mb-200">
+      <div class="create-section mb-10">
+        <h2 class="fs-500 fw-600 mb-5">
           {{ $t("pim.physical_properties") }}
         </h2>
-        <p class="fs-200 t-warning mb-200">
+        <p class="fs-200 t-warning mb-5">
           {{ $t("pim.shared_warning") }}
         </p>
         <div class="create-grid">
@@ -108,8 +108,8 @@
         </div>
       </div>
 
-      <div v-if="otherChannels.length" class="create-section mb-400">
-        <h2 class="fs-500 fw-600 mb-200">
+      <div v-if="otherChannels.length" class="create-section mb-10">
+        <h2 class="fs-500 fw-600 mb-5">
           {{ $t("pim.also_add_to_channels") }}
         </h2>
         <div class="channel-list">
@@ -311,18 +311,18 @@ export default {
 <style lang="scss" scoped>
 .create-section {
   border: 1px solid var(--border-subtle);
-  border-radius: 6px;
-  padding: 20px;
+  border-radius: var(--radius-base);
+  padding: var(--space-5);
 }
 .create-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 .create-field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
 }
 .create-label {
   font-size: var(--fs-200);
@@ -334,17 +334,17 @@ export default {
 .channel-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2);
 }
 .channel-item {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 8px 12px;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
 }
 .channel-item__options {
-  margin-left: 28px;
+  margin-left: var(--space-6);
 }
 </style>

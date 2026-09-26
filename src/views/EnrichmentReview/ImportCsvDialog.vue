@@ -255,12 +255,12 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-300);
+  padding: var(--space-8);
 }
 .import-modal__box {
   width: 100%;
   max-width: 480px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
   box-shadow: var(--shadow-md);
   display: flex;
   flex-direction: column;
@@ -269,25 +269,25 @@ export default {
 .import-modal__header {
   display: flex;
   align-items: center;
-  gap: var(--space-100);
-  padding: var(--space-300);
+  gap: var(--space-2);
+  padding: var(--space-8);
 }
 .import-modal__body {
-  padding: var(--space-300);
+  padding: var(--space-8);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: var(--space-300);
+  gap: var(--space-8);
 }
 .import-modal__drop {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-100);
+  gap: var(--space-2);
   min-height: 72px;
   border: 1px dashed var(--border-default);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   cursor: pointer;
   text-align: center;
   &--on {
@@ -307,8 +307,8 @@ export default {
 .import-modal__sample {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-50);
-  margin-top: var(--space-100);
+  gap: var(--space-1);
+  margin-top: var(--space-2);
   padding: 0;
   border: none;
   background: none;
@@ -320,14 +320,14 @@ export default {
 .import-modal__footer {
   display: flex;
   justify-content: flex-end;
-  gap: var(--space-100);
-  padding: var(--space-300);
+  gap: var(--space-2);
+  padding: var(--space-8);
 }
 .import-modal__btn {
   height: var(--elem-height);
-  padding: 0 16px;
+  padding: 0 var(--space-4);
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   font-size: var(--fs-200);
   cursor: pointer;
   &:disabled {

@@ -161,14 +161,14 @@ onMounted(() => Promise.all([load(), loadRules().catch(() => {})]));
   display: grid;
   grid-template-columns: auto minmax(8rem, 1fr) minmax(0, 20rem) auto;
   align-items: center;
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 .stage__handle {
   cursor: grab;
 }
 .stage__tags {
   display: flex;
-  gap: var(--space-100);
+  gap: var(--space-2);
   min-width: 0;
 }
 .stage__add {
@@ -181,7 +181,7 @@ onMounted(() => Promise.all([load(), loadRules().catch(() => {})]));
 }
 .stage__controls {
   display: flex;
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 .stage .ld-error {
   grid-column: 1 / -1;

@@ -58,21 +58,21 @@ function forwardMove(company, stageKey) {
 .column {
   display: flex;
   flex-direction: column;
-  gap: var(--space-200);
+  gap: var(--space-5);
   min-width: 240px;
-  padding: var(--space-200);
-  border-radius: 8px;
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
   background: var(--surface-raised);
 }
 .column__head {
   display: flex;
   align-items: center;
-  gap: var(--space-100);
+  gap: var(--space-2);
 }
 .column__cards {
   display: flex;
   flex-direction: column;
-  gap: var(--space-200);
+  gap: var(--space-5);
   min-height: 80px;
 }
 </style>

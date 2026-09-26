@@ -2,7 +2,7 @@
   <div class="channel-select">
     <button
       type="button"
-      class="channel-select__trigger pointer flex ai-ct gap-100"
+      class="channel-select__trigger pointer flex ai-ct gap-2"
       :class="{ 'channel-select__trigger--active': modelValue.length }"
       :title="triggerLabel"
       @click="open = !open"
@@ -83,12 +83,12 @@ function toggle(idx) {
 
 .channel-select__trigger {
   height: var(--elem-height);
-  padding: 0 10px;
-  border-radius: 5px;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-base);
   border: 1px solid var(--border-control);
   background-color: var(--surface-sunken);
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: var(--fs-250);
   transition: all 0.15s ease;
   white-space: nowrap;
   &:hover {
@@ -121,14 +121,14 @@ function toggle(idx) {
   z-index: 10;
   background: var(--surface-base);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
   box-shadow: var(--shadow-md);
   overflow: hidden;
 }
 
 .channel-select__header {
-  padding: 8px 12px;
-  font-size: 11px;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--fs-150);
   font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
@@ -140,8 +140,8 @@ function toggle(idx) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 12px;
-  font-size: 13px;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--fs-250);
   color: var(--text-body);
   cursor: pointer;
   transition: background-color 0.1s ease;

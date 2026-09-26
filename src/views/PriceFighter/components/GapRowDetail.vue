@@ -116,13 +116,13 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 .gap-detail {
-  padding: var(--space-200) 0;
+  padding: var(--space-5) 0;
 }
 
 .gap-detail__grid {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-500);
+  gap: var(--space-12);
 }
 
 .gap-detail__block {
@@ -137,19 +137,19 @@ onMounted(async () => {
 .gap-detail__heading {
   display: flex;
   align-items: center;
-  gap: var(--space-100);
+  gap: var(--space-2);
   font-size: var(--fs-200);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
   color: var(--text-muted);
-  margin: 0 0 var(--space-200) 0;
+  margin: 0 0 var(--space-5) 0;
 }
 
 .gap-detail__facts {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 4px var(--space-200);
+  gap: var(--space-1) var(--space-5);
   margin: 0;
   font-size: var(--fs-300);
 
@@ -171,7 +171,7 @@ onMounted(async () => {
 
   th {
     text-align: left;
-    padding: 4px 8px;
+    padding: var(--space-1) var(--space-2);
     color: var(--text-muted);
     text-transform: uppercase;
     font-size: var(--fs-100);
@@ -179,7 +179,7 @@ onMounted(async () => {
   }
 
   td {
-    padding: 4px 8px;
+    padding: var(--space-1) var(--space-2);
     border-bottom: 1px solid var(--border-subtle);
   }
 }

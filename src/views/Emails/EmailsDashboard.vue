@@ -1,9 +1,9 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
     >
-      <div class="flex ai-ct mb-400">
+      <div class="flex ai-ct mb-10">
         <h1 class="fs-700 fw-600">{{ $t("emails.dashboard") }}</h1>
       </div>
 
@@ -11,8 +11,8 @@
 
       <div v-show="!loading">
         <!-- Channels -->
-        <div class="mb-500">
-          <h2 class="fs-500 fw-600 mb-300">{{ $t("emails.channels") }}</h2>
+        <div class="mb-12">
+          <h2 class="fs-500 fw-600 mb-8">{{ $t("emails.channels") }}</h2>
           <div v-if="channels.length === 0" class="fs-300 t-muted">
             {{ $t("emails.no_channels") }}
           </div>
@@ -20,10 +20,10 @@
             <div
               v-for="channel in channels"
               :key="channel.pk"
-              class="emails-card bg-base b-subtle br-50 p-400 pointer"
+              class="emails-card bg-base b-subtle rounded p-10 pointer"
               @click="editChannel(channel.pk)"
             >
-              <div class="flex ai-ct gap-200 mb-200">
+              <div class="flex ai-ct gap-5 mb-5">
                 <div
                   class="emails-card__color-dot"
                   :style="{
@@ -36,7 +36,7 @@
                 }}</span>
               </div>
               <div class="fs-200 t-muted">{{ channel.idx }}</div>
-              <div v-if="channel.from_email" class="fs-200 t-muted mt-100">
+              <div v-if="channel.from_email" class="fs-200 t-muted mt-2">
                 {{ channel.from_email }}
               </div>
             </div>
@@ -45,17 +45,17 @@
 
         <!-- Email Types -->
         <div>
-          <h2 class="fs-500 fw-600 mb-300">
+          <h2 class="fs-500 fw-600 mb-8">
             {{ $t("emails.template_types") }}
           </h2>
           <div class="emails-grid">
             <div
               v-for="emailType in emailTypes"
               :key="emailType.slug"
-              class="emails-card bg-base b-subtle br-50 p-400 pointer"
+              class="emails-card bg-base b-subtle rounded p-10 pointer"
               @click="editTemplates(emailType.slug)"
             >
-              <div class="fs-400 fw-600 t-body mb-100">
+              <div class="fs-400 fw-600 t-body mb-2">
                 {{ emailType.label }}
               </div>
               <div class="fs-200 t-muted">{{ emailType.description }}</div>
@@ -181,7 +181,7 @@ export default {
 .emails-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
+  gap: var(--space-4);
 }
 
 .emails-card {
@@ -195,7 +195,7 @@ export default {
 .emails-card__color-dot {
   width: 12px;
   height: 12px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   border: 1px solid var(--border-subtle);
   flex-shrink: 0;
 }

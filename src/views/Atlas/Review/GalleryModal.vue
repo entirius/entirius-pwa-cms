@@ -7,7 +7,7 @@
         @click.self="$emit('close')"
         data-testid="gallery-modal"
       >
-        <div class="gallery-container bg-base b-subtle br-100">
+        <div class="gallery-container bg-base b-subtle rounded-lg">
           <header class="gallery-header">
             <h2 class="fs-400 fw-600">
               {{ $t("atlas.review.gallery_title") }}
@@ -131,7 +131,7 @@ export default {
   align-items: center;
   justify-content: center;
   z-index: 100;
-  padding: var(--space-300);
+  padding: var(--space-8);
 }
 
 .gallery-container {
@@ -147,14 +147,14 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-200) var(--space-300);
+  padding: var(--space-5) var(--space-8);
   border-bottom: 1px solid var(--border-subtle);
 }
 
 .gallery-close {
   background: transparent;
   border: none;
-  font-size: 20px;
+  font-size: var(--fs-500);
   color: var(--text-muted);
   cursor: pointer;
   padding: 0;
@@ -195,11 +195,11 @@ export default {
   transform: translateY(-50%);
   width: 40px;
   height: 40px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   border: none;
   background: rgba(0, 0, 0, 0.45);
   color: white;
-  font-size: 16px;
+  font-size: var(--fs-400);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -223,18 +223,18 @@ export default {
   bottom: 12px;
   left: 50%;
   transform: translateX(-50%);
-  padding: 4px 10px;
+  padding: var(--space-1) var(--space-2);
   background: rgba(0, 0, 0, 0.55);
   color: white;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   font-size: var(--fs-200);
   font-weight: 600;
 }
 
 .gallery-thumbs {
   display: flex;
-  gap: 8px;
-  padding: var(--space-200) var(--space-300);
+  gap: var(--space-2);
+  padding: var(--space-5) var(--space-8);
   overflow-x: auto;
   overflow-y: hidden;
   border-top: 1px solid var(--border-subtle);
@@ -247,7 +247,7 @@ export default {
   height: 64px;
   padding: 0;
   border: 2px solid transparent;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   background: var(--surface-raised);
   cursor: pointer;
   overflow: hidden;

@@ -1,12 +1,12 @@
 <template>
-  <div class="acc-list__wrapper p-500 fs-300 t-body h-100 ov-h">
-    <div class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500">
-      <div class="flex ai-ct mb-400">
+  <div class="acc-list__wrapper p-12 fs-300 t-body h-100 ov-h">
+    <div class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12">
+      <div class="flex ai-ct mb-10">
         <h1 class="fs-700 fw-600">{{ $t("accounts.customers") }}</h1>
       </div>
 
       <!-- Filters -->
-      <div class="flex ai-ct mb-400">
+      <div class="flex ai-ct mb-10">
         <MobileFilterPanel
           :active-count="activeFilterCount"
           :trigger-label="$t('builder.filters')"
@@ -22,7 +22,7 @@
         </MobileFilterPanel>
       </div>
 
-      <div class="flex ai-ct gap-300 mb-400 flex-wrap">
+      <div class="flex ai-ct gap-8 mb-10 flex-wrap">
         <BasicInput
           v-model="search"
           :placeholder="$t('common.start_typing')"
@@ -64,7 +64,7 @@
           {{ row.firstname }} {{ row.lastname }}
         </template>
         <template #cell-group="{ value }">
-          <span v-if="value" class="bg-accent-subtle t-strong fs-200 ph-100 br-50">
+          <span v-if="value" class="bg-accent-subtle t-strong fs-200 ph-2 rounded">
             {{ value }}
           </span>
           <span v-else class="t-muted">---</span>
@@ -74,7 +74,7 @@
           <span v-else class="t-muted">---</span>
         </template>
         <template #cell-status="{ row }">
-          <div class="flex gap-100">
+          <div class="flex gap-2">
             <StatusBadge
               :label="row.is_active ? $t('accounts.active') : $t('accounts.inactive')"
               :variant="row.is_active ? 'positive' : 'negative'"
@@ -288,7 +288,7 @@ export default {
 
 @media only screen and (max-width: 768px) {
   .acc-list__wrapper {
-    padding: 16px !important;
+    padding: var(--space-4) !important;
   }
 }
 </style>

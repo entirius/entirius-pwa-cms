@@ -307,8 +307,8 @@ export default {
 .vouchers-list__toolbar {
   display: flex;
   align-items: center;
-  gap: var(--space-200);
-  margin-bottom: var(--space-400);
+  gap: var(--space-5);
+  margin-bottom: var(--space-10);
   flex-wrap: wrap;
 }
 
@@ -321,7 +321,7 @@ export default {
 .vouchers-list__lookup {
   display: flex;
   align-items: center;
-  gap: var(--space-100);
+  gap: var(--space-2);
   flex-shrink: 0;
 }
 
@@ -338,8 +338,8 @@ export default {
   text-overflow: ellipsis;
   white-space: nowrap;
   vertical-align: middle;
-  padding: 2px 8px;
-  border-radius: var(--radius-sm);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-base);
   font-size: var(--fs-200);
   font-weight: 600;
 }

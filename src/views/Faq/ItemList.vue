@@ -1,6 +1,6 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
-    <div class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
+    <div class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12">
       <div class="item-list__toolbar">
         <BasicInput
           v-model="search"
@@ -258,8 +258,8 @@ export default {
 .item-list__toolbar {
   display: flex;
   align-items: center;
-  gap: var(--space-200);
-  margin-bottom: var(--space-400);
+  gap: var(--space-5);
+  margin-bottom: var(--space-10);
   flex-wrap: wrap;
 }
 

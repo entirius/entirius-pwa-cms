@@ -1,36 +1,36 @@
 <template>
   <div
-    class="auth-card fs-300 p-400 t-body br-50 bg-base b-subtle shadow-down"
+    class="auth-card fs-300 p-10 t-body rounded bg-base b-subtle shadow-down"
   >
     <!-- Forgot password mode -->
     <template v-if="showForgotPassword">
-      <p class="fs-700 fw-600 txt-center mb-50">
+      <p class="fs-700 fw-600 txt-center mb-1">
         {{ $t("login.forgot_title") }}
       </p>
-      <p class="fs-300 t-secondary txt-center mb-500">
+      <p class="fs-300 t-secondary txt-center mb-12">
         {{ $t("login.forgot_subtitle") }}
       </p>
 
       <template v-if="resetEmailSent">
-        <div class="auth-card__banner auth-card__banner--success mb-400">
+        <div class="auth-card__banner auth-card__banner--success mb-10">
           <p class="fs-300 fw-500">{{ $t("login.reset_email_sent") }}</p>
         </div>
       </template>
       <template v-else>
         <BasicInput
           v-model="resetEmail"
-          class="bg-raised mb-300 lh-base-elem"
+          class="bg-raised mb-8 lh-base-elem"
           :label="$t('login.email')"
         />
         <BasicButton
           :text="$t('login.send_reset_link')"
           @click="sendResetLink"
-          class="bg-accent-fill b-accent jc-ct t-on-accent-fill w-100 br-50"
+          class="bg-accent-fill b-accent jc-ct t-on-accent-fill w-100 rounded"
         />
       </template>
 
       <button
-        class="auth-card__link mt-300"
+        class="auth-card__link mt-8"
         @click="
           showForgotPassword = false;
           resetEmailSent = false;
@@ -44,20 +44,20 @@
     <template v-else>
       <div
         v-if="sessionExpired"
-        class="auth-card__banner auth-card__banner--warning mb-400"
+        class="auth-card__banner auth-card__banner--warning mb-10"
       >
         <p class="fs-300 fw-500">{{ $t("login.session_expired") }}</p>
       </div>
-      <p class="fs-700 fw-600 txt-center mb-50">{{ $t("login.welcome") }}</p>
-      <p class="fs-300 t-secondary txt-center mb-500">
+      <p class="fs-700 fw-600 txt-center mb-1">{{ $t("login.welcome") }}</p>
+      <p class="fs-300 t-secondary txt-center mb-12">
         {{ $t("login.subtitle") }}
       </p>
       <BasicInput
         v-model="username"
-        class="bg-raised mb-400 lh-base-elem"
+        class="bg-raised mb-10 lh-base-elem"
         :label="$t('login.username')"
       />
-      <div class="auth-card__pw-field mb-300">
+      <div class="auth-card__pw-field mb-8">
         <BasicInput
           v-model="password"
           class="bg-raised lh-base-elem"
@@ -76,22 +76,22 @@
       <BasicButton
         :text="$t('login.submit')"
         @click="login"
-        class="bg-accent-fill b-accent jc-ct t-on-accent-fill w-100 br-50"
+        class="bg-accent-fill b-accent jc-ct t-on-accent-fill w-100 rounded"
       />
 
       <template v-if="ssoEnabled">
-        <p class="auth-card__divider fs-200 t-muted mt-300 mb-300">
+        <p class="auth-card__divider fs-200 t-muted mt-8 mb-8">
           {{ $t("login.sso_or") }}
         </p>
         <BasicButton
           data-testid="sso-login"
           :text="$t('login.sso_submit')"
           @click="startSsoLogin"
-          class="bg-base b-accent jc-ct t-accent w-100 br-50"
+          class="bg-base b-accent jc-ct t-accent w-100 rounded"
         />
       </template>
 
-      <button class="auth-card__link mt-300" @click="showForgotPassword = true">
+      <button class="auth-card__link mt-8" @click="showForgotPassword = true">
         {{ $t("login.forgot_password") }}
       </button>
     </template>

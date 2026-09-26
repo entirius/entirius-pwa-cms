@@ -102,9 +102,9 @@ onMounted(async () => {
 .inbox-row {
   display: flex;
   flex-direction: column;
-  gap: var(--space-100);
+  gap: var(--space-2);
   border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   background: var(--surface-base);
 }
 .inbox-row--draft,
@@ -117,9 +117,9 @@ onMounted(async () => {
 .inbox-row__link {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 0.15rem var(--space-200);
+  gap: 0.15rem var(--space-5);
   min-height: 56px;
-  padding: var(--space-200) var(--space-300);
+  padding: var(--space-5) var(--space-8);
   color: var(--text-body);
   text-decoration: none;
 }
@@ -154,16 +154,16 @@ onMounted(async () => {
   color: var(--text-secondary);
 }
 .inbox-row__clock {
-  margin-right: 0.25rem;
+  margin-right: var(--space-1);
   color: var(--text-muted);
 }
 .inbox-row__send {
   align-self: flex-start;
   min-height: 44px;
-  margin: 0 var(--space-300) var(--space-200);
-  padding: 0 var(--space-400);
+  margin: 0 var(--space-8) var(--space-5);
+  padding: 0 var(--space-10);
   border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   background: var(--surface-base);
   color: var(--text-body);
   cursor: pointer;

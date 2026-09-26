@@ -1,7 +1,7 @@
 <template>
   <div class="stock-panel h-100">
     <div class="stock-panel__toolbar flex ai-ct jc-sb bg-raised fs-300">
-      <div class="flex ai-ct gap-200">
+      <div class="flex ai-ct gap-5">
         <Dropdown
           :values="warehouseOptions"
           :selected="activeWarehouse ? [activeWarehouse.code] : []"
@@ -21,7 +21,7 @@
           {{ $t('stock.last_synced') }}: {{ formatRelativeTime(activeWarehouse.last_synced_at) }}
         </span>
       </div>
-      <div id="stock-toolbar-right" class="flex ai-ct gap-200"></div>
+      <div id="stock-toolbar-right" class="flex ai-ct gap-5"></div>
     </div>
 
     <div v-if="!activeWarehouse && !loading" class="flex-center h-100">
@@ -120,7 +120,7 @@ export default {
 }
 
 .stock-panel__toolbar {
-  padding: 8px 20px;
+  padding: var(--space-2) var(--space-5);
   border-bottom: 1px solid var(--border-subtle);
   flex-shrink: 0;
 }

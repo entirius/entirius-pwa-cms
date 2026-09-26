@@ -7,8 +7,8 @@
         @click.self="$emit('close')"
         data-testid="raw-data-modal"
       >
-        <div class="raw-modal-container bg-base b-subtle br-100 p-400">
-          <div class="flex ai-ct jc-sb mb-200">
+        <div class="raw-modal-container bg-base b-subtle rounded-lg p-10">
+          <div class="flex ai-ct jc-sb mb-5">
             <h2 class="fs-400 fw-600">{{ $t("atlas.review.raw_data_title") }}</h2>
             <button
               class="raw-modal__close"
@@ -18,7 +18,7 @@
               <FontAwesomeIcon icon="xmark" />
             </button>
           </div>
-          <pre class="raw-modal__pre bg-raised t-body p-200 br-sm">{{
+          <pre class="raw-modal__pre bg-raised t-body p-5 rounded">{{
             formatted
           }}</pre>
         </div>
@@ -53,7 +53,7 @@ export default {
   align-items: center;
   justify-content: center;
   z-index: 100;
-  padding: var(--space-300);
+  padding: var(--space-8);
 }
 .raw-modal-container {
   width: min(720px, 100%);
@@ -65,7 +65,7 @@ export default {
 .raw-modal__close {
   background: transparent;
   border: none;
-  font-size: 18px;
+  font-size: var(--fs-500);
   color: var(--text-muted);
   cursor: pointer;
 }

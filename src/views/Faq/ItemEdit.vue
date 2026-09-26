@@ -1,5 +1,5 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#faq-toolbar-left" defer>
       <BasicButton
         text=""
@@ -27,11 +27,11 @@
       />
     </Teleport>
 
-    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
       <Loader v-if="loading" />
 
       <template v-else>
-        <div class="flex ai-ct jc-sb mb-500">
+        <div class="flex ai-ct jc-sb mb-12">
           <h1 class="fs-700 fw-600">
             {{ isEdit ? item.question || item.url_key : $t("faq.create_item") }}
           </h1>
@@ -43,8 +43,8 @@
         </div>
 
         <!-- Main fields -->
-        <div class="detail-section mb-400">
-          <h2 class="fs-500 fw-600 mb-300">{{ $t("faq.item_details") }}</h2>
+        <div class="detail-section mb-10">
+          <h2 class="fs-500 fw-600 mb-8">{{ $t("faq.item_details") }}</h2>
           <div class="detail-grid">
             <div class="detail-field">
               <div class="flex ai-ct jc-sb">
@@ -76,10 +76,10 @@
         </div>
 
         <!-- Content fields — each with per-field Translations button -->
-        <div class="detail-section mb-400">
-          <h2 class="fs-500 fw-600 mb-300">{{ $t("faq.item_content") }}</h2>
+        <div class="detail-section mb-10">
+          <h2 class="fs-500 fw-600 mb-8">{{ $t("faq.item_content") }}</h2>
 
-          <div class="detail-field mb-300">
+          <div class="detail-field mb-8">
             <div class="flex ai-ct jc-sb">
               <label class="detail-label required">{{ $t("faq.question") }}</label>
               <BasicButton
@@ -96,7 +96,7 @@
             />
           </div>
 
-          <div class="detail-field mb-300">
+          <div class="detail-field mb-8">
             <div class="flex ai-ct jc-sb">
               <label class="detail-label">{{ $t("faq.short_answer") }}</label>
               <BasicButton
@@ -126,8 +126,8 @@
         </div>
 
         <!-- Associations (edit mode only) -->
-        <div v-if="isEdit" class="detail-section mb-400">
-          <div class="flex ai-ct jc-sb mb-300">
+        <div v-if="isEdit" class="detail-section mb-10">
+          <div class="flex ai-ct jc-sb mb-8">
             <h2 class="fs-500 fw-600">{{ $t("faq.associations") }}</h2>
             <BasicButton
               :text="$t('faq.add_association')"
@@ -142,7 +142,7 @@
           <div
             v-for="(assoc, idx) in associations"
             :key="idx"
-            class="assoc-row flex ai-ct gap-200 mb-200"
+            class="assoc-row flex ai-ct gap-5 mb-5"
           >
             <Dropdown
               :values="entityTypeOptions"
@@ -201,7 +201,7 @@
               @click="removeAssociation(idx)"
             />
           </div>
-          <div v-if="associationsDirty" class="flex jc-fe mt-200">
+          <div v-if="associationsDirty" class="flex jc-fe mt-5">
             <BasicButton
               :text="$t('faq.save_associations')"
               class="bg-accent-fill t-on-accent-fill"
@@ -597,20 +597,20 @@ export default {
 <style lang="scss" scoped>
 .detail-section {
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 20px;
+  border-radius: var(--radius-base);
+  padding: var(--space-5);
 }
 
 .detail-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 
 .detail-field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .detail-label {
@@ -626,7 +626,7 @@ export default {
 }
 
 .assoc-row {
-  padding: 8px 0;
+  padding: var(--space-2) 0;
 }
 
 .assoc-type-select {

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="switcher inline-flex gap-100 ai-ct"
+    class="switcher inline-flex gap-2 ai-ct"
     :class="{ active: selected, disabled: prevent }"
     @click="onSwitch"
   >
@@ -55,7 +55,7 @@ export default {
     width: 2.5rem;
     height: $baseSize;
     background: var(--surface-base);
-    border-radius: 6.25rem;
+    border-radius: var(--radius-full);
     border: 1px solid var(--border-default);
     transition: background $transition;
     &::after {
@@ -68,7 +68,7 @@ export default {
       height: $baseSize;
       background: var(--surface-base);
       border: 1px solid var(--border-default);
-      border-radius: 5.625rem;
+      border-radius: var(--radius-full);
       transition: $transition;
       box-shadow: var(--shadow-sm);
     }

@@ -1,9 +1,9 @@
 <template>
   <div class="pm-panel h-100">
     <div class="pm-panel__toolbar flex ai-ct jc-sb bg-raised fs-300">
-      <div class="flex ai-ct gap-200">
-        <div id="pricing-toolbar-left" class="flex ai-ct gap-200"></div>
-        <div v-if="showChannelSelector && channelOptions.length" class="flex ai-ct gap-200">
+      <div class="flex ai-ct gap-5">
+        <div id="pricing-toolbar-left" class="flex ai-ct gap-5"></div>
+        <div v-if="showChannelSelector && channelOptions.length" class="flex ai-ct gap-5">
           <span class="fs-200 fw-600 t-muted text-uppercase">{{ $t('pm.channel') }}</span>
           <Dropdown
             :values="channelOptions"
@@ -12,7 +12,7 @@
           />
         </div>
       </div>
-      <div id="pricing-toolbar-right" class="flex ai-ct gap-200"></div>
+      <div id="pricing-toolbar-right" class="flex ai-ct gap-5"></div>
     </div>
     <router-view />
   </div>
@@ -66,7 +66,7 @@ provide('pmActiveChannel', activeChannel)
 }
 
 .pm-panel__toolbar {
-  padding: 8px 20px;
+  padding: var(--space-2) var(--space-5);
   border-bottom: 1px solid var(--border-subtle);
   flex-shrink: 0;
 }

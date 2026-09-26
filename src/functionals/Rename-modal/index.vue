@@ -7,11 +7,11 @@
       <div class="modal-body">
         <slot name="description"></slot>
       </div>
-      <div class="modal-footer mt-300">
+      <div class="modal-footer mt-8">
         <BasicButton @click="accept" :text="$t('common.copy')"></BasicButton>
         <BasicButton
           @click="reject"
-          class="bg-negative-fill t-on-status-fill br-50"
+          class="bg-negative-fill t-on-status-fill rounded"
           :text="$t('common.cancel')"
         ></BasicButton>
       </div>
@@ -56,8 +56,8 @@ export default {
 .modal-container {
   background: var(--surface-base);
   color: var(--text-body);
-  padding: 20px;
-  border-radius: 8px;
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   width: 400px;
   max-width: 90%;
@@ -66,7 +66,7 @@ export default {
 .modal-header,
 .modal-body,
 .modal-footer {
-  margin-bottom: 10px;
+  margin-bottom: var(--space-2);
 }
 
 .modal-footer {
@@ -75,6 +75,6 @@ export default {
 }
 
 button {
-  margin-left: 10px;
+  margin-left: var(--space-2);
 }
 </style>

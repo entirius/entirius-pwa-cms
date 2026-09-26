@@ -25,9 +25,9 @@
       />
     </Teleport>
 
-    <div class="flex-1 ovy-auto p-500">
-      <div class="bg-base b-subtle br-50 p-500">
-        <div class="gap-def-identity mb-400">
+    <div class="flex-1 ovy-auto p-12">
+      <div class="bg-base b-subtle rounded p-12">
+        <div class="gap-def-identity mb-10">
           <span class="fs-200 t-accent fw-600 tt-upper">
             {{ isCreate ? $t("pim.create_gap_definition") : $t("pim.gap_definition_detail") }}
           </span>
@@ -101,7 +101,7 @@
               <NumberInput v-model="displayOrderStr" :min="0" :max="100000" />
             </FormField>
 
-            <div class="flex ai-ct gap-100">
+            <div class="flex ai-ct gap-2">
               <Switcher
                 :label="$t('pim.gap_active')"
                 :selected="form.active"
@@ -111,13 +111,13 @@
           </div>
 
           <!-- raw JSON params fallback -->
-          <div class="mt-300">
+          <div class="mt-8">
             <Switcher
               :label="$t('pim.gap_raw_params')"
               :selected="rawParamsMode"
               @onSelect="toggleRawParams"
             />
-            <div v-if="rawParamsMode" class="mt-200">
+            <div v-if="rawParamsMode" class="mt-5">
               <FormField :label="$t('pim.gap_params_json')" :error="rawParamsError">
                 <TextAreaBasic v-model="rawParamsText" :rows="4" />
               </FormField>
@@ -125,9 +125,9 @@
           </div>
 
           <!-- label translations -->
-          <div class="mt-400">
+          <div class="mt-10">
             <span class="fs-200 t-muted fw-600 tt-upper">{{ $t("pim.gap_label") }}</span>
-            <div class="gap-def-t9n mt-200">
+            <div class="gap-def-t9n mt-5">
               <div v-for="lang in labelLangs" :key="lang" class="gap-def-t9n__row">
                 <span class="gap-def-t9n__lang">{{ lang }}</span>
                 <BasicInput
@@ -140,14 +140,14 @@
           </div>
 
           <!-- scope: languages + channels -->
-          <div class="mt-400 flex gap-400" style="flex-wrap: wrap">
+          <div class="mt-10 flex gap-10" style="flex-wrap: wrap">
             <div>
               <span class="fs-200 t-muted fw-600 tt-upper">
                 {{ $t("pim.gap_languages") }}
                 <HelpTooltip :text="$t('pim.gap_scope_all_hint')" />
               </span>
-              <div class="mb-100"></div>
-              <div class="flex gap-100" style="flex-wrap: wrap">
+              <div class="mb-2"></div>
+              <div class="flex gap-2" style="flex-wrap: wrap">
                 <FilterChip
                   v-for="lang in availableLangs"
                   :key="lang"
@@ -162,7 +162,7 @@
                 {{ $t("pim.gap_channels") }}
                 <HelpTooltip :text="$t('pim.gap_scope_all_hint')" />
               </span>
-              <div class="mb-100"></div>
+              <div class="mb-2"></div>
               <ChannelMultiSelect
                 v-model="form.channels"
                 :channels="pimChannel.channels"
@@ -510,26 +510,26 @@ export default {
 <style lang="scss" scoped>
 .gap-def-identity {
   border-left: 3px solid var(--accent);
-  padding-left: var(--space-300);
-  padding-top: var(--space-200);
-  padding-bottom: var(--space-200);
+  padding-left: var(--space-8);
+  padding-top: var(--space-5);
+  padding-bottom: var(--space-5);
 }
 .gap-def-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--space-300);
+  gap: var(--space-8);
   align-items: end;
 }
 .gap-def-t9n {
   display: flex;
   flex-direction: column;
-  gap: var(--space-200);
+  gap: var(--space-5);
   max-width: 520px;
 }
 .gap-def-t9n__row {
   display: flex;
   align-items: center;
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 .gap-def-t9n__lang {
   width: 40px;

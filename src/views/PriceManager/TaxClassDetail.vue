@@ -1,5 +1,5 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#pricing-toolbar-left" defer>
       <BasicButton
         text=""
@@ -26,13 +26,13 @@
       />
     </Teleport>
 
-    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
       <Loader v-if="loading" />
 
       <template v-else>
         <!-- Basic fields -->
-        <div class="pm-section mb-400">
-          <h2 class="fs-500 fw-600 mb-300">{{ $t('pm.tax_class_detail') }}</h2>
+        <div class="pm-section mb-10">
+          <h2 class="fs-500 fw-600 mb-8">{{ $t('pm.tax_class_detail') }}</h2>
           <div class="pm-grid">
             <div class="pm-field">
               <label class="pm-label required">IDX</label>
@@ -54,11 +54,11 @@
 
         <!-- Rates table -->
         <div v-if="isEdit" class="pm-section">
-          <div class="flex ai-ct jc-sb mb-300">
+          <div class="flex ai-ct jc-sb mb-8">
             <h2 class="fs-500 fw-600">{{ $t('pm.rate_count') }}</h2>
           </div>
 
-          <div v-if="rates.length" class="pm-rates-table mb-300">
+          <div v-if="rates.length" class="pm-rates-table mb-8">
             <div class="pm-rates-table__head">
               <span>{{ $t('pm.country') }}</span>
               <span>{{ $t('pm.percent') }}</span>
@@ -81,7 +81,7 @@
           </div>
 
           <!-- Add rate row -->
-          <div class="flex ai-ct gap-200 flex-wrap">
+          <div class="flex ai-ct gap-5 flex-wrap">
             <BasicInput v-model="newRate.country_iso2" placeholder="ISO2 (e.g. PL)" class="pm-rate-input" />
             <NumberInput v-model="newRate.rate" :min="0" :max="100" :step="0.01" suffix="%" class="pm-rate-input" />
             <BasicButton
@@ -258,20 +258,20 @@ export default {
 <style lang="scss" scoped>
 .pm-section {
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 20px;
+  border-radius: var(--radius-base);
+  padding: var(--space-5);
 }
 
 .pm-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 
 .pm-field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .pm-label {
@@ -284,15 +284,15 @@ export default {
 
 .pm-rates-table {
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
   overflow: hidden;
 }
 
 .pm-rates-table__head {
   display: grid;
   grid-template-columns: 1fr 1fr 40px;
-  gap: var(--space-100);
-  padding: 8px var(--space-200);
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-5);
   background: var(--surface-raised);
   font-size: var(--fs-200);
   font-weight: 600;
@@ -304,8 +304,8 @@ export default {
 .pm-rates-table__row {
   display: grid;
   grid-template-columns: 1fr 1fr 40px;
-  gap: var(--space-100);
-  padding: 8px var(--space-200);
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-5);
   border-top: 1px solid var(--border-subtle);
   align-items: center;
 

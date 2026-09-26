@@ -1,9 +1,9 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
     >
-      <div class="flex ai-ct mb-400">
+      <div class="flex ai-ct mb-10">
         <h1 class="fs-700 fw-600 flex-1">{{ $t("agm.people_list") }}</h1>
         <BasicButton
           v-if="mode === 'marketing_lists'"
@@ -13,7 +13,7 @@
         />
       </div>
 
-      <div class="mb-400">
+      <div class="mb-10">
         <BasicTabs
           v-model="mode"
           :options="[
@@ -25,7 +25,7 @@
 
       <!-- People tab -->
       <template v-if="mode === 'people'">
-        <div class="flex ai-ct gap-300 mb-400">
+        <div class="flex ai-ct gap-8 mb-10">
           <BasicInput
             v-model="search"
             :placeholder="$t('agm.search_by_email')"
@@ -69,9 +69,9 @@
           <div
             v-for="group in subscriberGroups"
             :key="group.slug"
-            class="mb-500"
+            class="mb-12"
           >
-            <div class="flex ai-ct gap-200 mb-300">
+            <div class="flex ai-ct gap-5 mb-8">
               <h2 class="fs-400 fw-600">{{ group.name }}</h2>
               <span class="consent-people__count-badge fs-200 t-muted">
                 {{ group.items.length }} {{ $t("agm.subscribers_count") }}
@@ -290,7 +290,7 @@ export default {
 .consent-people__count-badge {
   background: var(--surface-raised);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  padding: 2px 8px;
+  border-radius: var(--radius-base);
+  padding: 2px var(--space-2);
 }
 </style>

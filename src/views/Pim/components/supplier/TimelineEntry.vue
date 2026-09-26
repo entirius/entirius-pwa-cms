@@ -16,7 +16,7 @@
       <div class="timeline-entry__field-row">
         <span class="t-muted fs-200">{{ $t("pim.supplier.timeline.field") }}:</span>
         <code class="timeline-entry__field">{{ entry.field_path || "—" }}</code>
-        <span v-if="diffComponent === 'NumericDiff'" class="ml-200">
+        <span v-if="diffComponent === 'NumericDiff'" class="ml-5">
           <NumericDiff :before="entry.before" :after="entry.after" />
         </span>
       </div>
@@ -119,8 +119,8 @@ export default {
 .timeline-entry {
   display: grid;
   grid-template-columns: 24px 1fr;
-  gap: var(--space-200);
-  padding: var(--space-200) 0;
+  gap: var(--space-5);
+  padding: var(--space-5) 0;
   border-bottom: 1px solid var(--border-subtle);
   list-style: none;
 }
@@ -130,8 +130,8 @@ export default {
 .timeline-entry__marker {
   width: 12px;
   height: 12px;
-  border-radius: 50%;
-  margin-top: 6px;
+  border-radius: var(--radius-full);
+  margin-top: var(--space-1);
   justify-self: center;
 }
 .timeline-entry__marker--applied {
@@ -144,25 +144,25 @@ export default {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 .timeline-entry__field-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-100);
-  margin-top: var(--space-100);
+  gap: var(--space-2);
+  margin-top: var(--space-2);
   font-size: var(--fs-200);
 }
 .timeline-entry__field {
   background: var(--surface-raised);
-  padding: 2px 6px;
-  border-radius: var(--radius-sm);
+  padding: 2px var(--space-1);
+  border-radius: var(--radius-base);
   font-family: var(--font-mono, monospace);
   font-size: var(--fs-100);
 }
 .timeline-entry__toggle {
-  margin-top: var(--space-100);
+  margin-top: var(--space-2);
   background: none;
   border: none;
   padding: 0;
@@ -172,7 +172,7 @@ export default {
   text-decoration: underline;
 }
 .timeline-entry__diff {
-  margin-top: var(--space-200);
+  margin-top: var(--space-5);
 }
 .timeline-entry__user {
   margin-left: auto;

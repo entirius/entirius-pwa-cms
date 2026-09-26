@@ -351,7 +351,7 @@ onMounted(() => {
 
 <template>
   <div class="product-files">
-    <div class="product-files__header flex ai-ct jc-sb mb-300">
+    <div class="product-files__header flex ai-ct jc-sb mb-8">
       <h3 class="fs-500 fw-600">{{ $t("pim.files") }}</h3>
       <span v-if="files.length" class="fs-200 t-muted">
         {{ files.length }} {{ files.length === 1 ? "file" : "files" }}
@@ -373,10 +373,10 @@ onMounted(() => {
         @drop="onDrop"
       >
         <FontAwesomeIcon icon="upload" class="t-muted fs-500" />
-        <span class="t-secondary fs-200 mt-100">{{
+        <span class="t-secondary fs-200 mt-2">{{
           $t("pim.drop_files_here")
         }}</span>
-        <span class="t-muted fs-200 mt-100">{{
+        <span class="t-muted fs-200 mt-2">{{
           $t("pim.files_supported_hint")
         }}</span>
       </label>
@@ -389,7 +389,7 @@ onMounted(() => {
 
       <!-- Upload popup (shown after file is staged) -->
       <div v-if="pendingFile" class="product-files__popup">
-        <div class="product-files__popup-header flex ai-ct gap-200 mb-200">
+        <div class="product-files__popup-header flex ai-ct gap-5 mb-5">
           <FontAwesomeIcon icon="file" class="t-accent fs-400" />
           <span class="fs-300 fw-600 t-body">{{ pendingFile.name }}</span>
         </div>
@@ -426,7 +426,7 @@ onMounted(() => {
         </div>
 
         <!-- Category quick-add (inside popup) -->
-        <div v-if="showCategoryCreate" class="product-files__cat-create mt-200">
+        <div v-if="showCategoryCreate" class="product-files__cat-create mt-5">
           <div class="product-files__cat-create-fields">
             <div class="product-files__field">
               <label class="product-files__label">Code *</label>
@@ -450,7 +450,7 @@ onMounted(() => {
               />
             </div>
           </div>
-          <div class="product-files__cat-create-actions mt-100">
+          <div class="product-files__cat-create-actions mt-2">
             <BasicButton
               class="btn-primary"
               :text="$t('pim.create_category')"
@@ -465,7 +465,7 @@ onMounted(() => {
           </div>
         </div>
 
-        <div class="product-files__popup-actions mt-200">
+        <div class="product-files__popup-actions mt-5">
           <BasicButton
             class="btn-primary"
             :text="$t('pim.upload_file')"
@@ -484,11 +484,11 @@ onMounted(() => {
       <!-- Empty state -->
       <div v-if="!files.length && !pendingFile" class="product-files__empty">
         <FontAwesomeIcon icon="file" class="t-muted fs-600" />
-        <span class="t-muted fs-200 mt-200">{{ $t("pim.no_files") }}</span>
+        <span class="t-muted fs-200 mt-5">{{ $t("pim.no_files") }}</span>
       </div>
 
       <!-- File list -->
-      <div v-if="files.length" class="product-files__list mt-300">
+      <div v-if="files.length" class="product-files__list mt-8">
         <div v-for="pf in files" :key="pf.pk" class="product-files__row">
           <!-- Row 1: icon + filename + type badge + delete -->
           <div class="product-files__row-top">
@@ -513,7 +513,7 @@ onMounted(() => {
                 {{ fileName(pf) || "—" }}
               </span>
               <div
-                class="product-files__details flex ai-ct gap-200 fs-200 t-muted"
+                class="product-files__details flex ai-ct gap-5 fs-200 t-muted"
               >
                 <StatusBadge
                   v-if="fileTypeBadge(pf)"
@@ -593,7 +593,7 @@ onMounted(() => {
                 />
               </div>
             </div>
-            <div class="product-files__row-edit-actions mt-100">
+            <div class="product-files__row-edit-actions mt-2">
               <BasicButton
                 class="btn-primary"
                 :text="$t('common.save')"
@@ -617,8 +617,8 @@ onMounted(() => {
 .product-files {
   &__dropzone {
     border: 2px dashed var(--border-default);
-    border-radius: 6px;
-    padding: 24px;
+    border-radius: var(--radius-base);
+    padding: var(--space-6);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -641,41 +641,41 @@ onMounted(() => {
   }
 
   &__popup {
-    padding: 16px;
+    padding: var(--space-4);
     border: 1px solid var(--accent);
-    border-radius: 6px;
+    border-radius: var(--radius-base);
     background: var(--surface-base);
     box-shadow: var(--shadow-md);
   }
 
   &__popup-fields {
     display: flex;
-    gap: 12px;
+    gap: var(--space-3);
     flex-wrap: wrap;
     align-items: flex-end;
   }
 
   &__popup-actions {
     display: flex;
-    gap: 8px;
+    gap: var(--space-2);
   }
 
   &__cat-create {
-    padding: 12px;
+    padding: var(--space-3);
     border: 1px solid var(--accent);
-    border-radius: 6px;
+    border-radius: var(--radius-base);
     background: var(--surface-raised);
   }
 
   &__cat-create-fields {
     display: flex;
-    gap: 12px;
+    gap: var(--space-3);
     flex-wrap: wrap;
   }
 
   &__cat-create-actions {
     display: flex;
-    gap: 8px;
+    gap: var(--space-2);
   }
 
   &__field {
@@ -689,59 +689,59 @@ onMounted(() => {
 
   &__label {
     display: block;
-    font-size: 11px;
+    font-size: var(--fs-150);
     font-weight: 600;
     text-transform: uppercase;
     color: var(--text-muted);
-    margin-bottom: 4px;
+    margin-bottom: var(--space-1);
   }
 
   &__empty {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 40px 20px;
-    gap: 8px;
+    padding: var(--space-10) var(--space-5);
+    gap: var(--space-2);
   }
 
   &__list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: var(--space-2);
   }
 
   &__row {
     border: 1px solid var(--border-subtle);
-    border-radius: 6px;
+    border-radius: var(--radius-base);
     background: var(--surface-base);
   }
 
   &__row-top {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px;
+    gap: var(--space-3);
+    padding: var(--space-3);
   }
 
   &__row-edit {
-    padding: 12px;
+    padding: var(--space-3);
     border-top: 1px solid var(--border-subtle);
   }
 
   &__row-edit-fields {
     display: flex;
-    gap: 12px;
+    gap: var(--space-3);
     flex-wrap: wrap;
     align-items: flex-end;
   }
 
   &__row-edit-actions {
     display: flex;
-    gap: 8px;
+    gap: var(--space-2);
   }
 
   &__icon {
-    font-size: 20px;
+    font-size: var(--fs-500);
     flex-shrink: 0;
     width: 24px;
     text-align: center;
@@ -779,7 +779,7 @@ onMounted(() => {
     width: 32px;
     height: 32px;
     border: none;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-base);
     background-color: var(--surface-raised);
     color: var(--text-secondary);
     cursor: pointer;
@@ -799,7 +799,7 @@ onMounted(() => {
     width: 32px;
     height: 32px;
     border: none;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-base);
     background-color: var(--negative-subtle);
     color: var(--negative);
     cursor: pointer;
@@ -829,13 +829,13 @@ onMounted(() => {
   border: 0;
 }
 
-.mt-100 {
-  margin-top: var(--space-100);
+.mt-2 {
+  margin-top: var(--space-2);
 }
-.mt-200 {
-  margin-top: var(--space-200);
+.mt-5 {
+  margin-top: var(--space-5);
 }
-.mt-300 {
-  margin-top: var(--space-300);
+.mt-8 {
+  margin-top: var(--space-8);
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
-  <div class="flex-column gap-300 jc-sb fg-1">
-    <div class="fg-1 pl-400 pr-400 ovy-auto pb-400 h-100">
+  <div class="flex-column gap-8 jc-sb fg-1">
+    <div class="fg-1 pl-10 pr-10 ovy-auto pb-10 h-100">
       <div>
         <p class="t-secondary" v-if="type === 'static-page'">
           {{ $t("routes.paths_for_doc") }}
@@ -10,8 +10,8 @@
         </p>
         <p class="t-secondary" v-else>{{ $t("routes.linked_paths") }}</p>
 
-        <hr class="mv-100" />
-        <div class="flex gap-100">
+        <hr class="mv-2" />
+        <div class="flex gap-2">
           <div class="fg-1">
             <Dropdown
               :placeholder="`${$t('routes.list_of_paths')} (${routes.length})`"
@@ -45,11 +45,11 @@
                 to_delete = $event.url;
               "
               @onExtension2="ENTER_edit_mode({ ...$event })"
-              class="br-50 bg-base b-default"
+              class="rounded bg-base b-default"
               :class="{ 'b-negative t-negative': error }"
             />
             <template v-if="!['static-page', 'blog-post'].includes(type)">
-              <p class="mt-300 mb-200">
+              <p class="mt-8 mb-5">
                 {{ $t("routes.multi_route_info") }}
               </p>
               <Dropdown
@@ -76,7 +76,7 @@
                     );
                   }
                 "
-                class="br-50 bg-base b-default"
+                class="rounded bg-base b-default"
               />
             </template>
           </div>
@@ -85,7 +85,7 @@
             :icon="!mode ? 'plus' : false"
             :text="!mode ? $t('routes.set_new') : $t('common.close')"
             :class="{ 'jc-ct': mode }"
-            class="as-s bg-hover b-default t-secondary t-on-accent-fill-hover bg-accent-fill-hover b-accent-fill-hover br-50"
+            class="as-s bg-hover b-default t-secondary t-on-accent-fill-hover bg-accent-fill-hover b-accent-fill-hover rounded"
             @click="
               () => {
                 error = null;
@@ -94,7 +94,7 @@
             "
           />
         </div>
-        <hr class="mv-100" />
+        <hr class="mv-2" />
 
         <p class="fs-100 t-secondary" v-if="type === 'static-page'">
           {{ $t("routes.static_page_help") }}
@@ -106,11 +106,11 @@
           {{ $t("routes.product_help") }}
         </p>
 
-        <hr class="mv-100" />
+        <hr class="mv-2" />
 
         <div
           v-if="mode"
-          class="mb-300 p-200 br-50"
+          class="mb-8 p-5 rounded"
           :class="
             mode === 'edit'
               ? 'bg-raised b-accent'
@@ -121,25 +121,25 @@
           "
           :key="force_refresh"
         >
-          <div class="grid grid-col-2 gap-100">
+          <div class="grid grid-col-2 gap-2">
             <BasicInput
               :label="$t('routes.route_value')"
-              class="br-50 bg-base lh-base-elem"
+              class="rounded bg-base lh-base-elem"
               v-model="route_label"
             />
             <BasicInput
               :label="'URL'"
-              class="br-50 bg-base lh-base-elem"
+              class="rounded bg-base lh-base-elem"
               v-model="route_url"
             />
           </div>
 
-          <hr class="mv-100" />
-          <div class="flex jc-fe gap-100">
+          <hr class="mv-2" />
+          <div class="flex jc-fe gap-2">
             <BasicButton
               v-if="mode === 'edit'"
               :text="$t('common.cancel')"
-              class="b-default t-secondary br-50"
+              class="b-default t-secondary rounded"
               @click="CLOSE_form"
             />
             <BasicButton
@@ -147,7 +147,7 @@
                 mode === 'edit' ? $t('common.save') : $t('routes.add_route')
               "
               :icon="mode === 'edit' ? false : 'plus'"
-              class="bg-accent-fill b-accent t-on-accent-fill br-50"
+              class="bg-accent-fill b-accent t-on-accent-fill rounded"
               @click="SET_route({ label: route_label, url: route_url })"
             />
           </div>
@@ -177,11 +177,11 @@
     </ConfirmationModal>
 
     <div
-      class="grid grid-col-3 rtl-direction bg-raised pl-400 pr-400 pt-100 pb-100"
+      class="grid grid-col-3 rtl-direction bg-raised pl-10 pr-10 pt-2 pb-2"
     >
       <BasicButton
         :text="$t('common.save')"
-        class="br-50 w-100 jc-ct"
+        class="rounded w-100 jc-ct"
         :class="[
           !selected || selected.draft
             ? 'bg-hover b-subtle t-muted'

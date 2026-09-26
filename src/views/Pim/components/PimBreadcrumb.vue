@@ -35,7 +35,7 @@ defineProps({
 .pim-breadcrumb {
   font-size: var(--fs-200);
   color: var(--text-muted);
-  margin-bottom: var(--space-200);
+  margin-bottom: var(--space-5);
 }
 
 .pim-breadcrumb__link {

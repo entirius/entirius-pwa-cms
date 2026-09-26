@@ -203,13 +203,13 @@ defineExpose({ reload });
 .inbox {
   display: flex;
   flex-direction: column;
-  gap: var(--space-200);
-  padding: var(--space-300);
+  gap: var(--space-5);
+  padding: var(--space-8);
 }
 .inbox__chips {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-100);
+  gap: var(--space-2);
 }
 .inbox__chip--empty {
   opacity: 0.5;
@@ -221,9 +221,9 @@ defineExpose({ reload });
 .inbox__refresh,
 .inbox__more {
   min-height: 44px;
-  padding: 0 var(--space-400);
+  padding: 0 var(--space-10);
   border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   background: var(--surface-base);
   color: var(--text-body);
   cursor: pointer;

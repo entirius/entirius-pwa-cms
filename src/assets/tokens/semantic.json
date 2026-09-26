@@ -75,7 +75,7 @@
   },
 
   "radius": {
-    "$description": "Same names and px as brand (D5 amended). Theme-independent.",
+    "$description": "Same names and px as brand (D5 amended). Theme-independent; the generator emits the .rounded-<name> classes (.rounded = base).",
     "radius-base": "{radius.base}",
     "radius-lg": "{radius.lg}",
     "radius-xl": "{radius.xl}",
@@ -86,23 +86,23 @@
   },
 
   "space": {
-    "$description": "D4: existing --space-* names re-valued onto the 4 px grid; 125/150/250 are the new steps. One map (the m/d maps were identical). Theme-independent; generator keeps the .p-/.m-/.gap-/.br-<step> classes.",
+    "$description": "D4 + Q-6: the brand steps under the brand names (space-1 = 4 px … space-30 = 120 px). Theme-independent; the generator emits the .p-/.m-/.gap-<step> classes.",
     "space-0": "{space.0}",
-    "space-50": "{space.1}",
-    "space-100": "{space.2}",
-    "space-125": "{space.3}",
-    "space-150": "{space.4}",
-    "space-200": "{space.5}",
-    "space-250": "{space.6}",
-    "space-300": "{space.8}",
-    "space-400": "{space.10}",
-    "space-500": "{space.12}",
-    "space-600": "{space.16}",
-    "space-700": "{space.30}"
+    "space-1": "{space.1}",
+    "space-2": "{space.2}",
+    "space-3": "{space.3}",
+    "space-4": "{space.4}",
+    "space-5": "{space.5}",
+    "space-6": "{space.6}",
+    "space-8": "{space.8}",
+    "space-10": "{space.10}",
+    "space-12": "{space.12}",
+    "space-16": "{space.16}",
+    "space-30": "{space.30}"
   },
 
   "font-size": {
-    "$description": "--fs-* kept as the size scale for legacy utility classes; new code uses type roles. 500 and 700 re-valued to the Figma sizes, 150/250 added, 800–1000 removed (0 uses).",
+    "$description": "--fs-* is the Figma size scale behind the .fs-<step> classes; new text uses type roles.",
     "fs-100": "10px", "fs-150": "11px", "fs-200": "12px", "fs-250": "13px", "fs-300": "14px",
     "fs-400": "16px", "fs-500": "20px", "fs-600": "24px", "fs-700": "30px"
   },

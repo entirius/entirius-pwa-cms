@@ -211,10 +211,10 @@ export default {
 
       <!-- Step 1: Config -->
       <div v-if="step === 'config'">
-        <p class="t-muted fs-200 mb-300">{{ itemsLabel }}</p>
+        <p class="t-muted fs-200 mb-8">{{ itemsLabel }}</p>
 
-        <div class="td-dialog__field mb-300">
-          <label class="fs-200 fw-600 t-muted mb-100">{{
+        <div class="td-dialog__field mb-8">
+          <label class="fs-200 fw-600 t-muted mb-2">{{
             $t("pim.translate_source_language")
           }}</label>
           <Dropdown
@@ -225,8 +225,8 @@ export default {
           />
         </div>
 
-        <div class="td-dialog__field mb-300">
-          <div class="td-lang-header mb-100">
+        <div class="td-dialog__field mb-8">
+          <div class="td-lang-header mb-2">
             <label class="fs-200 fw-600 t-muted">{{
               $t("pim.translate_target_languages")
             }}</label>
@@ -240,7 +240,7 @@ export default {
           </div>
 
           <!-- inline add language form -->
-          <div v-if="showAddLanguage" class="td-add-lang-box mb-200">
+          <div v-if="showAddLanguage" class="td-add-lang-box mb-5">
             <Dropdown
               :values="addableLanguageOptions"
               :selected="newLanguageIso2 ? [newLanguageIso2] : []"
@@ -266,7 +266,7 @@ export default {
             :placeholder="$t('pim.translate_select_language')"
             @onSelect="onLanguageSelect"
           />
-          <div v-if="selectedLanguages.length" class="td-chips mt-100">
+          <div v-if="selectedLanguages.length" class="td-chips mt-2">
             <span
               v-for="lang in selectedLanguages"
               :key="lang"
@@ -279,13 +279,13 @@ export default {
           </div>
           <p
             v-if="!targetLanguageOptions.length"
-            class="t-warning fs-200 mt-100"
+            class="t-warning fs-200 mt-2"
           >
             {{ $t("pim.translate_no_languages") }}
           </p>
         </div>
 
-        <div class="td-dialog__field mb-300">
+        <div class="td-dialog__field mb-8">
           <label class="td-checkbox fs-300 t-body">
             <input type="checkbox" v-model="force" />
             {{ $t("pim.translate_force_all") }}
@@ -312,7 +312,7 @@ export default {
 
       <!-- Step 2: Estimate + Confirm -->
       <div v-if="step === 'confirm' && estimate">
-        <table class="td-table mb-300">
+        <table class="td-table mb-8">
           <thead>
             <tr>
               <th class="fs-200 t-muted">
@@ -393,7 +393,7 @@ export default {
 .td-dialog {
   background: var(--surface-base);
   border-radius: var(--radius-lg);
-  padding: 24px;
+  padding: var(--space-6);
   min-width: min(480px, 95vw);
   max-width: 560px;
   box-shadow: var(--shadow-lg);
@@ -401,7 +401,7 @@ export default {
 }
 
 .td-dialog__title {
-  margin: 0 0 16px;
+  margin: 0 0 var(--space-4);
   font-size: var(--fs-500);
   font-weight: 600;
   color: var(--text-body);
@@ -415,8 +415,8 @@ export default {
 .td-dialog__actions {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
-  margin-top: 16px;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
 }
 
 .td-lang-header {
@@ -431,7 +431,7 @@ export default {
   justify-content: center;
   width: 20px;
   height: 20px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   border: 1px solid var(--accent);
   background: transparent;
   color: var(--text-accent);
@@ -447,36 +447,36 @@ export default {
 .td-add-lang-box {
   background: var(--surface-raised);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 10px 12px;
+  border-radius: var(--radius-base);
+  padding: var(--space-2) var(--space-3);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .td-add-lang-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 6px;
+  gap: var(--space-1);
 }
 
 .td-btn--sm {
-  padding: 4px 10px;
+  padding: var(--space-1) var(--space-2);
   font-size: var(--fs-200);
 }
 
 .td-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--space-1);
 }
 
 .td-chip {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 2px 8px;
-  border-radius: var(--radius-sm);
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-base);
   cursor: pointer;
   font-weight: 600;
   transition: opacity 0.15s;
@@ -493,7 +493,7 @@ export default {
   th,
   td {
     text-align: left;
-    padding: 8px 12px;
+    padding: var(--space-2) var(--space-3);
     border-bottom: 1px solid var(--border-subtle);
   }
 
@@ -509,8 +509,8 @@ export default {
 }
 
 .td-btn {
-  padding: 8px 16px;
-  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-base);
   border: 1px solid var(--border-subtle);
   cursor: pointer;
   font-size: var(--fs-300);

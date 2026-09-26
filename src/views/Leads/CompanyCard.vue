@@ -50,10 +50,10 @@ function openCard(event) {
 .card {
   display: flex;
   flex-direction: column;
-  gap: var(--space-100);
-  padding: var(--space-200);
+  gap: var(--space-2);
+  padding: var(--space-5);
   border: 1px solid var(--border-subtle);
-  border-radius: 6px;
+  border-radius: var(--radius-base);
   background: var(--surface-base);
   cursor: pointer;
 }

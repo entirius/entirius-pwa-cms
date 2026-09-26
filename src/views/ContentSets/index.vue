@@ -1,9 +1,9 @@
 <template>
-  <div class="fs-200 t-secondary fg-1 relative p-500">
-    <div class="br-50 b-subtle bg-base p-500">
+  <div class="fs-200 t-secondary fg-1 relative p-12">
+    <div class="rounded b-subtle bg-base p-12">
       <div
         v-if="isSingleLanguage"
-        class="flex ai-ct jc-ct gap-200 p-500 t-muted"
+        class="flex ai-ct jc-ct gap-5 p-12 t-muted"
         style="min-height: 14rem; flex-direction: column"
       >
         <p class="fs-400 fw-600 t-secondary">
@@ -14,7 +14,7 @@
         </p>
       </div>
       <template v-else>
-        <div class="flex jc-sb ai-ct mv-300">
+        <div class="flex jc-sb ai-ct mv-8">
           <MobileFilterPanel
             :active-count="1"
             :trigger-label="$t('builder.filters')"
@@ -37,7 +37,7 @@
           />
         </div>
         <div v-if="DOCS && mode === 'list'">
-          <div class="grid grid-col-3 gap-400">
+          <div class="grid grid-col-3 gap-10">
             <div
               v-for="(lang_value, lang, lang_index) in DOCS"
               :key="`single-doc-lang-${lang_index}`"
@@ -59,10 +59,10 @@
                 @update:modelValue="(val) => onLangSearch(lang, val)"
                 icon="search"
                 :placeholder="$t('content_sets.search_placeholder')"
-                class="mt-100"
+                class="mt-2"
               />
               <div
-                class="br-50 fs-200 t-secondary mt-100 grid gap-200 doc-list"
+                class="rounded fs-200 t-secondary mt-2 grid gap-5 doc-list"
                 :class="{ 'doc-list--loading': langLoading[lang] }"
               >
                 <template
@@ -98,7 +98,7 @@
                       }
                     "
                   >
-                    <div class="flex jc-sb ai-st gap-100">
+                    <div class="flex jc-sb ai-st gap-2">
                       <p class="fw-600 fs-300 lc-1">
                         {{ page_value.name ?? $t("content_sets.no_name") }}
                       </p>
@@ -107,7 +107,7 @@
                         class="doc-tile__badge"
                       >{{ $t("content_sets.linked") }}</span>
                     </div>
-                    <p class="fs-200 t-muted lc-1 mt-50">
+                    <p class="fs-200 t-muted lc-1 mt-1">
                       /{{ page_value.routes && page_value.routes.length
                         ? page_value.routes.at(0)
                         : $t("content_sets.not_set") }}
@@ -115,17 +115,17 @@
                   </div>
                 </template>
                 <template v-else>
-                  <div class="p-100 br-50 b-default bg-raised t-muted">
+                  <div class="p-2 rounded b-default bg-raised t-muted">
                     <p>{{ $t("content_sets.no_docs") }}</p>
                   </div>
                 </template>
               </div>
             </div>
           </div>
-          <p class="fs-100 t-muted mt-300 mb-100">
+          <p class="fs-100 t-muted mt-8 mb-2">
             {{ $t("content_sets.instruction") }}
           </p>
-          <div class="flex gap-100">
+          <div class="flex gap-2">
             <ToolTip
               v-if="!hasEnoughSelections"
               :tip="$t('content_sets.set_ready_tip')"
@@ -134,13 +134,13 @@
             >
               <BasicButton
                 :text="$t('content_sets.set_ready')"
-                class="br-50 fs-200 bg-hover t-muted"
+                class="rounded fs-200 bg-hover t-muted"
               />
             </ToolTip>
             <BasicButton
               v-else
               :text="$t('content_sets.set_ready')"
-              class="br-50 fs-200 bg-accent-fill b-accent t-on-accent-fill"
+              class="rounded fs-200 bg-accent-fill b-accent t-on-accent-fill"
               @click="
                 MODIFY_Set({
                   url: `/content-sets/${edit ? edit : ''}`,
@@ -156,28 +156,28 @@
             >
               <BasicButton
                 :text="$t('content_sets.clear_set')"
-                class="br-50 fs-200 bg-hover b-subtle t-muted"
+                class="rounded fs-200 bg-hover b-subtle t-muted"
               />
             </ToolTip>
             <BasicButton
               v-else
               :text="$t('content_sets.clear_set')"
-              class="br-50 fs-200 bg-negative-fill b-negative t-on-status-fill"
+              class="rounded fs-200 bg-negative-fill b-negative t-on-status-fill"
               @click="selected_set_members = null"
             />
           </div>
         </div>
-        <div v-if="sets && mode === 'edit'" class="grid gap-200">
-          <div v-if="!sets.length" class="flex ai-ct jc-ct p-500 t-muted">
+        <div v-if="sets && mode === 'edit'" class="grid gap-5">
+          <div v-if="!sets.length" class="flex ai-ct jc-ct p-12 t-muted">
             <p class="fs-200">{{ $t("content_sets.no_sets") }}</p>
           </div>
           <div
-            class="set-card b-subtle br-50 p-200"
+            class="set-card b-subtle rounded p-5"
             v-for="({ uid, members }, i) in sets"
             :key="`set-${uid}`"
           >
             <div class="flex jc-sb ai-ct">
-              <div class="flex ai-ct gap-100 fg-1" style="min-width: 0">
+              <div class="flex ai-ct gap-2 fg-1" style="min-width: 0">
                 <span
                   v-for="({ name, language }, m_index) in members"
                   :key="`member-${uid}-${m_index}`"
@@ -195,11 +195,11 @@
                 <FontAwesomeIcon icon="trash-can" />
               </button>
             </div>
-            <p class="fs-100 t-muted mt-50 lc-1">{{ uid }}</p>
+            <p class="fs-100 t-muted mt-1 lc-1">{{ uid }}</p>
           </div>
-          <!-- <div class="mb-300 grid grid-col-3 gap-200">
+          <!-- <div class="mb-8 grid grid-col-3 gap-5">
           <Dropdown
-            class="bg-base br-50 b-default fs-200"
+            class="bg-base rounded b-default fs-200"
             :class="{ 'bg-raised t-muted': !sets.length }"
             :placeholder="'Content sets list'"
             v-if="sets"
@@ -518,9 +518,9 @@ export default {
   }
 }
 .doc-tile {
-  padding: 12px var(--space-200);
+  padding: var(--space-3) var(--space-5);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--space-50);
+  border-radius: var(--radius-base);
   cursor: pointer;
   transition: border-color 0.15s ease, background-color 0.15s ease;
   &:hover:not(.doc-tile--linked) {
@@ -538,10 +538,10 @@ export default {
   }
   &__badge {
     flex-shrink: 0;
-    font-size: 10px;
+    font-size: var(--fs-100);
     line-height: 1;
-    padding: 3px 6px;
-    border-radius: var(--radius-sm);
+    padding: 3px var(--space-1);
+    border-radius: var(--radius-base);
     background: var(--negative-subtle);
     color: var(--negative);
     white-space: nowrap;
@@ -556,12 +556,12 @@ export default {
     display: inline-flex;
     align-items: center;
     gap: 2px;
-    font-size: 13px;
+    font-size: var(--fs-250);
     color: var(--text-body);
     white-space: nowrap;
     &:not(:last-child)::after {
       content: "+";
-      margin: 0 4px;
+      margin: 0 var(--space-1);
       color: var(--text-muted);
     }
   }
@@ -572,9 +572,9 @@ export default {
     width: 28px;
     height: 28px;
     flex-shrink: 0;
-    font-size: 12px;
+    font-size: var(--fs-200);
     border: 1px solid transparent;
-    border-radius: var(--space-50);
+    border-radius: var(--radius-base);
     background: none;
     color: var(--text-muted);
     transition: all 0.15s ease;

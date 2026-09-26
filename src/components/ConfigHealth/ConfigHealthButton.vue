@@ -69,12 +69,12 @@ function toggle() {
   justify-content: center;
   width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   border: none;
   background: none;
   color: var(--warning);
   cursor: pointer;
-  font-size: 13px;
+  font-size: var(--fs-250);
 }
 .cfg-btn:hover,
 .cfg-btn--active {
@@ -89,12 +89,12 @@ function toggle() {
   right: 0;
   min-width: 1.1rem;
   height: 1.1rem;
-  padding: 0 0.25rem;
-  border-radius: 999px;
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-full);
   background: var(--negative-fill);
   color: var(--text-on-status-fill);
-  font-size: 0.65rem;
-  font-weight: 700;
+  font-size: var(--fs-100);
+  font-weight: 600;
   line-height: 1.1rem;
   text-align: center;
 }

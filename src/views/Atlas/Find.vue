@@ -1,10 +1,10 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
     >
       <h1 class="fs-700 fw-600">{{ $t("lookup.find.title") }}</h1>
-      <p class="fs-300 t-body mb-400">
+      <p class="fs-300 t-body mb-10">
         {{ $t("lookup.find.subtitle") }}
       </p>
 
@@ -17,23 +17,23 @@
         @error="onSearchError"
       />
 
-      <p v-if="understoodLine" class="fs-200 t-muted mt-300">
+      <p v-if="understoodLine" class="fs-200 t-muted mt-8">
         {{ $t("lookup.find.understood_prefix") }} {{ understoodLine }}
       </p>
 
       <div
         v-if="warnings.length"
-        class="bg-warning-subtle t-warning p-200 br-sm mt-300"
+        class="bg-warning-subtle t-warning p-5 rounded mt-8"
         data-testid="atlas-find-warnings"
       >
         <p class="fs-200">{{ warnings.join(", ") }}</p>
       </div>
 
-      <div class="mt-400">
+      <div class="mt-10">
         <template v-for="kind in ['exact', 'similar']" :key="kind">
           <h2
             v-if="groups[kind].length"
-            class="fs-400 fw-600 mt-300 mb-200"
+            class="fs-400 fw-600 mt-8 mb-5"
             :data-testid="`atlas-find-group-${kind}`"
           >
             {{ $t(`lookup.match.${kind}`) }}
@@ -64,13 +64,13 @@
 
         <details
           v-if="groups.none.length"
-          class="mt-300"
+          class="mt-8"
           data-testid="atlas-find-rest"
         >
           <summary class="fs-200 t-muted">
             {{ $t("lookup.match.none", { n: groups.none.length }) }}
           </summary>
-          <div class="mt-200">
+          <div class="mt-5">
             <CandidateRow
               v-for="hit in groups.none"
               :key="`${hit.kind}-${hit.ref}`"

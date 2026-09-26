@@ -56,15 +56,15 @@ export default {
 
 <style lang="scss" scoped>
 .sp-timeline-section {
-  margin-top: var(--space-300);
-  padding-top: var(--space-300);
+  margin-top: var(--space-8);
+  padding-top: var(--space-8);
   border-top: 1px solid var(--border-subtle);
 }
 .sp-timeline-section__head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-200);
-  margin-bottom: var(--space-100);
+  gap: var(--space-5);
+  margin-bottom: var(--space-2);
 }
 </style>

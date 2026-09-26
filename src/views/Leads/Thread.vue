@@ -175,8 +175,8 @@ watch(() => route.params.id, (id) => id && load());
 .thread {
   display: flex;
   flex-direction: column;
-  gap: var(--space-200);
-  padding: var(--space-300);
+  gap: var(--space-5);
+  padding: var(--space-8);
   overflow-x: hidden;
 }
 .thread__back {
@@ -212,6 +212,6 @@ watch(() => route.params.id, (id) => id && load());
 }
 .thread__activity ul {
   margin: 0;
-  padding-left: 1.1rem;
+  padding-left: var(--space-4);
 }
 </style>

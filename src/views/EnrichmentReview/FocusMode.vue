@@ -11,9 +11,9 @@
 
     <div
       v-else-if="current"
-      class="focus-mode__card bg-base b-subtle br-50"
+      class="focus-mode__card bg-base b-subtle rounded"
     >
-      <div class="focus-mode__head flex ai-ct jc-sb flex-wrap gap-200">
+      <div class="focus-mode__head flex ai-ct jc-sb flex-wrap gap-5">
         <div>
           <a
             v-if="current.subject_url"
@@ -26,7 +26,7 @@
           <span v-else class="focus-mode__subject fs-400 fw-600">{{
             current.subject_label || current.subject_ref
           }}</span>
-          <div class="fs-200 t-muted mt-100">{{ metaLine }}</div>
+          <div class="fs-200 t-muted mt-2">{{ metaLine }}</div>
         </div>
         <span
           class="fs-200 t-secondary"
@@ -43,7 +43,7 @@
 
       <div
         v-if="driftMode"
-        class="focus-mode__drift bg-warning-subtle t-warning br-50"
+        class="focus-mode__drift bg-warning-subtle t-warning rounded"
         data-testid="enrichment-focus-drift"
       >
         <FontAwesomeIcon icon="triangle-exclamation" />
@@ -68,7 +68,7 @@
         data-testid="enrichment-focus-reason"
       />
 
-      <div class="focus-mode__actions flex ai-ct gap-100 flex-wrap">
+      <div class="focus-mode__actions flex ai-ct gap-2 flex-wrap">
         <button
           class="focus-mode__btn bg-positive-fill t-on-status-fill"
           :disabled="acting"
@@ -301,7 +301,7 @@ export default {
 .focus-mode__card {
   max-width: 860px;
   margin: 0 auto;
-  padding: var(--space-400);
+  padding: var(--space-10);
 }
 .focus-mode__subject {
   text-decoration: none;
@@ -312,39 +312,39 @@ export default {
 .focus-mode__drift {
   display: flex;
   align-items: center;
-  gap: var(--space-100);
-  padding: var(--space-200);
-  margin: var(--space-300) 0;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  margin: var(--space-8) 0;
   font-size: var(--fs-200);
 }
 .focus-mode__diff {
-  margin: var(--space-300) 0;
+  margin: var(--space-8) 0;
 }
 .focus-mode__product {
-  margin-top: var(--space-300);
+  margin-top: var(--space-8);
   border-top: 1px solid var(--border-subtle);
 }
 .focus-mode__reason {
   width: 100%;
-  padding: var(--space-200);
+  padding: var(--space-5);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   background: var(--surface-base);
   color: var(--text-body);
   font-size: var(--fs-200);
   resize: vertical;
-  margin-bottom: var(--space-300);
+  margin-bottom: var(--space-8);
 }
 .focus-mode__btn {
   height: var(--elem-height);
-  padding: 0 16px;
+  padding: 0 var(--space-4);
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   font-size: var(--fs-200);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: var(--space-100);
+  gap: var(--space-2);
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
@@ -353,8 +353,8 @@ export default {
     font-size: var(--fs-100);
     background: var(--surface-base);
     color: var(--text-secondary);
-    border-radius: var(--radius-sm);
-    padding: 0 4px;
+    border-radius: var(--radius-base);
+    padding: 0 var(--space-1);
     opacity: 0.8;
   }
 }

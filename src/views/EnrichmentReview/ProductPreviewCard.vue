@@ -15,7 +15,7 @@
         </div>
       </div>
 
-      <h3 class="fs-400 fw-600 mb-200">{{ product.name || sku }}</h3>
+      <h3 class="fs-400 fw-600 mb-5">{{ product.name || sku }}</h3>
 
       <dl class="product-preview__meta">
         <div class="product-preview__row">
@@ -147,19 +147,19 @@ export default {
 
 <style lang="scss" scoped>
 .product-preview {
-  padding: var(--space-300);
+  padding: var(--space-8);
 }
 .product-preview__hero {
   width: 100%;
   display: flex;
   justify-content: center;
-  margin-bottom: var(--space-300);
+  margin-bottom: var(--space-8);
 }
 .product-preview__img {
   max-width: 100%;
   max-height: 240px;
   object-fit: contain;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
 }
 .product-preview__img--ph {
   width: 100%;
@@ -169,7 +169,7 @@ export default {
   justify-content: center;
   background: var(--surface-raised);
   color: var(--text-muted);
-  font-size: 2rem;
+  font-size: var(--fs-700);
 }
 .product-preview__meta {
   margin: 0;
@@ -177,9 +177,9 @@ export default {
 .product-preview__row {
   display: grid;
   grid-template-columns: 130px 1fr;
-  gap: var(--space-200);
+  gap: var(--space-5);
   align-items: center;
-  padding: var(--space-100) 0;
+  padding: var(--space-2) 0;
   border-bottom: 1px solid var(--border-subtle);
   dt {
     font-size: var(--fs-200);
@@ -191,16 +191,16 @@ export default {
   }
 }
 .product-preview__actions {
-  margin-top: var(--space-300);
+  margin-top: var(--space-8);
 }
 .product-preview__btn {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-100);
+  gap: var(--space-2);
   height: var(--elem-height);
-  padding: 0 16px;
+  padding: 0 var(--space-4);
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   font-size: var(--fs-200);
   cursor: pointer;
   &:disabled {

@@ -89,8 +89,8 @@ watch(() => route.params.id, (id) => id && route.name === "LeadsConversation" &&
 .conversation {
   display: flex;
   flex-direction: column;
-  gap: var(--space-200);
-  padding: var(--space-300);
+  gap: var(--space-5);
+  padding: var(--space-8);
   overflow-x: hidden;
 }
 .conversation__back {

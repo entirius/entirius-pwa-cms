@@ -1,5 +1,5 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport v-if="!embedded" to="#pricing-toolbar-left" defer>
       <BasicButton
         text=""
@@ -10,7 +10,7 @@
       <span class="fw-600 fs-400">{{ effectiveSku || $t('pm.price_detail') }}</span>
     </Teleport>
 
-    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
       <Loader v-if="loading" />
 
       <template v-else>
@@ -23,7 +23,7 @@
 
         <template v-else>
           <!-- Top bar: currency selector + meta info -->
-          <div class="flex ai-ct gap-300 mb-400 flex-wrap">
+          <div class="flex ai-ct gap-8 mb-10 flex-wrap">
             <div class="pm-field">
               <label class="pm-label">{{ $t('pm.currency') }}</label>
               <Dropdown
@@ -42,13 +42,13 @@
             </div>
             <div v-if="sourceBadge" class="pm-meta-item">
               <span class="pm-label">{{ $t('pm.source_label') }}</span>
-              <span class="flex ai-ct gap-100">
+              <span class="flex ai-ct gap-2">
                 <StatusBadge :label="sourceBadge.label" :variant="sourceBadge.variant" />
               </span>
             </div>
             <div v-if="flatPurchaseCost" class="pm-meta-item">
               <span class="pm-label">{{ $t('pm.purchase_cost') }}</span>
-              <span class="flex ai-ct gap-100">
+              <span class="flex ai-ct gap-2">
                 <span class="t-body fw-600">{{ flatPurchaseCost.net_cost }} {{ flatPurchaseCost.currency }}</span>
                 <span v-if="flatPurchaseCost.supplier_idx" class="t-muted fs-200">
                   · {{ flatPurchaseCost.supplier_idx }}
@@ -64,7 +64,7 @@
           </div>
 
           <!-- Editable row -->
-          <div class="pm-edit-form mb-300">
+          <div class="pm-edit-form mb-8">
             <div class="pm-edit-fields">
               <!-- Editable price (net or gross depending on direction) -->
               <div class="pm-field">
@@ -82,7 +82,7 @@
               <div class="pm-field">
                 <label class="pm-label">
                   {{ isNetEditable ? $t('pm.gross') : $t('pm.net') }}
-                  <span class="pm-lock-icon t-muted ml-50">
+                  <span class="pm-lock-icon t-muted ml-1">
                     <FontAwesomeIcon icon="lock" />
                   </span>
                 </label>
@@ -124,7 +124,7 @@
           </div>
 
           <!-- Actions row -->
-          <div class="flex gap-200 mb-400 flex-wrap ai-ct">
+          <div class="flex gap-5 mb-10 flex-wrap ai-ct">
             <BasicButton
               :text="$t('pm.save')"
               class="bg-accent-fill t-on-accent-fill"
@@ -178,8 +178,8 @@
           </Confirmation-modal>
 
           <!-- All-countries breakdown (collapsible) -->
-          <div v-if="showCountries" class="mb-400">
-            <h3 class="fs-400 fw-600 mb-200 t-secondary">{{ $t('pm.all_countries') }}</h3>
+          <div v-if="showCountries" class="mb-10">
+            <h3 class="fs-400 fw-600 mb-5 t-secondary">{{ $t('pm.all_countries') }}</h3>
             <div class="pm-country-table">
               <div class="pm-country-table__head">
                 <span>{{ $t('pm.country') }}</span>
@@ -208,14 +208,14 @@
           </div>
 
           <!-- History (collapsible) -->
-          <div v-if="showHistory" class="mt-200">
-            <h3 class="fs-400 fw-600 mb-200">{{ $t('pm.history') }}</h3>
+          <div v-if="showHistory" class="mt-5">
+            <h3 class="fs-400 fw-600 mb-5">{{ $t('pm.history') }}</h3>
             <Loader v-if="historyLoading" />
             <div v-else-if="!history.length" class="t-muted fs-200">—</div>
             <div
               v-for="entry in history"
               :key="entry.id"
-              class="pm-history-row flex ai-ct gap-200"
+              class="pm-history-row flex ai-ct gap-5"
             >
               <span class="t-muted fs-200">{{ entry.created_at }}</span>
               <span class="fw-600">{{ entry.country }}</span>
@@ -546,22 +546,22 @@ export default {
 <style lang="scss" scoped>
 .pm-edit-form {
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 20px;
+  border-radius: var(--radius-base);
+  padding: var(--space-5);
   background: var(--surface-base);
 }
 
 .pm-edit-fields {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: var(--space-200);
+  gap: var(--space-5);
   align-items: end;
 }
 
 .pm-field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .pm-label {
@@ -580,10 +580,10 @@ export default {
   height: var(--elem-height);
   display: flex;
   align-items: center;
-  padding: 0 var(--space-100);
+  padding: 0 var(--space-2);
   background: var(--surface-raised);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   color: var(--text-secondary);
   font-size: var(--fs-300);
 }
@@ -591,20 +591,20 @@ export default {
 .pm-meta-item {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .pm-country-table {
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
   overflow: hidden;
 }
 
 .pm-country-table__head {
   display: grid;
   grid-template-columns: 60px 60px 70px 1fr 1fr 1fr;
-  gap: var(--space-100);
-  padding: 8px var(--space-200);
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-5);
   background: var(--surface-raised);
   font-size: var(--fs-200);
   font-weight: 600;
@@ -616,23 +616,23 @@ export default {
 .pm-country-table__row {
   display: grid;
   grid-template-columns: 60px 60px 70px 1fr 1fr 1fr;
-  gap: var(--space-100);
-  padding: 8px var(--space-200);
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-5);
   border-top: 1px solid var(--border-subtle);
   align-items: center;
 }
 
 .pm-history-row {
-  padding: 8px var(--space-200);
+  padding: var(--space-2) var(--space-5);
   border-bottom: 1px solid var(--border-subtle);
   font-size: var(--fs-200);
 }
 
 .pm-date-input {
   height: var(--elem-height);
-  padding: 0 var(--space-100);
+  padding: 0 var(--space-2);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   background: var(--surface-base);
   color: var(--text-body);
   font-size: var(--fs-300);

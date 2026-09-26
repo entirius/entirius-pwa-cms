@@ -15,7 +15,7 @@
         </div>
 
         <div v-if="safeReport.stale.length" class="apply-report__stale-note">
-          <FontAwesomeIcon icon="triangle-exclamation" class="mr-100" />
+          <FontAwesomeIcon icon="triangle-exclamation" class="mr-2" />
           {{ $t('pricefighter.stale_note') }}
         </div>
 
@@ -86,19 +86,19 @@ export default {
 .apply-report__body {
   display: flex;
   flex-direction: column;
-  gap: var(--space-300);
+  gap: var(--space-8);
   max-width: 560px;
 }
 
 .apply-report__buckets {
   display: flex;
-  gap: var(--space-100);
+  gap: var(--space-2);
   flex-wrap: wrap;
 }
 
 .apply-report__stale-note {
-  padding: var(--space-200);
-  border-radius: var(--radius-sm);
+  padding: var(--space-5);
+  border-radius: var(--radius-base);
   background: var(--negative-subtle);
   color: var(--negative);
   font-size: var(--fs-200);
@@ -110,7 +110,7 @@ export default {
   text-transform: uppercase;
   letter-spacing: 0.03em;
   color: var(--text-muted);
-  margin: 0 0 var(--space-100) 0;
+  margin: 0 0 var(--space-2) 0;
 }
 
 .apply-report__table {
@@ -119,7 +119,7 @@ export default {
   font-size: var(--fs-200);
 
   td {
-    padding: 4px 8px;
+    padding: var(--space-1) var(--space-2);
     border-bottom: 1px solid var(--border-subtle);
   }
 }

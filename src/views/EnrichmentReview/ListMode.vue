@@ -5,13 +5,13 @@
          backend contract. -->
     <div
       v-if="totalCount > 0 && (actionableFilter || undoableFilter)"
-      class="list-mode__bulk flex ai-ct gap-200 mb-300 p-200 bg-accent-subtle br-50 flex-wrap"
+      class="list-mode__bulk flex ai-ct gap-5 mb-8 p-5 bg-accent-subtle rounded flex-wrap"
       data-testid="enrichment-bulk-bar"
     >
       <span class="fs-200 t-accent fw-600">
         {{ $t("enrichment.review.bulk.matching", { count: totalCount }) }}
       </span>
-      <div class="flex ai-ct gap-100 ml-auto flex-wrap">
+      <div class="flex ai-ct gap-2 ml-auto flex-wrap">
         <button
           v-if="actionableFilter"
           class="list-mode__btn bg-positive-subtle t-positive"
@@ -101,7 +101,7 @@
         <span class="fs-200 t-muted">{{ formatDate(row.created_at) }}</span>
       </template>
       <template #cell-actions="{ row }">
-        <div v-if="isActionable(row)" class="flex ai-ct gap-100">
+        <div v-if="isActionable(row)" class="flex ai-ct gap-2">
           <button
             v-if="row.status === 'drifted'"
             class="list-mode__btn bg-warning-subtle t-warning"
@@ -142,7 +142,7 @@
 
     <div
       v-if="totalPages > 1"
-      class="list-mode__pager flex ai-ct jc-ct gap-200 mt-300"
+      class="list-mode__pager flex ai-ct jc-ct gap-5 mt-8"
     >
       <button
         class="list-mode__btn bg-raised t-secondary"
@@ -311,9 +311,9 @@ export default {
 }
 .list-mode__btn {
   height: var(--elem-height);
-  padding: 0 12px;
+  padding: 0 var(--space-3);
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   font-size: var(--fs-200);
   cursor: pointer;
   &:disabled {

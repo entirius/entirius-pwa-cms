@@ -1,5 +1,5 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#agreements-toolbar-left" defer>
       <BasicButton
         text=""
@@ -23,12 +23,12 @@
       />
     </Teleport>
 
-    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
       <Loader v-if="loading" />
 
       <template v-else>
-        <div class="flex ai-ct jc-sb mb-500">
-          <div class="flex ai-ct gap-200">
+        <div class="flex ai-ct jc-sb mb-12">
+          <div class="flex ai-ct gap-5">
             <h1 class="fs-700 fw-600">
               {{
                 isEdit
@@ -49,13 +49,13 @@
           />
         </div>
 
-        <p v-if="definition.is_system" class="agm-system-info mb-400">
+        <p v-if="definition.is_system" class="agm-system-info mb-10">
           {{ $t("agm.system_info") }}
         </p>
 
         <!-- Definition fields -->
-        <div class="agm-section mb-400">
-          <h2 class="fs-500 fw-600 mb-300">{{ $t("agm.definitions") }}</h2>
+        <div class="agm-section mb-10">
+          <h2 class="fs-500 fw-600 mb-8">{{ $t("agm.definitions") }}</h2>
           <div class="agm-grid">
             <FormField :label="$t('agm.slug')">
               <BasicInput
@@ -103,13 +103,13 @@
                   <div
                     v-for="ch in channelOptions"
                     :key="ch.value"
-                    class="pointer flex jc-sb ai-ct ph-100 dropdown-list-el"
+                    class="pointer flex jc-sb ai-ct ph-2 dropdown-list-el"
                     :class="{
                       '-primary-100': form.channel_ids.includes(ch.value),
                     }"
                     @click.stop="toggleChannel(ch.value)"
                   >
-                    <span class="ml-100">{{ ch.label }}</span>
+                    <span class="ml-2">{{ ch.label }}</span>
                     <FontAwesomeIcon
                       v-if="form.channel_ids.includes(ch.value)"
                       icon="check"
@@ -123,7 +123,7 @@
             <!-- display_contexts: readonly tags for system, multi-select for custom -->
             <FormField :label="$t('agm.display_contexts')">
               <template v-if="definition.is_system">
-                <div class="flex gap-100 flex-wrap">
+                <div class="flex gap-2 flex-wrap">
                   <span
                     v-for="ctx in definition.display_contexts"
                     :key="ctx"
@@ -155,7 +155,7 @@
                     <div
                       v-for="ctx in displayContextOptions"
                       :key="ctx.value"
-                      class="pointer flex jc-sb ai-ct ph-100 dropdown-list-el"
+                      class="pointer flex jc-sb ai-ct ph-2 dropdown-list-el"
                       :class="{
                         '-primary-100': form.display_contexts.includes(
                           ctx.value
@@ -163,7 +163,7 @@
                       }"
                       @click.stop="toggleContext(ctx.value)"
                     >
-                      <span class="ml-100">{{ ctx.label }}</span>
+                      <span class="ml-2">{{ ctx.label }}</span>
                       <FontAwesomeIcon
                         v-if="form.display_contexts.includes(ctx.value)"
                         icon="check"
@@ -178,8 +178,8 @@
         </div>
 
         <!-- Versions section (edit mode only) -->
-        <div v-if="isEdit" class="agm-section mb-400">
-          <div class="flex ai-ct jc-sb mb-300">
+        <div v-if="isEdit" class="agm-section mb-10">
+          <div class="flex ai-ct jc-sb mb-8">
             <h2 class="fs-500 fw-600">{{ $t("agm.versions") }}</h2>
             <BasicButton
               :text="$t('agm.create_version')"
@@ -189,9 +189,9 @@
           </div>
 
           <!-- New version form -->
-          <div v-if="showVersionForm" class="agm-version-form mb-300">
-            <div class="mb-200">
-              <FormField :label="$t('agm.summary_en')" class="mb-200">
+          <div v-if="showVersionForm" class="agm-version-form mb-8">
+            <div class="mb-5">
+              <FormField :label="$t('agm.summary_en')" class="mb-5">
                 <BasicWysiwyg
                   v-model="newVersion.summary_en"
                   :toolbar="wysiwygToolbar"
@@ -204,7 +204,7 @@
                 />
               </FormField>
             </div>
-            <div class="flex jc-fe gap-200">
+            <div class="flex jc-fe gap-5">
               <BasicButton
                 :text="$t('common.cancel')"
                 class="bg-raised t-secondary"
@@ -254,7 +254,7 @@
                   </td>
                   <td class="agm-td">{{ formatDate(ver.created_at) }}</td>
                   <td class="agm-td">
-                    <div class="flex gap-100 jc-fe">
+                    <div class="flex gap-2 jc-fe">
                       <BasicButton
                         v-if="!ver.published_at"
                         text=""
@@ -288,8 +288,8 @@
                 >
                   <td colspan="5" class="agm-td">
                     <div class="agm-version-form">
-                      <div class="mb-200">
-                        <FormField :label="$t('agm.summary_en')" class="mb-200">
+                      <div class="mb-5">
+                        <FormField :label="$t('agm.summary_en')" class="mb-5">
                           <BasicWysiwyg
                             v-model="editVersion.summary_en"
                             :toolbar="wysiwygToolbar"
@@ -302,7 +302,7 @@
                           />
                         </FormField>
                       </div>
-                      <div class="flex jc-fe gap-200">
+                      <div class="flex jc-fe gap-5">
                         <BasicButton
                           :text="$t('common.cancel')"
                           class="bg-raised t-secondary"
@@ -325,10 +325,10 @@
         <!-- Legal Page History (only when definition has content_route) -->
         <div
           v-if="isEdit && definition.content_route"
-          class="agm-section mb-400"
+          class="agm-section mb-10"
         >
           <div
-            class="flex ai-ct gap-200 pointer"
+            class="flex ai-ct gap-5 pointer"
             @click="contentHistoryOpen = !contentHistoryOpen"
           >
             <font-awesome-icon icon="clock-rotate-left" class="t-muted" />
@@ -340,7 +340,7 @@
           </div>
 
           <template v-if="contentHistoryOpen">
-            <div class="flex gap-100 mt-300 mb-300">
+            <div class="flex gap-2 mt-8 mb-8">
               <FilterChip
                 :label="$t('agm.filter_all')"
                 :active="contentHistoryLang === ''"
@@ -403,7 +403,7 @@
                         v-if="idx === 0"
                         :label="$t('agm.snapshot_current')"
                         variant="positive"
-                        class="ml-100"
+                        class="ml-2"
                       />
                     </td>
                     <td class="agm-td">{{ snap.language }}</td>
@@ -411,7 +411,7 @@
                       {{ snap.text_preview }}
                     </td>
                     <td class="agm-td">
-                      <div class="flex gap-100 ai-ct jc-fe">
+                      <div class="flex gap-2 ai-ct jc-fe">
                         <StatusBadge
                           v-if="snap.warnings && snap.warnings.length"
                           :label="$t('agm.snapshot_warnings')"
@@ -853,20 +853,20 @@ export default {
 <style lang="scss" scoped>
 .agm-section {
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 20px;
+  border-radius: var(--radius-base);
+  padding: var(--space-5);
 }
 
 .agm-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 
 .agm-version-form {
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 16px;
+  border-radius: var(--radius-base);
+  padding: var(--space-4);
   background: var(--surface-raised);
 }
 
@@ -881,7 +881,7 @@ export default {
   text-transform: uppercase;
   letter-spacing: 0.03em;
   color: var(--text-muted);
-  padding: 8px 12px;
+  padding: var(--space-2) var(--space-3);
   border-bottom: 2px solid var(--border-subtle);
 }
 
@@ -890,7 +890,7 @@ export default {
 }
 
 .agm-td {
-  padding: 10px 12px;
+  padding: var(--space-2) var(--space-3);
   border-bottom: 1px solid var(--border-subtle);
   font-size: var(--fs-300);
   color: var(--text-body);
@@ -907,15 +907,15 @@ export default {
   font-size: var(--fs-300);
   color: var(--text-muted);
   background: var(--surface-raised);
-  border-radius: var(--radius-md);
-  padding: 10px 16px;
+  border-radius: var(--radius-base);
+  padding: var(--space-2) var(--space-4);
 }
 
 .agm-context-tag {
   display: inline-flex;
   align-items: center;
-  padding: 2px 10px;
-  border-radius: var(--radius-sm);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-base);
   background: var(--surface-raised);
   color: var(--text-body);
   font-size: var(--fs-200);
@@ -925,9 +925,9 @@ export default {
 .agm-legal-text-preview {
   max-height: 400px;
   overflow-y: auto;
-  padding: 16px;
+  padding: var(--space-4);
   background: var(--surface-raised);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
   font-size: var(--fs-300);
   line-height: 1.6;
   color: var(--text-body);

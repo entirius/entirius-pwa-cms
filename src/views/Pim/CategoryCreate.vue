@@ -1,5 +1,5 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#pim-toolbar-left" defer>
       <BasicButton
         text=""
@@ -15,9 +15,9 @@
         @click="createCategory"
       />
     </Teleport>
-    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
-      <div class="create-section mb-400">
-        <h2 class="fs-500 fw-600 mb-200">{{ $t("pim.basic_info") }}</h2>
+    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
+      <div class="create-section mb-10">
+        <h2 class="fs-500 fw-600 mb-5">{{ $t("pim.basic_info") }}</h2>
         <div class="create-grid">
           <div class="create-field">
             <label class="create-label">IDX *</label>
@@ -54,9 +54,9 @@
         </div>
       </div>
 
-      <div class="create-section mb-400">
-        <h2 class="fs-500 fw-600 mb-200">{{ $t("pim.name") }} *</h2>
-        <div class="grid grid-col-2 gap-300">
+      <div class="create-section mb-10">
+        <h2 class="fs-500 fw-600 mb-5">{{ $t("pim.name") }} *</h2>
+        <div class="grid grid-col-2 gap-8">
           <div v-for="lang in formLanguages" :key="`name-${lang}`">
             <span
               class="chip chip--sm bg-accent-subtle t-strong"
@@ -64,7 +64,7 @@
             >
             <BasicInput
               :model-value="form.name_t9n[lang] || ''"
-              class="mt-100"
+              class="mt-2"
               @update:model-value="
                 (val) => (form.name_t9n = { ...form.name_t9n, [lang]: val })
               "
@@ -73,9 +73,9 @@
         </div>
       </div>
 
-      <div class="create-section mb-400">
-        <h2 class="fs-500 fw-600 mb-200">{{ $t("pim.description") }}</h2>
-        <div class="grid grid-col-2 gap-300">
+      <div class="create-section mb-10">
+        <h2 class="fs-500 fw-600 mb-5">{{ $t("pim.description") }}</h2>
+        <div class="grid grid-col-2 gap-8">
           <div v-for="lang in formLanguages" :key="`desc-${lang}`">
             <span
               class="chip chip--sm bg-accent-subtle t-strong"
@@ -83,7 +83,7 @@
             >
             <TextAreaBasic
               :model-value="form.description_t9n[lang] || ''"
-              class="mt-100"
+              class="mt-2"
               @update:model-value="
                 (val) =>
                   (form.description_t9n = {
@@ -96,9 +96,9 @@
         </div>
       </div>
 
-      <div class="create-section mb-400">
-        <h2 class="fs-500 fw-600 mb-200">{{ $t("pim.seo") }}</h2>
-        <div class="grid grid-col-2 gap-300 mb-300">
+      <div class="create-section mb-10">
+        <h2 class="fs-500 fw-600 mb-5">{{ $t("pim.seo") }}</h2>
+        <div class="grid grid-col-2 gap-8 mb-8">
           <div v-for="lang in formLanguages" :key="`meta-title-${lang}`">
             <span
               class="chip chip--sm bg-accent-subtle t-strong"
@@ -107,7 +107,7 @@
             <BasicInput
               :model-value="form.meta_title_t9n[lang] || ''"
               :placeholder="$t('meta.meta_title')"
-              class="mt-100"
+              class="mt-2"
               @update:model-value="
                 (val) =>
                   (form.meta_title_t9n = {
@@ -118,10 +118,10 @@
             />
           </div>
         </div>
-        <h3 class="fs-300 fw-600 t-muted mb-200">
+        <h3 class="fs-300 fw-600 t-muted mb-5">
           {{ $t("meta.meta_description") }}
         </h3>
-        <div class="grid grid-col-2 gap-300">
+        <div class="grid grid-col-2 gap-8">
           <div v-for="lang in formLanguages" :key="`meta-desc-${lang}`">
             <span
               class="chip chip--sm bg-accent-subtle t-strong"
@@ -130,7 +130,7 @@
             <TextAreaBasic
               :model-value="form.meta_description_t9n[lang] || ''"
               :placeholder="$t('meta.meta_description')"
-              class="mt-100"
+              class="mt-2"
               @update:model-value="
                 (val) =>
                   (form.meta_description_t9n = {
@@ -270,21 +270,21 @@ export default {
 <style lang="scss" scoped>
 .create-section {
   border: 1px solid var(--border-subtle);
-  border-radius: 6px;
-  padding: 20px;
+  border-radius: var(--radius-base);
+  padding: var(--space-5);
 }
 .create-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 16px;
+  gap: var(--space-4);
 }
 .create-field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
 }
 .create-label {
-  font-size: 12px;
+  font-size: var(--fs-200);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;

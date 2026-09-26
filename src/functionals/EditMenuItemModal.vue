@@ -101,7 +101,7 @@ function onSave() {
         </div>
 
         <div class="modal-body">
-          <div class="form-group mb-300">
+          <div class="form-group mb-8">
             <div class="flex ai-ct jc-sb">
               <label class="detail-label required">{{ $t("layout_extender.label") }}</label>
               <BasicButton
@@ -115,7 +115,7 @@ function onSave() {
             <BasicInput v-model="form.label" />
           </div>
 
-          <div class="form-group mb-300">
+          <div class="form-group mb-8">
             <label class="detail-label">{{ $t("layout_extender.display_as") }}</label>
             <div class="radio-group">
               <label class="radio-label">
@@ -130,7 +130,7 @@ function onSave() {
           </div>
 
           <template v-if="form.display_as === 'link'">
-            <div class="form-group mb-300">
+            <div class="form-group mb-8">
               <label class="detail-label">{{ $t("layout_extender.link_type") }}</label>
               <div class="radio-group">
                 <label class="radio-label">
@@ -148,7 +148,7 @@ function onSave() {
               </div>
             </div>
 
-            <div class="form-group mb-300">
+            <div class="form-group mb-8">
               <label class="detail-label">
                 {{ form.link_type === "url" ? $t("layout_extender.url") : $t("layout_extender.link_value") }}
               </label>
@@ -214,13 +214,13 @@ function onSave() {
   justify-content: center;
   align-items: center;
   z-index: 100;
-  padding: 1rem;
+  padding: var(--space-4);
 }
 
 .modal-container {
   background: var(--surface-base);
-  padding: 24px;
-  border-radius: 8px;
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
   border: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-lg);
   width: min(480px, 95vw);
@@ -230,8 +230,8 @@ function onSave() {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
-  padding-bottom: 12px;
+  margin-bottom: var(--space-5);
+  padding-bottom: var(--space-3);
   border-bottom: 1px solid var(--border-subtle);
 }
 
@@ -241,7 +241,7 @@ function onSave() {
   justify-content: center;
   width: 32px;
   height: 32px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   cursor: pointer;
   color: var(--text-muted);
   transition: background 0.1s, color 0.1s;
@@ -253,33 +253,33 @@ function onSave() {
 }
 
 .modal-body {
-  margin-bottom: 24px;
+  margin-bottom: var(--space-6);
 }
 
 .modal-footer {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
   justify-content: flex-end;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .radio-group {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: var(--space-6);
 }
 
 .radio-label {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   cursor: pointer;
-  font-size: 14px;
+  font-size: var(--fs-300);
   color: var(--text-body);
 }
 
@@ -295,13 +295,13 @@ function onSave() {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: var(--space-2);
   height: 36px;
-  padding: 0 16px;
-  font-size: 13px;
+  padding: 0 var(--space-4);
+  font-size: var(--fs-250);
   font-weight: 500;
   font-family: inherit;
-  border-radius: 5px;
+  border-radius: var(--radius-base);
   border: 1px solid;
   cursor: pointer;
   transition: all 0.15s ease;

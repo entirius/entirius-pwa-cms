@@ -1,6 +1,6 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
-    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
+    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
       <!-- Toolbar -->
       <div class="gap-table__toolbar">
         <Dropdown
@@ -30,7 +30,7 @@
         selected-label-key="pricefighter.rows_selected"
         clear-label-key="pricefighter.clear_selection"
         :actions="bulkActions"
-        class="mb-400"
+        class="mb-10"
         @action="onBulkAction"
         @clear="onClearSelection"
       />
@@ -291,8 +291,8 @@ export default {
 .gap-table__toolbar {
   display: flex;
   align-items: center;
-  gap: var(--space-200);
-  margin-bottom: var(--space-400);
+  gap: var(--space-5);
+  margin-bottom: var(--space-10);
   flex-wrap: wrap;
 }
 
@@ -314,13 +314,13 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--space-50);
+  gap: var(--space-1);
 }
 
 .suggested-cell__badges {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
-  gap: var(--space-50);
+  gap: var(--space-1);
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
     >
       <Teleport v-if="toolbarReady" to="#forms-toolbar-left">
         <BasicButton
@@ -15,7 +15,7 @@
       <Loader v-if="loading" />
 
       <template v-else-if="submission">
-        <div class="flex ai-ct jc-sb mb-200">
+        <div class="flex ai-ct jc-sb mb-5">
           <h1 class="fs-700 fw-600">{{ $t("cf.submission_detail") }}</h1>
           <Dropdown
             :values="statusOptions"
@@ -25,7 +25,7 @@
             @onSelect="updateStatus"
           />
         </div>
-        <div class="mb-400">
+        <div class="mb-10">
           <StatusBadge
             :label="statusLabel(submission.status)"
             :variant="statusVariant(submission.status)"
@@ -33,7 +33,7 @@
         </div>
 
         <!-- Header info -->
-        <div class="cf-header mb-400">
+        <div class="cf-header mb-10">
           <div class="cf-header__row">
             <span class="cf-header__label t-muted fs-200 fw-600 tt-upper">{{
               $t("cf.id")
@@ -83,10 +83,10 @@
 
           <!-- Form Data — full-width row at the bottom of the header grid -->
           <div class="cf-header__row cf-header__row--full">
-            <h2 class="fs-400 fw-600 mb-200">{{ $t("cf.body") }}</h2>
+            <h2 class="fs-400 fw-600 mb-5">{{ $t("cf.body") }}</h2>
             <div
               v-if="isRenderableObject(submission.body)"
-              class="cf-fields bg-raised br-50 p-300"
+              class="cf-fields bg-raised rounded p-8"
             >
               <div
                 v-for="(val, key) in submission.body"
@@ -103,14 +103,14 @@
                 }}</span>
                 <pre
                   v-else
-                  class="cf-body--nested bg-base br-50 p-200 fs-200 t-body mt-50"
+                  class="cf-body--nested bg-base rounded p-5 fs-200 t-body mt-1"
                   >{{ JSON.stringify(val, null, 2) }}</pre
                 >
               </div>
             </div>
             <pre
               v-else
-              class="cf-body bg-raised br-50 p-300 fs-200 t-body"
+              class="cf-body bg-raised rounded p-8 fs-200 t-body"
               >{{ formatBody(submission.body) }}</pre
             >
           </div>
@@ -118,12 +118,12 @@
 
         <!-- Attachments -->
         <div v-if="submission.attachments && submission.attachments.length">
-          <h2 class="fs-400 fw-600 mb-200">{{ $t("cf.attachments") }}</h2>
+          <h2 class="fs-400 fw-600 mb-5">{{ $t("cf.attachments") }}</h2>
           <div class="cf-attachments">
             <div
               v-for="att in submission.attachments"
               :key="att.id"
-              class="cf-attachment flex ai-ct gap-200 p-200 bg-raised br-50 mb-100"
+              class="cf-attachment flex ai-ct gap-5 p-5 bg-raised rounded mb-2"
             >
               <font-awesome-icon icon="paperclip" class="t-muted" />
               <span class="t-body fs-200">{{ att.name }}</span>
@@ -281,13 +281,13 @@ export default {
 .cf-header {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  gap: var(--space-4);
 }
 
 .cf-header__row {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .cf-header__row--full {
@@ -297,13 +297,13 @@ export default {
 .cf-fields {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: var(--space-4);
 }
 
 .cf-field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .cf-field--full {

@@ -1,31 +1,31 @@
 <template>
   <div
-    class="auth-card fs-300 p-400 t-body br-50 bg-base b-subtle shadow-down"
+    class="auth-card fs-300 p-10 t-body rounded bg-base b-subtle shadow-down"
   >
     <!-- Success state -->
     <template v-if="success">
-      <p class="fs-700 fw-600 txt-center mb-50">
+      <p class="fs-700 fw-600 txt-center mb-1">
         {{ $t("user.change_password") }}
       </p>
-      <div class="auth-card__banner auth-card__banner--success mb-400">
+      <div class="auth-card__banner auth-card__banner--success mb-10">
         <p class="fs-300 fw-500">{{ $t("user.password_changed_message") }}</p>
       </div>
       <BasicButton
         :text="$t('user.back_to_home')"
         @click="goHome"
-        class="bg-accent-fill b-accent jc-ct t-on-accent-fill w-100 br-50"
+        class="bg-accent-fill b-accent jc-ct t-on-accent-fill w-100 rounded"
       />
     </template>
 
     <!-- Form -->
     <template v-else>
-      <p class="fs-700 fw-600 txt-center mb-50">
+      <p class="fs-700 fw-600 txt-center mb-1">
         {{ $t("user.change_password_title") }}
       </p>
-      <p class="fs-300 t-secondary txt-center mb-500">
+      <p class="fs-300 t-secondary txt-center mb-12">
         {{ $t("user.change_password_subtitle") }}
       </p>
-      <div class="auth-card__pw-field mb-400">
+      <div class="auth-card__pw-field mb-10">
         <BasicInput
           v-model="oldPassword"
           class="bg-raised lh-base-elem"
@@ -40,7 +40,7 @@
           <FontAwesomeIcon :icon="oldPwVisible ? 'eye-slash' : 'eye'" />
         </button>
       </div>
-      <div class="auth-card__pw-field mb-400">
+      <div class="auth-card__pw-field mb-10">
         <BasicInput
           v-model="newPassword"
           class="bg-raised lh-base-elem"
@@ -55,7 +55,7 @@
           <FontAwesomeIcon :icon="newPwVisible ? 'eye-slash' : 'eye'" />
         </button>
       </div>
-      <div class="auth-card__pw-field mb-300">
+      <div class="auth-card__pw-field mb-8">
         <BasicInput
           v-model="confirmPassword"
           class="bg-raised lh-base-elem"
@@ -73,7 +73,7 @@
       <BasicButton
         :text="$t('user.change_password_submit')"
         @click="handleSubmit"
-        class="bg-accent-fill b-accent jc-ct t-on-accent-fill w-100 br-50"
+        class="bg-accent-fill b-accent jc-ct t-on-accent-fill w-100 rounded"
       />
     </template>
   </div>

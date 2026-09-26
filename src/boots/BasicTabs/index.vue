@@ -33,11 +33,11 @@ defineEmits(["update:modelValue"]);
 <style lang="scss">
 .basic-tabs {
   display: flex;
-  gap: var(--space-100);
+  gap: var(--space-2);
   border-bottom: 1px solid var(--border-subtle);
 
   &__tab {
-    padding: 8px 16px;
+    padding: var(--space-2) var(--space-4);
     border: none;
     background: none;
     cursor: pointer;
@@ -63,13 +63,13 @@ defineEmits(["update:modelValue"]);
     justify-content: center;
     min-width: 20px;
     height: 20px;
-    padding: 0 6px;
-    border-radius: 10px;
+    padding: 0 var(--space-1);
+    border-radius: var(--radius-xl);
     background: var(--surface-raised);
     color: var(--text-secondary);
     font-size: var(--fs-100);
     font-weight: 600;
-    margin-left: 4px;
+    margin-left: var(--space-1);
   }
 }
 </style>

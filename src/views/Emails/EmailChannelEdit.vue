@@ -1,9 +1,9 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
     >
-      <div class="flex ai-ct gap-200 mb-400">
+      <div class="flex ai-ct gap-5 mb-10">
         <BasicButton
           text=""
           icon="arrow-left"
@@ -13,7 +13,7 @@
         <h1 class="fs-700 fw-600">
           {{ channel.label || $t("emails.channel") }}
         </h1>
-        <span v-if="channel.idx" class="fs-200 t-muted ml-100"
+        <span v-if="channel.idx" class="fs-200 t-muted ml-2"
           >({{ channel.idx }})</span
         >
       </div>
@@ -22,8 +22,8 @@
 
       <div v-show="!loading">
         <!-- Branding Section -->
-        <div class="mb-500">
-          <h2 class="fs-500 fw-600 mb-300">{{ $t("emails.branding") }}</h2>
+        <div class="mb-12">
+          <h2 class="fs-500 fw-600 mb-8">{{ $t("emails.branding") }}</h2>
           <div class="emails-form-grid">
             <FormField :label="$t('emails.from_name')">
               <BasicInput v-model="channel.from_name" />
@@ -55,10 +55,10 @@
                   <div
                     v-for="font in fontOptions"
                     :key="font.value"
-                    class="font-option pointer flex flex-column jc-ct pl-200 pr-200"
+                    class="font-option pointer flex flex-column jc-ct pl-5 pr-5"
                     @click.stop="channel.font_family = font.value"
                   >
-                    <span class="fs-200 t-body fw-700">{{
+                    <span class="fs-200 t-body fw-600">{{
                       font.label
                     }}</span>
                     <span
@@ -80,7 +80,7 @@
               />
             </FormField>
           </div>
-          <div class="flex jc-fe mt-300">
+          <div class="flex jc-fe mt-8">
             <BasicButton
               :text="$t('common.save')"
               class="bg-accent-fill t-on-accent-fill"
@@ -91,7 +91,7 @@
 
         <!-- Language Configs Section -->
         <div>
-          <h2 class="fs-500 fw-600 mb-300">{{ $t("emails.lang_configs") }}</h2>
+          <h2 class="fs-500 fw-600 mb-8">{{ $t("emails.lang_configs") }}</h2>
           <div v-if="langConfigs.length === 0" class="fs-300 t-muted">
             {{ $t("emails.no_lang_configs") }}
           </div>
@@ -99,13 +99,13 @@
             <div
               v-for="config in langConfigs"
               :key="config.pk"
-              class="emails-card bg-base b-subtle br-50 p-400 pointer"
+              class="emails-card bg-base b-subtle rounded p-10 pointer"
               @click="editLangConfig(config.pk)"
             >
               <div class="fs-400 fw-600 t-body">
                 {{ config.language || $t("emails.default_lang") }}
               </div>
-              <div v-if="config.shop_name" class="fs-200 t-muted mt-100">
+              <div v-if="config.shop_name" class="fs-200 t-muted mt-2">
                 {{ config.shop_name }}
               </div>
             </div>
@@ -219,13 +219,13 @@ export default {
 .emails-form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
+  gap: var(--space-4);
 }
 
 .emails-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
+  gap: var(--space-4);
 }
 
 .emails-card {

@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="pagination inline-flex ai-ct gap-50"
+    class="pagination inline-flex ai-ct gap-1"
     :style="`--cell-size: ${nav_size}px`"
     aria-label="pagination"
   >
@@ -127,9 +127,9 @@ export default {
   .page-cell {
     min-width: var(--cell-size, 2rem);
     height: var(--cell-size, 2rem);
-    padding: 0 6px;
+    padding: 0 var(--space-1);
     border: 0;
-    border-radius: 6px;
+    border-radius: var(--radius-base);
     background: transparent;
     color: var(--text-body);
     font-size: inherit;

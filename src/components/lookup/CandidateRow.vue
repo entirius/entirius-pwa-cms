@@ -147,11 +147,11 @@ export default {
 .candidate-row {
   display: flex;
   align-items: flex-start;
-  gap: var(--space-300);
-  padding: var(--space-300);
+  gap: var(--space-8);
+  padding: var(--space-8);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  margin-bottom: var(--space-200);
+  border-radius: var(--radius-base);
+  margin-bottom: var(--space-5);
 
   &__thumb {
     flex-shrink: 0;
@@ -161,7 +161,7 @@ export default {
     align-items: center;
     justify-content: center;
     background: var(--surface-raised);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-base);
     color: var(--text-muted);
     overflow: hidden;
 
@@ -176,13 +176,13 @@ export default {
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: var(--space-1);
   }
   &__title-line,
   &__meta {
     display: flex;
     align-items: center;
-    gap: var(--space-200);
+    gap: var(--space-5);
   }
   &__title-line {
     flex-wrap: wrap;
@@ -193,20 +193,20 @@ export default {
   &__reasons {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: var(--space-1);
   }
   &__reason-chip {
     font-size: var(--fs-200);
     color: var(--text-secondary);
     background: var(--surface-raised);
-    border-radius: 999px;
-    padding: 2px 10px;
+    border-radius: var(--radius-full);
+    padding: 2px var(--space-2);
   }
   &__actions {
     flex-shrink: 0;
     display: flex;
     align-items: center;
-    gap: var(--space-100);
+    gap: var(--space-2);
   }
 }
 .row-action-btn {
@@ -216,7 +216,7 @@ export default {
   width: 28px;
   height: 28px;
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   cursor: pointer;
 }
 </style>

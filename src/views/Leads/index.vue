@@ -105,7 +105,7 @@ onMounted(async () => {
 <style scoped>
 .leads-page__back {
   min-height: 44px;
-  margin: var(--space-200) var(--space-300) 0;
+  margin: var(--space-5) var(--space-8) 0;
 }
 .leads-page :deep(.ld-table) {
   display: block;
@@ -125,7 +125,7 @@ onMounted(async () => {
 .leads__toggle {
   display: flex;
   height: 44px;
-  margin: var(--space-300) var(--space-300) 0;
+  margin: var(--space-8) var(--space-8) 0;
 }
 .leads__toggle :deep(.segmented-control__option) {
   flex: 1;
@@ -155,10 +155,10 @@ onMounted(async () => {
   .leads__placeholder {
     display: flex;
     flex-direction: column;
-    gap: var(--space-200);
+    gap: var(--space-5);
     align-items: center;
     justify-content: center;
-    padding: var(--space-400);
+    padding: var(--space-10);
     color: var(--text-secondary);
     text-align: center;
   }

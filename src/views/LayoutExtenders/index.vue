@@ -1,10 +1,10 @@
 <template>
   <div class="layout-extender-panel h-100">
     <div class="layout-extender-panel__toolbar flex ai-ct jc-sb bg-raised fs-300">
-      <div class="flex ai-ct gap-300">
-        <div id="layout-extender-toolbar-left" class="flex ai-ct gap-200"></div>
+      <div class="flex ai-ct gap-8">
+        <div id="layout-extender-toolbar-left" class="flex ai-ct gap-5"></div>
       </div>
-      <div id="layout-extender-toolbar-right" class="flex ai-ct gap-200"></div>
+      <div id="layout-extender-toolbar-right" class="flex ai-ct gap-5"></div>
     </div>
     <router-view />
   </div>
@@ -23,7 +23,7 @@ export default {
 }
 
 .layout-extender-panel__toolbar {
-  padding: 8px 20px;
+  padding: var(--space-2) var(--space-5);
   border-bottom: 1px solid var(--border-subtle);
   flex-shrink: 0;
 }

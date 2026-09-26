@@ -366,12 +366,12 @@ onMounted(async () => {
 .contacts {
   display: flex;
   flex-direction: column;
-  gap: var(--space-300);
+  gap: var(--space-8);
 }
 .contacts__form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-200);
+  gap: var(--space-5);
   max-width: 640px;
 }
 .contacts__legend {

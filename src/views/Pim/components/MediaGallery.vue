@@ -524,7 +524,7 @@ watch(
             <a
               :href="selectedItem.imageUrl"
               target="_blank"
-              class="t-accent fs-200 mt-100"
+              class="t-accent fs-200 mt-2"
             >
               {{ selectedItem.altText || selectedItem.imageUrl }}
             </a>
@@ -546,7 +546,7 @@ watch(
               <a
                 :href="selectedItem.videoUrl"
                 target="_blank"
-                class="t-accent fs-200 mt-100"
+                class="t-accent fs-200 mt-2"
               >
                 {{ selectedItem.videoUrl }}
               </a>
@@ -557,9 +557,9 @@ watch(
           <FontAwesomeIcon
             icon="image"
             class="t-muted"
-            style="font-size: 32px"
+            style="font-size: var(--fs-700)"
           />
-          <span class="t-muted fs-200 mt-100">{{
+          <span class="t-muted fs-200 mt-2">{{
             $t("pim.no_media")
           }}</span>
         </div>
@@ -747,7 +747,7 @@ watch(
           <span v-if="uploadingPicture" class="t-muted fs-200">...</span>
           <template v-else>
             <FontAwesomeIcon icon="upload" class="t-muted fs-400" />
-            <span class="t-muted fs-200 mt-100">{{
+            <span class="t-muted fs-200 mt-2">{{
               $t("pim.drop_files_here")
             }}</span>
           </template>
@@ -815,7 +815,7 @@ watch(
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 12px;
+    margin-bottom: var(--space-3);
   }
 
   &__count {
@@ -825,7 +825,7 @@ watch(
   &__preview {
     width: 100%;
     aspect-ratio: 4 / 3;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-base);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -857,14 +857,14 @@ watch(
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-2);
   }
 
   &__no-image {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-2);
   }
 
   &__broken-placeholder {
@@ -873,22 +873,22 @@ watch(
     align-items: center;
     justify-content: center;
     color: var(--text-muted);
-    gap: 4px;
+    gap: var(--space-1);
   }
 
   // --- Thumbnail strip ---
   &__thumb-strip {
     display: flex;
-    gap: 6px;
-    margin-top: 8px;
+    gap: var(--space-1);
+    margin-top: var(--space-2);
     overflow-x: auto;
-    padding-bottom: 4px;
+    padding-bottom: var(--space-1);
     align-items: stretch;
   }
 
   &__drag-container {
     display: flex;
-    gap: 6px;
+    gap: var(--space-1);
   }
 
   &__thumb {
@@ -896,7 +896,7 @@ watch(
     width: 64px;
     height: 64px;
     border: 2px solid transparent;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-base);
     overflow: hidden;
     cursor: pointer;
     position: relative;
@@ -941,7 +941,7 @@ watch(
       var(--surface-raised) 100%
     );
     color: var(--text-muted);
-    font-size: 18px;
+    font-size: var(--fs-500);
   }
 
   &__thumb-video-fallback {
@@ -956,7 +956,7 @@ watch(
       var(--surface-raised) 100%
     );
     color: var(--text-muted);
-    font-size: 18px;
+    font-size: var(--fs-500);
   }
 
   &__play-badge {
@@ -965,7 +965,7 @@ watch(
     right: 2px;
     width: 18px;
     height: 18px;
-    border-radius: 50%;
+    border-radius: var(--radius-full);
     background: rgba(0, 0, 0, 0.55);
     color: var(--text-on-accent-fill);
     display: flex;
@@ -980,7 +980,7 @@ watch(
     top: 2px;
     left: 2px;
     font-size: 9px;
-    padding: 1px 4px;
+    padding: 1px var(--space-1);
     pointer-events: none;
   }
 
@@ -990,7 +990,7 @@ watch(
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: var(--space-1);
     background: rgba(0, 0, 0, 0.45);
     opacity: 0;
     transition: opacity 0.15s;
@@ -999,7 +999,7 @@ watch(
   &__action-btn {
     width: 24px;
     height: 24px;
-    border-radius: 50%;
+    border-radius: var(--radius-full);
     border: none;
     background: var(--surface-base);
     color: var(--text-body);
@@ -1007,7 +1007,7 @@ watch(
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: 11px;
+    font-size: var(--fs-150);
     transition: background 0.1s;
 
     &:hover {
@@ -1030,10 +1030,10 @@ watch(
 
   // --- Unified add-media zone ---
   &__add-zone {
-    margin-top: 8px;
+    margin-top: var(--space-2);
     border: 2px dashed var(--border-default);
-    border-radius: var(--radius-md);
-    padding: 12px;
+    border-radius: var(--radius-base);
+    padding: var(--space-3);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1042,13 +1042,13 @@ watch(
 
   &__upload-area {
     width: 100%;
-    padding: 12px;
+    padding: var(--space-3);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-base);
     transition: background 0.15s;
 
     &:hover,
@@ -1066,8 +1066,8 @@ watch(
     width: 100%;
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 6px 0;
+    gap: var(--space-2);
+    padding: var(--space-1) 0;
   }
 
   &__divider-line {
@@ -1085,14 +1085,14 @@ watch(
     width: 100%;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-2);
   }
 
   &__video-input {
     flex: 1;
     border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-sm);
-    padding: 6px 8px;
+    border-radius: var(--radius-base);
+    padding: var(--space-1) var(--space-2);
     font-size: var(--fs-200);
     background: var(--surface-base);
     color: var(--text-body);
@@ -1117,7 +1117,7 @@ watch(
   &__edit-panel {
     position: absolute;
     inset: 0;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-base);
     background: var(--surface-base);
     display: flex;
     flex-direction: column;
@@ -1128,7 +1128,7 @@ watch(
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 12px;
+    padding: var(--space-2) var(--space-3);
     border-bottom: 1px solid var(--border-subtle);
   }
 
@@ -1136,7 +1136,7 @@ watch(
     background: none;
     border: none;
     cursor: pointer;
-    padding: 4px;
+    padding: var(--space-1);
     line-height: 1;
 
     &:hover {
@@ -1145,17 +1145,17 @@ watch(
   }
 
   &__edit-body {
-    padding: 12px;
+    padding: var(--space-3);
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: var(--space-3);
     flex: 1;
   }
 
   &__edit-field {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: var(--space-1);
   }
 
   &__field-label {
@@ -1168,8 +1168,8 @@ watch(
 
   &__edit-actions {
     display: flex;
-    gap: 8px;
-    padding: 10px 12px;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
     border-top: 1px solid var(--border-subtle);
     margin-top: auto;
   }
@@ -1187,8 +1187,8 @@ watch(
   border: 0;
 }
 
-.mt-100 {
-  margin-top: var(--space-100);
+.mt-2 {
+  margin-top: var(--space-2);
 }
 .lc-1 {
   overflow: hidden;
@@ -1202,7 +1202,7 @@ watch(
 .media-gallery__drag-clone {
   opacity: 0.9;
   border: 2px solid var(--accent);
-  border-radius: 4px;
+  border-radius: var(--radius-base);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 </style>

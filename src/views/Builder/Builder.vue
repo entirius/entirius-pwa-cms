@@ -1,6 +1,6 @@
 <template>
   <div
-    class="fs-300 t-body fg-1 flex-column relative pl-500 pr-500 pt-200 pb-700 ovy-auto builder-wrap"
+    class="fs-300 t-body fg-1 flex-column relative pl-12 pr-12 pt-5 pb-30 ovy-auto builder-wrap"
     :id="`container-${componentId}`"
   >
     <ConfirmationModal
@@ -67,7 +67,7 @@
       "
     >
       <template #header>
-        <p class="mb-300">{{ $t("builder.enter_new_doc_name") }}</p>
+        <p class="mb-8">{{ $t("builder.enter_new_doc_name") }}</p>
       </template>
 
       <template #description>
@@ -191,7 +191,7 @@
     <!-- Advanced options row (collapsible, below toolbar) -->
     <div
       v-if="advanced_options && !loading"
-      class="builder-advanced-row flex ai-ct gap-200 bg-base"
+      class="builder-advanced-row flex ai-ct gap-5 bg-base"
     >
       <NoticeMe
         :stroke_color_class="'t-secondary'"
@@ -348,10 +348,10 @@
     </div>
 
     <nav
-      class="sections-options-menu flex ai-ct jc-fe pv-200 pt-200 pb-200 pl-500 pr-500 br-50 bb-subtle bg-base mb-600"
+      class="sections-options-menu flex ai-ct jc-fe pv-5 pt-5 pb-5 pl-12 pr-12 rounded bb-subtle bg-base mb-16"
       v-if="type === 'blog-post'"
     >
-      <div class="inline-flex ai-ct gap-100 mr-200">
+      <div class="inline-flex ai-ct gap-2 mr-5">
         <ToolTip
           class="right t-accent fs-200 relative"
           :tip="$t('builder.blog_repr_tip')"
@@ -375,10 +375,10 @@
               :stroke_color_class="'t-warning'"
             >
               <div
-                class="flex ai-ct gap-100 p-50 fs-200 pointer br-50"
+                class="flex ai-ct gap-2 p-1 fs-200 pointer rounded"
                 :class="[
                   !blog_extension
-                    ? 'p-50 bg-hover t-warning  bg-inverse-hover'
+                    ? 'p-1 bg-hover t-warning  bg-inverse-hover'
                     : 't-secondary bg-hover b-default',
                 ]"
               >
@@ -405,20 +405,20 @@
       </div>
     </nav>
     <div class="grid grid-col-12">
-      <div class="grid gap-400 gc-s-1 gc-e-13">
+      <div class="grid gap-10 gc-s-1 gc-e-13">
         <div
-          class="fs-300 grid b-subtle br-50 ov-h"
+          class="fs-300 grid b-subtle rounded ov-h"
           v-for="(s_uid, s_idx) in sections_order"
           :key="s_idx"
         >
           <div class="grid grid-col-4 t-secondary">
-            <div class="gc-s-1 gc-e-5 br-50 bb-default">
-              <div class="pt-200 pb-200 pl-500 pr-500 bg-base">
-                <div class="section-header-row flex jc-sb mb-200">
+            <div class="gc-s-1 gc-e-5 rounded bb-default">
+              <div class="pt-5 pb-5 pl-12 pr-12 bg-base">
+                <div class="section-header-row flex jc-sb mb-5">
                   <div class="section-title-wrap">
                     <p class="section-title fs-600 fw-600 t-body">
                       {{ formatCoreType(sections[s_uid]["core_type"]) }}
-                      <span class="fs-200 t-muted fw-400 ml-100"
+                      <span class="fs-200 t-muted fw-400 ml-2"
                         >· {{ tileCountLabel(s_uid) }}</span
                       >
                     </p>
@@ -436,7 +436,7 @@
                       {{ s_uid.substring(0, 8) }}
                     </p>
                   </div>
-                  <div class="section-actions flex gap-50 as-s ai-ct">
+                  <div class="section-actions flex gap-1 as-s ai-ct">
                     <ToolTip
                       class="right relative"
                       :tip="sectionConfigSummary(s_uid)"
@@ -495,8 +495,8 @@
                       { prop = null, __value, type = null }, i
                     ) in core_properties"
                   >
-                    <div v-if="sections[s_uid][prop]" class="mb-200">
-                      <p class="t-muted fs-100 mb-50">
+                    <div v-if="sections[s_uid][prop]" class="mb-5">
+                      <p class="t-muted fs-100 mb-1">
                         {{ props_dictionary[prop] }}:
                       </p>
                       <p v-if="type === 'text'" class="fs-200">
@@ -516,7 +516,7 @@
                         v-if="type === 'group-fields'"
                         :value="sections[s_uid][prop]"
                       />
-                      <div v-if="type === 'buttons'" class="flex wrap gap-50">
+                      <div v-if="type === 'buttons'" class="flex wrap gap-1">
                         <span
                           v-for="(link, idx) in sections[s_uid][prop]"
                           :key="idx"
@@ -530,9 +530,9 @@
                 </div>
               </div>
             </div>
-            <div class="gc-s-1 gc-e-5 bg-raised pt-200 pb-200 pl-500 pr-500">
+            <div class="gc-s-1 gc-e-5 bg-raised pt-5 pb-5 pl-12 pr-12">
               <div
-                class="t-body br-50"
+                class="t-body rounded"
                 v-if="
                   sections[s_uid]['core_type'] !== 'section-slider' ||
                   sections[s_uid]['slider_type'] === 'tiles'
@@ -568,7 +568,7 @@
                         }`
                       }})
                     </p>
-                    <div class="flex gap-50 ai-ct">
+                    <div class="flex gap-1 ai-ct">
                       <SubscriberSetter
                         @onSet="
                           () => {
@@ -650,7 +650,7 @@
                   </div>
                 </template>
               </div>
-              <div class="mt-200">
+              <div class="mt-5">
                 <div
                   class="tile-swiper-wrap"
                   v-if="
@@ -687,7 +687,7 @@
                     >
                       <div v-if="tiles[t_uid] && tiles[t_uid].core_type" class="swiper-slide pointer">
                         <div
-                          class="bg-hover t-body br-50 pl-100 pr-100 pt-100 pb-100 ai-ct grid gap-50"
+                          class="bg-hover t-body rounded pl-2 pr-2 pt-2 pb-2 ai-ct grid gap-1"
                         >
                           <div class="flex-column ai-fe">
                             <p class="fs-200 t-body fw-600 txt-right lc-1">
@@ -710,7 +710,7 @@
                             </p>
                             <div
                               v-if="tileFirstImage(t_uid)"
-                              class="tile-card-thumb mt-50"
+                              class="tile-card-thumb mt-1"
                             >
                               <img
                                 :src="tileFirstImage(t_uid)"
@@ -723,7 +723,7 @@
                             </div>
                           </div>
 
-                          <div class="flex gap-50 jc-fe mt-200">
+                          <div class="flex gap-1 jc-fe mt-5">
                             <button
                               class="section-icon-btn pointer"
                               :aria-label="$t('common.copy')"
@@ -797,7 +797,7 @@
                   </BasicSwiper>
                 </div>
                 <div
-                  class="grid grid-col-4 gap-100 bg-raised"
+                  class="grid grid-col-4 gap-2 bg-raised"
                   v-if="section_tiles_details === s_uid"
                 >
                   <template
@@ -806,10 +806,10 @@
                   >
                     <div v-if="tiles[t_uid] && tiles[t_uid].core_type">
                       <div
-                        class="br-50 p-100 bg-hover grid gap-100 b-default"
+                        class="rounded p-2 bg-hover grid gap-2 b-default"
                       >
                         <div class="">
-                          <div class="mb-200">
+                          <div class="mb-5">
                             <div class="flex jc-sb ai-st">
                               <div>
                                 <p class="fs-200 fw-500 t-secondary">
@@ -818,7 +818,7 @@
                                   }}
                                 </p>
                                 <p
-                                  class="fs-100 t-muted pointer mt-50"
+                                  class="fs-100 t-muted pointer mt-1"
                                   @click="copyToClipboard(t_uid)"
                                   :title="t_uid"
                                 >
@@ -835,10 +835,10 @@
                           >
                             <div
                               v-if="tiles[t_uid][prop]"
-                              class="mb-100 fs-200"
+                              class="mb-2 fs-200"
                             >
                               <p
-                                class="t-muted fw-600 underline fs-100 mb-50"
+                                class="t-muted fw-600 underline fs-100 mb-1"
                               >
                                 {{ props_dictionary[prop] }}:
                               </p>
@@ -861,7 +861,7 @@
                               />
                               <div
                                 v-if="type === 'buttons'"
-                                class="flex wrap gap-50"
+                                class="flex wrap gap-1"
                               >
                                 <span
                                   v-for="(link, idx) in tiles[t_uid][prop]"
@@ -875,7 +875,7 @@
                           </template>
                         </div>
 
-                        <div class="flex jc-fe gap-50 as-fe">
+                        <div class="flex jc-fe gap-1 as-fe">
                           <button
                             class="section-icon-btn pointer"
                             :aria-label="$t('common.copy')"
@@ -1825,11 +1825,11 @@ const scroll_into = (id) => {
       display: flex;
       flex-direction: column;
     }
-    .pl-500 {
-      padding-left: 16px;
+    .pl-12 {
+      padding-left: var(--space-4);
     }
-    .pr-500 {
-      padding-right: 16px;
+    .pr-12 {
+      padding-right: var(--space-4);
     }
   }
 }
@@ -1850,7 +1850,7 @@ const scroll_into = (id) => {
 
   table {
     table-layout: fixed;
-    // border-radius: var(--space-50);
+    // border-radius: var(--radius-base);
     border: 1px solid var(--border-default);
     // overflow: hidden;
     font-size: var(--fs-100);
@@ -1866,7 +1866,7 @@ const scroll_into = (id) => {
     td,
     th {
       text-align: center;
-      padding: 8px;
+      padding: var(--space-2);
     }
 
     tbody > tr:nth-child(n + 3) {
@@ -1910,11 +1910,11 @@ const scroll_into = (id) => {
   justify-content: center;
   width: 32px;
   height: 32px;
-  border-radius: 5px;
+  border-radius: var(--radius-base);
   border: 1px solid var(--border-default);
   background-color: var(--surface-base);
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: var(--fs-250);
   transition: all 0.15s ease;
   &:hover {
     background-color: var(--surface-hover);
@@ -1924,12 +1924,12 @@ const scroll_into = (id) => {
 .builder-tb-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   height: var(--elem-height);
-  padding: 0 14px;
+  padding: 0 var(--space-3);
   font-size: var(--fs-200);
   font-family: inherit;
-  border-radius: 5px;
+  border-radius: var(--radius-base);
   border: 1px solid;
   white-space: nowrap;
   transition: all 0.15s ease;
@@ -1960,7 +1960,7 @@ const scroll_into = (id) => {
 .builder-advanced-row {
   flex-shrink: 0;
   flex-wrap: wrap;
-  padding: 12px 50px;
+  padding: var(--space-3) var(--space-12);
   margin-left: -50px;
   margin-right: -50px;
   border-bottom: 1px solid var(--border-subtle);
@@ -1968,11 +1968,11 @@ const scroll_into = (id) => {
 .builder-adv-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   height: var(--elem-height);
-  padding: 0 12px;
+  padding: 0 var(--space-3);
   font-size: var(--fs-200);
-  border-radius: 5px;
+  border-radius: var(--radius-base);
   border: 1px solid var(--border-default);
   background: var(--surface-raised);
   color: var(--text-secondary);
@@ -1997,8 +1997,8 @@ const scroll_into = (id) => {
   &__header {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 50px;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-12);
     font-size: var(--fs-200);
     font-weight: 600;
     text-transform: uppercase;
@@ -2014,7 +2014,7 @@ const scroll_into = (id) => {
 
   &__chevron {
     margin-left: auto;
-    font-size: 12px;
+    font-size: var(--fs-200);
     color: var(--text-muted);
   }
 
@@ -2024,25 +2024,25 @@ const scroll_into = (id) => {
     justify-content: center;
     min-width: 20px;
     height: 20px;
-    padding: 0 6px;
-    font-size: 11px;
-    font-weight: 700;
-    border-radius: 50px;
+    padding: 0 var(--space-1);
+    font-size: var(--fs-150);
+    font-weight: 600;
+    border-radius: var(--radius-full);
     background: var(--accent-subtle);
     color: var(--text-strong);
   }
 
   &__body {
     display: flex;
-    gap: var(--space-400);
+    gap: var(--space-10);
     flex-wrap: wrap;
-    padding: 16px 50px;
+    padding: var(--space-4) var(--space-12);
     border-top: 1px solid var(--border-subtle);
   }
 
   @media only screen and (max-width: 768px) {
     &__body {
-      gap: var(--space-200);
+      gap: var(--space-5);
     }
   }
 }
@@ -2053,11 +2053,11 @@ const scroll_into = (id) => {
   justify-content: center;
   width: 32px;
   height: 32px;
-  border-radius: 5px;
+  border-radius: var(--radius-base);
   border: 1px solid var(--border-default);
   background-color: var(--surface-base);
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: var(--fs-250);
   transition: all 0.15s ease;
   &:hover {
     background-color: var(--surface-hover);
@@ -2091,7 +2091,7 @@ const scroll_into = (id) => {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.75rem;
+  gap: var(--space-3);
 }
 .builder-fab-stack :deep(.floating-actions) {
   position: static;
@@ -2100,7 +2100,7 @@ const scroll_into = (id) => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 .section-title-wrap {
   min-width: 0;
@@ -2109,8 +2109,8 @@ const scroll_into = (id) => {
   display: inline-flex;
   align-items: center;
   height: 22px;
-  padding: 0 8px;
-  border-radius: 11px;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-xl);
   border: 1px solid var(--border-default);
   background: var(--surface-base);
   color: var(--text-secondary);
@@ -2127,17 +2127,17 @@ const scroll_into = (id) => {
     height: 40px;
     max-width: 100%;
     object-fit: cover;
-    border-radius: 3px;
+    border-radius: var(--radius-base);
   }
 }
 .builder-fab-aux__btn {
   width: 38px;
   height: 38px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   border: 1px solid var(--border-default);
   background-color: var(--surface-base);
   color: var(--text-secondary);
-  font-size: 14px;
+  font-size: var(--fs-300);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2168,7 +2168,7 @@ const scroll_into = (id) => {
   }
   .section-header-row {
     flex-direction: column;
-    gap: 4px;
+    gap: var(--space-1);
   }
   .section-title-wrap {
     width: 100%;
@@ -2180,7 +2180,7 @@ const scroll_into = (id) => {
     word-break: break-word;
   }
   .section-actions {
-    gap: 4px;
+    gap: var(--space-1);
     flex-shrink: 0;
     align-self: flex-start;
   }
@@ -2199,7 +2199,7 @@ const scroll_into = (id) => {
   }
   .tiles-header {
     flex-wrap: wrap;
-    gap: 8px;
+    gap: var(--space-2);
   }
   .tile-swiper-wrap {
     width: 100%;

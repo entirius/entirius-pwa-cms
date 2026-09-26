@@ -1,5 +1,5 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#pricing-toolbar-left" defer>
       <BasicButton
         text=""
@@ -26,12 +26,12 @@
       />
     </Teleport>
 
-    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
       <Loader v-if="loading" />
 
       <template v-else>
         <div class="pm-section">
-          <h2 class="fs-500 fw-600 mb-300">{{ $t('pm.channel_detail') }}</h2>
+          <h2 class="fs-500 fw-600 mb-8">{{ $t('pm.channel_detail') }}</h2>
           <div class="pm-grid">
             <div class="pm-field">
               <label class="pm-label required">IDX</label>
@@ -66,11 +66,11 @@
                   <div
                     v-for="c in countryOptions"
                     :key="c.value"
-                    class="pointer flex jc-sb ai-ct ph-100 dropdown-list-el"
+                    class="pointer flex jc-sb ai-ct ph-2 dropdown-list-el"
                     :class="{ 'bg-accent-fill': form.calculate_country_codes.includes(c.value) }"
                     @click.stop="toggleCountry(c.value)"
                   >
-                    <span class="ml-100">{{ c.label }}</span>
+                    <span class="ml-2">{{ c.label }}</span>
                     <FontAwesomeIcon
                       v-if="form.calculate_country_codes.includes(c.value)"
                       icon="check"
@@ -287,20 +287,20 @@ export default {
 <style lang="scss" scoped>
 .pm-section {
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 20px;
+  border-radius: var(--radius-base);
+  padding: var(--space-5);
 }
 
 .pm-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 
 .pm-field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .pm-label {

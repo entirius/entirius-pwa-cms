@@ -1,8 +1,8 @@
 <template>
-  <div class="order-list p-500 fs-300 t-body h-100 ov-h">
+  <div class="order-list p-12 fs-300 t-body h-100 ov-h">
     <!-- Channel selector in toolbar (matches PIM pattern) -->
     <Teleport to="#checkout-orders-toolbar-left" defer>
-      <span v-if="channels.length > 1" class="flex ai-ct gap-100">
+      <span v-if="channels.length > 1" class="flex ai-ct gap-2">
         <span class="t-muted fs-200"
           >{{ $t("checkout_orders.channel") }}:</span
         >
@@ -17,15 +17,15 @@
     </Teleport>
 
     <div
-      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
     >
       <!-- Heading -->
-      <div class="flex ai-ct mb-400">
+      <div class="flex ai-ct mb-10">
         <h1 class="fs-700 fw-600">{{ $t("checkout_orders.orders") }}</h1>
       </div>
 
       <!-- Status FilterChips -->
-      <div class="flex ai-ct mb-400">
+      <div class="flex ai-ct mb-10">
         <MobileFilterPanel
           :active-count="activeFilterCount"
           :trigger-label="$t('checkout_orders.filters')"
@@ -42,7 +42,7 @@
       </div>
 
       <!-- Search -->
-      <div class="flex ai-ct gap-300 mb-400 flex-wrap">
+      <div class="flex ai-ct gap-8 mb-10 flex-wrap">
         <BasicInput
           v-model="search"
           icon="search"

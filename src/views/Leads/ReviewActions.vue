@@ -68,8 +68,8 @@ function pick(name) {
   position: sticky;
   bottom: 0;
   display: flex;
-  gap: var(--space-200);
-  padding: var(--space-200) var(--space-300);
+  gap: var(--space-5);
+  padding: var(--space-5) var(--space-8);
   background: var(--surface-base);
   border-top: 1px solid var(--border-subtle);
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.04);
@@ -78,9 +78,9 @@ function pick(name) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-100);
+  gap: var(--space-2);
   min-height: 48px;
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   border: 1px solid var(--border-subtle);
   background: var(--surface-base);
   color: var(--text-body);
@@ -115,13 +115,13 @@ function pick(name) {
   min-width: 13rem;
   background: var(--surface-base);
   border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   z-index: 20;
 }
 .ra__menu button {
   min-height: 44px;
-  padding: 0 var(--space-300);
+  padding: 0 var(--space-8);
   border: none;
   background: none;
   color: var(--text-body);

@@ -99,7 +99,7 @@ const entries = computed(() => {
 .tl {
   display: flex;
   flex-direction: column;
-  gap: var(--space-200);
+  gap: var(--space-5);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -116,17 +116,17 @@ const entries = computed(() => {
 }
 .tl__bubble {
   max-width: 85%;
-  padding: var(--space-200) var(--space-300);
-  border-radius: 12px;
+  padding: var(--space-5) var(--space-8);
+  border-radius: var(--radius-xl);
   background: var(--surface-raised);
   color: var(--text-body);
 }
 .tl__entry--out .tl__bubble {
   background: var(--accent-subtle);
-  border-bottom-right-radius: 4px;
+  border-bottom-right-radius: var(--radius-base);
 }
 .tl__entry--in .tl__bubble {
-  border-bottom-left-radius: 4px;
+  border-bottom-left-radius: var(--radius-base);
 }
 .tl__tag,
 .tl__meta {
@@ -136,14 +136,14 @@ const entries = computed(() => {
 }
 .tl__meta {
   display: flex;
-  gap: var(--space-200);
+  gap: var(--space-5);
   justify-content: flex-end;
 }
 .tl__status {
   font-weight: 600;
 }
 .tl__subject {
-  margin: 0 0 var(--space-100);
+  margin: 0 0 var(--space-2);
   font-weight: 600;
   overflow-wrap: anywhere;
 }
@@ -154,7 +154,7 @@ const entries = computed(() => {
 }
 .tl__quote-toggle {
   min-height: 24px;
-  margin-top: var(--space-100);
+  margin-top: var(--space-2);
   padding: 0;
   border: none;
   background: none;
@@ -164,29 +164,29 @@ const entries = computed(() => {
   cursor: pointer;
 }
 .tl__quote {
-  margin-top: var(--space-100);
+  margin-top: var(--space-2);
   color: var(--text-secondary);
 }
 /* A phone has no width to spare: bubbles take nearly the whole line and a slimmer padding. */
 @media (max-width: 1023px) {
   .tl__bubble {
     max-width: 95%;
-    padding: var(--space-200);
+    padding: var(--space-5);
   }
 }
 .tl__optout {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-200);
+  gap: var(--space-5);
   align-items: center;
-  margin-top: var(--space-200);
+  margin-top: var(--space-5);
   color: var(--negative);
 }
 .tl__confirm {
   min-height: 44px;
-  padding: 0 var(--space-300);
+  padding: 0 var(--space-8);
   border: 1px solid var(--negative);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   background: var(--surface-base);
   color: var(--negative);
   font-weight: 600;

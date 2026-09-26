@@ -1,9 +1,9 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
     >
-      <div class="flex ai-ct gap-200 mb-400">
+      <div class="flex ai-ct gap-5 mb-10">
         <BasicButton
           text=""
           icon="arrow-left"
@@ -23,10 +23,10 @@
           <div
             v-for="tpl in templates"
             :key="tpl.pk"
-            class="emails-card bg-base b-subtle br-50 p-400 pointer"
+            class="emails-card bg-base b-subtle rounded p-10 pointer"
             @click="editTemplate(tpl.pk)"
           >
-            <div class="fs-400 fw-600 t-body mb-100">
+            <div class="fs-400 fw-600 t-body mb-2">
               {{ tpl.subject || $t("emails.default_subject") }}
             </div>
             <div class="fs-200 t-muted">
@@ -38,7 +38,7 @@
               :label="
                 tpl.subject ? $t('emails.customized') : $t('emails.default')
               "
-              class="mt-200"
+              class="mt-5"
             />
           </div>
         </div>
@@ -116,7 +116,7 @@ export default {
 .emails-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
+  gap: var(--space-4);
 }
 
 .emails-card {

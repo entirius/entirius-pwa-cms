@@ -1,5 +1,5 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#pim-toolbar-left" defer>
       <BasicButton
         text=""
@@ -26,23 +26,23 @@
         />
       </template>
     </Teleport>
-    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
       <Loader v-if="loading" />
 
       <template v-else>
-        <BasicTabs v-model="activeTab" :options="tabs" class="mb-400" />
+        <BasicTabs v-model="activeTab" :options="tabs" class="mb-10" />
 
         <div v-if="activeTab === 'details'">
           <div
             v-if="category.breadcrumb_path"
-            class="detail-breadcrumb mb-400 t-muted fs-200"
+            class="detail-breadcrumb mb-10 t-muted fs-200"
           >
-            <font-awesome-icon icon="folder-tree" class="mr-100" />
+            <font-awesome-icon icon="folder-tree" class="mr-2" />
             {{ category.breadcrumb_path }}
           </div>
 
-          <div class="detail-section mb-400">
-            <h2 class="fs-500 fw-600 mb-200">{{ $t("pim.basic_info") }}</h2>
+          <div class="detail-section mb-10">
+            <h2 class="fs-500 fw-600 mb-5">{{ $t("pim.basic_info") }}</h2>
             <div class="detail-grid">
               <div class="detail-field">
                 <label class="detail-label">IDX</label>
@@ -97,7 +97,7 @@
             </div>
           </div>
 
-          <div class="detail-section mb-400">
+          <div class="detail-section mb-10">
             <div class="translation-field">
               <div class="translation-field__header">
                 <label class="detail-label">{{ $t("pim.name") }} ({{ defaultLang.toUpperCase() }})</label>
@@ -110,7 +110,7 @@
               </div>
               <BasicInput v-model="form.name_t9n[defaultLang]" />
             </div>
-            <div class="translation-field mt-300">
+            <div class="translation-field mt-8">
               <div class="translation-field__header">
                 <label class="detail-label">{{ $t("pim.description") }} ({{ defaultLang.toUpperCase() }})</label>
                 <BasicButton
@@ -123,7 +123,7 @@
               <BasicWysiwyg v-model="form.description_t9n[defaultLang]" />
             </div>
             <!-- Internal AI-grounding desc — single-language, NOT the storefront description_t9n -->
-            <div v-if="hasDesc" class="mt-300">
+            <div v-if="hasDesc" class="mt-8">
               <FormField
                 :label="$t('pim.internal_desc_label')"
                 :tooltip="$t('pim.internal_desc_tooltip')"
@@ -133,8 +133,8 @@
             </div>
           </div>
 
-          <div class="detail-section mb-400">
-            <h2 class="fs-500 fw-600 mb-200">{{ $t("pim.category_image") }}</h2>
+          <div class="detail-section mb-10">
+            <h2 class="fs-500 fw-600 mb-5">{{ $t("pim.category_image") }}</h2>
             <div v-if="form.image_url" class="category-image">
               <img :src="fullImageUrl" class="category-image__preview" />
               <button class="category-image__delete" @click="form.image_url = ''">
@@ -156,7 +156,7 @@
               <span v-if="uploadingImage" class="t-muted fs-200">...</span>
               <template v-else>
                 <font-awesome-icon icon="upload" class="t-muted fs-400" />
-                <span class="t-muted fs-200 mt-100">{{ $t("pim.drop_files_here") }}</span>
+                <span class="t-muted fs-200 mt-2">{{ $t("pim.drop_files_here") }}</span>
               </template>
             </div>
             <input
@@ -168,9 +168,9 @@
             />
           </div>
 
-          <div class="detail-section mb-400">
-            <h2 class="fs-500 fw-600 mb-200">{{ $t("pim.seo_settings") }}</h2>
-            <div class="detail-grid mb-300">
+          <div class="detail-section mb-10">
+            <h2 class="fs-500 fw-600 mb-5">{{ $t("pim.seo_settings") }}</h2>
+            <div class="detail-grid mb-8">
               <div class="detail-field">
                 <label class="detail-label">
                   {{ $t("pim.index") }}
@@ -192,14 +192,14 @@
                 />
               </div>
             </div>
-            <div class="mb-300">
+            <div class="mb-8">
               <label class="detail-label">
                 {{ $t("pim.og_image_url") }}
                 <HelpTooltip :text="$t('pim.og_image_url_help')" />
               </label>
               <BasicInput v-model="form.og_image_url" />
             </div>
-            <div class="translation-field mt-300">
+            <div class="translation-field mt-8">
               <div class="translation-field__header">
                 <label class="detail-label">{{ $t("pim.meta_title") }} ({{ defaultLang.toUpperCase() }})</label>
                 <BasicButton
@@ -211,7 +211,7 @@
               </div>
               <BasicInput v-model="form.meta_title_t9n[defaultLang]" />
             </div>
-            <div class="translation-field mt-300">
+            <div class="translation-field mt-8">
               <div class="translation-field__header">
                 <label class="detail-label">{{ $t("pim.meta_description") }} ({{ defaultLang.toUpperCase() }})</label>
                 <BasicButton
@@ -223,7 +223,7 @@
               </div>
               <TextAreaBasic v-model="form.meta_description_t9n[defaultLang]" rows="3" />
             </div>
-            <div class="translation-field mt-300">
+            <div class="translation-field mt-8">
               <div class="translation-field__header">
                 <label class="detail-label">{{ $t("pim.canonical_url") }} ({{ defaultLang.toUpperCase() }})</label>
                 <BasicButton
@@ -558,18 +558,18 @@ export default {
 <style lang="scss" scoped>
 .detail-section {
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: var(--space-200);
+  border-radius: var(--radius-base);
+  padding: var(--space-5);
 }
 .detail-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 .detail-field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
 }
 .detail-label {
   font-size: var(--fs-200);
@@ -583,10 +583,10 @@ export default {
   color: var(--text-body);
 }
 .detail-breadcrumb {
-  padding: 8px 12px;
+  padding: var(--space-2) var(--space-3);
   background: var(--surface-base);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
 }
 .category-image {
   position: relative;
@@ -595,7 +595,7 @@ export default {
   &__preview {
     width: 200px;
     height: 140px;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-base);
     border: 1px solid var(--border-subtle);
     object-fit: cover;
     display: block;
@@ -607,7 +607,7 @@ export default {
     right: 6px;
     width: 28px;
     height: 28px;
-    border-radius: 50%;
+    border-radius: var(--radius-full);
     border: none;
     background: var(--negative-subtle);
     color: var(--negative);
@@ -615,7 +615,7 @@ export default {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: 12px;
+    font-size: var(--fs-200);
     box-shadow: var(--shadow-sm);
 
     &:hover {
@@ -626,14 +626,14 @@ export default {
 
   &__dropzone {
     width: 100%;
-    padding: var(--space-300) var(--space-200);
+    padding: var(--space-8) var(--space-5);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     border: 2px dashed var(--border-subtle);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-base);
     transition: background 0.15s, border-color 0.15s;
 
     &:hover,
@@ -653,7 +653,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--space-100);
+  margin-bottom: var(--space-2);
 }
 .translation-field__btn {
   font-size: var(--fs-200);

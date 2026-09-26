@@ -31,17 +31,17 @@ export default {
 .string-diff {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 .string-diff__label {
   font-size: var(--fs-100);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: var(--space-100);
+  margin-bottom: var(--space-2);
 }
 .string-diff__value {
-  padding: var(--space-200);
-  border-radius: var(--radius-sm);
+  padding: var(--space-5);
+  border-radius: var(--radius-base);
   background: var(--surface-raised);
   font-size: var(--fs-200);
   white-space: pre-wrap;

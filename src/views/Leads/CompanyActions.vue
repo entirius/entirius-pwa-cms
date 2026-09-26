@@ -97,9 +97,9 @@ function createCustomer() {
   left: 50%;
   z-index: 20;
   transform: translateX(-50%);
-  padding: var(--space-300);
+  padding: var(--space-8);
   border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   background: var(--surface-base);
   box-shadow: 0 8px 24px rgb(0 0 0 / 20%);
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="list-mode">
     <div
-      class="flex ai-ct gap-200 mb-300 flex-wrap"
+      class="flex ai-ct gap-5 mb-8 flex-wrap"
       data-testid="list-bulk-toolbar"
     >
       <span
@@ -469,12 +469,12 @@ export default {
 .bulk-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   height: 32px;
-  padding: 0 12px;
+  padding: 0 var(--space-3);
   font-size: var(--fs-200);
   font-weight: 600;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   border: 1px solid;
   cursor: pointer;
 }
@@ -515,16 +515,16 @@ export default {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: var(--space-300);
-  padding-bottom: var(--space-300);
+  gap: var(--space-8);
+  padding-bottom: var(--space-8);
 }
 .list-detail__actions {
   flex-shrink: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-200);
-  padding: var(--space-200) var(--space-300);
-  margin: 0 calc(-1 * var(--space-300)) calc(-1 * var(--space-300));
+  gap: var(--space-5);
+  padding: var(--space-5) var(--space-8);
+  margin: 0 calc(-1 * var(--space-8)) calc(-1 * var(--space-8));
   background: var(--surface-base);
   border-top: 1px solid var(--border-subtle);
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.04);

@@ -39,11 +39,11 @@ const sections = computed(() => SECTIONS.filter((section) => munin.isModuleEnabl
 .settings-row {
   display: flex;
   align-items: center;
-  gap: var(--space-300);
+  gap: var(--space-8);
   min-height: 56px;
-  padding: 0 var(--space-300);
+  padding: 0 var(--space-8);
   border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   background: var(--surface-base);
   color: var(--text-body);
   text-decoration: none;

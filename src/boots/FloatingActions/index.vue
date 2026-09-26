@@ -126,7 +126,7 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.75rem;
+  gap: var(--space-3);
 }
 
 @media only screen and (max-width: 768px) {
@@ -139,7 +139,7 @@ onBeforeUnmount(() => {
 .floating-actions__back {
   width: 44px;
   height: 44px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   border: 1px solid var(--border-default);
   background-color: var(--surface-base);
   color: var(--text-secondary);
@@ -147,7 +147,7 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.85rem;
+  font-size: var(--fs-300);
   box-shadow: var(--shadow-md);
   transition: all 0.2s ease;
 }
@@ -160,7 +160,7 @@ onBeforeUnmount(() => {
 .floating-actions__trigger {
   width: 44px;
   height: 44px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   border: none;
   background-color: var(--accent-fill);
   color: var(--text-on-accent-fill);
@@ -168,7 +168,7 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
+  font-size: var(--fs-400);
   box-shadow: var(--shadow-md);
   transition: background-color 0.2s ease;
 }
@@ -189,13 +189,13 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.625rem;
+  gap: var(--space-2);
 }
 
 .floating-actions__item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-2);
   animation: fab-fly-in 0.2s ease forwards;
   opacity: 0;
   transform: translateY(8px);
@@ -212,8 +212,8 @@ onBeforeUnmount(() => {
   background-color: var(--surface-inverse);
   color: var(--text-inverse);
   font-size: var(--fs-100);
-  padding: 0.25rem 0.625rem;
-  border-radius: 50px;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-full);
   white-space: nowrap;
   pointer-events: none;
 }
@@ -221,14 +221,14 @@ onBeforeUnmount(() => {
 .floating-actions__action {
   width: 32px;
   height: 32px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   border: none;
   color: var(--text-on-accent-fill);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
+  font-size: var(--fs-200);
   box-shadow: var(--shadow-arrow);
   transition: filter 0.2s ease;
   flex-shrink: 0;

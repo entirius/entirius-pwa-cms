@@ -1,7 +1,7 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
     >
       <Teleport v-if="toolbarReady" to="#forms-toolbar-left">
         <BasicButton
@@ -15,7 +15,7 @@
       <Loader v-if="loading" />
 
       <template v-else-if="booking">
-        <div class="flex ai-ct mb-400">
+        <div class="flex ai-ct mb-10">
           <h1 class="fs-700 fw-600">{{ $t("cf.booking_detail") }}</h1>
         </div>
 
@@ -86,7 +86,7 @@
           <div class="cf-card">
             <h2 class="cf-card__title">{{ $t("cf.lead_status") }}</h2>
             <template v-if="booking.linked_lead">
-              <div class="mb-200">
+              <div class="mb-5">
                 <StatusBadge
                   :label="leadStatusLabel($t, booking.linked_lead.status)"
                   :variant="leadStatusVariant(booking.linked_lead.status)"
@@ -116,7 +116,7 @@
                   </dd>
                 </div>
               </dl>
-              <div class="mt-300">
+              <div class="mt-8">
                 <BasicButton
                   icon="bullseye"
                   :text="$t('cf.open_lead')"
@@ -201,14 +201,14 @@ export default {
 .cf-booking-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  gap: var(--space-300);
+  gap: var(--space-8);
 }
 
 .cf-card {
-  padding: var(--space-300);
+  padding: var(--space-8);
   background: var(--surface-base);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
 }
 
 .cf-card__title {
@@ -217,20 +217,20 @@ export default {
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  margin-bottom: var(--space-200);
+  margin-bottom: var(--space-5);
 }
 
 .cf-field-list {
   display: flex;
   flex-direction: column;
-  gap: var(--space-100);
+  gap: var(--space-2);
   margin: 0;
 }
 
 .cf-field-list__row {
   display: grid;
   grid-template-columns: 160px 1fr;
-  gap: var(--space-200);
+  gap: var(--space-5);
   align-items: baseline;
 }
 
@@ -253,7 +253,7 @@ export default {
   text-decoration: none;
   display: inline-flex;
   align-items: center;
-  gap: var(--space-50);
+  gap: var(--space-1);
 }
 
 .cf-inline-link:hover {
@@ -263,9 +263,9 @@ export default {
 .cf-code {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: var(--fs-200);
-  padding: 2px 6px;
+  padding: 2px var(--space-1);
   background: var(--surface-raised);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   color: var(--text-body);
 }
 </style>

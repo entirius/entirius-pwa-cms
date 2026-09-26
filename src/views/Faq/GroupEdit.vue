@@ -1,5 +1,5 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#faq-toolbar-left" defer>
       <BasicButton
         text=""
@@ -34,11 +34,11 @@
       />
     </Teleport>
 
-    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
       <Loader v-if="loading" />
 
       <template v-else>
-        <div class="flex ai-ct jc-sb mb-500">
+        <div class="flex ai-ct jc-sb mb-12">
           <h1 class="fs-700 fw-600">
             {{ isEdit ? group.name || group.idx : $t("faq.create_group") }}
           </h1>
@@ -50,8 +50,8 @@
         </div>
 
         <!-- Main fields -->
-        <div class="detail-section mb-400">
-          <h2 class="fs-500 fw-600 mb-300">{{ $t("faq.group_details") }}</h2>
+        <div class="detail-section mb-10">
+          <h2 class="fs-500 fw-600 mb-8">{{ $t("faq.group_details") }}</h2>
           <div class="detail-grid">
             <div class="detail-field">
               <label class="detail-label required">{{ $t("faq.idx") }}</label>
@@ -80,13 +80,13 @@
                   <div
                     v-for="ch in channelOptions"
                     :key="ch.value"
-                    class="pointer flex jc-sb ai-ct ph-100 dropdown-list-el"
+                    class="pointer flex jc-sb ai-ct ph-2 dropdown-list-el"
                     :class="{
                       '-primary-100': form.channel_ids.includes(ch.value),
                     }"
                     @click.stop="toggleChannel(ch.value)"
                   >
-                    <span class="ml-100">{{ ch.label }}</span>
+                    <span class="ml-2">{{ ch.label }}</span>
                     <FontAwesomeIcon
                       v-if="form.channel_ids.includes(ch.value)"
                       icon="check"
@@ -100,10 +100,10 @@
         </div>
 
         <!-- Items in this group — drag to reorder, add existing -->
-        <div v-if="isEdit" class="detail-section mb-400">
-          <div class="flex ai-ct jc-sb mb-300">
+        <div v-if="isEdit" class="detail-section mb-10">
+          <div class="flex ai-ct jc-sb mb-8">
             <h2 class="fs-500 fw-600">{{ $t("faq.items_in_group") }}</h2>
-            <div class="flex ai-ct gap-200">
+            <div class="flex ai-ct gap-5">
               <Dropdown
                 :values="unassignedItemOptions"
                 :selected="[]"
@@ -129,7 +129,7 @@
             @end="onReorderItems"
           >
             <template #item="{ element }">
-              <div class="item-row flex ai-ct gap-200">
+              <div class="item-row flex ai-ct gap-5">
                 <font-awesome-icon
                   icon="grip-vertical"
                   class="drag-handle t-muted"
@@ -530,20 +530,20 @@ export default {
 <style lang="scss" scoped>
 .detail-section {
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 20px;
+  border-radius: var(--radius-base);
+  padding: var(--space-5);
 }
 
 .detail-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 
 .detail-field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .detail-label {
@@ -560,7 +560,7 @@ export default {
 }
 
 .item-row {
-  padding: 12px var(--space-200);
+  padding: var(--space-3) var(--space-5);
   border-bottom: 1px solid var(--border-subtle);
   transition: background 0.1s;
 
@@ -592,8 +592,8 @@ export default {
   opacity: 0.9;
   background: var(--surface-base);
   border: 1px solid var(--accent);
-  border-radius: 6px;
+  border-radius: var(--radius-base);
   box-shadow: var(--shadow-md);
-  padding: 12px var(--space-200);
+  padding: var(--space-3) var(--space-5);
 }
 </style>

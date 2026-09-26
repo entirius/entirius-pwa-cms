@@ -2,8 +2,8 @@
   <nav v-if="!mobile" class="navigation-wrapper fs-300 t-body h-100 ov-h">
     <template v-if="user">
       <nav
-        class="navigation pb-100 pt-700"
-        :class="isSidebarCollapsed ? '' : 'pl-300 pr-300'"
+        class="navigation pb-2 pt-30"
+        :class="isSidebarCollapsed ? '' : 'pl-8 pr-8'"
       >
         <div
           class="flex flex-column"
@@ -110,11 +110,11 @@ export default {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-2);
   min-width: 0;
-  padding: 8px 12px;
+  padding: var(--space-2) var(--space-3);
   margin-bottom: 2px;
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   color: var(--text-secondary);
   font-weight: 500;
   line-height: 1.4;
@@ -146,7 +146,7 @@ export default {
       transform: translateY(-50%);
       width: 3px;
       height: 18px;
-      border-radius: 999px;
+      border-radius: var(--radius-full);
       background: var(--accent-fill);
     }
   }
@@ -154,11 +154,11 @@ export default {
 .nav-link--collapsed {
   justify-content: center;
   width: 40px;
-  padding: 8px 0;
+  padding: var(--space-2) 0;
 }
 .nav-icon {
   width: 18px;
-  font-size: 15px;
+  font-size: var(--fs-300);
   text-align: center;
   flex-shrink: 0;
   color: var(--text-muted);
@@ -189,7 +189,7 @@ export default {
   justify-content: center;
   gap: 2px;
   min-height: 44px;
-  padding: 0 4px;
+  padding: 0 var(--space-1);
   text-decoration: none;
   color: var(--text-secondary);
   transition: color 0.15s ease;
@@ -199,7 +199,7 @@ export default {
   }
 }
 .mobile-nav__icon {
-  font-size: 16px;
+  font-size: var(--fs-400);
   flex-shrink: 0;
 }
 .mobile-nav__label {

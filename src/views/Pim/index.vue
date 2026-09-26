@@ -1,9 +1,9 @@
 <template>
   <div class="pim-panel h-100">
     <div class="pim-panel__channel-bar flex ai-ct jc-sb bg-raised fs-300">
-      <div class="flex ai-ct gap-300">
-        <div id="pim-toolbar-left" class="flex ai-ct gap-200"></div>
-        <div class="pim-channel-selector flex ai-ct gap-300">
+      <div class="flex ai-ct gap-8">
+        <div id="pim-toolbar-left" class="flex ai-ct gap-5"></div>
+        <div class="pim-channel-selector flex ai-ct gap-8">
           <span class="fs-200 fw-600 t-muted"
             >{{ $t("pim.channel") }}:</span
           >
@@ -26,7 +26,7 @@
           >
         </div>
       </div>
-      <div id="pim-toolbar-right" class="flex ai-ct gap-200">
+      <div id="pim-toolbar-right" class="flex ai-ct gap-5">
         <BasicButton
           v-if="translatorAvailable"
           :text="$t('pim.translate_store')"
@@ -118,7 +118,7 @@ export default {
 }
 
 .pim-panel__channel-bar {
-  padding: 8px 20px;
+  padding: var(--space-2) var(--space-5);
   border-bottom: 1px solid var(--border-subtle);
   flex-shrink: 0;
 }
@@ -127,8 +127,8 @@ export default {
 @media only screen and (max-width: 768px) {
   .pim-panel__channel-bar {
     flex-wrap: wrap;
-    gap: 8px;
-    padding: 8px 12px;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
   }
   .pim-channel-selector {
     display: none;

@@ -1,6 +1,6 @@
 <template>
-  <div class="product-links p-300 ovy-auto h-100">
-    <div class="flex ai-ct jc-sb mb-300 flex-wrap gap-200">
+  <div class="product-links p-8 ovy-auto h-100">
+    <div class="flex ai-ct jc-sb mb-8 flex-wrap gap-5">
       <h2 class="fs-400 fw-600">{{ $t("pim.tab_links") }}</h2>
       <button
         class="links-primary-btn"
@@ -12,7 +12,7 @@
       </button>
     </div>
 
-    <div class="flex ai-ct gap-200 mb-200 flex-wrap">
+    <div class="flex ai-ct gap-5 mb-5 flex-wrap">
       <SegmentedControl
         v-model="activeLinkType"
         :options="filterOptions"
@@ -20,7 +20,7 @@
     </div>
 
     <p
-      class="t-muted fs-100 mb-200"
+      class="t-muted fs-100 mb-5"
       data-testid="linked-sync-notice"
     >
       <FontAwesomeIcon icon="circle-info" />
@@ -69,7 +69,7 @@
             <span>{{ row.linked_product?.sku }}</span>
             <span class="lc-1">{{ row.linked_product?.name }}</span>
             <span>{{ row.position }}</span>
-            <span class="flex ai-ct gap-100" @click.stop>
+            <span class="flex ai-ct gap-2" @click.stop>
               <button
                 class="row-action-btn bg-raised t-body"
                 :title="$t('common.edit')"
@@ -91,7 +91,7 @@
         </template>
       </draggable>
 
-      <p v-if="!links.length" class="t-muted fs-200 p-300 ta-ct">
+      <p v-if="!links.length" class="t-muted fs-200 p-8 ta-ct">
         {{ $t("pim.links.empty") }}
       </p>
     </div>
@@ -102,7 +102,7 @@
       width="420px"
       @close="closeForm"
     >
-      <form class="flex flex-column gap-200" @submit.prevent="submitForm">
+      <form class="flex flex-column gap-5" @submit.prevent="submitForm">
         <FormField
           :label="$t('pim.links.linked_sku_label')"
           required
@@ -147,7 +147,7 @@
           />
         </FormField>
 
-        <div class="flex ai-ct jc-end gap-200 mt-300">
+        <div class="flex ai-ct jc-end gap-5 mt-8">
           <button
             type="button"
             class="links-secondary-btn"
@@ -440,12 +440,12 @@ watch(
 .links-secondary-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   height: 36px;
-  padding: 0 16px;
-  font-size: 13px;
+  padding: 0 var(--space-4);
+  font-size: var(--fs-250);
   font-weight: 500;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   border: 1px solid;
   cursor: pointer;
 }
@@ -470,7 +470,7 @@ watch(
   width: 28px;
   height: 28px;
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   cursor: pointer;
 }
 .form-error {
@@ -479,15 +479,15 @@ watch(
 }
 .links-table {
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   overflow: hidden;
 }
 .links-table__row {
   display: grid;
   grid-template-columns: 32px 140px 180px 1fr 80px 96px;
   align-items: center;
-  gap: 12px;
-  padding: 8px 12px;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
   border-bottom: 1px solid var(--border-subtle);
   background: var(--surface-base);
 }
@@ -497,7 +497,7 @@ watch(
 .links-table__row--header {
   background: var(--surface-raised);
   font-weight: 600;
-  font-size: 12px;
+  font-size: var(--fs-200);
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.04em;

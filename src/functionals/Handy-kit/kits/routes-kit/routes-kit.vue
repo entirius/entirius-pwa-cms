@@ -1,7 +1,7 @@
 <template>
-  <div class="routes-kit fs-200 t-secondary flex-column gap-300">
+  <div class="routes-kit fs-200 t-secondary flex-column gap-8">
     <nav
-      class="grid grid-col-2 grid-col-2-m ai-ct bg-raised pl-400 pr-400 pt-200 pb-200 t-secondary br-tl-50 br-tr-50"
+      class="grid grid-col-2 grid-col-2-m ai-ct bg-raised pl-10 pr-10 pt-5 pb-5 t-secondary rounded-tl rounded-tr"
     >
       <p class="fw-600 fs-400 uppercase">
         {{ handyType.label ? handyType.label : "kliknij" }}

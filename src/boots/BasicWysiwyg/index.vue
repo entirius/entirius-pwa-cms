@@ -25,7 +25,7 @@
           <editor-content
             :editor="editor"
             :key="'editor-stable'"
-            class="h-100 pb-900 pr-100"
+            class="h-100 pb-900 pr-2"
           />
           <button
             class="focus-mode-trigger"
@@ -44,11 +44,11 @@
         </div>
         <div
           v-if="editor"
-          class="wysiwyg-options bt-subtle pt-100 bg-base flex ai-ct gap-100"
+          class="wysiwyg-options bt-subtle pt-2 bg-base flex ai-ct gap-2"
         >
-          <div v-if="mode == 'text'" class="wysiwyg-btn-row flex gap-100 fg-1">
+          <div v-if="mode == 'text'" class="wysiwyg-btn-row flex gap-2 fg-1">
             <BasicButton
-              class="b-subtle lh-init p-50"
+              class="b-subtle lh-init p-1"
               :class="{ 'bg-hover t-body': editor.isActive('bold') }"
               :custom="true"
               @click="editor.chain().focus().toggleBold().run()"
@@ -58,7 +58,7 @@
               </template>
             </BasicButton>
             <BasicButton
-              class="b-subtle lh-init p-50"
+              class="b-subtle lh-init p-1"
               :class="{ 'bg-hover t-body': editor.isActive('italic') }"
               :custom="true"
               @click="editor.chain().focus().toggleItalic().run()"
@@ -68,7 +68,7 @@
               </template>
             </BasicButton>
             <BasicButton
-              class="b-subtle lh-init p-50"
+              class="b-subtle lh-init p-1"
               :class="{
                 'bg-hover t-body': editor.isActive('underline'),
               }"
@@ -81,7 +81,7 @@
             </BasicButton>
 
             <BasicButton
-              class="b-subtle lh-init p-50"
+              class="b-subtle lh-init p-1"
               :class="{
                 'bg-hover t-body': editor.isActive('heading', {
                   level: 1,
@@ -95,7 +95,7 @@
               </template>
             </BasicButton>
             <BasicButton
-              class="b-subtle lh-init p-50"
+              class="b-subtle lh-init p-1"
               :class="{
                 'bg-hover t-body': editor.isActive('heading', {
                   level: 2,
@@ -109,7 +109,7 @@
               </template>
             </BasicButton>
             <BasicButton
-              class="b-subtle lh-init p-50"
+              class="b-subtle lh-init p-1"
               :class="{
                 'bg-hover t-body': editor.isActive('heading', {
                   level: 3,
@@ -124,7 +124,7 @@
             </BasicButton>
 
             <BasicButton
-              class="b-subtle lh-init p-50"
+              class="b-subtle lh-init p-1"
               :class="{
                 'bg-hover t-body': editor.isActive('link'),
               }"
@@ -139,7 +139,7 @@
             <!-- FAQ Tooltip button + search dropdown -->
             <div v-if="faqEnabled" class="relative faq-tooltip-btn">
               <BasicButton
-                class="b-subtle lh-init p-50"
+                class="b-subtle lh-init p-1"
                 :class="{
                   'bg-hover t-body': editor.isActive('faqTooltip'),
                 }"
@@ -165,9 +165,9 @@
 
               <div
                 v-if="showFaqSearch"
-                class="faq-tooltip-dropdown bg-base b-subtle br-50"
+                class="faq-tooltip-dropdown bg-base b-subtle rounded"
               >
-                <div class="p-100">
+                <div class="p-2">
                   <input
                     v-model="faqQuery"
                     class="faq-tooltip-search"
@@ -179,13 +179,13 @@
                 </div>
                 <div
                   v-if="faqLoading"
-                  class="p-100 t-secondary fs-200 tc"
+                  class="p-2 t-secondary fs-200 tc"
                 >
                   {{ $t('wysiwyg.faq_searching') }}
                 </div>
                 <div
                   v-else-if="faqResults.length === 0 && faqQuery.trim()"
-                  class="p-100 t-secondary fs-200 tc"
+                  class="p-2 t-secondary fs-200 tc"
                 >
                   {{ $t('wysiwyg.faq_no_results') }}
                 </div>
@@ -193,7 +193,7 @@
                   <li
                     v-for="item in faqResults"
                     :key="item.url_key"
-                    class="faq-tooltip-result p-100 bb-subtle t-body fs-200"
+                    class="faq-tooltip-result p-2 bb-subtle t-body fs-200"
                     @click="applyFaqTooltip(item.url_key)"
                   >
                     <div class="fw-600">{{ item.question || item.url_key }}</div>
@@ -202,7 +202,7 @@
                     </div>
                   </li>
                 </ul>
-                <div class="p-100 bt-subtle">
+                <div class="p-2 bt-subtle">
                   <button class="faq-tooltip-cancel" @click="closeFaqSearch">
                     {{ $t('wysiwyg.faq_cancel') }}
                   </button>
@@ -211,7 +211,7 @@
             </div>
 
             <BasicButton
-              class="b-subtle lh-init p-50"
+              class="b-subtle lh-init p-1"
               :class="{
                 'bg-hover t-body': editor.isActive('bulletList'),
               }"
@@ -224,7 +224,7 @@
             </BasicButton>
 
             <BasicButton
-              class="b-subtle lh-init p-50"
+              class="b-subtle lh-init p-1"
               :class="{
                 'bg-hover t-body': editor.isActive('orderedList'),
               }"
@@ -237,7 +237,7 @@
             </BasicButton>
 
             <BasicButton
-              class="b-subtle lh-init p-50"
+              class="b-subtle lh-init p-1"
               :class="{
                 'bg-hover t-body': editor.isActive('highlight'),
               }"
@@ -252,7 +252,7 @@
             </BasicButton>
 
             <BasicButton
-              class="b-subtle lh-init p-50"
+              class="b-subtle lh-init p-1"
               :class="{
                 'bg-hover t-body': editor.isActive('textStyle', {
                   color: EDITOR_LINK_COLOR,
@@ -271,7 +271,7 @@
             </BasicButton>
 
             <BasicButton
-              class="b-subtle lh-init p-50"
+              class="b-subtle lh-init p-1"
               :class="{
                 'bg-hover t-body': editor.isActive({
                   textAlign: 'left',
@@ -285,7 +285,7 @@
               </template>
             </BasicButton>
             <BasicButton
-              class="b-subtle lh-init p-50"
+              class="b-subtle lh-init p-1"
               :class="{
                 'bg-hover t-body': editor.isActive({
                   textAlign: 'center',
@@ -299,7 +299,7 @@
               </template>
             </BasicButton>
             <BasicButton
-              class="b-subtle lh-init p-50"
+              class="b-subtle lh-init p-1"
               :class="{
                 'bg-hover t-body': editor.isActive({
                   textAlign: 'right',
@@ -313,7 +313,7 @@
               </template>
             </BasicButton>
           </div>
-          <div v-if="mode == 'table'" class="flex wrap gap-50 t-secondary fg-1">
+          <div v-if="mode == 'table'" class="flex wrap gap-1 t-secondary fg-1">
             <BasicButton
               @click="
                 editor
@@ -322,7 +322,7 @@
                   .insertTable({ rows: 2, cols: 3, withHeaderRow: true })
                   .run()
               "
-              class="b-subtle lh-init p-100"
+              class="b-subtle lh-init p-2"
               :custom="true"
             >
               <template v-slot:custom>
@@ -333,7 +333,7 @@
               </template>
             </BasicButton>
             <BasicButton
-              class="b-subtle lh-init p-100"
+              class="b-subtle lh-init p-2"
               :custom="true"
               @click="editor.chain().focus().deleteTable().run()"
             >
@@ -345,12 +345,12 @@
               </template>
             </BasicButton>
             <BasicButton
-              class="b-subtle lh-init p-100"
+              class="b-subtle lh-init p-2"
               :custom="true"
               @click="editor.chain().focus().addColumnBefore().run()"
             >
               <template v-slot:custom>
-                <div class="inline-flex ai-ct gap-50">
+                <div class="inline-flex ai-ct gap-1">
                   <span>col. before</span>
                   <font-awesome-icon
                     class="fs-300"
@@ -360,12 +360,12 @@
               </template>
             </BasicButton>
             <BasicButton
-              class="b-subtle lh-init p-100"
+              class="b-subtle lh-init p-2"
               :custom="true"
               @click="editor.chain().focus().addColumnAfter().run()"
             >
               <template v-slot:custom>
-                <div class="inline-flex ai-ct gap-50">
+                <div class="inline-flex ai-ct gap-1">
                   <span>col. after</span>
                   <font-awesome-icon
                     class="fs-300"
@@ -376,12 +376,12 @@
             </BasicButton>
 
             <BasicButton
-              class="b-subtle lh-init p-100"
+              class="b-subtle lh-init p-2"
               :custom="true"
               @click="editor.chain().focus().deleteColumn().run()"
             >
               <template v-slot:custom>
-                <div class="inline-flex ai-ct gap-50">
+                <div class="inline-flex ai-ct gap-1">
                   <span>col. delete</span>
                   <font-awesome-icon
                     class="fs-300"
@@ -391,12 +391,12 @@
               </template>
             </BasicButton>
             <BasicButton
-              class="b-subtle lh-init p-100"
+              class="b-subtle lh-init p-2"
               :custom="true"
               @click="editor.chain().focus().addRowBefore().run()"
             >
               <template v-slot:custom>
-                <div class="inline-flex ai-ct gap-50">
+                <div class="inline-flex ai-ct gap-1">
                   <span>row. before</span>
                   <font-awesome-icon
                     class="fs-300"
@@ -406,12 +406,12 @@
               </template>
             </BasicButton>
             <BasicButton
-              class="b-subtle lh-init p-100"
+              class="b-subtle lh-init p-2"
               :custom="true"
               @click="editor.chain().focus().addRowAfter().run()"
             >
               <template v-slot:custom>
-                <div class="inline-flex ai-ct gap-50">
+                <div class="inline-flex ai-ct gap-1">
                   <span>row. after</span>
                   <font-awesome-icon
                     class="fs-300"
@@ -422,12 +422,12 @@
             </BasicButton>
 
             <BasicButton
-              class="b-subtle lh-init p-100"
+              class="b-subtle lh-init p-2"
               :custom="true"
               @click="editor.chain().focus().deleteRow().run()"
             >
               <template v-slot:custom>
-                <div class="inline-flex ai-ct gap-50">
+                <div class="inline-flex ai-ct gap-1">
                   <span>row. delete</span>
                   <font-awesome-icon
                     class="fs-300"
@@ -437,12 +437,12 @@
               </template>
             </BasicButton>
             <BasicButton
-              class="b-subtle lh-init p-100"
+              class="b-subtle lh-init p-2"
               :custom="true"
               @click="editor.chain().focus().mergeCells().run()"
             >
               <template v-slot:custom>
-                <div class="inline-flex ai-ct gap-50">
+                <div class="inline-flex ai-ct gap-1">
                   <span>Merge</span>
                   <font-awesome-icon
                     class="fs-300"
@@ -452,12 +452,12 @@
               </template>
             </BasicButton>
             <BasicButton
-              class="b-subtle lh-init p-100"
+              class="b-subtle lh-init p-2"
               :custom="true"
               @click="editor.chain().focus().splitCell().run()"
             >
               <template v-slot:custom>
-                <div class="inline-flex ai-ct gap-50">
+                <div class="inline-flex ai-ct gap-1">
                   <span>Split</span>
                   <font-awesome-icon
                     class="fs-300"
@@ -467,12 +467,12 @@
               </template>
             </BasicButton>
             <BasicButton
-              class="b-subtle lh-init p-100"
+              class="b-subtle lh-init p-2"
               :custom="true"
               @click="editor.chain().focus().toggleHeaderColumn().run()"
             >
               <template v-slot:custom>
-                <div class="inline-flex ai-ct gap-50">
+                <div class="inline-flex ai-ct gap-1">
                   <span>Toggle (col.)</span>
                   <font-awesome-icon
                     class="fs-300"
@@ -482,12 +482,12 @@
               </template>
             </BasicButton>
             <BasicButton
-              class="b-subtle lh-init p-100"
+              class="b-subtle lh-init p-2"
               :custom="true"
               @click="editor.chain().focus().toggleHeaderRow().run()"
             >
               <template v-slot:custom>
-                <div class="inline-flex ai-ct gap-50">
+                <div class="inline-flex ai-ct gap-1">
                   <span>Toggle (row.)</span>
                   <font-awesome-icon
                     class="fs-300"
@@ -498,12 +498,12 @@
             </BasicButton>
 
             <BasicButton
-              class="b-subtle lh-init p-100"
+              class="b-subtle lh-init p-2"
               :custom="true"
               @click="editor.chain().focus().toggleHeaderCell().run()"
             >
               <template v-slot:custom>
-                <div class="inline-flex ai-ct gap-50">
+                <div class="inline-flex ai-ct gap-1">
                   <span>Toggle (cell.)</span>
                   <font-awesome-icon
                     class="fs-300"
@@ -515,7 +515,7 @@
           </div>
           <Dropdown
             v-if="variant !== 'lite'"
-            class="wysiwyg-mode-switcher br-50 b-strong t-muted bg-inverse"
+            class="wysiwyg-mode-switcher rounded b-strong t-muted bg-inverse"
             :selected="[mode]"
             :values="[
               { label: 'text mode', value: 'text' },
@@ -900,8 +900,8 @@ export default {
 <style lang="scss">
 .text-section.input {
   border: 1px solid var(--border-default);
-  border-radius: var(--space-50);
-  padding: var(--space-100);
+  border-radius: var(--radius-base);
+  padding: var(--space-2);
   background-color: var(--surface-base);
 }
 
@@ -920,10 +920,10 @@ export default {
   height: 90vh;
   z-index: 201;
   background-color: var(--surface-base);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   border: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-lg);
-  padding: var(--space-300);
+  padding: var(--space-8);
   display: flex;
   flex-direction: column;
 }
@@ -940,7 +940,7 @@ export default {
   align-items: center;
   justify-content: center;
   border: 1px solid var(--border-subtle);
-  border-radius: 4px;
+  border-radius: var(--radius-base);
   background: var(--surface-base);
   color: var(--text-muted);
   font-size: var(--fs-200);
@@ -994,7 +994,7 @@ export default {
       text-decoration: underline;
     }
     ul {
-      padding-left: var(--space-100);
+      padding-left: var(--space-2);
     }
     &:focus-visible {
       outline: none;
@@ -1010,7 +1010,7 @@ export default {
     }
     table {
       table-layout: fixed;
-      // border-radius: var(--space-50);
+      // border-radius: var(--radius-base);
       border: 1px solid var(--border-default);
       // overflow: hidden;
       font-size: var(--fs-100);
@@ -1026,7 +1026,7 @@ export default {
       td,
       th {
         //text-align: center;
-        padding: 8px;
+        padding: var(--space-2);
       }
 
       td {
@@ -1071,7 +1071,7 @@ export default {
 .wysiwyg-mode-switcher {
   flex-shrink: 0;
   min-width: 9rem;
-  padding: 0 var(--space-50);
+  padding: 0 var(--space-1);
 
   .dropdown-list {
     color: var(--text-body);
@@ -1098,8 +1098,8 @@ export default {
 .faq-tooltip-search {
   width: 100%;
   border: 1px solid var(--border-default);
-  border-radius: 4px;
-  padding: 6px 8px;
+  border-radius: var(--radius-base);
+  padding: var(--space-1) var(--space-2);
   font-size: var(--fs-200);
   background: var(--surface-base);
   color: var(--text-body);
@@ -1128,7 +1128,7 @@ export default {
 }
 
 .faq-tooltip-urlkey {
-  font-size: 10px;
+  font-size: var(--fs-100);
 }
 
 .faq-tooltip-cancel {

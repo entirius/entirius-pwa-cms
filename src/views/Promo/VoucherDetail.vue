@@ -1,5 +1,5 @@
 <template>
-  <div class="voucher-detail p-500 fs-300 t-body h-100 ovy-auto">
+  <div class="voucher-detail p-12 fs-300 t-body h-100 ovy-auto">
     <Teleport to="#promo-toolbar-left" defer>
       <BasicButton text="" icon="arrow-left" @click="navigateBack" />
       <span class="fw-600">{{ $t("promo.voucher_title") }} #{{ pk }}</span>
@@ -15,8 +15,8 @@
     <Loader v-if="loading" />
 
     <template v-else-if="voucher">
-      <div class="bg-base b-subtle br-50 p-500 mb-400">
-        <div class="flex ai-ct jc-sb mb-400">
+      <div class="bg-base b-subtle rounded p-12 mb-10">
+        <div class="flex ai-ct jc-sb mb-10">
           <StatusBadge
             :label="statusLabel(voucher.status)"
             :variant="statusVariant(voucher.status)"
@@ -29,7 +29,7 @@
           </span>
         </div>
 
-        <div v-if="availableActions.length" class="voucher-detail__bok mb-400">
+        <div v-if="availableActions.length" class="voucher-detail__bok mb-10">
           <BasicButton
             v-for="act in availableActions"
             :key="act.action"
@@ -41,7 +41,7 @@
 
         <div
           v-if="revealedCode"
-          class="voucher-detail__code bg-accent-subtle t-strong br-50 p-300 mb-400"
+          class="voucher-detail__code bg-accent-subtle t-strong rounded p-8 mb-10"
         >
           <span class="fs-200">{{ $t("promo.voucher_code") }}:</span>
           <code class="fw-600">{{ revealedCode }}</code>
@@ -86,11 +86,11 @@
         </dl>
       </div>
 
-      <div class="bg-base b-subtle br-50 p-500">
+      <div class="bg-base b-subtle rounded p-12">
         <SegmentedControl
           v-model="historyTab"
           :options="historyTabs"
-          class="mb-400"
+          class="mb-10"
         />
         <DataTable
           v-if="historyTab === 'events'"
@@ -463,19 +463,19 @@ export default {
 .voucher-detail__bok {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 
 .voucher-form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-300);
+  gap: var(--space-8);
 }
 
 .voucher-form__actions {
   display: flex;
   justify-content: flex-end;
-  margin-top: var(--space-400);
+  margin-top: var(--space-10);
 }
 
 .voucher-order-link {
@@ -487,13 +487,13 @@ export default {
 .voucher-detail__code {
   display: flex;
   align-items: center;
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 
 .voucher-detail__grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: var(--space-300);
+  gap: var(--space-8);
   margin: 0;
 
   dt {

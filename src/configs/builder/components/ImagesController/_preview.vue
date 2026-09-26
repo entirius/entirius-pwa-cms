@@ -2,11 +2,11 @@
   <div class="image-controller-preview">
     <!-- <p>{{ value }}</p> -->
 
-    <div class="flex gap-50 relative">
-      <div class="flex gap-50">
+    <div class="flex gap-1 relative">
+      <div class="flex gap-1">
         <div
           v-for="(v, k, i) in value"
-          class="relative p-300 br-50 b-default ov-h pointer shadow-down"
+          class="relative p-8 rounded b-default ov-h pointer shadow-down"
         >
           <img
             :src="resolveImageUrl(v.image)"
@@ -20,14 +20,14 @@
             @error="(e) => (e.target.style.display = 'none')"
           />
           <span
-            class="fs-100 absolute image-badge ph-50 bg-accent-fill t-on-accent-fill br-50"
+            class="fs-100 absolute image-badge ph-1 bg-accent-fill t-on-accent-fill rounded"
           >
             {{ `${k}` }}
           </span>
         </div>
         <div
           v-if="scale_src"
-          class="absolute scaled-image-preview br-50 b-default bg-base shadow-down"
+          class="absolute scaled-image-preview rounded b-default bg-base shadow-down"
           @mouseleave="
             () => {
               image_scale = null;

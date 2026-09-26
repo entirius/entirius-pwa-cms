@@ -1,8 +1,8 @@
 <template>
   <div class="channel-settings">
     <Loader v-show="loading" />
-    <div v-show="!loading" class="bg-base b-subtle br-50 p-500">
-      <div class="flex ai-ct jc-sb mb-400">
+    <div v-show="!loading" class="bg-base b-subtle rounded p-12">
+      <div class="flex ai-ct jc-sb mb-10">
         <h3 class="fs-400 fw-600">
           {{ $t("promo.cfg_title") }} · {{ form.idx }}
         </h3>
@@ -317,12 +317,12 @@ export default {
 .cfg-section {
   font-size: var(--fs-300);
   font-weight: 600;
-  margin: var(--space-400) 0 var(--space-200);
+  margin: var(--space-10) 0 var(--space-5);
 }
 
 .cfg-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: var(--space-300);
+  gap: var(--space-8);
 }
 </style>

@@ -1,9 +1,9 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
     >
-      <div class="flex ai-ct gap-300 mb-400">
+      <div class="flex ai-ct gap-8 mb-10">
         <button
           class="person-detail__back t-secondary"
           @click="$router.push('/agreements/consents')"
@@ -13,9 +13,9 @@
         </button>
       </div>
 
-      <div class="flex ai-ct jc-sb mb-500">
+      <div class="flex ai-ct jc-sb mb-12">
         <div>
-          <p class="fs-200 fw-600 t-muted mb-100">{{ $t("agm.email") }}</p>
+          <p class="fs-200 fw-600 t-muted mb-2">{{ $t("agm.email") }}</p>
           <h1 class="fs-600 fw-600">{{ email }}</h1>
         </div>
         <BasicTabs
@@ -32,17 +32,17 @@
       <template v-if="!loading">
         <!-- Marketing tab -->
         <template v-if="mode === 'marketing'">
-          <section class="mb-500">
-            <h2 class="fs-400 fw-600 mb-300">
+          <section class="mb-12">
+            <h2 class="fs-400 fw-600 mb-8">
               {{ $t("agm.current_consents") }}
             </h2>
             <div v-if="marketingStatuses.length" class="person-detail__grid">
               <div
                 v-for="item in marketingStatuses"
                 :key="item.slug"
-                class="person-detail__card bg-raised b-subtle br-50 p-400"
+                class="person-detail__card bg-raised b-subtle rounded p-10"
               >
-                <p class="fs-200 fw-600 t-secondary mb-200">
+                <p class="fs-200 fw-600 t-secondary mb-5">
                   {{ item.name || item.slug }}
                 </p>
                 <StatusBadge
@@ -61,7 +61,7 @@
           </section>
 
           <section>
-            <h2 class="fs-400 fw-600 mb-300">
+            <h2 class="fs-400 fw-600 mb-8">
               {{ $t("agm.consent_history") }}
             </h2>
             <DataTable
@@ -88,7 +88,7 @@
 
         <!-- Legal tab -->
         <template v-if="mode === 'legal'">
-          <div class="flex ai-ct gap-200 mb-400">
+          <div class="flex ai-ct gap-5 mb-10">
             <FilterChip
               :label="$t('agm.filter_all')"
               :active="legalFilter === 'all'"
@@ -107,7 +107,7 @@
           </div>
 
           <section>
-            <h2 class="fs-400 fw-600 mb-300">
+            <h2 class="fs-400 fw-600 mb-8">
               {{ $t("agm.consent_history") }}
             </h2>
             <DataTable
@@ -150,12 +150,12 @@
         @click.self="consentTextModal.visible = false"
       >
         <div class="agm-modal bg-base b-subtle">
-          <div class="agm-modal__header flex ai-ct jc-sb p-400">
+          <div class="agm-modal__header flex ai-ct jc-sb p-10">
             <div>
               <h2 class="fs-500 fw-600">
                 {{ $t("agm.legal_text_at_consent") }}
               </h2>
-              <p v-if="consentTextModal.data" class="fs-200 t-muted mt-100">
+              <p v-if="consentTextModal.data" class="fs-200 t-muted mt-2">
                 {{ consentTextModal.data.agreement_name }} — v{{
                   consentTextModal.data.version_number
                 }}
@@ -169,7 +169,7 @@
               @click="consentTextModal.visible = false"
             />
           </div>
-          <div class="agm-modal__body p-400">
+          <div class="agm-modal__body p-10">
             <Loader v-if="consentTextModal.loading" />
             <p
               v-else-if="
@@ -343,7 +343,7 @@ export default {
 .person-detail__back {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-200);
+  gap: var(--space-5);
   background: none;
   border: none;
   cursor: pointer;
@@ -358,7 +358,7 @@ export default {
 .person-detail__grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: var(--space-300);
+  gap: var(--space-8);
 }
 
 .person-detail__card {
@@ -397,9 +397,9 @@ export default {
 .agm-legal-text-preview {
   max-height: 60vh;
   overflow-y: auto;
-  padding: 16px;
+  padding: var(--space-4);
   background: var(--surface-raised);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
   font-size: var(--fs-300);
   line-height: 1.6;
   color: var(--text-body);

@@ -8,7 +8,7 @@
         @click.self="$emit('close')"
       >
         <div class="side-drawer-panel" :style="{ width: effectiveWidth }">
-          <header class="side-drawer__header flex ai-ct jc-sb mb-300">
+          <header class="side-drawer__header flex ai-ct jc-sb mb-8">
             <span class="fs-300 fw-600 t-body">{{ title }}</span>
             <button
               class="side-drawer__close t-muted pointer"
@@ -34,7 +34,7 @@
     >
       <header
         v-if="title || closable"
-        class="side-drawer__header flex ai-ct jc-sb mb-300"
+        class="side-drawer__header flex ai-ct jc-sb mb-8"
       >
         <span v-if="title" class="fs-300 fw-600 t-body">{{ title }}</span>
         <button
@@ -121,7 +121,7 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  padding: var(--space-300);
+  padding: var(--space-8);
   @media only screen and (max-width: 768px) {
     width: 100% !important;
   }
@@ -129,7 +129,7 @@ onBeforeUnmount(() => {
 
 /* Sticky mode: full-height sidebar */
 .side-drawer-sticky {
-  padding: var(--space-300);
+  padding: var(--space-8);
   border-left: 1px solid var(--border-subtle);
   overflow-y: auto;
   display: flex;
@@ -144,9 +144,9 @@ onBeforeUnmount(() => {
 .side-drawer__close {
   background: none;
   border: none;
-  font-size: 16px;
+  font-size: var(--fs-400);
   line-height: 1;
-  padding: 4px;
+  padding: var(--space-1);
   &:hover {
     color: var(--text-body);
   }

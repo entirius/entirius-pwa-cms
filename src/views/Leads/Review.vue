@@ -314,8 +314,8 @@ onBeforeUnmount(() => clearTimeout(nextTimer));
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--space-200);
-  padding: var(--space-300);
+  gap: var(--space-5);
+  padding: var(--space-8);
   overflow-x: hidden;
 }
 .review__back {
@@ -323,9 +323,9 @@ onBeforeUnmount(() => clearTimeout(nextTimer));
   min-height: 44px;
 }
 .review__scheduled {
-  margin: var(--space-400) 0;
-  padding: var(--space-300);
-  border-radius: 8px;
+  margin: var(--space-10) 0;
+  padding: var(--space-8);
+  border-radius: var(--radius-lg);
   background: var(--positive-subtle);
   color: var(--text-body);
   font-size: var(--fs-400);
@@ -335,9 +335,9 @@ onBeforeUnmount(() => clearTimeout(nextTimer));
 .review__failed {
   display: flex;
   flex-direction: column;
-  gap: var(--space-200);
-  padding: var(--space-300);
-  border-radius: 8px;
+  gap: var(--space-5);
+  padding: var(--space-8);
+  border-radius: var(--radius-lg);
   background: var(--negative-subtle);
 }
 .review__failed-text {
@@ -348,7 +348,7 @@ onBeforeUnmount(() => clearTimeout(nextTimer));
 .review__draft {
   display: flex;
   flex-direction: column;
-  gap: var(--space-200);
+  gap: var(--space-5);
   touch-action: pan-y;
   transition: transform 0.1s ease;
 }
@@ -369,7 +369,7 @@ onBeforeUnmount(() => clearTimeout(nextTimer));
   overflow-wrap: anywhere;
 }
 .review__subject {
-  margin: var(--space-200) 0 0;
+  margin: var(--space-5) 0 0;
   font-size: var(--fs-400);
   overflow-wrap: anywhere;
 }
@@ -387,27 +387,27 @@ onBeforeUnmount(() => clearTimeout(nextTimer));
 .review__label {
   display: flex;
   flex-direction: column;
-  gap: var(--space-100);
+  gap: var(--space-2);
   font-weight: 600;
 }
 .review__input {
   box-sizing: border-box;
   width: 100%;
-  padding: var(--space-200);
+  padding: var(--space-5);
   border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   font: inherit;
   font-weight: 400;
 }
 .review__edit-actions {
   display: flex;
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 .review__btn {
   flex: 1;
   min-height: 48px;
   border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   background: var(--surface-base);
   color: var(--text-body);
   font-weight: 600;

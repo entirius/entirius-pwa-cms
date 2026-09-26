@@ -46,7 +46,7 @@ defineProps({
 .form-field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .form-field__label {
@@ -72,7 +72,7 @@ defineProps({
   margin: 0;
   display: inline-flex;
   align-items: center;
-  gap: var(--space-50);
+  gap: var(--space-1);
 }
 
 .form-field__error-icon {

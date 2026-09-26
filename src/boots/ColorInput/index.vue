@@ -65,7 +65,7 @@ function onTextInput(e) {
 .color-input {
   border: 1px solid var(--border-control);
   background-color: var(--surface-sunken);
-  border-radius: var(--space-50);
+  border-radius: var(--radius-base);
   height: var(--elem-height);
   padding: 0;
   transition: border-color 0.2s;
@@ -108,6 +108,6 @@ function onTextInput(e) {
   color: inherit;
   background: transparent;
   height: 100%;
-  padding: 0 var(--space-100);
+  padding: 0 var(--space-2);
 }
 </style>

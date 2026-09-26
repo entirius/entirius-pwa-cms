@@ -16,7 +16,7 @@ defineProps({
   position: relative;
   display: inline;
   cursor: help;
-  margin-left: 4px;
+  margin-left: var(--space-1);
 
   &__icon {
     display: inline-flex;
@@ -24,11 +24,11 @@ defineProps({
     justify-content: center;
     width: 14px;
     height: 14px;
-    border-radius: 50%;
+    border-radius: var(--radius-full);
     background: var(--surface-hover);
     color: var(--text-secondary);
     font-size: 9px;
-    font-weight: 700;
+    font-weight: 600;
     line-height: 1;
     user-select: none;
     vertical-align: text-bottom;
@@ -42,7 +42,7 @@ defineProps({
     bottom: calc(100% + 6px);
     left: 50%;
     transform: translateX(-50%);
-    padding: 8px 12px;
+    padding: var(--space-2) var(--space-3);
     background: var(--surface-inverse);
     color: var(--text-inverse);
     font-size: var(--fs-200);
@@ -50,7 +50,7 @@ defineProps({
     text-transform: none;
     letter-spacing: normal;
     line-height: 1.4;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-base);
     white-space: normal;
     width: max-content;
     max-width: 260px;

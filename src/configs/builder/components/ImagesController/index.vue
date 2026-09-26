@@ -1,10 +1,10 @@
 <template>
   <div class="images-controller t-body bg-base">
-    <p class="mb-100" v-if="label">{{ label }}</p>
-    <div class="flex gap-100">
+    <p class="mb-2" v-if="label">{{ label }}</p>
+    <div class="flex gap-2">
       <BasicButton
         :text="$t('routes.set_new')"
-        class="t-accent b-default bg-base bg-hover-hover br-50"
+        class="t-accent b-default bg-base bg-hover-hover rounded"
         @click="
           () => {
             init();
@@ -15,7 +15,7 @@
         :placeholder="`${$t('controllers.setted')} (${
           Object.keys(value ?? {}).length
         })`"
-        class="b-default br-50 bg-base fg-1"
+        class="b-default rounded bg-base fg-1"
         :class="[!Boolean(value) ? 'bg-raised t-muted' : '']"
         :isDisabled="!Boolean(value)"
         :values="
@@ -35,18 +35,18 @@
 
     <div
       v-if="mode === 'gallery'"
-      class="gallery-modal t-body flex flex-column ov-h br-50 ov-h"
+      class="gallery-modal t-body flex flex-column ov-h rounded ov-h"
     >
       <nav
-        class="grid grid-col-2 grid-col-2-m bg-raised t-secondary fs-300 pl-400 pr-400 pt-200 pb-200"
+        class="grid grid-col-2 grid-col-2-m bg-raised t-secondary fs-300 pl-10 pr-10 pt-5 pb-5"
       >
         <p class="fs-400 fw-600 uppercase">{{ $t("images.library") }}</p>
         <p class="js-fe" @click="mode = null">
           <i class="icon-close-mini pointer" />
         </p>
       </nav>
-      <div class="pl-400 pr-400 pt-300 pb-300 fg-1 relative bg-base flex flex-column ov-h">
-        <div class="flex ai-ct jc-sb pb-100 shadow-down">
+      <div class="pl-10 pr-10 pt-8 pb-8 fg-1 relative bg-base flex flex-column ov-h">
+        <div class="flex ai-ct jc-sb pb-2 shadow-down">
           <Pagination
             v-if="pagination"
             :nav_size="32"
@@ -58,10 +58,10 @@
               }
             "
           />
-          <div class="flex gap-50">
+          <div class="flex gap-1">
             <Dropdown
               :placeholder="$t('common.sort_by')"
-              class="bg-base br-50 b-default t-body js-e shadow-down"
+              class="bg-base rounded b-default t-body js-e shadow-down"
               :values="[
                 { label: $t('common.oldest_first'), value: 'created_at' },
                 { label: $t('common.newest_first'), value: '-created_at' },
@@ -75,7 +75,7 @@
               "
             />
             <Dropdown
-              class="bg-base br-50 b-default t-body js-e shadow-down"
+              class="bg-base rounded b-default t-body js-e shadow-down"
               :values="[
                 { label: 10, value: 10 },
                 { label: 20, value: 20 },
@@ -93,7 +93,7 @@
             />
           </div>
         </div>
-        <div class="flex wrap ai-ct gap-50 pv-100">
+        <div class="flex wrap ai-ct gap-1 pv-2">
           <p class="fs-100 t-muted">{{ $t("gallery.filter_by_tag") }}</p>
           <p
             v-for="(t, idx) in tags"
@@ -127,11 +127,11 @@
             <FontAwesomeIcon icon="xmark" />
           </button>
         </div>
-        <div class="grid grid-col-5 gap-100 relative pv-100 fg-1 ovy-auto" style="min-height: 0">
+        <div class="grid grid-col-5 gap-2 relative pv-2 fg-1 ovy-auto" style="min-height: 0">
           <div
             v-for="(g, i) in gallery"
             @click="selected_asset = i"
-            class="ic-gallery-card bg-base relative grid-square pointer br-50"
+            class="ic-gallery-card bg-base relative grid-square pointer rounded"
             :class="{ 'ic-gallery-card--selected': selected_asset === i }"
           >
             <HoverMe
@@ -169,11 +169,11 @@
           <BasicButton
             :text="$t('images.add_photo')"
             :icon="'plus'"
-            class="br-50 t-accent fs-200 jc-ct b-default bg-hover-hover"
+            class="rounded t-accent fs-200 jc-ct b-default bg-hover-hover"
             @click="mode = 'new-picture'"
           />
-          <div class="flex ai-ct gap-100">
-            <div class="flex gap-50">
+          <div class="flex ai-ct gap-2">
+            <div class="flex gap-1">
               <button
                 class="ic-device-chip pointer"
                 :class="{ 'ic-device-chip--active': set_mobile }"
@@ -201,7 +201,7 @@
             </div>
             <BasicButton
               :text="$t('common.accept')"
-              class="br-50 fs-100 shadow-down jc-ct"
+              class="rounded fs-100 shadow-down jc-ct"
               :class="[
                 !canAccept
                   ? 't-muted b-default bg-raised'
@@ -216,17 +216,17 @@
     </div>
     <div
       v-if="mode === 'new-picture'"
-      class="gallery-modal t-body flex flex-column ov-h br-50"
+      class="gallery-modal t-body flex flex-column ov-h rounded"
     >
       <nav
-        class="flex bg-raised t-secondary fs-300 pl-400 pr-400 pt-200 pb-200"
+        class="flex bg-raised t-secondary fs-300 pl-10 pr-10 pt-5 pb-5"
       >
-        <p class="mr-100 pointer" @click="mode = 'gallery'">
+        <p class="mr-2 pointer" @click="mode = 'gallery'">
           <i class="icon-arrow-left" />
         </p>
         <p class="fw-600 uppercase">{{ $t("images.new_photo") }}</p>
       </nav>
-      <div class="pl-400 pr-400 bg-base fg-1 ovy-auto pt-400 pb-400">
+      <div class="pl-10 pr-10 bg-base fg-1 ovy-auto pt-10 pb-10">
         <div
           class="ic-dropzone"
           :class="{ 'ic-dropzone--dragover': isDraggingOver }"
@@ -247,19 +247,19 @@
           @change="set_File"
         />
 
-        <div v-if="filePreview" class="mt-300">
-          <div class="grid grid-col-2 gap-400 bg-base p-300 br-50 b-subtle">
-            <img :src="filePreview" alt="" style="max-width: 100%; border-radius: 4px" />
-            <div class="flex-column gap-200 ai-fs">
+        <div v-if="filePreview" class="mt-8">
+          <div class="grid grid-col-2 gap-10 bg-base p-8 rounded b-subtle">
+            <img :src="filePreview" alt="" style="max-width: 100%; border-radius: var(--radius-base)" />
+            <div class="flex-column gap-5 ai-fs">
               <BasicInput
-                class="bg-base br-50 t-secondary lh-base-elem"
+                class="bg-base rounded t-secondary lh-base-elem"
                 :label="'alt'"
                 v-model="meta.alt"
               />
-              <p class="fs-200 t-secondary mt-100">
+              <p class="fs-200 t-secondary mt-2">
                 {{ $t("images.choose_tags") }}
               </p>
-              <div class="flex wrap gap-50">
+              <div class="flex wrap gap-1">
                 <p
                   v-for="tag in tags"
                   :key="tag.slug"
@@ -282,7 +282,7 @@
               <BasicButton
                 :text="$t('gallery.upload')"
                 @click="upload_File({})"
-                class="br-50 jc-ct t-on-accent-fill b-accent bg-accent-fill"
+                class="rounded jc-ct t-on-accent-fill b-accent bg-accent-fill"
               />
             </div>
           </div>
@@ -552,10 +552,10 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
+  font-size: var(--fs-500);
   color: var(--text-accent);
   background: var(--surface-base);
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   z-index: 1;
   pointer-events: none;
 }
@@ -563,12 +563,12 @@ export default {
 .ic-device-chip {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   height: 30px;
-  padding: 0 10px;
-  font-size: 12px;
+  padding: 0 var(--space-2);
+  font-size: var(--fs-200);
   font-weight: 500;
-  border-radius: 50px;
+  border-radius: var(--radius-full);
   border: 1px solid var(--border-default);
   background: transparent;
   color: var(--text-muted);
@@ -582,7 +582,7 @@ export default {
   }
 
   &__icon {
-    font-size: 14px;
+    font-size: var(--fs-300);
     color: var(--text-accent);
   }
 }
@@ -592,10 +592,10 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 32px 16px;
+  gap: var(--space-1);
+  padding: var(--space-8) var(--space-4);
   border: 2px dashed var(--border-default);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
   cursor: pointer;
   transition: border-color 0.15s ease, background-color 0.15s ease;
 
@@ -631,19 +631,19 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: var(--space-1);
   background: var(--surface-raised);
 
   &__icon {
-    font-size: 20px;
+    font-size: var(--fs-500);
     color: var(--text-muted);
   }
 
   &__name {
-    font-size: 10px;
+    font-size: var(--fs-100);
     color: var(--text-muted);
     text-align: center;
-    padding: 0 6px;
+    padding: 0 var(--space-1);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -655,9 +655,9 @@ export default {
   display: inline-flex;
   align-items: center;
   height: 28px;
-  padding: 0 10px;
-  font-size: 12px;
-  border-radius: 50px;
+  padding: 0 var(--space-2);
+  font-size: var(--fs-200);
+  border-radius: var(--radius-full);
   border: 1px solid var(--border-default);
   background: var(--surface-base);
   color: var(--text-body);

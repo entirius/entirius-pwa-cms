@@ -1,6 +1,6 @@
 <template>
   <div class="options-manager">
-    <div class="flex ai-ct jc-sb mb-300">
+    <div class="flex ai-ct jc-sb mb-8">
       <h3 class="fs-400 fw-600">
         {{ $t("pim.options") }}
         <span v-if="totalCount" class="t-muted fw-400 fs-200"
@@ -15,7 +15,7 @@
     </div>
 
     <!-- Search -->
-    <div class="options-manager__search mb-200">
+    <div class="options-manager__search mb-5">
       <BasicInput
         v-model="searchQuery"
         :placeholder="$t('pim.search_to_add')"
@@ -26,7 +26,7 @@
     <!-- Add option form -->
     <div
       v-if="showAddForm"
-      class="options-manager__add-form flex ai-ct gap-200 mb-300"
+      class="options-manager__add-form flex ai-ct gap-5 mb-8"
     >
       <BasicInput
         v-model="newOption.idx"
@@ -54,14 +54,14 @@
 
     <div
       v-else-if="!options.length && !searchQuery"
-      class="t-muted fs-200 p-300"
+      class="t-muted fs-200 p-8"
     >
       {{ $t("pim.no_options") }}
     </div>
 
     <div
       v-else-if="!options.length && searchQuery"
-      class="t-muted fs-200 p-300"
+      class="t-muted fs-200 p-8"
     >
       {{ $t("pim.no_results") }}
     </div>
@@ -70,7 +70,7 @@
       <Pagination
         v-if="totalCount > pageSize"
         :pagination="paginationState"
-        class="mb-200"
+        class="mb-5"
         @onChangePage="onPageChange"
       />
 
@@ -96,7 +96,7 @@
       >
         <template #item="{ element, index }">
           <div class="options-table__row flex ai-ct">
-            <span class="options-table__col--num flex ai-ct gap-100">
+            <span class="options-table__col--num flex ai-ct gap-2">
               <span
                 v-if="!searchQuery"
                 class="drag-handle t-muted cursor-grab"
@@ -110,7 +110,7 @@
             <span class="options-table__col--label t-secondary hide-mobile">{{
               getDefaultLabel(element)
             }}</span>
-            <span class="options-table__col--actions flex ai-ct gap-100">
+            <span class="options-table__col--actions flex ai-ct gap-2">
               <BasicButton
                 :text="$t('pim.translations')"
                 icon="language"
@@ -131,7 +131,7 @@
       <Pagination
         v-if="totalCount > pageSize"
         :pagination="paginationState"
-        class="mt-200"
+        class="mt-5"
         @onChangePage="onPageChange"
       />
     </template>
@@ -428,20 +428,20 @@ export default {
 
 <style lang="scss" scoped>
 .options-manager__add-form {
-  padding: 12px;
+  padding: var(--space-3);
   background: var(--surface-raised);
-  border-radius: 6px;
+  border-radius: var(--radius-base);
 }
 .options-table__header {
-  padding: 8px 12px;
+  padding: var(--space-2) var(--space-3);
   border-bottom: 2px solid var(--border-subtle);
-  font-size: 11px;
+  font-size: var(--fs-150);
   font-weight: 600;
   color: var(--text-muted);
   letter-spacing: 0.03em;
 }
 .options-table__row {
-  padding: 8px 12px;
+  padding: var(--space-2) var(--space-3);
   border-bottom: 1px solid var(--border-subtle);
   transition: background 0.15s;
   &:hover {
@@ -470,7 +470,7 @@ export default {
 .drag-handle {
   cursor: grab;
   user-select: none;
-  font-size: 14px;
+  font-size: var(--fs-300);
 }
 .cursor-grab {
   cursor: grab;

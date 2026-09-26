@@ -30,14 +30,14 @@ defineProps({
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--space-200);
-  padding: var(--space-500);
+  gap: var(--space-5);
+  padding: var(--space-12);
   min-height: 14rem;
   text-align: center;
 }
 
 .empty-state__icon {
-  font-size: 2rem;
+  font-size: var(--fs-700);
   color: var(--text-muted);
 }
 

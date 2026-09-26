@@ -220,9 +220,9 @@ onBeforeUnmount(() => {
     align-items: center;
     justify-content: space-between;
     height: var(--elem-height);
-    padding: 0 12px;
+    padding: 0 var(--space-3);
     border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-base);
     background: var(--surface-base);
     cursor: pointer;
     font-size: var(--fs-300);
@@ -243,7 +243,7 @@ onBeforeUnmount(() => {
     left: 0;
     right: 0;
     border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-base);
     background: var(--surface-base);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     z-index: 10;
@@ -257,7 +257,7 @@ onBeforeUnmount(() => {
   &__search {
     display: block;
     width: 100%;
-    padding: 8px 12px;
+    padding: var(--space-2) var(--space-3);
     border: none;
     border-bottom: 1px solid var(--border-subtle);
     background: transparent;
@@ -273,7 +273,7 @@ onBeforeUnmount(() => {
   }
 
   &__item {
-    padding: 8px 12px;
+    padding: var(--space-2) var(--space-3);
     cursor: pointer;
     font-size: var(--fs-300);
     color: var(--text-body);
@@ -292,7 +292,7 @@ onBeforeUnmount(() => {
   }
 
   &__loading {
-    padding: 8px 12px;
+    padding: var(--space-2) var(--space-3);
     text-align: center;
   }
 }

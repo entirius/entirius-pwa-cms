@@ -112,7 +112,7 @@ export default {
       width: 100%;
       height: 100%;
       background-color: var(--overlay-loading);
-      font-size: 1.5rem;
+      font-size: var(--fs-600);
       color: var(--clr-gray-900);
       opacity: 0;
       transition: opacity 0.1s ease-in, background-color 0.1s ease-in;

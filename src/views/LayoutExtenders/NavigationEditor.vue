@@ -1,5 +1,5 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <!-- Left toolbar -->
     <Teleport to="#layout-extender-toolbar-left" defer>
       <BasicButton
@@ -47,7 +47,7 @@
     </Teleport>
 
     <!-- Content -->
-    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
       <Loader v-show="loading" />
 
       <template v-if="!loading">
@@ -69,7 +69,7 @@
                 </span>
                 <span class="fg-1 fw-500 t-body fs-300">{{ element.label || "—" }}</span>
                 <span
-                  class="fs-200 ph-100 br-50"
+                  class="fs-200 ph-2 rounded"
                   :class="element.display_as === 'megamenu' ? 'bg-accent-subtle t-strong' : 'bg-hover t-body'"
                   :data-testid="element.display_as === 'megamenu' ? 'nav-item-type-megamenu' : 'nav-item-type-link'"
                 >
@@ -112,7 +112,7 @@
                 v-if="element.display_as === 'megamenu' && expandedItems.includes(element.id)"
                 class="nav-item__expanded"
               >
-                <p class="section-label mb-200">{{ $t("layout_extender.columns") }}</p>
+                <p class="section-label mb-5">{{ $t("layout_extender.columns") }}</p>
 
                 <div class="nav-columns">
                   <div
@@ -161,7 +161,7 @@
                         <template #item="{ element: link, index: linkIdx }">
                           <div class="nav-link-row" @click="openEditLink(element, index, col, colIdx, link, linkIdx)">
                             <span class="link-handle t-muted">
-                              <FontAwesomeIcon icon="grip-vertical" style="font-size: 10px" />
+                              <FontAwesomeIcon icon="grip-vertical" style="font-size: var(--fs-100)" />
                             </span>
                             <span class="nav-link-row__text">
                               <span class="t-muted">·</span> {{ link.label }}
@@ -188,7 +188,7 @@
                           <FontAwesomeIcon icon="trash-can" />
                         </span>
                       </div>
-                      <div v-if="col.media_url" class="mb-100">
+                      <div v-if="col.media_url" class="mb-2">
                         <img
                           v-if="!brokenImages.has(col.media_url)"
                           :src="resolveMediaUrl(col.media_url)"
@@ -197,10 +197,10 @@
                           @error="onImageError(col.media_url)"
                         />
                         <div v-else class="nav-banner-placeholder">
-                          <FontAwesomeIcon icon="image" class="t-muted" style="font-size: 20px" />
+                          <FontAwesomeIcon icon="image" class="t-muted" style="font-size: var(--fs-500)" />
                         </div>
                       </div>
-                      <p v-if="col.caption" class="fs-200 t-secondary mb-100">{{ col.caption }}</p>
+                      <p v-if="col.caption" class="fs-200 t-secondary mb-2">{{ col.caption }}</p>
                       <button class="nav-btn-outline" @click="openEditColumn(element, index, col, colIdx)">
                         {{ $t("layout_extender.edit_banner") }}
                       </button>
@@ -209,7 +209,7 @@
                 </div>
 
                 <!-- Add column buttons -->
-                <div class="flex gap-200 mt-300">
+                <div class="flex gap-5 mt-8">
                   <button
                     class="nav-btn-outline"
                     :disabled="element.columns.length >= 4"
@@ -237,7 +237,7 @@
         <BasicButton
           :text="$t('layout_extender.add_item')"
           icon="plus"
-          class="bg-accent-fill t-on-accent-fill mt-300"
+          class="bg-accent-fill t-on-accent-fill mt-8"
           data-testid="nav-editor-add-item"
           @click="openAddItem"
         />
@@ -627,17 +627,17 @@ export default {
 }
 
 .nav-item {
-  margin-bottom: 12px;
+  margin-bottom: var(--space-3);
 }
 
 .nav-item__row {
   display: flex;
   align-items: center;
-  gap: var(--space-200);
-  padding: 12px var(--space-200);
+  gap: var(--space-5);
+  padding: var(--space-3) var(--space-5);
   background: var(--surface-base);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
   transition: background 0.1s;
 
   &:hover {
@@ -651,7 +651,7 @@ export default {
   justify-content: center;
   width: 36px;
   height: 36px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   cursor: pointer;
   color: var(--text-muted);
   transition: background 0.1s, color 0.1s, transform 0.2s;
@@ -674,20 +674,20 @@ export default {
   &--sm {
     width: 28px;
     height: 28px;
-    font-size: 12px;
+    font-size: var(--fs-200);
   }
 }
 
 .nav-item__expanded {
-  margin-top: 8px;
-  margin-left: 40px;
-  padding-left: var(--space-200);
+  margin-top: var(--space-2);
+  margin-left: var(--space-10);
+  padding-left: var(--space-5);
   border-left: 2px solid var(--border-subtle);
 }
 
 .nav-columns {
   display: flex;
-  gap: var(--space-200);
+  gap: var(--space-5);
   flex-wrap: wrap;
 }
 
@@ -695,8 +695,8 @@ export default {
   min-width: 160px;
   flex: 1;
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 12px var(--space-200);
+  border-radius: var(--radius-base);
+  padding: var(--space-3) var(--space-5);
 }
 
 .nav-editor__channel-dropdown {
@@ -708,13 +708,13 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: var(--space-2);
 }
 
 .nav-column__heading-group {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-1);
   flex: 1;
   min-width: 0;
 }
@@ -727,9 +727,9 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 4px 0;
+  padding: var(--space-1) 0;
   cursor: pointer;
-  font-size: 13px;
+  font-size: var(--fs-250);
   color: var(--text-body);
 
   &:hover {
@@ -744,7 +744,7 @@ export default {
 .nav-link-row__text {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-1);
   flex: 1;
   min-width: 0;
 }
@@ -753,7 +753,7 @@ export default {
   cursor: grab;
   opacity: 0;
   transition: opacity 0.1s;
-  font-size: 10px;
+  font-size: var(--fs-100);
   flex-shrink: 0;
 }
 
@@ -768,7 +768,7 @@ export default {
   justify-content: center;
   width: 24px;
   height: 24px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   color: var(--text-muted);
   cursor: pointer;
   transition: opacity 0.1s, color 0.1s;
@@ -780,8 +780,8 @@ export default {
 
 .nav-add-link {
   display: inline-block;
-  margin-top: 6px;
-  font-size: 12px;
+  margin-top: var(--space-1);
+  font-size: var(--fs-200);
   color: var(--text-accent);
   cursor: pointer;
   font-weight: 500;
@@ -795,7 +795,7 @@ export default {
   width: 100%;
   max-height: 100px;
   object-fit: cover;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
 }
 
 .nav-banner-placeholder {
@@ -805,7 +805,7 @@ export default {
   width: 100%;
   height: 60px;
   background: var(--surface-raised);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   border: 1px dashed var(--border-default);
 }
 
@@ -813,14 +813,14 @@ export default {
   display: inline-flex;
   align-items: center;
   height: var(--elem-height);
-  padding: 0 12px;
-  font-size: 13px;
+  padding: 0 var(--space-3);
+  font-size: var(--fs-250);
   font-weight: 500;
   font-family: inherit;
   color: var(--text-body);
   background: var(--surface-base);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   cursor: pointer;
   transition: background 0.1s;
 
@@ -838,16 +838,16 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-400);
-  border-radius: var(--radius-md);
+  padding: var(--space-10);
+  border-radius: var(--radius-base);
   border: 1px solid var(--border-subtle);
   color: var(--text-muted);
   min-height: 8rem;
 }
 
 @media only screen and (max-width: 768px) {
-  .p-500 {
-    padding: 16px !important;
+  .p-12 {
+    padding: var(--space-4) !important;
   }
 }
 </style>
@@ -858,8 +858,8 @@ export default {
   opacity: 0.9;
   background: var(--surface-base);
   border: 1px solid var(--accent);
-  border-radius: 6px;
+  border-radius: var(--radius-base);
   box-shadow: var(--shadow-md);
-  padding: 12px var(--space-200);
+  padding: var(--space-3) var(--space-5);
 }
 </style>

@@ -86,21 +86,21 @@ export default {
 
 <style lang="scss" scoped>
 .supplier-timeline {
-  margin-top: var(--space-400);
+  margin-top: var(--space-10);
 }
 .supplier-timeline__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: var(--space-200);
-  margin-bottom: var(--space-200);
+  gap: var(--space-5);
+  margin-bottom: var(--space-5);
 }
 .supplier-timeline__filters {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: var(--space-100);
+  gap: var(--space-2);
 }
 .supplier-timeline__source-dropdown {
   min-width: 180px;
@@ -108,7 +108,7 @@ export default {
 .supplier-timeline__list {
   list-style: none;
   margin: 0;
-  padding: var(--space-200) 0;
+  padding: var(--space-5) 0;
   border-top: 1px solid var(--border-subtle);
 }
 </style>

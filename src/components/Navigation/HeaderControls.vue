@@ -284,7 +284,7 @@ export default {
   width: 1px;
   height: 16px;
   background: var(--surface-hover);
-  margin: 0 4px;
+  margin: 0 var(--space-1);
 }
 .hc-btn {
   display: flex;
@@ -292,12 +292,12 @@ export default {
   justify-content: center;
   width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   border: none;
   background: none;
   color: var(--text-muted);
   cursor: pointer;
-  font-size: 13px;
+  font-size: var(--fs-250);
   transition: all 0.15s ease;
   &:hover {
     background: var(--surface-raised);
@@ -315,10 +315,10 @@ export default {
   top: calc(100% + 8px);
   right: 0;
   min-width: 220px;
-  padding: 6px;
+  padding: var(--space-1);
   background: var(--surface-base);
   border: 1px solid var(--border-subtle);
-  border-radius: 10px;
+  border-radius: var(--radius-xl);
   box-shadow: var(--shadow-md);
   z-index: 100;
   &--user {
@@ -326,8 +326,8 @@ export default {
   }
 }
 .hc-dropdown-label {
-  padding: 6px 10px 4px;
-  font-size: 11px;
+  padding: var(--space-1) var(--space-2) var(--space-1);
+  font-size: var(--fs-150);
   font-weight: 500;
   color: var(--text-muted);
   letter-spacing: 0.03em;
@@ -336,20 +336,20 @@ export default {
 .hc-dropdown-sep {
   height: 1px;
   background: var(--surface-hover);
-  margin: 4px 6px;
+  margin: var(--space-1) var(--space-1);
 }
 .hc-dropdown-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-2);
   width: 100%;
-  padding: 8px 10px;
-  border-radius: 6px;
+  padding: var(--space-2) var(--space-2);
+  border-radius: var(--radius-base);
   cursor: pointer;
   background: none;
   border: none;
   font: inherit;
-  font-size: 13px;
+  font-size: var(--fs-250);
   color: var(--text-body);
   text-align: left;
   transition: background 0.12s ease;
@@ -379,16 +379,16 @@ export default {
   width: 16px;
   text-align: center;
   flex-shrink: 0;
-  font-size: 12px;
+  font-size: var(--fs-200);
 }
 
 .hc-dropdown-chevron {
   margin-left: auto;
-  font-size: 10px;
+  font-size: var(--fs-100);
   color: var(--text-muted);
 }
 .hc-lang-list {
-  padding-left: 12px;
+  padding-left: var(--space-3);
 }
 
 /* Dropdown animation */

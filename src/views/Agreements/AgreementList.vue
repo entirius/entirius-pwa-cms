@@ -1,14 +1,14 @@
 <template>
-  <div class="agm-list__wrapper p-500 fs-300 t-body h-100 ov-h">
+  <div class="agm-list__wrapper p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
     >
-      <div class="flex ai-ct mb-400">
+      <div class="flex ai-ct mb-10">
         <h1 class="fs-700 fw-600">{{ $t("agm.definitions") }}</h1>
       </div>
 
       <!-- Filter tabs -->
-      <div class="flex ai-ct mb-400">
+      <div class="flex ai-ct mb-10">
         <MobileFilterPanel
           :active-count="activeFilter !== 'all' ? 1 : 0"
           :trigger-label="$t('builder.filters')"
@@ -24,7 +24,7 @@
         </MobileFilterPanel>
       </div>
 
-      <div class="flex ai-ct gap-300 mb-400">
+      <div class="flex ai-ct gap-8 mb-10">
         <BasicInput
           v-model="search"
           :placeholder="$t('common.start_typing')"
@@ -225,7 +225,7 @@ export default {
 
 @media only screen and (max-width: 768px) {
   .agm-list__wrapper {
-    padding: 16px !important;
+    padding: var(--space-4) !important;
     overflow-x: visible !important;
 
     > div {

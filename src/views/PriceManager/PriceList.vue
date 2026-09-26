@@ -1,7 +1,7 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#pricing-toolbar-right" defer>
-      <div v-if="dirtyCount > 0" class="flex ai-ct gap-100">
+      <div v-if="dirtyCount > 0" class="flex ai-ct gap-2">
         <StatusBadge :label="`${dirtyCount} ${$t('pm.unsaved')}`" variant="warning" />
         <BasicButton
           :text="saving ? $t('pm.saving') : $t('pm.save_all')"
@@ -12,7 +12,7 @@
       </div>
     </Teleport>
 
-    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
 
       <!-- Toolbar -->
       <div class="price-list__toolbar">
@@ -27,11 +27,11 @@
             <div
               v-for="code in availableCurrencies"
               :key="code"
-              class="pointer flex jc-sb ai-ct ph-100 dropdown-list-el"
+              class="pointer flex jc-sb ai-ct ph-2 dropdown-list-el"
               :class="{ 'bg-accent-fill': selectedCurrencies.includes(code) }"
               @click.stop="toggleCurrency(code)"
             >
-              <span class="fw-600 ml-100">{{ code }}</span>
+              <span class="fw-600 ml-2">{{ code }}</span>
               <FontAwesomeIcon
                 v-if="selectedCurrencies.includes(code)"
                 icon="check"
@@ -56,7 +56,7 @@
         />
 
         <!-- Filter chips -->
-        <div class="flex ai-ct gap-100">
+        <div class="flex ai-ct gap-2">
           <FilterChip
             :label="$t('pm.all_products')"
             :active="activeFilter === 'all'"
@@ -123,7 +123,7 @@
                 <span class="t-muted fs-200">{{ row.tax_class || '—' }}</span>
 
                 <!-- Currency -->
-                <span class="fw-700 fs-200">{{ row.currency || activeCurrency }}</span>
+                <span class="fw-600 fs-200">{{ row.currency || activeCurrency }}</span>
 
                 <!-- Net -->
                 <BasicInput
@@ -162,7 +162,7 @@
                 />
 
                 <!-- Actions: eye + flush special + delete -->
-                <div class="flex ai-ct gap-50">
+                <div class="flex ai-ct gap-1">
                   <button
                     v-if="row.has_price && hasMultipleCountries"
                     class="pm-expand-btn"
@@ -191,7 +191,7 @@
                 </div>
 
                 <!-- Status -->
-                <div class="flex ai-ct gap-100">
+                <div class="flex ai-ct gap-2">
                   <StatusBadge
                     v-if="!row.has_price"
                     :label="$t('pm.no_price_set')"
@@ -698,8 +698,8 @@ export default {
 .price-list__toolbar {
   display: flex;
   align-items: center;
-  gap: var(--space-200);
-  margin-bottom: var(--space-400);
+  gap: var(--space-5);
+  margin-bottom: var(--space-10);
   flex-wrap: wrap;
 }
 
@@ -723,7 +723,7 @@ export default {
 
 .pm-price-table {
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
   overflow-x: auto;
   // min-width ensures horizontal scroll instead of crushing columns
   min-width: 900px;
@@ -747,8 +747,8 @@ $cols:
 .pm-price-table__head {
   display: grid;
   grid-template-columns: $cols;
-  gap: 6px;
-  padding: 10px 12px;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
   background: var(--surface-raised);
   font-size: var(--fs-200);
   font-weight: 600;
@@ -760,8 +760,8 @@ $cols:
 .pm-price-table__row {
   display: grid;
   grid-template-columns: $cols;
-  gap: 6px;
-  padding: 6px 12px;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
   border-top: 1px solid var(--border-subtle);
   align-items: center;
   min-height: 40px;
@@ -779,12 +779,12 @@ $cols:
 .pm-price-cell {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .pm-currency-tag {
   font-size: var(--fs-100);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-secondary);
   white-space: nowrap;
   flex-shrink: 0;
@@ -797,9 +797,9 @@ $cols:
 
 .pm-date-native {
   height: var(--elem-height);
-  padding: 2px 6px;
+  padding: 2px var(--space-1);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   background: var(--surface-base);
   color: var(--text-body);
   font-size: var(--fs-100);
@@ -835,7 +835,7 @@ $cols:
   width: 28px;
   height: 28px;
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   background: var(--surface-base);
   color: var(--text-muted);
   cursor: pointer;
@@ -862,7 +862,7 @@ $cols:
   width: 22px;
   height: 22px;
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   cursor: pointer;
   font-size: var(--fs-100);
   opacity: 0.4;
@@ -888,28 +888,28 @@ $expand-cols: 80px 80px 110px 110px 1fr;
 .pm-expand {
   border-top: 1px solid var(--border-subtle);
   background: var(--surface-raised);
-  padding: 10px var(--space-200) 10px 56px;
+  padding: var(--space-2) var(--space-5) var(--space-2) var(--space-12);
 }
 
 .pm-expand__head {
   display: grid;
   grid-template-columns: $expand-cols;
-  gap: var(--space-100);
+  gap: var(--space-2);
   font-size: var(--fs-200);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
   color: var(--text-muted);
-  padding-bottom: 6px;
+  padding-bottom: var(--space-1);
   border-bottom: 1px solid var(--border-subtle);
-  margin-bottom: 4px;
+  margin-bottom: var(--space-1);
 }
 
 .pm-expand__row {
   display: grid;
   grid-template-columns: $expand-cols;
-  gap: var(--space-100);
-  padding: 4px 0;
+  gap: var(--space-2);
+  padding: var(--space-1) 0;
   font-size: var(--fs-300);
   align-items: center;
   border-bottom: 1px solid var(--border-subtle);

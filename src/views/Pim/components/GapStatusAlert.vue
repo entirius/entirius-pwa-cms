@@ -1,11 +1,11 @@
 <template>
   <div
     v-if="isStale"
-    class="gap-status-alert bg-warning-subtle t-warning br-50 flex ai-ct jc-sb gap-300"
+    class="gap-status-alert bg-warning-subtle t-warning rounded flex ai-ct jc-sb gap-8"
     :class="{ 'gap-status-alert--compact': compact }"
     data-test="gap-status-alert"
   >
-    <div class="flex ai-ct gap-200">
+    <div class="flex ai-ct gap-5">
       <FontAwesomeIcon icon="triangle-exclamation" class="gap-status-alert__icon" />
       <span>{{ $t("pim.gaps_rules_changed_alert", { date: changedAt }) }}</span>
     </div>
@@ -140,12 +140,12 @@ export default {
 
 <style lang="scss" scoped>
 .gap-status-alert {
-  padding: var(--space-300);
-  margin-bottom: var(--space-400);
+  padding: var(--space-8);
+  margin-bottom: var(--space-10);
   border: 1px solid var(--warning);
 }
 .gap-status-alert--compact {
-  padding: var(--space-200) var(--space-300);
+  padding: var(--space-5) var(--space-8);
 }
 .gap-status-alert__icon {
   flex-shrink: 0;

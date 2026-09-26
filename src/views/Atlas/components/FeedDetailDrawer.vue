@@ -8,7 +8,7 @@
     <div v-if="feed" class="feed-detail">
       <!-- Identity + status header -->
       <section class="feed-detail__section">
-        <div class="flex ai-ct gap-200 flex-wrap mb-200">
+        <div class="flex ai-ct gap-5 flex-wrap mb-5">
           <span class="fs-300 fw-600 t-body">{{ feed.idx }}</span>
           <StatusBadge :label="feed.connector_kind" variant="informative" />
           <StatusBadge :label="feed.sync_mode" variant="neutral" />
@@ -74,7 +74,7 @@
         <h3 class="feed-detail__heading">
           {{ $t("atlas.feeds.detail.config_section") }}
         </h3>
-        <p class="fs-200 t-muted mb-200">
+        <p class="fs-200 t-muted mb-5">
           {{ $t("atlas.feeds.detail.config_hint") }}
         </p>
         <pre class="feed-detail__json">{{ feedConfigPretty }}</pre>
@@ -82,7 +82,7 @@
 
       <!-- Sample preview (calls /test/?limit=3) -->
       <section class="feed-detail__section">
-        <div class="flex ai-ct jc-sb mb-200">
+        <div class="flex ai-ct jc-sb mb-5">
           <h3 class="feed-detail__heading m-0">
             {{ $t("atlas.feeds.detail.preview_section") }}
           </h3>
@@ -110,11 +110,11 @@
             :key="p.external_id"
             class="feed-detail__preview-row"
           >
-            <div class="flex ai-ct gap-200 flex-wrap mb-100">
+            <div class="flex ai-ct gap-5 flex-wrap mb-2">
               <strong class="fs-200">{{ p.external_id }}</strong>
               <span class="fs-300 t-body">{{ p.name }}</span>
             </div>
-            <div class="flex ai-ct gap-300 flex-wrap fs-200 t-muted">
+            <div class="flex ai-ct gap-8 flex-wrap fs-200 t-muted">
               <span v-if="p.cost">{{ formatCost(p.cost, p.currency) }}</span>
               <span>stock: {{ p.stock ?? 0 }}</span>
               <span v-if="p.ean">EAN: {{ p.ean }}</span>
@@ -225,10 +225,10 @@ export default {
 
 <style lang="scss" scoped>
 .feed-detail {
-  padding: var(--space-300);
+  padding: var(--space-8);
   display: flex;
   flex-direction: column;
-  gap: var(--space-400);
+  gap: var(--space-10);
 }
 
 .feed-detail__section {
@@ -242,13 +242,13 @@ export default {
   text-transform: uppercase;
   letter-spacing: 0.03em;
   color: var(--text-muted);
-  margin: 0 0 8px;
+  margin: 0 0 var(--space-2);
 }
 
 .feed-detail__grid {
   display: grid;
   grid-template-columns: max-content 1fr;
-  gap: 4px 16px;
+  gap: var(--space-1) var(--space-4);
   margin: 0;
 
   dt {
@@ -275,8 +275,8 @@ export default {
   background: var(--surface-raised);
   color: var(--text-body);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  padding: 12px;
+  border-radius: var(--radius-base);
+  padding: var(--space-3);
   font-family: var(--font-mono);
   font-size: var(--fs-200);
   margin: 0;
@@ -288,13 +288,13 @@ export default {
 .feed-detail__preview {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .feed-detail__preview-row {
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  padding: 8px 12px;
+  border-radius: var(--radius-base);
+  padding: var(--space-2) var(--space-3);
 }
 
 .feed-detail__refresh-btn {
@@ -306,7 +306,7 @@ export default {
   border: 1px solid var(--border-subtle);
   background: transparent;
   color: var(--text-body);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   cursor: pointer;
   transition: background 0.15s ease;
 

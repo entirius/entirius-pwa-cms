@@ -88,7 +88,7 @@ function onSave() {
 .translations-drawer {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--space-2);
   font-size: var(--fs-300);
 
   &__row {
@@ -100,7 +100,7 @@ function onSave() {
   &__lang {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: var(--space-1);
     font-size: var(--fs-200);
     font-weight: 600;
     text-transform: uppercase;
@@ -113,8 +113,8 @@ function onSave() {
     font-weight: 500;
     text-transform: lowercase;
     letter-spacing: 0;
-    padding: 1px 6px;
-    border-radius: 3px;
+    padding: 1px var(--space-1);
+    border-radius: var(--radius-base);
     background: var(--accent-subtle);
     color: var(--text-strong);
   }
@@ -122,9 +122,9 @@ function onSave() {
   &__footer {
     display: flex;
     justify-content: flex-end;
-    gap: var(--space-200);
-    margin-top: var(--space-300);
-    padding-top: var(--space-300);
+    gap: var(--space-5);
+    margin-top: var(--space-8);
+    padding-top: var(--space-8);
     border-top: 1px solid var(--border-subtle);
   }
 }

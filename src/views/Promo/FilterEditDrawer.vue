@@ -17,7 +17,7 @@
       </FormField>
 
       <!-- take_common_part -->
-      <FormField :label="$t('promo.filter_field_take_common_part')" class="mt-300">
+      <FormField :label="$t('promo.filter_field_take_common_part')" class="mt-8">
         <Switcher
           :label="$t('promo.filter_take_common_part_hint')"
           :hint="$t('promo.filter_common_tip')"
@@ -29,13 +29,13 @@
       <!-- ===== PRODUCT / THRESHOLD FIELDS ===== -->
       <template v-if="kind !== 'customer'">
         <!-- products -->
-        <FormField :label="$t('promo.filter_field_products')" class="mt-300">
+        <FormField :label="$t('promo.filter_field_products')" class="mt-8">
           <BasicInput
             v-model="productSearch"
             :placeholder="$t('promo.filter_search_products')"
             @input="debouncedFetch(fetchProducts)"
           />
-          <div v-if="productResults.length" class="fed__results mt-100">
+          <div v-if="productResults.length" class="fed__results mt-2">
             <div
               v-for="p in productResults"
               :key="p.sku"
@@ -45,12 +45,12 @@
               <FontAwesomeIcon
                 v-if="local.products.includes(p.sku)"
                 icon="check"
-                class="t-positive mr-100"
+                class="t-positive mr-2"
               />
               <span>{{ p.sku }}{{ p.name ? ` — ${p.name}` : '' }}</span>
             </div>
           </div>
-          <div v-if="local.products.length" class="fed__chips mt-100">
+          <div v-if="local.products.length" class="fed__chips mt-2">
             <span
               v-for="sku in local.products"
               :key="sku"
@@ -68,7 +68,7 @@
         </FormField>
 
         <!-- categories -->
-        <FormField :label="$t('promo.filter_field_categories')" class="mt-300">
+        <FormField :label="$t('promo.filter_field_categories')" class="mt-8">
           <Dropdown
             :custom_droplist="true"
             :placeholder="`${$t('promo.filter_field_categories')} (${local.categories.length})`"
@@ -77,18 +77,18 @@
               <div
                 v-for="c in categoryOptions"
                 :key="c.idx"
-                class="pointer flex jc-sb ai-ct ph-100 dropdown-list-el"
+                class="pointer flex jc-sb ai-ct ph-2 dropdown-list-el"
                 :class="{ '-primary-100': local.categories.includes(c.idx) }"
                 @click.stop="toggleCategory(c.idx)"
               >
-                <span class="ml-100">{{ c.idx }}{{ c.name ? ` — ${c.name}` : '' }}</span>
+                <span class="ml-2">{{ c.idx }}{{ c.name ? ` — ${c.name}` : '' }}</span>
                 <FontAwesomeIcon
                   v-if="local.categories.includes(c.idx)"
                   icon="check"
                   class="t-positive"
                 />
               </div>
-              <div v-if="!categoryOptions.length" class="ph-100 pv-100 t-muted fs-200 ml-100">
+              <div v-if="!categoryOptions.length" class="ph-2 pv-2 t-muted fs-200 ml-2">
                 {{ $t('promo.filter_no_options') }}
               </div>
             </template>
@@ -96,7 +96,7 @@
         </FormField>
 
         <!-- attributes -->
-        <FormField :label="$t('promo.filter_field_attributes')" class="mt-300">
+        <FormField :label="$t('promo.filter_field_attributes')" class="mt-8">
           <Dropdown
             :custom_droplist="true"
             :placeholder="`${$t('promo.filter_field_attributes')} (${local.attributes.length})`"
@@ -105,18 +105,18 @@
               <div
                 v-for="a in attributeOptions"
                 :key="a.idx"
-                class="pointer flex jc-sb ai-ct ph-100 dropdown-list-el"
+                class="pointer flex jc-sb ai-ct ph-2 dropdown-list-el"
                 :class="{ '-primary-100': local.attributes.includes(a.idx) }"
                 @click.stop="toggleAttribute(a.idx)"
               >
-                <span class="ml-100">{{ a.idx }}{{ a.name ? ` — ${a.name}` : '' }}</span>
+                <span class="ml-2">{{ a.idx }}{{ a.name ? ` — ${a.name}` : '' }}</span>
                 <FontAwesomeIcon
                   v-if="local.attributes.includes(a.idx)"
                   icon="check"
                   class="t-positive"
                 />
               </div>
-              <div v-if="!attributeOptions.length" class="ph-100 pv-100 t-muted fs-200 ml-100">
+              <div v-if="!attributeOptions.length" class="ph-2 pv-2 t-muted fs-200 ml-2">
                 {{ $t('promo.filter_no_options') }}
               </div>
             </template>
@@ -124,7 +124,7 @@
         </FormField>
 
         <!-- features_qty_greater_than_attr_value -->
-        <FormField :label="$t('promo.filter_field_features_qty_gt')" class="mt-300">
+        <FormField :label="$t('promo.filter_field_features_qty_gt')" class="mt-8">
           <Dropdown
             :custom_droplist="true"
             :placeholder="`${$t('promo.filter_field_features_qty_gt')} (${local.features_qty_greater_than_attr_value.length})`"
@@ -133,18 +133,18 @@
               <div
                 v-for="f in featureOptions"
                 :key="f.idx"
-                class="pointer flex jc-sb ai-ct ph-100 dropdown-list-el"
+                class="pointer flex jc-sb ai-ct ph-2 dropdown-list-el"
                 :class="{ '-primary-100': local.features_qty_greater_than_attr_value.includes(f.idx) }"
                 @click.stop="toggleFeatureGt(f.idx)"
               >
-                <span class="ml-100">{{ f.idx }}{{ f.name ? ` — ${f.name}` : '' }}</span>
+                <span class="ml-2">{{ f.idx }}{{ f.name ? ` — ${f.name}` : '' }}</span>
                 <FontAwesomeIcon
                   v-if="local.features_qty_greater_than_attr_value.includes(f.idx)"
                   icon="check"
                   class="t-positive"
                 />
               </div>
-              <div v-if="!featureOptions.length" class="ph-100 pv-100 t-muted fs-200 ml-100">
+              <div v-if="!featureOptions.length" class="ph-2 pv-2 t-muted fs-200 ml-2">
                 {{ $t('promo.filter_no_options') }}
               </div>
             </template>
@@ -152,7 +152,7 @@
         </FormField>
 
         <!-- features_qty_is_multiple_of_attr_value -->
-        <FormField :label="$t('promo.filter_field_features_qty_multiple')" class="mt-300">
+        <FormField :label="$t('promo.filter_field_features_qty_multiple')" class="mt-8">
           <Dropdown
             :custom_droplist="true"
             :placeholder="`${$t('promo.filter_field_features_qty_multiple')} (${local.features_qty_is_multiple_of_attr_value.length})`"
@@ -161,18 +161,18 @@
               <div
                 v-for="f in featureOptions"
                 :key="f.idx"
-                class="pointer flex jc-sb ai-ct ph-100 dropdown-list-el"
+                class="pointer flex jc-sb ai-ct ph-2 dropdown-list-el"
                 :class="{ '-primary-100': local.features_qty_is_multiple_of_attr_value.includes(f.idx) }"
                 @click.stop="toggleFeatureMultiple(f.idx)"
               >
-                <span class="ml-100">{{ f.idx }}{{ f.name ? ` — ${f.name}` : '' }}</span>
+                <span class="ml-2">{{ f.idx }}{{ f.name ? ` — ${f.name}` : '' }}</span>
                 <FontAwesomeIcon
                   v-if="local.features_qty_is_multiple_of_attr_value.includes(f.idx)"
                   icon="check"
                   class="t-positive"
                 />
               </div>
-              <div v-if="!featureOptions.length" class="ph-100 pv-100 t-muted fs-200 ml-100">
+              <div v-if="!featureOptions.length" class="ph-2 pv-2 t-muted fs-200 ml-2">
                 {{ $t('promo.filter_no_options') }}
               </div>
             </template>
@@ -180,7 +180,7 @@
         </FormField>
 
         <!-- numeric ranges -->
-        <div class="fed__range-grid mt-300">
+        <div class="fed__range-grid mt-8">
           <FormField :label="$t('promo.filter_field_product_price_from')">
             <NumberInput v-model="local.product_price_from" />
           </FormField>
@@ -211,13 +211,13 @@
       <!-- ===== CUSTOMER FIELDS ===== -->
       <template v-else>
         <!-- customers -->
-        <FormField :label="$t('promo.filter_field_customers')" class="mt-300">
+        <FormField :label="$t('promo.filter_field_customers')" class="mt-8">
           <BasicInput
             v-model="customerSearch"
             :placeholder="$t('promo.filter_search_customers')"
             @input="debouncedFetch(fetchCustomers)"
           />
-          <div v-if="customerResults.length" class="fed__results mt-100">
+          <div v-if="customerResults.length" class="fed__results mt-2">
             <div
               v-for="c in customerResults"
               :key="c.uid"
@@ -227,12 +227,12 @@
               <FontAwesomeIcon
                 v-if="local.customers.includes(c.uid)"
                 icon="check"
-                class="t-positive mr-100"
+                class="t-positive mr-2"
               />
               <span>{{ c.first_name || '' }} {{ c.last_name || '' }}{{ c.email ? ` (${c.email})` : '' }}</span>
             </div>
           </div>
-          <div v-if="local.customers.length" class="fed__chips mt-100">
+          <div v-if="local.customers.length" class="fed__chips mt-2">
             <span
               v-for="uid in local.customers"
               :key="uid"
@@ -250,7 +250,7 @@
         </FormField>
 
         <!-- groups -->
-        <FormField :label="$t('promo.filter_field_groups')" class="mt-300">
+        <FormField :label="$t('promo.filter_field_groups')" class="mt-8">
           <Dropdown
             :custom_droplist="true"
             :placeholder="`${$t('promo.filter_field_groups')} (${local.groups.length})`"
@@ -259,18 +259,18 @@
               <div
                 v-for="g in groupOptions"
                 :key="g.code"
-                class="pointer flex jc-sb ai-ct ph-100 dropdown-list-el"
+                class="pointer flex jc-sb ai-ct ph-2 dropdown-list-el"
                 :class="{ '-primary-100': local.groups.includes(g.code) }"
                 @click.stop="toggleGroup(g.code)"
               >
-                <span class="ml-100">{{ g.code }}{{ g.name ? ` — ${g.name}` : '' }}</span>
+                <span class="ml-2">{{ g.code }}{{ g.name ? ` — ${g.name}` : '' }}</span>
                 <FontAwesomeIcon
                   v-if="local.groups.includes(g.code)"
                   icon="check"
                   class="t-positive"
                 />
               </div>
-              <div v-if="!groupOptions.length" class="ph-100 pv-100 t-muted fs-200 ml-100">
+              <div v-if="!groupOptions.length" class="ph-2 pv-2 t-muted fs-200 ml-2">
                 {{ $t('promo.filter_no_options') }}
               </div>
             </template>
@@ -279,7 +279,7 @@
       </template>
 
       <!-- footer -->
-      <div class="fed__footer mt-400">
+      <div class="fed__footer mt-10">
         <BasicButton
           :text="$t('common.cancel')"
           class="bg-raised t-secondary"
@@ -579,7 +579,7 @@ function onClose() {
 
   &__results {
     border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-base);
     max-height: 180px;
     overflow-y: auto;
     background: var(--surface-base);
@@ -588,7 +588,7 @@ function onClose() {
   &__result-row {
     display: flex;
     align-items: center;
-    padding: 6px 10px;
+    padding: var(--space-1) var(--space-2);
     font-size: var(--fs-200);
     color: var(--text-body);
     min-height: 36px;
@@ -601,15 +601,15 @@ function onClose() {
   &__chips {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-100);
+    gap: var(--space-2);
   }
 
   &__chip {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    padding: 2px 8px;
-    border-radius: var(--radius-sm);
+    gap: var(--space-1);
+    padding: 2px var(--space-2);
+    border-radius: var(--radius-base);
     background: var(--accent-subtle);
     color: var(--text-accent);
     font-size: var(--fs-200);
@@ -643,20 +643,20 @@ function onClose() {
   &__empty-hint {
     font-size: var(--fs-200);
     color: var(--text-muted);
-    margin-top: 4px;
+    margin-top: var(--space-1);
   }
 
   &__range-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: var(--space-200);
+    gap: var(--space-5);
   }
 
   &__footer {
     display: flex;
     justify-content: flex-end;
-    gap: var(--space-200);
-    padding-top: var(--space-300);
+    gap: var(--space-5);
+    padding-top: var(--space-8);
     border-top: 1px solid var(--border-subtle);
     flex-shrink: 0;
   }

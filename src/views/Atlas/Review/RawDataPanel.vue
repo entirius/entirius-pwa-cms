@@ -1,5 +1,5 @@
 <template>
-  <aside class="raw-panel bg-base b-subtle br-100 p-300" v-if="product">
+  <aside class="raw-panel bg-base b-subtle rounded-lg p-8" v-if="product">
     <h3 class="raw-panel__heading">
       {{ $t("atlas.review.raw_data_title") }}
     </h3>
@@ -152,7 +152,7 @@ export default {
 .raw-panel {
   display: flex;
   flex-direction: column;
-  gap: var(--space-300);
+  gap: var(--space-8);
   max-height: calc(100vh - 200px);
   overflow-y: auto;
 }
@@ -160,7 +160,7 @@ export default {
 .raw-panel__heading {
   font-size: var(--fs-400);
   font-weight: 600;
-  margin: 0 0 var(--space-200);
+  margin: 0 0 var(--space-5);
   color: var(--text-body);
 }
 
@@ -168,7 +168,7 @@ export default {
   display: flex;
   flex-direction: column;
   border-bottom: 1px solid var(--border-subtle);
-  padding-bottom: var(--space-200);
+  padding-bottom: var(--space-5);
 
   &:last-child {
     border-bottom: none;
@@ -182,20 +182,20 @@ export default {
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--text-muted);
-  margin: 0 0 8px;
+  margin: 0 0 var(--space-2);
 }
 
 .raw-panel__count {
   font-weight: 400;
   text-transform: none;
   color: var(--text-muted);
-  margin-left: 4px;
+  margin-left: var(--space-1);
 }
 
 .raw-panel__grid {
   display: grid;
   grid-template-columns: max-content 1fr;
-  gap: 4px 12px;
+  gap: var(--space-1) var(--space-3);
   margin: 0;
 
   dt {
@@ -221,11 +221,11 @@ export default {
 .raw-panel__json {
   background: var(--surface-raised);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  padding: 6px 8px;
+  border-radius: var(--radius-base);
+  padding: var(--space-1) var(--space-2);
   margin: 0;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 11px;
+  font-size: var(--fs-150);
   max-height: 140px;
   overflow: auto;
   white-space: pre;
@@ -241,7 +241,7 @@ export default {
 
 .raw-panel__expand-btn {
   display: inline-block;
-  margin-top: 4px;
+  margin-top: var(--space-1);
   padding: 0;
   background: transparent;
   border: none;
@@ -261,7 +261,7 @@ export default {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .raw-panel__image-link {

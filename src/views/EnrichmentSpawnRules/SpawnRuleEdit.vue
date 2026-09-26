@@ -1,7 +1,7 @@
 <template>
-  <div class="spawn-rule-edit p-500 fs-300 t-body h-100 ov-h">
-    <div class="bg-base b-subtle br-50 flex-1 ovy-auto p-500">
-      <div class="flex ai-ct gap-200 mb-400">
+  <div class="spawn-rule-edit p-12 fs-300 t-body h-100 ov-h">
+    <div class="bg-base b-subtle rounded flex-1 ovy-auto p-12">
+      <div class="flex ai-ct gap-5 mb-10">
         <BasicButton
           text=""
           icon="arrow-left"
@@ -11,7 +11,7 @@
         <h1 class="fs-700 fw-600 m-0">
           {{ isCreate ? $t("enrichment.spawn_rules.create") : form.key }}
         </h1>
-        <div class="flex ai-ct gap-200 ml-auto">
+        <div class="flex ai-ct gap-5 ml-auto">
           <BasicButton
             v-if="!isCreate"
             :text="$t('enrichment.spawn_rules.run_now')"
@@ -120,7 +120,7 @@
             />
           </FormField>
 
-          <div class="flex ai-ct gap-300">
+          <div class="flex ai-ct gap-8">
             <Switcher
               :label="$t('enrichment.spawn_rules.col_auto')"
               :selected="form.auto"
@@ -383,7 +383,7 @@ export default {
 .spawn-rule-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--space-300);
+  gap: var(--space-8);
   align-items: end;
 }
 </style>

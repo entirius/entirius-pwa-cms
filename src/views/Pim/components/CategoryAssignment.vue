@@ -130,22 +130,22 @@ function closeDropdown() {
 .category-assignment {
   display: flex;
   flex-direction: column;
-  gap: var(--space-300);
+  gap: var(--space-8);
 }
 
 .category-assignment__chips {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-100);
+  gap: var(--space-2);
   min-height: 28px;
 }
 
 .category-chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: 4px;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-base);
   font-size: var(--fs-200);
   background: var(--surface-raised);
   color: var(--text-body);
@@ -168,7 +168,7 @@ function closeDropdown() {
   border: none;
   padding: 0;
   cursor: pointer;
-  font-size: 16px;
+  font-size: var(--fs-400);
   line-height: 1;
   color: var(--text-muted);
   transition: color 0.15s;
@@ -179,7 +179,7 @@ function closeDropdown() {
 
   &:focus-visible {
     outline: 2px solid var(--accent);
-    border-radius: 2px;
+    border-radius: var(--radius-base);
   }
 }
 
@@ -195,7 +195,7 @@ function closeDropdown() {
   z-index: 10;
   background: var(--surface-base);
   border: 1px solid var(--border-subtle);
-  border-radius: 4px;
+  border-radius: var(--radius-base);
   max-height: 240px;
   overflow-y: auto;
   box-shadow: var(--shadow-200);
@@ -205,7 +205,7 @@ function closeDropdown() {
   display: block;
   width: 100%;
   text-align: left;
-  padding: 8px var(--space-200);
+  padding: var(--space-2) var(--space-5);
   font-size: var(--fs-200);
   color: var(--text-body);
   background: none;

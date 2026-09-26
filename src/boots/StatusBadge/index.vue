@@ -23,9 +23,9 @@ defineProps({
 .status-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 2px 10px;
-  border-radius: 999px;
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
   font-size: var(--fs-200);
   font-weight: 500;
   line-height: 1.5;
@@ -40,7 +40,7 @@ defineProps({
     display: inline-block;
     width: 6px;
     height: 6px;
-    border-radius: 50%;
+    border-radius: var(--radius-full);
     flex-shrink: 0;
     background: var(--surface-disabled);
   }

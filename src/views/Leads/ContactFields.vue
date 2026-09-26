@@ -139,12 +139,12 @@ const BASES = ["legitimate_interest", "consent", "contract"];
 .contact-fields {
   display: flex;
   flex-direction: column;
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 .contact-fields__pair {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 .contact-fields .ld-input {
   min-height: 44px;
@@ -157,7 +157,7 @@ const BASES = ["legitimate_interest", "consent", "contract"];
 .contact-fields__check {
   display: flex;
   align-items: center;
-  gap: var(--space-200);
+  gap: var(--space-5);
   min-height: 44px;
 }
 </style>

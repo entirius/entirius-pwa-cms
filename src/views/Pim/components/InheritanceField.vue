@@ -100,19 +100,19 @@ export default {
 .inheritance-field__header {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-bottom: 4px;
+  gap: var(--space-1);
+  margin-bottom: var(--space-1);
 }
 
 .inheritance-badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   background: none;
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  padding: 2px 8px;
-  font-size: 11px;
+  border-radius: var(--radius-base);
+  padding: 2px var(--space-2);
+  font-size: var(--fs-150);
   color: var(--text-muted);
 
   &--inherited {
@@ -126,7 +126,7 @@ export default {
   display: inline-block;
   width: 10px;
   height: 10px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   flex-shrink: 0;
 
   &--linked {
@@ -153,6 +153,6 @@ export default {
 .inheritance-field__preview {
   margin-top: 2px;
   font-style: italic;
-  font-size: 11px;
+  font-size: var(--fs-150);
 }
 </style>

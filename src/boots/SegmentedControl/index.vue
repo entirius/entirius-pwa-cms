@@ -43,7 +43,7 @@ defineEmits(["update:modelValue"]);
   height: 28px;
   padding: 2px;
   background-color: var(--surface-raised);
-  border-radius: 50px;
+  border-radius: var(--radius-full);
   gap: 2px;
 
   &__option {
@@ -51,12 +51,12 @@ defineEmits(["update:modelValue"]);
     align-items: center;
     justify-content: center;
     height: 100%;
-    padding: 0 0.75rem;
-    font-size: 12px;
+    padding: 0 var(--space-3);
+    font-size: var(--fs-200);
     font-weight: 400;
     white-space: nowrap;
     border: none;
-    border-radius: 50px;
+    border-radius: var(--radius-full);
     background: transparent;
     color: var(--text-secondary);
     cursor: pointer;

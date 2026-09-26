@@ -1,12 +1,12 @@
 <template>
   <div class="basic-date-picker inline-block">
-    <p v-if="label && label.length" class="mb-100">{{ label }}</p>
+    <p v-if="label && label.length" class="mb-2">{{ label }}</p>
     <div class="relative">
-      <div class="flex ai-ct gap-100">
+      <div class="flex ai-ct gap-2">
         <BasicButton
           :icon="`${!value ? 'plus' : 'edit'}`"
           :text="`${value ?? $t('routes.set_new')}`"
-          class="bg-accent-fill t-on-accent-fill fs-100 lh-init pl-100 pr-100 pt-50 pb-50 br-50"
+          class="bg-accent-fill t-on-accent-fill fs-100 lh-init pl-2 pr-2 pt-1 pb-1 rounded"
           @click="
             () => {
               visible = true;
@@ -107,14 +107,14 @@ export default {
     color: inherit;
     font-size: inherit;
     border: 1px solid var(--border-default);
-    border-radius: var(--space-50);
+    border-radius: var(--radius-base);
     box-shadow: unset;
   }
   .flatpickr-day.selected,
   .flatpickr-day.startRange,
   .flatpickr-day.endRange {
     background-color: var(--accent-fill);
-    border-radius: var(--space-50);
+    border-radius: var(--radius-base);
     box-shadow: unset;
   }
 
@@ -126,7 +126,7 @@ export default {
     background: var(--accent-fill);
     color: var(--text-strong);
     font-weight: 600;
-    border-radius: var(--space-50);
+    border-radius: var(--radius-base);
     border: none;
 
     &.inRange {
@@ -139,7 +139,7 @@ export default {
     border: none;
   }
   .flatpickr-day:hover {
-    border-radius: var(--space-50);
+    border-radius: var(--radius-base);
   }
   .flatpickr-calendar.hasTime .flatpickr-time {
     border: 0;

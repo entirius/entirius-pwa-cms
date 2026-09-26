@@ -1,16 +1,16 @@
 <template>
   <div class="stock-tab" :class="{ 'stock-tab--embedded': embedded }">
-    <div v-if="loading" class="flex-center pv-500">
+    <div v-if="loading" class="flex-center pv-12">
       <Loader />
     </div>
 
-    <div v-else-if="rows.length === 0" class="pv-500">
+    <div v-else-if="rows.length === 0" class="pv-12">
       <EmptyState :title="$t('stock.no_warehouses')" icon="warehouse" />
     </div>
 
     <template v-else>
-      <div v-if="dirtyCount > 0" class="stock-tab__actions flex ai-ct jc-fe gap-200 mb-200">
-        <span class="bg-warning-subtle t-warning fs-200 ph-100 br-50">
+      <div v-if="dirtyCount > 0" class="stock-tab__actions flex ai-ct jc-fe gap-5 mb-5">
+        <span class="bg-warning-subtle t-warning fs-200 ph-2 rounded">
           {{ $t("stock.unsaved") }}: {{ dirtyCount }}
         </span>
         <BasicButton
@@ -149,7 +149,7 @@ export default {
 
 <style lang="scss" scoped>
 .stock-tab--embedded {
-  padding: var(--space-300);
+  padding: var(--space-8);
 }
 
 .stock-tab__table {
@@ -158,7 +158,7 @@ export default {
 
   th,
   td {
-    padding: 10px 12px;
+    padding: var(--space-2) var(--space-3);
     text-align: left;
     border-bottom: 1px solid var(--border-subtle);
   }
@@ -184,7 +184,7 @@ export default {
 }
 
 .stock-tab__actions {
-  padding-bottom: var(--space-200);
+  padding-bottom: var(--space-5);
   border-bottom: 1px solid var(--border-subtle);
 }
 

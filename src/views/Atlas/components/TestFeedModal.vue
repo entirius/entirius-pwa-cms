@@ -7,8 +7,8 @@
         @click.self="$emit('close')"
         data-testid="test-feed-modal"
       >
-        <div class="test-feed-container bg-base b-subtle br-100 p-400">
-          <div class="flex ai-ct jc-sb mb-200">
+        <div class="test-feed-container bg-base b-subtle rounded-lg p-10">
+          <div class="flex ai-ct jc-sb mb-5">
             <h2 class="fs-400 fw-600">{{ $t("atlas.feeds.test.title") }}</h2>
             <button
               class="test-feed__close"
@@ -36,7 +36,7 @@
           </div>
 
           <div v-else-if="!busy && Array.isArray(result?.raw_products)">
-            <p class="t-muted fs-200 mb-200">
+            <p class="t-muted fs-200 mb-5">
               {{
                 $t("atlas.feeds.test.results_count", {
                   count: result.raw_products.length,
@@ -47,10 +47,10 @@
               <div
                 v-for="(p, i) in result.raw_products"
                 :key="i"
-                class="test-feed__row b-subtle br-sm p-200 mb-100"
+                class="test-feed__row b-subtle rounded p-5 mb-2"
                 :data-testid="`test-feed-row-${i}`"
               >
-                <div class="flex ai-ct gap-200 flex-wrap fs-200">
+                <div class="flex ai-ct gap-5 flex-wrap fs-200">
                   <strong>{{ p.external_id }}</strong>
                   <span class="t-body">{{ p.name }}</span>
                   <span v-if="p.cost" class="t-secondary">
@@ -97,7 +97,7 @@ export default {
   align-items: center;
   justify-content: center;
   z-index: 100;
-  padding: var(--space-300);
+  padding: var(--space-8);
 }
 .test-feed-container {
   width: min(720px, 100%);
@@ -108,7 +108,7 @@ export default {
 .test-feed__close {
   background: transparent;
   border: none;
-  font-size: 18px;
+  font-size: var(--fs-500);
   color: var(--text-muted);
   cursor: pointer;
 }

@@ -1,7 +1,7 @@
 <template>
-  <div class="stance-switcher mt-200 fs-200">
-    <div class="mb-100">
-      <span v-if="label" class="mr-100">{{ label }}</span>
+  <div class="stance-switcher mt-5 fs-200">
+    <div class="mb-2">
+      <span v-if="label" class="mr-2">{{ label }}</span>
       <span class="current-value t-accent underline">{{
         getCurrentLabel
       }}</span>
@@ -84,7 +84,7 @@ export default {
   height: 1rem;
   background: var(--surface-inverse);
   outline: 4px solid var(--surface-base);
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   cursor: pointer;
 }
 
@@ -92,7 +92,7 @@ export default {
   width: 1rem;
   height: 1rem;
   background: var(--surface-inverse);
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   cursor: pointer;
 }
 </style>

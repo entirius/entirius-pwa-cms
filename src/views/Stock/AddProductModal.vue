@@ -1,9 +1,9 @@
 <template>
   <Confirmation-modal :visible="true" @reject="$emit('close')">
     <template #description>
-      <h3 class="fs-500 fw-600 mb-300">{{ $t("stock.add_products_title") }}</h3>
+      <h3 class="fs-500 fw-600 mb-8">{{ $t("stock.add_products_title") }}</h3>
 
-      <div class="add-product__toolbar flex ai-ct gap-200 mb-200">
+      <div class="add-product__toolbar flex ai-ct gap-5 mb-5">
         <BasicInput
           v-model="search"
           :placeholder="$t('stock.search_sku')"
@@ -18,11 +18,11 @@
         />
       </div>
 
-      <div v-if="loading" class="flex-center pv-300">
+      <div v-if="loading" class="flex-center pv-8">
         <Loader />
       </div>
 
-      <div v-else-if="products.length === 0" class="pv-300 fs-300 t-muted">
+      <div v-else-if="products.length === 0" class="pv-8 fs-300 t-muted">
         {{ $t("stock.no_products_found") }}
       </div>
 
@@ -34,7 +34,7 @@
           :class="{ 'add-product__row--selected': selectedSkus.has(p.sku) }"
           @click="toggleSku(p.sku)"
         >
-          <div class="flex ai-ct gap-200">
+          <div class="flex ai-ct gap-5">
             <FontAwesomeIcon
               :icon="selectedSkus.has(p.sku) ? 'check-square' : 'square'"
               :class="selectedSkus.has(p.sku) ? 't-accent' : 't-muted'"
@@ -50,7 +50,7 @@
         </div>
       </div>
 
-      <div v-if="totalCount > pageSize" class="mt-200">
+      <div v-if="totalCount > pageSize" class="mt-5">
         <Pagination
           :current="currentPage"
           :total="totalCount"
@@ -154,11 +154,11 @@ export default {
   max-height: 350px;
   overflow-y: auto;
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
 }
 
 .add-product__row {
-  padding: 10px var(--space-200);
+  padding: var(--space-2) var(--space-5);
   border-bottom: 1px solid var(--border-subtle);
   cursor: pointer;
 

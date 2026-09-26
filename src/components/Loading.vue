@@ -57,7 +57,7 @@ export default {
   .loader {
     width: 100px;
     height: 100px;
-    margin: 20px;
+    margin: var(--space-5);
     display: inline-block;
     animation: loader 0.45s infinite;
     .svg-path {

@@ -76,7 +76,7 @@ onMounted(() => load());
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 .companies__head {
   flex-wrap: wrap;
@@ -108,9 +108,9 @@ onMounted(() => load());
 .company-row {
   display: flex;
   flex-direction: column;
-  gap: var(--space-100);
+  gap: var(--space-2);
   min-height: 44px;
-  padding: var(--space-200);
+  padding: var(--space-5);
   border-bottom: 1px solid var(--border-subtle);
   color: inherit;
   text-decoration: none;

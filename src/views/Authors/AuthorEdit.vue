@@ -1,5 +1,5 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h relative">
+  <div class="p-12 fs-300 t-body h-100 ov-h relative">
     <Teleport to="#authors-toolbar-left" defer>
       <BasicButton
         text=""
@@ -30,14 +30,14 @@
       />
     </Teleport>
 
-    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500 relative">
+    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12 relative">
       <Loader v-if="loading" />
 
       <template v-else>
         <!-- Basic info -->
-        <div class="author-edit__section mb-400">
-          <div class="section-label mb-300">{{ $t("pim.basic_info") }}</div>
-          <div class="flex gap-300 mb-300" style="flex-wrap: wrap">
+        <div class="author-edit__section mb-10">
+          <div class="section-label mb-8">{{ $t("pim.basic_info") }}</div>
+          <div class="flex gap-8 mb-8" style="flex-wrap: wrap">
             <BasicInput
               v-model="form.name"
               :label="$t('authors.name')"
@@ -59,11 +59,11 @@
           />
 
           <!-- Photo -->
-          <div class="mt-300">
-            <label class="fs-200 fw-600 t-muted tt-upper mb-100 db">
+          <div class="mt-8">
+            <label class="fs-200 fw-600 t-muted tt-upper mb-2 db">
               {{ $t("authors.photo") }}
             </label>
-            <div class="flex ai-ct gap-300">
+            <div class="flex ai-ct gap-8">
               <div class="author-photo-preview pointer" @click="$refs.photoController.init()">
                 <img
                   v-if="form.photo_url"
@@ -72,10 +72,10 @@
                   class="author-photo-preview__img"
                 />
                 <div v-else class="author-photo-preview__placeholder">
-                  <FontAwesomeIcon icon="user" class="t-muted" style="font-size: 24px" />
+                  <FontAwesomeIcon icon="user" class="t-muted" style="font-size: var(--fs-600)" />
                 </div>
               </div>
-              <div class="flex ai-ct gap-100">
+              <div class="flex ai-ct gap-2">
                 <BasicButton
                   :text="form.photo_uid ? $t('common.edit') : $t('common.select')"
                   class="btn-outline"
@@ -94,13 +94,13 @@
         </div>
 
         <!-- Translated fields -->
-        <div class="author-edit__section mb-400">
-          <div class="section-label mb-300">{{ $t("pim.translations") }}</div>
+        <div class="author-edit__section mb-10">
+          <div class="section-label mb-8">{{ $t("pim.translations") }}</div>
 
           <div
             v-for="field in t9nFields"
             :key="field.key"
-            class="translation-field mb-300"
+            class="translation-field mb-8"
           >
             <div class="translation-field__header">
               <label class="fs-200 fw-600 t-muted tt-upper">
@@ -120,9 +120,9 @@
         </div>
 
         <!-- Contact info -->
-        <div class="author-edit__section mb-400">
-          <div class="section-label mb-300">{{ $t("dp.contact") }}</div>
-          <div class="flex gap-300 mb-300" style="flex-wrap: wrap">
+        <div class="author-edit__section mb-10">
+          <div class="section-label mb-8">{{ $t("dp.contact") }}</div>
+          <div class="flex gap-8 mb-8" style="flex-wrap: wrap">
             <BasicInput
               v-model="form.contact_email"
               :label="$t('authors.contact_email')"
@@ -146,11 +146,11 @@
         </div>
 
         <!-- Social profiles -->
-        <div class="author-edit__section mb-400">
-          <div class="section-label mb-300">
+        <div class="author-edit__section mb-10">
+          <div class="section-label mb-8">
             {{ $t("authors.social_profiles") }}
           </div>
-          <div class="flex gap-300" style="flex-wrap: wrap">
+          <div class="flex gap-8" style="flex-wrap: wrap">
             <BasicInput
               v-for="platform in knownPlatforms"
               :key="platform"
@@ -193,11 +193,11 @@
     >
       <template #description>
         <p>{{ $t("authors.delete_confirm") }}</p>
-        <p v-if="form.post_count" class="mt-200 t-secondary fs-200">
+        <p v-if="form.post_count" class="mt-5 t-secondary fs-200">
           {{ $t("authors.post_count") }}: <strong>{{ form.post_count }}</strong>
         </p>
-        <div v-if="reassignOptions.length" class="mt-300">
-          <p class="fs-200 fw-600 mb-100">{{ $t("authors.reassign_label") }}</p>
+        <div v-if="reassignOptions.length" class="mt-8">
+          <p class="fs-200 fw-600 mb-2">{{ $t("authors.reassign_label") }}</p>
           <Dropdown
             :values="reassignOptions"
             :selected="reassignTo ? [reassignTo] : []"
@@ -512,8 +512,8 @@ export default {
 <style lang="scss" scoped>
 .author-edit__section {
   border: 1px solid var(--border-subtle);
-  border-radius: 6px;
-  padding: var(--space-300);
+  border-radius: var(--radius-base);
+  padding: var(--space-8);
 }
 
 .translation-field {
@@ -521,12 +521,12 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 6px;
+    margin-bottom: var(--space-1);
   }
 
   &__btn {
     line-height: 1;
-    padding: 4px 10px;
+    padding: var(--space-1) var(--space-2);
     font-size: var(--fs-200);
   }
 }
@@ -539,7 +539,7 @@ export default {
 .author-photo-preview {
   width: 80px;
   height: 80px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
   border: 1px solid var(--border-subtle);
   overflow: hidden;
   flex-shrink: 0;
@@ -566,11 +566,11 @@ export default {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   border: none;
   background: var(--negative-subtle);
   color: var(--negative);
-  font-size: 14px;
+  font-size: var(--fs-300);
   transition: background-color 0.15s;
 
   &:hover {
@@ -595,8 +595,8 @@ export default {
 }
 
 @media only screen and (max-width: 768px) {
-  .p-500 {
-    padding: 16px !important;
+  .p-12 {
+    padding: var(--space-4) !important;
   }
 
 }

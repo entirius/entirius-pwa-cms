@@ -1,8 +1,8 @@
 <template>
-  <div class="products-tab p-300 ovy-auto h-100 fs-300">
-    <div class="flex ai-ct jc-sb mb-200 flex-wrap gap-200">
+  <div class="products-tab p-8 ovy-auto h-100 fs-300">
+    <div class="flex ai-ct jc-sb mb-5 flex-wrap gap-5">
       <h2 class="fs-400 fw-600">{{ $t("atlas.tabs.products") }}</h2>
-      <div class="flex ai-ct flex-wrap gap-100">
+      <div class="flex ai-ct flex-wrap gap-2">
         <FilterChip
           v-for="opt in statusOptions"
           :key="opt.value"
@@ -21,7 +21,7 @@
       </div>
     </div>
 
-    <div class="products-filters mb-300">
+    <div class="products-filters mb-8">
       <BasicInput
         v-model="filters.search"
         :placeholder="$t('atlas.products.filters.search_placeholder')"
@@ -118,7 +118,7 @@
         <span class="fs-200 t-secondary">{{ formatDate(value) }}</span>
       </template>
       <template #cell-actions="{ row }">
-        <div class="flex ai-ct gap-100" @click.stop>
+        <div class="flex ai-ct gap-2" @click.stop>
           <!-- etap-12 #19: per-row quick actions for new/queued SPs, complementary to the bulk bar. -->
           <button
             v-if="canApprove(row)"
@@ -180,7 +180,7 @@
     <Pagination
       v-if="!loading && totalCount > pageSize"
       :pagination="paginationState"
-      class="mt-300"
+      class="mt-8"
       @onChangePage="onPageChange"
     />
 
@@ -313,12 +313,12 @@
         </p>
         <div
           v-if="repushTarget?.pushed_to_channel_idxs?.length"
-          class="bg-warning-subtle t-warning p-200 br-sm mt-200"
+          class="bg-warning-subtle t-warning p-5 rounded mt-5"
         >
-          <p class="fs-200 fw-600 mb-100">
+          <p class="fs-200 fw-600 mb-2">
             {{ $t("atlas.products.affected_channels") }}
           </p>
-          <div class="flex ai-ct flex-wrap gap-100">
+          <div class="flex ai-ct flex-wrap gap-2">
             <StatusBadge
               v-for="ch in repushTarget.pushed_to_channel_idxs"
               :key="ch"
@@ -950,7 +950,7 @@ export default {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 .products-filters__search {
   flex: 1 1 220px;
@@ -969,12 +969,12 @@ export default {
 .products-filters__clear {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   background: transparent;
   border: 1px solid var(--border-subtle);
   color: var(--text-secondary);
-  border-radius: var(--radius-sm);
-  padding: 6px 12px;
+  border-radius: var(--radius-base);
+  padding: var(--space-1) var(--space-3);
   font-size: var(--fs-200);
   cursor: pointer;
 
@@ -996,19 +996,19 @@ export default {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: var(--space-300);
-  padding-bottom: var(--space-300);
+  gap: var(--space-8);
+  padding-bottom: var(--space-8);
 }
 
 .products-detail__actions {
   flex-shrink: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-200);
-  padding: var(--space-200) var(--space-300);
+  gap: var(--space-5);
+  padding: var(--space-5) var(--space-8);
   /* Negative margins make the footer span the panel's full width and sit flush
      against its bottom edge, past the panel padding. */
-  margin: 0 calc(-1 * var(--space-300)) calc(-1 * var(--space-300));
+  margin: 0 calc(-1 * var(--space-8)) calc(-1 * var(--space-8));
   background: var(--surface-base);
   border-top: 1px solid var(--border-subtle);
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.04);
@@ -1017,12 +1017,12 @@ export default {
 .detail-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   height: 32px;
-  padding: 0 14px;
+  padding: 0 var(--space-3);
   font-size: var(--fs-200);
   font-weight: 600;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   border: 1px solid;
   cursor: pointer;
   transition: filter 0.15s ease;
@@ -1068,7 +1068,7 @@ export default {
 .products-detail__find-in-pim {
   display: flex;
   flex-direction: column;
-  gap: var(--space-200);
+  gap: var(--space-5);
   align-items: flex-start;
 }
 
@@ -1079,7 +1079,7 @@ export default {
   width: 28px;
   height: 28px;
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   cursor: pointer;
 }
 </style>

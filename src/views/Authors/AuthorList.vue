@@ -1,15 +1,15 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
     >
-      <div class="flex ai-ct mb-400">
+      <div class="flex ai-ct mb-10">
         <h1 class="fs-700 fw-600">{{ $t("authors.title") }}</h1>
       </div>
 
       <div
         v-if="unavailable"
-        class="flex ai-ct jc-ct gap-200 p-500 t-muted"
+        class="flex ai-ct jc-ct gap-5 p-12 t-muted"
         style="min-height: 14rem; flex-direction: column"
       >
         <p class="fs-400 fw-600 t-secondary">
@@ -21,7 +21,7 @@
       </div>
 
       <template v-if="!unavailable">
-      <div class="flex ai-ct mb-400">
+      <div class="flex ai-ct mb-10">
         <MobileFilterPanel
           :active-count="activeFilterCount"
           :trigger-label="$t('builder.filters')"
@@ -85,7 +85,7 @@
       <Pagination
         v-if="totalCount > pageSize"
         :pagination="paginationState"
-        class="mt-200"
+        class="mt-5"
         @onChangePage="onPageChange"
       />
     </template>
@@ -233,8 +233,8 @@ export default {
 .author-list__toolbar {
   display: flex;
   align-items: center;
-  gap: var(--space-200);
-  margin-bottom: var(--space-400);
+  gap: var(--space-5);
+  margin-bottom: var(--space-10);
   flex-wrap: wrap;
 }
 .author-list__search {
@@ -250,8 +250,8 @@ export default {
 }
 
 @media only screen and (max-width: 768px) {
-  .p-500 {
-    padding: 16px !important;
+  .p-12 {
+    padding: var(--space-4) !important;
   }
 }
 </style>

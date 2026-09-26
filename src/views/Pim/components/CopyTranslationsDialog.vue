@@ -140,7 +140,7 @@ export default {
 .copy-dialog {
   background: var(--surface-base);
   border-radius: var(--radius-lg);
-  padding: 24px;
+  padding: var(--space-6);
   min-width: 360px;
   max-width: 480px;
   box-shadow: var(--shadow-lg);
@@ -148,40 +148,40 @@ export default {
 }
 
 .copy-dialog__title {
-  margin: 0 0 8px;
+  margin: 0 0 var(--space-2);
   font-size: var(--fs-500);
   font-weight: 600;
   color: var(--text-body);
 }
 
 .copy-dialog__desc {
-  margin: 0 0 16px;
+  margin: 0 0 var(--space-4);
 }
 
 .copy-dialog__options {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 20px;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
 }
 
 .copy-dialog__option {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   cursor: pointer;
   font-size: var(--fs-300);
   color: var(--text-body);
 }
 
 .copy-dialog__lang-select {
-  margin-left: 24px;
+  margin-left: var(--space-6);
 }
 
 .copy-dialog__select {
-  padding: 6px 10px;
+  padding: var(--space-1) var(--space-2);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   background: var(--surface-base);
   color: var(--text-body);
   font-size: var(--fs-300);
@@ -190,12 +190,12 @@ export default {
 .copy-dialog__actions {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .pim-btn {
-  padding: 8px 16px;
-  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-base);
   border: 1px solid var(--border-subtle);
   cursor: pointer;
   font-size: var(--fs-300);

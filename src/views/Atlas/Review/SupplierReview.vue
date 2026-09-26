@@ -1,13 +1,13 @@
 <template>
   <div class="supplier-review h-100 ovy-auto">
-    <div class="supplier-review__toolbar p-300 b-subtle bb-100 bg-base">
-      <div class="flex ai-ct gap-300 flex-wrap">
+    <div class="supplier-review__toolbar p-8 b-subtle bb-100 bg-base">
+      <div class="flex ai-ct gap-8 flex-wrap">
         <SegmentedControl
           v-model="activeMode"
           :options="modeOptions"
           data-testid="review-mode-switch"
         />
-        <div class="flex ai-ct gap-200 ml-auto flex-wrap">
+        <div class="flex ai-ct gap-5 ml-auto flex-wrap">
           <BasicInput
             v-model="filters.search"
             :placeholder="$t('common.start_typing')"
@@ -28,7 +28,7 @@
       </div>
       <div
         v-if="activeMode !== 'events' && activeMode !== 'updated'"
-        class="flex ai-ct flex-wrap gap-100 mt-200"
+        class="flex ai-ct flex-wrap gap-2 mt-5"
       >
         <FilterChip
           v-for="opt in statusOptions"
@@ -50,12 +50,12 @@
       />
       <ListMode
         v-else-if="activeMode === 'list'"
-        class="p-300"
+        class="p-8"
         :filters="filters"
         :kind="kind"
       />
-      <EventsMode v-else-if="activeMode === 'events'" class="p-300" :filters="filters" />
-      <UpdatedMode v-else class="p-300" :filters="filters" :kind="kind" />
+      <EventsMode v-else-if="activeMode === 'events'" class="p-8" :filters="filters" />
+      <UpdatedMode v-else class="p-8" :filters="filters" :kind="kind" />
     </div>
   </div>
 </template>

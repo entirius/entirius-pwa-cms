@@ -44,7 +44,7 @@
             </FormField>
 
             <FormField :label="$t('enrichment.spawn.languages')">
-              <div class="spawn-modal__langs flex ai-ct gap-200 flex-wrap">
+              <div class="spawn-modal__langs flex ai-ct gap-5 flex-wrap">
                 <label
                   v-for="lang in availableLanguages"
                   :key="lang"
@@ -80,7 +80,7 @@
             </FormField>
 
             <FormField :label="$t('enrichment.spawn.scope')">
-              <div class="flex flex-column gap-100">
+              <div class="flex flex-column gap-2">
                 <label class="spawn-modal__scope fs-200">
                   <input
                     type="radio"
@@ -326,12 +326,12 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-300);
+  padding: var(--space-8);
 }
 .spawn-modal__box {
   width: 100%;
   max-width: 520px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
   box-shadow: var(--shadow-md);
   display: flex;
   flex-direction: column;
@@ -340,23 +340,23 @@ export default {
 .spawn-modal__header {
   display: flex;
   align-items: center;
-  gap: var(--space-100);
-  padding: var(--space-300);
+  gap: var(--space-2);
+  padding: var(--space-8);
 }
 .spawn-modal__body {
-  padding: var(--space-300);
+  padding: var(--space-8);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: var(--space-300);
+  gap: var(--space-8);
 }
 .spawn-modal__lang {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-50);
-  padding: 4px 8px;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   cursor: pointer;
   &--on {
     border-color: var(--accent);
@@ -366,7 +366,7 @@ export default {
 .spawn-modal__scope {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-100);
+  gap: var(--space-2);
 }
 .spawn-modal__summary {
   margin: 0;
@@ -374,14 +374,14 @@ export default {
 .spawn-modal__footer {
   display: flex;
   justify-content: flex-end;
-  gap: var(--space-100);
-  padding: var(--space-300);
+  gap: var(--space-2);
+  padding: var(--space-8);
 }
 .spawn-modal__btn {
   height: var(--elem-height);
-  padding: 0 16px;
+  padding: 0 var(--space-4);
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   font-size: var(--fs-200);
   cursor: pointer;
   &:disabled {

@@ -1,8 +1,8 @@
 <template>
   <div
-    class="bulk-bar bg-accent-subtle flex ai-ct jc-sb pl-400 pr-400 pt-200 pb-200"
+    class="bulk-bar bg-accent-subtle flex ai-ct jc-sb pl-10 pr-10 pt-5 pb-5"
   >
-    <div class="flex ai-ct gap-300">
+    <div class="flex ai-ct gap-8">
       <span class="fs-300 fw-600 t-accent">
         {{ count }} {{ $t(selectedLabelKey) }}
       </span>
@@ -57,8 +57,8 @@ defineEmits(["action", "clear"]);
 
 <style lang="scss" scoped>
 .bulk-bar {
-  border-radius: 6px;
-  margin-bottom: 16px;
+  border-radius: var(--radius-base);
+  margin-bottom: var(--space-4);
 }
 .bulk-bar__dropdown {
   min-width: 180px;

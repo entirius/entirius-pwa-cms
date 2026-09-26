@@ -10,10 +10,10 @@
       "
     >
       <div class="accordion-label">
-        <span class="ml-100" v-if="header">{{ header }}</span>
+        <span class="ml-2" v-if="header">{{ header }}</span>
         <slot v-if="!header" name="accordion-custom-head"></slot>
       </div>
-      <i :class="`icon-${!open ? 'plus' : 'minus'}`" class="js-fe mr-100"></i>
+      <i :class="`icon-${!open ? 'plus' : 'minus'}`" class="js-fe mr-2"></i>
     </div>
     <div class="accordion-body" v-if="open">
       <slot name="accordion-custom-body"></slot>

@@ -1,11 +1,11 @@
 <template>
   <div
-    class="fs-200 p-500 flex-column jc-sb gap-400 image-gallery"
+    class="fs-200 p-12 flex-column jc-sb gap-10 image-gallery"
     style="height: 100%"
   >
     <!-- Changed to 100vh -->
     <div
-      class="fg-1 flex-column gap-400"
+      class="fg-1 flex-column gap-10"
       style="min-height: 0; overflow: hidden"
     >
       <FloatingActions
@@ -19,12 +19,12 @@
         "
       />
       <div
-        class="t-secondary fg-1 ovy-auto flex-column gap-300"
+        class="t-secondary fg-1 ovy-auto flex-column gap-8"
         v-if="mode === 'tag'"
       >
         <div>
-          <p class="fs-200 t-secondary mb-100">{{ $t("gallery.tag_list") }}</p>
-          <div class="flex wrap ai-ct gap-100 mb-200">
+          <p class="fs-200 t-secondary mb-2">{{ $t("gallery.tag_list") }}</p>
+          <div class="flex wrap ai-ct gap-2 mb-5">
             <p
               v-for="tag in tags"
               :key="`manage-tag-${tag.slug}`"
@@ -45,7 +45,7 @@
             </p>
             <button
               v-if="selected_tags.length"
-              class="tag-chip tag-chip--danger pointer flex ai-ct gap-50"
+              class="tag-chip tag-chip--danger pointer flex ai-ct gap-1"
               @click="deleteSelectedTags()"
             >
               <FontAwesomeIcon icon="trash-can" />
@@ -53,26 +53,26 @@
             </button>
           </div>
         </div>
-        <div class="flex ai-ct gap-100" style="max-width: 400px">
+        <div class="flex ai-ct gap-2" style="max-width: 400px">
           <BasicInput
             class="bg-base lh-base-elem fg-1 tag-input"
             :label="$t('gallery.add_new_tag')"
             v-model="new_tag_input"
           />
           <button
-            class="tag-add-btn bg-accent-fill t-on-accent-fill br-50 pointer"
+            class="tag-add-btn bg-accent-fill t-on-accent-fill rounded pointer"
             @click="addNewTag()"
           >
             <FontAwesomeIcon icon="plus" />
           </button>
         </div>
       </div>
-      <div v-if="mode === 'edit_tag'" class="flex-column gap-300">
+      <div v-if="mode === 'edit_tag'" class="flex-column gap-8">
         <div>
-          <p class="fs-200 t-secondary mb-100">
+          <p class="fs-200 t-secondary mb-2">
             {{ $t("gallery.select_tags") }}
           </p>
-          <div v-if="tags.length" class="flex wrap ai-ct gap-100 mb-200">
+          <div v-if="tags.length" class="flex wrap ai-ct gap-2 mb-5">
             <p
               v-for="tag in tags"
               :key="`edit-tag-${tag.slug}`"
@@ -100,7 +100,7 @@
               {{ tag.label }}
             </p>
           </div>
-          <div v-else class="flex ai-ct gap-100 p-200 br-50 b-default bg-raised t-muted fs-200">
+          <div v-else class="flex ai-ct gap-2 p-5 rounded b-default bg-raised t-muted fs-200">
             <FontAwesomeIcon icon="circle-info" />
             <span>{{ $t("gallery.no_tags_yet") }}</span>
             <button
@@ -110,7 +110,7 @@
             >{{ $t("gallery.go_to_manage_tags") }}</button>
           </div>
         </div>
-        <div class="flex ai-ct gap-100">
+        <div class="flex ai-ct gap-2">
           <BasicInput
             class="bg-base lh-base-elem fg-1 tag-input"
             :label="$t('gallery.quick_add_tag')"
@@ -118,13 +118,13 @@
             @keydown.enter.native="quickAddTag"
           />
           <button
-            class="tag-add-btn bg-accent-fill t-on-accent-fill br-50 pointer"
+            class="tag-add-btn bg-accent-fill t-on-accent-fill rounded pointer"
             @click="quickAddTag"
           >
             <FontAwesomeIcon icon="plus" />
           </button>
         </div>
-        <div class="flex gap-100">
+        <div class="flex gap-2">
           <button
             class="gallery-action-btn bg-accent-fill b-accent t-on-accent-fill"
             @click="
@@ -144,10 +144,10 @@
         </div>
       </div>
       <div
-        class="br-50 t-secondary fg-1 ovy-auto flex-column"
+        class="rounded t-secondary fg-1 ovy-auto flex-column"
         v-if="mode === 'add_new'"
       >
-        <div class="mb-400">
+        <div class="mb-10">
           <div
             class="gallery-dropzone"
             :class="{ 'gallery-dropzone--dragover': isDraggingOver }"
@@ -175,7 +175,7 @@
           />
         </div>
         <div
-          class="fg-1 ovy-auto grid grid-col-2 gap-500 bg-base p-500 br-50 b-subtle"
+          class="fg-1 ovy-auto grid grid-col-2 gap-12 bg-base p-12 rounded b-subtle"
           v-if="filePreview"
         >
           <div>
@@ -185,14 +185,14 @@
             <div>
               <p class="fs-100 t-info">Optionals</p>
               <BasicInput
-                class="bg-base br-50 t-secondary mt-300 lh-base-elem"
+                class="bg-base rounded t-secondary mt-8 lh-base-elem"
                 :label="'Picture alt.'"
                 v-model="meta.alt"
               />
-              <p class="fs-200 t-secondary mt-200 mb-100">
+              <p class="fs-200 t-secondary mt-5 mb-2">
                 {{ $t("gallery.select_tags") }}
               </p>
-              <div class="flex wrap ai-ct gap-100">
+              <div class="flex wrap ai-ct gap-2">
                 <p
                   v-for="tag in tags"
                   :key="`upload-tag-${tag.slug}`"
@@ -216,14 +216,14 @@
                 v-if="filePreview"
                 :text="$t('gallery.upload')"
                 @click="upload_File({})"
-                class="br-50 jc-ct mt-200"
+                class="rounded jc-ct mt-5"
                 :class="[
                   filePreview === null
                     ? 't-muted b-default bg-raised'
                     : 't-on-accent-fill b-accent bg-accent-fill',
                 ]"
               />
-              <div class="mt-200"></div>
+              <div class="mt-5"></div>
             </div>
           </div>
         </div>
@@ -234,7 +234,7 @@
         style="min-height: 0"
         v-if="gallery && mode === 'read'"
       >
-        <div class="flex ai-ct jc-sb gap-200 mb-200">
+        <div class="flex ai-ct jc-sb gap-5 mb-5">
           <MobileFilterPanel
             :active-count="mode === 'read' ? selected_tags.length : 0"
             :trigger-label="$t('gallery.filter_by_tag')"
@@ -273,10 +273,10 @@
               <FontAwesomeIcon icon="xmark" />
             </button>
           </MobileFilterPanel>
-          <div class="flex gap-100 fs-0">
+          <div class="flex gap-2 fs-0">
             <Dropdown
               :placeholder="$t('common.sort_by')"
-              class="bg-base br-50 b-default t-body js-e shadow-down"
+              class="bg-base rounded b-default t-body js-e shadow-down"
               :values="[
                 { label: $t('common.oldest_first'), value: 'created_at' },
                 { label: $t('common.newest_first'), value: '-created_at' },
@@ -293,7 +293,7 @@
               "
             />
             <Dropdown
-              class="bg-base br-50 b-default t-body js-e shadow-down"
+              class="bg-base rounded b-default t-body js-e shadow-down"
               :values="[
                 { label: 18, value: 18 },
                 { label: 36, value: 36 },
@@ -313,7 +313,7 @@
           </div>
         </div>
         <div
-          class="gallery-grid bg-base b-subtle br-50 p-200"
+          class="gallery-grid bg-base b-subtle rounded p-5"
           v-out="
             () => {
               selected = null;
@@ -324,12 +324,12 @@
           <div
             v-for="(image, index) in gallery[current_view_page]"
             :class="[
-              'gallery-card relative bg-hover br-50 b-default b-default-hover pointer',
+              'gallery-card relative bg-hover rounded b-default b-default-hover pointer',
               { 'gallery-card--selected': selected === image.uid },
             ]"
             @click="selected = selected === image.uid ? null : image.uid"
           >
-            <div class="ov-h h-100 w-100 br-50">
+            <div class="ov-h h-100 w-100 rounded">
               <HoverMe
                 :text="
                   image.meta && image.meta.fileName
@@ -829,9 +829,9 @@ $radius: 5px;
   display: inline-flex;
   align-items: center;
   height: 28px;
-  padding: 0 0.75rem;
-  font-size: 12px;
-  border-radius: 50px;
+  padding: 0 var(--space-3);
+  font-size: var(--fs-200);
+  border-radius: var(--radius-full);
   border: 1px solid var(--border-default);
   background-color: var(--surface-base);
   color: var(--text-body);
@@ -853,7 +853,7 @@ $radius: 5px;
   }
   &--danger {
     color: var(--negative);
-    gap: 0.25rem;
+    gap: var(--space-1);
     &:hover {
       background-color: var(--negative-fill);
       border-color: var(--negative);
@@ -881,9 +881,9 @@ $radius: 5px;
 .gallery-action-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.375rem;
+  gap: var(--space-2);
   height: $btn-height;
-  padding: 0 1rem;
+  padding: 0 var(--space-4);
   font-size: var(--fs-200);
   border-radius: $radius;
   cursor: pointer;
@@ -895,10 +895,10 @@ $radius: 5px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 32px 16px;
+  gap: var(--space-1);
+  padding: var(--space-8) var(--space-4);
   border: 2px dashed var(--border-default);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
   cursor: pointer;
   transition: border-color 0.15s ease, background-color 0.15s ease;
   &:hover,
@@ -922,8 +922,8 @@ $radius: 5px;
   right: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
-  padding: 6px;
+  gap: var(--space-1);
+  padding: var(--space-1);
   background: linear-gradient(transparent, var(--overlay-heavy));
   border-radius: 0 0 $radius $radius;
   opacity: 0;
@@ -936,10 +936,10 @@ $radius: 5px;
   transform: translateY(0);
 }
 .gallery-tags__pill {
-  font-size: 11px;
+  font-size: var(--fs-150);
   line-height: 1;
-  padding: 3px 8px;
-  border-radius: 50px;
+  padding: 3px var(--space-2);
+  border-radius: var(--radius-full);
   background-color: var(--surface-base);
   color: var(--text-body);
   white-space: nowrap;
@@ -955,8 +955,8 @@ $radius: 5px;
   right: 0;
   display: flex;
   justify-content: center;
-  gap: 4px;
-  padding: 4px;
+  gap: var(--space-1);
+  padding: var(--space-1);
   background: var(--surface-raised);
   border-top: 1px solid var(--border-default);
   border-radius: 0 0 $radius $radius;
@@ -967,7 +967,7 @@ $radius: 5px;
   justify-content: center;
   width: 26px;
   height: 26px;
-  font-size: 12px;
+  font-size: var(--fs-200);
   border: none;
   border-radius: $radius;
   background: none;
@@ -978,7 +978,7 @@ $radius: 5px;
 }
 .gallery-grid {
   display: grid;
-  gap: 10px;
+  gap: var(--space-2);
   grid-template-columns: repeat(6, 1fr);
   @media only screen and (max-width: 1279px) {
     grid-template-columns: repeat(4, 1fr);
@@ -989,7 +989,7 @@ $radius: 5px;
 }
 @media only screen and (max-width: 768px) {
   .image-gallery {
-    padding: 16px !important;
+    padding: var(--space-4) !important;
   }
 }
 </style>

@@ -1,23 +1,23 @@
 <template>
-  <div class="flex-column gap-200 jc-sb">
+  <div class="flex-column gap-5 jc-sb">
     <nav
-      class="flex ai-ct jc-sb bg-raised pl-400 pr-400 pt-200 pb-200 t-secondary br-tl-50 br-tr-50"
+      class="flex ai-ct jc-sb bg-raised pl-10 pr-10 pt-5 pb-5 t-secondary rounded-tl rounded-tr"
     >
       <p class="fw-600 fs-400 uppercase">
         {{ handyType.label ? handyType.label : $t("common.click") }}
       </p>
-      <div class="flex ai-ct gap-200">
+      <div class="flex ai-ct gap-5">
         <span v-if="handy.isDirty" class="chip bg-warning-subtle t-warning">
           {{ $t("unsaved.changes") }}
         </span>
         <i class="icon-close-mini pointer t-secondary" @click="requestClose" />
       </div>
     </nav>
-    <div class="fg-1 pl-400 pr-400 ovy-auto pb-400">
+    <div class="fg-1 pl-10 pr-10 ovy-auto pb-10">
       <div>
         <p class="fs-300 t-secondary">{{ $t("config.config_part") }}</p>
-        <hr class="mv-100" />
-        <div class="grid grid-col-4 gap-100 t-body">
+        <hr class="mv-2" />
+        <div class="grid grid-col-4 gap-2 t-body">
           <template
             v-for="(
               {
@@ -67,13 +67,13 @@
                 reset({ setter: prop, _in: 'core_config' });
                 reset({ setter: null, _in: 'optional_config' });
               "
-              class="bg-base b-default mb-50 br-50 shadow-down fs-200 t-body"
+              class="bg-base b-default mb-1 rounded shadow-down fs-200 t-body"
             ></component>
           </template>
         </div>
 
-        <hr class="mv-50" />
-        <div class="grid grid-col-4 gap-100">
+        <hr class="mv-1" />
+        <div class="grid grid-col-4 gap-2">
           <template
             v-for="(
               {
@@ -122,15 +122,15 @@
                 set_config('optional_config', { key: prop, value: $event })
               "
               :style="prop === 'dye' ? 'grid-column: span 2' : null"
-              class="bg-base b-default mb-50 br-50 shadow-down fs-200 t-body"
+              class="bg-base b-default mb-1 rounded shadow-down fs-200 t-body"
             ></component>
           </template>
         </div>
 
-        <p class="fs-300 t-secondary mt-200">
+        <p class="fs-300 t-secondary mt-5">
           {{ $t("config.props_handlers") }}
         </p>
-        <hr class="mv-100" />
+        <hr class="mv-2" />
         <template
           v-for="(
             {
@@ -150,9 +150,9 @@
               (prop === 'product_sku' || prop === 'sku') &&
               props_dependency_check('props', _for[processing_config_type])
             "
-            class="mt-400"
+            class="mt-10"
           >
-            <div class="flex ai-ct jc-sb mb-50">
+            <div class="flex ai-ct jc-sb mb-1">
               <p class="fs-200 fw-600 t-muted uppercase">{{ tProp(prop) }}</p>
               <button
                 v-if="skuPickerChannel"
@@ -194,10 +194,10 @@
                     __value: property.prop === prop ? $event : property.__value,
                   })))
               "
-              class="br-50 bg-base lh-base-elem fs-200"
+              class="rounded bg-base lh-base-elem fs-200"
             />
-            <p v-if="skuPickerDisabledMsg && !skuManualMode" class="fs-100 t-muted mt-50">
-              <FontAwesomeIcon icon="circle-info" class="mr-50" />
+            <p v-if="skuPickerDisabledMsg && !skuManualMode" class="fs-100 t-muted mt-1">
+              <FontAwesomeIcon icon="circle-info" class="mr-1" />
               {{ skuPickerDisabledMsg }}
             </p>
           </div>
@@ -219,7 +219,7 @@
                   };
                 }))
             "
-            class="br-50 bg-base mt-400 lh-base-elem fs-200"
+            class="rounded bg-base mt-10 lh-base-elem fs-200"
           />
           <div
             v-if="
@@ -227,9 +227,9 @@
               props_dependency_check('props', _for[processing_config_type])
             "
           >
-            <p class="mb-50 mt-200 fs-200" v-if="label">{{ tProp(prop) }}</p>
+            <p class="mb-1 mt-5 fs-200" v-if="label">{{ tProp(prop) }}</p>
             <BasicWysiwyg
-              class="b-default br-50 p-100 bg-base fs-200"
+              class="b-default rounded p-2 bg-base fs-200"
               @onFocusout="
                 ($event) =>
                   (core_properties = core_properties.map((property) => {
@@ -244,7 +244,7 @@
             />
           </div>
           <ImagesController
-            class="fs-200 mt-200"
+            class="fs-200 mt-5"
             v-if="
               props_handlers[type] === 'ImagesController' &&
               props_dependency_check('props', _for[processing_config_type])
@@ -262,7 +262,7 @@
             "
           />
           <ButtonsController
-            class="fs-200 mt-200"
+            class="fs-200 mt-5"
             v-if="
               props_handlers[type] === 'ButtonsController' &&
               props_dependency_check('props', _for[processing_config_type])
@@ -293,7 +293,7 @@
           />
 
           <GroupFieldsController
-            class="fs-200 mt-200"
+            class="fs-200 mt-5"
             v-if="
               props_handlers[type] === 'GroupFieldsController' &&
               props_dependency_check('props', _for[processing_config_type])
@@ -324,7 +324,7 @@
           />
 
           <BasicDatePicker
-            class="fs-200 mt-200"
+            class="fs-200 mt-5"
             v-if="
               props_handlers[type] === 'BasicDatePicker' &&
               props_dependency_check('props', _for[processing_config_type])
@@ -381,10 +381,10 @@
       </div>
     </div>
     <div
-      class="grid grid-col-3 rtl-direction bg-raised pl-400 pr-400 pt-100 pb-100"
+      class="grid grid-col-3 rtl-direction bg-raised pl-10 pr-10 pt-2 pb-2"
     >
       <BasicButton
-        class="bg-inverse br-50 bg-accent-fill b-accent fs-200 b-strong t-on-accent-fill w-100 jc-ct"
+        class="bg-inverse rounded bg-accent-fill b-accent fs-200 b-strong t-on-accent-fill w-100 jc-ct"
         :text="$t('common.save')"
         @click="pass_asset({})"
       />

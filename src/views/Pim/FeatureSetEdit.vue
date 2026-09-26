@@ -24,14 +24,14 @@
         @click="save"
       />
     </Teleport>
-    <div class="flex-1 ovy-auto p-500">
-      <div class="bg-base b-subtle br-50 p-500">
+    <div class="flex-1 ovy-auto p-12">
+      <div class="bg-base b-subtle rounded p-12">
         <!-- Set identity -->
-        <div class="set-identity mb-400">
+        <div class="set-identity mb-10">
           <span class="fs-200 t-accent fw-600 tt-upper">{{
             $t("pim.currently_editing")
           }}</span>
-          <div class="flex ai-ct gap-200 mt-200">
+          <div class="flex ai-ct gap-5 mt-5">
             <Dropdown
               :values="allSetOptions"
               :selected="[featureSetIdx]"
@@ -40,7 +40,7 @@
               @onSelect="onSwitchSet"
             />
           </div>
-          <p v-if="form.desc" class="t-muted fs-200 mt-200">
+          <p v-if="form.desc" class="t-muted fs-200 mt-5">
             {{ form.desc }}
           </p>
         </div>
@@ -48,7 +48,7 @@
 
         <template v-else>
           <!-- Set properties -->
-          <div class="flex gap-300 mb-400">
+          <div class="flex gap-8 mb-10">
             <BasicInput
               v-model="form.name"
               :label="$t('pim.name')"
@@ -61,7 +61,7 @@
             >
               <BasicInput v-model="form.desc" />
             </FormField>
-            <div class="flex ai-ct gap-100">
+            <div class="flex ai-ct gap-2">
               <Switcher
                 :label="$t('pim.is_default')"
                 :selected="form.is_default"
@@ -71,7 +71,7 @@
           </div>
 
           <!-- Toolbar -->
-          <div class="flex ai-ct gap-200 mb-400">
+          <div class="flex ai-ct gap-5 mb-10">
             <BasicInput
               v-model="featureSearch"
               :placeholder="$t('common.start_typing')"
@@ -86,8 +86,8 @@
           </div>
 
           <!-- Inline group creation -->
-          <div v-if="showAddGroup" class="add-group-panel br-50 p-300 mb-400">
-            <div class="flex ai-ct gap-200">
+          <div v-if="showAddGroup" class="add-group-panel rounded p-8 mb-10">
+            <div class="flex ai-ct gap-5">
               <BasicInput
                 v-model="newGroupName"
                 :placeholder="$t('pim.group_name_placeholder')"
@@ -109,11 +109,11 @@
                 "
               />
             </div>
-            <div v-if="availableGroupOptions.length" class="mt-200">
+            <div v-if="availableGroupOptions.length" class="mt-5">
               <span class="fs-200 t-muted">{{
                 $t("pim.or_add_existing")
               }}</span>
-              <div class="flex gap-100 mt-100" style="flex-wrap: wrap">
+              <div class="flex gap-2 mt-2" style="flex-wrap: wrap">
                 <span
                   v-for="opt in availableGroupOptions"
                   :key="opt.value"
@@ -128,11 +128,11 @@
           </div>
 
           <!-- Default group (ungrouped features) -->
-          <div class="feature-group mb-400">
+          <div class="feature-group mb-10">
             <div
               class="feature-group__header bg-raised t-body flex ai-ct jc-sb"
             >
-              <div class="flex ai-ct gap-200">
+              <div class="flex ai-ct gap-5">
                 <span
                   class="collapse-chevron"
                   :class="{ 'is-collapsed': isCollapsed('__default') }"
@@ -165,7 +165,7 @@
                     v-if="matchesSearch(element)"
                     class="feature-row flex ai-ct jc-sb"
                   >
-                    <div class="flex ai-ct gap-200">
+                    <div class="flex ai-ct gap-5">
                       <span class="drag-handle t-muted cursor-grab"
                         >&#x2630;</span
                       >
@@ -174,7 +174,7 @@
                       }}</span>
                       <TypeBadge :feature-type="element.feature_type" />
                     </div>
-                    <div class="flex ai-ct gap-100">
+                    <div class="flex ai-ct gap-2">
                       <BasicButton
                         text=""
                         icon="pen"
@@ -195,7 +195,7 @@
               </draggable>
               <div
                 v-if="!ungroupedFeatures.length"
-                class="t-muted fs-200 p-300"
+                class="t-muted fs-200 p-8"
               >
                 {{ $t("pim.drag_to_add") }}
               </div>
@@ -210,11 +210,11 @@
             :item-key="(el) => el.idx"
           >
             <template #item="{ element: group }">
-              <div class="feature-group mb-400">
+              <div class="feature-group mb-10">
                 <div
                   class="feature-group__header bg-raised t-body flex ai-ct jc-sb"
                 >
-                  <div class="flex ai-ct gap-200">
+                  <div class="flex ai-ct gap-5">
                     <span class="group-drag-handle t-muted">&#x2630;</span>
                     <span
                       class="collapse-chevron"
@@ -285,7 +285,7 @@
                         v-if="matchesSearch(element)"
                         class="feature-row flex ai-ct jc-sb"
                       >
-                        <div class="flex ai-ct gap-200">
+                        <div class="flex ai-ct gap-5">
                           <span class="drag-handle t-muted cursor-grab"
                             >&#x2630;</span
                           >
@@ -294,7 +294,7 @@
                           }}</span>
                           <TypeBadge :feature-type="element.feature_type" />
                         </div>
-                        <div class="flex ai-ct gap-100">
+                        <div class="flex ai-ct gap-2">
                           <BasicButton
                             text=""
                             icon="pen"
@@ -317,7 +317,7 @@
                   </draggable>
                   <div
                     v-if="!group.features.length"
-                    class="t-muted fs-200 p-300"
+                    class="t-muted fs-200 p-8"
                   >
                     {{ $t("pim.drag_to_add") }}
                   </div>
@@ -876,21 +876,21 @@ export default {
 <style lang="scss" scoped>
 .set-identity {
   border-left: 3px solid var(--accent);
-  padding-left: var(--space-300);
-  padding-top: var(--space-200);
-  padding-bottom: var(--space-200);
+  padding-left: var(--space-8);
+  padding-top: var(--space-5);
+  padding-bottom: var(--space-5);
 }
 .feature-group {
   border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 .feature-group__header {
-  padding: 10px 16px;
+  padding: var(--space-2) var(--space-4);
   user-select: none;
 }
 .feature-row {
-  padding: 12px var(--space-200);
+  padding: var(--space-3) var(--space-5);
   border-top: 1px solid var(--border-subtle);
   transition: background 0.15s;
   cursor: grab;
@@ -914,7 +914,7 @@ export default {
 .collapse-chevron {
   cursor: pointer;
   transition: transform 0.2s;
-  font-size: 10px;
+  font-size: var(--fs-100);
   user-select: none;
   &.is-collapsed {
     transform: rotate(-90deg);
@@ -931,13 +931,13 @@ export default {
 .modal-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   height: 36px;
-  padding: 0 16px;
-  font-size: 13px;
+  padding: 0 var(--space-4);
+  font-size: var(--fs-250);
   font-weight: 500;
   font-family: inherit;
-  border-radius: 5px;
+  border-radius: var(--radius-base);
   border: 1px solid;
   cursor: pointer;
 }
@@ -960,8 +960,8 @@ export default {
     background: none;
     border: none;
     cursor: pointer;
-    padding: 4px 8px;
-    font-size: 16px;
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--fs-400);
     color: var(--text-muted);
     &:hover {
       color: var(--text-body);
@@ -973,22 +973,22 @@ export default {
     top: 100%;
     background: var(--surface-base);
     border: 1px solid var(--border-subtle);
-    border-radius: 6px;
+    border-radius: var(--radius-base);
     box-shadow: var(--shadow-md);
     z-index: 10;
     min-width: 140px;
     .pim-kebab__item {
-      padding: 8px 14px;
+      padding: var(--space-2) var(--space-3);
       cursor: pointer;
       font-size: var(--fs-300);
       &:hover {
         background: var(--surface-raised);
       }
       &:first-child {
-        border-radius: 6px 6px 0 0;
+        border-radius: var(--radius-base) var(--radius-base) 0 0;
       }
       &:last-child {
-        border-radius: 0 0 6px 6px;
+        border-radius: 0 0 var(--radius-base) var(--radius-base);
       }
     }
   }
@@ -1027,8 +1027,8 @@ export default {
   opacity: 0.9;
   background: var(--surface-base);
   border: 1px solid var(--accent);
-  border-radius: 6px;
+  border-radius: var(--radius-base);
   box-shadow: var(--shadow-md);
-  padding: 12px var(--space-200);
+  padding: var(--space-3) var(--space-5);
 }
 </style>

@@ -90,14 +90,14 @@ async function confirmOptout(replyId) {
 .tg {
   display: flex;
   flex-direction: column;
-  gap: var(--space-200);
-  padding-top: var(--space-200);
+  gap: var(--space-5);
+  padding-top: var(--space-5);
   border-top: 1px solid var(--border-subtle);
 }
 .tg__head {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-100) var(--space-200);
+  gap: var(--space-2) var(--space-5);
   align-items: baseline;
   min-height: 44px;
   padding: 0;

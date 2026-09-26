@@ -94,7 +94,7 @@ export default {
 
 <style lang="scss" scoped>
 .quality-tab {
-  padding: var(--space-200) 0;
+  padding: var(--space-5) 0;
 }
 .quality-tab__list {
   list-style: none;
@@ -102,26 +102,26 @@ export default {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 .quality-tab__item {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-200);
-  padding: var(--space-200) var(--space-300);
+  gap: var(--space-5);
+  padding: var(--space-5) var(--space-8);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
   background: var(--surface-base);
 }
 .quality-tab__label {
   color: var(--text-body);
 }
 .quality-tab__lang {
-  padding: 0 6px;
-  border-radius: var(--radius-sm);
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-base);
   background: var(--surface-raised);
-  font-size: 11px;
+  font-size: var(--fs-150);
   text-transform: uppercase;
 }
 .quality-tab__inherited {

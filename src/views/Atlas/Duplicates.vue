@@ -1,12 +1,12 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
     >
-      <div class="flex ai-ct jc-sb mb-400 gap-300">
+      <div class="flex ai-ct jc-sb mb-10 gap-8">
         <h1 class="fs-700 fw-600">{{ $t("atlas.duplicates.title") }}</h1>
       </div>
-      <p class="fs-300 t-body mb-400">
+      <p class="fs-300 t-body mb-10">
         {{ $t("atlas.duplicates.subtitle") }}
       </p>
 
@@ -22,9 +22,9 @@
       <div
         v-for="group in groups"
         :key="group.ean"
-        class="bg-base b-subtle br-50 p-400 mb-300"
+        class="bg-base b-subtle rounded p-10 mb-8"
       >
-        <div class="flex ai-ct jc-sb mb-300 gap-200">
+        <div class="flex ai-ct jc-sb mb-8 gap-5">
           <div>
             <p class="fs-200 t-muted fw-600">
               {{ $t("atlas.duplicates.col.ean") }}
@@ -37,7 +37,7 @@
             :data-testid="`duplicates-suggestion-${group.ean}`"
           />
         </div>
-        <p class="fs-200 t-secondary mb-300">{{ group.suggestion_detail }}</p>
+        <p class="fs-200 t-secondary mb-8">{{ group.suggestion_detail }}</p>
 
         <table class="duplicates-table">
           <thead>
@@ -55,7 +55,7 @@
               </td>
               <td>{{ rp.weight ?? "—" }}</td>
               <td>
-                <div class="flex ai-ct flex-wrap gap-100">
+                <div class="flex ai-ct flex-wrap gap-2">
                   <StatusBadge
                     v-for="s in rp.sources"
                     :key="s.idx"
@@ -65,7 +65,7 @@
                 </div>
               </td>
               <td>
-                <div class="flex ai-ct flex-wrap gap-100">
+                <div class="flex ai-ct flex-wrap gap-2">
                   <button
                     v-for="other in otherRps(group, rp)"
                     :key="other.sku"
@@ -177,7 +177,7 @@ export default {
 
   th,
   td {
-    padding: var(--space-200);
+    padding: var(--space-5);
     text-align: left;
     border-bottom: 1px solid var(--border-subtle);
   }
@@ -190,10 +190,10 @@ export default {
 }
 
 .merge-btn {
-  padding: var(--space-100) var(--space-200);
+  padding: var(--space-2) var(--space-5);
   font-size: var(--fs-200);
   font-weight: 600;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   background-color: var(--positive-subtle);
   color: var(--positive);
   border: none;

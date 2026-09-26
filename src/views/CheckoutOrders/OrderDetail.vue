@@ -1,15 +1,15 @@
 <template>
-  <div class="order-detail p-500 fs-300 t-body h-100 ov-h">
+  <div class="order-detail p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#checkout-orders-toolbar-left" defer>
       <BasicButton text="" icon="arrow-left" class="bg-raised t-secondary" @click="goBack" />
       <span class="fw-600">{{ order.pretty_id || $t("checkout_orders.order_detail") }}</span>
     </Teleport>
 
-    <div v-if="loading" class="flex jc-ct p-500"><Loader /></div>
+    <div v-if="loading" class="flex jc-ct p-12"><Loader /></div>
 
-    <div v-else-if="order.order_id" class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
+    <div v-else-if="order.order_id" class="bg-base b-subtle rounded h-100 ovy-auto p-12">
       <!-- Header: status + total + dates in one compact row -->
-      <div class="order-detail__header mb-400">
+      <div class="order-detail__header mb-10">
         <div class="order-detail__header-left">
           <StatusBadge :label="statusLabel(order.status)" :variant="statusVariant(order.status)" />
           <span class="fw-600 fs-500">{{ body.total || "0.00" }} {{ body.currency_code || "" }}</span>
@@ -21,7 +21,7 @@
       </div>
 
       <!-- Order meta: inline key-value pairs, aligned with table below -->
-      <div class="order-detail__meta mb-300">
+      <div class="order-detail__meta mb-8">
         <div class="order-detail__meta-item">
           <span class="order-detail__meta-label">{{ $t('checkout_orders.order_id') }}</span>
           <span class="order-detail__meta-value">{{ order.pretty_id }}</span>
@@ -33,8 +33,8 @@
       </div>
 
       <!-- Items table -->
-      <div v-if="items.length" class="mb-400">
-        <div class="section-label mb-200">{{ $t("checkout_orders.items") }} ({{ items.length }})</div>
+      <div v-if="items.length" class="mb-10">
+        <div class="section-label mb-5">{{ $t("checkout_orders.items") }} ({{ items.length }})</div>
         <DataTable :columns="itemColumns" :rows="items">
           <template #status="{ row }">
             <StatusBadge :label="row.status" :variant="row.status === 'valid' ? 'positive' : 'negative'" />
@@ -44,15 +44,15 @@
       </div>
 
       <!-- Delivery: shipping + payment side by side -->
-      <div class="order-detail__delivery mb-400">
+      <div class="order-detail__delivery mb-10">
         <div v-if="body.shipping_method" class="order-detail__card">
-          <div class="section-label mb-100">{{ $t("checkout_orders.shipping_method") }}</div>
+          <div class="section-label mb-2">{{ $t("checkout_orders.shipping_method") }}</div>
           <p class="fw-600 t-body">{{ body.shipping_method.name || body.shipping_method.code }}</p>
           <p class="t-muted fs-200">{{ body.shipping_method.code }}</p>
-          <p v-if="shippingPrice" class="t-secondary mt-100">{{ shippingPrice }}</p>
+          <p v-if="shippingPrice" class="t-secondary mt-2">{{ shippingPrice }}</p>
         </div>
         <div v-if="paymentMethods.length" class="order-detail__card">
-          <div class="section-label mb-100">{{ $t("checkout_orders.payment_method") }}</div>
+          <div class="section-label mb-2">{{ $t("checkout_orders.payment_method") }}</div>
           <div v-for="method in paymentMethods" :key="method.code" class="order-detail__payment-method">
             <p class="fw-600 t-body">{{ method.name || method.code }}</p>
             <p class="t-muted fs-200">{{ method.code }}</p>
@@ -61,18 +61,18 @@
       </div>
 
       <!-- Addresses: billing + shipping side by side -->
-      <div v-if="body.addresses" class="order-detail__delivery mb-400">
+      <div v-if="body.addresses" class="order-detail__delivery mb-10">
         <div v-if="billing" class="order-detail__card">
-          <div class="section-label mb-100">{{ $t("checkout_orders.billing_address") }}</div>
+          <div class="section-label mb-2">{{ $t("checkout_orders.billing_address") }}</div>
           <p class="fw-600 t-body">{{ billing.firstname }} {{ billing.lastname }}</p>
           <p class="t-secondary fs-200">{{ billing.street }}</p>
           <p class="t-secondary fs-200">{{ billing.postcode }} {{ billing.city }}, {{ billing.country_code }}</p>
-          <p v-if="billing.email" class="t-muted fs-200 mt-100">{{ billing.email }}</p>
+          <p v-if="billing.email" class="t-muted fs-200 mt-2">{{ billing.email }}</p>
           <p v-if="billing.telephone" class="t-muted fs-200">{{ billing.dialling_code }} {{ billing.telephone }}</p>
-          <p v-if="billing.company" class="t-muted fs-200 mt-100">{{ billing.company }}</p>
+          <p v-if="billing.company" class="t-muted fs-200 mt-2">{{ billing.company }}</p>
         </div>
         <div class="order-detail__card">
-          <div class="section-label mb-100">{{ $t("checkout_orders.shipping_address") }}</div>
+          <div class="section-label mb-2">{{ $t("checkout_orders.shipping_address") }}</div>
           <template v-if="shipping">
             <p class="fw-600 t-body">{{ shipping.firstname }} {{ shipping.lastname }}</p>
             <p class="t-secondary fs-200">{{ shipping.street }}</p>
@@ -83,15 +83,15 @@
       </div>
 
       <!-- Payment History (only if exists) -->
-      <div v-if="order.payment_intents && order.payment_intents.length" class="mb-400">
-        <div class="section-label mb-200">{{ $t("checkout_orders.payment_intents") }}</div>
+      <div v-if="order.payment_intents && order.payment_intents.length" class="mb-10">
+        <div class="section-label mb-5">{{ $t("checkout_orders.payment_intents") }}</div>
         <DataTable :columns="paymentIntentColumns" :rows="order.payment_intents" />
       </div>
 
       <!-- Attachments (only if exists) -->
-      <div v-if="order.attachments && order.attachments.length" class="mb-300">
-        <div class="section-label mb-200">{{ $t("checkout_orders.attachments") }}</div>
-        <div v-for="att in order.attachments" :key="att.file_id" class="flex ai-ct gap-100 mb-100 t-secondary fs-200">
+      <div v-if="order.attachments && order.attachments.length" class="mb-8">
+        <div class="section-label mb-5">{{ $t("checkout_orders.attachments") }}</div>
+        <div v-for="att in order.attachments" :key="att.file_id" class="flex ai-ct gap-2 mb-2 t-secondary fs-200">
           <span>{{ att.name || `File #${att.file_id}` }}</span>
         </div>
       </div>
@@ -191,15 +191,15 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: var(--space-300);
-  margin-bottom: var(--space-300);
+  padding-bottom: var(--space-8);
+  margin-bottom: var(--space-8);
   border-bottom: 1px solid var(--border-subtle);
 }
 
 .order-detail__header-left {
   display: flex;
   align-items: center;
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 
 .order-detail__header-right {
@@ -211,8 +211,8 @@ export default {
 
 .order-detail__meta {
   display: flex;
-  gap: var(--space-500);
-  padding-bottom: var(--space-200);
+  gap: var(--space-12);
+  padding-bottom: var(--space-5);
 }
 
 .order-detail__meta-item {
@@ -238,13 +238,13 @@ export default {
 .order-detail__delivery {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 
 .order-detail__card {
-  padding: 16px var(--space-200);
+  padding: var(--space-4) var(--space-5);
   background: var(--surface-raised);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
 
   p {
     line-height: 1.5;
@@ -252,7 +252,7 @@ export default {
 }
 
 .order-detail__payment-method + .order-detail__payment-method {
-  margin-top: var(--space-200);
+  margin-top: var(--space-5);
 }
 
 @media only screen and (max-width: 768px) {
@@ -261,12 +261,12 @@ export default {
   }
   .order-detail__meta {
     flex-direction: column;
-    gap: var(--space-200);
+    gap: var(--space-5);
   }
   .order-detail__header {
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--space-100);
+    gap: var(--space-2);
   }
   .order-detail__header-right {
     align-items: flex-start;

@@ -1,9 +1,9 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#stock-toolbar-right" defer>
       <span
         v-if="dirtyCount > 0 && isManual"
-        class="bg-warning-subtle t-warning fs-200 ph-100 br-50"
+        class="bg-warning-subtle t-warning fs-200 ph-2 rounded"
       >
         {{ $t("stock.unsaved") }}: {{ dirtyCount }}
       </span>
@@ -26,13 +26,13 @@
     <!-- Integration warning -->
     <div
       v-if="!isManual"
-      class="flex ai-ct gap-200 mb-300 p-300 bg-accent-subtle br-50 t-strong fs-200"
+      class="flex ai-ct gap-5 mb-8 p-8 bg-accent-subtle rounded t-strong fs-200"
     >
       <FontAwesomeIcon icon="lock" />
       <span>{{ $t("stock.integration_readonly") }}</span>
     </div>
 
-    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
       <!-- Toolbar: search + filter chips -->
       <div class="stock-table__toolbar">
         <BasicInput
@@ -60,11 +60,11 @@
       </div>
 
       <!-- Table -->
-      <div v-if="loading" class="flex-center pv-500">
+      <div v-if="loading" class="flex-center pv-12">
         <Loader />
       </div>
 
-      <div v-else-if="rows.length === 0" class="pv-500">
+      <div v-else-if="rows.length === 0" class="pv-12">
         <EmptyState :title="$t('stock.no_stock')" icon="boxes-stacked" />
       </div>
 
@@ -98,7 +98,7 @@
               <span v-else class="t-muted fs-200">—</span>
             </td>
             <td class="stock-table__col-status">
-              <span v-if="isDirty(item.sku)" class="bg-warning-subtle t-warning fs-200 ph-100 br-50">
+              <span v-if="isDirty(item.sku)" class="bg-warning-subtle t-warning fs-200 ph-2 rounded">
                 {{ $t("stock.unsaved") }}
               </span>
               <span v-else-if="!item.has_stock" class="t-muted fs-200">
@@ -110,7 +110,7 @@
       </table>
 
       <!-- Pagination -->
-      <div v-if="totalCount > pageSize" class="mt-300">
+      <div v-if="totalCount > pageSize" class="mt-8">
         <Pagination
           :current="currentPage"
           :total="totalCount"
@@ -278,8 +278,8 @@ export default {
 .stock-table__toolbar {
   display: flex;
   align-items: center;
-  gap: var(--space-200);
-  margin-bottom: var(--space-300);
+  gap: var(--space-5);
+  margin-bottom: var(--space-8);
   flex-wrap: wrap;
 }
 
@@ -295,7 +295,7 @@ export default {
 
   th,
   td {
-    padding: 8px 12px;
+    padding: var(--space-2) var(--space-3);
     text-align: left;
     border-bottom: 1px solid var(--border-subtle);
   }

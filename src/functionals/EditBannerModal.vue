@@ -170,7 +170,7 @@ function onSave() {
 
         <div class="modal-body">
           <!-- Image area -->
-          <div class="form-group mb-300">
+          <div class="form-group mb-8">
             <label class="detail-label">{{ $t("layout_extender.media_url") }}</label>
 
             <!-- Selected image preview -->
@@ -224,7 +224,7 @@ function onSave() {
             <p class="fs-100 t-accent">Recommended aspect ratio: 16:9</p>
           </div>
 
-          <div class="form-group mb-300">
+          <div class="form-group mb-8">
             <div class="flex ai-ct jc-sb">
               <label class="detail-label">{{ $t("layout_extender.alt_text") }}</label>
               <BasicButton
@@ -238,7 +238,7 @@ function onSave() {
             <BasicInput v-model="form.alt_text" />
           </div>
 
-          <div class="form-group mb-300">
+          <div class="form-group mb-8">
             <div class="flex ai-ct jc-sb">
               <label class="detail-label">{{ $t("layout_extender.caption") }}</label>
               <BasicButton
@@ -252,7 +252,7 @@ function onSave() {
             <BasicInput v-model="form.caption" />
           </div>
 
-          <div class="form-group mb-300">
+          <div class="form-group mb-8">
             <div class="flex ai-ct jc-sb">
               <label class="detail-label">{{ $t("layout_extender.button_label") }}</label>
               <BasicButton
@@ -266,7 +266,7 @@ function onSave() {
             <BasicInput v-model="form.button_label" />
           </div>
 
-          <div class="form-group mb-300">
+          <div class="form-group mb-8">
             <label class="detail-label">{{ $t("layout_extender.link_type") }}</label>
             <div class="radio-group">
               <label class="radio-label">
@@ -284,7 +284,7 @@ function onSave() {
             </div>
           </div>
 
-          <div class="form-group mb-300">
+          <div class="form-group mb-8">
             <label class="detail-label">
               {{ form.button_link_type === "url" ? $t("layout_extender.url") : $t("layout_extender.link_value") }}
             </label>
@@ -349,13 +349,13 @@ function onSave() {
   justify-content: center;
   align-items: center;
   z-index: 100;
-  padding: 1rem;
+  padding: var(--space-4);
 }
 
 .modal-container {
   background: var(--surface-base);
-  padding: 24px;
-  border-radius: 8px;
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
   border: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-lg);
   width: min(440px, 95vw);
@@ -367,8 +367,8 @@ function onSave() {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
-  padding-bottom: 12px;
+  margin-bottom: var(--space-5);
+  padding-bottom: var(--space-3);
   border-bottom: 1px solid var(--border-subtle);
 }
 
@@ -378,7 +378,7 @@ function onSave() {
   justify-content: center;
   width: 32px;
   height: 32px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   cursor: pointer;
   color: var(--text-muted);
   transition: background 0.1s, color 0.1s;
@@ -390,33 +390,33 @@ function onSave() {
 }
 
 .modal-body {
-  margin-bottom: 24px;
+  margin-bottom: var(--space-6);
 }
 
 .modal-footer {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
   justify-content: flex-end;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .radio-group {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: var(--space-6);
 }
 
 .radio-label {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   cursor: pointer;
-  font-size: 14px;
+  font-size: var(--fs-300);
   color: var(--text-body);
 }
 
@@ -431,7 +431,7 @@ function onSave() {
 .banner-image-area {
   position: relative;
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
   overflow: hidden;
   min-height: 120px;
   display: flex;
@@ -457,7 +457,7 @@ function onSave() {
   height: 28px;
   background: var(--surface-base);
   border: 1px solid var(--border-subtle);
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   cursor: pointer;
   color: var(--text-secondary);
   transition: background 0.1s;
@@ -472,16 +472,16 @@ function onSave() {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--space-2);
   width: 100%;
   height: 40px;
-  font-size: 13px;
+  font-size: var(--fs-250);
   font-weight: 500;
   font-family: inherit;
   color: var(--text-body);
   background: var(--surface-base);
   border: 1px dashed var(--border-default);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
   cursor: pointer;
   transition: background 0.1s, border-color 0.1s;
 }
@@ -493,32 +493,32 @@ function onSave() {
 }
 
 .banner-gallery {
-  margin-top: 8px;
+  margin-top: var(--space-2);
 }
 
 .banner-gallery__loading {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: var(--space-6);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
 }
 
 .banner-gallery__grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
+  gap: var(--space-1);
   max-height: 240px;
   overflow-y: auto;
-  padding: 4px;
+  padding: var(--space-1);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
 }
 
 .banner-gallery__item {
   aspect-ratio: 1;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   overflow: hidden;
   cursor: pointer;
   border: 2px solid transparent;
@@ -544,16 +544,16 @@ function onSave() {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 24px;
+  gap: var(--space-2);
+  padding: var(--space-6);
 }
 
 .banner-gallery__pagination {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  margin-top: 8px;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
 }
 
 .banner-gallery__page-btn {
@@ -562,11 +562,11 @@ function onSave() {
   justify-content: center;
   width: 28px;
   height: 28px;
-  font-size: 12px;
+  font-size: var(--fs-200);
   font-family: inherit;
   background: var(--surface-base);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   cursor: pointer;
   color: var(--text-body);
   transition: background 0.1s;
@@ -585,13 +585,13 @@ function onSave() {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: var(--space-2);
   height: 36px;
-  padding: 0 16px;
-  font-size: 13px;
+  padding: 0 var(--space-4);
+  font-size: var(--fs-250);
   font-weight: 500;
   font-family: inherit;
-  border-radius: 5px;
+  border-radius: var(--radius-base);
   border: 1px solid;
   cursor: pointer;
   transition: all 0.15s ease;

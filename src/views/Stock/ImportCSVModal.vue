@@ -1,21 +1,21 @@
 <template>
   <Confirmation-modal :visible="true" @reject="$emit('close')">
     <template #description>
-      <h3 class="fs-500 fw-600 mb-300">{{ $t("stock.import_title") }}</h3>
+      <h3 class="fs-500 fw-600 mb-8">{{ $t("stock.import_title") }}</h3>
 
-      <div v-if="!report" class="flex fd-col gap-200">
+      <div v-if="!report" class="flex fd-col gap-5">
         <p class="fs-300 t-secondary">{{ $t("stock.import_select_file") }}</p>
         <input
           ref="fileInput"
           type="file"
           accept=".csv"
-          class="mb-200"
+          class="mb-5"
           @change="onFileSelect"
         />
       </div>
 
-      <div v-else class="flex fd-col gap-100">
-        <p class="fs-300 fw-600 t-positive mb-200">{{ $t("stock.import_success") }}</p>
+      <div v-else class="flex fd-col gap-2">
+        <p class="fs-300 fw-600 t-positive mb-5">{{ $t("stock.import_success") }}</p>
         <div class="flex jc-sb fs-300">
           <span>{{ $t("stock.import_rows_parsed") }}:</span>
           <span class="fw-600">{{ report.rows_parsed }}</span>
@@ -28,8 +28,8 @@
           <span>{{ $t("stock.import_rows_skipped") }}:</span>
           <span class="fw-600 t-warning">{{ report.rows_skipped }}</span>
         </div>
-        <div v-if="report.errors && report.errors.length" class="mt-200">
-          <p class="fs-200 fw-600 t-negative mb-100">{{ $t("stock.import_errors") }}:</p>
+        <div v-if="report.errors && report.errors.length" class="mt-5">
+          <p class="fs-200 fw-600 t-negative mb-2">{{ $t("stock.import_errors") }}:</p>
           <ul class="fs-200 t-secondary">
             <li v-for="(err, i) in report.errors.slice(0, 10)" :key="i">
               Row {{ err.row }}: {{ err.error }}

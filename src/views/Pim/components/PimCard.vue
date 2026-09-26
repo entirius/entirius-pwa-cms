@@ -30,7 +30,7 @@ defineProps({
   background: var(--surface-base);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: var(--space-200);
+  padding: var(--space-5);
 }
 
 .pim-card__title {
@@ -38,10 +38,10 @@ defineProps({
 }
 
 .pim-card__subtitle {
-  margin: 4px 0 0;
+  margin: var(--space-1) 0 0;
 }
 
 .pim-card__body {
-  margin-top: var(--space-300);
+  margin-top: var(--space-8);
 }
 </style>

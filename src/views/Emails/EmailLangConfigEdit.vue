@@ -1,9 +1,9 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
     >
-      <div class="flex ai-ct gap-200 mb-400">
+      <div class="flex ai-ct gap-5 mb-10">
         <BasicButton
           text=""
           icon="arrow-left"
@@ -19,7 +19,7 @@
       <Loader v-show="loading" />
 
       <div v-show="!loading">
-        <div class="emails-form-grid mb-400">
+        <div class="emails-form-grid mb-10">
           <FormField :label="$t('emails.shop_name')">
             <BasicInput v-model="config.shop_name" />
           </FormField>
@@ -37,12 +37,12 @@
           </FormField>
         </div>
 
-        <h3 class="fs-400 fw-600 mt-400 mb-300">
+        <h3 class="fs-400 fw-600 mt-10 mb-8">
           {{ $t("emails.footer_copy") }}
         </h3>
         <BasicWysiwyg v-model="config.footer_copy" />
 
-        <h3 class="fs-400 fw-600 mt-400 mb-300">
+        <h3 class="fs-400 fw-600 mt-10 mb-8">
           {{ $t("emails.social_links") }}
         </h3>
         <div class="emails-form-grid">
@@ -63,10 +63,10 @@
           </FormField>
         </div>
 
-        <h3 class="fs-400 fw-600 mt-400 mb-300">
+        <h3 class="fs-400 fw-600 mt-10 mb-8">
           {{ $t("emails.footer_overrides") }}
         </h3>
-        <p class="fs-200 t-secondary mb-300">
+        <p class="fs-200 t-secondary mb-8">
           {{ $t("emails.footer_overrides_hint") }}
         </p>
         <div class="emails-form-grid">
@@ -98,12 +98,12 @@
         <FormField
           :label="$t('emails.footer_automatic_copy')"
           :description="$t('emails.footer_automatic_copy_hint')"
-          class="mt-300"
+          class="mt-8"
         >
           <BasicWysiwyg v-model="config.footer_automatic_copy" />
         </FormField>
 
-        <div class="flex jc-fe mt-400">
+        <div class="flex jc-fe mt-10">
           <BasicButton
             :text="$t('common.save')"
             class="bg-accent-fill t-on-accent-fill"
@@ -187,6 +187,6 @@ export default {
 .emails-form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
+  gap: var(--space-4);
 }
 </style>

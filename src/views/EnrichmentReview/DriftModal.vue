@@ -116,12 +116,12 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-300);
+  padding: var(--space-8);
 }
 .drift-modal__box {
   width: 100%;
   max-width: 640px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
   box-shadow: var(--shadow-md);
   display: flex;
   flex-direction: column;
@@ -130,27 +130,27 @@ export default {
 .drift-modal__header {
   display: flex;
   align-items: center;
-  gap: var(--space-100);
-  padding: var(--space-300);
+  gap: var(--space-2);
+  padding: var(--space-8);
 }
 .drift-modal__body {
-  padding: var(--space-300);
+  padding: var(--space-8);
   overflow-y: auto;
 }
 .drift-modal__diff {
-  margin: var(--space-200) 0;
+  margin: var(--space-5) 0;
 }
 .drift-modal__reason-label {
   display: block;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: var(--space-100);
+  margin-bottom: var(--space-2);
 }
 .drift-modal__reason {
   width: 100%;
-  padding: var(--space-200);
+  padding: var(--space-5);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   background: var(--surface-base);
   color: var(--text-body);
   font-size: var(--fs-200);
@@ -159,14 +159,14 @@ export default {
 .drift-modal__footer {
   display: flex;
   justify-content: flex-end;
-  gap: var(--space-100);
-  padding: var(--space-300);
+  gap: var(--space-2);
+  padding: var(--space-8);
 }
 .drift-modal__btn {
   height: var(--elem-height);
-  padding: 0 16px;
+  padding: 0 var(--space-4);
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   font-size: var(--fs-200);
   cursor: pointer;
   &:disabled {

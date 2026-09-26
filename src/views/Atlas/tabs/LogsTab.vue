@@ -1,6 +1,6 @@
 <template>
-  <div class="logs-tab p-300 ovy-auto h-100">
-    <div class="flex ai-ct mb-300 gap-200">
+  <div class="logs-tab p-8 ovy-auto h-100">
+    <div class="flex ai-ct mb-8 gap-5">
       <SegmentedControl
         v-model="activeMode"
         :options="modeOptions"
@@ -29,7 +29,7 @@
 
     <!-- Events -->
     <div v-else>
-      <div class="flex ai-ct flex-wrap gap-200 mb-300">
+      <div class="flex ai-ct flex-wrap gap-5 mb-8">
         <FilterChip
           v-for="opt in severityOptions"
           :key="opt.value"
@@ -308,10 +308,10 @@ export default {
 .logs-ack-btn {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   border: none;
-  border-radius: var(--radius-sm);
-  padding: 4px 8px;
+  border-radius: var(--radius-base);
+  padding: var(--space-1) var(--space-2);
   font-size: var(--fs-200);
   font-weight: 600;
   cursor: pointer;

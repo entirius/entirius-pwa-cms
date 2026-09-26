@@ -155,8 +155,8 @@
 
         <!-- Product filters (nested; INCLUSION / EXCLUSION) -->
         <div v-if="isEdit" class="voucher-form__filters">
-          <h3 class="fs-300 fw-600 mb-200">{{ $t("promo.pv_filters") }}</h3>
-          <p class="fs-200 t-muted mb-300">
+          <h3 class="fs-300 fw-600 mb-5">{{ $t("promo.pv_filters") }}</h3>
+          <p class="fs-200 t-muted mb-8">
             {{ $t("promo.pv_filters_hint") }}
           </p>
 
@@ -180,7 +180,7 @@
                 · {{ $t("promo.pv_filter_common") }}</span
               >
             </span>
-            <div class="flex ai-ct gap-100">
+            <div class="flex ai-ct gap-2">
               <BasicButton
                 :text="$t('promo.btn_edit')"
                 class="btn-secondary"
@@ -238,7 +238,7 @@
                 newFilter.take_common_part = !newFilter.take_common_part
               "
             />
-            <div class="flex ai-ct gap-100">
+            <div class="flex ai-ct gap-2">
               <BasicButton
                 :text="
                   editingFilterId
@@ -748,64 +748,64 @@ export default {
 .config-list__toolbar {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: var(--space-400);
+  margin-bottom: var(--space-10);
 }
 
 .voucher-form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-300);
+  gap: var(--space-8);
 }
 
 .voucher-form__row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-300);
+  gap: var(--space-8);
 }
 
 .voucher-form__filters {
   border-top: 1px solid var(--border-subtle);
-  padding-top: var(--space-300);
+  padding-top: var(--space-8);
 }
 
 .voucher-form__actions {
   display: flex;
   justify-content: space-between;
-  gap: var(--space-200);
-  margin-top: var(--space-400);
+  gap: var(--space-5);
+  margin-top: var(--space-10);
 }
 
 .filter-row {
-  padding: var(--space-200) 0;
+  padding: var(--space-5) 0;
   border-bottom: 1px solid var(--border-subtle);
 }
 
 .filter-add {
   display: flex;
   flex-direction: column;
-  gap: var(--space-200);
-  margin-top: var(--space-300);
+  gap: var(--space-5);
+  margin-top: var(--space-8);
 }
 
 .filter-picker {
   display: flex;
   flex-direction: column;
-  gap: var(--space-50);
+  gap: var(--space-1);
 }
 
 .chips {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-100);
-  margin-top: var(--space-100);
+  gap: var(--space-2);
+  margin-top: var(--space-2);
 }
 
 .config-chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 2px 8px;
-  border-radius: var(--radius-sm);
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-base);
   font-size: var(--fs-200);
   background: var(--surface-raised);
   color: var(--text-body);
@@ -815,7 +815,7 @@ export default {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 14px;
+  font-size: var(--fs-300);
   line-height: 1;
   color: var(--text-muted);
   padding: 0;
@@ -823,8 +823,8 @@ export default {
 
 .config-badge {
   display: inline-block;
-  padding: 2px 8px;
-  border-radius: var(--radius-sm);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-base);
   font-size: var(--fs-200);
   font-weight: 600;
 }

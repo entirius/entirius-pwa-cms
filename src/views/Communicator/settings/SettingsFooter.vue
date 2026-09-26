@@ -89,7 +89,7 @@ const hasPlaceholder = computed(() => PLACEHOLDER.test(html.value));
 const sampleLegal = computed(() => t("communicator.footer.sample_legal").split("\n\n").map((line) => `<p>${line}</p>`).join(""));
 // The mail is read on a white canvas whatever the CMS theme, so the white belongs to the previewed document.
 const previewDoc = computed(
-  () => `<!doctype html><html><body style="font-family:sans-serif;margin:8px;background:#fff">${html.value.replace(PLACEHOLDER, sampleLegal.value)}</body></html>`
+  () => `<!doctype html><html><body style="font-family:sans-serif;margin:var(--space-2);background:#fff">${html.value.replace(PLACEHOLDER, sampleLegal.value)}</body></html>`
 );
 
 function showLanguage(code) {
@@ -172,7 +172,7 @@ onMounted(async () => {
   width: 100%;
   min-height: 220px;
   border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   background: var(--surface-base);
 }
 </style>

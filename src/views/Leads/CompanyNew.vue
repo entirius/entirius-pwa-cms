@@ -140,13 +140,13 @@ onMounted(() => leadTypes.load()); // a failed load leaves Unknown only
 .add-lead__group {
   display: flex;
   flex-direction: column;
-  gap: var(--space-200);
+  gap: var(--space-5);
   margin: 0;
   padding: 0;
   border: none;
 }
 .add-lead__group legend {
-  margin-bottom: var(--space-200);
+  margin-bottom: var(--space-5);
   font-weight: 600;
 }
 .add-lead .ld-input {
@@ -156,8 +156,8 @@ onMounted(() => leadTypes.load()); // a failed load leaves Unknown only
 }
 .add-lead__saved {
   margin: 0;
-  padding: var(--space-200) var(--space-300);
-  border-radius: 8px;
+  padding: var(--space-5) var(--space-8);
+  border-radius: var(--radius-lg);
   background: var(--surface-raised);
 }
 .add-lead__cancel {

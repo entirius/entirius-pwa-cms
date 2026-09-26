@@ -59,7 +59,7 @@ onBeforeUnmount(() => {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 5px;
+  gap: var(--space-1);
 }
 
 .mobile-filter-panel__trigger {
@@ -70,11 +70,11 @@ onBeforeUnmount(() => {
   width: 32px;
   height: 32px;
   flex-shrink: 0;
-  border-radius: 5px;
+  border-radius: var(--radius-base);
   border: 1px solid var(--border-default);
   background-color: var(--surface-base);
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: var(--fs-250);
   cursor: pointer;
   transition: all 0.15s ease;
   &:hover {
@@ -89,11 +89,11 @@ onBeforeUnmount(() => {
   right: -4px;
   min-width: 16px;
   height: 16px;
-  font-size: 10px;
+  font-size: var(--fs-100);
   font-weight: 600;
   line-height: 16px;
   text-align: center;
-  border-radius: 50px;
+  border-radius: var(--radius-full);
   background-color: var(--accent-fill);
   color: var(--text-on-accent-fill);
   pointer-events: none;
@@ -103,7 +103,7 @@ onBeforeUnmount(() => {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 5px;
+  gap: var(--space-1);
 }
 
 .mobile-filter-panel__dropdown {
@@ -112,7 +112,7 @@ onBeforeUnmount(() => {
 
 @media only screen and (max-width: 768px) {
   .mobile-filter-panel {
-    gap: 8px;
+    gap: var(--space-2);
   }
 
   .mobile-filter-panel__trigger {
@@ -127,15 +127,15 @@ onBeforeUnmount(() => {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 5px;
+    gap: var(--space-1);
     width: 100%;
     max-height: 40vh;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    padding: 8px;
+    padding: var(--space-2);
     background-color: var(--surface-raised);
     border: 1px solid var(--border-subtle);
-    border-radius: 5px;
+    border-radius: var(--radius-base);
   }
 }
 

@@ -4,11 +4,11 @@
       v-model="search"
       :placeholder="$t('common.start_typing')"
       icon="search"
-      class="mb-300"
+      class="mb-8"
       @input="debouncedFetch"
     />
 
-    <div class="flex ai-ct jc-sb mb-200">
+    <div class="flex ai-ct jc-sb mb-5">
       <span class="fs-200 t-muted">{{
         $t("pim.available_count", { count: totalCount })
       }}</span>
@@ -41,7 +41,7 @@
     </draggable>
     <div
       v-if="!loading && !normalizedFeatures.length"
-      class="t-muted fs-200 p-300"
+      class="t-muted fs-200 p-8"
     >
       {{ $t("pim.no_unassigned") }}
     </div>
@@ -49,7 +49,7 @@
     <Pagination
       v-if="totalCount > pageSize"
       :pagination="paginationState"
-      class="pt-200"
+      class="pt-5"
       @onChangePage="onPageChange"
     />
   </div>
@@ -184,13 +184,13 @@ export default {
 }
 
 .attribute-library__item {
-  padding: 12px var(--space-200);
+  padding: var(--space-3) var(--space-5);
   background: var(--surface-base);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   cursor: grab;
   user-select: none;
-  gap: var(--space-100);
+  gap: var(--space-2);
   transition: background 0.15s;
   &:hover {
     background: var(--surface-raised);

@@ -1,8 +1,8 @@
 <template>
   <div class="category-products">
     <!-- Pinned products panel -->
-    <div class="panel mb-400">
-      <h3 class="panel-title fs-400 fw-600 mb-200 t-body">
+    <div class="panel mb-10">
+      <h3 class="panel-title fs-400 fw-600 mb-5 t-body">
         {{ $t("pim.pinned_products") }}
         <span class="t-muted fw-400">({{ positioned.length }})</span>
       </h3>
@@ -49,14 +49,14 @@
 
     <!-- Unpositioned products panel -->
     <div class="panel">
-      <h3 class="panel-title fs-400 fw-600 t-body mb-200">
+      <h3 class="panel-title fs-400 fw-600 t-body mb-5">
         {{ $t("pim.all_products") }}
         <span class="t-muted fw-400">({{ unpositionedCount }})</span>
       </h3>
       <BasicInput
         v-model="searchQuery"
         :placeholder="$t('common.start_typing')"
-        class="search-input mb-200"
+        class="search-input mb-5"
       />
       <draggable
         v-model="unpositioned"
@@ -100,7 +100,7 @@
       <!-- Pagination -->
       <div
         v-if="totalPages > 1"
-        class="pagination flex ai-center jc-center gap-100 mt-300"
+        class="pagination flex ai-center jc-center gap-2 mt-8"
       >
         <button
           class="page-btn"
@@ -264,18 +264,18 @@ onMounted(() => fetchProducts());
 
 <style lang="scss" scoped>
 .category-products {
-  padding: 4px 0;
+  padding: var(--space-1) 0;
 }
 
 .panel {
   border: 1px solid var(--border-subtle);
-  border-radius: 6px;
-  padding: 20px;
+  border-radius: var(--radius-base);
+  padding: var(--space-5);
 }
 
 .panel-header {
   flex-wrap: wrap;
-  gap: var(--space-100);
+  gap: var(--space-2);
 }
 
 .search-input {
@@ -286,7 +286,7 @@ onMounted(() => fetchProducts());
 .product-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: var(--space-200);
+  gap: var(--space-5);
   min-height: 48px;
 
   &--pinned {
@@ -299,7 +299,7 @@ onMounted(() => fetchProducts());
     justify-content: center;
     min-height: 80px;
     border: 2px dashed var(--border-subtle);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-base);
     transition: border-color 0.2s, background 0.2s;
 
     &::after {
@@ -313,10 +313,10 @@ onMounted(() => fetchProducts());
 .product-card {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
   background: var(--surface-base);
   cursor: grab;
   user-select: none;
@@ -339,15 +339,15 @@ onMounted(() => fetchProducts());
     flex-shrink: 0;
     font-size: var(--fs-200);
     font-weight: 600;
-    padding: 2px 6px;
-    border-radius: var(--radius-sm);
+    padding: 2px var(--space-1);
+    border-radius: var(--radius-base);
   }
 
   &__thumb {
     flex-shrink: 0;
     width: 40px;
     height: 40px;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-base);
     background-size: cover;
     background-position: center;
     background-color: var(--surface-raised);
@@ -379,14 +379,14 @@ onMounted(() => fetchProducts());
 }
 
 .empty-state {
-  padding: 24px;
+  padding: var(--space-6);
   text-align: center;
   border: 2px dashed var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
 }
 
 .pagination {
-  padding-top: var(--space-200);
+  padding-top: var(--space-5);
 }
 
 .page-btn {
@@ -395,9 +395,9 @@ onMounted(() => fetchProducts());
   justify-content: center;
   min-width: 32px;
   height: 32px;
-  padding: 0 8px;
+  padding: 0 var(--space-2);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   background: var(--surface-base);
   color: var(--text-secondary);
   cursor: pointer;

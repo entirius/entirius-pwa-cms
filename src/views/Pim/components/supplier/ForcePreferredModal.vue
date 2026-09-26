@@ -2,7 +2,7 @@
   <ConfirmationModal :visible="visible" @reject="$emit('close')">
     <template #header>
       <h2 class="t-warning">
-        <FontAwesomeIcon icon="triangle-exclamation" class="mr-100" />
+        <FontAwesomeIcon icon="triangle-exclamation" class="mr-2" />
         {{ $t("pim.supplier.force_preferred_modal.title") }}
       </h2>
     </template>
@@ -27,7 +27,7 @@
           {{ $t("pim.supplier.force_preferred_modal.reason_min_hint") }}
         </p>
         <p class="force-preferred__warning t-negative fs-200">
-          <FontAwesomeIcon icon="triangle-exclamation" class="mr-100" />
+          <FontAwesomeIcon icon="triangle-exclamation" class="mr-2" />
           {{ $t("pim.supplier.force_preferred_modal.warning") }}
         </p>
         <div class="force-preferred__actions">
@@ -122,21 +122,21 @@ export default {
 .force-preferred__body {
   display: flex;
   flex-direction: column;
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 .force-preferred__warning {
-  padding: var(--space-200);
-  border-radius: var(--radius-sm);
+  padding: var(--space-5);
+  border-radius: var(--radius-base);
   background: var(--negative-subtle);
   border-left: 3px solid var(--negative);
 }
 .force-preferred__hint {
-  margin-top: calc(-1 * var(--space-100));
+  margin-top: calc(-1 * var(--space-2));
 }
 .force-preferred__actions {
   display: flex;
   justify-content: flex-end;
-  gap: var(--space-200);
-  margin-top: var(--space-200);
+  gap: var(--space-5);
+  margin-top: var(--space-5);
 }
 </style>

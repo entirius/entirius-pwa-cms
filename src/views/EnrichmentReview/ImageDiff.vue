@@ -1,5 +1,5 @@
 <template>
-  <div class="image-diff flex ai-st gap-200">
+  <div class="image-diff flex ai-st gap-5">
     <!-- Before = current main from PIM (public /media URL). -->
     <figure
       class="image-diff__pane image-diff__pane--before"
@@ -114,8 +114,8 @@ export default {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-50);
-  padding-left: var(--space-100);
+  gap: var(--space-1);
+  padding-left: var(--space-2);
   border-left: 3px solid var(--border-subtle);
 }
 .image-diff__pane--before {
@@ -133,7 +133,7 @@ export default {
   max-width: 120px;
   max-height: 120px;
   object-fit: contain;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   background: var(--surface-raised);
   cursor: pointer;
 }

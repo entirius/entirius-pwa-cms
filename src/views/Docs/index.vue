@@ -1,12 +1,12 @@
 <template>
   <div class="doc-view fs-200 t-body">
     <div>
-      <nav class="flex bb-subtle mb-200">
+      <nav class="flex bb-subtle mb-5">
         <BasicButton
           v-for="({ label, value }, i) in nav"
           :key="`nav-key-${i}`"
           :text="label"
-          class="br-tl-50 br-tr-50"
+          class="rounded-tl rounded-tr"
           :class="[
             selected_view === value
               ? 'bg-accent-fill t-on-accent-fill b-accent'
@@ -16,12 +16,12 @@
         />
       </nav>
       <div v-if="selected_view === 'doc'">
-        <div class="mb-200">
+        <div class="mb-5">
           <Dropdown
             style="max-width: 10rem"
             :values="docs_nav"
             :selected="[doc_prev]"
-            class="bg-hover b-default br-50 fs-100"
+            class="bg-hover b-default rounded fs-100"
             @onSelect="doc_prev = $event"
           />
         </div>
@@ -31,19 +31,19 @@
         </div>
       </div>
       <div v-if="selected_view === 'eg'">
-        <p class="fs-100 t-muted mb-50">Wybierz przyklad</p>
-        <div class="flex mb-200">
+        <p class="fs-100 t-muted mb-1">Wybierz przyklad</p>
+        <div class="flex mb-5">
           <Dropdown
             style="min-width: 10rem"
             :values="sub_nav"
             :selected="[eg_prev]"
-            class="bg-hover b-default br-50 fs-100"
+            class="bg-hover b-default rounded fs-100"
             @onSelect="eg_prev = $event"
           />
         </div>
-        <div class="grid grid-col-3 gap-200">
+        <div class="grid grid-col-3 gap-5">
           <pre
-            class="fs-100 b-subtle br-50 p-200 bg-base as-s"
+            class="fs-100 b-subtle rounded p-5 bg-base as-s"
             v-for="(k, i) in ex_preview"
           >
             
@@ -130,7 +130,7 @@ export default {
 .doc-view {
   .markdown-renderer-wrapper {
     div > * {
-      margin-bottom: var(--space-200);
+      margin-bottom: var(--space-5);
     }
     h1,
     h2,
@@ -147,11 +147,11 @@ export default {
 
     table {
       border: 1px solid var(--border-default);
-      border-radius: var(--space-50);
+      border-radius: var(--radius-base);
 
       th,
       td {
-        padding: var(--space-50) var(--space-100);
+        padding: var(--space-1) var(--space-2);
       }
 
       th:nth-of-type(2n),
@@ -167,14 +167,14 @@ export default {
     }
 
     blockquote {
-      padding: var(--space-50);
+      padding: var(--space-1);
       background: var(--surface-base);
-      border-radius: var(--space-50);
+      border-radius: var(--radius-base);
     }
     code {
       border: 1px solid var(--border-default);
-      border-radius: var(--space-50);
-      padding: var(--space-50);
+      border-radius: var(--radius-base);
+      padding: var(--space-1);
       background: var(--surface-hover);
     }
     hr {

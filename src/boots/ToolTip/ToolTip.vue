@@ -1,7 +1,7 @@
 <template>
   <span class="tool-tip relative pointer">
     <i class="icon-cookie" v-if="!is_wrapper" />
-    <span class="tip p-50 fs-100">{{ tip }}</span>
+    <span class="tip p-1 fs-100">{{ tip }}</span>
     <slot v-if="is_wrapper"> </slot>
   </span>
 </template>
@@ -33,7 +33,7 @@ export default {
     transform: translate(-50%, -100%);
     white-space: nowrap;
     z-index: 2;
-    border-radius: var(--space-50);
+    border-radius: var(--radius-base);
 
     &::after {
       content: "";

@@ -82,26 +82,26 @@ export default {
 .home-content {
   width: 100%;
   max-width: 860px;
-  padding: 3rem 2rem;
+  padding: var(--space-12) var(--space-8);
 }
 .home-greeting {
-  font-size: 13px;
+  font-size: var(--fs-250);
   font-weight: 500;
   color: var(--text-muted);
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  margin-bottom: 6px;
+  margin-bottom: var(--space-1);
 }
 .home-title {
-  font-size: 22px;
+  font-size: var(--fs-500);
   font-weight: 600;
   color: var(--text-body);
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-8);
 }
 .panel-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  gap: var(--space-3);
 
   @media only screen and (max-width: 768px) {
     grid-template-columns: repeat(2, 1fr);
@@ -115,11 +115,11 @@ export default {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 10px;
-  padding: 20px 16px;
+  gap: var(--space-2);
+  padding: var(--space-5) var(--space-4);
   background: var(--surface-base);
   border: 1px solid transparent;
-  border-radius: 10px;
+  border-radius: var(--radius-xl);
   cursor: pointer;
   font: inherit;
   color: inherit;
@@ -139,22 +139,22 @@ export default {
   justify-content: center;
   width: 44px;
   height: 44px;
-  border-radius: 10px;
+  border-radius: var(--radius-xl);
   background: var(--surface-raised);
   flex-shrink: 0;
   transition: background 0.2s ease;
 }
 .panel-card-icon {
-  font-size: 18px;
+  font-size: var(--fs-500);
   color: var(--text-accent);
 }
 .panel-card-name {
-  font-size: 15px;
+  font-size: var(--fs-300);
   font-weight: 600;
   color: var(--text-body);
 }
 .panel-card-desc {
-  font-size: 11px;
+  font-size: var(--fs-150);
   color: var(--text-muted);
   line-height: 1.4;
 }
@@ -171,11 +171,11 @@ export default {
   }
 }
 .panel-card-locked-msg {
-  font-size: 11px;
+  font-size: var(--fs-150);
   color: var(--text-muted);
   line-height: 1.4;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-1);
 }
 </style>

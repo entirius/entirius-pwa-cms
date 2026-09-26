@@ -1,5 +1,5 @@
 <template>
-  <form class="feed-config-form flex flex-column gap-200" @submit.prevent="submit">
+  <form class="feed-config-form flex flex-column gap-5" @submit.prevent="submit">
     <FormField :label="$t('atlas.feeds.form.idx_label')" required>
       <BasicInput
         v-model="local.idx"
@@ -103,7 +103,7 @@
       />
     </FormField>
 
-    <div class="flex ai-ct jc-end gap-200 mt-300">
+    <div class="flex ai-ct jc-end gap-5 mt-8">
       <button
         type="button"
         class="suppliers-secondary-btn"
@@ -220,12 +220,12 @@ export default {
 .suppliers-secondary-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   height: 36px;
-  padding: 0 16px;
-  font-size: 13px;
+  padding: 0 var(--space-4);
+  font-size: var(--fs-250);
   font-weight: 500;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   border: 1px solid;
   cursor: pointer;
   transition: all 0.15s ease;

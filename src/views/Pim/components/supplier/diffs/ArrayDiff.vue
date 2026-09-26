@@ -68,10 +68,10 @@ export default {
 }
 .array-diff__summary {
   display: flex;
-  gap: var(--space-300);
+  gap: var(--space-8);
 }
 .array-diff__toggle {
-  margin-top: var(--space-100);
+  margin-top: var(--space-2);
   padding: 0;
   background: none;
   border: none;
@@ -81,7 +81,7 @@ export default {
   font-size: var(--fs-100);
 }
 .array-diff__details {
-  margin-top: var(--space-200);
+  margin-top: var(--space-5);
 }
 .array-diff__list {
   list-style: none;

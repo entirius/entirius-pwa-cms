@@ -113,7 +113,7 @@ onMounted(load);
   display: grid;
   grid-template-columns: minmax(8rem, 1fr) auto auto auto;
   align-items: center;
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 .lead-type__code {
   font-family: monospace;
@@ -121,12 +121,12 @@ onMounted(load);
 .lead-type__active {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-100);
+  gap: var(--space-2);
   min-height: 44px;
 }
 .lead-type__controls {
   display: flex;
-  gap: var(--space-100);
+  gap: var(--space-2);
 }
 .lead-type__error {
   grid-column: 1 / -1;

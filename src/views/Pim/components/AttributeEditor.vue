@@ -803,21 +803,21 @@ onMounted(() => {
   flex-direction: column;
 
   &__empty {
-    padding: var(--space-400);
+    padding: var(--space-10);
     text-align: center;
   }
 }
 
 .attribute-group {
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  margin-bottom: var(--space-300);
+  border-radius: var(--radius-base);
+  margin-bottom: var(--space-8);
 
   &__header {
     display: flex;
     align-items: center;
-    gap: var(--space-200);
-    padding: 10px 16px;
+    gap: var(--space-5);
+    padding: var(--space-2) var(--space-4);
     background: var(--surface-raised);
     cursor: pointer;
     border-left: 3px solid var(--accent);
@@ -832,14 +832,14 @@ onMounted(() => {
   }
 
   &__body {
-    padding: 0 16px;
+    padding: 0 var(--space-4);
   }
 }
 
 .collapse-chevron {
   cursor: pointer;
   transition: transform 0.2s;
-  font-size: 10px;
+  font-size: var(--fs-100);
   color: var(--text-muted);
 
   &.is-collapsed {
@@ -850,9 +850,9 @@ onMounted(() => {
 .attribute-row {
   display: grid;
   grid-template-columns: 240px 1fr;
-  gap: var(--space-300);
+  gap: var(--space-8);
   align-items: start;
-  padding: 14px 0;
+  padding: var(--space-3) 0;
   border-bottom: 1px solid var(--border-subtle);
 
   &:last-child {
@@ -863,8 +863,8 @@ onMounted(() => {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: var(--space-100);
-    padding-top: 6px;
+    gap: var(--space-2);
+    padding-top: var(--space-1);
   }
 
   &__link {
@@ -882,14 +882,14 @@ onMounted(() => {
 
 .required-mark {
   font-size: var(--fs-400);
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1;
 }
 
 .lang-tag {
   display: inline-block;
-  padding: 2px 6px;
-  border-radius: 3px;
+  padding: 2px var(--space-1);
+  border-radius: var(--radius-base);
   background: var(--surface-raised);
   color: var(--text-muted);
   font-weight: 600;
@@ -904,12 +904,12 @@ onMounted(() => {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 6px;
+    margin-bottom: var(--space-1);
   }
 
   &__btn {
     line-height: 1;
-    padding: 4px 10px;
+    padding: var(--space-1) var(--space-2);
     font-size: var(--fs-200);
   }
 }
@@ -917,7 +917,7 @@ onMounted(() => {
 .input-with-unit {
   display: flex;
   align-items: center;
-  gap: var(--space-200);
+  gap: var(--space-5);
 
   .unit-suffix {
     font-size: var(--fs-300);

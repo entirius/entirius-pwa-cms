@@ -1,5 +1,5 @@
 <template>
-  <div class="product-card bg-base b-subtle br-100 p-300 shadow-sm">
+  <div class="product-card bg-base b-subtle rounded-lg p-8 shadow-sm">
     <div class="product-card__hero" data-testid="product-card-hero">
       <img
         v-if="heroImage"
@@ -11,13 +11,13 @@
         <FontAwesomeIcon icon="image" />
       </div>
     </div>
-    <h2 class="fs-500 fw-600 mt-200" data-testid="product-card-name">
+    <h2 class="fs-500 fw-600 mt-5" data-testid="product-card-name">
       {{ product?.name }}
     </h2>
-    <div v-if="product?.ean" class="flex ai-ct gap-200 mt-100 flex-wrap">
+    <div v-if="product?.ean" class="flex ai-ct gap-5 mt-2 flex-wrap">
       <span class="t-muted fs-200">EAN: {{ product.ean }}</span>
     </div>
-    <div class="flex ai-ct gap-300 mt-200 flex-wrap">
+    <div class="flex ai-ct gap-8 mt-5 flex-wrap">
       <span class="fs-400 fw-600 t-body">
         {{ formatCost(product?.cost, product?.currency) }}
       </span>
@@ -26,7 +26,7 @@
         :variant="(product?.stock ?? 0) > 0 ? 'positive' : 'negative'"
       />
     </div>
-    <div class="flex ai-ct gap-200 mt-300 flex-wrap">
+    <div class="flex ai-ct gap-5 mt-8 flex-wrap">
       <button
         v-if="extraImagesCount > 0"
         class="product-card__gallery-btn"
@@ -96,7 +96,7 @@ export default {
   width: 100%;
   aspect-ratio: 1;
   background: var(--surface-raised);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -115,7 +115,7 @@ export default {
 .product-card__link {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   color: var(--text-accent);
   text-decoration: none;
   font-size: var(--fs-200);
@@ -126,12 +126,12 @@ export default {
 .product-card__raw-btn {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   background: var(--surface-raised);
   color: var(--text-body);
   border: none;
-  border-radius: var(--radius-sm);
-  padding: 4px 10px;
+  border-radius: var(--radius-base);
+  padding: var(--space-1) var(--space-2);
   font-size: var(--fs-200);
   cursor: pointer;
 }
@@ -141,12 +141,12 @@ export default {
 .product-card__gallery-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   background: var(--surface-raised);
   color: var(--text-body);
   border: none;
-  border-radius: var(--radius-sm);
-  padding: 6px 12px;
+  border-radius: var(--radius-base);
+  padding: var(--space-1) var(--space-3);
   font-size: var(--fs-200);
   font-weight: 500;
   cursor: pointer;

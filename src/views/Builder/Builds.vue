@@ -1,7 +1,7 @@
 <template>
-  <div class="site-genator t-body fs-300 ph-500 h-100 ovy-auto">
+  <div class="site-genator t-body fs-300 ph-12 h-100 ovy-auto">
     <FloatingActions :actions="fabActions" />
-    <div class="flex jc-sb ai-ct mv-300">
+    <div class="flex jc-sb ai-ct mv-8">
       <MobileFilterPanel
         :active-count="activeFilters.length"
         :trigger-label="$t('builder.filters')"
@@ -24,7 +24,7 @@
           @click="activeFilters = []"
         />
       </MobileFilterPanel>
-      <div class="flex gap-100 js-fe">
+      <div class="flex gap-2 js-fe">
         <BasicButton
           v-if="translatorAvailable"
           :text="$t('builder.translate_all')"
@@ -54,7 +54,7 @@
             }
           "
           :placeholder="$t('builder.language')"
-          class="bg-base b-default t-secondary fs-200 br-50"
+          class="bg-base b-default t-secondary fs-200 rounded"
         />
       </div>
     </div>
@@ -69,7 +69,7 @@
       <div
         :key="`content_type-${i}`"
         v-if="doc.data.length"
-        class="doc-section mb-400"
+        class="doc-section mb-10"
       >
         <div class="doc-section__header">
           {{ tBuildType(doc.type, doc.label) }}
@@ -154,7 +154,7 @@
             </button>
           </template>
         </DataTable>
-        <div class="mv-100 ph-100" v-if="doc.pagination">
+        <div class="mv-2 ph-2" v-if="doc.pagination">
           <Pagination
             :nav_size="32"
             :pagination="doc.pagination"
@@ -183,7 +183,7 @@
 
     <div
       v-if="contentTypes !== null && !hasVisibleContent"
-      class="flex ai-ct jc-ct gap-200 p-500 br-50 b-subtle bg-base t-muted"
+      class="flex ai-ct jc-ct gap-5 p-12 rounded b-subtle bg-base t-muted"
       style="min-height: 14rem; flex-direction: column"
     >
       <p class="fs-400 fw-600 t-secondary">
@@ -489,16 +489,16 @@ export default {
 
 <style lang="scss" scoped>
 .doc-section {
-  border-radius: 5px;
+  border-radius: var(--radius-base);
   overflow: hidden;
   border: 1px solid var(--border-subtle);
 }
 .doc-section__header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  font-size: 12px;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--fs-200);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
@@ -512,10 +512,10 @@ export default {
   justify-content: center;
   min-width: 20px;
   height: 20px;
-  padding: 0 6px;
-  font-size: 11px;
+  padding: 0 var(--space-1);
+  font-size: var(--fs-150);
   font-weight: 600;
-  border-radius: 50px;
+  border-radius: var(--radius-full);
   background-color: var(--surface-hover);
   color: var(--text-secondary);
 }
@@ -535,13 +535,13 @@ export default {
 .data-table__action-btn {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  font-size: 12px;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--fs-200);
   color: var(--text-secondary);
   background: none;
   border: 1px solid transparent;
-  border-radius: 5px;
+  border-radius: var(--radius-base);
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.15s ease;
@@ -561,8 +561,8 @@ export default {
 }
 @media only screen and (max-width: 768px) {
   .site-genator {
-    padding-left: 16px !important;
-    padding-right: 16px !important;
+    padding-left: var(--space-4) !important;
+    padding-right: var(--space-4) !important;
   }
 }
 </style>

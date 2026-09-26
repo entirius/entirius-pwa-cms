@@ -1,9 +1,9 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
     >
-      <div class="flex ai-ct gap-200 mb-400">
+      <div class="flex ai-ct gap-5 mb-10">
         <BasicButton
           text=""
           icon="arrow-left"
@@ -11,10 +11,10 @@
           @click="goBack"
         />
         <h1 class="fs-700 fw-600">{{ $t("emails.edit_template") }}</h1>
-        <span class="fs-200 t-muted ml-100">({{ typeLabel }})</span>
+        <span class="fs-200 t-muted ml-2">({{ typeLabel }})</span>
         <span
           v-if="template.language_code"
-          class="fs-200 t-accent ml-100 fw-600"
+          class="fs-200 t-accent ml-2 fw-600"
           >{{ template.language_code }}</span
         >
       </div>
@@ -22,20 +22,20 @@
       <Loader v-show="loading" />
 
       <div v-show="!loading">
-        <div class="emails-form-grid mb-400">
+        <div class="emails-form-grid mb-10">
           <FormField :label="$t('emails.subject')">
             <BasicInput v-model="template.subject" />
           </FormField>
         </div>
 
-        <div v-for="field in contentFields" :key="field.key" class="mb-300">
+        <div v-for="field in contentFields" :key="field.key" class="mb-8">
           <FormField :label="field.label" :description="field.description || ''">
             <BasicWysiwyg v-if="field.wysiwyg" v-model="template[field.key]" />
             <BasicInput v-else v-model="template[field.key]" />
           </FormField>
         </div>
 
-        <div class="flex jc-fe mt-400">
+        <div class="flex jc-fe mt-10">
           <BasicButton
             :text="$t('common.save')"
             class="bg-accent-fill t-on-accent-fill"
@@ -324,6 +324,6 @@ export default {
 .emails-form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
+  gap: var(--space-4);
 }
 </style>

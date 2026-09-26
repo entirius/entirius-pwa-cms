@@ -1,7 +1,7 @@
 <template>
-  <div class="flex-column gap-300 jc-sb h-100 fs-200 t-body">
+  <div class="flex-column gap-8 jc-sb h-100 fs-200 t-body">
     <nav
-      class="grid grid-col-2 grid-col-2-m ai-ct bg-raised pl-400 pr-400 pt-200 pb-200 t-secondary br-tl-50 br-tr-50"
+      class="grid grid-col-2 grid-col-2-m ai-ct bg-raised pl-10 pr-10 pt-5 pb-5 t-secondary rounded-tl rounded-tr"
     >
       <p class="fw-600 fs-400 uppercase">
         {{ handyType.label ? handyType.label : $t("common.click") }}
@@ -13,8 +13,8 @@
         <i class="icon-close-mini pointer" />
       </p>
     </nav>
-    <div class="fg-1 pl-400 pr-400 ovy-auto pb-400">
-      <div class="grid gap-100 mt-200">
+    <div class="fg-1 pl-10 pr-10 ovy-auto pb-10">
+      <div class="grid gap-2 mt-5">
         <div>
           <Switcher
             class="rtl-direction"
@@ -35,28 +35,28 @@
             "
           />
         </div>
-        <div class="mt-400">
+        <div class="mt-10">
           <BasicInput
             class="bg-base lh-base-elem"
             :label="`${$t('meta.meta_title')} - ${title.length}/60`"
             v-model="title"
           />
         </div>
-        <div class="mt-200">
-          <span class="block fs-200 mb-50">{{
+        <div class="mt-5">
+          <span class="block fs-200 mb-1">{{
             `${$t("meta.meta_description")} - ${description.length}/160`
           }}</span>
           <TextAreaBasic class="size-sm bg-base" v-model="description" />
         </div>
-        <div class="mt-300">
+        <div class="mt-8">
           <BasicInput
             class="bg-base lh-base-elem"
             :label="`${$t('meta.og_title')} - ${og_title.length}/60`"
             v-model="og_title"
           />
         </div>
-        <div class="mt-200">
-          <span class="block fs-200 mb-50">{{
+        <div class="mt-5">
+          <span class="block fs-200 mb-1">{{
             `${$t("meta.og_description")} - ${og_description.length}/160`
           }}</span>
           <TextAreaBasic
@@ -65,11 +65,11 @@
           />
         </div>
       </div>
-      <div class="mt-200">
-        <span class="block fs-200 mb-50">{{ $t("meta.og_image") }}</span>
-        <div class="grid grid-col-6 gap-100" v-if="pictures">
+      <div class="mt-5">
+        <span class="block fs-200 mb-1">{{ $t("meta.og_image") }}</span>
+        <div class="grid grid-col-6 gap-2" v-if="pictures">
           <div
-            class="pointer ov-h relative b-accent br-50 grid-square shadow-down"
+            class="pointer ov-h relative b-accent rounded grid-square shadow-down"
             :class="{ 'b-negative': !og_image.length }"
           >
             <div v-if="!og_image.length" class="flex jc-ct ai-ct h-100">
@@ -77,20 +77,20 @@
             </div>
             <div v-else class="relative w-100 h-100">
               <div
-                class="absolute bg-base br-100 ov-h t-negative"
+                class="absolute bg-base rounded-lg ov-h t-negative"
                 style="top: 3px; right: 3px; z-index: 2"
               >
                 <BasicButton
                   @click="og_image = ''"
                   :icon="'close-mini'"
-                  class="p-0 p-50 ov-h fs-100"
+                  class="p-0 p-1 ov-h fs-100"
                 />
               </div>
               <img class="absolute absolute-ct" :src="og_image" alt="" />
             </div>
           </div>
           <div
-            class="pointer relative b-subtle p-100 br-50 grid-square"
+            class="pointer relative b-subtle p-2 rounded grid-square"
             v-for="(p, i) in pictures[c_page]"
             @click="
               () => {
@@ -113,10 +113,10 @@
             </HoverMe>
           </div>
         </div>
-        <div class="flex jc-sb mt-200">
+        <div class="flex jc-sb mt-5">
           <Dropdown
             :placeholder="$t('common.sort_by')"
-            class="bg-base br-50 b-default t-body js-e"
+            class="bg-base rounded b-default t-body js-e"
             :values="[
               { label: $t('common.oldest_first'), value: 'created_at' },
               { label: $t('common.newest_first'), value: '-created_at' },
@@ -152,10 +152,10 @@
       </div>
     </div>
     <div
-      class="grid grid-col-3 rtl-direction bg-raised pl-400 pr-400 pt-100 pb-100"
+      class="grid grid-col-3 rtl-direction bg-raised pl-10 pr-10 pt-2 pb-2"
     >
       <BasicButton
-        class="bg-inverse br-50 bg-accent-fill fs-200 b-accent t-on-accent-fill w-100 jc-ct"
+        class="bg-inverse rounded bg-accent-fill fs-200 b-accent t-on-accent-fill w-100 jc-ct"
         :text="$t('common.save')"
         @click="
           pass_asset({

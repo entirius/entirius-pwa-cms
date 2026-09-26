@@ -1,6 +1,6 @@
 <template>
   <div class="events-mode">
-    <div class="flex ai-ct flex-wrap gap-200 mb-300">
+    <div class="flex ai-ct flex-wrap gap-5 mb-8">
       <span class="t-secondary fs-200">{{
         $t("atlas.severity.label")
       }}</span>
@@ -190,10 +190,10 @@ export default {
 .events-ack-btn {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   border: none;
-  border-radius: var(--radius-sm);
-  padding: 4px 8px;
+  border-radius: var(--radius-base);
+  padding: var(--space-1) var(--space-2);
   font-size: var(--fs-200);
   font-weight: 600;
   cursor: pointer;

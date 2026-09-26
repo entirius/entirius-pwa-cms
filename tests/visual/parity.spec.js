@@ -3,7 +3,7 @@ const { test, expect, THEME_VALUES, openPinned } = require("./support/state");
 const { expectedTokens, themeColors, brandFamilies } = require("./support/tokens");
 const { writeReport, mergeReport } = require("./support/report");
 
-// Layer 1 — token parity. Gates: token resolution (semantic and brand-scale tokens) and body text in Inter.
+// Layer 1 — token parity. Gates: token resolution (semantic tokens, the space/radius/type scales) and body text in Inter.
 // Census, the other fonts and contrast are reports.
 const THEMES = ["dark", "light"];
 const CENSUS_SCREENS = ["g-home", "pages-content-list", "pages-content-editor", "pim-products-list"]; // S1, S4, S6, PIM
@@ -19,10 +19,10 @@ const colorScheme = (theme) => (theme === "dark" ? "dark" : "light");
 for (const theme of THEMES) {
   test.describe(`token resolution ${theme}`, () => {
     test.use({ colorScheme: colorScheme(theme) });
-    test(`every source token resolves on / (${theme})`, { tag: "@parity" }, async ({ context, page }, testInfo) => {
+    test(`every source token resolves on / (${theme})`, { tag: "@parity" }, async ({ context, page }) => {
       await openPinned({ context, page }, "g-home", theme);
       await expect(page.locator("html")).toHaveAttribute("data-theme", THEME_VALUES[theme]);
-      const expected = expectedTokens(theme, testInfo.project.use.viewport.width);
+      const expected = expectedTokens(theme);
       const mismatches = await page.evaluate((tokens) => window.visualProbes.resolveTokens(tokens), expected);
       expect(mismatches).toEqual([]);
     });

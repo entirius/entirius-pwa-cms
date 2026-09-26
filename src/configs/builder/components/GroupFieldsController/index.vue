@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="">
-      <div class="flex jc-sb ai-ct mb-100">
+      <div class="flex jc-sb ai-ct mb-2">
         <p v-if="label">{{ label }}</p>
         <ToolTip
           class="right t-accent fs-200"
@@ -13,10 +13,10 @@
         >
         </ToolTip>
       </div>
-      <div class="flex gap-100">
+      <div class="flex gap-2">
         <BasicButton
           :text="!mode ? $t('routes.set_new') : $t('common.close')"
-          class="b-default bg-base bg-hover-hover br-50 t-accent fs-200"
+          class="b-default bg-base bg-hover-hover rounded t-accent fs-200"
           :class="{
             'bg-hover t-body bg-accent-fill-hover t-on-accent-fill-hover b-accent-fill-hover':
               mode,
@@ -33,7 +33,7 @@
               ? `/${group_rules.max}`
               : `/${$t('controllers.unlimited')}`
           })`"
-          class="br-50 fs-200 fg-1"
+          class="rounded fs-200 fg-1"
           :class="[
             !Boolean(value)
               ? 'bg-raised t-muted b-subtle'
@@ -80,7 +80,7 @@
               >
                 <template #item="{ element, index: idx }">
                   <div
-                    class="ph-100 flex jc-sb"
+                    class="ph-2 flex jc-sb"
                     @click="
                       () => {
                         on_edit(idx);
@@ -89,7 +89,7 @@
                     "
                   >
                     <p>{{ $t("controllers.position") }}: {{ idx + 1 }}</p>
-                    <div class="grid grid-col-2 gap-50">
+                    <div class="grid grid-col-2 gap-1">
                       <p
                         class="t-negative"
                         @click.stop="
@@ -115,9 +115,9 @@
         </Dropdown>
       </div>
     </div>
-    <div v-if="group && Object.keys(group).length && mode" class="mt-200">
+    <div v-if="group && Object.keys(group).length && mode" class="mt-5">
       <div
-        class="grid gap-100 ai-fe"
+        class="grid gap-2 ai-fe"
         :class="{
           'grid-col-1': Object.keys(group).length === 1,
           'grid-col-2': Object.keys(group).length === 2,
@@ -136,21 +136,21 @@
             v-if="props_handlers[field.type] === 'BasicInput'"
             v-model="group[key]"
             :label="tFieldLabel(key, field.label)"
-            class="br-50 bg-base mt-300 lh-base-elem"
+            class="rounded bg-base mt-8 lh-base-elem"
             :key="`${force_refresh}-${index}`"
           />
           <div
             v-if="props_handlers[field.type] === 'BasicWysiwyg'"
             class="gc-1 gc-4"
           >
-            <p class="mb-50">{{ tFieldLabel(key, field.label) }}</p>
+            <p class="mb-1">{{ tFieldLabel(key, field.label) }}</p>
             <BasicWysiwyg v-model="group[key]" :key="`wysiwyg-${key}`" />
           </div>
           <div v-if="props_handlers[field.type] === 'Dropdown'">
-            <p class="mb-50">{{ tFieldLabel(key, field.label) }}</p>
+            <p class="mb-1">{{ tFieldLabel(key, field.label) }}</p>
             <Dropdown
               :selected="[group[key]]"
-              class="br-50 b-default bg-base"
+              class="rounded b-default bg-base"
               :values="field.options"
               @onSelect="
                 ($event) => {
@@ -162,9 +162,9 @@
             />
           </div>
           <div v-if="props_handlers[field.type] === 'Switcher'">
-            <p class="mb-50">{{ tFieldLabel(key, field.label) }}</p>
+            <p class="mb-1">{{ tFieldLabel(key, field.label) }}</p>
             <Switcher
-              class="mv-100"
+              class="mv-2"
               :selected="group[key]"
               @onSelect="
                 () => {
@@ -178,7 +178,7 @@
         </div>
       </div>
       <BasicButton
-        class="bg-hover bg-hover-hover br-50 t-secondary mt-200 b-default"
+        class="bg-hover bg-hover-hover rounded t-secondary mt-5 b-default"
         :text="mode === 'add' ? $t('controllers.add_group') : $t('common.save')"
         @click="set_group({ ...group })"
       />

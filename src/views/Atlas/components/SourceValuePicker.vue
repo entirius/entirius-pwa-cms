@@ -20,24 +20,24 @@
       class="source-value-picker__panel bg-base b-subtle"
       :data-testid="`${testId}-popover`"
     >
-      <div v-if="loading && !filteredValues.length" class="source-value-picker__state t-muted p-100 fs-200">
+      <div v-if="loading && !filteredValues.length" class="source-value-picker__state t-muted p-2 fs-200">
         {{ $t("layout_extender.searching") }}
       </div>
       <div
         v-else-if="!sourceField"
-        class="source-value-picker__state t-muted p-100 fs-200"
+        class="source-value-picker__state t-muted p-2 fs-200"
       >
         {{ $t("atlas.mappings.category.source_value_picker_no_source_field") }}
       </div>
       <div
         v-else-if="error"
-        class="source-value-picker__state t-negative p-100 fs-200"
+        class="source-value-picker__state t-negative p-2 fs-200"
       >
         {{ error }}
       </div>
       <div
         v-else-if="!filteredValues.length"
-        class="source-value-picker__state t-muted p-100 fs-200"
+        class="source-value-picker__state t-muted p-2 fs-200"
       >
         {{
           values.length
@@ -49,7 +49,7 @@
         <li
           v-for="item in filteredValues"
           :key="item.value"
-          class="source-value-picker__item flex ai-ct jc-sb p-100"
+          class="source-value-picker__item flex ai-ct jc-sb p-2"
           :data-testid="`${testId}-option`"
           @click="selectValue(item.value)"
         >
@@ -171,10 +171,10 @@ export default {
 }
 .source-value-picker__chevron {
   position: absolute;
-  right: var(--space-100);
+  right: var(--space-2);
   top: 50%;
   transform: translateY(-50%);
-  font-size: 11px;
+  font-size: var(--fs-150);
   color: var(--text-muted);
   transition: transform 0.15s;
   cursor: pointer;
@@ -192,7 +192,7 @@ export default {
   max-height: 280px;
   overflow-y: auto;
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
   background: var(--surface-base);
   box-shadow: var(--shadow-md);
 }
@@ -217,7 +217,7 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  margin-right: var(--space-100);
+  margin-right: var(--space-2);
 }
 .source-value-picker__count {
   flex-shrink: 0;

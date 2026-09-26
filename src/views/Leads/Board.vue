@@ -169,11 +169,11 @@ onBeforeUnmount(() => window.removeEventListener("resize", measure));
   right: 0;
   display: flex;
   align-items: center;
-  gap: var(--space-100);
+  gap: var(--space-2);
   min-height: 44px;
-  padding: 0 var(--space-300);
+  padding: 0 var(--space-8);
   border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   background: var(--surface-base);
   box-shadow: -12px 0 16px var(--surface-base);
   color: var(--text-body);
@@ -182,8 +182,8 @@ onBeforeUnmount(() => window.removeEventListener("resize", measure));
 }
 .board {
   display: flex;
-  padding-bottom: var(--space-200);
-  gap: var(--space-300);
+  padding-bottom: var(--space-5);
+  gap: var(--space-8);
   align-items: flex-start;
   overflow-x: auto;
 }

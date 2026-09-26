@@ -1,6 +1,6 @@
 <template>
   <div
-    class="dropdown-wrapper pl-100 relative"
+    class="dropdown-wrapper pl-2 relative"
     :class="{
       dropped: open,
       'dropdown-disabled': isDisabled,
@@ -40,20 +40,20 @@
       <template v-if="!custom_droplist">
         <div
           v-for="(el, i) in values"
-          class="pointer flex jc-sb ai-ct pl-50 dropdown-list-el"
+          class="pointer flex jc-sb ai-ct pl-1 dropdown-list-el"
           :key="`unique-key-${i}`"
           @click.stop="onSelect(el)"
         >
           <span class="dropdown-list-el__main">
-            <span class="ml-100 dropdown-list-el__label" :class="{ 't-muted': el.disabled }">{{
+            <span class="ml-2 dropdown-list-el__label" :class="{ 't-muted': el.disabled }">{{
               el.label
             }}</span>
-            <span v-if="el.description" class="ml-100 dropdown-list-el__desc">{{
+            <span v-if="el.description" class="ml-2 dropdown-list-el__desc">{{
               el.description
             }}</span>
           </span>
           <span
-            class="flex gap-200 ai-ct mr-100"
+            class="flex gap-5 ai-ct mr-2"
             v-if="el.label_ext || el.label_ext_2"
           >
             <span
@@ -212,7 +212,7 @@ function find_label({
   line-height: var(--elem-height);
   min-width: 180px;
   border: 1px solid var(--border-control);
-  border-radius: var(--space-50);
+  border-radius: var(--radius-base);
   background-color: var(--surface-sunken);
   transition: border-color 0.2s;
 
@@ -290,7 +290,7 @@ function find_label({
     max-height: 14rem;
     overflow-y: auto;
     border: 1px solid var(--border-default);
-    border-radius: var(--space-50);
+    border-radius: var(--radius-base);
     box-shadow: var(--shadow-md);
 
     &.drop-up {
@@ -300,7 +300,7 @@ function find_label({
 
     .dropdown-list-el {
       min-height: var(--elem-height);
-      padding: 0 var(--space-100);
+      padding: 0 var(--space-2);
       transition: background-color 0.15s;
 
       &:hover {
@@ -308,11 +308,11 @@ function find_label({
       }
 
       &:first-child {
-        border-radius: var(--space-50) var(--space-50) 0 0;
+        border-radius: var(--radius-base) var(--radius-base) 0 0;
       }
 
       &:last-child {
-        border-radius: 0 0 var(--space-50) var(--space-50);
+        border-radius: 0 0 var(--radius-base) var(--radius-base);
       }
     }
 
@@ -326,7 +326,7 @@ function find_label({
       display: flex;
       flex-direction: column;
       min-width: 0;
-      padding: var(--space-50) 0;
+      padding: var(--space-1) 0;
     }
 
     .dropdown-list-el__label {

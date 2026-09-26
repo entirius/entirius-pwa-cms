@@ -1,6 +1,6 @@
 <template>
   <div class="linked-suppliers">
-    <h3 class="fs-200 fw-600 t-muted mb-200 supplier-section__heading">
+    <h3 class="fs-200 fw-600 t-muted mb-5 supplier-section__heading">
       {{ $t("pim.supplier.linked_title") }}
     </h3>
     <ul class="linked-suppliers__list">
@@ -17,13 +17,13 @@
               v-if="item.is_preferred && !item.manual_override"
               :label="$t('pim.supplier.auto_preferred_badge')"
               variant="positive"
-              class="ml-100"
+              class="ml-2"
             />
             <StatusBadge
               v-if="item.manual_override"
               :label="$t('pim.supplier.manual_override_badge')"
               variant="warning"
-              class="ml-100"
+              class="ml-2"
             />
           </div>
           <div class="linked-suppliers__metrics">
@@ -72,13 +72,13 @@ export default {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-100);
+  gap: var(--space-2);
 }
 
 .linked-suppliers__item {
-  padding: var(--space-200) var(--space-300);
+  padding: var(--space-5) var(--space-8);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
   background: var(--surface-base);
 }
 
@@ -87,13 +87,13 @@ export default {
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 
 .linked-suppliers__name {
   display: flex;
   align-items: center;
-  gap: var(--space-100);
+  gap: var(--space-2);
 }
 
 .linked-suppliers__star {
@@ -103,7 +103,7 @@ export default {
 
 .linked-suppliers__metrics {
   display: flex;
-  gap: var(--space-300);
+  gap: var(--space-8);
   font-size: var(--fs-200);
 }
 

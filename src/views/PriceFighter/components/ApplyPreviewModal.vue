@@ -30,7 +30,7 @@
         </table>
 
         <div v-if="errorText" class="apply-preview__error t-negative fs-200">
-          <FontAwesomeIcon icon="triangle-exclamation" class="mr-100" />
+          <FontAwesomeIcon icon="triangle-exclamation" class="mr-2" />
           {{ errorText }}
         </div>
 
@@ -107,7 +107,7 @@ export default {
 .apply-preview__body {
   display: flex;
   flex-direction: column;
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 
 .apply-preview__table {
@@ -118,7 +118,7 @@ export default {
 
   th {
     text-align: left;
-    padding: 4px 8px;
+    padding: var(--space-1) var(--space-2);
     color: var(--text-muted);
     text-transform: uppercase;
     font-size: var(--fs-100);
@@ -126,14 +126,14 @@ export default {
   }
 
   td {
-    padding: 6px 8px;
+    padding: var(--space-1) var(--space-2);
     border-bottom: 1px solid var(--border-subtle);
   }
 }
 
 .apply-preview__error {
-  padding: var(--space-200);
-  border-radius: var(--radius-sm);
+  padding: var(--space-5);
+  border-radius: var(--radius-base);
   background: var(--negative-subtle);
   border-left: 3px solid var(--negative);
 }
@@ -141,7 +141,7 @@ export default {
 .apply-preview__actions {
   display: flex;
   justify-content: flex-end;
-  gap: var(--space-200);
-  margin-top: var(--space-200);
+  gap: var(--space-5);
+  margin-top: var(--space-5);
 }
 </style>

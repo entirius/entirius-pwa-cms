@@ -1,5 +1,5 @@
 <template>
-  <div class="overview-tab p-300 ovy-auto h-100">
+  <div class="overview-tab p-8 ovy-auto h-100">
     <Teleport to="#suppliers-toolbar-right" defer>
       <button
         class="suppliers-toolbar-btn suppliers-toolbar-btn--primary"
@@ -8,7 +8,7 @@
         @click="save"
       >
         <FontAwesomeIcon icon="floppy-disk" />
-        <span class="ml-100">{{ $t("common.save") }}</span>
+        <span class="ml-2">{{ $t("common.save") }}</span>
       </button>
     </Teleport>
 
@@ -492,7 +492,7 @@ export default {
 .overview-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: var(--space-300);
+  gap: var(--space-8);
 }
 .overview-grid__wide {
   grid-column: 1 / -1;
@@ -507,8 +507,8 @@ export default {
   background: transparent;
   border: 1px solid var(--border-subtle);
   color: var(--text-body);
-  border-radius: var(--radius-sm);
-  padding: 4px 10px;
+  border-radius: var(--radius-base);
+  padding: var(--space-1) var(--space-2);
   cursor: pointer;
   transition: background 0.15s ease;
 }

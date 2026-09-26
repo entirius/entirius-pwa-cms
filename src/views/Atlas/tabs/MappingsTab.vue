@@ -1,6 +1,6 @@
 <template>
-  <div class="mappings-tab p-300 ovy-auto h-100">
-    <div class="flex ai-ct jc-sb mb-300">
+  <div class="mappings-tab p-8 ovy-auto h-100">
+    <div class="flex ai-ct jc-sb mb-8">
       <h2 class="fs-400 fw-600">{{ $t("atlas.tabs.mappings") }}</h2>
       <button
         class="suppliers-primary-btn"
@@ -18,11 +18,11 @@
       <div
         v-for="profile in profiles"
         :key="profile.idx"
-        class="mapping-profile bg-base b-subtle br-sm p-300 mb-200"
+        class="mapping-profile bg-base b-subtle rounded p-8 mb-5"
         :data-testid="`mapping-profile-${profile.idx}`"
       >
-        <div class="flex ai-ct jc-sb gap-200 flex-wrap mb-200">
-          <div class="flex ai-ct gap-200 flex-wrap">
+        <div class="flex ai-ct jc-sb gap-5 flex-wrap mb-5">
+          <div class="flex ai-ct gap-5 flex-wrap">
             <strong class="t-body">{{
               profile.name || profile.idx
             }}</strong>
@@ -52,7 +52,7 @@
               />
             </button>
           </div>
-          <div class="flex ai-ct gap-100">
+          <div class="flex ai-ct gap-2">
             <button
               class="suppliers-secondary-btn"
               :data-testid="`mapping-edit-profile-${profile.idx}`"
@@ -81,15 +81,15 @@
         </div>
         <div
           v-if="profile._expandValidation && profile._validation"
-          class="validation-detail mb-200 p-200 b-subtle br-sm"
+          class="validation-detail mb-5 p-5 b-subtle rounded"
           :data-testid="`mapping-validation-detail-${profile.idx}`"
         >
           <div
             v-for="(group, kind) in groupedValidation(profile)"
             :key="kind"
-            class="mb-100"
+            class="mb-2"
           >
-            <h4 class="fs-200 fw-600 t-secondary mb-50">
+            <h4 class="fs-200 fw-600 t-secondary mb-1">
               {{ kind }} ({{ group.length }})
             </h4>
             <ul class="validation-list">
@@ -121,8 +121,8 @@
           <summary class="t-secondary fs-200 pointer">
             {{ $t("atlas.mappings.expand_label") }}
           </summary>
-          <div class="mt-200">
-            <h3 class="fs-300 fw-600 mb-100">
+          <div class="mt-5">
+            <h3 class="fs-300 fw-600 mb-2">
               {{ $t("atlas.mappings.attribute_section") }}
             </h3>
             <AttributeMappingRow
@@ -139,7 +139,7 @@
               @delete="(payload) => deleteAttributeMapping(profile, payload)"
             />
             <button
-              class="suppliers-secondary-btn mt-100"
+              class="suppliers-secondary-btn mt-2"
               :data-testid="`mapping-add-attribute-${profile.idx}`"
               @click="addAttributeRow(profile)"
             >
@@ -147,7 +147,7 @@
               {{ $t("atlas.mappings.add_attribute") }}
             </button>
 
-            <h3 class="fs-300 fw-600 mt-300 mb-100">
+            <h3 class="fs-300 fw-600 mt-8 mb-2">
               {{ $t("atlas.mappings.category_section") }}
             </h3>
             <CategoryMappingRow
@@ -163,7 +163,7 @@
               @delete="(payload) => deleteCategoryMapping(profile, payload)"
             />
             <button
-              class="suppliers-secondary-btn mt-100"
+              class="suppliers-secondary-btn mt-2"
               :data-testid="`mapping-add-category-${profile.idx}`"
               @click="addCategoryRow(profile)"
             >
@@ -186,7 +186,7 @@
       width="420px"
       @close="closeForm"
     >
-      <form class="flex flex-column gap-200" @submit.prevent="submitForm">
+      <form class="flex flex-column gap-5" @submit.prevent="submitForm">
         <FormField :label="$t('atlas.form.name_label')" required>
           <BasicInput v-model="formData.name" data-testid="mapping-form-name" />
         </FormField>
@@ -224,7 +224,7 @@
           />
           <p
             v-if="languageMismatchHint"
-            class="fs-200 t-warning mt-50"
+            class="fs-200 t-warning mt-1"
             data-testid="mapping-form-language-mismatch-hint"
           >
             {{ languageMismatchHint }}
@@ -246,7 +246,7 @@
             @onSelect="formData.is_active = !formData.is_active"
           />
         </FormField>
-        <div class="flex ai-ct jc-end gap-200 mt-300">
+        <div class="flex ai-ct jc-end gap-5 mt-8">
           <button
             type="button"
             class="suppliers-secondary-btn"
@@ -849,12 +849,12 @@ export default {
 .suppliers-primary-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   height: 36px;
-  padding: 0 16px;
-  font-size: 13px;
+  padding: 0 var(--space-4);
+  font-size: var(--fs-250);
   font-weight: 500;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   border: 1px solid var(--accent);
   background: var(--accent-fill);
   color: var(--text-on-accent-fill);
@@ -867,12 +867,12 @@ export default {
 .suppliers-secondary-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   height: 32px;
-  padding: 0 12px;
+  padding: 0 var(--space-3);
   font-size: var(--fs-200);
   font-weight: 500;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   border: 1px solid var(--border-default);
   background: var(--surface-base);
   color: var(--text-body);
@@ -888,7 +888,7 @@ export default {
   width: 28px;
   height: 28px;
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   cursor: pointer;
 }
 .form-error {
@@ -916,7 +916,7 @@ export default {
   padding: 2px 0;
   line-height: 1.4;
 }
-.mb-50 {
-  margin-bottom: 5px;
+.mb-1 {
+  margin-bottom: var(--space-1);
 }
 </style>

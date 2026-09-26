@@ -375,32 +375,32 @@ export default {
 .config-list__toolbar {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: var(--space-400);
+  margin-bottom: var(--space-10);
 }
 
 .voucher-form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-300);
+  gap: var(--space-8);
 }
 
 .voucher-form__row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-300);
+  gap: var(--space-8);
 }
 
 .voucher-form__actions {
   display: flex;
   justify-content: space-between;
-  gap: var(--space-200);
-  margin-top: var(--space-400);
+  gap: var(--space-5);
+  margin-top: var(--space-10);
 }
 
 .config-badge {
   display: inline-block;
-  padding: 2px 8px;
-  border-radius: var(--radius-sm);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-base);
   font-size: var(--fs-200);
   font-weight: 600;
 }

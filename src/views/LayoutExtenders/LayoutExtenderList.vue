@@ -1,5 +1,5 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#layout-extender-toolbar-left" defer>
       <span class="fs-300 fw-600 t-body">{{ $t("layout_extender.list_title") }}</span>
       <Dropdown
@@ -12,7 +12,7 @@
       />
     </Teleport>
 
-    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
       <Loader v-show="loading" />
 
       <DataTable
@@ -28,7 +28,7 @@
         </template>
 
         <template #cell-type="{ row }">
-          <span class="bg-hover t-body fs-200 ph-100 br-50">
+          <span class="bg-hover t-body fs-200 ph-2 rounded">
             {{ row.type === "header" ? "Header" : "Footer" }}
           </span>
         </template>
@@ -38,11 +38,11 @@
         </template>
 
         <template #cell-channels="{ row }">
-          <div class="flex gap-50 flex-wrap">
+          <div class="flex gap-1 flex-wrap">
             <span
               v-for="ch in (row.channels || [])"
               :key="ch"
-              class="bg-hover t-body fs-200 ph-100 br-50"
+              class="bg-hover t-body fs-200 ph-2 rounded"
             >{{ ch }}</span>
           </div>
         </template>
@@ -370,23 +370,23 @@ export default {
 .le-copy {
   display: flex;
   flex-direction: column;
-  gap: var(--space-100);
+  gap: var(--space-2);
 }
 
 .le-copy__label {
-  font-size: 12px;
+  font-size: var(--fs-200);
   font-weight: 600;
   color: var(--text-secondary);
 
   &:not(:first-child) {
-    margin-top: var(--space-200);
+    margin-top: var(--space-5);
   }
 }
 
 .le-list__actions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   justify-content: flex-end;
 }
 
@@ -396,7 +396,7 @@ export default {
   justify-content: center;
   width: 32px;
   height: 32px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   cursor: pointer;
   color: var(--text-muted);
   transition: background 0.1s, color 0.1s;
@@ -413,8 +413,8 @@ export default {
 }
 
 @media only screen and (max-width: 768px) {
-  .p-500 {
-    padding: 16px !important;
+  .p-12 {
+    padding: var(--space-4) !important;
   }
 }
 </style>

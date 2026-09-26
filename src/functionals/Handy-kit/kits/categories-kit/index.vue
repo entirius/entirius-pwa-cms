@@ -1,8 +1,8 @@
 <template>
-  <div class="categories-kit fs-200 t-secondary flex-column fg-1 jc-sb gap-300">
-    <div class="grid gap-300">
+  <div class="categories-kit fs-200 t-secondary flex-column fg-1 jc-sb gap-8">
+    <div class="grid gap-8">
       <nav
-        class="grid grid-col-2 grid-col-2-m ai-ct bg-raised pl-400 pr-400 pt-200 pb-200 t-secondary br-tl-50 br-tr-50"
+        class="grid grid-col-2 grid-col-2-m ai-ct bg-raised pl-10 pr-10 pt-5 pb-5 t-secondary rounded-tl rounded-tr"
       >
         <p class="fw-600 fs-400 uppercase">
           {{ handyType.label ? handyType.label : $t("common.click") }}
@@ -14,10 +14,10 @@
           <i class="icon-close-mini pointer" />
         </p>
       </nav>
-      <div class="ph-300">
+      <div class="ph-8">
         <div
           :class="
-            editing_category ? 'p-200 br-50 bg-raised b-accent' : ''
+            editing_category ? 'p-5 rounded bg-raised b-accent' : ''
           "
           :style="
             editing_category
@@ -26,7 +26,7 @@
           "
         >
           <p
-            class="mb-100"
+            class="mb-2"
             :class="{ 'fs-100 fw-600 t-accent': editing_category }"
           >
             {{
@@ -35,7 +35,7 @@
                 : $t("images.add_new_category")
             }}
           </p>
-          <div class="flex gap-100">
+          <div class="flex gap-2">
             <BasicInput
               v-model="new_c"
               class="lh-base-elem w-50"
@@ -43,7 +43,7 @@
             />
             <BasicButton
               v-if="editing_category"
-              class="b-default t-secondary br-50 fs-200"
+              class="b-default t-secondary rounded fs-200"
               :text="$t('common.cancel')"
               @click="
                 editing_category = null;
@@ -51,7 +51,7 @@
               "
             />
             <BasicButton
-              class="bg-inverse br-50 bg-accent-fill fs-200 b-accent t-on-accent-fill"
+              class="bg-inverse rounded bg-accent-fill fs-200 b-accent t-on-accent-fill"
               :text="editing_category ? $t('common.save') : $t('common.post')"
               @click="
                 editing_category
@@ -65,8 +65,8 @@
             />
           </div>
         </div>
-        <hr class="bb-subtle mv-300" />
-        <p class="mb-100">
+        <hr class="bb-subtle mv-8" />
+        <p class="mb-2">
           {{
             ` ${
               !c || (Array.isArray && !c.length)
@@ -82,7 +82,7 @@
               ? $t('categories.select_category')
               : $t('categories.category')
           }`"
-          class="br-50 bg-base b-default override-dropdown"
+          class="rounded bg-base b-default override-dropdown"
           :class="{ 'bg-raised': !c || (Array.isArray && !c.length) }"
           :isDisabled="!c || (Array.isArray && !c.length)"
           :custom_droplist="true"
@@ -94,7 +94,7 @@
             >
               <div
                 v-for="{ label = null, value = null } in c"
-                class="ph-100 flex jc-sb ai-ct"
+                class="ph-2 flex jc-sb ai-ct"
                 @click="
                   c_to_set = { label, value };
                   if (editing_category) {
@@ -104,7 +104,7 @@
                 "
               >
                 <span>{{ label }} </span>
-                <span class="flex gap-200 ai-ct">
+                <span class="flex gap-5 ai-ct">
                   <span
                     class="t-accent pointer"
                     @click.stop="
@@ -128,17 +128,17 @@
         </Dropdown>
         <template v-if="c_to_set">
           <div
-            class="mv-300 t-secondary bg-raised p-100 br-50 b-default flex"
+            class="mv-8 t-secondary bg-raised p-2 rounded b-default flex"
           >
             <div class="fg-1">
               <p class="fs-300 fw-600">{{ $t("categories.category") }}:</p>
-              <p class="fs-200 mt-100">
+              <p class="fs-200 mt-2">
                 {{ c_to_set.label }} ({{ c_to_set.value }})
               </p>
             </div>
             <BasicButton
               :text="$t('categories.unset')"
-              class="b-negative t-negative br-50"
+              class="b-negative t-negative rounded"
               @click="pass_asset({ force_unset: true })"
             />
           </div>
@@ -169,11 +169,11 @@
     </ConfirmationModal>
 
     <div
-      class="grid grid-col-3 rtl-direction bg-raised pl-400 pr-400 pt-100 pb-100"
+      class="grid grid-col-3 rtl-direction bg-raised pl-10 pr-10 pt-2 pb-2"
     >
       <BasicButton
         :text="$t('common.save')"
-        class="br-50 w-100 jc-ct"
+        class="rounded w-100 jc-ct"
         :class="[
           !c_to_set
             ? 'bg-hover b-subtle t-muted'

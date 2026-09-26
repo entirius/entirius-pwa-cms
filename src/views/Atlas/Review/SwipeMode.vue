@@ -6,7 +6,7 @@
     <div class="swipe-mode__scroll">
       <Loader v-show="loading" />
 
-      <div v-if="!loading && !current" class="text-center mt-400">
+      <div v-if="!loading && !current" class="text-center mt-10">
         <EmptyState
           :title="$t('atlas.review.empty_state_title')"
           :message="$t('atlas.review.empty_state_message')"
@@ -16,7 +16,7 @@
 
       <div v-else-if="current" class="swipe-mode__content">
         <p
-          class="t-muted fs-200 text-center mb-200"
+          class="t-muted fs-200 text-center mb-5"
           data-testid="swipe-counter"
         >
           {{ index + 1 }} / {{ queue.length }}
@@ -217,7 +217,7 @@ export default {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: var(--space-300);
+  padding: var(--space-8);
 }
 
 .swipe-mode__content {
@@ -228,7 +228,7 @@ export default {
 .swipe-mode__layout {
   display: grid;
   grid-template-columns: minmax(0, 520px) minmax(0, 1fr);
-  gap: var(--space-300);
+  gap: var(--space-8);
   align-items: start;
   max-width: 1100px;
   margin: 0 auto;
@@ -253,9 +253,9 @@ export default {
   flex-shrink: 0;
   display: flex;
   justify-content: center;
-  gap: var(--space-200);
+  gap: var(--space-5);
   flex-wrap: wrap;
-  padding: var(--space-100) var(--space-300);
+  padding: var(--space-2) var(--space-8);
   background: var(--surface-base);
   border-top: 1px solid var(--border-subtle);
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.04);
@@ -264,12 +264,12 @@ export default {
 .swipe-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   height: 32px;
-  padding: 0 14px;
+  padding: 0 var(--space-3);
   font-size: var(--fs-200);
   font-weight: 600;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   border: 1px solid;
   cursor: pointer;
   transition: all 0.15s ease;

@@ -1,10 +1,10 @@
 <template>
   <div
     v-if="loaded"
-    class="quality-settings bg-base br-50"
+    class="quality-settings bg-base rounded"
     data-test="quality-settings-card"
   >
-    <h2 class="fs-400 fw-600 mb-300">{{ $t("pim.quality_settings") }}</h2>
+    <h2 class="fs-400 fw-600 mb-8">{{ $t("pim.quality_settings") }}</h2>
 
     <div class="quality-settings__row">
       <FormField
@@ -182,14 +182,14 @@ export default {
 
 <style lang="scss" scoped>
 .quality-settings {
-  padding: var(--space-300);
-  margin-bottom: var(--space-400);
+  padding: var(--space-8);
+  margin-bottom: var(--space-10);
   border: 1px solid var(--border-subtle);
 }
 .quality-settings__row {
   display: flex;
   align-items: flex-start;
-  gap: var(--space-500);
+  gap: var(--space-12);
   flex-wrap: wrap;
 }
 .quality-settings__picker {

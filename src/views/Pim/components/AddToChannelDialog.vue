@@ -190,7 +190,7 @@ export default {
 .add-dialog {
   background: var(--surface-base);
   border-radius: var(--radius-lg);
-  padding: 24px;
+  padding: var(--space-6);
   min-width: 360px;
   max-width: 480px;
   box-shadow: var(--shadow-lg);
@@ -198,18 +198,18 @@ export default {
 }
 
 .add-dialog__title {
-  margin: 0 0 8px;
+  margin: 0 0 var(--space-2);
   font-size: var(--fs-500);
   font-weight: 600;
   color: var(--text-body);
 }
 
 .add-dialog__desc {
-  margin: 0 0 16px;
+  margin: 0 0 var(--space-4);
 }
 
 .add-dialog__section {
-  margin-bottom: 16px;
+  margin-bottom: var(--space-4);
 }
 
 .add-dialog__label {
@@ -219,22 +219,22 @@ export default {
   text-transform: uppercase;
   letter-spacing: 0.03em;
   color: var(--text-muted);
-  margin-bottom: 8px;
+  margin-bottom: var(--space-2);
 }
 
 .channel-list {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  margin-bottom: 12px;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
 }
 
 .channel-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-base);
   font-size: var(--fs-300);
 }
 
@@ -262,7 +262,7 @@ export default {
 
 .channel-item__check {
   color: var(--positive);
-  font-size: 14px;
+  font-size: var(--fs-300);
   font-weight: 600;
   flex-shrink: 0;
   width: 18px;
@@ -275,7 +275,7 @@ export default {
   justify-content: center;
   width: 16px;
   height: 16px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   border: 2px solid var(--border-subtle);
   flex-shrink: 0;
 
@@ -287,7 +287,7 @@ export default {
 .channel-item__radio-dot {
   width: 8px;
   height: 8px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   background: var(--accent-fill);
 }
 
@@ -302,7 +302,7 @@ export default {
 .add-dialog__checkbox {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   font-size: var(--fs-300);
   color: var(--text-body);
   cursor: pointer;
@@ -311,12 +311,12 @@ export default {
 .add-dialog__actions {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .pim-btn {
-  padding: 8px 16px;
-  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-base);
   border: 1px solid var(--border-subtle);
   cursor: pointer;
   font-size: var(--fs-300);

@@ -115,13 +115,13 @@ async function save() {
   justify-content: center;
   align-items: center;
   z-index: 100;
-  padding: 1rem;
+  padding: var(--space-4);
 }
 
 .modal-container {
   background: var(--surface-base);
-  padding: 24px;
-  border-radius: 8px;
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
   border: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-lg);
   width: 520px;
@@ -131,51 +131,51 @@ async function save() {
 }
 
 .modal-header {
-  margin-bottom: 16px;
+  margin-bottom: var(--space-4);
 }
 
 .modal-header h2 {
-  font-size: 16px;
+  font-size: var(--fs-400);
   font-weight: 600;
   color: var(--text-body);
   margin: 0;
 }
 
 .modal-body {
-  margin-bottom: 24px;
+  margin-bottom: var(--space-6);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .lang-row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .lang-label {
   min-width: 60px;
-  font-size: 13px;
+  font-size: var(--fs-250);
   font-weight: 600;
   color: var(--text-secondary);
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-1);
 }
 
 .lang-badge {
-  font-size: 10px;
+  font-size: var(--fs-100);
   font-weight: 500;
   color: var(--text-muted);
   background: var(--surface-raised);
-  padding: 1px 5px;
-  border-radius: 3px;
+  padding: 1px var(--space-1);
+  border-radius: var(--radius-base);
 }
 
 .modal-footer {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
   justify-content: flex-end;
 }
 
@@ -185,7 +185,7 @@ async function save() {
   height: 14px;
   border: 2px solid var(--border-default);
   border-top-color: transparent;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   animation: spin 0.6s linear infinite;
 }
 

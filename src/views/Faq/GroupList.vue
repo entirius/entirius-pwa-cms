@@ -1,6 +1,6 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
-    <div class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
+    <div class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12">
       <div class="group-list__toolbar">
         <BasicInput
           v-model="search"
@@ -43,7 +43,7 @@
         >
           <template #item="{ element }">
             <div
-              class="group-row flex ai-ct gap-200 pointer"
+              class="group-row flex ai-ct gap-5 pointer"
               @click="$router.push(`/faq/groups/${element.idx}`)"
             >
               <font-awesome-icon
@@ -53,7 +53,7 @@
               <span class="group-row__name fw-600 flex-1">
                 {{ element.name || element.idx }}
               </span>
-              <div class="flex ai-ct gap-100">
+              <div class="flex ai-ct gap-2">
                 <span
                   v-if="(element.channel_ids || []).length"
                   class="chip bg-accent-subtle t-strong"
@@ -215,8 +215,8 @@ export default {
 .group-list__toolbar {
   display: flex;
   align-items: center;
-  gap: var(--space-200);
-  margin-bottom: var(--space-400);
+  gap: var(--space-5);
+  margin-bottom: var(--space-10);
   flex-wrap: wrap;
 }
 
@@ -227,7 +227,7 @@ export default {
 }
 
 .group-row {
-  padding: 12px var(--space-200);
+  padding: var(--space-3) var(--space-5);
   border-bottom: 1px solid var(--border-subtle);
   transition: background 0.1s;
 
@@ -259,8 +259,8 @@ export default {
   opacity: 0.9;
   background: var(--surface-base);
   border: 1px solid var(--accent);
-  border-radius: 6px;
+  border-radius: var(--radius-base);
   box-shadow: var(--shadow-md);
-  padding: 12px var(--space-200);
+  padding: var(--space-3) var(--space-5);
 }
 </style>

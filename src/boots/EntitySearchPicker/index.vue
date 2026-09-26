@@ -188,9 +188,9 @@ async function fetchResults(search) {
   display: flex;
   align-items: center;
   height: var(--elem-height);
-  padding: 0 var(--space-100);
+  padding: 0 var(--space-2);
   border: 1px solid var(--border-control);
-  border-radius: var(--space-50);
+  border-radius: var(--radius-base);
   background: var(--surface-sunken);
   cursor: pointer;
   transition: border-color 0.15s;
@@ -200,7 +200,7 @@ async function fetchResults(search) {
   }
 
   &--empty {
-    gap: 8px;
+    gap: var(--space-2);
     color: var(--text-muted);
   }
 
@@ -212,13 +212,13 @@ async function fetchResults(search) {
 }
 
 .entity-picker__search-icon {
-  font-size: 12px;
+  font-size: var(--fs-200);
   color: var(--text-muted);
 }
 
 .entity-picker__chevron {
   margin-left: auto;
-  font-size: 11px;
+  font-size: var(--fs-150);
   color: var(--text-muted);
   transition: transform 0.15s;
   flex-shrink: 0;
@@ -229,7 +229,7 @@ async function fetchResults(search) {
 }
 
 .entity-picker__trigger--open .entity-picker__chevron {
-  margin-right: var(--space-100);
+  margin-right: var(--space-2);
 }
 
 .entity-picker__placeholder {
@@ -249,9 +249,9 @@ async function fetchResults(search) {
 .entity-picker__chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: 4px;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-base);
   font-size: var(--fs-200);
   background: var(--surface-raised);
   color: var(--text-body);
@@ -272,7 +272,7 @@ async function fetchResults(search) {
   border: none;
   padding: 0;
   cursor: pointer;
-  font-size: 16px;
+  font-size: var(--fs-400);
   line-height: 1;
   color: var(--text-muted);
   transition: color 0.15s;
@@ -290,7 +290,7 @@ async function fetchResults(search) {
   z-index: 110;
   background: var(--surface-base);
   border: 1px solid var(--accent);
-  border-radius: var(--space-50);
+  border-radius: var(--radius-base);
   box-shadow: var(--shadow-md);
   max-height: 240px;
   overflow-y: auto;
@@ -300,7 +300,7 @@ async function fetchResults(search) {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: var(--space-4);
 }
 
 .entity-picker__result {
@@ -309,7 +309,7 @@ async function fetchResults(search) {
   gap: 2px;
   width: 100%;
   text-align: left;
-  padding: 8px var(--space-200);
+  padding: var(--space-2) var(--space-5);
   font-size: var(--fs-200);
   color: var(--text-body);
   background: none;

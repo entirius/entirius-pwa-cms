@@ -13,7 +13,7 @@
     </div>
 
     <!-- Filter Chips -->
-    <div class="tj-filters flex ai-ct gap-200 mb-300">
+    <div class="tj-filters flex ai-ct gap-5 mb-8">
       <FilterChip
         v-for="chip in filterChips"
         :key="chip.value"
@@ -244,30 +244,30 @@ export default {
 .tj-dashboard {
   display: flex;
   flex-direction: column;
-  gap: var(--space-300);
+  gap: var(--space-8);
 }
 
 /* Stats Cards */
 .tj-stats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 
 .tj-stat-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-50);
-  padding: var(--space-200);
+  gap: var(--space-1);
+  padding: var(--space-5);
   background: var(--surface-raised);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
   border: 1px solid var(--border-subtle);
 }
 
 .tj-stat-card__value {
   font-size: var(--fs-700);
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1;
 }
 
@@ -294,8 +294,8 @@ export default {
 /* Source badge */
 .tj-source-badge {
   display: inline-block;
-  padding: 2px 8px;
-  border-radius: var(--radius-sm);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-base);
   font-size: var(--fs-200);
   font-weight: 600;
   text-transform: uppercase;
@@ -317,7 +317,7 @@ export default {
   position: relative;
   height: 22px;
   background: var(--surface-raised);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   overflow: hidden;
   min-width: 120px;
 }
@@ -329,7 +329,7 @@ export default {
   height: 100%;
   background: var(--accent-fill);
   opacity: 0.2;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   transition: width 0.3s ease;
 }
 

@@ -1,7 +1,7 @@
 <template>
-  <div class="fs-200 t-secondary flex-column gap-300 jc-sb">
+  <div class="fs-200 t-secondary flex-column gap-8 jc-sb">
     <nav
-      class="grid grid-col-2 grid-col-2-m ai-ct bg-raised pl-400 pr-400 pt-200 pb-200 t-secondary br-tl-50 br-tr-50"
+      class="grid grid-col-2 grid-col-2-m ai-ct bg-raised pl-10 pr-10 pt-5 pb-5 t-secondary rounded-tl rounded-tr"
     >
       <p class="fw-600 fs-400 uppercase">
         {{ handyType.label ? handyType.label : $t("common.click") }}
@@ -13,9 +13,9 @@
         <i class="icon-close-mini pointer" />
       </p>
     </nav>
-    <div class="fg-1 pl-400 pr-400 ovy-auto pt-200 pb-400">
+    <div class="fg-1 pl-10 pr-10 ovy-auto pt-5 pb-10">
       <template v-if="attrs_list">
-        <div class="grid grid-col-3 gap-100 mb-100">
+        <div class="grid grid-col-3 gap-2 mb-2">
           <Dropdown
             :placeholder="'Attr'"
             :selected="[attr_to_edit]"
@@ -34,11 +34,11 @@
                 GET_ATTR_VALUES();
               }
             "
-            class="bg-base b-default br-50 shadow-down fs-200 t-body gc-s-1 gc-e-3"
+            class="bg-base b-default rounded shadow-down fs-200 t-body gc-s-1 gc-e-3"
           />
           <BasicButton
             :text="$t('attrs.add_value')"
-            class="b-default br-50"
+            class="b-default rounded"
             @click="mode = 'add'"
             :isDisabled="!attr_to_edit"
             :class="[
@@ -62,7 +62,7 @@
           "
           :custom_droplist="true"
           :isDisabled="!attr_to_edit"
-          class="bg-base b-default br-50 shadow-down fs-200"
+          class="bg-base b-default rounded shadow-down fs-200"
           :class="[!attr_to_edit ? 'bg-raised t-muted' : 't-body']"
           :key="`${force_refresh}-key`"
         >
@@ -80,12 +80,12 @@
                       };
                     }
                   )"
-              class="ph-100 flex jc-sb"
+              class="ph-2 flex jc-sb"
             >
               <span>{{ label }}</span>
               <div>
                 <span
-                  class="t-accent mr-100"
+                  class="t-accent mr-2"
                   @click="
                     () => {
                       document_attrs[attr_to_edit] = [label];
@@ -106,12 +106,12 @@
       </template>
       <template v-if="mode === 'add'">
         <BasicInput
-          class="bg-base lh-base-elem mt-300"
+          class="bg-base lh-base-elem mt-8"
           :label="$t('attrs.attribute_value')"
           v-model="attr_value"
         />
         <BasicButton
-          class="br-50 mt-100 bb-default"
+          class="rounded mt-2 bb-default"
           :text="$t('common.save')"
           @click="POST_NEW_ATTR"
           :isDisabled="attr_value.length < 5"
@@ -122,14 +122,14 @@
           ]"
         />
       </template>
-      <hr class="bb-default mv-300" />
+      <hr class="bb-default mv-8" />
       <Dropdown
         :placeholder="`Setted attrs for document (${
           Object.keys(document_attrs ?? {}).length
         })`"
         :custom_droplist="true"
         :complex_values="true"
-        class="bg-base b-default br-50 fs-200 mt-50"
+        class="bg-base b-default rounded fs-200 mt-1"
         :class="[
           !Object.keys(document_attrs ?? {}).length
             ? 'bg-raised t-muted'
@@ -139,7 +139,7 @@
       >
         <template v-slot:custom>
           <div
-            class="ph-100 flex jc-sb"
+            class="ph-2 flex jc-sb"
             v-for="({ label, value }, index) in !document_attrs
               ? []
               : Object.entries(document_attrs).reduce(
@@ -178,15 +178,15 @@
     </div>
 
     <div
-      class="grid grid-col-3 gap-100 rtl-direction bg-raised pl-400 pr-400 pt-100 pb-100"
+      class="grid grid-col-3 gap-2 rtl-direction bg-raised pl-10 pr-10 pt-2 pb-2"
     >
       <BasicButton
-        class="bg-inverse br-50 bg-accent-fill-hover b-accent-fill-hover fs-200 b-strong t-inverse t-on-accent-fill-hover w-100 jc-ct"
+        class="bg-inverse rounded bg-accent-fill-hover b-accent-fill-hover fs-200 b-strong t-inverse t-on-accent-fill-hover w-100 jc-ct"
         :text="$t('common.save')"
         @click="pass_asset({ ...document_attrs })"
       />
       <BasicButton
-        class="bg-negative-subtle br-50 fs-200 b-negative t-negative w-100 jc-ct"
+        class="bg-negative-subtle rounded fs-200 b-negative t-negative w-100 jc-ct"
         :text="$t('common.cancel')"
         @click="handy.open_Handykit({})"
       />

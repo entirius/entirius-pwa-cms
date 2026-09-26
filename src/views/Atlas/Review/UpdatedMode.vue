@@ -1,15 +1,15 @@
 <template>
   <div class="updated-mode">
-    <div class="updated-mode__header flex ai-ct jc-sb mb-200 flex-wrap gap-200">
+    <div class="updated-mode__header flex ai-ct jc-sb mb-5 flex-wrap gap-5">
       <div>
         <h3 class="fs-300 fw-600 m-0">
           {{ $t("atlas.review.updated.title") }}
         </h3>
-        <p class="fs-200 t-muted mt-100 mb-0">
+        <p class="fs-200 t-muted mt-2 mb-0">
           {{ $t("atlas.review.updated.help") }}
         </p>
       </div>
-      <div class="flex ai-ct gap-200">
+      <div class="flex ai-ct gap-5">
         <span
           v-if="!loading"
           class="fs-200 t-secondary"
@@ -25,7 +25,7 @@
 
     <div
       v-if="perSupplierCounts.length"
-      class="updated-mode__sidebar flex ai-ct flex-wrap gap-100 mb-300"
+      class="updated-mode__sidebar flex ai-ct flex-wrap gap-2 mb-8"
       data-testid="updated-sidebar"
     >
       <FilterChip
@@ -333,7 +333,7 @@ export default {
   flex-direction: column;
 }
 .updated-mode__sidebar {
-  padding: var(--space-100) 0;
+  padding: var(--space-2) 0;
   border-bottom: 1px solid var(--border-subtle);
 }
 </style>

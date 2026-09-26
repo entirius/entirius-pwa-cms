@@ -42,7 +42,7 @@ const hooks = computed(() => props.context?.hooks || []);
 <style scoped>
 .intel {
   border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   background: var(--surface-base);
 }
 .intel__toggle {
@@ -51,7 +51,7 @@ const hooks = computed(() => props.context?.hooks || []);
   align-items: center;
   width: 100%;
   min-height: 44px;
-  padding: 0 var(--space-300);
+  padding: 0 var(--space-8);
   border: none;
   background: none;
   color: var(--text-body);
@@ -59,16 +59,16 @@ const hooks = computed(() => props.context?.hooks || []);
   cursor: pointer;
 }
 .intel__body {
-  padding: 0 var(--space-300) var(--space-300);
+  padding: 0 var(--space-8) var(--space-8);
 }
 .intel__fact {
-  margin: 0 0 var(--space-100);
+  margin: 0 0 var(--space-2);
 }
 .intel__hooks {
   margin: 0;
-  padding-left: 1.1rem;
+  padding-left: var(--space-4);
   display: flex;
   flex-direction: column;
-  gap: var(--space-100);
+  gap: var(--space-2);
 }
 </style>

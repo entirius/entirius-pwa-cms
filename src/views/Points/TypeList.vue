@@ -1,14 +1,14 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
     >
-      <div class="flex ai-ct mb-400">
+      <div class="flex ai-ct mb-10">
         <h1 class="fs-700 fw-600">{{ $t("dp.types") }}</h1>
       </div>
 
       <!-- Inline create row -->
-      <div class="create-row mb-400">
+      <div class="create-row mb-10">
         <div class="create-row__fields">
           <BasicInput
             v-model="newType.code"
@@ -20,7 +20,7 @@
             :placeholder="$t('dp.name')"
             class="create-row__input"
           />
-          <div class="flex ai-ct gap-200">
+          <div class="flex ai-ct gap-5">
             <Switcher
               :label="$t('dp.is_carrier')"
               :selected="newType.is_carrier"
@@ -77,10 +77,10 @@
       @click.self="cancelEdit"
     >
       <div class="type-modal">
-        <h2 class="fs-500 fw-600 mb-400">
+        <h2 class="fs-500 fw-600 mb-10">
           {{ editingType.name || editingType.code }}
         </h2>
-        <div class="detail-grid mb-400">
+        <div class="detail-grid mb-10">
           <div class="detail-field">
             <label class="detail-label">{{ $t("dp.code") }}</label>
             <BasicInput v-model="editForm.code" />
@@ -94,7 +94,7 @@
             <BasicInput v-model="editForm.sort_order" />
           </div>
         </div>
-        <div class="flex ai-ct gap-200 mb-400">
+        <div class="flex ai-ct gap-5 mb-10">
           <Switcher
             :label="$t('dp.is_carrier')"
             :selected="editForm.is_carrier"
@@ -106,14 +106,14 @@
             @onSelect="editForm.is_active = !editForm.is_active"
           />
         </div>
-        <div class="flex ai-ct jc-sb gap-200">
+        <div class="flex ai-ct jc-sb gap-5">
           <BasicButton
             text=""
             icon="trash-can"
             class="bg-negative-subtle t-negative"
             @click="showDeleteConfirm = true"
           />
-          <div class="flex ai-ct gap-200">
+          <div class="flex ai-ct gap-5">
             <BasicButton
               :text="$t('common.cancel')"
               class="bg-raised t-secondary"
@@ -347,10 +347,10 @@ export default {
 .create-row {
   display: flex;
   align-items: center;
-  gap: var(--space-200);
-  padding: 16px;
+  gap: var(--space-5);
+  padding: var(--space-4);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
   background: var(--surface-raised);
   flex-wrap: wrap;
 }
@@ -358,7 +358,7 @@ export default {
 .create-row__fields {
   display: flex;
   align-items: center;
-  gap: var(--space-200);
+  gap: var(--space-5);
   flex: 1;
   flex-wrap: wrap;
 }
@@ -383,7 +383,7 @@ export default {
   background: var(--surface-base);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: 28px;
+  padding: var(--space-6);
   min-width: min(400px, 95vw);
   max-width: 560px;
   width: 100%;
@@ -392,13 +392,13 @@ export default {
 .detail-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 
 .detail-field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .detail-label {

@@ -73,17 +73,17 @@ async function loadMore() {
 <style scoped>
 .earlier {
   border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   background: var(--surface-base);
 }
 .earlier__toggle {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-200);
+  gap: var(--space-5);
   align-items: center;
   width: 100%;
   min-height: 44px;
-  padding: 0 var(--space-300);
+  padding: 0 var(--space-8);
   border: none;
   background: none;
   color: var(--text-body);
@@ -101,18 +101,18 @@ async function loadMore() {
 .earlier__list {
   display: flex;
   flex-direction: column;
-  gap: var(--space-200);
-  padding: 0 var(--space-300) var(--space-300);
+  gap: var(--space-5);
+  padding: 0 var(--space-8) var(--space-8);
 }
 @media (max-width: 1023px) {
   .earlier__list {
-    padding: 0 var(--space-200) var(--space-200);
+    padding: 0 var(--space-5) var(--space-5);
   }
 }
 .earlier__more {
   min-height: 44px;
   border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   background: var(--surface-base);
   color: var(--text-body);
   cursor: pointer;

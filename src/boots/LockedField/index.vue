@@ -3,7 +3,7 @@
     <label v-if="label" class="locked-field__label fs-200 block absolute">{{
       label
     }}</label>
-    <div class="locked-field__value flex ai-ct gap-100">
+    <div class="locked-field__value flex ai-ct gap-2">
       <FontAwesomeIcon icon="lock" class="locked-field__icon" />
       <span>{{ modelValue }}</span>
     </div>
@@ -32,16 +32,16 @@ defineProps({
 
 .locked-field__value {
   height: var(--elem-height);
-  padding: 4px var(--space-100);
+  padding: var(--space-1) var(--space-2);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--space-50);
+  border-radius: var(--radius-base);
   background: var(--surface-raised);
   color: var(--text-muted);
   font-size: inherit;
 }
 
 .locked-field__icon {
-  font-size: 11px;
+  font-size: var(--fs-150);
   color: var(--text-muted);
 }
 </style>

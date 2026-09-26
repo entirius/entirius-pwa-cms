@@ -128,7 +128,7 @@ onBeforeUnmount(() => clearTimeout(timer));
 }
 .import__list {
   margin: 0;
-  padding-left: 1.1rem;
+  padding-left: var(--space-4);
 }
 /* The native file control stays focusable and scriptable; the label is what the user sees and clicks. */
 .import__pick {

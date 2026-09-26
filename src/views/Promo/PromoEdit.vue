@@ -1,5 +1,5 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#promo-toolbar-left" defer>
       <BasicButton
         text=""
@@ -12,7 +12,7 @@
       </span>
     </Teleport>
     <Teleport to="#promo-toolbar-right" defer>
-      <span v-if="isDirty" class="bg-warning-subtle t-warning fs-200 ph-100 br-50 fw-600">
+      <span v-if="isDirty" class="bg-warning-subtle t-warning fs-200 ph-2 rounded fw-600">
         {{ $t("unsaved.changes") }}
       </span>
       <BasicButton
@@ -29,13 +29,13 @@
       />
     </Teleport>
 
-    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
       <Loader v-if="loading" />
 
       <template v-else>
         <!-- Section: Basic info -->
-        <div class="detail-section mb-400">
-          <h2 class="fs-500 fw-600 mb-300">{{ $t("promo.section_basic") }}</h2>
+        <div class="detail-section mb-10">
+          <h2 class="fs-500 fw-600 mb-8">{{ $t("promo.section_basic") }}</h2>
           <div class="detail-grid">
             <FormField :label="$t('promo.field_name')" required>
               <BasicInput
@@ -73,8 +73,8 @@
         </div>
 
         <!-- Section: Extra value (modifier-specific) -->
-        <div v-if="extraValueKind && extraValueKind !== 'none'" class="detail-section mb-400">
-          <h2 class="fs-500 fw-600 mb-300">{{ $t("promo.section_extra_value") }}</h2>
+        <div v-if="extraValueKind && extraValueKind !== 'none'" class="detail-section mb-10">
+          <h2 class="fs-500 fw-600 mb-8">{{ $t("promo.section_extra_value") }}</h2>
           <div class="detail-grid">
             <!-- percent / amount / gratis_qty -->
             <template v-if="['percent', 'amount', 'gratis_qty'].includes(extraValueKind)">
@@ -114,9 +114,9 @@
                 <div
                   v-for="(group, groupIdx) in perCurrencyRows"
                   :key="group.iso3"
-                  class="currency-threshold-group b-subtle br-50 p-300 mb-300"
+                  class="currency-threshold-group b-subtle rounded p-8 mb-8"
                 >
-                  <div class="flex ai-ct jc-sb mb-200">
+                  <div class="flex ai-ct jc-sb mb-5">
                     <span class="fw-600 fs-300">{{ group.iso3 }}</span>
                     <BasicButton
                       text=""
@@ -128,7 +128,7 @@
                   <div
                     v-for="(row, rowIdx) in group.rows"
                     :key="rowIdx"
-                    class="flex ai-ct gap-200 mb-200"
+                    class="flex ai-ct gap-5 mb-5"
                   >
                     <BasicInput
                       v-model="row.key"
@@ -155,7 +155,7 @@
                   />
                 </div>
                 <!-- add currency group -->
-                <div class="flex ai-ct gap-200 mt-100">
+                <div class="flex ai-ct gap-5 mt-2">
                   <Dropdown
                     :values="availableCurrencyGroupOptions"
                     :selected="[]"
@@ -184,8 +184,8 @@
         </div>
 
         <!-- Section: Order conditions -->
-        <div class="detail-section mb-400">
-          <h2 class="fs-500 fw-600 mb-300">{{ $t("promo.section_conditions") }}</h2>
+        <div class="detail-section mb-10">
+          <h2 class="fs-500 fw-600 mb-8">{{ $t("promo.section_conditions") }}</h2>
           <div class="detail-grid">
             <FormField :label="$t('promo.field_min_order_amount')">
               <BasicInput
@@ -203,23 +203,23 @@
                   <div
                     v-for="opt in currencyOptions"
                     :key="opt.iso3"
-                    class="pointer flex jc-sb ai-ct ph-100 dropdown-list-el"
+                    class="pointer flex jc-sb ai-ct ph-2 dropdown-list-el"
                     :class="{ '-primary-100': form.currencies.includes(opt.iso3) }"
                     @click.stop="toggleCurrency(opt.iso3)"
                   >
-                    <span class="ml-100">{{ opt.iso3 }} — {{ opt.name }}</span>
+                    <span class="ml-2">{{ opt.iso3 }} — {{ opt.name }}</span>
                     <FontAwesomeIcon
                       v-if="form.currencies.includes(opt.iso3)"
                       icon="check"
                       class="t-positive"
                     />
                   </div>
-                  <div v-if="!currencyOptions.length" class="ph-100 pv-100 t-muted fs-200 ml-100">
+                  <div v-if="!currencyOptions.length" class="ph-2 pv-2 t-muted fs-200 ml-2">
                     {{ $t("promo.no_currencies") }}
                   </div>
                 </template>
               </Dropdown>
-              <p class="fs-200 t-muted mt-100">{{ $t("promo.currencies_hint") }}</p>
+              <p class="fs-200 t-muted mt-2">{{ $t("promo.currencies_hint") }}</p>
             </FormField>
             <FormField :label="$t('promo.section_channels')">
               <Dropdown
@@ -230,11 +230,11 @@
                   <div
                     v-for="opt in checkoutChannel.channels"
                     :key="opt.idx"
-                    class="pointer flex jc-sb ai-ct ph-100 dropdown-list-el"
+                    class="pointer flex jc-sb ai-ct ph-2 dropdown-list-el"
                     :class="{ '-primary-100': form.channels.includes(opt.idx) }"
                     @click.stop="toggleChannel(opt.idx)"
                   >
-                    <span class="ml-100">
+                    <span class="ml-2">
                       {{ opt.name || opt.idx }}
                       <span v-if="opt.idx === channel" class="t-muted fs-200">({{ $t("promo.channel_active") }})</span>
                     </span>
@@ -244,15 +244,15 @@
                       class="t-positive"
                     />
                   </div>
-                  <div v-if="!checkoutChannel.channels.length" class="ph-100 pv-100 t-muted fs-200 ml-100">
+                  <div v-if="!checkoutChannel.channels.length" class="ph-2 pv-2 t-muted fs-200 ml-2">
                     {{ $t("promo.no_channels") }}
                   </div>
                 </template>
               </Dropdown>
-              <p class="fs-200 t-muted mt-100">{{ $t("promo.channels_hint") }}</p>
+              <p class="fs-200 t-muted mt-2">{{ $t("promo.channels_hint") }}</p>
             </FormField>
           </div>
-          <div v-if="form.free_shipping" class="detail-grid mt-300">
+          <div v-if="form.free_shipping" class="detail-grid mt-8">
             <FormField :label="$t('promo.field_free_shipping_methods')">
               <Dropdown
                 :custom_droplist="true"
@@ -262,11 +262,11 @@
                   <div
                     v-for="opt in shippingMethodOptions"
                     :key="opt.code"
-                    class="pointer flex jc-sb ai-ct ph-100 dropdown-list-el"
+                    class="pointer flex jc-sb ai-ct ph-2 dropdown-list-el"
                     :class="{ '-primary-100': form.free_shipping_methods.includes(opt.code) }"
                     @click.stop="toggleShippingMethod(opt.code)"
                   >
-                    <span class="ml-100">
+                    <span class="ml-2">
                       [{{ opt.channel_idx }}] {{ opt.code }}{{ opt.name ? ` — ${opt.name}` : "" }}
                     </span>
                     <FontAwesomeIcon
@@ -275,7 +275,7 @@
                       class="t-positive"
                     />
                   </div>
-                  <div v-if="!shippingMethodOptions.length" class="ph-100 pv-100 t-muted fs-200 ml-100">
+                  <div v-if="!shippingMethodOptions.length" class="ph-2 pv-2 t-muted fs-200 ml-2">
                     {{ $t("promo.no_shipping_methods") }}
                   </div>
                 </template>
@@ -285,8 +285,8 @@
         </div>
 
         <!-- Section: Flags -->
-        <div class="detail-section mb-400">
-          <h2 class="fs-500 fw-600 mb-300">{{ $t("promo.section_flags") }}</h2>
+        <div class="detail-section mb-10">
+          <h2 class="fs-500 fw-600 mb-8">{{ $t("promo.section_flags") }}</h2>
           <div class="detail-flags">
             <Switcher
               :label="$t('promo.field_is_active')"
@@ -334,8 +334,8 @@
         </div>
 
         <!-- Section: Discount codes (edit only) -->
-        <div v-if="isEdit" class="detail-section mb-400">
-          <div class="flex ai-ct jc-sb mb-300">
+        <div v-if="isEdit" class="detail-section mb-10">
+          <div class="flex ai-ct jc-sb mb-8">
             <h2 class="fs-500 fw-600">{{ $t("promo.section_codes") }}</h2>
             <BasicButton
               :text="$t('promo.add_code')"
@@ -346,7 +346,7 @@
           </div>
 
           <!-- Search -->
-          <div class="codes-search-row mb-300">
+          <div class="codes-search-row mb-8">
             <BasicInput
               v-model="codesSearch"
               :placeholder="$t('promo.codes_search_placeholder')"
@@ -401,7 +401,7 @@
           </DataTable>
 
           <!-- Codes pagination -->
-          <div v-if="codesCount > codesPageSize" class="flex jc-ct mt-300">
+          <div v-if="codesCount > codesPageSize" class="flex jc-ct mt-8">
             <Pagination
               :pagination="codesPaginationState"
               @onChangePage="onCodesPageChange"
@@ -409,8 +409,8 @@
           </div>
 
           <!-- Add code form (inline) -->
-          <div v-if="showAddCode" class="detail-section mt-300">
-            <h3 class="fs-400 fw-600 mb-300">{{ $t("promo.new_code_title") }}</h3>
+          <div v-if="showAddCode" class="detail-section mt-8">
+            <h3 class="fs-400 fw-600 mb-8">{{ $t("promo.new_code_title") }}</h3>
             <div class="detail-grid">
               <FormField :label="$t('promo.code_field_code')" required>
                 <BasicInput
@@ -434,7 +434,7 @@
                 <BasicInput type="date" v-model="newCode.active_to" />
               </FormField>
             </div>
-            <div class="flex jc-fe gap-200 mt-300">
+            <div class="flex jc-fe gap-5 mt-8">
               <BasicButton
                 :text="$t('common.cancel')"
                 class="bg-raised t-secondary"
@@ -450,13 +450,13 @@
         </div>
 
         <!-- Section: Filters (edit only) -->
-        <div v-if="isEdit" class="detail-section mb-400">
-          <h2 class="fs-500 fw-600 mb-300">{{ $t("promo.section_filters") }}</h2>
-          <p class="fs-200 t-muted mb-300">{{ $t("promo.filters_hint") }}</p>
+        <div v-if="isEdit" class="detail-section mb-10">
+          <h2 class="fs-500 fw-600 mb-8">{{ $t("promo.section_filters") }}</h2>
+          <p class="fs-200 t-muted mb-8">{{ $t("promo.filters_hint") }}</p>
 
           <!-- Product filters -->
-          <div class="mb-400">
-            <div class="flex ai-ct jc-sb mb-200">
+          <div class="mb-10">
+            <div class="flex ai-ct jc-sb mb-5">
               <h3 class="fs-400 fw-600">{{ $t("promo.product_filters") }}</h3>
               <BasicButton
                 :text="$t('promo.add_filter')"
@@ -482,7 +482,7 @@
                 <span class="fs-200 pointer t-accent" @click="openFilterDrawer('product', row)">{{ filterSummary(row, 'product') }}</span>
               </template>
               <template #cell-actions="{ row }">
-                <div class="flex gap-100">
+                <div class="flex gap-2">
                   <BasicButton
                     text=""
                     icon="pencil"
@@ -501,8 +501,8 @@
           </div>
 
           <!-- Customer filters -->
-          <div class="mb-400">
-            <div class="flex ai-ct jc-sb mb-200">
+          <div class="mb-10">
+            <div class="flex ai-ct jc-sb mb-5">
               <h3 class="fs-400 fw-600">{{ $t("promo.customer_filters") }}</h3>
               <BasicButton
                 :text="$t('promo.add_filter')"
@@ -528,7 +528,7 @@
                 <span class="fs-200 pointer t-accent" @click="openFilterDrawer('customer', row)">{{ filterSummary(row, 'customer') }}</span>
               </template>
               <template #cell-actions="{ row }">
-                <div class="flex gap-100">
+                <div class="flex gap-2">
                   <BasicButton
                     text=""
                     icon="pencil"
@@ -548,7 +548,7 @@
 
           <!-- Threshold filters -->
           <div>
-            <div class="flex ai-ct jc-sb mb-200">
+            <div class="flex ai-ct jc-sb mb-5">
               <h3 class="fs-400 fw-600">{{ $t("promo.threshold_filters") }}</h3>
               <BasicButton
                 :text="$t('promo.add_filter')"
@@ -574,7 +574,7 @@
                 <span class="fs-200 pointer t-accent" @click="openFilterDrawer('threshold', row)">{{ filterSummary(row, 'threshold') }}</span>
               </template>
               <template #cell-actions="{ row }">
-                <div class="flex gap-100">
+                <div class="flex gap-2">
                   <BasicButton
                     text=""
                     icon="pencil"
@@ -648,22 +648,22 @@
       </template>
       <template #description>
         <div class="edit-code-body">
-          <p class="fs-200 t-muted mb-300">
+          <p class="fs-200 t-muted mb-8">
             {{ $t("promo.code_field_current_used") }}: <strong>{{ editCode.current_used }}</strong>
           </p>
-          <FormField :label="$t('promo.code_field_code')" required class="mb-200">
+          <FormField :label="$t('promo.code_field_code')" required class="mb-5">
             <BasicInput v-model="editCode.code" />
           </FormField>
-          <FormField :label="$t('promo.code_field_max_used')" class="mb-200">
+          <FormField :label="$t('promo.code_field_max_used')" class="mb-5">
             <NumberInput v-model="editCode.max_used" />
           </FormField>
-          <FormField :label="$t('promo.code_field_max_per_user')" class="mb-200">
+          <FormField :label="$t('promo.code_field_max_per_user')" class="mb-5">
             <NumberInput v-model="editCode.max_uses_per_user" />
           </FormField>
-          <FormField :label="$t('promo.code_field_active_from')" class="mb-200">
+          <FormField :label="$t('promo.code_field_active_from')" class="mb-5">
             <BasicInput type="date" v-model="editCode.active_from" />
           </FormField>
-          <FormField :label="$t('promo.code_field_active_to')" class="mb-200">
+          <FormField :label="$t('promo.code_field_active_to')" class="mb-5">
             <BasicInput type="date" v-model="editCode.active_to" />
           </FormField>
           <FormField :label="$t('promo.code_field_max_qty')">
@@ -1487,14 +1487,14 @@ export default {
 <style lang="scss" scoped>
 .detail-section {
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: var(--space-200);
+  border-radius: var(--radius-base);
+  padding: var(--space-5);
 }
 
 .detail-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: var(--space-300);
+  gap: var(--space-8);
 
   &--full {
     grid-column: 1 / -1;
@@ -1504,14 +1504,14 @@ export default {
 .detail-flags {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-300);
+  gap: var(--space-8);
 }
 
 .promo-channel-chip {
   display: inline-flex;
   align-items: center;
-  padding: 4px 12px;
-  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-base);
   background: var(--accent-subtle);
   color: var(--text-strong);
   font-size: var(--fs-200);
@@ -1520,8 +1520,8 @@ export default {
 
 .promo-code-row {
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  padding: var(--space-100) var(--space-100);
+  border-radius: var(--radius-base);
+  padding: var(--space-2) var(--space-2);
 }
 
 .promo-code-value {
@@ -1530,18 +1530,18 @@ export default {
 }
 
 
-.mr-100 {
-  margin-right: 4px;
+.mr-2 {
+  margin-right: var(--space-1);
 }
 
-.mt-100 {
-  margin-top: 4px;
+.mt-2 {
+  margin-top: var(--space-1);
 }
 
 .currency-threshold-group {
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  padding: var(--space-300);
+  border-radius: var(--radius-base);
+  padding: var(--space-8);
 }
 
 .codes-search-row {
@@ -1552,6 +1552,6 @@ export default {
 .edit-code-body {
   display: flex;
   flex-direction: column;
-  gap: var(--space-100);
+  gap: var(--space-2);
 }
 </style>

@@ -16,7 +16,7 @@
           class="app-sidebar-col flex ai-ct br-subtle"
           style="align-self: stretch"
           :class="
-            isSidebarCollapsed ? 'sidebar-collapsed jc-ct' : 'p-100 pl-300'
+            isSidebarCollapsed ? 'sidebar-collapsed jc-ct' : 'p-2 pl-8'
           "
         >
           <router-link to="/" class="app-logo-link">
@@ -26,7 +26,7 @@
             />
           </router-link>
         </div>
-        <div v-else class="flex ai-ct p-100 pl-300">
+        <div v-else class="flex ai-ct p-2 pl-8">
           <router-link to="/" class="app-logo-link">
             <BasicLogo :size="22" variant="full" />
           </router-link>
@@ -37,7 +37,7 @@
           </router-link>
         </div>
         <div
-          class="app-content-col p-100 pl-300 flex ai-ct jc-sb"
+          class="app-content-col p-2 pl-8 flex ai-ct jc-sb"
           style="overflow: visible"
         >
           <h2 v-if="hasPanel" class="fs-400 fw-600 t-body route-title">
@@ -296,7 +296,7 @@ export default {
   z-index: 10;
   width: 28px;
   height: 28px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   border: 1px solid var(--border-subtle);
   background: var(--surface-base);
   color: var(--text-secondary);
@@ -304,7 +304,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: var(--fs-200);
   box-shadow: var(--shadow-sm);
   &:hover {
     background: var(--surface-raised);
@@ -344,13 +344,13 @@ export default {
   .app-header-mobile-logo {
     display: flex;
     align-items: center;
-    padding: 4px 4px 4px 16px;
+    padding: var(--space-1) var(--space-1) var(--space-1) var(--space-4);
   }
   .layout {
     height: calc(100% - var(--bottom-bar-height));
   }
-  .p-500 {
-    padding: 12px !important;
+  .p-12 {
+    padding: var(--space-3) !important;
   }
 }
 </style>

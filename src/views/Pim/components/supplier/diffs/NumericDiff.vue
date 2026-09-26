@@ -27,7 +27,7 @@ export default {
 .numeric-diff {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-100);
+  gap: var(--space-2);
   font-family: var(--font-mono, monospace);
   font-size: var(--fs-200);
 }

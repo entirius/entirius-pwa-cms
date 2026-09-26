@@ -63,7 +63,7 @@ export default {
     align-items: center;
     justify-content: center;
     border: 1px dashed var(--border-default);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-base);
     background: var(--surface-base);
     color: var(--text-muted);
     cursor: pointer;
@@ -92,10 +92,10 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
+    border-radius: var(--radius-full);
     background: var(--negative-fill);
     color: var(--text-on-status-fill);
-    font-size: 10px;
+    font-size: var(--fs-100);
   }
   &__file-input {
     display: none;

@@ -169,10 +169,10 @@ function onDragEnd() {
 .tree-node__row {
   display: flex;
   align-items: center;
-  gap: var(--space-100);
-  padding-top: var(--space-100);
-  padding-right: 12px;
-  padding-bottom: var(--space-100);
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+  padding-right: var(--space-3);
+  padding-bottom: var(--space-2);
   cursor: pointer;
   border-bottom: 1px solid var(--border-subtle);
   transition: background 0.15s;
@@ -242,13 +242,13 @@ function onDragEnd() {
 .tree-node__edit {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  font-size: 12px;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--fs-200);
   color: var(--text-secondary);
   background: none;
   border: 1px solid transparent;
-  border-radius: 5px;
+  border-radius: var(--radius-base);
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
@@ -274,7 +274,7 @@ function onDragEnd() {
 .tree-node__status {
   width: 8px;
   height: 8px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   flex-shrink: 0;
 }
 

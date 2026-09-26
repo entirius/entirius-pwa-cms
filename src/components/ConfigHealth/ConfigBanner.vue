@@ -42,11 +42,11 @@ const rows = computed(() => store.failingFor(props.code));
 .config-banner {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-200);
+  gap: var(--space-5);
   justify-content: space-between;
   margin: 0;
-  padding: var(--space-200) var(--space-300);
-  border-radius: 8px;
+  padding: var(--space-5) var(--space-8);
+  border-radius: var(--radius-lg);
   background: var(--warning-subtle);
   color: var(--text-body);
 }

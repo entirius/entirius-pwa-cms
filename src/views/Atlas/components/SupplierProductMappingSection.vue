@@ -19,7 +19,7 @@
     </p>
     <ul v-else class="sp-mapping-section__profiles">
       <li v-for="p in profiles" :key="p.id" class="sp-mapping-section__profile">
-        <div class="flex ai-ct jc-sb gap-200 flex-wrap">
+        <div class="flex ai-ct jc-sb gap-5 flex-wrap">
           <span class="fw-600">{{ p.name || p.idx }}</span>
           <span class="fs-200 t-muted">
             {{ $t("atlas.products.drawer.mapping_counts", {
@@ -95,22 +95,22 @@ export default {
 
 <style lang="scss" scoped>
 .sp-mapping-section {
-  margin-top: var(--space-300);
-  padding-top: var(--space-300);
+  margin-top: var(--space-8);
+  padding-top: var(--space-8);
   border-top: 1px solid var(--border-subtle);
 }
 .sp-mapping-section__head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-200);
-  margin-bottom: var(--space-100);
+  gap: var(--space-5);
+  margin-bottom: var(--space-2);
 }
 .sp-mapping-section__link {
   background: transparent;
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  padding: 4px 12px;
+  border-radius: var(--radius-base);
+  padding: var(--space-1) var(--space-3);
   font-size: var(--fs-200);
   color: var(--text-body);
   cursor: pointer;
@@ -125,7 +125,7 @@ export default {
   padding: 0;
 }
 .sp-mapping-section__profile {
-  padding: var(--space-100) 0;
+  padding: var(--space-2) 0;
   border-bottom: 1px solid var(--border-subtle);
 
   &:last-child {

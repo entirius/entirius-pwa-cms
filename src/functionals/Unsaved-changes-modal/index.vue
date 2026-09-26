@@ -52,13 +52,13 @@ export default {
   justify-content: center;
   align-items: center;
   z-index: 100;
-  padding: 1rem;
+  padding: var(--space-4);
 }
 
 .modal-container {
   background: var(--surface-base);
-  padding: 24px;
-  border-radius: 8px;
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
   border: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-lg);
   width: 420px;
@@ -66,22 +66,22 @@ export default {
 }
 
 .modal-header {
-  margin-bottom: 12px;
+  margin-bottom: var(--space-3);
 }
 
 .modal-header h2 {
-  font-size: 16px;
+  font-size: var(--fs-400);
   font-weight: 600;
   color: var(--text-body);
   margin: 0;
 }
 
 .modal-body {
-  margin-bottom: 24px;
+  margin-bottom: var(--space-6);
 }
 
 .modal-body p {
-  font-size: 14px;
+  font-size: var(--fs-300);
   line-height: 1.5;
   color: var(--text-secondary);
   margin: 0;
@@ -89,7 +89,7 @@ export default {
 
 .modal-footer {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
   justify-content: flex-end;
 }
 
@@ -97,13 +97,13 @@ export default {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: var(--space-2);
   height: 36px;
-  padding: 0 16px;
-  font-size: 13px;
+  padding: 0 var(--space-4);
+  font-size: var(--fs-250);
   font-weight: 500;
   font-family: inherit;
-  border-radius: 5px;
+  border-radius: var(--radius-base);
   border: 1px solid;
   cursor: pointer;
   transition: all 0.15s ease;

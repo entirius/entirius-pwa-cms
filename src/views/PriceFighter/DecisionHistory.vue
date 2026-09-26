@@ -1,6 +1,6 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
-    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
+    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
       <div class="history__toolbar">
         <BasicInput
           v-model="search"
@@ -225,8 +225,8 @@ export default {
 .history__toolbar {
   display: flex;
   align-items: center;
-  gap: var(--space-200);
-  margin-bottom: var(--space-400);
+  gap: var(--space-5);
+  margin-bottom: var(--space-10);
   flex-wrap: wrap;
 }
 
@@ -244,14 +244,14 @@ export default {
 .history__detail {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-500);
+  gap: var(--space-12);
   align-items: flex-start;
 }
 
 .history__facts {
   display: grid;
   grid-template-columns: auto auto;
-  gap: var(--space-100) var(--space-300);
+  gap: var(--space-2) var(--space-8);
   margin: 0;
   font-size: var(--fs-200);
 
@@ -271,7 +271,7 @@ export default {
 }
 
 .history__obs-heading {
-  margin: 0 0 var(--space-200);
+  margin: 0 0 var(--space-5);
   font-size: var(--fs-200);
   color: var(--text-muted);
 }
@@ -285,10 +285,10 @@ export default {
     text-align: left;
     color: var(--text-muted);
     font-weight: 500;
-    padding: var(--space-50) var(--space-200) var(--space-50) 0;
+    padding: var(--space-1) var(--space-5) var(--space-1) 0;
   }
   td {
-    padding: var(--space-50) var(--space-200) var(--space-50) 0;
+    padding: var(--space-1) var(--space-5) var(--space-1) 0;
     color: var(--text-body);
   }
 }

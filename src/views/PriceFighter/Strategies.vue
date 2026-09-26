@@ -1,7 +1,7 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
-    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
-      <div class="flex ai-ct jc-sb mb-400">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
+    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
+      <div class="flex ai-ct jc-sb mb-10">
         <h1 class="fs-700 fw-600">{{ $t('pricefighter.strategies') }}</h1>
         <BasicButton
           :text="$t('pricefighter.new_rule')"
@@ -49,11 +49,11 @@
     <!-- Create/Edit modal -->
     <div v-if="editingRule !== null" class="rule-modal-backdrop" @click.self="closeModal">
       <div class="rule-modal">
-        <h2 class="fs-500 fw-600 mb-400">
+        <h2 class="fs-500 fw-600 mb-10">
           {{ editingRule.id ? $t('pricefighter.edit_rule') : $t('pricefighter.new_rule') }}
         </h2>
 
-        <FormField :label="$t('pricefighter.scope_type')" :tooltip="$t('pricefighter.scope_type_tooltip')" class="mb-300">
+        <FormField :label="$t('pricefighter.scope_type')" :tooltip="$t('pricefighter.scope_type_tooltip')" class="mb-8">
           <Dropdown
             :values="scopeTypeOptions"
             :selected="[form.scopeType]"
@@ -65,7 +65,7 @@
           v-if="form.scopeType === 'sku'"
           :label="$t('pricefighter.sku')"
           :error="formErrors.getFieldError('sku')?.msg"
-          class="mb-300"
+          class="mb-8"
         >
           <EntitySearchPicker
             :modelValue="form.scopeValue"
@@ -82,7 +82,7 @@
           v-else-if="form.scopeType === 'category_idx'"
           :label="$t('pricefighter.category')"
           :error="formErrors.getFieldError('category_idx')?.msg"
-          class="mb-300"
+          class="mb-8"
         >
           <EntitySearchPicker
             :modelValue="form.scopeValue"
@@ -100,7 +100,7 @@
           :label="$t('pricefighter.market')"
           :tooltip="$t('pricefighter.market_tooltip')"
           :error="formErrors.getFieldError('channel')?.msg"
-          class="mb-300"
+          class="mb-8"
         >
           <Dropdown
             :values="channelOptions"
@@ -109,7 +109,7 @@
           />
         </FormField>
 
-        <FormField :label="$t('pricefighter.strategy')" :tooltip="$t('pricefighter.strategy_tooltip')" class="mb-300">
+        <FormField :label="$t('pricefighter.strategy')" :tooltip="$t('pricefighter.strategy_tooltip')" class="mb-8">
           <Dropdown
             :values="strategyOptions"
             :selected="[form.strategy]"
@@ -117,7 +117,7 @@
           />
         </FormField>
 
-        <div class="flex ai-ct gap-300 mb-400">
+        <div class="flex ai-ct gap-8 mb-10">
           <Switcher
             :label="$t('pricefighter.price_war')"
             :selected="form.price_war"
@@ -131,7 +131,7 @@
           />
         </div>
 
-        <div class="flex ai-ct jc-sb gap-200">
+        <div class="flex ai-ct jc-sb gap-5">
           <BasicButton
             v-if="editingRule.id"
             text=""
@@ -140,7 +140,7 @@
             @click="showDeleteConfirm = true"
           />
           <div v-else />
-          <div class="flex ai-ct gap-200">
+          <div class="flex ai-ct gap-5">
             <BasicButton
               :text="$t('common.cancel')"
               class="bg-raised t-secondary"
@@ -361,7 +361,7 @@ export default {
   background: var(--surface-base);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: 28px;
+  padding: var(--space-6);
   min-width: min(420px, 95vw);
   max-width: 560px;
   width: 100%;

@@ -139,7 +139,7 @@ onBeforeUnmount(() => document.removeEventListener("keydown", onKey));
   overflow-y: auto;
   padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
   background: var(--surface-base);
-  border-radius: 1rem 1rem 0 0;
+  border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
   box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.16);
   z-index: 91;
 }
@@ -149,7 +149,7 @@ onBeforeUnmount(() => document.removeEventListener("keydown", onKey));
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75rem 0.5rem 0.5rem 1rem;
+  padding: var(--space-3) var(--space-2) var(--space-2) var(--space-4);
   background: var(--surface-base);
   border-bottom: 1px solid var(--border-subtle);
 }
@@ -160,7 +160,7 @@ onBeforeUnmount(() => document.removeEventListener("keydown", onKey));
   width: 2.5rem;
   height: 0.25rem;
   margin-left: -1.25rem;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: var(--surface-hover);
 }
 .cfg-panel__title {
@@ -171,21 +171,21 @@ onBeforeUnmount(() => document.removeEventListener("keydown", onKey));
   width: 44px;
   height: 44px;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   background: none;
   color: var(--text-secondary);
   cursor: pointer;
 }
 .cfg-panel__ok {
   margin: 0;
-  padding: 1rem;
+  padding: var(--space-4);
   color: var(--text-secondary);
 }
 .cfg-row {
   display: flex;
-  gap: 0.75rem;
+  gap: var(--space-3);
   align-items: flex-start;
-  padding: 0.75rem 1rem;
+  padding: var(--space-3) var(--space-4);
   border-bottom: 1px solid var(--border-subtle);
   border-left: 3px solid var(--warning);
   color: var(--text-body);
@@ -219,23 +219,23 @@ onBeforeUnmount(() => document.removeEventListener("keydown", onKey));
 .cfg-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem 1rem;
+  gap: var(--space-1) var(--space-4);
   margin: 0;
-  padding: 0.75rem 1rem;
+  padding: var(--space-3) var(--space-4);
   list-style: none;
   font-size: var(--fs-100);
   color: var(--text-muted);
 }
 .cfg-grid__tick {
-  margin-right: 0.35rem;
+  margin-right: var(--space-1);
   color: var(--positive);
 }
 .cfg-panel__foot {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 0.5rem 1rem;
+  gap: var(--space-4);
+  padding: var(--space-2) var(--space-4);
   border-top: 1px solid var(--border-subtle);
 }
 .cfg-panel__age {
@@ -244,9 +244,9 @@ onBeforeUnmount(() => document.removeEventListener("keydown", onKey));
 }
 .cfg-panel__again {
   min-height: 44px;
-  padding: 0 0.75rem;
+  padding: 0 var(--space-3);
   border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   background: none;
   color: var(--text-body);
   cursor: pointer;
@@ -268,7 +268,7 @@ onBeforeUnmount(() => document.removeEventListener("keydown", onKey));
     width: 26rem;
     max-height: 60vh;
     padding-bottom: 0;
-    border-radius: 0.75rem;
+    border-radius: var(--radius-xl);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
   }
   .cfg-panel__grip {

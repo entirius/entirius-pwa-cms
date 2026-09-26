@@ -1,10 +1,10 @@
 <template>
   <div class="author-picker">
-    <p v-if="label" class="fs-200 fw-600 t-muted tt-upper mb-200">
+    <p v-if="label" class="fs-200 fw-600 t-muted tt-upper mb-5">
       {{ label }}
     </p>
 
-    <div v-if="selectedAuthors.length" class="author-picker__selected mb-200">
+    <div v-if="selectedAuthors.length" class="author-picker__selected mb-5">
       <draggable
         v-model="selectedAuthors"
         ghost-class="bg-accent-subtle"
@@ -16,7 +16,7 @@
       >
         <template #item="{ element }">
           <div class="author-picker__row flex ai-ct jc-sb">
-            <div class="flex ai-ct gap-200">
+            <div class="flex ai-ct gap-5">
               <span class="drag-handle t-muted">&#x2630;</span>
               <span class="fw-500">{{ element.name }}</span>
               <span v-if="element.role_t9n" class="fs-200 t-muted">
@@ -34,7 +34,7 @@
       </draggable>
     </div>
 
-    <div v-else class="t-muted fs-200 mb-200 p-200 b-subtle br-50">
+    <div v-else class="t-muted fs-200 mb-5 p-5 b-subtle rounded">
       {{ placeholderEmpty }}
     </div>
 
@@ -207,11 +207,11 @@ export default {
 }
 .author-picker__selected {
   border: 1px solid var(--border-subtle);
-  border-radius: 6px;
+  border-radius: var(--radius-base);
   overflow: hidden;
 }
 .author-picker__row {
-  padding: 10px var(--space-200);
+  padding: var(--space-2) var(--space-5);
   border-bottom: 1px solid var(--border-subtle);
   background: var(--surface-base);
   &:last-child {
@@ -229,11 +229,11 @@ export default {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   border: none;
   background: var(--negative-subtle);
   color: var(--negative);
-  font-size: 12px;
+  font-size: var(--fs-200);
   transition: background-color 0.15s;
   flex-shrink: 0;
   &:hover {
@@ -251,14 +251,14 @@ export default {
   right: 0;
   background: var(--surface-base);
   border: 1px solid var(--border-subtle);
-  border-radius: 6px;
+  border-radius: var(--radius-base);
   box-shadow: var(--shadow-md);
   z-index: 10;
   max-height: 240px;
   overflow-y: auto;
 }
 .author-picker__option {
-  padding: 10px var(--space-200);
+  padding: var(--space-2) var(--space-5);
   cursor: pointer;
   font-size: var(--fs-300);
   border-bottom: 1px solid var(--border-subtle);
@@ -277,8 +277,8 @@ export default {
   opacity: 0.9;
   background: var(--surface-base);
   border: 1px solid var(--accent);
-  border-radius: 6px;
+  border-radius: var(--radius-base);
   box-shadow: var(--shadow-md);
-  padding: 10px var(--space-200);
+  padding: var(--space-2) var(--space-5);
 }
 </style>

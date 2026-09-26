@@ -1,6 +1,6 @@
 <template>
-  <div class="feeds-tab p-300 ovy-auto h-100">
-    <div class="flex ai-ct jc-sb mb-300">
+  <div class="feeds-tab p-8 ovy-auto h-100">
+    <div class="flex ai-ct jc-sb mb-8">
       <h2 class="fs-400 fw-600">{{ $t("atlas.tabs.feeds") }}</h2>
       <p class="fs-200 t-muted m-0">
         {{ $t("atlas.feeds.readonly_hint") }}
@@ -21,7 +21,7 @@
         <StatusBadge :label="value" variant="informative" />
       </template>
       <template #cell-status_combined="{ row }">
-        <div class="flex ai-ct gap-100 flex-wrap">
+        <div class="flex ai-ct gap-2 flex-wrap">
           <StatusBadge
             :label="row.is_active ? $t('common.active') : $t('common.inactive')"
             :variant="row.is_active ? 'positive' : 'negative'"
@@ -38,7 +38,7 @@
         <span v-else class="t-muted">{{ dash }}</span>
       </template>
       <template #cell-actions="{ row }">
-        <div class="flex ai-ct gap-100" @click.stop>
+        <div class="flex ai-ct gap-2" @click.stop>
           <button
             class="row-action-btn bg-positive-subtle t-positive"
             :title="$t('atlas.feeds.trigger_button')"
@@ -223,7 +223,7 @@ export default {
   width: 28px;
   height: 28px;
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   cursor: pointer;
   transition: opacity 0.15s ease;
 }

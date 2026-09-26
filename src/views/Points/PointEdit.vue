@@ -1,5 +1,5 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#points-toolbar-left" defer>
       <BasicButton
         text=""
@@ -25,11 +25,11 @@
         @click="savePoint"
       />
     </Teleport>
-    <div class="bg-base b-subtle br-50 h-100 ovy-auto p-500">
+    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
       <Loader v-if="loading" />
 
       <template v-else>
-        <div class="flex ai-ct jc-sb mb-500">
+        <div class="flex ai-ct jc-sb mb-12">
           <h1 class="fs-700 fw-600">
             {{ isEdit ? point.name || point.code : $t("dp.create_point") }}
           </h1>
@@ -43,21 +43,21 @@
         <!-- Carrier read-only banner -->
         <div
           v-if="isCarrier"
-          class="flex ai-ct gap-200 mb-300 p-300 bg-accent-subtle br-50 t-strong fs-200"
+          class="flex ai-ct gap-5 mb-8 p-8 bg-accent-subtle rounded t-strong fs-200"
         >
           <font-awesome-icon icon="lock" />
           <span>{{ $t("dp.carrier_point_read_only") }}</span>
         </div>
 
         <!-- Address section -->
-        <div class="detail-section mb-400">
-          <h2 class="fs-500 fw-600 mb-300">{{ $t("dp.address") }}</h2>
+        <div class="detail-section mb-10">
+          <h2 class="fs-500 fw-600 mb-8">{{ $t("dp.address") }}</h2>
 
           <!-- Geocode address search -->
-          <div v-if="!isCarrier" class="mb-300">
+          <div v-if="!isCarrier" class="mb-8">
             <div
               v-if="!geocodeAvailable"
-              class="flex ai-ct gap-200 p-200 bg-accent-subtle br-50 t-strong fs-200 mb-200"
+              class="flex ai-ct gap-5 p-5 bg-accent-subtle rounded t-strong fs-200 mb-5"
             >
               <font-awesome-icon icon="info-circle" />
               <span>{{ $t("dp.geocoding_unavailable") }}</span>
@@ -144,13 +144,13 @@
                   <div
                     v-for="ch in channelOptions"
                     :key="ch.value"
-                    class="pointer flex jc-sb ai-ct ph-100 dropdown-list-el"
+                    class="pointer flex jc-sb ai-ct ph-2 dropdown-list-el"
                     :class="{
                       '-primary-100': form.channel_ids.includes(ch.value),
                     }"
                     @click.stop="toggleChannel(ch.value)"
                   >
-                    <span class="ml-100">{{ ch.label }}</span>
+                    <span class="ml-2">{{ ch.label }}</span>
                     <FontAwesomeIcon
                       v-if="form.channel_ids.includes(ch.value)"
                       icon="check"
@@ -221,8 +221,8 @@
         </div>
 
         <!-- Location section -->
-        <div class="detail-section mb-400">
-          <h2 class="fs-500 fw-600 mb-300">{{ $t("dp.location") }}</h2>
+        <div class="detail-section mb-10">
+          <h2 class="fs-500 fw-600 mb-8">{{ $t("dp.location") }}</h2>
           <div class="detail-grid">
             <div class="detail-field">
               <label class="detail-label">{{ $t("dp.lat") }}</label>
@@ -244,8 +244,8 @@
         </div>
 
         <!-- Contact section -->
-        <div class="detail-section mb-400">
-          <h2 class="fs-500 fw-600 mb-300">{{ $t("dp.contact") }}</h2>
+        <div class="detail-section mb-10">
+          <h2 class="fs-500 fw-600 mb-8">{{ $t("dp.contact") }}</h2>
           <div class="detail-grid">
             <div class="detail-field">
               <label class="detail-label">{{ $t("dp.phone") }}</label>
@@ -279,7 +279,7 @@
               />
             </div>
           </div>
-          <div class="detail-field mt-300">
+          <div class="detail-field mt-8">
             <label class="detail-label">{{ $t("dp.hint") }}</label>
             <TextAreaBasic
               v-model="form.hint"
@@ -290,12 +290,12 @@
         </div>
 
         <!-- Translations section (edit mode only, hidden for single-language setups) -->
-        <div v-if="isEdit && showTranslations" class="detail-section mb-400">
-          <div class="flex ai-ct jc-sb mb-300">
+        <div v-if="isEdit && showTranslations" class="detail-section mb-10">
+          <div class="flex ai-ct jc-sb mb-8">
             <h2 class="fs-500 fw-600">{{ $t("dp.translations") }}</h2>
             <div
               v-if="availableLanguageCodes.length"
-              class="flex ai-ct gap-200"
+              class="flex ai-ct gap-5"
             >
               <Dropdown
                 :values="availableLanguageCodes"
@@ -320,9 +320,9 @@
           <div
             v-for="t9n in translations"
             :key="t9n.language"
-            class="t9n-row mb-300"
+            class="t9n-row mb-8"
           >
-            <div class="t9n-lang-header flex ai-ct jc-sb mb-200">
+            <div class="t9n-lang-header flex ai-ct jc-sb mb-5">
               <span class="detail-label t-accent">{{
                 t9n.language.toUpperCase()
               }}</span>
@@ -347,13 +347,13 @@
                 <BasicInput v-model="t9n.opening_hours" />
               </div>
             </div>
-            <div class="detail-field mt-200">
+            <div class="detail-field mt-5">
               <label class="detail-label">{{
                 $t("dp.translation_hint")
               }}</label>
               <BasicInput v-model="t9n.hint" />
             </div>
-            <div class="flex jc-fe mt-200">
+            <div class="flex jc-fe mt-5">
               <BasicButton
                 :text="$t('common.save')"
                 class="bg-accent-fill t-on-accent-fill"
@@ -803,20 +803,20 @@ export default {
 <style lang="scss" scoped>
 .detail-section {
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 20px;
+  border-radius: var(--radius-base);
+  padding: var(--space-5);
 }
 
 .detail-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 
 .detail-field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .detail-label {
@@ -829,13 +829,13 @@ export default {
 
 .t9n-row {
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 16px;
+  border-radius: var(--radius-base);
+  padding: var(--space-4);
 }
 
 .t9n-lang-header {
   border-bottom: 1px solid var(--border-subtle);
-  padding-bottom: 8px;
+  padding-bottom: var(--space-2);
 }
 
 .t9n-lang-select {
@@ -845,7 +845,7 @@ export default {
 .geocode-search {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .geocode-search__input-wrap {
@@ -860,15 +860,15 @@ export default {
   z-index: 10;
   background: var(--surface-base);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
   box-shadow: var(--shadow-md);
-  margin-top: 4px;
+  margin-top: var(--space-1);
   max-height: 240px;
   overflow-y: auto;
 }
 
 .geocode-search__result {
-  padding: 10px var(--space-200);
+  padding: var(--space-2) var(--space-5);
   font-size: var(--fs-300);
   color: var(--text-body);
   border-bottom: 1px solid var(--border-subtle);

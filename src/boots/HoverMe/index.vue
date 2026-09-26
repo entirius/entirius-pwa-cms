@@ -11,7 +11,7 @@
       <transition name="fade">
         <div
           v-show="is_visible"
-          class="hover_text pl-100 pr-100 pt-50 pb-50 bg-inverse t-inverse br-50 fs-100 lc-1"
+          class="hover_text pl-2 pr-2 pt-1 pb-1 bg-inverse t-inverse rounded fs-100 lc-1"
           :style="position_style"
           ref="tooltip"
         >

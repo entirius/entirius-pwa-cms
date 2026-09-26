@@ -1,5 +1,5 @@
 <template>
-  <div class="mapping-row b-subtle br-sm p-200 mb-100">
+  <div class="mapping-row b-subtle rounded p-5 mb-2">
     <div class="mapping-row__grid">
       <FormField
         :label="$t('atlas.mappings.attribute.source_field')"
@@ -40,7 +40,7 @@
         />
         <span
           v-if="modifierPreview"
-          class="modifier-preview t-muted fs-200 mt-100"
+          class="modifier-preview t-muted fs-200 mt-2"
           :data-testid="`attr-mapping-modifier-preview-${rowKey}`"
         >
           {{ modifierPreview }}
@@ -92,7 +92,7 @@
         />
       </FormField>
     </div>
-    <div class="flex ai-ct gap-100 mt-200 jc-end">
+    <div class="flex ai-ct gap-2 mt-5 jc-end">
       <span
         v-if="rowWarnings.length"
         class="row-warning t-warning"
@@ -309,7 +309,7 @@ export default {
 .mapping-row__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 .row-action-btn {
   display: inline-flex;
@@ -318,18 +318,18 @@ export default {
   width: 28px;
   height: 28px;
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   cursor: pointer;
 }
 .suppliers-primary-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   height: 32px;
-  padding: 0 12px;
+  padding: 0 var(--space-3);
   font-size: var(--fs-200);
   font-weight: 600;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   border: 1px solid var(--accent);
   background: var(--accent-fill);
   color: var(--text-on-accent-fill);
@@ -342,8 +342,8 @@ export default {
 .row-warning {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 0 var(--space-50);
+  gap: var(--space-1);
+  padding: 0 var(--space-1);
 }
 .modifier-preview {
   display: inline-block;

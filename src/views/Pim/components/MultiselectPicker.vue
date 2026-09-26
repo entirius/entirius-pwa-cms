@@ -237,22 +237,22 @@ onBeforeUnmount(() => {
 .multiselect-wrapper {
   display: flex;
   flex-direction: column;
-  gap: var(--space-100);
+  gap: var(--space-2);
 }
 
 .multiselect-option {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   cursor: pointer;
-  padding: 4px 0;
+  padding: var(--space-1) 0;
 
   &__input {
     appearance: none;
     width: 16px;
     height: 16px;
     border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-base);
     background: var(--surface-base);
     cursor: pointer;
     flex-shrink: 0;
@@ -286,12 +286,12 @@ onBeforeUnmount(() => {
 .ms-picker {
   display: flex;
   flex-direction: column;
-  gap: var(--space-200);
+  gap: var(--space-5);
 
   &__chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: var(--space-1);
     min-height: 28px;
     align-items: center;
   }
@@ -299,11 +299,11 @@ onBeforeUnmount(() => {
   &__chip {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    padding: 2px 8px;
+    gap: var(--space-1);
+    padding: 2px var(--space-2);
     background: var(--accent-subtle);
     color: var(--text-strong);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-base);
     font-size: var(--fs-200);
     font-weight: 600;
   }
@@ -313,7 +313,7 @@ onBeforeUnmount(() => {
     border: none;
     color: var(--text-accent);
     cursor: pointer;
-    font-size: 14px;
+    font-size: var(--fs-300);
     line-height: 1;
     padding: 0 2px;
 
@@ -323,7 +323,7 @@ onBeforeUnmount(() => {
   }
 
   &__empty {
-    padding: 4px 0;
+    padding: var(--space-1) 0;
   }
 
   &__search-area {
@@ -334,9 +334,9 @@ onBeforeUnmount(() => {
     display: block;
     width: 100%;
     height: var(--elem-height);
-    padding: 0 12px;
+    padding: 0 var(--space-3);
     border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-base);
     background: var(--surface-base);
     font-size: var(--fs-300);
     color: var(--text-body);
@@ -354,7 +354,7 @@ onBeforeUnmount(() => {
     left: 0;
     right: 0;
     border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-base);
     background: var(--surface-base);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     z-index: 10;
@@ -371,7 +371,7 @@ onBeforeUnmount(() => {
   }
 
   &__item {
-    padding: 8px 12px;
+    padding: var(--space-2) var(--space-3);
     cursor: pointer;
     font-size: var(--fs-300);
     color: var(--text-body);
@@ -382,12 +382,12 @@ onBeforeUnmount(() => {
   }
 
   &__empty-results {
-    padding: 8px 12px;
+    padding: var(--space-2) var(--space-3);
     text-align: center;
   }
 
   &__loading {
-    padding: 8px 12px;
+    padding: var(--space-2) var(--space-3);
     text-align: center;
   }
 }

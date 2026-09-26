@@ -8,17 +8,17 @@
         @click="goBack"
       >
         <FontAwesomeIcon icon="arrow-left" />
-        <span class="ml-100">{{ $t("common.back") }}</span>
+        <span class="ml-2">{{ $t("common.back") }}</span>
       </button>
       <span class="t-body fw-600 fs-400">{{ headerLabel }}</span>
     </Teleport>
 
     <Loader v-if="loading" />
-    <div v-else-if="!supplier" class="p-500 t-muted">
+    <div v-else-if="!supplier" class="p-12 t-muted">
       {{ $t("atlas.detail_not_found") }}
     </div>
     <div v-else class="supplier-detail__body">
-      <div class="supplier-detail__tabs p-300 b-subtle bb-100">
+      <div class="supplier-detail__tabs p-8 b-subtle bb-100">
         <SegmentedControl
           v-model="activeTab"
           :options="tabOptions"
@@ -164,7 +164,7 @@ export default {
 .supplier-detail__tabs {
   display: flex;
   align-items: center;
-  gap: var(--space-200);
+  gap: var(--space-5);
 }
 .suppliers-toolbar-btn {
   display: inline-flex;
@@ -172,8 +172,8 @@ export default {
   background: transparent;
   border: 1px solid var(--border-subtle);
   color: var(--text-body);
-  border-radius: var(--radius-sm);
-  padding: 4px 10px;
+  border-radius: var(--radius-base);
+  padding: var(--space-1) var(--space-2);
   cursor: pointer;
   transition: background 0.15s ease;
 }

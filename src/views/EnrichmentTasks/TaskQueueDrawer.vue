@@ -38,7 +38,7 @@
       />
     </div>
 
-    <div class="task-queue__pager flex ai-ct jc-ct gap-200">
+    <div class="task-queue__pager flex ai-ct jc-ct gap-5">
       <button
         type="button"
         class="task-queue__btn bg-raised t-secondary"
@@ -173,7 +173,7 @@ export default {
 
 <style lang="scss" scoped>
 .task-queue {
-  padding: var(--space-300);
+  padding: var(--space-8);
 }
 .task-queue__sku {
   background: none;
@@ -184,17 +184,17 @@ export default {
   text-align: left;
 }
 .task-queue__pager {
-  padding: var(--space-300);
+  padding: var(--space-8);
   border-top: 1px solid var(--border-subtle);
 }
 .task-queue__btn {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-100);
+  gap: var(--space-2);
   height: var(--elem-height);
-  padding: 0 16px;
+  padding: 0 var(--space-4);
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   font-size: var(--fs-200);
   cursor: pointer;
   &:disabled {

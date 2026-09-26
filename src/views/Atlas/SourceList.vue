@@ -1,9 +1,9 @@
 <template>
-  <div class="p-500 fs-300 t-body h-100 ov-h">
+  <div class="p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle br-50 h-100 ovy-auto pl-500 pt-500 pb-500 pr-500"
+      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
     >
-      <div class="flex ai-ct jc-sb mb-400 gap-300">
+      <div class="flex ai-ct jc-sb mb-10 gap-8">
         <h1 class="fs-700 fw-600">{{ $t("atlas.list_title") }}</h1>
         <button
           class="suppliers-primary-btn"
@@ -16,13 +16,13 @@
       </div>
 
       <!-- Filter panel -->
-      <div class="flex ai-ct mb-400">
+      <div class="flex ai-ct mb-10">
         <MobileFilterPanel
           :active-count="activeFilterCount"
           :trigger-label="$t('builder.filters')"
         >
           <p class="fs-200 t-secondary">{{ $t("atlas.filter.kind") }}</p>
-          <div class="flex ai-ct flex-wrap gap-100">
+          <div class="flex ai-ct flex-wrap gap-2">
             <FilterChip
               v-for="opt in kindOptions"
               :key="opt.value"
@@ -35,7 +35,7 @@
           <p class="fs-200 t-secondary">
             {{ $t("atlas.filter.status") }}
           </p>
-          <div class="flex ai-ct flex-wrap gap-100">
+          <div class="flex ai-ct flex-wrap gap-2">
             <FilterChip
               v-for="opt in statusOptions"
               :key="opt.value"
@@ -96,7 +96,7 @@
           {{ regionalStore.currencyById(value)?.iso3 || "—" }}
         </template>
         <template #cell-actions="{ row }">
-          <div class="flex ai-ct gap-100" @click.stop>
+          <div class="flex ai-ct gap-2" @click.stop>
             <button
               class="row-action-btn bg-accent-subtle t-strong"
               :title="$t('common.edit')"
@@ -131,7 +131,7 @@
       width="420px"
       @close="closeCreate"
     >
-      <form class="flex flex-column gap-200" @submit.prevent="submitCreate">
+      <form class="flex flex-column gap-5" @submit.prevent="submitCreate">
         <FormField :label="$t('atlas.form.idx_label')" required>
           <BasicInput
             v-model="createForm.idx"
@@ -204,7 +204,7 @@
             data-testid="suppliers-create-sku-prefix"
           />
         </FormField>
-        <div class="flex ai-ct jc-end gap-200 mt-300">
+        <div class="flex ai-ct jc-end gap-5 mt-8">
           <button
             type="button"
             class="suppliers-secondary-btn"
@@ -236,11 +236,11 @@
         <h2>{{ $t("atlas.delete.modal_title") }}</h2>
       </template>
       <template #description>
-        <p class="mb-200">
+        <p class="mb-5">
           <strong>{{ deleteTarget?.name }}</strong> ({{ deleteTarget?.idx }})
         </p>
-        <div class="flex flex-column gap-100 mb-200">
-          <label class="flex ai-ct gap-100 pointer">
+        <div class="flex flex-column gap-2 mb-5">
+          <label class="flex ai-ct gap-2 pointer">
             <input
               type="radio"
               :value="false"
@@ -251,7 +251,7 @@
               $t("atlas.delete.mode_soft_label")
             }}</span>
           </label>
-          <label class="flex ai-ct gap-100 pointer">
+          <label class="flex ai-ct gap-2 pointer">
             <input
               type="radio"
               :value="true"
@@ -268,7 +268,7 @@
           class="suppliers-delete-impact"
           data-testid="suppliers-delete-impact-banner"
         >
-          <p class="fs-200 mb-100">
+          <p class="fs-200 mb-2">
             {{
               $t("atlas.delete.impact_links", {
                 count: deleteImpact.affected_links_count,
@@ -283,7 +283,7 @@
             }}
           </p>
         </div>
-        <p v-if="!deleteForce" class="fs-200 t-muted mt-200">
+        <p v-if="!deleteForce" class="fs-200 t-muted mt-5">
           {{ $t("atlas.delete.default_warning") }}
         </p>
       </template>
@@ -640,8 +640,8 @@ export default {
 .supplier-list__toolbar {
   display: flex;
   align-items: center;
-  gap: var(--space-200);
-  margin-bottom: var(--space-400);
+  gap: var(--space-5);
+  margin-bottom: var(--space-10);
   flex-wrap: wrap;
 }
 .supplier-list__search {
@@ -653,12 +653,12 @@ export default {
 .suppliers-secondary-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   height: 36px;
-  padding: 0 16px;
-  font-size: 13px;
+  padding: 0 var(--space-4);
+  font-size: var(--fs-250);
   font-weight: 500;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   border: 1px solid;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -692,7 +692,7 @@ export default {
   width: 28px;
   height: 28px;
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-base);
   cursor: pointer;
   transition: opacity 0.15s ease;
 }
@@ -702,8 +702,8 @@ export default {
 .suppliers-delete-impact {
   background: var(--negative-subtle);
   color: var(--negative);
-  padding: var(--space-200);
-  border-radius: var(--radius-sm);
+  padding: var(--space-5);
+  border-radius: var(--radius-base);
 }
 .modal-btn--danger {
   background: var(--negative-subtle);

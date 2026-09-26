@@ -144,13 +144,13 @@ export default {
   .input-field {
     overflow: hidden;
     border-radius: inherit;
-    padding: 4px var(--space-100);
+    padding: var(--space-1) var(--space-2);
     height: var(--elem-height);
     font-size: inherit;
     font-family: inherit;
     border: 1px solid;
     border-color: var(--border-control);
-    border-radius: var(--space-50);
+    border-radius: var(--radius-base);
     transition: border-color 0.2s;
     outline: 0;
     color: inherit;
@@ -167,7 +167,7 @@ export default {
       // cursor: text;
       // top: 50%;
       // transform: translate(0, -50%);
-      // left: var(--space-50);
+      // left: var(--space-1);
       // background-color: transparent;
       // color: inherit;
     }
@@ -176,13 +176,13 @@ export default {
   .input-label {
     top: calc(-1 * var(--label-gap));
     transform: translate(0, -100%);
-    // left: var(--space-50);
+    // left: var(--space-1);
     // transition: 0.1s;
     //font-size: var(--fs-100);
     // background-color: var(--surface-hover);
     // color: var(--text-body);
-    // padding: 0 var(--space-50);
-    // border-radius: var(--space-50);
+    // padding: 0 var(--space-1);
+    // border-radius: var(--radius-base);
   }
 
   // .input-field:focus {
@@ -190,7 +190,7 @@ export default {
   //   ~ .input-label {
   //     position: absolute;
   //     top: 0;
-  //     left: var(--space-50);
+  //     left: var(--space-1);
   //     transform: translate(0%, -40%);
   //     display: block;
   //     transition: 0.1s;

@@ -1,7 +1,7 @@
 <template>
   <button
     :disabled="isDisabled"
-    class="button-basic pointer normal inline-flex jc-sb ai-ct gap-100"
+    class="button-basic pointer normal inline-flex jc-sb ai-ct gap-2"
     :class="{ 'jc-ct': !text && icon }"
     @click.stop="$emit('click')"
   >
@@ -43,9 +43,9 @@ button.button-basic {
   overflow: hidden;
   position: relative;
   border: none;
-  border-radius: var(--space-50);
+  border-radius: var(--radius-base);
   color: inherit;
-  padding: 0 1rem;
+  padding: 0 var(--space-4);
   background-color: transparent;
   line-height: var(--elem-height);
 
@@ -73,7 +73,7 @@ button.button-basic {
     }
   }
   .btn-text {
-    //   margin: 0 1rem;
+    //   margin: 0 var(--space-4);
     color: inherit;
   }
   // -------------------------------------------------------------
@@ -153,16 +153,16 @@ button.button-basic {
     color: var(--text-inverse);
     background: var(--surface-inverse);
     line-height: 1rem;
-    padding: 0.5rem 1rem;
+    padding: var(--space-2) var(--space-4);
     min-width: 3rem;
     i {
-      font-size: 0.975rem;
+      font-size: var(--fs-400);
     }
     .btn-icon {
       color: var(--text-inverse);
     }
     .btn-text {
-      font-size: 0.875rem;
+      font-size: var(--fs-300);
       color: var(--text-inverse);
     }
   }

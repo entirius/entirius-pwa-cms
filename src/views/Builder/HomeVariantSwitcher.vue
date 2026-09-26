@@ -1,7 +1,7 @@
 <template>
   <div class="home-switcher">
     <button
-      class="home-switcher__trigger pointer flex ai-ct gap-100"
+      class="home-switcher__trigger pointer flex ai-ct gap-2"
       :title="$t('builder.home_variant')"
       @click="open = !open"
     >
@@ -118,12 +118,12 @@ export default {
 
 .home-switcher__trigger {
   height: var(--elem-height);
-  padding: 0 10px;
-  border-radius: 5px;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-base);
   border: 1px solid var(--border-default);
   background-color: var(--surface-base);
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: var(--fs-250);
   transition: all 0.15s ease;
   white-space: nowrap;
   &:hover {
@@ -152,14 +152,14 @@ export default {
   z-index: 10;
   background: var(--surface-base);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-base);
   box-shadow: var(--shadow-md);
   overflow: hidden;
 }
 
 .home-switcher__header {
-  padding: 8px 12px;
-  font-size: 11px;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--fs-150);
   font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
@@ -171,8 +171,8 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 12px;
-  font-size: 13px;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--fs-250);
   color: var(--text-body);
   cursor: pointer;
   transition: background-color 0.1s ease;
@@ -195,6 +195,6 @@ export default {
   color: var(--text-muted);
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
 }
 </style>
