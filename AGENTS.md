@@ -142,6 +142,9 @@ per moved stage — there is no bulk order endpoint; delete 409 inline), `settin
 redirect there; the route names (`CommunicatorTemplates`, `CommunicatorSettings`, `LeadsStages`, …) did not change. `/leads/companies/:id` on desktop is the company card (`Company.vue`, tabs via `?tab=`
 overview | intel | contacts | timeline; timeline = the plan-13 thread, which a phone still gets alone);
 notification jumps open `?tab=timeline`.
+The Contacts tab (`tabs/ContactsTab.vue`, UX-011) adds, edits in place and removes contacts, one form at a time, with the
+primary star (one per company, server-side); the fields are `ContactFields.vue`, shared with the add-lead form. Remove
+answers 204 (never used, deleted) or 200 (used, anonymised) and the status line says which; anonymised rows are history only.
 
 ### Communicator sections of Settings
 

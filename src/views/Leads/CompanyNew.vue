@@ -35,34 +35,7 @@
 
     <fieldset class="add-lead__group">
       <legend>{{ $t("leads.add.contact") }}</legend>
-      <label class="ld-field">
-        <span>{{ $t("leads.contacts.email") }}</span>
-        <input v-model.trim="form.email" class="ld-input" type="email" inputmode="email" autocomplete="off" data-testid="add-lead-email" />
-        <span v-if="fieldError('email')" class="ld-error" data-testid="add-lead-email-error">{{ fieldError("email") }}</span>
-      </label>
-      <div class="add-lead__names">
-        <label class="ld-field">
-          <span>{{ $t("leads.add.first_name") }}</span>
-          <input v-model.trim="form.first_name" class="ld-input" autocomplete="off" data-testid="add-lead-first-name" />
-        </label>
-        <label class="ld-field">
-          <span>{{ $t("leads.add.last_name") }}</span>
-          <input v-model.trim="form.last_name" class="ld-input" autocomplete="off" data-testid="add-lead-last-name" />
-        </label>
-      </div>
-      <label class="ld-field">
-        <span>{{ $t("leads.contacts.legal_basis") }}</span>
-        <select v-model="form.legal_basis" class="ld-input" data-testid="add-lead-basis">
-          <option value="">{{ $t("leads.add.basis_none") }}</option>
-          <option v-for="basis in BASES" :key="basis" :value="basis">{{ legalBasisLabel(basis) }}</option>
-        </select>
-        <span class="ld-muted">{{ $t("leads.add.basis_hint") }}</span>
-      </label>
-      <label v-if="form.legal_basis === 'consent'" class="ld-field">
-        <span>{{ $t("leads.add.consent_ref") }} *</span>
-        <input v-model.trim="form.consent_ref" class="ld-input" data-testid="add-lead-consent-ref" />
-        <span v-if="fieldError('consent_ref')" class="ld-error">{{ fieldError("consent_ref") }}</span>
-      </label>
+      <ContactFields :form="form" :error-of="fieldError" testid="add-lead" />
     </fieldset>
 
     <p v-if="error" class="ld-error" data-testid="add-lead-error">{{ error }}</p>
@@ -82,12 +55,11 @@ import { t } from "@/i18n";
 import { GET_Companies, POST_Company, POST_Contact } from "@/api/leads/api";
 import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
 import { useLeadTypesStore } from "@/stores/leadTypes";
-import { legalBasisLabel } from "@/utils/leadsLabels";
+import ContactFields from "./ContactFields.vue";
 
 // One lead by hand (UX-006): the company, then its contact — the two creates the API offers, so the company lands
 // where an imported row lands (first stage, "company created"). Legal basis stays optional as in the import: the
 // outreach gate refuses a contact without one. The rest (phone, job title, industry) lives on the company card.
-const BASES = ["legitimate_interest", "consent", "contract"];
 const CONTACT_FIELDS = ["email", "first_name", "last_name", "legal_basis", "consent_ref"];
 
 const router = useRouter();
@@ -176,11 +148,6 @@ onMounted(() => leadTypes.load()); // a failed load leaves Unknown only
 .add-lead__group legend {
   margin-bottom: var(--space-200);
   font-weight: 600;
-}
-.add-lead__names {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: var(--space-200);
 }
 .add-lead .ld-input {
   min-height: 44px;

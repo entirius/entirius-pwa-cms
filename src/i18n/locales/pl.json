@@ -3169,7 +3169,22 @@
       "email": "E-mail",
       "legal_basis": "Podstawa prawna",
       "suppressed": "Zablokowany",
-      "yes": "tak"
+      "yes": "tak",
+      "add": "Dodaj kontakt",
+      "actions": "Akcje",
+      "job_title": "Stanowisko",
+      "phone": "Telefon",
+      "language": "Język",
+      "make_primary": "Ustaw jako główny",
+      "remove": "Usuń",
+      "remove_title": "Usunąć {name}?",
+      "remove_message": "Kontakt, do którego nikt nie pisał, zostanie usunięty. Kontakt z historią maili, zgodą lub wypisem zostanie zanonimizowany — jego wątek i oś czasu zostają.",
+      "removed": "Kontakt usunięty.",
+      "anonymised_done": "Kontakt miał historię, więc został zanonimizowany — jego wątek i oś czasu zostają.",
+      "anonymised": "Zanonimizowany",
+      "added": "Kontakt dodany.",
+      "saved": "Kontakt zapisany.",
+      "exists": "Ten kontakt już jest w tej firmie."
     },
     "import": {
       "title": "Import firm",

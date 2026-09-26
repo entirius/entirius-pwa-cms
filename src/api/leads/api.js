@@ -48,6 +48,11 @@ export const POST_Company = (body) => leadsApi.post(`${base()}/companies/`, body
 
 export const POST_Contact = (body) => leadsApi.post(`${base()}/contacts/`, body);
 
+// UX-011 — contacts managed in the company card. DELETE: 204 = deleted (never used), 200 = anonymised (used).
+export const PATCH_Contact = (id, body) => leadsApi.patch(`${base()}/contacts/${id}/`, body);
+
+export const DELETE_Contact = (id) => leadsApi.delete(`${base()}/contacts/${id}/`);
+
 export const GET_LeadTypes = () => leadsApi.get(`${base()}/lead-types/`);
 
 // UX-004 — lead types of the channel (Leads → Settings); the code is fixed after create.

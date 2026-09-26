@@ -3170,7 +3170,22 @@
       "email": "Email",
       "legal_basis": "Legal basis",
       "suppressed": "Suppressed",
-      "yes": "yes"
+      "yes": "yes",
+      "add": "Add contact",
+      "actions": "Actions",
+      "job_title": "Job title",
+      "phone": "Phone",
+      "language": "Language",
+      "make_primary": "Make primary",
+      "remove": "Remove",
+      "remove_title": "Remove {name}?",
+      "remove_message": "A contact nobody has written to is deleted. One with mail history, consent or an opt-out is anonymised instead — its thread and timeline stay.",
+      "removed": "Contact removed.",
+      "anonymised_done": "The contact had history, so it was anonymised — its thread and timeline stay.",
+      "anonymised": "Anonymised",
+      "added": "Contact added.",
+      "saved": "Contact saved.",
+      "exists": "Already a contact of this company."
     },
     "import": {
       "title": "Import companies",

@@ -34,7 +34,7 @@
     <template v-if="company">
       <OverviewTab v-if="tab === 'overview'" :company="company" />
       <IntelTab v-else-if="tab === 'intel'" :company="company" />
-      <ContactsTab v-else-if="tab === 'contacts'" :company="company" />
+      <ContactsTab v-else-if="tab === 'contacts'" :company="company" @changed="load" />
       <Thread v-else />
     </template>
   </div>
