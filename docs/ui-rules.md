@@ -8,7 +8,7 @@ in `src/boots/`. This file names them and never restates a value. Lint enforces 
 
 | What | Where |
 |---|---|
-| Tokens (colour, spacing, type, radius, shadow, overlay) | `@entirius/brand-tokens` + `src/assets/tokens/semantic.json` (generated into `src/assets/scss/themes/_semantic.generated.scss`); the old spacing, radius and size layer in `variables/`, `main.scss` until P2 closes |
+| Tokens (colour, spacing, type, radius, shadow, overlay) | `@entirius/brand-tokens` + `src/assets/tokens/semantic.json` (generated into `src/assets/scss/themes/_semantic.generated.scss`); the scale lists in `src/assets/scss/variables/`, emitted by `main.scss` |
 | Components | `src/boots/` + `src/boots/register-elems.js`; API in `docs/ui-components.md`; catalogue page (P3) |
 | Icons | FontAwesome, registered in `src/boots/Icons/fa-icons.js` (P3: the `icons.js` meaning registry) |
 | Breakpoints | `src/assets/scss/utils/_media-query.scss` (mixins `max-tablet`, `min-tablet`, `max-desktop`, `min-desktop`) |
@@ -17,11 +17,12 @@ in `src/boots/`. This file names them and never restates a value. Lint enforces 
 
 ## Tokens
 
-New code uses the P2 layer: `@entirius/brand-tokens` (`--brand-*`, never used directly in views) and the CMS
-semantic layer on top of it. Its source is `src/assets/tokens/semantic.json`; `themes/_semantic.generated.scss` is
-generated from its `color`, `overlay`, `shadow` and `type` groups (`node scripts/tokens/build-theme.mjs`, a unit test
-fails when it is stale), never edited by hand. The map's `radius`, `space`, `font-size` and `font` groups describe
-the end state after P2; the brand scales below are what exists today.
+Two layers: `@entirius/brand-tokens` (`--brand-*`, never used directly in views) and the CMS semantic layer on top
+of it. The semantic source is `src/assets/tokens/semantic.json`: its `color`, `overlay`, `shadow` and `type` groups
+are generated into `themes/_semantic.generated.scss` (`node scripts/tokens/build-theme.mjs`, a unit test fails when it
+is stale; never edit the output by hand). Its `space`, `radius`, `font-size` and `font` groups name the scales that
+`main.scss` emits from the lists in `src/assets/scss/variables/`; the parity check (`@parity`) holds both to the same
+values.
 
 - **T1 Colour comes from a semantic token.** Use `var(--surface-*)`, `--text-*`, `--border-*`, `--focus-ring`,
   `--accent*`, `--positive*`, `--negative*`, `--warning*`, `--info*`, or the classes the map names: `bg-*` (surfaces),
@@ -29,22 +30,31 @@ the end state after P2; the brand scales below are what exists today.
   `-hover` variant (`t-accent-hover`, `bg-accent-hover`, `b-accent-hover` are the `accent-hover` token itself). Pick the token by the role the map gives it, never by a number. No hex, `rgb()`, `rgba()`,
   `hsl()` or named colours outside the token files. Form fields (input, select, textarea, checkbox, radio) sit on
   `surface-sunken` with a `border-control` edge. On `accent-subtle` text is `text-strong` or `text-body`, never
-  `text-accent` or `text-muted`; on `accent-fill` it is `text-on-accent-fill`. The old palette (`--c-*` and its
-  `t-` / `bg-` / `b-`… `<colour>-<shade>` classes) is removed; lint fails on it.
-- **T2 No fallback on a token.** `var(--text-body, #fff)` hides a missing token in one theme.
-- **T3 Spacing comes from `--space-*`.** New code uses the brand steps `--space-0` … `--space-30` and the `p-*`,
-  `m-*`, `gap-*` classes with the same numbers, for margin, padding and gap. When no step fits, ask for a token.
-  Never write raw px or rem.
-- **T4 Radius comes from `--radius-*`.** Use `--radius-base`, `-lg`, `-xl`, `-2xl`, `-3xl`, `-4xl`, `-full`, or the
-  `radius-<name>` / `br-<name>` classes. Never take it from the spacing scale (`br-50`, `br-100`, `var(--space-50)`).
+  `text-accent` or `text-muted`; on `accent-fill` it is `text-on-accent-fill`.
+- **T2 No fallback on a token.** `var(--text-body, #fff)` hides a missing token in one theme. Every `var()` names a
+  token that exists (brand, semantic, a scale below, or one declared in the same file); lint flags unknown ones.
+- **T3 Spacing comes from `--space-*`.** The brand steps on the 4 px grid: `--space-0`, `-1` (4 px), `-2`, `-3`, `-4`,
+  `-5`, `-6`, `-8`, `-10`, `-12`, `-16`, `-30` (120 px); the step number times 4 is the px value. Classes use the same
+  numbers: `p-*`, `pt-*` / `pr-*` / `pb-*` / `pl-*`, `pv-*` / `ph-*`, `m-*` and its sides and axes, `gap-*`. Margin,
+  padding and gap never take raw px or rem. The one exception is a 1–3 px hairline alignment (border compensation, a
+  focus offset, an icon nudge), which stays raw. When no step fits, ask for a token.
+- **T4 Radius comes from `--radius-*`.** `--radius-base` (4 px), `-lg`, `-xl`, `-2xl`, `-3xl`, `-4xl`, `-full`, or the
+  classes `rounded` (base), `rounded-lg` … `rounded-full` and the corner variants `rounded-tl` / `rounded-tr`. Radius
+  never comes from the spacing scale. `br-` is the border-right prefix of T1 and never a radius.
 - **T5 Type comes from a type role.** New text uses a `type-*` class (the map's `type` group: family, weight, size,
-  line height, tracking). Font families are `--font-ui`, `--font-brand` and `--font-mono`; sizes outside a role use
-  `--fs-*`. Shadow and overlay come from `--shadow-*` and `--overlay-*`.
+  line height, tracking). Sizes outside a role use `--fs-*` or the `fs-*` classes: `100` (10 px), `150` (11), `200`
+  (12), `250` (13), `300` (14), `400` (16), `500` (20), `600` (24), `700` (30). Weights are `fw-300` … `fw-600`: Inter
+  carries 300–600, Lexend Deca 300 and 400. Font families are `--font-ui` (Inter, body and controls), `--font-brand`
+  (Lexend Deca, titles and navigation) and `--font-mono`. Shadow and overlay come from `--shadow-sm`, `-md`, `-lg`,
+  `-down` (plus the CMS-local `-arrow` / `-right` / `-left` / `-top` / `-around`) and `--overlay-backdrop`, `-heavy`,
+  `-loading`, `-handy`, `-ripple`.
 - **T6 Every screen works in both themes.** `data-theme` on `<html>` is `default` (light) or `dark`. A screen that
   follows T1 is themed for free. Scope third-party dark overrides as `[data-theme="dark"] .x { }`.
 
-Being migrated in P2 (still defined, no new uses): `--space-50` … `--space-700` and their classes (with `-m` / `-d`),
-`--radius-sm` / `--radius-md` and `radius-sm` / `radius-md`, and the current values of `--fs-500` and `--fs-700`.
+Removed in P2, and lint fails on them: the old palette (`--c-*` and its `t-` / `bg-` / `b-`… `<colour>-<shade>`
+classes), the old spacing steps (`--space-50` … `--space-700` and `p-100`-style classes with their `-m` / `-d`
+variants), `--radius-sm` / `--radius-md`, the radius classes `br-<n>`, `br-tl-<n>`, `radius-<name>` and
+`br-<radius name>`, `--fs-800` … `--fs-1000`, `fw-100` and `fw-700`.
 
 Traps:
 - `ph-*` / `pv-*` are shorthands, and they reset the other two sides. Use `pl-*` + `pr-*` when you also set a vertical side.
@@ -119,7 +129,7 @@ Traps:
   content card below it scrolls (`flex: 1; min-height: 0; overflow-y: auto`), and the toolbar never shrinks. P3
   replaces this with `PageLayout` + `PageHeader` + `ActionBar`.
 - **List view.** The toolbar holds a search `BasicInput` with `useSearchDebounce`, then filters in
-  `MobileFilterPanel`, and it wraps (`flex-wrap`, `gap: var(--space-200)`). In `DataTable`, secondary columns get fixed
+  `MobileFilterPanel`, and it wraps (`flex-wrap`, `gap: var(--space-5)`). In `DataTable`, secondary columns get fixed
   widths and only the primary text column gets `1fr`, truncated with an ellipsis. No data means `EmptyState`.
 - **Edit view.** A `FormField` wraps every field, validation follows § Forms, and there is one primary Save (R5).
   A dirty form shows the unsaved state next to the actions.
