@@ -3,7 +3,7 @@ const { test, expect, THEME_VALUES, openPinned } = require("./support/state");
 const { expectedTokens, themeColors, brandFamilies } = require("./support/tokens");
 const { writeReport, mergeReport } = require("./support/report");
 
-// Layer 1 — token parity. Gates: token resolution (old, semantic and brand-scale tokens) and body text in Inter.
+// Layer 1 — token parity. Gates: token resolution (semantic and brand-scale tokens) and body text in Inter.
 // Census, the other fonts and contrast are reports.
 const THEMES = ["dark", "light"];
 const CENSUS_SCREENS = ["g-home", "pages-content-list", "pages-content-editor", "pim-products-list"]; // S1, S4, S6, PIM

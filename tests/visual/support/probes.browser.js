@@ -79,7 +79,7 @@
   const distinct = (values) => [...new Set(values)].sort((a, b) => parseFloat(a) - parseFloat(b) || a.localeCompare(b));
   const firstFamily = (style) => style.fontFamily.split(",")[0].trim().replace(/["']/g, "");
 
-  // Census of every visible element against the theme's --c-* tokens (report only).
+  // Census of every visible element against the theme's semantic colour tokens (report only).
   function census(colorTokenNames) {
     const classify = colourClassifier(colorTokenNames);
     const elements = visibleElements();

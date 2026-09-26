@@ -79,25 +79,14 @@ span on click.
 - **Persistence:** `localStorage` key `cms_theme`, falls back to
   `prefers-color-scheme: dark`
 
-### Color Palettes
+### Colours, shadows, overlays
 
-Defined in `src/assets/scss/themes/` (`__default.scss`, `__dark.scss`).
-Groups: `basic` (100-900), `support`, `primary`, `positive`, `negative`,
-`warning`, `informative`, `notice`.
-
-Light: `basic-100` = lightest. Dark: scale inverts.
-
-### Theme-Scoped CSS Variables
-
-Per `[data-theme]` in `src/assets/scss/main.scss`:
-- **Shadows:** `--shadow-sm/md/lg/arrow/right/left/down/top/around`
-- **Overlays:** `--overlay-backdrop/heavy/loading/handy/ripple`
-- **Gradients:** `--gradient-blue/subtle/main-bg`
-- **Editor:** `--editor-table-header-bg/bg-alt/text`
+The semantic layer, per `[data-theme]`: `src/assets/tokens/semantic.json`, generated into
+`src/assets/scss/themes/_semantic.generated.scss` (rules and roles: `docs/ui-rules.md` § Tokens).
 
 ### Focus Styles
 
-`:focus-visible` uses `outline: 2px solid var(--c-support-400)` with
+`:focus-visible` uses `outline: 2px solid var(--accent)` with
 `offset: 2px`. Defined in `src/assets/scss/utils/_reset.scss`.
 
 ## Mobile / RWD

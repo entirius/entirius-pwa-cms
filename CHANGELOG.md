@@ -51,6 +51,15 @@ All notable changes to this project will be documented in this file.
   Shadows and overlays now come from the semantic layer; the dark loading veil is black-based instead of blue.
   PIM supplier diffs that already read `var(--font-mono, monospace)` now get the brand mono stack.
   The visual parity gate checks every semantic token in both themes and fails when body text is not Inter.
+- **Every colour comes from the semantic layer (P2):** the old palette (`--c-<colour>-<shade>`, the
+  `t-` / `bg-` / `b-` / `bb-` / `bt-` / `bl-` / `br-` / `o-` / `stroke-<colour>-<shade>` classes, `themes/__dark.scss`,
+  `themes/__default.scss`) is gone; each use was moved by the role it plays (`scripts/codemods/p2-colours.mjs`;
+  `--check` exits 1 while anything is left to rewrite). Visible: the brand palette in both themes (warm black shell, `#00ACC1` accent,
+  white text on the teal `accent-fill`), inputs, selects and checkboxes on `surface-sunken` with the `border-control`
+  edge, accent and muted text on `accent-subtle` chips become `text-strong`, the app background is the flat
+  `surface-page` (the `--gradient-*` variables and `.bg-gradient-*` / `.text-gradient-*` / `.main-bg-theme` are removed),
+  the content-builder tables use `accent-subtle` / `surface-raised` / `text-strong`. `npm run lint:ui` fails on an old
+  palette var or class. Client config is untouched; the CMS has no per-client theme overrides.
 - **Post-login session setup is shared** (`src/composables/useLoginSession.js`):
   password and SSO login run the same code after the token call.
 

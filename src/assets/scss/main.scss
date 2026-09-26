@@ -1,7 +1,6 @@
 @use "sass:list";
 @use "sass:map";
 
-@import "./themes/__config";
 @import "./variables/spacing";
 @import "./variables/fonts";
 
@@ -347,57 +346,7 @@
   }
 }
 
-@each $theme, $set in $themes {
-  [data-theme="#{$theme}"] {
-    @each $color, $shades in $set {
-      @each $shade, $value in $shades {
-        --c-#{$color}-#{$shade}: #{$value};
-
-        .t-#{$color}-#{$shade},
-        .t-#{$color}-#{$shade}-hover:hover {
-          color: #{$value};
-        }
-
-        .bg-#{$color}-#{$shade},
-        .bg-#{$color}-#{$shade}-hover:hover {
-          background-color: $value;
-        }
-
-        .bb-#{$color}-#{$shade} {
-          border-bottom: 1px solid $value;
-        }
-
-        .bt-#{$color}-#{$shade} {
-          border-top: 1px solid $value;
-        }
-
-        .br-#{$color}-#{$shade} {
-          border-right: 1px solid $value;
-        }
-
-        .bl-#{$color}-#{$shade} {
-          border-left: 1px solid $value;
-        }
-
-        .b-#{$color}-#{$shade},
-        .b-#{$color}-#{$shade}-hover:hover {
-          border: 1px solid $value;
-        }
-
-        .o-#{$color}-#{$shade},
-        .o-#{$color}-#{$shade}-hover:hover {
-          outline: 1px solid $value;
-        }
-
-        .stroke-#{$color}-#{$shade} {
-          stroke: $value;
-        }
-      }
-    }
-  }
-}
-
-// Semantic layer (P2), after the old generators so its classes win ties on source order.
+// Theme: the semantic layer only — colour, overlay and shadow tokens per theme, the $semantic-classes map, type roles.
 @import "./themes/semantic.generated";
 
 // Semantic utility classes from $semantic-classes (themes/_semantic.generated.scss); values follow the theme via var().
@@ -414,8 +363,7 @@
   }
 }
 
-// New utilities sit under :root like the old generated ones (0,2,0), so on an element that carries both
-// an old and a new class for one property, the new one wins by source order.
+// Utilities sit under :root (0,2,0), the weight the removed palette classes had, so no call site changes weight.
 :root {
   @each $token, $class in $semantic-classes {
     $name: map.get($class, name);
@@ -483,65 +431,8 @@ $brand-space-properties: (
   }
 }
 
-// Theme-scoped variables (gradients, editor); shadows and overlays live in the semantic layer
-[data-theme="default"] {
-  --gradient-blue: linear-gradient(135deg, #2563EB 0%, #1E40AF 100%);
-  --gradient-blue-light: linear-gradient(135deg, #60A5FA 0%, #3B82F6 100%);
-  --gradient-tech: linear-gradient(135deg, #3B82F6 0%, #2563EB 50%, #1E40AF 100%);
-  --gradient-subtle: linear-gradient(135deg, #F5F7FA 0%, #E8ECEF 100%);
-  --gradient-main-bg: linear-gradient(135deg, #fdfcfb 0%, #c6c3e25c 100%);
-
-  --editor-table-header-bg: #3B82F6;
-  --editor-table-header-bg-alt: #2563EB;
-  --editor-table-header-text: #ffffff;
-  --editor-table-even-row: #f8f8f8;
-}
-
-[data-theme="dark"] {
-  --gradient-blue: linear-gradient(135deg, #2563EB 0%, #1E40AF 100%);
-  --gradient-blue-light: linear-gradient(135deg, #60A5FA 0%, #3B82F6 100%);
-  --gradient-tech: linear-gradient(135deg, #3B82F6 0%, #2563EB 50%, #1E40AF 100%);
-  --gradient-subtle: linear-gradient(135deg, #141A24 0%, #1E2830 100%);
-  --gradient-main-bg: linear-gradient(135deg, #0C1017 0%, #141A24 100%);
-
-  --editor-table-header-bg: #163450;
-  --editor-table-header-bg-alt: #0F2636;
-  --editor-table-header-text: #D6E0EA;
-  --editor-table-even-row: #141A24;
-}
-
 [data-theme] * {
   transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-}
-
-.bg-gradient-blue {
-  background: var(--gradient-blue);
-}
-
-.bg-gradient-blue-light {
-  background: var(--gradient-blue-light);
-}
-
-.bg-gradient-tech {
-  background: var(--gradient-tech);
-}
-
-.bg-gradient-subtle {
-  background: var(--gradient-subtle);
-}
-
-.text-gradient-blue {
-  background: var(--gradient-blue);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.text-gradient-tech {
-  background: var(--gradient-tech);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .bg-inherit {

@@ -8,7 +8,7 @@ in `src/boots/`. This file names them and never restates a value. Lint enforces 
 
 | What | Where |
 |---|---|
-| Tokens (colour, spacing, type, radius, shadow, overlay) | `@entirius/brand-tokens` + `src/assets/tokens/semantic.json` (generated into `src/assets/scss/themes/_semantic.generated.scss`); the old layer in `themes/`, `variables/`, `main.scss` until P2 closes |
+| Tokens (colour, spacing, type, radius, shadow, overlay) | `@entirius/brand-tokens` + `src/assets/tokens/semantic.json` (generated into `src/assets/scss/themes/_semantic.generated.scss`); the old spacing, radius and size layer in `variables/`, `main.scss` until P2 closes |
 | Components | `src/boots/` + `src/boots/register-elems.js`; API in `docs/ui-components.md`; catalogue page (P3) |
 | Icons | FontAwesome, registered in `src/boots/Icons/fa-icons.js` (P3: the `icons.js` meaning registry) |
 | Breakpoints | `src/assets/scss/utils/_media-query.scss` (mixins `max-tablet`, `min-tablet`, `max-desktop`, `min-desktop`) |
@@ -27,7 +27,10 @@ the end state after P2; the brand scales below are what exists today.
   `--accent*`, `--positive*`, `--negative*`, `--warning*`, `--info*`, or the classes the map names: `bg-*` (surfaces),
   `t-*` (text), `b-*` / `bt-*` / `bb-*` / `bl-*` / `br-*` (borders), all three for accent and status, most with a
   `-hover` variant (`t-accent-hover`, `bg-accent-hover`, `b-accent-hover` are the `accent-hover` token itself). Pick the token by the role the map gives it, never by a number. No hex, `rgb()`, `rgba()`,
-  `hsl()` or named colours outside the token files.
+  `hsl()` or named colours outside the token files. Form fields (input, select, textarea, checkbox, radio) sit on
+  `surface-sunken` with a `border-control` edge. On `accent-subtle` text is `text-strong` or `text-body`, never
+  `text-accent` or `text-muted`; on `accent-fill` it is `text-on-accent-fill`. The old palette (`--c-*` and its
+  `t-` / `bg-` / `b-`… `<colour>-<shade>` classes) is removed; lint fails on it.
 - **T2 No fallback on a token.** `var(--text-body, #fff)` hides a missing token in one theme.
 - **T3 Spacing comes from `--space-*`.** New code uses the brand steps `--space-0` … `--space-30` and the `p-*`,
   `m-*`, `gap-*` classes with the same numbers, for margin, padding and gap. When no step fits, ask for a token.
@@ -40,13 +43,10 @@ the end state after P2; the brand scales below are what exists today.
 - **T6 Every screen works in both themes.** `data-theme` on `<html>` is `default` (light) or `dark`. A screen that
   follows T1 is themed for free. Scope third-party dark overrides as `[data-theme="dark"] .x { }`.
 
-Being migrated in P2 (still defined, no new uses): `--c-*` and the `t-` / `bg-` / `b-` / `bb-` / `bt-` / `bl-` /
-`br-` / `o-` / `stroke-<colour>-<shade>` classes, `--space-50` … `--space-700` and their classes (with `-m` / `-d`),
+Being migrated in P2 (still defined, no new uses): `--space-50` … `--space-700` and their classes (with `-m` / `-d`),
 `--radius-sm` / `--radius-md` and `radius-sm` / `radius-md`, and the current values of `--fs-500` and `--fs-700`.
 
 Traps:
-- The old `basic-*` shades invert with the theme (dark `basic-100` is the darkest, light `basic-100` the lightest);
-  a semantic token keeps its role in both. Never map an old name to a new one by its number.
 - `ph-*` / `pv-*` are shorthands, and they reset the other two sides. Use `pl-*` + `pr-*` when you also set a vertical side.
 - Utility grid classes apply only from 640 px up. Below that, use flex.
 - Inputs and buttons share `--elem-height`, so never override it on one of them.
@@ -108,7 +108,7 @@ Traps:
   more), and each one still gets an accessible label.
 - **R8 Brand, not generic.** Accent and interactive states use the brand accent tokens (`accent` for text, icons,
   borders and indicators; `accent-fill` with white text for fills). No generic blue, and no panel-specific colours.
-  Until P2 renames them, the primary fill is `bg-support-400 t-basic-100`.
+  The primary fill is `bg-accent-fill t-on-accent-fill`.
 - **R9 Restyle before restructure.** A visual change keeps the structure and behaviour of a screen unless R1–R8
   require a change. Content-builder section blocks, tiles and `DataTable` internals change through tokens only.
 

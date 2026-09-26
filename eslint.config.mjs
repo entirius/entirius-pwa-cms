@@ -19,6 +19,8 @@ const NO_RAW_INLINE_STYLE = {
   selector: "VAttribute[directive=false][key.name='style'][value.value=/#[0-9a-fA-F]{3,8}\\b|rgba?\\(|\\d+px/]",
   message: `Raw value in style="": use a token or a utility class (${RULES} § Tokens).`,
 };
+// T1 the old palette classes (removed in P2) render nothing: an error, not debt.
+const OLD_COLOUR_CLASS = "/^(t|bg|b|bb|bt|bl|br|o|stroke)-(basic|support|primary|positive|negative|warning|informative|notice)-\\d+(-hover)?$/";
 // C1 <input type="file"> stays raw: it is the hidden picker behind an upload button.
 const NO_RAW_INPUT = {
   selector: "VElement[rawName='input']:not(:has(VAttribute[key.name='type'][value.value='file']))",
@@ -39,8 +41,7 @@ export default [
     },
   },
   {
-    // C3 no hand-rolled copy of a boot class · T4 no radius from the spacing scale · C5 no icon-font glyph
-    // · T1 no colour shade the palette does not generate (renders nothing; regenerate the regex in P2).
+    // C3 no hand-rolled copy of a boot class · T4 no radius from the spacing scale · C5 no icon-font glyph.
     files: ["src/**/*.vue"],
     ignores: ["src/boots/**"], // boots own these classes
     rules: {
@@ -51,9 +52,15 @@ export default [
         "pim-badge",
         "/^br-\\d+$/",
         "/^icon-(?!only-mobile$)/",
-        "/^(t|bg|b|bb|bt|bl|br|o|stroke)-(primary|positive|negative|warning|informative)-[4-9]00$/",
       ],
     },
+  },
+  {
+    // T1 old palette classes, boots included. The vue plugin under a second name gives this check its own
+    // severity: vue/no-restricted-class above stays in warn mode.
+    files: ["src/**/*.vue"],
+    plugins: { "vue-p2": vue },
+    rules: { "vue-p2/no-restricted-class": ["error", OLD_COLOUR_CLASS] },
   },
   {
     // C1 views, panel components and functionals build UI from boots; boots are the implementations.

@@ -2,30 +2,16 @@ const fs = require("fs");
 const path = require("path");
 
 // Expected token values, read from the token sources (not from the built CSS the parity check verifies):
-// today's SCSS, the CMS semantic map and the @entirius/brand-tokens CSS it points into.
+// the spacing/radius SCSS, the CMS semantic map and the @entirius/brand-tokens CSS it points into.
 const ROOT = path.resolve(__dirname, "../../..");
 const SCSS = path.join(ROOT, "src/assets/scss");
 const SEMANTIC = path.join(ROOT, "src/assets/tokens/semantic.json");
 const BRAND_CSS = require.resolve("@entirius/brand-tokens/tokens.css");
-const THEME_FILES = { dark: "themes/__dark.scss", light: "themes/__default.scss" };
 const MOBILE_MAX_WIDTH = 640; // main.scss: `max-width: 40rem` switches --space-* to the `m` set
 // variables/_spacing.scss `$brand-space-steps` / `$brand-radii`: the brand scales the CMS emits by the same name
 const LIST = (name) => new RegExp(`\\$${name}:\\s*([^;]+);`);
 
 const read = (file) => fs.readFileSync(path.join(SCSS, file), "utf8");
-
-// `$<theme>_colors: (basic: (100: #0C1017, …), …)` → { "--c-basic-100": "#0C1017", … }
-function themeColors(theme) {
-  const tokens = {};
-  let color = null;
-  for (const line of read(THEME_FILES[theme]).split("\n")) {
-    const group = line.match(/^\s*([a-z][\w-]*):\s*\($/i);
-    const shade = line.match(/^\s*(\d+):\s*(.+?)\s*,?\s*$/);
-    if (group) color = group[1];
-    else if (shade && color) tokens[`--c-${color}-${shade[1]}`] = shade[2];
-  }
-  return tokens;
-}
 
 function declarations(block, prefix) {
   const pattern = new RegExp(`(--${prefix}-[\\w-]+):\\s*([^;]+);`, "g");
@@ -88,7 +74,7 @@ function spacing(viewportWidth) {
 function expectedTokens(theme, viewportWidth) {
   const semantic = semanticTokens(theme);
   const expected = {
-    color: { ...themeColors(theme), ...semantic.color },
+    color: semantic.color,
     background: semantic.background,
     boxShadow: semantic.boxShadow,
     borderTopLeftRadius: { ...declarations(read("main.scss"), "radius"), ...brandScale("brand-radii", "radius") },
@@ -107,5 +93,8 @@ function brandFamilies() {
   const first = (stack) => stack.split(",")[0].trim().replace(/["']/g, "");
   return { brand: first(brand["--brand-font-family-brand"]), ui: first(brand["--brand-font-family-ui"]) };
 }
+
+// Colour token names of the semantic layer for a theme (census input).
+const themeColors = (theme) => semanticTokens(theme).color;
 
 module.exports = { expectedTokens, themeColors, brandFamilies };
