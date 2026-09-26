@@ -1579,7 +1579,7 @@ export default {
 .toolbar-action {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-1);
+  gap: var(--space-2);
   padding: 0 var(--space-3);
   height: var(--elem-height);
   border: 1px solid var(--border-subtle);

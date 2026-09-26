@@ -155,7 +155,7 @@
                   />
                 </div>
                 <!-- add currency group -->
-                <div class="flex ai-ct gap-5 mt-2">
+                <div class="flex ai-ct gap-5 mt-1">
                   <Dropdown
                     :values="availableCurrencyGroupOptions"
                     :selected="[]"
@@ -219,7 +219,7 @@
                   </div>
                 </template>
               </Dropdown>
-              <p class="fs-200 t-muted mt-2">{{ $t("promo.currencies_hint") }}</p>
+              <p class="fs-200 t-muted mt-1">{{ $t("promo.currencies_hint") }}</p>
             </FormField>
             <FormField :label="$t('promo.section_channels')">
               <Dropdown
@@ -249,7 +249,7 @@
                   </div>
                 </template>
               </Dropdown>
-              <p class="fs-200 t-muted mt-2">{{ $t("promo.channels_hint") }}</p>
+              <p class="fs-200 t-muted mt-1">{{ $t("promo.channels_hint") }}</p>
             </FormField>
           </div>
           <div v-if="form.free_shipping" class="detail-grid mt-8">
@@ -1527,15 +1527,6 @@ export default {
 .promo-code-value {
   font-family: monospace;
   font-size: var(--fs-300);
-}
-
-
-.mr-2 {
-  margin-right: var(--space-1);
-}
-
-.mt-2 {
-  margin-top: var(--space-1);
 }
 
 .currency-threshold-group {

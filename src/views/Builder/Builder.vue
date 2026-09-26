@@ -1961,8 +1961,8 @@ const scroll_into = (id) => {
   flex-shrink: 0;
   flex-wrap: wrap;
   padding: var(--space-3) var(--space-12);
-  margin-left: -50px;
-  margin-right: -50px;
+  margin-left: calc(-1 * var(--space-12));
+  margin-right: calc(-1 * var(--space-12));
   border-bottom: 1px solid var(--border-subtle);
 }
 .builder-adv-btn {
@@ -1989,8 +1989,8 @@ const scroll_into = (id) => {
 }
 .builder-author-panel {
   flex-shrink: 0;
-  margin-left: -50px;
-  margin-right: -50px;
+  margin-left: calc(-1 * var(--space-12));
+  margin-right: calc(-1 * var(--space-12));
   border-bottom: 1px solid var(--border-subtle);
   background: var(--surface-base);
 

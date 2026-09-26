@@ -903,7 +903,7 @@ export default {
 .product-list__filter-toggle {
   display: flex;
   align-items: center;
-  gap: var(--space-1);
+  gap: var(--space-2);
   position: relative;
   padding: 0 var(--space-3);
   height: var(--elem-height);

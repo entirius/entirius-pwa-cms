@@ -8,6 +8,12 @@ SNAP = an off-grid value moved to the nearest step (visible). RAW = a value the 
 Line numbers are those before the write. Decided by hand afterwards:
   - src/boots/Switcher/Switcher.vue  border-radius 6.25rem / 5.625rem (pill track and knob) → var(--radius-full)
   - src/assets/scss/main.scss        --label-gap 6px → var(--space-1)
+  - src/views/Builder/Builder.vue    margin -50px (bleed rows under pl-12/pr-12) → calc(-1 * var(--space-12))
+  - src/views/Pim/ProductDetail.vue  .toolbar-action gap 6px → var(--space-2) (a button: the button-gap exception)
+  - src/views/Pim/ProductList.vue    .product-list__filter-toggle gap 6px → var(--space-2) (same)
+  - src/views/Promo/PromoEdit.vue    scoped .mr-2/.mt-2 overrides (4 px) removed; the template uses mt-1
+  - src/views/Communicator/settings/SettingsFooter.vue  margin:8px restored: mail HTML in the preview iframe,
+    which has no CMS tokens (the codemod now leaves <script> alone)
 
 SNAP src/App.vue:299  border-radius: 50% -> var(--radius-full)
 SNAP src/assets/scss/typo/_typo.scss:12  font-weight: 100 -> 300

@@ -7,7 +7,8 @@
 //   3. weight   .fw-100 → .fw-300, .fw-700 → .fw-600 (Inter carries 300–600 in the CMS)
 //   4. raw      margin/padding/gap, border-radius, font-size and font-weight values in CSS (style blocks, .scss,
 //               static style="") → tokens; off-grid values snap to the nearest step (ties round down, r01 names
-//               the exceptions); 1–3 px hairlines, negatives, em/% and out-of-range values stay raw and are listed.
+//               the exceptions); 1–3 px hairlines, negatives, % and out-of-range values stay raw and are listed;
+//               em values are relative and skipped. <script> is never touched (mail HTML in template literals).
 // Usage: node scripts/codemods/p2-scales.mjs [--write | --check]
 //   (none)   dry run: report every rewrite, every snap and every value left raw
 //   --write  apply the rewrites
@@ -36,9 +37,9 @@ const FS_MAX = 32; // the deleted --fs-800 snaps to 30; larger sizes are icon gl
 const FONT_WEIGHT = { 100: "300", 200: "300", 700: "600", 800: "600", 900: "600", bold: "600" };
 
 const RADIUS_VAR_RE = /var\(--(space-(?:50|100)|radius-(?:sm|md))\)/g;
-const RADIUS_CLASS_RE = /(?<![\w-])(?:br|radius)-(?:(tl|tr|bl|br)-)?(50|25|100|sm|md|lg|base|xl|2xl|3xl|4xl|full)(?![\w-])/g;
+const RADIUS_CLASS_RE = /(?<![\w$-])(?:br|radius)-(?:(tl|tr|bl|br)-)?(50|25|100|sm|md|lg|base|xl|2xl|3xl|4xl|full)(?![\w-])/g;
 const SPACE_VAR_RE = /--space-(50|100|200|300|400|500|600|700)(?![\w-])/g;
-const SPACE_CLASS_RE = /(?<![\w-])(p|pt|pr|pb|pl|pv|ph|m|mt|mr|mb|ml|mv|mh|gap)-(50|100|200|300|400|500|600|700)(?![\w-])/g;
+const SPACE_CLASS_RE = /(?<![\w$-])(p|pt|pr|pb|pl|pv|ph|m|mt|mr|mb|ml|mv|mh|gap)-(50|100|200|300|400|500|600|700)(?![\w-])/g;
 const WEIGHT_CLASS_RE = /(?<![\w-])fw-(100|700)(?![\w-])/g;
 const DECLARATION_RE =
   /(?<![\w$@.#-])((?:margin|padding)(?:-[a-z]+){0,2}|gap|row-gap|column-gap|border(?:-[a-z]+-[a-z]+)?-radius|font-size|font-weight)(\s*:\s*)([^;{}"\n]+)/g;
@@ -122,7 +123,7 @@ function rewriteValue(value, property, selector, found) {
   let depth = 0;
   return value.replace(/[()]|[^\s()]+/g, (token) => {
     if (token === "(" || token === ")") depth += token === "(" ? 1 : -1;
-    if (depth > 0 || token.endsWith("(")) return token;
+    if (depth > 0) return token;
     const result = tokenValue(token, property, selector);
     if (result) found.push({ token, property, ...result });
     return result?.value ?? token;
@@ -153,13 +154,15 @@ function declarations(text, offset, [property, colon, value], { log, lineBase })
 }
 
 // The CSS of a file: all of a .scss/.css, the <style> blocks and static style="" attributes of a .vue.
-const CSS_PARTS = /(<style[^>]*>)([\s\S]*?)(<\/style>)|((?<![:\w-])style=")([^"]*)(")/g;
+// <script> blocks match first and pass through: a style="" there is a string (mail HTML), not CMS CSS.
+const CSS_PARTS = /<script[^>]*>[\s\S]*?<\/script>|(<style[^>]*>)([\s\S]*?)(<\/style>)|((?<![:\w-])style=")([^"]*)(")/g;
 
 function rawValues(text, path, log) {
   const rewrite = (css, lineBase) =>
     css.replace(DECLARATION_RE, (m, ...args) => declarations(css, args[3], args.slice(0, 3), { log, lineBase }));
   if (!path.endsWith(".vue")) return path.endsWith(".js") ? text : rewrite(text, 1);
   return text.replace(CSS_PARTS, (m, open, body, close, attrOpen, attr, attrClose, offset) => {
+    if (!open && !attrOpen) return m;
     const lineBase = lineOf(text, offset);
     return open ? `${open}${rewrite(body, lineBase)}${close}` : `${attrOpen}${rewrite(attr, lineBase)}${attrClose}`;
   });
