@@ -83,7 +83,7 @@ export default {
   width: 1rem;
   height: 1rem;
   background: var(--surface-inverse);
-  outline: 4px solid var(--border-subtle);
+  outline: 4px solid var(--surface-base);
   border-radius: 50%;
   cursor: pointer;
 }
