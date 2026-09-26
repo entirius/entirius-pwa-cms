@@ -128,9 +128,8 @@
               <font-awesome-icon icon="paperclip" class="t-basic-500" />
               <span class="t-basic-800 fs-200">{{ att.name }}</span>
               <BasicButton
-                variant="ghost"
-                icon="download"
-                size="sm"
+                :text="$t('cf.download_attachment')"
+                class="bg-basic-200 t-basic-800"
                 @click="downloadAttachment(att)"
               />
             </div>

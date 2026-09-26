@@ -253,7 +253,7 @@
                   <template #default="{ readonly }">
                     <BasicInput
                       v-model="form.name_t9n[defaultLang]"
-                      :disabled="readonly"
+                      :isDisabled="readonly"
                     />
                   </template>
                 </InheritanceField>
@@ -429,7 +429,7 @@
                 <template #default="{ readonly }">
                   <BasicInput
                     v-model="form.subname_t9n[defaultLang]"
-                    :disabled="readonly"
+                    :isDisabled="readonly"
                   />
                 </template>
               </InheritanceField>
@@ -465,7 +465,7 @@
                 <template #default="{ readonly }">
                   <BasicInput
                     v-model="form.subname2_t9n[defaultLang]"
-                    :disabled="readonly"
+                    :isDisabled="readonly"
                   />
                 </template>
               </InheritanceField>
@@ -505,7 +505,7 @@
                 <template #default="{ readonly }">
                   <BasicInput
                     v-model="form.url_key_t9n[defaultLang]"
-                    :disabled="readonly"
+                    :isDisabled="readonly"
                   />
                 </template>
               </InheritanceField>
@@ -541,7 +541,7 @@
                 <template #default="{ readonly }">
                   <BasicInput
                     v-model="form.meta_title_t9n[defaultLang]"
-                    :disabled="readonly"
+                    :isDisabled="readonly"
                   />
                 </template>
               </InheritanceField>
@@ -578,7 +578,7 @@
                   <TextAreaBasic
                     v-model="form.meta_description_t9n[defaultLang]"
                     rows="3"
-                    :disabled="readonly"
+                    :isDisabled="readonly"
                   />
                 </template>
               </InheritanceField>
@@ -618,7 +618,7 @@
                 <template #default="{ readonly }">
                   <BasicInput
                     v-model="form.canonical_url_t9n[defaultLang]"
-                    :disabled="readonly"
+                    :isDisabled="readonly"
                   />
                 </template>
               </InheritanceField>
@@ -804,13 +804,13 @@
               :model-value="modelValue"
               @update:model-value="onUpdate"
               rows="3"
-              :disabled="readonly"
+              :isDisabled="readonly"
             />
             <BasicInput
               v-else
               :model-value="modelValue"
               @update:model-value="onUpdate"
-              :disabled="readonly"
+              :isDisabled="readonly"
             />
           </template>
         </InheritanceField>

@@ -1263,6 +1263,7 @@
     "code": "Campaign Code",
     "body": "Form Data",
     "attachments": "Attachments",
+    "download_attachment": "Download",
     "created_at": "Submitted At",
     "back_to_list": "Back to list",
     "all_types": "All Types",

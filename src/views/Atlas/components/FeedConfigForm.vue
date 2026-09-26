@@ -3,7 +3,7 @@
     <FormField :label="$t('atlas.feeds.form.idx_label')" required>
       <BasicInput
         v-model="local.idx"
-        :disabled="!!feed"
+        :isDisabled="!!feed"
         placeholder="xml-1"
         data-testid="feed-form-idx"
       />

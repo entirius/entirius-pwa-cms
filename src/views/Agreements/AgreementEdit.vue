@@ -71,7 +71,7 @@
                 :values="categoryOptions"
                 :selected="form.category ? [form.category] : []"
                 :placeholder="$t('common.select')"
-                :disabled="definition.is_system"
+                :isDisabled="definition.is_system"
                 @onSelect="(val) => (form.category = val)"
               />
             </FormField>
@@ -80,7 +80,7 @@
                 :values="consentChannelOptions"
                 :selected="form.consent_channel ? [form.consent_channel] : []"
                 :placeholder="$t('common.select')"
-                :disabled="definition.is_system"
+                :isDisabled="definition.is_system"
                 @onSelect="(val) => (form.consent_channel = val)"
               />
             </FormField>

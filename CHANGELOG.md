@@ -45,6 +45,11 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 
 - Router `meta.module` guard no longer loops when the panel root itself needs the missing module.
+- Read-only fields are read-only again: `BasicInput`, `TextAreaBasic` and `Dropdown` take `isDisabled`, and the
+  `disabled` passed by PIM product inherited fields, system agreement definitions (category, consent channel) and
+  the Atlas feed/source key landed on the wrapper, which left them editable.
+- The contact form attachment download button is visible. It was icon-only with a glyph the icon font lacks, which
+  rendered it blank. It now carries a "Download" / "Pobierz" label. The Polish "Załączniki" heading has its diacritics.
 
 ## [2.1.0] (2026-09-01)
 

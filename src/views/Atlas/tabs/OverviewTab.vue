@@ -19,7 +19,7 @@
       >
         <BasicInput
           :model-value="form.idx"
-          disabled
+          is-disabled
           data-testid="overview-idx"
         />
       </FormField>
