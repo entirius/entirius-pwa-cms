@@ -33,21 +33,6 @@ export const POST_Login = async ({ username = null, password = null }) => {
 //
 //
 //
-// --- AUTH -------------- LOGIN
-export const POST_refreshToken = async ({ refresh = null }) => {
-  const url = `${accounts}/customer/tokens/refresh/`;
-
-  return api.post(url, { refresh });
-};
-//
-//
-//
-//
-// -------------------------------------------------------------------------------------------------
-//
-//
-//
-//
 // --- AUTH -------------- LOGOUT
 export const POST_Logout = async ({ refresh = null }) => {
   const url = `${accounts}/customer/tokens/blacklist/`;
