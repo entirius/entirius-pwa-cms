@@ -21,7 +21,8 @@ describe("cold load with an expired access token", () => {
     calls = [];
     localStorage.clear();
     setActivePinia(createPinia());
-    cookies.set("token", jwtExpiringIn(-60), { path: "/" });
+    cookies.set("token", "stale-token", { path: "/" });
+    cookies.set("expiryDate", new Date(Date.now() - 60_000), { path: "/" });
     cookies.set("refresh", "r-token", { path: "/" });
     cookies.set("isAuth", true, { path: "/" });
     muninApi.defaults.adapter = async (config) => {

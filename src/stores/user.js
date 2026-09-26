@@ -95,11 +95,11 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  // Scheduled from the access token's own `exp`; the refresh is shared with the API clients, so no race.
+  // Scheduled from the expiry the access token carried (`tokenExpiry`); the refresh is shared with the API clients.
   function startSessionMonitor() {
     stopSessionMonitor()
 
-    const delay = refreshDelay(cookies.get('token'))
+    const delay = refreshDelay(cookies.get('expiryDate'))
     if (delay === null) return
 
     sessionTimer = setTimeout(proactiveRefresh, delay)

@@ -161,7 +161,7 @@ on the rows of Figma frames S1, S4, S6 and S9. Rows marked `needsData` (a review
 when the seed has no such row. Take and check baselines on a fresh `make seed` with no BDD run since: BDD adds rows.
 
 **Deterministic state** (`support/state.js`): a login at most 3 minutes old (the access JWT lives 300 s; the CMS
-refreshes from the JWT `exp`, which the frozen clock `2026-09-26T10:00:00+02:00` never reaches), theme, language `PL`
+refreshes before the `expiryDate` it set at login, which the frozen clock `2026-09-26T10:00:00+02:00` never reaches), theme, language `PL`
 and sidebar pinned through `localStorage` on every page load (the profile GET is rewritten too, so the shared profile never
 leaks in at login), transitions, animations and the caret off, notification and config-health polls answered with
 fixed bodies. Every write to the API is answered `200 {}` (only login and token refresh pass through), so a run

@@ -40,9 +40,11 @@ All 12 stores (`src/stores/`) use composition (setup) syntax with `defineStore`.
   ContentDB translation jobs. `fetchJobs(channelIdx)`, `startPolling()` (polls
   while `hasActiveJobs`), `stopPolling()`, `setStatusFilter()`.
 - **`useUserStore`** (`user.js`) — auth (JWT + refresh), session-expiry
-  monitor (refresh 60 s before the access token's `exp`, at least 10 s out,
-  through `refreshAccessToken()` in `api/createClient.js` — the one refresh
-  call, shared with the 401 retry and the pre-request check), theme (`"default"`/`"dark"`), sidebar, `activeApp`, language,
+  monitor (refresh 60 s before the access token expires, at least 10 s out;
+  the expiry is the token's `exp` - `iat` counted from receipt, kept in the
+  `expiryDate` cookie, so client clock skew does not matter; the call is
+  `refreshAccessToken()` in `api/createClient.js`, shared with the 401 retry
+  and the pre-request check), theme (`"default"`/`"dark"`), sidebar, `activeApp`, language,
   preferences. Cookie persistence via `universal-cookie`.
 
 ### `useMuninStore` API

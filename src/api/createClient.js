@@ -56,7 +56,7 @@ async function postRefresh() {
   const { access, refresh } = data.data || data
 
   cookies.set('token', access, COOKIE_OPTS)
-  cookies.set('expiryDate', new Date(tokenExpiry(access)), COOKIE_OPTS)
+  cookies.set('expiryDate', tokenExpiry(access), COOKIE_OPTS)
   // The API only returns a new refresh token when rotation is enabled server-side.
   // Overwriting the cookie with undefined logs the user out on the next refresh.
   if (refresh) {
@@ -77,7 +77,7 @@ async function refreshOrLogout() {
 // A cold load can hold a token that expired while the tab was closed. Munin answers it anonymously instead of
 // with a 401, so the 401 retry never runs and admin panels vanish — refresh before sending instead.
 async function refreshIfExpiring() {
-  if (cookies.get('refresh') && expiresSoon(cookies.get('token'))) {
+  if (cookies.get('refresh') && expiresSoon(cookies.get('expiryDate'))) {
     await refreshOrLogout()
   }
 }

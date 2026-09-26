@@ -25,8 +25,7 @@ export function useLoginSession() {
   const munin = useMuninStore()
 
   async function completeLogin({ access, refresh, customer_id = null }) {
-    const expiryDate = new Date(tokenExpiry(access))
-    userStore.setAuth({ token: access, refresh, customer_id, expiryDate })
+    userStore.setAuth({ token: access, refresh, customer_id, expiryDate: tokenExpiry(access) })
 
     const permissions = await fetchContentPermissions()
     const { extra = null, ...profile } = await fetchProfile(customer_id)

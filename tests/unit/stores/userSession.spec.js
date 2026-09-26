@@ -5,7 +5,7 @@ import { useUserStore } from "@/stores/user";
 import { jwtExpiringIn } from "../helpers/jwt";
 
 // r04 §9 defect 1: the service issues 300 s access tokens, the client assumed 15 min and refreshed far too late.
-// The proactive refresh is scheduled from the token's own `exp`: 60 s before it, never sooner than 10 s.
+// The proactive refresh is scheduled from the lifetime the token carries: 60 s before expiry, never sooner than 10 s.
 const login = (seconds) =>
   useUserStore().setAuth({
     token: jwtExpiringIn(seconds),
@@ -56,5 +56,15 @@ describe("user store — proactive token refresh", () => {
 
     await vi.advanceTimersByTimeAsync(240_000);
     expect(post).toHaveBeenCalledTimes(2);
+  });
+
+  // Review finding: `exp` read against a client clock 5 min ahead looked expired on arrival → a refresh every 10 s.
+  it("a client clock 5 min ahead of the server still refreshes once per token lifetime", async () => {
+    post.mockImplementation(async () => ({ data: { data: { access: jwtExpiringIn(300, -300) } } }));
+    login(300);
+    await vi.advanceTimersByTimeAsync(240_000);
+
+    await vi.advanceTimersByTimeAsync(239_000);
+    expect(post).toHaveBeenCalledTimes(1);
   });
 });
