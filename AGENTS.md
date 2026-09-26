@@ -118,7 +118,7 @@ Salesperson screens for django-leads + django-communicator, mobile first (one th
 same screens in two columns (`src/views/Leads/index.vue`, CSS grid only). One panel for both backends (there is no
 Communicator panel, UX-002d): munin keys `leads` and `communicator` both map to it, and every nav entry, route and
 Settings section carries the module it needs (`requiresModule` / `meta.module` / the hub's filter) — a section of
-a module that is off is simply not there. Nav: Inbox · Board · Import (leads) · Settings; a phone gets Inbox · Settings in the bottom bar, which Review
+a module that is off is simply not there. Nav: Inbox · Pipeline (`/leads/board`) · Import (leads) · Settings; a phone gets Inbox · Settings in the bottom bar, which Review
 (`meta.noBottomBar`) keeps off its sticky actions. Inbox is one entry for two lists (UX-010): the left column carries a
 `SegmentedControl` Conversations | Companies (`leads-list-toggle`, shown with both modules) that only navigates
 `/leads/inbox` ↔ `/leads/companies`; a card, draft or thread opened from a list keeps that list in the column, and

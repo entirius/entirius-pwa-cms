@@ -46,7 +46,7 @@
     "leads_inbox": "Inbox",
     "leads_companies": "Companies",
     "leads_settings": "Settings",
-    "leads_board": "Stage board",
+    "leads_board": "Pipeline",
     "leads_import": "Import",
     "leads_stages": "Stages",
     "communicator_templates": "Templates",
@@ -2997,8 +2997,8 @@
       "untitled": "(no subject)",
       "pick": "Pick a draft to review",
       "detail_empty_title": "While the queue is empty",
-      "detail_empty": "The stage board shows every company and where it stands — open a card to write to it or re-audit it.",
-      "open_board": "Open the stage board",
+      "detail_empty": "The pipeline shows every company and where it stands — open a card to write to it or re-audit it.",
+      "open_board": "Open the pipeline",
       "filter": {
         "all": "All",
         "draft": "Drafts",
@@ -3119,7 +3119,7 @@
       "empty": "No companies found"
     },
     "board": {
-      "title": "Stage board",
+      "title": "Pipeline",
       "search": "Search name or domain",
       "more": "Load more",
       "has_reply": "Has reply",
@@ -3179,7 +3179,7 @@
       "status": "Status",
       "counts": "{created} created, {matched} matched, {skipped} skipped",
       "row": "Row {row}",
-      "to_board": "Open the stage board",
+      "to_board": "Open the pipeline",
       "failed": "Upload failed",
       "columns_title": "Columns",
       "column_company": "company_name (optional) — the company name",

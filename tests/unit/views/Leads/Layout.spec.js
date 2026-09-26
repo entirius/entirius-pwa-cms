@@ -54,7 +54,7 @@ describe("Leads layout", () => {
   });
 
   // FIX-17 item 8: nothing to pick, no "Pick a draft to review" — the empty state of the Inbox says it once.
-  // FIX-17b item 5: the empty right pane is not blank — it points at the stage board instead.
+  // FIX-17b item 5: the empty right pane is not blank — it points at the pipeline instead.
   it("the desktop pane asks to pick a draft only while drafts wait, else points at the board", () => {
     enable("leads", "communicator");
     route.current.name = "LeadsInbox";

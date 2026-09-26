@@ -46,7 +46,7 @@
     "leads_inbox": "Skrzynka",
     "leads_companies": "Firmy",
     "leads_settings": "Ustawienia",
-    "leads_board": "Tablica etapów",
+    "leads_board": "Pipeline",
     "leads_import": "Import",
     "leads_stages": "Etapy",
     "communicator_templates": "Szablony",
@@ -2996,8 +2996,8 @@
       "untitled": "(bez tematu)",
       "pick": "Wybierz szkic do przejrzenia",
       "detail_empty_title": "Kolejka jest pusta",
-      "detail_empty": "Tablica etapów pokazuje każdą firmę i jej etap — otwórz kartę, aby do niej napisać lub ponowić audyt.",
-      "open_board": "Otwórz tablicę etapów",
+      "detail_empty": "Pipeline pokazuje każdą firmę i jej etap — otwórz kartę, aby do niej napisać lub ponowić audyt.",
+      "open_board": "Otwórz pipeline",
       "filter": {
         "all": "Wszystkie",
         "draft": "Szkice",
@@ -3118,7 +3118,7 @@
       "empty": "Nie znaleziono firm"
     },
     "board": {
-      "title": "Tablica etapów",
+      "title": "Pipeline",
       "search": "Szukaj nazwy lub domeny",
       "more": "Załaduj więcej",
       "has_reply": "Z odpowiedzią",
@@ -3178,7 +3178,7 @@
       "status": "Status",
       "counts": "utworzone: {created}, dopasowane: {matched}, pominięte: {skipped}",
       "row": "Wiersz {row}",
-      "to_board": "Otwórz tablicę etapów",
+      "to_board": "Otwórz pipeline",
       "failed": "Wysyłka pliku nie powiodła się",
       "columns_title": "Kolumny",
       "column_company": "company_name (opcjonalna) — nazwa firmy",
