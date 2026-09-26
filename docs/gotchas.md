@@ -55,24 +55,4 @@ idx2]`.
 
 ## Standard Patterns for New Panels
 
-- `useSearchDebounce` — list search. Never duplicate debounce logic inline.
-- `useFormErrors` — edit/create field-level validation. All edit views MUST
-  use it.
-- `FormField` — wraps label + slot + description. Use for ALL form fields.
-  `:tooltip` renders a `?` `HelpTooltip` next to the label (the field-level
-  equivalent of `Switcher :hint`); `:description` renders a muted line below
-  the field.
-- `EmptyState` — standardized no-data display (`title`, `message`, `icon`
-  props).
-- `ChannelMultiSelect` — channel multi-select with a globe icon, responsive
-  (icon-only on mobile).
-- `HelpTooltip` — inline `?` icon with a hover/focus bubble (`:text`). Use to
-  explain non-obvious fields/toggles. The `Switcher` boot has a built-in
-  `:hint` prop for the same purpose (click on `?` is `@click.stop`, won't
-  toggle the switch).
-- `Dropdown` options support an optional `el.description` field in
-  `:values` — renders a muted secondary line under the option label (use for
-  terse labels that need a fuller explanation, e.g. discount modifiers).
-  Don't put a `?` tooltip inside dropdown options — the bubble clips against
-  the list's `overflow`.
-- `MobileFilterPanel` + `FilterChip` — filter UI on list views.
+See `docs/ui-rules.md` — the only CMS UI rule file (boots by job, page patterns, forms).

@@ -17,6 +17,7 @@ django-munin module registry. Backend for local dev: entirius-zeno at `http://lo
 | `npm test` | build check + full Playwright e2e (needs a running backend) |
 | `npm run test:smoke` | quick e2e sanity (~2 min) |
 | `npm run pretty` | Prettier over `*.vue` |
+| `npm run lint:ui` | UI lint (stylelint + eslint), warnings = debt |
 
 ## Conventions
 
@@ -31,6 +32,8 @@ django-munin module registry. Backend for local dev: entirius-zeno at `http://lo
   gate via route `meta.panel` + `MODULE_TO_PANEL` (`src/stores/munin.js`);
   routes needing an optional module declare `meta.module`; in-view features
   use `isModuleEnabled` / `isModuleInstalled` / `isModuleAtLeast`.
+- UI: `docs/ui-rules.md` is the only CMS UI rule file; change it in the PR that
+  changes the code it describes.
 
 ## Commit Message Format
 
@@ -80,6 +83,7 @@ tests/            # unit/ (Vitest) + e2e/ (Playwright) + helpers/
 |---|---|
 | `docs/panels-routing.md` | panel registry, route table, munin gating, access control |
 | `docs/stores-composables.md` | all Pinia stores and composables, usage patterns |
+| `docs/ui-rules.md` | CMS UI rules: tokens, components, layout R1–R9, page patterns, merge checklist |
 | `docs/ui-components.md` | boot components, DataTable API, directives, theming, RWD |
 | `docs/config-system.md` | `__client/` file map, variant system, env validation |
 | `docs/supplier-bridges.md` | PIM ↔ Suppliers integration patterns and dashboards |

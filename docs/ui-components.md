@@ -29,7 +29,11 @@ Notable ones for list/form views:
 - **`ChannelMultiSelect`** — multi-select for channel scoping (`v-model`
   array of channel idx). Props: `modelValue`, `channels`, `label`, `allLabel`.
 - **`HelpTooltip`** — inline `?` icon with a hover bubble. Props: `text`
-  (required).
+  (required). `Switcher :hint` is the same bubble built in (the `?` click is
+  `@click.stop`, it does not toggle the switch).
+- **`Dropdown`** — an option in `:values` may carry `description`, a muted
+  line under its label. Never put a `?` tooltip inside an option: the bubble
+  clips against the list's `overflow`.
 - **`BulkActionBar`** — sticky bar for bulk row actions. Props: `count`
   (required), `actions` (required), `selectedLabelKey`, `clearLabelKey`.
 - **`SegmentedControl`** — single-choice toggle group. Props: `options`
@@ -110,17 +114,4 @@ Per `[data-theme]` in `src/assets/scss/main.scss`:
 
 ## Reusable UI Patterns
 
-### ToolTip on Disabled Buttons
-
-```html
-<ToolTip v-if="!isValid" :tip="'Why disabled'" :is_wrapper="true" class="left">
-  <BasicButton :text="'Action'" class="bg-basic-300 t-basic-500" />
-</ToolTip>
-<BasicButton v-else :text="'Action'" class="bg-support-400" @click="handler" />
-```
-
-### Filter Chips
-
-Use the `FilterChip` boot component (`src/boots/FilterChip/index.vue`) —
-`label`, `active`, `count` props, `click` event. Do not hand-roll
-`.filter-chip` styles in a view; the global component owns that CSS.
+Page patterns, boot choice by job and UI rules live in `docs/ui-rules.md`.
