@@ -624,7 +624,9 @@
         "dark",
         "light"
       ],
-      "file": "forms-submission-detail__{vp}__{theme}.png"
+      "file": "forms-submission-detail__{vp}__{theme}.png",
+      "needsData": true,
+      "note": "a fresh seed has no contact form submission"
     },
     {
       "id": "forms-bookings-list",
@@ -686,7 +688,9 @@
         "dark",
         "light"
       ],
-      "file": "forms-lead-detail__{vp}__{theme}.png"
+      "file": "forms-lead-detail__{vp}__{theme}.png",
+      "needsData": true,
+      "note": "a fresh seed has no form lead"
     },
     {
       "id": "accounts-customers-list",
@@ -746,7 +750,9 @@
         "dark",
         "light"
       ],
-      "file": "orders-detail__{vp}__{theme}.png"
+      "file": "orders-detail__{vp}__{theme}.png",
+      "needsData": true,
+      "note": "a fresh seed has no checkout order"
     },
     {
       "id": "agreements-list",
@@ -1434,7 +1440,9 @@
         "dark",
         "light"
       ],
-      "file": "leads-conversation__{vp}__{theme}.png"
+      "file": "leads-conversation__{vp}__{theme}.png",
+      "needsData": true,
+      "note": "a fresh seed has no leads conversation (BDD creates them)"
     },
     {
       "id": "leads-review",
