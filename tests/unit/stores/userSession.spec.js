@@ -3,7 +3,9 @@ import axios from "axios";
 import Cookies from "universal-cookie";
 import { setActivePinia, createPinia } from "pinia";
 import { useUserStore } from "@/stores/user";
-import { createApiClient } from "@/api/createClient";
+import { useNotifyStore } from "@/stores/notify";
+import { createApiClient, SessionEndedError } from "@/api/createClient";
+import { useFormErrors } from "@/composables/useFormErrors";
 import { tokenExpiry } from "@/utils/jwt";
 import { jwtExpiringIn } from "../helpers/jwt";
 
@@ -176,6 +178,48 @@ describe("user store — proactive token refresh", () => {
     expect(localStorage.getItem("cms_return_route")).toBeNull();
   });
 
+  // FIX-04b review: the logout blacklists the refresh token, so the refresh racing it fails with a 401 — that failure
+  // redirected to "session expired" and wiped a login made in the meantime.
+  it("a refresh that fails after a logout neither redirects nor wipes the next login", async () => {
+    const fails = [];
+    post.mockImplementation(() => new Promise((_, reject) => fails.push(reject)));
+    login(30);
+    await vi.advanceTimersByTimeAsync(10_000);
+
+    useUserStore().clearAuth();
+    login(300);
+    const token = useUserStore().token;
+    fails[0](Object.assign(new Error("401"), { response: { status: 401, data: {} } }));
+    await vi.advanceTimersByTimeAsync(0);
+
+    expect(useUserStore().token).toBe(token);
+    expect(SESSION_COOKIES.map((name) => cookies.get(name) !== undefined)).toEqual([true, true, true, true]);
+    expect(localStorage.getItem("cms_return_route")).toBeNull();
+    expect(localStorage.getItem("session_expired")).toBeNull();
+    expect(post).toHaveBeenCalledTimes(1);
+  });
+
+  // The refresh path raises no toast; panels that toast on any rejection must skip SessionEndedError themselves.
+  it("a request waiting on a refresh dropped by a logout rejects with SessionEndedError, reported nowhere", async () => {
+    let fail;
+    post.mockImplementation(() => new Promise((_, reject) => (fail = reject)));
+    login(30);
+    await vi.advanceTimersByTimeAsync(10_000);
+    const request = clientWith401().get("/me/");
+    await vi.advanceTimersByTimeAsync(0);
+
+    useUserStore().clearAuth();
+    fail(Object.assign(new Error("401"), { response: { status: 401, data: {} } }));
+    const error = await request.catch((err) => err);
+
+    expect(error).toBeInstanceOf(SessionEndedError);
+    const form = useFormErrors();
+    form.handleApiError(error);
+    expect(form.summary.value).toBe("");
+    expect(useNotifyStore().notifications).toEqual([]);
+    expect(localStorage.getItem("cms_return_route")).toBeNull();
+  });
+
   // Code review: a login right after the logout joined the still-pending old refresh and was wiped by its drop.
   it("a login after a logout never joins the dropped refresh", async () => {
     const answers = [];
@@ -210,6 +254,11 @@ describe("user store — proactive token refresh", () => {
     useUserStore().setAuth({ token: jwtExpiringIn(300), refresh: "r-token", expiryDate: null });
     expect(useUserStore().customer_id).toBeNull();
     expect(cookies.get("customer_id")).toBeUndefined();
+
+    // a store never hydrated from the cookies keeps the cookie's customer id
+    cookies.set("customer_id", "cust-2", { path: "/" });
+    useUserStore().setAuth({ token: jwtExpiringIn(300), refresh: "r-token", expiryDate: null });
+    expect(useUserStore().customer_id).toBe("cust-2");
   });
 });
 

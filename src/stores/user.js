@@ -39,8 +39,11 @@ export const useUserStore = defineStore('user', () => {
     cookies.set('user', user.value, COOKIE_OPTS)
   }
 
-  // A token refresh carries no customer id: the current one stays, and an unknown one is never written.
-  function setAuth({ token: t, refresh: r, customer_id: cid = customer_id.value, expiryDate: exp }) {
+  // A token refresh carries no customer id: the current one stays (the store's, else the cookie's), and an unknown
+  // one is null, never written.
+  function setAuth({
+    token: t, refresh: r, customer_id: cid = customer_id.value ?? cookies.get('customer_id') ?? null, expiryDate: exp,
+  }) {
     token.value = t
     refresh.value = r
     customer_id.value = cid

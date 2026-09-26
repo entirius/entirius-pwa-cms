@@ -10,7 +10,12 @@ let refreshPromise = null
 // Bumped by every logout: a refresh that started under an older generation drops its answer.
 let sessionGeneration = 0
 
-// A refresh answered after a logout: nothing expired, the session had already ended — callers do not log out again.
+/**
+ * A refresh that settled after a logout, answered or failed: nothing expired, the session had already ended.
+ * It is not an error to report: the refresh paths neither log out again nor redirect, and a request waiting on that
+ * refresh rejects with it instead of a v2 body — `handleApiError` shows no message and `isConflict` is false.
+ * A caller that toasts on every rejection skips it (`err instanceof SessionEndedError`).
+ */
 export class SessionEndedError extends Error {}
 
 function clearAllCookies() {
@@ -65,6 +70,21 @@ async function userStore() {
   return useUserStore()
 }
 
+function assertSameSession(generation) {
+  if (generation !== sessionGeneration) throw new SessionEndedError('Logged out during the token refresh')
+}
+
+// A logout while the POST was in flight turns either outcome into SessionEndedError: a refresh token blacklisted
+// by that logout answers 401, and that is not an expired session.
+async function postInSession(url, body, generation) {
+  try {
+    return await axios.post(url, body)
+  } catch (error) {
+    assertSameSession(generation)
+    throw error
+  }
+}
+
 // Every refresh lands in the store's `setAuth`, which stores the pair and re-arms the one refresh timer — unless
 // the user logged out while the request was in flight: then the answer is dropped and nothing is written.
 async function postRefresh() {
@@ -73,9 +93,9 @@ async function postRefresh() {
   if (!refreshCookie) throw new Error('No refresh token')
 
   const url = `${process.env.VUE_APP_API_URL}/api/accounts/v1/${_CHANNEL ?? ''}/customer/tokens/refresh/`
-  const { data } = await axios.post(url, { refresh: refreshCookie })
+  const { data } = await postInSession(url, { refresh: refreshCookie }, generation)
   const store = await userStore()
-  if (generation !== sessionGeneration) throw new SessionEndedError('Logged out during the token refresh')
+  assertSameSession(generation)
   const { access, refresh } = data.data || data
 
   // The API only returns a new refresh token when rotation is enabled server-side — keep the old one otherwise.
