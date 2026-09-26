@@ -156,7 +156,7 @@ $semantic-classes: (
   "info-fill": (name: "info-fill", families: t bg b, hover: true, background: background-color),
 );
 
-.type-page-title {
+:root .type-page-title {
   font-family: var(--font-brand);
   font-weight: 400;
   font-size: 30px;
@@ -164,7 +164,7 @@ $semantic-classes: (
   letter-spacing: var(--brand-font-tracking-brand);
 }
 
-.type-title {
+:root .type-title {
   font-family: var(--font-brand);
   font-weight: 400;
   font-size: 20px;
@@ -172,7 +172,7 @@ $semantic-classes: (
   letter-spacing: var(--brand-font-tracking-brand);
 }
 
-.type-nav {
+:root .type-nav {
   font-family: var(--font-brand);
   font-weight: 400;
   font-size: 16px;
@@ -180,7 +180,7 @@ $semantic-classes: (
   letter-spacing: var(--brand-font-tracking-brand);
 }
 
-.type-nav-sub {
+:root .type-nav-sub {
   font-family: var(--font-brand);
   font-weight: 400;
   font-size: 14px;
@@ -188,7 +188,7 @@ $semantic-classes: (
   letter-spacing: var(--brand-font-tracking-brand);
 }
 
-.type-description {
+:root .type-description {
   font-family: var(--font-brand);
   font-weight: 300;
   font-size: 14px;
@@ -196,7 +196,7 @@ $semantic-classes: (
   letter-spacing: var(--brand-font-tracking-brand);
 }
 
-.type-crumb-sm {
+:root .type-crumb-sm {
   font-family: var(--font-brand);
   font-weight: 400;
   font-size: 12px;
@@ -204,7 +204,7 @@ $semantic-classes: (
   letter-spacing: var(--brand-font-tracking-brand);
 }
 
-.type-tab-label {
+:root .type-tab-label {
   font-family: var(--font-brand);
   font-weight: 400;
   font-size: 10px;
@@ -212,7 +212,7 @@ $semantic-classes: (
   letter-spacing: var(--brand-font-tracking-brand);
 }
 
-.type-overline {
+:root .type-overline {
   font-family: var(--font-ui);
   font-weight: 500;
   font-size: 13px;
@@ -221,7 +221,7 @@ $semantic-classes: (
   text-transform: uppercase;
 }
 
-.type-label {
+:root .type-label {
   font-family: var(--font-ui);
   font-weight: 500;
   font-size: 14px;
@@ -229,7 +229,7 @@ $semantic-classes: (
   letter-spacing: 0;
 }
 
-.type-cell {
+:root .type-cell {
   font-family: var(--font-ui);
   font-weight: 500;
   font-size: 13px;
@@ -237,7 +237,7 @@ $semantic-classes: (
   letter-spacing: 0;
 }
 
-.type-control {
+:root .type-control {
   font-family: var(--font-ui);
   font-weight: 500;
   font-size: 12px;
@@ -245,7 +245,7 @@ $semantic-classes: (
   letter-spacing: 0;
 }
 
-.type-badge {
+:root .type-badge {
   font-family: var(--font-ui);
   font-weight: 600;
   font-size: 12px;
@@ -253,7 +253,7 @@ $semantic-classes: (
   letter-spacing: 0;
 }
 
-.type-table-header {
+:root .type-table-header {
   font-family: var(--font-ui);
   font-weight: 600;
   font-size: 12px;
@@ -262,7 +262,7 @@ $semantic-classes: (
   text-transform: uppercase;
 }
 
-.type-count {
+:root .type-count {
   font-family: var(--font-ui);
   font-weight: 600;
   font-size: 11px;
@@ -271,7 +271,7 @@ $semantic-classes: (
   text-transform: uppercase;
 }
 
-.type-caption {
+:root .type-caption {
   font-family: var(--font-ui);
   font-weight: 400;
   font-size: 12px;
@@ -279,7 +279,7 @@ $semantic-classes: (
   letter-spacing: 0;
 }
 
-.type-micro {
+:root .type-micro {
   font-family: var(--font-ui);
   font-weight: 500;
   font-size: 10px;

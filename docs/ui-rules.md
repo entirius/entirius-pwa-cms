@@ -19,12 +19,14 @@ in `src/boots/`. This file names them and never restates a value. Lint enforces 
 
 New code uses the P2 layer: `@entirius/brand-tokens` (`--brand-*`, never used directly in views) and the CMS
 semantic layer on top of it. Its source is `src/assets/tokens/semantic.json`; `themes/_semantic.generated.scss` is
-generated from it (`node scripts/tokens/build-theme.mjs`, a unit test fails when it is stale), never edited by hand.
+generated from its `color`, `overlay`, `shadow` and `type` groups (`node scripts/tokens/build-theme.mjs`, a unit test
+fails when it is stale), never edited by hand. The map's `radius`, `space`, `font-size` and `font` groups describe
+the end state after P2; the brand scales below are what exists today.
 
 - **T1 Colour comes from a semantic token.** Use `var(--surface-*)`, `--text-*`, `--border-*`, `--focus-ring`,
   `--accent*`, `--positive*`, `--negative*`, `--warning*`, `--info*`, or the classes the map names: `bg-*` (surfaces),
   `t-*` (text), `b-*` / `bt-*` / `bb-*` / `bl-*` / `br-*` (borders), all three for accent and status, most with a
-  `-hover` variant. Pick the token by the role the map gives it, never by a number. No hex, `rgb()`, `rgba()`,
+  `-hover` variant (`t-accent-hover`, `bg-accent-hover`, `b-accent-hover` are the `accent-hover` token itself). Pick the token by the role the map gives it, never by a number. No hex, `rgb()`, `rgba()`,
   `hsl()` or named colours outside the token files.
 - **T2 No fallback on a token.** `var(--text-body, #fff)` hides a missing token in one theme.
 - **T3 Spacing comes from `--space-*`.** New code uses the brand steps `--space-0` … `--space-30` and the `p-*`,

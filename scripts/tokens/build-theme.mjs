@@ -2,6 +2,8 @@
 // Builds the CMS semantic layer from src/assets/tokens/semantic.json:
 // theme blocks (colour, overlay, shadow), the $semantic-classes map main.scss turns into utility classes,
 // and the .type-<role> classes. Brand references become var(--brand-*), never hex.
+// The map's radius, space, font-size and font groups are not generated: the brand scales live in
+// variables/_spacing.scss + main.scss, and the re-valued old names are plan-08 targets.
 // Usage: node scripts/tokens/build-theme.mjs [output path]
 import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -79,7 +81,8 @@ function typeRole([role, spec], resolve) {
     `letter-spacing: ${resolve(spec.tracking)}`,
     ...(spec.case ? [`text-transform: ${spec.case}`] : []),
   ];
-  return `.type-${role} {\n${declarations.map((d) => `  ${d};`).join("\n")}\n}`;
+  // :root matches the specificity of the old .fs-*/.fw-* utilities it replaces (0,2,0).
+  return `:root .type-${role} {\n${declarations.map((d) => `  ${d};`).join("\n")}\n}`;
 }
 
 function buildTheme() {

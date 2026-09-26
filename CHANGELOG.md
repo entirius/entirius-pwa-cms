@@ -49,6 +49,7 @@ All notable changes to this project will be documented in this file.
   `src/assets/tokens/semantic.json`; brand spacing `--space-0` … `--space-30`, radius `--radius-base` … `--radius-full`,
   `--fs-150` / `--fs-250`, font families `--font-ui` / `--font-brand` / `--font-mono` and the `type-*` role classes.
   Shadows and overlays now come from the semantic layer; the dark loading veil is black-based instead of blue.
+  PIM supplier diffs that already read `var(--font-mono, monospace)` now get the brand mono stack.
   The visual parity gate checks every semantic token in both themes and fails when body text is not Inter.
 - **Post-login session setup is shared** (`src/composables/useLoginSession.js`):
   password and SSO login run the same code after the token call.

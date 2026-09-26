@@ -11,7 +11,7 @@ const CONTRAST_SCREENS = ["g-home", "pages-content-list", "pages-content-editor"
 const FONT_TARGETS = { title: ".route-title", navLabel: ".nav-label", button: ".data-table__action-btn" };
 const FAMILIES = brandFamilies();
 const BRAND_FAMILIES = [FAMILIES.brand, FAMILIES.ui];
-const BODY_TEXT = ".data-table__cell"; // table cells carry the body font (Inter) on S4
+const BODY_TEXT = ".data-table__cell[data-column]"; // a text cell (not a checkbox/toggle cell) inherits the body font
 const REPORT = { tag: ["@parity", "@desktop"] };
 
 const colorScheme = (theme) => (theme === "dark" ? "dark" : "light");
