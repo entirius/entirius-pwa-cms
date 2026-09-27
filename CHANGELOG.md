@@ -6,6 +6,12 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- Action components (P3 plan 11): `BasicButton` `variant` (primary, secondary, ghost, danger, danger-solid), meaning
+  `icon`, `loading`, `disabled`, label in the default slot; new `IconButton` (every icon-only action, `label`
+  required, `pressed` toggle) and `ActionBar` (R5 order, „Akcje” row on a phone); `FloatingActions` `pill` (labelled
+  action next to the FAB, R7) and meaning icons; `BulkActionBar` actions take `variant`. Catalogue `#actions` shows
+  every cell; `scripts/codemods/p3-actions.mjs` moves the call sites in the sweeps.
+
 - Component catalogue `/ui` (any logged-in operator, in no nav): every component from static fixtures, one section
   per P3/P4 plan, `?theme=dark|light`; visual layers `@catalogue` (`npm run visual:catalogue`) and `@components`
   (`npm run visual:components`, baselines via `visual:approve:components`).
@@ -51,6 +57,10 @@ All notable changes to this project will be documented in this file.
   `docs/sso-login.md`. Unset, nothing changes.
 
 ### Changed
+
+- Rich-text table tools are short text buttons (four "add" and three "delete" tools shared one icon each); the
+  pricing detail flush/delete buttons carry one tooltip (their label); the standalone `ToolTip` hint is a `note`
+  described by its text; the FAB sits 16 px from the edge and its speed-dial back button uses the `back` meaning.
 
 - **Forms, type and spacing follow one rhythm** (`docs/ui-rules.md` T5, Cards, Forms): one form-label style
   (`.field-label`: 12 px / 600, uppercase, muted) from `FormField`, the `BasicInput` / `LockedField` labels and every

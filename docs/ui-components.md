@@ -42,7 +42,7 @@ Notable ones for list/form views:
   line under its label. Never put a `?` tooltip inside an option: the bubble
   clips against the list's `overflow`.
 - **`BulkActionBar`** — sticky bar for bulk row actions. Props: `count`
-  (required), `actions` (required), `selectedLabelKey`, `clearLabelKey`.
+  (required), `actions` (required, `variant` per action), `selectedLabelKey`, `clearLabelKey`.
 - **`SegmentedControl`** — single-choice toggle group. Props: `options`
   (required), `modelValue`; emits `update:modelValue`.
 - **`StatusBadge`** — colored status pill. Props: `label` (required),
@@ -135,6 +135,33 @@ and one meaning per glyph (unit test). A new meaning adds its glyph to `fa-icons
 `BasicInput icon` and Pagination take their glyphs from it. Catalogue: `#icons`, every meaning at 16 / 20 / 24 px.
 
 ### P3 actions (plan 11)
+
+- **`BasicButton`** — `variant` `primary` (accent fill, white text) · `secondary` (outline) · `ghost` · `danger`
+  (every delete/remove/reject) · `danger-solid` (the destructive confirm of a dialog); `size` `md`
+  (`--elem-height`) · `sm` (24 px); label in the default slot; `icon` = a meaning of `icons.js`, drawn before the
+  label (6 px gap); `loading` swaps the icon for a spinner, disables and sets `aria-busy`; `disabled`; `type`
+  (`button` by default). The click stops at the button (`:stop="false"` lets it through).
+  Transition API, removed in plan 19: `text`, `isDisabled`, the `btn-*` role classes (no `variant` = the look the
+  classes give), an `icon` that is no meaning (legacy font glyph), the `custom` slot for icon-only buttons.
+- **`IconButton`** — every icon-only action: `icon` (meaning, required), `label` (required: `aria-label` + `title`),
+  `variant` `ghost` · `outline` · `primary` · `danger`, `size` `sm` 24 · `md` `--elem-height` · `lg` 40 (header,
+  mobile menu, `--radius-xl`), `pressed` (a toggle: `aria-pressed`, `surface-hover` fill), `disabled`. On a phone
+  the hit area grows to 40 × 40 around the box, the box keeps its size. `md` matches the text button, not Figma's
+  32 px (KD23).
+- **`ActionBar`** — page and dialog actions in R5 order: `actions` = `[{ key, label, role, onClick, icon?,
+  disabled?, loading?, testid? }]`, `role` `utility` (an IconButton, `icon` required) · `secondary` · `danger` ·
+  `primary` (one at most, a second warns in dev); extra controls go into the default slot, already in order.
+  Right-aligned, gap 12 px (8 px on a phone); below 768 px it takes its own row with the label „Akcje”.
+- **`FloatingActions`** — FAB 44 px `accent-fill`, 16 px inset, 16 px above the bottom bar, `data-fid="fab"`;
+  `actions[].icon` and `pill.icon` take meanings (other names still pass through until the sweeps). `pill` =
+  `{ icon, label, handler, testid? }`: an important action with a visible label left of the FAB (R7). `open`
+  starts with the speed-dial open.
+- **`BulkActionBar`** — `actions[].variant` is a BasicButton variant; `buttonClass` still paints until plan 19.
+- Codemod `scripts/codemods/p3-actions.mjs` (sweeps 17/18): colour classes → `variant`, `text` → slot,
+  `isDisabled` → `disabled`, labelled buttons drop `icon`, icon-only → IconButton, `buttonClass` → `variant`;
+  it flags the dark toggles, one-off colours, colours in `:class` and icon-only buttons it cannot name.
+
+Catalogue: `#actions` (`#basic-button`, `#icon-button`, `#action-bar`, `#floating-actions`, `#bulk-action-bar`).
 
 ### P3 overlays (plan 12)
 

@@ -89,31 +89,34 @@ Traps:
 | status / category pill | `StatusBadge` |
 | filter toggle · mode switch (list / edit) | `FilterChip` inside `MobileFilterPanel` · `SegmentedControl` (never a pair of chips) |
 | list · bulk actions · empty list | `DataTable` · `BulkActionBar` · `EmptyState` |
+| text action · icon-only action · page or dialog actions | `BasicButton` · `IconButton` · `ActionBar` |
 | side panel · per-language editing | `SideDrawer` · `TranslationsDrawer` |
-| confirmation · floating action | `Confirmation-modal` (`src/functionals/`) · `FloatingActions` |
+| confirmation · floating action (+ labelled pill) | `Confirmation-modal` (`src/functionals/`) · `FloatingActions` (`pill`) |
 | help next to a label | `FormField :tooltip` |
 
 - **C5 One icon set: FontAwesome, picked by meaning.** A template names the meaning, never the glyph:
   `<FontAwesomeIcon :icon="$icons.edit" />` (`src/boots/Icons/icons.js`, keys camelCase). A new meaning adds its glyph
   to `fa-icons.js`, in both the `import` and the `library.add()`: a missing registration renders nothing and logs
-  nothing (the registry unit test catches it). Do not use `<i class="icon-*">` font glyphs; `BasicInput icon` takes a
-  meaning (`icon="search"`). `BasicButton icon="…"` still renders the legacy font until plan 11, so an icon the font
-  lacks renders blank (`trash-can`, `xmark`, `pencil`): put `<FontAwesomeIcon>` into its `custom` slot.
-  Icon policy: a text button carries no icon unless the design shows one. An icon-only action has an accessible
-  name (`aria-label` or `title`), and it gets a visible text label when it is important or not obvious (R7). Until
-  P3 ships `IconButton`, an icon-only `BasicButton` puts `<FontAwesomeIcon>` into its `custom` slot and names itself
-  with `label` (sets `aria-label` and `title`).
+  nothing (the registry unit test catches it). Do not use `<i class="icon-*">` font glyphs; `BasicInput icon`,
+  `BasicButton icon`, `IconButton icon` and `FloatingActions` icons take a meaning (`icon="search"`); a
+  `BasicButton icon` that is no meaning still renders the legacy font until plan 19.
+  Icon policy: a text button carries no icon unless the design shows one. An icon-only action is an `IconButton`
+  with `label` (its accessible name: `aria-label` and `title`), and it gets a visible text label when it is
+  important or not obvious (R7). Un-swept icon-only `BasicButton`s (`custom` slot + `label`) move to `IconButton`
+  with `scripts/codemods/p3-actions.mjs`.
 - **C6 One button family.** `BasicButton` owns height, padding, type and border: `size="md"` (default,
-  `--elem-height`, the toolbar and form size) or `size="sm"` (row actions); labels never wrap. The role is a class:
-  `btn-primary` (one per page, R5: row, bulk, section and inline-form actions are `btn-secondary` beside it; a dialog
-  or drawer has its own), `btn-secondary` (`btn-outline` is the same look), `btn-ghost` (close, row edit),
-  `btn-danger` (every delete, remove, reject), `btn-danger-fill` (the destructive confirm in a dialog: a delete,
-  remove or flush passes `destructive` to `Confirmation-modal`; every other confirm is its default `btn-primary`). A
-  button without `text` is icon-only: a square of its size, `label` required — without it the button warns in the
-  dev console. One toolbar uses one size. Back is always `BackBar` (icon, or icon + label), never a `BasicButton`.
-  The click stops at the button; inside a wrapper that acts on the click (`SubscriberSetter`) pass `:stop="false"`.
-  An icon-only button is named by its short action (`label`); a longer explanation goes into a `ToolTip
-  :is_wrapper="true"` around it.
+  `--elem-height`, the toolbar and form size) or `size="sm"` (row actions); labels never wrap. The role is
+  `variant`: `primary` (one per page, R5: row, bulk, section and inline-form actions are `secondary` beside it; a
+  dialog or drawer has its own), `secondary`, `ghost` (close, row edit), `danger` (every delete, remove, reject),
+  `danger-solid` (the destructive confirm in a dialog: a delete, remove or flush passes `destructive` to
+  `Confirmation-modal`; every other confirm is its default primary). The label is the default slot. Until the sweeps
+  (plans 17, 18) the `btn-*` role classes and `text` still work: the same roles, `btn-outline` = `btn-secondary`,
+  `btn-danger-fill` = `danger-solid`. An icon-only action is an `IconButton` (`sm` / `md` like the text button,
+  `lg` 40 in the header), `variant` `ghost` · `outline` · `primary` · `danger`, `pressed` for a toggle; an icon-only
+  `BasicButton` without `label` warns in the dev console. One toolbar uses one size. Back is always `BackBar` (icon,
+  or icon + label), never a `BasicButton`. The click stops at the button; inside a wrapper that acts on the click
+  (`SubscriberSetter`) pass `:stop="false"`. An icon-only button is named by its short action (`label`), and that is
+  its one tooltip: no `ToolTip` wrapper on top of it.
   Never pass `bg-*` / `t-*` utilities to pick a role, and never set a button height or font size from a view.
 
 ## Layout (R1–R9)
@@ -130,7 +133,8 @@ Traps:
   blocks, tables and inputs.
 - **R5 Action order.** Page and dialog actions are right-aligned and ordered by importance from the right. The
   primary action (accent fill, one per page or dialog) is rightmost, the secondary (outline) comes next, then the
-  icon-only utilities. Every screen uses the same order.
+  icon-only utilities. Every screen uses the same order: `ActionBar` renders it from the actions' `role`, and on a
+  phone takes its own row labelled „Akcje”.
 - **R6 One icon, one meaning.** An icon stands for one action across the CMS, and it is never reused for another
   action (reorder `arrows-up-down` ≠ menu `grip` ≠ drag handle `grip-vertical`). Pick the meaning from `$icons`
   (`icons.js`: one glyph per meaning, one meaning per glyph); lint warns on a literal glyph name in `icon="…"` or
@@ -139,7 +143,8 @@ Traps:
   preview.
 - **R7 Label important actions.** An action that is important, or not obvious from its icon, carries a visible
   text label. A tooltip alone is not enough. Icon-only is reserved for well-known utilities (close, row delete,
-  more), and each one still gets an accessible label.
+  more), and each one is an `IconButton` with its `label`. A labelled action next to the FAB is its `pill`
+  (`FloatingActions`, „Zarządzaj kolejnością”); tools that repeat one icon (rich-text table tools) are text buttons.
 - **R8 Brand, not generic.** Accent and interactive states use the brand accent tokens (`accent` for text, icons,
   borders and indicators; `accent-fill` with white text for fills). No generic blue, and no panel-specific colours.
   The primary fill is `bg-accent-fill t-on-accent-fill`.
