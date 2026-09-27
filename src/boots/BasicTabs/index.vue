@@ -62,6 +62,11 @@ defineEmits(["update:modelValue"]);
       color: var(--text-accent);
       border-bottom-color: var(--accent);
     }
+
+    // The row scrolls, so it clips an outside ring: the focus ring sits inside the tab.
+    &:focus-visible {
+      outline-offset: -2px;
+    }
   }
 
   &__count {
