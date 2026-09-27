@@ -7,6 +7,9 @@ import { endRefreshSession, refreshAccessToken, SessionEndedError } from '@/api/
 import { setLang, getLang } from '@/i18n'
 import { expiresSoon, refreshDelay } from '@/utils/jwt'
 
+// Upper bound for the whole logout (refresh + blacklist); the local logout always happens within it.
+const LOGOUT_BUDGET_MS = 6000
+
 const cookies = new Cookies()
 const COOKIE_OPTS = { path: '/', maxAge: 7 * 24 * 60 * 60 }
 
@@ -90,10 +93,16 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function endSession() {
-    if (refresh.value && expiresSoon(expiryDate.value)) await refreshAccessToken().catch(() => {})
-    endRefreshSession()
     stopSessionMonitor()
-    await POST_Logout({ access: token.value, refresh: refresh.value }).catch(() => {})
+    const tellServer = (async () => {
+      if (refresh.value && expiresSoon(expiryDate.value)) await refreshAccessToken().catch(() => {})
+      endRefreshSession()
+      await POST_Logout({ access: token.value, refresh: refresh.value }).catch(() => {})
+    })()
+    // Nothing on the network may keep the user logged in: past the budget the session ends locally regardless
+    // (a stalled refresh has no timeout of its own).
+    await Promise.race([tellServer, new Promise((resolve) => setTimeout(resolve, LOGOUT_BUDGET_MS))])
+    endRefreshSession()
     clearAuth()
     window.location.assign('/')
   }

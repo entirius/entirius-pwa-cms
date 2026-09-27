@@ -285,6 +285,20 @@ describe("user store — proactive token refresh", () => {
     expect(reload).toHaveBeenCalledWith("/");
   });
 
+  // FIX-04e review: a refresh request without a timeout kept logout pending forever.
+  it("a stalled refresh cannot keep the user logged in: logout ends locally after its budget", async () => {
+    post.mockImplementation((url) => (isRefresh(url) ? new Promise(() => {}) : Promise.resolve({})));
+    login(5);
+
+    const logout = useUserStore().logout();
+    await vi.advanceTimersByTimeAsync(6000);
+    await logout;
+
+    expect(useUserStore().token).toBeNull();
+    expect(SESSION_COOKIES.map((name) => cookies.get(name))).toEqual([undefined, undefined, undefined, undefined]);
+    expect(reload).toHaveBeenCalledWith("/");
+  });
+
   it("a second logout while one runs sends one blacklist request", async () => {
     login(300);
 
