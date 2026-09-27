@@ -88,29 +88,13 @@
               <BasicInput v-model="form.sort_order" type="number" />
             </FormField>
             <FormField :label="$t('agm.channels')">
-              <Dropdown
-                :custom_droplist="true"
-                :placeholder="form.channel_ids.length ? $t('common.selected_count', { count: form.channel_ids.length }) : $t('agm.all_channels')"
-              >
-                <template #custom>
-                  <div
-                    v-for="ch in channelOptions"
-                    :key="ch.value"
-                    class="pointer flex jc-sb ai-ct ph-2 dropdown-list-el"
-                    :class="{
-                      '-primary-100': form.channel_ids.includes(ch.value),
-                    }"
-                    @click.stop="toggleChannel(ch.value)"
-                  >
-                    <span class="ml-2">{{ ch.label }}</span>
-                    <FontAwesomeIcon
-                      v-if="form.channel_ids.includes(ch.value)"
-                      :icon="$icons.check"
-                      class="t-positive"
-                    />
-                  </div>
-                </template>
-              </Dropdown>
+              <BasicSelect
+                v-model="form.channel_ids"
+                :options="channelOptions"
+                :placeholder="$t('agm.all_channels')"
+                multiple
+                searchable
+              />
             </FormField>
 
             <!-- display_contexts: readonly tags for system, multi-select for custom -->
@@ -136,31 +120,12 @@
                 </div>
               </template>
               <template v-else>
-                <Dropdown
-                  :custom_droplist="true"
-                  :placeholder="form.display_contexts.length ? $t('common.selected_count', { count: form.display_contexts.length }) : $t('agm.all_channels')"
-                >
-                  <template #custom>
-                    <div
-                      v-for="ctx in displayContextOptions"
-                      :key="ctx.value"
-                      class="pointer flex jc-sb ai-ct ph-2 dropdown-list-el"
-                      :class="{
-                        '-primary-100': form.display_contexts.includes(
-                          ctx.value
-                        ),
-                      }"
-                      @click.stop="toggleContext(ctx.value)"
-                    >
-                      <span class="ml-2">{{ ctx.label }}</span>
-                      <FontAwesomeIcon
-                        v-if="form.display_contexts.includes(ctx.value)"
-                        :icon="$icons.check"
-                        class="t-positive"
-                      />
-                    </div>
-                  </template>
-                </Dropdown>
+                <BasicSelect
+                  v-model="form.display_contexts"
+                  :options="displayContextOptions"
+                  :placeholder="$t('agm.all_channels')"
+                  multiple
+                />
               </template>
             </FormField>
           </div>
@@ -583,22 +548,6 @@ export default {
         newsletter: this.$t("agm.context_newsletter"),
       };
       return map[ctx] || ctx;
-    },
-    toggleChannel(id) {
-      const idx = this.form.channel_ids.indexOf(id);
-      if (idx >= 0) {
-        this.form.channel_ids.splice(idx, 1);
-      } else {
-        this.form.channel_ids.push(id);
-      }
-    },
-    toggleContext(value) {
-      const idx = this.form.display_contexts.indexOf(value);
-      if (idx >= 0) {
-        this.form.display_contexts.splice(idx, 1);
-      } else {
-        this.form.display_contexts.push(value);
-      }
     },
     formatDate(dateStr) {
       if (!dateStr) return "---";
