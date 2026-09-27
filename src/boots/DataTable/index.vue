@@ -99,31 +99,17 @@
               class="data-table__cell"
               :class="cellClass(col)"
               :style="alignStyle(col)"
+              :title="isTruncated(col) ? titleOf(row, col) : undefined"
               :data-column="col.key"
               role="gridcell"
             >
-              <span
-                v-if="isTruncated(col)"
-                class="data-table__text"
-                :title="titleOf(row, col)"
-              >
-                <slot
-                  :name="'cell-' + col.key"
-                  :row="row"
-                  :value="row[col.key]"
-                  :index="index"
-                >
-                  {{ displayOf(row[col.key]) }}
-                </slot>
-              </span>
               <slot
-                v-else
                 :name="'cell-' + col.key"
                 :row="row"
                 :value="row[col.key]"
                 :index="index"
               >
-                {{ displayOf(row[col.key]) }}
+                {{ displayOf(row, col) }}
               </slot>
             </div>
           </div>
@@ -220,13 +206,15 @@ const belowDesktop = useMediaQuery("(max-width: 1023px)");
 
 function alignStyle(col) {
   const align = col.numeric || col.actions ? "right" : col.align;
-  return { justifyContent: ALIGN_MAP[align] || "flex-start" };
+  return { justifyContent: ALIGN_MAP[align] || "flex-start", textAlign: align };
 }
 
 // --- Cells ---
 
+const hasSlot = (col) => Boolean(slots[`cell-${col.key}`]);
+
 function isTruncated(col) {
-  return col.truncate ?? (!slots[`cell-${col.key}`] && !col.numeric && !col.actions);
+  return col.truncate ?? (!hasSlot(col) && !col.numeric && !col.actions);
 }
 
 function cellClass(col) {
@@ -239,8 +227,10 @@ function cellClass(col) {
 
 const isEmpty = (value) => value === null || value === undefined || value === "";
 
-function displayOf(value) {
-  return isEmpty(value) ? EMPTY : value;
+// Only the default renderer shows the dash: a slot that renders nothing (an icon-only column) stays empty.
+function displayOf(row, col) {
+  if (hasSlot(col)) return "";
+  return isEmpty(row[col.key]) ? EMPTY : row[col.key];
 }
 
 function titleOf(row, col) {
@@ -497,10 +487,17 @@ function handleRowClick(row, index, event) {
     justify-content: center;
   }
 
-  // Out of intrinsic sizing: the column width comes from its track and header, not from the full text.
+  // One line with an ellipsis, out of intrinsic sizing: the column width comes from its track and header, not
+  // from the full text. Clip, not hidden: the 4 px margin keeps the focus ring of a link in the text visible.
   &--truncate {
+    display: block;
+    align-self: center;
     min-width: 0;
     contain: inline-size;
+    overflow: clip;
+    overflow-clip-margin: var(--space-1);
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &--numeric {
@@ -512,15 +509,6 @@ function handleRowClick(row, index, event) {
     gap: var(--space-2);
     white-space: nowrap;
   }
-}
-
-// Clip, not hidden: the 4 px margin keeps the focus ring of a link inside the text visible.
-.data-table__text {
-  min-width: 0;
-  overflow: clip;
-  overflow-clip-margin: var(--space-1);
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .data-table__empty {

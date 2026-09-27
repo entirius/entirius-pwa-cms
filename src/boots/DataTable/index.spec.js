@@ -141,9 +141,10 @@ const cells = (wrapper, key) => wrapper.findAll(`.data-table__cell[data-column="
 describe("DataTable boot — cell model", () => {
   it("truncates a cell without a slot and gives it the full value as title", () => {
     const wrapper = mount(DataTable, { props: { columns, rows } });
-    const text = cells(wrapper, "name")[0].find(".data-table__text");
-    expect(text.text()).toBe("Row A");
-    expect(text.attributes("title")).toBe("Row A");
+    const cell = cells(wrapper, "name")[0];
+    expect(cell.classes()).toContain("data-table__cell--truncate");
+    expect(cell.text()).toBe("Row A");
+    expect(cell.attributes("title")).toBe("Row A");
   });
 
   it("leaves a slot cell untruncated unless the column opts in, with title(row) as the title", () => {
@@ -153,8 +154,9 @@ describe("DataTable boot — cell model", () => {
     ];
     const slots = { "cell-name": "<b>custom</b>", "cell-value": "<i>badge</i>" };
     const wrapper = mount(DataTable, { props: { columns: opted, rows }, slots });
-    expect(cells(wrapper, "name")[0].find(".data-table__text").attributes("title")).toBe("Row A (1)");
-    expect(cells(wrapper, "value")[0].find(".data-table__text").exists()).toBe(false);
+    expect(cells(wrapper, "name")[0].attributes("title")).toBe("Row A (1)");
+    expect(cells(wrapper, "value")[0].classes()).not.toContain("data-table__cell--truncate");
+    expect(cells(wrapper, "value")[0].attributes("title")).toBeUndefined();
   });
 
   it("renders an em dash for an empty value, without a title", () => {
@@ -162,7 +164,12 @@ describe("DataTable boot — cell model", () => {
     const wrapper = mount(DataTable, { props: { columns, rows: empty } });
     expect(cells(wrapper, "name")[0].text()).toBe("\u2014");
     expect(cells(wrapper, "value")[0].text()).toBe("\u2014");
-    expect(cells(wrapper, "name")[0].find(".data-table__text").attributes("title")).toBeUndefined();
+    expect(cells(wrapper, "name")[0].attributes("title")).toBeUndefined();
+  });
+
+  it("leaves a slot that renders nothing empty, without the dash", () => {
+    const wrapper = mount(DataTable, { props: { columns, rows }, slots: { "cell-value": "" } });
+    expect(cells(wrapper, "value")[0].text()).toBe("");
   });
 
   it("right-aligns numeric and action cells and never truncates them", () => {
@@ -174,7 +181,7 @@ describe("DataTable boot — cell model", () => {
     const [value, actions] = [cells(wrapper, "value")[0], cells(wrapper, "actions")[0]];
     expect(value.classes()).toContain("data-table__cell--numeric");
     expect(value.attributes("style")).toContain("justify-content: flex-end");
-    expect(value.find(".data-table__text").exists()).toBe(false);
+    expect(value.classes()).not.toContain("data-table__cell--truncate");
     expect(actions.classes()).toContain("data-table__cell--actions");
     expect(actions.attributes("style")).toContain("justify-content: flex-end");
   });
