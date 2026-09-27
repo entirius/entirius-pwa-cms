@@ -34,9 +34,9 @@
         >
           {{ $t('builder.translate_all') }}
         </BasicButton>
-        <Dropdown
+        <BasicSelect
           v-if="availableLanguages && language"
-          :values="
+          :options="
             availableLanguages.map((val) => {
               return {
                 label: `${val.iso2}`,
@@ -45,8 +45,8 @@
             })
           "
           style="width: 4rem"
-          :selected="[!language ? null : language.toUpperCase()]"
-          @onSelect="
+          :model-value="language.toUpperCase()"
+          @update:model-value="
             ($event) => {
               if ($event.toLowerCase() === language) return;
               $router
@@ -56,7 +56,7 @@
             }
           "
           :placeholder="$t('builder.language')"
-          class="bg-base b-default t-secondary fs-200 rounded"
+          :aria-label="$t('builder.language')"
         />
       </div>
     </div>
@@ -264,7 +264,7 @@ export default {
           const is_disabled =
             !bt.actions.includes("create") || doc_count >= config_max;
           return {
-            icon: "plus",
+            icon: "add",
             label: this.tBuildType(bt.slug, bt.label),
             handler: () => this.create_new(bt),
             disabled: is_disabled,

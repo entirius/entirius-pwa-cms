@@ -335,15 +335,8 @@
         >
           <FontAwesomeIcon :icon="$icons.collapse" />
         </button>
-        <button
-          class="builder-fab-aux__btn pointer"
-          @click="$refs.manageOrderSetter?.$el?.click()"
-          :aria-label="$t('builder.manage_order')"
-        >
-          <FontAwesomeIcon :icon="$icons.reorder" />
-        </button>
       </div>
-      <FloatingActions :actions="fabActions" />
+      <FloatingActions :actions="fabActions" :pill="orderPill" />
     </div>
 
     <nav
@@ -406,7 +399,7 @@
       <div class="grid gap-10 gc-s-1 gc-e-13">
         <EmptyState
           v-if="!loading && !sections_order.length"
-          icon="plus"
+          icon="add"
           :title="$t('builder.empty_title')"
           :message="$t('builder.empty_message')"
         >
@@ -1035,10 +1028,19 @@ export default {
         )
       );
     },
+    // R6, R7: the section order is an important action, so it gets a visible label next to the FAB.
+    orderPill() {
+      return {
+        icon: "reorder",
+        label: this.$t("builder.manage_order"),
+        handler: () => this.$refs.manageOrderSetter?.$el?.click(),
+        testid: "builder-order-pill",
+      };
+    },
     fabActions() {
       return [
         {
-          icon: "plus",
+          icon: "add",
           label: this.$t("builder.new_section"),
           handler: () => this.$refs.newSectionSetter?.$el?.click(),
           disabled: this.isSectionLimitReached,
