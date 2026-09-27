@@ -1,5 +1,5 @@
 <template>
-  <CatalogueSection id="shell" title="Shell">
+  <CatalogueSection id="shell" :title="$t('ui_catalogue.sections.shell')">
     <p class="fs-300 t-muted">{{ $t("ui_catalogue.stub", { plan: "21" }) }}</p>
   </CatalogueSection>
 </template>

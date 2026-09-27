@@ -3638,6 +3638,16 @@
     "no_results": "No results"
   },
   "ui_catalogue": {
-    "stub": "Filled by plan {plan}."
+    "stub": "Filled by plan {plan}.",
+    "sections": {
+      "icons": "Icon registry",
+      "actions": "Actions",
+      "overlays": "Overlays",
+      "display": "Display",
+      "page_frame": "Page frame",
+      "selects": "Selects",
+      "inputs": "Inputs",
+      "shell": "Shell"
+    }
   }
 }

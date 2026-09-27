@@ -1,5 +1,5 @@
 <template>
-  <CatalogueSection id="display" title="Display">
+  <CatalogueSection id="display" :title="$t('ui_catalogue.sections.display')">
     <h3 id="status-badge" class="fs-500 mb-4">StatusBadge</h3>
     <div class="display-grid grid gap-3 mb-10">
       <CatalogueCell v-for="cell in badgeCells" :id="cell.id" :key="cell.id" :label="cell.label">
@@ -158,6 +158,16 @@
             <p class="fs-200 t-muted p-3">Ostatnia zmiana: {{ row.updated }}</p>
           </template>
         </DataTable>
+      </CatalogueCell>
+    </div>
+
+    <h3 id="basic-logo" class="fs-500 mb-4">BasicLogo</h3>
+    <div class="display-grid grid gap-3 mb-10">
+      <CatalogueCell id="basic-logo-desktop-default" label="desktop, 32 px">
+        <div class="flex"><BasicLogo variant="full" :size="32" /></div>
+      </CatalogueCell>
+      <CatalogueCell id="basic-logo-mobile-default" label="mobile, 24 px">
+        <div class="flex"><BasicLogo variant="full" :size="24" /></div>
       </CatalogueCell>
     </div>
   </CatalogueSection>

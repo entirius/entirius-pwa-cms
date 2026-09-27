@@ -1,5 +1,5 @@
 <template>
-  <CatalogueSection id="overlays" title="Overlays">
+  <CatalogueSection id="overlays" :title="$t('ui_catalogue.sections.overlays')">
     <div class="flex flex-wrap gap-3 mb-8">
       <BasicButton variant="secondary" data-testid="ui-open-modal" @click="live.modal = true">Otwórz modal</BasicButton>
       <BasicButton variant="secondary" data-testid="ui-open-confirm" @click="live.confirm = true">

@@ -1,5 +1,5 @@
 <template>
-  <CatalogueSection id="selects" title="Selects">
+  <CatalogueSection id="selects" :title="$t('ui_catalogue.sections.selects')">
     <h3 id="basic-select" class="fs-500 mb-4">BasicSelect</h3>
     <div class="selects-grid grid gap-3 mb-10">
       <CatalogueCell

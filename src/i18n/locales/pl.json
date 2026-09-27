@@ -3637,6 +3637,16 @@
     "no_results": "Brak wyników"
   },
   "ui_catalogue": {
-    "stub": "Sekcję wypełni plan {plan}."
+    "stub": "Sekcję wypełni plan {plan}.",
+    "sections": {
+      "icons": "Rejestr ikon",
+      "actions": "Akcje",
+      "overlays": "Nakładki",
+      "display": "Wyświetlanie",
+      "page_frame": "Ramka strony",
+      "selects": "Listy wyboru",
+      "inputs": "Pola formularzy",
+      "shell": "Powłoka"
+    }
   }
 }

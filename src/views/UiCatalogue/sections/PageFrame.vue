@@ -1,5 +1,5 @@
 <template>
-  <CatalogueSection id="page-frame" title="Page frame">
+  <CatalogueSection id="page-frame" :title="$t('ui_catalogue.sections.page_frame')">
     <h3 id="page-header" class="fs-500 mb-4">PageHeader</h3>
     <div class="flex-column gap-3 mb-10">
       <CatalogueCell id="page-header-root-default" label="root: H1 only">

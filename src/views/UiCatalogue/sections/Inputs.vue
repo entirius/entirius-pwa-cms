@@ -1,5 +1,5 @@
 <template>
-  <CatalogueSection id="inputs" title="Inputs">
+  <CatalogueSection id="inputs" :title="$t('ui_catalogue.sections.inputs')">
     <h3 id="form-field" class="fs-500 mb-4">FormField</h3>
     <div class="inputs-grid grid gap-3 mb-10">
       <CatalogueCell v-for="cell in fieldCells" :id="cell.id" :key="cell.id" :label="cell.label">

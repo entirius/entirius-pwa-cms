@@ -32,16 +32,24 @@ const THEMES = { dark: "dark", light: "default" };
 const root = document.documentElement;
 const route = useRoute();
 const userStore = useUserStore();
-let pinned = false;
+let pinned = null;
 
 watch(
   () => THEMES[route.query.theme],
   (theme) => {
     if (!theme) return;
     root.setAttribute("data-theme", theme);
-    pinned = true;
+    pinned = theme;
   },
   { immediate: true }
 );
-onBeforeUnmount(() => pinned && root.setAttribute("data-theme", userStore.theme));
+// The profile preferences can arrive after the catalogue opened, and setTheme writes the attribute: put the pin back.
+const keepPinned = new MutationObserver(() => {
+  if (pinned && root.getAttribute("data-theme") !== pinned) root.setAttribute("data-theme", pinned);
+});
+keepPinned.observe(root, { attributes: true, attributeFilter: ["data-theme"] });
+onBeforeUnmount(() => {
+  keepPinned.disconnect();
+  if (pinned) root.setAttribute("data-theme", userStore.theme);
+});
 </script>

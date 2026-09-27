@@ -1,5 +1,5 @@
 <template>
-  <CatalogueSection id="icons" title="icons.js">
+  <CatalogueSection id="icons" :title="$t('ui_catalogue.sections.icons')">
     <div class="icons-grid grid gap-3">
       <CatalogueCell
         v-for="[meaning, glyph] in meanings"
