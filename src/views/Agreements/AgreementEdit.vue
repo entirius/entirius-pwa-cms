@@ -889,6 +889,7 @@ export default {
 // The tables scroll in their own box on a phone; the card does not.
 .agm-table-scroll {
   overflow-x: auto;
+  scrollbar-width: thin;
 }
 
 .agm-th {

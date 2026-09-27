@@ -184,6 +184,7 @@ export default {
 
 .duplicates-table__scroll {
   overflow-x: auto;
+  scrollbar-width: thin;
 }
 
 .duplicates-table {

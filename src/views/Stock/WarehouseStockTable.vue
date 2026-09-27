@@ -293,6 +293,7 @@ export default {
 // A table wider than a phone scrolls in this box; the card around it does not.
 .stock-table__scroll {
   overflow-x: auto;
+  scrollbar-width: thin;
 }
 
 .stock-table {
