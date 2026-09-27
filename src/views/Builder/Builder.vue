@@ -1,6 +1,6 @@
 <template>
   <div
-    class="fs-300 t-body fg-1 flex-column relative pl-12 pr-12 pt-5 pb-30 ovy-auto builder-wrap"
+    class="fs-300 t-body fg-1 flex-column relative page-pad-x pt-5 pb-30 ovy-auto builder-wrap"
     :id="`container-${componentId}`"
   >
     <ConfirmationModal
