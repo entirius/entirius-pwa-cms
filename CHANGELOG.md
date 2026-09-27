@@ -93,6 +93,15 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- Touch and layout rules (phone): small controls keep their look and get a thumb-sized hit area from one mixin
+  (`touch-target`): the help "?", table row checkboxes and the expander, `NumberInput` − / +, filter chips, the
+  config-health close and the Leads kit buttons; neighbouring hit areas never overlap. The back arrow is 40 px on a
+  phone only and shows its tooltip on desktop. Page wrappers pad 16 px on a phone through `.page-pad` instead of a
+  global `!important` override of `p-12`, so empty states and loaders keep their spacing. Focus rings of tabs and
+  segmented options are drawn inside, never clipped by the scrolling row. Leads stage and lead-type rows stack at the
+  shared tablet breakpoint; the Builder tile row scrolls natively below tablet (was: on a touch pointer); the
+  customer status badges wrap without borrowing the title-row class; the panel toolbar styles its title group and
+  actions by role class. `@ux` reports a page card that scrolls sideways on a phone (`overflow` / `card-x`).
 - Tables keep what a row showed and stay pageable: PriceFighter gap and decision tables show the channel in the
   market cell again, so rows that differ only by channel are told apart; status badge columns (layout extenders,
   recommendation, strategy) size to their longest label instead of truncating; a chip in a narrow cell ends in an

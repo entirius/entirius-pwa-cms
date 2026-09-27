@@ -1,5 +1,5 @@
 <template>
-  <div class="acc-list__wrapper p-12 fs-300 t-body h-100 ov-h">
+  <div class="acc-list__wrapper page-pad fs-300 t-body h-100 ov-h">
     <div class="page-card h-100 ovy-auto">
       <div class="flex ai-ct mb-10">
         <h1 class="page-title">{{ $t("accounts.customers") }}</h1>
@@ -285,11 +285,5 @@ export default {
 .acc-list__filter-dropdown {
   min-width: 120px;
   max-width: 200px;
-}
-
-@media only screen and (max-width: 768px) {
-  .acc-list__wrapper {
-    padding: var(--space-4) !important;
-  }
 }
 </style>

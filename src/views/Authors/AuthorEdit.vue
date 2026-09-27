@@ -1,5 +1,5 @@
 <template>
-  <div class="p-12 fs-300 t-body h-100 ov-h relative">
+  <div class="page-pad fs-300 t-body h-100 ov-h relative">
     <Teleport to="#authors-toolbar-left" defer>
       <BackBar
         @back="$router.push('/pages/authors')"
@@ -567,13 +567,6 @@ export default {
 
 .db {
   display: block;
-}
-
-@media only screen and (max-width: 768px) {
-  .p-12 {
-    padding: var(--space-4) !important;
-  }
-
 }
 </style>
 

@@ -32,15 +32,3 @@
     padding: 0 var(--space-2) !important;
   }
 }
-
-// Page cards: the 48 px desktop padding leaves a phone 270 px of 393, so it drops to 16 px on every side it pads.
-@include max-tablet {
-  .p-12 {
-    padding: var(--space-4) !important;
-  }
-  @each $side in (top, right, bottom, left) {
-    .p#{str-slice($side, 1, 1)}-12 {
-      padding-#{$side}: var(--space-4) !important;
-    }
-  }
-}

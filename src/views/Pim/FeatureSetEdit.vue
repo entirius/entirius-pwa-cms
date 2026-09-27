@@ -23,7 +23,7 @@
         @click="save"
       />
     </Teleport>
-    <div class="flex-1 ovy-auto p-12">
+    <div class="flex-1 ovy-auto page-pad">
       <div class="page-card">
         <!-- Set identity -->
         <div class="set-identity mb-10">

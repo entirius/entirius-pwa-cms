@@ -1,5 +1,5 @@
 <template>
-  <div class="p-12 fs-300 t-body h-100 ov-h">
+  <div class="page-pad fs-300 t-body h-100 ov-h">
     <Teleport to="#pim-toolbar-left" defer>
       <BackBar
         @back="$router.push('/pim/products')"

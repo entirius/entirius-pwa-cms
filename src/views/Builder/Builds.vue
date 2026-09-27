@@ -1,5 +1,5 @@
 <template>
-  <div class="site-genator t-body fs-300 ph-12 h-100 ovy-auto">
+  <div class="site-genator t-body fs-300 page-pad-x h-100 ovy-auto">
     <FloatingActions :actions="fabActions" />
     <div class="flex jc-sb ai-ct mv-8">
       <MobileFilterPanel
@@ -530,12 +530,6 @@ export default {
   text-overflow: ellipsis;
   &:hover {
     color: var(--text-accent);
-  }
-}
-@media only screen and (max-width: 768px) {
-  .site-genator {
-    padding-left: var(--space-4) !important;
-    padding-right: var(--space-4) !important;
   }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="voucher-detail p-12 fs-300 t-body h-100 ovy-auto">
+  <div class="voucher-detail page-pad fs-300 t-body h-100 ovy-auto">
     <Teleport to="#promo-toolbar-left" defer>
       <BackBar
         @back="navigateBack"

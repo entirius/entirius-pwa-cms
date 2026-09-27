@@ -1,5 +1,5 @@
 <template>
-  <div class="acc-detail__wrapper p-12 fs-300 t-body h-100 ov-h">
+  <div class="acc-detail__wrapper page-pad fs-300 t-body h-100 ov-h">
     <Teleport to="#accounts-toolbar-left" defer>
       <BackBar
         @back="goBack"
@@ -189,9 +189,6 @@ export default {
 }
 
 @media only screen and (max-width: 768px) {
-  .acc-detail__wrapper {
-    padding: var(--space-4) !important;
-  }
   .acc-detail__grid {
     grid-template-columns: 1fr;
   }

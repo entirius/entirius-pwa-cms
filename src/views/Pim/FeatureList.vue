@@ -1,5 +1,5 @@
 <template>
-  <div class="pim-list-layout p-12 fs-300 t-body h-100 ov-h">
+  <div class="pim-list-layout page-pad fs-300 t-body h-100 ov-h">
     <div
       class="page-card flex-1 ovy-auto"
     >
@@ -286,7 +286,6 @@ export default {
 
 @media only screen and (max-width: 768px) {
   .pim-list-layout {
-    padding: var(--space-4) !important;
     overflow-x: visible !important;
 
     > div {

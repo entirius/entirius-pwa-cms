@@ -1,5 +1,5 @@
 <template>
-  <div class="spawn-rule-edit p-12 fs-300 t-body h-100 ov-h">
+  <div class="spawn-rule-edit page-pad fs-300 t-body h-100 ov-h">
     <div class="page-card flex-1 ovy-auto">
       <div class="page-title-row flex ai-ct gap-5 mb-10">
         <BackBar

@@ -1,5 +1,5 @@
 <template>
-  <div class="agm-list__wrapper p-12 fs-300 t-body h-100 ov-h">
+  <div class="agm-list__wrapper page-pad fs-300 t-body h-100 ov-h">
     <div
       class="page-card h-100 ovy-auto"
     >
@@ -229,7 +229,6 @@ export default {
 
 @media only screen and (max-width: 768px) {
   .agm-list__wrapper {
-    padding: var(--space-4) !important;
     overflow-x: visible !important;
 
     > div {

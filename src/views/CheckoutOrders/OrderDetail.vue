@@ -1,5 +1,5 @@
 <template>
-  <div class="order-detail p-12 fs-300 t-body h-100 ov-h">
+  <div class="order-detail page-pad fs-300 t-body h-100 ov-h">
     <Teleport to="#checkout-orders-toolbar-left" defer>
       <BackBar
         @back="goBack"

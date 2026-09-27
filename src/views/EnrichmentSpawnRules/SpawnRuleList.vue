@@ -1,5 +1,5 @@
 <template>
-  <div class="spawn-rules-list p-12 fs-300 t-body h-100 ov-h">
+  <div class="spawn-rules-list page-pad fs-300 t-body h-100 ov-h">
     <div
       class="page-card flex-1 ovy-auto"
     >

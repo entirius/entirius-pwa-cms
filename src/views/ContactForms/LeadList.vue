@@ -1,5 +1,5 @@
 <template>
-  <div class="cf-lead-list__wrapper p-12 fs-300 t-body h-100 ov-h">
+  <div class="cf-lead-list__wrapper page-pad fs-300 t-body h-100 ov-h">
     <div
       class="page-card h-100 ovy-auto"
     >
@@ -285,11 +285,5 @@ export default {
   border-radius: var(--radius-base);
   background: var(--positive-subtle);
   color: var(--positive);
-}
-
-@media only screen and (max-width: 768px) {
-  .cf-lead-list__wrapper {
-    padding: var(--space-4) !important;
-  }
 }
 </style>

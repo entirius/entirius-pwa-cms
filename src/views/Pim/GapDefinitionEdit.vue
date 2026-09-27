@@ -24,7 +24,7 @@
       />
     </Teleport>
 
-    <div class="flex-1 ovy-auto p-12">
+    <div class="flex-1 ovy-auto page-pad">
       <div class="page-card">
         <div class="gap-def-identity mb-10">
           <span class="fs-200 t-accent fw-600 tt-upper">

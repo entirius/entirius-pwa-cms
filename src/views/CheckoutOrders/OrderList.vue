@@ -1,5 +1,5 @@
 <template>
-  <div class="order-list p-12 fs-300 t-body h-100 ov-h">
+  <div class="order-list page-pad fs-300 t-body h-100 ov-h">
     <!-- Channel selector in toolbar (matches PIM pattern) -->
     <Teleport to="#checkout-orders-toolbar-left" defer>
       <span v-if="channels.length > 1" class="flex ai-ct gap-2">

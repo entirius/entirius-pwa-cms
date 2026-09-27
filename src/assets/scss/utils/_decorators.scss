@@ -12,6 +12,25 @@
   }
 }
 
+// The page wrapper around a panel's content card: 48 px, 16 px below tablet (a phone keeps 361 of its 393 px).
+// `.page-pad-x` pads the sides only, for a wrapper whose rows bring their own vertical rhythm.
+.page-pad,
+.page-pad-x {
+  --page-pad: var(--space-12);
+
+  @include max-tablet {
+    --page-pad: var(--space-4);
+  }
+}
+
+.page-pad {
+  padding: var(--page-pad);
+}
+
+.page-pad-x {
+  padding: 0 var(--page-pad);
+}
+
 .dot-indicator {
   position: relative;
   display: inline-block;

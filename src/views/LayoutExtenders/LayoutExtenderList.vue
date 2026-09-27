@@ -1,5 +1,5 @@
 <template>
-  <div class="p-12 fs-300 t-body h-100 ov-h">
+  <div class="page-pad fs-300 t-body h-100 ov-h">
     <Teleport to="#layout-extender-toolbar-left" defer>
       <span class="fs-300 fw-600 t-body">{{ $t("layout_extender.list_title") }}</span>
       <Dropdown
@@ -385,11 +385,5 @@ export default {
   align-items: center;
   gap: var(--space-2);
   justify-content: flex-end;
-}
-
-@media only screen and (max-width: 768px) {
-  .p-12 {
-    padding: var(--space-4) !important;
-  }
 }
 </style>
