@@ -379,73 +379,128 @@
             </BasicButton>
             <BasicButton
               size="sm"
-              text="col. before"
+              :label="$t('wysiwyg.add_column_before')"
               class="b-subtle lh-init"
+              :custom="true"
               @click="editor.chain().focus().addColumnBefore().run()"
-            />
+            >
+              <template v-slot:custom>
+                <font-awesome-icon class="fs-300" :icon="`fa-solid fa-plus`" />
+              </template>
+            </BasicButton>
             <BasicButton
               size="sm"
-              text="col. after"
+              :label="$t('wysiwyg.add_column_after')"
               class="b-subtle lh-init"
+              :custom="true"
               @click="editor.chain().focus().addColumnAfter().run()"
-            />
+            >
+              <template v-slot:custom>
+                <font-awesome-icon class="fs-300" :icon="`fa-solid fa-plus`" />
+              </template>
+            </BasicButton>
 
             <BasicButton
               size="sm"
-              text="col. delete"
+              :label="$t('wysiwyg.delete_column')"
               class="b-subtle lh-init"
+              :custom="true"
               @click="editor.chain().focus().deleteColumn().run()"
-            />
+            >
+              <template v-slot:custom>
+                <font-awesome-icon class="fs-300" :icon="`fa-solid fa-trash-can`" />
+              </template>
+            </BasicButton>
             <BasicButton
               size="sm"
-              text="row. before"
+              :label="$t('wysiwyg.add_row_before')"
               class="b-subtle lh-init"
+              :custom="true"
               @click="editor.chain().focus().addRowBefore().run()"
-            />
+            >
+              <template v-slot:custom>
+                <font-awesome-icon class="fs-300" :icon="`fa-solid fa-plus`" />
+              </template>
+            </BasicButton>
             <BasicButton
               size="sm"
-              text="row. after"
+              :label="$t('wysiwyg.add_row_after')"
               class="b-subtle lh-init"
+              :custom="true"
               @click="editor.chain().focus().addRowAfter().run()"
-            />
+            >
+              <template v-slot:custom>
+                <font-awesome-icon class="fs-300" :icon="`fa-solid fa-plus`" />
+              </template>
+            </BasicButton>
 
             <BasicButton
               size="sm"
-              text="row. delete"
+              :label="$t('wysiwyg.delete_row')"
               class="b-subtle lh-init"
+              :custom="true"
               @click="editor.chain().focus().deleteRow().run()"
-            />
+            >
+              <template v-slot:custom>
+                <font-awesome-icon class="fs-300" :icon="`fa-solid fa-trash-can`" />
+              </template>
+            </BasicButton>
             <BasicButton
               size="sm"
-              text="Merge"
+              :label="$t('wysiwyg.merge_cells')"
               class="b-subtle lh-init"
+              :custom="true"
               @click="editor.chain().focus().mergeCells().run()"
-            />
+            >
+              <template v-slot:custom>
+                <font-awesome-icon class="fs-300" :icon="`fa-solid fa-object-group`" />
+              </template>
+            </BasicButton>
             <BasicButton
               size="sm"
-              text="Split"
+              :label="$t('wysiwyg.split_cell')"
               class="b-subtle lh-init"
+              :custom="true"
               @click="editor.chain().focus().splitCell().run()"
-            />
+            >
+              <template v-slot:custom>
+                <font-awesome-icon class="fs-300" :icon="`fa-solid fa-object-ungroup`" />
+              </template>
+            </BasicButton>
             <BasicButton
               size="sm"
-              text="Toggle (col.)"
+              :label="$t('wysiwyg.header_column')"
               class="b-subtle lh-init"
+              :custom="true"
               @click="editor.chain().focus().toggleHeaderColumn().run()"
-            />
+            >
+              <template v-slot:custom>
+                <font-awesome-icon class="fs-300" :icon="`fa-solid fa-circle-dot`" />
+              </template>
+            </BasicButton>
             <BasicButton
               size="sm"
-              text="Toggle (row.)"
+              :label="$t('wysiwyg.header_row')"
               class="b-subtle lh-init"
+              :custom="true"
               @click="editor.chain().focus().toggleHeaderRow().run()"
-            />
+            >
+              <template v-slot:custom>
+                <font-awesome-icon class="fs-300" :icon="`fa-solid fa-circle-dot`" />
+              </template>
+            </BasicButton>
 
             <BasicButton
               size="sm"
-              text="Toggle (cell.)"
+              :label="$t('wysiwyg.header_cell')"
               class="b-subtle lh-init"
+              :custom="true"
               @click="editor.chain().focus().toggleHeaderCell().run()"
-            />
+            >
+              <template v-slot:custom>
+                <font-awesome-icon class="fs-300" :icon="`fa-solid fa-circle-dot`" />
+              </template>
+            </BasicButton>
           </div>
           <Dropdown
             v-if="variant !== 'lite'"

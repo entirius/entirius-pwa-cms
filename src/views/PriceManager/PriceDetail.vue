@@ -137,26 +137,31 @@
               class="btn-outline"
               @click="toggleHistory"
             />
-            <BasicButton
-              custom
-              :label="$t('pm.flush_special_tooltip')"
-              class="btn-danger"
-              @click="showFlushConfirm = true"
-            >
-              <template #custom><FontAwesomeIcon icon="broom" /></template>
-            </BasicButton>
-            <BasicButton
-              custom
-              :label="$t('pm.delete_prices_tooltip')"
-              class="btn-danger"
-              @click="showDeleteConfirm = true"
-            >
-              <template #custom><FontAwesomeIcon icon="trash-can" /></template>
-            </BasicButton>
+            <ToolTip :tip="$t('pm.flush_special_tooltip')" :is_wrapper="true">
+              <BasicButton
+                custom
+                :label="$t('pm.flush_special')"
+                class="btn-danger"
+                @click="showFlushConfirm = true"
+              >
+                <template #custom><FontAwesomeIcon icon="broom" /></template>
+              </BasicButton>
+            </ToolTip>
+            <ToolTip :tip="$t('pm.delete_prices_tooltip')" :is_wrapper="true">
+              <BasicButton
+                custom
+                :label="$t('pm.delete_prices')"
+                class="btn-danger"
+                @click="showDeleteConfirm = true"
+              >
+                <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+              </BasicButton>
+            </ToolTip>
           </div>
 
           <!-- Confirmation modals -->
           <Confirmation-modal
+            destructive
             :visible="showFlushConfirm"
             @accept="flushSpecial"
             @reject="showFlushConfirm = false"
@@ -166,6 +171,7 @@
           </Confirmation-modal>
 
           <Confirmation-modal
+            destructive
             :visible="showDeleteConfirm"
             @accept="deletePrices"
             @reject="showDeleteConfirm = false"
