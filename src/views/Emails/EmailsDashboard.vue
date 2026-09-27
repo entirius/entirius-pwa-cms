@@ -7,7 +7,7 @@
         <h1>{{ $t("emails.dashboard") }}</h1>
       </div>
 
-      <Loader v-show="loading" />
+      <Loader block v-show="loading" />
 
       <div v-show="!loading">
         <!-- Channels -->

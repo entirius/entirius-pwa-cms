@@ -8,7 +8,7 @@
         {{ $t("atlas.products.drawer.timeline_count", { count: entries.length }) }}
       </span>
     </header>
-    <Loader v-if="loading" />
+    <Loader block v-if="loading" />
     <SupplierTimeline v-else :entries="entries" />
   </section>
 </template>

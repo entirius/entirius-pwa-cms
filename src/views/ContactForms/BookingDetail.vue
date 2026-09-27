@@ -10,7 +10,7 @@
         />
       </Teleport>
 
-      <Loader v-if="loading" />
+      <Loader block v-if="loading" />
 
       <template v-else-if="booking">
         <div class="flex ai-ct mb-10">

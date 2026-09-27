@@ -13,7 +13,7 @@
         {{ $t("atlas.products.drawer.open_mappings_tab") }}
       </button>
     </header>
-    <Loader v-if="loading" />
+    <Loader block v-if="loading" />
     <p v-else-if="!profiles.length" class="fs-200 t-muted m-0">
       {{ $t("atlas.products.drawer.no_mapping_profiles") }}
     </p>

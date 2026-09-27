@@ -358,7 +358,7 @@ onMounted(() => {
       </span>
     </div>
 
-    <Loader v-if="loading" />
+    <Loader block v-if="loading" />
 
     <template v-else>
       <!-- Upload drop zone -->

@@ -29,7 +29,7 @@
     </Teleport>
 
     <div class="page-card h-100 ovy-auto relative">
-      <Loader v-if="loading" />
+      <Loader block v-if="loading" />
 
       <template v-else>
         <!-- Basic info -->

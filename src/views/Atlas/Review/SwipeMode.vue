@@ -4,7 +4,7 @@
          container so it stays docked at the bottom regardless of RawDataPanel
          internal overflow. -->
     <div class="swipe-mode__scroll">
-      <Loader v-show="loading" />
+      <Loader block v-show="loading" />
 
       <div v-if="!loading && !current" class="text-center mt-10">
         <EmptyState

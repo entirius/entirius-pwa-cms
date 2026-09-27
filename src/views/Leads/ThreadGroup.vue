@@ -10,7 +10,7 @@
       <span v-if="holdsReply" class="tg__reply" data-testid="earlier-thread-reply">{{ $t("leads.thread.earlier_reply") }}</span>
       <span v-if="pending" class="tg__badge" data-testid="earlier-thread-optout">{{ $t("leads.thread.optout_suspected") }}</span>
     </button>
-    <Loader v-show="loading" />
+    <Loader block v-show="loading" />
     <ThreadTimeline
       v-if="open && detail"
       :messages="detail.timeline || []"

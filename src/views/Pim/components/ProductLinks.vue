@@ -27,7 +27,7 @@
       {{ $t("pim.links.sync_notice") }}
     </p>
 
-    <Loader v-show="loading" />
+    <Loader block v-show="loading" />
 
     <div v-show="!loading" class="links-table" role="table">
       <div class="links-table__row links-table__row--header" role="row">

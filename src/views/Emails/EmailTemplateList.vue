@@ -10,7 +10,7 @@
         <h1>{{ typeLabel }}</h1>
       </div>
 
-      <Loader v-show="loading" />
+      <Loader block v-show="loading" />
 
       <div v-show="!loading">
         <div v-if="templates.length === 0" class="fs-300 t-muted">

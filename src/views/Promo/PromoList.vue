@@ -96,7 +96,7 @@
           </button>
         </div>
 
-        <Loader v-show="loading" />
+        <Loader block v-show="loading" />
 
         <DataTable
           v-show="!loading"

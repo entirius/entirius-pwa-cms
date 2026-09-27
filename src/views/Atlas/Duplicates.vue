@@ -10,7 +10,7 @@
         {{ $t("atlas.duplicates.subtitle") }}
       </p>
 
-      <Loader v-show="loading" />
+      <Loader block v-show="loading" />
 
       <EmptyState
         v-if="!loading && groups.length === 0"

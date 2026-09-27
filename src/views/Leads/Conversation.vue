@@ -1,7 +1,7 @@
 <template>
   <div class="conversation" data-testid="leads-conversation">
     <BackBar v-if="!isDesktop" class="conversation__back" :label="$t('leads.thread.back')" @back="goBack" />
-    <Loader v-show="loading" />
+    <Loader block v-show="loading" />
     <p v-if="missing" class="conversation__none" role="status" data-testid="conversation-missing">
       {{ $t("leads.thread.mail_unavailable") }}
     </p>

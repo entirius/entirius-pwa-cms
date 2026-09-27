@@ -40,7 +40,7 @@
         />
       </Teleport>
 
-      <Loader v-if="loading" />
+      <Loader block v-if="loading" />
 
       <template v-else-if="lead">
         <div class="flex ai-ct mb-8">

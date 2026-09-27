@@ -23,7 +23,7 @@
     </Teleport>
 
     <div class="page-card h-100 ovy-auto">
-      <Loader v-if="loading" />
+      <Loader block v-if="loading" />
 
       <template v-else>
         <div class="flex ai-ct jc-sb flex-wrap gap-5 rg-3 mb-12">

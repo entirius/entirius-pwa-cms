@@ -24,7 +24,7 @@
         />
       </div>
 
-      <Loader v-show="loading" />
+      <Loader block v-show="loading" />
 
       <template v-if="!loading">
         <!-- Marketing tab -->

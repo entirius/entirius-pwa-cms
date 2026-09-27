@@ -85,7 +85,7 @@
       @clear="clearSelection"
     />
 
-    <Loader v-show="loading" />
+    <Loader block v-show="loading" />
 
     <DataTable
       v-show="!loading"

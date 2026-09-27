@@ -14,7 +14,7 @@
       />
     </Teleport>
 
-    <Loader v-if="loading" />
+    <Loader block v-if="loading" />
 
     <template v-else-if="voucher">
       <div class="page-card mb-10">

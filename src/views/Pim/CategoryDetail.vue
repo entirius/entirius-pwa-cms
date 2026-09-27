@@ -26,7 +26,7 @@
       </template>
     </Teleport>
     <div class="page-card h-100 ovy-auto">
-      <Loader v-if="loading" />
+      <Loader block v-if="loading" />
 
       <EmptyState
         v-else-if="notFound"

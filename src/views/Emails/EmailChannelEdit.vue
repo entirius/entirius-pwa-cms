@@ -15,7 +15,7 @@
         >
       </div>
 
-      <Loader v-show="loading" />
+      <Loader block v-show="loading" />
 
       <div v-show="!loading">
         <!-- Branding Section -->

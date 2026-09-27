@@ -7,7 +7,7 @@
       {{ $t("pim.no_feature_set_attributes") }}
     </div>
 
-    <Loader v-else-if="loading" />
+    <Loader block v-else-if="loading" />
 
     <template v-else>
       <!-- Ungrouped features -->

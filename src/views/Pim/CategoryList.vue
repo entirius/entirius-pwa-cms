@@ -31,7 +31,7 @@
         />
       </div>
 
-      <Loader v-if="loading" />
+      <Loader block v-if="loading" />
 
       <CategoryTree
         v-else

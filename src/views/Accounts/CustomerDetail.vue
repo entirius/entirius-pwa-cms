@@ -7,7 +7,7 @@
       <span class="fw-600">{{ toolbarTitle }}</span>
     </Teleport>
 
-    <Loader v-if="loading" />
+    <Loader block v-if="loading" />
 
     <div v-else-if="customer" class="page-card h-100 ovy-auto">
       <!-- Profile Card -->

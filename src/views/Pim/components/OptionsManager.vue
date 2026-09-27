@@ -50,7 +50,7 @@
       />
     </div>
 
-    <Loader v-if="loading" />
+    <Loader block v-if="loading" />
 
     <div
       v-else-if="!options.length && !searchQuery"

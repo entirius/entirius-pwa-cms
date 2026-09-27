@@ -13,7 +13,7 @@
       />
     </div>
 
-    <Loader v-show="loading" />
+    <Loader block v-show="loading" />
 
     <!-- Drafts is where the work starts: empty, it says what waits for the send beat and when it leaves -->
     <EmptyState

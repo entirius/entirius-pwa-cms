@@ -124,7 +124,7 @@
       </BasicButton>
     </Teleport>
     <div class="page-card h-100 ovy-auto">
-      <Loader v-if="loading" />
+      <Loader block v-if="loading" />
 
       <!-- etap-12 #25: 404 on the chosen channel auto-switches to default and warns. -->
       <div

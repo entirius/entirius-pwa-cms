@@ -32,7 +32,7 @@
           </span>
         </div>
 
-        <Loader v-if="loading" />
+        <Loader block v-if="loading" />
 
         <template v-else>
           <div class="gap-def-grid">

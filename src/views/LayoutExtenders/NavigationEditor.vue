@@ -45,7 +45,7 @@
 
     <!-- Content -->
     <div class="page-card h-100 ovy-auto">
-      <Loader v-show="loading" />
+      <Loader block v-show="loading" />
 
       <template v-if="!loading">
         <draggable

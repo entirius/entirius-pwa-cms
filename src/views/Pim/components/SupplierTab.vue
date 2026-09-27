@@ -1,6 +1,6 @@
 <template>
   <div class="supplier-tab" data-test="supplier-tab">
-    <Loader v-if="loading" />
+    <Loader block v-if="loading" />
 
     <template v-else-if="!data">
       <EmptyState

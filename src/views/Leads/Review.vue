@@ -2,7 +2,7 @@
   <div class="review" data-testid="leads-review">
     <div class="review__scroll">
       <BackBar class="review__back" :label="$t('leads.review.back')" @back="goInbox" />
-      <Loader v-show="loading" />
+      <Loader block v-show="loading" />
 
       <p v-if="scheduledLabel" class="review__scheduled" role="status" data-testid="review-scheduled">
         {{ scheduledLabel }}

@@ -9,7 +9,7 @@
       <span class="t-body fw-600 fs-400">{{ headerLabel }}</span>
     </Teleport>
 
-    <Loader v-if="loading" />
+    <Loader block v-if="loading" />
     <div v-else-if="!supplier" class="p-12 t-muted">
       {{ $t("atlas.detail_not_found") }}
     </div>
