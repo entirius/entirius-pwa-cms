@@ -19,7 +19,7 @@ const VARIANT_TONE = { informative: "info" };
 import { computed } from "vue";
 
 const props = defineProps({
-  label: { type: String, required: true },
+  label: { type: [String, Number], required: true },
   tone: { type: String, default: null, validator: (value) => TONES.includes(value) },
   variant: {
     type: String,
