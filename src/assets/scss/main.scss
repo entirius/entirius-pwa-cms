@@ -95,8 +95,9 @@
   }
 }
 
-// Spacing classes from the brand steps (.p-1 = 4 px …); radius classes from the radius scale (Tailwind names:
-// .rounded = base, .rounded-lg …), with the corner variants in use. `br-` is the border-right colour prefix only.
+// Spacing classes from the brand steps (.p-1 = 4 px …, .rg-* = the row gap of a wrapping row); radius classes from
+// the radius scale (Tailwind names: .rounded = base, .rounded-lg …), with the corner variants in use. `br-` is the
+// border-right colour prefix only.
 $space-properties: (
   p: padding, pt: padding-top, pr: padding-right, pb: padding-bottom, pl: padding-left,
   m: margin, mt: margin-top, mr: margin-right, mb: margin-bottom, ml: margin-left, gap: gap,
@@ -123,6 +124,13 @@ $radius-corners: (tl: top-left, tr: top-right);
     }
     .mh-#{$step} {
       margin: 0 $value;
+    }
+  }
+
+  // After the loop above, so a row gap refines the `.gap-*` of the same element.
+  @each $step in $brand-space-steps {
+    .rg-#{$step} {
+      row-gap: var(--space-#{$step});
     }
   }
 

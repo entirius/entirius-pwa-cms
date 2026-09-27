@@ -7,7 +7,7 @@
         <h1 class="fs-700 fw-600">{{ $t("cf.bookings") }}</h1>
       </div>
 
-      <div class="flex ai-ct gap-8 mb-10">
+      <div class="flex ai-ct flex-wrap gap-8 rg-3 mb-10">
         <BasicInput
           v-model="search"
           :placeholder="$t('cf.search_placeholder')"
@@ -281,10 +281,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/scss/utils/media-query";
+
 .cf-list__search {
   flex: 1;
   max-width: 400px;
   min-width: 150px;
+
+  // A phone gives the search its own row above the filters.
+  @include max-tablet {
+    flex-basis: 100%;
+    max-width: none;
+  }
 }
 
 .cf-list__filter {
