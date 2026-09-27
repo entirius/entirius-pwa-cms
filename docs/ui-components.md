@@ -280,7 +280,8 @@ Catalogue: `#page-frame` (`#page-header`, `#breadcrumbs`, `#page-layout`).
   `stacked` · `inline` (label left, control right from 1024 px, stacked below — Figma „Język treści”); `id` fixes the
   control's id, `disabled` disables it. It provides `FORM_FIELD` (`src/composables/formField.js`): `id` (the label's
   `for`), `describedBy` (the hint or error shown), `invalid`, `required`, `disabled`, plus `labelId` for a control a
-  `for` cannot name. Controls read it through `useControlAttrs()` (`src/boots/FormField/useControlAttrs.js`) and
+  `for` cannot name. Of several controls in one field (rows of a `v-for`) only the first takes the field's id.
+  Controls read it through `useControlAttrs()` (`src/boots/FormField/useControlAttrs.js`) and
   paint their own error border; FormField's own border paint is left only for controls without `aria-invalid`
   (Dropdown, TextAreaBasic, raw inputs) until plan 19.
 - **`BasicInput`** — `v-model`, `type`, `placeholder`, `icon` (a leading meaning of `icons.js`), `readonly` (the
@@ -298,8 +299,8 @@ Catalogue: `#page-frame` (`#page-header`, `#breadcrumbs`, `#page-layout`).
 - **`BasicSwitch`** — replaces `Switcher`: `v-model`, `label`, `hint` (a help tooltip), `disabled`; a
   `role="switch"` button with `aria-checked`, styles scoped to it.
 - **`BasicDatePicker`** — an input-looking trigger with the `calendar` icon opens an inline flatpickr; `v-model` (the
-  flatpickr date string), `config` (a range by default), `disabled`; the instance is destroyed on unmount. `value` and
-  `onChange` stay until plan 19.
+  flatpickr date string), `config` (a single date by default, `mode: "range"` for a range), `disabled`; the instance
+  is destroyed on unmount. `value` and `onChange` stay until plan 19.
 - **`SegmentedControl`** — contract id and `disabled`, named by the FormField label, `aria-pressed` on the active
   option. **`ColorInput`** — `disabled`, the text field reads the contract, the swatch is the native picker itself.
 - Codemod `scripts/codemods/p3-inputs.mjs` (sweeps 17/18): `Switcher` → `BasicSwitch` (`:selected` + `@onSelect="x =

@@ -65,6 +65,16 @@ describe("FormField contract", () => {
     expect(wrapper.find("label").attributes("for")).toBe("product-name");
   });
 
+  it("gives the field's id to its first control only: rows of controls in one field repeat no id", () => {
+    const Host = defineComponent({
+      render: () => h(FormField, { label: "Progi" }, () => [h(BasicInput), h(NumberInput), h(BasicInput)]),
+    });
+    const wrapper = mount(Host, { global: GLOBAL });
+    const ids = wrapper.findAll("input").map((input) => input.attributes("id"));
+    expect(new Set(ids).size).toBe(3);
+    expect(wrapper.find("label").attributes("for")).toBe(ids[0]);
+  });
+
   it("shows the help tooltip on BasicTooltip, outside the label", () => {
     const wrapper = inField(BasicInput, { tooltip: "Nazwa w sklepie" });
     const tip = wrapper.findComponent({ name: "BasicTooltip" });

@@ -6,12 +6,13 @@
 //   <TextAreaBasic> → <BasicTextarea>: `limit` → `maxlength`
 //   <LockedField> → <BasicInput readonly>
 //   `isDisabled` / `is-disabled` / `is_disabled` → `disabled` on BasicInput, NumberInput and the textarea
-//   a floating `label` on BasicInput / the textarea → <FormField :label> around the control (with its v-if / v-for /
-//     :key, id, class and style); dropped when the control already sits in a FormField with a label
+//   a floating `label` on BasicInput / the textarea → <FormField :label> around the control (with its v-if / v-show /
+//     v-for, :key and id); dropped when the control already sits in a FormField with a label
 // Flagged, never guessed: any other @onSelect handler (that Switcher stays as it is), `validate` (FormField `error`),
 // the BasicCheckbox array API (`values`), the old textarea API (`value`, `type`, `size`, its events), a label on a
-// control in a FormField without one, an attribute outside the map. The sweeps (plans 17, 18) run it per partition
-// and resolve the flags. The three tags are global registrations, so no import changes. CLI: see p3-lib.mjs.
+// control in a FormField without one, an attribute outside the map. Class and style stay on a wrapped control: they
+// may style it (line height, surface), so the sweep moves only the layout ones. The sweeps (plans 17, 18) run it per
+// partition and resolve the flags. The three tags are global registrations, so no import changes. CLI: see p3-lib.mjs.
 import { pathToFileURL } from "node:url";
 import {
   applyEdits,
@@ -46,9 +47,9 @@ const KIND_OF_TAG = {
 };
 const TARGET = { [SWITCH]: "BasicSwitch", [TEXTAREA]: "BasicTextarea", [LOCKED]: "BasicInput" };
 const DISABLED_SPELLINGS = new Set(["isdisabled", "is_disabled"]);
-// Attributes that move from a labelled control onto the FormField around it.
-const MOVES_TO_FIELD = /^(v-(if|else-if|else|for)|key|id|class|style)$/;
-const STRUCTURAL = /^v-(if|else-if|else|for)$/;
+// Attributes that move from a labelled control onto the FormField around it; class and style stay on the control.
+const MOVES_TO_FIELD = /^(v-(if|else-if|else|for|show)|key|id)$/;
+const STRUCTURAL = /^v-(if|else-if|else|for|show)$/;
 const PASSTHROUGH = /^(key|ref|class|style|id|data[a-z_]+)$/;
 // Attributes each target takes as they are (normalised names; `@x` is a listener, `v-model` the model).
 const KEPT = {

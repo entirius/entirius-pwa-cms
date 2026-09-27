@@ -52,6 +52,7 @@
       data-testid="title-input"
     />
     <TextAreaBasic v-if="showMeta" label="Opis meta" v-model="form.meta" />
+    <BasicInput v-show="advanced" :label="$t('pim.ean')" v-model="form.ean2" style="max-width: 20rem" />
     <LockedField :label="$t('pim.scope')" :model-value="scope" />
 
     <!-- a label in a FormField: dropped when the field has one, flagged when it has none -->

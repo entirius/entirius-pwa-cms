@@ -28,8 +28,8 @@ describe("p3-inputs codemod", () => {
       [40, "two disabled spellings: merge by hand"],
       [41, "validate: the message goes to FormField `error` by hand"],
       [42, "BasicCheckbox array API: a boolean v-model per checkbox (or BasicRadioGroup) by hand"],
-      [62, "a label inside a FormField without one: move it to the field by hand"],
-      [65, "an id on a control in a labelled FormField: move it to the field (its label points there)"],
+      [63, "a label inside a FormField without one: move it to the field by hand"],
+      [66, "an id on a control in a labelled FormField: move it to the field (its label points there)"],
     ]);
   });
 

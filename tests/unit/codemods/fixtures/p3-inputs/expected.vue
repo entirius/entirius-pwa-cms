@@ -41,8 +41,8 @@
     <BasicCheckbox :values="[{ label: 'A', value: 'a' }]" @onSelect="pick" />
 
     <!-- a floating label → FormField around the control, with its structure, id and layout -->
-    <FormField :label="$t('pim.name')" class="mb-4">
-      <BasicInput v-model="form.title" />
+    <FormField :label="$t('pim.name')">
+      <BasicInput v-model="form.title" class="mb-4" />
     </FormField>
     <FormField v-for="lang in langs" :label="lang" :key="lang" id="title">
       <BasicInput
@@ -52,6 +52,9 @@
     </FormField>
     <FormField v-if="showMeta" label="Opis meta">
       <BasicTextarea v-model="form.meta" />
+    </FormField>
+    <FormField v-show="advanced" :label="$t('pim.ean')">
+      <BasicInput v-model="form.ean2" style="max-width: 20rem" />
     </FormField>
     <FormField :label="$t('pim.scope')">
       <BasicInput :model-value="scope" readonly />

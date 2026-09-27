@@ -50,7 +50,20 @@ const labelId = `${generatedId}-label`;
 const errorId = `${generatedId}-error`;
 const descriptionId = `${generatedId}-description`;
 
+// Several controls in one field (a v-for of rows): the first one mounted takes the field's id, the rest keep their own,
+// so no id repeats and the label points at one control.
+let owner = null;
+const claim = (token) => {
+  owner ??= token;
+  return owner === token;
+};
+const release = (token) => {
+  if (owner === token) owner = null;
+};
+
 provide(FORM_FIELD, {
+  claim,
+  release,
   id: controlId,
   describedBy: computed(() => (props.error ? errorId : props.description ? descriptionId : "")),
   invalid: computed(() => !!props.error),

@@ -24,7 +24,7 @@
 
 <script>
 const DEFAULT_CONFIG = {
-  mode: "range",
+  mode: "single",
   wrap: true,
   inline: true,
   altInputClass: "invisible",
@@ -35,7 +35,7 @@ const DEFAULT_CONFIG = {
 
 <script setup>
 // Date or date range (docs/ui-components.md § P3 inputs): an input-looking trigger with the calendar icon opens an
-// inline flatpickr below it. `v-model` (the flatpickr date string), `config` (flatpickr options, a range by default),
+// inline flatpickr below it. `v-model` (the flatpickr date string), `config` (flatpickr options; a single date by default, `mode: "range"` for a range),
 // `disabled`; inside a FormField the trigger takes the contract's id and state. The instance is destroyed on unmount.
 // Transition until plan 19: `value` + the `onChange` event, the `label` above the trigger.
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
