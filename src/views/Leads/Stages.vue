@@ -199,4 +199,21 @@ onMounted(() => Promise.all([load(), loadRules().catch(() => {})]));
 .stage .ld-error {
   grid-column: 1 / -1;
 }
+/* A phone (as in LeadTypes): name beside the handle, then the tags, then the controls, right-aligned */
+@media (max-width: 599px) {
+  .stage {
+    grid-template-columns: auto minmax(0, 1fr);
+    row-gap: var(--space-2);
+  }
+  .stage__tags,
+  .stage__controls {
+    grid-column: 2;
+  }
+  .stage__tags {
+    flex-wrap: wrap;
+  }
+  .stage__controls {
+    justify-content: flex-end;
+  }
+}
 </style>
