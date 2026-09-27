@@ -112,19 +112,12 @@
           @row-click="onRowClick"
           @select="onSelect"
         >
-          <template #cell-name="{ row }">
-            <span class="promo-rule-name">{{ row.name }}</span>
-          </template>
           <template #cell-modifier="{ row }">
-            <span
-              class="promo-modifier-badge bg-accent-subtle t-strong"
+            <StatusBadge
+              :label="modifierShortLabel(row.modifier)"
+              variant="neutral"
               :title="modifierLabel(row.modifier)"
-            >{{ modifierShortLabel(row.modifier) }}</span>
-          </template>
-          <template #cell-target="{ row }">
-            <span class="bg-raised t-secondary fs-200 ph-2 rounded fw-600">{{
-              row.target
-            }}</span>
+            />
           </template>
           <template #cell-code_count="{ row }">
             <span class="bg-raised t-secondary fs-200 ph-2 rounded fw-600">{{
@@ -144,9 +137,6 @@
               variant="neutral"
             />
             <span v-else class="t-muted">—</span>
-          </template>
-          <template #cell-priority="{ row }">
-            <span class="t-secondary">{{ row.priority }}</span>
           </template>
         </DataTable>
 
@@ -284,18 +274,22 @@ export default {
           label: this.$t("promo.col_modifier"),
           sortable: false,
           width: "160px",
+          priority: 2,
         },
         {
           key: "target",
           label: this.$t("promo.col_target"),
           sortable: false,
-          width: "100px",
+          width: "160px",
+          priority: 2,
         },
         {
           key: "code_count",
           label: this.$t("promo.col_codes"),
           sortable: false,
           width: "80px",
+          priority: 2,
+          numeric: true,
         },
         {
           key: "is_active",
@@ -308,12 +302,15 @@ export default {
           label: this.$t("promo.col_automatic"),
           sortable: false,
           width: "100px",
+          priority: 2,
         },
         {
           key: "priority",
           label: this.$t("promo.col_priority"),
           sortable: true,
           width: "80px",
+          priority: 2,
+          numeric: true,
         },
       ];
     },
@@ -566,26 +563,7 @@ export default {
   }
 }
 
-.promo-rule-name {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 
-.promo-modifier-badge {
-  display: inline-block;
-  max-width: 100%;
-  padding: 2px var(--space-2);
-  border-radius: var(--radius-base);
-  font-size: var(--fs-200);
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  vertical-align: middle;
-  cursor: default;
-}
 
 .promo-vouchers-disabled {
   opacity: 0.6;
