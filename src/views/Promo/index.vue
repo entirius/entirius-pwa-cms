@@ -1,7 +1,7 @@
 <template>
   <div class="promo-panel h-100">
     <div class="panel-toolbar bg-raised fs-300">
-      <div class="flex ai-ct gap-8">
+      <div class="panel-toolbar__title flex ai-ct gap-8">
         <div id="promo-toolbar-left" class="flex ai-ct gap-5"></div>
         <div v-if="showChannelSelector" class="promo-channel-selector flex ai-ct gap-8">
           <span class="field-label">{{ $t("promo.channel") }}</span>
@@ -13,7 +13,7 @@
           />
         </div>
       </div>
-      <div id="promo-toolbar-right" class="flex ai-ct gap-5"></div>
+      <div id="promo-toolbar-right" class="panel-toolbar__actions flex ai-ct gap-5"></div>
     </div>
     <router-view />
   </div>

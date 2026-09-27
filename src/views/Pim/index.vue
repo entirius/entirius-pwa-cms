@@ -1,7 +1,7 @@
 <template>
   <div class="pim-panel h-100">
     <div class="panel-toolbar bg-raised fs-300">
-      <div class="flex ai-ct gap-8">
+      <div class="panel-toolbar__title flex ai-ct gap-8">
         <div id="pim-toolbar-left" class="flex ai-ct gap-5"></div>
         <div class="pim-channel-selector flex ai-ct gap-8">
           <span class="field-label">{{ $t("pim.channel") }}</span>
@@ -24,7 +24,7 @@
           >
         </div>
       </div>
-      <div id="pim-toolbar-right" class="flex ai-ct gap-5">
+      <div id="pim-toolbar-right" class="panel-toolbar__actions flex ai-ct gap-5">
         <BasicButton
           v-if="translatorAvailable"
           :text="$t('pim.translate_store')"
