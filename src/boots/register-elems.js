@@ -50,6 +50,11 @@ export default function registerBootComponents(app) {
   // P3 overlays (plan 12)
 
   // P3 display (plan 13)
+  app.component("CountBadge", defineAsyncComponent(() => import("./CountBadge/index.vue")));
+  app.component("Tag", defineAsyncComponent(() => import("./Tag/index.vue")));
+  app.component("BasicCard", defineAsyncComponent(() => import("./BasicCard/index.vue")));
+  app.component("PanelCard", defineAsyncComponent(() => import("./PanelCard/index.vue")));
+  app.component("MediaTile", defineAsyncComponent(() => import("./MediaTile/index.vue")));
 
   // P3 page frame (plan 14)
 

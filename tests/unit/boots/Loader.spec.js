@@ -11,3 +11,25 @@ describe("Loader boot", () => {
     expect(mount(Loader, { props: { block: true } }).classes()).toContain("loader-element--block");
   });
 });
+
+describe("Loader sizes and overlay", () => {
+  it("is a status with a hidden loading text", () => {
+    const wrapper = mount(Loader);
+    expect(wrapper.attributes("role")).toBe("status");
+    expect(wrapper.find(".loader-hidden-text").text()).toBe("common.loading");
+  });
+
+  it("takes size 32 or 64 over h / w", () => {
+    expect(mount(Loader, { props: { size: 32 } }).attributes("style")).toContain("width: 32px");
+    expect(mount(Loader, { props: { h: 20, w: 20 } }).attributes("style")).toContain("width: 20px");
+  });
+
+  it("overlay veils the screen with a 64 px loader; contained keeps it in its box", () => {
+    const overlay = mount(Loader, { props: { overlay: true } });
+    expect(overlay.classes()).toContain("loader-overlay");
+    expect(overlay.classes()).not.toContain("loader-overlay--contained");
+    expect(overlay.attributes("role")).toBe("status");
+    expect(overlay.find(".loader-element").attributes("style")).toContain("width: 64px");
+    expect(mount(Loader, { props: { overlay: true, contained: true } }).classes()).toContain("loader-overlay--contained");
+  });
+});

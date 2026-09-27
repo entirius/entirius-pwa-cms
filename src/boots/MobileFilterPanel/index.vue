@@ -1,16 +1,16 @@
 <template>
   <div class="mobile-filter-panel" ref="rootRef">
-    <button
-      class="mobile-filter-panel__trigger"
-      @click="isOpen = !isOpen"
-      :aria-label="triggerLabel"
-      :aria-expanded="isOpen"
-    >
-      <FontAwesomeIcon icon="filter" />
-      <span v-if="activeCount > 0" class="mobile-filter-panel__badge">{{
-        activeCount
-      }}</span>
-    </button>
+    <span class="mobile-filter-panel__trigger">
+      <IconButton
+        icon="filter"
+        variant="outline"
+        :label="triggerLabel"
+        :aria-expanded="String(isOpen)"
+        :stop="false"
+        @click="isOpen = !isOpen"
+      />
+      <CountBadge v-if="activeCount > 0" :count="activeCount" class="mobile-filter-panel__badge" />
+    </span>
     <div class="mobile-filter-panel__desktop">
       <slot />
     </div>
@@ -24,6 +24,8 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
+import IconButton from "@/boots/IconButton/index.vue";
+import CountBadge from "@/boots/CountBadge/index.vue";
 
 defineProps({
   activeCount: {
@@ -65,37 +67,14 @@ onBeforeUnmount(() => {
 .mobile-filter-panel__trigger {
   display: none;
   position: relative;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
   flex-shrink: 0;
-  border-radius: var(--radius-base);
-  border: 1px solid var(--border-default);
-  background-color: var(--surface-base);
-  color: var(--text-secondary);
-  font-size: var(--fs-250);
-  cursor: pointer;
-  transition: all 0.15s ease;
-  &:hover {
-    background-color: var(--surface-raised);
-    color: var(--text-body);
-  }
 }
 
+// The count sits on the trigger's top-right corner.
 .mobile-filter-panel__badge {
   position: absolute;
-  top: -4px;
-  right: -4px;
-  min-width: 16px;
-  height: 16px;
-  font-size: var(--fs-100);
-  font-weight: 600;
-  line-height: 16px;
-  text-align: center;
-  border-radius: var(--radius-full);
-  background-color: var(--accent-fill);
-  color: var(--text-on-accent-fill);
+  top: calc(-1 * var(--space-2));
+  right: calc(-1 * var(--space-2));
   pointer-events: none;
 }
 

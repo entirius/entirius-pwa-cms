@@ -36,3 +36,30 @@ describe("Pagination boot", () => {
     expect(derived.emitted("onChangePage")).toEqual([[1]]);
   });
 });
+
+describe("Pagination v-model:page", () => {
+  it("renders page / pages and emits update:page next to the transition events", async () => {
+    const wrapper = mount(Pagination, { props: { page: 3, pages: 5 } });
+    expect(wrapper.find('[aria-current="page"]').text()).toBe("3");
+    await wrapper.find('[aria-label="next page"]').trigger("click");
+    expect(wrapper.emitted("update:page")).toEqual([[4]]);
+    expect(wrapper.emitted("onChangePage")).toEqual([[4]]);
+  });
+
+  it("disables the arrows at the ends and folds many pages into an ellipsis", () => {
+    const first = mount(Pagination, { props: { page: 1, pages: 40 } });
+    expect(first.find('[aria-label="previous page"]').attributes("disabled")).toBeDefined();
+    expect(first.findAll(".page-cell--gap")).toHaveLength(1);
+    const middle = mount(Pagination, { props: { page: 20, pages: 40 } });
+    expect(middle.findAll(".page-cell--gap")).toHaveLength(2);
+    const last = mount(Pagination, { props: { page: 40, pages: 40 } });
+    expect(last.find('[aria-label="next page"]').attributes("disabled")).toBeDefined();
+  });
+
+  it("keeps the pagination object working without pages", async () => {
+    const wrapper = mount(Pagination, { props: { pagination: { page: 2, pages: 3 } } });
+    expect(wrapper.find('[aria-current="page"]').text()).toBe("2");
+    await wrapper.find('[aria-label="previous page"]').trigger("click");
+    expect(wrapper.emitted("update:page")).toEqual([[1]]);
+  });
+});

@@ -20,3 +20,12 @@ describe("EmptyState size", () => {
     expect(emptyOf({ emptySize: "md" }).classes()).toContain("empty-state--md");
   });
 });
+
+describe("EmptyState icon", () => {
+  const glyph = (icon) => mount(EmptyState, { props: { title: "x", icon } }).find("font-awesome-icon-stub").attributes("icon");
+
+  it("takes a meaning of icons.js; a glyph name still draws until the sweeps", () => {
+    expect(glyph("history")).toBe("clock-rotate-left");
+    expect(glyph("boxes-stacked")).toBe("boxes-stacked");
+  });
+});

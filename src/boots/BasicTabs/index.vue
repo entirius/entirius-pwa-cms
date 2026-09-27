@@ -1,33 +1,59 @@
 <template>
-  <div class="basic-tabs">
+  <div ref="listRef" class="basic-tabs" role="tablist" @keydown="onKeydown">
     <button
       v-for="option in options"
       :key="option.value"
+      type="button"
+      role="tab"
       class="basic-tabs__tab"
       :class="{ 'basic-tabs__tab--active': modelValue === option.value }"
+      :aria-selected="String(modelValue === option.value)"
+      :tabindex="isFocusTarget(option) ? 0 : -1"
       @click="$emit('update:modelValue', option.value)"
     >
       {{ option.label }}
-      <span v-if="option.count != null" class="basic-tabs__count">{{
-        option.count
-      }}</span>
+      <CountBadge v-if="option.count != null" :count="option.count" />
     </button>
   </div>
 </template>
 
 <script setup>
-defineProps({
-  options: {
-    type: Array,
-    required: true,
-  },
-  modelValue: {
-    type: [String, Number],
-    default: null,
-  },
-});
+// Tabs of one screen (docs/ui-components.md § P3 display): a `tablist` with one Tab stop (the active tab); arrow
+// keys, Home and End move to a tab and select it. Counts are CountBadges.
+import { ref } from "vue";
+import CountBadge from "@/boots/CountBadge/index.vue";
 
-defineEmits(["update:modelValue"]);
+const props = defineProps({
+  options: { type: Array, required: true },
+  modelValue: { type: [String, Number], default: null },
+});
+const emit = defineEmits(["update:modelValue"]);
+const listRef = ref(null);
+
+const STEP = { ArrowRight: 1, ArrowLeft: -1 };
+
+// Without a selected tab the first one takes the Tab stop.
+function isFocusTarget(option) {
+  const selected = props.options.some((o) => o.value === props.modelValue);
+  return selected ? option.value === props.modelValue : option === props.options[0];
+}
+
+function targetIndex(key, current) {
+  const last = props.options.length - 1;
+  if (key === "Home") return 0;
+  if (key === "End") return last;
+  if (!STEP[key]) return null;
+  return (current + STEP[key] + last + 1) % (last + 1);
+}
+
+function onKeydown(event) {
+  const current = props.options.findIndex((o) => o.value === props.modelValue);
+  const next = targetIndex(event.key, Math.max(current, 0));
+  if (next === null) return;
+  event.preventDefault();
+  emit("update:modelValue", props.options[next].value);
+  listRef.value?.querySelectorAll('[role="tab"]')[next]?.focus();
+}
 </script>
 
 <style lang="scss">
@@ -42,12 +68,16 @@ defineEmits(["update:modelValue"]);
   border-bottom: 1px solid var(--border-subtle);
 
   &__tab {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
     flex-shrink: 0;
     white-space: nowrap;
     padding: var(--space-2) var(--space-4);
     border: none;
     background: none;
     cursor: pointer;
+    font-family: inherit;
     font-size: var(--fs-300);
     font-weight: 500;
     color: var(--text-muted);
@@ -67,21 +97,6 @@ defineEmits(["update:modelValue"]);
     &:focus-visible {
       outline-offset: -2px;
     }
-  }
-
-  &__count {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 20px;
-    height: 20px;
-    padding: 0 var(--space-1);
-    border-radius: var(--radius-xl);
-    background: var(--surface-raised);
-    color: var(--text-secondary);
-    font-size: var(--fs-100);
-    font-weight: 600;
-    margin-left: var(--space-1);
   }
 }
 </style>
