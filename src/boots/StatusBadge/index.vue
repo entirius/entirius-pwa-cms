@@ -47,7 +47,6 @@ const resolvedTone = computed(() => props.tone ?? VARIANT_TONE[props.variant] ??
   // Never wider than its cell: a label that does not fit ends in an ellipsis (full label in `title`).
   max-width: 100%;
   min-width: 0;
-  flex-shrink: 0;
   background: transparent;
   border: 1px solid var(--status-badge-border);
   color: var(--status-badge-tone);
