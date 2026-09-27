@@ -2,11 +2,13 @@
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#faq-toolbar-left" defer>
       <BasicButton
-        text=""
-        icon="arrow-left"
-        class="bg-raised t-secondary"
+        custom
+        :label="$t('common.back')"
+        class="btn-ghost"
         @click="$router.push('/faq/items')"
-      />
+      >
+        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
+      </BasicButton>
       <span class="fw-600 fs-400">{{ isEdit ? item.question || item.url_key : $t("faq.create_item") }}</span>
     </Teleport>
     <Teleport to="#faq-toolbar-right" defer>
@@ -15,14 +17,16 @@
       </span>
       <BasicButton
         v-if="isEdit"
-        text=""
-        icon="trash-can"
-        class="bg-negative-subtle t-negative"
+        custom
+        :label="$t('common.delete')"
+        class="btn-danger"
         @click="showDeleteConfirm = true"
-      />
+      >
+        <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+      </BasicButton>
       <BasicButton
         :text="$t('common.save')"
-        class="bg-accent-fill t-on-accent-fill"
+        class="btn-primary"
         @click="saveItem"
       />
     </Teleport>
@@ -195,16 +199,19 @@
               class="flex-1"
             />
             <BasicButton
-              text=""
-              icon="xmark"
-              class="bg-raised t-secondary"
+              custom
+              size="sm"
+              :label="$t('faq.remove_association')"
+              class="btn-danger"
               @click="removeAssociation(idx)"
-            />
+            >
+              <template #custom><FontAwesomeIcon icon="xmark" /></template>
+            </BasicButton>
           </div>
           <div v-if="associationsDirty" class="flex jc-fe mt-5">
             <BasicButton
               :text="$t('faq.save_associations')"
-              class="bg-accent-fill t-on-accent-fill"
+              class="btn-primary"
               @click="saveAssociations"
             />
           </div>

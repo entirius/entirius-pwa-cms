@@ -2,25 +2,29 @@
   <div class="feature-set-edit fs-300 t-body h-100 ov-h flex">
     <Teleport to="#pim-toolbar-left" defer>
       <BasicButton
-        text=""
-        icon="arrow-left"
-        class="bg-raised t-secondary"
+        custom
+        :label="$t('common.back')"
+        class="btn-ghost"
         @click="$router.push('/pim/feature-sets')"
-      />
+      >
+        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
+      </BasicButton>
     </Teleport>
     <Teleport to="#pim-toolbar-right" defer>
       <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
         {{ $t("unsaved.changes") }}
       </span>
       <BasicButton
-        text=""
-        icon="trash-can"
-        class="bg-negative-subtle t-negative"
+        custom
+        :label="$t('common.delete')"
+        class="btn-danger"
         @click="showDeleteConfirm = true"
-      />
+      >
+        <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+      </BasicButton>
       <BasicButton
         :text="$t('pim.save_set_config')"
-        class="bg-accent-fill t-on-accent-fill"
+        class="btn-primary"
         @click="save"
       />
     </Teleport>
@@ -80,7 +84,7 @@
             />
             <BasicButton
               :text="$t('pim.add_attribute_group')"
-              class="bg-raised t-secondary"
+              class="btn-secondary"
               @click="showAddGroup = true"
             />
           </div>
@@ -96,18 +100,17 @@
               />
               <BasicButton
                 :text="$t('pim.create_group')"
-                class="bg-accent-fill t-on-accent-fill"
+                class="btn-primary"
                 @click="createGroup"
               />
               <BasicButton
-                text=""
-                icon="xmark"
-                class="bg-raised t-secondary"
-                @click="
-                  showAddGroup = false;
-                  newGroupName = '';
-                "
-              />
+                custom
+                :label="$t('common.cancel')"
+                class="btn-ghost"
+                @click="showAddGroup = false; newGroupName = '';"
+              >
+                <template #custom><FontAwesomeIcon icon="xmark" /></template>
+              </BasicButton>
             </div>
             <div v-if="availableGroupOptions.length" class="mt-5">
               <span class="fs-200 t-muted">{{
@@ -176,19 +179,23 @@
                     </div>
                     <div class="flex ai-ct gap-2">
                       <BasicButton
-                        text=""
-                        icon="pen"
-                        class="bg-raised t-secondary"
-                        @click="
-                          $router.push(`/pim/features/${element.feature_idx}`)
-                        "
-                      />
+                        custom
+                        size="sm"
+                        :label="$t('common.edit')"
+                        class="btn-ghost"
+                        @click="$router.push(`/pim/features/${element.feature_idx}`)"
+                      >
+                        <template #custom><FontAwesomeIcon icon="pen" /></template>
+                      </BasicButton>
                       <BasicButton
-                        text=""
-                        icon="xmark"
-                        class="bg-negative-subtle t-negative"
+                        custom
+                        size="sm"
+                        :label="$t('pim.remove_from_set')"
+                        class="btn-danger"
                         @click="removeFeature(element.feature_idx)"
-                      />
+                      >
+                        <template #custom><FontAwesomeIcon icon="xmark" /></template>
+                      </BasicButton>
                     </div>
                   </div>
                 </template>
@@ -296,21 +303,23 @@
                         </div>
                         <div class="flex ai-ct gap-2">
                           <BasicButton
-                            text=""
-                            icon="pen"
-                            class="bg-raised t-secondary"
-                            @click="
-                              $router.push(
-                                `/pim/features/${element.feature_idx}`
-                              )
-                            "
-                          />
+                            custom
+                            size="sm"
+                            :label="$t('common.edit')"
+                            class="btn-ghost"
+                            @click="$router.push( `/pim/features/${element.feature_idx}` )"
+                          >
+                            <template #custom><FontAwesomeIcon icon="pen" /></template>
+                          </BasicButton>
                           <BasicButton
-                            text=""
-                            icon="xmark"
-                            class="bg-negative-subtle t-negative"
+                            custom
+                            size="sm"
+                            :label="$t('pim.remove_from_set')"
+                            class="btn-danger"
                             @click="removeFeature(element.feature_idx)"
-                          />
+                          >
+                            <template #custom><FontAwesomeIcon icon="xmark" /></template>
+                          </BasicButton>
                         </div>
                       </div>
                     </template>

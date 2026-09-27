@@ -36,7 +36,7 @@
         </div>
 
         <div class="apply-report__actions">
-          <BasicButton :text="$t('common.close')" class="bg-accent-fill t-on-accent-fill" @click="onClose" />
+          <BasicButton :text="$t('common.close')" class="btn-primary" @click="onClose" />
         </div>
       </div>
     </template>

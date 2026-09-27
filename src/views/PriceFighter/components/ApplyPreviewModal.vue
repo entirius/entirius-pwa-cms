@@ -37,13 +37,13 @@
         <div class="apply-preview__actions">
           <BasicButton
             :text="$t('common.cancel')"
-            class="bg-raised t-secondary"
+            class="btn-secondary"
             :disabled="loading"
             @click="onCancel"
           />
           <BasicButton
             :text="loading ? $t('pricefighter.applying') : $t('pricefighter.confirm_apply')"
-            class="bg-accent-fill t-on-accent-fill"
+            class="btn-primary"
             :disabled="loading || !items.length"
             @click="onConfirm"
           />

@@ -2,11 +2,13 @@
   <div class="p-12 fs-300 t-body h-100 ov-h relative">
     <Teleport to="#authors-toolbar-left" defer>
       <BasicButton
-        text=""
-        icon="arrow-left"
-        class="bg-raised t-secondary"
+        custom
+        :label="$t('common.back')"
+        class="btn-ghost"
         @click="$router.push('/pages/authors')"
-      />
+      >
+        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
+      </BasicButton>
       <span v-if="!loading && form.name" class="fw-600">{{ form.name }}</span>
       <span v-if="!loading && !form.name" class="t-muted">{{
         $t("authors.create")
@@ -25,7 +27,7 @@
       </button>
       <BasicButton
         :text="$t('common.save')"
-        class="bg-accent-fill t-on-accent-fill"
+        class="btn-primary"
         @click="save"
       />
     </Teleport>

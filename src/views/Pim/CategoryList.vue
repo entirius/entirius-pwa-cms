@@ -21,12 +21,12 @@
         />
         <BasicButton
           :text="$t('pim.expand_all')"
-          class="bg-raised t-secondary"
+          class="btn-secondary"
           @click="expandAll"
         />
         <BasicButton
           :text="$t('pim.collapse_all')"
-          class="bg-raised t-secondary"
+          class="btn-secondary"
           @click="collapseAll"
         />
       </div>

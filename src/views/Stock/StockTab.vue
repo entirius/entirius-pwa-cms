@@ -15,7 +15,7 @@
         </span>
         <BasicButton
           :text="$t('stock.save_all')"
-          class="bg-accent-fill t-on-accent-fill"
+          class="btn-primary"
           @click="saveAll"
         />
       </div>

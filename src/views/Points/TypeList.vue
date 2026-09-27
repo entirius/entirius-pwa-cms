@@ -31,7 +31,7 @@
         <BasicButton
           :text="$t('common.add')"
           icon="plus"
-          class="bg-accent-fill t-on-accent-fill"
+          class="btn-primary"
           @click="createType"
         />
       </div>
@@ -108,20 +108,22 @@
         </div>
         <div class="flex ai-ct jc-sb gap-5">
           <BasicButton
-            text=""
-            icon="trash-can"
-            class="bg-negative-subtle t-negative"
+            custom
+            :label="$t('common.delete')"
+            class="btn-danger"
             @click="showDeleteConfirm = true"
-          />
+          >
+            <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+          </BasicButton>
           <div class="flex ai-ct gap-5">
             <BasicButton
               :text="$t('common.cancel')"
-              class="bg-raised t-secondary"
+              class="btn-secondary"
               @click="cancelEdit"
             />
             <BasicButton
               :text="$t('common.save')"
-              class="bg-accent-fill t-on-accent-fill"
+              class="btn-primary"
               @click="saveType"
             />
           </div>

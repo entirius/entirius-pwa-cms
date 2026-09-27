@@ -7,7 +7,7 @@
         <BasicButton
           icon="arrow-left"
           :text="$t('cf.back_to_list')"
-          class="bg-raised t-secondary"
+          class="btn-secondary"
           @click="$router.push('/forms/bookings')"
         />
       </Teleport>
@@ -118,9 +118,8 @@
               </dl>
               <div class="mt-8">
                 <BasicButton
-                  icon="bullseye"
                   :text="$t('cf.open_lead')"
-                  class="bg-accent-fill t-on-accent-fill"
+                  class="btn-primary"
                   @click="
                     $router.push(`/forms/leads/${booking.linked_lead.id}`)
                   "

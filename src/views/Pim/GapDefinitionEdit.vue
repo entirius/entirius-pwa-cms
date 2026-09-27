@@ -2,24 +2,28 @@
   <div class="gap-def-edit fs-300 t-body h-100 ov-h">
     <Teleport to="#pim-toolbar-left" defer>
       <BasicButton
-        text=""
-        icon="arrow-left"
-        class="bg-raised t-secondary"
+        custom
+        :label="$t('common.back')"
+        class="btn-ghost"
         @click="$router.push('/pim/gap-definitions')"
-      />
+      >
+        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
+      </BasicButton>
     </Teleport>
     <Teleport to="#pim-toolbar-right" defer>
       <BasicButton
         v-if="!isCreate"
-        text=""
-        icon="trash-can"
-        class="bg-negative-subtle t-negative"
         data-test="gap-delete-btn"
+        custom
+        :label="$t('common.delete')"
+        class="btn-danger"
         @click="showDeleteConfirm = true"
-      />
+      >
+        <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+      </BasicButton>
       <BasicButton
         :text="$t('common.save')"
-        class="bg-accent-fill t-on-accent-fill"
+        class="btn-primary"
         data-test="gap-save-btn"
         @click="save"
       />

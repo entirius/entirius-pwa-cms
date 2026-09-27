@@ -2,16 +2,18 @@
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#pim-toolbar-left" defer>
       <BasicButton
-        text=""
-        icon="arrow-left"
-        class="bg-raised t-secondary"
+        custom
+        :label="$t('common.back')"
+        class="btn-ghost"
         @click="$router.push('/pim/products')"
-      />
+      >
+        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
+      </BasicButton>
     </Teleport>
     <Teleport to="#pim-toolbar-right" defer>
       <BasicButton
         :text="$t('common.save')"
-        class="bg-positive-fill t-on-status-fill"
+        class="btn-primary"
         @click="createProduct"
       />
     </Teleport>

@@ -2,23 +2,27 @@
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#agreements-toolbar-left" defer>
       <BasicButton
-        text=""
-        icon="arrow-left"
-        class="bg-raised t-secondary"
+        custom
+        :label="$t('common.back')"
+        class="btn-ghost"
         @click="$router.push('/agreements/list')"
-      />
+      >
+        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
+      </BasicButton>
     </Teleport>
     <Teleport to="#agreements-toolbar-right" defer>
       <BasicButton
         v-if="isEdit && !definition.is_system"
-        text=""
-        icon="trash-can"
-        class="bg-negative-subtle t-negative"
+        custom
+        :label="$t('common.delete')"
+        class="btn-danger"
         @click="showDeleteConfirm = true"
-      />
+      >
+        <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+      </BasicButton>
       <BasicButton
         :text="$t('agm.save')"
-        class="bg-accent-fill t-on-accent-fill"
+        class="btn-primary"
         @click="saveDefinition"
       />
     </Teleport>
@@ -183,7 +187,7 @@
             <h2 class="fs-500 fw-600">{{ $t("agm.versions") }}</h2>
             <BasicButton
               :text="$t('agm.create_version')"
-              class="bg-accent-fill t-on-accent-fill"
+              class="btn-primary"
               @click="showVersionForm = !showVersionForm"
             />
           </div>
@@ -207,12 +211,12 @@
             <div class="flex jc-fe gap-5">
               <BasicButton
                 :text="$t('common.cancel')"
-                class="bg-raised t-secondary"
+                class="btn-secondary"
                 @click="cancelVersionForm"
               />
               <BasicButton
                 :text="$t('agm.create_version')"
-                class="bg-accent-fill t-on-accent-fill"
+                class="btn-primary"
                 @click="createVersion"
               />
             </div>
@@ -257,24 +261,28 @@
                     <div class="flex gap-2 jc-fe">
                       <BasicButton
                         v-if="!ver.published_at"
-                        text=""
-                        icon="pencil"
-                        class="bg-raised t-secondary"
-                        :title="$t('agm.edit_draft')"
+                        custom
+                        size="sm"
+                        :label="$t('agm.edit_draft')"
+                        class="btn-ghost"
                         @click="startEditDraft(ver)"
-                      />
+                      >
+                        <template #custom><FontAwesomeIcon icon="pen" /></template>
+                      </BasicButton>
                       <BasicButton
                         v-else
-                        text=""
-                        icon="pencil"
-                        class="bg-raised t-secondary"
-                        :title="$t('agm.create_draft_from_published')"
+                        custom
+                        size="sm"
+                        :label="$t('agm.create_draft_from_published')"
+                        class="btn-ghost"
                         @click="startEditPublished(ver)"
-                      />
+                      >
+                        <template #custom><FontAwesomeIcon icon="pen" /></template>
+                      </BasicButton>
                       <BasicButton
                         v-if="!ver.published_at"
                         :text="$t('agm.publish')"
-                        class="bg-accent-fill t-on-accent-fill"
+                        class="btn-primary"
                         @click="publishVersion(ver.id)"
                       />
                     </div>
@@ -305,12 +313,12 @@
                       <div class="flex jc-fe gap-5">
                         <BasicButton
                           :text="$t('common.cancel')"
-                          class="bg-raised t-secondary"
+                          class="btn-secondary"
                           @click="cancelEditVersion"
                         />
                         <BasicButton
                           :text="$t('common.save')"
-                          class="bg-accent-fill t-on-accent-fill"
+                          class="btn-primary"
                           @click="saveDraftVersion(ver.id)"
                         />
                       </div>

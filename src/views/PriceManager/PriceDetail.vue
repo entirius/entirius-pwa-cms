@@ -2,11 +2,13 @@
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport v-if="!embedded" to="#pricing-toolbar-left" defer>
       <BasicButton
-        text=""
-        icon="arrow-left"
-        class="bg-raised t-secondary"
+        custom
+        :label="$t('common.back')"
+        class="btn-ghost"
         @click="$router.push('/pricing/prices')"
-      />
+      >
+        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
+      </BasicButton>
       <span class="fw-600 fs-400">{{ effectiveSku || $t('pm.price_detail') }}</span>
     </Teleport>
 
@@ -127,7 +129,7 @@
           <div class="flex gap-5 mb-10 flex-wrap ai-ct">
             <BasicButton
               :text="$t('pm.save')"
-              class="bg-accent-fill t-on-accent-fill"
+              class="btn-primary"
               @click="save"
             />
             <BasicButton
@@ -142,19 +144,23 @@
             />
             <span :title="$t('pm.flush_special_tooltip')">
               <BasicButton
-                text=""
-                icon="broom"
-                class="bg-raised t-secondary"
+                custom
+                :label="$t('pm.flush_special')"
+                class="btn-danger"
                 @click="showFlushConfirm = true"
-              />
+              >
+                <template #custom><FontAwesomeIcon icon="broom" /></template>
+              </BasicButton>
             </span>
             <span :title="$t('pm.delete_prices_tooltip')">
               <BasicButton
-                text=""
-                icon="trash-can"
-                class="bg-negative-subtle t-negative"
+                custom
+                :label="$t('common.delete')"
+                class="btn-danger"
                 @click="showDeleteConfirm = true"
-              />
+              >
+                <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+              </BasicButton>
             </span>
           </div>
 

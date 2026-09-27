@@ -5,11 +5,13 @@
     >
       <div class="flex ai-ct gap-5 mb-10">
         <BasicButton
-          text=""
-          icon="arrow-left"
-          class="bg-raised t-secondary"
+          custom
+          :label="$t('common.back')"
+          class="btn-ghost"
           @click="$router.push('/emails')"
-        />
+        >
+          <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
+        </BasicButton>
         <h1 class="fs-700 fw-600">{{ typeLabel }}</h1>
       </div>
 

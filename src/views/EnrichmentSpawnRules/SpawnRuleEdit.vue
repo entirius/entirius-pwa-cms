@@ -3,11 +3,13 @@
     <div class="bg-base b-subtle rounded flex-1 ovy-auto p-12">
       <div class="flex ai-ct gap-5 mb-10">
         <BasicButton
-          text=""
-          icon="arrow-left"
-          class="bg-raised t-secondary"
+          custom
+          :label="$t('common.back')"
+          class="btn-ghost"
           @click="$router.push('/enrichment/spawn-rules')"
-        />
+        >
+          <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
+        </BasicButton>
         <h1 class="fs-700 fw-600 m-0">
           {{ isCreate ? $t("enrichment.spawn_rules.create") : form.key }}
         </h1>
@@ -15,21 +17,23 @@
           <BasicButton
             v-if="!isCreate"
             :text="$t('enrichment.spawn_rules.run_now')"
-            class="bg-raised t-secondary"
+            class="btn-secondary"
             data-test="spawn-rule-run-btn"
             @click="runRule"
           />
           <BasicButton
             v-if="!isCreate"
-            text=""
-            icon="trash-can"
-            class="bg-negative-subtle t-negative"
             data-test="spawn-rule-delete-btn"
+            custom
+            :label="$t('common.delete')"
+            class="btn-danger"
             @click="showDeleteConfirm = true"
-          />
+          >
+            <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+          </BasicButton>
           <BasicButton
             :text="$t('common.save')"
-            class="bg-accent-fill t-on-accent-fill"
+            class="btn-primary"
             data-test="spawn-rule-save-btn"
             @click="save"
           />

@@ -36,12 +36,12 @@
       <div class="translations-drawer__footer">
         <BasicButton
           text="Cancel"
-          class="bg-raised t-secondary"
+          class="btn-secondary"
           @click="onCancel"
         />
         <BasicButton
           text="Save"
-          class="bg-accent-fill t-on-accent-fill"
+          class="btn-primary"
           @click="onSave"
         />
       </div>

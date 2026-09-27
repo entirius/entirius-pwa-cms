@@ -49,7 +49,7 @@
                 <Pagination
                   class="fs-200"
                   v-if="DOCS_pagination && DOCS_pagination[lang]"
-                  :nav_size="20"
+                  :nav_size="32"
                   :pagination="DOCS_pagination[lang]"
                   @onChangePage="SET_Page({ language: lang, page: $event })"
                 />
@@ -134,13 +134,14 @@
             >
               <BasicButton
                 :text="$t('content_sets.set_ready')"
-                class="rounded fs-200 bg-hover t-muted"
+                class="btn-primary"
+                :isDisabled="true"
               />
             </ToolTip>
             <BasicButton
               v-else
               :text="$t('content_sets.set_ready')"
-              class="rounded fs-200 bg-accent-fill b-accent t-on-accent-fill"
+              class="btn-primary"
               @click="
                 MODIFY_Set({
                   url: `/content-sets/${edit ? edit : ''}`,
@@ -156,13 +157,14 @@
             >
               <BasicButton
                 :text="$t('content_sets.clear_set')"
-                class="rounded fs-200 bg-hover b-subtle t-muted"
+                class="btn-secondary"
+                :isDisabled="true"
               />
             </ToolTip>
             <BasicButton
               v-else
               :text="$t('content_sets.clear_set')"
-              class="rounded fs-200 bg-negative-fill b-negative t-on-status-fill"
+              class="btn-secondary"
               @click="selected_set_members = null"
             />
           </div>

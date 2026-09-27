@@ -2,11 +2,13 @@
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#points-toolbar-left" defer>
       <BasicButton
-        text=""
-        icon="arrow-left"
-        class="bg-raised t-secondary"
+        custom
+        :label="$t('common.back')"
+        class="btn-ghost"
         @click="$router.push('/points/list')"
-      />
+      >
+        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
+      </BasicButton>
     </Teleport>
     <Teleport to="#points-toolbar-right" defer>
       <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
@@ -14,14 +16,16 @@
       </span>
       <BasicButton
         v-if="isEdit && !isCarrier"
-        text=""
-        icon="trash-can"
-        class="bg-negative-subtle t-negative"
+        custom
+        :label="$t('common.delete')"
+        class="btn-danger"
         @click="showDeleteConfirm = true"
-      />
+      >
+        <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+      </BasicButton>
       <BasicButton
         :text="$t('common.save')"
-        class="bg-accent-fill t-on-accent-fill"
+        class="btn-primary"
         @click="savePoint"
       />
     </Teleport>
@@ -306,7 +310,7 @@
               />
               <BasicButton
                 :text="$t('dp.add_translation')"
-                class="bg-accent-fill t-on-accent-fill"
+                class="btn-primary"
                 :isDisabled="!addingLanguage"
                 @click="addTranslation"
               />
@@ -327,11 +331,14 @@
                 t9n.language.toUpperCase()
               }}</span>
               <BasicButton
-                text=""
-                icon="trash-can"
-                class="bg-negative-subtle t-negative"
+                custom
+                size="sm"
+                :label="$t('common.delete')"
+                class="btn-danger"
                 @click="deleteTranslation(t9n.language)"
-              />
+              >
+                <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+              </BasicButton>
             </div>
             <div class="detail-grid">
               <div class="detail-field">
@@ -356,7 +363,7 @@
             <div class="flex jc-fe mt-5">
               <BasicButton
                 :text="$t('common.save')"
-                class="bg-accent-fill t-on-accent-fill"
+                class="btn-primary"
                 @click="saveTranslation(t9n)"
               />
             </div>

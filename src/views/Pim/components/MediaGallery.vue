@@ -768,7 +768,7 @@ watch(
           />
           <BasicButton
             :text="$t('pim.add_video')"
-            class="btn-primary media-gallery__video-submit"
+            class="btn-secondary media-gallery__video-submit"
             :isDisabled="addingVideo || !newVideoUrl.trim()"
             @click="addVideo"
           />

@@ -132,7 +132,7 @@
                 <BasicButton
                   v-if="row.has_content_route"
                   :text="$t('agm.view_legal_text')"
-                  class="bg-raised t-secondary"
+                  class="btn-secondary"
                   @click="viewLegalText(row)"
                 />
               </template>
@@ -163,11 +163,13 @@
               </p>
             </div>
             <BasicButton
-              text=""
-              icon="xmark"
-              class="bg-raised t-secondary"
+              custom
+              :label="$t('common.close')"
+              class="btn-ghost"
               @click="consentTextModal.visible = false"
-            />
+            >
+              <template #custom><FontAwesomeIcon icon="xmark" /></template>
+            </BasicButton>
           </div>
           <div class="agm-modal__body p-10">
             <Loader v-if="consentTextModal.loading" />

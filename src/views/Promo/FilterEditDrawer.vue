@@ -282,12 +282,12 @@
       <div class="fed__footer mt-10">
         <BasicButton
           :text="$t('common.cancel')"
-          class="bg-raised t-secondary"
+          class="btn-secondary"
           @click="onClose"
         />
         <BasicButton
           :text="$t('common.save')"
-          class="bg-accent-fill t-on-accent-fill"
+          class="btn-primary"
           :disabled="saving"
           @click="onSave"
         />

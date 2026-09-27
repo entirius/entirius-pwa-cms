@@ -25,8 +25,7 @@
       <div class="flex-1"></div>
       <BasicButton
         :text="$t('translation.refresh')"
-        icon="arrows-rotate"
-        class="bg-raised t-secondary"
+        class="btn-secondary"
         @click="refresh"
       />
     </div>

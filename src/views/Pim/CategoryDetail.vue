@@ -2,11 +2,13 @@
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#pim-toolbar-left" defer>
       <BasicButton
-        text=""
-        icon="arrow-left"
-        class="bg-raised t-secondary"
+        custom
+        :label="$t('common.back')"
+        class="btn-ghost"
         @click="$router.push('/pim/categories')"
-      />
+      >
+        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
+      </BasicButton>
     </Teleport>
     <Teleport to="#pim-toolbar-right" defer>
       <template v-if="activeTab === 'details'">
@@ -15,15 +17,17 @@
         </span>
         <BasicButton
           :text="$t('common.save')"
-          class="bg-accent-fill t-on-accent-fill"
+          class="btn-primary"
           @click="saveCategory"
         />
         <BasicButton
-          text=""
-          icon="trash-can"
-          class="bg-negative-subtle t-negative"
+          custom
+          :label="$t('common.delete')"
+          class="btn-danger"
           @click="showDeleteConfirm = true"
-        />
+        >
+          <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+        </BasicButton>
       </template>
     </Teleport>
     <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">

@@ -5,11 +5,13 @@
     >
       <div class="flex ai-ct gap-5 mb-10">
         <BasicButton
-          text=""
-          icon="arrow-left"
-          class="bg-raised t-secondary"
+          custom
+          :label="$t('common.back')"
+          class="btn-ghost"
           @click="goBack"
-        />
+        >
+          <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
+        </BasicButton>
         <h1 class="fs-700 fw-600">{{ $t("emails.edit_template") }}</h1>
         <span class="fs-200 t-muted ml-2">({{ typeLabel }})</span>
         <span
@@ -38,7 +40,7 @@
         <div class="flex jc-fe mt-10">
           <BasicButton
             :text="$t('common.save')"
-            class="bg-accent-fill t-on-accent-fill"
+            class="btn-primary"
             @click="save"
           />
         </div>

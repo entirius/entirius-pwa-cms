@@ -171,7 +171,7 @@ export function buildNavRoutes() {
     {
       route: "/agreements/consents",
       labelKey: "nav.agm_people",
-      icon: "clock-rotate-left",
+      icon: "users",
       query: {},
       app: ["agreements"],
     },

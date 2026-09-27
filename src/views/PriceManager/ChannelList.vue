@@ -4,7 +4,6 @@
     <Teleport to="#pricing-toolbar-right" defer>
       <BasicButton
         :text="$t('pm.sync_channels')"
-        icon="rotate"
         class="btn-outline"
         @click="syncChannels"
       />

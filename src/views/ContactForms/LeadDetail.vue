@@ -7,7 +7,7 @@
         <BasicButton
           icon="arrow-left"
           :text="$t('cf.back_to_list')"
-          class="bg-raised t-secondary"
+          class="btn-secondary"
           @click="$router.push('/forms/leads')"
         />
         <span v-if="form.name" class="fw-600">{{ form.name }}</span>
@@ -20,9 +20,8 @@
         />
         <BasicButton
           v-if="canMarkAsWon"
-          icon="check"
           :text="$t('cf.mark_as_won')"
-          class="bg-positive-fill t-on-status-fill"
+          class="btn-primary"
           @click="openMarkAsWon"
         />
         <Dropdown
@@ -37,7 +36,7 @@
         </span>
         <BasicButton
           :text="$t('cf.save')"
-          class="bg-accent-fill t-on-accent-fill"
+          class="btn-primary"
           :is-disabled="!isDirty || saving"
           @click="save"
         />

@@ -18,23 +18,22 @@
           <div class="promo-list__bulk-actions">
             <BasicButton
               :text="$t('promo.bulk_activate')"
-              class="bg-positive-fill t-on-status-fill"
+              class="btn-primary"
               @click="startBulk('activate')"
             />
             <BasicButton
               :text="$t('promo.bulk_deactivate')"
-              class="bg-raised t-secondary"
+              class="btn-secondary"
               @click="startBulk('deactivate')"
             />
             <BasicButton
               :text="$t('promo.bulk_delete')"
-              icon="trash-can"
-              class="bg-negative-subtle t-negative"
+              class="btn-danger"
               @click="startBulk('delete')"
             />
             <BasicButton
               :text="$t('promo.bulk_clear')"
-              class="bg-raised t-secondary"
+              class="btn-secondary"
               @click="clearSelection"
             />
           </div>

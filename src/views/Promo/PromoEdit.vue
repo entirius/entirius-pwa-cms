@@ -2,11 +2,13 @@
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#promo-toolbar-left" defer>
       <BasicButton
-        text=""
-        icon="arrow-left"
-        class="bg-raised t-secondary"
+        custom
+        :label="$t('common.back')"
+        class="btn-ghost"
         @click="$router.push('/promo/list')"
-      />
+      >
+        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
+      </BasicButton>
       <span class="fw-600 fs-400">
         {{ isEdit ? form.name || $t("promo.edit_rule") : $t("promo.create_rule") }}
       </span>
@@ -17,14 +19,16 @@
       </span>
       <BasicButton
         v-if="isEdit"
-        text=""
-        icon="trash-can"
-        class="bg-negative-subtle t-negative"
+        custom
+        :label="$t('common.delete')"
+        class="btn-danger"
         @click="showDeleteConfirm = true"
-      />
+      >
+        <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+      </BasicButton>
       <BasicButton
         :text="$t('common.save')"
-        class="bg-accent-fill t-on-accent-fill"
+        class="btn-primary"
         @click="saveRule"
       />
     </Teleport>
@@ -119,11 +123,13 @@
                   <div class="flex ai-ct jc-sb mb-5">
                     <span class="fw-600 fs-300">{{ group.iso3 }}</span>
                     <BasicButton
-                      text=""
-                      icon="xmark"
-                      class="bg-raised t-secondary"
+                      custom
+                      :label="$t('common.delete')"
+                      class="btn-danger"
                       @click="removeCurrencyGroup(groupIdx)"
-                    />
+                    >
+                      <template #custom><FontAwesomeIcon icon="xmark" /></template>
+                    </BasicButton>
                   </div>
                   <div
                     v-for="(row, rowIdx) in group.rows"
@@ -141,11 +147,13 @@
                       class="flex-1"
                     />
                     <BasicButton
-                      text=""
-                      icon="xmark"
-                      class="bg-raised t-secondary"
+                      custom
+                      :label="$t('common.delete')"
+                      class="btn-danger"
                       @click="removeCurrencyRow(groupIdx, rowIdx)"
-                    />
+                    >
+                      <template #custom><FontAwesomeIcon icon="xmark" /></template>
+                    </BasicButton>
                   </div>
                   <BasicButton
                     :text="$t('promo.extra_add_threshold_row')"
@@ -386,17 +394,23 @@
             </template>
             <template #cell-actions="{ row }">
               <BasicButton
-                text=""
-                icon="pencil"
-                class="bg-raised t-secondary"
+                custom
+                size="sm"
+                :label="$t('common.edit')"
+                class="btn-ghost"
                 @click="openEditCode(row)"
-              />
+              >
+                <template #custom><FontAwesomeIcon icon="pen" /></template>
+              </BasicButton>
               <BasicButton
-                text=""
-                icon="trash-can"
-                class="bg-negative-subtle t-negative"
+                custom
+                size="sm"
+                :label="$t('common.delete')"
+                class="btn-danger"
                 @click="confirmDeleteCode(row.id)"
-              />
+              >
+                <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+              </BasicButton>
             </template>
           </DataTable>
 
@@ -437,12 +451,12 @@
             <div class="flex jc-fe gap-5 mt-8">
               <BasicButton
                 :text="$t('common.cancel')"
-                class="bg-raised t-secondary"
+                class="btn-secondary"
                 @click="showAddCode = false"
               />
               <BasicButton
                 :text="$t('promo.save_code')"
-                class="bg-accent-fill t-on-accent-fill"
+                class="btn-primary"
                 @click="saveNewCode"
               />
             </div>
@@ -484,17 +498,23 @@
               <template #cell-actions="{ row }">
                 <div class="flex gap-2">
                   <BasicButton
-                    text=""
-                    icon="pencil"
-                    class="bg-raised t-secondary"
+                    custom
+                    size="sm"
+                    :label="$t('common.edit')"
+                    class="btn-ghost"
                     @click="openFilterDrawer('product', row)"
-                  />
+                  >
+                    <template #custom><FontAwesomeIcon icon="pen" /></template>
+                  </BasicButton>
                   <BasicButton
-                    text=""
-                    icon="trash-can"
-                    class="bg-negative-subtle t-negative"
+                    custom
+                    size="sm"
+                    :label="$t('common.delete')"
+                    class="btn-danger"
                     @click="confirmDeleteFilter(row.id, 'product')"
-                  />
+                  >
+                    <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+                  </BasicButton>
                 </div>
               </template>
             </DataTable>
@@ -530,17 +550,23 @@
               <template #cell-actions="{ row }">
                 <div class="flex gap-2">
                   <BasicButton
-                    text=""
-                    icon="pencil"
-                    class="bg-raised t-secondary"
+                    custom
+                    size="sm"
+                    :label="$t('common.edit')"
+                    class="btn-ghost"
                     @click="openFilterDrawer('customer', row)"
-                  />
+                  >
+                    <template #custom><FontAwesomeIcon icon="pen" /></template>
+                  </BasicButton>
                   <BasicButton
-                    text=""
-                    icon="trash-can"
-                    class="bg-negative-subtle t-negative"
+                    custom
+                    size="sm"
+                    :label="$t('common.delete')"
+                    class="btn-danger"
                     @click="confirmDeleteFilter(row.id, 'customer')"
-                  />
+                  >
+                    <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+                  </BasicButton>
                 </div>
               </template>
             </DataTable>
@@ -576,17 +602,23 @@
               <template #cell-actions="{ row }">
                 <div class="flex gap-2">
                   <BasicButton
-                    text=""
-                    icon="pencil"
-                    class="bg-raised t-secondary"
+                    custom
+                    size="sm"
+                    :label="$t('common.edit')"
+                    class="btn-ghost"
                     @click="openFilterDrawer('threshold', row)"
-                  />
+                  >
+                    <template #custom><FontAwesomeIcon icon="pen" /></template>
+                  </BasicButton>
                   <BasicButton
-                    text=""
-                    icon="trash-can"
-                    class="bg-negative-subtle t-negative"
+                    custom
+                    size="sm"
+                    :label="$t('common.delete')"
+                    class="btn-danger"
                     @click="confirmDeleteFilter(row.id, 'threshold')"
-                  />
+                  >
+                    <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+                  </BasicButton>
                 </div>
               </template>
             </DataTable>
@@ -674,12 +706,12 @@
       <template #footer>
         <BasicButton
           :text="$t('common.cancel')"
-          class="bg-raised t-secondary"
+          class="btn-secondary"
           @click="closeEditCodeModal"
         />
         <BasicButton
           :text="$t('common.save')"
-          class="bg-accent-fill t-on-accent-fill"
+          class="btn-primary"
           @click="saveEditCode"
         />
       </template>

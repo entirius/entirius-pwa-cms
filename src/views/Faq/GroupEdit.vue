@@ -2,11 +2,13 @@
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#faq-toolbar-left" defer>
       <BasicButton
-        text=""
-        icon="arrow-left"
-        class="bg-raised t-secondary"
+        custom
+        :label="$t('common.back')"
+        class="btn-ghost"
         @click="$router.push('/faq/groups')"
-      />
+      >
+        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
+      </BasicButton>
       <span class="fw-600 fs-400">{{ isEdit ? group.name || group.idx : $t("faq.create_group") }}</span>
     </Teleport>
     <Teleport to="#faq-toolbar-right" defer>
@@ -22,14 +24,16 @@
       />
       <BasicButton
         v-if="isEdit"
-        text=""
-        icon="trash-can"
-        class="bg-negative-subtle t-negative"
+        custom
+        :label="$t('common.delete')"
+        class="btn-danger"
         @click="showDeleteConfirm = true"
-      />
+      >
+        <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+      </BasicButton>
       <BasicButton
         :text="$t('common.save')"
-        class="bg-accent-fill t-on-accent-fill"
+        class="btn-primary"
         @click="saveGroup"
       />
     </Teleport>
@@ -145,11 +149,14 @@
                   :variant="element.is_active ? 'positive' : 'negative'"
                 />
                 <BasicButton
-                  text=""
-                  icon="xmark"
-                  class="bg-raised t-secondary"
+                  custom
+                  size="sm"
+                  :label="$t('faq.remove_from_group')"
+                  class="btn-danger"
                   @click="removeItemFromGroup(element)"
-                />
+                >
+                  <template #custom><FontAwesomeIcon icon="xmark" /></template>
+                </BasicButton>
               </div>
             </template>
           </draggable>

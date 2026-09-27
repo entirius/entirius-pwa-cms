@@ -9,7 +9,7 @@
       </h3>
       <BasicButton
         :text="$t('pim.add_option')"
-        class="bg-accent-fill t-on-accent-fill"
+        class="btn-primary"
         @click="showAddForm = true"
       />
     </div>
@@ -40,12 +40,12 @@
       />
       <BasicButton
         :text="$t('common.save')"
-        class="bg-accent-fill t-on-accent-fill"
+        class="btn-primary"
         @click="createOption"
       />
       <BasicButton
         :text="$t('common.cancel')"
-        class="bg-raised t-secondary"
+        class="btn-secondary"
         @click="showAddForm = false"
       />
     </div>
@@ -118,11 +118,14 @@
                 @click="openTranslations(element)"
               />
               <BasicButton
-                text=""
-                icon="trash"
-                class="bg-negative-subtle t-negative"
+                custom
+                size="sm"
+                :label="$t('common.delete')"
+                class="btn-danger"
                 @click="confirmDelete(element)"
-              />
+              >
+                <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+              </BasicButton>
             </span>
           </div>
         </template>

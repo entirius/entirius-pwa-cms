@@ -3,11 +3,13 @@
     <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
       <div class="flex ai-ct mb-12">
         <BasicButton
-          text=""
-          icon="arrow-left"
-          class="bg-raised t-secondary"
+          custom
+          :label="$t('common.back')"
+          class="btn-ghost"
           @click="$router.push('/points/list')"
-        />
+        >
+          <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
+        </BasicButton>
       </div>
 
       <h1 class="fs-700 fw-600 mb-12">{{ $t("dp.import") }}</h1>
@@ -31,8 +33,7 @@
           </span>
           <BasicButton
             :text="$t('gallery.upload')"
-            icon="file-arrow-up"
-            class="bg-raised t-body mt-5"
+            class="btn-secondary mt-5"
             @click="$refs.fileInput.click()"
           />
         </div>
@@ -89,8 +90,7 @@
 
         <BasicButton
           :text="$t('dp.import_submit')"
-          icon="file-import"
-          class="bg-accent-fill t-on-accent-fill"
+          class="btn-primary"
           :disabled="submitting || !selectedFile"
           @click="submitImport"
         />

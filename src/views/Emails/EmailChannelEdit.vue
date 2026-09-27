@@ -5,11 +5,13 @@
     >
       <div class="flex ai-ct gap-5 mb-10">
         <BasicButton
-          text=""
-          icon="arrow-left"
-          class="bg-raised t-secondary"
+          custom
+          :label="$t('common.back')"
+          class="btn-ghost"
           @click="$router.push('/emails')"
-        />
+        >
+          <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
+        </BasicButton>
         <h1 class="fs-700 fw-600">
           {{ channel.label || $t("emails.channel") }}
         </h1>
@@ -83,7 +85,7 @@
           <div class="flex jc-fe mt-8">
             <BasicButton
               :text="$t('common.save')"
-              class="bg-accent-fill t-on-accent-fill"
+              class="btn-primary"
               @click="saveChannel"
             />
           </div>

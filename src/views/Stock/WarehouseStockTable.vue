@@ -10,14 +10,13 @@
       <BasicButton
         v-if="isManual"
         :text="$t('stock.import_csv')"
-        icon="file-csv"
         class="btn-outline"
         @click="showImportModal = true"
       />
       <BasicButton
         v-if="isManual"
         :text="$t('stock.save_all')"
-        class="bg-accent-fill t-on-accent-fill"
+        class="btn-primary"
         :disabled="dirtyCount === 0"
         @click="saveAll"
       />
