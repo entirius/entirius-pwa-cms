@@ -53,11 +53,11 @@
       </template>
     </draggable>
     <form class="ld-row stage__add" data-testid="stage-add" @submit.prevent="add">
-      <label class="ld-field">{{ $t("leads.stages.key") }}
+      <label class="ld-field"><span>{{ $t("leads.stages.key") }}</span>
         <input v-model="draft.key" class="ld-input" required pattern="[-a-zA-Z0-9_]+" />
         <span class="ld-muted">{{ $t("leads.stages.key_help") }}</span>
       </label>
-      <label class="ld-field">{{ $t("leads.stages.label") }}
+      <label class="ld-field"><span>{{ $t("leads.stages.label") }}</span>
         <input v-model="draft.label" class="ld-input" required />
         <span class="ld-muted">{{ $t("leads.stages.label_help") }}</span>
       </label>

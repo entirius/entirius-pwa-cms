@@ -11,10 +11,10 @@
       </button>
     </div>
     <form v-if="loaded" class="ld-field form" @submit.prevent="save">
-      <label class="ld-field">{{ $t("communicator.template.kind") }}
+      <label class="ld-field"><span>{{ $t("communicator.template.kind") }}</span>
         <select v-model="form.kind" class="ld-input"><option value="static">static</option><option value="ai_prompt">ai_prompt</option></select>
       </label>
-      <label class="ld-field">{{ $t("communicator.template.language") }}
+      <label class="ld-field"><span>{{ $t("communicator.template.language") }}</span>
         <input v-model="form.language" class="ld-input" maxlength="2" required />
       </label>
       <!-- the lead type this variant is for (audience cascade); without leads the value travels back unchanged -->
@@ -25,19 +25,19 @@
         </select>
         <span class="ld-muted">{{ $t("communicator.template.audience_help") }}</span>
       </label>
-      <label class="ld-field">{{ $t("communicator.template.subject") }}
+      <label class="ld-field"><span>{{ $t("communicator.template.subject") }}</span>
         <input v-model="form.subject" class="ld-input" data-testid="template-subject" />
       </label>
-      <label class="ld-field">{{ $t("communicator.template.body") }}
+      <label class="ld-field"><span>{{ $t("communicator.template.body") }}</span>
         <textarea v-model="form.body" class="ld-input" rows="10" required data-testid="template-body"></textarea>
       </label>
-      <label class="ld-field">{{ $t("communicator.template.model") }}
+      <label class="ld-field"><span>{{ $t("communicator.template.model") }}</span>
         <select v-model="form.model" class="ld-input" data-testid="template-model">
           <option value="">—</option>
           <option v-for="m in models" :key="m.model_id" :value="m.model_id">{{ m.model_id }} ({{ m.provider }})</option>
         </select>
       </label>
-      <label class="ld-field">{{ $t("communicator.template.json_schema") }}
+      <label class="ld-field"><span>{{ $t("communicator.template.json_schema") }}</span>
         <textarea v-model="schemaText" class="ld-input" rows="6" data-testid="template-schema"></textarea>
       </label>
       <p v-if="schemaError" class="ld-error" data-testid="template-schema-error">{{ schemaError }}</p>

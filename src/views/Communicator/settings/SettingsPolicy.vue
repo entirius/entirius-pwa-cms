@@ -4,14 +4,14 @@
     <p class="ld-muted">{{ $t("communicator.policy.zone", { timezone: meta.timezone, country: meta.country }) }}</p>
     <label><input v-model="form.business_days_only" type="checkbox" /> {{ $t("communicator.policy.business_days") }}</label>
     <label><input v-model="form.spread" type="checkbox" /> {{ $t("communicator.policy.spread") }}</label>
-    <label class="ld-field">{{ $t("communicator.policy.daily_cap") }}
+    <label class="ld-field"><span>{{ $t("communicator.policy.daily_cap") }}</span>
       <input v-model.number="form.daily_cap" class="ld-input" type="number" min="0" max="10000" required data-testid="policy-cap" />
     </label>
     <div v-for="(window, i) in form.windows" :key="i" class="ld-row" data-testid="policy-window">
-      <label class="ld-field">{{ $t("communicator.policy.window_start") }}
+      <label class="ld-field"><span>{{ $t("communicator.policy.window_start") }}</span>
         <input v-model="window.start_time" v-bind="TIME_INPUT" :placeholder="$t('communicator.policy.time_format')" data-testid="policy-window-start" />
       </label>
-      <label class="ld-field">{{ $t("communicator.policy.window_end") }}
+      <label class="ld-field"><span>{{ $t("communicator.policy.window_end") }}</span>
         <input v-model="window.end_time" v-bind="TIME_INPUT" :placeholder="$t('communicator.policy.time_format')" data-testid="policy-window-end" />
       </label>
       <button

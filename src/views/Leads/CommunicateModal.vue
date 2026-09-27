@@ -3,7 +3,7 @@
     <div class="cm__sheet ld-field">
       <p class="ld-title">{{ $t("leads.company.communicate") }}</p>
       <label class="ld-field">
-        {{ $t("leads.communicate.template") }}
+        <span>{{ $t("leads.communicate.template") }}</span>
         <select v-model="templateKey" class="ld-input" data-testid="communicate-template">
           <option v-for="tpl in templates" :key="tpl.id" :value="tpl.key">{{ tpl.key }} ({{ tpl.language }})</option>
         </select>
