@@ -31,8 +31,8 @@
       <Loader v-if="loading" />
 
       <template v-else>
-        <div class="flex ai-ct jc-sb mb-12">
-          <div class="flex ai-ct gap-5">
+        <div class="flex ai-ct jc-sb flex-wrap gap-5 rg-3 mb-12">
+          <div class="flex ai-ct flex-wrap gap-5">
             <h1 class="fs-700 fw-600">
               {{
                 isEdit
@@ -226,108 +226,110 @@
           <p v-if="!versions.length" class="fs-200 t-muted">
             {{ $t("agm.no_definitions") }}
           </p>
-          <table v-else class="agm-versions-table w-100">
-            <thead>
-              <tr>
-                <th class="agm-th">{{ $t("agm.version_number") }}</th>
-                <th class="agm-th">{{ $t("agm.summary_en") }}</th>
-                <th class="agm-th">{{ $t("agm.published_at") }}</th>
-                <th class="agm-th">{{ $t("agm.created_at") }}</th>
-                <th class="agm-th"></th>
-              </tr>
-            </thead>
-            <tbody>
-              <template v-for="ver in versions" :key="ver.id">
-                <tr class="agm-tr">
-                  <td class="agm-td">{{ ver.version_number }}</td>
-                  <td
-                    class="agm-td agm-td--summary"
-                    v-html="ver.summary_en || '---'"
-                  />
-                  <td class="agm-td">
-                    <StatusBadge
-                      v-if="ver.published_at"
-                      :label="formatDate(ver.published_at)"
-                      variant="positive"
+          <div v-else class="agm-table-scroll">
+            <table class="agm-versions-table w-100">
+              <thead>
+                <tr>
+                  <th class="agm-th">{{ $t("agm.version_number") }}</th>
+                  <th class="agm-th">{{ $t("agm.summary_en") }}</th>
+                  <th class="agm-th">{{ $t("agm.published_at") }}</th>
+                  <th class="agm-th">{{ $t("agm.created_at") }}</th>
+                  <th class="agm-th"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <template v-for="ver in versions" :key="ver.id">
+                  <tr class="agm-tr">
+                    <td class="agm-td">{{ ver.version_number }}</td>
+                    <td
+                      class="agm-td agm-td--summary"
+                      v-html="ver.summary_en || '---'"
                     />
-                    <StatusBadge
-                      v-else
-                      :label="$t('agm.draft')"
-                      variant="neutral"
-                    />
-                  </td>
-                  <td class="agm-td">{{ formatDate(ver.created_at) }}</td>
-                  <td class="agm-td">
-                    <div class="flex gap-2 jc-fe">
-                      <BasicButton
-                        v-if="!ver.published_at"
-                        custom
-                        size="sm"
-                        :label="$t('agm.edit_draft')"
-                        class="btn-ghost"
-                        @click="startEditDraft(ver)"
-                      >
-                        <template #custom><FontAwesomeIcon icon="pen" /></template>
-                      </BasicButton>
-                      <BasicButton
-                        v-else
-                        custom
-                        size="sm"
-                        :label="$t('agm.create_draft_from_published')"
-                        class="btn-ghost"
-                        @click="startEditPublished(ver)"
-                      >
-                        <template #custom><FontAwesomeIcon icon="pen" /></template>
-                      </BasicButton>
-                      <BasicButton
-                        v-if="!ver.published_at"
-                        :text="$t('agm.publish')"
-                        class="btn-primary"
-                        @click="publishVersion(ver.id)"
+                    <td class="agm-td">
+                      <StatusBadge
+                        v-if="ver.published_at"
+                        :label="formatDate(ver.published_at)"
+                        variant="positive"
                       />
-                    </div>
-                  </td>
-                </tr>
-
-                <!-- Inline draft edit form -->
-                <tr
-                  v-if="editingVersionId === ver.id && !ver.published_at"
-                  :key="`edit-${ver.id}`"
-                >
-                  <td colspan="5" class="agm-td">
-                    <div class="agm-version-form">
-                      <div class="mb-5">
-                        <FormField :label="$t('agm.summary_en')" class="mb-5">
-                          <BasicWysiwyg
-                            v-model="editVersion.summary_en"
-                            :toolbar="wysiwygToolbar"
-                          />
-                        </FormField>
-                        <FormField :label="$t('agm.summary_pl')">
-                          <BasicWysiwyg
-                            v-model="editVersion.summary_pl"
-                            :toolbar="wysiwygToolbar"
-                          />
-                        </FormField>
-                      </div>
-                      <div class="flex jc-fe gap-5">
+                      <StatusBadge
+                        v-else
+                        :label="$t('agm.draft')"
+                        variant="neutral"
+                      />
+                    </td>
+                    <td class="agm-td">{{ formatDate(ver.created_at) }}</td>
+                    <td class="agm-td">
+                      <div class="flex gap-2 jc-fe">
                         <BasicButton
-                          :text="$t('common.cancel')"
-                          class="btn-secondary"
-                          @click="cancelEditVersion"
-                        />
+                          v-if="!ver.published_at"
+                          custom
+                          size="sm"
+                          :label="$t('agm.edit_draft')"
+                          class="btn-ghost"
+                          @click="startEditDraft(ver)"
+                        >
+                          <template #custom><FontAwesomeIcon icon="pen" /></template>
+                        </BasicButton>
                         <BasicButton
-                          :text="$t('common.save')"
+                          v-else
+                          custom
+                          size="sm"
+                          :label="$t('agm.create_draft_from_published')"
+                          class="btn-ghost"
+                          @click="startEditPublished(ver)"
+                        >
+                          <template #custom><FontAwesomeIcon icon="pen" /></template>
+                        </BasicButton>
+                        <BasicButton
+                          v-if="!ver.published_at"
+                          :text="$t('agm.publish')"
                           class="btn-primary"
-                          @click="saveDraftVersion(ver.id)"
+                          @click="publishVersion(ver.id)"
                         />
                       </div>
-                    </div>
-                  </td>
-                </tr>
-              </template>
-            </tbody>
-          </table>
+                    </td>
+                  </tr>
+
+                  <!-- Inline draft edit form -->
+                  <tr
+                    v-if="editingVersionId === ver.id && !ver.published_at"
+                    :key="`edit-${ver.id}`"
+                  >
+                    <td colspan="5" class="agm-td">
+                      <div class="agm-version-form">
+                        <div class="mb-5">
+                          <FormField :label="$t('agm.summary_en')" class="mb-5">
+                            <BasicWysiwyg
+                              v-model="editVersion.summary_en"
+                              :toolbar="wysiwygToolbar"
+                            />
+                          </FormField>
+                          <FormField :label="$t('agm.summary_pl')">
+                            <BasicWysiwyg
+                              v-model="editVersion.summary_pl"
+                              :toolbar="wysiwygToolbar"
+                            />
+                          </FormField>
+                        </div>
+                        <div class="flex jc-fe gap-5">
+                          <BasicButton
+                            :text="$t('common.cancel')"
+                            class="btn-secondary"
+                            @click="cancelEditVersion"
+                          />
+                          <BasicButton
+                            :text="$t('common.save')"
+                            class="btn-primary"
+                            @click="saveDraftVersion(ver.id)"
+                          />
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <!-- Legal Page History (only when definition has content_route) -->
@@ -387,69 +389,71 @@
               {{ $t("agm.content_history_empty") }}
             </p>
 
-            <table v-else class="agm-versions-table w-100">
-              <thead>
-                <tr>
-                  <th class="agm-th">{{ $t("agm.published_at") }}</th>
-                  <th class="agm-th">{{ $t("builder.language") }}</th>
-                  <th class="agm-th">{{ $t("common.preview") }}</th>
-                  <th class="agm-th"></th>
-                </tr>
-              </thead>
-              <tbody>
-                <template
-                  v-for="(snap, idx) in contentSnapshots"
-                  :key="snap.published_id"
-                >
-                  <tr
-                    class="agm-tr pointer"
-                    @click="toggleSnapshot(snap.published_id)"
+            <div v-else class="agm-table-scroll">
+              <table class="agm-versions-table w-100">
+                <thead>
+                  <tr>
+                    <th class="agm-th">{{ $t("agm.published_at") }}</th>
+                    <th class="agm-th">{{ $t("builder.language") }}</th>
+                    <th class="agm-th">{{ $t("common.preview") }}</th>
+                    <th class="agm-th"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <template
+                    v-for="(snap, idx) in contentSnapshots"
+                    :key="snap.published_id"
                   >
-                    <td class="agm-td">
-                      <span>{{ formatDate(snap.created_at) }}</span>
-                      <StatusBadge
-                        v-if="idx === 0"
-                        :label="$t('agm.snapshot_current')"
-                        variant="positive"
-                        class="ml-2"
-                      />
-                    </td>
-                    <td class="agm-td">{{ snap.language }}</td>
-                    <td class="agm-td agm-td--summary">
-                      {{ snap.text_preview }}
-                    </td>
-                    <td class="agm-td">
-                      <div class="flex gap-2 ai-ct jc-fe">
+                    <tr
+                      class="agm-tr pointer"
+                      @click="toggleSnapshot(snap.published_id)"
+                    >
+                      <td class="agm-td">
+                        <span>{{ formatDate(snap.created_at) }}</span>
                         <StatusBadge
-                          v-if="snap.warnings && snap.warnings.length"
-                          :label="$t('agm.snapshot_warnings')"
-                          variant="warning"
+                          v-if="idx === 0"
+                          :label="$t('agm.snapshot_current')"
+                          variant="positive"
+                          class="ml-2"
                         />
-                        <font-awesome-icon
-                          :icon="
-                            expandedSnapshot === snap.published_id
-                              ? 'chevron-up'
-                              : 'chevron-down'
-                          "
-                          class="t-muted"
+                      </td>
+                      <td class="agm-td">{{ snap.language }}</td>
+                      <td class="agm-td agm-td--summary">
+                        {{ snap.text_preview }}
+                      </td>
+                      <td class="agm-td">
+                        <div class="flex gap-2 ai-ct jc-fe">
+                          <StatusBadge
+                            v-if="snap.warnings && snap.warnings.length"
+                            :label="$t('agm.snapshot_warnings')"
+                            variant="warning"
+                          />
+                          <font-awesome-icon
+                            :icon="
+                              expandedSnapshot === snap.published_id
+                                ? 'chevron-up'
+                                : 'chevron-down'
+                            "
+                            class="t-muted"
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                    <tr
+                      v-if="expandedSnapshot === snap.published_id"
+                      :key="`exp-${snap.published_id}`"
+                    >
+                      <td colspan="4" class="agm-td">
+                        <div
+                          class="agm-legal-text-preview"
+                          v-html="snap.text_html"
                         />
-                      </div>
-                    </td>
-                  </tr>
-                  <tr
-                    v-if="expandedSnapshot === snap.published_id"
-                    :key="`exp-${snap.published_id}`"
-                  >
-                    <td colspan="4" class="agm-td">
-                      <div
-                        class="agm-legal-text-preview"
-                        v-html="snap.text_html"
-                      />
-                    </td>
-                  </tr>
-                </template>
-              </tbody>
-            </table>
+                      </td>
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
+            </div>
           </template>
         </div>
       </template>
@@ -880,6 +884,11 @@ export default {
 
 .agm-versions-table {
   border-collapse: collapse;
+}
+
+// The tables scroll in their own box on a phone; the card does not.
+.agm-table-scroll {
+  overflow-x: auto;
 }
 
 .agm-th {
