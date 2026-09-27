@@ -99,6 +99,7 @@
         <Loader block v-show="loading" />
 
         <DataTable
+          empty-size="md"
           v-show="!loading"
           :key="tableKey"
           :columns="columns"
