@@ -1,6 +1,6 @@
 <template>
   <section class="ld-field" data-testid="company-overview">
-    <table class="ld-table">
+    <table class="table-basic ld-table">
       <tbody>
         <tr><th>{{ $t("leads.company.name") }}</th><td>{{ company.name }}</td></tr>
         <tr><th>{{ $t("leads.company.stage") }}</th><td data-testid="overview-stage">{{ company.stage.label }}</td></tr>

@@ -1,7 +1,7 @@
 <template>
   <div class="ld-page" data-testid="communicator-templates">
     <h2 class="ld-title">{{ $t("communicator.templates.title") }}</h2>
-    <table class="ld-table">
+    <table class="table-basic ld-table">
       <thead>
         <tr>
           <th>{{ $t("communicator.template.key") }}</th>

@@ -56,7 +56,7 @@
     </p>
 
     <div class="contacts__scroll">
-      <table class="ld-table" data-testid="company-contacts">
+      <table class="table-basic ld-table" data-testid="company-contacts">
         <thead>
           <tr>
             <th>{{ $t("leads.contacts.primary") }}</th>

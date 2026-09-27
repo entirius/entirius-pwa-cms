@@ -4,7 +4,7 @@
     <p v-if="!audit" class="ld-muted" data-testid="intel-no-audit">{{ $t("leads.intel.no_audit") }}</p>
     <template v-else>
       <p>{{ $t("leads.intel.audit_status") }}: <strong data-testid="intel-audit-status">{{ audit.status }}</strong></p>
-      <table class="ld-table" data-testid="intel-scores">
+      <table class="table-basic ld-table" data-testid="intel-scores">
         <tbody>
           <tr v-for="(summary, strategy) in strategies" :key="strategy" :data-testid="`intel-score-${strategy}`">
             <th>{{ $t(`leads.intel.strategy.${strategy}`) }}</th>

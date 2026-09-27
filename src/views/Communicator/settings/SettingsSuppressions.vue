@@ -8,7 +8,7 @@
       <button class="ld-btn ld-btn--primary" type="submit">{{ $t("communicator.suppressions.add") }}</button>
     </form>
     <p v-if="error" class="ld-error">{{ error }}</p>
-    <table class="ld-table">
+    <table class="table-basic ld-table">
       <tbody>
         <tr v-for="row in rows" :key="row.id" data-testid="suppression-row">
           <td>{{ row.kind }}</td>

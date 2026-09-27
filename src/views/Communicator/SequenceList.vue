@@ -3,7 +3,7 @@
     <h2 class="ld-title">{{ $t("communicator.sequences.title") }}</h2>
     <section v-for="sequence in sequences" :key="sequence.id" class="ld-field" data-testid="sequence">
       <h3>{{ sequence.key }} <span v-if="!sequence.is_active" class="ld-badge">{{ $t("communicator.sequences.inactive") }}</span></h3>
-      <table class="ld-table">
+      <table class="table-basic ld-table">
         <thead>
           <tr><th>#</th><th>{{ $t("communicator.sequences.days") }}</th><th>{{ $t("communicator.template.key") }}</th></tr>
         </thead>

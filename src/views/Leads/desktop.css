@@ -79,16 +79,7 @@ textarea.ld-input {
   padding: var(--space-5);
   font-family: monospace;
 }
-.ld-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-.ld-table th,
-.ld-table td {
-  padding: var(--space-5);
-  border-bottom: 1px solid var(--border-subtle);
-  text-align: left;
-}
+/* Cells come from the shared `.table-basic` (the DataTable cell model); `.ld-table` only marks the kit's tables. */
 .ld-field {
   display: flex;
   flex-direction: column;

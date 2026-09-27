@@ -4,7 +4,7 @@
     <p class="ld-muted">{{ $t("communicator.scheduled.note") }}</p>
     <EmptyState v-if="!rows.length" icon="inbox" :title="$t('communicator.scheduled.empty')" />
     <div v-else class="scheduled__scroll">
-      <table class="ld-table">
+      <table class="table-basic ld-table">
         <thead>
           <tr>
             <th>{{ $t("communicator.scheduled.company") }}</th>
