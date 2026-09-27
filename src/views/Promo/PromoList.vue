@@ -17,25 +17,29 @@
           </span>
           <div class="promo-list__bulk-actions">
             <BasicButton
-              :text="$t('promo.bulk_activate')"
-              class="btn-secondary"
+              variant="secondary"
               @click="startBulk('activate')"
-            />
+            >
+              {{ $t('promo.bulk_activate') }}
+            </BasicButton>
             <BasicButton
-              :text="$t('promo.bulk_deactivate')"
-              class="btn-secondary"
+              variant="secondary"
               @click="startBulk('deactivate')"
-            />
+            >
+              {{ $t('promo.bulk_deactivate') }}
+            </BasicButton>
             <BasicButton
-              :text="$t('promo.bulk_delete')"
-              class="btn-danger"
+              variant="danger"
               @click="startBulk('delete')"
-            />
+            >
+              {{ $t('promo.bulk_delete') }}
+            </BasicButton>
             <BasicButton
-              :text="$t('promo.bulk_clear')"
-              class="btn-secondary"
+              variant="secondary"
               @click="clearSelection"
-            />
+            >
+              {{ $t('promo.bulk_clear') }}
+            </BasicButton>
           </div>
         </div>
 

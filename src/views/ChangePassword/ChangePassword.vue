@@ -11,10 +11,12 @@
         <p class="fs-300 fw-500">{{ $t("user.password_changed_message") }}</p>
       </div>
       <BasicButton
-        :text="$t('user.back_to_home')"
         @click="goHome"
-        class="bg-accent-fill b-accent jc-ct t-on-accent-fill w-100 rounded"
-      />
+        variant="primary"
+        class="jc-ct w-100 rounded"
+      >
+        {{ $t('user.back_to_home') }}
+      </BasicButton>
     </template>
 
     <!-- Form -->
@@ -71,10 +73,12 @@
         </button>
       </div>
       <BasicButton
-        :text="$t('user.change_password_submit')"
         @click="handleSubmit"
-        class="bg-accent-fill b-accent jc-ct t-on-accent-fill w-100 rounded"
-      />
+        variant="primary"
+        class="jc-ct w-100 rounded"
+      >
+        {{ $t('user.change_password_submit') }}
+      </BasicButton>
     </template>
   </div>
 </template>

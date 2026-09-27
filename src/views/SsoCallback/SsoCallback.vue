@@ -8,10 +8,12 @@
         <p class="fs-300 fw-500" data-testid="sso-error">{{ errorMessage }}</p>
       </div>
       <BasicButton
-        :text="$t('login.back_to_login')"
         @click="goToLogin"
-        class="bg-accent-fill b-accent jc-ct t-on-accent-fill w-100 rounded"
-      />
+        variant="primary"
+        class="jc-ct w-100 rounded"
+      >
+        {{ $t('login.back_to_login') }}
+      </BasicButton>
     </template>
     <p v-else class="fs-500 fw-500 txt-center">
       {{ $t("login.sso_in_progress") }}

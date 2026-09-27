@@ -81,10 +81,11 @@
           </div>
           <div class="flex jc-fe mt-8">
             <BasicButton
-              :text="$t('common.save')"
-              class="btn-primary"
+              variant="primary"
               @click="saveChannel"
-            />
+            >
+              {{ $t('common.save') }}
+            </BasicButton>
           </div>
         </div>
 

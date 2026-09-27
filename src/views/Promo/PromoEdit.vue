@@ -14,20 +14,19 @@
       <span v-if="isDirty" class="bg-warning-subtle t-warning fs-200 ph-2 rounded fw-600">
         {{ $t("unsaved.changes") }}
       </span>
-      <BasicButton
+      <IconButton
         v-if="isEdit"
-        custom
+        icon="delete"
         :label="$t('common.delete')"
-        class="btn-danger"
+        variant="danger"
         @click="showDeleteConfirm = true"
-      >
-        <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
-      </BasicButton>
-      <BasicButton
-        :text="$t('common.save')"
-        class="btn-primary"
-        @click="saveRule"
       />
+      <BasicButton
+        variant="primary"
+        @click="saveRule"
+      >
+        {{ $t('common.save') }}
+      </BasicButton>
     </Teleport>
 
     <div class="page-card h-100 ovy-auto">
@@ -119,14 +118,12 @@
                 >
                   <div class="flex ai-ct jc-sb mb-5">
                     <span class="fw-600 fs-300">{{ group.iso3 }}</span>
-                    <BasicButton
-                      custom
+                    <IconButton
+                      icon="close"
                       :label="$t('common.delete')"
-                      class="btn-danger"
+                      variant="danger"
                       @click="removeCurrencyGroup(groupIdx)"
-                    >
-                      <template #custom><FontAwesomeIcon :icon="$icons.close" /></template>
-                    </BasicButton>
+                    />
                   </div>
                   <div
                     v-for="(row, rowIdx) in group.rows"
@@ -143,21 +140,19 @@
                       :placeholder="$t('promo.extra_threshold_value')"
                       class="flex-1"
                     />
-                    <BasicButton
-                      custom
+                    <IconButton
+                      icon="close"
                       :label="$t('common.delete')"
-                      class="btn-danger"
+                      variant="danger"
                       @click="removeCurrencyRow(groupIdx, rowIdx)"
-                    >
-                      <template #custom><FontAwesomeIcon :icon="$icons.close" /></template>
-                    </BasicButton>
+                    />
                   </div>
                   <BasicButton
-                    :text="$t('promo.extra_add_threshold_row')"
-                    icon="plus"
-                    class="btn-outline"
+                    variant="secondary"
                     @click="addCurrencyRow(groupIdx)"
-                  />
+                  >
+                    {{ $t('promo.extra_add_threshold_row') }}
+                  </BasicButton>
                 </div>
                 <!-- add currency group -->
                 <div class="flex ai-ct gap-5 mt-1">
@@ -343,11 +338,11 @@
           <div class="flex ai-ct jc-sb mb-8">
             <h2 class="fs-500 fw-600">{{ $t("promo.section_codes") }}</h2>
             <BasicButton
-              :text="$t('promo.add_code')"
-              icon="plus"
-              class="btn-outline"
+              variant="secondary"
               @click="openAddCode"
-            />
+            >
+              {{ $t('promo.add_code') }}
+            </BasicButton>
           </div>
 
           <!-- Search -->
@@ -390,24 +385,19 @@
               {{ row.max_products_qty !== null ? row.max_products_qty : "—" }}
             </template>
             <template #cell-actions="{ row }">
-              <BasicButton
-                custom
-                size="sm"
+              <IconButton
+                icon="edit"
                 :label="$t('common.edit')"
-                class="btn-ghost"
-                @click="openEditCode(row)"
-              >
-                <template #custom><FontAwesomeIcon :icon="$icons.edit" /></template>
-              </BasicButton>
-              <BasicButton
-                custom
                 size="sm"
+                @click="openEditCode(row)"
+              />
+              <IconButton
+                icon="delete"
                 :label="$t('common.delete')"
-                class="btn-danger"
+                variant="danger"
+                size="sm"
                 @click="confirmDeleteCode(row.id)"
-              >
-                <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
-              </BasicButton>
+              />
             </template>
           </DataTable>
 
@@ -447,15 +437,17 @@
             </div>
             <div class="flex jc-fe gap-5 mt-8">
               <BasicButton
-                :text="$t('common.cancel')"
-                class="btn-secondary"
+                variant="secondary"
                 @click="showAddCode = false"
-              />
+              >
+                {{ $t('common.cancel') }}
+              </BasicButton>
               <BasicButton
-                :text="$t('promo.save_code')"
-                class="btn-secondary"
+                variant="secondary"
                 @click="saveNewCode"
-              />
+              >
+                {{ $t('promo.save_code') }}
+              </BasicButton>
             </div>
           </div>
         </div>
@@ -470,11 +462,11 @@
             <div class="flex ai-ct jc-sb mb-5">
               <h3 class="fs-400 fw-600">{{ $t("promo.product_filters") }}</h3>
               <BasicButton
-                :text="$t('promo.add_filter')"
-                icon="plus"
-                class="btn-outline"
+                variant="secondary"
                 @click="addProductFilter"
-              />
+              >
+                {{ $t('promo.add_filter') }}
+              </BasicButton>
             </div>
             <DataTable
               :columns="filterColumns"
@@ -494,24 +486,19 @@
               </template>
               <template #cell-actions="{ row }">
                 <div class="flex gap-2">
-                  <BasicButton
-                    custom
-                    size="sm"
+                  <IconButton
+                    icon="edit"
                     :label="$t('common.edit')"
-                    class="btn-ghost"
-                    @click="openFilterDrawer('product', row)"
-                  >
-                    <template #custom><FontAwesomeIcon :icon="$icons.edit" /></template>
-                  </BasicButton>
-                  <BasicButton
-                    custom
                     size="sm"
+                    @click="openFilterDrawer('product', row)"
+                  />
+                  <IconButton
+                    icon="delete"
                     :label="$t('common.delete')"
-                    class="btn-danger"
+                    variant="danger"
+                    size="sm"
                     @click="confirmDeleteFilter(row.id, 'product')"
-                  >
-                    <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
-                  </BasicButton>
+                  />
                 </div>
               </template>
             </DataTable>
@@ -522,11 +509,11 @@
             <div class="flex ai-ct jc-sb mb-5">
               <h3 class="fs-400 fw-600">{{ $t("promo.customer_filters") }}</h3>
               <BasicButton
-                :text="$t('promo.add_filter')"
-                icon="plus"
-                class="btn-outline"
+                variant="secondary"
                 @click="addCustomerFilter"
-              />
+              >
+                {{ $t('promo.add_filter') }}
+              </BasicButton>
             </div>
             <DataTable
               :columns="filterColumns"
@@ -546,24 +533,19 @@
               </template>
               <template #cell-actions="{ row }">
                 <div class="flex gap-2">
-                  <BasicButton
-                    custom
-                    size="sm"
+                  <IconButton
+                    icon="edit"
                     :label="$t('common.edit')"
-                    class="btn-ghost"
-                    @click="openFilterDrawer('customer', row)"
-                  >
-                    <template #custom><FontAwesomeIcon :icon="$icons.edit" /></template>
-                  </BasicButton>
-                  <BasicButton
-                    custom
                     size="sm"
+                    @click="openFilterDrawer('customer', row)"
+                  />
+                  <IconButton
+                    icon="delete"
                     :label="$t('common.delete')"
-                    class="btn-danger"
+                    variant="danger"
+                    size="sm"
                     @click="confirmDeleteFilter(row.id, 'customer')"
-                  >
-                    <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
-                  </BasicButton>
+                  />
                 </div>
               </template>
             </DataTable>
@@ -574,11 +556,11 @@
             <div class="flex ai-ct jc-sb mb-5">
               <h3 class="fs-400 fw-600">{{ $t("promo.threshold_filters") }}</h3>
               <BasicButton
-                :text="$t('promo.add_filter')"
-                icon="plus"
-                class="btn-outline"
+                variant="secondary"
                 @click="addThresholdFilter"
-              />
+              >
+                {{ $t('promo.add_filter') }}
+              </BasicButton>
             </div>
             <DataTable
               :columns="filterColumns"
@@ -598,24 +580,19 @@
               </template>
               <template #cell-actions="{ row }">
                 <div class="flex gap-2">
-                  <BasicButton
-                    custom
-                    size="sm"
+                  <IconButton
+                    icon="edit"
                     :label="$t('common.edit')"
-                    class="btn-ghost"
-                    @click="openFilterDrawer('threshold', row)"
-                  >
-                    <template #custom><FontAwesomeIcon :icon="$icons.edit" /></template>
-                  </BasicButton>
-                  <BasicButton
-                    custom
                     size="sm"
+                    @click="openFilterDrawer('threshold', row)"
+                  />
+                  <IconButton
+                    icon="delete"
                     :label="$t('common.delete')"
-                    class="btn-danger"
+                    variant="danger"
+                    size="sm"
                     @click="confirmDeleteFilter(row.id, 'threshold')"
-                  >
-                    <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
-                  </BasicButton>
+                  />
                 </div>
               </template>
             </DataTable>
@@ -705,15 +682,17 @@
       </template>
       <template #footer>
         <BasicButton
-          :text="$t('common.cancel')"
-          class="btn-secondary"
+          variant="secondary"
           @click="closeEditCodeModal"
-        />
+        >
+          {{ $t('common.cancel') }}
+        </BasicButton>
         <BasicButton
-          :text="$t('common.save')"
-          class="btn-primary"
+          variant="primary"
           @click="saveEditCode"
-        />
+        >
+          {{ $t('common.save') }}
+        </BasicButton>
       </template>
     </Confirmation-modal>
 

@@ -214,7 +214,6 @@
               </div>
               <BasicButton
                 v-if="filePreview"
-                :text="$t('gallery.upload')"
                 @click="upload_File({})"
                 class="rounded jc-ct mt-5"
                 :class="[
@@ -222,7 +221,9 @@
                     ? 't-muted b-default bg-raised'
                     : 't-on-accent-fill b-accent bg-accent-fill',
                 ]"
-              />
+              >
+                {{ $t('gallery.upload') }}
+              </BasicButton>
               <div class="mt-5"></div>
             </div>
           </div>

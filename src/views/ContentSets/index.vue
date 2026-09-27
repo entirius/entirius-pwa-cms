@@ -133,22 +133,24 @@
               class="left"
             >
               <BasicButton
-                :text="$t('content_sets.set_ready')"
-                class="btn-primary"
-                :isDisabled="true"
-              />
+                variant="primary"
+                :disabled="true"
+              >
+                {{ $t('content_sets.set_ready') }}
+              </BasicButton>
             </ToolTip>
             <BasicButton
               v-else
-              :text="$t('content_sets.set_ready')"
-              class="btn-primary"
+              variant="primary"
               @click="
                 MODIFY_Set({
                   url: `/content-sets/${edit ? edit : ''}`,
                   method: edit ? 'put' : 'post',
                 })
               "
-            />
+            >
+              {{ $t('content_sets.set_ready') }}
+            </BasicButton>
             <ToolTip
               v-if="!hasEnoughSelections"
               :tip="$t('content_sets.clear_set_tip')"
@@ -156,17 +158,19 @@
               class="left"
             >
               <BasicButton
-                :text="$t('content_sets.clear_set')"
-                class="btn-secondary"
-                :isDisabled="true"
-              />
+                variant="secondary"
+                :disabled="true"
+              >
+                {{ $t('content_sets.clear_set') }}
+              </BasicButton>
             </ToolTip>
             <BasicButton
               v-else
-              :text="$t('content_sets.clear_set')"
-              class="btn-secondary"
+              variant="secondary"
               @click="selected_set_members = null"
-            />
+            >
+              {{ $t('content_sets.clear_set') }}
+            </BasicButton>
           </div>
         </div>
         <div v-if="sets && mode === 'edit'" class="grid gap-5">

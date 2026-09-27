@@ -65,25 +65,17 @@
 
         <template #cell-actions="{ row }">
           <div class="le-list__actions">
-            <BasicButton custom size="sm" :label="$t('common.edit')" class="btn-ghost" @click="onEdit(row)">
-              <template #custom><FontAwesomeIcon :icon="$icons.edit" /></template>
-            </BasicButton>
-            <BasicButton custom size="sm" :label="$t('common.preview')" class="btn-ghost" @click="onPreview(row)">
-              <template #custom><FontAwesomeIcon :icon="$icons.preview" /></template>
-            </BasicButton>
-            <BasicButton custom size="sm" :label="$t('common.copy')" class="btn-ghost" @click="onCopy(row)">
-              <template #custom><FontAwesomeIcon :icon="$icons.duplicate" /></template>
-            </BasicButton>
-            <BasicButton
+            <IconButton icon="edit" :label="$t('common.edit')" size="sm" @click="onEdit(row)" />
+            <IconButton icon="preview" :label="$t('common.preview')" size="sm" @click="onPreview(row)" />
+            <IconButton icon="duplicate" :label="$t('common.copy')" size="sm" @click="onCopy(row)" />
+            <IconButton
               v-if="!row.is_system"
-              custom
-              size="sm"
+              icon="delete"
               :label="$t('common.delete')"
-              class="btn-danger"
+              variant="danger"
+              size="sm"
               @click="onDeleteClick(row)"
-            >
-              <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
-            </BasicButton>
+            />
           </div>
         </template>
       </DataTable>
@@ -123,16 +115,18 @@
       </template>
       <template #footer>
         <BasicButton
-          :text="$t('common.cancel')"
-          class="btn-secondary"
+          variant="secondary"
           @click="closeCopy"
-        />
+        >
+          {{ $t('common.cancel') }}
+        </BasicButton>
         <BasicButton
-          :text="$t('layout_extender.copy_action')"
-          class="btn-primary"
+          variant="primary"
           :disabled="!copyTargetChannel || copying"
           @click="onCopyConfirm"
-        />
+        >
+          {{ $t('layout_extender.copy_action') }}
+        </BasicButton>
       </template>
     </ConfirmationModal>
   </div>

@@ -31,17 +31,19 @@
           {{ $t("layout_extender.unsaved") }}
         </span>
         <BasicButton
-          :text="$t('layout_extender.save_draft')"
-          class="btn-outline"
+          variant="secondary"
           @click="saveDraft"
-        />
+        >
+          {{ $t('layout_extender.save_draft') }}
+        </BasicButton>
         <BasicButton
-          :text="$t('layout_extender.publish')"
-          class="btn-primary"
+          variant="primary"
           data-testid="nav-editor-publish"
           :disabled="!uid"
           @click="publish"
-        />
+        >
+          {{ $t('layout_extender.publish') }}
+        </BasicButton>
       </template>
     </Teleport>
 
@@ -95,33 +97,28 @@
                     <template #custom><FontAwesomeIcon icon="grip" /></template>
                   </BasicButton>
                 </SubscriberSetter>
-                <BasicButton
+                <IconButton
                   v-if="element.display_as === 'megamenu'"
-                  custom
+                  icon="expand"
                   :label="$t('layout_extender.columns')"
-                  class="btn-ghost nav-action"
+                  class="nav-action"
                   :class="{ 'nav-action--rotated': expandedItems.includes(element.id) }"
                   :aria-expanded="expandedItems.includes(element.id)"
                   @click="toggleExpand(element.id)"
-                >
-                  <template #custom><FontAwesomeIcon :icon="$icons.expand" /></template>
-                </BasicButton>
-                <BasicButton
-                  custom
+                />
+                <IconButton
+                  icon="edit"
                   :label="$t('common.edit')"
-                  class="btn-ghost nav-action"
+                  class="nav-action"
                   @click="openEditItem(element, index)"
-                >
-                  <template #custom><FontAwesomeIcon :icon="$icons.edit" /></template>
-                </BasicButton>
-                <BasicButton
-                  custom
+                />
+                <IconButton
+                  icon="delete"
                   :label="$t('common.delete')"
-                  class="btn-danger nav-action nav-action--danger"
+                  variant="danger"
+                  class="nav-action nav-action--danger"
                   @click="removeItem(index)"
-                >
-                  <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
-                </BasicButton>
+                />
               </div>
 
               <!-- Expanded megamenu columns -->
@@ -155,27 +152,22 @@
                               class="fw-600 fs-300 t-body pointer"
                               @dblclick="startEditHeading(index, colIdx)"
                             >{{ col.heading || $t("layout_extender.heading") }}</span>
-                            <BasicButton
+                            <IconButton
                               v-if="channelLanguages.length > 1"
-                              custom
-                              size="sm"
+                              icon="translate"
                               :label="$t('layout_extender.translations')"
-                              class="btn-ghost"
+                              size="sm"
                               @click="openColumnTranslation(index, colIdx)"
-                            >
-                              <template #custom><FontAwesomeIcon :icon="$icons.translate" /></template>
-                            </BasicButton>
+                            />
                           </template>
                         </div>
-                        <BasicButton
-                          custom
-                          size="sm"
+                        <IconButton
+                          icon="delete"
                           :label="$t('common.delete')"
-                          class="btn-danger"
+                          variant="danger"
+                          size="sm"
                           @click="removeColumn(index, colIdx)"
-                        >
-                          <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
-                        </BasicButton>
+                        />
                       </div>
                       <draggable
                         v-model="col.links"
@@ -210,15 +202,13 @@
                     <template v-else-if="col.type === 'banner'">
                       <div class="nav-column__header">
                         <span class="fw-600 fs-300 t-body">{{ $t("layout_extender.banner") }}</span>
-                        <BasicButton
-                          custom
-                          size="sm"
+                        <IconButton
+                          icon="delete"
                           :label="$t('common.delete')"
-                          class="btn-danger"
+                          variant="danger"
+                          size="sm"
                           @click="removeColumn(index, colIdx)"
-                        >
-                          <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
-                        </BasicButton>
+                        />
                       </div>
                       <div v-if="col.media_url" class="mb-2">
                         <img
@@ -267,12 +257,13 @@
         </div>
 
         <BasicButton
-          :text="$t('layout_extender.add_item')"
-          icon="plus"
-          class="bg-accent-fill t-on-accent-fill mt-8"
+          variant="primary"
+          class="mt-8"
           data-testid="nav-editor-add-item"
           @click="openAddItem"
-        />
+        >
+          {{ $t('layout_extender.add_item') }}
+        </BasicButton>
       </template>
     </div>
 

@@ -120,12 +120,13 @@
               </dl>
               <div class="mt-8">
                 <BasicButton
-                  :text="$t('cf.open_lead')"
-                  class="btn-primary"
+                  variant="primary"
                   @click="
                     $router.push(`/forms/leads/${booking.linked_lead.id}`)
                   "
-                />
+                >
+                  {{ $t('cf.open_lead') }}
+                </BasicButton>
               </div>
             </template>
             <EmptyState

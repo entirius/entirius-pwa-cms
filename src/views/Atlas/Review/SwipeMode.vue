@@ -43,28 +43,31 @@
       data-testid="swipe-actions-bar"
     >
       <BasicButton
-        :text="$t('atlas.review.reject_button')"
-        class="btn-danger"
-        :isDisabled="busy"
+        variant="danger"
+        :disabled="busy"
         data-testid="swipe-reject-btn"
         @click="reviewProduct('reject')"
-      />
+      >
+        {{ $t('atlas.review.reject_button') }}
+      </BasicButton>
       <BasicButton
         v-if="!isMonitoringRow"
-        :text="$t('atlas.review.skip_button')"
-        class="btn-secondary"
-        :isDisabled="busy"
+        variant="secondary"
+        :disabled="busy"
         data-testid="swipe-skip-btn"
         @click="reviewProduct('skip')"
-      />
+      >
+        {{ $t('atlas.review.skip_button') }}
+      </BasicButton>
       <BasicButton
         v-if="!isMonitoringRow && kind === 'procurement'"
-        :text="$t('atlas.review.approve_button')"
-        class="btn-primary"
-        :isDisabled="busy"
+        variant="primary"
+        :disabled="busy"
         data-testid="swipe-approve-btn"
         @click="reviewProduct('approve')"
-      />
+      >
+        {{ $t('atlas.review.approve_button') }}
+      </BasicButton>
     </div>
 
     <!-- Mobile-only fallback modal — desktop uses the side panel. -->

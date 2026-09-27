@@ -2,10 +2,11 @@
   <div class="config-list">
     <div class="config-list__toolbar">
       <BasicButton
-        :text="$t('promo.campaign_new')"
-        class="btn-primary"
+        variant="primary"
         @click="openCreate"
-      />
+      >
+        {{ $t('promo.campaign_new') }}
+      </BasicButton>
     </div>
 
     <Loader block v-show="loading" />
@@ -98,16 +99,18 @@
         <div class="voucher-form__actions">
           <BasicButton
             v-if="isEdit"
-            :text="$t('promo.btn_delete')"
-            class="btn-secondary"
+            variant="secondary"
             @click="showDelete = true"
-          />
+          >
+            {{ $t('promo.btn_delete') }}
+          </BasicButton>
           <BasicButton
-            :text="$t('promo.btn_save')"
-            class="btn-primary"
-            :is-disabled="saving"
+            variant="primary"
+            :disabled="saving"
             @click="save"
-          />
+          >
+            {{ $t('promo.btn_save') }}
+          </BasicButton>
         </div>
       </div>
     </SideDrawer>

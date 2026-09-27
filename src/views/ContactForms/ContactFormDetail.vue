@@ -130,10 +130,11 @@
               <font-awesome-icon :icon="$icons.attachment" class="t-muted" />
               <span class="t-body fs-200">{{ att.name }}</span>
               <BasicButton
-                :text="$t('cf.download_attachment')"
-                class="bg-raised t-body"
+                variant="secondary"
                 @click="downloadAttachment(att)"
-              />
+              >
+                {{ $t('cf.download_attachment') }}
+              </BasicButton>
             </div>
           </div>
         </div>

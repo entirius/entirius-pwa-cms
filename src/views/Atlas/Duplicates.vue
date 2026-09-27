@@ -75,13 +75,14 @@
                   <div class="flex ai-ct flex-wrap gap-2">
                     <BasicButton
                       v-for="other in otherRps(group, rp)"
-                      :text="$t('atlas.duplicates.action.merge_to', { sku: other.sku })"
                       size="sm"
-                      class="btn-secondary"
+                      variant="secondary"
                       :key="other.sku"
                       :data-testid="`duplicates-merge-${rp.sku}-to-${other.sku}`"
                       @click="openMergeModal(other.sku, rp.sku)"
-                    />
+                    >
+                      {{ $t('atlas.duplicates.action.merge_to', { sku: other.sku }) }}
+                    </BasicButton>
                   </div>
                 </td>
               </tr>

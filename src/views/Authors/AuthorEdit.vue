@@ -13,20 +13,19 @@
         {{ $t("unsaved.changes") }}
       </span>
       <template v-if="!loading">
-        <BasicButton
+        <IconButton
           v-if="isEdit"
-          custom
+          icon="delete"
           :label="$t('common.delete')"
-          class="btn-danger"
+          variant="danger"
           @click="showDeleteConfirm = true"
-        >
-          <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
-        </BasicButton>
-        <BasicButton
-          :text="$t('common.save')"
-          class="btn-primary"
-          @click="save"
         />
+        <BasicButton
+          variant="primary"
+          @click="save"
+        >
+          {{ $t('common.save') }}
+        </BasicButton>
       </template>
     </Teleport>
 
@@ -77,19 +76,18 @@
               </div>
               <div class="flex ai-ct gap-2">
                 <BasicButton
-                  :text="form.photo_uid ? $t('common.edit') : $t('common.select')"
-                  class="btn-outline"
+                  variant="secondary"
                   @click="$refs.photoController.init()"
-                />
-                <BasicButton
-                  v-if="form.photo_uid"
-                  custom
-                  :label="$t('gallery.delete_photo')"
-                  class="btn-danger"
-                  @click="clearPhoto"
                 >
-                  <template #custom><FontAwesomeIcon :icon="$icons.close" /></template>
+                  {{ form.photo_uid ? $t('common.edit') : $t('common.select') }}
                 </BasicButton>
+                <IconButton
+                  v-if="form.photo_uid"
+                  icon="close"
+                  :label="$t('gallery.delete_photo')"
+                  variant="danger"
+                  @click="clearPhoto"
+                />
               </div>
             </div>
           </div>
@@ -110,10 +108,12 @@
               </label>
               <BasicButton
                 v-if="availableLanguages.length > 1"
-                :text="$t('pim.translations')"
-                class="btn-outline translation-field__btn"
+                variant="secondary"
+                class="translation-field__btn"
                 @click="openTranslations(field.name)"
-              />
+              >
+                {{ $t('pim.translations') }}
+              </BasicButton>
             </div>
             <BasicInput
               v-model="form[field.key][defaultLang]"

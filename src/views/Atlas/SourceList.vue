@@ -6,11 +6,12 @@
       <div class="flex ai-ct jc-sb mb-10 gap-8">
         <h1 class="page-title">{{ $t("atlas.list_title") }}</h1>
         <BasicButton
-          :text="$t('atlas.create_button')"
-          class="btn-primary"
+          variant="primary"
           data-testid="suppliers-create-btn"
           @click="openCreate"
-        />
+        >
+          {{ $t('atlas.create_button') }}
+        </BasicButton>
       </div>
 
       <!-- Filter panel -->
@@ -90,26 +91,21 @@
         </template>
         <template #cell-actions="{ row }">
           <div class="flex ai-ct gap-2" @click.stop>
-            <BasicButton
-              custom
-              size="sm"
+            <IconButton
+              icon="edit"
               :label="$t('common.edit')"
-              class="btn-ghost"
+              size="sm"
               :data-testid="`suppliers-edit-${row.idx}`"
               @click="onEdit(row)"
-            >
-              <template #custom><FontAwesomeIcon :icon="$icons.edit" /></template>
-            </BasicButton>
-            <BasicButton
-              custom
-              size="sm"
+            />
+            <IconButton
+              icon="delete"
               :label="$t('common.delete')"
-              class="btn-danger"
+              variant="danger"
+              size="sm"
               :data-testid="`suppliers-delete-${row.idx}`"
               @click="openDelete(row)"
-            >
-              <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
-            </BasicButton>
+            />
           </div>
         </template>
       </DataTable>
@@ -203,19 +199,21 @@
         </FormField>
         <div class="flex ai-ct jc-end gap-5 mt-8">
           <BasicButton
-            :text="$t('common.cancel')"
-            class="btn-secondary"
+            variant="secondary"
             type="button"
             data-testid="suppliers-create-cancel"
             @click="closeCreate"
-          />
+          >
+            {{ $t('common.cancel') }}
+          </BasicButton>
           <BasicButton
-            :text="$t('common.save')"
-            class="btn-primary"
+            variant="primary"
             type="submit"
-            :isDisabled="creating"
+            :disabled="creating"
             data-testid="suppliers-create-submit"
-          />
+          >
+            {{ $t('common.save') }}
+          </BasicButton>
         </div>
       </form>
     </SideDrawer>
@@ -284,22 +282,23 @@
       </template>
       <template #footer>
         <BasicButton
-          :text="$t('common.cancel')"
-          class="btn-secondary"
+          variant="secondary"
           data-testid="suppliers-delete-cancel"
           @click="closeDelete"
-        />
+        >
+          {{ $t('common.cancel') }}
+        </BasicButton>
         <BasicButton
-          :text="
-            deleteForce
-              ? $t('atlas.delete.confirm_button_hard')
-              : $t('atlas.delete.confirm_button_soft')
-          "
-          class="btn-danger-fill modal-btn--delete"
-          :isDisabled="deleting"
+          variant="danger-solid"
+          class="modal-btn--delete"
+          :disabled="deleting"
           data-testid="suppliers-delete-confirm"
           @click="submitDelete"
-        />
+        >
+          {{ deleteForce
+              ? $t('atlas.delete.confirm_button_hard')
+              : $t('atlas.delete.confirm_button_soft') }}
+        </BasicButton>
       </template>
     </Confirmation-modal>
   </div>

@@ -16,11 +16,12 @@
           @keyup.enter="doLookup"
         />
         <BasicButton
-          :text="$t('promo.voucher_lookup_btn')"
-          class="btn-secondary"
-          :is-disabled="!lookupCode"
+          variant="secondary"
+          :disabled="!lookupCode"
           @click="doLookup"
-        />
+        >
+          {{ $t('promo.voucher_lookup_btn') }}
+        </BasicButton>
       </div>
 
       <MobileFilterPanel

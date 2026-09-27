@@ -35,19 +35,21 @@
     <template #footer>
       <div class="merge-confirm__actions">
         <BasicButton
-          :text="$t('atlas.duplicates.merge_modal.cancel')"
-          class="btn-outline"
+          variant="secondary"
           :disabled="loading"
           data-test="merge-confirm-cancel"
           @click="onCancel"
-        />
+        >
+          {{ $t('atlas.duplicates.merge_modal.cancel') }}
+        </BasicButton>
         <BasicButton
-          :text="$t('atlas.duplicates.merge_modal.confirm')"
-          class="btn-primary"
+          variant="primary"
           :disabled="!canConfirm"
           data-test="merge-confirm-submit"
           @click="onConfirm"
-        />
+        >
+          {{ $t('atlas.duplicates.merge_modal.confirm') }}
+        </BasicButton>
       </div>
     </template>
   </ConfirmationModal>

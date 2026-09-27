@@ -13,25 +13,24 @@
       </span>
       <BasicButton
         v-if="isEdit && channelLanguages.length > 0"
-        :text="$t('faq.translations')"
-        icon="language"
-        class="btn-outline"
+        variant="secondary"
         @click="showTranslationsDrawer = true"
-      />
-      <BasicButton
-        v-if="isEdit"
-        custom
-        :label="$t('common.delete')"
-        class="btn-danger"
-        @click="showDeleteConfirm = true"
       >
-        <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
+        {{ $t('faq.translations') }}
       </BasicButton>
-      <BasicButton
-        :text="$t('common.save')"
-        class="btn-primary"
-        @click="saveGroup"
+      <IconButton
+        v-if="isEdit"
+        icon="delete"
+        :label="$t('common.delete')"
+        variant="danger"
+        @click="showDeleteConfirm = true"
       />
+      <BasicButton
+        variant="primary"
+        @click="saveGroup"
+      >
+        {{ $t('common.save') }}
+      </BasicButton>
     </Teleport>
 
     <div class="page-card h-100 ovy-auto">
@@ -144,15 +143,13 @@
                   :label="element.is_active ? $t('faq.active') : $t('faq.inactive')"
                   :variant="element.is_active ? 'positive' : 'negative'"
                 />
-                <BasicButton
-                  custom
-                  size="sm"
+                <IconButton
+                  icon="close"
                   :label="$t('faq.remove_from_group')"
-                  class="btn-danger"
+                  variant="danger"
+                  size="sm"
                   @click="removeItemFromGroup(element)"
-                >
-                  <template #custom><FontAwesomeIcon :icon="$icons.close" /></template>
-                </BasicButton>
+                />
               </div>
             </template>
           </draggable>

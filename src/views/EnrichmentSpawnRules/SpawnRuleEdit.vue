@@ -13,27 +13,27 @@
         <div class="flex ai-ct gap-5 ml-auto">
           <BasicButton
             v-if="!isCreate"
-            :text="$t('enrichment.spawn_rules.run_now')"
-            class="btn-secondary"
+            variant="secondary"
             data-test="spawn-rule-run-btn"
             @click="runRule"
+          >
+            {{ $t('enrichment.spawn_rules.run_now') }}
+          </BasicButton>
+          <IconButton
+            v-if="!isCreate"
+            icon="delete"
+            :label="$t('common.delete')"
+            variant="danger"
+            data-test="spawn-rule-delete-btn"
+            @click="showDeleteConfirm = true"
           />
           <BasicButton
-            v-if="!isCreate"
-            data-test="spawn-rule-delete-btn"
-            custom
-            :label="$t('common.delete')"
-            class="btn-danger"
-            @click="showDeleteConfirm = true"
-          >
-            <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
-          </BasicButton>
-          <BasicButton
-            :text="$t('common.save')"
-            class="btn-primary"
+            variant="primary"
             data-test="spawn-rule-save-btn"
             @click="save"
-          />
+          >
+            {{ $t('common.save') }}
+          </BasicButton>
         </div>
       </div>
 

@@ -7,11 +7,12 @@
           {{ $t("promo.cfg_title") }} · {{ form.idx }}
         </h3>
         <BasicButton
-          :text="$t('promo.btn_save')"
-          class="btn-primary"
-          :is-disabled="saving"
+          variant="primary"
+          :disabled="saving"
           @click="save"
-        />
+        >
+          {{ $t('promo.btn_save') }}
+        </BasicButton>
       </div>
 
       <h4 class="cfg-section">{{ $t("promo.cfg_section_validity") }}</h4>

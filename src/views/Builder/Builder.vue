@@ -414,10 +414,11 @@
           :message="$t('builder.empty_message')"
         >
           <BasicButton
-            :text="$t('builder.new_section')"
-            class="btn-secondary"
+            variant="secondary"
             @click="$refs.newSectionSetter?.$el?.click()"
-          />
+          >
+            {{ $t('builder.new_section') }}
+          </BasicButton>
         </EmptyState>
         <div
           class="fs-300 grid b-subtle rounded ov-h"

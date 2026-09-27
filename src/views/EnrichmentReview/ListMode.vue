@@ -14,29 +14,32 @@
       <div class="flex ai-ct gap-2 ml-auto flex-wrap">
         <BasicButton
           v-if="actionableFilter"
-          :text="$t('enrichment.review.bulk.accept_all')"
-          class="btn-primary"
-          :isDisabled="busy"
+          variant="primary"
+          :disabled="busy"
           data-testid="enrichment-bulk-accept"
           @click="$emit('bulk-accept')"
-        />
+        >
+          {{ $t('enrichment.review.bulk.accept_all') }}
+        </BasicButton>
         <BasicButton
           v-if="actionableFilter"
-          :text="$t('enrichment.review.bulk.reject_all')"
-          class="btn-danger"
-          :isDisabled="busy"
+          variant="danger"
+          :disabled="busy"
           data-testid="enrichment-bulk-reject"
           @click="$emit('bulk-reject', '')"
-        />
+        >
+          {{ $t('enrichment.review.bulk.reject_all') }}
+        </BasicButton>
         <BasicButton
           v-if="undoableFilter"
-          :text="$t('enrichment.review.undo')"
-          class="btn-secondary"
-          :isDisabled="busy"
+          variant="secondary"
+          :disabled="busy"
           :title="$t('enrichment.review.undo_hint')"
           data-testid="enrichment-undo"
           @click="$emit('bulk-undo')"
-        />
+        >
+          {{ $t('enrichment.review.undo') }}
+        </BasicButton>
       </div>
     </div>
 
@@ -102,30 +105,33 @@
         <div v-if="isActionable(row)" class="flex ai-ct gap-2">
           <BasicButton
             v-if="row.status === 'drifted'"
-            :text="$t('enrichment.review.reconfirm')"
             size="sm"
-            class="btn-secondary"
-            :isDisabled="busy"
+            variant="secondary"
+            :disabled="busy"
             :data-testid="`enrichment-reconfirm-${row.id}`"
             @click="$emit('reconfirm', row)"
-          />
+          >
+            {{ $t('enrichment.review.reconfirm') }}
+          </BasicButton>
           <BasicButton
             v-else
-            :text="$t('common.accept')"
             size="sm"
-            class="btn-secondary"
-            :isDisabled="busy"
+            variant="secondary"
+            :disabled="busy"
             :data-testid="`enrichment-accept-${row.id}`"
             @click="$emit('accept', row)"
-          />
+          >
+            {{ $t('common.accept') }}
+          </BasicButton>
           <BasicButton
-            :text="$t('common.reject')"
             size="sm"
-            class="btn-danger"
-            :isDisabled="busy"
+            variant="danger"
+            :disabled="busy"
             :data-testid="`enrichment-reject-${row.id}`"
             @click="$emit('reject', { proposal: row, reason: '' })"
-          />
+          >
+            {{ $t('common.reject') }}
+          </BasicButton>
         </div>
         <span v-else class="fs-200 t-muted">—</span>
       </template>
@@ -143,20 +149,22 @@
       class="list-mode__pager flex ai-ct jc-ct gap-5 mt-8"
     >
       <BasicButton
-        :text="$t('enrichment.review.prev')"
-        class="btn-secondary"
-        :isDisabled="page <= 1 || busy"
+        variant="secondary"
+        :disabled="page <= 1 || busy"
         @click="$emit('page', page - 1)"
-      />
+      >
+        {{ $t('enrichment.review.prev') }}
+      </BasicButton>
       <span class="fs-200 t-muted">{{
         $t("enrichment.review.page_of", { page, total: totalPages })
       }}</span>
       <BasicButton
-        :text="$t('enrichment.review.next')"
-        class="btn-secondary"
-        :isDisabled="page >= totalPages || busy"
+        variant="secondary"
+        :disabled="page >= totalPages || busy"
         @click="$emit('page', page + 1)"
-      />
+      >
+        {{ $t('enrichment.review.next') }}
+      </BasicButton>
     </div>
   </div>
 </template>

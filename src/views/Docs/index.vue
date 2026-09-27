@@ -5,7 +5,6 @@
         <BasicButton
           v-for="({ label, value }, i) in nav"
           :key="`nav-key-${i}`"
-          :text="label"
           class="rounded-tl rounded-tr"
           :class="[
             selected_view === value
@@ -13,7 +12,9 @@
               : 'bg-hover b-default t-secondary',
           ]"
           @click="selected_view = value"
-        />
+        >
+          {{ label }}
+        </BasicButton>
       </nav>
       <div v-if="selected_view === 'doc'">
         <div class="mb-5">

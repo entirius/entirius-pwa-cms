@@ -60,12 +60,13 @@
         </template>
         <template #cell-actions="{ row }">
           <BasicButton
-            :text="$t('enrichment.spawn_rules.run_now')"
             size="sm"
-            class="btn-secondary"
+            variant="secondary"
             :data-test="`spawn-rule-run-${row.key}`"
             @click="runRule(row)"
-          />
+          >
+            {{ $t('enrichment.spawn_rules.run_now') }}
+          </BasicButton>
         </template>
       </DataTable>
 

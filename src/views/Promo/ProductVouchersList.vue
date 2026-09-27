@@ -2,10 +2,11 @@
   <div class="config-list">
     <div class="config-list__toolbar">
       <BasicButton
-        :text="$t('promo.pv_new')"
-        class="btn-primary"
+        variant="primary"
         @click="openCreate"
-      />
+      >
+        {{ $t('promo.pv_new') }}
+      </BasicButton>
     </div>
 
     <Loader block v-show="loading" />
@@ -183,15 +184,17 @@
             </span>
             <div class="flex ai-ct gap-2">
               <BasicButton
-                :text="$t('promo.btn_edit')"
-                class="btn-secondary"
+                variant="secondary"
                 @click="editFilter(f)"
-              />
+              >
+                {{ $t('promo.btn_edit') }}
+              </BasicButton>
               <BasicButton
-                :text="$t('promo.btn_delete')"
-                class="btn-secondary"
+                variant="secondary"
                 @click="deleteFilter(f.id)"
-              />
+              >
+                {{ $t('promo.btn_delete') }}
+              </BasicButton>
             </div>
           </div>
 
@@ -241,20 +244,20 @@
             />
             <div class="flex ai-ct gap-2">
               <BasicButton
-                :text="
-                  editingFilterId
-                    ? $t('promo.btn_save')
-                    : $t('promo.pv_filter_add')
-                "
-                class="btn-secondary"
+                variant="secondary"
                 @click="saveFilter"
-              />
+              >
+                {{ editingFilterId
+                    ? $t('promo.btn_save')
+                    : $t('promo.pv_filter_add') }}
+              </BasicButton>
               <BasicButton
                 v-if="editingFilterId"
-                :text="$t('promo.btn_cancel')"
-                class="btn-secondary"
+                variant="secondary"
                 @click="cancelFilterEdit"
-              />
+              >
+                {{ $t('promo.btn_cancel') }}
+              </BasicButton>
             </div>
           </div>
         </div>
@@ -262,16 +265,18 @@
         <div class="voucher-form__actions">
           <BasicButton
             v-if="isEdit"
-            :text="$t('promo.btn_delete')"
-            class="btn-secondary"
+            variant="secondary"
             @click="showDelete = true"
-          />
+          >
+            {{ $t('promo.btn_delete') }}
+          </BasicButton>
           <BasicButton
-            :text="$t('promo.btn_save')"
-            class="btn-primary"
-            :is-disabled="saving"
+            variant="primary"
+            :disabled="saving"
             @click="save"
-          />
+          >
+            {{ $t('promo.btn_save') }}
+          </BasicButton>
         </div>
       </div>
     </SideDrawer>

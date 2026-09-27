@@ -22,10 +22,11 @@
         />
         <BasicButton
           v-if="canMarkAsWon"
-          :text="$t('cf.mark_as_won')"
-          class="btn-secondary"
+          variant="secondary"
           @click="openMarkAsWon"
-        />
+        >
+          {{ $t('cf.mark_as_won') }}
+        </BasicButton>
         <Dropdown
           v-if="otherTransitions.length"
           :values="otherTransitions"
@@ -37,11 +38,12 @@
           {{ $t("unsaved.changes") }}
         </span>
         <BasicButton
-          :text="$t('cf.save')"
-          class="btn-primary"
-          :is-disabled="!isDirty || saving"
+          variant="primary"
+          :disabled="!isDirty || saving"
           @click="save"
-        />
+        >
+          {{ $t('cf.save') }}
+        </BasicButton>
       </Teleport>
 
       <Loader block v-if="loading" />

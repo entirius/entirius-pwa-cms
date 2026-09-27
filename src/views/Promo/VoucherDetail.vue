@@ -10,10 +10,11 @@
     </Teleport>
     <Teleport to="#promo-toolbar-right" defer>
       <BasicButton
-        :text="$t('promo.voucher_reveal_btn')"
-        class="btn-secondary"
+        variant="secondary"
         @click="reveal"
-      />
+      >
+        {{ $t('promo.voucher_reveal_btn') }}
+      </BasicButton>
     </Teleport>
 
     <Loader block v-if="loading" />
@@ -37,10 +38,11 @@
           <BasicButton
             v-for="act in availableActions"
             :key="act.action"
-            :text="$t('promo.act_' + act.key)"
-            class="btn-secondary"
+            variant="secondary"
             @click="openAction(act)"
-          />
+          >
+            {{ $t('promo.act_' + act.key) }}
+          </BasicButton>
         </div>
 
         <div
@@ -170,11 +172,12 @@
         </FormField>
         <div class="voucher-form__actions">
           <BasicButton
-            :text="$t('promo.btn_save')"
-            class="btn-primary"
-            :is-disabled="actionSaving"
+            variant="primary"
+            :disabled="actionSaving"
             @click="submitAction"
-          />
+          >
+            {{ $t('promo.btn_save') }}
+          </BasicButton>
         </div>
       </div>
     </SideDrawer>

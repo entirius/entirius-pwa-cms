@@ -27,12 +27,13 @@
       <div class="flex gap-2 js-fe">
         <BasicButton
           v-if="translatorAvailable"
-          :text="$t('builder.translate_all')"
           :label="$t('builder.translate_all')"
-          icon="language"
-          class="btn-secondary icon-only-mobile"
+          variant="secondary"
+          class="icon-only-mobile"
           @click="showTranslateModal = true"
-        />
+        >
+          {{ $t('builder.translate_all') }}
+        </BasicButton>
         <Dropdown
           v-if="availableLanguages && language"
           :values="
@@ -116,8 +117,8 @@
           <template #cell-actions="{ row }">
             <BasicButton
               size="sm"
-              :text="canCreate ? $t('builder.edit') : $t('builder.preview')"
-              class="btn-ghost data-table__action-btn"
+              variant="ghost"
+              class="data-table__action-btn"
               @click="
                 $router.push({
                   name: 'Builder',
@@ -125,23 +126,24 @@
                   query: { lg: language },
                 })
               "
-            />
-            <BasicButton
+            >
+              {{ canCreate ? $t('builder.edit') : $t('builder.preview') }}
+            </BasicButton>
+            <IconButton
               v-if="doc.type !== 'legal-page'"
-              custom
-              size="sm"
+              icon="delete"
               :label="$t('builder.delete')"
-              class="btn-danger data-table__action-btn"
-              :isDisabled="!canCreate"
+              variant="danger"
+              size="sm"
+              class="data-table__action-btn"
+              :disabled="!canCreate"
               @click="
                 () => {
                   confirmation_modal = true;
                   to_remove = [doc.type, row.uid];
                 }
               "
-            >
-              <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
-            </BasicButton>
+            />
           </template>
         </DataTable>
         <div class="mv-2 ph-2" v-if="doc.pagination">

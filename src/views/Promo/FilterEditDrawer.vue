@@ -281,16 +281,18 @@
       <!-- footer -->
       <div class="fed__footer mt-10">
         <BasicButton
-          :text="$t('common.cancel')"
-          class="btn-secondary"
+          variant="secondary"
           @click="onClose"
-        />
+        >
+          {{ $t('common.cancel') }}
+        </BasicButton>
         <BasicButton
-          :text="$t('common.save')"
-          class="btn-primary"
+          variant="primary"
           :disabled="saving"
           @click="onSave"
-        />
+        >
+          {{ $t('common.save') }}
+        </BasicButton>
       </div>
     </div>
   </SideDrawer>

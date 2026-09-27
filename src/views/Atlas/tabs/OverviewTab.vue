@@ -2,12 +2,13 @@
   <div class="overview-tab p-8 ovy-auto h-100">
     <Teleport to="#suppliers-toolbar-right" defer>
       <BasicButton
-        :text="$t('common.save')"
-        class="btn-primary"
-        :isDisabled="saving || !isDirty"
+        variant="primary"
+        :disabled="saving || !isDirty"
         data-testid="suppliers-overview-save"
         @click="save"
-      />
+      >
+        {{ $t('common.save') }}
+      </BasicButton>
     </Teleport>
 
     <div class="overview-grid">
