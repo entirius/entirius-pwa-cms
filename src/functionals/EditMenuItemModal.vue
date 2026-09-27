@@ -1,5 +1,7 @@
 <script setup>
 import { ref, watch, computed } from "vue";
+import BasicModal from "@/boots/BasicModal/index.vue";
+import { t } from "@/i18n";
 import { useCategoryFetch, usePageFetch } from "@/composables/useEntityFetch";
 import { useMuninStore } from "@/stores/munin";
 
@@ -32,6 +34,11 @@ const categoryFetch = computed(() => useCategoryFetch(props.channelIdx));
 const pageFetch = computed(() => usePageFetch());
 
 const emit = defineEmits(["save", "close"]);
+
+const footerActions = computed(() => [
+  { key: "cancel", label: t("common.cancel"), role: "secondary", onClick: () => emit("close") },
+  { key: "save", label: t("common.save"), role: "primary", onClick: onSave, testid: "modal-save" },
+]);
 
 const translatingField = ref(null);
 
@@ -88,108 +95,90 @@ function onSave() {
 </script>
 
 <template>
-  <Transition name="modal">
-    <div v-if="visible" class="modal-overlay" @click.self="emit('close')">
-      <div class="modal-container">
-        <div class="modal-header">
-          <h2 class="fs-500 fw-600 t-body">
-            {{ item ? $t("layout_extender.edit_item") : $t("layout_extender.add_item") }}
-          </h2>
-          <span class="modal-close" @click="emit('close')">
-            <FontAwesomeIcon icon="xmark" />
-          </span>
-        </div>
+  <BasicModal
+    :open="visible"
+    :title="item ? $t('layout_extender.edit_item') : $t('layout_extender.add_item')"
+    size="md"
+    :actions="footerActions"
+    @update:open="(open) => !open && emit('close')"
+  >
+    <div class="form-group mb-8">
+      <div class="flex ai-ct jc-sb">
+        <label class="field-label required">{{ $t("layout_extender.label") }}</label>
+        <BasicButton
+          v-if="languages.length > 1"
+          :text="$t('layout_extender.translations')"
+          icon="language"
+          class="btn-outline translation-field__btn"
+          @click="translatingField = 'label'"
+        />
+      </div>
+      <BasicInput v-model="form.label" />
+    </div>
 
-        <div class="modal-body">
-          <div class="form-group mb-8">
-            <div class="flex ai-ct jc-sb">
-              <label class="field-label required">{{ $t("layout_extender.label") }}</label>
-              <BasicButton
-                v-if="languages.length > 1"
-                :text="$t('layout_extender.translations')"
-                icon="language"
-                class="btn-outline translation-field__btn"
-                @click="translatingField = 'label'"
-              />
-            </div>
-            <BasicInput v-model="form.label" />
-          </div>
-
-          <div class="form-group mb-8">
-            <label class="field-label">{{ $t("layout_extender.display_as") }}</label>
-            <div class="radio-group">
-              <label class="radio-label">
-                <input type="radio" v-model="form.display_as" value="link" />
-                <span>{{ $t("layout_extender.simple_link") }}</span>
-              </label>
-              <label class="radio-label">
-                <input type="radio" v-model="form.display_as" value="megamenu" />
-                <span>{{ $t("layout_extender.mega_menu") }}</span>
-              </label>
-            </div>
-          </div>
-
-          <template v-if="form.display_as === 'link'">
-            <div class="form-group mb-8">
-              <label class="field-label">{{ $t("layout_extender.link_type") }}</label>
-              <div class="radio-group">
-                <label class="radio-label">
-                  <input type="radio" v-model="form.link_type" value="category" />
-                  <span>{{ $t("layout_extender.category") }}</span>
-                </label>
-                <label class="radio-label">
-                  <input type="radio" v-model="form.link_type" value="page" />
-                  <span>{{ $t("layout_extender.content_page") }}</span>
-                </label>
-                <label class="radio-label">
-                  <input type="radio" v-model="form.link_type" value="url" />
-                  <span>{{ $t("layout_extender.url") }}</span>
-                </label>
-              </div>
-            </div>
-
-            <div class="form-group mb-8">
-              <label class="field-label">
-                {{ form.link_type === "url" ? $t("layout_extender.url") : $t("layout_extender.link_value") }}
-              </label>
-              <EntitySearchPicker
-                v-if="form.link_type === 'category'"
-                :modelValue="form.link_value"
-                :displayValue="form.link_display"
-                :fetchFn="categoryFetch"
-                :placeholder="$t('layout_extender.search_category')"
-                :disabled="!pimEnabled"
-                @update:modelValue="form.link_value = $event"
-                @update:displayValue="form.link_display = $event"
-                @clear="form.link_value = ''; form.link_display = ''"
-              />
-              <EntitySearchPicker
-                v-else-if="form.link_type === 'page'"
-                :modelValue="form.link_value"
-                :displayValue="form.link_display"
-                :fetchFn="pageFetch"
-                :placeholder="$t('layout_extender.search_page')"
-                :clientFilter="true"
-                @update:modelValue="form.link_value = $event"
-                @update:displayValue="form.link_display = $event"
-                @clear="form.link_value = ''; form.link_display = ''"
-              />
-              <BasicInput v-else v-model="form.link_value" :placeholder="'https://...'" />
-            </div>
-          </template>
-        </div>
-
-        <div class="modal-footer">
-          <button class="modal-btn modal-btn--secondary" @click="emit('close')">
-            {{ $t("common.cancel") }}
-          </button>
-          <button class="modal-btn modal-btn--confirm" @click="onSave">
-            {{ $t("common.save") }}
-          </button>
-        </div>
+    <div class="form-group mb-8">
+      <label class="field-label">{{ $t("layout_extender.display_as") }}</label>
+      <div class="radio-group">
+        <label class="radio-label">
+          <input type="radio" v-model="form.display_as" value="link" />
+          <span>{{ $t("layout_extender.simple_link") }}</span>
+        </label>
+        <label class="radio-label">
+          <input type="radio" v-model="form.display_as" value="megamenu" />
+          <span>{{ $t("layout_extender.mega_menu") }}</span>
+        </label>
       </div>
     </div>
-  </Transition>
+
+    <template v-if="form.display_as === 'link'">
+      <div class="form-group mb-8">
+        <label class="field-label">{{ $t("layout_extender.link_type") }}</label>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input type="radio" v-model="form.link_type" value="category" />
+            <span>{{ $t("layout_extender.category") }}</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" v-model="form.link_type" value="page" />
+            <span>{{ $t("layout_extender.content_page") }}</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" v-model="form.link_type" value="url" />
+            <span>{{ $t("layout_extender.url") }}</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group mb-8">
+        <label class="field-label">
+          {{ form.link_type === "url" ? $t("layout_extender.url") : $t("layout_extender.link_value") }}
+        </label>
+        <EntitySearchPicker
+          v-if="form.link_type === 'category'"
+          :modelValue="form.link_value"
+          :displayValue="form.link_display"
+          :fetchFn="categoryFetch"
+          :placeholder="$t('layout_extender.search_category')"
+          :disabled="!pimEnabled"
+          @update:modelValue="form.link_value = $event"
+          @update:displayValue="form.link_display = $event"
+          @clear="form.link_value = ''; form.link_display = ''"
+        />
+        <EntitySearchPicker
+          v-else-if="form.link_type === 'page'"
+          :modelValue="form.link_value"
+          :displayValue="form.link_display"
+          :fetchFn="pageFetch"
+          :placeholder="$t('layout_extender.search_page')"
+          :clientFilter="true"
+          @update:modelValue="form.link_value = $event"
+          @update:displayValue="form.link_display = $event"
+          @clear="form.link_value = ''; form.link_display = ''"
+        />
+        <BasicInput v-else v-model="form.link_value" :placeholder="'https://...'" />
+      </div>
+    </template>
+  </BasicModal>
 
   <TranslationsDrawer
     :visible="!!translatingField"
@@ -203,64 +192,6 @@ function onSave() {
 </template>
 
 <style scoped>
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: var(--overlay-backdrop);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 100;
-  padding: var(--space-4);
-}
-
-.modal-container {
-  background: var(--surface-base);
-  padding: var(--space-6);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-subtle);
-  box-shadow: var(--shadow-lg);
-  width: min(480px, 95vw);
-}
-
-.modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--space-5);
-  padding-bottom: var(--space-3);
-  border-bottom: 1px solid var(--border-subtle);
-}
-
-.modal-close {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-base);
-  cursor: pointer;
-  color: var(--text-muted);
-  transition: background 0.1s, color 0.1s;
-}
-
-.modal-close:hover {
-  background: var(--surface-raised);
-  color: var(--text-body);
-}
-
-.modal-body {
-  margin-bottom: var(--space-6);
-}
-
-.modal-footer {
-  display: flex;
-  gap: var(--space-2);
-  justify-content: flex-end;
-}
 
 .form-group {
   display: flex;
@@ -291,68 +222,8 @@ function onSave() {
   cursor: pointer;
 }
 
-.modal-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  height: 36px;
-  padding: 0 var(--space-4);
-  font-size: var(--fs-250);
-  font-weight: 500;
-  font-family: inherit;
-  border-radius: var(--radius-base);
-  border: 1px solid;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.modal-btn--secondary {
-  background: var(--surface-base);
-  border-color: var(--border-default);
-  color: var(--text-body);
-}
-
-.modal-btn--secondary:hover {
-  background: var(--surface-raised);
-}
-
-.modal-btn--confirm {
-  background: var(--accent-fill);
-  border-color: var(--accent);
-  color: var(--text-on-accent-fill);
-}
-
-.modal-btn--confirm:hover {
-  opacity: 0.9;
-}
-
 .translation-field__btn {
   flex-shrink: 0;
 }
 
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.15s ease;
-}
-
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-}
-
-.modal-enter-active .modal-container {
-  animation: modal-scale 0.15s ease-out;
-}
-
-@keyframes modal-scale {
-  from {
-    opacity: 0;
-    transform: scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
 </style>

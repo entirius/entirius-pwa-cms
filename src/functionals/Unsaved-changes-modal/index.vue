@@ -1,35 +1,24 @@
 <template>
-  <Transition name="modal">
-    <div v-if="visible" class="modal-overlay" @click.self="$emit('stay')">
-      <div class="modal-container">
-        <div class="modal-header">
-          <h2>{{ $t("unsaved.title") }}</h2>
-        </div>
-        <div class="modal-body">
-          <p>{{ $t("unsaved.message") }}</p>
-        </div>
-        <div class="modal-footer">
-          <button class="modal-btn modal-btn--secondary" @click="$emit('stay')">
-            {{ $t("common.cancel") }}
-          </button>
-          <button
-            class="modal-btn modal-btn--discard"
-            @click="$emit('discard')"
-          >
-            {{ $t("unsaved.discard") }}
-          </button>
-          <button class="modal-btn modal-btn--save" @click="$emit('save')">
-            {{ $t("unsaved.save_and_leave") }}
-          </button>
-        </div>
-      </div>
-    </div>
-  </Transition>
+  <ConfirmDialog
+    :open="visible"
+    :title="$t('unsaved.title')"
+    :message="$t('unsaved.message')"
+    :confirm-label="$t('unsaved.save_and_leave')"
+    :discard-label="$t('unsaved.discard')"
+    @confirm="$emit('save')"
+    @discard="$emit('discard')"
+    @cancel="$emit('stay')"
+  />
 </template>
 
 <script>
+// Transition wrapper over ConfirmDialog (plan 12) until the sweeps move the call sites (scripts/codemods/
+// p3-overlays.mjs); plan 19 deletes it. Stay = cancel (also Esc and the backdrop), discard, save and leave = confirm.
+import ConfirmDialog from "@/boots/ConfirmDialog/index.vue";
+
 export default {
   name: "UnsavedChangesModal",
+  components: { ConfirmDialog },
   props: {
     visible: {
       type: Boolean,
@@ -39,133 +28,3 @@ export default {
   emits: ["save", "discard", "stay"],
 };
 </script>
-
-<style scoped>
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: var(--overlay-backdrop);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 100;
-  padding: var(--space-4);
-}
-
-.modal-container {
-  background: var(--surface-base);
-  padding: var(--space-6);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-subtle);
-  box-shadow: var(--shadow-lg);
-  width: 420px;
-  max-width: 100%;
-}
-
-.modal-header {
-  margin-bottom: var(--space-3);
-}
-
-.modal-header h2 {
-  font-size: var(--fs-400);
-  font-weight: 600;
-  color: var(--text-body);
-  margin: 0;
-}
-
-.modal-body {
-  margin-bottom: var(--space-6);
-}
-
-.modal-body p {
-  font-size: var(--fs-300);
-  line-height: 1.5;
-  color: var(--text-secondary);
-  margin: 0;
-}
-
-.modal-footer {
-  display: flex;
-  gap: var(--space-2);
-  justify-content: flex-end;
-}
-
-.modal-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  height: 36px;
-  padding: 0 var(--space-4);
-  font-size: var(--fs-250);
-  font-weight: 500;
-  font-family: inherit;
-  border-radius: var(--radius-base);
-  border: 1px solid;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  white-space: nowrap;
-}
-
-.modal-btn--secondary {
-  background: var(--surface-base);
-  border-color: var(--border-default);
-  color: var(--text-body);
-}
-
-.modal-btn--secondary:hover {
-  background: var(--surface-raised);
-  border-color: var(--border-default);
-}
-
-.modal-btn--discard {
-  background: var(--negative-subtle);
-  border-color: var(--negative);
-  color: var(--negative);
-}
-
-.modal-btn--discard:hover {
-  background: var(--negative-fill);
-  border-color: var(--negative);
-  color: var(--text-on-status-fill);
-}
-
-.modal-btn--save {
-  background: var(--accent-fill);
-  border-color: var(--accent);
-  color: var(--text-on-accent-fill);
-}
-
-.modal-btn--save:hover {
-  background: var(--accent-fill);
-  border-color: var(--accent);
-}
-
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.15s ease;
-}
-
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-}
-
-.modal-enter-active .modal-container {
-  animation: modal-scale 0.15s ease-out;
-}
-
-@keyframes modal-scale {
-  from {
-    opacity: 0;
-    transform: scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-</style>

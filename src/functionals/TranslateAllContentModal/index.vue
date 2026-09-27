@@ -3,6 +3,7 @@ import { useContentDBChannelStore } from "@/stores/contentDBChannel";
 import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import BasicModal from "@/boots/BasicModal/index.vue";
 import {
   POST_ContentTranslateEstimate,
   POST_ContentTranslateExecute,
@@ -10,6 +11,7 @@ import {
 
 export default {
   name: "TranslateAllContentModal",
+  components: { BasicModal },
   props: {
     visible: { type: Boolean, default: false },
     channelIdx: { type: String, required: true },
@@ -53,6 +55,32 @@ export default {
     dialogTitle() {
       return this.title || this.$t("builder.translate_all");
     },
+    // Step 1: Cancel · Estimate; step 2: Back · Confirm (R5, primary rightmost).
+    footerActions() {
+      if (this.step === "confirm") {
+        return [
+          { key: "back", label: this.$t("common.back"), role: "secondary", onClick: this.backToConfig },
+          {
+            key: "confirm",
+            label: this.$t("builder.translate_confirm"),
+            role: "primary",
+            loading: this.executing,
+            onClick: this.confirmTranslate,
+          },
+        ];
+      }
+      return [
+        { key: "cancel", label: this.$t("common.cancel"), role: "secondary", onClick: () => this.$emit("close") },
+        {
+          key: "estimate",
+          label: this.$t("builder.translate_estimate"),
+          role: "primary",
+          disabled: !this.canEstimate,
+          loading: this.estimating,
+          onClick: this.fetchEstimate,
+        },
+      ];
+    },
   },
   watch: {
     visible(val) {
@@ -73,6 +101,10 @@ export default {
     },
   },
   methods: {
+    backToConfig() {
+      this.step = "config";
+      this.estimate = null;
+    },
     onLanguageSelect(val) {
       const idx = this.selectedLanguages.indexOf(val);
       if (idx >= 0) {
@@ -148,225 +180,153 @@ export default {
 </script>
 
 <template>
-  <div v-if="visible" class="td-overlay" @click.self="$emit('close')">
-    <div class="td-dialog">
-      <h3 class="td-dialog__title">{{ dialogTitle }}</h3>
+  <BasicModal
+    :open="visible"
+    :title="dialogTitle"
+    size="md"
+    :actions="footerActions"
+    @update:open="(open) => !open && $emit('close')"
+  >
+    <!-- Step 1: Config -->
+    <div v-if="step === 'config'">
+      <p class="t-muted fs-200 mb-8">
+        {{ $t("builder.translate_all_description") }}
+      </p>
 
-      <!-- Step 1: Config -->
-      <div v-if="step === 'config'">
-        <p class="t-muted fs-200 mb-8">
-          {{ $t("builder.translate_all_description") }}
-        </p>
-
-        <div class="td-dialog__field mb-8">
-          <label class="field-label mb-2">{{
-            $t("builder.translate_source_language")
-          }}</label>
-          <Dropdown
-            :values="sourceLanguageOptions"
-            :selected="sourceLanguage ? [sourceLanguage] : []"
-            :placeholder="$t('builder.translate_select_language')"
-            @onSelect="(val) => (sourceLanguage = val)"
-          />
-        </div>
-
-        <div class="td-dialog__field mb-8">
-          <label class="field-label mb-2">{{
-            $t("builder.translate_target_languages")
-          }}</label>
-          <Dropdown
-            :values="targetLanguageOptions"
-            :placeholder="$t('builder.translate_select_language')"
-            @onSelect="onLanguageSelect"
-          />
-          <div v-if="selectedLanguages.length" class="td-chips mt-2">
-            <span
-              v-for="lang in selectedLanguages"
-              :key="lang"
-              class="td-chip bg-accent-subtle t-strong fs-200"
-              @click="removeLanguage(lang)"
-            >
-              {{ lang.toUpperCase() }}
-              <FontAwesomeIcon :icon="$icons.close" class="fs-100" />
-            </span>
-          </div>
-          <p
-            v-if="!targetLanguageOptions.length"
-            class="t-warning fs-200 mt-2"
-          >
-            {{ $t("builder.translate_no_languages") }}
-          </p>
-        </div>
-
-        <div class="td-dialog__field mb-5">
-          <label class="td-checkbox fs-300 t-body">
-            <input type="checkbox" v-model="force" />
-            {{ $t("builder.translate_force_all") }}
-          </label>
-        </div>
-
-        <div class="td-dialog__field mb-8">
-          <label class="td-checkbox fs-300 t-body">
-            <input type="checkbox" v-model="publish" />
-            {{ $t("builder.translate_publish") }}
-          </label>
-        </div>
-
-        <div class="td-dialog__actions">
-          <button class="td-btn td-btn--secondary" @click="$emit('close')">
-            {{ $t("common.cancel") }}
-          </button>
-          <button
-            class="td-btn td-btn--primary"
-            :disabled="!canEstimate || estimating"
-            @click="fetchEstimate"
-          >
-            {{
-              estimating
-                ? $t("builder.translate_estimating")
-                : $t("builder.translate_estimate")
-            }}
-          </button>
-        </div>
+      <div class="td-dialog__field mb-8">
+        <label class="field-label mb-2">{{
+          $t("builder.translate_source_language")
+        }}</label>
+        <Dropdown
+          :values="sourceLanguageOptions"
+          :selected="sourceLanguage ? [sourceLanguage] : []"
+          :placeholder="$t('builder.translate_select_language')"
+          @onSelect="(val) => (sourceLanguage = val)"
+        />
       </div>
 
-      <!-- Step 2: Estimate + Confirm -->
-      <div v-if="step === 'confirm' && estimate">
-        <!-- Per-language breakdown -->
+      <div class="td-dialog__field mb-8">
+        <label class="field-label mb-2">{{
+          $t("builder.translate_target_languages")
+        }}</label>
+        <Dropdown
+          :values="targetLanguageOptions"
+          :placeholder="$t('builder.translate_select_language')"
+          @onSelect="onLanguageSelect"
+        />
+        <div v-if="selectedLanguages.length" class="td-chips mt-2">
+          <span
+            v-for="lang in selectedLanguages"
+            :key="lang"
+            class="td-chip bg-accent-subtle t-strong fs-200"
+            @click="removeLanguage(lang)"
+          >
+            {{ lang.toUpperCase() }}
+            <FontAwesomeIcon :icon="$icons.close" class="fs-100" />
+          </span>
+        </div>
+        <p
+          v-if="!targetLanguageOptions.length"
+          class="t-warning fs-200 mt-2"
+        >
+          {{ $t("builder.translate_no_languages") }}
+        </p>
+      </div>
+
+      <div class="td-dialog__field mb-5">
+        <label class="td-checkbox fs-300 t-body">
+          <input type="checkbox" v-model="force" />
+          {{ $t("builder.translate_force_all") }}
+        </label>
+      </div>
+
+      <div class="td-dialog__field mb-8">
+        <label class="td-checkbox fs-300 t-body">
+          <input type="checkbox" v-model="publish" />
+          {{ $t("builder.translate_publish") }}
+        </label>
+      </div>
+
+    </div>
+
+    <!-- Step 2: Estimate + Confirm -->
+    <div v-if="step === 'confirm' && estimate">
+      <!-- Per-language breakdown -->
+      <table class="td-table mb-8">
+        <thead>
+          <tr>
+            <th class="fs-200 t-muted">
+              {{ $t("builder.translate_target_languages") }}
+            </th>
+            <th class="fs-200 t-muted">
+              {{ $t("builder.translate_items") }}
+            </th>
+            <th class="fs-200 t-muted">
+              {{ $t("builder.translate_chars") }}
+            </th>
+            <th class="fs-200 t-muted">
+              {{ $t("builder.translate_cost") }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="pl in estimate.per_language" :key="pl.language">
+            <td class="fs-300 fw-600">{{ pl.language.toUpperCase() }}</td>
+            <td class="fs-300">{{ pl.items }}</td>
+            <td class="fs-300">{{ pl.chars?.toLocaleString() }}</td>
+            <td class="fs-300">{{ formatCost(pl.cost_usd) }}</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td class="fs-300 fw-600" colspan="3">
+              {{ $t("builder.translate_total_cost") }}
+            </td>
+            <td class="fs-300 fw-600">
+              {{ formatCost(estimate.estimated_cost_usd) }}
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <!-- Per-draft breakdown -->
+      <div v-if="estimate.per_draft && estimate.per_draft.length">
+        <h4 class="fs-200 fw-600 t-muted mb-2" style="text-transform: uppercase; letter-spacing: 0.03em;">
+          {{ $t("builder.translate_pages_to_translate") }}
+        </h4>
         <table class="td-table mb-8">
           <thead>
             <tr>
               <th class="fs-200 t-muted">
-                {{ $t("builder.translate_target_languages") }}
+                {{ $t("builder.translate_draft_name") }}
               </th>
               <th class="fs-200 t-muted">
-                {{ $t("builder.translate_items") }}
+                {{ $t("builder.translate_draft_items") }}
               </th>
               <th class="fs-200 t-muted">
-                {{ $t("builder.translate_chars") }}
-              </th>
-              <th class="fs-200 t-muted">
-                {{ $t("builder.translate_cost") }}
+                {{ $t("builder.translate_draft_chars") }}
               </th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="pl in estimate.per_language" :key="pl.language">
-              <td class="fs-300 fw-600">{{ pl.language.toUpperCase() }}</td>
-              <td class="fs-300">{{ pl.items }}</td>
-              <td class="fs-300">{{ pl.chars?.toLocaleString() }}</td>
-              <td class="fs-300">{{ formatCost(pl.cost_usd) }}</td>
+            <tr v-for="draft in estimate.per_draft" :key="draft.draft_name">
+              <td class="fs-300">{{ draft.draft_name }}</td>
+              <td class="fs-300">{{ draft.items }}</td>
+              <td class="fs-300">{{ draft.chars?.toLocaleString() }}</td>
             </tr>
           </tbody>
-          <tfoot>
-            <tr>
-              <td class="fs-300 fw-600" colspan="3">
-                {{ $t("builder.translate_total_cost") }}
-              </td>
-              <td class="fs-300 fw-600">
-                {{ formatCost(estimate.estimated_cost_usd) }}
-              </td>
-            </tr>
-          </tfoot>
         </table>
-
-        <!-- Per-draft breakdown -->
-        <div v-if="estimate.per_draft && estimate.per_draft.length">
-          <h4 class="fs-200 fw-600 t-muted mb-2" style="text-transform: uppercase; letter-spacing: 0.03em;">
-            {{ $t("builder.translate_pages_to_translate") }}
-          </h4>
-          <table class="td-table mb-8">
-            <thead>
-              <tr>
-                <th class="fs-200 t-muted">
-                  {{ $t("builder.translate_draft_name") }}
-                </th>
-                <th class="fs-200 t-muted">
-                  {{ $t("builder.translate_draft_items") }}
-                </th>
-                <th class="fs-200 t-muted">
-                  {{ $t("builder.translate_draft_chars") }}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="draft in estimate.per_draft" :key="draft.draft_name">
-                <td class="fs-300">{{ draft.draft_name }}</td>
-                <td class="fs-300">{{ draft.items }}</td>
-                <td class="fs-300">{{ draft.chars?.toLocaleString() }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="td-dialog__actions">
-          <button
-            class="td-btn td-btn--secondary"
-            @click="
-              step = 'config';
-              estimate = null;
-            "
-          >
-            {{ $t("common.back") }}
-          </button>
-          <button
-            class="td-btn td-btn--primary"
-            :disabled="executing"
-            @click="confirmTranslate"
-          >
-            {{
-              executing
-                ? $t("builder.translate_creating_jobs")
-                : $t("builder.translate_confirm")
-            }}
-          </button>
-        </div>
       </div>
+
     </div>
-  </div>
+  </BasicModal>
 </template>
 
 <style lang="scss" scoped>
-.td-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--overlay-heavy);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.td-dialog {
-  background: var(--surface-base);
-  border-radius: var(--radius-lg);
-  padding: var(--space-6);
-  min-width: min(480px, 95vw);
-  max-width: 560px;
-  box-shadow: var(--shadow-lg);
-  border: 1px solid var(--border-subtle);
-}
-
-.td-dialog__title {
-  margin: 0 0 var(--space-4);
-  font-size: var(--fs-500);
-  font-weight: 600;
-  color: var(--text-body);
-}
 
 .td-dialog__field {
   display: flex;
   flex-direction: column;
-}
-
-.td-dialog__actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--space-2);
-  margin-top: var(--space-4);
 }
 
 .td-chips {
@@ -409,41 +369,6 @@ export default {
   tfoot td {
     border-top: 2px solid var(--border-default);
     border-bottom: none;
-  }
-}
-
-.td-btn {
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-base);
-  border: 1px solid var(--border-subtle);
-  cursor: pointer;
-  font-size: var(--fs-300);
-  font-weight: 500;
-  transition: background 0.15s, border-color 0.15s;
-
-  &--primary {
-    background: var(--accent-fill);
-    color: var(--text-on-accent-fill);
-    border-color: var(--accent);
-
-    &:hover:not(:disabled) {
-      background: var(--accent-fill);
-      border-color: var(--accent);
-    }
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-  }
-
-  &--secondary {
-    background: var(--surface-base);
-    color: var(--text-body);
-
-    &:hover {
-      background: var(--surface-raised);
-    }
   }
 }
 

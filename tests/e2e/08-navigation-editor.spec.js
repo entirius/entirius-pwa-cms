@@ -215,11 +215,11 @@ test.describe("Navigation Editor", () => {
     test("add simple link item via modal", async () => {
       // Click "Add item" (content area, below the list)
       await page.getByTestId("nav-editor-add-item").click();
-      await expect(page.locator(".modal-overlay")).toBeVisible({ timeout: 5000 });
+      await expect(page.locator(".basic-modal")).toBeVisible({ timeout: 5000 });
 
       // Fill label
       await page
-        .locator(".modal-body .form-group")
+        .locator(".basic-modal__body .form-group")
         .first()
         .locator("input")
         .fill("Test Link");
@@ -235,14 +235,14 @@ test.describe("Navigation Editor", () => {
 
       // Fill URL in the last form-group input
       await page
-        .locator(".modal-body .form-group")
+        .locator(".basic-modal__body .form-group")
         .last()
         .locator("input")
         .fill("https://example.com");
 
       // Save
-      await page.locator(".modal-btn--confirm").click();
-      await expect(page.locator(".modal-overlay")).not.toBeVisible({
+      await page.locator('[data-testid="modal-save"]').click();
+      await expect(page.locator(".basic-modal")).not.toBeVisible({
         timeout: 3000,
       });
 
@@ -260,10 +260,10 @@ test.describe("Navigation Editor", () => {
 
     test("add megamenu item via modal", async () => {
       await page.getByTestId("nav-editor-add-item").click();
-      await expect(page.locator(".modal-overlay")).toBeVisible({ timeout: 5000 });
+      await expect(page.locator(".basic-modal")).toBeVisible({ timeout: 5000 });
 
       await page
-        .locator(".modal-body .form-group")
+        .locator(".basic-modal__body .form-group")
         .first()
         .locator("input")
         .fill("Test Mega");
@@ -271,8 +271,8 @@ test.describe("Navigation Editor", () => {
       // Select megamenu
       await page.locator('input[type="radio"][value="megamenu"]').click();
 
-      await page.locator(".modal-btn--confirm").click();
-      await expect(page.locator(".modal-overlay")).not.toBeVisible({
+      await page.locator('[data-testid="modal-save"]').click();
+      await expect(page.locator(".basic-modal")).not.toBeVisible({
         timeout: 3000,
       });
 
@@ -316,11 +316,11 @@ test.describe("Navigation Editor", () => {
 
       // Click "+ Add link"
       await column.locator("a.nav-add-link").click();
-      await expect(page.locator(".modal-overlay")).toBeVisible({ timeout: 5000 });
+      await expect(page.locator(".basic-modal")).toBeVisible({ timeout: 5000 });
 
       // Fill label
       await page
-        .locator(".modal-body .form-group")
+        .locator(".basic-modal__body .form-group")
         .first()
         .locator("input")
         .fill("Column Link 1");
@@ -330,13 +330,13 @@ test.describe("Navigation Editor", () => {
       await page.waitForTimeout(300);
 
       await page
-        .locator(".modal-body .form-group")
+        .locator(".basic-modal__body .form-group")
         .last()
         .locator("input")
         .fill("https://link1.example.com");
 
-      await page.locator(".modal-btn--confirm").click();
-      await expect(page.locator(".modal-overlay")).not.toBeVisible({
+      await page.locator('[data-testid="modal-save"]').click();
+      await expect(page.locator(".basic-modal")).not.toBeVisible({
         timeout: 3000,
       });
 
@@ -357,11 +357,11 @@ test.describe("Navigation Editor", () => {
         .click();
 
       // EditBannerModal opens
-      await expect(page.locator(".modal-overlay")).toBeVisible({ timeout: 5000 });
+      await expect(page.locator(".basic-modal")).toBeVisible({ timeout: 5000 });
 
       // Save with defaults (no image required)
-      await page.locator(".modal-btn--confirm").click();
-      await expect(page.locator(".modal-overlay")).not.toBeVisible({
+      await page.locator('[data-testid="modal-save"]').click();
+      await expect(page.locator(".basic-modal")).not.toBeVisible({
         timeout: 3000,
       });
 
@@ -380,17 +380,17 @@ test.describe("Navigation Editor", () => {
         .first()
         .click();
 
-      await expect(page.locator(".modal-overlay")).toBeVisible({ timeout: 5000 });
+      await expect(page.locator(".basic-modal")).toBeVisible({ timeout: 5000 });
 
       // Change label
       const labelInput = page
-        .locator(".modal-body .form-group")
+        .locator(".basic-modal__body .form-group")
         .first()
         .locator("input");
       await labelInput.fill("Updated Link");
 
-      await page.locator(".modal-btn--confirm").click();
-      await expect(page.locator(".modal-overlay")).not.toBeVisible({
+      await page.locator('[data-testid="modal-save"]').click();
+      await expect(page.locator(".basic-modal")).not.toBeVisible({
         timeout: 3000,
       });
 
@@ -511,19 +511,19 @@ test.describe("Navigation Editor", () => {
 
         // Open Add item modal
         await page.getByTestId("nav-editor-add-item").click();
-        await expect(page.locator(".modal-overlay")).toBeVisible({
+        await expect(page.locator(".basic-modal")).toBeVisible({
           timeout: 5000,
         });
 
         // Leave label empty, click save
-        await page.locator(".modal-btn--confirm").click();
+        await page.locator('[data-testid="modal-save"]').click();
 
         // Modal should still be open (validation prevents save)
-        await expect(page.locator(".modal-overlay")).toBeVisible();
+        await expect(page.locator(".basic-modal")).toBeVisible();
 
         // Close and verify no items added
         await page.locator(".modal-close").click();
-        await expect(page.locator(".modal-overlay")).not.toBeVisible({
+        await expect(page.locator(".basic-modal")).not.toBeVisible({
           timeout: 3000,
         });
         await expect(page.locator(".nav-item")).toHaveCount(0);
@@ -542,19 +542,19 @@ test.describe("Navigation Editor", () => {
         await page.waitForLoadState("networkidle", { timeout: 15000 });
 
         await page.getByTestId("nav-editor-add-item").click();
-        await expect(page.locator(".modal-overlay")).toBeVisible({
+        await expect(page.locator(".basic-modal")).toBeVisible({
           timeout: 5000,
         });
 
         // Fill label but close via X
         await page
-          .locator(".modal-body .form-group")
+          .locator(".basic-modal__body .form-group")
           .first()
           .locator("input")
           .fill("Should Not Be Added");
 
         await page.locator(".modal-close").click();
-        await expect(page.locator(".modal-overlay")).not.toBeVisible({
+        await expect(page.locator(".basic-modal")).not.toBeVisible({
           timeout: 3000,
         });
         await expect(page.locator(".nav-item")).toHaveCount(0);
@@ -573,21 +573,21 @@ test.describe("Navigation Editor", () => {
         await page.waitForLoadState("networkidle", { timeout: 15000 });
 
         await page.getByTestId("nav-editor-add-item").click();
-        await expect(page.locator(".modal-overlay")).toBeVisible({
+        await expect(page.locator(".basic-modal")).toBeVisible({
           timeout: 5000,
         });
 
         await page
-          .locator(".modal-body .form-group")
+          .locator(".basic-modal__body .form-group")
           .first()
           .locator("input")
           .fill("Should Not Be Added");
 
         // Click overlay (self-click closes via @click.self)
         await page
-          .locator(".modal-overlay")
+          .locator(".basic-modal")
           .click({ position: { x: 10, y: 10 } });
-        await expect(page.locator(".modal-overlay")).not.toBeVisible({
+        await expect(page.locator(".basic-modal")).not.toBeVisible({
           timeout: 3000,
         });
         await expect(page.locator(".nav-item")).toHaveCount(0);
@@ -651,7 +651,7 @@ test.describe("Navigation Editor", () => {
 
         // Open add item modal
         await page.getByTestId("nav-editor-add-item").click();
-        await expect(page.locator(".modal-overlay")).toBeVisible({
+        await expect(page.locator(".basic-modal")).toBeVisible({
           timeout: 5000,
         });
 

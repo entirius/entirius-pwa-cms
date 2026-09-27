@@ -156,7 +156,7 @@ test.describe('SupplierReview panel', () => {
       await page.getByTestId('list-row-checkbox-501').click();
       await page.getByTestId('list-bulk-approve').click();
       // accept the confirmation
-      await page.locator('.modal-btn--delete').last().click();
+      await page.getByTestId('confirm-dialog-confirm').last().click();
       const req = await waitForRequest(
         mockState,
         (r) =>
@@ -168,7 +168,7 @@ test.describe('SupplierReview panel', () => {
     test('Bulk Reject POSTs bulk-reject', async ({ page }) => {
       await page.getByTestId('list-row-checkbox-501').click();
       await page.getByTestId('list-bulk-reject').click();
-      await page.locator('.modal-btn--delete').last().click();
+      await page.getByTestId('confirm-dialog-confirm').last().click();
       const req = await waitForRequest(
         mockState,
         (r) => r.method === 'POST' && r.url.endsWith('/products/bulk-reject/')
@@ -193,7 +193,7 @@ test.describe('SupplierReview panel', () => {
       await page.getByTestId('list-row-checkbox-501').click();
       await page.getByTestId('list-row-checkbox-503').click();
       await page.getByTestId('list-bulk-requeue').click();
-      await page.locator('.modal-btn--delete').last().click();
+      await page.getByTestId('confirm-dialog-confirm').last().click();
       const req = await waitForRequest(
         mockState,
         (r) =>
