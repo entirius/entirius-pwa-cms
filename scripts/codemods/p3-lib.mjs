@@ -65,6 +65,12 @@ export function applyEdits(text, edits) {
   return sorted.reduce((out, { start, end, text: replacement }) => out.slice(0, start) + replacement + out.slice(end), text);
 }
 
+// Template errors of an SFC. A self-closing component (`<StatusBadge />`) is valid Vue, but the HTML parser reports
+// it; counting it would reject every rewrite that closes a tag.
+const SELF_CLOSING = "non-void-html-element-start-tag-with-trailing-solidus";
+export const templateErrors = (source) =>
+  (parseSfc(source).templateBody?.errors ?? []).filter((error) => error.message !== SELF_CLOSING).length;
+
 const lineOf = (text, offset) => text.slice(0, offset).split("\n").length;
 
 function parseArgs(argv) {
@@ -95,7 +101,6 @@ function transformFile(file, transform, write) {
   if (write && edits.length) {
     const out = applyEdits(text, edits);
     // A rewrite that breaks the SFC throws before it is written; the parser only records template errors.
-    const templateErrors = (source) => parseSfc(source).templateBody?.errors.length ?? 0;
     if (templateErrors(out) > templateErrors(text)) throw new Error("the rewrite breaks the template");
     writeFileSync(join(ROOT, file), out);
   }
