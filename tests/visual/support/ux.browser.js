@@ -347,13 +347,15 @@
   const OPTION_LABEL =
     'input[type="checkbox"], input[type="radio"], input[type="file"], [role="switch"], [role="checkbox"]';
   const CONTROL = "input, select, textarea, [contenteditable]";
+  const LABELLED_ROLES = '[role="combobox"], [role="listbox"], [role="textbox"], [role="spinbutton"], [role="slider"]';
   const ownText = (el) => [...el.childNodes].some((n) => n.nodeType === Node.TEXT_NODE && n.textContent.trim());
   function labelText(el) {
     if (!el.querySelector(CONTROL) || ownText(el)) return el;
     return [...el.children].find((c) => textOf(c) && !c.matches(CONTROL) && !c.querySelector(CONTROL)) || el;
   }
   function labelledIds() {
-    const refs = [...document.querySelectorAll("[aria-labelledby]")].map((el) => el.getAttribute("aria-labelledby"));
+    const named = [...document.querySelectorAll(`:is(${CONTROL}, ${LABELLED_ROLES})[aria-labelledby]`)];
+    const refs = named.map((el) => el.getAttribute("aria-labelledby"));
     return new Set(refs.flatMap((ids) => ids.split(/\s+/)).filter(Boolean));
   }
   function labelStyles(shown) {
