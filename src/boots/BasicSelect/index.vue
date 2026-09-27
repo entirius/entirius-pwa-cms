@@ -51,7 +51,8 @@
             :tabindex="searchable ? -1 : 0"
             :aria-labelledby="controlAttrs['aria-labelledby'] ?? field.id.value"
             :aria-activedescendant="searchable ? undefined : activeId"
-            @keydown="listbox.onKeydown($event)"
+            @keydown="onListKeydown"
+            @keyup.space="multiple || listbox.chooseActive()"
             @hover="listbox.active.value = $event"
             @choose="choose"
           />
@@ -129,7 +130,14 @@ const display = computed(() => {
 
 const listbox = useListbox(visible, choose);
 const activeId = computed(() => (listbox.active.value >= 0 ? `${listId}-${listbox.active.value}` : undefined));
-watch(query, () => listbox.reset());
+// Sync: onOpen clears the query and then points at the chosen option; a queued reset would undo that.
+watch(query, () => listbox.reset(), { flush: "sync" });
+
+// Single choice takes Space on keyup: focus returns to the trigger button, whose own Space keyup would reopen.
+function onListKeydown(event) {
+  if (event.key === " " && !props.multiple) event.preventDefault();
+  else listbox.onKeydown(event);
+}
 
 function onOpen() {
   query.value = "";

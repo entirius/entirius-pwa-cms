@@ -78,8 +78,10 @@ function scriptFunctions(ast) {
   return functions;
 }
 
-// `this.form.x` (options API) and `x.value` (script setup) read as `form.x` and `x` in the template.
-const templateName = (text, node) => code(text, node).replace(/^this\./, "").replace(/\.value$/, "");
+// `this.form.x` (options API) and `x.value` (a script-setup ref) read as `form.x` and `x` in the template.
+const SCRIPT_SETUP = /<script\b[^>]*\bsetup\b/;
+const templateName = (text, node) =>
+  SCRIPT_SETUP.test(text) ? code(text, node).replace(/\.value$/, "") : code(text, node).replace(/^this\./, "");
 
 // → { inline: true } when the handler can go (v-model does its work), { method } when it stays, null otherwise.
 function handlerKind(text, attr, value, functions) {

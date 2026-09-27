@@ -136,7 +136,13 @@ const pickerCells = [
   { id: "entity-search-picker-default-selected", label: "selected (Tag)", fetchFn: found, selected: true },
   { id: "entity-search-picker-default-open", label: "open · results", fetchFn: found, open: true, interact: "hover" },
   { id: "entity-search-picker-default-open-empty", label: "open · no results", fetchFn: nothing, open: true },
-  { id: "entity-search-picker-default-disabled", label: "disabled", fetchFn: found, selected: true, disabled: true },
+  {
+    id: "entity-search-picker-default-disabled",
+    label: "disabled (manual entry until the sweeps)",
+    fetchFn: found,
+    selected: true,
+    disabled: true,
+  },
 ];
 const pickers = reactive(
   Object.fromEntries(

@@ -172,6 +172,43 @@ describe("BasicSelect", () => {
     expect(wrapper.find(".basic-select__clear").exists()).toBe(false);
   });
 
+  it("Enter never chooses a disabled option; Space on a single select chooses on keyup", async () => {
+    const wrapper = mountSelect({ modelValue: "de" });
+    await open();
+    key(listbox(), "Enter");
+    await settle();
+    expect(emitted(wrapper)).toEqual([]);
+    key(listbox(), "ArrowDown");
+    key(listbox(), " ");
+    await settle();
+    expect(emitted(wrapper)).toEqual([]);
+    listbox().dispatchEvent(new KeyboardEvent("keyup", { key: " ", bubbles: true }));
+    await settle();
+    expect(emitted(wrapper)).toEqual(["pl"]);
+  });
+
+  it("searchable: reopening points at the chosen option again, not the first", async () => {
+    mountSelect({ searchable: true, modelValue: "en" });
+    await open();
+    const input = document.querySelector('input[type="search"]');
+    input.value = "po";
+    input.dispatchEvent(new Event("input"));
+    await settle();
+    key(input, "Escape");
+    await settle();
+    await open();
+    expect(input.getAttribute("aria-activedescendant")).toBe(options()[1].id);
+  });
+
+  it("a control that mounts disabled gets its ARIA state once enabled", async () => {
+    const wrapper = mountSelect({ disabled: true });
+    await settle();
+    await wrapper.setProps({ disabled: false });
+    await settle();
+    expect(control().getAttribute("aria-expanded")).toBe("false");
+    expect(control().getAttribute("aria-haspopup")).toBe("dialog");
+  });
+
   it("disabled: the control is disabled and does not open", async () => {
     mountSelect({ disabled: true });
     await settle();

@@ -105,11 +105,31 @@ describe("EntitySearchPicker", () => {
     expect(wrapper.emitted("clear")).toHaveLength(1);
   });
 
-  it("disabled: the control is disabled and the Tag is not removable", async () => {
-    const wrapper = mountPicker({ modelValue: "sku-1", disabled: true });
+  it("disabled keeps the manual-entry fallback: a text field for the value, no search", async () => {
+    const wrapper = mountPicker({ modelValue: "cat-1", disabled: true });
     await settle();
-    expect(trigger().disabled).toBe(true);
-    expect(wrapper.findComponent(Tag).props("removable")).toBe(false);
+    const input = wrapper.find('input[type="text"]');
+    expect(input.element.value).toBe("cat-1");
+    expect(wrapper.find('[role="combobox"]').exists()).toBe(false);
+    await input.setValue("cat-2");
+    expect(wrapper.emitted("update:modelValue")).toEqual([["cat-2"]]);
+  });
+
+  it("a slower earlier search never overwrites the newer results", async () => {
+    let releaseFirst;
+    const fetchFn = vi.fn((q) => (q ? Promise.resolve([RESULTS[1]]) : new Promise((r) => (releaseFirst = r))));
+    mountPicker({ fetchFn });
+    trigger().click();
+    await settle();
+    vi.useFakeTimers();
+    search().value = "ska";
+    search().dispatchEvent(new Event("input"));
+    vi.advanceTimersByTime(300);
+    vi.useRealTimers();
+    await settle();
+    releaseFirst(RESULTS);
+    await settle();
+    expect(options()).toHaveLength(1);
   });
 });
 

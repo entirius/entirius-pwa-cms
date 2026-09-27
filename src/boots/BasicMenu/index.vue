@@ -171,13 +171,15 @@ function syncTriggerAria() {
   control.setAttribute("aria-controls", menuId);
 }
 
-// An async trigger (the global boots load lazily) renders after the menu mounts: sync again when it appears.
+// An async trigger (the global boots load lazily) renders after the menu mounts, a disabled one is enabled later:
+// sync again when it appears or changes.
 let triggerObserver = null;
 watch(isOpen, syncTriggerAria, { flush: "post" });
 onMounted(() => {
   syncTriggerAria();
   triggerObserver = new MutationObserver(syncTriggerAria);
-  triggerObserver.observe(trigger.value, { childList: true, subtree: true });
+  // `disabled` too: a control that mounts disabled is no FOCUSABLE until it is enabled.
+  triggerObserver.observe(trigger.value, { childList: true, subtree: true, attributes: true, attributeFilter: ["disabled"] });
   document.addEventListener("pointerdown", onDocumentPointer);
 });
 onBeforeUnmount(() => {

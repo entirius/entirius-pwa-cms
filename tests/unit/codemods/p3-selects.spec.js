@@ -63,6 +63,16 @@ describe("p3-selects codemod", () => {
     ]);
   });
 
+  it("reads `.value` as a ref only in script setup: an options-API object property is no model", () => {
+    const text = [
+      '<template><Dropdown :values="o" :selected="[filter]" @onSelect="onPick" /></template>',
+      "<script>export default { methods: { onPick(v) { this.filter.value = v; } } };</script>",
+    ].join("\n");
+    expect(transform(text).flags.map((flag) => flag.message)).toEqual([
+      "@onSelect does more than assign the :selected value: by hand",
+    ]);
+  });
+
   it("flags a Dropdown without :selected", () => {
     const result = transform('<template><Dropdown :values="o" @onSelect="(v) => (x = v)" /></template>');
     expect(result.flags.map((flag) => flag.message)).toEqual(["no :selected: the model binding by hand"]);

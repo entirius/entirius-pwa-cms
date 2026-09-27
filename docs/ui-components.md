@@ -262,6 +262,8 @@ Catalogue: `#display` (`#status-badge`, `#count-badge`, `#tag`, `#basic-tabs`, `
   debounce; `clientFilter` fetches once and filters here), `v-model` + `v-model:displayValue`, `placeholder`,
   `disabled`. The chosen entity is a removable `Tag` (remove → both cleared, `clear`); the list opens in
   BasicMenu's panel: a filter input driving a listbox, `secondary` as the option description. i18n `entity_picker.*`.
+  Transition until the sweeps: the `disabled` prop is the old manual-entry fallback (a text field for the value,
+  used by the Edit* modals without PIM); a FormField's `disabled` disables the control.
 - **`ChannelMultiSelect`** — channel scope chip (`channels` icon): „Kanały: Wszystkie” / „Kanały: 2”; `compact`
   (and every chip below the tablet breakpoint) shows „Kanały”. `v-model` = channel idxs, `channels` =
   `[{ idx, name? }]`, `label`, `allLabel`; the list is a multi-select listbox with checkboxes in BasicMenu's panel.

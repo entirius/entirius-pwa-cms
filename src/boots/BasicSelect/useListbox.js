@@ -37,8 +37,13 @@ export function useListbox(options, choose) {
     ArrowUp: () => step(-1),
     Home: () => (active.value = enabled()[0] ?? -1),
     End: () => (active.value = enabled().at(-1) ?? -1),
-    Enter: () => active.value >= 0 && choose(list()[active.value]),
+    Enter: () => chooseActive(),
   };
+
+  function chooseActive() {
+    const option = list()[active.value];
+    if (option && !option.disabled) choose(option);
+  }
 
   function onKeydown(event, editable = false) {
     const key = event.key === " " && !editable ? "Enter" : event.key;
@@ -54,5 +59,5 @@ export function useListbox(options, choose) {
   // First enabled option, or the given index (the selected one when a list opens).
   const reset = (index = enabled()[0] ?? -1) => (active.value = index);
 
-  return { active, onKeydown, reset };
+  return { active, onKeydown, reset, chooseActive };
 }

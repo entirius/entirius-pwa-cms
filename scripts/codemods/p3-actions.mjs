@@ -47,8 +47,9 @@ const COMPANIONS = new Set([
   ...["t-secondary", "t-muted", "t-body"],
 ]);
 // Legacy colour classes that survived P2 (`txt-gray-700`, `txt-basic-600`, `bg-gray-200`) are colours too.
-const COLOUR_CLASS = /^(btn-[a-z-]+|(txt|t|bg|b)-(?!inherit$)[a-z][a-z0-9-]*)$/;
-const COLOUR_IN_EXPRESSION = /(^|[\s'"`{])(btn|bg|txt|t|b)-[a-z]/;
+// `txt-center` / `txt-left` / `txt-right` / `txt-justify` align text: not colours.
+const COLOUR_CLASS = /^(btn-[a-z-]+|(t|bg|b)-(?!inherit$)[a-z][a-z0-9-]*|txt-(?!(center|left|right|justify)$)[a-z][a-z0-9-]*)$/;
+const COLOUR_IN_EXPRESSION = /(^|[\s'"`{])((btn|bg|t|b)-[a-z]|txt-(?!(center|left|right|justify)\b)[a-z])/;
 const ICON_BUTTON_VARIANT = { ghost: null, secondary: "outline", primary: "primary", danger: "danger" };
 const ICON_ELEMENT = /^(FontAwesomeIcon|font-awesome-icon)$/;
 const LABEL_ATTRIBUTES = ["label", "arialabel", "title"];
