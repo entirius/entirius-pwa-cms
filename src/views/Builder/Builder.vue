@@ -677,6 +677,7 @@
                     :key="tiles_order[s_uid].length"
                     :uid_class="`tiles-slider-${s_uid}`"
                     :options="{
+                      cssMode: coarsePointer,
                       slidesPerView: 1.25,
                       spaceBetween: 10,
                       breakpoints: {
@@ -1050,6 +1051,8 @@ export default {
   },
   data() {
     return {
+      // A touch screen scrolls the tile row natively (a real sideways scroller); a mouse keeps Swiper's drag.
+      coarsePointer: window.matchMedia?.("(pointer: coarse)").matches ?? false,
       loading: false,
       config_options: null,
       props_dictionary: {},
@@ -2222,6 +2225,10 @@ const scroll_into = (id) => {
   }
   .tile-swiper-wrap :deep(.swiper) {
     max-width: 100%;
+  }
+  // cssMode (touch): the tiles scroll natively; a thin bar shows that the row scrolls sideways.
+  .tile-swiper-wrap :deep(.swiper-wrapper) {
+    scrollbar-width: thin;
   }
 }
 </style>
