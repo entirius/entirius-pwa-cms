@@ -74,7 +74,7 @@
               class="pm-rates-table__row"
             >
               <span class="fw-600">{{ rate.country }}</span>
-              <span>{{ rate.rate }}%</span>
+              <span>{{ formatTaxRate(rate.rate) }}</span>
               <BasicButton
                 custom
                 size="sm"
@@ -125,6 +125,7 @@ import {
   POST_PmTaxRate,
   DELETE_PmTaxRate,
 } from '@/api/pricemanager/api'
+import { formatTaxRate, percentToRate } from '@/utils/taxRate'
 
 export default {
   name: 'PmTaxClassDetail',
@@ -161,6 +162,7 @@ export default {
     if (this.isEdit) this.fetch()
   },
   methods: {
+    formatTaxRate,
     async fetch() {
       this.loading = true
       try {
@@ -209,11 +211,9 @@ export default {
       if (!this.newRate.country_iso2.trim()) return
       this.loader.loaderStart()
       try {
-        // Backend expects decimal (0.2300), UI shows percentage (23)
-        const rateDecimal = (Number(this.newRate.rate) / 100).toFixed(4)
         await POST_PmTaxRate(this.$route.params.idx, {
           country_code: this.newRate.country_iso2.trim().toUpperCase(),
-          rate: rateDecimal,
+          rate: percentToRate(this.newRate.rate),
         })
         this.newRate = { country_iso2: '', rate: 0 }
         await this.fetch()
