@@ -29,8 +29,8 @@ const negToast = (page, text) =>
     : page.locator('.notification--negative');
 
 async function expectNoEmptyErrorUI(page) {
-  for (const el of await page.locator('p.validation-msg:visible').all()) {
-    expect((await el.innerText()).trim(), 'field validation-msg must not be empty').not.toBe('');
+  for (const el of await page.locator('.form-field__error:visible').all()) {
+    expect((await el.innerText()).trim(), 'field error must not be empty').not.toBe('');
   }
   for (const el of await page.locator('.notification__msg:visible').all()) {
     expect((await el.innerText()).trim(), 'toast msg must not be empty').not.toBe('');
@@ -65,10 +65,10 @@ async function firstExistingSku(page) {
 
 async function selectFirstFeatureSet(page) {
   const dropdown = page
-    .locator('.dropdown-wrapper', { hasText: 'Select feature set' })
+    .locator('button[role="combobox"]', { hasText: 'Select feature set' })
     .first();
   await dropdown.click();
-  await page.locator('.dropdown-list .dropdown-list-el').first().click();
+  await page.getByRole('option').first().click();
 }
 
 test.describe('Scenario A — required-field validation', () => {
@@ -81,11 +81,11 @@ test.describe('Scenario A — required-field validation', () => {
 
     await page.click('button:has-text("Save")');
 
-    const skuError = page.locator('p.validation-msg').first();
+    const skuError = page.locator('.form-field__error').first();
     await expect(skuError).toBeVisible();
     expect((await skuError.innerText()).trim()).not.toBe('');
 
-    await expect(page.locator('.dropdown-wrapper.dropdown-invalid')).toBeVisible();
+    await expect(page.locator('button[role="combobox"][aria-invalid="true"]')).toBeVisible();
     await expectNoEmptyErrorUI(page);
 
     expect(collector.getErrors().exceptions).toEqual([]);
@@ -218,7 +218,7 @@ test.describe('Scenario C — response shapes (mocked)', () => {
       await expect(toast.first(), `toast for shape: ${shape.name}`).toBeVisible({ timeout: 10000 });
 
       if (shape.expectFieldError) {
-        const fieldError = page.locator('p.validation-msg', { hasText: shape.expectFieldError });
+        const fieldError = page.locator('.form-field__error', { hasText: shape.expectFieldError });
         await expect(fieldError.first(), `field error for shape: ${shape.name}`).toBeVisible();
       }
 
