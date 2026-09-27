@@ -346,11 +346,13 @@ export default {
     align-items: center;
     padding: var(--space-1) var(--space-1) var(--space-1) var(--space-4);
   }
+  // The layout takes the height the header leaves; its padding keeps every scroll region above the fixed
+  // bottom bar.
   .layout {
-    height: calc(100% - var(--bottom-bar-height));
-  }
-  .p-12 {
-    padding: var(--space-3) !important;
+    flex: 1;
+    height: auto;
+    min-height: 0;
+    padding-bottom: calc(var(--bottom-bar-height) + env(safe-area-inset-bottom, 0px));
   }
 }
 </style>
