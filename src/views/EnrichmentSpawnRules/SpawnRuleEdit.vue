@@ -35,7 +35,7 @@
         </div>
       </div>
 
-      <Loader v-if="loading" />
+      <Loader block v-if="loading" />
 
       <template v-else>
         <div class="spawn-rule-grid">
@@ -88,7 +88,12 @@
               :placeholder="$t('common.select')"
               @onSelect="selectChannel"
             />
-            <BasicInput v-else v-model="scopeChannel" />
+            <BasicInput
+              v-else
+              :modelValue="scopeChannel"
+              data-test="spawn-rule-channel-input"
+              @update:modelValue="selectChannel"
+            />
           </FormField>
 
           <FormField
