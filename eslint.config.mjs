@@ -1,14 +1,22 @@
 // CMS UI lint, template side. Rule IDs (C1…, T1…) refer to docs/ui-rules.md.
 // Templates only, no JS style rules. P1 ships LEVEL = "warn" (debt report); P5 sets "error".
+import { readdirSync, readFileSync } from "node:fs";
 import vue from "eslint-plugin-vue";
 import vueParser from "vue-eslint-parser";
 
 const LEVEL = "warn";
 const RULES = "docs/ui-rules.md";
 
-// C2 removed component → its replacement. The P3 PR that ships a replacement adds the old name here
-// (r02 removal list: BackBar, LockedField, ToolTip, HelpTooltip, HoverMe, Switcher, TextAreaBasic, Dropdown, …).
-const REMOVED_COMPONENTS = { PimField: "FormField" };
+// C2 removed component → its replacement, merged from scripts/lint/removed-components/*.json ({ "Old": "New" }). The P3
+// plan that retires a component adds its own <section>.json (r02 removal list: BackBar, LockedField, ToolTip, …).
+const REMOVED_DIR = new URL("./scripts/lint/removed-components/", import.meta.url);
+const REMOVED_COMPONENTS = Object.assign(
+  {},
+  ...readdirSync(REMOVED_DIR)
+    .filter((file) => file.endsWith(".json"))
+    .sort()
+    .map((file) => JSON.parse(readFileSync(new URL(file, REMOVED_DIR), "utf8")))
+);
 
 const NO_REMOVED_COMPONENT = Object.entries(REMOVED_COMPONENTS).map(([old, replacement]) => ({
   selector: `VElement[rawName='${old}']`,
@@ -28,6 +36,18 @@ const OLD_CLASSES = [
   "/^(br|radius)-((tl|tr|bl|br)-)?(\\d+|sm|md|base|lg|xl|2xl|3xl|4xl|full)(-[a-z]+)?$/",
   "/^(fs-(800|900|1000)|fw-(100|700))$/",
 ];
+// R6 a template picks an icon by meaning from the registry (`:icon="$icons.edit"`), never by a glyph name: a literal
+// `icon="…"`, or a string an `:icon` binding evaluates to (the whole expression, a ternary branch, an `||` / `??`
+// operand; a string in a condition is no glyph). scripts/codemods/p3-icons.mjs rewrites them.
+const ICON_ELEMENT = "VElement[rawName=/^(FontAwesomeIcon|font-awesome-icon)$/] > VStartTag";
+const ICON_BINDING = `${ICON_ELEMENT} > VAttribute[directive=true][key.argument.name='icon']`;
+const NO_LITERAL_ICON = [
+  `${ICON_ELEMENT} > VAttribute[directive=false][key.name='icon']`,
+  `${ICON_BINDING} > VExpressionContainer > Literal`,
+  `${ICON_BINDING} ConditionalExpression > Literal.consequent`,
+  `${ICON_BINDING} ConditionalExpression > Literal.alternate`,
+  `${ICON_BINDING} LogicalExpression > Literal`,
+].map((selector) => ({ selector, message: `Pick a meaning from $icons (${RULES} R6).` }));
 // C1 <input type="file"> stays raw: it is the hidden picker behind an upload button.
 const NO_RAW_INPUT = {
   selector: "VElement[rawName='input']:not(:has(VAttribute[key.name='type'][value.value='file']))",
@@ -44,7 +64,7 @@ export default [
       parserOptions: { ecmaVersion: "latest", sourceType: "module" },
     },
     rules: {
-      "vue/no-restricted-syntax": [LEVEL, ...NO_REMOVED_COMPONENT, NO_RAW_INLINE_STYLE],
+      "vue/no-restricted-syntax": [LEVEL, ...NO_REMOVED_COMPONENT, NO_RAW_INLINE_STYLE, ...NO_LITERAL_ICON],
     },
   },
   {
@@ -79,7 +99,7 @@ export default [
         { element: "select", message: `Use <Dropdown> (${RULES} § Components).` },
       ],
       // Repeats the shared selectors: a later block replaces a rule's options, it does not merge them.
-      "vue/no-restricted-syntax": [LEVEL, ...NO_REMOVED_COMPONENT, NO_RAW_INLINE_STYLE, NO_RAW_INPUT],
+      "vue/no-restricted-syntax": [LEVEL, ...NO_REMOVED_COMPONENT, NO_RAW_INLINE_STYLE, ...NO_LITERAL_ICON, NO_RAW_INPUT],
     },
   },
 ];

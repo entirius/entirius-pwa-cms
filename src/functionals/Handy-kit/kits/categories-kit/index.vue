@@ -11,7 +11,7 @@
           class="js-fe t-secondary"
           @click="handy.open_Handykit({ typeId: false })"
         >
-          <i class="icon-close-mini pointer" />
+          <FontAwesomeIcon :icon="$icons.close" class="pointer" />
         </p>
       </nav>
       <div class="ph-8">
@@ -88,10 +88,7 @@
           :custom_droplist="true"
         >
           <template v-slot:custom>
-            <LazyScroll
-              @onLazy="load_more"
-              style="height: 100; max-height: 10rem"
-            >
+            <div class="categories-kit__list ovy-auto">
               <div
                 v-for="{ label = null, value = null } in c"
                 class="ph-2 flex jc-sb ai-ct"
@@ -123,7 +120,7 @@
                   >
                 </span>
               </div>
-            </LazyScroll>
+            </div>
           </template>
         </Dropdown>
         <template v-if="c_to_set">
@@ -192,10 +189,10 @@ import { useNotifyStore } from "@/stores/notify";
 import { useHandyStore } from "@/stores/handy";
 import { useContentDBChannelStore } from "@/stores/contentDBChannel";
 import { _METHOD_content } from "../../../../api/contentDB/api";
-import LazyScroll from "../../../../boots/LazyScroll/LazyScroll.vue";
 import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 
 const _base_url = `/category/`;
+const ALL_PAGES_LIMIT = 100;
 export default {
   setup() {
     const notify = useNotifyStore();
@@ -204,7 +201,6 @@ export default {
     return { notify, handy, contentDBChannel };
   },
   components: {
-    LazyScroll,
     ConfirmationModal,
   },
   data() {
@@ -219,6 +215,7 @@ export default {
       language: null,
       c_to_set: null,
       default_c: null,
+      closed: false,
     };
   },
   computed: {
@@ -253,17 +250,14 @@ export default {
       if (default_category && typeof default_category === "string")
         this.GET_CATEGORY({ uid: default_category });
     },
-    load_more() {
-      const { page = 1, pages = 1 } = this.cp;
-      if (page >= pages) return;
-
-      this.GET_CATEGORIES({
-        page: page + 1,
-        limit: this.cp.limit,
-        language: this.language,
-      });
-
-      this.cp.page = page + 1;
+    // Every page, one after the other: the list scrolls in its own box (LazyScroll never fired, a Vue 2 directive,
+    // so only the first page ever showed).
+    async GET_ALL_CATEGORIES() {
+      const params = { limit: ALL_PAGES_LIMIT, language: this.language };
+      await this.GET_CATEGORIES(params);
+      for (let page = 2; this.cp && page <= this.cp.pages && !this.closed; page += 1) {
+        await this.GET_CATEGORIES({ ...params, page });
+      }
     },
     async GET_CATEGORIES({ limit = 6, page = 1, language = null } = {}) {
       try {
@@ -291,7 +285,9 @@ export default {
           };
         });
 
-        this.c = [...this.c, ..._data];
+        // A category created while the pages load comes back in a later page: keep it once.
+        const known = new Set(this.c.map(({ value }) => value));
+        this.c = [...this.c, ..._data.filter(({ value }) => !known.has(value))];
 
         if (!this.cp) this.cp = pagination;
       } catch (error) {
@@ -454,16 +450,23 @@ export default {
     },
     async init() {
       this.set_additional_data();
-      await this.GET_CATEGORIES({ language: this.language });
+      await this.GET_ALL_CATEGORIES();
     },
   },
   created() {
     this.init();
   },
+  beforeUnmount() {
+    this.closed = true; // stops loading the remaining pages
+  },
 };
 </script>
 <style lang="scss">
 .categories-kit {
+  .categories-kit__list {
+    max-height: 10rem;
+  }
+
   .dropdown-wrapper {
     .dropdown-list {
       overflow-y: unset;

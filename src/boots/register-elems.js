@@ -1,7 +1,8 @@
 import { defineAsyncComponent } from "vue";
 
+// Per-plan slots (dev-plans § Streams): a P3/P4 plan registers its new boots under its own anchor only; the anchors
+// keep their order and a blank line around each, so two streams never edit the same lines.
 export default function registerBootComponents(app) {
-  app.component("Accordion", defineAsyncComponent(() => import("./Accordion/index.vue")));
   app.component("BasicButton", defineAsyncComponent(() => import("./BasicButton/index.vue")));
   app.component("BasicSwiper", defineAsyncComponent(() => import("./BasicSwiper/index.vue")));
   app.component("BasicCheckbox", defineAsyncComponent(() => import("./BasicCheckbox/index.vue")));
@@ -23,7 +24,6 @@ export default function registerBootComponents(app) {
   app.component("SubscriberSetter", defineAsyncComponent(() => import("./SubscriberSetter/index.vue")));
   app.component("Switcher", defineAsyncComponent(() => import("./Switcher/Switcher.vue")));
   app.component("TextAreaBasic", defineAsyncComponent(() => import("./TextArea/TextAreaBasic.vue")));
-  app.component("LazyScroll", defineAsyncComponent(() => import("./LazyScroll/LazyScroll.vue")));
   app.component("ToolTip", defineAsyncComponent(() => import("./ToolTip/ToolTip.vue")));
   app.component("FloatingActions", defineAsyncComponent(() => import("./FloatingActions/index.vue")));
   app.component("MobileFilterPanel", defineAsyncComponent(() => import("./MobileFilterPanel/index.vue")));
@@ -40,4 +40,21 @@ export default function registerBootComponents(app) {
   app.component("EmptyState", defineAsyncComponent(() => import("./EmptyState/index.vue")));
   app.component("ChannelMultiSelect", defineAsyncComponent(() => import("./ChannelMultiSelect/index.vue")));
   app.component("BulkActionBar", defineAsyncComponent(() => import("./BulkActionBar/index.vue")));
+
+  // P3 icons
+
+  // P3 actions (plan 11)
+
+  // P3 overlays (plan 12)
+
+  // P3 display (plan 13)
+
+  // P3 page frame (plan 14)
+
+  // P3 selects (plan 15)
+
+  // P3 inputs (plan 16)
+
+  // P4 shell (plan 21)
+
 }
