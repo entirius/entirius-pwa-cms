@@ -19,6 +19,13 @@ All notable changes to this project will be documented in this file.
   replaces `Loading.vue`; `Pagination` takes `v-model:page` + `pages`; `EmptyState` takes a meaning icon; tab, filter
   chip and filter-trigger counts are CountBadges. Catalogue `#display` shows every cell;
   `scripts/codemods/p3-display.mjs` moves `.chip` and `<Loading>` call sites in the sweeps.
+- Overlay components (P3 plan 12): `BasicModal` (sizes, footer ActionBar, bottom sheet on a phone), `ConfirmDialog`
+  (`tone`, `loading`, unsaved-changes discard), `BasicMenu` (keyboard menu or panel, `@floating-ui/dom`
+  positioning), `BasicTooltip` (hover and focus, `help` variant) and `useFocusTrap`: every dialog traps focus,
+  closes on Esc and gives focus back. SideDrawer traps focus in focused mode and closes on Esc in both modes;
+  TranslationsDrawer's footer is an ActionBar; IconButton shows its label as a BasicTooltip. The eight shared modals
+  in `src/functionals/` run on BasicModal / ConfirmDialog (Confirmation-modal and Unsaved-changes-modal as thin
+  wrappers); catalogue `#overlays`; `scripts/codemods/p3-overlays.mjs` moves the call sites in the sweeps.
 
 - Action components (P3 plan 11): `BasicButton` `variant` (primary, secondary, ghost, danger, danger-solid), meaning
   `icon`, `loading`, `disabled`, label in the default slot; new `IconButton` (every icon-only action, `label`
@@ -127,6 +134,9 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- Handy-kit category picker loads the first page and the next one when its list is scrolled to the end (plan 10
+  loaded every page on open); P3 codemods resolve the repo root from a path with spaces and report a missing or
+  unparsable file as one error line.
 - UX polish track closed (plans 01–07, FIX-02…06): 189 audited defects accounted for — buttons in one family (sizes,
   roles, named icon-only squares, FAQ delete and unlink work again), values and loaders shown right, every action
   reachable on a phone, tables that fit or truncate on purpose, one label, card and type rhythm. `@ux` is now a guard:

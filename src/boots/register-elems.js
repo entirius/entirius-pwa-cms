@@ -48,6 +48,10 @@ export default function registerBootComponents(app) {
   app.component("ActionBar", defineAsyncComponent(() => import("./ActionBar/index.vue")));
 
   // P3 overlays (plan 12)
+  app.component("BasicModal", defineAsyncComponent(() => import("./BasicModal/index.vue")));
+  app.component("ConfirmDialog", defineAsyncComponent(() => import("./ConfirmDialog/index.vue")));
+  app.component("BasicMenu", defineAsyncComponent(() => import("./BasicMenu/index.vue")));
+  app.component("BasicTooltip", defineAsyncComponent(() => import("./BasicTooltip/index.vue")));
 
   // P3 display (plan 13)
   app.component("CountBadge", defineAsyncComponent(() => import("./CountBadge/index.vue")));

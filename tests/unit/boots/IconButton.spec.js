@@ -4,16 +4,20 @@ import { mount } from "@vue/test-utils";
 
 import IconButton from "@/boots/IconButton/index.vue";
 
-const mountButton = (props = {}, attrs = {}) =>
+const mountIconButton = (props = {}, attrs = {}) =>
   mount(IconButton, { props: { icon: "delete", label: "Usuń", ...props }, attrs });
+const mountButton = (props = {}, attrs = {}) => mountIconButton(props, attrs).find("button");
 
 describe("IconButton", () => {
-  it("draws the meaning's glyph and is named by label (aria-label and title)", () => {
-    const wrapper = mountButton();
-    expect(wrapper.find("font-awesome-icon-stub").attributes("icon")).toBe("trash-can");
-    expect(wrapper.attributes("aria-label")).toBe("Usuń");
-    expect(wrapper.attributes("title")).toBe("Usuń");
-    expect(wrapper.attributes("type")).toBe("button");
+  it("draws the meaning's glyph, is named by label (aria-label) and shows it as its BasicTooltip", () => {
+    const wrapper = mountIconButton();
+    const button = wrapper.find("button");
+    expect(button.find("font-awesome-icon-stub").attributes("icon")).toBe("trash-can");
+    expect(button.attributes("aria-label")).toBe("Usuń");
+    expect(button.attributes("title")).toBeUndefined();
+    expect(button.attributes("type")).toBe("button");
+    expect(wrapper.find('[role="tooltip"]').text()).toBe("Usuń");
+    expect(button.attributes("aria-describedby")).toBe(wrapper.find('[role="tooltip"]').attributes("id"));
   });
 
   it("is ghost md by default; variant and size are classes", () => {
@@ -30,12 +34,14 @@ describe("IconButton", () => {
   });
 
   it("emits click unless disabled, and passes data-testid to the button", async () => {
-    const wrapper = mountButton({}, { "data-testid": "row-delete" });
-    expect(wrapper.attributes("data-testid")).toBe("row-delete");
-    await wrapper.trigger("click");
+    const wrapper = mountIconButton({}, { "data-testid": "row-delete", class: "ml-2" });
+    const button = wrapper.find("button");
+    expect(button.attributes("data-testid")).toBe("row-delete");
+    expect(button.classes()).toContain("ml-2");
+    await button.trigger("click");
     expect(wrapper.emitted("click")).toHaveLength(1);
     await wrapper.setProps({ disabled: true });
-    await wrapper.trigger("click");
+    await button.trigger("click");
     expect(wrapper.emitted("click")).toHaveLength(1);
   });
 

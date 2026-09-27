@@ -9,10 +9,12 @@
 //   --part N   only the files of sweep partition N (p3-partitions.mjs); files given by name win over it
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import vueParser from "vue-eslint-parser";
 import { partitionFiles } from "./p3-partitions.mjs";
 
-export const ROOT = new URL("../../", import.meta.url).pathname;
+// fileURLToPath, not `.pathname`: a checkout path with spaces or non-ASCII letters stays readable.
+export const ROOT = fileURLToPath(new URL("../../", import.meta.url));
 const PARSER_OPTIONS = { sourceType: "module", ecmaVersion: "latest" };
 
 export const parseSfc = (text) => vueParser.parse(text, { ...PARSER_OPTIONS, filePath: "file.vue" });
@@ -26,6 +28,34 @@ export function walkTemplate(ast, visit) {
 
 // Name of a static attribute or of a bound one (`:icon` → "icon").
 export const attributeName = (attr) => (attr.directive ? attr.key.argument?.name : attr.key.name);
+
+// Template helpers shared by the codemods. `findAttr(node, "isdisabled")` matches `isDisabled`, `is-disabled`,
+// `:isDisabled`; `bound` narrows it to a directive (true) or a static attribute (false).
+export const normalName = (attr) => (attributeName(attr) ?? "").toLowerCase().replace(/-/g, "");
+export const findAttr = (node, name, bound) =>
+  node.startTag.attributes.find((a) => normalName(a) === name && (bound === undefined || a.directive === bound));
+export const sourceOf = (text, node) => text.slice(node.range[0], node.range[1]);
+export const lineIndent = (text, offset) =>
+  text.slice(text.lastIndexOf("\n", offset - 1) + 1, offset).match(/^\s*/)[0];
+export const contentChildren = (node) => node.children.filter((c) => !(c.type === "VText" && !c.value.trim()));
+export const expressionOf = (text, attr) => sourceOf(text, attr.value.expression);
+export const staticClasses = (node) =>
+  (findAttr(node, "class", false)?.value?.value ?? "").split(/\s+/).filter(Boolean);
+
+// Accumulates a transform's result: `edit(start, end, text)`, `flag(node, message)`.
+export function collector() {
+  const result = { edits: [], flags: [] };
+  result.edit = (start, end, replacement) => result.edits.push({ start, end, text: replacement });
+  result.flag = (node, message) => result.flags.push({ offset: node.range[0], message });
+  return result;
+}
+
+// Removes a node (an attribute, an element) together with the whitespace in front of it.
+export function removeNode(text, node, result) {
+  let start = node.range[0];
+  while (/\s/.test(text[start - 1])) start -= 1;
+  result.edit(start, node.range[1], "");
+}
 
 export function applyEdits(text, edits) {
   const sorted = [...edits].sort((a, b) => b.start - a.start);
@@ -45,8 +75,17 @@ function parseArgs(argv) {
   return { write: argv.includes("--write"), check: argv.includes("--check"), part, files };
 }
 
-// Rewrites one file (when `write`), returns its report lines.
+// Rewrites one file (when `write`), returns its report lines; a file that is missing or does not parse is one
+// ERROR line, not a stack trace, and the run exits 1.
 function runFile(file, transform, write) {
+  try {
+    return transformFile(file, transform, write);
+  } catch (error) {
+    return { lines: [`${file}  ERROR ${error.message}`], edits: 0, flags: 0, failed: true };
+  }
+}
+
+function transformFile(file, transform, write) {
   const text = readFileSync(join(ROOT, file), "utf8");
   const { edits, flags } = transform(text, file);
   const lines = [
@@ -55,7 +94,9 @@ function runFile(file, transform, write) {
   ];
   if (write && edits.length) {
     const out = applyEdits(text, edits);
-    parseSfc(out); // a rewrite that breaks the SFC throws before it is written
+    // A rewrite that breaks the SFC throws before it is written; the parser only records template errors.
+    const templateErrors = (source) => parseSfc(source).templateBody?.errors.length ?? 0;
+    if (templateErrors(out) > templateErrors(text)) throw new Error("the rewrite breaks the template");
     writeFileSync(join(ROOT, file), out);
   }
   return { lines, edits: edits.length, flags: flags.length };
@@ -69,5 +110,5 @@ export function runCodemod(name, transform, argv = process.argv.slice(2)) {
   const edits = results.reduce((sum, r) => sum + r.edits, 0);
   const flags = results.reduce((sum, r) => sum + r.flags, 0);
   console.log(`${name}: ${edits} rewrite(s)${write ? " applied" : ""}, ${flags} flag(s) in ${targets.length} file(s)`);
-  if (check && edits + flags) process.exitCode = 1;
+  if (results.some((r) => r.failed) || (check && edits + flags)) process.exitCode = 1;
 }

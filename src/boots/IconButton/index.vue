@@ -1,24 +1,30 @@
 <template>
-  <button
-    :type="type"
-    class="icon-button inline-flex jc-ct ai-ct pointer"
-    :class="[`icon-button--${variant}`, `icon-button--${size}`]"
-    :disabled="disabled"
-    :aria-label="label"
-    :aria-pressed="pressed === undefined ? undefined : String(pressed)"
-    :title="label"
-    @click="onClick"
-  >
-    <FontAwesomeIcon :icon="ICONS[icon]" aria-hidden="true" />
-  </button>
+  <BasicTooltip :text="label" class="icon-button__tip">
+    <button
+      v-bind="$attrs"
+      :type="type"
+      class="icon-button inline-flex jc-ct ai-ct pointer"
+      :class="[`icon-button--${variant}`, `icon-button--${size}`]"
+      :disabled="disabled"
+      :aria-label="label"
+      :aria-pressed="pressed === undefined ? undefined : String(pressed)"
+      @click="onClick"
+    >
+      <FontAwesomeIcon :icon="ICONS[icon]" aria-hidden="true" />
+    </button>
+  </BasicTooltip>
 </template>
 
 <script setup>
 // Every icon-only action (docs/ui-rules.md C5, R7): `icon` is a meaning of icons.js, `label` its accessible name
-// (aria-label + title until BasicTooltip, plan 12). Sizes: sm 24, md --elem-height (lines up with a text button in
-// an ActionBar), lg 40 (header, mobile menu). `danger` is every icon-only delete/remove (C6). `pressed` makes it a
-// toggle (aria-pressed). The click stops at the button, as BasicButton's does (rows and cards may act on a click).
+// (aria-label) and its BasicTooltip; attributes (class, test id) land on the button, not on the tooltip wrapper.
+// Sizes: sm 24, md --elem-height (lines up with a text button in an ActionBar), lg 40 (header, mobile menu).
+// `danger` is every icon-only delete/remove (C6). `pressed` makes it a toggle (aria-pressed). The click stops at the
+// button, as BasicButton's does (rows and cards may act on a click).
 import { ICONS } from "@/boots/Icons/icons";
+import BasicTooltip from "@/boots/BasicTooltip/index.vue";
+
+defineOptions({ inheritAttrs: false });
 
 const props = defineProps({
   icon: { type: String, required: true, validator: (value) => Object.hasOwn(ICONS, value) },
@@ -44,6 +50,11 @@ function onClick(event) {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/utils/media-query";
+
+// The tooltip wrapper takes no box: the button lays out as if it were the component's root.
+.icon-button__tip {
+  display: contents;
+}
 
 .icon-button {
   --icon-button-size: var(--elem-height);

@@ -15,7 +15,11 @@ describe("icon meaning registry", () => {
   });
 
   it("gives every glyph one meaning", () => {
-    const meaningsOf = Object.groupBy(Object.keys(ICONS), (meaning) => ICONS[meaning]);
+    // A plain reduce, not Object.groupBy: the CMS supports Node 20 (engines).
+    const meaningsOf = Object.keys(ICONS).reduce(
+      (groups, meaning) => ({ ...groups, [ICONS[meaning]]: [...(groups[ICONS[meaning]] ?? []), meaning] }),
+      {}
+    );
     const shared = Object.values(meaningsOf).filter((meanings) => meanings.length > 1);
     expect(shared).toEqual([]);
   });

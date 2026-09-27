@@ -1,37 +1,32 @@
 <template>
-  <Transition name="modal">
-    <div v-if="visible" class="modal-overlay" @click.self="reject">
-      <div class="modal-container">
-        <div class="modal-header">
-          <slot name="header"></slot>
-        </div>
-        <div class="modal-body">
-          <slot name="description"></slot>
-        </div>
-        <div class="modal-footer">
-          <slot name="footer">
-            <BasicButton
-              :text="$t('common.cancel')"
-              class="btn-secondary"
-              @click="reject"
-            />
-            <!-- `modal-btn--delete` is the e2e hook of the confirm button (every confirm, not only deletes), not a style. -->
-            <BasicButton
-              :text="$t('common.accept')"
-              :class="destructive ? 'btn-danger-fill' : 'btn-primary'"
-              class="modal-btn--delete"
-              @click="accept"
-            />
-          </slot>
-        </div>
-      </div>
-    </div>
-  </Transition>
+  <ConfirmDialog
+    v-if="!$slots.footer"
+    :open="visible"
+    :tone="destructive ? 'danger' : 'default'"
+    @confirm="accept"
+    @cancel="reject"
+  >
+    <template v-if="$slots.header" #title><slot name="header" /></template>
+    <slot name="description" />
+  </ConfirmDialog>
+  <BasicModal v-else :open="visible" size="sm" @update:open="onClose">
+    <template v-if="$slots.header" #title><slot name="header" /></template>
+    <slot name="description" />
+    <template #footer><slot name="footer" /></template>
+  </BasicModal>
 </template>
 
 <script>
+// Transition wrapper over ConfirmDialog (plan 12) until the sweeps move the call sites (scripts/codemods/
+// p3-overlays.mjs); plan 19 deletes it. Old API kept: `visible`, `destructive`, `accept` / `reject`, slots `header`,
+// `description`, `footer` (a custom footer makes it a plain BasicModal). The confirm button's test id is
+// `confirm-dialog-confirm`.
+import BasicModal from "@/boots/BasicModal/index.vue";
+import ConfirmDialog from "@/boots/ConfirmDialog/index.vue";
+
 export default {
   name: "ConfirmationModal",
+  components: { BasicModal, ConfirmDialog },
   props: {
     visible: {
       type: Boolean,
@@ -44,6 +39,7 @@ export default {
       default: false,
     },
   },
+  emits: ["accept", "reject"],
   methods: {
     accept() {
       this.$emit("accept");
@@ -51,85 +47,9 @@ export default {
     reject() {
       this.$emit("reject");
     },
+    onClose(open) {
+      if (!open) this.reject();
+    },
   },
 };
 </script>
-
-<style scoped>
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: var(--overlay-backdrop);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 100;
-  padding: var(--space-4);
-}
-
-.modal-container {
-  background: var(--surface-base);
-  padding: var(--space-6);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-subtle);
-  box-shadow: var(--shadow-lg);
-  width: 420px;
-  max-width: 100%;
-}
-
-.modal-header {
-  margin-bottom: var(--space-3);
-}
-
-.modal-header h2 {
-  font-size: var(--fs-400);
-  font-weight: 600;
-  color: var(--text-body);
-  margin: 0;
-}
-
-.modal-body {
-  margin-bottom: var(--space-6);
-}
-
-.modal-body p {
-  font-size: var(--fs-300);
-  line-height: 1.5;
-  color: var(--text-secondary);
-  margin: 0;
-}
-
-.modal-footer {
-  display: flex;
-  gap: var(--space-2);
-  justify-content: flex-end;
-}
-
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.15s ease;
-}
-
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-}
-
-.modal-enter-active .modal-container {
-  animation: modal-scale 0.15s ease-out;
-}
-
-@keyframes modal-scale {
-  from {
-    opacity: 0;
-    transform: scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-</style>

@@ -275,7 +275,7 @@ test.describe('Suppliers panel', () => {
 
     test('Trigger feed → confirm → POSTs trigger', async ({ page }) => {
       await page.getByTestId('feeds-trigger-xml-1').click();
-      await page.locator('.modal-btn--delete').last().click();
+      await page.getByTestId('confirm-dialog-confirm').last().click();
       const req = await waitForRequest(
         mockState,
         (r) => r.method === 'POST' && r.url.endsWith('/feeds/xml-1/trigger/')
@@ -328,7 +328,7 @@ test.describe('Suppliers panel', () => {
 
     test('Delete profile sends DELETE', async ({ page }) => {
       await page.getByTestId('mapping-delete-profile-default').click();
-      await page.locator('.modal-btn--delete').last().click();
+      await page.getByTestId('confirm-dialog-confirm').last().click();
       const req = await waitForRequest(
         mockState,
         (r) =>
@@ -389,7 +389,7 @@ test.describe('Suppliers panel', () => {
       await page.getByTestId('products-force-repush-504').click();
       // Affected channel listed
       await expect(page.getByText('default-europe')).toBeVisible();
-      await page.locator('.modal-btn--delete').last().click();
+      await page.getByTestId('confirm-dialog-confirm').last().click();
       const req = await waitForRequest(
         mockState,
         (r) =>
@@ -471,7 +471,7 @@ test.describe('Suppliers panel', () => {
 
     test('Delete link sends DELETE', async ({ page }) => {
       await page.getByTestId('linked-delete-901').click();
-      await page.locator('.modal-btn--delete').last().click();
+      await page.getByTestId('confirm-dialog-confirm').last().click();
       const req = await waitForRequest(
         mockState,
         (r) => r.method === 'DELETE' && r.url.endsWith('/product-links/901/')
