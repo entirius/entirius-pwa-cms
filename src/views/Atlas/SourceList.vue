@@ -1,10 +1,10 @@
 <template>
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
+      class="page-card h-100 ovy-auto"
     >
       <div class="flex ai-ct jc-sb mb-10 gap-8">
-        <h1 class="fs-700 fw-600">{{ $t("atlas.list_title") }}</h1>
+        <h1>{{ $t("atlas.list_title") }}</h1>
         <BasicButton
           :text="$t('atlas.create_button')"
           class="btn-primary"

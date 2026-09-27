@@ -1,7 +1,7 @@
 <template>
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
+      class="page-card h-100 ovy-auto"
     >
       <div class="flex ai-ct gap-8 mb-10">
         <button
@@ -16,7 +16,7 @@
       <div class="flex ai-ct jc-sb flex-wrap gap-5 mb-12">
         <div class="person-detail__title">
           <p class="fs-200 fw-600 t-muted mb-2">{{ $t("agm.email") }}</p>
-          <h1 class="fs-600 fw-600">{{ email }}</h1>
+          <h1>{{ email }}</h1>
         </div>
         <BasicTabs
           v-model="mode"
@@ -40,7 +40,7 @@
               <div
                 v-for="item in marketingStatuses"
                 :key="item.slug"
-                class="person-detail__card bg-raised b-subtle rounded p-10"
+                class="page-card person-detail__card"
               >
                 <p class="fs-200 fw-600 t-secondary mb-5">
                   {{ item.name || item.slug }}
@@ -375,10 +375,6 @@ export default {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: var(--space-8);
-}
-
-.person-detail__card {
-  border: 1px solid var(--border-subtle);
 }
 
 .agm-modal-overlay {

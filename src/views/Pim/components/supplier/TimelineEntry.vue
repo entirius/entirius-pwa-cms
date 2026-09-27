@@ -9,7 +9,7 @@
           :label="entry.applied_to_pim ? $t('pim.supplier.timeline.applied') : $t('pim.supplier.timeline.pending')"
           :variant="entry.applied_to_pim ? 'positive' : 'warning'"
         />
-        <span v-if="entry.triggered_by" class="timeline-entry__user fs-100 t-muted">
+        <span v-if="entry.triggered_by" class="timeline-entry__user fs-200 t-muted">
           {{ $t("pim.supplier.timeline.triggered_by", { user: entry.triggered_by }) }}
         </span>
       </div>
@@ -159,7 +159,7 @@ export default {
   padding: 2px var(--space-1);
   border-radius: var(--radius-base);
   font-family: var(--font-mono, monospace);
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
 }
 .timeline-entry__toggle {
   margin-top: var(--space-2);
@@ -168,7 +168,7 @@ export default {
   padding: 0;
   color: var(--text-accent);
   cursor: pointer;
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
   text-decoration: underline;
 }
 .timeline-entry__diff {

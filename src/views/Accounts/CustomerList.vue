@@ -1,8 +1,8 @@
 <template>
   <div class="acc-list__wrapper p-12 fs-300 t-body h-100 ov-h">
-    <div class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12">
+    <div class="page-card h-100 ovy-auto">
       <div class="flex ai-ct mb-10">
-        <h1 class="fs-700 fw-600">{{ $t("accounts.customers") }}</h1>
+        <h1>{{ $t("accounts.customers") }}</h1>
       </div>
 
       <!-- Filters -->
@@ -154,11 +154,11 @@ export default {
     columns() {
       return [
         { key: "email", label: "Email", sortable: true, width: "1fr" },
-        { key: "name", label: "Name", sortable: false, width: "180px", priority: 2 },
+        { key: "name", label: this.$t("accounts.name"), sortable: false, width: "180px", priority: 2 },
         { key: "group", label: this.$t("accounts.group"), sortable: false, width: "120px", priority: 2 },
         { key: "source_channel", label: this.$t("accounts.channel"), sortable: false, width: "140px", priority: 2 },
         { key: "status", label: this.$t("accounts.status"), sortable: false, width: "240px" },
-        { key: "created_at", label: "Created", sortable: true, width: "140px", priority: 2 },
+        { key: "created_at", label: this.$t("accounts.created"), sortable: true, width: "140px", priority: 2 },
       ];
     },
     paginationState() {

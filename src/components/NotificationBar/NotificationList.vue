@@ -195,11 +195,11 @@ const preview = (body) =>
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
   color: var(--text-secondary);
 }
 .notif-row__age {
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
   color: var(--text-muted);
 }
 @media (min-width: 1024px) {

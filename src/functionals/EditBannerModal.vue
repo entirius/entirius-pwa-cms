@@ -221,7 +221,7 @@ function onSave() {
               </template>
             </div>
 
-            <p class="fs-100 t-accent">Recommended aspect ratio: 16:9</p>
+            <p class="fs-200 t-accent">Recommended aspect ratio: 16:9</p>
           </div>
 
           <div class="form-group mb-8">

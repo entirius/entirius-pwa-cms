@@ -22,7 +22,7 @@
     <Loader v-if="loading" />
 
     <template v-else-if="voucher">
-      <div class="bg-base b-subtle rounded p-12 mb-10">
+      <div class="page-card mb-10">
         <div class="flex ai-ct jc-sb mb-10">
           <StatusBadge
             :label="statusLabel(voucher.status)"
@@ -93,7 +93,7 @@
         </dl>
       </div>
 
-      <div class="bg-base b-subtle rounded p-12">
+      <div class="page-card">
         <SegmentedControl
           v-model="historyTab"
           :options="historyTabs"

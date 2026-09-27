@@ -9,7 +9,6 @@
       >
         <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
       </BasicButton>
-      <span class="fw-600 fs-400">{{ isEdit ? item.question || item.url_key : $t("faq.create_item") }}</span>
     </Teleport>
     <Teleport to="#faq-toolbar-right" defer>
       <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
@@ -31,12 +30,12 @@
       />
     </Teleport>
 
-    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
+    <div class="page-card h-100 ovy-auto">
       <Loader v-if="loading" />
 
       <template v-else>
         <div class="flex ai-ct jc-sb mb-12">
-          <h1 class="fs-700 fw-600">
+          <h1>
             {{ isEdit ? item.question || item.url_key : $t("faq.create_item") }}
           </h1>
           <Switcher
@@ -47,12 +46,12 @@
         </div>
 
         <!-- Main fields -->
-        <div class="detail-section mb-10">
+        <div class="page-card detail-section mb-10">
           <h2 class="fs-500 fw-600 mb-8">{{ $t("faq.item_details") }}</h2>
           <div class="detail-grid">
             <div class="detail-field">
               <div class="flex ai-ct jc-sb">
-                <label class="detail-label required">{{ $t("faq.url_key") }}</label>
+                <label class="field-label required">{{ $t("faq.url_key") }}</label>
                 <BasicButton
                   v-if="isEdit && channelLanguages.length"
                   :text="$t('faq.translations')"
@@ -68,7 +67,7 @@
               />
             </div>
             <div class="detail-field">
-              <label class="detail-label">{{ $t("faq.group") }}</label>
+              <label class="field-label">{{ $t("faq.group") }}</label>
               <Dropdown
                 :values="groupOptions"
                 :selected="form.group_idx ? [form.group_idx] : []"
@@ -80,12 +79,12 @@
         </div>
 
         <!-- Content fields — each with per-field Translations button -->
-        <div class="detail-section mb-10">
+        <div class="page-card detail-section mb-10">
           <h2 class="fs-500 fw-600 mb-8">{{ $t("faq.item_content") }}</h2>
 
           <div class="detail-field mb-8">
             <div class="flex ai-ct jc-sb">
-              <label class="detail-label required">{{ $t("faq.question") }}</label>
+              <label class="field-label required">{{ $t("faq.question") }}</label>
               <BasicButton
                 v-if="isEdit && channelLanguages.length"
                 :text="$t('faq.translations')"
@@ -102,7 +101,7 @@
 
           <div class="detail-field mb-8">
             <div class="flex ai-ct jc-sb">
-              <label class="detail-label">{{ $t("faq.short_answer") }}</label>
+              <label class="field-label">{{ $t("faq.short_answer") }}</label>
               <BasicButton
                 v-if="isEdit && channelLanguages.length"
                 :text="$t('faq.translations')"
@@ -116,7 +115,7 @@
 
           <div class="detail-field">
             <div class="flex ai-ct jc-sb">
-              <label class="detail-label required">{{ $t("faq.answer") }}</label>
+              <label class="field-label required">{{ $t("faq.answer") }}</label>
               <BasicButton
                 v-if="isEdit && channelLanguages.length"
                 :text="$t('faq.translations')"
@@ -130,7 +129,7 @@
         </div>
 
         <!-- Associations (edit mode only) -->
-        <div v-if="isEdit" class="detail-section mb-10">
+        <div v-if="isEdit" class="page-card detail-section mb-10">
           <div class="flex ai-ct jc-sb mb-8">
             <h2 class="fs-500 fw-600">{{ $t("faq.associations") }}</h2>
             <BasicButton
@@ -602,11 +601,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.detail-section {
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-  padding: var(--space-5);
-}
 
 .detail-grid {
   display: grid;
@@ -620,13 +614,6 @@ export default {
   gap: var(--space-1);
 }
 
-.detail-label {
-  font-size: var(--fs-200);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--text-muted);
-}
 
 .translation-field__btn {
   flex-shrink: 0;

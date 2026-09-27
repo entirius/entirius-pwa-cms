@@ -174,7 +174,7 @@ export default {
   right: var(--space-2);
   top: 50%;
   transform: translateY(-50%);
-  font-size: var(--fs-150);
+  font-size: var(--fs-200);
   color: var(--text-muted);
   transition: transform 0.15s;
   cursor: pointer;

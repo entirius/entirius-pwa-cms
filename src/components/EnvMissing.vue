@@ -1,6 +1,6 @@
 <template>
   <div
-    class="env-missing absolute fs-300 p-10 t-body rounded bg-base b-subtle shadow-down"
+    class="page-card env-missing absolute fs-300 t-body shadow-down"
   >
     <p class="fs-700 fw-600 txt-center mb-1">Configuration Required</p>
     <p class="fs-300 t-secondary txt-center mb-12">

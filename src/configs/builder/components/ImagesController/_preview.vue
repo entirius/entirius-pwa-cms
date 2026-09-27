@@ -20,7 +20,7 @@
             @error="(e) => (e.target.style.display = 'none')"
           />
           <span
-            class="fs-100 absolute image-badge ph-1 bg-accent-fill t-on-accent-fill rounded"
+            class="fs-200 absolute image-badge ph-1 bg-accent-fill t-on-accent-fill rounded"
           >
             {{ `${k}` }}
           </span>

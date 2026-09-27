@@ -225,7 +225,7 @@ function onDragEnd() {
   text-align: center;
   flex-shrink: 0;
   cursor: pointer;
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
   color: var(--text-muted);
 }
 

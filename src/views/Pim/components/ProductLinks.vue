@@ -20,7 +20,7 @@
     </div>
 
     <p
-      class="t-muted fs-100 mb-5"
+      class="t-muted fs-200 mb-5"
       data-testid="linked-sync-notice"
     >
       <FontAwesomeIcon icon="circle-info" />

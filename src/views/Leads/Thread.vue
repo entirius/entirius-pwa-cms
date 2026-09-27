@@ -198,11 +198,11 @@ watch(() => route.params.id, (id) => id && load());
 }
 .thread__state {
   color: var(--text-secondary);
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
 }
 .thread__activity {
   color: var(--text-secondary);
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
 }
 .thread__activity summary {
   min-height: 44px;

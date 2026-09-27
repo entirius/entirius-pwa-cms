@@ -27,13 +27,13 @@
       />
     </Teleport>
 
-    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
+    <div class="page-card h-100 ovy-auto">
       <Loader v-if="loading" />
 
       <template v-else>
         <div class="flex ai-ct jc-sb flex-wrap gap-5 rg-3 mb-12">
           <div class="flex ai-ct flex-wrap gap-5">
-            <h1 class="fs-700 fw-600">
+            <h1>
               {{
                 isEdit
                   ? definition.name || definition.slug
@@ -97,11 +97,7 @@
             <FormField :label="$t('agm.channels')">
               <Dropdown
                 :custom_droplist="true"
-                :placeholder="`${$t('agm.channels')} (${
-                  form.channel_ids.length
-                    ? form.channel_ids.length
-                    : $t('agm.all_channels')
-                })`"
+                :placeholder="form.channel_ids.length ? $t('common.selected_count', { count: form.channel_ids.length }) : $t('agm.all_channels')"
               >
                 <template #custom>
                   <div
@@ -149,11 +145,7 @@
               <template v-else>
                 <Dropdown
                   :custom_droplist="true"
-                  :placeholder="`${$t('agm.display_contexts')} (${
-                    form.display_contexts.length
-                      ? form.display_contexts.length
-                      : $t('agm.all_channels')
-                  })`"
+                  :placeholder="form.display_contexts.length ? $t('common.selected_count', { count: form.display_contexts.length }) : $t('agm.all_channels')"
                 >
                   <template #custom>
                     <div

@@ -18,7 +18,7 @@
       <div
         v-for="profile in profiles"
         :key="profile.idx"
-        class="mapping-profile bg-base b-subtle rounded p-8 mb-5"
+        class="page-card mapping-profile mb-5"
         :data-testid="`mapping-profile-${profile.idx}`"
       >
         <div class="flex ai-ct jc-sb gap-5 flex-wrap mb-5">

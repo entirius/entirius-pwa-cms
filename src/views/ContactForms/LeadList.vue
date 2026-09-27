@@ -1,10 +1,10 @@
 <template>
   <div class="cf-lead-list__wrapper p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
+      class="page-card h-100 ovy-auto"
     >
       <div class="flex ai-ct mb-10">
-        <h1 class="fs-700 fw-600">{{ $t("cf.leads") }}</h1>
+        <h1>{{ $t("cf.leads") }}</h1>
       </div>
 
       <div class="flex ai-ct flex-wrap gap-8 rg-3 mb-10">

@@ -21,7 +21,7 @@
             style="max-width: 10rem"
             :values="docs_nav"
             :selected="[doc_prev]"
-            class="bg-hover b-default rounded fs-100"
+            class="bg-hover b-default rounded fs-200"
             @onSelect="doc_prev = $event"
           />
         </div>
@@ -31,19 +31,19 @@
         </div>
       </div>
       <div v-if="selected_view === 'eg'">
-        <p class="fs-100 t-muted mb-1">Wybierz przyklad</p>
+        <p class="fs-200 t-muted mb-1">Wybierz przyklad</p>
         <div class="flex mb-5">
           <Dropdown
             style="min-width: 10rem"
             :values="sub_nav"
             :selected="[eg_prev]"
-            class="bg-hover b-default rounded fs-100"
+            class="bg-hover b-default rounded fs-200"
             @onSelect="eg_prev = $event"
           />
         </div>
         <div class="grid grid-col-3 gap-5">
           <pre
-            class="fs-100 b-subtle rounded p-5 bg-base as-s"
+            class="page-card fs-200 as-s"
             v-for="(k, i) in ex_preview"
           >
             
@@ -163,7 +163,7 @@ export default {
     li,
     blockquote {
       color: var(--text-secondary);
-      font-size: var(--fs-100);
+      font-size: var(--fs-200);
     }
 
     blockquote {

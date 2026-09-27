@@ -97,7 +97,7 @@
       v-if="form.legal_basis === 'consent' && !consentRecorded"
       class="ld-field"
     >
-      <span>{{ $t("leads.add.consent_ref") }} *</span>
+      <span class="required">{{ $t("leads.add.consent_ref") }}</span>
       <input
         v-model.trim="form.consent_ref"
         class="ld-input"

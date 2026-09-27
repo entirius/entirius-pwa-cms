@@ -14,7 +14,7 @@
 
     <div v-if="loading" class="flex jc-ct p-12"><Loader /></div>
 
-    <div v-else-if="order.order_id" class="bg-base b-subtle rounded h-100 ovy-auto p-12">
+    <div v-else-if="order.order_id" class="page-card h-100 ovy-auto">
       <!-- Header: status + total + dates in one compact row -->
       <div class="order-detail__header mb-10">
         <div class="order-detail__header-left">
@@ -137,7 +137,7 @@ export default {
       paymentIntentColumns: [
         { key: "code", label: "Method", width: "140px" },
         { key: "status", label: "Status", width: "120px" },
-        { key: "external_order_id", label: "External ID", width: "1fr" },
+        { key: "external_order_id", label: this.$t("checkout_orders.external_id"), width: "1fr" },
       ],
     };
   },

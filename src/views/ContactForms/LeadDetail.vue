@@ -1,7 +1,7 @@
 <template>
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
+      class="page-card h-100 ovy-auto"
     >
       <Teleport v-if="toolbarReady" to="#forms-toolbar-left">
         <BasicButton
@@ -46,7 +46,7 @@
 
       <template v-else-if="lead">
         <div class="flex ai-ct mb-8">
-          <h1 class="fs-700 fw-600">{{ $t("cf.lead_detail") }}</h1>
+          <h1>{{ $t("cf.lead_detail") }}</h1>
         </div>
 
         <div class="cf-lead-grid">

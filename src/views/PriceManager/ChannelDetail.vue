@@ -30,7 +30,7 @@
       />
     </Teleport>
 
-    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
+    <div class="page-card h-100 ovy-auto">
       <Loader v-if="loading" />
 
       <template v-else>
@@ -38,7 +38,7 @@
           <h2 class="fs-500 fw-600 mb-8">{{ $t('pm.channel_detail') }}</h2>
           <div class="pm-grid">
             <div class="pm-field">
-              <label class="pm-label required">IDX</label>
+              <label class="field-label required">IDX</label>
               <BasicInput
                 v-model="form.idx"
                 :isDisabled="isEdit"
@@ -46,14 +46,14 @@
               />
             </div>
             <div class="pm-field">
-              <label class="pm-label required">{{ $t('pm.name') }}</label>
+              <label class="field-label required">{{ $t('pm.name') }}</label>
               <BasicInput
                 v-model="form.name"
                 :validate="formErrors.getFieldError('name')"
               />
             </div>
             <div class="pm-field">
-              <label class="pm-label">{{ $t('pm.calculate_direction') }}</label>
+              <label class="field-label">{{ $t('pm.calculate_direction') }}</label>
               <Dropdown
                 :values="directionOptions"
                 :selected="[form.calculate_direction]"
@@ -61,7 +61,7 @@
               />
             </div>
             <div class="pm-field">
-              <label class="pm-label">{{ $t('pm.calculate_countries') }}</label>
+              <label class="field-label">{{ $t('pm.calculate_countries') }}</label>
               <Dropdown
                 :custom_droplist="true"
                 :placeholder="`${$t('pm.calculate_countries')} (${form.calculate_country_codes.length})`"
@@ -85,7 +85,7 @@
               </Dropdown>
             </div>
             <div class="pm-field">
-              <label class="pm-label">{{ $t('pm.default_country') }}</label>
+              <label class="field-label">{{ $t('pm.default_country') }}</label>
               <Dropdown
                 :values="defaultCountryOptions"
                 :selected="form.default_country_code ? [form.default_country_code] : []"
@@ -307,13 +307,6 @@ export default {
   gap: var(--space-1);
 }
 
-.pm-label {
-  font-size: var(--fs-200);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--text-muted);
-}
 
 .pm-hint {
   font-size: var(--fs-200);

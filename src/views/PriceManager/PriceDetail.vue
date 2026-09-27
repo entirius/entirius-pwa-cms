@@ -12,7 +12,7 @@
       <span class="fw-600 fs-400">{{ effectiveSku || $t('pm.price_detail') }}</span>
     </Teleport>
 
-    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
+    <div class="page-card h-100 ovy-auto">
       <Loader v-if="loading" />
 
       <template v-else>
@@ -27,7 +27,7 @@
           <!-- Top bar: currency selector + meta info -->
           <div class="flex ai-ct gap-8 mb-10 flex-wrap">
             <div class="pm-field">
-              <label class="pm-label">{{ $t('pm.currency') }}</label>
+              <label class="field-label">{{ $t('pm.currency') }}</label>
               <Dropdown
                 :values="currencyOptions"
                 :selected="activeCurrency ? [activeCurrency] : []"
@@ -35,21 +35,21 @@
               />
             </div>
             <div class="pm-meta-item">
-              <span class="pm-label">{{ $t('pm.country') }}</span>
+              <span class="field-label">{{ $t('pm.country') }}</span>
               <span class="fw-600">{{ flatPrice?.country || defaultCountryIso || '—' }}</span>
             </div>
             <div class="pm-meta-item">
-              <span class="pm-label">{{ $t('pm.direction') }}</span>
+              <span class="field-label">{{ $t('pm.direction') }}</span>
               <span>{{ isNetEditable ? $t('pm.from_net_to_gross') : $t('pm.from_gross_to_net') }}</span>
             </div>
             <div v-if="sourceBadge" class="pm-meta-item">
-              <span class="pm-label">{{ $t('pm.source_label') }}</span>
+              <span class="field-label">{{ $t('pm.source_label') }}</span>
               <span class="flex ai-ct gap-2">
                 <StatusBadge :label="sourceBadge.label" :variant="sourceBadge.variant" />
               </span>
             </div>
             <div v-if="flatPurchaseCost" class="pm-meta-item">
-              <span class="pm-label">{{ $t('pm.purchase_cost') }}</span>
+              <span class="field-label">{{ $t('pm.purchase_cost') }}</span>
               <span class="flex ai-ct gap-2">
                 <span class="t-body fw-600">{{ flatPurchaseCost.net_cost }} {{ flatPurchaseCost.currency }}</span>
                 <span v-if="flatPurchaseCost.supplier_idx" class="t-muted fs-200">
@@ -66,11 +66,11 @@
           </div>
 
           <!-- Editable row -->
-          <div class="pm-edit-form mb-8">
+          <div class="page-card pm-edit-form mb-8">
             <div class="pm-edit-fields">
               <!-- Editable price (net or gross depending on direction) -->
               <div class="pm-field">
-                <label class="pm-label required">
+                <label class="field-label required">
                   {{ isNetEditable ? $t('pm.net') : $t('pm.gross') }}
                 </label>
                 <BasicInput
@@ -82,7 +82,7 @@
 
               <!-- Calculated price (read-only) -->
               <div class="pm-field">
-                <label class="pm-label">
+                <label class="field-label">
                   {{ isNetEditable ? $t('pm.gross') : $t('pm.net') }}
                   <span class="pm-lock-icon t-muted ml-1">
                     <FontAwesomeIcon icon="lock" />
@@ -95,7 +95,7 @@
 
               <!-- Special price -->
               <div class="pm-field">
-                <label class="pm-label">{{ $t('pm.special_net') }}</label>
+                <label class="field-label">{{ $t('pm.special_net') }}</label>
                 <BasicInput
                   v-model="form.special_value"
                   :validate="formErrors.getFieldError('special_value')"
@@ -105,7 +105,7 @@
 
               <!-- Promo dates -->
               <div class="pm-field">
-                <label class="pm-label">{{ $t('pm.special_from') }}</label>
+                <label class="field-label">{{ $t('pm.special_from') }}</label>
                 <input
                   type="date"
                   class="pm-date-input"
@@ -114,7 +114,7 @@
                 />
               </div>
               <div class="pm-field">
-                <label class="pm-label">{{ $t('pm.special_to') }}</label>
+                <label class="field-label">{{ $t('pm.special_to') }}</label>
                 <input
                   type="date"
                   class="pm-date-input"
@@ -552,13 +552,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.pm-edit-form {
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-  padding: var(--space-5);
-  background: var(--surface-base);
-}
-
 .pm-edit-fields {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -572,16 +565,9 @@ export default {
   gap: var(--space-1);
 }
 
-.pm-label {
-  font-size: var(--fs-200);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--text-muted);
-}
 
 .pm-lock-icon {
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
 }
 
 .pm-readonly-value {

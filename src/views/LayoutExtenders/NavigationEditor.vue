@@ -49,7 +49,7 @@
     </Teleport>
 
     <!-- Content -->
-    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
+    <div class="page-card h-100 ovy-auto">
       <Loader v-show="loading" />
 
       <template v-if="!loading">
@@ -182,7 +182,7 @@
                         <template #item="{ element: link, index: linkIdx }">
                           <div class="nav-link-row" @click="openEditLink(element, index, col, colIdx, link, linkIdx)">
                             <span class="link-handle t-muted">
-                              <FontAwesomeIcon icon="grip-vertical" style="font-size: var(--fs-100)" />
+                              <FontAwesomeIcon icon="grip-vertical" style="font-size: var(--fs-200)" />
                             </span>
                             <span class="nav-link-row__text">
                               <span class="t-muted">·</span> {{ link.label }}
@@ -792,7 +792,7 @@ export default {
   cursor: grab;
   opacity: 0;
   transition: opacity 0.1s;
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
   flex-shrink: 0;
 }
 

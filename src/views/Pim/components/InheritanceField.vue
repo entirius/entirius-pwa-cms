@@ -112,7 +112,7 @@ export default {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-base);
   padding: 2px var(--space-2);
-  font-size: var(--fs-150);
+  font-size: var(--fs-200);
   color: var(--text-muted);
 
   &--inherited {
@@ -153,6 +153,6 @@ export default {
 .inheritance-field__preview {
   margin-top: 2px;
   font-style: italic;
-  font-size: var(--fs-150);
+  font-size: var(--fs-200);
 }
 </style>

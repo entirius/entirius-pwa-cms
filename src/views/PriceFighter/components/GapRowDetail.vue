@@ -9,7 +9,7 @@
           <h4 class="gap-detail__heading">{{ $t('pricefighter.detail_components') }}</h4>
           <dl class="gap-detail__facts">
             <dt>{{ $t('pricefighter.reference_price') }} (R)</dt>
-            <dd>{{ fmt(row.reference_price) }} <span class="t-muted fs-100">({{ row.estimator }})</span></dd>
+            <dd>{{ fmt(row.reference_price) }} <span class="t-muted fs-200">({{ row.estimator }})</span></dd>
             <dt>{{ $t('pricefighter.baseline') }} (B)</dt>
             <dd>{{ fmt(bounds ? bounds.baseline : row.baseline) }}</dd>
             <dt>{{ $t('pricefighter.floor') }} (F)</dt>
@@ -175,7 +175,7 @@ onMounted(async () => {
     padding: var(--space-1) var(--space-2);
     color: var(--text-muted);
     text-transform: uppercase;
-    font-size: var(--fs-100);
+    font-size: var(--fs-200);
     border-bottom: 1px solid var(--border-subtle);
   }
 

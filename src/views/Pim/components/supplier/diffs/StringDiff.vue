@@ -34,7 +34,7 @@ export default {
   gap: var(--space-5);
 }
 .string-diff__label {
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: var(--space-2);

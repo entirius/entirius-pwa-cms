@@ -2,7 +2,7 @@
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <!-- Title shown by router titleKey in header bar -->
 
-    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
+    <div class="page-card h-100 ovy-auto">
       <Loader v-show="loading" />
 
       <div v-show="!loading">

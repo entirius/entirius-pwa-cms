@@ -195,7 +195,7 @@ onBeforeUnmount(() => document.removeEventListener("keydown", onKey));
   overflow-wrap: anywhere;
 }
 .cfg-row__detail {
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
   color: var(--text-secondary);
   overflow-wrap: anywhere;
 }
@@ -214,7 +214,7 @@ onBeforeUnmount(() => document.removeEventListener("keydown", onKey));
   margin: 0;
   padding: var(--space-3) var(--space-4);
   list-style: none;
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
   color: var(--text-muted);
 }
 .cfg-grid__tick {
@@ -230,7 +230,7 @@ onBeforeUnmount(() => document.removeEventListener("keydown", onKey));
   border-top: 1px solid var(--border-subtle);
 }
 .cfg-panel__age {
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
   color: var(--text-muted);
 }
 @media (min-width: 1024px) {

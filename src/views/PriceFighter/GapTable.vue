@@ -1,6 +1,6 @@
 <template>
   <div class="p-12 fs-300 t-body h-100 ov-h">
-    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
+    <div class="page-card h-100 ovy-auto">
       <!-- Toolbar -->
       <div class="gap-table__toolbar">
         <Dropdown
@@ -307,7 +307,7 @@ export default {
    instead of overflowing into the Gap column. */
 .gap-table__ccy {
   color: var(--text-muted);
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
 }
 
 .suggested-cell {

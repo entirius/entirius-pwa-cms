@@ -4,7 +4,7 @@
       class="enrichment-review__toolbar p-8 b-subtle bb-100 bg-base"
     >
       <div class="flex ai-ct gap-8 flex-wrap">
-        <h1 class="fs-500 fw-600 m-0">{{ $t("enrichment.review.title") }}</h1>
+        <h1 class="m-0">{{ $t("enrichment.review.title") }}</h1>
         <SegmentedControl
           v-model="mode"
           :options="modeOptions"
@@ -637,7 +637,7 @@ export default {
   min-width: 16px;
   height: 16px;
   padding: 0 var(--space-1);
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
   font-weight: 600;
   line-height: 16px;
   text-align: center;

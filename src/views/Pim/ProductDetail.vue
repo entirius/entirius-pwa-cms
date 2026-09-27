@@ -128,7 +128,7 @@
         <template #custom><FontAwesomeIcon icon="trash-can" /></template>
       </BasicButton>
     </Teleport>
-    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
+    <div class="page-card h-100 ovy-auto">
       <Loader v-if="loading" />
 
       <!-- etap-12 #25: 404 on the chosen channel auto-switches to default and warns. -->
@@ -179,7 +179,7 @@
               </div>
               <div class="product-controls">
                 <div class="product-controls__field">
-                  <label class="product-controls__label">{{
+                  <label class="product-controls__label field-label">{{
                     $t("pim.visibility")
                   }}</label>
                   <Dropdown
@@ -189,7 +189,7 @@
                   />
                 </div>
                 <div class="product-controls__field">
-                  <label class="product-controls__label">{{
+                  <label class="product-controls__label field-label">{{
                     $t("pim.feature_set")
                   }}</label>
                   <Dropdown
@@ -227,7 +227,7 @@
               <!-- Name field -->
               <div class="translation-field mt-8">
                 <div class="translation-field__header">
-                  <label class="detail-label"
+                  <label class="field-label"
                     >{{ $t("pim.name") }} ({{
                       defaultLang.toUpperCase()
                     }})</label
@@ -271,25 +271,25 @@
                 </p>
                 <div class="physical-row mb-5">
                   <div class="detail-field">
-                    <label class="detail-label">EAN</label>
+                    <label class="field-label">EAN</label>
                     <BasicInput v-model="form.ean" />
                   </div>
                   <div class="detail-field">
-                    <label class="detail-label">{{ $t("pim.weight") }}</label>
+                    <label class="field-label">{{ $t("pim.weight") }}</label>
                     <BasicInput v-model="form.weight" />
                   </div>
                 </div>
                 <div class="physical-row physical-row--3">
                   <div class="detail-field">
-                    <label class="detail-label">{{ $t("pim.width") }}</label>
+                    <label class="field-label">{{ $t("pim.width") }}</label>
                     <BasicInput v-model="form.width" />
                   </div>
                   <div class="detail-field">
-                    <label class="detail-label">{{ $t("pim.height") }}</label>
+                    <label class="field-label">{{ $t("pim.height") }}</label>
                     <BasicInput v-model="form.height" />
                   </div>
                   <div class="detail-field">
-                    <label class="detail-label">{{ $t("pim.depth") }}</label>
+                    <label class="field-label">{{ $t("pim.depth") }}</label>
                     <BasicInput v-model="form.deep" />
                   </div>
                 </div>
@@ -317,7 +317,7 @@
           <div v-if="activeTab === 'descriptions'" class="detail-section">
             <div class="translation-field">
               <div class="translation-field__header">
-                <label class="detail-label"
+                <label class="field-label"
                   >Short Description ({{ defaultLang.toUpperCase() }})</label
                 >
                 <BasicButton
@@ -358,7 +358,7 @@
             </div>
             <div class="translation-field mt-8">
               <div class="translation-field__header">
-                <label class="detail-label"
+                <label class="field-label"
                   >{{ $t("pim.description") }} ({{
                     defaultLang.toUpperCase()
                   }})</label
@@ -405,7 +405,7 @@
           <div v-if="activeTab === 'product_tile'" class="detail-section">
             <div class="translation-field">
               <div class="translation-field__header">
-                <label class="detail-label"
+                <label class="field-label"
                   >Subname ({{ defaultLang.toUpperCase() }})</label
                 >
                 <BasicButton
@@ -441,7 +441,7 @@
             </div>
             <div class="translation-field mt-8">
               <div class="translation-field__header">
-                <label class="detail-label"
+                <label class="field-label"
                   >Subname 2 ({{ defaultLang.toUpperCase() }})</label
                 >
                 <BasicButton
@@ -481,7 +481,7 @@
           <div v-if="activeTab === 'seo'" class="detail-section">
             <div class="translation-field">
               <div class="translation-field__header">
-                <label class="detail-label"
+                <label class="field-label"
                   >URL Key ({{ defaultLang.toUpperCase() }})</label
                 >
                 <BasicButton
@@ -517,7 +517,7 @@
             </div>
             <div class="translation-field mt-8">
               <div class="translation-field__header">
-                <label class="detail-label"
+                <label class="field-label"
                   >Meta Title ({{ defaultLang.toUpperCase() }})</label
                 >
                 <BasicButton
@@ -553,7 +553,7 @@
             </div>
             <div class="translation-field mt-8">
               <div class="translation-field__header">
-                <label class="detail-label"
+                <label class="field-label"
                   >Meta Description ({{ defaultLang.toUpperCase() }})</label
                 >
                 <BasicButton
@@ -594,7 +594,7 @@
             </div>
             <div class="translation-field mt-8">
               <div class="translation-field__header">
-                <label class="detail-label"
+                <label class="field-label"
                   >{{ $t("pim.canonical_url") }} ({{ defaultLang.toUpperCase() }})</label
                 >
                 <BasicButton
@@ -629,7 +629,7 @@
               <BasicInput v-else v-model="form.canonical_url_t9n[defaultLang]" />
             </div>
             <div class="translation-field mt-8">
-              <label class="detail-label">{{ $t("pim.og_image_url") }}</label>
+              <label class="field-label">{{ $t("pim.og_image_url") }}</label>
               <p class="fs-200 t-muted mb-2">{{ $t("pim.og_image_url_help") }}</p>
               <BasicInput v-model="form.og_image" />
             </div>
@@ -958,7 +958,7 @@ export default {
       const tabs = [
         { value: "attributes", label: this.$t("pim.tab_attributes") },
         { value: "descriptions", label: this.$t("pim.tab_descriptions") },
-        { value: "product_tile", label: "Product Tile" },
+        { value: "product_tile", label: this.$t("pim.tab_product_tile") },
         { value: "seo", label: "SEO" },
         { value: "categories", label: this.$t("pim.categories") },
         { value: "files", label: this.$t("pim.tab_files") },
@@ -1525,7 +1525,7 @@ export default {
   border-radius: var(--radius-lg);
   background: var(--accent-fill);
   color: var(--text-on-accent-fill);
-  font-size: var(--fs-150);
+  font-size: var(--fs-200);
   font-weight: 600;
 }
 
@@ -1664,13 +1664,6 @@ export default {
   gap: var(--space-1);
 }
 
-.detail-label {
-  font-size: var(--fs-200);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--text-muted);
-}
 
 .meta-item {
   font-size: var(--fs-200);
@@ -1700,12 +1693,6 @@ export default {
     display: flex;
     flex-direction: column;
     gap: var(--space-1);
-  }
-
-  &__label {
-    font-size: var(--fs-200);
-    color: var(--text-muted);
-    font-weight: 500;
   }
 }
 

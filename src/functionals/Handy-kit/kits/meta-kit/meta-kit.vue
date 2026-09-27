@@ -73,7 +73,7 @@
             :class="{ 'b-negative': !og_image.length }"
           >
             <div v-if="!og_image.length" class="flex jc-ct ai-ct h-100">
-              <span class="fs-100">empty</span>
+              <span class="fs-200">empty</span>
             </div>
             <div v-else class="relative w-100 h-100">
               <div
@@ -83,7 +83,7 @@
                 <BasicButton
                   @click="og_image = ''"
                   :icon="'close-mini'"
-                  class="p-0 p-1 ov-h fs-100"
+                  class="p-0 p-1 ov-h fs-200"
                 />
               </div>
               <img class="absolute absolute-ct" :src="og_image" alt="" />

@@ -17,11 +17,11 @@
     </Teleport>
 
     <div
-      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
+      class="page-card h-100 ovy-auto"
     >
       <!-- Heading -->
       <div class="flex ai-ct mb-10">
-        <h1 class="fs-700 fw-600">{{ $t("checkout_orders.orders") }}</h1>
+        <h1>{{ $t("checkout_orders.orders") }}</h1>
       </div>
 
       <!-- Status FilterChips -->

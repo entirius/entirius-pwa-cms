@@ -78,7 +78,7 @@ export default {
   color: var(--text-accent);
   cursor: pointer;
   text-decoration: underline;
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
 }
 .array-diff__details {
   margin-top: var(--space-5);

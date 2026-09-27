@@ -754,7 +754,7 @@ watch(
         </div>
         <div class="media-gallery__divider">
           <span class="media-gallery__divider-line" />
-          <span class="media-gallery__divider-text t-muted fs-100">or</span>
+          <span class="media-gallery__divider-text t-muted fs-200">{{ $t("pim.upload_or") }}</span>
           <span class="media-gallery__divider-line" />
         </div>
         <div class="media-gallery__video-inline">
@@ -858,6 +858,11 @@ watch(
     flex-direction: column;
     align-items: center;
     gap: var(--space-2);
+  }
+
+  // Empty preview: a themed sunken box, not the inverse photo backdrop (a light block in dark theme).
+  &__preview:has(&__no-image) {
+    background: var(--surface-sunken);
   }
 
   &__no-image {
@@ -1007,7 +1012,7 @@ watch(
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: var(--fs-150);
+    font-size: var(--fs-200);
     transition: background 0.1s;
 
     &:hover {
@@ -1160,7 +1165,7 @@ watch(
   }
 
   &__field-label {
-    font-size: var(--fs-100);
+    font-size: var(--fs-200);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.03em;

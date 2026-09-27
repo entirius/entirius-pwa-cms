@@ -1,7 +1,7 @@
 <template>
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
+      class="page-card h-100 ovy-auto"
     >
       <div class="page-title-row flex ai-ct gap-5 mb-10">
         <BasicButton
@@ -12,7 +12,7 @@
         >
           <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
         </BasicButton>
-        <h1 class="fs-700 fw-600">{{ typeLabel }}</h1>
+        <h1>{{ typeLabel }}</h1>
       </div>
 
       <Loader v-show="loading" />
@@ -25,7 +25,7 @@
           <div
             v-for="tpl in templates"
             :key="tpl.pk"
-            class="emails-card bg-base b-subtle rounded p-10 pointer"
+            class="page-card emails-card pointer"
             @click="editTemplate(tpl.pk)"
           >
             <div class="fs-400 fw-600 t-body mb-2">
@@ -54,19 +54,7 @@ import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { GET_EmailTemplates } from "@/api/emails/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
-
-const TYPE_LABELS = {
-  "accounts-new-account": "New Account Email",
-  "accounts-reset-password": "Reset Password Email",
-  "checkout-virtual-product": "Virtual Product Email",
-  "loyalty-coupon-confirmation": "Coupon Confirmation Email",
-  "returns-return-confirmation": "Return Confirmation Email",
-  "allegro-virtual-product": "Allegro Virtual Product Email",
-  "agreements-newsletter-signup": "Newsletter Signup Email",
-  "contact-forms-booking-confirmation": "Booking Confirmation Email",
-  "contact-forms-booking-admin-notification": "Booking Admin Notification Email",
-  "contact-forms-submission": "Contact Form Submission Email",
-};
+import { emailTypeLabel } from "./emailTypes";
 
 export default {
   name: "EmailTemplateList",
@@ -86,7 +74,7 @@ export default {
       return this.$route.params.emailType;
     },
     typeLabel() {
-      return TYPE_LABELS[this.emailType] || this.emailType;
+      return emailTypeLabel(this.$t, this.emailType);
     },
   },
   mounted() {

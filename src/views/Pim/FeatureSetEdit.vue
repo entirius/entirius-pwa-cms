@@ -29,7 +29,7 @@
       />
     </Teleport>
     <div class="flex-1 ovy-auto p-12">
-      <div class="bg-base b-subtle rounded p-12">
+      <div class="page-card">
         <!-- Set identity -->
         <div class="set-identity mb-10">
           <span class="fs-200 t-accent fw-600 tt-upper">{{
@@ -933,7 +933,7 @@ export default {
 .collapse-chevron {
   cursor: pointer;
   transition: transform 0.2s;
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
   user-select: none;
   &.is-collapsed {
     transform: rotate(-90deg);

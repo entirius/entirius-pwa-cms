@@ -156,7 +156,7 @@
               <p class="fs-200 fw-600 t-muted uppercase">{{ tProp(prop) }}</p>
               <button
                 v-if="skuPickerChannel"
-                class="fs-100 t-accent pointer"
+                class="fs-200 t-accent pointer"
                 style="background: none; border: none; text-decoration: underline"
                 @click="skuManualMode = !skuManualMode"
               >
@@ -196,7 +196,7 @@
               "
               class="rounded bg-base lh-base-elem fs-200"
             />
-            <p v-if="skuPickerDisabledMsg && !skuManualMode" class="fs-100 t-muted mt-1">
+            <p v-if="skuPickerDisabledMsg && !skuManualMode" class="fs-200 t-muted mt-1">
               <FontAwesomeIcon icon="circle-info" class="mr-1" />
               {{ skuPickerDisabledMsg }}
             </p>

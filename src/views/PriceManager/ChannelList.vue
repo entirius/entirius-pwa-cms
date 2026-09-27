@@ -9,7 +9,7 @@
       />
     </Teleport>
 
-    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
+    <div class="page-card h-100 ovy-auto">
       <Loader v-show="loading" />
 
       <div v-show="!loading">

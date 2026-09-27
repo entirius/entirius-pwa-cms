@@ -1,7 +1,7 @@
 <template>
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
+      class="page-card h-100 ovy-auto"
     >
       <div class="page-title-row flex ai-ct gap-5 mb-10">
         <BasicButton
@@ -12,7 +12,7 @@
         >
           <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
         </BasicButton>
-        <h1 class="fs-700 fw-600">{{ $t("emails.edit_template") }}</h1>
+        <h1>{{ $t("emails.edit_template") }}</h1>
         <span class="fs-200 t-muted ml-2">({{ typeLabel }})</span>
         <span
           v-if="template.language_code"
@@ -31,7 +31,7 @@
         </div>
 
         <div v-for="field in contentFields" :key="field.key" class="mb-8">
-          <FormField :label="field.label" :description="field.description || ''">
+          <FormField :label="$t(field.label)" :description="field.description ? $t(field.description) : ''">
             <BasicWysiwyg v-if="field.wysiwyg" v-model="template[field.key]" />
             <BasicInput v-else v-model="template[field.key]" />
           </FormField>
@@ -54,193 +54,181 @@ import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { GET_EmailTemplate, PATCH_EmailTemplate } from "@/api/emails/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { emailTypeLabel } from "./emailTypes";
 
-
-const TYPE_LABELS = {
-  "accounts-new-account": "New Account",
-  "accounts-reset-password": "Reset Password",
-  "checkout-virtual-product": "Virtual Product",
-  "loyalty-coupon-confirmation": "Coupon Confirmation",
-  "returns-return-confirmation": "Return Confirmation",
-  "allegro-virtual-product": "Allegro Virtual Product",
-  "agreements-newsletter-signup": "Newsletter Signup",
-  "contact-forms-booking-confirmation": "Booking Confirmation",
-  "contact-forms-booking-admin-notification": "Booking Admin Notification",
-  "contact-forms-submission": "Contact Form Submission",
-};
 
 const TYPE_FIELDS = {
   "accounts-new-account": [
     {
       key: "welcome",
-      label: "Welcome",
-      description: "Supports |user_name| placeholder",
+      label: "emails.fields.welcome",
+      description: "emails.field_hints.user_name",
       wysiwyg: true,
     },
-    { key: "announce", label: "Announcement", wysiwyg: true },
-    { key: "confirm_button", label: "Confirm Button Label", wysiwyg: false },
-    { key: "thank_you", label: "Thank You", wysiwyg: true },
-    { key: "help", label: "Help Text", wysiwyg: true },
+    { key: "announce", label: "emails.fields.announce", wysiwyg: true },
+    { key: "confirm_button", label: "emails.fields.confirm_button", wysiwyg: false },
+    { key: "thank_you", label: "emails.fields.thank_you", wysiwyg: true },
+    { key: "help", label: "emails.fields.help", wysiwyg: true },
   ],
   "accounts-reset-password": [
-    { key: "welcome", label: "Welcome", wysiwyg: true },
-    { key: "reset_button", label: "Reset Button Label", wysiwyg: false },
-    { key: "help", label: "Help Text", wysiwyg: true },
+    { key: "welcome", label: "emails.fields.welcome", wysiwyg: true },
+    { key: "reset_button", label: "emails.fields.reset_button", wysiwyg: false },
+    { key: "help", label: "emails.fields.help", wysiwyg: true },
   ],
   "checkout-virtual-product": [
     {
       key: "welcome",
-      label: "Welcome",
-      description: "Supports |user_name| placeholder",
+      label: "emails.fields.welcome",
+      description: "emails.field_hints.user_name",
       wysiwyg: true,
     },
     {
       key: "order",
-      label: "Order Info",
-      description: "Supports |order_id| placeholder",
+      label: "emails.fields.order",
+      description: "emails.field_hints.order_id",
       wysiwyg: true,
     },
-    { key: "products", label: "Products Header", wysiwyg: false },
-    { key: "key_name", label: "Key Name Label", wysiwyg: false },
+    { key: "products", label: "emails.fields.products", wysiwyg: false },
+    { key: "key_name", label: "emails.fields.key_name", wysiwyg: false },
     {
       key: "additional_key_name",
-      label: "Additional Key Name",
+      label: "emails.fields.additional_key_name",
       wysiwyg: false,
     },
-    { key: "instructions", label: "Instructions Header", wysiwyg: false },
-    { key: "help", label: "Help Text", wysiwyg: true },
+    { key: "instructions", label: "emails.fields.instructions", wysiwyg: false },
+    { key: "help", label: "emails.fields.help", wysiwyg: true },
   ],
   "loyalty-coupon-confirmation": [
     {
       key: "welcome",
-      label: "Welcome",
-      description: "Supports |user_name| placeholder",
+      label: "emails.fields.welcome",
+      description: "emails.field_hints.user_name",
       wysiwyg: true,
     },
-    { key: "thank_you", label: "Thank You", wysiwyg: true },
-    { key: "coupon_copy", label: "Coupon Description", wysiwyg: true },
-    { key: "coupon_button", label: "Coupon Button Label", wysiwyg: false },
-    { key: "help", label: "Help Text", wysiwyg: true },
+    { key: "thank_you", label: "emails.fields.thank_you", wysiwyg: true },
+    { key: "coupon_copy", label: "emails.fields.coupon_copy", wysiwyg: true },
+    { key: "coupon_button", label: "emails.fields.coupon_button", wysiwyg: false },
+    { key: "help", label: "emails.fields.help", wysiwyg: true },
   ],
   "returns-return-confirmation": [
     {
       key: "welcome",
-      label: "Welcome",
-      description: "Supports |user_name| placeholder",
+      label: "emails.fields.welcome",
+      description: "emails.field_hints.user_name",
       wysiwyg: true,
     },
     {
       key: "return_copy",
-      label: "Return Info",
-      description: "Supports |order_id|, |return_id| placeholders",
+      label: "emails.fields.return_copy",
+      description: "emails.field_hints.return_id",
       wysiwyg: true,
     },
-    { key: "comment_copy", label: "Comment Section", wysiwyg: true },
-    { key: "print_copy", label: "Print Instructions", wysiwyg: true },
-    { key: "help", label: "Help Text", wysiwyg: true },
+    { key: "comment_copy", label: "emails.fields.comment_copy", wysiwyg: true },
+    { key: "print_copy", label: "emails.fields.print_copy", wysiwyg: true },
+    { key: "help", label: "emails.fields.help", wysiwyg: true },
   ],
   "allegro-virtual-product": [
     {
       key: "welcome",
-      label: "Welcome",
-      description: "Supports |user_name| placeholder",
+      label: "emails.fields.welcome",
+      description: "emails.field_hints.user_name",
       wysiwyg: true,
     },
     {
       key: "order",
-      label: "Order Info",
-      description: "Supports |order_id| placeholder",
+      label: "emails.fields.order",
+      description: "emails.field_hints.order_id",
       wysiwyg: true,
     },
-    { key: "products", label: "Products Header", wysiwyg: false },
-    { key: "key_name", label: "Key Name Label", wysiwyg: false },
+    { key: "products", label: "emails.fields.products", wysiwyg: false },
+    { key: "key_name", label: "emails.fields.key_name", wysiwyg: false },
     {
       key: "additional_key_name",
-      label: "Additional Key Name",
+      label: "emails.fields.additional_key_name",
       wysiwyg: false,
     },
-    { key: "instructions", label: "Instructions Header", wysiwyg: false },
-    { key: "help", label: "Help Text", wysiwyg: true },
+    { key: "instructions", label: "emails.fields.instructions", wysiwyg: false },
+    { key: "help", label: "emails.fields.help", wysiwyg: true },
   ],
   "agreements-newsletter-signup": [
     {
       key: "welcome",
-      label: "Welcome",
-      description: "Supports |user_name| placeholder",
+      label: "emails.fields.welcome",
+      description: "emails.field_hints.user_name",
       wysiwyg: true,
     },
-    { key: "confirm_copy", label: "Confirmation Text", wysiwyg: true },
-    { key: "confirm_button", label: "Confirm Button Label", wysiwyg: false },
-    { key: "help", label: "Help Text", wysiwyg: true },
+    { key: "confirm_copy", label: "emails.fields.confirm_copy", wysiwyg: true },
+    { key: "confirm_button", label: "emails.fields.confirm_button", wysiwyg: false },
+    { key: "help", label: "emails.fields.help", wysiwyg: true },
   ],
   "contact-forms-booking-confirmation": [
     {
       key: "header_title",
-      label: "Header Title",
-      description: "H2 heading. Empty = use translated default 'Your booking is confirmed'.",
+      label: "emails.fields.header_title",
+      description: "emails.field_hints.header_booking",
       wysiwyg: false,
     },
     {
       key: "greeting_template",
-      label: "Greeting",
-      description: "Use |booker_name| placeholder for booker's name (e.g., 'Cześć |booker_name|,').",
+      label: "emails.fields.greeting_template",
+      description: "emails.field_hints.greeting",
       wysiwyg: false,
     },
     {
       key: "intro_copy",
-      label: "Intro Paragraph",
-      description: "Rendered above the booking facts. Empty = use translated default.",
+      label: "emails.fields.intro_copy",
+      description: "emails.field_hints.intro_booking",
       wysiwyg: true,
     },
-    { key: "label_datetime", label: "Date & time label", wysiwyg: false },
-    { key: "label_email", label: "Email label", wysiwyg: false },
-    { key: "label_phone", label: "Phone label", wysiwyg: false },
-    { key: "label_company", label: "Company label", wysiwyg: false },
-    { key: "label_message", label: "Message label", wysiwyg: false },
-    { key: "label_video", label: "Video call label", wysiwyg: false },
+    { key: "label_datetime", label: "emails.fields.label_datetime", wysiwyg: false },
+    { key: "label_email", label: "emails.fields.label_email", wysiwyg: false },
+    { key: "label_phone", label: "emails.fields.label_phone", wysiwyg: false },
+    { key: "label_company", label: "emails.fields.label_company", wysiwyg: false },
+    { key: "label_message", label: "emails.fields.label_message", wysiwyg: false },
+    { key: "label_video", label: "emails.fields.label_video", wysiwyg: false },
     {
       key: "closing_copy",
-      label: "Closing Paragraph",
-      description: "Rendered after the meet link. Empty = use translated default.",
+      label: "emails.fields.closing_copy",
+      description: "emails.field_hints.closing_booking",
       wysiwyg: true,
     },
   ],
   "contact-forms-booking-admin-notification": [
     {
       key: "header_title",
-      label: "Header Title",
-      description: "H2 heading. Empty = use translated default 'New booking'.",
+      label: "emails.fields.header_title",
+      description: "emails.field_hints.header_admin_booking",
       wysiwyg: false,
     },
     {
       key: "intro_copy",
-      label: "Intro Paragraph",
-      description: "Rendered above the booking facts. Empty = use translated default.",
+      label: "emails.fields.intro_copy",
+      description: "emails.field_hints.intro_booking",
       wysiwyg: true,
     },
-    { key: "label_datetime", label: "Date & time label", wysiwyg: false },
-    { key: "label_name", label: "Name label", wysiwyg: false },
-    { key: "label_email", label: "Email label", wysiwyg: false },
-    { key: "label_phone", label: "Phone label", wysiwyg: false },
-    { key: "label_company", label: "Company label", wysiwyg: false },
-    { key: "label_message", label: "Message label", wysiwyg: false },
-    { key: "label_video", label: "Video call label", wysiwyg: false },
-    { key: "closing_copy", label: "Closing Paragraph", wysiwyg: true },
+    { key: "label_datetime", label: "emails.fields.label_datetime", wysiwyg: false },
+    { key: "label_name", label: "emails.fields.label_name", wysiwyg: false },
+    { key: "label_email", label: "emails.fields.label_email", wysiwyg: false },
+    { key: "label_phone", label: "emails.fields.label_phone", wysiwyg: false },
+    { key: "label_company", label: "emails.fields.label_company", wysiwyg: false },
+    { key: "label_message", label: "emails.fields.label_message", wysiwyg: false },
+    { key: "label_video", label: "emails.fields.label_video", wysiwyg: false },
+    { key: "closing_copy", label: "emails.fields.closing_copy", wysiwyg: true },
   ],
   "contact-forms-submission": [
     {
       key: "header_title",
-      label: "Header Title",
-      description: "H2 heading. Empty = use translated default 'New contact form submission'.",
+      label: "emails.fields.header_title",
+      description: "emails.field_hints.header_submission",
       wysiwyg: false,
     },
-    { key: "intro_copy", label: "Intro Paragraph", wysiwyg: true },
-    { key: "label_email", label: "Email label", wysiwyg: false },
-    { key: "label_type", label: "Type label", wysiwyg: false },
-    { key: "label_form", label: "Form label", wysiwyg: false },
-    { key: "label_code", label: "Code label", wysiwyg: false },
-    { key: "label_body", label: "Body label", wysiwyg: false },
-    { key: "closing_copy", label: "Closing Paragraph", wysiwyg: true },
+    { key: "intro_copy", label: "emails.fields.intro_copy", wysiwyg: true },
+    { key: "label_email", label: "emails.fields.label_email", wysiwyg: false },
+    { key: "label_type", label: "emails.fields.label_type", wysiwyg: false },
+    { key: "label_form", label: "emails.fields.label_form", wysiwyg: false },
+    { key: "label_code", label: "emails.fields.label_code", wysiwyg: false },
+    { key: "label_body", label: "emails.fields.label_body", wysiwyg: false },
+    { key: "closing_copy", label: "emails.fields.closing_copy", wysiwyg: true },
   ],
 };
 
@@ -262,7 +250,7 @@ export default {
       return this.$route.params.emailType;
     },
     typeLabel() {
-      return TYPE_LABELS[this.emailType] || this.emailType;
+      return emailTypeLabel(this.$t, this.emailType);
     },
     contentFields() {
       return TYPE_FIELDS[this.emailType] || [];

@@ -9,10 +9,7 @@
       >
         <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
       </BasicButton>
-      <span v-if="!loading && form.name" class="fw-600">{{ form.name }}</span>
-      <span v-if="!loading && !form.name" class="t-muted">{{
-        $t("authors.create")
-      }}</span>
+      <h1 v-if="!loading">{{ form.name || $t("authors.create") }}</h1>
     </Teleport>
     <Teleport to="#authors-toolbar-right" defer>
       <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
@@ -36,12 +33,12 @@
       </template>
     </Teleport>
 
-    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12 relative">
+    <div class="page-card h-100 ovy-auto relative">
       <Loader v-if="loading" />
 
       <template v-else>
         <!-- Basic info -->
-        <div class="author-edit__section mb-10">
+        <div class="page-card author-edit__section mb-10">
           <div class="section-label mb-8">{{ $t("pim.basic_info") }}</div>
           <div class="flex gap-8 mb-8" style="flex-wrap: wrap">
             <BasicInput
@@ -66,7 +63,7 @@
 
           <!-- Photo -->
           <div class="mt-8">
-            <label class="fs-200 fw-600 t-muted tt-upper mb-2 db">
+            <label class="field-label mb-2 db">
               {{ $t("authors.photo") }}
             </label>
             <div class="flex ai-ct gap-8">
@@ -102,7 +99,7 @@
         </div>
 
         <!-- Translated fields -->
-        <div class="author-edit__section mb-10">
+        <div class="page-card author-edit__section mb-10">
           <div class="section-label mb-8">{{ $t("pim.translations") }}</div>
 
           <div
@@ -111,7 +108,7 @@
             class="translation-field mb-8"
           >
             <div class="translation-field__header">
-              <label class="fs-200 fw-600 t-muted tt-upper">
+              <label class="field-label">
                 {{ field.label }} ({{ defaultLang.toUpperCase() }})
               </label>
               <BasicButton
@@ -128,7 +125,7 @@
         </div>
 
         <!-- Contact info -->
-        <div class="author-edit__section mb-10">
+        <div class="page-card author-edit__section mb-10">
           <div class="section-label mb-8">{{ $t("dp.contact") }}</div>
           <div class="flex gap-8 mb-8" style="flex-wrap: wrap">
             <BasicInput
@@ -154,7 +151,7 @@
         </div>
 
         <!-- Social profiles -->
-        <div class="author-edit__section mb-10">
+        <div class="page-card author-edit__section mb-10">
           <div class="section-label mb-8">
             {{ $t("authors.social_profiles") }}
           </div>
@@ -518,12 +515,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.author-edit__section {
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-  padding: var(--space-8);
-}
-
 .translation-field {
   &__header {
     display: flex;

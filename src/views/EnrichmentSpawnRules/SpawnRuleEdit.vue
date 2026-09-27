@@ -1,6 +1,6 @@
 <template>
   <div class="spawn-rule-edit p-12 fs-300 t-body h-100 ov-h">
-    <div class="bg-base b-subtle rounded flex-1 ovy-auto p-12">
+    <div class="page-card flex-1 ovy-auto">
       <div class="page-title-row flex ai-ct gap-5 mb-10">
         <BasicButton
           custom
@@ -10,7 +10,7 @@
         >
           <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
         </BasicButton>
-        <h1 class="fs-700 fw-600 m-0">
+        <h1 class="m-0">
           {{ isCreate ? $t("enrichment.spawn_rules.create") : form.key }}
         </h1>
         <div class="flex ai-ct gap-5 ml-auto">
@@ -46,6 +46,7 @@
         <div class="spawn-rule-grid">
           <FormField
             :label="$t('enrichment.spawn_rules.col_key')"
+            :required="isCreate"
             :tooltip="$t('enrichment.spawn_rules.key_hint')"
             :error="fieldErr('key')"
           >

@@ -1,5 +1,5 @@
 <template>
-  <div class="pim-card">
+  <div class="page-card pim-card">
     <div class="pim-card__header">
       <p class="fs-500 fw-600 pim-card__title">{{ title }}</p>
       <p v-if="subtitle" class="fs-200 t-muted pim-card__subtitle">
@@ -26,13 +26,6 @@ defineProps({
 </script>
 
 <style lang="scss" scoped>
-.pim-card {
-  background: var(--surface-base);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  padding: var(--space-5);
-}
-
 .pim-card__title {
   margin: 0;
 }

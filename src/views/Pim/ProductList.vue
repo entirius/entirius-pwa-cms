@@ -1,10 +1,10 @@
 <template>
   <div class="pim-list-layout p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle rounded flex-1 ovy-auto pl-12 pt-12 pb-12 pr-12"
+      class="page-card flex-1 ovy-auto"
     >
       <div class="flex ai-ct mb-10">
-        <h1 class="fs-700 fw-600">{{ $t("pim.products") }}</h1>
+        <h1>{{ $t("pim.products") }}</h1>
       </div>
 
       <GapStatusAlert v-if="hasQualityData" compact />
@@ -201,7 +201,7 @@
               />
               <FontAwesomeIcon
                 :icon="qualityPopover.pk === String(row.pk) ? 'chevron-up' : 'chevron-down'"
-                class="product-list__quality-caret fs-100 t-muted"
+                class="product-list__quality-caret fs-200 t-muted"
               />
             </button>
             <StatusBadge
@@ -935,7 +935,7 @@ export default {
   border-radius: var(--radius-lg);
   background: var(--accent-fill-hover);
   color: var(--text-on-accent-fill);
-  font-size: var(--fs-150);
+  font-size: var(--fs-200);
   font-weight: 600;
 }
 
@@ -1071,7 +1071,7 @@ export default {
   border-radius: var(--radius-base);
   background: var(--surface-raised);
   color: var(--text-secondary);
-  font-size: var(--fs-150);
+  font-size: var(--fs-200);
   text-transform: uppercase;
 }
 

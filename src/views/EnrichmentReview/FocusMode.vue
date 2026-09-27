@@ -94,7 +94,7 @@
         >
           {{ $t("enrichment.review.skip") }} <kbd>s</kbd>
         </button>
-        <div class="ml-auto fs-100 t-muted">
+        <div class="ml-auto fs-200 t-muted">
           {{ $t("enrichment.review.shortcuts_hint") }}
         </div>
       </div>
@@ -350,7 +350,7 @@ export default {
     cursor: not-allowed;
   }
   kbd {
-    font-size: var(--fs-100);
+    font-size: var(--fs-200);
     background: var(--surface-base);
     color: var(--text-secondary);
     border-radius: var(--radius-base);

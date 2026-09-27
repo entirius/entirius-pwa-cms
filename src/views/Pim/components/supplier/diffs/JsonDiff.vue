@@ -46,7 +46,7 @@ export default {
   min-width: 0;
 }
 .json-diff__label {
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: var(--space-2);
@@ -56,7 +56,7 @@ export default {
   border-radius: var(--radius-base);
   background: var(--surface-raised);
   font-family: var(--font-mono, monospace);
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
   white-space: pre;
   max-height: 240px;
   overflow: auto;

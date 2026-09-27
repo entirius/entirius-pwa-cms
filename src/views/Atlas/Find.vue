@@ -1,9 +1,9 @@
 <template>
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
+      class="page-card h-100 ovy-auto"
     >
-      <h1 class="fs-700 fw-600">{{ $t("lookup.find.title") }}</h1>
+      <h1>{{ $t("lookup.find.title") }}</h1>
       <p class="fs-300 t-body mb-10">
         {{ $t("lookup.find.subtitle") }}
       </p>

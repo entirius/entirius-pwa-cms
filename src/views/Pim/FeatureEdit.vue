@@ -29,7 +29,7 @@
         @click="save"
       />
     </Teleport>
-    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
+    <div class="page-card h-100 ovy-auto">
       <!-- Breadcrumb -->
       <PimBreadcrumb :items="breadcrumbItems" />
       <Loader v-if="loading" />

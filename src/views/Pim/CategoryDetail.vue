@@ -30,7 +30,7 @@
         </BasicButton>
       </template>
     </Teleport>
-    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
+    <div class="page-card h-100 ovy-auto">
       <Loader v-if="loading" />
 
       <EmptyState
@@ -58,31 +58,31 @@
             {{ category.breadcrumb_path }}
           </div>
 
-          <div class="detail-section mb-10">
+          <div class="page-card detail-section mb-10">
             <h2 class="fs-500 fw-600 mb-5">{{ $t("pim.basic_info") }}</h2>
             <div class="detail-grid">
               <div class="detail-field">
-                <label class="detail-label">IDX</label>
+                <label class="field-label">IDX</label>
                 <span class="detail-value">{{ category.idx }}</span>
               </div>
               <div class="detail-field">
-                <label class="detail-label">{{ $t("pim.parent") }}</label>
+                <label class="field-label">{{ $t("pim.parent") }}</label>
                 <span class="detail-value">{{
                   category.parent_category_idx || "---"
                 }}</span>
               </div>
               <div class="detail-field">
-                <label class="detail-label">{{ $t("pim.position") }}</label>
+                <label class="field-label">{{ $t("pim.position") }}</label>
                 <span class="detail-value">{{
                   category.position ?? "---"
                 }}</span>
               </div>
               <div class="detail-field">
-                <label class="detail-label">{{ $t("pim.depth") }}</label>
+                <label class="field-label">{{ $t("pim.depth") }}</label>
                 <span class="detail-value">{{ category.tree_deep }}</span>
               </div>
               <div class="detail-field">
-                <label class="detail-label">{{ $t("pim.status") }}</label>
+                <label class="field-label">{{ $t("pim.status") }}</label>
                 <Switcher
                   :label="$t('pim.active')"
                   :selected="form.is_active"
@@ -90,7 +90,7 @@
                 />
               </div>
               <div class="detail-field">
-                <label class="detail-label">{{ $t("pim.in_menu") }}</label>
+                <label class="field-label">{{ $t("pim.in_menu") }}</label>
                 <Switcher
                   :label="$t('pim.show_in_menu')"
                   :selected="form.is_in_menu"
@@ -98,13 +98,13 @@
                 />
               </div>
               <div class="detail-field">
-                <label class="detail-label">{{ $t("pim.products") }}</label>
+                <label class="field-label">{{ $t("pim.products") }}</label>
                 <span class="detail-value">{{
                   category.product_count || 0
                 }}</span>
               </div>
               <div class="detail-field">
-                <label class="detail-label">{{
+                <label class="field-label">{{
                   $t("pim.subcategories")
                 }}</label>
                 <span class="detail-value">{{
@@ -114,10 +114,10 @@
             </div>
           </div>
 
-          <div class="detail-section mb-10">
+          <div class="page-card detail-section mb-10">
             <div class="translation-field">
               <div class="translation-field__header">
-                <label class="detail-label">{{ $t("pim.name") }} ({{ defaultLang.toUpperCase() }})</label>
+                <label class="field-label">{{ $t("pim.name") }} ({{ defaultLang.toUpperCase() }})</label>
                 <BasicButton
                   v-if="secondaryLanguages.length"
                   :text="$t('pim.translations')"
@@ -129,7 +129,7 @@
             </div>
             <div class="translation-field mt-8">
               <div class="translation-field__header">
-                <label class="detail-label">{{ $t("pim.description") }} ({{ defaultLang.toUpperCase() }})</label>
+                <label class="field-label">{{ $t("pim.description") }} ({{ defaultLang.toUpperCase() }})</label>
                 <BasicButton
                   v-if="secondaryLanguages.length"
                   :text="$t('pim.translations')"
@@ -150,7 +150,7 @@
             </div>
           </div>
 
-          <div class="detail-section mb-10">
+          <div class="page-card detail-section mb-10">
             <h2 class="fs-500 fw-600 mb-5">{{ $t("pim.category_image") }}</h2>
             <div v-if="form.image_url" class="category-image">
               <img :src="fullImageUrl" class="category-image__preview" />
@@ -185,11 +185,11 @@
             />
           </div>
 
-          <div class="detail-section mb-10">
+          <div class="page-card detail-section mb-10">
             <h2 class="fs-500 fw-600 mb-5">{{ $t("pim.seo_settings") }}</h2>
             <div class="detail-grid mb-8">
               <div class="detail-field">
-                <label class="detail-label">
+                <label class="field-label">
                   {{ $t("pim.index") }}
                   <HelpTooltip :text="$t('pim.index_help')" />
                 </label>
@@ -199,7 +199,7 @@
                 />
               </div>
               <div class="detail-field">
-                <label class="detail-label">
+                <label class="field-label">
                   {{ $t("pim.follow") }}
                   <HelpTooltip :text="$t('pim.follow_help')" />
                 </label>
@@ -210,7 +210,7 @@
               </div>
             </div>
             <div class="mb-8">
-              <label class="detail-label">
+              <label class="field-label">
                 {{ $t("pim.og_image_url") }}
                 <HelpTooltip :text="$t('pim.og_image_url_help')" />
               </label>
@@ -218,7 +218,7 @@
             </div>
             <div class="translation-field mt-8">
               <div class="translation-field__header">
-                <label class="detail-label">{{ $t("pim.meta_title") }} ({{ defaultLang.toUpperCase() }})</label>
+                <label class="field-label">{{ $t("pim.meta_title") }} ({{ defaultLang.toUpperCase() }})</label>
                 <BasicButton
                   v-if="secondaryLanguages.length"
                   :text="$t('pim.translations')"
@@ -230,7 +230,7 @@
             </div>
             <div class="translation-field mt-8">
               <div class="translation-field__header">
-                <label class="detail-label">{{ $t("pim.meta_description") }} ({{ defaultLang.toUpperCase() }})</label>
+                <label class="field-label">{{ $t("pim.meta_description") }} ({{ defaultLang.toUpperCase() }})</label>
                 <BasicButton
                   v-if="secondaryLanguages.length"
                   :text="$t('pim.translations')"
@@ -242,7 +242,7 @@
             </div>
             <div class="translation-field mt-8">
               <div class="translation-field__header">
-                <label class="detail-label">{{ $t("pim.canonical_url") }} ({{ defaultLang.toUpperCase() }})</label>
+                <label class="field-label">{{ $t("pim.canonical_url") }} ({{ defaultLang.toUpperCase() }})</label>
                 <BasicButton
                   v-if="secondaryLanguages.length"
                   :text="$t('pim.translations')"
@@ -578,11 +578,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.detail-section {
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-  padding: var(--space-5);
-}
 .detail-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -592,13 +587,6 @@ export default {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
-}
-.detail-label {
-  font-size: var(--fs-200);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--text-muted);
 }
 .detail-value {
   font-size: var(--fs-300);

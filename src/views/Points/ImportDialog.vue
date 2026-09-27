@@ -1,6 +1,6 @@
 <template>
   <div class="p-12 fs-300 t-body h-100 ov-h">
-    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
+    <div class="page-card h-100 ovy-auto">
       <div class="flex ai-ct mb-12">
         <BasicButton
           custom
@@ -12,12 +12,12 @@
         </BasicButton>
       </div>
 
-      <h1 class="fs-700 fw-600 mb-12">{{ $t("dp.import") }}</h1>
+      <h1 class="mb-12">{{ $t("dp.import") }}</h1>
 
       <div class="import-card">
         <!-- File input -->
         <div class="detail-field mb-10">
-          <label class="detail-label">{{ $t("dp.import_file") }}</label>
+          <label class="field-label">{{ $t("dp.import_file") }}</label>
           <input
             ref="fileInput"
             type="file"
@@ -40,7 +40,7 @@
 
         <!-- Type selection -->
         <div class="detail-field mb-10">
-          <label class="detail-label">{{ $t("dp.import_type") }}</label>
+          <label class="field-label">{{ $t("dp.import_type") }}</label>
           <Dropdown
             :values="typeOptions"
             :selected="typeCode ? [typeCode] : []"
@@ -51,7 +51,7 @@
 
         <!-- Mode selection -->
         <div class="detail-field mb-10">
-          <label class="detail-label">{{ $t("dp.import_mode") }}</label>
+          <label class="field-label">{{ $t("dp.import_mode") }}</label>
           <div class="flex flex-column gap-5 mt-2">
             <label class="radio-option">
               <input v-model="mode" type="radio" value="incremental" />
@@ -66,7 +66,7 @@
 
         <!-- Optional channel -->
         <div class="detail-field mb-12">
-          <label class="detail-label">{{ $t("dp.import_channel") }}</label>
+          <label class="field-label">{{ $t("dp.import_channel") }}</label>
           <BasicInput
             v-model="channelIdx"
             :placeholder="$t('dp.import_channel')"
@@ -203,13 +203,6 @@ export default {
   gap: var(--space-1);
 }
 
-.detail-label {
-  font-size: var(--fs-200);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--text-muted);
-}
 
 .import-input {
   max-width: 300px;

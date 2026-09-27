@@ -27,7 +27,7 @@
         >
           <p
             class="mb-2"
-            :class="{ 'fs-100 fw-600 t-accent': editing_category }"
+            :class="{ 'fs-200 fw-600 t-accent': editing_category }"
           >
             {{
               editing_category

@@ -14,10 +14,10 @@
 
     <Loader v-if="loading" />
 
-    <div v-else-if="customer" class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12">
+    <div v-else-if="customer" class="page-card h-100 ovy-auto">
       <!-- Profile Card -->
       <div class="mb-10">
-        <div class="section-label mb-5">{{ $t("accounts.customer_detail") }}</div>
+        <div class="field-label mb-5">{{ $t("accounts.customer_detail") }}</div>
         <div class="acc-detail__grid">
           <FormField label="Email">
             <p class="t-body">{{ customer.email }}</p>
@@ -72,7 +72,7 @@
 
       <!-- Session Info -->
       <div v-if="customer.last_session_ip || customer.last_session_country" class="mb-10">
-        <div class="section-label mb-5">{{ $t("accounts.session_info") }}</div>
+        <div class="field-label mb-5">{{ $t("accounts.session_info") }}</div>
         <div class="acc-detail__grid">
           <FormField :label="$t('accounts.last_ip')">
             <p class="t-body">{{ customer.last_session_ip || '---' }}</p>
@@ -85,13 +85,13 @@
 
       <!-- Extra Data -->
       <div v-if="customer.extra && Object.keys(customer.extra).length" class="mb-10">
-        <div class="section-label mb-5">{{ $t("accounts.extra_data") }}</div>
+        <div class="field-label mb-5">{{ $t("accounts.extra_data") }}</div>
         <pre class="bg-raised p-5 rounded fs-200 t-secondary ov-auto">{{ JSON.stringify(customer.extra, null, 2) }}</pre>
       </div>
 
       <!-- Addresses Table -->
       <div class="mb-10">
-        <div class="section-label mb-5">{{ $t("accounts.addresses") }} ({{ customer.addresses_count }})</div>
+        <div class="field-label mb-5">{{ $t("accounts.addresses") }} ({{ customer.addresses_count }})</div>
         <DataTable
           :columns="addressColumns"
           :rows="customer.addresses"
@@ -104,10 +104,10 @@
           </template>
           <template #cell-defaults="{ row }">
             <div class="flex gap-2">
-              <span v-if="row.is_default_billing" class="bg-positive-subtle t-positive fs-100 ph-2 rounded">
+              <span v-if="row.is_default_billing" class="bg-positive-subtle t-positive fs-200 ph-2 rounded">
                 {{ $t("accounts.default_billing") }}
               </span>
-              <span v-if="row.is_default_shipping" class="bg-accent-subtle t-strong fs-100 ph-2 rounded">
+              <span v-if="row.is_default_shipping" class="bg-accent-subtle t-strong fs-200 ph-2 rounded">
                 {{ $t("accounts.default_shipping") }}
               </span>
             </div>
@@ -148,11 +148,11 @@ export default {
     },
     addressColumns() {
       return [
-        { key: "name", label: "Name", width: "1fr" },
-        { key: "street", label: "Street", width: "1fr" },
-        { key: "city", label: "City", width: "120px" },
-        { key: "postcode", label: "Postcode", width: "100px" },
-        { key: "country_code", label: "Country", width: "80px" },
+        { key: "name", label: this.$t("accounts.name"), width: "1fr" },
+        { key: "street", label: this.$t("accounts.street"), width: "1fr" },
+        { key: "city", label: this.$t("accounts.city"), width: "120px" },
+        { key: "postcode", label: this.$t("accounts.postcode"), width: "100px" },
+        { key: "country_code", label: this.$t("accounts.country"), width: "80px" },
         { key: "defaults", label: "", width: "200px" },
       ];
     },
@@ -193,13 +193,6 @@ export default {
   gap: var(--space-5);
 }
 
-.section-label {
-  text-transform: uppercase;
-  font-size: var(--fs-200);
-  font-weight: 600;
-  color: var(--text-muted);
-  letter-spacing: 0.05em;
-}
 
 @media only screen and (max-width: 768px) {
   .acc-detail__wrapper {

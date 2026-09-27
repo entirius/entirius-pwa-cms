@@ -17,20 +17,20 @@
         @click="createProduct"
       />
     </Teleport>
-    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
+    <div class="page-card h-100 ovy-auto">
       <div class="create-section mb-10">
         <h2 class="fs-500 fw-600 mb-5">{{ $t("pim.basic_info") }}</h2>
         <div class="create-grid">
           <div class="create-field">
-            <label class="create-label required">SKU</label>
+            <label class="field-label required">SKU</label>
             <BasicInput
               v-model="form.sku"
-              placeholder="e.g. CHAIR-001"
+              :placeholder="$t('pim.sku_placeholder')"
               :validate="formErrors.getFieldError('sku')"
             />
           </div>
           <div class="create-field">
-            <label class="create-label required">{{
+            <label class="field-label required">{{
               $t("pim.feature_set")
             }}</label>
             <Dropdown
@@ -41,7 +41,7 @@
             />
           </div>
           <div class="create-field">
-            <label class="create-label">{{ $t("pim.visibility") }}</label>
+            <label class="field-label">{{ $t("pim.visibility") }}</label>
             <Dropdown
               :values="visibilityOptions"
               :selected="[form.visibility]"
@@ -49,7 +49,7 @@
             />
           </div>
           <div class="create-field">
-            <label class="create-label">{{ $t("pim.status") }}</label>
+            <label class="field-label">{{ $t("pim.status") }}</label>
             <Switcher
               :label="$t('pim.enabled')"
               :selected="form.is_enabled"
@@ -68,7 +68,7 @@
         </p>
         <div class="create-grid">
           <div class="create-field">
-            <label class="create-label">EAN</label>
+            <label class="field-label">EAN</label>
             <BasicInput
               v-model="form.ean"
               placeholder="e.g. 5901234123457"
@@ -76,7 +76,7 @@
             />
           </div>
           <div class="create-field">
-            <label class="create-label">{{ $t("pim.weight") }}</label>
+            <label class="field-label">{{ $t("pim.weight") }}</label>
             <BasicInput
               v-model="form.weight"
               placeholder="kg"
@@ -84,7 +84,7 @@
             />
           </div>
           <div class="create-field">
-            <label class="create-label">{{ $t("pim.width") }}</label>
+            <label class="field-label">{{ $t("pim.width") }}</label>
             <BasicInput
               v-model="form.width"
               placeholder="cm"
@@ -92,7 +92,7 @@
             />
           </div>
           <div class="create-field">
-            <label class="create-label">{{ $t("pim.height") }}</label>
+            <label class="field-label">{{ $t("pim.height") }}</label>
             <BasicInput
               v-model="form.height"
               placeholder="cm"
@@ -100,7 +100,7 @@
             />
           </div>
           <div class="create-field">
-            <label class="create-label">{{ $t("pim.depth") }}</label>
+            <label class="field-label">{{ $t("pim.depth") }}</label>
             <BasicInput
               v-model="form.deep"
               placeholder="cm"
@@ -325,13 +325,6 @@ export default {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
-}
-.create-label {
-  font-size: var(--fs-200);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--text-muted);
 }
 .channel-list {
   display: flex;

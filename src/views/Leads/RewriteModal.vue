@@ -43,7 +43,7 @@ const notes = ref("");
 }
 .rw__hint {
   margin: 0;
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
   color: var(--text-secondary);
 }
 .rw {

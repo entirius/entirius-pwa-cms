@@ -93,7 +93,7 @@
       <div class="flex">
         <BasicButton
           :text="!mode ? $t('routes.set_new') : $t('common.close')"
-          class="b-default bg-base bg-hover-hover rounded fs-100 mr-1"
+          class="b-default bg-base bg-hover-hover rounded fs-200 mr-1"
           :class="{ 'bg-inverse t-inverse bg-inverse-hover': mode }"
           @click="!mode ? (mode = 'add') : (mode = null)"
         />

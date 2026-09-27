@@ -95,7 +95,7 @@ export default {
     border-radius: var(--radius-full);
     background: var(--negative-fill);
     color: var(--text-on-status-fill);
-    font-size: var(--fs-100);
+    font-size: var(--fs-200);
   }
   &__file-input {
     display: none;

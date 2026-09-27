@@ -24,12 +24,12 @@
       >
         <p>{{ doc_uid }}</p>
         <div class="flex gap-1">
-          <span class="ph-1 bg-accent-fill t-on-accent-fill rounded fs-100"
+          <span class="ph-1 bg-accent-fill t-on-accent-fill rounded fs-200"
             >current doc.</span
           >
           <span
             v-if="selected_contents.includes(doc_uid)"
-            class="ph-1 bg-accent-subtle t-strong rounded mr-1 fs-100"
+            class="ph-1 bg-accent-subtle t-strong rounded mr-1 fs-200"
             >selected</span
           >
         </div>
@@ -39,7 +39,7 @@
         <p class="mb-1">
           Seems like at least one document is already in preview mode.
         </p>
-        <p class="fs-100 t-negative mb-2">
+        <p class="fs-200 t-negative mb-2">
           Warning: any other than selected documents will become unpublished.
         </p>
         <div
@@ -52,15 +52,15 @@
           <div class="flex gap-1">
             <span
               v-if="doc_uid === uid"
-              class="ph-1 bg-accent-fill t-on-accent-fill rounded fs-100"
+              class="ph-1 bg-accent-fill t-on-accent-fill rounded fs-200"
               >Current</span
             >
-            <span class="ph-1 bg-accent-fill t-on-accent-fill rounded fs-100"
+            <span class="ph-1 bg-accent-fill t-on-accent-fill rounded fs-200"
               >setted</span
             >
             <span
               v-if="selected_contents.includes(uid)"
-              class="ph-1 bg-accent-subtle t-strong rounded mr-1 fs-100"
+              class="ph-1 bg-accent-subtle t-strong rounded mr-1 fs-200"
               >selected</span
             >
           </div>

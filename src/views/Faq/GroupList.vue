@@ -1,6 +1,6 @@
 <template>
   <div class="p-12 fs-300 t-body h-100 ov-h">
-    <div class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12">
+    <div class="page-card h-100 ovy-auto">
       <div class="group-list__toolbar">
         <BasicInput
           v-model="search"
@@ -61,7 +61,7 @@
                   v-if="(element.channel_ids || []).length"
                   class="chip bg-accent-subtle t-strong"
                 >
-                  {{ element.channel_ids.length }} {{ element.channel_ids.length === 1 ? 'channel' : 'channels' }}
+                  {{ $t(`faq.channels_${pluralKey(element.channel_ids.length)}`, { count: element.channel_ids.length }) }}
                 </span>
                 <span
                   v-else
@@ -71,7 +71,7 @@
                 </span>
               </div>
               <span class="chip bg-accent-subtle t-strong">
-                {{ element.item_count || 0 }} {{ $t("faq.items") }}
+                {{ $t(`faq.items_${pluralKey(element.item_count || 0)}`, { count: element.item_count || 0 }) }}
               </span>
               <StatusBadge
                 :label="element.is_active ? $t('faq.active') : $t('faq.inactive')"
@@ -103,6 +103,7 @@ import {
   PATCH_FaqGroupsReorder,
 } from "@/api/faq/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { pluralKey } from "@/utils/plural";
 
 export default {
   name: "FaqGroupList",
@@ -158,6 +159,7 @@ export default {
     this.fetchGroups();
   },
   methods: {
+    pluralKey,
     async fetchGroups() {
       this.loading = true;
       try {

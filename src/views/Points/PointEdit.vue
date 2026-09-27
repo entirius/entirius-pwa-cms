@@ -29,12 +29,12 @@
         @click="savePoint"
       />
     </Teleport>
-    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
+    <div class="page-card h-100 ovy-auto">
       <Loader v-if="loading" />
 
       <template v-else>
         <div class="flex ai-ct jc-sb mb-12">
-          <h1 class="fs-700 fw-600">
+          <h1>
             {{ isEdit ? point.name || point.code : $t("dp.create_point") }}
           </h1>
           <Switcher
@@ -67,7 +67,7 @@
               <span>{{ $t("dp.geocoding_unavailable") }}</span>
             </div>
             <div class="geocode-search">
-              <label class="detail-label">{{ $t("dp.address_search") }}</label>
+              <label class="field-label">{{ $t("dp.address_search") }}</label>
               <div class="geocode-search__input-wrap">
                 <BasicInput
                   v-model="geocodeQuery"
@@ -95,7 +95,7 @@
 
           <div class="detail-grid">
             <div class="detail-field">
-              <label class="detail-label required">{{ $t("dp.code") }}</label>
+              <label class="field-label required">{{ $t("dp.code") }}</label>
               <BasicInput
                 v-model="form.code"
                 :isDisabled="isCarrier"
@@ -103,7 +103,7 @@
               />
             </div>
             <div class="detail-field">
-              <label class="detail-label required">{{ $t("dp.name") }}</label>
+              <label class="field-label required">{{ $t("dp.name") }}</label>
               <BasicInput
                 v-model="form.name"
                 :isDisabled="isCarrier"
@@ -111,7 +111,7 @@
               />
             </div>
             <div class="detail-field">
-              <label class="detail-label required">{{ $t("dp.type") }}</label>
+              <label class="field-label required">{{ $t("dp.type") }}</label>
               <Dropdown
                 :values="typeOptions"
                 :selected="form.type_id ? [form.type_id] : []"
@@ -124,13 +124,13 @@
               />
               <p
                 v-if="formErrors.getFieldError('type_id')"
-                class="t-negative fs-100"
+                class="t-negative fs-200"
               >
                 {{ formErrors.getFieldError("type_id").msg }}
               </p>
             </div>
             <div class="detail-field">
-              <label class="detail-label">{{ $t("dp.channels") }}</label>
+              <label class="field-label">{{ $t("dp.channels") }}</label>
               <Dropdown
                 v-if="isCarrier"
                 :values="[{ label: $t('dp.global'), value: '__global' }]"
@@ -140,9 +140,7 @@
               <Dropdown
                 v-else
                 :custom_droplist="true"
-                :placeholder="`${$t('dp.channels')} (${
-                  form.channel_ids.length || $t('dp.global')
-                })`"
+                :placeholder="form.channel_ids.length ? $t('common.selected_count', { count: form.channel_ids.length }) : $t('dp.global')"
               >
                 <template #custom>
                   <div
@@ -165,7 +163,7 @@
               </Dropdown>
             </div>
             <div class="detail-field">
-              <label class="detail-label">{{ $t("dp.street") }}</label>
+              <label class="field-label">{{ $t("dp.street") }}</label>
               <BasicInput
                 v-model="form.street"
                 :isDisabled="isCarrier"
@@ -173,7 +171,7 @@
               />
             </div>
             <div class="detail-field">
-              <label class="detail-label">{{ $t("dp.city") }}</label>
+              <label class="field-label">{{ $t("dp.city") }}</label>
               <BasicInput
                 v-model="form.city"
                 :isDisabled="isCarrier"
@@ -181,7 +179,7 @@
               />
             </div>
             <div class="detail-field">
-              <label class="detail-label">{{ $t("dp.state") }}</label>
+              <label class="field-label">{{ $t("dp.state") }}</label>
               <BasicInput
                 v-model="form.state"
                 :isDisabled="isCarrier"
@@ -189,7 +187,7 @@
               />
             </div>
             <div class="detail-field">
-              <label class="detail-label">{{ $t("dp.post_code") }}</label>
+              <label class="field-label">{{ $t("dp.post_code") }}</label>
               <BasicInput
                 v-model="form.post_code"
                 :isDisabled="isCarrier"
@@ -197,7 +195,7 @@
               />
             </div>
             <div class="detail-field">
-              <label class="detail-label">{{ $t("dp.country") }}</label>
+              <label class="field-label">{{ $t("dp.country") }}</label>
               <Dropdown
                 v-if="isCarrier"
                 :values="countryOptions"
@@ -216,7 +214,7 @@
               />
               <p
                 v-if="formErrors.getFieldError('country')"
-                class="t-negative fs-100"
+                class="t-negative fs-200"
               >
                 {{ formErrors.getFieldError("country").msg }}
               </p>
@@ -229,7 +227,7 @@
           <h2 class="fs-500 fw-600 mb-8">{{ $t("dp.location") }}</h2>
           <div class="detail-grid">
             <div class="detail-field">
-              <label class="detail-label">{{ $t("dp.lat") }}</label>
+              <label class="field-label">{{ $t("dp.lat") }}</label>
               <BasicInput
                 v-model="form.latitude"
                 :isDisabled="isCarrier"
@@ -237,7 +235,7 @@
               />
             </div>
             <div class="detail-field">
-              <label class="detail-label">{{ $t("dp.lon") }}</label>
+              <label class="field-label">{{ $t("dp.lon") }}</label>
               <BasicInput
                 v-model="form.longitude"
                 :isDisabled="isCarrier"
@@ -252,7 +250,7 @@
           <h2 class="fs-500 fw-600 mb-8">{{ $t("dp.contact") }}</h2>
           <div class="detail-grid">
             <div class="detail-field">
-              <label class="detail-label">{{ $t("dp.phone") }}</label>
+              <label class="field-label">{{ $t("dp.phone") }}</label>
               <BasicInput
                 v-model="form.phone"
                 :isDisabled="isCarrier"
@@ -260,7 +258,7 @@
               />
             </div>
             <div class="detail-field">
-              <label class="detail-label">{{ $t("dp.email") }}</label>
+              <label class="field-label">{{ $t("dp.email") }}</label>
               <BasicInput
                 v-model="form.email"
                 :isDisabled="isCarrier"
@@ -268,7 +266,7 @@
               />
             </div>
             <div class="detail-field">
-              <label class="detail-label">{{ $t("dp.website") }}</label>
+              <label class="field-label">{{ $t("dp.website") }}</label>
               <BasicInput
                 v-model="form.website"
                 :isDisabled="isCarrier"
@@ -276,7 +274,7 @@
               />
             </div>
             <div class="detail-field">
-              <label class="detail-label">{{ $t("dp.opening_hours") }}</label>
+              <label class="field-label">{{ $t("dp.opening_hours") }}</label>
               <BasicInput
                 v-model="form.opening_hours"
                 :isDisabled="isCarrier"
@@ -284,7 +282,7 @@
             </div>
           </div>
           <div class="detail-field mt-8">
-            <label class="detail-label">{{ $t("dp.hint") }}</label>
+            <label class="field-label">{{ $t("dp.hint") }}</label>
             <TextAreaBasic
               v-model="form.hint"
               rows="3"
@@ -329,7 +327,7 @@
             class="t9n-row mb-8"
           >
             <div class="t9n-lang-header flex ai-ct jc-sb mb-5">
-              <span class="detail-label t-accent">{{
+              <span class="field-label t-accent">{{
                 t9n.language.toUpperCase()
               }}</span>
               <BasicButton
@@ -344,20 +342,20 @@
             </div>
             <div class="detail-grid">
               <div class="detail-field">
-                <label class="detail-label">{{
+                <label class="field-label">{{
                   $t("dp.translation_name")
                 }}</label>
                 <BasicInput v-model="t9n.name" />
               </div>
               <div class="detail-field">
-                <label class="detail-label">{{
+                <label class="field-label">{{
                   $t("dp.translation_opening_hours")
                 }}</label>
                 <BasicInput v-model="t9n.opening_hours" />
               </div>
             </div>
             <div class="detail-field mt-5">
-              <label class="detail-label">{{
+              <label class="field-label">{{
                 $t("dp.translation_hint")
               }}</label>
               <BasicInput v-model="t9n.hint" />
@@ -829,13 +827,6 @@ export default {
   gap: var(--space-1);
 }
 
-.detail-label {
-  font-size: var(--fs-200);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--text-muted);
-}
 
 .t9n-row {
   border: 1px solid var(--border-subtle);

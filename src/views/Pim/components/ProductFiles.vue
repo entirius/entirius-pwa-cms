@@ -396,7 +396,7 @@ onMounted(() => {
 
         <div class="product-files__popup-fields">
           <div class="product-files__field">
-            <label class="product-files__label">{{
+            <label class="product-files__label field-label">{{
               $t("pim.file_category")
             }}</label>
             <Dropdown
@@ -411,7 +411,7 @@ onMounted(() => {
             :key="`upload-label-${lang}`"
             class="product-files__field"
           >
-            <label class="product-files__label">
+            <label class="product-files__label field-label">
               {{ $t("pim.file_label") }}
               <span
                 class="chip chip--sm bg-accent-subtle t-strong"
@@ -429,7 +429,7 @@ onMounted(() => {
         <div v-if="showCategoryCreate" class="product-files__cat-create mt-5">
           <div class="product-files__cat-create-fields">
             <div class="product-files__field">
-              <label class="product-files__label">Code *</label>
+              <label class="product-files__label field-label required">{{ $t("pim.code") }}</label>
               <BasicInput v-model="newCategoryCode" placeholder="e.g. manual" />
             </div>
             <div
@@ -437,7 +437,7 @@ onMounted(() => {
               :key="`cat-name-${lang}`"
               class="product-files__field"
             >
-              <label class="product-files__label">
+              <label class="product-files__label field-label">
                 {{ $t("pim.name") }}
                 <span
                   class="chip chip--sm bg-accent-subtle t-strong"
@@ -555,7 +555,7 @@ onMounted(() => {
           >
             <div class="product-files__row-edit-fields">
               <div class="product-files__field product-files__field--compact">
-                <label class="product-files__label">{{
+                <label class="product-files__label field-label">{{
                   $t("pim.file_category")
                 }}</label>
                 <Dropdown
@@ -574,7 +574,7 @@ onMounted(() => {
                 :key="`label-${fileData(pf).pk}-${lang}`"
                 class="product-files__field product-files__field--compact"
               >
-                <label class="product-files__label">
+                <label class="product-files__label field-label">
                   {{ $t("pim.file_label") }}
                   <span
                     class="chip chip--sm bg-accent-subtle t-strong"
@@ -689,10 +689,6 @@ onMounted(() => {
 
   &__label {
     display: block;
-    font-size: var(--fs-150);
-    font-weight: 600;
-    text-transform: uppercase;
-    color: var(--text-muted);
     margin-bottom: var(--space-1);
   }
 

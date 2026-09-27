@@ -31,7 +31,7 @@
       <span>{{ $t("stock.integration_readonly") }}</span>
     </div>
 
-    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
+    <div class="page-card h-100 ovy-auto">
       <!-- Toolbar: search + filter chips -->
       <div class="stock-table__toolbar">
         <BasicInput

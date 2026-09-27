@@ -162,7 +162,7 @@
           >
             <FontAwesomeIcon icon="upload" class="t-muted fs-500" />
             <span class="t-muted fs-200">{{ $t('gallery.drop_files_here') }}</span>
-            <span class="t-muted fs-100">{{ $t('gallery.or_click_to_browse') }}</span>
+            <span class="t-muted fs-200">{{ $t('gallery.or_click_to_browse') }}</span>
           </div>
           <input
             type="file"
@@ -175,7 +175,7 @@
           />
         </div>
         <div
-          class="fg-1 ovy-auto grid grid-col-2 gap-12 bg-base p-12 rounded b-subtle"
+          class="page-card fg-1 ovy-auto grid grid-col-2 gap-12"
           v-if="filePreview"
         >
           <div>
@@ -183,7 +183,7 @@
           </div>
           <div class="flex-column">
             <div>
-              <p class="fs-100 t-info">Optionals</p>
+              <p class="fs-200 t-info">Optionals</p>
               <BasicInput
                 class="bg-base rounded t-secondary mt-8 lh-base-elem"
                 :label="'Picture alt.'"
@@ -313,7 +313,7 @@
           </div>
         </div>
         <div
-          class="gallery-grid bg-base b-subtle rounded p-5"
+          class="page-card gallery-grid"
           v-out="
             () => {
               selected = null;
@@ -951,7 +951,7 @@ $radius: 5px;
   transform: translateY(0);
 }
 .gallery-tags__pill {
-  font-size: var(--fs-150);
+  font-size: var(--fs-200);
   line-height: 1;
   padding: 3px var(--space-2);
   border-radius: var(--radius-full);

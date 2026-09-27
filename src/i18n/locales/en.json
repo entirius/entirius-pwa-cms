@@ -202,7 +202,10 @@
     "translate_no_languages": "No target languages available. Add languages to the channel first.",
     "translate_draft_name": "Page",
     "translate_draft_items": "Items",
-    "translate_draft_chars": "Chars"
+    "translate_draft_chars": "Chars",
+    "tiles_one": "1 tile",
+    "tiles_few": "{count} tiles",
+    "tiles_many": "{count} tiles"
   },
   "gallery": {
     "close": "Close",
@@ -504,7 +507,8 @@
     "active": "Active",
     "inactive": "Inactive",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "selected_count": "Selected: {count}"
   },
   "notifications": {
     "doc_saved": "Document saved!",
@@ -567,7 +571,9 @@
     "leads": "Leads",
     "leads_desc": "Sales inbox — review drafts, read replies, company threads",
     "communicator": "Communicator",
-    "communicator_desc": "Outreach templates, follow-up sequences, send policy and channel mode"
+    "communicator_desc": "Outreach templates, follow-up sequences, send policy and channel mode",
+    "greeting": "Hello",
+    "greeting_name": "Hello, {name}"
   },
   "stock": {
     "manage": "Stocks",
@@ -638,7 +644,13 @@
     "language": "Language",
     "sex": "Gender",
     "external_id": "External ID",
-    "blacklisted": "Blocked"
+    "blacklisted": "Blocked",
+    "name": "Name",
+    "created": "Created",
+    "street": "Street",
+    "city": "City",
+    "postcode": "Postcode",
+    "country": "Country"
   },
   "checkout_orders": {
     "orders": "Orders",
@@ -673,7 +685,8 @@
       "COMPLETED": "Completed",
       "RETURNED": "Returned",
       "CANCELED": "Canceled"
-    }
+    },
+    "external_id": "External ID"
   },
   "pim": {
     "products": "Products",
@@ -1180,7 +1193,11 @@
       "sync_notice": "Changes appear on the storefront after the next product sync.",
       "drag_disabled_hint": "Select a link type to enable drag-and-drop reordering.",
       "toast_reordered": "Positions updated"
-    }
+    },
+    "tab_product_tile": "Product tile",
+    "upload_or": "or",
+    "sku_placeholder": "e.g. CHAIR-001",
+    "code": "Code"
   },
   "dp": {
     "points": "Delivery Points",
@@ -1557,7 +1574,76 @@
     "error_load_config": "Failed to load config",
     "error_load_templates": "Failed to load templates",
     "error_load_template": "Failed to load template",
-    "error_save": "Save failed"
+    "error_save": "Save failed",
+    "types": {
+      "accounts-new-account": "New Account",
+      "accounts-reset-password": "Reset Password",
+      "checkout-virtual-product": "Virtual Product",
+      "loyalty-coupon-confirmation": "Coupon Confirmation",
+      "returns-return-confirmation": "Return Confirmation",
+      "allegro-virtual-product": "Allegro Virtual Product",
+      "agreements-newsletter-signup": "Newsletter Signup",
+      "contact-forms-booking-confirmation": "Booking Confirmation",
+      "contact-forms-booking-admin-notification": "Booking Admin Notification",
+      "contact-forms-submission": "Contact Form Submission"
+    },
+    "type_desc": {
+      "accounts-new-account": "Signup confirmation email",
+      "accounts-reset-password": "Password reset email",
+      "checkout-virtual-product": "Digital product delivery email",
+      "loyalty-coupon-confirmation": "Loyalty coupon email",
+      "returns-return-confirmation": "Return accepted email",
+      "allegro-virtual-product": "Allegro digital delivery email",
+      "agreements-newsletter-signup": "Newsletter confirmation email",
+      "contact-forms-booking-confirmation": "Booker confirmation email",
+      "contact-forms-booking-admin-notification": "Admin notification of new booking",
+      "contact-forms-submission": "Generic contact form admin notification"
+    },
+    "fields": {
+      "welcome": "Welcome",
+      "announce": "Announcement",
+      "confirm_button": "Confirm Button Label",
+      "thank_you": "Thank You",
+      "help": "Help Text",
+      "reset_button": "Reset Button Label",
+      "order": "Order Info",
+      "products": "Products Header",
+      "key_name": "Key Name Label",
+      "additional_key_name": "Additional Key Name",
+      "instructions": "Instructions Header",
+      "coupon_copy": "Coupon Description",
+      "coupon_button": "Coupon Button Label",
+      "return_copy": "Return Info",
+      "comment_copy": "Comment Section",
+      "print_copy": "Print Instructions",
+      "confirm_copy": "Confirmation Text",
+      "header_title": "Header Title",
+      "greeting_template": "Greeting",
+      "intro_copy": "Intro Paragraph",
+      "label_datetime": "Date & time label",
+      "label_email": "Email label",
+      "label_phone": "Phone label",
+      "label_company": "Company label",
+      "label_message": "Message label",
+      "label_video": "Video call label",
+      "closing_copy": "Closing Paragraph",
+      "label_name": "Name label",
+      "label_type": "Type label",
+      "label_form": "Form label",
+      "label_code": "Code label",
+      "label_body": "Body label"
+    },
+    "field_hints": {
+      "user_name": "Supports |user_name| placeholder",
+      "order_id": "Supports |order_id| placeholder",
+      "return_id": "Supports |order_id|, |return_id| placeholders",
+      "header_booking": "H2 heading. Empty = use translated default 'Your booking is confirmed'.",
+      "greeting": "Use |booker_name| placeholder for booker's name (e.g., 'Cześć |booker_name|,').",
+      "intro_booking": "Rendered above the booking facts. Empty = use translated default.",
+      "closing_booking": "Rendered after the meet link. Empty = use translated default.",
+      "header_admin_booking": "H2 heading. Empty = use translated default 'New booking'.",
+      "header_submission": "H2 heading. Empty = use translated default 'New contact form submission'."
+    }
   },
   "faq": {
     "groups": "FAQ Groups",
@@ -1626,7 +1712,13 @@
     "associations_saved": "Associations saved",
     "entity_type": "Entity type",
     "entity_identifier": "Identifier",
-    "translations_saved": "Translations saved"
+    "translations_saved": "Translations saved",
+    "channels_one": "1 channel",
+    "channels_few": "{count} channels",
+    "channels_many": "{count} channels",
+    "items_one": "1 FAQ question",
+    "items_few": "{count} FAQ questions",
+    "items_many": "{count} FAQ questions"
   },
   "layout_extender": {
     "title": "Navigation Editor",
@@ -1798,7 +1890,8 @@
     "all_countries": "All countries",
     "special": "Special",
     "source_supplier_cost": "Supplier cost",
-    "last_supplier_update": "Last supplier update"
+    "last_supplier_update": "Last supplier update",
+    "iso2_placeholder": "ISO2 (e.g. PL)"
   },
   "translation": {
     "jobs": "Translation Jobs",
@@ -1848,7 +1941,9 @@
     "align_center": "Align centre",
     "align_right": "Align right",
     "insert_table": "Insert table",
-    "delete_table": "Delete table"
+    "delete_table": "Delete table",
+    "text_mode": "Text mode",
+    "table_mode": "Table mode"
   },
   "atlas": {
     "list_title": "Sources",
@@ -2334,7 +2429,13 @@
         "attributes_section": "Vendor attributes",
         "images_section": "Images",
         "expand": "Read more",
-        "collapse": "Show less"
+        "collapse": "Show less",
+        "external_id": "External ID",
+        "status": "Status",
+        "cost": "Cost",
+        "stock": "Stock",
+        "last_synced": "Last synced",
+        "data_changed": "Data changed"
       },
       "empty_state_title": "Queue is empty",
       "empty_state_message": "All products have been reviewed.",
@@ -2377,7 +2478,8 @@
       "procurement": "Procurement",
       "monitoring": "Monitoring",
       "enrichment": "Enrichment"
-    }
+    },
+    "stock_count": "Stock: {count}"
   },
   "lookup": {
     "find": {
@@ -3367,7 +3469,7 @@
       "json_schema": "JSON schema",
       "requires_legal_footer": "Requires a legal footer",
       "auto_approve": "Auto approve",
-      "grappelli": "set in Grappelli",
+      "grappelli": "set in the admin panel",
       "save": "Save",
       "saved": "Saved",
       "schema_object": "The JSON schema must be an object",

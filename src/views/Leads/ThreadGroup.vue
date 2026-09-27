@@ -113,19 +113,19 @@ async function confirmOptout(replyId) {
   overflow-wrap: anywhere;
 }
 .tg__meta {
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
   color: var(--text-secondary);
 }
 .tg--reply {
   border-top: 2px solid var(--accent);
 }
 .tg__reply {
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
   font-weight: 600;
   color: var(--text-accent);
 }
 .tg__badge {
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
   font-weight: 600;
   color: var(--negative);
 }

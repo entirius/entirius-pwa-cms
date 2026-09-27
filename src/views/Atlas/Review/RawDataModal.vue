@@ -7,7 +7,7 @@
         @click.self="$emit('close')"
         data-testid="raw-data-modal"
       >
-        <div class="raw-modal-container bg-base b-subtle rounded-lg p-10">
+        <div class="page-card raw-modal-container">
           <div class="flex ai-ct jc-sb mb-5">
             <h2 class="fs-400 fw-600">{{ $t("atlas.review.raw_data_title") }}</h2>
             <button

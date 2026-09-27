@@ -7,7 +7,7 @@
         @click.self="$emit('close')"
         data-testid="test-feed-modal"
       >
-        <div class="test-feed-container bg-base b-subtle rounded-lg p-10">
+        <div class="page-card test-feed-container">
           <div class="flex ai-ct jc-sb mb-5">
             <h2 class="fs-400 fw-600">{{ $t("atlas.feeds.test.title") }}</h2>
             <button
@@ -57,7 +57,7 @@
                     {{ formatCost(p.cost, p.currency) }}
                   </span>
                   <span v-if="p.ean" class="t-muted">EAN: {{ p.ean }}</span>
-                  <span class="t-muted">stock: {{ p.stock ?? 0 }}</span>
+                  <span class="t-muted">{{ $t("atlas.stock_count", { count: p.stock ?? 0 }) }}</span>
                 </div>
               </div>
             </div>

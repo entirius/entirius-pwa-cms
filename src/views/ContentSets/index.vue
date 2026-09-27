@@ -1,6 +1,6 @@
 <template>
   <div class="fs-200 t-secondary fg-1 relative p-12">
-    <div class="rounded b-subtle bg-base p-12">
+    <div class="page-card">
       <div
         v-if="isSingleLanguage"
         class="flex ai-ct jc-ct gap-5 p-12 t-muted"
@@ -122,7 +122,7 @@
               </div>
             </div>
           </div>
-          <p class="fs-100 t-muted mt-8 mb-2">
+          <p class="fs-200 t-muted mt-8 mb-2">
             {{ $t("content_sets.instruction") }}
           </p>
           <div class="flex gap-2">
@@ -197,7 +197,7 @@
                 <FontAwesomeIcon icon="trash-can" />
               </button>
             </div>
-            <p class="fs-100 t-muted mt-1 lc-1">{{ uid }}</p>
+            <p class="fs-200 t-muted mt-1 lc-1">{{ uid }}</p>
           </div>
           <!-- <div class="mb-8 grid grid-col-3 gap-5">
           <Dropdown
@@ -540,7 +540,7 @@ export default {
   }
   &__badge {
     flex-shrink: 0;
-    font-size: var(--fs-100);
+    font-size: var(--fs-200);
     line-height: 1;
     padding: 3px var(--space-1);
     border-radius: var(--radius-base);

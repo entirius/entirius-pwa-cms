@@ -319,7 +319,7 @@ export default {
 }
 .hc-dropdown-label {
   padding: var(--space-1) var(--space-2) var(--space-1);
-  font-size: var(--fs-150);
+  font-size: var(--fs-200);
   font-weight: 500;
   color: var(--text-muted);
   letter-spacing: 0.03em;
@@ -376,7 +376,7 @@ export default {
 
 .hc-dropdown-chevron {
   margin-left: auto;
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
   color: var(--text-muted);
 }
 .hc-lang-list {

@@ -15,7 +15,7 @@
     "dp_points": "Punkty",
     "dp_types": "Typy",
     "dp_import": "Import",
-    "cf_submissions": "Zgloszenia",
+    "cf_submissions": "Zgłoszenia",
     "cf_bookings": "Rezerwacje",
     "cf_leads": "Leady",
     "agm_definitions": "Zgody",
@@ -125,7 +125,7 @@
     "delete": "Usuń",
     "confirm_title": "Potwierdzenie akcji",
     "confirm_msg": "Czy na pewno chcesz kontynuować?",
-    "doc_name": "Nazwa dok.:",
+    "doc_name": "Nazwa dokumentu:",
     "set_name": "Ustaw nazwę dokumentu.",
     "save_draw": "Zapisz szkic",
     "post_draw": "Utwórz nowy",
@@ -202,7 +202,10 @@
     "translate_no_languages": "Brak dostępnych języków docelowych. Najpierw dodaj języki do kanału.",
     "translate_draft_name": "Strona",
     "translate_draft_items": "Elementy",
-    "translate_draft_chars": "Znaki"
+    "translate_draft_chars": "Znaki",
+    "tiles_one": "1 kafelek",
+    "tiles_few": "{count} kafelki",
+    "tiles_many": "{count} kafelków"
   },
   "gallery": {
     "close": "Zamknij",
@@ -504,7 +507,8 @@
     "active": "Aktywny",
     "inactive": "Nieaktywny",
     "yes": "Tak",
-    "no": "Nie"
+    "no": "Nie",
+    "selected_count": "Wybrano: {count}"
   },
   "notifications": {
     "doc_saved": "Dokument zapisany!",
@@ -534,7 +538,7 @@
     "points": "Punkty Odbioru",
     "points_desc": "Punkty odbioru — paczkomaty, salony, lokalizacje",
     "forms": "Formularze Kontaktowe",
-    "forms_desc": "Zgloszenia z formularzy kontaktowych i ustawienia powiadomień",
+    "forms_desc": "Zgłoszenia z formularzy kontaktowych i ustawienia powiadomień",
     "agreements": "Zgody",
     "agreements_desc": "Zarządzanie zgodami i rejestr audytowy",
     "choose_panel": "Wybierz panel, aby rozpocząć",
@@ -543,7 +547,7 @@
     "contact_admin": "Skontaktuj się z administratorem, aby włączyć ten moduł",
     "panel_locked": "Panel zablokowany",
     "emails": "E-maile",
-    "emails_desc": "Konfiguracja szablonow email — branding, tresc, ustawienia kanalow",
+    "emails_desc": "Konfiguracja szablonów e-mail — branding, treść, ustawienia kanałów",
     "faq": "FAQ",
     "faq_desc": "Grupy i pytania FAQ — pytania, odpowiedzi, przypisanie do kanałów",
     "pricing": "Ceny",
@@ -567,7 +571,9 @@
     "leads": "Leady",
     "leads_desc": "Skrzynka sprzedaży — przegląd szkiców, odpowiedzi, wątki firm",
     "communicator": "Communicator",
-    "communicator_desc": "Szablony wiadomości, sekwencje follow-upów, polityka wysyłki i tryb kanału"
+    "communicator_desc": "Szablony wiadomości, sekwencje follow-upów, polityka wysyłki i tryb kanału",
+    "greeting": "Dzień dobry",
+    "greeting_name": "Dzień dobry, {name}"
   },
   "stock": {
     "manage": "Stany",
@@ -638,7 +644,13 @@
     "language": "Język",
     "sex": "Płeć",
     "external_id": "Identyfikator zewnętrzny",
-    "blacklisted": "Zablokowany"
+    "blacklisted": "Zablokowany",
+    "name": "Imię i nazwisko",
+    "created": "Utworzono",
+    "street": "Ulica",
+    "city": "Miasto",
+    "postcode": "Kod pocztowy",
+    "country": "Kraj"
   },
   "checkout_orders": {
     "orders": "Zamówienia",
@@ -673,7 +685,8 @@
       "COMPLETED": "Zrealizowane",
       "RETURNED": "Zwrócone",
       "CANCELED": "Anulowane"
-    }
+    },
+    "external_id": "ID zewnętrzne"
   },
   "pim": {
     "products": "Produkty",
@@ -1179,7 +1192,11 @@
       "sync_notice": "Zmiany pojawią się na storefront po następnej synchronizacji produktów.",
       "drag_disabled_hint": "Wybierz typ powiązania, aby włączyć przeciąganie i zmianę kolejności.",
       "toast_reordered": "Pozycje zaktualizowane"
-    }
+    },
+    "tab_product_tile": "Kafelek produktu",
+    "upload_or": "lub",
+    "sku_placeholder": "np. CHAIR-001",
+    "code": "Kod"
   },
   "dp": {
     "points": "Punkty Odbioru",
@@ -1259,26 +1276,26 @@
     "select_country": "Wybierz kraj"
   },
   "cf": {
-    "submissions": "Zgloszenia",
-    "submission_detail": "Szczegoly zgloszenia",
-    "no_submissions": "Nie znaleziono zgloszen",
-    "id": "ID zgloszenia",
+    "submissions": "Zgłoszenia",
+    "submission_detail": "Szczegóły zgłoszenia",
+    "no_submissions": "Nie znaleziono zgłoszeń",
+    "id": "ID zgłoszenia",
     "email": "Adres email",
     "type": "Typ formularza",
     "slug": "Klucz URL",
-    "channel": "Kanal",
+    "channel": "Kanał",
     "code": "Kod kampanii",
     "body": "Dane formularza",
     "attachments": "Załączniki",
     "download_attachment": "Pobierz",
-    "created_at": "Data wyslania",
-    "back_to_list": "Powrot do listy",
+    "created_at": "Data wysłania",
+    "back_to_list": "Powrót do listy",
     "all_types": "Wszystkie typy",
-    "all_channels": "Wszystkie kanaly",
+    "all_channels": "Wszystkie kanały",
     "status": "Status",
     "status_todo": "Do zrobienia",
     "status_in_progress": "W trakcie",
-    "status_done": "Zakonczone",
+    "status_done": "Zakończone",
     "all_statuses": "Wszystkie statusy",
     "status_updated": "Status zaktualizowany",
     "bookings": "Rezerwacje",
@@ -1556,7 +1573,76 @@
     "error_load_config": "Nie udało się załadować konfiguracji",
     "error_load_templates": "Nie udało się załadować szablonów",
     "error_load_template": "Nie udało się załadować szablonu",
-    "error_save": "Zapis nie powiódł się"
+    "error_save": "Zapis nie powiódł się",
+    "types": {
+      "accounts-new-account": "Nowe konto",
+      "accounts-reset-password": "Reset hasła",
+      "checkout-virtual-product": "Produkt wirtualny",
+      "loyalty-coupon-confirmation": "Potwierdzenie kuponu",
+      "returns-return-confirmation": "Potwierdzenie zwrotu",
+      "allegro-virtual-product": "Produkt wirtualny Allegro",
+      "agreements-newsletter-signup": "Zapis do newslettera",
+      "contact-forms-booking-confirmation": "Potwierdzenie rezerwacji",
+      "contact-forms-booking-admin-notification": "Powiadomienie o rezerwacji",
+      "contact-forms-submission": "Zgłoszenie z formularza"
+    },
+    "type_desc": {
+      "accounts-new-account": "E-mail potwierdzający rejestrację",
+      "accounts-reset-password": "E-mail z resetem hasła",
+      "checkout-virtual-product": "E-mail z dostawą produktu cyfrowego",
+      "loyalty-coupon-confirmation": "E-mail z kuponem lojalnościowym",
+      "returns-return-confirmation": "E-mail o przyjęciu zwrotu",
+      "allegro-virtual-product": "E-mail z dostawą cyfrową Allegro",
+      "agreements-newsletter-signup": "E-mail potwierdzający zapis do newslettera",
+      "contact-forms-booking-confirmation": "E-mail z potwierdzeniem dla rezerwującego",
+      "contact-forms-booking-admin-notification": "Powiadomienie administratora o nowej rezerwacji",
+      "contact-forms-submission": "Powiadomienie administratora o zgłoszeniu z formularza"
+    },
+    "fields": {
+      "welcome": "Powitanie",
+      "announce": "Komunikat",
+      "confirm_button": "Etykieta przycisku potwierdzenia",
+      "thank_you": "Podziękowanie",
+      "help": "Tekst pomocy",
+      "reset_button": "Etykieta przycisku resetu hasła",
+      "order": "Informacje o zamówieniu",
+      "products": "Nagłówek produktów",
+      "key_name": "Etykieta nazwy klucza",
+      "additional_key_name": "Dodatkowa nazwa klucza",
+      "instructions": "Nagłówek instrukcji",
+      "coupon_copy": "Opis kuponu",
+      "coupon_button": "Etykieta przycisku kuponu",
+      "return_copy": "Informacje o zwrocie",
+      "comment_copy": "Sekcja komentarza",
+      "print_copy": "Instrukcja wydruku",
+      "confirm_copy": "Tekst potwierdzenia",
+      "header_title": "Tytuł nagłówka",
+      "greeting_template": "Zwrot powitalny",
+      "intro_copy": "Akapit wstępny",
+      "label_datetime": "Etykieta daty i godziny",
+      "label_email": "Etykieta e-maila",
+      "label_phone": "Etykieta telefonu",
+      "label_company": "Etykieta firmy",
+      "label_message": "Etykieta wiadomości",
+      "label_video": "Etykieta rozmowy wideo",
+      "closing_copy": "Akapit końcowy",
+      "label_name": "Etykieta imienia i nazwiska",
+      "label_type": "Etykieta typu",
+      "label_form": "Etykieta formularza",
+      "label_code": "Etykieta kodu",
+      "label_body": "Etykieta treści"
+    },
+    "field_hints": {
+      "user_name": "Obsługuje znacznik |user_name|",
+      "order_id": "Obsługuje znacznik |order_id|",
+      "return_id": "Obsługuje znaczniki |order_id| i |return_id|",
+      "header_booking": "Nagłówek H2. Puste = domyślny tekst „Twoja rezerwacja jest potwierdzona”.",
+      "greeting": "Znacznik |booker_name| wstawia imię rezerwującego (np. „Cześć |booker_name|,”).",
+      "intro_booking": "Wyświetlany nad szczegółami rezerwacji. Puste = domyślny tekst.",
+      "closing_booking": "Wyświetlany pod linkiem do spotkania. Puste = domyślny tekst.",
+      "header_admin_booking": "Nagłówek H2. Puste = domyślny tekst „Nowa rezerwacja”.",
+      "header_submission": "Nagłówek H2. Puste = domyślny tekst „Nowe zgłoszenie z formularza kontaktowego”."
+    }
   },
   "faq": {
     "groups": "Grupy FAQ",
@@ -1625,7 +1711,13 @@
     "associations_saved": "Powiązania zapisane",
     "entity_type": "Typ encji",
     "entity_identifier": "Identyfikator",
-    "translations_saved": "Tłumaczenia zapisane"
+    "translations_saved": "Tłumaczenia zapisane",
+    "channels_one": "1 kanał",
+    "channels_few": "{count} kanały",
+    "channels_many": "{count} kanałów",
+    "items_one": "1 pytanie",
+    "items_few": "{count} pytania",
+    "items_many": "{count} pytań"
   },
   "layout_extender": {
     "title": "Edytor nawigacji",
@@ -1675,7 +1767,7 @@
     "status": "Status",
     "updated": "Zaktualizowano",
     "actions": "Akcje",
-    "published": "Opublikowano",
+    "published": "Opublikowany",
     "draft": "Szkic",
     "name": "Nazwa",
     "back": "Wróć",
@@ -1797,7 +1889,8 @@
     "all_countries": "Wszystkie kraje",
     "special": "Promocja",
     "source_supplier_cost": "Koszt dostawcy",
-    "last_supplier_update": "Ostatnia aktualizacja od dostawcy"
+    "last_supplier_update": "Ostatnia aktualizacja od dostawcy",
+    "iso2_placeholder": "ISO2 (np. PL)"
   },
   "translation": {
     "jobs": "Zadania tłumaczenia",
@@ -1847,7 +1940,9 @@
     "align_center": "Wyśrodkuj",
     "align_right": "Wyrównaj do prawej",
     "insert_table": "Wstaw tabelę",
-    "delete_table": "Usuń tabelę"
+    "delete_table": "Usuń tabelę",
+    "text_mode": "Tryb tekstu",
+    "table_mode": "Tryb tabeli"
   },
   "atlas": {
     "list_title": "Źródła",
@@ -2333,7 +2428,13 @@
         "attributes_section": "Atrybuty dostawcy",
         "images_section": "Obrazki",
         "expand": "Rozwiń",
-        "collapse": "Zwiń"
+        "collapse": "Zwiń",
+        "external_id": "ID zewnętrzne",
+        "status": "Status",
+        "cost": "Koszt",
+        "stock": "Stan",
+        "last_synced": "Ostatnia synchronizacja",
+        "data_changed": "Zmiana danych"
       },
       "empty_state_title": "Kolejka jest pusta",
       "empty_state_message": "Wszystkie produkty zostały zrecenzowane.",
@@ -2376,7 +2477,8 @@
       "procurement": "Zaopatrzenie",
       "monitoring": "Monitoring",
       "enrichment": "Wzbogacanie"
-    }
+    },
+    "stock_count": "Stan: {count}"
   },
   "lookup": {
     "find": {
@@ -3356,7 +3458,7 @@
       "key": "Klucz",
       "kind": "Rodzaj",
       "language": "Język",
-      "version": "Id bieżącej wersji",
+      "version": "Bieżąca wersja",
       "is_active": "Aktywny",
       "versions": "Wersje",
       "test_generate": "Testowe generowanie",
@@ -3366,7 +3468,7 @@
       "json_schema": "Schemat JSON",
       "requires_legal_footer": "Wymaga stopki prawnej",
       "auto_approve": "Automatyczna akceptacja",
-      "grappelli": "ustawiane w Grappelli",
+      "grappelli": "ustawiane w panelu administracyjnym",
       "save": "Zapisz",
       "saved": "Zapisano",
       "schema_object": "Schemat JSON musi być obiektem",

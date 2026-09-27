@@ -8,7 +8,7 @@
       <div id="translation-toolbar-right" class="flex ai-ct gap-5"></div>
     </div>
     <div class="p-12 fs-300 t-body h-100 ov-h">
-      <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
+      <div class="page-card h-100 ovy-auto">
         <router-view />
       </div>
     </div>

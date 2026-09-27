@@ -1,7 +1,7 @@
 <template>
   <div class="playground">
     <BasicWysiwyg
-      class="fs-100"
+      class="fs-200"
       style="height: 20rem; width: 40rem"
       :body="mybody"
     />

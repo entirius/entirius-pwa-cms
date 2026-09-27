@@ -121,7 +121,7 @@ export default {
     padding: var(--space-1) var(--space-2);
     color: var(--text-muted);
     text-transform: uppercase;
-    font-size: var(--fs-100);
+    font-size: var(--fs-200);
     border-bottom: 1px solid var(--border-subtle);
   }
 

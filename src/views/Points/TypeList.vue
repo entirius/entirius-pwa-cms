@@ -1,10 +1,10 @@
 <template>
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
+      class="page-card h-100 ovy-auto"
     >
       <div class="flex ai-ct mb-10">
-        <h1 class="fs-700 fw-600">{{ $t("dp.types") }}</h1>
+        <h1>{{ $t("dp.types") }}</h1>
       </div>
 
       <!-- Inline create row -->
@@ -82,15 +82,15 @@
         </h2>
         <div class="detail-grid mb-10">
           <div class="detail-field">
-            <label class="detail-label">{{ $t("dp.code") }}</label>
+            <label class="field-label">{{ $t("dp.code") }}</label>
             <BasicInput v-model="editForm.code" />
           </div>
           <div class="detail-field">
-            <label class="detail-label">{{ $t("dp.name") }}</label>
+            <label class="field-label">{{ $t("dp.name") }}</label>
             <BasicInput v-model="editForm.name" />
           </div>
           <div class="detail-field">
-            <label class="detail-label">{{ $t("dp.sort_order") }}</label>
+            <label class="field-label">{{ $t("dp.sort_order") }}</label>
             <BasicInput v-model="editForm.sort_order" />
           </div>
         </div>
@@ -407,11 +407,4 @@ export default {
   gap: var(--space-1);
 }
 
-.detail-label {
-  font-size: var(--fs-200);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--text-muted);
-}
 </style>

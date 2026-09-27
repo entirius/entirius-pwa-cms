@@ -1,5 +1,5 @@
 <template>
-  <aside class="raw-panel bg-base b-subtle rounded-lg p-8" v-if="product">
+  <aside class="page-card raw-panel" v-if="product">
     <h3 class="raw-panel__heading">
       {{ $t("atlas.review.raw_data_title") }}
     </h3>
@@ -84,14 +84,14 @@ export default {
       if (!p) return [];
       return [
         { label: "ID", value: p.id, mono: true },
-        { label: "External ID", value: p.external_id || "—", mono: true },
-        { label: "Status", value: p.status || "—" },
-        { label: "Cost", value: formatCost(p.cost, p.currency) || "—" },
-        { label: "Stock", value: p.stock ?? "—" },
+        { label: this.$t("atlas.review.raw_panel.external_id"), value: p.external_id || "—", mono: true },
+        { label: this.$t("atlas.review.raw_panel.status"), value: p.status || "—" },
+        { label: this.$t("atlas.review.raw_panel.cost"), value: formatCost(p.cost, p.currency) || "—" },
+        { label: this.$t("atlas.review.raw_panel.stock"), value: p.stock ?? "—" },
         { label: "EAN", value: p.ean || "—", mono: true },
         { label: "URL", value: p.url || "—", mono: true },
-        { label: "Last synced", value: this.formatDate(p.last_synced_at) },
-        { label: "Data changed", value: this.formatDate(p.data_changed_at) },
+        { label: this.$t("atlas.review.raw_panel.last_synced"), value: this.formatDate(p.last_synced_at) },
+        { label: this.$t("atlas.review.raw_panel.data_changed"), value: this.formatDate(p.data_changed_at) },
       ];
     },
     attributeRows() {
@@ -225,7 +225,7 @@ export default {
   padding: var(--space-1) var(--space-2);
   margin: 0;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: var(--fs-150);
+  font-size: var(--fs-200);
   max-height: 140px;
   overflow: auto;
   white-space: pre;

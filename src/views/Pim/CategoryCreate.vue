@@ -17,16 +17,16 @@
         @click="createCategory"
       />
     </Teleport>
-    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
+    <div class="page-card h-100 ovy-auto">
       <div class="create-section mb-10">
         <h2 class="fs-500 fw-600 mb-5">{{ $t("pim.basic_info") }}</h2>
         <div class="create-grid">
           <div class="create-field">
-            <label class="create-label">IDX *</label>
+            <label class="field-label required">IDX</label>
             <BasicInput v-model="form.idx" placeholder="e.g. furniture" />
           </div>
           <div class="create-field">
-            <label class="create-label">{{ $t("pim.parent") }}</label>
+            <label class="field-label">{{ $t("pim.parent") }}</label>
             <Dropdown
               :values="parentOptions"
               :placeholder="$t('pim.select_parent')"
@@ -34,11 +34,11 @@
             />
           </div>
           <div class="create-field">
-            <label class="create-label">{{ $t("pim.position") }}</label>
+            <label class="field-label">{{ $t("pim.position") }}</label>
             <BasicInput v-model="form.position" type="number" />
           </div>
           <div class="create-field">
-            <label class="create-label">{{ $t("pim.status") }}</label>
+            <label class="field-label">{{ $t("pim.status") }}</label>
             <Switcher
               :label="$t('pim.active')"
               :selected="form.is_active"
@@ -46,7 +46,7 @@
             />
           </div>
           <div class="create-field">
-            <label class="create-label">{{ $t("pim.in_menu") }}</label>
+            <label class="field-label">{{ $t("pim.in_menu") }}</label>
             <Switcher
               :label="$t('pim.show_in_menu')"
               :selected="form.is_in_menu"
@@ -57,7 +57,7 @@
       </div>
 
       <div class="create-section mb-10">
-        <h2 class="fs-500 fw-600 mb-5">{{ $t("pim.name") }} *</h2>
+        <h2 class="fs-500 fw-600 mb-5 required">{{ $t("pim.name") }}</h2>
         <div class="grid grid-col-2 gap-8">
           <div v-for="lang in formLanguages" :key="`name-${lang}`">
             <span
@@ -284,12 +284,5 @@ export default {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
-}
-.create-label {
-  font-size: var(--fs-200);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--text-muted);
 }
 </style>

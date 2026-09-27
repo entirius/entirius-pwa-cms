@@ -1,7 +1,7 @@
 <template>
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
+      class="page-card h-100 ovy-auto"
     >
       <div class="page-title-row flex ai-ct gap-5 mb-10">
         <BasicButton
@@ -12,7 +12,7 @@
         >
           <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
         </BasicButton>
-        <h1 class="fs-700 fw-600">
+        <h1>
           {{ $t("emails.lang_config") }}:
           {{ config.language || $t("emails.default_lang") }}
         </h1>

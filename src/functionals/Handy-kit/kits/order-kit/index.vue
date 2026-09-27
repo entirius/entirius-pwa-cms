@@ -36,16 +36,16 @@
                   : ""
               }}
             </p>
-            <p v-if="inserts[uid]?.title" class="fs-100 t-secondary mt-1 lc-1">
+            <p v-if="inserts[uid]?.title" class="fs-200 t-secondary mt-1 lc-1">
               {{ inserts[uid].title }}
             </p>
             <p
               v-else-if="inserts[uid]?.sku || inserts[uid]?.product_sku"
-              class="fs-100 t-accent mt-1"
+              class="fs-200 t-accent mt-1"
             >
               SKU: {{ inserts[uid]?.sku || inserts[uid]?.product_sku }}
             </p>
-            <p class="fs-100 t-muted mt-1">{{ uid.substring(0, 8) }}</p>
+            <p class="fs-200 t-muted mt-1">{{ uid.substring(0, 8) }}</p>
           </div>
         </template>
       </draggable>

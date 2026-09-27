@@ -66,7 +66,7 @@ function openCard(event) {
 }
 .card__domain {
   margin: 0;
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
   overflow-wrap: anywhere;
 }
 .card__stage {

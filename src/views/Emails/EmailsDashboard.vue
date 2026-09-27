@@ -1,10 +1,10 @@
 <template>
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
+      class="page-card h-100 ovy-auto"
     >
       <div class="flex ai-ct mb-10">
-        <h1 class="fs-700 fw-600">{{ $t("emails.dashboard") }}</h1>
+        <h1>{{ $t("emails.dashboard") }}</h1>
       </div>
 
       <Loader v-show="loading" />
@@ -20,7 +20,7 @@
             <div
               v-for="channel in channels"
               :key="channel.pk"
-              class="emails-card bg-base b-subtle rounded p-10 pointer"
+              class="page-card emails-card pointer"
               @click="editChannel(channel.pk)"
             >
               <div class="flex ai-ct gap-5 mb-5">
@@ -52,13 +52,13 @@
             <div
               v-for="emailType in emailTypes"
               :key="emailType.slug"
-              class="emails-card bg-base b-subtle rounded p-10 pointer"
+              class="page-card emails-card pointer"
               @click="editTemplates(emailType.slug)"
             >
               <div class="fs-400 fw-600 t-body mb-2">
-                {{ emailType.label }}
+                {{ $t(`emails.types.${emailType.slug}`) }}
               </div>
-              <div class="fs-200 t-muted">{{ emailType.description }}</div>
+              <div class="fs-200 t-muted">{{ $t(`emails.type_desc.${emailType.slug}`) }}</div>
             </div>
           </div>
         </div>
@@ -86,54 +86,34 @@ export default {
       loading: false,
       allEmailTypes: [
         {
-          slug: "accounts-new-account",
-          label: "New Account",
-          description: "Signup confirmation email",
+          slug: "accounts-new-account"
         },
         {
-          slug: "accounts-reset-password",
-          label: "Reset Password",
-          description: "Password reset email",
+          slug: "accounts-reset-password"
         },
         {
-          slug: "checkout-virtual-product",
-          label: "Virtual Product",
-          description: "Digital product delivery email",
+          slug: "checkout-virtual-product"
         },
         {
-          slug: "loyalty-coupon-confirmation",
-          label: "Coupon Confirmation",
-          description: "Loyalty coupon email",
+          slug: "loyalty-coupon-confirmation"
         },
         {
-          slug: "returns-return-confirmation",
-          label: "Return Confirmation",
-          description: "Return accepted email",
+          slug: "returns-return-confirmation"
         },
         {
-          slug: "allegro-virtual-product",
-          label: "Allegro Virtual Product",
-          description: "Allegro digital delivery email",
+          slug: "allegro-virtual-product"
         },
         {
-          slug: "agreements-newsletter-signup",
-          label: "Newsletter Signup",
-          description: "Newsletter confirmation email",
+          slug: "agreements-newsletter-signup"
         },
         {
-          slug: "contact-forms-booking-confirmation",
-          label: "Booking Confirmation",
-          description: "Booker confirmation email",
+          slug: "contact-forms-booking-confirmation"
         },
         {
-          slug: "contact-forms-booking-admin-notification",
-          label: "Booking Admin Notification",
-          description: "Admin notification of new booking",
+          slug: "contact-forms-booking-admin-notification"
         },
         {
-          slug: "contact-forms-submission",
-          label: "Contact Form Submission",
-          description: "Generic contact form admin notification",
+          slug: "contact-forms-submission"
         },
       ],
       emailTypes: [],

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="auth-card fs-300 p-10 t-body rounded bg-base b-subtle shadow-down"
+    class="page-card auth-card fs-300 t-body shadow-down"
   >
     <!-- Forgot password mode -->
     <template v-if="showForgotPassword">

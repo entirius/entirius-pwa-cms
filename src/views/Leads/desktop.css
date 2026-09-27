@@ -67,23 +67,25 @@
   padding: 0;
   font-size: var(--fs-400);
 }
+/* Field metrics of BasicInput: control height, sunken surface, control border. */
 .ld-input {
-  min-height: 36px;
-  padding: 0 var(--space-5);
-  border: 1px solid var(--border-subtle);
+  min-height: var(--elem-height);
+  padding: 0 var(--space-2);
+  border: 1px solid var(--border-control);
   border-radius: var(--radius-base);
-  background: var(--surface-base);
+  background: var(--surface-sunken);
   color: var(--text-body);
+  font: inherit;
 }
 textarea.ld-input {
-  padding: var(--space-5);
-  font-family: monospace;
+  padding: var(--space-2);
+  font-family: var(--font-mono);
 }
 /* Cells come from the shared `.table-basic` (the DataTable cell model); `.ld-table` only marks the kit's tables. */
 .ld-field {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-1);
 }
 .ld-error {
   margin: 0;
@@ -98,7 +100,7 @@ textarea.ld-input {
   padding: 0 var(--space-2);
   border-radius: var(--radius-base);
   background: var(--surface-raised);
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
 }
 /* WCAG 2.2 AA (2.5.8): a link or control target is at least 24 px in both directions. */
 .ld-link {

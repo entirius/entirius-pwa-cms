@@ -61,7 +61,7 @@ export default {
     },
     greeting() {
       const name = this.user?.first_name || this.user?.username || "";
-      return name ? `Hello, ${name}` : "Hello";
+      return name ? this.$t("panels.greeting_name", { name }) : this.$t("panels.greeting");
     },
   },
 };
@@ -93,8 +93,6 @@ export default {
   margin-bottom: var(--space-1);
 }
 .home-title {
-  font-size: var(--fs-500);
-  font-weight: 600;
   color: var(--text-body);
   margin-bottom: var(--space-8);
 }
@@ -154,7 +152,7 @@ export default {
   color: var(--text-body);
 }
 .panel-card-desc {
-  font-size: var(--fs-150);
+  font-size: var(--fs-200);
   color: var(--text-muted);
   line-height: 1.4;
 }
@@ -171,7 +169,7 @@ export default {
   }
 }
 .panel-card-locked-msg {
-  font-size: var(--fs-150);
+  font-size: var(--fs-200);
   color: var(--text-muted);
   line-height: 1.4;
   display: flex;

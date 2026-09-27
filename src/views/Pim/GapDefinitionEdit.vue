@@ -30,7 +30,7 @@
     </Teleport>
 
     <div class="flex-1 ovy-auto p-12">
-      <div class="bg-base b-subtle rounded p-12">
+      <div class="page-card">
         <div class="gap-def-identity mb-10">
           <span class="fs-200 t-accent fw-600 tt-upper">
             {{ isCreate ? $t("pim.create_gap_definition") : $t("pim.gap_definition_detail") }}
@@ -43,6 +43,7 @@
           <div class="gap-def-grid">
             <FormField
               :label="$t('pim.gap_key')"
+              :required="isCreate"
               :tooltip="$t('pim.gap_key_hint')"
               :error="fieldErr('key')"
             >

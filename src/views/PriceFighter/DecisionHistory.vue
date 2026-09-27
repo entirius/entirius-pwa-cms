@@ -1,6 +1,6 @@
 <template>
   <div class="p-12 fs-300 t-body h-100 ov-h">
-    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
+    <div class="page-card h-100 ovy-auto">
       <div class="history__toolbar">
         <BasicInput
           v-model="search"
@@ -47,7 +47,7 @@
             </template>
             <template #cell-change="{ row }">
               <span v-if="row.old_price === row.new_price" class="t-muted">
-                {{ row.new_price }} <span class="fs-100">· {{ $t('pricefighter.no_change') }}</span>
+                {{ row.new_price }} <span class="fs-200">· {{ $t('pricefighter.no_change') }}</span>
               </span>
               <span v-else>{{ row.old_price }} &rarr; <span class="fw-600">{{ row.new_price }}</span></span>
             </template>
@@ -66,7 +66,7 @@
                   <dt>{{ $t('pricefighter.reference_price') }} (R)</dt>
                   <dd>
                     {{ fmt(row.reason.reference_price) }}
-                    <span v-if="row.reason.estimator" class="t-muted fs-100">({{ row.reason.estimator }})</span>
+                    <span v-if="row.reason.estimator" class="t-muted fs-200">({{ row.reason.estimator }})</span>
                   </dd>
                   <dt>{{ $t('pricefighter.baseline') }} (B)</dt>
                   <dd>{{ fmt(row.reason.baseline) }}</dd>

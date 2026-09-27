@@ -1,5 +1,5 @@
 <template>
-  <div class="product-card bg-base b-subtle rounded-lg p-8 shadow-sm">
+  <div class="page-card product-card shadow-sm">
     <div class="product-card__hero" data-testid="product-card-hero">
       <img
         v-if="heroImage"
@@ -22,7 +22,7 @@
         {{ formatCost(product?.cost, product?.currency) }}
       </span>
       <StatusBadge
-        :label="`stock: ${product?.stock ?? 0}`"
+        :label="$t('atlas.stock_count', { count: product?.stock ?? 0 })"
         :variant="(product?.stock ?? 0) > 0 ? 'positive' : 'negative'"
       />
     </div>

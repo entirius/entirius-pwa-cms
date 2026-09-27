@@ -116,7 +116,7 @@
             </div>
             <div class="flex ai-ct gap-8 flex-wrap fs-200 t-muted">
               <span v-if="p.cost">{{ formatCost(p.cost, p.currency) }}</span>
-              <span>stock: {{ p.stock ?? 0 }}</span>
+              <span>{{ $t("atlas.stock_count", { count: p.stock ?? 0 }) }}</span>
               <span v-if="p.ean">EAN: {{ p.ean }}</span>
               <a
                 v-if="p.url"

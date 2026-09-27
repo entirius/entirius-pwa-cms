@@ -1,10 +1,10 @@
 <template>
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <div
-      class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
+      class="page-card h-100 ovy-auto"
     >
       <div class="flex ai-ct jc-sb mb-10 gap-8">
-        <h1 class="fs-700 fw-600">{{ $t("atlas.duplicates.title") }}</h1>
+        <h1>{{ $t("atlas.duplicates.title") }}</h1>
       </div>
       <p class="fs-300 t-body mb-10">
         {{ $t("atlas.duplicates.subtitle") }}
@@ -22,7 +22,7 @@
       <div
         v-for="group in groups"
         :key="group.ean"
-        class="duplicates-group bg-base b-subtle rounded p-10 mb-8"
+        class="page-card duplicates-group mb-8"
       >
         <div class="flex ai-ct jc-sb mb-8 gap-5">
           <div>
@@ -179,15 +179,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "@/assets/scss/utils/media-query";
-
-// A phone pads the group like the page card (16 px), and only the table scrolls sideways, not the card.
-.duplicates-group {
-  @include max-tablet {
-    padding: var(--space-4) !important;
-  }
-}
-
 // Every EAN group shares one column grid, so SKU, suppliers and actions line up from group to group.
 .duplicates-table {
   table-layout: fixed;

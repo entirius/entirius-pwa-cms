@@ -9,7 +9,6 @@
       >
         <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
       </BasicButton>
-      <span class="fw-600 fs-400">{{ isEdit ? group.name || group.idx : $t("faq.create_group") }}</span>
     </Teleport>
     <Teleport to="#faq-toolbar-right" defer>
       <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
@@ -38,12 +37,12 @@
       />
     </Teleport>
 
-    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
+    <div class="page-card h-100 ovy-auto">
       <Loader v-if="loading" />
 
       <template v-else>
         <div class="flex ai-ct jc-sb mb-12">
-          <h1 class="fs-700 fw-600">
+          <h1>
             {{ isEdit ? group.name || group.idx : $t("faq.create_group") }}
           </h1>
           <Switcher
@@ -54,11 +53,11 @@
         </div>
 
         <!-- Main fields -->
-        <div class="detail-section mb-10">
+        <div class="page-card detail-section mb-10">
           <h2 class="fs-500 fw-600 mb-8">{{ $t("faq.group_details") }}</h2>
           <div class="detail-grid">
             <div class="detail-field">
-              <label class="detail-label required">{{ $t("faq.idx") }}</label>
+              <label class="field-label required">{{ $t("faq.idx") }}</label>
               <BasicInput
                 v-model="form.idx"
                 :isDisabled="isEdit"
@@ -66,14 +65,14 @@
               />
             </div>
             <div class="detail-field">
-              <label class="detail-label required">{{ $t("faq.name") }}</label>
+              <label class="field-label required">{{ $t("faq.name") }}</label>
               <BasicInput
                 v-model="form.name"
                 :validate="formErrors.getFieldError('name')"
               />
             </div>
             <div class="detail-field">
-              <label class="detail-label">{{ $t("faq.channels") }}</label>
+              <label class="field-label">{{ $t("faq.channels") }}</label>
               <Dropdown
                 :custom_droplist="true"
                 :placeholder="`${$t('faq.channels')} (${
@@ -104,7 +103,7 @@
         </div>
 
         <!-- Items in this group — drag to reorder, add existing -->
-        <div v-if="isEdit" class="detail-section mb-10">
+        <div v-if="isEdit" class="page-card detail-section mb-10">
           <div class="section-head mb-8">
             <h2 class="fs-500 fw-600">{{ $t("faq.items_in_group") }}</h2>
             <div class="flex ai-ct gap-5">
@@ -535,11 +534,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.detail-section {
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-  padding: var(--space-5);
-}
 
 .detail-grid {
   display: grid;
@@ -553,13 +547,6 @@ export default {
   gap: var(--space-1);
 }
 
-.detail-label {
-  font-size: var(--fs-200);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--text-muted);
-}
 
 .add-item-select {
   min-width: 250px;

@@ -99,7 +99,7 @@ export default {
 
       <!-- Present channels -->
       <div v-if="presentChannels.length" class="add-dialog__section">
-        <label class="add-dialog__label">{{ $t("pim.present_in") }}</label>
+        <label class="add-dialog__label field-label">{{ $t("pim.present_in") }}</label>
         <div class="channel-list">
           <div
             v-for="ch in presentChannels"
@@ -117,7 +117,7 @@ export default {
 
       <!-- Available channels -->
       <div v-if="availableChannels.length" class="add-dialog__section">
-        <label class="add-dialog__label">{{ $t("pim.add_to") }}</label>
+        <label class="add-dialog__label field-label">{{ $t("pim.add_to") }}</label>
         <div class="channel-list">
           <div
             v-for="ch in availableChannels"
@@ -214,11 +214,6 @@ export default {
 
 .add-dialog__label {
   display: block;
-  font-size: var(--fs-200);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--text-muted);
   margin-bottom: var(--space-2);
 }
 

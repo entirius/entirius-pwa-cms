@@ -841,7 +841,7 @@ onMounted(() => {
 .collapse-chevron {
   cursor: pointer;
   transition: transform 0.2s;
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
   color: var(--text-muted);
 
   &.is-collapsed {

@@ -12,7 +12,7 @@
       </div>
     </Teleport>
 
-    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
+    <div class="page-card h-100 ovy-auto">
 
       <!-- Toolbar -->
       <div class="price-list__toolbar">
@@ -788,7 +788,7 @@ $cols:
 }
 
 .pm-currency-tag {
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
   font-weight: 600;
   color: var(--text-secondary);
   white-space: nowrap;
@@ -807,7 +807,7 @@ $cols:
   border-radius: var(--radius-base);
   background: var(--surface-base);
   color: var(--text-body);
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
   width: 100%;
   max-width: 100%;
   cursor: pointer;

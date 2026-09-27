@@ -165,7 +165,7 @@ async function save() {
 }
 
 .lang-badge {
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
   font-weight: 500;
   color: var(--text-muted);
   background: var(--surface-raised);

@@ -27,7 +27,7 @@
         @click="onSelect(ch)"
       >
         <span class="home-switcher__name">{{ ch.name || ch.idx }}</span>
-        <span class="home-switcher__status fs-100">
+        <span class="home-switcher__status fs-200">
           <template v-if="isCurrent(ch.idx)">
             <FontAwesomeIcon icon="check" class="t-accent" />
             {{ $t("builder.home_current") }}
@@ -159,7 +159,7 @@ export default {
 
 .home-switcher__header {
   padding: var(--space-2) var(--space-3);
-  font-size: var(--fs-150);
+  font-size: var(--fs-200);
   font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;

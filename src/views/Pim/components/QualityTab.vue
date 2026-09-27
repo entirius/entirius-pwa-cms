@@ -121,7 +121,7 @@ export default {
   padding: 0 var(--space-1);
   border-radius: var(--radius-base);
   background: var(--surface-raised);
-  font-size: var(--fs-150);
+  font-size: var(--fs-200);
   text-transform: uppercase;
 }
 .quality-tab__inherited {

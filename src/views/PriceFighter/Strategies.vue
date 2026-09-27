@@ -1,8 +1,8 @@
 <template>
   <div class="p-12 fs-300 t-body h-100 ov-h">
-    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
+    <div class="page-card h-100 ovy-auto">
       <div class="flex ai-ct jc-sb mb-10">
-        <h1 class="fs-700 fw-600">{{ $t('pricefighter.strategies') }}</h1>
+        <h1>{{ $t('pricefighter.strategies') }}</h1>
         <BasicButton
           :text="$t('pricefighter.new_rule')"
           icon="plus"

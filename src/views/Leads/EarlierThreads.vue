@@ -96,7 +96,7 @@ async function loadMore() {
 }
 .earlier__badge {
   color: var(--negative);
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
 }
 .earlier__list {
   display: flex;

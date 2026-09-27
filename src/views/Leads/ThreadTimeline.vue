@@ -131,7 +131,7 @@ const entries = computed(() => {
 .tl__tag,
 .tl__meta {
   margin: 0;
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
   color: var(--text-secondary);
 }
 .tl__meta {
@@ -159,7 +159,7 @@ const entries = computed(() => {
   border: none;
   background: none;
   color: var(--text-accent);
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
   text-decoration: underline;
   cursor: pointer;
 }

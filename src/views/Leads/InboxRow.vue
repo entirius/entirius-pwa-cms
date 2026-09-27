@@ -128,7 +128,7 @@ onMounted(async () => {
   overflow-wrap: anywhere;
 }
 .inbox-row__time {
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
   color: var(--text-muted);
 }
 .inbox-row__threads {
@@ -144,7 +144,7 @@ onMounted(async () => {
   color: var(--text-secondary);
 }
 .inbox-row__state {
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
 }
 .inbox-row__marker {
   color: var(--text-accent);

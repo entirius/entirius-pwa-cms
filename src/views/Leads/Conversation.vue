@@ -112,6 +112,6 @@ watch(() => route.params.id, (id) => id && route.name === "LeadsConversation" &&
 }
 .conversation__state {
   color: var(--text-secondary);
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
 }
 </style>

@@ -30,7 +30,7 @@
       />
     </Teleport>
 
-    <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
+    <div class="page-card h-100 ovy-auto">
       <Loader v-if="loading" />
 
       <template v-else>
@@ -39,7 +39,7 @@
           <h2 class="fs-500 fw-600 mb-8">{{ $t('pm.tax_class_detail') }}</h2>
           <div class="pm-grid">
             <div class="pm-field">
-              <label class="pm-label required">IDX</label>
+              <label class="field-label required">IDX</label>
               <BasicInput
                 v-model="form.idx"
                 :isDisabled="isEdit"
@@ -47,7 +47,7 @@
               />
             </div>
             <div class="pm-field">
-              <label class="pm-label required">{{ $t('pm.name') }}</label>
+              <label class="field-label required">{{ $t('pm.name') }}</label>
               <BasicInput
                 v-model="form.name"
                 :validate="formErrors.getFieldError('name')"
@@ -89,7 +89,7 @@
 
           <!-- Add rate row -->
           <div class="flex ai-ct gap-5 flex-wrap">
-            <BasicInput v-model="newRate.country_iso2" placeholder="ISO2 (e.g. PL)" class="pm-rate-input" />
+            <BasicInput v-model="newRate.country_iso2" :placeholder="$t('pm.iso2_placeholder')" class="pm-rate-input" />
             <NumberInput v-model="newRate.rate" :min="0" :max="100" :step="0.01" suffix="%" class="pm-rate-input" />
             <BasicButton
               :text="$t('pm.add_rate')"
@@ -281,13 +281,6 @@ export default {
   gap: var(--space-1);
 }
 
-.pm-label {
-  font-size: var(--fs-200);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--text-muted);
-}
 
 .pm-rates-table {
   border: 1px solid var(--border-subtle);

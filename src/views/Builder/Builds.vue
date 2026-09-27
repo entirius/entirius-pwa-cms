@@ -176,7 +176,7 @@
 
     <div
       v-if="contentTypes !== null && !hasVisibleContent"
-      class="flex ai-ct jc-ct gap-5 p-12 rounded b-subtle bg-base t-muted"
+      class="page-card flex ai-ct jc-ct gap-5 t-muted"
       style="min-height: 14rem; flex-direction: column"
     >
       <p class="fs-400 fw-600 t-secondary">
@@ -516,7 +516,7 @@ export default {
   min-width: 20px;
   height: 20px;
   padding: 0 var(--space-1);
-  font-size: var(--fs-150);
+  font-size: var(--fs-200);
   font-weight: 600;
   border-radius: var(--radius-full);
   background-color: var(--surface-hover);

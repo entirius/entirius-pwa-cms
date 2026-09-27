@@ -11,7 +11,7 @@
     <fieldset class="add-lead__group" :disabled="Boolean(company)">
       <legend>{{ $t("leads.add.company") }}</legend>
       <label class="ld-field">
-        <span>{{ $t("leads.add.domain") }} *</span>
+        <span class="required">{{ $t("leads.add.domain") }}</span>
         <input v-model.trim="form.domain" class="ld-input" inputmode="url" autocomplete="off" :placeholder="$t('leads.add.domain_hint')" data-testid="add-lead-domain" />
         <span v-if="fieldError('domain')" class="ld-error" data-testid="add-lead-domain-error">{{ fieldError("domain") }}</span>
         <span v-if="existing" class="ld-error" data-testid="add-lead-exists">

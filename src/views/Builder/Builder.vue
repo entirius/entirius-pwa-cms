@@ -443,7 +443,7 @@
                       {{ sections[s_uid].title }}
                     </p>
                     <p
-                      class="section-uid fs-100 t-muted pointer"
+                      class="section-uid fs-200 t-muted pointer"
                       @click="copyToClipboard(s_uid)"
                       :title="s_uid"
                     >
@@ -510,7 +510,7 @@
                     ) in core_properties"
                   >
                     <div v-if="sections[s_uid][prop]" class="mb-5">
-                      <p class="t-muted fs-100 mb-1">
+                      <p class="t-muted fs-200 mb-1">
                         {{ props_dictionary[prop] }}:
                       </p>
                       <p v-if="type === 'text'" class="fs-200">
@@ -710,7 +710,7 @@
                             </p>
                             <p
                               v-if="tiles[t_uid].title"
-                              class="fs-100 t-muted lc-1 txt-right"
+                              class="fs-200 t-muted lc-1 txt-right"
                             >
                               {{ tiles[t_uid].title }}
                             </p>
@@ -718,7 +718,7 @@
                               v-else-if="
                                 tiles[t_uid].product_sku || tiles[t_uid].sku
                               "
-                              class="fs-100 t-accent lc-1 txt-right"
+                              class="fs-200 t-accent lc-1 txt-right"
                             >
                               SKU:
                               {{ tiles[t_uid].product_sku || tiles[t_uid].sku }}
@@ -833,7 +833,7 @@
                                   }}
                                 </p>
                                 <p
-                                  class="fs-100 t-muted pointer mt-1"
+                                  class="fs-200 t-muted pointer mt-1"
                                   @click="copyToClipboard(t_uid)"
                                   :title="t_uid"
                                 >
@@ -853,7 +853,7 @@
                               class="mb-2 fs-200"
                             >
                               <p
-                                class="t-muted fw-600 underline fs-100 mb-1"
+                                class="t-muted fw-600 underline fs-200 mb-1"
                               >
                                 {{ props_dictionary[prop] }}:
                               </p>
@@ -863,7 +863,7 @@
                               <p
                                 v-if="type === 'wysiwyg'"
                                 v-html="tiles[t_uid][prop]"
-                                class="lc-3 fs-100"
+                                class="lc-3 fs-200"
                               ></p>
                               <ImagesControllPreview
                                 v-if="type === 'images'"
@@ -990,6 +990,7 @@ import RenameModal from "@/functionals/Rename-modal/index.vue";
 import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import AuthorPicker from "@/views/Authors/AuthorPicker.vue";
 import HomeVariantSwitcher from "@/views/Builder/HomeVariantSwitcher.vue";
+import { pluralKey } from "@/utils/plural";
 
 export default {
   components: {
@@ -1120,7 +1121,7 @@ export default {
     },
     tileCountLabel(s_uid) {
       const count = this.tiles_order[s_uid]?.length || 0;
-      return `${count} ${count === 1 ? "tile" : "tiles"}`;
+      return this.$t(`builder.tiles_${pluralKey(count)}`, { count });
     },
     copyToClipboard(text) {
       navigator.clipboard.writeText(text);
@@ -1870,7 +1871,7 @@ const scroll_into = (id) => {
     // border-radius: var(--radius-base);
     border: 1px solid var(--border-default);
     // overflow: hidden;
-    font-size: var(--fs-100);
+    font-size: var(--fs-200);
     font-weight: normal;
 
     border: none;
@@ -2042,7 +2043,7 @@ const scroll_into = (id) => {
     min-width: 20px;
     height: 20px;
     padding: 0 var(--space-1);
-    font-size: var(--fs-150);
+    font-size: var(--fs-200);
     font-weight: 600;
     border-radius: var(--radius-full);
     background: var(--accent-subtle);
@@ -2131,7 +2132,7 @@ const scroll_into = (id) => {
   border: 1px solid var(--border-default);
   background: var(--surface-base);
   color: var(--text-secondary);
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
   max-width: 200px;
   overflow: hidden;
   text-overflow: ellipsis;

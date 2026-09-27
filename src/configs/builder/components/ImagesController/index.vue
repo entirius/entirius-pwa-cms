@@ -94,7 +94,7 @@
           </div>
         </div>
         <div class="flex wrap ai-ct gap-1 pv-2">
-          <p class="fs-100 t-muted">{{ $t("gallery.filter_by_tag") }}</p>
+          <p class="fs-200 t-muted">{{ $t("gallery.filter_by_tag") }}</p>
           <p
             v-for="(t, idx) in tags"
             :key="`t-${idx}`"
@@ -201,7 +201,7 @@
             </div>
             <BasicButton
               :text="$t('common.accept')"
-              class="rounded fs-100 shadow-down jc-ct"
+              class="rounded fs-200 shadow-down jc-ct"
               :class="[
                 !canAccept
                   ? 't-muted b-default bg-raised'
@@ -237,7 +237,7 @@
         >
           <FontAwesomeIcon icon="upload" class="t-muted fs-500" />
           <span class="t-muted fs-200">{{ $t('gallery.drop_files_here') }}</span>
-          <span class="t-muted fs-100">{{ $t('gallery.or_click_to_browse') }}</span>
+          <span class="t-muted fs-200">{{ $t('gallery.or_click_to_browse') }}</span>
         </div>
         <input
           type="file"
@@ -248,7 +248,7 @@
         />
 
         <div v-if="filePreview" class="mt-8">
-          <div class="grid grid-col-2 gap-10 bg-base p-8 rounded b-subtle">
+          <div class="page-card grid grid-col-2 gap-10">
             <img :src="filePreview" alt="" style="max-width: 100%; border-radius: var(--radius-base)" />
             <div class="flex-column gap-5 ai-fs">
               <BasicInput
@@ -640,7 +640,7 @@ export default {
   }
 
   &__name {
-    font-size: var(--fs-100);
+    font-size: var(--fs-200);
     color: var(--text-muted);
     text-align: center;
     padding: 0 var(--space-1);

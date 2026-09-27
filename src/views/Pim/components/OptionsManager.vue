@@ -438,7 +438,7 @@ export default {
 .options-table__header {
   padding: var(--space-2) var(--space-3);
   border-bottom: 2px solid var(--border-subtle);
-  font-size: var(--fs-150);
+  font-size: var(--fs-200);
   font-weight: 600;
   color: var(--text-muted);
   letter-spacing: 0.03em;

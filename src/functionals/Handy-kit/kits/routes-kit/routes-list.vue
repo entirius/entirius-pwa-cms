@@ -96,13 +96,13 @@
         </div>
         <hr class="mv-2" />
 
-        <p class="fs-100 t-secondary" v-if="type === 'static-page'">
+        <p class="fs-200 t-secondary" v-if="type === 'static-page'">
           {{ $t("routes.static_page_help") }}
         </p>
-        <p class="fs-100 t-secondary" v-else-if="type === 'blog-post'">
+        <p class="fs-200 t-secondary" v-else-if="type === 'blog-post'">
           {{ $t("routes.blog_post_help") }}
         </p>
-        <p class="fs-100 t-secondary" v-else>
+        <p class="fs-200 t-secondary" v-else>
           {{ $t("routes.product_help") }}
         </p>
 
