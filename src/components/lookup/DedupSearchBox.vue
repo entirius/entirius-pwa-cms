@@ -196,6 +196,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/scss/utils/media-query";
+
 .dedup-search-box {
   display: flex;
   flex-direction: column;
@@ -218,8 +220,18 @@ export default {
     align-items: center;
     gap: var(--space-5);
   }
+  // A phone gives the query its own full-width row; the photo picker and Search wrap under it.
+  &__row {
+    @include max-tablet {
+      flex-wrap: wrap;
+    }
+  }
   &__input {
     flex: 1;
+
+    @include max-tablet {
+      flex-basis: 100%;
+    }
   }
   &__hint,
   &__error {
