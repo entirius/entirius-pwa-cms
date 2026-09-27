@@ -10,7 +10,7 @@
         <span v-if="handy.isDirty" class="chip bg-warning-subtle t-warning">
           {{ $t("unsaved.changes") }}
         </span>
-        <i class="icon-close-mini pointer t-secondary" @click="requestClose" />
+        <FontAwesomeIcon :icon="$icons.close" class="pointer t-secondary" @click="requestClose" />
       </div>
     </nav>
     <div class="fg-1 pl-10 pr-10 ovy-auto pb-10">
@@ -197,7 +197,7 @@
               class="rounded bg-base lh-base-elem fs-200"
             />
             <p v-if="skuPickerDisabledMsg && !skuManualMode" class="fs-200 t-muted mt-1">
-              <FontAwesomeIcon icon="circle-info" class="mr-1" />
+              <FontAwesomeIcon :icon="$icons.info" class="mr-1" />
               {{ skuPickerDisabledMsg }}
             </p>
           </div>

@@ -109,10 +109,15 @@ import {
   faSquareCheck,
   faWandMagicSparkles,
   faScaleBalanced,
+  faArrowsUpDown,
+  faFileArrowUp,
+  faFile,
+  faPaperclip,
 } from "@fortawesome/free-solid-svg-icons";
 
 /* import font awesome icon component */
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { ICONS } from "./icons";
 
 export default function registerFontAwesome(app) {
   /* add icons to the library */
@@ -222,9 +227,16 @@ export default function registerFontAwesome(app) {
     faBullseye,
     faSquareCheck,
     faWandMagicSparkles,
-    faScaleBalanced
+    faScaleBalanced,
+    faArrowsUpDown,
+    faFileArrowUp,
+    faFile,
+    faPaperclip
   );
 
   /* add font awesome icon component */
   app.component("FontAwesomeIcon", FontAwesomeIcon);
+
+  /* templates pick icons by meaning: :icon="$icons.edit" (icons.js) */
+  app.config.globalProperties.$icons = ICONS;
 }

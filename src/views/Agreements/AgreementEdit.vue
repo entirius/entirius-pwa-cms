@@ -13,7 +13,7 @@
         class="btn-danger"
         @click="showDeleteConfirm = true"
       >
-        <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+        <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
       </BasicButton>
       <BasicButton
         :text="$t('agm.save')"
@@ -107,7 +107,7 @@
                     <span class="ml-2">{{ ch.label }}</span>
                     <FontAwesomeIcon
                       v-if="form.channel_ids.includes(ch.value)"
-                      icon="check"
+                      :icon="$icons.check"
                       class="t-positive"
                     />
                   </div>
@@ -157,7 +157,7 @@
                       <span class="ml-2">{{ ctx.label }}</span>
                       <FontAwesomeIcon
                         v-if="form.display_contexts.includes(ctx.value)"
-                        icon="check"
+                        :icon="$icons.check"
                         class="t-positive"
                       />
                     </div>
@@ -255,7 +255,7 @@
                           class="btn-ghost"
                           @click="startEditDraft(ver)"
                         >
-                          <template #custom><FontAwesomeIcon icon="pen" /></template>
+                          <template #custom><FontAwesomeIcon :icon="$icons.edit" /></template>
                         </BasicButton>
                         <BasicButton
                           v-else
@@ -265,7 +265,7 @@
                           class="btn-ghost"
                           @click="startEditPublished(ver)"
                         >
-                          <template #custom><FontAwesomeIcon icon="pen" /></template>
+                          <template #custom><FontAwesomeIcon :icon="$icons.edit" /></template>
                         </BasicButton>
                         <BasicButton
                           v-if="!ver.published_at"
@@ -325,13 +325,13 @@
           class="agm-section mb-10"
         >
           <div
-            class="flex ai-ct gap-5 pointer"
+            class="agm-history-toggle flex ai-ct gap-5 pointer"
             @click="contentHistoryOpen = !contentHistoryOpen"
           >
-            <font-awesome-icon icon="clock-rotate-left" class="t-muted" />
+            <font-awesome-icon :icon="$icons.history" class="t-muted" />
             <h2 class="fs-500 fw-600">{{ $t("agm.content_history") }}</h2>
             <font-awesome-icon
-              :icon="contentHistoryOpen ? 'chevron-up' : 'chevron-down'"
+              :icon="contentHistoryOpen ? $icons.collapse : $icons.expand"
               class="t-muted fs-200"
             />
           </div>
@@ -418,8 +418,8 @@
                           <font-awesome-icon
                             :icon="
                               expandedSnapshot === snap.published_id
-                                ? 'chevron-up'
-                                : 'chevron-down'
+                                ? $icons.collapse
+                                : $icons.expand
                             "
                             class="t-muted"
                           />

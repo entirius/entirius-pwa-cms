@@ -7,7 +7,7 @@
         <BasicInput
           v-model="search"
           :placeholder="$t('stock.search_sku')"
-          icon="magnifying-glass"
+          icon="search"
           class="add-product__search"
           @input="debouncedSearch"
         />
@@ -36,7 +36,7 @@
         >
           <div class="flex ai-ct gap-5">
             <FontAwesomeIcon
-              :icon="selectedSkus.has(p.sku) ? 'check-square' : 'square'"
+              :icon="selectedSkus.has(p.sku) ? $icons.checkboxOn : $icons.checkboxOff"
               :class="selectedSkus.has(p.sku) ? 't-accent' : 't-muted'"
             />
             <span class="fw-500">{{ p.sku }}</span>

@@ -15,7 +15,7 @@
         changePage({ num: state.page - 1, isDisabled: false }, 'prev')
       "
     >
-      <FontAwesomeIcon icon="chevron-left" />
+      <FontAwesomeIcon :icon="$icons.prev" />
     </button>
 
     <template
@@ -50,7 +50,7 @@
         changePage({ num: state.page + 1, isDisabled: false }, 'next')
       "
     >
-      <FontAwesomeIcon icon="chevron-right" />
+      <FontAwesomeIcon :icon="$icons.next" />
     </button>
   </nav>
 </template>

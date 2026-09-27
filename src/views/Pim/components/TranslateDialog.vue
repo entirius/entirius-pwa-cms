@@ -235,7 +235,7 @@ export default {
               :title="$t('pim.translate_add_language_to_channel')"
               @click="showAddLanguage = !showAddLanguage"
             >
-              <i class="icon icon-plus fs-200"></i>
+              <FontAwesomeIcon :icon="$icons.add" class="fs-200" />
             </button>
           </div>
 
@@ -274,7 +274,7 @@ export default {
               @click="removeLanguage(lang)"
             >
               {{ lang.toUpperCase() }}
-              <i class="icon icon-close fs-100"></i>
+              <FontAwesomeIcon :icon="$icons.close" class="fs-100" />
             </span>
           </div>
           <p

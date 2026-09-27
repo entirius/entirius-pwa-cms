@@ -27,7 +27,7 @@
       v-if="!isManual"
       class="flex ai-ct gap-5 mb-8 p-8 bg-accent-subtle rounded t-strong fs-200"
     >
-      <FontAwesomeIcon icon="lock" />
+      <FontAwesomeIcon :icon="$icons.lock" />
       <span>{{ $t("stock.integration_readonly") }}</span>
     </div>
 
@@ -37,7 +37,7 @@
         <BasicInput
           v-model="search"
           :placeholder="$t('stock.search_sku')"
-          icon="magnifying-glass"
+          icon="search"
           class="stock-table__search"
           @input="onSearch"
         />

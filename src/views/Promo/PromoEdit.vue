@@ -19,7 +19,7 @@
         class="btn-danger"
         @click="showDeleteConfirm = true"
       >
-        <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+        <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
       </BasicButton>
       <BasicButton
         :text="$t('common.save')"
@@ -123,7 +123,7 @@
                       class="btn-danger"
                       @click="removeCurrencyGroup(groupIdx)"
                     >
-                      <template #custom><FontAwesomeIcon icon="xmark" /></template>
+                      <template #custom><FontAwesomeIcon :icon="$icons.close" /></template>
                     </BasicButton>
                   </div>
                   <div
@@ -147,7 +147,7 @@
                       class="btn-danger"
                       @click="removeCurrencyRow(groupIdx, rowIdx)"
                     >
-                      <template #custom><FontAwesomeIcon icon="xmark" /></template>
+                      <template #custom><FontAwesomeIcon :icon="$icons.close" /></template>
                     </BasicButton>
                   </div>
                   <BasicButton
@@ -213,7 +213,7 @@
                     <span class="ml-2">{{ opt.iso3 }} — {{ opt.name }}</span>
                     <FontAwesomeIcon
                       v-if="form.currencies.includes(opt.iso3)"
-                      icon="check"
+                      :icon="$icons.check"
                       class="t-positive"
                     />
                   </div>
@@ -243,7 +243,7 @@
                     </span>
                     <FontAwesomeIcon
                       v-if="form.channels.includes(opt.idx)"
-                      icon="check"
+                      :icon="$icons.check"
                       class="t-positive"
                     />
                   </div>
@@ -274,7 +274,7 @@
                     </span>
                     <FontAwesomeIcon
                       v-if="form.free_shipping_methods.includes(opt.code)"
-                      icon="check"
+                      :icon="$icons.check"
                       class="t-positive"
                     />
                   </div>
@@ -353,7 +353,7 @@
             <BasicInput
               v-model="codesSearch"
               :placeholder="$t('promo.codes_search_placeholder')"
-              icon="magnifying-glass"
+              icon="search"
               @input="debouncedFetch(() => fetchCodes(true))"
             />
           </div>
@@ -395,7 +395,7 @@
                 class="btn-ghost"
                 @click="openEditCode(row)"
               >
-                <template #custom><FontAwesomeIcon icon="pen" /></template>
+                <template #custom><FontAwesomeIcon :icon="$icons.edit" /></template>
               </BasicButton>
               <BasicButton
                 custom
@@ -404,7 +404,7 @@
                 class="btn-danger"
                 @click="confirmDeleteCode(row.id)"
               >
-                <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+                <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
               </BasicButton>
             </template>
           </DataTable>
@@ -499,7 +499,7 @@
                     class="btn-ghost"
                     @click="openFilterDrawer('product', row)"
                   >
-                    <template #custom><FontAwesomeIcon icon="pen" /></template>
+                    <template #custom><FontAwesomeIcon :icon="$icons.edit" /></template>
                   </BasicButton>
                   <BasicButton
                     custom
@@ -508,7 +508,7 @@
                     class="btn-danger"
                     @click="confirmDeleteFilter(row.id, 'product')"
                   >
-                    <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+                    <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
                   </BasicButton>
                 </div>
               </template>
@@ -551,7 +551,7 @@
                     class="btn-ghost"
                     @click="openFilterDrawer('customer', row)"
                   >
-                    <template #custom><FontAwesomeIcon icon="pen" /></template>
+                    <template #custom><FontAwesomeIcon :icon="$icons.edit" /></template>
                   </BasicButton>
                   <BasicButton
                     custom
@@ -560,7 +560,7 @@
                     class="btn-danger"
                     @click="confirmDeleteFilter(row.id, 'customer')"
                   >
-                    <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+                    <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
                   </BasicButton>
                 </div>
               </template>
@@ -603,7 +603,7 @@
                     class="btn-ghost"
                     @click="openFilterDrawer('threshold', row)"
                   >
-                    <template #custom><FontAwesomeIcon icon="pen" /></template>
+                    <template #custom><FontAwesomeIcon :icon="$icons.edit" /></template>
                   </BasicButton>
                   <BasicButton
                     custom
@@ -612,7 +612,7 @@
                     class="btn-danger"
                     @click="confirmDeleteFilter(row.id, 'threshold')"
                   >
-                    <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+                    <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
                   </BasicButton>
                 </div>
               </template>

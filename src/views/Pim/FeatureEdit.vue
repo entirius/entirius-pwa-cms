@@ -16,7 +16,7 @@
         class="btn-danger"
         @click="showDeleteConfirm = true"
       >
-        <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+        <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
       </BasicButton>
       <BasicButton
         :text="$t('common.save')"
@@ -35,7 +35,7 @@
           v-if="isSystem && !isCreate"
           class="flex ai-ct gap-5 mb-8 p-8 bg-accent-subtle rounded t-strong fs-200"
         >
-          <i class="icon icon-lock" />
+          <FontAwesomeIcon :icon="$icons.lock" />
           <span>{{ $t("pim.system_feature_notice") }}</span>
         </div>
 

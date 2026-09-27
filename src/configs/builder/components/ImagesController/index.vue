@@ -42,7 +42,7 @@
       >
         <p class="fs-400 fw-600 uppercase">{{ $t("images.library") }}</p>
         <p class="js-fe" @click="mode = null">
-          <i class="icon-close-mini pointer" />
+          <FontAwesomeIcon :icon="$icons.close" class="pointer" />
         </p>
       </nav>
       <div class="pl-10 pr-10 pt-8 pb-8 fg-1 relative bg-base flex flex-column ov-h">
@@ -124,7 +124,7 @@
               }
             "
           >
-            <FontAwesomeIcon icon="xmark" />
+            <FontAwesomeIcon :icon="$icons.close" />
           </button>
         </div>
         <div class="grid grid-col-5 gap-2 relative pv-2 fg-1 ovy-auto" style="min-height: 0">
@@ -151,7 +151,7 @@
                   v-if="!g._thumbSrc || g._thumbFailed"
                   class="ic-gallery-fallback"
                 >
-                  <FontAwesomeIcon icon="image" class="ic-gallery-fallback__icon" />
+                  <FontAwesomeIcon :icon="$icons.image" class="ic-gallery-fallback__icon" />
                   <span class="ic-gallery-fallback__name">{{
                     g.meta && g.meta.fileName
                       ? g.meta.fileName
@@ -161,7 +161,7 @@
               </div>
             </HoverMe>
             <div v-if="selected_asset === i" class="ic-gallery-check">
-              <FontAwesomeIcon icon="circle-check" />
+              <FontAwesomeIcon :icon="$icons.success" />
             </div>
           </div>
         </div>
@@ -181,7 +181,7 @@
               >
                 <FontAwesomeIcon
                   v-if="set_mobile"
-                  icon="circle-check"
+                  :icon="$icons.success"
                   class="ic-device-chip__icon"
                 />
                 {{ $t("images.mobile") }}
@@ -193,7 +193,7 @@
               >
                 <FontAwesomeIcon
                   v-if="set_desktop"
-                  icon="circle-check"
+                  :icon="$icons.success"
                   class="ic-device-chip__icon"
                 />
                 {{ $t("images.desktop") }}
@@ -222,7 +222,7 @@
         class="flex bg-raised t-secondary fs-300 pl-10 pr-10 pt-5 pb-5"
       >
         <p class="mr-2 pointer" @click="mode = 'gallery'">
-          <i class="icon-arrow-left" />
+          <FontAwesomeIcon :icon="$icons.back" />
         </p>
         <p class="fw-600 uppercase">{{ $t("images.new_photo") }}</p>
       </nav>
@@ -235,7 +235,7 @@
           @dragleave="isDraggingOver = false"
           @drop.prevent="onDrop"
         >
-          <FontAwesomeIcon icon="upload" class="t-muted fs-500" />
+          <FontAwesomeIcon :icon="$icons.upload" class="t-muted fs-500" />
           <span class="t-muted fs-200">{{ $t('gallery.drop_files_here') }}</span>
           <span class="t-muted fs-200">{{ $t('gallery.or_click_to_browse') }}</span>
         </div>

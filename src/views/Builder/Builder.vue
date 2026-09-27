@@ -121,7 +121,7 @@
           class="builder-tb-btn builder-tb-btn--secondary pointer"
           @click="saveDraft"
         >
-          <FontAwesomeIcon icon="floppy-disk" />
+          <FontAwesomeIcon :icon="$icons.saveDraft" />
           <span class="builder-tb-btn__label">{{
             uid ? $t("builder.save_draw") : $t("builder.post_draw")
           }}</span>
@@ -132,7 +132,7 @@
           :disabled="!uid"
           @click="saveAndPublish"
         >
-          <FontAwesomeIcon icon="upload" />
+          <FontAwesomeIcon :icon="$icons.publish" />
           <span class="builder-tb-btn__label">{{
             $t("builder.publish_document")
           }}</span>
@@ -142,7 +142,7 @@
           :title="$t('builder.copy_document')"
           @click="rename_modal = true"
         >
-          <FontAwesomeIcon icon="copy" />
+          <FontAwesomeIcon :icon="$icons.duplicate" />
         </button>
         <SubscriberSetter
           v-if="has_options('document_configs')"
@@ -164,7 +164,7 @@
           class="builder-toolbar-icon pointer"
           :title="$t('builder.document_options')"
         >
-          <FontAwesomeIcon icon="pen-to-square" />
+          <FontAwesomeIcon :icon="$icons.edit" />
         </SubscriberSetter>
         <NoticeMe
           :active="
@@ -181,7 +181,7 @@
             :class="{ 't-negative': advanced_options }"
             :title="$t('builder.advanced')"
           >
-            <FontAwesomeIcon :icon="advanced_options ? 'xmark' : 'gears'" />
+            <FontAwesomeIcon :icon="advanced_options ? $icons.close : $icons.settings" />
           </button>
         </NoticeMe>
       </template>
@@ -220,7 +220,7 @@
             class="builder-adv-btn pointer"
             :class="{ 'builder-adv-btn--disabled': isHomeDoc }"
           >
-            <FontAwesomeIcon icon="pen-to-square" />
+            <FontAwesomeIcon :icon="$icons.edit" />
             {{
               !routes || !routes.length
                 ? $t("builder.set_url")
@@ -236,7 +236,7 @@
         :defaults="{ meta }"
         class="builder-adv-btn pointer"
       >
-        <FontAwesomeIcon icon="circle-info" />
+        <FontAwesomeIcon :icon="$icons.info" />
         {{ $t("builder.meta") }}
       </SubscriberSetter>
       <SubscriberSetter
@@ -246,7 +246,7 @@
         :defaults="{ category }"
         class="builder-adv-btn pointer"
       >
-        <FontAwesomeIcon icon="tag" />
+        <FontAwesomeIcon :icon="$icons.tag" />
         {{ $t("builder.categories") }}
       </SubscriberSetter>
     </div>
@@ -260,13 +260,13 @@
         class="builder-author-panel__header"
         @click="authorPanelOpen = !authorPanelOpen"
       >
-        <FontAwesomeIcon icon="user-pen" />
+        <FontAwesomeIcon :icon="$icons.author" />
         <span>{{ $t('authors.title') }}</span>
         <span class="builder-author-panel__count">
           {{ authors.length + co_authors.length }}
         </span>
         <FontAwesomeIcon
-          :icon="authorPanelOpen ? 'chevron-up' : 'chevron-down'"
+          :icon="authorPanelOpen ? $icons.collapse : $icons.expand"
           class="builder-author-panel__chevron"
         />
       </div>
@@ -333,14 +333,14 @@
           @click="scroll_into(`container-${componentId}`)"
           :aria-label="$t('builder.scroll_top')"
         >
-          <FontAwesomeIcon icon="chevron-up" />
+          <FontAwesomeIcon :icon="$icons.collapse" />
         </button>
         <button
           class="builder-fab-aux__btn pointer"
           @click="$refs.manageOrderSetter?.$el?.click()"
           :aria-label="$t('builder.manage_order')"
         >
-          <FontAwesomeIcon icon="grip" />
+          <FontAwesomeIcon :icon="$icons.reorder" />
         </button>
       </div>
       <FloatingActions :actions="fabActions" />
@@ -386,16 +386,16 @@
                   style="width: 15px; height: 15px"
                   v-if="!blog_extension"
                 >
-                  <i
-                    class="icon-cookie"
+                  <FontAwesomeIcon
+                    :icon="$icons.warning"
                     :class="{
                       'pulse-animation t-warning': !blog_extension,
                     }"
-                  ></i>
+                  />
                 </span>
                 <span> {{ $t("builder.blog_repr_tile") }} </span>
                 <span v-if="blog_extension" @click.stop="blog_extension = null">
-                  <i class="icon-close-mini"></i>
+                  <FontAwesomeIcon :icon="$icons.close" />
                 </span>
               </div>
             </NoticeMe>
@@ -457,7 +457,7 @@
                         class="section-icon-btn pointer"
                         :aria-label="$t('builder.setted_config')"
                       >
-                        <FontAwesomeIcon icon="eye" />
+                        <FontAwesomeIcon :icon="$icons.preview" />
                       </button>
                     </ToolTip>
                     <SubscriberSetter
@@ -471,7 +471,7 @@
                       :defaults="{ ...sections[s_uid], __channels: channels }"
                       class="section-icon-btn pointer"
                     >
-                      <FontAwesomeIcon icon="pen" />
+                      <FontAwesomeIcon :icon="$icons.edit" />
                     </SubscriberSetter>
                     <button
                       class="section-icon-btn pointer"
@@ -484,7 +484,7 @@
                         })
                       "
                     >
-                      <FontAwesomeIcon icon="copy" />
+                      <FontAwesomeIcon :icon="$icons.duplicate" />
                     </button>
                     <button
                       class="section-icon-btn section-icon-btn--danger pointer"
@@ -496,7 +496,7 @@
                         }
                       "
                     >
-                      <FontAwesomeIcon icon="trash-can" />
+                      <FontAwesomeIcon :icon="$icons.delete" />
                     </button>
                   </div>
                 </div>
@@ -613,7 +613,7 @@
                           )
                         "
                       >
-                        <FontAwesomeIcon icon="plus" />
+                        <FontAwesomeIcon :icon="$icons.add" />
                       </SubscriberSetter>
 
                       <SubscriberSetter
@@ -639,7 +639,7 @@
                         }"
                         class="section-icon-btn pointer"
                       >
-                        <FontAwesomeIcon icon="grip" />
+                        <FontAwesomeIcon :icon="$icons.reorder" />
                       </SubscriberSetter>
                       <button
                         v-if="tiles_order[s_uid] && tiles_order[s_uid].length"
@@ -653,7 +653,7 @@
                       >
                         <FontAwesomeIcon
                           :icon="
-                            section_tiles_details === s_uid ? 'eye' : 'eye'
+                            section_tiles_details === s_uid ? $icons.preview : $icons.preview
                           "
                         />
                       </button>
@@ -762,7 +762,7 @@
                                 })
                               "
                             >
-                              <FontAwesomeIcon icon="copy" />
+                              <FontAwesomeIcon :icon="$icons.duplicate" />
                             </button>
                             <SubscriberSetter
                               @onSet="
@@ -785,7 +785,7 @@
                               }"
                               class="section-icon-btn pointer"
                             >
-                              <FontAwesomeIcon icon="pen" />
+                              <FontAwesomeIcon :icon="$icons.edit" />
                             </SubscriberSetter>
                             <button
                               class="section-icon-btn section-icon-btn--danger pointer"
@@ -800,7 +800,7 @@
                                 }
                               "
                             >
-                              <FontAwesomeIcon icon="trash-can" />
+                              <FontAwesomeIcon :icon="$icons.delete" />
                             </button>
                           </div>
                         </div>
@@ -914,7 +914,7 @@
                               })
                             "
                           >
-                            <FontAwesomeIcon icon="copy" />
+                            <FontAwesomeIcon :icon="$icons.duplicate" />
                           </button>
                           <SubscriberSetter
                             @onSet="
@@ -937,7 +937,7 @@
                             }"
                             class="section-icon-btn pointer"
                           >
-                            <FontAwesomeIcon icon="pen" />
+                            <FontAwesomeIcon :icon="$icons.edit" />
                           </SubscriberSetter>
                           <button
                             class="section-icon-btn section-icon-btn--danger pointer"
@@ -952,7 +952,7 @@
                               }
                             "
                           >
-                            <FontAwesomeIcon icon="trash-can" />
+                            <FontAwesomeIcon :icon="$icons.delete" />
                           </button>
                         </div>
                       </div>

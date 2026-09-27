@@ -26,7 +26,7 @@
         class="icon-wrapper absolute flex jc-ct ai-ct"
         aria-hidden="true"
       >
-        <i :class="`icon-${icon}`"></i>
+        <FontAwesomeIcon :icon="$icons[icon]" />
       </div>
 
       <label
@@ -85,6 +85,7 @@ export default {
       required: false,
       default: false,
     },
+    // A meaning of the icon registry (src/boots/Icons/icons.js), e.g. "search".
     icon: {
       type: String,
       require: false,

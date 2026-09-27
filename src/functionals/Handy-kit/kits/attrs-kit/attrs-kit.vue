@@ -10,7 +10,7 @@
         class="js-fe t-secondary"
         @click="handy.open_Handykit({ typeId: false })"
       >
-        <i class="icon-close-mini pointer" />
+        <FontAwesomeIcon :icon="$icons.close" class="pointer" />
       </p>
     </nav>
     <div class="fg-1 pl-10 pr-10 ovy-auto pt-5 pb-10">

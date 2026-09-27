@@ -1,4 +1,5 @@
 import { config } from "@vue/test-utils";
+import { ICONS } from "@/boots/Icons/icons";
 
 // Simple i18n stubs reused by every test
 const $t = (key, params = {}) => {
@@ -10,6 +11,7 @@ const $tc = (key, count, params = {}) => $t(key, { count, ...(params || {}) });
 config.global.mocks = {
   $t,
   $tc,
+  $icons: ICONS,
   $route: { params: {}, query: {}, hash: "", path: "/" },
   $router: { push: () => {}, replace: () => {} },
 };
