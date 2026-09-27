@@ -167,6 +167,40 @@ Catalogue: `#actions` (`#basic-button`, `#icon-button`, `#action-bar`, `#floatin
 
 ### P3 display (plan 13)
 
+- **`StatusBadge`** — one state pill: `label` (string or number, also the `title`; the badge never grows past its
+  cell and ends in an ellipsis), `tone` `positive` · `negative` · `warning` · `info` · `neutral` · `accent`, `dot`
+  (default on), `size` `md` · `sm`; hollow (tone border, tone text), 12 px Inter 600 (`type-badge`). Transition API,
+  removed in plan 19: `variant` = `tone` (`informative` = `info`). It replaces the global `.chip`.
+- **`CountBadge`** — `count` in a 20 px pill (`surface-hover`, 11 px Inter 600, `type-count`), `999+` above 999.
+  BasicTabs, FilterChip and the MobileFilterPanel trigger show their counts with it.
+- **`Tag`** — a value chip (a picked entity, a media tag): `label`, `removable` adds a `close` IconButton `sm` named
+  „Usuń: <label>” that emits `remove`.
+- **`BasicTabs`** — `options` `[{ label, value, count? }]` + `v-model` (unchanged); a `tablist` with one Tab stop
+  (the active tab), ←/→ (wrapping), Home and End select and focus a tab; active = accent text + 2 px accent underline.
+- **`BasicCard`** — the card of `.page-card` (border-subtle, `--radius-3xl`, 24 px / 16 px below tablet): `title`
+  (section title, Inter 600 16 px), `actions` slot (an ActionBar, right of the title), default slot.
+- **`PanelCard`** — Home panel tile: `icon` (the panel's glyph from `configs/access.js`), `title` (Lexend Deca),
+  `description`, `locked` + `lockedText` (opacity .5, lock, not focusable, no click), emits `click`; `surface-card`
+  gradient, `--radius-3xl`, padding and gap 20 px; root class `panel-card`, `data-fid="panel-card"`.
+- **`MediaTile`** — media grid tile, 188 × 276 (150 × 240 below tablet), `surface-raised`: `src` (none = image
+  placeholder), `alt`, `caption`, `selected` (accent border), `actions` slot (IconButtons `sm`).
+- **`Loader`** — `size` 32 · 64 (`h` / `w` until plan 19), `block` centres it in a content area, `overlay` veils the
+  screen (`overlay-loading`, 64 px rings; replaces `components/Loading.vue`), `overlay contained` veils the nearest
+  positioned ancestor; `role="status"` with a visually hidden „Ładowanie…”.
+- **`Pagination`** — `v-model:page` + `pages`; 32 px page squares 4 px apart, the current one boxed in accent, round
+  prev/next arrows at opacity .5 when disabled, an ellipsis for many pages, nothing for one page. Transition API,
+  removed in plan 19: `pagination` (`{ page, pages }`) or `current` / `total` / `perPage`, events `onChangePage` and
+  `change` (emitted next to `update:page`).
+- **`EmptyState`** — `icon` is a meaning of `icons.js` (a glyph name still draws until the sweeps).
+- **`MobileFilterPanel`** — the trigger is an `outline` IconButton `filter` named by `triggerLabel`, with a CountBadge.
+- Codemod `scripts/codemods/p3-display.mjs` (sweeps 17/18): `.chip` + colour classes → `StatusBadge` `tone`
+  (`:dot="false"` keeps the dotless look, `chip--sm` → `size="sm"`, `.chip__label` unwrapped); `<Loading>` →
+  `<Loader overlay>` (`isHandy` → `contained`), import dropped. It flags `:class` bindings, click handlers, one-off
+  colours and content that is not one text. `Loading` is a removed component (`removed-components/display.json`).
+
+Catalogue: `#display` (`#status-badge`, `#count-badge`, `#tag`, `#basic-tabs`, `#basic-card`, `#panel-card`,
+`#media-tile`, `#empty-state`, `#loader`, `#pagination`, `#filter-chip`, `#mobile-filter-panel`, `#data-table`).
+
 ### P3 page frame (plan 14)
 
 ### P3 selects (plan 15)
