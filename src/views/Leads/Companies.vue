@@ -100,9 +100,6 @@ onMounted(() => load());
   white-space: nowrap;
 }
 .companies__add {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
   text-decoration: none;
 }
 .company-row {

@@ -24,8 +24,15 @@
             {{ text.body }}
           </button>
           <span v-if="!text.is_active" class="ld-badge">{{ $t("communicator.pool.inactive") }}</span>
-          <button v-if="text.is_active" class="ld-btn ld-btn--danger" data-testid="pool-text-remove" @click="confirming = text">
-            {{ $t("communicator.pool.remove") }}
+          <button
+            v-if="text.is_active"
+            class="ld-btn ld-btn--danger ld-btn--icon"
+            :aria-label="$t('communicator.pool.remove')"
+            :title="$t('communicator.pool.remove')"
+            data-testid="pool-text-remove"
+            @click="confirming = text"
+          >
+            <FontAwesomeIcon icon="trash-can" />
           </button>
           <button v-else class="ld-btn" data-testid="pool-text-restore" @click="restore(text)">{{ $t("communicator.pool.restore") }}</button>
         </template>
@@ -146,8 +153,5 @@ function remove(text) {
   flex: 1 1 100%;
   flex-direction: column;
   gap: var(--space-5);
-}
-.pool__item .ld-btn {
-  min-height: 44px;
 }
 </style>

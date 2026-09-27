@@ -15,8 +15,14 @@
           <td>{{ row.value }}</td>
           <td>{{ row.reason }}</td>
           <td>
-            <button v-if="row.kind !== 'email_token'" class="ld-btn ld-btn--danger" @click="remove(row.id)">
-              {{ $t("leads.stages.delete") }}
+            <button
+              v-if="row.kind !== 'email_token'"
+              class="ld-btn ld-btn--danger ld-btn--icon"
+              :aria-label="$t('leads.stages.delete')"
+              :title="$t('leads.stages.delete')"
+              @click="remove(row.id)"
+            >
+              <FontAwesomeIcon icon="trash-can" />
             </button>
           </td>
         </tr>

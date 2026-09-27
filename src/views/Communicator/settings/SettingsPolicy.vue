@@ -14,7 +14,15 @@
       <label class="ld-field">{{ $t("communicator.policy.window_end") }}
         <input v-model="window.end_time" v-bind="TIME_INPUT" :placeholder="$t('communicator.policy.time_format')" data-testid="policy-window-end" />
       </label>
-      <button class="ld-btn" type="button" @click="form.windows.splice(i, 1)">{{ $t("communicator.policy.remove_window") }}</button>
+      <button
+        class="ld-btn ld-btn--danger ld-btn--icon"
+        type="button"
+        :aria-label="$t('communicator.policy.remove_window')"
+        :title="$t('communicator.policy.remove_window')"
+        @click="form.windows.splice(i, 1)"
+      >
+        <FontAwesomeIcon icon="trash-can" />
+      </button>
     </div>
     <div class="ld-row">
       <button class="ld-btn" type="button" @click="form.windows.push({ start_time: '08:00', end_time: '17:00' })">

@@ -19,27 +19,53 @@
   align-items: center;
   gap: var(--space-5);
 }
+/* Same metrics and roles as BasicButton (md): secondary by default, --primary, --danger, --icon (square). */
 .ld-btn {
-  min-height: 36px;
-  padding: 0 var(--space-8);
-  border: 1px solid var(--border-subtle);
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--elem-height);
+  padding: 0 var(--space-4);
+  border: 1px solid var(--border-default);
   border-radius: var(--radius-base);
-  background: var(--surface-base);
+  background: transparent;
   color: var(--text-body);
+  font-size: var(--fs-200);
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-decoration: none;
   cursor: pointer;
+}
+.ld-btn:hover:not(:disabled) {
+  border-color: var(--border-strong);
 }
 .ld-btn:disabled {
   opacity: 0.5;
   cursor: default;
 }
-.ld-btn--primary {
-  border-color: var(--accent);
+.ld-btn--primary,
+.ld-btn--primary:hover:not(:disabled) {
+  border-color: transparent;
   background: var(--accent-fill);
   color: var(--text-on-accent-fill);
 }
+.ld-btn--primary:hover:not(:disabled) {
+  background: var(--accent-fill-hover);
+}
 .ld-btn--danger {
-  border-color: var(--negative);
+  border-color: transparent;
   color: var(--negative);
+}
+.ld-btn--danger:hover:not(:disabled) {
+  border-color: var(--negative);
+}
+.ld-btn--icon {
+  width: var(--elem-height);
+  padding: 0;
+  font-size: var(--fs-400);
 }
 .ld-input {
   min-height: 36px;

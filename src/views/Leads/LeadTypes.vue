@@ -9,14 +9,32 @@
         {{ $t("leads.lead_types.active") }}
       </label>
       <div class="lead-type__controls">
-        <button class="ld-btn" :disabled="shifting || index === 0" :aria-label="$t('leads.stages.up')" @click="shift(index, -1)">
+        <button
+          class="ld-btn ld-btn--icon"
+          :disabled="shifting || index === 0"
+          :aria-label="$t('leads.stages.up')"
+          :title="$t('leads.stages.up')"
+          @click="shift(index, -1)"
+        >
           <FontAwesomeIcon icon="arrow-up" />
         </button>
-        <button class="ld-btn" :disabled="shifting || index === types.length - 1" :aria-label="$t('leads.stages.down')" @click="shift(index, 1)">
+        <button
+          class="ld-btn ld-btn--icon"
+          :disabled="shifting || index === types.length - 1"
+          :aria-label="$t('leads.stages.down')"
+          :title="$t('leads.stages.down')"
+          @click="shift(index, 1)"
+        >
           <FontAwesomeIcon icon="arrow-down" />
         </button>
-        <button class="ld-btn ld-btn--danger" :aria-label="$t('leads.stages.delete')" data-testid="lead-type-delete" @click="remove(type)">
-          <FontAwesomeIcon icon="trash" />
+        <button
+          class="ld-btn ld-btn--danger ld-btn--icon"
+          :aria-label="$t('leads.stages.delete')"
+          :title="$t('leads.stages.delete')"
+          data-testid="lead-type-delete"
+          @click="remove(type)"
+        >
+          <FontAwesomeIcon icon="trash-can" />
         </button>
       </div>
       <p v-if="errors[type.id]" class="ld-error lead-type__error" data-testid="lead-type-error">{{ errors[type.id] }}</p>

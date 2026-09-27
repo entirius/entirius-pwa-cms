@@ -378,10 +378,6 @@ onMounted(async () => {
   margin: 0;
   font-weight: 600;
 }
-.contacts__form .ld-btn,
-.contacts__actions .ld-btn {
-  min-height: 44px;
-}
 .contacts__actions {
   justify-content: flex-end;
 }

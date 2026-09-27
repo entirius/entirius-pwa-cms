@@ -20,19 +20,32 @@
             </span>
           </span>
           <div class="stage__controls">
-            <button class="ld-btn" :disabled="index === 0" :aria-label="$t('leads.stages.up')" @click="shift(index, -1)">
+            <button
+              class="ld-btn ld-btn--icon"
+              :disabled="index === 0"
+              :aria-label="$t('leads.stages.up')"
+              :title="$t('leads.stages.up')"
+              @click="shift(index, -1)"
+            >
               <FontAwesomeIcon icon="arrow-up" />
             </button>
             <button
-              class="ld-btn"
+              class="ld-btn ld-btn--icon"
               :disabled="index === stages.length - 1"
               :aria-label="$t('leads.stages.down')"
+              :title="$t('leads.stages.down')"
               @click="shift(index, 1)"
             >
               <FontAwesomeIcon icon="arrow-down" />
             </button>
-            <button class="ld-btn ld-btn--danger" data-testid="stage-delete" @click="askDelete(element)">
-              <FontAwesomeIcon icon="trash" /> {{ $t("leads.stages.delete") }}
+            <button
+              class="ld-btn ld-btn--danger ld-btn--icon"
+              :aria-label="$t('leads.stages.delete')"
+              :title="$t('leads.stages.delete')"
+              data-testid="stage-delete"
+              @click="askDelete(element)"
+            >
+              <FontAwesomeIcon icon="trash-can" />
             </button>
           </div>
           <p v-if="errors[element.id]" class="ld-error" data-testid="stage-error">{{ errors[element.id] }}</p>
