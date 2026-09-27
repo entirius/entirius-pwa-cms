@@ -193,7 +193,7 @@ function onFocusout() {
   color: inherit;
   background: transparent;
   height: 100%;
-  min-width: 4em;
+  min-width: 3em;
   padding: 0 var(--space-1);
 }
 
