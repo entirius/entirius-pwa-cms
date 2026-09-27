@@ -43,14 +43,17 @@
         >
           <template #item="{ element }">
             <div
-              class="group-row flex ai-ct gap-5 pointer"
+              class="group-row flex ai-ct flex-wrap gap-5 rg-2 pointer"
               @click="$router.push(`/faq/groups/${element.idx}`)"
             >
               <font-awesome-icon
                 icon="grip-vertical"
                 class="drag-handle t-muted"
               />
-              <span class="group-row__name fw-600 flex-1">
+              <span
+                class="group-row__name fw-600"
+                :title="element.name || element.idx"
+              >
                 {{ element.name || element.idx }}
               </span>
               <div class="flex ai-ct gap-2">
@@ -236,7 +239,10 @@ export default {
   }
 }
 
+// The name takes the row; on a phone the chips wrap under it instead of squeezing it to 0 px.
 .group-row__name {
+  flex: 1 1 12rem;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

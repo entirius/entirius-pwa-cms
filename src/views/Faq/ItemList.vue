@@ -43,9 +43,6 @@
         @sort="onSort"
         @row-click="onRowClick"
       >
-        <template #cell-question="{ row }">
-          <span class="item-question">{{ row.question }}</span>
-        </template>
         <template #cell-group_name="{ row }">
           <span v-if="row.group_name" class="chip bg-accent-subtle t-strong">
             {{ row.group_name }}
@@ -141,6 +138,8 @@ export default {
           label: this.$t("faq.position"),
           sortable: true,
           width: "80px",
+          priority: 2,
+          numeric: true,
         },
         {
           key: "question",
@@ -153,12 +152,15 @@ export default {
           label: this.$t("faq.group"),
           sortable: false,
           width: "160px",
+          priority: 2,
         },
         {
           key: "association_count",
           label: this.$t("faq.associations"),
           sortable: false,
           width: "100px",
+          priority: 2,
+          numeric: true,
         },
         {
           key: "is_active",
@@ -275,11 +277,5 @@ export default {
   flex-shrink: 0;
 }
 
-.item-question {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 
 </style>

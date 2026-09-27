@@ -65,9 +65,6 @@
         :empty-text="$t('authors.no_authors')"
         @row-click="onRowClick"
       >
-        <template #cell-name="{ row }">
-          <span class="author-list__name-cell">{{ row.name }}</span>
-        </template>
         <template #cell-role="{ row }">
           <span class="t-secondary">{{ resolveRole(row) }}</span>
         </template>
@@ -127,9 +124,9 @@ export default {
     },
     columns() {
       return [
-        { key: "name", label: this.$t("authors.name"), width: "1fr" },
-        { key: "slug", label: this.$t("authors.slug"), width: "160px" },
-        { key: "role", label: this.$t("authors.role"), width: "160px" },
+        { key: "name", label: this.$t("authors.name"), width: "1fr", truncate: true },
+        { key: "slug", label: this.$t("authors.slug"), width: "160px", priority: 2 },
+        { key: "role", label: this.$t("authors.role"), width: "160px", priority: 2 },
         {
           key: "is_active",
           label: this.$t("authors.is_active"),
@@ -139,6 +136,8 @@ export default {
           key: "post_count",
           label: this.$t("authors.post_count"),
           width: "120px",
+          priority: 2,
+          numeric: true,
         },
       ];
     },
@@ -242,13 +241,6 @@ export default {
   min-width: 150px;
   max-width: 400px;
 }
-.author-list__name-cell {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 @media only screen and (max-width: 768px) {
   .p-12 {
     padding: var(--space-4) !important;

@@ -23,9 +23,7 @@
         :empty-text="$t('layout_extender.no_items')"
         @row-click="onRowClick"
       >
-        <template #cell-name="{ row }">
-          <span class="le-list__name-cell">{{ row.name || row.uid }}</span>
-        </template>
+        <template #cell-name="{ row }">{{ row.name || row.uid }}</template>
 
         <template #cell-type="{ row }">
           <span class="bg-hover t-body fs-200 ph-2 rounded">
@@ -38,13 +36,14 @@
         </template>
 
         <template #cell-channels="{ row }">
-          <div class="flex gap-1 flex-wrap">
+          <div v-if="(row.channels || []).length" class="flex gap-1 flex-wrap">
             <span
-              v-for="ch in (row.channels || [])"
+              v-for="ch in row.channels"
               :key="ch"
               class="bg-hover t-body fs-200 ph-2 rounded"
             >{{ ch }}</span>
           </div>
+          <span v-else class="t-muted">—</span>
         </template>
 
         <template #cell-status="{ row }">
@@ -171,13 +170,19 @@ export default {
   computed: {
     columns() {
       return [
-        { key: "name", label: this.$t("layout_extender.name"), width: "1fr" },
-        { key: "type", label: this.$t("layout_extender.type"), width: "120px" },
-        { key: "language", label: this.$t("layout_extender.language"), width: "100px" },
-        { key: "channels", label: this.$t("layout_extender.channels"), width: "160px" },
+        {
+          key: "name",
+          label: this.$t("layout_extender.name"),
+          width: "1fr",
+          truncate: true,
+          title: (row) => row.name || row.uid,
+        },
+        { key: "type", label: this.$t("layout_extender.type"), width: "120px", priority: 2 },
+        { key: "language", label: this.$t("layout_extender.language"), width: "100px", priority: 2 },
+        { key: "channels", label: this.$t("layout_extender.channels"), width: "160px", priority: 2 },
         { key: "status", label: this.$t("layout_extender.status"), width: "120px" },
-        { key: "updated_at", label: this.$t("layout_extender.updated"), width: "160px" },
-        { key: "actions", label: this.$t("layout_extender.actions"), width: "160px", align: "right" },
+        { key: "updated_at", label: this.$t("layout_extender.updated"), width: "160px", priority: 2 },
+        { key: "actions", label: this.$t("layout_extender.actions"), align: "right", actions: true },
       ];
     },
     channelOptions() {
@@ -362,13 +367,6 @@ export default {
   max-width: 240px;
 }
 
-.le-list__name-cell {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .le-copy {
   display: flex;
   flex-direction: column;
@@ -388,7 +386,7 @@ export default {
 .le-list__actions {
   display: flex;
   align-items: center;
-  gap: var(--space-1);
+  gap: var(--space-2);
   justify-content: flex-end;
 }
 

@@ -276,11 +276,18 @@ export default {
     },
     contentColumns() {
       return [
-        { key: "name", label: this.$t("builder.name"), width: "1fr" },
+        {
+          key: "name",
+          label: this.$t("builder.name"),
+          width: "1fr",
+          truncate: true,
+          title: (row) => row.name || row.uid,
+        },
         {
           key: "updated_at",
           label: this.$t("builder.edit_date"),
           width: "160px",
+          priority: 2,
         },
         {
           key: "status",
@@ -288,7 +295,7 @@ export default {
           width: "110px",
           align: "center",
         },
-        { key: "actions", label: "", width: "140px", align: "right" },
+        { key: "actions", label: "", align: "right", actions: true },
       ];
     },
     hasVisibleContent() {
