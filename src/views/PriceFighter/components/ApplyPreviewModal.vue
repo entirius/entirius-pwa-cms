@@ -1,70 +1,61 @@
 <template>
-  <ConfirmationModal :visible="true" @reject="onCancel">
-    <template #header>
-      <h2>{{ $t('pricefighter.apply_preview_title', { count: items.length }) }}</h2>
-    </template>
-    <template #description>
-      <div class="apply-preview__body">
-        <table class="apply-preview__table">
-          <thead>
-            <tr>
-              <th>{{ $t('pricefighter.sku') }}</th>
-              <th>{{ $t('pricefighter.market') }}</th>
-              <th>{{ $t('pricefighter.current_price') }}</th>
-              <th>{{ $t('pricefighter.suggested_price') }}</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="item in items" :key="item._rowKey">
-              <td>{{ item.sku }}</td>
-              <td>{{ item.channel_idx }} · {{ item.country }} / {{ item.currency }}</td>
-              <td>{{ item.current_price }}</td>
-              <td class="fw-600">{{ item.suggested_price }}</td>
-              <td>
-                <StatusBadge v-if="item.clamped_floor" :label="$t('pricefighter.clamped_floor')" variant="warning" />
-                <StatusBadge v-if="item.clamped_step" :label="$t('pricefighter.clamped_step')" variant="warning" />
-              </td>
-            </tr>
-          </tbody>
-        </table>
+  <BasicModal :open="true" size="sm" :title="$t('pricefighter.apply_preview_title', { count: items.length })" @close="onCancel">
+    <div class="apply-preview__body">
+      <table class="apply-preview__table">
+        <thead>
+          <tr>
+            <th>{{ $t('pricefighter.sku') }}</th>
+            <th>{{ $t('pricefighter.market') }}</th>
+            <th>{{ $t('pricefighter.current_price') }}</th>
+            <th>{{ $t('pricefighter.suggested_price') }}</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in items" :key="item._rowKey">
+            <td>{{ item.sku }}</td>
+            <td>{{ item.channel_idx }} · {{ item.country }} / {{ item.currency }}</td>
+            <td>{{ item.current_price }}</td>
+            <td class="fw-600">{{ item.suggested_price }}</td>
+            <td>
+              <StatusBadge v-if="item.clamped_floor" :label="$t('pricefighter.clamped_floor')" variant="warning" />
+              <StatusBadge v-if="item.clamped_step" :label="$t('pricefighter.clamped_step')" variant="warning" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
-        <div v-if="errorText" class="apply-preview__error t-negative fs-200">
-          <FontAwesomeIcon :icon="$icons.warning" class="mr-2" />
-          {{ errorText }}
-        </div>
-
+      <div v-if="errorText" class="apply-preview__error t-negative fs-200">
+        <FontAwesomeIcon :icon="$icons.warning" class="mr-2" />
+        {{ errorText }}
       </div>
-    </template>
+
+    </div>
     <template #footer>
-      <div class="apply-preview__actions">
-        <BasicButton
-          variant="secondary"
-          :disabled="loading"
-          @click="onCancel"
-        >
-          {{ $t('common.cancel') }}
-        </BasicButton>
-        <BasicButton
-          variant="primary"
-          :disabled="loading || !items.length"
-          @click="onConfirm"
-        >
-          {{ loading ? $t('pricefighter.applying') : $t('pricefighter.confirm_apply') }}
-        </BasicButton>
-      </div>
+      <BasicButton
+        variant="secondary"
+        :disabled="loading"
+        @click="onCancel"
+      >
+        {{ $t('common.cancel') }}
+      </BasicButton>
+      <BasicButton
+        variant="primary"
+        :disabled="loading || !items.length"
+        @click="onConfirm"
+      >
+        {{ loading ? $t('pricefighter.applying') : $t('pricefighter.confirm_apply') }}
+      </BasicButton>
     </template>
-  </ConfirmationModal>
+  </BasicModal>
 </template>
 
 <script>
-import ConfirmationModal from '@/functionals/Confirmation-modal/index.vue'
 import { POST_PfApply } from '@/api/pricefighter/api'
 import { extractApiMessage } from '@/composables/useFormErrors'
 
 export default {
   name: 'ApplyPreviewModal',
-  components: { ConfirmationModal },
   props: {
     items: {
       type: Array,
@@ -140,12 +131,5 @@ export default {
   border-radius: var(--radius-base);
   background: var(--negative-subtle);
   border-left: 3px solid var(--negative);
-}
-
-.apply-preview__actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--space-5);
-  margin-top: var(--space-5);
 }
 </style>

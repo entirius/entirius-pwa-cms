@@ -1,52 +1,43 @@
 <template>
-  <ConfirmationModal :visible="true" @reject="onClose">
-    <template #header>
-      <h2>{{ $t('pricefighter.apply_report_title') }}</h2>
-    </template>
-    <template #description>
-      <div class="apply-report__body">
-        <div class="apply-report__buckets">
-          <StatusBadge
-            v-for="bucket in buckets"
-            :key="bucket.key"
-            :label="`${$t(`pricefighter.${bucket.key}`)}: ${safeReport[bucket.key].length}`"
-            :variant="bucket.variant"
-          />
-        </div>
-
-        <div v-if="safeReport.stale.length" class="apply-report__stale-note">
-          <FontAwesomeIcon :icon="$icons.warning" class="mr-2" />
-          {{ $t('pricefighter.stale_note') }}
-        </div>
-
-        <div v-for="bucket in buckets" :key="bucket.key" class="apply-report__bucket">
-          <template v-if="safeReport[bucket.key].length">
-            <h4 class="apply-report__bucket-heading">{{ $t(`pricefighter.${bucket.key}`) }}</h4>
-            <table class="apply-report__table">
-              <tbody>
-                <tr v-for="(item, i) in safeReport[bucket.key]" :key="i">
-                  <td>{{ item.sku }}</td>
-                  <td>{{ item.channel }} · {{ item.country }} / {{ item.currency }}</td>
-                  <td>{{ item.expected_new_price }}</td>
-                  <td class="t-muted">{{ item.reason }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </template>
-        </div>
+  <BasicModal :open="true" size="sm" :title="$t('pricefighter.apply_report_title')" @close="onClose">
+    <div class="apply-report__body">
+      <div class="apply-report__buckets">
+        <StatusBadge
+          v-for="bucket in buckets"
+          :key="bucket.key"
+          :label="`${$t(`pricefighter.${bucket.key}`)}: ${safeReport[bucket.key].length}`"
+          :variant="bucket.variant"
+        />
       </div>
-    </template>
+
+      <div v-if="safeReport.stale.length" class="apply-report__stale-note">
+        <FontAwesomeIcon :icon="$icons.warning" class="mr-2" />
+        {{ $t('pricefighter.stale_note') }}
+      </div>
+
+      <div v-for="bucket in buckets" :key="bucket.key" class="apply-report__bucket">
+        <template v-if="safeReport[bucket.key].length">
+          <h4 class="apply-report__bucket-heading">{{ $t(`pricefighter.${bucket.key}`) }}</h4>
+          <table class="apply-report__table">
+            <tbody>
+              <tr v-for="(item, i) in safeReport[bucket.key]" :key="i">
+                <td>{{ item.sku }}</td>
+                <td>{{ item.channel }} · {{ item.country }} / {{ item.currency }}</td>
+                <td>{{ item.expected_new_price }}</td>
+                <td class="t-muted">{{ item.reason }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </template>
+      </div>
+    </div>
     <template #footer>
-      <div class="apply-report__actions">
-        <BasicButton variant="primary" @click="onClose">{{ $t('common.close') }}</BasicButton>
-      </div>
+      <BasicButton variant="primary" @click="onClose">{{ $t('common.close') }}</BasicButton>
     </template>
-  </ConfirmationModal>
+  </BasicModal>
 </template>
 
 <script>
-import ConfirmationModal from '@/functionals/Confirmation-modal/index.vue'
-
 const BUCKETS = [
   { key: 'applied', variant: 'positive' },
   { key: 'clamped', variant: 'warning' },
@@ -57,7 +48,6 @@ const BUCKETS = [
 
 export default {
   name: 'ApplyReport',
-  components: { ConfirmationModal },
   props: {
     report: {
       type: Object,
@@ -123,10 +113,5 @@ export default {
     padding: var(--space-1) var(--space-2);
     border-bottom: 1px solid var(--border-subtle);
   }
-}
-
-.apply-report__actions {
-  display: flex;
-  justify-content: flex-end;
 }
 </style>

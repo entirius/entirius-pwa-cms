@@ -55,10 +55,10 @@
         </h2>
 
         <FormField :label="$t('pricefighter.scope_type')" :tooltip="$t('pricefighter.scope_type_tooltip')" class="mb-8">
-          <Dropdown
-            :values="scopeTypeOptions"
-            :selected="[form.scopeType]"
-            @onSelect="onScopeTypeSelect"
+          <BasicSelect
+            :model-value="form.scopeType"
+            :options="scopeTypeOptions"
+            @update:model-value="onScopeTypeSelect"
           />
         </FormField>
 

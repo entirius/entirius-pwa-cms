@@ -9,15 +9,14 @@
           class="history__search"
           @input="debouncedFetch(doSearch)"
         />
-        <Dropdown
+        <BasicSelect
           v-if="channelOptions.length"
-          :values="channelOptions"
-          :selected="[channelFilter]"
+          :model-value="channelFilter"
+          :options="channelOptions"
           :placeholder="$t('pricefighter.all_channels')"
-          can_remove_selected
+          clearable
           class="history__channel"
-          @onSelect="onChannelSelect"
-          @onRemoveSelected="onChannelSelect(null)"
+          @update:model-value="onChannelSelect"
         />
       </div>
 

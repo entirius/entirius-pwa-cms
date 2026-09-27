@@ -3,24 +3,26 @@
     <div class="page-card h-100 ovy-auto">
       <!-- Toolbar -->
       <div class="gap-table__toolbar">
-        <Dropdown
+        <BasicSelect
           v-if="channelOptions.length"
-          :values="channelFilterOptions"
-          :selected="[channelFilter || ALL_OPTION]"
+          :model-value="channelFilter || ALL_OPTION"
+          :options="channelFilterOptions"
+          :aria-label="$t('pricefighter.market')"
           class="gap-table__channel"
-          @onSelect="onChannelSelect"
+          @update:model-value="onChannelSelect"
         />
-        <Dropdown
-          :values="recommendationFilterOptions"
-          :selected="[recommendationFilter || ALL_OPTION]"
+        <BasicSelect
+          :model-value="recommendationFilter || ALL_OPTION"
+          :options="recommendationFilterOptions"
+          :aria-label="$t('pricefighter.recommendation')"
           class="gap-table__recommendation"
-          @onSelect="onRecommendationSelect"
+          @update:model-value="onRecommendationSelect"
         />
-        <Switcher
+        <BasicSwitch
           :label="$t('pricefighter.competitor_only')"
-          :selected="competitorOnly"
+          :model-value="competitorOnly"
           class="gap-table__competitor"
-          @onSelect="toggleCompetitorOnly"
+          @update:model-value="toggleCompetitorOnly"
         />
       </div>
 
