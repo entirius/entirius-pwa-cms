@@ -227,6 +227,9 @@
   line-height: 1.5;
   white-space: nowrap;
   flex-shrink: 0;
+  // Contained in its table cell like StatusBadge; a chip that can be cut carries a `title` at the call site.
+  max-width: 100%;
+  overflow: hidden;
   background: transparent !important;
   border: 1px solid color-mix(in srgb, currentColor 28%, transparent);
 }

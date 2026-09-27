@@ -1,6 +1,10 @@
 <template>
-  <span class="status-badge" :class="`status-badge--${variant}`">
-    {{ label }}
+  <span
+    class="status-badge"
+    :class="`status-badge--${variant}`"
+    :title="label"
+  >
+    <span class="status-badge__label">{{ label }}</span>
   </span>
 </template>
 
@@ -30,6 +34,9 @@ defineProps({
   font-weight: 500;
   line-height: 1.5;
   white-space: nowrap;
+  // Never wider than its cell: a label that does not fit ends in an ellipsis (full label in `title`).
+  max-width: 100%;
+  min-width: 0;
   background: transparent;
   border: 1px solid var(--border-subtle);
   color: var(--text-body);
@@ -43,6 +50,12 @@ defineProps({
     border-radius: var(--radius-full);
     flex-shrink: 0;
     background: var(--surface-disabled);
+  }
+
+  &__label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   &--positive {
