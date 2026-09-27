@@ -175,10 +175,9 @@
                   <label class="product-controls__label field-label">{{
                     $t("pim.visibility")
                   }}</label>
-                  <Dropdown
-                    :values="visibilityOptions"
-                    :selected="[form.visibility]"
-                    @onSelect="(val) => (form.visibility = val)"
+                  <BasicSelect
+                    :options="visibilityOptions"
+                    v-model="form.visibility"
                   />
                 </div>
                 <div class="product-controls__field">

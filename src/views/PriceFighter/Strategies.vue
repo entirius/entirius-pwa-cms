@@ -103,18 +103,16 @@
           :error="formErrors.getFieldError('channel')?.msg"
           class="mb-8"
         >
-          <Dropdown
-            :values="channelOptions"
-            :selected="[form.scopeValue]"
-            @onSelect="(v) => (form.scopeValue = v)"
+          <BasicSelect
+            :options="channelOptions"
+            v-model="form.scopeValue"
           />
         </FormField>
 
         <FormField :label="$t('pricefighter.strategy')" :tooltip="$t('pricefighter.strategy_tooltip')" class="mb-8">
-          <Dropdown
-            :values="strategyOptions"
-            :selected="[form.strategy]"
-            @onSelect="(v) => (form.strategy = v)"
+          <BasicSelect
+            :options="strategyOptions"
+            v-model="form.strategy"
           />
         </FormField>
 

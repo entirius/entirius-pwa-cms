@@ -67,21 +67,19 @@
               <BasicInput v-model="form.name" />
             </FormField>
             <FormField :label="$t('agm.category')">
-              <Dropdown
-                :values="categoryOptions"
-                :selected="form.category ? [form.category] : []"
+              <BasicSelect
+                :options="categoryOptions"
+                v-model="form.category"
                 :placeholder="$t('common.select')"
-                :isDisabled="definition.is_system"
-                @onSelect="(val) => (form.category = val)"
+                :disabled="definition.is_system"
               />
             </FormField>
             <FormField :label="$t('agm.consent_channel')">
-              <Dropdown
-                :values="consentChannelOptions"
-                :selected="form.consent_channel ? [form.consent_channel] : []"
+              <BasicSelect
+                :options="consentChannelOptions"
+                v-model="form.consent_channel"
                 :placeholder="$t('common.select')"
-                :isDisabled="definition.is_system"
-                @onSelect="(val) => (form.consent_channel = val)"
+                :disabled="definition.is_system"
               />
             </FormField>
             <FormField :label="$t('agm.content_route')">

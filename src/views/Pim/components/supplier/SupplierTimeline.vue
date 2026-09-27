@@ -10,13 +10,13 @@
           :active="mode === opt.value"
           @click="setMode(opt.value)"
         />
-        <Dropdown
+        <BasicSelect
           v-if="mode === 'by_source' && sourceOptions.length > 1"
-          :values="sourceOptions"
-          :selected="selectedSource ? [selectedSource] : []"
+          :options="sourceOptions"
+          v-model="selectedSource"
           :placeholder="$t('pim.supplier.timeline.source_label')"
           class="supplier-timeline__source-dropdown"
-          @onSelect="onSourceSelect"
+          @update:model-value="onSourceSelect"
         />
       </div>
     </div>

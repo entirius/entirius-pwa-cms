@@ -56,12 +56,12 @@
               :label="$t('pim.feature_type')"
               :description="$t('pim.feature_type_help')"
             >
-              <Dropdown
-                :values="typeOptions"
-                :selected="[form.feature_type]"
+              <BasicSelect
+                :options="typeOptions"
+                v-model="form.feature_type"
                 :placeholder="$t('pim.feature_type')"
-                :isDisabled="isSystem"
-                @onSelect="onTypeSelect"
+                :disabled="isSystem"
+                @update:model-value="onTypeSelect"
               />
             </FormField>
           </div>
@@ -73,19 +73,17 @@
               <LockedField :model-value="selectedScopeLabel" />
             </FormField>
             <FormField :label="$t('pim.frontend_input_type')">
-              <Dropdown
-                :values="frontendInputOptions"
-                :selected="[form.frontend_input_type]"
+              <BasicSelect
+                :options="frontendInputOptions"
+                v-model="form.frontend_input_type"
                 :placeholder="$t('pim.frontend_input_type')"
-                @onSelect="(val) => (form.frontend_input_type = val)"
               />
             </FormField>
             <FormField :label="$t('pim.filter_type')">
-              <Dropdown
-                :values="filterTypeOptions"
-                :selected="[form.filter_type]"
+              <BasicSelect
+                :options="filterTypeOptions"
+                v-model="form.filter_type"
                 :placeholder="$t('pim.filter_type')"
-                @onSelect="(val) => (form.filter_type = val)"
               />
             </FormField>
           </div>

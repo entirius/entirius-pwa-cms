@@ -241,11 +241,10 @@ export default {
           <label class="field-label mb-2">{{
             $t("pim.translate_source_language")
           }}</label>
-          <Dropdown
-            :values="sourceLanguageOptions"
-            :selected="sourceLanguage ? [sourceLanguage] : []"
+          <BasicSelect
+            :options="sourceLanguageOptions"
+            v-model="sourceLanguage"
             :placeholder="$t('pim.translate_select_language')"
-            @onSelect="(val) => (sourceLanguage = val)"
           />
         </div>
 
@@ -265,11 +264,10 @@ export default {
 
           <!-- inline add language form -->
           <div v-if="showAddLanguage" class="td-add-lang-box mb-5">
-            <Dropdown
-              :values="addableLanguageOptions"
-              :selected="newLanguageIso2 ? [newLanguageIso2] : []"
+            <BasicSelect
+              :options="addableLanguageOptions"
+              v-model="newLanguageIso2"
               :placeholder="$t('pim.translate_select_new_language')"
-              @onSelect="(v) => (newLanguageIso2 = v)"
             />
             <div class="td-add-lang-actions">
               <button class="td-btn td-btn--secondary td-btn--sm" @click="showAddLanguage = false; newLanguageIso2 = ''">

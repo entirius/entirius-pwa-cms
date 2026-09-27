@@ -40,11 +40,10 @@
         <!-- Type selection -->
         <div class="detail-field mb-10">
           <label class="field-label">{{ $t("dp.import_type") }}</label>
-          <Dropdown
-            :values="typeOptions"
-            :selected="typeCode ? [typeCode] : []"
+          <BasicSelect
+            :options="typeOptions"
+            v-model="typeCode"
             :placeholder="$t('common.select')"
-            @onSelect="(val) => (typeCode = val)"
           />
         </div>
 

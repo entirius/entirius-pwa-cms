@@ -580,10 +580,9 @@ watch(
                 <label class="media-gallery__field-label">{{
                   $t("pim.picture_role")
                 }}</label>
-                <Dropdown
-                  :values="roleOptions"
-                  :selected="[editingItem.editRole]"
-                  @onSelect="(val) => (editingItem.editRole = val)"
+                <BasicSelect
+                  :options="roleOptions"
+                  v-model="editingItem.editRole"
                 />
               </div>
               <div class="media-gallery__edit-field">

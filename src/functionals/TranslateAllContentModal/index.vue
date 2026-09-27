@@ -198,11 +198,10 @@ export default {
         <label class="field-label mb-2">{{
           $t("builder.translate_source_language")
         }}</label>
-        <Dropdown
-          :values="sourceLanguageOptions"
-          :selected="sourceLanguage ? [sourceLanguage] : []"
+        <BasicSelect
+          :options="sourceLanguageOptions"
+          v-model="sourceLanguage"
           :placeholder="$t('builder.translate_select_language')"
-          @onSelect="(val) => (sourceLanguage = val)"
         />
       </div>
 

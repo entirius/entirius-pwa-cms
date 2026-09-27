@@ -125,12 +125,11 @@
 
         <FormField :label="$t('pim.links.type_label')" required>
           <div data-testid="linked-form-type">
-            <Dropdown
-              :values="typeDropdownValues"
-              :selected="formData.link_type_idx ? [formData.link_type_idx] : []"
+            <BasicSelect
+              :options="typeDropdownValues"
+              v-model="formData.link_type_idx"
               :placeholder="$t('pim.links.type_placeholder')"
-              :isDisabled="!!editing"
-              @onSelect="formData.link_type_idx = $event"
+              :disabled="!!editing"
             />
           </div>
           <p v-if="errors.link_type_idx" class="form-error t-negative fs-200">

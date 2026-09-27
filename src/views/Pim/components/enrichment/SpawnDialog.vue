@@ -21,12 +21,11 @@
 
           <div class="spawn-modal__body">
             <FormField :label="$t('enrichment.spawn.operation')">
-              <Dropdown
-                :values="opOptions"
-                :selected="[op]"
+              <BasicSelect
+                :options="opOptions"
+                v-model="op"
                 :placeholder="$t('enrichment.spawn.operation')"
                 data-testid="enrichment-spawn-op"
-                @onSelect="(v) => (op = v)"
               />
             </FormField>
 
@@ -34,12 +33,11 @@
               :label="$t('enrichment.spawn.feature')"
               :description="$t('enrichment.spawn.feature_hint')"
             >
-              <Dropdown
-                :values="featureOptions"
-                :selected="feature ? [feature] : []"
+              <BasicSelect
+                :options="featureOptions"
+                v-model="feature"
                 :placeholder="$t('enrichment.spawn.feature_placeholder')"
                 data-testid="enrichment-spawn-feature"
-                @onSelect="(v) => (feature = v)"
               />
             </FormField>
 

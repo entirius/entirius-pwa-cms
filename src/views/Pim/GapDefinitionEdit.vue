@@ -47,11 +47,11 @@
             </FormField>
 
             <FormField :label="$t('pim.gap_check')" :error="fieldErr('check_key')">
-              <Dropdown
-                :values="checkOptions"
-                :selected="[form.check_key]"
+              <BasicSelect
+                :options="checkOptions"
+                v-model="form.check_key"
                 :placeholder="$t('common.select')"
-                @onSelect="onCheckSelect"
+                @update:model-value="onCheckSelect"
               />
             </FormField>
 
@@ -61,11 +61,10 @@
               :label="$t('pim.gap_param_feature')"
               :error="fieldErr('params')"
             >
-              <Dropdown
-                :values="featureOptions"
-                :selected="[paramFeatureIdx]"
+              <BasicSelect
+                :options="featureOptions"
+                v-model="paramFeatureIdx"
                 :placeholder="$t('pim.gap_param_feature_ph')"
-                @onSelect="(v) => (paramFeatureIdx = v)"
               />
             </FormField>
 
@@ -81,20 +80,18 @@
               :label="$t('pim.gap_param_role')"
               :tooltip="$t('pim.gap_param_role_hint')"
             >
-              <Dropdown
-                :values="roleOptions"
-                :selected="[paramRole]"
+              <BasicSelect
+                :options="roleOptions"
+                v-model="paramRole"
                 :placeholder="$t('pim.gap_param_role_any')"
-                @onSelect="(v) => (paramRole = v)"
               />
             </FormField>
 
             <FormField :label="$t('pim.gap_severity')" :error="fieldErr('severity')">
-              <Dropdown
-                :values="severityOptions"
-                :selected="[form.severity]"
+              <BasicSelect
+                :options="severityOptions"
+                v-model="form.severity"
                 :placeholder="$t('common.select')"
-                @onSelect="(v) => (form.severity = v)"
               />
             </FormField>
 

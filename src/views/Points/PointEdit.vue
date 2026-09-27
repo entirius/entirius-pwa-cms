@@ -106,15 +106,14 @@
             </div>
             <div class="detail-field">
               <label class="field-label required">{{ $t("dp.type") }}</label>
-              <Dropdown
-                :values="typeOptions"
-                :selected="form.type_id ? [form.type_id] : []"
+              <BasicSelect
+                :options="typeOptions"
+                v-model="form.type_id"
                 :placeholder="$t('common.select')"
-                :isDisabled="isCarrier || (isEdit && !typeChangeSupported)"
+                :disabled="isCarrier || (isEdit && !typeChangeSupported)"
                 :class="{
                   'b-negative': formErrors.getFieldError('type_id'),
                 }"
-                @onSelect="(val) => (form.type_id = val)"
               />
               <p
                 v-if="formErrors.getFieldError('type_id')"
@@ -125,11 +124,11 @@
             </div>
             <div class="detail-field">
               <label class="field-label">{{ $t("dp.channels") }}</label>
-              <Dropdown
+              <BasicSelect
                 v-if="isCarrier"
-                :values="[{ label: $t('dp.global'), value: '__global' }]"
-                :selected="['__global']"
-                :isDisabled="true"
+                :options="[{ label: $t('dp.global'), value: '__global' }]"
+                :model-value="'__global'"
+                :disabled="true"
               />
               <Dropdown
                 v-else
@@ -190,21 +189,20 @@
             </div>
             <div class="detail-field">
               <label class="field-label">{{ $t("dp.country") }}</label>
-              <Dropdown
+              <BasicSelect
                 v-if="isCarrier"
-                :values="countryOptions"
-                :selected="form.country ? [form.country] : []"
-                :isDisabled="true"
+                :options="countryOptions"
+                :model-value="form.country"
+                :disabled="true"
               />
-              <Dropdown
+              <BasicSelect
                 v-else
-                :values="countryOptions"
-                :selected="form.country ? [form.country] : []"
+                :options="countryOptions"
+                v-model="form.country"
                 :placeholder="$t('dp.select_country')"
                 :class="{
                   'b-negative': formErrors.getFieldError('country'),
                 }"
-                @onSelect="(val) => (form.country = val)"
               />
               <p
                 v-if="formErrors.getFieldError('country')"
@@ -293,12 +291,11 @@
               v-if="availableLanguageCodes.length"
               class="flex ai-ct gap-5"
             >
-              <Dropdown
-                :values="availableLanguageCodes"
-                :selected="addingLanguage ? [addingLanguage] : []"
+              <BasicSelect
+                :options="availableLanguageCodes"
+                v-model="addingLanguage"
                 :placeholder="$t('dp.language')"
                 class="t9n-lang-select"
-                @onSelect="(val) => (addingLanguage = val)"
               />
               <BasicButton
                 variant="secondary"

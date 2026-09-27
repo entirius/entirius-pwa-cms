@@ -40,10 +40,9 @@
           </div>
           <div class="create-field">
             <label class="field-label">{{ $t("pim.visibility") }}</label>
-            <Dropdown
-              :values="visibilityOptions"
-              :selected="[form.visibility]"
-              @onSelect="(val) => (form.visibility = val)"
+            <BasicSelect
+              :options="visibilityOptions"
+              v-model="form.visibility"
             />
           </div>
           <div class="create-field">
