@@ -80,6 +80,20 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- Tax rates read and are entered in percent: the tax class showed the stored fraction as "0.2300%"; it now shows
+  "23 %" / "8,5 %", and a typed 23 is stored as 0.2300.
+- Edit forms show the values the record has: the enrichment rule edit showed "Select" for a check and task type
+  outside the loaded lists (atlas rules) and for a rule without a channel scope ("All channels" now); task types
+  carry labels. A carrier delivery point shows its type.
+- Dates: price decision history, gap observations, price history and atlas events show the CMS date format instead
+  of raw ISO timestamps.
+- Loading states: the loader sits centred in the content area (it was a faint corner ripple, so edit screens read as
+  blank for a second); author edit shows Save and Delete after the load; a missing PIM category shows a not-found
+  state instead of a blank editable form.
+- Empty states have one look (`EmptyState`): lists without rows show it below the table, visible on a phone (the
+  text used to sit off-screen in the scrolling grid); point translations, waiting mails, the Inbox detail pane
+  ("No drafts to review") and an empty new document ("Add the first section") use it too.
+- Disabled inputs look disabled, like disabled selects.
 - FAQ items and groups can be deleted and unlinked again: their delete, remove-from-group and unlink buttons
   rendered 0 px high because the legacy icon font lacks the glyph.
 - The session refreshes its access token a minute before it expires, whatever lifetime the service issues. The
