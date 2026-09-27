@@ -12,34 +12,31 @@
         {{ $t("enrichment.review.bulk.matching", { count: totalCount }) }}
       </span>
       <div class="flex ai-ct gap-2 ml-auto flex-wrap">
-        <button
+        <BasicButton
           v-if="actionableFilter"
-          class="list-mode__btn bg-positive-subtle t-positive"
-          :disabled="busy"
+          :text="$t('enrichment.review.bulk.accept_all')"
+          class="btn-primary"
+          :isDisabled="busy"
           data-testid="enrichment-bulk-accept"
           @click="$emit('bulk-accept')"
-        >
-          {{ $t("enrichment.review.bulk.accept_all") }}
-        </button>
-        <button
+        />
+        <BasicButton
           v-if="actionableFilter"
-          class="list-mode__btn bg-negative-subtle t-negative"
-          :disabled="busy"
+          :text="$t('enrichment.review.bulk.reject_all')"
+          class="btn-danger"
+          :isDisabled="busy"
           data-testid="enrichment-bulk-reject"
           @click="$emit('bulk-reject', '')"
-        >
-          {{ $t("enrichment.review.bulk.reject_all") }}
-        </button>
-        <button
+        />
+        <BasicButton
           v-if="undoableFilter"
-          class="list-mode__btn bg-raised t-secondary"
-          :disabled="busy"
+          :text="$t('enrichment.review.undo')"
+          class="btn-secondary"
+          :isDisabled="busy"
           :title="$t('enrichment.review.undo_hint')"
           data-testid="enrichment-undo"
           @click="$emit('bulk-undo')"
-        >
-          {{ $t("enrichment.review.undo") }}
-        </button>
+        />
       </div>
     </div>
 
@@ -102,32 +99,32 @@
       </template>
       <template #cell-actions="{ row }">
         <div v-if="isActionable(row)" class="flex ai-ct gap-2">
-          <button
+          <BasicButton
             v-if="row.status === 'drifted'"
-            class="list-mode__btn bg-warning-subtle t-warning"
-            :disabled="busy"
+            :text="$t('enrichment.review.reconfirm')"
+            size="sm"
+            class="btn-secondary"
+            :isDisabled="busy"
             :data-testid="`enrichment-reconfirm-${row.id}`"
-            @click.stop="$emit('reconfirm', row)"
-          >
-            {{ $t("enrichment.review.reconfirm") }}
-          </button>
-          <button
+            @click="$emit('reconfirm', row)"
+          />
+          <BasicButton
             v-else
-            class="list-mode__btn bg-positive-subtle t-positive"
-            :disabled="busy"
+            :text="$t('common.accept')"
+            size="sm"
+            class="btn-primary"
+            :isDisabled="busy"
             :data-testid="`enrichment-accept-${row.id}`"
-            @click.stop="$emit('accept', row)"
-          >
-            {{ $t("common.accept") }}
-          </button>
-          <button
-            class="list-mode__btn bg-negative-subtle t-negative"
-            :disabled="busy"
+            @click="$emit('accept', row)"
+          />
+          <BasicButton
+            :text="$t('common.reject')"
+            size="sm"
+            class="btn-danger"
+            :isDisabled="busy"
             :data-testid="`enrichment-reject-${row.id}`"
-            @click.stop="$emit('reject', { proposal: row, reason: '' })"
-          >
-            {{ $t("common.reject") }}
-          </button>
+            @click="$emit('reject', { proposal: row, reason: '' })"
+          />
         </div>
         <span v-else class="fs-200 t-muted">—</span>
       </template>
@@ -144,23 +141,21 @@
       v-if="totalPages > 1"
       class="list-mode__pager flex ai-ct jc-ct gap-5 mt-8"
     >
-      <button
-        class="list-mode__btn bg-raised t-secondary"
-        :disabled="page <= 1 || busy"
+      <BasicButton
+        :text="$t('enrichment.review.prev')"
+        class="btn-secondary"
+        :isDisabled="page <= 1 || busy"
         @click="$emit('page', page - 1)"
-      >
-        {{ $t("enrichment.review.prev") }}
-      </button>
+      />
       <span class="fs-200 t-muted">{{
         $t("enrichment.review.page_of", { page, total: totalPages })
       }}</span>
-      <button
-        class="list-mode__btn bg-raised t-secondary"
-        :disabled="page >= totalPages || busy"
+      <BasicButton
+        :text="$t('enrichment.review.next')"
+        class="btn-secondary"
+        :isDisabled="page >= totalPages || busy"
         @click="$emit('page', page + 1)"
-      >
-        {{ $t("enrichment.review.next") }}
-      </button>
+      />
     </div>
   </div>
 </template>
@@ -308,17 +303,5 @@ export default {
   font: inherit;
   cursor: pointer;
   text-align: left;
-}
-.list-mode__btn {
-  height: var(--elem-height);
-  padding: 0 var(--space-3);
-  border: none;
-  border-radius: var(--radius-base);
-  font-size: var(--fs-200);
-  cursor: pointer;
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
 }
 </style>

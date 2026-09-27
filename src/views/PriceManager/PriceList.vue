@@ -5,7 +5,7 @@
         <StatusBadge :label="`${dirtyCount} ${$t('pm.unsaved')}`" variant="warning" />
         <BasicButton
           :text="saving ? $t('pm.saving') : $t('pm.save_all')"
-          class="bg-accent-fill t-on-accent-fill"
+          class="btn-primary"
           :disabled="saving"
           @click="saveAll"
         />
@@ -172,22 +172,26 @@
                   >
                     <FontAwesomeIcon icon="eye" />
                   </button>
-                  <button
+                  <BasicButton
                     v-if="row.has_price"
-                    class="pm-action-btn pm-action-btn--flush"
-                    :title="$t('pm.flush_special_tooltip')"
+                    custom
+                    size="sm"
+                    :label="$t('pm.flush_special_tooltip')"
+                    class="btn-danger"
                     @click="confirmFlush(row.sku, row.currency)"
                   >
-                    <FontAwesomeIcon icon="broom" />
-                  </button>
-                  <button
+                    <template #custom><FontAwesomeIcon icon="broom" /></template>
+                  </BasicButton>
+                  <BasicButton
                     v-if="row.has_price"
-                    class="pm-action-btn pm-action-btn--delete"
-                    :title="$t('pm.delete_prices_tooltip')"
+                    custom
+                    size="sm"
+                    :label="$t('pm.delete_prices_tooltip')"
+                    class="btn-danger"
                     @click="confirmDelete(row.sku, row.currency)"
                   >
-                    <FontAwesomeIcon icon="trash-can" />
-                  </button>
+                    <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+                  </BasicButton>
                 </div>
 
                 <!-- Status -->
@@ -852,32 +856,6 @@ $cols:
     background: var(--accent-subtle);
     border-color: var(--accent);
     color: var(--text-strong);
-  }
-}
-
-.pm-action-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border: none;
-  border-radius: var(--radius-base);
-  cursor: pointer;
-  font-size: var(--fs-100);
-  opacity: 0.4;
-  transition: opacity 0.15s, background 0.15s;
-
-  &:hover { opacity: 1; }
-
-  &--flush {
-    background: var(--surface-raised);
-    color: var(--text-secondary);
-  }
-
-  &--delete {
-    background: var(--negative-subtle);
-    color: var(--negative);
   }
 }
 

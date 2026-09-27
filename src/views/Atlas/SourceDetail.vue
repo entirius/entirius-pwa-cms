@@ -2,14 +2,15 @@
   <div class="supplier-detail h-100 ovy-auto">
     <!-- Toolbar buttons teleported into parent index.vue toolbar anchors -->
     <Teleport to="#suppliers-toolbar-left" defer>
-      <button
-        class="suppliers-toolbar-btn"
+      <BasicButton
+        custom
+        :label="$t('common.back')"
+        class="btn-ghost"
         data-testid="suppliers-detail-back"
         @click="goBack"
       >
-        <FontAwesomeIcon icon="arrow-left" />
-        <span class="ml-2">{{ $t("common.back") }}</span>
-      </button>
+        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
+      </BasicButton>
       <span class="t-body fw-600 fs-400">{{ headerLabel }}</span>
     </Teleport>
 
@@ -165,19 +166,5 @@ export default {
   display: flex;
   align-items: center;
   gap: var(--space-5);
-}
-.suppliers-toolbar-btn {
-  display: inline-flex;
-  align-items: center;
-  background: transparent;
-  border: 1px solid var(--border-subtle);
-  color: var(--text-body);
-  border-radius: var(--radius-base);
-  padding: var(--space-1) var(--space-2);
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-.suppliers-toolbar-btn:hover {
-  background: var(--surface-raised);
 }
 </style>

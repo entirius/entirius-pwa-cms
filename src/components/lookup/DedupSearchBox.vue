@@ -28,6 +28,7 @@
       />
       <BasicButton
         :text="$t('lookup.box.search_button')"
+        class="btn-primary"
         :is-disabled="loading || !canSearch"
         data-testid="dedup-search-submit"
         @click="search"

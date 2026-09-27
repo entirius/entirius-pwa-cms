@@ -42,35 +42,29 @@
       class="swipe-mode__actions"
       data-testid="swipe-actions-bar"
     >
-      <button
-        class="swipe-btn swipe-btn--reject"
-        :disabled="busy"
+      <BasicButton
+        :text="$t('atlas.review.reject_button')"
+        class="btn-danger"
+        :isDisabled="busy"
         data-testid="swipe-reject-btn"
         @click="reviewProduct('reject')"
-      >
-        <FontAwesomeIcon icon="xmark" />
-        {{ $t("atlas.review.reject_button") }}
-      </button>
-      <button
+      />
+      <BasicButton
         v-if="!isMonitoringRow"
-        class="swipe-btn swipe-btn--skip"
-        :disabled="busy"
+        :text="$t('atlas.review.skip_button')"
+        class="btn-secondary"
+        :isDisabled="busy"
         data-testid="swipe-skip-btn"
         @click="reviewProduct('skip')"
-      >
-        <FontAwesomeIcon icon="rotate" />
-        {{ $t("atlas.review.skip_button") }}
-      </button>
-      <button
+      />
+      <BasicButton
         v-if="!isMonitoringRow && kind === 'procurement'"
-        class="swipe-btn swipe-btn--approve"
-        :disabled="busy"
+        :text="$t('atlas.review.approve_button')"
+        class="btn-primary"
+        :isDisabled="busy"
         data-testid="swipe-approve-btn"
         @click="reviewProduct('approve')"
-      >
-        <FontAwesomeIcon icon="check" />
-        {{ $t("atlas.review.approve_button") }}
-      </button>
+      />
     </div>
 
     <!-- Mobile-only fallback modal — desktop uses the side panel. -->
@@ -261,41 +255,6 @@ export default {
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.04);
 }
 
-.swipe-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  height: 32px;
-  padding: 0 var(--space-3);
-  font-size: var(--fs-200);
-  font-weight: 600;
-  border-radius: var(--radius-base);
-  border: 1px solid;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-.swipe-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-.swipe-btn--reject {
-  background: var(--negative-subtle);
-  border-color: var(--negative);
-  color: var(--negative);
-}
-.swipe-btn--skip {
-  background: var(--surface-base);
-  border-color: var(--border-default);
-  color: var(--text-body);
-}
-.swipe-btn--approve {
-  background: var(--positive-subtle);
-  border-color: var(--positive);
-  color: var(--positive);
-}
-.swipe-btn:hover:not(:disabled) {
-  filter: brightness(0.97);
-}
 .text-center {
   text-align: center;
 }

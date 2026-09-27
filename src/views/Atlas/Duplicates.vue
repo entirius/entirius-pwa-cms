@@ -66,15 +66,15 @@
               </td>
               <td>
                 <div class="flex ai-ct flex-wrap gap-2">
-                  <button
+                  <BasicButton
                     v-for="other in otherRps(group, rp)"
+                    :text="$t('atlas.duplicates.action.merge_to', { sku: other.sku })"
+                    size="sm"
+                    class="btn-secondary"
                     :key="other.sku"
-                    class="merge-btn"
                     :data-testid="`duplicates-merge-${rp.sku}-to-${other.sku}`"
                     @click="openMergeModal(other.sku, rp.sku)"
-                  >
-                    {{ $t("atlas.duplicates.action.merge_to", { sku: other.sku }) }}
-                  </button>
+                  />
                 </div>
               </td>
             </tr>
@@ -189,18 +189,4 @@ export default {
   }
 }
 
-.merge-btn {
-  padding: var(--space-2) var(--space-5);
-  font-size: var(--fs-200);
-  font-weight: 600;
-  border-radius: var(--radius-base);
-  background-color: var(--positive-subtle);
-  color: var(--positive);
-  border: none;
-  cursor: pointer;
-
-  &:hover {
-    filter: brightness(0.95);
-  }
-}
 </style>

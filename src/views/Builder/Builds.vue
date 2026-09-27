@@ -28,8 +28,9 @@
         <BasicButton
           v-if="translatorAvailable"
           :text="$t('builder.translate_all')"
+          :label="$t('builder.translate_all')"
           icon="language"
-          class="bg-accent-subtle t-strong"
+          class="btn-secondary icon-only-mobile"
           @click="showTranslateModal = true"
         />
         <Dropdown
@@ -113,9 +114,12 @@
           </template>
 
           <template #cell-actions="{ row }">
-            <button
-              class="data-table__action-btn"
-              @click.stop="
+            <BasicButton
+              custom
+              size="sm"
+              :label="canCreate ? $t('builder.edit') : $t('builder.preview')"
+              class="btn-ghost data-table__action-btn"
+              @click="
                 $router.push({
                   name: 'Builder',
                   params: { type: doc.type, uid: row.uid },
@@ -123,35 +127,24 @@
                 })
               "
             >
-              <i class="icon-edit" />
-              {{
-                !user?.buildTypes?.some((type) =>
-                  type.actions?.includes("create")
-                )
-                  ? $t("builder.preview")
-                  : $t("builder.edit")
-              }}
-            </button>
-            <button
+              <template #custom><FontAwesomeIcon :icon="canCreate ? 'pen' : 'eye'" /></template>
+            </BasicButton>
+            <BasicButton
               v-if="doc.type !== 'legal-page'"
-              class="data-table__action-btn data-table__action-btn--danger"
-              :class="[
-                !user?.buildTypes?.some((type) =>
-                  type.actions?.includes('create')
-                )
-                  ? 'data-table__action-btn--disabled'
-                  : '',
-              ]"
-              @click.stop="
+              custom
+              size="sm"
+              :label="$t('builder.delete')"
+              class="btn-danger data-table__action-btn"
+              :isDisabled="!canCreate"
+              @click="
                 () => {
                   confirmation_modal = true;
                   to_remove = [doc.type, row.uid];
                 }
               "
             >
-              <i class="icon-bin" />
-              {{ $t("builder.delete") }}
-            </button>
+              <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+            </BasicButton>
           </template>
         </DataTable>
         <div class="mv-2 ph-2" v-if="doc.pagination">
@@ -257,6 +250,9 @@ export default {
     },
     user() {
       return this.userStore.user;
+    },
+    canCreate() {
+      return Boolean(this.user?.buildTypes?.some((type) => type.actions?.includes("create")));
     },
     availableLanguages() {
       return this.contentDBChannel.languages;
@@ -530,33 +526,6 @@ export default {
   text-overflow: ellipsis;
   &:hover {
     color: var(--text-accent);
-  }
-}
-.data-table__action-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-1) var(--space-2);
-  font-size: var(--fs-200);
-  color: var(--text-secondary);
-  background: none;
-  border: 1px solid transparent;
-  border-radius: var(--radius-base);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.15s ease;
-  &:hover {
-    background-color: var(--surface-hover);
-    border-color: var(--border-default);
-  }
-  &--danger:hover {
-    color: var(--negative);
-    border-color: var(--negative);
-    background-color: var(--surface-base);
-  }
-  &--disabled {
-    opacity: 0.35;
-    pointer-events: none;
   }
 }
 @media only screen and (max-width: 768px) {

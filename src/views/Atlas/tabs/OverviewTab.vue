@@ -1,15 +1,13 @@
 <template>
   <div class="overview-tab p-8 ovy-auto h-100">
     <Teleport to="#suppliers-toolbar-right" defer>
-      <button
-        class="suppliers-toolbar-btn suppliers-toolbar-btn--primary"
-        :disabled="saving || !isDirty"
+      <BasicButton
+        :text="$t('common.save')"
+        class="btn-primary"
+        :isDisabled="saving || !isDirty"
         data-testid="suppliers-overview-save"
         @click="save"
-      >
-        <FontAwesomeIcon icon="floppy-disk" />
-        <span class="ml-2">{{ $t("common.save") }}</span>
-      </button>
+      />
     </Teleport>
 
     <div class="overview-grid">
@@ -500,32 +498,5 @@ export default {
 .form-error {
   margin: 0;
   margin-top: 2px;
-}
-.suppliers-toolbar-btn {
-  display: inline-flex;
-  align-items: center;
-  background: transparent;
-  border: 1px solid var(--border-subtle);
-  color: var(--text-body);
-  border-radius: var(--radius-base);
-  padding: var(--space-1) var(--space-2);
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-.suppliers-toolbar-btn:hover:not(:disabled) {
-  background: var(--surface-raised);
-}
-.suppliers-toolbar-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-.suppliers-toolbar-btn--primary {
-  background: var(--accent-fill);
-  border-color: var(--accent);
-  color: var(--text-on-accent-fill);
-}
-.suppliers-toolbar-btn--primary:hover:not(:disabled) {
-  filter: brightness(1.05);
-  background: var(--accent-fill);
 }
 </style>

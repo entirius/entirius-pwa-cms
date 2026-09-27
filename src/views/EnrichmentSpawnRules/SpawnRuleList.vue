@@ -60,7 +60,8 @@
         <template #cell-actions="{ row }">
           <BasicButton
             :text="$t('enrichment.spawn_rules.run_now')"
-            class="bg-accent-fill t-on-accent-fill fs-200"
+            size="sm"
+            class="btn-secondary"
             :data-test="`spawn-rule-run-${row.key}`"
             @click="runRule(row)"
           />

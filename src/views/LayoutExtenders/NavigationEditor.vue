@@ -3,11 +3,13 @@
     <!-- Left toolbar -->
     <Teleport to="#layout-extender-toolbar-left" defer>
       <BasicButton
-        text=""
-        icon="arrow-left"
-        class="bg-raised t-secondary"
+        custom
+        :label="$t('common.back')"
+        class="btn-ghost"
         @click="$router.push('/pages/layout-extender')"
-      />
+      >
+        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
+      </BasicButton>
       <div v-if="!loading" class="nav-editor__toolbar-name">
         <span class="fw-600 t-body">{{ docName || $route.params.uid || "—" }}</span>
       </div>
@@ -38,7 +40,7 @@
         />
         <BasicButton
           :text="$t('layout_extender.publish')"
-          class="bg-accent-fill t-on-accent-fill"
+          class="btn-primary"
           data-testid="nav-editor-publish"
           :disabled="!uid"
           @click="publish"
@@ -87,24 +89,34 @@
                   }"
                   @on_AssetPass="reorderColumns(index, $event)"
                 >
-                  <span class="nav-action" :title="$t('layout_extender.reorder_columns')">
+                  <span
+                    class="nav-action"
+                    role="button"
+                    tabindex="0"
+                    :aria-label="$t('layout_extender.reorder_columns')"
+                    :title="$t('layout_extender.reorder_columns')"
+                    @keydown.enter.space.prevent="$event.currentTarget.click()"
+                  >
                     <FontAwesomeIcon icon="grip" />
                   </span>
                 </SubscriberSetter>
-                <span
+                <BasicButton
                   v-if="element.display_as === 'megamenu'"
-                  class="nav-action"
+                  custom
+                  :label="$t('layout_extender.columns')"
+                  class="btn-ghost"
                   :class="{ 'nav-action--rotated': expandedItems.includes(element.id) }"
+                  :aria-expanded="expandedItems.includes(element.id)"
                   @click="toggleExpand(element.id)"
                 >
-                  <FontAwesomeIcon icon="chevron-down" />
-                </span>
-                <span class="nav-action" @click="openEditItem(element, index)">
-                  <FontAwesomeIcon icon="pen-to-square" />
-                </span>
-                <span class="nav-action nav-action--danger" @click="removeItem(index)">
-                  <FontAwesomeIcon icon="trash-can" />
-                </span>
+                  <template #custom><FontAwesomeIcon icon="chevron-down" /></template>
+                </BasicButton>
+                <BasicButton custom :label="$t('common.edit')" class="btn-ghost" @click="openEditItem(element, index)">
+                  <template #custom><FontAwesomeIcon icon="pen" /></template>
+                </BasicButton>
+                <BasicButton custom :label="$t('common.delete')" class="btn-danger" @click="removeItem(index)">
+                  <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+                </BasicButton>
               </div>
 
               <!-- Expanded megamenu columns -->
@@ -138,18 +150,27 @@
                               class="fw-600 fs-300 t-body pointer"
                               @dblclick="startEditHeading(index, colIdx)"
                             >{{ col.heading || $t("layout_extender.heading") }}</span>
-                            <span
+                            <BasicButton
                               v-if="channelLanguages.length > 1"
-                              class="nav-action nav-action--sm"
+                              custom
+                              size="sm"
+                              :label="$t('layout_extender.translations')"
+                              class="btn-ghost"
                               @click="openColumnTranslation(index, colIdx)"
                             >
-                              <i class="icon-language"></i>
-                            </span>
+                              <template #custom><FontAwesomeIcon icon="language" /></template>
+                            </BasicButton>
                           </template>
                         </div>
-                        <span class="nav-action nav-action--danger nav-action--sm" @click="removeColumn(index, colIdx)">
-                          <FontAwesomeIcon icon="trash-can" />
-                        </span>
+                        <BasicButton
+                          custom
+                          size="sm"
+                          :label="$t('common.delete')"
+                          class="btn-danger"
+                          @click="removeColumn(index, colIdx)"
+                        >
+                          <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+                        </BasicButton>
                       </div>
                       <draggable
                         v-model="col.links"
@@ -184,9 +205,15 @@
                     <template v-else-if="col.type === 'banner'">
                       <div class="nav-column__header">
                         <span class="fw-600 fs-300 t-body">{{ $t("layout_extender.banner") }}</span>
-                        <span class="nav-action nav-action--danger nav-action--sm" @click="removeColumn(index, colIdx)">
-                          <FontAwesomeIcon icon="trash-can" />
-                        </span>
+                        <BasicButton
+                          custom
+                          size="sm"
+                          :label="$t('common.delete')"
+                          class="btn-danger"
+                          @click="removeColumn(index, colIdx)"
+                        >
+                          <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+                        </BasicButton>
                       </div>
                       <div v-if="col.media_url" class="mb-2">
                         <img
@@ -649,8 +676,8 @@ export default {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: var(--elem-height);
+  height: var(--elem-height);
   border-radius: var(--radius-base);
   cursor: pointer;
   color: var(--text-muted);
@@ -662,19 +689,8 @@ export default {
     color: var(--text-body);
   }
 
-  &--danger:hover {
-    background: var(--negative-subtle);
-    color: var(--negative);
-  }
-
   &--rotated {
     transform: rotate(180deg);
-  }
-
-  &--sm {
-    width: 28px;
-    height: 28px;
-    font-size: var(--fs-200);
   }
 }
 

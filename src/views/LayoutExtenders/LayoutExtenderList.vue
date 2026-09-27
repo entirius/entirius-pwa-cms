@@ -65,22 +65,25 @@
 
         <template #cell-actions="{ row }">
           <div class="le-list__actions">
-            <span class="le-list__action" @click.stop="onEdit(row)">
-              <FontAwesomeIcon icon="pen-to-square" />
-            </span>
-            <span class="le-list__action" @click.stop="onPreview(row)">
-              <FontAwesomeIcon icon="eye" />
-            </span>
-            <span class="le-list__action" @click.stop="onCopy(row)">
-              <FontAwesomeIcon icon="copy" />
-            </span>
-            <span
+            <BasicButton custom size="sm" :label="$t('common.edit')" class="btn-ghost" @click="onEdit(row)">
+              <template #custom><FontAwesomeIcon icon="pen" /></template>
+            </BasicButton>
+            <BasicButton custom size="sm" :label="$t('common.preview')" class="btn-ghost" @click="onPreview(row)">
+              <template #custom><FontAwesomeIcon icon="eye" /></template>
+            </BasicButton>
+            <BasicButton custom size="sm" :label="$t('common.copy')" class="btn-ghost" @click="onCopy(row)">
+              <template #custom><FontAwesomeIcon icon="copy" /></template>
+            </BasicButton>
+            <BasicButton
               v-if="!row.is_system"
-              class="le-list__action le-list__action--danger"
-              @click.stop="onDeleteClick(row)"
+              custom
+              size="sm"
+              :label="$t('common.delete')"
+              class="btn-danger"
+              @click="onDeleteClick(row)"
             >
-              <FontAwesomeIcon icon="trash-can" />
-            </span>
+              <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+            </BasicButton>
           </div>
         </template>
       </DataTable>
@@ -120,13 +123,12 @@
       <template #footer>
         <BasicButton
           :text="$t('common.cancel')"
-          class="bg-raised t-secondary"
+          class="btn-secondary"
           @click="closeCopy"
         />
         <BasicButton
           :text="$t('layout_extender.copy_action')"
-          icon="copy"
-          class="bg-accent-fill t-on-accent-fill"
+          class="btn-primary"
           :disabled="!copyTargetChannel || copying"
           @click="onCopyConfirm"
         />
@@ -388,28 +390,6 @@ export default {
   align-items: center;
   gap: var(--space-1);
   justify-content: flex-end;
-}
-
-.le-list__action {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-base);
-  cursor: pointer;
-  color: var(--text-muted);
-  transition: background 0.1s, color 0.1s;
-
-  &:hover {
-    background: var(--surface-raised);
-    color: var(--text-body);
-  }
-
-  &--danger:hover {
-    background: var(--negative-subtle);
-    color: var(--negative);
-  }
 }
 
 @media only screen and (max-width: 768px) {

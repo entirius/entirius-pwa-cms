@@ -5,14 +5,12 @@
     >
       <div class="flex ai-ct jc-sb mb-10 gap-8">
         <h1 class="fs-700 fw-600">{{ $t("atlas.list_title") }}</h1>
-        <button
-          class="suppliers-primary-btn"
+        <BasicButton
+          :text="$t('atlas.create_button')"
+          class="btn-primary"
           data-testid="suppliers-create-btn"
           @click="openCreate"
-        >
-          <FontAwesomeIcon icon="plus" />
-          {{ $t("atlas.create_button") }}
-        </button>
+        />
       </div>
 
       <!-- Filter panel -->
@@ -97,22 +95,26 @@
         </template>
         <template #cell-actions="{ row }">
           <div class="flex ai-ct gap-2" @click.stop>
-            <button
-              class="row-action-btn bg-accent-subtle t-strong"
-              :title="$t('common.edit')"
+            <BasicButton
+              custom
+              size="sm"
+              :label="$t('common.edit')"
+              class="btn-ghost"
               :data-testid="`suppliers-edit-${row.idx}`"
               @click="onEdit(row)"
             >
-              <FontAwesomeIcon icon="pen" />
-            </button>
-            <button
-              class="row-action-btn bg-negative-subtle t-negative"
-              :title="$t('common.delete')"
+              <template #custom><FontAwesomeIcon icon="pen" /></template>
+            </BasicButton>
+            <BasicButton
+              custom
+              size="sm"
+              :label="$t('common.delete')"
+              class="btn-danger"
               :data-testid="`suppliers-delete-${row.idx}`"
               @click="openDelete(row)"
             >
-              <FontAwesomeIcon icon="trash-can" />
-            </button>
+              <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+            </BasicButton>
           </div>
         </template>
       </DataTable>
@@ -205,23 +207,20 @@
           />
         </FormField>
         <div class="flex ai-ct jc-end gap-5 mt-8">
-          <button
+          <BasicButton
+            :text="$t('common.cancel')"
+            class="btn-secondary"
             type="button"
-            class="suppliers-secondary-btn"
             data-testid="suppliers-create-cancel"
             @click="closeCreate"
-          >
-            {{ $t("common.cancel") }}
-          </button>
-          <button
+          />
+          <BasicButton
+            :text="$t('common.save')"
+            class="btn-primary"
             type="submit"
-            class="suppliers-primary-btn"
-            :disabled="creating"
+            :isDisabled="creating"
             data-testid="suppliers-create-submit"
-          >
-            <FontAwesomeIcon icon="floppy-disk" />
-            {{ $t("common.save") }}
-          </button>
+          />
         </div>
       </form>
     </SideDrawer>
@@ -648,56 +647,6 @@ export default {
   flex: 1;
   min-width: 150px;
   max-width: 400px;
-}
-.suppliers-primary-btn,
-.suppliers-secondary-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  height: 36px;
-  padding: 0 var(--space-4);
-  font-size: var(--fs-250);
-  font-weight: 500;
-  border-radius: var(--radius-base);
-  border: 1px solid;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  white-space: nowrap;
-}
-.suppliers-primary-btn {
-  background: var(--accent-fill);
-  border-color: var(--accent);
-  color: var(--text-on-accent-fill);
-}
-.suppliers-primary-btn:hover:not(:disabled) {
-  filter: brightness(1.05);
-}
-.suppliers-primary-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-.suppliers-secondary-btn {
-  background: var(--surface-base);
-  border-color: var(--border-default);
-  color: var(--text-body);
-}
-.suppliers-secondary-btn:hover {
-  background: var(--surface-raised);
-  border-color: var(--border-default);
-}
-.row-action-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border: none;
-  border-radius: var(--radius-base);
-  cursor: pointer;
-  transition: opacity 0.15s ease;
-}
-.row-action-btn:hover {
-  opacity: 0.85;
 }
 .suppliers-delete-impact {
   background: var(--negative-subtle);
