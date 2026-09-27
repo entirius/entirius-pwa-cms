@@ -207,6 +207,7 @@ export default {
           label: this.$t("dp.is_carrier"),
           sortable: false,
           width: "120px",
+          priority: 2,
         },
         {
           key: "is_active",
@@ -219,6 +220,8 @@ export default {
           label: this.$t("dp.sort_order"),
           sortable: false,
           width: "80px",
+          priority: 2,
+          numeric: true,
         },
       ];
     },

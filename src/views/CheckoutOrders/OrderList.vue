@@ -143,16 +143,21 @@ export default {
           key: "total_gross",
           label: this.$t("checkout_orders.total"),
           width: "120px",
+          priority: 2,
+          numeric: true,
         },
         {
           key: "item_count",
           label: this.$t("checkout_orders.items"),
           width: "80px",
+          priority: 2,
+          numeric: true,
         },
         {
           key: "created",
           label: this.$t("checkout_orders.created"),
           width: "140px",
+          priority: 2,
         },
       ],
     };

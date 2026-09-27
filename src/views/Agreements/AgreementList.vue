@@ -128,18 +128,21 @@ export default {
           label: this.$t("agm.slug"),
           sortable: false,
           width: "180px",
+          priority: 2,
         },
         {
           key: "category",
           label: this.$t("agm.category"),
           sortable: false,
           width: "120px",
+          priority: 2,
         },
         {
           key: "consent_channel",
           label: this.$t("agm.consent_channel"),
           sortable: false,
           width: "120px",
+          priority: 2,
         },
         {
           key: "is_active",

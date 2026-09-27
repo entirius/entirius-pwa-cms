@@ -80,7 +80,7 @@
                 <span>{{ $t(`agm.source_${value.replace(/-/g, "_")}`) }}</span>
               </template>
               <template #cell-created_at="{ value }">
-                <span>{{ formatDate(value) }}</span>
+                {{ formatDate(value) }}
               </template>
             </DataTable>
           </section>
@@ -126,7 +126,7 @@
                 <span>{{ $t(`agm.source_${value.replace(/-/g, "_")}`) }}</span>
               </template>
               <template #cell-created_at="{ value }">
-                <span>{{ formatDate(value) }}</span>
+                {{ formatDate(value) }}
               </template>
               <template #cell-actions="{ row }">
                 <BasicButton
@@ -229,6 +229,7 @@ export default {
           label: this.$t("agm.agreement"),
           sortable: false,
           width: "1fr",
+          priority: 2,
         },
         {
           key: "agreement_name",
@@ -241,6 +242,8 @@ export default {
           label: this.$t("agm.version_number"),
           sortable: false,
           width: "80px",
+          priority: 2,
+          numeric: true,
         },
         {
           key: "granted",
@@ -253,25 +256,28 @@ export default {
           label: this.$t("agm.source"),
           sortable: false,
           width: "140px",
+          priority: 2,
         },
         {
           key: "channel_idx",
           label: this.$t("agm.channel"),
           sortable: false,
           width: "120px",
+          priority: 2,
         },
         {
           key: "created_at",
           label: this.$t("agm.date"),
           sortable: false,
           width: "150px",
+          numeric: true,
         },
       ];
     },
     legalHistoryColumns() {
       return [
         ...this.historyColumns,
-        { key: "actions", label: "", sortable: false, width: "120px" },
+        { key: "actions", label: "", sortable: false, actions: true },
       ];
     },
     marketingStatuses() {

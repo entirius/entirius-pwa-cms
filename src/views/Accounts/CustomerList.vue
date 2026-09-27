@@ -67,14 +67,14 @@
           <span v-if="value" class="bg-accent-subtle t-strong fs-200 ph-2 rounded">
             {{ value }}
           </span>
-          <span v-else class="t-muted">---</span>
+          <span v-else class="t-muted">—</span>
         </template>
         <template #cell-source_channel="{ value }">
           <span v-if="value" class="t-secondary fs-200">{{ value }}</span>
-          <span v-else class="t-muted">---</span>
+          <span v-else class="t-muted">—</span>
         </template>
         <template #cell-status="{ row }">
-          <div class="flex gap-2">
+          <div class="flex flex-wrap gap-2">
             <StatusBadge
               :label="row.is_active ? $t('accounts.active') : $t('accounts.inactive')"
               :variant="row.is_active ? 'positive' : 'negative'"
@@ -154,11 +154,11 @@ export default {
     columns() {
       return [
         { key: "email", label: "Email", sortable: true, width: "1fr" },
-        { key: "name", label: "Name", sortable: false, width: "180px" },
-        { key: "group", label: this.$t("accounts.group"), sortable: false, width: "120px" },
-        { key: "source_channel", label: this.$t("accounts.channel"), sortable: false, width: "140px" },
-        { key: "status", label: this.$t("accounts.status"), sortable: false, width: "160px" },
-        { key: "created_at", label: "Created", sortable: true, width: "140px" },
+        { key: "name", label: "Name", sortable: false, width: "180px", priority: 2 },
+        { key: "group", label: this.$t("accounts.group"), sortable: false, width: "120px", priority: 2 },
+        { key: "source_channel", label: this.$t("accounts.channel"), sortable: false, width: "140px", priority: 2 },
+        { key: "status", label: this.$t("accounts.status"), sortable: false, width: "240px" },
+        { key: "created_at", label: "Created", sortable: true, width: "140px", priority: 2 },
       ];
     },
     paginationState() {
@@ -263,7 +263,7 @@ export default {
       this.$router.push(`/accounts/customers/${row.uid}`);
     },
     formatDate(dateStr) {
-      if (!dateStr) return "---";
+      if (!dateStr) return "—";
       return new Date(dateStr).toLocaleDateString("en-GB", {
         day: "2-digit",
         month: "short",
