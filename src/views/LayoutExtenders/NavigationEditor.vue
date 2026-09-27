@@ -69,9 +69,9 @@
                 <span class="handle t-muted pointer">
                   <FontAwesomeIcon icon="grip-vertical" />
                 </span>
-                <span class="fg-1 fw-500 t-body fs-300">{{ element.label || "—" }}</span>
+                <span class="nav-item__label fg-1 fw-500 t-body fs-300">{{ element.label || "—" }}</span>
                 <span
-                  class="fs-200 ph-2 rounded"
+                  class="nav-item__type fs-200 ph-2 rounded"
                   :class="element.display_as === 'megamenu' ? 'bg-accent-subtle t-strong' : 'bg-hover t-body'"
                   :data-testid="element.display_as === 'megamenu' ? 'nav-item-type-megamenu' : 'nav-item-type-link'"
                 >
@@ -648,6 +648,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/scss/utils/media-query";
+
 .nav-editor__toolbar-name {
   display: flex;
   align-items: center;
@@ -669,6 +671,27 @@ export default {
 
   &:hover {
     background: var(--surface-raised);
+  }
+
+  // A phone keeps the name on the first line; the type badge and the actions share the second.
+  @include max-tablet {
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-3);
+    padding: var(--space-3);
+  }
+}
+
+.nav-item__label {
+  @include max-tablet {
+    flex-basis: 80%;
+  }
+}
+
+.nav-item__type {
+  white-space: nowrap;
+
+  @include max-tablet {
+    margin-right: auto;
   }
 }
 
