@@ -117,13 +117,13 @@ function onDragEnd() {
       <span class="tree-node__icon t-muted"
         ><font-awesome-icon icon="folder"
       /></span>
-      <span class="tree-node__name">{{ displayName }}</span>
+      <span class="tree-node__name" :title="displayName">{{ displayName }}</span>
       <span
         v-if="isRoot"
         class="chip chip--sm bg-accent-subtle t-strong tree-node__root-badge"
         >Root</span
       >
-      <span class="chip chip--pill bg-raised t-secondary">{{
+      <span class="chip chip--pill bg-raised t-secondary tree-node__count">{{
         node.product_count || 0
       }}</span>
       <span
@@ -134,15 +134,15 @@ function onDragEnd() {
             : 'tree-node__status--inactive'
         "
       />
+      <!-- The slot stays when the category is in the menu, so the meta lines up across rows. -->
       <span
-        v-if="!node.is_in_menu"
         class="tree-node__hidden t-muted"
-        :title="$t('pim.hidden_from_menu')"
+        :title="node.is_in_menu ? undefined : $t('pim.hidden_from_menu')"
       >
-        <font-awesome-icon icon="eye-slash" />
+        <font-awesome-icon v-if="!node.is_in_menu" icon="eye-slash" />
       </span>
       <button class="tree-node__edit" @click.stop="emit('select', node)">
-        <i class="icon-edit" />
+        <font-awesome-icon icon="pen" />
         {{ $t("common.edit") }}
       </button>
     </div>
@@ -236,7 +236,17 @@ function onDragEnd() {
 
 .tree-node__name {
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-weight: 500;
+}
+
+// Fixed-width meta so the count, status dot and menu flag line up between rows.
+.tree-node__count {
+  min-width: 2.5em;
+  justify-content: center;
 }
 
 .tree-node__edit {
@@ -261,6 +271,8 @@ function onDragEnd() {
 }
 
 .tree-node__hidden {
+  width: 1.25em;
+  text-align: center;
   flex-shrink: 0;
   font-size: var(--fs-200);
   opacity: 0.7;
