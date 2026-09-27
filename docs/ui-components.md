@@ -249,6 +249,35 @@ Catalogue: `#display` (`#status-badge`, `#count-badge`, `#tag`, `#basic-tabs`, `
 
 ### P3 selects (plan 15)
 
+- **`BasicSelect`** — one choice from a list: `v-model` (a value, or an array when `multiple`), `options`
+  `[{ label, value, description?, disabled? }]`, `placeholder` (default „Wybierz”), `searchable` (filter input above
+  the list), `clearable` (a clear IconButton while something is chosen), `disabled`. Closed control: a
+  `role="combobox"` button, `--elem-height`, `--radius-base`, `border-control`, 12 px Inter 500, `expand` caret;
+  `multiple` shows the one label or „Wybrano: N”. The list opens in BasicMenu's panel (position, flip = drop-up,
+  outside click, Esc, focus return) as a `listbox` driven by `aria-activedescendant`: arrows (wrap), Home / End,
+  type-ahead, Enter / Space; checkboxes when `multiple`, a check on the chosen option otherwise. Inside a FormField
+  it takes the field's id, `aria-describedby`, invalid, required and disabled (`useFormFieldControl()`); outside one,
+  `aria-label` / `aria-labelledby` on the tag name the control. `placement` and `inline` go to BasicMenu.
+- **`EntitySearchPicker`** — async entity search: `fetchFn(search)` → `[{ label, value, secondary? }]` (300 ms
+  debounce; `clientFilter` fetches once and filters here), `v-model` + `v-model:displayValue`, `placeholder`,
+  `disabled`. The chosen entity is a removable `Tag` (remove → both cleared, `clear`); the list opens in
+  BasicMenu's panel: a filter input driving a listbox, `secondary` as the option description. i18n `entity_picker.*`.
+- **`ChannelMultiSelect`** — channel scope chip (`channels` icon): „Kanały: Wszystkie” / „Kanały: 2”; `compact`
+  (and every chip below the tablet breakpoint) shows „Kanały”. `v-model` = channel idxs, `channels` =
+  `[{ idx, name? }]`, `label`, `allLabel`; the list is a multi-select listbox with checkboxes in BasicMenu's panel.
+- The three share `src/boots/BasicSelect/OptionList.vue` (listbox rendering) and `useListbox.js` (keyboard).
+  BasicMenu `inline` with a `top` placement draws the list above the trigger (the catalogue's drop-up).
+- Removed (lint, `scripts/lint/removed-components/selects.json`): `Dropdown` → `BasicSelect`; it stays registered
+  until plan 19.
+- Codemod `scripts/codemods/p3-selects.mjs` (sweeps 17/18): `Dropdown` → `BasicSelect`, `:values` → `:options`,
+  `isDisabled` → `disabled`, `icon` dropped; `:selected="x ? [x] : []"` / `[x]` + an `@onSelect` that only assigns
+  x → `v-model="x"` (a method keeps `@update:model-value="method"`); `:selected` alone → `:model-value`. Flags (tag
+  left as it is): a handler that does more, a `:selected` that is not one assignable value, a missing `:selected`,
+  `validate`, `custom_droplist`, `complex_values`, `can_remove_selected`, `@onUse`, `@onRemoveSelected`,
+  `@onExtension*`, options with `label_ext*` in the file, any other attribute.
+
+Catalogue: `#selects` (`#basic-select`, `#entity-search-picker`, `#channel-multi-select`).
+
 ### P3 inputs (plan 16)
 
 ### P4 shell (plan 21)
