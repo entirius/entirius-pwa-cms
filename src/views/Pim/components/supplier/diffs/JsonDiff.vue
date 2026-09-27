@@ -38,6 +38,7 @@ export default {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-5);
+  width: 100%;
   contain: inline-size;
 }
 .json-diff__col {
