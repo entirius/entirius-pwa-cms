@@ -347,23 +347,27 @@
         </Confirmation-modal>
 
         <!-- Delete confirmation -->
-        <Confirmation-modal
-          destructive
-          :visible="showDeleteConfirm"
-          @accept="deleteSet"
-          @reject="showDeleteConfirm = false"
+        <ConfirmDialog
+          tone="danger"
+          :open="showDeleteConfirm"
+          @confirm="deleteSet"
+          @cancel="showDeleteConfirm = false"
         >
-          <template #description>
+          <template #default>
             <p>{{ $t("pim.confirm_delete_feature_set") }}</p>
           </template>
-        </Confirmation-modal>
+        </ConfirmDialog>
 
         <!-- Unsaved changes modal -->
-        <UnsavedChangesModal
-          :visible="!!pendingNav"
-          @save="saveAndLeave"
+        <ConfirmDialog
+          :open="!!pendingNav"
+          @confirm="saveAndLeave"
           @discard="confirmLeave"
-          @stay="cancelLeave"
+          @cancel="cancelLeave"
+          :title="$t('unsaved.title')"
+          :message="$t('unsaved.message')"
+          :confirm-label="$t('unsaved.save_and_leave')"
+          :discard-label="$t('unsaved.discard')"
         />
 
         <!-- Add group modal removed — inline creation panel used instead -->
@@ -410,7 +414,6 @@ import { featureTypeLabel } from "./helpers/pimEnums";
 import AttributeLibrary from "./components/AttributeLibrary.vue";
 import TypeBadge from "./components/TypeBadge.vue";
 import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
-import UnsavedChangesModal from "@/functionals/Unsaved-changes-modal/index.vue";
 import { extractApiMessage } from "@/composables/useFormErrors";
 
 export default {
@@ -420,7 +423,6 @@ export default {
     AttributeLibrary,
     TypeBadge,
     ConfirmationModal,
-    UnsavedChangesModal,
   },
   setup() {
     const loader = useLoaderStore();

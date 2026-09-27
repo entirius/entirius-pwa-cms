@@ -4,7 +4,6 @@ import { t } from "@/i18n";
 import { useNotifyStore } from "@/stores/notify";
 import { usePimChannelStore } from "@/stores/pimChannel";
 import draggable from "vuedraggable";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import {
   POST_UploadPicture,
   GET_ProductPictures,
@@ -799,19 +798,19 @@ watch(
       @save="onAltTranslationsSave"
     />
 
-    <ConfirmationModal
-      destructive
-      :visible="!!confirmingDeleteItem"
-      @accept="
+    <ConfirmDialog
+      tone="danger"
+      :open="!!confirmingDeleteItem"
+      @confirm="
         deleteItem(confirmingDeleteItem);
         confirmingDeleteItem = null;
       "
-      @reject="confirmingDeleteItem = null"
+      @cancel="confirmingDeleteItem = null"
     >
-      <template #description>
+      <template #default>
         <p>{{ $t("pim.confirm_delete_media") }}</p>
       </template>
-    </ConfirmationModal>
+    </ConfirmDialog>
   </div>
 </template>
 

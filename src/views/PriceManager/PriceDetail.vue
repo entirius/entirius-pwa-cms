@@ -157,25 +157,25 @@
           </div>
 
           <!-- Confirmation modals -->
-          <Confirmation-modal
-            destructive
-            :visible="showFlushConfirm"
-            @accept="flushSpecial"
-            @reject="showFlushConfirm = false"
+          <ConfirmDialog
+            tone="danger"
+            :open="showFlushConfirm"
+            @confirm="flushSpecial"
+            @cancel="showFlushConfirm = false"
+            :title="$t('pm.flush_special')"
           >
-            <template #header><h2>{{ $t('pm.flush_special') }}</h2></template>
-            <template #description><p>{{ $t('pm.flush_special_confirm') }}</p></template>
-          </Confirmation-modal>
+            <template #default><p>{{ $t('pm.flush_special_confirm') }}</p></template>
+          </ConfirmDialog>
 
-          <Confirmation-modal
-            destructive
-            :visible="showDeleteConfirm"
-            @accept="deletePrices"
-            @reject="showDeleteConfirm = false"
+          <ConfirmDialog
+            tone="danger"
+            :open="showDeleteConfirm"
+            @confirm="deletePrices"
+            @cancel="showDeleteConfirm = false"
+            :title="$t('pm.delete_prices')"
           >
-            <template #header><h2>{{ $t('pm.delete_prices') }}</h2></template>
-            <template #description><p>{{ $t('pm.delete_prices_confirm') }}</p></template>
-          </Confirmation-modal>
+            <template #default><p>{{ $t('pm.delete_prices_confirm') }}</p></template>
+          </ConfirmDialog>
 
           <!-- All-countries breakdown (collapsible) -->
           <div v-if="showCountries" class="mb-10">
@@ -234,12 +234,11 @@ import { useLoaderStore } from '@/stores/loader'
 import { useNotifyStore } from '@/stores/notify'
 import { useFormErrors, extractApiMessage } from '@/composables/useFormErrors'
 import { GET_PmPriceDetail, GET_PmPrices, PATCH_PmPrice, DELETE_PmPrice, POST_PmFlushSpecial, GET_PmPriceHistory } from '@/api/pricemanager/api'
-import ConfirmationModal from '@/functionals/Confirmation-modal/index.vue'
 import { formatDate } from '@/utils/format'
 
 export default {
   name: 'PmPriceDetail',
-  components: { ConfirmationModal },
+  components: {},
   inject: {
     pmChannelIdx: { default: null },
     pmActiveChannel: { default: null },

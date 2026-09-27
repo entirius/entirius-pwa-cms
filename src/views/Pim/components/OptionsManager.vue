@@ -151,19 +151,17 @@
     />
 
     <!-- Delete confirmation -->
-    <Confirmation-modal
-      destructive
-      :visible="!!deletingOption"
-      @accept="deleteOption"
-      @reject="deletingOption = null"
+    <ConfirmDialog
+      tone="danger"
+      :open="!!deletingOption"
+      @confirm="deleteOption"
+      @cancel="deletingOption = null"
+      :title="$t('pim.confirm_delete_title')"
     >
-      <template #header
-        ><h2>{{ $t("pim.confirm_delete_title") }}</h2></template
-      >
-      <template #description
+      <template #default
         ><p>{{ $t("pim.confirm_delete_option") }}</p></template
       >
-    </Confirmation-modal>
+    </ConfirmDialog>
   </div>
 </template>
 
@@ -181,7 +179,6 @@ import {
   PATCH_AttributesReorder,
 } from "@/api/pim/api";
 
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import OptionTranslationsDrawer from "./OptionTranslationsDrawer.vue";
 import { extractApiMessage } from "@/composables/useFormErrors";
 
@@ -189,7 +186,7 @@ const PAGE_SIZE = 50;
 
 export default {
   name: "OptionsManager",
-  components: { draggable, ConfirmationModal, OptionTranslationsDrawer },
+  components: { draggable, OptionTranslationsDrawer },
   props: {
     featureIdx: {
       type: String,

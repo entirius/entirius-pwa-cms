@@ -95,15 +95,15 @@
       </template>
     </div>
 
-    <Confirmation-modal
-      destructive
-      :visible="showDeleteConfirm"
-      @accept="deleteChannel"
-      @reject="showDeleteConfirm = false"
+    <ConfirmDialog
+      tone="danger"
+      :open="showDeleteConfirm"
+      @confirm="deleteChannel"
+      @cancel="showDeleteConfirm = false"
+      :title="$t('pm.confirm_delete_title')"
     >
-      <template #header><h2>{{ $t('pm.confirm_delete_title') }}</h2></template>
-      <template #description><p>{{ $t('pm.confirm_delete_msg') }}</p></template>
-    </Confirmation-modal>
+      <template #default><p>{{ $t('pm.confirm_delete_msg') }}</p></template>
+    </ConfirmDialog>
   </div>
 </template>
 

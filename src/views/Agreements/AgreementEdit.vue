@@ -447,32 +447,28 @@
       </template>
     </div>
 
-    <Confirmation-modal
-      destructive
-      :visible="showDeleteConfirm"
-      @accept="deleteDefinition"
-      @reject="showDeleteConfirm = false"
+    <ConfirmDialog
+      tone="danger"
+      :open="showDeleteConfirm"
+      @confirm="deleteDefinition"
+      @cancel="showDeleteConfirm = false"
+      :title="$t('pim.confirm_delete_title')"
     >
-      <template #header
-        ><h2>{{ $t("pim.confirm_delete_title") }}</h2></template
-      >
-      <template #description
+      <template #default
         ><p>{{ $t("agm.confirm_delete") }}</p></template
       >
-    </Confirmation-modal>
+    </ConfirmDialog>
 
-    <Confirmation-modal
-      :visible="showPublishedEditConfirm"
-      @accept="confirmEditPublished"
-      @reject="showPublishedEditConfirm = false"
+    <ConfirmDialog
+      :open="showPublishedEditConfirm"
+      @confirm="confirmEditPublished"
+      @cancel="showPublishedEditConfirm = false"
+      :title="$t('agm.create_draft_from_published')"
     >
-      <template #header
-        ><h2>{{ $t("agm.create_draft_from_published") }}</h2></template
-      >
-      <template #description
+      <template #default
         ><p>{{ $t("agm.edit_published_confirm") }}</p></template
       >
-    </Confirmation-modal>
+    </ConfirmDialog>
   </div>
 </template>
 
@@ -491,12 +487,11 @@ import {
   GET_AgmChannels,
   GET_ContentHistory,
 } from "@/api/agreements/api";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import { extractApiMessage } from "@/composables/useFormErrors";
 
 export default {
   name: "AgreementEdit",
-  components: { ConfirmationModal },
+  components: {},
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();

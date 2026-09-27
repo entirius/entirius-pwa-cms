@@ -9,11 +9,15 @@
       <Loading :isHandy="true" v-if="handyLoading" />
     </div>
     <Teleport to="body">
-      <UnsavedChangesModal
-        :visible="showUnsavedConfirm"
-        @stay="showUnsavedConfirm = false"
+      <ConfirmDialog
+        :open="showUnsavedConfirm"
+        @cancel="showUnsavedConfirm = false"
         @discard="forceClose"
-        @save="saveAndClose"
+        @confirm="saveAndClose"
+        :title="$t('unsaved.title')"
+        :message="$t('unsaved.message')"
+        :confirm-label="$t('unsaved.save_and_leave')"
+        :discard-label="$t('unsaved.discard')"
       />
     </Teleport>
   </div>
@@ -23,7 +27,6 @@
 import { useLoaderStore } from "@/stores/loader";
 import { useHandyStore } from "@/stores/handy";
 import Loading from "../../components/Loading.vue";
-import UnsavedChangesModal from "../Unsaved-changes-modal/index.vue";
 
 import ImagesKit from "./kits/images-kit/images-kit.vue";
 import ConfigsKit from "./kits/configs-kit/index.vue";
@@ -87,7 +90,6 @@ export default {
     AttrsKit,
     CategoriesKit,
     ContentRoleKit,
-    UnsavedChangesModal,
     Loading,
   },
 };

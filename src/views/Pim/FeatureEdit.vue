@@ -190,23 +190,27 @@
       </template>
 
       <!-- Delete confirmation -->
-      <Confirmation-modal
-        destructive
-        :visible="showDeleteConfirm"
-        @accept="deleteFeature"
-        @reject="showDeleteConfirm = false"
+      <ConfirmDialog
+        tone="danger"
+        :open="showDeleteConfirm"
+        @confirm="deleteFeature"
+        @cancel="showDeleteConfirm = false"
       >
-        <template #description>
+        <template #default>
           <p>{{ $t("pim.confirm_delete_feature") }}</p>
         </template>
-      </Confirmation-modal>
+      </ConfirmDialog>
 
       <!-- Unsaved changes modal -->
-      <UnsavedChangesModal
-        :visible="!!pendingNav"
-        @save="saveAndLeave"
+      <ConfirmDialog
+        :open="!!pendingNav"
+        @confirm="saveAndLeave"
         @discard="confirmLeave"
-        @stay="cancelLeave"
+        @cancel="cancelLeave"
+        :title="$t('unsaved.title')"
+        :message="$t('unsaved.message')"
+        :confirm-label="$t('unsaved.save_and_leave')"
+        :discard-label="$t('unsaved.discard')"
       />
     </div>
   </div>
@@ -234,8 +238,6 @@ import {
 import OptionsManager from "./components/OptionsManager.vue";
 import PimBreadcrumb from "./components/PimBreadcrumb.vue";
 import PimCard from "./components/PimCard.vue";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
-import UnsavedChangesModal from "@/functionals/Unsaved-changes-modal/index.vue";
 import { extractApiMessage } from "@/composables/useFormErrors";
 
 export default {
@@ -244,8 +246,6 @@ export default {
     OptionsManager,
     PimBreadcrumb,
     PimCard,
-    ConfirmationModal,
-    UnsavedChangesModal,
   },
   setup() {
     const loader = useLoaderStore();

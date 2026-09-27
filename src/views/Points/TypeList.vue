@@ -132,19 +132,17 @@
       </div>
     </div>
 
-    <Confirmation-modal
-      destructive
-      :visible="showDeleteConfirm"
-      @accept="deleteType"
-      @reject="showDeleteConfirm = false"
+    <ConfirmDialog
+      tone="danger"
+      :open="showDeleteConfirm"
+      @confirm="deleteType"
+      @cancel="showDeleteConfirm = false"
+      :title="$t('dp.confirm_delete_title')"
     >
-      <template #header
-        ><h2>{{ $t("dp.confirm_delete_title") }}</h2></template
-      >
-      <template #description
+      <template #default
         ><p>{{ $t("dp.confirm_delete_type") }}</p></template
       >
-    </Confirmation-modal>
+    </ConfirmDialog>
   </div>
 </template>
 
@@ -157,12 +155,11 @@ import {
   PATCH_Type,
   DELETE_Type,
 } from "@/api/deliverypoints/api";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import { extractApiMessage } from "@/composables/useFormErrors";
 
 export default {
   name: "TypeList",
-  components: { ConfirmationModal },
+  components: {},
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();

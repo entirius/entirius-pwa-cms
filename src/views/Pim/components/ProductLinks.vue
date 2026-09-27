@@ -169,19 +169,17 @@
       </form>
     </SideDrawer>
 
-    <Confirmation-modal
-      destructive
-      :visible="deleteVisible"
-      @accept="executeDelete"
-      @reject="deleteVisible = false"
+    <ConfirmDialog
+      tone="danger"
+      :open="deleteVisible"
+      @confirm="executeDelete"
+      @cancel="deleteVisible = false"
+      :title="$t('pim.links.delete_title')"
     >
-      <template #header>
-        <h2>{{ $t("pim.links.delete_title") }}</h2>
-      </template>
-      <template #description>
+      <template #default>
         <p>{{ $t("pim.links.delete_body") }}</p>
       </template>
-    </Confirmation-modal>
+    </ConfirmDialog>
   </div>
 </template>
 
@@ -189,7 +187,6 @@
 import { ref, reactive, computed, onMounted, watch } from "vue";
 import draggable from "vuedraggable";
 import { t } from "@/i18n";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import { useNotifyStore } from "@/stores/notify";
 import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
 import { useProductFetch } from "@/composables/useEntityFetch";

@@ -3,15 +3,16 @@
     <div class="">
       <div class="flex jc-sb ai-ct mb-2">
         <p v-if="label">{{ label }}</p>
-        <ToolTip
-          class="right t-accent fs-200"
-          :tip="
+        <BasicTooltip
+          class="t-accent fs-200"
+          :text="
             Object.keys(groups).length
               ? $t('controllers.tooltip_select_group')
               : $t('controllers.tooltip_add_group')
           "
+          variant="help"
         >
-        </ToolTip>
+        </BasicTooltip>
       </div>
       <div class="flex gap-2">
         <BasicButton

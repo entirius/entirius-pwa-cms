@@ -252,25 +252,25 @@
 
     <FloatingActions :actions="fabActions" />
 
-    <Confirmation-modal
-      destructive
-      :visible="!!pendingFlushSku"
-      @accept="doFlushSpecial"
-      @reject="pendingFlushSku = null"
+    <ConfirmDialog
+      tone="danger"
+      :open="!!pendingFlushSku"
+      @confirm="doFlushSpecial"
+      @cancel="pendingFlushSku = null"
+      :title="$t('pm.flush_special')"
     >
-      <template #header><h2>{{ $t('pm.flush_special') }}</h2></template>
-      <template #description><p>{{ $t('pm.flush_special_confirm') }}</p></template>
-    </Confirmation-modal>
+      <template #default><p>{{ $t('pm.flush_special_confirm') }}</p></template>
+    </ConfirmDialog>
 
-    <Confirmation-modal
-      destructive
-      :visible="!!pendingDeleteSku"
-      @accept="doDeletePrices"
-      @reject="pendingDeleteSku = null"
+    <ConfirmDialog
+      tone="danger"
+      :open="!!pendingDeleteSku"
+      @confirm="doDeletePrices"
+      @cancel="pendingDeleteSku = null"
+      :title="$t('pm.delete_prices')"
     >
-      <template #header><h2>{{ $t('pm.delete_prices') }}</h2></template>
-      <template #description><p>{{ $t('pm.delete_prices_confirm') }}</p></template>
-    </Confirmation-modal>
+      <template #default><p>{{ $t('pm.delete_prices_confirm') }}</p></template>
+    </ConfirmDialog>
   </div>
 </template>
 
@@ -286,12 +286,11 @@ import {
   DELETE_PmPrice,
   POST_PmFlushSpecial,
 } from '@/api/pricemanager/api'
-import ConfirmationModal from '@/functionals/Confirmation-modal/index.vue'
 import { extractApiMessage } from '@/composables/useFormErrors'
 
 export default {
   name: 'PmPriceList',
-  components: { ConfirmationModal },
+  components: {},
   inject: {
     pmChannelIdx: { default: null },
     pmActiveChannel: { default: null },

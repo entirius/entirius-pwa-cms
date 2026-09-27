@@ -135,7 +135,7 @@
             class="ic-gallery-card bg-base relative grid-square pointer rounded"
             :class="{ 'ic-gallery-card--selected': selected_asset === i }"
           >
-            <HoverMe
+            <BasicTooltip
               :text="g.meta && g.meta.fileName ? g.meta.fileName : 'No title'"
               class="absolute absolute-ct w-100 h-100"
             >
@@ -160,7 +160,7 @@
                   }}</span>
                 </div>
               </div>
-            </HoverMe>
+            </BasicTooltip>
             <div v-if="selected_asset === i" class="ic-gallery-check">
               <FontAwesomeIcon :icon="$icons.success" />
             </div>

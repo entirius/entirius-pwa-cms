@@ -145,7 +145,7 @@
             <div>
               <span class="fs-200 t-muted fw-600 tt-upper">
                 {{ $t("pim.gap_languages") }}
-                <HelpTooltip :text="$t('pim.gap_scope_all_hint')" />
+                <BasicTooltip :text="$t('pim.gap_scope_all_hint')" variant="help" />
               </span>
               <div class="mb-2"></div>
               <div class="flex gap-2" style="flex-wrap: wrap">
@@ -161,7 +161,7 @@
             <div>
               <span class="fs-200 t-muted fw-600 tt-upper">
                 {{ $t("pim.gap_channels") }}
-                <HelpTooltip :text="$t('pim.gap_scope_all_hint')" />
+                <BasicTooltip :text="$t('pim.gap_scope_all_hint')" variant="help" />
               </span>
               <div class="mb-2"></div>
               <ChannelMultiSelect
@@ -174,16 +174,16 @@
           </div>
         </template>
 
-        <Confirmation-modal
-          destructive
-          :visible="showDeleteConfirm"
-          @accept="deleteRule"
-          @reject="showDeleteConfirm = false"
+        <ConfirmDialog
+          tone="danger"
+          :open="showDeleteConfirm"
+          @confirm="deleteRule"
+          @cancel="showDeleteConfirm = false"
         >
-          <template #description>
+          <template #default>
             <p>{{ $t("pim.confirm_delete_gap_definition") }}</p>
           </template>
-        </Confirmation-modal>
+        </ConfirmDialog>
       </div>
     </div>
   </div>
@@ -202,7 +202,6 @@ import {
   DELETE_GapDefinition,
   GET_Features,
 } from "@/api/pim/api";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 
 const FEATURE_CHECKS = ["feature_present", "feature_min_length"];
 const PICTURE_ROLES = ["MAIN", "GENERAL", "VARIANT", "ANGLE"];
@@ -218,7 +217,7 @@ function normalizedParams(obj) {
 
 export default {
   name: "GapDefinitionEdit",
-  components: { ConfirmationModal },
+  components: {},
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();

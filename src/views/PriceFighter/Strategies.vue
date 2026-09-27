@@ -159,15 +159,15 @@
       </div>
     </div>
 
-    <Confirmation-modal
-      destructive
-      :visible="showDeleteConfirm"
-      @accept="deleteRule"
-      @reject="showDeleteConfirm = false"
+    <ConfirmDialog
+      tone="danger"
+      :open="showDeleteConfirm"
+      @confirm="deleteRule"
+      @cancel="showDeleteConfirm = false"
+      :title="$t('pricefighter.confirm_delete_title')"
     >
-      <template #header><h2>{{ $t('pricefighter.confirm_delete_title') }}</h2></template>
-      <template #description><p>{{ $t('pricefighter.confirm_delete_rule') }}</p></template>
-    </Confirmation-modal>
+      <template #default><p>{{ $t('pricefighter.confirm_delete_rule') }}</p></template>
+    </ConfirmDialog>
   </div>
 </template>
 
@@ -180,7 +180,6 @@ import { useProductFetch, useCategoryFetch } from '@/composables/useEntityFetch'
 import { useMuninStore } from '@/stores/munin'
 import { GET_PfRules, POST_PfRule, PATCH_PfRule, DELETE_PfRule } from '@/api/pricefighter/api'
 import { STRATEGIES, RECOMMENDATION_VARIANTS } from './constants'
-import ConfirmationModal from '@/functionals/Confirmation-modal/index.vue'
 
 const SCOPE_TYPES = ['sku', 'category_idx', 'channel']
 
@@ -190,7 +189,7 @@ function emptyForm() {
 
 export default {
   name: 'PfStrategies',
-  components: { ConfirmationModal },
+  components: {},
   setup() {
     const loader = useLoaderStore()
     const notify = useNotifyStore()

@@ -154,28 +154,26 @@
         </div>
       </div>
     </div>
-    <ConfirmationModal
-      destructive
-      :visible="confirmation_modal"
-      @accept="
+    <ConfirmDialog
+      tone="danger"
+      :open="confirmation_modal"
+      @confirm="
         () => {
           DELETE_Route({ url: to_delete });
           confirmation_modal = false;
           to_delete = null;
         }
       "
-      @reject="
+      @cancel="
         confirmation_modal = false;
         to_delete = null;
       "
+      :title="$t('builder.confirm_title')"
     >
-      <template #header>
-        <h2>{{ $t("builder.confirm_title") }}</h2>
-      </template>
-      <template #description>
+      <template #default>
         <p>{{ $t("builder.confirm_msg") }}</p>
       </template>
-    </ConfirmationModal>
+    </ConfirmDialog>
 
     <div
       class="grid grid-col-3 rtl-direction bg-raised pl-10 pr-10 pt-2 pb-2"
@@ -200,7 +198,6 @@
 import { _METHOD_content } from "@/api/contentDB/api";
 import { useNotifyStore } from "@/stores/notify";
 import { useHandyStore } from "@/stores/handy";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 
 export default {
   setup() {
@@ -208,9 +205,7 @@ export default {
     const handy = useHandyStore();
     return { notify, handy };
   },
-  components: {
-    ConfirmationModal,
-  },
+  components: {},
   data() {
     return {
       routes: [],

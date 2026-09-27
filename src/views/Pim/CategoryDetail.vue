@@ -192,7 +192,7 @@
               <div class="detail-field">
                 <label class="field-label">
                   {{ $t("pim.index") }}
-                  <HelpTooltip :text="$t('pim.index_help')" />
+                  <BasicTooltip :text="$t('pim.index_help')" variant="help" />
                 </label>
                 <Switcher
                   :selected="!form.noindex"
@@ -202,7 +202,7 @@
               <div class="detail-field">
                 <label class="field-label">
                   {{ $t("pim.follow") }}
-                  <HelpTooltip :text="$t('pim.follow_help')" />
+                  <BasicTooltip :text="$t('pim.follow_help')" variant="help" />
                 </label>
                 <Switcher
                   :selected="!form.nofollow"
@@ -213,7 +213,7 @@
             <div class="mb-8">
               <label class="field-label">
                 {{ $t("pim.og_image_url") }}
-                <HelpTooltip :text="$t('pim.og_image_url_help')" />
+                <BasicTooltip :text="$t('pim.og_image_url_help')" variant="help" />
               </label>
               <BasicInput v-model="form.og_image_url" />
             </div>
@@ -287,16 +287,14 @@
       </template>
     </TranslationsDrawer>
 
-    <Confirmation-modal
-      destructive
-      :visible="showDeleteConfirm"
-      @accept="deleteCategory"
-      @reject="showDeleteConfirm = false"
+    <ConfirmDialog
+      tone="danger"
+      :open="showDeleteConfirm"
+      @confirm="deleteCategory"
+      @cancel="showDeleteConfirm = false"
+      :title="$t('pim.confirm_delete')"
     >
-      <template #header
-        ><h2>{{ $t("pim.confirm_delete") }}</h2></template
-      >
-      <template #description>
+      <template #default>
         <p>
           {{
             category.subcategory_count
@@ -307,13 +305,17 @@
           }}
         </p>
       </template>
-    </Confirmation-modal>
+    </ConfirmDialog>
 
-    <UnsavedChangesModal
-      :visible="!!pendingNav"
-      @save="saveAndLeave"
+    <ConfirmDialog
+      :open="!!pendingNav"
+      @confirm="saveAndLeave"
       @discard="confirmLeave"
-      @stay="cancelLeave"
+      @cancel="cancelLeave"
+      :title="$t('unsaved.title')"
+      :message="$t('unsaved.message')"
+      :confirm-label="$t('unsaved.save_and_leave')"
+      :discard-label="$t('unsaved.discard')"
     />
   </div>
 </template>
@@ -323,8 +325,6 @@ import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { usePimChannelStore } from "@/stores/pimChannel";
 import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
-import UnsavedChangesModal from "@/functionals/Unsaved-changes-modal/index.vue";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import { GET_Category, PATCH_Category, DELETE_Category, POST_UploadPicture } from "@/api/pim/api";
 import CategoryProducts from "./components/CategoryProducts.vue";
 import { extractApiMessage } from "@/composables/useFormErrors";
@@ -333,8 +333,6 @@ import { isNotFound } from "@/api/createClient";
 export default {
   name: "CategoryDetail",
   components: {
-    UnsavedChangesModal,
-    ConfirmationModal,
     CategoryProducts,
   },
   beforeRouteLeave(to, from, next) {

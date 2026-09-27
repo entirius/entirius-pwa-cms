@@ -99,7 +99,7 @@
               }
             "
           >
-            <HoverMe
+            <BasicTooltip
               :text="p.meta && p.meta.fileName ? p.meta.fileName : 'No title'"
               class="absolute absolute-ct w-100 h-100"
             >
@@ -111,7 +111,7 @@
                 :ommit_media_query="true"
                 :key="p.uid"
               />
-            </HoverMe>
+            </BasicTooltip>
           </div>
         </div>
         <div class="flex jc-sb mt-5">

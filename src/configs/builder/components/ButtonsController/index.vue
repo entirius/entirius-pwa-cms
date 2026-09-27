@@ -3,15 +3,16 @@
     <div class="mb-1 flex jc-sb ai-ct">
       <span v-if="label">{{ label }}</span>
 
-      <ToolTip
-        class="right t-accent fs-200"
-        :tip="
+      <BasicTooltip
+        class="t-accent fs-200"
+        :text="
           value
             ? $t('controllers.tooltip_select_button')
             : $t('controllers.tooltip_add_button')
         "
+        variant="help"
       >
-      </ToolTip>
+      </BasicTooltip>
     </div>
 
     <div class="grid grid-col-3 gap-2 mt-5" v-if="mode">
@@ -68,9 +69,10 @@
           :selected="link_rtl"
           @onSelect="link_rtl = !link_rtl"
         />
-        <ToolTip
-          :tip="$t('controllers.rtl_tip')"
-          class="fs-300 right t-accent"
+        <BasicTooltip
+          :text="$t('controllers.rtl_tip')"
+          class="fs-300 t-accent"
+          variant="help"
         />
       </div>
       <div class="grid">

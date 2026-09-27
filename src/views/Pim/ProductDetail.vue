@@ -712,51 +712,49 @@
       </template>
     </div>
 
-    <Confirmation-modal
-      destructive
-      :visible="showDeleteConfirm"
-      @accept="deleteProduct"
-      @reject="showDeleteConfirm = false"
+    <ConfirmDialog
+      tone="danger"
+      :open="showDeleteConfirm"
+      @confirm="deleteProduct"
+      @cancel="showDeleteConfirm = false"
+      :title="$t('pim.confirm_delete_title')"
     >
-      <template #header
-        ><h2>{{ $t("pim.confirm_delete_title") }}</h2></template
-      >
-      <template #description
+      <template #default
         ><p>{{ $t("pim.confirm_delete_product") }}</p></template
       >
-    </Confirmation-modal>
+    </ConfirmDialog>
 
-    <Confirmation-modal
-      :visible="!!pendingInheritanceFlag"
-      @accept="confirmInheritanceFlag"
-      @reject="pendingInheritanceFlag = null"
+    <ConfirmDialog
+      :open="!!pendingInheritanceFlag"
+      @confirm="confirmInheritanceFlag"
+      @cancel="pendingInheritanceFlag = null"
+      :title="$t('pim.confirm_inheritance_title')"
     >
-      <template #header
-        ><h2>{{ $t("pim.confirm_inheritance_title") }}</h2></template
-      >
-      <template #description
+      <template #default
         ><p>{{ $t("pim.confirm_inheritance_warning") }}</p></template
       >
-    </Confirmation-modal>
+    </ConfirmDialog>
 
-    <Confirmation-modal
-      :visible="!!pendingFeatureSetIdx"
-      @accept="confirmFeatureSetChange"
-      @reject="pendingFeatureSetIdx = null"
+    <ConfirmDialog
+      :open="!!pendingFeatureSetIdx"
+      @confirm="confirmFeatureSetChange"
+      @cancel="pendingFeatureSetIdx = null"
+      :title="$t('pim.confirm_change_feature_set_title')"
     >
-      <template #header
-        ><h2>{{ $t("pim.confirm_change_feature_set_title") }}</h2></template
-      >
-      <template #description
+      <template #default
         ><p>{{ $t("pim.confirm_change_feature_set_warning") }}</p></template
       >
-    </Confirmation-modal>
+    </ConfirmDialog>
 
-    <UnsavedChangesModal
-      :visible="!!pendingNav"
-      @save="saveAndLeave"
+    <ConfirmDialog
+      :open="!!pendingNav"
+      @confirm="saveAndLeave"
       @discard="confirmLeave"
-      @stay="cancelLeave"
+      @cancel="cancelLeave"
+      :title="$t('unsaved.title')"
+      :message="$t('unsaved.message')"
+      :confirm-label="$t('unsaved.save_and_leave')"
+      :discard-label="$t('unsaved.discard')"
     />
 
     <CopyTranslationsDialog
@@ -863,8 +861,6 @@ import { useNotifyStore } from "@/stores/notify";
 import { usePimChannelStore } from "@/stores/pimChannel";
 import { useMuninStore } from "@/stores/munin";
 import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
-import UnsavedChangesModal from "@/functionals/Unsaved-changes-modal/index.vue";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import MediaGallery from "./components/MediaGallery.vue";
 import AttributeEditor from "./components/AttributeEditor.vue";
 import CategoryAssignment from "./components/CategoryAssignment.vue";
@@ -886,8 +882,6 @@ import { extractApiMessage } from "@/composables/useFormErrors";
 export default {
   name: "ProductDetail",
   components: {
-    UnsavedChangesModal,
-    ConfirmationModal,
     MediaGallery,
     AttributeEditor,
     CategoryAssignment,

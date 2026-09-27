@@ -368,25 +368,27 @@
       </template>
     </div>
 
-    <Confirmation-modal
-      destructive
-      :visible="showDeleteConfirm"
-      @accept="deletePoint"
-      @reject="showDeleteConfirm = false"
+    <ConfirmDialog
+      tone="danger"
+      :open="showDeleteConfirm"
+      @confirm="deletePoint"
+      @cancel="showDeleteConfirm = false"
+      :title="$t('dp.confirm_delete_title')"
     >
-      <template #header
-        ><h2>{{ $t("dp.confirm_delete_title") }}</h2></template
-      >
-      <template #description
+      <template #default
         ><p>{{ $t("dp.confirm_delete_point") }}</p></template
       >
-    </Confirmation-modal>
+    </ConfirmDialog>
 
-    <UnsavedChangesModal
-      :visible="!!pendingNav"
-      @save="saveAndLeave"
+    <ConfirmDialog
+      :open="!!pendingNav"
+      @confirm="saveAndLeave"
       @discard="confirmLeave"
-      @stay="cancelLeave"
+      @cancel="cancelLeave"
+      :title="$t('unsaved.title')"
+      :message="$t('unsaved.message')"
+      :confirm-label="$t('unsaved.save_and_leave')"
+      :discard-label="$t('unsaved.discard')"
     />
   </div>
 </template>
@@ -411,12 +413,10 @@ import {
   DELETE_PointT9N,
   POST_GeocodeSearch,
 } from "@/api/deliverypoints/api";
-import UnsavedChangesModal from "@/functionals/Unsaved-changes-modal/index.vue";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 
 export default {
   name: "PointEdit",
-  components: { UnsavedChangesModal, ConfirmationModal },
+  components: {},
   setup() {
     const loader = useLoaderStore();
     const munin = useMuninStore();
