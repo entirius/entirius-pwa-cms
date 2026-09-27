@@ -80,6 +80,13 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- Mobile: every action is reachable on a phone. Scroll regions end above the bottom bar (pagination, the last form
+  fields and the atlas swipe actions were under it); panel toolbars, in-card title rows and section headings wrap, so
+  Save, Publish and Import no longer sit past the viewport; page cards pad 16 px instead of 48 px. Wide tables
+  (prices, stock, atlas duplicates, agreement versions), tabs and segmented controls scroll in their own box, never
+  the card. Forms stack to one column (PIM attributes and feature sets, forms-list filters, the atlas find box, leads
+  stages); PIM and Promo show their channel selector again; builder Save draft and Publish keep their labels. The
+  `.flex-wrap` utility 49 rows relied on did not exist and now does.
 - Tax rates read and are entered in percent: the tax class showed the stored fraction as "0.2300%"; it now shows
   "23 %" / "8,5 %", and a typed 23 is stored as 0.2300. `NumberInput` with a fractional `step` takes decimals
   ("8,5" or "8.5"); it used to strip the separator, so 8,5 became 85.
