@@ -12,7 +12,7 @@
       <input
         ref="inputEl"
         type="text"
-        inputmode="numeric"
+        :inputmode="decimals ? 'decimal' : 'numeric'"
         class="number-input__value"
         :value="displayValue"
         :placeholder="placeholder"
@@ -66,12 +66,19 @@ const props = defineProps({
 
 const emit = defineEmits(["update:modelValue"]);
 
+// A fractional step (0.01) turns on decimal entry: "," reads as ".", values round to the step's places.
+const decimals = computed(() => (String(props.step).split(".")[1] || "").length);
+
 const numericValue = computed(() => {
-  const n = parseInt(props.modelValue, 10);
+  const n = decimals.value
+    ? parseFloat(String(props.modelValue).replace(",", "."))
+    : parseInt(props.modelValue, 10);
   return isNaN(n) ? null : n;
 });
 
+// Decimal mode shows the text as typed, so "8." survives until the next digit.
 const displayValue = computed(() => {
+  if (decimals.value) return String(props.modelValue ?? "");
   return numericValue.value !== null ? String(numericValue.value) : "";
 });
 
@@ -83,7 +90,8 @@ const isAtMax = computed(
 );
 
 function clamp(val) {
-  return Math.min(props.max, Math.max(props.min, val));
+  const rounded = Number(val.toFixed(decimals.value));
+  return Math.min(props.max, Math.max(props.min, rounded));
 }
 
 function increment() {
@@ -97,7 +105,8 @@ function decrement() {
 }
 
 function onTextInput(e) {
-  const raw = e.target.value.replace(/[^0-9-]/g, "");
+  const allowed = decimals.value ? /[^0-9,.-]/g : /[^0-9-]/g;
+  const raw = e.target.value.replace(allowed, "").replace(",", ".");
   emit("update:modelValue", raw);
 }
 

@@ -81,7 +81,8 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 
 - Tax rates read and are entered in percent: the tax class showed the stored fraction as "0.2300%"; it now shows
-  "23 %" / "8,5 %", and a typed 23 is stored as 0.2300.
+  "23 %" / "8,5 %", and a typed 23 is stored as 0.2300. `NumberInput` with a fractional `step` takes decimals
+  ("8,5" or "8.5"); it used to strip the separator, so 8,5 became 85.
 - Edit forms show the values the record has: the enrichment rule edit showed "Select" for a check and task type
   outside the loaded lists (atlas rules) and for a rule without a channel scope ("All channels" now); task types
   carry labels. A carrier delivery point shows its type.
