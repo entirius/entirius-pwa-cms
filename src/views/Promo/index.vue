@@ -4,7 +4,7 @@
       <div class="flex ai-ct gap-8">
         <div id="promo-toolbar-left" class="flex ai-ct gap-5"></div>
         <div v-if="showChannelSelector" class="promo-channel-selector flex ai-ct gap-8">
-          <span class="fs-200 fw-600 t-muted">{{ $t("promo.channel") }}:</span>
+          <span class="field-label">{{ $t("promo.channel") }}</span>
           <Dropdown
             :values="channelOptions"
             :selected="[checkoutChannel.activeChannelIdx]"

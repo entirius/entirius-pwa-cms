@@ -1,8 +1,11 @@
 <template>
   <div class="locked-field relative">
-    <label v-if="label" class="locked-field__label field-label block absolute">{{
-      label
-    }}</label>
+    <label
+      v-if="label"
+      :title="label"
+      class="locked-field__label field-label field-label--fit block absolute"
+      >{{ label }}</label
+    >
     <div class="locked-field__value flex ai-ct gap-2">
       <FontAwesomeIcon icon="lock" class="locked-field__icon" />
       <span>{{ modelValue }}</span>

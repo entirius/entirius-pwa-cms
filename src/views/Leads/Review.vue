@@ -44,10 +44,10 @@
         <IntelCard v-if="munin.isModuleEnabled('siteintel')" :context="message.render_context" />
 
         <template v-if="editing">
-          <label class="review__label">{{ $t("leads.review.subject") }}
+          <label class="review__label"><span class="field-label">{{ $t("leads.review.subject") }}</span>
             <input v-model="draft.subject" class="review__input" data-testid="edit-subject" />
           </label>
-          <label class="review__label">{{ $t("leads.review.body") }}
+          <label class="review__label"><span class="field-label">{{ $t("leads.review.body") }}</span>
             <textarea v-model="draft.body_text" class="review__input" rows="12" data-testid="edit-body"></textarea>
           </label>
           <div class="review__edit-actions">
@@ -388,7 +388,6 @@ onBeforeUnmount(() => clearTimeout(nextTimer));
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  font-weight: 600;
 }
 .review__input {
   box-sizing: border-box;

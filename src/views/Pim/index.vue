@@ -4,9 +4,7 @@
       <div class="flex ai-ct gap-8">
         <div id="pim-toolbar-left" class="flex ai-ct gap-5"></div>
         <div class="pim-channel-selector flex ai-ct gap-8">
-          <span class="fs-200 fw-600 t-muted"
-            >{{ $t("pim.channel") }}:</span
-          >
+          <span class="field-label">{{ $t("pim.channel") }}</span>
           <Dropdown
             :values="channelOptions"
             :selected="[pimChannel.activeChannelIdx]"

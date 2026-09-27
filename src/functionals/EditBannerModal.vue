@@ -171,7 +171,7 @@ function onSave() {
         <div class="modal-body">
           <!-- Image area -->
           <div class="form-group mb-8">
-            <label class="detail-label">{{ $t("layout_extender.media_url") }}</label>
+            <label class="field-label">{{ $t("layout_extender.media_url") }}</label>
 
             <!-- Selected image preview -->
             <div v-if="form.media_url" class="banner-image-area">
@@ -226,7 +226,7 @@ function onSave() {
 
           <div class="form-group mb-8">
             <div class="flex ai-ct jc-sb">
-              <label class="detail-label">{{ $t("layout_extender.alt_text") }}</label>
+              <label class="field-label">{{ $t("layout_extender.alt_text") }}</label>
               <BasicButton
                 v-if="languages.length > 1"
                 :text="$t('layout_extender.translations')"
@@ -240,7 +240,7 @@ function onSave() {
 
           <div class="form-group mb-8">
             <div class="flex ai-ct jc-sb">
-              <label class="detail-label">{{ $t("layout_extender.caption") }}</label>
+              <label class="field-label">{{ $t("layout_extender.caption") }}</label>
               <BasicButton
                 v-if="languages.length > 1"
                 :text="$t('layout_extender.translations')"
@@ -254,7 +254,7 @@ function onSave() {
 
           <div class="form-group mb-8">
             <div class="flex ai-ct jc-sb">
-              <label class="detail-label">{{ $t("layout_extender.button_label") }}</label>
+              <label class="field-label">{{ $t("layout_extender.button_label") }}</label>
               <BasicButton
                 v-if="languages.length > 1"
                 :text="$t('layout_extender.translations')"
@@ -267,7 +267,7 @@ function onSave() {
           </div>
 
           <div class="form-group mb-8">
-            <label class="detail-label">{{ $t("layout_extender.link_type") }}</label>
+            <label class="field-label">{{ $t("layout_extender.link_type") }}</label>
             <div class="radio-group">
               <label class="radio-label">
                 <input type="radio" v-model="form.button_link_type" value="category" />
@@ -285,7 +285,7 @@ function onSave() {
           </div>
 
           <div class="form-group mb-8">
-            <label class="detail-label">
+            <label class="field-label">
               {{ form.button_link_type === "url" ? $t("layout_extender.url") : $t("layout_extender.link_value") }}
             </label>
             <EntitySearchPicker

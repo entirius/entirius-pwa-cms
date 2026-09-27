@@ -159,7 +159,7 @@ export default {
         </p>
 
         <div class="td-dialog__field mb-8">
-          <label class="fs-200 fw-600 t-muted mb-2">{{
+          <label class="field-label mb-2">{{
             $t("builder.translate_source_language")
           }}</label>
           <Dropdown
@@ -171,7 +171,7 @@ export default {
         </div>
 
         <div class="td-dialog__field mb-8">
-          <label class="fs-200 fw-600 t-muted mb-2">{{
+          <label class="field-label mb-2">{{
             $t("builder.translate_target_languages")
           }}</label>
           <Dropdown

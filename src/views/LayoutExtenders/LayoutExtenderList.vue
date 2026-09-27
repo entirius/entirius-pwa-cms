@@ -108,14 +108,14 @@
       </template>
       <template #description>
         <div class="le-copy">
-          <label class="le-copy__label">{{ $t("layout_extender.copy_target_channel") }}</label>
+          <label class="le-copy__label field-label">{{ $t("layout_extender.copy_target_channel") }}</label>
           <Dropdown
             :values="copyChannelOptions"
             :selected="copyTargetChannel ? [copyTargetChannel] : []"
             :placeholder="$t('layout_extender.copy_select_channel')"
             @onSelect="onCopyTargetSelect"
           />
-          <label class="le-copy__label">{{ $t("layout_extender.copy_name") }}</label>
+          <label class="le-copy__label field-label">{{ $t("layout_extender.copy_name") }}</label>
           <BasicInput v-model="copyName" />
         </div>
       </template>
@@ -374,10 +374,6 @@ export default {
 }
 
 .le-copy__label {
-  font-size: var(--fs-200);
-  font-weight: 600;
-  color: var(--text-secondary);
-
   &:not(:first-child) {
     margin-top: var(--space-5);
   }

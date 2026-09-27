@@ -103,7 +103,7 @@ function onSave() {
         <div class="modal-body">
           <div class="form-group mb-8">
             <div class="flex ai-ct jc-sb">
-              <label class="detail-label required">{{ $t("layout_extender.label") }}</label>
+              <label class="field-label required">{{ $t("layout_extender.label") }}</label>
               <BasicButton
                 v-if="languages.length > 1"
                 :text="$t('layout_extender.translations')"
@@ -116,7 +116,7 @@ function onSave() {
           </div>
 
           <div class="form-group mb-8">
-            <label class="detail-label">{{ $t("layout_extender.display_as") }}</label>
+            <label class="field-label">{{ $t("layout_extender.display_as") }}</label>
             <div class="radio-group">
               <label class="radio-label">
                 <input type="radio" v-model="form.display_as" value="link" />
@@ -131,7 +131,7 @@ function onSave() {
 
           <template v-if="form.display_as === 'link'">
             <div class="form-group mb-8">
-              <label class="detail-label">{{ $t("layout_extender.link_type") }}</label>
+              <label class="field-label">{{ $t("layout_extender.link_type") }}</label>
               <div class="radio-group">
                 <label class="radio-label">
                   <input type="radio" v-model="form.link_type" value="category" />
@@ -149,7 +149,7 @@ function onSave() {
             </div>
 
             <div class="form-group mb-8">
-              <label class="detail-label">
+              <label class="field-label">
                 {{ form.link_type === "url" ? $t("layout_extender.url") : $t("layout_extender.link_value") }}
               </label>
               <EntitySearchPicker

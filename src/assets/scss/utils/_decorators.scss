@@ -267,13 +267,21 @@
 
 // The one form-label style (FormField, BasicInput/LockedField labels, raw <label>s): 12 px / 600, uppercase, muted.
 .field-label,
-.ld-field > span:first-child {
+.ld-field__label {
   font-size: var(--fs-200);
   font-weight: 600;
   line-height: 1.25;
   text-transform: uppercase;
   letter-spacing: var(--brand-font-tracking-caps);
   color: var(--text-muted);
+}
+
+// A label floating above its control (BasicInput / LockedField): one line, never wider than the control.
+.field-label--fit {
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .required::after {

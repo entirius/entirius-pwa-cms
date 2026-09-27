@@ -2,7 +2,7 @@
   <div class="rw" role="dialog" :aria-label="$t('leads.rewrite.title')" data-testid="rewrite-modal">
     <div class="rw__sheet">
       <p class="rw__title">{{ $t("leads.rewrite.title") }}</p>
-      <label class="rw__label" for="rewrite-notes">{{ $t("leads.rewrite.label") }}</label>
+      <label class="field-label" for="rewrite-notes">{{ $t("leads.rewrite.label") }}</label>
       <textarea
         id="rewrite-notes"
         v-model="notes"
@@ -38,9 +38,6 @@ const notes = ref("");
 </script>
 
 <style scoped>
-.rw__label {
-  font-weight: 600;
-}
 .rw__hint {
   margin: 0;
   font-size: var(--fs-200);
