@@ -78,7 +78,7 @@
           <router-view class="h-100" />
         </div>
       </div>
-      <Loader v-if="loading" overlay />
+      <Transition name="loader-fade"><Loader v-if="loading" overlay /></Transition>
       <handy-kit v-if="handyType" />
       <nav
         v-if="hasPanel && showBottomBar"

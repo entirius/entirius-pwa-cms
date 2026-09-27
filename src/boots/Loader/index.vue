@@ -110,3 +110,16 @@ export default {
   white-space: nowrap;
 }
 </style>
+
+<style lang="scss">
+// The overlay fades in and out: wrap the `v-if` overlay in `<Transition name="loader-fade">`.
+.loader-fade-enter-active,
+.loader-fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.loader-fade-enter-from,
+.loader-fade-leave-to {
+  opacity: 0;
+}
+</style>

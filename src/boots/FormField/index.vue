@@ -90,7 +90,7 @@ provide(FORM_FIELD, {
 }
 
 // Figma "Język treści": label and control on one row on desktop, the label vertically centred on the control.
-@media only screen and (min-width: $bp-desktop) {
+@media only screen and (min-width: $breakpoint-shell) {
   .form-field--inline {
     flex-direction: row;
     align-items: flex-start;

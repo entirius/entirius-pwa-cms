@@ -107,10 +107,11 @@ function goBack() {
   .page-header__head--sticky {
     position: sticky;
     z-index: 1;
-    // The pin line sits inside the scroll body's padding; -20 px (PageLayout's phone padding) puts it at the edge.
-    top: calc(-1 * var(--space-5));
-    margin: 0 calc(-1 * var(--space-5));
-    padding: var(--space-3) var(--space-5);
+    // The pin line sits inside the scroll body's padding: PageLayout's padding (20 px on a phone outside one) puts it
+    // at the edge.
+    top: calc(-1 * var(--page-layout-pad-y, var(--space-5)));
+    margin: 0 calc(-1 * var(--page-layout-pad-x, var(--space-5)));
+    padding: var(--space-3) var(--page-layout-pad-x, var(--space-5));
     background-color: var(--surface-page);
   }
 }

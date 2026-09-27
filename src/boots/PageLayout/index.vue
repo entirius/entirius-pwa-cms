@@ -18,12 +18,18 @@
 .page-layout {
   display: flex;
   flex-direction: column;
+  // Shared with PageHeader: its sticky head reaches the edge through this padding.
+  --page-layout-pad-y: var(--space-10);
+  --page-layout-pad-x: calc(2 * var(--space-10));
+
   gap: var(--space-8);
-  padding: var(--space-10) calc(2 * var(--space-10));
+  padding: var(--page-layout-pad-y) var(--page-layout-pad-x);
 
   @include max-tablet {
+    --page-layout-pad-y: var(--space-5);
+    --page-layout-pad-x: var(--space-5);
+
     gap: var(--space-5);
-    padding: var(--space-5);
   }
 }
 

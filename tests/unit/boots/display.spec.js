@@ -149,7 +149,7 @@ describe("PanelCard", () => {
     const wrapper = panel({ locked: true, lockedText: "Skontaktuj się z administratorem" });
     expect(wrapper.element.tagName).toBe("DIV");
     expect(wrapper.attributes("tabindex")).toBeUndefined();
-    expect(wrapper.attributes("aria-disabled")).toBe("true");
+    expect(wrapper.attributes("aria-disabled")).toBeUndefined();
     expect(wrapper.classes()).toContain("panel-card--locked");
     expect(wrapper.text()).toContain("Skontaktuj się z administratorem");
     expect(wrapper.text()).not.toContain("Treści");

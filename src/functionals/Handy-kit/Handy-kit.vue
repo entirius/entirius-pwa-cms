@@ -6,7 +6,7 @@
       <div class="handy-kit-body flex-column fg-1 ov-h bg-base">
         <component :is="handyType.id" class="fg-1 ovy-auto" ref="activeKit" />
       </div>
-      <Loader v-if="handyLoading" overlay contained />
+      <Transition name="loader-fade"><Loader v-if="handyLoading" overlay contained /></Transition>
     </div>
     <Teleport to="body">
       <ConfirmDialog

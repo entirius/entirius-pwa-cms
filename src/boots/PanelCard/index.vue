@@ -4,7 +4,6 @@
     :type="locked ? null : 'button'"
     class="panel-card flex-column"
     :class="{ 'panel-card--locked': locked }"
-    :aria-disabled="locked ? 'true' : null"
     data-fid="panel-card"
     @click="!locked && $emit('click')"
   >
