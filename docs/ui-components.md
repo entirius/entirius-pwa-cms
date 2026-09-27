@@ -165,6 +165,50 @@ Catalogue: `#actions` (`#basic-button`, `#icon-button`, `#action-bar`, `#floatin
 
 ### P3 overlays (plan 12)
 
+- **`useFocusTrap(container, { active, initialFocus?, onEscape? })`** (`src/composables/useFocusTrap.js`) — while
+  `active`: focus moves in (the given element, else the first focusable), Tab / Shift+Tab cycle inside, Esc calls
+  `onEscape`, the other children of `<body>` are `inert`, the body does not scroll; on release focus returns to the
+  opener. Traps stack (the last one owns the keyboard). The container must be teleported to `<body>`; an `inline`
+  overlay never activates one. Positioning of menus and tooltips: `useFloatingPosition` (`@floating-ui/dom`, flip +
+  shift + offset, `position: fixed`).
+- **`BasicModal`** — `v-model:open`, `title` (the `<h2>` that names the dialog; the `title` slot takes richer
+  markup), `size` `sm` · `md` · `lg`, `persistent` (Esc and backdrop do not close; the close button does), default
+  slot = body, `footer` slot or `actions` (→ `ActionBar`); emits `update:open` and `close`. `role="dialog"
+  aria-modal`, teleported to `<body>`, `overlay-backdrop`, `surface-raised`, `--radius-xl`, `shadow-lg`, focus
+  trapped. Below the tablet breakpoint: a full-width sheet at the bottom. Close button test id `basic-modal-close`.
+- **`ConfirmDialog`** — on BasicModal `sm`: `v-model:open`, `title` (or slot), `message` (or the default slot),
+  `confirmLabel` / `cancelLabel` (default „Akceptuj” / „Anuluj”), `tone` `default` (primary confirm) · `danger`
+  (`danger-solid`), `loading` (spinner, Esc blocked), `discardLabel` (a third `danger` action for unsaved changes);
+  emits `confirm`, `cancel` (Cancel, close, Esc, backdrop), `discard`. The caller closes it. Test ids
+  `confirm-dialog-confirm` / `-cancel` / `-discard`.
+- **`BasicMenu`** — `trigger` slot (the menu sets the control's `aria-haspopup`, `aria-expanded`, `aria-controls`
+  and toggles on its click), `items` = `[{ key, label, icon?, danger?, separator?, disabled?, to?, testid? }]`
+  (`role="menu"`; emits `select` with the item) or the `panel` slot (scope `close`, `role="dialog"` named by
+  `label`); `placement` (floating-ui, default `bottom-start`). Keyboard: ArrowDown on the trigger opens, arrows /
+  Home / End move, Enter / Space choose, Esc closes and returns focus, Tab and a click outside close.
+- **`BasicTooltip`** — wraps its trigger (default slot; its first focusable gets `aria-describedby`): `text`,
+  `placement` `top` · `bottom` · `left` · `right` (flips when there is no room), `variant` `help` (a `?` button
+  named „Pomoc” instead of the slot), `open` (forced). Shows on hover and keyboard focus, hides on Esc, blur and
+  leave. A trigger holding only a disabled control makes the wrapper the tab stop (disabled with a reason).
+  `IconButton` shows its `label` through it (no `title`).
+- **`SideDrawer`** — focus trapped in `focused` mode (`role="dialog" aria-modal`, named by its title), Esc closes in
+  both modes (sticky: while focus is inside), close = `IconButton` (`side-drawer-close`). **`TranslationsDrawer`**
+  footer is an `ActionBar` (Save rightmost, `translations-save` / `translations-cancel`).
+- `inline` (BasicModal, ConfirmDialog, SideDrawer, TranslationsDrawer, BasicMenu) renders the open state in the page
+  flow: no Teleport, no backdrop, no trap (catalogue).
+- Transition wrappers until plan 19: `functionals/Confirmation-modal` (`visible`, `destructive`, `accept` /
+  `reject`, slots `header` / `description` / `footer`) and `Unsaved-changes-modal` (`save` / `discard` / `stay`) on
+  ConfirmDialog. Removed (lint, `scripts/lint/removed-components/overlays.json`): `ToolTip`, `HelpTooltip`,
+  `HoverMe` → `BasicTooltip`.
+- Codemod `scripts/codemods/p3-overlays.mjs` (sweeps 17/18): the confirmation tags → `ConfirmDialog` (`visible` →
+  `open`, `destructive` → `tone`, `accept` / `reject` / `save` / `stay` → `confirm` / `cancel`, a plain `#header`
+  `<h2>` → `title`, `#description` → default slot), tooltips → `BasicTooltip` (`tip` → `text`, a standalone ToolTip
+  or HelpTooltip → `variant="help"`), imports dropped; flags a custom `#footer`, a missing title, a computed
+  `is_wrapper` and attributes outside the map.
+
+Catalogue: `#overlays` (`#basic-modal`, `#confirm-dialog`, `#side-drawer`, `#translations-drawer`, `#basic-menu`,
+`#basic-tooltip`), plus buttons that open the real overlays.
+
 ### P3 display (plan 13)
 
 ### P3 page frame (plan 14)

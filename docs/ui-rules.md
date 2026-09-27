@@ -91,8 +91,9 @@ Traps:
 | list · bulk actions · empty list | `DataTable` · `BulkActionBar` · `EmptyState` |
 | text action · icon-only action · page or dialog actions | `BasicButton` · `IconButton` · `ActionBar` |
 | side panel · per-language editing | `SideDrawer` · `TranslationsDrawer` |
-| confirmation · floating action (+ labelled pill) | `Confirmation-modal` (`src/functionals/`) · `FloatingActions` (`pill`) |
-| help next to a label | `FormField :tooltip` |
+| dialog · confirmation (yes/no, unsaved changes) | `BasicModal` · `ConfirmDialog` (`tone="danger"` for a delete) |
+| action menu or popover panel · floating action (+ labelled pill) | `BasicMenu` · `FloatingActions` (`pill`) |
+| help next to a label · hint on a control | `FormField :tooltip` (else `BasicTooltip variant="help"`) · `BasicTooltip` |
 
 - **C5 One icon set: FontAwesome, picked by meaning.** A template names the meaning, never the glyph:
   `<FontAwesomeIcon :icon="$icons.edit" />` (`src/boots/Icons/icons.js`, keys camelCase). A new meaning adds its glyph
@@ -108,15 +109,15 @@ Traps:
   `--elem-height`, the toolbar and form size) or `size="sm"` (row actions); labels never wrap. The role is
   `variant`: `primary` (one per page, R5: row, bulk, section and inline-form actions are `secondary` beside it; a
   dialog or drawer has its own), `secondary`, `ghost` (close, row edit), `danger` (every delete, remove, reject),
-  `danger-solid` (the destructive confirm in a dialog: a delete, remove or flush passes `destructive` to
-  `Confirmation-modal`; every other confirm is its default primary). The label is the default slot. Until the sweeps
+  `danger-solid` (the destructive confirm in a dialog: a delete, remove or flush is a `ConfirmDialog tone="danger"`;
+  every other confirm is its default primary). The label is the default slot. Until the sweeps
   (plans 17, 18) the `btn-*` role classes and `text` still work: the same roles, `btn-outline` = `btn-secondary`,
   `btn-danger-fill` = `danger-solid`. An icon-only action is an `IconButton` (`sm` / `md` like the text button,
   `lg` 40 in the header), `variant` `ghost` · `outline` · `primary` · `danger`, `pressed` for a toggle; an icon-only
   `BasicButton` without `label` warns in the dev console. One toolbar uses one size. Back is always `BackBar` (icon,
   or icon + label), never a `BasicButton`. The click stops at the button; inside a wrapper that acts on the click
   (`SubscriberSetter`) pass `:stop="false"`. An icon-only button is named by its short action (`label`), and that is
-  its one tooltip: no `ToolTip` wrapper on top of it.
+  its one tooltip (IconButton draws it as a `BasicTooltip`): no tooltip wrapper on top of it.
   Never pass `bg-*` / `t-*` utilities to pick a role, and never set a button height or font size from a view.
 
 ## Layout (R1–R9)
@@ -185,14 +186,16 @@ Traps:
 - **Cards.** `.page-card` (`utils/_decorators.scss`) is the one card, for the page card and for a section card
   inside it: `surface-base`, `border-subtle`, `--radius-3xl`, 24 px padding, 16 px below tablet. A view never sets
   its own card padding, border or radius.
-- **Dialogs.** Build on `Confirmation-modal` or a `src/functionals/` modal, never inline in a view. Width:
-  `min-width: min(400px, 95vw)`. A dialog with an async action closes on success and on error.
+- **Dialogs.** Build on `BasicModal` (`size` sm · md · lg) or `ConfirmDialog`, never an overlay of the view's own:
+  they trap focus, close on Esc and give focus back, and turn into a bottom sheet on a phone. Actions go in the
+  footer as an `ActionBar` (R5). A dialog with an async action closes on success and on error.
 - **Locked / system entity.** Show a notice bar at the top. Pass the disabled prop of each boot (`Dropdown
   :isDisabled`, `Switcher :prevent`, `BasicButton` / `BasicInput :isDisabled`), or show the value as read-only text.
   Disabled `BasicInput` and `Dropdown` share one look (`--surface-disabled`, `--border-subtle`, muted text).
   Hide delete. Save stays for the fields that are not locked.
-- **Disabled button with a reason.** Wrap the disabled `BasicButton` in `ToolTip :is_wrapper="true"` carrying the
-  reason, and put the live button in the `v-else` branch.
+- **Disabled button with a reason.** Wrap the disabled `BasicButton` in `BasicTooltip` carrying the reason (the
+  wrapper becomes the tab stop, so the reason reads on keyboard focus too), and put the live button in the `v-else`
+  branch.
 - **Delete.** Use an icon-only `btn-danger` button with the `trash-can` icon, followed by a confirmation. Never a text "Delete" button.
 - **Drag and drop.** Use `vuedraggable` with `:force-fallback="true"` and `fallback-class="drag-ghost"`. The ghost
   style goes in an unscoped `<style>`, because the clone is appended to `<body>`.
