@@ -13,7 +13,7 @@
           data-testid="enrichment-spawn-dialog"
         >
           <div class="spawn-modal__header b-subtle bb-100">
-            <FontAwesomeIcon icon="wand-magic-sparkles" class="t-accent" />
+            <FontAwesomeIcon :icon="$icons.enrich" class="t-accent" />
             <h2 class="fs-400 fw-600 m-0">
               {{ $t("enrichment.spawn.title") }}
             </h2>

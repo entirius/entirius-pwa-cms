@@ -16,7 +16,7 @@
         :title="$t('pim.channels')"
         @click="showAddToChannelDialog = true"
       >
-        <font-awesome-icon icon="globe" class="toolbar-action__icon" />
+        <font-awesome-icon :icon="$icons.channels" class="toolbar-action__icon" />
         <span class="toolbar-action__text">{{ $t("pim.channels") }}</span>
       </button>
       <template v-if="!pimChannel.isDefaultChannel">
@@ -25,7 +25,7 @@
           :title="$t('pim.copy_translations')"
           @click="showCopyDialog = true"
         >
-          <font-awesome-icon icon="copy" class="toolbar-action__icon" />
+          <font-awesome-icon :icon="$icons.duplicate" class="toolbar-action__icon" />
           <span class="toolbar-action__text">{{
             $t("pim.copy_translations")
           }}</span>
@@ -42,7 +42,7 @@
             @click="showInheritancePicker = !showInheritancePicker"
           >
             <font-awesome-icon
-              icon="diagram-next"
+              :icon="$icons.variants"
               class="toolbar-action__icon"
             />
             <span class="toolbar-action__text">{{
@@ -105,7 +105,7 @@
         data-testid="enrichment-spawn-button"
         @click="showSpawnDialog = true"
       >
-        <font-awesome-icon icon="wand-magic-sparkles" class="toolbar-action__icon" />
+        <font-awesome-icon :icon="$icons.enrich" class="toolbar-action__icon" />
         <span class="toolbar-action__text">{{ $t("enrichment.spawn.send_single") }}</span>
       </button>
       <button
@@ -113,7 +113,7 @@
         :title="$t('common.save')"
         @click="saveProduct"
       >
-        <font-awesome-icon icon="floppy-disk" class="toolbar-action__icon" />
+        <font-awesome-icon :icon="$icons.saveDraft" class="toolbar-action__icon" />
         <span class="toolbar-action__text">{{ $t("common.save") }}</span>
       </button>
       <BasicButton
@@ -122,7 +122,7 @@
         class="btn-danger"
         @click="showDeleteConfirm = true"
       >
-        <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+        <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
       </BasicButton>
     </Teleport>
     <div class="page-card h-100 ovy-auto">
@@ -134,7 +134,7 @@
         class="channel-mismatch-warning bg-warning-subtle t-warning p-8 rounded mb-8"
         role="alert"
       >
-        <font-awesome-icon icon="triangle-exclamation" class="mr-5" />
+        <font-awesome-icon :icon="$icons.warning" class="mr-5" />
         {{ $t("pim.channel_mismatch_warning") }}
       </div>
 

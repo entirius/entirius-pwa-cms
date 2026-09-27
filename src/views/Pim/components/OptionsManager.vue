@@ -124,7 +124,7 @@
                 class="btn-danger"
                 @click="confirmDelete(element)"
               >
-                <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+                <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
               </BasicButton>
             </span>
           </div>

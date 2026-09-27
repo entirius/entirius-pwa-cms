@@ -18,7 +18,7 @@
         class="btn-danger"
         @click="showDeleteConfirm = true"
       >
-        <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+        <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
       </BasicButton>
       <BasicButton
         :text="$t('common.save')"
@@ -46,7 +46,7 @@
           v-if="isCarrier"
           class="flex ai-ct gap-5 mb-8 p-8 bg-accent-subtle rounded t-strong fs-200"
         >
-          <font-awesome-icon icon="lock" />
+          <font-awesome-icon :icon="$icons.lock" />
           <span>{{ $t("dp.carrier_point_read_only") }}</span>
         </div>
 
@@ -60,7 +60,7 @@
               v-if="!geocodeAvailable"
               class="flex ai-ct gap-5 p-5 bg-accent-subtle rounded t-strong fs-200 mb-5"
             >
-              <font-awesome-icon icon="info-circle" />
+              <font-awesome-icon :icon="$icons.info" />
               <span>{{ $t("dp.geocoding_unavailable") }}</span>
             </div>
             <div class="geocode-search">
@@ -152,7 +152,7 @@
                     <span class="ml-2">{{ ch.label }}</span>
                     <FontAwesomeIcon
                       v-if="form.channel_ids.includes(ch.value)"
-                      icon="check"
+                      :icon="$icons.check"
                       class="t-positive"
                     />
                   </div>
@@ -334,7 +334,7 @@
                 class="btn-danger"
                 @click="deleteTranslation(t9n.language)"
               >
-                <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+                <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
               </BasicButton>
             </div>
             <div class="detail-grid">

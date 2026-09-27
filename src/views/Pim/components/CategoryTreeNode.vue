@@ -115,7 +115,7 @@ function onDragEnd() {
         <template v-if="hasChildren">{{ isExpanded ? "▼" : "▶" }}</template>
       </span>
       <span class="tree-node__icon t-muted"
-        ><font-awesome-icon icon="folder"
+        ><font-awesome-icon :icon="$icons.category"
       /></span>
       <span class="tree-node__name" :title="displayName">{{ displayName }}</span>
       <span
@@ -139,10 +139,10 @@ function onDragEnd() {
         class="tree-node__hidden t-muted"
         :title="node.is_in_menu ? undefined : $t('pim.hidden_from_menu')"
       >
-        <font-awesome-icon v-if="!node.is_in_menu" icon="eye-slash" />
+        <font-awesome-icon v-if="!node.is_in_menu" :icon="$icons.hide" />
       </span>
       <button class="tree-node__edit" @click.stop="emit('select', node)">
-        <font-awesome-icon icon="pen" />
+        <font-awesome-icon :icon="$icons.edit" />
         {{ $t("common.edit") }}
       </button>
     </div>

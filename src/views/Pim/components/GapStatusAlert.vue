@@ -6,7 +6,7 @@
     data-test="gap-status-alert"
   >
     <div class="flex ai-ct gap-5">
-      <FontAwesomeIcon icon="triangle-exclamation" class="gap-status-alert__icon" />
+      <FontAwesomeIcon :icon="$icons.warning" class="gap-status-alert__icon" />
       <span>{{ $t("pim.gaps_rules_changed_alert", { date: changedAt }) }}</span>
     </div>
     <BasicButton

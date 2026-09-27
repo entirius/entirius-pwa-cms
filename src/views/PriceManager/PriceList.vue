@@ -34,7 +34,7 @@
               <span class="fw-600 ml-2">{{ code }}</span>
               <FontAwesomeIcon
                 v-if="selectedCurrencies.includes(code)"
-                icon="check"
+                :icon="$icons.check"
                 class="t-positive"
               />
             </div>
@@ -170,7 +170,7 @@
                     :title="$t('pm.expand_countries')"
                     @click="toggleExpand(row.sku)"
                   >
-                    <FontAwesomeIcon icon="eye" />
+                    <FontAwesomeIcon :icon="$icons.preview" />
                   </button>
                   <BasicButton
                     v-if="row.has_price"
@@ -180,7 +180,7 @@
                     class="btn-danger"
                     @click="confirmFlush(row.sku, row.currency)"
                   >
-                    <template #custom><FontAwesomeIcon icon="broom" /></template>
+                    <template #custom><FontAwesomeIcon :icon="$icons.clear" /></template>
                   </BasicButton>
                   <BasicButton
                     v-if="row.has_price"
@@ -190,7 +190,7 @@
                     class="btn-danger"
                     @click="confirmDelete(row.sku, row.currency)"
                   >
-                    <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+                    <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
                   </BasicButton>
                 </div>
 

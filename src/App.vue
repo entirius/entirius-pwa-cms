@@ -70,7 +70,7 @@
             @keydown.enter="!handyType && toggleSidebar()"
           >
             <FontAwesomeIcon
-              :icon="isSidebarCollapsed ? 'chevron-right' : 'chevron-left'"
+              :icon="isSidebarCollapsed ? $icons.next : $icons.prev"
             />
           </button>
         </template>

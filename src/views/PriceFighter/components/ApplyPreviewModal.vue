@@ -30,7 +30,7 @@
         </table>
 
         <div v-if="errorText" class="apply-preview__error t-negative fs-200">
-          <FontAwesomeIcon icon="triangle-exclamation" class="mr-2" />
+          <FontAwesomeIcon :icon="$icons.warning" class="mr-2" />
           {{ errorText }}
         </div>
 

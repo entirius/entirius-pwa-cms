@@ -23,7 +23,7 @@
           class="btn-danger"
           @click="showDeleteConfirm = true"
         >
-          <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+          <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
         </BasicButton>
       </template>
     </Teleport>
@@ -51,7 +51,7 @@
             v-if="category.breadcrumb_path"
             class="detail-breadcrumb mb-10 t-muted fs-200"
           >
-            <font-awesome-icon icon="folder-tree" class="mr-2" />
+            <font-awesome-icon :icon="$icons.categories" class="mr-2" />
             {{ category.breadcrumb_path }}
           </div>
 
@@ -152,7 +152,7 @@
             <div v-if="form.image_url" class="category-image">
               <img :src="fullImageUrl" class="category-image__preview" />
               <button class="category-image__delete" @click="form.image_url = ''">
-                <font-awesome-icon icon="trash-can" />
+                <font-awesome-icon :icon="$icons.delete" />
               </button>
             </div>
             <div

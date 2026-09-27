@@ -69,7 +69,7 @@
           type="button"
           @click="pwVisible = !pwVisible"
         >
-          <FontAwesomeIcon :icon="pwVisible ? 'eye-slash' : 'eye'" />
+          <FontAwesomeIcon :icon="pwVisible ? $icons.hide : $icons.preview" />
         </button>
       </div>
 

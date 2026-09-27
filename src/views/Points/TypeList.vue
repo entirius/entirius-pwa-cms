@@ -50,7 +50,7 @@
         <template #cell-lock="{ row }">
           <font-awesome-icon
             v-if="row.is_carrier"
-            icon="lock"
+            :icon="$icons.lock"
             class="t-muted"
           />
         </template>
@@ -114,7 +114,7 @@
             class="btn-danger"
             @click="showDeleteConfirm = true"
           >
-            <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+            <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
           </BasicButton>
           <div class="flex ai-ct gap-5">
             <BasicButton

@@ -15,7 +15,7 @@
         data-testid="dedup-search-remove-image"
         @click.stop="$emit('remove')"
       >
-        <FontAwesomeIcon icon="xmark" />
+        <FontAwesomeIcon :icon="$icons.close" />
       </span>
     </button>
     <input

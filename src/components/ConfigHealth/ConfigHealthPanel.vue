@@ -16,7 +16,7 @@
           class="btn-ghost"
           @click="emit('close')"
         >
-          <template #custom><FontAwesomeIcon icon="xmark" /></template>
+          <template #custom><FontAwesomeIcon :icon="$icons.close" /></template>
         </BasicButton>
       </div>
 
@@ -67,7 +67,7 @@
         data-testid="config-health-passing"
       >
         <li v-for="row in store.passing" :key="row.code" class="cfg-grid__item">
-          <FontAwesomeIcon icon="circle-check" class="cfg-grid__tick" />{{
+          <FontAwesomeIcon :icon="$icons.success" class="cfg-grid__tick" />{{
             checkName(row.code)
           }}
         </li>

@@ -18,7 +18,7 @@
         class="btn-danger"
         @click="showDeleteConfirm = true"
       >
-        <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+        <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
       </BasicButton>
       <BasicButton
         :text="$t('pm.save')"
@@ -79,7 +79,7 @@
                 class="btn-danger"
                 @click="deleteRate(rate.country)"
               >
-                <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+                <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
               </BasicButton>
             </div>
           </div>

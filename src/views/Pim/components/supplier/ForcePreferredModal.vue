@@ -2,7 +2,7 @@
   <ConfirmationModal :visible="visible" @reject="$emit('close')">
     <template #header>
       <h2 class="t-warning">
-        <FontAwesomeIcon icon="triangle-exclamation" class="mr-2" />
+        <FontAwesomeIcon :icon="$icons.warning" class="mr-2" />
         {{ $t("pim.supplier.force_preferred_modal.title") }}
       </h2>
     </template>
@@ -27,7 +27,7 @@
           {{ $t("pim.supplier.force_preferred_modal.reason_min_hint") }}
         </p>
         <p class="force-preferred__warning t-negative fs-200">
-          <FontAwesomeIcon icon="triangle-exclamation" class="mr-2" />
+          <FontAwesomeIcon :icon="$icons.warning" class="mr-2" />
           {{ $t("pim.supplier.force_preferred_modal.warning") }}
         </p>
       </div>

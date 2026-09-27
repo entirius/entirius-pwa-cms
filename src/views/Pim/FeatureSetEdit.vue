@@ -17,7 +17,7 @@
         class="btn-danger"
         @click="showDeleteConfirm = true"
       >
-        <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+        <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
       </BasicButton>
       <BasicButton
         :text="$t('pim.save_set_config')"
@@ -106,7 +106,7 @@
                 class="btn-ghost"
                 @click="showAddGroup = false; newGroupName = '';"
               >
-                <template #custom><FontAwesomeIcon icon="xmark" /></template>
+                <template #custom><FontAwesomeIcon :icon="$icons.close" /></template>
               </BasicButton>
             </div>
             <div v-if="availableGroupOptions.length" class="mt-5">
@@ -182,7 +182,7 @@
                         class="btn-ghost"
                         @click="$router.push(`/pim/features/${element.feature_idx}`)"
                       >
-                        <template #custom><FontAwesomeIcon icon="pen" /></template>
+                        <template #custom><FontAwesomeIcon :icon="$icons.edit" /></template>
                       </BasicButton>
                       <BasicButton
                         custom
@@ -191,7 +191,7 @@
                         class="btn-danger"
                         @click="removeFeature(element.feature_idx)"
                       >
-                        <template #custom><FontAwesomeIcon icon="xmark" /></template>
+                        <template #custom><FontAwesomeIcon :icon="$icons.close" /></template>
                       </BasicButton>
                     </div>
                   </div>
@@ -306,7 +306,7 @@
                             class="btn-ghost"
                             @click="$router.push( `/pim/features/${element.feature_idx}` )"
                           >
-                            <template #custom><FontAwesomeIcon icon="pen" /></template>
+                            <template #custom><FontAwesomeIcon :icon="$icons.edit" /></template>
                           </BasicButton>
                           <BasicButton
                             custom
@@ -315,7 +315,7 @@
                             class="btn-danger"
                             @click="removeFeature(element.feature_idx)"
                           >
-                            <template #custom><FontAwesomeIcon icon="xmark" /></template>
+                            <template #custom><FontAwesomeIcon :icon="$icons.close" /></template>
                           </BasicButton>
                         </div>
                       </div>

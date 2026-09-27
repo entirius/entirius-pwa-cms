@@ -9,7 +9,7 @@
         :src="thumbUrl"
         :alt="hit.basic?.name"
       />
-      <FontAwesomeIcon v-else icon="image" />
+      <FontAwesomeIcon v-else :icon="$icons.image" />
     </div>
     <div class="candidate-row__main">
       <div class="candidate-row__title-line">
@@ -59,7 +59,7 @@
         data-testid="candidate-row-open"
         @click="open"
       >
-        <FontAwesomeIcon icon="up-right-from-square" />
+        <FontAwesomeIcon :icon="$icons.external" />
       </button>
     </div>
   </div>

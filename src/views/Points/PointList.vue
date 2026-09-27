@@ -58,7 +58,7 @@
           <span v-if="row.type" class="chip t-accent" :title="row.type.name">
             <font-awesome-icon
               v-if="row.type.is_carrier"
-              icon="lock"
+              :icon="$icons.lock"
               class="mr-1"
             />
             <span class="chip__label">{{ row.type.name }}</span>

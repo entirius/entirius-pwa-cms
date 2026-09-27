@@ -30,7 +30,7 @@
             @keydown.enter="panel.isEnabled && handlePanelSelect(panel)"
           >
             <FontAwesomeIcon
-              :icon="panel.isEnabled ? panel.icon : 'lock'"
+              :icon="panel.isEnabled ? panel.icon : $icons.lock"
               class="hc-dropdown-icon"
             />
             <span>{{ $t(panel.labelKey) }}</span>
@@ -42,7 +42,7 @@
             @click="handleGoHome"
             @keydown.enter="handleGoHome"
           >
-            <FontAwesomeIcon icon="house" class="hc-dropdown-icon" />
+            <FontAwesomeIcon :icon="$icons.home" class="hc-dropdown-icon" />
             <span>{{ $t("nav.home") }}</span>
           </button>
         </div>
@@ -68,7 +68,7 @@
         @click="isUserMenuOpen = !isUserMenuOpen"
         @keydown.enter="isUserMenuOpen = !isUserMenuOpen"
       >
-        <FontAwesomeIcon icon="user" />
+        <FontAwesomeIcon :icon="$icons.user" />
       </button>
       <transition name="hc-drop">
         <div v-if="isUserMenuOpen" class="hc-dropdown hc-dropdown--user">
@@ -83,7 +83,7 @@
             @keydown.enter="toggleTheme"
           >
             <FontAwesomeIcon
-              :icon="isDark ? 'sun' : 'moon'"
+              :icon="isDark ? $icons.themeLight : $icons.themeDark"
               class="hc-dropdown-icon"
             />
             <span>{{
@@ -98,10 +98,10 @@
             @click="isLangOpen = !isLangOpen"
             @keydown.enter="isLangOpen = !isLangOpen"
           >
-            <FontAwesomeIcon icon="globe" class="hc-dropdown-icon" />
+            <FontAwesomeIcon :icon="$icons.channels" class="hc-dropdown-icon" />
             <span>{{ currentLangLabel }}</span>
             <FontAwesomeIcon
-              :icon="isLangOpen ? 'chevron-up' : 'chevron-down'"
+              :icon="isLangOpen ? $icons.collapse : $icons.expand"
               class="hc-dropdown-chevron"
             />
           </button>
@@ -116,7 +116,7 @@
               @keydown.enter="selectLanguage(l.code)"
             >
               <FontAwesomeIcon
-                :icon="currentLang === l.code ? 'check' : 'globe'"
+                :icon="currentLang === l.code ? $icons.check : $icons.channels"
                 class="hc-dropdown-icon"
               />
               <span>{{ l.label }}</span>
@@ -132,7 +132,7 @@
             @click="openConfigHealth"
             @keydown.enter="openConfigHealth"
           >
-            <FontAwesomeIcon icon="circle-check" class="hc-dropdown-icon" />
+            <FontAwesomeIcon :icon="$icons.success" class="hc-dropdown-icon" />
             <span>{{ $t("config_health.title") }}</span>
           </button>
 
@@ -143,7 +143,7 @@
             @click="goToChangePassword"
             @keydown.enter="goToChangePassword"
           >
-            <FontAwesomeIcon icon="key" class="hc-dropdown-icon" />
+            <FontAwesomeIcon :icon="$icons.password" class="hc-dropdown-icon" />
             <span>{{ $t("user.change_password") }}</span>
           </button>
 
@@ -157,7 +157,7 @@
             @keydown.enter="handleLogout"
           >
             <FontAwesomeIcon
-              icon="arrow-right-from-bracket"
+              :icon="$icons.logout"
               class="hc-dropdown-icon"
             />
             <span>{{ $t("app.log_out") }}</span>

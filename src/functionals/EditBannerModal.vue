@@ -178,13 +178,13 @@ function onSave() {
       <div v-if="form.media_url" class="banner-image-area">
         <img :src="resolveMediaUrl(form.media_url)" :alt="form.alt_text || ''" class="banner-image-preview" />
         <span class="banner-image-remove" @click="clearImage">
-          <FontAwesomeIcon icon="xmark" />
+          <FontAwesomeIcon :icon="$icons.close" />
         </span>
       </div>
 
       <!-- Choose from gallery button -->
       <button v-if="!galleryOpen" class="banner-gallery-btn" @click="openGallery">
-        <FontAwesomeIcon icon="image" class="t-muted" />
+        <FontAwesomeIcon :icon="$icons.image" class="t-muted" />
         <span>{{ form.media_url ? $t("layout_extender.change_image") : $t("layout_extender.choose_from_gallery") }}</span>
       </button>
 
@@ -205,18 +205,18 @@ function onSave() {
               <img :src="resolveMediaUrl(img.image)" :alt="img.meta?.fileName || ''" />
             </div>
             <div v-if="!galleryImages.length" class="banner-gallery__empty">
-              <FontAwesomeIcon icon="image" class="t-muted" />
+              <FontAwesomeIcon :icon="$icons.image" class="t-muted" />
               <span class="fs-200 t-muted">No images in gallery</span>
             </div>
           </div>
           <!-- Pagination -->
           <div v-if="galleryTotal > 9" class="banner-gallery__pagination">
             <button class="banner-gallery__page-btn" :disabled="galleryPage <= 1" @click="loadGallery(galleryPage - 1)">
-              <FontAwesomeIcon icon="chevron-left" />
+              <FontAwesomeIcon :icon="$icons.prev" />
             </button>
             <span class="fs-200 t-secondary">{{ galleryPage }}</span>
             <button class="banner-gallery__page-btn" :disabled="galleryImages.length < 9" @click="loadGallery(galleryPage + 1)">
-              <FontAwesomeIcon icon="chevron-right" />
+              <FontAwesomeIcon :icon="$icons.next" />
             </button>
           </div>
         </template>

@@ -21,7 +21,7 @@
         <template #item="{ element, index }">
           <div class="product-card product-card--pinned">
             <div class="product-card__handle">
-              <font-awesome-icon icon="grip-vertical" class="t-muted" />
+              <font-awesome-icon :icon="$icons.drag" class="t-muted" />
             </div>
             <span class="product-card__position bg-accent-subtle t-strong">
               #{{ index + 1 }}
@@ -32,7 +32,7 @@
               :style="{ backgroundImage: `url(${element.thumbnail_url})` }"
             />
             <div v-else class="product-card__thumb product-card__thumb--empty">
-              <font-awesome-icon icon="image" class="t-muted" />
+              <font-awesome-icon :icon="$icons.image" class="t-muted" />
             </div>
             <div class="product-card__info">
               <span class="product-card__sku fs-200 t-muted">{{
@@ -69,7 +69,7 @@
         <template #item="{ element }">
           <div class="product-card">
             <div class="product-card__handle">
-              <font-awesome-icon icon="grip-vertical" class="t-muted" />
+              <font-awesome-icon :icon="$icons.drag" class="t-muted" />
             </div>
             <div
               v-if="element.thumbnail_url"
@@ -77,7 +77,7 @@
               :style="{ backgroundImage: `url(${element.thumbnail_url})` }"
             />
             <div v-else class="product-card__thumb product-card__thumb--empty">
-              <font-awesome-icon icon="image" class="t-muted" />
+              <font-awesome-icon :icon="$icons.image" class="t-muted" />
             </div>
             <div class="product-card__info">
               <span class="product-card__sku fs-200 t-muted">{{
@@ -107,7 +107,7 @@
           :disabled="currentPage <= 1"
           @click="goToPage(currentPage - 1)"
         >
-          <font-awesome-icon icon="chevron-left" />
+          <font-awesome-icon :icon="$icons.prev" />
         </button>
         <button
           v-for="p in visiblePages"
@@ -123,7 +123,7 @@
           :disabled="currentPage >= totalPages"
           @click="goToPage(currentPage + 1)"
         >
-          <font-awesome-icon icon="chevron-right" />
+          <font-awesome-icon :icon="$icons.next" />
         </button>
       </div>
     </div>

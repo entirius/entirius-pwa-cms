@@ -82,7 +82,7 @@
                 <label class="field-label">
                   {{ isNetEditable ? $t('pm.gross') : $t('pm.net') }}
                   <span class="pm-lock-icon t-muted ml-1">
-                    <FontAwesomeIcon icon="lock" />
+                    <FontAwesomeIcon :icon="$icons.lock" />
                   </span>
                 </label>
                 <div class="pm-readonly-value">

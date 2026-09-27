@@ -15,7 +15,7 @@
         </div>
 
         <div v-if="safeReport.stale.length" class="apply-report__stale-note">
-          <FontAwesomeIcon icon="triangle-exclamation" class="mr-2" />
+          <FontAwesomeIcon :icon="$icons.warning" class="mr-2" />
           {{ $t('pricefighter.stale_note') }}
         </div>
 

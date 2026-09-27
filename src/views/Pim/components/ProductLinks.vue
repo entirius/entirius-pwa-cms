@@ -7,7 +7,7 @@
         data-testid="linked-create-btn"
         @click="openCreate"
       >
-        <FontAwesomeIcon icon="plus" />
+        <FontAwesomeIcon :icon="$icons.add" />
         {{ $t("pim.links.create_button") }}
       </button>
     </div>
@@ -23,7 +23,7 @@
       class="t-muted fs-200 mb-5"
       data-testid="linked-sync-notice"
     >
-      <FontAwesomeIcon icon="circle-info" />
+      <FontAwesomeIcon :icon="$icons.info" />
       {{ $t("pim.links.sync_notice") }}
     </p>
 
@@ -58,7 +58,7 @@
               :class="{ 'links-table__handle--disabled': !activeLinkType }"
               :title="!activeLinkType ? $t('pim.links.drag_disabled_hint') : ''"
             >
-              <FontAwesomeIcon icon="grip-vertical" />
+              <FontAwesomeIcon :icon="$icons.drag" />
             </span>
             <span>
               <StatusBadge
@@ -76,7 +76,7 @@
                 :data-testid="`linked-edit-${row.pk}`"
                 @click="openEdit(row)"
               >
-                <FontAwesomeIcon icon="pen" />
+                <FontAwesomeIcon :icon="$icons.edit" />
               </button>
               <button
                 class="row-action-btn bg-negative-subtle t-negative"
@@ -84,7 +84,7 @@
                 :data-testid="`linked-delete-${row.pk}`"
                 @click="confirmDelete(row)"
               >
-                <FontAwesomeIcon icon="trash-can" />
+                <FontAwesomeIcon :icon="$icons.delete" />
               </button>
             </span>
           </div>
@@ -162,7 +162,7 @@
             :disabled="formBusy"
             data-testid="linked-form-submit"
           >
-            <FontAwesomeIcon icon="floppy-disk" />
+            <FontAwesomeIcon :icon="$icons.saveDraft" />
             {{ $t("common.save") }}
           </button>
         </div>

@@ -21,7 +21,7 @@
           class="product-list__filter-toggle"
           @click="filtersExpanded = !filtersExpanded"
         >
-          <FontAwesomeIcon icon="filter" />
+          <FontAwesomeIcon :icon="$icons.filter" />
           <span v-if="dropdownFilterCount" class="product-list__filter-badge">{{
             dropdownFilterCount
           }}</span>
@@ -34,7 +34,7 @@
           data-test="quality-toggle"
           @click="toggleQualitySensor"
         >
-          <FontAwesomeIcon :icon="hideQualitySensor ? 'eye-slash' : 'eye'" />
+          <FontAwesomeIcon :icon="hideQualitySensor ? $icons.hide : $icons.preview" />
         </button>
         <div class="flex-1" />
         <span v-if="totalCount > 0" class="fs-200 t-muted"
@@ -148,7 +148,7 @@
             />
             <FontAwesomeIcon
               v-else
-              icon="image"
+              :icon="$icons.image"
               class="product-thumb__placeholder t-muted"
             />
           </div>
@@ -204,7 +204,7 @@
                 :variant="qualityVariant(row)"
               />
               <FontAwesomeIcon
-                :icon="qualityPopover.pk === String(row.pk) ? 'chevron-up' : 'chevron-down'"
+                :icon="qualityPopover.pk === String(row.pk) ? $icons.collapse : $icons.expand"
                 class="product-list__quality-caret fs-200 t-muted"
               />
             </button>

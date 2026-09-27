@@ -18,7 +18,7 @@
         class="btn-danger"
         @click="showDeleteConfirm = true"
       >
-        <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+        <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
       </BasicButton>
       <BasicButton
         :text="$t('pm.save')"
@@ -74,7 +74,7 @@
                     <span class="ml-2">{{ c.label }}</span>
                     <FontAwesomeIcon
                       v-if="form.calculate_country_codes.includes(c.value)"
-                      icon="check"
+                      :icon="$icons.check"
                       class="t-positive"
                     />
                   </div>

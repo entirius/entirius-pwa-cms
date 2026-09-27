@@ -8,7 +8,7 @@
       data-testid="notif-bell"
       @click="toggle"
     >
-      <FontAwesomeIcon icon="bell" />
+      <FontAwesomeIcon :icon="$icons.notifications" />
       <span v-if="store.unread" class="notif-bell__count" data-testid="notif-count">
         {{ store.unread > 99 ? "99+" : store.unread }}
       </span>

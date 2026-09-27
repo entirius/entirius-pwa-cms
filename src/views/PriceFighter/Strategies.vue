@@ -140,7 +140,7 @@
             class="btn-danger"
             @click="showDeleteConfirm = true"
           >
-            <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+            <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
           </BasicButton>
           <div v-else />
           <div class="flex ai-ct gap-5">

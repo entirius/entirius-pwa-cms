@@ -169,7 +169,7 @@
               class="btn-ghost"
               @click="consentTextModal.visible = false"
             >
-              <template #custom><FontAwesomeIcon icon="xmark" /></template>
+              <template #custom><FontAwesomeIcon :icon="$icons.close" /></template>
             </BasicButton>
           </div>
           <div class="agm-modal__body p-10">

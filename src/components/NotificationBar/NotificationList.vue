@@ -12,7 +12,7 @@
           data-testid="notif-close"
           @click="emit('close')"
         >
-          <template #custom><FontAwesomeIcon icon="xmark" /></template>
+          <template #custom><FontAwesomeIcon :icon="$icons.close" /></template>
         </BasicButton>
       </div>
       <p v-if="!store.items.length" class="notif-list__empty">{{ $t("notification_bar.empty") }}</p>

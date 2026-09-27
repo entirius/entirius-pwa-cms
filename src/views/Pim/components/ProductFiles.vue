@@ -390,7 +390,7 @@ onMounted(() => {
       <!-- Upload popup (shown after file is staged) -->
       <div v-if="pendingFile" class="product-files__popup">
         <div class="product-files__popup-header flex ai-ct gap-5 mb-5">
-          <FontAwesomeIcon icon="file" class="t-accent fs-400" />
+          <FontAwesomeIcon :icon="$icons.file" class="t-accent fs-400" />
           <span class="fs-300 fw-600 t-body">{{ pendingFile.name }}</span>
         </div>
 
@@ -483,7 +483,7 @@ onMounted(() => {
 
       <!-- Empty state -->
       <div v-if="!files.length && !pendingFile" class="product-files__empty">
-        <FontAwesomeIcon icon="file" class="t-muted fs-600" />
+        <FontAwesomeIcon :icon="$icons.file" class="t-muted fs-600" />
         <span class="t-muted fs-200 mt-5">{{ $t("pim.no_files") }}</span>
       </div>
 
@@ -531,7 +531,7 @@ onMounted(() => {
               :aria-label="$t('pim.settings')"
               @click="toggleEditRow(fileData(pf).pk)"
             >
-              <FontAwesomeIcon icon="pen" />
+              <FontAwesomeIcon :icon="$icons.edit" />
             </button>
             <button
               v-if="!readonly"
@@ -540,7 +540,7 @@ onMounted(() => {
               :disabled="deletingFilePk === pf.pk"
               @click="deleteFile(pf.pk)"
             >
-              <FontAwesomeIcon icon="trash-can" />
+              <FontAwesomeIcon :icon="$icons.delete" />
             </button>
           </div>
 

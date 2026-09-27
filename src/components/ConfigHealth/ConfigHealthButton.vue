@@ -11,7 +11,7 @@
       @click="toggle"
     >
       <FontAwesomeIcon
-        :icon="fixed ? 'circle-check' : 'triangle-exclamation'"
+        :icon="fixed ? $icons.success : $icons.warning"
       />
       <span
         v-if="!fixed"

@@ -520,7 +520,7 @@ watch(
             "
             class="media-gallery__broken-placeholder"
           >
-            <FontAwesomeIcon icon="video" style="font-size: 48px" />
+            <FontAwesomeIcon :icon="$icons.video" style="font-size: 48px" />
             <a
               :href="selectedItem.imageUrl"
               target="_blank"
@@ -539,7 +539,7 @@ watch(
             />
             <div v-else class="media-gallery__video-link">
               <FontAwesomeIcon
-                icon="play-circle"
+                :icon="$icons.play"
                 class="t-muted"
                 style="font-size: 48px"
               />
@@ -555,7 +555,7 @@ watch(
         </template>
         <div v-else class="media-gallery__no-image">
           <FontAwesomeIcon
-            icon="image"
+            :icon="$icons.image"
             class="t-muted"
             style="font-size: var(--fs-700)"
           />
@@ -571,7 +571,7 @@ watch(
               $t("pim.edit_media")
             }}</span>
             <button class="media-gallery__close-btn" @click="closeEdit">
-              <FontAwesomeIcon icon="xmark" class="t-muted" />
+              <FontAwesomeIcon :icon="$icons.close" class="t-muted" />
             </button>
           </div>
 
@@ -673,9 +673,9 @@ watch(
                   @error="onImgError(element.imageUrl)"
                 />
                 <div v-else class="media-gallery__thumb-broken">
-                  <FontAwesomeIcon icon="video" />
+                  <FontAwesomeIcon :icon="$icons.video" />
                   <span class="media-gallery__play-badge">
-                    <FontAwesomeIcon icon="play" />
+                    <FontAwesomeIcon :icon="$icons.play" />
                   </span>
                 </div>
               </template>
@@ -692,10 +692,10 @@ watch(
                   @error="onImgError(element.thumbnailUrl)"
                 />
                 <div v-else class="media-gallery__thumb-video-fallback">
-                  <FontAwesomeIcon icon="video" />
+                  <FontAwesomeIcon :icon="$icons.video" />
                 </div>
                 <span class="media-gallery__play-badge">
-                  <FontAwesomeIcon icon="play" />
+                  <FontAwesomeIcon :icon="$icons.play" />
                 </span>
               </div>
 
@@ -714,7 +714,7 @@ watch(
                   :aria-label="$t('pim.edit_media')"
                   @click.stop="openEdit(element)"
                 >
-                  <FontAwesomeIcon icon="pen" />
+                  <FontAwesomeIcon :icon="$icons.edit" />
                 </button>
                 <button
                   class="media-gallery__action-btn media-gallery__action-btn--delete"
@@ -722,7 +722,7 @@ watch(
                   :disabled="deletingKey === itemKey(element)"
                   @click.stop="confirmingDeleteItem = element"
                 >
-                  <FontAwesomeIcon icon="trash-can" />
+                  <FontAwesomeIcon :icon="$icons.delete" />
                 </button>
               </div>
             </div>
@@ -758,7 +758,7 @@ watch(
           <span class="media-gallery__divider-line" />
         </div>
         <div class="media-gallery__video-inline">
-          <FontAwesomeIcon icon="link" class="t-muted" />
+          <FontAwesomeIcon :icon="$icons.link" class="t-muted" />
           <input
             v-model="newVideoUrl"
             type="text"
