@@ -80,6 +80,14 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- Tables: nothing overlaps, everything fits or truncates on purpose. `DataTable` cells pad 12 px, a column is never
+  narrower than its header or an untruncated cell (badges, buttons), text cells truncate on one line with the full
+  value in a tooltip, numbers are right-aligned with tabular figures, and an empty value shows "—". Columns carry a
+  priority: on a phone the secondary columns step back and the name gets the width. `StatusBadge` and `.chip` stay
+  inside their cell. Raw tables (stock, atlas duplicates, agreement versions, the leads kit) share `.table-basic`;
+  atlas duplicate groups line up, the price grid keeps its columns apart and names its currency column, the promo
+  modifier is a translated neutral badge, enrichment JSON scrolls instead of breaking keys mid-word, stock shows its
+  status as a badge ("Sold out" for a zero quantity). Pagination hides for a single page.
 - Mobile: every action is reachable on a phone. Scroll regions end above the bottom bar (pagination, the last form
   fields and the atlas swipe actions were under it); panel toolbars, in-card title rows and section headings wrap, so
   Save, Publish and Import no longer sit past the viewport; page cards pad 16 px instead of 48 px. Wide tables
