@@ -2581,7 +2581,8 @@
       "backend_default": "Backend default",
       "saved": "Spawn rule saved",
       "deleted": "Spawn rule deleted",
-      "confirm_delete": "Delete this spawn rule? Open tasks are not affected."
+      "confirm_delete": "Delete this spawn rule? Open tasks are not affected.",
+      "confirm_delete_title": "Delete spawn rule"
     },
     "tasks": {
       "title": "Enrichment Tasks",

@@ -65,7 +65,7 @@
 
     <EmptyState
       v-if="!loading && !product"
-      icon="triangle-exclamation"
+      icon="warning"
       :title="$t('enrichment.preview.not_found')"
       :message="sku || ''"
     />

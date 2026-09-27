@@ -139,7 +139,7 @@
 
     <EmptyState
       v-if="!loading && !rows.length"
-      icon="wand-magic-sparkles"
+      icon="enrich"
       :title="$t('enrichment.review.empty')"
       :message="$t('enrichment.review.empty_message')"
     />

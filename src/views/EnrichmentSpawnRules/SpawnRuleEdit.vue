@@ -139,6 +139,7 @@
 
       <ConfirmDialog
         tone="danger"
+        :title="$t('enrichment.spawn_rules.confirm_delete_title')"
         :open="showDeleteConfirm"
         @confirm="deleteRule"
         @cancel="showDeleteConfirm = false"
