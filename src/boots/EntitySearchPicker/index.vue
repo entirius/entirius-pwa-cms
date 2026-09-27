@@ -1,7 +1,7 @@
 <template>
   <div class="entity-picker relative" v-bind="rootAttrs">
     <input
-      v-if="disabled"
+      v-if="manual"
       :id="field.id.value"
       type="text"
       class="entity-picker__search"
@@ -66,7 +66,7 @@
       </template>
     </BasicMenu>
     <Tag
-      v-if="modelValue && !disabled"
+      v-if="modelValue && !manual"
       class="entity-picker__tag"
       :label="selectedLabel"
       :removable="!isDisabled"
@@ -81,8 +81,8 @@
 // the chosen entity shows as a removable Tag (remove → both cleared + `clear`). The list opens in BasicMenu's panel:
 // a filter input driving the listbox (useListbox), `secondary` as the option description. Inside a FormField the
 // control takes the field's id, description, invalid, required and disabled. `inline`: open in the page flow
-// (catalogue). The `disabled` prop keeps the old manual-entry fallback until the sweeps give its call sites (Edit*
-// modals without PIM) their own text input: a plain text field for the value, no search.
+// (catalogue). `disabled` disables the control; `manual` swaps it for a plain text field for the value, no search
+// (the Edit* modals without PIM).
 import { computed, onBeforeUnmount, ref, useAttrs, useId, watch } from "vue";
 import BasicMenu from "@/boots/BasicMenu/index.vue";
 import Tag from "@/boots/Tag/index.vue";
@@ -99,6 +99,7 @@ const props = defineProps({
   fetchFn: { type: Function, required: true },
   placeholder: { type: String, default: "" },
   disabled: { type: Boolean, default: false },
+  manual: { type: Boolean, default: false },
   clientFilter: { type: Boolean, default: false },
   inline: { type: Boolean, default: false },
 });
@@ -121,7 +122,7 @@ let lastRequest = 0;
 const isAria = (name) => name.startsWith("aria-");
 const controlAttrs = computed(() => Object.fromEntries(Object.entries(attrs).filter(([name]) => isAria(name))));
 const rootAttrs = computed(() => Object.fromEntries(Object.entries(attrs).filter(([name]) => !isAria(name))));
-const isDisabled = computed(() => field.disabled.value);
+const isDisabled = computed(() => props.disabled || field.disabled.value);
 const selectedLabel = computed(() => props.displayValue || props.modelValue);
 const options = computed(() => results.value.map((r) => ({ label: r.label, value: r.value, description: r.secondary })));
 
@@ -174,7 +175,9 @@ async function fetchResults(search) {
       results.value = data;
     }
   } catch {
-    if (request === lastRequest) results.value = [];
+    if (request !== lastRequest) return;
+    results.value = [];
+    allResults.value = [];
   } finally {
     if (request === lastRequest) loading.value = false;
   }
@@ -183,7 +186,7 @@ async function fetchResults(search) {
 // The catalogue's open state has no `open` event: it loads the list at mount.
 watch(
   () => props.inline,
-  (inline) => inline && !props.disabled && fetchResults(""),
+  (inline) => inline && !props.manual && fetchResults(""),
   { immediate: true }
 );
 onBeforeUnmount(() => clearTimeout(debounceTimer));

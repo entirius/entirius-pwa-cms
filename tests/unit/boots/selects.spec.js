@@ -105,8 +105,14 @@ describe("EntitySearchPicker", () => {
     expect(wrapper.emitted("clear")).toHaveLength(1);
   });
 
-  it("disabled keeps the manual-entry fallback: a text field for the value, no search", async () => {
-    const wrapper = mountPicker({ modelValue: "cat-1", disabled: true });
+  it("disabled disables the control", async () => {
+    const wrapper = mountPicker({ disabled: true });
+    await settle();
+    expect(wrapper.find('[role="combobox"], button').attributes("disabled")).toBeDefined();
+  });
+
+  it("manual: a text field for the value, no search", async () => {
+    const wrapper = mountPicker({ modelValue: "cat-1", manual: true });
     await settle();
     const input = wrapper.find('input[type="text"]');
     expect(input.element.value).toBe("cat-1");
@@ -158,6 +164,14 @@ describe("ChannelMultiSelect", () => {
     await wrapper.setProps({ compact: true });
     expect(wrapper.find(".channel-select__full").exists()).toBe(false);
     expect(wrapper.find(".channel-select__short").text()).toBe("Kanały");
+  });
+
+  it("with no channel chosen it opens on the first channel", async () => {
+    mountChip({ modelValue: [] });
+    trigger().click();
+    await settle();
+    const listbox = document.querySelector('[role="listbox"]');
+    expect(listbox.getAttribute("aria-activedescendant")).toBe(options()[0].id);
   });
 
   it("the list is a multi-select listbox in BasicMenu's panel; click and Space toggle a channel", async () => {

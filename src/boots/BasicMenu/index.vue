@@ -14,7 +14,8 @@
       class="basic-menu__popover flex-column"
       :class="{ 'basic-menu__popover--panel': isPanel }"
       :role="isPanel ? 'dialog' : 'menu'"
-      :aria-label="label || undefined"
+      :aria-label="labelledby ? undefined : label || undefined"
+      :aria-labelledby="labelledby || undefined"
       tabindex="-1"
       :style="inline ? undefined : style"
       @keydown="onPopoverKeydown"
@@ -64,6 +65,8 @@ import { useFloatingPosition } from "@/composables/useFloatingPosition";
 const props = defineProps({
   items: { type: Array, default: () => [] },
   label: { type: String, default: "" },
+  // The id of an element that names the popover (a FormField label); wins over `label`.
+  labelledby: { type: String, default: "" },
   placement: { type: String, default: "bottom-start" },
   inline: { type: Boolean, default: false },
 });

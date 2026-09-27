@@ -4,6 +4,7 @@
       ref="menu"
       class="basic-select__menu"
       :label="menuLabel"
+      :labelledby="menuLabelledby"
       :placement="placement"
       :inline="inline"
       @open="onOpen"
@@ -109,6 +110,7 @@ const isAria = (name) => name.startsWith("aria-");
 const controlAttrs = computed(() => Object.fromEntries(Object.entries(attrs).filter(([name]) => isAria(name))));
 const rootAttrs = computed(() => Object.fromEntries(Object.entries(attrs).filter(([name]) => !isAria(name))));
 const menuLabel = computed(() => attrs["aria-label"] ?? "");
+const menuLabelledby = computed(() => attrs["aria-labelledby"] ?? field.labelId?.value ?? "");
 const isDisabled = computed(() => props.disabled || field.disabled.value);
 
 const values = computed(() => (props.multiple ? props.modelValue ?? [] : [props.modelValue]));

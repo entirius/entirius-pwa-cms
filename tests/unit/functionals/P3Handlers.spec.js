@@ -80,8 +80,11 @@ describe("meta-kit", () => {
 describe("routes-list", () => {
   const route = { url: "/a", draft: null, label: "A" };
 
-  it("adds a picked route and edits / deletes the route the list shows", async () => {
+  it("adds a picked route; edit and delete act on their own row, not on the picked route", async () => {
     handy.defaults = { type: "product", routes: null };
+    mockContent.mockResolvedValueOnce({
+      data: { data: [{ url: "/a", label: "A" }, { url: "/b", label: "B" }], pagination: {} },
+    });
     const wrapper = mountWith(RoutesList);
     await flushPromises();
 
@@ -89,13 +92,14 @@ describe("routes-list", () => {
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.selected).toEqual([{ label: "A", value: route }]);
 
-    const [edit, remove] = wrapper.findAllComponents(IconButton);
-    edit.vm.$emit("click");
+    // Row order: /a (edit, delete), /b (edit, delete).
+    const buttons = wrapper.findAllComponents(IconButton);
+    buttons[2].vm.$emit("click");
     expect(wrapper.vm.mode).toBe("edit");
-    expect(wrapper.vm.route_url).toBe("/a");
-    remove.vm.$emit("click");
+    expect(wrapper.vm.route_url).toBe("/b");
+    buttons[3].vm.$emit("click");
     await wrapper.vm.$nextTick();
-    expect(wrapper.vm.to_delete).toBe("/a");
+    expect(wrapper.vm.to_delete).toBe("/b");
     expect(wrapper.find(".confirm").exists()).toBe(true);
   });
 

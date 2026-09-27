@@ -143,7 +143,7 @@ function onSave() {
         :displayValue="form.link_display"
         :fetchFn="categoryFetch"
         :placeholder="$t('layout_extender.search_category')"
-        :disabled="!pimEnabled"
+        :manual="!pimEnabled"
         @update:modelValue="form.link_value = $event"
         @update:displayValue="form.link_display = $event"
         @clear="form.link_value = ''; form.link_display = ''"

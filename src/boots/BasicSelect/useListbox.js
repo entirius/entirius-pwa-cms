@@ -56,8 +56,8 @@ export function useListbox(options, choose) {
     }
   }
 
-  // First enabled option, or the given index (the selected one when a list opens).
-  const reset = (index = enabled()[0] ?? -1) => (active.value = index);
+  // No index (or -1, nothing chosen): the first enabled option, so the keyboard and the visible focus start somewhere.
+  const reset = (index = -1) => (active.value = index >= 0 ? index : enabled()[0] ?? -1);
 
   return { active, onKeydown, reset, chooseActive };
 }

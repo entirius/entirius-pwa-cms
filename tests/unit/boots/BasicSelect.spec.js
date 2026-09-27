@@ -69,6 +69,12 @@ describe("BasicSelect", () => {
     expect(listbox().getAttribute("aria-activedescendant")).toBe(options()[1].id);
   });
 
+  it("with nothing chosen it opens on the first enabled option", async () => {
+    mountSelect();
+    await open();
+    expect(listbox().getAttribute("aria-activedescendant")).toBe(options()[0].id);
+  });
+
   it("single: a click emits the value and closes, focus back on the control", async () => {
     const wrapper = mountSelect();
     await open();
@@ -83,10 +89,10 @@ describe("BasicSelect", () => {
     const wrapper = mountSelect();
     await open();
     const active = () => listbox().getAttribute("aria-activedescendant");
-    key(listbox(), "ArrowDown");
-    await nextTick();
     expect(active()).toBe(options()[0].id);
     key(listbox(), "ArrowDown");
+    await nextTick();
+    expect(active()).toBe(options()[1].id);
     key(listbox(), "ArrowDown");
     await nextTick();
     expect(active()).toBe(options()[3].id);
