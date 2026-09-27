@@ -730,7 +730,7 @@ export default {
   border-radius: var(--radius-base);
   overflow-x: auto;
   // min-width ensures horizontal scroll instead of crushing columns
-  min-width: 1040px;
+  min-width: 1080px;
 }
 
 // SKU | Tax | Cur | Net | Gross | Spec.Net | Spec.Gross | From | To | Eye | Status
@@ -909,10 +909,10 @@ $expand-cols: 80px 80px 110px 110px 1fr;
 
   .pm-price-table__head,
   .pm-price-table__row {
-    min-width: 1040px;
+    min-width: 1080px;
   }
 
-  // The rows keep 1040 px; the box itself fits the card, so only the table scrolls, not the card.
+  // The rows keep 1080 px; the box itself fits the card, so only the table scrolls, not the card.
   .pm-price-table {
     min-width: 0;
     overflow-x: auto;
