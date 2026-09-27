@@ -18,7 +18,7 @@
       >
         <BasicInput
           :model-value="form.idx"
-          is-disabled
+          disabled
           data-testid="overview-idx"
         />
       </FormField>
@@ -66,10 +66,9 @@
         :label="$t('atlas.form.is_active_label')"
         :tooltip="$t('atlas.form.is_active_tooltip')"
       >
-        <Switcher
-          :selected="form.is_active"
+        <BasicSwitch
+          v-model="form.is_active"
           data-testid="overview-is-active"
-          @onSelect="form.is_active = !form.is_active"
         />
       </FormField>
       <FormField
@@ -228,13 +227,9 @@
         "
         class="overview-grid__wide"
       >
-        <Switcher
-          :selected="form.allow_physical_writes_from_non_primary"
+        <BasicSwitch
+          v-model="form.allow_physical_writes_from_non_primary"
           data-testid="overview-allow-physical-writes-non-preferred"
-          @onSelect="
-            form.allow_physical_writes_from_non_primary =
-              !form.allow_physical_writes_from_non_primary
-          "
         />
       </FormField>
       <!-- etap-13b — auto-preferred selection per-supplier knobs. Grouped at the end

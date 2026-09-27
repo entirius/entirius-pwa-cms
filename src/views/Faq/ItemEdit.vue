@@ -32,10 +32,9 @@
           <h1 class="page-title">
             {{ isEdit ? item.question || item.url_key : $t("faq.create_item") }}
           </h1>
-          <Switcher
+          <BasicSwitch
             :label="$t('faq.is_active')"
-            :selected="form.is_active"
-            @onSelect="form.is_active = !form.is_active"
+            v-model="form.is_active"
           />
         </div>
 
@@ -57,7 +56,7 @@
               </div>
               <BasicInput
                 v-model="form.url_key"
-                :isDisabled="isEdit"
+                :disabled="isEdit"
                 :validate="formErrors.getFieldError('url_key')"
               />
             </div>
@@ -191,7 +190,7 @@
               v-else
               v-model="assoc.entity_identifier"
               :placeholder="$t('faq.entity_identifier')"
-              :isDisabled="!assoc.entity_type"
+              :disabled="!assoc.entity_type"
               class="flex-1"
             />
             <IconButton

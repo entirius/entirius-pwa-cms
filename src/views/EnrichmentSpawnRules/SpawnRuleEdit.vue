@@ -47,14 +47,14 @@
             :tooltip="$t('enrichment.spawn_rules.key_hint')"
             :error="fieldErr('key')"
           >
-            <BasicInput v-model="form.key" :isDisabled="!isCreate" data-test="spawn-rule-key" />
+            <BasicInput v-model="form.key" :disabled="!isCreate" data-test="spawn-rule-key" />
           </FormField>
 
           <FormField
             :label="$t('enrichment.spawn_rules.col_module')"
             :tooltip="$t('enrichment.spawn_rules.module_hint')"
           >
-            <BasicInput v-model="form.module" :isDisabled="true" />
+            <BasicInput v-model="form.module" :disabled="true" />
           </FormField>
 
           <FormField
@@ -125,15 +125,13 @@
           </FormField>
 
           <div class="flex ai-ct gap-8">
-            <Switcher
+            <BasicSwitch
               :label="$t('enrichment.spawn_rules.col_auto')"
-              :selected="form.auto"
-              @onSelect="form.auto = !form.auto"
+              v-model="form.auto"
             />
-            <Switcher
+            <BasicSwitch
               :label="$t('enrichment.spawn_rules.col_active')"
-              :selected="form.active"
-              @onSelect="form.active = !form.active"
+              v-model="form.active"
             />
           </div>
         </div>

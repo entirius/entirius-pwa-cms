@@ -3,7 +3,7 @@
     <FormField :label="$t('atlas.feeds.form.idx_label')" required>
       <BasicInput
         v-model="local.idx"
-        :isDisabled="!!feed"
+        :disabled="!!feed"
         placeholder="xml-1"
         data-testid="feed-form-idx"
       />
@@ -95,10 +95,9 @@
     </FormField>
 
     <FormField :label="$t('atlas.form.is_active_label')">
-      <Switcher
-        :selected="local.is_active"
+      <BasicSwitch
+        v-model="local.is_active"
         data-testid="feed-form-is-active"
-        @onSelect="local.is_active = !local.is_active"
       />
     </FormField>
 

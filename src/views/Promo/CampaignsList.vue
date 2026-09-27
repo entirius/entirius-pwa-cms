@@ -89,9 +89,8 @@
         </FormField>
 
         <FormField v-if="isEdit" :label="$t('promo.active')">
-          <Switcher
-            :selected="form.is_active"
-            @onSelect="form.is_active = !form.is_active"
+          <BasicSwitch
+            v-model="form.is_active"
           />
         </FormField>
 

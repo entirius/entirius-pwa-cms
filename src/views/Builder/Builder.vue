@@ -69,12 +69,12 @@
       </template>
 
       <template #description>
-        <BasicInput
-          class="bg-base lh-base-elem"
-          :label="$t('builder.document_name')"
-          v-model="copy_doc_label"
-          :key="`copy-name-label`"
-        />
+        <FormField :label="$t('builder.document_name')" :key="`copy-name-label`">
+          <BasicInput
+            class="bg-base lh-base-elem"
+            v-model="copy_doc_label"
+          />
+        </FormField>
       </template>
     </RenameModal>
     <!-- Left toolbar: back button, doc name, access level -->

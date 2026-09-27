@@ -19,7 +19,7 @@
         <BasicInput
           v-else
           v-model="local.source_field"
-          :is-disabled="true"
+          :disabled="true"
           :data-testid="`attr-mapping-source-${rowKey}`"
         />
       </FormField>
@@ -73,7 +73,7 @@
         <BasicInput
           v-else
           v-model="local.target_identifier"
-          :is-disabled="true"
+          :disabled="true"
           :placeholder="
             $t(
               'atlas.mappings.attribute.target_identifier_skip_placeholder'
@@ -83,10 +83,9 @@
         />
       </FormField>
       <FormField :label="$t('atlas.mappings.attribute.is_required')">
-        <Switcher
-          :selected="local.is_required"
+        <BasicSwitch
+          v-model="local.is_required"
           :data-testid="`attr-mapping-required-${rowKey}`"
-          @onSelect="local.is_required = !local.is_required"
         />
       </FormField>
     </div>

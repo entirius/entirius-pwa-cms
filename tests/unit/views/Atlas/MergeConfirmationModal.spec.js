@@ -24,8 +24,8 @@ const globalStubs = {
     props: ["label"],
     template: "<div class='stub-field' :data-label='label'><slot /></div>",
   },
-  TextAreaBasic: {
-    name: "TextAreaBasic",
+  BasicTextarea: {
+    name: "BasicTextarea",
     props: ["modelValue", "disabled"],
     emits: ["update:modelValue"],
     template:

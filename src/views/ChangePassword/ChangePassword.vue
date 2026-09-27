@@ -28,12 +28,13 @@
         {{ $t("user.change_password_subtitle") }}
       </p>
       <div class="auth-card__pw-field mb-10">
-        <BasicInput
-          v-model="oldPassword"
-          class="bg-raised lh-base-elem"
-          :label="$t('user.old_password')"
-          :type="oldPwVisible ? 'text' : 'password'"
-        />
+        <FormField :label="$t('user.old_password')">
+          <BasicInput
+            v-model="oldPassword"
+            class="bg-raised lh-base-elem"
+            :type="oldPwVisible ? 'text' : 'password'"
+          />
+        </FormField>
         <button
           class="auth-card__pw-toggle"
           type="button"
@@ -43,12 +44,13 @@
         </button>
       </div>
       <div class="auth-card__pw-field mb-10">
-        <BasicInput
-          v-model="newPassword"
-          class="bg-raised lh-base-elem"
-          :label="$t('user.new_password')"
-          :type="newPwVisible ? 'text' : 'password'"
-        />
+        <FormField :label="$t('user.new_password')">
+          <BasicInput
+            v-model="newPassword"
+            class="bg-raised lh-base-elem"
+            :type="newPwVisible ? 'text' : 'password'"
+          />
+        </FormField>
         <button
           class="auth-card__pw-toggle"
           type="button"
@@ -58,12 +60,13 @@
         </button>
       </div>
       <div class="auth-card__pw-field mb-8">
-        <BasicInput
-          v-model="confirmPassword"
-          class="bg-raised lh-base-elem"
-          :label="$t('user.confirm_password')"
-          :type="newPwVisible ? 'text' : 'password'"
-        />
+        <FormField :label="$t('user.confirm_password')">
+          <BasicInput
+            v-model="confirmPassword"
+            class="bg-raised lh-base-elem"
+            :type="newPwVisible ? 'text' : 'password'"
+          />
+        </FormField>
         <button
           class="auth-card__pw-toggle"
           type="button"

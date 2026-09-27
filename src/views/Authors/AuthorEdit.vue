@@ -35,24 +35,25 @@
         <div class="page-card author-edit__section mb-10">
           <div class="section-label mb-8">{{ $t("pim.basic_info") }}</div>
           <div class="flex gap-8 mb-8" style="flex-wrap: wrap">
-            <BasicInput
-              v-model="form.name"
-              :label="$t('authors.name')"
-              :validate="formErrors.getFieldError('name')"
-              class="flex-1"
-              style="min-width: 200px"
-            />
-            <BasicInput
-              v-model="form.slug"
-              :label="$t('authors.slug')"
-              class="flex-1"
-              style="min-width: 200px"
-            />
+            <FormField :label="$t('authors.name')">
+              <BasicInput
+                v-model="form.name"
+                :validate="formErrors.getFieldError('name')"
+                class="flex-1"
+                style="min-width: 200px"
+              />
+            </FormField>
+            <FormField :label="$t('authors.slug')">
+              <BasicInput
+                v-model="form.slug"
+                class="flex-1"
+                style="min-width: 200px"
+              />
+            </FormField>
           </div>
-          <Switcher
+          <BasicSwitch
             :label="$t('authors.is_active')"
-            :selected="form.is_active"
-            @onSelect="form.is_active = !form.is_active"
+            v-model="form.is_active"
           />
 
           <!-- Photo -->
@@ -123,26 +124,29 @@
         <div class="page-card author-edit__section mb-10">
           <div class="section-label mb-8">{{ $t("dp.contact") }}</div>
           <div class="flex gap-8 mb-8" style="flex-wrap: wrap">
-            <BasicInput
-              v-model="form.contact_email"
-              :label="$t('authors.contact_email')"
-              :validate="formErrors.getFieldError('contact_email')"
-              class="flex-1"
-              style="min-width: 200px"
-            />
-            <BasicInput
-              v-model="form.contact_phone"
-              :label="$t('authors.contact_phone')"
-              :validate="formErrors.getFieldError('contact_phone')"
-              class="flex-1"
-              style="min-width: 200px"
-            />
+            <FormField :label="$t('authors.contact_email')">
+              <BasicInput
+                v-model="form.contact_email"
+                :validate="formErrors.getFieldError('contact_email')"
+                class="flex-1"
+                style="min-width: 200px"
+              />
+            </FormField>
+            <FormField :label="$t('authors.contact_phone')">
+              <BasicInput
+                v-model="form.contact_phone"
+                :validate="formErrors.getFieldError('contact_phone')"
+                class="flex-1"
+                style="min-width: 200px"
+              />
+            </FormField>
           </div>
-          <BasicInput
-            v-model="form.contact_url"
-            :label="$t('authors.contact_url')"
-            :validate="formErrors.getFieldError('contact_url')"
-          />
+          <FormField :label="$t('authors.contact_url')">
+            <BasicInput
+              v-model="form.contact_url"
+              :validate="formErrors.getFieldError('contact_url')"
+            />
+          </FormField>
         </div>
 
         <!-- Social profiles -->
@@ -151,14 +155,13 @@
             {{ $t("authors.social_profiles") }}
           </div>
           <div class="flex gap-8" style="flex-wrap: wrap">
-            <BasicInput
-              v-for="platform in knownPlatforms"
-              :key="platform"
-              v-model="form.social_profiles[platform]"
-              :label="platform"
-              class="flex-1"
-              style="min-width: 200px"
-            />
+            <FormField v-for="platform in knownPlatforms" :label="platform" :key="platform">
+              <BasicInput
+                v-model="form.social_profiles[platform]"
+                class="flex-1"
+                style="min-width: 200px"
+              />
+            </FormField>
           </div>
         </div>
       </template>

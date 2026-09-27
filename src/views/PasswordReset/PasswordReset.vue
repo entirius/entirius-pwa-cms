@@ -43,12 +43,13 @@
         {{ $t("reset.subtitle") }}
       </p>
       <div class="auth-card__pw-field mb-10">
-        <BasicInput
-          v-model="newPassword"
-          class="bg-raised lh-base-elem"
-          :label="$t('reset.new_password')"
-          :type="pwVisible ? 'text' : 'password'"
-        />
+        <FormField :label="$t('reset.new_password')">
+          <BasicInput
+            v-model="newPassword"
+            class="bg-raised lh-base-elem"
+            :type="pwVisible ? 'text' : 'password'"
+          />
+        </FormField>
         <button
           class="auth-card__pw-toggle"
           type="button"
@@ -58,12 +59,13 @@
         </button>
       </div>
       <div class="auth-card__pw-field mb-8">
-        <BasicInput
-          v-model="confirmPassword"
-          class="bg-raised lh-base-elem"
-          :label="$t('reset.confirm_password')"
-          :type="pwVisible ? 'text' : 'password'"
-        />
+        <FormField :label="$t('reset.confirm_password')">
+          <BasicInput
+            v-model="confirmPassword"
+            class="bg-raised lh-base-elem"
+            :type="pwVisible ? 'text' : 'password'"
+          />
+        </FormField>
         <button
           class="auth-card__pw-toggle"
           type="button"

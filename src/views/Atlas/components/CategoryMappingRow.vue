@@ -19,7 +19,7 @@
         <BasicInput
           v-else
           v-model="local.source_field"
-          :is-disabled="true"
+          :disabled="true"
           :data-testid="`cat-mapping-source-${rowKey}`"
         />
       </FormField>
@@ -37,7 +37,7 @@
         <BasicInput
           v-else
           v-model="local.source_value"
-          :is-disabled="true"
+          :disabled="true"
           :data-testid="`cat-mapping-value-${rowKey}`"
         />
       </FormField>

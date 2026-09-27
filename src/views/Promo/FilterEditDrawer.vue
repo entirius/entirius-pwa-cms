@@ -17,11 +17,10 @@
 
       <!-- take_common_part -->
       <FormField :label="$t('promo.filter_field_take_common_part')" class="mt-8">
-        <Switcher
+        <BasicSwitch
           :label="$t('promo.filter_take_common_part_hint')"
           :hint="$t('promo.filter_common_tip')"
-          :selected="local.take_common_part"
-          @onSelect="local.take_common_part = !local.take_common_part"
+          v-model="local.take_common_part"
         />
       </FormField>
 

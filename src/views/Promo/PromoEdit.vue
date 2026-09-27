@@ -171,7 +171,7 @@
                 class="detail-grid--full"
                 :error="jsonParseError || ''"
               >
-                <TextAreaBasic
+                <BasicTextarea
                   v-model="form.extra_value_json"
                   :rows="5"
                   :placeholder="$t('promo.extra_json_placeholder')"
@@ -286,47 +286,40 @@
         <div class="detail-section mb-10">
           <h2 class="fs-500 fw-600 mb-8">{{ $t("promo.section_flags") }}</h2>
           <div class="detail-flags">
-            <Switcher
+            <BasicSwitch
               :label="$t('promo.field_is_active')"
               :hint="$t('promo.hint_is_active')"
-              :selected="form.is_active"
-              @onSelect="form.is_active = !form.is_active"
+              v-model="form.is_active"
             />
-            <Switcher
+            <BasicSwitch
               :label="$t('promo.field_automatic')"
               :hint="$t('promo.hint_automatic')"
-              :selected="form.automatic_applications"
-              @onSelect="form.automatic_applications = !form.automatic_applications"
+              v-model="form.automatic_applications"
             />
-            <Switcher
+            <BasicSwitch
               :label="$t('promo.field_free_shipping')"
               :hint="$t('promo.hint_free_shipping')"
-              :selected="form.free_shipping"
-              @onSelect="form.free_shipping = !form.free_shipping"
+              v-model="form.free_shipping"
             />
-            <Switcher
+            <BasicSwitch
               :label="$t('promo.field_free_order')"
               :hint="$t('promo.hint_free_order')"
-              :selected="form.free_order"
-              @onSelect="form.free_order = !form.free_order"
+              v-model="form.free_order"
             />
-            <Switcher
+            <BasicSwitch
               :label="$t('promo.field_is_omnibus')"
               :hint="$t('promo.hint_is_omnibus')"
-              :selected="form.is_omnibus"
-              @onSelect="form.is_omnibus = !form.is_omnibus"
+              v-model="form.is_omnibus"
             />
-            <Switcher
+            <BasicSwitch
               :label="$t('promo.field_show_when_invalid')"
               :hint="$t('promo.hint_show_when_invalid')"
-              :selected="form.show_when_invalid"
-              @onSelect="form.show_when_invalid = !form.show_when_invalid"
+              v-model="form.show_when_invalid"
             />
-            <Switcher
+            <BasicSwitch
               :label="$t('promo.field_combine')"
               :hint="$t('promo.hint_combine')"
-              :selected="form.combine_with_other_rules"
-              @onSelect="form.combine_with_other_rules = !form.combine_with_other_rules"
+              v-model="form.combine_with_other_rules"
             />
           </div>
         </div>

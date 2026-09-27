@@ -146,17 +146,15 @@
           v-if="!isMonitoringSupplier"
           :label="$t('atlas.linked.is_preferred_label')"
         >
-          <Switcher
-            :selected="formData.is_primary"
+          <BasicSwitch
+            v-model="formData.is_primary"
             data-testid="linked-form-is-preferred"
-            @onSelect="formData.is_primary = !formData.is_primary"
           />
         </FormField>
         <FormField :label="$t('atlas.form.is_active_label')">
-          <Switcher
-            :selected="formData.is_active"
+          <BasicSwitch
+            v-model="formData.is_active"
             data-testid="linked-form-is-active"
-            @onSelect="formData.is_active = !formData.is_active"
           />
         </FormField>
         <FormField :label="$t('atlas.linked.notes_label')">

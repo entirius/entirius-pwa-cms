@@ -39,10 +39,9 @@
           <h1 class="page-title">
             {{ isEdit ? group.name || group.idx : $t("faq.create_group") }}
           </h1>
-          <Switcher
+          <BasicSwitch
             :label="$t('faq.is_active')"
-            :selected="form.is_active"
-            @onSelect="form.is_active = !form.is_active"
+            v-model="form.is_active"
           />
         </div>
 
@@ -54,7 +53,7 @@
               <label class="field-label required">{{ $t("faq.idx") }}</label>
               <BasicInput
                 v-model="form.idx"
-                :isDisabled="isEdit"
+                :disabled="isEdit"
                 :validate="formErrors.getFieldError('idx')"
               />
             </div>

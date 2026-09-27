@@ -194,7 +194,7 @@
           <BasicInput
             :model-value="formData.idx"
             placeholder="default"
-            :is-disabled="!!editingIdx"
+            :disabled="!!editingIdx"
             data-testid="mapping-form-idx"
             @update:modelValue="onIdxInput"
           />
@@ -238,10 +238,9 @@
           />
         </FormField>
         <FormField :label="$t('atlas.form.is_active_label')">
-          <Switcher
-            :selected="formData.is_active"
+          <BasicSwitch
+            v-model="formData.is_active"
             data-testid="mapping-form-is-active"
-            @onSelect="formData.is_active = !formData.is_active"
           />
         </FormField>
         <div class="flex ai-ct jc-end gap-5 mt-8">

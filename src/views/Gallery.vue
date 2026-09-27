@@ -54,11 +54,12 @@
           </div>
         </div>
         <div class="flex ai-ct gap-2" style="max-width: 400px">
-          <BasicInput
-            class="bg-base lh-base-elem fg-1 tag-input"
-            :label="$t('gallery.add_new_tag')"
-            v-model="new_tag_input"
-          />
+          <FormField :label="$t('gallery.add_new_tag')">
+            <BasicInput
+              class="bg-base lh-base-elem fg-1 tag-input"
+              v-model="new_tag_input"
+            />
+          </FormField>
           <button
             class="tag-add-btn bg-accent-fill t-on-accent-fill rounded pointer"
             @click="addNewTag()"
@@ -111,12 +112,13 @@
           </div>
         </div>
         <div class="flex ai-ct gap-2">
-          <BasicInput
-            class="bg-base lh-base-elem fg-1 tag-input"
-            :label="$t('gallery.quick_add_tag')"
-            v-model="new_tag_input"
-            @keydown.enter.native="quickAddTag"
-          />
+          <FormField :label="$t('gallery.quick_add_tag')">
+            <BasicInput
+              class="bg-base lh-base-elem fg-1 tag-input"
+              v-model="new_tag_input"
+              @keydown.enter.native="quickAddTag"
+            />
+          </FormField>
           <button
             class="tag-add-btn bg-accent-fill t-on-accent-fill rounded pointer"
             @click="quickAddTag"
@@ -184,11 +186,12 @@
           <div class="flex-column">
             <div>
               <p class="fs-200 t-info">Optionals</p>
-              <BasicInput
-                class="bg-base rounded t-secondary mt-8 lh-base-elem"
-                :label="'Picture alt.'"
-                v-model="meta.alt"
-              />
+              <FormField :label="'Picture alt.'">
+                <BasicInput
+                  class="bg-base rounded t-secondary mt-8 lh-base-elem"
+                  v-model="meta.alt"
+                />
+              </FormField>
               <p class="fs-200 t-secondary mt-5 mb-2">
                 {{ $t("gallery.select_tags") }}
               </p>

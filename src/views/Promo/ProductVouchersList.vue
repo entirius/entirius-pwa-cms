@@ -128,18 +128,14 @@
           :label="$t('promo.pv_blacklist')"
           :tooltip="$t('promo.pv_blacklist_tip')"
         >
-          <Switcher
-            :selected="form.blacklist_other_vouchers"
-            @onSelect="
-              form.blacklist_other_vouchers = !form.blacklist_other_vouchers
-            "
+          <BasicSwitch
+            v-model="form.blacklist_other_vouchers"
           />
         </FormField>
 
         <FormField v-if="isEdit" :label="$t('promo.active')">
-          <Switcher
-            :selected="form.is_active"
-            @onSelect="form.is_active = !form.is_active"
+          <BasicSwitch
+            v-model="form.is_active"
           />
         </FormField>
 
@@ -221,13 +217,10 @@
                 </span>
               </div>
             </div>
-            <Switcher
+            <BasicSwitch
               :label="$t('promo.pv_filter_common')"
               :hint="$t('promo.filter_common_tip')"
-              :selected="newFilter.take_common_part"
-              @onSelect="
-                newFilter.take_common_part = !newFilter.take_common_part
-              "
+              v-model="newFilter.take_common_part"
             />
             <div class="flex ai-ct gap-2">
               <BasicButton

@@ -12,11 +12,10 @@
         :data-testid="`events-severity-${opt.value}`"
         @click="setSeverity(opt.value)"
       />
-      <Switcher
+      <BasicSwitch
         :label="$t('atlas.logs.show_acknowledged')"
-        :selected="showAcknowledged"
+        v-model="showAcknowledged"
         data-testid="events-show-ack-toggle"
-        @onSelect="showAcknowledged = !showAcknowledged"
       />
     </div>
 

@@ -12,7 +12,7 @@
           {{ descriptionText }}
         </p>
         <FormField :label="$t('atlas.duplicates.merge_modal.reason_label')">
-          <TextAreaBasic
+          <BasicTextarea
             v-model="reason"
             :placeholder="$t('atlas.duplicates.merge_modal.reason_placeholder')"
             rows="3"

@@ -3,7 +3,7 @@
     <div class="source-value-picker__wrapper">
       <BasicInput
         v-model="local"
-        :is-disabled="disabled"
+        :disabled="disabled"
         :placeholder="placeholder"
         :data-testid="`${testId}-input`"
         @focusin="onFocus"
