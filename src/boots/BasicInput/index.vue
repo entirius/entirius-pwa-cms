@@ -124,15 +124,16 @@ onMounted(() => props.focusOnCreate && inputEl.value.focus());
       padding-left: var(--elem-height);
     }
 
-    &[aria-invalid="true"] {
-      border-color: var(--negative);
-    }
-
     // The former LockedField: the value stays readable and selectable behind the lock icon.
     &:read-only:not(:disabled) {
       background-color: var(--surface-raised);
       border-color: var(--border-subtle);
       color: var(--text-muted);
+    }
+
+    // After read-only: a readonly value in error still shows it.
+    &[aria-invalid="true"] {
+      border-color: var(--negative);
     }
 
     // Same disabled look as Dropdown: a locked value is readable but plainly not editable.

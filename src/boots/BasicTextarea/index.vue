@@ -62,14 +62,15 @@ const length = computed(() => String(props.modelValue ?? "").length);
     border-color: var(--border-strong);
   }
 
-  &[aria-invalid="true"] {
-    border-color: var(--negative);
-  }
-
   &:read-only:not(:disabled) {
     background-color: var(--surface-raised);
     border-color: var(--border-subtle);
     color: var(--text-muted);
+  }
+
+  // After read-only: a readonly value in error still shows it.
+  &[aria-invalid="true"] {
+    border-color: var(--negative);
   }
 
   // The disabled look of BasicInput and NumberInput.

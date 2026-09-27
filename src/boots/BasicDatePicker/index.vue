@@ -12,8 +12,11 @@
         <FontAwesomeIcon :icon="ICONS.calendar" class="basic-date-picker__icon" aria-hidden="true" />
         <span :class="{ 't-muted': !current }">{{ current || $t("routes.set_new") }}</span>
       </button>
-      <div v-show="visible" ref="pickerEl" v-out="close" class="picker-wrapper bg-inherit bg-base">
-        <input type="text" data-input style="display: none" />
+      <div v-show="visible" v-out="close" class="picker-wrapper bg-inherit bg-base">
+        <!-- flatpickr's element: its inline calendar lands right after it, inside the wrapper -->
+        <div ref="pickerEl">
+          <input type="text" data-input style="display: none" />
+        </div>
       </div>
     </div>
   </div>
