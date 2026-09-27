@@ -99,6 +99,13 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- P3 sweep, partition 2 (plan 18): Promo, Atlas, Faq, forms, enrichment, content, Leads and the other partition-2
+  views use the P3 components — icons by meaning, buttons by variant, icon-only actions on `IconButton`,
+  confirmations on `ConfirmDialog` (custom footers on `BasicModal`), `.chip` on `StatusBadge`, `Dropdown` on
+  `BasicSelect` (the custom check lists are `multiple` selects), `Switcher` / `TextAreaBasic` on `BasicSwitch` /
+  `BasicTextarea`, field errors on `FormField`. The Builder section order is a labelled FloatingActions pill;
+  the Atlas preferred-strategy and evaluation-frequency selects show their value again (they passed `v-model` to a
+  Dropdown that ignored it); the forms back control has a 40 × 40 hit area on a phone.
 - Rich-text table tools are short text buttons (four "add" and three "delete" tools shared one icon each); the
   pricing detail flush/delete buttons carry one tooltip (their label); the standalone `ToolTip` hint is a `note`
   described by its text; the FAB sits 16 px from the edge and its speed-dial back button uses the `back` meaning.
