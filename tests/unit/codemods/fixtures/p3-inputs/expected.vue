@@ -71,6 +71,14 @@
       <BasicInput id="code" v-model="form.code3" />
     </FormField>
 
+    <!-- a label in a FormField through a wrapper: the field is found, no nested FormField; a static limit binds a number -->
+    <FormField :label="$t('pim.code')">
+      <div class="flex">
+        <BasicInput v-model="form.code4" />
+      </div>
+    </FormField>
+    <BasicTextarea v-model="form.note" :maxlength="120" />
+
     <!-- untouched: the new API -->
     <BasicSwitch v-model="form.on" :label="$t('pim.active')" />
     <BasicTextarea v-model="form.body" :maxlength="500" />

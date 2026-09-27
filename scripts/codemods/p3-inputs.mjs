@@ -66,6 +66,12 @@ const KEPT = {
 const kindOf = (node) => KIND_OF_TAG[node.rawName.toLowerCase().replace(/-/g, "")];
 const isFormField = (node) => node?.type === "VElement" && node.rawName.toLowerCase().replace(/-/g, "") === "formfield";
 
+// The FormField a control sits in, directly or through wrapper elements (`<FormField><div class="flex"><BasicInput>`).
+function enclosingFormField(node) {
+  for (let parent = node.parent; parent; parent = parent.parent) if (isFormField(parent)) return parent;
+  return null;
+}
+
 // One name per attribute: `v-if`, `v-model`, `@onselect`, `selected` (bound or static alike).
 function idOf(attr) {
   if (!attr.directive) return normalName(attr);
@@ -147,7 +153,7 @@ function switchEdits(text, node, result) {
 function textareaEdits(text, node, result) {
   renameTag(node, TARGET[TEXTAREA], result);
   const limit = findById(node, "limit");
-  if (limit) renameKey(limit, "maxlength", result);
+  if (limit) renameKey(limit, limit.directive ? "maxlength" : ":maxlength", result); // `maxlength` is a Number prop
   disabledEdits(node, result);
   validateFlag(node, result);
   unknownAttributes(text, node, [TEXTAREA, "limit", "label", "validate", ...DISABLED_SPELLINGS], result);
@@ -217,15 +223,15 @@ function unknownAttributes(text, node, [kind, ...handled], result) {
 function labelMove(text, node, result) {
   const label = findById(node, "label");
   if (!label) return null;
-  const parent = node.parent;
-  if (!isFormField(parent)) {
+  const field = enclosingFormField(node);
+  if (!field) {
     const moved = node.startTag.attributes.filter((attr) => MOVES_TO_FIELD.test(idOf(attr)));
     [label, ...moved].forEach((attr) => removeNode(text, attr, result));
     const structural = moved.filter((attr) => STRUCTURAL.test(idOf(attr)));
     const ordered = [...structural, label, ...moved.filter((attr) => !structural.includes(attr))];
     return { attributes: ordered.map((attr) => sourceOf(text, attr)) };
   }
-  if (!findById(parent, "label")) {
+  if (!findById(field, "label")) {
     result.flag(label, "a label inside a FormField without one: move it to the field by hand");
     return null;
   }
@@ -236,7 +242,8 @@ function labelMove(text, node, result) {
 // The field's label points at the field's id: a control's own id inside a labelled FormField breaks that.
 function idInFieldFlag(node, result) {
   const id = findById(node, "id");
-  if (id && isFormField(node.parent) && findById(node.parent, "label")) {
+  const field = enclosingFormField(node);
+  if (id && field && findById(field, "label")) {
     result.flag(id, "an id on a control in a labelled FormField: move it to the field (its label points there)");
   }
 }
