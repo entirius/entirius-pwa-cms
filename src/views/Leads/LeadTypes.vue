@@ -123,7 +123,9 @@ onMounted(load);
 </script>
 
 <style lang="scss" src="./desktop.scss"></style>
-<style scoped>
+<style lang="scss" scoped>
+@import "@/assets/scss/utils/media-query";
+
 .ld-page {
   max-width: 900px;
 }
@@ -152,8 +154,8 @@ onMounted(load);
 .lead-type__add {
   align-items: flex-start;
 }
-/* A phone: label on its own line, the rest wraps below it */
-@media (max-width: 599px) {
+/* Below tablet: label on its own line, the rest wraps below it */
+@include max-tablet {
   .lead-type {
     grid-template-columns: 1fr auto;
   }
