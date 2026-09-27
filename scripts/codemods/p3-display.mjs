@@ -6,13 +6,27 @@
 //   `chip--sm` → size="sm", `chip--pill` dropped (the badge is a pill), a `.chip__label` child is unwrapped, a
 //   `title` equal to the label is dropped (StatusBadge sets it).
 //   <Loading :isHandy="true" v-if="busy" /> → <Loader overlay contained v-if="busy" />, its import and its
-//   `components` entry removed.
+//   `components` entries removed (only those: `components: { Loading, Other }` keeps Other). Every tag the file
+//   registers from Loading.vue is it (`<loading>`, an alias); Loading.vue used in the script too → the tags are
+//   flagged and nothing is rewritten.
 // Tone from the P2 colour classes: the fill or text colour of a status names it, `bg-raised` is neutral, the text
 // colour that comes with a fill goes with it; no colour = neutral. `:dot="false"` keeps the chip's dotless look.
 // Flagged, never guessed: a `:class` binding, a click handler, one-off colours, two tones, content that is not one text
 // or one interpolation, text with markup. The sweeps (plans 17, 18) run it per partition. CLI: see p3-lib.mjs.
 import { pathToFileURL } from "node:url";
-import { attributeName, parseSfc, runCodemod, walkTemplate } from "./p3-lib.mjs";
+import vueParser from "vue-eslint-parser";
+import {
+  collector,
+  contentChildren,
+  findAttr,
+  lineIndent,
+  normalName,
+  parseSfc,
+  runCodemod,
+  sourceOf,
+  staticClasses,
+  walkTemplate,
+} from "./p3-lib.mjs";
 
 const TONE_OF_CLASS = {
   "bg-positive-subtle": "positive",
@@ -47,21 +61,6 @@ export function classify(classes) {
 }
 
 // --- template helpers -------------------------------------------------------------------------------------------
-
-const normalName = (attr) => (attributeName(attr) ?? "").toLowerCase().replace(/-/g, "");
-const findAttr = (node, name, bound) =>
-  node.startTag.attributes.find((a) => normalName(a) === name && (bound === undefined || a.directive === bound));
-const sourceOf = (text, node) => text.slice(node.range[0], node.range[1]);
-const lineIndent = (text, offset) => text.slice(text.lastIndexOf("\n", offset - 1) + 1, offset).match(/^\s*/)[0];
-const contentChildren = (node) => node.children.filter((c) => !(c.type === "VText" && !c.value.trim()));
-const staticClasses = (node) => (findAttr(node, "class", false)?.value?.value ?? "").split(/\s+/).filter(Boolean);
-
-function collector() {
-  const result = { edits: [], flags: [] };
-  result.edit = (start, end, replacement) => result.edits.push({ start, end, text: replacement });
-  result.flag = (node, message) => result.flags.push({ offset: node.range[0], message });
-  return result;
-}
 
 // Renders a new tag in the layout of the old one: one line, or one attribute per line.
 function renderTag(text, node, name, attributes) {
@@ -138,38 +137,83 @@ function loadingEdits(text, node, result) {
   result.edit(node.range[0], node.range[1], renderTag(text, node, "Loader", ["overlay", ...attributes.filter(Boolean)]));
 }
 
-// Removes the whole line(s) of a node, its indentation and line break included.
-function removeLines(text, node, result) {
-  const start = text.lastIndexOf("\n", node.range[0] - 1) + 1;
-  let end = node.range[1];
-  if (text[end] === ",") end += 1;
-  if (text[end] === "\n") end += 1;
-  result.edit(start, end, "");
+const tagKey = (name) => name.toLowerCase().replace(/-/g, "");
+
+function componentsObject(ast) {
+  const exported = ast.body.find((node) => node.type === "ExportDefaultDeclaration")?.declaration;
+  const option = exported?.properties?.find((p) => (p.key?.name ?? p.key?.value) === "components");
+  return option?.value?.type === "ObjectExpression" ? option.value : null;
 }
 
-// The Loading.vue import and its `components: { Loading }` entry.
-function loadingScriptEdits(ast, text, result) {
-  const imports = ast.body.filter((n) => n.type === "ImportDeclaration" && LOADING_IMPORT.test(n.source.value));
-  imports.forEach((declaration) => {
-    removeLines(text, declaration, result);
-    const local = declaration.specifiers[0]?.local.name;
-    const components = ast.body
-      .flatMap((n) => (n.type === "ExportDefaultDeclaration" ? n.declaration.properties ?? [] : []))
-      .find((p) => p.key?.name === "components");
-    const entry = components?.value.properties?.find((p) => p.key?.name === local);
-    if (entry) removeLines(text, entry, result);
+const within = (node, outer) => node.range[0] >= outer.range[0] && node.range[1] <= outer.range[1];
+
+// Identifiers named `local` in the script outside the given nodes (the import, its `components` entries).
+function otherReferences(ast, local, known) {
+  let count = 0;
+  vueParser.AST.traverseNodes(ast, {
+    enterNode(node) {
+      if (node.type === "Identifier" && node.name === local && !known.some((k) => within(node, k))) count += 1;
+    },
+    leaveNode() {},
   });
+  return count;
+}
+
+// How the file uses components/Loading.vue: its import, the `components` entries that register it, the tag names that
+// render it (normalised: `<loading>`, `<Loading-overlay>` for `LoadingOverlay: Loading`), and whether the script uses
+// it anywhere else (then nothing is rewritten, the tags are reported). Without the import only `<Loading>` is it;
+// a `Loading` imported from anywhere else is not.
+function loadingUse(ast) {
+  const imports = ast.body.filter((node) => node.type === "ImportDeclaration");
+  const declaration = imports.find((node) => LOADING_IMPORT.test(node.source.value));
+  if (!declaration) {
+    const shadowed = imports.some((node) => node.specifiers.some((s) => s.local.name === "Loading"));
+    return { tags: new Set(shadowed ? [] : ["loading"]), entries: [] };
+  }
+  const local = declaration.specifiers[0]?.local.name;
+  const components = componentsObject(ast);
+  const registers = (property) => property.value?.type === "Identifier" && property.value.name === local;
+  const entries = (components?.properties ?? []).filter(registers);
+  const names = [local, ...entries.map((p) => p.key.name ?? p.key.value)];
+  const elsewhere = otherReferences(ast, local, [declaration, ...entries]) > 0;
+  return { declaration, components, entries, elsewhere, tags: new Set(names.map(tagKey)) };
+}
+
+// Removes properties of an object literal with their commas, one edit per run of neighbours; all of them leave `{}`.
+function removeProperties(object, removed, result) {
+  const properties = object.properties;
+  if (removed.size === properties.length) return result.edit(object.range[0], object.range[1], "{}");
+  properties.forEach((property, i) => {
+    if (!removed.has(property) || removed.has(properties[i - 1])) return;
+    let last = i;
+    while (removed.has(properties[last + 1])) last += 1;
+    const next = properties[last + 1];
+    if (next) result.edit(property.range[0], next.range[0], "");
+    else result.edit(properties[i - 1].range[1], properties[last].range[1], "");
+  });
+}
+
+// The Loading.vue import and its `components` entries, only once every tag of it is rewritten.
+function loadingScriptEdits(text, use, result) {
+  if (!use.declaration) return;
+  const { range } = use.declaration;
+  result.edit(range[0], text[range[1]] === "\n" ? range[1] + 1 : range[1], "");
+  if (use.entries.length) removeProperties(use.components, new Set(use.entries), result);
 }
 
 export function transform(text) {
   const ast = parseSfc(text);
   const result = collector();
+  const use = loadingUse(ast);
   walkTemplate(ast, (node) => {
     if (node.type !== "VElement") return;
-    if (node.rawName === "Loading") return loadingEdits(text, node, result);
+    if (use.tags.has(tagKey(node.rawName))) {
+      if (use.elsewhere) return result.flag(node, "components/Loading.vue is used in the script too: Loader by hand");
+      return loadingEdits(text, node, result);
+    }
     if (staticClasses(node).includes("chip")) chipEdits(text, node, result);
   });
-  loadingScriptEdits(ast, text, result);
+  if (!use.elsewhere) loadingScriptEdits(text, use, result);
   return { edits: result.edits, flags: result.flags };
 }
 

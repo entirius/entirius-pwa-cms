@@ -45,6 +45,58 @@ describe("p3-display codemod", () => {
     expect(transform(tag)).toEqual({ edits: [], flags: [] });
   });
 
+  describe("Loading: template and script decided together", () => {
+    const run = (source) => {
+      const { edits, flags } = transform(source);
+      return { output: applyEdits(source, edits), flags: flags.map((flag) => flag.message) };
+    };
+    const sfc = (template, script) => `<template>\n  <div>\n${template}\n  </div>\n</template>\n\n<script>\n${script}\n</script>\n`;
+
+    it("a one-line registration loses only Loading", () => {
+      const source = sfc(
+        '    <loading v-if="busy" />',
+        'import Loading from "@/components/Loading.vue";\nimport Other from "./Other.vue";\n\nexport default {\n  components: { Loading, Other },\n};'
+      );
+      expect(run(source)).toEqual({
+        output: sfc(
+          '    <Loader v-if="busy" overlay />',
+          'import Other from "./Other.vue";\n\nexport default {\n  components: { Other },\n};'
+        ),
+        flags: [],
+      });
+    });
+
+    it("an alias is followed into the template: every tag registered from Loading.vue is rewritten", () => {
+      const source = sfc(
+        '    <Loading-overlay v-if="busy" />\n    <spinner v-show="saving" />',
+        'import Spinner from "../../components/Loading";\n\nexport default {\n  components: { Other, LoadingOverlay: Spinner, Spinner },\n};'
+      );
+      expect(run(source)).toEqual({
+        output: sfc(
+          '    <Loader v-if="busy" overlay />\n    <Loader v-show="saving" overlay />',
+          '\nexport default {\n  components: { Other },\n};'
+        ),
+        flags: [],
+      });
+    });
+
+    it("Loading used in the script too: the tags are reported, nothing is half-done", () => {
+      const source = sfc(
+        '    <Loading v-if="busy" />',
+        'import Loading from "@/components/Loading.vue";\n\nexport default {\n  components: { Loading },\n  data: () => ({ spinner: Loading }),\n};'
+      );
+      expect(run(source)).toEqual({
+        output: source,
+        flags: ["components/Loading.vue is used in the script too: Loader by hand"],
+      });
+    });
+
+    it("a Loading imported from elsewhere is not the retired component", () => {
+      const source = sfc('    <Loading v-if="busy" />', 'import Loading from "./MyLoading.vue";\n\nexport default { components: { Loading } };');
+      expect(transform(source)).toEqual({ edits: [], flags: [] });
+    });
+  });
+
   it("maps the P2 colour classes to tones", () => {
     const toneOf = (classes) => classify(classes.split(" ")).tone;
     expect(toneOf("chip bg-warning-subtle t-warning")).toBe("warning");
