@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
+import { h } from "vue";
 import { mount } from "@vue/test-utils";
 
 import BasicButton from "@/boots/BasicButton/index.vue";
@@ -34,6 +35,20 @@ describe("BasicButton", () => {
     expect(wrapper.attributes("disabled")).toBeDefined();
     await wrapper.trigger("click");
     expect(wrapper.emitted("click")).toHaveLength(1);
+  });
+
+  it("stops the click at the button unless :stop is false", async () => {
+    const onParent = vi.fn();
+    const Parent = {
+      props: ["stop"],
+      render() {
+        return h("div", { onClick: onParent }, [h(BasicButton, { text: "Go", stop: this.stop })]);
+      },
+    };
+    await mount(Parent, { props: { stop: true } }).find("button").trigger("click");
+    expect(onParent).not.toHaveBeenCalled();
+    await mount(Parent, { props: { stop: false } }).find("button").trigger("click");
+    expect(onParent).toHaveBeenCalledTimes(1);
   });
 
   it("an icon-prop button without text is icon-only and named by label", () => {

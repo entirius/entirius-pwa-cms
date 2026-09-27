@@ -5,7 +5,7 @@
     :class="[`button-basic--${size}`, { 'jc-ct button-basic--icon': isIconOnly }]"
     :aria-label="label || undefined"
     :title="label || undefined"
-    @click.stop="$emit('click')"
+    @click="onClick"
   >
     <span v-if="icon" class="inline-flex jc-ct ai-ct btn-icon">
       <i :class="`icon-${icon}`"></i
@@ -50,10 +50,22 @@ export default {
       type: String,
       default: "",
     },
+    // The click stops at the button by default; `:stop="false"` lets it reach a wrapper that acts on it
+    // (SubscriberSetter opens its kit on the click of what it wraps).
+    stop: {
+      type: Boolean,
+      default: true,
+    },
   },
   computed: {
     isIconOnly() {
       return !this.text;
+    },
+  },
+  methods: {
+    onClick(event) {
+      if (this.stop) event.stopPropagation();
+      this.$emit("click");
     },
   },
   mounted() {

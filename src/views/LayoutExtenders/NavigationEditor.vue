@@ -84,30 +84,30 @@
                   }"
                   @on_AssetPass="reorderColumns(index, $event)"
                 >
-                  <button
-                    type="button"
-                    class="nav-action"
-                    :aria-label="$t('layout_extender.reorder_columns')"
-                    :title="$t('layout_extender.reorder_columns')"
+                  <BasicButton
+                    custom
+                    :stop="false"
+                    :label="$t('layout_extender.reorder_columns')"
+                    class="btn-ghost"
                   >
-                    <FontAwesomeIcon icon="grip" />
-                  </button>
+                    <template #custom><FontAwesomeIcon icon="grip" /></template>
+                  </BasicButton>
                 </SubscriberSetter>
                 <BasicButton
                   v-if="element.display_as === 'megamenu'"
                   custom
                   :label="$t('layout_extender.columns')"
-                  class="btn-ghost"
+                  class="btn-ghost nav-action"
                   :class="{ 'nav-action--rotated': expandedItems.includes(element.id) }"
                   :aria-expanded="expandedItems.includes(element.id)"
                   @click="toggleExpand(element.id)"
                 >
                   <template #custom><FontAwesomeIcon icon="chevron-down" /></template>
                 </BasicButton>
-                <BasicButton custom :label="$t('common.edit')" class="btn-ghost" @click="openEditItem(element, index)">
+                <BasicButton custom :label="$t('common.edit')" class="btn-ghost nav-action" @click="openEditItem(element, index)">
                   <template #custom><FontAwesomeIcon icon="pen" /></template>
                 </BasicButton>
-                <BasicButton custom :label="$t('common.delete')" class="btn-danger" @click="removeItem(index)">
+                <BasicButton custom :label="$t('common.delete')" class="btn-danger nav-action nav-action--danger" @click="removeItem(index)">
                   <template #custom><FontAwesomeIcon icon="trash-can" /></template>
                 </BasicButton>
               </div>
@@ -688,29 +688,9 @@ export default {
   }
 }
 
-.nav-action {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--elem-height);
-  height: var(--elem-height);
-  padding: 0;
-  border: none;
-  border-radius: var(--radius-base);
-  background: none;
-  cursor: pointer;
-  color: var(--text-muted);
-  transition: background 0.1s, color 0.1s, transform 0.2s;
-  flex-shrink: 0;
-
-  &:hover {
-    background: var(--surface-hover);
-    color: var(--text-body);
-  }
-
-  &--rotated {
-    transform: rotate(180deg);
-  }
+// `.nav-action` / `--danger` on the row buttons are the e2e hooks (tests/e2e/08-navigation-editor.spec.js), not styles.
+.nav-action--rotated {
+  transform: rotate(180deg);
 }
 
 .nav-item__expanded {
