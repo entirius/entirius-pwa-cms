@@ -83,6 +83,7 @@
                 <BasicButton
                   @click="og_image = ''"
                   :icon="'close-mini'"
+                  :label="$t('common.delete')"
                   class="p-0 p-1 ov-h fs-200"
                 />
               </div>

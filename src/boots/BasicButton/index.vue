@@ -53,8 +53,13 @@ export default {
   },
   computed: {
     isIconOnly() {
-      return !this.text && Boolean(this.icon || this.label);
+      return !this.text;
     },
+  },
+  mounted() {
+    if (process.env.NODE_ENV !== "production" && this.isIconOnly && !this.label) {
+      console.warn("BasicButton: an icon-only button needs `label`, its accessible name (docs/ui-rules.md C6).");
+    }
   },
 };
 </script>

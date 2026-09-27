@@ -378,173 +378,74 @@
               </template>
             </BasicButton>
             <BasicButton
+              size="sm"
+              text="col. before"
               class="b-subtle lh-init"
-              :custom="true"
               @click="editor.chain().focus().addColumnBefore().run()"
-            >
-              <template v-slot:custom>
-                <div class="inline-flex ai-ct gap-1">
-                  <span>col. before</span>
-                  <font-awesome-icon
-                    class="fs-300"
-                    :icon="`fa-solid fa-plus`"
-                  />
-                </div>
-              </template>
-            </BasicButton>
+            />
             <BasicButton
+              size="sm"
+              text="col. after"
               class="b-subtle lh-init"
-              :custom="true"
               @click="editor.chain().focus().addColumnAfter().run()"
-            >
-              <template v-slot:custom>
-                <div class="inline-flex ai-ct gap-1">
-                  <span>col. after</span>
-                  <font-awesome-icon
-                    class="fs-300"
-                    :icon="`fa-solid fa-plus`"
-                  />
-                </div>
-              </template>
-            </BasicButton>
+            />
 
             <BasicButton
+              size="sm"
+              text="col. delete"
               class="b-subtle lh-init"
-              :custom="true"
               @click="editor.chain().focus().deleteColumn().run()"
-            >
-              <template v-slot:custom>
-                <div class="inline-flex ai-ct gap-1">
-                  <span>col. delete</span>
-                  <font-awesome-icon
-                    class="fs-300"
-                    :icon="`fa-solid fa-trash-can`"
-                  />
-                </div>
-              </template>
-            </BasicButton>
+            />
             <BasicButton
+              size="sm"
+              text="row. before"
               class="b-subtle lh-init"
-              :custom="true"
               @click="editor.chain().focus().addRowBefore().run()"
-            >
-              <template v-slot:custom>
-                <div class="inline-flex ai-ct gap-1">
-                  <span>row. before</span>
-                  <font-awesome-icon
-                    class="fs-300"
-                    :icon="`fa-solid fa-plus`"
-                  />
-                </div>
-              </template>
-            </BasicButton>
+            />
             <BasicButton
+              size="sm"
+              text="row. after"
               class="b-subtle lh-init"
-              :custom="true"
               @click="editor.chain().focus().addRowAfter().run()"
-            >
-              <template v-slot:custom>
-                <div class="inline-flex ai-ct gap-1">
-                  <span>row. after</span>
-                  <font-awesome-icon
-                    class="fs-300"
-                    :icon="`fa-solid fa-plus`"
-                  />
-                </div>
-              </template>
-            </BasicButton>
+            />
 
             <BasicButton
+              size="sm"
+              text="row. delete"
               class="b-subtle lh-init"
-              :custom="true"
               @click="editor.chain().focus().deleteRow().run()"
-            >
-              <template v-slot:custom>
-                <div class="inline-flex ai-ct gap-1">
-                  <span>row. delete</span>
-                  <font-awesome-icon
-                    class="fs-300"
-                    :icon="`fa-solid fa-trash-can`"
-                  />
-                </div>
-              </template>
-            </BasicButton>
+            />
             <BasicButton
+              size="sm"
+              text="Merge"
               class="b-subtle lh-init"
-              :custom="true"
               @click="editor.chain().focus().mergeCells().run()"
-            >
-              <template v-slot:custom>
-                <div class="inline-flex ai-ct gap-1">
-                  <span>Merge</span>
-                  <font-awesome-icon
-                    class="fs-300"
-                    :icon="`fa-solid fa-object-group`"
-                  />
-                </div>
-              </template>
-            </BasicButton>
+            />
             <BasicButton
+              size="sm"
+              text="Split"
               class="b-subtle lh-init"
-              :custom="true"
               @click="editor.chain().focus().splitCell().run()"
-            >
-              <template v-slot:custom>
-                <div class="inline-flex ai-ct gap-1">
-                  <span>Split</span>
-                  <font-awesome-icon
-                    class="fs-300"
-                    :icon="`fa-solid fa-object-ungroup`"
-                  />
-                </div>
-              </template>
-            </BasicButton>
+            />
             <BasicButton
+              size="sm"
+              text="Toggle (col.)"
               class="b-subtle lh-init"
-              :custom="true"
               @click="editor.chain().focus().toggleHeaderColumn().run()"
-            >
-              <template v-slot:custom>
-                <div class="inline-flex ai-ct gap-1">
-                  <span>Toggle (col.)</span>
-                  <font-awesome-icon
-                    class="fs-300"
-                    :icon="`fa-solid fa-circle-dot`"
-                  />
-                </div>
-              </template>
-            </BasicButton>
+            />
             <BasicButton
+              size="sm"
+              text="Toggle (row.)"
               class="b-subtle lh-init"
-              :custom="true"
               @click="editor.chain().focus().toggleHeaderRow().run()"
-            >
-              <template v-slot:custom>
-                <div class="inline-flex ai-ct gap-1">
-                  <span>Toggle (row.)</span>
-                  <font-awesome-icon
-                    class="fs-300"
-                    :icon="`fa-solid fa-circle-dot`"
-                  />
-                </div>
-              </template>
-            </BasicButton>
+            />
 
             <BasicButton
+              size="sm"
+              text="Toggle (cell.)"
               class="b-subtle lh-init"
-              :custom="true"
               @click="editor.chain().focus().toggleHeaderCell().run()"
-            >
-              <template v-slot:custom>
-                <div class="inline-flex ai-ct gap-1">
-                  <span>Toggle (cell.)</span>
-                  <font-awesome-icon
-                    class="fs-300"
-                    :icon="`fa-solid fa-circle-dot`"
-                  />
-                </div>
-              </template>
-            </BasicButton>
+            />
           </div>
           <Dropdown
             v-if="variant !== 'lite'"
