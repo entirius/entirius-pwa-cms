@@ -1,7 +1,7 @@
 <template>
   <!-- One page needs no navigation. -->
   <nav
-    v-if="pagination.pages > 1"
+    v-if="state.pages > 1"
     class="pagination inline-flex ai-ct gap-1"
     :style="`--cell-size: ${nav_size}px`"
     aria-label="pagination"
@@ -9,10 +9,10 @@
     <button
       type="button"
       class="page-cell"
-      :disabled="pagination.page <= 1"
+      :disabled="state.page <= 1"
       aria-label="previous page"
       @click="
-        changePage({ num: pagination.page - 1, isDisabled: false }, 'prev')
+        changePage({ num: state.page - 1, isDisabled: false }, 'prev')
       "
     >
       <FontAwesomeIcon icon="chevron-left" />
@@ -33,8 +33,8 @@
         v-else
         type="button"
         class="page-cell"
-        :class="{ 'page-cell--active': pagination.page === num.num }"
-        :aria-current="pagination.page === num.num ? 'page' : null"
+        :class="{ 'page-cell--active': state.page === num.num }"
+        :aria-current="state.page === num.num ? 'page' : null"
         @click="changePage(num)"
       >
         {{ num.num }}
@@ -44,10 +44,10 @@
     <button
       type="button"
       class="page-cell"
-      :disabled="pagination.page >= pagination.pages"
+      :disabled="state.page >= state.pages"
       aria-label="next page"
       @click="
-        changePage({ num: pagination.page + 1, isDisabled: false }, 'next')
+        changePage({ num: state.page + 1, isDisabled: false }, 'next')
       "
     >
       <FontAwesomeIcon icon="chevron-right" />
@@ -56,12 +56,27 @@
 </template>
 
 <script>
+// Two prop styles: `pagination` ({ page, pages }) or `current` / `total` / `perPage` (pages derived).
+// Both emit the new page as `onChangePage` and `change`.
 export default {
+  emits: ["onChangePage", "change"],
   props: {
     pagination: {
       type: Object,
       required: false,
       default: () => ({ page: 1, pages: 1 }),
+    },
+    current: {
+      type: Number,
+      default: 1,
+    },
+    total: {
+      type: Number,
+      default: null,
+    },
+    perPage: {
+      type: Number,
+      default: null,
     },
     nav_size: {
       type: Number,
@@ -71,11 +86,10 @@ export default {
   methods: {
     changePage(num, mode) {
       if (num.isDisabled) return;
-      if (mode === "prev" && this.pagination.page <= 1) return;
-      if (mode === "next" && this.pagination.page >= this.pagination.pages) {
-        return;
-      }
+      if (mode === "prev" && this.state.page <= 1) return;
+      if (mode === "next" && this.state.page >= this.state.pages) return;
       this.$emit("onChangePage", num.num);
+      this.$emit("change", num.num);
     },
     paginate(current, last) {
       const onSides = 1;
@@ -115,8 +129,12 @@ export default {
     },
   },
   computed: {
+    state() {
+      if (this.total === null || !this.perPage) return this.pagination;
+      return { page: this.current, pages: Math.ceil(this.total / this.perPage) };
+    },
     calculatePages() {
-      return this.paginate(this.pagination.page, this.pagination.pages);
+      return this.paginate(this.state.page, this.state.pages);
     },
   },
 };
