@@ -37,11 +37,16 @@ defineEmits(["update:modelValue"]);
 </script>
 
 <style lang="scss">
+// Wider than its box (a phone), it scrolls inside itself with a thin bar instead of pushing the page sideways.
 .segmented-control {
   display: inline-flex;
   align-items: center;
-  height: 28px;
+  flex-shrink: 0;
+  max-width: 100%;
+  min-height: 28px;
   padding: 2px;
+  overflow-x: auto;
+  scrollbar-width: thin;
   background-color: var(--surface-raised);
   border-radius: var(--radius-full);
   gap: 2px;
@@ -50,7 +55,8 @@ defineEmits(["update:modelValue"]);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    height: 100%;
+    flex-shrink: 0;
+    height: 24px;
     padding: 0 var(--space-3);
     font-size: var(--fs-200);
     font-weight: 400;
