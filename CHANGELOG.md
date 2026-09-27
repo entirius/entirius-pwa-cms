@@ -108,6 +108,23 @@ All notable changes to this project will be documented in this file.
   so a hint or badge placed first is not restyled. A `BasicInput` / `LockedField` label stays on one line inside its
   control, with an ellipsis and the full text as a tooltip. The `@ux` label census also counts `.ld-field__label` and
   `aria-labelledby` targets.
+- Tax rates: an empty, non-numeric or out-of-range (0–100) rate never posts; the field says "Podaj stawkę 0–100".
+  `NumberInput` takes one leading minus (only when `min` < 0), one decimal separator ("," reads as ".", a second
+  one is dropped) and digits, and looks disabled (muted text, no focus ring, steppers off) with `isDisabled`.
+- Empty states: an empty table inside a detail screen is one line (icon and text); list screens keep the full
+  block. The tax class, price channel and price history lists use `EmptyState` instead of a muted dash.
+- Loaders in modals, side panels and buttons keep their place again; content-area loaders stay centred (`block`).
+- Enrichment spawn rules: a channel typed into the free-text fallback drops a language it cannot vouch for, like a
+  picked channel does.
+- Buttons: one primary per page. Row, bulk, section and inline-form actions beside a page primary are secondary
+  (enrichment row accept, lead "Mark as won", promo bulk activate, agreement versions, FAQ associations, PIM groups,
+  options and files, point translations, tax rates, voucher filters, promo codes). Delete and remove confirmations
+  are filled danger (the shared confirmation modal and the supplier delete); non-destructive confirms (edit published
+  agreement, feed trigger, force re-push, atlas bulk approve/requeue) stay primary. An icon-only `BasicButton`
+  without `label` warns in dev. The rich-text table tools are one size (`sm`, text); every back control is
+  `BackBar`; sheet and notification close buttons, `BackBar` and the leads kit have a 40 px hit area on a phone;
+  the price detail flush/delete buttons carry one tooltip; the navigation reorder handle is a real button; the
+  atlas swipe bar shows Reject outlined with three equal buttons on a phone; builds rows say "Edit" / "Preview".
 - Tables: nothing overlaps, everything fits or truncates on purpose. `DataTable` cells pad 12 px, a column is never
   narrower than its header or an untruncated cell (badges, buttons), text cells truncate on one line with the full
   value in a tooltip, numbers are right-aligned with tabular figures, and an empty value shows "—". Columns carry a

@@ -12,7 +12,7 @@ vi.mock("@/functionals/Confirmation-modal/index.vue", () => ({
     name: "ConfirmationModal",
     props: ["visible"],
     template:
-      "<div class='stub-modal'><slot name='header' /><slot name='description' /></div>",
+      "<div class='stub-modal'><slot name='header' /><slot name='description' /><slot name='footer' /></div>",
   },
 }));
 

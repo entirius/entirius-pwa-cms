@@ -57,9 +57,10 @@
         />
       </div>
 
-      <Loader v-show="loading" />
+      <Loader block v-show="loading" />
 
       <DataTable
+        empty-size="md"
         v-show="!loading"
         :columns="columns"
         :rows="suppliers"
@@ -281,27 +282,23 @@
         </p>
       </template>
       <template #footer>
-        <button
-          class="modal-btn modal-btn--secondary"
+        <BasicButton
+          :text="$t('common.cancel')"
+          class="btn-secondary"
           data-testid="suppliers-delete-cancel"
           @click="closeDelete"
-        >
-          {{ $t("common.cancel") }}
-        </button>
-        <button
-          class="modal-btn modal-btn--delete"
-          :class="{ 'modal-btn--danger': deleteForce }"
-          :disabled="deleting"
+        />
+        <BasicButton
+          :text="
+            deleteForce
+              ? $t('atlas.delete.confirm_button_hard')
+              : $t('atlas.delete.confirm_button_soft')
+          "
+          class="btn-danger-fill modal-btn--delete"
+          :isDisabled="deleting"
           data-testid="suppliers-delete-confirm"
           @click="submitDelete"
-        >
-          <FontAwesomeIcon icon="trash-can" />
-          {{
-            deleteForce
-              ? $t("atlas.delete.confirm_button_hard")
-              : $t("atlas.delete.confirm_button_soft")
-          }}
-        </button>
+        />
       </template>
     </Confirmation-modal>
   </div>
@@ -644,15 +641,6 @@ export default {
   color: var(--negative);
   padding: var(--space-5);
   border-radius: var(--radius-base);
-}
-.modal-btn--danger {
-  background: var(--negative-subtle);
-  border-color: var(--negative);
-  color: var(--negative);
-}
-.modal-btn--danger:hover {
-  background: var(--negative-fill);
-  color: var(--text-on-status-fill);
 }
 .form-error {
   margin: 0;

@@ -4,15 +4,13 @@
       class="page-card h-100 ovy-auto"
     >
       <Teleport v-if="toolbarReady" to="#forms-toolbar-left">
-        <BasicButton
-          variant="ghost"
-          icon="arrow-left"
+        <BackBar
           :label="$t('cf.back_to_list')"
-          @click="$router.push('/forms/list')"
+          @back="$router.push('/forms/list')"
         />
       </Teleport>
 
-      <Loader v-if="loading" />
+      <Loader block v-if="loading" />
 
       <template v-else-if="submission">
         <div class="flex ai-ct jc-sb mb-5">

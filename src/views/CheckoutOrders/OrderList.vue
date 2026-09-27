@@ -52,10 +52,11 @@
         />
       </div>
 
-      <Loader v-show="loading" />
+      <Loader block v-show="loading" />
 
       <!-- Table -->
       <DataTable
+        empty-size="md"
         v-show="!loading"
         :columns="columns"
         :rows="orders"

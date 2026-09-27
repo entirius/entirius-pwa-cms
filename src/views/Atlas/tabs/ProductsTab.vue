@@ -85,7 +85,7 @@
       @clear="clearSelection"
     />
 
-    <Loader v-show="loading" />
+    <Loader block v-show="loading" />
 
     <DataTable
       v-show="!loading"
@@ -301,6 +301,7 @@
 
     <Confirmation-modal
       :visible="repushVisible"
+      :destructive="false"
       @accept="executeForceRepush"
       @reject="repushVisible = false"
     >

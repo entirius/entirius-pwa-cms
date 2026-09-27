@@ -15,7 +15,7 @@
       <span class="fs-200 t-muted">{{ $t("pim.drag_to_assign") }}</span>
     </div>
 
-    <Loader v-if="loading" />
+    <Loader block v-if="loading" />
 
     <draggable
       v-if="!loading"

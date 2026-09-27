@@ -1,14 +1,9 @@
 <template>
   <div class="feature-set-edit fs-300 t-body h-100 ov-h flex">
     <Teleport to="#pim-toolbar-left" defer>
-      <BasicButton
-        custom
-        :label="$t('common.back')"
-        class="btn-ghost"
-        @click="$router.push('/pim/feature-sets')"
-      >
-        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
-      </BasicButton>
+      <BackBar
+        @back="$router.push('/pim/feature-sets')"
+      />
     </Teleport>
     <Teleport to="#pim-toolbar-right" defer>
       <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
@@ -48,7 +43,7 @@
             {{ form.desc }}
           </p>
         </div>
-        <Loader v-if="loading" />
+        <Loader block v-if="loading" />
 
         <template v-else>
           <!-- Set properties -->
@@ -100,7 +95,7 @@
               />
               <BasicButton
                 :text="$t('pim.create_group')"
-                class="btn-primary"
+                class="btn-secondary"
                 @click="createGroup"
               />
               <BasicButton

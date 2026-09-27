@@ -12,7 +12,7 @@
       </button>
     </div>
 
-    <Loader v-show="loading" />
+    <Loader block v-show="loading" />
 
     <div v-show="!loading">
       <div

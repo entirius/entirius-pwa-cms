@@ -4,13 +4,10 @@
       class="page-card h-100 ovy-auto"
     >
       <div class="flex ai-ct gap-8 mb-10">
-        <button
-          class="person-detail__back t-secondary"
-          @click="$router.push('/agreements/consents')"
-        >
-          <font-awesome-icon icon="arrow-left" />
-          <span>{{ $t("common.back") }}</span>
-        </button>
+        <BackBar
+          :label="$t('common.back')"
+          @back="$router.push('/agreements/consents')"
+        />
       </div>
 
       <div class="flex ai-ct jc-sb flex-wrap gap-5 mb-12">
@@ -27,7 +24,7 @@
         />
       </div>
 
-      <Loader v-show="loading" />
+      <Loader block v-show="loading" />
 
       <template v-if="!loading">
         <!-- Marketing tab -->
@@ -354,21 +351,6 @@ export default {
   flex: 1 1 200px;
   min-width: 0;
   overflow-wrap: anywhere;
-}
-
-.person-detail__back {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-5);
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: var(--fs-300);
-  padding: 0;
-
-  &:hover {
-    color: var(--text-body);
-  }
 }
 
 .person-detail__grid {

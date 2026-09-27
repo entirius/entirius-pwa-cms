@@ -1,14 +1,9 @@
 <template>
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#points-toolbar-left" defer>
-      <BasicButton
-        custom
-        :label="$t('common.back')"
-        class="btn-ghost"
-        @click="$router.push('/points/list')"
-      >
-        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
-      </BasicButton>
+      <BackBar
+        @back="$router.push('/points/list')"
+      />
     </Teleport>
     <Teleport to="#points-toolbar-right" defer>
       <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
@@ -30,7 +25,7 @@
       />
     </Teleport>
     <div class="page-card h-100 ovy-auto">
-      <Loader v-if="loading" />
+      <Loader block v-if="loading" />
 
       <template v-else>
         <div class="flex ai-ct jc-sb mb-12">
@@ -308,7 +303,7 @@
               />
               <BasicButton
                 :text="$t('dp.add_translation')"
-                class="btn-primary"
+                class="btn-secondary"
                 :isDisabled="!addingLanguage"
                 @click="addTranslation"
               />
@@ -363,7 +358,7 @@
             <div class="flex jc-fe mt-5">
               <BasicButton
                 :text="$t('common.save')"
-                class="btn-primary"
+                class="btn-secondary"
                 @click="saveTranslation(t9n)"
               />
             </div>

@@ -1,6 +1,6 @@
 <template>
   <div class="quality-tab" data-test="quality-tab">
-    <Loader v-if="loading" />
+    <Loader block v-if="loading" />
 
     <EmptyState
       v-else-if="evaluatedAt == null"

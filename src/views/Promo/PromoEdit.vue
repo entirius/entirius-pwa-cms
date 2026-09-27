@@ -1,14 +1,9 @@
 <template>
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#promo-toolbar-left" defer>
-      <BasicButton
-        custom
-        :label="$t('common.back')"
-        class="btn-ghost"
-        @click="$router.push('/promo/list')"
-      >
-        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
-      </BasicButton>
+      <BackBar
+        @back="$router.push('/promo/list')"
+      />
       <span class="fw-600 fs-400">
         {{ isEdit ? form.name || $t("promo.edit_rule") : $t("promo.create_rule") }}
       </span>
@@ -34,7 +29,7 @@
     </Teleport>
 
     <div class="page-card h-100 ovy-auto">
-      <Loader v-if="loading" />
+      <Loader block v-if="loading" />
 
       <template v-else>
         <!-- Section: Basic info -->
@@ -456,7 +451,7 @@
               />
               <BasicButton
                 :text="$t('promo.save_code')"
-                class="btn-primary"
+                class="btn-secondary"
                 @click="saveNewCode"
               />
             </div>

@@ -30,22 +30,24 @@
           <FontAwesomeIcon icon="triangle-exclamation" class="mr-2" />
           {{ $t("pim.supplier.force_preferred_modal.warning") }}
         </p>
-        <div class="force-preferred__actions">
-          <BasicButton
-            :text="$t('pim.supplier.force_preferred_modal.cancel')"
-            class="btn-outline"
-            :disabled="loading"
-            data-test="force-preferred-cancel"
-            @click="$emit('close')"
-          />
-          <BasicButton
-            :text="loading ? $t('pim.supplier.force_preferred_modal.confirming') : confirmText"
-            class="btn-primary"
-            :disabled="!canConfirm"
-            data-test="force-preferred-confirm"
-            @click="onConfirm"
-          />
-        </div>
+      </div>
+    </template>
+    <template #footer>
+      <div class="force-preferred__actions">
+        <BasicButton
+          :text="$t('pim.supplier.force_preferred_modal.cancel')"
+          class="btn-outline"
+          :disabled="loading"
+          data-test="force-preferred-cancel"
+          @click="$emit('close')"
+        />
+        <BasicButton
+          :text="loading ? $t('pim.supplier.force_preferred_modal.confirming') : confirmText"
+          class="btn-primary"
+          :disabled="!canConfirm"
+          data-test="force-preferred-confirm"
+          @click="onConfirm"
+        />
       </div>
     </template>
   </ConfirmationModal>

@@ -2,14 +2,9 @@
   <div class="spawn-rule-edit p-12 fs-300 t-body h-100 ov-h">
     <div class="page-card flex-1 ovy-auto">
       <div class="page-title-row flex ai-ct gap-5 mb-10">
-        <BasicButton
-          custom
-          :label="$t('common.back')"
-          class="btn-ghost"
-          @click="$router.push('/enrichment/spawn-rules')"
-        >
-          <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
-        </BasicButton>
+        <BackBar
+          @back="$router.push('/enrichment/spawn-rules')"
+        />
         <h1 class="page-title m-0">
           {{ isCreate ? $t("enrichment.spawn_rules.create") : form.key }}
         </h1>
@@ -40,7 +35,7 @@
         </div>
       </div>
 
-      <Loader v-if="loading" />
+      <Loader block v-if="loading" />
 
       <template v-else>
         <div class="spawn-rule-grid">
@@ -93,7 +88,12 @@
               :placeholder="$t('common.select')"
               @onSelect="selectChannel"
             />
-            <BasicInput v-else v-model="scopeChannel" />
+            <BasicInput
+              v-else
+              :modelValue="scopeChannel"
+              data-test="spawn-rule-channel-input"
+              @update:modelValue="selectChannel"
+            />
           </FormField>
 
           <FormField

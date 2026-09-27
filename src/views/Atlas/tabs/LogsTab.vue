@@ -10,7 +10,7 @@
 
     <!-- Feed Runs -->
     <div v-if="activeMode === 'feed_runs'">
-      <Loader v-show="loading" />
+      <Loader block v-show="loading" />
       <DataTable
         v-show="!loading"
         :columns="feedRunColumns"
@@ -46,7 +46,7 @@
         />
       </div>
 
-      <Loader v-show="loading" />
+      <Loader block v-show="loading" />
       <DataTable
         v-show="!loading"
         :columns="eventColumns"

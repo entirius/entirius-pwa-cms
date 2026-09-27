@@ -3,14 +3,16 @@
     <!-- Title shown by router titleKey in header bar -->
 
     <div class="page-card h-100 ovy-auto">
-      <Loader v-show="loading" />
+      <Loader block v-show="loading" />
 
       <div v-show="!loading">
-        <p v-if="!taxClasses.length" class="t-muted fs-300">
-          {{ $t('pm.tax_classes') }}: —
-        </p>
-
-        <DataTable v-else :columns="columns" :rows="taxClasses" @row-click="onRowClick">
+        <DataTable
+          :columns="columns"
+          :rows="taxClasses"
+          :empty-text="$t('pm.no_tax_classes')"
+          empty-size="md"
+          @row-click="onRowClick"
+        >
           <template #cell-name="{ row }">
             <span class="fw-600">{{ row.name }}</span>
           </template>

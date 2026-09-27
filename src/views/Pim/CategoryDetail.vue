@@ -1,14 +1,9 @@
 <template>
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#pim-toolbar-left" defer>
-      <BasicButton
-        custom
-        :label="$t('common.back')"
-        class="btn-ghost"
-        @click="$router.push('/pim/categories')"
-      >
-        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
-      </BasicButton>
+      <BackBar
+        @back="$router.push('/pim/categories')"
+      />
     </Teleport>
     <Teleport to="#pim-toolbar-right" defer>
       <template v-if="activeTab === 'details' && !loading && !notFound">
@@ -31,7 +26,7 @@
       </template>
     </Teleport>
     <div class="page-card h-100 ovy-auto">
-      <Loader v-if="loading" />
+      <Loader block v-if="loading" />
 
       <EmptyState
         v-else-if="notFound"

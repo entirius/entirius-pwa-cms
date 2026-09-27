@@ -1,14 +1,9 @@
 <template>
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#faq-toolbar-left" defer>
-      <BasicButton
-        custom
-        :label="$t('common.back')"
-        class="btn-ghost"
-        @click="$router.push('/faq/items')"
-      >
-        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
-      </BasicButton>
+      <BackBar
+        @back="$router.push('/faq/items')"
+      />
     </Teleport>
     <Teleport to="#faq-toolbar-right" defer>
       <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
@@ -31,7 +26,7 @@
     </Teleport>
 
     <div class="page-card h-100 ovy-auto">
-      <Loader v-if="loading" />
+      <Loader block v-if="loading" />
 
       <template v-else>
         <div class="flex ai-ct jc-sb mb-12">
@@ -210,7 +205,7 @@
           <div v-if="associationsDirty" class="flex jc-fe mt-5">
             <BasicButton
               :text="$t('faq.save_associations')"
-              class="btn-primary"
+              class="btn-secondary"
               @click="saveAssociations"
             />
           </div>

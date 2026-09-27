@@ -21,7 +21,7 @@
         />
       </div>
 
-      <Loader v-show="loading" />
+      <Loader block v-show="loading" />
 
       <div v-show="!loading">
         <EmptyState
@@ -33,6 +33,7 @@
 
         <template v-else>
           <DataTable
+            empty-size="md"
             :columns="columns"
             :rows="decisions"
             row-key="id"

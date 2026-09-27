@@ -1,14 +1,9 @@
 <template>
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#agreements-toolbar-left" defer>
-      <BasicButton
-        custom
-        :label="$t('common.back')"
-        class="btn-ghost"
-        @click="$router.push('/agreements/list')"
-      >
-        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
-      </BasicButton>
+      <BackBar
+        @back="$router.push('/agreements/list')"
+      />
     </Teleport>
     <Teleport to="#agreements-toolbar-right" defer>
       <BasicButton
@@ -28,7 +23,7 @@
     </Teleport>
 
     <div class="page-card h-100 ovy-auto">
-      <Loader v-if="loading" />
+      <Loader block v-if="loading" />
 
       <template v-else>
         <div class="flex ai-ct jc-sb flex-wrap gap-5 rg-3 mb-12">
@@ -179,7 +174,7 @@
             <h2 class="fs-500 fw-600">{{ $t("agm.versions") }}</h2>
             <BasicButton
               :text="$t('agm.create_version')"
-              class="btn-primary"
+              class="btn-secondary"
               @click="showVersionForm = !showVersionForm"
             />
           </div>
@@ -208,7 +203,7 @@
               />
               <BasicButton
                 :text="$t('agm.create_version')"
-                class="btn-primary"
+                class="btn-secondary"
                 @click="createVersion"
               />
             </div>
@@ -275,7 +270,7 @@
                         <BasicButton
                           v-if="!ver.published_at"
                           :text="$t('agm.publish')"
-                          class="btn-primary"
+                          class="btn-secondary"
                           @click="publishVersion(ver.id)"
                         />
                       </div>
@@ -311,7 +306,7 @@
                           />
                           <BasicButton
                             :text="$t('common.save')"
-                            class="btn-primary"
+                            class="btn-secondary"
                             @click="saveDraftVersion(ver.id)"
                           />
                         </div>
@@ -466,6 +461,7 @@
 
     <Confirmation-modal
       :visible="showPublishedEditConfirm"
+      :destructive="false"
       @accept="confirmEditPublished"
       @reject="showPublishedEditConfirm = false"
     >

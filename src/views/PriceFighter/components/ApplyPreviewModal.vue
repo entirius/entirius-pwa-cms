@@ -34,20 +34,22 @@
           {{ errorText }}
         </div>
 
-        <div class="apply-preview__actions">
-          <BasicButton
-            :text="$t('common.cancel')"
-            class="btn-secondary"
-            :disabled="loading"
-            @click="onCancel"
-          />
-          <BasicButton
-            :text="loading ? $t('pricefighter.applying') : $t('pricefighter.confirm_apply')"
-            class="btn-primary"
-            :disabled="loading || !items.length"
-            @click="onConfirm"
-          />
-        </div>
+      </div>
+    </template>
+    <template #footer>
+      <div class="apply-preview__actions">
+        <BasicButton
+          :text="$t('common.cancel')"
+          class="btn-secondary"
+          :disabled="loading"
+          @click="onCancel"
+        />
+        <BasicButton
+          :text="loading ? $t('pricefighter.applying') : $t('pricefighter.confirm_apply')"
+          class="btn-primary"
+          :disabled="loading || !items.length"
+          @click="onConfirm"
+        />
       </div>
     </template>
   </ConfirmationModal>

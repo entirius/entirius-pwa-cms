@@ -1,14 +1,9 @@
 <template>
   <div class="order-detail p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#checkout-orders-toolbar-left" defer>
-      <BasicButton
-        custom
-        :label="$t('common.back')"
-        class="btn-ghost"
-        @click="goBack"
-      >
-        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
-      </BasicButton>
+      <BackBar
+        @back="goBack"
+      />
       <span class="fw-600">{{ order.pretty_id || $t("checkout_orders.order_detail") }}</span>
     </Teleport>
 

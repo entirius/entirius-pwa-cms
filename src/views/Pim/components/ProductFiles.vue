@@ -358,7 +358,7 @@ onMounted(() => {
       </span>
     </div>
 
-    <Loader v-if="loading" />
+    <Loader block v-if="loading" />
 
     <template v-else>
       <!-- Upload drop zone -->
@@ -452,7 +452,7 @@ onMounted(() => {
           </div>
           <div class="product-files__cat-create-actions mt-2">
             <BasicButton
-              class="btn-primary"
+              class="btn-secondary"
               :text="$t('pim.create_category')"
               :isDisabled="creatingCategory || !newCategoryCode"
               @click="createCategory"
@@ -595,7 +595,7 @@ onMounted(() => {
             </div>
             <div class="product-files__row-edit-actions mt-2">
               <BasicButton
-                class="btn-primary"
+                class="btn-secondary"
                 :text="$t('common.save')"
                 :isDisabled="savingFilePk === fileData(pf).pk"
                 @click="saveFileMetadata(fileData(pf).pk)"

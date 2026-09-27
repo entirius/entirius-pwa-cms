@@ -1,14 +1,9 @@
 <template>
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#pim-toolbar-left" defer>
-      <BasicButton
-        custom
-        :label="$t('common.back')"
-        class="btn-ghost"
-        @click="$router.push('/pim/products')"
-      >
-        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
-      </BasicButton>
+      <BackBar
+        @back="$router.push('/pim/products')"
+      />
     </Teleport>
     <Teleport to="#pim-toolbar-right" defer>
       <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
@@ -129,7 +124,7 @@
       </BasicButton>
     </Teleport>
     <div class="page-card h-100 ovy-auto">
-      <Loader v-if="loading" />
+      <Loader block v-if="loading" />
 
       <!-- etap-12 #25: 404 on the chosen channel auto-switches to default and warns. -->
       <div

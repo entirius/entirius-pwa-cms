@@ -23,15 +23,13 @@ vi.mock("@/stores/loader", () => ({
 vi.mock("@/stores/notify", () => ({
   useNotifyStore: () => ({ spawnNotification: mockNotify }),
 }));
+const CHANNELS = [
+  { idx: "default", name: "Default", languages: ["pl", "en"] },
+  { idx: "second", name: "Second", languages: ["de"] },
+];
+const mockStore = vi.hoisted(() => ({ channels: [], allLanguages: [] }));
 vi.mock("@/stores/pimChannel", () => ({
-  usePimChannelStore: () => ({
-    channels: [
-      { idx: "default", name: "Default", languages: ["pl", "en"] },
-      { idx: "second", name: "Second", languages: ["de"] },
-    ],
-    allLanguages: ["pl", "en", "de"],
-    fetchChannels: vi.fn(),
-  }),
+  usePimChannelStore: () => ({ ...mockStore, fetchChannels: vi.fn() }),
 }));
 vi.mock("@/functionals/Confirmation-modal/index.vue", () => ({
   default: { name: "ConfirmationModal", template: "<div />" },
@@ -60,6 +58,8 @@ describe("SpawnRuleEdit", () => {
     mockPatch.mockReset();
     mockGetDefs.mockReset();
     mockNotify.mockReset();
+    mockStore.channels = CHANNELS;
+    mockStore.allLanguages = ["pl", "en", "de"];
     mockGetDefs.mockResolvedValue({
       data: { results: [{ key: "pl-description" }] },
     });
@@ -168,6 +168,20 @@ describe("SpawnRuleEdit", () => {
     expect(wrapper.vm.scopeLanguage).toBe("fr");
     expect(wrapper.vm.languageOptions.map((o) => o.value)).toContain("fr");
     expect(wrapper.vm.buildPayload().scope).toEqual({ channel: "retired", language: "fr" });
+  });
+
+  it("free-text channel fallback runs the same language check as picking a channel", async () => {
+    mockStore.channels = [];
+    mockStore.allLanguages = [];
+    const wrapper = mountEdit();
+    await flushPromises();
+
+    wrapper.vm.scopeLanguage = "pl";
+    const input = wrapper.findComponent('[data-test="spawn-rule-channel-input"]');
+    input.vm.$emit("update:modelValue", "shop2");
+    await flushPromises();
+    expect(wrapper.vm.scopeChannel).toBe("shop2");
+    expect(wrapper.vm.scopeLanguage).toBe("");
   });
 
   it("falls back to free-text check input when the PIM gaps API is unavailable", async () => {

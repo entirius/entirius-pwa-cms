@@ -81,14 +81,9 @@
     </RenameModal>
     <!-- Left toolbar: back button, doc name, access level -->
     <Teleport to="#builder-toolbar-left" defer>
-      <BasicButton
-        custom
-        :label="$t('common.back')"
-        class="btn-ghost"
-        @click="$router.push(`/pages/${content_type}`)"
-      >
-        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
-      </BasicButton>
+      <BackBar
+        @back="$router.push(`/pages/${content_type}`)"
+      />
       <div v-if="!loading" class="builder-toolbar-name">
         <span class="fs-200 t-muted">{{ $t("builder.doc_name") }}</span>
         <span class="fs-300 fw-600 t-body">

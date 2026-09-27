@@ -53,8 +53,13 @@ export default {
   },
   computed: {
     isIconOnly() {
-      return !this.text && Boolean(this.icon || this.label);
+      return !this.text;
     },
+  },
+  mounted() {
+    if (process.env.NODE_ENV !== "production" && this.isIconOnly && !this.label) {
+      console.warn("BasicButton: an icon-only button needs `label`, its accessible name (docs/ui-rules.md C6).");
+    }
   },
 };
 </script>
@@ -178,6 +183,14 @@ button.button-basic {
   &.btn-danger-fill {
     color: var(--text-on-status-fill);
     background-color: var(--negative-fill);
+
+    &:hover:not([disabled]) {
+      filter: brightness(0.9);
+    }
+    &[disabled] {
+      color: var(--text-muted);
+      background-color: var(--negative-subtle);
+    }
   }
   //
   //

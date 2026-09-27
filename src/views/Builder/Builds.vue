@@ -115,9 +115,8 @@
 
           <template #cell-actions="{ row }">
             <BasicButton
-              custom
               size="sm"
-              :label="canCreate ? $t('builder.edit') : $t('builder.preview')"
+              :text="canCreate ? $t('builder.edit') : $t('builder.preview')"
               class="btn-ghost data-table__action-btn"
               @click="
                 $router.push({
@@ -126,9 +125,7 @@
                   query: { lg: language },
                 })
               "
-            >
-              <template #custom><FontAwesomeIcon :icon="canCreate ? 'pen' : 'eye'" /></template>
-            </BasicButton>
+            />
             <BasicButton
               v-if="doc.type !== 'legal-page'"
               custom

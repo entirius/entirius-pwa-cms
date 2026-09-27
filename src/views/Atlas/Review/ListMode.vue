@@ -63,8 +63,9 @@
       </button>
     </div>
 
-    <Loader v-show="loading" />
+    <Loader block v-show="loading" />
     <DataTable
+      empty-size="md"
       v-show="!loading"
       :columns="columns"
       :rows="rows"
@@ -93,6 +94,7 @@
 
     <Confirmation-modal
       :visible="confirmVisible"
+      :destructive="pendingAction === 'reject'"
       @accept="bulkExecute"
       @reject="confirmVisible = false"
     >

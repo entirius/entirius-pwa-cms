@@ -1,14 +1,9 @@
 <template>
   <div class="p-12 fs-300 t-body h-100 ov-h relative">
     <Teleport to="#authors-toolbar-left" defer>
-      <BasicButton
-        custom
-        :label="$t('common.back')"
-        class="btn-ghost"
-        @click="$router.push('/pages/authors')"
-      >
-        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
-      </BasicButton>
+      <BackBar
+        @back="$router.push('/pages/authors')"
+      />
       <h1 class="page-title" v-if="!loading">{{ form.name || $t("authors.create") }}</h1>
     </Teleport>
     <Teleport to="#authors-toolbar-right" defer>
@@ -34,7 +29,7 @@
     </Teleport>
 
     <div class="page-card h-100 ovy-auto relative">
-      <Loader v-if="loading" />
+      <Loader block v-if="loading" />
 
       <template v-else>
         <!-- Basic info -->

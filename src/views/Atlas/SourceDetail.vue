@@ -2,19 +2,14 @@
   <div class="supplier-detail h-100 ovy-auto">
     <!-- Toolbar buttons teleported into parent index.vue toolbar anchors -->
     <Teleport to="#suppliers-toolbar-left" defer>
-      <BasicButton
-        custom
-        :label="$t('common.back')"
-        class="btn-ghost"
+      <BackBar
         data-testid="suppliers-detail-back"
-        @click="goBack"
-      >
-        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
-      </BasicButton>
+        @back="goBack"
+      />
       <span class="t-body fw-600 fs-400">{{ headerLabel }}</span>
     </Teleport>
 
-    <Loader v-if="loading" />
+    <Loader block v-if="loading" />
     <div v-else-if="!supplier" class="p-12 t-muted">
       {{ $t("atlas.detail_not_found") }}
     </div>

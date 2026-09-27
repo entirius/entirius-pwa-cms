@@ -4,14 +4,9 @@
       class="page-card h-100 ovy-auto"
     >
       <div class="page-title-row flex ai-ct gap-5 mb-10">
-        <BasicButton
-          custom
-          :label="$t('common.back')"
-          class="btn-ghost"
-          @click="$router.push('/emails')"
-        >
-          <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
-        </BasicButton>
+        <BackBar
+          @back="$router.push('/emails')"
+        />
         <h1 class="page-title">
           {{ channel.label || $t("emails.channel") }}
         </h1>
@@ -20,7 +15,7 @@
         >
       </div>
 
-      <Loader v-show="loading" />
+      <Loader block v-show="loading" />
 
       <div v-show="!loading">
         <!-- Branding Section -->

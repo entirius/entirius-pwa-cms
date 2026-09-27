@@ -1,14 +1,9 @@
 <template>
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#pim-toolbar-left" defer>
-      <BasicButton
-        custom
-        :label="$t('common.back')"
-        class="btn-ghost"
-        @click="$router.push('/pim/features')"
-      >
-        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
-      </BasicButton>
+      <BackBar
+        @back="$router.push('/pim/features')"
+      />
     </Teleport>
     <Teleport to="#pim-toolbar-right" defer>
       <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
@@ -32,7 +27,7 @@
     <div class="page-card h-100 ovy-auto">
       <!-- Breadcrumb -->
       <PimBreadcrumb :items="breadcrumbItems" />
-      <Loader v-if="loading" />
+      <Loader block v-if="loading" />
 
       <template v-else>
         <!-- System feature notice -->

@@ -2,14 +2,9 @@
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <!-- Left toolbar -->
     <Teleport to="#layout-extender-toolbar-left" defer>
-      <BasicButton
-        custom
-        :label="$t('common.back')"
-        class="btn-ghost"
-        @click="$router.push('/pages/layout-extender')"
-      >
-        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
-      </BasicButton>
+      <BackBar
+        @back="$router.push('/pages/layout-extender')"
+      />
       <div v-if="!loading" class="nav-editor__toolbar-name">
         <span class="fw-600 t-body">{{ docName || $route.params.uid || "—" }}</span>
       </div>
@@ -50,7 +45,7 @@
 
     <!-- Content -->
     <div class="page-card h-100 ovy-auto">
-      <Loader v-show="loading" />
+      <Loader block v-show="loading" />
 
       <template v-if="!loading">
         <draggable
@@ -89,16 +84,14 @@
                   }"
                   @on_AssetPass="reorderColumns(index, $event)"
                 >
-                  <span
+                  <button
+                    type="button"
                     class="nav-action"
-                    role="button"
-                    tabindex="0"
                     :aria-label="$t('layout_extender.reorder_columns')"
                     :title="$t('layout_extender.reorder_columns')"
-                    @keydown.enter.space.prevent="$event.currentTarget.click()"
                   >
                     <FontAwesomeIcon icon="grip" />
-                  </span>
+                  </button>
                 </SubscriberSetter>
                 <BasicButton
                   v-if="element.display_as === 'megamenu'"
@@ -701,7 +694,10 @@ export default {
   justify-content: center;
   width: var(--elem-height);
   height: var(--elem-height);
+  padding: 0;
+  border: none;
   border-radius: var(--radius-base);
+  background: none;
   cursor: pointer;
   color: var(--text-muted);
   transition: background 0.1s, color 0.1s, transform 0.2s;

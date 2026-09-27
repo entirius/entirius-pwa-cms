@@ -8,9 +8,10 @@
       />
     </div>
 
-    <Loader v-show="loading" />
+    <Loader block v-show="loading" />
 
     <DataTable
+      empty-size="md"
       v-show="!loading"
       :columns="columns"
       :rows="items"
@@ -245,7 +246,7 @@
                     ? $t('promo.btn_save')
                     : $t('promo.pv_filter_add')
                 "
-                class="btn-primary"
+                class="btn-secondary"
                 @click="saveFilter"
               />
               <BasicButton

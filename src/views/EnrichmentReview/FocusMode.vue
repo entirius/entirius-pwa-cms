@@ -1,6 +1,6 @@
 <template>
   <div class="focus-mode">
-    <Loader v-show="loading" />
+    <Loader block v-show="loading" />
 
     <EmptyState
       v-if="!loading && !current"

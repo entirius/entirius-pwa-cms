@@ -20,7 +20,7 @@
       <p class="fs-200">{{ $t("atlas.linked.no_preferred_warning") }}</p>
     </div>
 
-    <Loader v-show="loading" />
+    <Loader block v-show="loading" />
 
     <DataTable
       v-show="!loading"

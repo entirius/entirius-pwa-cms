@@ -7,7 +7,7 @@
       </p>
     </div>
 
-    <Loader v-show="loading" />
+    <Loader block v-show="loading" />
 
     <DataTable
       v-show="!loading"
@@ -60,6 +60,7 @@
 
     <Confirmation-modal
       :visible="triggerVisible"
+      :destructive="false"
       @accept="executeTrigger"
       @reject="triggerVisible = false"
     >

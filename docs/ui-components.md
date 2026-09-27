@@ -25,8 +25,12 @@ Notable ones for list/form views:
 - **`FormField`** — label/description/tooltip/required wrapper for form
   inputs. Props: `label`, `description`, `tooltip`, `required`.
 - **`EmptyState`** — placeholder for empty lists and panels. Props: `title`, `message`,
-  `icon`; the default slot takes an action. `DataTable` renders it for `emptyText`.
-- **`Loader`** — loading indicator, centred in the content area it stands in for (`role="status"`).
+  `icon`, `size` (`md` full block, default; `sm` one line); the default slot takes an action. `DataTable` renders it
+  for `emptyText`, one line by default; a list screen whose only content is the table passes `empty-size="md"`.
+- **`Loader`** — loading indicator (`role="status"`), inline by default so it keeps its place in a modal, side
+  panel or button; `block` centres it in the content area it stands in for.
+- **`NumberInput`** — stepper field. A fractional `step` turns on decimal entry; typed text keeps one leading minus
+  (only when `min` < 0), one decimal separator and digits. `isDisabled` locks the value and both steppers.
 - **`ChannelMultiSelect`** — multi-select for channel scoping (`v-model`
   array of channel idx). Props: `modelValue`, `channels`, `label`, `allLabel`.
 - **`HelpTooltip`** — inline `?` icon with a hover bubble. Props: `text`

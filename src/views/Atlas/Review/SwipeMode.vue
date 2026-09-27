@@ -4,7 +4,7 @@
          container so it stays docked at the bottom regardless of RawDataPanel
          internal overflow. -->
     <div class="swipe-mode__scroll">
-      <Loader v-show="loading" />
+      <Loader block v-show="loading" />
 
       <div v-if="!loading && !current" class="text-center mt-10">
         <EmptyState
@@ -253,6 +253,25 @@ export default {
   background: var(--surface-base);
   border-top: 1px solid var(--border-subtle);
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.04);
+
+  /* A decision bar: Reject is outlined so it reads as a button beside Skip and Approve. */
+  .btn-danger {
+    border-color: var(--negative);
+
+    &[disabled] {
+      border-color: var(--border-default);
+    }
+  }
+
+  @media (max-width: 768px) {
+    flex-wrap: nowrap;
+    padding: var(--space-2) var(--space-4);
+
+    .button-basic {
+      flex: 1 1 0;
+      justify-content: center;
+    }
+  }
 }
 
 .text-center {

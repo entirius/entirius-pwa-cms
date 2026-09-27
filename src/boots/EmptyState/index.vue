@@ -1,5 +1,5 @@
 <template>
-  <div class="empty-state">
+  <div class="empty-state" :class="`empty-state--${size}`">
     <FontAwesomeIcon v-if="icon" :icon="icon" class="empty-state__icon" />
     <p v-if="title" class="empty-state__title">{{ title }}</p>
     <p v-if="message" class="empty-state__message">{{ message }}</p>
@@ -21,6 +21,12 @@ defineProps({
     type: String,
     default: "",
   },
+  // "md": the full block of a list screen whose only content is the list; "sm": one line inside a detail screen.
+  size: {
+    type: String,
+    default: "md",
+    validator: (value) => ["sm", "md"].includes(value),
+  },
 })
 </script>
 
@@ -34,6 +40,23 @@ defineProps({
   padding: var(--space-12);
   min-height: 14rem;
   text-align: center;
+}
+
+.empty-state--sm {
+  flex-direction: row;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  min-height: 0;
+
+  .empty-state__icon {
+    font-size: var(--fs-400);
+  }
+
+  .empty-state__title {
+    font-size: var(--fs-250);
+    font-weight: 400;
+    color: var(--text-muted);
+  }
 }
 
 .empty-state__icon {

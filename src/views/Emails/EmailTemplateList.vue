@@ -4,18 +4,13 @@
       class="page-card h-100 ovy-auto"
     >
       <div class="page-title-row flex ai-ct gap-5 mb-10">
-        <BasicButton
-          custom
-          :label="$t('common.back')"
-          class="btn-ghost"
-          @click="$router.push('/emails')"
-        >
-          <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
-        </BasicButton>
+        <BackBar
+          @back="$router.push('/emails')"
+        />
         <h1 class="page-title">{{ typeLabel }}</h1>
       </div>
 
-      <Loader v-show="loading" />
+      <Loader block v-show="loading" />
 
       <div v-show="!loading">
         <div v-if="templates.length === 0" class="fs-300 t-muted">

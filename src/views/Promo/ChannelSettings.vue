@@ -1,6 +1,6 @@
 <template>
   <div class="channel-settings">
-    <Loader v-show="loading" />
+    <Loader block v-show="loading" />
     <div v-show="!loading" class="page-card">
       <div class="flex ai-ct jc-sb mb-10">
         <h3 class="fs-400 fw-600">

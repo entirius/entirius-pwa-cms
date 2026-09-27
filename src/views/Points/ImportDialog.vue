@@ -2,14 +2,9 @@
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <div class="page-card h-100 ovy-auto">
       <div class="flex ai-ct mb-12">
-        <BasicButton
-          custom
-          :label="$t('common.back')"
-          class="btn-ghost"
-          @click="$router.push('/points/list')"
-        >
-          <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
-        </BasicButton>
+        <BackBar
+          @back="$router.push('/points/list')"
+        />
       </div>
 
       <h1 class="page-title mb-12">{{ $t("dp.import") }}</h1>

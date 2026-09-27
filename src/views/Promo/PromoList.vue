@@ -18,7 +18,7 @@
           <div class="promo-list__bulk-actions">
             <BasicButton
               :text="$t('promo.bulk_activate')"
-              class="btn-primary"
+              class="btn-secondary"
               @click="startBulk('activate')"
             />
             <BasicButton
@@ -96,9 +96,10 @@
           </button>
         </div>
 
-        <Loader v-show="loading" />
+        <Loader block v-show="loading" />
 
         <DataTable
+          empty-size="md"
           v-show="!loading"
           :key="tableKey"
           :columns="columns"

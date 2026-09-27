@@ -1,19 +1,14 @@
 <template>
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport v-if="!embedded" to="#pricing-toolbar-left" defer>
-      <BasicButton
-        custom
-        :label="$t('common.back')"
-        class="btn-ghost"
-        @click="$router.push('/pricing/prices')"
-      >
-        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
-      </BasicButton>
+      <BackBar
+        @back="$router.push('/pricing/prices')"
+      />
       <span class="fw-600 fs-400">{{ effectiveSku || $t('pm.price_detail') }}</span>
     </Teleport>
 
     <div class="page-card h-100 ovy-auto">
-      <Loader v-if="loading" />
+      <Loader block v-if="loading" />
 
       <template v-else>
         <EmptyState
@@ -142,26 +137,22 @@
               class="btn-outline"
               @click="toggleHistory"
             />
-            <span :title="$t('pm.flush_special_tooltip')">
-              <BasicButton
-                custom
-                :label="$t('pm.flush_special')"
-                class="btn-danger"
-                @click="showFlushConfirm = true"
-              >
-                <template #custom><FontAwesomeIcon icon="broom" /></template>
-              </BasicButton>
-            </span>
-            <span :title="$t('pm.delete_prices_tooltip')">
-              <BasicButton
-                custom
-                :label="$t('common.delete')"
-                class="btn-danger"
-                @click="showDeleteConfirm = true"
-              >
-                <template #custom><FontAwesomeIcon icon="trash-can" /></template>
-              </BasicButton>
-            </span>
+            <BasicButton
+              custom
+              :label="$t('pm.flush_special_tooltip')"
+              class="btn-danger"
+              @click="showFlushConfirm = true"
+            >
+              <template #custom><FontAwesomeIcon icon="broom" /></template>
+            </BasicButton>
+            <BasicButton
+              custom
+              :label="$t('pm.delete_prices_tooltip')"
+              class="btn-danger"
+              @click="showDeleteConfirm = true"
+            >
+              <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+            </BasicButton>
           </div>
 
           <!-- Confirmation modals -->
@@ -217,7 +208,7 @@
           <div v-if="showHistory" class="mt-5">
             <h3 class="fs-400 fw-600 mb-5">{{ $t('pm.history') }}</h3>
             <Loader v-if="historyLoading" />
-            <div v-else-if="!history.length" class="t-muted fs-200">—</div>
+            <EmptyState v-else-if="!history.length" icon="inbox" size="sm" :title="$t('pm.no_history')" />
             <div
               v-for="entry in history"
               :key="entry.id"
