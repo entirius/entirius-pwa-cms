@@ -22,7 +22,7 @@
       <div
         v-for="group in groups"
         :key="group.ean"
-        class="bg-base b-subtle rounded p-10 mb-8"
+        class="duplicates-group bg-base b-subtle rounded p-10 mb-8"
       >
         <div class="flex ai-ct jc-sb mb-8 gap-5">
           <div>
@@ -39,47 +39,49 @@
         </div>
         <p class="fs-200 t-secondary mb-8">{{ group.suggestion_detail }}</p>
 
-        <table class="duplicates-table">
-          <thead>
-            <tr>
-              <th>{{ $t("atlas.duplicates.col.sku") }}</th>
-              <th>{{ $t("atlas.duplicates.col.weight") }}</th>
-              <th>{{ $t("atlas.duplicates.col.suppliers") }}</th>
-              <th>{{ $t("atlas.duplicates.col.actions") }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="rp in group.realproducts" :key="rp.sku">
-              <td>
-                <span class="fw-600">{{ rp.sku }}</span>
-              </td>
-              <td>{{ rp.weight ?? "—" }}</td>
-              <td>
-                <div class="flex ai-ct flex-wrap gap-2">
-                  <StatusBadge
-                    v-for="s in rp.sources"
-                    :key="s.idx"
-                    :label="s.is_primary ? `★ ${s.name || s.idx}` : (s.name || s.idx)"
-                    :variant="s.is_primary ? 'positive' : 'neutral'"
-                  />
-                </div>
-              </td>
-              <td>
-                <div class="flex ai-ct flex-wrap gap-2">
-                  <BasicButton
-                    v-for="other in otherRps(group, rp)"
-                    :text="$t('atlas.duplicates.action.merge_to', { sku: other.sku })"
-                    size="sm"
-                    class="btn-secondary"
-                    :key="other.sku"
-                    :data-testid="`duplicates-merge-${rp.sku}-to-${other.sku}`"
-                    @click="openMergeModal(other.sku, rp.sku)"
-                  />
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="duplicates-table__scroll">
+          <table class="duplicates-table">
+            <thead>
+              <tr>
+                <th>{{ $t("atlas.duplicates.col.sku") }}</th>
+                <th>{{ $t("atlas.duplicates.col.weight") }}</th>
+                <th>{{ $t("atlas.duplicates.col.suppliers") }}</th>
+                <th>{{ $t("atlas.duplicates.col.actions") }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="rp in group.realproducts" :key="rp.sku">
+                <td>
+                  <span class="fw-600">{{ rp.sku }}</span>
+                </td>
+                <td>{{ rp.weight ?? "—" }}</td>
+                <td>
+                  <div class="flex ai-ct flex-wrap gap-2">
+                    <StatusBadge
+                      v-for="s in rp.sources"
+                      :key="s.idx"
+                      :label="s.is_primary ? `★ ${s.name || s.idx}` : (s.name || s.idx)"
+                      :variant="s.is_primary ? 'positive' : 'neutral'"
+                    />
+                  </div>
+                </td>
+                <td>
+                  <div class="flex ai-ct flex-wrap gap-2">
+                    <BasicButton
+                      v-for="other in otherRps(group, rp)"
+                      :text="$t('atlas.duplicates.action.merge_to', { sku: other.sku })"
+                      size="sm"
+                      class="btn-secondary"
+                      :key="other.sku"
+                      :data-testid="`duplicates-merge-${rp.sku}-to-${other.sku}`"
+                      @click="openMergeModal(other.sku, rp.sku)"
+                    />
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -171,6 +173,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/scss/utils/media-query";
+
+// A phone pads the group like the page card (16 px), and only the table scrolls sideways, not the card.
+.duplicates-group {
+  @include max-tablet {
+    padding: var(--space-4) !important;
+  }
+}
+
+.duplicates-table__scroll {
+  overflow-x: auto;
+}
+
 .duplicates-table {
   width: 100%;
   border-collapse: collapse;

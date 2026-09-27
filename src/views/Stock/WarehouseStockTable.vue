@@ -67,46 +67,48 @@
         <EmptyState :title="$t('stock.no_stock')" icon="boxes-stacked" />
       </div>
 
-      <table v-else class="stock-table">
-        <thead>
-          <tr>
-            <th class="stock-table__col-sku">{{ $t("stock.sku") }}</th>
-            <th class="stock-table__col-qty">{{ $t("stock.quantity") }}</th>
-            <th class="stock-table__col-dispatch">{{ $t("stock.dispatch_time") }}</th>
-            <th class="stock-table__col-status">{{ $t("stock.status") }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="item in rows" :key="item.sku">
-            <td class="stock-table__col-sku" :class="{ 't-negative': item.has_stock && item.quantity === 0 }">
-              {{ item.sku }}
-            </td>
-            <td class="stock-table__col-qty">
-              <NumberInput
-                v-if="isManual"
-                :modelValue="getDisplayQty(item)"
-                :min="0"
-                @update:modelValue="(val) => onQtyChange(item.sku, val, item)"
-              />
-              <span v-else>{{ item.has_stock ? item.quantity : '—' }}</span>
-            </td>
-            <td class="stock-table__col-dispatch">
-              <span v-if="item.dispatch_resolved != null">
-                {{ $t("stock.dispatch_hours", { hours: item.dispatch_resolved }) }}
-              </span>
-              <span v-else class="t-muted fs-200">—</span>
-            </td>
-            <td class="stock-table__col-status">
-              <span v-if="isDirty(item.sku)" class="bg-warning-subtle t-warning fs-200 ph-2 rounded">
-                {{ $t("stock.unsaved") }}
-              </span>
-              <span v-else-if="!item.has_stock" class="t-muted fs-200">
-                {{ $t("stock.no_stock_label") }}
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div v-else class="stock-table__scroll">
+        <table class="stock-table">
+          <thead>
+            <tr>
+              <th class="stock-table__col-sku">{{ $t("stock.sku") }}</th>
+              <th class="stock-table__col-qty">{{ $t("stock.quantity") }}</th>
+              <th class="stock-table__col-dispatch">{{ $t("stock.dispatch_time") }}</th>
+              <th class="stock-table__col-status">{{ $t("stock.status") }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="item in rows" :key="item.sku">
+              <td class="stock-table__col-sku" :class="{ 't-negative': item.has_stock && item.quantity === 0 }">
+                {{ item.sku }}
+              </td>
+              <td class="stock-table__col-qty">
+                <NumberInput
+                  v-if="isManual"
+                  :modelValue="getDisplayQty(item)"
+                  :min="0"
+                  @update:modelValue="(val) => onQtyChange(item.sku, val, item)"
+                />
+                <span v-else>{{ item.has_stock ? item.quantity : '—' }}</span>
+              </td>
+              <td class="stock-table__col-dispatch">
+                <span v-if="item.dispatch_resolved != null">
+                  {{ $t("stock.dispatch_hours", { hours: item.dispatch_resolved }) }}
+                </span>
+                <span v-else class="t-muted fs-200">—</span>
+              </td>
+              <td class="stock-table__col-status">
+                <span v-if="isDirty(item.sku)" class="bg-warning-subtle t-warning fs-200 ph-2 rounded">
+                  {{ $t("stock.unsaved") }}
+                </span>
+                <span v-else-if="!item.has_stock" class="t-muted fs-200">
+                  {{ $t("stock.no_stock_label") }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <!-- Pagination -->
       <div v-if="totalCount > pageSize" class="mt-8">
@@ -286,6 +288,11 @@ export default {
   flex: 1;
   min-width: 150px;
   max-width: 400px;
+}
+
+// A table wider than a phone scrolls in this box; the card around it does not.
+.stock-table__scroll {
+  overflow-x: auto;
 }
 
 .stock-table {

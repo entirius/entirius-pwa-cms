@@ -911,7 +911,9 @@ $expand-cols: 80px 80px 110px 110px 1fr;
     min-width: 900px;
   }
 
+  // The rows keep 900 px; the box itself fits the card, so only the table scrolls, not the card.
   .pm-price-table {
+    min-width: 0;
     overflow-x: auto;
   }
 }
