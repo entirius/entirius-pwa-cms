@@ -87,7 +87,7 @@ const SYNC_STATUS_VARIANTS = {
   success: "positive",
   partial: "warning",
   failed: "negative",
-  running: "informative",
+  running: "info",
 };
 
 export default {

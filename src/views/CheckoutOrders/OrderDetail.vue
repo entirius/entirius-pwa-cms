@@ -109,8 +109,8 @@ import { useNotifyStore } from "@/stores/notify";
 import { extractApiMessage } from "@/composables/useFormErrors";
 
 const STATUS_VARIANTS = {
-  UNPAID: "warning", NEW: "warning", CONFIRMED: "positive", HOLDED: "informative",
-  IN_PROGRESS: "informative", COMPLETED: "positive", RETURNED: "neutral", CANCELED: "negative",
+  UNPAID: "warning", NEW: "warning", CONFIRMED: "positive", HOLDED: "info",
+  IN_PROGRESS: "info", COMPLETED: "positive", RETURNED: "neutral", CANCELED: "negative",
 };
 
 export default {

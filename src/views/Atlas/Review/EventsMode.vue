@@ -59,7 +59,7 @@ import {
 const SEVERITY_VARIANTS = {
   critical: "negative",
   warning: "warning",
-  info: "informative",
+  info: "info",
 };
 
 export default {

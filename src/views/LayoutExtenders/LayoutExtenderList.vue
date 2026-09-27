@@ -50,7 +50,7 @@
         <template #cell-status="{ row }">
           <StatusBadge
             :label="row.is_published ? $t('layout_extender.published') : $t('layout_extender.draft')"
-            :tone="row.is_published ? 'positive' : 'informative'"
+            :tone="row.is_published ? 'positive' : 'info'"
           />
         </template>
 

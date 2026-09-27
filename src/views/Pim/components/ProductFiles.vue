@@ -47,7 +47,7 @@ const creatingCategory = ref(false);
 const MAX_FILE_SIZE = 50 * 1024 * 1024;
 
 const FILE_TYPE_BADGES = {
-  1: { label: "Image", variant: "informative" },
+  1: { label: "Image", variant: "info" },
   2: { label: "PDF", variant: "warning" },
   3: { label: "Document", variant: "neutral" },
   4: { label: "Video", variant: "positive" },

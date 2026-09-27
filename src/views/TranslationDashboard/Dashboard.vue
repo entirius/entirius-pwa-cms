@@ -217,7 +217,7 @@ export default {
     },
     statusVariant(status) {
       const map = {
-        pending: "informative",
+        pending: "info",
         running: "warning",
         completed: "positive",
         failed: "negative",

@@ -174,7 +174,7 @@ import { formatDate } from "@/utils/format";
 import DiffRenderer from "./DiffRenderer.vue";
 
 const STATUS_VARIANTS = {
-  pending: "informative",
+  pending: "info",
   applied: "positive",
   rejected: "negative",
   superseded: "neutral",

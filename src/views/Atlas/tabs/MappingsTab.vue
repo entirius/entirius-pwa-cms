@@ -651,7 +651,7 @@ export default {
       if (v.busy) {
         return {
           label: this.$t("atlas.mappings.badge.checking"),
-          variant: "informative",
+          variant: "info",
         };
       }
       if (v.errors.length) {

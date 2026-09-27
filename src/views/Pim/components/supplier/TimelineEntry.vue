@@ -43,18 +43,18 @@ const NUMERIC_SUFFIXES = [".weight", ".width", ".height", ".depth"];
 const ARRAY_FIELDS = new Set(["image_urls", "images", "files"]);
 
 const SOURCE_VARIANTS = {
-  full_sync: "informative",
-  delta_sync: "informative",
+  full_sync: "info",
+  delta_sync: "info",
   init_push: "neutral",
   force_repush: "warning",
   operator_sp_edit: "neutral",
-  auto_link: "informative",
+  auto_link: "info",
   auto_preferred_switch: "warning",
   manual_override: "warning",
   emergency_switch: "negative",
   operator_acknowledge: "positive",
   // etap-10 (Dziura #31) — physical race detection.
-  physical_skipped: "informative",
+  physical_skipped: "info",
   physical_overwrite: "warning",
 };
 

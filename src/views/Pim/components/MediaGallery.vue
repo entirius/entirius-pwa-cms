@@ -175,7 +175,7 @@ function itemKey(item) {
 }
 
 function roleBadgeVariant(role) {
-  if (role === "MAIN") return "informative";
+  if (role === "MAIN") return "info";
   if (role === "VARIANT") return "warning";
   return "neutral";
 }

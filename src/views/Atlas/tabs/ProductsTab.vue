@@ -363,7 +363,7 @@ const ACTION_FN = {
 
 const STATUS_VARIANTS = {
   new: "neutral",
-  queued: "informative",
+  queued: "info",
   approved: "positive",
   rejected: "negative",
   pushed_pending_images: "warning",

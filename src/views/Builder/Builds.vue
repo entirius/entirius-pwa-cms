@@ -110,7 +110,7 @@
               :label="
                 row.is_published ? $t('builder.published') : $t('builder.draft')
               "
-              :tone="row.is_published ? 'positive' : 'informative'"
+              :tone="row.is_published ? 'positive' : 'info'"
             />
           </template>
 

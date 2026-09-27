@@ -54,7 +54,7 @@
         />
         <StatusBadge
           :label="customer.is_verified ? $t('accounts.verified') : $t('accounts.not_verified')"
-          :tone="customer.is_verified ? 'informative' : 'neutral'"
+          :tone="customer.is_verified ? 'info' : 'neutral'"
         />
         <template v-if="customer.blacklist_channels.length">
           <span

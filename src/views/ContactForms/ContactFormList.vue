@@ -230,7 +230,7 @@ export default {
     statusVariant(status) {
       const map = {
         todo: "warning",
-        in_progress: "informative",
+        in_progress: "info",
         done: "positive",
       };
       return map[status] || "neutral";

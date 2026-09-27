@@ -86,7 +86,7 @@ import {
 } from "@/api/atlas/api";
 
 const LOG_STATUS_VARIANTS = {
-  running: "informative",
+  running: "info",
   success: "positive",
   partial: "warning",
   failed: "negative",
@@ -94,7 +94,7 @@ const LOG_STATUS_VARIANTS = {
 const SEVERITY_VARIANTS = {
   critical: "negative",
   warning: "warning",
-  info: "informative",
+  info: "info",
 };
 
 export default {

@@ -302,7 +302,7 @@ import {
 
 const KIND_VARIANTS = {
   procurement: "positive",
-  monitoring: "informative",
+  monitoring: "info",
   enrichment: "neutral",
 };
 

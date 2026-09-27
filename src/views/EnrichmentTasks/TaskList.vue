@@ -74,7 +74,7 @@ import TaskQueueDrawer from "./TaskQueueDrawer.vue";
 // Mirrors django_enrichment.enums.TaskStatus.
 const TASK_STATUSES = ["open", "in_progress", "done", "cancelled", "failed"];
 const STATUS_VARIANT = {
-  open: "informative",
+  open: "info",
   in_progress: "warning",
   done: "positive",
   cancelled: "neutral",
