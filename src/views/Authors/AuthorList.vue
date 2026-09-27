@@ -154,7 +154,7 @@ export default {
     fabActions() {
       return [
         {
-          icon: "plus",
+          icon: "add",
           label: this.$t("authors.create"),
           handler: () => this.$router.push("/pages/authors/create"),
         },

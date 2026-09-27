@@ -35,10 +35,9 @@
         <div class="page-card author-edit__section mb-10">
           <div class="section-label mb-8">{{ $t("pim.basic_info") }}</div>
           <div class="flex gap-8 mb-8" style="flex-wrap: wrap">
-            <FormField :label="$t('authors.name')">
+            <FormField :label="$t('authors.name')" :error="formErrors.getFieldError('name')?.msg || ''">
               <BasicInput
                 v-model="form.name"
-                :validate="formErrors.getFieldError('name')"
                 class="flex-1"
                 style="min-width: 200px"
               />
@@ -124,27 +123,33 @@
         <div class="page-card author-edit__section mb-10">
           <div class="section-label mb-8">{{ $t("dp.contact") }}</div>
           <div class="flex gap-8 mb-8" style="flex-wrap: wrap">
-            <FormField :label="$t('authors.contact_email')">
+            <FormField
+              :label="$t('authors.contact_email')"
+              :error="formErrors.getFieldError('contact_email')?.msg || ''"
+            >
               <BasicInput
                 v-model="form.contact_email"
-                :validate="formErrors.getFieldError('contact_email')"
                 class="flex-1"
                 style="min-width: 200px"
               />
             </FormField>
-            <FormField :label="$t('authors.contact_phone')">
+            <FormField
+              :label="$t('authors.contact_phone')"
+              :error="formErrors.getFieldError('contact_phone')?.msg || ''"
+            >
               <BasicInput
                 v-model="form.contact_phone"
-                :validate="formErrors.getFieldError('contact_phone')"
                 class="flex-1"
                 style="min-width: 200px"
               />
             </FormField>
           </div>
-          <FormField :label="$t('authors.contact_url')">
+          <FormField
+            :label="$t('authors.contact_url')"
+            :error="formErrors.getFieldError('contact_url')?.msg || ''"
+          >
             <BasicInput
               v-model="form.contact_url"
-              :validate="formErrors.getFieldError('contact_url')"
             />
           </FormField>
         </div>
@@ -191,6 +196,7 @@
     <!-- Delete confirmation -->
     <ConfirmDialog
       tone="danger"
+      :title="$t('authors.confirm_delete_title')"
       :open="showDeleteConfirm"
       @confirm="deleteAuthor"
       @cancel="showDeleteConfirm = false"
