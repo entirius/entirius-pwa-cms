@@ -236,9 +236,8 @@ function find_label({
   }
 
   &.dropdown-disabled {
-    background-color: var(--surface-raised);
+    background-color: var(--surface-disabled);
     border-color: var(--border-subtle);
-    opacity: 0.7;
     cursor: not-allowed;
 
     .selected-value-container {

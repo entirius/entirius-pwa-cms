@@ -163,6 +163,14 @@ export default {
       color: var(--text-muted);
     }
 
+    // Same disabled look as Dropdown: a locked value is readable but plainly not editable.
+    &:disabled {
+      background-color: var(--surface-disabled);
+      border-color: var(--border-subtle);
+      color: var(--text-muted);
+      cursor: not-allowed;
+    }
+
     &:placeholder-shown ~ .input-label {
       // cursor: text;
       // top: 50%;
