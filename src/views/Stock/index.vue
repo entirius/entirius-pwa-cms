@@ -2,12 +2,13 @@
   <div class="stock-panel h-100">
     <div class="panel-toolbar bg-raised fs-300">
       <div class="panel-toolbar__title flex ai-ct gap-5">
-        <Dropdown
-          :values="warehouseOptions"
-          :selected="activeWarehouse ? [activeWarehouse.code] : []"
+        <BasicSelect
+          :model-value="activeWarehouse?.code ?? null"
+          :options="warehouseOptions"
           :placeholder="$t('stock.select_warehouse')"
-          class="stock-panel__dropdown"
-          @onSelect="onWarehouseSelect"
+          :aria-label="$t('stock.select_warehouse')"
+          class="stock-panel__select"
+          @update:model-value="onWarehouseSelect"
         />
         <StatusBadge
           v-if="activeWarehouse"
@@ -119,7 +120,7 @@ export default {
   flex-direction: column;
 }
 
-.stock-panel__dropdown {
+.stock-panel__select {
   min-width: 200px;
   max-width: 300px;
 }

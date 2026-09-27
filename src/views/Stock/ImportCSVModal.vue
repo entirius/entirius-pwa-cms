@@ -1,65 +1,61 @@
 <template>
-  <Confirmation-modal :visible="true" @reject="$emit('close')">
-    <template #description>
-      <h3 class="fs-500 fw-600 mb-8">{{ $t("stock.import_title") }}</h3>
+  <BasicModal :open="true" size="sm" :title="$t('stock.import_title')" @close="$emit('close')">
+    <div v-if="!report" class="flex fd-col gap-5">
+      <p class="fs-300 t-secondary">{{ $t("stock.import_select_file") }}</p>
+      <input
+        ref="fileInput"
+        type="file"
+        accept=".csv"
+        class="mb-5"
+        @change="onFileSelect"
+      />
+    </div>
 
-      <div v-if="!report" class="flex fd-col gap-5">
-        <p class="fs-300 t-secondary">{{ $t("stock.import_select_file") }}</p>
-        <input
-          ref="fileInput"
-          type="file"
-          accept=".csv"
-          class="mb-5"
-          @change="onFileSelect"
-        />
+    <div v-else class="flex fd-col gap-2">
+      <p class="fs-300 fw-600 t-positive mb-5">{{ $t("stock.import_success") }}</p>
+      <div class="flex jc-sb fs-300">
+        <span>{{ $t("stock.import_rows_parsed") }}:</span>
+        <span class="fw-600">{{ report.rows_parsed }}</span>
       </div>
-
-      <div v-else class="flex fd-col gap-2">
-        <p class="fs-300 fw-600 t-positive mb-5">{{ $t("stock.import_success") }}</p>
-        <div class="flex jc-sb fs-300">
-          <span>{{ $t("stock.import_rows_parsed") }}:</span>
-          <span class="fw-600">{{ report.rows_parsed }}</span>
-        </div>
-        <div class="flex jc-sb fs-300">
-          <span>{{ $t("stock.import_rows_imported") }}:</span>
-          <span class="fw-600 t-positive">{{ report.rows_imported }}</span>
-        </div>
-        <div v-if="report.rows_skipped > 0" class="flex jc-sb fs-300">
-          <span>{{ $t("stock.import_rows_skipped") }}:</span>
-          <span class="fw-600 t-warning">{{ report.rows_skipped }}</span>
-        </div>
-        <div v-if="report.errors && report.errors.length" class="mt-5">
-          <p class="fs-200 fw-600 t-negative mb-2">{{ $t("stock.import_errors") }}:</p>
-          <ul class="fs-200 t-secondary">
-            <li v-for="(err, i) in report.errors.slice(0, 10)" :key="i">
-              Row {{ err.row }}: {{ err.error }}
-            </li>
-          </ul>
-        </div>
+      <div class="flex jc-sb fs-300">
+        <span>{{ $t("stock.import_rows_imported") }}:</span>
+        <span class="fw-600 t-positive">{{ report.rows_imported }}</span>
       </div>
-    </template>
+      <div v-if="report.rows_skipped > 0" class="flex jc-sb fs-300">
+        <span>{{ $t("stock.import_rows_skipped") }}:</span>
+        <span class="fw-600 t-warning">{{ report.rows_skipped }}</span>
+      </div>
+      <div v-if="report.errors && report.errors.length" class="mt-5">
+        <p class="fs-200 fw-600 t-negative mb-2">{{ $t("stock.import_errors") }}:</p>
+        <ul class="fs-200 t-secondary">
+          <li v-for="(err, i) in report.errors.slice(0, 10)" :key="i">
+            Row {{ err.row }}: {{ err.error }}
+          </li>
+        </ul>
+      </div>
+    </div>
 
     <template #footer>
-      <button class="modal-btn modal-btn--secondary" @click="$emit('close')">
+      <BasicButton variant="secondary" @click="$emit('close')">
         {{ report ? "Close" : "Cancel" }}
-      </button>
-      <button
+      </BasicButton>
+      <BasicButton
         v-if="!report"
-        class="modal-btn modal-btn--confirm"
+        variant="primary"
         :disabled="!selectedFile || uploading"
         @click="upload"
       >
         {{ uploading ? "Uploading..." : "Upload" }}
-      </button>
-      <button
+      </BasicButton>
+      <BasicButton
         v-if="report"
-        class="modal-btn modal-btn--confirm"
+        variant="primary"
         @click="$emit('imported')"
       >
         Done
-      </button>
+      </BasicButton>
     </template>
-  </Confirmation-modal>
+  </BasicModal>
 </template>
 
 <script>

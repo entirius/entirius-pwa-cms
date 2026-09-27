@@ -1,78 +1,74 @@
 <template>
-  <Confirmation-modal :visible="true" @reject="$emit('close')">
-    <template #description>
-      <h3 class="fs-500 fw-600 mb-8">{{ $t("stock.add_products_title") }}</h3>
+  <BasicModal :open="true" size="sm" :title="$t('stock.add_products_title')" @close="$emit('close')">
+    <div class="add-product__toolbar flex ai-ct gap-5 mb-5">
+      <BasicInput
+        v-model="search"
+        :placeholder="$t('stock.search_sku')"
+        icon="search"
+        class="add-product__search"
+        @input="debouncedSearch"
+      />
+      <FilterChip
+        :label="$t('stock.filter_without_stock')"
+        :active="onlyMissing"
+        @click="onlyMissing = !onlyMissing; fetchProducts()"
+      />
+    </div>
 
-      <div class="add-product__toolbar flex ai-ct gap-5 mb-5">
-        <BasicInput
-          v-model="search"
-          :placeholder="$t('stock.search_sku')"
-          icon="search"
-          class="add-product__search"
-          @input="debouncedSearch"
-        />
-        <FilterChip
-          :label="$t('stock.filter_without_stock')"
-          :active="onlyMissing"
-          @click="onlyMissing = !onlyMissing; fetchProducts()"
-        />
-      </div>
+    <div v-if="loading" class="flex-center pv-8">
+      <Loader />
+    </div>
 
-      <div v-if="loading" class="flex-center pv-8">
-        <Loader />
-      </div>
+    <div v-else-if="products.length === 0" class="pv-8 fs-300 t-muted">
+      {{ $t("stock.no_products_found") }}
+    </div>
 
-      <div v-else-if="products.length === 0" class="pv-8 fs-300 t-muted">
-        {{ $t("stock.no_products_found") }}
-      </div>
-
-      <div v-else class="add-product__list">
-        <div
-          v-for="p in products"
-          :key="p.sku"
-          class="add-product__row flex ai-ct jc-sb"
-          :class="{ 'add-product__row--selected': selectedSkus.has(p.sku) }"
-          @click="toggleSku(p.sku)"
-        >
-          <div class="flex ai-ct gap-5">
-            <FontAwesomeIcon
-              :icon="selectedSkus.has(p.sku) ? $icons.checkboxOn : $icons.checkboxOff"
-              :class="selectedSkus.has(p.sku) ? 't-accent' : 't-muted'"
-            />
-            <span class="fw-500">{{ p.sku }}</span>
-          </div>
-          <StatusBadge
-            v-if="p.has_stock"
-            :label="String(p.quantity)"
-            variant="neutral"
+    <div v-else class="add-product__list">
+      <div
+        v-for="p in products"
+        :key="p.sku"
+        class="add-product__row flex ai-ct jc-sb"
+        :class="{ 'add-product__row--selected': selectedSkus.has(p.sku) }"
+        @click="toggleSku(p.sku)"
+      >
+        <div class="flex ai-ct gap-5">
+          <FontAwesomeIcon
+            :icon="selectedSkus.has(p.sku) ? $icons.checkboxOn : $icons.checkboxOff"
+            :class="selectedSkus.has(p.sku) ? 't-accent' : 't-muted'"
           />
-          <span v-else class="fs-200 t-muted">{{ $t("stock.no_stock_yet") }}</span>
+          <span class="fw-500">{{ p.sku }}</span>
         </div>
-      </div>
-
-      <div v-if="totalCount > pageSize" class="mt-5">
-        <Pagination
-          :current="currentPage"
-          :total="totalCount"
-          :perPage="pageSize"
-          @change="onPageChange"
+        <StatusBadge
+          v-if="p.has_stock"
+          :label="String(p.quantity)"
+          variant="neutral"
         />
+        <span v-else class="fs-200 t-muted">{{ $t("stock.no_stock_yet") }}</span>
       </div>
-    </template>
+    </div>
+
+    <div v-if="totalCount > pageSize" class="mt-5">
+      <Pagination
+        :current="currentPage"
+        :total="totalCount"
+        :perPage="pageSize"
+        @change="onPageChange"
+      />
+    </div>
 
     <template #footer>
-      <button class="modal-btn modal-btn--secondary" @click="$emit('close')">
+      <BasicButton variant="secondary" @click="$emit('close')">
         Cancel
-      </button>
-      <button
-        class="modal-btn modal-btn--confirm"
+      </BasicButton>
+      <BasicButton
+        variant="primary"
         :disabled="selectedSkus.size === 0"
         @click="addSelected"
       >
         {{ $t("stock.add_selected") }} ({{ selectedSkus.size }})
-      </button>
+      </BasicButton>
     </template>
-  </Confirmation-modal>
+  </BasicModal>
 </template>
 
 <script>
