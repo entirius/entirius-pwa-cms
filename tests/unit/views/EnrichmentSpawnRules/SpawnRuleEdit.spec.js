@@ -140,14 +140,34 @@ describe("SpawnRuleEdit", () => {
     // No channel picked → union of all channel languages (+ "all" option).
     expect(wrapper.vm.languageOptions.map((o) => o.value)).toEqual(["", "pl", "en", "de"]);
 
-    wrapper.vm.scopeChannel = "default";
+    wrapper.vm.selectChannel("default");
     await flushPromises();
     expect(wrapper.vm.languageOptions.map((o) => o.value)).toEqual(["", "pl", "en"]);
 
     wrapper.vm.scopeLanguage = "pl";
-    wrapper.vm.scopeChannel = "second"; // serves only "de" → selection resets to all-languages
+    wrapper.vm.selectChannel("second"); // serves only "de" → selection resets to all-languages
     await flushPromises();
     expect(wrapper.vm.scopeLanguage).toBe("");
+  });
+
+  it("keeps a stored language the loaded channel list does not offer", async () => {
+    mockGetRule.mockResolvedValueOnce({
+      data: {
+        key: "desc-fr",
+        module: "pim",
+        check_key: "pl-description",
+        task_type: "translate",
+        scope: { channel: "retired", language: "fr" },
+        auto: false,
+        active: true,
+      },
+    });
+    const wrapper = mountEdit({ key: "desc-fr" });
+    await flushPromises();
+
+    expect(wrapper.vm.scopeLanguage).toBe("fr");
+    expect(wrapper.vm.languageOptions.map((o) => o.value)).toContain("fr");
+    expect(wrapper.vm.buildPayload().scope).toEqual({ channel: "retired", language: "fr" });
   });
 
   it("falls back to free-text check input when the PIM gaps API is unavailable", async () => {

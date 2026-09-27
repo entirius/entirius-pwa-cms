@@ -90,7 +90,7 @@
               :values="channelOptions"
               :selected="[scopeChannel]"
               :placeholder="$t('common.select')"
-              @onSelect="(v) => (scopeChannel = v)"
+              @onSelect="selectChannel"
             />
             <BasicInput v-else v-model="scopeChannel" />
           </FormField>
@@ -225,19 +225,16 @@ export default {
     },
     // Languages of the selected channel (that's exactly what find_gaps filters on);
     // before a channel is picked, the union across channels. "" = all languages.
-    languageOptions() {
+    channelLanguages() {
       const channel = (this.pimChannel.channels || []).find((ch) => ch.idx === this.scopeChannel);
-      const langs = channel ? channel.languages || [] : this.pimChannel.allLanguages || [];
-      return [
-        { label: this.$t("enrichment.spawn_rules.all_languages"), value: "" },
-        ...langs.map((l) => ({ label: l, value: l })),
-      ];
+      return channel ? channel.languages || [] : this.pimChannel.allLanguages || [];
     },
-  },
-  watch: {
-    scopeChannel() {
-      const valid = this.languageOptions.some((o) => o.value === this.scopeLanguage);
-      if (!valid) this.scopeLanguage = "";
+    languageOptions() {
+      const options = [
+        { label: this.$t("enrichment.spawn_rules.all_languages"), value: "" },
+        ...this.channelLanguages.map((l) => ({ label: l, value: l })),
+      ];
+      return withStoredOption(options, this.scopeLanguage);
     },
   },
   async mounted() {
@@ -251,6 +248,11 @@ export default {
       const key = `enrichment.spawn_rules.task_types.${type}`;
       const label = this.$t(key);
       return label === key ? type : label;
+    },
+    // Only a channel the user picks drops a language it does not serve; a late channel load never does.
+    selectChannel(channel) {
+      this.scopeChannel = channel;
+      if (!this.channelLanguages.includes(this.scopeLanguage)) this.scopeLanguage = "";
     },
     fieldErr(name) {
       return this.getFieldError(name)?.msg || "";
