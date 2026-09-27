@@ -64,11 +64,10 @@
           required
           :error="errors.typ"
         >
-          <Dropdown
-            :values="typeOptions"
-            :selected="form.typ ? [form.typ] : []"
+          <BasicSelect
+            :options="typeOptions"
+            v-model="form.typ"
             :placeholder="$t('promo.campaign_type')"
-            @onSelect="(v) => (form.typ = v)"
           />
         </FormField>
 

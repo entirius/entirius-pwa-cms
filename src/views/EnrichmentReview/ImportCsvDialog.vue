@@ -54,22 +54,20 @@
             </FormField>
 
             <FormField :label="$t('enrichment.import.channel')">
-              <Dropdown
-                :values="channelOptions"
-                :selected="channel ? [channel] : []"
+              <BasicSelect
+                :options="channelOptions"
+                v-model="channel"
                 :placeholder="$t('enrichment.import.channel')"
                 data-testid="enrichment-import-channel"
-                @onSelect="(v) => (channel = v)"
               />
             </FormField>
 
             <FormField :label="$t('enrichment.import.language')">
-              <Dropdown
-                :values="languageOptions"
-                :selected="language ? [language] : []"
+              <BasicSelect
+                :options="languageOptions"
+                v-model="language"
                 :placeholder="$t('enrichment.import.language')"
                 data-testid="enrichment-import-language"
-                @onSelect="(v) => (language = v)"
               />
             </FormField>
 

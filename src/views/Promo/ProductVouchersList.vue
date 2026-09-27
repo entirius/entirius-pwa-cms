@@ -78,23 +78,21 @@
             required
             :error="errors.currency_iso3"
           >
-            <Dropdown
+            <BasicSelect
               v-if="!isEdit"
-              :values="currencyOptions"
-              :selected="form.currency_iso3 ? [form.currency_iso3] : []"
+              :options="currencyOptions"
+              v-model="form.currency_iso3"
               :placeholder="$t('promo.pv_currency')"
-              @onSelect="(v) => (form.currency_iso3 = v)"
             />
             <span v-else class="t-secondary">{{ form.currency_iso3 }}</span>
           </FormField>
         </div>
 
         <FormField :label="$t('promo.pv_tax_type')" required>
-          <Dropdown
-            :values="taxOptions"
-            :selected="form.tax_type ? [form.tax_type] : []"
+          <BasicSelect
+            :options="taxOptions"
+            v-model="form.tax_type"
             :placeholder="$t('promo.pv_tax_type')"
-            @onSelect="(v) => (form.tax_type = v)"
           />
         </FormField>
 
@@ -110,29 +108,19 @@
             />
           </FormField>
           <FormField :label="$t('promo.pv_validity_precision')">
-            <Dropdown
-              :values="precisionOptions"
-              :selected="
-                form.validity_precision_override
-                  ? [form.validity_precision_override]
-                  : []
-              "
+            <BasicSelect
+              :options="precisionOptions"
+              v-model="form.validity_precision_override"
               :placeholder="$t('promo.pv_default')"
-              @onSelect="(v) => (form.validity_precision_override = v)"
             />
           </FormField>
         </div>
 
         <FormField :label="$t('promo.pv_expiry_starts_from')">
-          <Dropdown
-            :values="expiryStartsOptions"
-            :selected="
-              form.expiry_starts_from_override
-                ? [form.expiry_starts_from_override]
-                : []
-            "
+          <BasicSelect
+            :options="expiryStartsOptions"
+            v-model="form.expiry_starts_from_override"
             :placeholder="$t('promo.pv_default')"
-            @onSelect="(v) => (form.expiry_starts_from_override = v)"
           />
         </FormField>
 
@@ -199,11 +187,10 @@
           </div>
 
           <div class="filter-add">
-            <Dropdown
-              :values="modeOptions"
-              :selected="newFilter.mode ? [newFilter.mode] : []"
+            <BasicSelect
+              :options="modeOptions"
+              v-model="newFilter.mode"
               :placeholder="$t('promo.pv_filter_mode')"
-              @onSelect="(v) => (newFilter.mode = v)"
             />
             <div
               v-for="kind in entityKinds"

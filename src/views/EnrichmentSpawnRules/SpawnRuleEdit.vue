@@ -62,33 +62,31 @@
             :tooltip="$t('enrichment.spawn_rules.check_hint')"
             :error="fieldErr('check_key')"
           >
-            <Dropdown
+            <BasicSelect
               v-if="checkOptions.length"
-              :values="checkChoices"
-              :selected="[form.check_key]"
+              :options="checkChoices"
+              v-model="form.check_key"
               :placeholder="$t('common.select')"
-              @onSelect="(v) => (form.check_key = v)"
             />
             <!-- Soft-compat: no PIM gaps API (old backend / other module) → free text. -->
             <BasicInput v-else v-model="form.check_key" data-test="spawn-rule-check-input" />
           </FormField>
 
           <FormField :label="$t('enrichment.spawn_rules.col_task_type')">
-            <Dropdown
-              :values="taskTypeOptions"
-              :selected="[form.task_type]"
+            <BasicSelect
+              :options="taskTypeOptions"
+              v-model="form.task_type"
               :placeholder="$t('common.select')"
-              @onSelect="(v) => (form.task_type = v)"
             />
           </FormField>
 
           <FormField :label="$t('enrichment.spawn_rules.scope_channel')">
-            <Dropdown
+            <BasicSelect
               v-if="channelOptions.length"
-              :values="channelOptions"
-              :selected="[scopeChannel]"
+              :options="channelOptions"
+              :model-value="scopeChannel"
               :placeholder="$t('common.select')"
-              @onSelect="selectChannel"
+              @update:model-value="selectChannel"
             />
             <BasicInput
               v-else
@@ -102,11 +100,10 @@
             :label="$t('enrichment.spawn_rules.scope_language')"
             :tooltip="$t('enrichment.spawn_rules.scope_language_hint')"
           >
-            <Dropdown
-              :values="languageOptions"
-              :selected="[scopeLanguage]"
+            <BasicSelect
+              :options="languageOptions"
+              v-model="scopeLanguage"
               :placeholder="$t('enrichment.spawn_rules.all_languages')"
-              @onSelect="(v) => (scopeLanguage = v)"
             />
           </FormField>
 

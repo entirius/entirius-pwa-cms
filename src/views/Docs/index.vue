@@ -18,12 +18,11 @@
       </nav>
       <div v-if="selected_view === 'doc'">
         <div class="mb-5">
-          <Dropdown
+          <BasicSelect
             style="max-width: 10rem"
-            :values="docs_nav"
-            :selected="[doc_prev]"
+            :options="docs_nav"
+            v-model="doc_prev"
             class="bg-hover b-default rounded fs-200"
-            @onSelect="doc_prev = $event"
           />
         </div>
 
@@ -34,12 +33,11 @@
       <div v-if="selected_view === 'eg'">
         <p class="fs-200 t-muted mb-1">Wybierz przyklad</p>
         <div class="flex mb-5">
-          <Dropdown
+          <BasicSelect
             style="min-width: 10rem"
-            :values="sub_nav"
-            :selected="[eg_prev]"
+            :options="sub_nav"
+            v-model="eg_prev"
             class="bg-hover b-default rounded fs-200"
-            @onSelect="eg_prev = $event"
           />
         </div>
         <div class="grid grid-col-3 gap-5">

@@ -36,33 +36,30 @@
         :label="$t('atlas.form.kind_label')"
         :tooltip="$t('atlas.form.kind_tooltip')"
       >
-        <Dropdown
-          :values="kindOptions"
-          :selected="[form.kind]"
+        <BasicSelect
+          :options="kindOptions"
+          v-model="form.kind"
           data-testid="overview-kind"
-          @onSelect="(val) => (form.kind = val)"
         />
       </FormField>
       <FormField
         :label="$t('atlas.form.type_label')"
         :tooltip="$t('atlas.form.type_tooltip')"
       >
-        <Dropdown
-          :values="typeOptions"
-          :selected="[form.source_type]"
+        <BasicSelect
+          :options="typeOptions"
+          v-model="form.source_type"
           data-testid="overview-type"
-          @onSelect="(val) => (form.source_type = val)"
         />
       </FormField>
       <FormField
         :label="$t('atlas.form.review_mode_label')"
         :tooltip="$t('atlas.form.review_mode_tooltip')"
       >
-        <Dropdown
-          :values="reviewModeOptions"
-          :selected="[form.review_mode]"
+        <BasicSelect
+          :options="reviewModeOptions"
+          v-model="form.review_mode"
           data-testid="overview-review-mode"
-          @onSelect="(val) => (form.review_mode = val)"
         />
       </FormField>
       <FormField
@@ -79,36 +76,33 @@
         :label="$t('atlas.form.default_language_label')"
         :tooltip="$t('atlas.form.default_language_tooltip')"
       >
-        <Dropdown
-          :values="regionalStore.languageOptions"
-          :selected="form.default_language_id ? [form.default_language_id] : []"
+        <BasicSelect
+          :options="regionalStore.languageOptions"
+          v-model="form.default_language_id"
           :placeholder="$t('atlas.form.select_language')"
           data-testid="overview-language"
-          @onSelect="(val) => (form.default_language_id = val)"
         />
       </FormField>
       <FormField
         :label="$t('atlas.form.default_currency_label')"
         :tooltip="$t('atlas.form.default_currency_tooltip')"
       >
-        <Dropdown
-          :values="regionalStore.currencyOptions"
-          :selected="form.default_currency_id ? [form.default_currency_id] : []"
+        <BasicSelect
+          :options="regionalStore.currencyOptions"
+          v-model="form.default_currency_id"
           :placeholder="$t('atlas.form.select_currency')"
           data-testid="overview-currency"
-          @onSelect="(val) => (form.default_currency_id = val)"
         />
       </FormField>
       <FormField
         :label="$t('atlas.form.country_label')"
         :tooltip="$t('atlas.form.country_tooltip')"
       >
-        <Dropdown
-          :values="regionalStore.countryOptions"
-          :selected="form.country_id ? [form.country_id] : []"
+        <BasicSelect
+          :options="regionalStore.countryOptions"
+          v-model="form.country_id"
           :placeholder="$t('atlas.form.select_country')"
           data-testid="overview-country"
-          @onSelect="(val) => (form.country_id = val)"
         />
       </FormField>
       <FormField

@@ -24,11 +24,10 @@
         />
       </FormField>
       <FormField :label="$t('atlas.mappings.attribute.target_type')">
-        <Dropdown
-          :values="targetTypeOptions"
-          :selected="[local.target_type]"
+        <BasicSelect
+          :options="targetTypeOptions"
+          v-model="local.target_type"
           :data-testid="`attr-mapping-target-type-${rowKey}`"
-          @onSelect="(val) => (local.target_type = val)"
         />
       </FormField>
       <FormField :label="$t('atlas.mappings.attribute.modifier')">
@@ -60,17 +59,16 @@
           :client-filter="true"
           :data-testid="`attr-mapping-target-id-${rowKey}`"
         />
-        <Dropdown
+        <BasicSelect
           v-else-if="local.target_type === 'real_product'"
-          :values="realProductOptions"
-          :selected="[local.target_identifier]"
+          :options="realProductOptions"
+          v-model="local.target_identifier"
           :placeholder="
             $t(
               'atlas.mappings.attribute.target_identifier_real_product_placeholder'
             )
           "
           :data-testid="`attr-mapping-target-id-${rowKey}`"
-          @onSelect="(val) => (local.target_identifier = val)"
         />
         <BasicInput
           v-else

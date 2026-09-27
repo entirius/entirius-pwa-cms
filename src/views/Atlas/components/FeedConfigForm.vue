@@ -13,11 +13,11 @@
     </FormField>
 
     <FormField :label="$t('atlas.feeds.form.connector_label')" required>
-      <Dropdown
-        :values="connectorOptions"
-        :selected="[local.connector_kind]"
+      <BasicSelect
+        :options="connectorOptions"
+        v-model="local.connector_kind"
         data-testid="feed-form-connector"
-        @onSelect="onConnectorChange"
+        @update:model-value="onConnectorChange"
       />
     </FormField>
 
@@ -71,11 +71,10 @@
     </FormField>
 
     <FormField :label="$t('atlas.feeds.form.sync_mode_label')">
-      <Dropdown
-        :values="syncModeOptions"
-        :selected="[local.sync_mode]"
+      <BasicSelect
+        :options="syncModeOptions"
+        v-model="local.sync_mode"
         data-testid="feed-form-sync-mode"
-        @onSelect="(val) => (local.sync_mode = val)"
       />
     </FormField>
 

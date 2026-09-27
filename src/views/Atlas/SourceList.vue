@@ -149,45 +149,33 @@
           </p>
         </FormField>
         <FormField :label="$t('atlas.form.kind_label')">
-          <Dropdown
-            :values="kindDropdownOptions"
-            :selected="[createForm.kind]"
+          <BasicSelect
+            :options="kindDropdownOptions"
+            v-model="createForm.kind"
             data-testid="suppliers-create-kind"
-            @onSelect="(val) => (createForm.kind = val)"
           />
         </FormField>
         <FormField :label="$t('atlas.form.type_label')">
-          <Dropdown
-            :values="typeDropdownOptions"
-            :selected="[createForm.source_type]"
+          <BasicSelect
+            :options="typeDropdownOptions"
+            v-model="createForm.source_type"
             data-testid="suppliers-create-type"
-            @onSelect="(val) => (createForm.source_type = val)"
           />
         </FormField>
         <FormField :label="$t('atlas.form.default_language_label')">
-          <Dropdown
-            :values="regionalStore.languageOptions"
-            :selected="
-              createForm.default_language_id
-                ? [createForm.default_language_id]
-                : []
-            "
+          <BasicSelect
+            :options="regionalStore.languageOptions"
+            v-model="createForm.default_language_id"
             :placeholder="$t('atlas.form.select_language')"
             data-testid="suppliers-create-language"
-            @onSelect="(val) => (createForm.default_language_id = val)"
           />
         </FormField>
         <FormField :label="$t('atlas.form.default_currency_label')">
-          <Dropdown
-            :values="regionalStore.currencyOptions"
-            :selected="
-              createForm.default_currency_id
-                ? [createForm.default_currency_id]
-                : []
-            "
+          <BasicSelect
+            :options="regionalStore.currencyOptions"
+            v-model="createForm.default_currency_id"
             :placeholder="$t('atlas.form.select_currency')"
             data-testid="suppliers-create-currency"
-            @onSelect="(val) => (createForm.default_currency_id = val)"
           />
         </FormField>
         <FormField :label="$t('atlas.form.sku_prefix_label')">

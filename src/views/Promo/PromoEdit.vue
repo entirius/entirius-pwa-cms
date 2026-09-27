@@ -56,11 +56,10 @@
               />
             </FormField>
             <FormField :label="$t('promo.field_target')">
-              <Dropdown
-                :values="targetOptions"
-                :selected="form.target ? [form.target] : []"
+              <BasicSelect
+                :options="targetOptions"
+                v-model="form.target"
                 :placeholder="$t('promo.select_target')"
-                @onSelect="(v) => (form.target = v)"
               />
             </FormField>
             <FormField :label="$t('promo.field_priority')">
@@ -96,10 +95,9 @@
                 />
               </FormField>
               <FormField :label="$t('promo.extra_gratis_sku_logic')">
-                <Dropdown
-                  :values="skuLogicOptions"
-                  :selected="form.extra_value_sku_logic ? [form.extra_value_sku_logic] : []"
-                  @onSelect="(v) => (form.extra_value_sku_logic = v)"
+                <BasicSelect
+                  :options="skuLogicOptions"
+                  v-model="form.extra_value_sku_logic"
                 />
               </FormField>
               <FormField :label="$t('promo.extra_gratis_qty')">

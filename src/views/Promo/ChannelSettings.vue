@@ -28,17 +28,15 @@
           />
         </FormField>
         <FormField :label="$t('promo.pv_validity_precision')">
-          <Dropdown
-            :values="precisionOptions"
-            :selected="form.validity_precision ? [form.validity_precision] : []"
-            @onSelect="(v) => (form.validity_precision = v)"
+          <BasicSelect
+            :options="precisionOptions"
+            v-model="form.validity_precision"
           />
         </FormField>
         <FormField :label="$t('promo.pv_expiry_starts_from')">
-          <Dropdown
-            :values="expiryStartsOptions"
-            :selected="form.expiry_starts_from ? [form.expiry_starts_from] : []"
-            @onSelect="(v) => (form.expiry_starts_from = v)"
+          <BasicSelect
+            :options="expiryStartsOptions"
+            v-model="form.expiry_starts_from"
           />
         </FormField>
         <FormField :label="$t('promo.cfg_allow_extension')" :tooltip="$t('promo.cfg_allow_extension_tip')">

@@ -63,11 +63,10 @@
             </div>
             <div class="detail-field">
               <label class="field-label">{{ $t("faq.group") }}</label>
-              <Dropdown
-                :values="groupOptions"
-                :selected="form.group_idx ? [form.group_idx] : []"
+              <BasicSelect
+                :options="groupOptions"
+                v-model="form.group_idx"
                 :placeholder="$t('faq.no_group')"
-                @onSelect="(val) => (form.group_idx = val)"
               />
             </div>
           </div>

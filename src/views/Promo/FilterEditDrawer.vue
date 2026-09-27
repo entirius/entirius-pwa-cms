@@ -9,10 +9,9 @@
     <div v-if="visible" class="fed">
       <!-- inclusion/exclusion -->
       <FormField :label="$t('promo.filter_field_inclusion')">
-        <Dropdown
-          :values="inclusionOptions"
-          :selected="local.is_inclusion_or_exclusion ? [local.is_inclusion_or_exclusion] : []"
-          @onSelect="(v) => (local.is_inclusion_or_exclusion = v)"
+        <BasicSelect
+          :options="inclusionOptions"
+          v-model="local.is_inclusion_or_exclusion"
         />
       </FormField>
 

@@ -215,12 +215,11 @@
           />
         </FormField>
         <FormField :label="$t('atlas.mappings.import_language_label')">
-          <Dropdown
-            :values="languageOptions"
-            :selected="[formData.import_language_id]"
+          <BasicSelect
+            :options="languageOptions"
+            v-model="formData.import_language_id"
             :placeholder="$t('atlas.mappings.import_language_placeholder')"
             data-testid="mapping-form-language"
-            @onSelect="(val) => (formData.import_language_id = val)"
           />
           <p
             v-if="languageMismatchHint"
@@ -231,12 +230,11 @@
           </p>
         </FormField>
         <FormField :label="$t('atlas.form.feature_set_label')">
-          <Dropdown
-            :values="featureSetOptions"
-            :selected="[formData.feature_set_idx]"
+          <BasicSelect
+            :options="featureSetOptions"
+            v-model="formData.feature_set_idx"
             :placeholder="$t('atlas.mappings.feature_set_placeholder')"
             data-testid="mapping-form-feature-set"
-            @onSelect="(val) => (formData.feature_set_idx = val)"
           />
         </FormField>
         <FormField :label="$t('atlas.form.is_active_label')">

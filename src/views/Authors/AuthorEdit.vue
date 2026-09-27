@@ -199,11 +199,10 @@
         </p>
         <div v-if="reassignOptions.length" class="mt-8">
           <p class="fs-200 fw-600 mb-2">{{ $t("authors.reassign_label") }}</p>
-          <Dropdown
-            :values="reassignOptions"
-            :selected="reassignTo ? [reassignTo] : []"
+          <BasicSelect
+            :options="reassignOptions"
+            v-model="reassignTo"
             :placeholder="$t('authors.reassign_none')"
-            @onSelect="reassignTo = $event"
           />
         </div>
       </template>
