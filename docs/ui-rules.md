@@ -74,21 +74,30 @@ Traps:
 - **C2 One component, one implementation.** Before writing a component, check `src/boots/` and `src/functionals/`.
   If one does most of the job, extend it with a prop or variant. If it is broken, fix it in place. Never make a
   panel-local copy (`PimDataTable`, `ld-btn`). New shared UI goes into `src/boots/` + `register-elems.js`. Builder
-  controllers also register in `src/configs/builder/components/register-elems.js`. `eslint.config.mjs` lists removed
-  components with their replacements.
-- **C3 Do not restyle a boot from outside.** No local `.filter-chip`, `.status-badge` or badge and button class
-  families. A missing look is a variant of the boot.
+  controllers also register in `src/configs/builder/components/register-elems.js`. A removed component is a lint
+  error (`scripts/lint/removed-components/*.json`): `Dropdown` → `BasicSelect`, `Switcher` → `BasicSwitch`,
+  `TextAreaBasic` → `BasicTextarea`, `LockedField` → `BasicInput readonly`, `ToolTip` / `HelpTooltip` / `HoverMe` →
+  `BasicTooltip`, `BackBar` → PageHeader `back`, `Loading` → `Loader`, `PimField` → `FormField`.
+- **C3 Do not restyle a boot from outside.** No local `.filter-chip`, `.status-badge`, `.chip` or badge and button
+  class families. A missing look is a variant of the boot.
 - **C4 Pick the boot by job:**
 
 | Job | Boot |
 |---|---|
-| text / colour / number / rich text | `BasicInput` / `ColorInput` / `NumberInput` / `BasicWysiwyg` |
-| on/off setting · item in a checklist | `Switcher` · `BasicCheckbox` |
+| single-line text · read-only value · number · colour · rich text | `BasicInput` · `BasicInput readonly` · `NumberInput` · `ColorInput` · `BasicWysiwyg` |
+| multi-line text | `BasicTextarea` |
+| on/off · one boolean with a text · one of 2–5 choices, all visible | `BasicSwitch` · `BasicCheckbox` (boolean `v-model`, label in the slot) · `BasicRadioGroup` |
+| date / range | `BasicDatePicker` (`mode: "range"` in `config`) |
 | choice from a list · async entity search · channel scope | `BasicSelect` (`multiple`, `searchable`) · `EntitySearchPicker` · `ChannelMultiSelect` |
-| form field wrapper (label, hint, required, error) | `FormField`, around every field |
-| status / category pill | `StatusBadge` |
-| filter toggle · mode switch (list / edit) | `FilterChip` inside `MobileFilterPanel` · `SegmentedControl` (never a pair of chips) |
-| list · bulk actions · empty list | `DataTable` · `BulkActionBar` · `EmptyState` |
+| action picker (a transition, "add an existing item") | `BasicSelect :model-value="null"`, the placeholder as the prompt, the handler on `@update:model-value` |
+| field label, hint, required, error, help | `FormField`, around every field |
+| status / category pill · value chip (picked entity, media tag) · number next to a title, tab or filter | `StatusBadge` (`tone`) · `Tag` · `CountBadge` |
+| card / section container · Home panel tile · media grid tile | `BasicCard` · `PanelCard` · `MediaTile` |
+| tabs of one screen · mode switch (list / edit) | `BasicTabs` · `SegmentedControl` (never a pair of chips) |
+| filter toggle | `FilterChip` inside `MobileFilterPanel` |
+| list · pages · bulk actions · empty list | `DataTable` · `Pagination` (`v-model:page` + `pages`) · `BulkActionBar` · `EmptyState` |
+| loading | `Loader` (`block` in a content area, `overlay` for the whole screen, `overlay contained` in a panel) |
+| page frame · page title row (crumbs, back, H1, chips, actions) · breadcrumbs | `PageLayout` · `PageHeader` · `Breadcrumbs` |
 | text action · icon-only action · page or dialog actions | `BasicButton` · `IconButton` · `ActionBar` |
 | side panel · per-language editing | `SideDrawer` · `TranslationsDrawer` |
 | dialog · confirmation (yes/no, unsaved changes) | `BasicModal` · `ConfirmDialog` (`tone="danger"` for a delete) |
@@ -98,24 +107,23 @@ Traps:
 - **C5 One icon set: FontAwesome, picked by meaning.** A template names the meaning, never the glyph:
   `<FontAwesomeIcon :icon="$icons.edit" />` (`src/boots/Icons/icons.js`, keys camelCase). A new meaning adds its glyph
   to `fa-icons.js`, in both the `import` and the `library.add()`: a missing registration renders nothing and logs
-  nothing (the registry unit test catches it). Do not use `<i class="icon-*">` font glyphs; `BasicInput icon`,
-  `BasicButton icon`, `IconButton icon` and `FloatingActions` icons take a meaning (`icon="search"`); a
-  `BasicButton icon` that is no meaning still renders the legacy font until plan 19.
+  nothing (the registry unit test catches it). The icon font is deleted: an `icon-*` glyph class is a lint error.
+  `BasicInput icon`, `BasicButton icon`, `IconButton icon`, `EmptyState icon` and `FloatingActions` icons take a
+  meaning of the registry (`icon="search"`) and nothing else.
   Icon policy: a text button carries no icon unless the design shows one. An icon-only action is an `IconButton`
   with `label` (its accessible name: `aria-label` and `title`), and it gets a visible text label when it is
-  important or not obvious (R7). Un-swept icon-only `BasicButton`s (`custom` slot + `label`) move to `IconButton`
-  with `scripts/codemods/p3-actions.mjs`.
+  important or not obvious (R7).
 - **C6 One button family.** `BasicButton` owns height, padding, type and border: `size="md"` (default,
   `--elem-height`, the toolbar and form size) or `size="sm"` (row actions); labels never wrap. The role is
   `variant`: `primary` (one per page, R5: row, bulk, section and inline-form actions are `secondary` beside it; a
   dialog or drawer has its own), `secondary`, `ghost` (close, row edit), `danger` (every delete, remove, reject),
   `danger-solid` (the destructive confirm in a dialog: a delete, remove or flush is a `ConfirmDialog tone="danger"`;
-  every other confirm is its default primary). The label is the default slot. Until the sweeps
-  (plans 17, 18) the `btn-*` role classes and `text` still work: the same roles, `btn-outline` = `btn-secondary`,
-  `btn-danger-fill` = `danger-solid`. An icon-only action is an `IconButton` (`sm` / `md` like the text button,
+  every other confirm is its default primary); without a `variant` it is `secondary`. The label is the default slot.
+  An icon-only action is an `IconButton` (`sm` / `md` like the text button,
   `lg` 40 in the header), `variant` `ghost` · `outline` · `primary` · `danger`, `pressed` for a toggle; an icon-only
-  `BasicButton` without `label` warns in the dev console. One toolbar uses one size. Back is always `BackBar` (icon,
-  or icon + label), never a `BasicButton`. The click stops at the button; inside a wrapper that acts on the click
+  `BasicButton` without `label` warns in the dev console. One toolbar uses one size. Back is the PageHeader `back`
+  arrow (R3). Until a view has a PageHeader: `IconButton icon="back"` named „Wstecz”, or with a visible label a
+  `BasicButton variant="ghost" size="sm" icon="back"`. The click stops at the button; inside a wrapper that acts on the click
   (`SubscriberSetter`) pass `:stop="false"`. An icon-only button is named by its short action (`label`), and that is
   its one tooltip (IconButton draws it as a `BasicTooltip`): no tooltip wrapper on top of it.
   Never pass `bg-*` / `t-*` utilities to pick a role, and never set a button height or font size from a view.
@@ -126,21 +134,28 @@ Traps:
   The header has no panel switcher. To add a page, add its entry to `src/components/Navigation/nav-routes.js`. Never
   hard-code a menu in a view.
 - **R2 One page title.** The page title appears once, as the only `<h1>`, at the top of the content area. The
-  header, sidebar and toolbar never repeat it. The content area is the page's only scroll and focus region.
+  header, sidebar and toolbar never repeat it. The content area is the page's only scroll and focus region. The H1
+  is `PageHeader` `title` (the component carries `.page-title` and `data-fid="page-title"`); a view writes no raw
+  `<h1>`.
 - **R3 Breadcrumbs below the panel root.** Every page below a panel's top-level list shows breadcrumbs
   (`Panel / List / Item`) above the H1, with a back arrow next to the H1. A panel's top-level list has neither.
+  `PageHeader` takes `crumbs` and `back`; `Breadcrumbs` renders the trail (last item = the current page, not a link)
+  in a `<nav>` named by `common.breadcrumb` — a second, named `navigation` landmark next to the sidebar. PageHeader
+  renders a `<header>` inside `<main>`, so it is no banner landmark.
 - **R4 Space, not lines.** Header regions and page sections are separated by spacing tokens, never by divider
   lines (`bb-*`, a `border-bottom` under a header or toolbar, `<hr>`). Borders belong to containers: cards, section
-  blocks, tables and inputs.
+  blocks, tables and inputs. The content region is `PageLayout` (no border, no card, padding 40/80, 20 on a phone);
+  its `toolbar` slot holds the filters row.
 - **R5 Action order.** Page and dialog actions are right-aligned and ordered by importance from the right. The
   primary action (accent fill, one per page or dialog) is rightmost, the secondary (outline) comes next, then the
   icon-only utilities. Every screen uses the same order: `ActionBar` renders it from the actions' `role`, and on a
-  phone takes its own row labelled „Akcje”.
+  phone takes its own row labelled „Akcje”. Page actions go into PageHeader `actions` as an `ActionBar`: right of
+  the title on desktop, own row below 1024 px.
 - **R6 One icon, one meaning.** An icon stands for one action across the CMS, and it is never reused for another
   action (reorder `arrows-up-down` ≠ menu `grip` ≠ drag handle `grip-vertical`). Pick the meaning from `$icons`
   (`icons.js`: one glyph per meaning, one meaning per glyph); lint warns on a literal glyph name in `icon="…"` or
   inside an `:icon` binding, and `scripts/codemods/p3-icons.mjs` rewrites it. A meaning that is missing is added to
-  `icons.js` (stream 1; a stream-2 plan hands it to plan 19). Tile-group rows use distinct icons for add, reorder and
+  `icons.js`. Tile-group rows use distinct icons for add, reorder and
   preview.
 - **R7 Label important actions.** An action that is important, or not obvious from its icon, carries a visible
   text label. A tooltip alone is not enough. Icon-only is reserved for well-known utilities (close, row delete,
@@ -189,23 +204,25 @@ Traps:
 - **Dialogs.** Build on `BasicModal` (`size` sm · md · lg) or `ConfirmDialog`, never an overlay of the view's own:
   they trap focus, close on Esc and give focus back, and turn into a bottom sheet on a phone. Actions go in the
   footer as an `ActionBar` (R5). A dialog with an async action closes on success and on error.
-- **Locked / system entity.** Show a notice bar at the top. Pass the disabled prop of each boot (`Dropdown
-  :isDisabled`, `Switcher :prevent`, `BasicButton` / `BasicInput :isDisabled`), or show the value as read-only text.
-  Disabled `BasicInput` and `Dropdown` share one look (`--surface-disabled`, `--border-subtle`, muted text).
+- **Locked / system entity.** Show a notice bar at the top. Pass `disabled` to each boot (or to the `FormField`), or
+  show the value as `BasicInput readonly`. Disabled controls share one look (`--surface-disabled`, `--border-subtle`,
+  muted text).
   Hide delete. Save stays for the fields that are not locked.
 - **Disabled button with a reason.** Wrap the disabled `BasicButton` in `BasicTooltip` carrying the reason (the
   wrapper becomes the tab stop, so the reason reads on keyboard focus too), and put the live button in the `v-else`
   branch.
-- **Delete.** Use an icon-only `btn-danger` button with the `trash-can` icon, followed by a confirmation. Never a text "Delete" button.
+- **Delete.** Use an `IconButton variant="danger" icon="delete"`, followed by a confirmation. Never a text "Delete" button.
 - **Drag and drop.** Use `vuedraggable` with `:force-fallback="true"` and `fallback-class="drag-ghost"`. The ghost
   style goes in an unscoped `<style>`, because the clone is appended to `<body>`.
 
 ## Forms
 
 - Create `useFormErrors()` in `setup()` and return it as `formErrors`.
-- `BasicInput` and `Dropdown` both take `:validate="formErrors.getFieldError('field')"`. `FormField :required` marks
-  required fields.
-- One label style: `FormField` (and the `label` prop of `BasicInput` / `LockedField`) renders `.field-label` —
+- A field is built one way: `<FormField label description required error tooltip>` around one control. FormField
+  owns the label, hint, error and help; the control never carries its own label or error text. It takes `v-model`
+  and `disabled` (never `isDisabled`, `is_disabled`, `prevent`). `layout="inline"` for a toolbar field (label left of
+  the control from 1024 px). The error is `:error="formErrors.getFieldError('field')?.msg || ''"` on the FormField.
+- One label style: `FormField` renders `.field-label` —
   12 px / 600, uppercase, `text-muted`, 4 px above the control. A raw `<label>` takes `.field-label`; never a local
   copy of the style. The required marker is the `.required` class (a `negative` `*` after the label), never a `*`
   typed into the text.

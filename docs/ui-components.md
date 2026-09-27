@@ -2,21 +2,18 @@
 
 ## Global Components (Boots)
 
-37 components registered globally in `src/boots/register-elems.js` (plus
+47 components registered globally in `src/boots/register-elems.js` (plus
 FontAwesome icon registration in `src/boots/Icons/fa-icons.js`, loaded
 separately in `main.js` — not a component — and the icon meaning registry
 `src/boots/Icons/icons.js`, `$icons` in templates). Every component is shown on the catalogue page `/ui`
 (§ P3 components).
 
-Full list: BackBar, BasicButton, BasicCheckbox, BasicDatePicker
-(Flatpickr), BasicImage, BasicInput, BasicLogo, BasicSwiper, BasicTabs,
-BasicWysiwyg (TipTap), BulkActionBar, ChannelMultiSelect, ColorInput,
-DataTable (CSS Grid, `<script setup>`), Dropdown, EmptyState,
-EntitySearchPicker, FilterChip, FloatingActions, FormField, HelpTooltip,
-HoverMe, Loader, LockedField, MobileFilterPanel, NoticeMe,
-NumberInput, Pagination, SegmentedControl, SideDrawer, StanceSwitcher,
-StatusBadge, SubscriberSetter, Switcher, TextAreaBasic, ToolTip,
-TranslationsDrawer.
+Full list (generated from `register-elems.js`): ActionBar, BasicButton, BasicCard, BasicCheckbox, BasicDatePicker,
+BasicImage, BasicInput, BasicLogo, BasicMenu, BasicModal, BasicRadioGroup, BasicSelect, BasicSwiper, BasicSwitch,
+BasicTabs, BasicTextarea, BasicTooltip, BasicWysiwyg, Breadcrumbs, BulkActionBar, ChannelMultiSelect, ColorInput,
+ConfirmDialog, CountBadge, DataTable, EmptyState, EntitySearchPicker, FilterChip, FloatingActions, FormField,
+IconButton, Loader, MediaTile, MobileFilterPanel, NoticeMe, NumberInput, PageHeader, PageLayout, Pagination,
+PanelCard, SegmentedControl, SideDrawer, StanceSwitcher, StatusBadge, SubscriberSetter, Tag, TranslationsDrawer.
 
 New boots use `<script setup>` (plain JS). See `FloatingActions/index.vue` and
 `DataTable/index.vue` as patterns.
@@ -32,21 +29,18 @@ Notable ones for list/form views:
 - **`Loader`** — loading indicator (`role="status"`), inline by default so it keeps its place in a modal, side
   panel or button; `block` centres it in the content area it stands in for.
 - **`NumberInput`** — stepper field. A fractional `step` turns on decimal entry; typed text keeps one leading minus
-  (only when `min` < 0), one decimal separator and digits. `isDisabled` locks the value and both steppers.
+  (only when `min` < 0), one decimal separator and digits. `disabled` locks the value and both steppers.
 - **`ChannelMultiSelect`** — multi-select for channel scoping (`v-model`
   array of channel idx). Props: `modelValue`, `channels`, `label`, `allLabel`.
-- **`HelpTooltip`** — inline `?` icon with a hover bubble. Props: `text`
-  (required). `Switcher :hint` is the same bubble built in (the `?` click is
-  `@click.stop`, it does not toggle the switch).
-- **`Dropdown`** — an option in `:values` may carry `description`, a muted
-  line under its label. Never put a `?` tooltip inside an option: the bubble
-  clips against the list's `overflow`.
+- **`BasicSelect`** — an option may carry `description`, a muted line under its label. Never put a `?` tooltip
+  inside an option: the bubble clips against the list's `overflow`.
 - **`BulkActionBar`** — sticky bar for bulk row actions. Props: `count`
-  (required), `actions` (required, `variant` per action), `selectedLabelKey`, `clearLabelKey`.
+  (required), `actions` (required: `variant` per action, `secondary` without one; an action with `options` is an
+  action picker, a BasicSelect), `selectedLabelKey`, `clearLabelKey`.
 - **`SegmentedControl`** — single-choice toggle group. Props: `options`
   (required), `modelValue`; emits `update:modelValue`.
-- **`StatusBadge`** — colored status pill. Props: `label` (required),
-  `variant` (`positive`/`negative`/`warning`/`informative`/`neutral`).
+- **`StatusBadge`** — coloured status pill. Props: `label` (required),
+  `tone` (`positive`/`negative`/`warning`/`info`/`neutral`/`accent`).
 - **`MobileFilterPanel`** — collapsible filter drawer for small screens.
   Props: `activeCount`, `triggerLabel`.
 - **`FilterChip`** — toggleable filter pill. Props: `label` (required),
@@ -69,8 +63,7 @@ max(120 px, its header)), `numeric` (right, tabular figures, no wrap), `actions`
 `max-content` track), `priority` (2 hidden at `max-tablet` ≤ 768 px, 3 below 1024 px). A status (badge) column never
 truncates: `width: "max-content"`. An empty value renders "—".
 
-Pagination: `pagination` (`{ page, pages }`) or `current` / `total` / `perPage`; hidden for one page; emits the new
-page as `onChangePage` and `change`. A `.chip` that can be cut wraps its text in `.chip__label` and carries `title`.
+Pagination: `v-model:page` + `pages` (see § P3 display).
 
 Sort: prop-gated, header click cycles null -> asc -> desc -> null, emits only
 (parent handles sorting).
@@ -140,12 +133,13 @@ and one meaning per glyph (unit test). A new meaning adds its glyph to `fa-icons
   (every delete/remove/reject) · `danger-solid` (the destructive confirm of a dialog); `size` `md`
   (`--elem-height`) · `sm` (24 px); label in the default slot; `icon` = a meaning of `icons.js`, drawn before the
   label (6 px gap); `loading` swaps the icon for a spinner, disables and sets `aria-busy`; `disabled`; `type`
-  (`button` by default). The click stops at the button (`:stop="false"` lets it through).
-  Transition API, removed in plan 19: `text`, `isDisabled`, the `btn-*` role classes (no `variant` = the look the
-  classes give), an `icon` that is no meaning (legacy font glyph), the `custom` slot for icon-only buttons.
+  (`button` by default); without a `variant` it is `secondary`. The click stops at the button (`:stop="false"` lets
+  it through).
 - **`IconButton`** — every icon-only action: `icon` (meaning, required), `label` (required: `aria-label` + `title`),
   `variant` `ghost` · `outline` · `primary` · `danger`, `size` `sm` 24 · `md` `--elem-height` · `lg` 40 (header,
-  mobile menu, `--radius-xl`), `pressed` (a toggle: `aria-pressed`, `surface-hover` fill), `disabled`. On a phone
+  mobile menu, `--radius-xl`), `pressed` (a toggle: `aria-pressed`, `surface-hover` fill), `disabled`. `danger` is
+  every icon-only delete or remove (C6). The click stops at the button by default (`:stop="false"` to opt out).
+  A back control: `<IconButton icon="back" :label="$t('common.back')" />`. On a phone
   the hit area grows to 40 × 40 around the box, the box keeps its size. `md` matches the text button, not Figma's
   32 px (KD23).
 - **`ActionBar`** — page and dialog actions in R5 order: `actions` = `[{ key, label, role, onClick, icon?,
@@ -156,7 +150,8 @@ and one meaning per glyph (unit test). A new meaning adds its glyph to `fa-icons
   `actions[].icon` and `pill.icon` take meanings (other names still pass through until the sweeps). `pill` =
   `{ icon, label, handler, testid? }`: an important action with a visible label left of the FAB (R7). `open`
   starts with the speed-dial open.
-- **`BulkActionBar`** — `actions[].variant` is a BasicButton variant; `buttonClass` still paints until plan 19.
+- **`BulkActionBar`** — `actions[].variant` is a BasicButton variant (`secondary` without one); an action with
+  `options` is a BasicSelect action picker.
 - Codemod `scripts/codemods/p3-actions.mjs` (sweeps 17/18): colour classes → `variant`, `text` → slot,
   `isDisabled` → `disabled`, labelled buttons drop `icon`, icon-only → IconButton, `buttonClass` → `variant`;
   it flags the dark toggles, one-off colours, colours in `:class` and icon-only buttons it cannot name.
@@ -196,10 +191,8 @@ Catalogue: `#actions` (`#basic-button`, `#icon-button`, `#action-bar`, `#floatin
   footer is an `ActionBar` (Save rightmost, `translations-save` / `translations-cancel`).
 - `inline` (BasicModal, ConfirmDialog, SideDrawer, TranslationsDrawer, BasicMenu) renders the open state in the page
   flow: no Teleport, no backdrop, no trap (catalogue).
-- Transition wrappers until plan 19: `functionals/Confirmation-modal` (`visible`, `destructive`, `accept` /
-  `reject`, slots `header` / `description` / `footer`) and `Unsaved-changes-modal` (`save` / `discard` / `stay`) on
-  ConfirmDialog. Removed (lint, `scripts/lint/removed-components/overlays.json`): `ToolTip`, `HelpTooltip`,
-  `HoverMe` → `BasicTooltip`.
+- Removed (lint, `scripts/lint/removed-components/overlays.json`): `ToolTip`, `HelpTooltip`, `HoverMe` →
+  `BasicTooltip`; the `Confirmation-modal` / `Unsaved-changes-modal` wrappers are deleted (ConfirmDialog).
 - Codemod `scripts/codemods/p3-overlays.mjs` (sweeps 17/18): the confirmation tags → `ConfirmDialog` (`visible` →
   `open`, `destructive` → `tone`, `accept` / `reject` / `save` / `stay` → `confirm` / `cancel`, a plain `#header`
   `<h2>` → `title`, `#description` → default slot), tooltips → `BasicTooltip` (`tip` → `text`, a standalone ToolTip
@@ -213,14 +206,17 @@ Catalogue: `#overlays` (`#basic-modal`, `#confirm-dialog`, `#side-drawer`, `#tra
 
 - **`StatusBadge`** — one state pill: `label` (string or number, also the `title`; the badge never grows past its
   cell and ends in an ellipsis), `tone` `positive` · `negative` · `warning` · `info` · `neutral` · `accent`, `dot`
-  (default on), `size` `md` · `sm`; hollow (tone border, tone text), 12 px Inter 600 (`type-badge`). Transition API,
-  removed in plan 19: `variant` = `tone` (`informative` = `info`). It replaces the global `.chip`.
+  (default on), `size` `md` · `sm`; hollow (tone border, tone text), 12 px Inter 600 (`type-badge`). It replaced
+  the global `.chip` (deleted).
 - **`CountBadge`** — `count` in a 20 px pill (`surface-hover`, 11 px Inter 600, `type-count`), `999+` above 999.
   BasicTabs, FilterChip and the MobileFilterPanel trigger show their counts with it.
 - **`Tag`** — a value chip (a picked entity, a media tag): `label`, `removable` adds a `close` IconButton `sm` named
   „Usuń: <label>” that emits `remove`.
 - **`BasicTabs`** — `options` `[{ label, value, count? }]` + `v-model` (unchanged); a `tablist` with one Tab stop
   (the active tab), ←/→ (wrapping), Home and End select and focus a tab; active = accent text + 2 px accent underline.
+  Tab `i` is `id="<idPrefix>-tab-<value>"` with `aria-controls="<idPrefix>-panel-<value>"`: the call site renders the
+  panel as `<div role="tabpanel" :id="…-panel-<value>" :aria-labelledby="…-tab-<value>">`. Empty `options` render
+  nothing.
 - **`BasicCard`** — the card of `.page-card` (border-subtle, `--radius-3xl`, 24 px / 16 px below tablet): `title`
   (section title, Inter 600 16 px), `actions` slot (an ActionBar, right of the title), default slot.
 - **`PanelCard`** — Home panel tile: `icon` (the panel's glyph from `configs/access.js`), `title` (Lexend Deca),
@@ -228,14 +224,13 @@ Catalogue: `#overlays` (`#basic-modal`, `#confirm-dialog`, `#side-drawer`, `#tra
   gradient, `--radius-3xl`, padding and gap 20 px; root class `panel-card`, `data-fid="panel-card"`.
 - **`MediaTile`** — media grid tile, 188 × 276 (150 × 240 below tablet), `surface-raised`: `src` (none = image
   placeholder), `alt`, `caption`, `selected` (accent border), `actions` slot (IconButtons `sm`).
-- **`Loader`** — `size` 32 · 64 (`h` / `w` until plan 19), `block` centres it in a content area, `overlay` veils the
-  screen (`overlay-loading`, 64 px rings; replaces `components/Loading.vue`), `overlay contained` veils the nearest
+- **`Loader`** — `size` 32 · 64 (64 by default), `block` centres it in a content area, `overlay` veils the
+  screen (`overlay-loading`, 64 px rings, fades in and out), `overlay contained` veils the nearest
   positioned ancestor; `role="status"` with a visually hidden „Ładowanie…”.
 - **`Pagination`** — `v-model:page` + `pages`; 32 px page squares 4 px apart, the current one boxed in accent, round
-  prev/next arrows at opacity .5 when disabled, an ellipsis for many pages, nothing for one page. Transition API,
-  removed in plan 19: `pagination` (`{ page, pages }`) or `current` / `total` / `perPage`, events `onChangePage` and
-  `change` (emitted next to `update:page`).
-- **`EmptyState`** — `icon` is a meaning of `icons.js` (a glyph name still draws until the sweeps).
+  prev/next arrows at opacity .5 when disabled, an ellipsis for many pages, nothing for one page. A computed page
+  count is `:pages="Math.ceil(total / perPage)"` at the call site.
+- **`EmptyState`** — `icon` is a meaning of `icons.js` (`empty` for a list with no rows).
 - **`MobileFilterPanel`** — the trigger is an `outline` IconButton `filter` named by `triggerLabel`, with a CountBadge.
 - Codemod `scripts/codemods/p3-display.mjs` (sweeps 17/18): `.chip` + colour classes → `StatusBadge` `tone`
   (`:dot="false"` keeps the dotless look, `chip--sm` → `size="sm"`, `.chip__label` unwrapped); `<Loading>` →
@@ -293,8 +288,7 @@ Catalogue: `#page-frame` (`#page-header`, `#breadcrumbs`, `#page-layout`).
   `[{ idx, name? }]`, `label`, `allLabel`; the list is a multi-select listbox with checkboxes in BasicMenu's panel.
 - The three share `src/boots/BasicSelect/OptionList.vue` (listbox rendering) and `useListbox.js` (keyboard).
   BasicMenu `inline` with a `top` placement draws the list above the trigger (the catalogue's drop-up).
-- Removed (lint, `scripts/lint/removed-components/selects.json`): `Dropdown` → `BasicSelect`; it stays registered
-  until plan 19.
+- Removed (lint, `scripts/lint/removed-components/selects.json`): `Dropdown` → `BasicSelect`.
 - Codemod `scripts/codemods/p3-selects.mjs` (sweeps 17/18): `Dropdown` → `BasicSelect`, `:values` → `:options`,
   `isDisabled` → `disabled`, `icon` dropped; `:selected="x ? [x] : []"` / `[x]` + an `@onSelect` that only assigns
   x → `v-model="x"` (a method keeps `@update:model-value="method"`); `:selected` alone → `:model-value`. Flags (tag
@@ -313,27 +307,28 @@ Catalogue: `#selects` (`#basic-select`, `#entity-search-picker`, `#channel-multi
   `for`), `describedBy` (the hint or error shown), `invalid`, `required`, `disabled`, plus `labelId` for a control a
   `for` cannot name. Of several controls in one field (rows of a `v-for`) only the first takes the field's id.
   Controls read it through `useControlAttrs()` (`src/boots/FormField/useControlAttrs.js`) and
-  paint their own error border; FormField's own border paint is left only for controls without `aria-invalid`
-  (Dropdown, TextAreaBasic, raw inputs) until plan 19.
+  paint their own error border.
 - **`BasicInput`** — `v-model`, `type`, `placeholder`, `icon` (a leading meaning of `icons.js`), `readonly` (the
   value behind a `lock`, the former `LockedField`), `disabled`; `--elem-height`, `border-control`, the polish disabled
-  look. Transition API, removed in plan 19: the floating `label`, `validate` (`{ status, msg }`, own message),
-  `isDisabled`, `focusOnCreate`, events `onFocusout` / `onKeyDown`; unknown listeners and classes still land on the
-  wrapper.
+  look. No label or error text of its own (the FormField's). `null` / `false` show an empty field, `0` shows „0”.
+  `focusOnCreate` focuses it on mount; events `onFocusout` / `onKeyDown` (Enter) carry the text; unknown listeners
+  and classes land on the wrapper.
 - **`BasicTextarea`** — replaces `TextAreaBasic`: `v-model`, `rows` (4), `maxlength` (with an „n / max” counter),
   `placeholder`, `disabled`, `readonly`.
-- **`NumberInput`** — `disabled` (`isDisabled` until plan 19); the value field reads the contract.
-- **`BasicCheckbox`** — one checkbox: a boolean `v-model`, its label in the default slot, `disabled`. Transition API,
-  removed in plan 19: `values` (+ `init_selected`, `type`, `label`, event `onSelect`) renders the old array list.
+- **`NumberInput`** — `disabled`; the value field reads the contract.
+- **`BasicCheckbox`** — one checkbox: a boolean `v-model`, its label in the default slot, `disabled`. A list of ids
+  is `BasicSelect multiple`.
 - **`BasicRadioGroup`** — `options` `[{ label, value, disabled? }]`, `v-model`, `name`, `disabled`; native radios in a
   `role="radiogroup"` (one Tab stop, the arrow keys move and select), named by the FormField label.
 - **`BasicSwitch`** — replaces `Switcher`: `v-model`, `label`, `hint` (a help tooltip), `disabled`; a
   `role="switch"` button with `aria-checked`, styles scoped to it.
 - **`BasicDatePicker`** — an input-looking trigger with the `calendar` icon opens an inline flatpickr; `v-model` (the
   flatpickr date string), `config` (a single date by default, `mode: "range"` for a range), `disabled`; the instance
-  is destroyed on unmount. `value` and `onChange` stay until plan 19.
+  is destroyed on unmount. Its label is the FormField's. The trigger's click reaches the document, so other
+  popovers close; a click inside the open calendar never closes it.
 - **`SegmentedControl`** — contract id and `disabled`, named by the FormField label, `aria-pressed` on the active
-  option. **`ColorInput`** — `disabled`, the text field reads the contract, the swatch is the native picker itself.
+  option. **`ColorInput`** — `disabled`, the text field reads the contract, the swatch is the native picker itself
+  (named by the FormField label, else „Wybierz kolor”).
 - Codemod `scripts/codemods/p3-inputs.mjs` (sweeps 17/18): `Switcher` → `BasicSwitch` (`:selected` + `@onSelect="x =
   !x"` → `v-model`, `prevent` → `disabled`), `TextAreaBasic` → `BasicTextarea` (`limit` → `maxlength`), `LockedField` →
   `BasicInput readonly`, `isDisabled` / `is_disabled` → `disabled` on BasicInput, NumberInput and the textarea, a

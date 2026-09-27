@@ -1,5 +1,6 @@
 // CMS UI lint, template side. Rule IDs (C1…, T1…) refer to docs/ui-rules.md.
-// Templates only, no JS style rules. P1 ships LEVEL = "warn" (debt report); P5 sets "error".
+// Templates only, no JS style rules. P1 ships LEVEL = "warn" (debt report); P5 sets "error". P3 closed C2 (removed
+// components) and C5 (icon-font glyphs): those are errors now, under the "vue-p3" plugin name.
 import { readdirSync, readFileSync } from "node:fs";
 import vue from "eslint-plugin-vue";
 import vueParser from "vue-eslint-parser";
@@ -51,7 +52,7 @@ const NO_LITERAL_ICON = [
 // C1 <input type="file"> stays raw: it is the hidden picker behind an upload button.
 const NO_RAW_INPUT = {
   selector: "VElement[rawName='input']:not(:has(VAttribute[key.name='type'][value.value='file']))",
-  message: `Use a boot input: BasicInput, NumberInput, ColorInput, BasicCheckbox, Switcher (${RULES} § Components).`,
+  message: `Use a boot input: BasicInput, NumberInput, ColorInput, BasicCheckbox, BasicRadioGroup, BasicSwitch (${RULES} § Components).`,
 };
 
 export default [
@@ -64,11 +65,26 @@ export default [
       parserOptions: { ecmaVersion: "latest", sourceType: "module" },
     },
     rules: {
-      "vue/no-restricted-syntax": [LEVEL, ...NO_REMOVED_COMPONENT, NO_RAW_INLINE_STYLE, ...NO_LITERAL_ICON],
+      "vue/no-restricted-syntax": [LEVEL, NO_RAW_INLINE_STYLE, ...NO_LITERAL_ICON],
     },
   },
   {
-    // C3 no hand-rolled copy of a boot class · C5 no icon-font glyph.
+    // C2 removed components (P3 closed them): an error, boots included. The vue plugin under a second name gives this
+    // check its own severity.
+    files: ["src/**/*.vue"],
+    plugins: { "vue-p3": vue },
+    rules: { "vue-p3/no-restricted-syntax": ["error", ...NO_REMOVED_COMPONENT] },
+  },
+  {
+    // C5 no icon-font glyph (the font is deleted, a glyph class draws nothing): an error. Boots own icon-* classes of
+    // their own (IconButton, the BasicInput icon wrapper).
+    files: ["src/**/*.vue"],
+    ignores: ["src/boots/**"],
+    plugins: { "vue-p3": vue },
+    rules: { "vue-p3/no-restricted-class": ["error", "/^icon-(?!only-mobile$)/"] },
+  },
+  {
+    // C3 no hand-rolled copy of a boot class.
     files: ["src/**/*.vue"],
     ignores: ["src/boots/**"], // boots own these classes
     rules: {
@@ -77,7 +93,7 @@ export default [
         "filter-chip",
         "status-badge",
         "pim-badge",
-        "/^icon-(?!only-mobile$)/",
+        "chip",
       ],
     },
   },
@@ -95,11 +111,11 @@ export default [
       "vue/no-restricted-html-elements": [
         LEVEL,
         { element: "button", message: `Use <BasicButton> (${RULES} § Components).` },
-        { element: "textarea", message: `Use <TextAreaBasic> (${RULES} § Components).` },
-        { element: "select", message: `Use <Dropdown> (${RULES} § Components).` },
+        { element: "textarea", message: `Use <BasicTextarea> (${RULES} § Components).` },
+        { element: "select", message: `Use <BasicSelect> (${RULES} § Components).` },
       ],
       // Repeats the shared selectors: a later block replaces a rule's options, it does not merge them.
-      "vue/no-restricted-syntax": [LEVEL, ...NO_REMOVED_COMPONENT, NO_RAW_INLINE_STYLE, ...NO_LITERAL_ICON, NO_RAW_INPUT],
+      "vue/no-restricted-syntax": [LEVEL, NO_RAW_INLINE_STYLE, ...NO_LITERAL_ICON, NO_RAW_INPUT],
     },
   },
 ];
