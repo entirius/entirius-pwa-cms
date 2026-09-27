@@ -87,107 +87,102 @@
           </div>
 
           <div class="detail-grid">
-            <div class="detail-field">
-              <label class="field-label required">{{ $t("dp.code") }}</label>
+            <FormField
+              class="detail-field"
+              :label="$t('dp.code')"
+              required
+              :error="formErrors.getFieldError('code')?.msg"
+            >
               <BasicInput
                 v-model="form.code"
                 :disabled="isCarrier"
-                :validate="formErrors.getFieldError('code')"
               />
-            </div>
-            <div class="detail-field">
-              <label class="field-label required">{{ $t("dp.name") }}</label>
+            </FormField>
+            <FormField
+              class="detail-field"
+              :label="$t('dp.name')"
+              required
+              :error="formErrors.getFieldError('name')?.msg"
+            >
               <BasicInput
                 v-model="form.name"
                 :disabled="isCarrier"
-                :validate="formErrors.getFieldError('name')"
               />
-            </div>
-            <div class="detail-field">
-              <label class="field-label required">{{ $t("dp.type") }}</label>
+            </FormField>
+            <FormField
+              class="detail-field"
+              :label="$t('dp.type')"
+              required
+              :error="formErrors.getFieldError('type_id')?.msg"
+            >
               <BasicSelect
                 :options="typeOptions"
                 v-model="form.type_id"
                 :placeholder="$t('common.select')"
                 :disabled="isCarrier || (isEdit && !typeChangeSupported)"
-                :class="{
-                  'b-negative': formErrors.getFieldError('type_id'),
-                }"
               />
-              <p
-                v-if="formErrors.getFieldError('type_id')"
-                class="t-negative fs-200"
-              >
-                {{ formErrors.getFieldError("type_id").msg }}
-              </p>
-            </div>
-            <div class="detail-field">
-              <label class="field-label">{{ $t("dp.channels") }}</label>
+            </FormField>
+            <FormField class="detail-field" :label="$t('dp.channels')">
               <BasicSelect
                 v-if="isCarrier"
                 :options="[{ label: $t('dp.global'), value: '__global' }]"
                 :model-value="'__global'"
                 :disabled="true"
               />
-              <Dropdown
+              <BasicSelect
                 v-else
-                :custom_droplist="true"
-                :placeholder="form.channel_ids.length ? $t('common.selected_count', { count: form.channel_ids.length }) : $t('dp.global')"
-              >
-                <template #custom>
-                  <div
-                    v-for="ch in channelOptions"
-                    :key="ch.value"
-                    class="pointer flex jc-sb ai-ct ph-2 dropdown-list-el"
-                    :class="{
-                      '-primary-100': form.channel_ids.includes(ch.value),
-                    }"
-                    @click.stop="toggleChannel(ch.value)"
-                  >
-                    <span class="ml-2">{{ ch.label }}</span>
-                    <FontAwesomeIcon
-                      v-if="form.channel_ids.includes(ch.value)"
-                      :icon="$icons.check"
-                      class="t-positive"
-                    />
-                  </div>
-                </template>
-              </Dropdown>
-            </div>
-            <div class="detail-field">
-              <label class="field-label">{{ $t("dp.street") }}</label>
+                v-model="form.channel_ids"
+                :options="channelOptions"
+                :placeholder="$t('dp.global')"
+                multiple
+                searchable
+              />
+            </FormField>
+            <FormField
+              class="detail-field"
+              :label="$t('dp.street')"
+              :error="formErrors.getFieldError('street')?.msg"
+            >
               <BasicInput
                 v-model="form.street"
                 :disabled="isCarrier"
-                :validate="formErrors.getFieldError('street')"
               />
-            </div>
-            <div class="detail-field">
-              <label class="field-label">{{ $t("dp.city") }}</label>
+            </FormField>
+            <FormField
+              class="detail-field"
+              :label="$t('dp.city')"
+              :error="formErrors.getFieldError('city')?.msg"
+            >
               <BasicInput
                 v-model="form.city"
                 :disabled="isCarrier"
-                :validate="formErrors.getFieldError('city')"
               />
-            </div>
-            <div class="detail-field">
-              <label class="field-label">{{ $t("dp.state") }}</label>
+            </FormField>
+            <FormField
+              class="detail-field"
+              :label="$t('dp.state')"
+              :error="formErrors.getFieldError('state')?.msg"
+            >
               <BasicInput
                 v-model="form.state"
                 :disabled="isCarrier"
-                :validate="formErrors.getFieldError('state')"
               />
-            </div>
-            <div class="detail-field">
-              <label class="field-label">{{ $t("dp.post_code") }}</label>
+            </FormField>
+            <FormField
+              class="detail-field"
+              :label="$t('dp.post_code')"
+              :error="formErrors.getFieldError('post_code')?.msg"
+            >
               <BasicInput
                 v-model="form.post_code"
                 :disabled="isCarrier"
-                :validate="formErrors.getFieldError('post_code')"
               />
-            </div>
-            <div class="detail-field">
-              <label class="field-label">{{ $t("dp.country") }}</label>
+            </FormField>
+            <FormField
+              class="detail-field"
+              :label="$t('dp.country')"
+              :error="formErrors.getFieldError('country')?.msg"
+            >
               <BasicSelect
                 v-if="isCarrier"
                 :options="countryOptions"
@@ -199,17 +194,8 @@
                 :options="countryOptions"
                 v-model="form.country"
                 :placeholder="$t('dp.select_country')"
-                :class="{
-                  'b-negative': formErrors.getFieldError('country'),
-                }"
               />
-              <p
-                v-if="formErrors.getFieldError('country')"
-                class="t-negative fs-200"
-              >
-                {{ formErrors.getFieldError("country").msg }}
-              </p>
-            </div>
+            </FormField>
           </div>
         </div>
 
@@ -217,22 +203,26 @@
         <div class="detail-section mb-10">
           <h2 class="fs-500 fw-600 mb-8">{{ $t("dp.location") }}</h2>
           <div class="detail-grid">
-            <div class="detail-field">
-              <label class="field-label">{{ $t("dp.lat") }}</label>
+            <FormField
+              class="detail-field"
+              :label="$t('dp.lat')"
+              :error="formErrors.getFieldError('latitude')?.msg"
+            >
               <BasicInput
                 v-model="form.latitude"
                 :disabled="isCarrier"
-                :validate="formErrors.getFieldError('latitude')"
               />
-            </div>
-            <div class="detail-field">
-              <label class="field-label">{{ $t("dp.lon") }}</label>
+            </FormField>
+            <FormField
+              class="detail-field"
+              :label="$t('dp.lon')"
+              :error="formErrors.getFieldError('longitude')?.msg"
+            >
               <BasicInput
                 v-model="form.longitude"
                 :disabled="isCarrier"
-                :validate="formErrors.getFieldError('longitude')"
               />
-            </div>
+            </FormField>
           </div>
         </div>
 
@@ -240,30 +230,36 @@
         <div class="detail-section mb-10">
           <h2 class="fs-500 fw-600 mb-8">{{ $t("dp.contact") }}</h2>
           <div class="detail-grid">
-            <div class="detail-field">
-              <label class="field-label">{{ $t("dp.phone") }}</label>
+            <FormField
+              class="detail-field"
+              :label="$t('dp.phone')"
+              :error="formErrors.getFieldError('phone')?.msg"
+            >
               <BasicInput
                 v-model="form.phone"
                 :disabled="isCarrier"
-                :validate="formErrors.getFieldError('phone')"
               />
-            </div>
-            <div class="detail-field">
-              <label class="field-label">{{ $t("dp.email") }}</label>
+            </FormField>
+            <FormField
+              class="detail-field"
+              :label="$t('dp.email')"
+              :error="formErrors.getFieldError('email')?.msg"
+            >
               <BasicInput
                 v-model="form.email"
                 :disabled="isCarrier"
-                :validate="formErrors.getFieldError('email')"
               />
-            </div>
-            <div class="detail-field">
-              <label class="field-label">{{ $t("dp.website") }}</label>
+            </FormField>
+            <FormField
+              class="detail-field"
+              :label="$t('dp.website')"
+              :error="formErrors.getFieldError('website')?.msg"
+            >
               <BasicInput
                 v-model="form.website"
                 :disabled="isCarrier"
-                :validate="formErrors.getFieldError('website')"
               />
-            </div>
+            </FormField>
             <div class="detail-field">
               <label class="field-label">{{ $t("dp.opening_hours") }}</label>
               <BasicInput
@@ -579,14 +575,6 @@ export default {
       this.form.longitude = result.longitude || "";
       this.geocodeQuery = result.formatted_address || "";
       this.geocodeResults = [];
-    },
-    toggleChannel(pk) {
-      const idx = this.form.channel_ids.indexOf(pk);
-      if (idx >= 0) {
-        this.form.channel_ids.splice(idx, 1);
-      } else {
-        this.form.channel_ids.push(pk);
-      }
     },
     async fetchChannels() {
       try {

@@ -32,12 +32,12 @@
           class="point-list__search"
           @input="debouncedFetch(searchAndFetch)"
         />
-        <Dropdown
-          :values="channelFilterOptions"
-          :selected="[channelFilter]"
+        <BasicSelect
+          :model-value="channelFilter"
+          :options="channelFilterOptions"
           :placeholder="$t('dp.channel')"
           class="point-list__channel"
-          @onSelect="onChannelFilter"
+          @update:model-value="onChannelFilter"
         />
       </div>
 
@@ -55,13 +55,12 @@
         @row-click="onRowClick"
       >
         <template #cell-type_name="{ row }">
-          <span v-if="row.type" class="chip t-accent" :title="row.type.name">
+          <span v-if="row.type" class="flex ai-ct gap-1">
             <font-awesome-icon
               v-if="row.type.is_carrier"
               :icon="$icons.lock"
-              class="mr-1"
             />
-            <span class="chip__label">{{ row.type.name }}</span>
+            <StatusBadge tone="accent" :dot="false" :label="row.type.name" />
           </span>
           <span v-else class="t-muted">---</span>
         </template>
