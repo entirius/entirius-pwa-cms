@@ -7,7 +7,7 @@
       @click="open = !open"
     >
       <span>{{ $t("leads.intel.title") }}</span>
-      <FontAwesomeIcon :icon="open ? 'chevron-up' : 'chevron-down'" />
+      <FontAwesomeIcon :icon="open ? $icons.collapse : $icons.expand" />
     </button>
     <div v-if="open" class="intel__body" data-testid="intel-body">
       <p v-if="context.platform" class="intel__fact">

@@ -25,7 +25,7 @@
         class="btn-danger"
         @click="showDeleteConfirm = true"
       >
-        <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+        <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
       </BasicButton>
       <BasicButton
         :text="$t('common.save')"
@@ -89,7 +89,7 @@
                     <span class="ml-2">{{ ch.label }}</span>
                     <FontAwesomeIcon
                       v-if="form.channel_ids.includes(ch.value)"
-                      icon="check"
+                      :icon="$icons.check"
                       class="t-positive"
                     />
                   </div>
@@ -131,7 +131,7 @@
             <template #item="{ element }">
               <div class="item-row flex ai-ct gap-5">
                 <font-awesome-icon
-                  icon="grip-vertical"
+                  :icon="$icons.drag"
                   class="drag-handle t-muted"
                 />
                 <span
@@ -151,7 +151,7 @@
                   class="btn-danger"
                   @click="removeItemFromGroup(element)"
                 >
-                  <template #custom><FontAwesomeIcon icon="xmark" /></template>
+                  <template #custom><FontAwesomeIcon :icon="$icons.close" /></template>
                 </BasicButton>
               </div>
             </template>

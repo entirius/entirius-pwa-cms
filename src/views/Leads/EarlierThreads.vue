@@ -5,7 +5,7 @@
       <span v-if="pendingCount" class="earlier__badge" data-testid="earlier-optout-badge">
         {{ $t("leads.thread.earlier_optout", { count: pendingCount }) }}
       </span>
-      <FontAwesomeIcon :icon="open ? 'chevron-up' : 'chevron-down'" />
+      <FontAwesomeIcon :icon="open ? $icons.collapse : $icons.expand" />
     </button>
     <div v-if="open" class="earlier__list">
       <ThreadGroup

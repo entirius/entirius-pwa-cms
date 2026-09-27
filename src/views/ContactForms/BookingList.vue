@@ -100,7 +100,7 @@
             :title="$t('cf.open_meet')"
             @click.stop
           >
-            <font-awesome-icon icon="video" />
+            <font-awesome-icon :icon="$icons.video" />
           </a>
           <span v-else class="t-muted">—</span>
         </template>

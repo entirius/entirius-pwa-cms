@@ -50,7 +50,7 @@
           type="button"
           @click="pwVisible = !pwVisible"
         >
-          <FontAwesomeIcon :icon="pwVisible ? 'eye-slash' : 'eye'" />
+          <FontAwesomeIcon :icon="pwVisible ? $icons.hide : $icons.preview" />
         </button>
       </div>
       <div class="auth-card__pw-field mb-8">
@@ -65,7 +65,7 @@
           type="button"
           @click="pwVisible = !pwVisible"
         >
-          <FontAwesomeIcon :icon="pwVisible ? 'eye-slash' : 'eye'" />
+          <FontAwesomeIcon :icon="pwVisible ? $icons.hide : $icons.preview" />
         </button>
       </div>
       <BasicButton

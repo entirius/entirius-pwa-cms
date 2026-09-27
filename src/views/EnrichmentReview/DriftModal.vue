@@ -14,7 +14,7 @@
         >
           <div class="drift-modal__header b-subtle bb-100">
             <FontAwesomeIcon
-              icon="triangle-exclamation"
+              :icon="$icons.warning"
               class="t-warning"
             />
             <h2 class="fs-400 fw-600 m-0">

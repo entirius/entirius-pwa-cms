@@ -27,7 +27,7 @@
               class="author-picker__remove pointer"
               @click="removeAuthor(element.uid)"
             >
-              <FontAwesomeIcon icon="xmark" />
+              <FontAwesomeIcon :icon="$icons.close" />
             </button>
           </div>
         </template>

@@ -64,7 +64,7 @@
               <!-- Item header row -->
               <div class="nav-item__row">
                 <span class="handle t-muted pointer">
-                  <FontAwesomeIcon icon="grip-vertical" />
+                  <FontAwesomeIcon :icon="$icons.drag" />
                 </span>
                 <span class="nav-item__label fg-1 fw-500 t-body fs-300">{{ element.label || "—" }}</span>
                 <span
@@ -104,7 +104,7 @@
                   :aria-expanded="expandedItems.includes(element.id)"
                   @click="toggleExpand(element.id)"
                 >
-                  <template #custom><FontAwesomeIcon icon="chevron-down" /></template>
+                  <template #custom><FontAwesomeIcon :icon="$icons.expand" /></template>
                 </BasicButton>
                 <BasicButton
                   custom
@@ -112,7 +112,7 @@
                   class="btn-ghost nav-action"
                   @click="openEditItem(element, index)"
                 >
-                  <template #custom><FontAwesomeIcon icon="pen" /></template>
+                  <template #custom><FontAwesomeIcon :icon="$icons.edit" /></template>
                 </BasicButton>
                 <BasicButton
                   custom
@@ -120,7 +120,7 @@
                   class="btn-danger nav-action nav-action--danger"
                   @click="removeItem(index)"
                 >
-                  <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+                  <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
                 </BasicButton>
               </div>
 
@@ -163,7 +163,7 @@
                               class="btn-ghost"
                               @click="openColumnTranslation(index, colIdx)"
                             >
-                              <template #custom><FontAwesomeIcon icon="language" /></template>
+                              <template #custom><FontAwesomeIcon :icon="$icons.translate" /></template>
                             </BasicButton>
                           </template>
                         </div>
@@ -174,7 +174,7 @@
                           class="btn-danger"
                           @click="removeColumn(index, colIdx)"
                         >
-                          <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+                          <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
                         </BasicButton>
                       </div>
                       <draggable
@@ -187,7 +187,7 @@
                         <template #item="{ element: link, index: linkIdx }">
                           <div class="nav-link-row" @click="openEditLink(element, index, col, colIdx, link, linkIdx)">
                             <span class="link-handle t-muted">
-                              <FontAwesomeIcon icon="grip-vertical" style="font-size: var(--fs-200)" />
+                              <FontAwesomeIcon :icon="$icons.drag" style="font-size: var(--fs-200)" />
                             </span>
                             <span class="nav-link-row__text">
                               <span class="t-muted">·</span> {{ link.label }}
@@ -196,7 +196,7 @@
                               class="nav-link-row__delete"
                               @click.stop="removeLink(index, colIdx, linkIdx)"
                             >
-                              <FontAwesomeIcon icon="xmark" />
+                              <FontAwesomeIcon :icon="$icons.close" />
                             </span>
                           </div>
                         </template>
@@ -217,7 +217,7 @@
                           class="btn-danger"
                           @click="removeColumn(index, colIdx)"
                         >
-                          <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+                          <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
                         </BasicButton>
                       </div>
                       <div v-if="col.media_url" class="mb-2">
@@ -229,7 +229,7 @@
                           @error="onImageError(col.media_url)"
                         />
                         <div v-else class="nav-banner-placeholder">
-                          <FontAwesomeIcon icon="image" class="t-muted" style="font-size: var(--fs-500)" />
+                          <FontAwesomeIcon :icon="$icons.image" class="t-muted" style="font-size: var(--fs-500)" />
                         </div>
                       </div>
                       <p v-if="col.caption" class="fs-200 t-secondary mb-2">{{ col.caption }}</p>

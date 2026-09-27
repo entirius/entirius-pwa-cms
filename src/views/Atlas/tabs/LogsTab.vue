@@ -65,7 +65,7 @@
             :data-testid="`logs-ack-${row.id}`"
             @click.stop="acknowledge(row)"
           >
-            <FontAwesomeIcon icon="check" />
+            <FontAwesomeIcon :icon="$icons.check" />
             {{ $t("atlas.logs.acknowledge") }}
           </button>
           <span v-else class="t-muted fs-200">{{

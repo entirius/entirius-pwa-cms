@@ -66,13 +66,13 @@
         <template #cell-actions="{ row }">
           <div class="le-list__actions">
             <BasicButton custom size="sm" :label="$t('common.edit')" class="btn-ghost" @click="onEdit(row)">
-              <template #custom><FontAwesomeIcon icon="pen" /></template>
+              <template #custom><FontAwesomeIcon :icon="$icons.edit" /></template>
             </BasicButton>
             <BasicButton custom size="sm" :label="$t('common.preview')" class="btn-ghost" @click="onPreview(row)">
-              <template #custom><FontAwesomeIcon icon="eye" /></template>
+              <template #custom><FontAwesomeIcon :icon="$icons.preview" /></template>
             </BasicButton>
             <BasicButton custom size="sm" :label="$t('common.copy')" class="btn-ghost" @click="onCopy(row)">
-              <template #custom><FontAwesomeIcon icon="copy" /></template>
+              <template #custom><FontAwesomeIcon :icon="$icons.duplicate" /></template>
             </BasicButton>
             <BasicButton
               v-if="!row.is_system"
@@ -82,7 +82,7 @@
               class="btn-danger"
               @click="onDeleteClick(row)"
             >
-              <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+              <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
             </BasicButton>
           </div>
         </template>

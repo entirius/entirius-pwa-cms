@@ -9,7 +9,7 @@
         @focusin="onFocus"
       />
       <FontAwesomeIcon
-        icon="chevron-down"
+        :icon="$icons.expand"
         class="source-value-picker__chevron"
         :class="{ 'source-value-picker__chevron--open': open }"
         @click="toggleDropdown"

@@ -73,7 +73,7 @@
             class="cf-ads-imported"
             :title="$t('cf.ads_imported_tooltip')"
           >
-            <font-awesome-icon icon="bullseye" />
+            <font-awesome-icon :icon="$icons.target" />
           </span>
           <span v-else class="t-muted">—</span>
         </template>

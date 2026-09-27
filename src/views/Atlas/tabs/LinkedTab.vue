@@ -7,7 +7,7 @@
         data-testid="linked-create-btn"
         @click="openCreate"
       >
-        <FontAwesomeIcon icon="plus" />
+        <FontAwesomeIcon :icon="$icons.add" />
         {{ $t("atlas.linked.create_button") }}
       </button>
     </div>
@@ -54,7 +54,7 @@
             :data-testid="`linked-set-preferred-${row.id}`"
             @click="setPrimary(row)"
           >
-            <FontAwesomeIcon icon="star" />
+            <FontAwesomeIcon :icon="$icons.primary" />
           </button>
           <button
             v-else-if="!isMonitoringSupplier"
@@ -63,7 +63,7 @@
             :data-testid="`linked-unset-preferred-${row.id}`"
             @click="unsetPrimary(row)"
           >
-            <FontAwesomeIcon icon="star" />
+            <FontAwesomeIcon :icon="$icons.primary" />
           </button>
           <button
             class="row-action-btn bg-raised t-body"
@@ -71,7 +71,7 @@
             :data-testid="`linked-edit-${row.id}`"
             @click="openEdit(row)"
           >
-            <FontAwesomeIcon icon="pen" />
+            <FontAwesomeIcon :icon="$icons.edit" />
           </button>
           <button
             class="row-action-btn bg-negative-subtle t-negative"
@@ -79,7 +79,7 @@
             :data-testid="`linked-delete-${row.id}`"
             @click="confirmDelete(row)"
           >
-            <FontAwesomeIcon icon="trash-can" />
+            <FontAwesomeIcon :icon="$icons.delete" />
           </button>
         </div>
       </template>
@@ -118,7 +118,7 @@
               data-testid="linked-sku-preview-btn"
               @click="openPreview"
             >
-              <FontAwesomeIcon icon="magnifying-glass" />
+              <FontAwesomeIcon :icon="$icons.search" />
             </button>
           </div>
           <p
@@ -180,7 +180,7 @@
             :disabled="formBusy"
             data-testid="linked-form-submit"
           >
-            <FontAwesomeIcon icon="floppy-disk" />
+            <FontAwesomeIcon :icon="$icons.saveDraft" />
             {{ $t("common.save") }}
           </button>
         </div>
@@ -222,7 +222,7 @@
           />
           <FontAwesomeIcon
             v-else
-            icon="image"
+            :icon="$icons.image"
             class="sku-preview__placeholder"
           />
         </div>

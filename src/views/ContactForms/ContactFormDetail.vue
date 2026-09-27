@@ -127,7 +127,7 @@
               :key="att.id"
               class="cf-attachment flex ai-ct gap-5 p-5 bg-raised rounded mb-2"
             >
-              <font-awesome-icon icon="paperclip" class="t-muted" />
+              <font-awesome-icon :icon="$icons.attachment" class="t-muted" />
               <span class="t-body fs-200">{{ att.name }}</span>
               <BasicButton
                 :text="$t('cf.download_attachment')"

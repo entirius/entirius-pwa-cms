@@ -18,7 +18,7 @@
         class="btn-danger"
         @click="showDeleteConfirm = true"
       >
-        <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+        <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
       </BasicButton>
       <BasicButton
         :text="$t('common.save')"
@@ -201,7 +201,7 @@
               class="btn-danger"
               @click="removeAssociation(idx)"
             >
-              <template #custom><FontAwesomeIcon icon="xmark" /></template>
+              <template #custom><FontAwesomeIcon :icon="$icons.close" /></template>
             </BasicButton>
           </div>
           <div v-if="associationsDirty" class="flex jc-fe mt-5">

@@ -32,7 +32,7 @@
             data-testid="pool-text-remove"
             @click="confirming = text"
           >
-            <FontAwesomeIcon icon="trash-can" />
+            <FontAwesomeIcon :icon="$icons.delete" />
           </button>
           <button v-else class="ld-btn" data-testid="pool-text-restore" @click="restore(text)">{{ $t("communicator.pool.restore") }}</button>
         </template>

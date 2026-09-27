@@ -37,7 +37,7 @@
           type="button"
           @click="oldPwVisible = !oldPwVisible"
         >
-          <FontAwesomeIcon :icon="oldPwVisible ? 'eye-slash' : 'eye'" />
+          <FontAwesomeIcon :icon="oldPwVisible ? $icons.hide : $icons.preview" />
         </button>
       </div>
       <div class="auth-card__pw-field mb-10">
@@ -52,7 +52,7 @@
           type="button"
           @click="newPwVisible = !newPwVisible"
         >
-          <FontAwesomeIcon :icon="newPwVisible ? 'eye-slash' : 'eye'" />
+          <FontAwesomeIcon :icon="newPwVisible ? $icons.hide : $icons.preview" />
         </button>
       </div>
       <div class="auth-card__pw-field mb-8">
@@ -67,7 +67,7 @@
           type="button"
           @click="newPwVisible = !newPwVisible"
         >
-          <FontAwesomeIcon :icon="newPwVisible ? 'eye-slash' : 'eye'" />
+          <FontAwesomeIcon :icon="newPwVisible ? $icons.hide : $icons.preview" />
         </button>
       </div>
       <BasicButton

@@ -194,7 +194,7 @@
                 :aria-label="$t('common.delete')"
                 tabindex="0"
               >
-                <FontAwesomeIcon icon="trash-can" />
+                <FontAwesomeIcon :icon="$icons.delete" />
               </button>
             </div>
             <p class="fs-200 t-muted mt-1 lc-1">{{ uid }}</p>

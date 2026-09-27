@@ -18,7 +18,7 @@
               data-testid="gallery-modal-close"
               @click="$emit('close')"
             >
-              <FontAwesomeIcon icon="xmark" />
+              <FontAwesomeIcon :icon="$icons.close" />
             </button>
           </header>
 
@@ -37,7 +37,7 @@
                 :title="$t('atlas.review.gallery_prev')"
                 @click="prev"
               >
-                <FontAwesomeIcon icon="chevron-left" />
+                <FontAwesomeIcon :icon="$icons.prev" />
               </button>
               <button
                 v-if="images.length > 1"
@@ -45,7 +45,7 @@
                 :title="$t('atlas.review.gallery_next')"
                 @click="next"
               >
-                <FontAwesomeIcon icon="chevron-right" />
+                <FontAwesomeIcon :icon="$icons.next" />
               </button>
               <span v-if="images.length > 1" class="gallery-counter">
                 {{ activeIndex + 1 }} / {{ images.length }}

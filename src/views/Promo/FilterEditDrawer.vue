@@ -44,7 +44,7 @@
             >
               <FontAwesomeIcon
                 v-if="local.products.includes(p.sku)"
-                icon="check"
+                :icon="$icons.check"
                 class="t-positive mr-2"
               />
               <span>{{ p.sku }}{{ p.name ? ` — ${p.name}` : '' }}</span>
@@ -58,7 +58,7 @@
             >
               {{ sku }}
               <button class="fed__chip-remove" @click="removeProduct(sku)">
-                <FontAwesomeIcon icon="xmark" />
+                <FontAwesomeIcon :icon="$icons.close" />
               </button>
             </span>
           </div>
@@ -84,7 +84,7 @@
                 <span class="ml-2">{{ c.idx }}{{ c.name ? ` — ${c.name}` : '' }}</span>
                 <FontAwesomeIcon
                   v-if="local.categories.includes(c.idx)"
-                  icon="check"
+                  :icon="$icons.check"
                   class="t-positive"
                 />
               </div>
@@ -112,7 +112,7 @@
                 <span class="ml-2">{{ a.idx }}{{ a.name ? ` — ${a.name}` : '' }}</span>
                 <FontAwesomeIcon
                   v-if="local.attributes.includes(a.idx)"
-                  icon="check"
+                  :icon="$icons.check"
                   class="t-positive"
                 />
               </div>
@@ -140,7 +140,7 @@
                 <span class="ml-2">{{ f.idx }}{{ f.name ? ` — ${f.name}` : '' }}</span>
                 <FontAwesomeIcon
                   v-if="local.features_qty_greater_than_attr_value.includes(f.idx)"
-                  icon="check"
+                  :icon="$icons.check"
                   class="t-positive"
                 />
               </div>
@@ -168,7 +168,7 @@
                 <span class="ml-2">{{ f.idx }}{{ f.name ? ` — ${f.name}` : '' }}</span>
                 <FontAwesomeIcon
                   v-if="local.features_qty_is_multiple_of_attr_value.includes(f.idx)"
-                  icon="check"
+                  :icon="$icons.check"
                   class="t-positive"
                 />
               </div>
@@ -226,7 +226,7 @@
             >
               <FontAwesomeIcon
                 v-if="local.customers.includes(c.uid)"
-                icon="check"
+                :icon="$icons.check"
                 class="t-positive mr-2"
               />
               <span>{{ c.first_name || '' }} {{ c.last_name || '' }}{{ c.email ? ` (${c.email})` : '' }}</span>
@@ -240,7 +240,7 @@
             >
               {{ uid }}
               <button class="fed__chip-remove" @click="removeCustomer(uid)">
-                <FontAwesomeIcon icon="xmark" />
+                <FontAwesomeIcon :icon="$icons.close" />
               </button>
             </span>
           </div>
@@ -266,7 +266,7 @@
                 <span class="ml-2">{{ g.code }}{{ g.name ? ` — ${g.name}` : '' }}</span>
                 <FontAwesomeIcon
                   v-if="local.groups.includes(g.code)"
-                  icon="check"
+                  :icon="$icons.check"
                   class="t-positive"
                 />
               </div>

@@ -2,7 +2,7 @@
   <ConfirmationModal :visible="true" @reject="onCancel">
     <template #header>
       <h2 class="t-warning">
-        <FontAwesomeIcon icon="triangle-exclamation" class="mr-2" />
+        <FontAwesomeIcon :icon="$icons.warning" class="mr-2" />
         {{ $t("atlas.duplicates.merge_modal.title") }}
       </h2>
     </template>
@@ -27,7 +27,7 @@
           {{ $t("atlas.duplicates.merge_modal.reason_label") }}
         </p>
         <div v-if="errorText" class="merge-confirm__error t-negative fs-200">
-          <FontAwesomeIcon icon="triangle-exclamation" class="mr-2" />
+          <FontAwesomeIcon :icon="$icons.warning" class="mr-2" />
           {{ errorText }}
         </div>
       </div>

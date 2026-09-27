@@ -98,7 +98,7 @@
               :data-testid="`suppliers-edit-${row.idx}`"
               @click="onEdit(row)"
             >
-              <template #custom><FontAwesomeIcon icon="pen" /></template>
+              <template #custom><FontAwesomeIcon :icon="$icons.edit" /></template>
             </BasicButton>
             <BasicButton
               custom
@@ -108,7 +108,7 @@
               :data-testid="`suppliers-delete-${row.idx}`"
               @click="openDelete(row)"
             >
-              <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+              <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
             </BasicButton>
           </div>
         </template>

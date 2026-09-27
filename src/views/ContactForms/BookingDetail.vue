@@ -73,7 +73,7 @@
                     class="cf-inline-link"
                   >
                     {{ $t("cf.open_meet") }}
-                    <font-awesome-icon icon="video" />
+                    <font-awesome-icon :icon="$icons.video" />
                   </a>
                   <span v-else class="t-muted">---</span>
                 </dd>

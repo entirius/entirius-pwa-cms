@@ -4,7 +4,7 @@
       {{ $t("leads.review.not_now") }}
     </button>
     <button class="ra-btn ra-btn--primary" :disabled="busy" data-testid="review-send" @click="$emit('send')">
-      <FontAwesomeIcon icon="paper-plane" />
+      <FontAwesomeIcon :icon="$icons.send" />
       {{ $t("leads.review.send") }}
     </button>
     <div class="ra__more" v-out="() => (menuOpen = false)">
@@ -16,7 +16,7 @@
         data-testid="review-more"
         @click="menuOpen = !menuOpen"
       >
-        <FontAwesomeIcon icon="ellipsis-vertical" />
+        <FontAwesomeIcon :icon="$icons.more" />
       </button>
       <div v-if="menuOpen" class="ra__menu" role="menu">
         <button role="menuitem" :disabled="aiDisabled" data-testid="review-rewrite" @click="pick('rewrite')">

@@ -26,7 +26,7 @@
             class="btn-danger"
             @click="showDeleteConfirm = true"
           >
-            <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+            <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
           </BasicButton>
           <BasicButton
             :text="$t('common.save')"

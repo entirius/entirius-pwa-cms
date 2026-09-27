@@ -16,7 +16,7 @@
           :title="$t('leads.stages.up')"
           @click="shift(index, -1)"
         >
-          <FontAwesomeIcon icon="arrow-up" />
+          <FontAwesomeIcon :icon="$icons.moveUp" />
         </button>
         <button
           class="ld-btn ld-btn--icon"
@@ -25,7 +25,7 @@
           :title="$t('leads.stages.down')"
           @click="shift(index, 1)"
         >
-          <FontAwesomeIcon icon="arrow-down" />
+          <FontAwesomeIcon :icon="$icons.moveDown" />
         </button>
         <button
           class="ld-btn ld-btn--danger ld-btn--icon"
@@ -34,7 +34,7 @@
           data-testid="lead-type-delete"
           @click="remove(type)"
         >
-          <FontAwesomeIcon icon="trash-can" />
+          <FontAwesomeIcon :icon="$icons.delete" />
         </button>
       </div>
       <p v-if="errors[type.id]" class="ld-error lead-type__error" data-testid="lead-type-error">{{ errors[type.id] }}</p>

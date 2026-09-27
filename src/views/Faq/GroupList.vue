@@ -47,7 +47,7 @@
               @click="$router.push(`/faq/groups/${element.idx}`)"
             >
               <font-awesome-icon
-                icon="grip-vertical"
+                :icon="$icons.drag"
                 class="drag-handle t-muted"
               />
               <span

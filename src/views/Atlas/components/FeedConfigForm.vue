@@ -118,7 +118,7 @@
         :disabled="busy"
         data-testid="feed-form-submit"
       >
-        <FontAwesomeIcon icon="floppy-disk" />
+        <FontAwesomeIcon :icon="$icons.saveDraft" />
         {{ $t("common.save") }}
       </button>
     </div>

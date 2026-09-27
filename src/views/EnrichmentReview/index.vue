@@ -18,7 +18,7 @@
             :aria-expanded="filtersOpen"
             @click="filtersOpen = !filtersOpen"
           >
-            <FontAwesomeIcon icon="filter" />
+            <FontAwesomeIcon :icon="$icons.filter" />
             {{ $t("enrichment.review.filters") }}
             <span
               v-if="activeFilterCount > 0"
@@ -32,7 +32,7 @@
             data-testid="enrichment-import-open"
             @click="importVisible = true"
           >
-            <FontAwesomeIcon icon="file-csv" />
+            <FontAwesomeIcon :icon="$icons.importCsv" />
             {{ $t("enrichment.import.open") }}
           </button>
         </div>

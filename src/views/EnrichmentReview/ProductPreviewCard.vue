@@ -11,7 +11,7 @@
           class="product-preview__img"
         />
         <div v-else class="product-preview__img product-preview__img--ph">
-          <FontAwesomeIcon icon="image" />
+          <FontAwesomeIcon :icon="$icons.image" />
         </div>
       </div>
 
@@ -77,7 +77,7 @@
         data-testid="enrichment-preview-go-pim"
         @click="goToPim"
       >
-        <FontAwesomeIcon icon="up-right-from-square" />
+        <FontAwesomeIcon :icon="$icons.external" />
         {{ $t("enrichment.preview.go_to_pim") }}
       </button>
     </div>

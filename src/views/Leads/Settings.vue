@@ -9,7 +9,7 @@
     >
       <FontAwesomeIcon :icon="section.icon" class="settings-row__icon" />
       <span class="settings-row__label">{{ $t(section.labelKey) }}</span>
-      <FontAwesomeIcon icon="chevron-right" class="settings-row__go" />
+      <FontAwesomeIcon :icon="$icons.next" class="settings-row__go" />
     </router-link>
   </div>
 </template>

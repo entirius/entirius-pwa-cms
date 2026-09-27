@@ -21,7 +21,7 @@
         :title="$t('communicator.policy.remove_window')"
         @click="form.windows.splice(i, 1)"
       >
-        <FontAwesomeIcon icon="trash-can" />
+        <FontAwesomeIcon :icon="$icons.delete" />
       </button>
     </div>
     <div class="ld-row">

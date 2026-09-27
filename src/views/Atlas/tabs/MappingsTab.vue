@@ -7,7 +7,7 @@
         data-testid="mappings-create-profile-btn"
         @click="openCreate"
       >
-        <FontAwesomeIcon icon="plus" />
+        <FontAwesomeIcon :icon="$icons.add" />
         {{ $t("atlas.mappings.create_profile") }}
       </button>
     </div>
@@ -58,7 +58,7 @@
               :data-testid="`mapping-edit-profile-${profile.idx}`"
               @click="openEdit(profile)"
             >
-              <FontAwesomeIcon icon="pen-to-square" />
+              <FontAwesomeIcon :icon="$icons.edit" />
               {{ $t("common.edit") }}
             </button>
             <button
@@ -66,7 +66,7 @@
               :data-testid="`mapping-validate-${profile.idx}`"
               @click="validateProfile(profile)"
             >
-              <FontAwesomeIcon icon="check" />
+              <FontAwesomeIcon :icon="$icons.check" />
               {{ $t("atlas.mappings.validate") }}
             </button>
             <button
@@ -75,7 +75,7 @@
               :data-testid="`mapping-delete-profile-${profile.idx}`"
               @click="confirmDeleteProfile(profile)"
             >
-              <FontAwesomeIcon icon="trash-can" />
+              <FontAwesomeIcon :icon="$icons.delete" />
             </button>
           </div>
         </div>
@@ -143,7 +143,7 @@
               :data-testid="`mapping-add-attribute-${profile.idx}`"
               @click="addAttributeRow(profile)"
             >
-              <FontAwesomeIcon icon="plus" />
+              <FontAwesomeIcon :icon="$icons.add" />
               {{ $t("atlas.mappings.add_attribute") }}
             </button>
 
@@ -167,7 +167,7 @@
               :data-testid="`mapping-add-category-${profile.idx}`"
               @click="addCategoryRow(profile)"
             >
-              <FontAwesomeIcon icon="plus" />
+              <FontAwesomeIcon :icon="$icons.add" />
               {{ $t("atlas.mappings.add_category") }}
             </button>
           </div>
@@ -261,7 +261,7 @@
             :disabled="formBusy"
             data-testid="mapping-form-submit"
           >
-            <FontAwesomeIcon icon="floppy-disk" />
+            <FontAwesomeIcon :icon="$icons.saveDraft" />
             {{ $t("common.save") }}
           </button>
         </div>

@@ -39,7 +39,7 @@
           :data-testid="`events-ack-${row.id}`"
           @click.stop="acknowledge(row)"
         >
-          <FontAwesomeIcon icon="check" />
+          <FontAwesomeIcon :icon="$icons.check" />
           {{ $t("atlas.review.events.acknowledge_button") }}
         </button>
         <span v-else class="t-muted fs-200">{{ formatDate(row.acknowledged_at) }}</span>

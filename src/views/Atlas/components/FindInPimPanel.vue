@@ -27,7 +27,7 @@
             :data-testid="`find-in-pim-link-${hit.basic?.sku}`"
             @click="link(hit)"
           >
-            <FontAwesomeIcon icon="link" />
+            <FontAwesomeIcon :icon="$icons.link" />
           </button>
         </template>
       </CandidateRow>
@@ -63,7 +63,7 @@
                 :data-testid="`find-in-pim-link-${hit.basic?.sku}`"
                 @click="link(hit)"
               >
-                <FontAwesomeIcon icon="link" />
+                <FontAwesomeIcon :icon="$icons.link" />
               </button>
             </template>
           </CandidateRow>

@@ -20,7 +20,7 @@
           class="btn-danger"
           @click="showDeleteConfirm = true"
         >
-          <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+          <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
         </BasicButton>
         <BasicButton
           :text="$t('common.save')"
@@ -72,7 +72,7 @@
                   class="author-photo-preview__img"
                 />
                 <div v-else class="author-photo-preview__placeholder">
-                  <FontAwesomeIcon icon="user" class="t-muted" style="font-size: var(--fs-600)" />
+                  <FontAwesomeIcon :icon="$icons.user" class="t-muted" style="font-size: var(--fs-600)" />
                 </div>
               </div>
               <div class="flex ai-ct gap-2">
@@ -88,7 +88,7 @@
                   class="btn-danger"
                   @click="clearPhoto"
                 >
-                  <template #custom><FontAwesomeIcon icon="xmark" /></template>
+                  <template #custom><FontAwesomeIcon :icon="$icons.close" /></template>
                 </BasicButton>
               </div>
             </div>

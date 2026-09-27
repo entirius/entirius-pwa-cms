@@ -45,7 +45,7 @@
             :data-testid="`feeds-trigger-${row.idx}`"
             @click="triggerFeed(row)"
           >
-            <FontAwesomeIcon icon="play" />
+            <FontAwesomeIcon :icon="$icons.play" />
           </button>
         </div>
       </template>

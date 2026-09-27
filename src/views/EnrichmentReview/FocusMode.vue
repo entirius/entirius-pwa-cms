@@ -46,7 +46,7 @@
         class="focus-mode__drift bg-warning-subtle t-warning rounded"
         data-testid="enrichment-focus-drift"
       >
-        <FontAwesomeIcon icon="triangle-exclamation" />
+        <FontAwesomeIcon :icon="$icons.warning" />
         {{ $t("enrichment.drift.intro") }}
       </div>
 

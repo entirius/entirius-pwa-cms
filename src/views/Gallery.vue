@@ -48,7 +48,7 @@
               class="tag-chip tag-chip--danger pointer flex ai-ct gap-1"
               @click="deleteSelectedTags()"
             >
-              <FontAwesomeIcon icon="trash-can" />
+              <FontAwesomeIcon :icon="$icons.delete" />
               {{ $t("gallery.remove_tag") }}
             </button>
           </div>
@@ -63,7 +63,7 @@
             class="tag-add-btn bg-accent-fill t-on-accent-fill rounded pointer"
             @click="addNewTag()"
           >
-            <FontAwesomeIcon icon="plus" />
+            <FontAwesomeIcon :icon="$icons.add" />
           </button>
         </div>
       </div>
@@ -101,7 +101,7 @@
             </p>
           </div>
           <div v-else class="flex ai-ct gap-2 p-5 rounded b-default bg-raised t-muted fs-200">
-            <FontAwesomeIcon icon="circle-info" />
+            <FontAwesomeIcon :icon="$icons.info" />
             <span>{{ $t("gallery.no_tags_yet") }}</span>
             <button
               class="t-accent pointer"
@@ -121,7 +121,7 @@
             class="tag-add-btn bg-accent-fill t-on-accent-fill rounded pointer"
             @click="quickAddTag"
           >
-            <FontAwesomeIcon icon="plus" />
+            <FontAwesomeIcon :icon="$icons.add" />
           </button>
         </div>
         <div class="flex gap-2">
@@ -132,7 +132,7 @@
               mode = 'read';
             "
           >
-            <FontAwesomeIcon icon="floppy-disk" />
+            <FontAwesomeIcon :icon="$icons.saveDraft" />
             {{ $t("common.save") }}
           </button>
           <button
@@ -270,7 +270,7 @@
                 }
               "
             >
-              <FontAwesomeIcon icon="xmark" />
+              <FontAwesomeIcon :icon="$icons.close" />
             </button>
           </MobileFilterPanel>
           <div class="gallery-selects flex gap-2 fs-0">
@@ -368,7 +368,7 @@
                     })
                   "
                 >
-                  <FontAwesomeIcon icon="trash-can" />
+                  <FontAwesomeIcon :icon="$icons.delete" />
                 </button>
                 <button
                   class="gallery-actions__btn t-secondary pointer"
@@ -378,7 +378,7 @@
                     get_image_tags();
                   "
                 >
-                  <FontAwesomeIcon icon="tag" />
+                  <FontAwesomeIcon :icon="$icons.tag" />
                 </button>
               </div>
             </div>

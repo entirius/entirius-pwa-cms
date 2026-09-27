@@ -142,7 +142,7 @@
                     v-if="lead.ads_conversion_imported"
                     class="cf-ads-imported"
                   >
-                    <font-awesome-icon icon="check" />
+                    <font-awesome-icon :icon="$icons.check" />
                     {{ formatDateTime(lead.ads_imported_at) }}
                   </span>
                   <span v-else class="t-muted">---</span>
@@ -213,14 +213,14 @@
           v-if="integrations && integrations.google_ads_enabled"
           class="fs-200 t-accent mt-5"
         >
-          <font-awesome-icon icon="circle-info" />
+          <font-awesome-icon :icon="$icons.info" />
           {{ $t("cf.google_ads_push_hint") }}
         </p>
         <p
           v-else-if="integrations"
           class="fs-200 t-muted mt-5"
         >
-          <font-awesome-icon icon="circle-info" />
+          <font-awesome-icon :icon="$icons.info" />
           {{ $t("cf.google_ads_off_hint") }}
         </p>
       </template>

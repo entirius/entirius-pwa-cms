@@ -47,7 +47,7 @@
         />
       </div>
       <button v-if="moreRight" class="board__more" data-testid="board-scroll-right" @click="scrollRight">
-        {{ $t("leads.board.more_stages") }} <FontAwesomeIcon icon="chevron-right" />
+        {{ $t("leads.board.more_stages") }} <FontAwesomeIcon :icon="$icons.next" />
       </button>
     </div>
   </div>

@@ -25,7 +25,7 @@
         data-testid="list-bulk-approve"
         @click="bulkConfirm('approve')"
       >
-        <FontAwesomeIcon icon="check" />
+        <FontAwesomeIcon :icon="$icons.check" />
         {{ $t("atlas.review.list.bulk_approve") }}
       </button>
       <button
@@ -34,7 +34,7 @@
         data-testid="list-bulk-reject"
         @click="bulkConfirm('reject')"
       >
-        <FontAwesomeIcon icon="xmark" />
+        <FontAwesomeIcon :icon="$icons.close" />
         {{ $t("atlas.review.list.bulk_reject") }}
       </button>
       <button
@@ -43,7 +43,7 @@
         data-testid="list-bulk-requeue"
         @click="bulkConfirm('requeue')"
       >
-        <FontAwesomeIcon icon="rotate" />
+        <FontAwesomeIcon :icon="$icons.refresh" />
         {{ $t("atlas.review.list.bulk_requeue") }}
       </button>
       <button
@@ -135,7 +135,7 @@
             data-testid="list-detail-approve"
             @click="detailAction('approve')"
           >
-            <FontAwesomeIcon icon="check" />
+            <FontAwesomeIcon :icon="$icons.check" />
             {{ $t("atlas.review.approve_button") }}
           </button>
           <button
@@ -145,7 +145,7 @@
             data-testid="list-detail-skip"
             @click="detailAction('skip')"
           >
-            <FontAwesomeIcon icon="rotate" />
+            <FontAwesomeIcon :icon="$icons.refresh" />
             {{ $t("atlas.review.skip_button") }}
           </button>
           <button
@@ -155,7 +155,7 @@
             data-testid="list-detail-reject"
             @click="detailAction('reject')"
           >
-            <FontAwesomeIcon icon="xmark" />
+            <FontAwesomeIcon :icon="$icons.close" />
             {{ $t("atlas.review.reject_button") }}
           </button>
         </div>
