@@ -186,14 +186,14 @@ export default {
     },
     columns() {
       return [
-        { key: 'sku', label: this.$t('pricefighter.sku'), sortable: true, width: '1.4fr' },
+        { key: 'sku', label: this.$t('pricefighter.sku'), sortable: true, width: '1.5fr' },
         { key: 'market', label: this.$t('pricefighter.market'), sortable: false, width: '1.1fr', truncate: true, priority: 2, title: (row) => `${row.channel_idx} · ${row.country} / ${row.currency}` },
         { key: 'current_price', label: this.$t('pricefighter.current_price'), sortable: true, width: '0.8fr', numeric: true, priority: 2 },
         { key: 'cost', label: this.$t('pricefighter.cost'), sortable: false, width: '0.7fr', numeric: true, priority: 2 },
         { key: 'reference_price', label: this.$t('pricefighter.competitor_price'), sortable: true, width: '0.8fr', numeric: true, priority: 2 },
         { key: 'gap_baseline', label: this.$t('pricefighter.gap'), sortable: true, width: '0.8fr', numeric: true, priority: 2 },
-        { key: 'suggested_price', label: this.$t('pricefighter.suggested_price'), sortable: false, width: '1.3fr' },
-        { key: 'recommendation', label: this.$t('pricefighter.recommendation'), sortable: false, width: '240px', truncate: true },
+        { key: 'suggested_price', label: this.$t('pricefighter.suggested_price'), sortable: false, width: '1.3fr', priority: 2 },
+        { key: 'recommendation', label: this.$t('pricefighter.recommendation'), sortable: false, width: '1.4fr', truncate: true },
       ]
     },
     paginationState() {

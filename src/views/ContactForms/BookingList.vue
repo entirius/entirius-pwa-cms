@@ -179,6 +179,7 @@ export default {
           key: "meeting_start",
           label: this.$t("cf.meeting_start"),
           width: "180px",
+          priority: 2,
         },
         {
           key: "meeting_end",

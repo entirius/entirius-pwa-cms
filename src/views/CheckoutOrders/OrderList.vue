@@ -128,6 +128,7 @@ export default {
           key: "pretty_id",
           label: this.$t("checkout_orders.order_id"),
           width: "120px",
+          priority: 2,
         },
         {
           key: "billing_email",

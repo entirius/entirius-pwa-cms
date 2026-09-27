@@ -431,7 +431,7 @@ export default {
     },
     columns() {
       const cols = [
-        { key: "thumbnail", label: "", sortable: false, width: "60px" },
+        { key: "thumbnail", label: "", sortable: false, width: "60px", priority: 2 },
         { key: "sku", label: "SKU", sortable: true, width: "180px", priority: 2 },
         {
           key: "name",

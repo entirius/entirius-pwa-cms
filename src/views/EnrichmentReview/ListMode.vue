@@ -219,6 +219,7 @@ export default {
           key: "field",
           label: this.$t("enrichment.review.col.field"),
           width: "130px",
+          priority: 2,
         },
         {
           key: "change",

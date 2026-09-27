@@ -195,6 +195,7 @@ export default {
           label: this.$t("dp.code"),
           sortable: false,
           width: "1fr",
+          priority: 2,
         },
         {
           key: "name",

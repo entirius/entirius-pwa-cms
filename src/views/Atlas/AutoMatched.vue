@@ -115,7 +115,7 @@ export default {
     columns() {
       return [
         { key: "sku", label: this.$t("atlas.auto_matched.col.sku"), width: "1fr" },
-        { key: "ean", label: this.$t("atlas.auto_matched.col.ean"), numeric: true },
+        { key: "ean", label: this.$t("atlas.auto_matched.col.ean"), numeric: true, priority: 2 },
         {
           key: "suppliers",
           label: this.$t("atlas.auto_matched.col.suppliers"),

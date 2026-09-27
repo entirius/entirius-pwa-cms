@@ -271,6 +271,7 @@ export default {
           sortable: false,
           width: "150px",
           numeric: true,
+          priority: 2,
         },
       ];
     },

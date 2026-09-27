@@ -180,7 +180,7 @@ export default {
         { key: "type", label: this.$t("layout_extender.type"), width: "120px", priority: 2 },
         { key: "language", label: this.$t("layout_extender.language"), width: "100px", priority: 2 },
         { key: "channels", label: this.$t("layout_extender.channels"), width: "160px", priority: 2 },
-        { key: "status", label: this.$t("layout_extender.status"), width: "120px" },
+        { key: "status", label: this.$t("layout_extender.status"), width: "120px", truncate: true },
         { key: "updated_at", label: this.$t("layout_extender.updated"), width: "160px", priority: 2 },
         { key: "actions", label: this.$t("layout_extender.actions"), align: "right", actions: true },
       ];

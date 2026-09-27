@@ -143,6 +143,7 @@ export default {
           label: this.$t("pim.feature_type"),
           sortable: true,
           width: "180px",
+          truncate: true,
         },
         {
           key: "scope",

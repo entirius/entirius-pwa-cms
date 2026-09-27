@@ -138,7 +138,7 @@ export default {
     columns() {
       return [
         { key: "name", label: this.$t("cf.name"), width: "1fr" },
-        { key: "email", label: this.$t("cf.email"), width: "1fr" },
+        { key: "email", label: this.$t("cf.email"), width: "1fr", priority: 2 },
         { key: "status", label: this.$t("cf.status"), width: "120px" },
         {
           key: "source_type",
