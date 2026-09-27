@@ -146,7 +146,7 @@ DPR 1, `pl-PL`, `Europe/Warsaw`, one worker).
 | 1 Token parity | `parity.spec.js` (`@parity`) | Does every token of `src/assets/tokens/semantic.json` (colour, overlay, shadow and the `space`, `radius`, `font-size` scales) resolve on `/` to its `@entirius/brand-tokens` value, both themes? Does body text render in the UI font (CDP `CSS.getPlatformFontsForNode`, families read from the brand tokens)? Plus census (off-token colours, radii, font sizes), the other font targets and axe `color-contrast` | token resolution and the body-text font gate; census, other fonts, contrast are reports |
 | 2 Figma landmarks | `landmarks.spec.js` (`@landmarks`) | Do elements with `data-fid="<id>"` sit where `figma/figma-landmarks.json` puts them (±2 px)? | report ("0 matched" until the P4 shell adds `data-fid`) |
 | 3 Regression | `screens.spec.js` (`@screens`) | Did any screen of `capture-spec.json` change? `toHaveScreenshot`, `threshold 0.1`, `maxDiffPixels 20` | gate once baselines exist |
-| 4 UX checks | `ux.spec.js` (`@ux`) | Is anything on a `capture-spec.json` screen broken, unreachable or inconsistent? Every screen × viewport, dark (below) | report |
+| 4 UX checks | `ux.spec.js` (`@ux`) | Is anything on a `capture-spec.json` screen broken, unreachable or inconsistent? Every screen × viewport, dark (below) | gate on `high` (owned allow-list); `medium` is a report |
 
 ```bash
 npm run visual              # all layers
@@ -172,8 +172,10 @@ refreshes before the `expiryDate` it set at login, which the frozen clock `2026-
 and sidebar pinned through `localStorage` on every page load (the profile GET is rewritten too, so the shared profile never
 leaks in at login), transitions, animations and the caret off, notification and config-health polls answered with
 fixed bodies. A screen is captured only once its data has rendered: after `networkidle` `openScreen` waits until
-no loader is visible (`.loader`, `.loader-element`, `.skeleton`, `[aria-busy="true"]`, a leaf text starting
-"Ładowanie"/"Loading") and, when the row has a `readySelector`, until that selector is visible — 10 s, then `INFRA:`.
+no loader is visible (`.loader`, `.loader-element`, `.skeleton`, `[aria-busy="true"]`, an element whose own text
+starts with "Ładowanie"/"Loading" and ends in an ellipsis — "Ładowanie…" next to a spinner counts, a permanent
+"Ładowanie palet" does not) and, when the row has a `readySelector`, until that selector is visible — 10 s, then
+`INFRA:`.
 A detail or edit screen that paints its frame before the data (an empty form, no loader) gets a `readySelector`
 naming an element only the loaded state has (`.ProseMirror` of a loaded editor, a `StatusBadge`). Every write to the API is answered `200 {}` (only login and token refresh pass through), so a run
 changes no data on the shared stack. The harness never clicks the theme toggle or the language switch: both PATCH
@@ -185,17 +187,28 @@ redirected, login wall instead of the screen, a list with no row to open) is inf
 for both; the zeno wrapper (`make visual-check`, an operator step still to come) maps a run whose failures are all
 `INFRA:` to exit 2, so infrastructure never goes back to the coder.
 
-**UX checks** (`@ux`, report mode: a finding never fails the run; a screen that does not open is listed under
-`errors` in the summary). `support/ux.browser.js` measures what a user can see — `display:none`,
-`visibility:hidden`, `opacity: 0`, `aria-hidden`/`inert` subtrees, visually-hidden a11y text, closed off-canvas
-layers and content clipped away entirely are skipped. Interactive = `button`, `a[href]`, `[role=button]`, `input`,
-`select`, plus clickable `span`/`div`s (the outermost `cursor: pointer` element without semantics).
+**UX checks** (`@ux`, guard mode: a `high` finding fails its screen × viewport, a `medium` one is only reported; a
+screen that does not open is listed under `errors` in the summary). `support/ux.browser.js` measures what a user can
+see — `display:none`, `visibility:hidden`, `opacity: 0`, `aria-hidden`/`inert` subtrees, visually-hidden a11y text
+(clipped away, or an absolute 1 × 1 px box that cuts its overflow), closed off-canvas layers and content clipped away
+entirely are skipped; an absolute control that collapsed to 0 px on one axis is not hidden and counts as `zeroSize`.
+Interactive = `button`, `a[href]`, `[role=button]`, `input`, `select`, plus clickable `span`/`div`s (the outermost
+`cursor: pointer` element without semantics). The native input of a custom checkbox or radio is sized by its `label`.
 
-`npm run visual:ux` runs 6 workers, fully parallel (~2 min instead of ~10): the layer only reads the page. Each
+**Guard and allow-list.** A known, deliberate `high` finding goes into `tests/visual/ux-allow.json`: `screen` (an id or
+`"*"`), optional `viewport`, `kind`, `selector` (contained in the reported element's own selector step — its tag and
+first two classes, plus its `data-testid` — never matched against an ancestor), `reason` and `owner` (the plan that
+removes it). An entry without an owner or a reason fails every screen. Empty is the target: the plan that fixes a
+component deletes its entries. Plan 07 of the polish track left the `Dropdown` and `Switcher` boots (P3 plans 15/16)
+and click-only rows, cards and handles of P5 plans there.
+
+`npm run visual:ux` runs 6 workers, fully parallel (~3 min instead of ~10): the layer only reads the page. Each
 screen is measured once its DOM has settled (element count unchanged for 500 ms, at most 5 s after the data wait),
-so editors and lazy widgets are in the measurement at any load. Report files are written then renamed, and
-`support/global-teardown.js` rebuilds `ux-summary.json` once all workers finished. The pixel layer (`@screens`) and
-the other layers keep one worker.
+so editors and lazy widgets are in the measurement at any load. Every run writes to its own folder,
+`.report/ux/runs/<runId>/` (files written then renamed); `support/global-teardown.js` rebuilds the run's
+`ux-summary.json` once all workers finished. A full run — every screen × viewport measured, skipped (`needsData`) or
+failed to open — replaces the report in `.report/ux/` and prunes `runs/`; a partial run (`--grep`) stays in its
+folder, so it never wipes the last full report. The pixel layer (`@screens`) and the other layers keep one worker.
 
 | Kind | Finds | Class |
 |---|---|---|
@@ -211,13 +224,17 @@ Buttons are grouped by role (`primary` = accent fill, `danger` = negative colour
 `outline`, `secondary`) with their height, horizontal padding, radius, font size and border. Two censuses count
 consistency, not defects: `labelStyles` (every field label — `label`, `.form-field__label`, `.ld-field__label` or any
 element a control names in `aria-labelledby`, not the text beside a checkbox, radio or switch — by font size, weight,
-case and colour; labels inside a dialog the screen list never opens stay out of the count) and `cardPaddings` (every bordered, filled box of at
-least 240 × 96 that is not a control or table part, by padding), each value with the number of screens per viewport
-it appears on. Mobile emulation keeps the
-custom scrollbar as a classic one (the 6 px "page scroll" of every mobile screen); the document scroller and that
-gutter are not findings. Output in `tests/visual/.report/ux/`: `<screen>__<viewport>.json` (every issue with kind,
-class, detail, selector, text and box, the bottom bar found, every button) and `ux-summary.json`, the shape later
-gates read — keep it stable:
+case and colour; labels inside a dialog the screen list never opens stay out of the count) and `cardPaddings` (every
+bordered, filled box of at least 240 × 96 that is not a control or table part, by padding), each value with the
+number of screens per viewport it appears on.
+
+Not findings, on purpose: neighbours 0–1 px apart (a tab bar, a joined input + button, a segmented control are one
+group, and a 1 px gap is a shared border, not a cramped pair); a vertical scroller with a hidden scrollbar (scrolling
+down is expected everywhere, and mobile emulation draws every scrollbar at 0 px, so it would flag each list); the
+document scroller and the scrollbar gutter (mobile emulation keeps the custom scrollbar as a classic one, the 6 px
+"page scroll" of every mobile screen). Output in `tests/visual/.report/ux/`: `<screen>__<viewport>.json` (every issue
+with kind, class, detail, selector, text and box, the bottom bar found, every button) and `ux-summary.json`, the shape
+later gates read — keep it stable:
 
 ```json
 {
@@ -228,6 +245,7 @@ gates read — keep it stable:
   "cardPaddings": { "<top right bottom left>": { "desktop": 0, "mobile": 0 } },
   "severity": { "<kind>": "high|medium" },
   "errors": { "<screen>__<viewport>": "INFRA: ..." },
+  "skipped": { "<screen>__<viewport>": "<id>: <note> (not in this seed)" },
   "runId": "..."
 }
 ```

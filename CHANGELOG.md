@@ -93,6 +93,16 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- UX polish track closed (plans 01–07, FIX-02…06): 189 audited defects accounted for — buttons in one family (sizes,
+  roles, named icon-only squares, FAQ delete and unlink work again), values and loaders shown right, every action
+  reachable on a phone, tables that fit or truncate on purpose, one label, card and type rhythm. `@ux` is now a guard:
+  a `high` finding (zero-size, off-viewport, under the bottom bar, click-only element) fails its screen unless
+  `tests/visual/ux-allow.json` names the plan that removes it (Dropdown and Switcher → P3, click-only rows and cards →
+  their P5 panel plans); a partial `@ux` run no longer wipes the last full report. Closing fixes: no empty panel
+  toolbar strip (28 screens), content sets scroll on a phone, the search icon of `BasicInput` is decorative and lets
+  the click through, `ToolTip` wrappers leave focus to their control, `Confirmation-modal` is destructive only when a
+  delete or remove asks for it, `BasicButton :stop="false"` for wrappers that act on the click (navigation editor
+  reorder), rich-text table tools are named icon buttons, channel and author-picker labels name their control.
 - Touch and layout rules (phone): small controls keep their look and get a thumb-sized hit area from one mixin
   (`touch-target`): the help "?", table row checkboxes and the expander, `NumberInput` − / +, filter chips, the
   config-health close and the Leads kit buttons; neighbouring hit areas never overlap. The back arrow is 40 px on a

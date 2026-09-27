@@ -68,7 +68,9 @@ Traps:
 ## Components
 
 - **C1 Build UI from boots.** Views, `src/components/` and `src/functionals/` use no raw `<button>`, `<input>`
-  (except the hidden `type="file"` picker), `<select>` or `<textarea>`.
+  (except the hidden `type="file"` picker), `<select>` or `<textarea>`. A click handler sits on a boot or a focusable,
+  named element: a click-only `span`/`div` fails `@ux` (`nonFocusable`) unless `tests/visual/ux-allow.json` names the
+  plan that removes it. A decorative icon carries no pointer and no handler (`BasicInput`'s icon is `aria-hidden`).
 - **C2 One component, one implementation.** Before writing a component, check `src/boots/` and `src/functionals/`.
   If one does most of the job, extend it with a prop or variant. If it is broken, fix it in place. Never make a
   panel-local copy (`PimDataTable`, `ld-btn`). New shared UI goes into `src/boots/` + `register-elems.js`. Builder
@@ -103,10 +105,13 @@ Traps:
   `--elem-height`, the toolbar and form size) or `size="sm"` (row actions); labels never wrap. The role is a class:
   `btn-primary` (one per page, R5: row, bulk, section and inline-form actions are `btn-secondary` beside it; a dialog
   or drawer has its own), `btn-secondary` (`btn-outline` is the same look), `btn-ghost` (close, row edit),
-  `btn-danger` (every delete, remove, reject), `btn-danger-fill` (the destructive confirm in a dialog — the default
-  footer of `Confirmation-modal`; a non-destructive confirm passes `:destructive="false"` and gets `btn-primary`). A
+  `btn-danger` (every delete, remove, reject), `btn-danger-fill` (the destructive confirm in a dialog: a delete,
+  remove or flush passes `destructive` to `Confirmation-modal`; every other confirm is its default `btn-primary`). A
   button without `text` is icon-only: a square of its size, `label` required — without it the button warns in the
   dev console. One toolbar uses one size. Back is always `BackBar` (icon, or icon + label), never a `BasicButton`.
+  The click stops at the button; inside a wrapper that acts on the click (`SubscriberSetter`) pass `:stop="false"`.
+  An icon-only button is named by its short action (`label`); a longer explanation goes into a `ToolTip
+  :is_wrapper="true"` around it.
   Never pass `bg-*` / `t-*` utilities to pick a role, and never set a button height or font size from a view.
 
 ## Layout (R1–R9)
@@ -143,7 +148,9 @@ Traps:
   in R5 order. The toolbar styles its children by role, never by position: `.panel-toolbar__actions` on the right
   anchor, `.panel-toolbar__title` on a group around the left anchor (title + channel selector). The page wrapper
   below it pads with `.page-pad`, and its content card scrolls (`flex: 1; min-height: 0; overflow-y: auto`); the
-  toolbar never shrinks. P3 replaces this with `PageLayout` + `PageHeader` + `ActionBar`.
+  toolbar never shrinks. A toolbar with nothing in it (no teleported content, no selector or title of the panel's own)
+  is hidden by `.panel-toolbar` itself: never an empty strip. P3 replaces this with `PageLayout` + `PageHeader` +
+  `ActionBar`.
 - **List view.** The toolbar holds a search `BasicInput` with `useSearchDebounce`, then filters in
   `MobileFilterPanel`, and it wraps (`flex-wrap`, `gap: var(--space-5)`). In `DataTable`, secondary columns get fixed
   widths and only the primary text column gets `1fr`, truncated with an ellipsis. A cell either fits (its column
@@ -234,3 +241,5 @@ from this file and the catalogue page. The designer updates Figma afterwards, an
 2. `npm run test:unit` and `npm run test:smoke` pass.
 3. You checked the screen in both themes, at 390 px and on desktop.
 4. The fidelity check is green for the screens you touched (P1).
+5. `npm run visual:ux` is green: no `high` finding outside `tests/visual/ux-allow.json`, and an entry you add names
+   its owning plan.
