@@ -329,7 +329,7 @@
             ]"
             @click="selected = selected === image.uid ? null : image.uid"
           >
-            <div class="ov-h h-100 w-100 rounded">
+            <div class="relative ov-h h-100 w-100 rounded">
               <BasicTooltip
                 :text="
                   image.meta && image.meta.fileName
