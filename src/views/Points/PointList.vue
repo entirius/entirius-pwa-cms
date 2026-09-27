@@ -54,13 +54,13 @@
         @row-click="onRowClick"
       >
         <template #cell-type_name="{ row }">
-          <span v-if="row.type" class="chip t-accent">
+          <span v-if="row.type" class="chip t-accent" :title="row.type.name">
             <font-awesome-icon
               v-if="row.type.is_carrier"
               icon="lock"
               class="mr-1"
             />
-            {{ row.type.name }}
+            <span class="chip__label">{{ row.type.name }}</span>
           </span>
           <span v-else class="t-muted">---</span>
         </template>

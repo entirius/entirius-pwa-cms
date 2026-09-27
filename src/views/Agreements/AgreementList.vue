@@ -47,8 +47,8 @@
         @row-click="onRowClick"
       >
         <template #cell-category="{ value }">
-          <span v-if="value" class="chip bg-accent-subtle t-strong">
-            {{ value }}
+          <span v-if="value" class="chip bg-accent-subtle t-strong" :title="value">
+            <span class="chip__label">{{ value }}</span>
           </span>
           <span v-else class="t-muted">---</span>
         </template>

@@ -160,8 +160,11 @@
             v-if="row.product_class_name"
             class="chip"
             :class="productClassBadge(row.product_class_name)"
+            :title="productClassLabel(row.product_class_name)"
           >
-            {{ productClassLabel(row.product_class_name) }}
+            <span class="chip__label">{{
+              productClassLabel(row.product_class_name)
+            }}</span>
           </span>
           <span v-else class="t-muted">—</span>
         </template>
