@@ -47,7 +47,10 @@ values.
   carries 300–600, Lexend Deca 300 and 400. Font families are `--font-ui` (Inter, body and controls), `--font-brand`
   (Lexend Deca, titles and navigation) and `--font-mono`. Shadow and overlay come from `--shadow-sm`, `-md`, `-lg`,
   `-down` (plus the CMS-local `-arrow` / `-right` / `-left` / `-top` / `-around`) and `--overlay-backdrop`, `-heavy`,
-  `-loading`, `-handy`, `-ripple`.
+  `-loading`, `-handy`, `-ripple`. Every `<h1>` gets the page-title face from the base style (`typo/_typo.scss`:
+  `--font-brand`, `--fs-700`, 400), so a view never sizes or weighs an H1; section titles stay Inter 600 one step
+  down. Text that carries meaning is at least 12 px (`--fs-200`); 10–11 px is for decorative counters only (a badge
+  count on a tab, chip, bell or filter button).
 - **T6 Every screen works in both themes.** `data-theme` on `<html>` is `default` (light) or `dark`. A screen that
   follows T1 is themed for free. Scope third-party dark overrides as `[data-theme="dark"] .x { }`.
 
@@ -59,7 +62,7 @@ variants), `--radius-sm` / `--radius-md`, the radius classes `br-<n>`, `br-tl-<n
 Traps:
 - `ph-*` / `pv-*` are shorthands, and they reset the other two sides. Use `pl-*` + `pr-*` when you also set a vertical side.
 - Utility grid classes apply only from 640 px up. Below that, use flex.
-- Inputs and buttons share `--elem-height`, so never override it on one of them.
+- Inputs, selects, number and colour inputs and buttons share `--elem-height` (32 px), so never override it on one of them.
 
 ## Components
 
@@ -151,7 +154,11 @@ Traps:
   (`src/utils/format.js`), never raw ISO. A select in an edit form shows the stored value even when the loaded
   options lack it (`withStoredOption`, `src/utils/options.js`).
 - **Edit view.** A `FormField` wraps every field, validation follows § Forms, and there is one primary Save (R5).
-  A dirty form shows the unsaved state next to the actions.
+  A dirty form shows the unsaved state next to the actions. Rhythm: 16 px (`--space-4`) between fields, 24 px
+  (`--space-6`) between groups, 32 px (`--space-8`) between cards.
+- **Cards.** `.page-card` (`utils/_decorators.scss`) is the one card, for the page card and for a section card
+  inside it: `surface-base`, `border-subtle`, `--radius-3xl`, 24 px padding, 16 px below tablet. A view never sets
+  its own card padding, border or radius.
 - **Dialogs.** Build on `Confirmation-modal` or a `src/functionals/` modal, never inline in a view. Width:
   `min-width: min(400px, 95vw)`. A dialog with an async action closes on success and on error.
 - **Locked / system entity.** Show a notice bar at the top. Pass the disabled prop of each boot (`Dropdown
@@ -169,6 +176,10 @@ Traps:
 - Create `useFormErrors()` in `setup()` and return it as `formErrors`.
 - `BasicInput` and `Dropdown` both take `:validate="formErrors.getFieldError('field')"`. `FormField :required` marks
   required fields.
+- One label style: `FormField` (and the `label` prop of `BasicInput` / `LockedField`) renders `.field-label` —
+  12 px / 600, uppercase, `text-muted`, 4 px above the control. A raw `<label>` takes `.field-label`; never a local
+  copy of the style. The required marker is the `.required` class (a `negative` `*` after the label), never a `*`
+  typed into the text.
 - Run `validateRequired(form, rules)` before the request, and `formErrors.handleApiError(err)` in `catch`, before
   the toast.
 - A deep watcher on the form clears the errors when the user edits. Never show a generic toast only.
@@ -182,7 +193,8 @@ Traps:
   panel strip, `.page-title-row` for an in-card back arrow + H1 + `ml-auto` actions, `.section-head` for an `h2` with
   its controls. Wrapped actions stay right-aligned (R5). Other rows use `.flex-wrap` (with `.rg-*` for the row gap);
   form rows stack to one column below tablet.
-- Page cards (`p-12`, `pl-12` …) pad 16 px below tablet; the layout keeps every scroll region above the bottom bar.
+- `.page-card` pads 16 px below tablet, and so does the page wrapper (`p-12`, `pl-12` …); the layout keeps every
+  scroll region above the bottom bar.
 - A tap target is at least 24 × 24 px, and list rows are at least 36 px high. A small glyph gets a larger hit area
   (padding or a pseudo-element), not a larger visual.
 - A button with icon + text drops its text on mobile via `icon-only-mobile`. It keeps an accessible label. The page's

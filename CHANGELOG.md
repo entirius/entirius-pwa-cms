@@ -42,6 +42,19 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- **Forms, type and spacing follow one rhythm** (`docs/ui-rules.md` T5, Cards, Forms): one form-label style
+  (`.field-label`: 12 px / 600, uppercase, muted) from `FormField`, the `BasicInput` / `LockedField` labels and every
+  raw label, with local copies removed; the required marker is always the red `*` of `.required` or
+  `FormField :required` (no typed asterisks; key fields on quality rules and spawn rules marked). Inputs, selects,
+  number and colour inputs and buttons are 32 px (`--elem-height`); the colour swatch has an edge; Leads fields use
+  the field surface and control border. One card class (`.page-card`: faint border, 24 px radius, 24 px padding,
+  16 px on a phone) replaces the 48 / 40 / 32 / 20 / 8 px page and section cards. Every H1 is the page title in
+  Lexend Deca 30 px; FAQ and author screens show their title once. Meaningful text is at least 12 px (10–11 px only
+  for badge counts). The rich-text mode select follows the theme. Filter chips sit 8 px apart.
+- **Polish copy:** diacritics in the contact-form strings; e-mail template types, field labels and hints, the home
+  greeting, rich-text modes, atlas raw data and stock, customer columns and address headers, the PIM product-tile
+  tab, upload "or" and placeholders go through i18n; tile, channel and FAQ-question counts use Polish plurals;
+  channel selects show the choice alone ("Wybrano: 2") instead of nested parentheses.
 - **One button family** (`BasicButton`): two sizes (`md` = the input height, `sm` = row actions), 12 px labels that
   never wrap, a 1 px border on every variant, and the roles primary / secondary / ghost / danger / danger-fill as
   classes (`docs/ui-rules.md` C6). Every delete, remove and reject is a danger button; icon-only buttons are squares
