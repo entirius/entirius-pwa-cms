@@ -203,8 +203,9 @@ layers and content clipped away entirely are skipped. Interactive = `button`, `a
 
 Buttons are grouped by role (`primary` = accent fill, `danger` = negative colour or a delete label/icon, `icon-only`,
 `outline`, `secondary`) with their height, horizontal padding, radius, font size and border. Two censuses count
-consistency, not defects: `labelStyles` (every field label — `label` or `.form-field__label`, not the text beside a
-checkbox, radio or switch — by font size, weight, case and colour) and `cardPaddings` (every bordered, filled box of at
+consistency, not defects: `labelStyles` (every field label — `label`, `.form-field__label`, `.ld-field__label` or any
+element a control names in `aria-labelledby`, not the text beside a checkbox, radio or switch — by font size, weight,
+case and colour; labels inside a dialog the screen list never opens stay out of the count) and `cardPaddings` (every bordered, filled box of at
 least 240 × 96 that is not a control or table part, by padding), each value with the number of screens per viewport
 it appears on. Mobile emulation keeps the
 custom scrollbar as a classic one (the 6 px "page scroll" of every mobile screen); the document scroller and that
