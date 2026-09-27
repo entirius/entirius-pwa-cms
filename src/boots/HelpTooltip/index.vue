@@ -37,15 +37,16 @@ defineProps({
     position: relative;
     top: -1px;
 
-    // A phone gets a 40 px hit area around the 14 px glyph; the glyph itself does not grow.
+    // A phone gets the 24 px minimum hit area around the 14 px glyph (the glyph does not grow). Larger would cover the
+    // input 4 px below the label and the Switcher beside it, and take their taps.
     @include max-tablet {
       &::after {
         content: "";
         position: absolute;
         top: 50%;
         left: 50%;
-        width: var(--space-10);
-        height: var(--space-10);
+        width: var(--space-6);
+        height: var(--space-6);
         transform: translate(-50%, -50%);
       }
     }
