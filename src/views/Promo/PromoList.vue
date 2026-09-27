@@ -64,12 +64,12 @@
               :active="statusFilter === tab.key"
               @click="setStatusFilter(tab.key)"
             />
-            <Dropdown
-              :values="modifierOptions"
-              :selected="modifierFilter ? [modifierFilter] : []"
+            <BasicSelect
+              :options="modifierOptions"
+              :model-value="modifierFilter"
               :placeholder="$t('promo.all_modifiers')"
               class="promo-list__modifier-filter"
-              @onSelect="onModifierFilter"
+              @update:model-value="onModifierFilter"
             />
           </MobileFilterPanel>
         </div>
@@ -320,7 +320,7 @@ export default {
     fabActions() {
       return [
         {
-          icon: "plus",
+          icon: "add",
           label: this.$t("promo.create_rule"),
           handler: () => this.$router.push("/promo/create"),
         },

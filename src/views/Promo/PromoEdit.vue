@@ -37,10 +37,13 @@
         <div class="detail-section mb-10">
           <h2 class="fs-500 fw-600 mb-8">{{ $t("promo.section_basic") }}</h2>
           <div class="detail-grid">
-            <FormField :label="$t('promo.field_name')" required>
+            <FormField
+              :label="$t('promo.field_name')"
+              required
+              :error="formErrors.getFieldError('name')?.msg || ''"
+            >
               <BasicInput
                 v-model="form.name"
-                :validate="formErrors.getFieldError('name')"
               />
             </FormField>
             <FormField
@@ -48,11 +51,11 @@
               required
               :error="formErrors.getFieldError('modifier')?.msg"
             >
-              <Dropdown
-                :values="modifierOptions"
-                :selected="form.modifier ? [form.modifier] : []"
+              <BasicSelect
+                :options="modifierOptions"
+                :model-value="form.modifier"
                 :placeholder="$t('promo.select_modifier')"
-                @onSelect="onModifierSelect"
+                @update:model-value="onModifierSelect"
               />
             </FormField>
             <FormField :label="$t('promo.field_target')">
@@ -62,10 +65,12 @@
                 :placeholder="$t('promo.select_target')"
               />
             </FormField>
-            <FormField :label="$t('promo.field_priority')">
+            <FormField
+              :label="$t('promo.field_priority')"
+              :error="formErrors.getFieldError('priority')?.msg || ''"
+            >
               <NumberInput
                 v-model="form.priority"
-                :validate="formErrors.getFieldError('priority')"
               />
             </FormField>
           </div>
@@ -77,21 +82,25 @@
           <div class="detail-grid">
             <!-- percent / amount / gratis_qty -->
             <template v-if="['percent', 'amount', 'gratis_qty'].includes(extraValueKind)">
-              <FormField :label="extraValueLabel">
+              <FormField
+                :label="extraValueLabel"
+                :error="formErrors.getFieldError('extra_value')?.msg || ''"
+              >
                 <NumberInput
                   v-model="form.extra_value"
-                  :validate="formErrors.getFieldError('extra_value')"
                 />
               </FormField>
             </template>
 
             <!-- gratis_sku: sku + sku_logic + qty -->
             <template v-else-if="extraValueKind === 'gratis_sku'">
-              <FormField :label="$t('promo.extra_gratis_sku')">
+              <FormField
+                :label="$t('promo.extra_gratis_sku')"
+                :error="formErrors.getFieldError('extra_value')?.msg || ''"
+              >
                 <BasicInput
                   v-model="form.extra_value_sku"
                   :placeholder="$t('promo.extra_gratis_sku_placeholder')"
-                  :validate="formErrors.getFieldError('extra_value')"
                 />
               </FormField>
               <FormField :label="$t('promo.extra_gratis_sku_logic')">
@@ -154,11 +163,11 @@
                 </div>
                 <!-- add currency group -->
                 <div class="flex ai-ct gap-5 mt-1">
-                  <Dropdown
-                    :values="availableCurrencyGroupOptions"
-                    :selected="[]"
+                  <BasicSelect
+                    :options="availableCurrencyGroupOptions"
+                    :model-value="null"
                     :placeholder="$t('promo.extra_add_currency')"
-                    @onSelect="addCurrencyGroup"
+                    @update:model-value="addCurrencyGroup"
                   />
                 </div>
               </FormField>
@@ -185,99 +194,42 @@
         <div class="detail-section mb-10">
           <h2 class="fs-500 fw-600 mb-8">{{ $t("promo.section_conditions") }}</h2>
           <div class="detail-grid">
-            <FormField :label="$t('promo.field_min_order_amount')">
+            <FormField
+              :label="$t('promo.field_min_order_amount')"
+              :error="formErrors.getFieldError('min_order_amount')?.msg || ''"
+            >
               <BasicInput
                 v-model="form.min_order_amount"
                 :placeholder="$t('promo.min_order_amount_placeholder')"
-                :validate="formErrors.getFieldError('min_order_amount')"
               />
             </FormField>
             <FormField :label="$t('promo.field_currencies')">
-              <Dropdown
-                :custom_droplist="true"
+              <BasicSelect
+                v-model="form.currencies"
+                multiple
+                :options="currencySelectOptions"
                 :placeholder="`${$t('promo.field_currencies')} (${form.currencies.length})`"
-              >
-                <template #custom>
-                  <div
-                    v-for="opt in currencyOptions"
-                    :key="opt.iso3"
-                    class="pointer flex jc-sb ai-ct ph-2 dropdown-list-el"
-                    :class="{ '-primary-100': form.currencies.includes(opt.iso3) }"
-                    @click.stop="toggleCurrency(opt.iso3)"
-                  >
-                    <span class="ml-2">{{ opt.iso3 }} — {{ opt.name }}</span>
-                    <FontAwesomeIcon
-                      v-if="form.currencies.includes(opt.iso3)"
-                      :icon="$icons.check"
-                      class="t-positive"
-                    />
-                  </div>
-                  <div v-if="!currencyOptions.length" class="ph-2 pv-2 t-muted fs-200 ml-2">
-                    {{ $t("promo.no_currencies") }}
-                  </div>
-                </template>
-              </Dropdown>
+              />
               <p class="fs-200 t-muted mt-1">{{ $t("promo.currencies_hint") }}</p>
             </FormField>
             <FormField :label="$t('promo.section_channels')">
-              <Dropdown
-                :custom_droplist="true"
+              <BasicSelect
+                v-model="form.channels"
+                multiple
+                :options="channelSelectOptions"
                 :placeholder="`${$t('promo.section_channels')} (${form.channels.length})`"
-              >
-                <template #custom>
-                  <div
-                    v-for="opt in checkoutChannel.channels"
-                    :key="opt.idx"
-                    class="pointer flex jc-sb ai-ct ph-2 dropdown-list-el"
-                    :class="{ '-primary-100': form.channels.includes(opt.idx) }"
-                    @click.stop="toggleChannel(opt.idx)"
-                  >
-                    <span class="ml-2">
-                      {{ opt.name || opt.idx }}
-                      <span v-if="opt.idx === channel" class="t-muted fs-200">({{ $t("promo.channel_active") }})</span>
-                    </span>
-                    <FontAwesomeIcon
-                      v-if="form.channels.includes(opt.idx)"
-                      :icon="$icons.check"
-                      class="t-positive"
-                    />
-                  </div>
-                  <div v-if="!checkoutChannel.channels.length" class="ph-2 pv-2 t-muted fs-200 ml-2">
-                    {{ $t("promo.no_channels") }}
-                  </div>
-                </template>
-              </Dropdown>
+              />
               <p class="fs-200 t-muted mt-1">{{ $t("promo.channels_hint") }}</p>
             </FormField>
           </div>
           <div v-if="form.free_shipping" class="detail-grid mt-8">
             <FormField :label="$t('promo.field_free_shipping_methods')">
-              <Dropdown
-                :custom_droplist="true"
+              <BasicSelect
+                v-model="form.free_shipping_methods"
+                multiple
+                :options="shippingSelectOptions"
                 :placeholder="`${$t('promo.field_free_shipping_methods')} (${form.free_shipping_methods.length})`"
-              >
-                <template #custom>
-                  <div
-                    v-for="opt in shippingMethodOptions"
-                    :key="opt.code"
-                    class="pointer flex jc-sb ai-ct ph-2 dropdown-list-el"
-                    :class="{ '-primary-100': form.free_shipping_methods.includes(opt.code) }"
-                    @click.stop="toggleShippingMethod(opt.code)"
-                  >
-                    <span class="ml-2">
-                      [{{ opt.channel_idx }}] {{ opt.code }}{{ opt.name ? ` — ${opt.name}` : "" }}
-                    </span>
-                    <FontAwesomeIcon
-                      v-if="form.free_shipping_methods.includes(opt.code)"
-                      :icon="$icons.check"
-                      class="t-positive"
-                    />
-                  </div>
-                  <div v-if="!shippingMethodOptions.length" class="ph-2 pv-2 t-muted fs-200 ml-2">
-                    {{ $t("promo.no_shipping_methods") }}
-                  </div>
-                </template>
-              </Dropdown>
+              />
             </FormField>
           </div>
         </div>
@@ -404,10 +356,13 @@
           <div v-if="showAddCode" class="detail-section mt-8">
             <h3 class="fs-400 fw-600 mb-8">{{ $t("promo.new_code_title") }}</h3>
             <div class="detail-grid">
-              <FormField :label="$t('promo.code_field_code')" required>
+              <FormField
+                :label="$t('promo.code_field_code')"
+                required
+                :error="codeFormErrors.getFieldError('code')?.msg || ''"
+              >
                 <BasicInput
                   v-model="newCode.code"
-                  :validate="codeFormErrors.getFieldError('code')"
                 />
               </FormField>
               <FormField :label="$t('promo.code_field_max_used')">
@@ -632,39 +587,35 @@
     </ConfirmDialog>
 
     <!-- Edit code modal -->
-    <Confirmation-modal
-      :visible="showEditCodeModal"
-      @accept="saveEditCode"
-      @reject="closeEditCodeModal"
+    <BasicModal
+      :open="showEditCodeModal"
+      size="sm"
+      :title="$t('promo.edit_code_title')"
+      @update:open="(open) => open || closeEditCodeModal()"
     >
-      <template #header>
-        <h2>{{ $t("promo.edit_code_title") }}</h2>
-      </template>
-      <template #description>
-        <div class="edit-code-body">
-          <p class="fs-200 t-muted mb-8">
-            {{ $t("promo.code_field_current_used") }}: <strong>{{ editCode.current_used }}</strong>
-          </p>
-          <FormField :label="$t('promo.code_field_code')" required class="mb-5">
-            <BasicInput v-model="editCode.code" />
-          </FormField>
-          <FormField :label="$t('promo.code_field_max_used')" class="mb-5">
-            <NumberInput v-model="editCode.max_used" />
-          </FormField>
-          <FormField :label="$t('promo.code_field_max_per_user')" class="mb-5">
-            <NumberInput v-model="editCode.max_uses_per_user" />
-          </FormField>
-          <FormField :label="$t('promo.code_field_active_from')" class="mb-5">
-            <BasicInput type="date" v-model="editCode.active_from" />
-          </FormField>
-          <FormField :label="$t('promo.code_field_active_to')" class="mb-5">
-            <BasicInput type="date" v-model="editCode.active_to" />
-          </FormField>
-          <FormField :label="$t('promo.code_field_max_qty')">
-            <NumberInput v-model="editCode.max_products_qty" />
-          </FormField>
-        </div>
-      </template>
+      <div class="edit-code-body">
+        <p class="fs-200 t-muted mb-8">
+          {{ $t("promo.code_field_current_used") }}: <strong>{{ editCode.current_used }}</strong>
+        </p>
+        <FormField :label="$t('promo.code_field_code')" required class="mb-5">
+          <BasicInput v-model="editCode.code" />
+        </FormField>
+        <FormField :label="$t('promo.code_field_max_used')" class="mb-5">
+          <NumberInput v-model="editCode.max_used" />
+        </FormField>
+        <FormField :label="$t('promo.code_field_max_per_user')" class="mb-5">
+          <NumberInput v-model="editCode.max_uses_per_user" />
+        </FormField>
+        <FormField :label="$t('promo.code_field_active_from')" class="mb-5">
+          <BasicInput type="date" v-model="editCode.active_from" />
+        </FormField>
+        <FormField :label="$t('promo.code_field_active_to')" class="mb-5">
+          <BasicInput type="date" v-model="editCode.active_to" />
+        </FormField>
+        <FormField :label="$t('promo.code_field_max_qty')">
+          <NumberInput v-model="editCode.max_products_qty" />
+        </FormField>
+      </div>
       <template #footer>
         <BasicButton
           variant="secondary"
@@ -679,7 +630,7 @@
           {{ $t('common.save') }}
         </BasicButton>
       </template>
-    </Confirmation-modal>
+    </BasicModal>
 
     <ConfirmDialog
       :open="!!pendingNav"
@@ -732,7 +683,6 @@ import {
   GET_ShippingMethods,
   GET_Currencies,
 } from "@/api/promo/api";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import FilterEditDrawer from "./FilterEditDrawer.vue";
 
 const EXTRA_VALUE_KINDS_SCALAR = ["percent", "amount", "gratis_qty"];
@@ -779,7 +729,7 @@ function buildExtraValuePayload(form, extraValueKind) {
 
 export default {
   name: "PromoEdit",
-  components: { ConfirmationModal, FilterEditDrawer, Pagination },
+  components: { FilterEditDrawer, Pagination },
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();
@@ -887,6 +837,23 @@ export default {
       if (!this.form.modifier) return null;
       const found = this.modifiers.find(m => m.value === this.form.modifier);
       return found ? found.extra_value_kind : null;
+    },
+    currencySelectOptions() {
+      return this.currencyOptions.map(c => ({ label: `${c.iso3} — ${c.name}`, value: c.iso3 }));
+    },
+    // The active channel is always applied (backend auto-adds it) — can't toggle off.
+    channelSelectOptions() {
+      return this.checkoutChannel.channels.map(ch => {
+        const active = ch.idx === this.channel;
+        const description = active ? this.$t("promo.channel_active") : "";
+        return { label: ch.name || ch.idx, value: ch.idx, description, disabled: active };
+      });
+    },
+    shippingSelectOptions() {
+      return this.shippingMethodOptions.map(m => ({
+        label: `[${m.channel_idx}] ${m.code}${m.name ? ` — ${m.name}` : ""}`,
+        value: m.code,
+      }));
     },
     availableCurrencyGroupOptions() {
       const used = new Set(this.perCurrencyRows.map(g => g.iso3));
@@ -1033,32 +1000,6 @@ export default {
         this.currencyOptions = data.results || [];
       } catch {
         // Non-critical
-      }
-    },
-    toggleShippingMethod(code) {
-      const idx = this.form.free_shipping_methods.indexOf(code);
-      if (idx >= 0) {
-        this.form.free_shipping_methods.splice(idx, 1);
-      } else {
-        this.form.free_shipping_methods.push(code);
-      }
-    },
-    toggleCurrency(iso3) {
-      const idx = this.form.currencies.indexOf(iso3);
-      if (idx >= 0) {
-        this.form.currencies.splice(idx, 1);
-      } else {
-        this.form.currencies.push(iso3);
-      }
-    },
-    toggleChannel(channelIdx) {
-      // The active channel is always applied (backend auto-adds it) — can't toggle off.
-      if (channelIdx === this.channel) return;
-      const idx = this.form.channels.indexOf(channelIdx);
-      if (idx >= 0) {
-        this.form.channels.splice(idx, 1);
-      } else {
-        this.form.channels.push(channelIdx);
       }
     },
     addCurrencyGroup(iso3) {

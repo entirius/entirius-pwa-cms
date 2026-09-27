@@ -36,12 +36,12 @@
           :active="statusFilter === opt.key"
           @click="setStatusFilter(opt.key)"
         />
-        <Dropdown
-          :values="campaignOptions"
-          :selected="campaignFilter ? [campaignFilter] : []"
+        <BasicSelect
+          :options="campaignOptions"
+          :model-value="campaignFilter"
           :placeholder="$t('promo.voucher_all_campaigns')"
           class="vouchers-list__campaign-filter"
-          @onSelect="onCampaignFilter"
+          @update:model-value="onCampaignFilter"
         />
       </MobileFilterPanel>
     </div>
