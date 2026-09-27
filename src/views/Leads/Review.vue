@@ -1,7 +1,9 @@
 <template>
   <div class="review" data-testid="leads-review">
     <div class="review__scroll">
-      <BackBar class="review__back" :label="$t('leads.review.back')" @back="goInbox" />
+      <BasicButton class="review__back" variant="ghost" size="sm" icon="back" @click="goInbox">
+        {{ $t("leads.review.back") }}
+      </BasicButton>
       <Loader block v-show="loading" />
 
       <p v-if="scheduledLabel" class="review__scheduled" role="status" data-testid="review-scheduled">

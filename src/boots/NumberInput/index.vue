@@ -1,22 +1,25 @@
 <template>
   <div class="number-input-wrapper">
-    <div class="number-input flex ai-ct" :class="{ 'number-input--disabled': isDisabled }">
+    <div
+      class="number-input flex ai-ct"
+      :class="{ 'number-input--disabled': controlDisabled, 'number-input--invalid': invalid }"
+    >
       <button
         type="button"
         class="number-input__btn"
-        :disabled="isDisabled || isAtMin"
+        :disabled="controlDisabled || isAtMin"
         @click="decrement"
       >
         <span class="number-input__icon">&minus;</span>
       </button>
       <input
         ref="inputEl"
+        v-bind="attrs"
         type="text"
         :inputmode="decimals ? 'decimal' : 'numeric'"
         class="number-input__value"
         :value="displayValue"
         :placeholder="placeholder"
-        :disabled="isDisabled"
         @input="onTextInput"
         @keydown.up.prevent="increment"
         @keydown.down.prevent="decrement"
@@ -25,7 +28,7 @@
       <button
         type="button"
         class="number-input__btn"
-        :disabled="isDisabled || isAtMax"
+        :disabled="controlDisabled || isAtMax"
         @click="increment"
       >
         <span class="number-input__icon">+</span>
@@ -36,7 +39,11 @@
 </template>
 
 <script setup>
+// Stepper number (docs/ui-components.md § P3 inputs): `v-model`, `min` / `max` / `step`, `suffix`, `disabled`. Inside a
+// FormField the value field takes id, aria-describedby, aria-invalid, required and disabled from the contract.
+// `isDisabled` is the transition spelling until plan 19.
 import { computed } from "vue";
+import { useControlAttrs } from "@/boots/FormField/useControlAttrs";
 
 const props = defineProps({
   modelValue: {
@@ -63,6 +70,10 @@ const props = defineProps({
     type: String,
     default: "0",
   },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
   isDisabled: {
     type: Boolean,
     default: false,
@@ -70,6 +81,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["update:modelValue"]);
+const { attrs, disabled: controlDisabled, invalid } = useControlAttrs({ disabled: () => props.disabled || props.isDisabled });
 
 // A fractional step (0.01) turns on decimal entry: "," reads as ".", values round to the step's places.
 const decimals = computed(() => (String(props.step).split(".")[1] || "").length);
@@ -156,6 +168,11 @@ function onFocusout() {
 
   &:focus-within {
     border-color: var(--border-strong);
+  }
+
+  &--invalid,
+  &--invalid:focus-within {
+    border-color: var(--negative);
   }
 
   // Same disabled look as BasicInput: a locked value is readable but plainly not editable.

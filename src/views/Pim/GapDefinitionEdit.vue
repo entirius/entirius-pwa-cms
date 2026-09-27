@@ -1,8 +1,10 @@
 <template>
   <div class="gap-def-edit fs-300 t-body h-100 ov-h flex-column">
     <Teleport to="#pim-toolbar-left" defer>
-      <BackBar
-        @back="$router.push('/pim/gap-definitions')"
+      <IconButton
+        icon="back"
+        :label="$t('common.back')"
+        @click="$router.push('/pim/gap-definitions')"
       />
     </Teleport>
     <Teleport to="#pim-toolbar-right" defer>

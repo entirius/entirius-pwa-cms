@@ -1,6 +1,8 @@
 <template>
   <div class="thread" data-testid="leads-thread">
-    <BackBar v-if="desktopHint" class="thread__back" :label="$t('leads.thread.back')" @back="goBack" />
+    <BasicButton v-if="desktopHint" class="thread__back" variant="ghost" size="sm" icon="back" @click="goBack">
+      {{ $t("leads.thread.back") }}
+    </BasicButton>
     <Loader block v-show="loading" />
     <h3 v-if="company && desktopHint" class="thread__company" data-testid="thread-company">{{ company.name }}</h3>
     <p v-if="companyMissing" class="thread__none" role="status" data-testid="thread-company-missing">

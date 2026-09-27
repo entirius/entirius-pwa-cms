@@ -57,7 +57,7 @@ const conflictClient = (error, message) => {
 };
 const mountReview = async () => {
   const wrapper = mount(Review, {
-    global: { directives: { out: {} }, stubs: { BackBar: true, IntelCard: true, RouterLink: { template: "<a><slot /></a>" } } },
+    global: { directives: { out: {} }, stubs: { IntelCard: true, RouterLink: { template: "<a><slot /></a>" } } },
   });
   await flushPromises();
   return wrapper;

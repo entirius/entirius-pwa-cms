@@ -1,8 +1,10 @@
 <template>
   <div class="page-pad fs-300 t-body h-100 ov-h">
     <Teleport v-if="!embedded" to="#pricing-toolbar-left" defer>
-      <BackBar
-        @back="$router.push('/pricing/prices')"
+      <IconButton
+        icon="back"
+        :label="$t('common.back')"
+        @click="$router.push('/pricing/prices')"
       />
       <span class="fw-600 fs-400">{{ effectiveSku || $t('pm.price_detail') }}</span>
     </Teleport>

@@ -2,24 +2,19 @@
   <div class="basic-date-picker inline-block">
     <p v-if="label && label.length" class="mb-2">{{ label }}</p>
     <div class="relative">
-      <div class="flex ai-ct gap-2">
-        <BasicButton
-          :icon="value ? 'edit' : 'add'"
-          :text="`${value ?? $t('routes.set_new')}`"
-          class="bg-accent-fill t-on-accent-fill fs-200 lh-init pl-2 pr-2 pt-1 pb-1 rounded"
-          @click="
-            () => {
-              visible = true;
-            }
-          "
-        />
-      </div>
-      <div
-        class="picker-wrapper bg-inherit bg-base"
-        v-show="visible"
-        v-out="'visible'"
+      <button
+        v-bind="attrs"
+        type="button"
+        class="basic-date-picker__trigger flex ai-ct gap-2"
+        :aria-expanded="String(visible)"
+        @click.stop="visible = !visible"
       >
-        <div :data-uid="custom_uid">
+        <FontAwesomeIcon :icon="ICONS.calendar" class="basic-date-picker__icon" aria-hidden="true" />
+        <span :class="{ 't-muted': !current }">{{ current || $t("routes.set_new") }}</span>
+      </button>
+      <div v-show="visible" v-out="close" class="picker-wrapper bg-inherit bg-base">
+        <!-- flatpickr's element: its inline calendar lands right after it, inside the wrapper -->
+        <div ref="pickerEl">
           <input type="text" data-input style="display: none" />
         </div>
       </div>
@@ -28,71 +23,98 @@
 </template>
 
 <script>
-import { v4 as uuidv4 } from "uuid";
-import { Polish } from "flatpickr/dist/l10n/pl.js";
-export default {
-  props: {
-    custom_uid: {
-      type: String,
-      default: () => uuidv4(),
-    },
-    config: {
-      type: [Object],
-      required: false,
-      default: () => {
-        return {
-          mode: "range",
-          wrap: true,
-          inline: true,
-          altInputClass: "invisible",
-          enableTime: false,
-          noCalendar: false,
-        };
-      },
-    },
-    value: {
-      type: [String],
-      default: "",
-    },
-    label: {
-      type: [String],
-      required: false,
-    },
-  },
-  data() {
-    return {
-      visible: false,
-      instance: null,
-      options: {
-        emit_event: true,
-        event_name: "out_click",
-      },
-    };
-  },
-  methods: {
-    init() {
-      this.instance = flatpickr(`div[data-uid='${this.custom_uid}']`, {
-        ...this.config,
-        defaultDate: this.value,
-        locale: Polish,
-        onChange: (e, iso_date, g) => {
-          this.$emit("onChange", iso_date);
-        },
-      });
-    },
-  },
-  mounted() {
-    this.init();
-  },
-  beforeDestroy() {
-    this.instance.destroy();
-  },
+const DEFAULT_CONFIG = {
+  mode: "single",
+  wrap: true,
+  inline: true,
+  altInputClass: "invisible",
+  enableTime: false,
+  noCalendar: false,
 };
+</script>
+
+<script setup>
+// Date or date range (docs/ui-components.md § P3 inputs): an input-looking trigger with the calendar icon opens an
+// inline flatpickr below it. `v-model` (the flatpickr date string), `config` (flatpickr options; a single date by default, `mode: "range"` for a range),
+// `disabled`; inside a FormField the trigger takes the contract's id and state. The instance is destroyed on unmount.
+// Transition until plan 19: `value` + the `onChange` event, the `label` above the trigger.
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import flatpickr from "flatpickr";
+import { Polish } from "flatpickr/dist/l10n/pl.js";
+import { ICONS } from "@/boots/Icons/icons";
+import { useControlAttrs } from "@/boots/FormField/useControlAttrs";
+
+const props = defineProps({
+  modelValue: { type: String, default: undefined },
+  value: { type: String, default: "" },
+  config: { type: Object, default: () => DEFAULT_CONFIG },
+  label: { type: String, default: undefined },
+  disabled: { type: Boolean, default: false },
+});
+const emit = defineEmits(["update:modelValue", "onChange"]);
+
+const { attrs } = useControlAttrs({ disabled: () => props.disabled });
+const visible = ref(false);
+const pickerEl = ref(null);
+const current = computed(() => props.modelValue ?? props.value);
+let instance = null;
+
+function close() {
+  visible.value = false;
+}
+
+function onChange(dates, dateString) {
+  emit("update:modelValue", dateString);
+  emit("onChange", dateString);
+}
+
+onMounted(() => {
+  instance = flatpickr(pickerEl.value, { ...props.config, defaultDate: current.value, locale: Polish, onChange });
+});
+// An outside change only: the picker's own pick is already in its input.
+watch(current, (date) => {
+  if (instance && date !== instance.input.value) instance.setDate(date, false);
+});
+onBeforeUnmount(() => instance?.destroy());
 </script>
 
 <style lang="scss">
 .basic-date-picker {
   background-color: inherit;
+
+  // The trigger looks like a BasicInput: same height, border, surface and disabled look.
+  .basic-date-picker__trigger {
+    min-width: 12rem;
+    height: var(--elem-height);
+    padding: var(--space-1) var(--space-2);
+    font: inherit;
+    color: var(--text-body);
+    text-align: left;
+    background-color: var(--surface-sunken);
+    border: 1px solid var(--border-control);
+    border-radius: var(--radius-base);
+    cursor: pointer;
+    transition: border-color 0.2s;
+
+    &:hover:not(:disabled) {
+      border-color: var(--border-strong);
+    }
+
+    &[aria-invalid="true"] {
+      border-color: var(--negative);
+    }
+
+    &:disabled {
+      background-color: var(--surface-disabled);
+      border-color: var(--border-subtle);
+      color: var(--text-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .basic-date-picker__icon {
+    color: var(--text-muted);
+  }
 
   .picker-wrapper {
     position: absolute;

@@ -4,10 +4,14 @@
       class="page-card h-100 ovy-auto"
     >
       <div class="flex ai-ct gap-8 mb-10">
-        <BackBar
-          :label="$t('common.back')"
-          @back="$router.push('/agreements/consents')"
-        />
+        <BasicButton
+          variant="ghost"
+          size="sm"
+          icon="back"
+          @click="$router.push('/agreements/consents')"
+        >
+          {{ $t("common.back") }}
+        </BasicButton>
       </div>
 
       <div class="flex ai-ct jc-sb flex-wrap gap-5 mb-12">

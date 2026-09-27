@@ -1,0 +1,117 @@
+<template>
+  <header class="page-header" :class="{ 'page-header--sticky': sticky }">
+    <div
+      class="page-header__head"
+      :class="{ 'page-header__head--sticky': sticky }"
+      :data-fid="sticky ? 'sticky-header' : undefined"
+    >
+      <p v-if="overline" class="page-header__overline type-overline t-muted">{{ overline }}</p>
+      <Breadcrumbs v-if="trail.length" class="page-header__crumbs" :items="trail" />
+      <div class="page-header__title-row flex ai-ct gap-5">
+        <IconButton v-if="back" icon="back" :label="$t('common.back')" @click="goBack" />
+        <h1 class="page-header__title page-title" data-fid="page-title">{{ title }}</h1>
+        <div v-if="$slots.meta" class="page-header__meta flex ai-ct gap-2"><slot name="meta" /></div>
+      </div>
+    </div>
+    <div v-if="$slots.actions" class="page-header__actions"><slot name="actions" /></div>
+  </header>
+</template>
+
+<script setup>
+// The page's frame head (R2, R3, R5): `title` is the page's only <h1>; `overline` sits above it (Home); `crumbs`
+// ([{ label, to? }]) sit 24 px above the title row, and when omitted the shell's crumbs show (none without a shell);
+// `back` (a route location, or a handler) puts a back IconButton left of the H1. Slots: `meta` (chips beside the
+// title) and `actions` (an ActionBar: in the title row on desktop, its own row below 1024 px). `sticky` pins the head
+// under the app header on a phone; the actions row scrolls away (Figma S8). Mounting claims the shell's header slot.
+import { computed } from "vue";
+import { useRouter } from "vue-router";
+import Breadcrumbs from "@/boots/Breadcrumbs/index.vue";
+import IconButton from "@/boots/IconButton/index.vue";
+import { usePageHeaderClaim } from "@/composables/pageHeader";
+
+const props = defineProps({
+  title: { type: String, required: true },
+  overline: { type: String, default: "" },
+  crumbs: { type: Array, default: undefined },
+  back: { type: [String, Object, Function], default: undefined },
+  sticky: { type: Boolean, default: false },
+});
+
+const router = useRouter();
+const shellCrumbs = usePageHeaderClaim();
+const trail = computed(() => props.crumbs ?? shellCrumbs.value);
+
+function goBack() {
+  if (typeof props.back === "function") props.back();
+  else router.push(props.back);
+}
+</script>
+
+<style lang="scss" scoped>
+@import "@/assets/scss/utils/media-query";
+
+// The head (overline, crumbs, title row) and the actions share a line while both fit; the actions wrap under it,
+// right-aligned, when they do not, and always take their own row below 1024 px.
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-4) var(--space-5);
+}
+
+.page-header__head {
+  flex: 1 1 20rem;
+  min-width: 0;
+}
+
+.page-header__overline {
+  margin-bottom: var(--space-2);
+}
+
+.page-header__crumbs {
+  margin-bottom: var(--space-6);
+}
+
+.page-header__title {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+// The chips keep their width; the title gives way and wraps.
+.page-header__meta {
+  flex: none;
+}
+
+.page-header__actions {
+  min-width: 0;
+  margin-left: auto;
+}
+
+@include max-shell {
+  .page-header__actions {
+    flex-basis: 100%;
+  }
+}
+
+@include max-tablet {
+  .page-header__title {
+    font-size: var(--fs-500);
+  }
+
+  // A sticky box cannot leave its parent: the header gives up its box, so the head pins against the scroll body
+  // (PageLayout) and the actions row, now its sibling, scrolls away.
+  .page-header--sticky {
+    display: contents;
+  }
+
+  .page-header__head--sticky {
+    position: sticky;
+    z-index: 1;
+    // The pin line sits inside the scroll body's padding; -20 px (PageLayout's phone padding) puts it at the edge.
+    top: calc(-1 * var(--space-5));
+    margin: 0 calc(-1 * var(--space-5));
+    padding: var(--space-3) var(--space-5);
+    background-color: var(--surface-page);
+  }
+}
+</style>

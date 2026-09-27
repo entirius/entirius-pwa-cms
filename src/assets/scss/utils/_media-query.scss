@@ -1,5 +1,7 @@
 $breakpoint-mobile: 768px;
 $breakpoint-desktop: 1279px;
+// The shell breakpoint (r05 §7, `useIsDesktop`): sidebar layout from here up, phone/tablet layout below.
+$bp-desktop: 1024px;
 
 $breakpoints: ( // when size ends - min-width
   mobile: $breakpoint-mobile,
@@ -33,6 +35,12 @@ $breakpoints: ( // when size ends - min-width
 
 @mixin max-desktop {
   @media only screen and (max-width: $breakpoint-desktop) {
+    @content;
+  }
+}
+
+@mixin max-shell {
+  @media only screen and (max-width: $bp-desktop - 1px) {
     @content;
   }
 }

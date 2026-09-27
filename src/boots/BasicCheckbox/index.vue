@@ -1,182 +1,105 @@
 <template>
-  <div class="basic-checkbox">
-    <p class="mb-2" v-if="label">{{ label }}</p>
-    <label
-      class="pointer basic-checkbox-wrapper input-container"
-      :class="{ 'mb-1': values.length !== 1 && i !== values.length - 1 }"
-      v-for="(c, i) in values"
-      :key="`unique-checkbox-key-${i}`"
-      @input="updateValue(c)"
-    >
-      <div
-        class="relative checkbox-label pointer"
-        :class="[
-          type === 'radio' ? 'radio' : '',
-          type === 'checkbox' ? 'basic-checkbox' : '',
-          { checked: selected.includes(c.value) },
-        ]"
-      >
-        <i
-          class="absolute checkbox-mark pointer icon-check fs-100"
-          v-if="selected.includes(c.value) && type !== 'radio'"
-        ></i>
-        <input :type="type" :checked="selected.indexOf(c.value) > -1" />
-      </div>
-      <span class="basic-checkbox-label" v-if="c.label" v-html="c.label" />
-    </label>
-  </div>
+  <LegacyCheckboxList
+    v-if="values"
+    :values="values"
+    :init_selected="init_selected"
+    :type="type"
+    :label="label"
+    @onSelect="(selected) => emit('onSelect', selected)"
+  />
+  <label v-else class="checkbox-item inline-flex ai-ct gap-2" :class="{ 'checkbox-item--disabled': controlDisabled }">
+    <span class="checkbox-item__box relative inline-flex">
+      <input
+        v-bind="attrs"
+        type="checkbox"
+        class="checkbox-item__input"
+        :checked="modelValue"
+        @change="emit('update:modelValue', $event.target.checked)"
+      />
+      <FontAwesomeIcon v-if="modelValue" :icon="ICONS.check" class="checkbox-item__mark" aria-hidden="true" />
+    </span>
+    <span v-if="$slots.default" class="checkbox-item__label"><slot /></span>
+  </label>
 </template>
-<script>
-export default {
-  props: {
-    values: {
-      type: [Array],
-      default: () => {
-        return [
-          {
-            label: "label 2",
-            key: null,
-            value: 1,
-          },
-          {
-            label: "label 1",
-            key: null,
-            value: 2,
-          },
-        ];
-      },
-    },
-    init_selected: {
-      type: Array,
-      default: () => [],
-    },
-    type: {
-      type: String,
-      default: "checkbox",
-    },
-    label: {
-      type: [String, Boolean],
-      default: false,
-    },
-  },
-  data() {
-    return {
-      selected: [],
-    };
-  },
-  methods: {
-    add(c) {
-      this.selected.includes(c.value)
-        ? (this.selected = this.selected.filter((el) => {
-            return el !== c.value;
-          }))
-        : this.selected.push(c.value);
-    },
-    override(c) {
-      this.selected = [];
-      this.selected.push(c.value);
-    },
-    updateValue(c) {
-      this.type === "radio" ? this.override(c) : this.add(c);
-      this.$emit("onSelect", this.selected);
-    },
-  },
-  created() {
-    if (this.init_selected) this.selected = [...this.init_selected];
-  },
-};
+
+<script setup>
+// One checkbox (docs/ui-components.md § P3 inputs): a boolean `v-model`, its label in the default slot, `disabled`.
+// Inside a FormField it takes id, aria-describedby, aria-invalid, required and disabled from the contract.
+// Transition until plan 19: `values` (with `init_selected`, `type`, `label` and the `onSelect` event) renders the
+// old array list, LegacyCheckboxList.
+import { ICONS } from "@/boots/Icons/icons";
+import { useControlAttrs } from "@/boots/FormField/useControlAttrs";
+import LegacyCheckboxList from "./LegacyCheckboxList.vue";
+
+const props = defineProps({
+  modelValue: { type: Boolean, default: false },
+  disabled: { type: Boolean, default: false },
+  values: { type: Array, default: null },
+  init_selected: { type: Array, default: () => [] },
+  type: { type: String, default: "checkbox" },
+  label: { type: [String, Boolean], default: false },
+});
+const emit = defineEmits(["update:modelValue", "onSelect"]);
+
+const { attrs, disabled: controlDisabled } = useControlAttrs({ disabled: () => props.disabled });
 </script>
-<style lang="scss">
-.basic-checkbox-wrapper {
-  z-index: 2;
-  //background: inherit;
-  display: flex;
-  align-items: center;
-  span {
-    margin-top: 1px;
+
+<style lang="scss" scoped>
+.checkbox-item {
+  cursor: pointer;
+  color: var(--text-body);
+
+  &--disabled {
+    cursor: not-allowed;
+    color: var(--text-muted);
   }
-  .checkbox-label {
-    overflow: hidden;
-    display: inline-block;
-    height: 1.25rem;
-    width: 1.25rem;
-    outline: none;
-    min-width: 1.25rem;
-    margin-right: var(--space-4);
-    border: 1px solid var(--border-control);
-    .checkbox-mark {
-      z-index: 10;
-      top: 65%;
-      left: 50%;
-      transform: translate(-50%, -70%);
-    }
-    &.basic-checkbox {
-      border-radius: var(--radius-base);
-      color: var(--text-inverse);
-      //  &.checked {
-      //   background-color: var(--surface-inverse);
-      //   border: 1px solid var(--border-strong);
-      //  }
-      &.checked {
-        // background-color: var(--surface-inverse);
-        border: 1px solid var(--border-strong);
-        &::after {
-          content: "";
-          background-color: var(--surface-inverse);
-          position: absolute;
-          transform: translate(-50%, -50%);
-          top: 50%;
-          left: 50%;
-          height: 1.25rem;
-          width: 1.25rem;
-        }
-      }
-      &:hover {
-        border: 1px solid var(--border-strong);
-      }
-    }
-    &.radio {
-      border-radius: var(--radius-full);
-      position: relative;
-      border: 1px solid var(--border-control);
-      &:hover {
-        border: 1px solid var(--border-strong);
-        &::after {
-          content: "";
-          position: absolute;
-          transform: translate(-50%, -50%);
-          top: 50%;
-          left: 50%;
-          height: 0.75rem;
-          width: 0.75rem;
-          border-radius: var(--radius-full);
-        }
-      }
-      &.checked {
-        border: 1px solid var(--border-control);
-        &::after {
-          content: "";
-          background-color: var(--surface-inverse);
-          position: absolute;
-          transform: translate(-50%, -50%);
-          top: 50%;
-          left: 50%;
-          height: 0.8rem;
-          width: 0.8rem;
-          border-radius: var(--radius-full);
-        }
-      }
-    }
+}
+
+.checkbox-item__box {
+  flex-shrink: 0;
+}
+
+.checkbox-item__input {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-base);
+  background-color: var(--surface-sunken);
+  cursor: inherit;
+  transition: background-color 0.15s, border-color 0.15s;
+
+  &:hover:not(:disabled) {
+    border-color: var(--border-strong);
   }
 
-  input {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
+  &:checked {
+    background-color: var(--accent-fill);
+    border-color: var(--accent);
   }
-  .icon-check:before {
-    color: var(--text-inverse);
-    //font-size: var(--fs-500);
+
+  &[aria-invalid="true"] {
+    border-color: var(--negative);
   }
+
+  &:disabled {
+    background-color: var(--surface-disabled);
+    border-color: var(--border-subtle);
+  }
+}
+
+.checkbox-item__mark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: var(--fs-200);
+  color: var(--text-on-accent-fill);
+  pointer-events: none;
+}
+
+.checkbox-item--disabled .checkbox-item__mark {
+  color: var(--text-muted);
 }
 </style>

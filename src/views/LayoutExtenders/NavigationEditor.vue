@@ -2,8 +2,10 @@
   <div class="page-pad fs-300 t-body h-100 ov-h">
     <!-- Left toolbar -->
     <Teleport to="#layout-extender-toolbar-left" defer>
-      <BackBar
-        @back="$router.push('/pages/layout-extender')"
+      <IconButton
+        icon="back"
+        :label="$t('common.back')"
+        @click="$router.push('/pages/layout-extender')"
       />
       <div v-if="!loading" class="nav-editor__toolbar-name">
         <span class="fw-600 t-body">{{ docName || $route.params.uid || "—" }}</span>

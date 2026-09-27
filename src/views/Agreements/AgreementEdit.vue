@@ -1,8 +1,10 @@
 <template>
   <div class="page-pad fs-300 t-body h-100 ov-h">
     <Teleport to="#agreements-toolbar-left" defer>
-      <BackBar
-        @back="$router.push('/agreements/list')"
+      <IconButton
+        icon="back"
+        :label="$t('common.back')"
+        @click="$router.push('/agreements/list')"
       />
     </Teleport>
     <Teleport to="#agreements-toolbar-right" defer>

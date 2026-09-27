@@ -61,11 +61,17 @@ export default function registerBootComponents(app) {
   app.component("MediaTile", defineAsyncComponent(() => import("./MediaTile/index.vue")));
 
   // P3 page frame (plan 14)
+  app.component("PageLayout", defineAsyncComponent(() => import("./PageLayout/index.vue")));
+  app.component("PageHeader", defineAsyncComponent(() => import("./PageHeader/index.vue")));
+  app.component("Breadcrumbs", defineAsyncComponent(() => import("./Breadcrumbs/index.vue")));
 
   // P3 selects (plan 15)
   app.component("BasicSelect", defineAsyncComponent(() => import("./BasicSelect/index.vue")));
 
   // P3 inputs (plan 16)
+  app.component("BasicTextarea", defineAsyncComponent(() => import("./BasicTextarea/index.vue")));
+  app.component("BasicSwitch", defineAsyncComponent(() => import("./BasicSwitch/index.vue")));
+  app.component("BasicRadioGroup", defineAsyncComponent(() => import("./BasicRadioGroup/index.vue")));
 
   // P4 shell (plan 21)
 

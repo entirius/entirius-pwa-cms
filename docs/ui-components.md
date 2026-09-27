@@ -247,6 +247,30 @@ Catalogue: `#display` (`#status-badge`, `#count-badge`, `#tag`, `#basic-tabs`, `
 
 ### P3 page frame (plan 14)
 
+- **`PageLayout`** — a page's content region: no border, no card (R4), padding 40 top / 80 sides (20 below tablet),
+  one scroll body (`h-100 ovy-auto`). Slots `header` (a PageHeader), `toolbar` (the filters row), default (the
+  content). It replaces the bordered page container when P5 adopts it (plan 25).
+- **`PageHeader`** — `title` is the page's only `<h1>` (`.page-title`: Lexend Deca 30/400, 20 below tablet,
+  `data-fid="page-title"`); `overline` (Inter 13/500 uppercase, Home); `crumbs` `[{ label, to? }]` 24 px above the
+  title row — omitted = the crumbs the shell provides (none without a shell), `[]` = none; `back` (a route location
+  pushed on click, or a handler) = a ghost `back` IconButton left of the H1, 20 px gap; `sticky` pins the head (crumbs,
+  back, title, meta) under the app header on a phone, on the page background (`data-fid="sticky-header"`); the
+  actions row scrolls away. Slots `meta` (chips beside the title, they keep their width) and `actions` (an
+  ActionBar): in the title row on desktop while both fit, otherwise wrapped under it right-aligned, and always its own
+  row below 1024 px. A long title wraps inside itself.
+- **Shell claim** — `src/composables/pageHeader.js`: `PAGE_HEADER_CLAIM` (injection key) and
+  `usePageHeaderClaim()`. The shell (P4) provides `{ claim, release, crumbs }` and hides its fallback header while a
+  claim is held; claims overlap during a route change, so the provider counts them. PageHeader claims on mount,
+  releases on unmount, and without a provider the claim is a no-op.
+- **`Breadcrumbs`** — `items` `[{ label, to? }]`, the last item is the current page (`aria-current="page"`, never a
+  link); `<nav aria-label="Breadcrumb"><ol>`; Lexend Deca 16/400 (12 below tablet), `size="sm"` = 12 everywhere;
+  ancestors `text-muted`, current `text-strong`, a `/` separator with 12 px gaps; long labels truncate with a `title`.
+- `BackBar` is a removed component (`removed-components/page-frame.json` → PageHeader `back`); until a view moves to
+  PageHeader its back control is an `IconButton icon="back"` (`label` „Wstecz”) or, with a visible label, a
+  `BasicButton variant="ghost" size="sm" icon="back"`.
+
+Catalogue: `#page-frame` (`#page-header`, `#breadcrumbs`, `#page-layout`).
+
 ### P3 selects (plan 15)
 
 - **`BasicSelect`** — one choice from a list: `v-model` (a value, or an array when `multiple`), `options`
@@ -281,5 +305,43 @@ Catalogue: `#display` (`#status-badge`, `#count-badge`, `#tag`, `#basic-tabs`, `
 Catalogue: `#selects` (`#basic-select`, `#entity-search-picker`, `#channel-multi-select`).
 
 ### P3 inputs (plan 16)
+
+- **`FormField`** — the only owner of a field's `label`, `description` (hint), `required` (the red `*`), `error`
+  (`role="alert"`, replaces the hint) and `tooltip` (a BasicTooltip `help` button after the label); `layout`
+  `stacked` · `inline` (label left, control right from 1024 px, stacked below — Figma „Język treści”); `id` fixes the
+  control's id, `disabled` disables it. It provides `FORM_FIELD` (`src/composables/formField.js`): `id` (the label's
+  `for`), `describedBy` (the hint or error shown), `invalid`, `required`, `disabled`, plus `labelId` for a control a
+  `for` cannot name. Of several controls in one field (rows of a `v-for`) only the first takes the field's id.
+  Controls read it through `useControlAttrs()` (`src/boots/FormField/useControlAttrs.js`) and
+  paint their own error border; FormField's own border paint is left only for controls without `aria-invalid`
+  (Dropdown, TextAreaBasic, raw inputs) until plan 19.
+- **`BasicInput`** — `v-model`, `type`, `placeholder`, `icon` (a leading meaning of `icons.js`), `readonly` (the
+  value behind a `lock`, the former `LockedField`), `disabled`; `--elem-height`, `border-control`, the polish disabled
+  look. Transition API, removed in plan 19: the floating `label`, `validate` (`{ status, msg }`, own message),
+  `isDisabled`, `focusOnCreate`, events `onFocusout` / `onKeyDown`; unknown listeners and classes still land on the
+  wrapper.
+- **`BasicTextarea`** — replaces `TextAreaBasic`: `v-model`, `rows` (4), `maxlength` (with an „n / max” counter),
+  `placeholder`, `disabled`, `readonly`.
+- **`NumberInput`** — `disabled` (`isDisabled` until plan 19); the value field reads the contract.
+- **`BasicCheckbox`** — one checkbox: a boolean `v-model`, its label in the default slot, `disabled`. Transition API,
+  removed in plan 19: `values` (+ `init_selected`, `type`, `label`, event `onSelect`) renders the old array list.
+- **`BasicRadioGroup`** — `options` `[{ label, value, disabled? }]`, `v-model`, `name`, `disabled`; native radios in a
+  `role="radiogroup"` (one Tab stop, the arrow keys move and select), named by the FormField label.
+- **`BasicSwitch`** — replaces `Switcher`: `v-model`, `label`, `hint` (a help tooltip), `disabled`; a
+  `role="switch"` button with `aria-checked`, styles scoped to it.
+- **`BasicDatePicker`** — an input-looking trigger with the `calendar` icon opens an inline flatpickr; `v-model` (the
+  flatpickr date string), `config` (a single date by default, `mode: "range"` for a range), `disabled`; the instance
+  is destroyed on unmount. `value` and `onChange` stay until plan 19.
+- **`SegmentedControl`** — contract id and `disabled`, named by the FormField label, `aria-pressed` on the active
+  option. **`ColorInput`** — `disabled`, the text field reads the contract, the swatch is the native picker itself.
+- Codemod `scripts/codemods/p3-inputs.mjs` (sweeps 17/18): `Switcher` → `BasicSwitch` (`:selected` + `@onSelect="x =
+  !x"` → `v-model`, `prevent` → `disabled`), `TextAreaBasic` → `BasicTextarea` (`limit` → `maxlength`), `LockedField` →
+  `BasicInput readonly`, `isDisabled` / `is_disabled` → `disabled` on BasicInput, NumberInput and the textarea, a
+  floating `label` → a `FormField` around the control (dropped inside a labelled FormField). It flags other
+  `@onSelect` handlers, `validate`, the checkbox array API and the old textarea API. `Switcher`, `TextAreaBasic` and
+  `LockedField` are removed components (`removed-components/inputs.json`).
+
+Catalogue: `#inputs` (`#form-field`, `#basic-input`, `#basic-textarea`, `#number-input`, `#basic-checkbox`,
+`#basic-radio-group`, `#basic-switch`, `#segmented-control`, `#basic-date-picker`, `#color-input`, `#basic-wysiwyg`).
 
 ### P4 shell (plan 21)

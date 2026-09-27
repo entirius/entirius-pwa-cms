@@ -2,8 +2,10 @@
   <div class="spawn-rule-edit page-pad fs-300 t-body h-100 ov-h">
     <div class="page-card flex-1 ovy-auto">
       <div class="page-title-row flex ai-ct gap-5 mb-10">
-        <BackBar
-          @back="$router.push('/enrichment/spawn-rules')"
+        <IconButton
+          icon="back"
+          :label="$t('common.back')"
+          @click="$router.push('/enrichment/spawn-rules')"
         />
         <h1 class="page-title m-0">
           {{ isCreate ? $t("enrichment.spawn_rules.create") : form.key }}

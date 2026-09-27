@@ -1,8 +1,10 @@
 <template>
   <div class="voucher-detail page-pad fs-300 t-body h-100 ovy-auto">
     <Teleport to="#promo-toolbar-left" defer>
-      <BackBar
-        @back="navigateBack"
+      <IconButton
+        icon="back"
+        :label="$t('common.back')"
+        @click="navigateBack"
       />
       <span class="fw-600">{{ $t("promo.voucher_title") }} #{{ pk }}</span>
     </Teleport>

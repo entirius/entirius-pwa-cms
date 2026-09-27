@@ -1,8 +1,10 @@
 <template>
   <div class="page-pad fs-300 t-body h-100 ov-h relative">
     <Teleport to="#authors-toolbar-left" defer>
-      <BackBar
-        @back="$router.push('/pages/authors')"
+      <IconButton
+        icon="back"
+        :label="$t('common.back')"
+        @click="$router.push('/pages/authors')"
       />
       <h1 class="page-title" v-if="!loading">{{ form.name || $t("authors.create") }}</h1>
     </Teleport>

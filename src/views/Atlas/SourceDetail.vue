@@ -2,9 +2,11 @@
   <div class="supplier-detail h-100 ovy-auto">
     <!-- Toolbar buttons teleported into parent index.vue toolbar anchors -->
     <Teleport to="#suppliers-toolbar-left" defer>
-      <BackBar
+      <IconButton
+        icon="back"
+        :label="$t('common.back')"
         data-testid="suppliers-detail-back"
-        @back="goBack"
+        @click="goBack"
       />
       <span class="t-body fw-600 fs-400">{{ headerLabel }}</span>
     </Teleport>

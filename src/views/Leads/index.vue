@@ -5,12 +5,16 @@
   <!-- Settings and its sections: full width, one scroller, usable on a phone (wide tables scroll in their box) -->
   <div v-else-if="route.meta?.page" class="desktop-page leads-page" data-testid="leads-page">
     <!-- a section leads back to the hub; a template edit has its own link back to the template list -->
-    <BackBar
+    <BasicButton
       v-if="!NO_BACK_BAR.includes(route.name)"
       class="leads-page__back"
-      :label="$t('leads.thread.back')"
-      @back="router.push({ name: 'LeadsSettings' })"
-    />
+      variant="ghost"
+      size="sm"
+      icon="back"
+      @click="router.push({ name: 'LeadsSettings' })"
+    >
+      {{ $t("leads.thread.back") }}
+    </BasicButton>
     <router-view />
   </div>
   <div v-else class="leads" :class="{ 'leads--detail': hasDetail, 'leads--solo': !hasInbox }" data-testid="leads-layout">

@@ -101,7 +101,7 @@ describe("Leads layout", () => {
     const hub = mountLayout();
     expect(hub.find('[data-testid="leads-page"]').exists()).toBe(true);
     expect(hub.find('[data-testid="inbox"]').exists()).toBe(false);
-    expect(hub.findComponent({ name: "BackBar" }).exists()).toBe(false);
+    expect(hub.find(".leads-page__back").exists()).toBe(false);
     route.current.name = "CommunicatorSequences";
     expect(mountLayout().find(".leads-page__back").exists()).toBe(true);
     route.current.meta = undefined;

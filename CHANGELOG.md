@@ -12,6 +12,26 @@ All notable changes to this project will be documented in this file.
   a `Tag`, the chip reads „Kanały: 2” and has a `compact` form). BasicMenu `inline` draws a `top` placement above the
   trigger. Catalogue `#selects`; `scripts/codemods/p3-selects.mjs` moves `Dropdown` call sites in the sweeps and
   `Dropdown` is a removed component. `p3-actions` counts legacy `txt-*` / numbered colour classes as colours.
+- Input components (P3 plan 16): `FormField` owns label, hint, required marker, error and help tooltip, lays out
+  `stacked` or `inline`, and provides the control contract (id, `aria-describedby`, `aria-invalid`, required,
+  disabled); `BasicInput` gains `readonly` and a leading meaning icon; new `BasicTextarea` (counter), `BasicSwitch`
+  (`role="switch"`) and `BasicRadioGroup`; `BasicCheckbox` takes a boolean `v-model`; every control takes `disabled`.
+  `BasicDatePicker` destroys its flatpickr on unmount and has an input-style trigger with `v-model`. Catalogue
+  `#inputs` shows every cell; `scripts/codemods/p3-inputs.mjs` moves the call sites in the sweeps.
+
+- Page frame components (P3 plan 14): `PageLayout` (borderless content region, scroll body, `header` / `toolbar`
+  slots), `PageHeader` (the one H1, overline, crumbs, back arrow, `meta` chips, ActionBar `actions`, mobile `sticky`
+  head; claims the shell's header slot through `src/composables/pageHeader.js`) and `Breadcrumbs` (`aria-current`
+  trail, 16 / 12 px). Catalogue `#page-frame` shows every cell. `BackBar` is a removed component: its 36 call sites
+  are an `IconButton` `back` or, with a label, a ghost `BasicButton` `back` (same handler, `v-if`, class and test id).
+
+- Display components (P3 plan 13): `StatusBadge` `tone` (positive, negative, warning, info, neutral, accent), `dot`
+  and `size` in the badge type role (`variant` stays an alias); new `CountBadge` (999+), `Tag` (removable value chip),
+  `BasicCard` (the polish card with title and actions), `PanelCard` (Home panel tile, locked state) and `MediaTile`
+  (media grid tile, selected state). `BasicTabs` is a keyboard tablist; `Loader` takes `size` and an `overlay` that
+  replaces `Loading.vue`; `Pagination` takes `v-model:page` + `pages`; `EmptyState` takes a meaning icon; tab, filter
+  chip and filter-trigger counts are CountBadges. Catalogue `#display` shows every cell;
+  `scripts/codemods/p3-display.mjs` moves `.chip` and `<Loading>` call sites in the sweeps.
 - Overlay components (P3 plan 12): `BasicModal` (sizes, footer ActionBar, bottom sheet on a phone), `ConfirmDialog`
   (`tone`, `loading`, unsaved-changes discard), `BasicMenu` (keyboard menu or panel, `@floating-ui/dom`
   positioning), `BasicTooltip` (hover and focus, `help` variant) and `useFocusTrap`: every dialog traps focus,
