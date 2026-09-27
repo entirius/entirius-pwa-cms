@@ -29,6 +29,16 @@ describe("@ux report", () => {
     expect(Object.keys(buttonMetrics)).toEqual(["danger", "primary"]);
   });
 
+  it("counts on how many screens each label style and card padding appears", () => {
+    const labelled = (style) => ({ style, text: "Nazwa" });
+    const a = { ...measured([]), labels: [labelled("12px 600"), labelled("12px 600")], cards: [{ padding: "24px" }] };
+    const b = { ...measured([]), labels: [labelled("12px 500")], cards: [{ padding: "24px" }] };
+    const reports = [a, b].map((m, i) => screenReport({ screen: `s${i}`, viewport: "desktop", runId: "run-1", measured: m }));
+    const { labelStyles, cardPaddings } = buildSummary(reports, "run-1");
+    expect(labelStyles).toEqual({ "12px 500": { desktop: 1, mobile: 0 }, "12px 600": { desktop: 1, mobile: 0 } });
+    expect(cardPaddings).toEqual({ "24px": { desktop: 2, mobile: 0 } });
+  });
+
   it("records a screen that did not open under errors, with zero counts", () => {
     const failed = screenReport({ screen: "b", viewport: "mobile", runId: "run-1", measured: { error: "INFRA: down" } });
     const summary = buildSummary([failed], "run-1");

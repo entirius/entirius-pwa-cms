@@ -16,14 +16,16 @@ const sortValues = (values) =>
   values.sort((a, b) => parseFloat(a) - parseFloat(b) || String(a).localeCompare(String(b)));
 const sortKeys = (object) => Object.fromEntries(Object.entries(object).sort(([a], [b]) => a.localeCompare(b)));
 
-// measured = window.uxProbes.measure() → { issues, buttons, bottomBar }, or { error } when the screen did not open.
+// measured = window.uxProbes.measure() → { issues, buttons, labels, cards, bottomBar }, or { error } when the
+// screen did not open.
 function screenReport({ screen, viewport, runId, measured }) {
   if (measured.error) {
-    return { runId, screen, viewport, error: measured.error, counts: countByKind([]), issues: [], buttons: [] };
+    const empty = { issues: [], buttons: [], labels: [], cards: [] };
+    return { runId, screen, viewport, error: measured.error, counts: countByKind([]), ...empty };
   }
   const issues = measured.issues.map((item) => ({ ...item, severity: severityOf(item.kind) }));
-  const { buttons, bottomBar } = measured;
-  return { runId, screen, viewport, counts: countByKind(issues), bottomBar, issues, buttons };
+  const { buttons, bottomBar, labels = [], cards = [] } = measured;
+  return { runId, screen, viewport, counts: countByKind(issues), bottomBar, issues, buttons, labels, cards };
 }
 
 // { <role>: { <metric>: [distinct values] } } over every button of every screen.
@@ -35,6 +37,18 @@ function distinctMetrics(buttons) {
   }
   const listed = (sets) => Object.fromEntries(METRICS.map((metric) => [metric, sortValues([...sets[metric]])]));
   return sortKeys(Object.fromEntries(Object.entries(roles).map(([role, sets]) => [role, listed(sets)])));
+}
+
+// { <value>: { desktop: <screens>, mobile: <screens> } }: on how many screens each distinct value appears.
+function screensPerValue(reports, pick) {
+  const values = {};
+  for (const report of reports) {
+    for (const value of new Set(pick(report))) {
+      values[value] ||= { desktop: 0, mobile: 0 };
+      values[value][report.viewport] += 1;
+    }
+  }
+  return sortKeys(values);
 }
 
 function buildSummary(reports, runId) {
@@ -49,7 +63,10 @@ function buildSummary(reports, runId) {
   }
   const severity = Object.fromEntries(KINDS.map((kind) => [kind, severityOf(kind)]));
   const buttonMetrics = distinctMetrics(reports.flatMap((report) => report.buttons));
-  return { runId, totals, severity, screens: sortKeys(screens), buttonMetrics, errors: sortKeys(errors) };
+  const labelStyles = screensPerValue(reports, (report) => (report.labels || []).map((label) => label.style));
+  const cardPaddings = screensPerValue(reports, (report) => (report.cards || []).map((card) => card.padding));
+  const census = { buttonMetrics, labelStyles, cardPaddings };
+  return { runId, totals, severity, screens: sortKeys(screens), ...census, errors: sortKeys(errors) };
 }
 
 // Per-screen reports of this run feed the summary; files of an earlier run are removed, so the folder never mixes runs.

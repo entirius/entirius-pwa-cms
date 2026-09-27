@@ -202,7 +202,11 @@ layers and content clipped away entirely are skipped. Interactive = `button`, `a
 | `tapTarget` | mobile only: an interactive element (or its `label`) under 40×40; inline text links are exempt | medium |
 
 Buttons are grouped by role (`primary` = accent fill, `danger` = negative colour or a delete label/icon, `icon-only`,
-`outline`, `secondary`) with their height, horizontal padding, radius, font size and border. Mobile emulation keeps the
+`outline`, `secondary`) with their height, horizontal padding, radius, font size and border. Two censuses count
+consistency, not defects: `labelStyles` (every field label — `label` or `.form-field__label`, not the text beside a
+checkbox, radio or switch — by font size, weight, case and colour) and `cardPaddings` (every bordered, filled box of at
+least 240 × 96 that is not a control or table part, by padding), each value with the number of screens per viewport
+it appears on. Mobile emulation keeps the
 custom scrollbar as a classic one (the 6 px "page scroll" of every mobile screen); the document scroller and that
 gutter are not findings. Output in `tests/visual/.report/ux/`: `<screen>__<viewport>.json` (every issue with kind,
 class, detail, selector, text and box, the bottom bar found, every button) and `ux-summary.json`, the shape later
@@ -213,6 +217,8 @@ gates read — keep it stable:
   "totals": { "<kind>": { "desktop": 0, "mobile": 0 } },
   "screens": { "<screen>__<viewport>": { "<kind>": 0 } },
   "buttonMetrics": { "<role>": { "height": [], "paddingX": [], "radius": [], "fontSize": [], "border": [] } },
+  "labelStyles": { "<size weight case colour>": { "desktop": 0, "mobile": 0 } },
+  "cardPaddings": { "<top right bottom left>": { "desktop": 0, "mobile": 0 } },
   "severity": { "<kind>": "high|medium" },
   "errors": { "<screen>__<viewport>": "INFRA: ..." },
   "runId": "..."

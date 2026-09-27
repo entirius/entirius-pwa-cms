@@ -338,6 +338,39 @@
       });
   }
 
+  // Field labels (not the text beside a checkbox, radio or switch, not a file picker): one style per label, for the
+  // census. A label that wraps its control is measured on its text element, the first child without a control.
+  const OPTION_LABEL =
+    'input[type="checkbox"], input[type="radio"], input[type="file"], [role="switch"], [role="checkbox"]';
+  const CONTROL = "input, select, textarea, [contenteditable]";
+  const labelText = (el) =>
+    el.querySelector(CONTROL) ? [...el.children].find((c) => textOf(c) && !c.querySelector(CONTROL)) || el : el;
+  function labelStyles(shown) {
+    return shown
+      .filter((el) => el.matches("label, .form-field__label") && textOf(el) && !el.querySelector(OPTION_LABEL))
+      .filter((el) => !el.parentElement.closest(".form-field__label"))
+      .map((el) => {
+        const s = styleOf(labelText(el));
+        return { style: `${s.fontSize} ${s.fontWeight} ${s.textTransform} ${s.color}`, text: nameOf(el) };
+      });
+  }
+
+  // Cards: a bordered, filled container of at least 240 × 96 that is not a control or a table part.
+  // The rich-text editor frame and its toolbar are one control, not cards.
+  const TABLE_PART = 'table, tr, td, th, [role="row"], [role="grid"], [role="table"]';
+  const NOT_CARD = `${INTERACTIVE}, textarea, ${TABLE_PART}, .input-wysiwyg-wrapper *`;
+  function cardPaddings(shown) {
+    return shown
+      .filter((el) => !el.matches(NOT_CARD) && parseFloat(styleOf(el).borderTopWidth) > 0)
+      .filter((el) => styleOf(el).backgroundColor !== TRANSPARENT)
+      .filter((el) => el.getBoundingClientRect().width >= 240 && el.getBoundingClientRect().height >= 96)
+      .map((el) => {
+        const s = styleOf(el);
+        const padding = [s.paddingTop, s.paddingRight, s.paddingBottom, s.paddingLeft].join(" ");
+        return { padding, radius: s.borderTopLeftRadius, selector: selectorOf(el) };
+      });
+  }
+
   // Scrolls every scroller to its end last: the bottom-bar check needs it, the others need the page as captured.
   function measure(options) {
     viewportWidth = options.viewportWidth + scrollbarGutter();
@@ -350,10 +383,11 @@
     issues.push(...rowIssues(rows));
     issues.push(...toolbarIssues(shown), ...shown.map(overflowIssue).filter(Boolean));
     const buttons = buttonMetrics(shown);
+    const census = { labels: labelStyles(shown), cards: cardPaddings(shown) };
     const bar = findBottomBar(shown);
     scrollToEnd(elements);
     issues.push(...underBarIssues(controls, bar));
-    return { issues, buttons, bottomBar: bar ? selectorOf(bar) : null };
+    return { issues, buttons, ...census, bottomBar: bar ? selectorOf(bar) : null };
   }
 
   window.uxProbes = { measure };
