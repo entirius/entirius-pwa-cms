@@ -798,6 +798,8 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/scss/utils/media-query";
+
 .attribute-editor {
   display: flex;
   flex-direction: column;
@@ -854,6 +856,12 @@ onMounted(() => {
   align-items: start;
   padding: var(--space-3) 0;
   border-bottom: 1px solid var(--border-subtle);
+
+  // A phone puts the label above its value editor, so the editor gets the full width.
+  @include max-tablet {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-2);
+  }
 
   &:last-child {
     border-bottom: none;

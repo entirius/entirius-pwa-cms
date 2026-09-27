@@ -1090,6 +1090,7 @@ watch(
 
   &__video-input {
     flex: 1;
+    min-width: 0; // an input keeps ~170 px intrinsic width; the row must fit a phone
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-base);
     padding: var(--space-1) var(--space-2);
