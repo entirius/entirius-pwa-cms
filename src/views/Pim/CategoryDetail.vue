@@ -11,7 +11,7 @@
       </BasicButton>
     </Teleport>
     <Teleport to="#pim-toolbar-right" defer>
-      <template v-if="activeTab === 'details'">
+      <template v-if="activeTab === 'details' && !loading && !notFound">
         <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
           {{ $t("unsaved.changes") }}
         </span>
@@ -32,6 +32,19 @@
     </Teleport>
     <div class="bg-base b-subtle rounded h-100 ovy-auto p-12">
       <Loader v-if="loading" />
+
+      <EmptyState
+        v-else-if="notFound"
+        icon="folder-tree"
+        :title="$t('pim.category_not_found')"
+        :message="$t('pim.category_not_found_hint')"
+      >
+        <BasicButton
+          :text="$t('pim.back_to_categories')"
+          class="btn-secondary"
+          @click="$router.push('/pim/categories')"
+        />
+      </EmptyState>
 
       <template v-else>
         <BasicTabs v-model="activeTab" :options="tabs" class="mb-10" />
@@ -330,6 +343,7 @@ export default {
       activeTab: "details",
       category: {},
       loading: true,
+      notFound: false,
       showDeleteConfirm: false,
       translatingField: null,
       isDraggingImage: false,
@@ -454,6 +468,7 @@ export default {
     },
     async fetchCategory() {
       this.loading = true;
+      this.notFound = false;
       try {
         const { data } = await GET_Category(
           this.channelIdx,
@@ -462,6 +477,8 @@ export default {
         this.category = data;
         this.resetForm();
       } catch (err) {
+        this.notFound = err?.response?.status === 404 || err?.error === "NOT_FOUND";
+        if (this.notFound) return;
         this.notify.spawnNotification({
           type: "negative",
           msg: extractApiMessage(err, this.$t("notifications.error")),
