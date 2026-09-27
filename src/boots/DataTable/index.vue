@@ -21,7 +21,7 @@
           />
         </div>
         <div
-          v-for="col in columns"
+          v-for="col in visibleColumns"
           :key="'h-' + col.key"
           class="data-table__header-cell"
           :class="{
@@ -35,9 +35,11 @@
           @click="sortable && col.sortable && cycleSort(col)"
           @keydown.enter="sortable && col.sortable && cycleSort(col)"
         >
-          <slot :name="'header-' + col.key" :column="col">
-            {{ col.label }}
-          </slot>
+          <span class="data-table__header-label">
+            <slot :name="'header-' + col.key" :column="col">
+              {{ col.label }}
+            </slot>
+          </span>
           <span
             v-if="sortable && col.sortable"
             class="data-table__sort-indicator"
@@ -92,20 +94,36 @@
               />
             </div>
             <div
-              v-for="col in columns"
+              v-for="col in visibleColumns"
               :key="col.key"
               class="data-table__cell"
+              :class="cellClass(col)"
               :style="alignStyle(col)"
               :data-column="col.key"
               role="gridcell"
             >
+              <span
+                v-if="isTruncated(col)"
+                class="data-table__text"
+                :title="titleOf(row, col)"
+              >
+                <slot
+                  :name="'cell-' + col.key"
+                  :row="row"
+                  :value="row[col.key]"
+                  :index="index"
+                >
+                  {{ displayOf(row[col.key]) }}
+                </slot>
+              </span>
               <slot
+                v-else
                 :name="'cell-' + col.key"
                 :row="row"
                 :value="row[col.key]"
                 :index="index"
               >
-                {{ row[col.key] }}
+                {{ displayOf(row[col.key]) }}
               </slot>
             </div>
           </div>
@@ -134,9 +152,22 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, useSlots } from "vue";
 import { t } from "@/i18n";
+import { useMediaQuery } from "@/composables/useMediaQuery";
 
+/**
+ * Column options (`columns` prop):
+ * - `key`, `label`, `sortable`, `align` ("left" | "center" | "right").
+ * - `width`: a grid track. A px width is a floor for nothing but its header and content: the column never gets
+ *   narrower than its header or an untruncated cell (a badge, buttons), so neighbours never overlap.
+ * - `truncate`: one line with an ellipsis and a `title` with the full value (`title(row)` or the row value).
+ *   On by default for cells without a slot; a slot opts in with `truncate: true`.
+ * - `numeric`: right-aligned, tabular figures, no wrap.
+ * - `actions`: right-aligned buttons that never shrink; the track is `max-content` unless `width` is given.
+ * - `priority`: 1 (default) always shown; 2 hidden below 768 px; 3 hidden below 1024 px.
+ * An empty value (null, undefined, "") renders "—".
+ */
 const props = defineProps({
   columns: {
     type: Array,
@@ -177,18 +208,69 @@ const props = defineProps({
 const emit = defineEmits(["sort", "select", "row-click", "expand-toggle"]);
 
 const ALIGN_MAP = { left: "flex-start", center: "center", right: "flex-end" };
+const EMPTY = "\u2014";
+const FR_WIDTH = /^\d*\.?\d+fr$/;
+const PX_WIDTH = /^\d*\.?\d+px$/;
+// A truncated flexible column keeps room for a few words before it truncates.
+const TRUNCATED_FR_MIN = "120px";
+
+const slots = useSlots();
+const belowTablet = useMediaQuery("(max-width: 768px)");
+const belowDesktop = useMediaQuery("(max-width: 1023px)");
 
 function alignStyle(col) {
-  return { justifyContent: ALIGN_MAP[col.align] || "flex-start" };
+  const align = col.numeric || col.actions ? "right" : col.align;
+  return { justifyContent: ALIGN_MAP[align] || "flex-start" };
+}
+
+// --- Cells ---
+
+function isTruncated(col) {
+  return col.truncate ?? (!slots[`cell-${col.key}`] && !col.numeric && !col.actions);
+}
+
+function cellClass(col) {
+  return {
+    "data-table__cell--truncate": isTruncated(col),
+    "data-table__cell--numeric": col.numeric,
+    "data-table__cell--actions": col.actions,
+  };
+}
+
+const isEmpty = (value) => value === null || value === undefined || value === "";
+
+function displayOf(value) {
+  return isEmpty(value) ? EMPTY : value;
+}
+
+function titleOf(row, col) {
+  const value = col.title ? col.title(row) : row[col.key];
+  return ["string", "number"].includes(typeof value) && !isEmpty(value) ? String(value) : undefined;
 }
 
 // --- Grid layout ---
+
+function isVisible(col) {
+  if (col.priority === 2) return !belowTablet.value;
+  if (col.priority === 3) return !belowDesktop.value;
+  return true;
+}
+
+const visibleColumns = computed(() => props.columns.filter(isVisible));
+
+function trackOf(col) {
+  const width = col.width || (col.actions ? "max-content" : "auto");
+  if (col.actions && col.width) return `minmax(${width}, max-content)`;
+  if (PX_WIDTH.test(width)) return `minmax(min-content, ${width})`;
+  if (FR_WIDTH.test(width) && isTruncated(col)) return `minmax(${TRUNCATED_FR_MIN}, ${width})`;
+  return width;
+}
 
 const gridStyle = computed(() => {
   const widths = [];
   if (props.expandable) widths.push("32px");
   if (props.selectable) widths.push("40px");
-  widths.push(...props.columns.map((col) => col.width || "auto"));
+  widths.push(...visibleColumns.value.map(trackOf));
   return { gridTemplateColumns: widths.join(" ") };
 });
 
@@ -307,23 +389,20 @@ function handleRowClick(row, index, event) {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/scss/utils/media-query";
+
 .data-table {
   background-color: var(--surface-base);
-  @media only screen and (max-width: 768px) {
+  @include max-tablet {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    &::-webkit-scrollbar {
-      display: none;
-    }
+    scrollbar-width: thin;
   }
 }
 
+// Columns size from their tracks (see trackOf); a phone hides priority 2–3 columns instead of squeezing the name.
 .data-table__grid {
   display: grid;
-  @media only screen and (max-width: 768px) {
-    min-width: 600px;
-  }
 }
 
 .data-table__header {
@@ -333,11 +412,13 @@ function handleRowClick(row, index, event) {
   border-bottom: 1px solid var(--border-subtle);
 }
 
+// Cell model: 12 px padding (two columns ≥ 24 px apart). A header never wraps and floors its column's width.
 .data-table__header-cell {
   display: flex;
   align-items: center;
   gap: var(--space-1);
-  padding: var(--space-2) var(--space-4);
+  padding: var(--space-2) var(--space-3);
+  white-space: nowrap;
   font-size: var(--fs-200);
   font-weight: 600;
   text-transform: uppercase;
@@ -358,6 +439,7 @@ function handleRowClick(row, index, event) {
 }
 
 .data-table__sort-indicator {
+  flex-shrink: 0;
   display: inline-block;
   width: 0;
   height: 0;
@@ -401,18 +483,41 @@ function handleRowClick(row, index, event) {
   }
 }
 
+// An untruncated cell (badge, buttons) floors its column; a truncated one gives way and shows an ellipsis.
 .data-table__cell {
   display: flex;
   align-items: center;
   gap: var(--space-1);
-  padding: var(--space-2) var(--space-4);
+  padding: var(--space-2) var(--space-3);
   font-size: var(--fs-250);
   color: var(--text-body);
-  min-width: 0;
 
   &--checkbox {
     justify-content: center;
   }
+
+  // Out of intrinsic sizing: the column width comes from its track and header, not from the full text.
+  &--truncate {
+    min-width: 0;
+    contain: inline-size;
+  }
+
+  &--numeric {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  &--actions {
+    gap: var(--space-2);
+    white-space: nowrap;
+  }
+}
+
+.data-table__text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .data-table__empty {
