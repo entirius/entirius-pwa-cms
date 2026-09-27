@@ -20,14 +20,14 @@ const routes = [
     },
   },
   {
-    path: "/playground",
-    name: "Playground",
+    // Component catalogue (plan 10): any logged-in operator, no panel, in no nav, in every build.
+    path: "/ui",
+    name: "UiCatalogue",
     component: () =>
-      import(/* webpackChunkName: "about" */ "../views/Playground.vue"),
+      import(/* webpackChunkName: "ui-catalogue" */ "../views/UiCatalogue/index.vue"),
     meta: {
       requiresAuth: true,
-      titleKey: "nav.home",
-      panel: "pages",
+      titleKey: "nav.ui_catalogue",
     },
   },
   {

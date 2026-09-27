@@ -51,7 +51,8 @@
     "leads_stages": "Etapy",
     "communicator_templates": "Szablony",
     "communicator_sequences": "Sekwencje",
-    "communicator_settings": "Ustawienia wysyłki"
+    "communicator_settings": "Ustawienia wysyłki",
+    "ui_catalogue": "Katalog komponentów"
   },
   "login": {
     "welcome": "Witaj!",
@@ -3620,5 +3621,8 @@
         "auth_failed": "API {scope} odrzuca klucz — audyty stron z tego źródła kończą się błędem"
       }
     }
+  },
+  "ui_catalogue": {
+    "stub": "Sekcję wypełni plan {plan}."
   }
 }

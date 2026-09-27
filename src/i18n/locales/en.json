@@ -51,7 +51,8 @@
     "leads_stages": "Stages",
     "communicator_templates": "Templates",
     "communicator_sequences": "Sequences",
-    "communicator_settings": "Send settings"
+    "communicator_settings": "Send settings",
+    "ui_catalogue": "Component catalogue"
   },
   "login": {
     "welcome": "Welcome!",
@@ -3621,5 +3622,8 @@
         "auth_failed": "The {scope} API rejects the key — site audits of this source fail"
       }
     }
+  },
+  "ui_catalogue": {
+    "stub": "Filled by plan {plan}."
   }
 }
