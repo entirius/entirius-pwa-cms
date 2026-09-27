@@ -45,19 +45,16 @@
         @row-click="onRowClick"
       >
         <template #cell-group_name="{ row }">
-          <span
+          <StatusBadge
             v-if="row.group_name"
-            class="chip bg-accent-subtle t-strong"
-            :title="row.group_name"
-          >
-            <span class="chip__label">{{ row.group_name }}</span>
-          </span>
+            tone="accent"
+            :dot="false"
+            :label="row.group_name"
+          />
           <span v-else class="t-muted">—</span>
         </template>
         <template #cell-association_count="{ row }">
-          <span class="chip bg-raised t-secondary">
-            {{ (row.associations || []).length }}
-          </span>
+          <StatusBadge tone="neutral" :dot="false" :label="(row.associations || []).length" />
         </template>
         <template #cell-is_active="{ value }">
           <StatusBadge

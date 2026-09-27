@@ -8,9 +8,7 @@
       />
     </Teleport>
     <Teleport to="#faq-toolbar-right" defer>
-      <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
-        {{ $t("unsaved.changes") }}
-      </span>
+      <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
       <IconButton
         v-if="isEdit"
         icon="delete"

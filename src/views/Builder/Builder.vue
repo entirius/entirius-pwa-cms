@@ -112,9 +112,7 @@
     <!-- Right toolbar: unsaved badge, save, publish, duplicate, settings, advanced -->
     <Teleport to="#builder-toolbar-right" defer>
       <template v-if="!loading">
-        <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
-          {{ $t("unsaved.changes") }}
-        </span>
+        <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
         <button
           class="builder-tb-btn builder-tb-btn--secondary pointer"
           @click="saveDraft"

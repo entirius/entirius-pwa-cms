@@ -9,9 +9,7 @@
       <h1 class="page-title" v-if="!loading">{{ form.name || $t("authors.create") }}</h1>
     </Teleport>
     <Teleport to="#authors-toolbar-right" defer>
-      <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
-        {{ $t("unsaved.changes") }}
-      </span>
+      <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
       <template v-if="!loading">
         <IconButton
           v-if="isEdit"

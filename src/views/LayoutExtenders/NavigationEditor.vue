@@ -23,13 +23,13 @@
     <!-- Right toolbar -->
     <Teleport to="#layout-extender-toolbar-right" defer>
       <template v-if="!loading">
-        <span
+        <StatusBadge
           v-if="isDirty"
-          class="chip bg-warning-subtle t-warning"
+          tone="warning"
+          :dot="false"
+          :label="$t('layout_extender.unsaved')"
           data-testid="nav-editor-unsaved-badge"
-        >
-          {{ $t("layout_extender.unsaved") }}
-        </span>
+        />
         <BasicButton
           variant="secondary"
           @click="saveDraft"
