@@ -30,11 +30,13 @@
       @change="onChange"
     >
       <template #item="{ element }">
-        <div class="attribute-library__item flex ai-ct">
+        <div class="attribute-library__item flex ai-ct flex-wrap rg-1">
           <span class="drag-handle t-muted">&#x2630;</span>
-          <span class="fw-500 fs-200 attribute-library__name">{{
-            element.feature_name || element.feature_idx
-          }}</span>
+          <span
+            class="fw-500 fs-200 attribute-library__name"
+            :title="element.feature_name || element.feature_idx"
+            >{{ element.feature_name || element.feature_idx }}</span
+          >
           <TypeBadge :feature-type="element.feature_type" />
         </div>
       </template>
@@ -197,8 +199,9 @@ export default {
   }
 }
 
+// The name identifies the row: it keeps ~8 rem and the type badge wraps under it when the drawer is narrow.
 .attribute-library__name {
-  flex: 1;
+  flex: 1 1 8rem;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
