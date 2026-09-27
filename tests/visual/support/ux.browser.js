@@ -339,12 +339,16 @@
   }
 
   // Field labels (not the text beside a checkbox, radio or switch, not a file picker): one style per label, for the
-  // census. A label that wraps its control is measured on its text element, the first child without a control.
+  // census. A label that wraps its control is measured on its text: the label itself when the text sits in it
+  // directly, else its first child with text that is neither a control nor holds one.
   const OPTION_LABEL =
     'input[type="checkbox"], input[type="radio"], input[type="file"], [role="switch"], [role="checkbox"]';
   const CONTROL = "input, select, textarea, [contenteditable]";
-  const labelText = (el) =>
-    el.querySelector(CONTROL) ? [...el.children].find((c) => textOf(c) && !c.querySelector(CONTROL)) || el : el;
+  const ownText = (el) => [...el.childNodes].some((n) => n.nodeType === Node.TEXT_NODE && n.textContent.trim());
+  function labelText(el) {
+    if (!el.querySelector(CONTROL) || ownText(el)) return el;
+    return [...el.children].find((c) => textOf(c) && !c.matches(CONTROL) && !c.querySelector(CONTROL)) || el;
+  }
   function labelStyles(shown) {
     return shown
       .filter((el) => el.matches("label, .form-field__label") && textOf(el) && !el.querySelector(OPTION_LABEL))
