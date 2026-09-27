@@ -1,0 +1,78 @@
+<template>
+  <BasicModal
+    :open="open"
+    :title="title"
+    size="sm"
+    :persistent="loading"
+    :inline="inline"
+    @update:open="onClose"
+  >
+    <template v-if="$slots.title" #title><slot name="title" /></template>
+    <slot>
+      <p class="confirm-dialog__message t-secondary">{{ message }}</p>
+    </slot>
+    <template #footer>
+      <ActionBar>
+        <BasicButton variant="secondary" :disabled="loading" data-testid="confirm-dialog-cancel" @click="cancel">
+          {{ cancelLabel || $t("common.cancel") }}
+        </BasicButton>
+        <BasicButton
+          v-if="discardLabel"
+          variant="danger"
+          :disabled="loading"
+          data-testid="confirm-dialog-discard"
+          @click="emit('discard')"
+        >
+          {{ discardLabel }}
+        </BasicButton>
+        <BasicButton
+          :variant="tone === 'danger' ? 'danger-solid' : 'primary'"
+          :loading="loading"
+          data-testid="confirm-dialog-confirm"
+          @click="emit('confirm')"
+        >
+          {{ confirmLabel || $t("common.accept") }}
+        </BasicButton>
+      </ActionBar>
+    </template>
+  </BasicModal>
+</template>
+
+<script setup>
+// Yes/no confirmation on BasicModal (sm): `v-model:open`, `title` (or the `title` slot), `message` (or the default
+// slot), `confirmLabel`, `cancelLabel`, `tone` default (primary confirm) · danger (`danger-solid` confirm: every
+// delete, remove, flush), `loading` (spinner on confirm, Esc and backdrop blocked). Emits `confirm` and `cancel` (Cancel, close, Esc,
+// backdrop); the caller closes it. `discardLabel` adds a third action, `discard` (unsaved changes: stay · discard ·
+// save). The confirm button's test id is `confirm-dialog-confirm`.
+import BasicModal from "@/boots/BasicModal/index.vue";
+import ActionBar from "@/boots/ActionBar/index.vue";
+
+defineProps({
+  open: { type: Boolean, default: false },
+  title: { type: String, default: "" },
+  message: { type: String, default: "" },
+  confirmLabel: { type: String, default: "" },
+  cancelLabel: { type: String, default: "" },
+  discardLabel: { type: String, default: "" },
+  tone: { type: String, default: "default", validator: (value) => ["default", "danger"].includes(value) },
+  loading: { type: Boolean, default: false },
+  inline: { type: Boolean, default: false },
+});
+const emit = defineEmits(["update:open", "confirm", "cancel", "discard"]);
+
+function cancel() {
+  emit("update:open", false);
+  emit("cancel");
+}
+
+function onClose(value) {
+  if (!value) cancel();
+}
+</script>
+
+<style lang="scss" scoped>
+.confirm-dialog__message {
+  margin: 0;
+  line-height: 1.5;
+}
+</style>

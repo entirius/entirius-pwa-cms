@@ -4,6 +4,7 @@
     mode="focused"
     width="28rem"
     :title="`Translations — ${title}`"
+    :inline="inline"
     @close="onCancel"
   >
     <div v-if="visible" class="translations-drawer">
@@ -33,24 +34,16 @@
           />
         </slot>
       </div>
-      <div class="translations-drawer__footer">
-        <BasicButton
-          text="Cancel"
-          class="btn-secondary"
-          @click="onCancel"
-        />
-        <BasicButton
-          text="Save"
-          class="btn-primary"
-          @click="onSave"
-        />
-      </div>
+      <ActionBar class="translations-drawer__footer" :actions="footerActions" />
     </div>
   </SideDrawer>
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+// Per-language editing of one field on a focused SideDrawer; the footer is an ActionBar (R5: Save rightmost).
+import { computed, ref, watch } from "vue";
+import ActionBar from "@/boots/ActionBar/index.vue";
+import { t } from "@/i18n";
 
 const props = defineProps({
   visible: { type: Boolean, default: false },
@@ -58,6 +51,7 @@ const props = defineProps({
   languages: { type: Array, default: () => [] },
   defaultLanguage: { type: String, default: "en" },
   values: { type: Object, default: () => ({}) },
+  inline: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(["cancel", "save"]);
@@ -73,6 +67,11 @@ watch(
   },
   { immediate: true }
 );
+
+const footerActions = computed(() => [
+  { key: "cancel", label: t("common.cancel"), role: "secondary", onClick: onCancel, testid: "translations-cancel" },
+  { key: "save", label: t("common.save"), role: "primary", onClick: onSave, testid: "translations-save" },
+]);
 
 function onCancel() {
   emit("cancel");
@@ -120,9 +119,6 @@ function onSave() {
   }
 
   &__footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: var(--space-5);
     margin-top: var(--space-8);
     padding-top: var(--space-8);
     border-top: 1px solid var(--border-subtle);

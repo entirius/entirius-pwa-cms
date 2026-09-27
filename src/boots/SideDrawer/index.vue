@@ -1,21 +1,25 @@
 <template>
-  <!-- Focused: teleported overlay + sliding panel -->
-  <Teleport to="body" v-if="mode === 'focused'">
+  <!-- Focused: teleported overlay + sliding panel, focus trapped -->
+  <Teleport v-if="mode === 'focused'" to="body" :disabled="inline">
     <Transition name="side-drawer-focused">
       <div
         v-if="visible"
+        ref="overlay"
         class="side-drawer-overlay"
-        @click.self="$emit('close')"
+        :class="{ 'side-drawer-overlay--inline': inline }"
+        @click.self="onBackdrop"
       >
-        <div class="side-drawer-panel" :style="{ width: effectiveWidth }">
-          <header class="side-drawer__header flex ai-ct jc-sb mb-8">
-            <span class="fs-300 fw-600 t-body">{{ title }}</span>
-            <button
-              class="side-drawer__close t-muted pointer"
-              @click="$emit('close')"
-            >
-              <FontAwesomeIcon icon="xmark" />
-            </button>
+        <div
+          class="side-drawer-panel"
+          :style="{ width: effectiveWidth }"
+          role="dialog"
+          :aria-modal="inline ? undefined : 'true'"
+          :aria-labelledby="title ? titleId : undefined"
+          tabindex="-1"
+        >
+          <header class="side-drawer__header flex ai-ct jc-sb gap-3 mb-8">
+            <h2 :id="titleId" class="side-drawer__title fs-300 fw-600 t-body">{{ title }}</h2>
+            <IconButton icon="close" :label="$t('common.close')" data-testid="side-drawer-close" @click="close" />
           </header>
           <div class="side-drawer__body">
             <slot />
@@ -31,19 +35,19 @@
       v-if="visible"
       class="side-drawer-sticky"
       :style="{ width: effectiveWidth, minWidth: effectiveWidth }"
+      role="complementary"
+      :aria-labelledby="title ? titleId : undefined"
+      @keydown.esc="closable && close()"
     >
-      <header
-        v-if="title || closable"
-        class="side-drawer__header flex ai-ct jc-sb mb-8"
-      >
-        <span v-if="title" class="fs-300 fw-600 t-body">{{ title }}</span>
-        <button
+      <header v-if="title || closable" class="side-drawer__header flex ai-ct jc-sb gap-3 mb-8">
+        <h2 v-if="title" :id="titleId" class="side-drawer__title fs-300 fw-600 t-body">{{ title }}</h2>
+        <IconButton
           v-if="closable"
-          class="side-drawer__close t-muted pointer"
-          @click="$emit('close')"
-        >
-          <FontAwesomeIcon icon="xmark" />
-        </button>
+          icon="close"
+          :label="$t('common.close')"
+          data-testid="side-drawer-close"
+          @click="close"
+        />
       </header>
       <div class="side-drawer__body">
         <slot />
@@ -52,8 +56,18 @@
   </Transition>
 </template>
 
+<script>
+let nextId = 0;
+</script>
+
 <script setup>
-import { computed, onMounted, onBeforeUnmount } from "vue";
+// Side panel (docs/ui-rules.md C4). `focused`: a modal panel from the right over a backdrop, focus trapped while
+// visible, Esc and the backdrop close it. `sticky`: a sidebar in the page flow; Esc inside it closes it when
+// `closable`. Both emit `close`, the caller hides it. `inline` renders the focused panel in the page flow (catalogue):
+// no Teleport, no backdrop, no trap.
+import { computed, ref } from "vue";
+import IconButton from "@/boots/IconButton/index.vue";
+import { useFocusTrap } from "@/composables/useFocusTrap";
 
 const props = defineProps({
   visible: {
@@ -77,27 +91,34 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  inline: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const emit = defineEmits(["close"]);
+
+nextId += 1;
+const titleId = `side-drawer-title-${nextId}`;
+const overlay = ref(null);
 
 const effectiveWidth = computed(() => {
   if (props.width) return props.width;
   return props.mode === "focused" ? "50rem" : "340px";
 });
 
-function onKeydown(e) {
-  if (e.key === "Escape" && props.visible && props.mode === "focused") {
-    emit("close");
-  }
+function close() {
+  emit("close");
 }
 
-onMounted(() => {
-  document.addEventListener("keydown", onKeydown);
-});
+function onBackdrop() {
+  if (!props.inline) close();
+}
 
-onBeforeUnmount(() => {
-  document.removeEventListener("keydown", onKeydown);
+useFocusTrap(overlay, {
+  active: computed(() => props.visible && props.mode === "focused" && !props.inline),
+  onEscape: close,
 });
 </script>
 
@@ -109,6 +130,21 @@ onBeforeUnmount(() => {
   background-color: var(--overlay-handy);
   z-index: 100;
   cursor: pointer;
+}
+
+.side-drawer-overlay--inline {
+  position: static;
+  z-index: auto;
+  background: none;
+  cursor: auto;
+
+  .side-drawer-panel {
+    position: static;
+    height: auto;
+    max-width: 100%;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-xl);
+  }
 }
 
 .side-drawer-panel {
@@ -141,15 +177,9 @@ onBeforeUnmount(() => {
   flex-shrink: 0;
 }
 
-.side-drawer__close {
-  background: none;
-  border: none;
-  font-size: var(--fs-400);
-  line-height: 1;
-  padding: var(--space-1);
-  &:hover {
-    color: var(--text-body);
-  }
+.side-drawer__title {
+  margin: 0;
+  min-width: 0;
 }
 
 .side-drawer__body {
