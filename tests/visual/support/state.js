@@ -18,7 +18,9 @@ const FREEZE_CSS =
   "*,*::before,*::after{transition:none!important;animation:none!important;caret-color:transparent!important}";
 // A screen counts as loaded when none of these is visible (and the row's `readySelector` is, when it has one).
 const LOADING_CSS = '.loader, .loader-element, .skeleton, [aria-busy="true"]';
-const LOADING_TEXT = /^(Ładowanie|Loading)\b/;
+// A loading message ends in an ellipsis ("Ładowanie…", "Loading supplier data..."); a permanent label that merely
+// starts with the word ("Ładowanie palet") does not.
+const LOADING_TEXT = /^(Ładowanie|Loading)\b.*(…|\.\.\.)$/;
 const DATA_TIMEOUT_MS = 10000;
 const HEALTH_BODY = {
   checked_at: FREEZE,
@@ -147,13 +149,15 @@ async function settle(page) {
     .catch(() => {});
 }
 
-// Runs in the browser (serialised by waitForFunction): true once no loader or loading text is visible.
+// Runs in the browser (serialised by waitForFunction): true once no loader or loading text is visible. The text is
+// read per element from its own text nodes, so "Ładowanie…" next to a spinner child counts too.
 function noLoaderVisible({ css, text }) {
   const shown = (el) => el.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true });
   if ([...document.querySelectorAll(css)].some(shown)) return false;
   const pattern = new RegExp(text);
-  const leaves = [...document.querySelectorAll("body *")].filter((el) => !el.children.length);
-  return !leaves.some((el) => pattern.test(el.textContent.trim()) && shown(el));
+  const ownText = (el) =>
+    [...el.childNodes].filter((node) => node.nodeType === Node.TEXT_NODE).map((node) => node.textContent).join("");
+  return ![...document.querySelectorAll("body *")].some((el) => pattern.test(ownText(el).trim()) && shown(el));
 }
 
 // After networkidle a detail screen may still paint its loader or an empty form: wait for the data (10 s → INFRA).

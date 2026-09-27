@@ -58,11 +58,14 @@
     return styleOf(el).position === "fixed" ? rect : clip(rect, el.parentElement, stop);
   };
 
+  // The a11y-text pattern (`.sr-only`): clipped away, or an absolute 1 × 1 px box that cuts its overflow. An absolute
+  // control that collapsed to 0 px on one axis is not hidden on purpose: it stays in, and zeroSize reports it.
   function isVisuallyHidden(el) {
     const s = styleOf(el);
     const b = el.getBoundingClientRect();
     if (s.clip === "rect(0px, 0px, 0px, 0px)" || s.clipPath === "inset(50%)") return true;
-    return s.position === "absolute" && (b.width <= 1 || b.height <= 1);
+    const cut = HARD_CLIP.test(s.overflowX) && HARD_CLIP.test(s.overflowY);
+    return s.position === "absolute" && cut && b.width <= 1 && b.height <= 1;
   }
 
   // A closed drawer or sheet parked outside the viewport (fixed anywhere, absolute sideways).
@@ -86,14 +89,17 @@
     return clippedAway || inParkedLayer(el);
   }
 
+  // The element itself keeps its tag and classes next to its test id: the allow-list matches on the component class.
   function selectorOf(el) {
     const parts = [];
     for (let n = el; n && !isRoot(n) && parts.length < 4; n = n.parentElement) {
-      if (n.dataset.testid) return [`[data-testid="${n.dataset.testid}"]`, ...parts].join(" > ");
       const classes = typeof n.className === "string" ? n.className.trim().split(/\s+/).filter(Boolean) : [];
+      const own = [n.tagName.toLowerCase(), ...classes.slice(0, 2).map((c) => CSS.escape(c))].join(".");
+      const testid = n.dataset.testid && `[data-testid="${n.dataset.testid}"]`;
+      if (testid) return [n === el ? `${own}${testid}` : testid, ...parts].join(" > ");
       const same = n.parentElement ? [...n.parentElement.children].filter((c) => c.tagName === n.tagName) : [];
       const nth = same.length > 1 ? `:nth-of-type(${same.indexOf(n) + 1})` : "";
-      parts.unshift([n.tagName.toLowerCase(), ...classes.slice(0, 2).map((c) => CSS.escape(c))].join(".") + nth);
+      parts.unshift(own + nth);
     }
     return parts.join(" > ");
   }
@@ -109,7 +115,12 @@
     box: boxOf(rect || el.getBoundingClientRect()),
   });
 
-  function sizeIssue(el) {
+  // The native input of a custom checkbox or radio is drawn by its label (often at 0 px): the label is the target.
+  const OPTION_INPUT = 'input[type="checkbox"], input[type="radio"]';
+  const sizeTarget = (el) => (el.matches(OPTION_INPUT) && el.closest("label")) || el;
+
+  function sizeIssue(control) {
+    const el = sizeTarget(control);
     const b = el.getBoundingClientRect();
     if (b.width < MIN_SIZE || b.height < MIN_SIZE) return issue("zeroSize", "too-small", el);
     const seen = clipOf(el);

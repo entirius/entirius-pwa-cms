@@ -830,7 +830,7 @@
         "dark",
         "light"
       ],
-      "readySelector": ".status-badge",
+      "readySelector": ".page-card section h2",
       "file": "agreements-consent-person__{vp}__{theme}.png"
     },
     {
