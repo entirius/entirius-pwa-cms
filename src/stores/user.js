@@ -5,7 +5,7 @@ import { User } from '@/configs/access'
 import { PATCH_UserProfile, POST_Logout } from '@/api/contentDB/api'
 import { endRefreshSession, refreshAccessToken, SessionEndedError } from '@/api/createClient'
 import { setLang, getLang } from '@/i18n'
-import { refreshDelay } from '@/utils/jwt'
+import { expiresSoon, refreshDelay } from '@/utils/jwt'
 
 const cookies = new Cookies()
 const COOKIE_OPTS = { path: '/', maxAge: 7 * 24 * 60 * 60 }
@@ -24,6 +24,7 @@ export const useUserStore = defineStore('user', () => {
   const theme = ref('default')
   const lang = ref(getLang())
   const preferences = ref({})
+  let logoutRun = null
 
   function setStateViaCookies(cookiesKeys) {
     const stateMap = { user, token, refresh, customer_id, expiryDate, isAuth }
@@ -79,17 +80,22 @@ export const useUserStore = defineStore('user', () => {
     })
   }
 
-  // The only logout. The session ends before the server is told, so a refresh racing the blacklist can neither
-  // redirect nor toast; a failed logout request still logs the user out.
-  async function logout() {
+  // The only logout. An expiring access token is refreshed first, while the session is still current; then the
+  // session ends before the server is told, so no refresh can start or land after it. A failed or timed-out
+  // blacklist still logs the user out, and the full reload drops every store, pending request and timer.
+  // A second call while one runs gets the running one.
+  function logout() {
+    if (!logoutRun) logoutRun = endSession()
+    return logoutRun
+  }
+
+  async function endSession() {
+    if (refresh.value && expiresSoon(expiryDate.value)) await refreshAccessToken().catch(() => {})
     endRefreshSession()
     stopSessionMonitor()
-    try {
-      await POST_Logout({ refresh: refresh.value })
-    } catch {
-      // the local session ends either way
-    }
+    await POST_Logout({ access: token.value, refresh: refresh.value }).catch(() => {})
     clearAuth()
+    window.location.assign('/')
   }
 
   function sessionExpiredLogout() {

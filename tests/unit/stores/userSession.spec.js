@@ -5,16 +5,17 @@ import { setActivePinia, createPinia } from "pinia";
 import { useUserStore } from "@/stores/user";
 import { useNotifyStore } from "@/stores/notify";
 import { createApiClient } from "@/api/createClient";
-import { POST_Logout } from "@/api/contentDB/api";
+import { api } from "@/api/contentDB/client";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { useNotify } from "@/composables/useNotify";
 import { tokenExpiry } from "@/utils/jwt";
 import { jwtExpiringIn } from "../helpers/jwt";
 
-vi.mock("@/api/contentDB/api", async (importOriginal) => ({ ...(await importOriginal()), POST_Logout: vi.fn() }));
-
 const cookies = new Cookies();
 const SESSION_COOKIES = ["token", "refresh", "customer_id", "expiryDate"];
+const isBlacklist = (url) => url.endsWith("/customer/tokens/blacklist/");
+const isRefresh = (url) => url.endsWith("/customer/tokens/refresh/");
+const unauthorized = () => Object.assign(new Error("401"), { response: { status: 401, data: {} } });
 
 // r04 §9 defect 1: the service issues 300 s access tokens, the client assumed 15 min and refreshed far too late.
 // The proactive refresh is scheduled from the lifetime the token carries: 60 s before expiry, never sooner than 10 s.
@@ -37,13 +38,16 @@ const clientWith401 = (build = createApiClient) => {
 
 describe("user store — proactive token refresh", () => {
   let post;
+  let reload;
+  // POST urls in order: the refresh and the blacklist both go through plain `axios.post`
+  const posted = () => post.mock.calls.map(([url]) => (isBlacklist(url) ? "blacklist" : isRefresh(url) ? "refresh" : url));
 
   beforeEach(() => {
     vi.useFakeTimers();
     localStorage.clear();
     setActivePinia(createPinia());
     post = vi.spyOn(axios, "post").mockImplementation(async () => ({ data: { data: { access: jwtExpiringIn(300) } } }));
-    POST_Logout.mockReset().mockResolvedValue({});
+    reload = vi.spyOn(window.location, "assign").mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -207,45 +211,94 @@ describe("user store — proactive token refresh", () => {
   // FIX-04c review: the logout request blacklisted the refresh token before `clearAuth` moved the session on, so the
   // refresh racing it failed as an expired session. Both redirect paths store `cms_return_route` before reloading.
   it("a refresh that fails while the logout request is pending neither redirects nor reloads", async () => {
-    const fails = [];
-    post.mockImplementation(() => new Promise((_, reject) => fails.push(reject)));
+    let failRefresh;
     let loggedOut;
-    POST_Logout.mockImplementation(() => new Promise((resolve) => (loggedOut = resolve)));
+    post.mockImplementation((url) =>
+      new Promise((resolve, reject) => (isBlacklist(url) ? (loggedOut = resolve) : (failRefresh = reject)))
+    );
     login(30);
     await vi.advanceTimersByTimeAsync(10_000);
 
     const logout = useUserStore().logout();
-    fails[0](Object.assign(new Error("401"), { response: { status: 401, data: {} } }));
+    await vi.advanceTimersByTimeAsync(0);
+    failRefresh(unauthorized());
     await vi.advanceTimersByTimeAsync(0);
 
-    expect(POST_Logout).toHaveBeenCalledWith({ refresh: "r-token" });
+    expect(post.mock.calls[1][1]).toEqual({ refresh: "r-token" });
     expect(localStorage.getItem("cms_return_route")).toBeNull();
     expect(localStorage.getItem("session_expired")).toBeNull();
+    expect(reload).not.toHaveBeenCalled();
     loggedOut({});
     await logout;
     expect(useUserStore().token).toBeNull();
     expect(localStorage.getItem("cms_return_route")).toBeNull();
+    expect(reload).toHaveBeenCalledWith("/");
   });
 
-  it("a failed logout request still logs the user out", async () => {
-    POST_Logout.mockRejectedValue(new Error("Network Error"));
+  // FIX-04d review: the blacklist went through the contentDB client, whose interceptors refreshed the session it ended.
+  it("logout with an expiring access token refreshes once, then blacklists with the new token, clears and reloads", async () => {
+    const fresh = jwtExpiringIn(300);
+    post.mockImplementation(async (url) => ({ data: isRefresh(url) ? { data: { access: fresh, refresh: "rotated" } } : {} }));
+    login(5);
+    reload.mockImplementation(() => expect(SESSION_COOKIES.map((name) => cookies.get(name))).toEqual([undefined, undefined, undefined, undefined]));
+
+    await useUserStore().logout();
+
+    expect(posted()).toEqual(["refresh", "blacklist"]);
+    const [, body, config] = post.mock.calls[1];
+    expect(body).toEqual({ refresh: "rotated" });
+    expect(config.headers.Authorization).toBe(`Bearer ${fresh}`);
+    expect(reload).toHaveBeenCalledTimes(1);
+    expect(reload).toHaveBeenCalledWith("/");
+    await vi.advanceTimersByTimeAsync(600_000);
+    expect(posted()).toEqual(["refresh", "blacklist"]);
+  });
+
+  it("the blacklist call never goes through the refresh interceptors: its 401 starts no refresh and no redirect", async () => {
+    const client = vi.spyOn(api, "post");
+    post.mockImplementation(async () => Promise.reject(unauthorized()));
+    login(-60);
+
+    await useUserStore().logout();
+
+    // one refresh — the logout's own, while the session is current — then the blacklist, never retried
+    expect(posted()).toEqual(["refresh", "blacklist"]);
+    expect(client).not.toHaveBeenCalled();
+    expect(localStorage.getItem("cms_return_route")).toBeNull();
+    expect(localStorage.getItem("session_expired")).toBeNull();
+    expect(useUserStore().token).toBeNull();
+    expect(reload).toHaveBeenCalledWith("/");
+  });
+
+  it.each([
+    ["fails", new Error("Network Error")],
+    ["times out", Object.assign(new Error("timeout of 5000ms exceeded"), { code: "ECONNABORTED" })],
+  ])("a blacklist request that %s still clears the session and reloads", async (_, error) => {
+    post.mockRejectedValue(error);
     login(300);
 
     await useUserStore().logout();
 
+    expect(post.mock.calls[0][2].timeout).toBe(5000);
     expect(useUserStore().token).toBeNull();
     expect(SESSION_COOKIES.map((name) => cookies.get(name))).toEqual([undefined, undefined, undefined, undefined]);
+    expect(reload).toHaveBeenCalledWith("/");
+  });
+
+  it("a second logout while one runs sends one blacklist request", async () => {
+    login(300);
+
+    await Promise.all([useUserStore().logout(), useUserStore().logout()]);
+
+    expect(posted()).toEqual(["blacklist"]);
+    expect(reload).toHaveBeenCalledTimes(1);
   });
 
   // FIX-04c review: a request waiting on the dropped refresh rejected into its caller's catch, which toasted.
   it("a request waiting on the refresh when the user logs out never settles and raises no toast", async () => {
     let fail;
-    post.mockImplementation(() => new Promise((_, reject) => (fail = reject)));
-    login(12);
-    const expiring = createApiClient("http://service.test", {
-      authHeaderFn: () => `Bearer ${cookies.get("token")}`,
-      tokenRefresh: true,
-    });
+    post.mockImplementation((url) => (isBlacklist(url) ? Promise.resolve({}) : new Promise((_, reject) => (fail = reject))));
+    login(30);
     await vi.advanceTimersByTimeAsync(10_000);
     const notify = useNotify();
     const settled = [];
@@ -255,11 +308,11 @@ describe("user store — proactive token refresh", () => {
         (err) => settled.push(notify.error(extractApiMessage(err, "Loading failed")))
       );
     panelLoad(clientWith401().get("/me/"));
-    panelLoad(expiring.get("/a/"));
+    panelLoad(clientWith401().get("/a/"));
     await vi.advanceTimersByTimeAsync(0);
 
     await useUserStore().logout();
-    fail(Object.assign(new Error("401"), { response: { status: 401, data: {} } }));
+    fail(unauthorized());
     // below the 5 s toast timeout: a toast spawned by the catch would still be listed
     await vi.advanceTimersByTimeAsync(1_000);
 

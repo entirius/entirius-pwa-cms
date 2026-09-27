@@ -260,12 +260,9 @@ export default {
       this.isUserMenuOpen = false;
       this.$router.push("/change-password");
     },
-    async handleLogout() {
+    handleLogout() {
       this.isUserMenuOpen = false;
-      await this.userStore.logout();
-      if (this.$route.path !== "/") {
-        this.$router.push("/");
-      }
+      this.userStore.logout();
     },
   },
 };
