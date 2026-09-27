@@ -273,8 +273,12 @@ export default {
       if (this.loading || page >= pages) return;
       this.cp.page = page + 1;
       await this.GET_CATEGORIES({ page: page + 1, limit: this.cp.limit, language: this.language });
-      // Still in view after the new rows (a short page): observe again, the observer reports the current state.
-      if (!this.sentinel) return;
+    },
+    // After a page lands (also one that made load_more return early): a sentinel still in view loads the next one.
+    // Observing again makes the observer report the current state.
+    async recheck_sentinel() {
+      await this.$nextTick();
+      if (!this.sentinel || !this.observer) return;
       this.observer.unobserve(this.sentinel);
       this.observer.observe(this.sentinel);
     },
@@ -313,6 +317,7 @@ export default {
         console.log(error);
       } finally {
         this.loading = false;
+        this.recheck_sentinel();
       }
     },
     async GET_CATEGORY({ uid }) {

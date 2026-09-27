@@ -260,7 +260,8 @@
     "save_changes": "Zapisz zmiany",
     "new_attribute": "Nowy atrybut",
     "attribute_name": "Nazwa atrybutu",
-    "attribute_value": "Wartość atrybutu"
+    "attribute_value": "Wartość atrybutu",
+    "document_attrs": "Atrybuty przypisane do dokumentu"
   },
   "routes": {
     "paths_for_doc": "Ścieżki dla dokumentu",

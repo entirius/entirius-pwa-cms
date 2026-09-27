@@ -41,23 +41,29 @@
                   }
                 "
               />
-              <IconButton
-                v-if="shown_route"
-                icon="edit"
-                :label="$t('common.edit')"
-                @click="ENTER_edit_mode({ ...shown_route })"
-              />
-              <IconButton
-                v-if="shown_route"
-                icon="delete"
-                variant="danger"
-                :label="$t('common.delete')"
-                @click="
-                  confirmation_modal = true;
-                  to_delete = shown_route.url;
-                "
-              />
             </div>
+            <!-- Edit and delete act on their own row, never on the route picked above. -->
+            <ul v-if="routes.length" class="routes-manage mt-5 flex-column gap-1">
+              <li v-for="route in routes" :key="route.value.url" class="flex ai-ct gap-1">
+                <span class="fg-1 lc-1" :title="route.value.url">{{ route.label }}</span>
+                <IconButton
+                  size="sm"
+                  icon="edit"
+                  :label="`${$t('common.edit')}: ${route.label}`"
+                  @click="ENTER_edit_mode({ ...route.value })"
+                />
+                <IconButton
+                  size="sm"
+                  icon="delete"
+                  variant="danger"
+                  :label="`${$t('common.delete')}: ${route.label}`"
+                  @click="
+                    confirmation_modal = true;
+                    to_delete = route.value.url;
+                  "
+                />
+              </li>
+            </ul>
             <template v-if="!['static-page', 'blog-post'].includes(type)">
               <p class="mt-8 mb-5">
                 {{ $t("routes.multi_route_info") }}
@@ -227,7 +233,7 @@ export default {
       confirmation_modal: false,
       to_delete: null,
       selected: null,
-      // The route the list shows (its edit / delete act on it) and the set route picked for unset.
+      // The route the list shows and the set route picked for unset.
       picked_route: null,
       picked_setted: null,
       error: null,
@@ -267,6 +273,7 @@ export default {
               draft: null,
               label: url,
             },
+            description: this.$t("routes.in_use"),
           }));
     },
     sortRoutes() {
@@ -391,6 +398,7 @@ export default {
         });
 
         if (isEdit) {
+          this.picked_route = null;
           this.routes = this.routes.map((route) => {
             if (route.value.url === this.editing_route) {
               return {
@@ -407,6 +415,7 @@ export default {
                 return {
                   label,
                   value: { url, draft: s.value.draft, label },
+                  description: this.$t("routes.in_use"),
                 };
               }
               return s;

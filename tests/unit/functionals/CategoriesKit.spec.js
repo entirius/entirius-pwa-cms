@@ -62,6 +62,25 @@ describe("categories-kit", () => {
     expect(wrapper.findAll(".categories-kit__list > .ph-2")).toHaveLength(12);
   });
 
+  it("re-checks the sentinel after a page lands, so an early return while loading loses no page", async () => {
+    let land;
+    mockContent.mockResolvedValueOnce(page(1, 3)).mockReturnValueOnce(new Promise((r) => (land = r)));
+    const wrapper = mount(CategoriesKit, { global: { stubs: { BasicMenu, ConfirmDialog: true } } });
+    await flushPromises();
+
+    const [observer] = observers;
+    observer.callback([{ isIntersecting: true }]);
+    observer.callback([{ isIntersecting: true }]); // page 2 still loading: returns early
+    expect(mockContent).toHaveBeenCalledTimes(2);
+    observer.observe.mockClear();
+
+    land(page(2, 3));
+    await flushPromises();
+    const sentinel = wrapper.find(".categories-kit__list").element.lastElementChild;
+    expect(observer.unobserve).toHaveBeenCalledWith(sentinel);
+    expect(observer.observe).toHaveBeenCalledWith(sentinel);
+  });
+
   it("does not load past the last page and disconnects on unmount", async () => {
     mockContent.mockResolvedValueOnce(page(1, 1));
     const wrapper = mount(CategoriesKit, { global: { stubs: { BasicMenu, ConfirmDialog: true } } });

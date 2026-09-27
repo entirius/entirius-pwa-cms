@@ -114,10 +114,10 @@
         </BasicButton>
       </template>
       <hr class="bb-default mv-8" />
-      <BasicMenu :key="`${force_refresh}-key-2`" class="mt-1" label="Setted attrs for document">
+      <BasicMenu :key="`${force_refresh}-key-2`" class="mt-1" :label="$t('attrs.document_attrs')">
         <template #trigger>
           <BasicButton variant="secondary" class="w-100 fs-200">
-            {{ `Setted attrs for document (${Object.keys(document_attrs ?? {}).length})` }}
+            {{ `${$t('attrs.document_attrs')} (${Object.keys(document_attrs ?? {}).length})` }}
           </BasicButton>
         </template>
         <template #panel>
