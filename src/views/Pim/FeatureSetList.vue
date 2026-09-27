@@ -101,7 +101,7 @@ export default {
     },
     columns() {
       return [
-        { key: "idx", label: "IDX", sortable: true, width: "1fr" },
+        { key: "idx", label: "IDX", sortable: true, width: "1fr", priority: 2 },
         {
           key: "name",
           label: this.$t("pim.name"),
@@ -113,6 +113,7 @@ export default {
           label: this.$t("pim.description"),
           sortable: false,
           width: "2fr",
+          priority: 2,
         },
         {
           key: "is_default",

@@ -132,11 +132,18 @@ export default {
     columns() {
       return [
         { key: "key", label: this.$t("pim.gap_key"), sortable: true, width: "1.5fr" },
-        { key: "check_key", label: this.$t("pim.gap_check"), sortable: false, width: "1.5fr" },
-        { key: "label_t9n", label: this.$t("pim.gap_label"), sortable: false, width: "2fr" },
+        { key: "check_key", label: this.$t("pim.gap_check"), sortable: false, width: "1.5fr", priority: 2 },
+        {
+          key: "label_t9n",
+          label: this.$t("pim.gap_label"),
+          sortable: false,
+          width: "2fr",
+          truncate: true,
+          title: (row) => this.resolveLabel(row),
+        },
         { key: "severity", label: this.$t("pim.gap_severity"), sortable: true, width: "120px" },
         { key: "active", label: this.$t("pim.gap_active"), sortable: false, width: "90px" },
-        { key: "display_order", label: this.$t("pim.gap_order"), sortable: true, width: "90px" },
+        { key: "display_order", label: this.$t("pim.gap_order"), sortable: true, width: "90px", priority: 2, numeric: true },
       ];
     },
     paginationState() {

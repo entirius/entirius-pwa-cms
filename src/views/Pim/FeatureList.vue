@@ -44,15 +44,7 @@
         @sort="onSort"
         @row-click="onRowClick"
       >
-        <template #cell-name="{ row }">
-          <span class="feature-list__name-cell">
-            {{
-              row.name ||
-              (row.name_t9n && (row.name_t9n.en || row.name_t9n.pl)) ||
-              row.idx
-            }}
-          </span>
-        </template>
+        <template #cell-name="{ row }">{{ featureName(row) }}</template>
         <template #cell-feature_type="{ value }">
           <span class="chip bg-raised t-secondary">
             {{ $t(featureTypeLabel(value)) }}
@@ -137,30 +129,35 @@ export default {
     },
     columns() {
       return [
-        { key: "idx", label: "IDX", sortable: true, width: "160px" },
+        { key: "idx", label: "IDX", sortable: true, width: "160px", priority: 2 },
         {
           key: "name",
           label: this.$t("pim.name"),
           sortable: false,
           width: "1fr",
+          truncate: true,
+          title: (row) => this.featureName(row),
         },
         {
           key: "feature_type",
           label: this.$t("pim.feature_type"),
           sortable: true,
-          width: "120px",
+          width: "180px",
         },
         {
           key: "scope",
           label: this.$t("pim.scope"),
           sortable: true,
           width: "120px",
+          priority: 2,
         },
         {
           key: "attribute_count",
           label: this.$t("pim.options"),
           sortable: false,
           width: "80px",
+          priority: 2,
+          numeric: true,
         },
       ];
     },
@@ -202,6 +199,9 @@ export default {
   methods: {
     featureTypeLabel,
     scopeLabel,
+    featureName(row) {
+      return row.name || row.name_t9n?.en || row.name_t9n?.pl || row.idx;
+    },
     async fetchFeatures() {
       this.loading = true;
       try {
@@ -280,12 +280,6 @@ export default {
   flex: 1;
   min-width: 150px;
   max-width: 400px;
-}
-.feature-list__name-cell {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 @media only screen and (max-width: 768px) {

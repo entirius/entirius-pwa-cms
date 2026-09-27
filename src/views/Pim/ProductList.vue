@@ -163,7 +163,7 @@
           >
             {{ productClassLabel(row.product_class_name) }}
           </span>
-          <span v-else class="t-muted">---</span>
+          <span v-else class="t-muted">—</span>
         </template>
         <template #cell-is_enabled="{ value }">
           <StatusBadge
@@ -432,24 +432,28 @@ export default {
     columns() {
       const cols = [
         { key: "thumbnail", label: "", sortable: false, width: "60px" },
-        { key: "sku", label: "SKU", sortable: true, width: "1fr" },
+        { key: "sku", label: "SKU", sortable: true, width: "180px", priority: 2 },
         {
           key: "name",
           label: this.$t("pim.name"),
           sortable: false,
           width: "2fr",
+          truncate: true,
+          title: (row) => row.name || row.sku,
         },
         {
           key: "product_class_name",
           label: this.$t("pim.product_class"),
           sortable: false,
           width: "120px",
+          priority: 2,
         },
         {
           key: "visibility",
           label: this.$t("pim.visibility"),
           sortable: true,
           width: "1fr",
+          priority: 2,
         },
         {
           key: "is_enabled",
@@ -463,7 +467,8 @@ export default {
           key: "quality",
           label: this.$t("pim.quality_column"),
           sortable: true,
-          width: "220px",
+          width: "130px",
+          priority: 2,
         });
       }
       if (this.hasSuppliersPanel) {
@@ -472,6 +477,7 @@ export default {
           label: this.$t("pim.tab_supplier"),
           sortable: false,
           width: "110px",
+          priority: 2,
         });
       }
       return cols;
