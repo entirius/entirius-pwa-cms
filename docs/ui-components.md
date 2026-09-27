@@ -24,8 +24,9 @@ Notable ones for list/form views:
 - **`DataTable`** — see API below.
 - **`FormField`** — label/description/tooltip/required wrapper for form
   inputs. Props: `label`, `description`, `tooltip`, `required`.
-- **`EmptyState`** — placeholder for empty lists. Props: `title`, `message`,
-  `icon`.
+- **`EmptyState`** — placeholder for empty lists and panels. Props: `title`, `message`,
+  `icon`; the default slot takes an action. `DataTable` renders it for `emptyText`.
+- **`Loader`** — loading indicator, centred in the content area it stands in for (`role="status"`).
 - **`ChannelMultiSelect`** — multi-select for channel scoping (`v-model`
   array of channel idx). Props: `modelValue`, `channels`, `label`, `allLabel`.
 - **`HelpTooltip`** — inline `?` icon with a hover bubble. Props: `text`

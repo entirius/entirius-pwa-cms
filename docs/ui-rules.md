@@ -137,13 +137,23 @@ Traps:
   replaces this with `PageLayout` + `PageHeader` + `ActionBar`.
 - **List view.** The toolbar holds a search `BasicInput` with `useSearchDebounce`, then filters in
   `MobileFilterPanel`, and it wraps (`flex-wrap`, `gap: var(--space-5)`). In `DataTable`, secondary columns get fixed
-  widths and only the primary text column gets `1fr`, truncated with an ellipsis. No data means `EmptyState`.
+  widths and only the primary text column gets `1fr`, truncated with an ellipsis. No data means `EmptyState`
+  (`DataTable` renders it from `emptyText`, below the grid so a phone sees it); never a plain muted paragraph.
+- **Loading.** A screen whose data arrives after first paint shows `<Loader v-if="loading" />` in the content area
+  (the boot centres itself), and actions that need the data (Save, Delete) render only after the load. The empty
+  state comes after the load, never during it. A record that answers 404 shows `EmptyState` with a way back, not a
+  blank form.
+- **Values.** Show a stored value in the unit people read (a tax rate fraction `0.2300` is "23 %",
+  `src/utils/taxRate.js`); a field takes the same unit and converts on save. Dates and times go through `formatDate`
+  (`src/utils/format.js`), never raw ISO. A select in an edit form shows the stored value even when the loaded
+  options lack it (`withStoredOption`, `src/utils/options.js`).
 - **Edit view.** A `FormField` wraps every field, validation follows § Forms, and there is one primary Save (R5).
   A dirty form shows the unsaved state next to the actions.
 - **Dialogs.** Build on `Confirmation-modal` or a `src/functionals/` modal, never inline in a view. Width:
   `min-width: min(400px, 95vw)`. A dialog with an async action closes on success and on error.
 - **Locked / system entity.** Show a notice bar at the top. Pass the disabled prop of each boot (`Dropdown
   :isDisabled`, `Switcher :prevent`, `BasicButton` / `BasicInput :isDisabled`), or show the value as read-only text.
+  Disabled `BasicInput` and `Dropdown` share one look (`--surface-disabled`, `--border-subtle`, muted text).
   Hide delete. Save stays for the fields that are not locked.
 - **Disabled button with a reason.** Wrap the disabled `BasicButton` in `ToolTip :is_wrapper="true"` carrying the
   reason, and put the live button in the `v-else` branch.
