@@ -4,15 +4,19 @@
     class="tool-tip relative"
     :class="{ pointer: !is_wrapper }"
     :tabindex="is_wrapper ? undefined : 0"
+    :role="is_wrapper ? undefined : 'note'"
     :aria-label="is_wrapper ? undefined : tip"
+    :aria-describedby="is_wrapper ? undefined : tipId"
   >
     <i class="icon-cookie" v-if="!is_wrapper" />
-    <span class="tip p-1 fs-200">{{ tip }}</span>
+    <span :id="tipId" class="tip p-1 fs-200">{{ tip }}</span>
     <slot v-if="is_wrapper"> </slot>
   </span>
 </template>
 
 <script>
+let nextId = 0;
+
 export default {
   props: {
     tip: {
@@ -23,6 +27,10 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+  data() {
+    nextId += 1;
+    return { tipId: `tool-tip-${nextId}` };
   },
 };
 </script>

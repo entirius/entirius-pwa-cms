@@ -104,10 +104,20 @@
                 >
                   <template #custom><FontAwesomeIcon icon="chevron-down" /></template>
                 </BasicButton>
-                <BasicButton custom :label="$t('common.edit')" class="btn-ghost nav-action" @click="openEditItem(element, index)">
+                <BasicButton
+                  custom
+                  :label="$t('common.edit')"
+                  class="btn-ghost nav-action"
+                  @click="openEditItem(element, index)"
+                >
                   <template #custom><FontAwesomeIcon icon="pen" /></template>
                 </BasicButton>
-                <BasicButton custom :label="$t('common.delete')" class="btn-danger nav-action nav-action--danger" @click="removeItem(index)">
+                <BasicButton
+                  custom
+                  :label="$t('common.delete')"
+                  class="btn-danger nav-action nav-action--danger"
+                  @click="removeItem(index)"
+                >
                   <template #custom><FontAwesomeIcon icon="trash-can" /></template>
                 </BasicButton>
               </div>

@@ -137,26 +137,18 @@
               class="btn-outline"
               @click="toggleHistory"
             />
-            <ToolTip :tip="$t('pm.flush_special_tooltip')" :is_wrapper="true">
-              <BasicButton
-                custom
-                :label="$t('pm.flush_special')"
-                class="btn-danger"
-                @click="showFlushConfirm = true"
-              >
-                <template #custom><FontAwesomeIcon icon="broom" /></template>
-              </BasicButton>
-            </ToolTip>
-            <ToolTip :tip="$t('pm.delete_prices_tooltip')" :is_wrapper="true">
-              <BasicButton
-                custom
-                :label="$t('pm.delete_prices')"
-                class="btn-danger"
-                @click="showDeleteConfirm = true"
-              >
-                <template #custom><FontAwesomeIcon icon="trash-can" /></template>
-              </BasicButton>
-            </ToolTip>
+            <IconButton
+              icon="clear"
+              variant="danger"
+              :label="$t('pm.flush_special')"
+              @click="showFlushConfirm = true"
+            />
+            <IconButton
+              icon="delete"
+              variant="danger"
+              :label="$t('pm.delete_prices')"
+              @click="showDeleteConfirm = true"
+            />
           </div>
 
           <!-- Confirmation modals -->
