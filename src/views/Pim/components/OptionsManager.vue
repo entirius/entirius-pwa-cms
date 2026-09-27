@@ -29,16 +29,18 @@
       v-if="showAddForm"
       class="options-manager__add-form flex ai-ct gap-5 mb-8"
     >
-      <BasicInput
-        v-model="newOption.idx"
-        :label="$t('pim.option_code')"
-        class="flex-1"
-      />
-      <BasicInput
-        v-model="newOption.label"
-        :label="$t('pim.default_label')"
-        class="flex-1"
-      />
+      <FormField :label="$t('pim.option_code')">
+        <BasicInput
+          v-model="newOption.idx"
+          class="flex-1"
+        />
+      </FormField>
+      <FormField :label="$t('pim.default_label')">
+        <BasicInput
+          v-model="newOption.label"
+          class="flex-1"
+        />
+      </FormField>
       <BasicButton
         variant="secondary"
         @click="createOption"

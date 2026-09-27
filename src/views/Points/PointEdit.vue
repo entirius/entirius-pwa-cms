@@ -31,10 +31,9 @@
           <h1 class="page-title">
             {{ isEdit ? point.name || point.code : $t("dp.create_point") }}
           </h1>
-          <Switcher
+          <BasicSwitch
             :label="$t('dp.is_active')"
-            :selected="form.is_active"
-            @onSelect="form.is_active = !form.is_active"
+            v-model="form.is_active"
           />
         </div>
 
@@ -67,7 +66,7 @@
                   v-model="geocodeQuery"
                   :placeholder="$t('dp.address_search_placeholder')"
                   icon="search"
-                  :isDisabled="!geocodeAvailable"
+                  :disabled="!geocodeAvailable"
                   @input="debouncedGeocode"
                 />
                 <div
@@ -92,7 +91,7 @@
               <label class="field-label required">{{ $t("dp.code") }}</label>
               <BasicInput
                 v-model="form.code"
-                :isDisabled="isCarrier"
+                :disabled="isCarrier"
                 :validate="formErrors.getFieldError('code')"
               />
             </div>
@@ -100,7 +99,7 @@
               <label class="field-label required">{{ $t("dp.name") }}</label>
               <BasicInput
                 v-model="form.name"
-                :isDisabled="isCarrier"
+                :disabled="isCarrier"
                 :validate="formErrors.getFieldError('name')"
               />
             </div>
@@ -159,7 +158,7 @@
               <label class="field-label">{{ $t("dp.street") }}</label>
               <BasicInput
                 v-model="form.street"
-                :isDisabled="isCarrier"
+                :disabled="isCarrier"
                 :validate="formErrors.getFieldError('street')"
               />
             </div>
@@ -167,7 +166,7 @@
               <label class="field-label">{{ $t("dp.city") }}</label>
               <BasicInput
                 v-model="form.city"
-                :isDisabled="isCarrier"
+                :disabled="isCarrier"
                 :validate="formErrors.getFieldError('city')"
               />
             </div>
@@ -175,7 +174,7 @@
               <label class="field-label">{{ $t("dp.state") }}</label>
               <BasicInput
                 v-model="form.state"
-                :isDisabled="isCarrier"
+                :disabled="isCarrier"
                 :validate="formErrors.getFieldError('state')"
               />
             </div>
@@ -183,7 +182,7 @@
               <label class="field-label">{{ $t("dp.post_code") }}</label>
               <BasicInput
                 v-model="form.post_code"
-                :isDisabled="isCarrier"
+                :disabled="isCarrier"
                 :validate="formErrors.getFieldError('post_code')"
               />
             </div>
@@ -222,7 +221,7 @@
               <label class="field-label">{{ $t("dp.lat") }}</label>
               <BasicInput
                 v-model="form.latitude"
-                :isDisabled="isCarrier"
+                :disabled="isCarrier"
                 :validate="formErrors.getFieldError('latitude')"
               />
             </div>
@@ -230,7 +229,7 @@
               <label class="field-label">{{ $t("dp.lon") }}</label>
               <BasicInput
                 v-model="form.longitude"
-                :isDisabled="isCarrier"
+                :disabled="isCarrier"
                 :validate="formErrors.getFieldError('longitude')"
               />
             </div>
@@ -245,7 +244,7 @@
               <label class="field-label">{{ $t("dp.phone") }}</label>
               <BasicInput
                 v-model="form.phone"
-                :isDisabled="isCarrier"
+                :disabled="isCarrier"
                 :validate="formErrors.getFieldError('phone')"
               />
             </div>
@@ -253,7 +252,7 @@
               <label class="field-label">{{ $t("dp.email") }}</label>
               <BasicInput
                 v-model="form.email"
-                :isDisabled="isCarrier"
+                :disabled="isCarrier"
                 :validate="formErrors.getFieldError('email')"
               />
             </div>
@@ -261,7 +260,7 @@
               <label class="field-label">{{ $t("dp.website") }}</label>
               <BasicInput
                 v-model="form.website"
-                :isDisabled="isCarrier"
+                :disabled="isCarrier"
                 :validate="formErrors.getFieldError('website')"
               />
             </div>
@@ -269,16 +268,16 @@
               <label class="field-label">{{ $t("dp.opening_hours") }}</label>
               <BasicInput
                 v-model="form.opening_hours"
-                :isDisabled="isCarrier"
+                :disabled="isCarrier"
               />
             </div>
           </div>
           <div class="detail-field mt-8">
             <label class="field-label">{{ $t("dp.hint") }}</label>
-            <TextAreaBasic
+            <BasicTextarea
               v-model="form.hint"
               rows="3"
-              :isDisabled="isCarrier"
+              :disabled="isCarrier"
             />
           </div>
         </div>

@@ -16,18 +16,18 @@
     </div>
 
     <div class="grid grid-col-3 gap-2 mt-5" v-if="mode">
-      <BasicInput
-        class="bg-base lh-base-elem"
-        :label="tFieldLabel('label', $t('controllers.set_label'))"
-        v-model="link_label"
-        :key="`${force_refresh_v_model}-label`"
-      />
-      <BasicInput
-        class="bg-base lh-base-elem"
-        :label="tFieldLabel('url', $t('controllers.set_url'))"
-        v-model="link_url"
-        :key="`${force_refresh_v_model}-url`"
-      />
+      <FormField :label="tFieldLabel('label', $t('controllers.set_label'))" :key="`${force_refresh_v_model}-label`">
+        <BasicInput
+          class="bg-base lh-base-elem"
+          v-model="link_label"
+        />
+      </FormField>
+      <FormField :label="tFieldLabel('url', $t('controllers.set_url'))" :key="`${force_refresh_v_model}-url`">
+        <BasicInput
+          class="bg-base lh-base-elem"
+          v-model="link_url"
+        />
+      </FormField>
       <Dropdown
         class="bg-base rounded b-default"
         :placeholder="$t('controllers.link_type')"
@@ -63,11 +63,10 @@
           config && config.decorator && config.decorators.length && config.rtl
         "
       >
-        <Switcher
+        <BasicSwitch
           class="mr-1"
           :label="$t('controllers.rtl_label')"
-          :selected="link_rtl"
-          @onSelect="link_rtl = !link_rtl"
+          v-model="link_rtl"
         />
         <BasicTooltip
           :text="$t('controllers.rtl_tip')"

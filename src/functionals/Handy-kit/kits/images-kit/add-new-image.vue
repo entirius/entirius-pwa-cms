@@ -24,12 +24,12 @@
       alt=""
       class="input-file__preview mb-nm"
     />
-    <BasicInput
-      v-if="filePreview"
-      class="size-sm"
-      :label="'Alt text'"
-      v-model="meta.alt"
-    />
+    <FormField v-if="filePreview" :label="'Alt text'">
+      <BasicInput
+        class="size-sm"
+        v-model="meta.alt"
+      />
+    </FormField>
     <!-- <div class="fs-sm" v-if="filePreview">
       <p class="mb-sm">Wybierz tagi dla zdjęcia:</p>
       <ButtonBasic

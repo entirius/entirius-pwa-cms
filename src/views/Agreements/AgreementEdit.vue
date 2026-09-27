@@ -42,10 +42,9 @@
               variant="informative"
             />
           </div>
-          <Switcher
+          <BasicSwitch
             :label="$t('agm.is_active')"
-            :selected="form.is_active"
-            @onSelect="form.is_active = !form.is_active"
+            v-model="form.is_active"
           />
         </div>
 
@@ -60,7 +59,7 @@
             <FormField :label="$t('agm.slug')">
               <BasicInput
                 v-model="form.slug"
-                :isDisabled="isEdit || definition.is_system"
+                :disabled="isEdit || definition.is_system"
               />
             </FormField>
             <FormField :label="$t('agm.name')">

@@ -12,7 +12,7 @@
           {{ introText }}
         </p>
         <FormField :label="forceLabel">
-          <TextAreaBasic
+          <BasicTextarea
             v-model="reason"
             :placeholder="$t('pim.supplier.force_preferred_modal.reason_placeholder')"
             rows="3"

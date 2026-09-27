@@ -43,7 +43,7 @@
               :tooltip="$t('pim.gap_key_hint')"
               :error="fieldErr('key')"
             >
-              <BasicInput v-model="form.key" :isDisabled="!isCreate" />
+              <BasicInput v-model="form.key" :disabled="!isCreate" />
             </FormField>
 
             <FormField :label="$t('pim.gap_check')" :error="fieldErr('check_key')">
@@ -100,10 +100,9 @@
             </FormField>
 
             <div class="flex ai-ct gap-2">
-              <Switcher
+              <BasicSwitch
                 :label="$t('pim.gap_active')"
-                :selected="form.active"
-                @onSelect="form.active = !form.active"
+                v-model="form.active"
               />
             </div>
           </div>
@@ -117,7 +116,7 @@
             />
             <div v-if="rawParamsMode" class="mt-5">
               <FormField :label="$t('pim.gap_params_json')" :error="rawParamsError">
-                <TextAreaBasic v-model="rawParamsText" :rows="4" />
+                <BasicTextarea v-model="rawParamsText" :rows="4" />
               </FormField>
             </div>
           </div>

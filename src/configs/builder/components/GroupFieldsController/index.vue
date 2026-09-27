@@ -134,13 +134,12 @@
             ),
           }"
         >
-          <BasicInput
-            v-if="props_handlers[field.type] === 'BasicInput'"
-            v-model="group[key]"
-            :label="tFieldLabel(key, field.label)"
-            class="rounded bg-base mt-8 lh-base-elem"
-            :key="`${force_refresh}-${index}`"
-          />
+          <FormField v-if="props_handlers[field.type] === 'BasicInput'" :label="tFieldLabel(key, field.label)" :key="`${force_refresh}-${index}`">
+            <BasicInput
+              v-model="group[key]"
+              class="rounded bg-base mt-8 lh-base-elem"
+            />
+          </FormField>
           <div
             v-if="props_handlers[field.type] === 'BasicWysiwyg'"
             class="gc-1 gc-4"

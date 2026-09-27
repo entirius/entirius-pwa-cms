@@ -37,18 +37,16 @@
           </div>
           <div class="create-field">
             <label class="field-label">{{ $t("pim.status") }}</label>
-            <Switcher
+            <BasicSwitch
               :label="$t('pim.active')"
-              :selected="form.is_active"
-              @onSelect="form.is_active = !form.is_active"
+              v-model="form.is_active"
             />
           </div>
           <div class="create-field">
             <label class="field-label">{{ $t("pim.in_menu") }}</label>
-            <Switcher
+            <BasicSwitch
               :label="$t('pim.show_in_menu')"
-              :selected="form.is_in_menu"
-              @onSelect="form.is_in_menu = !form.is_in_menu"
+              v-model="form.is_in_menu"
             />
           </div>
         </div>
@@ -85,7 +83,7 @@
               :dot="false"
               :label="lang.toUpperCase()"
             />
-            <TextAreaBasic
+            <BasicTextarea
               :model-value="form.description_t9n[lang] || ''"
               class="mt-2"
               @update:model-value="
@@ -135,7 +133,7 @@
               :dot="false"
               :label="lang.toUpperCase()"
             />
-            <TextAreaBasic
+            <BasicTextarea
               :model-value="form.meta_description_t9n[lang] || ''"
               :placeholder="$t('meta.meta_description')"
               class="mt-2"

@@ -253,11 +253,12 @@
           <div class="page-card grid grid-col-2 gap-10">
             <img :src="filePreview" alt="" style="max-width: 100%; border-radius: var(--radius-base)" />
             <div class="flex-column gap-5 ai-fs">
-              <BasicInput
-                class="bg-base rounded t-secondary lh-base-elem"
-                :label="'alt'"
-                v-model="meta.alt"
-              />
+              <FormField :label="'alt'">
+                <BasicInput
+                  class="bg-base rounded t-secondary lh-base-elem"
+                  v-model="meta.alt"
+                />
+              </FormField>
               <p class="fs-200 t-secondary mt-2">
                 {{ $t("images.choose_tags") }}
               </p>

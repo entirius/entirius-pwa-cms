@@ -4,12 +4,13 @@
       Lorem ipsum dolor, sit amet consectetur adipisicing elit. Fuga, alias.
     </p>
     <hr class="mv-lg" />
-    <BasicInput
-      :size="'sm'"
-      :label="`new value for ${attrName}`"
-      class="size-sm"
-      v-model="attrVal"
-    />
+    <FormField :label="`new value for ${attrName}`">
+      <BasicInput
+        :size="'sm'"
+        class="size-sm"
+        v-model="attrVal"
+      />
+    </FormField>
 
     <ButtonBasic
       :text="$t('common.add')"

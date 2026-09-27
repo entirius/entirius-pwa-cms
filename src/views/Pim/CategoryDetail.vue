@@ -78,18 +78,16 @@
               </div>
               <div class="detail-field">
                 <label class="field-label">{{ $t("pim.status") }}</label>
-                <Switcher
+                <BasicSwitch
                   :label="$t('pim.active')"
-                  :selected="form.is_active"
-                  @onSelect="form.is_active = !form.is_active"
+                  v-model="form.is_active"
                 />
               </div>
               <div class="detail-field">
                 <label class="field-label">{{ $t("pim.in_menu") }}</label>
-                <Switcher
+                <BasicSwitch
                   :label="$t('pim.show_in_menu')"
-                  :selected="form.is_in_menu"
-                  @onSelect="form.is_in_menu = !form.is_in_menu"
+                  v-model="form.is_in_menu"
                 />
               </div>
               <div class="detail-field">
@@ -144,7 +142,7 @@
                 :label="$t('pim.internal_desc_label')"
                 :tooltip="$t('pim.internal_desc_tooltip')"
               >
-                <TextAreaBasic v-model="form.desc" />
+                <BasicTextarea v-model="form.desc" />
               </FormField>
             </div>
           </div>
@@ -241,7 +239,7 @@
                   {{ $t('pim.translations') }}
                 </BasicButton>
               </div>
-              <TextAreaBasic v-model="form.meta_description_t9n[defaultLang]" rows="3" />
+              <BasicTextarea v-model="form.meta_description_t9n[defaultLang]" rows="3" />
             </div>
             <div class="translation-field mt-8">
               <div class="translation-field__header">
@@ -281,7 +279,7 @@
         <BasicWysiwyg variant="lite" :model-value="modelValue" @update:model-value="onUpdate" />
       </template>
       <template v-else-if="translatingFieldIsTextArea" #input="{ modelValue, onUpdate }">
-        <TextAreaBasic :model-value="modelValue" @update:model-value="onUpdate" rows="3" />
+        <BasicTextarea :model-value="modelValue" @update:model-value="onUpdate" rows="3" />
       </template>
     </TranslationsDrawer>
 

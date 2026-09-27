@@ -117,16 +117,15 @@
         </FormField>
 
         <div class="flex ai-ct gap-8 mb-10">
-          <Switcher
+          <BasicSwitch
             :label="$t('pricefighter.price_war')"
-            :selected="form.price_war"
-            @onSelect="form.price_war = !form.price_war"
+            v-model="form.price_war"
           />
-          <Switcher
+          <BasicSwitch
             :label="$t('pricefighter.mode_authoritative')"
             :hint="$t('pricefighter.mode_v2_note')"
-            :selected="false"
-            prevent
+            :model-value="false"
+            disabled
           />
         </div>
 

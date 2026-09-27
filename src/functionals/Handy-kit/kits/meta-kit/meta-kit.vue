@@ -36,30 +36,32 @@
           />
         </div>
         <div class="mt-10">
-          <BasicInput
-            class="bg-base lh-base-elem"
-            :label="`${$t('meta.meta_title')} - ${title.length}/60`"
-            v-model="title"
-          />
+          <FormField :label="`${$t('meta.meta_title')} - ${title.length}/60`">
+            <BasicInput
+              class="bg-base lh-base-elem"
+              v-model="title"
+            />
+          </FormField>
         </div>
         <div class="mt-5">
           <span class="block fs-200 mb-1">{{
             `${$t("meta.meta_description")} - ${description.length}/160`
           }}</span>
-          <TextAreaBasic class="size-sm bg-base" v-model="description" />
+          <BasicTextarea class="size-sm bg-base" v-model="description" />
         </div>
         <div class="mt-8">
-          <BasicInput
-            class="bg-base lh-base-elem"
-            :label="`${$t('meta.og_title')} - ${og_title.length}/60`"
-            v-model="og_title"
-          />
+          <FormField :label="`${$t('meta.og_title')} - ${og_title.length}/60`">
+            <BasicInput
+              class="bg-base lh-base-elem"
+              v-model="og_title"
+            />
+          </FormField>
         </div>
         <div class="mt-5">
           <span class="block fs-200 mb-1">{{
             `${$t("meta.og_description")} - ${og_description.length}/160`
           }}</span>
-          <TextAreaBasic
+          <BasicTextarea
             class="size-sm bg-base"
             v-model="og_description"
           />

@@ -21,10 +21,9 @@
             class="create-row__input"
           />
           <div class="flex ai-ct gap-5">
-            <Switcher
+            <BasicSwitch
               :label="$t('dp.is_carrier')"
-              :selected="newType.is_carrier"
-              @onSelect="newType.is_carrier = !newType.is_carrier"
+              v-model="newType.is_carrier"
             />
           </div>
         </div>
@@ -96,15 +95,13 @@
           </div>
         </div>
         <div class="flex ai-ct gap-5 mb-10">
-          <Switcher
+          <BasicSwitch
             :label="$t('dp.is_carrier')"
-            :selected="editForm.is_carrier"
-            @onSelect="editForm.is_carrier = !editForm.is_carrier"
+            v-model="editForm.is_carrier"
           />
-          <Switcher
+          <BasicSwitch
             :label="$t('dp.is_active')"
-            :selected="editForm.is_active"
-            @onSelect="editForm.is_active = !editForm.is_active"
+            v-model="editForm.is_active"
           />
         </div>
         <div class="flex ai-ct jc-sb gap-5">

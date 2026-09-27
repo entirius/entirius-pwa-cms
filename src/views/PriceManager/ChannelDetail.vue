@@ -37,7 +37,7 @@
               <label class="field-label required">IDX</label>
               <BasicInput
                 v-model="form.idx"
-                :isDisabled="isEdit"
+                :disabled="isEdit"
                 :validate="formErrors.getFieldError('idx')"
               />
             </div>

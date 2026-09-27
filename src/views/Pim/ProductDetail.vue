@@ -194,10 +194,9 @@
                     @onSelect="onFeatureSetSelect"
                   />
                 </div>
-                <Switcher
+                <BasicSwitch
                   :label="$t('pim.enabled')"
-                  :selected="form.is_enabled"
-                  @onSelect="form.is_enabled = !form.is_enabled"
+                  v-model="form.is_enabled"
                 />
               </div>
               <div
@@ -247,7 +246,7 @@
                   <template #default="{ readonly }">
                     <BasicInput
                       v-model="form.name_t9n[defaultLang]"
-                      :isDisabled="readonly"
+                      :disabled="readonly"
                     />
                   </template>
                 </InheritanceField>
@@ -429,7 +428,7 @@
                 <template #default="{ readonly }">
                   <BasicInput
                     v-model="form.subname_t9n[defaultLang]"
-                    :isDisabled="readonly"
+                    :disabled="readonly"
                   />
                 </template>
               </InheritanceField>
@@ -467,7 +466,7 @@
                 <template #default="{ readonly }">
                   <BasicInput
                     v-model="form.subname2_t9n[defaultLang]"
-                    :isDisabled="readonly"
+                    :disabled="readonly"
                   />
                 </template>
               </InheritanceField>
@@ -509,7 +508,7 @@
                 <template #default="{ readonly }">
                   <BasicInput
                     v-model="form.url_key_t9n[defaultLang]"
-                    :isDisabled="readonly"
+                    :disabled="readonly"
                   />
                 </template>
               </InheritanceField>
@@ -547,7 +546,7 @@
                 <template #default="{ readonly }">
                   <BasicInput
                     v-model="form.meta_title_t9n[defaultLang]"
-                    :isDisabled="readonly"
+                    :disabled="readonly"
                   />
                 </template>
               </InheritanceField>
@@ -583,14 +582,14 @@
                 "
               >
                 <template #default="{ readonly }">
-                  <TextAreaBasic
+                  <BasicTextarea
                     v-model="form.meta_description_t9n[defaultLang]"
                     rows="3"
-                    :isDisabled="readonly"
+                    :disabled="readonly"
                   />
                 </template>
               </InheritanceField>
-              <TextAreaBasic
+              <BasicTextarea
                 v-else
                 v-model="form.meta_description_t9n[defaultLang]"
                 rows="3"
@@ -628,7 +627,7 @@
                 <template #default="{ readonly }">
                   <BasicInput
                     v-model="form.canonical_url_t9n[defaultLang]"
-                    :isDisabled="readonly"
+                    :disabled="readonly"
                   />
                 </template>
               </InheritanceField>
@@ -808,18 +807,18 @@
               @update:model-value="onUpdate"
               :disabled="readonly"
             />
-            <TextAreaBasic
+            <BasicTextarea
               v-else-if="translatingFieldIsTextArea"
               :model-value="modelValue"
               @update:model-value="onUpdate"
               rows="3"
-              :isDisabled="readonly"
+              :disabled="readonly"
             />
             <BasicInput
               v-else
               :model-value="modelValue"
               @update:model-value="onUpdate"
-              :isDisabled="readonly"
+              :disabled="readonly"
             />
           </template>
         </InheritanceField>
@@ -830,7 +829,7 @@
             :model-value="modelValue"
             @update:model-value="onUpdate"
           />
-          <TextAreaBasic
+          <BasicTextarea
             v-else-if="translatingFieldIsTextArea"
             :model-value="modelValue"
             @update:model-value="onUpdate"

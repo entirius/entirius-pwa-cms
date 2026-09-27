@@ -151,7 +151,7 @@
             />
           </template>
           <template v-else-if="row.feature_type === 9">
-            <TextAreaBasic
+            <BasicTextarea
               :model-value="jsonToString(row.value_json)"
               :placeholder="'{}'"
               @update:model-value="
@@ -180,7 +180,7 @@
                   {{ $t('pim.translations') }}
                 </BasicButton>
               </div>
-              <TextAreaBasic
+              <BasicTextarea
                 :model-value="jsonToString((row.value_json || {})[defaultLang])"
                 :placeholder="'{}'"
                 @update:model-value="
@@ -396,7 +396,7 @@
                 />
               </template>
               <template v-else-if="row.feature_type === 9">
-                <TextAreaBasic
+                <BasicTextarea
                   :model-value="jsonToString(row.value_json)"
                   :placeholder="'{}'"
                   @update:model-value="
@@ -425,7 +425,7 @@
                       {{ $t('pim.translations') }}
                     </BasicButton>
                   </div>
-                  <TextAreaBasic
+                  <BasicTextarea
                     :model-value="jsonToString((row.value_json || {})[defaultLang])"
                     :placeholder="'{}'"
                     @update:model-value="
@@ -496,7 +496,7 @@
           :model-value="modelValue"
           @update:model-value="onUpdate"
         />
-        <TextAreaBasic
+        <BasicTextarea
           v-else-if="translatingRowData?.feature_type === 11"
           :model-value="jsonToString(modelValue)"
           :placeholder="'{}'"

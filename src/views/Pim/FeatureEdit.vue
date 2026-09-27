@@ -50,7 +50,7 @@
                 v-model="form.idx"
                 :placeholder="$t('pim.feature_code')"
               />
-              <LockedField v-else :model-value="form.idx" />
+              <BasicInput v-else :model-value="form.idx" readonly />
             </FormField>
             <FormField
               :label="$t('pim.feature_type')"
@@ -70,7 +70,7 @@
               :label="$t('pim.scope')"
               :description="$t('pim.scope_help')"
             >
-              <LockedField :model-value="selectedScopeLabel" />
+              <BasicInput :model-value="selectedScopeLabel" readonly />
             </FormField>
             <FormField :label="$t('pim.frontend_input_type')">
               <BasicSelect
@@ -98,7 +98,7 @@
             :tooltip="$t('pim.internal_desc_tooltip')"
             class="mt-8"
           >
-            <TextAreaBasic v-model="form.desc" />
+            <BasicTextarea v-model="form.desc" />
           </FormField>
         </PimCard>
 
@@ -129,53 +129,42 @@
         <!-- Section 3: Flags & Options -->
         <PimCard :title="$t('pim.flags_and_options')">
           <div class="grid grid-col-3 gap-8 mb-10">
-            <Switcher
+            <BasicSwitch
               :label="$t('pim.is_required')"
-              :selected="form.is_required"
-              :prevent="isSystem"
-              @onSelect="form.is_required = !form.is_required"
+              v-model="form.is_required"
+              :disabled="isSystem"
             />
-            <Switcher
+            <BasicSwitch
               :label="$t('pim.is_visible')"
-              :selected="form.is_visible"
-              @onSelect="form.is_visible = !form.is_visible"
+              v-model="form.is_visible"
             />
-            <Switcher
+            <BasicSwitch
               :label="$t('pim.is_filterable')"
-              :selected="form.is_filterable"
-              @onSelect="form.is_filterable = !form.is_filterable"
+              v-model="form.is_filterable"
             />
-            <Switcher
+            <BasicSwitch
               :label="$t('pim.is_searchable')"
-              :selected="form.is_searchable"
-              @onSelect="form.is_searchable = !form.is_searchable"
+              v-model="form.is_searchable"
             />
-            <Switcher
+            <BasicSwitch
               :label="$t('pim.is_comparable')"
-              :selected="form.is_comparable"
-              @onSelect="form.is_comparable = !form.is_comparable"
+              v-model="form.is_comparable"
             />
-            <Switcher
+            <BasicSwitch
               :label="$t('pim.is_for_customization')"
-              :selected="form.is_for_customization"
-              @onSelect="form.is_for_customization = !form.is_for_customization"
+              v-model="form.is_for_customization"
             />
-            <Switcher
+            <BasicSwitch
               :label="$t('pim.exclude_from_inheritance')"
-              :selected="form.exclude_from_inheritance"
-              @onSelect="
-                form.exclude_from_inheritance = !form.exclude_from_inheritance
-              "
+              v-model="form.exclude_from_inheritance"
             />
-            <Switcher
+            <BasicSwitch
               :label="$t('pim.has_visual_asset')"
-              :selected="form.has_visual_asset"
-              @onSelect="form.has_visual_asset = !form.has_visual_asset"
+              v-model="form.has_visual_asset"
             />
-            <Switcher
+            <BasicSwitch
               :label="$t('pim.is_seo')"
-              :selected="form.is_seo"
-              @onSelect="form.is_seo = !form.is_seo"
+              v-model="form.is_seo"
             />
           </div>
 

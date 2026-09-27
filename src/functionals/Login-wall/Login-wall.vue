@@ -17,11 +17,12 @@
         </div>
       </template>
       <template v-else>
-        <BasicInput
-          v-model="resetEmail"
-          class="bg-raised mb-8 lh-base-elem"
-          :label="$t('login.email')"
-        />
+        <FormField :label="$t('login.email')">
+          <BasicInput
+            v-model="resetEmail"
+            class="bg-raised mb-8 lh-base-elem"
+          />
+        </FormField>
         <BasicButton
           @click="sendResetLink"
           variant="primary"
@@ -54,18 +55,20 @@
       <p class="fs-300 t-secondary txt-center mb-12">
         {{ $t("login.subtitle") }}
       </p>
-      <BasicInput
-        v-model="username"
-        class="bg-raised mb-10 lh-base-elem"
-        :label="$t('login.username')"
-      />
-      <div class="auth-card__pw-field mb-8">
+      <FormField :label="$t('login.username')">
         <BasicInput
-          v-model="password"
-          class="bg-raised lh-base-elem"
-          :label="$t('login.password')"
-          :type="pwVisible ? 'text' : 'password'"
+          v-model="username"
+          class="bg-raised mb-10 lh-base-elem"
         />
+      </FormField>
+      <div class="auth-card__pw-field mb-8">
+        <FormField :label="$t('login.password')">
+          <BasicInput
+            v-model="password"
+            class="bg-raised lh-base-elem"
+            :type="pwVisible ? 'text' : 'password'"
+          />
+        </FormField>
         <button
           class="auth-card__pw-toggle"
           type="button"

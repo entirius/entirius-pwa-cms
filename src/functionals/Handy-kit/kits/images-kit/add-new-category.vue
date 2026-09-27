@@ -2,11 +2,12 @@
   <div>
     <h4 class="mb-md">{{ $t("images.add_new_category") }}</h4>
     <hr class="mv-lg" />
-    <BasicInput
-      class="size-sm"
-      :label="$t('images.category_name')"
-      v-model="newTag"
-    />
+    <FormField :label="$t('images.category_name')">
+      <BasicInput
+        class="size-sm"
+        v-model="newTag"
+      />
+    </FormField>
     <ButtonBasic
       :text="$t('common.save')"
       :styles="'full'"

@@ -106,11 +106,12 @@
         </Dropdown>
       </template>
       <template v-if="mode === 'add'">
-        <BasicInput
-          class="bg-base lh-base-elem mt-8"
-          :label="$t('attrs.attribute_value')"
-          v-model="attr_value"
-        />
+        <FormField :label="$t('attrs.attribute_value')">
+          <BasicInput
+            class="bg-base lh-base-elem mt-8"
+            v-model="attr_value"
+          />
+        </FormField>
         <BasicButton
           class="rounded mt-2 bb-default"
           @click="POST_NEW_ATTR"

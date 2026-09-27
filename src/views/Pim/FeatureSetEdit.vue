@@ -47,11 +47,12 @@
         <template v-else>
           <!-- Set properties -->
           <div class="feature-set-props flex gap-8 mb-10">
-            <BasicInput
-              v-model="form.name"
-              :label="$t('pim.name')"
-              class="flex-1"
-            />
+            <FormField :label="$t('pim.name')">
+              <BasicInput
+                v-model="form.name"
+                class="flex-1"
+              />
+            </FormField>
             <FormField
               :label="$t('pim.internal_desc_label')"
               :tooltip="$t('pim.internal_desc_tooltip')"

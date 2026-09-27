@@ -47,10 +47,9 @@
           </div>
           <div class="create-field">
             <label class="field-label">{{ $t("pim.status") }}</label>
-            <Switcher
+            <BasicSwitch
               :label="$t('pim.enabled')"
-              :selected="form.is_enabled"
-              @onSelect="form.is_enabled = !form.is_enabled"
+              v-model="form.is_enabled"
             />
           </div>
         </div>

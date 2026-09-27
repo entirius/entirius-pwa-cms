@@ -122,16 +122,18 @@
           :key="force_refresh"
         >
           <div class="grid grid-col-2 gap-2">
-            <BasicInput
-              :label="$t('routes.route_value')"
-              class="rounded bg-base lh-base-elem"
-              v-model="route_label"
-            />
-            <BasicInput
-              :label="'URL'"
-              class="rounded bg-base lh-base-elem"
-              v-model="route_url"
-            />
+            <FormField :label="$t('routes.route_value')">
+              <BasicInput
+                class="rounded bg-base lh-base-elem"
+                v-model="route_label"
+              />
+            </FormField>
+            <FormField :label="'URL'">
+              <BasicInput
+                class="rounded bg-base lh-base-elem"
+                v-model="route_url"
+              />
+            </FormField>
           </div>
 
           <hr class="mv-2" />

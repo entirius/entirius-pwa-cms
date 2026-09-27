@@ -199,26 +199,26 @@
               {{ skuPickerDisabledMsg }}
             </p>
           </div>
-          <BasicInput
-            v-if="
+          <FormField v-if="
               props_handlers[type] === 'BasicInput' &&
               prop !== 'product_sku' &&
               prop !== 'sku' &&
               props_dependency_check('props', _for[processing_config_type])
-            "
-            :modelValue="__value"
-            :label="tProp(prop)"
-            @onFocusout="
-              ($event) =>
-                (core_properties = core_properties.map((property) => {
-                  return {
-                    ...property,
-                    __value: property.prop === prop ? $event : property.__value,
-                  };
-                }))
-            "
-            class="rounded bg-base mt-10 lh-base-elem fs-200"
-          />
+            " :label="tProp(prop)">
+            <BasicInput
+              :modelValue="__value"
+              @onFocusout="
+                ($event) =>
+                  (core_properties = core_properties.map((property) => {
+                    return {
+                      ...property,
+                      __value: property.prop === prop ? $event : property.__value,
+                    };
+                  }))
+              "
+              class="rounded bg-base mt-10 lh-base-elem fs-200"
+            />
+          </FormField>
           <div
             v-if="
               props_handlers[type] === 'BasicWysiwyg' &&
