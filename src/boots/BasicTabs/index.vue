@@ -1,10 +1,12 @@
 <template>
-  <div ref="listRef" class="basic-tabs" role="tablist" @keydown="onKeydown">
+  <div v-if="options.length" ref="listRef" class="basic-tabs" role="tablist" @keydown="onKeydown">
     <button
       v-for="option in options"
       :key="option.value"
       type="button"
       role="tab"
+      :id="`${prefix}-tab-${option.value}`"
+      :aria-controls="`${prefix}-panel-${option.value}`"
       class="basic-tabs__tab"
       :class="{ 'basic-tabs__tab--active': modelValue === option.value }"
       :aria-selected="String(modelValue === option.value)"
@@ -19,14 +21,18 @@
 
 <script setup>
 // Tabs of one screen (docs/ui-components.md § P3 display): a `tablist` with one Tab stop (the active tab); arrow
-// keys, Home and End move to a tab and select it. Counts are CountBadges.
-import { ref } from "vue";
+// keys, Home and End move to a tab and select it. Counts are CountBadges. Tab ids are `<idPrefix>-tab-<value>`; each
+// tab controls `<idPrefix>-panel-<value>`, the call site's `role="tabpanel"` element. No options, no tablist.
+import { computed, ref, useId } from "vue";
 import CountBadge from "@/boots/CountBadge/index.vue";
 
 const props = defineProps({
   options: { type: Array, required: true },
   modelValue: { type: [String, Number], default: null },
+  idPrefix: { type: String, default: null },
 });
+const autoId = useId();
+const prefix = computed(() => props.idPrefix ?? autoId);
 const emit = defineEmits(["update:modelValue"]);
 const listRef = ref(null);
 

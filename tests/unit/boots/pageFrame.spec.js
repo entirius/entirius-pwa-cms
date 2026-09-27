@@ -110,7 +110,7 @@ describe("Breadcrumbs", () => {
 
   it("is a labelled nav list; ancestors link, the last item is the current page", () => {
     const wrapper = crumbs(CRUMBS);
-    expect(wrapper.get("nav").attributes("aria-label")).toBe("Breadcrumb");
+    expect(wrapper.get("nav").attributes("aria-label")).toBe("common.breadcrumb");
     expect(wrapper.findAll("ol > li")).toHaveLength(3);
     expect(wrapper.findAll("a").map((a) => a.attributes("href"))).toEqual(["/pages/content", "/pages/content"]);
     const current = wrapper.get('[aria-current="page"]');

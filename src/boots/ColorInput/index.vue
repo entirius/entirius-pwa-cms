@@ -11,6 +11,7 @@
           :value="modelValue || '#000000'"
           :disabled="controlDisabled"
           :aria-labelledby="field.labelId?.value || undefined"
+          :aria-label="field.labelId?.value ? undefined : $t('common.color_picker')"
           @input="onPickerInput"
         />
       </div>
@@ -48,7 +49,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["update:modelValue", "onFocusout"]);
+const emit = defineEmits(["update:modelValue"]);
 const {
   field,
   attrs,

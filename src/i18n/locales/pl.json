@@ -509,7 +509,9 @@
     "inactive": "Nieaktywny",
     "yes": "Tak",
     "no": "Nie",
-    "selected_count": "Wybrano: {count}"
+    "selected_count": "Wybrano: {count}",
+    "breadcrumb": "Ścieżka nawigacji",
+    "color_picker": "Wybierz kolor"
   },
   "notifications": {
     "doc_saved": "Dokument zapisany!",

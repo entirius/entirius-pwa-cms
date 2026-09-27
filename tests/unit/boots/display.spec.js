@@ -64,6 +64,14 @@ const TABS = [
 const tabs = (modelValue = "desc") => mount(BasicTabs, { props: { options: TABS, modelValue }, attachTo: document.body });
 
 describe("BasicTabs", () => {
+  it("names each tab's panel and renders nothing without options", () => {
+    const wrapper = mount(BasicTabs, { props: { options: TABS, modelValue: "desc", idPrefix: "p" } });
+    const first = wrapper.find('[role="tab"]');
+    expect(first.attributes("id")).toBe(`p-tab-${TABS[0].value}`);
+    expect(first.attributes("aria-controls")).toBe(`p-panel-${TABS[0].value}`);
+    expect(mount(BasicTabs, { props: { options: [] } }).find('[role="tablist"]').exists()).toBe(false);
+  });
+
   it("is a tablist; the active tab is selected and the one Tab stop", () => {
     const wrapper = tabs("variants");
     expect(wrapper.attributes("role")).toBe("tablist");

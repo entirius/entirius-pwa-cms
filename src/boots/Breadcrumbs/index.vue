@@ -1,5 +1,5 @@
 <template>
-  <nav v-if="items.length" class="breadcrumbs" :class="`breadcrumbs--${size}`" aria-label="Breadcrumb">
+  <nav v-if="items.length" class="breadcrumbs" :class="`breadcrumbs--${size}`" :aria-label="$t('common.breadcrumb')">
     <ol class="breadcrumbs__list flex ai-ct gap-3">
       <li v-for="(item, index) in items" :key="index" class="breadcrumbs__item flex ai-ct gap-3">
         <span v-if="index" class="breadcrumbs__sep" aria-hidden="true">/</span>

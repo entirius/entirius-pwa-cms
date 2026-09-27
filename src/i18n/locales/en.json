@@ -509,7 +509,9 @@
     "inactive": "Inactive",
     "yes": "Yes",
     "no": "No",
-    "selected_count": "Selected: {count}"
+    "selected_count": "Selected: {count}",
+    "breadcrumb": "Breadcrumb",
+    "color_picker": "Pick a colour"
   },
   "notifications": {
     "doc_saved": "Document saved!",
