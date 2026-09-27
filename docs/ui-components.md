@@ -203,6 +203,30 @@ Catalogue: `#display` (`#status-badge`, `#count-badge`, `#tag`, `#basic-tabs`, `
 
 ### P3 page frame (plan 14)
 
+- **`PageLayout`** — a page's content region: no border, no card (R4), padding 40 top / 80 sides (20 below tablet),
+  one scroll body (`h-100 ovy-auto`). Slots `header` (a PageHeader), `toolbar` (the filters row), default (the
+  content). It replaces the bordered page container when P5 adopts it (plan 25).
+- **`PageHeader`** — `title` is the page's only `<h1>` (`.page-title`: Lexend Deca 30/400, 20 below tablet,
+  `data-fid="page-title"`); `overline` (Inter 13/500 uppercase, Home); `crumbs` `[{ label, to? }]` 24 px above the
+  title row — omitted = the crumbs the shell provides (none without a shell), `[]` = none; `back` (a route location
+  pushed on click, or a handler) = a ghost `back` IconButton left of the H1, 20 px gap; `sticky` pins the head (crumbs,
+  back, title, meta) under the app header on a phone, on the page background (`data-fid="sticky-header"`); the
+  actions row scrolls away. Slots `meta` (chips beside the title, they keep their width) and `actions` (an
+  ActionBar): in the title row on desktop while both fit, otherwise wrapped under it right-aligned, and always its own
+  row below 1024 px. A long title wraps inside itself.
+- **Shell claim** — `src/composables/pageHeader.js`: `PAGE_HEADER_CLAIM` (injection key) and
+  `usePageHeaderClaim()`. The shell (P4) provides `{ claim, release, crumbs }` and hides its fallback header while a
+  claim is held; claims overlap during a route change, so the provider counts them. PageHeader claims on mount,
+  releases on unmount, and without a provider the claim is a no-op.
+- **`Breadcrumbs`** — `items` `[{ label, to? }]`, the last item is the current page (`aria-current="page"`, never a
+  link); `<nav aria-label="Breadcrumb"><ol>`; Lexend Deca 16/400 (12 below tablet), `size="sm"` = 12 everywhere;
+  ancestors `text-muted`, current `text-strong`, a `/` separator with 12 px gaps; long labels truncate with a `title`.
+- `BackBar` is a removed component (`removed-components/page-frame.json` → PageHeader `back`); until a view moves to
+  PageHeader its back control is an `IconButton icon="back"` (`label` „Wstecz”) or, with a visible label, a
+  `BasicButton variant="ghost" size="sm" icon="back"`.
+
+Catalogue: `#page-frame` (`#page-header`, `#breadcrumbs`, `#page-layout`).
+
 ### P3 selects (plan 15)
 
 ### P3 inputs (plan 16)
