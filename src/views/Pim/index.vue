@@ -4,8 +4,9 @@
       <div class="panel-toolbar__title flex ai-ct gap-8">
         <div id="pim-toolbar-left" class="flex ai-ct gap-5"></div>
         <div class="pim-channel-selector flex ai-ct gap-8">
-          <span class="field-label">{{ $t("pim.channel") }}</span>
+          <span id="pim-channel-label" class="field-label">{{ $t("pim.channel") }}</span>
           <Dropdown
+            aria-labelledby="pim-channel-label"
             :values="channelOptions"
             :selected="[pimChannel.activeChannelIdx]"
             :placeholder="$t('pim.select_channel')"

@@ -153,7 +153,7 @@
             class="mt-10"
           >
             <div class="flex ai-ct jc-sb mb-1">
-              <p class="fs-200 fw-600 t-muted uppercase">{{ tProp(prop) }}</p>
+              <p class="field-label">{{ tProp(prop) }}</p>
               <button
                 v-if="skuPickerChannel"
                 class="fs-200 t-accent pointer"

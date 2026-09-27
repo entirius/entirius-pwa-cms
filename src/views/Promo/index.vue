@@ -4,8 +4,9 @@
       <div class="panel-toolbar__title flex ai-ct gap-8">
         <div id="promo-toolbar-left" class="flex ai-ct gap-5"></div>
         <div v-if="showChannelSelector" class="promo-channel-selector flex ai-ct gap-8">
-          <span class="field-label">{{ $t("promo.channel") }}</span>
+          <span id="promo-channel-label" class="field-label">{{ $t("promo.channel") }}</span>
           <Dropdown
+            aria-labelledby="promo-channel-label"
             :values="channelOptions"
             :selected="[checkoutChannel.activeChannelIdx]"
             :placeholder="$t('promo.select_channel')"

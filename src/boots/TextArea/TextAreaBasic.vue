@@ -34,7 +34,7 @@
         :disabled="isDisabled"
         :maxlength="limit"
       />
-      <label :for="id" class="input-label field-label">{{ label }}</label>
+      <label :for="id" :title="label" class="input-label field-label field-label--fit">{{ label }}</label>
     </div>
     <span
       v-if="

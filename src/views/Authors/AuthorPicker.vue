@@ -1,8 +1,8 @@
 <template>
   <div class="author-picker">
-    <p v-if="label" class="field-label mb-5">
+    <label v-if="label" :for="searchId" class="field-label block mb-5">
       {{ label }}
-    </p>
+    </label>
 
     <div v-if="selectedAuthors.length" class="author-picker__selected mb-5">
       <draggable
@@ -40,6 +40,7 @@
 
     <div class="author-picker__search-wrap">
       <BasicInput
+        :id="searchId"
         v-model="search"
         :placeholder="placeholderSearch"
         icon="search"
@@ -70,6 +71,7 @@
 </template>
 
 <script>
+import { getCurrentInstance } from "vue";
 import draggable from "vuedraggable";
 import { GET_Authors } from "@/api/contentDB/api";
 import { useSearchDebounce } from "@/composables/useSearchDebounce";
@@ -87,7 +89,8 @@ export default {
   emits: ["update:modelValue"],
   setup() {
     const { search, debouncedFetch } = useSearchDebounce();
-    return { search, debouncedFetch };
+    const searchId = `author-picker-${getCurrentInstance().uid}`;
+    return { search, debouncedFetch, searchId };
   },
   data() {
     return {
