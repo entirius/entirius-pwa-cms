@@ -284,9 +284,14 @@ export default {
 <style lang="scss" scoped>
 @import "@/assets/scss/utils/touch-target";
 
-// The 24 px back control gets the 40 × 40 hit area of every other back control on a phone.
+// The 24 px back control gets the 40 × 40 hit area of every other back control on a phone; BasicButton clips its
+// overflow, which would cut the hit area off.
 .cf-back {
   @include touch-target;
+
+  @include max-tablet {
+    overflow: visible;
+  }
 }
 
 .cf-header {
