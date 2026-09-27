@@ -226,26 +226,26 @@
           <p v-if="!versions.length" class="fs-200 t-muted">
             {{ $t("agm.no_definitions") }}
           </p>
-          <div v-else class="agm-table-scroll">
-            <table class="agm-versions-table w-100">
+          <div v-else class="table-scroll">
+            <table class="table-basic">
               <thead>
                 <tr>
-                  <th class="agm-th">{{ $t("agm.version_number") }}</th>
-                  <th class="agm-th">{{ $t("agm.summary_en") }}</th>
-                  <th class="agm-th">{{ $t("agm.published_at") }}</th>
-                  <th class="agm-th">{{ $t("agm.created_at") }}</th>
-                  <th class="agm-th"></th>
+                  <th>{{ $t("agm.version_number") }}</th>
+                  <th>{{ $t("agm.summary_en") }}</th>
+                  <th>{{ $t("agm.published_at") }}</th>
+                  <th>{{ $t("agm.created_at") }}</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
                 <template v-for="ver in versions" :key="ver.id">
                   <tr class="agm-tr">
-                    <td class="agm-td">{{ ver.version_number }}</td>
+                    <td>{{ ver.version_number }}</td>
                     <td
-                      class="agm-td agm-td--summary"
-                      v-html="ver.summary_en || '---'"
+                      class="agm-td--summary"
+                      v-html="ver.summary_en || '—'"
                     />
-                    <td class="agm-td">
+                    <td>
                       <StatusBadge
                         v-if="ver.published_at"
                         :label="formatDate(ver.published_at)"
@@ -257,8 +257,8 @@
                         variant="neutral"
                       />
                     </td>
-                    <td class="agm-td">{{ formatDate(ver.created_at) }}</td>
-                    <td class="agm-td">
+                    <td>{{ formatDate(ver.created_at) }}</td>
+                    <td>
                       <div class="flex gap-2 jc-fe">
                         <BasicButton
                           v-if="!ver.published_at"
@@ -295,7 +295,7 @@
                     v-if="editingVersionId === ver.id && !ver.published_at"
                     :key="`edit-${ver.id}`"
                   >
-                    <td colspan="5" class="agm-td">
+                    <td colspan="5">
                       <div class="agm-version-form">
                         <div class="mb-5">
                           <FormField :label="$t('agm.summary_en')" class="mb-5">
@@ -389,14 +389,14 @@
               {{ $t("agm.content_history_empty") }}
             </p>
 
-            <div v-else class="agm-table-scroll">
-              <table class="agm-versions-table w-100">
+            <div v-else class="table-scroll">
+              <table class="table-basic">
                 <thead>
                   <tr>
-                    <th class="agm-th">{{ $t("agm.published_at") }}</th>
-                    <th class="agm-th">{{ $t("builder.language") }}</th>
-                    <th class="agm-th">{{ $t("common.preview") }}</th>
-                    <th class="agm-th"></th>
+                    <th>{{ $t("agm.published_at") }}</th>
+                    <th>{{ $t("builder.language") }}</th>
+                    <th>{{ $t("common.preview") }}</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -408,7 +408,7 @@
                       class="agm-tr pointer"
                       @click="toggleSnapshot(snap.published_id)"
                     >
-                      <td class="agm-td">
+                      <td>
                         <span>{{ formatDate(snap.created_at) }}</span>
                         <StatusBadge
                           v-if="idx === 0"
@@ -417,11 +417,11 @@
                           class="ml-2"
                         />
                       </td>
-                      <td class="agm-td">{{ snap.language }}</td>
-                      <td class="agm-td agm-td--summary">
+                      <td>{{ snap.language }}</td>
+                      <td class="agm-td--summary" :title="snap.text_preview">
                         {{ snap.text_preview }}
                       </td>
-                      <td class="agm-td">
+                      <td>
                         <div class="flex gap-2 ai-ct jc-fe">
                           <StatusBadge
                             v-if="snap.warnings && snap.warnings.length"
@@ -443,7 +443,7 @@
                       v-if="expandedSnapshot === snap.published_id"
                       :key="`exp-${snap.published_id}`"
                     >
-                      <td colspan="4" class="agm-td">
+                      <td colspan="4">
                         <div
                           class="agm-legal-text-preview"
                           v-html="snap.text_html"
@@ -882,36 +882,8 @@ export default {
   background: var(--surface-raised);
 }
 
-.agm-versions-table {
-  border-collapse: collapse;
-}
-
-// The tables scroll in their own box on a phone; the card does not.
-.agm-table-scroll {
-  overflow-x: auto;
-  scrollbar-width: thin;
-}
-
-.agm-th {
-  text-align: left;
-  font-size: var(--fs-200);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--text-muted);
-  padding: var(--space-2) var(--space-3);
-  border-bottom: 2px solid var(--border-subtle);
-}
-
 .agm-tr:hover {
   background: var(--surface-raised);
-}
-
-.agm-td {
-  padding: var(--space-2) var(--space-3);
-  border-bottom: 1px solid var(--border-subtle);
-  font-size: var(--fs-300);
-  color: var(--text-body);
 }
 
 .agm-td--summary {
