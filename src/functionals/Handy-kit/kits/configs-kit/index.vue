@@ -382,7 +382,8 @@
       class="grid grid-col-3 rtl-direction bg-raised pl-10 pr-10 pt-2 pb-2"
     >
       <BasicButton
-        class="bg-inverse rounded bg-accent-fill b-accent fs-200 b-strong t-on-accent-fill w-100 jc-ct"
+        variant="primary"
+        class="rounded fs-200 w-100 jc-ct"
         @click="pass_asset({})"
       >
         {{ $t('common.save') }}

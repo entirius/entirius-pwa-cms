@@ -13,77 +13,85 @@
         <hr class="mv-2" />
         <div class="flex gap-2">
           <div class="fg-1">
-            <Dropdown
-              :placeholder="`${$t('routes.list_of_paths')} (${routes.length})`"
-              :values="routes"
-              :selected="[
-                Array.isArray(selected) && selected.at(0)
-                  ? selected.at(0).value
-                  : selected,
-              ]"
-              :complex_values="true"
-              @onSelect="
-                ({ draft = null, url = null, label = null }) => {
-                  if (mode) CLOSE_form();
-                  error = false;
-                  if (draft) error = true;
+            <div class="flex ai-ct gap-1">
+              <BasicSelect
+                class="fg-1"
+                :placeholder="`${$t('routes.list_of_paths')} (${routes.length})`"
+                :options="routes"
+                :model-value="shown_route"
+                :aria-invalid="error ? 'true' : undefined"
+                @update:model-value="
+                  ($event) => {
+                    picked_route = $event;
+                    const { draft = null, url = null, label = null } = $event;
+                    if (mode) CLOSE_form();
+                    error = false;
+                    if (draft) error = true;
 
-                  if (['static-page', 'blog-post'].includes(type)) {
-                    selected = [{ label, value: { draft, url, label } }];
-                    return;
+                    if (['static-page', 'blog-post'].includes(type)) {
+                      selected = [{ label, value: { draft, url, label } }];
+                      return;
+                    }
+
+                    if (!selected) selected = [];
+
+                    if (selected.some(({ value }) => value.url === url)) return;
+
+                    selected.push({ label, value: { draft, url, label } });
                   }
-
-                  if (!selected) selected = [];
-
-                  if (selected.some(({ value }) => value.url === url)) return;
-
-                  selected.push({ label, value: { draft, url, label } });
-                }
-              "
-              @onExtension="
-                confirmation_modal = true;
-                to_delete = $event.url;
-              "
-              @onExtension2="ENTER_edit_mode({ ...$event })"
-              class="rounded bg-base b-default"
-              :class="{ 'b-negative t-negative': error }"
-            />
+                "
+              />
+              <IconButton
+                v-if="shown_route"
+                icon="edit"
+                :label="$t('common.edit')"
+                @click="ENTER_edit_mode({ ...shown_route })"
+              />
+              <IconButton
+                v-if="shown_route"
+                icon="delete"
+                variant="danger"
+                :label="$t('common.delete')"
+                @click="
+                  confirmation_modal = true;
+                  to_delete = shown_route.url;
+                "
+              />
+            </div>
             <template v-if="!['static-page', 'blog-post'].includes(type)">
               <p class="mt-8 mb-5">
                 {{ $t("routes.multi_route_info") }}
               </p>
-              <Dropdown
-                :isDisabled="!selected"
-                :values="
-                  !selected
-                    ? []
-                    : selected.map((_selected) => {
-                        return {
-                          ..._selected,
-                          label_ext: `(${$t('categories.unset')})`,
-                          label_ext_class: 't-negative',
-                        };
-                      })
-                "
-                :complex_values="true"
-                :placeholder="`${$t('routes.setted_routes')} (${
-                  !selected ? 0 : selected.length
-                })`"
-                @onExtension="
-                  ($event) => {
+              <div class="flex ai-ct gap-1">
+                <BasicSelect
+                  v-model="picked_setted"
+                  class="fg-1"
+                  :disabled="!selected"
+                  :options="!selected ? [] : selected"
+                  :placeholder="`${$t('routes.setted_routes')} (${
+                    !selected ? 0 : selected.length
+                  })`"
+                />
+                <IconButton
+                  v-if="picked_setted"
+                  icon="close"
+                  variant="danger"
+                  :label="$t('categories.unset')"
+                  @click="
                     selected = selected.filter(
-                      ({ label, value }) => value.url !== $event.url
+                      ({ label, value }) => value.url !== picked_setted.url
                     );
-                  }
-                "
-                class="rounded bg-base b-default"
-              />
+                    picked_setted = null;
+                  "
+                />
+              </div>
             </template>
           </div>
           <BasicButton
             style="min-width: 5.5rem"
             :class="{ 'jc-ct': mode }"
-            class="as-s bg-hover b-default t-secondary t-on-accent-fill-hover bg-accent-fill-hover b-accent-fill-hover rounded"
+            variant="secondary"
+            class="as-s rounded"
             @click="
               () => {
                 error = null;
@@ -140,7 +148,8 @@
           <div class="flex jc-fe gap-2">
             <BasicButton
               v-if="mode === 'edit'"
-              class="b-default t-secondary rounded"
+              variant="secondary"
+              class="rounded"
               @click="CLOSE_form"
             >
               {{ $t('common.cancel') }}
@@ -162,6 +171,7 @@
       @confirm="
         () => {
           DELETE_Route({ url: to_delete });
+          picked_route = null;
           confirmation_modal = false;
           to_delete = null;
         }
@@ -181,12 +191,8 @@
       class="grid grid-col-3 rtl-direction bg-raised pl-10 pr-10 pt-2 pb-2"
     >
       <BasicButton
+        variant="primary"
         class="rounded w-100 jc-ct"
-        :class="[
-          !selected || selected.draft
-            ? 'bg-hover b-subtle t-muted'
-            : 'bg-accent-fill b-accent t-on-accent-fill ',
-        ]"
         @click="pass_asset(selected)"
         :disabled="!selected"
       >
@@ -221,6 +227,9 @@ export default {
       confirmation_modal: false,
       to_delete: null,
       selected: null,
+      // The route the list shows (its edit / delete act on it) and the set route picked for unset.
+      picked_route: null,
+      picked_setted: null,
       error: null,
       force_refresh: 1,
     };
@@ -231,6 +240,10 @@ export default {
     },
     defaults() {
       return this.handy.defaults;
+    },
+    shown_route() {
+      if (this.picked_route) return this.picked_route;
+      return Array.isArray(this.selected) && this.selected.at(0) ? this.selected.at(0).value : null;
     },
   },
   methods: {
@@ -254,8 +267,6 @@ export default {
               draft: null,
               label: url,
             },
-            label_ext: `(${this.$t("routes.in_use")})`,
-            label_ext_class: "t-positive",
           }));
     },
     sortRoutes() {
@@ -291,10 +302,6 @@ export default {
                 draft,
                 label,
               },
-              label_ext: this.$t("common.delete"),
-              label_ext_class: "t-negative",
-              label_ext_2: this.$t("common.edit"),
-              label_ext_2_class: "t-accent",
             };
 
             return model;
@@ -389,10 +396,6 @@ export default {
               return {
                 label,
                 value: { url, draft: route.value.draft, label },
-                label_ext: this.$t("common.delete"),
-                label_ext_class: "t-negative",
-                label_ext_2: this.$t("common.edit"),
-                label_ext_2_class: "t-accent",
               };
             }
             return route;
@@ -404,8 +407,6 @@ export default {
                 return {
                   label,
                   value: { url, draft: s.value.draft, label },
-                  label_ext: `(${this.$t("routes.in_use")})`,
-                  label_ext_class: "t-positive",
                 };
               }
               return s;
@@ -416,10 +417,6 @@ export default {
             {
               label,
               value: { url, draft: null, label },
-              label_ext: this.$t("common.delete"),
-              label_ext_class: "t-negative",
-              label_ext_2: this.$t("common.edit"),
-              label_ext_2_class: "t-accent",
             },
             ...this.routes,
           ];

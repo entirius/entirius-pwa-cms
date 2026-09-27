@@ -56,7 +56,8 @@
       style="bottom: 0"
     >
       <BasicButton
-        class="bg-inverse rounded bg-accent-fill b-accent fs-200 b-strong t-on-accent-fill w-100 jc-ct"
+        variant="primary"
+        class="rounded fs-200 w-100 jc-ct"
         @click="pass_asset"
       >
         {{ $t('common.save') }}

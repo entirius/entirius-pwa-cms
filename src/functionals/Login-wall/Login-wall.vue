@@ -93,7 +93,8 @@
         <BasicButton
           data-testid="sso-login"
           @click="startSsoLogin"
-          class="bg-base b-accent jc-ct t-accent w-100 rounded"
+          variant="secondary"
+          class="jc-ct w-100 rounded"
         >
           {{ $t('login.sso_submit') }}
         </BasicButton>

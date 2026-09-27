@@ -16,23 +16,19 @@
     <div class="fg-1 pl-10 pr-10 ovy-auto pb-10">
       <div class="grid gap-2 mt-5">
         <div>
-          <Switcher
+          <BasicSwitch
             class="rtl-direction"
             :label="index === 'Index' ? 'Index' : 'No-index'"
-            :selected="index === 'Index'"
-            @onSelect="
-              index === 'Index' ? (index = 'No-index') : (index = 'Index')
-            "
+            :model-value="index === 'Index'"
+            @update:model-value="(on) => (index = on ? 'Index' : 'No-index')"
           />
         </div>
         <div>
-          <Switcher
+          <BasicSwitch
             class="rtl-direction"
             :label="follow === 'Follow' ? 'Follow' : 'No-follow'"
-            :selected="follow === 'Follow'"
-            @onSelect="
-              follow === 'Follow' ? (follow = 'No-follow') : (follow = 'Follow')
-            "
+            :model-value="follow === 'Follow'"
+            @update:model-value="(on) => (follow = on ? 'Follow' : 'No-follow')"
           />
         </div>
         <div class="mt-10">
@@ -82,11 +78,12 @@
                 class="absolute bg-base rounded-lg ov-h t-negative"
                 style="top: 3px; right: 3px; z-index: 2"
               >
-                <BasicButton
-                  @click="og_image = ''"
-                  :icon="'close-mini'"
+                <IconButton
+                  icon="close"
+                  variant="danger"
+                  size="sm"
                   :label="$t('common.delete')"
-                  class="p-0 p-1 ov-h fs-200"
+                  @click="og_image = ''"
                 />
               </div>
               <img class="absolute absolute-ct" :src="og_image" alt="" />
@@ -117,15 +114,14 @@
           </div>
         </div>
         <div class="flex jc-sb mt-5">
-          <Dropdown
+          <BasicSelect
             :placeholder="$t('common.sort_by')"
-            class="bg-base rounded b-default t-body js-e"
-            :values="[
+            :options="[
               { label: $t('common.oldest_first'), value: 'created_at' },
               { label: $t('common.newest_first'), value: '-created_at' },
             ]"
-            :selected="[sort_by]"
-            @onSelect="
+            :model-value="sort_by"
+            @update:model-value="
               ($event) => {
                 pictures = null;
                 m_pages = 1;
@@ -158,7 +154,8 @@
       class="grid grid-col-3 rtl-direction bg-raised pl-10 pr-10 pt-2 pb-2"
     >
       <BasicButton
-        class="bg-inverse rounded bg-accent-fill fs-200 b-accent t-on-accent-fill w-100 jc-ct"
+        variant="primary"
+        class="rounded fs-200 w-100 jc-ct"
         @click="
           pass_asset({
             index,

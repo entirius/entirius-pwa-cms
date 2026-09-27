@@ -16,15 +16,15 @@
     <div class="fg-1 pl-10 pr-10 ovy-auto pt-5 pb-10">
       <template v-if="attrs_list">
         <div class="grid grid-col-3 gap-2 mb-2">
-          <Dropdown
+          <BasicSelect
             :placeholder="'Attr'"
-            :selected="[attr_to_edit]"
-            :values="
+            :model-value="attr_to_edit"
+            :options="
               attrs_list.map(({ label = null, slug }) => {
                 return { label, value: slug };
               })
             "
-            @onSelect="
+            @update:model-value="
               ($event) => {
                 attr_to_edit = $event;
                 if (attr_values && attr_values[attr_to_edit]) {
@@ -34,40 +34,32 @@
                 GET_ATTR_VALUES();
               }
             "
-            class="bg-base b-default rounded shadow-down fs-200 t-body gc-s-1 gc-e-3"
+            class="gc-s-1 gc-e-3"
           />
           <BasicButton
-            class="b-default rounded"
+            variant="primary"
+            class="rounded"
             @click="mode = 'add'"
             :disabled="!attr_to_edit"
-            :class="[
-              !attr_to_edit
-                ? 'bg-raised t-muted'
-                : 'bg-accent-fill t-on-accent-fill b-accent',
-            ]"
           >
             {{ $t('attrs.add_value') }}
           </BasicButton>
         </div>
       </template>
       <template v-if="!mode">
-        <Dropdown
-          :placeholder="
-            !attr_to_edit
-              ? $t('common.select')
-              : !attr_values || !attr_values[attr_to_edit].length
-              ? $t('attrs.add_value')
-              : `${$t('attrs.available_values')} (${
-                  attr_values[attr_to_edit].length
-                })`
-          "
-          :custom_droplist="true"
-          :isDisabled="!attr_to_edit"
-          class="bg-base b-default rounded shadow-down fs-200"
-          :class="[!attr_to_edit ? 'bg-raised t-muted' : 't-body']"
-          :key="`${force_refresh}-key`"
-        >
-          <template v-slot:custom>
+        <BasicMenu :key="`${force_refresh}-key`" :label="$t('attrs.available_values')">
+          <template #trigger>
+            <BasicButton variant="secondary" class="w-100 fs-200" :disabled="!attr_to_edit">
+              {{
+                !attr_to_edit
+                  ? $t('common.select')
+                  : !attr_values || !attr_values[attr_to_edit].length
+                  ? $t('attrs.add_value')
+                  : `${$t('attrs.available_values')} (${attr_values[attr_to_edit].length})`
+              }}
+            </BasicButton>
+          </template>
+          <template #panel>
             <div
               v-for="({ label, value }, i) in !attr_to_edit ||
               !attr_values ||
@@ -103,7 +95,7 @@
               </div>
             </div>
           </template>
-        </Dropdown>
+        </BasicMenu>
       </template>
       <template v-if="mode === 'add'">
         <FormField :label="$t('attrs.attribute_value')">
@@ -113,34 +105,22 @@
           />
         </FormField>
         <BasicButton
+          variant="primary"
           class="rounded mt-2 bb-default"
           @click="POST_NEW_ATTR"
           :disabled="attr_value.length < 5"
-          :class="[
-            attr_value.length < 5
-              ? 'bg-raised t-muted'
-              : 't-on-accent-fill bg-accent-fill',
-          ]"
         >
           {{ $t('common.save') }}
         </BasicButton>
       </template>
       <hr class="bb-default mv-8" />
-      <Dropdown
-        :placeholder="`Setted attrs for document (${
-          Object.keys(document_attrs ?? {}).length
-        })`"
-        :custom_droplist="true"
-        :complex_values="true"
-        class="bg-base b-default rounded fs-200 mt-1"
-        :class="[
-          !Object.keys(document_attrs ?? {}).length
-            ? 'bg-raised t-muted'
-            : 't-body',
-        ]"
-        :key="`${force_refresh}-key-2`"
-      >
-        <template v-slot:custom>
+      <BasicMenu :key="`${force_refresh}-key-2`" class="mt-1" label="Setted attrs for document">
+        <template #trigger>
+          <BasicButton variant="secondary" class="w-100 fs-200">
+            {{ `Setted attrs for document (${Object.keys(document_attrs ?? {}).length})` }}
+          </BasicButton>
+        </template>
+        <template #panel>
           <div
             class="ph-2 flex jc-sb"
             v-for="({ label, value }, index) in !document_attrs
@@ -177,14 +157,15 @@
             </div>
           </div>
         </template>
-      </Dropdown>
+      </BasicMenu>
     </div>
 
     <div
       class="grid grid-col-3 gap-2 rtl-direction bg-raised pl-10 pr-10 pt-2 pb-2"
     >
       <BasicButton
-        class="bg-inverse rounded bg-accent-fill-hover b-accent-fill-hover fs-200 b-strong t-inverse t-on-accent-fill-hover w-100 jc-ct"
+        variant="primary"
+        class="rounded fs-200 w-100 jc-ct"
         @click="pass_asset({ ...document_attrs })"
       >
         {{ $t('common.save') }}

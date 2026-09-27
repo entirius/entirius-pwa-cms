@@ -43,7 +43,8 @@
             />
             <BasicButton
               v-if="editing_category"
-              class="b-default t-secondary rounded fs-200"
+              variant="secondary"
+              class="rounded fs-200"
               @click="
                 editing_category = null;
                 new_c = '';
@@ -52,7 +53,8 @@
               {{ $t('common.cancel') }}
             </BasicButton>
             <BasicButton
-              class="bg-inverse rounded bg-accent-fill fs-200 b-accent t-on-accent-fill"
+              variant="primary"
+              class="rounded fs-200"
               @click="
                 editing_category
                   ? PUT_CATEGORY({
@@ -77,20 +79,26 @@
             }`
           }}
         </p>
-        <Dropdown
+        <BasicMenu
           :key="`dropdown-${Object.values(c_to_set ?? {}).at(1)}`"
-          :placeholder="`${
-            !c || (Array.isArray && !c.length)
-              ? $t('categories.select_category')
-              : $t('categories.category')
-          }`"
-          class="rounded bg-base b-default override-dropdown"
-          :class="{ 'bg-raised': !c || (Array.isArray && !c.length) }"
-          :isDisabled="!c || (Array.isArray && !c.length)"
-          :custom_droplist="true"
+          class="w-100"
+          :label="$t('categories.category')"
         >
-          <template v-slot:custom>
-            <div class="categories-kit__list ovy-auto" @scroll="on_list_scroll">
+          <template #trigger>
+            <BasicButton
+              variant="secondary"
+              class="w-100"
+              :disabled="!c || (Array.isArray && !c.length)"
+            >
+              {{
+                !c || (Array.isArray && !c.length)
+                  ? $t('categories.select_category')
+                  : $t('categories.category')
+              }}
+            </BasicButton>
+          </template>
+          <template #panel>
+            <div class="categories-kit__list ovy-auto">
               <div
                 v-for="{ label = null, value = null } in c"
                 class="ph-2 flex jc-sb ai-ct"
@@ -122,9 +130,10 @@
                   >
                 </span>
               </div>
+              <div :ref="observe_sentinel" class="categories-kit__sentinel" />
             </div>
           </template>
-        </Dropdown>
+        </BasicMenu>
         <template v-if="c_to_set">
           <div
             class="mv-8 t-secondary bg-raised p-2 rounded b-default flex"
@@ -136,7 +145,8 @@
               </p>
             </div>
             <BasicButton
-              class="b-negative t-negative rounded"
+              variant="danger"
+              class="rounded"
               @click="pass_asset({ force_unset: true })"
             >
               {{ $t('categories.unset') }}
@@ -171,12 +181,8 @@
       class="grid grid-col-3 rtl-direction bg-raised pl-10 pr-10 pt-2 pb-2"
     >
       <BasicButton
+        variant="primary"
         class="rounded w-100 jc-ct"
-        :class="[
-          !c_to_set
-            ? 'bg-hover b-subtle t-muted'
-            : 'bg-accent-fill b-accent t-on-accent-fill ',
-        ]"
         :disabled="!c_to_set"
         @click="pass_asset({})"
       >
@@ -193,7 +199,7 @@ import { useContentDBChannelStore } from "@/stores/contentDBChannel";
 import { _METHOD_content } from "../../../../api/contentDB/api";
 
 const _base_url = `/category/`;
-// Pixels from the bottom of the list at which the next page loads.
+// Pixels below the end of the list at which the next page loads.
 const LOAD_MORE_THRESHOLD = 24;
 export default {
   setup() {
@@ -249,16 +255,28 @@ export default {
       if (default_category && typeof default_category === "string")
         this.GET_CATEGORY({ uid: default_category });
     },
-    // The first page loads with the kit; the next one when the list is scrolled to its end.
-    on_list_scroll({ target }) {
-      const { scrollTop, clientHeight, scrollHeight } = target;
-      if (scrollTop + clientHeight >= scrollHeight - LOAD_MORE_THRESHOLD) this.load_more();
+    // The first page loads with the kit; the next one when the sentinel after the last row comes into the list's
+    // view, which also covers a first page too short to scroll. The list remounts with the menu (its :key).
+    observe_sentinel(el) {
+      if (el === this.sentinel) return;
+      this.observer?.disconnect();
+      this.sentinel = el;
+      if (!el) return;
+      this.observer = new IntersectionObserver(([entry]) => entry.isIntersecting && this.load_more(), {
+        root: el.parentElement,
+        rootMargin: `0px 0px ${LOAD_MORE_THRESHOLD}px 0px`,
+      });
+      this.observer.observe(el);
     },
-    load_more() {
+    async load_more() {
       const { page = 1, pages = 1 } = this.cp ?? {};
       if (this.loading || page >= pages) return;
       this.cp.page = page + 1;
-      this.GET_CATEGORIES({ page: page + 1, limit: this.cp.limit, language: this.language });
+      await this.GET_CATEGORIES({ page: page + 1, limit: this.cp.limit, language: this.language });
+      // Still in view after the new rows (a short page): observe again, the observer reports the current state.
+      if (!this.sentinel) return;
+      this.observer.unobserve(this.sentinel);
+      this.observer.observe(this.sentinel);
     },
     async GET_CATEGORIES({ limit = 6, page = 1, language = null } = {}) {
       try {
@@ -457,18 +475,15 @@ export default {
   created() {
     this.init();
   },
+  beforeUnmount() {
+    this.observer?.disconnect();
+  },
 };
 </script>
 <style lang="scss">
 .categories-kit {
   .categories-kit__list {
     max-height: 10rem;
-  }
-
-  .dropdown-wrapper {
-    .dropdown-list {
-      overflow-y: unset;
-    }
   }
 }
 </style>

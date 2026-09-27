@@ -209,10 +209,11 @@ export default {
         <label class="field-label mb-2">{{
           $t("builder.translate_target_languages")
         }}</label>
-        <Dropdown
-          :values="targetLanguageOptions"
+        <BasicSelect
+          :options="targetLanguageOptions"
+          :model-value="null"
           :placeholder="$t('builder.translate_select_language')"
-          @onSelect="onLanguageSelect"
+          @update:model-value="onLanguageSelect"
         />
         <div v-if="selectedLanguages.length" class="td-chips mt-2">
           <span

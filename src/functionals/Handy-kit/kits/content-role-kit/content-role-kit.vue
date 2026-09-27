@@ -69,12 +69,8 @@
     </div>
     <div class="grid grid-col-3 gap-2 rtl-direction">
       <BasicButton
+        variant="primary"
         class="rounded fs-200 w-100 jc-ct"
-        :class="[
-          !selected_contents && !selected_contents.length
-            ? 'bg-hover t-muted b-subtle'
-            : 'bg-inverse bg-accent-fill-hover b-accent-fill-hover b-strong t-inverse t-on-accent-fill-hover',
-        ]"
         :disabled="!selected_contents && !selected_contents.length"
         @click="on_Save"
       >
