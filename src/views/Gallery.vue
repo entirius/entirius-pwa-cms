@@ -54,9 +54,9 @@
           </div>
         </div>
         <div class="flex ai-ct gap-2" style="max-width: 400px">
-          <FormField :label="$t('gallery.add_new_tag')">
+          <FormField class="fg-1" :label="$t('gallery.add_new_tag')">
             <BasicInput
-              class="bg-base lh-base-elem fg-1 tag-input"
+              class="bg-base lh-base-elem tag-input"
               v-model="new_tag_input"
             />
           </FormField>
@@ -112,9 +112,9 @@
           </div>
         </div>
         <div class="flex ai-ct gap-2">
-          <FormField :label="$t('gallery.quick_add_tag')">
+          <FormField class="fg-1" :label="$t('gallery.quick_add_tag')">
             <BasicInput
-              class="bg-base lh-base-elem fg-1 tag-input"
+              class="bg-base lh-base-elem tag-input"
               v-model="new_tag_input"
               @keydown.enter.native="quickAddTag"
             />

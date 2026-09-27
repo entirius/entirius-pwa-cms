@@ -47,10 +47,9 @@
         <template v-else>
           <!-- Set properties -->
           <div class="feature-set-props flex gap-8 mb-10">
-            <FormField :label="$t('pim.name')">
+            <FormField class="flex-1" :label="$t('pim.name')">
               <BasicInput
                 v-model="form.name"
-                class="flex-1"
               />
             </FormField>
             <FormField

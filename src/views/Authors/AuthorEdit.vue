@@ -35,18 +35,19 @@
         <div class="page-card author-edit__section mb-10">
           <div class="section-label mb-8">{{ $t("pim.basic_info") }}</div>
           <div class="flex gap-8 mb-8" style="flex-wrap: wrap">
-            <FormField :label="$t('authors.name')" :error="formErrors.getFieldError('name')?.msg || ''">
+            <FormField
+              class="flex-1"
+              style="min-width: 200px"
+              :label="$t('authors.name')"
+              :error="formErrors.getFieldError('name')?.msg || ''"
+            >
               <BasicInput
                 v-model="form.name"
-                class="flex-1"
-                style="min-width: 200px"
               />
             </FormField>
-            <FormField :label="$t('authors.slug')">
+            <FormField class="flex-1" style="min-width: 200px" :label="$t('authors.slug')">
               <BasicInput
                 v-model="form.slug"
-                class="flex-1"
-                style="min-width: 200px"
               />
             </FormField>
           </div>
@@ -124,23 +125,23 @@
           <div class="section-label mb-8">{{ $t("dp.contact") }}</div>
           <div class="flex gap-8 mb-8" style="flex-wrap: wrap">
             <FormField
+              class="flex-1"
+              style="min-width: 200px"
               :label="$t('authors.contact_email')"
               :error="formErrors.getFieldError('contact_email')?.msg || ''"
             >
               <BasicInput
                 v-model="form.contact_email"
-                class="flex-1"
-                style="min-width: 200px"
               />
             </FormField>
             <FormField
+              class="flex-1"
+              style="min-width: 200px"
               :label="$t('authors.contact_phone')"
               :error="formErrors.getFieldError('contact_phone')?.msg || ''"
             >
               <BasicInput
                 v-model="form.contact_phone"
-                class="flex-1"
-                style="min-width: 200px"
               />
             </FormField>
           </div>
@@ -160,11 +161,15 @@
             {{ $t("authors.social_profiles") }}
           </div>
           <div class="flex gap-8" style="flex-wrap: wrap">
-            <FormField v-for="platform in knownPlatforms" :label="platform" :key="platform">
+            <FormField
+              v-for="platform in knownPlatforms"
+              :key="platform"
+              class="flex-1"
+              style="min-width: 200px"
+              :label="platform"
+            >
               <BasicInput
                 v-model="form.social_profiles[platform]"
-                class="flex-1"
-                style="min-width: 200px"
               />
             </FormField>
           </div>
