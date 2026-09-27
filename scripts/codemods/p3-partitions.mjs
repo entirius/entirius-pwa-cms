@@ -2,8 +2,9 @@
 // Boots are the implementations and the catalogue shows them: neither belongs to a partition.
 import { readdirSync } from "node:fs";
 import { join, relative } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = new URL("../../", import.meta.url).pathname;
+const ROOT = fileURLToPath(new URL("../../", import.meta.url));
 const PARTITION_2_VIEWS = [
   "Promo", "Atlas", "Faq", "ContactForms", "EnrichmentReview", "EnrichmentSpawnRules", "EnrichmentTasks",
   "LayoutExtenders", "Emails", "Builder", "Authors", "Accounts", "CheckoutOrders", "ContentSets",

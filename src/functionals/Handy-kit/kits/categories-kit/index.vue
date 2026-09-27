@@ -88,7 +88,7 @@
           :custom_droplist="true"
         >
           <template v-slot:custom>
-            <div class="categories-kit__list ovy-auto">
+            <div class="categories-kit__list ovy-auto" @scroll="on_list_scroll">
               <div
                 v-for="{ label = null, value = null } in c"
                 class="ph-2 flex jc-sb ai-ct"
@@ -192,7 +192,8 @@ import { _METHOD_content } from "../../../../api/contentDB/api";
 import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 
 const _base_url = `/category/`;
-const ALL_PAGES_LIMIT = 100;
+// Pixels from the bottom of the list at which the next page loads.
+const LOAD_MORE_THRESHOLD = 24;
 export default {
   setup() {
     const notify = useNotifyStore();
@@ -215,7 +216,6 @@ export default {
       language: null,
       c_to_set: null,
       default_c: null,
-      closed: false,
     };
   },
   computed: {
@@ -250,14 +250,16 @@ export default {
       if (default_category && typeof default_category === "string")
         this.GET_CATEGORY({ uid: default_category });
     },
-    // Every page, one after the other: the list scrolls in its own box (LazyScroll never fired, a Vue 2 directive,
-    // so only the first page ever showed).
-    async GET_ALL_CATEGORIES() {
-      const params = { limit: ALL_PAGES_LIMIT, language: this.language };
-      await this.GET_CATEGORIES(params);
-      for (let page = 2; this.cp && page <= this.cp.pages && !this.closed; page += 1) {
-        await this.GET_CATEGORIES({ ...params, page });
-      }
+    // The first page loads with the kit; the next one when the list is scrolled to its end.
+    on_list_scroll({ target }) {
+      const { scrollTop, clientHeight, scrollHeight } = target;
+      if (scrollTop + clientHeight >= scrollHeight - LOAD_MORE_THRESHOLD) this.load_more();
+    },
+    load_more() {
+      const { page = 1, pages = 1 } = this.cp ?? {};
+      if (this.loading || page >= pages) return;
+      this.cp.page = page + 1;
+      this.GET_CATEGORIES({ page: page + 1, limit: this.cp.limit, language: this.language });
     },
     async GET_CATEGORIES({ limit = 6, page = 1, language = null } = {}) {
       try {
@@ -450,14 +452,11 @@ export default {
     },
     async init() {
       this.set_additional_data();
-      await this.GET_ALL_CATEGORIES();
+      await this.GET_CATEGORIES({ language: this.language });
     },
   },
   created() {
     this.init();
-  },
-  beforeUnmount() {
-    this.closed = true; // stops loading the remaining pages
   },
 };
 </script>

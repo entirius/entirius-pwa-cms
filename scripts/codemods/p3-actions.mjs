@@ -12,7 +12,20 @@
 // `:class` binding, an icon-only button without a label or without one FontAwesomeIcon, a glyph without a meaning.
 // The sweeps (plans 17, 18) run it per partition and resolve the flags. CLI: see p3-lib.mjs.
 import { pathToFileURL } from "node:url";
-import { attributeName, parseSfc, runCodemod, walkTemplate } from "./p3-lib.mjs";
+import {
+  collector,
+  contentChildren,
+  expressionOf,
+  findAttr,
+  lineIndent,
+  normalName,
+  parseSfc,
+  removeNode as removeAttr,
+  runCodemod,
+  sourceOf,
+  staticClasses,
+  walkTemplate,
+} from "./p3-lib.mjs";
 import { meaningOf, readIcons } from "./p3-icons.mjs";
 
 const ROLE_OF_CLASS = {
@@ -55,31 +68,6 @@ export function classify(classes) {
     return { colour, flag: `one-off colours "${colour.join(" ")}": pick the variant by hand` };
   }
   return { colour, variant: [...roles][0] ?? "ghost" };
-}
-
-// --- template helpers -------------------------------------------------------------------------------------------
-
-const normalName = (attr) => (attributeName(attr) ?? "").toLowerCase().replace(/-/g, "");
-const findAttr = (node, name, bound) =>
-  node.startTag.attributes.find((a) => normalName(a) === name && (bound === undefined || a.directive === bound));
-const sourceOf = (text, node) => text.slice(node.range[0], node.range[1]);
-const lineIndent = (text, offset) => text.slice(text.lastIndexOf("\n", offset - 1) + 1, offset).match(/^\s*/)[0];
-const contentChildren = (node) => node.children.filter((c) => !(c.type === "VText" && !c.value.trim()));
-const expressionOf = (text, attr) => sourceOf(text, attr.value.expression);
-const staticClasses = (node) => (findAttr(node, "class", false)?.value?.value ?? "").split(/\s+/).filter(Boolean);
-
-function collector() {
-  const result = { edits: [], flags: [] };
-  result.edit = (start, end, replacement) => result.edits.push({ start, end, text: replacement });
-  result.flag = (node, message) => result.flags.push({ offset: node.range[0], message });
-  return result;
-}
-
-// Removes an attribute together with the whitespace in front of it.
-function removeAttr(text, attr, result) {
-  let start = attr.range[0];
-  while (/\s/.test(text[start - 1])) start -= 1;
-  result.edit(start, attr.range[1], "");
 }
 
 // A colour picked in a `:class` binding (active states) cannot become a static variant.
