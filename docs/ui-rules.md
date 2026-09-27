@@ -137,7 +137,10 @@ Traps:
   shrinks. P3 replaces this with `PageLayout` + `PageHeader` + `ActionBar`.
 - **List view.** The toolbar holds a search `BasicInput` with `useSearchDebounce`, then filters in
   `MobileFilterPanel`, and it wraps (`flex-wrap`, `gap: var(--space-5)`). In `DataTable`, secondary columns get fixed
-  widths and only the primary text column gets `1fr`, truncated with an ellipsis. No data means `EmptyState`
+  widths and only the primary text column gets `1fr`, truncated with an ellipsis. A cell either fits (its column
+  grows to the badge or buttons) or truncates with a `title`, never spills into its neighbour; numbers take
+  `numeric`, row buttons `actions`, and every column but name, status and actions takes a `priority` so a phone
+  shows those three. A raw table uses `.table-basic` in a `.table-scroll` box. No data means `EmptyState`
   (`DataTable` renders it from `emptyText`, below the grid so a phone sees it); never a plain muted paragraph.
 - **Loading.** A screen whose data arrives after first paint shows `<Loader v-if="loading" />` in the content area
   (the boot centres itself), and actions that need the data (Save, Delete) render only after the load. The empty

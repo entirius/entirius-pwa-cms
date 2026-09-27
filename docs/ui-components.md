@@ -56,6 +56,11 @@ CSS Grid table for all list views. Uses `<script setup>`.
 **Events:** `sort`, `select`, `row-click`
 **Slots:** `cell-{key}`, `header-{key}`, `empty`
 
+Column options (JSDoc in the component): `key`, `label`, `sortable`, `align`, `width` (a grid track; a px width
+never drops below the header or an untruncated cell), `truncate` (one line, ellipsis, `title` from `title(row)` or
+the value; on for cells without a slot), `numeric` (right, tabular figures, no wrap), `actions` (right-aligned
+buttons, `max-content` track), `priority` (2 hidden below 768 px, 3 below 1024 px). An empty value renders "—".
+
 Sort: prop-gated, header click cycles null -> asc -> desc -> null, emits only
 (parent handles sorting).
 Selection: prop-gated, Shift+click range, Ctrl/Cmd+click toggle. The
