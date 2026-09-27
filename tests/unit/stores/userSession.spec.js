@@ -4,10 +4,14 @@ import Cookies from "universal-cookie";
 import { setActivePinia, createPinia } from "pinia";
 import { useUserStore } from "@/stores/user";
 import { useNotifyStore } from "@/stores/notify";
-import { createApiClient, SessionEndedError } from "@/api/createClient";
-import { useFormErrors } from "@/composables/useFormErrors";
+import { createApiClient } from "@/api/createClient";
+import { POST_Logout } from "@/api/contentDB/api";
+import { extractApiMessage } from "@/composables/useFormErrors";
+import { useNotify } from "@/composables/useNotify";
 import { tokenExpiry } from "@/utils/jwt";
 import { jwtExpiringIn } from "../helpers/jwt";
+
+vi.mock("@/api/contentDB/api", async (importOriginal) => ({ ...(await importOriginal()), POST_Logout: vi.fn() }));
 
 const cookies = new Cookies();
 const SESSION_COOKIES = ["token", "refresh", "customer_id", "expiryDate"];
@@ -39,6 +43,7 @@ describe("user store — proactive token refresh", () => {
     localStorage.clear();
     setActivePinia(createPinia());
     post = vi.spyOn(axios, "post").mockImplementation(async () => ({ data: { data: { access: jwtExpiringIn(300) } } }));
+    POST_Logout.mockReset().mockResolvedValue({});
   });
 
   afterEach(() => {
@@ -199,23 +204,66 @@ describe("user store — proactive token refresh", () => {
     expect(post).toHaveBeenCalledTimes(1);
   });
 
-  // The refresh path raises no toast; panels that toast on any rejection must skip SessionEndedError themselves.
-  it("a request waiting on a refresh dropped by a logout rejects with SessionEndedError, reported nowhere", async () => {
-    let fail;
-    post.mockImplementation(() => new Promise((_, reject) => (fail = reject)));
+  // FIX-04c review: the logout request blacklisted the refresh token before `clearAuth` moved the session on, so the
+  // refresh racing it failed as an expired session. Both redirect paths store `cms_return_route` before reloading.
+  it("a refresh that fails while the logout request is pending neither redirects nor reloads", async () => {
+    const fails = [];
+    post.mockImplementation(() => new Promise((_, reject) => fails.push(reject)));
+    let loggedOut;
+    POST_Logout.mockImplementation(() => new Promise((resolve) => (loggedOut = resolve)));
     login(30);
     await vi.advanceTimersByTimeAsync(10_000);
-    const request = clientWith401().get("/me/");
+
+    const logout = useUserStore().logout();
+    fails[0](Object.assign(new Error("401"), { response: { status: 401, data: {} } }));
     await vi.advanceTimersByTimeAsync(0);
 
-    useUserStore().clearAuth();
-    fail(Object.assign(new Error("401"), { response: { status: 401, data: {} } }));
-    const error = await request.catch((err) => err);
+    expect(POST_Logout).toHaveBeenCalledWith({ refresh: "r-token" });
+    expect(localStorage.getItem("cms_return_route")).toBeNull();
+    expect(localStorage.getItem("session_expired")).toBeNull();
+    loggedOut({});
+    await logout;
+    expect(useUserStore().token).toBeNull();
+    expect(localStorage.getItem("cms_return_route")).toBeNull();
+  });
 
-    expect(error).toBeInstanceOf(SessionEndedError);
-    const form = useFormErrors();
-    form.handleApiError(error);
-    expect(form.summary.value).toBe("");
+  it("a failed logout request still logs the user out", async () => {
+    POST_Logout.mockRejectedValue(new Error("Network Error"));
+    login(300);
+
+    await useUserStore().logout();
+
+    expect(useUserStore().token).toBeNull();
+    expect(SESSION_COOKIES.map((name) => cookies.get(name))).toEqual([undefined, undefined, undefined, undefined]);
+  });
+
+  // FIX-04c review: a request waiting on the dropped refresh rejected into its caller's catch, which toasted.
+  it("a request waiting on the refresh when the user logs out never settles and raises no toast", async () => {
+    let fail;
+    post.mockImplementation(() => new Promise((_, reject) => (fail = reject)));
+    login(12);
+    const expiring = createApiClient("http://service.test", {
+      authHeaderFn: () => `Bearer ${cookies.get("token")}`,
+      tokenRefresh: true,
+    });
+    await vi.advanceTimersByTimeAsync(10_000);
+    const notify = useNotify();
+    const settled = [];
+    const panelLoad = (request) =>
+      request.then(
+        () => settled.push("resolved"),
+        (err) => settled.push(notify.error(extractApiMessage(err, "Loading failed")))
+      );
+    panelLoad(clientWith401().get("/me/"));
+    panelLoad(expiring.get("/a/"));
+    await vi.advanceTimersByTimeAsync(0);
+
+    await useUserStore().logout();
+    fail(Object.assign(new Error("401"), { response: { status: 401, data: {} } }));
+    // below the 5 s toast timeout: a toast spawned by the catch would still be listed
+    await vi.advanceTimersByTimeAsync(1_000);
+
+    expect(settled).toEqual([]);
     expect(useNotifyStore().notifications).toEqual([]);
     expect(localStorage.getItem("cms_return_route")).toBeNull();
   });
@@ -254,11 +302,25 @@ describe("user store — proactive token refresh", () => {
     useUserStore().setAuth({ token: jwtExpiringIn(300), refresh: "r-token", expiryDate: null });
     expect(useUserStore().customer_id).toBeNull();
     expect(cookies.get("customer_id")).toBeUndefined();
+  });
 
-    // a store never hydrated from the cookies keeps the cookie's customer id
+  it("a store never hydrated keeps the customer_id cookie after a refresh", async () => {
+    cookies.set("refresh", "r-token", { path: "/" });
     cookies.set("customer_id", "cust-2", { path: "/" });
-    useUserStore().setAuth({ token: jwtExpiringIn(300), refresh: "r-token", expiryDate: null });
+
+    await clientWith401().get("/me/");
+
     expect(useUserStore().customer_id).toBe("cust-2");
+    expect(cookies.get("customer_id")).toBe("cust-2");
+  });
+
+  it("setAuth with customer_id null keeps the existing id", () => {
+    login(300);
+
+    useUserStore().setAuth({ token: jwtExpiringIn(300), refresh: "r-token", customer_id: null, expiryDate: null });
+
+    expect(useUserStore().customer_id).toBe("cust-1");
+    expect(cookies.get("customer_id")).toBe("cust-1");
   });
 });
 

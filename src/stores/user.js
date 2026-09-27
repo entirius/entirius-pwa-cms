@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import Cookies from 'universal-cookie'
 import { User } from '@/configs/access'
-import { PATCH_UserProfile } from '@/api/contentDB/api'
+import { PATCH_UserProfile, POST_Logout } from '@/api/contentDB/api'
 import { endRefreshSession, refreshAccessToken, SessionEndedError } from '@/api/createClient'
 import { setLang, getLang } from '@/i18n'
 import { refreshDelay } from '@/utils/jwt'
@@ -39,11 +39,10 @@ export const useUserStore = defineStore('user', () => {
     cookies.set('user', user.value, COOKIE_OPTS)
   }
 
-  // A token refresh carries no customer id: the current one stays (the store's, else the cookie's), and an unknown
-  // one is null, never written.
-  function setAuth({
-    token: t, refresh: r, customer_id: cid = customer_id.value ?? cookies.get('customer_id') ?? null, expiryDate: exp,
-  }) {
+  // A token refresh carries no customer id (absent or null): the current one stays (the store's, else the cookie's),
+  // and an unknown one is null, never written.
+  function setAuth({ token: t, refresh: r, customer_id: passed, expiryDate: exp }) {
+    const cid = passed ?? customer_id.value ?? cookies.get('customer_id') ?? null
     token.value = t
     refresh.value = r
     customer_id.value = cid
@@ -78,6 +77,19 @@ export const useUserStore = defineStore('user', () => {
     Object.keys(allCookies).forEach((cookieName) => {
       cookies.remove(cookieName, { path: '/' })
     })
+  }
+
+  // The only logout. The session ends before the server is told, so a refresh racing the blacklist can neither
+  // redirect nor toast; a failed logout request still logs the user out.
+  async function logout() {
+    endRefreshSession()
+    stopSessionMonitor()
+    try {
+      await POST_Logout({ refresh: refresh.value })
+    } catch {
+      // the local session ends either way
+    }
+    clearAuth()
   }
 
   function sessionExpiredLogout() {
@@ -211,7 +223,7 @@ export const useUserStore = defineStore('user', () => {
   return {
     user, token, refresh, customer_id, expiryDate, isAuth,
     activeApp, isSidebarCollapsed, theme, lang, preferences,
-    setAuth, markAuthenticated, clearAuth, setUser, toggleSidebar, setTheme,
+    setAuth, markAuthenticated, clearAuth, logout, setUser, toggleSidebar, setTheme,
     setLanguage, loadPreferences, savePreference,
     readCookies, appInit, sessionExpiredLogout
   }

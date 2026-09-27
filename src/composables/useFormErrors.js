@@ -1,5 +1,6 @@
 import { reactive, ref, computed } from "vue"
 import { t } from "@/i18n"
+import { SessionEndedError } from "@/api/createClient"
 
 /** Join a DRF field value ([msg] | msg) into a single non-empty string. */
 function asMessage(value) {
@@ -90,6 +91,7 @@ export function useFormErrors() {
 
   function handleApiError(err) {
     clearErrors()
+    if (err instanceof SessionEndedError) return
     lastMessage.value = extractApiMessage(err)
     lastDebugId.value = extractDebugId(err)
     const data = resolveErrorBody(err)

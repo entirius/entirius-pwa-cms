@@ -173,7 +173,6 @@ import { useUserStore } from "@/stores/user";
 import { useNotifyStore } from "@/stores/notify";
 import { useMuninStore } from "@/stores/munin";
 import { panels } from "../../configs/access";
-import { POST_Logout } from "../../api/contentDB/api";
 import NotificationBell from "@/components/NotificationBar/NotificationBell.vue";
 import ConfigHealthButton from "@/components/ConfigHealth/ConfigHealthButton.vue";
 import { useConfigHealthStore } from "@/stores/configHealth";
@@ -214,9 +213,6 @@ export default {
     },
     user() {
       return this.userStore.user;
-    },
-    refresh() {
-      return this.userStore.refresh;
     },
     activeApp() {
       return this.userStore.activeApp;
@@ -266,8 +262,7 @@ export default {
     },
     async handleLogout() {
       this.isUserMenuOpen = false;
-      await POST_Logout({ refresh: this.refresh });
-      this.userStore.clearAuth();
+      await this.userStore.logout();
       if (this.$route.path !== "/") {
         this.$router.push("/");
       }

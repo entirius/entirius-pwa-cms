@@ -13,8 +13,7 @@ let sessionGeneration = 0
 /**
  * A refresh that settled after a logout, answered or failed: nothing expired, the session had already ended.
  * It is not an error to report: the refresh paths neither log out again nor redirect, and a request waiting on that
- * refresh rejects with it instead of a v2 body — `handleApiError` shows no message and `isConflict` is false.
- * A caller that toasts on every rejection skips it (`err instanceof SessionEndedError`).
+ * refresh never sees it — the interceptors leave that request pending (`refreshOrLogout`), so no caller toasts it.
  */
 export class SessionEndedError extends Error {}
 
@@ -103,11 +102,15 @@ async function postRefresh() {
   return access
 }
 
+// Shared by both interceptors (the 401 retry and the pre-request check). A request waiting on a refresh of an ended
+// session is abandoned, not rejected: its promise never settles. The user logged out and is on the way to the login
+// screen, the waiting components unmount — a rejection would reach ~280 call sites that toast on any error.
 async function refreshOrLogout() {
   try {
     return await refreshAccessToken()
   } catch (error) {
-    if (!(error instanceof SessionEndedError)) sessionExpiredRedirect()
+    if (error instanceof SessionEndedError) return new Promise(() => {})
+    sessionExpiredRedirect()
     throw error
   }
 }

@@ -44,8 +44,11 @@ All 12 stores (`src/stores/`) use composition (setup) syntax with `defineStore`.
   the expiry is the token's `exp` - `iat` counted from receipt, kept in the
   `expiryDate` cookie, so client clock skew does not matter; the call is
   `refreshAccessToken()` in `api/createClient.js`, shared with the 401 retry
-  and the pre-request check), theme (`"default"`/`"dark"`), sidebar, `activeApp`, language,
-  preferences. Cookie persistence via `universal-cookie`.
+  and the pre-request check), `logout()` — the only logout: ends the refresh
+  session, then blacklists the refresh token (a failure is ignored), then
+  `clearAuth()`; a request waiting on a refresh of the ended session never
+  settles, so no panel toasts it — theme (`"default"`/`"dark"`), sidebar,
+  `activeApp`, language, preferences. Cookie persistence via `universal-cookie`.
 
 ### `useMuninStore` API
 
