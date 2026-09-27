@@ -11,20 +11,19 @@
       </span>
     </Teleport>
     <Teleport to="#pricing-toolbar-right" defer>
-      <BasicButton
+      <IconButton
         v-if="isEdit"
-        custom
+        icon="delete"
         :label="$t('common.delete')"
-        class="btn-danger"
+        variant="danger"
         @click="showDeleteConfirm = true"
-      >
-        <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
-      </BasicButton>
-      <BasicButton
-        :text="$t('pm.save')"
-        class="btn-primary"
-        @click="save"
       />
+      <BasicButton
+        variant="primary"
+        @click="save"
+      >
+        {{ $t('pm.save') }}
+      </BasicButton>
     </Teleport>
 
     <div class="page-card h-100 ovy-auto">
@@ -72,15 +71,13 @@
             >
               <span class="fw-600">{{ rate.country }}</span>
               <span>{{ formatTaxRate(rate.rate) }}</span>
-              <BasicButton
-                custom
-                size="sm"
+              <IconButton
+                icon="delete"
                 :label="$t('common.delete')"
-                class="btn-danger"
+                variant="danger"
+                size="sm"
                 @click="deleteRate(rate.country)"
-              >
-                <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
-              </BasicButton>
+              />
             </div>
           </div>
 
@@ -91,11 +88,11 @@
               <NumberInput v-model="newRate.rate" :min="0" :max="100" :step="0.01" suffix="%" />
             </FormField>
             <BasicButton
-              :text="$t('pm.add_rate')"
-              icon="plus"
-              class="btn-secondary"
+              variant="secondary"
               @click="addRate"
-            />
+            >
+              {{ $t('pm.add_rate') }}
+            </BasicButton>
           </div>
         </div>
       </template>

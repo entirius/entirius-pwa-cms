@@ -35,19 +35,21 @@
     <template #footer>
       <div class="force-preferred__actions">
         <BasicButton
-          :text="$t('pim.supplier.force_preferred_modal.cancel')"
-          class="btn-outline"
+          variant="secondary"
           :disabled="loading"
           data-test="force-preferred-cancel"
           @click="$emit('close')"
-        />
+        >
+          {{ $t('pim.supplier.force_preferred_modal.cancel') }}
+        </BasicButton>
         <BasicButton
-          :text="loading ? $t('pim.supplier.force_preferred_modal.confirming') : confirmText"
-          class="btn-primary"
+          variant="primary"
           :disabled="!canConfirm"
           data-test="force-preferred-confirm"
           @click="onConfirm"
-        />
+        >
+          {{ loading ? $t('pim.supplier.force_preferred_modal.confirming') : confirmText }}
+        </BasicButton>
       </div>
     </template>
   </ConfirmationModal>

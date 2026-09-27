@@ -20,15 +20,17 @@
           @onSelect="onFilterActive"
         />
         <BasicButton
-          :text="$t('pim.expand_all')"
-          class="btn-secondary"
+          variant="secondary"
           @click="expandAll"
-        />
+        >
+          {{ $t('pim.expand_all') }}
+        </BasicButton>
         <BasicButton
-          :text="$t('pim.collapse_all')"
-          class="btn-secondary"
+          variant="secondary"
           @click="collapseAll"
-        />
+        >
+          {{ $t('pim.collapse_all') }}
+        </BasicButton>
       </div>
 
       <Loader block v-if="loading" />

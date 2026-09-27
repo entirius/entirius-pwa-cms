@@ -7,10 +7,11 @@
         <h1 class="page-title flex-1">{{ $t("agm.people_list") }}</h1>
         <BasicButton
           v-if="mode === 'marketing_lists'"
-          :text="$t('agm.download_csv')"
-          class="btn-outline"
+          variant="secondary"
           @click="downloadCSV"
-        />
+        >
+          {{ $t('agm.download_csv') }}
+        </BasicButton>
       </div>
 
       <div class="mb-10">

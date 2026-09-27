@@ -174,7 +174,7 @@ export default {
   },
   computed: {
     bulkActions() {
-      return [{ key: 'apply', labelKey: 'pricefighter.apply_selected', buttonClass: 'bg-accent-fill t-on-accent-fill' }]
+      return [{ key: 'apply', labelKey: 'pricefighter.apply_selected', variant: 'primary' }]
     },
     recommendationFilterOptions() {
       return [

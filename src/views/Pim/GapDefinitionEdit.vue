@@ -8,22 +8,21 @@
       />
     </Teleport>
     <Teleport to="#pim-toolbar-right" defer>
-      <BasicButton
+      <IconButton
         v-if="!isCreate"
-        data-test="gap-delete-btn"
-        custom
+        icon="delete"
         :label="$t('common.delete')"
-        class="btn-danger"
+        variant="danger"
+        data-test="gap-delete-btn"
         @click="showDeleteConfirm = true"
-      >
-        <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
-      </BasicButton>
+      />
       <BasicButton
-        :text="$t('common.save')"
-        class="btn-primary"
+        variant="primary"
         data-test="gap-save-btn"
         @click="save"
-      />
+      >
+        {{ $t('common.save') }}
+      </BasicButton>
     </Teleport>
 
     <div class="flex-1 ovy-auto page-pad">

@@ -27,12 +27,13 @@
         @remove="removeImage"
       />
       <BasicButton
-        :text="$t('lookup.box.search_button')"
-        class="btn-primary"
-        :is-disabled="loading || !canSearch"
+        variant="primary"
+        :disabled="loading || !canSearch"
         data-testid="dedup-search-submit"
         @click="search"
-      />
+      >
+        {{ $t('lookup.box.search_button') }}
+      </BasicButton>
     </div>
 
     <!-- Directly under the picker it describes, not stranded in the filter row. -->

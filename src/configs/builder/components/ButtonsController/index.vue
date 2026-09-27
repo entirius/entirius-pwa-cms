@@ -75,7 +75,6 @@
       </div>
       <div class="grid">
         <BasicButton
-          :text="mode === 'add' ? $t('common.add') : $t('common.save')"
           class="bg-raised b-default bg-base-hover rounded"
           @click="
             set_button({
@@ -86,17 +85,20 @@
               link_rtl,
             })
           "
-        />
+        >
+          {{ mode === 'add' ? $t('common.add') : $t('common.save') }}
+        </BasicButton>
       </div>
     </div>
     <div class="mt-1">
       <div class="flex">
         <BasicButton
-          :text="!mode ? $t('routes.set_new') : $t('common.close')"
           class="b-default bg-base bg-hover-hover rounded fs-200 mr-1"
           :class="{ 'bg-inverse t-inverse bg-inverse-hover': mode }"
           @click="!mode ? (mode = 'add') : (mode = null)"
-        />
+        >
+          {{ !mode ? $t('routes.set_new') : $t('common.close') }}
+        </BasicButton>
         <Dropdown
           class="bg-base rounded b-default fg-1"
           :class="[!Boolean(value) ? 'bg-raised t-muted' : '']"

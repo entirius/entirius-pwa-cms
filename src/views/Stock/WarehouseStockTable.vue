@@ -9,17 +9,19 @@
       </span>
       <BasicButton
         v-if="isManual"
-        :text="$t('stock.import_csv')"
-        class="btn-outline"
+        variant="secondary"
         @click="showImportModal = true"
-      />
+      >
+        {{ $t('stock.import_csv') }}
+      </BasicButton>
       <BasicButton
         v-if="isManual"
-        :text="$t('stock.save_all')"
-        class="btn-primary"
+        variant="primary"
         :disabled="dirtyCount === 0"
         @click="saveAll"
-      />
+      >
+        {{ $t('stock.save_all') }}
+      </BasicButton>
     </Teleport>
 
     <!-- Integration warning -->

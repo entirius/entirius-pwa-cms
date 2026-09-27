@@ -37,16 +37,17 @@
             class="bg-base b-default rounded shadow-down fs-200 t-body gc-s-1 gc-e-3"
           />
           <BasicButton
-            :text="$t('attrs.add_value')"
             class="b-default rounded"
             @click="mode = 'add'"
-            :isDisabled="!attr_to_edit"
+            :disabled="!attr_to_edit"
             :class="[
               !attr_to_edit
                 ? 'bg-raised t-muted'
                 : 'bg-accent-fill t-on-accent-fill b-accent',
             ]"
-          />
+          >
+            {{ $t('attrs.add_value') }}
+          </BasicButton>
         </div>
       </template>
       <template v-if="!mode">
@@ -112,15 +113,16 @@
         />
         <BasicButton
           class="rounded mt-2 bb-default"
-          :text="$t('common.save')"
           @click="POST_NEW_ATTR"
-          :isDisabled="attr_value.length < 5"
+          :disabled="attr_value.length < 5"
           :class="[
             attr_value.length < 5
               ? 'bg-raised t-muted'
               : 't-on-accent-fill bg-accent-fill',
           ]"
-        />
+        >
+          {{ $t('common.save') }}
+        </BasicButton>
       </template>
       <hr class="bb-default mv-8" />
       <Dropdown
@@ -182,14 +184,17 @@
     >
       <BasicButton
         class="bg-inverse rounded bg-accent-fill-hover b-accent-fill-hover fs-200 b-strong t-inverse t-on-accent-fill-hover w-100 jc-ct"
-        :text="$t('common.save')"
         @click="pass_asset({ ...document_attrs })"
-      />
+      >
+        {{ $t('common.save') }}
+      </BasicButton>
       <BasicButton
-        class="bg-negative-subtle rounded fs-200 b-negative t-negative w-100 jc-ct"
-        :text="$t('common.cancel')"
+        variant="danger"
+        class="rounded fs-200 w-100 jc-ct"
         @click="handy.open_Handykit({})"
-      />
+      >
+        {{ $t('common.cancel') }}
+      </BasicButton>
     </div>
   </div>
 </template>

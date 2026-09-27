@@ -3,10 +3,11 @@
     <!-- Title shown by router titleKey in header bar -->
     <Teleport to="#pricing-toolbar-right" defer>
       <BasicButton
-        :text="$t('pm.sync_channels')"
-        class="btn-outline"
+        variant="secondary"
         @click="syncChannels"
-      />
+      >
+        {{ $t('pm.sync_channels') }}
+      </BasicButton>
     </Teleport>
 
     <div class="page-card h-100 ovy-auto">

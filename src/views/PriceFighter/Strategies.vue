@@ -4,11 +4,11 @@
       <div class="flex ai-ct jc-sb mb-10">
         <h1 class="page-title">{{ $t('pricefighter.strategies') }}</h1>
         <BasicButton
-          :text="$t('pricefighter.new_rule')"
-          icon="plus"
-          class="btn-primary"
+          variant="primary"
           @click="openCreate"
-        />
+        >
+          {{ $t('pricefighter.new_rule') }}
+        </BasicButton>
       </div>
 
       <Loader block v-show="loading" />
@@ -133,27 +133,27 @@
         </div>
 
         <div class="flex ai-ct jc-sb gap-5">
-          <BasicButton
+          <IconButton
             v-if="editingRule.id"
-            custom
+            icon="delete"
             :label="$t('common.delete')"
-            class="btn-danger"
+            variant="danger"
             @click="showDeleteConfirm = true"
-          >
-            <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
-          </BasicButton>
+          />
           <div v-else />
           <div class="flex ai-ct gap-5">
             <BasicButton
-              :text="$t('common.cancel')"
-              class="btn-secondary"
+              variant="secondary"
               @click="closeModal"
-            />
+            >
+              {{ $t('common.cancel') }}
+            </BasicButton>
             <BasicButton
-              :text="$t('common.save')"
-              class="btn-primary"
+              variant="primary"
               @click="saveRule"
-            />
+            >
+              {{ $t('common.save') }}
+            </BasicButton>
           </div>
         </div>
       </div>

@@ -67,10 +67,12 @@
                 <span class="lang-tag fs-200 t-muted">{{ defaultLang }}</span>
                 <BasicButton
                   v-if="hasSecondaryLanguages"
-                  :text="$t('pim.translations')"
-                  class="btn-outline translation-field__btn"
+                  variant="secondary"
+                  class="translation-field__btn"
                   @click="openTranslationsDrawer(row.feature_idx)"
-                />
+                >
+                  {{ $t('pim.translations') }}
+                </BasicButton>
               </div>
               <BasicInput
                 :model-value="(row.value_txt_t9n || {})[defaultLang]"
@@ -101,10 +103,12 @@
                 <span class="lang-tag fs-200 t-muted">{{ defaultLang }}</span>
                 <BasicButton
                   v-if="hasSecondaryLanguages"
-                  :text="$t('pim.translations')"
-                  class="btn-outline translation-field__btn"
+                  variant="secondary"
+                  class="translation-field__btn"
                   @click="openTranslationsDrawer(row.feature_idx)"
-                />
+                >
+                  {{ $t('pim.translations') }}
+                </BasicButton>
               </div>
               <BasicWysiwyg
                 variant="lite"
@@ -169,10 +173,12 @@
                 <span class="lang-tag fs-200 t-muted">{{ defaultLang }}</span>
                 <BasicButton
                   v-if="hasSecondaryLanguages"
-                  :text="$t('pim.translations')"
-                  class="btn-outline translation-field__btn"
+                  variant="secondary"
+                  class="translation-field__btn"
                   @click="openTranslationsDrawer(row.feature_idx)"
-                />
+                >
+                  {{ $t('pim.translations') }}
+                </BasicButton>
               </div>
               <TextAreaBasic
                 :model-value="jsonToString((row.value_json || {})[defaultLang])"
@@ -305,10 +311,12 @@
                     <span class="lang-tag fs-200 t-muted">{{ defaultLang }}</span>
                     <BasicButton
                       v-if="hasSecondaryLanguages"
-                      :text="$t('pim.translations')"
-                      class="btn-outline translation-field__btn"
+                      variant="secondary"
+                      class="translation-field__btn"
                       @click="openTranslationsDrawer(row.feature_idx)"
-                    />
+                    >
+                      {{ $t('pim.translations') }}
+                    </BasicButton>
                   </div>
                   <BasicInput
                     :model-value="(row.value_txt_t9n || {})[defaultLang]"
@@ -339,10 +347,12 @@
                     <span class="lang-tag fs-200 t-muted">{{ defaultLang }}</span>
                     <BasicButton
                       v-if="hasSecondaryLanguages"
-                      :text="$t('pim.translations')"
-                      class="btn-outline translation-field__btn"
+                      variant="secondary"
+                      class="translation-field__btn"
                       @click="openTranslationsDrawer(row.feature_idx)"
-                    />
+                    >
+                      {{ $t('pim.translations') }}
+                    </BasicButton>
                   </div>
                   <BasicWysiwyg
                     variant="lite"
@@ -407,10 +417,12 @@
                     <span class="lang-tag fs-200 t-muted">{{ defaultLang }}</span>
                     <BasicButton
                       v-if="hasSecondaryLanguages"
-                      :text="$t('pim.translations')"
-                      class="btn-outline translation-field__btn"
+                      variant="secondary"
+                      class="translation-field__btn"
                       @click="openTranslationsDrawer(row.feature_idx)"
-                    />
+                    >
+                      {{ $t('pim.translations') }}
+                    </BasicButton>
                   </div>
                   <TextAreaBasic
                     :model-value="jsonToString((row.value_json || {})[defaultLang])"

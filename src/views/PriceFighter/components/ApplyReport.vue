@@ -38,7 +38,7 @@
     </template>
     <template #footer>
       <div class="apply-report__actions">
-        <BasicButton :text="$t('common.close')" class="btn-primary" @click="onClose" />
+        <BasicButton variant="primary" @click="onClose">{{ $t('common.close') }}</BasicButton>
       </div>
     </template>
   </ConfirmationModal>

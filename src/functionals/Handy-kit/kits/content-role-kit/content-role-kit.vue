@@ -75,15 +75,18 @@
             ? 'bg-hover t-muted b-subtle'
             : 'bg-inverse bg-accent-fill-hover b-accent-fill-hover b-strong t-inverse t-on-accent-fill-hover',
         ]"
-        :text="$t('common.save')"
-        :isDisabled="!selected_contents && !selected_contents.length"
+        :disabled="!selected_contents && !selected_contents.length"
         @click="on_Save"
-      />
+      >
+        {{ $t('common.save') }}
+      </BasicButton>
       <BasicButton
-        class="bg-negative-fill rounded fs-200 b-negative t-on-status-fill w-100 jc-ct"
-        :text="$t('common.cancel')"
+        variant="danger"
+        class="rounded fs-200 w-100 jc-ct"
         @click="() => {}"
-      />
+      >
+        {{ $t('common.cancel') }}
+      </BasicButton>
     </div>
   </div>
 </template>

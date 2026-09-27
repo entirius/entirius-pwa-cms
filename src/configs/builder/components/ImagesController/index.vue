@@ -3,14 +3,15 @@
     <p class="mb-2" v-if="label">{{ label }}</p>
     <div class="flex gap-2">
       <BasicButton
-        :text="$t('routes.set_new')"
         class="t-accent b-default bg-base bg-hover-hover rounded"
         @click="
           () => {
             init();
           }
         "
-      />
+      >
+        {{ $t('routes.set_new') }}
+      </BasicButton>
       <Dropdown
         :placeholder="`${$t('controllers.setted')} (${
           Object.keys(value ?? {}).length
@@ -167,11 +168,11 @@
         </div>
         <div class="flex jc-sb ai-ct">
           <BasicButton
-            :text="$t('images.add_photo')"
-            :icon="'plus'"
             class="rounded t-accent fs-200 jc-ct b-default bg-hover-hover"
             @click="mode = 'new-picture'"
-          />
+          >
+            {{ $t('images.add_photo') }}
+          </BasicButton>
           <div class="flex ai-ct gap-2">
             <div class="flex gap-1">
               <button
@@ -200,16 +201,17 @@
               </button>
             </div>
             <BasicButton
-              :text="$t('common.accept')"
               class="rounded fs-200 shadow-down jc-ct"
               :class="[
                 !canAccept
                   ? 't-muted b-default bg-raised'
                   : 't-on-accent-fill b-accent bg-accent-fill',
               ]"
-              :isDisabled="!canAccept"
+              :disabled="!canAccept"
               @click="handleAccept"
-            />
+            >
+              {{ $t('common.accept') }}
+            </BasicButton>
           </div>
         </div>
       </div>
@@ -280,10 +282,12 @@
                 </p>
               </div>
               <BasicButton
-                :text="$t('gallery.upload')"
                 @click="upload_File({})"
-                class="rounded jc-ct t-on-accent-fill b-accent bg-accent-fill"
-              />
+                variant="primary"
+                class="rounded jc-ct"
+              >
+                {{ $t('gallery.upload') }}
+              </BasicButton>
             </div>
           </div>
         </div>

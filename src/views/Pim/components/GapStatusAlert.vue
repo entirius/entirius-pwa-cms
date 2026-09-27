@@ -10,12 +10,13 @@
       <span>{{ $t("pim.gaps_rules_changed_alert", { date: changedAt }) }}</span>
     </div>
     <BasicButton
-      :text="recomputing ? $t('pim.gaps_recomputing') : $t('pim.gaps_recompute_now')"
-      :isDisabled="recomputing"
+      :disabled="recomputing"
       class="bg-warning-fill t-on-status-fill"
       data-test="gap-recompute-btn"
       @click="recompute"
-    />
+    >
+      {{ recomputing ? $t('pim.gaps_recomputing') : $t('pim.gaps_recompute_now') }}
+    </BasicButton>
   </div>
 </template>
 

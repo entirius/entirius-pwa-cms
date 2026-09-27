@@ -116,14 +116,12 @@
         <font-awesome-icon :icon="$icons.saveDraft" class="toolbar-action__icon" />
         <span class="toolbar-action__text">{{ $t("common.save") }}</span>
       </button>
-      <BasicButton
-        custom
+      <IconButton
+        icon="delete"
         :label="$t('common.delete')"
-        class="btn-danger"
+        variant="danger"
         @click="showDeleteConfirm = true"
-      >
-        <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
-      </BasicButton>
+      />
     </Teleport>
     <div class="page-card h-100 ovy-auto">
       <Loader block v-if="loading" />
@@ -231,10 +229,12 @@
                   >
                   <BasicButton
                     v-if="secondaryLanguages.length"
-                    :text="$t('pim.translations')"
-                    class="btn-outline translation-field__btn"
+                    variant="secondary"
+                    class="translation-field__btn"
                     @click="openTranslations('name')"
-                  />
+                  >
+                    {{ $t('pim.translations') }}
+                  </BasicButton>
                 </div>
                 <InheritanceField
                   v-if="!pimChannel.isDefaultChannel"
@@ -319,10 +319,12 @@
                 >
                 <BasicButton
                   v-if="secondaryLanguages.length"
-                  :text="$t('pim.translations')"
-                  class="btn-outline translation-field__btn"
+                  variant="secondary"
+                  class="translation-field__btn"
                   @click="openTranslations('short_description')"
-                />
+                >
+                  {{ $t('pim.translations') }}
+                </BasicButton>
               </div>
               <InheritanceField
                 v-if="!pimChannel.isDefaultChannel"
@@ -362,10 +364,12 @@
                 >
                 <BasicButton
                   v-if="secondaryLanguages.length"
-                  :text="$t('pim.translations')"
-                  class="btn-outline translation-field__btn"
+                  variant="secondary"
+                  class="translation-field__btn"
                   @click="openTranslations('description')"
-                />
+                >
+                  {{ $t('pim.translations') }}
+                </BasicButton>
               </div>
               <InheritanceField
                 v-if="!pimChannel.isDefaultChannel"
@@ -407,10 +411,12 @@
                 >
                 <BasicButton
                   v-if="secondaryLanguages.length"
-                  :text="$t('pim.translations')"
-                  class="btn-outline translation-field__btn"
+                  variant="secondary"
+                  class="translation-field__btn"
                   @click="openTranslations('subname')"
-                />
+                >
+                  {{ $t('pim.translations') }}
+                </BasicButton>
               </div>
               <InheritanceField
                 v-if="!pimChannel.isDefaultChannel"
@@ -443,10 +449,12 @@
                 >
                 <BasicButton
                   v-if="secondaryLanguages.length"
-                  :text="$t('pim.translations')"
-                  class="btn-outline translation-field__btn"
+                  variant="secondary"
+                  class="translation-field__btn"
                   @click="openTranslations('subname2')"
-                />
+                >
+                  {{ $t('pim.translations') }}
+                </BasicButton>
               </div>
               <InheritanceField
                 v-if="!pimChannel.isDefaultChannel"
@@ -483,10 +491,12 @@
                 >
                 <BasicButton
                   v-if="secondaryLanguages.length"
-                  :text="$t('pim.translations')"
-                  class="btn-outline translation-field__btn"
+                  variant="secondary"
+                  class="translation-field__btn"
                   @click="openTranslations('url_key')"
-                />
+                >
+                  {{ $t('pim.translations') }}
+                </BasicButton>
               </div>
               <InheritanceField
                 v-if="!pimChannel.isDefaultChannel"
@@ -519,10 +529,12 @@
                 >
                 <BasicButton
                   v-if="secondaryLanguages.length"
-                  :text="$t('pim.translations')"
-                  class="btn-outline translation-field__btn"
+                  variant="secondary"
+                  class="translation-field__btn"
                   @click="openTranslations('meta_title')"
-                />
+                >
+                  {{ $t('pim.translations') }}
+                </BasicButton>
               </div>
               <InheritanceField
                 v-if="!pimChannel.isDefaultChannel"
@@ -555,10 +567,12 @@
                 >
                 <BasicButton
                   v-if="secondaryLanguages.length"
-                  :text="$t('pim.translations')"
-                  class="btn-outline translation-field__btn"
+                  variant="secondary"
+                  class="translation-field__btn"
                   @click="openTranslations('meta_description')"
-                />
+                >
+                  {{ $t('pim.translations') }}
+                </BasicButton>
               </div>
               <InheritanceField
                 v-if="!pimChannel.isDefaultChannel"
@@ -596,10 +610,12 @@
                 >
                 <BasicButton
                   v-if="secondaryLanguages.length"
-                  :text="$t('pim.translations')"
-                  class="btn-outline translation-field__btn"
+                  variant="secondary"
+                  class="translation-field__btn"
                   @click="openTranslations('canonical_url')"
-                />
+                >
+                  {{ $t('pim.translations') }}
+                </BasicButton>
               </div>
               <InheritanceField
                 v-if="!pimChannel.isDefaultChannel"

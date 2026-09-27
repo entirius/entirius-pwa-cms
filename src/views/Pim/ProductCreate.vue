@@ -9,10 +9,11 @@
     </Teleport>
     <Teleport to="#pim-toolbar-right" defer>
       <BasicButton
-        :text="$t('common.save')"
-        class="btn-primary"
+        variant="primary"
         @click="createProduct"
-      />
+      >
+        {{ $t('common.save') }}
+      </BasicButton>
     </Teleport>
     <div class="page-card h-100 ovy-auto">
       <div class="create-section mb-10">

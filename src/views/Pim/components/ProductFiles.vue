@@ -452,32 +452,36 @@ onMounted(() => {
           </div>
           <div class="product-files__cat-create-actions mt-2">
             <BasicButton
-              class="btn-secondary"
-              :text="$t('pim.create_category')"
-              :isDisabled="creatingCategory || !newCategoryCode"
+              variant="secondary"
+              :disabled="creatingCategory || !newCategoryCode"
               @click="createCategory"
-            />
+            >
+              {{ $t('pim.create_category') }}
+            </BasicButton>
             <BasicButton
-              class="btn-outline"
-              :text="$t('common.cancel')"
+              variant="secondary"
               @click="cancelCategoryCreate"
-            />
+            >
+              {{ $t('common.cancel') }}
+            </BasicButton>
           </div>
         </div>
 
         <div class="product-files__popup-actions mt-5">
           <BasicButton
-            class="btn-primary"
-            :text="$t('pim.upload_file')"
-            :isDisabled="uploadingFile"
+            variant="primary"
+            :disabled="uploadingFile"
             @click="confirmUpload"
-          />
+          >
+            {{ $t('pim.upload_file') }}
+          </BasicButton>
           <BasicButton
-            class="btn-outline"
-            :text="$t('common.cancel')"
-            :isDisabled="uploadingFile"
+            variant="secondary"
+            :disabled="uploadingFile"
             @click="cancelUpload"
-          />
+          >
+            {{ $t('common.cancel') }}
+          </BasicButton>
         </div>
       </div>
 
@@ -595,16 +599,18 @@ onMounted(() => {
             </div>
             <div class="product-files__row-edit-actions mt-2">
               <BasicButton
-                class="btn-secondary"
-                :text="$t('common.save')"
-                :isDisabled="savingFilePk === fileData(pf).pk"
+                variant="secondary"
+                :disabled="savingFilePk === fileData(pf).pk"
                 @click="saveFileMetadata(fileData(pf).pk)"
-              />
+              >
+                {{ $t('common.save') }}
+              </BasicButton>
               <BasicButton
-                class="btn-outline"
-                :text="$t('common.close')"
+                variant="secondary"
                 @click="closeEditRow(fileData(pf).pk)"
-              />
+              >
+                {{ $t('common.close') }}
+              </BasicButton>
             </div>
           </div>
         </div>

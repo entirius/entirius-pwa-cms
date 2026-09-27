@@ -600,10 +600,11 @@ watch(
                   {{ editAltPreview }}
                 </span>
                 <BasicButton
-                  :text="$t('pim.translations')"
-                  class="btn-outline"
+                  variant="secondary"
                   @click="translatingAlt = true"
-                />
+                >
+                  {{ $t('pim.translations') }}
+                </BasicButton>
               </div>
             </template>
 
@@ -630,15 +631,17 @@ watch(
 
           <div class="media-gallery__edit-actions">
             <BasicButton
-              :text="$t('common.save')"
-              class="btn-primary"
+              variant="primary"
               @click="saveEdit"
-            />
+            >
+              {{ $t('common.save') }}
+            </BasicButton>
             <BasicButton
-              :text="$t('common.cancel')"
-              class="btn-outline"
+              variant="secondary"
               @click="closeEdit"
-            />
+            >
+              {{ $t('common.cancel') }}
+            </BasicButton>
           </div>
         </div>
       </div>
@@ -767,11 +770,13 @@ watch(
             @keydown.enter="addVideo"
           />
           <BasicButton
-            :text="$t('pim.add_video')"
-            class="btn-secondary media-gallery__video-submit"
-            :isDisabled="addingVideo || !newVideoUrl.trim()"
+            variant="secondary"
+            class="media-gallery__video-submit"
+            :disabled="addingVideo || !newVideoUrl.trim()"
             @click="addVideo"
-          />
+          >
+            {{ $t('pim.add_video') }}
+          </BasicButton>
         </div>
       </div>
       <input

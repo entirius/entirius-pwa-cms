@@ -125,20 +125,23 @@
           <!-- Actions row -->
           <div class="flex gap-5 mb-10 flex-wrap ai-ct">
             <BasicButton
-              :text="$t('pm.save')"
-              class="btn-primary"
+              variant="primary"
               @click="save"
-            />
+            >
+              {{ $t('pm.save') }}
+            </BasicButton>
             <BasicButton
-              :text="showCountries ? $t('pm.hide_countries') : $t('pm.view_all_countries')"
-              class="btn-outline"
+              variant="secondary"
               @click="showCountries = !showCountries"
-            />
+            >
+              {{ showCountries ? $t('pm.hide_countries') : $t('pm.view_all_countries') }}
+            </BasicButton>
             <BasicButton
-              :text="showHistory ? $t('pm.hide_history') : $t('pm.view_history')"
-              class="btn-outline"
+              variant="secondary"
               @click="toggleHistory"
-            />
+            >
+              {{ showHistory ? $t('pm.hide_history') : $t('pm.view_history') }}
+            </BasicButton>
             <IconButton
               icon="clear"
               variant="danger"

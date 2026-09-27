@@ -107,11 +107,12 @@ function onSave() {
         <label class="field-label required">{{ $t("layout_extender.label") }}</label>
         <BasicButton
           v-if="languages.length > 1"
-          :text="$t('layout_extender.translations')"
-          icon="language"
-          class="btn-outline translation-field__btn"
+          variant="secondary"
+          class="translation-field__btn"
           @click="translatingField = 'label'"
-        />
+        >
+          {{ $t('layout_extender.translations') }}
+        </BasicButton>
       </div>
       <BasicInput v-model="form.label" />
     </div>

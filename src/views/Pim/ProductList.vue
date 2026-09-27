@@ -399,12 +399,12 @@ export default {
         {
           key: "enable",
           labelKey: "pim.enable_all",
-          buttonClass: "bg-positive-fill t-on-status-fill",
+          variant: "primary",
         },
         {
           key: "disable",
           labelKey: "pim.disable_all",
-          buttonClass: "bg-negative-fill t-on-status-fill",
+          variant: "danger",
         },
         {
           key: "visibility",
@@ -428,7 +428,7 @@ export default {
         actions.push({
           key: "translate",
           labelKey: "pim.translate",
-          buttonClass: "bg-accent-fill t-on-accent-fill",
+          variant: "primary",
         });
       }
       return actions;

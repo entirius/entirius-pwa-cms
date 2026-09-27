@@ -23,10 +23,12 @@
           :label="$t('login.email')"
         />
         <BasicButton
-          :text="$t('login.send_reset_link')"
           @click="sendResetLink"
-          class="bg-accent-fill b-accent jc-ct t-on-accent-fill w-100 rounded"
-        />
+          variant="primary"
+          class="jc-ct w-100 rounded"
+        >
+          {{ $t('login.send_reset_link') }}
+        </BasicButton>
       </template>
 
       <button
@@ -74,10 +76,12 @@
       </div>
 
       <BasicButton
-        :text="$t('login.submit')"
         @click="login"
-        class="bg-accent-fill b-accent jc-ct t-on-accent-fill w-100 rounded"
-      />
+        variant="primary"
+        class="jc-ct w-100 rounded"
+      >
+        {{ $t('login.submit') }}
+      </BasicButton>
 
       <template v-if="ssoEnabled">
         <p class="auth-card__divider fs-200 t-muted mt-8 mb-8">
@@ -85,10 +89,11 @@
         </p>
         <BasicButton
           data-testid="sso-login"
-          :text="$t('login.sso_submit')"
           @click="startSsoLogin"
           class="bg-base b-accent jc-ct t-accent w-100 rounded"
-        />
+        >
+          {{ $t('login.sso_submit') }}
+        </BasicButton>
       </template>
 
       <button class="auth-card__link mt-8" @click="showForgotPassword = true">

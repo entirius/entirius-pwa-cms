@@ -39,17 +39,19 @@
     <template #footer>
       <div class="apply-preview__actions">
         <BasicButton
-          :text="$t('common.cancel')"
-          class="btn-secondary"
+          variant="secondary"
           :disabled="loading"
           @click="onCancel"
-        />
+        >
+          {{ $t('common.cancel') }}
+        </BasicButton>
         <BasicButton
-          :text="loading ? $t('pricefighter.applying') : $t('pricefighter.confirm_apply')"
-          class="btn-primary"
+          variant="primary"
           :disabled="loading || !items.length"
           @click="onConfirm"
-        />
+        >
+          {{ loading ? $t('pricefighter.applying') : $t('pricefighter.confirm_apply') }}
+        </BasicButton>
       </div>
     </template>
   </ConfirmationModal>

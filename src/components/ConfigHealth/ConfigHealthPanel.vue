@@ -10,14 +10,11 @@
       <div class="cfg-panel__head">
         <span class="cfg-panel__grip" aria-hidden="true"></span>
         <p class="cfg-panel__title">{{ $t("config_health.title") }}</p>
-        <BasicButton
-          custom
+        <IconButton
+          icon="close"
           :label="$t('config_health.close')"
-          class="btn-ghost"
           @click="emit('close')"
-        >
-          <template #custom><FontAwesomeIcon :icon="$icons.close" /></template>
-        </BasicButton>
+        />
       </div>
 
       <p
@@ -76,12 +73,13 @@
       <div class="cfg-panel__foot">
         <span class="cfg-panel__age">{{ checkedAgo }}</span>
         <BasicButton
-          :text="$t('config_health.check_again')"
-          class="btn-secondary"
-          :isDisabled="store.checking"
+          variant="secondary"
+          :disabled="store.checking"
           data-testid="config-health-recheck"
           @click="store.recheck()"
-        />
+        >
+          {{ $t('config_health.check_again') }}
+        </BasicButton>
       </div>
     </div>
   </div>

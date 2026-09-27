@@ -11,20 +11,19 @@
       <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
         {{ $t("unsaved.changes") }}
       </span>
-      <BasicButton
+      <IconButton
         v-if="!isCreate && !isSystem"
-        custom
+        icon="delete"
         :label="$t('common.delete')"
-        class="btn-danger"
+        variant="danger"
         @click="showDeleteConfirm = true"
-      >
-        <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
-      </BasicButton>
-      <BasicButton
-        :text="$t('common.save')"
-        class="btn-primary"
-        @click="save"
       />
+      <BasicButton
+        variant="primary"
+        @click="save"
+      >
+        {{ $t('common.save') }}
+      </BasicButton>
     </Teleport>
     <div class="page-card h-100 ovy-auto">
       <!-- Breadcrumb -->

@@ -8,20 +8,19 @@
       />
     </Teleport>
     <Teleport to="#agreements-toolbar-right" defer>
-      <BasicButton
+      <IconButton
         v-if="isEdit && !definition.is_system"
-        custom
+        icon="delete"
         :label="$t('common.delete')"
-        class="btn-danger"
+        variant="danger"
         @click="showDeleteConfirm = true"
-      >
-        <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
-      </BasicButton>
-      <BasicButton
-        :text="$t('agm.save')"
-        class="btn-primary"
-        @click="saveDefinition"
       />
+      <BasicButton
+        variant="primary"
+        @click="saveDefinition"
+      >
+        {{ $t('agm.save') }}
+      </BasicButton>
     </Teleport>
 
     <div class="page-card h-100 ovy-auto">
@@ -175,10 +174,11 @@
           <div class="flex ai-ct jc-sb mb-8">
             <h2 class="fs-500 fw-600">{{ $t("agm.versions") }}</h2>
             <BasicButton
-              :text="$t('agm.create_version')"
-              class="btn-secondary"
+              variant="secondary"
               @click="showVersionForm = !showVersionForm"
-            />
+            >
+              {{ $t('agm.create_version') }}
+            </BasicButton>
           </div>
 
           <!-- New version form -->
@@ -199,15 +199,17 @@
             </div>
             <div class="flex jc-fe gap-5">
               <BasicButton
-                :text="$t('common.cancel')"
-                class="btn-secondary"
+                variant="secondary"
                 @click="cancelVersionForm"
-              />
+              >
+                {{ $t('common.cancel') }}
+              </BasicButton>
               <BasicButton
-                :text="$t('agm.create_version')"
-                class="btn-secondary"
+                variant="secondary"
                 @click="createVersion"
-              />
+              >
+                {{ $t('agm.create_version') }}
+              </BasicButton>
             </div>
           </div>
 
@@ -249,32 +251,27 @@
                     <td>{{ formatDate(ver.created_at) }}</td>
                     <td>
                       <div class="flex gap-2 jc-fe">
-                        <BasicButton
+                        <IconButton
                           v-if="!ver.published_at"
-                          custom
-                          size="sm"
+                          icon="edit"
                           :label="$t('agm.edit_draft')"
-                          class="btn-ghost"
-                          @click="startEditDraft(ver)"
-                        >
-                          <template #custom><FontAwesomeIcon :icon="$icons.edit" /></template>
-                        </BasicButton>
-                        <BasicButton
-                          v-else
-                          custom
                           size="sm"
+                          @click="startEditDraft(ver)"
+                        />
+                        <IconButton
+                          v-else
+                          icon="edit"
                           :label="$t('agm.create_draft_from_published')"
-                          class="btn-ghost"
+                          size="sm"
                           @click="startEditPublished(ver)"
-                        >
-                          <template #custom><FontAwesomeIcon :icon="$icons.edit" /></template>
-                        </BasicButton>
+                        />
                         <BasicButton
                           v-if="!ver.published_at"
-                          :text="$t('agm.publish')"
-                          class="btn-secondary"
+                          variant="secondary"
                           @click="publishVersion(ver.id)"
-                        />
+                        >
+                          {{ $t('agm.publish') }}
+                        </BasicButton>
                       </div>
                     </td>
                   </tr>
@@ -302,15 +299,17 @@
                         </div>
                         <div class="flex jc-fe gap-5">
                           <BasicButton
-                            :text="$t('common.cancel')"
-                            class="btn-secondary"
+                            variant="secondary"
                             @click="cancelEditVersion"
-                          />
+                          >
+                            {{ $t('common.cancel') }}
+                          </BasicButton>
                           <BasicButton
-                            :text="$t('common.save')"
-                            class="btn-secondary"
+                            variant="secondary"
                             @click="saveDraftVersion(ver.id)"
-                          />
+                          >
+                            {{ $t('common.save') }}
+                          </BasicButton>
                         </div>
                       </div>
                     </td>

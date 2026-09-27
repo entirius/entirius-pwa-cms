@@ -14,10 +14,11 @@
           {{ $t("stock.unsaved") }}: {{ dirtyCount }}
         </span>
         <BasicButton
-          :text="$t('stock.save_all')"
-          class="btn-primary"
+          variant="primary"
           @click="saveAll"
-        />
+        >
+          {{ $t('stock.save_all') }}
+        </BasicButton>
       </div>
 
       <table class="table-basic stock-tab__table">

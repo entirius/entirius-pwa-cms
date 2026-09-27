@@ -385,9 +385,10 @@
     >
       <BasicButton
         class="bg-inverse rounded bg-accent-fill b-accent fs-200 b-strong t-on-accent-fill w-100 jc-ct"
-        :text="$t('common.save')"
         @click="pass_asset({})"
-      />
+      >
+        {{ $t('common.save') }}
+      </BasicButton>
     </div>
   </div>
 </template>

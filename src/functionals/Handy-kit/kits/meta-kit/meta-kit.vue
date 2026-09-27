@@ -157,7 +157,6 @@
     >
       <BasicButton
         class="bg-inverse rounded bg-accent-fill fs-200 b-accent t-on-accent-fill w-100 jc-ct"
-        :text="$t('common.save')"
         @click="
           pass_asset({
             index,
@@ -169,7 +168,9 @@
             og_description,
           })
         "
-      />
+      >
+        {{ $t('common.save') }}
+      </BasicButton>
     </div>
   </div>
 </template>

@@ -29,11 +29,11 @@
           </div>
         </div>
         <BasicButton
-          :text="$t('common.add')"
-          icon="plus"
-          class="btn-primary"
+          variant="primary"
           @click="createType"
-        />
+        >
+          {{ $t('common.add') }}
+        </BasicButton>
       </div>
 
       <Loader block v-show="loading" />
@@ -108,25 +108,25 @@
           />
         </div>
         <div class="flex ai-ct jc-sb gap-5">
-          <BasicButton
-            custom
+          <IconButton
+            icon="delete"
             :label="$t('common.delete')"
-            class="btn-danger"
+            variant="danger"
             @click="showDeleteConfirm = true"
-          >
-            <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
-          </BasicButton>
+          />
           <div class="flex ai-ct gap-5">
             <BasicButton
-              :text="$t('common.cancel')"
-              class="btn-secondary"
+              variant="secondary"
               @click="cancelEdit"
-            />
+            >
+              {{ $t('common.cancel') }}
+            </BasicButton>
             <BasicButton
-              :text="$t('common.save')"
-              class="btn-primary"
+              variant="primary"
               @click="saveType"
-            />
+            >
+              {{ $t('common.save') }}
+            </BasicButton>
           </div>
         </div>
       </div>

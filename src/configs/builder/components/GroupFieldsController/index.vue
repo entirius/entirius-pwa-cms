@@ -15,14 +15,15 @@
       </div>
       <div class="flex gap-2">
         <BasicButton
-          :text="!mode ? $t('routes.set_new') : $t('common.close')"
           class="b-default bg-base bg-hover-hover rounded t-accent fs-200"
           :class="{
             'bg-hover t-body bg-accent-fill-hover t-on-accent-fill-hover b-accent-fill-hover':
               mode,
           }"
           @click="!mode ? (mode = 'add') : (mode = null)"
-        />
+        >
+          {{ !mode ? $t('routes.set_new') : $t('common.close') }}
+        </BasicButton>
 
         <Dropdown
           :custom_droplist="true"
@@ -179,9 +180,10 @@
       </div>
       <BasicButton
         class="bg-hover bg-hover-hover rounded t-secondary mt-5 b-default"
-        :text="mode === 'add' ? $t('controllers.add_group') : $t('common.save')"
         @click="set_group({ ...group })"
-      />
+      >
+        {{ mode === 'add' ? $t('controllers.add_group') : $t('common.save') }}
+      </BasicButton>
     </div>
   </div>
 </template>

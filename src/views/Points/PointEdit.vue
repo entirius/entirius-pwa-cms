@@ -11,20 +11,19 @@
       <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
         {{ $t("unsaved.changes") }}
       </span>
-      <BasicButton
+      <IconButton
         v-if="isEdit && !isCarrier"
-        custom
+        icon="delete"
         :label="$t('common.delete')"
-        class="btn-danger"
+        variant="danger"
         @click="showDeleteConfirm = true"
-      >
-        <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
-      </BasicButton>
-      <BasicButton
-        :text="$t('common.save')"
-        class="btn-primary"
-        @click="savePoint"
       />
+      <BasicButton
+        variant="primary"
+        @click="savePoint"
+      >
+        {{ $t('common.save') }}
+      </BasicButton>
     </Teleport>
     <div class="page-card h-100 ovy-auto">
       <Loader block v-if="loading" />
@@ -304,11 +303,12 @@
                 @onSelect="(val) => (addingLanguage = val)"
               />
               <BasicButton
-                :text="$t('dp.add_translation')"
-                class="btn-secondary"
-                :isDisabled="!addingLanguage"
+                variant="secondary"
+                :disabled="!addingLanguage"
                 @click="addTranslation"
-              />
+              >
+                {{ $t('dp.add_translation') }}
+              </BasicButton>
             </div>
           </div>
 
@@ -327,15 +327,13 @@
               <span class="field-label t-accent">{{
                 t9n.language.toUpperCase()
               }}</span>
-              <BasicButton
-                custom
-                size="sm"
+              <IconButton
+                icon="delete"
                 :label="$t('common.delete')"
-                class="btn-danger"
+                variant="danger"
+                size="sm"
                 @click="deleteTranslation(t9n.language)"
-              >
-                <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
-              </BasicButton>
+              />
             </div>
             <div class="detail-grid">
               <div class="detail-field">
@@ -359,10 +357,11 @@
             </div>
             <div class="flex jc-fe mt-5">
               <BasicButton
-                :text="$t('common.save')"
-                class="btn-secondary"
+                variant="secondary"
                 @click="saveTranslation(t9n)"
-              />
+              >
+                {{ $t('common.save') }}
+              </BasicButton>
             </div>
           </div>
         </div>

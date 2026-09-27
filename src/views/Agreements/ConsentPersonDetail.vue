@@ -132,10 +132,11 @@
               <template #cell-actions="{ row }">
                 <BasicButton
                   v-if="row.has_content_route"
-                  :text="$t('agm.view_legal_text')"
-                  class="btn-secondary"
+                  variant="secondary"
                   @click="viewLegalText(row)"
-                />
+                >
+                  {{ $t('agm.view_legal_text') }}
+                </BasicButton>
               </template>
             </DataTable>
           </section>
@@ -163,14 +164,11 @@
                 — {{ formatDate(consentTextModal.data.consent_date) }}
               </p>
             </div>
-            <BasicButton
-              custom
+            <IconButton
+              icon="close"
               :label="$t('common.close')"
-              class="btn-ghost"
               @click="consentTextModal.visible = false"
-            >
-              <template #custom><FontAwesomeIcon :icon="$icons.close" /></template>
-            </BasicButton>
+            />
           </div>
           <div class="agm-modal__body p-10">
             <Loader v-if="consentTextModal.loading" />

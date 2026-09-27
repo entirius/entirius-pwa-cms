@@ -31,47 +31,55 @@
           <div class="supplier-tab__actions">
             <div class="supplier-action">
               <BasicButton
-                :text="repushing ? $t('pim.supplier.actions.force_repush_progress') : $t('pim.supplier.actions.force_repush')"
-                class="btn-outline supplier-action__btn"
+                variant="secondary"
+                class="supplier-action__btn"
                 :disabled="repushing"
                 data-test="supplier-force-repush"
                 @click="onForceRepush"
-              />
+              >
+                {{ repushing ? $t('pim.supplier.actions.force_repush_progress') : $t('pim.supplier.actions.force_repush') }}
+              </BasicButton>
               <span class="supplier-action__desc t-muted fs-200">
                 {{ $t("pim.supplier.actions.force_repush_desc") }}
               </span>
             </div>
             <div class="supplier-action">
               <BasicButton
-                :text="acknowledging ? $t('pim.supplier.actions.acknowledge_progress') : $t('pim.supplier.actions.acknowledge_all')"
-                class="btn-outline supplier-action__btn"
+                variant="secondary"
+                class="supplier-action__btn"
                 :disabled="acknowledging || unseenCount === 0"
                 data-test="supplier-acknowledge"
                 @click="onAcknowledgeAll"
-              />
+              >
+                {{ acknowledging ? $t('pim.supplier.actions.acknowledge_progress') : $t('pim.supplier.actions.acknowledge_all') }}
+              </BasicButton>
               <span class="supplier-action__desc t-muted fs-200">
                 {{ $t("pim.supplier.actions.acknowledge_all_desc") }}
               </span>
             </div>
             <div class="supplier-action">
               <BasicButton
-                :text="$t('pim.supplier.actions.force_preferred')"
-                class="btn-outline supplier-action__btn"
+                variant="secondary"
+                class="supplier-action__btn"
                 data-test="supplier-force-preferred"
                 @click="onForcePreferredClick"
-              />
+              >
+                {{ $t('pim.supplier.actions.force_preferred') }}
+              </BasicButton>
               <span class="supplier-action__desc t-muted fs-200">
                 {{ $t("pim.supplier.actions.force_preferred_desc") }}
               </span>
             </div>
             <div class="supplier-action">
               <BasicButton
-                :text="resetting ? $t('pim.supplier.actions.reset_to_auto_progress') : $t('pim.supplier.actions.reset_to_auto')"
-                class="btn-outline supplier-action__btn"
+                variant="secondary"
+                class="supplier-action__btn"
                 :disabled="resetting"
                 data-test="supplier-reset-auto"
                 @click="onResetToAuto"
-              />
+              >
+                {{ resetting ? $t('pim.supplier.actions.reset_to_auto_progress') : $t('pim.supplier.actions.reset_to_auto') }}
+              </BasicButton>
               <span class="supplier-action__desc t-muted fs-200">
                 {{ $t("pim.supplier.actions.reset_to_auto_desc") }}
               </span>

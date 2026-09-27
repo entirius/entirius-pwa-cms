@@ -44,15 +44,15 @@
             <BasicButton
               v-if="editing_category"
               class="b-default t-secondary rounded fs-200"
-              :text="$t('common.cancel')"
               @click="
                 editing_category = null;
                 new_c = '';
               "
-            />
+            >
+              {{ $t('common.cancel') }}
+            </BasicButton>
             <BasicButton
               class="bg-inverse rounded bg-accent-fill fs-200 b-accent t-on-accent-fill"
-              :text="editing_category ? $t('common.save') : $t('common.post')"
               @click="
                 editing_category
                   ? PUT_CATEGORY({
@@ -62,7 +62,9 @@
                     })
                   : POST_CATEGORY({ cat_name: new_c, language: language })
               "
-            />
+            >
+              {{ editing_category ? $t('common.save') : $t('common.post') }}
+            </BasicButton>
           </div>
         </div>
         <hr class="bb-subtle mv-8" />
@@ -134,10 +136,11 @@
               </p>
             </div>
             <BasicButton
-              :text="$t('categories.unset')"
               class="b-negative t-negative rounded"
               @click="pass_asset({ force_unset: true })"
-            />
+            >
+              {{ $t('categories.unset') }}
+            </BasicButton>
           </div>
         </template>
       </div>
@@ -170,16 +173,17 @@
       class="grid grid-col-3 rtl-direction bg-raised pl-10 pr-10 pt-2 pb-2"
     >
       <BasicButton
-        :text="$t('common.save')"
         class="rounded w-100 jc-ct"
         :class="[
           !c_to_set
             ? 'bg-hover b-subtle t-muted'
             : 'bg-accent-fill b-accent t-on-accent-fill ',
         ]"
-        :isDisabled="!c_to_set"
+        :disabled="!c_to_set"
         @click="pass_asset({})"
-      />
+      >
+        {{ $t('common.save') }}
+      </BasicButton>
     </div>
   </div>
 </template>

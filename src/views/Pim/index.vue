@@ -28,12 +28,13 @@
       <div id="pim-toolbar-right" class="panel-toolbar__actions flex ai-ct gap-5">
         <BasicButton
           v-if="translatorAvailable"
-          :text="$t('pim.translate_store')"
           :label="$t('pim.translate_store')"
-          icon="language"
-          class="btn-secondary icon-only-mobile"
+          variant="secondary"
+          class="icon-only-mobile"
           @click="showTranslateStore = true"
-        />
+        >
+          {{ $t('pim.translate_store') }}
+        </BasicButton>
       </div>
     </div>
     <router-view />

@@ -8,10 +8,11 @@
         >
       </h3>
       <BasicButton
-        :text="$t('pim.add_option')"
-        class="btn-secondary"
+        variant="secondary"
         @click="showAddForm = true"
-      />
+      >
+        {{ $t('pim.add_option') }}
+      </BasicButton>
     </div>
 
     <!-- Search -->
@@ -39,15 +40,17 @@
         class="flex-1"
       />
       <BasicButton
-        :text="$t('common.save')"
-        class="btn-secondary"
+        variant="secondary"
         @click="createOption"
-      />
+      >
+        {{ $t('common.save') }}
+      </BasicButton>
       <BasicButton
-        :text="$t('common.cancel')"
-        class="btn-secondary"
+        variant="secondary"
         @click="showAddForm = false"
-      />
+      >
+        {{ $t('common.cancel') }}
+      </BasicButton>
     </div>
 
     <Loader block v-if="loading" />
@@ -112,20 +115,19 @@
             }}</span>
             <span class="options-table__col--actions flex ai-ct gap-2">
               <BasicButton
-                :text="$t('pim.translations')"
-                icon="language"
-                class="bg-raised t-secondary icon-only-mobile"
+                variant="secondary"
+                class="icon-only-mobile"
                 @click="openTranslations(element)"
-              />
-              <BasicButton
-                custom
-                size="sm"
-                :label="$t('common.delete')"
-                class="btn-danger"
-                @click="confirmDelete(element)"
               >
-                <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
+                {{ $t('pim.translations') }}
               </BasicButton>
+              <IconButton
+                icon="delete"
+                :label="$t('common.delete')"
+                variant="danger"
+                size="sm"
+                @click="confirmDelete(element)"
+              />
             </span>
           </div>
         </template>

@@ -230,11 +230,12 @@ function onSave() {
         <label class="field-label">{{ $t("layout_extender.alt_text") }}</label>
         <BasicButton
           v-if="languages.length > 1"
-          :text="$t('layout_extender.translations')"
-          icon="language"
-          class="btn-outline translation-field__btn"
+          variant="secondary"
+          class="translation-field__btn"
           @click="translatingField = 'alt_text'"
-        />
+        >
+          {{ $t('layout_extender.translations') }}
+        </BasicButton>
       </div>
       <BasicInput v-model="form.alt_text" />
     </div>
@@ -244,11 +245,12 @@ function onSave() {
         <label class="field-label">{{ $t("layout_extender.caption") }}</label>
         <BasicButton
           v-if="languages.length > 1"
-          :text="$t('layout_extender.translations')"
-          icon="language"
-          class="btn-outline translation-field__btn"
+          variant="secondary"
+          class="translation-field__btn"
           @click="translatingField = 'caption'"
-        />
+        >
+          {{ $t('layout_extender.translations') }}
+        </BasicButton>
       </div>
       <BasicInput v-model="form.caption" />
     </div>
@@ -258,11 +260,12 @@ function onSave() {
         <label class="field-label">{{ $t("layout_extender.button_label") }}</label>
         <BasicButton
           v-if="languages.length > 1"
-          :text="$t('layout_extender.translations')"
-          icon="language"
-          class="btn-outline translation-field__btn"
+          variant="secondary"
+          class="translation-field__btn"
           @click="translatingField = 'button_label'"
-        />
+        >
+          {{ $t('layout_extender.translations') }}
+        </BasicButton>
       </div>
       <BasicInput v-model="form.button_label" />
     </div>

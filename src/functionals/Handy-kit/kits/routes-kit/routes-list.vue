@@ -82,8 +82,6 @@
           </div>
           <BasicButton
             style="min-width: 5.5rem"
-            :icon="!mode ? 'plus' : false"
-            :text="!mode ? $t('routes.set_new') : $t('common.close')"
             :class="{ 'jc-ct': mode }"
             class="as-s bg-hover b-default t-secondary t-on-accent-fill-hover bg-accent-fill-hover b-accent-fill-hover rounded"
             @click="
@@ -92,7 +90,9 @@
                 !mode ? (mode = 'add') : CLOSE_form();
               }
             "
-          />
+          >
+            {{ !mode ? $t('routes.set_new') : $t('common.close') }}
+          </BasicButton>
         </div>
         <hr class="mv-2" />
 
@@ -138,18 +138,18 @@
           <div class="flex jc-fe gap-2">
             <BasicButton
               v-if="mode === 'edit'"
-              :text="$t('common.cancel')"
               class="b-default t-secondary rounded"
               @click="CLOSE_form"
-            />
+            >
+              {{ $t('common.cancel') }}
+            </BasicButton>
             <BasicButton
-              :text="
-                mode === 'edit' ? $t('common.save') : $t('routes.add_route')
-              "
-              :icon="mode === 'edit' ? false : 'plus'"
-              class="bg-accent-fill b-accent t-on-accent-fill rounded"
+              variant="primary"
+              class="rounded"
               @click="SET_route({ label: route_label, url: route_url })"
-            />
+            >
+              {{ mode === 'edit' ? $t('common.save') : $t('routes.add_route') }}
+            </BasicButton>
           </div>
         </div>
       </div>
@@ -181,7 +181,6 @@
       class="grid grid-col-3 rtl-direction bg-raised pl-10 pr-10 pt-2 pb-2"
     >
       <BasicButton
-        :text="$t('common.save')"
         class="rounded w-100 jc-ct"
         :class="[
           !selected || selected.draft
@@ -189,8 +188,10 @@
             : 'bg-accent-fill b-accent t-on-accent-fill ',
         ]"
         @click="pass_asset(selected)"
-        :isDisabled="!selected"
-      />
+        :disabled="!selected"
+      >
+        {{ $t('common.save') }}
+      </BasicButton>
     </div>
   </div>
 </template>

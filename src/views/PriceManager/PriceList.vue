@@ -4,11 +4,12 @@
       <div v-if="dirtyCount > 0" class="flex ai-ct gap-2">
         <StatusBadge :label="`${dirtyCount} ${$t('pm.unsaved')}`" variant="warning" />
         <BasicButton
-          :text="saving ? $t('pm.saving') : $t('pm.save_all')"
-          class="btn-primary"
+          variant="primary"
           :disabled="saving"
           @click="saveAll"
-        />
+        >
+          {{ saving ? $t('pm.saving') : $t('pm.save_all') }}
+        </BasicButton>
       </div>
     </Teleport>
 
@@ -172,26 +173,22 @@
                   >
                     <FontAwesomeIcon :icon="$icons.preview" />
                   </button>
-                  <BasicButton
+                  <IconButton
                     v-if="row.has_price"
-                    custom
-                    size="sm"
+                    icon="clear"
                     :label="$t('pm.flush_special_tooltip')"
-                    class="btn-danger"
-                    @click="confirmFlush(row.sku, row.currency)"
-                  >
-                    <template #custom><FontAwesomeIcon :icon="$icons.clear" /></template>
-                  </BasicButton>
-                  <BasicButton
-                    v-if="row.has_price"
-                    custom
+                    variant="danger"
                     size="sm"
+                    @click="confirmFlush(row.sku, row.currency)"
+                  />
+                  <IconButton
+                    v-if="row.has_price"
+                    icon="delete"
                     :label="$t('pm.delete_prices_tooltip')"
-                    class="btn-danger"
+                    variant="danger"
+                    size="sm"
                     @click="confirmDelete(row.sku, row.currency)"
-                  >
-                    <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
-                  </BasicButton>
+                  />
                 </div>
 
                 <!-- Status -->

@@ -29,10 +29,12 @@
             {{ selectedFile.name }}
           </span>
           <BasicButton
-            :text="$t('gallery.upload')"
-            class="btn-secondary mt-5"
+            variant="secondary"
+            class="mt-5"
             @click="$refs.fileInput.click()"
-          />
+          >
+            {{ $t('gallery.upload') }}
+          </BasicButton>
         </div>
 
         <!-- Type selection -->
@@ -86,11 +88,12 @@
         </div>
 
         <BasicButton
-          :text="$t('dp.import_submit')"
-          class="btn-primary"
+          variant="primary"
           :disabled="submitting || !selectedFile"
           @click="submitImport"
-        />
+        >
+          {{ $t('dp.import_submit') }}
+        </BasicButton>
       </div>
     </div>
   </div>

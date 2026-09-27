@@ -5,15 +5,12 @@
       <div class="notif-list__head">
         <span class="notif-list__grip" aria-hidden="true"></span>
         <p class="notif-list__title">{{ $t("notification_bar.title") }}</p>
-        <BasicButton
-          custom
+        <IconButton
+          icon="close"
           :label="$t('notification_bar.close')"
-          class="btn-ghost"
           data-testid="notif-close"
           @click="emit('close')"
-        >
-          <template #custom><FontAwesomeIcon :icon="$icons.close" /></template>
-        </BasicButton>
+        />
       </div>
       <p v-if="!store.items.length" class="notif-list__empty">{{ $t("notification_bar.empty") }}</p>
       <button

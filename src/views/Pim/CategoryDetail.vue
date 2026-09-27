@@ -13,18 +13,17 @@
           {{ $t("unsaved.changes") }}
         </span>
         <BasicButton
-          :text="$t('common.save')"
-          class="btn-primary"
+          variant="primary"
           @click="saveCategory"
-        />
-        <BasicButton
-          custom
-          :label="$t('common.delete')"
-          class="btn-danger"
-          @click="showDeleteConfirm = true"
         >
-          <template #custom><FontAwesomeIcon :icon="$icons.delete" /></template>
+          {{ $t('common.save') }}
         </BasicButton>
+        <IconButton
+          icon="delete"
+          :label="$t('common.delete')"
+          variant="danger"
+          @click="showDeleteConfirm = true"
+        />
       </template>
     </Teleport>
     <div class="page-card h-100 ovy-auto">
@@ -37,10 +36,11 @@
         :message="$t('pim.category_not_found_hint')"
       >
         <BasicButton
-          :text="$t('pim.back_to_categories')"
-          class="btn-secondary"
+          variant="secondary"
           @click="$router.push('/pim/categories')"
-        />
+        >
+          {{ $t('pim.back_to_categories') }}
+        </BasicButton>
       </EmptyState>
 
       <template v-else>
@@ -117,10 +117,12 @@
                 <label class="field-label">{{ $t("pim.name") }} ({{ defaultLang.toUpperCase() }})</label>
                 <BasicButton
                   v-if="secondaryLanguages.length"
-                  :text="$t('pim.translations')"
-                  class="btn-outline translation-field__btn"
+                  variant="secondary"
+                  class="translation-field__btn"
                   @click="openTranslations('name')"
-                />
+                >
+                  {{ $t('pim.translations') }}
+                </BasicButton>
               </div>
               <BasicInput v-model="form.name_t9n[defaultLang]" />
             </div>
@@ -129,10 +131,12 @@
                 <label class="field-label">{{ $t("pim.description") }} ({{ defaultLang.toUpperCase() }})</label>
                 <BasicButton
                   v-if="secondaryLanguages.length"
-                  :text="$t('pim.translations')"
-                  class="btn-outline translation-field__btn"
+                  variant="secondary"
+                  class="translation-field__btn"
                   @click="openTranslations('description')"
-                />
+                >
+                  {{ $t('pim.translations') }}
+                </BasicButton>
               </div>
               <BasicWysiwyg v-model="form.description_t9n[defaultLang]" />
             </div>
@@ -218,10 +222,12 @@
                 <label class="field-label">{{ $t("pim.meta_title") }} ({{ defaultLang.toUpperCase() }})</label>
                 <BasicButton
                   v-if="secondaryLanguages.length"
-                  :text="$t('pim.translations')"
-                  class="btn-outline translation-field__btn"
+                  variant="secondary"
+                  class="translation-field__btn"
                   @click="openTranslations('meta_title')"
-                />
+                >
+                  {{ $t('pim.translations') }}
+                </BasicButton>
               </div>
               <BasicInput v-model="form.meta_title_t9n[defaultLang]" />
             </div>
@@ -230,10 +236,12 @@
                 <label class="field-label">{{ $t("pim.meta_description") }} ({{ defaultLang.toUpperCase() }})</label>
                 <BasicButton
                   v-if="secondaryLanguages.length"
-                  :text="$t('pim.translations')"
-                  class="btn-outline translation-field__btn"
+                  variant="secondary"
+                  class="translation-field__btn"
                   @click="openTranslations('meta_description')"
-                />
+                >
+                  {{ $t('pim.translations') }}
+                </BasicButton>
               </div>
               <TextAreaBasic v-model="form.meta_description_t9n[defaultLang]" rows="3" />
             </div>
@@ -242,10 +250,12 @@
                 <label class="field-label">{{ $t("pim.canonical_url") }} ({{ defaultLang.toUpperCase() }})</label>
                 <BasicButton
                   v-if="secondaryLanguages.length"
-                  :text="$t('pim.translations')"
-                  class="btn-outline translation-field__btn"
+                  variant="secondary"
+                  class="translation-field__btn"
                   @click="openTranslations('canonical_url')"
-                />
+                >
+                  {{ $t('pim.translations') }}
+                </BasicButton>
               </div>
               <BasicInput v-model="form.canonical_url_t9n[defaultLang]" />
             </div>
