@@ -1,5 +1,5 @@
 <template>
-  <div class="fs-200 t-secondary fg-1 relative p-12">
+  <div class="fs-200 t-secondary fg-1 relative page-pad">
     <div class="page-card">
       <div
         v-if="isSingleLanguage"

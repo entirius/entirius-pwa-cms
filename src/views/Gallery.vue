@@ -1,6 +1,6 @@
 <template>
   <div
-    class="fs-200 p-12 flex-column jc-sb gap-10 image-gallery"
+    class="fs-200 page-pad flex-column jc-sb gap-10 image-gallery"
     style="height: 100%"
   >
     <!-- Changed to 100vh -->
@@ -1000,11 +1000,6 @@ $radius: 5px;
   }
   @media only screen and (max-width: 768px) {
     grid-template-columns: repeat(3, 1fr);
-  }
-}
-@media only screen and (max-width: 768px) {
-  .image-gallery {
-    padding: var(--space-4) !important;
   }
 }
 </style>

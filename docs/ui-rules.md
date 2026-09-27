@@ -47,8 +47,9 @@ values.
   carries 300–600, Lexend Deca 300 and 400. Font families are `--font-ui` (Inter, body and controls), `--font-brand`
   (Lexend Deca, titles and navigation) and `--font-mono`. Shadow and overlay come from `--shadow-sm`, `-md`, `-lg`,
   `-down` (plus the CMS-local `-arrow` / `-right` / `-left` / `-top` / `-around`) and `--overlay-backdrop`, `-heavy`,
-  `-loading`, `-handy`, `-ripple`. Every `<h1>` gets the page-title face from the base style (`typo/_typo.scss`:
-  `--font-brand`, `--fs-700`, 400), so a view never sizes or weighs an H1; section titles stay Inter 600 one step
+  `-loading`, `-handy`, `-ripple`. The page `<h1>` carries `.page-title` (`typo/_typo.scss`: `--font-brand`,
+  `--fs-700`, 400), so a view never sizes or weighs it; content H1s (rich text, previews, docs) are not page titles and
+  keep the browser look; section titles stay Inter 600 one step
   down. Text that carries meaning is at least 12 px (`--fs-200`); 10–11 px is for decorative counters only (a badge
   count on a tab, chip, bell or filter button).
 - **T6 Every screen works in both themes.** `data-theme` on `<html>` is `default` (light) or `dark`. A screen that
@@ -139,12 +140,15 @@ Traps:
 
 - **Page frame.** The panel wrapper holds a toolbar (`.panel-toolbar`) with `#<panel>-toolbar-left` / `-right`
   anchors, and child views `<Teleport … defer>` into them. Left anchor: back arrow + H1 (R2, R3). Right anchor: actions
-  in R5 order. The content card below it scrolls (`flex: 1; min-height: 0; overflow-y: auto`), and the toolbar never
-  shrinks. P3 replaces this with `PageLayout` + `PageHeader` + `ActionBar`.
+  in R5 order. The toolbar styles its children by role, never by position: `.panel-toolbar__actions` on the right
+  anchor, `.panel-toolbar__title` on a group around the left anchor (title + channel selector). The page wrapper
+  below it pads with `.page-pad`, and its content card scrolls (`flex: 1; min-height: 0; overflow-y: auto`); the
+  toolbar never shrinks. P3 replaces this with `PageLayout` + `PageHeader` + `ActionBar`.
 - **List view.** The toolbar holds a search `BasicInput` with `useSearchDebounce`, then filters in
   `MobileFilterPanel`, and it wraps (`flex-wrap`, `gap: var(--space-5)`). In `DataTable`, secondary columns get fixed
   widths and only the primary text column gets `1fr`, truncated with an ellipsis. A cell either fits (its column
-  grows to the badge or buttons) or truncates with a `title`, never spills into its neighbour; numbers take
+  grows to the badge or buttons) or truncates with a `title`, never spills into its neighbour; a status badge column
+  is `max-content`, never truncated; numbers take
   `numeric`, row buttons `actions`, and every column but name, status and actions takes a `priority` so a phone
   shows those three. A raw table uses `.table-basic` in a `.table-scroll` box. No data means `EmptyState`
   (`DataTable` renders it from `emptyText`, below the grid so a phone sees it); never a plain muted paragraph. A table
@@ -198,10 +202,15 @@ Traps:
   panel strip, `.page-title-row` for an in-card back arrow + H1 + `ml-auto` actions, `.section-head` for an `h2` with
   its controls. Wrapped actions stay right-aligned (R5). Other rows use `.flex-wrap` (with `.rg-*` for the row gap);
   form rows stack to one column below tablet.
-- `.page-card` pads 16 px below tablet, and so does the page wrapper (`p-12`, `pl-12` …); the layout keeps every
-  scroll region above the bottom bar.
-- A tap target is at least 24 × 24 px, and list rows are at least 36 px high. A small glyph gets a larger hit area
-  (padding or a pseudo-element), not a larger visual.
+- `.page-card` pads 16 px below tablet, and so does the page wrapper (`.page-pad`, `.page-pad-x` for the sides
+  only). Spacing utilities (`p-12` …) mean the same on every screen; an empty state or loader keeps its own. The
+  layout keeps every scroll region above the bottom bar.
+- A tap target is at least 40 × 40 px on mobile, and list rows are at least 36 px high. A small control keeps its
+  visual and takes the `touch-target` mixin (`utils/_touch-target.scss`): a transparent `::after` hit area, below
+  tablet only. Hit areas never overlap: where a neighbour is closer, the area is the control plus half the gap on
+  each side (the help "?" above its field, wrapped filter chips, table rows).
+- A control in a scrolling box (`BasicTabs`, `SegmentedControl`) draws its focus ring inside (`outline-offset:
+  -2px`), so the box never clips it.
 - A button with icon + text drops its text on mobile via `icon-only-mobile`. It keeps an accessible label. The page's
   primary actions (Save, Publish, Approve) keep their text (R7).
 - Fixed-bottom elements sit above `var(--bottom-bar-height)`.

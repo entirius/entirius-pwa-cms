@@ -1,5 +1,5 @@
 <template>
-  <div class="p-12 fs-300 t-body h-100 ov-h">
+  <div class="page-pad fs-300 t-body h-100 ov-h">
     <div
       class="page-card h-100 ovy-auto"
     >
@@ -14,7 +14,7 @@
 
       <template v-else-if="submission">
         <div class="flex ai-ct jc-sb mb-5">
-          <h1>{{ $t("cf.submission_detail") }}</h1>
+          <h1 class="page-title">{{ $t("cf.submission_detail") }}</h1>
           <Dropdown
             :values="statusOptions"
             :selected="[submission.status]"

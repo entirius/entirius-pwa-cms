@@ -4,7 +4,7 @@
       class="enrichment-review__toolbar p-8 b-subtle bb-100 bg-base"
     >
       <div class="flex ai-ct gap-8 flex-wrap">
-        <h1 class="m-0">{{ $t("enrichment.review.title") }}</h1>
+        <h1 class="page-title m-0">{{ $t("enrichment.review.title") }}</h1>
         <SegmentedControl
           v-model="mode"
           :options="modeOptions"

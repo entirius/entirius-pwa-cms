@@ -238,7 +238,7 @@ export default {
       <!-- Step 1: Config -->
       <div v-if="step === 'config'">
         <div class="td-dialog__field mb-8">
-          <label class="fs-200 fw-600 t-muted mb-2">{{
+          <label class="field-label mb-2">{{
             $t("pim.translate_source_language")
           }}</label>
           <Dropdown
@@ -251,7 +251,7 @@ export default {
 
         <div class="td-dialog__field mb-8">
           <div class="td-lang-header mb-2">
-            <label class="fs-200 fw-600 t-muted">{{
+            <label class="field-label">{{
               $t("pim.translate_target_languages")
             }}</label>
             <button
@@ -304,7 +304,7 @@ export default {
         </div>
 
         <div class="td-dialog__field mb-8">
-          <label class="fs-200 fw-600 t-muted mb-2">{{
+          <label class="field-label mb-2">{{
             $t("pim.translate_content_types")
           }}</label>
           <div class="td-checkboxes">

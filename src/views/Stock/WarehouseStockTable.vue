@@ -1,5 +1,5 @@
 <template>
-  <div class="p-12 fs-300 t-body h-100 ov-h">
+  <div class="page-pad fs-300 t-body h-100 ov-h">
     <Teleport to="#stock-toolbar-right" defer>
       <span
         v-if="dirtyCount > 0 && isManual"
@@ -100,11 +100,6 @@
               <td class="stock-table__col-status">
                 <StatusBadge v-if="isDirty(item.sku)" :label="$t('stock.unsaved')" variant="warning" />
                 <StatusBadge v-else-if="!item.has_stock" :label="$t('stock.no_stock_label')" variant="neutral" />
-                <StatusBadge
-                  v-else-if="item.quantity === 0"
-                  :label="$t('stock.sold_out_label')"
-                  variant="negative"
-                />
               </td>
             </tr>
           </tbody>
@@ -291,7 +286,6 @@ export default {
   max-width: 400px;
 }
 
-// A table wider than a phone scrolls in this box; the card around it does not.
 .stock-table tr:hover td {
   background: var(--surface-raised);
 }

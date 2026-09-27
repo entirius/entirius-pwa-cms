@@ -1,5 +1,5 @@
 <template>
-  <div class="p-12 fs-300 t-body h-100 ov-h">
+  <div class="page-pad fs-300 t-body h-100 ov-h">
     <div
       class="page-card h-100 ovy-auto"
     >
@@ -563,8 +563,6 @@ export default {
     outline: 2px solid var(--accent);
   }
 }
-
-
 
 .promo-vouchers-disabled {
   opacity: 0.6;

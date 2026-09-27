@@ -2,7 +2,7 @@
   <form class="ld-field" data-testid="settings-channel" @submit.prevent="save">
     <h3>{{ $t("communicator.channel.title") }}</h3>
     <SegmentedControl v-model="mode" :options="modeOptions" />
-    <label v-if="mode === 'sandbox'" class="ld-field"><span>{{ $t("communicator.channel.sandbox_mailbox") }}</span>
+    <label v-if="mode === 'sandbox'" class="ld-field"><span class="ld-field__label">{{ $t("communicator.channel.sandbox_mailbox") }}</span>
       <input v-model="mailbox" class="ld-input" type="email" data-testid="channel-mailbox" />
     </label>
     <p v-if="mode === 'live'" class="ld-muted" data-testid="channel-live-gate">{{ $t("communicator.channel.live_gate") }}</p>

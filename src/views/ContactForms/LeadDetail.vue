@@ -1,5 +1,5 @@
 <template>
-  <div class="p-12 fs-300 t-body h-100 ov-h">
+  <div class="page-pad fs-300 t-body h-100 ov-h">
     <div
       class="page-card h-100 ovy-auto"
     >
@@ -44,7 +44,7 @@
 
       <template v-else-if="lead">
         <div class="flex ai-ct mb-8">
-          <h1>{{ $t("cf.lead_detail") }}</h1>
+          <h1 class="page-title">{{ $t("cf.lead_detail") }}</h1>
         </div>
 
         <div class="cf-lead-grid">

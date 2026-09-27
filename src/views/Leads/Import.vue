@@ -130,17 +130,19 @@ onBeforeUnmount(() => clearTimeout(timer));
   margin: 0;
   padding-left: var(--space-4);
 }
-/* The native file control stays focusable and scriptable; the label is what the user sees and clicks. */
+/* The native file control stays focusable and scriptable; the label is what the user sees and clicks. The input is
+   sized to the label instead of clipped by it, so the label's phone hit area (`.ld-btn::after`) is not clipped. */
 .import__pick {
   position: relative;
   display: inline-flex;
   align-items: center;
-  overflow: hidden;
   cursor: pointer;
 }
 .import__input {
   position: absolute;
   inset: 0;
+  width: 100%;
+  height: 100%;
   opacity: 0;
   cursor: pointer;
 }

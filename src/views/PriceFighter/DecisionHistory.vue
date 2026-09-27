@@ -1,5 +1,5 @@
 <template>
-  <div class="p-12 fs-300 t-body h-100 ov-h">
+  <div class="page-pad fs-300 t-body h-100 ov-h">
     <div class="page-card h-100 ovy-auto">
       <div class="history__toolbar">
         <BasicInput
@@ -44,7 +44,7 @@
               <span class="fw-600 t-accent">{{ row.sku }}</span>
             </template>
             <template #cell-market="{ row }">
-              {{ row.country }} · {{ row.currency }}
+              <span class="t-muted">{{ row.channel_idx }}</span> · {{ row.country }} · {{ row.currency }}
             </template>
             <template #cell-change="{ row }">
               <span v-if="row.old_price === row.new_price" class="t-muted">
@@ -164,9 +164,9 @@ export default {
     columns() {
       return [
         { key: 'sku', label: this.$t('pricefighter.sku'), sortable: false, width: '1.2fr' },
-        { key: 'market', label: this.$t('pricefighter.market'), sortable: false, width: '1.1fr', truncate: true, priority: 2, title: (row) => `${row.channel_idx} · ${row.country} / ${row.currency}` },
+        { key: 'market', label: this.$t('pricefighter.market'), sortable: false, width: '1.1fr', truncate: true, priority: 2 },
         { key: 'change', label: this.$t('pricefighter.price_change'), sortable: false, width: '1fr' },
-        { key: 'strategy', label: this.$t('pricefighter.strategy'), sortable: false, width: '1fr', truncate: true, priority: 2 },
+        { key: 'strategy', label: this.$t('pricefighter.strategy'), sortable: false, width: 'max-content', priority: 2 },
         { key: 'applied_by', label: this.$t('pricefighter.applied_by'), sortable: false, width: '1.2fr', priority: 2 },
         { key: 'created_at', label: this.$t('pricefighter.observed_at'), sortable: false, width: '1.2fr', priority: 2 },
       ]

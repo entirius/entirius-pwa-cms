@@ -1,10 +1,10 @@
 <template>
-  <div class="pim-list-layout p-12 fs-300 t-body h-100 ov-h">
+  <div class="pim-list-layout page-pad fs-300 t-body h-100 ov-h">
     <div
       class="page-card flex-1 ovy-auto"
     >
       <div class="flex ai-ct mb-10">
-        <h1>{{ $t("pim.products") }}</h1>
+        <h1 class="page-title">{{ $t("pim.products") }}</h1>
       </div>
 
       <GapStatusAlert v-if="hasQualityData" compact />
@@ -161,8 +161,11 @@
             v-if="row.product_class_name"
             class="chip"
             :class="productClassBadge(row.product_class_name)"
+            :title="productClassLabel(row.product_class_name)"
           >
-            {{ productClassLabel(row.product_class_name) }}
+            <span class="chip__label">{{
+              productClassLabel(row.product_class_name)
+            }}</span>
           </span>
           <span v-else class="t-muted">—</span>
         </template>

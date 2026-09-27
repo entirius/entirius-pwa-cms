@@ -1,7 +1,7 @@
 <template>
   <div class="contact-fields">
     <label class="ld-field">
-      <span>{{ $t("leads.contacts.email") }}</span>
+      <span class="ld-field__label">{{ $t("leads.contacts.email") }}</span>
       <input
         v-model.trim="form.email"
         class="ld-input"
@@ -20,7 +20,7 @@
     </label>
     <div class="contact-fields__pair">
       <label class="ld-field">
-        <span>{{ $t("leads.add.first_name") }}</span>
+        <span class="ld-field__label">{{ $t("leads.add.first_name") }}</span>
         <input
           v-model.trim="form.first_name"
           class="ld-input"
@@ -29,7 +29,7 @@
         />
       </label>
       <label class="ld-field">
-        <span>{{ $t("leads.add.last_name") }}</span>
+        <span class="ld-field__label">{{ $t("leads.add.last_name") }}</span>
         <input
           v-model.trim="form.last_name"
           class="ld-input"
@@ -40,7 +40,7 @@
     </div>
     <div v-if="full" class="contact-fields__pair">
       <label class="ld-field">
-        <span>{{ $t("leads.contacts.job_title") }}</span>
+        <span class="ld-field__label">{{ $t("leads.contacts.job_title") }}</span>
         <input
           v-model.trim="form.job_title"
           class="ld-input"
@@ -49,7 +49,7 @@
         />
       </label>
       <label class="ld-field">
-        <span>{{ $t("leads.contacts.phone") }}</span>
+        <span class="ld-field__label">{{ $t("leads.contacts.phone") }}</span>
         <input
           v-model.trim="form.phone"
           class="ld-input"
@@ -62,7 +62,7 @@
         }}</span>
       </label>
       <label class="ld-field">
-        <span>{{ $t("leads.contacts.language") }}</span>
+        <span class="ld-field__label">{{ $t("leads.contacts.language") }}</span>
         <input
           v-model.trim="form.language"
           class="ld-input"
@@ -80,7 +80,7 @@
       </label>
     </div>
     <label class="ld-field">
-      <span>{{ $t("leads.contacts.legal_basis") }}</span>
+      <span class="ld-field__label">{{ $t("leads.contacts.legal_basis") }}</span>
       <select
         v-model="form.legal_basis"
         class="ld-input"
@@ -97,7 +97,7 @@
       v-if="form.legal_basis === 'consent' && !consentRecorded"
       class="ld-field"
     >
-      <span class="required">{{ $t("leads.add.consent_ref") }}</span>
+      <span class="ld-field__label required">{{ $t("leads.add.consent_ref") }}</span>
       <input
         v-model.trim="form.consent_ref"
         class="ld-input"

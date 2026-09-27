@@ -1,7 +1,7 @@
 <template>
   <div class="stock-panel h-100">
     <div class="panel-toolbar bg-raised fs-300">
-      <div class="flex ai-ct gap-5">
+      <div class="panel-toolbar__title flex ai-ct gap-5">
         <Dropdown
           :values="warehouseOptions"
           :selected="activeWarehouse ? [activeWarehouse.code] : []"
@@ -21,7 +21,7 @@
           {{ $t('stock.last_synced') }}: {{ formatRelativeTime(activeWarehouse.last_synced_at) }}
         </span>
       </div>
-      <div id="stock-toolbar-right" class="flex ai-ct gap-5"></div>
+      <div id="stock-toolbar-right" class="panel-toolbar__actions flex ai-ct gap-5"></div>
     </div>
 
     <div v-if="!activeWarehouse && !loading" class="flex-center h-100">

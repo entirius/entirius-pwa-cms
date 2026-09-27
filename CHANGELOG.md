@@ -93,6 +93,30 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- Touch and layout rules (phone): small controls keep their look and get a thumb-sized hit area from one mixin
+  (`touch-target`): the help "?", table row checkboxes and the expander, `NumberInput` − / +, filter chips, the
+  config-health close and the Leads kit buttons; neighbouring hit areas never overlap. The back arrow is 40 px on a
+  phone only and shows its tooltip on desktop. Page wrappers pad 16 px on a phone through `.page-pad` instead of a
+  global `!important` override of `p-12`, so empty states and loaders keep their spacing. Focus rings of tabs and
+  segmented options are drawn inside, never clipped by the scrolling row. Leads stage and lead-type rows stack at the
+  shared tablet breakpoint; the Builder tile row scrolls natively below tablet (was: on a touch pointer); the
+  customer status badges wrap without borrowing the title-row class; the panel toolbar styles its title group and
+  actions by role class. `@ux` reports a page card that scrolls sideways on a phone (`overflow` / `card-x`).
+- Tables keep what a row showed and stay pageable: PriceFighter gap and decision tables show the channel in the
+  market cell again, so rows that differ only by channel are told apart; status badge columns (layout extenders,
+  recommendation, strategy) size to their longest label instead of truncating; a chip in a narrow cell ends in an
+  ellipsis (`.chip__label`) with the full text as a tooltip. A truncated flexible column is never narrower than its
+  header, and a truncated slot cell's tooltip is its rendered text, not the raw value. `Pagination` also takes
+  `current` / `total` / `perPage` (and emits `change`), so the Stock tables page again. `DataTable` switches to the
+  phone layout at the shared `max-tablet` breakpoint (768 px). Promo modifier labels are back to their previous
+  wording (now translated) and the Stock "Sold out" badge is gone.
+- Page titles only: the page-title face moved from the `h1` element rule to `.page-title`, carried by every page H1,
+  so a heading typed in the rich-text editor, a content or e-mail preview and the docs view look as before. Every
+  form label uses the shared label style (translation dialogs, layout-extender modals, channel selectors, Leads
+  review and rewrite, drift reason, voucher filters); the Leads kit labels by `.ld-field__label`, not by position,
+  so a hint or badge placed first is not restyled. A `BasicInput` / `LockedField` label stays on one line inside its
+  control, with an ellipsis and the full text as a tooltip. The `@ux` label census also counts `.ld-field__label` and
+  `aria-labelledby` targets.
 - Tax rates: an empty, non-numeric or out-of-range (0–100) rate never posts; the field says "Podaj stawkę 0–100".
   `NumberInput` takes one leading minus (only when `min` < 0), one decimal separator ("," reads as ".", a second
   one is dropped) and digits, and looks disabled (muted text, no focus ring, steppers off) with `isDisabled`.

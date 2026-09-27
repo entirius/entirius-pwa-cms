@@ -11,7 +11,7 @@
     <fieldset class="add-lead__group" :disabled="Boolean(company)">
       <legend>{{ $t("leads.add.company") }}</legend>
       <label class="ld-field">
-        <span class="required">{{ $t("leads.add.domain") }}</span>
+        <span class="ld-field__label required">{{ $t("leads.add.domain") }}</span>
         <input v-model.trim="form.domain" class="ld-input" inputmode="url" autocomplete="off" :placeholder="$t('leads.add.domain_hint')" data-testid="add-lead-domain" />
         <span v-if="fieldError('domain')" class="ld-error" data-testid="add-lead-domain-error">{{ fieldError("domain") }}</span>
         <span v-if="existing" class="ld-error" data-testid="add-lead-exists">
@@ -20,11 +20,11 @@
         </span>
       </label>
       <label class="ld-field">
-        <span>{{ $t("leads.add.name") }}</span>
+        <span class="ld-field__label">{{ $t("leads.add.name") }}</span>
         <input v-model.trim="form.name" class="ld-input" data-testid="add-lead-name" />
       </label>
       <label class="ld-field">
-        <span>{{ $t("leads.add.lead_type") }}</span>
+        <span class="ld-field__label">{{ $t("leads.add.lead_type") }}</span>
         <select v-model="form.lead_type" class="ld-input" data-testid="add-lead-type">
           <option value="UNKNOWN">{{ $t("leads.lead_types.unknown") }}</option>
           <option v-for="type in leadTypes.active" :key="type.code" :value="type.code">{{ type.label }}</option>
@@ -132,7 +132,7 @@ async function save() {
 onMounted(() => leadTypes.load()); // a failed load leaves Unknown only
 </script>
 
-<style src="./desktop.css"></style>
+<style lang="scss" src="./desktop.scss"></style>
 <style scoped>
 .add-lead {
   max-width: 640px;

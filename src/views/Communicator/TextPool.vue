@@ -113,7 +113,7 @@ function remove(text) {
 }
 </script>
 
-<style src="@/views/Leads/desktop.css"></style>
+<style lang="scss" src="@/views/Leads/desktop.scss"></style>
 <style scoped>
 .pool__list {
   display: flex;

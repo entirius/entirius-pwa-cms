@@ -32,7 +32,8 @@
       <label
         v-if="label"
         :for="component_id"
-        class="input-label field-label block absolute"
+        :title="label"
+        class="input-label field-label field-label--fit block absolute"
         >{{ label }}</label
       >
 
@@ -186,7 +187,7 @@ export default {
     transform: translate(0, -100%);
     // left: var(--space-1);
     // transition: 0.1s;
-    //font-size: var(--fs-200);
+    //font-size: var(--fs-100);
     // background-color: var(--surface-hover);
     // color: var(--text-body);
     // padding: 0 var(--space-1);

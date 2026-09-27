@@ -1,5 +1,5 @@
 <template>
-  <div class="p-12 fs-300 t-body h-100 ov-h">
+  <div class="page-pad fs-300 t-body h-100 ov-h">
     <div class="page-card h-100 ovy-auto">
       <div class="flex ai-ct mb-12">
         <BackBar
@@ -7,7 +7,7 @@
         />
       </div>
 
-      <h1 class="mb-12">{{ $t("dp.import") }}</h1>
+      <h1 class="page-title mb-12">{{ $t("dp.import") }}</h1>
 
       <div class="import-card">
         <!-- File input -->
@@ -197,7 +197,6 @@ export default {
   flex-direction: column;
   gap: var(--space-1);
 }
-
 
 .import-input {
   max-width: 300px;

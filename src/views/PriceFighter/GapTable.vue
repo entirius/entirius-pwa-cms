@@ -1,5 +1,5 @@
 <template>
-  <div class="p-12 fs-300 t-body h-100 ov-h">
+  <div class="page-pad fs-300 t-body h-100 ov-h">
     <div class="page-card h-100 ovy-auto">
       <!-- Toolbar -->
       <div class="gap-table__toolbar">
@@ -67,7 +67,7 @@
               </div>
             </template>
             <template #cell-market="{ row }">
-              {{ row.country }} · {{ row.currency }}
+              <span class="t-muted">{{ row.channel_idx }}</span> · {{ row.country }} · {{ row.currency }}
             </template>
             <template #cell-current_price="{ row }">
               {{ fmt(row.current_price) }} <span class="gap-table__ccy">{{ row.currency }}</span>
@@ -188,13 +188,13 @@ export default {
     columns() {
       return [
         { key: 'sku', label: this.$t('pricefighter.sku'), sortable: true, width: '1.5fr' },
-        { key: 'market', label: this.$t('pricefighter.market'), sortable: false, width: '1.1fr', truncate: true, priority: 2, title: (row) => `${row.channel_idx} · ${row.country} / ${row.currency}` },
+        { key: 'market', label: this.$t('pricefighter.market'), sortable: false, width: '1.1fr', truncate: true, priority: 2 },
         { key: 'current_price', label: this.$t('pricefighter.current_price'), sortable: true, width: '0.8fr', numeric: true, priority: 2 },
         { key: 'cost', label: this.$t('pricefighter.cost'), sortable: false, width: '0.7fr', numeric: true, priority: 2 },
         { key: 'reference_price', label: this.$t('pricefighter.competitor_price'), sortable: true, width: '0.8fr', numeric: true, priority: 2 },
         { key: 'gap_baseline', label: this.$t('pricefighter.gap'), sortable: true, width: '0.8fr', numeric: true, priority: 2 },
         { key: 'suggested_price', label: this.$t('pricefighter.suggested_price'), sortable: false, width: '1.3fr', priority: 2 },
-        { key: 'recommendation', label: this.$t('pricefighter.recommendation'), sortable: false, width: '1.4fr', truncate: true },
+        { key: 'recommendation', label: this.$t('pricefighter.recommendation'), sortable: false, width: 'max-content' },
       ]
     },
     paginationState() {

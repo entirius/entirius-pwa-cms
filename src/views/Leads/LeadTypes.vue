@@ -41,11 +41,11 @@
     </div>
     <p v-if="errors.order" class="ld-error" data-testid="lead-type-order-error">{{ errors.order }}</p>
     <form class="ld-row lead-type__add" data-testid="lead-type-add" @submit.prevent="add">
-      <label class="ld-field"><span>{{ $t("leads.lead_types.code") }}</span>
+      <label class="ld-field"><span class="ld-field__label">{{ $t("leads.lead_types.code") }}</span>
         <input v-model="draft.code" class="ld-input" required pattern="[A-Za-z0-9_]+" data-testid="lead-type-new-code" @input="draft.code = draft.code.toUpperCase()" />
         <span class="ld-muted">{{ $t("leads.lead_types.code_help") }}</span>
       </label>
-      <label class="ld-field"><span>{{ $t("leads.lead_types.label") }}</span>
+      <label class="ld-field"><span class="ld-field__label">{{ $t("leads.lead_types.label") }}</span>
         <input v-model="draft.label" class="ld-input" required data-testid="lead-type-new-label" />
       </label>
       <button class="ld-btn ld-btn--primary" type="submit" data-testid="lead-type-save">{{ $t("leads.lead_types.add") }}</button>
@@ -122,8 +122,10 @@ async function add() {
 onMounted(load);
 </script>
 
-<style src="./desktop.css"></style>
-<style scoped>
+<style lang="scss" src="./desktop.scss"></style>
+<style lang="scss" scoped>
+@import "@/assets/scss/utils/media-query";
+
 .ld-page {
   max-width: 900px;
 }
@@ -152,8 +154,8 @@ onMounted(load);
 .lead-type__add {
   align-items: flex-start;
 }
-/* A phone: label on its own line, the rest wraps below it */
-@media (max-width: 599px) {
+/* Below tablet: label on its own line, the rest wraps below it */
+@include max-tablet {
   .lead-type {
     grid-template-columns: 1fr auto;
   }

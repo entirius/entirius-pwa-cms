@@ -1,10 +1,10 @@
 <template>
-  <div class="pim-list-layout p-12 fs-300 t-body h-100 ov-h">
+  <div class="pim-list-layout page-pad fs-300 t-body h-100 ov-h">
     <div
       class="page-card flex-1 ovy-auto"
     >
       <div class="flex ai-ct mb-10">
-        <h1>{{ $t("pim.gap_definitions") }}</h1>
+        <h1 class="page-title">{{ $t("pim.gap_definitions") }}</h1>
       </div>
 
       <GapStatusAlert />

@@ -1,10 +1,10 @@
 <template>
-  <div class="pim-list-layout p-12 fs-300 t-body h-100 ov-h">
+  <div class="pim-list-layout page-pad fs-300 t-body h-100 ov-h">
     <div
       class="page-card flex-1 ovy-auto"
     >
       <div class="flex ai-ct mb-10">
-        <h1>{{ $t("pim.features") }}</h1>
+        <h1 class="page-title">{{ $t("pim.features") }}</h1>
       </div>
 
       <div class="feature-list__toolbar">
@@ -48,7 +48,7 @@
         <template #cell-name="{ row }">{{ featureName(row) }}</template>
         <template #cell-feature_type="{ value }">
           <span class="chip bg-raised t-secondary">
-            {{ $t(featureTypeLabel(value)) }}
+            <span class="chip__label">{{ $t(featureTypeLabel(value)) }}</span>
           </span>
         </template>
         <template #cell-scope="{ value }">
@@ -286,7 +286,6 @@ export default {
 
 @media only screen and (max-width: 768px) {
   .pim-list-layout {
-    padding: var(--space-4) !important;
     overflow-x: visible !important;
 
     > div {

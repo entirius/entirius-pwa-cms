@@ -1,5 +1,5 @@
 <template>
-  <div class="p-12 fs-300 t-body h-100 ov-h">
+  <div class="page-pad fs-300 t-body h-100 ov-h">
     <Teleport to="#pricing-toolbar-left" defer>
       <BackBar
         @back="$router.push('/pricing/tax-classes')"
@@ -286,7 +286,6 @@ export default {
   flex-direction: column;
   gap: var(--space-1);
 }
-
 
 .pm-rates-table {
   border: 1px solid var(--border-subtle);

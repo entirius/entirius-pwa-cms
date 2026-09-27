@@ -38,13 +38,17 @@ defineEmits(["update:modelValue"]);
 
 <style lang="scss">
 // Wider than its box (a phone), it scrolls inside itself with a thin bar instead of pushing the page sideways.
+// Option height = control height minus the padding on both sides.
 .segmented-control {
+  --seg-height: 28px;
+  --seg-pad: 2px;
+
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
   max-width: 100%;
-  min-height: 28px;
-  padding: 2px;
+  min-height: var(--seg-height);
+  padding: var(--seg-pad);
   overflow-x: auto;
   scrollbar-width: thin;
   background-color: var(--surface-raised);
@@ -56,7 +60,7 @@ defineEmits(["update:modelValue"]);
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    height: 24px;
+    height: calc(var(--seg-height) - 2 * var(--seg-pad));
     padding: 0 var(--space-3);
     font-size: var(--fs-200);
     font-weight: 400;
@@ -82,6 +86,11 @@ defineEmits(["update:modelValue"]);
     &:disabled {
       cursor: default;
       opacity: 0.6;
+    }
+
+    // The control scrolls, so it clips an outside ring: the focus ring sits inside the option.
+    &:focus-visible {
+      outline-offset: -2px;
     }
   }
 }

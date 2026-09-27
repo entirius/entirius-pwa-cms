@@ -1,6 +1,6 @@
 <template>
   <div class="data-table" role="grid">
-    <div class="data-table__grid" :style="gridStyle">
+    <div ref="gridEl" class="data-table__grid" :style="gridStyle">
       <div class="data-table__header" role="row">
         <div
           v-if="expandable"
@@ -27,7 +27,7 @@
           :class="{
             'data-table__header-cell--sortable': sortable && col.sortable,
           }"
-          :style="alignStyle(col)"
+          :style="[alignStyle(col), headerMinStyle(col)]"
           :data-column="col.key"
           role="columnheader"
           :aria-sort="getAriaSortValue(col)"
@@ -86,12 +86,14 @@
               class="data-table__cell data-table__cell--checkbox"
               role="gridcell"
             >
-              <input
-                type="checkbox"
-                :checked="isSelected(row)"
-                aria-label="Select row"
-                @click.stop="toggleSelect(row, index, $event)"
-              />
+              <label class="data-table__check" @click.stop>
+                <input
+                  type="checkbox"
+                  :checked="isSelected(row)"
+                  aria-label="Select row"
+                  @click.stop="toggleSelect(row, index, $event)"
+                />
+              </label>
             </div>
             <div
               v-for="col in visibleColumns"
@@ -99,7 +101,7 @@
               class="data-table__cell"
               :class="cellClass(col)"
               :style="alignStyle(col)"
-              :title="isTruncated(col) ? titleOf(row, col) : undefined"
+              :title="titleOf(row, col)"
               :data-column="col.key"
               role="gridcell"
             >
@@ -138,20 +140,23 @@
 </template>
 
 <script setup>
-import { ref, computed, useSlots } from "vue";
+import { ref, computed, useSlots, onMounted, onUpdated } from "vue";
 import { t } from "@/i18n";
 import { useMediaQuery } from "@/composables/useMediaQuery";
+import { MAX_TABLET_QUERY } from "@/utils/breakpoints";
 
 /**
  * Column options (`columns` prop):
  * - `key`, `label`, `sortable`, `align` ("left" | "center" | "right").
  * - `width`: a grid track. A px width never gets narrower than its header or an untruncated cell (a badge,
  *   buttons), so neighbours never overlap; below 768 px it shrinks to that content and the `fr` name takes the rest.
- * - `truncate`: one line with an ellipsis and a `title` with the full value (`title(row)` or the row value).
- *   On by default for cells without a slot; a slot opts in with `truncate: true`.
+ * - `truncate`: one line with an ellipsis and a `title` with the full value: `title(row)`, else the row value
+ *   (default cell) or the rendered text (slot cell). On by default for cells without a slot; a slot opts in with
+ *   `truncate: true`. Never on a status column: a badge column is `width: "max-content"`, sized by its longest label.
+ *   A truncated `fr` column is at least max(120 px, its header) wide.
  * - `numeric`: right-aligned, tabular figures, no wrap.
  * - `actions`: right-aligned buttons that never shrink; the track is `max-content` unless `width` is given.
- * - `priority`: 1 (default) always shown; 2 hidden below 768 px; 3 hidden below 1024 px.
+ * - `priority`: 1 (default) always shown; 2 hidden at `max-tablet` (≤ 768 px); 3 hidden below 1024 px.
  * An empty value (null, undefined, "") renders "—".
  */
 const props = defineProps({
@@ -206,7 +211,7 @@ const PX_WIDTH = /^\d*\.?\d+px$/;
 const TRUNCATED_FR_MIN = "120px";
 
 const slots = useSlots();
-const belowTablet = useMediaQuery("(max-width: 767px)");
+const belowTablet = useMediaQuery(MAX_TABLET_QUERY);
 const belowDesktop = useMediaQuery("(max-width: 1023px)");
 
 function alignStyle(col) {
@@ -225,6 +230,7 @@ function isTruncated(col) {
 function cellClass(col) {
   return {
     "data-table__cell--truncate": isTruncated(col),
+    "data-table__cell--text-title": titlesFromText(col),
     "data-table__cell--numeric": col.numeric,
     "data-table__cell--actions": col.actions,
   };
@@ -238,10 +244,27 @@ function displayOf(row, col) {
   return isEmpty(row[col.key]) ? EMPTY : row[col.key];
 }
 
+// A truncated slot cell without `title(row)` gets its rendered text as the title (syncSlotTitles), never the raw value.
+const titlesFromText = (col) => isTruncated(col) && hasSlot(col) && !col.title;
+
 function titleOf(row, col) {
+  if (!isTruncated(col) || titlesFromText(col)) return undefined;
   const value = col.title ? col.title(row) : row[col.key];
   return ["string", "number"].includes(typeof value) && !isEmpty(value) ? String(value) : undefined;
 }
+
+const gridEl = ref(null);
+
+function syncSlotTitles() {
+  gridEl.value?.querySelectorAll(".data-table__cell--text-title").forEach((cell) => {
+    const text = cell.textContent.replace(/\s+/g, " ").trim();
+    if (text) cell.title = text;
+    else cell.removeAttribute("title");
+  });
+}
+
+onMounted(syncSlotTitles);
+onUpdated(syncSlotTitles);
 
 // --- Grid layout ---
 
@@ -258,13 +281,21 @@ function trackOf(col) {
   if (col.actions && col.width) return `minmax(${width}, max-content)`;
   // A phone gives the free width to the name: a px column shrinks to its header or untruncated content.
   if (PX_WIDTH.test(width)) return belowTablet.value ? "min-content" : `minmax(min-content, ${width})`;
-  if (FR_WIDTH.test(width) && isTruncated(col)) return `minmax(${TRUNCATED_FR_MIN}, ${width})`;
+  if (isTruncatedFr(col)) return `minmax(min-content, ${width})`;
   return width;
+}
+
+const isTruncatedFr = (col) => FR_WIDTH.test(col.width || "") && isTruncated(col);
+
+// Truncated cells add nothing to min-content, so the header floors a truncated fr column: never under its own
+// nowrap label (sort indicator included), never under 120 px.
+function headerMinStyle(col) {
+  return isTruncatedFr(col) ? { minWidth: TRUNCATED_FR_MIN } : undefined;
 }
 
 const gridStyle = computed(() => {
   const widths = [];
-  if (props.expandable) widths.push("32px");
+  if (props.expandable) widths.push(belowTablet.value ? "40px" : "32px");
   if (props.selectable) widths.push("40px");
   widths.push(...visibleColumns.value.map(trackOf));
   return { gridTemplateColumns: widths.join(" ") };
@@ -385,7 +416,7 @@ function handleRowClick(row, index, event) {
 </script>
 
 <style lang="scss" scoped>
-@import "@/assets/scss/utils/media-query";
+@import "@/assets/scss/utils/touch-target";
 
 .data-table {
   background-color: var(--surface-base);
@@ -549,6 +580,16 @@ function handleRowClick(row, index, event) {
     background-color: var(--surface-hover);
     color: var(--text-body);
   }
+
+  // A phone widens the column to 40 px; the hit area stays inside its row (rows are at least 36 px high).
+  @include touch-target(var(--space-10), 36px);
+}
+
+// The row checkbox: its label carries the hit area, the whole 40 px column by the row height.
+.data-table__check {
+  display: flex;
+
+  @include touch-target(var(--space-10), 36px);
 }
 
 .data-table__expand-row {

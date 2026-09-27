@@ -11,7 +11,7 @@
       :disabled="busy"
       @update:model-value="pickLanguage"
     />
-    <label class="ld-field"><span>{{ $t("communicator.footer.html", { language: language.toUpperCase() }) }}</span>
+    <label class="ld-field"><span class="ld-field__label">{{ $t("communicator.footer.html", { language: language.toUpperCase() }) }}</span>
       <textarea
         v-model="html"
         class="ld-input footer__html"

@@ -207,7 +207,7 @@
               :key="kind.type"
               class="filter-picker"
             >
-              <label class="fs-200 t-muted">{{ $t(kind.labelKey) }}</label>
+              <label class="field-label">{{ $t(kind.labelKey) }}</label>
               <EntitySearchPicker
                 :model-value="null"
                 :fetch-fn="(s) => fetchEntities(kind.type, s)"

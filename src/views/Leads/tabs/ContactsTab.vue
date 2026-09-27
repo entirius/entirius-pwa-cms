@@ -361,7 +361,7 @@ onMounted(async () => {
 });
 </script>
 
-<style src="../desktop.css"></style>
+<style lang="scss" src="../desktop.scss"></style>
 <style scoped>
 .contacts {
   display: flex;

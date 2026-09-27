@@ -1,5 +1,5 @@
 <template>
-  <div class="p-12 fs-300 t-body h-100 ov-h">
+  <div class="page-pad fs-300 t-body h-100 ov-h">
     <div
       class="page-card h-100 ovy-auto"
     >
@@ -7,7 +7,7 @@
         <BackBar
           @back="$router.push('/emails')"
         />
-        <h1>
+        <h1 class="page-title">
           {{ channel.label || $t("emails.channel") }}
         </h1>
         <span v-if="channel.idx" class="fs-200 t-muted ml-2"

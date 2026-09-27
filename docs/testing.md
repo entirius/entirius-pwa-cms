@@ -204,13 +204,14 @@ the other layers keep one worker.
 | `underBottomBar` | an interactive element a fixed bottom bar still covers with every scroller at its end | high |
 | `nonFocusable` | a clickable `span`/`div` without `tabindex` or without an accessible name | high |
 | `overlap` | table row: the content of neighbouring cells intersects (> 1 px) or is 1–8 px apart; toolbar (a flex row of controls): neighbours intersect or sit 1–8 px apart. Flush neighbours are one group by design | medium |
-| `overflow` | clipped text without a `title`, content cut by `overflow: hidden`, a sideways scroller with a 0 px scrollbar | medium |
+| `overflow` | clipped text without a `title`, content cut by `overflow: hidden`, a sideways scroller with a 0 px scrollbar, a `.page-card` wider than its box on mobile (`card-x`) | medium |
 | `tapTarget` | mobile only: an interactive element (or its `label`) under 40×40; inline text links are exempt | medium |
 
 Buttons are grouped by role (`primary` = accent fill, `danger` = negative colour or a delete label/icon, `icon-only`,
 `outline`, `secondary`) with their height, horizontal padding, radius, font size and border. Two censuses count
-consistency, not defects: `labelStyles` (every field label — `label` or `.form-field__label`, not the text beside a
-checkbox, radio or switch — by font size, weight, case and colour) and `cardPaddings` (every bordered, filled box of at
+consistency, not defects: `labelStyles` (every field label — `label`, `.form-field__label`, `.ld-field__label` or any
+element a control names in `aria-labelledby`, not the text beside a checkbox, radio or switch — by font size, weight,
+case and colour; labels inside a dialog the screen list never opens stay out of the count) and `cardPaddings` (every bordered, filled box of at
 least 240 × 96 that is not a control or table part, by padding), each value with the number of screens per viewport
 it appears on. Mobile emulation keeps the
 custom scrollbar as a classic one (the 6 px "page scroll" of every mobile screen); the document scroller and that

@@ -1,5 +1,5 @@
 <template>
-  <div class="p-12 fs-300 t-body h-100 ov-h">
+  <div class="page-pad fs-300 t-body h-100 ov-h">
     <Teleport to="#faq-toolbar-left" defer>
       <BackBar
         @back="$router.push('/faq/items')"
@@ -30,7 +30,7 @@
 
       <template v-else>
         <div class="flex ai-ct jc-sb mb-12">
-          <h1>
+          <h1 class="page-title">
             {{ isEdit ? item.question || item.url_key : $t("faq.create_item") }}
           </h1>
           <Switcher
@@ -596,7 +596,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 .detail-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -608,7 +607,6 @@ export default {
   flex-direction: column;
   gap: var(--space-1);
 }
-
 
 .translation-field__btn {
   flex-shrink: 0;

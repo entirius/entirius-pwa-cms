@@ -1,5 +1,5 @@
 <template>
-  <div class="p-12 fs-300 t-body h-100 ov-h">
+  <div class="page-pad fs-300 t-body h-100 ov-h">
     <Teleport to="#pricing-toolbar-left" defer>
       <BackBar
         @back="$router.push('/pricing/channels')"
@@ -301,7 +301,6 @@ export default {
   flex-direction: column;
   gap: var(--space-1);
 }
-
 
 .pm-hint {
   font-size: var(--fs-200);

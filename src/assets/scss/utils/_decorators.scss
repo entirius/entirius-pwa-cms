@@ -12,6 +12,25 @@
   }
 }
 
+// The page wrapper around a panel's content card: 48 px, 16 px below tablet (a phone keeps 361 of its 393 px).
+// `.page-pad-x` pads the sides only, for a wrapper whose rows bring their own vertical rhythm.
+.page-pad,
+.page-pad-x {
+  --page-pad: var(--space-12);
+
+  @include max-tablet {
+    --page-pad: var(--space-4);
+  }
+}
+
+.page-pad {
+  padding: var(--page-pad);
+}
+
+.page-pad-x {
+  padding: 0 var(--page-pad);
+}
+
 .dot-indicator {
   position: relative;
   display: inline-block;
@@ -241,11 +260,19 @@
   line-height: 1.5;
   white-space: nowrap;
   flex-shrink: 0;
-  // Contained in its table cell like StatusBadge; a chip that can be cut carries a `title` at the call site.
+  // Contained in its table cell like StatusBadge: a chip that can be cut wraps its text in `.chip__label` (the
+  // ellipsis) and carries the full text as `title`.
   max-width: 100%;
   overflow: hidden;
   background: transparent !important;
   border: 1px solid color-mix(in srgb, currentColor 28%, transparent);
+}
+
+.chip__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .chip--pill {
@@ -267,13 +294,21 @@
 
 // The one form-label style (FormField, BasicInput/LockedField labels, raw <label>s): 12 px / 600, uppercase, muted.
 .field-label,
-.ld-field > span:first-child {
+.ld-field__label {
   font-size: var(--fs-200);
   font-weight: 600;
   line-height: 1.25;
   text-transform: uppercase;
   letter-spacing: var(--brand-font-tracking-caps);
   color: var(--text-muted);
+}
+
+// A label floating above its control (BasicInput / LockedField): one line, never wider than the control.
+.field-label--fit {
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .required::after {

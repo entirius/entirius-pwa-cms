@@ -1,5 +1,5 @@
 <template>
-  <div class="p-12 fs-300 t-body h-100 ov-h">
+  <div class="page-pad fs-300 t-body h-100 ov-h">
     <!-- Left toolbar -->
     <Teleport to="#layout-extender-toolbar-left" defer>
       <BackBar
@@ -878,12 +878,6 @@ export default {
   border: 1px solid var(--border-subtle);
   color: var(--text-muted);
   min-height: 8rem;
-}
-
-@media only screen and (max-width: 768px) {
-  .p-12 {
-    padding: var(--space-4) !important;
-  }
 }
 </style>
 

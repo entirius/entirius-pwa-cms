@@ -1,10 +1,10 @@
 <template>
-  <div class="agm-list__wrapper p-12 fs-300 t-body h-100 ov-h">
+  <div class="agm-list__wrapper page-pad fs-300 t-body h-100 ov-h">
     <div
       class="page-card h-100 ovy-auto"
     >
       <div class="flex ai-ct mb-10">
-        <h1>{{ $t("agm.definitions") }}</h1>
+        <h1 class="page-title">{{ $t("agm.definitions") }}</h1>
       </div>
 
       <!-- Filter tabs -->
@@ -48,8 +48,8 @@
         @row-click="onRowClick"
       >
         <template #cell-category="{ value }">
-          <span v-if="value" class="chip bg-accent-subtle t-strong">
-            {{ value }}
+          <span v-if="value" class="chip bg-accent-subtle t-strong" :title="value">
+            <span class="chip__label">{{ value }}</span>
           </span>
           <span v-else class="t-muted">---</span>
         </template>
@@ -229,7 +229,6 @@ export default {
 
 @media only screen and (max-width: 768px) {
   .agm-list__wrapper {
-    padding: var(--space-4) !important;
     overflow-x: visible !important;
 
     > div {

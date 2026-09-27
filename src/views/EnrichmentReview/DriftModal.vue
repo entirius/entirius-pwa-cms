@@ -34,7 +34,7 @@
                 :subject-label="active.subject_label || active.subject_ref"
               />
             </div>
-            <label class="drift-modal__reason-label fs-200 t-muted">{{
+            <label class="drift-modal__reason-label field-label">{{
               $t("enrichment.review.reject_reason")
             }}</label>
             <textarea
@@ -142,8 +142,6 @@ export default {
 }
 .drift-modal__reason-label {
   display: block;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
   margin-bottom: var(--space-2);
 }
 .drift-modal__reason {

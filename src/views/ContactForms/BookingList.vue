@@ -1,10 +1,10 @@
 <template>
-  <div class="cf-booking-list__wrapper p-12 fs-300 t-body h-100 ov-h">
+  <div class="cf-booking-list__wrapper page-pad fs-300 t-body h-100 ov-h">
     <div
       class="page-card h-100 ovy-auto"
     >
       <div class="flex ai-ct mb-10">
-        <h1>{{ $t("cf.bookings") }}</h1>
+        <h1 class="page-title">{{ $t("cf.bookings") }}</h1>
       </div>
 
       <div class="flex ai-ct flex-wrap gap-8 rg-3 mb-10">
@@ -311,7 +311,6 @@ export default {
   font-size: var(--fs-200);
 }
 
-
 .cf-list__date-input {
   height: var(--elem-height);
   padding: 0 var(--space-2);
@@ -341,11 +340,5 @@ export default {
 
 .cf-list__meet-link:hover {
   background: var(--surface-raised);
-}
-
-@media only screen and (max-width: 768px) {
-  .cf-booking-list__wrapper {
-    padding: var(--space-4) !important;
-  }
 }
 </style>

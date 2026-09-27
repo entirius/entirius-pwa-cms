@@ -1,5 +1,5 @@
 <template>
-  <div class="p-12 fs-300 t-body h-100 ov-h">
+  <div class="page-pad fs-300 t-body h-100 ov-h">
     <Teleport to="#layout-extender-toolbar-left" defer>
       <span class="fs-300 fw-600 t-body">{{ $t("layout_extender.list_title") }}</span>
       <Dropdown
@@ -109,14 +109,14 @@
       </template>
       <template #description>
         <div class="le-copy">
-          <label class="le-copy__label">{{ $t("layout_extender.copy_target_channel") }}</label>
+          <label class="le-copy__label field-label">{{ $t("layout_extender.copy_target_channel") }}</label>
           <Dropdown
             :values="copyChannelOptions"
             :selected="copyTargetChannel ? [copyTargetChannel] : []"
             :placeholder="$t('layout_extender.copy_select_channel')"
             @onSelect="onCopyTargetSelect"
           />
-          <label class="le-copy__label">{{ $t("layout_extender.copy_name") }}</label>
+          <label class="le-copy__label field-label">{{ $t("layout_extender.copy_name") }}</label>
           <BasicInput v-model="copyName" />
         </div>
       </template>
@@ -181,7 +181,7 @@ export default {
         { key: "type", label: this.$t("layout_extender.type"), width: "120px", priority: 2 },
         { key: "language", label: this.$t("layout_extender.language"), width: "100px", priority: 2 },
         { key: "channels", label: this.$t("layout_extender.channels"), width: "160px", priority: 2 },
-        { key: "status", label: this.$t("layout_extender.status"), width: "120px", truncate: true },
+        { key: "status", label: this.$t("layout_extender.status"), width: "max-content" },
         { key: "updated_at", label: this.$t("layout_extender.updated"), width: "160px", priority: 2 },
         { key: "actions", label: this.$t("layout_extender.actions"), align: "right", actions: true },
       ];
@@ -375,10 +375,6 @@ export default {
 }
 
 .le-copy__label {
-  font-size: var(--fs-200);
-  font-weight: 600;
-  color: var(--text-secondary);
-
   &:not(:first-child) {
     margin-top: var(--space-5);
   }
@@ -389,11 +385,5 @@ export default {
   align-items: center;
   gap: var(--space-2);
   justify-content: flex-end;
-}
-
-@media only screen and (max-width: 768px) {
-  .p-12 {
-    padding: var(--space-4) !important;
-  }
 }
 </style>

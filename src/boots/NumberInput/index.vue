@@ -133,6 +133,8 @@ function onFocusout() {
 </script>
 
 <style lang="scss">
+@import "@/assets/scss/utils/touch-target";
+
 .number-input-wrapper {
   background-color: transparent;
   color: var(--text-body);
@@ -146,6 +148,11 @@ function onFocusout() {
   padding: 0;
   transition: border-color 0.2s;
   overflow: hidden;
+
+  // The steppers' hit areas reach past the border on a phone; the buttons round their own outer corners instead.
+  @include max-tablet {
+    overflow: visible;
+  }
 
   &:focus-within {
     border-color: var(--border-strong);
@@ -193,12 +200,20 @@ function onFocusout() {
     cursor: default;
   }
 
+  // Flush with the value field: the hit area grows to 40 px in height only, never over the field.
+  @include touch-target(100%, var(--space-10));
+
   &:first-child {
     border-right: 1px solid var(--border-default);
+    border-radius: var(--radius-base) 0 0 var(--radius-base);
   }
 
   &:last-of-type {
     border-left: 1px solid var(--border-default);
+  }
+
+  &:last-child {
+    border-radius: 0 var(--radius-base) var(--radius-base) 0;
   }
 }
 

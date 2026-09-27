@@ -1,5 +1,5 @@
 <template>
-  <div class="p-12 fs-300 t-body h-100 ov-h">
+  <div class="page-pad fs-300 t-body h-100 ov-h">
     <Teleport to="#points-toolbar-left" defer>
       <BackBar
         @back="$router.push('/points/list')"
@@ -29,7 +29,7 @@
 
       <template v-else>
         <div class="flex ai-ct jc-sb mb-12">
-          <h1>
+          <h1 class="page-title">
             {{ isEdit ? point.name || point.code : $t("dp.create_point") }}
           </h1>
           <Switcher
@@ -821,7 +821,6 @@ export default {
   flex-direction: column;
   gap: var(--space-1);
 }
-
 
 .t9n-row {
   border: 1px solid var(--border-subtle);

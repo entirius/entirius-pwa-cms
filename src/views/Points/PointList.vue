@@ -1,10 +1,10 @@
 <template>
-  <div class="p-12 fs-300 t-body h-100 ov-h">
+  <div class="page-pad fs-300 t-body h-100 ov-h">
     <div
       class="page-card h-100 ovy-auto"
     >
       <div class="flex ai-ct mb-10">
-        <h1>{{ $t("dp.points") }}</h1>
+        <h1 class="page-title">{{ $t("dp.points") }}</h1>
       </div>
 
       <!-- Filter tabs -->
@@ -55,13 +55,13 @@
         @row-click="onRowClick"
       >
         <template #cell-type_name="{ row }">
-          <span v-if="row.type" class="chip t-accent">
+          <span v-if="row.type" class="chip t-accent" :title="row.type.name">
             <font-awesome-icon
               v-if="row.type.is_carrier"
               icon="lock"
               class="mr-1"
             />
-            {{ row.type.name }}
+            <span class="chip__label">{{ row.type.name }}</span>
           </span>
           <span v-else class="t-muted">---</span>
         </template>

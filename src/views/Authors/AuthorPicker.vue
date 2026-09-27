@@ -1,6 +1,6 @@
 <template>
   <div class="author-picker">
-    <p v-if="label" class="fs-200 fw-600 t-muted tt-upper mb-5">
+    <p v-if="label" class="field-label mb-5">
       {{ label }}
     </p>
 

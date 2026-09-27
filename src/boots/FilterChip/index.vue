@@ -29,6 +29,8 @@ defineEmits(["click"]);
 </script>
 
 <style lang="scss">
+@import "@/assets/scss/utils/touch-target";
+
 .filter-chip {
   display: inline-flex;
   align-items: center;
@@ -42,6 +44,9 @@ defineEmits(["click"]);
   color: var(--text-body);
   white-space: nowrap;
   transition: all 0.15s ease;
+
+  // Wrapped chip rows sit 8 px apart: the hit area is 40 wide and 36 high (28 + the gap), so rows never overlap.
+  @include touch-target(var(--space-10), 36px);
 
   &:hover {
     border-color: var(--border-default);

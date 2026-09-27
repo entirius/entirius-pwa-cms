@@ -1,10 +1,10 @@
 <template>
-  <div class="p-12 fs-300 t-body h-100 ov-h">
+  <div class="page-pad fs-300 t-body h-100 ov-h">
     <div
       class="page-card h-100 ovy-auto"
     >
       <div class="flex ai-ct mb-10">
-        <h1>{{ $t("authors.title") }}</h1>
+        <h1 class="page-title">{{ $t("authors.title") }}</h1>
       </div>
 
       <div
@@ -241,10 +241,5 @@ export default {
   flex: 1;
   min-width: 150px;
   max-width: 400px;
-}
-@media only screen and (max-width: 768px) {
-  .p-12 {
-    padding: var(--space-4) !important;
-  }
 }
 </style>

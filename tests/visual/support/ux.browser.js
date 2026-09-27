@@ -270,6 +270,15 @@
     return hiddenScrollbar(el, s, dx) ? issue("overflow", "no-scrollbar", el) : null;
   }
 
+  // Mobile: a page card never scrolls sideways; a wide table, tab row or tile row scrolls inside its own box.
+  const cardScrollsSideways = (el) => el.scrollWidth > el.clientWidth + EPS;
+  function cardIssues(shown, mobile) {
+    if (!mobile) return [];
+    return shown
+      .filter((el) => el.matches(".page-card") && cardScrollsSideways(el))
+      .map((el) => issue("overflow", "card-x", el));
+  }
+
   // A fixed or sticky bar across the bottom of the viewport (the mobile bottom nav, a sticky action bar).
   function findBottomBar(shown) {
     return shown.find((el) => {
@@ -339,20 +348,31 @@
   }
 
   // Field labels (not the text beside a checkbox, radio or switch, not a file picker): one style per label, for the
-  // census. A label that wraps its control is measured on its text: the label itself when the text sits in it
-  // directly, else its first child with text that is neither a control nor holds one.
+  // census. A label is a `label`, a shared label class, or any element a control names in `aria-labelledby`; one
+  // nested in another label is its text, not a second label. A label that wraps its control is measured on its text:
+  // the label itself when the text sits in it directly, else its first child with text that is neither a control nor
+  // holds one.
+  const FIELD_LABEL = "label, .form-field__label, .ld-field__label";
   const OPTION_LABEL =
     'input[type="checkbox"], input[type="radio"], input[type="file"], [role="switch"], [role="checkbox"]';
   const CONTROL = "input, select, textarea, [contenteditable]";
+  const LABELLED_ROLES = '[role="combobox"], [role="listbox"], [role="textbox"], [role="spinbutton"], [role="slider"]';
   const ownText = (el) => [...el.childNodes].some((n) => n.nodeType === Node.TEXT_NODE && n.textContent.trim());
   function labelText(el) {
     if (!el.querySelector(CONTROL) || ownText(el)) return el;
     return [...el.children].find((c) => textOf(c) && !c.matches(CONTROL) && !c.querySelector(CONTROL)) || el;
   }
+  function labelledIds() {
+    const named = [...document.querySelectorAll(`:is(${CONTROL}, ${LABELLED_ROLES})[aria-labelledby]`)];
+    const refs = named.map((el) => el.getAttribute("aria-labelledby"));
+    return new Set(refs.flatMap((ids) => ids.split(/\s+/)).filter(Boolean));
+  }
   function labelStyles(shown) {
+    const ids = labelledIds();
+    const isLabel = (el) => el.matches(FIELD_LABEL) || (el.id && ids.has(el.id));
     return shown
-      .filter((el) => el.matches("label, .form-field__label") && textOf(el) && !el.querySelector(OPTION_LABEL))
-      .filter((el) => !el.parentElement.closest(".form-field__label"))
+      .filter((el) => isLabel(el) && textOf(el) && !el.querySelector(OPTION_LABEL))
+      .filter((el) => !el.parentElement.closest(FIELD_LABEL))
       .map((el) => {
         const s = styleOf(labelText(el));
         return { style: `${s.fontSize} ${s.fontWeight} ${s.textTransform} ${s.color}`, text: nameOf(el) };
@@ -386,6 +406,7 @@
     const issues = [...interactiveIssues(controls, options.mobile), ...nonFocusableIssues(pointerActions)];
     issues.push(...rowIssues(rows));
     issues.push(...toolbarIssues(shown), ...shown.map(overflowIssue).filter(Boolean));
+    issues.push(...cardIssues(shown, options.mobile));
     const buttons = buttonMetrics(shown);
     const census = { labels: labelStyles(shown), cards: cardPaddings(shown) };
     const bar = findBottomBar(shown);

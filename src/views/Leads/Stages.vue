@@ -53,11 +53,11 @@
       </template>
     </draggable>
     <form class="ld-row stage__add" data-testid="stage-add" @submit.prevent="add">
-      <label class="ld-field"><span>{{ $t("leads.stages.key") }}</span>
+      <label class="ld-field"><span class="ld-field__label">{{ $t("leads.stages.key") }}</span>
         <input v-model="draft.key" class="ld-input" required pattern="[-a-zA-Z0-9_]+" />
         <span class="ld-muted">{{ $t("leads.stages.key_help") }}</span>
       </label>
-      <label class="ld-field"><span>{{ $t("leads.stages.label") }}</span>
+      <label class="ld-field"><span class="ld-field__label">{{ $t("leads.stages.label") }}</span>
         <input v-model="draft.label" class="ld-input" required />
         <span class="ld-muted">{{ $t("leads.stages.label_help") }}</span>
       </label>
@@ -168,7 +168,9 @@ async function add() {
 onMounted(() => Promise.all([load(), loadRules().catch(() => {})]));
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import "@/assets/scss/utils/media-query";
+
 /* A grid, not a flex row: the controls line up down the list whatever the key tag is long. */
 .stage {
   display: grid;
@@ -199,8 +201,8 @@ onMounted(() => Promise.all([load(), loadRules().catch(() => {})]));
 .stage .ld-error {
   grid-column: 1 / -1;
 }
-/* A phone (as in LeadTypes): name beside the handle, then the tags, then the controls, right-aligned */
-@media (max-width: 599px) {
+/* Below tablet (as in LeadTypes): name beside the handle, then the tags, then the controls, right-aligned */
+@include max-tablet {
   .stage {
     grid-template-columns: auto minmax(0, 1fr);
     row-gap: var(--space-2);

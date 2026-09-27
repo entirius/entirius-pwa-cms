@@ -1,6 +1,6 @@
 <template>
   <div
-    class="fs-300 t-body fg-1 flex-column relative pl-12 pr-12 pt-5 pb-30 ovy-auto builder-wrap"
+    class="fs-300 t-body fg-1 flex-column relative page-pad-x pt-5 pb-30 ovy-auto builder-wrap"
     :id="`container-${componentId}`"
   >
     <ConfirmationModal
@@ -669,10 +669,10 @@
                   "
                 >
                   <BasicSwiper
-                    :key="tiles_order[s_uid].length"
+                    :key="`${tiles_order[s_uid].length}-${belowTablet}`"
                     :uid_class="`tiles-slider-${s_uid}`"
                     :options="{
-                      cssMode: coarsePointer,
+                      cssMode: belowTablet,
                       slidesPerView: 1.25,
                       spaceBetween: 10,
                       breakpoints: {
@@ -986,6 +986,8 @@ import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import AuthorPicker from "@/views/Authors/AuthorPicker.vue";
 import HomeVariantSwitcher from "@/views/Builder/HomeVariantSwitcher.vue";
 import { pluralKey } from "@/utils/plural";
+import { useMediaQuery } from "@/composables/useMediaQuery";
+import { MAX_TABLET_QUERY } from "@/utils/breakpoints";
 
 export default {
   components: {
@@ -1006,7 +1008,9 @@ export default {
     const handy = useHandyStore();
     const unsaved = useUnsavedChanges();
     const contentDBChannel = useContentDBChannelStore();
-    return { notify, userStore, handy, ...unsaved, contentDBChannel };
+    // Below tablet the tile row scrolls natively (a real sideways scroller); wider screens keep Swiper's drag.
+    const belowTablet = useMediaQuery(MAX_TABLET_QUERY);
+    return { notify, userStore, handy, ...unsaved, contentDBChannel, belowTablet };
   },
   computed: {
     user() {
@@ -1047,8 +1051,6 @@ export default {
   },
   data() {
     return {
-      // A touch screen scrolls the tile row natively (a real sideways scroller); a mouse keeps Swiper's drag.
-      coarsePointer: window.matchMedia?.("(pointer: coarse)").matches ?? false,
       loading: false,
       config_options: null,
       props_dictionary: {},
@@ -1911,6 +1913,8 @@ const scroll_into = (id) => {
 }
 </style>
 <style lang="scss" scoped>
+@import "@/assets/scss/utils/media-query";
+
 .builder-toolbar-name {
   display: flex;
   flex-direction: column;
@@ -2162,7 +2166,7 @@ const scroll_into = (id) => {
   }
 }
 // Save draft and Publish keep their labels on a phone (R7); the wrapping panel toolbar makes the room.
-@media only screen and (max-width: 768px) {
+@include max-tablet {
   .section-icon-btn {
     width: 36px;
     height: 36px;
@@ -2214,7 +2218,7 @@ const scroll_into = (id) => {
   .tile-swiper-wrap :deep(.swiper) {
     max-width: 100%;
   }
-  // cssMode (touch): the tiles scroll natively; a thin bar shows that the row scrolls sideways.
+  // cssMode (below tablet, as `belowTablet`): the tiles scroll natively; a thin bar shows that the row scrolls sideways.
   .tile-swiper-wrap :deep(.swiper-wrapper) {
     scrollbar-width: thin;
   }

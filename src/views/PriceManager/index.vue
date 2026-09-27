@@ -1,10 +1,10 @@
 <template>
   <div class="pm-panel h-100">
     <div class="panel-toolbar bg-raised fs-300">
-      <div class="flex ai-ct gap-5">
+      <div class="panel-toolbar__title flex ai-ct gap-5">
         <div id="pricing-toolbar-left" class="flex ai-ct gap-5"></div>
         <div v-if="showChannelSelector && channelOptions.length" class="flex ai-ct gap-5">
-          <span class="fs-200 fw-600 t-muted text-uppercase">{{ $t('pm.channel') }}</span>
+          <span class="field-label">{{ $t('pm.channel') }}</span>
           <Dropdown
             :values="channelOptions"
             :selected="[activeChannelIdx]"
@@ -12,7 +12,7 @@
           />
         </div>
       </div>
-      <div id="pricing-toolbar-right" class="flex ai-ct gap-5"></div>
+      <div id="pricing-toolbar-right" class="panel-toolbar__actions flex ai-ct gap-5"></div>
     </div>
     <router-view />
   </div>

@@ -1,5 +1,5 @@
 <template>
-  <div class="p-12 fs-300 t-body h-100 ov-h">
+  <div class="page-pad fs-300 t-body h-100 ov-h">
     <!-- Title shown by router titleKey in header bar -->
     <Teleport to="#pricing-toolbar-right" defer>
       <BasicButton
@@ -26,8 +26,8 @@
             </span>
           </template>
           <template #cell-calculate_direction="{ row }">
-            <span class="chip bg-raised t-secondary">
-              {{ row.calculate_direction === 'from_net_to_gross' ? $t('pm.from_net_to_gross') : $t('pm.from_gross_to_net') }}
+            <span class="chip bg-raised t-secondary" :title="directionLabel(row)">
+              <span class="chip__label">{{ directionLabel(row) }}</span>
             </span>
           </template>
           <template #cell-country_count="{ row }">
@@ -85,6 +85,9 @@ export default {
     this.fetch()
   },
   methods: {
+    directionLabel(row) {
+      return row.calculate_direction === 'from_net_to_gross' ? this.$t('pm.from_net_to_gross') : this.$t('pm.from_gross_to_net')
+    },
     async fetch() {
       this.loading = true
       try {
