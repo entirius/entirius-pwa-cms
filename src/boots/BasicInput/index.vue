@@ -23,8 +23,8 @@
       />
       <div
         v-if="icon"
-        class="icon-wrapper absolute flex jc-ct ai-ct pointer"
-        @click="$emit('onIcon', val)"
+        class="icon-wrapper absolute flex jc-ct ai-ct"
+        aria-hidden="true"
       >
         <i :class="`icon-${icon}`"></i>
       </div>
@@ -214,7 +214,9 @@ export default {
     transform: translateY(140%);
   }
 
+  // Decorative (no caller acts on it): a click goes through to the input.
   .icon-wrapper {
+    pointer-events: none;
     width: var(--elem-height);
     height: var(--elem-height);
     right: 0;

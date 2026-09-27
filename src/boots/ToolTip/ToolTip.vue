@@ -1,5 +1,11 @@
 <template>
-  <span class="tool-tip relative pointer">
+  <!-- A wrapper leaves cursor and focus to the control it wraps; the standalone hint icon is reachable by keyboard. -->
+  <span
+    class="tool-tip relative"
+    :class="{ pointer: !is_wrapper }"
+    :tabindex="is_wrapper ? undefined : 0"
+    :aria-label="is_wrapper ? undefined : tip"
+  >
     <i class="icon-cookie" v-if="!is_wrapper" />
     <span class="tip p-1 fs-200">{{ tip }}</span>
     <slot v-if="is_wrapper"> </slot>
@@ -66,7 +72,8 @@ export default {
       transform: translate(20%, 0);
     }
   }
-  &:hover .tip {
+  &:hover .tip,
+  &:focus-visible .tip {
     display: block;
   }
 }
