@@ -270,6 +270,15 @@
     return hiddenScrollbar(el, s, dx) ? issue("overflow", "no-scrollbar", el) : null;
   }
 
+  // Mobile: a page card never scrolls sideways; a wide table, tab row or tile row scrolls inside its own box.
+  const cardScrollsSideways = (el) => el.scrollWidth > el.clientWidth + EPS;
+  function cardIssues(shown, mobile) {
+    if (!mobile) return [];
+    return shown
+      .filter((el) => el.matches(".page-card") && cardScrollsSideways(el))
+      .map((el) => issue("overflow", "card-x", el));
+  }
+
   // A fixed or sticky bar across the bottom of the viewport (the mobile bottom nav, a sticky action bar).
   function findBottomBar(shown) {
     return shown.find((el) => {
@@ -397,6 +406,7 @@
     const issues = [...interactiveIssues(controls, options.mobile), ...nonFocusableIssues(pointerActions)];
     issues.push(...rowIssues(rows));
     issues.push(...toolbarIssues(shown), ...shown.map(overflowIssue).filter(Boolean));
+    issues.push(...cardIssues(shown, options.mobile));
     const buttons = buttonMetrics(shown);
     const census = { labels: labelStyles(shown), cards: cardPaddings(shown) };
     const bar = findBottomBar(shown);
