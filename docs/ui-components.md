@@ -275,4 +275,41 @@ Catalogue: `#page-frame` (`#page-header`, `#breadcrumbs`, `#page-layout`).
 
 ### P3 inputs (plan 16)
 
+- **`FormField`** — the only owner of a field's `label`, `description` (hint), `required` (the red `*`), `error`
+  (`role="alert"`, replaces the hint) and `tooltip` (a BasicTooltip `help` button after the label); `layout`
+  `stacked` · `inline` (label left, control right from 1024 px, stacked below — Figma „Język treści”); `id` fixes the
+  control's id, `disabled` disables it. It provides `FORM_FIELD` (`src/composables/formField.js`): `id` (the label's
+  `for`), `describedBy` (the hint or error shown), `invalid`, `required`, `disabled`, plus `labelId` for a control a
+  `for` cannot name. Controls read it through `useControlAttrs()` (`src/boots/FormField/useControlAttrs.js`) and
+  paint their own error border; FormField's own border paint is left only for controls without `aria-invalid`
+  (Dropdown, TextAreaBasic, raw inputs) until plan 19.
+- **`BasicInput`** — `v-model`, `type`, `placeholder`, `icon` (a leading meaning of `icons.js`), `readonly` (the
+  value behind a `lock`, the former `LockedField`), `disabled`; `--elem-height`, `border-control`, the polish disabled
+  look. Transition API, removed in plan 19: the floating `label`, `validate` (`{ status, msg }`, own message),
+  `isDisabled`, `focusOnCreate`, events `onFocusout` / `onKeyDown`; unknown listeners and classes still land on the
+  wrapper.
+- **`BasicTextarea`** — replaces `TextAreaBasic`: `v-model`, `rows` (4), `maxlength` (with an „n / max” counter),
+  `placeholder`, `disabled`, `readonly`.
+- **`NumberInput`** — `disabled` (`isDisabled` until plan 19); the value field reads the contract.
+- **`BasicCheckbox`** — one checkbox: a boolean `v-model`, its label in the default slot, `disabled`. Transition API,
+  removed in plan 19: `values` (+ `init_selected`, `type`, `label`, event `onSelect`) renders the old array list.
+- **`BasicRadioGroup`** — `options` `[{ label, value, disabled? }]`, `v-model`, `name`, `disabled`; native radios in a
+  `role="radiogroup"` (one Tab stop, the arrow keys move and select), named by the FormField label.
+- **`BasicSwitch`** — replaces `Switcher`: `v-model`, `label`, `hint` (a help tooltip), `disabled`; a
+  `role="switch"` button with `aria-checked`, styles scoped to it.
+- **`BasicDatePicker`** — an input-looking trigger with the `calendar` icon opens an inline flatpickr; `v-model` (the
+  flatpickr date string), `config` (a range by default), `disabled`; the instance is destroyed on unmount. `value` and
+  `onChange` stay until plan 19.
+- **`SegmentedControl`** — contract id and `disabled`, named by the FormField label, `aria-pressed` on the active
+  option. **`ColorInput`** — `disabled`, the text field reads the contract, the swatch is the native picker itself.
+- Codemod `scripts/codemods/p3-inputs.mjs` (sweeps 17/18): `Switcher` → `BasicSwitch` (`:selected` + `@onSelect="x =
+  !x"` → `v-model`, `prevent` → `disabled`), `TextAreaBasic` → `BasicTextarea` (`limit` → `maxlength`), `LockedField` →
+  `BasicInput readonly`, `isDisabled` / `is_disabled` → `disabled` on BasicInput, NumberInput and the textarea, a
+  floating `label` → a `FormField` around the control (dropped inside a labelled FormField). It flags other
+  `@onSelect` handlers, `validate`, the checkbox array API and the old textarea API. `Switcher`, `TextAreaBasic` and
+  `LockedField` are removed components (`removed-components/inputs.json`).
+
+Catalogue: `#inputs` (`#form-field`, `#basic-input`, `#basic-textarea`, `#number-input`, `#basic-checkbox`,
+`#basic-radio-group`, `#basic-switch`, `#segmented-control`, `#basic-date-picker`, `#color-input`, `#basic-wysiwyg`).
+
 ### P4 shell (plan 21)
