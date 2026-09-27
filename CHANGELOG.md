@@ -42,6 +42,12 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- **One button family** (`BasicButton`): two sizes (`md` = the input height, `sm` = row actions), 12 px labels that
+  never wrap, a 1 px border on every variant, and the roles primary / secondary / ghost / danger / danger-fill as
+  classes (`docs/ui-rules.md` C6). Every delete, remove and reject is a danger button; icon-only buttons are squares
+  with a FontAwesome icon and an accessible name; back arrows are ghost icon buttons instead of a 14 px strip. The
+  Leads kit (`ld-btn`), the config-health panel, atlas, pricing, enrichment review and pagination follow the same
+  metrics; layout-list and navigation-editor row actions and the rich-text toolbar are keyboard-reachable and named.
 - **Brand token layer (P2, additive):** the CMS loads `@entirius/brand-tokens` and self-hosts Inter and Lexend Deca
   (`@fontsource-variable`, wght axis, latin + latin-ext); Google Fonts is no longer requested. Body text renders in
   Inter from the app bundle. New tokens beside the old ones: the semantic colour layer (`--surface-*`, `--text-*`,
@@ -74,6 +80,8 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- FAQ items and groups can be deleted and unlinked again: their delete, remove-from-group and unlink buttons
+  rendered 0 px high because the legacy icon font lacks the glyph.
 - The session refreshes its access token a minute before it expires, whatever lifetime the service issues. The
   CMS assumed 15 minutes against a 5-minute token and refreshed far too late.
 - A token refreshed by a request (expired on page load, or a 401 retry) moves the next scheduled refresh too; the
