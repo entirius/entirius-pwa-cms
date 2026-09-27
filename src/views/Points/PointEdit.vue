@@ -477,9 +477,10 @@ export default {
     typeChangeSupported() {
       return this.munin.isModuleAtLeast("deliverypoints", "1.1.0");
     },
+    // Carrier types are not selectable, but a carrier point still shows its own type.
     typeOptions() {
       return this.types
-        .filter((t) => !t.is_carrier)
+        .filter((t) => !t.is_carrier || t.id === this.form.type_id)
         .map((t) => ({ label: t.name, value: t.id }));
     },
     channelOptions() {

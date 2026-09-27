@@ -2442,6 +2442,13 @@
       "scope_language": "Language",
       "scope_language_hint": "Languages served by the selected channel; empty = all languages",
       "all_languages": "All languages",
+      "all_channels": "All channels",
+      "task_types": {
+        "fix-attribute": "Fix attribute",
+        "fill-attribute": "Fill attribute",
+        "translate": "Translate",
+        "lookup_link": "Link duplicate"
+      },
       "module_hint": "Only PIM supports quality-gap spawning today. Module discovery via Munin will unlock this once other modules ship their gap catalogues.",
       "limit": "Limit per task",
       "limit_hint": "Max targets one task feeds the worker",

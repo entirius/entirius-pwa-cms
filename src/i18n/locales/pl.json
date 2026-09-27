@@ -2441,6 +2441,13 @@
       "scope_language": "Język",
       "scope_language_hint": "Języki obsługiwane przez wybrany kanał; puste = wszystkie języki",
       "all_languages": "Wszystkie języki",
+      "all_channels": "Wszystkie kanały",
+      "task_types": {
+        "fix-attribute": "Popraw atrybut",
+        "fill-attribute": "Uzupełnij atrybut",
+        "translate": "Przetłumacz",
+        "lookup_link": "Połącz duplikat"
+      },
       "module_hint": "Spawnowanie z braków jakości obsługuje dziś tylko PIM. Pole odblokujemy przez Munin, gdy kolejne moduły dostaną własne katalogi reguł.",
       "limit": "Limit na zadanie",
       "limit_hint": "Maksymalna liczba celów w jednym zadaniu",

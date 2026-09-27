@@ -160,3 +160,51 @@ describe("SpawnRuleEdit", () => {
     expect(wrapper.find('[data-test="spawn-rule-check-input"]').exists()).toBe(true);
   });
 });
+
+describe("SpawnRuleEdit — stored values in selects", () => {
+  // Renders the label the real Dropdown would show: the selected option's, else the placeholder.
+  const DropdownProbe = {
+    props: ["values", "selected", "placeholder"],
+    template:
+      '<span class="dd">{{ (values.find((o) => o.value === selected[0]) || { label: placeholder }).label }}</span>',
+  };
+
+  beforeEach(() => {
+    mockGetDefs.mockReset();
+    mockGetDefs.mockResolvedValue({ data: { results: [{ key: "pl-description" }] } });
+    mockGetRule.mockReset();
+    mockGetRule.mockResolvedValueOnce({
+      data: {
+        key: "atlas-duplicate-in-pim",
+        module: "atlas",
+        check_key: "duplicate_in_pim",
+        task_type: "lookup_link",
+        task_params: {},
+        params: {},
+        scope: {},
+        limit: 200,
+        cooldown_days: 1,
+        auto: false,
+        active: true,
+      },
+    });
+  });
+
+  it("shows the rule's check, task type and channel scope instead of the placeholder", async () => {
+    const wrapper = mount(SpawnRuleEdit, {
+      global: {
+        mocks: { $route: { params: { key: "atlas-duplicate-in-pim" }, query: {} } },
+        stubs: { FormField: { template: "<div><slot /></div>" }, Dropdown: DropdownProbe },
+      },
+    });
+    await flushPromises();
+
+    const labels = wrapper.findAll(".dd").map((d) => d.text());
+    expect(labels.slice(0, 3)).toEqual([
+      "duplicate_in_pim",
+      "lookup_link",
+      "enrichment.spawn_rules.all_channels",
+    ]);
+    expect(labels).not.toContain("common.select");
+  });
+});

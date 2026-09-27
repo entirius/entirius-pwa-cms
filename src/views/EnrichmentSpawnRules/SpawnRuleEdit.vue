@@ -66,7 +66,7 @@
           >
             <Dropdown
               v-if="checkOptions.length"
-              :values="checkOptions"
+              :values="checkChoices"
               :selected="[form.check_key]"
               :placeholder="$t('common.select')"
               @onSelect="(v) => (form.check_key = v)"
@@ -166,6 +166,7 @@ import {
 } from "@/api/enrichment/api";
 import { GET_GapDefinitions } from "@/api/pim/api";
 import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
+import { withStoredOption } from "@/utils/options";
 
 const TASK_TYPES = ["fix-attribute", "fill-attribute", "translate"];
 const KEY_PATTERN = /^[a-z0-9][a-z0-9_-]*$/;
@@ -205,14 +206,22 @@ export default {
     isCreate() {
       return !this.$route.params.key;
     },
-    taskTypeOptions() {
-      return TASK_TYPES.map((t) => ({ label: t, value: t }));
+    checkChoices() {
+      return withStoredOption(this.checkOptions, this.form.check_key);
     },
+    taskTypeOptions() {
+      const options = TASK_TYPES.map((t) => ({ label: this.taskTypeLabel(t), value: t }));
+      return withStoredOption(options, this.form.task_type, this.taskTypeLabel(this.form.task_type));
+    },
+    // "" = no channel scope: the rule runs for every channel.
     channelOptions() {
-      return (this.pimChannel.channels || []).map((ch) => ({
+      const channels = (this.pimChannel.channels || []).map((ch) => ({
         label: ch.name || ch.idx,
         value: ch.idx,
       }));
+      if (!channels.length) return [];
+      const all = { label: this.$t("enrichment.spawn_rules.all_channels"), value: "" };
+      return withStoredOption([all, ...channels], this.scopeChannel);
     },
     // Languages of the selected channel (that's exactly what find_gaps filters on);
     // before a channel is picked, the union across channels. "" = all languages.
@@ -237,6 +246,12 @@ export default {
     if (!this.isCreate) await this.fetchRule();
   },
   methods: {
+    // Task types are free strings on the backend; a type without a label shows its code.
+    taskTypeLabel(type) {
+      const key = `enrichment.spawn_rules.task_types.${type}`;
+      const label = this.$t(key);
+      return label === key ? type : label;
+    },
     fieldErr(name) {
       return this.getFieldError(name)?.msg || "";
     },
