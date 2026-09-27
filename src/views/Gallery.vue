@@ -162,7 +162,7 @@
             @dragleave="isDraggingOver = false"
             @drop.prevent="onDrop"
           >
-            <FontAwesomeIcon icon="upload" class="t-muted fs-500" />
+            <FontAwesomeIcon :icon="$icons.upload" class="t-muted fs-500" />
             <span class="t-muted fs-200">{{ $t('gallery.drop_files_here') }}</span>
             <span class="t-muted fs-200">{{ $t('gallery.or_click_to_browse') }}</span>
           </div>
@@ -217,13 +217,9 @@
               </div>
               <BasicButton
                 v-if="filePreview"
+                variant="primary"
+                class="jc-ct mt-5"
                 @click="upload_File({})"
-                class="rounded jc-ct mt-5"
-                :class="[
-                  filePreview === null
-                    ? 't-muted b-default bg-raised'
-                    : 't-on-accent-fill b-accent bg-accent-fill',
-                ]"
               >
                 {{ $t('gallery.upload') }}
               </BasicButton>
@@ -278,15 +274,15 @@
             </button>
           </MobileFilterPanel>
           <div class="gallery-selects flex gap-2 fs-0">
-            <Dropdown
+            <BasicSelect
               :placeholder="$t('common.sort_by')"
-              class="bg-base rounded b-default t-body js-e shadow-down"
-              :values="[
+              class="js-e"
+              :options="[
                 { label: $t('common.oldest_first'), value: 'created_at' },
                 { label: $t('common.newest_first'), value: '-created_at' },
               ]"
-              :selected="[sort_by]"
-              @onSelect="
+              :model-value="sort_by"
+              @update:model-value="
                 ($event) => {
                   gallery = null;
                   gallery_pagination = null;
@@ -296,15 +292,15 @@
                 }
               "
             />
-            <Dropdown
-              class="bg-base rounded b-default t-body js-e shadow-down"
-              :values="[
+            <BasicSelect
+              class="js-e"
+              :options="[
                 { label: 18, value: 18 },
                 { label: 36, value: 36 },
                 { label: 54, value: 54 },
               ]"
-              :selected="[limit]"
-              @onSelect="
+              :model-value="limit"
+              @update:model-value="
                 ($event) => {
                   gallery = null;
                   gallery_pagination = null;
