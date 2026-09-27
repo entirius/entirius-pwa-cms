@@ -176,7 +176,9 @@ when the seed has no such row. Take and check baselines on a fresh `make seed` w
 refreshes before the `expiryDate` it set at login, which the frozen clock `2026-09-26T10:00:00+02:00` never reaches), theme, language `PL`
 and sidebar pinned through `localStorage` on every page load (the profile GET is rewritten too, so the shared profile never
 leaks in at login), transitions, animations and the caret off, notification and config-health polls answered with
-fixed bodies. A screen is captured only once its data has rendered: after `networkidle` `openScreen` waits until
+fixed bodies. A screen is captured only once its data has rendered: after `networkidle` — and after 500 ms with no request
+in flight, counted per page, because `networkidle` resolves at once after an in-app navigation while the new route still
+loads its data and its async boot chunks — `openScreen` waits until
 no loader is visible (`.loader`, `.loader-element`, `.skeleton`, `[aria-busy="true"]`, an element whose own text
 starts with "Ładowanie"/"Loading" and ends in an ellipsis — "Ładowanie…" next to a spinner counts, a permanent
 "Ładowanie palet" does not; so every loading message ends in an ellipsis, `docs/ui-rules.md` § Copy) and, when the row has a `readySelector`, until that selector is visible — 10 s, then

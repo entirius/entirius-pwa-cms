@@ -45,8 +45,32 @@ class InfraError extends Error {
 
 let auth = { state: null, at: 0 };
 
+// `networkidle` fires once per document: after an in-app navigation (a row click) it resolves at once, while the new
+// route still fetches its data and the async boot chunks (FormField, EmptyState, Pagination…) it renders. So the
+// requests in flight are counted per page, and idle also waits until none has been open for QUIET_MS.
+const QUIET_MS = 500;
+const inflight = new WeakMap();
+
+function track(page) {
+  if (!inflight.has(page)) {
+    const pending = new Set();
+    page.on("request", (request) => pending.add(request));
+    page.on("requestfinished", (request) => pending.delete(request));
+    page.on("requestfailed", (request) => pending.delete(request));
+    inflight.set(page, pending);
+  }
+  return inflight.get(page);
+}
+
 async function idle(page, timeout = 15000) {
+  const pending = track(page);
   await page.waitForLoadState("networkidle", { timeout }).catch(() => {});
+  const deadline = Date.now() + timeout;
+  let quietSince = Date.now();
+  while (Date.now() - quietSince < QUIET_MS && Date.now() < deadline) {
+    if (pending.size) quietSince = Date.now();
+    await page.waitForTimeout(50);
+  }
 }
 
 const json = (body) => ({
@@ -246,6 +270,7 @@ const STATES = {
 
 // Returns a skip reason for rows whose data the seed may not hold (`needsData`), else null.
 async function openScreen(page, screen) {
+  track(page);
   await page.clock.setFixedTime(FREEZE);
   await page.goto(screen.route).catch((err) => {
     throw new InfraError(`${screen.route} did not load: ${err.message.split("\n")[0]}`);
