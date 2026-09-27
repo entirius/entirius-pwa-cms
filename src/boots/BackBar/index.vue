@@ -1,10 +1,10 @@
 <template>
   <button
     class="back-bar pointer flex ai-ct gap-2"
-    aria-label="Back"
+    :aria-label="label || $t('common.back')"
     @click="$emit('back')"
   >
-    <FontAwesomeIcon icon="backward" class="back-bar__icon" />
+    <FontAwesomeIcon icon="arrow-left" class="back-bar__icon" />
     <span v-if="label" class="back-bar__label">{{ label }}</span>
   </button>
 </template>

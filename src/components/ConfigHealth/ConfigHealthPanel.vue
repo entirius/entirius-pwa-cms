@@ -10,13 +10,14 @@
       <div class="cfg-panel__head">
         <span class="cfg-panel__grip" aria-hidden="true"></span>
         <p class="cfg-panel__title">{{ $t("config_health.title") }}</p>
-        <button
-          class="cfg-panel__close"
-          :aria-label="$t('config_health.close')"
+        <BasicButton
+          custom
+          :label="$t('config_health.close')"
+          class="btn-ghost"
           @click="emit('close')"
         >
-          <FontAwesomeIcon icon="xmark" />
-        </button>
+          <template #custom><FontAwesomeIcon icon="xmark" /></template>
+        </BasicButton>
       </div>
 
       <p
@@ -74,14 +75,13 @@
 
       <div class="cfg-panel__foot">
         <span class="cfg-panel__age">{{ checkedAgo }}</span>
-        <button
-          class="cfg-panel__again"
-          :disabled="store.checking"
+        <BasicButton
+          :text="$t('config_health.check_again')"
+          class="btn-secondary"
+          :isDisabled="store.checking"
           data-testid="config-health-recheck"
           @click="store.recheck()"
-        >
-          {{ $t("config_health.check_again") }}
-        </button>
+        />
       </div>
     </div>
   </div>
@@ -167,15 +167,6 @@ onBeforeUnmount(() => document.removeEventListener("keydown", onKey));
   margin: 0;
   font-weight: 600;
 }
-.cfg-panel__close {
-  width: 44px;
-  height: 44px;
-  border: none;
-  border-radius: var(--radius-lg);
-  background: none;
-  color: var(--text-secondary);
-  cursor: pointer;
-}
 .cfg-panel__ok {
   margin: 0;
   padding: var(--space-4);
@@ -241,19 +232,6 @@ onBeforeUnmount(() => document.removeEventListener("keydown", onKey));
 .cfg-panel__age {
   font-size: var(--fs-100);
   color: var(--text-muted);
-}
-.cfg-panel__again {
-  min-height: 44px;
-  padding: 0 var(--space-3);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  background: none;
-  color: var(--text-body);
-  cursor: pointer;
-}
-.cfg-panel__again:disabled {
-  opacity: 0.5;
-  cursor: wait;
 }
 @media (min-width: 1024px) {
   .cfg-sheet__backdrop {

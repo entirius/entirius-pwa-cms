@@ -70,7 +70,8 @@
                 type="button"
                 class="data-table__expand-toggle"
                 :aria-expanded="isExpanded(row)"
-                aria-label="Toggle row details"
+                :aria-label="$t('common.toggle_details')"
+                :title="$t('common.toggle_details')"
                 @click.stop="toggleExpand(row)"
               >
                 <FontAwesomeIcon
@@ -421,14 +422,17 @@ function handleRowClick(row, index, event) {
 .data-table__header-cell--expand,
 .data-table__cell--expand {
   justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .data-table__expand-toggle {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: var(--space-6);
+  height: var(--space-6);
   border: none;
   border-radius: var(--radius-base);
   background: transparent;

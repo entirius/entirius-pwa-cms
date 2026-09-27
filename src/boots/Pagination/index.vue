@@ -13,7 +13,7 @@
         changePage({ num: pagination.page - 1, isDisabled: false }, 'prev')
       "
     >
-      <i class="icon-arrow-right-2 rotate-180"></i>
+      <FontAwesomeIcon icon="chevron-left" />
     </button>
 
     <template
@@ -48,7 +48,7 @@
         changePage({ num: pagination.page + 1, isDisabled: false }, 'next')
       "
     >
-      <i class="icon-arrow-right-2"></i>
+      <FontAwesomeIcon icon="chevron-right" />
     </button>
   </nav>
 </template>
@@ -132,7 +132,7 @@ export default {
     border-radius: var(--radius-base);
     background: transparent;
     color: var(--text-body);
-    font-size: inherit;
+    font-size: var(--fs-200);
     font-family: inherit;
     display: inline-flex;
     align-items: center;
