@@ -295,7 +295,7 @@
 
         <!-- Translations section (edit mode only, hidden for single-language setups) -->
         <div v-if="isEdit && showTranslations" class="detail-section mb-10">
-          <div class="flex ai-ct jc-sb mb-8">
+          <div class="section-head mb-8">
             <h2 class="fs-500 fw-600">{{ $t("dp.translations") }}</h2>
             <div
               v-if="availableLanguageCodes.length"

@@ -105,7 +105,7 @@
 
         <!-- Items in this group — drag to reorder, add existing -->
         <div v-if="isEdit" class="detail-section mb-10">
-          <div class="flex ai-ct jc-sb mb-8">
+          <div class="section-head mb-8">
             <h2 class="fs-500 fw-600">{{ $t("faq.items_in_group") }}</h2>
             <div class="flex ai-ct gap-5">
               <Dropdown
