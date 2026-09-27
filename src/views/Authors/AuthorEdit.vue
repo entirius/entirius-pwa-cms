@@ -187,6 +187,7 @@
 
     <!-- Delete confirmation -->
     <Confirmation-modal
+      destructive
       :visible="showDeleteConfirm"
       @accept="deleteAuthor"
       @reject="showDeleteConfirm = false"

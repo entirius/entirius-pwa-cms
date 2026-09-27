@@ -15,6 +15,7 @@
               class="btn-secondary"
               @click="reject"
             />
+            <!-- `modal-btn--delete` is the e2e hook of the confirm button (every confirm, not only deletes), not a style. -->
             <BasicButton
               :text="$t('common.accept')"
               :class="destructive ? 'btn-danger-fill' : 'btn-primary'"
@@ -36,10 +37,11 @@ export default {
       type: Boolean,
       default: false,
     },
-    // The default confirm is a delete/remove: filled danger (C6). A non-destructive confirm passes false.
+    // Opt-in: a delete, remove or flush passes `destructive` and gets the filled danger confirm (C6); every other
+    // confirm is primary.
     destructive: {
       type: Boolean,
-      default: true,
+      default: false,
     },
   },
   methods: {

@@ -90,6 +90,7 @@
     </div>
 
     <ConfirmationModal
+      destructive
       :visible="confirmVisible"
       @accept="onDeleteConfirm"
       @reject="confirmVisible = false"

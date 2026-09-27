@@ -151,6 +151,7 @@
 
         <!-- Bulk delete confirmation modal -->
         <Confirmation-modal
+          destructive
           :visible="pendingBulkAction === 'delete'"
           @accept="onBulkDeleteAccept"
           @reject="pendingBulkAction = null"

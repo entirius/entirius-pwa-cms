@@ -4,6 +4,7 @@
     :id="`container-${componentId}`"
   >
     <ConfirmationModal
+      destructive
       :visible="confirmation_modal"
       @accept="
         () => {
@@ -28,6 +29,7 @@
       </template>
     </ConfirmationModal>
     <ConfirmationModal
+      destructive
       :visible="tile_confirmation_modal"
       @accept="
         () => {

@@ -150,6 +150,7 @@
 
     <!-- Delete confirmation -->
     <Confirmation-modal
+      destructive
       :visible="!!deletingOption"
       @accept="deleteOption"
       @reject="deletingOption = null"

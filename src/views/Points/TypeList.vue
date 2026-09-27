@@ -133,6 +133,7 @@
     </div>
 
     <Confirmation-modal
+      destructive
       :visible="showDeleteConfirm"
       @accept="deleteType"
       @reject="showDeleteConfirm = false"

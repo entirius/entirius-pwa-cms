@@ -60,7 +60,6 @@
 
     <Confirmation-modal
       :visible="triggerVisible"
-      :destructive="false"
       @accept="executeTrigger"
       @reject="triggerVisible = false"
     >

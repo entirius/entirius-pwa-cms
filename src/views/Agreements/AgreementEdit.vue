@@ -447,6 +447,7 @@
     </div>
 
     <Confirmation-modal
+      destructive
       :visible="showDeleteConfirm"
       @accept="deleteDefinition"
       @reject="showDeleteConfirm = false"
@@ -461,7 +462,6 @@
 
     <Confirmation-modal
       :visible="showPublishedEditConfirm"
-      :destructive="false"
       @accept="confirmEditPublished"
       @reject="showPublishedEditConfirm = false"
     >

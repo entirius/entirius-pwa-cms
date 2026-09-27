@@ -358,6 +358,7 @@
 
         <!-- Delete confirmation -->
         <Confirmation-modal
+          destructive
           :visible="showDeleteConfirm"
           @accept="deleteSet"
           @reject="showDeleteConfirm = false"

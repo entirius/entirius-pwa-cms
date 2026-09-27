@@ -276,6 +276,7 @@
     </TranslationsDrawer>
 
     <Confirmation-modal
+      destructive
       :visible="showDeleteConfirm"
       @accept="deleteCategory"
       @reject="showDeleteConfirm = false"

@@ -301,7 +301,6 @@
 
     <Confirmation-modal
       :visible="repushVisible"
-      :destructive="false"
       @accept="executeForceRepush"
       @reject="repushVisible = false"
     >

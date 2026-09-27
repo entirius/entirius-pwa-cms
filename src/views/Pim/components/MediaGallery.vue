@@ -795,6 +795,7 @@ watch(
     />
 
     <ConfirmationModal
+      destructive
       :visible="!!confirmingDeleteItem"
       @accept="
         deleteItem(confirmingDeleteItem);

@@ -256,6 +256,7 @@
     <FloatingActions :actions="fabActions" />
 
     <Confirmation-modal
+      destructive
       :visible="!!pendingFlushSku"
       @accept="doFlushSpecial"
       @reject="pendingFlushSku = null"
@@ -265,6 +266,7 @@
     </Confirmation-modal>
 
     <Confirmation-modal
+      destructive
       :visible="!!pendingDeleteSku"
       @accept="doDeletePrices"
       @reject="pendingDeleteSku = null"

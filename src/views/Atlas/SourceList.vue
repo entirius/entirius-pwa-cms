@@ -222,6 +222,7 @@
 
     <!-- Delete confirmation modal -->
     <Confirmation-modal
+      destructive
       :visible="deleteVisible"
       @accept="submitDelete"
       @reject="closeDelete"

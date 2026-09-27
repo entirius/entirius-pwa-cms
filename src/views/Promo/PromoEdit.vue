@@ -624,6 +624,7 @@
 
     <!-- Delete rule confirmation -->
     <Confirmation-modal
+      destructive
       :visible="showDeleteConfirm"
       @accept="deleteRule"
       @reject="showDeleteConfirm = false"
@@ -638,6 +639,7 @@
 
     <!-- Delete code confirmation -->
     <Confirmation-modal
+      destructive
       :visible="showDeleteCodeConfirm"
       @accept="deleteCode"
       @reject="showDeleteCodeConfirm = false"
@@ -652,6 +654,7 @@
 
     <!-- Delete filter confirmation -->
     <Confirmation-modal
+      destructive
       :visible="!!pendingDeleteFilter"
       @accept="executeDeleteFilter"
       @reject="pendingDeleteFilter = null"

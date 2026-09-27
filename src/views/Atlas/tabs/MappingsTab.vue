@@ -269,6 +269,7 @@
     </SideDrawer>
 
     <Confirmation-modal
+      destructive
       :visible="deleteVisible"
       @accept="executeDeleteProfile"
       @reject="deleteVisible = false"

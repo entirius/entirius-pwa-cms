@@ -190,6 +190,7 @@
 
       <!-- Delete confirmation -->
       <Confirmation-modal
+        destructive
         :visible="showDeleteConfirm"
         @accept="deleteFeature"
         @reject="showDeleteConfirm = false"

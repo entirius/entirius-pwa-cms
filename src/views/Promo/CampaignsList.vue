@@ -113,6 +113,7 @@
     </SideDrawer>
 
     <Confirmation-modal
+      destructive
       :visible="showDelete"
       @accept="doDelete"
       @reject="showDelete = false"

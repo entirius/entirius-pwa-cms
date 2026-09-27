@@ -95,6 +95,7 @@
     </div>
 
     <Confirmation-modal
+      destructive
       :visible="showDeleteConfirm"
       @accept="deleteChannel"
       @reject="showDeleteConfirm = false"

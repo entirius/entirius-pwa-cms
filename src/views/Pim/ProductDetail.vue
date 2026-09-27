@@ -695,6 +695,7 @@
     </div>
 
     <Confirmation-modal
+      destructive
       :visible="showDeleteConfirm"
       @accept="deleteProduct"
       @reject="showDeleteConfirm = false"

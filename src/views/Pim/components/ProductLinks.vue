@@ -170,6 +170,7 @@
     </SideDrawer>
 
     <Confirmation-modal
+      destructive
       :visible="deleteVisible"
       @accept="executeDelete"
       @reject="deleteVisible = false"

@@ -155,6 +155,7 @@
       </div>
     </div>
     <ConfirmationModal
+      destructive
       :visible="confirmation_modal"
       @accept="
         () => {

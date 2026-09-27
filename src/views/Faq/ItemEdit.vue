@@ -232,6 +232,7 @@
     </TranslationsDrawer>
 
     <Confirmation-modal
+      destructive
       :visible="showDeleteConfirm"
       @accept="deleteItem"
       @reject="showDeleteConfirm = false"

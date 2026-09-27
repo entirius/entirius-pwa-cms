@@ -159,6 +159,7 @@
     </div>
 
     <Confirmation-modal
+      destructive
       :visible="showDeleteConfirm"
       @accept="deleteGroup"
       @reject="showDeleteConfirm = false"
