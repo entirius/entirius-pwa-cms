@@ -57,6 +57,9 @@ export default function registerBootComponents(app) {
   app.component("MediaTile", defineAsyncComponent(() => import("./MediaTile/index.vue")));
 
   // P3 page frame (plan 14)
+  app.component("PageLayout", defineAsyncComponent(() => import("./PageLayout/index.vue")));
+  app.component("PageHeader", defineAsyncComponent(() => import("./PageHeader/index.vue")));
+  app.component("Breadcrumbs", defineAsyncComponent(() => import("./Breadcrumbs/index.vue")));
 
   // P3 selects (plan 15)
 
