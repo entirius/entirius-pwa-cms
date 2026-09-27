@@ -128,8 +128,8 @@
               class="mv-2"
               :model-value="group[key]"
               @update:model-value="
-                () => {
-                  group[key] = !group[key];
+                (on) => {
+                  group[key] = on;
                   force_refresh += force_refresh;
                 }
               "

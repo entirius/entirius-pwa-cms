@@ -250,8 +250,8 @@ export default {
       this.currentPage = 1
       this.fetchRows()
     },
-    toggleCompetitorOnly() {
-      this.competitorOnly = !this.competitorOnly
+    toggleCompetitorOnly(on) {
+      this.competitorOnly = on
       this.currentPage = 1
       this.fetchRows()
     },
