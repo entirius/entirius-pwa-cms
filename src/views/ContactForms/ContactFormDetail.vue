@@ -8,6 +8,7 @@
           variant="ghost"
           size="sm"
           icon="back"
+          class="cf-back"
           @click="$router.push('/forms/list')"
         >
           {{ $t("cf.back_to_list") }}
@@ -19,12 +20,12 @@
       <template v-else-if="submission">
         <div class="flex ai-ct jc-sb mb-5">
           <h1 class="page-title">{{ $t("cf.submission_detail") }}</h1>
-          <Dropdown
-            :values="statusOptions"
-            :selected="[submission.status]"
+          <BasicSelect
+            :options="statusOptions"
+            :model-value="submission.status"
             :placeholder="$t('cf.status')"
             class="cf-status-dropdown"
-            @onSelect="updateStatus"
+            @update:model-value="updateStatus"
           />
         </div>
         <div class="mb-10">
@@ -281,6 +282,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/scss/utils/touch-target";
+
+// The 24 px back control gets the 40 × 40 hit area of every other back control on a phone.
+.cf-back {
+  @include touch-target;
+}
+
 .cf-header {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

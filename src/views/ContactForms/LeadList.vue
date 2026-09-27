@@ -15,12 +15,12 @@
           class="cf-list__search"
           @input="debouncedFetch(searchAndFetch)"
         />
-        <Dropdown
-          :values="channelOptions"
-          :selected="[channelFilter]"
+        <BasicSelect
+          :options="channelOptions"
+          :model-value="channelFilter"
           :placeholder="$t('cf.channel')"
           class="cf-list__filter"
-          @onSelect="onChannelFilter"
+          @update:model-value="onChannelFilter"
         />
       </div>
 
