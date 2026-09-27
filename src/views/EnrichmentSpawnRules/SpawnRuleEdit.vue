@@ -1,7 +1,7 @@
 <template>
   <div class="spawn-rule-edit p-12 fs-300 t-body h-100 ov-h">
     <div class="bg-base b-subtle rounded flex-1 ovy-auto p-12">
-      <div class="flex ai-ct gap-5 mb-10">
+      <div class="page-title-row flex ai-ct gap-5 mb-10">
         <BasicButton
           custom
           :label="$t('common.back')"

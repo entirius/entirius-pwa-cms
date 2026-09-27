@@ -50,7 +50,7 @@
       </div>
 
       <!-- Status Row -->
-      <div class="flex ai-ct gap-5 mb-10">
+      <div class="page-title-row flex ai-ct gap-5 mb-10">
         <StatusBadge
           :label="customer.is_active ? $t('accounts.active') : $t('accounts.inactive')"
           :variant="customer.is_active ? 'positive' : 'negative'"

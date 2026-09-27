@@ -3,7 +3,7 @@
     <div
       class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
     >
-      <div class="flex ai-ct gap-5 mb-10">
+      <div class="page-title-row flex ai-ct gap-5 mb-10">
         <BasicButton
           custom
           :label="$t('common.back')"
