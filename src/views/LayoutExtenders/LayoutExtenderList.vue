@@ -2,13 +2,13 @@
   <div class="page-pad fs-300 t-body h-100 ov-h">
     <Teleport to="#layout-extender-toolbar-left" defer>
       <span class="fs-300 fw-600 t-body">{{ $t("layout_extender.list_title") }}</span>
-      <Dropdown
+      <BasicSelect
         v-if="channelOptions.length"
-        :values="channelOptions"
-        :selected="selectedChannel ? [selectedChannel] : []"
+        :options="channelOptions"
+        :model-value="selectedChannel"
         :placeholder="$t('layout_extender.all_channels')"
         class="le-list__channel-dropdown"
-        @onSelect="onChannelFilter"
+        @update:model-value="onChannelFilter"
       />
     </Teleport>
 
@@ -65,76 +65,64 @@
 
         <template #cell-actions="{ row }">
           <div class="le-list__actions">
-            <BasicButton custom size="sm" :label="$t('common.edit')" class="btn-ghost" @click="onEdit(row)">
-              <template #custom><FontAwesomeIcon icon="pen" /></template>
-            </BasicButton>
-            <BasicButton custom size="sm" :label="$t('common.preview')" class="btn-ghost" @click="onPreview(row)">
-              <template #custom><FontAwesomeIcon icon="eye" /></template>
-            </BasicButton>
-            <BasicButton custom size="sm" :label="$t('common.copy')" class="btn-ghost" @click="onCopy(row)">
-              <template #custom><FontAwesomeIcon icon="copy" /></template>
-            </BasicButton>
-            <BasicButton
+            <IconButton icon="edit" :label="$t('common.edit')" size="sm" @click="onEdit(row)" />
+            <IconButton icon="preview" :label="$t('common.preview')" size="sm" @click="onPreview(row)" />
+            <IconButton icon="duplicate" :label="$t('common.copy')" size="sm" @click="onCopy(row)" />
+            <IconButton
               v-if="!row.is_system"
-              custom
-              size="sm"
+              icon="delete"
               :label="$t('common.delete')"
-              class="btn-danger"
+              variant="danger"
+              size="sm"
               @click="onDeleteClick(row)"
-            >
-              <template #custom><FontAwesomeIcon icon="trash-can" /></template>
-            </BasicButton>
+            />
           </div>
         </template>
       </DataTable>
     </div>
 
-    <ConfirmationModal
-      destructive
-      :visible="confirmVisible"
-      @accept="onDeleteConfirm"
-      @reject="confirmVisible = false"
+    <ConfirmDialog
+      tone="danger"
+      :open="confirmVisible"
+      @confirm="onDeleteConfirm"
+      @cancel="confirmVisible = false"
+      :title="$t('layout_extender.delete_confirm')"
     >
-      <template #header>
-        <h2>{{ $t("layout_extender.delete_confirm") }}</h2>
-      </template>
-    </ConfirmationModal>
+    </ConfirmDialog>
 
-    <ConfirmationModal
-      :visible="copyVisible"
-      @accept="onCopyConfirm"
-      @reject="closeCopy"
+    <BasicModal
+      :open="copyVisible"
+      size="sm"
+      :title="$t('layout_extender.copy_title')"
+      @update:open="(open) => open || closeCopy()"
     >
-      <template #header>
-        <h2>{{ $t("layout_extender.copy_title") }}</h2>
-      </template>
-      <template #description>
-        <div class="le-copy">
-          <label class="le-copy__label field-label">{{ $t("layout_extender.copy_target_channel") }}</label>
-          <Dropdown
-            :values="copyChannelOptions"
-            :selected="copyTargetChannel ? [copyTargetChannel] : []"
-            :placeholder="$t('layout_extender.copy_select_channel')"
-            @onSelect="onCopyTargetSelect"
-          />
-          <label class="le-copy__label field-label">{{ $t("layout_extender.copy_name") }}</label>
-          <BasicInput v-model="copyName" />
-        </div>
-      </template>
+      <div class="le-copy">
+        <label class="le-copy__label field-label">{{ $t("layout_extender.copy_target_channel") }}</label>
+        <BasicSelect
+          :options="copyChannelOptions"
+          :model-value="copyTargetChannel"
+          :placeholder="$t('layout_extender.copy_select_channel')"
+          @update:model-value="onCopyTargetSelect"
+        />
+        <label class="le-copy__label field-label">{{ $t("layout_extender.copy_name") }}</label>
+        <BasicInput v-model="copyName" />
+      </div>
       <template #footer>
         <BasicButton
-          :text="$t('common.cancel')"
-          class="btn-secondary"
+          variant="secondary"
           @click="closeCopy"
-        />
+        >
+          {{ $t('common.cancel') }}
+        </BasicButton>
         <BasicButton
-          :text="$t('layout_extender.copy_action')"
-          class="btn-primary"
+          variant="primary"
           :disabled="!copyTargetChannel || copying"
           @click="onCopyConfirm"
-        />
+        >
+          {{ $t('layout_extender.copy_action') }}
+        </BasicButton>
       </template>
-    </ConfirmationModal>
+    </BasicModal>
   </div>
 </template>
 
@@ -143,12 +131,10 @@ import { GET_Content, GET_ContentTypes, DELETE_Content, POST_Content } from "@/a
 import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { useContentDBChannelStore } from "@/stores/contentDBChannel";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import { extractApiMessage } from "@/composables/useFormErrors";
 
 export default {
   name: "LayoutExtenderList",
-  components: { ConfirmationModal },
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();

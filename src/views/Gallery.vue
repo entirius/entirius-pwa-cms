@@ -48,22 +48,23 @@
               class="tag-chip tag-chip--danger pointer flex ai-ct gap-1"
               @click="deleteSelectedTags()"
             >
-              <FontAwesomeIcon icon="trash-can" />
+              <FontAwesomeIcon :icon="$icons.delete" />
               {{ $t("gallery.remove_tag") }}
             </button>
           </div>
         </div>
         <div class="flex ai-ct gap-2" style="max-width: 400px">
-          <BasicInput
-            class="bg-base lh-base-elem fg-1 tag-input"
-            :label="$t('gallery.add_new_tag')"
-            v-model="new_tag_input"
-          />
+          <FormField :label="$t('gallery.add_new_tag')">
+            <BasicInput
+              class="bg-base lh-base-elem fg-1 tag-input"
+              v-model="new_tag_input"
+            />
+          </FormField>
           <button
             class="tag-add-btn bg-accent-fill t-on-accent-fill rounded pointer"
             @click="addNewTag()"
           >
-            <FontAwesomeIcon icon="plus" />
+            <FontAwesomeIcon :icon="$icons.add" />
           </button>
         </div>
       </div>
@@ -101,7 +102,7 @@
             </p>
           </div>
           <div v-else class="flex ai-ct gap-2 p-5 rounded b-default bg-raised t-muted fs-200">
-            <FontAwesomeIcon icon="circle-info" />
+            <FontAwesomeIcon :icon="$icons.info" />
             <span>{{ $t("gallery.no_tags_yet") }}</span>
             <button
               class="t-accent pointer"
@@ -111,17 +112,18 @@
           </div>
         </div>
         <div class="flex ai-ct gap-2">
-          <BasicInput
-            class="bg-base lh-base-elem fg-1 tag-input"
-            :label="$t('gallery.quick_add_tag')"
-            v-model="new_tag_input"
-            @keydown.enter.native="quickAddTag"
-          />
+          <FormField :label="$t('gallery.quick_add_tag')">
+            <BasicInput
+              class="bg-base lh-base-elem fg-1 tag-input"
+              v-model="new_tag_input"
+              @keydown.enter.native="quickAddTag"
+            />
+          </FormField>
           <button
             class="tag-add-btn bg-accent-fill t-on-accent-fill rounded pointer"
             @click="quickAddTag"
           >
-            <FontAwesomeIcon icon="plus" />
+            <FontAwesomeIcon :icon="$icons.add" />
           </button>
         </div>
         <div class="flex gap-2">
@@ -132,7 +134,7 @@
               mode = 'read';
             "
           >
-            <FontAwesomeIcon icon="floppy-disk" />
+            <FontAwesomeIcon :icon="$icons.saveDraft" />
             {{ $t("common.save") }}
           </button>
           <button
@@ -160,7 +162,7 @@
             @dragleave="isDraggingOver = false"
             @drop.prevent="onDrop"
           >
-            <FontAwesomeIcon icon="upload" class="t-muted fs-500" />
+            <FontAwesomeIcon :icon="$icons.upload" class="t-muted fs-500" />
             <span class="t-muted fs-200">{{ $t('gallery.drop_files_here') }}</span>
             <span class="t-muted fs-200">{{ $t('gallery.or_click_to_browse') }}</span>
           </div>
@@ -184,11 +186,12 @@
           <div class="flex-column">
             <div>
               <p class="fs-200 t-info">Optionals</p>
-              <BasicInput
-                class="bg-base rounded t-secondary mt-8 lh-base-elem"
-                :label="'Picture alt.'"
-                v-model="meta.alt"
-              />
+              <FormField :label="'Picture alt.'">
+                <BasicInput
+                  class="bg-base rounded t-secondary mt-8 lh-base-elem"
+                  v-model="meta.alt"
+                />
+              </FormField>
               <p class="fs-200 t-secondary mt-5 mb-2">
                 {{ $t("gallery.select_tags") }}
               </p>
@@ -214,15 +217,12 @@
               </div>
               <BasicButton
                 v-if="filePreview"
-                :text="$t('gallery.upload')"
+                variant="primary"
+                class="jc-ct mt-5"
                 @click="upload_File({})"
-                class="rounded jc-ct mt-5"
-                :class="[
-                  filePreview === null
-                    ? 't-muted b-default bg-raised'
-                    : 't-on-accent-fill b-accent bg-accent-fill',
-                ]"
-              />
+              >
+                {{ $t('gallery.upload') }}
+              </BasicButton>
               <div class="mt-5"></div>
             </div>
           </div>
@@ -270,19 +270,19 @@
                 }
               "
             >
-              <FontAwesomeIcon icon="xmark" />
+              <FontAwesomeIcon :icon="$icons.close" />
             </button>
           </MobileFilterPanel>
           <div class="gallery-selects flex gap-2 fs-0">
-            <Dropdown
+            <BasicSelect
               :placeholder="$t('common.sort_by')"
-              class="bg-base rounded b-default t-body js-e shadow-down"
-              :values="[
+              class="js-e"
+              :options="[
                 { label: $t('common.oldest_first'), value: 'created_at' },
                 { label: $t('common.newest_first'), value: '-created_at' },
               ]"
-              :selected="[sort_by]"
-              @onSelect="
+              :model-value="sort_by"
+              @update:model-value="
                 ($event) => {
                   gallery = null;
                   gallery_pagination = null;
@@ -292,15 +292,15 @@
                 }
               "
             />
-            <Dropdown
-              class="bg-base rounded b-default t-body js-e shadow-down"
-              :values="[
+            <BasicSelect
+              class="js-e"
+              :options="[
                 { label: 18, value: 18 },
                 { label: 36, value: 36 },
                 { label: 54, value: 54 },
               ]"
-              :selected="[limit]"
-              @onSelect="
+              :model-value="limit"
+              @update:model-value="
                 ($event) => {
                   gallery = null;
                   gallery_pagination = null;
@@ -330,7 +330,7 @@
             @click="selected = selected === image.uid ? null : image.uid"
           >
             <div class="ov-h h-100 w-100 rounded">
-              <HoverMe
+              <BasicTooltip
                 :text="
                   image.meta && image.meta.fileName
                     ? image.meta.fileName
@@ -345,7 +345,7 @@
                   :ommit_media_query="true"
                   :key="image.uid"
                 />
-              </HoverMe>
+              </BasicTooltip>
               <div v-if="image.tags && image.tags.length" class="gallery-tags">
                 <span
                   v-for="tag in image.tags"
@@ -368,7 +368,7 @@
                     })
                   "
                 >
-                  <FontAwesomeIcon icon="trash-can" />
+                  <FontAwesomeIcon :icon="$icons.delete" />
                 </button>
                 <button
                   class="gallery-actions__btn t-secondary pointer"
@@ -378,7 +378,7 @@
                     get_image_tags();
                   "
                 >
-                  <FontAwesomeIcon icon="tag" />
+                  <FontAwesomeIcon :icon="$icons.tag" />
                 </button>
               </div>
             </div>

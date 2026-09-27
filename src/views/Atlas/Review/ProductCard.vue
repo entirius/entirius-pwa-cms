@@ -8,7 +8,7 @@
         class="product-card__image"
       />
       <div v-else class="product-card__image product-card__image--empty">
-        <FontAwesomeIcon icon="image" />
+        <FontAwesomeIcon :icon="$icons.image" />
       </div>
     </div>
     <h2 class="fs-500 fw-600 mt-5" data-testid="product-card-name">
@@ -33,7 +33,7 @@
         data-testid="product-card-gallery-btn"
         @click="$emit('show-gallery')"
       >
-        <FontAwesomeIcon icon="image" />
+        <FontAwesomeIcon :icon="$icons.image" />
         {{ $t("atlas.review.show_gallery") }}
         <span class="t-muted">({{ imagesCount }})</span>
       </button>
@@ -45,7 +45,7 @@
         class="product-card__link"
         data-testid="product-card-supplier-url"
       >
-        <FontAwesomeIcon icon="link" />
+        <FontAwesomeIcon :icon="$icons.link" />
         {{ $t("atlas.review.view_at_supplier") }}
       </a>
       <button
@@ -53,7 +53,7 @@
         data-testid="product-card-raw-data-btn"
         @click="$emit('show-raw')"
       >
-        <FontAwesomeIcon icon="eye" />
+        <FontAwesomeIcon :icon="$icons.preview" />
         {{ $t("atlas.review.show_raw_data") }}
       </button>
     </div>

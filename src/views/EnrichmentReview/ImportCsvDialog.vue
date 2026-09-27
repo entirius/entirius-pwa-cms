@@ -13,7 +13,7 @@
           data-testid="enrichment-import-dialog"
         >
           <div class="import-modal__header b-subtle bb-100">
-            <FontAwesomeIcon icon="file-csv" class="t-accent" />
+            <FontAwesomeIcon :icon="$icons.importCsv" class="t-accent" />
             <h2 class="fs-400 fw-600 m-0">
               {{ $t("enrichment.import.title") }}
             </h2>
@@ -39,7 +39,7 @@
                   data-testid="enrichment-import-file"
                   @change="onPick"
                 />
-                <FontAwesomeIcon icon="file-csv" class="t-muted" />
+                <FontAwesomeIcon :icon="$icons.importCsv" class="t-muted" />
                 <span class="fs-200">{{ fileLabel }}</span>
               </label>
               <button
@@ -48,28 +48,26 @@
                 data-testid="enrichment-import-sample"
                 @click="downloadSample"
               >
-                <FontAwesomeIcon icon="download" />
+                <FontAwesomeIcon :icon="$icons.download" />
                 {{ $t("enrichment.import.download_sample") }}
               </button>
             </FormField>
 
             <FormField :label="$t('enrichment.import.channel')">
-              <Dropdown
-                :values="channelOptions"
-                :selected="channel ? [channel] : []"
+              <BasicSelect
+                :options="channelOptions"
+                v-model="channel"
                 :placeholder="$t('enrichment.import.channel')"
                 data-testid="enrichment-import-channel"
-                @onSelect="(v) => (channel = v)"
               />
             </FormField>
 
             <FormField :label="$t('enrichment.import.language')">
-              <Dropdown
-                :values="languageOptions"
-                :selected="language ? [language] : []"
+              <BasicSelect
+                :options="languageOptions"
+                v-model="language"
                 :placeholder="$t('enrichment.import.language')"
                 data-testid="enrichment-import-language"
-                @onSelect="(v) => (language = v)"
               />
             </FormField>
 

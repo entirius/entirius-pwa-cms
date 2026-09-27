@@ -56,12 +56,12 @@
         @keyup.enter="resetAndFetch"
         @blur="resetAndFetch"
       />
-      <Dropdown
-        :values="orderingOptions"
-        :selected="[filters.ordering]"
+      <BasicSelect
+        :options="orderingOptions"
+        :model-value="filters.ordering"
         class="products-filters__ordering"
         data-testid="products-filter-ordering"
-        @onSelect="(val) => onOrderingChange(val)"
+        @update:model-value="(val) => onOrderingChange(val)"
       />
       <button
         v-if="hasActiveFilters"
@@ -69,7 +69,7 @@
         data-testid="products-filter-clear"
         @click="clearFilters"
       >
-        <FontAwesomeIcon icon="xmark" />
+        <FontAwesomeIcon :icon="$icons.close" />
         {{ $t("atlas.products.filters.clear") }}
       </button>
     </div>
@@ -127,7 +127,7 @@
             :data-testid="`products-review-${row.id}`"
             @click="reviewProduct(row)"
           >
-            <FontAwesomeIcon icon="eye" />
+            <FontAwesomeIcon :icon="$icons.preview" />
           </button>
           <button
             v-if="canApprove(row)"
@@ -136,7 +136,7 @@
             :data-testid="`products-approve-${row.id}`"
             @click="quickApprove(row)"
           >
-            <FontAwesomeIcon icon="check" />
+            <FontAwesomeIcon :icon="$icons.check" />
           </button>
           <button
             v-if="canApprove(row)"
@@ -145,7 +145,7 @@
             :data-testid="`products-reject-${row.id}`"
             @click="quickReject(row)"
           >
-            <FontAwesomeIcon icon="xmark" />
+            <FontAwesomeIcon :icon="$icons.close" />
           </button>
           <button
             v-if="canPush(row)"
@@ -154,7 +154,7 @@
             :data-testid="`products-push-${row.id}`"
             @click="pushProduct(row)"
           >
-            <FontAwesomeIcon icon="upload" />
+            <FontAwesomeIcon :icon="$icons.publish" />
           </button>
           <button
             v-if="canForceRepush(row)"
@@ -163,7 +163,7 @@
             :data-testid="`products-force-repush-${row.id}`"
             @click="confirmForceRepush(row)"
           >
-            <FontAwesomeIcon icon="rotate" />
+            <FontAwesomeIcon :icon="$icons.refresh" />
           </button>
           <button
             class="row-action-btn bg-raised t-body"
@@ -171,7 +171,7 @@
             :data-testid="`products-raw-${row.id}`"
             @click="showRaw(row)"
           >
-            <FontAwesomeIcon icon="eye" />
+            <FontAwesomeIcon :icon="$icons.preview" />
           </button>
         </div>
       </template>
@@ -235,7 +235,7 @@
               data-testid="drawer-find-in-pim-toggle"
               @click="showFindInPim = !showFindInPim"
             >
-              <FontAwesomeIcon icon="magnifying-glass" />
+              <FontAwesomeIcon :icon="$icons.search" />
               {{ $t("lookup.source_detail.find_in_pim") }}
             </button>
             <FindInPimPanel
@@ -256,7 +256,7 @@
             :disabled="detailBusy"
             @click="detailAction('approve')"
           >
-            <FontAwesomeIcon icon="check" />
+            <FontAwesomeIcon :icon="$icons.check" />
             {{ $t("atlas.review.approve_button") }}
           </button>
           <button
@@ -265,7 +265,7 @@
             :disabled="detailBusy"
             @click="detailAction('skip')"
           >
-            <FontAwesomeIcon icon="rotate" />
+            <FontAwesomeIcon :icon="$icons.refresh" />
             {{ $t("atlas.review.skip_button") }}
           </button>
           <button
@@ -274,7 +274,7 @@
             :disabled="detailBusy"
             @click="detailAction('reject')"
           >
-            <FontAwesomeIcon icon="xmark" />
+            <FontAwesomeIcon :icon="$icons.close" />
             {{ $t("atlas.review.reject_button") }}
           </button>
           <button
@@ -283,7 +283,7 @@
             :disabled="detailBusy"
             @click="detailPush"
           >
-            <FontAwesomeIcon icon="upload" />
+            <FontAwesomeIcon :icon="$icons.publish" />
             {{ $t("atlas.products.push_button") }}
           </button>
           <button
@@ -292,22 +292,20 @@
             :disabled="detailBusy"
             @click="detailForceRepush"
           >
-            <FontAwesomeIcon icon="rotate" />
+            <FontAwesomeIcon :icon="$icons.refresh" />
             {{ $t("atlas.products.force_repush_button") }}
           </button>
         </div>
       </div>
     </SideDrawer>
 
-    <Confirmation-modal
-      :visible="repushVisible"
-      @accept="executeForceRepush"
-      @reject="repushVisible = false"
+    <ConfirmDialog
+      :open="repushVisible"
+      @confirm="executeForceRepush"
+      @cancel="repushVisible = false"
+      :title="$t('atlas.products.force_repush_title')"
     >
-      <template #header>
-        <h2>{{ $t("atlas.products.force_repush_title") }}</h2>
-      </template>
-      <template #description>
+      <template #default>
         <p>
           {{ $t("atlas.products.force_repush_body") }}
         </p>
@@ -328,7 +326,7 @@
           </div>
         </div>
       </template>
-    </Confirmation-modal>
+    </ConfirmDialog>
   </div>
 </template>
 
@@ -341,7 +339,6 @@ import RawDataPanel from "../Review/RawDataPanel.vue";
 import SupplierProductTimelineSection from "../components/SupplierProductTimelineSection.vue";
 import SupplierProductMappingSection from "../components/SupplierProductMappingSection.vue";
 import FindInPimPanel from "../components/FindInPimPanel.vue";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import { useNotifyStore } from "@/stores/notify";
 import { useMuninStore } from "@/stores/munin";
 import { useAtlasBulkActions } from "@/composables/useAtlasBulkActions";
@@ -382,7 +379,6 @@ export default {
     SupplierProductTimelineSection,
     SupplierProductMappingSection,
     FindInPimPanel,
-    ConfirmationModal,
   },
   props: {
     supplier: { type: Object, default: null },
@@ -557,13 +553,13 @@ export default {
         actions.push({
           key: "force_repush",
           labelKey: "atlas.products.bulk.force_repush_selected",
-          buttonClass: "bg-warning-subtle t-warning",
+          variant: "secondary",
         });
       }
       actions.push({
         key: "acknowledge",
         labelKey: "atlas.products.bulk.acknowledge_selected",
-        buttonClass: "bg-positive-subtle t-positive",
+        variant: "primary",
       });
       return actions;
     },

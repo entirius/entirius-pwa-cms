@@ -8,6 +8,7 @@
           variant="ghost"
           size="sm"
           icon="back"
+          class="cf-back"
           @click="$router.push('/forms/leads')"
         >
           {{ $t("cf.back_to_list") }}
@@ -22,26 +23,27 @@
         />
         <BasicButton
           v-if="canMarkAsWon"
-          :text="$t('cf.mark_as_won')"
-          class="btn-secondary"
+          variant="secondary"
           @click="openMarkAsWon"
-        />
-        <Dropdown
+        >
+          {{ $t('cf.mark_as_won') }}
+        </BasicButton>
+        <BasicSelect
           v-if="otherTransitions.length"
-          :values="otherTransitions"
+          :options="otherTransitions"
+          :model-value="null"
           :placeholder="$t('cf.change_status')"
           class="cf-detail__transitions"
-          @onSelect="onTransition"
+          @update:model-value="onTransition"
         />
-        <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
-          {{ $t("unsaved.changes") }}
-        </span>
+        <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
         <BasicButton
-          :text="$t('cf.save')"
-          class="btn-primary"
-          :is-disabled="!isDirty || saving"
+          variant="primary"
+          :disabled="!isDirty || saving"
           @click="save"
-        />
+        >
+          {{ $t('cf.save') }}
+        </BasicButton>
       </Teleport>
 
       <Loader block v-if="loading" />
@@ -55,37 +57,35 @@
           <!-- Editable fields -->
           <div class="cf-card">
             <h2 class="cf-card__title">{{ $t("cf.actions") }}</h2>
-            <FormField :label="$t('cf.name')">
+            <FormField :label="$t('cf.name')" :error="formErrors.getFieldError('name')?.msg || ''">
               <BasicInput
                 v-model="form.name"
-                :validate="formErrors.getFieldError('name')"
               />
             </FormField>
-            <FormField :label="$t('cf.phone')">
+            <FormField :label="$t('cf.phone')" :error="formErrors.getFieldError('phone')?.msg || ''">
               <BasicInput
                 v-model="form.phone"
-                :validate="formErrors.getFieldError('phone')"
               />
             </FormField>
-            <FormField :label="$t('cf.company')">
+            <FormField :label="$t('cf.company')" :error="formErrors.getFieldError('company')?.msg || ''">
               <BasicInput
                 v-model="form.company"
-                :validate="formErrors.getFieldError('company')"
               />
             </FormField>
-            <FormField :label="$t('cf.deal_value')">
+            <FormField
+              :label="$t('cf.deal_value')"
+              :error="formErrors.getFieldError('deal_value')?.msg || ''"
+            >
               <BasicInput
                 v-model="form.deal_value"
                 type="number"
                 min="0"
                 step="0.01"
-                :validate="formErrors.getFieldError('deal_value')"
               />
             </FormField>
-            <FormField :label="$t('cf.notes')">
+            <FormField :label="$t('cf.notes')" :error="formErrors.getFieldError('notes')?.msg || ''">
               <BasicInput
                 v-model="form.notes"
-                :validate="formErrors.getFieldError('notes')"
               />
             </FormField>
           </div>
@@ -142,7 +142,7 @@
                     v-if="lead.ads_conversion_imported"
                     class="cf-ads-imported"
                   >
-                    <font-awesome-icon icon="check" />
+                    <font-awesome-icon :icon="$icons.check" />
                     {{ formatDateTime(lead.ads_imported_at) }}
                   </span>
                   <span v-else class="t-muted">---</span>
@@ -191,39 +191,35 @@
       </template>
     </div>
 
-    <Confirmation-modal
-      :visible="showMarkAsWon"
-      @accept="confirmMarkAsWon"
-      @reject="cancelMarkAsWon"
+    <BasicModal
+      :open="showMarkAsWon"
+      size="sm"
+      :title="$t('cf.mark_as_won_title')"
+      @update:open="(open) => open || cancelMarkAsWon()"
     >
-      <template #header>
-        <h2 class="fs-500 fw-600">{{ $t("cf.mark_as_won_title") }}</h2>
-      </template>
-      <template #description>
-        <p class="mb-5">{{ $t("cf.mark_as_won_description") }}</p>
-        <FormField :label="$t('cf.deal_value')">
-          <BasicInput
-            v-model="markAsWonDealValue"
-            type="number"
-            min="0"
-            step="0.01"
-          />
-        </FormField>
-        <p
-          v-if="integrations && integrations.google_ads_enabled"
-          class="fs-200 t-accent mt-5"
-        >
-          <font-awesome-icon icon="circle-info" />
-          {{ $t("cf.google_ads_push_hint") }}
-        </p>
-        <p
-          v-else-if="integrations"
-          class="fs-200 t-muted mt-5"
-        >
-          <font-awesome-icon icon="circle-info" />
-          {{ $t("cf.google_ads_off_hint") }}
-        </p>
-      </template>
+      <p class="mb-5">{{ $t("cf.mark_as_won_description") }}</p>
+      <FormField :label="$t('cf.deal_value')">
+        <BasicInput
+          v-model="markAsWonDealValue"
+          type="number"
+          min="0"
+          step="0.01"
+        />
+      </FormField>
+      <p
+        v-if="integrations && integrations.google_ads_enabled"
+        class="fs-200 t-accent mt-5"
+      >
+        <font-awesome-icon :icon="$icons.info" />
+        {{ $t("cf.google_ads_push_hint") }}
+      </p>
+      <p
+        v-else-if="integrations"
+        class="fs-200 t-muted mt-5"
+      >
+        <font-awesome-icon :icon="$icons.info" />
+        {{ $t("cf.google_ads_off_hint") }}
+      </p>
       <template #footer>
         <button class="modal-btn modal-btn--secondary" @click="cancelMarkAsWon">
           {{ $t("cf.cancel") }}
@@ -232,7 +228,7 @@
           {{ $t("cf.confirm") }}
         </button>
       </template>
-    </Confirmation-modal>
+    </BasicModal>
   </div>
 </template>
 
@@ -240,7 +236,6 @@
 import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import {
   GET_Lead,
   PATCH_Lead,
@@ -255,7 +250,6 @@ import {
 
 export default {
   name: "LeadDetail",
-  components: { ConfirmationModal },
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();
@@ -493,6 +487,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/scss/utils/touch-target";
+
+// The 24 px back control gets the 40 × 40 hit area of every other back control on a phone; BasicButton clips its
+// overflow, which would cut the hit area off.
+.cf-back {
+  @include touch-target;
+
+  @include max-tablet {
+    overflow: visible;
+  }
+}
+
 .cf-lead-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));

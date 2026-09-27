@@ -6,11 +6,12 @@
       <div class="flex ai-ct jc-sb mb-10 gap-8">
         <h1 class="page-title">{{ $t("atlas.list_title") }}</h1>
         <BasicButton
-          :text="$t('atlas.create_button')"
-          class="btn-primary"
+          variant="primary"
           data-testid="suppliers-create-btn"
           @click="openCreate"
-        />
+        >
+          {{ $t('atlas.create_button') }}
+        </BasicButton>
       </div>
 
       <!-- Filter panel -->
@@ -90,26 +91,21 @@
         </template>
         <template #cell-actions="{ row }">
           <div class="flex ai-ct gap-2" @click.stop>
-            <BasicButton
-              custom
-              size="sm"
+            <IconButton
+              icon="edit"
               :label="$t('common.edit')"
-              class="btn-ghost"
+              size="sm"
               :data-testid="`suppliers-edit-${row.idx}`"
               @click="onEdit(row)"
-            >
-              <template #custom><FontAwesomeIcon icon="pen" /></template>
-            </BasicButton>
-            <BasicButton
-              custom
-              size="sm"
+            />
+            <IconButton
+              icon="delete"
               :label="$t('common.delete')"
-              class="btn-danger"
+              variant="danger"
+              size="sm"
               :data-testid="`suppliers-delete-${row.idx}`"
               @click="openDelete(row)"
-            >
-              <template #custom><FontAwesomeIcon icon="trash-can" /></template>
-            </BasicButton>
+            />
           </div>
         </template>
       </DataTable>
@@ -153,45 +149,33 @@
           </p>
         </FormField>
         <FormField :label="$t('atlas.form.kind_label')">
-          <Dropdown
-            :values="kindDropdownOptions"
-            :selected="[createForm.kind]"
+          <BasicSelect
+            :options="kindDropdownOptions"
+            v-model="createForm.kind"
             data-testid="suppliers-create-kind"
-            @onSelect="(val) => (createForm.kind = val)"
           />
         </FormField>
         <FormField :label="$t('atlas.form.type_label')">
-          <Dropdown
-            :values="typeDropdownOptions"
-            :selected="[createForm.source_type]"
+          <BasicSelect
+            :options="typeDropdownOptions"
+            v-model="createForm.source_type"
             data-testid="suppliers-create-type"
-            @onSelect="(val) => (createForm.source_type = val)"
           />
         </FormField>
         <FormField :label="$t('atlas.form.default_language_label')">
-          <Dropdown
-            :values="regionalStore.languageOptions"
-            :selected="
-              createForm.default_language_id
-                ? [createForm.default_language_id]
-                : []
-            "
+          <BasicSelect
+            :options="regionalStore.languageOptions"
+            v-model="createForm.default_language_id"
             :placeholder="$t('atlas.form.select_language')"
             data-testid="suppliers-create-language"
-            @onSelect="(val) => (createForm.default_language_id = val)"
           />
         </FormField>
         <FormField :label="$t('atlas.form.default_currency_label')">
-          <Dropdown
-            :values="regionalStore.currencyOptions"
-            :selected="
-              createForm.default_currency_id
-                ? [createForm.default_currency_id]
-                : []
-            "
+          <BasicSelect
+            :options="regionalStore.currencyOptions"
+            v-model="createForm.default_currency_id"
             :placeholder="$t('atlas.form.select_currency')"
             data-testid="suppliers-create-currency"
-            @onSelect="(val) => (createForm.default_currency_id = val)"
           />
         </FormField>
         <FormField :label="$t('atlas.form.sku_prefix_label')">
@@ -203,105 +187,103 @@
         </FormField>
         <div class="flex ai-ct jc-end gap-5 mt-8">
           <BasicButton
-            :text="$t('common.cancel')"
-            class="btn-secondary"
+            variant="secondary"
             type="button"
             data-testid="suppliers-create-cancel"
             @click="closeCreate"
-          />
+          >
+            {{ $t('common.cancel') }}
+          </BasicButton>
           <BasicButton
-            :text="$t('common.save')"
-            class="btn-primary"
+            variant="primary"
             type="submit"
-            :isDisabled="creating"
+            :disabled="creating"
             data-testid="suppliers-create-submit"
-          />
+          >
+            {{ $t('common.save') }}
+          </BasicButton>
         </div>
       </form>
     </SideDrawer>
 
     <!-- Delete confirmation modal -->
-    <Confirmation-modal
-      destructive
-      :visible="deleteVisible"
-      @accept="submitDelete"
-      @reject="closeDelete"
+    <BasicModal
+      :open="deleteVisible"
+      size="sm"
+      :title="$t('atlas.delete.modal_title')"
+      @update:open="(open) => open || closeDelete()"
     >
-      <template #header>
-        <h2>{{ $t("atlas.delete.modal_title") }}</h2>
-      </template>
-      <template #description>
-        <p class="mb-5">
-          <strong>{{ deleteTarget?.name }}</strong> ({{ deleteTarget?.idx }})
+      <p class="mb-5">
+        <strong>{{ deleteTarget?.name }}</strong> ({{ deleteTarget?.idx }})
+      </p>
+      <div class="flex flex-column gap-2 mb-5">
+        <label class="flex ai-ct gap-2 pointer">
+          <input
+            type="radio"
+            :value="false"
+            v-model="deleteForce"
+            data-testid="suppliers-delete-soft-radio"
+          />
+          <span class="fs-300">{{
+            $t("atlas.delete.mode_soft_label")
+          }}</span>
+        </label>
+        <label class="flex ai-ct gap-2 pointer">
+          <input
+            type="radio"
+            :value="true"
+            v-model="deleteForce"
+            data-testid="suppliers-delete-hard-radio"
+          />
+          <span class="fs-300 t-negative fw-600">{{
+            $t("atlas.delete.mode_hard_label")
+          }}</span>
+        </label>
+      </div>
+      <div
+        v-if="deleteForce && deleteImpact"
+        class="suppliers-delete-impact"
+        data-testid="suppliers-delete-impact-banner"
+      >
+        <p class="fs-200 mb-2">
+          {{
+            $t("atlas.delete.impact_links", {
+              count: deleteImpact.affected_links_count,
+            })
+          }}
         </p>
-        <div class="flex flex-column gap-2 mb-5">
-          <label class="flex ai-ct gap-2 pointer">
-            <input
-              type="radio"
-              :value="false"
-              v-model="deleteForce"
-              data-testid="suppliers-delete-soft-radio"
-            />
-            <span class="fs-300">{{
-              $t("atlas.delete.mode_soft_label")
-            }}</span>
-          </label>
-          <label class="flex ai-ct gap-2 pointer">
-            <input
-              type="radio"
-              :value="true"
-              v-model="deleteForce"
-              data-testid="suppliers-delete-hard-radio"
-            />
-            <span class="fs-300 t-negative fw-600">{{
-              $t("atlas.delete.mode_hard_label")
-            }}</span>
-          </label>
-        </div>
-        <div
-          v-if="deleteForce && deleteImpact"
-          class="suppliers-delete-impact"
-          data-testid="suppliers-delete-impact-banner"
-        >
-          <p class="fs-200 mb-2">
-            {{
-              $t("atlas.delete.impact_links", {
-                count: deleteImpact.affected_links_count,
-              })
-            }}
-          </p>
-          <p class="fs-200">
-            {{
-              $t("atlas.delete.impact_pushed_skus", {
-                count: deleteImpact.affected_pushed_skus_count,
-              })
-            }}
-          </p>
-        </div>
-        <p v-if="!deleteForce" class="fs-200 t-muted mt-5">
-          {{ $t("atlas.delete.default_warning") }}
+        <p class="fs-200">
+          {{
+            $t("atlas.delete.impact_pushed_skus", {
+              count: deleteImpact.affected_pushed_skus_count,
+            })
+          }}
         </p>
-      </template>
+      </div>
+      <p v-if="!deleteForce" class="fs-200 t-muted mt-5">
+        {{ $t("atlas.delete.default_warning") }}
+      </p>
       <template #footer>
         <BasicButton
-          :text="$t('common.cancel')"
-          class="btn-secondary"
+          variant="secondary"
           data-testid="suppliers-delete-cancel"
           @click="closeDelete"
-        />
+        >
+          {{ $t('common.cancel') }}
+        </BasicButton>
         <BasicButton
-          :text="
-            deleteForce
-              ? $t('atlas.delete.confirm_button_hard')
-              : $t('atlas.delete.confirm_button_soft')
-          "
-          class="btn-danger-fill modal-btn--delete"
-          :isDisabled="deleting"
+          variant="danger-solid"
+          class="modal-btn--delete"
+          :disabled="deleting"
           data-testid="suppliers-delete-confirm"
           @click="submitDelete"
-        />
+        >
+          {{ deleteForce
+              ? $t('atlas.delete.confirm_button_hard')
+              : $t('atlas.delete.confirm_button_soft') }}
+        </BasicButton>
       </template>
-    </Confirmation-modal>
+    </BasicModal>
   </div>
 </template>
 
@@ -310,7 +292,6 @@ import { useNotifyStore } from "@/stores/notify";
 import { useRegionalStore } from "@/stores/regional";
 import { useSearchDebounce } from "@/composables/useSearchDebounce";
 import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import {
   GET_Sources,
   POST_Source,
@@ -336,7 +317,6 @@ const EMPTY_FORM = () => ({
 
 export default {
   name: "SourceList",
-  components: { ConfirmationModal },
   setup() {
     const notify = useNotifyStore();
     const regionalStore = useRegionalStore();

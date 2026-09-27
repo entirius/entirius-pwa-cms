@@ -6,12 +6,12 @@
         <span class="t-muted fs-200"
           >{{ $t("checkout_orders.channel") }}:</span
         >
-        <Dropdown
-          :values="channelOptions"
-          :selected="activeChannel ? [activeChannel] : []"
+        <BasicSelect
+          :options="channelOptions"
+          :model-value="activeChannel"
           :placeholder="$t('checkout_orders.channel')"
           class="order-list__channel-dropdown"
-          @onSelect="onChannelChange"
+          @update:model-value="onChannelChange"
         />
       </span>
     </Teleport>

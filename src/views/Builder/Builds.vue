@@ -27,15 +27,16 @@
       <div class="flex gap-2 js-fe">
         <BasicButton
           v-if="translatorAvailable"
-          :text="$t('builder.translate_all')"
           :label="$t('builder.translate_all')"
-          icon="language"
-          class="btn-secondary icon-only-mobile"
+          variant="secondary"
+          class="icon-only-mobile"
           @click="showTranslateModal = true"
-        />
-        <Dropdown
+        >
+          {{ $t('builder.translate_all') }}
+        </BasicButton>
+        <BasicSelect
           v-if="availableLanguages && language"
-          :values="
+          :options="
             availableLanguages.map((val) => {
               return {
                 label: `${val.iso2}`,
@@ -44,8 +45,8 @@
             })
           "
           style="width: 4rem"
-          :selected="[!language ? null : language.toUpperCase()]"
-          @onSelect="
+          :model-value="language.toUpperCase()"
+          @update:model-value="
             ($event) => {
               if ($event.toLowerCase() === language) return;
               $router
@@ -55,7 +56,7 @@
             }
           "
           :placeholder="$t('builder.language')"
-          class="bg-base b-default t-secondary fs-200 rounded"
+          :aria-label="$t('builder.language')"
         />
       </div>
     </div>
@@ -116,8 +117,8 @@
           <template #cell-actions="{ row }">
             <BasicButton
               size="sm"
-              :text="canCreate ? $t('builder.edit') : $t('builder.preview')"
-              class="btn-ghost data-table__action-btn"
+              variant="ghost"
+              class="data-table__action-btn"
               @click="
                 $router.push({
                   name: 'Builder',
@@ -125,23 +126,24 @@
                   query: { lg: language },
                 })
               "
-            />
-            <BasicButton
+            >
+              {{ canCreate ? $t('builder.edit') : $t('builder.preview') }}
+            </BasicButton>
+            <IconButton
               v-if="doc.type !== 'legal-page'"
-              custom
-              size="sm"
+              icon="delete"
               :label="$t('builder.delete')"
-              class="btn-danger data-table__action-btn"
-              :isDisabled="!canCreate"
+              variant="danger"
+              size="sm"
+              class="data-table__action-btn"
+              :disabled="!canCreate"
               @click="
                 () => {
                   confirmation_modal = true;
                   to_remove = [doc.type, row.uid];
                 }
               "
-            >
-              <template #custom><FontAwesomeIcon icon="trash-can" /></template>
-            </BasicButton>
+            />
           </template>
         </DataTable>
         <div class="mv-2 ph-2" v-if="doc.pagination">
@@ -152,24 +154,22 @@
           />
         </div>
       </div>
-      <ConfirmationModal
-        destructive
-        :visible="confirmation_modal"
-        @accept="
+      <ConfirmDialog
+        tone="danger"
+        :open="confirmation_modal"
+        @confirm="
           () => {
             removeDoc(to_remove[0], to_remove[1]);
             confirmation_modal = false;
           }
         "
-        @reject="confirmation_modal = false"
+        @cancel="confirmation_modal = false"
+        :title="$t('builder.confirm_title')"
       >
-        <template #header>
-          <h2>{{ $t("builder.confirm_title") }}</h2>
-        </template>
-        <template #description>
+        <template #default>
           <p>{{ $t("builder.confirm_msg") }}</p>
         </template>
-      </ConfirmationModal>
+      </ConfirmDialog>
     </template>
 
     <div
@@ -214,7 +214,6 @@ const section_options = (value, look_for = null) => {
   return config_options[value];
 };
 
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import TranslateAllContentModal from "@/functionals/TranslateAllContentModal/index.vue";
 export default {
   setup() {
@@ -265,7 +264,7 @@ export default {
           const is_disabled =
             !bt.actions.includes("create") || doc_count >= config_max;
           return {
-            icon: "plus",
+            icon: "add",
             label: this.tBuildType(bt.slug, bt.label),
             handler: () => this.create_new(bt),
             disabled: is_disabled,
@@ -482,7 +481,6 @@ export default {
     next();
   },
   components: {
-    ConfirmationModal,
     TranslateAllContentModal,
   },
 };

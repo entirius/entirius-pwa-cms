@@ -15,7 +15,7 @@
               data-testid="raw-data-modal-close"
               @click="$emit('close')"
             >
-              <FontAwesomeIcon icon="xmark" />
+              <FontAwesomeIcon :icon="$icons.close" />
             </button>
           </div>
           <pre class="raw-modal__pre bg-raised t-body p-5 rounded">{{

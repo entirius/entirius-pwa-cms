@@ -2,10 +2,11 @@
   <div class="config-list">
     <div class="config-list__toolbar">
       <BasicButton
-        :text="$t('promo.pv_new')"
-        class="btn-primary"
+        variant="primary"
         @click="openCreate"
-      />
+      >
+        {{ $t('promo.pv_new') }}
+      </BasicButton>
     </div>
 
     <Loader block v-show="loading" />
@@ -77,23 +78,21 @@
             required
             :error="errors.currency_iso3"
           >
-            <Dropdown
+            <BasicSelect
               v-if="!isEdit"
-              :values="currencyOptions"
-              :selected="form.currency_iso3 ? [form.currency_iso3] : []"
+              :options="currencyOptions"
+              v-model="form.currency_iso3"
               :placeholder="$t('promo.pv_currency')"
-              @onSelect="(v) => (form.currency_iso3 = v)"
             />
             <span v-else class="t-secondary">{{ form.currency_iso3 }}</span>
           </FormField>
         </div>
 
         <FormField :label="$t('promo.pv_tax_type')" required>
-          <Dropdown
-            :values="taxOptions"
-            :selected="form.tax_type ? [form.tax_type] : []"
+          <BasicSelect
+            :options="taxOptions"
+            v-model="form.tax_type"
             :placeholder="$t('promo.pv_tax_type')"
-            @onSelect="(v) => (form.tax_type = v)"
           />
         </FormField>
 
@@ -109,29 +108,19 @@
             />
           </FormField>
           <FormField :label="$t('promo.pv_validity_precision')">
-            <Dropdown
-              :values="precisionOptions"
-              :selected="
-                form.validity_precision_override
-                  ? [form.validity_precision_override]
-                  : []
-              "
+            <BasicSelect
+              :options="precisionOptions"
+              v-model="form.validity_precision_override"
               :placeholder="$t('promo.pv_default')"
-              @onSelect="(v) => (form.validity_precision_override = v)"
             />
           </FormField>
         </div>
 
         <FormField :label="$t('promo.pv_expiry_starts_from')">
-          <Dropdown
-            :values="expiryStartsOptions"
-            :selected="
-              form.expiry_starts_from_override
-                ? [form.expiry_starts_from_override]
-                : []
-            "
+          <BasicSelect
+            :options="expiryStartsOptions"
+            v-model="form.expiry_starts_from_override"
             :placeholder="$t('promo.pv_default')"
-            @onSelect="(v) => (form.expiry_starts_from_override = v)"
           />
         </FormField>
 
@@ -139,18 +128,14 @@
           :label="$t('promo.pv_blacklist')"
           :tooltip="$t('promo.pv_blacklist_tip')"
         >
-          <Switcher
-            :selected="form.blacklist_other_vouchers"
-            @onSelect="
-              form.blacklist_other_vouchers = !form.blacklist_other_vouchers
-            "
+          <BasicSwitch
+            v-model="form.blacklist_other_vouchers"
           />
         </FormField>
 
         <FormField v-if="isEdit" :label="$t('promo.active')">
-          <Switcher
-            :selected="form.is_active"
-            @onSelect="form.is_active = !form.is_active"
+          <BasicSwitch
+            v-model="form.is_active"
           />
         </FormField>
 
@@ -183,24 +168,25 @@
             </span>
             <div class="flex ai-ct gap-2">
               <BasicButton
-                :text="$t('promo.btn_edit')"
-                class="btn-secondary"
+                variant="secondary"
                 @click="editFilter(f)"
-              />
+              >
+                {{ $t('promo.btn_edit') }}
+              </BasicButton>
               <BasicButton
-                :text="$t('promo.btn_delete')"
-                class="btn-secondary"
+                variant="secondary"
                 @click="deleteFilter(f.id)"
-              />
+              >
+                {{ $t('promo.btn_delete') }}
+              </BasicButton>
             </div>
           </div>
 
           <div class="filter-add">
-            <Dropdown
-              :values="modeOptions"
-              :selected="newFilter.mode ? [newFilter.mode] : []"
+            <BasicSelect
+              :options="modeOptions"
+              v-model="newFilter.mode"
               :placeholder="$t('promo.pv_filter_mode')"
-              @onSelect="(v) => (newFilter.mode = v)"
             />
             <div
               v-for="kind in entityKinds"
@@ -231,30 +217,27 @@
                 </span>
               </div>
             </div>
-            <Switcher
+            <BasicSwitch
               :label="$t('promo.pv_filter_common')"
               :hint="$t('promo.filter_common_tip')"
-              :selected="newFilter.take_common_part"
-              @onSelect="
-                newFilter.take_common_part = !newFilter.take_common_part
-              "
+              v-model="newFilter.take_common_part"
             />
             <div class="flex ai-ct gap-2">
               <BasicButton
-                :text="
-                  editingFilterId
-                    ? $t('promo.btn_save')
-                    : $t('promo.pv_filter_add')
-                "
-                class="btn-secondary"
+                variant="secondary"
                 @click="saveFilter"
-              />
+              >
+                {{ editingFilterId
+                    ? $t('promo.btn_save')
+                    : $t('promo.pv_filter_add') }}
+              </BasicButton>
               <BasicButton
                 v-if="editingFilterId"
-                :text="$t('promo.btn_cancel')"
-                class="btn-secondary"
+                variant="secondary"
                 @click="cancelFilterEdit"
-              />
+              >
+                {{ $t('promo.btn_cancel') }}
+              </BasicButton>
             </div>
           </div>
         </div>
@@ -262,33 +245,33 @@
         <div class="voucher-form__actions">
           <BasicButton
             v-if="isEdit"
-            :text="$t('promo.btn_delete')"
-            class="btn-secondary"
+            variant="secondary"
             @click="showDelete = true"
-          />
+          >
+            {{ $t('promo.btn_delete') }}
+          </BasicButton>
           <BasicButton
-            :text="$t('promo.btn_save')"
-            class="btn-primary"
-            :is-disabled="saving"
+            variant="primary"
+            :disabled="saving"
             @click="save"
-          />
+          >
+            {{ $t('promo.btn_save') }}
+          </BasicButton>
         </div>
       </div>
     </SideDrawer>
 
-    <Confirmation-modal
-      destructive
-      :visible="showDelete"
-      @accept="doDelete"
-      @reject="showDelete = false"
+    <ConfirmDialog
+      tone="danger"
+      :open="showDelete"
+      @confirm="doDelete"
+      @cancel="showDelete = false"
+      :title="$t('promo.pv_delete_title')"
     >
-      <template #header
-        ><h2>{{ $t("promo.pv_delete_title") }}</h2></template
-      >
-      <template #description
+      <template #default
         ><p>{{ $t("promo.pv_delete_msg") }}</p></template
       >
-    </Confirmation-modal>
+    </ConfirmDialog>
   </div>
 </template>
 
@@ -296,7 +279,6 @@
 import { useNotifyStore } from "@/stores/notify";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { useCheckoutChannelStore } from "@/stores/checkoutChannel";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import { GET_RegionalCurrencies } from "@/api/regional/api";
 import { GET_Products, GET_Categories, GET_Attributes } from "@/api/pim/api";
 import {
@@ -338,7 +320,7 @@ function emptyFilter() {
 
 export default {
   name: "ProductVouchersList",
-  components: { ConfirmationModal },
+  components: {},
   setup() {
     return {
       notify: useNotifyStore(),

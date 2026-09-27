@@ -6,12 +6,6 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- Select components (P3 plan 15): new `BasicSelect` (`v-model` value or array with `multiple`, `searchable`,
-  `clearable`, option descriptions; a keyboard combobox whose listbox opens in BasicMenu's panel, FormField contract);
-  `EntitySearchPicker` and `ChannelMultiSelect` run on BasicMenu with the same listbox (the picker shows its value as
-  a `Tag`, the chip reads „Kanały: 2” and has a `compact` form). BasicMenu `inline` draws a `top` placement above the
-  trigger. Catalogue `#selects`; `scripts/codemods/p3-selects.mjs` moves `Dropdown` call sites in the sweeps and
-  `Dropdown` is a removed component. `p3-actions` counts legacy `txt-*` / numbered colour classes as colours.
 - Input components (P3 plan 16): `FormField` owns label, hint, required marker, error and help tooltip, lays out
   `stacked` or `inline`, and provides the control contract (id, `aria-describedby`, `aria-invalid`, required,
   disabled); `BasicInput` gains `readonly` and a leading meaning icon; new `BasicTextarea` (counter), `BasicSwitch`
@@ -32,6 +26,12 @@ All notable changes to this project will be documented in this file.
   replaces `Loading.vue`; `Pagination` takes `v-model:page` + `pages`; `EmptyState` takes a meaning icon; tab, filter
   chip and filter-trigger counts are CountBadges. Catalogue `#display` shows every cell;
   `scripts/codemods/p3-display.mjs` moves `.chip` and `<Loading>` call sites in the sweeps.
+- Select components (P3 plan 15): new `BasicSelect` (`v-model` value or array with `multiple`, `searchable`,
+  `clearable`, option descriptions; a keyboard combobox whose listbox opens in BasicMenu's panel, FormField contract);
+  `EntitySearchPicker` and `ChannelMultiSelect` run on BasicMenu with the same listbox (the picker shows its value as
+  a `Tag`, the chip reads „Kanały: 2” and has a `compact` form). BasicMenu `inline` draws a `top` placement above the
+  trigger. Catalogue `#selects`; `scripts/codemods/p3-selects.mjs` moves `Dropdown` call sites in the sweeps and
+  `Dropdown` is a removed component. `p3-actions` counts legacy `txt-*` / numbered colour classes as colours.
 - Overlay components (P3 plan 12): `BasicModal` (sizes, footer ActionBar, bottom sheet on a phone), `ConfirmDialog`
   (`tone`, `loading`, unsaved-changes discard), `BasicMenu` (keyboard menu or panel, `@floating-ui/dom`
   positioning), `BasicTooltip` (hover and focus, `help` variant) and `useFocusTrap`: every dialog traps focus,
@@ -106,6 +106,13 @@ All notable changes to this project will be documented in this file.
   lists that did more than pick a value (reorder, edit, delete per row) open in a `BasicMenu` panel. The P3 codemods
   no longer reject a rewrite that closes a tag (`<StatusBadge />`).
 
+- P3 sweep, partition 2 (plan 18): Promo, Atlas, Faq, forms, enrichment, content, Leads and the other partition-2
+  views use the P3 components — icons by meaning, buttons by variant, icon-only actions on `IconButton`,
+  confirmations on `ConfirmDialog` (custom footers on `BasicModal`), `.chip` on `StatusBadge`, `Dropdown` on
+  `BasicSelect` (the custom check lists are `multiple` selects), `Switcher` / `TextAreaBasic` on `BasicSwitch` /
+  `BasicTextarea`, field errors on `FormField`. The Builder section order is a labelled FloatingActions pill;
+  the Atlas preferred-strategy and evaluation-frequency selects show their value again (they passed `v-model` to a
+  Dropdown that ignored it); the forms back control has a 40 × 40 hit area on a phone.
 - Rich-text table tools are short text buttons (four "add" and three "delete" tools shared one icon each); the
   pricing detail flush/delete buttons carry one tooltip (their label); the standalone `ToolTip` hint is a `note`
   described by its text; the FAB sits 16 px from the edge and its speed-dial back button uses the `back` meaning.

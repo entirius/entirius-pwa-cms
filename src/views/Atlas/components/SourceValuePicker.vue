@@ -3,13 +3,13 @@
     <div class="source-value-picker__wrapper">
       <BasicInput
         v-model="local"
-        :is-disabled="disabled"
+        :disabled="disabled"
         :placeholder="placeholder"
         :data-testid="`${testId}-input`"
         @focusin="onFocus"
       />
       <FontAwesomeIcon
-        icon="chevron-down"
+        :icon="$icons.expand"
         class="source-value-picker__chevron"
         :class="{ 'source-value-picker__chevron--open': open }"
         @click="toggleDropdown"

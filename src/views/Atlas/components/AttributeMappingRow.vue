@@ -19,24 +19,23 @@
         <BasicInput
           v-else
           v-model="local.source_field"
-          :is-disabled="true"
+          :disabled="true"
           :data-testid="`attr-mapping-source-${rowKey}`"
         />
       </FormField>
       <FormField :label="$t('atlas.mappings.attribute.target_type')">
-        <Dropdown
-          :values="targetTypeOptions"
-          :selected="[local.target_type]"
+        <BasicSelect
+          :options="targetTypeOptions"
+          v-model="local.target_type"
           :data-testid="`attr-mapping-target-type-${rowKey}`"
-          @onSelect="(val) => (local.target_type = val)"
         />
       </FormField>
       <FormField :label="$t('atlas.mappings.attribute.modifier')">
-        <Dropdown
-          :values="modifierOptions"
-          :selected="[local.modifier || 'none']"
+        <BasicSelect
+          :options="modifierOptions"
+          :model-value="local.modifier || 'none'"
           :data-testid="`attr-mapping-modifier-${rowKey}`"
-          @onSelect="(val) => (local.modifier = val)"
+          @update:model-value="(val) => (local.modifier = val)"
         />
         <span
           v-if="modifierPreview"
@@ -60,22 +59,21 @@
           :client-filter="true"
           :data-testid="`attr-mapping-target-id-${rowKey}`"
         />
-        <Dropdown
+        <BasicSelect
           v-else-if="local.target_type === 'real_product'"
-          :values="realProductOptions"
-          :selected="[local.target_identifier]"
+          :options="realProductOptions"
+          v-model="local.target_identifier"
           :placeholder="
             $t(
               'atlas.mappings.attribute.target_identifier_real_product_placeholder'
             )
           "
           :data-testid="`attr-mapping-target-id-${rowKey}`"
-          @onSelect="(val) => (local.target_identifier = val)"
         />
         <BasicInput
           v-else
           v-model="local.target_identifier"
-          :is-disabled="true"
+          :disabled="true"
           :placeholder="
             $t(
               'atlas.mappings.attribute.target_identifier_skip_placeholder'
@@ -85,10 +83,9 @@
         />
       </FormField>
       <FormField :label="$t('atlas.mappings.attribute.is_required')">
-        <Switcher
-          :selected="local.is_required"
+        <BasicSwitch
+          v-model="local.is_required"
           :data-testid="`attr-mapping-required-${rowKey}`"
-          @onSelect="local.is_required = !local.is_required"
         />
       </FormField>
     </div>
@@ -99,7 +96,7 @@
         :title="warningTitle"
         :data-testid="`attr-mapping-warning-${rowKey}`"
       >
-        <FontAwesomeIcon icon="triangle-exclamation" />
+        <FontAwesomeIcon :icon="$icons.warning" />
         <span class="fs-200 fw-600">{{ rowWarnings.length }}</span>
       </span>
       <button
@@ -109,7 +106,7 @@
         :data-testid="`attr-mapping-delete-${rowKey}`"
         @click="$emit('delete', mapping)"
       >
-        <FontAwesomeIcon icon="trash-can" />
+        <FontAwesomeIcon :icon="$icons.delete" />
       </button>
       <button
         class="suppliers-primary-btn"
@@ -117,7 +114,7 @@
         :data-testid="`attr-mapping-save-${rowKey}`"
         @click="emitSave"
       >
-        <FontAwesomeIcon icon="floppy-disk" />
+        <FontAwesomeIcon :icon="$icons.saveDraft" />
         {{ $t("common.save") }}
       </button>
     </div>

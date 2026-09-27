@@ -13,27 +13,27 @@
         <div class="flex ai-ct gap-5 ml-auto">
           <BasicButton
             v-if="!isCreate"
-            :text="$t('enrichment.spawn_rules.run_now')"
-            class="btn-secondary"
+            variant="secondary"
             data-test="spawn-rule-run-btn"
             @click="runRule"
+          >
+            {{ $t('enrichment.spawn_rules.run_now') }}
+          </BasicButton>
+          <IconButton
+            v-if="!isCreate"
+            icon="delete"
+            :label="$t('common.delete')"
+            variant="danger"
+            data-test="spawn-rule-delete-btn"
+            @click="showDeleteConfirm = true"
           />
           <BasicButton
-            v-if="!isCreate"
-            data-test="spawn-rule-delete-btn"
-            custom
-            :label="$t('common.delete')"
-            class="btn-danger"
-            @click="showDeleteConfirm = true"
-          >
-            <template #custom><FontAwesomeIcon icon="trash-can" /></template>
-          </BasicButton>
-          <BasicButton
-            :text="$t('common.save')"
-            class="btn-primary"
+            variant="primary"
             data-test="spawn-rule-save-btn"
             @click="save"
-          />
+          >
+            {{ $t('common.save') }}
+          </BasicButton>
         </div>
       </div>
 
@@ -47,14 +47,14 @@
             :tooltip="$t('enrichment.spawn_rules.key_hint')"
             :error="fieldErr('key')"
           >
-            <BasicInput v-model="form.key" :isDisabled="!isCreate" data-test="spawn-rule-key" />
+            <BasicInput v-model="form.key" :disabled="!isCreate" data-test="spawn-rule-key" />
           </FormField>
 
           <FormField
             :label="$t('enrichment.spawn_rules.col_module')"
             :tooltip="$t('enrichment.spawn_rules.module_hint')"
           >
-            <BasicInput v-model="form.module" :isDisabled="true" />
+            <BasicInput v-model="form.module" :disabled="true" />
           </FormField>
 
           <FormField
@@ -62,33 +62,31 @@
             :tooltip="$t('enrichment.spawn_rules.check_hint')"
             :error="fieldErr('check_key')"
           >
-            <Dropdown
+            <BasicSelect
               v-if="checkOptions.length"
-              :values="checkChoices"
-              :selected="[form.check_key]"
+              :options="checkChoices"
+              v-model="form.check_key"
               :placeholder="$t('common.select')"
-              @onSelect="(v) => (form.check_key = v)"
             />
             <!-- Soft-compat: no PIM gaps API (old backend / other module) → free text. -->
             <BasicInput v-else v-model="form.check_key" data-test="spawn-rule-check-input" />
           </FormField>
 
           <FormField :label="$t('enrichment.spawn_rules.col_task_type')">
-            <Dropdown
-              :values="taskTypeOptions"
-              :selected="[form.task_type]"
+            <BasicSelect
+              :options="taskTypeOptions"
+              v-model="form.task_type"
               :placeholder="$t('common.select')"
-              @onSelect="(v) => (form.task_type = v)"
             />
           </FormField>
 
           <FormField :label="$t('enrichment.spawn_rules.scope_channel')">
-            <Dropdown
+            <BasicSelect
               v-if="channelOptions.length"
-              :values="channelOptions"
-              :selected="[scopeChannel]"
+              :options="channelOptions"
+              :model-value="scopeChannel"
               :placeholder="$t('common.select')"
-              @onSelect="selectChannel"
+              @update:model-value="selectChannel"
             />
             <BasicInput
               v-else
@@ -102,11 +100,10 @@
             :label="$t('enrichment.spawn_rules.scope_language')"
             :tooltip="$t('enrichment.spawn_rules.scope_language_hint')"
           >
-            <Dropdown
-              :values="languageOptions"
-              :selected="[scopeLanguage]"
+            <BasicSelect
+              :options="languageOptions"
+              v-model="scopeLanguage"
               :placeholder="$t('enrichment.spawn_rules.all_languages')"
-              @onSelect="(v) => (scopeLanguage = v)"
             />
           </FormField>
 
@@ -128,30 +125,29 @@
           </FormField>
 
           <div class="flex ai-ct gap-8">
-            <Switcher
+            <BasicSwitch
               :label="$t('enrichment.spawn_rules.col_auto')"
-              :selected="form.auto"
-              @onSelect="form.auto = !form.auto"
+              v-model="form.auto"
             />
-            <Switcher
+            <BasicSwitch
               :label="$t('enrichment.spawn_rules.col_active')"
-              :selected="form.active"
-              @onSelect="form.active = !form.active"
+              v-model="form.active"
             />
           </div>
         </div>
       </template>
 
-      <Confirmation-modal
-        destructive
-        :visible="showDeleteConfirm"
-        @accept="deleteRule"
-        @reject="showDeleteConfirm = false"
+      <ConfirmDialog
+        tone="danger"
+        :title="$t('enrichment.spawn_rules.confirm_delete_title')"
+        :open="showDeleteConfirm"
+        @confirm="deleteRule"
+        @cancel="showDeleteConfirm = false"
       >
-        <template #description>
+        <template #default>
           <p>{{ $t("enrichment.spawn_rules.confirm_delete") }}</p>
         </template>
-      </Confirmation-modal>
+      </ConfirmDialog>
     </div>
   </div>
 </template>
@@ -169,7 +165,6 @@ import {
   POST_SpawnRuleRun,
 } from "@/api/enrichment/api";
 import { GET_GapDefinitions } from "@/api/pim/api";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import { withStoredOption } from "@/utils/options";
 
 const TASK_TYPES = ["fix-attribute", "fill-attribute", "translate"];
@@ -177,7 +172,7 @@ const KEY_PATTERN = /^[a-z0-9][a-z0-9_-]*$/;
 
 export default {
   name: "SpawnRuleEdit",
-  components: { ConfirmationModal },
+  components: {},
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();

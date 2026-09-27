@@ -26,10 +26,11 @@
       />
       <div class="flex-1"></div>
       <BasicButton
-        :text="$t('translation.refresh')"
-        class="btn-secondary"
+        variant="secondary"
         @click="refresh"
-      />
+      >
+        {{ $t('translation.refresh') }}
+      </BasicButton>
     </div>
 
     <!-- Empty State -->

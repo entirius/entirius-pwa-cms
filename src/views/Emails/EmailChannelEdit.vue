@@ -43,31 +43,18 @@
               <ColorInput v-model="channel.brand_text_color" />
             </FormField>
             <FormField :label="$t('emails.font_family')">
-              <Dropdown
-                :values="fontOptions"
-                :selected="[channel.font_family]"
+              <BasicSelect
+                v-model="channel.font_family"
+                :options="fontOptions"
                 :placeholder="$t('emails.font_family')"
-                :custom_droplist="true"
-                @onSelect="channel.font_family = $event"
+              />
+              <p
+                v-if="channel.font_family"
+                :style="{ fontFamily: channel.font_family }"
+                class="fs-300 t-secondary mt-2"
               >
-                <template #custom>
-                  <div
-                    v-for="font in fontOptions"
-                    :key="font.value"
-                    class="font-option pointer flex flex-column jc-ct pl-5 pr-5"
-                    @click.stop="channel.font_family = font.value"
-                  >
-                    <span class="fs-200 t-body fw-600">{{
-                      font.label
-                    }}</span>
-                    <span
-                      :style="{ fontFamily: font.value }"
-                      class="fs-300 t-secondary"
-                      >Hello, your order has been confirmed!</span
-                    >
-                  </div>
-                </template>
-              </Dropdown>
+                Hello, your order has been confirmed!
+              </p>
             </FormField>
             <FormField :label="$t('emails.logo_max_width')">
               <NumberInput
@@ -81,10 +68,11 @@
           </div>
           <div class="flex jc-fe mt-8">
             <BasicButton
-              :text="$t('common.save')"
-              class="btn-primary"
+              variant="primary"
               @click="saveChannel"
-            />
+            >
+              {{ $t('common.save') }}
+            </BasicButton>
           </div>
         </div>
 
@@ -232,19 +220,6 @@ export default {
 
   &:hover {
     border-color: var(--accent);
-  }
-}
-
-.font-option {
-  min-height: var(--elem-height);
-  transition: background-color 0.15s;
-
-  &:hover {
-    background-color: var(--surface-raised);
-  }
-
-  &:not(:last-child) {
-    border-bottom: 1px solid var(--border-subtle);
   }
 }
 </style>

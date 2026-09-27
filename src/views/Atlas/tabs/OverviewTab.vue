@@ -2,12 +2,13 @@
   <div class="overview-tab p-8 ovy-auto h-100">
     <Teleport to="#suppliers-toolbar-right" defer>
       <BasicButton
-        :text="$t('common.save')"
-        class="btn-primary"
-        :isDisabled="saving || !isDirty"
+        variant="primary"
+        :disabled="saving || !isDirty"
         data-testid="suppliers-overview-save"
         @click="save"
-      />
+      >
+        {{ $t('common.save') }}
+      </BasicButton>
     </Teleport>
 
     <div class="overview-grid">
@@ -17,7 +18,7 @@
       >
         <BasicInput
           :model-value="form.idx"
-          is-disabled
+          disabled
           data-testid="overview-idx"
         />
       </FormField>
@@ -35,79 +36,72 @@
         :label="$t('atlas.form.kind_label')"
         :tooltip="$t('atlas.form.kind_tooltip')"
       >
-        <Dropdown
-          :values="kindOptions"
-          :selected="[form.kind]"
+        <BasicSelect
+          :options="kindOptions"
+          v-model="form.kind"
           data-testid="overview-kind"
-          @onSelect="(val) => (form.kind = val)"
         />
       </FormField>
       <FormField
         :label="$t('atlas.form.type_label')"
         :tooltip="$t('atlas.form.type_tooltip')"
       >
-        <Dropdown
-          :values="typeOptions"
-          :selected="[form.source_type]"
+        <BasicSelect
+          :options="typeOptions"
+          v-model="form.source_type"
           data-testid="overview-type"
-          @onSelect="(val) => (form.source_type = val)"
         />
       </FormField>
       <FormField
         :label="$t('atlas.form.review_mode_label')"
         :tooltip="$t('atlas.form.review_mode_tooltip')"
       >
-        <Dropdown
-          :values="reviewModeOptions"
-          :selected="[form.review_mode]"
+        <BasicSelect
+          :options="reviewModeOptions"
+          v-model="form.review_mode"
           data-testid="overview-review-mode"
-          @onSelect="(val) => (form.review_mode = val)"
         />
       </FormField>
       <FormField
         :label="$t('atlas.form.is_active_label')"
         :tooltip="$t('atlas.form.is_active_tooltip')"
       >
-        <Switcher
-          :selected="form.is_active"
+        <BasicSwitch
+          v-model="form.is_active"
           data-testid="overview-is-active"
-          @onSelect="form.is_active = !form.is_active"
         />
       </FormField>
       <FormField
         :label="$t('atlas.form.default_language_label')"
         :tooltip="$t('atlas.form.default_language_tooltip')"
       >
-        <Dropdown
-          :values="regionalStore.languageOptions"
-          :selected="form.default_language_id ? [form.default_language_id] : []"
+        <BasicSelect
+          :options="regionalStore.languageOptions"
+          v-model="form.default_language_id"
           :placeholder="$t('atlas.form.select_language')"
           data-testid="overview-language"
-          @onSelect="(val) => (form.default_language_id = val)"
         />
       </FormField>
       <FormField
         :label="$t('atlas.form.default_currency_label')"
         :tooltip="$t('atlas.form.default_currency_tooltip')"
       >
-        <Dropdown
-          :values="regionalStore.currencyOptions"
-          :selected="form.default_currency_id ? [form.default_currency_id] : []"
+        <BasicSelect
+          :options="regionalStore.currencyOptions"
+          v-model="form.default_currency_id"
           :placeholder="$t('atlas.form.select_currency')"
           data-testid="overview-currency"
-          @onSelect="(val) => (form.default_currency_id = val)"
         />
       </FormField>
       <FormField
         :label="$t('atlas.form.country_label')"
         :tooltip="$t('atlas.form.country_tooltip')"
       >
-        <Dropdown
-          :values="regionalStore.countryOptions"
-          :selected="form.country_id ? [form.country_id] : []"
+        <BasicSelect
+          :options="regionalStore.countryOptions"
+          v-model="form.country_id"
           :placeholder="$t('atlas.form.select_country')"
           data-testid="overview-country"
-          @onSelect="(val) => (form.country_id = val)"
         />
       </FormField>
       <FormField
@@ -233,13 +227,9 @@
         "
         class="overview-grid__wide"
       >
-        <Switcher
-          :selected="form.allow_physical_writes_from_non_primary"
+        <BasicSwitch
+          v-model="form.allow_physical_writes_from_non_primary"
           data-testid="overview-allow-physical-writes-non-preferred"
-          @onSelect="
-            form.allow_physical_writes_from_non_primary =
-              !form.allow_physical_writes_from_non_primary
-          "
         />
       </FormField>
       <!-- etap-13b — auto-preferred selection per-supplier knobs. Grouped at the end
@@ -250,7 +240,7 @@
         :label="$t('atlas.form.preferred_strategy_label')"
         :tooltip="$t('atlas.form.preferred_strategy_tooltip')"
       >
-        <Dropdown
+        <BasicSelect
           v-model="form.primary_strategy"
           :options="preferredStrategyOptions"
           data-testid="overview-preferred-strategy"
@@ -285,7 +275,7 @@
         :label="$t('atlas.form.eval_frequency_label')"
         :tooltip="$t('atlas.form.eval_frequency_tooltip')"
       >
-        <Dropdown
+        <BasicSelect
           v-model="form.eval_frequency"
           :options="evalFrequencyOptions"
           data-testid="overview-eval-frequency"

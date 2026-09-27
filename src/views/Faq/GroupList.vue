@@ -47,7 +47,7 @@
               @click="$router.push(`/faq/groups/${element.idx}`)"
             >
               <font-awesome-icon
-                icon="grip-vertical"
+                :icon="$icons.drag"
                 class="drag-handle t-muted"
               />
               <span
@@ -57,22 +57,20 @@
                 {{ element.name || element.idx }}
               </span>
               <div class="flex ai-ct gap-2">
-                <span
+                <StatusBadge
                   v-if="(element.channel_ids || []).length"
-                  class="chip bg-accent-subtle t-strong"
-                >
-                  {{ $t(`faq.channels_${pluralKey(element.channel_ids.length)}`, { count: element.channel_ids.length }) }}
-                </span>
-                <span
+                  tone="accent"
+                  :dot="false"
+                  :label="$t(`faq.channels_${pluralKey(element.channel_ids.length)}`, { count: element.channel_ids.length })"
+                />
+                <StatusBadge
                   v-else
-                  class="chip bg-raised t-muted"
-                >
-                  {{ $t("faq.global") }}
-                </span>
+                  tone="neutral"
+                  :dot="false"
+                  :label="$t('faq.global')"
+                />
               </div>
-              <span class="chip bg-accent-subtle t-strong">
-                {{ $t(`faq.items_${pluralKey(element.item_count || 0)}`, { count: element.item_count || 0 }) }}
-              </span>
+              <StatusBadge tone="accent" :dot="false" :label="$t(`faq.items_${pluralKey(element.item_count || 0)}`, { count: element.item_count || 0 })" />
               <StatusBadge
                 :label="element.is_active ? $t('faq.active') : $t('faq.inactive')"
                 :variant="element.is_active ? 'positive' : 'negative'"
@@ -128,7 +126,7 @@ export default {
     fabActions() {
       return [
         {
-          icon: "plus",
+          icon: "add",
           label: this.$t("faq.create_group"),
           handler: () => this.$router.push("/faq/groups/create"),
         },

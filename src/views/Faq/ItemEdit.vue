@@ -8,23 +8,20 @@
       />
     </Teleport>
     <Teleport to="#faq-toolbar-right" defer>
-      <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
-        {{ $t("unsaved.changes") }}
-      </span>
-      <BasicButton
+      <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
+      <IconButton
         v-if="isEdit"
-        custom
+        icon="delete"
         :label="$t('common.delete')"
-        class="btn-danger"
+        variant="danger"
         @click="showDeleteConfirm = true"
-      >
-        <template #custom><FontAwesomeIcon icon="trash-can" /></template>
-      </BasicButton>
-      <BasicButton
-        :text="$t('common.save')"
-        class="btn-primary"
-        @click="saveItem"
       />
+      <BasicButton
+        variant="primary"
+        @click="saveItem"
+      >
+        {{ $t('common.save') }}
+      </BasicButton>
     </Teleport>
 
     <div class="page-card h-100 ovy-auto">
@@ -35,10 +32,9 @@
           <h1 class="page-title">
             {{ isEdit ? item.question || item.url_key : $t("faq.create_item") }}
           </h1>
-          <Switcher
+          <BasicSwitch
             :label="$t('faq.is_active')"
-            :selected="form.is_active"
-            @onSelect="form.is_active = !form.is_active"
+            v-model="form.is_active"
           />
         </div>
 
@@ -51,25 +47,26 @@
                 <label class="field-label required">{{ $t("faq.url_key") }}</label>
                 <BasicButton
                   v-if="isEdit && channelLanguages.length"
-                  :text="$t('faq.translations')"
-                  icon="language"
-                  class="btn-outline translation-field__btn"
+                  variant="secondary"
+                  class="translation-field__btn"
                   @click="openTranslations('url_key')"
-                />
+                >
+                  {{ $t('faq.translations') }}
+                </BasicButton>
               </div>
-              <BasicInput
-                v-model="form.url_key"
-                :isDisabled="isEdit"
-                :validate="formErrors.getFieldError('url_key')"
-              />
+              <FormField :error="formErrors.getFieldError('url_key')?.msg || ''">
+                <BasicInput
+                  v-model="form.url_key"
+                  :disabled="isEdit"
+                />
+              </FormField>
             </div>
             <div class="detail-field">
               <label class="field-label">{{ $t("faq.group") }}</label>
-              <Dropdown
-                :values="groupOptions"
-                :selected="form.group_idx ? [form.group_idx] : []"
+              <BasicSelect
+                :options="groupOptions"
+                v-model="form.group_idx"
                 :placeholder="$t('faq.no_group')"
-                @onSelect="(val) => (form.group_idx = val)"
               />
             </div>
           </div>
@@ -84,16 +81,18 @@
               <label class="field-label required">{{ $t("faq.question") }}</label>
               <BasicButton
                 v-if="isEdit && channelLanguages.length"
-                :text="$t('faq.translations')"
-                icon="language"
-                class="btn-outline translation-field__btn"
+                variant="secondary"
+                class="translation-field__btn"
                 @click="openTranslations('question')"
-              />
+              >
+                {{ $t('faq.translations') }}
+              </BasicButton>
             </div>
-            <BasicInput
-              v-model="form.question"
-              :validate="formErrors.getFieldError('question')"
-            />
+            <FormField :error="formErrors.getFieldError('question')?.msg || ''">
+              <BasicInput
+                v-model="form.question"
+              />
+            </FormField>
           </div>
 
           <div class="detail-field mb-8">
@@ -101,11 +100,12 @@
               <label class="field-label">{{ $t("faq.short_answer") }}</label>
               <BasicButton
                 v-if="isEdit && channelLanguages.length"
-                :text="$t('faq.translations')"
-                icon="language"
-                class="btn-outline translation-field__btn"
+                variant="secondary"
+                class="translation-field__btn"
                 @click="openTranslations('short_answer')"
-              />
+              >
+                {{ $t('faq.translations') }}
+              </BasicButton>
             </div>
             <BasicInput v-model="form.short_answer" />
           </div>
@@ -115,11 +115,12 @@
               <label class="field-label required">{{ $t("faq.answer") }}</label>
               <BasicButton
                 v-if="isEdit && channelLanguages.length"
-                :text="$t('faq.translations')"
-                icon="language"
-                class="btn-outline translation-field__btn"
+                variant="secondary"
+                class="translation-field__btn"
                 @click="openTranslations('answer')"
-              />
+              >
+                {{ $t('faq.translations') }}
+              </BasicButton>
             </div>
             <BasicWysiwyg v-model="form.answer" />
           </div>
@@ -130,11 +131,11 @@
           <div class="flex ai-ct jc-sb mb-8">
             <h2 class="fs-500 fw-600">{{ $t("faq.associations") }}</h2>
             <BasicButton
-              :text="$t('faq.add_association')"
-              icon="plus"
-              class="btn-outline"
+              variant="secondary"
               @click="addAssociation"
-            />
+            >
+              {{ $t('faq.add_association') }}
+            </BasicButton>
           </div>
           <p v-if="!associations.length" class="fs-200 t-muted">
             {{ $t("faq.no_associations") }}
@@ -144,12 +145,12 @@
             :key="idx"
             class="assoc-row flex ai-ct gap-5 mb-5"
           >
-            <Dropdown
-              :values="entityTypeOptions"
-              :selected="assoc.entity_type ? [assoc.entity_type] : []"
+            <BasicSelect
+              :options="entityTypeOptions"
+              :model-value="assoc.entity_type"
               :placeholder="$t('faq.entity_type')"
               class="assoc-type-select"
-              @onSelect="(val) => { assoc.entity_type = val; assoc.entity_identifier = ''; assoc.entity_display = ''; }"
+              @update:model-value="(val) => { assoc.entity_type = val; assoc.entity_identifier = ''; assoc.entity_display = ''; }"
             />
             <EntitySearchPicker
               v-if="assoc.entity_type === 'product'"
@@ -191,25 +192,24 @@
               v-else
               v-model="assoc.entity_identifier"
               :placeholder="$t('faq.entity_identifier')"
-              :isDisabled="!assoc.entity_type"
+              :disabled="!assoc.entity_type"
               class="flex-1"
             />
-            <BasicButton
-              custom
-              size="sm"
+            <IconButton
+              icon="close"
               :label="$t('faq.remove_association')"
-              class="btn-danger"
+              variant="danger"
+              size="sm"
               @click="removeAssociation(idx)"
-            >
-              <template #custom><FontAwesomeIcon icon="xmark" /></template>
-            </BasicButton>
+            />
           </div>
           <div v-if="associationsDirty" class="flex jc-fe mt-5">
             <BasicButton
-              :text="$t('faq.save_associations')"
-              class="btn-secondary"
+              variant="secondary"
               @click="saveAssociations"
-            />
+            >
+              {{ $t('faq.save_associations') }}
+            </BasicButton>
           </div>
         </div>
       </template>
@@ -233,25 +233,27 @@
       </template>
     </TranslationsDrawer>
 
-    <Confirmation-modal
-      destructive
-      :visible="showDeleteConfirm"
-      @accept="deleteItem"
-      @reject="showDeleteConfirm = false"
+    <ConfirmDialog
+      tone="danger"
+      :open="showDeleteConfirm"
+      @confirm="deleteItem"
+      @cancel="showDeleteConfirm = false"
+      :title="$t('faq.confirm_delete_title')"
     >
-      <template #header>
-        <h2>{{ $t("faq.confirm_delete_title") }}</h2>
-      </template>
-      <template #description>
+      <template #default>
         <p>{{ $t("faq.confirm_delete_item") }}</p>
       </template>
-    </Confirmation-modal>
+    </ConfirmDialog>
 
-    <UnsavedChangesModal
-      :visible="!!pendingNav"
-      @save="saveAndLeave"
+    <ConfirmDialog
+      :open="!!pendingNav"
+      @confirm="saveAndLeave"
       @discard="confirmLeave"
-      @stay="cancelLeave"
+      @cancel="cancelLeave"
+      :title="$t('unsaved.title')"
+      :message="$t('unsaved.message')"
+      :confirm-label="$t('unsaved.save_and_leave')"
+      :discard-label="$t('unsaved.discard')"
     />
   </div>
 </template>
@@ -275,8 +277,6 @@ import {
   GET_FaqGroups,
   GET_FaqChannels,
 } from "@/api/faq/api";
-import UnsavedChangesModal from "@/functionals/Unsaved-changes-modal/index.vue";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 
 const FIELD_LABELS = {
   url_key: "URL key (per language)",
@@ -287,7 +287,7 @@ const FIELD_LABELS = {
 
 export default {
   name: "FaqItemEdit",
-  components: { UnsavedChangesModal, ConfirmationModal },
+  components: {},
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();

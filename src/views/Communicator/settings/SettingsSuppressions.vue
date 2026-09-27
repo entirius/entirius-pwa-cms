@@ -22,7 +22,7 @@
               :title="$t('leads.stages.delete')"
               @click="remove(row.id)"
             >
-              <FontAwesomeIcon icon="trash-can" />
+              <FontAwesomeIcon :icon="$icons.delete" />
             </button>
           </td>
         </tr>

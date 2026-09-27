@@ -7,7 +7,7 @@
         data-testid="linked-create-btn"
         @click="openCreate"
       >
-        <FontAwesomeIcon icon="plus" />
+        <FontAwesomeIcon :icon="$icons.add" />
         {{ $t("atlas.linked.create_button") }}
       </button>
     </div>
@@ -54,7 +54,7 @@
             :data-testid="`linked-set-preferred-${row.id}`"
             @click="setPrimary(row)"
           >
-            <FontAwesomeIcon icon="star" />
+            <FontAwesomeIcon :icon="$icons.primary" />
           </button>
           <button
             v-else-if="!isMonitoringSupplier"
@@ -63,7 +63,7 @@
             :data-testid="`linked-unset-preferred-${row.id}`"
             @click="unsetPrimary(row)"
           >
-            <FontAwesomeIcon icon="star" />
+            <FontAwesomeIcon :icon="$icons.primary" />
           </button>
           <button
             class="row-action-btn bg-raised t-body"
@@ -71,7 +71,7 @@
             :data-testid="`linked-edit-${row.id}`"
             @click="openEdit(row)"
           >
-            <FontAwesomeIcon icon="pen" />
+            <FontAwesomeIcon :icon="$icons.edit" />
           </button>
           <button
             class="row-action-btn bg-negative-subtle t-negative"
@@ -79,7 +79,7 @@
             :data-testid="`linked-delete-${row.id}`"
             @click="confirmDelete(row)"
           >
-            <FontAwesomeIcon icon="trash-can" />
+            <FontAwesomeIcon :icon="$icons.delete" />
           </button>
         </div>
       </template>
@@ -118,7 +118,7 @@
               data-testid="linked-sku-preview-btn"
               @click="openPreview"
             >
-              <FontAwesomeIcon icon="magnifying-glass" />
+              <FontAwesomeIcon :icon="$icons.search" />
             </button>
           </div>
           <p
@@ -146,17 +146,15 @@
           v-if="!isMonitoringSupplier"
           :label="$t('atlas.linked.is_preferred_label')"
         >
-          <Switcher
-            :selected="formData.is_primary"
+          <BasicSwitch
+            v-model="formData.is_primary"
             data-testid="linked-form-is-preferred"
-            @onSelect="formData.is_primary = !formData.is_primary"
           />
         </FormField>
         <FormField :label="$t('atlas.form.is_active_label')">
-          <Switcher
-            :selected="formData.is_active"
+          <BasicSwitch
+            v-model="formData.is_active"
             data-testid="linked-form-is-active"
-            @onSelect="formData.is_active = !formData.is_active"
           />
         </FormField>
         <FormField :label="$t('atlas.linked.notes_label')">
@@ -180,26 +178,24 @@
             :disabled="formBusy"
             data-testid="linked-form-submit"
           >
-            <FontAwesomeIcon icon="floppy-disk" />
+            <FontAwesomeIcon :icon="$icons.saveDraft" />
             {{ $t("common.save") }}
           </button>
         </div>
       </form>
     </SideDrawer>
 
-    <Confirmation-modal
-      destructive
-      :visible="deleteVisible"
-      @accept="executeDelete"
-      @reject="deleteVisible = false"
+    <ConfirmDialog
+      tone="danger"
+      :open="deleteVisible"
+      @confirm="executeDelete"
+      @cancel="deleteVisible = false"
+      :title="$t('atlas.linked.delete_title')"
     >
-      <template #header>
-        <h2>{{ $t("atlas.linked.delete_title") }}</h2>
-      </template>
-      <template #description>
+      <template #default>
         <p>{{ $t("atlas.linked.delete_body") }}</p>
       </template>
-    </Confirmation-modal>
+    </ConfirmDialog>
 
     <SideDrawer
       :visible="previewVisible"
@@ -222,7 +218,7 @@
           />
           <FontAwesomeIcon
             v-else
-            icon="image"
+            :icon="$icons.image"
             class="sku-preview__placeholder"
           />
         </div>
@@ -241,7 +237,6 @@
 </template>
 
 <script>
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import { useNotifyStore } from "@/stores/notify";
 import { usePimChannelStore } from "@/stores/pimChannel";
 import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
@@ -267,7 +262,7 @@ const EMPTY_LINK = (supplierIdx) => ({
 
 export default {
   name: "LinkedTab",
-  components: { ConfirmationModal },
+  components: {},
   props: {
     supplier: { type: Object, default: null },
   },

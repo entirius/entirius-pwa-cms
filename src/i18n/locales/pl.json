@@ -2580,7 +2580,8 @@
       "backend_default": "Domyślna wartość backendu",
       "saved": "Reguła spawnu zapisana",
       "deleted": "Reguła spawnu usunięta",
-      "confirm_delete": "Usunąć tę regułę spawnu? Otwarte zadania pozostają bez zmian."
+      "confirm_delete": "Usunąć tę regułę spawnu? Otwarte zadania pozostają bez zmian.",
+      "confirm_delete_title": "Usuń regułę spawnu"
     },
     "tasks": {
       "title": "Zadania wzbogacania",

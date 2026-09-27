@@ -3,7 +3,7 @@
     <FormField :label="$t('atlas.feeds.form.idx_label')" required>
       <BasicInput
         v-model="local.idx"
-        :isDisabled="!!feed"
+        :disabled="!!feed"
         placeholder="xml-1"
         data-testid="feed-form-idx"
       />
@@ -13,11 +13,11 @@
     </FormField>
 
     <FormField :label="$t('atlas.feeds.form.connector_label')" required>
-      <Dropdown
-        :values="connectorOptions"
-        :selected="[local.connector_kind]"
+      <BasicSelect
+        :options="connectorOptions"
+        v-model="local.connector_kind"
         data-testid="feed-form-connector"
-        @onSelect="onConnectorChange"
+        @update:model-value="onConnectorChange"
       />
     </FormField>
 
@@ -71,11 +71,10 @@
     </FormField>
 
     <FormField :label="$t('atlas.feeds.form.sync_mode_label')">
-      <Dropdown
-        :values="syncModeOptions"
-        :selected="[local.sync_mode]"
+      <BasicSelect
+        :options="syncModeOptions"
+        v-model="local.sync_mode"
         data-testid="feed-form-sync-mode"
-        @onSelect="(val) => (local.sync_mode = val)"
       />
     </FormField>
 
@@ -96,10 +95,9 @@
     </FormField>
 
     <FormField :label="$t('atlas.form.is_active_label')">
-      <Switcher
-        :selected="local.is_active"
+      <BasicSwitch
+        v-model="local.is_active"
         data-testid="feed-form-is-active"
-        @onSelect="local.is_active = !local.is_active"
       />
     </FormField>
 
@@ -118,7 +116,7 @@
         :disabled="busy"
         data-testid="feed-form-submit"
       >
-        <FontAwesomeIcon icon="floppy-disk" />
+        <FontAwesomeIcon :icon="$icons.saveDraft" />
         {{ $t("common.save") }}
       </button>
     </div>

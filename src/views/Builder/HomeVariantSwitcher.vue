@@ -5,11 +5,11 @@
       :title="$t('builder.home_variant')"
       @click="open = !open"
     >
-      <FontAwesomeIcon icon="house" />
+      <FontAwesomeIcon :icon="$icons.home" />
       <span class="home-switcher__label fs-200">
         {{ $t("builder.home_variant") }}: {{ currentChannelLabel }}
       </span>
-      <FontAwesomeIcon icon="caret-down" />
+      <FontAwesomeIcon :icon="$icons.expand" />
     </button>
     <div v-if="open" class="home-switcher__backdrop" @click="open = false" />
     <div v-if="open" class="home-switcher__drop">
@@ -29,14 +29,14 @@
         <span class="home-switcher__name">{{ ch.name || ch.idx }}</span>
         <span class="home-switcher__status fs-200">
           <template v-if="isCurrent(ch.idx)">
-            <FontAwesomeIcon icon="check" class="t-accent" />
+            <FontAwesomeIcon :icon="$icons.check" class="t-accent" />
             {{ $t("builder.home_current") }}
           </template>
           <template v-else-if="variants[ch.idx]">
             {{ $t("builder.home_exists") }}
           </template>
           <template v-else>
-            <FontAwesomeIcon icon="plus" />
+            <FontAwesomeIcon :icon="$icons.add" />
             {{ $t("builder.home_create") }}
           </template>
         </span>

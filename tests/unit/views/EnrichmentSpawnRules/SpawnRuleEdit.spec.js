@@ -196,11 +196,11 @@ describe("SpawnRuleEdit", () => {
 });
 
 describe("SpawnRuleEdit — stored values in selects", () => {
-  // Renders the label the real Dropdown would show: the selected option's, else the placeholder.
-  const DropdownProbe = {
-    props: ["values", "selected", "placeholder"],
+  // Renders the label the real BasicSelect would show: the selected option's, else the placeholder.
+  const SelectProbe = {
+    props: ["options", "modelValue", "placeholder"],
     template:
-      '<span class="dd">{{ (values.find((o) => o.value === selected[0]) || { label: placeholder }).label }}</span>',
+      '<span class="dd">{{ (options.find((o) => o.value === modelValue) || { label: placeholder }).label }}</span>',
   };
 
   beforeEach(() => {
@@ -228,7 +228,7 @@ describe("SpawnRuleEdit — stored values in selects", () => {
     const wrapper = mount(SpawnRuleEdit, {
       global: {
         mocks: { $route: { params: { key: "atlas-duplicate-in-pim" }, query: {} } },
-        stubs: { FormField: { template: "<div><slot /></div>" }, Dropdown: DropdownProbe },
+        stubs: { FormField: { template: "<div><slot /></div>" }, BasicSelect: SelectProbe },
       },
     });
     await flushPromises();

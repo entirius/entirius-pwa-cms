@@ -126,47 +126,47 @@
             {{ $t("content_sets.instruction") }}
           </p>
           <div class="flex gap-2">
-            <ToolTip
+            <BasicTooltip
               v-if="!hasEnoughSelections"
-              :tip="$t('content_sets.set_ready_tip')"
-              :is_wrapper="true"
-              class="left"
+              :text="$t('content_sets.set_ready_tip')"
             >
               <BasicButton
-                :text="$t('content_sets.set_ready')"
-                class="btn-primary"
-                :isDisabled="true"
-              />
-            </ToolTip>
+                variant="primary"
+                :disabled="true"
+              >
+                {{ $t('content_sets.set_ready') }}
+              </BasicButton>
+            </BasicTooltip>
             <BasicButton
               v-else
-              :text="$t('content_sets.set_ready')"
-              class="btn-primary"
+              variant="primary"
               @click="
                 MODIFY_Set({
                   url: `/content-sets/${edit ? edit : ''}`,
                   method: edit ? 'put' : 'post',
                 })
               "
-            />
-            <ToolTip
+            >
+              {{ $t('content_sets.set_ready') }}
+            </BasicButton>
+            <BasicTooltip
               v-if="!hasEnoughSelections"
-              :tip="$t('content_sets.clear_set_tip')"
-              :is_wrapper="true"
-              class="left"
+              :text="$t('content_sets.clear_set_tip')"
             >
               <BasicButton
-                :text="$t('content_sets.clear_set')"
-                class="btn-secondary"
-                :isDisabled="true"
-              />
-            </ToolTip>
+                variant="secondary"
+                :disabled="true"
+              >
+                {{ $t('content_sets.clear_set') }}
+              </BasicButton>
+            </BasicTooltip>
             <BasicButton
               v-else
-              :text="$t('content_sets.clear_set')"
-              class="btn-secondary"
+              variant="secondary"
               @click="selected_set_members = null"
-            />
+            >
+              {{ $t('content_sets.clear_set') }}
+            </BasicButton>
           </div>
         </div>
         <div v-if="sets && mode === 'edit'" class="grid gap-5">
@@ -194,7 +194,7 @@
                 :aria-label="$t('common.delete')"
                 tabindex="0"
               >
-                <FontAwesomeIcon icon="trash-can" />
+                <FontAwesomeIcon :icon="$icons.delete" />
               </button>
             </div>
             <p class="fs-200 t-muted mt-1 lc-1">{{ uid }}</p>

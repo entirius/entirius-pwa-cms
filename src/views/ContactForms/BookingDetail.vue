@@ -8,6 +8,7 @@
           variant="ghost"
           size="sm"
           icon="back"
+          class="cf-back"
           @click="$router.push('/forms/bookings')"
         >
           {{ $t("cf.back_to_list") }}
@@ -73,7 +74,7 @@
                     class="cf-inline-link"
                   >
                     {{ $t("cf.open_meet") }}
-                    <font-awesome-icon icon="video" />
+                    <font-awesome-icon :icon="$icons.video" />
                   </a>
                   <span v-else class="t-muted">---</span>
                 </dd>
@@ -120,12 +121,13 @@
               </dl>
               <div class="mt-8">
                 <BasicButton
-                  :text="$t('cf.open_lead')"
-                  class="btn-primary"
+                  variant="primary"
                   @click="
                     $router.push(`/forms/leads/${booking.linked_lead.id}`)
                   "
-                />
+                >
+                  {{ $t('cf.open_lead') }}
+                </BasicButton>
               </div>
             </template>
             <EmptyState
@@ -199,6 +201,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/scss/utils/touch-target";
+
+// The 24 px back control gets the 40 × 40 hit area of every other back control on a phone; BasicButton clips its
+// overflow, which would cut the hit area off.
+.cf-back {
+  @include touch-target;
+
+  @include max-tablet {
+    overflow: visible;
+  }
+}
+
 .cf-booking-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));

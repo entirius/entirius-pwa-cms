@@ -7,11 +7,12 @@
           {{ $t("promo.cfg_title") }} · {{ form.idx }}
         </h3>
         <BasicButton
-          :text="$t('promo.btn_save')"
-          class="btn-primary"
-          :is-disabled="saving"
+          variant="primary"
+          :disabled="saving"
           @click="save"
-        />
+        >
+          {{ $t('promo.btn_save') }}
+        </BasicButton>
       </div>
 
       <h4 class="cfg-section">{{ $t("promo.cfg_section_validity") }}</h4>
@@ -27,23 +28,20 @@
           />
         </FormField>
         <FormField :label="$t('promo.pv_validity_precision')">
-          <Dropdown
-            :values="precisionOptions"
-            :selected="form.validity_precision ? [form.validity_precision] : []"
-            @onSelect="(v) => (form.validity_precision = v)"
+          <BasicSelect
+            :options="precisionOptions"
+            v-model="form.validity_precision"
           />
         </FormField>
         <FormField :label="$t('promo.pv_expiry_starts_from')">
-          <Dropdown
-            :values="expiryStartsOptions"
-            :selected="form.expiry_starts_from ? [form.expiry_starts_from] : []"
-            @onSelect="(v) => (form.expiry_starts_from = v)"
+          <BasicSelect
+            :options="expiryStartsOptions"
+            v-model="form.expiry_starts_from"
           />
         </FormField>
         <FormField :label="$t('promo.cfg_allow_extension')" :tooltip="$t('promo.cfg_allow_extension_tip')">
-          <Switcher
-            :selected="form.allow_extension"
-            @onSelect="form.allow_extension = !form.allow_extension"
+          <BasicSwitch
+            v-model="form.allow_extension"
           />
         </FormField>
         <FormField :label="$t('promo.cfg_extension_days')" :tooltip="$t('promo.cfg_extension_days_tip')">
@@ -77,12 +75,8 @@
           />
         </FormField>
         <FormField :label="$t('promo.cfg_allow_stacking')" :tooltip="$t('promo.cfg_allow_stacking_tip')">
-          <Switcher
-            :selected="form.allow_stacking_with_discount_codes"
-            @onSelect="
-              form.allow_stacking_with_discount_codes =
-                !form.allow_stacking_with_discount_codes
-            "
+          <BasicSwitch
+            v-model="form.allow_stacking_with_discount_codes"
           />
         </FormField>
       </div>
@@ -96,9 +90,8 @@
           <NumberInput v-model="form.code_length" :min="8" :max="32" />
         </FormField>
         <FormField :label="$t('promo.cfg_require_pin')" :tooltip="$t('promo.cfg_require_pin_tip')">
-          <Switcher
-            :selected="form.require_pin"
-            @onSelect="form.require_pin = !form.require_pin"
+          <BasicSwitch
+            v-model="form.require_pin"
           />
         </FormField>
       </div>
@@ -106,11 +99,8 @@
       <h4 class="cfg-section">{{ $t("promo.cfg_section_security") }}</h4>
       <div class="cfg-grid">
         <FormField :label="$t('promo.cfg_require_approval')" :tooltip="$t('promo.cfg_require_approval_tip')">
-          <Switcher
-            :selected="form.require_issuance_approval"
-            @onSelect="
-              form.require_issuance_approval = !form.require_issuance_approval
-            "
+          <BasicSwitch
+            v-model="form.require_issuance_approval"
           />
         </FormField>
         <FormField :label="$t('promo.cfg_max_failed')" :tooltip="$t('promo.cfg_max_failed_tip')">

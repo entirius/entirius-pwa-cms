@@ -9,24 +9,21 @@
       <h1 class="page-title" v-if="!loading">{{ form.name || $t("authors.create") }}</h1>
     </Teleport>
     <Teleport to="#authors-toolbar-right" defer>
-      <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
-        {{ $t("unsaved.changes") }}
-      </span>
+      <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
       <template v-if="!loading">
-        <BasicButton
+        <IconButton
           v-if="isEdit"
-          custom
+          icon="delete"
           :label="$t('common.delete')"
-          class="btn-danger"
+          variant="danger"
           @click="showDeleteConfirm = true"
-        >
-          <template #custom><FontAwesomeIcon icon="trash-can" /></template>
-        </BasicButton>
-        <BasicButton
-          :text="$t('common.save')"
-          class="btn-primary"
-          @click="save"
         />
+        <BasicButton
+          variant="primary"
+          @click="save"
+        >
+          {{ $t('common.save') }}
+        </BasicButton>
       </template>
     </Teleport>
 
@@ -38,24 +35,24 @@
         <div class="page-card author-edit__section mb-10">
           <div class="section-label mb-8">{{ $t("pim.basic_info") }}</div>
           <div class="flex gap-8 mb-8" style="flex-wrap: wrap">
-            <BasicInput
-              v-model="form.name"
-              :label="$t('authors.name')"
-              :validate="formErrors.getFieldError('name')"
-              class="flex-1"
-              style="min-width: 200px"
-            />
-            <BasicInput
-              v-model="form.slug"
-              :label="$t('authors.slug')"
-              class="flex-1"
-              style="min-width: 200px"
-            />
+            <FormField :label="$t('authors.name')" :error="formErrors.getFieldError('name')?.msg || ''">
+              <BasicInput
+                v-model="form.name"
+                class="flex-1"
+                style="min-width: 200px"
+              />
+            </FormField>
+            <FormField :label="$t('authors.slug')">
+              <BasicInput
+                v-model="form.slug"
+                class="flex-1"
+                style="min-width: 200px"
+              />
+            </FormField>
           </div>
-          <Switcher
+          <BasicSwitch
             :label="$t('authors.is_active')"
-            :selected="form.is_active"
-            @onSelect="form.is_active = !form.is_active"
+            v-model="form.is_active"
           />
 
           <!-- Photo -->
@@ -72,24 +69,23 @@
                   class="author-photo-preview__img"
                 />
                 <div v-else class="author-photo-preview__placeholder">
-                  <FontAwesomeIcon icon="user" class="t-muted" style="font-size: var(--fs-600)" />
+                  <FontAwesomeIcon :icon="$icons.user" class="t-muted" style="font-size: var(--fs-600)" />
                 </div>
               </div>
               <div class="flex ai-ct gap-2">
                 <BasicButton
-                  :text="form.photo_uid ? $t('common.edit') : $t('common.select')"
-                  class="btn-outline"
+                  variant="secondary"
                   @click="$refs.photoController.init()"
-                />
-                <BasicButton
-                  v-if="form.photo_uid"
-                  custom
-                  :label="$t('gallery.delete_photo')"
-                  class="btn-danger"
-                  @click="clearPhoto"
                 >
-                  <template #custom><FontAwesomeIcon icon="xmark" /></template>
+                  {{ form.photo_uid ? $t('common.edit') : $t('common.select') }}
                 </BasicButton>
+                <IconButton
+                  v-if="form.photo_uid"
+                  icon="close"
+                  :label="$t('gallery.delete_photo')"
+                  variant="danger"
+                  @click="clearPhoto"
+                />
               </div>
             </div>
           </div>
@@ -110,10 +106,12 @@
               </label>
               <BasicButton
                 v-if="availableLanguages.length > 1"
-                :text="$t('pim.translations')"
-                class="btn-outline translation-field__btn"
+                variant="secondary"
+                class="translation-field__btn"
                 @click="openTranslations(field.name)"
-              />
+              >
+                {{ $t('pim.translations') }}
+              </BasicButton>
             </div>
             <BasicInput
               v-model="form[field.key][defaultLang]"
@@ -125,26 +123,35 @@
         <div class="page-card author-edit__section mb-10">
           <div class="section-label mb-8">{{ $t("dp.contact") }}</div>
           <div class="flex gap-8 mb-8" style="flex-wrap: wrap">
-            <BasicInput
-              v-model="form.contact_email"
+            <FormField
               :label="$t('authors.contact_email')"
-              :validate="formErrors.getFieldError('contact_email')"
-              class="flex-1"
-              style="min-width: 200px"
-            />
-            <BasicInput
-              v-model="form.contact_phone"
+              :error="formErrors.getFieldError('contact_email')?.msg || ''"
+            >
+              <BasicInput
+                v-model="form.contact_email"
+                class="flex-1"
+                style="min-width: 200px"
+              />
+            </FormField>
+            <FormField
               :label="$t('authors.contact_phone')"
-              :validate="formErrors.getFieldError('contact_phone')"
-              class="flex-1"
-              style="min-width: 200px"
-            />
+              :error="formErrors.getFieldError('contact_phone')?.msg || ''"
+            >
+              <BasicInput
+                v-model="form.contact_phone"
+                class="flex-1"
+                style="min-width: 200px"
+              />
+            </FormField>
           </div>
-          <BasicInput
-            v-model="form.contact_url"
+          <FormField
             :label="$t('authors.contact_url')"
-            :validate="formErrors.getFieldError('contact_url')"
-          />
+            :error="formErrors.getFieldError('contact_url')?.msg || ''"
+          >
+            <BasicInput
+              v-model="form.contact_url"
+            />
+          </FormField>
         </div>
 
         <!-- Social profiles -->
@@ -153,14 +160,13 @@
             {{ $t("authors.social_profiles") }}
           </div>
           <div class="flex gap-8" style="flex-wrap: wrap">
-            <BasicInput
-              v-for="platform in knownPlatforms"
-              :key="platform"
-              v-model="form.social_profiles[platform]"
-              :label="platform"
-              class="flex-1"
-              style="min-width: 200px"
-            />
+            <FormField v-for="platform in knownPlatforms" :label="platform" :key="platform">
+              <BasicInput
+                v-model="form.social_profiles[platform]"
+                class="flex-1"
+                style="min-width: 200px"
+              />
+            </FormField>
           </div>
         </div>
       </template>
@@ -188,28 +194,28 @@
     />
 
     <!-- Delete confirmation -->
-    <Confirmation-modal
-      destructive
-      :visible="showDeleteConfirm"
-      @accept="deleteAuthor"
-      @reject="showDeleteConfirm = false"
+    <ConfirmDialog
+      tone="danger"
+      :title="$t('authors.confirm_delete_title')"
+      :open="showDeleteConfirm"
+      @confirm="deleteAuthor"
+      @cancel="showDeleteConfirm = false"
     >
-      <template #description>
+      <template #default>
         <p>{{ $t("authors.delete_confirm") }}</p>
         <p v-if="form.post_count" class="mt-5 t-secondary fs-200">
           {{ $t("authors.post_count") }}: <strong>{{ form.post_count }}</strong>
         </p>
         <div v-if="reassignOptions.length" class="mt-8">
           <p class="fs-200 fw-600 mb-2">{{ $t("authors.reassign_label") }}</p>
-          <Dropdown
-            :values="reassignOptions"
-            :selected="reassignTo ? [reassignTo] : []"
+          <BasicSelect
+            :options="reassignOptions"
+            v-model="reassignTo"
             :placeholder="$t('authors.reassign_none')"
-            @onSelect="reassignTo = $event"
           />
         </div>
       </template>
-    </Confirmation-modal>
+    </ConfirmDialog>
   </div>
 </template>
 
@@ -218,7 +224,6 @@ import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { useContentDBChannelStore } from "@/stores/contentDBChannel";
 import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import ImagesController from "@/configs/builder/components/ImagesController/index.vue";
 import {
   GET_Author,
@@ -239,7 +244,7 @@ const KNOWN_PLATFORMS = [
 
 export default {
   name: "AuthorEdit",
-  components: { ConfirmationModal, ImagesController },
+  components: { ImagesController },
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();

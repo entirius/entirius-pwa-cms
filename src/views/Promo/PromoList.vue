@@ -17,25 +17,29 @@
           </span>
           <div class="promo-list__bulk-actions">
             <BasicButton
-              :text="$t('promo.bulk_activate')"
-              class="btn-secondary"
+              variant="secondary"
               @click="startBulk('activate')"
-            />
+            >
+              {{ $t('promo.bulk_activate') }}
+            </BasicButton>
             <BasicButton
-              :text="$t('promo.bulk_deactivate')"
-              class="btn-secondary"
+              variant="secondary"
               @click="startBulk('deactivate')"
-            />
+            >
+              {{ $t('promo.bulk_deactivate') }}
+            </BasicButton>
             <BasicButton
-              :text="$t('promo.bulk_delete')"
-              class="btn-danger"
+              variant="danger"
               @click="startBulk('delete')"
-            />
+            >
+              {{ $t('promo.bulk_delete') }}
+            </BasicButton>
             <BasicButton
-              :text="$t('promo.bulk_clear')"
-              class="btn-secondary"
+              variant="secondary"
               @click="clearSelection"
-            />
+            >
+              {{ $t('promo.bulk_clear') }}
+            </BasicButton>
           </div>
         </div>
 
@@ -60,12 +64,12 @@
               :active="statusFilter === tab.key"
               @click="setStatusFilter(tab.key)"
             />
-            <Dropdown
-              :values="modifierOptions"
-              :selected="modifierFilter ? [modifierFilter] : []"
+            <BasicSelect
+              :options="modifierOptions"
+              :model-value="modifierFilter"
               :placeholder="$t('promo.all_modifiers')"
               class="promo-list__modifier-filter"
-              @onSelect="onModifierFilter"
+              @update:model-value="onModifierFilter"
             />
           </MobileFilterPanel>
         </div>
@@ -150,19 +154,17 @@
         <FloatingActions :actions="fabActions" />
 
         <!-- Bulk delete confirmation modal -->
-        <Confirmation-modal
-          destructive
-          :visible="pendingBulkAction === 'delete'"
-          @accept="onBulkDeleteAccept"
-          @reject="pendingBulkAction = null"
+        <ConfirmDialog
+          tone="danger"
+          :open="pendingBulkAction === 'delete'"
+          @confirm="onBulkDeleteAccept"
+          @cancel="pendingBulkAction = null"
+          :title="$t('promo.bulk_confirm_delete_title')"
         >
-          <template #header>
-            <h2>{{ $t("promo.bulk_confirm_delete_title") }}</h2>
-          </template>
-          <template #description>
+          <template #default>
             <p>{{ $t("promo.bulk_confirm_delete", { n: selectionCount }) }}</p>
           </template>
-        </Confirmation-modal>
+        </ConfirmDialog>
       </template>
 
       <!-- VOUCHERS tab (gated on the checkout_voucher module) -->
@@ -188,13 +190,12 @@ import { useCheckoutChannelStore } from "@/stores/checkoutChannel";
 import { modifierShortLabel } from "./promo-modifiers";
 import { useSearchDebounce } from "@/composables/useSearchDebounce";
 import { GET_DiscountRules, GET_DiscountMeta, POST_BulkRules } from "@/api/promo/api";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import VouchersSection from "./VouchersSection.vue";
 import { extractApiMessage } from "@/composables/useFormErrors";
 
 export default {
   name: "PromoList",
-  components: { VouchersSection, ConfirmationModal },
+  components: { VouchersSection },
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();
@@ -319,7 +320,7 @@ export default {
     fabActions() {
       return [
         {
-          icon: "plus",
+          icon: "add",
           label: this.$t("promo.create_rule"),
           handler: () => this.$router.push("/promo/create"),
         },

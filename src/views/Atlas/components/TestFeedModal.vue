@@ -15,7 +15,7 @@
               data-testid="test-feed-close"
               @click="$emit('close')"
             >
-              <FontAwesomeIcon icon="xmark" />
+              <FontAwesomeIcon :icon="$icons.close" />
             </button>
           </div>
 

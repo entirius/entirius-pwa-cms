@@ -15,12 +15,12 @@
           class="cf-list__search"
           @input="debouncedFetch(searchAndFetch)"
         />
-        <Dropdown
-          :values="channelOptions"
-          :selected="[channelFilter]"
+        <BasicSelect
+          :options="channelOptions"
+          :model-value="channelFilter"
           :placeholder="$t('cf.channel')"
           class="cf-list__filter"
-          @onSelect="onChannelFilter"
+          @update:model-value="onChannelFilter"
         />
       </div>
 
@@ -73,7 +73,7 @@
             class="cf-ads-imported"
             :title="$t('cf.ads_imported_tooltip')"
           >
-            <font-awesome-icon icon="bullseye" />
+            <font-awesome-icon :icon="$icons.target" />
           </span>
           <span v-else class="t-muted">—</span>
         </template>

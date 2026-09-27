@@ -15,26 +15,26 @@
           class="form-list__search"
           @input="debouncedFetch(searchAndFetch)"
         />
-        <Dropdown
-          :values="typeFilterOptions"
-          :selected="[typeFilter]"
+        <BasicSelect
+          :options="typeFilterOptions"
+          :model-value="typeFilter"
           :placeholder="$t('cf.type')"
           class="form-list__filter"
-          @onSelect="onTypeFilter"
+          @update:model-value="onTypeFilter"
         />
-        <Dropdown
-          :values="channelFilterOptions"
-          :selected="[channelFilter]"
+        <BasicSelect
+          :options="channelFilterOptions"
+          :model-value="channelFilter"
           :placeholder="$t('cf.channel')"
           class="form-list__filter"
-          @onSelect="onChannelFilter"
+          @update:model-value="onChannelFilter"
         />
-        <Dropdown
-          :values="statusFilterOptions"
-          :selected="[statusFilter]"
+        <BasicSelect
+          :options="statusFilterOptions"
+          :model-value="statusFilter"
           :placeholder="$t('cf.status')"
           class="form-list__filter"
-          @onSelect="onStatusFilter"
+          @update:model-value="onStatusFilter"
         />
       </div>
 

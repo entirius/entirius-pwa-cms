@@ -25,7 +25,7 @@
               {{ $t(panel.descriptionKey) }}
             </p>
             <p v-else class="panel-card-locked-msg">
-              <FontAwesomeIcon icon="lock" />
+              <FontAwesomeIcon :icon="$icons.lock" />
               {{ $t("panels.contact_admin") }}
             </p>
           </component>

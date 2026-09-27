@@ -4,7 +4,7 @@
     <draggable :list="stages" item-key="id" handle=".stage__handle" class="ld-field" @end="saveOrder">
       <template #item="{ element, index }">
         <div class="stage" :data-stage="element.key" data-testid="stage-row">
-          <FontAwesomeIcon icon="grip-vertical" class="stage__handle" />
+          <FontAwesomeIcon :icon="$icons.drag" class="stage__handle" />
           <input v-model="element.label" class="ld-input" :aria-label="$t('leads.stages.label')" @change="rename(element)" />
           <span class="stage__tags">
             <span class="ld-badge stage__key" :title="$t('leads.stages.key_help')">
@@ -27,7 +27,7 @@
               :title="$t('leads.stages.up')"
               @click="shift(index, -1)"
             >
-              <FontAwesomeIcon icon="arrow-up" />
+              <FontAwesomeIcon :icon="$icons.moveUp" />
             </button>
             <button
               class="ld-btn ld-btn--icon"
@@ -36,7 +36,7 @@
               :title="$t('leads.stages.down')"
               @click="shift(index, 1)"
             >
-              <FontAwesomeIcon icon="arrow-down" />
+              <FontAwesomeIcon :icon="$icons.moveDown" />
             </button>
             <button
               class="ld-btn ld-btn--danger ld-btn--icon"
@@ -45,7 +45,7 @@
               data-testid="stage-delete"
               @click="askDelete(element)"
             >
-              <FontAwesomeIcon icon="trash-can" />
+              <FontAwesomeIcon :icon="$icons.delete" />
             </button>
           </div>
           <p v-if="errors[element.id]" class="ld-error" data-testid="stage-error">{{ errors[element.id] }}</p>

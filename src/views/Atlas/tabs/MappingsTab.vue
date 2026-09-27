@@ -7,7 +7,7 @@
         data-testid="mappings-create-profile-btn"
         @click="openCreate"
       >
-        <FontAwesomeIcon icon="plus" />
+        <FontAwesomeIcon :icon="$icons.add" />
         {{ $t("atlas.mappings.create_profile") }}
       </button>
     </div>
@@ -58,7 +58,7 @@
               :data-testid="`mapping-edit-profile-${profile.idx}`"
               @click="openEdit(profile)"
             >
-              <FontAwesomeIcon icon="pen-to-square" />
+              <FontAwesomeIcon :icon="$icons.edit" />
               {{ $t("common.edit") }}
             </button>
             <button
@@ -66,7 +66,7 @@
               :data-testid="`mapping-validate-${profile.idx}`"
               @click="validateProfile(profile)"
             >
-              <FontAwesomeIcon icon="check" />
+              <FontAwesomeIcon :icon="$icons.check" />
               {{ $t("atlas.mappings.validate") }}
             </button>
             <button
@@ -75,7 +75,7 @@
               :data-testid="`mapping-delete-profile-${profile.idx}`"
               @click="confirmDeleteProfile(profile)"
             >
-              <FontAwesomeIcon icon="trash-can" />
+              <FontAwesomeIcon :icon="$icons.delete" />
             </button>
           </div>
         </div>
@@ -143,7 +143,7 @@
               :data-testid="`mapping-add-attribute-${profile.idx}`"
               @click="addAttributeRow(profile)"
             >
-              <FontAwesomeIcon icon="plus" />
+              <FontAwesomeIcon :icon="$icons.add" />
               {{ $t("atlas.mappings.add_attribute") }}
             </button>
 
@@ -167,7 +167,7 @@
               :data-testid="`mapping-add-category-${profile.idx}`"
               @click="addCategoryRow(profile)"
             >
-              <FontAwesomeIcon icon="plus" />
+              <FontAwesomeIcon :icon="$icons.add" />
               {{ $t("atlas.mappings.add_category") }}
             </button>
           </div>
@@ -194,7 +194,7 @@
           <BasicInput
             :model-value="formData.idx"
             placeholder="default"
-            :is-disabled="!!editingIdx"
+            :disabled="!!editingIdx"
             data-testid="mapping-form-idx"
             @update:modelValue="onIdxInput"
           />
@@ -215,12 +215,11 @@
           />
         </FormField>
         <FormField :label="$t('atlas.mappings.import_language_label')">
-          <Dropdown
-            :values="languageOptions"
-            :selected="[formData.import_language_id]"
+          <BasicSelect
+            :options="languageOptions"
+            v-model="formData.import_language_id"
             :placeholder="$t('atlas.mappings.import_language_placeholder')"
             data-testid="mapping-form-language"
-            @onSelect="(val) => (formData.import_language_id = val)"
           />
           <p
             v-if="languageMismatchHint"
@@ -231,19 +230,17 @@
           </p>
         </FormField>
         <FormField :label="$t('atlas.form.feature_set_label')">
-          <Dropdown
-            :values="featureSetOptions"
-            :selected="[formData.feature_set_idx]"
+          <BasicSelect
+            :options="featureSetOptions"
+            v-model="formData.feature_set_idx"
             :placeholder="$t('atlas.mappings.feature_set_placeholder')"
             data-testid="mapping-form-feature-set"
-            @onSelect="(val) => (formData.feature_set_idx = val)"
           />
         </FormField>
         <FormField :label="$t('atlas.form.is_active_label')">
-          <Switcher
-            :selected="formData.is_active"
+          <BasicSwitch
+            v-model="formData.is_active"
             data-testid="mapping-form-is-active"
-            @onSelect="formData.is_active = !formData.is_active"
           />
         </FormField>
         <div class="flex ai-ct jc-end gap-5 mt-8">
@@ -261,23 +258,21 @@
             :disabled="formBusy"
             data-testid="mapping-form-submit"
           >
-            <FontAwesomeIcon icon="floppy-disk" />
+            <FontAwesomeIcon :icon="$icons.saveDraft" />
             {{ $t("common.save") }}
           </button>
         </div>
       </form>
     </SideDrawer>
 
-    <Confirmation-modal
-      destructive
-      :visible="deleteVisible"
-      @accept="executeDeleteProfile"
-      @reject="deleteVisible = false"
+    <ConfirmDialog
+      tone="danger"
+      :open="deleteVisible"
+      @confirm="executeDeleteProfile"
+      @cancel="deleteVisible = false"
+      :title="$t('atlas.mappings.delete_title')"
     >
-      <template #header>
-        <h2>{{ $t("atlas.mappings.delete_title") }}</h2>
-      </template>
-      <template #description>
+      <template #default>
         <p>
           {{
             $t("atlas.mappings.delete_body", {
@@ -286,14 +281,13 @@
           }}
         </p>
       </template>
-    </Confirmation-modal>
+    </ConfirmDialog>
   </div>
 </template>
 
 <script>
 import AttributeMappingRow from "../components/AttributeMappingRow.vue";
 import CategoryMappingRow from "../components/CategoryMappingRow.vue";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import { useNotifyStore } from "@/stores/notify";
 import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
 import {
@@ -331,7 +325,7 @@ const EMPTY_PROFILE = () => ({
 
 export default {
   name: "MappingsTab",
-  components: { AttributeMappingRow, CategoryMappingRow, ConfirmationModal },
+  components: { AttributeMappingRow, CategoryMappingRow },
   props: {
     supplier: { type: Object, default: null },
   },

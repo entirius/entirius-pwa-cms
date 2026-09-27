@@ -12,11 +12,10 @@
         :data-testid="`events-severity-${opt.value}`"
         @click="setSeverity(opt.value)"
       />
-      <Switcher
+      <BasicSwitch
         :label="$t('atlas.logs.show_acknowledged')"
-        :selected="showAcknowledged"
+        v-model="showAcknowledged"
         data-testid="events-show-ack-toggle"
-        @onSelect="showAcknowledged = !showAcknowledged"
       />
     </div>
 
@@ -39,7 +38,7 @@
           :data-testid="`events-ack-${row.id}`"
           @click.stop="acknowledge(row)"
         >
-          <FontAwesomeIcon icon="check" />
+          <FontAwesomeIcon :icon="$icons.check" />
           {{ $t("atlas.review.events.acknowledge_button") }}
         </button>
         <span v-else class="t-muted fs-200">{{ formatDate(row.acknowledged_at) }}</span>

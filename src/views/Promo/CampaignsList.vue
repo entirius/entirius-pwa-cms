@@ -2,10 +2,11 @@
   <div class="config-list">
     <div class="config-list__toolbar">
       <BasicButton
-        :text="$t('promo.campaign_new')"
-        class="btn-primary"
+        variant="primary"
         @click="openCreate"
-      />
+      >
+        {{ $t('promo.campaign_new') }}
+      </BasicButton>
     </div>
 
     <Loader block v-show="loading" />
@@ -63,11 +64,10 @@
           required
           :error="errors.typ"
         >
-          <Dropdown
-            :values="typeOptions"
-            :selected="form.typ ? [form.typ] : []"
+          <BasicSelect
+            :options="typeOptions"
+            v-model="form.typ"
             :placeholder="$t('promo.campaign_type')"
-            @onSelect="(v) => (form.typ = v)"
           />
         </FormField>
 
@@ -89,49 +89,47 @@
         </FormField>
 
         <FormField v-if="isEdit" :label="$t('promo.active')">
-          <Switcher
-            :selected="form.is_active"
-            @onSelect="form.is_active = !form.is_active"
+          <BasicSwitch
+            v-model="form.is_active"
           />
         </FormField>
 
         <div class="voucher-form__actions">
           <BasicButton
             v-if="isEdit"
-            :text="$t('promo.btn_delete')"
-            class="btn-secondary"
+            variant="secondary"
             @click="showDelete = true"
-          />
+          >
+            {{ $t('promo.btn_delete') }}
+          </BasicButton>
           <BasicButton
-            :text="$t('promo.btn_save')"
-            class="btn-primary"
-            :is-disabled="saving"
+            variant="primary"
+            :disabled="saving"
             @click="save"
-          />
+          >
+            {{ $t('promo.btn_save') }}
+          </BasicButton>
         </div>
       </div>
     </SideDrawer>
 
-    <Confirmation-modal
-      destructive
-      :visible="showDelete"
-      @accept="doDelete"
-      @reject="showDelete = false"
+    <ConfirmDialog
+      tone="danger"
+      :open="showDelete"
+      @confirm="doDelete"
+      @cancel="showDelete = false"
+      :title="$t('promo.campaign_delete_title')"
     >
-      <template #header
-        ><h2>{{ $t("promo.campaign_delete_title") }}</h2></template
-      >
-      <template #description
+      <template #default
         ><p>{{ $t("promo.campaign_delete_msg") }}</p></template
       >
-    </Confirmation-modal>
+    </ConfirmDialog>
   </div>
 </template>
 
 <script>
 import { useNotifyStore } from "@/stores/notify";
 import { extractApiMessage } from "@/composables/useFormErrors";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import {
   GET_Campaigns,
   POST_Campaign,
@@ -155,7 +153,7 @@ function emptyForm() {
 
 export default {
   name: "CampaignsList",
-  components: { ConfirmationModal },
+  components: {},
   setup() {
     return {
       notify: useNotifyStore(),

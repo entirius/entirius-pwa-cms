@@ -16,11 +16,12 @@
           @keyup.enter="doLookup"
         />
         <BasicButton
-          :text="$t('promo.voucher_lookup_btn')"
-          class="btn-secondary"
-          :is-disabled="!lookupCode"
+          variant="secondary"
+          :disabled="!lookupCode"
           @click="doLookup"
-        />
+        >
+          {{ $t('promo.voucher_lookup_btn') }}
+        </BasicButton>
       </div>
 
       <MobileFilterPanel
@@ -35,12 +36,12 @@
           :active="statusFilter === opt.key"
           @click="setStatusFilter(opt.key)"
         />
-        <Dropdown
-          :values="campaignOptions"
-          :selected="campaignFilter ? [campaignFilter] : []"
+        <BasicSelect
+          :options="campaignOptions"
+          :model-value="campaignFilter"
           :placeholder="$t('promo.voucher_all_campaigns')"
           class="vouchers-list__campaign-filter"
-          @onSelect="onCampaignFilter"
+          @update:model-value="onCampaignFilter"
         />
       </MobileFilterPanel>
     </div>

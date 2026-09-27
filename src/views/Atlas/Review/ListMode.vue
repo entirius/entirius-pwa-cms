@@ -25,7 +25,7 @@
         data-testid="list-bulk-approve"
         @click="bulkConfirm('approve')"
       >
-        <FontAwesomeIcon icon="check" />
+        <FontAwesomeIcon :icon="$icons.check" />
         {{ $t("atlas.review.list.bulk_approve") }}
       </button>
       <button
@@ -34,7 +34,7 @@
         data-testid="list-bulk-reject"
         @click="bulkConfirm('reject')"
       >
-        <FontAwesomeIcon icon="xmark" />
+        <FontAwesomeIcon :icon="$icons.close" />
         {{ $t("atlas.review.list.bulk_reject") }}
       </button>
       <button
@@ -43,7 +43,7 @@
         data-testid="list-bulk-requeue"
         @click="bulkConfirm('requeue')"
       >
-        <FontAwesomeIcon icon="rotate" />
+        <FontAwesomeIcon :icon="$icons.refresh" />
         {{ $t("atlas.review.list.bulk_requeue") }}
       </button>
       <button
@@ -58,7 +58,7 @@
         data-testid="list-bulk-push"
         @click="bulkPush"
       >
-        <FontAwesomeIcon icon="upload" />
+        <FontAwesomeIcon :icon="$icons.publish" />
         {{ $t("atlas.review.list.push_approved") }}
       </button>
     </div>
@@ -92,16 +92,14 @@
       </template>
     </DataTable>
 
-    <Confirmation-modal
-      :visible="confirmVisible"
-      :destructive="pendingAction === 'reject'"
-      @accept="bulkExecute"
-      @reject="confirmVisible = false"
+    <ConfirmDialog
+      :open="confirmVisible"
+      :tone="(pendingAction === 'reject') ? 'danger' : 'default'"
+      @confirm="bulkExecute"
+      @cancel="confirmVisible = false"
+      :title="$t('atlas.review.list.confirm_title')"
     >
-      <template #header>
-        <h2>{{ $t("atlas.review.list.confirm_title") }}</h2>
-      </template>
-      <template #description>
+      <template #default>
         <p>
           {{
             $t(`atlas.review.list.confirm_${pendingAction}`, {
@@ -110,7 +108,7 @@
           }}
         </p>
       </template>
-    </Confirmation-modal>
+    </ConfirmDialog>
 
     <SideDrawer
       :visible="detailVisible"
@@ -135,7 +133,7 @@
             data-testid="list-detail-approve"
             @click="detailAction('approve')"
           >
-            <FontAwesomeIcon icon="check" />
+            <FontAwesomeIcon :icon="$icons.check" />
             {{ $t("atlas.review.approve_button") }}
           </button>
           <button
@@ -145,7 +143,7 @@
             data-testid="list-detail-skip"
             @click="detailAction('skip')"
           >
-            <FontAwesomeIcon icon="rotate" />
+            <FontAwesomeIcon :icon="$icons.refresh" />
             {{ $t("atlas.review.skip_button") }}
           </button>
           <button
@@ -155,7 +153,7 @@
             data-testid="list-detail-reject"
             @click="detailAction('reject')"
           >
-            <FontAwesomeIcon icon="xmark" />
+            <FontAwesomeIcon :icon="$icons.close" />
             {{ $t("atlas.review.reject_button") }}
           </button>
         </div>
@@ -177,7 +175,6 @@
 </template>
 
 <script>
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import ProductCard from "./ProductCard.vue";
 import RawDataPanel from "./RawDataPanel.vue";
 import RawDataModal from "./RawDataModal.vue";
@@ -221,7 +218,6 @@ const ACTION_FN = {
 export default {
   name: "ListMode",
   components: {
-    ConfirmationModal,
     ProductCard,
     RawDataPanel,
     RawDataModal,

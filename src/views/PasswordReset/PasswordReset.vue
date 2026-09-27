@@ -11,10 +11,12 @@
         <p class="fs-300 fw-500">{{ $t("reset.success_message") }}</p>
       </div>
       <BasicButton
-        :text="$t('reset.back_to_login')"
         @click="goToLogin"
-        class="bg-accent-fill b-accent jc-ct t-on-accent-fill w-100 rounded"
-      />
+        variant="primary"
+        class="jc-ct w-100 rounded"
+      >
+        {{ $t('reset.back_to_login') }}
+      </BasicButton>
     </template>
 
     <!-- Error state (invalid/expired key) -->
@@ -26,10 +28,12 @@
         <p class="fs-300 fw-500">{{ errorMessage }}</p>
       </div>
       <BasicButton
-        :text="$t('reset.back_to_login')"
         @click="goToLogin"
-        class="bg-accent-fill b-accent jc-ct t-on-accent-fill w-100 rounded"
-      />
+        variant="primary"
+        class="jc-ct w-100 rounded"
+      >
+        {{ $t('reset.back_to_login') }}
+      </BasicButton>
     </template>
 
     <!-- Reset form -->
@@ -39,40 +43,44 @@
         {{ $t("reset.subtitle") }}
       </p>
       <div class="auth-card__pw-field mb-10">
-        <BasicInput
-          v-model="newPassword"
-          class="bg-raised lh-base-elem"
-          :label="$t('reset.new_password')"
-          :type="pwVisible ? 'text' : 'password'"
-        />
+        <FormField :label="$t('reset.new_password')">
+          <BasicInput
+            v-model="newPassword"
+            class="bg-raised lh-base-elem"
+            :type="pwVisible ? 'text' : 'password'"
+          />
+        </FormField>
         <button
           class="auth-card__pw-toggle"
           type="button"
           @click="pwVisible = !pwVisible"
         >
-          <FontAwesomeIcon :icon="pwVisible ? 'eye-slash' : 'eye'" />
+          <FontAwesomeIcon :icon="pwVisible ? $icons.hide : $icons.preview" />
         </button>
       </div>
       <div class="auth-card__pw-field mb-8">
-        <BasicInput
-          v-model="confirmPassword"
-          class="bg-raised lh-base-elem"
-          :label="$t('reset.confirm_password')"
-          :type="pwVisible ? 'text' : 'password'"
-        />
+        <FormField :label="$t('reset.confirm_password')">
+          <BasicInput
+            v-model="confirmPassword"
+            class="bg-raised lh-base-elem"
+            :type="pwVisible ? 'text' : 'password'"
+          />
+        </FormField>
         <button
           class="auth-card__pw-toggle"
           type="button"
           @click="pwVisible = !pwVisible"
         >
-          <FontAwesomeIcon :icon="pwVisible ? 'eye-slash' : 'eye'" />
+          <FontAwesomeIcon :icon="pwVisible ? $icons.hide : $icons.preview" />
         </button>
       </div>
       <BasicButton
-        :text="$t('reset.submit')"
         @click="handleReset"
-        class="bg-accent-fill b-accent jc-ct t-on-accent-fill w-100 rounded"
-      />
+        variant="primary"
+        class="jc-ct w-100 rounded"
+      >
+        {{ $t('reset.submit') }}
+      </BasicButton>
     </template>
   </div>
 </template>

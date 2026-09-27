@@ -55,11 +55,12 @@
           "
           icon="magnifying-glass"
         >
-          <BasicButton
-            :text="$t('lookup.find.create_product')"
+          <BasicButton variant="ghost"
             data-testid="atlas-find-create-product"
             @click="goCreateProduct"
-          />
+          >
+            {{ $t('lookup.find.create_product') }}
+          </BasicButton>
         </EmptyState>
 
         <details

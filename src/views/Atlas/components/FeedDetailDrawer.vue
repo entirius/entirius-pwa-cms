@@ -92,7 +92,7 @@
             :title="$t('atlas.feeds.detail.preview_refresh')"
             @click="loadPreview"
           >
-            <FontAwesomeIcon icon="rotate" :spin="previewBusy" />
+            <FontAwesomeIcon :icon="$icons.refresh" :spin="previewBusy" />
           </button>
         </div>
         <p v-if="previewBusy" class="fs-200 t-muted">

@@ -16,13 +16,13 @@
             data-testid="review-search-input"
             @input="onSearchChange"
           />
-          <Dropdown
-            :values="supplierFilterOptions"
-            :selected="[filters.supplier]"
+          <BasicSelect
+            :options="supplierFilterOptions"
+            :model-value="filters.supplier"
             :placeholder="$t('atlas.col.name')"
             class="review-supplier-filter"
             data-testid="review-supplier-filter"
-            @onSelect="onSupplierChange"
+            @update:model-value="onSupplierChange"
           />
         </div>
       </div>

@@ -35,20 +35,18 @@
         @row-click="onRowClick"
       >
         <template #cell-auto="{ value }">
-          <span
-            class="chip"
-            :class="value ? 'bg-accent-subtle t-strong' : 'bg-raised t-muted'"
-          >
-            {{ value ? $t("common.yes") : $t("common.no") }}
-          </span>
+          <StatusBadge
+            :tone="value ? 'accent' : 'neutral'"
+            :dot="false"
+            :label="value ? $t('common.yes') : $t('common.no')"
+          />
         </template>
         <template #cell-active="{ value }">
-          <span
-            class="chip"
-            :class="value ? 'bg-positive-subtle t-positive' : 'bg-raised t-muted'"
-          >
-            {{ value ? $t("common.yes") : $t("common.no") }}
-          </span>
+          <StatusBadge
+            :tone="value ? 'positive' : 'neutral'"
+            :dot="false"
+            :label="value ? $t('common.yes') : $t('common.no')"
+          />
         </template>
         <template #cell-running="{ row }">
           <StatusBadge
@@ -60,12 +58,13 @@
         </template>
         <template #cell-actions="{ row }">
           <BasicButton
-            :text="$t('enrichment.spawn_rules.run_now')"
             size="sm"
-            class="btn-secondary"
+            variant="secondary"
             :data-test="`spawn-rule-run-${row.key}`"
             @click="runRule(row)"
-          />
+          >
+            {{ $t('enrichment.spawn_rules.run_now') }}
+          </BasicButton>
         </template>
       </DataTable>
 
@@ -114,7 +113,7 @@ export default {
     fabActions() {
       return [
         {
-          icon: "plus",
+          icon: "add",
           label: this.$t("enrichment.spawn_rules.create"),
           handler: () => this.$router.push("/enrichment/spawn-rules/new"),
         },

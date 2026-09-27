@@ -11,10 +11,12 @@
         <p class="fs-300 fw-500">{{ $t("user.password_changed_message") }}</p>
       </div>
       <BasicButton
-        :text="$t('user.back_to_home')"
         @click="goHome"
-        class="bg-accent-fill b-accent jc-ct t-on-accent-fill w-100 rounded"
-      />
+        variant="primary"
+        class="jc-ct w-100 rounded"
+      >
+        {{ $t('user.back_to_home') }}
+      </BasicButton>
     </template>
 
     <!-- Form -->
@@ -26,55 +28,60 @@
         {{ $t("user.change_password_subtitle") }}
       </p>
       <div class="auth-card__pw-field mb-10">
-        <BasicInput
-          v-model="oldPassword"
-          class="bg-raised lh-base-elem"
-          :label="$t('user.old_password')"
-          :type="oldPwVisible ? 'text' : 'password'"
-        />
+        <FormField :label="$t('user.old_password')">
+          <BasicInput
+            v-model="oldPassword"
+            class="bg-raised lh-base-elem"
+            :type="oldPwVisible ? 'text' : 'password'"
+          />
+        </FormField>
         <button
           class="auth-card__pw-toggle"
           type="button"
           @click="oldPwVisible = !oldPwVisible"
         >
-          <FontAwesomeIcon :icon="oldPwVisible ? 'eye-slash' : 'eye'" />
+          <FontAwesomeIcon :icon="oldPwVisible ? $icons.hide : $icons.preview" />
         </button>
       </div>
       <div class="auth-card__pw-field mb-10">
-        <BasicInput
-          v-model="newPassword"
-          class="bg-raised lh-base-elem"
-          :label="$t('user.new_password')"
-          :type="newPwVisible ? 'text' : 'password'"
-        />
+        <FormField :label="$t('user.new_password')">
+          <BasicInput
+            v-model="newPassword"
+            class="bg-raised lh-base-elem"
+            :type="newPwVisible ? 'text' : 'password'"
+          />
+        </FormField>
         <button
           class="auth-card__pw-toggle"
           type="button"
           @click="newPwVisible = !newPwVisible"
         >
-          <FontAwesomeIcon :icon="newPwVisible ? 'eye-slash' : 'eye'" />
+          <FontAwesomeIcon :icon="newPwVisible ? $icons.hide : $icons.preview" />
         </button>
       </div>
       <div class="auth-card__pw-field mb-8">
-        <BasicInput
-          v-model="confirmPassword"
-          class="bg-raised lh-base-elem"
-          :label="$t('user.confirm_password')"
-          :type="newPwVisible ? 'text' : 'password'"
-        />
+        <FormField :label="$t('user.confirm_password')">
+          <BasicInput
+            v-model="confirmPassword"
+            class="bg-raised lh-base-elem"
+            :type="newPwVisible ? 'text' : 'password'"
+          />
+        </FormField>
         <button
           class="auth-card__pw-toggle"
           type="button"
           @click="newPwVisible = !newPwVisible"
         >
-          <FontAwesomeIcon :icon="newPwVisible ? 'eye-slash' : 'eye'" />
+          <FontAwesomeIcon :icon="newPwVisible ? $icons.hide : $icons.preview" />
         </button>
       </div>
       <BasicButton
-        :text="$t('user.change_password_submit')"
         @click="handleSubmit"
-        class="bg-accent-fill b-accent jc-ct t-on-accent-fill w-100 rounded"
-      />
+        variant="primary"
+        class="jc-ct w-100 rounded"
+      >
+        {{ $t('user.change_password_submit') }}
+      </BasicButton>
     </template>
   </div>
 </template>

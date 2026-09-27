@@ -19,7 +19,7 @@
         <BasicInput
           v-else
           v-model="local.source_field"
-          :is-disabled="true"
+          :disabled="true"
           :data-testid="`cat-mapping-source-${rowKey}`"
         />
       </FormField>
@@ -37,7 +37,7 @@
         <BasicInput
           v-else
           v-model="local.source_value"
-          :is-disabled="true"
+          :disabled="true"
           :data-testid="`cat-mapping-value-${rowKey}`"
         />
       </FormField>
@@ -69,7 +69,7 @@
         :title="warningTitle"
         :data-testid="`cat-mapping-warning-${rowKey}`"
       >
-        <FontAwesomeIcon icon="triangle-exclamation" />
+        <FontAwesomeIcon :icon="$icons.warning" />
         <span class="fs-200 fw-600">{{ rowWarnings.length }}</span>
       </span>
       <button
@@ -79,7 +79,7 @@
         :data-testid="`cat-mapping-delete-${rowKey}`"
         @click="$emit('delete', mapping)"
       >
-        <FontAwesomeIcon icon="trash-can" />
+        <FontAwesomeIcon :icon="$icons.delete" />
       </button>
       <button
         class="suppliers-primary-btn"
@@ -87,7 +87,7 @@
         :data-testid="`cat-mapping-save-${rowKey}`"
         @click="emitSave"
       >
-        <FontAwesomeIcon icon="floppy-disk" />
+        <FontAwesomeIcon :icon="$icons.saveDraft" />
         {{ $t("common.save") }}
       </button>
     </div>

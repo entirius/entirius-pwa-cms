@@ -143,7 +143,7 @@
                   data-testid="contact-primary"
                   @click="togglePrimary(contact)"
                 >
-                  <FontAwesomeIcon icon="star" />
+                  <FontAwesomeIcon :icon="$icons.primary" />
                 </button>
               </td>
               <td>

@@ -8,30 +8,27 @@
       />
     </Teleport>
     <Teleport to="#faq-toolbar-right" defer>
-      <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
-        {{ $t("unsaved.changes") }}
-      </span>
+      <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
       <BasicButton
         v-if="isEdit && channelLanguages.length > 0"
-        :text="$t('faq.translations')"
-        icon="language"
-        class="btn-outline"
+        variant="secondary"
         @click="showTranslationsDrawer = true"
-      />
-      <BasicButton
-        v-if="isEdit"
-        custom
-        :label="$t('common.delete')"
-        class="btn-danger"
-        @click="showDeleteConfirm = true"
       >
-        <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+        {{ $t('faq.translations') }}
       </BasicButton>
-      <BasicButton
-        :text="$t('common.save')"
-        class="btn-primary"
-        @click="saveGroup"
+      <IconButton
+        v-if="isEdit"
+        icon="delete"
+        :label="$t('common.delete')"
+        variant="danger"
+        @click="showDeleteConfirm = true"
       />
+      <BasicButton
+        variant="primary"
+        @click="saveGroup"
+      >
+        {{ $t('common.save') }}
+      </BasicButton>
     </Teleport>
 
     <div class="page-card h-100 ovy-auto">
@@ -42,10 +39,9 @@
           <h1 class="page-title">
             {{ isEdit ? group.name || group.idx : $t("faq.create_group") }}
           </h1>
-          <Switcher
+          <BasicSwitch
             :label="$t('faq.is_active')"
-            :selected="form.is_active"
-            @onSelect="form.is_active = !form.is_active"
+            v-model="form.is_active"
           />
         </div>
 
@@ -55,46 +51,30 @@
           <div class="detail-grid">
             <div class="detail-field">
               <label class="field-label required">{{ $t("faq.idx") }}</label>
-              <BasicInput
-                v-model="form.idx"
-                :isDisabled="isEdit"
-                :validate="formErrors.getFieldError('idx')"
-              />
+              <FormField :error="formErrors.getFieldError('idx')?.msg || ''">
+                <BasicInput
+                  v-model="form.idx"
+                  :disabled="isEdit"
+                />
+              </FormField>
             </div>
             <div class="detail-field">
               <label class="field-label required">{{ $t("faq.name") }}</label>
-              <BasicInput
-                v-model="form.name"
-                :validate="formErrors.getFieldError('name')"
-              />
+              <FormField :error="formErrors.getFieldError('name')?.msg || ''">
+                <BasicInput
+                  v-model="form.name"
+                />
+              </FormField>
             </div>
             <div class="detail-field">
               <label class="field-label">{{ $t("faq.channels") }}</label>
-              <Dropdown
-                :custom_droplist="true"
-                :placeholder="`${$t('faq.channels')} (${
-                  form.channel_ids.length || $t('faq.global')
-                })`"
-              >
-                <template #custom>
-                  <div
-                    v-for="ch in channelOptions"
-                    :key="ch.value"
-                    class="pointer flex jc-sb ai-ct ph-2 dropdown-list-el"
-                    :class="{
-                      '-primary-100': form.channel_ids.includes(ch.value),
-                    }"
-                    @click.stop="toggleChannel(ch.value)"
-                  >
-                    <span class="ml-2">{{ ch.label }}</span>
-                    <FontAwesomeIcon
-                      v-if="form.channel_ids.includes(ch.value)"
-                      icon="check"
-                      class="t-positive"
-                    />
-                  </div>
-                </template>
-              </Dropdown>
+              <BasicSelect
+                v-model="form.channel_ids"
+                multiple
+                :options="channelOptions"
+                :placeholder="`${$t('faq.channels')} (${$t('faq.global')})`"
+                :aria-label="$t('faq.channels')"
+              />
             </div>
           </div>
         </div>
@@ -104,12 +84,12 @@
           <div class="section-head mb-8">
             <h2 class="fs-500 fw-600">{{ $t("faq.items_in_group") }}</h2>
             <div class="flex ai-ct gap-5">
-              <Dropdown
-                :values="unassignedItemOptions"
-                :selected="[]"
+              <BasicSelect
+                :options="unassignedItemOptions"
+                :model-value="null"
                 :placeholder="$t('faq.add_existing_item')"
                 class="add-item-select"
-                @onSelect="addItemToGroup"
+                @update:model-value="addItemToGroup"
               />
             </div>
           </div>
@@ -131,7 +111,7 @@
             <template #item="{ element }">
               <div class="item-row flex ai-ct gap-5">
                 <font-awesome-icon
-                  icon="grip-vertical"
+                  :icon="$icons.drag"
                   class="drag-handle t-muted"
                 />
                 <span
@@ -144,15 +124,13 @@
                   :label="element.is_active ? $t('faq.active') : $t('faq.inactive')"
                   :variant="element.is_active ? 'positive' : 'negative'"
                 />
-                <BasicButton
-                  custom
-                  size="sm"
+                <IconButton
+                  icon="close"
                   :label="$t('faq.remove_from_group')"
-                  class="btn-danger"
+                  variant="danger"
+                  size="sm"
                   @click="removeItemFromGroup(element)"
-                >
-                  <template #custom><FontAwesomeIcon icon="xmark" /></template>
-                </BasicButton>
+                />
               </div>
             </template>
           </draggable>
@@ -160,19 +138,17 @@
       </template>
     </div>
 
-    <Confirmation-modal
-      destructive
-      :visible="showDeleteConfirm"
-      @accept="deleteGroup"
-      @reject="showDeleteConfirm = false"
+    <ConfirmDialog
+      tone="danger"
+      :open="showDeleteConfirm"
+      @confirm="deleteGroup"
+      @cancel="showDeleteConfirm = false"
+      :title="$t('faq.confirm_delete_title')"
     >
-      <template #header>
-        <h2>{{ $t("faq.confirm_delete_title") }}</h2>
-      </template>
-      <template #description>
+      <template #default>
         <p>{{ $t("faq.confirm_delete_group") }}</p>
       </template>
-    </Confirmation-modal>
+    </ConfirmDialog>
 
     <!-- Translations drawer (group has only 'name' to translate) -->
     <TranslationsDrawer
@@ -185,11 +161,15 @@
       @save="onTranslationsSave"
     />
 
-    <UnsavedChangesModal
-      :visible="!!pendingNav"
-      @save="saveAndLeave"
+    <ConfirmDialog
+      :open="!!pendingNav"
+      @confirm="saveAndLeave"
       @discard="confirmLeave"
-      @stay="cancelLeave"
+      @cancel="cancelLeave"
+      :title="$t('unsaved.title')"
+      :message="$t('unsaved.message')"
+      :confirm-label="$t('unsaved.save_and_leave')"
+      :discard-label="$t('unsaved.discard')"
     />
   </div>
 </template>
@@ -213,12 +193,10 @@ import {
   PATCH_FaqItem,
   PATCH_FaqItemsReorder,
 } from "@/api/faq/api";
-import UnsavedChangesModal from "@/functionals/Unsaved-changes-modal/index.vue";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 
 export default {
   name: "FaqGroupEdit",
-  components: { draggable, UnsavedChangesModal, ConfirmationModal },
+  components: { draggable },
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();
@@ -313,14 +291,6 @@ export default {
     }
   },
   methods: {
-    toggleChannel(id) {
-      const idx = this.form.channel_ids.indexOf(id);
-      if (idx >= 0) {
-        this.form.channel_ids.splice(idx, 1);
-      } else {
-        this.form.channel_ids.push(id);
-      }
-    },
     async fetchChannels() {
       try {
         const { data } = await GET_FaqChannels({ page_size: 100 });

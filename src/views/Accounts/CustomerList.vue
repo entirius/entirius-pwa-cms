@@ -30,21 +30,21 @@
           class="acc-list__search"
           @input="debouncedFetch(searchAndFetch)"
         />
-        <Dropdown
+        <BasicSelect
           v-if="groupOptions.length"
-          :values="groupOptions"
-          :selected="groupFilter ? [groupFilter] : []"
+          :options="groupOptions"
+          :model-value="groupFilter"
           :placeholder="$t('accounts.group')"
           class="acc-list__filter-dropdown"
-          @onSelect="setGroupFilter"
+          @update:model-value="setGroupFilter"
         />
-        <Dropdown
+        <BasicSelect
           v-if="channelOptions.length"
-          :values="channelOptions"
-          :selected="channelFilter ? [channelFilter] : []"
+          :options="channelOptions"
+          :model-value="channelFilter"
           :placeholder="$t('accounts.channel')"
           class="acc-list__filter-dropdown"
-          @onSelect="setChannelFilter"
+          @update:model-value="setChannelFilter"
         />
       </div>
 

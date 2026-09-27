@@ -1,28 +1,13 @@
 <template>
   <div class="doc-view fs-200 t-body">
     <div>
-      <nav class="flex bb-subtle mb-5">
-        <BasicButton
-          v-for="({ label, value }, i) in nav"
-          :key="`nav-key-${i}`"
-          :text="label"
-          class="rounded-tl rounded-tr"
-          :class="[
-            selected_view === value
-              ? 'bg-accent-fill t-on-accent-fill b-accent'
-              : 'bg-hover b-default t-secondary',
-          ]"
-          @click="selected_view = value"
-        />
-      </nav>
+      <BasicTabs v-model="selected_view" :options="nav" class="mb-5" />
       <div v-if="selected_view === 'doc'">
         <div class="mb-5">
-          <Dropdown
+          <BasicSelect
             style="max-width: 10rem"
-            :values="docs_nav"
-            :selected="[doc_prev]"
-            class="bg-hover b-default rounded fs-200"
-            @onSelect="doc_prev = $event"
+            :options="docs_nav"
+            v-model="doc_prev"
           />
         </div>
 
@@ -33,12 +18,10 @@
       <div v-if="selected_view === 'eg'">
         <p class="fs-200 t-muted mb-1">Wybierz przyklad</p>
         <div class="flex mb-5">
-          <Dropdown
+          <BasicSelect
             style="min-width: 10rem"
-            :values="sub_nav"
-            :selected="[eg_prev]"
-            class="bg-hover b-default rounded fs-200"
-            @onSelect="eg_prev = $event"
+            :options="sub_nav"
+            v-model="eg_prev"
           />
         </div>
         <div class="grid grid-col-3 gap-5">

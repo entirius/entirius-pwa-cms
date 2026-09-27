@@ -9,20 +9,18 @@
     <div v-if="visible" class="fed">
       <!-- inclusion/exclusion -->
       <FormField :label="$t('promo.filter_field_inclusion')">
-        <Dropdown
-          :values="inclusionOptions"
-          :selected="local.is_inclusion_or_exclusion ? [local.is_inclusion_or_exclusion] : []"
-          @onSelect="(v) => (local.is_inclusion_or_exclusion = v)"
+        <BasicSelect
+          :options="inclusionOptions"
+          v-model="local.is_inclusion_or_exclusion"
         />
       </FormField>
 
       <!-- take_common_part -->
       <FormField :label="$t('promo.filter_field_take_common_part')" class="mt-8">
-        <Switcher
+        <BasicSwitch
           :label="$t('promo.filter_take_common_part_hint')"
           :hint="$t('promo.filter_common_tip')"
-          :selected="local.take_common_part"
-          @onSelect="local.take_common_part = !local.take_common_part"
+          v-model="local.take_common_part"
         />
       </FormField>
 
@@ -44,7 +42,7 @@
             >
               <FontAwesomeIcon
                 v-if="local.products.includes(p.sku)"
-                icon="check"
+                :icon="$icons.check"
                 class="t-positive mr-2"
               />
               <span>{{ p.sku }}{{ p.name ? ` — ${p.name}` : '' }}</span>
@@ -58,7 +56,7 @@
             >
               {{ sku }}
               <button class="fed__chip-remove" @click="removeProduct(sku)">
-                <FontAwesomeIcon icon="xmark" />
+                <FontAwesomeIcon :icon="$icons.close" />
               </button>
             </span>
           </div>
@@ -69,114 +67,42 @@
 
         <!-- categories -->
         <FormField :label="$t('promo.filter_field_categories')" class="mt-8">
-          <Dropdown
-            :custom_droplist="true"
+          <BasicSelect
+            v-model="local.categories"
+            multiple
+            :options="idOptions(categoryOptions, 'idx')"
             :placeholder="`${$t('promo.filter_field_categories')} (${local.categories.length})`"
-          >
-            <template #custom>
-              <div
-                v-for="c in categoryOptions"
-                :key="c.idx"
-                class="pointer flex jc-sb ai-ct ph-2 dropdown-list-el"
-                :class="{ '-primary-100': local.categories.includes(c.idx) }"
-                @click.stop="toggleCategory(c.idx)"
-              >
-                <span class="ml-2">{{ c.idx }}{{ c.name ? ` — ${c.name}` : '' }}</span>
-                <FontAwesomeIcon
-                  v-if="local.categories.includes(c.idx)"
-                  icon="check"
-                  class="t-positive"
-                />
-              </div>
-              <div v-if="!categoryOptions.length" class="ph-2 pv-2 t-muted fs-200 ml-2">
-                {{ $t('promo.filter_no_options') }}
-              </div>
-            </template>
-          </Dropdown>
+          />
         </FormField>
 
         <!-- attributes -->
         <FormField :label="$t('promo.filter_field_attributes')" class="mt-8">
-          <Dropdown
-            :custom_droplist="true"
+          <BasicSelect
+            v-model="local.attributes"
+            multiple
+            :options="idOptions(attributeOptions, 'idx')"
             :placeholder="`${$t('promo.filter_field_attributes')} (${local.attributes.length})`"
-          >
-            <template #custom>
-              <div
-                v-for="a in attributeOptions"
-                :key="a.idx"
-                class="pointer flex jc-sb ai-ct ph-2 dropdown-list-el"
-                :class="{ '-primary-100': local.attributes.includes(a.idx) }"
-                @click.stop="toggleAttribute(a.idx)"
-              >
-                <span class="ml-2">{{ a.idx }}{{ a.name ? ` — ${a.name}` : '' }}</span>
-                <FontAwesomeIcon
-                  v-if="local.attributes.includes(a.idx)"
-                  icon="check"
-                  class="t-positive"
-                />
-              </div>
-              <div v-if="!attributeOptions.length" class="ph-2 pv-2 t-muted fs-200 ml-2">
-                {{ $t('promo.filter_no_options') }}
-              </div>
-            </template>
-          </Dropdown>
+          />
         </FormField>
 
         <!-- features_qty_greater_than_attr_value -->
         <FormField :label="$t('promo.filter_field_features_qty_gt')" class="mt-8">
-          <Dropdown
-            :custom_droplist="true"
+          <BasicSelect
+            v-model="local.features_qty_greater_than_attr_value"
+            multiple
+            :options="idOptions(featureOptions, 'idx')"
             :placeholder="`${$t('promo.filter_field_features_qty_gt')} (${local.features_qty_greater_than_attr_value.length})`"
-          >
-            <template #custom>
-              <div
-                v-for="f in featureOptions"
-                :key="f.idx"
-                class="pointer flex jc-sb ai-ct ph-2 dropdown-list-el"
-                :class="{ '-primary-100': local.features_qty_greater_than_attr_value.includes(f.idx) }"
-                @click.stop="toggleFeatureGt(f.idx)"
-              >
-                <span class="ml-2">{{ f.idx }}{{ f.name ? ` — ${f.name}` : '' }}</span>
-                <FontAwesomeIcon
-                  v-if="local.features_qty_greater_than_attr_value.includes(f.idx)"
-                  icon="check"
-                  class="t-positive"
-                />
-              </div>
-              <div v-if="!featureOptions.length" class="ph-2 pv-2 t-muted fs-200 ml-2">
-                {{ $t('promo.filter_no_options') }}
-              </div>
-            </template>
-          </Dropdown>
+          />
         </FormField>
 
         <!-- features_qty_is_multiple_of_attr_value -->
         <FormField :label="$t('promo.filter_field_features_qty_multiple')" class="mt-8">
-          <Dropdown
-            :custom_droplist="true"
+          <BasicSelect
+            v-model="local.features_qty_is_multiple_of_attr_value"
+            multiple
+            :options="idOptions(featureOptions, 'idx')"
             :placeholder="`${$t('promo.filter_field_features_qty_multiple')} (${local.features_qty_is_multiple_of_attr_value.length})`"
-          >
-            <template #custom>
-              <div
-                v-for="f in featureOptions"
-                :key="f.idx"
-                class="pointer flex jc-sb ai-ct ph-2 dropdown-list-el"
-                :class="{ '-primary-100': local.features_qty_is_multiple_of_attr_value.includes(f.idx) }"
-                @click.stop="toggleFeatureMultiple(f.idx)"
-              >
-                <span class="ml-2">{{ f.idx }}{{ f.name ? ` — ${f.name}` : '' }}</span>
-                <FontAwesomeIcon
-                  v-if="local.features_qty_is_multiple_of_attr_value.includes(f.idx)"
-                  icon="check"
-                  class="t-positive"
-                />
-              </div>
-              <div v-if="!featureOptions.length" class="ph-2 pv-2 t-muted fs-200 ml-2">
-                {{ $t('promo.filter_no_options') }}
-              </div>
-            </template>
-          </Dropdown>
+          />
         </FormField>
 
         <!-- numeric ranges -->
@@ -226,7 +152,7 @@
             >
               <FontAwesomeIcon
                 v-if="local.customers.includes(c.uid)"
-                icon="check"
+                :icon="$icons.check"
                 class="t-positive mr-2"
               />
               <span>{{ c.first_name || '' }} {{ c.last_name || '' }}{{ c.email ? ` (${c.email})` : '' }}</span>
@@ -240,7 +166,7 @@
             >
               {{ uid }}
               <button class="fed__chip-remove" @click="removeCustomer(uid)">
-                <FontAwesomeIcon icon="xmark" />
+                <FontAwesomeIcon :icon="$icons.close" />
               </button>
             </span>
           </div>
@@ -251,46 +177,30 @@
 
         <!-- groups -->
         <FormField :label="$t('promo.filter_field_groups')" class="mt-8">
-          <Dropdown
-            :custom_droplist="true"
+          <BasicSelect
+            v-model="local.groups"
+            multiple
+            :options="idOptions(groupOptions, 'code')"
             :placeholder="`${$t('promo.filter_field_groups')} (${local.groups.length})`"
-          >
-            <template #custom>
-              <div
-                v-for="g in groupOptions"
-                :key="g.code"
-                class="pointer flex jc-sb ai-ct ph-2 dropdown-list-el"
-                :class="{ '-primary-100': local.groups.includes(g.code) }"
-                @click.stop="toggleGroup(g.code)"
-              >
-                <span class="ml-2">{{ g.code }}{{ g.name ? ` — ${g.name}` : '' }}</span>
-                <FontAwesomeIcon
-                  v-if="local.groups.includes(g.code)"
-                  icon="check"
-                  class="t-positive"
-                />
-              </div>
-              <div v-if="!groupOptions.length" class="ph-2 pv-2 t-muted fs-200 ml-2">
-                {{ $t('promo.filter_no_options') }}
-              </div>
-            </template>
-          </Dropdown>
+          />
         </FormField>
       </template>
 
       <!-- footer -->
       <div class="fed__footer mt-10">
         <BasicButton
-          :text="$t('common.cancel')"
-          class="btn-secondary"
+          variant="secondary"
           @click="onClose"
-        />
+        >
+          {{ $t('common.cancel') }}
+        </BasicButton>
         <BasicButton
-          :text="$t('common.save')"
-          class="btn-primary"
+          variant="primary"
           :disabled="saving"
           @click="onSave"
-        />
+        >
+          {{ $t('common.save') }}
+        </BasicButton>
       </div>
     </div>
   </SideDrawer>
@@ -485,6 +395,11 @@ watch(customerSearch, () => {
 });
 
 // ─── toggle helpers ─────────────────────────────────────────────────────────
+// { idx | code, name } rows → BasicSelect options ("idx — name").
+function idOptions(rows, key) {
+  return rows.map((row) => ({ label: row.name ? `${row[key]} — ${row.name}` : row[key], value: row[key] }));
+}
+
 function toggleInArray(arr, value) {
   const idx = arr.indexOf(value);
   if (idx >= 0) arr.splice(idx, 1);
@@ -495,15 +410,10 @@ function toggleProduct(sku) { toggleInArray(local.value.products, sku); }
 function removeProduct(sku) {
   local.value.products = local.value.products.filter((s) => s !== sku);
 }
-function toggleCategory(idx) { toggleInArray(local.value.categories, idx); }
-function toggleAttribute(idx) { toggleInArray(local.value.attributes, idx); }
-function toggleFeatureGt(idx) { toggleInArray(local.value.features_qty_greater_than_attr_value, idx); }
-function toggleFeatureMultiple(idx) { toggleInArray(local.value.features_qty_is_multiple_of_attr_value, idx); }
 function toggleCustomer(uid) { toggleInArray(local.value.customers, uid); }
 function removeCustomer(uid) {
   local.value.customers = local.value.customers.filter((u) => u !== uid);
 }
-function toggleGroup(code) { toggleInArray(local.value.groups, code); }
 
 // ─── save ────────────────────────────────────────────────────────────────────
 const RANGE_FIELDS = [

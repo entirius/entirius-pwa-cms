@@ -17,7 +17,7 @@
       </span>
       <span class="inbox-row__subject" data-testid="inbox-item-subject">{{ subject }}</span>
       <span class="inbox-row__state" data-testid="inbox-item-state">
-        <FontAwesomeIcon v-if="marker === 'waiting'" icon="clock" class="inbox-row__clock" />
+        <FontAwesomeIcon v-if="marker === 'waiting'" :icon="$icons.scheduled" class="inbox-row__clock" />
         <strong v-if="marker !== 'none'" class="inbox-row__marker" :data-testid="`inbox-marker-${marker}`">{{ markerText }}</strong>
         <template v-else>{{ $t(`leads.thread.state.${row.status}`) }}</template><template v-if="detail"> · {{ detail }}</template>
       </span>

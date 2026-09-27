@@ -18,7 +18,7 @@
             :aria-expanded="filtersOpen"
             @click="filtersOpen = !filtersOpen"
           >
-            <FontAwesomeIcon icon="filter" />
+            <FontAwesomeIcon :icon="$icons.filter" />
             {{ $t("enrichment.review.filters") }}
             <span
               v-if="activeFilterCount > 0"
@@ -32,7 +32,7 @@
             data-testid="enrichment-import-open"
             @click="importVisible = true"
           >
-            <FontAwesomeIcon icon="file-csv" />
+            <FontAwesomeIcon :icon="$icons.importCsv" />
             {{ $t("enrichment.import.open") }}
           </button>
         </div>
@@ -68,26 +68,26 @@
             data-testid="enrichment-search-input"
             @input="onSearchChange"
           />
-          <Dropdown
-            :values="moduleOptions"
-            :selected="[filters.target_module]"
+          <BasicSelect
+            :options="moduleOptions"
+            :model-value="filters.target_module"
             :placeholder="$t('enrichment.review.col.module')"
             data-testid="enrichment-module-filter"
-            @onSelect="(v) => onFilterChange('target_module', v)"
+            @update:model-value="(v) => onFilterChange('target_module', v)"
           />
-          <Dropdown
-            :values="kindOptions"
-            :selected="[filters.target_kind]"
+          <BasicSelect
+            :options="kindOptions"
+            :model-value="filters.target_kind"
             :placeholder="$t('enrichment.review.col.kind')"
             data-testid="enrichment-kind-filter"
-            @onSelect="(v) => onFilterChange('target_kind', v)"
+            @update:model-value="(v) => onFilterChange('target_kind', v)"
           />
-          <Dropdown
-            :values="sourceOptions"
-            :selected="[filters.source]"
+          <BasicSelect
+            :options="sourceOptions"
+            :model-value="filters.source"
             :placeholder="$t('enrichment.review.col.source')"
             data-testid="enrichment-source-filter"
-            @onSelect="(v) => onFilterChange('source', v)"
+            @update:model-value="(v) => onFilterChange('source', v)"
           />
           <BasicInput
             v-model="filters.batch_id"
