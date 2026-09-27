@@ -72,8 +72,10 @@ export default {
       transform: translate(20%, 0);
     }
   }
+  // Hover, or keyboard focus on the hint itself or on the control a wrapper holds.
   &:hover .tip,
-  &:focus-visible .tip {
+  &:focus-visible .tip,
+  &:has(:focus-visible) .tip {
     display: block;
   }
 }
