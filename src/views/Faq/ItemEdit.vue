@@ -601,7 +601,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 .detail-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -613,7 +612,6 @@ export default {
   flex-direction: column;
   gap: var(--space-1);
 }
-
 
 .translation-field__btn {
   flex-shrink: 0;

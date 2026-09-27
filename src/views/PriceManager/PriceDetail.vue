@@ -565,7 +565,6 @@ export default {
   gap: var(--space-1);
 }
 
-
 .pm-lock-icon {
   font-size: var(--fs-200);
 }

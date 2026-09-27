@@ -827,7 +827,6 @@ export default {
   gap: var(--space-1);
 }
 
-
 .t9n-row {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-base);

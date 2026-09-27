@@ -203,7 +203,6 @@ export default {
   gap: var(--space-1);
 }
 
-
 .import-input {
   max-width: 300px;
 }

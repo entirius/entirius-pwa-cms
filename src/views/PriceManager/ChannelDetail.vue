@@ -307,7 +307,6 @@ export default {
   gap: var(--space-1);
 }
 
-
 .pm-hint {
   font-size: var(--fs-200);
   color: var(--text-muted);

@@ -1664,7 +1664,6 @@ export default {
   gap: var(--space-1);
 }
 
-
 .meta-item {
   font-size: var(--fs-200);
   color: var(--text-muted);

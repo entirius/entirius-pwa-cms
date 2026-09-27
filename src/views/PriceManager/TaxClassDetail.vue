@@ -281,7 +281,6 @@ export default {
   gap: var(--space-1);
 }
 
-
 .pm-rates-table {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-base);
