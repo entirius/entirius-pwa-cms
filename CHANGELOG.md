@@ -175,6 +175,12 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- P3 close (plan 20): the PIM "Translate store", Builder "Translate all" and PIM option "Translations" buttons show
+  the translate icon on a phone instead of an empty box; author, feature-set, option and gallery-tag fields take their
+  share of the row again; a portrait image stays inside its gallery tile; the Find-product empty state shows its
+  search icon; a dialog without a title is named by `ariaLabel`. The visual harness waits until no request is in
+  flight before a capture, so detail screens opened by a row click keep their lazily loaded fields.
+
 - The Handy-kit categories list loads its next page when the end of the list comes into view, so a first page that
   does not fill the box no longer stops at six categories.
 
