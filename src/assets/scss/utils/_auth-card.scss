@@ -23,6 +23,11 @@
   &:hover {
     text-decoration: underline;
   }
+
+  // A thumb-sized target on a phone (the text line alone is 16 px).
+  @include max-tablet {
+    min-height: var(--space-10);
+  }
 }
 
 .auth-card__divider {

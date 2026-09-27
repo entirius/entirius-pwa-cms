@@ -12,6 +12,8 @@ defineProps({
 </template>
 
 <style lang="scss">
+@import "@/assets/scss/utils/media-query";
+
 .help-tooltip {
   position: relative;
   display: inline;
@@ -34,6 +36,19 @@ defineProps({
     vertical-align: text-bottom;
     position: relative;
     top: -1px;
+
+    // A phone gets a 40 px hit area around the 14 px glyph; the glyph itself does not grow.
+    @include max-tablet {
+      &::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: var(--space-10);
+        height: var(--space-10);
+        transform: translate(-50%, -50%);
+      }
+    }
   }
 
   &__bubble {
