@@ -140,4 +140,11 @@ describe("BasicMenu", () => {
     expect(menu().style.display).not.toBe("none");
     expect(menu().style.position).toBe("");
   });
+
+  it("inline with a top placement draws the drop-up state: the list above the trigger", () => {
+    const up = mountMenu({ inline: true, placement: "top-start" });
+    const down = mountMenu({ inline: true });
+    expect(up.classes()).toContain("basic-menu--inline-up");
+    expect(down.classes()).not.toContain("basic-menu--inline-up");
+  });
 });

@@ -63,6 +63,7 @@ export default function registerBootComponents(app) {
   // P3 page frame (plan 14)
 
   // P3 selects (plan 15)
+  app.component("BasicSelect", defineAsyncComponent(() => import("./BasicSelect/index.vue")));
 
   // P3 inputs (plan 16)
 
