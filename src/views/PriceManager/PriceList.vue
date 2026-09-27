@@ -263,6 +263,7 @@
 
 <script>
 import { useLoaderStore } from '@/stores/loader'
+import { toggledValue } from '@/utils/toggled-value'
 import { useNotifyStore } from '@/stores/notify'
 import { useSearchDebounce } from '@/composables/useSearchDebounce'
 import {
@@ -470,8 +471,7 @@ export default {
     // --- UI events ---
     // BasicSelect `multiple` emits the whole list; toggle the one code it added or removed.
     onCurrenciesPick(codes) {
-      const current = this.selectedCurrencies
-      this.toggleCurrency(codes.find((c) => !current.includes(c)) ?? current.find((c) => !codes.includes(c)))
+      this.toggleCurrency(toggledValue(codes, this.selectedCurrencies))
     },
     toggleCurrency(code) {
       const idx = this.selectedCurrencies.indexOf(code)

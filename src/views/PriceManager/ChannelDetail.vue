@@ -92,6 +92,7 @@
 
 <script>
 import { useLoaderStore } from '@/stores/loader'
+import { toggledValue } from '@/utils/toggled-value'
 import { useNotifyStore } from '@/stores/notify'
 import { useFormErrors, extractApiMessage } from '@/composables/useFormErrors'
 import {
@@ -167,8 +168,7 @@ export default {
   methods: {
     // BasicSelect `multiple` emits the whole list; toggle the one code it added or removed.
     onCountriesPick(codes) {
-      const current = this.form.calculate_country_codes
-      this.toggleCountry(codes.find((c) => !current.includes(c)) ?? current.find((c) => !codes.includes(c)))
+      this.toggleCountry(toggledValue(codes, this.form.calculate_country_codes))
     },
     toggleCountry(iso2) {
       const idx = this.form.calculate_country_codes.indexOf(iso2)

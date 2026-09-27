@@ -99,6 +99,13 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- P3 sweep, partition 1 (plan 17): Pim, Points, PriceManager, PriceFighter, Stock, Agreements, the functionals,
+  the builder controllers and the shell use the P3 components — buttons by `variant`, icon-only actions on
+  `IconButton`, icons by meaning, confirmations on `ConfirmDialog` / `BasicModal`, chips on `StatusBadge`, `Loader`,
+  `BasicSelect`, `BasicSwitch`, `BasicTextarea`, field errors and floating labels on `FormField`. The Handy-kit
+  lists that did more than pick a value (reorder, edit, delete per row) open in a `BasicMenu` panel. The P3 codemods
+  no longer reject a rewrite that closes a tag (`<StatusBadge />`).
+
 - Rich-text table tools are short text buttons (four "add" and three "delete" tools shared one icon each); the
   pricing detail flush/delete buttons carry one tooltip (their label); the standalone `ToolTip` hint is a `note`
   described by its text; the FAB sits 16 px from the edge and its speed-dial back button uses the `back` meaning.
@@ -153,6 +160,9 @@ All notable changes to this project will be documented in this file.
   password and SSO login run the same code after the token call.
 
 ### Fixed
+
+- The Handy-kit categories list loads its next page when the end of the list comes into view, so a first page that
+  does not fill the box no longer stops at six categories.
 
 - Handy-kit category picker loads the first page and the next one when its list is scrolled to the end (plan 10
   loaded every page on open); P3 codemods resolve the repo root from a path with spaces and report a missing or
