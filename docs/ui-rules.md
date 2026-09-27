@@ -131,10 +131,10 @@ Traps:
 
 ## Page patterns
 
-- **Page frame.** The panel wrapper holds a toolbar with `#<panel>-toolbar-left` / `-right` anchors, and child
-  views `<Teleport … defer>` into them. Left anchor: back arrow + H1 (R2, R3). Right anchor: actions in R5 order. The
-  content card below it scrolls (`flex: 1; min-height: 0; overflow-y: auto`), and the toolbar never shrinks. P3
-  replaces this with `PageLayout` + `PageHeader` + `ActionBar`.
+- **Page frame.** The panel wrapper holds a toolbar (`.panel-toolbar`) with `#<panel>-toolbar-left` / `-right`
+  anchors, and child views `<Teleport … defer>` into them. Left anchor: back arrow + H1 (R2, R3). Right anchor: actions
+  in R5 order. The content card below it scrolls (`flex: 1; min-height: 0; overflow-y: auto`), and the toolbar never
+  shrinks. P3 replaces this with `PageLayout` + `PageHeader` + `ActionBar`.
 - **List view.** The toolbar holds a search `BasicInput` with `useSearchDebounce`, then filters in
   `MobileFilterPanel`, and it wraps (`flex-wrap`, `gap: var(--space-5)`). In `DataTable`, secondary columns get fixed
   widths and only the primary text column gets `1fr`, truncated with an ellipsis. No data means `EmptyState`
@@ -173,9 +173,17 @@ Traps:
 ## Mobile
 
 - Breakpoints come from the mixins, never from raw media queries. Check every screen at 390 px (one thumb) and on
-  desktop. The page never scrolls horizontally. `DataTable` scrolls inside its own box.
-- A tap target is at least 24 × 24 px, and list rows are at least 36 px high.
-- A button with icon + text drops its text on mobile via `icon-only-mobile`. It keeps an accessible label.
+  desktop. The page never scrolls horizontally, and neither does a card: a wide table (`DataTable`, or a raw table in
+  an `overflow-x: auto` box), `BasicTabs` and `SegmentedControl` scroll inside their own box.
+- Rows wrap instead of overflowing, through the shared classes (`utils/_panel-toolbar.scss`): `.panel-toolbar` for the
+  panel strip, `.page-title-row` for an in-card back arrow + H1 + `ml-auto` actions, `.section-head` for an `h2` with
+  its controls. Wrapped actions stay right-aligned (R5). Other rows use `.flex-wrap` (with `.rg-*` for the row gap);
+  form rows stack to one column below tablet.
+- Page cards (`p-12`, `pl-12` …) pad 16 px below tablet; the layout keeps every scroll region above the bottom bar.
+- A tap target is at least 24 × 24 px, and list rows are at least 36 px high. A small glyph gets a larger hit area
+  (padding or a pseudo-element), not a larger visual.
+- A button with icon + text drops its text on mobile via `icon-only-mobile`. It keeps an accessible label. The page's
+  primary actions (Save, Publish, Approve) keep their text (R7).
 - Fixed-bottom elements sit above `var(--bottom-bar-height)`.
 
 ## Copy
