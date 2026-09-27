@@ -1,20 +1,21 @@
 <template>
   <div class="color-input-wrapper">
-    <div class="color-input flex ai-ct">
-      <div
-        class="color-input__swatch"
-        :style="{ backgroundColor: modelValue || 'transparent' }"
-        @click="openPicker"
-      >
+    <div
+      class="color-input flex ai-ct"
+      :class="{ 'color-input--disabled': controlDisabled, 'color-input--invalid': invalid }"
+    >
+      <div class="color-input__swatch" :style="{ backgroundColor: modelValue || 'transparent' }">
         <input
-          ref="picker"
           type="color"
           class="color-input__native"
           :value="modelValue || '#000000'"
+          :disabled="controlDisabled"
+          :aria-labelledby="field.labelId?.value || undefined"
           @input="onPickerInput"
         />
       </div>
       <input
+        v-bind="attrs"
         type="text"
         class="color-input__text w-100 bg-inherit"
         :value="modelValue"
@@ -27,9 +28,12 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+// Colour (docs/ui-components.md § P3 inputs): `v-model` (hex), `placeholder`, `disabled`. The swatch is the native
+// colour picker itself (transparent over the swatch), so a click or a key on it opens the picker. Inside a FormField
+// the text field takes id, aria-describedby, aria-invalid, required and disabled from the contract.
+import { useControlAttrs } from "@/boots/FormField/useControlAttrs";
 
-defineProps({
+const props = defineProps({
   modelValue: {
     type: String,
     default: "",
@@ -38,14 +42,19 @@ defineProps({
     type: String,
     default: "#000000",
   },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
 });
 
-const emit = defineEmits(["update:modelValue"]);
-const picker = ref(null);
-
-function openPicker() {
-  picker.value?.click();
-}
+const emit = defineEmits(["update:modelValue", "onFocusout"]);
+const {
+  field,
+  attrs,
+  disabled: controlDisabled,
+  invalid,
+} = useControlAttrs({ disabled: () => props.disabled });
 
 function onPickerInput(e) {
   emit("update:modelValue", e.target.value.toUpperCase());
@@ -74,6 +83,22 @@ function onTextInput(e) {
   &:focus-within {
     border-color: var(--border-strong);
   }
+
+  &--invalid,
+  &--invalid:focus-within {
+    border-color: var(--negative);
+  }
+
+  // The disabled look of BasicInput.
+  &--disabled {
+    background-color: var(--surface-disabled);
+    border-color: var(--border-subtle);
+    color: var(--text-muted);
+
+    .color-input__native {
+      cursor: not-allowed;
+    }
+  }
 }
 
 // Inset swatch with its own edge, so a white colour on a light field still shows where it ends.
@@ -84,7 +109,6 @@ function onTextInput(e) {
   margin: 0 var(--space-1);
   border: 1px solid var(--border-control);
   border-radius: var(--radius-base);
-  cursor: pointer;
   position: relative;
   overflow: hidden;
 }

@@ -3,35 +3,35 @@
     class="input-basic-wrapper"
     :class="[
       { positive: validate !== null && validate.status },
-      { negative: validate !== null && validate.status === 'error' },
+      { negative: validateError },
     ]"
   >
     <div class="input-basic h-100 relative flex br-inherit">
       <input
-        :disabled="isDisabled"
+        ref="inputEl"
+        v-bind="attrs"
         :type="type"
         class="input-field w-100 bg-inherit"
-        :class="{ 'has-placeholder': placeholder }"
+        :class="{ 'has-placeholder': placeholder, 'input-field--icon': leadingIcon }"
         :placeholder="label ? label : placeholder"
-        :name="component_id"
-        :id="component_id"
-        :value="val"
-        @input="updateValue"
-        @focusout="$emit('onFocusout', val)"
-        @keydown.enter="$emit('onKeyDown', val)"
-        :ref="focusOnCreate ? 'focus_input' : component_id"
+        :name="attrs.id"
+        :value="modelValue ?? ''"
+        :readonly="readonly"
+        @input="emit('update:modelValue', $event.target.value)"
+        @focusout="emit('onFocusout', $event.target.value)"
+        @keydown.enter="emit('onKeyDown', $event.target.value)"
       />
       <div
-        v-if="icon"
+        v-if="leadingIcon"
         class="icon-wrapper absolute flex jc-ct ai-ct"
         aria-hidden="true"
       >
-        <FontAwesomeIcon :icon="$icons[icon]" />
+        <FontAwesomeIcon :icon="ICONS[leadingIcon]" />
       </div>
 
       <label
         v-if="label"
-        :for="component_id"
+        :for="attrs.id"
         :title="label"
         class="input-label field-label field-label--fit block absolute"
         >{{ label }}</label
@@ -39,7 +39,7 @@
 
       <p
         class="validation-msg t-negative fs-200 absolute"
-        v-if="validate && validate.status === 'error' && validate.msg"
+        v-if="validateError && validate.msg"
       >
         {{ validate.msg }}
       </p>
@@ -47,88 +47,43 @@
   </div>
 </template>
 
-<script>
-import { getCurrentInstance } from "vue";
+<script setup>
+// Single-line text (docs/ui-components.md § P3 inputs): `v-model`, `type`, `placeholder`, `icon` (a leading meaning
+// of icons.js), `readonly` (the value behind a lock, the former LockedField), `disabled`. Inside a FormField it takes
+// id, aria-describedby, aria-invalid, required and disabled from the contract.
+// Transition until plan 19: the floating `label`, `validate` ({ status, msg }, its own error text), `isDisabled`,
+// `focusOnCreate` and the `onFocusout` / `onKeyDown` events keep un-swept screens as they were.
+import { computed, onMounted, ref } from "vue";
+import { ICONS } from "@/boots/Icons/icons";
+import { useControlAttrs } from "@/boots/FormField/useControlAttrs";
 
-export default {
-  props: {
-    label: {
-      type: [Boolean, String],
-      default: false,
-    },
-    placeholder: {
-      // etap-02 fix (Dziura #10): prop must be String to avoid the boolean default
-      // rendering as the literal "false" string in the HTML placeholder attribute.
-      type: String,
-      default: "",
-    },
-    modelValue: {
-      type: [String, Number, Boolean],
-      default: "",
-    },
-    type: {
-      type: String,
-      required: false,
-      default: "text",
-    },
-    validate: {
-      type: [Object, Boolean],
-      default: null,
-    },
-    id: {
-      type: String,
-      required: false,
-      default: "",
-    },
-    focusOnCreate: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-    // A meaning of the icon registry (src/boots/Icons/icons.js), e.g. "search".
-    icon: {
-      type: String,
-      require: false,
-      default: null,
-    },
-    isDisabled: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  data() {
-    return {
-      val: "",
-      component_id: null,
-    };
-  },
-  mounted() {
-    this.onFocus();
-  },
-  created() {
-    this.init();
-  },
-  watch: {
-    modelValue(newVal) {
-      this.val = newVal;
-    },
-  },
-  methods: {
-    init() {
-      if (this.modelValue) this.val = this.modelValue;
-      this.id
-        ? (this.component_id = this.id)
-        : (this.component_id = getCurrentInstance().uid);
-    },
-    onFocus() {
-      if (this.focusOnCreate) this.$refs.focus_input.focus();
-    },
-    updateValue(e) {
-      this.val = e.target.value;
-      this.$emit("update:modelValue", this.val);
-    },
-  },
-};
+const props = defineProps({
+  label: { type: [Boolean, String], default: false },
+  // A String: a boolean default would render as the literal "false" placeholder.
+  placeholder: { type: String, default: "" },
+  modelValue: { type: [String, Number, Boolean], default: "" },
+  type: { type: String, default: "text" },
+  validate: { type: [Object, Boolean], default: null },
+  id: { type: String, default: "" },
+  focusOnCreate: { type: Boolean, default: false },
+  // A meaning of the icon registry (src/boots/Icons/icons.js), e.g. "search".
+  icon: { type: String, default: null },
+  readonly: { type: Boolean, default: false },
+  disabled: { type: Boolean, default: false },
+  isDisabled: { type: Boolean, default: false },
+});
+const emit = defineEmits(["update:modelValue", "onFocusout", "onKeyDown"]);
+
+const inputEl = ref(null);
+const validateError = computed(() => props.validate?.status === "error");
+const leadingIcon = computed(() => (props.readonly ? "lock" : props.icon));
+const { attrs } = useControlAttrs({
+  id: () => props.id,
+  disabled: () => props.disabled || props.isDisabled,
+  invalid: () => validateError.value,
+});
+
+onMounted(() => props.focusOnCreate && inputEl.value.focus());
 </script>
 
 <style lang="scss">
@@ -162,6 +117,21 @@ export default {
       color: transparent;
     }
     &.has-placeholder::placeholder {
+      color: var(--text-muted);
+    }
+
+    &--icon {
+      padding-left: var(--elem-height);
+    }
+
+    &[aria-invalid="true"] {
+      border-color: var(--negative);
+    }
+
+    // The former LockedField: the value stays readable and selectable behind the lock icon.
+    &:read-only:not(:disabled) {
+      background-color: var(--surface-raised);
+      border-color: var(--border-subtle);
       color: var(--text-muted);
     }
 
@@ -215,12 +185,12 @@ export default {
     transform: translateY(140%);
   }
 
-  // Decorative (no caller acts on it): a click goes through to the input.
+  // Leading and decorative (no caller acts on it): a click goes through to the input.
   .icon-wrapper {
     pointer-events: none;
     width: var(--elem-height);
     height: var(--elem-height);
-    right: 0;
+    left: 0;
     top: 50%;
     transform: translate(0, -50%);
   }

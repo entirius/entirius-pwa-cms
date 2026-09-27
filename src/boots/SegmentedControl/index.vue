@@ -1,10 +1,17 @@
 <template>
-  <div class="segmented-control">
+  <div
+    :id="attrs.id"
+    role="group"
+    class="segmented-control"
+    :aria-labelledby="field.labelId?.value || undefined"
+    :aria-describedby="attrs['aria-describedby']"
+  >
     <button
       v-for="option in options"
       :key="option.value"
       type="button"
-      :disabled="disabled"
+      :disabled="controlDisabled"
+      :aria-pressed="String(modelValue === option.value)"
       class="segmented-control__option"
       :class="{
         'segmented-control__option--active': modelValue === option.value,
@@ -18,7 +25,12 @@
 </template>
 
 <script setup>
-defineProps({
+// A mode switch of 2–4 options (docs/ui-components.md § P3 inputs): `options` [{ label, value, testid? }], `v-model`,
+// `disabled`. Inside a FormField it is named by the field's label and takes aria-describedby and disabled from the
+// contract.
+import { useControlAttrs } from "@/boots/FormField/useControlAttrs";
+
+const props = defineProps({
   options: {
     type: Array,
     required: true,
@@ -34,6 +46,8 @@ defineProps({
 });
 
 defineEmits(["update:modelValue"]);
+
+const { field, attrs, disabled: controlDisabled } = useControlAttrs({ disabled: () => props.disabled });
 </script>
 
 <style lang="scss">

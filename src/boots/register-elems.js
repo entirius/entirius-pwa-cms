@@ -68,6 +68,9 @@ export default function registerBootComponents(app) {
   // P3 selects (plan 15)
 
   // P3 inputs (plan 16)
+  app.component("BasicTextarea", defineAsyncComponent(() => import("./BasicTextarea/index.vue")));
+  app.component("BasicSwitch", defineAsyncComponent(() => import("./BasicSwitch/index.vue")));
+  app.component("BasicRadioGroup", defineAsyncComponent(() => import("./BasicRadioGroup/index.vue")));
 
   // P4 shell (plan 21)
 
