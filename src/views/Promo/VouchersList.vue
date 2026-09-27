@@ -186,6 +186,7 @@ export default {
           key: "voucher_campaign_id",
           label: this.$t("promo.voucher_col_campaign"),
           width: "160px",
+          truncate: true,
         },
       ];
     },

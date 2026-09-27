@@ -215,7 +215,7 @@ const PX_WIDTH = /^\d*\.?\d+px$/;
 const TRUNCATED_FR_MIN = "120px";
 
 const slots = useSlots();
-const belowTablet = useMediaQuery("(max-width: 768px)");
+const belowTablet = useMediaQuery("(max-width: 767px)");
 const belowDesktop = useMediaQuery("(max-width: 1023px)");
 
 function alignStyle(col) {
@@ -514,9 +514,11 @@ function handleRowClick(row, index, event) {
   }
 }
 
+// Clip, not hidden: the 4 px margin keeps the focus ring of a link inside the text visible.
 .data-table__text {
   min-width: 0;
-  overflow: hidden;
+  overflow: clip;
+  overflow-clip-margin: var(--space-1);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
