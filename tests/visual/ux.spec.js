@@ -5,7 +5,8 @@ const { screens } = require("./capture-spec.json");
 
 // Layer 4 — UX checks (@ux), report mode: every capture-spec screen × viewport, dark, is measured for broken or
 // inconsistent UI (support/ux.browser.js) and written to .report/ux/. A finding never fails the test; a screen that
-// does not open is recorded under `errors` in the summary instead of measured.
+// does not open (INFRA) is recorded under `errors` in the summary instead of measured. Any other error is a probe bug
+// and fails the test — its zero counts would otherwise pass as a clean screen.
 const PROBES = path.join(__dirname, "support", "ux.browser.js");
 
 async function measureScreen(page, screen, viewport) {
@@ -21,9 +22,10 @@ function defineUxTest(screen, viewport) {
     test.use({ colorScheme: "dark", needsAuth: !screen.noAuth });
     test(`ux ${screen.id}-${viewport}`, { tag: ["@ux", `@${viewport}`] }, async ({ context, page }) => {
       await prepareContext(context, { theme: "dark", collapsed: screen.collapsed });
-      const measured = await measureScreen(page, screen, viewport).catch((err) => ({
-        error: err.message.split("\n")[0],
-      }));
+      const measured = await measureScreen(page, screen, viewport).catch((err) => {
+        if (!err.message.startsWith("INFRA:")) throw err;
+        return { error: err.message.split("\n")[0] };
+      });
       test.skip(Boolean(measured.skipReason), measured.skipReason);
       const runId = process.env.VISUAL_RUN_ID;
       const { counts, error } = writeScreenReport({ screen: screen.id, viewport, runId, measured });
