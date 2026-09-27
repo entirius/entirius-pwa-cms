@@ -593,6 +593,7 @@
     "filter_with_stock": "With Stock",
     "filter_no_stock": "No Stock",
     "no_stock_label": "No stock",
+    "sold_out_label": "Sold out",
     "saved": "Stock saved successfully",
     "import_csv": "Import CSV",
     "import_title": "Import Stock from CSV",

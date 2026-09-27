@@ -20,7 +20,7 @@
         />
       </div>
 
-      <table class="stock-tab__table">
+      <table class="table-basic stock-tab__table">
         <thead>
           <tr>
             <th>{{ $t("stock.warehouse") }}</th>
@@ -152,27 +152,8 @@ export default {
   padding: var(--space-8);
 }
 
-.stock-tab__table {
-  width: 100%;
-  border-collapse: collapse;
-
-  th,
-  td {
-    padding: var(--space-2) var(--space-3);
-    text-align: left;
-    border-bottom: 1px solid var(--border-subtle);
-  }
-
-  th {
-    font-size: var(--fs-200);
-    font-weight: 600;
-    color: var(--text-muted);
-    text-transform: uppercase;
-  }
-
-  tr:hover td {
-    background: var(--surface-raised);
-  }
+.stock-tab__table tr:hover td {
+  background: var(--surface-raised);
 }
 
 .stock-tab__col-type {

@@ -593,6 +593,7 @@
     "filter_with_stock": "Ze stanem",
     "filter_no_stock": "Bez stanu",
     "no_stock_label": "Brak stanu",
+    "sold_out_label": "Wyprzedane",
     "saved": "Stany zapisane pomyślnie",
     "import_csv": "Importuj CSV",
     "import_title": "Importuj stany z pliku CSV",

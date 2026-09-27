@@ -67,8 +67,8 @@
         <EmptyState :title="$t('stock.no_stock')" icon="boxes-stacked" />
       </div>
 
-      <div v-else class="stock-table__scroll">
-        <table class="stock-table">
+      <div v-else class="table-scroll">
+        <table class="table-basic stock-table">
           <thead>
             <tr>
               <th class="stock-table__col-sku">{{ $t("stock.sku") }}</th>
@@ -98,12 +98,13 @@
                 <span v-else class="t-muted fs-200">—</span>
               </td>
               <td class="stock-table__col-status">
-                <span v-if="isDirty(item.sku)" class="bg-warning-subtle t-warning fs-200 ph-2 rounded">
-                  {{ $t("stock.unsaved") }}
-                </span>
-                <span v-else-if="!item.has_stock" class="t-muted fs-200">
-                  {{ $t("stock.no_stock_label") }}
-                </span>
+                <StatusBadge v-if="isDirty(item.sku)" :label="$t('stock.unsaved')" variant="warning" />
+                <StatusBadge v-else-if="!item.has_stock" :label="$t('stock.no_stock_label')" variant="neutral" />
+                <StatusBadge
+                  v-else-if="item.quantity === 0"
+                  :label="$t('stock.sold_out_label')"
+                  variant="negative"
+                />
               </td>
             </tr>
           </tbody>
@@ -291,32 +292,8 @@ export default {
 }
 
 // A table wider than a phone scrolls in this box; the card around it does not.
-.stock-table__scroll {
-  overflow-x: auto;
-  scrollbar-width: thin;
-}
-
-.stock-table {
-  width: 100%;
-  border-collapse: collapse;
-
-  th,
-  td {
-    padding: var(--space-2) var(--space-3);
-    text-align: left;
-    border-bottom: 1px solid var(--border-subtle);
-  }
-
-  th {
-    font-size: var(--fs-200);
-    font-weight: 600;
-    color: var(--text-muted);
-    text-transform: uppercase;
-  }
-
-  tr:hover td {
-    background: var(--surface-raised);
-  }
+.stock-table tr:hover td {
+  background: var(--surface-raised);
 }
 
 .stock-table__col-sku {
