@@ -1,5 +1,5 @@
 <template>
-  <div class="gap-def-edit fs-300 t-body h-100 ov-h">
+  <div class="gap-def-edit fs-300 t-body h-100 ov-h flex-column">
     <Teleport to="#pim-toolbar-left" defer>
       <BasicButton
         custom
