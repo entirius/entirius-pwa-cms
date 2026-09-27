@@ -142,16 +142,16 @@
         </div>
       </template>
 
-      <Confirmation-modal
-        destructive
-        :visible="showDeleteConfirm"
-        @accept="deleteRule"
-        @reject="showDeleteConfirm = false"
+      <ConfirmDialog
+        tone="danger"
+        :open="showDeleteConfirm"
+        @confirm="deleteRule"
+        @cancel="showDeleteConfirm = false"
       >
-        <template #description>
+        <template #default>
           <p>{{ $t("enrichment.spawn_rules.confirm_delete") }}</p>
         </template>
-      </Confirmation-modal>
+      </ConfirmDialog>
     </div>
   </div>
 </template>
@@ -169,7 +169,6 @@ import {
   POST_SpawnRuleRun,
 } from "@/api/enrichment/api";
 import { GET_GapDefinitions } from "@/api/pim/api";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import { withStoredOption } from "@/utils/options";
 
 const TASK_TYPES = ["fix-attribute", "fill-attribute", "translate"];
@@ -177,7 +176,7 @@ const KEY_PATTERN = /^[a-z0-9][a-z0-9_-]*$/;
 
 export default {
   name: "SpawnRuleEdit",
-  components: { ConfirmationModal },
+  components: {},
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();

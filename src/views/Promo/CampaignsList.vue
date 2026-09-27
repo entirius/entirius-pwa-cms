@@ -115,26 +115,23 @@
       </div>
     </SideDrawer>
 
-    <Confirmation-modal
-      destructive
-      :visible="showDelete"
-      @accept="doDelete"
-      @reject="showDelete = false"
+    <ConfirmDialog
+      tone="danger"
+      :open="showDelete"
+      @confirm="doDelete"
+      @cancel="showDelete = false"
+      :title="$t('promo.campaign_delete_title')"
     >
-      <template #header
-        ><h2>{{ $t("promo.campaign_delete_title") }}</h2></template
-      >
-      <template #description
+      <template #default
         ><p>{{ $t("promo.campaign_delete_msg") }}</p></template
       >
-    </Confirmation-modal>
+    </ConfirmDialog>
   </div>
 </template>
 
 <script>
 import { useNotifyStore } from "@/stores/notify";
 import { extractApiMessage } from "@/composables/useFormErrors";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import {
   GET_Campaigns,
   POST_Campaign,
@@ -158,7 +155,7 @@ function emptyForm() {
 
 export default {
   name: "CampaignsList",
-  components: { ConfirmationModal },
+  components: {},
   setup() {
     return {
       notify: useNotifyStore(),

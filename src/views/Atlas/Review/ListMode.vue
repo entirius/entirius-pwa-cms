@@ -92,16 +92,14 @@
       </template>
     </DataTable>
 
-    <Confirmation-modal
-      :visible="confirmVisible"
-      :destructive="pendingAction === 'reject'"
-      @accept="bulkExecute"
-      @reject="confirmVisible = false"
+    <ConfirmDialog
+      :open="confirmVisible"
+      :tone="(pendingAction === 'reject') ? 'danger' : 'default'"
+      @confirm="bulkExecute"
+      @cancel="confirmVisible = false"
+      :title="$t('atlas.review.list.confirm_title')"
     >
-      <template #header>
-        <h2>{{ $t("atlas.review.list.confirm_title") }}</h2>
-      </template>
-      <template #description>
+      <template #default>
         <p>
           {{
             $t(`atlas.review.list.confirm_${pendingAction}`, {
@@ -110,7 +108,7 @@
           }}
         </p>
       </template>
-    </Confirmation-modal>
+    </ConfirmDialog>
 
     <SideDrawer
       :visible="detailVisible"
@@ -177,7 +175,6 @@
 </template>
 
 <script>
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import ProductCard from "./ProductCard.vue";
 import RawDataPanel from "./RawDataPanel.vue";
 import RawDataModal from "./RawDataModal.vue";
@@ -221,7 +218,6 @@ const ACTION_FN = {
 export default {
   name: "ListMode",
   components: {
-    ConfirmationModal,
     ProductCard,
     RawDataPanel,
     RawDataModal,

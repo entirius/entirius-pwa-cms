@@ -331,7 +331,7 @@
             @click="selected = selected === image.uid ? null : image.uid"
           >
             <div class="ov-h h-100 w-100 rounded">
-              <HoverMe
+              <BasicTooltip
                 :text="
                   image.meta && image.meta.fileName
                     ? image.meta.fileName
@@ -346,7 +346,7 @@
                   :ommit_media_query="true"
                   :key="image.uid"
                 />
-              </HoverMe>
+              </BasicTooltip>
               <div v-if="image.tags && image.tags.length" class="gallery-tags">
                 <span
                   v-for="tag in image.tags"

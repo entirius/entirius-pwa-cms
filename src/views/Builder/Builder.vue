@@ -3,10 +3,10 @@
     class="fs-300 t-body fg-1 flex-column relative page-pad-x pt-5 pb-30 ovy-auto builder-wrap"
     :id="`container-${componentId}`"
   >
-    <ConfirmationModal
-      destructive
-      :visible="confirmation_modal"
-      @accept="
+    <ConfirmDialog
+      tone="danger"
+      :open="confirmation_modal"
+      @confirm="
         () => {
           on_delete(section_to_delete);
 
@@ -14,44 +14,40 @@
           section_to_delete = null;
         }
       "
-      @reject="
+      @cancel="
         () => {
           confirmation_modal = false;
           section_to_delete = null;
         }
       "
+      :title="$t('builder.confirm_title')"
     >
-      <template #header>
-        <h2>{{ $t("builder.confirm_title") }}</h2>
-      </template>
-      <template #description>
+      <template #default>
         <p>{{ $t("builder.confirm_msg") }}</p>
       </template>
-    </ConfirmationModal>
-    <ConfirmationModal
-      destructive
-      :visible="tile_confirmation_modal"
-      @accept="
+    </ConfirmDialog>
+    <ConfirmDialog
+      tone="danger"
+      :open="tile_confirmation_modal"
+      @confirm="
         () => {
           on_tile_delete(tile_to_delete.tile_uid, tile_to_delete.section_uid);
           tile_confirmation_modal = false;
           tile_to_delete = { tile_uid: null, section_uid: null };
         }
       "
-      @reject="
+      @cancel="
         () => {
           tile_confirmation_modal = false;
           tile_to_delete = { tile_uid: null, section_uid: null };
         }
       "
+      :title="$t('builder.confirm_title')"
     >
-      <template #header>
-        <h2>{{ $t("builder.confirm_title") }}</h2>
-      </template>
-      <template #description>
+      <template #default>
         <p>{{ $t("builder.confirm_msg") }}</p>
       </template>
-    </ConfirmationModal>
+    </ConfirmDialog>
     <RenameModal
       :visible="rename_modal"
       @reject="rename_modal = false"
@@ -294,11 +290,15 @@
       </div>
     </div>
 
-    <UnsavedChangesModal
-      :visible="!!pendingNav"
-      @save="saveAndLeave"
+    <ConfirmDialog
+      :open="!!pendingNav"
+      @confirm="saveAndLeave"
       @discard="confirmLeave"
-      @stay="cancelLeave"
+      @cancel="cancelLeave"
+      :title="$t('unsaved.title')"
+      :message="$t('unsaved.message')"
+      :confirm-label="$t('unsaved.save_and_leave')"
+      :discard-label="$t('unsaved.discard')"
     />
 
     <!-- Hidden SubscriberSetters triggered by FAB -->
@@ -353,10 +353,9 @@
       v-if="type === 'blog-post'"
     >
       <div class="inline-flex ai-ct gap-2 mr-5">
-        <ToolTip
-          class="right t-accent fs-200 relative"
-          :tip="$t('builder.blog_repr_tip')"
-          :is_wrapper="true"
+        <BasicTooltip
+          class="t-accent fs-200 relative"
+          :text="$t('builder.blog_repr_tip')"
         >
           <SubscriberSetter
             @on_AssetPass="blog_extension = $event"
@@ -402,7 +401,7 @@
               </div>
             </NoticeMe>
           </SubscriberSetter>
-        </ToolTip>
+        </BasicTooltip>
       </div>
     </nav>
     <div class="grid grid-col-12">
@@ -451,10 +450,9 @@
                     </p>
                   </div>
                   <div class="section-actions flex gap-1 as-s ai-ct">
-                    <ToolTip
-                      class="right relative"
-                      :tip="sectionConfigSummary(s_uid)"
-                      :is_wrapper="true"
+                    <BasicTooltip
+                      class="relative"
+                      :text="sectionConfigSummary(s_uid)"
                     >
                       <button
                         class="section-icon-btn pointer"
@@ -462,7 +460,7 @@
                       >
                         <FontAwesomeIcon :icon="$icons.preview" />
                       </button>
-                    </ToolTip>
+                    </BasicTooltip>
                     <SubscriberSetter
                       @onSet="edited_section_uid = s_uid"
                       @on_AssetPass="set_section"
@@ -983,11 +981,9 @@ import { _METHOD_content, GET_ContentTypes } from "@/api/contentDB/api";
 import { useContentDBChannelStore } from "@/stores/contentDBChannel";
 
 import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
-import UnsavedChangesModal from "@/functionals/Unsaved-changes-modal/index.vue";
 import ImagesControllPreview from "@/configs/builder/components/ImagesController/_preview.vue";
 import GroupFieldsControllerPreview from "@/configs/builder/components/GroupFieldsController/_preview.vue";
 import RenameModal from "@/functionals/Rename-modal/index.vue";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import AuthorPicker from "@/views/Authors/AuthorPicker.vue";
 import HomeVariantSwitcher from "@/views/Builder/HomeVariantSwitcher.vue";
 import { pluralKey } from "@/utils/plural";
@@ -996,11 +992,9 @@ import { MAX_TABLET_QUERY } from "@/utils/breakpoints";
 
 export default {
   components: {
-    UnsavedChangesModal,
     ImagesControllPreview,
     GroupFieldsControllerPreview,
     RenameModal,
-    ConfirmationModal,
     AuthorPicker,
     HomeVariantSwitcher,
   },

@@ -81,16 +81,14 @@
       </DataTable>
     </div>
 
-    <ConfirmationModal
-      destructive
-      :visible="confirmVisible"
-      @accept="onDeleteConfirm"
-      @reject="confirmVisible = false"
+    <ConfirmDialog
+      tone="danger"
+      :open="confirmVisible"
+      @confirm="onDeleteConfirm"
+      @cancel="confirmVisible = false"
+      :title="$t('layout_extender.delete_confirm')"
     >
-      <template #header>
-        <h2>{{ $t("layout_extender.delete_confirm") }}</h2>
-      </template>
-    </ConfirmationModal>
+    </ConfirmDialog>
 
     <ConfirmationModal
       :visible="copyVisible"

@@ -187,19 +187,17 @@
       </form>
     </SideDrawer>
 
-    <Confirmation-modal
-      destructive
-      :visible="deleteVisible"
-      @accept="executeDelete"
-      @reject="deleteVisible = false"
+    <ConfirmDialog
+      tone="danger"
+      :open="deleteVisible"
+      @confirm="executeDelete"
+      @cancel="deleteVisible = false"
+      :title="$t('atlas.linked.delete_title')"
     >
-      <template #header>
-        <h2>{{ $t("atlas.linked.delete_title") }}</h2>
-      </template>
-      <template #description>
+      <template #default>
         <p>{{ $t("atlas.linked.delete_body") }}</p>
       </template>
-    </Confirmation-modal>
+    </ConfirmDialog>
 
     <SideDrawer
       :visible="previewVisible"
@@ -241,7 +239,6 @@
 </template>
 
 <script>
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import { useNotifyStore } from "@/stores/notify";
 import { usePimChannelStore } from "@/stores/pimChannel";
 import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
@@ -267,7 +264,7 @@ const EMPTY_LINK = (supplierIdx) => ({
 
 export default {
   name: "LinkedTab",
-  components: { ConfirmationModal },
+  components: {},
   props: {
     supplier: { type: Object, default: null },
   },

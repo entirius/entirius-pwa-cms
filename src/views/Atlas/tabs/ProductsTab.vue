@@ -299,15 +299,13 @@
       </div>
     </SideDrawer>
 
-    <Confirmation-modal
-      :visible="repushVisible"
-      @accept="executeForceRepush"
-      @reject="repushVisible = false"
+    <ConfirmDialog
+      :open="repushVisible"
+      @confirm="executeForceRepush"
+      @cancel="repushVisible = false"
+      :title="$t('atlas.products.force_repush_title')"
     >
-      <template #header>
-        <h2>{{ $t("atlas.products.force_repush_title") }}</h2>
-      </template>
-      <template #description>
+      <template #default>
         <p>
           {{ $t("atlas.products.force_repush_body") }}
         </p>
@@ -328,7 +326,7 @@
           </div>
         </div>
       </template>
-    </Confirmation-modal>
+    </ConfirmDialog>
   </div>
 </template>
 
@@ -341,7 +339,6 @@ import RawDataPanel from "../Review/RawDataPanel.vue";
 import SupplierProductTimelineSection from "../components/SupplierProductTimelineSection.vue";
 import SupplierProductMappingSection from "../components/SupplierProductMappingSection.vue";
 import FindInPimPanel from "../components/FindInPimPanel.vue";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import { useNotifyStore } from "@/stores/notify";
 import { useMuninStore } from "@/stores/munin";
 import { useAtlasBulkActions } from "@/composables/useAtlasBulkActions";
@@ -382,7 +379,6 @@ export default {
     SupplierProductTimelineSection,
     SupplierProductMappingSection,
     FindInPimPanel,
-    ConfirmationModal,
   },
   props: {
     supplier: { type: Object, default: null },

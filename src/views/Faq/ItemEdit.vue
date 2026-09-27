@@ -235,25 +235,27 @@
       </template>
     </TranslationsDrawer>
 
-    <Confirmation-modal
-      destructive
-      :visible="showDeleteConfirm"
-      @accept="deleteItem"
-      @reject="showDeleteConfirm = false"
+    <ConfirmDialog
+      tone="danger"
+      :open="showDeleteConfirm"
+      @confirm="deleteItem"
+      @cancel="showDeleteConfirm = false"
+      :title="$t('faq.confirm_delete_title')"
     >
-      <template #header>
-        <h2>{{ $t("faq.confirm_delete_title") }}</h2>
-      </template>
-      <template #description>
+      <template #default>
         <p>{{ $t("faq.confirm_delete_item") }}</p>
       </template>
-    </Confirmation-modal>
+    </ConfirmDialog>
 
-    <UnsavedChangesModal
-      :visible="!!pendingNav"
-      @save="saveAndLeave"
+    <ConfirmDialog
+      :open="!!pendingNav"
+      @confirm="saveAndLeave"
       @discard="confirmLeave"
-      @stay="cancelLeave"
+      @cancel="cancelLeave"
+      :title="$t('unsaved.title')"
+      :message="$t('unsaved.message')"
+      :confirm-label="$t('unsaved.save_and_leave')"
+      :discard-label="$t('unsaved.discard')"
     />
   </div>
 </template>
@@ -277,8 +279,6 @@ import {
   GET_FaqGroups,
   GET_FaqChannels,
 } from "@/api/faq/api";
-import UnsavedChangesModal from "@/functionals/Unsaved-changes-modal/index.vue";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 
 const FIELD_LABELS = {
   url_key: "URL key (per language)",
@@ -289,7 +289,7 @@ const FIELD_LABELS = {
 
 export default {
   name: "FaqItemEdit",
-  components: { UnsavedChangesModal, ConfirmationModal },
+  components: {},
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();

@@ -58,15 +58,13 @@
       @close="closeDetail"
     />
 
-    <Confirmation-modal
-      :visible="triggerVisible"
-      @accept="executeTrigger"
-      @reject="triggerVisible = false"
+    <ConfirmDialog
+      :open="triggerVisible"
+      @confirm="executeTrigger"
+      @cancel="triggerVisible = false"
+      :title="$t('atlas.feeds.trigger_title')"
     >
-      <template #header>
-        <h2>{{ $t("atlas.feeds.trigger_title") }}</h2>
-      </template>
-      <template #description>
+      <template #default>
         <p>
           {{
             $t("atlas.feeds.trigger_body", {
@@ -75,14 +73,13 @@
           }}
         </p>
       </template>
-    </Confirmation-modal>
+    </ConfirmDialog>
   </div>
 </template>
 
 <script>
 import FeedDetailDrawer from "../components/FeedDetailDrawer.vue";
 import { extractApiMessage } from "@/composables/useFormErrors";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import { useNotifyStore } from "@/stores/notify";
 import { GET_Feeds, POST_FeedTrigger } from "@/api/atlas/api";
 
@@ -95,7 +92,7 @@ const SYNC_STATUS_VARIANTS = {
 
 export default {
   name: "FeedsTab",
-  components: { FeedDetailDrawer, ConfirmationModal },
+  components: { FeedDetailDrawer },
   props: {
     supplier: { type: Object, default: null },
   },

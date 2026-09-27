@@ -154,19 +154,17 @@
         <FloatingActions :actions="fabActions" />
 
         <!-- Bulk delete confirmation modal -->
-        <Confirmation-modal
-          destructive
-          :visible="pendingBulkAction === 'delete'"
-          @accept="onBulkDeleteAccept"
-          @reject="pendingBulkAction = null"
+        <ConfirmDialog
+          tone="danger"
+          :open="pendingBulkAction === 'delete'"
+          @confirm="onBulkDeleteAccept"
+          @cancel="pendingBulkAction = null"
+          :title="$t('promo.bulk_confirm_delete_title')"
         >
-          <template #header>
-            <h2>{{ $t("promo.bulk_confirm_delete_title") }}</h2>
-          </template>
-          <template #description>
+          <template #default>
             <p>{{ $t("promo.bulk_confirm_delete", { n: selectionCount }) }}</p>
           </template>
-        </Confirmation-modal>
+        </ConfirmDialog>
       </template>
 
       <!-- VOUCHERS tab (gated on the checkout_voucher module) -->
@@ -192,13 +190,12 @@ import { useCheckoutChannelStore } from "@/stores/checkoutChannel";
 import { modifierShortLabel } from "./promo-modifiers";
 import { useSearchDebounce } from "@/composables/useSearchDebounce";
 import { GET_DiscountRules, GET_DiscountMeta, POST_BulkRules } from "@/api/promo/api";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import VouchersSection from "./VouchersSection.vue";
 import { extractApiMessage } from "@/composables/useFormErrors";
 
 export default {
   name: "PromoList",
-  components: { VouchersSection, ConfirmationModal },
+  components: { VouchersSection },
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();

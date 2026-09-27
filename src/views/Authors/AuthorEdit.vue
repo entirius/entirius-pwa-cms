@@ -188,13 +188,13 @@
     />
 
     <!-- Delete confirmation -->
-    <Confirmation-modal
-      destructive
-      :visible="showDeleteConfirm"
-      @accept="deleteAuthor"
-      @reject="showDeleteConfirm = false"
+    <ConfirmDialog
+      tone="danger"
+      :open="showDeleteConfirm"
+      @confirm="deleteAuthor"
+      @cancel="showDeleteConfirm = false"
     >
-      <template #description>
+      <template #default>
         <p>{{ $t("authors.delete_confirm") }}</p>
         <p v-if="form.post_count" class="mt-5 t-secondary fs-200">
           {{ $t("authors.post_count") }}: <strong>{{ form.post_count }}</strong>
@@ -209,7 +209,7 @@
           />
         </div>
       </template>
-    </Confirmation-modal>
+    </ConfirmDialog>
   </div>
 </template>
 
@@ -218,7 +218,6 @@ import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { useContentDBChannelStore } from "@/stores/contentDBChannel";
 import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import ImagesController from "@/configs/builder/components/ImagesController/index.vue";
 import {
   GET_Author,
@@ -239,7 +238,7 @@ const KNOWN_PLATFORMS = [
 
 export default {
   name: "AuthorEdit",
-  components: { ConfirmationModal, ImagesController },
+  components: { ImagesController },
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();

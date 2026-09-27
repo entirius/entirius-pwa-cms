@@ -268,16 +268,14 @@
       </form>
     </SideDrawer>
 
-    <Confirmation-modal
-      destructive
-      :visible="deleteVisible"
-      @accept="executeDeleteProfile"
-      @reject="deleteVisible = false"
+    <ConfirmDialog
+      tone="danger"
+      :open="deleteVisible"
+      @confirm="executeDeleteProfile"
+      @cancel="deleteVisible = false"
+      :title="$t('atlas.mappings.delete_title')"
     >
-      <template #header>
-        <h2>{{ $t("atlas.mappings.delete_title") }}</h2>
-      </template>
-      <template #description>
+      <template #default>
         <p>
           {{
             $t("atlas.mappings.delete_body", {
@@ -286,14 +284,13 @@
           }}
         </p>
       </template>
-    </Confirmation-modal>
+    </ConfirmDialog>
   </div>
 </template>
 
 <script>
 import AttributeMappingRow from "../components/AttributeMappingRow.vue";
 import CategoryMappingRow from "../components/CategoryMappingRow.vue";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import { useNotifyStore } from "@/stores/notify";
 import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
 import {
@@ -331,7 +328,7 @@ const EMPTY_PROFILE = () => ({
 
 export default {
   name: "MappingsTab",
-  components: { AttributeMappingRow, CategoryMappingRow, ConfirmationModal },
+  components: { AttributeMappingRow, CategoryMappingRow },
   props: {
     supplier: { type: Object, default: null },
   },

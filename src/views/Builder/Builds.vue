@@ -154,24 +154,22 @@
           />
         </div>
       </div>
-      <ConfirmationModal
-        destructive
-        :visible="confirmation_modal"
-        @accept="
+      <ConfirmDialog
+        tone="danger"
+        :open="confirmation_modal"
+        @confirm="
           () => {
             removeDoc(to_remove[0], to_remove[1]);
             confirmation_modal = false;
           }
         "
-        @reject="confirmation_modal = false"
+        @cancel="confirmation_modal = false"
+        :title="$t('builder.confirm_title')"
       >
-        <template #header>
-          <h2>{{ $t("builder.confirm_title") }}</h2>
-        </template>
-        <template #description>
+        <template #default>
           <p>{{ $t("builder.confirm_msg") }}</p>
         </template>
-      </ConfirmationModal>
+      </ConfirmDialog>
     </template>
 
     <div
@@ -216,7 +214,6 @@ const section_options = (value, look_for = null) => {
   return config_options[value];
 };
 
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import TranslateAllContentModal from "@/functionals/TranslateAllContentModal/index.vue";
 export default {
   setup() {
@@ -484,7 +481,6 @@ export default {
     next();
   },
   components: {
-    ConfirmationModal,
     TranslateAllContentModal,
   },
 };

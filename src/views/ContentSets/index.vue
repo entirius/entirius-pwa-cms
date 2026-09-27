@@ -126,11 +126,9 @@
             {{ $t("content_sets.instruction") }}
           </p>
           <div class="flex gap-2">
-            <ToolTip
+            <BasicTooltip
               v-if="!hasEnoughSelections"
-              :tip="$t('content_sets.set_ready_tip')"
-              :is_wrapper="true"
-              class="left"
+              :text="$t('content_sets.set_ready_tip')"
             >
               <BasicButton
                 variant="primary"
@@ -138,7 +136,7 @@
               >
                 {{ $t('content_sets.set_ready') }}
               </BasicButton>
-            </ToolTip>
+            </BasicTooltip>
             <BasicButton
               v-else
               variant="primary"
@@ -151,11 +149,9 @@
             >
               {{ $t('content_sets.set_ready') }}
             </BasicButton>
-            <ToolTip
+            <BasicTooltip
               v-if="!hasEnoughSelections"
-              :tip="$t('content_sets.clear_set_tip')"
-              :is_wrapper="true"
-              class="left"
+              :text="$t('content_sets.clear_set_tip')"
             >
               <BasicButton
                 variant="secondary"
@@ -163,7 +159,7 @@
               >
                 {{ $t('content_sets.clear_set') }}
               </BasicButton>
-            </ToolTip>
+            </BasicTooltip>
             <BasicButton
               v-else
               variant="secondary"

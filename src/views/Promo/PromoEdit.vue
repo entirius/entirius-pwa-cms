@@ -602,49 +602,43 @@
     </div>
 
     <!-- Delete rule confirmation -->
-    <Confirmation-modal
-      destructive
-      :visible="showDeleteConfirm"
-      @accept="deleteRule"
-      @reject="showDeleteConfirm = false"
+    <ConfirmDialog
+      tone="danger"
+      :open="showDeleteConfirm"
+      @confirm="deleteRule"
+      @cancel="showDeleteConfirm = false"
+      :title="$t('promo.confirm_delete_title')"
     >
-      <template #header>
-        <h2>{{ $t("promo.confirm_delete_title") }}</h2>
-      </template>
-      <template #description>
+      <template #default>
         <p>{{ $t("promo.confirm_delete_rule") }}</p>
       </template>
-    </Confirmation-modal>
+    </ConfirmDialog>
 
     <!-- Delete code confirmation -->
-    <Confirmation-modal
-      destructive
-      :visible="showDeleteCodeConfirm"
-      @accept="deleteCode"
-      @reject="showDeleteCodeConfirm = false"
+    <ConfirmDialog
+      tone="danger"
+      :open="showDeleteCodeConfirm"
+      @confirm="deleteCode"
+      @cancel="showDeleteCodeConfirm = false"
+      :title="$t('promo.confirm_delete_code_title')"
     >
-      <template #header>
-        <h2>{{ $t("promo.confirm_delete_code_title") }}</h2>
-      </template>
-      <template #description>
+      <template #default>
         <p>{{ $t("promo.confirm_delete_code") }}</p>
       </template>
-    </Confirmation-modal>
+    </ConfirmDialog>
 
     <!-- Delete filter confirmation -->
-    <Confirmation-modal
-      destructive
-      :visible="!!pendingDeleteFilter"
-      @accept="executeDeleteFilter"
-      @reject="pendingDeleteFilter = null"
+    <ConfirmDialog
+      tone="danger"
+      :open="!!pendingDeleteFilter"
+      @confirm="executeDeleteFilter"
+      @cancel="pendingDeleteFilter = null"
+      :title="$t('promo.confirm_delete_filter_title')"
     >
-      <template #header>
-        <h2>{{ $t("promo.confirm_delete_filter_title") }}</h2>
-      </template>
-      <template #description>
+      <template #default>
         <p>{{ $t("promo.confirm_delete_filter") }}</p>
       </template>
-    </Confirmation-modal>
+    </ConfirmDialog>
 
     <!-- Edit code modal -->
     <Confirmation-modal
@@ -696,11 +690,15 @@
       </template>
     </Confirmation-modal>
 
-    <UnsavedChangesModal
-      :visible="!!pendingNav"
-      @save="saveAndLeave"
+    <ConfirmDialog
+      :open="!!pendingNav"
+      @confirm="saveAndLeave"
       @discard="confirmLeave"
-      @stay="cancelLeave"
+      @cancel="cancelLeave"
+      :title="$t('unsaved.title')"
+      :message="$t('unsaved.message')"
+      :confirm-label="$t('unsaved.save_and_leave')"
+      :discard-label="$t('unsaved.discard')"
     />
 
     <FilterEditDrawer
@@ -743,7 +741,6 @@ import {
   GET_ShippingMethods,
   GET_Currencies,
 } from "@/api/promo/api";
-import UnsavedChangesModal from "@/functionals/Unsaved-changes-modal/index.vue";
 import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import FilterEditDrawer from "./FilterEditDrawer.vue";
 
@@ -791,7 +788,7 @@ function buildExtraValuePayload(form, extraValueKind) {
 
 export default {
   name: "PromoEdit",
-  components: { UnsavedChangesModal, ConfirmationModal, FilterEditDrawer, Pagination },
+  components: { ConfirmationModal, FilterEditDrawer, Pagination },
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();
