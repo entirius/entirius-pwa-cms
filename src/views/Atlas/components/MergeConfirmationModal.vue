@@ -30,22 +30,24 @@
           <FontAwesomeIcon icon="triangle-exclamation" class="mr-2" />
           {{ errorText }}
         </div>
-        <div class="merge-confirm__actions">
-          <BasicButton
-            :text="$t('atlas.duplicates.merge_modal.cancel')"
-            class="btn-outline"
-            :disabled="loading"
-            data-test="merge-confirm-cancel"
-            @click="onCancel"
-          />
-          <BasicButton
-            :text="$t('atlas.duplicates.merge_modal.confirm')"
-            class="btn-primary"
-            :disabled="!canConfirm"
-            data-test="merge-confirm-submit"
-            @click="onConfirm"
-          />
-        </div>
+      </div>
+    </template>
+    <template #footer>
+      <div class="merge-confirm__actions">
+        <BasicButton
+          :text="$t('atlas.duplicates.merge_modal.cancel')"
+          class="btn-outline"
+          :disabled="loading"
+          data-test="merge-confirm-cancel"
+          @click="onCancel"
+        />
+        <BasicButton
+          :text="$t('atlas.duplicates.merge_modal.confirm')"
+          class="btn-primary"
+          :disabled="!canConfirm"
+          data-test="merge-confirm-submit"
+          @click="onConfirm"
+        />
       </div>
     </template>
   </ConfirmationModal>

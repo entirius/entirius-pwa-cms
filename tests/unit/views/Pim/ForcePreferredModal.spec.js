@@ -6,7 +6,7 @@ vi.mock("@/functionals/Confirmation-modal/index.vue", () => ({
     name: "ConfirmationModal",
     props: { visible: Boolean },
     emits: ["reject"],
-    template: '<div class="cm-stub"><slot name="header" /><slot name="description" /></div>',
+    template: '<div class="cm-stub"><slot name="header" /><slot name="description" /><slot name="footer" /></div>',
   },
 }));
 

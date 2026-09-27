@@ -257,6 +257,10 @@ export default {
   /* A decision bar: Reject is outlined so it reads as a button beside Skip and Approve. */
   .btn-danger {
     border-color: var(--negative);
+
+    &[disabled] {
+      border-color: var(--border-default);
+    }
   }
 
   @media (max-width: 768px) {

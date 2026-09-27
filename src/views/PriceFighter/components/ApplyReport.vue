@@ -34,10 +34,11 @@
             </table>
           </template>
         </div>
-
-        <div class="apply-report__actions">
-          <BasicButton :text="$t('common.close')" class="btn-primary" @click="onClose" />
-        </div>
+      </div>
+    </template>
+    <template #footer>
+      <div class="apply-report__actions">
+        <BasicButton :text="$t('common.close')" class="btn-primary" @click="onClose" />
       </div>
     </template>
   </ConfirmationModal>
