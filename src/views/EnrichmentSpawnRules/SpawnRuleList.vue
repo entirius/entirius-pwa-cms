@@ -122,13 +122,13 @@ export default {
     columns() {
       return [
         { key: "key", label: this.$t("enrichment.spawn_rules.col_key"), width: "1.5fr" },
-        { key: "module", label: this.$t("enrichment.spawn_rules.col_module"), width: "90px" },
-        { key: "check_key", label: this.$t("enrichment.spawn_rules.col_check"), width: "1.5fr" },
-        { key: "task_type", label: this.$t("enrichment.spawn_rules.col_task_type"), width: "1fr" },
-        { key: "auto", label: this.$t("enrichment.spawn_rules.col_auto"), width: "80px" },
+        { key: "module", label: this.$t("enrichment.spawn_rules.col_module"), width: "90px", priority: 2 },
+        { key: "check_key", label: this.$t("enrichment.spawn_rules.col_check"), width: "1.5fr", priority: 2 },
+        { key: "task_type", label: this.$t("enrichment.spawn_rules.col_task_type"), width: "1fr", priority: 2 },
+        { key: "auto", label: this.$t("enrichment.spawn_rules.col_auto"), width: "80px", priority: 2 },
         { key: "active", label: this.$t("enrichment.spawn_rules.col_active"), width: "80px" },
-        { key: "running", label: this.$t("enrichment.spawn_rules.col_running"), width: "110px" },
-        { key: "actions", label: "", width: "140px" },
+        { key: "running", label: this.$t("enrichment.spawn_rules.col_running"), width: "110px", priority: 2 },
+        { key: "actions", label: "", actions: true },
       ];
     },
     paginationState() {

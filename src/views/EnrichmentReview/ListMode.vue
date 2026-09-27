@@ -207,11 +207,13 @@ export default {
           key: "target_module",
           label: this.$t("enrichment.review.col.module"),
           width: "90px",
+          priority: 2,
         },
         {
           key: "target_kind",
           label: this.$t("enrichment.review.col.kind"),
           width: "90px",
+          priority: 2,
         },
         {
           key: "field",
@@ -221,7 +223,8 @@ export default {
         {
           key: "change",
           label: this.$t("enrichment.review.col.change"),
-          width: "minmax(240px, 2fr)",
+          width: "minmax(360px, 2fr)",
+          priority: 2,
         },
         {
           key: "status",
@@ -232,23 +235,27 @@ export default {
           key: "confidence",
           label: this.$t("enrichment.review.col.confidence"),
           width: "90px",
+          priority: 2,
         },
         {
           key: "source",
           label: this.$t("enrichment.review.col.source"),
           width: "110px",
+          priority: 2,
         },
         {
           key: "batch_id",
           label: this.$t("enrichment.review.col.batch"),
           width: "100px",
+          priority: 2,
         },
         {
           key: "age",
           label: this.$t("enrichment.review.col.age"),
           width: "120px",
+          priority: 2,
         },
-        { key: "actions", label: "", width: "150px" },
+        { key: "actions", label: "", actions: true },
       ];
     },
     totalPages() {

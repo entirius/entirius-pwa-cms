@@ -32,10 +32,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+// A long JSON line scrolls inside its pane instead of breaking keys mid-word or widening a table cell.
 .json-diff {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-5);
+  contain: inline-size;
 }
 .json-diff__label {
   font-size: var(--fs-100);
@@ -49,10 +51,10 @@ export default {
   background: var(--surface-raised);
   font-family: var(--font-mono, monospace);
   font-size: var(--fs-100);
-  white-space: pre-wrap;
-  word-break: break-word;
+  white-space: pre;
   max-height: 240px;
-  overflow-y: auto;
+  overflow: auto;
+  scrollbar-width: thin;
   margin: 0;
 }
 .json-diff__value--before {
