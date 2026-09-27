@@ -41,8 +41,8 @@
 
 <script setup>
 // Yes/no confirmation on BasicModal (sm): `v-model:open`, `title` (or the `title` slot), `message` (or the default
-// slot), `ariaLabel` (the name without a title; defaults to `message`), `confirmLabel`, `cancelLabel`, `tone` default (primary confirm) · danger (`danger-solid` confirm: every
-// delete, remove, flush), `loading` (spinner on confirm; Esc, backdrop and close blocked). Emits `confirm` and
+// slot), `ariaLabel` (the name without a title; defaults to `message`), `confirmLabel`, `cancelLabel`, `tone`
+// default (primary confirm) · danger (`danger-solid` confirm: every delete, remove, flush), `loading` (spinner on confirm; Esc, backdrop and close blocked). Emits `confirm` and
 // `cancel` (Cancel, close, Esc, backdrop); the caller closes it. `discardLabel` adds a third action, `discard` (unsaved changes: stay · discard ·
 // save). The confirm button's test id is `confirm-dialog-confirm`.
 import BasicModal from "@/boots/BasicModal/index.vue";
