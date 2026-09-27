@@ -93,6 +93,14 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- Tables keep what a row showed and stay pageable: PriceFighter gap and decision tables show the channel in the
+  market cell again, so rows that differ only by channel are told apart; status badge columns (layout extenders,
+  recommendation, strategy) size to their longest label instead of truncating; a chip in a narrow cell ends in an
+  ellipsis (`.chip__label`) with the full text as a tooltip. A truncated flexible column is never narrower than its
+  header, and a truncated slot cell's tooltip is its rendered text, not the raw value. `Pagination` also takes
+  `current` / `total` / `perPage` (and emits `change`), so the Stock tables page again. `DataTable` switches to the
+  phone layout at the shared `max-tablet` breakpoint (768 px). Promo modifier labels are back to their previous
+  wording (now translated) and the Stock "Sold out" badge is gone.
 - Page titles only: the page-title face moved from the `h1` element rule to `.page-title`, carried by every page H1,
   so a heading typed in the rich-text editor, a content or e-mail preview and the docs view look as before. Every
   form label uses the shared label style (translation dialogs, layout-extender modals, channel selectors, Leads

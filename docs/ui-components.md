@@ -57,9 +57,14 @@ CSS Grid table for all list views. Uses `<script setup>`.
 **Slots:** `cell-{key}`, `header-{key}`, `empty`
 
 Column options (JSDoc in the component): `key`, `label`, `sortable`, `align`, `width` (a grid track; a px width
-never drops below the header or an untruncated cell, and on a phone shrinks to that content), `truncate` (one line, ellipsis, `title` from `title(row)` or
-the value; on for cells without a slot), `numeric` (right, tabular figures, no wrap), `actions` (right-aligned
-buttons, `max-content` track), `priority` (2 hidden below 768 px, 3 below 1024 px). An empty value renders "—".
+never drops below the header or an untruncated cell, and on a phone shrinks to that content), `truncate` (one line, ellipsis, `title` from `title(row)`, else
+the value, or a slot cell's rendered text; on for cells without a slot; a truncated `fr` column is at least
+max(120 px, its header)), `numeric` (right, tabular figures, no wrap), `actions` (right-aligned buttons,
+`max-content` track), `priority` (2 hidden at `max-tablet` ≤ 768 px, 3 below 1024 px). A status (badge) column never
+truncates: `width: "max-content"`. An empty value renders "—".
+
+Pagination: `pagination` (`{ page, pages }`) or `current` / `total` / `perPage`; hidden for one page; emits the new
+page as `onChangePage` and `change`. A `.chip` that can be cut wraps its text in `.chip__label` and carries `title`.
 
 Sort: prop-gated, header click cycles null -> asc -> desc -> null, emits only
 (parent handles sorting).
