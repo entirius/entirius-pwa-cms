@@ -52,7 +52,7 @@
 
         <template v-else>
           <!-- Set properties -->
-          <div class="flex gap-8 mb-10">
+          <div class="feature-set-props flex gap-8 mb-10">
             <BasicInput
               v-model="form.name"
               :label="$t('pim.name')"
@@ -75,7 +75,7 @@
           </div>
 
           <!-- Toolbar -->
-          <div class="flex ai-ct gap-5 mb-10">
+          <div class="flex ai-ct flex-wrap gap-5 rg-3 mb-10">
             <BasicInput
               v-model="featureSearch"
               :placeholder="$t('common.start_typing')"
@@ -883,6 +883,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/scss/utils/media-query";
+
+// A phone stacks name, description and the default switch instead of squeezing the inputs to 50 px.
+.feature-set-props {
+  @include max-tablet {
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+}
+
 .set-identity {
   border-left: 3px solid var(--accent);
   padding-left: var(--space-8);
