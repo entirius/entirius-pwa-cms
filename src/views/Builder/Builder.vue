@@ -2165,16 +2165,8 @@ const scroll_into = (id) => {
     color: var(--text-body);
   }
 }
+// Save draft and Publish keep their labels on a phone (R7); the wrapping panel toolbar makes the room.
 @media only screen and (max-width: 768px) {
-  .builder-tb-btn__label {
-    display: none;
-  }
-  .builder-tb-btn {
-    padding: 0;
-    width: 32px;
-    height: 32px;
-    justify-content: center;
-  }
   .section-icon-btn {
     width: 36px;
     height: 36px;
