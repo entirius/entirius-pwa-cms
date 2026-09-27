@@ -362,7 +362,7 @@
   // Cards: a bordered, filled container of at least 240 × 96 that is not a control or a table part.
   // The rich-text editor frame and its toolbar are one control, not cards.
   const TABLE_PART = 'table, tr, td, th, [role="row"], [role="grid"], [role="table"]';
-  const NOT_CARD = `${INTERACTIVE}, textarea, ${TABLE_PART}, .input-wysiwyg-wrapper *`;
+  const NOT_CARD = `${INTERACTIVE}, textarea, ${TABLE_PART}, .text-section, .input-wysiwyg-wrapper *`;
   function cardPaddings(shown) {
     return shown
       .filter((el) => !el.matches(NOT_CARD) && parseFloat(styleOf(el).borderTopWidth) > 0)
