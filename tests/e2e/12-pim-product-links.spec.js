@@ -121,16 +121,16 @@ test.describe('PIM Linked products', () => {
       .click();
     // Type a search term that matches the linked SKU
     const skuInput = page.locator(
-      '[data-testid="linked-form-sku"] .entity-picker__inline-input input'
+      '[data-testid="linked-form-sku"] .entity-picker__search'
     );
     await skuInput.fill('1310');
     // Wait for picker debounce + API + render
     await page
-      .locator('[data-testid="linked-form-sku"] .entity-picker__result')
+      .locator('[data-testid="linked-form-sku"] [role="option"]')
       .first()
       .waitFor({ state: 'visible', timeout: 5000 });
     await page
-      .locator('[data-testid="linked-form-sku"] .entity-picker__result')
+      .locator('[data-testid="linked-form-sku"] [role="option"]')
       .first()
       .click();
 

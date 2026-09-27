@@ -452,10 +452,10 @@ test.describe('Suppliers panel', () => {
         .locator('[data-testid="linked-form-sku"] .entity-picker__trigger')
         .click();
       await page
-        .locator('[data-testid="linked-form-sku"] .entity-picker__inline-input input')
+        .locator('[data-testid="linked-form-sku"] .entity-picker__search')
         .fill('PIM-SKU-3');
       await page
-        .locator('[data-testid="linked-form-sku"] .entity-picker__result')
+        .locator('[data-testid="linked-form-sku"] [role="option"]')
         .first()
         .click();
       await page.getByTestId('linked-form-submit').click();
