@@ -43,7 +43,10 @@ describe("CategoryDetail — missing category", () => {
   });
 
   it("shows the not-found state instead of an editable form and a raw error toast", async () => {
-    mockGetCategory.mockRejectedValueOnce({ response: { status: 404 } });
+    // The API client rejects with the v2 body; the status rides along as non-enumerable httpStatus.
+    const body = { error: "NOT_FOUND", detail: "Category with idx 'missing' not found" };
+    Object.defineProperty(body, "httpStatus", { value: 404 });
+    mockGetCategory.mockRejectedValueOnce(body);
     const wrapper = mountDetail();
     await flushPromises();
 

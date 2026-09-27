@@ -43,6 +43,7 @@ function rejectWithBody(err) {
 }
 
 export const isConflict = (err) => (err?.httpStatus ?? err?.response?.status) === 409
+export const isNotFound = (err) => (err?.httpStatus ?? err?.response?.status) === 404
 
 // The single token refresh: the 401 retry, the pre-request check and the user store's timer share one
 // in-flight call, so a rotated refresh token is never sent twice.

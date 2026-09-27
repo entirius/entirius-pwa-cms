@@ -320,6 +320,7 @@ import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import { GET_Category, PATCH_Category, DELETE_Category, POST_UploadPicture } from "@/api/pim/api";
 import CategoryProducts from "./components/CategoryProducts.vue";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { isNotFound } from "@/api/createClient";
 
 export default {
   name: "CategoryDetail",
@@ -477,7 +478,7 @@ export default {
         this.category = data;
         this.resetForm();
       } catch (err) {
-        this.notFound = err?.response?.status === 404 || err?.error === "NOT_FOUND";
+        this.notFound = isNotFound(err);
         if (this.notFound) return;
         this.notify.spawnNotification({
           type: "negative",
