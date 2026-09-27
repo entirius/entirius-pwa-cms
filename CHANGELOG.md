@@ -99,6 +99,13 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- P3 join (plan 19): the rich-text formatting tools are IconButtons and its mode switch a BasicSelect;
+  BulkActionBar pickers are BasicSelects; FAB and empty-state icons resolve only as meanings; selects open on an
+  active option and their list is named by the field label; dialogs start in their first field; tabs name their
+  panels; route edit / delete in the routes kit act on their own row again; one name per breakpoint
+  (`$breakpoint-shell`, `$breakpoint-wide`), max-* mixins stop 1 px below their min-* partner. Lint: C2 and C5 are
+  errors; the catalogue spec fails on a missing component anchor or an API call.
+
 - P3 sweep, partition 1 (plan 17): Pim, Points, PriceManager, PriceFighter, Stock, Agreements, the functionals,
   the builder controllers and the shell use the P3 components — buttons by `variant`, icon-only actions on
   `IconButton`, icons by meaning, confirmations on `ConfirmDialog` / `BasicModal`, chips on `StatusBadge`, `Loader`,
@@ -282,6 +289,14 @@ All notable changes to this project will be documented in this file.
 
 - `/playground` and `Playground.vue` (replaced by `/ui`), the unused `Accordion` boot and `LazyScroll` (a Vue 2
   directive that never fired): the builder category kit now loads every category page instead of only the first.
+- P3 join (plan 19): the retired boots `Dropdown`, `Switcher`, `TextAreaBasic`, `LockedField`, `ToolTip`,
+  `HelpTooltip`, `HoverMe`, `BackBar`, `components/Loading.vue`, the `Confirmation-modal`, `Unsaved-changes-modal` and
+  `Translations-modal` wrappers, the icon font and the global `.chip`; the transition APIs `BasicButton` `text` /
+  `isDisabled` / `custom` / btn-* classes (secondary by default), `BasicInput` floating `label` / `validate` /
+  `isDisabled`, `NumberInput` `isDisabled`, `StatusBadge` `variant`, `Pagination` `pagination` / `current` / `total` /
+  `perPage` / `onChangePage` / `change`, `BulkActionBar` `buttonClass`, `BasicDatePicker` `value` / `label` /
+  `onChange`, the `BasicCheckbox` array API, `Loader` `h` / `w` and the `EmptyState` glyph fallback. A removed
+  component and an icon-font class are lint errors.
 
 ## [2.1.0] (2026-09-01)
 

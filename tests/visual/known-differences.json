@@ -191,6 +191,70 @@
       "code": "IconButton md = --elem-height, the text button height, so an ActionBar lines up",
       "scope": "IconButton md, ActionBar",
       "treatment": "geometry-tolerance"
+    },
+    {
+      "id": "KD24",
+      "decision": "plan 13 (display)",
+      "figma": "badge role 12/15 Inter 600",
+      "code": "StatusBadge 600 weight, 19 px tall (was 500, 22 px); the dot takes the tone text colour; every .chip is a dotless StatusBadge",
+      "scope": "status and category pills",
+      "treatment": "no-reference"
+    },
+    {
+      "id": "KD25",
+      "decision": "plan 13 (display)",
+      "figma": "pagination: current page boxed",
+      "code": "current page: 1 px accent border, no accent-subtle fill; prev/next round 32 px with a border-default ring, disabled at opacity .5; hover surface-hover",
+      "scope": "Pagination",
+      "treatment": "no-reference"
+    },
+    {
+      "id": "KD26",
+      "decision": "plan 13 (display)",
+      "figma": "counts 20 px pills",
+      "code": "counts are CountBadges: 20 px (was 16), surface-hover fill in FilterChip, BasicTabs and the MobileFilterPanel trigger (at -8 px)",
+      "scope": "FilterChip, BasicTabs, MobileFilterPanel",
+      "treatment": "no-reference"
+    },
+    {
+      "id": "KD27",
+      "decision": "plan 13 (display)",
+      "figma": "—",
+      "code": "overlay Loader: 64 px accent rings (the old arc was 100 px), fades in and out; inline loaders unchanged, the name is a visually hidden „Ładowanie…”",
+      "scope": "Loader overlay",
+      "treatment": "no-reference"
+    },
+    {
+      "id": "KD28",
+      "decision": "plan 14 (page frame)",
+      "figma": "back arrow left of the H1",
+      "code": "before PageHeader lands: icon-only back controls are 32 px ghost IconButtons (40 px hit area on a phone); labelled ones ghost sm BasicButtons with the same hit area",
+      "scope": "back controls",
+      "treatment": "geometry-tolerance"
+    },
+    {
+      "id": "KD29",
+      "decision": "plan 16 (inputs)",
+      "figma": "search field icon leading",
+      "code": "BasicInput icon is leading (the text starts after it); FormField labels carry for (a click focuses the control), the required * sits before the ? help button; BasicDatePicker trigger looks like an input with the calendar icon",
+      "scope": "form fields",
+      "treatment": "no-reference"
+    },
+    {
+      "id": "KD30",
+      "decision": "plan 18 (sweep 2)",
+      "figma": "—",
+      "code": "multi-choice lists are BasicSelect multiple („Wybrano: N” for several, the plain label as placeholder); confirmations with a custom footer are BasicModal (a bottom sheet on a phone); the Builder section order is the labelled FloatingActions pill",
+      "scope": "selects, dialogs, Builder",
+      "treatment": "no-reference"
+    },
+    {
+      "id": "KD31",
+      "decision": "plan 19 (join)",
+      "figma": "—",
+      "code": "the rich-text toolbar formatting tools are outline sm IconButtons with a pressed state (H1–H3 stay text buttons, R7); the text / table mode switch is a BasicSelect",
+      "scope": "BasicWysiwyg",
+      "treatment": "no-reference"
     }
   ]
 }

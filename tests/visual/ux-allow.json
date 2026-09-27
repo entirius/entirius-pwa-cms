@@ -2,27 +2,6 @@
   {
     "screen": "*",
     "kind": "nonFocusable",
-    "selector": "div.dropdown-wrapper",
-    "reason": "Dropdown boot: a clickable div without tabindex; keyboard access comes with the BasicSelect rebuild",
-    "owner": "P3 plan 15 (selects)"
-  },
-  {
-    "screen": "*",
-    "kind": "nonFocusable",
-    "selector": "div.switcher",
-    "reason": "Switcher boot: a clickable div without tabindex; keyboard access comes with BasicSwitch",
-    "owner": "P3 plan 16 (inputs)"
-  },
-  {
-    "screen": "emails-channel-edit",
-    "kind": "nonFocusable",
-    "selector": "div.color-input__swatch",
-    "reason": "colour swatch opens the picker on click only; part of the input family rebuild",
-    "owner": "P3 plan 16 (inputs)"
-  },
-  {
-    "screen": "*",
-    "kind": "nonFocusable",
     "selector": "div.page-card.emails-card",
     "reason": "clickable email cards (dashboard, template list, channel edit) without keyboard access",
     "owner": "P5 plan 34 (Emails)"
