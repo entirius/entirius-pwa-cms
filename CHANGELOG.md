@@ -80,7 +80,8 @@ All notable changes to this project will be documented in this file.
   CMS no longer sends a second refresh at the old token's time.
 - Logging out while the session refreshes no longer signs you back in: a refresh answered after the logout is
   dropped and writes no cookie. One that fails after the logout no longer shows the "session expired" screen or
-  signs out a login made in the meantime.
+  signs out a login made in the meantime. A refresh failing while the logout request is still out no longer does
+  either, and a panel request waiting on that refresh shows no error toast.
 - Opening the CMS after the access token expired (a tab reopened later) refreshes the session first. Panels outside
   `VUE_APP_PANELS` no longer bounce to the home page.
 - The desktop sidebar is no longer empty after a fast click right after login: the CMS leaves the login screen only
