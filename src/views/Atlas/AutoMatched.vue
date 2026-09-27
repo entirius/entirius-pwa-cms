@@ -3,7 +3,7 @@
     <div
       class="bg-base b-subtle rounded h-100 ovy-auto pl-12 pt-12 pb-12 pr-12"
     >
-      <div class="flex ai-ct jc-sb mb-10 gap-8">
+      <div class="flex ai-ct jc-sb flex-wrap rg-2 mb-10 gap-8">
         <h1 class="fs-700 fw-600">
           {{ $t("atlas.auto_matched.title") }}
         </h1>
@@ -114,16 +114,17 @@ export default {
   computed: {
     columns() {
       return [
-        { key: "sku", label: this.$t("atlas.auto_matched.col.sku") },
-        { key: "ean", label: this.$t("atlas.auto_matched.col.ean") },
+        { key: "sku", label: this.$t("atlas.auto_matched.col.sku"), width: "1fr" },
+        { key: "ean", label: this.$t("atlas.auto_matched.col.ean"), numeric: true },
         {
           key: "suppliers",
           label: this.$t("atlas.auto_matched.col.suppliers"),
         },
-        { key: "flags", label: this.$t("atlas.auto_matched.col.flags") },
+        { key: "flags", label: this.$t("atlas.auto_matched.col.flags"), priority: 2 },
         {
           key: "last_auto_link_at",
           label: this.$t("atlas.auto_matched.col.last_auto_link"),
+          priority: 2,
         },
       ];
     },

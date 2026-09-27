@@ -69,12 +69,6 @@
         @sort="onSort"
         @row-click="onRowClick"
       >
-        <template #cell-idx="{ value }">
-          <span class="cell-truncate" :title="value">{{ value }}</span>
-        </template>
-        <template #cell-name="{ value }">
-          <span class="cell-truncate" :title="value">{{ value }}</span>
-        </template>
         <template #cell-kind="{ value }">
           <StatusBadge :label="$t(`atlas.kind.${value}`)" :variant="kindVariant(value)" />
         </template>
@@ -425,7 +419,8 @@ export default {
           key: "idx",
           label: this.$t("atlas.col.idx"),
           sortable: true,
-          width: "minmax(120px, 180px)",
+          width: "180px",
+          priority: 2,
         },
         {
           key: "name",
@@ -438,24 +433,28 @@ export default {
           label: this.$t("atlas.col.kind"),
           sortable: false,
           width: "120px",
+          priority: 2,
         },
         {
           key: "source_type",
           label: this.$t("atlas.col.type"),
           sortable: false,
           width: "100px",
+          priority: 2,
         },
         {
           key: "default_currency_id",
           label: this.$t("atlas.col.currency"),
           sortable: false,
           width: "80px",
+          priority: 2,
         },
         {
           key: "target_warehouse_code",
           label: this.$t("atlas.col.warehouse"),
           sortable: false,
           width: "120px",
+          priority: 2,
         },
         {
           key: "is_active",
@@ -463,7 +462,7 @@ export default {
           sortable: true,
           width: "100px",
         },
-        { key: "actions", label: "", sortable: false, width: "100px" },
+        { key: "actions", label: "", sortable: false, actions: true },
       ];
     },
     paginationState() {
@@ -628,14 +627,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.cell-truncate {
-  display: block;
-  min-width: 0;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 .supplier-list__toolbar {
   display: flex;
   align-items: center;

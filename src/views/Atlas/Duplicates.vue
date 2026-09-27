@@ -39,12 +39,18 @@
         </div>
         <p class="fs-200 t-secondary mb-8">{{ group.suggestion_detail }}</p>
 
-        <div class="duplicates-table__scroll">
-          <table class="duplicates-table">
+        <div class="table-scroll">
+          <table class="table-basic duplicates-table">
+            <colgroup>
+              <col class="duplicates-table__sku" />
+              <col class="duplicates-table__weight" />
+              <col />
+              <col class="duplicates-table__actions" />
+            </colgroup>
             <thead>
               <tr>
                 <th>{{ $t("atlas.duplicates.col.sku") }}</th>
-                <th>{{ $t("atlas.duplicates.col.weight") }}</th>
+                <th class="table-basic__numeric">{{ $t("atlas.duplicates.col.weight") }}</th>
                 <th>{{ $t("atlas.duplicates.col.suppliers") }}</th>
                 <th>{{ $t("atlas.duplicates.col.actions") }}</th>
               </tr>
@@ -54,7 +60,7 @@
                 <td>
                   <span class="fw-600">{{ rp.sku }}</span>
                 </td>
-                <td>{{ rp.weight ?? "—" }}</td>
+                <td class="table-basic__numeric">{{ rp.weight ?? "—" }}</td>
                 <td>
                   <div class="flex ai-ct flex-wrap gap-2">
                     <StatusBadge
@@ -182,27 +188,22 @@ export default {
   }
 }
 
-.duplicates-table__scroll {
-  overflow-x: auto;
-  scrollbar-width: thin;
+// Every EAN group shares one column grid, so SKU, suppliers and actions line up from group to group.
+.duplicates-table {
+  table-layout: fixed;
+  min-width: 640px;
 }
 
-.duplicates-table {
-  width: 100%;
-  border-collapse: collapse;
+.duplicates-table__sku {
+  width: 200px;
+}
 
-  th,
-  td {
-    padding: var(--space-5);
-    text-align: left;
-    border-bottom: 1px solid var(--border-subtle);
-  }
+.duplicates-table__weight {
+  width: 100px;
+}
 
-  th {
-    font-size: var(--fs-200);
-    font-weight: 600;
-    color: var(--text-muted);
-  }
+.duplicates-table__actions {
+  width: 280px;
 }
 
 </style>
