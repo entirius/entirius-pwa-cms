@@ -1,0 +1,135 @@
+[
+  {
+    "screen": "*",
+    "kind": "nonFocusable",
+    "selector": "div.dropdown-wrapper",
+    "reason": "Dropdown boot: a clickable div without tabindex; keyboard access comes with the BasicSelect rebuild",
+    "owner": "P3 plan 15 (selects)"
+  },
+  {
+    "screen": "*",
+    "kind": "nonFocusable",
+    "selector": "div.switcher",
+    "reason": "Switcher boot: a clickable div without tabindex; keyboard access comes with BasicSwitch",
+    "owner": "P3 plan 16 (inputs)"
+  },
+  {
+    "screen": "emails-channel-edit",
+    "kind": "nonFocusable",
+    "selector": "div.color-input__swatch",
+    "reason": "colour swatch opens the picker on click only; part of the input family rebuild",
+    "owner": "P3 plan 16 (inputs)"
+  },
+  {
+    "screen": "*",
+    "kind": "nonFocusable",
+    "selector": "div.page-card.emails-card",
+    "reason": "clickable email cards (dashboard, template list, channel edit) without keyboard access",
+    "owner": "P5 plan 34 (Emails)"
+  },
+  {
+    "screen": "*",
+    "kind": "nonFocusable",
+    "selector": "div.author-photo-preview",
+    "reason": "the author photo opens the gallery picker on click only",
+    "owner": "P5 plan 35 (Authors)"
+  },
+  {
+    "screen": "*",
+    "kind": "nonFocusable",
+    "selector": "div.subscriber-setter",
+    "reason": "content editor tile reorder/set controls inside SubscriberSetter (a BasicButton would swallow the setter click, plan 02)",
+    "owner": "P5 plan 28 (Pages content editor + Handy-kit)"
+  },
+  {
+    "screen": "*",
+    "kind": "nonFocusable",
+    "selector": "div.swiper-slide",
+    "reason": "content editor tile slider: slides select a tile on click only",
+    "owner": "P5 plan 28 (Pages content editor + Handy-kit)"
+  },
+  {
+    "screen": "*",
+    "kind": "nonFocusable",
+    "selector": "p.section-uid",
+    "reason": "content editor section id copies on click only",
+    "owner": "P5 plan 28 (Pages content editor + Handy-kit)"
+  },
+  {
+    "screen": "pages-content-sets",
+    "kind": "nonFocusable",
+    "selector": "div.doc-tile",
+    "reason": "content-set document tiles bind on click only",
+    "owner": "P5 plan 31 (ContentSets)"
+  },
+  {
+    "screen": "pages-gallery",
+    "kind": "nonFocusable",
+    "selector": "div.gallery-card",
+    "reason": "gallery cards select on click only; the grid becomes MediaTile",
+    "owner": "P5 plan 29 (Gallery)"
+  },
+  {
+    "screen": "pages-layout-editor",
+    "kind": "nonFocusable",
+    "selector": "span.handle",
+    "reason": "navigation editor drag handle (drag only; the reorder buttons are the keyboard path)",
+    "owner": "P5 plan 42 (LayoutExtenders)"
+  },
+  {
+    "screen": "agreements-detail",
+    "kind": "nonFocusable",
+    "selector": "div.flex.ai-ct",
+    "reason": "the legal page history section header toggles on click only",
+    "owner": "P5 plan 36 (Agreements)"
+  },
+  {
+    "screen": "*",
+    "kind": "nonFocusable",
+    "selector": "item-row__question",
+    "reason": "FAQ group detail: a question opens its item on click only",
+    "owner": "P5 plan 33 (Faq)"
+  },
+  {
+    "screen": "faq-groups-list",
+    "kind": "nonFocusable",
+    "selector": "div.group-row",
+    "reason": "FAQ group rows open on click only (a list, not a DataTable)",
+    "owner": "P5 plan 33 (Faq)"
+  },
+  {
+    "screen": "*",
+    "kind": "nonFocusable",
+    "selector": "span.fw-600.t-accent",
+    "reason": "price table SKU cells open the product on click only (the grid is not on DataTable yet)",
+    "owner": "P5 plan 39 (PriceManager)"
+  },
+  {
+    "screen": "promo-detail",
+    "kind": "nonFocusable",
+    "selector": "span.promo-code-value",
+    "reason": "voucher code copies on click only",
+    "owner": "P5 plan 44 (Promo)"
+  },
+  {
+    "screen": "pim-categories-list",
+    "kind": "nonFocusable",
+    "selector": "div.tree-node__row",
+    "reason": "category tree rows expand on click only (the row's Edit button is focusable)",
+    "owner": "P5 plan 51 (Pim taxonomy)"
+  },
+  {
+    "screen": "pim-feature-set-detail",
+    "kind": "nonFocusable",
+    "selector": "span.collapse-chevron",
+    "reason": "feature group chevron collapses on click only",
+    "owner": "P5 plan 51 (Pim taxonomy)"
+  },
+  {
+    "screen": "leads-board",
+    "kind": "nonFocusable",
+    "selector": "board-card",
+    "reason": "board cards are drag targets; the card's stage select is the keyboard path",
+    "owner": "P5 plan 53 (Leads board)"
+  }
+]
