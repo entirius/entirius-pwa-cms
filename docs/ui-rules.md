@@ -84,7 +84,7 @@ Traps:
 |---|---|
 | text / colour / number / rich text | `BasicInput` / `ColorInput` / `NumberInput` / `BasicWysiwyg` |
 | on/off setting · item in a checklist | `Switcher` · `BasicCheckbox` |
-| choice from a list · async entity search · channel scope | `Dropdown` · `EntitySearchPicker` · `ChannelMultiSelect` |
+| choice from a list · async entity search · channel scope | `BasicSelect` (`multiple`, `searchable`) · `EntitySearchPicker` · `ChannelMultiSelect` |
 | form field wrapper (label, hint, required, error) | `FormField`, around every field |
 | status / category pill | `StatusBadge` |
 | filter toggle · mode switch (list / edit) | `FilterChip` inside `MobileFilterPanel` · `SegmentedControl` (never a pair of chips) |

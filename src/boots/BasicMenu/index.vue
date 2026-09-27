@@ -1,5 +1,9 @@
 <template>
-  <span ref="root" class="basic-menu" :class="{ 'basic-menu--inline': inline }">
+  <span
+    ref="root"
+    class="basic-menu"
+    :class="{ 'basic-menu--inline': inline, 'basic-menu--inline-up': inline && placement.startsWith('top') }"
+  >
     <span ref="trigger" class="basic-menu__trigger" @click.capture="onTriggerClick" @keydown="onTriggerKeydown">
       <slot name="trigger" :open="isOpen" />
     </span>
@@ -51,7 +55,7 @@ let nextId = 0;
 // `role="menu"`: arrows, Home / End move between items, Enter / Space choose (emits `select` with the item), Esc and
 // Tab close; Esc returns focus to the trigger; a click outside closes. The `panel` slot (scope: `close`) replaces the
 // list with free content, `role="dialog"` named by `label`. `placement` is a floating-ui placement. `inline` renders
-// it open in the page flow (catalogue).
+// it open in the page flow (catalogue), above the trigger for a `top` placement (the drop-up state).
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useSlots, watch } from "vue";
 import { ICONS } from "@/boots/Icons/icons";
 import { FOCUSABLE, focusableIn } from "@/composables/useFocusTrap";
@@ -167,13 +171,15 @@ function syncTriggerAria() {
   control.setAttribute("aria-controls", menuId);
 }
 
-// An async trigger (the global boots load lazily) renders after the menu mounts: sync again when it appears.
+// An async trigger (the global boots load lazily) renders after the menu mounts, a disabled one is enabled later:
+// sync again when it appears or changes.
 let triggerObserver = null;
 watch(isOpen, syncTriggerAria, { flush: "post" });
 onMounted(() => {
   syncTriggerAria();
   triggerObserver = new MutationObserver(syncTriggerAria);
-  triggerObserver.observe(trigger.value, { childList: true, subtree: true });
+  // `disabled` too: a control that mounts disabled is no FOCUSABLE until it is enabled.
+  triggerObserver.observe(trigger.value, { childList: true, subtree: true, attributes: true, attributeFilter: ["disabled"] });
   document.addEventListener("pointerdown", onDocumentPointer);
 });
 onBeforeUnmount(() => {
@@ -194,6 +200,15 @@ defineExpose({ open: openMenu, close });
   flex-direction: column;
   align-items: flex-start;
   gap: var(--space-1);
+}
+
+// In the page flow the list stacks like content: a real menu opened next to it stays on top.
+.basic-menu--inline .basic-menu__popover {
+  z-index: auto;
+}
+
+.basic-menu--inline-up {
+  flex-direction: column-reverse;
 }
 
 .basic-menu__trigger {

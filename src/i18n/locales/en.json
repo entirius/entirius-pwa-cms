@@ -3623,6 +3623,17 @@
       }
     }
   },
+  "select": {
+    "search": "Search the list",
+    "no_results": "No results",
+    "clear": "Clear selection",
+    "selected_count": "{count} selected"
+  },
+  "entity_picker": {
+    "search": "Search",
+    "searching": "Searching…",
+    "no_results": "No results"
+  },
   "ui_catalogue": {
     "stub": "Filled by plan {plan}."
   }

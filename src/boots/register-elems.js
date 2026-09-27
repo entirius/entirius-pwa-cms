@@ -66,6 +66,7 @@ export default function registerBootComponents(app) {
   app.component("Breadcrumbs", defineAsyncComponent(() => import("./Breadcrumbs/index.vue")));
 
   // P3 selects (plan 15)
+  app.component("BasicSelect", defineAsyncComponent(() => import("./BasicSelect/index.vue")));
 
   // P3 inputs (plan 16)
   app.component("BasicTextarea", defineAsyncComponent(() => import("./BasicTextarea/index.vue")));

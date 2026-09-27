@@ -3622,6 +3622,17 @@
       }
     }
   },
+  "select": {
+    "search": "Szukaj na liście",
+    "no_results": "Brak wyników",
+    "clear": "Wyczyść wybór",
+    "selected_count": "Wybrano: {count}"
+  },
+  "entity_picker": {
+    "search": "Szukaj",
+    "searching": "Szukanie…",
+    "no_results": "Brak wyników"
+  },
   "ui_catalogue": {
     "stub": "Sekcję wypełni plan {plan}."
   }

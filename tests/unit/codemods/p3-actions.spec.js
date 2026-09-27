@@ -58,4 +58,16 @@ describe("p3-actions codemod", () => {
     expect(classify(["t-secondary"]).flag).toMatch(/one-off/);
     expect(classify(["btn-primary", "btn-danger"]).flag).toMatch(/one-off/);
   });
+
+  it("counts the legacy colour classes that survived P2 as colours (plan-11 review)", () => {
+    expect(classify(["txt-gray-700"]).flag).toBe('one-off colours "txt-gray-700": pick the variant by hand');
+    expect(classify(["bg-gray-200", "txt-basic-600"]).flag).toMatch(/one-off/);
+    expect(classify(["bg-accent-fill", "txt-gray-500"]).flag).toMatch(/one-off/);
+    expect(classify(["txt-center", "bg-raised"]).variant).toBe("secondary");
+    expect(transform('<template><BasicButton :text="t" :class="w ? \'txt-right\' : \'\'" /></template>', "a.vue").flags).toEqual([]);
+    const bound = '<template><BasicButton :text="t" :class="on ? \'txt-gray-700\' : \'\'" /></template>';
+    expect(transform(bound, "legacy.vue").flags.map((flag) => flag.message)).toEqual([
+      "a colour in :class: pick the variant by hand",
+    ]);
+  });
 });

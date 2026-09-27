@@ -1,158 +1,123 @@
 <template>
-  <div class="channel-select">
-    <button
-      type="button"
-      class="channel-select__trigger pointer flex ai-ct gap-2"
-      :class="{ 'channel-select__trigger--active': modelValue.length }"
-      :title="triggerLabel"
-      @click="open = !open"
-    >
-      <FontAwesomeIcon icon="globe" />
-      <span class="channel-select__label fs-200">{{ triggerLabel }}</span>
-    </button>
-    <div v-if="open" class="channel-select__backdrop" @click="open = false" />
-    <div v-if="open" class="channel-select__drop">
-      <div class="channel-select__header">
-        {{ label }}
-      </div>
-      <div
-        v-for="ch in channels"
-        :key="ch.idx"
-        class="channel-select__item"
-        :class="{ 'channel-select__item--selected': modelValue.includes(ch.idx) }"
-        @click="toggle(ch.idx)"
+  <BasicMenu class="channel-select" :label="label" :inline="inline" placement="bottom-end" @open="onOpen">
+    <template #trigger>
+      <button
+        type="button"
+        class="channel-select__trigger flex ai-ct gap-2 pointer"
+        :class="{ 'channel-select__trigger--active': modelValue.length }"
+        :title="triggerLabel"
+        :aria-label="triggerLabel"
       >
-        <span>{{ ch.name || ch.idx }}</span>
-        <FontAwesomeIcon
-          v-if="modelValue.includes(ch.idx)"
-          icon="check"
-          class="t-accent"
-        />
-      </div>
-    </div>
-  </div>
+        <FontAwesomeIcon :icon="ICONS.channels" aria-hidden="true" />
+        <span v-if="!compact" class="channel-select__full">{{ triggerLabel }}</span>
+        <span class="channel-select__short" :class="{ 'channel-select__short--always': compact }">{{ label }}</span>
+      </button>
+    </template>
+    <template #panel>
+      <OptionList
+        :id="listId"
+        class="channel-select__list"
+        :options="options"
+        :is-selected="(option) => modelValue.includes(option.value)"
+        multiple
+        :active="listbox.active.value"
+        tabindex="0"
+        :aria-label="label"
+        :aria-activedescendant="listbox.active.value >= 0 ? `${listId}-${listbox.active.value}` : undefined"
+        @keydown="listbox.onKeydown($event)"
+        @hover="listbox.active.value = $event"
+        @choose="toggle($event.value)"
+      />
+    </template>
+  </BasicMenu>
 </template>
 
 <script setup>
-import { ref, computed } from "vue"
+// Channel scope chip (docs/ui-rules.md C4, Figma S6): „Kanały: Wszystkie” with no channel picked, „Kanały: 2” with
+// two; `compact` shows „Kanały” only (phone header), as does every chip below the tablet breakpoint. `v-model` =
+// picked channel idxs, `channels` = [{ idx, name? }]. The list opens in BasicMenu's panel as a multi-select listbox
+// with checkboxes (useListbox keyboard); `inline`: open in the page flow (catalogue).
+import { computed, useId } from "vue";
+import BasicMenu from "@/boots/BasicMenu/index.vue";
+import OptionList from "@/boots/BasicSelect/OptionList.vue";
+import { useListbox } from "@/boots/BasicSelect/useListbox";
+import { ICONS } from "@/boots/Icons/icons";
 
 const props = defineProps({
-  modelValue: {
-    type: Array,
-    default: () => [],
-  },
-  channels: {
-    type: Array,
-    default: () => [],
-  },
-  label: {
-    type: String,
-    default: "Channels",
-  },
-  allLabel: {
-    type: String,
-    default: "All",
-  },
-})
+  modelValue: { type: Array, default: () => [] },
+  channels: { type: Array, default: () => [] },
+  label: { type: String, default: "Channels" },
+  allLabel: { type: String, default: "All" },
+  compact: { type: Boolean, default: false },
+  inline: { type: Boolean, default: false },
+});
+const emit = defineEmits(["update:modelValue"]);
 
-const emit = defineEmits(["update:modelValue"])
+const listId = `${useId()}-listbox`;
+const options = computed(() => props.channels.map((ch) => ({ label: ch.name || ch.idx, value: ch.idx })));
+const listbox = useListbox(options, (option) => toggle(option.value));
 
-const open = ref(false)
+const triggerLabel = computed(() => `${props.label}: ${props.modelValue.length || props.allLabel}`);
 
-const triggerLabel = computed(() => {
-  if (!props.modelValue.length) return `${props.label}: ${props.allLabel}`
-  return `${props.label} (${props.modelValue.length})`
-})
+function onOpen() {
+  listbox.reset(options.value.findIndex((option) => props.modelValue.includes(option.value)));
+}
 
 function toggle(idx) {
-  const current = [...props.modelValue]
-  const index = current.indexOf(idx)
-  if (index > -1) {
-    current.splice(index, 1)
-  } else {
-    current.push(idx)
-  }
-  emit("update:modelValue", current)
+  const picked = props.modelValue.includes(idx);
+  emit("update:modelValue", picked ? props.modelValue.filter((value) => value !== idx) : [...props.modelValue, idx]);
 }
 </script>
 
 <style lang="scss" scoped>
-.channel-select {
-  position: relative;
-}
-
 .channel-select__trigger {
+  box-sizing: border-box;
   height: var(--elem-height);
-  padding: 0 var(--space-2);
-  border-radius: var(--radius-base);
+  padding: 0 var(--space-3);
   border: 1px solid var(--border-control);
-  background-color: var(--surface-sunken);
+  border-radius: var(--radius-base);
+  background: var(--surface-sunken);
   color: var(--text-secondary);
-  font-size: var(--fs-250);
-  transition: all 0.15s ease;
+  font-family: inherit;
+  font-size: var(--fs-300);
+  font-weight: 500;
   white-space: nowrap;
+  transition: border-color 0.15s;
+
   &:hover {
-    background-color: var(--surface-hover);
+    border-color: var(--border-default);
     color: var(--text-body);
   }
-  &--active {
+
+  &[aria-expanded="true"] {
     border-color: var(--accent);
-    color: var(--text-accent);
   }
 }
 
-.channel-select__label {
-  @media only screen and (max-width: 768px) {
+.channel-select__trigger--active {
+  border-color: var(--accent);
+  color: var(--text-accent);
+}
+
+.channel-select__short {
+  display: none;
+}
+
+.channel-select__short--always {
+  display: inline;
+}
+
+@media only screen and (max-width: 768px) {
+  .channel-select__full {
     display: none;
   }
-}
 
-.channel-select__backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 9;
-}
-
-.channel-select__drop {
-  position: absolute;
-  top: calc(100% + 4px);
-  right: 0;
-  min-width: 200px;
-  z-index: 10;
-  background: var(--surface-base);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-  box-shadow: var(--shadow-md);
-  overflow: hidden;
-}
-
-.channel-select__header {
-  padding: var(--space-2) var(--space-3);
-  font-size: var(--fs-200);
-  font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-bottom: 1px solid var(--border-subtle);
-}
-
-.channel-select__item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-2) var(--space-3);
-  font-size: var(--fs-250);
-  color: var(--text-body);
-  cursor: pointer;
-  transition: background-color 0.1s ease;
-  &:hover {
-    background-color: var(--surface-raised);
+  .channel-select__short {
+    display: inline;
   }
-  &--selected {
-    background-color: var(--accent-subtle);
-  }
-  & + & {
-    border-top: 1px solid var(--border-subtle);
-  }
+}
+
+.channel-select__list {
+  min-width: 12rem;
 }
 </style>
