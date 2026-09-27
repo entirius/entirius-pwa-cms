@@ -2,14 +2,14 @@
   <span
     ref="root"
     class="basic-tooltip"
-    :class="{ 'basic-tooltip--help': variant === 'help' }"
+    :class="{ 'basic-tooltip--help': variant === 'help', 'basic-tooltip--own-stop': ownTabStop }"
     :tabindex="ownTabStop ? 0 : undefined"
     :aria-describedby="ownTabStop ? tipId : undefined"
     @mouseenter="hovered = true"
     @mouseleave="onLeave"
     @focusin="onFocusIn"
     @focusout="onLeave"
-    @keydown.esc="dismissed = true"
+    @keydown.esc="onEscape"
   >
     <button
       v-if="variant === 'help'"
@@ -80,6 +80,13 @@ function onFocusIn(event) {
   focused.value = isKeyboardFocus(event.target);
 }
 
+// Esc hides a shown tip and stops there (a dialog around it stays open); with no tip it goes on to the dialog.
+function onEscape(event) {
+  if (!shown.value || props.open) return;
+  event.stopPropagation();
+  dismissed.value = true;
+}
+
 function onLeave(event) {
   if (event.type === "mouseleave") hovered.value = false;
   else if (!root.value?.contains(event.relatedTarget)) focused.value = false;
@@ -106,11 +113,11 @@ onUpdated(describeTrigger);
 
 .basic-tooltip {
   display: inline-flex;
+}
 
-  // A disabled control swallows the pointer: the wrapper takes the hover instead.
-  :deep(:disabled) {
-    pointer-events: none;
-  }
+// Disabled with a reason: the disabled control swallows the pointer, so the wrapper takes the hover instead.
+.basic-tooltip--own-stop :deep(:disabled) {
+  pointer-events: none;
 }
 
 .basic-tooltip__help {

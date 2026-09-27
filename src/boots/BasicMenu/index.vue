@@ -11,6 +11,7 @@
       :class="{ 'basic-menu__popover--panel': isPanel }"
       :role="isPanel ? 'dialog' : 'menu'"
       :aria-label="label || undefined"
+      tabindex="-1"
       :style="inline ? undefined : style"
       @keydown="onPopoverKeydown"
     >
@@ -18,15 +19,15 @@
       <template v-for="item in items" v-else :key="item.key">
         <div v-if="item.separator" role="separator" class="basic-menu__separator" />
         <component
-          :is="item.to ? 'router-link' : 'button'"
+          :is="isLink(item) ? 'router-link' : 'button'"
           v-else
-          :to="item.to"
-          :type="item.to ? undefined : 'button'"
+          :to="isLink(item) ? item.to : undefined"
+          :type="isLink(item) ? undefined : 'button'"
           role="menuitem"
           tabindex="-1"
           class="basic-menu__item flex ai-ct gap-2 pointer"
           :class="{ 'basic-menu__item--danger': item.danger }"
-          :disabled="item.to ? undefined : item.disabled"
+          :disabled="isLink(item) ? undefined : item.disabled"
           :aria-disabled="item.disabled ? 'true' : undefined"
           :data-testid="item.testid"
           @click="choose(item, $event)"
@@ -81,6 +82,8 @@ const { style } = useFloatingPosition(anchor, popover, {
   active: computed(() => expanded.value && !props.inline),
 });
 
+// A disabled `to` item renders as a button: a disabled router-link would still navigate.
+const isLink = (item) => Boolean(item.to) && !item.disabled;
 const enabledItems = () => [...(popover.value?.querySelectorAll('[role="menuitem"]:not([aria-disabled="true"])') ?? [])];
 
 function focusFirst() {
@@ -109,6 +112,11 @@ function onTriggerClick() {
 }
 
 function onTriggerKeydown(event) {
+  if (expanded.value && event.key === "Escape") {
+    event.stopPropagation();
+    close({ returnFocus: true });
+    return;
+  }
   if (props.inline || expanded.value || !["ArrowDown", "ArrowUp"].includes(event.key)) return;
   event.preventDefault();
   openMenu();
@@ -159,12 +167,19 @@ function syncTriggerAria() {
   control.setAttribute("aria-controls", menuId);
 }
 
+// An async trigger (the global boots load lazily) renders after the menu mounts: sync again when it appears.
+let triggerObserver = null;
 watch(isOpen, syncTriggerAria, { flush: "post" });
 onMounted(() => {
   syncTriggerAria();
+  triggerObserver = new MutationObserver(syncTriggerAria);
+  triggerObserver.observe(trigger.value, { childList: true, subtree: true });
   document.addEventListener("pointerdown", onDocumentPointer);
 });
-onBeforeUnmount(() => document.removeEventListener("pointerdown", onDocumentPointer));
+onBeforeUnmount(() => {
+  triggerObserver?.disconnect();
+  document.removeEventListener("pointerdown", onDocumentPointer);
+});
 
 defineExpose({ open: openMenu, close });
 </script>

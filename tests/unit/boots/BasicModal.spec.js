@@ -21,6 +21,11 @@ describe("BasicModal", () => {
     return wrapper;
   };
   const dialog = () => document.querySelector('[role="dialog"]');
+  const backdropClick = () => {
+    const backdrop = document.querySelector(".basic-modal");
+    backdrop.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+    backdrop.click();
+  };
   const escape = () => document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
 
   afterEach(() => {
@@ -47,7 +52,7 @@ describe("BasicModal", () => {
     const wrapper = mountModal();
     await settle();
     escape();
-    document.querySelector(".basic-modal").click();
+    backdropClick();
     document.querySelector('[data-testid="basic-modal-close"]').click();
     expect(wrapper.emitted("update:open")).toEqual([[false], [false], [false]]);
     expect(wrapper.emitted("close")).toHaveLength(3);
@@ -57,7 +62,7 @@ describe("BasicModal", () => {
     const wrapper = mountModal({ persistent: true });
     await settle();
     escape();
-    document.querySelector(".basic-modal").click();
+    backdropClick();
     expect(wrapper.emitted("update:open")).toBeUndefined();
     document.querySelector('[data-testid="basic-modal-close"]').click();
     expect(wrapper.emitted("update:open")).toEqual([[false]]);
@@ -88,8 +93,15 @@ describe("BasicModal", () => {
     expect(wrapper.find('[role="dialog"]').exists()).toBe(true);
     expect(dialog().hasAttribute("aria-modal")).toBe(false);
     expect(document.activeElement).toBe(outside);
-    document.querySelector(".basic-modal").click();
+    backdropClick();
     escape();
+    expect(wrapper.emitted("update:open")).toBeUndefined();
+  });
+
+  it("a click that started inside the panel (a text selection dragged out) does not close it", async () => {
+    const wrapper = mountModal();
+    await settle();
+    document.querySelector(".basic-modal").click();
     expect(wrapper.emitted("update:open")).toBeUndefined();
   });
 

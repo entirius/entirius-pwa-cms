@@ -62,13 +62,14 @@ describe("ConfirmDialog", () => {
     expect(byTestId("confirm-dialog-discard")).toBeNull();
   });
 
-  it("loading: spinner on confirm, cancel disabled, Esc ignored", async () => {
+  it("loading: spinner on confirm, cancel disabled, Esc and the close button ignored", async () => {
     const wrapper = mountDialog({ loading: true });
     await nextTick();
     await nextTick();
     expect(byTestId("confirm-dialog-confirm").getAttribute("aria-busy")).toBe("true");
     expect(byTestId("confirm-dialog-cancel").disabled).toBe(true);
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    byTestId("basic-modal-close").click();
     expect(wrapper.emitted("cancel")).toBeUndefined();
   });
 });

@@ -9,6 +9,7 @@ const VIEWPORT_PADDING = 8;
 export function useFloatingPosition(anchor, floating, { placement, active, gap = 4 }) {
   const style = ref({ position: "fixed", left: "0px", top: "0px" });
   let stop = null;
+  let unmounted = false;
 
   async function update() {
     const [reference, element] = [toValue(anchor), toValue(floating)];
@@ -32,12 +33,16 @@ export function useFloatingPosition(anchor, floating, { placement, active, gap =
       release();
       if (!on) return;
       await nextTick();
+      if (unmounted || !toValue(active)) return;
       const [reference, element] = [toValue(anchor), toValue(floating)];
       if (reference && element) stop = autoUpdate(reference, element, update);
     },
     { immediate: true }
   );
-  onBeforeUnmount(release);
+  onBeforeUnmount(() => {
+    unmounted = true;
+    release();
+  });
 
   return { style };
 }

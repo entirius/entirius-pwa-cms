@@ -115,6 +115,22 @@ describe("BasicMenu", () => {
     expect(document.activeElement).toBe(document.querySelector(".mark"));
   });
 
+  it("a disabled `to` item is a button: it neither navigates nor selects", async () => {
+    const wrapper = mountMenu({ items: [{ key: "go", label: "Idź", to: "/x", disabled: true }] });
+    await open();
+    expect(items()[0].tagName).toBe("BUTTON");
+    items()[0].click();
+    expect(wrapper.emitted("select")).toBeUndefined();
+  });
+
+  it("Esc on the trigger closes an open panel with nothing focusable", async () => {
+    mountMenu({ items: [] }, { panel: "<p>Brak powiadomień</p>" });
+    await open();
+    key(trigger(), "Escape");
+    await nextTick();
+    expect(trigger().getAttribute("aria-expanded")).toBe("false");
+  });
+
   it("inline: open in the page flow, a click on the trigger does not close it", async () => {
     mountMenu({ inline: true });
     await nextTick();

@@ -7,6 +7,7 @@
         ref="overlay"
         class="side-drawer-overlay"
         :class="{ 'side-drawer-overlay--inline': inline }"
+        @mousedown.self="pressedOnBackdrop = true"
         @click.self="onBackdrop"
       >
         <div
@@ -112,8 +113,13 @@ function close() {
   emit("close");
 }
 
+// Only a click that also started on the backdrop closes: a text selection dragged out of a field does not.
+const pressedOnBackdrop = ref(false);
+
 function onBackdrop() {
-  if (!props.inline) close();
+  const pressed = pressedOnBackdrop.value;
+  pressedOnBackdrop.value = false;
+  if (pressed && !props.inline) close();
 }
 
 useFocusTrap(overlay, {

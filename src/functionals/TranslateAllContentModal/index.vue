@@ -185,7 +185,8 @@ export default {
     :title="dialogTitle"
     size="md"
     :actions="footerActions"
-    @update:open="(open) => !open && $emit('close')"
+    :persistent="executing"
+    @update:open="(open) => !open && !executing && $emit('close')"
   >
     <!-- Step 1: Config -->
     <div v-if="step === 'config'">

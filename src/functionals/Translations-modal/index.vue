@@ -3,7 +3,8 @@
     :open="visible"
     :title="title || $t('translations_modal.title')"
     :actions="actions"
-    @update:open="(open) => !open && cancel()"
+    :persistent="saving"
+    @update:open="(open) => !open && !saving && cancel()"
   >
     <div class="translations-modal flex-column gap-3">
       <div v-for="lang in allLanguages" :key="lang" class="lang-row">

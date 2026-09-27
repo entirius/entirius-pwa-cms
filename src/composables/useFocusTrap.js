@@ -19,7 +19,9 @@ export const FOCUSABLE = [
 const stack = [];
 let scrollLock = null;
 
-export const focusableIn = (root) => [...root.querySelectorAll(FOCUSABLE)];
+// Tab stops only: a `tabindex="-1"` item (a closed BasicMenu's) or a control hidden by `display: none` is none.
+const isTabStop = (el) => el.tabIndex >= 0 && (typeof el.checkVisibility !== "function" || el.checkVisibility());
+export const focusableIn = (root) => [...root.querySelectorAll(FOCUSABLE)].filter(isTabStop);
 
 // The ancestor of `el` that is a child of <body> (the teleported root), or null outside the document.
 function bodyChildOf(el) {
@@ -66,9 +68,13 @@ function cycle(event, root) {
   }
 }
 
+const isForeignOverlay = (target, root) =>
+  target instanceof Element && target !== document.body && !root.contains(target);
+
+// Keys from an overlay teleported to <body> on top of the trap (a fullscreen editor, a legacy modal) are its own.
 function onKeydown(event) {
   const trap = stack.at(-1);
-  if (!trap) return;
+  if (!trap || isForeignOverlay(event.target, trap.root)) return;
   if (event.key === "Tab") cycle(event, trap.root);
   if (event.key === "Escape" && trap.onEscape) {
     event.stopPropagation();
@@ -93,15 +99,19 @@ export function useFocusTrap(container, { active, initialFocus = null, onEscape 
     initialTarget(root, initialFocus).focus();
   }
 
+  // A trap closed under another one hands its inert set to the one above and leaves focus where it is.
   function deactivate() {
     if (!trap) return;
     const released = trap;
     trap = null;
-    stack.splice(stack.indexOf(released), 1);
-    released.inert.forEach((el) => el.removeAttribute("inert"));
+    const at = stack.indexOf(released);
+    stack.splice(at, 1);
+    const above = stack[at];
+    if (above) above.inert.push(...released.inert);
+    else released.inert.forEach((el) => el.removeAttribute("inert"));
     if (!stack.length) document.removeEventListener("keydown", onKeydown);
     unlockScroll();
-    if (released.opener?.isConnected) released.opener.focus();
+    if (!above && released.opener?.isConnected) released.opener.focus();
   }
 
   watch(

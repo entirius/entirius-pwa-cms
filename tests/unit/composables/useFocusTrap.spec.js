@@ -118,6 +118,31 @@ describe("useFocusTrap", () => {
     expect(escapes).toEqual({ outer: 0, inner: 1 });
   });
 
+  it("a trap closed under another one leaves the top one in charge: background stays inert, focus stays", async () => {
+    const button = opener();
+    const lower = mountTrap({ active: true, name: "lower" });
+    await nextTick();
+    await nextTick();
+    mountTrap({ active: true, name: "upper" });
+    await nextTick();
+    await nextTick();
+    await lower.setProps({ active: false });
+    expect(button.hasAttribute("inert")).toBe(true);
+    expect(document.activeElement).toBe(byId("upper-first"));
+  });
+
+  it("ignores keys from an overlay teleported on top of it (a fullscreen editor)", async () => {
+    opener();
+    mountTrap({ active: true, name: "a" });
+    await nextTick();
+    await nextTick();
+    const editor = document.createElement("div");
+    document.body.appendChild(editor);
+    const event = new KeyboardEvent("keydown", { key: "Tab", bubbles: true, cancelable: true });
+    editor.dispatchEvent(event);
+    expect(event.defaultPrevented).toBe(false);
+  });
+
   it("never activates while inactive (an inline overlay)", async () => {
     const button = opener();
     mountTrap({ active: false, name: "a" });

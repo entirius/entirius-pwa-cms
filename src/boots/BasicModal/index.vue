@@ -6,6 +6,7 @@
         ref="root"
         class="basic-modal"
         :class="{ 'basic-modal--inline': inline }"
+        @mousedown.self="pressedOnBackdrop = true"
         @click.self="onBackdrop"
       >
         <div
@@ -77,8 +78,13 @@ function dismiss() {
   if (!props.persistent) close();
 }
 
+// Only a click that also started on the backdrop closes: a text selection dragged out of a field does not.
+const pressedOnBackdrop = ref(false);
+
 function onBackdrop() {
-  if (!props.inline) dismiss();
+  const pressed = pressedOnBackdrop.value;
+  pressedOnBackdrop.value = false;
+  if (pressed && !props.inline) dismiss();
 }
 
 useFocusTrap(root, { active: computed(() => props.open && !props.inline), onEscape: dismiss });

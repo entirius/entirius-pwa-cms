@@ -94,7 +94,9 @@ function transformFile(file, transform, write) {
   ];
   if (write && edits.length) {
     const out = applyEdits(text, edits);
-    parseSfc(out); // a rewrite that breaks the SFC throws before it is written
+    // A rewrite that breaks the SFC throws before it is written; the parser only records template errors.
+    const templateErrors = (source) => parseSfc(source).templateBody?.errors.length ?? 0;
+    if (templateErrors(out) > templateErrors(text)) throw new Error("the rewrite breaks the template");
     writeFileSync(join(ROOT, file), out);
   }
   return { lines, edits: edits.length, flags: flags.length };

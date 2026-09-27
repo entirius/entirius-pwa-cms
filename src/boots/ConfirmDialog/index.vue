@@ -41,13 +41,13 @@
 <script setup>
 // Yes/no confirmation on BasicModal (sm): `v-model:open`, `title` (or the `title` slot), `message` (or the default
 // slot), `confirmLabel`, `cancelLabel`, `tone` default (primary confirm) · danger (`danger-solid` confirm: every
-// delete, remove, flush), `loading` (spinner on confirm, Esc and backdrop blocked). Emits `confirm` and `cancel` (Cancel, close, Esc,
-// backdrop); the caller closes it. `discardLabel` adds a third action, `discard` (unsaved changes: stay · discard ·
+// delete, remove, flush), `loading` (spinner on confirm; Esc, backdrop and close blocked). Emits `confirm` and
+// `cancel` (Cancel, close, Esc, backdrop); the caller closes it. `discardLabel` adds a third action, `discard` (unsaved changes: stay · discard ·
 // save). The confirm button's test id is `confirm-dialog-confirm`.
 import BasicModal from "@/boots/BasicModal/index.vue";
 import ActionBar from "@/boots/ActionBar/index.vue";
 
-defineProps({
+const props = defineProps({
   open: { type: Boolean, default: false },
   title: { type: String, default: "" },
   message: { type: String, default: "" },
@@ -65,8 +65,9 @@ function cancel() {
   emit("cancel");
 }
 
+// While `loading` nothing dismisses it, the header close button included.
 function onClose(value) {
-  if (!value) cancel();
+  if (!value && !props.loading) cancel();
 }
 </script>
 
