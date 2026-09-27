@@ -14,7 +14,7 @@
           :class="`basic-modal__panel--${size}`"
           role="dialog"
           :aria-modal="inline ? undefined : 'true'"
-          :aria-labelledby="titleId"
+          :aria-labelledby="title || $slots.title ? titleId : undefined"
           tabindex="-1"
         >
           <header class="basic-modal__header flex ai-ct jc-sb gap-3">

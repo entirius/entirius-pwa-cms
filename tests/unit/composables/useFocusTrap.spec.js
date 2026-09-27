@@ -6,7 +6,7 @@ import { useFocusTrap } from "@/composables/useFocusTrap";
 
 // A teleported container with two buttons, trapped while `active`.
 const Trapped = defineComponent({
-  props: { active: Boolean, name: String },
+  props: { active: Boolean, name: String, field: Boolean },
   setup(props) {
     const root = ref(null);
     useFocusTrap(root, { active: () => props.active });
@@ -14,6 +14,7 @@ const Trapped = defineComponent({
       h(Teleport, { to: "body" }, [
         h("div", { ref: root, "data-trap": props.name }, [
           h("button", { id: `${props.name}-first` }, "first"),
+          props.field ? h("input", { id: `${props.name}-field` }) : null,
           h("button", { id: `${props.name}-last` }, "last"),
         ]),
       ]);
@@ -61,6 +62,13 @@ describe("useFocusTrap", () => {
 
     await wrapper.setProps({ active: false });
     expect(document.activeElement).toBe(button);
+  });
+
+  it("starts in the first form field when the dialog has one, before Close", async () => {
+    mountTrap({ active: true, name: "f", field: true });
+    await nextTick();
+    await nextTick();
+    expect(document.activeElement).toBe(byId("f-field"));
   });
 
   it("marks the rest of <body> inert and locks the scroll while active; releases both", async () => {

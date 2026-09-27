@@ -82,8 +82,12 @@ function onKeydown(event) {
   }
 }
 
+// A dialog with a form starts in its first field; Close is the fallback, not the first stop.
+const FIELD = "input:not([type='hidden']), textarea, select, [role='combobox']";
+
 function initialTarget(root, initialFocus) {
-  return toValue(initialFocus) ?? focusableIn(root)[0] ?? root;
+  const stops = focusableIn(root);
+  return toValue(initialFocus) ?? stops.find((el) => el.matches(FIELD)) ?? stops[0] ?? root;
 }
 
 export function useFocusTrap(container, { active, initialFocus = null, onEscape = null } = {}) {

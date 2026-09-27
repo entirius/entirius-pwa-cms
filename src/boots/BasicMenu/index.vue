@@ -142,7 +142,9 @@ function choose(item, event) {
 function moveFocus(key) {
   const items = enabledItems();
   const at = items.indexOf(document.activeElement);
-  const next = { ArrowDown: at + 1, ArrowUp: at - 1, Home: 0, End: items.length - 1 }[key];
+  // Nothing focused yet: Down starts at the first item, Up at the last.
+  const up = at < 0 ? items.length - 1 : at - 1;
+  const next = { ArrowDown: at + 1, ArrowUp: up, Home: 0, End: items.length - 1 }[key];
   items.at(next % items.length)?.focus();
 }
 
