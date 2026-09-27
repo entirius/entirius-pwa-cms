@@ -50,7 +50,7 @@
             <BasicButton
               size="sm"
               :label="$t('wysiwyg.bold')"
-              class="b-subtle lh-init p-1"
+              class="b-subtle lh-init"
               :class="{ 'bg-hover t-body': editor.isActive('bold') }"
               :custom="true"
               @click="editor.chain().focus().toggleBold().run()"
@@ -62,7 +62,7 @@
             <BasicButton
               size="sm"
               :label="$t('wysiwyg.italic')"
-              class="b-subtle lh-init p-1"
+              class="b-subtle lh-init"
               :class="{ 'bg-hover t-body': editor.isActive('italic') }"
               :custom="true"
               @click="editor.chain().focus().toggleItalic().run()"
@@ -74,7 +74,7 @@
             <BasicButton
               size="sm"
               :label="$t('wysiwyg.underline')"
-              class="b-subtle lh-init p-1"
+              class="b-subtle lh-init"
               :class="{
                 'bg-hover t-body': editor.isActive('underline'),
               }"
@@ -89,7 +89,7 @@
             <BasicButton
               size="sm"
               :label="$t('wysiwyg.heading_1')"
-              class="b-subtle lh-init p-1"
+              class="b-subtle lh-init"
               :class="{
                 'bg-hover t-body': editor.isActive('heading', {
                   level: 1,
@@ -105,7 +105,7 @@
             <BasicButton
               size="sm"
               :label="$t('wysiwyg.heading_2')"
-              class="b-subtle lh-init p-1"
+              class="b-subtle lh-init"
               :class="{
                 'bg-hover t-body': editor.isActive('heading', {
                   level: 2,
@@ -121,7 +121,7 @@
             <BasicButton
               size="sm"
               :label="$t('wysiwyg.heading_3')"
-              class="b-subtle lh-init p-1"
+              class="b-subtle lh-init"
               :class="{
                 'bg-hover t-body': editor.isActive('heading', {
                   level: 3,
@@ -138,7 +138,7 @@
             <BasicButton
               size="sm"
               :label="$t('wysiwyg.link')"
-              class="b-subtle lh-init p-1"
+              class="b-subtle lh-init"
               :class="{
                 'bg-hover t-body': editor.isActive('link'),
               }"
@@ -154,7 +154,7 @@
             <div v-if="faqEnabled" class="relative faq-tooltip-btn">
               <BasicButton
                 size="sm"
-                class="b-subtle lh-init p-1"
+                class="b-subtle lh-init"
                 :class="{
                   'bg-hover t-body': editor.isActive('faqTooltip'),
                 }"
@@ -228,7 +228,7 @@
             <BasicButton
               size="sm"
               :label="$t('wysiwyg.bullet_list')"
-              class="b-subtle lh-init p-1"
+              class="b-subtle lh-init"
               :class="{
                 'bg-hover t-body': editor.isActive('bulletList'),
               }"
@@ -243,7 +243,7 @@
             <BasicButton
               size="sm"
               :label="$t('wysiwyg.ordered_list')"
-              class="b-subtle lh-init p-1"
+              class="b-subtle lh-init"
               :class="{
                 'bg-hover t-body': editor.isActive('orderedList'),
               }"
@@ -258,7 +258,7 @@
             <BasicButton
               size="sm"
               :label="$t('wysiwyg.highlight')"
-              class="b-subtle lh-init p-1"
+              class="b-subtle lh-init"
               :class="{
                 'bg-hover t-body': editor.isActive('highlight'),
               }"
@@ -275,7 +275,7 @@
             <BasicButton
               size="sm"
               :label="$t('wysiwyg.link_color')"
-              class="b-subtle lh-init p-1"
+              class="b-subtle lh-init"
               :class="{
                 'bg-hover t-body': editor.isActive('textStyle', {
                   color: EDITOR_LINK_COLOR,
@@ -296,7 +296,7 @@
             <BasicButton
               size="sm"
               :label="$t('wysiwyg.align_left')"
-              class="b-subtle lh-init p-1"
+              class="b-subtle lh-init"
               :class="{
                 'bg-hover t-body': editor.isActive({
                   textAlign: 'left',
@@ -312,7 +312,7 @@
             <BasicButton
               size="sm"
               :label="$t('wysiwyg.align_center')"
-              class="b-subtle lh-init p-1"
+              class="b-subtle lh-init"
               :class="{
                 'bg-hover t-body': editor.isActive({
                   textAlign: 'center',
@@ -328,7 +328,7 @@
             <BasicButton
               size="sm"
               :label="$t('wysiwyg.align_right')"
-              class="b-subtle lh-init p-1"
+              class="b-subtle lh-init"
               :class="{
                 'bg-hover t-body': editor.isActive({
                   textAlign: 'right',
@@ -353,7 +353,7 @@
                   .insertTable({ rows: 2, cols: 3, withHeaderRow: true })
                   .run()
               "
-              class="b-subtle lh-init p-2"
+              class="b-subtle lh-init"
               :custom="true"
             >
               <template v-slot:custom>
@@ -366,7 +366,7 @@
             <BasicButton
               size="sm"
               :label="$t('wysiwyg.delete_table')"
-              class="b-subtle lh-init p-2"
+              class="b-subtle lh-init"
               :custom="true"
               @click="editor.chain().focus().deleteTable().run()"
             >
@@ -378,9 +378,7 @@
               </template>
             </BasicButton>
             <BasicButton
-              size="sm"
-              :label="$t('wysiwyg.add_column_before')"
-              class="b-subtle lh-init p-2"
+              class="b-subtle lh-init"
               :custom="true"
               @click="editor.chain().focus().addColumnBefore().run()"
             >
@@ -395,9 +393,7 @@
               </template>
             </BasicButton>
             <BasicButton
-              size="sm"
-              :label="$t('wysiwyg.add_column_after')"
-              class="b-subtle lh-init p-2"
+              class="b-subtle lh-init"
               :custom="true"
               @click="editor.chain().focus().addColumnAfter().run()"
             >
@@ -413,9 +409,7 @@
             </BasicButton>
 
             <BasicButton
-              size="sm"
-              :label="$t('wysiwyg.delete_column')"
-              class="b-subtle lh-init p-2"
+              class="b-subtle lh-init"
               :custom="true"
               @click="editor.chain().focus().deleteColumn().run()"
             >
@@ -430,9 +424,7 @@
               </template>
             </BasicButton>
             <BasicButton
-              size="sm"
-              :label="$t('wysiwyg.add_row_before')"
-              class="b-subtle lh-init p-2"
+              class="b-subtle lh-init"
               :custom="true"
               @click="editor.chain().focus().addRowBefore().run()"
             >
@@ -447,9 +439,7 @@
               </template>
             </BasicButton>
             <BasicButton
-              size="sm"
-              :label="$t('wysiwyg.add_row_after')"
-              class="b-subtle lh-init p-2"
+              class="b-subtle lh-init"
               :custom="true"
               @click="editor.chain().focus().addRowAfter().run()"
             >
@@ -465,9 +455,7 @@
             </BasicButton>
 
             <BasicButton
-              size="sm"
-              :label="$t('wysiwyg.delete_row')"
-              class="b-subtle lh-init p-2"
+              class="b-subtle lh-init"
               :custom="true"
               @click="editor.chain().focus().deleteRow().run()"
             >
@@ -482,9 +470,7 @@
               </template>
             </BasicButton>
             <BasicButton
-              size="sm"
-              :label="$t('wysiwyg.merge_cells')"
-              class="b-subtle lh-init p-2"
+              class="b-subtle lh-init"
               :custom="true"
               @click="editor.chain().focus().mergeCells().run()"
             >
@@ -499,9 +485,7 @@
               </template>
             </BasicButton>
             <BasicButton
-              size="sm"
-              :label="$t('wysiwyg.split_cell')"
-              class="b-subtle lh-init p-2"
+              class="b-subtle lh-init"
               :custom="true"
               @click="editor.chain().focus().splitCell().run()"
             >
@@ -516,9 +500,7 @@
               </template>
             </BasicButton>
             <BasicButton
-              size="sm"
-              :label="$t('wysiwyg.header_column')"
-              class="b-subtle lh-init p-2"
+              class="b-subtle lh-init"
               :custom="true"
               @click="editor.chain().focus().toggleHeaderColumn().run()"
             >
@@ -533,9 +515,7 @@
               </template>
             </BasicButton>
             <BasicButton
-              size="sm"
-              :label="$t('wysiwyg.header_row')"
-              class="b-subtle lh-init p-2"
+              class="b-subtle lh-init"
               :custom="true"
               @click="editor.chain().focus().toggleHeaderRow().run()"
             >
@@ -551,9 +531,7 @@
             </BasicButton>
 
             <BasicButton
-              size="sm"
-              :label="$t('wysiwyg.header_cell')"
-              class="b-subtle lh-init p-2"
+              class="b-subtle lh-init"
               :custom="true"
               @click="editor.chain().focus().toggleHeaderCell().run()"
             >

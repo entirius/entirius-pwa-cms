@@ -1840,18 +1840,7 @@
     "align_center": "Wyśrodkuj",
     "align_right": "Wyrównaj do prawej",
     "insert_table": "Wstaw tabelę",
-    "delete_table": "Usuń tabelę",
-    "add_column_before": "Dodaj kolumnę przed",
-    "add_column_after": "Dodaj kolumnę po",
-    "delete_column": "Usuń kolumnę",
-    "add_row_before": "Dodaj wiersz przed",
-    "add_row_after": "Dodaj wiersz po",
-    "delete_row": "Usuń wiersz",
-    "merge_cells": "Scal komórki",
-    "split_cell": "Podziel komórkę",
-    "header_column": "Kolumna nagłówkowa",
-    "header_row": "Wiersz nagłówkowy",
-    "header_cell": "Komórka nagłówkowa"
+    "delete_table": "Usuń tabelę"
   },
   "atlas": {
     "list_title": "Źródła",
