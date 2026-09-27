@@ -1,5 +1,7 @@
 <template>
+  <!-- One page needs no navigation. -->
   <nav
+    v-if="pagination.pages > 1"
     class="pagination inline-flex ai-ct gap-1"
     :style="`--cell-size: ${nav_size}px`"
     aria-label="pagination"
