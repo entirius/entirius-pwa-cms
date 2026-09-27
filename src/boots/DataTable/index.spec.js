@@ -127,7 +127,7 @@ describe("DataTable boot — empty state", () => {
   });
 });
 
-// The query strings DataTable asks for, answered as a phone (below 768 px) or a tablet (768–1023 px).
+// The query strings DataTable asks for, answered as a phone (up to 768 px, `max-tablet`) or a tablet (769–1023 px).
 function stubViewport(width) {
   vi.spyOn(window, "matchMedia").mockImplementation((query) => ({
     matches: width <= Number(query.match(/max-width: (\d+)px/)?.[1] ?? 0),
@@ -159,6 +159,16 @@ describe("DataTable boot — cell model", () => {
     expect(cells(wrapper, "value")[0].attributes("title")).toBeUndefined();
   });
 
+  it("titles a truncated slot cell without title(row) by its rendered text, never the raw value", async () => {
+    const opted = [{ key: "value", label: "Value", truncate: true }];
+    const slots = { "cell-value": ({ value }) => h("span", `Label ${value}`) };
+    const wrapper = mount(DataTable, { props: { columns: opted, rows }, slots });
+    expect(cells(wrapper, "value")[0].attributes("title")).toBe("Label 10");
+
+    await wrapper.setProps({ rows: [{ uid: 3, value: 30 }] });
+    expect(cells(wrapper, "value")[0].attributes("title")).toBe("Label 30");
+  });
+
   it("renders an em dash for an empty value, without a title", () => {
     const empty = [{ uid: 1, name: "", value: null }];
     const wrapper = mount(DataTable, { props: { columns, rows: empty } });
@@ -186,7 +196,7 @@ describe("DataTable boot — cell model", () => {
     expect(actions.attributes("style")).toContain("justify-content: flex-end");
   });
 
-  it("builds tracks: px floored by content, truncated fr keeps a minimum, actions sized to their buttons", () => {
+  it("builds tracks: px floored by content, truncated fr floored by its header and 120 px, actions sized to their buttons", () => {
     const sized = [
       { key: "name", label: "Name", width: "1fr" },
       { key: "value", label: "Value", width: "100px" },
@@ -194,8 +204,11 @@ describe("DataTable boot — cell model", () => {
       { key: "extra", label: "Extra", width: "minmax(80px, 1fr)" },
     ];
     const wrapper = mount(DataTable, { props: { columns: sized, rows, selectable: true } });
+    const [name, value] = wrapper.findAll(".data-table__header-cell").slice(1);
+    expect(name.attributes("style")).toContain("min-width: 120px");
+    expect(value.attributes("style")).not.toContain("min-width");
     expect(wrapper.find(".data-table__grid").attributes("style")).toContain(
-      "grid-template-columns: 40px minmax(120px, 1fr) minmax(min-content, 100px) max-content minmax(80px, 1fr)"
+      "grid-template-columns: 40px minmax(min-content, 1fr) minmax(min-content, 100px) max-content minmax(80px, 1fr)"
     );
   });
 });
@@ -215,7 +228,7 @@ describe("DataTable boot — column priority", () => {
     expect(wrapper.findAll(".data-table__header-cell").length).toBe(3);
   });
 
-  it("hides priority 3 below 1024 px and priority 2 below 768 px, header, cells and track alike", () => {
+  it("hides priority 3 below 1024 px and priority 2 at max-tablet (≤ 768 px), header, cells and track alike", () => {
     stubViewport(900);
     const tablet = mount(DataTable, { props: { columns: prioritised, rows } });
     expect(tablet.findAll(".data-table__header-cell").map((h) => h.text())).toEqual(["Name", "Value"]);
@@ -225,8 +238,14 @@ describe("DataTable boot — column priority", () => {
     expect(phone.findAll(".data-table__header-cell").map((h) => h.text())).toEqual(["Name"]);
     expect(cells(phone, "value").length).toBe(0);
     expect(phone.find(".data-table__grid").attributes("style")).toContain(
-      "grid-template-columns: minmax(120px, 1fr);"
+      "grid-template-columns: minmax(min-content, 1fr);"
     );
+  });
+
+  it("switches to the phone layout at 768 px, the same breakpoint as the max-tablet mixin", () => {
+    stubViewport(768);
+    const wrapper = mount(DataTable, { props: { columns: prioritised, rows } });
+    expect(wrapper.findAll(".data-table__header-cell").map((h) => h.text())).toEqual(["Name"]);
   });
 
   it("shrinks a px column to its content on a phone, so the name takes the free width", () => {
@@ -234,7 +253,7 @@ describe("DataTable boot — column priority", () => {
     const sized = [prioritised[0], { key: "value", label: "V", width: "100px" }];
     const wrapper = mount(DataTable, { props: { columns: sized, rows } });
     expect(wrapper.find(".data-table__grid").attributes("style")).toContain(
-      "grid-template-columns: minmax(120px, 1fr) min-content;"
+      "grid-template-columns: minmax(min-content, 1fr) min-content;"
     );
   });
 });
