@@ -2,7 +2,9 @@
   <button
     :disabled="isDisabled"
     class="button-basic pointer normal inline-flex jc-sb ai-ct gap-2"
-    :class="{ 'jc-ct': !text && icon }"
+    :class="[`button-basic--${size}`, { 'jc-ct button-basic--icon': isIconOnly }]"
+    :aria-label="label || undefined"
+    :title="label || undefined"
     @click.stop="$emit('click')"
   >
     <span v-if="icon" class="inline-flex jc-ct ai-ct btn-icon">
@@ -14,6 +16,10 @@
 </template>
 
 <script>
+// Sizes: md = --elem-height (inputs share it), sm = row actions. Roles are classes: btn-primary, btn-secondary
+// (btn-outline is the same look), btn-ghost, btn-danger (every delete/remove/reject), btn-danger-fill (the
+// destructive confirm in a dialog). Icon-only (no text) is a square of the size and needs `label`, the accessible
+// name; its icon is a <FontAwesomeIcon> in the `custom` slot (docs/ui-rules.md C5).
 export default {
   emits: ["click"],
   props: {
@@ -35,19 +41,57 @@ export default {
       type: [String, Boolean],
       require: false,
     },
+    size: {
+      type: String,
+      default: "md",
+      validator: (value) => ["md", "sm"].includes(value),
+    },
+    label: {
+      type: String,
+      default: "",
+    },
+  },
+  computed: {
+    isIconOnly() {
+      return !this.text && Boolean(this.icon || this.label);
+    },
   },
 };
 </script>
 <style lang="scss">
+@import "@/assets/scss/utils/media-query";
+
 button.button-basic {
+  --btn-height: var(--elem-height);
+  --btn-icon-size: var(--fs-400);
+
   overflow: hidden;
   position: relative;
-  border: none;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  min-height: var(--btn-height);
+  border: 1px solid transparent;
   border-radius: var(--radius-base);
   color: inherit;
   padding: 0 var(--space-4);
   background-color: transparent;
-  line-height: var(--elem-height);
+  font-size: var(--fs-200);
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+
+  &.button-basic--sm {
+    --btn-height: var(--space-6);
+    --btn-icon-size: var(--fs-300);
+
+    padding: 0 var(--space-3);
+  }
+
+  &.button-basic--icon {
+    width: var(--btn-height);
+    padding: 0;
+    font-size: var(--btn-icon-size);
+  }
 
   &.reverse-order {
     .btn-icon {
@@ -73,15 +117,14 @@ button.button-basic {
     }
   }
   .btn-text {
-    //   margin: 0 var(--space-4);
     color: inherit;
   }
   // -------------------------------------------------------------
-  // -------------------------------------------------------------
+  // Roles
   // -------------------------------------------------------------
 
   &.btn-primary {
-    color: inherit;
+    color: var(--text-on-accent-fill);
     background-color: var(--accent-fill);
 
     &:hover:not([disabled]) {
@@ -89,62 +132,52 @@ button.button-basic {
     }
 
     &[disabled] {
-      //opacity: 0.3;
       background-color: var(--accent-fill-hover);
     }
-    .btn-text {
-      color: var(--text-on-accent-fill);
-    }
   }
-  // -------------------------------------------------------------
-  // -------------------------------------------------------------
-  // -------------------------------------------------------------
-  &.btn-outline {
-    color: inherit;
-    //background-color: var(--surface-base);
-    border: 1px solid var(--border-subtle);
 
-    &:hover {
-      border: 1px solid var(--border-default);
+  &.btn-secondary,
+  &.btn-outline {
+    color: var(--text-body);
+    border-color: var(--border-default);
+
+    &:hover:not([disabled]) {
+      border-color: var(--border-strong);
     }
     &[disabled] {
-      border: 1px solid var(--border-default);
-      .btn-text {
-        color: var(--text-muted);
-      }
-    }
-
-    .btn-text {
-      color: var(--text-secondary);
+      color: var(--text-muted);
     }
     &.selected {
       border-bottom: 2px solid var(--border-strong);
     }
   }
 
-  // -------------------------------------------------------------
-  // -------------------------------------------------------------
-  // -------------------------------------------------------------
-  &.btn-secondary {
-    color: inherit;
-    background-color: var(--surface-raised);
+  &.btn-ghost {
+    color: var(--text-secondary);
 
-    &:hover {
+    &:hover:not([disabled]) {
+      color: var(--text-body);
       background-color: var(--surface-hover);
     }
-
     &[disabled] {
-      color: var(--text-body);
-      background-color: var(--surface-raised);
-      .btn-text {
-        color: var(--text-muted);
-      }
+      color: var(--text-muted);
     }
-    .btn-text {
-      position: relative;
-      z-index: 1;
-      color: var(--text-secondary);
+  }
+
+  &.btn-danger {
+    color: var(--negative);
+
+    &:hover:not([disabled]) {
+      border-color: var(--negative);
     }
+    &[disabled] {
+      color: var(--text-muted);
+    }
+  }
+
+  &.btn-danger-fill {
+    color: var(--text-on-status-fill);
+    background-color: var(--negative-fill);
   }
   //
   //
@@ -166,8 +199,15 @@ button.button-basic {
       color: var(--text-inverse);
     }
   }
-  // -------------------------------------------------------------
-  // -------------------------------------------------------------
-  // -------------------------------------------------------------
+}
+
+// Toolbar icon-only actions get a thumb-sized box on mobile; everything else keeps its size.
+@include max-tablet {
+  [id$="-toolbar-left"],
+  [id$="-toolbar-right"] {
+    button.button-basic.button-basic--icon {
+      --btn-height: var(--space-10);
+    }
+  }
 }
 </style>

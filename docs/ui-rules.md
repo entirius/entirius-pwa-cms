@@ -93,7 +93,14 @@ Traps:
   `pencil`). Until P3 moves BasicButton to FontAwesome, put `<FontAwesomeIcon>` into its `custom` slot.
   Icon policy: a text button carries no icon unless the design shows one. An icon-only action has an accessible
   name (`aria-label` or `title`), and it gets a visible text label when it is important or not obvious (R7). Until
-  P3 ships `IconButton`, an icon-only `BasicButton` puts `<FontAwesomeIcon>` into its `custom` slot.
+  P3 ships `IconButton`, an icon-only `BasicButton` puts `<FontAwesomeIcon>` into its `custom` slot and names itself
+  with `label` (sets `aria-label` and `title`).
+- **C6 One button family.** `BasicButton` owns height, padding, type and border: `size="md"` (default,
+  `--elem-height`, the toolbar and form size) or `size="sm"` (row actions); labels never wrap. The role is a class:
+  `btn-primary` (one per page, R5), `btn-secondary` (`btn-outline` is the same look), `btn-ghost` (back, close, row
+  edit), `btn-danger` (every delete, remove, reject), `btn-danger-fill` (the destructive confirm in a dialog). A
+  button without `text` is icon-only: a square of its size, `label` required. Never pass `bg-*` / `t-*` utilities to
+  pick a role, and never set a button height or font size from a view.
 
 ## Layout (R1–R9)
 
@@ -140,7 +147,7 @@ Traps:
   Hide delete. Save stays for the fields that are not locked.
 - **Disabled button with a reason.** Wrap the disabled `BasicButton` in `ToolTip :is_wrapper="true"` carrying the
   reason, and put the live button in the `v-else` branch.
-- **Delete.** Use an icon-only danger button with a trash icon, followed by a confirmation. Never a text "Delete" button.
+- **Delete.** Use an icon-only `btn-danger` button with the `trash-can` icon, followed by a confirmation. Never a text "Delete" button.
 - **Drag and drop.** Use `vuedraggable` with `:force-fallback="true"` and `fallback-class="drag-ghost"`. The ghost
   style goes in an unscoped `<style>`, because the clone is appended to `<body>`.
 
