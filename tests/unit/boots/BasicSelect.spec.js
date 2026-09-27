@@ -193,6 +193,14 @@ describe("BasicSelect", () => {
     expect(emitted(wrapper)).toEqual(["pl"]);
   });
 
+  it("closed: holds no option, so no hidden copy of the labels sits in the page", async () => {
+    mountSelect({ modelValue: "en" });
+    await settle();
+    expect(options()).toHaveLength(0);
+    await open();
+    expect(options().length).toBeGreaterThan(0);
+  });
+
   it("searchable: reopening points at the chosen option again, not the first", async () => {
     mountSelect({ searchable: true, modelValue: "en" });
     await open();
@@ -203,7 +211,8 @@ describe("BasicSelect", () => {
     key(input, "Escape");
     await settle();
     await open();
-    expect(input.getAttribute("aria-activedescendant")).toBe(options()[1].id);
+    const reopened = document.querySelector('input[type="search"]');
+    expect(reopened.getAttribute("aria-activedescendant")).toBe(options()[1].id);
   });
 
   it("a control that mounts disabled gets its ARIA state once enabled", async () => {

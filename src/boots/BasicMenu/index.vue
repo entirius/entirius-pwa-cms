@@ -20,8 +20,8 @@
       :style="inline ? undefined : style"
       @keydown="onPopoverKeydown"
     >
-      <slot v-if="isPanel" name="panel" :close="close" />
-      <template v-for="item in items" v-else :key="item.key">
+      <slot v-if="isPanel && isOpen" name="panel" :close="close" />
+      <template v-for="item in items" v-else-if="isOpen" :key="item.key">
         <div v-if="item.separator" role="separator" class="basic-menu__separator" />
         <component
           :is="isLink(item) ? 'router-link' : 'button'"
@@ -56,7 +56,8 @@ let nextId = 0;
 // `role="menu"`: arrows, Home / End move between items, Enter / Space choose (emits `select` with the item), Esc and
 // Tab close; Esc returns focus to the trigger; a click outside closes. The `panel` slot (scope: `close`) replaces the
 // list with free content, `role="dialog"` named by `label`. `placement` is a floating-ui placement. `inline` renders
-// it open in the page flow (catalogue), above the trigger for a `top` placement (the drop-up state).
+// it open in the page flow (catalogue), above the trigger for a `top` placement (the drop-up state). A closed menu
+// mounts neither items nor panel: a closed select holds no hidden copy of its option labels.
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useSlots, watch } from "vue";
 import { ICONS } from "@/boots/Icons/icons";
 import { FOCUSABLE, focusableIn } from "@/composables/useFocusTrap";
