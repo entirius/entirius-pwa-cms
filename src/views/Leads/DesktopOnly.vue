@@ -21,4 +21,4 @@ import { useIsDesktop } from "@/composables/useIsDesktop";
 const isDesktop = useIsDesktop();
 </script>
 
-<style src="./desktop.css"></style>
+<style lang="scss" src="./desktop.scss"></style>

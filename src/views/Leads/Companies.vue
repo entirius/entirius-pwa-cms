@@ -70,7 +70,7 @@ async function load(nextPage = 1) {
 onMounted(() => load());
 </script>
 
-<style src="./desktop.css"></style>
+<style lang="scss" src="./desktop.scss"></style>
 <style scoped>
 .companies__head {
   display: flex;

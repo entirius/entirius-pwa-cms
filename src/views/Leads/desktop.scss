@@ -1,3 +1,5 @@
+@import "@/assets/scss/utils/touch-target";
+
 /* Shared look of the leads desktop screens (plan 14): buttons, tables, form rows. */
 .desktop-page {
   height: 100%;
@@ -68,15 +70,8 @@
   font-size: var(--fs-400);
 }
 /* Phone: a 40 px hit area around every kit button, the visible box unchanged. */
-@media (max-width: 1023px) {
-  .ld-btn {
-    position: relative;
-  }
-  .ld-btn::after {
-    content: "";
-    position: absolute;
-    inset: calc((var(--elem-height) - var(--space-10)) / 2);
-  }
+.ld-btn {
+  @include touch-target;
 }
 /* Field metrics of BasicInput: control height, sunken surface, control border. */
 .ld-input {

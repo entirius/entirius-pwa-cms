@@ -122,7 +122,9 @@ onMounted(() => document.addEventListener("keydown", onKey));
 onBeforeUnmount(() => document.removeEventListener("keydown", onKey));
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import "@/assets/scss/utils/touch-target";
+
 .cfg-sheet__backdrop {
   position: fixed;
   inset: 0;
@@ -233,12 +235,11 @@ onBeforeUnmount(() => document.removeEventListener("keydown", onKey));
   font-size: var(--fs-200);
   color: var(--text-muted);
 }
-/* Phone: the close button gets a 40 px hit area; the negative margin keeps the header height. */
-@media (max-width: 1023px) {
-  .cfg-panel__head .button-basic--icon {
-    --btn-height: var(--space-10);
-
-    margin: calc((var(--elem-height) - var(--space-10)) / 2);
+/* Phone: the close button keeps its 32 px box inside a 40 px hit area (BasicButton clips, so it stops clipping). */
+.cfg-panel__head .button-basic--icon {
+  @include touch-target;
+  @include max-tablet {
+    overflow: visible;
   }
 }
 @media (min-width: 1024px) {

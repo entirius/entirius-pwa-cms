@@ -132,7 +132,7 @@ async function save() {
 onMounted(() => leadTypes.load()); // a failed load leaves Unknown only
 </script>
 
-<style src="./desktop.css"></style>
+<style lang="scss" src="./desktop.scss"></style>
 <style scoped>
 .add-lead {
   max-width: 640px;

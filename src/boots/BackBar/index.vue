@@ -3,6 +3,7 @@
     class="back-bar pointer flex ai-ct gap-2"
     :class="{ 'jc-ct': !label }"
     :aria-label="label || $t('common.back')"
+    :title="label ? undefined : $t('common.back')"
     @click="$emit('back')"
   >
     <FontAwesomeIcon icon="arrow-left" class="back-bar__icon" />
@@ -21,10 +22,10 @@ defineProps({
 defineEmits(["back"]);
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import "@/assets/scss/utils/media-query";
+
 .back-bar {
-  min-width: var(--elem-height);
-  min-height: var(--elem-height);
   background: none;
   border: none;
   color: var(--text-secondary);
@@ -32,7 +33,8 @@ defineEmits(["back"]);
   padding: var(--space-1) 0;
   transition: color 0.15s ease;
 }
-@media (max-width: 1023px) {
+// A phone gets a 40 px target; the desktop box stays the arrow (and label) itself.
+@include max-tablet {
   .back-bar {
     min-width: var(--space-10);
     min-height: var(--space-10);

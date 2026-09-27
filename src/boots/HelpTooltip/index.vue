@@ -12,7 +12,7 @@ defineProps({
 </template>
 
 <style lang="scss">
-@import "@/assets/scss/utils/media-query";
+@import "@/assets/scss/utils/touch-target";
 
 .help-tooltip {
   position: relative;
@@ -37,17 +37,12 @@ defineProps({
     position: relative;
     top: -1px;
 
-    // A phone gets the 24 px minimum hit area around the 14 px glyph (the glyph does not grow). Larger would cover the
-    // input 4 px below the label and the Switcher beside it, and take their taps.
+    // The glyph sits 1–5 px above the field it labels and can sit 9 px from a Switcher: the hit area follows the gap
+    // rule (22 × 30, bottom edge on the glyph's) and grows upwards, into the label, instead of over the field.
+    @include touch-target(22px, 30px);
     @include max-tablet {
       &::after {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: var(--space-6);
-        height: var(--space-6);
-        transform: translate(-50%, -50%);
+        transform: translate(-50%, calc(-50% - 8px));
       }
     }
   }

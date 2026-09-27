@@ -122,7 +122,7 @@ async function add() {
 onMounted(load);
 </script>
 
-<style src="./desktop.css"></style>
+<style lang="scss" src="./desktop.scss"></style>
 <style scoped>
 .ld-page {
   max-width: 900px;

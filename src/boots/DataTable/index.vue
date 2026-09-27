@@ -86,12 +86,14 @@
               class="data-table__cell data-table__cell--checkbox"
               role="gridcell"
             >
-              <input
-                type="checkbox"
-                :checked="isSelected(row)"
-                aria-label="Select row"
-                @click.stop="toggleSelect(row, index, $event)"
-              />
+              <label class="data-table__check" @click.stop>
+                <input
+                  type="checkbox"
+                  :checked="isSelected(row)"
+                  aria-label="Select row"
+                  @click.stop="toggleSelect(row, index, $event)"
+                />
+              </label>
             </div>
             <div
               v-for="col in visibleColumns"
@@ -293,7 +295,7 @@ function headerMinStyle(col) {
 
 const gridStyle = computed(() => {
   const widths = [];
-  if (props.expandable) widths.push("32px");
+  if (props.expandable) widths.push(belowTablet.value ? "40px" : "32px");
   if (props.selectable) widths.push("40px");
   widths.push(...visibleColumns.value.map(trackOf));
   return { gridTemplateColumns: widths.join(" ") };
@@ -414,7 +416,7 @@ function handleRowClick(row, index, event) {
 </script>
 
 <style lang="scss" scoped>
-@import "@/assets/scss/utils/media-query";
+@import "@/assets/scss/utils/touch-target";
 
 .data-table {
   background-color: var(--surface-base);
@@ -578,6 +580,16 @@ function handleRowClick(row, index, event) {
     background-color: var(--surface-hover);
     color: var(--text-body);
   }
+
+  // A phone widens the column to 40 px; the hit area stays inside its row (rows are at least 36 px high).
+  @include touch-target(var(--space-10), 36px);
+}
+
+// The row checkbox: its label carries the hit area, the whole 40 px column by the row height.
+.data-table__check {
+  display: flex;
+
+  @include touch-target(var(--space-10), 36px);
 }
 
 .data-table__expand-row {
