@@ -8,7 +8,7 @@
       @click="$refs.fileInput.click()"
     >
       <img v-if="previewUrl" :src="previewUrl" :alt="altText" />
-      <FontAwesomeIcon v-else icon="upload" />
+      <FontAwesomeIcon v-else :icon="$icons.upload" />
       <span
         v-if="previewUrl"
         class="image-picker-thumb__remove"

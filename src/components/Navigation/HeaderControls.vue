@@ -10,7 +10,7 @@
         @click="isPanelSwitcherOpen = !isPanelSwitcherOpen"
         @keydown.enter="isPanelSwitcherOpen = !isPanelSwitcherOpen"
       >
-        <FontAwesomeIcon icon="grip" />
+        <FontAwesomeIcon :icon="$icons.menu" />
       </button>
       <transition name="hc-drop">
         <div v-if="isPanelSwitcherOpen" class="hc-dropdown">

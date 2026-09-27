@@ -28,34 +28,27 @@
           v-model="link_url"
         />
       </FormField>
-      <Dropdown
-        class="bg-base rounded b-default"
+      <BasicSelect
+        v-model="link_type"
         :placeholder="$t('controllers.link_type')"
-        :values="[
+        :options="[
           { label: tFieldLabel('internal', 'In'), value: 'internal' },
           { label: tFieldLabel('external', 'Out'), value: 'external' },
         ]"
-        :selected="link_type ? [link_type] : []"
-        @onSelect="link_type = $event"
       />
     </div>
 
     <div class="grid grid-col-3 gap-2 mt-2 ai-ct" v-if="mode">
-      <Dropdown
+      <BasicSelect
         v-if="config && config.decorator && config.decorators.length"
+        v-model="link_decorator"
         :placeholder="$t('controllers.select_decorator')"
-        class="bg-base rounded b-default fs-200"
-        :values="
+        :options="
           config.decorators.map((d) => {
             return { label: d, value: d };
           })
         "
-        :selected="link_decorator ? [link_decorator] : []"
-        :isDisabled="Boolean(link_decorator)"
-        :can_remove_selected="true"
-        @onRemoveSelected="link_decorator = null"
-        :icon="link_decorator ? 'close-mini' : 'arrow-right-2'"
-        @onSelect="link_decorator = $event"
+        clearable
       />
       <div
         class="inline-flex jc-sb ai-ct bg-base h-100 rounded b-default ph-2"
@@ -76,7 +69,8 @@
       </div>
       <div class="grid">
         <BasicButton
-          class="bg-raised b-default bg-base-hover rounded"
+          variant="secondary"
+          class="rounded"
           @click="
             set_button({
               link_url,
@@ -94,41 +88,45 @@
     <div class="mt-1">
       <div class="flex">
         <BasicButton
-          class="b-default bg-base bg-hover-hover rounded fs-200 mr-1"
-          :class="{ 'bg-inverse t-inverse bg-inverse-hover': mode }"
+          :variant="mode ? 'primary' : 'secondary'"
+          class="rounded fs-200 mr-1"
           @click="!mode ? (mode = 'add') : (mode = null)"
         >
           {{ !mode ? $t('routes.set_new') : $t('common.close') }}
         </BasicButton>
-        <Dropdown
-          class="bg-base rounded b-default fg-1"
-          :class="[!Boolean(value) ? 'bg-raised t-muted' : '']"
+        <BasicSelect
+          class="fg-1"
+          :model-value="editing"
           :placeholder="`${$t('controllers.setted')} (${
             !value ? [].length : value.length
           }/${
             config && config.max ? config.max : $t('controllers.unlimited')
           })`"
-          :isDisabled="!Boolean(value)"
-          :values="
+          :disabled="!Boolean(value)"
+          :options="
             !value
               ? []
               : value.map((b, i) => {
                   return {
                     label: `${b.link_label} / [to_: ${b.link_url} | type_: ${b.link_type}]`,
                     value: i,
-                    label_ext: $t('common.delete'),
-                    label_ext_class: 't-negative',
                   };
                 })
           "
-          @onSelect="
+          @update:model-value="
             ($event) => {
               on_edit($event);
               force_refresh_v_model += force_refresh_v_model;
             }
           "
-          @onExtension="
-            editing = $event;
+        />
+        <IconButton
+          v-if="editing !== null"
+          icon="delete"
+          variant="danger"
+          class="ml-1"
+          :label="$t('common.delete')"
+          @click="
             on_delete({
               link_url,
               link_label,

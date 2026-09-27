@@ -3,7 +3,8 @@
     <p class="mb-2" v-if="label">{{ label }}</p>
     <div class="flex gap-2">
       <BasicButton
-        class="t-accent b-default bg-base bg-hover-hover rounded"
+        variant="secondary"
+        class="rounded"
         @click="
           () => {
             init();
@@ -12,25 +13,32 @@
       >
         {{ $t('routes.set_new') }}
       </BasicButton>
-      <Dropdown
+      <BasicSelect
+        v-model="picked_image"
         :placeholder="`${$t('controllers.setted')} (${
           Object.keys(value ?? {}).length
         })`"
-        class="b-default rounded bg-base fg-1"
-        :class="[!Boolean(value) ? 'bg-raised t-muted' : '']"
-        :isDisabled="!Boolean(value)"
-        :values="
+        class="fg-1"
+        :disabled="!Boolean(value)"
+        :options="
           Object.entries(value ?? {}).map((entry) => {
             const [key, v] = entry;
             return {
               label: `${v.meta.fileName} (${key}) | ${v.width}px/${v.height}px`,
               value: entry,
-              label_ext: $t('common.delete'),
-              label_ext_class: 't-negative',
             };
           })
         "
-        @onExtension="remove_picture({ key: 'source', value: $event })"
+      />
+      <IconButton
+        v-if="picked_image"
+        icon="delete"
+        variant="danger"
+        :label="$t('common.delete')"
+        @click="
+          remove_picture({ key: 'source', value: picked_image });
+          picked_image = null;
+        "
       />
     </div>
 
@@ -60,30 +68,28 @@
             "
           />
           <div class="flex gap-1">
-            <Dropdown
+            <BasicSelect
               :placeholder="$t('common.sort_by')"
-              class="bg-base rounded b-default t-body js-e shadow-down"
-              :values="[
+              :options="[
                 { label: $t('common.oldest_first'), value: 'created_at' },
                 { label: $t('common.newest_first'), value: '-created_at' },
               ]"
-              :selected="[sort_by]"
-              @onSelect="
+              :model-value="sort_by"
+              @update:model-value="
                 ($event) => {
                   sort_by = $event;
                   GET_Images({ limit, page });
                 }
               "
             />
-            <Dropdown
-              class="bg-base rounded b-default t-body js-e shadow-down"
-              :values="[
+            <BasicSelect
+              :options="[
                 { label: 10, value: 10 },
                 { label: 20, value: 20 },
                 { label: 30, value: 30 },
               ]"
-              :selected="[limit]"
-              @onSelect="
+              :model-value="limit"
+              @update:model-value="
                 ($event) => {
                   gallery = null;
                   selected_asset = null;
@@ -168,7 +174,8 @@
         </div>
         <div class="flex jc-sb ai-ct">
           <BasicButton
-            class="rounded t-accent fs-200 jc-ct b-default bg-hover-hover"
+            variant="secondary"
+            class="rounded fs-200 jc-ct"
             @click="mode = 'new-picture'"
           >
             {{ $t('images.add_photo') }}
@@ -201,12 +208,8 @@
               </button>
             </div>
             <BasicButton
+              variant="primary"
               class="rounded fs-200 shadow-down jc-ct"
-              :class="[
-                !canAccept
-                  ? 't-muted b-default bg-raised'
-                  : 't-on-accent-fill b-accent bg-accent-fill',
-              ]"
               :disabled="!canAccept"
               @click="handleAccept"
             >
@@ -328,6 +331,7 @@ export default {
       sort_by: "-created_at",
       //
       selected_asset: null,
+      picked_image: null,
       set_mobile: true,
       set_desktop: true,
 
