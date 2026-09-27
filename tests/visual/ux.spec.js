@@ -9,9 +9,28 @@ const { screens } = require("./capture-spec.json");
 // and fails the test — its zero counts would otherwise pass as a clean screen.
 const PROBES = path.join(__dirname, "support", "ux.browser.js");
 
+// Editors and lazy widgets mount after the data arrives; under parallel load that can land after openScreen returns.
+// Measure only once the element count has not changed for QUIET_MS (at most SETTLE_MS).
+const QUIET_MS = 500;
+const SETTLE_MS = 5000;
+
+async function waitForDomSettle(page) {
+  await page.waitForFunction(
+    ({ quietMs }) => {
+      const count = document.getElementsByTagName("*").length;
+      const now = performance.now();
+      if (window.__uxSettle?.count !== count) window.__uxSettle = { count, since: now };
+      return now - window.__uxSettle.since >= quietMs;
+    },
+    { quietMs: QUIET_MS },
+    { timeout: SETTLE_MS, polling: 100 }
+  ).catch(() => {}); // a screen that never settles (a live ticker) is measured as it is after SETTLE_MS
+}
+
 async function measureScreen(page, screen, viewport) {
   const skipReason = await openScreen(page, screen);
   if (skipReason) return { skipReason };
+  await waitForDomSettle(page);
   await page.addScriptTag({ path: PROBES });
   const args = { viewportWidth: page.viewportSize().width, mobile: viewport === "mobile" };
   return page.evaluate((options) => window.uxProbes.measure(options), args);

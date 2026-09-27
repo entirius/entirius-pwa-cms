@@ -6,10 +6,13 @@ const REPORT_DIR = path.resolve(
   process.env.VISUAL_REPORT_DIR || path.join(__dirname, "..", ".report")
 );
 
+// Write-then-rename: a parallel worker reading the folder never sees a half-written file.
 function writeReport(name, data) {
   const file = path.join(REPORT_DIR, name);
+  const temp = `${file}.${process.pid}.tmp`;
   fs.mkdirSync(path.dirname(file), { recursive: true });
-  fs.writeFileSync(file, `${JSON.stringify(data, null, 2)}\n`);
+  fs.writeFileSync(temp, `${JSON.stringify(data, null, 2)}\n`);
+  fs.renameSync(temp, file);
   return file;
 }
 

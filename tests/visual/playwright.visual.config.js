@@ -11,6 +11,7 @@ module.exports = defineConfig({
   testDir: __dirname,
   outputDir: path.join(__dirname, "test-results"),
   globalSetup: require.resolve("./support/global-setup"),
+  globalTeardown: require.resolve("./support/global-teardown"),
   snapshotPathTemplate: "{testDir}/__screenshots__/{projectName}/{arg}{ext}",
   updateSnapshots: "none",
   timeout: 90000,

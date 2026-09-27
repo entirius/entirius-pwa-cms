@@ -77,12 +77,29 @@ function currentReports(runId) {
   return reports.filter(({ report }) => report.runId === runId).map(({ report }) => report);
 }
 
+function writeSummary(runId) {
+  writeReport(`ux/${SUMMARY}`, buildSummary(currentReports(runId), runId));
+}
+
 // Rewrites the summary after every screen, so a crashed worker never loses the screens measured before it.
 function writeScreenReport(input) {
   const report = screenReport(input);
   writeReport(`ux/${report.screen}__${report.viewport}.json`, report);
-  writeReport(`ux/${SUMMARY}`, buildSummary(currentReports(report.runId), report.runId));
+  writeSummary(report.runId);
   return report;
 }
 
-module.exports = { KINDS, screenReport, buildSummary, writeScreenReport };
+// Parallel workers rewrite the summary concurrently, so the last rewrite can miss a screen another worker wrote in
+// the meantime: global-teardown rebuilds it once from every screen of the run. A run without @ux screens (parity,
+// screens) leaves the folder untouched.
+function finishRun(runId) {
+  if (!runId || !fs.existsSync(UX_DIR)) return false;
+  const ofRun = fs
+    .readdirSync(UX_DIR)
+    .filter((file) => file.endsWith(".json") && file !== SUMMARY)
+    .some((file) => JSON.parse(fs.readFileSync(path.join(UX_DIR, file), "utf8")).runId === runId);
+  if (ofRun) writeSummary(runId);
+  return ofRun;
+}
+
+module.exports = { KINDS, screenReport, buildSummary, writeScreenReport, finishRun };

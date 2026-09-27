@@ -191,6 +191,12 @@ for both; the zeno wrapper (`make visual-check`, an operator step still to come)
 layers and content clipped away entirely are skipped. Interactive = `button`, `a[href]`, `[role=button]`, `input`,
 `select`, plus clickable `span`/`div`s (the outermost `cursor: pointer` element without semantics).
 
+`npm run visual:ux` runs 6 workers, fully parallel (~2 min instead of ~10): the layer only reads the page. Each
+screen is measured once its DOM has settled (element count unchanged for 500 ms, at most 5 s after the data wait),
+so editors and lazy widgets are in the measurement at any load. Report files are written then renamed, and
+`support/global-teardown.js` rebuilds `ux-summary.json` once all workers finished. The pixel layer (`@screens`) and
+the other layers keep one worker.
+
 | Kind | Finds | Class |
 |---|---|---|
 | `zeroSize` | an interactive element under 8 px wide or high while visible, or cut by an `overflow: hidden` ancestor | high |
