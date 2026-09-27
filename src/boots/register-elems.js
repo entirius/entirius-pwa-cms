@@ -44,6 +44,8 @@ export default function registerBootComponents(app) {
   // P3 icons
 
   // P3 actions (plan 11)
+  app.component("IconButton", defineAsyncComponent(() => import("./IconButton/index.vue")));
+  app.component("ActionBar", defineAsyncComponent(() => import("./ActionBar/index.vue")));
 
   // P3 overlays (plan 12)
 

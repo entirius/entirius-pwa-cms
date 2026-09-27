@@ -20,7 +20,7 @@
         >
           <FontAwesomeIcon
             v-if="!isCustomIcon(action.icon)"
-            :icon="action.icon"
+            :icon="glyphOf(action.icon)"
           />
           <i v-else :class="action.icon" />
         </button>
@@ -33,38 +33,54 @@
       aria-label="Back"
       @click="backHandler"
     >
-      <FontAwesomeIcon icon="backward" />
+      <FontAwesomeIcon :icon="$icons.back" />
     </button>
 
-    <button
-      class="floating-actions__trigger"
-      aria-label="Toggle menu"
-      :aria-expanded="isOpen"
-      aria-haspopup="menu"
-      @click="handleToggle"
-    >
-      <FontAwesomeIcon
-        icon="plus"
-        class="floating-actions__trigger-icon"
-        :class="{ 'floating-actions__trigger-icon--open': isOpen }"
-      />
-    </button>
+    <div class="floating-actions__row">
+      <button
+        v-if="pill"
+        type="button"
+        class="floating-actions__pill"
+        :data-testid="pill.testid"
+        @click="pill.handler"
+      >
+        <FontAwesomeIcon :icon="glyphOf(pill.icon)" aria-hidden="true" />
+        <span>{{ pill.label }}</span>
+      </button>
+      <button
+        class="floating-actions__trigger"
+        data-fid="fab"
+        aria-label="Toggle menu"
+        :aria-expanded="isOpen"
+        aria-haspopup="menu"
+        @click="handleToggle"
+      >
+        <FontAwesomeIcon
+          :icon="$icons.add"
+          class="floating-actions__trigger-icon"
+          :class="{ 'floating-actions__trigger-icon--open': isOpen }"
+        />
+      </button>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
+import { ICONS } from "@/boots/Icons/icons";
 
 /**
  * @typedef {Object} FloatingAction
- * @property {string} icon - FA short name or custom class starting with 'icon-'
+ * @property {string} icon - a meaning of icons.js; until the sweeps also an FA name or an 'icon-' font class
  * @property {string} label - Tooltip text
  * @property {Function} handler - Click callback
  * @property {'primary'|'secondary'|'danger'} [variant='primary']
  * @property {boolean} [disabled]
  */
 
-defineProps({
+// `pill` = { icon, label, handler, testid? }: an important action with a visible label next to the FAB (R7, Figma
+// S6–S8 "Zarządzaj kolejnością"). `open` starts with the speed-dial open (catalogue state).
+const props = defineProps({
   actions: {
     type: Array,
     required: true,
@@ -73,9 +89,17 @@ defineProps({
     type: Function,
     default: null,
   },
+  pill: {
+    type: Object,
+    default: null,
+  },
+  open: {
+    type: Boolean,
+    default: false,
+  },
 });
 
-const isOpen = ref(false);
+const isOpen = ref(props.open);
 const rootRef = ref(null);
 
 const CUSTOM_ICON_PREFIX = "icon-";
@@ -83,6 +107,8 @@ const CUSTOM_ICON_PREFIX = "icon-";
 function isCustomIcon(icon) {
   return icon.startsWith(CUSTOM_ICON_PREFIX);
 }
+
+const glyphOf = (icon) => ICONS[icon] ?? icon;
 
 function handleToggle() {
   isOpen.value = !isOpen.value;
@@ -120,8 +146,8 @@ onBeforeUnmount(() => {
 <style scoped>
 .floating-actions {
   position: fixed;
-  bottom: 2rem;
-  right: 2rem;
+  bottom: var(--space-4);
+  right: var(--space-4);
   z-index: 90;
   display: flex;
   flex-direction: column;
@@ -131,8 +157,7 @@ onBeforeUnmount(() => {
 
 @media only screen and (max-width: 768px) {
   .floating-actions {
-    bottom: calc(var(--bottom-bar-height) + 1rem);
-    right: 1rem;
+    bottom: calc(var(--bottom-bar-height) + var(--space-4));
   }
 }
 
@@ -155,6 +180,33 @@ onBeforeUnmount(() => {
 .floating-actions__back:hover {
   background-color: var(--surface-raised);
   color: var(--text-body);
+}
+
+.floating-actions__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.floating-actions__pill {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 44px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-full);
+  background-color: var(--surface-base);
+  color: var(--text-body);
+  font-size: var(--fs-200);
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+.floating-actions__pill:hover {
+  border-color: var(--border-strong);
 }
 
 .floating-actions__trigger {

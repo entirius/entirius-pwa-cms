@@ -4,7 +4,7 @@
     <div class="relative">
       <div class="flex ai-ct gap-2">
         <BasicButton
-          :icon="`${!value ? 'plus' : 'edit'}`"
+          :icon="value ? 'edit' : 'add'"
           :text="`${value ?? $t('routes.set_new')}`"
           class="bg-accent-fill t-on-accent-fill fs-200 lh-init pl-2 pr-2 pt-1 pb-1 rounded"
           @click="

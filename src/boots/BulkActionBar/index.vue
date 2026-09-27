@@ -16,10 +16,12 @@
         />
         <BasicButton
           v-else
-          :text="$t(action.labelKey)"
+          :variant="action.variant"
           :class="action.buttonClass"
           @click="$emit('action', action.key)"
-        />
+        >
+          {{ $t(action.labelKey) }}
+        </BasicButton>
       </template>
     </div>
     <BasicButton
@@ -31,6 +33,8 @@
 </template>
 
 <script setup>
+// actions = [{ key, labelKey, variant?, options? }]: `variant` is a BasicButton variant; an action with `options` is
+// a Dropdown. `buttonClass` (colour classes) still paints until plan 19; the sweeps move its call sites to `variant`.
 defineProps({
   count: {
     type: Number,

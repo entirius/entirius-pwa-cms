@@ -1,25 +1,43 @@
 <template>
   <button
-    :disabled="isDisabled"
+    :type="type"
+    :disabled="isOff"
+    :aria-busy="loading || undefined"
     class="button-basic pointer normal inline-flex jc-sb ai-ct gap-2"
-    :class="[`button-basic--${size}`, { 'jc-ct button-basic--icon': isIconOnly }]"
+    :class="[
+      `button-basic--${size}`,
+      variant && `button-basic--${variant}`,
+      { 'jc-ct button-basic--icon': isIconOnly(), 'button-basic--labelled': hasSlotLabel() },
+    ]"
     :aria-label="label || undefined"
     :title="label || undefined"
     @click="onClick"
   >
-    <span v-if="icon" class="inline-flex jc-ct ai-ct btn-icon">
+    <span v-if="loading" class="inline-flex jc-ct ai-ct btn-icon" aria-hidden="true">
+      <span class="button-basic__spinner"></span>
+    </span>
+    <span v-else-if="meaningIcon" class="inline-flex jc-ct ai-ct btn-icon" aria-hidden="true">
+      <FontAwesomeIcon :icon="meaningIcon" />
+    </span>
+    <span v-else-if="icon" class="inline-flex jc-ct ai-ct btn-icon">
       <i :class="`icon-${icon}`"></i
     ></span>
     <span class="btn-text" v-if="text && !custom">{{ text }}</span>
-    <slot name="custom" v-if="!text && custom"></slot>
+    <span class="btn-text" v-else-if="hasSlotLabel()"><slot /></span>
+    <slot name="custom" v-if="!text && custom && !loading"></slot>
   </button>
 </template>
 
 <script>
-// Sizes: md = --elem-height (inputs share it), sm = row actions. Roles are classes: btn-primary, btn-secondary
-// (btn-outline is the same look), btn-ghost, btn-danger (every delete/remove/reject), btn-danger-fill (the
-// destructive confirm in a dialog). Icon-only (no text) is a square of the size and needs `label`, the accessible
-// name; its icon is a <FontAwesomeIcon> in the `custom` slot (docs/ui-rules.md C5).
+// Sizes: md = --elem-height (inputs share it), sm = row actions. `variant` is the role: primary, secondary, ghost,
+// danger (every delete/remove/reject), danger-solid (the destructive confirm in a dialog). The label is the default
+// slot; `icon` is a meaning of icons.js, drawn before the label; `loading` swaps the icon for a spinner and disables.
+// Transition API until plan 19 (docs/ui-components.md § P3 actions): `text`, `isDisabled`, the btn-* role classes
+// (no variant = the look the classes give), an `icon` that is no meaning (legacy font glyph) and the `custom` slot.
+import { ICONS } from "@/boots/Icons/icons";
+
+const VARIANTS = ["primary", "secondary", "ghost", "danger", "danger-solid"];
+
 export default {
   emits: ["click"],
   props: {
@@ -36,6 +54,23 @@ export default {
     isDisabled: {
       type: Boolean,
       default: false,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+    loading: {
+      type: Boolean,
+      default: false,
+    },
+    variant: {
+      type: String,
+      default: "",
+      validator: (value) => !value || VARIANTS.includes(value),
+    },
+    type: {
+      type: String,
+      default: "button",
     },
     icon: {
       type: [String, Boolean],
@@ -58,18 +93,28 @@ export default {
     },
   },
   computed: {
-    isIconOnly() {
-      return !this.text;
+    isOff() {
+      return this.disabled || this.isDisabled || this.loading;
+    },
+    meaningIcon() {
+      return typeof this.icon === "string" ? ICONS[this.icon] : undefined;
     },
   },
   methods: {
+    // $slots is not reactive, so these are methods, not computeds.
+    hasSlotLabel() {
+      return !this.text && Boolean(this.$slots.default);
+    },
+    isIconOnly() {
+      return !this.text && !this.hasSlotLabel();
+    },
     onClick(event) {
       if (this.stop) event.stopPropagation();
       this.$emit("click");
     },
   },
   mounted() {
-    if (process.env.NODE_ENV !== "production" && this.isIconOnly && !this.label) {
+    if (process.env.NODE_ENV !== "production" && this.isIconOnly() && !this.label) {
       console.warn("BasicButton: an icon-only button needs `label`, its accessible name (docs/ui-rules.md C6).");
     }
   },
@@ -104,6 +149,10 @@ button.button-basic {
     padding: 0 var(--space-3);
   }
 
+  &.button-basic--labelled {
+    gap: calc(var(--space-1) * 1.5);
+  }
+
   &.button-basic--icon {
     width: var(--btn-height);
     padding: 0;
@@ -136,11 +185,21 @@ button.button-basic {
   .btn-text {
     color: inherit;
   }
+
+  .button-basic__spinner {
+    width: 1em;
+    height: 1em;
+    border: 2px solid currentcolor;
+    border-right-color: transparent;
+    border-radius: var(--radius-full);
+    animation: button-basic-spin 0.8s linear infinite;
+  }
   // -------------------------------------------------------------
   // Roles
   // -------------------------------------------------------------
 
-  &.btn-primary {
+  &.btn-primary,
+  &.button-basic--primary {
     color: var(--text-on-accent-fill);
     background-color: var(--accent-fill);
 
@@ -154,7 +213,8 @@ button.button-basic {
   }
 
   &.btn-secondary,
-  &.btn-outline {
+  &.btn-outline,
+  &.button-basic--secondary {
     color: var(--text-body);
     border-color: var(--border-default);
 
@@ -169,7 +229,8 @@ button.button-basic {
     }
   }
 
-  &.btn-ghost {
+  &.btn-ghost,
+  &.button-basic--ghost {
     color: var(--text-secondary);
 
     &:hover:not([disabled]) {
@@ -181,7 +242,8 @@ button.button-basic {
     }
   }
 
-  &.btn-danger {
+  &.btn-danger,
+  &.button-basic--danger {
     color: var(--negative);
 
     &:hover:not([disabled]) {
@@ -192,7 +254,8 @@ button.button-basic {
     }
   }
 
-  &.btn-danger-fill {
+  &.btn-danger-fill,
+  &.button-basic--danger-solid {
     color: var(--text-on-status-fill);
     background-color: var(--negative-fill);
 
@@ -223,6 +286,12 @@ button.button-basic {
       font-size: var(--fs-300);
       color: var(--text-inverse);
     }
+  }
+}
+
+@keyframes button-basic-spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 

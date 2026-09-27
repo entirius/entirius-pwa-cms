@@ -66,6 +66,65 @@ describe("BasicButton", () => {
     expect(wrapper.attributes("title")).toBe("Edit product");
   });
 
+  describe("variant API", () => {
+    const button = (props, label = "Zapisz szkic") => mount(BasicButton, { props, slots: { default: label } });
+
+    it("the variant is a class, the label the default slot, the type button", () => {
+      const wrapper = button({ variant: "danger-solid" });
+      expect(wrapper.classes()).toEqual(
+        expect.arrayContaining(["button-basic--danger-solid", "button-basic--labelled"])
+      );
+      expect(wrapper.classes()).not.toContain("button-basic--icon");
+      expect(wrapper.text()).toBe("Zapisz szkic");
+      expect(wrapper.attributes("type")).toBe("button");
+      expect(button({ variant: "primary", type: "submit" }).attributes("type")).toBe("submit");
+    });
+
+    it("a meaning icon renders before the label through FontAwesome", () => {
+      const wrapper = button({ variant: "secondary", icon: "saveDraft" });
+      const icon = wrapper.find(".btn-icon font-awesome-icon-stub");
+      expect(icon.attributes("icon")).toBe("floppy-disk");
+      expect(wrapper.find(".btn-icon").element.nextElementSibling.textContent).toBe("Zapisz szkic");
+      expect(wrapper.find("i").exists()).toBe(false);
+    });
+
+    it("loading swaps the icon for a spinner, disables and sets aria-busy", async () => {
+      const wrapper = button({ variant: "primary", icon: "publish", loading: true });
+      expect(wrapper.find(".button-basic__spinner").exists()).toBe(true);
+      expect(wrapper.find("font-awesome-icon-stub").exists()).toBe(false);
+      expect(wrapper.attributes("disabled")).toBeDefined();
+      expect(wrapper.attributes("aria-busy")).toBe("true");
+      await wrapper.trigger("click");
+      expect(wrapper.emitted("click")).toBeUndefined();
+    });
+
+    it("disabled blocks the click; no aria-busy while idle", async () => {
+      const wrapper = button({ variant: "ghost", disabled: true });
+      expect(wrapper.attributes("disabled")).toBeDefined();
+      expect(wrapper.attributes("aria-busy")).toBeUndefined();
+      await wrapper.trigger("click");
+      expect(wrapper.emitted("click")).toBeUndefined();
+    });
+  });
+
+  describe("transition API (removed in plan 19)", () => {
+    it("without a variant the tag's role class paints and no variant class is added", () => {
+      const wrapper = mount(BasicButton, { props: { text: "Save" }, attrs: { class: "btn-primary" } });
+      expect(wrapper.classes()).toContain("btn-primary");
+      expect(wrapper.classes().filter((c) => /^button-basic--(primary|secondary|ghost|danger)/.test(c))).toEqual([]);
+    });
+
+    it("isDisabled still disables", () => {
+      expect(mount(BasicButton, { props: { text: "Save", isDisabled: true } }).attributes("disabled")).toBeDefined();
+    });
+
+    it("an icon that is no meaning keeps the legacy font glyph, so a text button sprouts nothing new", () => {
+      const wrapper = mount(BasicButton, { props: { text: "Tłumacz", icon: "language" } });
+      expect(wrapper.find("i.icon-language").exists()).toBe(true);
+      expect(wrapper.find("font-awesome-icon-stub").exists()).toBe(false);
+    });
+  });
+
   describe("accessible-name warning", () => {
     afterEach(() => {
       vi.restoreAllMocks();

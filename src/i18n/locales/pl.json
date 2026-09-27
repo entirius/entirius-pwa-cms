@@ -479,6 +479,7 @@
   },
   "common": {
     "save": "Zapisz",
+    "actions": "Akcje",
     "delete": "Usuń",
     "cancel": "Anuluj",
     "edit": "Edytuj",

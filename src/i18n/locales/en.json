@@ -479,6 +479,7 @@
   },
   "common": {
     "save": "Save",
+    "actions": "Actions",
     "loading": "Loading…",
     "delete": "Delete",
     "cancel": "Cancel",
