@@ -52,7 +52,7 @@
       >
         <template #cell-type="{ value }">
           <span :class="value ? 't-body' : 't-muted'">{{
-            value || "---"
+            value || "—"
           }}</span>
         </template>
         <template #cell-status="{ value }">
@@ -127,7 +127,7 @@ export default {
     },
     columns() {
       return [
-        { key: "id", label: this.$t("cf.id"), sortable: false, width: "140px" },
+        { key: "id", label: this.$t("cf.id"), sortable: false, width: "140px", priority: 2 },
         {
           key: "email",
           label: this.$t("cf.email"),
@@ -139,6 +139,7 @@ export default {
           label: this.$t("cf.type"),
           sortable: true,
           width: "140px",
+          priority: 2,
         },
         {
           key: "status",
@@ -151,18 +152,21 @@ export default {
           label: this.$t("cf.slug"),
           sortable: false,
           width: "1fr",
+          priority: 2,
         },
         {
           key: "channel_idx",
           label: this.$t("cf.channel"),
           sortable: false,
           width: "1fr",
+          priority: 2,
         },
         {
           key: "created_at",
           label: this.$t("cf.created_at"),
           sortable: true,
           width: "180px",
+          priority: 2,
         },
       ];
     },
@@ -196,7 +200,7 @@ export default {
       }
     },
     formatDate(isoStr) {
-      if (!isoStr) return "---";
+      if (!isoStr) return "—";
       const d = new Date(isoStr);
       return d.toLocaleDateString("en-GB", {
         day: "2-digit",
@@ -235,7 +239,7 @@ export default {
         in_progress: this.$t("cf.status_in_progress"),
         done: this.$t("cf.status_done"),
       };
-      return map[status] || status || "---";
+      return map[status] || status || "—";
     },
     async fetchSubmissions() {
       this.loading = true;

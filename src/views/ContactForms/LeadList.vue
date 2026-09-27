@@ -58,7 +58,7 @@
         </template>
         <template #cell-deal_value="{ value }">
           <span v-if="value">{{ value }}</span>
-          <span v-else class="t-muted">---</span>
+          <span v-else class="t-muted">—</span>
         </template>
         <template #cell-contact_date="{ value }">
           {{ formatDateTime(value) }}
@@ -74,7 +74,7 @@
           >
             <font-awesome-icon icon="bullseye" />
           </span>
-          <span v-else class="t-muted">---</span>
+          <span v-else class="t-muted">—</span>
         </template>
       </DataTable>
 
@@ -144,21 +144,26 @@ export default {
           key: "source_type",
           label: this.$t("cf.source_type"),
           width: "140px",
+          priority: 2,
         },
         {
           key: "deal_value",
           label: this.$t("cf.deal_value"),
           width: "120px",
+          priority: 2,
+          numeric: true,
         },
         {
           key: "contact_date",
           label: this.$t("cf.contact_date"),
           width: "180px",
+          priority: 2,
         },
         {
           key: "ads_conversion_imported",
           label: this.$t("cf.ads_imported"),
           width: "100px",
+          priority: 2,
         },
       ];
     },
@@ -186,7 +191,7 @@ export default {
     leadStatusLabel,
     leadStatusVariant,
     formatDateTime(iso) {
-      if (!iso) return "---";
+      if (!iso) return "—";
       const d = new Date(iso);
       return d.toLocaleString("en-GB", {
         day: "2-digit",
@@ -197,7 +202,7 @@ export default {
       });
     },
     sourceTypeLabel(value) {
-      if (!value) return "---";
+      if (!value) return "—";
       const key = `cf.source_types.${value}`;
       const translated = this.$t(key);
       return translated !== key ? translated : value;

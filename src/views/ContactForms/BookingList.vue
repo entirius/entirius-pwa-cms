@@ -79,7 +79,7 @@
         </template>
         <template #cell-name="{ row }">
           <span v-if="row.name">{{ row.name }}</span>
-          <span v-else class="t-muted">---</span>
+          <span v-else class="t-muted">—</span>
         </template>
         <template #cell-linked_lead="{ value }">
           <StatusBadge
@@ -101,7 +101,7 @@
           >
             <font-awesome-icon icon="video" />
           </a>
-          <span v-else class="t-muted">---</span>
+          <span v-else class="t-muted">—</span>
         </template>
       </DataTable>
 
@@ -184,15 +184,16 @@ export default {
           key: "meeting_end",
           label: this.$t("cf.meeting_end"),
           width: "180px",
+          priority: 2,
         },
         { key: "name", label: this.$t("cf.name"), width: "1fr" },
-        { key: "email", label: this.$t("cf.email"), width: "1fr" },
+        { key: "email", label: this.$t("cf.email"), width: "1fr", priority: 2 },
         {
           key: "linked_lead",
           label: this.$t("cf.lead_status"),
           width: "140px",
         },
-        { key: "meet_link", label: this.$t("cf.meet_link"), width: "80px" },
+        { key: "meet_link", label: this.$t("cf.meet_link"), width: "80px", priority: 2 },
       ];
     },
     paginationState() {
@@ -219,7 +220,7 @@ export default {
     leadStatusLabel,
     leadStatusVariant,
     formatDateTime(iso) {
-      if (!iso) return "---";
+      if (!iso) return "—";
       const d = new Date(iso);
       return d.toLocaleString("en-GB", {
         day: "2-digit",
