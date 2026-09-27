@@ -1,6 +1,6 @@
 <template>
   <div class="stock-panel h-100">
-    <div class="stock-panel__toolbar flex ai-ct jc-sb bg-raised fs-300">
+    <div class="panel-toolbar bg-raised fs-300">
       <div class="flex ai-ct gap-5">
         <Dropdown
           :values="warehouseOptions"
@@ -117,12 +117,6 @@ export default {
 .stock-panel {
   display: flex;
   flex-direction: column;
-}
-
-.stock-panel__toolbar {
-  padding: var(--space-2) var(--space-5);
-  border-bottom: 1px solid var(--border-subtle);
-  flex-shrink: 0;
 }
 
 .stock-panel__dropdown {

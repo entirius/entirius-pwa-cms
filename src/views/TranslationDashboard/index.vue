@@ -1,6 +1,6 @@
 <template>
   <div class="translation-panel h-100">
-    <div class="translation-panel__toolbar flex ai-ct jc-sb bg-raised fs-300">
+    <div class="panel-toolbar bg-raised fs-300">
       <div class="flex ai-ct gap-5">
         <div id="translation-toolbar-left" class="flex ai-ct gap-5"></div>
         <span class="fw-600 t-body">{{ $t("translation.jobs") }}</span>
@@ -25,19 +25,5 @@ export default {
 .translation-panel {
   display: flex;
   flex-direction: column;
-}
-
-.translation-panel__toolbar {
-  padding: var(--space-2) var(--space-5);
-  border-bottom: 1px solid var(--border-subtle);
-  flex-shrink: 0;
-}
-
-@media only screen and (max-width: 768px) {
-  .translation-panel__toolbar {
-    flex-wrap: wrap;
-    gap: var(--space-2);
-    padding: var(--space-2) var(--space-3);
-  }
 }
 </style>

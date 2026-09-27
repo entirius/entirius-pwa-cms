@@ -1,6 +1,6 @@
 <template>
   <div class="promo-panel h-100">
-    <div class="promo-panel__toolbar flex ai-ct jc-sb bg-raised fs-300">
+    <div class="panel-toolbar bg-raised fs-300">
       <div class="flex ai-ct gap-8">
         <div id="promo-toolbar-left" class="flex ai-ct gap-5"></div>
         <div v-if="showChannelSelector" class="promo-channel-selector flex ai-ct gap-8">
@@ -65,21 +65,5 @@ export default {
 .promo-panel {
   display: flex;
   flex-direction: column;
-}
-
-.promo-panel__toolbar {
-  padding: var(--space-2) var(--space-5);
-  border-bottom: 1px solid var(--border-subtle);
-  flex-shrink: 0;
-}
-
-@media only screen and (max-width: 768px) {
-  .promo-panel__toolbar {
-    flex-wrap: wrap;
-    gap: var(--space-2);
-  }
-  .promo-channel-selector {
-    display: none;
-  }
 }
 </style>

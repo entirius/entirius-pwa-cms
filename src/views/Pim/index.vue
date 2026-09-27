@@ -1,6 +1,6 @@
 <template>
   <div class="pim-panel h-100">
-    <div class="pim-panel__channel-bar flex ai-ct jc-sb bg-raised fs-300">
+    <div class="panel-toolbar bg-raised fs-300">
       <div class="flex ai-ct gap-8">
         <div id="pim-toolbar-left" class="flex ai-ct gap-5"></div>
         <div class="pim-channel-selector flex ai-ct gap-8">
@@ -116,23 +116,5 @@ export default {
 .pim-panel {
   display: flex;
   flex-direction: column;
-}
-
-.pim-panel__channel-bar {
-  padding: var(--space-2) var(--space-5);
-  border-bottom: 1px solid var(--border-subtle);
-  flex-shrink: 0;
-}
-
-
-@media only screen and (max-width: 768px) {
-  .pim-panel__channel-bar {
-    flex-wrap: wrap;
-    gap: var(--space-2);
-    padding: var(--space-2) var(--space-3);
-  }
-  .pim-channel-selector {
-    display: none;
-  }
 }
 </style>
