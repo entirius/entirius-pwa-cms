@@ -747,7 +747,7 @@ watch(
         >
           <span v-if="uploadingPicture" class="t-muted fs-200">...</span>
           <template v-else>
-            <FontAwesomeIcon icon="upload" class="t-muted fs-400" />
+            <FontAwesomeIcon :icon="$icons.upload" class="t-muted fs-400" />
             <span class="t-muted fs-200 mt-2">{{
               $t("pim.drop_files_here")
             }}</span>
@@ -800,6 +800,7 @@ watch(
     <ConfirmDialog
       tone="danger"
       :open="!!confirmingDeleteItem"
+      :title="$t('pim.confirm_delete_title')"
       @confirm="
         deleteItem(confirmingDeleteItem);
         confirmingDeleteItem = null;

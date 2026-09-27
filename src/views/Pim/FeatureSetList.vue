@@ -31,16 +31,11 @@
         @row-click="onRowClick"
       >
         <template #cell-is_default="{ value }">
-          <span
-            class="chip"
-            :class="
-              value
-                ? 'bg-positive-subtle t-positive'
-                : 'bg-raised t-muted'
-            "
-          >
-            {{ value ? $t("pim.yes") : $t("pim.no") }}
-          </span>
+          <StatusBadge
+            :tone="value ? 'positive' : 'neutral'"
+            :dot="false"
+            :label="value ? $t('pim.yes') : $t('pim.no')"
+          />
         </template>
       </DataTable>
 

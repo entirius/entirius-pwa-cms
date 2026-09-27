@@ -32,16 +32,10 @@
         </div>
         <div class="attribute-row__input">
           <template v-if="row.feature_type === 1">
-            <Switcher
+            <BasicSwitch
               :label="row.value_bool ? $t('pim.yes') : $t('pim.no')"
-              :selected="row.value_bool || false"
-              @onSelect="
-                updateField(
-                  row.feature_idx,
-                  'value_bool',
-                  !(row.value_bool || false)
-                )
-              "
+              :model-value="row.value_bool || false"
+              @update:model-value="(on) => updateField(row.feature_idx, 'value_bool', on)"
             />
           </template>
           <template v-else-if="row.feature_type === 2">
@@ -162,6 +156,7 @@
           <template v-else-if="row.feature_type === 10">
             <BasicDatePicker
               :model-value="row.value_datetime"
+              :config="DATE_PICKER_CONFIG"
               @update:model-value="
                 (val) => updateField(row.feature_idx, 'value_datetime', val)
               "
@@ -277,16 +272,10 @@
             </div>
             <div class="attribute-row__input">
               <template v-if="row.feature_type === 1">
-                <Switcher
+                <BasicSwitch
                   :label="row.value_bool ? $t('pim.yes') : $t('pim.no')"
-                  :selected="row.value_bool || false"
-                  @onSelect="
-                    updateField(
-                      row.feature_idx,
-                      'value_bool',
-                      !(row.value_bool || false)
-                    )
-                  "
+                  :model-value="row.value_bool || false"
+                  @update:model-value="(on) => updateField(row.feature_idx, 'value_bool', on)"
                 />
               </template>
               <template v-else-if="row.feature_type === 2">
@@ -407,6 +396,7 @@
               <template v-else-if="row.feature_type === 10">
                 <BasicDatePicker
                   :model-value="row.value_datetime"
+                  :config="DATE_PICKER_CONFIG"
                   @update:model-value="
                     (val) => updateField(row.feature_idx, 'value_datetime', val)
                   "
@@ -527,6 +517,9 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["update:attributes"]);
+
+// Datetime attributes (feature_type 10) hold one date.
+const DATE_PICKER_CONFIG = { mode: "single", wrap: true, inline: true };
 
 const effectiveLanguages = computed(() =>
   props.languages.length > 0 ? props.languages : ["en"]

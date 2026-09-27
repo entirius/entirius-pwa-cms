@@ -109,10 +109,10 @@
 
           <!-- raw JSON params fallback -->
           <div class="mt-8">
-            <Switcher
+            <BasicSwitch
               :label="$t('pim.gap_raw_params')"
-              :selected="rawParamsMode"
-              @onSelect="toggleRawParams"
+              :model-value="rawParamsMode"
+              @update:model-value="toggleRawParams"
             />
             <div v-if="rawParamsMode" class="mt-5">
               <FormField :label="$t('pim.gap_params_json')" :error="rawParamsError">
@@ -173,6 +173,7 @@
         <ConfirmDialog
           tone="danger"
           :open="showDeleteConfirm"
+          :title="$t('pim.confirm_delete_title')"
           @confirm="deleteRule"
           @cancel="showDeleteConfirm = false"
         >

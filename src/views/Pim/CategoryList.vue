@@ -14,10 +14,11 @@
           icon="search"
           class="category-list__search"
         />
-        <Dropdown
-          :values="activeFilterOptions"
+        <BasicSelect
+          :options="activeFilterOptions"
+          :model-value="isActiveFilter ?? ''"
           :placeholder="$t('pim.filter_status')"
-          @onSelect="onFilterActive"
+          @update:model-value="onFilterActive"
         />
         <BasicButton
           variant="secondary"

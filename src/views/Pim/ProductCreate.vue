@@ -19,25 +19,29 @@
       <div class="create-section mb-10">
         <h2 class="fs-500 fw-600 mb-5">{{ $t("pim.basic_info") }}</h2>
         <div class="create-grid">
-          <div class="create-field">
-            <label class="field-label required">SKU</label>
+          <FormField
+            class="create-field"
+            label="SKU"
+            required
+            :error="formErrors.getFieldError('sku')?.msg"
+          >
             <BasicInput
               v-model="form.sku"
               :placeholder="$t('pim.sku_placeholder')"
-              :validate="formErrors.getFieldError('sku')"
             />
-          </div>
-          <div class="create-field">
-            <label class="field-label required">{{
-              $t("pim.feature_set")
-            }}</label>
-            <Dropdown
-              :values="featureSetOptions"
+          </FormField>
+          <FormField
+            class="create-field"
+            :label="$t('pim.feature_set')"
+            required
+            :error="formErrors.getFieldError('feature_set_idx')?.msg"
+          >
+            <BasicSelect
+              v-model="form.feature_set_idx"
+              :options="featureSetOptions"
               :placeholder="$t('pim.select_feature_set')"
-              :validate="formErrors.getFieldError('feature_set_idx')"
-              @onSelect="(val) => (form.feature_set_idx = val)"
             />
-          </div>
+          </FormField>
           <div class="create-field">
             <label class="field-label">{{ $t("pim.visibility") }}</label>
             <BasicSelect
@@ -63,46 +67,56 @@
           {{ $t("pim.shared_warning") }}
         </p>
         <div class="create-grid">
-          <div class="create-field">
-            <label class="field-label">EAN</label>
+          <FormField
+            class="create-field"
+            label="EAN"
+            :error="formErrors.getFieldError('ean')?.msg"
+          >
             <BasicInput
               v-model="form.ean"
               placeholder="e.g. 5901234123457"
-              :validate="formErrors.getFieldError('ean')"
             />
-          </div>
-          <div class="create-field">
-            <label class="field-label">{{ $t("pim.weight") }}</label>
+          </FormField>
+          <FormField
+            class="create-field"
+            :label="$t('pim.weight')"
+            :error="formErrors.getFieldError('weight')?.msg"
+          >
             <BasicInput
               v-model="form.weight"
               placeholder="kg"
-              :validate="formErrors.getFieldError('weight')"
             />
-          </div>
-          <div class="create-field">
-            <label class="field-label">{{ $t("pim.width") }}</label>
+          </FormField>
+          <FormField
+            class="create-field"
+            :label="$t('pim.width')"
+            :error="formErrors.getFieldError('width')?.msg"
+          >
             <BasicInput
               v-model="form.width"
               placeholder="cm"
-              :validate="formErrors.getFieldError('width')"
             />
-          </div>
-          <div class="create-field">
-            <label class="field-label">{{ $t("pim.height") }}</label>
+          </FormField>
+          <FormField
+            class="create-field"
+            :label="$t('pim.height')"
+            :error="formErrors.getFieldError('height')?.msg"
+          >
             <BasicInput
               v-model="form.height"
               placeholder="cm"
-              :validate="formErrors.getFieldError('height')"
             />
-          </div>
-          <div class="create-field">
-            <label class="field-label">{{ $t("pim.depth") }}</label>
+          </FormField>
+          <FormField
+            class="create-field"
+            :label="$t('pim.depth')"
+            :error="formErrors.getFieldError('deep')?.msg"
+          >
             <BasicInput
               v-model="form.deep"
               placeholder="cm"
-              :validate="formErrors.getFieldError('deep')"
             />
-          </div>
+          </FormField>
         </div>
       </div>
 
@@ -113,28 +127,20 @@
         <div class="channel-list">
           <div v-for="ch in otherChannels" :key="ch.idx" class="channel-item">
             <BasicCheckbox
-              :values="[
-                { label: ch.name + ' (' + ch.idx + ')', value: ch.idx },
-              ]"
-              @onSelect="
-                (selected) => toggleChannel(ch.idx, selected.includes(ch.idx))
-              "
-            />
+              :model-value="isChannelSelected(ch.idx)"
+              @update:model-value="(on) => toggleChannel(ch.idx, on)"
+            >
+              {{ ch.name + " (" + ch.idx + ")" }}
+            </BasicCheckbox>
             <div v-if="isChannelSelected(ch.idx)" class="channel-item__options">
               <BasicCheckbox
-                :values="[
-                  { label: $t('pim.inherit_translations'), value: 'inherit' },
-                ]"
-                :init_selected="['inherit']"
-                @onSelect="
-                  (selected) =>
-                    setChannelOption(
-                      ch.idx,
-                      'inherit',
-                      selected.includes('inherit')
-                    )
+                :model-value="getChannelOption(ch.idx, 'inherit')"
+                @update:model-value="
+                  (on) => setChannelOption(ch.idx, 'inherit', on)
                 "
-              />
+              >
+                {{ $t("pim.inherit_translations") }}
+              </BasicCheckbox>
             </div>
           </div>
         </div>

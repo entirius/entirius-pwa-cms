@@ -283,10 +283,11 @@ export default {
             </div>
           </div>
 
-          <Dropdown
-            :values="targetLanguageOptions"
+          <BasicSelect
+            :options="targetLanguageOptions"
+            :model-value="null"
             :placeholder="$t('pim.translate_select_language')"
-            @onSelect="onLanguageSelect"
+            @update:model-value="onLanguageSelect"
           />
           <div v-if="selectedLanguages.length" class="td-chips mt-2">
             <span

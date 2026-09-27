@@ -30,12 +30,12 @@
             $t("pim.currently_editing")
           }}</span>
           <div class="flex ai-ct gap-5 mt-5">
-            <Dropdown
-              :values="allSetOptions"
-              :selected="[featureSetIdx]"
+            <BasicSelect
+              :options="allSetOptions"
+              :model-value="featureSetIdx"
               :placeholder="form.name || featureSetIdx"
               class="flex-1"
-              @onSelect="onSwitchSet"
+              @update:model-value="onSwitchSet"
             />
           </div>
           <p v-if="form.desc" class="t-muted fs-200 mt-5">
@@ -61,10 +61,10 @@
               <BasicInput v-model="form.desc" />
             </FormField>
             <div class="flex ai-ct gap-2">
-              <Switcher
+              <BasicSwitch
                 :label="$t('pim.is_default')"
-                :selected="form.is_default"
-                @onSelect="onToggleDefault"
+                :model-value="form.is_default"
+                @update:model-value="onToggleDefault"
               />
             </div>
           </div>
@@ -111,15 +111,15 @@
                 $t("pim.or_add_existing")
               }}</span>
               <div class="flex gap-2 mt-2" style="flex-wrap: wrap">
-                <span
+                <BasicButton
                   v-for="opt in availableGroupOptions"
                   :key="opt.value"
-                  class="chip bg-raised t-body"
-                  style="cursor: pointer"
+                  variant="secondary"
+                  size="sm"
                   @click="onSelectGroup(opt.value)"
                 >
                   + {{ opt.label }}
-                </span>
+                </BasicButton>
               </div>
             </div>
           </div>
@@ -319,34 +319,36 @@
         </template>
 
         <!-- Default change confirmation -->
-        <Confirmation-modal
-          :visible="showDefaultConfirm"
-          @accept="confirmDefaultChange"
-          @reject="showDefaultConfirm = false"
+        <BasicModal
+          :open="showDefaultConfirm"
+          size="sm"
+          :title="$t('pim.default_feature_set')"
+          @close="showDefaultConfirm = false"
         >
-          <template #description>
-            <p>{{ defaultConfirmMessage }}</p>
-          </template>
+          <p>{{ defaultConfirmMessage }}</p>
           <template #footer>
-            <button
-              class="modal-btn modal-btn--secondary"
-              @click="showDefaultConfirm = false"
-            >
-              {{ $t("common.cancel") }}
-            </button>
-            <button
-              class="modal-btn modal-btn--confirm"
-              @click="confirmDefaultChange"
-            >
-              {{ $t("common.confirm") }}
-            </button>
+            <ActionBar>
+              <BasicButton
+                variant="secondary"
+                @click="showDefaultConfirm = false"
+              >
+                {{ $t("common.cancel") }}
+              </BasicButton>
+              <BasicButton
+                variant="primary"
+                @click="confirmDefaultChange"
+              >
+                {{ $t("common.confirm") }}
+              </BasicButton>
+            </ActionBar>
           </template>
-        </Confirmation-modal>
+        </BasicModal>
 
         <!-- Delete confirmation -->
         <ConfirmDialog
           tone="danger"
           :open="showDeleteConfirm"
+          :title="$t('pim.confirm_delete_title')"
           @confirm="deleteSet"
           @cancel="showDeleteConfirm = false"
         >
@@ -410,7 +412,6 @@ import {
 import { featureTypeLabel } from "./helpers/pimEnums";
 import AttributeLibrary from "./components/AttributeLibrary.vue";
 import TypeBadge from "./components/TypeBadge.vue";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import { extractApiMessage } from "@/composables/useFormErrors";
 
 export default {
@@ -419,7 +420,6 @@ export default {
     draggable,
     AttributeLibrary,
     TypeBadge,
-    ConfirmationModal,
   },
   setup() {
     const loader = useLoaderStore();

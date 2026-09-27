@@ -25,10 +25,10 @@
           </div>
           <div class="create-field">
             <label class="field-label">{{ $t("pim.parent") }}</label>
-            <Dropdown
-              :values="parentOptions"
+            <BasicSelect
+              v-model="form.parent_category_idx"
+              :options="parentOptions"
               :placeholder="$t('pim.select_parent')"
-              @onSelect="(val) => (form.parent_category_idx = val)"
             />
           </div>
           <div class="create-field">

@@ -372,7 +372,7 @@ onMounted(() => {
         @dragleave="onDragLeave"
         @drop="onDrop"
       >
-        <FontAwesomeIcon icon="upload" class="t-muted fs-500" />
+        <FontAwesomeIcon :icon="$icons.upload" class="t-muted fs-500" />
         <span class="t-secondary fs-200 mt-2">{{
           $t("pim.drop_files_here")
         }}</span>
@@ -399,11 +399,11 @@ onMounted(() => {
             <label class="product-files__label field-label">{{
               $t("pim.file_category")
             }}</label>
-            <Dropdown
-              :values="categoryDropdownValues"
-              :selected="uploadCategory ? [uploadCategory] : []"
+            <BasicSelect
+              :options="categoryDropdownValues"
+              :model-value="uploadCategory"
               :placeholder="$t('pim.select_category')"
-              @onSelect="onUploadCategorySelect"
+              @update:model-value="onUploadCategorySelect"
             />
           </div>
           <div
@@ -566,15 +566,11 @@ onMounted(() => {
                 <label class="product-files__label field-label">{{
                   $t("pim.file_category")
                 }}</label>
-                <Dropdown
-                  :values="categoryDropdownValues"
-                  :selected="
-                    editingStates[fileData(pf).pk].category_code
-                      ? [editingStates[fileData(pf).pk].category_code]
-                      : []
-                  "
+                <BasicSelect
+                  :options="categoryDropdownValues"
+                  :model-value="editingStates[fileData(pf).pk].category_code"
                   :placeholder="$t('pim.select_category')"
-                  @onSelect="(sel) => onCategorySelect(fileData(pf).pk, sel)"
+                  @update:model-value="(sel) => onCategorySelect(fileData(pf).pk, sel)"
                 />
               </div>
               <div

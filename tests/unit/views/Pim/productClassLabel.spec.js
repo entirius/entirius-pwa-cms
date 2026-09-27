@@ -1,5 +1,5 @@
 /**
- * etap-12 #24 — productClassLabel + productClassBadge / productClassColor map every PIM
+ * etap-12 #24 — productClassLabel + productClassTone / productClassColor map every PIM
  * product_class_name value (including ProductBase, which previously fell through to "Custom").
  *
  * We exercise the Options API method objects directly with a synthetic `this`
@@ -13,17 +13,17 @@ import ProductDetail from "@/views/Pim/ProductDetail.vue";
 
 const ctx = { $t: (key) => key };
 
-describe("etap-12 #24 — ProductList.productClassLabel + productClassBadge", () => {
+describe("etap-12 #24 — ProductList.productClassLabel + productClassTone", () => {
   const label = (name) =>
     ProductList.methods.productClassLabel.call(ctx, name);
   const badge = (name) =>
-    ProductList.methods.productClassBadge.call(ctx, name);
+    ProductList.methods.productClassTone.call(ctx, name);
 
   it.each([
-    ["ProductBase", "pim.type_base", "bg-raised t-secondary"],
-    ["ProductSimple", "pim.type_simple", "bg-accent-subtle t-strong"],
-    ["ProductConfigurable", "pim.type_configurable", "bg-accent-fill t-on-accent-fill"],
-    ["ProductBundle", "pim.type_bundle", "bg-warning-subtle t-warning"],
+    ["ProductBase", "pim.type_base", "neutral"],
+    ["ProductSimple", "pim.type_simple", "accent"],
+    ["ProductConfigurable", "pim.type_configurable", "accent"],
+    ["ProductBundle", "pim.type_bundle", "warning"],
   ])("maps %s to label + badge", (name, expectedLabel, expectedBadge) => {
     expect(label(name)).toBe(expectedLabel);
     expect(badge(name)).toBe(expectedBadge);
@@ -31,13 +31,13 @@ describe("etap-12 #24 — ProductList.productClassLabel + productClassBadge", ()
 
   it("falls back to type_custom for unknown class names", () => {
     expect(label("Whatever")).toBe("pim.type_custom");
-    expect(badge("Whatever")).toBe("bg-raised t-secondary");
+    expect(badge("Whatever")).toBe("neutral");
   });
 
   it("survives null/undefined input without throwing", () => {
     expect(label(null)).toBe("pim.type_custom");
     expect(label(undefined)).toBe("pim.type_custom");
-    expect(badge(null)).toBe("bg-raised t-secondary");
+    expect(badge(null)).toBe("neutral");
   });
 });
 

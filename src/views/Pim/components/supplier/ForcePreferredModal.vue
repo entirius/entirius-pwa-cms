@@ -1,39 +1,37 @@
 <template>
-  <ConfirmationModal :visible="visible" @reject="$emit('close')">
-    <template #header>
+  <BasicModal :open="visible" size="sm" @close="$emit('close')">
+    <template #title>
       <h2 class="t-warning">
         <FontAwesomeIcon :icon="$icons.warning" class="mr-2" />
         {{ $t("pim.supplier.force_preferred_modal.title") }}
       </h2>
     </template>
-    <template #description>
-      <div class="force-preferred__body">
-        <p class="t-body">
-          {{ introText }}
-        </p>
-        <FormField :label="forceLabel">
-          <BasicTextarea
-            v-model="reason"
-            :placeholder="$t('pim.supplier.force_preferred_modal.reason_placeholder')"
-            rows="3"
-            :disabled="loading"
-            data-test="force-preferred-reason"
-          />
-        </FormField>
-        <p
-          v-if="reasonTooShort"
-          class="force-preferred__hint t-muted fs-200"
-        >
-          {{ $t("pim.supplier.force_preferred_modal.reason_min_hint") }}
-        </p>
-        <p class="force-preferred__warning t-negative fs-200">
-          <FontAwesomeIcon :icon="$icons.warning" class="mr-2" />
-          {{ $t("pim.supplier.force_preferred_modal.warning") }}
-        </p>
-      </div>
-    </template>
+    <div class="force-preferred__body">
+      <p class="t-body">
+        {{ introText }}
+      </p>
+      <FormField :label="forceLabel">
+        <BasicTextarea
+          v-model="reason"
+          :placeholder="$t('pim.supplier.force_preferred_modal.reason_placeholder')"
+          rows="3"
+          :disabled="loading"
+          data-test="force-preferred-reason"
+        />
+      </FormField>
+      <p
+        v-if="reasonTooShort"
+        class="force-preferred__hint t-muted fs-200"
+      >
+        {{ $t("pim.supplier.force_preferred_modal.reason_min_hint") }}
+      </p>
+      <p class="force-preferred__warning t-negative fs-200">
+        <FontAwesomeIcon :icon="$icons.warning" class="mr-2" />
+        {{ $t("pim.supplier.force_preferred_modal.warning") }}
+      </p>
+    </div>
     <template #footer>
-      <div class="force-preferred__actions">
+      <ActionBar>
         <BasicButton
           variant="secondary"
           :disabled="loading"
@@ -50,17 +48,14 @@
         >
           {{ loading ? $t('pim.supplier.force_preferred_modal.confirming') : confirmText }}
         </BasicButton>
-      </div>
+      </ActionBar>
     </template>
-  </ConfirmationModal>
+  </BasicModal>
 </template>
 
 <script>
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
-
 export default {
   name: "ForcePreferredModal",
-  components: { ConfirmationModal },
   props: {
     visible: { type: Boolean, default: false },
     autoPreferredName: { type: String, default: "" },
@@ -136,11 +131,5 @@ export default {
 }
 .force-preferred__hint {
   margin-top: calc(-1 * var(--space-2));
-}
-.force-preferred__actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--space-5);
-  margin-top: var(--space-5);
 }
 </style>

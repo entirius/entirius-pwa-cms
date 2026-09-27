@@ -24,13 +24,16 @@ const sets = [
   { idx: "bikes", name: "Bikes", is_default: false },
 ];
 
+const SwitchStub = { name: "BasicSwitch", props: ["modelValue", "disabled"], emits: ["update:modelValue"], template: "<div />" };
+const SelectStub = { name: "BasicSelect", props: ["modelValue", "options"], emits: ["update:modelValue"], template: "<div />" };
+
 const mountCard = () =>
   mount(QualitySettingsCard, {
     global: {
+      components: { BasicSwitch: SwitchStub, BasicSelect: SelectStub },
       stubs: {
-        ConfirmationModal: true,
-        Switcher: true,
-        // Slot-rendering stub so the Dropdown (data-test="default-set-picker") is reachable.
+        BasicModal: true,
+        // Slot-rendering stub so the select (data-test="default-set-picker") is reachable.
         FormField: { template: "<div><slot /></div>" },
       },
     },
@@ -153,5 +156,24 @@ describe("QualitySettingsCard", () => {
 
     expect(wrapper.vm.pendingDefaultIdx).toBe(null);
     expect(mockPatchSet).not.toHaveBeenCalled();
+  });
+
+  it("the switch PATCHes the inverted value and the select stages the picked set", async () => {
+    mockGetSettings.mockResolvedValueOnce({ data: { gaps_skip_default_featureset: true } });
+    mockGetSets.mockResolvedValueOnce({ data: { results: sets } });
+    mockPatchSettings.mockResolvedValueOnce({ data: { gaps_skip_default_featureset: false } });
+    const wrapper = mountCard();
+    await flushPromises();
+
+    const toggle = wrapper.findComponent(SwitchStub);
+    expect(toggle.props("modelValue")).toBe(true);
+    await toggle.vm.$emit("update:modelValue", false);
+    await flushPromises();
+    expect(mockPatchSettings).toHaveBeenCalledWith({ gaps_skip_default_featureset: false });
+
+    const picker = wrapper.findComponent(SelectStub);
+    expect(picker.props("modelValue")).toBe("default");
+    await picker.vm.$emit("update:modelValue", "bikes");
+    expect(wrapper.vm.pendingDefaultIdx).toBe("bikes");
   });
 });

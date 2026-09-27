@@ -19,15 +19,17 @@
           :active-count="activeFilterCount"
           :trigger-label="$t('builder.filters')"
         >
-          <Dropdown
-            :values="typeFilterOptions"
+          <BasicSelect
+            :options="typeFilterOptions"
+            :model-value="typeFilter ?? ''"
             :placeholder="$t('pim.feature_type')"
-            @onSelect="onFilterType"
+            @update:model-value="onFilterType"
           />
-          <Dropdown
-            :values="scopeFilterOptions"
+          <BasicSelect
+            :options="scopeFilterOptions"
+            :model-value="scopeFilter ?? ''"
             :placeholder="$t('pim.scope')"
-            @onSelect="onFilterScope"
+            @update:model-value="onFilterScope"
           />
         </MobileFilterPanel>
       </div>

@@ -11,7 +11,7 @@
     </div>
     <BasicButton
       :disabled="recomputing"
-      class="bg-warning-fill t-on-status-fill"
+      variant="primary"
       data-test="gap-recompute-btn"
       @click="recompute"
     >

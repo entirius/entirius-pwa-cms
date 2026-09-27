@@ -179,6 +179,7 @@
       <ConfirmDialog
         tone="danger"
         :open="showDeleteConfirm"
+        :title="$t('pim.confirm_delete_title')"
         @confirm="deleteFeature"
         @cancel="showDeleteConfirm = false"
       >

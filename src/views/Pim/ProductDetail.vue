@@ -184,14 +184,12 @@
                   <label class="product-controls__label field-label">{{
                     $t("pim.feature_set")
                   }}</label>
-                  <Dropdown
+                  <BasicSelect
                     v-if="featureSetOptions.length"
-                    :values="featureSetOptions"
-                    :selected="
-                      form.feature_set_idx ? [form.feature_set_idx] : []
-                    "
+                    :options="featureSetOptions"
+                    :model-value="form.feature_set_idx"
                     :placeholder="$t('pim.select_feature_set')"
-                    @onSelect="onFeatureSetSelect"
+                    @update:model-value="onFeatureSetSelect"
                   />
                 </div>
                 <BasicSwitch

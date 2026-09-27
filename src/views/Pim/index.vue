@@ -5,13 +5,13 @@
         <div id="pim-toolbar-left" class="flex ai-ct gap-5"></div>
         <div class="pim-channel-selector flex ai-ct gap-8">
           <span id="pim-channel-label" class="field-label">{{ $t("pim.channel") }}</span>
-          <Dropdown
+          <BasicSelect
             aria-labelledby="pim-channel-label"
-            :values="channelOptions"
-            :selected="[pimChannel.activeChannelIdx]"
+            :options="channelOptions"
+            :model-value="pimChannel.activeChannelIdx"
             :placeholder="$t('pim.select_channel')"
-            :isDisabled="isGlobalScopeValue"
-            @onSelect="onChannelSelect"
+            :disabled="isGlobalScopeValue"
+            @update:model-value="onChannelSelect"
           />
           <StatusBadge
             v-if="pimChannel.isDefaultChannel && !isGlobalScopeValue"

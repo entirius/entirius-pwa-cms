@@ -52,37 +52,35 @@
             @click="setFilter(tab.key)"
           />
         </div>
-        <Dropdown
-          :values="visibilityOptions"
-          :selected="visibilityFilter ? [visibilityFilter] : []"
+        <BasicSelect
+          :options="visibilityOptions"
+          :model-value="visibilityFilter"
           :placeholder="$t('pim.all_visibilities')"
           class="product-list__filter-dropdown"
-          @onSelect="onVisibilitySelect"
+          @update:model-value="onVisibilitySelect"
         />
-        <Dropdown
-          :values="productClassOptions"
-          :selected="productClassFilter ? [productClassFilter] : []"
+        <BasicSelect
+          :options="productClassOptions"
+          :model-value="productClassFilter"
           :placeholder="$t('pim.all_classes')"
           class="product-list__filter-dropdown"
-          @onSelect="onProductClassSelect"
+          @update:model-value="onProductClassSelect"
         />
-        <Dropdown
-          :values="categoryOptions"
-          :selected="categoryFilter ? [categoryFilter] : []"
+        <BasicSelect
+          :options="categoryOptions"
+          :model-value="categoryFilter"
           :placeholder="$t('pim.all_categories')"
           class="product-list__filter-dropdown"
-          @onSelect="onCategorySelect"
+          @update:model-value="onCategorySelect"
         />
-        <Dropdown
+        <BasicSelect
           v-for="feat in filterableFeatures"
           :key="feat.idx"
-          :values="featureFilterOptions(feat)"
-          :selected="
-            attributeFilters[feat.idx] ? [attributeFilters[feat.idx]] : []
-          "
+          :options="featureFilterOptions(feat)"
+          :model-value="attributeFilters[feat.idx] ?? ''"
           :placeholder="feat.name"
           class="product-list__filter-dropdown"
-          @onSelect="(val) => onAttributeFilter(feat.idx, val)"
+          @update:model-value="(val) => onAttributeFilter(feat.idx, val)"
         />
         <template v-if="hasQualityData">
           <span class="product-list__quality-filter-label t-muted fs-200">
@@ -157,16 +155,12 @@
           {{ row.name || row.sku }}
         </template>
         <template #cell-product_class_name="{ row }">
-          <span
+          <StatusBadge
             v-if="row.product_class_name"
-            class="chip"
-            :class="productClassBadge(row.product_class_name)"
-            :title="productClassLabel(row.product_class_name)"
-          >
-            <span class="chip__label">{{
-              productClassLabel(row.product_class_name)
-            }}</span>
-          </span>
+            :tone="productClassTone(row.product_class_name)"
+            :dot="false"
+            :label="productClassLabel(row.product_class_name)"
+          />
           <span v-else class="t-muted">—</span>
         </template>
         <template #cell-is_enabled="{ value }">
@@ -421,7 +415,7 @@ export default {
         actions.push({
           key: "send_to_enrichment",
           labelKey: "enrichment.spawn.send_selected",
-          buttonClass: "bg-accent-subtle t-strong",
+          variant: "secondary",
         });
       }
       if (this.translatorAvailable) {
@@ -881,14 +875,14 @@ export default {
       };
       return map[name?.toLowerCase()] || this.$t("pim.type_custom");
     },
-    productClassBadge(name) {
+    productClassTone(name) {
       const map = {
-        productbase: "bg-raised t-secondary",
-        productsimple: "bg-accent-subtle t-strong",
-        productconfigurable: "bg-accent-fill t-on-accent-fill",
-        productbundle: "bg-warning-subtle t-warning",
+        productbase: "neutral",
+        productsimple: "accent",
+        productconfigurable: "accent",
+        productbundle: "warning",
       };
-      return map[name?.toLowerCase()] || "bg-raised t-secondary";
+      return map[name?.toLowerCase()] || "neutral";
     },
   },
 };

@@ -11,11 +11,11 @@
         :label="$t('pim.gaps_skip_default_label')"
         :tooltip="$t('pim.gaps_skip_default_tooltip')"
       >
-        <Switcher
-          :selected="settings.gaps_skip_default_featureset"
-          :prevent="saving"
+        <BasicSwitch
+          :model-value="settings.gaps_skip_default_featureset"
+          :disabled="saving"
           data-test="skip-default-switcher"
-          @onSelect="toggleSkipDefault"
+          @update:model-value="toggleSkipDefault"
         />
       </FormField>
 
@@ -25,42 +25,39 @@
         :tooltip="$t('pim.default_feature_set_tooltip')"
         class="quality-settings__picker"
       >
-        <Dropdown
-          :values="setOptions"
-          :selected="currentDefaultIdx ? [currentDefaultIdx] : []"
+        <BasicSelect
+          :options="setOptions"
+          :model-value="currentDefaultIdx"
           :placeholder="$t('pim.default_feature_set')"
           data-test="default-set-picker"
-          @onSelect="onPickDefault"
+          @update:model-value="onPickDefault"
         />
       </FormField>
     </div>
 
-    <Confirmation-modal
-      :visible="pendingDefaultIdx != null"
-      @accept="confirmDefaultChange"
-      @reject="pendingDefaultIdx = null"
+    <BasicModal
+      :open="pendingDefaultIdx != null"
+      size="sm"
+      :title="$t('pim.default_feature_set')"
+      @close="pendingDefaultIdx = null"
     >
-      <template #description>
-        <p>{{ defaultConfirmMessage }}</p>
-      </template>
+      <p>{{ defaultConfirmMessage }}</p>
       <template #footer>
-        <button
-          class="modal-btn modal-btn--secondary"
-          @click="pendingDefaultIdx = null"
-        >
-          {{ $t("common.cancel") }}
-        </button>
-        <button class="modal-btn modal-btn--confirm" @click="confirmDefaultChange">
-          {{ $t("common.confirm") }}
-        </button>
+        <ActionBar>
+          <BasicButton variant="secondary" @click="pendingDefaultIdx = null">
+            {{ $t("common.cancel") }}
+          </BasicButton>
+          <BasicButton variant="primary" @click="confirmDefaultChange">
+            {{ $t("common.confirm") }}
+          </BasicButton>
+        </ActionBar>
       </template>
-    </Confirmation-modal>
+    </BasicModal>
   </div>
 </template>
 
 <script>
 import { useNotifyStore } from "@/stores/notify";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import {
   GET_GapSettings,
   PATCH_GapSettings,
@@ -71,7 +68,6 @@ import { extractApiMessage } from "@/composables/useFormErrors";
 
 export default {
   name: "QualitySettingsCard",
-  components: { ConfirmationModal },
   setup() {
     const notify = useNotifyStore();
     return { notify };

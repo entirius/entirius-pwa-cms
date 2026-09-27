@@ -1,13 +1,13 @@
 <template>
-  <Dropdown
+  <BasicSelect
     v-if="optionCount <= 50"
-    :values="[
+    :options="[
       { label: $t('pim.clear_attribute_value'), value: null },
       ...options,
     ]"
-    :selected="selected ? [selected] : []"
+    :model-value="selected ?? ''"
     :placeholder="placeholder"
-    @onSelect="(val) => emit('update:selected', val)"
+    @update:model-value="(val) => emit('update:selected', val)"
   />
 
   <div

@@ -169,7 +169,7 @@
             >
               <span v-if="uploadingImage" class="t-muted fs-200">...</span>
               <template v-else>
-                <font-awesome-icon icon="upload" class="t-muted fs-400" />
+                <font-awesome-icon :icon="$icons.upload" class="t-muted fs-400" />
                 <span class="t-muted fs-200 mt-2">{{ $t("pim.drop_files_here") }}</span>
               </template>
             </div>
@@ -190,9 +190,9 @@
                   {{ $t("pim.index") }}
                   <BasicTooltip :text="$t('pim.index_help')" variant="help" />
                 </label>
-                <Switcher
-                  :selected="!form.noindex"
-                  @onSelect="form.noindex = !form.noindex"
+                <BasicSwitch
+                  :model-value="!form.noindex"
+                  @update:model-value="(on) => (form.noindex = !on)"
                 />
               </div>
               <div class="detail-field">
@@ -200,9 +200,9 @@
                   {{ $t("pim.follow") }}
                   <BasicTooltip :text="$t('pim.follow_help')" variant="help" />
                 </label>
-                <Switcher
-                  :selected="!form.nofollow"
-                  @onSelect="form.nofollow = !form.nofollow"
+                <BasicSwitch
+                  :model-value="!form.nofollow"
+                  @update:model-value="(on) => (form.nofollow = !on)"
                 />
               </div>
             </div>
