@@ -5,9 +5,15 @@
       <div class="notif-list__head">
         <span class="notif-list__grip" aria-hidden="true"></span>
         <p class="notif-list__title">{{ $t("notification_bar.title") }}</p>
-        <button class="notif-list__close" :aria-label="$t('notification_bar.close')" data-testid="notif-close" @click="emit('close')">
-          <FontAwesomeIcon icon="xmark" />
-        </button>
+        <BasicButton
+          custom
+          :label="$t('notification_bar.close')"
+          class="btn-ghost"
+          data-testid="notif-close"
+          @click="emit('close')"
+        >
+          <template #custom><FontAwesomeIcon icon="xmark" /></template>
+        </BasicButton>
       </div>
       <p v-if="!store.items.length" class="notif-list__empty">{{ $t("notification_bar.empty") }}</p>
       <button
@@ -141,15 +147,6 @@ const preview = (body) =>
 .notif-list__title {
   margin: 0;
   font-weight: 600;
-}
-.notif-list__close {
-  width: 44px;
-  height: 44px;
-  border: none;
-  border-radius: var(--radius-lg);
-  background: none;
-  color: var(--text-secondary);
-  cursor: pointer;
 }
 .notif-list__empty {
   margin: 0;

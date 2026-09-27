@@ -18,13 +18,15 @@
       <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
         {{ $t("unsaved.changes") }}
       </span>
-      <button
+      <BasicButton
         v-if="isEdit"
-        class="author-photo-remove pointer"
+        custom
+        :label="$t('common.delete')"
+        class="btn-danger"
         @click="showDeleteConfirm = true"
       >
-        <FontAwesomeIcon icon="trash-can" />
-      </button>
+        <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+      </BasicButton>
       <BasicButton
         :text="$t('common.save')"
         class="btn-primary"
@@ -83,13 +85,15 @@
                   class="btn-outline"
                   @click="$refs.photoController.init()"
                 />
-                <button
+                <BasicButton
                   v-if="form.photo_uid"
-                  class="author-photo-remove pointer"
+                  custom
+                  :label="$t('gallery.delete_photo')"
+                  class="btn-danger"
                   @click="clearPhoto"
                 >
-                  <FontAwesomeIcon icon="xmark" />
-                </button>
+                  <template #custom><FontAwesomeIcon icon="xmark" /></template>
+                </BasicButton>
               </div>
             </div>
           </div>
@@ -559,25 +563,6 @@ export default {
     align-items: center;
     justify-content: center;
     background: var(--surface-raised);
-  }
-}
-
-.author-photo-remove {
-  width: var(--elem-height);
-  height: var(--elem-height);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-base);
-  border: none;
-  background: var(--negative-subtle);
-  color: var(--negative);
-  font-size: var(--fs-300);
-  transition: background-color 0.15s;
-
-  &:hover {
-    background: var(--negative-fill);
-    color: var(--text-on-status-fill);
   }
 }
 
