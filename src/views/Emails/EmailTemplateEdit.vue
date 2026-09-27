@@ -4,8 +4,10 @@
       class="page-card h-100 ovy-auto"
     >
       <div class="page-title-row flex ai-ct gap-5 mb-10">
-        <BackBar
-          @back="goBack"
+        <IconButton
+          icon="back"
+          :label="$t('common.back')"
+          @click="goBack"
         />
         <h1 class="page-title">{{ $t("emails.edit_template") }}</h1>
         <span class="fs-200 t-muted ml-2">({{ typeLabel }})</span>

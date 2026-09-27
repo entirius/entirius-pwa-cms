@@ -1,8 +1,10 @@
 <template>
   <div class="feature-set-edit fs-300 t-body h-100 ov-h flex">
     <Teleport to="#pim-toolbar-left" defer>
-      <BackBar
-        @back="$router.push('/pim/feature-sets')"
+      <IconButton
+        icon="back"
+        :label="$t('common.back')"
+        @click="$router.push('/pim/feature-sets')"
       />
     </Teleport>
     <Teleport to="#pim-toolbar-right" defer>

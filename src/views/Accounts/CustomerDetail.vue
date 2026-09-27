@@ -1,8 +1,10 @@
 <template>
   <div class="acc-detail__wrapper page-pad fs-300 t-body h-100 ov-h">
     <Teleport to="#accounts-toolbar-left" defer>
-      <BackBar
-        @back="goBack"
+      <IconButton
+        icon="back"
+        :label="$t('common.back')"
+        @click="goBack"
       />
       <span class="fw-600">{{ toolbarTitle }}</span>
     </Teleport>

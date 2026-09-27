@@ -4,8 +4,10 @@
       class="page-card h-100 ovy-auto"
     >
       <div class="page-title-row flex ai-ct gap-5 mb-10">
-        <BackBar
-          @back="$router.push('/emails')"
+        <IconButton
+          icon="back"
+          :label="$t('common.back')"
+          @click="$router.push('/emails')"
         />
         <h1 class="page-title">
           {{ channel.label || $t("emails.channel") }}

@@ -4,10 +4,14 @@
       class="page-card h-100 ovy-auto"
     >
       <Teleport v-if="toolbarReady" to="#forms-toolbar-left">
-        <BackBar
-          :label="$t('cf.back_to_list')"
-          @back="$router.push('/forms/leads')"
-        />
+        <BasicButton
+          variant="ghost"
+          size="sm"
+          icon="back"
+          @click="$router.push('/forms/leads')"
+        >
+          {{ $t("cf.back_to_list") }}
+        </BasicButton>
         <span v-if="form.name" class="fw-600">{{ form.name }}</span>
       </Teleport>
       <Teleport v-if="toolbarReady" to="#forms-toolbar-right">

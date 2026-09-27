@@ -33,7 +33,7 @@ describe("Leads Conversation (a thread by id)", () => {
 
   it("shows the whole thread of a reply that belongs to no company", async () => {
     api.GET_ThreadWithOptouts.mockResolvedValue({ id: 23, status: "replied", recipient_name: "Jan", recipient_email: "jan@shop.test", timeline, optouts: [] });
-    const wrapper = mount(Conversation, { global: { stubs: { Loader: true, BackBar: true } } });
+    const wrapper = mount(Conversation, { global: { stubs: { Loader: true } } });
     await flushPromises();
     expect(api.GET_ThreadWithOptouts).toHaveBeenCalledWith("23");
     expect(wrapper.get('[data-testid="conversation-recipient"]').text()).toBe("Jan · jan@shop.test");
@@ -43,7 +43,7 @@ describe("Leads Conversation (a thread by id)", () => {
 
   it("a thread that cannot load says so", async () => {
     api.GET_ThreadWithOptouts.mockRejectedValue({ status: 404 });
-    const wrapper = mount(Conversation, { global: { stubs: { Loader: true, BackBar: true } } });
+    const wrapper = mount(Conversation, { global: { stubs: { Loader: true } } });
     await flushPromises();
     expect(wrapper.find('[data-testid="conversation-missing"]').exists()).toBe(true);
   });
@@ -51,8 +51,8 @@ describe("Leads Conversation (a thread by id)", () => {
   it("Back on a directly opened thread (no history) goes to the Inbox", async () => {
     api.GET_ThreadWithOptouts.mockResolvedValue({ id: 23, status: "open", timeline, optouts: [] });
     const length = vi.spyOn(window.history, "length", "get").mockReturnValue(1);
-    const BackBar = { emits: ["back"], template: "<button data-testid='back' @click=\"$emit('back')\" />" };
-    const wrapper = mount(Conversation, { global: { stubs: { Loader: true, BackBar } } });
+    const BasicButton = { emits: ["click"], template: "<button data-testid='back' @click=\"$emit('click')\" />" };
+    const wrapper = mount(Conversation, { global: { stubs: { Loader: true, BasicButton } } });
     await flushPromises();
     await wrapper.get('[data-testid="back"]').trigger("click");
     expect(push).toHaveBeenCalledWith({ name: "LeadsInbox" });

@@ -1,8 +1,10 @@
 <template>
   <div class="page-pad fs-300 t-body h-100 ov-h">
     <Teleport to="#promo-toolbar-left" defer>
-      <BackBar
-        @back="$router.push('/promo/list')"
+      <IconButton
+        icon="back"
+        :label="$t('common.back')"
+        @click="$router.push('/promo/list')"
       />
       <span class="fw-600 fs-400">
         {{ isEdit ? form.name || $t("promo.edit_rule") : $t("promo.create_rule") }}

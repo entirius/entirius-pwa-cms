@@ -37,7 +37,7 @@ vi.mock("vue-router", () => ({ useRoute: () => ({ params: { id: "42" } }), useRo
 
 import Thread from "@/views/Leads/Thread.vue";
 
-const stubs = { BackBar: true, Loader: true, ConfigBanner: true };
+const stubs = { Loader: true, ConfigBanner: true };
 const mountThread = (props = {}) => mount(Thread, { props, global: { stubs } });
 
 beforeEach(() => {
