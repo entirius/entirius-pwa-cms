@@ -1,3 +1,17 @@
+@import "./media-query";
+
+// The one page / section card: faint border, card radius, 24 px padding (16 px below tablet).
+.page-card {
+  background-color: var(--surface-base);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-3xl);
+  padding: var(--space-6);
+
+  @include max-tablet {
+    padding: var(--space-4);
+  }
+}
+
 .dot-indicator {
   position: relative;
   display: inline-block;
@@ -239,7 +253,7 @@
 }
 
 .chip--sm {
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
   padding: 1px var(--space-1);
 }
 
@@ -249,6 +263,17 @@
   text-transform: uppercase;
   letter-spacing: 0.03em;
   color: var(--text-secondary);
+}
+
+// The one form-label style (FormField, BasicInput/LockedField labels, raw <label>s): 12 px / 600, uppercase, muted.
+.field-label,
+.ld-field > span:first-child {
+  font-size: var(--fs-200);
+  font-weight: 600;
+  line-height: 1.25;
+  text-transform: uppercase;
+  letter-spacing: var(--brand-font-tracking-caps);
+  color: var(--text-muted);
 }
 
 .required::after {

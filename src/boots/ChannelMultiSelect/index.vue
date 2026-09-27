@@ -128,7 +128,7 @@ function toggle(idx) {
 
 .channel-select__header {
   padding: var(--space-2) var(--space-3);
-  font-size: var(--fs-150);
+  font-size: var(--fs-200);
   font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;

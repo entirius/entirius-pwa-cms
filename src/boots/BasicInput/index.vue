@@ -32,12 +32,12 @@
       <label
         v-if="label"
         :for="component_id"
-        class="input-label block absolute fs-200"
+        class="input-label field-label block absolute"
         >{{ label }}</label
       >
 
       <p
-        class="validation-msg t-negative fs-100 absolute"
+        class="validation-msg t-negative fs-200 absolute"
         v-if="validate && validate.status === 'error' && validate.msg"
       >
         {{ validate.msg }}
@@ -186,7 +186,7 @@ export default {
     transform: translate(0, -100%);
     // left: var(--space-1);
     // transition: 0.1s;
-    //font-size: var(--fs-100);
+    //font-size: var(--fs-200);
     // background-color: var(--surface-hover);
     // color: var(--text-body);
     // padding: 0 var(--space-1);

@@ -1,7 +1,7 @@
 <template>
   <span class="tool-tip relative pointer">
     <i class="icon-cookie" v-if="!is_wrapper" />
-    <span class="tip p-1 fs-100">{{ tip }}</span>
+    <span class="tip p-1 fs-200">{{ tip }}</span>
     <slot v-if="is_wrapper"> </slot>
   </span>
 </template>

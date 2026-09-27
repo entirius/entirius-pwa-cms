@@ -211,7 +211,7 @@ onBeforeUnmount(() => {
 .floating-actions__label {
   background-color: var(--surface-inverse);
   color: var(--text-inverse);
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
   padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-full);
   white-space: nowrap;

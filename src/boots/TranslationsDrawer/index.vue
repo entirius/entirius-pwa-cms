@@ -109,7 +109,7 @@ function onSave() {
   }
 
   &__badge {
-    font-size: var(--fs-100);
+    font-size: var(--fs-200);
     font-weight: 500;
     text-transform: lowercase;
     letter-spacing: 0;

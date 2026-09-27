@@ -77,7 +77,7 @@
       <slot name="custom" v-if="custom_droplist"></slot>
     </div>
     <p
-      class="validation-msg t-negative fs-100 absolute"
+      class="validation-msg t-negative fs-200 absolute"
       v-if="validate && validate.status === 'error' && validate.msg"
     >
       {{ validate.msg }}

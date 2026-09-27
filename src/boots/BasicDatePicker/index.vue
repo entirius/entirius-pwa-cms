@@ -6,7 +6,7 @@
         <BasicButton
           :icon="`${!value ? 'plus' : 'edit'}`"
           :text="`${value ?? $t('routes.set_new')}`"
-          class="bg-accent-fill t-on-accent-fill fs-100 lh-init pl-2 pr-2 pt-1 pb-1 rounded"
+          class="bg-accent-fill t-on-accent-fill fs-200 lh-init pl-2 pr-2 pt-1 pb-1 rounded"
           @click="
             () => {
               visible = true;

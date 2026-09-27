@@ -2,7 +2,7 @@
   <div class="form-field" :class="{ 'form-field--invalid': !!error }">
     <label
       v-if="label || tooltip"
-      class="form-field__label"
+      class="form-field__label field-label"
       :class="{ required }"
     >
       <span v-if="label">{{ label }}</span>
@@ -50,11 +50,6 @@ defineProps({
 }
 
 .form-field__label {
-  font-size: var(--fs-200);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--text-muted);
   display: inline-flex;
   align-items: center;
   gap: 2px;

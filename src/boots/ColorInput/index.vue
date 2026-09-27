@@ -76,13 +76,14 @@ function onTextInput(e) {
   }
 }
 
+// Inset swatch with its own edge, so a white colour on a light field still shows where it ends.
 .color-input__swatch {
-  width: 32px;
-  min-width: 32px;
-  height: 100%;
-  border: none;
-  border-right: 1px solid var(--border-default);
-  border-radius: 0;
+  width: var(--space-6);
+  min-width: var(--space-6);
+  height: var(--space-6);
+  margin: 0 var(--space-1);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-base);
   cursor: pointer;
   position: relative;
   overflow: hidden;

@@ -548,11 +548,11 @@
           </div>
           <Dropdown
             v-if="variant !== 'lite'"
-            class="wysiwyg-mode-switcher rounded b-strong t-muted bg-inverse"
+            class="wysiwyg-mode-switcher"
             :selected="[mode]"
             :values="[
-              { label: 'text mode', value: 'text' },
-              { label: 'table mode', value: 'table' },
+              { label: $t('wysiwyg.text_mode'), value: 'text' },
+              { label: $t('wysiwyg.table_mode'), value: 'table' },
             ]"
             @onSelect="($event) => (mode = $event)"
           />
@@ -1046,7 +1046,7 @@ export default {
       // border-radius: var(--radius-base);
       border: 1px solid var(--border-default);
       // overflow: hidden;
-      font-size: var(--fs-100);
+      font-size: var(--fs-200);
       font-weight: normal;
 
       border: none;
@@ -1104,11 +1104,6 @@ export default {
 .wysiwyg-mode-switcher {
   flex-shrink: 0;
   min-width: 9rem;
-  padding: 0 var(--space-1);
-
-  .dropdown-list {
-    color: var(--text-body);
-  }
 }
 
 .wysiwyg-options {
@@ -1161,7 +1156,7 @@ export default {
 }
 
 .faq-tooltip-urlkey {
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
 }
 
 .faq-tooltip-cancel {

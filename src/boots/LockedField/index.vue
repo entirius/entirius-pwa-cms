@@ -1,6 +1,6 @@
 <template>
   <div class="locked-field relative">
-    <label v-if="label" class="locked-field__label fs-200 block absolute">{{
+    <label v-if="label" class="locked-field__label field-label block absolute">{{
       label
     }}</label>
     <div class="locked-field__value flex ai-ct gap-2">
@@ -27,7 +27,6 @@ defineProps({
 .locked-field__label {
   top: calc(-1 * var(--label-gap));
   transform: translate(0, -100%);
-  color: var(--text-secondary);
 }
 
 .locked-field__value {
@@ -41,7 +40,7 @@ defineProps({
 }
 
 .locked-field__icon {
-  font-size: var(--fs-150);
+  font-size: var(--fs-200);
   color: var(--text-muted);
 }
 </style>

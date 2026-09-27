@@ -218,7 +218,7 @@ async function fetchResults(search) {
 
 .entity-picker__chevron {
   margin-left: auto;
-  font-size: var(--fs-150);
+  font-size: var(--fs-200);
   color: var(--text-muted);
   transition: transform 0.15s;
   flex-shrink: 0;
@@ -338,7 +338,7 @@ async function fetchResults(search) {
 }
 
 .entity-picker__result-secondary {
-  font-size: var(--fs-100);
+  font-size: var(--fs-200);
   color: var(--text-muted);
 }
 </style>
