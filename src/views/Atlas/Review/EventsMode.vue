@@ -41,7 +41,7 @@
           <FontAwesomeIcon icon="check" />
           {{ $t("atlas.review.events.acknowledge_button") }}
         </button>
-        <span v-else class="t-muted fs-200">{{ row.acknowledged_at }}</span>
+        <span v-else class="t-muted fs-200">{{ formatDate(row.acknowledged_at) }}</span>
       </template>
     </DataTable>
   </div>
@@ -50,6 +50,7 @@
 <script>
 import { useNotifyStore } from "@/stores/notify";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { formatDate } from "@/utils/format";
 import {
   GET_IntegrationEvents,
   POST_AcknowledgeEvent,
@@ -135,6 +136,7 @@ export default {
     this.fetchEvents();
   },
   methods: {
+    formatDate,
     severityVariant(value) {
       return SEVERITY_VARIANTS[value] || "neutral";
     },

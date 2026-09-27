@@ -56,7 +56,7 @@
                 <td>{{ obs.source_idx }}</td>
                 <td>{{ obs.price }} {{ obs.currency || '' }}</td>
                 <td>{{ obs.stock != null ? obs.stock : '—' }}</td>
-                <td>{{ obs.ts }}</td>
+                <td>{{ formatDate(obs.ts) }}</td>
                 <td>
                   <StatusBadge
                     :label="$t(`pricefighter.flag_${obs.flag}`)"
@@ -78,6 +78,7 @@ import { t } from '@/i18n'
 import { GET_PfDecisionDetail, GET_PfBounds } from '@/api/pricefighter/api'
 import { extractApiMessage } from '@/composables/useFormErrors'
 import { pfFormat } from '../constants'
+import { formatDate } from '@/utils/format'
 
 const props = defineProps({
   row: {

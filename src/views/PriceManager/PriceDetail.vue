@@ -223,7 +223,7 @@
               :key="entry.id"
               class="pm-history-row flex ai-ct gap-5"
             >
-              <span class="t-muted fs-200">{{ entry.created_at }}</span>
+              <span class="t-muted fs-200">{{ formatDate(entry.created_at) }}</span>
               <span class="fw-600">{{ entry.country }}</span>
               <span>{{ entry.source }} — gross: {{ entry.gross_value }}, net: {{ entry.net_value }}</span>
               <span class="t-muted fs-200">{{ entry.changed_by }}</span>
@@ -241,6 +241,7 @@ import { useNotifyStore } from '@/stores/notify'
 import { useFormErrors, extractApiMessage } from '@/composables/useFormErrors'
 import { GET_PmPriceDetail, GET_PmPrices, PATCH_PmPrice, DELETE_PmPrice, POST_PmFlushSpecial, GET_PmPriceHistory } from '@/api/pricemanager/api'
 import ConfirmationModal from '@/functionals/Confirmation-modal/index.vue'
+import { formatDate } from '@/utils/format'
 
 export default {
   name: 'PmPriceDetail',
@@ -372,6 +373,7 @@ export default {
     if (this.effectiveChannelIdx && this.effectiveSku) this.fetchDetail()
   },
   methods: {
+    formatDate,
     async fetchDetail() {
       this.loading = true
       this.productNotFound = false

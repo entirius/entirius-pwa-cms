@@ -58,7 +58,7 @@
               {{ row.applied_by || $t('pricefighter.system') }}
             </template>
             <template #cell-created_at="{ row }">
-              {{ row.created_at }}
+              {{ formatDate(row.created_at) }}
             </template>
             <template #expand="{ row }">
               <div v-if="row.reason" class="history__detail">
@@ -103,7 +103,7 @@
                         <td>{{ obs.source_idx }}</td>
                         <td>{{ obs.price }} {{ obs.currency || '' }}</td>
                         <td>{{ obs.stock != null ? obs.stock : '—' }}</td>
-                        <td>{{ obs.ts }}</td>
+                        <td>{{ formatDate(obs.ts) }}</td>
                         <td>
                           <StatusBadge
                             :label="$t(`pricefighter.flag_${obs.flag}`)"
@@ -138,6 +138,7 @@ import { usePfChannels } from '@/composables/usePfChannels'
 import { GET_PfHistory } from '@/api/pricefighter/api'
 import { extractApiMessage } from '@/composables/useFormErrors'
 import { PF_PAGE_SIZE, pfFormat } from './constants'
+import { formatDate } from '@/utils/format'
 
 export default {
   name: 'PfDecisionHistory',
@@ -181,6 +182,7 @@ export default {
     await this.fetchHistory()
   },
   methods: {
+    formatDate,
     async fetchHistory() {
       this.loading = true
       try {
