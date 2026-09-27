@@ -21,6 +21,19 @@
   @include max-tablet {
     padding: var(--space-2) var(--space-3);
   }
+
+  // No empty bar: a view that teleports nothing into either anchor, on a panel with nothing of its own in the bar
+  // (a channel selector, a title), leaves no strip behind.
+  &:not(
+      :has(
+          [id$="-toolbar-left"] > *,
+          [id$="-toolbar-right"] > *,
+          > :not([id$="-toolbar-left"], [id$="-toolbar-right"], .panel-toolbar__title),
+          .panel-toolbar__title > :not([id$="-toolbar-left"])
+        )
+    ) {
+    display: none;
+  }
 }
 
 .panel-toolbar__title {
