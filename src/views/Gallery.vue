@@ -273,7 +273,7 @@
               <FontAwesomeIcon icon="xmark" />
             </button>
           </MobileFilterPanel>
-          <div class="flex gap-2 fs-0">
+          <div class="gallery-selects flex gap-2 fs-0">
             <Dropdown
               :placeholder="$t('common.sort_by')"
               class="bg-base rounded b-default t-body js-e shadow-down"
@@ -822,7 +822,22 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+@import "@/assets/scss/utils/media-query";
+
 $btn-height: 36px;
+
+// A phone gives the sort and page-size selects half the row each, next to the filter trigger.
+.gallery-selects {
+  @include max-tablet {
+    flex: 1;
+    min-width: 0;
+
+    > * {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+}
 $radius: 5px;
 
 .tag-chip {
