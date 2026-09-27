@@ -103,7 +103,7 @@ All notable changes to this project will be documented in this file.
   BulkActionBar pickers are BasicSelects; FAB and empty-state icons resolve only as meanings; selects open on an
   active option and their list is named by the field label; dialogs start in their first field; tabs name their
   panels; route edit / delete in the routes kit act on their own row again; one name per breakpoint
-  (`$breakpoint-shell`, `$breakpoint-wide`), max-* mixins stop 1 px below their min-* partner. Lint: C2 and C5 are
+  (`$breakpoint-shell`, `$breakpoint-wide`); a min-* mixin never overlaps its max-* partner (768 stays a phone). Lint: C2 and C5 are
   errors; the catalogue spec fails on a missing component anchor or an API call.
 
 - P3 sweep, partition 1 (plan 17): Pim, Points, PriceManager, PriceFighter, Stock, Agreements, the functionals,

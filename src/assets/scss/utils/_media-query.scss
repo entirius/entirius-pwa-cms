@@ -1,5 +1,6 @@
-// One name per breakpoint. A min-* mixin includes its breakpoint, the matching max-* mixin stops 1 px below it, so
-// exactly one of the pair applies at any width.
+// One name per breakpoint, and exactly one mixin of a pair applies at any width. Mobile and wide: max-* includes the
+// breakpoint (768 is a phone, as MAX_TABLET_QUERY in utils/breakpoints.js), min-* / mq() start 1 px above it. Shell:
+// the sidebar layout starts at 1024 (FormField inline, useIsDesktop), max-shell stops 1 px below.
 $breakpoint-mobile: 768px;
 // The shell breakpoint (r05 §7, `useIsDesktop`): sidebar layout from here up, phone/tablet layout below.
 $breakpoint-shell: 1024px;
@@ -12,31 +13,31 @@ $breakpoints: ( // when size ends - min-width
 @mixin mq($key) {
   $size: map-get($breakpoints, $key);
 
-  @media only screen and (min-width: $size) {
+  @media only screen and (min-width: $size + 1px) {
     @content;
   }
 }
 
 @mixin min-tablet {
-  @media only screen and (min-width: $breakpoint-mobile) {
+  @media only screen and (min-width: $breakpoint-mobile + 1px) {
     @content;
   }
 }
 
 @mixin min-desktop {
-  @media only screen and (min-width: $breakpoint-wide) {
+  @media only screen and (min-width: $breakpoint-wide + 1px) {
     @content;
   }
 }
 
 @mixin max-tablet {
-  @media only screen and (max-width: $breakpoint-mobile - 1px) {
+  @media only screen and (max-width: $breakpoint-mobile) {
     @content;
   }
 }
 
 @mixin max-desktop {
-  @media only screen and (max-width: $breakpoint-wide - 1px) {
+  @media only screen and (max-width: $breakpoint-wide) {
     @content;
   }
 }
