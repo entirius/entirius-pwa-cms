@@ -90,8 +90,8 @@ export function useFormErrors() {
   })
 
   function handleApiError(err) {
-    clearErrors()
     if (err instanceof SessionEndedError) return
+    clearErrors()
     lastMessage.value = extractApiMessage(err)
     lastDebugId.value = extractDebugId(err)
     const data = resolveErrorBody(err)

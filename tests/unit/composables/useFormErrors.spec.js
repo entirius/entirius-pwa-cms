@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { extractApiMessage, extractDebugId, useFormErrors } from "@/composables/useFormErrors"
+import { SessionEndedError } from "@/api/createClient"
 
 // The token-refresh interceptor (createClient) rejects non-401/403 with the UNWRAPPED v2 body,
 // so enrichment/quality catch blocks receive the envelope directly (no `.response`). These guard
@@ -70,6 +71,18 @@ describe("extractDebugId", () => {
 })
 
 describe("useFormErrors.handleApiError", () => {
+  // FIX-04d review: the ignored error cleared the form before the check returned.
+  it("ignores a SessionEndedError without touching the form state", () => {
+    const fe = useFormErrors()
+    fe.handleApiError({ error: "VALIDATION_ERROR", message: "bad", details: [{ field: "name", description: "too short" }] })
+
+    fe.handleApiError(new SessionEndedError())
+
+    expect(fe.lastMessage.value).toBe("bad")
+    expect(fe.summary.value).toBe("too short")
+    expect(fe.getFieldError("name")).toEqual({ status: "error", msg: "too short" })
+  })
+
   it("populates field errors from an unwrapped v2 envelope", () => {
     const fe = useFormErrors()
     fe.handleApiError({ error: "VALIDATION_ERROR", message: "bad", details: [{ field: "name", description: "too short" }] })
