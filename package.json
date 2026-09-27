@@ -42,7 +42,10 @@
     "visual:screens": "playwright test -c tests/visual/playwright.visual.config.js --grep @screens",
     "visual:approve": "playwright test -c tests/visual/playwright.visual.config.js --grep @screens --update-snapshots",
     "visual:landmarks": "playwright test -c tests/visual/playwright.visual.config.js --grep @landmarks",
-    "visual:ux": "playwright test -c tests/visual/playwright.visual.config.js --grep @ux --workers=6 --fully-parallel"
+    "visual:ux": "playwright test -c tests/visual/playwright.visual.config.js --grep @ux --workers=6 --fully-parallel",
+    "visual:catalogue": "playwright test -c tests/visual/playwright.visual.config.js --grep @catalogue",
+    "visual:components": "playwright test -c tests/visual/playwright.visual.config.js --grep @components",
+    "visual:approve:components": "playwright test -c tests/visual/playwright.visual.config.js --grep @components --update-snapshots"
   },
   "dependencies": {
     "@entirius/brand-tokens": "file:../entirius-brand-tokens",

@@ -79,7 +79,7 @@
   {
     "screen": "agreements-detail",
     "kind": "nonFocusable",
-    "selector": "div.flex.ai-ct",
+    "selector": "div.agm-history-toggle",
     "reason": "the legal page history section header toggles on click only",
     "owner": "P5 plan 36 (Agreements)"
   },

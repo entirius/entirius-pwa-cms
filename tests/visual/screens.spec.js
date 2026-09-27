@@ -24,11 +24,11 @@ function defineScreenTest(screen, viewport, theme) {
   const file = screen.file.replace("{vp}", VP_SHORT[viewport]).replace("{theme}", theme);
   test.describe(() => {
     test.use({ colorScheme: theme === "dark" ? "dark" : "light", needsAuth: !screen.noAuth });
-    test(`${screen.id}-${viewport}-${theme}`, { tag: ["@screens", `@${viewport}`] }, async ({ context, page }) => {
+    test(`${screen.id}-${viewport}-${theme}`, { tag: ["@screens", `@${viewport}`] }, async ({ context, page }, testInfo) => {
       const stubs = await prepareContext(context, { theme, collapsed: screen.collapsed });
       const skipReason = await openScreen(page, screen);
       test.skip(Boolean(skipReason), skipReason);
-      await expect(page).toHaveScreenshot([file], {
+      await expect(page).toHaveScreenshot([testInfo.project.name, file], {
         animations: "disabled",
         caret: "hide",
         mask: badgeMasks(page, stubs),

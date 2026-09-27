@@ -43,12 +43,15 @@ function defineUxTest(screen, viewport) {
   test.describe(() => {
     test.use({ colorScheme: "dark", needsAuth: !screen.noAuth });
     test(`ux ${screen.id}-${viewport}`, { tag: ["@ux", `@${viewport}`] }, async ({ context, page }) => {
+      const runId = process.env.VISUAL_RUN_ID;
       await prepareContext(context, { theme: "dark", collapsed: screen.collapsed });
       const measured = await measureScreen(page, screen, viewport).catch((err) => {
-        if (!err.message.startsWith("INFRA:")) throw err;
-        return { error: err.message.split("\n")[0] };
+        const error = err.message.split("\n")[0];
+        if (err.message.startsWith("INFRA:")) return { error };
+        // A probe bug fails the test, and its stub keeps the run complete: it still promotes, the error in `errors`.
+        writeScreenReport({ screen: screen.id, viewport, runId, measured: { error } });
+        throw err;
       });
-      const runId = process.env.VISUAL_RUN_ID;
       const report = writeScreenReport({ screen: screen.id, viewport, runId, measured });
       test.skip(Boolean(measured.skipReason), measured.skipReason);
       const found = Object.entries(report.counts).filter(([, n]) => n).map(([kind, n]) => `${kind} ${n}`);

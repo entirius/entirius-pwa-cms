@@ -1656,6 +1656,21 @@
         "light"
       ],
       "file": "leads-sending__{vp}__{theme}.png"
+    },
+    {
+      "id": "ui-catalogue",
+      "route": "/ui",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "ui-catalogue__{vp}__{theme}.png"
     }
   ]
 }

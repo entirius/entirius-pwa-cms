@@ -12,7 +12,8 @@ module.exports = defineConfig({
   outputDir: path.join(__dirname, "test-results"),
   globalSetup: require.resolve("./support/global-setup"),
   globalTeardown: require.resolve("./support/global-teardown"),
-  snapshotPathTemplate: "{testDir}/__screenshots__/{projectName}/{arg}{ext}",
+  // Specs name the folder: screens.spec.js `<project>/<file>`, catalogue.spec.js `components/<file>`.
+  snapshotPathTemplate: "{testDir}/__screenshots__/{arg}{ext}",
   updateSnapshots: "none",
   timeout: 90000,
   fullyParallel: false,
