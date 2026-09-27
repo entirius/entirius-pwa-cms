@@ -58,7 +58,7 @@
         data-testid="list-bulk-push"
         @click="bulkPush"
       >
-        <FontAwesomeIcon icon="upload" />
+        <FontAwesomeIcon :icon="$icons.publish" />
         {{ $t("atlas.review.list.push_approved") }}
       </button>
     </div>

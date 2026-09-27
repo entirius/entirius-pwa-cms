@@ -1,37 +1,39 @@
 <template>
-  <ConfirmationModal :visible="true" @reject="onCancel">
-    <template #header>
+  <BasicModal
+    :open="true"
+    size="sm"
+    @update:open="(open) => open || onCancel()"
+  >
+    <template #title>
       <h2 class="t-warning">
         <FontAwesomeIcon :icon="$icons.warning" class="mr-2" />
         {{ $t("atlas.duplicates.merge_modal.title") }}
       </h2>
     </template>
-    <template #description>
-      <div class="merge-confirm__body">
-        <p class="t-body">
-          {{ descriptionText }}
-        </p>
-        <FormField :label="$t('atlas.duplicates.merge_modal.reason_label')">
-          <BasicTextarea
-            v-model="reason"
-            :placeholder="$t('atlas.duplicates.merge_modal.reason_placeholder')"
-            rows="3"
-            :disabled="loading"
-            data-test="merge-confirm-reason"
-          />
-        </FormField>
-        <p
-          v-if="reasonTooShort"
-          class="merge-confirm__hint t-muted fs-200"
-        >
-          {{ $t("atlas.duplicates.merge_modal.reason_label") }}
-        </p>
-        <div v-if="errorText" class="merge-confirm__error t-negative fs-200">
-          <FontAwesomeIcon :icon="$icons.warning" class="mr-2" />
-          {{ errorText }}
-        </div>
+    <div class="merge-confirm__body">
+      <p class="t-body">
+        {{ descriptionText }}
+      </p>
+      <FormField :label="$t('atlas.duplicates.merge_modal.reason_label')">
+        <BasicTextarea
+          v-model="reason"
+          :placeholder="$t('atlas.duplicates.merge_modal.reason_placeholder')"
+          rows="3"
+          :disabled="loading"
+          data-test="merge-confirm-reason"
+        />
+      </FormField>
+      <p
+        v-if="reasonTooShort"
+        class="merge-confirm__hint t-muted fs-200"
+      >
+        {{ $t("atlas.duplicates.merge_modal.reason_label") }}
+      </p>
+      <div v-if="errorText" class="merge-confirm__error t-negative fs-200">
+        <FontAwesomeIcon :icon="$icons.warning" class="mr-2" />
+        {{ errorText }}
       </div>
-    </template>
+    </div>
     <template #footer>
       <div class="merge-confirm__actions">
         <BasicButton
@@ -52,17 +54,15 @@
         </BasicButton>
       </div>
     </template>
-  </ConfirmationModal>
+  </BasicModal>
 </template>
 
 <script>
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import { POST_MergeByEan } from "@/api/atlas/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 
 export default {
   name: "MergeConfirmationModal",
-  components: { ConfirmationModal },
   props: {
     winnerSku: { type: String, required: true },
     loserSku: { type: String, required: true },

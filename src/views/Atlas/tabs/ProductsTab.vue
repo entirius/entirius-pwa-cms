@@ -56,12 +56,12 @@
         @keyup.enter="resetAndFetch"
         @blur="resetAndFetch"
       />
-      <Dropdown
-        :values="orderingOptions"
-        :selected="[filters.ordering]"
+      <BasicSelect
+        :options="orderingOptions"
+        :model-value="filters.ordering"
         class="products-filters__ordering"
         data-testid="products-filter-ordering"
-        @onSelect="(val) => onOrderingChange(val)"
+        @update:model-value="(val) => onOrderingChange(val)"
       />
       <button
         v-if="hasActiveFilters"
@@ -154,7 +154,7 @@
             :data-testid="`products-push-${row.id}`"
             @click="pushProduct(row)"
           >
-            <FontAwesomeIcon icon="upload" />
+            <FontAwesomeIcon :icon="$icons.publish" />
           </button>
           <button
             v-if="canForceRepush(row)"
@@ -283,7 +283,7 @@
             :disabled="detailBusy"
             @click="detailPush"
           >
-            <FontAwesomeIcon icon="upload" />
+            <FontAwesomeIcon :icon="$icons.publish" />
             {{ $t("atlas.products.push_button") }}
           </button>
           <button
@@ -553,13 +553,13 @@ export default {
         actions.push({
           key: "force_repush",
           labelKey: "atlas.products.bulk.force_repush_selected",
-          buttonClass: "bg-warning-subtle t-warning",
+          variant: "secondary",
         });
       }
       actions.push({
         key: "acknowledge",
         labelKey: "atlas.products.bulk.acknowledge_selected",
-        buttonClass: "bg-positive-subtle t-positive",
+        variant: "primary",
       });
       return actions;
     },

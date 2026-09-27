@@ -38,11 +38,10 @@
           :data-testid="`logs-severity-${opt.value}`"
           @click="setSeverity(opt.value)"
         />
-        <Switcher
+        <BasicSwitch
+          v-model="showAcknowledged"
           :label="$t('atlas.logs.show_acknowledged')"
-          :selected="showAcknowledged"
           data-testid="logs-show-ack-toggle"
-          @onSelect="toggleAcknowledged"
         />
       </div>
 
@@ -230,9 +229,6 @@ export default {
     },
     setSeverity(value) {
       this.severityFilter = value;
-    },
-    toggleAcknowledged() {
-      this.showAcknowledged = !this.showAcknowledged;
     },
     async fetchLogs() {
       if (!this.supplier?.idx) return;

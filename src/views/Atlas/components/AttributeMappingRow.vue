@@ -31,11 +31,11 @@
         />
       </FormField>
       <FormField :label="$t('atlas.mappings.attribute.modifier')">
-        <Dropdown
-          :values="modifierOptions"
-          :selected="[local.modifier || 'none']"
+        <BasicSelect
+          :options="modifierOptions"
+          :model-value="local.modifier || 'none'"
           :data-testid="`attr-mapping-modifier-${rowKey}`"
-          @onSelect="(val) => (local.modifier = val)"
+          @update:model-value="(val) => (local.modifier = val)"
         />
         <span
           v-if="modifierPreview"

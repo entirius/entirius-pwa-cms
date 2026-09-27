@@ -197,13 +197,13 @@ export default {
         actions.push({
           key: "force_repush",
           labelKey: "atlas.products.bulk.force_repush_selected",
-          buttonClass: "bg-warning-subtle t-warning",
+          variant: "secondary",
         });
       }
       actions.push({
         key: "acknowledge",
         labelKey: "atlas.products.bulk.acknowledge_selected",
-        buttonClass: "bg-positive-subtle t-positive",
+        variant: "primary",
       });
       return actions;
     },

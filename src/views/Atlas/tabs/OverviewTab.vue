@@ -240,7 +240,7 @@
         :label="$t('atlas.form.preferred_strategy_label')"
         :tooltip="$t('atlas.form.preferred_strategy_tooltip')"
       >
-        <Dropdown
+        <BasicSelect
           v-model="form.primary_strategy"
           :options="preferredStrategyOptions"
           data-testid="overview-preferred-strategy"
@@ -275,7 +275,7 @@
         :label="$t('atlas.form.eval_frequency_label')"
         :tooltip="$t('atlas.form.eval_frequency_tooltip')"
       >
-        <Dropdown
+        <BasicSelect
           v-model="form.eval_frequency"
           :options="evalFrequencyOptions"
           data-testid="overview-eval-frequency"

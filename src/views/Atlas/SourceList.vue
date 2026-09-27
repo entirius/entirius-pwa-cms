@@ -207,67 +207,62 @@
     </SideDrawer>
 
     <!-- Delete confirmation modal -->
-    <Confirmation-modal
-      destructive
-      :visible="deleteVisible"
-      @accept="submitDelete"
-      @reject="closeDelete"
+    <BasicModal
+      :open="deleteVisible"
+      size="sm"
+      :title="$t('atlas.delete.modal_title')"
+      @update:open="(open) => open || closeDelete()"
     >
-      <template #header>
-        <h2>{{ $t("atlas.delete.modal_title") }}</h2>
-      </template>
-      <template #description>
-        <p class="mb-5">
-          <strong>{{ deleteTarget?.name }}</strong> ({{ deleteTarget?.idx }})
+      <p class="mb-5">
+        <strong>{{ deleteTarget?.name }}</strong> ({{ deleteTarget?.idx }})
+      </p>
+      <div class="flex flex-column gap-2 mb-5">
+        <label class="flex ai-ct gap-2 pointer">
+          <input
+            type="radio"
+            :value="false"
+            v-model="deleteForce"
+            data-testid="suppliers-delete-soft-radio"
+          />
+          <span class="fs-300">{{
+            $t("atlas.delete.mode_soft_label")
+          }}</span>
+        </label>
+        <label class="flex ai-ct gap-2 pointer">
+          <input
+            type="radio"
+            :value="true"
+            v-model="deleteForce"
+            data-testid="suppliers-delete-hard-radio"
+          />
+          <span class="fs-300 t-negative fw-600">{{
+            $t("atlas.delete.mode_hard_label")
+          }}</span>
+        </label>
+      </div>
+      <div
+        v-if="deleteForce && deleteImpact"
+        class="suppliers-delete-impact"
+        data-testid="suppliers-delete-impact-banner"
+      >
+        <p class="fs-200 mb-2">
+          {{
+            $t("atlas.delete.impact_links", {
+              count: deleteImpact.affected_links_count,
+            })
+          }}
         </p>
-        <div class="flex flex-column gap-2 mb-5">
-          <label class="flex ai-ct gap-2 pointer">
-            <input
-              type="radio"
-              :value="false"
-              v-model="deleteForce"
-              data-testid="suppliers-delete-soft-radio"
-            />
-            <span class="fs-300">{{
-              $t("atlas.delete.mode_soft_label")
-            }}</span>
-          </label>
-          <label class="flex ai-ct gap-2 pointer">
-            <input
-              type="radio"
-              :value="true"
-              v-model="deleteForce"
-              data-testid="suppliers-delete-hard-radio"
-            />
-            <span class="fs-300 t-negative fw-600">{{
-              $t("atlas.delete.mode_hard_label")
-            }}</span>
-          </label>
-        </div>
-        <div
-          v-if="deleteForce && deleteImpact"
-          class="suppliers-delete-impact"
-          data-testid="suppliers-delete-impact-banner"
-        >
-          <p class="fs-200 mb-2">
-            {{
-              $t("atlas.delete.impact_links", {
-                count: deleteImpact.affected_links_count,
-              })
-            }}
-          </p>
-          <p class="fs-200">
-            {{
-              $t("atlas.delete.impact_pushed_skus", {
-                count: deleteImpact.affected_pushed_skus_count,
-              })
-            }}
-          </p>
-        </div>
-        <p v-if="!deleteForce" class="fs-200 t-muted mt-5">
-          {{ $t("atlas.delete.default_warning") }}
+        <p class="fs-200">
+          {{
+            $t("atlas.delete.impact_pushed_skus", {
+              count: deleteImpact.affected_pushed_skus_count,
+            })
+          }}
         </p>
-      </template>
+      </div>
+      <p v-if="!deleteForce" class="fs-200 t-muted mt-5">
+        {{ $t("atlas.delete.default_warning") }}
+      </p>
       <template #footer>
         <BasicButton
           variant="secondary"
@@ -288,7 +283,7 @@
               : $t('atlas.delete.confirm_button_soft') }}
         </BasicButton>
       </template>
-    </Confirmation-modal>
+    </BasicModal>
   </div>
 </template>
 
@@ -297,7 +292,6 @@ import { useNotifyStore } from "@/stores/notify";
 import { useRegionalStore } from "@/stores/regional";
 import { useSearchDebounce } from "@/composables/useSearchDebounce";
 import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
-import ConfirmationModal from "@/functionals/Confirmation-modal/index.vue";
 import {
   GET_Sources,
   POST_Source,
@@ -323,7 +317,6 @@ const EMPTY_FORM = () => ({
 
 export default {
   name: "SourceList",
-  components: { ConfirmationModal },
   setup() {
     const notify = useNotifyStore();
     const regionalStore = useRegionalStore();

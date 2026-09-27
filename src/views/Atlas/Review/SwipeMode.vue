@@ -10,7 +10,7 @@
         <EmptyState
           :title="$t('atlas.review.empty_state_title')"
           :message="$t('atlas.review.empty_state_message')"
-          icon="square-check"
+          icon="checkboxOn"
         />
       </div>
 
