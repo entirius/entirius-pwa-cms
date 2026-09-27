@@ -6,7 +6,7 @@
       <div class="handy-kit-body flex-column fg-1 ov-h bg-base">
         <component :is="handyType.id" class="fg-1 ovy-auto" ref="activeKit" />
       </div>
-      <Loading :isHandy="true" v-if="handyLoading" />
+      <Loader v-if="handyLoading" overlay contained />
     </div>
     <Teleport to="body">
       <ConfirmDialog
@@ -26,7 +26,6 @@
 <script>
 import { useLoaderStore } from "@/stores/loader";
 import { useHandyStore } from "@/stores/handy";
-import Loading from "../../components/Loading.vue";
 
 import ImagesKit from "./kits/images-kit/images-kit.vue";
 import ConfigsKit from "./kits/configs-kit/index.vue";
@@ -90,7 +89,6 @@ export default {
     AttrsKit,
     CategoriesKit,
     ContentRoleKit,
-    Loading,
   },
 };
 </script>

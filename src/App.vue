@@ -78,7 +78,7 @@
           <router-view class="h-100" />
         </div>
       </div>
-      <Loading v-if="loading" />
+      <Loader v-if="loading" overlay />
       <handy-kit v-if="handyType" />
       <nav
         v-if="hasPanel && showBottomBar"
@@ -118,7 +118,6 @@ import Navigation from "./components/Navigation/Navigation.vue";
 import HeaderControls from "./components/Navigation/HeaderControls.vue";
 
 import HandyKit from "./functionals/Handy-kit/Handy-kit.vue";
-import Loading from "./components/Loading.vue";
 
 export default {
   setup() {
@@ -236,7 +235,6 @@ export default {
     Navigation,
     HeaderControls,
     HandyKit,
-    Loading,
     LoginWall,
   },
 };
