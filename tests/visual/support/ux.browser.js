@@ -37,14 +37,16 @@
     return r;
   }
 
-  // The part of `rect` its overflow:hidden|clip ancestors (from `node` up, `stop` included) leave visible. The walk
-  // ends at the first scroller: what lies beyond it is reachable by scrolling.
+  // The part of `rect` its overflow:hidden|clip ancestors (from `node` up, `stop` included) leave visible. Per axis,
+  // the walk ends at the first scroller of that axis: what lies beyond it is reachable by scrolling.
   function clip(rect, node, stop) {
     let r = rect;
-    for (let n = node; n && !isRoot(n); n = n.parentElement) {
+    const open = { x: true, y: true };
+    for (let n = node; n && !isRoot(n) && (open.x || open.y); n = n.parentElement) {
       const s = styleOf(n);
-      if (SCROLLER.test(s.overflowX) || SCROLLER.test(s.overflowY)) break;
-      const axes = { x: HARD_CLIP.test(s.overflowX), y: HARD_CLIP.test(s.overflowY) };
+      open.x &&= !SCROLLER.test(s.overflowX);
+      open.y &&= !SCROLLER.test(s.overflowY);
+      const axes = { x: open.x && HARD_CLIP.test(s.overflowX), y: open.y && HARD_CLIP.test(s.overflowY) };
       if (axes.x || axes.y) r = intersect(r, toRect(n.getBoundingClientRect()), axes);
       if (n === stop || s.position === "fixed") break;
     }
