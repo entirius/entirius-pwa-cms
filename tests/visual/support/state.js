@@ -16,6 +16,10 @@ const LOGIN_PREFS = { cms_theme: "dark", cms_lang: "PL", cms_sidebar_collapsed: 
 const PROBES = path.join(__dirname, "probes.browser.js");
 const FREEZE_CSS =
   "*,*::before,*::after{transition:none!important;animation:none!important;caret-color:transparent!important}";
+// A screen counts as loaded when none of these is visible (and the row's `readySelector` is, when it has one).
+const LOADING_CSS = '.loader, .loader-element, .skeleton, [aria-busy="true"]';
+const LOADING_TEXT = /^(Ładowanie|Loading)\b/;
+const DATA_TIMEOUT_MS = 10000;
 const HEALTH_BODY = {
   checked_at: FREEZE,
   checks: [
@@ -143,6 +147,28 @@ async function settle(page) {
     .catch(() => {});
 }
 
+// Runs in the browser (serialised by waitForFunction): true once no loader or loading text is visible.
+function noLoaderVisible({ css, text }) {
+  const shown = (el) => el.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true });
+  if ([...document.querySelectorAll(css)].some(shown)) return false;
+  const pattern = new RegExp(text);
+  const leaves = [...document.querySelectorAll("body *")].filter((el) => !el.children.length);
+  return !leaves.some((el) => pattern.test(el.textContent.trim()) && shown(el));
+}
+
+// After networkidle a detail screen may still paint its loader or an empty form: wait for the data (10 s → INFRA).
+async function waitForData(page, screen) {
+  const seconds = `${DATA_TIMEOUT_MS / 1000} s`;
+  const args = { css: LOADING_CSS, text: LOADING_TEXT.source };
+  await page.waitForFunction(noLoaderVisible, args, { timeout: DATA_TIMEOUT_MS, polling: 100 }).catch(() => {
+    throw new InfraError(`${screen.id}: still loading after ${seconds}`);
+  });
+  if (!screen.readySelector) return;
+  await page.locator(screen.readySelector).first().waitFor({ state: "visible", timeout: DATA_TIMEOUT_MS }).catch(() => {
+    throw new InfraError(`${screen.id}: readySelector ${screen.readySelector} not visible after ${seconds}`);
+  });
+}
+
 async function clickAndWaitForUrl(page, locator) {
   const before = page.url();
   await locator.click({ timeout: 5000 }).catch(() => {});
@@ -225,6 +251,7 @@ async function openScreen(page, screen) {
     if (screen.needsData) return `${screen.id}: ${screen.note} (not in this seed)`;
     throw new InfraError(`${screen.id}: ${screen.resolver} found no detail on ${screen.route}`);
   }
+  await waitForData(page, screen);
   await STATES[screen.state](page);
   await idle(page, 5000);
   return null;

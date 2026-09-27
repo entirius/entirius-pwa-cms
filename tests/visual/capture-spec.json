@@ -324,6 +324,7 @@
         "dark",
         "light"
       ],
+      "readySelector": ".author-photo-preview",
       "file": "pages-author-detail__{vp}__{theme}.png"
     },
     {
@@ -403,7 +404,7 @@
     },
     {
       "id": "pim-category-detail",
-      "route": "/pim/categories/1",
+      "route": "/pim/categories/sofas",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -414,6 +415,7 @@
         "dark",
         "light"
       ],
+      "readySelector": ".detail-section",
       "file": "pim-category-detail__{vp}__{theme}.png"
     },
     {
@@ -720,6 +722,7 @@
         "dark",
         "light"
       ],
+      "readySelector": ".status-badge",
       "file": "accounts-customer-detail__{vp}__{theme}.png"
     },
     {
@@ -827,6 +830,7 @@
         "dark",
         "light"
       ],
+      "readySelector": ".status-badge",
       "file": "agreements-consent-person__{vp}__{theme}.png"
     },
     {
@@ -860,6 +864,7 @@
         "dark",
         "light"
       ],
+      "readySelector": "h1 ~ span.t-muted",
       "file": "emails-channel-edit__{vp}__{theme}.png"
     },
     {
@@ -893,6 +898,7 @@
         "dark",
         "light"
       ],
+      "readySelector": ".ProseMirror",
       "file": "emails-template-edit__{vp}__{theme}.png"
     },
     {
@@ -912,6 +918,7 @@
         "dark",
         "light"
       ],
+      "readySelector": ".ProseMirror",
       "file": "emails-lang-config__{vp}__{theme}.png"
     },
     {
@@ -1182,6 +1189,7 @@
         "dark",
         "light"
       ],
+      "readySelector": ".supplier-detail__body input",
       "file": "atlas-source-detail__{vp}__{theme}.png"
     },
     {
