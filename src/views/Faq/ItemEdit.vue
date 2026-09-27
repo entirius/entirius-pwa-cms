@@ -44,7 +44,7 @@
           <div class="detail-grid">
             <div class="detail-field">
               <div class="flex ai-ct jc-sb">
-                <label class="field-label required">{{ $t("faq.url_key") }}</label>
+                <label class="field-label required" for="faq-item-url-key">{{ $t("faq.url_key") }}</label>
                 <BasicButton
                   v-if="isEdit && channelLanguages.length"
                   variant="secondary"
@@ -54,7 +54,7 @@
                   {{ $t('faq.translations') }}
                 </BasicButton>
               </div>
-              <FormField :error="formErrors.getFieldError('url_key')?.msg || ''">
+              <FormField id="faq-item-url-key" :error="formErrors.getFieldError('url_key')?.msg || ''">
                 <BasicInput
                   v-model="form.url_key"
                   :disabled="isEdit"
@@ -78,7 +78,7 @@
 
           <div class="detail-field mb-8">
             <div class="flex ai-ct jc-sb">
-              <label class="field-label required">{{ $t("faq.question") }}</label>
+              <label class="field-label required" for="faq-item-question">{{ $t("faq.question") }}</label>
               <BasicButton
                 v-if="isEdit && channelLanguages.length"
                 variant="secondary"
@@ -88,7 +88,7 @@
                 {{ $t('faq.translations') }}
               </BasicButton>
             </div>
-            <FormField :error="formErrors.getFieldError('question')?.msg || ''">
+            <FormField id="faq-item-question" :error="formErrors.getFieldError('question')?.msg || ''">
               <BasicInput
                 v-model="form.question"
               />

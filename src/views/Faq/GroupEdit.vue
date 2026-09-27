@@ -50,8 +50,7 @@
           <h2 class="fs-500 fw-600 mb-8">{{ $t("faq.group_details") }}</h2>
           <div class="detail-grid">
             <div class="detail-field">
-              <label class="field-label required">{{ $t("faq.idx") }}</label>
-              <FormField :error="formErrors.getFieldError('idx')?.msg || ''">
+              <FormField :label="$t('faq.idx')" required :error="formErrors.getFieldError('idx')?.msg || ''">
                 <BasicInput
                   v-model="form.idx"
                   :disabled="isEdit"
@@ -59,8 +58,7 @@
               </FormField>
             </div>
             <div class="detail-field">
-              <label class="field-label required">{{ $t("faq.name") }}</label>
-              <FormField :error="formErrors.getFieldError('name')?.msg || ''">
+              <FormField :label="$t('faq.name')" required :error="formErrors.getFieldError('name')?.msg || ''">
                 <BasicInput
                   v-model="form.name"
                 />

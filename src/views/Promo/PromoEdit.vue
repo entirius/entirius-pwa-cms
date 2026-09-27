@@ -208,7 +208,7 @@
                 v-model="form.currencies"
                 multiple
                 :options="currencySelectOptions"
-                :placeholder="`${$t('promo.field_currencies')} (${form.currencies.length})`"
+                :placeholder="$t('promo.field_currencies')"
               />
               <p class="fs-200 t-muted mt-1">{{ $t("promo.currencies_hint") }}</p>
             </FormField>
@@ -217,7 +217,7 @@
                 v-model="form.channels"
                 multiple
                 :options="channelSelectOptions"
-                :placeholder="`${$t('promo.section_channels')} (${form.channels.length})`"
+                :placeholder="$t('promo.section_channels')"
               />
               <p class="fs-200 t-muted mt-1">{{ $t("promo.channels_hint") }}</p>
             </FormField>
@@ -228,7 +228,7 @@
                 v-model="form.free_shipping_methods"
                 multiple
                 :options="shippingSelectOptions"
-                :placeholder="`${$t('promo.field_free_shipping_methods')} (${form.free_shipping_methods.length})`"
+                :placeholder="$t('promo.field_free_shipping_methods')"
               />
             </FormField>
           </div>

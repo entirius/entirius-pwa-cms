@@ -71,7 +71,7 @@
             v-model="local.categories"
             multiple
             :options="idOptions(categoryOptions, 'idx')"
-            :placeholder="`${$t('promo.filter_field_categories')} (${local.categories.length})`"
+            :placeholder="$t('promo.filter_field_categories')"
           />
         </FormField>
 
@@ -81,7 +81,7 @@
             v-model="local.attributes"
             multiple
             :options="idOptions(attributeOptions, 'idx')"
-            :placeholder="`${$t('promo.filter_field_attributes')} (${local.attributes.length})`"
+            :placeholder="$t('promo.filter_field_attributes')"
           />
         </FormField>
 
@@ -91,7 +91,7 @@
             v-model="local.features_qty_greater_than_attr_value"
             multiple
             :options="idOptions(featureOptions, 'idx')"
-            :placeholder="`${$t('promo.filter_field_features_qty_gt')} (${local.features_qty_greater_than_attr_value.length})`"
+            :placeholder="$t('promo.filter_field_features_qty_gt')"
           />
         </FormField>
 
@@ -101,7 +101,7 @@
             v-model="local.features_qty_is_multiple_of_attr_value"
             multiple
             :options="idOptions(featureOptions, 'idx')"
-            :placeholder="`${$t('promo.filter_field_features_qty_multiple')} (${local.features_qty_is_multiple_of_attr_value.length})`"
+            :placeholder="$t('promo.filter_field_features_qty_multiple')"
           />
         </FormField>
 
@@ -181,7 +181,7 @@
             v-model="local.groups"
             multiple
             :options="idOptions(groupOptions, 'code')"
-            :placeholder="`${$t('promo.filter_field_groups')} (${local.groups.length})`"
+            :placeholder="$t('promo.filter_field_groups')"
           />
         </FormField>
       </template>
