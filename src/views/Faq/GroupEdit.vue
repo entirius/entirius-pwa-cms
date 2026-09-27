@@ -51,46 +51,30 @@
           <div class="detail-grid">
             <div class="detail-field">
               <label class="field-label required">{{ $t("faq.idx") }}</label>
-              <BasicInput
-                v-model="form.idx"
-                :disabled="isEdit"
-                :validate="formErrors.getFieldError('idx')"
-              />
+              <FormField :error="formErrors.getFieldError('idx')?.msg || ''">
+                <BasicInput
+                  v-model="form.idx"
+                  :disabled="isEdit"
+                />
+              </FormField>
             </div>
             <div class="detail-field">
               <label class="field-label required">{{ $t("faq.name") }}</label>
-              <BasicInput
-                v-model="form.name"
-                :validate="formErrors.getFieldError('name')"
-              />
+              <FormField :error="formErrors.getFieldError('name')?.msg || ''">
+                <BasicInput
+                  v-model="form.name"
+                />
+              </FormField>
             </div>
             <div class="detail-field">
               <label class="field-label">{{ $t("faq.channels") }}</label>
-              <Dropdown
-                :custom_droplist="true"
-                :placeholder="`${$t('faq.channels')} (${
-                  form.channel_ids.length || $t('faq.global')
-                })`"
-              >
-                <template #custom>
-                  <div
-                    v-for="ch in channelOptions"
-                    :key="ch.value"
-                    class="pointer flex jc-sb ai-ct ph-2 dropdown-list-el"
-                    :class="{
-                      '-primary-100': form.channel_ids.includes(ch.value),
-                    }"
-                    @click.stop="toggleChannel(ch.value)"
-                  >
-                    <span class="ml-2">{{ ch.label }}</span>
-                    <FontAwesomeIcon
-                      v-if="form.channel_ids.includes(ch.value)"
-                      :icon="$icons.check"
-                      class="t-positive"
-                    />
-                  </div>
-                </template>
-              </Dropdown>
+              <BasicSelect
+                v-model="form.channel_ids"
+                multiple
+                :options="channelOptions"
+                :placeholder="`${$t('faq.channels')} (${$t('faq.global')})`"
+                :aria-label="$t('faq.channels')"
+              />
             </div>
           </div>
         </div>
@@ -100,12 +84,12 @@
           <div class="section-head mb-8">
             <h2 class="fs-500 fw-600">{{ $t("faq.items_in_group") }}</h2>
             <div class="flex ai-ct gap-5">
-              <Dropdown
-                :values="unassignedItemOptions"
-                :selected="[]"
+              <BasicSelect
+                :options="unassignedItemOptions"
+                :model-value="null"
                 :placeholder="$t('faq.add_existing_item')"
                 class="add-item-select"
-                @onSelect="addItemToGroup"
+                @update:model-value="addItemToGroup"
               />
             </div>
           </div>
@@ -307,14 +291,6 @@ export default {
     }
   },
   methods: {
-    toggleChannel(id) {
-      const idx = this.form.channel_ids.indexOf(id);
-      if (idx >= 0) {
-        this.form.channel_ids.splice(idx, 1);
-      } else {
-        this.form.channel_ids.push(id);
-      }
-    },
     async fetchChannels() {
       try {
         const { data } = await GET_FaqChannels({ page_size: 100 });

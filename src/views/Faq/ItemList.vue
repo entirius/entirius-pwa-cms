@@ -21,12 +21,12 @@
             :active="activeFilter === tab.key"
             @click="setFilter(tab.key)"
           />
-          <Dropdown
-            :values="groupFilterOptions"
-            :selected="groupFilter ? [groupFilter] : []"
+          <BasicSelect
+            :options="groupFilterOptions"
+            :model-value="groupFilter"
             :placeholder="$t('faq.all_groups')"
             class="item-list__group-filter"
-            @onSelect="onGroupFilter"
+            @update:model-value="onGroupFilter"
           />
         </MobileFilterPanel>
       </div>
@@ -107,7 +107,7 @@ export default {
     fabActions() {
       return [
         {
-          icon: "plus",
+          icon: "add",
           label: this.$t("faq.create_item"),
           handler: () => this.$router.push("/faq/items/create"),
         },

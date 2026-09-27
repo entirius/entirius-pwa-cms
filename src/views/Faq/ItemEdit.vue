@@ -54,11 +54,12 @@
                   {{ $t('faq.translations') }}
                 </BasicButton>
               </div>
-              <BasicInput
-                v-model="form.url_key"
-                :disabled="isEdit"
-                :validate="formErrors.getFieldError('url_key')"
-              />
+              <FormField :error="formErrors.getFieldError('url_key')?.msg || ''">
+                <BasicInput
+                  v-model="form.url_key"
+                  :disabled="isEdit"
+                />
+              </FormField>
             </div>
             <div class="detail-field">
               <label class="field-label">{{ $t("faq.group") }}</label>
@@ -87,10 +88,11 @@
                 {{ $t('faq.translations') }}
               </BasicButton>
             </div>
-            <BasicInput
-              v-model="form.question"
-              :validate="formErrors.getFieldError('question')"
-            />
+            <FormField :error="formErrors.getFieldError('question')?.msg || ''">
+              <BasicInput
+                v-model="form.question"
+              />
+            </FormField>
           </div>
 
           <div class="detail-field mb-8">
@@ -143,12 +145,12 @@
             :key="idx"
             class="assoc-row flex ai-ct gap-5 mb-5"
           >
-            <Dropdown
-              :values="entityTypeOptions"
-              :selected="assoc.entity_type ? [assoc.entity_type] : []"
+            <BasicSelect
+              :options="entityTypeOptions"
+              :model-value="assoc.entity_type"
               :placeholder="$t('faq.entity_type')"
               class="assoc-type-select"
-              @onSelect="(val) => { assoc.entity_type = val; assoc.entity_identifier = ''; assoc.entity_display = ''; }"
+              @update:model-value="(val) => { assoc.entity_type = val; assoc.entity_identifier = ''; assoc.entity_display = ''; }"
             />
             <EntitySearchPicker
               v-if="assoc.entity_type === 'product'"

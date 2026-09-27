@@ -126,7 +126,7 @@ export default {
     fabActions() {
       return [
         {
-          icon: "plus",
+          icon: "add",
           label: this.$t("faq.create_group"),
           handler: () => this.$router.push("/faq/groups/create"),
         },
