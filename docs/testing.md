@@ -135,7 +135,7 @@ Use `waitForLoadState('networkidle')` not `waitForTimeout`. Prefer
 
 ## Visual fidelity harness
 
-`tests/visual/` proves what a redesign change did to the CMS, in four layers. It runs against an already running
+`tests/visual/` proves what a redesign change did to the CMS, in four layers plus the catalogue layers. It runs against an already running
 CMS (the zeno stack, `CMS_BASE_URL`, default `http://localhost:8180`, API `CMS_API_URL`, default
 `http://localhost:8100`), logs in as `CMS_USER` / `CMS_PASSWORD` (default `admin` / `admin123`) and never starts a
 server. Config: `tests/visual/playwright.visual.config.js` (projects `desktop` 1680×1168 and `mobile` 393×852,
@@ -147,6 +147,8 @@ DPR 1, `pl-PL`, `Europe/Warsaw`, one worker).
 | 2 Figma landmarks | `landmarks.spec.js` (`@landmarks`) | Do elements with `data-fid="<id>"` sit where `figma/figma-landmarks.json` puts them (±2 px)? | report ("0 matched" until the P4 shell adds `data-fid`) |
 | 3 Regression | `screens.spec.js` (`@screens`) | Did any screen of `capture-spec.json` change? `toHaveScreenshot`, `threshold 0.1`, `maxDiffPixels 20` | gate once baselines exist |
 | 4 UX checks | `ux.spec.js` (`@ux`) | Is anything on a `capture-spec.json` screen broken, unreachable or inconsistent? Every screen × viewport, dark (below) | gate on `high` (owned allow-list); `medium` is a report |
+| Catalogue | `catalogue.spec.js` (`@catalogue`) | Does `/ui` show every section anchor and every `cat-*` cell with a box, without a console error? Both viewports and themes, no screenshot | gate (tier-1 plan gates run it) |
+| Components | `catalogue.spec.js` (`@components`) | Did any catalogue cell change? One screenshot per cell and interaction state, both viewports and themes | gate once the P3 close (plan 20) approved the baselines; tier-1 gates never run it |
 
 ```bash
 npm run visual              # all layers
@@ -154,7 +156,10 @@ npm run visual:parity       # layer 1
 npm run visual:landmarks    # layer 2
 npm run visual:screens      # layer 3 against the approved baselines
 npm run visual:ux           # layer 4
+npm run visual:catalogue    # @catalogue
+npm run visual:components   # @components against the approved cell baselines
 npm run visual:approve      # operator only: write layer-3 baselines
+npm run visual:approve:components  # operator only: write the @components baselines
 ```
 
 Reports land in `tests/visual/.report/` (`VISUAL_REPORT_DIR` overrides it): `census.json`, `fonts.json`,
@@ -174,7 +179,7 @@ leaks in at login), transitions, animations and the caret off, notification and 
 fixed bodies. A screen is captured only once its data has rendered: after `networkidle` `openScreen` waits until
 no loader is visible (`.loader`, `.loader-element`, `.skeleton`, `[aria-busy="true"]`, an element whose own text
 starts with "Ładowanie"/"Loading" and ends in an ellipsis — "Ładowanie…" next to a spinner counts, a permanent
-"Ładowanie palet" does not) and, when the row has a `readySelector`, until that selector is visible — 10 s, then
+"Ładowanie palet" does not; so every loading message ends in an ellipsis, `docs/ui-rules.md` § Copy) and, when the row has a `readySelector`, until that selector is visible — 10 s, then
 `INFRA:`.
 A detail or edit screen that paints its frame before the data (an empty form, no loader) gets a `readySelector`
 naming an element only the loaded state has (`.ProseMirror` of a loaded editor, a `StatusBadge`). Every write to the API is answered `200 {}` (only login and token refresh pass through), so a run
@@ -249,6 +254,18 @@ later gates read — keep it stable:
   "runId": "..."
 }
 ```
+
+**Catalogue** (`/ui`, `src/views/UiCatalogue/`). A logged-in page in no nav that renders every component from static
+fixtures: no API call, no timer, no random id, fixed Polish copy. `?theme=dark|light` sets `data-theme` on `<html>`
+for the page only (never through the user store, which PATCHes the shared profile). One section file per P3/P4 plan
+(`sections/<Section>.vue`, anchors `#icons`, `#actions`, `#overlays`, `#display`, `#page-frame`, `#selects`,
+`#inputs`, `#shell`), inside it one `CatalogueSection` per component (anchor `#<component>`) and one `CatalogueCell`
+per variant × state: `data-testid="cat-<component>-<variant>-<state>"`, kebab-case. Static states come from props;
+hover and focus are listed on the cell (`interact="hover,focus"` → `data-cat-interact`) and driven by `@components`
+(`hover()`, `focus()` on the first focusable element), which screenshots them as `<id>--<state>`; never fake them
+with classes. A mobile-only component renders in a 393 px frame (`mobile`). Capture-spec row `ui-catalogue` puts
+the page under `@ux` and `@screens` too. `@catalogue` ignores the dev server's hot-reload socket error (zeno maps
+the CMS to 8180, the client dials 8080). Baselines: `__screenshots__/components/<id>[--<state>]__<d|m>__<theme>.png`.
 
 **Approving baselines** (operator only; agents never update baselines). The config has `updateSnapshots: "none"`, so a
 missing baseline fails instead of being written silently. On a fresh seed, review the HTML report (expected / actual /

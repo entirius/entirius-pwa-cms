@@ -6,6 +6,16 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- Component catalogue `/ui` (any logged-in operator, in no nav): every component from static fixtures, one section
+  per P3/P4 plan, `?theme=dark|light`; visual layers `@catalogue` (`npm run visual:catalogue`) and `@components`
+  (`npm run visual:components`, baselines via `visual:approve:components`).
+- Icon meaning registry `src/boots/Icons/icons.js` (`$icons` in templates): one glyph per meaning; lint warns on a
+  literal glyph name (R6) and `scripts/codemods/p3-icons.mjs` rewrites it. The legacy font glyphs in views, kits and
+  builder controllers, `BasicInput icon` and Pagination use the registry; the builder reorder buttons show the reorder
+  glyph instead of the menu grid.
+- P3 plan slots: per-plan blocks in `register-elems.js` and `docs/ui-components.md`, removed-component lists in
+  `scripts/lint/removed-components/`, the codemod library (`scripts/codemods/p3-lib.mjs`, sweep partitions) and the
+  FormField control contract `src/composables/formField.js`.
 - UI rules in `docs/ui-rules.md` and `npm run lint:ui` (stylelint + eslint, warnings = debt).
 - Visual fidelity harness in `tests/visual/` (`npm run visual`): token parity, Figma landmarks report and screen
   regression over the 106-screen capture spec; baselines are approved by the operator (`docs/testing.md`).
@@ -196,6 +206,11 @@ All notable changes to this project will be documented in this file.
   the Atlas feed/source key landed on the wrapper, which left them editable.
 - The contact form attachment download button is visible. It was icon-only with a glyph the icon font lacks, which
   rendered it blank. It now carries a "Download" / "Pobierz" label. The Polish "Załączniki" heading has its diacritics.
+
+### Removed
+
+- `/playground` and `Playground.vue` (replaced by `/ui`), the unused `Accordion` boot and `LazyScroll` (a Vue 2
+  directive that never fired): the builder category kit now loads every category page instead of only the first.
 
 ## [2.1.0] (2026-09-01)
 

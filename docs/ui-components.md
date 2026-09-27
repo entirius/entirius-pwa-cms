@@ -2,16 +2,18 @@
 
 ## Global Components (Boots)
 
-39 components registered globally in `src/boots/register-elems.js` (plus
+37 components registered globally in `src/boots/register-elems.js` (plus
 FontAwesome icon registration in `src/boots/Icons/fa-icons.js`, loaded
-separately in `main.js` — not a component).
+separately in `main.js` — not a component — and the icon meaning registry
+`src/boots/Icons/icons.js`, `$icons` in templates). Every component is shown on the catalogue page `/ui`
+(§ P3 components).
 
-Full list: Accordion, BackBar, BasicButton, BasicCheckbox, BasicDatePicker
+Full list: BackBar, BasicButton, BasicCheckbox, BasicDatePicker
 (Flatpickr), BasicImage, BasicInput, BasicLogo, BasicSwiper, BasicTabs,
 BasicWysiwyg (TipTap), BulkActionBar, ChannelMultiSelect, ColorInput,
 DataTable (CSS Grid, `<script setup>`), Dropdown, EmptyState,
 EntitySearchPicker, FilterChip, FloatingActions, FormField, HelpTooltip,
-HoverMe, LazyScroll, Loader, LockedField, MobileFilterPanel, NoticeMe,
+HoverMe, Loader, LockedField, MobileFilterPanel, NoticeMe,
 NumberInput, Pagination, SegmentedControl, SideDrawer, StanceSwitcher,
 StatusBadge, SubscriberSetter, Switcher, TextAreaBasic, ToolTip,
 TranslationsDrawer.
@@ -119,3 +121,29 @@ The semantic layer, per `[data-theme]`: `src/assets/tokens/semantic.json`, gener
 ## Reusable UI Patterns
 
 Page patterns, boot choice by job and UI rules live in `docs/ui-rules.md`.
+
+## P3 components
+
+One section per P3/P4 plan, in plan order. A plan writes only its own section (dev-plans § Streams); each section
+matches the plan's block in `register-elems.js` and its section of the catalogue (`src/views/UiCatalogue/sections/`).
+
+### P3 icons
+
+`src/boots/Icons/icons.js` exports `ICONS`, a frozen `{ meaning: glyph }` map; templates read it as `$icons`
+(`<FontAwesomeIcon :icon="$icons.edit" />`). Keys are camelCase (`saveDraft`, `importCsv`), one glyph per meaning
+and one meaning per glyph (unit test). A new meaning adds its glyph to `fa-icons.js` (import and `library.add()`).
+`BasicInput icon` and Pagination take their glyphs from it. Catalogue: `#icons`, every meaning at 16 / 20 / 24 px.
+
+### P3 actions (plan 11)
+
+### P3 overlays (plan 12)
+
+### P3 display (plan 13)
+
+### P3 page frame (plan 14)
+
+### P3 selects (plan 15)
+
+### P3 inputs (plan 16)
+
+### P4 shell (plan 21)

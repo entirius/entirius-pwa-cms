@@ -9,8 +9,8 @@ in `src/boots/`. This file names them and never restates a value. Lint enforces 
 | What | Where |
 |---|---|
 | Tokens (colour, spacing, type, radius, shadow, overlay) | `@entirius/brand-tokens` + `src/assets/tokens/semantic.json` (generated into `src/assets/scss/themes/_semantic.generated.scss`); the scale lists in `src/assets/scss/variables/`, emitted by `main.scss` |
-| Components | `src/boots/` + `src/boots/register-elems.js`; API in `docs/ui-components.md`; catalogue page (P3) |
-| Icons | FontAwesome, registered in `src/boots/Icons/fa-icons.js` (P3: the `icons.js` meaning registry) |
+| Components | `src/boots/` + `src/boots/register-elems.js`; API in `docs/ui-components.md`; catalogue page `/ui` (`src/views/UiCatalogue/`) |
+| Icons | the meaning registry `src/boots/Icons/icons.js` (`$icons` in templates); glyphs registered in `src/boots/Icons/fa-icons.js` |
 | Breakpoints | `src/assets/scss/utils/_media-query.scss` (mixins `max-tablet`, `min-tablet`, `max-desktop`, `min-desktop`) |
 | Lint | `stylelint.config.mjs` (T rules), `eslint.config.mjs` (C rules) |
 | Design reference | Figma snapshot, frozen (see § Designs) |
@@ -93,10 +93,12 @@ Traps:
 | confirmation · floating action | `Confirmation-modal` (`src/functionals/`) · `FloatingActions` |
 | help next to a label | `FormField :tooltip` |
 
-- **C5 One icon set: FontAwesome.** Register every icon in `fa-icons.js`, in both the `import` and the
-  `library.add()`. A missing registration fails silently. Do not use `<i class="icon-*">` font glyphs.
-  `BasicButton icon="…"` still renders the legacy font, so an icon the font lacks renders blank (`trash-can`, `xmark`,
-  `pencil`). Until P3 moves BasicButton to FontAwesome, put `<FontAwesomeIcon>` into its `custom` slot.
+- **C5 One icon set: FontAwesome, picked by meaning.** A template names the meaning, never the glyph:
+  `<FontAwesomeIcon :icon="$icons.edit" />` (`src/boots/Icons/icons.js`, keys camelCase). A new meaning adds its glyph
+  to `fa-icons.js`, in both the `import` and the `library.add()`: a missing registration renders nothing and logs
+  nothing (the registry unit test catches it). Do not use `<i class="icon-*">` font glyphs; `BasicInput icon` takes a
+  meaning (`icon="search"`). `BasicButton icon="…"` still renders the legacy font until plan 11, so an icon the font
+  lacks renders blank (`trash-can`, `xmark`, `pencil`): put `<FontAwesomeIcon>` into its `custom` slot.
   Icon policy: a text button carries no icon unless the design shows one. An icon-only action has an accessible
   name (`aria-label` or `title`), and it gets a visible text label when it is important or not obvious (R7). Until
   P3 ships `IconButton`, an icon-only `BasicButton` puts `<FontAwesomeIcon>` into its `custom` slot and names itself
@@ -130,8 +132,11 @@ Traps:
   primary action (accent fill, one per page or dialog) is rightmost, the secondary (outline) comes next, then the
   icon-only utilities. Every screen uses the same order.
 - **R6 One icon, one meaning.** An icon stands for one action across the CMS, and it is never reused for another
-  action (reorder ≠ menu). Use the icon other screens already use for that action (P3: pick it from `icons.js`).
-  Tile-group rows use distinct icons for add, reorder and preview.
+  action (reorder `arrows-up-down` ≠ menu `grip` ≠ drag handle `grip-vertical`). Pick the meaning from `$icons`
+  (`icons.js`: one glyph per meaning, one meaning per glyph); lint warns on a literal glyph name in `icon="…"` or
+  inside an `:icon` binding, and `scripts/codemods/p3-icons.mjs` rewrites it. A meaning that is missing is added to
+  `icons.js` (stream 1; a stream-2 plan hands it to plan 19). Tile-group rows use distinct icons for add, reorder and
+  preview.
 - **R7 Label important actions.** An action that is important, or not obvious from its icon, carries a visible
   text label. A tooltip alone is not enough. Icon-only is reserved for well-known utilities (close, row delete,
   more), and each one still gets an accessible label.
@@ -226,6 +231,8 @@ Traps:
 
 - Every visible string goes through `$t()`, with keys in both `src/i18n/locales/en.json` and `pl.json`. There is
   no `$tc`: format counts into the string.
+- A loading message starts with "Ładowanie" / "Loading" and ends in an ellipsis ("Ładowanie…"); a permanent label
+  never does. The visual harness waits on exactly that shape before it captures a screen (`docs/testing.md`).
 - Polish copy uses full diacritics (`ą ę ć ł ń ó ś ź ż`). Labels on actions are verbs ("Zapisz szkic").
 
 ## Designs
@@ -243,3 +250,4 @@ from this file and the catalogue page. The designer updates Figma afterwards, an
 4. The fidelity check is green for the screens you touched (P1).
 5. `npm run visual:ux` is green: no `high` finding outside `tests/visual/ux-allow.json`, and an entry you add names
    its owning plan.
+6. A boot you added or changed has its cells on `/ui` and `npm run visual:catalogue` is green.

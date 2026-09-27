@@ -49,7 +49,7 @@ Same rule applies to PR descriptions: no `Generated with [Claude Code]` footer.
 src/
 ├── api/          # one client per backend service, built by createClient.js
 │                 # (contentDB, pim, munin, suppliers, promo, voucher, orders, …)
-├── boots/        # 39 global UI components, registered in register-elems.js
+├── boots/        # 37 global UI components, registered in register-elems.js
 ├── composables/  # 12 shared Composition API helpers (useFormErrors, useLoginSession, …)
 ├── configs/      # access.js — panel registry (idx, icon, root); builder/ controllers
 ├── functionals/  # builder UI kit (Handy-kit), Login-wall, Confirmation-modal
