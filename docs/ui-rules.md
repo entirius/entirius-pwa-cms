@@ -100,10 +100,13 @@ Traps:
   with `label` (sets `aria-label` and `title`).
 - **C6 One button family.** `BasicButton` owns height, padding, type and border: `size="md"` (default,
   `--elem-height`, the toolbar and form size) or `size="sm"` (row actions); labels never wrap. The role is a class:
-  `btn-primary` (one per page, R5), `btn-secondary` (`btn-outline` is the same look), `btn-ghost` (back, close, row
-  edit), `btn-danger` (every delete, remove, reject), `btn-danger-fill` (the destructive confirm in a dialog). A
-  button without `text` is icon-only: a square of its size, `label` required. Never pass `bg-*` / `t-*` utilities to
-  pick a role, and never set a button height or font size from a view.
+  `btn-primary` (one per page, R5: row, bulk, section and inline-form actions are `btn-secondary` beside it; a dialog
+  or drawer has its own), `btn-secondary` (`btn-outline` is the same look), `btn-ghost` (close, row edit),
+  `btn-danger` (every delete, remove, reject), `btn-danger-fill` (the destructive confirm in a dialog — the default
+  footer of `Confirmation-modal`; a non-destructive confirm passes `:destructive="false"` and gets `btn-primary`). A
+  button without `text` is icon-only: a square of its size, `label` required — without it the button warns in the
+  dev console. One toolbar uses one size. Back is always `BackBar` (icon, or icon + label), never a `BasicButton`.
+  Never pass `bg-*` / `t-*` utilities to pick a role, and never set a button height or font size from a view.
 
 ## Layout (R1–R9)
 

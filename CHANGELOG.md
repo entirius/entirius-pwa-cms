@@ -93,6 +93,15 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- Buttons: one primary per page. Row, bulk, section and inline-form actions beside a page primary are secondary
+  (enrichment row accept, lead "Mark as won", promo bulk activate, agreement versions, FAQ associations, PIM groups,
+  options and files, point translations, tax rates, voucher filters, promo codes). Delete and remove confirmations
+  are filled danger (the shared confirmation modal and the supplier delete); non-destructive confirms (edit published
+  agreement, feed trigger, force re-push, atlas bulk approve/requeue) stay primary. An icon-only `BasicButton`
+  without `label` warns in dev. The rich-text table tools are one size (`sm`, text); every back control is
+  `BackBar`; sheet and notification close buttons, `BackBar` and the leads kit have a 40 px hit area on a phone;
+  the price detail flush/delete buttons carry one tooltip; the navigation reorder handle is a real button; the
+  atlas swipe bar shows Reject outlined with three equal buttons on a phone; builds rows say "Edit" / "Preview".
 - Tables: nothing overlaps, everything fits or truncates on purpose. `DataTable` cells pad 12 px, a column is never
   narrower than its header or an untruncated cell (badges, buttons), text cells truncate on one line with the full
   value in a tooltip, numbers are right-aligned with tabular figures, and an empty value shows "—". Columns carry a
