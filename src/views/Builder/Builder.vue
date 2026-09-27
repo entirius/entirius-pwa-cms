@@ -408,6 +408,18 @@
     </nav>
     <div class="grid grid-col-12">
       <div class="grid gap-10 gc-s-1 gc-e-13">
+        <EmptyState
+          v-if="!loading && !sections_order.length"
+          icon="plus"
+          :title="$t('builder.empty_title')"
+          :message="$t('builder.empty_message')"
+        >
+          <BasicButton
+            :text="$t('builder.new_section')"
+            class="btn-secondary"
+            @click="$refs.newSectionSetter?.$el?.click()"
+          />
+        </EmptyState>
         <div
           class="fs-300 grid b-subtle rounded ov-h"
           v-for="(s_uid, s_idx) in sections_order"

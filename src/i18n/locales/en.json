@@ -150,6 +150,8 @@
     "set_url": "Set URL",
     "edit_url": "Edit URL",
     "new_section": "New section",
+    "empty_title": "Add the first section",
+    "empty_message": "The document is empty. Sections build the page from top to bottom.",
     "manage_order": "Manage order",
     "blog_repr_tile": "Blog representation tile",
     "blog_repr_tip": "Tile shown on blog listing",

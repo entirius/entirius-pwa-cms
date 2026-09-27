@@ -150,6 +150,8 @@
     "set_url": "Ustaw URL",
     "edit_url": "Edytuj URL",
     "new_section": "Nowa sekcja",
+    "empty_title": "Dodaj pierwszą sekcję",
+    "empty_message": "Dokument jest pusty. Sekcje układają stronę od góry do dołu.",
     "manage_order": "Zarządzaj kolejnością",
     "blog_repr_tile": "Kafelek reprezentacji bloga",
     "blog_repr_tip": "Kafelek wyświetlany na liście blogów",
