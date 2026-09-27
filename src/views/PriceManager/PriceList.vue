@@ -97,7 +97,7 @@
             <div class="pm-price-table__head">
               <span>{{ $t('pm.sku') }}</span>
               <span>{{ $t('pm.tax_class') }}</span>
-              <span></span>
+              <span>{{ $t('pm.currency') }}</span>
               <span>{{ isNetEditable ? $t('pm.net') : $t('pm.gross') }}</span>
               <span>{{ isNetEditable ? $t('pm.gross') : $t('pm.net') }}</span>
               <span>{{ $t('pm.special_net') }}</span>
@@ -162,7 +162,7 @@
                 />
 
                 <!-- Actions: eye + flush special + delete -->
-                <div class="flex ai-ct gap-1">
+                <div class="flex ai-ct gap-2">
                   <button
                     v-if="row.has_price && hasMultipleCountries"
                     class="pm-expand-btn"
@@ -730,7 +730,7 @@ export default {
   border-radius: var(--radius-base);
   overflow-x: auto;
   // min-width ensures horizontal scroll instead of crushing columns
-  min-width: 900px;
+  min-width: 1040px;
 }
 
 // SKU | Tax | Cur | Net | Gross | Spec.Net | Spec.Gross | From | To | Eye | Status
@@ -738,20 +738,21 @@ export default {
 $cols:
   minmax(100px, 1.5fr) // SKU
   minmax(70px, 1fr)    // Tax Class
-  40px                 // Currency
+  64px                 // Currency
   minmax(80px, 1fr)    // Net (input)
-  minmax(60px, 1fr)    // Gross (readonly)
-  minmax(70px, 1fr)    // Special Net (input)
-  minmax(55px, 0.8fr)  // Special Gross (readonly)
+  minmax(90px, 1fr)    // Gross (readonly)
+  minmax(90px, 1fr)    // Special Net (input)
+  minmax(90px, 0.8fr)  // Special Gross (readonly)
   minmax(90px, 1fr)    // Promo Start
   minmax(90px, 1fr)    // Promo End
-  70px                 // Actions (eye + flush + delete)
+  112px                // Actions (eye + flush + delete)
   60px;                // Status
 
 .pm-price-table__head {
   display: grid;
   grid-template-columns: $cols;
-  gap: var(--space-1);
+  // The DataTable cell model: neighbouring columns keep 12 px between them.
+  gap: var(--space-3);
   padding: var(--space-2) var(--space-3);
   background: var(--surface-raised);
   font-size: var(--fs-200);
@@ -764,7 +765,7 @@ $cols:
 .pm-price-table__row {
   display: grid;
   grid-template-columns: $cols;
-  gap: var(--space-1);
+  gap: var(--space-3);
   padding: var(--space-1) var(--space-3);
   border-top: 1px solid var(--border-subtle);
   align-items: center;
@@ -908,10 +909,10 @@ $expand-cols: 80px 80px 110px 110px 1fr;
 
   .pm-price-table__head,
   .pm-price-table__row {
-    min-width: 900px;
+    min-width: 1040px;
   }
 
-  // The rows keep 900 px; the box itself fits the card, so only the table scrolls, not the card.
+  // The rows keep 1040 px; the box itself fits the card, so only the table scrolls, not the card.
   .pm-price-table {
     min-width: 0;
     overflow-x: auto;
