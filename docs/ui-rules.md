@@ -147,9 +147,11 @@ Traps:
   grows to the badge or buttons) or truncates with a `title`, never spills into its neighbour; numbers take
   `numeric`, row buttons `actions`, and every column but name, status and actions takes a `priority` so a phone
   shows those three. A raw table uses `.table-basic` in a `.table-scroll` box. No data means `EmptyState`
-  (`DataTable` renders it from `emptyText`, below the grid so a phone sees it); never a plain muted paragraph.
-- **Loading.** A screen whose data arrives after first paint shows `<Loader v-if="loading" />` in the content area
-  (the boot centres itself), and actions that need the data (Save, Delete) render only after the load. The empty
+  (`DataTable` renders it from `emptyText`, below the grid so a phone sees it); never a plain muted paragraph. A table
+  inside a detail screen keeps the one-line empty state (`DataTable` default); a list screen whose only content is
+  the table passes `empty-size="md"`.
+- **Loading.** A screen whose data arrives after first paint shows `<Loader block v-if="loading" />` in the content
+  area (`block` centres it; a loader in a modal, side panel or button stays inline, without `block`), and actions that need the data (Save, Delete) render only after the load. The empty
   state comes after the load, never during it. A record that answers 404 shows `EmptyState` with a way back, not a
   blank form.
 - **Values.** Show a stored value in the unit people read (a tax rate fraction `0.2300` is "23 %",

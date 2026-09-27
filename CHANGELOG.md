@@ -93,6 +93,14 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- Tax rates: an empty, non-numeric or out-of-range (0–100) rate never posts; the field says "Podaj stawkę 0–100".
+  `NumberInput` takes one leading minus (only when `min` < 0), one decimal separator ("," reads as ".", a second
+  one is dropped) and digits, and looks disabled (muted text, no focus ring, steppers off) with `isDisabled`.
+- Empty states: an empty table inside a detail screen is one line (icon and text); list screens keep the full
+  block. The tax class, price channel and price history lists use `EmptyState` instead of a muted dash.
+- Loaders in modals, side panels and buttons keep their place again; content-area loaders stay centred (`block`).
+- Enrichment spawn rules: a channel typed into the free-text fallback drops a language it cannot vouch for, like a
+  picked channel does.
 - Buttons: one primary per page. Row, bulk, section and inline-form actions beside a page primary are secondary
   (enrichment row accept, lead "Mark as won", promo bulk activate, agreement versions, FAQ associations, PIM groups,
   options and files, point translations, tax rates, voucher filters, promo codes). Delete and remove confirmations
