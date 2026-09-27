@@ -4,14 +4,9 @@
       class="page-card h-100 ovy-auto"
     >
       <div class="page-title-row flex ai-ct gap-5 mb-10">
-        <BasicButton
-          custom
-          :label="$t('common.back')"
-          class="btn-ghost"
-          @click="goBack"
-        >
-          <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
-        </BasicButton>
+        <BackBar
+          @back="goBack"
+        />
         <h1>
           {{ $t("emails.lang_config") }}:
           {{ config.language || $t("emails.default_lang") }}

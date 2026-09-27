@@ -4,11 +4,9 @@
       class="page-card h-100 ovy-auto"
     >
       <Teleport v-if="toolbarReady" to="#forms-toolbar-left">
-        <BasicButton
-          icon="arrow-left"
-          :text="$t('cf.back_to_list')"
-          class="btn-secondary"
-          @click="$router.push('/forms/bookings')"
+        <BackBar
+          :label="$t('cf.back_to_list')"
+          @back="$router.push('/forms/bookings')"
         />
       </Teleport>
 

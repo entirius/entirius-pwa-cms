@@ -1,14 +1,9 @@
 <template>
   <div class="gap-def-edit fs-300 t-body h-100 ov-h flex-column">
     <Teleport to="#pim-toolbar-left" defer>
-      <BasicButton
-        custom
-        :label="$t('common.back')"
-        class="btn-ghost"
-        @click="$router.push('/pim/gap-definitions')"
-      >
-        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
-      </BasicButton>
+      <BackBar
+        @back="$router.push('/pim/gap-definitions')"
+      />
     </Teleport>
     <Teleport to="#pim-toolbar-right" defer>
       <BasicButton

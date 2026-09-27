@@ -1,14 +1,9 @@
 <template>
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#pricing-toolbar-left" defer>
-      <BasicButton
-        custom
-        :label="$t('common.back')"
-        class="btn-ghost"
-        @click="$router.push('/pricing/tax-classes')"
-      >
-        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
-      </BasicButton>
+      <BackBar
+        @back="$router.push('/pricing/tax-classes')"
+      />
       <span class="fw-600 fs-400">
         {{ isEdit ? (taxClass.name || taxClass.idx) : $t('pm.create_tax_class') }}
       </span>

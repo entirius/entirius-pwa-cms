@@ -1,14 +1,9 @@
 <template>
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#pricing-toolbar-left" defer>
-      <BasicButton
-        custom
-        :label="$t('common.back')"
-        class="btn-ghost"
-        @click="$router.push('/pricing/channels')"
-      >
-        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
-      </BasicButton>
+      <BackBar
+        @back="$router.push('/pricing/channels')"
+      />
       <span class="fw-600 fs-400">
         {{ isEdit ? (channel.name || channel.idx) : $t('pm.create_channel') }}
       </span>

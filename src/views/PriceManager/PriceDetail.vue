@@ -1,14 +1,9 @@
 <template>
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport v-if="!embedded" to="#pricing-toolbar-left" defer>
-      <BasicButton
-        custom
-        :label="$t('common.back')"
-        class="btn-ghost"
-        @click="$router.push('/pricing/prices')"
-      >
-        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
-      </BasicButton>
+      <BackBar
+        @back="$router.push('/pricing/prices')"
+      />
       <span class="fw-600 fs-400">{{ effectiveSku || $t('pm.price_detail') }}</span>
     </Teleport>
 
@@ -142,26 +137,22 @@
               class="btn-outline"
               @click="toggleHistory"
             />
-            <span :title="$t('pm.flush_special_tooltip')">
-              <BasicButton
-                custom
-                :label="$t('pm.flush_special')"
-                class="btn-danger"
-                @click="showFlushConfirm = true"
-              >
-                <template #custom><FontAwesomeIcon icon="broom" /></template>
-              </BasicButton>
-            </span>
-            <span :title="$t('pm.delete_prices_tooltip')">
-              <BasicButton
-                custom
-                :label="$t('common.delete')"
-                class="btn-danger"
-                @click="showDeleteConfirm = true"
-              >
-                <template #custom><FontAwesomeIcon icon="trash-can" /></template>
-              </BasicButton>
-            </span>
+            <BasicButton
+              custom
+              :label="$t('pm.flush_special_tooltip')"
+              class="btn-danger"
+              @click="showFlushConfirm = true"
+            >
+              <template #custom><FontAwesomeIcon icon="broom" /></template>
+            </BasicButton>
+            <BasicButton
+              custom
+              :label="$t('pm.delete_prices_tooltip')"
+              class="btn-danger"
+              @click="showDeleteConfirm = true"
+            >
+              <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+            </BasicButton>
           </div>
 
           <!-- Confirmation modals -->

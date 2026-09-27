@@ -1,14 +1,9 @@
 <template>
   <div class="p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#agreements-toolbar-left" defer>
-      <BasicButton
-        custom
-        :label="$t('common.back')"
-        class="btn-ghost"
-        @click="$router.push('/agreements/list')"
-      >
-        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
-      </BasicButton>
+      <BackBar
+        @back="$router.push('/agreements/list')"
+      />
     </Teleport>
     <Teleport to="#agreements-toolbar-right" defer>
       <BasicButton

@@ -1,14 +1,9 @@
 <template>
   <div class="p-12 fs-300 t-body h-100 ov-h relative">
     <Teleport to="#authors-toolbar-left" defer>
-      <BasicButton
-        custom
-        :label="$t('common.back')"
-        class="btn-ghost"
-        @click="$router.push('/pages/authors')"
-      >
-        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
-      </BasicButton>
+      <BackBar
+        @back="$router.push('/pages/authors')"
+      />
       <h1 v-if="!loading">{{ form.name || $t("authors.create") }}</h1>
     </Teleport>
     <Teleport to="#authors-toolbar-right" defer>

@@ -1,14 +1,9 @@
 <template>
   <div class="acc-detail__wrapper p-12 fs-300 t-body h-100 ov-h">
     <Teleport to="#accounts-toolbar-left" defer>
-      <BasicButton
-        custom
-        :label="$t('common.back')"
-        class="btn-ghost"
-        @click="goBack"
-      >
-        <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
-      </BasicButton>
+      <BackBar
+        @back="goBack"
+      />
       <span class="fw-600">{{ toolbarTitle }}</span>
     </Teleport>
 

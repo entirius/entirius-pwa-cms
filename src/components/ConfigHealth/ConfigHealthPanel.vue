@@ -233,6 +233,14 @@ onBeforeUnmount(() => document.removeEventListener("keydown", onKey));
   font-size: var(--fs-200);
   color: var(--text-muted);
 }
+/* Phone: the close button gets a 40 px hit area; the negative margin keeps the header height. */
+@media (max-width: 1023px) {
+  .cfg-panel__head .button-basic--icon {
+    --btn-height: var(--space-10);
+
+    margin: calc((var(--elem-height) - var(--space-10)) / 2);
+  }
+}
 @media (min-width: 1024px) {
   .cfg-sheet__backdrop {
     background: transparent;
