@@ -15,6 +15,7 @@
           role="dialog"
           :aria-modal="inline ? undefined : 'true'"
           :aria-labelledby="title || $slots.title ? titleId : undefined"
+          :aria-label="title || $slots.title ? undefined : ariaLabel || undefined"
           tabindex="-1"
         >
           <header class="basic-modal__header flex ai-ct jc-sb gap-3">
@@ -45,7 +46,8 @@ let nextId = 0;
 
 <script setup>
 // The one centred dialog (docs/ui-rules.md § Dialogs): `v-model:open`, `title` (the dialog's <h2> and its name; the
-// `title` slot takes richer markup),
+// `title` slot takes richer markup), `ariaLabel` (the name of a dialog without a title: the root is a Teleport, so a
+// fallthrough `aria-label` never reaches the dialog),
 // `size` sm · md · lg, `persistent` (Esc and the backdrop do not close it; the close button does), default slot =
 // body, `footer` slot or `actions` (→ ActionBar, R5). Focus is trapped while open and goes back to the opener on
 // close. Below the tablet breakpoint it is a full-width sheet at the bottom. `inline` renders the open state in the
@@ -58,6 +60,7 @@ import { useFocusTrap } from "@/composables/useFocusTrap";
 const props = defineProps({
   open: { type: Boolean, default: false },
   title: { type: String, default: "" },
+  ariaLabel: { type: String, default: "" },
   size: { type: String, default: "md", validator: (value) => ["sm", "md", "lg"].includes(value) },
   persistent: { type: Boolean, default: false },
   actions: { type: Array, default: () => [] },

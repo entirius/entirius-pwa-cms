@@ -1,5 +1,11 @@
 <template>
-  <BasicModal :open="visible" size="sm" :actions="actions" @update:open="onClose">
+  <BasicModal
+    :open="visible"
+    size="sm"
+    :actions="actions"
+    :aria-label="$t('builder.enter_new_doc_name')"
+    @update:open="onClose"
+  >
     <template v-if="$slots.header" #title><slot name="header" /></template>
     <slot name="description" />
   </BasicModal>

@@ -1,3 +1,5 @@
+import fs from "fs";
+import path from "path";
 import { describe, it, expect } from "vitest";
 import { findIconDefinition } from "@fortawesome/fontawesome-svg-core";
 import registerFontAwesome from "@/boots/Icons/fa-icons";
@@ -27,5 +29,23 @@ describe("icon meaning registry", () => {
   it("is frozen and reaches templates as $icons", () => {
     expect(Object.isFrozen(ICONS)).toBe(true);
     expect(app.config.globalProperties.$icons).toBe(ICONS);
+  });
+});
+
+describe("icon props of the boot components", () => {
+  // A raw FontAwesome name passed as `icon="…"` resolves to nothing: these components look meanings up only.
+  const iconProp = /<(EmptyState|IconButton|BasicButton|FloatingActions)\b[^>]*?\sicon="([^"]+)"/gs;
+  const vueFiles = fs
+    .readdirSync("src", { recursive: true })
+    .filter((file) => file.endsWith(".vue"))
+    .map((file) => path.join("src", file));
+
+  it("pass a meaning of icons.js, never a glyph name", () => {
+    const glyphs = vueFiles.flatMap((file) =>
+      [...fs.readFileSync(file, "utf8").matchAll(iconProp)]
+        .filter(([, , icon]) => !Object.hasOwn(ICONS, icon))
+        .map(([, tag, icon]) => `${file}: <${tag} icon="${icon}">`)
+    );
+    expect(glyphs).toEqual([]);
   });
 });

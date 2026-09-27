@@ -53,7 +53,7 @@
               ? $t('lookup.find.empty_image')
               : $t('lookup.find.empty_message')
           "
-          icon="magnifying-glass"
+          icon="search"
         >
           <BasicButton variant="ghost"
             data-testid="atlas-find-create-product"

@@ -84,6 +84,18 @@ describe("BasicModal", () => {
     expect(document.getElementById(dialog().getAttribute("aria-labelledby")).textContent.trim()).toBe("Uwaga");
   });
 
+  it("without a title the `ariaLabel` prop names the dialog, never both names", async () => {
+    mountModal({ title: "", ariaLabel: "Kopiuj stronę" });
+    await settle();
+    expect(dialog().getAttribute("aria-label")).toBe("Kopiuj stronę");
+    expect(dialog().hasAttribute("aria-labelledby")).toBe(false);
+    wrappers.splice(0).forEach((wrapper) => wrapper.unmount());
+    mountModal({ ariaLabel: "Kopiuj stronę" });
+    await settle();
+    expect(dialog().hasAttribute("aria-label")).toBe(false);
+    expect(dialog().hasAttribute("aria-labelledby")).toBe(true);
+  });
+
   it("inline: renders in place, no aria-modal, no trap, no backdrop close", async () => {
     const outside = document.createElement("button");
     document.body.appendChild(outside);

@@ -72,4 +72,15 @@ describe("ConfirmDialog", () => {
     byTestId("basic-modal-close").click();
     expect(wrapper.emitted("cancel")).toBeUndefined();
   });
+
+  it("without a title the dialog is named by `ariaLabel`, else by the message", async () => {
+    mountDialog({ title: "" });
+    await nextTick();
+    const dialog = () => document.querySelector('[role="dialog"]');
+    expect(dialog().getAttribute("aria-label")).toBe("Tego nie da się cofnąć.");
+    wrappers.splice(0).forEach((w) => w.unmount());
+    mountDialog({ title: "", ariaLabel: "Usuwanie strony" });
+    await nextTick();
+    expect(dialog().getAttribute("aria-label")).toBe("Usuwanie strony");
+  });
 });
