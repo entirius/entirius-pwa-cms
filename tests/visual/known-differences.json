@@ -183,6 +183,14 @@
       "code": "basic-800 #9A9CAA, as the docs sidebar",
       "scope": "sidebar L2",
       "treatment": "token"
+    },
+    {
+      "id": "KD23",
+      "decision": "plan 11 (polish button model)",
+      "figma": "content icon buttons 32 px next to 31 px text buttons in one action bar",
+      "code": "IconButton md = --elem-height, the text button height, so an ActionBar lines up",
+      "scope": "IconButton md, ActionBar",
+      "treatment": "geometry-tolerance"
     }
   ]
 }

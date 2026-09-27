@@ -150,9 +150,11 @@ async function settle(page) {
 }
 
 // Runs in the browser (serialised by waitForFunction): true once no loader or loading text is visible. The text is
-// read per element from its own text nodes, so "Ładowanie…" next to a spinner child counts too.
+// read per element from its own text nodes, so "Ładowanie…" next to a spinner child counts too. A loading state
+// inside a catalogue cell (`cat-*`) is a fixture, never pending data.
 function noLoaderVisible({ css, text }) {
-  const shown = (el) => el.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true });
+  const shown = (el) =>
+    !el.closest('[data-testid^="cat-"]') && el.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true });
   if ([...document.querySelectorAll(css)].some(shown)) return false;
   const pattern = new RegExp(text);
   const ownText = (el) =>
