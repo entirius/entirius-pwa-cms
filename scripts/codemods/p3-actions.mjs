@@ -46,8 +46,9 @@ const COMPANIONS = new Set([
   ...["t-on-accent-fill", "t-on-status-fill", "b-accent", "b-negative", "t-negative"],
   ...["t-secondary", "t-muted", "t-body"],
 ]);
-const COLOUR_CLASS = /^(btn-[a-z-]+|(t|bg|b)-(?!inherit$)[a-z][a-z-]*)$/;
-const COLOUR_IN_EXPRESSION = /(^|[\s'"`{])(btn|bg|t|b)-[a-z]/;
+// Legacy colour classes that survived P2 (`txt-gray-700`, `txt-basic-600`, `bg-gray-200`) are colours too.
+const COLOUR_CLASS = /^(btn-[a-z-]+|(txt|t|bg|b)-(?!inherit$)[a-z][a-z0-9-]*)$/;
+const COLOUR_IN_EXPRESSION = /(^|[\s'"`{])(btn|bg|txt|t|b)-[a-z]/;
 const ICON_BUTTON_VARIANT = { ghost: null, secondary: "outline", primary: "primary", danger: "danger" };
 const ICON_ELEMENT = /^(FontAwesomeIcon|font-awesome-icon)$/;
 const LABEL_ATTRIBUTES = ["label", "arialabel", "title"];
