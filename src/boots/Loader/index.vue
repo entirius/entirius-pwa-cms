@@ -1,5 +1,10 @@
 <template>
-  <div class="loader-element relative" :style="`height: ${h}px; width: ${w}px`">
+  <div
+    class="loader-element relative"
+    role="status"
+    :aria-label="$t('common.loading')"
+    :style="`height: ${h}px; width: ${w}px`"
+  >
     <div class="loader-element__circle absolute" />
     <div class="loader-element__circle loader-element__inner-circle absolute" />
   </div>
@@ -21,15 +26,15 @@ export default {
 </script>
 
 <style lang="scss">
+// Centred in the content area it replaces, on a static track, so a loading screen never reads as blank.
 .loader-element {
-  display: inline-block;
-
-  // top: 50%;
-  // left: 50%;
-  // transform: translate(-50%, -50%);
+  display: block;
+  margin: var(--space-8) auto;
+  border: 2px solid var(--border-subtle);
+  border-radius: var(--radius-full);
 
   &__circle {
-    border: 1px solid var(--accent);
+    border: 2px solid var(--accent);
     height: 100%;
     width: 100%;
     opacity: 1;
@@ -39,7 +44,7 @@ export default {
   }
 
   &__inner-circle {
-    border: 2px solid var(--accent);
+    border: 3px solid var(--accent);
     animation-delay: -0.5s;
   }
 

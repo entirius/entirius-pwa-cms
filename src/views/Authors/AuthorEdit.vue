@@ -18,20 +18,22 @@
       <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
         {{ $t("unsaved.changes") }}
       </span>
-      <BasicButton
-        v-if="isEdit"
-        custom
-        :label="$t('common.delete')"
-        class="btn-danger"
-        @click="showDeleteConfirm = true"
-      >
-        <template #custom><FontAwesomeIcon icon="trash-can" /></template>
-      </BasicButton>
-      <BasicButton
-        :text="$t('common.save')"
-        class="btn-primary"
-        @click="save"
-      />
+      <template v-if="!loading">
+        <BasicButton
+          v-if="isEdit"
+          custom
+          :label="$t('common.delete')"
+          class="btn-danger"
+          @click="showDeleteConfirm = true"
+        >
+          <template #custom><FontAwesomeIcon icon="trash-can" /></template>
+        </BasicButton>
+        <BasicButton
+          :text="$t('common.save')"
+          class="btn-primary"
+          @click="save"
+        />
+      </template>
     </Teleport>
 
     <div class="bg-base b-subtle rounded h-100 ovy-auto p-12 relative">

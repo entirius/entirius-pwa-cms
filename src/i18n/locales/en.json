@@ -473,6 +473,7 @@
   },
   "common": {
     "save": "Save",
+    "loading": "Loading…",
     "delete": "Delete",
     "cancel": "Cancel",
     "edit": "Edit",
@@ -678,6 +679,9 @@
     "create_category": "Create category",
     "product_detail": "Product detail",
     "category_detail": "Category detail",
+    "category_not_found": "Category not found",
+    "category_not_found_hint": "The category does not exist in this channel or was deleted.",
+    "back_to_categories": "Back to categories",
     "basic_info": "Basic information",
     "physical_properties": "Physical properties",
     "translations": "Translations",
