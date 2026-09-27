@@ -1,5 +1,7 @@
 <template>
   <div class="tj-dashboard">
+    <PageHeader class="mb-8" :title="$t('translation.jobs')" />
+
     <!-- Stats Cards -->
     <div class="tj-stats">
       <div

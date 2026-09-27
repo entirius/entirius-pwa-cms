@@ -3,7 +3,6 @@
     <div class="panel-toolbar bg-raised fs-300">
       <div class="panel-toolbar__title flex ai-ct gap-5">
         <div id="translation-toolbar-left" class="flex ai-ct gap-5"></div>
-        <span class="fw-600 t-body">{{ $t("translation.jobs") }}</span>
       </div>
       <div id="translation-toolbar-right" class="panel-toolbar__actions flex ai-ct gap-5"></div>
     </div>
