@@ -88,14 +88,11 @@
                   }"
                   @on_AssetPass="reorderColumns(index, $event)"
                 >
-                  <BasicButton
-                    custom
+                  <IconButton
+                    icon="reorder"
                     :stop="false"
                     :label="$t('layout_extender.reorder_columns')"
-                    class="btn-ghost"
-                  >
-                    <template #custom><FontAwesomeIcon icon="grip" /></template>
-                  </BasicButton>
+                  />
                 </SubscriberSetter>
                 <IconButton
                   v-if="element.display_as === 'megamenu'"
