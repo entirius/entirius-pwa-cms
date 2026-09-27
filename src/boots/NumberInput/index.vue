@@ -180,8 +180,11 @@ function onFocusout() {
   user-select: none;
 }
 
+// width: 100% drops the input's ~170 px intrinsic minimum, so the stepper fits a narrow cell or phone row; the value
+// keeps room for a few digits.
 .number-input__value {
   flex: 1;
+  width: 100%;
   border: none;
   outline: none;
   text-align: center;
@@ -190,7 +193,7 @@ function onFocusout() {
   color: inherit;
   background: transparent;
   height: 100%;
-  min-width: 0;
+  min-width: 4em;
   padding: 0 var(--space-1);
 }
 
