@@ -6,7 +6,7 @@
           v-for="bucket in buckets"
           :key="bucket.key"
           :label="`${$t(`pricefighter.${bucket.key}`)}: ${safeReport[bucket.key].length}`"
-          :variant="bucket.variant"
+          :tone="bucket.variant"
         />
       </div>
 

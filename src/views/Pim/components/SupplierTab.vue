@@ -5,7 +5,7 @@
     <template v-else-if="!data">
       <EmptyState
         :title="$t('pim.supplier.no_supplier')"
-        icon="circle-info"
+        icon="info"
       />
     </template>
 
@@ -17,12 +17,12 @@
             <StatusBadge
               v-if="unseenCount > 0"
               :label="$t('pim.supplier.status_unseen', { count: unseenCount })"
-              variant="warning"
+              tone="warning"
             />
             <StatusBadge
               v-else
               :label="$t('pim.supplier.status_no_unseen')"
-              variant="positive"
+              tone="positive"
             />
             <span v-if="lastSync" class="t-muted fs-200">
               {{ $t("pim.supplier.status_last_sync", { date: lastSync }) }}

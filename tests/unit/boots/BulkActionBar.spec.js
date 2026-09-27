@@ -14,11 +14,12 @@ const dropdownAction = {
 };
 
 const stubs = {
-  Dropdown: {
-    name: "Dropdown",
-    props: ["values", "placeholder"],
-    emits: ["onSelect"],
-    template: "<div class='stub-dropdown' @click=\"$emit('onSelect', values[0].value)\">{{ placeholder }}</div>",
+  BasicSelect: {
+    name: "BasicSelect",
+    props: ["options", "placeholder", "modelValue"],
+    emits: ["update:modelValue"],
+    template:
+      "<div class='stub-dropdown' @click=\"$emit('update:modelValue', options[0].value)\">{{ placeholder }}</div>",
   },
   BasicButton: {
     name: "BasicButton",
@@ -71,8 +72,8 @@ describe("BulkActionBar boot", () => {
     expect(wrapper.emitted("clear")).toBeTruthy();
   });
 
-  it("passes each action's variant to its button; buttonClass still paints until plan 19", () => {
-    const legacy = { key: "old", labelKey: "pim.old", buttonClass: "btn-secondary" };
+  it("passes each action's variant to its button; secondary without one", () => {
+    const legacy = { key: "old", labelKey: "pim.old" };
     const wrapper = mount(BulkActionBar, {
       props: { count: 3, actions: [buttonAction, legacy] },
       global: { stubs },
@@ -80,7 +81,7 @@ describe("BulkActionBar boot", () => {
     const [enable, old] = wrapper.findAll(".stub-button");
     expect(enable.attributes("data-variant")).toBe("primary");
     expect(enable.text()).toBe("pim.enable_all");
-    expect(old.classes()).toContain("btn-secondary");
+    expect(old.attributes("data-variant")).toBe("secondary");
   });
 
   it("renders multiple actions in order (buttons + dropdown)", () => {

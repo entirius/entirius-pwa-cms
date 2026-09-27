@@ -13,7 +13,7 @@
     </div>
     <div class="candidate-row__main">
       <div class="candidate-row__title-line">
-        <StatusBadge :label="kindLabel" variant="informative" />
+        <StatusBadge :label="kindLabel" tone="info" />
         <span class="candidate-row__name">{{ hit.basic?.name }}</span>
         <span class="candidate-row__sku fs-200 t-muted">{{
           hit.basic?.sku
@@ -29,13 +29,13 @@
         <StatusBadge
           v-if="isExact"
           :label="$t('lookup.match.exact_badge')"
-          variant="positive"
+          tone="positive"
           data-testid="candidate-row-exact"
         />
         <StatusBadge
           v-if="hit.decision"
           :label="decisionLabel"
-          :variant="decisionVariant"
+          :tone="decisionVariant"
           data-testid="candidate-row-decision"
         />
       </div>

@@ -16,7 +16,7 @@
         v-if="!loading && groups.length === 0"
         :title="$t('atlas.duplicates.empty_title')"
         :message="$t('atlas.duplicates.empty_message')"
-        icon="copy"
+        icon="duplicate"
       />
 
       <div
@@ -33,7 +33,7 @@
           </div>
           <StatusBadge
             :label="suggestionLabel(group.suggestion)"
-            :variant="suggestionVariant(group.suggestion)"
+            :tone="suggestionVariant(group.suggestion)"
             :data-testid="`duplicates-suggestion-${group.ean}`"
           />
         </div>
@@ -67,7 +67,7 @@
                       v-for="s in rp.sources"
                       :key="s.idx"
                       :label="s.is_primary ? `★ ${s.name || s.idx}` : (s.name || s.idx)"
-                      :variant="s.is_primary ? 'positive' : 'neutral'"
+                      :tone="s.is_primary ? 'positive' : 'neutral'"
                     />
                   </div>
                 </td>

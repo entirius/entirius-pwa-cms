@@ -10,9 +10,7 @@
 
 <script>
 // One state pill (docs/ui-components.md § P3 display): hollow, a tone-coloured border and text, a leading dot.
-// `variant` is the pre-P3 name of `tone` (`informative` = `info`), kept until plan 19.
 const TONES = ["positive", "negative", "warning", "info", "neutral", "accent"];
-const VARIANT_TONE = { informative: "info" };
 </script>
 
 <script setup>
@@ -20,17 +18,12 @@ import { computed } from "vue";
 
 const props = defineProps({
   label: { type: [String, Number], required: true },
-  tone: { type: String, default: null, validator: (value) => TONES.includes(value) },
-  variant: {
-    type: String,
-    default: null,
-    validator: (value) => TONES.includes(value) || Object.hasOwn(VARIANT_TONE, value),
-  },
+  tone: { type: String, default: "neutral", validator: (value) => TONES.includes(value) },
   dot: { type: Boolean, default: true },
   size: { type: String, default: "md", validator: (value) => ["sm", "md"].includes(value) },
 });
 
-const resolvedTone = computed(() => props.tone ?? VARIANT_TONE[props.variant] ?? props.variant ?? "neutral");
+const resolvedTone = computed(() => props.tone ?? "neutral");
 </script>
 
 <style lang="scss">

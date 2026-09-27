@@ -86,7 +86,7 @@
           <StatusBadge
             v-if="value"
             :label="leadStatusLabel($t, value.status)"
-            :variant="leadStatusVariant(value.status)"
+            :tone="leadStatusVariant(value.status)"
           />
           <span v-else class="t-muted">{{ $t("cf.no_linked_lead") }}</span>
         </template>
@@ -108,8 +108,9 @@
 
       <Pagination
         v-if="totalCount > pageSize"
-        :pagination="paginationState"
-        @onChangePage="onPageChange"
+        :page="paginationState.page"
+        :pages="paginationState.pages"
+        @update:page="onPageChange"
       />
     </div>
   </div>

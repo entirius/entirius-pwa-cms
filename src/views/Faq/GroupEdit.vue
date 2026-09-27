@@ -122,7 +122,7 @@
                 </span>
                 <StatusBadge
                   :label="element.is_active ? $t('faq.active') : $t('faq.inactive')"
-                  :variant="element.is_active ? 'positive' : 'negative'"
+                  :tone="element.is_active ? 'positive' : 'negative'"
                 />
                 <IconButton
                   icon="close"

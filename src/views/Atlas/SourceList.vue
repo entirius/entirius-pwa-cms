@@ -72,18 +72,18 @@
         @row-click="onRowClick"
       >
         <template #cell-kind="{ value }">
-          <StatusBadge :label="$t(`atlas.kind.${value}`)" :variant="kindVariant(value)" />
+          <StatusBadge :label="$t(`atlas.kind.${value}`)" :tone="kindVariant(value)" />
         </template>
         <template #cell-source_type="{ value }">
           <StatusBadge
             :label="$t(`atlas.type.${value || 'feed'}`)"
-            variant="neutral"
+            tone="neutral"
           />
         </template>
         <template #cell-is_active="{ value }">
           <StatusBadge
             :label="value ? $t('common.active') : $t('common.inactive')"
-            :variant="value ? 'positive' : 'negative'"
+            :tone="value ? 'positive' : 'negative'"
           />
         </template>
         <template #cell-default_currency_id="{ value }">
@@ -112,8 +112,9 @@
 
       <Pagination
         v-if="totalCount > pageSize"
-        :pagination="paginationState"
-        @onChangePage="onPageChange"
+        :page="paginationState.page"
+        :pages="paginationState.pages"
+        @update:page="onPageChange"
       />
     </div>
 

@@ -50,11 +50,11 @@
       <div class="flex flex-wrap ai-ct gap-5 rg-3 mb-10">
         <StatusBadge
           :label="customer.is_active ? $t('accounts.active') : $t('accounts.inactive')"
-          :variant="customer.is_active ? 'positive' : 'negative'"
+          :tone="customer.is_active ? 'positive' : 'negative'"
         />
         <StatusBadge
           :label="customer.is_verified ? $t('accounts.verified') : $t('accounts.not_verified')"
-          :variant="customer.is_verified ? 'informative' : 'neutral'"
+          :tone="customer.is_verified ? 'informative' : 'neutral'"
         />
         <template v-if="customer.blacklist_channels.length">
           <span

@@ -50,8 +50,9 @@
                   class="fs-200"
                   v-if="DOCS_pagination && DOCS_pagination[lang]"
                   :nav_size="32"
-                  :pagination="DOCS_pagination[lang]"
-                  @onChangePage="SET_Page({ language: lang, page: $event })"
+                  :page="DOCS_pagination[lang].page"
+                  :pages="DOCS_pagination[lang].pages"
+                  @update:page="SET_Page({ language: lang, page: $event })"
                 />
               </div>
               <BasicInput
@@ -199,33 +200,6 @@
             </div>
             <p class="fs-200 t-muted mt-1 lc-1">{{ uid }}</p>
           </div>
-          <!-- <div class="mb-8 grid grid-col-3 gap-5">
-          <Dropdown
-            class="bg-base rounded b-default fs-200"
-            :class="{ 'bg-raised t-muted': !sets.length }"
-            :placeholder="'Content sets list'"
-            v-if="sets"
-            :icon="edit ? 'close-mini' : 'arrow-right-2'"
-            :selected="[null]"
-            :values="
-              sets.map(({ uid, members = [] }) => {
-                const _label = members
-                  .map(({ name, language }) => {
-                    return `${name} (${language})`;
-                  })
-                  .join(' + ');
-                return {
-                  label: _label,
-                  value: uid,
-                  label_ext: 'delete',
-                  label_ext_class: 't-negative',
-                };
-              })
-            "
-            :isDisabled="Boolean(edit || !sets.length)"
-            @onExtension="DELETE_Set({ url: `/content-sets/${$event}` })"
-          />
-        </div> -->
         </div>
       </template>
     </div>

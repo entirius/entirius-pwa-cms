@@ -33,7 +33,7 @@
         <div class="gap-detail__block gap-detail__block--wide">
           <h4 class="gap-detail__heading">
             {{ $t('pricefighter.observations') }}
-            <StatusBadge :label="`${validCount}/${observations.length} ${$t('pricefighter.valid')}`" variant="informative" />
+            <StatusBadge :label="`${validCount}/${observations.length} ${$t('pricefighter.valid')}`" tone="info" />
           </h4>
           <p v-if="loadError" class="t-negative fs-200">{{ loadError }}</p>
           <p v-else-if="!observations.length" class="t-muted fs-200">{{ $t('pricefighter.no_observations') }}</p>
@@ -60,7 +60,7 @@
                 <td>
                   <StatusBadge
                     :label="$t(`pricefighter.flag_${obs.flag}`)"
-                    :variant="obs.flag === 'valid' ? 'positive' : 'neutral'"
+                    :tone="obs.flag === 'valid' ? 'positive' : 'neutral'"
                   />
                 </td>
               </tr>

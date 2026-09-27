@@ -347,8 +347,9 @@
           <!-- Codes pagination -->
           <div v-if="codesCount > codesPageSize" class="flex jc-ct mt-8">
             <Pagination
-              :pagination="codesPaginationState"
-              @onChangePage="onCodesPageChange"
+              :page="codesPaginationState.page"
+              :pages="codesPaginationState.pages"
+              @update:page="onCodesPageChange"
             />
           </div>
 
@@ -424,7 +425,7 @@
               <template #cell-mode="{ row }">
                 <StatusBadge
                   :label="row.is_inclusion_or_exclusion === 'exclusion' ? $t('promo.exclusion') : $t('promo.inclusion')"
-                  :variant="row.is_inclusion_or_exclusion === 'exclusion' ? 'negative' : 'positive'"
+                  :tone="row.is_inclusion_or_exclusion === 'exclusion' ? 'negative' : 'positive'"
                 />
               </template>
               <template #cell-summary="{ row }">
@@ -471,7 +472,7 @@
               <template #cell-mode="{ row }">
                 <StatusBadge
                   :label="row.is_inclusion_or_exclusion === 'exclusion' ? $t('promo.exclusion') : $t('promo.inclusion')"
-                  :variant="row.is_inclusion_or_exclusion === 'exclusion' ? 'negative' : 'positive'"
+                  :tone="row.is_inclusion_or_exclusion === 'exclusion' ? 'negative' : 'positive'"
                 />
               </template>
               <template #cell-summary="{ row }">
@@ -518,7 +519,7 @@
               <template #cell-mode="{ row }">
                 <StatusBadge
                   :label="row.is_inclusion_or_exclusion === 'exclusion' ? $t('promo.exclusion') : $t('promo.inclusion')"
-                  :variant="row.is_inclusion_or_exclusion === 'exclusion' ? 'negative' : 'positive'"
+                  :tone="row.is_inclusion_or_exclusion === 'exclusion' ? 'negative' : 'positive'"
                 />
               </template>
               <template #cell-summary="{ row }">

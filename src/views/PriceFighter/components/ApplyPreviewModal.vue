@@ -18,8 +18,8 @@
             <td>{{ item.current_price }}</td>
             <td class="fw-600">{{ item.suggested_price }}</td>
             <td>
-              <StatusBadge v-if="item.clamped_floor" :label="$t('pricefighter.clamped_floor')" variant="warning" />
-              <StatusBadge v-if="item.clamped_step" :label="$t('pricefighter.clamped_step')" variant="warning" />
+              <StatusBadge v-if="item.clamped_floor" :label="$t('pricefighter.clamped_floor')" tone="warning" />
+              <StatusBadge v-if="item.clamped_step" :label="$t('pricefighter.clamped_step')" tone="warning" />
             </td>
           </tr>
         </tbody>

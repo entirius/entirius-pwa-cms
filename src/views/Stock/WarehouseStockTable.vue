@@ -66,7 +66,7 @@
       </div>
 
       <div v-else-if="rows.length === 0" class="pv-12">
-        <EmptyState :title="$t('stock.no_stock')" icon="boxes-stacked" />
+        <EmptyState :title="$t('stock.no_stock')" icon="stock" />
       </div>
 
       <div v-else class="table-scroll">
@@ -100,8 +100,8 @@
                 <span v-else class="t-muted fs-200">—</span>
               </td>
               <td class="stock-table__col-status">
-                <StatusBadge v-if="isDirty(item.sku)" :label="$t('stock.unsaved')" variant="warning" />
-                <StatusBadge v-else-if="!item.has_stock" :label="$t('stock.no_stock_label')" variant="neutral" />
+                <StatusBadge v-if="isDirty(item.sku)" :label="$t('stock.unsaved')" tone="warning" />
+                <StatusBadge v-else-if="!item.has_stock" :label="$t('stock.no_stock_label')" tone="neutral" />
               </td>
             </tr>
           </tbody>
@@ -111,10 +111,9 @@
       <!-- Pagination -->
       <div v-if="totalCount > pageSize" class="mt-8">
         <Pagination
-          :current="currentPage"
-          :total="totalCount"
-          :perPage="pageSize"
-          @change="onPageChange"
+          :page="currentPage"
+          :pages="Math.ceil(totalCount / pageSize)"
+          @update:page="onPageChange"
         />
       </div>
     </div>

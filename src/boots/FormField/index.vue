@@ -127,10 +127,4 @@ provide(FORM_FIELD, {
   font-size: 0.9em;
   line-height: 1;
 }
-
-// Transition (plan 19 deletes it with Dropdown and TextAreaBasic): a control that does not read the contract yet
-// carries no aria-invalid, so the field still paints its border. Contract controls paint their own.
-.form-field--invalid :deep(:is(input, textarea, .dropdown__trigger):not([aria-invalid])) {
-  border-color: var(--negative);
-}
 </style>

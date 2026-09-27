@@ -35,7 +35,7 @@
             <td class="stock-tab__col-type">
               <StatusBadge
                 :label="row.source_type === 'manual' ? $t('stock.source_manual') : $t('stock.source_integration')"
-                :variant="row.source_type === 'manual' ? 'positive' : 'neutral'"
+                :tone="row.source_type === 'manual' ? 'positive' : 'neutral'"
               />
             </td>
             <td class="stock-tab__col-qty">

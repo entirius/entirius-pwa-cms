@@ -27,7 +27,7 @@
       v-else
       :title="$t('pim.supplier.timeline.empty')"
       :message="''"
-      icon="clock-rotate-left"
+      icon="history"
     />
   </div>
 </template>

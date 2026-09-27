@@ -29,7 +29,7 @@
 
       <EmptyState
         v-else-if="notFound"
-        icon="folder-tree"
+        icon="categories"
         :title="$t('pim.category_not_found')"
         :message="$t('pim.category_not_found_hint')"
       >

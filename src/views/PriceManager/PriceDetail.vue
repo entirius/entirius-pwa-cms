@@ -41,7 +41,7 @@
             <div v-if="sourceBadge" class="pm-meta-item">
               <span class="field-label">{{ $t('pm.source_label') }}</span>
               <span class="flex ai-ct gap-2">
-                <StatusBadge :label="sourceBadge.label" :variant="sourceBadge.variant" />
+                <StatusBadge :label="sourceBadge.label" :tone="sourceBadge.variant" />
               </span>
             </div>
             <div v-if="flatPurchaseCost" class="pm-meta-item">
@@ -54,7 +54,7 @@
                 <StatusBadge
                   v-if="marginPercent !== null"
                   :label="$t('pm.margin_percent', { value: marginPercent })"
-                  :variant="Number(marginPercent) > 0 ? 'positive' : 'negative'"
+                  :tone="Number(marginPercent) > 0 ? 'positive' : 'negative'"
                 />
                 <span v-else-if="!flatPrice" class="t-warning fs-200">{{ $t('pm.unpriced_hint') }}</span>
               </span>
@@ -213,7 +213,7 @@
           <div v-if="showHistory" class="mt-5">
             <h3 class="fs-400 fw-600 mb-5">{{ $t('pm.history') }}</h3>
             <Loader v-if="historyLoading" />
-            <EmptyState v-else-if="!history.length" icon="inbox" size="sm" :title="$t('pm.no_history')" />
+            <EmptyState v-else-if="!history.length" icon="empty" size="sm" :title="$t('pm.no_history')" />
             <div
               v-for="entry in history"
               :key="entry.id"

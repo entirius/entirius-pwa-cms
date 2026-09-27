@@ -120,7 +120,7 @@
           <template #cell-modifier="{ row }">
             <StatusBadge
               :label="modifierShortLabel(row.modifier)"
-              variant="neutral"
+              tone="neutral"
               :title="modifierLabel(row.modifier)"
             />
           </template>
@@ -132,14 +132,14 @@
           <template #cell-is_active="{ row }">
             <StatusBadge
               :label="row.is_active ? $t('promo.active') : $t('promo.inactive')"
-              :variant="row.is_active ? 'positive' : 'negative'"
+              :tone="row.is_active ? 'positive' : 'negative'"
             />
           </template>
           <template #cell-automatic_applications="{ row }">
             <StatusBadge
               v-if="row.automatic_applications"
               :label="$t('promo.automatic')"
-              variant="neutral"
+              tone="neutral"
             />
             <span v-else class="t-muted">—</span>
           </template>
@@ -147,8 +147,9 @@
 
         <Pagination
           v-if="totalCount > pageSize"
-          :pagination="paginationState"
-          @onChangePage="onPageChange"
+          :page="paginationState.page"
+          :pages="paginationState.pages"
+          @update:page="onPageChange"
         />
 
         <FloatingActions :actions="fabActions" />

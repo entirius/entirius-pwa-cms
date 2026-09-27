@@ -36,7 +36,7 @@
     <!-- Empty State -->
     <EmptyState
       v-if="!jobsStore.loading && !jobsStore.filteredJobs.length"
-      icon="language"
+      icon="translate"
       :title="$t('translation.no_jobs')"
       :message="$t('translation.no_jobs_msg')"
     />
@@ -91,7 +91,7 @@
       </template>
 
       <template #cell-status="{ row }">
-        <StatusBadge :label="statusLabel(row.status)" :variant="statusVariant(row.status)" />
+        <StatusBadge :label="statusLabel(row.status)" :tone="statusVariant(row.status)" />
       </template>
 
       <template #cell-created="{ row }">

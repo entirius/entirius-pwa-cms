@@ -41,7 +41,7 @@
         <StatusBadge
           v-if="p.has_stock"
           :label="String(p.quantity)"
-          variant="neutral"
+          tone="neutral"
         />
         <span v-else class="fs-200 t-muted">{{ $t("stock.no_stock_yet") }}</span>
       </div>
@@ -49,10 +49,9 @@
 
     <div v-if="totalCount > pageSize" class="mt-5">
       <Pagination
-        :current="currentPage"
-        :total="totalCount"
-        :perPage="pageSize"
-        @change="onPageChange"
+        :page="currentPage"
+        :pages="Math.ceil(totalCount / pageSize)"
+        @update:page="onPageChange"
       />
     </div>
 

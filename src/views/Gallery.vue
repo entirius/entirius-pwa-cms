@@ -398,8 +398,9 @@
       <Pagination
         v-if="gallery_pagination"
         :nav_size="32"
-        :pagination="{ ...gallery_pagination, page: current_view_page }"
-        @onChangePage="set_page({ page: $event, limit, sort: sort_by })"
+        :page="current_view_page"
+        :pages="gallery_pagination.pages"
+        @update:page="set_page({ page: $event, limit, sort: sort_by })"
       />
     </div>
   </div>

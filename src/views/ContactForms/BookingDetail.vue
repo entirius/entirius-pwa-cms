@@ -92,7 +92,7 @@
               <div class="mb-5">
                 <StatusBadge
                   :label="leadStatusLabel($t, booking.linked_lead.status)"
-                  :variant="leadStatusVariant(booking.linked_lead.status)"
+                  :tone="leadStatusVariant(booking.linked_lead.status)"
                 />
               </div>
               <dl class="cf-field-list">

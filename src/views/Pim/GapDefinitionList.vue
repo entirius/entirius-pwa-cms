@@ -43,7 +43,7 @@
         <template #cell-severity="{ row }">
           <StatusBadge
             :label="severityLabel(row.severity)"
-            :variant="severityVariant(row.severity)"
+            :tone="severityVariant(row.severity)"
           />
         </template>
         <template #cell-check_key="{ value }">
@@ -65,9 +65,10 @@
     </div>
     <Pagination
       v-if="totalCount > pageSize"
-      :pagination="paginationState"
+      :page="paginationState.page"
+      :pages="paginationState.pages"
       class="mt-5"
-      @onChangePage="onPageChange"
+      @update:page="onPageChange"
     />
   </div>
 </template>

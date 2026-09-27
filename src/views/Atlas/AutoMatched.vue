@@ -58,7 +58,7 @@
               v-for="s in row.sources"
               :key="s.idx"
               :label="s.is_primary ? `★ ${s.name || s.idx}` : (s.name || s.idx)"
-              :variant="s.is_primary ? 'positive' : 'neutral'"
+              :tone="s.is_primary ? 'positive' : 'neutral'"
               :data-testid="`auto-matched-supplier-${row.sku}-${s.idx}`"
             />
           </div>
@@ -68,13 +68,13 @@
             <StatusBadge
               v-if="row.has_tolerance_violation"
               :label="$t('atlas.auto_matched.flag.violation')"
-              variant="warning"
+              tone="warning"
               :data-testid="`auto-matched-violation-${row.sku}`"
             />
             <StatusBadge
               v-if="row.has_manual_override"
               :label="$t('atlas.auto_matched.flag.manual_override')"
-              variant="informative"
+              tone="info"
               :data-testid="`auto-matched-manual-override-${row.sku}`"
             />
           </div>
@@ -86,9 +86,10 @@
 
       <Pagination
         v-if="!loading && totalCount > pageSize"
-        :pagination="paginationState"
+        :page="paginationState.page"
+        :pages="paginationState.pages"
         class="mt-8"
-        @onChangePage="onPageChange"
+        @update:page="onPageChange"
       />
     </div>
   </div>

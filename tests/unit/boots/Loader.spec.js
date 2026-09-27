@@ -19,9 +19,9 @@ describe("Loader sizes and overlay", () => {
     expect(wrapper.find(".loader-hidden-text").text()).toBe("common.loading");
   });
 
-  it("takes size 32 or 64 over h / w", () => {
+  it("takes size 32 or 64, 64 by default", () => {
     expect(mount(Loader, { props: { size: 32 } }).attributes("style")).toContain("width: 32px");
-    expect(mount(Loader, { props: { h: 20, w: 20 } }).attributes("style")).toContain("width: 20px");
+    expect(mount(Loader).attributes("style")).toContain("width: 64px");
   });
 
   it("overlay veils the screen with a 64 px loader; contained keeps it in its box", () => {

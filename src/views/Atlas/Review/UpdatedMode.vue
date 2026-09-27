@@ -72,13 +72,13 @@
         <span class="fs-200">{{ row.source_name || row.source_idx || "—" }}</span>
       </template>
       <template #cell-status="{ value }">
-        <StatusBadge :label="value" :variant="statusVariant(value)" />
+        <StatusBadge :label="value" :tone="statusVariant(value)" />
       </template>
       <template #cell-updated="{ row }">
         <StatusBadge
           v-if="isRowUpdated(row)"
           :label="$t('atlas.products.col.updated')"
-          variant="warning"
+          tone="warning"
           :data-testid="`updated-badge-${row.id}`"
         />
       </template>
@@ -92,7 +92,7 @@
 
     <EmptyState
       v-if="!loading && !visibleRows.length"
-      icon="bell-slash"
+      icon="notificationsOff"
       :title="$t('atlas.review.updated.empty')"
       :message="$t('atlas.review.updated.empty_message')"
     />

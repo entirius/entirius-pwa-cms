@@ -33,7 +33,7 @@
               {{ tpl.language_code || $t("emails.default_lang") }}
             </div>
             <StatusBadge
-              :variant="tpl.subject ? 'positive' : 'neutral'"
+              :tone="tpl.subject ? 'positive' : 'neutral'"
               :label="
                 tpl.subject ? $t('emails.customized') : $t('emails.default')
               "

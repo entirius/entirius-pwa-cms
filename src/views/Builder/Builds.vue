@@ -110,7 +110,7 @@
               :label="
                 row.is_published ? $t('builder.published') : $t('builder.draft')
               "
-              :variant="row.is_published ? 'positive' : 'informative'"
+              :tone="row.is_published ? 'positive' : 'informative'"
             />
           </template>
 
@@ -149,8 +149,9 @@
         <div class="mv-2 ph-2" v-if="doc.pagination">
           <Pagination
             :nav_size="32"
-            :pagination="doc.pagination"
-            @onChangePage="setPagination({ page: $event, type: doc.type })"
+            :page="doc.pagination.page"
+            :pages="doc.pagination.pages"
+            @update:page="setPagination({ page: $event, type: doc.type })"
           />
         </div>
       </div>

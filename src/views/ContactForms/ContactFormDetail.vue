@@ -31,7 +31,7 @@
         <div class="mb-10">
           <StatusBadge
             :label="statusLabel(submission.status)"
-            :variant="statusVariant(submission.status)"
+            :tone="statusVariant(submission.status)"
           />
         </div>
 

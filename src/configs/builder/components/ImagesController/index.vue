@@ -59,8 +59,9 @@
           <Pagination
             v-if="pagination"
             :nav_size="32"
-            :pagination="pagination"
-            @onChangePage="
+            :page="pagination.page"
+            :pages="pagination.pages"
+            @update:page="
               ($event) => {
                 selected_asset = null;
                 GET_Images({ limit, page: $event });

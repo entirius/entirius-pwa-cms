@@ -2,7 +2,7 @@
   <section class="ld-field" data-testid="settings-scheduled">
     <h3>{{ $t("communicator.scheduled.title") }}</h3>
     <p class="ld-muted">{{ $t("communicator.scheduled.note") }}</p>
-    <EmptyState v-if="!rows.length" icon="inbox" :title="$t('communicator.scheduled.empty')" />
+    <EmptyState v-if="!rows.length" icon="empty" :title="$t('communicator.scheduled.empty')" />
     <div v-else class="scheduled__scroll">
       <table class="table-basic ld-table">
         <thead>

@@ -43,7 +43,7 @@
     <!-- desktop, empty queue: the right pane says why it is empty and where the work is -->
     <section v-else class="leads__placeholder" data-testid="leads-detail-empty">
       <EmptyState
-        icon="inbox"
+        icon="empty"
         :title="$t('leads.inbox.detail_empty_title')"
         :message="$t('leads.inbox.detail_empty')"
       >

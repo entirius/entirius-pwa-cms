@@ -132,7 +132,7 @@
     <div v-if="!rows || !rows.length" class="data-table__empty" role="row">
       <div role="gridcell">
         <slot name="empty">
-          <EmptyState icon="inbox" :size="emptySize" :title="emptyText || t('common.no_data')" />
+          <EmptyState icon="empty" :size="emptySize" :title="emptyText || t('common.no_data')" />
         </slot>
       </div>
     </div>

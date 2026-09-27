@@ -18,7 +18,7 @@
     <!-- Drafts is where the work starts: empty, it says what waits for the send beat and when it leaves -->
     <EmptyState
       v-if="!loading && !rows.length && filter === 'draft'"
-      icon="inbox"
+      icon="empty"
       :title="$t('leads.inbox.empty_title')"
       :message="emptyMessage"
       data-testid="inbox-empty"

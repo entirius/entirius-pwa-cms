@@ -73,7 +73,7 @@ describe("NumberInput boot", () => {
   });
 
   it("locks the value and both steppers when disabled", () => {
-    const wrapper = mount(NumberInput, { props: { modelValue: "5", isDisabled: true } });
+    const wrapper = mount(NumberInput, { props: { modelValue: "5", disabled: true } });
     expect(wrapper.find(".number-input--disabled").exists()).toBe(true);
     expect(wrapper.find("input").attributes("disabled")).toBeDefined();
     for (const button of wrapper.findAll("button")) {

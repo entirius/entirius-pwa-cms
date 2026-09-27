@@ -72,7 +72,7 @@
         <template #cell-is_active="{ value }">
           <StatusBadge
             :label="value ? $t('pim.active') : $t('pim.inactive')"
-            :variant="value ? 'positive' : 'negative'"
+            :tone="value ? 'positive' : 'negative'"
           />
         </template>
         <template #cell-post_count="{ value }">
@@ -82,9 +82,10 @@
 
       <Pagination
         v-if="totalCount > pageSize"
-        :pagination="paginationState"
+        :page="paginationState.page"
+        :pages="paginationState.pages"
         class="mt-5"
-        @onChangePage="onPageChange"
+        @update:page="onPageChange"
       />
     </template>
     </div>

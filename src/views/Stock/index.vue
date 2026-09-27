@@ -13,7 +13,7 @@
         <StatusBadge
           v-if="activeWarehouse"
           :label="activeWarehouse.source_type === 'manual' ? $t('stock.source_manual') : $t('stock.source_integration')"
-          :variant="activeWarehouse.source_type === 'manual' ? 'positive' : 'neutral'"
+          :tone="activeWarehouse.source_type === 'manual' ? 'positive' : 'neutral'"
         />
         <span
           v-if="activeWarehouse && activeWarehouse.source_type === 'integration' && activeWarehouse.last_synced_at"
@@ -28,7 +28,7 @@
     <div v-if="!activeWarehouse && !loading" class="flex-center h-100">
       <EmptyState
         :title="warehouses.length ? $t('stock.select_warehouse') : $t('stock.no_warehouses')"
-        icon="boxes-stacked"
+        icon="stock"
       />
     </div>
 

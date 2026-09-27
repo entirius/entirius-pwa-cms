@@ -1,18 +1,17 @@
 <template>
   <div class="basic-date-picker inline-block">
-    <p v-if="label && label.length" class="mb-2">{{ label }}</p>
-    <div class="relative">
+    <div v-out="close" class="relative">
       <button
         v-bind="attrs"
         type="button"
         class="basic-date-picker__trigger flex ai-ct gap-2"
         :aria-expanded="String(visible)"
-        @click.stop="visible = !visible"
+        @click="visible = !visible"
       >
         <FontAwesomeIcon :icon="ICONS.calendar" class="basic-date-picker__icon" aria-hidden="true" />
         <span :class="{ 't-muted': !current }">{{ current || $t("routes.set_new") }}</span>
       </button>
-      <div v-show="visible" v-out="close" class="picker-wrapper bg-inherit bg-base">
+      <div v-show="visible" class="picker-wrapper bg-inherit bg-base">
         <!-- flatpickr's element: its inline calendar lands right after it, inside the wrapper -->
         <div ref="pickerEl">
           <input type="text" data-input style="display: none" />
@@ -36,8 +35,8 @@ const DEFAULT_CONFIG = {
 <script setup>
 // Date or date range (docs/ui-components.md § P3 inputs): an input-looking trigger with the calendar icon opens an
 // inline flatpickr below it. `v-model` (the flatpickr date string), `config` (flatpickr options; a single date by default, `mode: "range"` for a range),
-// `disabled`; inside a FormField the trigger takes the contract's id and state. The instance is destroyed on unmount.
-// Transition until plan 19: `value` + the `onChange` event, the `label` above the trigger.
+// `disabled`; inside a FormField the trigger takes the contract's id, label and state. The instance is destroyed on
+// unmount.
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import flatpickr from "flatpickr";
 import { Polish } from "flatpickr/dist/l10n/pl.js";
@@ -46,17 +45,15 @@ import { useControlAttrs } from "@/boots/FormField/useControlAttrs";
 
 const props = defineProps({
   modelValue: { type: String, default: undefined },
-  value: { type: String, default: "" },
   config: { type: Object, default: () => DEFAULT_CONFIG },
-  label: { type: String, default: undefined },
   disabled: { type: Boolean, default: false },
 });
-const emit = defineEmits(["update:modelValue", "onChange"]);
+const emit = defineEmits(["update:modelValue"]);
 
 const { attrs } = useControlAttrs({ disabled: () => props.disabled });
 const visible = ref(false);
 const pickerEl = ref(null);
-const current = computed(() => props.modelValue ?? props.value);
+const current = computed(() => props.modelValue ?? "");
 let instance = null;
 
 function close() {
@@ -65,7 +62,6 @@ function close() {
 
 function onChange(dates, dateString) {
   emit("update:modelValue", dateString);
-  emit("onChange", dateString);
 }
 
 onMounted(() => {

@@ -83,7 +83,7 @@
         />
       </template>
       <template #cell-status="{ value }">
-        <StatusBadge :label="value" :variant="statusVariant(value)" />
+        <StatusBadge :label="value" :tone="statusVariant(value)" />
       </template>
       <template #cell-cost="{ row }">
         <span class="t-body fw-600">

@@ -52,7 +52,7 @@
           <StatusBadge
             v-if="runningKeys.has(row.key)"
             :label="$t('enrichment.spawn_rules.running')"
-            variant="informative"
+            tone="info"
           />
           <span v-else class="t-muted">—</span>
         </template>
@@ -72,9 +72,10 @@
     </div>
     <Pagination
       v-if="totalCount > pageSize"
-      :pagination="paginationState"
+      :page="paginationState.page"
+      :pages="paginationState.pages"
       class="mt-5"
-      @onChangePage="onPageChange"
+      @update:page="onPageChange"
     />
   </div>
 </template>

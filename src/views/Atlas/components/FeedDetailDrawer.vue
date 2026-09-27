@@ -10,18 +10,18 @@
       <section class="feed-detail__section">
         <div class="flex ai-ct gap-5 flex-wrap mb-5">
           <span class="fs-300 fw-600 t-body">{{ feed.idx }}</span>
-          <StatusBadge :label="feed.connector_kind" variant="informative" />
-          <StatusBadge :label="feed.sync_mode" variant="neutral" />
+          <StatusBadge :label="feed.connector_kind" tone="info" />
+          <StatusBadge :label="feed.sync_mode" tone="neutral" />
           <StatusBadge
             :label="
               feed.is_active ? $t('common.active') : $t('common.inactive')
             "
-            :variant="feed.is_active ? 'positive' : 'negative'"
+            :tone="feed.is_active ? 'positive' : 'negative'"
           />
           <StatusBadge
             v-if="feed.last_sync_status"
             :label="feed.last_sync_status"
-            :variant="syncStatusVariant(feed.last_sync_status)"
+            :tone="syncStatusVariant(feed.last_sync_status)"
           />
         </div>
       </section>

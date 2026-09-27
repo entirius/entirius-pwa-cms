@@ -99,13 +99,13 @@
       @row-click="onRowClick"
     >
       <template #cell-status="{ value }">
-        <StatusBadge :label="value" :variant="statusVariant(value)" />
+        <StatusBadge :label="value" :tone="statusVariant(value)" />
       </template>
       <template #cell-updated="{ row }">
         <StatusBadge
           v-if="isRowUpdated(row)"
           :label="$t('atlas.products.col.updated')"
-          variant="warning"
+          tone="warning"
           role="button"
           :data-testid="`products-updated-${row.id}`"
           @click.stop="onUpdatedBadgeClick(row)"
@@ -179,9 +179,10 @@
 
     <Pagination
       v-if="!loading && totalCount > pageSize"
-      :pagination="paginationState"
+      :page="paginationState.page"
+      :pages="paginationState.pages"
       class="mt-8"
-      @onChangePage="onPageChange"
+      @update:page="onPageChange"
     />
 
     <RawDataModal
@@ -321,7 +322,7 @@
               v-for="ch in repushTarget.pushed_to_channel_idxs"
               :key="ch"
               :label="ch"
-              variant="warning"
+              tone="warning"
             />
           </div>
         </div>

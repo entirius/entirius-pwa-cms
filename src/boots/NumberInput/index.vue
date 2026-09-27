@@ -41,7 +41,6 @@
 <script setup>
 // Stepper number (docs/ui-components.md § P3 inputs): `v-model`, `min` / `max` / `step`, `suffix`, `disabled`. Inside a
 // FormField the value field takes id, aria-describedby, aria-invalid, required and disabled from the contract.
-// `isDisabled` is the transition spelling until plan 19.
 import { computed } from "vue";
 import { useControlAttrs } from "@/boots/FormField/useControlAttrs";
 
@@ -74,14 +73,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  isDisabled: {
-    type: Boolean,
-    default: false,
-  },
 });
 
 const emit = defineEmits(["update:modelValue"]);
-const { attrs, disabled: controlDisabled, invalid } = useControlAttrs({ disabled: () => props.disabled || props.isDisabled });
+const { attrs, disabled: controlDisabled, invalid } = useControlAttrs({ disabled: () => props.disabled });
 
 // A fractional step (0.01) turns on decimal entry: "," reads as ".", values round to the step's places.
 const decimals = computed(() => (String(props.step).split(".")[1] || "").length);

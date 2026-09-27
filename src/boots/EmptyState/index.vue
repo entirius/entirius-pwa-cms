@@ -1,6 +1,6 @@
 <template>
   <div class="empty-state" :class="`empty-state--${size}`">
-    <FontAwesomeIcon v-if="icon" :icon="ICONS[icon] ?? icon" class="empty-state__icon" />
+    <FontAwesomeIcon v-if="icon" :icon="ICONS[icon]" class="empty-state__icon" />
     <p v-if="title" class="empty-state__title">{{ title }}</p>
     <p v-if="message" class="empty-state__message">{{ message }}</p>
     <slot />
@@ -8,7 +8,7 @@
 </template>
 
 <script setup>
-// `icon` is a meaning of icons.js; a glyph name still draws until the sweeps move the call sites (plan 19 drops it).
+// `icon` is a meaning of icons.js.
 import { ICONS } from "@/boots/Icons/icons";
 
 defineProps({
@@ -23,6 +23,7 @@ defineProps({
   icon: {
     type: String,
     default: "",
+    validator: (value) => !value || Object.hasOwn(ICONS, value),
   },
   // "md": the full block of a list screen whose only content is the list; "sm": one line inside a detail screen.
   size: {

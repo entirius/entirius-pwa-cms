@@ -39,7 +39,7 @@
                   ? $t('enrichment.preview.enabled')
                   : $t('enrichment.preview.disabled')
               "
-              :variant="product.is_enabled ? 'positive' : 'neutral'"
+              :tone="product.is_enabled ? 'positive' : 'neutral'"
             />
           </dd>
         </div>
@@ -56,7 +56,7 @@
           <dd>
             <StatusBadge
               :label="String(product.gap_count)"
-              :variant="product.gap_count > 0 ? 'warning' : 'positive'"
+              :tone="product.gap_count > 0 ? 'warning' : 'positive'"
             />
           </dd>
         </div>

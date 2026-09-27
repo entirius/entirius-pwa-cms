@@ -43,9 +43,10 @@
     </div>
     <Pagination
       v-if="totalCount > pageSize"
-      :pagination="paginationState"
+      :page="paginationState.page"
+      :pages="paginationState.pages"
       class="mt-5"
-      @onChangePage="onPageChange"
+      @update:page="onPageChange"
     />
   </div>
 </template>

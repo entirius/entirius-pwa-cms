@@ -27,7 +27,7 @@
           v-if="!decisions.length"
           :title="$t('pricefighter.no_history')"
           :message="$t('pricefighter.no_history_desc')"
-          icon="clock-rotate-left"
+          icon="history"
         />
 
         <template v-else>
@@ -52,7 +52,7 @@
               <span v-else>{{ row.old_price }} &rarr; <span class="fw-600">{{ row.new_price }}</span></span>
             </template>
             <template #cell-strategy="{ row }">
-              <StatusBadge :label="$t(`pricefighter.recommendation_${row.strategy}`)" variant="informative" />
+              <StatusBadge :label="$t(`pricefighter.recommendation_${row.strategy}`)" tone="info" />
             </template>
             <template #cell-applied_by="{ row }">
               {{ row.applied_by || $t('pricefighter.system') }}
@@ -107,7 +107,7 @@
                         <td>
                           <StatusBadge
                             :label="$t(`pricefighter.flag_${obs.flag}`)"
-                            :variant="obs.flag === 'valid' ? 'positive' : 'neutral'"
+                            :tone="obs.flag === 'valid' ? 'positive' : 'neutral'"
                           />
                         </td>
                       </tr>
@@ -121,8 +121,9 @@
 
           <Pagination
             v-if="totalCount > pageSize"
-            :pagination="paginationState"
-            @onChangePage="onPageChange"
+            :page="paginationState.page"
+            :pages="paginationState.pages"
+            @update:page="onPageChange"
           />
         </template>
       </div>

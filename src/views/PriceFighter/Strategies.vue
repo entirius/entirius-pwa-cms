@@ -18,7 +18,7 @@
           v-if="!rules.length"
           :title="$t('pricefighter.no_rules')"
           :message="$t('pricefighter.no_rules_desc')"
-          icon="scale-balanced"
+          icon="pricing"
         />
 
         <DataTable
@@ -34,10 +34,10 @@
             <span class="fw-600">{{ scopeLabel(row) }}</span>
           </template>
           <template #cell-strategy="{ row }">
-            <StatusBadge :label="$t(`pricefighter.recommendation_${row.strategy}`)" :variant="strategyVariant(row.strategy)" />
+            <StatusBadge :label="$t(`pricefighter.recommendation_${row.strategy}`)" :tone="strategyVariant(row.strategy)" />
           </template>
           <template #cell-price_war="{ row }">
-            <StatusBadge v-if="row.price_war" :label="$t('pricefighter.active')" variant="negative" />
+            <StatusBadge v-if="row.price_war" :label="$t('pricefighter.active')" tone="negative" />
             <span v-else class="t-muted">—</span>
           </template>
           <template #cell-mode="{ row }">

@@ -6,13 +6,13 @@
       v-else-if="evaluatedAt == null"
       :title="$t('pim.quality_unevaluated')"
       :message="$t('pim.quality_unevaluated_hint')"
-      icon="circle-info"
+      icon="info"
     />
 
     <EmptyState
       v-else-if="!findings.length"
       :title="$t('pim.quality_no_gaps')"
-      icon="circle-check"
+      icon="success"
     />
 
     <ul v-else class="quality-tab__list">
@@ -24,7 +24,7 @@
       >
         <StatusBadge
           :label="severityLabel(f.severity)"
-          :variant="variant(f.severity)"
+          :tone="variant(f.severity)"
         />
         <span class="quality-tab__label">{{ label(f) }}</span>
         <span v-if="f.language" class="quality-tab__lang t-muted">{{

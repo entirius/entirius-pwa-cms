@@ -19,7 +19,7 @@
         <StatusBadge
           v-if="lead"
           :label="leadStatusLabel($t, lead.status)"
-          :variant="leadStatusVariant(lead.status)"
+          :tone="leadStatusVariant(lead.status)"
         />
         <BasicButton
           v-if="canMarkAsWon"
@@ -164,7 +164,7 @@
                         ? $t('cf.enabled')
                         : $t('cf.disabled')
                     "
-                    :variant="
+                    :tone="
                       integrations?.google_ads_enabled ? 'positive' : 'neutral'
                     "
                   />
@@ -179,7 +179,7 @@
                         ? $t('cf.enabled')
                         : $t('cf.disabled')
                     "
-                    :variant="
+                    :tone="
                       integrations?.bookings_enabled ? 'positive' : 'neutral'
                     "
                   />

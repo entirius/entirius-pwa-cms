@@ -104,8 +104,7 @@ export default {
   overflow: hidden;
   &__picture {
     &::before {
-      content: "\e921";
-      font-family: "font-icons" !important;
+      content: "+";
       display: grid;
       place-items: center;
       position: absolute;

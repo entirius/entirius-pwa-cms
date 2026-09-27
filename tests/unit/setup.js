@@ -22,9 +22,7 @@ config.global.stubs = {
   EmptyState: true,
   StatusBadge: true,
   FilterChip: true,
-  Dropdown: true,
   BasicButton: true,
   BasicInput: true,
-  TextAreaBasic: true,
   FormField: true,
 };

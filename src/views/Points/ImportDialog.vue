@@ -74,7 +74,7 @@
 
         <!-- Result summary -->
         <div v-if="importResult" class="import-result mb-10">
-          <StatusBadge label="Import complete" variant="positive" />
+          <StatusBadge label="Import complete" tone="positive" />
           <p class="fs-300 t-body mt-5">
             {{
               $t("dp.import_success", {

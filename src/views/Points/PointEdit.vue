@@ -304,7 +304,7 @@
 
           <EmptyState
             v-if="!translations.length"
-            icon="language"
+            icon="translate"
             :title="$t('dp.no_translations')"
           />
 

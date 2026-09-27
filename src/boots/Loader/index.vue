@@ -27,23 +27,21 @@
 <script>
 // One loader (docs/ui-components.md § P3 display): accent rings on a static track, a `role="status"` with a visually
 // hidden "Ładowanie". Inline by default; `block` centres it where the data will appear; `overlay` veils the whole
-// screen (`overlay-loading`) and replaces components/Loading.vue, `contained` keeps the veil inside the nearest
-// positioned ancestor (a kit panel). `size` 32 · 64; `h` / `w` stay until plan 19.
-const OVERLAY_SIZE = 64;
+// screen (`overlay-loading`), `contained` keeps the veil inside the nearest positioned ancestor (a kit panel).
+// `size` 32 · 64 (64 by default).
+const DEFAULT_SIZE = 64;
 
 export default {
   props: {
     size: { type: Number, default: null, validator: (value) => [32, 64].includes(value) },
-    h: { type: Number, default: 64 },
-    w: { type: Number, default: 64 },
     block: { type: Boolean, default: false },
     overlay: { type: Boolean, default: false },
     contained: { type: Boolean, default: false },
   },
   computed: {
     sizeStyle() {
-      const size = this.size ?? (this.overlay ? OVERLAY_SIZE : null);
-      return size ? `height: ${size}px; width: ${size}px` : `height: ${this.h}px; width: ${this.w}px`;
+      const size = this.size ?? DEFAULT_SIZE;
+      return `height: ${size}px; width: ${size}px`;
     },
   },
 };

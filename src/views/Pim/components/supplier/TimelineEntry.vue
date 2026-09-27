@@ -4,10 +4,10 @@
     <div class="timeline-entry__body">
       <div class="timeline-entry__row">
         <span class="timeline-entry__date t-body fw-600">{{ formatDate(entry.created_at) }}</span>
-        <StatusBadge :label="sourceLabel" :variant="sourceVariant" />
+        <StatusBadge :label="sourceLabel" :tone="sourceVariant" />
         <StatusBadge
           :label="entry.applied_to_pim ? $t('pim.supplier.timeline.applied') : $t('pim.supplier.timeline.pending')"
-          :variant="entry.applied_to_pim ? 'positive' : 'warning'"
+          :tone="entry.applied_to_pim ? 'positive' : 'warning'"
         />
         <span v-if="entry.triggered_by" class="timeline-entry__user fs-200 t-muted">
           {{ $t("pim.supplier.timeline.triggered_by", { user: entry.triggered_by }) }}

@@ -24,7 +24,7 @@
         <div class="flex ai-ct jc-sb mb-10">
           <StatusBadge
             :label="statusLabel(voucher.status)"
-            :variant="statusVariant(voucher.status)"
+            :tone="statusVariant(voucher.status)"
           />
           <span class="fs-400 fw-600">
             {{ voucher.balance }}

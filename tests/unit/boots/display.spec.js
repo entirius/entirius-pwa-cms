@@ -26,10 +26,9 @@ describe("StatusBadge", () => {
     expect(wrapper.classes()).not.toContain("status-badge--dot");
   });
 
-  it("keeps `variant` as an alias of tone, `informative` = info; tone wins", () => {
-    expect(badge({ variant: "informative" }).classes()).toContain("status-badge--info");
-    expect(badge({ variant: "warning" }).classes()).toContain("status-badge--warning");
-    expect(badge({ variant: "warning", tone: "positive" }).classes()).toContain("status-badge--positive");
+  it("paints its tone, neutral without one", () => {
+    expect(badge({ tone: "info" }).classes()).toContain("status-badge--info");
+    expect(badge({}).classes()).toContain("status-badge--neutral");
   });
 });
 

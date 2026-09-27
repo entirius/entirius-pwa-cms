@@ -138,8 +138,9 @@
           <Pagination
             v-if="pagination"
             :nav_size="32"
-            :pagination="{ ...pagination, page: c_page }"
-            @onChangePage="
+            :page="c_page"
+            :pages="pagination.pages"
+            @update:page="
               GET_GALLERY({
                 method: 'get',
                 url: '/images/',

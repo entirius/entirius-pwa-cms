@@ -15,7 +15,7 @@
       <!-- Header: status + total + dates in one compact row -->
       <div class="order-detail__header mb-10">
         <div class="order-detail__header-left">
-          <StatusBadge :label="statusLabel(order.status)" :variant="statusVariant(order.status)" />
+          <StatusBadge :label="statusLabel(order.status)" :tone="statusVariant(order.status)" />
           <span class="fw-600 fs-500">{{ body.total || "0.00" }} {{ body.currency_code || "" }}</span>
         </div>
         <div class="order-detail__header-right t-muted fs-200">
@@ -41,7 +41,7 @@
         <div class="section-label mb-5">{{ $t("checkout_orders.items") }} ({{ items.length }})</div>
         <DataTable :columns="itemColumns" :rows="items">
           <template #status="{ row }">
-            <StatusBadge :label="row.status" :variant="row.status === 'valid' ? 'positive' : 'negative'" />
+            <StatusBadge :label="row.status" :tone="row.status === 'valid' ? 'positive' : 'negative'" />
           </template>
           <template #tax_rate="{ row }">{{ formatTax(row.tax_rate) }}</template>
         </DataTable>

@@ -117,28 +117,31 @@ describe("BasicInput", () => {
     expect(wrapper.find("input").classes()).toContain("input-field--icon");
   });
 
-  it("takes disabled, and isDisabled until plan 19", () => {
+  it("takes disabled", () => {
     expect(mountInput({ disabled: true }).find("input").attributes("disabled")).toBeDefined();
-    expect(mountInput({ isDisabled: true }).find("input").attributes("disabled")).toBeDefined();
     expect(mountInput().find("input").attributes("disabled")).toBeUndefined();
   });
 
-  describe("transition API (un-swept screens)", () => {
-    it("keeps the floating label on the input", () => {
-      const wrapper = mountInput({ label: "Nazwa", id: "name" });
-      const label = wrapper.find("label.input-label");
-      expect(label.text()).toBe("Nazwa");
-      expect(label.attributes("for")).toBe("name");
-      expect(wrapper.find("input").attributes("placeholder")).toBe("Nazwa");
-    });
+  it("shows 0 as 0 and null / false as an empty field", () => {
+    expect(mountInput({ modelValue: 0 }).find("input").element.value).toBe("0");
+    expect(mountInput({ modelValue: null }).find("input").element.value).toBe("");
+    expect(mountInput({ modelValue: false }).find("input").element.value).toBe("");
+  });
 
-    it("keeps validate: its colour class, its own message, and marks the input invalid", () => {
-      const wrapper = mountInput({ validate: { status: "error", msg: "Błąd" } });
-      expect(wrapper.classes()).toContain("negative");
-      expect(wrapper.find(".validation-msg").text()).toBe("Błąd");
-      expect(wrapper.find("input").attributes("aria-invalid")).toBe("true");
-    });
+  it("focuses itself on mount with focusOnCreate", () => {
+    const wrapper = mount(BasicInput, { props: { focusOnCreate: true }, global: GLOBAL, attachTo: document.body });
+    expect(document.activeElement).toBe(wrapper.find("input").element);
+    wrapper.unmount();
+  });
 
+  it("has no own label or error text: the FormField's", () => {
+    const wrapper = inField(BasicInput, { label: "Nazwa", error: "Błąd" });
+    expect(wrapper.find(".input-label").exists()).toBe(false);
+    expect(wrapper.find(".validation-msg").exists()).toBe(false);
+    expect(wrapper.find("input").attributes("aria-invalid")).toBe("true");
+  });
+
+  describe("events and fallthrough", () => {
     it("keeps the onFocusout and onKeyDown events with the value", async () => {
       const wrapper = mountInput({ modelValue: "x" });
       await wrapper.find("input").trigger("focusout");
@@ -185,12 +188,10 @@ describe("BasicTextarea", () => {
 });
 
 describe("NumberInput", () => {
-  it("takes disabled and isDisabled: value field and both steppers", () => {
-    for (const props of [{ disabled: true }, { isDisabled: true }]) {
-      const wrapper = mount(NumberInput, { props: { modelValue: "5", ...props } });
-      expect(wrapper.find("input").attributes("disabled")).toBeDefined();
-      expect(wrapper.findAll("button").every((b) => b.attributes("disabled") !== undefined)).toBe(true);
-    }
+  it("takes disabled: value field and both steppers", () => {
+    const wrapper = mount(NumberInput, { props: { modelValue: "5", disabled: true } });
+    expect(wrapper.find("input").attributes("disabled")).toBeDefined();
+    expect(wrapper.findAll("button").every((b) => b.attributes("disabled") !== undefined)).toBe(true);
   });
 
   it("reads the contract", () => {
@@ -217,14 +218,6 @@ describe("BasicCheckbox", () => {
     expect(input.attributes("disabled")).toBeDefined();
     expect(input.attributes("aria-invalid")).toBe("true");
     expect(wrapper.find("label.form-field__label").attributes("for")).toBe(input.attributes("id"));
-  });
-
-  it("keeps the array API until plan 19", async () => {
-    const values = [{ label: "Kanał A", value: "a" }];
-    const wrapper = mount(BasicCheckbox, { props: { values, init_selected: [] } });
-    expect(wrapper.find(".basic-checkbox-wrapper").exists()).toBe(true);
-    await wrapper.find("label").trigger("input");
-    expect(wrapper.emitted("onSelect").at(-1)).toEqual([["a"]]);
   });
 });
 
@@ -315,17 +308,32 @@ describe("BasicDatePicker", () => {
     expect(flatpickrInstance.destroy).toHaveBeenCalledTimes(1);
   });
 
-  it("emits v-model and the transition onChange with the picked date", () => {
+  it("emits v-model with the picked date", () => {
     const wrapper = mountPicker();
     const { onChange } = flatpickr.mock.calls.at(-1)[1];
     onChange([], "2026-09-01");
     expect(wrapper.emitted("update:modelValue")).toEqual([["2026-09-01"]]);
-    expect(wrapper.emitted("onChange")).toEqual([["2026-09-01"]]);
+    expect(Object.keys(wrapper.emitted())).not.toContain("onChange");
   });
 
-  it("shows the value on an input-like trigger with the calendar icon; value until plan 19", () => {
+  it("is named by its FormField label", () => {
+    const wrapper = inField(BasicDatePicker, { label: "Data" });
+    expect(wrapper.find("label").attributes("for")).toBe(wrapper.find("button").attributes("id"));
+  });
+
+  it("lets the click reach the document, so other popovers close", async () => {
+    const onDocument = vi.fn();
+    document.addEventListener("click", onDocument);
+    const wrapper = mount(BasicDatePicker, { global: GLOBAL, attachTo: document.body });
+    await wrapper.find("button").trigger("click");
+    expect(onDocument).toHaveBeenCalled();
+    expect(wrapper.find(".picker-wrapper").isVisible()).toBe(true);
+    document.removeEventListener("click", onDocument);
+    wrapper.unmount();
+  });
+
+  it("shows the value on an input-like trigger with the calendar icon", () => {
     expect(mountPicker({ modelValue: "2026-09-01" }).find("button").text()).toBe("2026-09-01");
-    expect(mountPicker({ value: "2026-01-02" }).find("button").text()).toBe("2026-01-02");
     const empty = mountPicker();
     expect(empty.find("button").text()).toBe("routes.set_new");
     expect(iconOf(empty)).toBe(ICONS.calendar);

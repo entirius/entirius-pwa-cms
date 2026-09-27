@@ -705,7 +705,7 @@ watch(
                 v-if="element.role === 'MAIN'"
                 class="media-gallery__role-badge"
                 :label="$t('pim.role_main')"
-                variant="informative"
+                tone="info"
               />
 
               <!-- Hover overlay with edit/delete -->

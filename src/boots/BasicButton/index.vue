@@ -6,7 +6,7 @@
     class="button-basic pointer normal inline-flex jc-sb ai-ct gap-2"
     :class="[
       `button-basic--${size}`,
-      variant && `button-basic--${variant}`,
+      `button-basic--${variant}`,
       { 'jc-ct button-basic--icon': isIconOnly(), 'button-basic--labelled': hasSlotLabel() },
     ]"
     :aria-label="label || undefined"
@@ -19,12 +19,7 @@
     <span v-else-if="meaningIcon" class="inline-flex jc-ct ai-ct btn-icon" aria-hidden="true">
       <FontAwesomeIcon :icon="meaningIcon" />
     </span>
-    <span v-else-if="icon" class="inline-flex jc-ct ai-ct btn-icon">
-      <i :class="`icon-${icon}`"></i
-    ></span>
-    <span class="btn-text" v-if="text && !custom">{{ text }}</span>
-    <span class="btn-text" v-else-if="hasSlotLabel()"><slot /></span>
-    <slot name="custom" v-if="!text && custom && !loading"></slot>
+    <span class="btn-text" v-if="hasSlotLabel()"><slot /></span>
   </button>
 </template>
 
@@ -32,8 +27,6 @@
 // Sizes: md = --elem-height (inputs share it), sm = row actions. `variant` is the role: primary, secondary, ghost,
 // danger (every delete/remove/reject), danger-solid (the destructive confirm in a dialog). The label is the default
 // slot; `icon` is a meaning of icons.js, drawn before the label; `loading` swaps the icon for a spinner and disables.
-// Transition API until plan 19 (docs/ui-components.md § P3 actions): `text`, `isDisabled`, the btn-* role classes
-// (no variant = the look the classes give), an `icon` that is no meaning (legacy font glyph) and the `custom` slot.
 import { ICONS } from "@/boots/Icons/icons";
 
 const VARIANTS = ["primary", "secondary", "ghost", "danger", "danger-solid"];
@@ -41,20 +34,6 @@ const VARIANTS = ["primary", "secondary", "ghost", "danger", "danger-solid"];
 export default {
   emits: ["click"],
   props: {
-    text: {
-      type: [String, Boolean],
-      require: false,
-      default: false,
-    },
-    custom: {
-      type: Boolean,
-      require: false,
-      default: false,
-    },
-    isDisabled: {
-      type: Boolean,
-      default: false,
-    },
     disabled: {
       type: Boolean,
       default: false,
@@ -65,16 +44,17 @@ export default {
     },
     variant: {
       type: String,
-      default: "",
-      validator: (value) => !value || VARIANTS.includes(value),
+      default: "secondary",
+      validator: (value) => VARIANTS.includes(value),
     },
     type: {
       type: String,
       default: "button",
     },
     icon: {
-      type: [String, Boolean],
-      require: false,
+      type: String,
+      default: null,
+      validator: (value) => Object.hasOwn(ICONS, value),
     },
     size: {
       type: String,
@@ -94,19 +74,19 @@ export default {
   },
   computed: {
     isOff() {
-      return this.disabled || this.isDisabled || this.loading;
+      return this.disabled || this.loading;
     },
     meaningIcon() {
-      return typeof this.icon === "string" ? ICONS[this.icon] : undefined;
+      return this.icon ? ICONS[this.icon] : undefined;
     },
   },
   methods: {
     // $slots is not reactive, so these are methods, not computeds.
     hasSlotLabel() {
-      return !this.text && Boolean(this.$slots.default);
+      return Boolean(this.$slots.default);
     },
     isIconOnly() {
-      return !this.text && !this.hasSlotLabel();
+      return !this.hasSlotLabel();
     },
     onClick(event) {
       if (this.stop) event.stopPropagation();
@@ -198,7 +178,6 @@ button.button-basic {
   // Roles
   // -------------------------------------------------------------
 
-  &.btn-primary,
   &.button-basic--primary {
     color: var(--text-on-accent-fill);
     background-color: var(--accent-fill);
@@ -212,8 +191,6 @@ button.button-basic {
     }
   }
 
-  &.btn-secondary,
-  &.btn-outline,
   &.button-basic--secondary {
     color: var(--text-body);
     border-color: var(--border-default);
@@ -229,7 +206,6 @@ button.button-basic {
     }
   }
 
-  &.btn-ghost,
   &.button-basic--ghost {
     color: var(--text-secondary);
 
@@ -242,7 +218,6 @@ button.button-basic {
     }
   }
 
-  &.btn-danger,
   &.button-basic--danger {
     color: var(--negative);
 
@@ -254,7 +229,6 @@ button.button-basic {
     }
   }
 
-  &.btn-danger-fill,
   &.button-basic--danger-solid {
     color: var(--text-on-status-fill);
     background-color: var(--negative-fill);
@@ -265,26 +239,6 @@ button.button-basic {
     &[disabled] {
       color: var(--text-muted);
       background-color: var(--negative-subtle);
-    }
-  }
-  //
-  //
-  //
-  &.filter-primary {
-    color: var(--text-inverse);
-    background: var(--surface-inverse);
-    line-height: 1rem;
-    padding: var(--space-2) var(--space-4);
-    min-width: 3rem;
-    i {
-      font-size: var(--fs-400);
-    }
-    .btn-icon {
-      color: var(--text-inverse);
-    }
-    .btn-text {
-      font-size: var(--fs-300);
-      color: var(--text-inverse);
     }
   }
 }

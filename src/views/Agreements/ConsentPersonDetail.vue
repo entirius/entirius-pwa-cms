@@ -48,7 +48,7 @@
                 </p>
                 <StatusBadge
                   :label="$t(`agm.${item.status}`)"
-                  :variant="
+                  :tone="
                     item.status === 'granted'
                       ? 'positive'
                       : item.status === 'pending'
@@ -74,7 +74,7 @@
               <template #cell-granted="{ value }">
                 <StatusBadge
                   :label="value ? $t('agm.granted') : $t('agm.withdrawn')"
-                  :variant="value ? 'positive' : 'negative'"
+                  :tone="value ? 'positive' : 'negative'"
                 />
               </template>
               <template #cell-source="{ value }">
@@ -120,7 +120,7 @@
               <template #cell-granted="{ value }">
                 <StatusBadge
                   :label="value ? $t('agm.granted') : $t('agm.withdrawn')"
-                  :variant="value ? 'positive' : 'negative'"
+                  :tone="value ? 'positive' : 'negative'"
                 />
               </template>
               <template #cell-source="{ value }">

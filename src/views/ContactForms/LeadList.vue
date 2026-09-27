@@ -54,7 +54,7 @@
         <template #cell-status="{ value }">
           <StatusBadge
             :label="leadStatusLabel($t, value)"
-            :variant="leadStatusVariant(value)"
+            :tone="leadStatusVariant(value)"
           />
         </template>
         <template #cell-deal_value="{ value }">
@@ -81,8 +81,9 @@
 
       <Pagination
         v-if="totalCount > pageSize"
-        :pagination="paginationState"
-        @onChangePage="onPageChange"
+        :page="paginationState.page"
+        :pages="paginationState.pages"
+        @update:page="onPageChange"
       />
     </div>
   </div>

@@ -18,18 +18,18 @@
       @row-click="openDetail"
     >
       <template #cell-connector_kind="{ value }">
-        <StatusBadge :label="value" variant="informative" />
+        <StatusBadge :label="value" tone="info" />
       </template>
       <template #cell-status_combined="{ row }">
         <div class="flex ai-ct gap-2 flex-wrap">
           <StatusBadge
             :label="row.is_active ? $t('common.active') : $t('common.inactive')"
-            :variant="row.is_active ? 'positive' : 'negative'"
+            :tone="row.is_active ? 'positive' : 'negative'"
           />
           <StatusBadge
             v-if="row.last_sync_status"
             :label="row.last_sync_status"
-            :variant="syncStatusVariant(row.last_sync_status)"
+            :tone="syncStatusVariant(row.last_sync_status)"
           />
         </div>
       </template>

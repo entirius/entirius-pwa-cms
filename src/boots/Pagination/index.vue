@@ -56,11 +56,9 @@
 </template>
 
 <script>
-// `v-model:page` + `pages` (docs/ui-components.md § P3 display). Until plan 19 two older prop styles still work:
-// `pagination` ({ page, pages }) or `current` / `total` / `perPage` (pages derived). Every style emits the new page
-// as `update:page`, `onChangePage` and `change`.
+// `v-model:page` + `pages` (docs/ui-components.md § P3 display).
 export default {
-  emits: ["update:page", "onChangePage", "change"],
+  emits: ["update:page"],
   props: {
     page: {
       type: Number,
@@ -68,24 +66,7 @@ export default {
     },
     pages: {
       type: Number,
-      default: null,
-    },
-    pagination: {
-      type: Object,
-      required: false,
-      default: () => ({ page: 1, pages: 1 }),
-    },
-    current: {
-      type: Number,
       default: 1,
-    },
-    total: {
-      type: Number,
-      default: null,
-    },
-    perPage: {
-      type: Number,
-      default: null,
     },
     nav_size: {
       type: Number,
@@ -98,8 +79,6 @@ export default {
       if (mode === "prev" && this.state.page <= 1) return;
       if (mode === "next" && this.state.page >= this.state.pages) return;
       this.$emit("update:page", num.num);
-      this.$emit("onChangePage", num.num);
-      this.$emit("change", num.num);
     },
     paginate(current, last) {
       const onSides = 1;
@@ -140,9 +119,7 @@ export default {
   },
   computed: {
     state() {
-      if (this.pages !== null) return { page: this.page, pages: this.pages };
-      if (this.total === null || !this.perPage) return this.pagination;
-      return { page: this.current, pages: Math.ceil(this.total / this.perPage) };
+      return { page: this.page, pages: this.pages };
     },
     calculatePages() {
       return this.paginate(this.state.page, this.state.pages);

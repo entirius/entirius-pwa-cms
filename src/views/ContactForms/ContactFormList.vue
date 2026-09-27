@@ -59,7 +59,7 @@
         <template #cell-status="{ value }">
           <StatusBadge
             :label="statusLabel(value)"
-            :variant="statusVariant(value)"
+            :tone="statusVariant(value)"
           />
         </template>
         <template #cell-created_at="{ value }">
@@ -69,8 +69,9 @@
 
       <Pagination
         v-if="totalCount > pageSize"
-        :pagination="paginationState"
-        @onChangePage="onPageChange"
+        :page="paginationState.page"
+        :pages="paginationState.pages"
+        @update:page="onPageChange"
       />
     </div>
   </div>

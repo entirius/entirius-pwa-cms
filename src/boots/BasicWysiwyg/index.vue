@@ -47,136 +47,47 @@
           class="wysiwyg-options bt-subtle pt-2 bg-base flex ai-ct gap-2"
         >
           <div v-if="mode == 'text'" class="wysiwyg-btn-row flex gap-2 fg-1">
-            <BasicButton
+            <IconButton
+              v-for="tool in MARK_TOOLS"
+              :key="tool.key"
               size="sm"
-              :label="$t('wysiwyg.bold')"
-              class="b-subtle lh-init"
-              :class="{ 'bg-hover t-body': editor.isActive('bold') }"
-              :custom="true"
-              @click="editor.chain().focus().toggleBold().run()"
+              variant="outline"
+              :icon="tool.icon"
+              :label="$t(`wysiwyg.${tool.key}`)"
+              :pressed="editor.isActive(...tool.active)"
+              @click="tool.run()"
+            />
+            <BasicButton
+              v-for="level in [1, 2, 3]"
+              :key="`heading_${level}`"
+              size="sm"
+              variant="secondary"
+              :class="{ 'bg-hover t-body': editor.isActive('heading', { level }) }"
+              :aria-label="$t(`wysiwyg.heading_${level}`)"
+              :aria-pressed="String(editor.isActive('heading', { level }))"
+              @click="editor.chain().focus().toggleHeading({ level }).run()"
             >
-              <template v-slot:custom>
-                <span class="wi-bold fs-400 inline-block" />
-              </template>
+              H{{ level }}
             </BasicButton>
-            <BasicButton
+            <IconButton
               size="sm"
-              :label="$t('wysiwyg.italic')"
-              class="b-subtle lh-init"
-              :class="{ 'bg-hover t-body': editor.isActive('italic') }"
-              :custom="true"
-              @click="editor.chain().focus().toggleItalic().run()"
-            >
-              <template v-slot:custom>
-                <span class="wi-italic fs-400 inline-block" />
-              </template>
-            </BasicButton>
-            <BasicButton
-              size="sm"
-              :label="$t('wysiwyg.underline')"
-              class="b-subtle lh-init"
-              :class="{
-                'bg-hover t-body': editor.isActive('underline'),
-              }"
-              :custom="true"
-              @click="editor.chain().focus().toggleUnderline().run()"
-            >
-              <template v-slot:custom>
-                <span class="wi-underline fs-400 inline-block" />
-              </template>
-            </BasicButton>
-
-            <BasicButton
-              size="sm"
-              :label="$t('wysiwyg.heading_1')"
-              class="b-subtle lh-init"
-              :class="{
-                'bg-hover t-body': editor.isActive('heading', {
-                  level: 1,
-                }),
-              }"
-              :custom="true"
-              @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
-            >
-              <template v-slot:custom>
-                <span class="wi-h1 fs-400 inline-block" />
-              </template>
-            </BasicButton>
-            <BasicButton
-              size="sm"
-              :label="$t('wysiwyg.heading_2')"
-              class="b-subtle lh-init"
-              :class="{
-                'bg-hover t-body': editor.isActive('heading', {
-                  level: 2,
-                }),
-              }"
-              :custom="true"
-              @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
-            >
-              <template v-slot:custom>
-                <span class="wi-h2 fs-400 inline-block" />
-              </template>
-            </BasicButton>
-            <BasicButton
-              size="sm"
-              :label="$t('wysiwyg.heading_3')"
-              class="b-subtle lh-init"
-              :class="{
-                'bg-hover t-body': editor.isActive('heading', {
-                  level: 3,
-                }),
-              }"
-              :custom="true"
-              @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
-            >
-              <template v-slot:custom>
-                <span class="wi-h3 fs-400 inline-block" />
-              </template>
-            </BasicButton>
-
-            <BasicButton
-              size="sm"
+              variant="outline"
+              icon="link"
               :label="$t('wysiwyg.link')"
-              class="b-subtle lh-init"
-              :class="{
-                'bg-hover t-body': editor.isActive('link'),
-              }"
-              :custom="true"
+              :pressed="editor.isActive('link')"
               @click="setLink"
-            >
-              <template v-slot:custom>
-                <span class="wi-link fs-400 inline-block" />
-              </template>
-            </BasicButton>
+            />
 
             <!-- FAQ Tooltip button + search dropdown -->
             <div v-if="faqEnabled" class="relative faq-tooltip-btn">
-              <BasicButton
+              <IconButton
                 size="sm"
-                class="b-subtle lh-init"
-                :class="{
-                  'bg-hover t-body': editor.isActive('faqTooltip'),
-                }"
-                :custom="true"
-                :label="
-                  editor.isActive('faqTooltip')
-                    ? $t('wysiwyg.faq_remove')
-                    : $t('wysiwyg.faq_add')
-                "
-                @click="
-                  editor.isActive('faqTooltip')
-                    ? removeFaqTooltip()
-                    : openFaqSearch()
-                "
-              >
-                <template v-slot:custom>
-                  <font-awesome-icon
-                    class="fs-400"
-                    icon="fa-solid fa-circle-question"
-                  />
-                </template>
-              </BasicButton>
+                variant="outline"
+                icon="help"
+                :label="editor.isActive('faqTooltip') ? $t('wysiwyg.faq_remove') : $t('wysiwyg.faq_add')"
+                :pressed="editor.isActive('faqTooltip')"
+                @click="editor.isActive('faqTooltip') ? removeFaqTooltip() : openFaqSearch()"
+              />
 
               <div
                 v-if="showFaqSearch"
@@ -225,122 +136,16 @@
               </div>
             </div>
 
-            <BasicButton
+            <IconButton
+              v-for="tool in BLOCK_TOOLS"
+              :key="tool.key"
               size="sm"
-              :label="$t('wysiwyg.bullet_list')"
-              class="b-subtle lh-init"
-              :class="{
-                'bg-hover t-body': editor.isActive('bulletList'),
-              }"
-              :custom="true"
-              @click="editor.chain().focus().toggleBulletList().run()"
-            >
-              <template v-slot:custom>
-                <span class="wi-bulletList fs-400 inline-block" />
-              </template>
-            </BasicButton>
-
-            <BasicButton
-              size="sm"
-              :label="$t('wysiwyg.ordered_list')"
-              class="b-subtle lh-init"
-              :class="{
-                'bg-hover t-body': editor.isActive('orderedList'),
-              }"
-              :custom="true"
-              @click="editor.chain().focus().toggleOrderedList().run()"
-            >
-              <template v-slot:custom>
-                <span class="wi-orderedList fs-400 inline-block" />
-              </template>
-            </BasicButton>
-
-            <BasicButton
-              size="sm"
-              :label="$t('wysiwyg.highlight')"
-              class="b-subtle lh-init"
-              :class="{
-                'bg-hover t-body': editor.isActive('highlight'),
-              }"
-              :custom="true"
-              @click="
-                editor.commands.toggleHighlight({ color: highlightColor })
-              "
-            >
-              <template v-slot:custom>
-                <span class="wi-highlight fs-400 inline-block" />
-              </template>
-            </BasicButton>
-
-            <BasicButton
-              size="sm"
-              :label="$t('wysiwyg.link_color')"
-              class="b-subtle lh-init"
-              :class="{
-                'bg-hover t-body': editor.isActive('textStyle', {
-                  color: EDITOR_LINK_COLOR,
-                }),
-              }"
-              :custom="true"
-              @click="
-                editor.isActive('textStyle', { color: EDITOR_LINK_COLOR })
-                  ? editor.chain().focus().unsetColor().run()
-                  : editor.chain().focus().setColor(EDITOR_LINK_COLOR).run()
-              "
-            >
-              <template v-slot:custom>
-                <span class="wi-highlight fs-400 inline-block" />
-              </template>
-            </BasicButton>
-
-            <BasicButton
-              size="sm"
-              :label="$t('wysiwyg.align_left')"
-              class="b-subtle lh-init"
-              :class="{
-                'bg-hover t-body': editor.isActive({
-                  textAlign: 'left',
-                }),
-              }"
-              :custom="true"
-              @click="editor.chain().focus().setTextAlign('left').run()"
-            >
-              <template v-slot:custom>
-                <span class="wi-align-left fs-400 inline-block" />
-              </template>
-            </BasicButton>
-            <BasicButton
-              size="sm"
-              :label="$t('wysiwyg.align_center')"
-              class="b-subtle lh-init"
-              :class="{
-                'bg-hover t-body': editor.isActive({
-                  textAlign: 'center',
-                }),
-              }"
-              :custom="true"
-              @click="editor.chain().focus().setTextAlign('center').run()"
-            >
-              <template v-slot:custom>
-                <span class="wi-align-center fs-400 inline-block" />
-              </template>
-            </BasicButton>
-            <BasicButton
-              size="sm"
-              :label="$t('wysiwyg.align_right')"
-              class="b-subtle lh-init"
-              :class="{
-                'bg-hover t-body': editor.isActive({
-                  textAlign: 'right',
-                }),
-              }"
-              :custom="true"
-              @click="editor.chain().focus().setTextAlign('right').run()"
-            >
-              <template v-slot:custom>
-                <span class="wi-align-right fs-400 inline-block" />
-              </template>
-            </BasicButton>
+              variant="outline"
+              :icon="tool.icon"
+              :label="$t(`wysiwyg.${tool.key}`)"
+              :pressed="editor.isActive(...tool.active)"
+              @click="tool.run()"
+            />
           </div>
           <div v-if="mode == 'table'" class="flex wrap gap-2 fg-1">
             <BasicButton
@@ -353,15 +158,15 @@
               {{ $t(`wysiwyg.${tool.key}`) }}
             </BasicButton>
           </div>
-          <Dropdown
+          <BasicSelect
             v-if="variant !== 'lite'"
+            v-model="mode"
             class="wysiwyg-mode-switcher"
-            :selected="[mode]"
-            :values="[
+            :aria-label="$t('wysiwyg.text_mode') + ' / ' + $t('wysiwyg.table_mode')"
+            :options="[
               { label: $t('wysiwyg.text_mode'), value: 'text' },
               { label: $t('wysiwyg.table_mode'), value: 'table' },
             ]"
-            @onSelect="($event) => (mode = $event)"
           />
         </div>
       </div>
@@ -732,7 +537,37 @@ export default {
       document.body.style.overflow = "";
     });
 
+    // Formatting toggles are icon buttons (R7); H1–H3 have no distinct glyph, so they stay text buttons.
+    const chain = () => editor.value.chain().focus();
+    const linkColor = { color: EDITOR_LINK_COLOR };
+    const toggleLinkColor = () =>
+      (editor.value.isActive("textStyle", linkColor) ? chain().unsetColor() : chain().setColor(EDITOR_LINK_COLOR)).run();
+    const MARK_TOOLS = [
+      { key: "bold", icon: "bold", active: ["bold"], run: () => chain().toggleBold().run() },
+      { key: "italic", icon: "italic", active: ["italic"], run: () => chain().toggleItalic().run() },
+      { key: "underline", icon: "underline", active: ["underline"], run: () => chain().toggleUnderline().run() },
+    ];
+    const BLOCK_TOOLS = [
+      { key: "bullet_list", icon: "listBullet", active: ["bulletList"], run: () => chain().toggleBulletList().run() },
+      { key: "ordered_list", icon: "listOrdered", active: ["orderedList"], run: () => chain().toggleOrderedList().run() },
+      {
+        key: "highlight",
+        icon: "highlight",
+        active: ["highlight"],
+        run: () => editor.value.commands.toggleHighlight({ color: highlightColor.value }),
+      },
+      { key: "link_color", icon: "textColor", active: ["textStyle", linkColor], run: toggleLinkColor },
+      ...["left", "center", "right"].map((align) => ({
+        key: `align_${align}`,
+        icon: `align${align[0].toUpperCase()}${align.slice(1)}`,
+        active: [{ textAlign: align }],
+        run: () => chain().setTextAlign(align).run(),
+      })),
+    ];
+
     return {
+      MARK_TOOLS,
+      BLOCK_TOOLS,
       TABLE_TOOLS,
       mode,
       editor_size,

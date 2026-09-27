@@ -64,7 +64,7 @@
       <template #cell-status="{ row }">
         <StatusBadge
           :label="statusLabel(row.status)"
-          :variant="statusVariant(row.status)"
+          :tone="statusVariant(row.status)"
         />
       </template>
       <template #cell-balance="{ row }">
@@ -87,8 +87,9 @@
 
     <Pagination
       v-if="totalCount > pageSize"
-      :pagination="paginationState"
-      @onChangePage="onPageChange"
+      :page="paginationState.page"
+      :pages="paginationState.pages"
+      @update:page="onPageChange"
     />
   </div>
 </template>

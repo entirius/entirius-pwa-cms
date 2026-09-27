@@ -34,15 +34,16 @@
       <template #cell-is_active="{ row }">
         <StatusBadge
           :label="row.is_active ? $t('promo.active') : $t('promo.inactive')"
-          :variant="row.is_active ? 'positive' : 'negative'"
+          :tone="row.is_active ? 'positive' : 'negative'"
         />
       </template>
     </DataTable>
 
     <Pagination
       v-if="totalCount > pageSize"
-      :pagination="paginationState"
-      @onChangePage="onPageChange"
+      :page="paginationState.page"
+      :pages="paginationState.pages"
+      @update:page="onPageChange"
     />
 
     <SideDrawer :visible="drawerOpen" :title="drawerTitle" @close="closeDrawer">

@@ -67,7 +67,7 @@
         <template #status="{ row }">
           <StatusBadge
             :label="statusLabel(row.status)"
-            :variant="statusVariant(row.status)"
+            :tone="statusVariant(row.status)"
           />
         </template>
         <template #total_gross="{ row }">
@@ -84,8 +84,9 @@
       <!-- Pagination -->
       <Pagination
         v-if="totalCount > pageSize"
-        :pagination="paginationState"
-        @onChangePage="onPageChange"
+        :page="paginationState.page"
+        :pages="paginationState.pages"
+        @update:page="onPageChange"
       />
     </div>
   </div>

@@ -19,7 +19,7 @@
         :empty-text="$t('atlas.logs.no_runs')"
       >
         <template #cell-status="{ value }">
-          <StatusBadge :label="value" :variant="logStatusVariant(value)" />
+          <StatusBadge :label="value" :tone="logStatusVariant(value)" />
         </template>
         <template #cell-mode="{ value }">
           <span class="t-secondary fs-200">{{ value }}</span>
@@ -55,7 +55,7 @@
         @row-click="onEventRowClick"
       >
         <template #cell-severity="{ value }">
-          <StatusBadge :label="value" :variant="severityVariant(value)" />
+          <StatusBadge :label="value" :tone="severityVariant(value)" />
         </template>
         <template #cell-acknowledged_at="{ row }">
           <button

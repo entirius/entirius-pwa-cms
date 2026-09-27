@@ -321,33 +321,36 @@
             "
           />
 
-          <BasicDatePicker
-            class="fs-200 mt-5"
+          <FormField
             v-if="
               props_handlers[type] === 'BasicDatePicker' &&
               props_dependency_check('props', _for[processing_config_type])
             "
-            :value="__value"
-            :label="tProp(prop)"
             :key="`${props_dependency_check(
               'options',
               _for[processing_config_type]
             )}`"
-            :config="
-              props_options[
-                props_dependency_check('options', _for[processing_config_type])
-              ]
-            "
-            @onChange="
-              ($event) =>
-                (core_properties = core_properties.map((property) => {
-                  return {
-                    ...property,
-                    __value: property.prop === prop ? $event : property.__value,
-                  };
-                }))
-            "
-          />
+            class="fs-200 mt-5"
+            :label="tProp(prop)"
+          >
+            <BasicDatePicker
+              :model-value="__value"
+              :config="
+                props_options[
+                  props_dependency_check('options', _for[processing_config_type])
+                ]
+              "
+              @update:model-value="
+                ($event) =>
+                  (core_properties = core_properties.map((property) => {
+                    return {
+                      ...property,
+                      __value: property.prop === prop ? $event : property.__value,
+                    };
+                  }))
+              "
+            />
+          </FormField>
 
           <StanceSwitcher
             v-if="

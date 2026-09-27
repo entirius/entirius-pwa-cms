@@ -35,7 +35,7 @@
         <template #cell-status="{ value }">
           <StatusBadge
             :label="$t(`enrichment.task_status.${value}`)"
-            :variant="statusVariant(value)"
+            :tone="statusVariant(value)"
           />
         </template>
         <template #cell-progress="{ row }">
@@ -49,9 +49,10 @@
 
     <Pagination
       v-if="totalCount > pageSize"
-      :pagination="paginationState"
+      :page="paginationState.page"
+      :pages="paginationState.pages"
       class="mt-5"
-      @onChangePage="onPageChange"
+      @update:page="onPageChange"
     />
 
     <TaskQueueDrawer

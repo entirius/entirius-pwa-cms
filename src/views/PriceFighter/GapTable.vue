@@ -44,7 +44,7 @@
           v-if="!rows.length"
           :title="$t('pricefighter.no_decisions')"
           :message="$t('pricefighter.no_decisions_desc')"
-          icon="scale-balanced"
+          icon="pricing"
         />
 
         <template v-else>
@@ -89,15 +89,15 @@
               <div class="suggested-cell">
                 <span>{{ fmt(row.suggested_price) }} <span class="gap-table__ccy">{{ row.currency }}</span></span>
                 <div v-if="row.clamped_floor || row.clamped_step" class="suggested-cell__badges">
-                  <StatusBadge v-if="row.clamped_floor" :label="$t('pricefighter.clamped_floor')" variant="warning" />
-                  <StatusBadge v-if="row.clamped_step" :label="$t('pricefighter.clamped_step')" variant="warning" />
+                  <StatusBadge v-if="row.clamped_floor" :label="$t('pricefighter.clamped_floor')" tone="warning" />
+                  <StatusBadge v-if="row.clamped_step" :label="$t('pricefighter.clamped_step')" tone="warning" />
                 </div>
               </div>
             </template>
             <template #cell-recommendation="{ row }">
               <StatusBadge
                 :label="$t(`pricefighter.recommendation_${row.recommendation}`)"
-                :variant="recommendationVariant(row.recommendation)"
+                :tone="recommendationVariant(row.recommendation)"
               />
             </template>
             <template #expand="{ row }">
@@ -107,8 +107,9 @@
 
           <Pagination
             v-if="totalCount > pageSize"
-            :pagination="paginationState"
-            @onChangePage="onPageChange"
+            :page="paginationState.page"
+            :pages="paginationState.pages"
+            @update:page="onPageChange"
           />
         </template>
       </div>

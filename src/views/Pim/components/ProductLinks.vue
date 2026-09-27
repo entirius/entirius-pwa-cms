@@ -63,7 +63,7 @@
             <span>
               <StatusBadge
                 :label="typeLabel(row.link_type_idx, row.link_type_name)"
-                variant="neutral"
+                tone="neutral"
               />
             </span>
             <span>{{ row.linked_product?.sku }}</span>

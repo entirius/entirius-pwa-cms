@@ -84,7 +84,7 @@ describe("PriceDetail — source badge", () => {
     const badge = wrapper.find("status-badge-stub");
     expect(badge.exists()).toBe(true);
     expect(badge.attributes("label")).toBe("pm.source_admin_edit");
-    expect(badge.attributes("variant")).toBe("neutral");
+    expect(badge.attributes("tone")).toBe("neutral");
   });
 });
 
@@ -118,7 +118,7 @@ describe("PriceDetail — purchase cost + margin", () => {
       .find((b) => (b.attributes("label") || "").startsWith("pm.margin_percent"));
     expect(marginBadge).toBeTruthy();
     expect(marginBadge.attributes("label")).toContain('"value":"50.0"');
-    expect(marginBadge.attributes("variant")).toBe("positive");
+    expect(marginBadge.attributes("tone")).toBe("positive");
   });
 
   it("renders a negative margin badge when cost exceeds the sell price", async () => {
@@ -132,7 +132,7 @@ describe("PriceDetail — purchase cost + margin", () => {
       .find((b) => (b.attributes("label") || "").startsWith("pm.margin_percent"));
     expect(marginBadge).toBeTruthy();
     expect(marginBadge.attributes("label")).toContain('"value":"-100.0"');
-    expect(marginBadge.attributes("variant")).toBe("negative");
+    expect(marginBadge.attributes("tone")).toBe("negative");
   });
 
   it("shows the unpriced hint when a purchase cost exists but there is no sell price", async () => {

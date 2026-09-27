@@ -2,7 +2,7 @@
   <div class="page-pad fs-300 t-body h-100 ov-h">
     <Teleport to="#pricing-toolbar-right" defer>
       <div v-if="dirtyCount > 0" class="flex ai-ct gap-2">
-        <StatusBadge :label="`${dirtyCount} ${$t('pm.unsaved')}`" variant="warning" />
+        <StatusBadge :label="`${dirtyCount} ${$t('pm.unsaved')}`" tone="warning" />
         <BasicButton
           variant="primary"
           :disabled="saving"
@@ -183,12 +183,12 @@
                   <StatusBadge
                     v-if="!row.has_price"
                     :label="$t('pm.no_price_set')"
-                    variant="neutral"
+                    tone="neutral"
                   />
                   <StatusBadge
                     v-else-if="dirtyRows.has(rowKey(row))"
                     :label="$t('pm.unsaved')"
-                    variant="warning"
+                    tone="warning"
                   />
                 </div>
               </div>
@@ -230,8 +230,9 @@
 
           <Pagination
             v-if="totalCount > pageSize"
-            :pagination="paginationState"
-            @onChangePage="onPageChange"
+            :page="paginationState.page"
+            :pages="paginationState.pages"
+            @update:page="onPageChange"
           />
         </template>
       </div>

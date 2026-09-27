@@ -36,13 +36,13 @@
               ? $t('atlas.linked.preferred')
               : $t('atlas.linked.not_preferred')
           "
-          :variant="value ? 'positive' : 'neutral'"
+          :tone="value ? 'positive' : 'neutral'"
         />
       </template>
       <template #cell-is_active="{ value }">
         <StatusBadge
           :label="value ? $t('common.active') : $t('common.inactive')"
-          :variant="value ? 'positive' : 'negative'"
+          :tone="value ? 'positive' : 'negative'"
         />
       </template>
       <template #cell-actions="{ row }">

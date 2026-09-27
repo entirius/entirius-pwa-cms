@@ -8,22 +8,20 @@
         v-model="newTag"
       />
     </FormField>
-    <ButtonBasic
-      :text="$t('common.save')"
-      :styles="'full'"
-      @click="addNewTag"
-      class="bg-accent-fill txt-gray-700 w-full sticky-btn mt-md"
-    />
+    <BasicButton variant="primary" class="w-full sticky-btn mt-md" @click="addNewTag">
+      {{ $t("common.save") }}
+    </BasicButton>
     <hr class="mv-lg" />
     <p class="mt-lg">{{ $t("images.photos") }}</p>
     <div class="images-categories">
-      <ButtonBasic
-        class="outline txt-gray-700 w-full sticky-btn mt-md"
+      <BasicButton
         v-for="(t, i) in tags"
         :key="`${i}-tag-${t}`"
-        :text="t.label"
-        :isDisabled="true"
-      />
+        class="w-full sticky-btn mt-md"
+        disabled
+      >
+        {{ t.label }}
+      </BasicButton>
     </div>
   </div>
 </template>

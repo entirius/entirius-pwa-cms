@@ -39,7 +39,7 @@
             <StatusBadge
               v-if="definition.is_system"
               :label="$t('agm.system_badge')"
-              variant="informative"
+              tone="info"
             />
           </div>
           <BasicSwitch
@@ -202,12 +202,12 @@
                       <StatusBadge
                         v-if="ver.published_at"
                         :label="formatDate(ver.published_at)"
-                        variant="positive"
+                        tone="positive"
                       />
                       <StatusBadge
                         v-else
                         :label="$t('agm.draft')"
-                        variant="neutral"
+                        tone="neutral"
                       />
                     </td>
                     <td>{{ formatDate(ver.created_at) }}</td>
@@ -363,7 +363,7 @@
                         <StatusBadge
                           v-if="idx === 0"
                           :label="$t('agm.snapshot_current')"
-                          variant="positive"
+                          tone="positive"
                           class="ml-2"
                         />
                       </td>
@@ -376,7 +376,7 @@
                           <StatusBadge
                             v-if="snap.warnings && snap.warnings.length"
                             :label="$t('agm.snapshot_warnings')"
-                            variant="warning"
+                            tone="warning"
                           />
                           <font-awesome-icon
                             :icon="

@@ -31,13 +31,13 @@
               v-for="ch in profile.target_channel_idxs || []"
               :key="ch"
               :label="ch"
-              variant="informative"
+              tone="info"
             />
             <StatusBadge
               :label="
                 profile.is_active ? $t('common.active') : $t('common.inactive')
               "
-              :variant="profile.is_active ? 'positive' : 'negative'"
+              :tone="profile.is_active ? 'positive' : 'negative'"
             />
             <button
               v-if="validationBadge(profile)"
@@ -48,7 +48,7 @@
             >
               <StatusBadge
                 :label="validationBadge(profile).label"
-                :variant="validationBadge(profile).variant"
+                :tone="validationBadge(profile).variant"
               />
             </button>
           </div>
@@ -176,7 +176,7 @@
       <EmptyState
         v-if="!profiles.length"
         :title="$t('atlas.mappings.empty')"
-        icon="layer-group"
+        icon="layers"
       />
     </div>
 

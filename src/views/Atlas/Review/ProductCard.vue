@@ -23,7 +23,7 @@
       </span>
       <StatusBadge
         :label="$t('atlas.stock_count', { count: product?.stock ?? 0 })"
-        :variant="(product?.stock ?? 0) > 0 ? 'positive' : 'negative'"
+        :tone="(product?.stock ?? 0) > 0 ? 'positive' : 'negative'"
       />
     </div>
     <div class="flex ai-ct gap-5 mt-8 flex-wrap">

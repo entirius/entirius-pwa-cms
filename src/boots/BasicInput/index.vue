@@ -1,11 +1,5 @@
 <template>
-  <div
-    class="input-basic-wrapper"
-    :class="[
-      { positive: validate !== null && validate.status },
-      { negative: validateError },
-    ]"
-  >
+  <div class="input-basic-wrapper">
     <div class="input-basic h-100 relative flex br-inherit">
       <input
         ref="inputEl"
@@ -13,9 +7,9 @@
         :type="type"
         class="input-field w-100 bg-inherit"
         :class="{ 'has-placeholder': placeholder, 'input-field--icon': leadingIcon }"
-        :placeholder="label ? label : placeholder"
+        :placeholder="placeholder"
         :name="attrs.id"
-        :value="modelValue ?? ''"
+        :value="shown"
         :readonly="readonly"
         @input="emit('update:modelValue', $event.target.value)"
         @focusout="emit('onFocusout', $event.target.value)"
@@ -28,21 +22,6 @@
       >
         <FontAwesomeIcon :icon="ICONS[leadingIcon]" />
       </div>
-
-      <label
-        v-if="label"
-        :for="attrs.id"
-        :title="label"
-        class="input-label field-label field-label--fit block absolute"
-        >{{ label }}</label
-      >
-
-      <p
-        class="validation-msg t-negative fs-200 absolute"
-        v-if="validateError && validate.msg"
-      >
-        {{ validate.msg }}
-      </p>
     </div>
   </div>
 </template>
@@ -50,37 +29,33 @@
 <script setup>
 // Single-line text (docs/ui-components.md § P3 inputs): `v-model`, `type`, `placeholder`, `icon` (a leading meaning
 // of icons.js), `readonly` (the value behind a lock, the former LockedField), `disabled`. Inside a FormField it takes
-// id, aria-describedby, aria-invalid, required and disabled from the contract.
-// Transition until plan 19: the floating `label`, `validate` ({ status, msg }, its own error text), `isDisabled`,
-// `focusOnCreate` and the `onFocusout` / `onKeyDown` events keep un-swept screens as they were.
+// id, aria-describedby, aria-invalid, required and disabled from the contract; the label and the error text are the
+// FormField's. `null` and `false` show an empty field, `0` shows "0". `focusOnCreate` focuses it on mount;
+// `onFocusout` / `onKeyDown` (Enter) emit the current text.
 import { computed, onMounted, ref } from "vue";
 import { ICONS } from "@/boots/Icons/icons";
 import { useControlAttrs } from "@/boots/FormField/useControlAttrs";
 
 const props = defineProps({
-  label: { type: [Boolean, String], default: false },
   // A String: a boolean default would render as the literal "false" placeholder.
   placeholder: { type: String, default: "" },
   modelValue: { type: [String, Number, Boolean], default: "" },
   type: { type: String, default: "text" },
-  validate: { type: [Object, Boolean], default: null },
   id: { type: String, default: "" },
   focusOnCreate: { type: Boolean, default: false },
   // A meaning of the icon registry (src/boots/Icons/icons.js), e.g. "search".
   icon: { type: String, default: null },
   readonly: { type: Boolean, default: false },
   disabled: { type: Boolean, default: false },
-  isDisabled: { type: Boolean, default: false },
 });
 const emit = defineEmits(["update:modelValue", "onFocusout", "onKeyDown"]);
 
 const inputEl = ref(null);
-const validateError = computed(() => props.validate?.status === "error");
+const shown = computed(() => (props.modelValue === null || props.modelValue === false ? "" : props.modelValue));
 const leadingIcon = computed(() => (props.readonly ? "lock" : props.icon));
 const { attrs } = useControlAttrs({
   id: () => props.id,
-  disabled: () => props.disabled || props.isDisabled,
-  invalid: () => validateError.value,
+  disabled: () => props.disabled,
 });
 
 onMounted(() => props.focusOnCreate && inputEl.value.focus());
@@ -90,14 +65,6 @@ onMounted(() => props.focusOnCreate && inputEl.value.focus());
 .input-basic-wrapper {
   background-color: transparent;
   color: var(--text-body);
-  &.positive input,
-  &.positive input:focus {
-    border-color: var(--positive);
-  }
-  &.negative input,
-  &.negative input:focus {
-    border-color: var(--negative) !important;
-  }
   .input-field {
     overflow: hidden;
     border-radius: inherit;
@@ -136,54 +103,13 @@ onMounted(() => props.focusOnCreate && inputEl.value.focus());
       border-color: var(--negative);
     }
 
-    // Same disabled look as Dropdown: a locked value is readable but plainly not editable.
+    // A locked value is readable but plainly not editable.
     &:disabled {
       background-color: var(--surface-disabled);
       border-color: var(--border-subtle);
       color: var(--text-muted);
       cursor: not-allowed;
     }
-
-    &:placeholder-shown ~ .input-label {
-      // cursor: text;
-      // top: 50%;
-      // transform: translate(0, -50%);
-      // left: var(--space-1);
-      // background-color: transparent;
-      // color: inherit;
-    }
-  }
-
-  .input-label {
-    top: calc(-1 * var(--label-gap));
-    transform: translate(0, -100%);
-    // left: var(--space-1);
-    // transition: 0.1s;
-    //font-size: var(--fs-100);
-    // background-color: var(--surface-hover);
-    // color: var(--text-body);
-    // padding: 0 var(--space-1);
-    // border-radius: var(--radius-base);
-  }
-
-  // .input-field:focus {
-  //   border-color: var(--border-strong);
-  //   ~ .input-label {
-  //     position: absolute;
-  //     top: 0;
-  //     left: var(--space-1);
-  //     transform: translate(0%, -40%);
-  //     display: block;
-  //     transition: 0.1s;
-  //     background-color: var(--accent-subtle);
-  //     color: var(--text-strong);
-  //     //font-size: var(--fs-200);
-  //   }
-  // }
-
-  .validation-msg {
-    bottom: 0;
-    transform: translateY(140%);
   }
 
   // Leading and decorative (no caller acts on it): a click goes through to the input.

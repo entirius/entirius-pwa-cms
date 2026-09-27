@@ -245,45 +245,6 @@
   }
 }
 
-// Light hollow chip shared by every panel (product class, delivery-point Type, PriceManager tax
-// classes, ...). Colour still comes from the call site's `t-*` utility; the soft border derives
-// from it via currentColor. The background is forced transparent so the legacy `bg-*-100` fills go
-// hollow everywhere without touching ~20 call sites (utilities carry no !important, so this wins).
-.chip {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  padding: 2px var(--space-2);
-  border-radius: var(--radius-full);
-  font-size: var(--fs-200);
-  font-weight: 500;
-  line-height: 1.5;
-  white-space: nowrap;
-  flex-shrink: 0;
-  // Contained in its table cell like StatusBadge: a chip that can be cut wraps its text in `.chip__label` (the
-  // ellipsis) and carries the full text as `title`.
-  max-width: 100%;
-  overflow: hidden;
-  background: transparent !important;
-  border: 1px solid color-mix(in srgb, currentColor 28%, transparent);
-}
-
-.chip__label {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.chip--pill {
-  border-radius: var(--radius-xl);
-}
-
-.chip--sm {
-  font-size: var(--fs-200);
-  padding: 1px var(--space-1);
-}
-
 .section-label {
   font-size: var(--fs-200);
   font-weight: 600;
@@ -292,7 +253,7 @@
   color: var(--text-secondary);
 }
 
-// The one form-label style (FormField, BasicInput/LockedField labels, raw <label>s): 12 px / 600, uppercase, muted.
+// The one form-label style (FormField, BasicInput labels, raw <label>s): 12 px / 600, uppercase, muted.
 .field-label,
 .ld-field__label {
   font-size: var(--fs-200);

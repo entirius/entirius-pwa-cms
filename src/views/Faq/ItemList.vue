@@ -59,15 +59,16 @@
         <template #cell-is_active="{ value }">
           <StatusBadge
             :label="value ? $t('faq.active') : $t('faq.inactive')"
-            :variant="value ? 'positive' : 'negative'"
+            :tone="value ? 'positive' : 'negative'"
           />
         </template>
       </DataTable>
 
       <Pagination
         v-if="totalCount > pageSize"
-        :pagination="paginationState"
-        @onChangePage="onPageChange"
+        :page="paginationState.page"
+        :pages="paginationState.pages"
+        @update:page="onPageChange"
       />
 
       <FloatingActions :actions="fabActions" />

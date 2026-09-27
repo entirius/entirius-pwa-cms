@@ -258,7 +258,7 @@ export default {
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.04);
 
   /* A decision bar: Reject is outlined so it reads as a button beside Skip and Approve. */
-  .btn-danger {
+  .button-basic--danger {
     border-color: var(--negative);
 
     &[disabled] {

@@ -5,7 +5,7 @@
   </div>
   <EmptyState
     v-else
-    icon="table-columns"
+    icon="columns"
     :title="$t('leads.desktop_only.title')"
     :message="$t('leads.desktop_only.message')"
     data-testid="desktop-only"

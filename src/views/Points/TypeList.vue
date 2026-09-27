@@ -57,14 +57,14 @@
           <StatusBadge
             v-if="value"
             :label="$t('dp.carrier')"
-            variant="informative"
+            tone="info"
           />
-          <StatusBadge v-else :label="$t('dp.custom')" variant="neutral" />
+          <StatusBadge v-else :label="$t('dp.custom')" tone="neutral" />
         </template>
         <template #cell-is_active="{ value }">
           <StatusBadge
             :label="value ? $t('dp.active') : $t('dp.inactive')"
-            :variant="value ? 'positive' : 'negative'"
+            :tone="value ? 'positive' : 'negative'"
           />
         </template>
       </DataTable>

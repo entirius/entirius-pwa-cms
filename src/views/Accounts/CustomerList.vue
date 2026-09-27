@@ -78,12 +78,12 @@
           <div class="flex flex-wrap gap-2">
             <StatusBadge
               :label="row.is_active ? $t('accounts.active') : $t('accounts.inactive')"
-              :variant="row.is_active ? 'positive' : 'negative'"
+              :tone="row.is_active ? 'positive' : 'negative'"
             />
             <StatusBadge
               v-if="row.is_verified"
               :label="$t('accounts.verified')"
-              variant="informative"
+              tone="info"
             />
           </div>
         </template>
@@ -94,8 +94,9 @@
 
       <Pagination
         v-if="totalCount > pageSize"
-        :pagination="paginationState"
-        @onChangePage="onPageChange"
+        :page="paginationState.page"
+        :pages="paginationState.pages"
+        @update:page="onPageChange"
       />
     </div>
   </div>

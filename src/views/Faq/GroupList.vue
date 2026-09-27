@@ -73,7 +73,7 @@
               <StatusBadge tone="accent" :dot="false" :label="$t(`faq.items_${pluralKey(element.item_count || 0)}`, { count: element.item_count || 0 })" />
               <StatusBadge
                 :label="element.is_active ? $t('faq.active') : $t('faq.inactive')"
-                :variant="element.is_active ? 'positive' : 'negative'"
+                :tone="element.is_active ? 'positive' : 'negative'"
               />
             </div>
           </template>
@@ -82,8 +82,9 @@
 
       <Pagination
         v-if="totalCount > pageSize"
-        :pagination="paginationState"
-        @onChangePage="onPageChange"
+        :page="paginationState.page"
+        :pages="paginationState.pages"
+        @update:page="onPageChange"
       />
 
       <FloatingActions :actions="fabActions" />

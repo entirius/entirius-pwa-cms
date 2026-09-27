@@ -7,34 +7,29 @@
         {{ count }} {{ $t(selectedLabelKey) }}
       </span>
       <template v-for="action in actions" :key="action.key">
-        <Dropdown
+        <BasicSelect
           v-if="action.options"
-          :values="action.options"
+          :model-value="null"
+          :options="action.options"
           :placeholder="$t(action.labelKey)"
+          :aria-label="$t(action.labelKey)"
           class="bulk-bar__dropdown"
-          @onSelect="(val) => $emit('action', action.key, val)"
+          @update:model-value="(val) => $emit('action', action.key, val)"
         />
-        <BasicButton
-          v-else
-          :variant="action.variant"
-          :class="action.buttonClass"
-          @click="$emit('action', action.key)"
-        >
+        <BasicButton v-else :variant="action.variant ?? 'secondary'" @click="$emit('action', action.key)">
           {{ $t(action.labelKey) }}
         </BasicButton>
       </template>
     </div>
-    <BasicButton
-      :text="$t(clearLabelKey)"
-      class="bg-hover t-body"
-      @click="$emit('clear')"
-    />
+    <BasicButton variant="ghost" @click="$emit('clear')">
+      {{ $t(clearLabelKey) }}
+    </BasicButton>
   </div>
 </template>
 
 <script setup>
-// actions = [{ key, labelKey, variant?, options? }]: `variant` is a BasicButton variant; an action with `options` is
-// a Dropdown. `buttonClass` (colour classes) still paints until plan 19; the sweeps move its call sites to `variant`.
+// actions = [{ key, labelKey, variant?, options? }]: `variant` is a BasicButton variant (default secondary); an action
+// with `options` is an action picker (BasicSelect without a value of its own, `options` = [{ label, value }]).
 defineProps({
   count: {
     type: Number,

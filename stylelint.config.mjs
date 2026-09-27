@@ -47,7 +47,6 @@ export default {
     "src/assets/scss/themes/**",
     "src/assets/scss/variables/**",
     "src/assets/scss/main.scss",
-    "src/assets/scss/typo/font-icons/**",
     "src/assets/scss/typo/wysiwyg-icons/**",
   ],
   rules: {

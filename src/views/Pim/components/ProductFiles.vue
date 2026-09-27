@@ -525,7 +525,7 @@ onMounted(() => {
               >
                 <StatusBadge
                   v-if="fileTypeBadge(pf)"
-                  :variant="fileTypeBadge(pf).variant"
+                  :tone="fileTypeBadge(pf).variant"
                   :label="fileTypeBadge(pf).label"
                 />
                 <span v-if="pf.file && pf.file.category_name">{{

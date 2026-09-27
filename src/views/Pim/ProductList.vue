@@ -166,7 +166,7 @@
         <template #cell-is_enabled="{ value }">
           <StatusBadge
             :label="value ? $t('pim.enabled') : $t('pim.disabled')"
-            :variant="value ? 'positive' : 'negative'"
+            :tone="value ? 'positive' : 'negative'"
           />
         </template>
         <template #cell-supplier_status="{ row }">
@@ -179,7 +179,7 @@
             @click.stop="onSupplierBadgeClick(row.sku)"
             @keydown.enter.stop.prevent="onSupplierBadgeClick(row.sku)"
           >
-            <StatusBadge :label="$t('pim.badge_updated')" variant="warning" />
+            <StatusBadge :label="$t('pim.badge_updated')" tone="warning" />
           </span>
         </template>
         <template #cell-quality="{ row }">
@@ -195,7 +195,7 @@
             >
               <StatusBadge
                 :label="String(qualityFilterActive ? qualityFindings(row).length : row.gap_count)"
-                :variant="qualityVariant(row)"
+                :tone="qualityVariant(row)"
               />
               <FontAwesomeIcon
                 :icon="qualityPopover.pk === String(row.pk) ? $icons.collapse : $icons.expand"
@@ -205,7 +205,7 @@
             <StatusBadge
               v-else-if="qualityState(row) === 'unevaluated'"
               :label="$t('pim.quality_unevaluated')"
-              variant="neutral"
+              tone="neutral"
             />
             <span v-else class="t-muted fs-200">{{ $t("pim.quality_ok") }}</span>
           </div>
@@ -216,9 +216,10 @@
     </div>
     <Pagination
       v-if="totalCount > pageSize"
-      :pagination="paginationState"
+      :page="paginationState.page"
+      :pages="paginationState.pages"
       class="mt-5"
-      @onChangePage="onPageChange"
+      @update:page="onPageChange"
     />
 
     <TranslateDialog

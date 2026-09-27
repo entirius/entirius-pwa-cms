@@ -32,7 +32,7 @@
 
       <EmptyState
         v-if="!loading && !rows.length"
-        icon="list-check"
+        icon="tasks"
         :title="$t('enrichment.queue.empty')"
         :message="reachedEnd && page > 1 ? $t('enrichment.queue.end') : ''"
       />

@@ -92,7 +92,7 @@
       <template #cell-status="{ value }">
         <StatusBadge
           :label="$t(`enrichment.status.${value}`)"
-          :variant="statusVariant(value)"
+          :tone="statusVariant(value)"
         />
       </template>
       <template #cell-confidence="{ value }">

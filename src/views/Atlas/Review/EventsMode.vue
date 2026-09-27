@@ -29,7 +29,7 @@
       :empty-text="$t('atlas.review.events.empty_state')"
     >
       <template #cell-severity="{ value }">
-        <StatusBadge :label="value" :variant="severityVariant(value)" />
+        <StatusBadge :label="value" :tone="severityVariant(value)" />
       </template>
       <template #cell-acknowledged_at="{ row }">
         <button

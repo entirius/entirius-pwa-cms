@@ -16,13 +16,13 @@
             <StatusBadge
               v-if="item.is_preferred && !item.manual_override"
               :label="$t('pim.supplier.auto_preferred_badge')"
-              variant="positive"
+              tone="positive"
               class="ml-2"
             />
             <StatusBadge
               v-if="item.manual_override"
               :label="$t('pim.supplier.manual_override_badge')"
-              variant="warning"
+              tone="warning"
               class="ml-2"
             />
           </div>

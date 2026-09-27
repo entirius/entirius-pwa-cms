@@ -19,7 +19,6 @@
 
 <script>
 import RoutesList from "./routes-list.vue";
-import RoutesSets from "./routes-sets.vue";
 import { useHandyStore } from "@/stores/handy";
 
 export default {
@@ -34,7 +33,6 @@ export default {
   },
   components: {
     RoutesList,
-    RoutesSets,
   },
   computed: {
     handyType() {
