@@ -48,4 +48,14 @@ describe("icon props of the boot components", () => {
     );
     expect(glyphs).toEqual([]);
   });
+
+  it("give every icon-only-mobile BasicButton an icon, its only content on a phone", () => {
+    const buttons = /<BasicButton\b[^>]*?class="[^"]*\bicon-only-mobile\b[^"]*"[^>]*>/gs;
+    const empty = vueFiles.flatMap((file) =>
+      [...fs.readFileSync(file, "utf8").matchAll(buttons)]
+        .filter(([tag]) => !/\sicon="/.test(tag))
+        .map(([tag]) => `${file}: ${tag.replace(/\s+/g, " ").slice(0, 80)}`)
+    );
+    expect(empty).toEqual([]);
+  });
 });

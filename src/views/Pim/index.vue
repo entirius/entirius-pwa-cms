@@ -33,6 +33,7 @@
         <BasicButton
           v-if="translatorAvailable"
           :label="$t('pim.translate_store')"
+          icon="translate"
           variant="secondary"
           class="icon-only-mobile"
           @click="showTranslateStore = true"

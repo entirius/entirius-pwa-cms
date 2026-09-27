@@ -28,6 +28,7 @@
         <BasicButton
           v-if="translatorAvailable"
           :label="$t('builder.translate_all')"
+          icon="translate"
           variant="secondary"
           class="icon-only-mobile"
           @click="showTranslateModal = true"

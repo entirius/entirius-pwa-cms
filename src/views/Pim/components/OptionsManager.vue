@@ -118,6 +118,8 @@
             }}</span>
             <span class="options-table__col--actions flex ai-ct gap-2">
               <BasicButton
+                :label="$t('pim.translations')"
+                icon="translate"
                 variant="secondary"
                 class="icon-only-mobile"
                 @click="openTranslations(element)"
