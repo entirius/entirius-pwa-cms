@@ -159,8 +159,8 @@ import { useMediaQuery } from "@/composables/useMediaQuery";
 /**
  * Column options (`columns` prop):
  * - `key`, `label`, `sortable`, `align` ("left" | "center" | "right").
- * - `width`: a grid track. A px width is a floor for nothing but its header and content: the column never gets
- *   narrower than its header or an untruncated cell (a badge, buttons), so neighbours never overlap.
+ * - `width`: a grid track. A px width never gets narrower than its header or an untruncated cell (a badge,
+ *   buttons), so neighbours never overlap; below 768 px it shrinks to that content and the `fr` name takes the rest.
  * - `truncate`: one line with an ellipsis and a `title` with the full value (`title(row)` or the row value).
  *   On by default for cells without a slot; a slot opts in with `truncate: true`.
  * - `numeric`: right-aligned, tabular figures, no wrap.
@@ -261,7 +261,8 @@ const visibleColumns = computed(() => props.columns.filter(isVisible));
 function trackOf(col) {
   const width = col.width || (col.actions ? "max-content" : "auto");
   if (col.actions && col.width) return `minmax(${width}, max-content)`;
-  if (PX_WIDTH.test(width)) return `minmax(min-content, ${width})`;
+  // A phone gives the free width to the name: a px column shrinks to its header or untruncated content.
+  if (PX_WIDTH.test(width)) return belowTablet.value ? "min-content" : `minmax(min-content, ${width})`;
   if (FR_WIDTH.test(width) && isTruncated(col)) return `minmax(${TRUNCATED_FR_MIN}, ${width})`;
   return width;
 }

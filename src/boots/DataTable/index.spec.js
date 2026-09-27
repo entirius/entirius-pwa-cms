@@ -221,6 +221,15 @@ describe("DataTable boot — column priority", () => {
       "grid-template-columns: minmax(120px, 1fr);"
     );
   });
+
+  it("shrinks a px column to its content on a phone, so the name takes the free width", () => {
+    stubViewport(393);
+    const sized = [prioritised[0], { key: "value", label: "V", width: "100px" }];
+    const wrapper = mount(DataTable, { props: { columns: sized, rows } });
+    expect(wrapper.find(".data-table__grid").attributes("style")).toContain(
+      "grid-template-columns: minmax(120px, 1fr) min-content;"
+    );
+  });
 });
 
 describe("DataTable boot — sort, selection and row click unchanged", () => {
