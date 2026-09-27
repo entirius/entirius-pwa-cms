@@ -191,7 +191,7 @@ export default {
 // Every EAN group shares one column grid, so SKU, suppliers and actions line up from group to group.
 .duplicates-table {
   table-layout: fixed;
-  min-width: 640px;
+  min-width: 760px;
 }
 
 .duplicates-table__sku {

@@ -32,12 +32,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-// A long JSON line scrolls inside its pane instead of breaking keys mid-word or widening a table cell.
+// Before and after sit side by side while each gets 16 rem, else they stack; a longer JSON line scrolls inside
+// its pane instead of breaking keys mid-word or widening a table cell.
 .json-diff {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: var(--space-5);
   contain: inline-size;
+}
+.json-diff__col {
+  flex: 1 1 16rem;
+  min-width: 0;
 }
 .json-diff__label {
   font-size: var(--fs-100);
@@ -62,11 +67,5 @@ export default {
 }
 .json-diff__value--after {
   border-left: 2px solid var(--positive);
-}
-
-@media (max-width: 640px) {
-  .json-diff {
-    grid-template-columns: 1fr;
-  }
 }
 </style>
