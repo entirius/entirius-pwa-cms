@@ -1,10 +1,10 @@
 <template>
   <div class="number-input-wrapper">
-    <div class="number-input flex ai-ct">
+    <div class="number-input flex ai-ct" :class="{ 'number-input--disabled': isDisabled }">
       <button
         type="button"
         class="number-input__btn"
-        :disabled="isAtMin"
+        :disabled="isDisabled || isAtMin"
         @click="decrement"
       >
         <span class="number-input__icon">&minus;</span>
@@ -16,6 +16,7 @@
         class="number-input__value"
         :value="displayValue"
         :placeholder="placeholder"
+        :disabled="isDisabled"
         @input="onTextInput"
         @keydown.up.prevent="increment"
         @keydown.down.prevent="decrement"
@@ -24,7 +25,7 @@
       <button
         type="button"
         class="number-input__btn"
-        :disabled="isAtMax"
+        :disabled="isDisabled || isAtMax"
         @click="increment"
       >
         <span class="number-input__icon">+</span>
@@ -61,6 +62,10 @@ const props = defineProps({
   placeholder: {
     type: String,
     default: "0",
+  },
+  isDisabled: {
+    type: Boolean,
+    default: false,
   },
 });
 
@@ -104,10 +109,21 @@ function decrement() {
   emit("update:modelValue", String(clamp(base - props.step)));
 }
 
+// One rule for typed text: a leading "-" only when min < 0, one decimal separator ("," reads as "."; a second one is
+// dropped), digits otherwise.
+function normalise(text) {
+  const negative = props.min < 0 && text.trimStart().startsWith("-");
+  const kept = text.replace(/,/g, ".").replace(decimals.value ? /[^0-9.]/g : /[^0-9]/g, "");
+  const [whole, ...fraction] = kept.split(".");
+  const number = kept.includes(".") ? `${whole}.${fraction.join("")}` : whole;
+  return negative ? `-${number}` : number;
+}
+
+// The field shows the normalised text even when the model does not change (a rejected "-" on an empty field).
 function onTextInput(e) {
-  const allowed = decimals.value ? /[^0-9,.-]/g : /[^0-9-]/g;
-  const raw = e.target.value.replace(allowed, "").replace(",", ".");
-  emit("update:modelValue", raw);
+  const value = normalise(e.target.value);
+  e.target.value = value;
+  emit("update:modelValue", value);
 }
 
 function onFocusout() {
@@ -133,6 +149,19 @@ function onFocusout() {
 
   &:focus-within {
     border-color: var(--border-strong);
+  }
+
+  // Same disabled look as BasicInput: a locked value is readable but plainly not editable.
+  &--disabled,
+  &--disabled:focus-within {
+    background-color: var(--surface-disabled);
+    border-color: var(--border-subtle);
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+
+  &--disabled .number-input__value {
+    cursor: not-allowed;
   }
 }
 

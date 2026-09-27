@@ -6,14 +6,21 @@ const LOCALES = { PL: "pl-PL", EN: "en-GB" };
 
 const round2 = (n) => Math.round(n * 100) / 100;
 
+// null for a missing or non-numeric value: an empty field is never a silent zero.
+function toNumber(value) {
+  if (value === null || value === undefined || String(value).trim() === "") return null;
+  const num = Number(value);
+  return Number.isFinite(num) ? num : null;
+}
+
 export function rateToPercent(rate) {
-  if (rate === null || rate === undefined || rate === "") return null;
-  const num = Number(rate);
-  return Number.isFinite(num) ? round2(num * 100) : null;
+  const num = toNumber(rate);
+  return num === null ? null : round2(num * 100);
 }
 
 export function percentToRate(percent) {
-  return (round2(Number(percent)) / 100).toFixed(4);
+  const num = toNumber(percent);
+  return num === null ? null : (round2(num) / 100).toFixed(4);
 }
 
 // "23 %", "8,5 %" (pl) / "8.5 %" (en); "" when the rate is missing.

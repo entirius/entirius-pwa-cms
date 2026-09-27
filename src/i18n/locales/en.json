@@ -1848,6 +1848,7 @@
     "rate": "Rate",
     "percent": "Percent",
     "add_rate": "Add Rate",
+    "rate_range_error": "Enter a rate of 0–100",
     "channels": "Channels",
     "channel_detail": "Channel Detail",
     "create_channel": "Create Channel",

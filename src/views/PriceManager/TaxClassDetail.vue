@@ -26,7 +26,7 @@
     </Teleport>
 
     <div class="page-card h-100 ovy-auto">
-      <Loader v-if="loading" />
+      <Loader block v-if="loading" />
 
       <template v-else>
         <!-- Basic fields -->
@@ -83,9 +83,11 @@
           </div>
 
           <!-- Add rate row -->
-          <div class="flex ai-ct gap-5 flex-wrap">
+          <div class="flex ai-st gap-5 flex-wrap">
             <BasicInput v-model="newRate.country_iso2" :placeholder="$t('pm.iso2_placeholder')" class="pm-rate-input" />
-            <NumberInput v-model="newRate.rate" :min="0" :max="100" :step="0.01" suffix="%" class="pm-rate-input" />
+            <FormField :error="rateError" class="pm-rate-input">
+              <NumberInput v-model="newRate.rate" :min="0" :max="100" :step="0.01" suffix="%" />
+            </FormField>
             <BasicButton
               :text="$t('pm.add_rate')"
               icon="plus"
@@ -138,6 +140,7 @@ export default {
       showDeleteConfirm: false,
       form: { idx: '', name: '' },
       newRate: { country_iso2: '', rate: 0 },
+      rateError: '',
     }
   },
   computed: {
@@ -151,6 +154,9 @@ export default {
       handler() {
         if (this.formErrors.hasErrors) this.formErrors.clearErrors()
       },
+    },
+    'newRate.rate'() {
+      this.rateError = ''
     },
   },
   mounted() {
@@ -204,11 +210,16 @@ export default {
     },
     async addRate() {
       if (!this.newRate.country_iso2.trim()) return
+      const rate = percentToRate(this.newRate.rate)
+      if (rate === null || Number(rate) < 0 || Number(rate) > 1) {
+        this.rateError = this.$t('pm.rate_range_error')
+        return
+      }
       this.loader.loaderStart()
       try {
         await POST_PmTaxRate(this.$route.params.idx, {
           country_code: this.newRate.country_iso2.trim().toUpperCase(),
-          rate: percentToRate(this.newRate.rate),
+          rate,
         })
         this.newRate = { country_iso2: '', rate: 0 }
         await this.fetch()

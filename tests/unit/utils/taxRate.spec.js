@@ -41,4 +41,11 @@ describe("tax rate conversions", () => {
     expect(formatTaxRate("")).toBe("");
     expect(formatTaxRate("abc")).toBe("");
   });
+
+  it("takes nothing that is not a number, never a silent zero", () => {
+    for (const input of [".", "-", "", "  ", null, undefined, "abc", "1.2.3"]) {
+      expect(percentToRate(input)).toBeNull();
+    }
+    expect(rateToPercent(".")).toBeNull();
+  });
 });

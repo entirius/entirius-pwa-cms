@@ -22,6 +22,7 @@ vi.mock("@/stores/notify", () => ({
 vi.mock("@/functionals/Confirmation-modal/index.vue", () => ({ default: { template: "<div />" } }));
 
 import TaxClassDetail from "@/views/PriceManager/TaxClassDetail.vue";
+import NumberInput from "@/boots/NumberInput/index.vue";
 
 const TAX_CLASS = {
   idx: "standard",
@@ -64,5 +65,33 @@ describe("TaxClassDetail — rate unit", () => {
     wrapper.vm.newRate = { country_iso2: "cz", rate: 23 };
     await wrapper.vm.addRate();
     expect(mockPostRate).toHaveBeenCalledWith("standard", { country_code: "CZ", rate: "0.2300" });
+  });
+
+  it.each([null, "", ".", "-", "101", "-1"])("does not post the rate %j and shows the field error", async (rate) => {
+    const wrapper = await mountDetail();
+    wrapper.vm.newRate = { country_iso2: "cz", rate };
+    await flushPromises();
+    await wrapper.vm.addRate();
+    expect(mockPostRate).not.toHaveBeenCalled();
+    expect(wrapper.vm.rateError).toBe("pm.rate_range_error");
+  });
+
+  it("clears the field error once the rate is typed again", async () => {
+    mockGetTaxClass.mockResolvedValue({ data: TAX_CLASS });
+    const wrapper = mount(TaxClassDetail, {
+      global: {
+        mocks: { $route: { params: { idx: "standard" }, query: {} } },
+        components: { NumberInput },
+        stubs: { Teleport: true, FormField: { template: "<div><slot /></div>" } },
+      },
+    });
+    await flushPromises();
+    const input = wrapper.find(".number-input__value");
+    await input.setValue("101");
+    wrapper.vm.newRate.country_iso2 = "cz";
+    await wrapper.vm.addRate();
+    expect(wrapper.vm.rateError).toBe("pm.rate_range_error");
+    await input.setValue("10");
+    expect(wrapper.vm.rateError).toBe("");
   });
 });

@@ -1847,6 +1847,7 @@
     "rate": "Stawka",
     "percent": "Procent",
     "add_rate": "Dodaj stawkę",
+    "rate_range_error": "Podaj stawkę 0–100",
     "channels": "Kanały",
     "channel_detail": "Szczegóły kanału",
     "create_channel": "Utwórz kanał",
