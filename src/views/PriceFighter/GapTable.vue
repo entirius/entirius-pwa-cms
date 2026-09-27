@@ -35,7 +35,7 @@
         @clear="onClearSelection"
       />
 
-      <Loader v-show="loading" />
+      <Loader block v-show="loading" />
 
       <div v-show="!loading">
         <EmptyState
@@ -47,6 +47,7 @@
 
         <template v-else>
           <DataTable
+            empty-size="md"
             ref="table"
             :columns="columns"
             :rows="rows"

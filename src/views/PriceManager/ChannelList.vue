@@ -10,12 +10,16 @@
     </Teleport>
 
     <div class="page-card h-100 ovy-auto">
-      <Loader v-show="loading" />
+      <Loader block v-show="loading" />
 
       <div v-show="!loading">
-        <p v-if="!channels.length" class="t-muted fs-300">{{ $t('pm.channels') }}: —</p>
-
-        <DataTable v-else :columns="columns" :rows="channels" @row-click="onRowClick">
+        <DataTable
+          :columns="columns"
+          :rows="channels"
+          :empty-text="$t('pm.no_channels')"
+          empty-size="md"
+          @row-click="onRowClick"
+        >
           <template #cell-idx="{ row }">
             <span class="fw-600 t-accent pointer" @click.stop="$router.push(`/pricing/channels/${row.idx}`)">
               {{ row.idx }}

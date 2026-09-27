@@ -34,7 +34,7 @@
         />
       </div>
 
-      <Loader v-show="loading" />
+      <Loader block v-show="loading" />
 
       <EmptyState
         v-if="!loading && rows.length === 0"
@@ -44,6 +44,7 @@
       />
 
       <DataTable
+        empty-size="md"
         v-show="!loading && rows.length > 0"
         :columns="columns"
         :rows="rows"

@@ -35,9 +35,10 @@
           />
         </div>
 
-        <Loader v-show="loading" />
+        <Loader block v-show="loading" />
 
         <DataTable
+          empty-size="md"
           v-show="!loading"
           :columns="columns"
           :rows="people"
@@ -59,7 +60,7 @@
 
       <!-- Marketing Lists tab -->
       <template v-if="mode === 'marketing_lists'">
-        <Loader v-show="subscribersLoading" />
+        <Loader block v-show="subscribersLoading" />
 
         <template v-if="!subscribersLoading">
           <p v-if="!subscriberGroups.length" class="t-muted">

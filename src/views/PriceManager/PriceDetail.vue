@@ -8,7 +8,7 @@
     </Teleport>
 
     <div class="page-card h-100 ovy-auto">
-      <Loader v-if="loading" />
+      <Loader block v-if="loading" />
 
       <template v-else>
         <EmptyState
@@ -208,7 +208,7 @@
           <div v-if="showHistory" class="mt-5">
             <h3 class="fs-400 fw-600 mb-5">{{ $t('pm.history') }}</h3>
             <Loader v-if="historyLoading" />
-            <div v-else-if="!history.length" class="t-muted fs-200">—</div>
+            <EmptyState v-else-if="!history.length" icon="inbox" size="sm" :title="$t('pm.no_history')" />
             <div
               v-for="entry in history"
               :key="entry.id"

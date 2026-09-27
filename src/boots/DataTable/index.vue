@@ -130,7 +130,7 @@
     <div v-if="!rows || !rows.length" class="data-table__empty" role="row">
       <div role="gridcell">
         <slot name="empty">
-          <EmptyState icon="inbox" :title="emptyText || t('common.no_data')" />
+          <EmptyState icon="inbox" :size="emptySize" :title="emptyText || t('common.no_data')" />
         </slot>
       </div>
     </div>
@@ -166,6 +166,11 @@ const props = defineProps({
   emptyText: {
     type: String,
     default: "",
+  },
+  // One line by default (a table inside a detail screen); a list screen whose only content is the table passes "md".
+  emptySize: {
+    type: String,
+    default: "sm",
   },
   sortable: {
     type: Boolean,

@@ -40,9 +40,10 @@
       </div>
     </div>
 
-    <Loader v-show="loading" />
+    <Loader block v-show="loading" />
 
     <DataTable
+      empty-size="md"
       v-show="!loading"
       :columns="columns"
       :rows="rows"
