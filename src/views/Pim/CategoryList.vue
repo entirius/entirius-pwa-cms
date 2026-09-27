@@ -84,7 +84,7 @@ export default {
     fabActions() {
       return [
         {
-          icon: "plus",
+          icon: "add",
           label: this.$t("pim.add_root_category"),
           handler: () => this.$router.push("/pim/categories/create"),
         },

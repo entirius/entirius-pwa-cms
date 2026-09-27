@@ -57,7 +57,7 @@ export default {
     fabActions() {
       return [
         {
-          icon: 'plus',
+          icon: 'add',
           label: this.$t('pm.create_tax_class'),
           handler: () => this.$router.push('/pricing/tax-classes/create'),
         },

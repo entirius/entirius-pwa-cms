@@ -120,7 +120,7 @@ export default {
     fabActions() {
       return [
         {
-          icon: "plus",
+          icon: "add",
           label: this.$t("pim.create_gap_definition"),
           handler: () => this.$router.push("/pim/gap-definitions/create"),
         },

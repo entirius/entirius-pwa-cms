@@ -15,16 +15,16 @@ describe("FloatingActions", () => {
     wrapper.unmount();
   });
 
-  it("action icons take meaning keys; other names still pass through until the sweeps", () => {
+  it("action icons take meaning keys only; a raw FontAwesome name is never looked up", () => {
     const wrapper = mountFab({
       open: true,
       actions: [
         { icon: "add", label: "Dodaj", handler: vi.fn() },
-        { icon: "plus", label: "Stare", handler: vi.fn() },
+        { icon: "upload", label: "Wgraj", handler: vi.fn() },
       ],
     });
     const icons = wrapper.findAll(".floating-actions__action font-awesome-icon-stub").map((i) => i.attributes("icon"));
-    expect(icons).toEqual(["plus", "plus"]);
+    expect(icons).toEqual(["plus", "file-arrow-up"]);
     wrapper.unmount();
   });
 

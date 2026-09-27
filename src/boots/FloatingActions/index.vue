@@ -18,11 +18,7 @@
           @click="handleActionClick(action)"
           @keydown.enter="handleActionClick(action)"
         >
-          <FontAwesomeIcon
-            v-if="!isCustomIcon(action.icon)"
-            :icon="glyphOf(action.icon)"
-          />
-          <i v-else :class="action.icon" />
+          <FontAwesomeIcon :icon="ICONS[action.icon]" />
         </button>
       </div>
     </div>
@@ -42,9 +38,10 @@
         type="button"
         class="floating-actions__pill"
         :data-testid="pill.testid"
+        :disabled="pill.disabled"
         @click="pill.handler"
       >
-        <FontAwesomeIcon :icon="glyphOf(pill.icon)" aria-hidden="true" />
+        <FontAwesomeIcon :icon="ICONS[pill.icon]" aria-hidden="true" />
         <span>{{ pill.label }}</span>
       </button>
       <button
@@ -71,15 +68,15 @@ import { ICONS } from "@/boots/Icons/icons";
 
 /**
  * @typedef {Object} FloatingAction
- * @property {string} icon - a meaning of icons.js; until the sweeps also an FA name or an 'icon-' font class
+ * @property {string} icon - a meaning of icons.js (a raw FontAwesome name is never looked up)
  * @property {string} label - Tooltip text
  * @property {Function} handler - Click callback
  * @property {'primary'|'secondary'|'danger'} [variant='primary']
  * @property {boolean} [disabled]
  */
 
-// `pill` = { icon, label, handler, testid? }: an important action with a visible label next to the FAB (R7, Figma
-// S6–S8 "Zarządzaj kolejnością"). `open` starts with the speed-dial open (catalogue state).
+// `pill` = { icon, label, handler, testid?, disabled? }: an important action with a visible label next to the FAB
+// (R7, Figma S6–S8 "Zarządzaj kolejnością"). `open` starts with the speed-dial open (catalogue state).
 const props = defineProps({
   actions: {
     type: Array,
@@ -101,14 +98,6 @@ const props = defineProps({
 
 const isOpen = ref(props.open);
 const rootRef = ref(null);
-
-const CUSTOM_ICON_PREFIX = "icon-";
-
-function isCustomIcon(icon) {
-  return icon.startsWith(CUSTOM_ICON_PREFIX);
-}
-
-const glyphOf = (icon) => ICONS[icon] ?? icon;
 
 function handleToggle() {
   isOpen.value = !isOpen.value;
@@ -205,8 +194,16 @@ onBeforeUnmount(() => {
   box-shadow: var(--shadow-sm);
 }
 
-.floating-actions__pill:hover {
+.floating-actions__pill:hover:not([disabled]) {
   border-color: var(--border-strong);
+}
+.floating-actions__pill:focus-visible {
+  border-color: var(--accent);
+  outline: none;
+}
+.floating-actions__pill[disabled] {
+  color: var(--text-muted);
+  cursor: not-allowed;
 }
 
 .floating-actions__trigger {

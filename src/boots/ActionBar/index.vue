@@ -46,7 +46,12 @@ const props = defineProps({
   actions: {
     type: Array,
     default: () => [],
-    validator: (value) => value.every((action) => action.key && action.label && ROLES.includes(action.role)),
+    // A utility is an IconButton: it needs its icon.
+    validator: (value) =>
+      value.every(
+        (action) =>
+          action.key && action.label && ROLES.includes(action.role) && (action.role !== "utility" || action.icon)
+      ),
   },
 });
 

@@ -93,12 +93,20 @@ function onLeave(event) {
   if (!hovered.value && !focused.value) dismissed.value = false;
 }
 
+// Appended to the target's own descriptions; a tip that repeats the target's name (an IconButton's label) is not
+// announced twice.
+function describe(target) {
+  if (target.getAttribute("aria-label") === props.text) return;
+  const ids = (target.getAttribute("aria-describedby") ?? "").split(/\s+/).filter(Boolean);
+  if (!ids.includes(tipId)) target.setAttribute("aria-describedby", [...ids, tipId].join(" "));
+}
+
 // The slot's first focusable element carries the description; with a disabled control only, the wrapper does
 // (unless a parent laid the wrapper out as `display: contents`, IconButton: a box-less element is no tab stop).
 function describeTrigger() {
   if (props.variant === "help" || !root.value) return;
   const target = root.value.querySelector(FOCUSABLE);
-  target?.setAttribute("aria-describedby", tipId);
+  if (target) describe(target);
   described.value = target;
   const onlyDisabled = !target && Boolean(root.value.querySelector(":disabled, [aria-disabled='true']"));
   ownTabStop.value = onlyDisabled && getComputedStyle(root.value).display !== "contents";

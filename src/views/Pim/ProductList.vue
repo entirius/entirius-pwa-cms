@@ -375,7 +375,7 @@ export default {
     fabActions() {
       return [
         {
-          icon: "plus",
+          icon: "add",
           label: this.$t("pim.create_product"),
           handler: () => this.$router.push("/pim/products/create"),
         },

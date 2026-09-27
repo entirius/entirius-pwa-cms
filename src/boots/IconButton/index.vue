@@ -50,6 +50,7 @@ function onClick(event) {
 
 <style lang="scss" scoped>
 @import "@/assets/scss/utils/media-query";
+@import "@/assets/scss/utils/touch-target";
 
 // The tooltip wrapper takes no box: the button lays out as if it were the component's root.
 .icon-button__tip {
@@ -126,16 +127,15 @@ function onClick(event) {
   }
 }
 
-// A thumb-sized hit area on touch screens without a bigger box: the pseudo-element takes the taps around the button.
-@include max-tablet {
-  .icon-button::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: max(100%, var(--space-10));
-    height: max(100%, var(--space-10));
-    transform: translate(-50%, -50%);
-  }
+// A thumb-sized hit area on touch screens without a bigger box (touch-target). `sm` buttons sit in rows 8 px apart:
+// their area is the box plus that gap, so two neighbours' areas meet but never overlap.
+.icon-button {
+  --icon-button-hit: var(--space-10);
+
+  @include touch-target(var(--icon-button-hit));
+}
+
+.icon-button--sm {
+  --icon-button-hit: calc(var(--space-6) + var(--space-2));
 }
 </style>

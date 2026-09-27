@@ -127,7 +127,7 @@ export default {
     fabActions() {
       return [
         {
-          icon: "plus",
+          icon: "add",
           label: this.$t("dp.create_point"),
           handler: () => this.$router.push("/points/create"),
         },

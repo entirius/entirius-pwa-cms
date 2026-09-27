@@ -117,7 +117,7 @@ export default {
     fabActions() {
       return [
         {
-          icon: "plus",
+          icon: "add",
           label: this.$t("pim.create_feature"),
           handler: () => this.onCreate(),
         },

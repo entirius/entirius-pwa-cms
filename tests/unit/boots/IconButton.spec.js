@@ -17,7 +17,8 @@ describe("IconButton", () => {
     expect(button.attributes("title")).toBeUndefined();
     expect(button.attributes("type")).toBe("button");
     expect(wrapper.find('[role="tooltip"]').text()).toBe("Usuń");
-    expect(button.attributes("aria-describedby")).toBe(wrapper.find('[role="tooltip"]').attributes("id"));
+    // The tip repeats the name: no second announcement.
+    expect(button.attributes("aria-describedby")).toBeUndefined();
   });
 
   it("is ghost md by default; variant and size are classes", () => {

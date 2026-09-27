@@ -383,7 +383,7 @@ export default {
     fabActions() {
       return [
         {
-          icon: 'plus',
+          icon: 'add',
           label: this.$t('pm.add_product'),
           handler: () => this.$router.push('/pricing/prices/new'),
         },

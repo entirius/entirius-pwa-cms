@@ -71,7 +71,7 @@ export default {
     fabActions() {
       return [
         {
-          icon: 'plus',
+          icon: 'add',
           label: this.$t('pm.create_channel'),
           handler: () => this.$router.push('/pricing/channels/create'),
         },

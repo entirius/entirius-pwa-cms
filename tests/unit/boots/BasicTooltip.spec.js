@@ -30,6 +30,13 @@ describe("BasicTooltip", () => {
     expect(wrapper.attributes("tabindex")).toBeUndefined();
   });
 
+  it("appends its id to the trigger's own aria-describedby", async () => {
+    const wrapper = mountTip({}, "<button class='control' aria-describedby='hint'>Zapisz</button>");
+    await nextTick();
+    const id = bubble(wrapper).attributes("id");
+    expect(wrapper.find(".control").attributes("aria-describedby")).toBe(`hint ${id}`);
+  });
+
   it("shows on hover, hides on leave", async () => {
     const wrapper = mountTip();
     await wrapper.trigger("mouseenter");

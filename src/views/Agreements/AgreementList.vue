@@ -101,7 +101,7 @@ export default {
     fabActions() {
       return [
         {
-          icon: "plus",
+          icon: "add",
           label: this.$t("agm.create_definition"),
           handler: () => this.$router.push("/agreements/create"),
         },
