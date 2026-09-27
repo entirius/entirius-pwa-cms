@@ -94,7 +94,7 @@
             <BasicButton
               :text="$t('pm.add_rate')"
               icon="plus"
-              class="btn-primary"
+              class="btn-secondary"
               @click="addRate"
             />
           </div>

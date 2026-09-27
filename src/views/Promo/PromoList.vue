@@ -18,7 +18,7 @@
           <div class="promo-list__bulk-actions">
             <BasicButton
               :text="$t('promo.bulk_activate')"
-              class="btn-primary"
+              class="btn-secondary"
               @click="startBulk('activate')"
             />
             <BasicButton

@@ -308,7 +308,7 @@
               />
               <BasicButton
                 :text="$t('dp.add_translation')"
-                class="btn-primary"
+                class="btn-secondary"
                 :isDisabled="!addingLanguage"
                 @click="addTranslation"
               />
@@ -363,7 +363,7 @@
             <div class="flex jc-fe mt-5">
               <BasicButton
                 :text="$t('common.save')"
-                class="btn-primary"
+                class="btn-secondary"
                 @click="saveTranslation(t9n)"
               />
             </div>

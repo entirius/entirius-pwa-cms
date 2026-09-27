@@ -21,7 +21,7 @@
         <BasicButton
           v-if="canMarkAsWon"
           :text="$t('cf.mark_as_won')"
-          class="btn-primary"
+          class="btn-secondary"
           @click="openMarkAsWon"
         />
         <Dropdown

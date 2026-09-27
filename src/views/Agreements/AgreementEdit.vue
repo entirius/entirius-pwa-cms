@@ -179,7 +179,7 @@
             <h2 class="fs-500 fw-600">{{ $t("agm.versions") }}</h2>
             <BasicButton
               :text="$t('agm.create_version')"
-              class="btn-primary"
+              class="btn-secondary"
               @click="showVersionForm = !showVersionForm"
             />
           </div>
@@ -208,7 +208,7 @@
               />
               <BasicButton
                 :text="$t('agm.create_version')"
-                class="btn-primary"
+                class="btn-secondary"
                 @click="createVersion"
               />
             </div>
@@ -275,7 +275,7 @@
                         <BasicButton
                           v-if="!ver.published_at"
                           :text="$t('agm.publish')"
-                          class="btn-primary"
+                          class="btn-secondary"
                           @click="publishVersion(ver.id)"
                         />
                       </div>
@@ -311,7 +311,7 @@
                           />
                           <BasicButton
                             :text="$t('common.save')"
-                            class="btn-primary"
+                            class="btn-secondary"
                             @click="saveDraftVersion(ver.id)"
                           />
                         </div>
@@ -466,6 +466,7 @@
 
     <Confirmation-modal
       :visible="showPublishedEditConfirm"
+      :destructive="false"
       @accept="confirmEditPublished"
       @reject="showPublishedEditConfirm = false"
     >

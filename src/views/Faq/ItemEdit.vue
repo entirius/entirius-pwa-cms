@@ -210,7 +210,7 @@
           <div v-if="associationsDirty" class="flex jc-fe mt-5">
             <BasicButton
               :text="$t('faq.save_associations')"
-              class="btn-primary"
+              class="btn-secondary"
               @click="saveAssociations"
             />
           </div>

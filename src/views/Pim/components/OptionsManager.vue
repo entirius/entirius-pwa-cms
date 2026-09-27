@@ -9,7 +9,7 @@
       </h3>
       <BasicButton
         :text="$t('pim.add_option')"
-        class="btn-primary"
+        class="btn-secondary"
         @click="showAddForm = true"
       />
     </div>
@@ -40,7 +40,7 @@
       />
       <BasicButton
         :text="$t('common.save')"
-        class="btn-primary"
+        class="btn-secondary"
         @click="createOption"
       />
       <BasicButton

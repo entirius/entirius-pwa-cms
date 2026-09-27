@@ -456,7 +456,7 @@
               />
               <BasicButton
                 :text="$t('promo.save_code')"
-                class="btn-primary"
+                class="btn-secondary"
                 @click="saveNewCode"
               />
             </div>

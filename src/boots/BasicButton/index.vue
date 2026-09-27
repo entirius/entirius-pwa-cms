@@ -178,6 +178,14 @@ button.button-basic {
   &.btn-danger-fill {
     color: var(--text-on-status-fill);
     background-color: var(--negative-fill);
+
+    &:hover:not([disabled]) {
+      filter: brightness(0.9);
+    }
+    &[disabled] {
+      color: var(--text-muted);
+      background-color: var(--negative-subtle);
+    }
   }
   //
   //

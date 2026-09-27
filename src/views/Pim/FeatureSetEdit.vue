@@ -100,7 +100,7 @@
               />
               <BasicButton
                 :text="$t('pim.create_group')"
-                class="btn-primary"
+                class="btn-secondary"
                 @click="createGroup"
               />
               <BasicButton

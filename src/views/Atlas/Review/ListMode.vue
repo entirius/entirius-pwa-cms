@@ -93,6 +93,7 @@
 
     <Confirmation-modal
       :visible="confirmVisible"
+      :destructive="pendingAction === 'reject'"
       @accept="bulkExecute"
       @reject="confirmVisible = false"
     >

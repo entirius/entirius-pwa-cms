@@ -10,13 +10,17 @@
         </div>
         <div class="modal-footer">
           <slot name="footer">
-            <button class="modal-btn modal-btn--secondary" @click="reject">
-              {{ $t("common.cancel") }}
-            </button>
-            <button class="modal-btn modal-btn--delete" @click="accept">
-              <FontAwesomeIcon icon="trash-can" />
-              {{ $t("common.accept") }}
-            </button>
+            <BasicButton
+              :text="$t('common.cancel')"
+              class="btn-secondary"
+              @click="reject"
+            />
+            <BasicButton
+              :text="$t('common.accept')"
+              :class="destructive ? 'btn-danger-fill' : 'btn-primary'"
+              class="modal-btn--delete"
+              @click="accept"
+            />
           </slot>
         </div>
       </div>
@@ -31,6 +35,11 @@ export default {
     visible: {
       type: Boolean,
       default: false,
+    },
+    // The default confirm is a delete/remove: filled danger (C6). A non-destructive confirm passes false.
+    destructive: {
+      type: Boolean,
+      default: true,
     },
   },
   methods: {
@@ -95,46 +104,6 @@ export default {
   display: flex;
   gap: var(--space-2);
   justify-content: flex-end;
-}
-
-.modal-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  height: 36px;
-  padding: 0 var(--space-4);
-  font-size: var(--fs-250);
-  font-weight: 500;
-  font-family: inherit;
-  border-radius: var(--radius-base);
-  border: 1px solid;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  white-space: nowrap;
-}
-
-.modal-btn--secondary {
-  background: var(--surface-base);
-  border-color: var(--border-default);
-  color: var(--text-body);
-}
-
-.modal-btn--secondary:hover {
-  background: var(--surface-raised);
-  border-color: var(--border-default);
-}
-
-.modal-btn--delete {
-  background: var(--surface-base);
-  border-color: var(--border-default);
-  color: var(--text-body);
-}
-
-.modal-btn--delete:hover {
-  background: var(--surface-raised);
-  border-color: var(--border-default);
-  color: var(--text-body);
 }
 
 .modal-enter-active,

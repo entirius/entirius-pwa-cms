@@ -245,7 +245,7 @@
                     ? $t('promo.btn_save')
                     : $t('promo.pv_filter_add')
                 "
-                class="btn-primary"
+                class="btn-secondary"
                 @click="saveFilter"
               />
               <BasicButton

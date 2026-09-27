@@ -112,7 +112,7 @@
             v-else
             :text="$t('common.accept')"
             size="sm"
-            class="btn-primary"
+            class="btn-secondary"
             :isDisabled="busy"
             :data-testid="`enrichment-accept-${row.id}`"
             @click="$emit('accept', row)"
