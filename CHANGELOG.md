@@ -93,6 +93,13 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- Page titles only: the page-title face moved from the `h1` element rule to `.page-title`, carried by every page H1,
+  so a heading typed in the rich-text editor, a content or e-mail preview and the docs view look as before. Every
+  form label uses the shared label style (translation dialogs, layout-extender modals, channel selectors, Leads
+  review and rewrite, drift reason, voucher filters); the Leads kit labels by `.ld-field__label`, not by position,
+  so a hint or badge placed first is not restyled. A `BasicInput` / `LockedField` label stays on one line inside its
+  control, with an ellipsis and the full text as a tooltip. The `@ux` label census also counts `.ld-field__label` and
+  `aria-labelledby` targets.
 - Tables: nothing overlaps, everything fits or truncates on purpose. `DataTable` cells pad 12 px, a column is never
   narrower than its header or an untruncated cell (badges, buttons), text cells truncate on one line with the full
   value in a tooltip, numbers are right-aligned with tabular figures, and an empty value shows "—". Columns carry a
