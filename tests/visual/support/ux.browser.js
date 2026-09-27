@@ -1,0 +1,358 @@
+// Browser-side `@ux` measurements, injected with `page.addScriptTag({ path })` and called as
+// `window.uxProbes.measure({ viewportWidth, mobile })`. Measures only what a user can see: display:none,
+// visibility:hidden, opacity 0, aria-hidden/inert subtrees, visually-hidden a11y text, closed off-canvas layers and
+// content clipped away entirely (collapsed accordions, scrolled-out table cells) are skipped.
+(() => {
+  const INTERACTIVE = 'button, a[href], [role="button"], input:not([type="hidden"]), select';
+  const ROLES = ["button", "link", "tab", "menuitem", "option", "checkbox", "switch", "radio", "treeitem"];
+  const NATIVE = "button, a[href], input, select, textarea, label, summary, [contenteditable]";
+  const SEMANTIC = `${NATIVE}, ${ROLES.map((role) => `[role="${role}"]`)}`;
+  const CLICKABLE_ROW = '[role="row"], [role="gridcell"], tr, td'; // a row click duplicates the row's own actions
+  const JOINED = '[role="tablist"], [role="radiogroup"], [role="group"], [role="toolbar"], [class*="segmented"]';
+  const DELETE_ICON = '.icon-bin, .icon-trash, [data-icon="trash"], [data-icon="trash-can"]';
+  const DELETE_LABEL = /usuń|delete|remove|odłącz|unlink/i;
+  const HARD_CLIP = /^(hidden|clip)$/;
+  const SCROLLER = /^(auto|scroll)$/;
+  const MIN_SIZE = 8;
+  const MIN_TAP = 40;
+  const MIN_GAP = 8;
+  const EPS = 1;
+  const TRANSPARENT = "rgba(0, 0, 0, 0)";
+  let viewportWidth = innerWidth; // set by measure()
+
+  const styles = new Map();
+  const styleOf = (el) => styles.get(el) || styles.set(el, getComputedStyle(el)).get(el);
+  const round = (n) => Math.round(n * 10) / 10;
+  const toRect = (r) => ({ left: r.left, top: r.top, right: r.right, bottom: r.bottom });
+  const width = (r) => Math.max(0, r.right - r.left);
+  const height = (r) => Math.max(0, r.bottom - r.top);
+  const boxOf = (r) => ({ x: round(r.left), y: round(r.top), width: round(width(r)), height: round(height(r)) });
+  const isRoot = (el) => el === document.body || el === document.documentElement;
+  const textOf = (el) => (el.innerText || "").trim(); // SVG elements have no innerText
+
+  function intersect(a, b, axes) {
+    const r = { ...a };
+    if (axes.x) Object.assign(r, { left: Math.max(a.left, b.left), right: Math.min(a.right, b.right) });
+    if (axes.y) Object.assign(r, { top: Math.max(a.top, b.top), bottom: Math.min(a.bottom, b.bottom) });
+    return r;
+  }
+
+  // The part of `rect` its overflow:hidden|clip ancestors (from `node` up, `stop` included) leave visible. The walk
+  // ends at the first scroller: what lies beyond it is reachable by scrolling.
+  function clip(rect, node, stop) {
+    let r = rect;
+    for (let n = node; n && !isRoot(n); n = n.parentElement) {
+      const s = styleOf(n);
+      if (SCROLLER.test(s.overflowX) || SCROLLER.test(s.overflowY)) break;
+      const axes = { x: HARD_CLIP.test(s.overflowX), y: HARD_CLIP.test(s.overflowY) };
+      if (axes.x || axes.y) r = intersect(r, toRect(n.getBoundingClientRect()), axes);
+      if (n === stop || s.position === "fixed") break;
+    }
+    return r;
+  }
+
+  const clipOf = (el, stop) => {
+    const rect = toRect(el.getBoundingClientRect());
+    return styleOf(el).position === "fixed" ? rect : clip(rect, el.parentElement, stop);
+  };
+
+  function isVisuallyHidden(el) {
+    const s = styleOf(el);
+    const b = el.getBoundingClientRect();
+    if (s.clip === "rect(0px, 0px, 0px, 0px)" || s.clipPath === "inset(50%)") return true;
+    return s.position === "absolute" && (b.width <= 1 || b.height <= 1);
+  }
+
+  // A closed drawer or sheet parked outside the viewport (fixed anywhere, absolute sideways).
+  function inParkedLayer(el) {
+    for (let n = el; n && !isRoot(n); n = n.parentElement) {
+      const pos = styleOf(n).position;
+      if (pos !== "fixed" && pos !== "absolute") continue;
+      const b = n.getBoundingClientRect();
+      const sideways = b.right <= 0 || b.left >= viewportWidth;
+      if (sideways || (pos === "fixed" && (b.bottom <= 0 || b.top >= innerHeight))) return true;
+    }
+    return false;
+  }
+
+  function isHidden(el) {
+    if (!el.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true })) return true;
+    if (el.closest('[aria-hidden="true"], [inert]') || isVisuallyHidden(el)) return true;
+    const seen = clipOf(el);
+    const b = el.getBoundingClientRect();
+    const clippedAway = b.width > 0 && b.height > 0 && (width(seen) <= 0 || height(seen) <= 0);
+    return clippedAway || inParkedLayer(el);
+  }
+
+  function selectorOf(el) {
+    const parts = [];
+    for (let n = el; n && !isRoot(n) && parts.length < 4; n = n.parentElement) {
+      if (n.dataset.testid) return [`[data-testid="${n.dataset.testid}"]`, ...parts].join(" > ");
+      const classes = typeof n.className === "string" ? n.className.trim().split(/\s+/).filter(Boolean) : [];
+      const same = n.parentElement ? [...n.parentElement.children].filter((c) => c.tagName === n.tagName) : [];
+      const nth = same.length > 1 ? `:nth-of-type(${same.indexOf(n) + 1})` : "";
+      parts.unshift([n.tagName.toLowerCase(), ...classes.slice(0, 2).map((c) => CSS.escape(c))].join(".") + nth);
+    }
+    return parts.join(" > ");
+  }
+
+  const nameOf = (el) =>
+    (el.getAttribute("aria-label") || textOf(el) || el.value || el.getAttribute("title") || "").trim().slice(0, 60);
+
+  const issue = (kind, detail, el, rect) => ({
+    kind,
+    detail,
+    selector: selectorOf(el),
+    text: nameOf(el),
+    box: boxOf(rect || el.getBoundingClientRect()),
+  });
+
+  function sizeIssue(el) {
+    const b = el.getBoundingClientRect();
+    if (b.width < MIN_SIZE || b.height < MIN_SIZE) return issue("zeroSize", "too-small", el);
+    const seen = clipOf(el);
+    if (width(seen) < b.width - EPS || height(seen) < b.height - EPS) return issue("zeroSize", "clipped", el);
+    return null;
+  }
+
+  // Mobile emulation keeps the custom scrollbar as a classic one, so `100vw` ends under it (the 6 px "page scroll"
+  // of every mobile screen); a phone draws overlay scrollbars. That gutter is not off the viewport.
+  const scrollbarGutter = () => Math.min(Math.max(innerWidth - document.documentElement.clientWidth, 0), 20);
+
+  // A sideways scroller between the element and the document (a wide table) brings it into view.
+  function inSidewaysScroller(el) {
+    for (let n = el.parentElement; n && !isRoot(n); n = n.parentElement) {
+      if (SCROLLER.test(styleOf(n).overflowX) && n.scrollWidth > n.clientWidth + EPS) return true;
+    }
+    return false;
+  }
+
+  // Horizontal only: below the fold is what page scrolling is for.
+  function offViewportIssue(el) {
+    const b = el.getBoundingClientRect();
+    if (b.right <= viewportWidth + EPS && b.left >= -EPS) return null;
+    return inSidewaysScroller(el) ? null : issue("offViewport", "beyond-viewport-width", el);
+  }
+
+  // The effective target of a checkbox or radio is its label.
+  function tapIssue(el) {
+    const label = el.closest("label");
+    const b = (label || el).getBoundingClientRect();
+    if (el.tagName === "A" && styleOf(el).display === "inline") return null; // inline text link (WCAG 2.5.8 exception)
+    if (b.width >= MIN_TAP && b.height >= MIN_TAP) return null;
+    return issue("tapTarget", `${Math.round(b.width)}x${Math.round(b.height)}`, el, b);
+  }
+
+  // An element pushed off the viewport is also clipped by the app column: reported once, as off-viewport.
+  function interactiveIssues(controls, mobile) {
+    return controls
+      .flatMap((el) => {
+        const [size, off] = [sizeIssue(el), offViewportIssue(el)];
+        return [off && size?.detail === "clipped" ? null : size, off, mobile ? tapIssue(el) : null];
+      })
+      .filter(Boolean);
+  }
+
+  const accessibleName = (el) =>
+    Boolean(
+      el.getAttribute("aria-label") ||
+        el.getAttribute("aria-labelledby") ||
+        el.getAttribute("title") ||
+        textOf(el) ||
+        el.querySelector("img[alt]:not([alt=''])")
+    );
+
+  // A clickable `span`/`div`: the outermost element with cursor:pointer that has no semantics of its own.
+  const isPointerAction = (el) =>
+    styleOf(el).cursor === "pointer" &&
+    styleOf(el.parentElement).cursor !== "pointer" &&
+    !el.closest(SEMANTIC) &&
+    !el.matches(CLICKABLE_ROW);
+
+  function nonFocusableIssues(pointerActions) {
+    return pointerActions
+      .map((el) => {
+        if (el.tabIndex < 0) return issue("nonFocusable", "not-focusable", el);
+        return accessibleName(el) ? null : issue("nonFocusable", "no-accessible-name", el);
+      })
+      .filter(Boolean);
+  }
+
+  const union = (rects) =>
+    rects.length
+      ? {
+          left: Math.min(...rects.map((r) => r.left)),
+          top: Math.min(...rects.map((r) => r.top)),
+          right: Math.max(...rects.map((r) => r.right)),
+          bottom: Math.max(...rects.map((r) => r.bottom)),
+        }
+      : null;
+  const byLeft = (a, b) => a.rect.left - b.rect.left;
+  const painted = (el) => {
+    const s = styleOf(el);
+    const replaced = /^(img|svg|input|select|button)$/i.test(el.tagName);
+    return replaced || s.backgroundColor !== TRANSPARENT || parseFloat(s.borderTopWidth) > 0;
+  };
+
+  // What a table cell shows: its text runs and painted boxes (badges, chips, controls), clipped as the cell clips.
+  function contentRect(cell) {
+    const rects = [];
+    const walker = document.createTreeWalker(cell, NodeFilter.SHOW_TEXT);
+    while (walker.nextNode()) {
+      const text = walker.currentNode;
+      if (!text.textContent.trim() || isHidden(text.parentElement)) continue;
+      const range = document.createRange();
+      range.selectNodeContents(text);
+      rects.push(clip(toRect(range.getBoundingClientRect()), text.parentElement, cell));
+    }
+    for (const el of cell.querySelectorAll("*")) if (painted(el) && !isHidden(el)) rects.push(clipOf(el, cell));
+    return union(rects.filter((r) => width(r) > 0 && height(r) > 0));
+  }
+
+  // Neighbours on one line (sorted by left): intersection > 1 px is an overlap, a gap of 1–8 px is cramped. Flush
+  // neighbours (a tab bar, a joined input + button) are one group by design.
+  function pairIssues(items) {
+    const issues = [];
+    for (let i = 1; i < items.length; i += 1) {
+      const [a, b] = [items[i - 1].rect, items[i].rect];
+      if (Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) <= EPS) continue;
+      const gap = b.left - a.right;
+      if (gap < -EPS) issues.push(issue("overlap", `intersect ${round(-gap)}px`, items[i].el, b));
+      else if (gap > EPS && gap < MIN_GAP) issues.push(issue("overlap", `gap ${round(gap)}px`, items[i].el, b));
+    }
+    return issues;
+  }
+
+  function rowIssues(rows) {
+    return rows.flatMap((row) => {
+      const cells = [...row.children].filter((cell) => !isHidden(cell));
+      const items = cells.map((el) => ({ el, rect: contentRect(el) })).filter((item) => item.rect);
+      return pairIssues(items.sort(byLeft));
+    });
+  }
+
+  // A toolbar item is a control or a wrapper around exactly one (a layout column holding several is not).
+  const isControl = (el) => el.matches(INTERACTIVE) || el.querySelectorAll(INTERACTIVE).length === 1;
+
+  function isControlRow(el) {
+    const s = styleOf(el);
+    if (!/flex/.test(s.display) || s.flexDirection.startsWith("column")) return false;
+    return !el.matches(`${JOINED}, [role="row"], tr`) && !el.closest(".ProseMirror");
+  }
+
+  function toolbarIssues(shown) {
+    return shown.filter(isControlRow).flatMap((row) => {
+      const items = [...row.children].filter((c) => !isHidden(c) && isControl(c));
+      if (items.length < 2) return [];
+      return pairIssues(items.map((el) => ({ el, rect: toRect(el.getBoundingClientRect()) })).sort(byLeft));
+    });
+  }
+
+  const hasShortText = (el) => Boolean(textOf(el)) && el.querySelectorAll("*").length <= 4;
+
+  // A sideways scroller whose scrollbar has no thickness: nothing shows that it scrolls (vertical scrolling is
+  // expected, a hidden vertical bar is not reported).
+  function hiddenScrollbar(el, s, dx) {
+    const barX = el.offsetHeight - el.clientHeight - parseFloat(s.borderTopWidth) - parseFloat(s.borderBottomWidth);
+    return SCROLLER.test(s.overflowX) && dx > EPS && barX < EPS;
+  }
+
+  // The document scroller is skipped: its 6 px on mobile is the emulated custom scrollbar, not a layout defect.
+  function overflowIssue(el) {
+    const s = styleOf(el);
+    const [dx, dy] = [el.scrollWidth - el.clientWidth, el.scrollHeight - el.clientHeight];
+    if (isRoot(el) || (dx <= EPS && dy <= EPS)) return null;
+    const cutX = HARD_CLIP.test(s.overflowX) && dx > EPS;
+    if (cutX && hasShortText(el)) return el.closest("[title]") ? null : issue("overflow", "text-cut-no-title", el);
+    if (cutX || (HARD_CLIP.test(s.overflowY) && dy > EPS)) return issue("overflow", "content-clipped", el);
+    return hiddenScrollbar(el, s, dx) ? issue("overflow", "no-scrollbar", el) : null;
+  }
+
+  // A fixed or sticky bar across the bottom of the viewport (the mobile bottom nav, a sticky action bar).
+  function findBottomBar(shown) {
+    return shown.find((el) => {
+      if (!/^(fixed|sticky)$/.test(styleOf(el).position)) return false;
+      const b = el.getBoundingClientRect();
+      const acrossBottom = b.bottom >= innerHeight - 2 && b.width >= viewportWidth * 0.6;
+      return acrossBottom && b.height > 0 && b.height <= innerHeight * 0.3;
+    });
+  }
+
+  function scrollToEnd(elements) {
+    for (const el of elements) {
+      const scrolls = SCROLLER.test(styleOf(el).overflowY) && el.scrollHeight > el.clientHeight + EPS;
+      if (scrolls) el.scrollTop = el.scrollHeight;
+    }
+    window.scrollTo(0, document.documentElement.scrollHeight);
+  }
+
+  // At full scroll, a control whose centre the bar still covers can never be reached.
+  function underBarIssues(controls, bar) {
+    if (!bar) return [];
+    const barTop = bar.getBoundingClientRect().top;
+    return controls
+      .filter((el) => !bar.contains(el))
+      .map((el) => {
+        const b = el.getBoundingClientRect();
+        const [x, y] = [b.left + b.width / 2, b.top + b.height / 2];
+        if (y < barTop || y > innerHeight) return null;
+        const hit = document.elementFromPoint(x, y);
+        return hit && bar.contains(hit) ? issue("underBottomBar", "covered-at-full-scroll", el) : null;
+      })
+      .filter(Boolean);
+  }
+
+  function tokenColours() {
+    const probe = document.body.appendChild(document.createElement("div"));
+    const read = (name) => {
+      probe.style.backgroundColor = `var(${name})`;
+      return getComputedStyle(probe).backgroundColor;
+    };
+    const negative = ["--negative", "--negative-fill", "--negative-subtle"].map(read);
+    const colours = { accent: read("--accent-fill"), negative };
+    probe.remove();
+    return colours;
+  }
+
+  function buttonRole(el, colours) {
+    const s = styleOf(el);
+    const label = `${el.getAttribute("aria-label") || ""} ${textOf(el)} ${el.title}`;
+    const negative = colours.negative.includes(s.backgroundColor) || colours.negative.includes(s.color);
+    if (negative || DELETE_LABEL.test(label) || el.querySelector(DELETE_ICON)) return "danger";
+    if (s.backgroundColor === colours.accent) return "primary";
+    if (!textOf(el)) return "icon-only";
+    return s.backgroundColor === TRANSPARENT && parseFloat(s.borderTopWidth) > 0 ? "outline" : "secondary";
+  }
+
+  function buttonMetrics(shown) {
+    const colours = tokenColours();
+    return shown
+      .filter((el) => el.matches('button:not([role]), [role="button"]'))
+      .map((el) => {
+        const s = styleOf(el);
+        const metrics = { height: round(el.getBoundingClientRect().height), paddingX: s.paddingLeft };
+        Object.assign(metrics, { radius: s.borderTopLeftRadius, fontSize: s.fontSize, border: s.borderTopWidth });
+        return { role: buttonRole(el, colours), ...metrics, selector: selectorOf(el), text: nameOf(el) };
+      });
+  }
+
+  // Scrolls every scroller to its end last: the bottom-bar check needs it, the others need the page as captured.
+  function measure(options) {
+    viewportWidth = options.viewportWidth + scrollbarGutter();
+    const elements = [...document.querySelectorAll("body *")];
+    const shown = elements.filter((el) => !isHidden(el));
+    const pointerActions = shown.filter(isPointerAction);
+    const controls = [...shown.filter((el) => el.matches(INTERACTIVE)), ...pointerActions];
+    const rows = shown.filter((el) => el.matches('[role="row"], tr'));
+    const issues = [...interactiveIssues(controls, options.mobile), ...nonFocusableIssues(pointerActions)];
+    issues.push(...rowIssues(rows));
+    issues.push(...toolbarIssues(shown), ...shown.map(overflowIssue).filter(Boolean));
+    const buttons = buttonMetrics(shown);
+    const bar = findBottomBar(shown);
+    scrollToEnd(elements);
+    issues.push(...underBarIssues(controls, bar));
+    return { issues, buttons, bottomBar: bar ? selectorOf(bar) : null };
+  }
+
+  window.uxProbes = { measure };
+})();

@@ -41,7 +41,8 @@
     "visual:parity": "playwright test -c tests/visual/playwright.visual.config.js --grep @parity",
     "visual:screens": "playwright test -c tests/visual/playwright.visual.config.js --grep @screens",
     "visual:approve": "playwright test -c tests/visual/playwright.visual.config.js --grep @screens --update-snapshots",
-    "visual:landmarks": "playwright test -c tests/visual/playwright.visual.config.js --grep @landmarks"
+    "visual:landmarks": "playwright test -c tests/visual/playwright.visual.config.js --grep @landmarks",
+    "visual:ux": "playwright test -c tests/visual/playwright.visual.config.js --grep @ux"
   },
   "dependencies": {
     "@entirius/brand-tokens": "file:../entirius-brand-tokens",
