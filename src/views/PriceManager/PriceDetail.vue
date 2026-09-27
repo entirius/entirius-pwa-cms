@@ -23,14 +23,13 @@
         <template v-else>
           <!-- Top bar: currency selector + meta info -->
           <div class="flex ai-ct gap-8 mb-10 flex-wrap">
-            <div class="pm-field">
-              <label class="field-label">{{ $t('pm.currency') }}</label>
-              <Dropdown
-                :values="currencyOptions"
-                :selected="activeCurrency ? [activeCurrency] : []"
-                @onSelect="onCurrencyChange"
+            <FormField class="pm-field" :label="$t('pm.currency')">
+              <BasicSelect
+                :model-value="activeCurrency"
+                :options="currencyOptions"
+                @update:model-value="onCurrencyChange"
               />
-            </div>
+            </FormField>
             <div class="pm-meta-item">
               <span class="field-label">{{ $t('pm.country') }}</span>
               <span class="fw-600">{{ flatPrice?.country || defaultCountryIso || '—' }}</span>
@@ -66,16 +65,17 @@
           <div class="page-card pm-edit-form mb-8">
             <div class="pm-edit-fields">
               <!-- Editable price (net or gross depending on direction) -->
-              <div class="pm-field">
-                <label class="field-label required">
-                  {{ isNetEditable ? $t('pm.net') : $t('pm.gross') }}
-                </label>
+              <FormField
+                class="pm-field"
+                :label="isNetEditable ? $t('pm.net') : $t('pm.gross')"
+                required
+                :error="formErrors.getFieldError('value')?.msg"
+              >
                 <BasicInput
                   v-model="form.value"
-                  :validate="formErrors.getFieldError('value')"
                   @blur="form.value = normalizePrice(form.value)"
                 />
-              </div>
+              </FormField>
 
               <!-- Calculated price (read-only) -->
               <div class="pm-field">
@@ -91,14 +91,16 @@
               </div>
 
               <!-- Special price -->
-              <div class="pm-field">
-                <label class="field-label">{{ $t('pm.special_net') }}</label>
+              <FormField
+                class="pm-field"
+                :label="$t('pm.special_net')"
+                :error="formErrors.getFieldError('special_value')?.msg"
+              >
                 <BasicInput
                   v-model="form.special_value"
-                  :validate="formErrors.getFieldError('special_value')"
                   @blur="form.special_value = normalizePrice(form.special_value)"
                 />
-              </div>
+              </FormField>
 
               <!-- Promo dates -->
               <div class="pm-field">

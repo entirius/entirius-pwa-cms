@@ -30,9 +30,7 @@
             <StatusBadge tone="neutral" :dot="false" :label="directionLabel(row)" />
           </template>
           <template #cell-country_count="{ row }">
-            <span class="chip bg-accent-subtle t-strong">
-              {{ row.country_count ?? 0 }} {{ $t('pm.country_count') }}
-            </span>
+            <StatusBadge tone="accent" :dot="false" :label="`${row.country_count ?? 0} ${$t('pm.country_count')}`" />
           </template>
         </DataTable>
       </div>

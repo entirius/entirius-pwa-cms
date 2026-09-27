@@ -18,29 +18,16 @@
       <!-- Toolbar -->
       <div class="price-list__toolbar">
         <!-- Currency multi-select -->
-        <Dropdown
+        <BasicSelect
           v-if="availableCurrencies.length"
-          :custom_droplist="true"
+          :model-value="selectedCurrencies"
+          :options="currencyOptions"
           :placeholder="`${$t('pm.currency')} (${selectedCurrencies.length}/${availableCurrencies.length})`"
+          :aria-label="$t('pm.currency')"
+          multiple
           class="price-list__currency"
-        >
-          <template #custom>
-            <div
-              v-for="code in availableCurrencies"
-              :key="code"
-              class="pointer flex jc-sb ai-ct ph-2 dropdown-list-el"
-              :class="{ 'bg-accent-fill': selectedCurrencies.includes(code) }"
-              @click.stop="toggleCurrency(code)"
-            >
-              <span class="fw-600 ml-2">{{ code }}</span>
-              <FontAwesomeIcon
-                v-if="selectedCurrencies.includes(code)"
-                :icon="$icons.check"
-                class="t-positive"
-              />
-            </div>
-          </template>
-        </Dropdown>
+          @update:model-value="onCurrenciesPick"
+        />
 
         <!-- Default country (read-only) -->
         <span v-if="defaultCountry" class="price-list__country-label t-muted fs-200">
@@ -481,6 +468,11 @@ export default {
       } catch { /* ignore — currencies stay empty */ }
     },
     // --- UI events ---
+    // BasicSelect `multiple` emits the whole list; toggle the one code it added or removed.
+    onCurrenciesPick(codes) {
+      const current = this.selectedCurrencies
+      this.toggleCurrency(codes.find((c) => !current.includes(c)) ?? current.find((c) => !codes.includes(c)))
+    },
     toggleCurrency(code) {
       const idx = this.selectedCurrencies.indexOf(code)
       if (idx >= 0) {

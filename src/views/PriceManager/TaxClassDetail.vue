@@ -34,21 +34,22 @@
         <div class="pm-section mb-10">
           <h2 class="fs-500 fw-600 mb-8">{{ $t('pm.tax_class_detail') }}</h2>
           <div class="pm-grid">
-            <div class="pm-field">
-              <label class="field-label required">IDX</label>
+            <FormField class="pm-field" label="IDX" required :error="formErrors.getFieldError('idx')?.msg">
               <BasicInput
                 v-model="form.idx"
                 :disabled="isEdit"
-                :validate="formErrors.getFieldError('idx')"
               />
-            </div>
-            <div class="pm-field">
-              <label class="field-label required">{{ $t('pm.name') }}</label>
+            </FormField>
+            <FormField
+              class="pm-field"
+              :label="$t('pm.name')"
+              required
+              :error="formErrors.getFieldError('name')?.msg"
+            >
               <BasicInput
                 v-model="form.name"
-                :validate="formErrors.getFieldError('name')"
               />
-            </div>
+            </FormField>
           </div>
         </div>
 

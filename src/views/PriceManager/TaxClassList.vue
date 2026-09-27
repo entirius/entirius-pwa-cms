@@ -17,9 +17,7 @@
             <span class="fw-600">{{ row.name }}</span>
           </template>
           <template #cell-rate_count="{ row }">
-            <span class="chip bg-accent-subtle t-strong">
-              {{ row.rate_count ?? 0 }} {{ $t('pm.rate_count') }}
-            </span>
+            <StatusBadge tone="accent" :dot="false" :label="`${row.rate_count ?? 0} ${$t('pm.rate_count')}`" />
           </template>
         </DataTable>
       </div>

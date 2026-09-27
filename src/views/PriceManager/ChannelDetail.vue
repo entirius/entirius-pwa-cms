@@ -33,63 +33,46 @@
         <div class="pm-section">
           <h2 class="fs-500 fw-600 mb-8">{{ $t('pm.channel_detail') }}</h2>
           <div class="pm-grid">
-            <div class="pm-field">
-              <label class="field-label required">IDX</label>
+            <FormField class="pm-field" label="IDX" required :error="formErrors.getFieldError('idx')?.msg">
               <BasicInput
                 v-model="form.idx"
                 :disabled="isEdit"
-                :validate="formErrors.getFieldError('idx')"
               />
-            </div>
-            <div class="pm-field">
-              <label class="field-label required">{{ $t('pm.name') }}</label>
+            </FormField>
+            <FormField
+              class="pm-field"
+              :label="$t('pm.name')"
+              required
+              :error="formErrors.getFieldError('name')?.msg"
+            >
               <BasicInput
                 v-model="form.name"
-                :validate="formErrors.getFieldError('name')"
               />
-            </div>
-            <div class="pm-field">
-              <label class="field-label">{{ $t('pm.calculate_direction') }}</label>
-              <Dropdown
-                :values="directionOptions"
-                :selected="[form.calculate_direction]"
-                @onSelect="(val) => form.calculate_direction = val[0]"
+            </FormField>
+            <FormField class="pm-field" :label="$t('pm.calculate_direction')">
+              <BasicSelect
+                v-model="form.calculate_direction"
+                :options="directionOptions"
               />
-            </div>
-            <div class="pm-field">
-              <label class="field-label">{{ $t('pm.calculate_countries') }}</label>
-              <Dropdown
-                :custom_droplist="true"
+            </FormField>
+            <FormField class="pm-field" :label="$t('pm.calculate_countries')">
+              <BasicSelect
+                :model-value="form.calculate_country_codes"
+                :options="countryOptions"
                 :placeholder="`${$t('pm.calculate_countries')} (${form.calculate_country_codes.length})`"
-              >
-                <template #custom>
-                  <div
-                    v-for="c in countryOptions"
-                    :key="c.value"
-                    class="pointer flex jc-sb ai-ct ph-2 dropdown-list-el"
-                    :class="{ 'bg-accent-fill': form.calculate_country_codes.includes(c.value) }"
-                    @click.stop="toggleCountry(c.value)"
-                  >
-                    <span class="ml-2">{{ c.label }}</span>
-                    <FontAwesomeIcon
-                      v-if="form.calculate_country_codes.includes(c.value)"
-                      :icon="$icons.check"
-                      class="t-positive"
-                    />
-                  </div>
-                </template>
-              </Dropdown>
-            </div>
-            <div class="pm-field">
-              <label class="field-label">{{ $t('pm.default_country') }}</label>
-              <Dropdown
-                :values="defaultCountryOptions"
-                :selected="form.default_country_code ? [form.default_country_code] : []"
-                :placeholder="$t('pm.select_default_country')"
-                :isDisabled="!form.calculate_country_codes.length"
-                @onSelect="(val) => form.default_country_code = val[0]"
+                multiple
+                searchable
+                @update:model-value="onCountriesPick"
               />
-            </div>
+            </FormField>
+            <FormField class="pm-field" :label="$t('pm.default_country')">
+              <BasicSelect
+                v-model="form.default_country_code"
+                :options="defaultCountryOptions"
+                :placeholder="$t('pm.select_default_country')"
+                :disabled="!form.calculate_country_codes.length"
+              />
+            </FormField>
           </div>
         </div>
       </template>
@@ -182,6 +165,11 @@ export default {
     if (this.isEdit) this.fetch()
   },
   methods: {
+    // BasicSelect `multiple` emits the whole list; toggle the one code it added or removed.
+    onCountriesPick(codes) {
+      const current = this.form.calculate_country_codes
+      this.toggleCountry(codes.find((c) => !current.includes(c)) ?? current.find((c) => !codes.includes(c)))
+    },
     toggleCountry(iso2) {
       const idx = this.form.calculate_country_codes.indexOf(iso2)
       if (idx >= 0) {

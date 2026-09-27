@@ -5,11 +5,11 @@
         <div id="pricing-toolbar-left" class="flex ai-ct gap-5"></div>
         <div v-if="showChannelSelector && channelOptions.length" class="flex ai-ct gap-5">
           <span id="pricing-channel-label" class="field-label">{{ $t('pm.channel') }}</span>
-          <Dropdown
+          <BasicSelect
             aria-labelledby="pricing-channel-label"
-            :values="channelOptions"
-            :selected="[activeChannelIdx]"
-            @onSelect="onChannelSelect"
+            :model-value="activeChannelIdx"
+            :options="channelOptions"
+            @update:model-value="onChannelSelect"
           />
         </div>
       </div>
