@@ -3032,7 +3032,7 @@
       "refresh": "Odśwież",
       "untitled": "(bez tematu)",
       "pick": "Wybierz szkic do przejrzenia",
-      "detail_empty_title": "Kolejka jest pusta",
+      "detail_empty_title": "Brak szkiców do przeglądu",
       "detail_empty": "Pipeline pokazuje każdą firmę i jej etap — otwórz kartę, aby do niej napisać lub ponowić audyt.",
       "open_board": "Otwórz pipeline",
       "filter": {

@@ -38,11 +38,15 @@
     </section>
     <!-- desktop, empty queue: the right pane says why it is empty and where the work is -->
     <section v-else class="leads__placeholder" data-testid="leads-detail-empty">
-      <p class="leads__placeholder-title">{{ $t("leads.inbox.detail_empty_title") }}</p>
-      <p>{{ $t("leads.inbox.detail_empty") }}</p>
-      <router-link v-if="isDesktop" class="ld-link" :to="{ name: 'LeadsBoard' }" data-testid="leads-open-board">
-        {{ $t("leads.inbox.open_board") }}
-      </router-link>
+      <EmptyState
+        icon="inbox"
+        :title="$t('leads.inbox.detail_empty_title')"
+        :message="$t('leads.inbox.detail_empty')"
+      >
+        <router-link v-if="isDesktop" class="ld-link" :to="{ name: 'LeadsBoard' }" data-testid="leads-open-board">
+          {{ $t("leads.inbox.open_board") }}
+        </router-link>
+      </EmptyState>
     </section>
   </div>
 </template>
@@ -164,10 +168,6 @@ onMounted(async () => {
   }
   .leads__placeholder p {
     margin: 0;
-  }
-  .leads__placeholder-title {
-    font-weight: 600;
-    color: var(--text-body);
   }
   .ld-link {
     min-height: 32px;

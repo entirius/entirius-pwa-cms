@@ -3033,7 +3033,7 @@
       "refresh": "Refresh",
       "untitled": "(no subject)",
       "pick": "Pick a draft to review",
-      "detail_empty_title": "While the queue is empty",
+      "detail_empty_title": "No drafts to review",
       "detail_empty": "The pipeline shows every company and where it stands — open a card to write to it or re-audit it.",
       "open_board": "Open the pipeline",
       "filter": {

@@ -111,3 +111,18 @@ describe("DataTable boot — expand row (opt-in)", () => {
     expect(wrapper.findAll(".data-table__expand-row").length).toBe(1);
   });
 });
+
+describe("DataTable boot — empty state", () => {
+  it("renders EmptyState with the empty text outside the scrolling grid", () => {
+    const wrapper = mount(DataTable, { props: { columns, rows: [], emptyText: "No bookings" } });
+    const empty = wrapper.find(".data-table__empty");
+    expect(empty.exists()).toBe(true);
+    expect(wrapper.find(".data-table__grid .data-table__empty").exists()).toBe(false);
+    expect(empty.find("empty-state-stub").attributes("title")).toBe("No bookings");
+  });
+
+  it("renders no empty state while there are rows", () => {
+    const wrapper = mount(DataTable, { props: { columns, rows } });
+    expect(wrapper.find(".data-table__empty").exists()).toBe(false);
+  });
+});

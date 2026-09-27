@@ -317,9 +317,11 @@
             </div>
           </div>
 
-          <p v-if="!translations.length" class="fs-200 t-muted">
-            {{ $t("dp.no_translations") }}
-          </p>
+          <EmptyState
+            v-if="!translations.length"
+            icon="language"
+            :title="$t('dp.no_translations')"
+          />
 
           <div
             v-for="t9n in translations"

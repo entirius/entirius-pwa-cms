@@ -120,11 +120,14 @@
           </div>
         </template>
       </template>
+    </div>
 
-      <div v-else class="data-table__empty" role="row">
-        <div role="gridcell">
-          <slot name="empty">{{ emptyText || "No data" }}</slot>
-        </div>
+    <!-- Outside the grid: on a phone the grid scrolls sideways, the empty state stays in view. -->
+    <div v-if="!rows || !rows.length" class="data-table__empty" role="row">
+      <div role="gridcell">
+        <slot name="empty">
+          <EmptyState icon="inbox" :title="emptyText || t('common.no_data')" />
+        </slot>
       </div>
     </div>
   </div>
@@ -132,6 +135,7 @@
 
 <script setup>
 import { ref, computed } from "vue";
+import { t } from "@/i18n";
 
 const props = defineProps({
   columns: {
@@ -412,8 +416,8 @@ function handleRowClick(row, index, event) {
 }
 
 .data-table__empty {
-  grid-column: 1 / -1;
-  padding: var(--space-8);
+  position: sticky;
+  left: 0;
   text-align: center;
   color: var(--text-muted);
   font-size: var(--fs-250);
