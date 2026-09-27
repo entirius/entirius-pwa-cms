@@ -3,7 +3,7 @@
     <div
       class="page-card h-100 ovy-auto"
     >
-      <h1>{{ $t("lookup.find.title") }}</h1>
+      <h1 class="page-title">{{ $t("lookup.find.title") }}</h1>
       <p class="fs-300 t-body mb-10">
         {{ $t("lookup.find.subtitle") }}
       </p>

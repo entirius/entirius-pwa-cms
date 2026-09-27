@@ -12,7 +12,7 @@
         >
           <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
         </BasicButton>
-        <h1>
+        <h1 class="page-title">
           {{ $t("emails.lang_config") }}:
           {{ config.language || $t("emails.default_lang") }}
         </h1>

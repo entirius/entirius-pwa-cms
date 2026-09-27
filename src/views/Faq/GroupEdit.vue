@@ -42,7 +42,7 @@
 
       <template v-else>
         <div class="flex ai-ct jc-sb mb-12">
-          <h1>
+          <h1 class="page-title">
             {{ isEdit ? group.name || group.idx : $t("faq.create_group") }}
           </h1>
           <Switcher

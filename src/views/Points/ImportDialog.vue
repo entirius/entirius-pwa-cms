@@ -12,7 +12,7 @@
         </BasicButton>
       </div>
 
-      <h1 class="mb-12">{{ $t("dp.import") }}</h1>
+      <h1 class="page-title mb-12">{{ $t("dp.import") }}</h1>
 
       <div class="import-card">
         <!-- File input -->

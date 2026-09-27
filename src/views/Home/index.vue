@@ -3,7 +3,7 @@
     <div class="home-inner h-100 ovy-auto">
       <div class="home-content">
         <p class="home-greeting">{{ greeting }}</p>
-        <h1 class="home-title">{{ $t("panels.choose_panel") }}</h1>
+        <h1 class="page-title home-title">{{ $t("panels.choose_panel") }}</h1>
 
         <div class="panel-grid">
           <component

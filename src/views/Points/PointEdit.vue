@@ -34,7 +34,7 @@
 
       <template v-else>
         <div class="flex ai-ct jc-sb mb-12">
-          <h1>
+          <h1 class="page-title">
             {{ isEdit ? point.name || point.code : $t("dp.create_point") }}
           </h1>
           <Switcher

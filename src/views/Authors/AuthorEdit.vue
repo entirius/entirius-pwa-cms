@@ -9,7 +9,7 @@
       >
         <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
       </BasicButton>
-      <h1 v-if="!loading">{{ form.name || $t("authors.create") }}</h1>
+      <h1 class="page-title" v-if="!loading">{{ form.name || $t("authors.create") }}</h1>
     </Teleport>
     <Teleport to="#authors-toolbar-right" defer>
       <span v-if="isDirty" class="chip bg-warning-subtle t-warning">

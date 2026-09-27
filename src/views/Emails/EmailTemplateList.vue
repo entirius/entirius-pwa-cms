@@ -12,7 +12,7 @@
         >
           <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
         </BasicButton>
-        <h1>{{ typeLabel }}</h1>
+        <h1 class="page-title">{{ typeLabel }}</h1>
       </div>
 
       <Loader v-show="loading" />

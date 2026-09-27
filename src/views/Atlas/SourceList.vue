@@ -4,7 +4,7 @@
       class="page-card h-100 ovy-auto"
     >
       <div class="flex ai-ct jc-sb mb-10 gap-8">
-        <h1>{{ $t("atlas.list_title") }}</h1>
+        <h1 class="page-title">{{ $t("atlas.list_title") }}</h1>
         <BasicButton
           :text="$t('atlas.create_button')"
           class="btn-primary"

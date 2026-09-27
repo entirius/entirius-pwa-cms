@@ -47,8 +47,9 @@ values.
   carries 300–600, Lexend Deca 300 and 400. Font families are `--font-ui` (Inter, body and controls), `--font-brand`
   (Lexend Deca, titles and navigation) and `--font-mono`. Shadow and overlay come from `--shadow-sm`, `-md`, `-lg`,
   `-down` (plus the CMS-local `-arrow` / `-right` / `-left` / `-top` / `-around`) and `--overlay-backdrop`, `-heavy`,
-  `-loading`, `-handy`, `-ripple`. Every `<h1>` gets the page-title face from the base style (`typo/_typo.scss`:
-  `--font-brand`, `--fs-700`, 400), so a view never sizes or weighs an H1; section titles stay Inter 600 one step
+  `-loading`, `-handy`, `-ripple`. The page `<h1>` carries `.page-title` (`typo/_typo.scss`: `--font-brand`,
+  `--fs-700`, 400), so a view never sizes or weighs it; content H1s (rich text, previews, docs) are not page titles and
+  keep the browser look; section titles stay Inter 600 one step
   down. Text that carries meaning is at least 12 px (`--fs-200`); 10–11 px is for decorative counters only (a badge
   count on a tab, chip, bell or filter button).
 - **T6 Every screen works in both themes.** `data-theme` on `<html>` is `default` (light) or `dark`. A screen that

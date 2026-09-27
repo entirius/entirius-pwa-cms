@@ -16,7 +16,7 @@
 
       <template v-else-if="submission">
         <div class="flex ai-ct jc-sb mb-5">
-          <h1>{{ $t("cf.submission_detail") }}</h1>
+          <h1 class="page-title">{{ $t("cf.submission_detail") }}</h1>
           <Dropdown
             :values="statusOptions"
             :selected="[submission.status]"

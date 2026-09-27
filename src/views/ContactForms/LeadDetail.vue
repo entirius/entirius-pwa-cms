@@ -46,7 +46,7 @@
 
       <template v-else-if="lead">
         <div class="flex ai-ct mb-8">
-          <h1>{{ $t("cf.lead_detail") }}</h1>
+          <h1 class="page-title">{{ $t("cf.lead_detail") }}</h1>
         </div>
 
         <div class="cf-lead-grid">

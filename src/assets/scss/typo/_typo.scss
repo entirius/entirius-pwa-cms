@@ -4,8 +4,8 @@
 
 @import "./font-icons/font-icons";
 
-// The page title (R2): one H1 per page in the brand face at the heading size (type role `page-title`).
-h1 {
+// The page title (R2): the one page H1 carries it; content H1s (rich text, previews, docs) keep the browser look.
+.page-title {
   font-family: var(--font-brand);
   font-size: var(--fs-700);
   font-weight: 400;

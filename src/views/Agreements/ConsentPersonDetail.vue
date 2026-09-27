@@ -16,7 +16,7 @@
       <div class="flex ai-ct jc-sb flex-wrap gap-5 mb-12">
         <div class="person-detail__title">
           <p class="fs-200 fw-600 t-muted mb-2">{{ $t("agm.email") }}</p>
-          <h1>{{ email }}</h1>
+          <h1 class="page-title">{{ email }}</h1>
         </div>
         <BasicTabs
           v-model="mode"

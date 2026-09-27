@@ -16,7 +16,7 @@
 
       <template v-else-if="booking">
         <div class="flex ai-ct mb-10">
-          <h1>{{ $t("cf.booking_detail") }}</h1>
+          <h1 class="page-title">{{ $t("cf.booking_detail") }}</h1>
         </div>
 
         <div class="cf-booking-grid">

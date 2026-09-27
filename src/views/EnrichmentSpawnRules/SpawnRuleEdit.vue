@@ -10,7 +10,7 @@
         >
           <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
         </BasicButton>
-        <h1 class="m-0">
+        <h1 class="page-title m-0">
           {{ isCreate ? $t("enrichment.spawn_rules.create") : form.key }}
         </h1>
         <div class="flex ai-ct gap-5 ml-auto">

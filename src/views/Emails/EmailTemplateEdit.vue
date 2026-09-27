@@ -12,7 +12,7 @@
         >
           <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
         </BasicButton>
-        <h1>{{ $t("emails.edit_template") }}</h1>
+        <h1 class="page-title">{{ $t("emails.edit_template") }}</h1>
         <span class="fs-200 t-muted ml-2">({{ typeLabel }})</span>
         <span
           v-if="template.language_code"

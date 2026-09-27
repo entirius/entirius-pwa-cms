@@ -33,7 +33,7 @@
       <template v-else>
         <div class="flex ai-ct jc-sb flex-wrap gap-5 rg-3 mb-12">
           <div class="flex ai-ct flex-wrap gap-5">
-            <h1>
+            <h1 class="page-title">
               {{
                 isEdit
                   ? definition.name || definition.slug

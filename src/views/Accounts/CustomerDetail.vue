@@ -193,7 +193,6 @@ export default {
   gap: var(--space-5);
 }
 
-
 @media only screen and (max-width: 768px) {
   .acc-detail__wrapper {
     padding: var(--space-4) !important;

@@ -21,7 +21,7 @@
     >
       <!-- Heading -->
       <div class="flex ai-ct mb-10">
-        <h1>{{ $t("checkout_orders.orders") }}</h1>
+        <h1 class="page-title">{{ $t("checkout_orders.orders") }}</h1>
       </div>
 
       <!-- Status FilterChips -->

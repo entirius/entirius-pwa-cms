@@ -4,7 +4,7 @@
       class="page-card h-100 ovy-auto"
     >
       <div class="flex ai-ct mb-10">
-        <h1>{{ $t("cf.leads") }}</h1>
+        <h1 class="page-title">{{ $t("cf.leads") }}</h1>
       </div>
 
       <div class="flex ai-ct flex-wrap gap-8 rg-3 mb-10">

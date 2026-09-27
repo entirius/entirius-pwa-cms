@@ -4,7 +4,7 @@
       class="page-card h-100 ovy-auto"
     >
       <div class="flex ai-ct mb-10">
-        <h1>{{ $t("authors.title") }}</h1>
+        <h1 class="page-title">{{ $t("authors.title") }}</h1>
       </div>
 
       <div

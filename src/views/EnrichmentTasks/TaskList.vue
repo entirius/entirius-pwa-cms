@@ -4,7 +4,7 @@
       class="page-card flex-1 ovy-auto"
     >
       <div class="flex ai-ct mb-10">
-        <h1>{{ $t("enrichment.tasks.title") }}</h1>
+        <h1 class="page-title">{{ $t("enrichment.tasks.title") }}</h1>
       </div>
 
       <div class="flex ai-ct flex-wrap gap-2 mb-10">

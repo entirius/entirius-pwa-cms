@@ -4,7 +4,7 @@
       class="page-card h-100 ovy-auto"
     >
       <div class="flex ai-ct mb-10">
-        <h1>{{ $t("emails.dashboard") }}</h1>
+        <h1 class="page-title">{{ $t("emails.dashboard") }}</h1>
       </div>
 
       <Loader v-show="loading" />

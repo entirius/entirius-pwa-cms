@@ -12,7 +12,7 @@
         >
           <template #custom><FontAwesomeIcon icon="arrow-left" /></template>
         </BasicButton>
-        <h1>
+        <h1 class="page-title">
           {{ channel.label || $t("emails.channel") }}
         </h1>
         <span v-if="channel.idx" class="fs-200 t-muted ml-2"
