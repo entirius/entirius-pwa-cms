@@ -1,15 +1,18 @@
 <template>
   <button
+    type="button"
     class="filter-chip pointer"
     :class="{ 'filter-chip--active': active }"
     @click="$emit('click')"
   >
     {{ label }}
-    <span v-if="count != null" class="filter-chip__count">{{ count }}</span>
+    <CountBadge v-if="count != null" :count="count" />
   </button>
 </template>
 
 <script setup>
+import CountBadge from "@/boots/CountBadge/index.vue";
+
 defineProps({
   label: {
     type: String,
@@ -63,25 +66,6 @@ defineEmits(["click"]);
       background-color: var(--accent-fill);
       border-color: var(--accent);
     }
-  }
-
-  &__count {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 16px;
-    height: 16px;
-    padding: 0 var(--space-1);
-    font-size: var(--fs-100);
-    font-weight: 600;
-    border-radius: var(--radius-full);
-    background-color: var(--surface-hover);
-    color: var(--text-secondary);
-  }
-
-  &--active &__count {
-    background-color: rgba(255, 255, 255, 0.25);
-    color: var(--text-on-accent-fill);
   }
 }
 </style>

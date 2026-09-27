@@ -8,7 +8,7 @@
   >
     <button
       type="button"
-      class="page-cell"
+      class="page-cell page-cell--arrow"
       :disabled="state.page <= 1"
       aria-label="previous page"
       @click="
@@ -43,7 +43,7 @@
 
     <button
       type="button"
-      class="page-cell"
+      class="page-cell page-cell--arrow"
       :disabled="state.page >= state.pages"
       aria-label="next page"
       @click="
@@ -56,11 +56,20 @@
 </template>
 
 <script>
-// Two prop styles: `pagination` ({ page, pages }) or `current` / `total` / `perPage` (pages derived).
-// Both emit the new page as `onChangePage` and `change`.
+// `v-model:page` + `pages` (docs/ui-components.md § P3 display). Until plan 19 two older prop styles still work:
+// `pagination` ({ page, pages }) or `current` / `total` / `perPage` (pages derived). Every style emits the new page
+// as `update:page`, `onChangePage` and `change`.
 export default {
-  emits: ["onChangePage", "change"],
+  emits: ["update:page", "onChangePage", "change"],
   props: {
+    page: {
+      type: Number,
+      default: 1,
+    },
+    pages: {
+      type: Number,
+      default: null,
+    },
     pagination: {
       type: Object,
       required: false,
@@ -88,6 +97,7 @@ export default {
       if (num.isDisabled) return;
       if (mode === "prev" && this.state.page <= 1) return;
       if (mode === "next" && this.state.page >= this.state.pages) return;
+      this.$emit("update:page", num.num);
       this.$emit("onChangePage", num.num);
       this.$emit("change", num.num);
     },
@@ -130,6 +140,7 @@ export default {
   },
   computed: {
     state() {
+      if (this.pages !== null) return { page: this.page, pages: this.pages };
       if (this.total === null || !this.perPage) return this.pagination;
       return { page: this.current, pages: Math.ceil(this.total / this.perPage) };
     },
@@ -141,14 +152,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+// Pages are 32 px squares 4 px apart, the current one boxed in accent; the arrows are round.
 .pagination {
   max-width: fit-content;
 
   .page-cell {
+    box-sizing: border-box;
     min-width: var(--cell-size, 2rem);
     height: var(--cell-size, 2rem);
     padding: 0 var(--space-1);
-    border: 0;
+    border: 1px solid transparent;
     border-radius: var(--radius-base);
     background: transparent;
     color: var(--text-body);
@@ -160,16 +173,17 @@ export default {
     cursor: pointer;
 
     &:hover:not(:disabled):not(.page-cell--active):not(.page-cell--gap) {
-      background: var(--surface-raised);
+      background: var(--surface-hover);
     }
 
-    &:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 1px;
+    &--arrow {
+      border-color: var(--border-default);
+      border-radius: var(--radius-full);
+      color: var(--text-secondary);
     }
 
     &--active {
-      background: var(--accent-subtle);
+      border-color: var(--accent);
       color: var(--text-strong);
       font-weight: 600;
     }
@@ -180,7 +194,7 @@ export default {
     }
 
     &:disabled {
-      opacity: 0.4;
+      opacity: 0.5;
       cursor: default;
     }
   }
