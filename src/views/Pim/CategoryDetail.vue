@@ -9,9 +9,7 @@
     </Teleport>
     <Teleport to="#pim-toolbar-right" defer>
       <template v-if="activeTab === 'details' && !loading && !notFound">
-        <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
-          {{ $t("unsaved.changes") }}
-        </span>
+        <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
         <BasicButton
           variant="primary"
           @click="saveCategory"

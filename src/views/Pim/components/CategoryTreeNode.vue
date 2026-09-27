@@ -118,14 +118,15 @@ function onDragEnd() {
         ><font-awesome-icon :icon="$icons.category"
       /></span>
       <span class="tree-node__name" :title="displayName">{{ displayName }}</span>
-      <span
+      <StatusBadge
         v-if="isRoot"
-        class="chip chip--sm bg-accent-subtle t-strong tree-node__root-badge"
-        >Root</span
-      >
-      <span class="chip chip--pill bg-raised t-secondary tree-node__count">{{
-        node.product_count || 0
-      }}</span>
+        tone="accent"
+        size="sm"
+        :dot="false"
+        label="Root"
+        class="tree-node__root-badge"
+      />
+      <StatusBadge tone="neutral" :dot="false" :label="node.product_count || 0" class="tree-node__count" />
       <span
         class="tree-node__status"
         :class="

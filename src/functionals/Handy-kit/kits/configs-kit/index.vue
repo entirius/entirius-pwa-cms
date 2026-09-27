@@ -7,9 +7,7 @@
         {{ handyType.label ? handyType.label : $t("common.click") }}
       </p>
       <div class="flex ai-ct gap-5">
-        <span v-if="handy.isDirty" class="chip bg-warning-subtle t-warning">
-          {{ $t("unsaved.changes") }}
-        </span>
+        <StatusBadge v-if="handy.isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
         <FontAwesomeIcon :icon="$icons.close" class="pointer t-secondary" @click="requestClose" />
       </div>
     </nav>

@@ -58,10 +58,12 @@
         <h2 class="fs-500 fw-600 mb-5 required">{{ $t("pim.name") }}</h2>
         <div class="grid grid-col-2 gap-8">
           <div v-for="lang in formLanguages" :key="`name-${lang}`">
-            <span
-              class="chip chip--sm bg-accent-subtle t-strong"
-              >{{ lang.toUpperCase() }}</span
-            >
+            <StatusBadge
+              tone="accent"
+              size="sm"
+              :dot="false"
+              :label="lang.toUpperCase()"
+            />
             <BasicInput
               :model-value="form.name_t9n[lang] || ''"
               class="mt-2"
@@ -77,10 +79,12 @@
         <h2 class="fs-500 fw-600 mb-5">{{ $t("pim.description") }}</h2>
         <div class="grid grid-col-2 gap-8">
           <div v-for="lang in formLanguages" :key="`desc-${lang}`">
-            <span
-              class="chip chip--sm bg-accent-subtle t-strong"
-              >{{ lang.toUpperCase() }}</span
-            >
+            <StatusBadge
+              tone="accent"
+              size="sm"
+              :dot="false"
+              :label="lang.toUpperCase()"
+            />
             <TextAreaBasic
               :model-value="form.description_t9n[lang] || ''"
               class="mt-2"
@@ -100,10 +104,12 @@
         <h2 class="fs-500 fw-600 mb-5">{{ $t("pim.seo") }}</h2>
         <div class="grid grid-col-2 gap-8 mb-8">
           <div v-for="lang in formLanguages" :key="`meta-title-${lang}`">
-            <span
-              class="chip chip--sm bg-accent-subtle t-strong"
-              >{{ lang.toUpperCase() }}</span
-            >
+            <StatusBadge
+              tone="accent"
+              size="sm"
+              :dot="false"
+              :label="lang.toUpperCase()"
+            />
             <BasicInput
               :model-value="form.meta_title_t9n[lang] || ''"
               :placeholder="$t('meta.meta_title')"
@@ -123,10 +129,12 @@
         </h3>
         <div class="grid grid-col-2 gap-8">
           <div v-for="lang in formLanguages" :key="`meta-desc-${lang}`">
-            <span
-              class="chip chip--sm bg-accent-subtle t-strong"
-              >{{ lang.toUpperCase() }}</span
-            >
+            <StatusBadge
+              tone="accent"
+              size="sm"
+              :dot="false"
+              :label="lang.toUpperCase()"
+            />
             <TextAreaBasic
               :model-value="form.meta_description_t9n[lang] || ''"
               :placeholder="$t('meta.meta_description')"

@@ -413,10 +413,12 @@ onMounted(() => {
           >
             <label class="product-files__label field-label">
               {{ $t("pim.file_label") }}
-              <span
-                class="chip chip--sm bg-accent-subtle t-strong"
-                >{{ lang.toUpperCase() }}</span
-              >
+              <StatusBadge
+                tone="accent"
+                size="sm"
+                :dot="false"
+                :label="lang.toUpperCase()"
+              />
             </label>
             <BasicInput
               :model-value="uploadLabelT9n[lang] || ''"
@@ -439,10 +441,12 @@ onMounted(() => {
             >
               <label class="product-files__label field-label">
                 {{ $t("pim.name") }}
-                <span
-                  class="chip chip--sm bg-accent-subtle t-strong"
-                  >{{ lang.toUpperCase() }}</span
-                >
+                <StatusBadge
+                  tone="accent"
+                  size="sm"
+                  :dot="false"
+                  :label="lang.toUpperCase()"
+                />
               </label>
               <BasicInput
                 :model-value="newCategoryNameT9n[lang] || ''"
@@ -580,10 +584,12 @@ onMounted(() => {
               >
                 <label class="product-files__label field-label">
                   {{ $t("pim.file_label") }}
-                  <span
-                    class="chip chip--sm bg-accent-subtle t-strong"
-                    >{{ lang.toUpperCase() }}</span
-                  >
+                  <StatusBadge
+                    tone="accent"
+                    size="sm"
+                    :dot="false"
+                    :label="lang.toUpperCase()"
+                  />
                 </label>
                 <BasicInput
                   :model-value="

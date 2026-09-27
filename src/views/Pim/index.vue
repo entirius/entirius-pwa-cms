@@ -13,16 +13,20 @@
             :isDisabled="isGlobalScopeValue"
             @onSelect="onChannelSelect"
           />
-          <span
+          <StatusBadge
             v-if="pimChannel.isDefaultChannel && !isGlobalScopeValue"
-            class="chip t-accent fs-200"
-            >{{ $t("pim.default") }}</span
-          >
-          <span
+            tone="accent"
+            :dot="false"
+            :label="$t('pim.default')"
+            class="fs-200"
+          />
+          <StatusBadge
             v-if="isGlobalScopeValue"
-            class="chip bg-raised t-muted fs-200"
-            >{{ $t("pim.global_scope") }}</span
-          >
+            tone="neutral"
+            :dot="false"
+            :label="$t('pim.global_scope')"
+            class="fs-200"
+          />
         </div>
       </div>
       <div id="pim-toolbar-right" class="panel-toolbar__actions flex ai-ct gap-5">

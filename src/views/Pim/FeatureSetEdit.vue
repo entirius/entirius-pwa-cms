@@ -8,9 +8,7 @@
       />
     </Teleport>
     <Teleport to="#pim-toolbar-right" defer>
-      <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
-        {{ $t("unsaved.changes") }}
-      </span>
+      <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
       <IconButton
         icon="delete"
         :label="$t('common.delete')"
@@ -138,14 +136,13 @@
                   >&#x25BC;</span
                 >
                 <span class="fw-600">{{ $t("pim.default_group") }}</span>
-                <span
-                  class="chip chip--pill bg-raised t-secondary"
-                  >{{
-                    $t("pim.attributes_in_group", {
+                <StatusBadge
+                  tone="neutral"
+                  :dot="false"
+                  :label="$t('pim.attributes_in_group', {
                       count: ungroupedFeatures.length,
-                    })
-                  }}</span
-                >
+                    })"
+                />
               </div>
             </div>
             <div v-show="!isCollapsed('__default')">
@@ -232,14 +229,13 @@
                       @blur="finishRename(group)"
                       @keydown.enter="finishRename(group)"
                     />
-                    <span
-                      class="chip chip--pill bg-raised t-secondary"
-                      >{{
-                        $t("pim.attributes_in_group", {
+                    <StatusBadge
+                      tone="neutral"
+                      :dot="false"
+                      :label="$t('pim.attributes_in_group', {
                           count: group.features.length,
-                        })
-                      }}</span
-                    >
+                        })"
+                    />
                   </div>
                   <div class="pim-kebab">
                     <button

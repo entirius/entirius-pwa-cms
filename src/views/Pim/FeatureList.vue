@@ -47,9 +47,7 @@
       >
         <template #cell-name="{ row }">{{ featureName(row) }}</template>
         <template #cell-feature_type="{ value }">
-          <span class="chip bg-raised t-secondary">
-            <span class="chip__label">{{ $t(featureTypeLabel(value)) }}</span>
-          </span>
+          <StatusBadge tone="neutral" :dot="false" :label="$t(featureTypeLabel(value))" />
         </template>
         <template #cell-scope="{ value }">
           {{ $t(scopeLabel(value)) }}

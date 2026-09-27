@@ -48,9 +48,7 @@
         @row-click="onRowClick"
       >
         <template #cell-category="{ value }">
-          <span v-if="value" class="chip bg-accent-subtle t-strong" :title="value">
-            <span class="chip__label">{{ value }}</span>
-          </span>
+          <StatusBadge v-if="value" tone="accent" :dot="false" :label="value" />
           <span v-else class="t-muted">---</span>
         </template>
         <template #cell-is_active="{ value }">

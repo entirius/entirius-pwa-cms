@@ -8,9 +8,7 @@
       />
     </Teleport>
     <Teleport to="#pim-toolbar-right" defer>
-      <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
-        {{ $t("unsaved.changes") }}
-      </span>
+      <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
       <button
         class="toolbar-action"
         :title="$t('pim.channels')"
@@ -210,13 +208,9 @@
                 "
                 class="info-card__inheritance mt-5"
               >
-                <span class="chip bg-accent-subtle t-strong">
-                  {{
-                    $t("pim.channels_inherit", {
+                <StatusBadge tone="accent" :dot="false" :label="$t('pim.channels_inherit', {
                       count: product.inheriting_channels_count,
-                    })
-                  }}
-                </span>
+                    })" />
               </div>
 
               <!-- Name field -->

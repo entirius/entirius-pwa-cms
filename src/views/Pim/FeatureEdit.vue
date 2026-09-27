@@ -8,9 +8,7 @@
       />
     </Teleport>
     <Teleport to="#pim-toolbar-right" defer>
-      <span v-if="isDirty" class="chip bg-warning-subtle t-warning">
-        {{ $t("unsaved.changes") }}
-      </span>
+      <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
       <IconButton
         v-if="!isCreate && !isSystem"
         icon="delete"
@@ -114,11 +112,12 @@
         >
           <div class="grid grid-col-2 gap-8">
             <div v-for="(lang, index) in languages" :key="lang">
-              <span
-                class="chip chip--sm bg-accent-subtle t-strong"
-              >
-                {{ lang.toUpperCase() }}
-              </span>
+              <StatusBadge
+                tone="accent"
+                size="sm"
+                :dot="false"
+                :label="lang.toUpperCase()"
+              />
               <BasicInput
                 :model-value="form.name_t9n[lang] || ''"
                 :placeholder="`${$t('pim.name')} (${lang})`"

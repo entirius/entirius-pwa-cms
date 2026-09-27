@@ -244,11 +244,12 @@
             >&#x25BC;</span
           >
           <span class="attribute-group__name">{{ group.name }}</span>
-          <span
-            class="chip chip--pill bg-raised t-secondary fs-200"
-          >
-            {{ group.rows.length }}
-          </span>
+          <StatusBadge
+            tone="neutral"
+            :dot="false"
+            :label="group.rows.length"
+            class="fs-200"
+          />
         </div>
 
         <div

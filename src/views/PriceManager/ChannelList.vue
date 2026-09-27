@@ -27,9 +27,7 @@
             </span>
           </template>
           <template #cell-calculate_direction="{ row }">
-            <span class="chip bg-raised t-secondary" :title="directionLabel(row)">
-              <span class="chip__label">{{ directionLabel(row) }}</span>
-            </span>
+            <StatusBadge tone="neutral" :dot="false" :label="directionLabel(row)" />
           </template>
           <template #cell-country_count="{ row }">
             <span class="chip bg-accent-subtle t-strong">
