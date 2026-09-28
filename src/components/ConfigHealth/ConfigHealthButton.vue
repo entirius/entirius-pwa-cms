@@ -17,8 +17,9 @@
         />
         <span v-if="!fixed" class="cfg-btn__count" data-testid="config-health-count">{{ store.failing.length }}</span>
       </span>
+      <!-- the wrapper takes the button out of the flow; the button's own class clips it (BasicButton sets position) -->
       <span v-else class="visually-hidden">
-        <BasicButton variant="ghost" tabindex="-1" data-testid="config-health-anchor">
+        <BasicButton variant="ghost" tabindex="-1" class="visually-hidden" data-testid="config-health-anchor">
           {{ $t("config_health.title") }}
         </BasicButton>
       </span>
