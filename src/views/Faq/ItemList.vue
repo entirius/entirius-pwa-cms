@@ -1,5 +1,9 @@
 <template>
   <PageLayout class="fs-300 t-body">
+    <template #header>
+      <PageHeader :title="$t('faq.items')" />
+    </template>
+    <template #toolbar>
       <div class="item-list__toolbar">
         <BasicInput
           v-model="search"
@@ -29,6 +33,7 @@
           />
         </MobileFilterPanel>
       </div>
+    </template>
 
       <Loader block v-show="loading" />
 
@@ -63,12 +68,14 @@
         </template>
       </DataTable>
 
+    <template #footer>
       <Pagination
         v-if="totalCount > pageSize"
         :page="paginationState.page"
         :pages="paginationState.pages"
         @update:page="onPageChange"
       />
+    </template>
 
       <FloatingActions :actions="fabActions" />
   </PageLayout>
@@ -262,7 +269,6 @@ export default {
   display: flex;
   align-items: center;
   gap: var(--space-5);
-  margin-bottom: var(--space-10);
   flex-wrap: wrap;
 }
 

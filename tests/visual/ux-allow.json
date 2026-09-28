@@ -42,20 +42,6 @@
     "owner": "P5 plan 36 (Agreements)"
   },
   {
-    "screen": "faq-group-detail",
-    "kind": "nonFocusable",
-    "selector": "item-row__question",
-    "reason": "FAQ group detail: a question opens its item on click only",
-    "owner": "P5 plan 33 (Faq)"
-  },
-  {
-    "screen": "faq-groups-list",
-    "kind": "nonFocusable",
-    "selector": "div.group-row",
-    "reason": "FAQ group rows open on click only (a list, not a DataTable)",
-    "owner": "P5 plan 33 (Faq)"
-  },
-  {
     "screen": "pricing-prices-list",
     "kind": "nonFocusable",
     "selector": "span.fw-600.t-accent",

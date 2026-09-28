@@ -1728,7 +1728,12 @@
     "channels_many": "{count} kanałów",
     "items_one": "1 pytanie",
     "items_few": "{count} pytania",
-    "items_many": "{count} pytań"
+    "items_many": "{count} pytań",
+    "filters": "Filtry",
+    "idx_hint": "Nie zmienia się po utworzeniu grupy",
+    "url_key_hint": "Nie zmienia się po utworzeniu pytania",
+    "channels_hint": "Bez wyboru: grupa widoczna we wszystkich kanałach",
+    "translations_of": "Tłumaczenia: {field}"
   },
   "layout_extender": {
     "title": "Edytor nawigacji",
