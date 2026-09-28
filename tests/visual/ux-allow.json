@@ -35,13 +35,6 @@
     "owner": "P5 plan 31 (ContentSets)"
   },
   {
-    "screen": "pages-gallery",
-    "kind": "nonFocusable",
-    "selector": "div.gallery-card",
-    "reason": "gallery cards select on click only; the grid becomes MediaTile",
-    "owner": "P5 plan 29 (Gallery)"
-  },
-  {
     "screen": "pages-layout-editor",
     "kind": "nonFocusable",
     "selector": "span.handle",

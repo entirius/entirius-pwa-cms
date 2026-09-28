@@ -5,11 +5,10 @@ const { screens } = require("./capture-spec.json");
 
 // Layer 2 — Figma landmarks: elements carrying data-fid="<landmark id>" are compared with the frame's landmark box
 // (±tolerancePx). A box is clipped to its frame first (Figma draws the content container past the frame's bottom; the
-// code's <main> ends at the viewport). Gate for the shell ids since P4: one of them off or missing fails the frame.
-// The page ids (title, card, sticky header, FAB) stay in report mode until their P5 screens. Radius differences are
-// listed, not judged: Figma radii map onto the code scale first (known difference KD09).
+// code's <main> ends at the viewport). Gate for every id of S1–S10 since the P5 wave-1 close (plan 30): the shell ids
+// and the page ids (title, card, sticky header, FAB); one of them off or missing fails the frame. Radius differences
+// are listed, not judged: Figma radii map onto the code scale first (known difference KD09).
 const GEOMETRY = ["x", "y", "width", "height"];
-const SHELL_IDS = ["header", "logo", "user-button", "sidebar", "tab-bar", "mobile-menu", "content"];
 
 const clipToFrame = (box, frame) => ({
   ...box,
@@ -26,7 +25,8 @@ const withinTolerance = (expected, actual) =>
   GEOMETRY.every((key) => Math.abs(expected[key] - actual[key]) <= tolerancePx);
 
 function compare(frame, boxes) {
-  const found = new Map(boxes.map((box) => [box.id, box]));
+  // The first box per id: a repeated component (PanelCard on Home) is measured on its first instance.
+  const found = new Map([...boxes].reverse().map((box) => [box.id, box]));
   const result = { matched: [], mismatched: [], missing: [], unknown: [], radius: [] };
   for (const [id, landmark] of Object.entries(frame.landmarks)) {
     const expected = clipToFrame(landmark, frame);
@@ -43,10 +43,7 @@ function compare(frame, boxes) {
   return result;
 }
 
-const shellFailures = ({ mismatched, missing }) => [
-  ...mismatched.filter(({ id }) => SHELL_IDS.includes(id)),
-  ...missing.filter((id) => SHELL_IDS.includes(id)).map((id) => ({ id, missing: true })),
-];
+const failures = ({ mismatched, missing }) => [...mismatched, ...missing.map((id) => ({ id, missing: true }))];
 
 for (const [frame, spec] of Object.entries(frames)) {
   const { viewport } = spec;
@@ -62,7 +59,7 @@ for (const [frame, spec] of Object.entries(frames)) {
         type: "landmarks",
         description: `${frame}: ${result.matched.length} matched, ${result.mismatched.length} off, ${result.missing.length} missing`,
       });
-      expect(shellFailures(result), `${frame}: shell landmarks off by more than ${tolerancePx} px`).toEqual([]);
+      expect(failures(result), `${frame}: landmarks off by more than ${tolerancePx} px`).toEqual([]);
     });
   });
 }

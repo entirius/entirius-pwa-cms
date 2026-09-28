@@ -295,6 +295,38 @@
       "code": "no line: the head sits on the page background, spacing separates it",
       "scope": "Pages content editor sticky header (phone)",
       "treatment": "geometry-tolerance"
+    },
+    {
+      "id": "KD-P5-S1-card-glyph",
+      "decision": "plan 26 (handoff 26, plan 30)",
+      "figma": "panel-card glyph 13.5 × 18 in a 24 px box; description at opacity .80",
+      "code": "glyph at `--fs-500` (20 px, no 18 px token); description `text-muted` without the extra opacity",
+      "scope": "Home PanelCard",
+      "treatment": "token"
+    },
+    {
+      "id": "KD-P5-S1-glow",
+      "decision": "plan 26 (handoff 26, plan 30)",
+      "figma": "glow band behind the cards (sign 1340 × 1306, blur 120, opacity .10)",
+      "code": "600 px band pinned to the bottom of the content region, fading 158 px into `--surface-page`, `--brand-gradient-accent-from/-to`; it does not scroll with the cards; no frame for 769–1023 px (2 columns kept, R9)",
+      "scope": "Home background",
+      "treatment": "mask"
+    },
+    {
+      "id": "KD-P5-S9-media-tile",
+      "decision": "plan 29 (handoff 29, plan 30)",
+      "figma": "the image fills a plain tile, no caption",
+      "code": "MediaTile keeps its 8 px inner padding and the caption / actions footer (image `object-fit: cover`); grid 4 × 188 on desktop, 2 × 188 from 769 to 1023 px (no frame), 2 × 150 on a phone",
+      "scope": "Gallery grid tiles",
+      "treatment": "mask"
+    },
+    {
+      "id": "KD-P5-S9-controls",
+      "decision": "plan 29 (handoff 29, plan 30)",
+      "figma": "controls-row gap 5, grid gap 10; selects 31 px high",
+      "code": "controls-row and grid gaps 8 px (no 5 or 10 px token); selects 32 px (`--elem-height`)",
+      "scope": "Gallery controls row and grid",
+      "treatment": "token"
     }
   ]
 }

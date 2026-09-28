@@ -39,7 +39,7 @@
     },
     {
       "id": "g-switcher-open",
-      "route": "/pages/content?lg=en",
+      "route": "/",
       "resolver": "fixed",
       "state": "switcher-open",
       "viewports": [
