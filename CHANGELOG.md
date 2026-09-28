@@ -115,6 +115,19 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- P5 Atlas sources (plan 47): the panel toolbar is gone. A source's detail has its PageHeader (crumbs, back arrow, H1
+  „name (idx)”) and the tabs are `BasicTabs` (a `tablist`, arrow keys; each tab body a `tabpanel`); the Overview Save
+  moved from the toolbar into the header `ActionBar` (the tab emits it). A source that does not load shows an
+  `EmptyState`. The list's search sits in the page toolbar beside the filter panel and the pager in the page footer;
+  the delete dialog's soft/hard choice is a `BasicRadioGroup`. Every raw button of the list, tabs, mapping rows, feed
+  form, feed drawer and Find-in-PIM panel is a `BasicButton` (Create/Save primary, row and inline-form actions
+  secondary) or an `IconButton` (row actions, delete `danger`); the product drawer's approve / skip / reject / push /
+  re-push are an `ActionBar`. The test-feed modal is a `BasicModal`. `SourceValuePicker` is deleted: the category
+  mapping's source value is an `EntitySearchPicker` over the feed's values that still takes a typed value the feed
+  does not carry. Field errors sit on their `FormField`s. `BasicTabs` and `BasicRadioGroup` options take a `testid`.
+  Handlers, API calls and payloads are unchanged. Smoke spec `tests/e2e/p5-atlas-sources-smoke.spec.js`; specs 09
+  and 11 select the tabs and the back arrow by role.
+
 - P5 EnrichmentReview (plan 45): the page sits in `PageLayout`: the List | Focus switch in the PageHeader `meta`,
   Import CSV a secondary `ActionBar` action, the status chips one inline row with the match count, and the other
   filters (search, module, kind, source, batch, minimum confidence) in a `MobileFilterPanel` (inline on desktop, a
