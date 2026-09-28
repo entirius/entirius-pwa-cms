@@ -591,6 +591,8 @@ export default {
 </script>
 
 <style lang="scss">
+@import "@/assets/scss/utils/media-query";
+
 .text-section.input {
   border: 1px solid var(--border-default);
   border-radius: var(--radius-base);
@@ -768,6 +770,19 @@ export default {
 
 .wysiwyg-options {
   overflow: visible;
+}
+
+// A-54: on a phone the mode select takes its own row above the tools, which get the full width. The tool row keeps
+// wrapping: a sideways scroll would clip the FAQ search that opens above it.
+@include max-tablet {
+  .wysiwyg-options {
+    flex-wrap: wrap;
+  }
+
+  .wysiwyg-mode-switcher {
+    order: -1;
+    flex-basis: 100%;
+  }
 }
 
 .faq-tooltip-btn {

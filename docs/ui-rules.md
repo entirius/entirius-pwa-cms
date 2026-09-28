@@ -135,7 +135,7 @@ Traps:
   hard-code a menu in a view.
 - **R2 One page title.** The page title appears once, as the only `<h1>`, at the top of the content area. The
   header, sidebar and toolbar never repeat it. The content area is the page's only scroll and focus region. The H1
-  is `PageHeader` `title` (the component carries `.page-title` and `data-fid="page-title"`); a view writes no raw
+  is `PageHeader` `title` (the component carries `.page-title`, and `data-fid="page-title"` on its title row); a view writes no raw
   `<h1>`. A route whose view has no PageHeader gets the shell's fallback header (crumbs + H1 from `titleKey`), so
   every page has exactly one H1.
 - **R3 Breadcrumbs below the panel root.** Every page below a panel's top-level list shows breadcrumbs

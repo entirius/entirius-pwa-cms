@@ -35,7 +35,8 @@ defineProps({
   font-weight: 400;
   letter-spacing: var(--brand-font-tracking-brand);
   font-size: var(--fs-400);
-  line-height: 1.5;
+  // Figma sets Lexend Deca at 1.1 (the H1 too): 24 px below the trail puts the title row at y 170 (S6), 130 (S7).
+  line-height: 1.1;
 }
 
 .breadcrumbs--sm {
@@ -57,8 +58,9 @@ defineProps({
   min-width: 0;
 }
 
+// Clipped sideways only: at line-height 1.1 the descenders reach past the line box.
 .breadcrumbs__label {
-  overflow: hidden;
+  overflow-x: clip;
   max-width: 20em;
   white-space: nowrap;
   text-overflow: ellipsis;

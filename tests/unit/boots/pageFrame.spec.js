@@ -30,7 +30,7 @@ describe("PageHeader", () => {
     const h1s = wrapper.findAll("h1");
     expect(h1s).toHaveLength(1);
     expect(h1s[0].text()).toBe("Product Showcase");
-    expect(h1s[0].attributes("data-fid")).toBe("page-title");
+    expect(h1s[0].element.closest('[data-fid="page-title"]').classList).toContain("page-header__title-row");
     expect(wrapper.find(".page-header__overline").text()).toBe("Home");
   });
 

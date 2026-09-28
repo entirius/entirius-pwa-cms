@@ -83,12 +83,14 @@ watchEffect(() => {
   display: none;
 }
 
+// Figma S7: the label on its own line, 12 px above one left-aligned row of actions 8 px apart.
 @include max-tablet {
   .action-bar {
     flex-basis: 100%;
+    flex-direction: column;
+    align-items: flex-start;
     width: 100%;
-    justify-content: space-between;
-    gap: var(--space-2);
+    gap: var(--space-3);
   }
 
   .action-bar__label {
@@ -96,6 +98,7 @@ watchEffect(() => {
   }
 
   .action-bar__actions {
+    justify-content: flex-start;
     gap: var(--space-2);
   }
 }

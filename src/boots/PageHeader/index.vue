@@ -7,9 +7,9 @@
     >
       <p v-if="overline" class="page-header__overline type-overline t-muted">{{ overline }}</p>
       <Breadcrumbs v-if="trail.length" class="page-header__crumbs" :items="trail" />
-      <div class="page-header__title-row flex ai-ct gap-5">
+      <div class="page-header__title-row flex ai-ct gap-5" data-fid="page-title">
         <IconButton v-if="backTo" icon="back" :label="$t('common.back')" @click="goBack" />
-        <h1 class="page-header__title page-title" data-fid="page-title">{{ title }}</h1>
+        <h1 class="page-header__title page-title">{{ title }}</h1>
         <div v-if="$slots.meta" class="page-header__meta flex ai-ct gap-2"><slot name="meta" /></div>
       </div>
     </div>
@@ -25,7 +25,8 @@
 // page by it. Slots: `meta` (chips beside the title) and `actions` (an ActionBar: in the title row on desktop, its
 // own row below 1024 px). `sticky` pins the head under the app header on a phone; the actions row scrolls away
 // (Figma S8). Mounting claims the shell's header slot; `claimShell` false keeps a demo instance (the UI catalogue) out
-// of it: no claim, no shell crumbs or back, the page keeps its own title.
+// of it: no claim, no shell crumbs or back, the page keeps its own title. `data-fid="page-title"` marks the title row
+// (back, H1, meta): Figma's "Heading" frame is that row (S6: 837.5 wide beside the actions).
 import { computed } from "vue";
 import { useRouter } from "vue-router";
 import Breadcrumbs from "@/boots/Breadcrumbs/index.vue";
@@ -118,7 +119,8 @@ function goBack() {
     // The pin line sits inside the scroll body's padding: PageLayout's padding (20 px on a phone outside one) puts it
     // at the edge.
     top: calc(-1 * var(--page-layout-pad-y, var(--space-5)));
-    margin: 0 calc(-1 * var(--page-layout-pad-x, var(--space-5)));
+    // Flush under the app header before any scroll too (Figma S7: y 81, full width).
+    margin: calc(-1 * var(--page-layout-pad-y, var(--space-5))) calc(-1 * var(--page-layout-pad-x, var(--space-5))) 0;
     padding: var(--space-3) var(--page-layout-pad-x, var(--space-5));
     background-color: var(--surface-page);
   }

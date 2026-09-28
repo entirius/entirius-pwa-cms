@@ -145,7 +145,7 @@ and one meaning per glyph (unit test). A new meaning adds its glyph to `fa-icons
 - **`ActionBar`** — page and dialog actions in R5 order: `actions` = `[{ key, label, role, onClick, icon?,
   disabled?, loading?, testid? }]`, `role` `utility` (an IconButton, `icon` required) · `secondary` · `danger` ·
   `primary` (one at most, a second warns in dev); extra controls go into the default slot, already in order.
-  Right-aligned, gap 12 px (8 px on a phone); below 768 px it takes its own row with the label „Akcje”.
+  Right-aligned, gap 12 px (8 px on a phone); below 768 px it takes its own row: the label „Akcje” above the actions, left-aligned (Figma S7).
 - **`FloatingActions`** — FAB 44 px `accent-fill`, 16 px inset, 16 px above the bottom bar, `data-fid="fab"`;
   `actions[].icon` and `pill.icon` take meanings (other names still pass through until the sweeps). `pill` =
   `{ icon, label, handler, testid? }`: an important action with a visible label left of the FAB (R7). `open`
@@ -245,11 +245,11 @@ Catalogue: `#display` (`#status-badge`, `#count-badge`, `#tag`, `#basic-tabs`, `
 - **`PageLayout`** — a page's content region: no border, no card (R4), padding 40 top / 80 sides (20 below tablet),
   one scroll body (`h-100 ovy-auto`). Slots `header` (a PageHeader), `toolbar` (the filters row), default (the
   content). It replaces the bordered page container when P5 adopts it (plan 25).
-- **`PageHeader`** — `title` is the page's only `<h1>` (`.page-title`: Lexend Deca 30/400, 20 below tablet,
-  `data-fid="page-title"`); `overline` (Inter 13/500 uppercase, Home); `crumbs` `[{ label, to? }]` 24 px above the
+- **`PageHeader`** — `title` is the page's only `<h1>` (`.page-title`: Lexend Deca 30/400, 20 below tablet) in the
+  title row (back, H1, meta: `data-fid="page-title"`, Figma's "Heading" frame); `overline` (Inter 13/500 uppercase, Home); `crumbs` `[{ label, to? }]` 24 px above the
   title row — omitted = the crumbs the shell provides (none without a shell), `[]` = none; `back` (a route location
   pushed on click, or a handler) = a ghost `back` IconButton left of the H1, 20 px gap; `sticky` pins the head (crumbs,
-  back, title, meta) under the app header on a phone, on the page background (`data-fid="sticky-header"`); the
+  back, title, meta) under the app header on a phone, flush with it and full width, on the page background (`data-fid="sticky-header"`); the
   actions row scrolls away. Slots `meta` (chips beside the title, they keep their width) and `actions` (an
   ActionBar): in the title row on desktop while both fit, otherwise wrapped under it right-aligned, and always its own
   row below 1024 px. A long title wraps inside itself.
