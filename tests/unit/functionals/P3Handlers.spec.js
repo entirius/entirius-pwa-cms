@@ -92,15 +92,31 @@ describe("routes-list", () => {
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.selected).toEqual([{ label: "A", value: route }]);
 
-    // Row order: /a (edit, delete), /b (edit, delete).
+    // Row order: /a (edit; picked, so in use: no delete), /b (edit, delete).
     const buttons = wrapper.findAllComponents(IconButton);
-    buttons[2].vm.$emit("click");
+    expect(buttons.map((button) => button.props("icon"))).toEqual(["edit", "edit", "delete"]);
+    buttons[1].vm.$emit("click");
     expect(wrapper.vm.mode).toBe("edit");
     expect(wrapper.vm.route_url).toBe("/b");
-    buttons[3].vm.$emit("click");
+    buttons[2].vm.$emit("click");
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.to_delete).toBe("/b");
     expect(wrapper.find(".confirm").exists()).toBe(true);
+  });
+
+  it("lists at most 10 rows to manage, filtered by label or URL, and says how many more there are", async () => {
+    handy.defaults = { type: "product", routes: null };
+    const rows = Array.from({ length: 25 }, (_, i) => ({ url: `/p-${i}`, label: `Page ${i}` }));
+    mockContent.mockResolvedValueOnce({ data: { data: rows, pagination: {} } });
+    const wrapper = mountWith(RoutesList);
+    await flushPromises();
+    expect(wrapper.findAll(".routes-manage li")).toHaveLength(10);
+    expect(wrapper.vm.managed_more).toBe(15);
+
+    wrapper.vm.manage_filter = "/p-2";
+    await wrapper.vm.$nextTick();
+    expect(wrapper.findAll(".routes-manage li").map((li) => li.text())).toEqual(["Page 2", ...[0, 1, 2, 3, 4].map((i) => `Page 2${i}`)]);
+    expect(wrapper.vm.managed_more).toBe(0);
   });
 
   it("unsets the picked set route", async () => {

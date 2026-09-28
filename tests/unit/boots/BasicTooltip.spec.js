@@ -37,6 +37,16 @@ describe("BasicTooltip", () => {
     expect(wrapper.find(".control").attributes("aria-describedby")).toBe(`hint ${id}`);
   });
 
+  it("re-evaluates on a text change: a tip equal to the trigger's name drops its id, a different one adds it", async () => {
+    const wrapper = mountTip({ text: "Save" }, "<button class='control' aria-label='Save'>x</button>");
+    await nextTick();
+    expect(wrapper.find(".control").attributes("aria-describedby")).toBeUndefined();
+    await wrapper.setProps({ text: "Save the draft first" });
+    expect(wrapper.find(".control").attributes("aria-describedby")).toBe(bubble(wrapper).attributes("id"));
+    await wrapper.setProps({ text: "Save" });
+    expect(wrapper.find(".control").attributes("aria-describedby")).toBeUndefined();
+  });
+
   it("shows on hover, hides on leave", async () => {
     const wrapper = mountTip();
     await wrapper.trigger("mouseenter");

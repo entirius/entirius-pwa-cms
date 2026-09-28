@@ -279,7 +279,9 @@
     "static_page_help": "To add a new path, fill in its label (displayed on the front of the site) and URL. After saving, link content to it using the list above.",
     "blog_post_help": "Add the URL where the content is located (no special characters or spaces). One path allowed for this document type.",
     "product_help": "Add the product URL to link content (no special characters or spaces). Multiple paths allowed for this document type.",
-    "in_use": "in use"
+    "in_use": "in use",
+    "filter": "Filter paths",
+    "more": "{count} more — narrow the filter"
   },
   "categories": {
     "unset": "Unset",

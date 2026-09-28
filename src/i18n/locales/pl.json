@@ -279,7 +279,9 @@
     "static_page_help": "Aby dodać nową ścieżkę, uzupełnij etykietę (wyświetlaną na stronie) i URL. Po zapisaniu, powiąż treść korzystając z listy powyżej.",
     "blog_post_help": "Dodaj URL, pod którym znajduje się treść (bez polskich znaków i spacji). Dla tego typu dokumentu możesz dodać jedną ścieżkę.",
     "product_help": "Dodaj URL produktu, do którego linkujesz treść (bez polskich znaków i spacji). Dla tego typu dokumentu możesz dodać wiele ścieżek.",
-    "in_use": "w użyciu"
+    "in_use": "w użyciu",
+    "filter": "Filtruj ścieżki",
+    "more": "Jeszcze {count} — zawęź filtr"
   },
   "categories": {
     "unset": "Brak",

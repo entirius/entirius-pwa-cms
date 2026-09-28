@@ -42,9 +42,13 @@
                 "
               />
             </div>
-            <!-- Edit and delete act on their own row, never on the route picked above. -->
-            <ul v-if="routes.length" class="routes-manage mt-5 flex-column gap-1">
-              <li v-for="route in routes" :key="route.value.url" class="flex ai-ct gap-1">
+            <!-- Edit and delete act on their own row, never on the route picked above. The rows follow a filter and
+                 stop at MANAGE_LIMIT; a route in use by this document can be edited, not deleted. -->
+            <FormField v-if="routes.length" class="mt-5" :label="$t('routes.filter')">
+              <BasicInput v-model="manage_filter" icon="search" />
+            </FormField>
+            <ul v-if="managed_routes.length" class="routes-manage mt-2 flex-column gap-1">
+              <li v-for="route in managed_routes" :key="route.value.url" class="flex ai-ct gap-1">
                 <span class="fg-1 lc-1" :title="route.value.url">{{ route.label }}</span>
                 <IconButton
                   size="sm"
@@ -53,6 +57,7 @@
                   @click="ENTER_edit_mode({ ...route.value })"
                 />
                 <IconButton
+                  v-if="!in_use(route.value.url)"
                   size="sm"
                   icon="delete"
                   variant="danger"
@@ -64,6 +69,7 @@
                 />
               </li>
             </ul>
+            <p v-if="managed_more" class="fs-200 t-muted mt-2">{{ $t("routes.more", { count: managed_more }) }}</p>
             <template v-if="!['static-page', 'blog-post'].includes(type)">
               <p class="mt-8 mb-5">
                 {{ $t("routes.multi_route_info") }}
@@ -213,6 +219,8 @@ import { _METHOD_content } from "@/api/contentDB/api";
 import { useNotifyStore } from "@/stores/notify";
 import { useHandyStore } from "@/stores/handy";
 
+const MANAGE_LIMIT = 10;
+
 export default {
   setup() {
     const notify = useNotifyStore();
@@ -236,6 +244,7 @@ export default {
       // The route the list shows and the set route picked for unset.
       picked_route: null,
       picked_setted: null,
+      manage_filter: "",
       error: null,
       force_refresh: 1,
     };
@@ -247,12 +256,26 @@ export default {
     defaults() {
       return this.handy.defaults;
     },
+    matching_routes() {
+      const query = this.manage_filter.trim().toLowerCase();
+      if (!query) return this.routes;
+      return this.routes.filter(({ label, value }) => `${label} ${value.url}`.toLowerCase().includes(query));
+    },
+    managed_routes() {
+      return this.matching_routes.slice(0, MANAGE_LIMIT);
+    },
+    managed_more() {
+      return Math.max(this.matching_routes.length - MANAGE_LIMIT, 0);
+    },
     shown_route() {
       if (this.picked_route) return this.picked_route;
       return Array.isArray(this.selected) && this.selected.at(0) ? this.selected.at(0).value : null;
     },
   },
   methods: {
+    in_use(url) {
+      return Array.isArray(this.selected) && this.selected.some(({ value }) => value.url === url);
+    },
     open_Handykit(params) {
       this.handy.open_Handykit(params);
     },

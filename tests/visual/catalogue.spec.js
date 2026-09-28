@@ -17,7 +17,7 @@ const COMPONENTS = [
   "mobile-filter-panel", "status-badge", "count-badge", "tag", "basic-tabs", "basic-card", "panel-card", "media-tile",
   "empty-state", "loader", "pagination", "data-table", "page-header", "breadcrumbs", "page-layout", "basic-logo",
 ];
-// The catalogue renders from static fixtures: after navigation it calls no API.
+// The catalogue renders from static fixtures: it calls no API (the shell around it does).
 const API_ORIGIN = new URL(process.env.CMS_API_URL || "http://localhost:8100").origin;
 const THEMES = ["dark", "light"];
 const VP_SHORT = { desktop: "d", mobile: "m" };
@@ -36,6 +36,20 @@ function collectErrors(page) {
   });
   page.on("pageerror", (error) => errors.push(error.message));
   return errors;
+}
+
+// The shell's own boot calls and polls, made on every screen (App.vue): Munin modules and health, the bell's count.
+const SHELL_CALLS = [/\/api\/munin\/v2\/(health\/)?$/, /\/notifications\/unread-count\/$/];
+
+// API calls from before the first navigation, so the catalogue's mount counts too; the shell's own are not its.
+function collectApiCalls(page) {
+  const calls = [];
+  page.on("request", (request) => {
+    const url = new URL(request.url());
+    if (url.origin !== API_ORIGIN || SHELL_CALLS.some((re) => re.test(url.pathname))) return;
+    calls.push(request.url());
+  });
+  return calls;
 }
 
 async function openCatalogue({ context, page }, theme) {
@@ -83,11 +97,8 @@ for (const theme of THEMES) {
 
     test(`catalogue-${theme}`, { tag: "@catalogue" }, async ({ context, page }) => {
       const errors = collectErrors(page);
+      const apiCalls = collectApiCalls(page);
       await openCatalogue({ context, page }, theme);
-      const apiCalls = [];
-      page.on("request", (request) => {
-        if (new URL(request.url()).origin === API_ORIGIN) apiCalls.push(request.url());
-      });
       await expect(page.locator("html")).toHaveAttribute("data-theme", THEME_VALUES[theme]);
       for (const id of SECTIONS) await expect(page.locator(`section#${id}`), `section #${id}`).toHaveCount(1);
       const anchors = await page.locator("[id]").evaluateAll((els) => els.map((el) => el.id));

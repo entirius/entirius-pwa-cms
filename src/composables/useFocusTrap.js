@@ -82,8 +82,14 @@ function onKeydown(event) {
   }
 }
 
-// A dialog with a form starts in its first field; Close is the fallback, not the first stop.
-const FIELD = "input:not([type='hidden']), textarea, select, [role='combobox']";
+// A dialog with a form starts in its first editable field (a checkbox, radio or read-only value is no start);
+// Close is the fallback, not the first stop.
+const FIELD = [
+  "input:not([type='hidden']):not([type='checkbox']):not([type='radio']):not([readonly])",
+  "textarea:not([readonly])",
+  "select",
+  "[role='combobox']",
+].join(", ");
 
 function initialTarget(root, initialFocus) {
   const stops = focusableIn(root);

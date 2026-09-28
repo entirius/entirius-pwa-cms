@@ -37,7 +37,7 @@ let nextId = 0;
 // a disabled control (the disabled-with-reason pattern) becomes the tab stop itself. `variant="help"` renders a `?`
 // button named „Pomoc” instead of the slot. `placement` top · bottom · left · right (it flips when there is no
 // room); `open` forces it shown (catalogue). Replaces ToolTip, HelpTooltip and HoverMe (plan 19 deletes them).
-import { computed, onMounted, onUpdated, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, onUpdated, ref } from "vue";
 import { ICONS } from "@/boots/Icons/icons";
 import { FOCUSABLE } from "@/composables/useFocusTrap";
 import { useFloatingPosition } from "@/composables/useFloatingPosition";
@@ -94,11 +94,12 @@ function onLeave(event) {
 }
 
 // Appended to the target's own descriptions; a tip that repeats the target's name (an IconButton's label) is not
-// announced twice.
-function describe(target) {
-  if (target.getAttribute("aria-label") === props.text) return;
-  const ids = (target.getAttribute("aria-describedby") ?? "").split(/\s+/).filter(Boolean);
-  if (!ids.includes(tipId)) target.setAttribute("aria-describedby", [...ids, tipId].join(" "));
+// announced twice. Re-run on every update: a changed text or label adds or removes the id.
+function setDescribed(target, on) {
+  const ids = (target.getAttribute("aria-describedby") ?? "").split(/\s+/).filter((id) => id && id !== tipId);
+  if (on) ids.push(tipId);
+  if (ids.length) target.setAttribute("aria-describedby", ids.join(" "));
+  else target.removeAttribute("aria-describedby");
 }
 
 // The slot's first focusable element carries the description; with a disabled control only, the wrapper does
@@ -106,7 +107,8 @@ function describe(target) {
 function describeTrigger() {
   if (props.variant === "help" || !root.value) return;
   const target = root.value.querySelector(FOCUSABLE);
-  if (target) describe(target);
+  if (described.value && described.value !== target) setDescribed(described.value, false);
+  if (target) setDescribed(target, target.getAttribute("aria-label") !== props.text);
   described.value = target;
   const onlyDisabled = !target && Boolean(root.value.querySelector(":disabled, [aria-disabled='true']"));
   ownTabStop.value = onlyDisabled && getComputedStyle(root.value).display !== "contents";
@@ -114,6 +116,7 @@ function describeTrigger() {
 
 onMounted(describeTrigger);
 onUpdated(describeTrigger);
+onBeforeUnmount(() => described.value && setDescribed(described.value, false));
 </script>
 
 <style lang="scss" scoped>

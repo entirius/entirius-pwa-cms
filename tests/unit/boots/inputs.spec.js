@@ -22,7 +22,7 @@ const GLOBAL = { stubs: { FormField: false, BasicInput: false, BasicTooltip: tru
 // A control inside a FormField with the given field props.
 function inField(control, fieldProps = {}, controlProps = {}) {
   const Host = defineComponent({
-    render: () => h(FormField, { label: "Nazwa", ...fieldProps }, () => h(control, controlProps)),
+    render: () => h(FormField, { label: "Name", ...fieldProps }, () => h(control, controlProps)),
   });
   return mount(Host, { global: GLOBAL });
 }
@@ -38,13 +38,13 @@ describe("FormField contract", () => {
   });
 
   it("describes the control with the hint, and with the error instead of it", async () => {
-    const wrapper = inField(BasicInput, { description: "Widoczna w sklepie" });
+    const wrapper = inField(BasicInput, { description: "Visible in the store" });
     const input = () => wrapper.find("input");
     const hint = wrapper.find(".form-field__desc");
     expect(input().attributes("aria-describedby")).toBe(hint.attributes("id"));
     expect(input().attributes("aria-invalid")).toBeUndefined();
 
-    const invalid = inField(BasicInput, { description: "Widoczna w sklepie", error: "Pole wymagane" });
+    const invalid = inField(BasicInput, { description: "Visible in the store", error: "Required field" });
     const error = invalid.find(".form-field__error");
     expect(error.attributes("role")).toBe("alert");
     expect(invalid.find("input").attributes("aria-describedby")).toBe(error.attributes("id"));
@@ -76,10 +76,10 @@ describe("FormField contract", () => {
   });
 
   it("shows the help tooltip on BasicTooltip, outside the label", () => {
-    const wrapper = inField(BasicInput, { tooltip: "Nazwa w sklepie" });
+    const wrapper = inField(BasicInput, { tooltip: "Name in the store" });
     const tip = wrapper.findComponent({ name: "BasicTooltip" });
     expect(tip.attributes("variant")).toBe("help");
-    expect(tip.attributes("text")).toBe("Nazwa w sklepie");
+    expect(tip.attributes("text")).toBe("Name in the store");
     expect(wrapper.find("label").find("basic-tooltip-stub").exists()).toBe(false);
   });
 
@@ -135,7 +135,7 @@ describe("BasicInput", () => {
   });
 
   it("has no own label or error text: the FormField's", () => {
-    const wrapper = inField(BasicInput, { label: "Nazwa", error: "Błąd" });
+    const wrapper = inField(BasicInput, { label: "Name", error: "Error" });
     expect(wrapper.find(".input-label").exists()).toBe(false);
     expect(wrapper.find(".validation-msg").exists()).toBe(false);
     expect(wrapper.find("input").attributes("aria-invalid")).toBe("true");
@@ -180,7 +180,7 @@ describe("BasicTextarea", () => {
   });
 
   it("reads the contract", () => {
-    const wrapper = inField(BasicTextarea, { error: "Za długie" });
+    const wrapper = inField(BasicTextarea, { error: "Too long" });
     const field = wrapper.find("textarea");
     expect(wrapper.find("label").attributes("for")).toBe(field.attributes("id"));
     expect(field.attributes("aria-invalid")).toBe("true");
@@ -195,7 +195,7 @@ describe("NumberInput", () => {
   });
 
   it("reads the contract", () => {
-    const wrapper = inField(NumberInput, { error: "Za dużo", disabled: true });
+    const wrapper = inField(NumberInput, { error: "Too many", disabled: true });
     const input = wrapper.find("input");
     expect(wrapper.find("label").attributes("for")).toBe(input.attributes("id"));
     expect(input.attributes("aria-invalid")).toBe("true");
@@ -223,8 +223,8 @@ describe("BasicCheckbox", () => {
 
 describe("BasicRadioGroup", () => {
   const options = [
-    { label: "Jeden", value: 1 },
-    { label: "Dwa", value: 2 },
+    { label: "One", value: 1 },
+    { label: "Two", value: 2 },
   ];
 
   it("is a named radio group: one name, checked from v-model, a change emits the value", async () => {
@@ -264,7 +264,7 @@ describe("BasicSwitch", () => {
   });
 
   it("shows its hint as a help tooltip", () => {
-    const wrapper = mount(BasicSwitch, { props: { label: "A", hint: "Podpowiedź" }, global: GLOBAL });
+    const wrapper = mount(BasicSwitch, { props: { label: "A", hint: "Hint" }, global: GLOBAL });
     expect(wrapper.findComponent({ name: "BasicTooltip" }).attributes("variant")).toBe("help");
   });
 
@@ -289,7 +289,7 @@ describe("SegmentedControl and ColorInput", () => {
   });
 
   it("ColorInput: the text field reads the contract, disabled reaches the picker too", () => {
-    const wrapper = inField(ColorInput, { error: "Zły kolor" }, { disabled: true });
+    const wrapper = inField(ColorInput, { error: "Bad colour" }, { disabled: true });
     const text = wrapper.find("input[type=text]");
     expect(wrapper.find("label").attributes("for")).toBe(text.attributes("id"));
     expect(text.attributes("aria-invalid")).toBe("true");
