@@ -94,7 +94,7 @@ Traps:
 | status / category pill · value chip (picked entity, media tag) · number next to a title, tab or filter | `StatusBadge` (`tone`) · `Tag` · `CountBadge` |
 | card / section container · Home panel tile · media grid tile | `BasicCard` · `PanelCard` · `MediaTile` |
 | tabs of one screen · mode switch (list / edit) | `BasicTabs` · `SegmentedControl` (never a pair of chips) |
-| filter toggle | `FilterChip` inside `MobileFilterPanel` |
+| filter toggle | `FilterChip`: one chip set inline (one row that scrolls sideways on a phone), more filter groups inside `MobileFilterPanel` |
 | list · pages · bulk actions · empty list | `DataTable` · `Pagination` (`v-model:page` + `pages`) · `BulkActionBar` · `EmptyState` |
 | loading | `Loader` (`block` in a content area, `overlay` for the whole screen, `overlay contained` in a panel) |
 | page frame · page title row (crumbs, back, H1, chips, actions) · breadcrumbs | `PageLayout` · `PageHeader` · `Breadcrumbs` |
@@ -178,8 +178,8 @@ Traps:
   slot; `#toolbar` = the search/filter row); the toolbar never shrinks. A toolbar with nothing in it (no teleported
   content, no selector or title of the panel's own) is hidden by `.panel-toolbar` itself: never an empty strip. The
   P5 panel plans move the teleported actions into a `PageHeader` `ActionBar`.
-- **List view.** The toolbar holds a search `BasicInput` with `useSearchDebounce`, then filters in
-  `MobileFilterPanel`, and it wraps (`flex-wrap`, `gap: var(--space-5)`). In `DataTable`, secondary columns get fixed
+- **List view.** The toolbar holds a search `BasicInput` with `useSearchDebounce`, then the filters (one chip set
+  inline, more groups in `MobileFilterPanel`), and it wraps (`flex-wrap`, `gap: var(--space-5)`). In `DataTable`, secondary columns get fixed
   widths and only the primary text column gets `1fr`, truncated with an ellipsis. A cell either fits (its column
   grows to the badge or buttons) or truncates with a `title`, never spills into its neighbour; a status badge column
   is `max-content`, never truncated; numbers take

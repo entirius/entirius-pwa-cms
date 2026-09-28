@@ -82,8 +82,8 @@ test.describe('Content List Table', () => {
     );
     // Either it deactivated or we need to use the clear button
     if (stillActive) {
-      // Clear all filters via the x button (last filter-chip element is the clear button)
-      const clearBtn = page.locator('button.filter-chip');
+      // Clear all filters via the icon button next to the chips
+      const clearBtn = page.getByRole('button', { name: /Wyczyść filtry|Clear filters/ });
       if (await clearBtn.isVisible().catch(() => false)) {
         await clearBtn.click();
       }

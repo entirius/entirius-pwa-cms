@@ -255,6 +255,22 @@
       "code": "the rich-text toolbar formatting tools are outline sm IconButtons with a pressed state (H1–H3 stay text buttons, R7); the text / table mode switch is a BasicSelect",
       "scope": "BasicWysiwyg",
       "treatment": "no-reference"
+    },
+    {
+      "id": "KD-P5-S4-row-actions",
+      "decision": "plan 27 (Q5, ui-rules § Delete)",
+      "figma": "row actions „Edytuj” / „Usuń” as ghost buttons with a 12 px icon and text (S4 39:3716, 39:3722)",
+      "code": "„Edytuj” is a ghost sm text button without an icon (C5: no icon unless the design needs one); delete is an icon-only danger sm IconButton named „Usuń”",
+      "scope": "Pages content list rows",
+      "treatment": "geometry-tolerance"
+    },
+    {
+      "id": "KD-P5-S4-filters-row",
+      "decision": "plan 27 (Q5)",
+      "figma": "„Język treści” label In 12/500 sentence case; no translate action in the frame",
+      "code": "the label is the FormField field label (12/600 uppercase, text-muted); „Przetłumacz wszystko” (contentdb_translator installed) is a secondary button left of the labelled select, above it on a phone",
+      "scope": "Pages content list filters row",
+      "treatment": "geometry-tolerance"
     }
   ]
 }

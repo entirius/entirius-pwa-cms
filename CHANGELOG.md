@@ -115,6 +115,12 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- The Pages content list (P5 plan 27, Figma S4/S5): `PageLayout` with the „Lista treści” `PageHeader`; the filters
+  row holds „Filtry:” with the content-type `FilterChip`s (a „Wyczyść filtry” IconButton instead of the „✕” chip) and
+  the language `BasicSelect` in an inline `FormField` „Język treści”; on a phone the chips scroll sideways in one row
+  and the select stacks under its label (no `MobileFilterPanel` on this screen). Each content type is a table with an
+  uppercase title and a `CountBadge`; the empty list is an `EmptyState`; the FAB sits 24 px from the corner on
+  desktop and 16 px above the tab bar below 1024 px. „Przetłumacz wszystko” drops its icon.
 - The page frame (P5 plan 25): every view outside Home, Gallery and the Pages builder renders in `PageLayout` —
   no bordered page card, content on the page background with 40/80 px padding (20 on a phone), the view's
   `PageHeader` in the `#header` slot (a loading page keeps its condition there) and the search/filter row in
@@ -208,6 +214,11 @@ All notable changes to this project will be documented in this file.
   password and SSO login run the same code after the token call.
 
 ### Fixed
+
+- Pages content list: one delete confirmation for the whole list (every content-type group rendered its own copy, so
+  a delete opened one dialog per group).
+- Thin scrollbars apply to mouse screens only: on a touch screen the styled scrollbar widened the layout viewport past
+  the screen and moved every fixed element (FAB, pill, toasts) 6 / 11 px off its corner.
 
 - P4 close (plan 24): closing the configuration-health panel with Esc returns focus to a named control even where the
   header shows no health icon (a phone; desktop with every check green); the Points, FAQ, Agreements, consent-person
