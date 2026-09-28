@@ -22,7 +22,7 @@
         {{ $t('pim.save_set_config') }}
       </BasicButton>
     </Teleport>
-    <div class="flex-1 ovy-auto page-pad">
+    <PageLayout class="flex-1">
       <BasicCard>
         <!-- Set identity -->
         <div class="set-identity mb-10">
@@ -370,7 +370,7 @@
 
         <!-- Add group modal removed — inline creation panel used instead -->
       </BasicCard>
-    </div>
+    </PageLayout>
 
     <!-- Attribute Library sidebar (full height, right edge) -->
     <SideDrawer

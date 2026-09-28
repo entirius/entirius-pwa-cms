@@ -25,7 +25,7 @@
       </BasicButton>
     </Teleport>
 
-    <div class="flex-1 ovy-auto page-pad">
+    <PageLayout class="flex-1">
       <BasicCard>
         <div class="gap-def-identity mb-10">
           <span class="fs-200 t-accent fw-600 tt-upper">
@@ -182,7 +182,7 @@
           </template>
         </ConfirmDialog>
       </BasicCard>
-    </div>
+    </PageLayout>
   </div>
 </template>
 
