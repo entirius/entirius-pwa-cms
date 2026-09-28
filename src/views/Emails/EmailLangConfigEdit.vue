@@ -1,16 +1,21 @@
 <template>
   <PageLayout class="fs-300 t-body">
-    <template #header>
+    <template v-if="!loading" #header>
       <PageHeader
         :title="`${$t('emails.lang_config')}: ${config.language || $t('emails.default_lang')}`"
         :back="goBack"
-      />
+      >
+        <template #actions>
+          <ActionBar :actions="headerActions" />
+        </template>
+      </PageHeader>
     </template>
 
-      <Loader block v-show="loading" />
+    <Loader block v-if="loading" />
 
-      <div v-show="!loading">
-        <div class="emails-form-grid mb-10">
+    <template v-else>
+      <BasicCard :title="$t('emails.shop_details')" gap class="mb-8">
+        <div class="form-grid">
           <FormField :label="$t('emails.shop_name')">
             <BasicInput v-model="config.shop_name" />
           </FormField>
@@ -26,17 +31,14 @@
           <FormField :label="$t('emails.footer_brand_link')">
             <BasicInput v-model="config.footer_link_brand" />
           </FormField>
+          <FormField :label="$t('emails.footer_copy')" class="form-grid__wide">
+            <BasicWysiwyg v-model="config.footer_copy" />
+          </FormField>
         </div>
+      </BasicCard>
 
-        <h3 class="fs-400 fw-600 mt-10 mb-8">
-          {{ $t("emails.footer_copy") }}
-        </h3>
-        <BasicWysiwyg v-model="config.footer_copy" />
-
-        <h3 class="fs-400 fw-600 mt-10 mb-8">
-          {{ $t("emails.social_links") }}
-        </h3>
-        <div class="emails-form-grid">
+      <BasicCard :title="$t('emails.social_links')" gap class="mb-8">
+        <div class="form-grid">
           <FormField label="Facebook">
             <BasicInput v-model="config.footer_link_facebook" />
           </FormField>
@@ -53,14 +55,11 @@
             <BasicInput v-model="config.footer_link_tiktok" />
           </FormField>
         </div>
+      </BasicCard>
 
-        <h3 class="fs-400 fw-600 mt-10 mb-8">
-          {{ $t("emails.footer_overrides") }}
-        </h3>
-        <p class="fs-200 t-secondary mb-8">
-          {{ $t("emails.footer_overrides_hint") }}
-        </p>
-        <div class="emails-form-grid">
+      <BasicCard :title="$t('emails.footer_overrides')" gap>
+        <p class="fs-200 t-secondary">{{ $t("emails.footer_overrides_hint") }}</p>
+        <div class="form-grid">
           <FormField
             :label="$t('emails.footer_signature_copy_1')"
             :description="$t('emails.footer_signature_copy_1_hint')"
@@ -85,24 +84,16 @@
           >
             <BasicInput v-model="config.footer_unsubscribe_label" />
           </FormField>
-        </div>
-        <FormField
-          :label="$t('emails.footer_automatic_copy')"
-          :description="$t('emails.footer_automatic_copy_hint')"
-          class="mt-8"
-        >
-          <BasicWysiwyg v-model="config.footer_automatic_copy" />
-        </FormField>
-
-        <div class="flex jc-fe mt-10">
-          <BasicButton
-            variant="primary"
-            @click="save"
+          <FormField
+            :label="$t('emails.footer_automatic_copy')"
+            :description="$t('emails.footer_automatic_copy_hint')"
+            class="form-grid__wide"
           >
-            {{ $t('common.save') }}
-          </BasicButton>
+            <BasicWysiwyg v-model="config.footer_automatic_copy" />
+          </FormField>
         </div>
-      </div>
+      </BasicCard>
+    </template>
   </PageLayout>
 </template>
 
@@ -111,6 +102,7 @@ import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { GET_EmailLangConfig, PATCH_EmailLangConfig } from "@/api/emails/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
+
 export default {
   name: "EmailLangConfigEdit",
   setup() {
@@ -121,8 +113,21 @@ export default {
   data() {
     return {
       config: {},
-      loading: false,
+      loading: true,
     };
+  },
+  computed: {
+    headerActions() {
+      return [
+        {
+          key: "save",
+          role: "primary",
+          label: this.$t("common.save"),
+          onClick: this.save,
+          testid: "emails-save",
+        },
+      ];
+    },
   },
   mounted() {
     this.fetchData();
@@ -173,11 +178,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.emails-form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--space-4);
-}
-</style>

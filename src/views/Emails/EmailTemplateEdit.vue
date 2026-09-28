@@ -1,43 +1,36 @@
 <template>
   <PageLayout class="fs-300 t-body">
-    <template #header>
+    <template v-if="!loading" #header>
       <PageHeader :title="$t('emails.edit_template')" :back="goBack">
         <template #meta>
-          <span class="fs-200 t-muted ml-2">({{ typeLabel }})</span>
-          <span
-            v-if="template.language_code"
-            class="fs-200 t-accent ml-2 fw-600"
-            >{{ template.language_code }}</span
-          >
+          <span class="fs-200 t-muted">({{ typeLabel }})</span>
+          <span v-if="template.language_code" class="fs-200 t-accent fw-600">{{ template.language_code }}</span>
+        </template>
+        <template #actions>
+          <ActionBar :actions="headerActions" />
         </template>
       </PageHeader>
     </template>
 
-      <Loader block v-show="loading" />
+    <Loader block v-if="loading" />
 
-      <div v-show="!loading">
-        <div class="emails-form-grid mb-10">
-          <FormField :label="$t('emails.subject')">
-            <BasicInput v-model="template.subject" />
-          </FormField>
-        </div>
-
-        <div v-for="field in contentFields" :key="field.key" class="mb-8">
-          <FormField :label="$t(field.label)" :description="field.description ? $t(field.description) : ''">
-            <BasicWysiwyg v-if="field.wysiwyg" v-model="template[field.key]" />
-            <BasicInput v-else v-model="template[field.key]" />
-          </FormField>
-        </div>
-
-        <div class="flex jc-fe mt-10">
-          <BasicButton
-            variant="primary"
-            @click="save"
-          >
-            {{ $t('common.save') }}
-          </BasicButton>
-        </div>
+    <BasicCard v-else :title="$t('emails.template_content')" gap>
+      <div class="form-grid">
+        <FormField :label="$t('emails.subject')" class="form-grid__wide">
+          <BasicInput v-model="template.subject" />
+        </FormField>
+        <FormField
+          v-for="field in contentFields"
+          :key="field.key"
+          :label="$t(field.label)"
+          :description="field.description ? $t(field.description) : ''"
+          :class="{ 'form-grid__wide': field.wysiwyg }"
+        >
+          <BasicWysiwyg v-if="field.wysiwyg" v-model="template[field.key]" />
+          <BasicInput v-else v-model="template[field.key]" />
+        </FormField>
       </div>
+    </BasicCard>
   </PageLayout>
 </template>
 
@@ -47,7 +40,6 @@ import { useNotifyStore } from "@/stores/notify";
 import { GET_EmailTemplate, PATCH_EmailTemplate } from "@/api/emails/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { emailTypeLabel } from "./emailTypes";
-
 
 const TYPE_FIELDS = {
   "accounts-new-account": [
@@ -234,7 +226,7 @@ export default {
   data() {
     return {
       template: {},
-      loading: false,
+      loading: true,
     };
   },
   computed: {
@@ -246,6 +238,17 @@ export default {
     },
     contentFields() {
       return TYPE_FIELDS[this.emailType] || [];
+    },
+    headerActions() {
+      return [
+        {
+          key: "save",
+          role: "primary",
+          label: this.$t("common.save"),
+          onClick: this.save,
+          testid: "emails-save",
+        },
+      ];
     },
   },
   mounted() {
@@ -301,11 +304,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.emails-form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--space-4);
-}
-</style>
