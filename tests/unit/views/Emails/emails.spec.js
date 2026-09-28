@@ -1,5 +1,26 @@
 import { describe, it, expect, vi } from "vitest";
-import { mount, RouterLinkStub } from "@vue/test-utils";
+import { mount, flushPromises, RouterLinkStub } from "@vue/test-utils";
+
+const mockGetChannel = vi.fn();
+const mockGetLangConfigs = vi.fn();
+// Every export any of the three Emails edit views pulls from the client: unused ones are never called here.
+vi.mock("@/api/emails/api", () => ({
+  GET_EmailChannel: (...a) => mockGetChannel(...a),
+  GET_EmailLangConfigs: (...a) => mockGetLangConfigs(...a),
+  PATCH_EmailChannel: vi.fn(),
+  GET_EmailChannels: vi.fn(),
+  GET_EmailTemplates: vi.fn(),
+  GET_EmailTemplate: vi.fn(),
+  PATCH_EmailTemplate: vi.fn(),
+  GET_EmailLangConfig: vi.fn(),
+  PATCH_EmailLangConfig: vi.fn(),
+}));
+vi.mock("@/stores/loader", () => ({
+  useLoaderStore: () => ({ loaderStart() {}, loaderFinish() {} }),
+}));
+vi.mock("@/stores/notify", () => ({
+  useNotifyStore: () => ({ spawnNotification: vi.fn() }),
+}));
 
 import EmailCard from "@/views/Emails/EmailCard.vue";
 import EmailChannelEdit from "@/views/Emails/EmailChannelEdit.vue";
@@ -45,5 +66,20 @@ describe("EmailCard", () => {
 
   it("renders the lines under the title", () => {
     expect(mountCard().text()).toContain("default-europe");
+  });
+});
+
+describe("EmailChannelEdit failed load", () => {
+  it("shows a retry, no Save and no form after a failed load", async () => {
+    mockGetChannel.mockReset().mockRejectedValue(new Error("offline"));
+    mockGetLangConfigs.mockReset().mockResolvedValue({ data: { results: [] } });
+    const wrapper = mount(EmailChannelEdit, {
+      global: { mocks: { $route: { params: { channelPk: "7" }, query: {}, path: "/emails/channels/7" } } },
+    });
+    await flushPromises();
+
+    expect(wrapper.find('[data-testid="emails-save"]').exists()).toBe(false);
+    expect(wrapper.find(".form-grid").exists()).toBe(false);
+    expect(wrapper.findComponent({ name: "EmptyState" }).exists()).toBe(true);
   });
 });

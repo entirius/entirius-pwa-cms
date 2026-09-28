@@ -29,6 +29,13 @@
   grid-column: 1 / -1;
 }
 
+// The Emails dashboard tile grid (EmailCard): a responsive grid of cards, auto-filling the row.
+.email-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-4);
+}
+
 // The page wrapper around a panel's content card: 48 px, 16 px below tablet (a phone keeps 361 of its 393 px).
 // `.page-pad-x` pads the sides only, for a wrapper whose rows bring their own vertical rhythm.
 .page-pad,

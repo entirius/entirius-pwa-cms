@@ -20,7 +20,8 @@ const VIEWPORTS = {
 const DEV_SERVER = ['WebSocket connection to'];
 
 // The admin profile picks the UI language; accept either locale's text.
-const either = (pick) => new RegExp(`^(${[pick(en), pick(pl)].join('|')})$`);
+const { either: escapedEither } = require('./helpers/text');
+const either = (pick) => escapedEither(pick(en), pick(pl));
 
 async function openPage(page, path) {
   await page.goto(path);
@@ -100,6 +101,21 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
         await expect(page.locator('.basic-card .form-grid').first()).toBeVisible();
         await expect(page.getByRole('heading', { level: 2, name: either((t) => t.agm.versions) })).toBeVisible();
         await expectNoSidewaysScroll(page);
+
+        if (name === 'phone') {
+          const versionsCard = page.locator('.basic-card').filter({
+            has: page.getByRole('heading', { level: 2, name: either((t) => t.agm.versions) }),
+          });
+          const versionRowCount = await versionsCard.locator('.data-table__row').count();
+          if (versionRowCount > 0) {
+            await expect(versionsCard.locator('.data-table__row').first()).toBeVisible();
+          } else {
+            test.info().annotations.push({
+              type: 'skip',
+              description: 'Seed has no agreement versions — versions table phone check skipped',
+            });
+          }
+        }
       }
 
       collector.assertNoErrors(expect, 'Agreements definitions');

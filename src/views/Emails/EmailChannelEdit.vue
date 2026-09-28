@@ -16,7 +16,17 @@
 
     <Loader block v-if="loading" />
 
-    <template v-else-if="!loadFailed">
+    <EmptyState
+      v-else-if="loadFailed"
+      :title="$t('emails.error_load_channel')"
+      icon="warning"
+    >
+      <BasicButton variant="ghost" @click="fetchData">
+        {{ $t("emails.retry") }}
+      </BasicButton>
+    </EmptyState>
+
+    <template v-else>
       <BasicCard :title="$t('emails.branding')" gap class="mb-8">
         <div class="form-grid">
           <FormField :label="$t('emails.from_name')">
@@ -107,6 +117,7 @@ export default {
       langConfigs: [],
       loading: true,
       loadFailed: false,
+      saving: false,
       fontOptions: [
         { label: "Arial", value: "Arial, Helvetica, sans-serif" },
         { label: "Helvetica", value: "Helvetica, Arial, sans-serif" },
@@ -135,6 +146,8 @@ export default {
           role: "primary",
           label: this.$t("common.save"),
           onClick: this.saveChannel,
+          loading: this.saving,
+          disabled: this.saving,
           testid: "emails-save",
         },
       ];
@@ -165,6 +178,8 @@ export default {
       }
     },
     async saveChannel() {
+      if (this.saving) return;
+      this.saving = true;
       this.loader.loaderStart();
       try {
         const pk = this.$route.params.channelPk;
@@ -190,6 +205,7 @@ export default {
         });
       } finally {
         this.loader.loaderFinish();
+        this.saving = false;
       }
     },
   },

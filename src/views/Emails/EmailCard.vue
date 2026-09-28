@@ -10,10 +10,11 @@
 
 <script setup>
 // An Emails dashboard tile (channel, template type, template, language config): a BasicCard whose title is the
-// link to the record. The link's `::after` covers the card, so the whole card opens it by pointer, and the link is
-// the one tab stop (Enter opens it). The default slot takes the muted lines under the title; `icon` sits before it.
-// `level` is the title's heading level (3 under a section h2, 2 right under the page h1). `.email-cards` lays the
-// tiles out in the views.
+// link to the record. The link's `::after` covers the title row only, so the title opens it by pointer while the
+// muted lines under it stay selectable; the link is the one tab stop (Enter opens it). The default slot takes the
+// muted lines under the title; `icon` sits before it.
+// `level` is the title's heading level (3 under a section h2, 2 right under the page h1). `.email-cards`
+// (src/assets/scss/utils/_decorators.scss) lays the tiles out in the views.
 defineProps({
   to: { type: [String, Object], required: true },
   title: { type: String, required: true },
@@ -23,11 +24,8 @@ defineProps({
 </script>
 
 <style lang="scss" scoped>
-.email-card {
-  position: relative;
-}
-
 .email-card__title {
+  position: relative;
   margin: 0;
   min-width: 0;
   color: var(--text-strong);
@@ -58,13 +56,5 @@ defineProps({
       outline-offset: 2px;
     }
   }
-}
-</style>
-
-<style lang="scss">
-.email-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--space-4);
 }
 </style>

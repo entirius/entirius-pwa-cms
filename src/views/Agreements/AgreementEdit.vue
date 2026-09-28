@@ -14,6 +14,7 @@
         </template>
         <template v-if="!loadFailed" #actions>
           <div class="flex ai-ct jc-fe wrap gap-3">
+            <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
             <BasicSwitch
               :label="$t('agm.is_active')"
               v-model="form.is_active"
@@ -32,7 +33,7 @@
           {{ $t("agm.system_info") }}
         </p>
 
-        <BasicCard :title="$t('agm.definitions')" gap class="mb-8">
+        <BasicCard :title="$t('agm.definition')" gap class="mb-8">
           <div class="form-grid">
             <FormField :label="$t('agm.slug')" required :error="fieldError('slug')">
               <BasicInput
@@ -103,13 +104,15 @@
 
         <BasicCard v-if="isEdit" :title="$t('agm.versions')" gap class="mb-8">
           <template #actions>
-            <BasicButton
-              variant="secondary"
-              :aria-expanded="String(showVersionForm)"
-              @click="showVersionForm = !showVersionForm"
-            >
-              {{ $t('agm.create_version') }}
-            </BasicButton>
+            <ActionBar :actions="[]">
+              <BasicButton
+                variant="secondary"
+                :aria-expanded="String(showVersionForm)"
+                @click="showVersionForm = !showVersionForm"
+              >
+                {{ $t('agm.create_version') }}
+              </BasicButton>
+            </ActionBar>
           </template>
 
           <div v-if="showVersionForm" class="form-grid" data-testid="agm-new-version-form">
@@ -133,7 +136,7 @@
             :columns="versionColumns"
             :rows="versions"
             row-key="id"
-            :empty-text="$t('agm.no_definitions')"
+            :empty-text="$t('agm.no_versions')"
           >
             <template #cell-version_number="{ value }">v{{ value }}</template>
             <template #cell-summary_en="{ value }">
@@ -204,7 +207,7 @@
           <template #actions>
             <IconButton
               :icon="contentHistoryOpen ? 'collapse' : 'expand'"
-              :label="$t('common.toggle_details')"
+              :label="$t('agm.toggle_content_history')"
               :aria-expanded="String(contentHistoryOpen)"
               data-testid="agm-history-toggle"
               @click="contentHistoryOpen = !contentHistoryOpen"
@@ -295,6 +298,7 @@ import {
   GET_ContentHistory,
 } from "@/api/agreements/api";
 import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
+import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
 
 export default {
   name: "AgreementEdit",
@@ -302,7 +306,8 @@ export default {
     const loader = useLoaderStore();
     const notify = useNotifyStore();
     const formErrors = useFormErrors();
-    return { loader, notify, formErrors };
+    const unsaved = useUnsavedChanges();
+    return { loader, notify, formErrors, ...unsaved };
   },
   data() {
     return {
@@ -421,6 +426,9 @@ export default {
       if (this.definition.content_route) {
         await this.fetchContentHistory();
       }
+    } else {
+      this.snapshot(this.form);
+      this.track(this.form);
     }
   },
   watch: {
@@ -479,6 +487,8 @@ export default {
         const { data } = await GET_Definition(this.$route.params.slug);
         this.definition = data;
         this.resetForm(data);
+        this.snapshot(this.form);
+        this.track(this.form);
       } catch (err) {
         // Only the first load fails the page; a failed refresh after a save keeps the loaded form.
         if (!this.definition.slug) this.loadFailed = true;

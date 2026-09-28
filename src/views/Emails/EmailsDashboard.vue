@@ -17,7 +17,7 @@
             v-for="channel in channels"
             :key="channel.pk"
             :to="`/emails/channels/${channel.pk}`"
-            :title="channel.label"
+            :title="channel.label || channel.idx"
             testid="emails-channel-card"
           >
             <template #icon>
