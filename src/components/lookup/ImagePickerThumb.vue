@@ -58,7 +58,9 @@ export default {
   position: relative;
   flex-shrink: 0;
 
-  &__button {
+  // BasicButton's variant rule (`button.button-basic.button-basic--secondary`, 0,3,1) outranks a plain scoped class:
+  // the thumb's own colours need the root and the boot class in front.
+  & button.button-basic.image-picker-thumb__button {
     width: 42px;
     height: 42px;
     padding: 0;
@@ -71,14 +73,13 @@ export default {
       height: 40px;
       object-fit: cover;
     }
-
-    // Same tokens as ProductFiles.vue __dropzone--dragover, so a drag reads the
-    // same here as it does on the PIM file and gallery upload areas.
-    &--dragover {
-      border-color: var(--accent);
-      background: var(--surface-raised);
-      color: var(--text-accent);
-    }
+  }
+  // Same tokens as ProductFiles.vue __dropzone--dragover, so a drag reads the
+  // same here as it does on the PIM file and gallery upload areas.
+  & button.button-basic.image-picker-thumb__button--dragover {
+    border-color: var(--accent);
+    background: var(--surface-raised);
+    color: var(--text-accent);
   }
   // IconButton puts the class on its button, below the tooltip wrapper: out of reach of a scoped selector.
   :deep(.image-picker-thumb__remove) {

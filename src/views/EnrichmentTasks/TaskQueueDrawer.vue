@@ -19,7 +19,7 @@
           <BasicButton
             variant="ghost"
             size="sm"
-            class="t-accent"
+            class="task-queue__sku"
             :data-testid="`queue-sku-${row.sku}`"
             @click="goToPim(row.sku)"
           >
@@ -173,6 +173,10 @@ export default {
 <style lang="scss" scoped>
 .task-queue {
   padding: var(--space-8);
+}
+// The SKU opens the product: accent text, which the ghost variant rule (0,3,1) would otherwise override.
+.task-queue button.button-basic.task-queue__sku {
+  color: var(--text-accent);
 }
 .task-queue__pager {
   padding: var(--space-8);

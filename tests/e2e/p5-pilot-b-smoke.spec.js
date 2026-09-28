@@ -98,6 +98,8 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
         await page.waitForLoadState('networkidle');
         await expect(page.getByRole('heading', { level: 1 })).not.toBeEmpty();
         await expect(page.locator('[data-test="spawn-rule-save-btn"]')).toBeVisible();
+      } else {
+        test.info().annotations.push({ type: 'skipped', description: 'no spawn rule on this stack: detail not opened' });
       }
 
       collector.assertNoErrors(expect, 'Spawn rules');
@@ -108,7 +110,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
       await openPage(page, '/pages/doc');
 
       await expect(page.getByRole('heading', { level: 1 })).toHaveText(either((t) => t.nav.docs));
-      await expect(page.locator('.markdown-renderer-wrapper')).not.toBeEmpty();
+      await expect(page.locator('.markdown-renderer-wrapper > div')).toHaveText(/\S/);
 
       collector.assertNoErrors(expect, 'Docs');
     });
