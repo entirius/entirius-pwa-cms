@@ -116,6 +116,8 @@
     "filters": "Filtry:",
     "add_new_document": "Dodaj nowy dokument",
     "language": "Język",
+    "content_language": "Język treści",
+    "clear_filters": "Wyczyść filtry",
     "name": "Nazwa",
     "edit_date": "Data edycji",
     "status": "Status",

@@ -1,82 +1,52 @@
 <template>
-  <div class="site-genator t-body fs-300 page-pad-x h-100 ovy-auto">
-    <FloatingActions :actions="fabActions" />
-    <div class="flex jc-sb ai-ct mv-8">
-      <MobileFilterPanel
-        :active-count="activeFilters.length"
-        :trigger-label="$t('builder.filters')"
-      >
-        <p class="fs-200 t-secondary">{{ $t("builder.filters") }}</p>
-        <template v-if="user && user.buildTypes">
-          <FilterChip
-            v-for="t in user.buildTypes.filter(
-              (bt) => bt._for === content_type
-            )"
-            :key="`filter-${t.slug}`"
-            :label="tBuildType(t.slug, t.label)"
-            :active="activeFilters.includes(t.slug)"
-            @click="setFilter(t)"
-          />
-        </template>
-        <FilterChip
-          v-if="activeFilters.length"
-          label="✕"
-          @click="activeFilters = []"
-        />
-      </MobileFilterPanel>
-      <div class="flex gap-2 js-fe">
-        <BasicButton
-          v-if="translatorAvailable"
-          :label="$t('builder.translate_all')"
-          icon="translate"
-          variant="secondary"
-          class="icon-only-mobile"
-          @click="showTranslateModal = true"
-        >
-          {{ $t('builder.translate_all') }}
-        </BasicButton>
-        <BasicSelect
-          v-if="availableLanguages && language"
-          :options="
-            availableLanguages.map((val) => {
-              return {
-                label: `${val.iso2}`,
-                value: val.iso2,
-              };
-            })
-          "
-          style="width: 4rem"
-          :model-value="language.toUpperCase()"
-          @update:model-value="
-            ($event) => {
-              if ($event.toLowerCase() === language) return;
-              $router
-                .replace({ query: { lg: $event.toLowerCase() } })
-                .catch(() => {});
-              init({ language: $event });
-            }
-          "
-          :placeholder="$t('builder.language')"
-          :aria-label="$t('builder.language')"
-        />
+  <PageLayout class="content-list">
+    <template #header>
+      <PageHeader :title="$t('nav.content_list')" />
+    </template>
+    <template #toolbar>
+      <div class="content-list__filters">
+        <div v-if="buildTypes.length" class="content-list__chip-group">
+          <span id="content-list-filter-label" class="content-list__label">{{ $t("builder.filters") }}</span>
+          <div class="content-list__chips" role="group" aria-labelledby="content-list-filter-label">
+            <FilterChip
+              v-for="t in buildTypes"
+              :key="`filter-${t.slug}`"
+              :label="tBuildType(t.slug, t.label)"
+              :active="activeFilters.includes(t.slug)"
+              :aria-pressed="String(activeFilters.includes(t.slug))"
+              @click="setFilter(t)"
+            />
+            <IconButton
+              v-if="activeFilters.length"
+              icon="close"
+              size="sm"
+              :label="$t('builder.clear_filters')"
+              @click="clearFilters"
+            />
+          </div>
+        </div>
+        <div class="content-list__controls">
+          <BasicButton v-if="translatorAvailable" variant="secondary" @click="showTranslateModal = true">
+            {{ $t("builder.translate_all") }}
+          </BasicButton>
+          <FormField v-if="availableLanguages && language" :label="$t('builder.content_language')" layout="inline">
+            <BasicSelect
+              class="content-list__select"
+              :options="languageOptions"
+              :model-value="language.toUpperCase()"
+              :placeholder="$t('builder.language')"
+              @update:model-value="setLanguage"
+            />
+          </FormField>
+        </div>
       </div>
-    </div>
+    </template>
 
-    <template
-      v-for="(doc, i) in activeFilters.length
-        ? docs.filter((doc) => {
-            return activeFilters.indexOf(doc.type) > -1;
-          })
-        : docs"
-    >
-      <div
-        :key="`content_type-${i}`"
-        v-if="doc.data.length"
-        class="doc-section mb-10"
-      >
+    <template v-for="(doc, i) in visibleDocs" :key="`content_type-${doc.type ?? i}`">
+      <div v-if="doc.data.length" class="doc-section mb-10">
         <div class="doc-section__header">
           {{ tBuildType(doc.type, doc.label) }}
-          <span class="doc-section__count">{{ doc.data.length }}</span>
+          <CountBadge :count="doc.data.length" />
         </div>
 
         <DataTable
@@ -120,13 +90,7 @@
               size="sm"
               variant="ghost"
               class="data-table__action-btn"
-              @click="
-                $router.push({
-                  name: 'Builder',
-                  params: { type: doc.type, uid: row.uid },
-                  query: { lg: language },
-                })
-              "
+              @click="navigateToEditor(row, doc.type)"
             >
               {{ canCreate ? $t('builder.edit') : $t('builder.preview') }}
             </BasicButton>
@@ -138,12 +102,7 @@
               size="sm"
               class="data-table__action-btn"
               :disabled="!canCreate"
-              @click="
-                () => {
-                  confirmation_modal = true;
-                  to_remove = [doc.type, row.uid];
-                }
-              "
+              @click="askRemove(doc.type, row.uid)"
             />
           </template>
         </DataTable>
@@ -156,36 +115,26 @@
           />
         </div>
       </div>
-      <ConfirmDialog
-        tone="danger"
-        :open="confirmation_modal"
-        @confirm="
-          () => {
-            removeDoc(to_remove[0], to_remove[1]);
-            confirmation_modal = false;
-          }
-        "
-        @cancel="confirmation_modal = false"
-        :title="$t('builder.confirm_title')"
-      >
-        <template #default>
-          <p>{{ $t("builder.confirm_msg") }}</p>
-        </template>
-      </ConfirmDialog>
     </template>
 
-    <BasicCard
+    <EmptyState
       v-if="contentTypes !== null && !hasVisibleContent"
-      class="ai-ct jc-ct t-muted"
-      style="min-height: 14rem"
+      icon="empty"
+      :title="$t('builder.no_content_title')"
+      :message="$t('builder.no_content_msg')"
+    />
+
+    <ConfirmDialog
+      tone="danger"
+      :open="confirmation_modal"
+      :title="$t('builder.confirm_title')"
+      @confirm="confirmRemove"
+      @cancel="confirmation_modal = false"
     >
-      <p class="fs-400 fw-600 t-secondary">
-        {{ $t("builder.no_content_title") }}
-      </p>
-      <p class="fs-200 t-muted ta-ct" style="max-width: 30rem">
-        {{ $t("builder.no_content_msg") }}
-      </p>
-    </BasicCard>
+      <p>{{ $t("builder.confirm_msg") }}</p>
+    </ConfirmDialog>
+
+    <FloatingActions class="content-list__fab" :actions="fabActions" />
 
     <TranslateAllContentModal
       :visible="showTranslateModal"
@@ -194,7 +143,7 @@
       @close="showTranslateModal = false"
       @translated="init({})"
     />
-  </div>
+  </PageLayout>
 </template>
 
 <script>
@@ -256,22 +205,29 @@ export default {
     availableLanguages() {
       return this.contentDBChannel.languages;
     },
+    languageOptions() {
+      return (this.availableLanguages || []).map((val) => ({ label: `${val.iso2}`, value: val.iso2 }));
+    },
+    buildTypes() {
+      return (this.user?.buildTypes || []).filter((bt) => bt._for === this.content_type);
+    },
+    visibleDocs() {
+      if (!this.activeFilters.length) return this.docs;
+      return this.docs.filter((doc) => this.activeFilters.includes(doc.type));
+    },
     fabActions() {
-      if (!this.user || !this.user.buildTypes) return [];
-      return this.user.buildTypes
-        .filter((bt) => bt._for === this.content_type)
-        .map((bt, index) => {
-          const config_max = this.section_options(bt.slug, "max_self");
-          const doc_count = this.docs[index] ? this.docs[index]["count"] : 0;
-          const is_disabled =
-            !bt.actions.includes("create") || doc_count >= config_max;
-          return {
-            icon: "add",
-            label: this.tBuildType(bt.slug, bt.label),
-            handler: () => this.create_new(bt),
-            disabled: is_disabled,
-          };
-        });
+      return this.buildTypes.map((bt, index) => {
+        const config_max = this.section_options(bt.slug, "max_self");
+        const doc_count = this.docs[index] ? this.docs[index]["count"] : 0;
+        const is_disabled =
+          !bt.actions.includes("create") || doc_count >= config_max;
+        return {
+          icon: "add",
+          label: this.tBuildType(bt.slug, bt.label),
+          handler: () => this.create_new(bt),
+          disabled: is_disabled,
+        };
+      });
     },
     contentColumns() {
       return [
@@ -298,13 +254,29 @@ export default {
       ];
     },
     hasVisibleContent() {
-      const filtered = this.activeFilters.length
-        ? this.docs.filter((doc) => this.activeFilters.indexOf(doc.type) > -1)
-        : this.docs;
-      return filtered.some((doc) => doc.data && doc.data.length > 0);
+      return this.visibleDocs.some((doc) => doc.data && doc.data.length > 0);
     },
   },
   methods: {
+    setLanguage(value) {
+      if (value.toLowerCase() === this.language) return;
+      this.$router.replace({ query: { lg: value.toLowerCase() } }).catch(() => {});
+      this.init({ language: value });
+    },
+    // The clear button disappears with the filters: focus moves to the first chip instead of the page body.
+    async clearFilters() {
+      this.activeFilters = [];
+      await this.$nextTick();
+      this.$el.querySelector(".content-list__chips .filter-chip")?.focus();
+    },
+    askRemove(type, uid) {
+      this.to_remove = [type, uid];
+      this.confirmation_modal = true;
+    },
+    confirmRemove() {
+      this.removeDoc(this.to_remove[0], this.to_remove[1]);
+      this.confirmation_modal = false;
+    },
     navigateToEditor(row, type) {
       this.$router.push({
         name: "Builder",
@@ -489,6 +461,97 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/scss/utils/media-query";
+
+// Figma S4/S5 frame: the title fills its row, and a phone keeps the desktop rhythm (40 top, 32 below the title, the
+// 30 px title) where PageLayout / PageHeader use 20 px (handoff 26/29: the wave close decides for every page).
+.content-list :deep(.page-header__title) {
+  flex: 1 1 auto;
+}
+
+@include max-tablet {
+  .content-list.page-layout {
+    --page-layout-pad-y: var(--space-10);
+
+    gap: var(--space-8);
+  }
+
+  .content-list :deep(.page-header__title) {
+    font-size: var(--fs-700);
+  }
+}
+
+// Filters row (Figma S4): "Filtry:" and the type chips left, the language select right; a phone stacks the label,
+// scrolls the chips sideways in one row and puts the labelled select under them (S5).
+.content-list__filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+}
+
+.content-list__chip-group,
+.content-list__chips,
+.content-list__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.content-list__chips {
+  flex-wrap: wrap;
+}
+
+.content-list__label {
+  font-size: var(--fs-200);
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.content-list__controls {
+  gap: var(--space-3);
+}
+
+.content-list__select {
+  width: 180px;
+}
+
+@include max-tablet {
+  .content-list__chip-group,
+  .content-list__controls {
+    flex: 1 0 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .content-list__chip-group {
+    flex-wrap: nowrap;
+  }
+
+  // The chips' 36 px touch area stays inside the scroll box.
+  .content-list__chips {
+    flex-wrap: nowrap;
+    max-width: 100%;
+    overflow-x: auto;
+    padding-block: var(--space-1);
+  }
+}
+
+// Figma S4/S5: the FAB sits 24 px from the corner beside the sidebar, 16 px from the edge and above the tab bar
+// wherever the tab bar shows (handoff 29: FloatingActions offsets only up to 768 px and uses 16 on desktop).
+.content-list .content-list__fab {
+  right: var(--space-6);
+  bottom: var(--space-6);
+
+  @include max-shell {
+    right: var(--space-4);
+    bottom: calc(var(--bottom-bar-height) + var(--space-4));
+  }
+}
+
 .doc-section {
   border-radius: var(--radius-base);
   overflow: hidden;
@@ -506,19 +569,6 @@ export default {
   color: var(--text-secondary);
   background-color: var(--surface-base);
   border-bottom: 1px solid var(--border-subtle);
-}
-.doc-section__count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 20px;
-  height: 20px;
-  padding: 0 var(--space-1);
-  font-size: var(--fs-200);
-  font-weight: 600;
-  border-radius: var(--radius-full);
-  background-color: var(--surface-hover);
-  color: var(--text-secondary);
 }
 .data-table__name-link {
   display: block;

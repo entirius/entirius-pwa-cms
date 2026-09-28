@@ -116,6 +116,8 @@
     "filters": "Filters:",
     "add_new_document": "Add new document",
     "language": "Language",
+    "content_language": "Content language",
+    "clear_filters": "Clear filters",
     "name": "Name",
     "edit_date": "Edit date",
     "status": "Status",
