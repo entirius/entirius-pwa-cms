@@ -297,6 +297,7 @@
     "edit_category": "Edytuj kategorie"
   },
   "content_sets": {
+    "filters": "Typ dokumentu",
     "title": "Zestawy treści",
     "add_new": "Dodaj nowy zestaw",
     "set_name": "Nazwa zestawu",
@@ -630,6 +631,7 @@
     "tab_stock": "Stany"
   },
   "accounts": {
+    "filters": "Status klienta",
     "customers": "Klienci",
     "customer_detail": "Szczegóły klienta",
     "search": "Szukaj",
@@ -1727,7 +1729,12 @@
     "channels_many": "{count} kanałów",
     "items_one": "1 pytanie",
     "items_few": "{count} pytania",
-    "items_many": "{count} pytań"
+    "items_many": "{count} pytań",
+    "filters": "Filtry",
+    "idx_hint": "Nie zmienia się po utworzeniu grupy",
+    "url_key_hint": "Nie zmienia się po utworzeniu pytania",
+    "channels_hint": "Bez wyboru: grupa widoczna we wszystkich kanałach",
+    "translations_of": "Tłumaczenia: {field}"
   },
   "layout_extender": {
     "title": "Edytor nawigacji",
@@ -1907,6 +1914,7 @@
     "iso2_placeholder": "ISO2 (np. PL)"
   },
   "translation": {
+    "filters": "Status zadania",
     "jobs": "Zadania tłumaczenia",
     "all": "Wszystkie",
     "pending": "Oczekujące",

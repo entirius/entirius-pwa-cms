@@ -28,13 +28,6 @@
     "owner": "P5 plan 35 (Authors)"
   },
   {
-    "screen": "pages-content-sets",
-    "kind": "nonFocusable",
-    "selector": "div.doc-tile",
-    "reason": "content-set document tiles bind on click only",
-    "owner": "P5 plan 31 (ContentSets)"
-  },
-  {
     "screen": "pages-layout-editor",
     "kind": "nonFocusable",
     "selector": "span.handle",
@@ -47,20 +40,6 @@
     "selector": "div.agm-history-toggle",
     "reason": "the legal page history section header toggles on click only",
     "owner": "P5 plan 36 (Agreements)"
-  },
-  {
-    "screen": "faq-group-detail",
-    "kind": "nonFocusable",
-    "selector": "item-row__question",
-    "reason": "FAQ group detail: a question opens its item on click only",
-    "owner": "P5 plan 33 (Faq)"
-  },
-  {
-    "screen": "faq-groups-list",
-    "kind": "nonFocusable",
-    "selector": "div.group-row",
-    "reason": "FAQ group rows open on click only (a list, not a DataTable)",
-    "owner": "P5 plan 33 (Faq)"
   },
   {
     "screen": "pricing-prices-list",

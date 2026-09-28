@@ -1,13 +1,8 @@
 <template>
   <PageLayout class="acc-detail__wrapper fs-300 t-body">
-    <Teleport to="#accounts-toolbar-left" defer>
-      <IconButton
-        icon="back"
-        :label="$t('common.back')"
-        @click="goBack"
-      />
-      <span class="fw-600">{{ toolbarTitle }}</span>
-    </Teleport>
+    <template #header>
+      <PageHeader :title="pageTitle" :back="goBack" />
+    </template>
 
     <Loader block v-if="loading" />
 
@@ -138,8 +133,8 @@ export default {
     };
   },
   computed: {
-    toolbarTitle() {
-      if (!this.customer) return "";
+    pageTitle() {
+      if (!this.customer) return this.$t("accounts.customer_detail");
       const name = (this.customer.firstname + " " + this.customer.lastname).trim();
       return name || this.customer.email;
     },

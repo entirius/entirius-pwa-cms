@@ -1,136 +1,134 @@
 <template>
   <PageLayout class="fs-300 t-body">
-    <Teleport to="#faq-toolbar-right" defer>
-      <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
-      <IconButton
-        v-if="isEdit"
-        icon="delete"
-        :label="$t('common.delete')"
-        variant="danger"
-        @click="showDeleteConfirm = true"
-      />
-      <BasicButton
-        variant="primary"
-        @click="saveItem"
-      >
-        {{ $t('common.save') }}
-      </BasicButton>
-    </Teleport>
     <template v-if="!loading" #header>
       <PageHeader
         :title="isEdit ? String(item.question || item.url_key || '') : $t('faq.create_item')"
         back="/faq/items"
       >
         <template #actions>
-          <BasicSwitch
-            :label="$t('faq.is_active')"
-            v-model="form.is_active"
-          />
+          <div class="flex ai-ct jc-fe wrap gap-3">
+            <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
+            <BasicSwitch
+              :label="$t('faq.is_active')"
+              v-model="form.is_active"
+            />
+            <ActionBar :actions="headerActions" />
+          </div>
         </template>
       </PageHeader>
     </template>
       <Loader block v-if="loading" />
 
       <template v-else>
-        <!-- Main fields -->
-        <BasicCard class="detail-section mb-10">
-          <h2 class="fs-500 fw-600 mb-8">{{ $t("faq.item_details") }}</h2>
-          <div class="detail-grid">
-            <div class="detail-field">
-              <div class="flex ai-ct jc-sb">
-                <label class="field-label required" for="faq-item-url-key">{{ $t("faq.url_key") }}</label>
-                <BasicButton
-                  v-if="isEdit && channelLanguages.length"
-                  variant="secondary"
-                  class="translation-field__btn"
-                  @click="openTranslations('url_key')"
-                >
-                  {{ $t('faq.translations') }}
-                </BasicButton>
-              </div>
-              <FormField id="faq-item-url-key" :error="formErrors.getFieldError('url_key')?.msg || ''">
+        <BasicCard :title="$t('faq.item_details')" gap class="mb-8">
+          <div class="form-grid">
+            <FormField
+              id="faq-item-url-key"
+              :label="$t('faq.url_key')"
+              required
+              :description="$t('faq.url_key_hint')"
+              :error="formErrors.getFieldError('url_key')?.msg || ''"
+            >
+              <div class="flex ai-st gap-3">
                 <BasicInput
                   v-model="form.url_key"
                   :disabled="isEdit"
+                  class="flex-1"
                 />
-              </FormField>
-            </div>
-            <div class="detail-field">
-              <label class="field-label">{{ $t("faq.group") }}</label>
+                <IconButton
+                  v-if="canTranslate"
+                  icon="translate"
+                  :label="translationsLabel('url_key')"
+                  variant="outline"
+                  @click="openTranslations('url_key')"
+                />
+              </div>
+            </FormField>
+            <FormField :label="$t('faq.group')" :error="formErrors.getFieldError('group_idx')?.msg || ''">
               <BasicSelect
                 :options="groupOptions"
                 v-model="form.group_idx"
                 :placeholder="$t('faq.no_group')"
               />
-            </div>
+            </FormField>
           </div>
         </BasicCard>
 
         <!-- Content fields — each with per-field Translations button -->
-        <BasicCard class="detail-section mb-10">
-          <h2 class="fs-500 fw-600 mb-8">{{ $t("faq.item_content") }}</h2>
-
-          <div class="detail-field mb-8">
-            <div class="flex ai-ct jc-sb">
-              <label class="field-label required" for="faq-item-question">{{ $t("faq.question") }}</label>
-              <BasicButton
-                v-if="isEdit && channelLanguages.length"
-                variant="secondary"
-                class="translation-field__btn"
-                @click="openTranslations('question')"
-              >
-                {{ $t('faq.translations') }}
-              </BasicButton>
-            </div>
-            <FormField id="faq-item-question" :error="formErrors.getFieldError('question')?.msg || ''">
-              <BasicInput
-                v-model="form.question"
-              />
+        <BasicCard :title="$t('faq.item_content')" gap class="mb-8">
+          <div class="form-grid">
+            <FormField
+              id="faq-item-question"
+              :label="$t('faq.question')"
+              required
+              class="form-grid__wide"
+              :error="formErrors.getFieldError('question')?.msg || ''"
+            >
+              <div class="flex ai-st gap-3">
+                <BasicInput
+                  v-model="form.question"
+                  class="flex-1"
+                />
+                <IconButton
+                  v-if="canTranslate"
+                  icon="translate"
+                  :label="translationsLabel('question')"
+                  variant="outline"
+                  @click="openTranslations('question')"
+                />
+              </div>
             </FormField>
-          </div>
 
-          <div class="detail-field mb-8">
-            <div class="flex ai-ct jc-sb">
-              <label class="field-label">{{ $t("faq.short_answer") }}</label>
-              <BasicButton
-                v-if="isEdit && channelLanguages.length"
-                variant="secondary"
-                class="translation-field__btn"
-                @click="openTranslations('short_answer')"
-              >
-                {{ $t('faq.translations') }}
-              </BasicButton>
-            </div>
-            <BasicInput v-model="form.short_answer" />
-          </div>
+            <FormField
+              :label="$t('faq.short_answer')"
+              class="form-grid__wide"
+              :error="formErrors.getFieldError('short_answer')?.msg || ''"
+            >
+              <div class="flex ai-st gap-3">
+                <BasicInput
+                  v-model="form.short_answer"
+                  class="flex-1"
+                />
+                <IconButton
+                  v-if="canTranslate"
+                  icon="translate"
+                  :label="translationsLabel('short_answer')"
+                  variant="outline"
+                  @click="openTranslations('short_answer')"
+                />
+              </div>
+            </FormField>
 
-          <div class="detail-field">
-            <div class="flex ai-ct jc-sb">
-              <label class="field-label required">{{ $t("faq.answer") }}</label>
-              <BasicButton
-                v-if="isEdit && channelLanguages.length"
-                variant="secondary"
-                class="translation-field__btn"
-                @click="openTranslations('answer')"
-              >
-                {{ $t('faq.translations') }}
-              </BasicButton>
-            </div>
-            <BasicWysiwyg v-model="form.answer" />
+            <FormField
+              :label="$t('faq.answer')"
+              required
+              class="form-grid__wide"
+              :error="formErrors.getFieldError('answer')?.msg || ''"
+            >
+              <div class="flex ai-st gap-3">
+                <BasicWysiwyg v-model="form.answer" class="flex-1" />
+                <IconButton
+                  v-if="canTranslate"
+                  icon="translate"
+                  :label="translationsLabel('answer')"
+                  variant="outline"
+                  @click="openTranslations('answer')"
+                />
+              </div>
+            </FormField>
           </div>
         </BasicCard>
 
         <!-- Associations (edit mode only) -->
-        <BasicCard v-if="isEdit" class="detail-section mb-10">
-          <div class="flex ai-ct jc-sb mb-8">
-            <h2 class="fs-500 fw-600">{{ $t("faq.associations") }}</h2>
+        <BasicCard v-if="isEdit" :title="$t('faq.associations')" gap class="mb-8">
+          <template #actions>
             <BasicButton
               variant="secondary"
               @click="addAssociation"
             >
               {{ $t('faq.add_association') }}
             </BasicButton>
-          </div>
+          </template>
           <p v-if="!associations.length" class="fs-200 t-muted">
             {{ $t("faq.no_associations") }}
           </p>
@@ -143,6 +141,7 @@
               :options="entityTypeOptions"
               :model-value="assoc.entity_type"
               :placeholder="$t('faq.entity_type')"
+              :aria-label="$t('faq.entity_type')"
               class="assoc-type-select"
               @update:model-value="(val) => { assoc.entity_type = val; assoc.entity_identifier = ''; assoc.entity_display = ''; }"
             />
@@ -271,13 +270,6 @@ import {
   GET_FaqChannels,
 } from "@/api/faq/api";
 
-const FIELD_LABELS = {
-  url_key: "URL key (per language)",
-  question: "Question",
-  short_answer: "Short answer",
-  answer: "Answer",
-};
-
 export default {
   name: "FaqItemEdit",
   components: {},
@@ -317,6 +309,18 @@ export default {
     },
     isEdit() {
       return !!this.$route.params.id;
+    },
+    canTranslate() {
+      return this.isEdit && this.channelLanguages.length > 0;
+    },
+    headerActions() {
+      return [
+        ...(this.isEdit
+          ? [{ key: "delete", role: "utility", icon: "delete", variant: "danger", label: this.$t("common.delete"),
+              onClick: () => (this.showDeleteConfirm = true) }]
+          : []),
+        { key: "save", role: "primary", label: this.$t("common.save"), onClick: this.saveItem },
+      ];
     },
     groupOptions() {
       const opts = [{ label: this.$t("faq.no_group"), value: null }];
@@ -365,7 +369,7 @@ export default {
       return ch?.default_language || this.channelLanguages[0] || "en";
     },
     translatingFieldLabel() {
-      return FIELD_LABELS[this.translatingField] || "";
+      return this.translatingField ? this.$t(`faq.${this.translatingField}`) : "";
     },
     translatingFieldValues() {
       if (!this.translatingField) return {};
@@ -400,6 +404,9 @@ export default {
     }
   },
   methods: {
+    translationsLabel(field) {
+      return this.$t("faq.translations_of", { field: this.$t(`faq.${field}`) });
+    },
     openTranslations(fieldName) {
       this.translatingField = fieldName;
     },
@@ -592,22 +599,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.detail-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: var(--space-5);
-}
-
-.detail-field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-}
-
-.translation-field__btn {
-  flex-shrink: 0;
-}
-
 .assoc-row {
   padding: var(--space-2) 0;
 }

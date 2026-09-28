@@ -1,39 +1,36 @@
 <template>
   <PageLayout>
     <template #header>
-      <PageHeader :title="$t('translation.jobs')" />
+      <PageHeader :title="$t('translation.jobs')">
+        <template #actions>
+          <ActionBar :actions="headerActions" />
+        </template>
+      </PageHeader>
+    </template>
+    <template #toolbar>
+      <div class="filter-chip-row" role="group" :aria-label="$t('translation.filters')">
+        <FilterChip
+          v-for="chip in filterChips"
+          :key="chip.value"
+          :label="chip.label"
+          :active="jobsStore.statusFilter === chip.value"
+          :count="chip.count"
+          @click="jobsStore.setStatusFilter(chip.value)"
+        />
+      </div>
     </template>
   <div class="tj-dashboard">
 
     <!-- Stats Cards -->
     <div class="tj-stats">
-      <div
+      <BasicCard
         v-for="stat in statCards"
         :key="stat.key"
-        class="tj-stat-card"
+        class="tj-stat"
       >
-        <span class="tj-stat-card__value" :class="stat.colorClass">{{ stat.count }}</span>
-        <span class="tj-stat-card__label">{{ stat.label }}</span>
-      </div>
-    </div>
-
-    <!-- Filter Chips -->
-    <div class="tj-filters flex ai-ct gap-5 mb-8">
-      <FilterChip
-        v-for="chip in filterChips"
-        :key="chip.value"
-        :label="chip.label"
-        :active="jobsStore.statusFilter === chip.value"
-        :count="chip.count"
-        @click="jobsStore.setStatusFilter(chip.value)"
-      />
-      <div class="flex-1"></div>
-      <BasicButton
-        variant="secondary"
-        @click="refresh"
-      >
-        {{ $t('translation.refresh') }}
-      </BasicButton>
+        <span class="tj-stat__value" :class="stat.colorClass">{{ stat.count }}</span>
+        <span class="tj-stat__label">{{ stat.label }}</span>
+      </BasicCard>
     </div>
 
     <!-- Empty State -->
@@ -57,12 +54,11 @@
       </template>
 
       <template #cell-source="{ row }">
-        <span
-          class="tj-source-badge"
-          :class="row._source === 'pim' ? 'tj-source-badge--pim' : 'tj-source-badge--content'"
-        >
-          {{ row._source === "pim" ? $t("translation.pim") : $t("translation.content") }}
-        </span>
+        <StatusBadge
+          :label="row._source === 'pim' ? $t('translation.pim') : $t('translation.content')"
+          :tone="row._source === 'pim' ? 'accent' : 'positive'"
+          :dot="false"
+        />
       </template>
 
       <template #cell-type="{ row }">
@@ -147,6 +143,9 @@ export default {
           colorClass: "t-negative",
         },
       ];
+    },
+    headerActions() {
+      return [{ key: "refresh", role: "secondary", label: this.$t("translation.refresh"), onClick: this.refresh }];
     },
     filterChips() {
       return [
@@ -260,24 +259,18 @@ export default {
   gap: var(--space-5);
 }
 
-.tj-stat-card {
-  display: flex;
-  flex-direction: column;
+.tj-stat {
   align-items: center;
   gap: var(--space-1);
-  padding: var(--space-5);
-  background: var(--surface-raised);
-  border-radius: var(--radius-base);
-  border: 1px solid var(--border-subtle);
 }
 
-.tj-stat-card__value {
+.tj-stat__value {
   font-size: var(--fs-700);
   font-weight: 600;
   line-height: 1;
 }
 
-.tj-stat-card__label {
+.tj-stat__label {
   font-size: var(--fs-200);
   color: var(--text-muted);
   text-transform: uppercase;
@@ -285,37 +278,11 @@ export default {
   letter-spacing: 0.04em;
 }
 
-/* Filters */
-.tj-filters {
-  flex-wrap: wrap;
-}
-
 /* Monospace ID */
 .tj-mono {
   font-family: monospace;
   font-size: var(--fs-200);
   color: var(--text-secondary);
-}
-
-/* Source badge */
-.tj-source-badge {
-  display: inline-block;
-  padding: 2px var(--space-2);
-  border-radius: var(--radius-base);
-  font-size: var(--fs-200);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.tj-source-badge--pim {
-  background: var(--accent-subtle);
-  color: var(--text-strong);
-}
-
-.tj-source-badge--content {
-  background: var(--positive-subtle);
-  color: var(--positive);
 }
 
 /* Progress bar */

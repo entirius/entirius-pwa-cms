@@ -33,6 +33,7 @@ defineEmits(["click"]);
 
 <style lang="scss">
 @import "@/assets/scss/utils/touch-target";
+@import "@/assets/scss/utils/media-query";
 
 .filter-chip {
   display: inline-flex;
@@ -66,6 +67,23 @@ defineEmits(["click"]);
       background-color: var(--accent-fill);
       border-color: var(--accent);
     }
+  }
+}
+
+// One inline chip set (r06 §8): wraps on desktop, one row that scrolls sideways below tablet; the chips' 36 px touch
+// area stays inside the scroll box.
+.filter-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+
+  @include max-tablet {
+    flex-wrap: nowrap;
+    max-width: 100%;
+    overflow-x: auto;
+    padding-block: var(--space-1);
   }
 }
 </style>

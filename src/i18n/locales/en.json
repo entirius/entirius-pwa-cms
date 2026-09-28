@@ -297,6 +297,7 @@
     "edit_category": "Edit category"
   },
   "content_sets": {
+    "filters": "Document type",
     "title": "Content sets",
     "add_new": "Add new set",
     "set_name": "Set name",
@@ -630,6 +631,7 @@
     "tab_stock": "Stock"
   },
   "accounts": {
+    "filters": "Customer status",
     "customers": "Customers",
     "customer_detail": "Customer Detail",
     "search": "Search",
@@ -1728,7 +1730,12 @@
     "channels_many": "{count} channels",
     "items_one": "1 FAQ question",
     "items_few": "{count} FAQ questions",
-    "items_many": "{count} FAQ questions"
+    "items_many": "{count} FAQ questions",
+    "filters": "Filters",
+    "idx_hint": "Fixed after the group is created",
+    "url_key_hint": "Fixed after the question is created",
+    "channels_hint": "None selected: the group shows in every channel",
+    "translations_of": "Translations: {field}"
   },
   "layout_extender": {
     "title": "Navigation Editor",
@@ -1908,6 +1915,7 @@
     "iso2_placeholder": "ISO2 (e.g. PL)"
   },
   "translation": {
+    "filters": "Job status",
     "jobs": "Translation Jobs",
     "all": "All",
     "pending": "Pending",

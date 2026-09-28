@@ -1,91 +1,70 @@
 <template>
   <PageLayout class="fs-300 t-body">
-    <Teleport to="#faq-toolbar-right" defer>
-      <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
-      <BasicButton
-        v-if="isEdit && channelLanguages.length > 0"
-        variant="secondary"
-        @click="showTranslationsDrawer = true"
-      >
-        {{ $t('faq.translations') }}
-      </BasicButton>
-      <IconButton
-        v-if="isEdit"
-        icon="delete"
-        :label="$t('common.delete')"
-        variant="danger"
-        @click="showDeleteConfirm = true"
-      />
-      <BasicButton
-        variant="primary"
-        @click="saveGroup"
-      >
-        {{ $t('common.save') }}
-      </BasicButton>
-    </Teleport>
     <template v-if="!loading" #header>
       <PageHeader
         :title="isEdit ? String(group.name || group.idx || '') : $t('faq.create_group')"
         back="/faq/groups"
       >
         <template #actions>
-          <BasicSwitch
-            :label="$t('faq.is_active')"
-            v-model="form.is_active"
-          />
+          <div class="flex ai-ct jc-fe wrap gap-3">
+            <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
+            <BasicSwitch
+              :label="$t('faq.is_active')"
+              v-model="form.is_active"
+            />
+            <ActionBar :actions="headerActions" />
+          </div>
         </template>
       </PageHeader>
     </template>
       <Loader block v-if="loading" />
 
       <template v-else>
-        <!-- Main fields -->
-        <BasicCard class="detail-section mb-10">
-          <h2 class="fs-500 fw-600 mb-8">{{ $t("faq.group_details") }}</h2>
-          <div class="detail-grid">
-            <div class="detail-field">
-              <FormField :label="$t('faq.idx')" required :error="formErrors.getFieldError('idx')?.msg || ''">
-                <BasicInput
-                  v-model="form.idx"
-                  :disabled="isEdit"
-                />
-              </FormField>
-            </div>
-            <div class="detail-field">
-              <FormField :label="$t('faq.name')" required :error="formErrors.getFieldError('name')?.msg || ''">
-                <BasicInput
-                  v-model="form.name"
-                />
-              </FormField>
-            </div>
-            <div class="detail-field">
-              <label class="field-label">{{ $t("faq.channels") }}</label>
+        <BasicCard :title="$t('faq.group_details')" gap class="mb-8">
+          <div class="form-grid">
+            <FormField
+              :label="$t('faq.idx')"
+              required
+              :description="$t('faq.idx_hint')"
+              :error="formErrors.getFieldError('idx')?.msg || ''"
+            >
+              <BasicInput
+                v-model="form.idx"
+                :disabled="isEdit"
+              />
+            </FormField>
+            <FormField :label="$t('faq.name')" required :error="formErrors.getFieldError('name')?.msg || ''">
+              <BasicInput
+                v-model="form.name"
+              />
+            </FormField>
+            <FormField
+              :label="$t('faq.channels')"
+              :description="$t('faq.channels_hint')"
+              :error="formErrors.getFieldError('channel_ids')?.msg || ''"
+            >
               <BasicSelect
                 v-model="form.channel_ids"
                 multiple
                 :options="channelOptions"
-                :placeholder="`${$t('faq.channels')} (${$t('faq.global')})`"
-                :aria-label="$t('faq.channels')"
+                :placeholder="$t('faq.global')"
               />
-            </div>
+            </FormField>
           </div>
         </BasicCard>
 
         <!-- Items in this group — drag to reorder, add existing -->
-        <BasicCard v-if="isEdit" class="detail-section mb-10">
-          <div class="section-head mb-8">
-            <h2 class="fs-500 fw-600">{{ $t("faq.items_in_group") }}</h2>
-            <div class="flex ai-ct gap-5">
-              <BasicSelect
-                :options="unassignedItemOptions"
-                :model-value="null"
-                :placeholder="$t('faq.add_existing_item')"
-                :aria-label="$t('faq.add_existing_item')"
-                class="add-item-select"
-                @update:model-value="addItemToGroup"
-              />
-            </div>
-          </div>
+        <BasicCard v-if="isEdit" :title="$t('faq.items_in_group')" gap class="mb-8">
+          <template #actions>
+            <BasicSelect
+              :options="unassignedItemOptions"
+              :model-value="null"
+              :placeholder="$t('faq.add_existing_item')"
+              :aria-label="$t('faq.add_existing_item')"
+              class="add-item-select"
+              @update:model-value="addItemToGroup"
+            />
+          </template>
 
           <p v-if="!groupItems.length" class="fs-200 t-muted">
             {{ $t("faq.no_items_in_group") }}
@@ -107,12 +86,12 @@
                   :icon="$icons.drag"
                   class="drag-handle t-muted"
                 />
-                <span
-                  class="flex-1 item-row__question pointer"
-                  @click="$router.push(`/faq/items/${element.id}`)"
+                <router-link
+                  :to="`/faq/items/${element.id}`"
+                  class="flex-1 item-row__question"
                 >
                   {{ element.question }}
-                </span>
+                </router-link>
                 <StatusBadge
                   :label="element.is_active ? $t('faq.active') : $t('faq.inactive')"
                   :tone="element.is_active ? 'positive' : 'negative'"
@@ -220,6 +199,19 @@ export default {
     },
     isEdit() {
       return !!this.$route.params.id;
+    },
+    headerActions() {
+      return [
+        ...(this.isEdit && this.channelLanguages.length > 0
+          ? [{ key: "translations", role: "utility", icon: "translate", label: this.$t("faq.translations"),
+              onClick: () => (this.showTranslationsDrawer = true) }]
+          : []),
+        ...(this.isEdit
+          ? [{ key: "delete", role: "utility", icon: "delete", variant: "danger", label: this.$t("common.delete"),
+              onClick: () => (this.showDeleteConfirm = true) }]
+          : []),
+        { key: "save", role: "primary", label: this.$t("common.save"), onClick: this.saveGroup },
+      ];
     },
     channelOptions() {
       return this.channels.map((ch) => ({
@@ -494,18 +486,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.detail-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: var(--space-5);
-}
-
-.detail-field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-}
-
 .add-item-select {
   min-width: 250px;
   max-width: 400px;
@@ -522,6 +502,7 @@ export default {
 }
 
 .item-row__question {
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

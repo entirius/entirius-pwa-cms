@@ -1,46 +1,22 @@
 <template>
   <PageLayout class="order-list fs-300 t-body">
-    <!-- Channel selector in toolbar (matches PIM pattern) -->
-    <Teleport to="#checkout-orders-toolbar-left" defer>
-      <span v-if="channels.length > 1" class="flex ai-ct gap-2">
-        <span class="t-muted fs-200"
-          >{{ $t("checkout_orders.channel") }}:</span
-        >
-        <BasicSelect
-          :options="channelOptions"
-          :model-value="activeChannel"
-          :placeholder="$t('checkout_orders.channel')"
-          class="order-list__channel-dropdown"
-          @update:model-value="onChannelChange"
-        />
-      </span>
-    </Teleport>
-
     <template #header>
-      <!-- Heading -->
-      <PageHeader :title="$t('checkout_orders.orders')" />
+      <PageHeader :title="$t('checkout_orders.orders')">
+        <template v-if="channels.length > 1" #meta>
+          <FormField :label="$t('checkout_orders.channel')" layout="inline">
+            <BasicSelect
+              :options="channelOptions"
+              :model-value="activeChannel"
+              :placeholder="$t('checkout_orders.channel')"
+              class="order-list__channel-dropdown"
+              @update:model-value="onChannelChange"
+            />
+          </FormField>
+        </template>
+      </PageHeader>
     </template>
     <template #toolbar>
-      <!-- Status FilterChips -->
-      <div class="flex ai-ct">
-        <MobileFilterPanel
-          :active-count="activeFilterCount"
-          :trigger-label="$t('checkout_orders.filters')"
-        >
-          <p class="fs-200 t-secondary">{{ $t("checkout_orders.filters") }}</p>
-          <FilterChip
-            v-for="tab in statusTabs"
-            :key="tab.key"
-            :label="tab.label"
-            :active="selectedStatus === tab.key"
-            @click="setStatusFilter(tab.key)"
-          />
-        </MobileFilterPanel>
-      </div>
-    </template>
-
-      <!-- Search -->
-      <div class="flex ai-ct gap-8 mb-10 flex-wrap">
+      <div class="order-list__toolbar">
         <BasicInput
           v-model="search"
           icon="search"
@@ -48,7 +24,17 @@
           class="order-list__search"
           @input="onSearchInput"
         />
+        <div class="filter-chip-row" role="group" :aria-label="$t('checkout_orders.filters')">
+          <FilterChip
+            v-for="tab in statusTabs"
+            :key="tab.key"
+            :label="tab.label"
+            :active="selectedStatus === tab.key"
+            @click="setStatusFilter(tab.key)"
+          />
+        </div>
       </div>
+    </template>
 
       <Loader block v-show="loading" />
 
@@ -171,9 +157,6 @@ export default {
         page: this.currentPage,
         pages: Math.ceil(this.totalCount / this.pageSize),
       };
-    },
-    activeFilterCount() {
-      return this.selectedStatus && this.selectedStatus !== "all" ? 1 : 0;
     },
     statusTabs() {
       return [
@@ -300,6 +283,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.order-list__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-5);
+}
 .order-list__search {
   flex: 1;
   min-width: 150px;

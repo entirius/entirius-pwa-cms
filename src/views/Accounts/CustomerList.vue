@@ -4,25 +4,7 @@
       <PageHeader :title="$t('accounts.customers')" />
     </template>
     <template #toolbar>
-      <!-- Filters -->
-      <div class="flex ai-ct">
-        <MobileFilterPanel
-          :active-count="activeFilterCount"
-          :trigger-label="$t('builder.filters')"
-        >
-          <p class="fs-200 t-secondary">{{ $t("builder.filters") }}</p>
-          <FilterChip
-            v-for="tab in statusTabs"
-            :key="tab.key"
-            :label="tab.label"
-            :active="statusFilter === tab.key"
-            @click="setStatusFilter(tab.key)"
-          />
-        </MobileFilterPanel>
-      </div>
-    </template>
-
-      <div class="flex ai-ct gap-8 mb-10 flex-wrap">
+      <div class="acc-list__toolbar">
         <BasicInput
           v-model="search"
           :placeholder="$t('common.start_typing')"
@@ -46,7 +28,17 @@
           class="acc-list__filter-dropdown"
           @update:model-value="setChannelFilter"
         />
+        <div class="filter-chip-row" role="group" :aria-label="$t('accounts.filters')">
+          <FilterChip
+            v-for="tab in statusTabs"
+            :key="tab.key"
+            :label="tab.label"
+            :active="statusFilter === tab.key"
+            @click="setStatusFilter(tab.key)"
+          />
+        </div>
       </div>
+    </template>
 
       <Loader block v-show="loading" />
 
@@ -144,13 +136,6 @@ export default {
         { key: "verified", label: this.$t("accounts.verified") },
         { key: "not_verified", label: this.$t("accounts.not_verified") },
       ];
-    },
-    activeFilterCount() {
-      let count = 0;
-      if (this.statusFilter !== "all") count++;
-      if (this.groupFilter) count++;
-      if (this.channelFilter) count++;
-      return count;
     },
     columns() {
       return [
@@ -276,6 +261,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.acc-list__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-5);
+}
+
 .acc-list__search {
   flex: 1;
   min-width: 150px;

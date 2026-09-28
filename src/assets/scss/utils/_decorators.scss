@@ -13,6 +13,22 @@
   }
 }
 
+// The detail-form grid (docs/ui-components.md § Detail form): FormFields in two columns above a phone, one on it;
+// `.form-grid__wide` spans both (a long text, a rich-text answer).
+.form-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4) var(--space-6);
+
+  @include min-tablet {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.form-grid__wide {
+  grid-column: 1 / -1;
+}
+
 // The page wrapper around a panel's content card: 48 px, 16 px below tablet (a phone keeps 361 of its 393 px).
 // `.page-pad-x` pads the sides only, for a wrapper whose rows bring their own vertical rhythm.
 .page-pad,

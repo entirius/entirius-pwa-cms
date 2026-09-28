@@ -1,5 +1,9 @@
 <template>
   <PageLayout class="fs-300 t-body">
+    <template #header>
+      <PageHeader :title="$t('faq.groups')" />
+    </template>
+    <template #toolbar>
       <div class="group-list__toolbar">
         <BasicInput
           v-model="search"
@@ -8,11 +12,7 @@
           class="group-list__search"
           @input="debouncedFetch(searchAndFetch)"
         />
-        <MobileFilterPanel
-          :active-count="activeFilter !== 'all' ? 1 : 0"
-          :trigger-label="$t('builder.filters')"
-        >
-          <p class="fs-200 t-secondary">{{ $t("builder.filters") }}</p>
+        <div class="filter-chip-row" role="group" :aria-label="$t('faq.filters')">
           <FilterChip
             v-for="tab in filterTabs"
             :key="tab.key"
@@ -20,8 +20,9 @@
             :active="activeFilter === tab.key"
             @click="setFilter(tab.key)"
           />
-        </MobileFilterPanel>
+        </div>
       </div>
+    </template>
 
       <Loader block v-show="loading" />
 
@@ -43,7 +44,10 @@
           <template #item="{ element }">
             <div
               class="group-row flex ai-ct flex-wrap gap-5 rg-2 pointer"
-              @click="$router.push(`/faq/groups/${element.idx}`)"
+              role="link"
+              tabindex="0"
+              @click="openGroup(element)"
+              @keydown.enter="openGroup(element)"
             >
               <font-awesome-icon
                 :icon="$icons.drag"
@@ -79,12 +83,14 @@
         </draggable>
       </div>
 
+    <template #footer>
       <Pagination
         v-if="totalCount > pageSize"
         :page="paginationState.page"
         :pages="paginationState.pages"
         @update:page="onPageChange"
       />
+    </template>
 
       <FloatingActions :actions="fabActions" />
   </PageLayout>
@@ -178,6 +184,9 @@ export default {
         this.loading = false;
       }
     },
+    openGroup(group) {
+      this.$router.push(`/faq/groups/${group.idx}`);
+    },
     setFilter(key) {
       this.activeFilter = key;
       this.currentPage = 1;
@@ -218,7 +227,6 @@ export default {
   display: flex;
   align-items: center;
   gap: var(--space-5);
-  margin-bottom: var(--space-10);
   flex-wrap: wrap;
 }
 
