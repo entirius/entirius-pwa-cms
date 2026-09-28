@@ -125,7 +125,7 @@ All notable changes to this project will be documented in this file.
   centred; its gallery and raw-data buttons are `BasicButton`s. List mode: the bulk buttons are `BasicButton`s (Reject
   danger), row checkboxes `BasicCheckbox`es, the detail drawer's approve / skip / reject an `ActionBar`; Events: the
   acknowledge button is a `BasicButton`, dates formatted; Updated: one empty state. Duplicates: each EAN group's
-  table is a `DataTable` (weight and suppliers hide on a phone); Auto-matched: the pager sits in the page footer.
+  table is a `DataTable` (weight hides on a phone); Auto-matched: the pager sits in the page footer.
   Handlers, API calls and payloads are unchanged. Smoke spec `tests/e2e/p5-atlas-review-smoke.spec.js`; spec 10 opens
   the raw-data dialog by role.
 
