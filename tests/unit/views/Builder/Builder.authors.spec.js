@@ -128,12 +128,12 @@ const mountBuilder = async () => {
     },
   });
   await flushPromises();
-  // load_configs() dynamic-imports the __client configs; that resolves a tick after a plain flushPromises.
-  await new Promise((resolve) => setTimeout(resolve, 20));
-  await flushPromises();
   wrapper.vm.advanced_options = true;
   wrapper.vm.authorPanelOpen = true;
-  await flushPromises();
+  // load_configs() dynamic-imports the __client configs; under a loaded suite that takes more than a few ticks.
+  await vi.waitFor(() => {
+    if (!wrapper.find(".tag__label").exists()) throw new Error("author panel not rendered yet");
+  });
   return wrapper;
 };
 

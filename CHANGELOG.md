@@ -131,7 +131,7 @@ All notable changes to this project will be documented in this file.
   The lead's status badge sits beside the title (PageHeader `meta`), and the unsaved badge, the transitions
   `BasicSelect`, Mark as Won and Save sit in the PageHeader, with the same transition call and the same deal-value
   dialog before "won". The dialog's buttons are its `ActionBar`. Open lead moved into the booking's PageHeader. The
-  submission's attachment download is an outline `IconButton` `download` named „Pobierz: <file>”. The bookings date
+  submission's attachment download is an outline `IconButton` `download` named by `cf.download_attachment` + the file name. The bookings date
   filters are `BasicDatePicker`s in inline `FormField`s with a clear button, and the lead status filter of both
   lists is an inline `FilterChip` row (no filter panel). Pagination sits in the footer of the three lists, and the
   Forms panel toolbar is gone. Smoke spec `tests/e2e/p5-contact-forms-smoke.spec.js`.
@@ -330,6 +330,14 @@ All notable changes to this project will be documented in this file.
   password and SSO login run the same code after the token call.
 
 ### Fixed
+
+- P5 wave-2 close (plan 40): the Stock page offers its warehouse picker when no warehouse is active yet (it was only
+  inside the table, so a fresh session hit a dead end); FAQ lists show an empty state; a FAQ answer is required before
+  the save request; e-mail channel Save shows its progress and cannot be sent twice, a failed channel load offers a
+  retry; wysiwyg editors inside a form field are labelled by it; the sticky page footer appears only when it has
+  content; picked authors show their role again and drag by a handle; booking filters sit in the phone filter panel;
+  the channel and tax-class IDX links are URL-encoded and the tax-class name is bold again; the e-mail panel's nav
+  entry is „Konfiguracja e-mail”, so channel crumbs no longer pass through „Szablony”.
 
 - P5 wave-1 close (plan 30): cards no longer add a second 16 px gap under children that carry their own margin (auth,
   e-mail, FAQ, PIM detail cards); the PIM lists, enrichment tasks and spawn rules keep their pagination visible at
