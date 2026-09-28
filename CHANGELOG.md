@@ -115,6 +115,14 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- Auth screens, Enrichment lists, Docs and the lookup/notification components on the P3 components (P5 plan 32):
+  login, forgot-password, password change and reset are `<form>`s (Enter submits), each password field has a
+  „Pokaż hasło” `IconButton` toggle inside the field, the links are `ghost` buttons and the titles balance their
+  lines; the task-queue drawer's SKU and pager, the lookup open, photo and remove controls and the toast close are
+  boots; the spawn-rule edit actions are an `ActionBar` in R5 order (delete · run · save) shown after the rule
+  loaded; Docs sits in `PageLayout` with a „Dokumentacja” `PageHeader` and its example cards show key and value.
+  Read-only smoke `tests/e2e/p5-pilot-b-smoke.spec.js`.
+
 - The Pages content editor (P5 plan 28, Figma S6–S8): `PageLayout` with a `PageHeader` — crumbs Pages / Lista treści /
   <document>, a back arrow to the list, the document name as the H1 and the „Kanały” `ChannelMultiSelect` chip beside
   it; the head sticks under the app header on a phone. The toolbar that teleported into the Pages wrapper is an
