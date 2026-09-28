@@ -224,7 +224,10 @@ Catalogue: `#overlays` (`#basic-modal`, `#confirm-dialog`, `#side-drawer`, `#tra
   gradient, `--radius-3xl`, padding and gap 20 px, a plain 24 px icon, title and description 12 px apart; root class
   `panel-card` (e2e hook). The page sets `data-fid="panel-card"` on the one card Figma measures (Home: the first).
 - **`MediaTile`** — media grid tile, 188 × 276 (150 × 240 below tablet), `surface-raised`: `src` (none = image
-  placeholder), `alt`, `caption`, `selected` (accent border), `actions` slot (IconButtons `sm`).
+  placeholder; contained, not cropped), `alt`, `caption` (truncated, full text in `title`), `selected` (accent
+  border), `actions` slot (IconButtons `sm`), `overlay` slot (value chips, `Tag`, over the bottom of the image).
+  Actions and overlay show on hover, keyboard focus inside the tile, when selected and always on a touch screen.
+  The page lays the tiles out (Gallery: `repeat(auto-fill, <tile width>)` in a bordered container).
 - **`Loader`** — `size` 32 · 64 (64 by default), `block` centres it in a content area, `overlay` veils the
   screen (`overlay-loading`, 64 px rings, fades in and out), `overlay contained` veils the nearest
   positioned ancestor; `role="status"` with a visually hidden „Ładowanie…”.

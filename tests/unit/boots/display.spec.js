@@ -172,6 +172,13 @@ describe("MediaTile", () => {
     expect(wrapper.find(".media-tile__footer i").exists()).toBe(true);
     expect(wrapper.text()).toContain("baner.jpg");
   });
+
+  it("puts the overlay slot over the image; overlay and actions share the reveal class", () => {
+    const wrapper = mount(MediaTile, { props: { src: "/a.jpg" }, slots: { overlay: "<b>lato</b>", actions: "<i>a</i>" } });
+    expect(wrapper.find(".media-tile__image .media-tile__overlay b").text()).toBe("lato");
+    expect(wrapper.findAll(".media-tile__reveal")).toHaveLength(2);
+    expect(mount(MediaTile).find(".media-tile__overlay").exists()).toBe(false);
+  });
 });
 
 describe("display boots registry", () => {

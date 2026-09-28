@@ -3,10 +3,13 @@
     <div class="media-tile__image flex jc-ct ai-ct">
       <img v-if="src" :src="src" :alt="alt" loading="lazy" />
       <FontAwesomeIcon v-else :icon="$icons.image" class="media-tile__placeholder" aria-hidden="true" />
+      <div v-if="$slots.overlay" class="media-tile__overlay media-tile__reveal flex flex-wrap gap-1">
+        <slot name="overlay" />
+      </div>
     </div>
     <figcaption v-if="caption || $slots.actions" class="media-tile__footer flex ai-ct jc-sb gap-2">
-      <span class="media-tile__caption">{{ caption }}</span>
-      <span v-if="$slots.actions" class="flex gap-1">
+      <span class="media-tile__caption" :title="caption || undefined">{{ caption }}</span>
+      <span v-if="$slots.actions" class="media-tile__reveal flex gap-1">
         <slot name="actions" />
       </span>
     </figcaption>
@@ -15,7 +18,9 @@
 
 <script setup>
 // An image tile of a media grid (Figma S9/S10: 188 × 276 desktop, 150 × 240 below tablet). No `src` = the image
-// placeholder. `selected` draws the accent border. The `actions` slot takes IconButtons (`sm`).
+// placeholder. `selected` draws the accent border. The `actions` slot takes IconButtons (`sm`), the `overlay` slot
+// value chips (`Tag`) over the bottom of the image; both show on hover, keyboard focus inside the tile, when selected
+// and always on a touch screen (no hover there).
 defineProps({
   src: { type: String, default: "" },
   alt: { type: String, default: "" },
@@ -44,6 +49,7 @@ defineProps({
   }
 
   &__image {
+    position: relative;
     flex: 1;
     min-height: 0;
     overflow: hidden;
@@ -53,7 +59,32 @@ defineProps({
     img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
+    }
+  }
+
+  &__overlay {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: var(--space-1);
+  }
+
+  &__reveal {
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+
+  &:hover &__reveal,
+  &:focus-within &__reveal,
+  &--selected &__reveal {
+    opacity: 1;
+  }
+
+  @media (hover: none) {
+    &__reveal {
+      opacity: 1;
     }
   }
 

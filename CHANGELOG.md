@@ -140,6 +140,15 @@ All notable changes to this project will be documented in this file.
   `PageHeader` in the `#header` slot (a loading page keeps its condition there) and the search/filter row in
   `#toolbar`. The swap is the `p5-page-frame` codemod (`scripts/codemods/p5-page-frame.mjs`, `--check` in the gate);
   section cards, local modal surfaces and the auth cards are `BasicCard`, the only renderer of `.page-card`.
+- The gallery is the Figma S9/S10 screen (P5 plan 29): `PageLayout` + `PageHeader` „Galeria”, a controls row with
+  the label „Filtruj po tagu”, the tag filter as `FilterChip`s (one sideways-scrolling row on a phone) and the sort
+  and page-size `BasicSelect`s (180 px; side by side under the label on a phone), a bordered grid of `MediaTile`s
+  (188 × 276, 150 × 240 on a phone; file name as caption, tags over the image) with labelled `IconButton` actions
+  (edit tags, delete behind a `ConfirmDialog`), pagination below and the FAB 24 px from the corner. Tag manager, tag
+  editor and upload are `BasicModal`s with `BasicSelect multiple` tag pickers; the filter keeps its own tag list, so
+  editing or uploading no longer changes it. `MediaTile` gains an `overlay` slot and shows actions and overlay on
+  hover, keyboard focus, selection and always on a touch screen; images are contained, not cropped.
+
 - Home is the Figma S1/S2 screen (P5 plan 26): `PageLayout` + `PageHeader` (greeting overline, title), a left-aligned
   `PanelCard` grid (3 columns from 1024 px, 2 from 769 px, 1 on a phone, 12 px gap) with the panel's own glyph, locked
   panels dimmed with the lock, and the blurred Entirius sign behind the content as decoration. `PanelCard` draws the
@@ -241,6 +250,8 @@ All notable changes to this project will be documented in this file.
   a delete opened one dialog per group).
 - Thin scrollbars apply to mouse screens only: on a touch screen the styled scrollbar widened the layout viewport past
   the screen and moved every fixed element (FAB, pill, toasts) 6 / 11 px off its corner.
+- The thin custom scrollbar applies to mouse screens only: on a touch screen it widened the layout viewport past the
+  screen (393 → 399 px), so fixed elements such as the FAB sat off their corner.
 
 - P4 close (plan 24): closing the configuration-health panel with Esc returns focus to a named control even where the
   header shows no health icon (a phone; desktop with every check green); the Points, FAQ, Agreements, consent-person
