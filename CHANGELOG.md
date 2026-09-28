@@ -115,6 +115,15 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- P5 pilot A (plan 31): Orders, Customers, Content sets and Translation jobs sit on the page frame. Each list's
+  one chip set is an inline `FilterChip` row (`.filter-chip-row`: wraps on desktop, scrolls sideways on a phone) next
+  to its search, instead of a `MobileFilterPanel`; the order and customer details carry their back arrow and title in
+  `PageHeader`, the orders channel select sits in its `meta`, the Translation jobs Refresh in its `ActionBar`. The
+  three panel toolbars are gone. Content sets: the sets are `BasicCard`s with an `IconButton` delete, the
+  „Powiązany z zestawem” badge is a `StatusBadge`, document tiles are keyboard buttons, „Wyczyść zestaw” sits left of the
+  primary „Ustaw zestaw” on the right, and empty columns show `EmptyState`. Translation jobs: stat cards are
+  `BasicCard`s, the source badge a `StatusBadge`. Smoke spec `tests/e2e/p5-pilot-a-smoke.spec.js`.
+
 - The Pages content editor (P5 plan 28, Figma S6–S8): `PageLayout` with a `PageHeader` — crumbs Pages / Lista treści /
   <document>, a back arrow to the list, the document name as the H1 and the „Kanały” `ChannelMultiSelect` chip beside
   it; the head sticks under the app header on a phone. The toolbar that teleported into the Pages wrapper is an
