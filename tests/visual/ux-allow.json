@@ -1,9 +1,23 @@
 [
   {
-    "screen": "*",
+    "screen": "emails-dashboard",
     "kind": "nonFocusable",
-    "selector": "div.page-card.emails-card",
-    "reason": "clickable email cards (dashboard, template list, channel edit) without keyboard access",
+    "selector": "section.basic-card.page-card",
+    "reason": "clickable email cards (BasicCard since plan 25) without keyboard access",
+    "owner": "P5 plan 34 (Emails)"
+  },
+  {
+    "screen": "emails-channel-edit",
+    "kind": "nonFocusable",
+    "selector": "section.basic-card.page-card",
+    "reason": "clickable email cards (BasicCard since plan 25) without keyboard access",
+    "owner": "P5 plan 34 (Emails)"
+  },
+  {
+    "screen": "emails-template-list",
+    "kind": "nonFocusable",
+    "selector": "section.basic-card.page-card",
+    "reason": "clickable email cards (BasicCard since plan 25) without keyboard access",
     "owner": "P5 plan 34 (Emails)"
   },
   {

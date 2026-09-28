@@ -281,12 +281,13 @@
     return hiddenScrollbar(el, s, dx) ? issue("overflow", "no-scrollbar", el) : null;
   }
 
-  // Mobile: a page card never scrolls sideways; a wide table, tab row or tile row scrolls inside its own box.
+  // Mobile: the page frame (PageLayout) and a card never scroll sideways; a wide table, tab row or tile row scrolls
+  // inside its own box.
   const cardScrollsSideways = (el) => el.scrollWidth > el.clientWidth + EPS;
   function cardIssues(shown, mobile) {
     if (!mobile) return [];
     return shown
-      .filter((el) => el.matches(".page-card") && cardScrollsSideways(el))
+      .filter((el) => el.matches(".page-layout, .page-card") && cardScrollsSideways(el))
       .map((el) => issue("overflow", "card-x", el));
   }
 
