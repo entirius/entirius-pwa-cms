@@ -44,9 +44,10 @@ test.describe('Critical Smoke Tests', () => {
     await page.waitForLoadState('networkidle');
 
     // Should see panel cards (at least Pages and PIM)
-    await expect(page.locator('.panel-card').first()).toBeVisible({ timeout: 10000 });
+    const panelCards = page.getByRole('main').locator('.panel-card');
+    await expect(panelCards.first()).toBeVisible({ timeout: 10000 });
 
-    const panelCount = await page.locator('.panel-card').count();
+    const panelCount = await panelCards.count();
     expect(panelCount).toBeGreaterThanOrEqual(2);
   });
 

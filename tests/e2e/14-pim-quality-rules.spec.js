@@ -32,8 +32,8 @@ test.describe('PIM Quality Rules', () => {
 
     // Either the rules list rendered, or (old backend) we got redirected to products.
     // Both are error-free; what matters is no console errors.
-    const heading = page.locator('h1');
-    await heading.first().waitFor({ timeout: 5000 }).catch(() => {});
+    // Every screen has exactly one H1 (the page header, or the shell's fallback).
+    await expect(page.locator('h1')).toBeVisible({ timeout: 5000 });
     console.log('PIM Quality Rules: screen at', page.url());
 
     collector.assertNoErrors(expect, 'PIM Quality Rules list');

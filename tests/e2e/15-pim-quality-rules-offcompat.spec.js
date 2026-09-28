@@ -43,11 +43,9 @@ test.describe('PIM Quality Rules — soft-compat OFF', () => {
     await page.goto('/pim/products');
     await page.waitForLoadState('networkidle');
 
-    // The quality-rules nav entry must not be offered.
-    const navItem = page.locator(
-      '.nav-link:has-text("Quality Rules"), .nav-link:has-text("Reguły jakości"), ' +
-        '.mobile-nav__item:has-text("Quality Rules"), .mobile-nav__item:has-text("Reguły jakości")'
-    );
+    // The quality-rules nav entry must not be offered, in the sidebar nor in the tab bar.
+    const navItem = page.getByRole('navigation').getByRole('link', { name: /Quality Rules|Reguły jakości/ });
+    await expect(page.getByRole('navigation', { name: /^(Panele|Panels)$/ })).toBeVisible();
     expect(await navItem.count()).toBe(0);
 
     collector.assertNoErrors(expect, 'soft-compat OFF — product list');

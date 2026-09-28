@@ -136,7 +136,8 @@ Traps:
 - **R2 One page title.** The page title appears once, as the only `<h1>`, at the top of the content area. The
   header, sidebar and toolbar never repeat it. The content area is the page's only scroll and focus region. The H1
   is `PageHeader` `title` (the component carries `.page-title` and `data-fid="page-title"`); a view writes no raw
-  `<h1>`.
+  `<h1>`. A route whose view has no PageHeader gets the shell's fallback header (crumbs + H1 from `titleKey`), so
+  every page has exactly one H1.
 - **R3 Breadcrumbs below the panel root.** Every page below a panel's top-level list shows breadcrumbs
   (`Panel / List / Item`) above the H1, with a back arrow next to the H1. A panel's top-level list has neither.
   `PageHeader` takes `crumbs` and `back`; `Breadcrumbs` renders the trail (last item = the current page, not a link)
@@ -232,6 +233,9 @@ Traps:
 
 ## Mobile
 
+- The shell switches at one breakpoint, 1024 px: `SHELL_BREAKPOINT` in `src/utils/breakpoints.js`, `$breakpoint-shell`
+  and the `max-shell` mixin in `utils/_media-query.scss` (a unit test holds them together), `useIsDesktop` in script.
+  From it up the sidebar, below it the header menu button, the mobile menu and the tab bar.
 - Breakpoints come from the mixins, never from raw media queries. Check every screen at 390 px (one thumb) and on
   desktop. The page never scrolls horizontally, and neither does a card: a wide table (`DataTable`, or a raw table in
   an `overflow-x: auto` box), `BasicTabs` and `SegmentedControl` scroll inside their own box.

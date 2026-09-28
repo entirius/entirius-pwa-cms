@@ -139,8 +139,9 @@ test.describe('Gallery Upload Workflow', () => {
       }
     }
 
-    // Logout via icon button (no visible text, use aria-label)
-    const logoutButton = page.locator('button[aria-label="Wyloguj"], button[aria-label="Log out"]');
+    // Logout lives in the user menu (the header's user button)
+    await page.locator('[data-fid="user-button"]').click();
+    const logoutButton = page.getByRole('menuitem', { name: /^(Wyloguj|Log out)$/ });
     if (await logoutButton.isVisible({ timeout: 3000 }).catch(() => false)) {
       await logoutButton.click();
 

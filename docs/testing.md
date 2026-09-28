@@ -144,9 +144,10 @@ DPR 1, `pl-PL`, `Europe/Warsaw`, one worker).
 | Layer | Spec (tag) | Question | P1 mode |
 |---|---|---|---|
 | 1 Token parity | `parity.spec.js` (`@parity`) | Does every token of `src/assets/tokens/semantic.json` (colour, overlay, shadow and the `space`, `radius`, `font-size` scales) resolve on `/` to its `@entirius/brand-tokens` value, both themes? Does body text render in the UI font (CDP `CSS.getPlatformFontsForNode`, families read from the brand tokens)? Plus census (off-token colours, radii, font sizes), the other font targets and axe `color-contrast` | token resolution and the body-text font gate; census, other fonts, contrast are reports |
-| 2 Figma landmarks | `landmarks.spec.js` (`@landmarks`) | Do elements with `data-fid="<id>"` sit where `figma/figma-landmarks.json` puts them (±2 px)? | report ("0 matched" until the P4 shell adds `data-fid`) |
+| 2 Figma landmarks | `landmarks.spec.js` (`@landmarks`) | Do elements with `data-fid="<id>"` sit where `figma/figma-landmarks.json` puts them (±2 px)? | gate for the shell ids (`header`, `logo`, `user-button`, `sidebar`, `tab-bar`, `mobile-menu`, `content`: off or missing fails the frame; a Figma box is clipped to its frame first); `page-title`, `panel-card`, `sticky-header`, `fab` stay reports until their P5 screens |
 | 3 Regression | `screens.spec.js` (`@screens`) | Did any screen of `capture-spec.json` change? `toHaveScreenshot`, `threshold 0.1`, `maxDiffPixels 20` | gate once baselines exist |
 | 4 UX checks | `ux.spec.js` (`@ux`) | Is anything on a `capture-spec.json` screen broken, unreachable or inconsistent? Every screen × viewport, dark (below) | gate on `high` (owned allow-list); `medium` is a report |
+| Accessibility | `a11y.spec.js` (`@a11y`) | axe on Home, a list and a detail screen at both viewports (no `serious` / `critical` violation); keyboard: skip link → `<main>`, Tab through the sidebar and Enter opens a group (desktop), the mobile menu keeps Tab inside and gives focus back to its button on Esc | gate |
 | Catalogue | `catalogue.spec.js` (`@catalogue`) | Does `/ui` show every section anchor and every `cat-*` cell with a box, without a console error? Both viewports and themes, no screenshot | gate (tier-1 plan gates run it) |
 | Components | `catalogue.spec.js` (`@components`) | Did any catalogue cell change? One screenshot per cell and interaction state, both viewports and themes | gate once the P3 close (plan 20) approved the baselines; tier-1 gates never run it |
 
@@ -157,6 +158,7 @@ npm run visual:landmarks    # layer 2
 npm run visual:screens      # layer 3 against the approved baselines
 npm run visual:ux           # layer 4
 npm run visual:catalogue    # @catalogue
+npx playwright test -c tests/visual/playwright.visual.config.js --grep @a11y   # accessibility
 npm run visual:components   # @components against the approved cell baselines
 npm run visual:approve      # operator only: write layer-3 baselines
 npm run visual:approve:components  # operator only: write the @components baselines
@@ -167,7 +169,7 @@ Reports land in `tests/visual/.report/` (`VISUAL_REPORT_DIR` overrides it): `cen
 Both are gitignored.
 
 **Screens.** `capture-spec.json` lists every screen: route, resolver (`fixed`, `first-row`, `first-link`), state
-(`default`, `switcher-open`, `user-menu-open`, `notif-open`, `health-open`, `fab-open`, `scrolled`), viewports and the
+(`default`, `switcher-open` (the mobile menu open; nothing on desktop), `user-menu-open`, `notif-open`, `health-open`, `fab-open`, `scrolled`), viewports and the
 baseline file name, plus an optional `readySelector` (below). Tests are named `<id>-<viewport>-<theme>`. P1 policy:
 dark on every screen and viewport, light only on the rows of Figma frames S1, S4, S6 and S9. Rows marked `needsData` (a review draft, a booking) skip with the reason
 when the seed has no such row. Take and check baselines on a fresh `make seed` with no BDD run since: BDD adds rows.

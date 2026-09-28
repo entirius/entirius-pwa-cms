@@ -6,6 +6,13 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- Accessibility baseline of the shell (P4 plan 22): landmarks (`header`, the "Panele" sidebar `nav`, `main#main`, the
+  tab-bar `nav`, the breadcrumb `nav`), a skip link („Przejdź do treści”), `<html lang>` from the UI language,
+  focus to `<main>` after a path change (not a query change), `document.title` = `<page> · <panel> · Entirius CMS`,
+  the `focus-ring` token on every shell control, sidebar transitions off under `prefers-reduced-motion`. Visual
+  `@a11y` (`tests/visual/a11y.spec.js`): axe with no serious/critical violation on Home, a list and a detail at both
+  viewports, and the keyboard script (skip link, sidebar group, mobile menu trap and Esc).
+
 - Navigation model and shell components (P4 plan 21, not wired into `App.vue` yet): `src/composables/useNav.js`
   (`usePanels`, `navTree`, `resolveNavEntry` exact → `activeOn` → `navParent` → prefix, `useActiveNav`,
   `useBreadcrumbs` with `crumbParent` chains and a history-aware back target), `meta.navParent` on 9 detail/create
@@ -107,6 +114,19 @@ All notable changes to this project will be documented in this file.
   `docs/sso-login.md`. Unset, nothing changes.
 
 ### Changed
+
+- The new shell in `App.vue` (P4 plan 22): AppHeader without a title, SidebarNav on every authenticated route (Home
+  and single-entry panels included) from 1024 px, the mobile menu and a 72 px tab bar below it, `<main>` with the
+  shell's page header: a view's `PageHeader` claims it (crumbs, back to the parent crumb, its title for the tab name),
+  otherwise a fallback shows the crumbs and the H1 from `titleKey`. The 40 views with a raw `<h1>` render
+  `PageHeader` (their title-row content in `meta` / `actions`, a back arrow beside the H1 as `back`), so every page
+  has exactly one H1. The bell and configuration health are IconButtons that open their lists in BasicMenu's
+  `panel` mode (on a phone configuration health opens from the user menu). `--bottom-bar-height` lives on `:root`
+  (72 px below the shell breakpoint, 0 without the bar). User-menu languages are `menuitemradio` items with
+  `aria-checked` (BasicMenu items take `checked`); the user fallback name goes through i18n; one
+  `munin.healthAvailable` gate serves the header, the user menu and the polling. The sidebar entry of a page below it
+  is `aria-current="true"`, the page itself `"page"`. Landmarks: the shell ids are a gate (±2 px, S1–S10).
+  CMS e2e `01`, `04`, `05`, `14`, `15` target the new shell by role (run in plan 24).
 
 - P3 join (plan 19): the rich-text formatting tools are IconButtons and its mode switch a BasicSelect;
   BulkActionBar pickers are BasicSelects; FAB and empty-state icons resolve only as meanings; selects open on an
@@ -307,6 +327,10 @@ All notable changes to this project will be documented in this file.
   rendered it blank. It now carries a "Download" / "Pobierz" label. The Polish "Załączniki" heading has its diacritics.
 
 ### Removed
+
+- The old shell (P4 plan 22): the header route title, the grip panel switcher, the three logo copies, the sidebar
+  edge toggle, `Navigation.vue`, `HeaderControls.vue`, `userStore.activeApp` and its write in the router guard, the
+  global `.router-link-active` decorator (it resized 24 unrelated links), the theme logo PNGs.
 
 - `/playground` and `Playground.vue` (replaced by `/ui`), the unused `Accordion` boot and `LazyScroll` (a Vue 2
   directive that never fired): the builder category kit now loads every category page instead of only the first.

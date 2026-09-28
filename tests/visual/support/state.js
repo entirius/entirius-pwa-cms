@@ -258,12 +258,26 @@ async function openFab(page) {
   await fab.click();
 }
 
+// The panel switcher of old is the mobile menu (Figma S3); the desktop sidebar lists every panel already.
+async function openMobileMenu(page) {
+  const menu = page.locator('[aria-controls="app-mobile-menu"]:visible');
+  if (await menu.count()) await menu.click();
+}
+
+// The header icon (desktop, while a check fails); a phone opens configuration health from the user menu.
+async function openHealth(page) {
+  const icon = page.locator('[data-testid="config-health-button"]:visible');
+  if (await icon.count()) return icon.first().click();
+  await page.locator('[data-fid="user-button"]:visible').click();
+  await page.locator('[data-testid="config-health-menu"]').click();
+}
+
 const STATES = {
   default: async () => {},
-  "switcher-open": (page) => page.locator(".hc-btn:visible").first().click(),
-  "user-menu-open": (page) => page.locator(".hc-btn:visible").last().click(),
+  "switcher-open": openMobileMenu,
+  "user-menu-open": (page) => page.locator('[data-fid="user-button"]:visible').click(),
   "notif-open": (page) => page.locator('[data-testid="notif-bell"]:visible').first().click(),
-  "health-open": (page) => page.locator('[data-testid="config-health-button"]:visible').first().click(),
+  "health-open": openHealth,
   "fab-open": openFab,
   scrolled: scrollToTiles,
 };

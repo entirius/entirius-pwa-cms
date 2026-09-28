@@ -101,15 +101,15 @@ The semantic layer, per `[data-theme]`: `src/assets/tokens/semantic.json`, gener
 
 ## Mobile / RWD
 
-**Breakpoints:** `768px` (mobile/tablet), `1279px` (desktop). Mixins:
-`max-tablet`, `min-tablet`, `max-desktop`, `min-desktop`
+**Breakpoints:** `768px` (mobile/tablet), `1024px` (the shell: sidebar from here up), `1279px` (desktop). Mixins:
+`max-tablet`, `min-tablet`, `max-shell`, `max-desktop`, `min-desktop`
 (`src/assets/scss/utils/_media-query.scss`).
 
 **Grid gotcha:** Utility grid classes only apply at `min-width: 40rem`
 (640px). Below that, use `display: flex; flex-direction: column`.
 
-**`--bottom-bar-height`:** `0px` desktop, `56px` mobile
-(`src/assets/scss/utils/_mobile.scss`). Use for fixed-bottom elements.
+**`--bottom-bar-height`:** `72px` below the shell breakpoint, `0px` from it up and on a screen without the tab bar
+(`:root` in `src/assets/scss/utils/_mobile.scss`, `.app--no-panel-nav` in `App.vue`). Use for fixed-bottom elements.
 
 ## Reusable UI Patterns
 
@@ -358,7 +358,9 @@ Built and in the catalogue; `App.vue` still runs the old shell until plan 22 swa
 - **Breakpoint** — `SHELL_BREAKPOINT` (1024, `src/utils/breakpoints.js`) = `$breakpoint-shell`; `useIsDesktop`
   reads it. A unit test holds the SCSS and script values together.
 - **`AppHeader`** — `<header data-fid="header">`: the wordmark home link (`data-fid="logo"`), then ConfigHealth and
-  the bell (conditional) and `UserMenu`. 88 px on desktop, 81 px below the shell breakpoint with a hairline separator
+  the bell (conditional; a phone reaches ConfigHealth through the user menu) and `UserMenu`, 12 px apart. The bell
+  and ConfigHealth are IconButtons (`notif-bell`, `config-health-button`) that open their lists in BasicMenu's
+  `panel` mode. 88 px on desktop, 81 px below the shell breakpoint with a hairline separator
   and the `menu` / `close` IconButton (`aria-expanded`, `aria-controls` = `menuId`, `v-model:menuOpen`). No title,
   no panel switcher (R1, R2). `mobile` forces a layout.
 - **`SidebarNav`** — `<nav aria-label="Panele" data-testid="app-sidebar" data-fid="sidebar">`, 300 px, its own
@@ -366,22 +368,24 @@ Built and in the catalogue; `App.vue` still runs the old shell until plan 22 swa
   `SidebarNavGroup` disclosure (`button[aria-expanded][aria-controls]`), one entry is a leaf link, a locked panel is
   dimmed with a lock, unfocusable, "(niedostępny)" for screen readers. The active panel's group opens on
   activation; the others toggle per session. `collapsed` (default: the user store, `cms_sidebar_collapsed`) is the
-  64 px rail: icons named by `aria-label` with a BasicTooltip, toggled by the footer IconButton (`aria-expanded`).
+  64 px rail: icons named by `aria-label` with a BasicTooltip, toggled by the footer IconButton (`aria-expanded`;
+  with the `collapsed` prop set it reports `update:collapsed` and writes no preference).
   `flat` is the MobileMenu list (no title, no footer, each panel one link to its root).
 - **`SidebarNavItem`** — `label`, `icon` (a FontAwesome glyph of the nav model), `to`, `level` 1 (40 px, Lexend
   16/400) / 2 (32 px, 14/400, 1 px `hairline` rail → `accent` when active), `active` (`aria-current="page"` on a
-  link), `locked`, `expanded` (set = a disclosure row, emits `toggle`), `collapsed`. Group rows hover with a
+  link on its own page, `"true"` on a page below it), `locked`, `expanded` (set = a disclosure row, emits `toggle`), `collapsed`. Group rows hover with a
   `surface-hover` pill, links change colour only; the inactive L2 text is `text-secondary` (KD22).
 - **`MobileMenu`** — `v-model:open`: a full-screen `role="dialog" aria-modal="true"` below the header with the flat
   SidebarNav (`data-fid="mobile-menu"`); its close button sits over the header's menu button. `useFocusTrap`: focus on
   close, Tab cycles, Esc closes, focus returns to the menu button, the background is inert; a navigation closes it.
   `inline` = open in the page flow without a trap.
-- **`BottomTabBar`** — `<nav aria-label="<panel>" data-fid="tab-bar">`, 72 px (`--bottom-bar-height`): the current
+- **`BottomTabBar`** — `<nav aria-label="<panel>" data-fid="tab-bar">`, 72 px (= `--bottom-bar-height`): the current
   panel's entries, icon + 12 px label, items ≥ 44 px, the lit one `aria-current`; hidden with ≤ 1 entry and on
   `meta.noBottomBar`. `entries` / `label` / `current` take fixed data (catalogue). No panel has more than 5 phone
   entries (a unit test guards it: there is no overflow design).
 - **`UserMenu`** — on BasicMenu (`aria-haspopup="menu"`): the user's name (a BasicMenu `heading` item), the theme
-  item naming its target ("Tryb jasny" / "Tryb ciemny"), the languages (current checked), configuration health (with
+  item naming its target ("Tryb jasny" / "Tryb ciemny"), the languages (`menuitemradio`, the current one
+  `aria-checked`; BasicMenu items take `checked`), configuration health (with
   munin), change password, logout (`danger`). Trigger: IconButton `lg` `user`, `data-fid="user-button"`.
 - **`BasicLogo`** — `variant="full"` is the "ENTIRIUS CMS" wordmark, `size` its height (32 → 206 × 32, 24 → 154 × 24);
   its gradients belong to the asset (D2), the name turns `text-strong` in the light theme.

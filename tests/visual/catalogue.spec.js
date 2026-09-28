@@ -42,15 +42,25 @@ function collectErrors(page) {
 // The shell's own boot calls and polls, made on every screen (App.vue): Munin modules and health, the bell's count.
 const SHELL_CALLS = [/\/api\/munin\/v2\/(health\/)?$/, /\/notifications\/unread-count\/$/];
 
-// API calls from before the first navigation, so the catalogue's mount counts too; the shell's own are not its.
+// API calls from before the first navigation, so the catalogue's mount counts too. The shell's are not its: a GET
+// matching SHELL_CALLS passes while the page boots, and afterwards only as a repeat (a poll) of one the shell made
+// then. The catalogue's AppHeader cells mount the real bell and health icon, so anything they call on top shows.
 function collectApiCalls(page) {
   const calls = [];
+  const shellCalls = new Set();
+  let booted = false;
   page.on("request", (request) => {
     const url = new URL(request.url());
-    if (url.origin !== API_ORIGIN || SHELL_CALLS.some((re) => re.test(url.pathname))) return;
+    if (url.origin !== API_ORIGIN) return;
+    const key = `${request.method()} ${url.pathname}`;
+    const shellCall = request.method() === "GET" && SHELL_CALLS.some((re) => re.test(url.pathname));
+    if (shellCall && (!booted || shellCalls.has(key))) {
+      shellCalls.add(key);
+      return;
+    }
     calls.push(request.url());
   });
-  return calls;
+  return { calls, booted: () => (booted = true) };
 }
 
 async function openCatalogue({ context, page }, theme) {
@@ -100,6 +110,7 @@ for (const theme of THEMES) {
       const errors = collectErrors(page);
       const apiCalls = collectApiCalls(page);
       await openCatalogue({ context, page }, theme);
+      apiCalls.booted();
       await expect(page.locator("html")).toHaveAttribute("data-theme", THEME_VALUES[theme]);
       for (const id of SECTIONS) await expect(page.locator(`section#${id}`), `section #${id}`).toHaveCount(1);
       const anchors = await page.locator("[id]").evaluateAll((els) => els.map((el) => el.id));
@@ -109,7 +120,7 @@ for (const theme of THEMES) {
       expect(ids.filter((id, i) => ids.indexOf(id) !== i), "duplicate cell ids").toEqual([]);
       expect(await emptyCells(page.locator(CELLS)), "cells without a box").toEqual([]);
       expect(errors, "console errors").toEqual([]);
-      expect(apiCalls, "API calls after navigation").toEqual([]);
+      expect(apiCalls.calls, "API calls after navigation").toEqual([]);
     });
 
     test(`components-${theme}`, { tag: "@components" }, async ({ context, page }, testInfo) => {

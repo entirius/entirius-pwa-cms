@@ -10,11 +10,12 @@ Repo-specific traps. Read before touching configs, i18n, or panels.
 - Global components register in TWO files: `src/boots/register-elems.js` (UI
   components) AND `src/configs/builder/components/register-elems.js`
   (builder config controllers). Adding one without the other fails silently.
-- Sidebar/mobile-bar routes come from `src/components/Navigation/nav-routes.js`
-  (`buildNavRoutes()` / `filterNavRoutes()`), consumed by both
-  `Navigation.vue` and `App.vue` — not hardcoded per-component. `App.vue`
-  hides the sidebar entirely for single-tab panels (enrichment, emails,
-  accounts, checkout, stock).
+- Sidebar / tab-bar routes come from `src/components/Navigation/nav-routes.js`
+  (`buildNavRoutes()` / `filterNavRoutes()`) through the nav model
+  (`src/composables/useNav.js`) — not hardcoded per component. The sidebar
+  shows on every authenticated route (Home and single-entry panels included);
+  the phone tab bar hides for a panel with one entry. The active panel is
+  `route.meta.panel`: there is no active-panel state in a store.
 - Points panel import view is commented out (nav + router). Imports are
   CLI-only via `manage.py import_deliverypoints`. Files kept but unreachable.
 - Carrier types are read-only in `Points/TypeList.vue` — clicking shows an
