@@ -122,6 +122,13 @@ All notable changes to this project will be documented in this file.
   boots; the spawn-rule edit actions are an `ActionBar` in R5 order (delete · run · save) shown after the rule
   loaded; Docs sits in `PageLayout` with a „Dokumentacja” `PageHeader` and its example cards show key and value.
   Read-only smoke `tests/e2e/p5-pilot-b-smoke.spec.js`.
+- P5 Emails (plan 34): the channel, template-type, template and language-config tiles are `EmailCard`
+  (`src/views/Emails/EmailCard.vue`), a `BasicCard` whose title is the link to the record and covers the card — the
+  tiles open from the keyboard now (Tab, Enter). The channel, template and language-config forms are `BasicCard`
+  sections with a `.form-grid` (rich-text fields span both columns); Save moved from the foot of each form (mid-page on
+  the channel) into the PageHeader `ActionBar`. The header shows after the load. The font preview line is translated.
+  Smoke spec `tests/e2e/p5-emails-smoke.spec.js`.
+
 - P5 Faq and the detail-form pattern (plan 33): the group and item forms are `BasicCard` sections with a `.form-grid`
   of `FormField`s (2 columns above 768 px, `.form-grid__wide` spans both) — labels, required markers, hints (IDX and
   URL key fixed after create, no channel = every channel) and errors all come from FormField. Save, Delete (danger
