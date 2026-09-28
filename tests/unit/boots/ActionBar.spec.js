@@ -33,6 +33,13 @@ describe("ActionBar", () => {
     expect(labels).toEqual(["Ustawienia", "Zapisz szkic", "Usuń", "Zapisz i publikuj"]);
   });
 
+  it("expanded: aria-expanded on the button only when the action sets it", () => {
+    const wrapper = mountBar([action("secondary", "Nowa wersja", { expanded: false }), action("primary", "Zapisz")]);
+    const [toggle, save] = wrapper.findAll(".stub-basic");
+    expect(toggle.attributes("aria-expanded")).toBe("false");
+    expect(save.attributes("aria-expanded")).toBeUndefined();
+  });
+
   it("a utility is an IconButton, the others BasicButtons of their role", () => {
     const wrapper = mountBar([action("utility", "Ustawienia", { icon: "settings" }), action("danger", "Usuń")]);
     expect(wrapper.find(".stub-icon").attributes("data-icon")).toBe("settings");

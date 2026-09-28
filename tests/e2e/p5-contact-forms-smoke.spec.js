@@ -69,12 +69,12 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
         await expect(page.getByRole('heading', { level: 1 })).not.toBeEmpty();
         await expect(page.getByRole('button', { name: either((t) => t.cf.save) })).toBeDisabled();
         await expect(page.locator('.basic-card').first()).toBeVisible();
-        const status = page.getByRole('combobox').first();
-        if (await status.count()) {
-          await status.click();
-          await expect(page.getByRole('option').first()).toBeVisible();
-          await page.keyboard.press('Escape');
-        }
+        // Every lead status has another transition (leadStatus.js ALLOWED_NEXT), so the menu is always there.
+        const status = page.getByRole('combobox', { name: either((t) => t.cf.change_status) });
+        await expect(status).toBeVisible();
+        await status.click();
+        await expect(page.getByRole('option').first()).toBeVisible();
+        await page.keyboard.press('Escape');
       }
 
       collector.assertNoErrors(expect, 'Leads');

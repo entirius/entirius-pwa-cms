@@ -34,6 +34,16 @@ describe("AgreementEdit header actions", () => {
   });
 });
 
+describe("AgreementEdit versions card", () => {
+  it("a secondary action shows and hides the new-version form, its state in aria-expanded", () => {
+    const state = { showVersionForm: false };
+    const [create] = call(AgreementEdit, "versionActions", state);
+    expect(create).toMatchObject({ role: "secondary", label: "agm.create_version", expanded: false });
+    create.onClick();
+    expect(state.showVersionForm).toBe(true);
+  });
+});
+
 describe("AgreementEdit draft edit form", () => {
   const versions = [
     { id: 1, published_at: null },

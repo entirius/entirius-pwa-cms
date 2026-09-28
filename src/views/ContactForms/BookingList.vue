@@ -16,7 +16,7 @@
           :active-count="activeFilterCount"
           :trigger-label="$t('builder.filters')"
         >
-          <p class="fs-200 t-secondary">{{ $t("cf.lead_status") }}</p>
+          <p class="cf-list__caption fs-200 t-secondary">{{ $t("cf.lead_status") }}</p>
           <div class="filter-chip-row" role="group" :aria-label="$t('cf.lead_status')">
             <FilterChip
               v-for="opt in leadStatusOptions"
@@ -26,7 +26,7 @@
               @click="onLeadStatusFilter(opt.value)"
             />
           </div>
-          <p class="fs-200 t-secondary">{{ $t("cf.channel") }}</p>
+          <p class="cf-list__caption fs-200 t-secondary">{{ $t("cf.channel") }}</p>
           <BasicSelect
             :options="channelOptions"
             :model-value="channelFilter"
@@ -34,7 +34,6 @@
             class="cf-list__filter"
             @update:model-value="onChannelFilter"
           />
-          <p class="fs-200 t-secondary">{{ $t("cf.date_from") }} — {{ $t("cf.date_to") }}</p>
           <div class="flex ai-ct gap-3">
             <FormField :label="$t('cf.date_from')" layout="inline">
               <BasicDatePicker :model-value="dateFrom" @update:model-value="onDateFrom" />
@@ -311,6 +310,10 @@ export default {
   flex-shrink: 0;
 }
 
+// The captions name the groups in the phone panel; the desktop row has the chip group's name and the placeholder.
+.mobile-filter-panel__desktop .cf-list__caption {
+  display: none;
+}
 
 .cf-list__meet-link {
   display: inline-flex;

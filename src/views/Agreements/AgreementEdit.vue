@@ -104,15 +104,7 @@
 
         <BasicCard v-if="isEdit" :title="$t('agm.versions')" gap class="mb-8">
           <template #actions>
-            <ActionBar :actions="[]">
-              <BasicButton
-                variant="secondary"
-                :aria-expanded="String(showVersionForm)"
-                @click="showVersionForm = !showVersionForm"
-              >
-                {{ $t('agm.create_version') }}
-              </BasicButton>
-            </ActionBar>
+            <ActionBar :actions="versionActions" />
           </template>
 
           <div v-if="showVersionForm" class="form-grid" data-testid="agm-new-version-form">
@@ -350,6 +342,17 @@ export default {
   computed: {
     isEdit() {
       return !!this.$route.params.slug;
+    },
+    versionActions() {
+      return [
+        {
+          key: "create-version",
+          role: "secondary",
+          label: this.$t("agm.create_version"),
+          expanded: this.showVersionForm,
+          onClick: () => { this.showVersionForm = !this.showVersionForm; },
+        },
+      ];
     },
     headerActions() {
       return [

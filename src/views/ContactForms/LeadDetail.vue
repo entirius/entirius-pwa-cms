@@ -6,18 +6,22 @@
         <template v-if="lead" #meta>
           <span class="fs-200 t-strong fw-600">{{ lead.name }}</span>
           <StatusBadge :label="leadStatusLabel($t, lead.status)" :tone="leadStatusVariant(lead.status)" />
-          <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
-          <BasicSelect
-            v-if="otherTransitions.length"
-            :options="otherTransitions"
-            :model-value="null"
-            :placeholder="$t('cf.change_status')"
-            class="cf-detail__transitions"
-            @update:model-value="onTransition"
-          />
         </template>
         <template v-if="lead" #actions>
-          <ActionBar :actions="headerActions" />
+          <!-- the detail-form pattern (plan 33): unsaved state and the page's own controls left of the ActionBar -->
+          <div class="flex ai-ct jc-fe wrap gap-3">
+            <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
+            <BasicSelect
+              v-if="otherTransitions.length"
+              :options="otherTransitions"
+              :model-value="null"
+              :placeholder="$t('cf.change_status')"
+              :aria-label="$t('cf.change_status')"
+              class="cf-detail__transitions"
+              @update:model-value="onTransition"
+            />
+            <ActionBar :actions="headerActions" />
+          </div>
         </template>
       </PageHeader>
     </template>
