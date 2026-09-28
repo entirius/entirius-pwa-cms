@@ -5,30 +5,32 @@
         :title="isCreate ? $t('enrichment.spawn_rules.create') : String(form.key || '')"
         back="/enrichment/spawn-rules"
       >
-        <template #actions>
-          <BasicButton
-            v-if="!isCreate"
-            variant="secondary"
-            data-test="spawn-rule-run-btn"
-            @click="runRule"
-          >
-            {{ $t('enrichment.spawn_rules.run_now') }}
-          </BasicButton>
-          <IconButton
-            v-if="!isCreate"
-            icon="delete"
-            :label="$t('common.delete')"
-            variant="danger"
-            data-test="spawn-rule-delete-btn"
-            @click="showDeleteConfirm = true"
-          />
-          <BasicButton
-            variant="primary"
-            data-test="spawn-rule-save-btn"
-            @click="save"
-          >
-            {{ $t('common.save') }}
-          </BasicButton>
+        <template v-if="!loading" #actions>
+          <ActionBar>
+            <IconButton
+              v-if="!isCreate"
+              icon="delete"
+              :label="$t('common.delete')"
+              variant="danger"
+              data-test="spawn-rule-delete-btn"
+              @click="showDeleteConfirm = true"
+            />
+            <BasicButton
+              v-if="!isCreate"
+              variant="secondary"
+              data-test="spawn-rule-run-btn"
+              @click="runRule"
+            >
+              {{ $t('enrichment.spawn_rules.run_now') }}
+            </BasicButton>
+            <BasicButton
+              variant="primary"
+              data-test="spawn-rule-save-btn"
+              @click="save"
+            >
+              {{ $t('common.save') }}
+            </BasicButton>
+          </ActionBar>
         </template>
       </PageHeader>
     </template>

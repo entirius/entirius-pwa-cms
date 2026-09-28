@@ -4,7 +4,7 @@
   >
     <!-- Forgot password mode -->
     <template v-if="showForgotPassword">
-      <p class="fs-700 fw-600 txt-center mb-1">
+      <p class="auth-card__title fs-700 fw-600 txt-center mb-1">
         {{ $t("login.forgot_title") }}
       </p>
       <p class="fs-300 t-secondary txt-center mb-12">
@@ -16,7 +16,7 @@
           <p class="fs-300 fw-500">{{ $t("login.reset_email_sent") }}</p>
         </div>
       </template>
-      <template v-else>
+      <form v-else @submit.prevent="sendResetLink">
         <FormField :label="$t('login.email')">
           <BasicInput
             v-model="resetEmail"
@@ -24,23 +24,24 @@
           />
         </FormField>
         <BasicButton
-          @click="sendResetLink"
+          type="submit"
           variant="primary"
           class="jc-ct w-100 rounded"
         >
           {{ $t('login.send_reset_link') }}
         </BasicButton>
-      </template>
+      </form>
 
-      <button
-        class="auth-card__link mt-8"
+      <BasicButton
+        variant="ghost"
+        class="jc-ct w-100 mt-8"
         @click="
           showForgotPassword = false;
           resetEmailSent = false;
         "
       >
         {{ $t("login.back_to_login") }}
-      </button>
+      </BasicButton>
     </template>
 
     <!-- Login mode -->
@@ -51,40 +52,44 @@
       >
         <p class="fs-300 fw-500">{{ $t("login.session_expired") }}</p>
       </div>
-      <p class="fs-700 fw-600 txt-center mb-1">{{ $t("login.welcome") }}</p>
+      <p class="auth-card__title fs-700 fw-600 txt-center mb-1">{{ $t("login.welcome") }}</p>
       <p class="fs-300 t-secondary txt-center mb-12">
         {{ $t("login.subtitle") }}
       </p>
-      <FormField :label="$t('login.username')">
-        <BasicInput
-          v-model="username"
-          class="bg-raised mb-10 lh-base-elem"
-        />
-      </FormField>
-      <div class="auth-card__pw-field mb-8">
-        <FormField :label="$t('login.password')">
+      <form @submit.prevent="login">
+        <FormField :label="$t('login.username')">
           <BasicInput
-            v-model="password"
-            class="bg-raised lh-base-elem"
-            :type="pwVisible ? 'text' : 'password'"
+            v-model="username"
+            class="bg-raised mb-10 lh-base-elem"
           />
         </FormField>
-        <button
-          class="auth-card__pw-toggle"
-          type="button"
-          @click="pwVisible = !pwVisible"
-        >
-          <FontAwesomeIcon :icon="pwVisible ? $icons.hide : $icons.preview" />
-        </button>
-      </div>
+        <FormField :label="$t('login.password')" class="mb-8">
+          <div class="auth-card__pw-field">
+            <BasicInput
+              v-model="password"
+              class="bg-raised lh-base-elem"
+              :type="pwVisible ? 'text' : 'password'"
+            />
+            <span class="auth-card__pw-toggle">
+              <IconButton
+                :icon="pwVisible ? 'hide' : 'preview'"
+                :label="$t('login.show_password')"
+                :pressed="pwVisible"
+                size="sm"
+                @click="pwVisible = !pwVisible"
+              />
+            </span>
+          </div>
+        </FormField>
 
-      <BasicButton
-        @click="login"
-        variant="primary"
-        class="jc-ct w-100 rounded"
-      >
-        {{ $t('login.submit') }}
-      </BasicButton>
+        <BasicButton
+          type="submit"
+          variant="primary"
+          class="jc-ct w-100 rounded"
+        >
+          {{ $t('login.submit') }}
+        </BasicButton>
+      </form>
 
       <template v-if="ssoEnabled">
         <p class="auth-card__divider fs-200 t-muted mt-8 mb-8">
@@ -100,9 +105,13 @@
         </BasicButton>
       </template>
 
-      <button class="auth-card__link mt-8" @click="showForgotPassword = true">
+      <BasicButton
+        variant="ghost"
+        class="jc-ct w-100 mt-8"
+        @click="showForgotPassword = true"
+      >
         {{ $t("login.forgot_password") }}
-      </button>
+      </BasicButton>
     </template>
   </BasicCard>
 </template>

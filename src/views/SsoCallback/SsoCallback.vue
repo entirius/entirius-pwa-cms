@@ -3,7 +3,7 @@
     class="auth-card fs-300 t-body shadow-down"
   >
     <template v-if="errorMessage">
-      <p class="fs-700 fw-600 txt-center mb-1">{{ $t("login.sso_failed") }}</p>
+      <p class="auth-card__title fs-700 fw-600 txt-center mb-1">{{ $t("login.sso_failed") }}</p>
       <div class="auth-card__banner auth-card__banner--error mb-10">
         <p class="fs-300 fw-500" data-testid="sso-error">{{ errorMessage }}</p>
       </div>

@@ -1,43 +1,42 @@
 <template>
-  <div class="doc-view fs-200 t-body">
-    <div>
-      <BasicTabs v-model="selected_view" :options="nav" class="mb-5" />
-      <div v-if="selected_view === 'doc'">
-        <div class="mb-5">
-          <BasicSelect
-            style="max-width: 10rem"
-            :options="docs_nav"
-            v-model="doc_prev"
-          />
-        </div>
-
-        <div class="markdown-renderer-wrapper">
-          <div v-html="renderedMarkdown"></div>
-        </div>
+  <PageLayout class="doc-view fs-200 t-body">
+    <template #header>
+      <PageHeader :title="$t('nav.docs')" />
+    </template>
+    <BasicTabs v-model="selected_view" :options="nav" class="mb-5" />
+    <div v-if="selected_view === 'doc'">
+      <div class="mb-5">
+        <BasicSelect
+          style="max-width: 10rem"
+          :options="docs_nav"
+          v-model="doc_prev"
+        />
       </div>
-      <div v-if="selected_view === 'eg'">
-        <p class="fs-200 t-muted mb-1">Wybierz przyklad</p>
-        <div class="flex mb-5">
-          <BasicSelect
-            style="min-width: 10rem"
-            :options="sub_nav"
-            v-model="eg_prev"
-          />
-        </div>
-        <div class="grid grid-col-3 gap-5">
-          <BasicCard v-for="(k, i) in ex_preview" class="as-s">
-          <pre class="fs-200">
-            
-            <p class="t-accent">"{{ k }}":</p>
-            <p>
-              {{ v }}
-            </p>
-          </pre>
-          </BasicCard>
-        </div>
+
+      <div class="markdown-renderer-wrapper">
+        <div v-html="renderedMarkdown"></div>
       </div>
     </div>
-  </div>
+    <div v-if="selected_view === 'eg'">
+      <FormField label="Wybierz przyklad" class="mb-5">
+        <BasicSelect
+          style="min-width: 10rem"
+          :options="sub_nav"
+          v-model="eg_prev"
+        />
+      </FormField>
+      <div class="grid grid-col-3 gap-5">
+        <BasicCard v-for="(value, key) in ex_preview" :key="key" class="as-s">
+          <pre class="fs-200">
+            <p class="t-accent">"{{ key }}":</p>
+            <p>
+              {{ value }}
+            </p>
+          </pre>
+        </BasicCard>
+      </div>
+    </div>
+  </PageLayout>
 </template>
 
 <script>

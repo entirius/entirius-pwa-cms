@@ -16,14 +16,15 @@
         :empty-text="$t('enrichment.queue.empty')"
       >
         <template #cell-sku="{ row }">
-          <button
-            type="button"
-            class="task-queue__sku t-accent"
+          <BasicButton
+            variant="ghost"
+            size="sm"
+            class="task-queue__sku"
             :data-testid="`queue-sku-${row.sku}`"
             @click="goToPim(row.sku)"
           >
             {{ row.sku }}
-          </button>
+          </BasicButton>
         </template>
         <template #cell-priority="{ value }">
           <span class="fs-200 t-secondary">{{ value ?? "—" }}</span>
@@ -39,27 +40,25 @@
     </div>
 
     <div class="task-queue__pager flex ai-ct jc-ct gap-5">
-      <button
-        type="button"
-        class="task-queue__btn bg-raised t-secondary"
+      <BasicButton
+        variant="secondary"
         :disabled="loading || page <= 1"
         data-testid="queue-prev"
         @click="prevPage"
       >
         {{ $t("enrichment.queue.prev") }}
-      </button>
+      </BasicButton>
       <span class="fs-200 t-muted">
         {{ $t("enrichment.queue.page", { page }) }}
       </span>
-      <button
-        type="button"
-        class="task-queue__btn bg-raised t-secondary"
+      <BasicButton
+        variant="secondary"
         :disabled="loading || !hasMore"
         data-testid="queue-next"
         @click="nextPage"
       >
         {{ $t("enrichment.queue.next") }}
-      </button>
+      </BasicButton>
     </div>
   </SideDrawer>
 </template>
@@ -175,31 +174,12 @@ export default {
 .task-queue {
   padding: var(--space-8);
 }
-.task-queue__sku {
-  background: none;
-  border: none;
-  padding: 0;
-  font: inherit;
-  cursor: pointer;
-  text-align: left;
+// The SKU opens the product: accent text, which the ghost variant rule (0,3,1) would otherwise override.
+.task-queue button.button-basic.task-queue__sku {
+  color: var(--text-accent);
 }
 .task-queue__pager {
   padding: var(--space-8);
   border-top: 1px solid var(--border-subtle);
-}
-.task-queue__btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  height: var(--elem-height);
-  padding: 0 var(--space-4);
-  border: none;
-  border-radius: var(--radius-base);
-  font-size: var(--fs-200);
-  cursor: pointer;
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
 }
 </style>

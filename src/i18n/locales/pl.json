@@ -75,7 +75,8 @@
     "sso_in_progress": "Trwa logowanie…",
     "sso_failed": "Logowanie SSO nie powiodło się",
     "sso_state_mismatch": "Ten link logowania jest nieprawidłowy albo został już użyty. Zacznij logowanie od nowa.",
-    "sso_provider_error": "Dostawca tożsamości odrzucił logowanie ({error})."
+    "sso_provider_error": "Dostawca tożsamości odrzucił logowanie ({error}).",
+    "show_password": "Pokaż hasło"
   },
   "app": {
     "expand_sidebar": "Rozwiń panel",
@@ -2533,7 +2534,8 @@
       "scope_pim": "PIM",
       "scope_atlas": "Atlas",
       "image_error": "Nie udało się odczytać tego zdjęcia.",
-      "image_too_large": "To zdjęcie jest za duże (maks. 20 MB)."
+      "image_too_large": "To zdjęcie jest za duże (maks. 20 MB).",
+      "remove_image": "Usuń zdjęcie"
     },
     "kind": {
       "pim_product": "PIM",
