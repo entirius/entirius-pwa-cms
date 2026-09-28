@@ -1,82 +1,80 @@
 <template>
   <PageLayout class="fs-300 t-body">
-    <Teleport to="#layout-extender-toolbar-left" defer>
-      <span class="fs-300 fw-600 t-body">{{ $t("layout_extender.list_title") }}</span>
+    <template #header>
+      <PageHeader :title="$t('layout_extender.list_title')" />
+    </template>
+
+    <template v-if="channelOptions.length" #toolbar>
       <BasicSelect
-        v-if="channelOptions.length"
         :options="channelOptions"
         :model-value="selectedChannel"
         :placeholder="$t('layout_extender.all_channels')"
+        :aria-label="$t('layout_extender.channels')"
         class="le-list__channel-dropdown"
         @update:model-value="onChannelFilter"
       />
-    </Teleport>
-      <Loader block v-show="loading" />
+    </template>
 
-      <DataTable
-        empty-size="md"
-        v-show="!loading"
-        :columns="columns"
-        :rows="filteredItems"
-        row-key="uid"
-        :empty-text="$t('layout_extender.no_items')"
-        @row-click="onRowClick"
-      >
-        <template #cell-name="{ row }">{{ row.name || row.uid }}</template>
+    <Loader block v-if="loading" />
 
-        <template #cell-type="{ row }">
-          <span class="bg-hover t-body fs-200 ph-2 rounded">
-            {{ row.type === "header" ? "Header" : "Footer" }}
-          </span>
-        </template>
+    <DataTable
+      v-else
+      empty-size="md"
+      :columns="columns"
+      :rows="filteredItems"
+      row-key="uid"
+      :empty-text="$t('layout_extender.no_items')"
+      @row-click="onRowClick"
+    >
+      <template #cell-name="{ row }">{{ row.name || row.uid }}</template>
 
-        <template #cell-language="{ row }">
-          <span class="t-secondary">{{ (row.language || "").toUpperCase() }}</span>
-        </template>
+      <template #cell-type="{ row }">
+        <Tag :label="row.type === 'header' ? $t('layout_extender.type_header') : $t('layout_extender.type_footer')" />
+      </template>
 
-        <template #cell-channels="{ row }">
-          <div v-if="(row.channels || []).length" class="flex gap-1 flex-wrap">
-            <span
-              v-for="ch in row.channels"
-              :key="ch"
-              class="bg-hover t-body fs-200 ph-2 rounded"
-            >{{ ch }}</span>
-          </div>
-          <span v-else class="t-muted">—</span>
-        </template>
+      <template #cell-language="{ row }">
+        <span class="t-secondary">{{ (row.language || "").toUpperCase() }}</span>
+      </template>
 
-        <template #cell-status="{ row }">
-          <StatusBadge
-            :label="row.is_published ? $t('layout_extender.published') : $t('layout_extender.draft')"
-            :tone="row.is_published ? 'positive' : 'info'"
+      <template #cell-channels="{ row }">
+        <div v-if="(row.channels || []).length" class="flex gap-1 flex-wrap">
+          <Tag v-for="ch in row.channels" :key="ch" :label="ch" />
+        </div>
+        <span v-else class="t-muted">—</span>
+      </template>
+
+      <template #cell-status="{ row }">
+        <StatusBadge
+          :label="row.is_published ? $t('layout_extender.published') : $t('layout_extender.draft')"
+          :tone="row.is_published ? 'positive' : 'info'"
+        />
+      </template>
+
+      <template #cell-updated_at="{ row }">
+        <div>
+          <span class="t-secondary fs-300">{{ formatDate(row.updated_at, { timeStyle: undefined }) || "—" }}</span>
+          <p v-if="row.updated_by" class="t-muted fs-200">
+            {{ $t("layout_extender.updated_by", { name: row.updated_by }) }}
+          </p>
+        </div>
+      </template>
+
+      <template #cell-actions="{ row }">
+        <div class="le-list__actions">
+          <IconButton icon="edit" :label="$t('common.edit')" size="sm" @click="onEdit(row)" />
+          <IconButton icon="preview" :label="$t('common.preview')" size="sm" @click="onPreview(row)" />
+          <IconButton icon="duplicate" :label="$t('common.copy')" size="sm" @click="onCopy(row)" />
+          <IconButton
+            v-if="!row.is_system"
+            icon="delete"
+            :label="$t('common.delete')"
+            variant="danger"
+            size="sm"
+            @click="onDeleteClick(row)"
           />
-        </template>
-
-        <template #cell-updated_at="{ row }">
-          <div>
-            <span class="t-secondary fs-300">
-              {{ row.updated_at ? new Date(row.updated_at).toLocaleDateString("en-GB") : "—" }}
-            </span>
-            <p v-if="row.updated_by" class="t-muted fs-200">by {{ row.updated_by }}</p>
-          </div>
-        </template>
-
-        <template #cell-actions="{ row }">
-          <div class="le-list__actions">
-            <IconButton icon="edit" :label="$t('common.edit')" size="sm" @click="onEdit(row)" />
-            <IconButton icon="preview" :label="$t('common.preview')" size="sm" @click="onPreview(row)" />
-            <IconButton icon="duplicate" :label="$t('common.copy')" size="sm" @click="onCopy(row)" />
-            <IconButton
-              v-if="!row.is_system"
-              icon="delete"
-              :label="$t('common.delete')"
-              variant="danger"
-              size="sm"
-              @click="onDeleteClick(row)"
-            />
-          </div>
-        </template>
-      </DataTable>
+        </div>
+      </template>
+    </DataTable>
 
     <ConfirmDialog
       tone="danger"
@@ -91,34 +89,22 @@
       :open="copyVisible"
       size="sm"
       :title="$t('layout_extender.copy_title')"
+      :actions="copyActions"
       @update:open="(open) => open || closeCopy()"
     >
-      <div class="le-copy">
-        <label class="le-copy__label field-label">{{ $t("layout_extender.copy_target_channel") }}</label>
-        <BasicSelect
-          :options="copyChannelOptions"
-          :model-value="copyTargetChannel"
-          :placeholder="$t('layout_extender.copy_select_channel')"
-          @update:model-value="onCopyTargetSelect"
-        />
-        <label class="le-copy__label field-label">{{ $t("layout_extender.copy_name") }}</label>
-        <BasicInput v-model="copyName" />
+      <div class="flex-column gap-4">
+        <FormField :label="$t('layout_extender.copy_target_channel')" required>
+          <BasicSelect
+            :options="copyChannelOptions"
+            :model-value="copyTargetChannel"
+            :placeholder="$t('layout_extender.copy_select_channel')"
+            @update:model-value="onCopyTargetSelect"
+          />
+        </FormField>
+        <FormField :label="$t('layout_extender.copy_name')">
+          <BasicInput v-model="copyName" />
+        </FormField>
       </div>
-      <template #footer>
-        <BasicButton
-          variant="secondary"
-          @click="closeCopy"
-        >
-          {{ $t('common.cancel') }}
-        </BasicButton>
-        <BasicButton
-          variant="primary"
-          :disabled="!copyTargetChannel || copying"
-          @click="onCopyConfirm"
-        >
-          {{ $t('layout_extender.copy_action') }}
-        </BasicButton>
-      </template>
     </BasicModal>
   </PageLayout>
 </template>
@@ -129,6 +115,7 @@ import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { useContentDBChannelStore } from "@/stores/contentDBChannel";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { formatDate } from "@/utils/format";
 
 export default {
   name: "LayoutExtenderList",
@@ -180,6 +167,18 @@ export default {
       if (!this.selectedChannel) return this.items;
       return this.items.filter((row) => (row.channels || []).includes(this.selectedChannel));
     },
+    copyActions() {
+      return [
+        { key: "cancel", label: this.$t("common.cancel"), role: "secondary", onClick: this.closeCopy },
+        {
+          key: "copy",
+          label: this.$t("layout_extender.copy_action"),
+          role: "primary",
+          disabled: !this.copyTargetChannel || this.copying,
+          onClick: this.onCopyConfirm,
+        },
+      ];
+    },
     copyChannelOptions() {
       return this.contentDBChannelStore.channels.map((ch) => ({
         label: ch.name || ch.idx,
@@ -192,6 +191,7 @@ export default {
     this.contentDBChannelStore.fetchChannelsAndLanguages();
   },
   methods: {
+    formatDate,
     onChannelFilter(val) {
       this.selectedChannel = this.selectedChannel === val ? null : val;
     },
@@ -350,18 +350,6 @@ export default {
 .le-list__channel-dropdown {
   min-width: 160px;
   max-width: 240px;
-}
-
-.le-copy {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.le-copy__label {
-  &:not(:first-child) {
-    margin-top: var(--space-5);
-  }
 }
 
 .le-list__actions {
