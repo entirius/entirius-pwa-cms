@@ -115,6 +115,18 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- P5 EnrichmentReview (plan 45): the page sits in `PageLayout`: the List | Focus switch in the PageHeader `meta`,
+  Import CSV a secondary `ActionBar` action, the status chips one inline row with the match count, and the other
+  filters (search, module, kind, source, batch, minimum confidence) in a `MobileFilterPanel` (inline on desktop, a
+  filter button with the count on a phone) instead of the Filters toggle. The list pager is a `Pagination` in the page
+  footer. One primary per mode: in the list the bulk Accept all (row Accept secondary, Reject danger), in Focus the
+  Accept („Apply anyway” while re-confirming a drift) with Reject (danger) and Skip in an `ActionBar`; the proposal is
+  a `BasicCard` and the reject reason a `BasicTextarea` in a `FormField`. A PIM subject in the list is a ghost
+  `BasicButton`, and clicking a row now opens Focus on that row (it always opened the first). The drift and CSV-import
+  dialogs are `BasicModal`s with `ActionBar` footers (the file picker stays a raw input in the drop zone); the product
+  preview is a `BasicCard` with Go to PIM (secondary) in its header. Handlers, API calls and payloads are unchanged.
+  Smoke spec `tests/e2e/p5-enrichment-review-smoke.spec.js`.
+
 - P5 Points (plan 43): the point form follows the detail pattern: Address (with the address search), Location,
   Contact and Translations are `BasicCard`s with a `.form-grid` of `FormField`s (Code, Name and Type marked required;
   the API's field errors land on the fields, the toast stays). Save and Delete moved from the panel toolbar into the
