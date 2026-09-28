@@ -330,6 +330,16 @@ describe("BasicDatePicker", () => {
     wrapper.unmount();
   });
 
+  it("fixed: never past the viewport's right edge", async () => {
+    const wrapper = mount(BasicDatePicker, { props: { fixed: true }, global: GLOBAL, attachTo: document.body });
+    wrapper.find("button").element.getBoundingClientRect = () => ({ top: 10, bottom: 40, left: window.innerWidth - 50 });
+    Object.defineProperty(wrapper.find(".picker-wrapper").element, "offsetWidth", { value: 310 });
+    await wrapper.find("button").trigger("click");
+    await nextTick();
+    expect(wrapper.find(".picker-wrapper").element.style.left).toBe(`${window.innerWidth - 310}px`);
+    wrapper.unmount();
+  });
+
   it("emits v-model with the picked date", async () => {
     const wrapper = mountPicker();
     await wrapper.find("button").trigger("click");

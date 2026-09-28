@@ -74,10 +74,11 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
 
       // The last row's promo calendar shows whole: the table's scroll box must not cut it off, and the table carries
       // one calendar (the open one), not one per cell.
-      const lastFrom = page.locator('.pm-price-table__row .basic-date-picker__trigger').nth(-2);
-      if (await lastFrom.count()) {
-        await lastFrom.scrollIntoViewIfNeeded();
-        await lastFrom.click();
+      // Both of the last row's pickers: From, and To at the table's right edge.
+      const triggers = page.locator('.pm-price-table__row .basic-date-picker__trigger');
+      for (const trigger of (await triggers.count()) ? [triggers.nth(-2), triggers.nth(-1)] : []) {
+        await trigger.scrollIntoViewIfNeeded();
+        await trigger.click();
         const calendar = page.locator('.pm-price-table .flatpickr-calendar');
         await expect(calendar).toHaveCount(1);
         await expect(calendar).toBeInViewport({ ratio: 1 });
@@ -86,7 +87,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
           .locator('.pm-price-table')
           .evaluate((box) => box.scrollHeight - box.clientHeight);
         expect(hiddenBelow).toBeLessThanOrEqual(1);
-        await lastFrom.click();
+        await trigger.click();
         await expect(calendar).toHaveCount(0);
       }
 

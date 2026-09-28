@@ -86,13 +86,15 @@ function close() {
   window.removeEventListener("resize", place);
 }
 
-// Below the trigger, or above it when the viewport has no room below and does above.
+// Below the trigger, or above it when the viewport has no room below and does above; never past the right edge (a
+// fixed box cannot be scrolled to).
 function place() {
   const trigger = triggerEl.value.getBoundingClientRect();
-  const height = wrapperEl.value.offsetHeight;
+  const { offsetHeight: height, offsetWidth: width } = wrapperEl.value;
   const up = window.innerHeight - trigger.bottom < height && trigger.top >= height;
   const top = up ? trigger.top - height : trigger.bottom;
-  fixedStyle.value = { position: "fixed", top: `${top}px`, left: `${trigger.left}px`, bottom: "auto", transform: "none" };
+  const left = Math.max(0, Math.min(trigger.left, window.innerWidth - width));
+  fixedStyle.value = { position: "fixed", top: `${top}px`, left: `${left}px`, bottom: "auto", transform: "none" };
 }
 
 // An outside change only: the picker's own pick is already in its input.
