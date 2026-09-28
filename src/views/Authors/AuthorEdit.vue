@@ -30,7 +30,7 @@
 
       <template v-else>
         <!-- Basic info -->
-        <div class="page-card author-edit__section mb-10">
+        <BasicCard class="author-edit__section mb-10">
           <div class="section-label mb-8">{{ $t("pim.basic_info") }}</div>
           <div class="flex gap-8 mb-8" style="flex-wrap: wrap">
             <FormField
@@ -88,10 +88,10 @@
               </div>
             </div>
           </div>
-        </div>
+        </BasicCard>
 
         <!-- Translated fields -->
-        <div class="page-card author-edit__section mb-10">
+        <BasicCard class="author-edit__section mb-10">
           <div class="section-label mb-8">{{ $t("pim.translations") }}</div>
 
           <div
@@ -116,10 +116,10 @@
               v-model="form[field.key][defaultLang]"
             />
           </div>
-        </div>
+        </BasicCard>
 
         <!-- Contact info -->
-        <div class="page-card author-edit__section mb-10">
+        <BasicCard class="author-edit__section mb-10">
           <div class="section-label mb-8">{{ $t("dp.contact") }}</div>
           <div class="flex gap-8 mb-8" style="flex-wrap: wrap">
             <FormField
@@ -151,10 +151,10 @@
               v-model="form.contact_url"
             />
           </FormField>
-        </div>
+        </BasicCard>
 
         <!-- Social profiles -->
-        <div class="page-card author-edit__section mb-10">
+        <BasicCard class="author-edit__section mb-10">
           <div class="section-label mb-8">
             {{ $t("authors.social_profiles") }}
           </div>
@@ -171,7 +171,7 @@
               />
             </FormField>
           </div>
-        </div>
+        </BasicCard>
       </template>
     </PageLayout>
 
