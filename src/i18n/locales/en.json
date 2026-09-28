@@ -628,7 +628,12 @@
     "no_products_found": "No products found",
     "no_stock_yet": "No stock",
     "add_selected": "Add selected",
-    "tab_stock": "Stock"
+    "tab_stock": "Stock",
+    "import_choose_file": "Choose file",
+    "import_no_file": "No file chosen",
+    "import_upload": "Upload",
+    "import_done": "Done",
+    "import_row_error": "Row {row}: {error}"
   },
   "accounts": {
     "filters": "Customer status",

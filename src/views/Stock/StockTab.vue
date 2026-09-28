@@ -1,56 +1,37 @@
 <template>
-  <div class="stock-tab" :class="{ 'stock-tab--embedded': embedded }">
-    <div v-if="loading" class="flex-center pv-12">
-      <Loader />
-    </div>
+  <div class="sku-stock" :class="{ 'sku-stock--embedded': embedded }">
+    <Loader v-if="loading" block />
 
     <div v-else-if="rows.length === 0" class="pv-12">
       <EmptyState :title="$t('stock.no_warehouses')" icon="warehouse" />
     </div>
 
     <template v-else>
-      <div v-if="dirtyCount > 0" class="stock-tab__actions flex ai-ct jc-fe gap-5 mb-5">
-        <span class="bg-warning-subtle t-warning fs-200 ph-2 rounded">
-          {{ $t("stock.unsaved") }}: {{ dirtyCount }}
-        </span>
-        <BasicButton
-          variant="primary"
-          @click="saveAll"
-        >
-          {{ $t('stock.save_all') }}
+      <div v-if="dirtyCount > 0" class="sku-stock__actions flex ai-ct jc-fe gap-5 mb-5">
+        <StatusBadge tone="warning" :dot="false" :label="`${$t('stock.unsaved')}: ${dirtyCount}`" />
+        <BasicButton variant="primary" @click="saveAll">
+          {{ $t("stock.save_all") }}
         </BasicButton>
       </div>
 
-      <table class="table-basic stock-tab__table">
-        <thead>
-          <tr>
-            <th>{{ $t("stock.warehouse") }}</th>
-            <th class="stock-tab__col-type">{{ $t("stock.source_manual") }}</th>
-            <th class="stock-tab__col-qty">{{ $t("stock.quantity") }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="row in rows" :key="row.warehouse_code">
-            <td class="fw-500">{{ row.warehouse_name }}</td>
-            <td class="stock-tab__col-type">
-              <StatusBadge
-                :label="row.source_type === 'manual' ? $t('stock.source_manual') : $t('stock.source_integration')"
-                :tone="row.source_type === 'manual' ? 'positive' : 'neutral'"
-              />
-            </td>
-            <td class="stock-tab__col-qty">
-              <NumberInput
-                v-if="row.source_type === 'manual'"
-                :modelValue="getDisplayQty(row)"
-                :min="0"
-                @update:modelValue="(val) => onQtyChange(row.warehouse_code, val)"
-              />
-              <span v-else class="t-muted">{{ row.quantity }}</span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
+      <DataTable :columns="columns" :rows="rows" row-key="warehouse_code">
+        <template #cell-source_type="{ row }">
+          <StatusBadge
+            :label="row.source_type === 'manual' ? $t('stock.source_manual') : $t('stock.source_integration')"
+            :tone="row.source_type === 'manual' ? 'positive' : 'neutral'"
+          />
+        </template>
+        <template #cell-quantity="{ row }">
+          <NumberInput
+            v-if="row.source_type === 'manual'"
+            :model-value="getDisplayQty(row)"
+            :min="0"
+            :aria-label="`${$t('stock.quantity')}: ${row.warehouse_name}`"
+            @update:model-value="(val) => onQtyChange(row.warehouse_code, val)"
+          />
+          <span v-else class="t-muted">{{ row.quantity }}</span>
+        </template>
+      </DataTable>
     </template>
   </div>
 </template>
@@ -82,6 +63,13 @@ export default {
   computed: {
     dirtyCount() {
       return Object.keys(this.dirtyItems).length
+    },
+    columns() {
+      return [
+        { key: "warehouse_name", label: this.$t("stock.warehouse") },
+        { key: "source_type", label: this.$t("stock.source_manual"), width: "max-content" },
+        { key: "quantity", label: this.$t("stock.quantity"), width: "160px" },
+      ]
     },
   },
   watch: {
@@ -149,30 +137,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.stock-tab--embedded {
+.sku-stock--embedded {
   padding: var(--space-8);
 }
 
-.stock-tab__table tr:hover td {
-  background: var(--surface-raised);
-}
-
-.stock-tab__col-type {
-  width: 120px;
-}
-
-.stock-tab__col-qty {
-  width: 140px;
-}
-
-.stock-tab__actions {
+.sku-stock__actions {
   padding-bottom: var(--space-5);
   border-bottom: 1px solid var(--border-subtle);
-}
-
-.flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 </style>

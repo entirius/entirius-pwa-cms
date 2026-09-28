@@ -1,15 +1,25 @@
 <template>
-  <BasicModal :open="true" size="sm" :title="$t('stock.import_title')" @close="$emit('close')">
-    <div v-if="!report" class="flex fd-col gap-5">
-      <p class="fs-300 t-secondary">{{ $t("stock.import_select_file") }}</p>
+  <BasicModal
+    :open="true"
+    size="sm"
+    :title="$t('stock.import_title')"
+    :actions="footerActions"
+    @close="$emit('close')"
+  >
+    <FormField v-if="!report" id="stock-import-file" :label="$t('stock.import_select_file')">
+      <div class="flex ai-ct wrap gap-3">
+        <BasicButton @click="$refs.fileInput.click()">{{ $t("stock.import_choose_file") }}</BasicButton>
+        <span class="fs-300 t-secondary">{{ selectedFile?.name || $t("stock.import_no_file") }}</span>
+      </div>
       <input
+        id="stock-import-file"
         ref="fileInput"
         type="file"
         accept=".csv"
-        class="mb-5"
+        hidden
         @change="onFileSelect"
       />
-    </div>
+    </FormField>
 
     <div v-else class="flex fd-col gap-2">
       <p class="fs-300 fw-600 t-positive mb-5">{{ $t("stock.import_success") }}</p>
@@ -29,32 +39,11 @@
         <p class="fs-200 fw-600 t-negative mb-2">{{ $t("stock.import_errors") }}:</p>
         <ul class="fs-200 t-secondary">
           <li v-for="(err, i) in report.errors.slice(0, 10)" :key="i">
-            Row {{ err.row }}: {{ err.error }}
+            {{ $t("stock.import_row_error", { row: err.row, error: err.error }) }}
           </li>
         </ul>
       </div>
     </div>
-
-    <template #footer>
-      <BasicButton variant="secondary" @click="$emit('close')">
-        {{ report ? "Close" : "Cancel" }}
-      </BasicButton>
-      <BasicButton
-        v-if="!report"
-        variant="primary"
-        :disabled="!selectedFile || uploading"
-        @click="upload"
-      >
-        {{ uploading ? "Uploading..." : "Upload" }}
-      </BasicButton>
-      <BasicButton
-        v-if="report"
-        variant="primary"
-        @click="$emit('imported')"
-      >
-        Done
-      </BasicButton>
-    </template>
   </BasicModal>
 </template>
 
@@ -79,6 +68,27 @@ export default {
       uploading: false,
       report: null,
     }
+  },
+  computed: {
+    footerActions() {
+      if (this.report) {
+        return [
+          { key: "close", label: this.$t("common.close"), role: "secondary", onClick: () => this.$emit("close") },
+          { key: "done", label: this.$t("stock.import_done"), role: "primary", onClick: () => this.$emit("imported") },
+        ]
+      }
+      return [
+        { key: "cancel", label: this.$t("common.cancel"), role: "secondary", onClick: () => this.$emit("close") },
+        {
+          key: "upload",
+          label: this.$t("stock.import_upload"),
+          role: "primary",
+          disabled: !this.selectedFile,
+          loading: this.uploading,
+          onClick: this.upload,
+        },
+      ]
+    },
   },
   methods: {
     onFileSelect(event) {

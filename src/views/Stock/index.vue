@@ -1,31 +1,6 @@
 <template>
   <div class="stock-panel h-100">
-    <div class="panel-toolbar bg-raised fs-300">
-      <div class="panel-toolbar__title flex ai-ct gap-5">
-        <BasicSelect
-          :model-value="activeWarehouse?.code ?? null"
-          :options="warehouseOptions"
-          :placeholder="$t('stock.select_warehouse')"
-          :aria-label="$t('stock.select_warehouse')"
-          class="stock-panel__select"
-          @update:model-value="onWarehouseSelect"
-        />
-        <StatusBadge
-          v-if="activeWarehouse"
-          :label="activeWarehouse.source_type === 'manual' ? $t('stock.source_manual') : $t('stock.source_integration')"
-          :tone="activeWarehouse.source_type === 'manual' ? 'positive' : 'neutral'"
-        />
-        <span
-          v-if="activeWarehouse && activeWarehouse.source_type === 'integration' && activeWarehouse.last_synced_at"
-          class="fs-200 t-muted"
-        >
-          {{ $t('stock.last_synced') }}: {{ formatRelativeTime(activeWarehouse.last_synced_at) }}
-        </span>
-      </div>
-      <div id="stock-toolbar-right" class="panel-toolbar__actions flex ai-ct gap-5"></div>
-    </div>
-
-    <div v-if="!activeWarehouse && !loading" class="flex-center h-100">
+    <div v-if="!activeWarehouse && !loading" class="flex ai-ct jc-ct h-100">
       <EmptyState
         :title="warehouses.length ? $t('stock.select_warehouse') : $t('stock.no_warehouses')"
         icon="stock"
@@ -52,6 +27,8 @@ export default {
   provide() {
     return {
       activeWarehouse: () => this.activeWarehouse,
+      stockWarehouses: () => this.sortedWarehouses,
+      selectWarehouse: this.onWarehouseSelect,
     }
   },
   data() {
@@ -67,12 +44,6 @@ export default {
         if (a.source_type === b.source_type) return a.name.localeCompare(b.name)
         return a.source_type === "manual" ? -1 : 1
       })
-    },
-    warehouseOptions() {
-      return this.sortedWarehouses.map((wh) => ({
-        label: wh.name,
-        value: wh.code,
-      }))
     },
   },
   mounted() {
@@ -100,16 +71,6 @@ export default {
       const code = Array.isArray(selected) ? selected[0] : selected
       this.activeWarehouse = this.warehouses.find((wh) => wh.code === code) || null
     },
-    formatRelativeTime(dateStr) {
-      if (!dateStr) return ""
-      const diff = Date.now() - new Date(dateStr).getTime()
-      const minutes = Math.floor(diff / 60000)
-      if (minutes < 60) return `${minutes}m ago`
-      const hours = Math.floor(minutes / 60)
-      if (hours < 24) return `${hours}h ago`
-      const days = Math.floor(hours / 24)
-      return `${days}d ago`
-    },
   },
 }
 </script>
@@ -118,16 +79,5 @@ export default {
 .stock-panel {
   display: flex;
   flex-direction: column;
-}
-
-.stock-panel__select {
-  min-width: 200px;
-  max-width: 300px;
-}
-
-.flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 </style>

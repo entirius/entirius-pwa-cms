@@ -13,19 +13,25 @@ vi.mock("@/stores/loader", () => ({ useLoaderStore: () => ({ loaderStart() {}, l
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification() {} }) }));
 
 import StockPanel from "@/views/Stock/index.vue";
+import StockWarehousePicker from "@/views/Stock/StockWarehousePicker.vue";
 
 const BasicSelect = { name: "BasicSelect", props: ["modelValue", "options"], emits: ["update:modelValue"], template: "<div />" };
 
-// Plan 17: the warehouse picker's `@onSelect` handler now hangs on BasicSelect `@update:model-value`.
+// Plan 38: the picker left the panel toolbar for the PageHeader `meta` of the stock table; the panel wrapper still
+// owns the warehouses and provides them to the picker.
+const PickerRoute = { components: { StockWarehousePicker }, template: "<StockWarehousePicker />" };
+
 describe("Stock panel — warehouse picker on BasicSelect", () => {
   it("makes the picked warehouse active", async () => {
-    const wrapper = mount(StockPanel, { global: { stubs: { BasicSelect, RouterView: true } } });
+    const wrapper = mount(StockPanel, {
+      global: { stubs: { BasicSelect, StatusBadge: true, RouterView: PickerRoute, EmptyState: true } },
+    });
     await flushPromises();
     const select = wrapper.findComponent({ name: "BasicSelect" });
-    const first = select.props("modelValue");
-    const other = first === "main" ? "ext" : "main";
-    await select.vm.$emit("update:modelValue", other);
-    expect(wrapper.vm.activeWarehouse.code).toBe(other);
-    expect(select.props("modelValue")).toBe(other);
+    expect(select.props("modelValue")).toBe("main");
+    expect(select.props("options").map((o) => o.value)).toEqual(["main", "ext"]);
+    await select.vm.$emit("update:modelValue", "ext");
+    expect(wrapper.vm.activeWarehouse.code).toBe("ext");
+    expect(select.props("modelValue")).toBe("ext");
   });
 });

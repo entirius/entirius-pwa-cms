@@ -1,9 +1,16 @@
 <template>
-  <BasicModal :open="true" size="sm" :title="$t('stock.add_products_title')" @close="$emit('close')">
+  <BasicModal
+    :open="true"
+    size="sm"
+    :title="$t('stock.add_products_title')"
+    :actions="footerActions"
+    @close="$emit('close')"
+  >
     <div class="add-product__toolbar flex ai-ct gap-5 mb-5">
       <BasicInput
         v-model="search"
         :placeholder="$t('stock.search_sku')"
+        :aria-label="$t('stock.search_sku')"
         icon="search"
         class="add-product__search"
         @input="debouncedSearch"
@@ -15,29 +22,17 @@
       />
     </div>
 
-    <div v-if="loading" class="flex-center pv-8">
-      <Loader />
-    </div>
+    <Loader v-if="loading" block />
 
     <div v-else-if="products.length === 0" class="pv-8 fs-300 t-muted">
       {{ $t("stock.no_products_found") }}
     </div>
 
     <div v-else class="add-product__list">
-      <div
-        v-for="p in products"
-        :key="p.sku"
-        class="add-product__row flex ai-ct jc-sb"
-        :class="{ 'add-product__row--selected': selectedSkus.has(p.sku) }"
-        @click="toggleSku(p.sku)"
-      >
-        <div class="flex ai-ct gap-5">
-          <FontAwesomeIcon
-            :icon="selectedSkus.has(p.sku) ? $icons.checkboxOn : $icons.checkboxOff"
-            :class="selectedSkus.has(p.sku) ? 't-accent' : 't-muted'"
-          />
+      <div v-for="p in products" :key="p.sku" class="add-product__row flex ai-ct jc-sb">
+        <BasicCheckbox :model-value="selectedSkus.has(p.sku)" @update:model-value="toggleSku(p.sku)">
           <span class="fw-500">{{ p.sku }}</span>
-        </div>
+        </BasicCheckbox>
         <StatusBadge
           v-if="p.has_stock"
           :label="String(p.quantity)"
@@ -55,18 +50,6 @@
       />
     </div>
 
-    <template #footer>
-      <BasicButton variant="secondary" @click="$emit('close')">
-        Cancel
-      </BasicButton>
-      <BasicButton
-        variant="primary"
-        :disabled="selectedSkus.size === 0"
-        @click="addSelected"
-      >
-        {{ $t("stock.add_selected") }} ({{ selectedSkus.size }})
-      </BasicButton>
-    </template>
   </BasicModal>
 </template>
 
@@ -91,6 +74,20 @@ export default {
       selectedSkus: new Set(),
       _debounceTimer: null,
     }
+  },
+  computed: {
+    footerActions() {
+      return [
+        { key: "cancel", label: this.$t("common.cancel"), role: "secondary", onClick: () => this.$emit("close") },
+        {
+          key: "add",
+          label: `${this.$t("stock.add_selected")} (${this.selectedSkus.size})`,
+          role: "primary",
+          disabled: this.selectedSkus.size === 0,
+          onClick: this.addSelected,
+        },
+      ]
+    },
   },
   mounted() {
     this.fetchProducts()
@@ -155,24 +152,9 @@ export default {
 .add-product__row {
   padding: var(--space-2) var(--space-5);
   border-bottom: 1px solid var(--border-subtle);
-  cursor: pointer;
 
   &:last-child {
     border-bottom: none;
   }
-
-  &:hover {
-    background: var(--surface-raised);
-  }
-
-  &--selected {
-    background: var(--accent-subtle);
-  }
-}
-
-.flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 </style>
