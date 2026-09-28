@@ -533,23 +533,22 @@ onMounted(() => {
                 }}</span>
               </div>
             </div>
-            <button
+            <IconButton
               v-if="!readonly"
-              class="product-files__edit-btn"
-              :aria-label="$t('pim.settings')"
+              icon="edit"
+              size="sm"
+              :label="$t('pim.settings')"
               @click="toggleEditRow(fileData(pf).pk)"
-            >
-              <FontAwesomeIcon :icon="$icons.edit" />
-            </button>
-            <button
+            />
+            <IconButton
               v-if="!readonly"
-              class="product-files__delete-btn"
-              :aria-label="$t('pim.confirm_delete_media')"
+              icon="delete"
+              size="sm"
+              variant="danger"
+              :label="$t('common.delete')"
               :disabled="deletingFilePk === pf.pk"
               @click="deleteFile(pf.pk)"
-            >
-              <FontAwesomeIcon :icon="$icons.delete" />
-            </button>
+            />
           </div>
 
           <!-- Row 2: inline editing (category + labels) — toggled -->
@@ -773,51 +772,6 @@ onMounted(() => {
 
   &__details {
     margin-top: 2px;
-  }
-
-  &__edit-btn {
-    flex-shrink: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border: none;
-    border-radius: var(--radius-base);
-    background-color: var(--surface-raised);
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: background-color 0.15s;
-
-    &:hover {
-      background-color: var(--accent-subtle);
-      color: var(--text-strong);
-    }
-  }
-
-  &__delete-btn {
-    flex-shrink: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border: none;
-    border-radius: var(--radius-base);
-    background-color: var(--negative-subtle);
-    color: var(--negative);
-    cursor: pointer;
-    transition: background-color 0.15s;
-
-    &:hover:not(:disabled) {
-      background-color: var(--negative-fill);
-      color: var(--text-on-status-fill);
-    }
-
-    &:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
   }
 }
 

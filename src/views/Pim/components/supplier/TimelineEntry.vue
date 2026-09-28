@@ -1,7 +1,7 @@
 <template>
   <li class="timeline-entry" :class="{ 'timeline-entry--applied': entry.applied_to_pim }">
     <div class="timeline-entry__marker" :class="`timeline-entry__marker--${entry.applied_to_pim ? 'applied' : 'pending'}`" />
-    <div class="timeline-entry__body">
+    <BasicCard class="timeline-entry__body">
       <div class="timeline-entry__row">
         <span class="timeline-entry__date t-body fw-600">{{ formatDate(entry.created_at) }}</span>
         <StatusBadge :label="sourceLabel" :tone="sourceVariant" />
@@ -21,14 +21,14 @@
         </span>
       </div>
       <div v-if="hasComplexDiff" class="timeline-entry__diff-controls">
-        <button class="timeline-entry__toggle" @click="expanded = !expanded">
+        <BasicButton size="sm" variant="ghost" @click="expanded = !expanded">
           {{ expanded ? $t("pim.supplier.timeline.hide_diff") : $t("pim.supplier.timeline.show_diff") }}
-        </button>
+        </BasicButton>
       </div>
       <div v-if="hasComplexDiff && expanded" class="timeline-entry__diff">
         <component :is="diffComponent" :before="entry.before" :after="entry.after" />
       </div>
-    </div>
+    </BasicCard>
   </li>
 </template>
 
@@ -120,18 +120,13 @@ export default {
   display: grid;
   grid-template-columns: 24px 1fr;
   gap: var(--space-5);
-  padding: var(--space-5) 0;
-  border-bottom: 1px solid var(--border-subtle);
   list-style: none;
-}
-.timeline-entry:last-child {
-  border-bottom: none;
 }
 .timeline-entry__marker {
   width: 12px;
   height: 12px;
   border-radius: var(--radius-full);
-  margin-top: var(--space-1);
+  margin-top: var(--space-6);
   justify-self: center;
 }
 .timeline-entry__marker--applied {
@@ -160,16 +155,6 @@ export default {
   border-radius: var(--radius-base);
   font-family: var(--font-mono, monospace);
   font-size: var(--fs-200);
-}
-.timeline-entry__toggle {
-  margin-top: var(--space-2);
-  background: none;
-  border: none;
-  padding: 0;
-  color: var(--text-accent);
-  cursor: pointer;
-  font-size: var(--fs-200);
-  text-decoration: underline;
 }
 .timeline-entry__diff {
   margin-top: var(--space-5);

@@ -11,13 +11,14 @@
         {{ $t("pim.supplier.diff.no_change") }}
       </span>
     </div>
-    <button
+    <BasicButton
       v-if="addedItems.length + removedItems.length > 0"
-      class="array-diff__toggle"
+      size="sm"
+      variant="ghost"
       @click="expanded = !expanded"
     >
       {{ expanded ? $t("pim.supplier.timeline.hide_diff") : $t("pim.supplier.timeline.show_diff") }}
-    </button>
+    </BasicButton>
     <div v-if="expanded" class="array-diff__details">
       <ul v-if="addedItems.length" class="array-diff__list">
         <li v-for="(item, i) in addedItems" :key="`a-${i}`" class="t-positive">+ {{ item }}</li>
@@ -69,16 +70,6 @@ export default {
 .array-diff__summary {
   display: flex;
   gap: var(--space-8);
-}
-.array-diff__toggle {
-  margin-top: var(--space-2);
-  padding: 0;
-  background: none;
-  border: none;
-  color: var(--text-accent);
-  cursor: pointer;
-  text-decoration: underline;
-  font-size: var(--fs-200);
 }
 .array-diff__details {
   margin-top: var(--space-5);

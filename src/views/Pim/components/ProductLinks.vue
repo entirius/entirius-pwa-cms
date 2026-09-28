@@ -2,14 +2,9 @@
   <div class="product-links p-8 ovy-auto h-100">
     <div class="flex ai-ct jc-sb mb-8 flex-wrap gap-5">
       <h2 class="fs-400 fw-600">{{ $t("pim.tab_links") }}</h2>
-      <button
-        class="links-primary-btn"
-        data-testid="linked-create-btn"
-        @click="openCreate"
-      >
-        <FontAwesomeIcon :icon="$icons.add" />
+      <BasicButton data-testid="linked-create-btn" @click="openCreate">
         {{ $t("pim.links.create_button") }}
-      </button>
+      </BasicButton>
     </div>
 
     <div class="flex ai-ct gap-5 mb-5 flex-wrap">
@@ -51,10 +46,12 @@
           <div
             class="links-table__row"
             :class="{ 'links-table__row--draggable': activeLinkType && !reordering }"
+            data-testid="linked-row"
             role="row"
           >
             <span
               class="links-table__handle"
+              data-testid="linked-handle"
               :class="{ 'links-table__handle--disabled': !activeLinkType }"
               :title="!activeLinkType ? $t('pim.links.drag_disabled_hint') : ''"
             >
@@ -70,22 +67,21 @@
             <span class="lc-1">{{ row.linked_product?.name }}</span>
             <span>{{ row.position }}</span>
             <span class="flex ai-ct gap-2" @click.stop>
-              <button
-                class="row-action-btn bg-raised t-body"
-                :title="$t('common.edit')"
+              <IconButton
+                icon="edit"
+                size="sm"
+                :label="$t('common.edit')"
                 :data-testid="`linked-edit-${row.pk}`"
                 @click="openEdit(row)"
-              >
-                <FontAwesomeIcon :icon="$icons.edit" />
-              </button>
-              <button
-                class="row-action-btn bg-negative-subtle t-negative"
-                :title="$t('common.delete')"
+              />
+              <IconButton
+                icon="delete"
+                size="sm"
+                variant="danger"
+                :label="$t('common.delete')"
                 :data-testid="`linked-delete-${row.pk}`"
                 @click="confirmDelete(row)"
-              >
-                <FontAwesomeIcon :icon="$icons.delete" />
-              </button>
+              />
             </span>
           </div>
         </template>
@@ -106,6 +102,7 @@
         <FormField
           :label="$t('pim.links.linked_sku_label')"
           required
+          :error="errors.linked_product_sku?.msg || ''"
           data-testid="linked-form-sku"
         >
           <EntitySearchPicker
@@ -118,12 +115,13 @@
             @update:displayValue="formData.linked_product_display = $event"
             @clear="formData.linked_product_sku = ''; formData.linked_product_display = ''"
           />
-          <p v-if="errors.linked_product_sku" class="form-error t-negative fs-200">
-            {{ errors.linked_product_sku.msg }}
-          </p>
         </FormField>
 
-        <FormField :label="$t('pim.links.type_label')" required>
+        <FormField
+          :label="$t('pim.links.type_label')"
+          required
+          :error="errors.link_type_idx?.msg || ''"
+        >
           <div data-testid="linked-form-type">
             <BasicSelect
               :options="typeDropdownValues"
@@ -132,9 +130,6 @@
               :disabled="!!editing"
             />
           </div>
-          <p v-if="errors.link_type_idx" class="form-error t-negative fs-200">
-            {{ errors.link_type_idx.msg }}
-          </p>
         </FormField>
 
         <FormField :label="$t('pim.links.position_label')">
@@ -147,23 +142,17 @@
         </FormField>
 
         <div class="flex ai-ct jc-end gap-5 mt-8">
-          <button
-            type="button"
-            class="links-secondary-btn"
-            data-testid="linked-form-cancel"
-            @click="closeForm"
-          >
+          <BasicButton data-testid="linked-form-cancel" @click="closeForm">
             {{ $t("common.cancel") }}
-          </button>
-          <button
+          </BasicButton>
+          <BasicButton
             type="submit"
-            class="links-primary-btn"
+            variant="primary"
             :disabled="formBusy"
             data-testid="linked-form-submit"
           >
-            <FontAwesomeIcon :icon="$icons.saveDraft" />
             {{ $t("common.save") }}
-          </button>
+          </BasicButton>
         </div>
       </form>
     </SideDrawer>
@@ -432,47 +421,6 @@ watch(
 .product-links {
   display: flex;
   flex-direction: column;
-}
-.links-primary-btn,
-.links-secondary-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  height: 36px;
-  padding: 0 var(--space-4);
-  font-size: var(--fs-250);
-  font-weight: 500;
-  border-radius: var(--radius-base);
-  border: 1px solid;
-  cursor: pointer;
-}
-.links-primary-btn {
-  background: var(--accent-fill);
-  border-color: var(--accent);
-  color: var(--text-on-accent-fill);
-}
-.links-primary-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-.links-secondary-btn {
-  background: var(--surface-base);
-  border-color: var(--border-default);
-  color: var(--text-body);
-}
-.row-action-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border: none;
-  border-radius: var(--radius-base);
-  cursor: pointer;
-}
-.form-error {
-  margin: 0;
-  margin-top: 2px;
 }
 .links-table {
   border: 1px solid var(--border-subtle);

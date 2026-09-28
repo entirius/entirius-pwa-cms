@@ -67,9 +67,7 @@ async function openLinkedProductsTab(page) {
   await page.goto(`/pim/products/${PRODUCT_SKU}`);
   await page.waitForLoadState('networkidle', { timeout: 15000 });
   // Click the "Linked products" tab via its label
-  await page
-    .locator('button.basic-tabs__tab', { hasText: 'Linked products' })
-    .click();
+  await page.getByRole('tab', { name: 'Linked products' }).click();
   await page.waitForSelector('[data-testid="linked-create-btn"]', { timeout: 5000 });
 }
 
@@ -104,7 +102,7 @@ test.describe('PIM Linked products', () => {
     await expect(page.locator('[data-testid="linked-filter-navigation"]')).toBeVisible();
 
     // Empty state — no data rows
-    const rowCount = await page.locator('.data-table__row').count();
+    const rowCount = await page.locator('[data-testid="linked-row"]').count();
     expect(rowCount).toBe(0);
 
     collector.assertNoErrors(expect, 'Linked products empty state');
@@ -117,38 +115,30 @@ test.describe('PIM Linked products', () => {
 
     // Open SKU picker
     await page
-      .locator('[data-testid="linked-form-sku"] .entity-picker__trigger')
+      .locator('[data-testid="linked-form-sku"]')
+      .getByRole('combobox')
       .click();
-    // Type a search term that matches the linked SKU
-    const skuInput = page.locator(
-      '[data-testid="linked-form-sku"] .entity-picker__search'
-    );
+    // Type a search term that matches the linked SKU (the picker panel opens in a popover)
+    const skuInput = page.getByRole('combobox', { name: 'Search by SKU or name' });
     await skuInput.fill('1310');
     // Wait for picker debounce + API + render
-    await page
-      .locator('[data-testid="linked-form-sku"] [role="option"]')
-      .first()
-      .waitFor({ state: 'visible', timeout: 5000 });
-    await page
-      .locator('[data-testid="linked-form-sku"] [role="option"]')
-      .first()
-      .click();
+    const firstOption = page.getByRole('option').first();
+    await firstOption.waitFor({ state: 'visible', timeout: 5000 });
+    await firstOption.click();
 
-    // Open Type dropdown and pick "Related"
+    // Open Type select and pick "Related"
     await page
-      .locator('[data-testid="linked-form-type"] .element-wrap')
+      .locator('[data-testid="linked-form-type"]')
+      .getByRole('combobox')
       .click();
-    await page
-      .locator('[data-testid="linked-form-type"] .dropdown-list-el', { hasText: 'Related' })
-      .first()
-      .click();
+    await page.getByRole('option', { name: 'Related' }).first().click();
 
     // Submit
     await page.locator('[data-testid="linked-form-submit"]').click();
 
     // Drawer should close + row should appear
     await page.waitForSelector('.side-drawer-panel', { state: 'detached', timeout: 5000 });
-    await expect(page.locator('.data-table__row', { hasText: LINKED_SKU })).toBeVisible({
+    await expect(page.locator('[data-testid="linked-row"]', { hasText: LINKED_SKU })).toBeVisible({
       timeout: 5000,
     });
   });
@@ -164,7 +154,7 @@ test.describe('PIM Linked products', () => {
     // Drawer stays open, field error appears
     await expect(page.locator('.side-drawer-panel')).toBeVisible();
     await expect(
-      page.locator('.side-drawer-panel .form-error').first()
+      page.locator('.side-drawer-panel').getByRole('alert').first()
     ).toBeVisible({ timeout: 2000 });
   });
 
@@ -201,7 +191,7 @@ test.describe('PIM Linked products', () => {
     await page.waitForSelector('.side-drawer-panel', { state: 'detached', timeout: 5000 });
 
     // Row should still show LINKED_SKU and position 5
-    const row = page.locator('.data-table__row', { hasText: LINKED_SKU });
+    const row = page.locator('[data-testid="linked-row"]', { hasText: LINKED_SKU });
     await expect(row).toBeVisible();
     await expect(row).toContainText('5');
   });
@@ -226,22 +216,22 @@ test.describe('PIM Linked products', () => {
     // All shows 2 rows
     await page.locator('[data-testid="linked-filter-all"]').click();
     await page.waitForLoadState('networkidle');
-    expect(await page.locator('.data-table__row').count()).toBe(2);
+    expect(await page.locator('[data-testid="linked-row"]').count()).toBe(2);
 
     // Related shows 1
     await page.locator('[data-testid="linked-filter-related"]').click();
     await page.waitForLoadState('networkidle');
-    expect(await page.locator('.data-table__row').count()).toBe(1);
+    expect(await page.locator('[data-testid="linked-row"]').count()).toBe(1);
 
     // Upsell shows 1
     await page.locator('[data-testid="linked-filter-upsell"]').click();
     await page.waitForLoadState('networkidle');
-    expect(await page.locator('.data-table__row').count()).toBe(1);
+    expect(await page.locator('[data-testid="linked-row"]').count()).toBe(1);
 
     // Crosssell shows 0
     await page.locator('[data-testid="linked-filter-crosssell"]').click();
     await page.waitForLoadState('networkidle');
-    expect(await page.locator('.data-table__row').count()).toBe(0);
+    expect(await page.locator('[data-testid="linked-row"]').count()).toBe(0);
   });
 
   test('7. drag-and-drop reorder updates positions (filtered view)', async ({ page }) => {
@@ -272,16 +262,16 @@ test.describe('PIM Linked products', () => {
 
     // Capture initial order
     const rowsBefore = await page
-      .locator('.links-table__row:not(.links-table__row--header)')
+      .locator('[data-testid="linked-row"]')
       .allTextContents();
     expect(rowsBefore.length).toBe(seeded.length);
 
     // Drag first handle onto the last row using Playwright's real-mouse drag
     const firstHandle = page
-      .locator('.links-table__row:not(.links-table__row--header) .links-table__handle')
+      .locator('[data-testid="linked-row"] [data-testid="linked-handle"]')
       .first();
     const lastRow = page
-      .locator('.links-table__row:not(.links-table__row--header)')
+      .locator('[data-testid="linked-row"]')
       .last();
     await firstHandle.dragTo(lastRow);
 
@@ -289,7 +279,7 @@ test.describe('PIM Linked products', () => {
     await page.waitForLoadState('networkidle', { timeout: 5000 });
 
     const rowsAfter = await page
-      .locator('.links-table__row:not(.links-table__row--header)')
+      .locator('[data-testid="linked-row"]')
       .allTextContents();
     // First row should no longer be the one that was first
     expect(rowsAfter[0]).not.toBe(rowsBefore[0]);
@@ -312,14 +302,10 @@ test.describe('PIM Linked products', () => {
     // Click delete trigger
     await page.locator(`[data-testid="linked-delete-${pk}"]`).click();
 
-    // Confirmation modal — accept it. The Confirmation-modal renders an
-    // "Accept" / "Yes" button — pick whichever variant lands.
-    const acceptBtn = page
-      .locator('button:has-text("Yes"), button:has-text("Tak"), button:has-text("OK"), button:has-text("Confirm")')
-      .first();
-    await acceptBtn.click();
+    // Confirmation dialog — accept it.
+    await page.locator('[data-testid="confirm-dialog-confirm"]').click();
 
     // Row disappears
-    await expect(page.locator('.data-table__row')).toHaveCount(0, { timeout: 5000 });
+    await expect(page.locator('[data-testid="linked-row"]')).toHaveCount(0, { timeout: 5000 });
   });
 });

@@ -1,5 +1,5 @@
 <template>
-  <div class="supplier-tab" data-test="supplier-tab">
+  <div class="pv-5" data-test="supplier-tab">
     <Loader block v-if="loading" />
 
     <template v-else-if="!data">
@@ -10,10 +10,10 @@
     </template>
 
     <template v-else>
-      <div class="supplier-tab__header">
+      <div class="flex-column gap-8">
         <LinkedSuppliersPanel :items="linkedSuppliers" />
-        <div class="supplier-tab__status">
-          <div class="supplier-tab__status-line">
+        <BasicCard gap>
+          <div class="flex flex-wrap ai-ct gap-5">
             <StatusBadge
               v-if="unseenCount > 0"
               :label="$t('pim.supplier.status_unseen', { count: unseenCount })"
@@ -28,11 +28,10 @@
               {{ $t("pim.supplier.status_last_sync", { date: lastSync }) }}
             </span>
           </div>
-          <div class="supplier-tab__actions">
+          <div class="flex-column gap-5">
             <div class="supplier-action">
               <BasicButton
                 variant="secondary"
-                class="supplier-action__btn"
                 :disabled="repushing"
                 data-test="supplier-force-repush"
                 @click="onForceRepush"
@@ -46,7 +45,6 @@
             <div class="supplier-action">
               <BasicButton
                 variant="secondary"
-                class="supplier-action__btn"
                 :disabled="acknowledging || unseenCount === 0"
                 data-test="supplier-acknowledge"
                 @click="onAcknowledgeAll"
@@ -60,7 +58,6 @@
             <div class="supplier-action">
               <BasicButton
                 variant="secondary"
-                class="supplier-action__btn"
                 data-test="supplier-force-preferred"
                 @click="onForcePreferredClick"
               >
@@ -73,7 +70,6 @@
             <div class="supplier-action">
               <BasicButton
                 variant="secondary"
-                class="supplier-action__btn"
                 :disabled="resetting"
                 data-test="supplier-reset-auto"
                 @click="onResetToAuto"
@@ -85,7 +81,7 @@
               </span>
             </div>
           </div>
-        </div>
+        </BasicCard>
       </div>
 
       <SupplierTimeline :entries="data.changes || []" data-test="supplier-timeline" />
@@ -310,52 +306,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.supplier-tab {
-  padding: var(--space-5) 0;
-}
-.supplier-tab__header {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-8);
-}
-.supplier-tab__status {
-  padding: var(--space-8);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-  background: var(--surface-base);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
-}
-.supplier-tab__status-line {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-5);
-}
-.supplier-tab__actions {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
-}
 .supplier-action {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: var(--space-5) var(--space-8);
 }
-.supplier-action__btn {
-  flex: 0 0 auto;
-  min-width: 15rem;
-  // override BasicButton's default `jc-sb` (space-between) which, with no
-  // icon, pushes the label to the right edge and looks misaligned
-  justify-content: center;
-}
 .supplier-action__desc {
   flex: 1 1 14rem;
   line-height: var(--lh-300, 1.4);
-}
-.supplier-tab__disabled-wrap {
-  display: inline-flex;
 }
 </style>

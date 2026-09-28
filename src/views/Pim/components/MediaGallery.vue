@@ -174,10 +174,13 @@ function itemKey(item) {
   return `${item.type}-${item.pk}`;
 }
 
-function roleBadgeVariant(role) {
-  if (role === "MAIN") return "info";
-  if (role === "VARIANT") return "warning";
-  return "neutral";
+function tileSrc(item) {
+  const url = item.type === "picture" ? item.imageUrl : item.thumbnailUrl;
+  return url && !brokenImages.has(url) ? url : "";
+}
+
+function tileCaption(item) {
+  return item.type === "picture" ? item.altText : item.title || item.videoUrl;
 }
 
 // --- Data loading ---
@@ -397,6 +400,12 @@ const editAltFilledCount = computed(() => {
     .length;
 });
 
+const altLabel = computed(() => {
+  if (!editAltFilledCount.value) return t("pim.alt_text");
+  const total = pimChannel.activeChannelLanguages.length;
+  return `${t("pim.alt_text")} (${editAltFilledCount.value}/${total})`;
+});
+
 function closeEdit() {
   editingItem.value = null;
   translatingAlt.value = false;
@@ -519,7 +528,7 @@ watch(
             "
             class="media-gallery__broken-placeholder"
           >
-            <FontAwesomeIcon :icon="$icons.video" style="font-size: 48px" />
+            <FontAwesomeIcon :icon="$icons.video" class="fs-700" />
             <a
               :href="selectedItem.imageUrl"
               target="_blank"
@@ -539,8 +548,7 @@ watch(
             <div v-else class="media-gallery__video-link">
               <FontAwesomeIcon
                 :icon="$icons.play"
-                class="t-muted"
-                style="font-size: 48px"
+                class="t-muted fs-700"
               />
               <a
                 :href="selectedItem.videoUrl"
@@ -569,31 +577,23 @@ watch(
             <span class="fw-600 fs-300 t-body">{{
               $t("pim.edit_media")
             }}</span>
-            <button class="media-gallery__close-btn" @click="closeEdit">
-              <FontAwesomeIcon :icon="$icons.close" class="t-muted" />
-            </button>
+            <IconButton
+              icon="close"
+              size="sm"
+              :label="$t('common.close')"
+              @click="closeEdit"
+            />
           </div>
 
           <div class="media-gallery__edit-body">
             <template v-if="editingItem.type === 'picture'">
-              <div class="media-gallery__edit-field">
-                <label class="media-gallery__field-label">{{
-                  $t("pim.picture_role")
-                }}</label>
+              <FormField :label="$t('pim.picture_role')">
                 <BasicSelect
                   :options="roleOptions"
                   v-model="editingItem.editRole"
                 />
-              </div>
-              <div class="media-gallery__edit-field">
-                <label class="media-gallery__field-label">
-                  {{ $t("pim.alt_text") }}
-                  <span v-if="editAltFilledCount" class="t-muted">
-                    ({{ editAltFilledCount }}/{{
-                      pimChannel.activeChannelLanguages.length
-                    }})
-                  </span>
-                </label>
+              </FormField>
+              <FormField :label="altLabel">
                 <span v-if="editAltPreview" class="t-secondary fs-200 lc-1">
                   {{ editAltPreview }}
                 </span>
@@ -603,27 +603,19 @@ watch(
                 >
                   {{ $t('pim.translations') }}
                 </BasicButton>
-              </div>
+              </FormField>
             </template>
 
             <template v-else>
-              <div class="media-gallery__edit-field">
-                <label class="media-gallery__field-label">{{
-                  $t("pim.video_title")
-                }}</label>
+              <FormField :label="$t('pim.video_title')">
                 <BasicInput
                   v-model="editingItem.editTitle"
                   :placeholder="$t('pim.video_title')"
                 />
-              </div>
-              <div class="media-gallery__edit-field">
-                <label class="media-gallery__field-label">{{
-                  $t("pim.video_url")
-                }}</label>
-                <span class="t-secondary fs-200 lc-1">{{
-                  editingItem.videoUrl
-                }}</span>
-              </div>
+              </FormField>
+              <FormField :label="$t('pim.video_url')">
+                <BasicInput :model-value="editingItem.videoUrl" readonly />
+              </FormField>
             </template>
           </div>
 
@@ -657,76 +649,34 @@ watch(
           @end="onDragEnd"
         >
           <template #item="{ element, index }">
-            <div
-              class="media-gallery__thumb"
-              :class="{
-                'media-gallery__thumb--active': index === selectedIndex,
-              }"
+            <MediaTile
+              :src="tileSrc(element)"
+              :alt="element.altText || ''"
+              :caption="tileCaption(element)"
+              :selected="index === selectedIndex"
               @click="selectItem(index)"
+              @keydown.enter.self="selectItem(index)"
             >
-              <!-- Picture thumbnail -->
-              <template v-if="element.type === 'picture'">
-                <img
-                  v-if="!brokenImages.has(element.imageUrl)"
-                  :src="element.imageUrl"
-                  :alt="element.altText"
-                  class="media-gallery__thumb-img"
-                  @error="onImgError(element.imageUrl)"
-                />
-                <div v-else class="media-gallery__thumb-broken">
-                  <FontAwesomeIcon :icon="$icons.video" />
-                  <span class="media-gallery__play-badge">
-                    <FontAwesomeIcon :icon="$icons.play" />
-                  </span>
-                </div>
+              <template v-if="element.role === 'MAIN'" #overlay>
+                <Tag :label="$t('pim.role_main')" />
               </template>
-              <!-- Video thumbnail -->
-              <div v-else class="media-gallery__thumb-video">
-                <img
-                  v-if="
-                    element.thumbnailUrl &&
-                    !brokenImages.has(element.thumbnailUrl)
-                  "
-                  :src="element.thumbnailUrl"
-                  alt=""
-                  class="media-gallery__thumb-img"
-                  @error="onImgError(element.thumbnailUrl)"
+              <template v-if="!readonly" #actions>
+                <IconButton
+                  icon="edit"
+                  size="sm"
+                  :label="$t('pim.edit_media')"
+                  @click="openEdit(element)"
                 />
-                <div v-else class="media-gallery__thumb-video-fallback">
-                  <FontAwesomeIcon :icon="$icons.video" />
-                </div>
-                <span class="media-gallery__play-badge">
-                  <FontAwesomeIcon :icon="$icons.play" />
-                </span>
-              </div>
-
-              <!-- Role badge -->
-              <StatusBadge
-                v-if="element.role === 'MAIN'"
-                class="media-gallery__role-badge"
-                :label="$t('pim.role_main')"
-                tone="info"
-              />
-
-              <!-- Hover overlay with edit/delete -->
-              <div v-if="!readonly" class="media-gallery__thumb-actions">
-                <button
-                  class="media-gallery__action-btn"
-                  :aria-label="$t('pim.edit_media')"
-                  @click.stop="openEdit(element)"
-                >
-                  <FontAwesomeIcon :icon="$icons.edit" />
-                </button>
-                <button
-                  class="media-gallery__action-btn media-gallery__action-btn--delete"
-                  :aria-label="$t('pim.confirm_delete_media')"
+                <IconButton
+                  icon="delete"
+                  size="sm"
+                  variant="danger"
+                  :label="$t('common.delete')"
                   :disabled="deletingKey === itemKey(element)"
-                  @click.stop="confirmingDeleteItem = element"
-                >
-                  <FontAwesomeIcon :icon="$icons.delete" />
-                </button>
-              </div>
-            </div>
+                  @click="confirmingDeleteItem = element"
+                />
+              </template>
+            </MediaTile>
           </template>
         </draggable>
       </div>
@@ -759,13 +709,12 @@ watch(
           <span class="media-gallery__divider-line" />
         </div>
         <div class="media-gallery__video-inline">
-          <FontAwesomeIcon :icon="$icons.link" class="t-muted" />
-          <input
+          <BasicInput
             v-model="newVideoUrl"
-            type="text"
             class="media-gallery__video-input"
+            icon="link"
             :placeholder="$t('pim.video_url_placeholder')"
-            @keydown.enter="addVideo"
+            @on-key-down="addVideo"
           />
           <BasicButton
             variant="secondary"
@@ -886,150 +835,21 @@ watch(
     gap: var(--space-1);
   }
 
-  // --- Thumbnail strip ---
+  // --- Tile grid ---
   &__thumb-strip {
-    display: flex;
-    gap: var(--space-1);
     margin-top: var(--space-2);
-    overflow-x: auto;
-    padding-bottom: var(--space-1);
-    align-items: stretch;
   }
 
+  // One row of tiles that scrolls sideways in its own box: the column holds one 188 px tile, so a wrapping grid
+  // would stack every asset under the preview.
   &__drag-container {
     display: flex;
-    gap: var(--space-1);
-  }
+    gap: var(--space-2);
+    overflow-x: auto;
+    padding-bottom: var(--space-2);
 
-  &__thumb {
-    flex-shrink: 0;
-    width: 64px;
-    height: 64px;
-    border: 2px solid transparent;
-    border-radius: var(--radius-base);
-    overflow: hidden;
-    cursor: pointer;
-    position: relative;
-    transition: border-color 0.15s;
-    background: var(--surface-raised);
-
-    &:hover {
-      border-color: var(--border-default);
-    }
-
-    &--active {
-      border-color: var(--accent);
-    }
-
-    &:hover .media-gallery__thumb-actions {
-      opacity: 1;
-    }
-  }
-
-  &__thumb-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  &__thumb-video {
-    width: 100%;
-    height: 100%;
-    position: relative;
-  }
-
-  &__thumb-broken {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    background: linear-gradient(
-      135deg,
-      var(--surface-hover) 0%,
-      var(--surface-raised) 100%
-    );
-    color: var(--text-muted);
-    font-size: var(--fs-500);
-  }
-
-  &__thumb-video-fallback {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(
-      135deg,
-      var(--surface-hover) 0%,
-      var(--surface-raised) 100%
-    );
-    color: var(--text-muted);
-    font-size: var(--fs-500);
-  }
-
-  &__play-badge {
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    width: 18px;
-    height: 18px;
-    border-radius: var(--radius-full);
-    background: rgba(0, 0, 0, 0.55);
-    color: var(--text-on-accent-fill);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 8px;
-    pointer-events: none;
-  }
-
-  &__role-badge {
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    font-size: 9px;
-    padding: 1px var(--space-1);
-    pointer-events: none;
-  }
-
-  &__thumb-actions {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-1);
-    background: rgba(0, 0, 0, 0.45);
-    opacity: 0;
-    transition: opacity 0.15s;
-  }
-
-  &__action-btn {
-    width: 24px;
-    height: 24px;
-    border-radius: var(--radius-full);
-    border: none;
-    background: var(--surface-base);
-    color: var(--text-body);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: var(--fs-200);
-    transition: background 0.1s;
-
-    &:hover {
-      background: var(--surface-raised);
-    }
-
-    &--delete {
-      color: var(--negative);
-
-      &:hover {
-        background: var(--negative-subtle);
-      }
+    > * {
+      flex-shrink: 0;
     }
   }
 
@@ -1101,22 +921,6 @@ watch(
   &__video-input {
     flex: 1;
     min-width: 0; // an input keeps ~170 px intrinsic width; the row must fit a phone
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-base);
-    padding: var(--space-1) var(--space-2);
-    font-size: var(--fs-200);
-    background: var(--surface-base);
-    color: var(--text-body);
-    outline: none;
-    height: var(--elem-height);
-
-    &::placeholder {
-      color: var(--text-muted);
-    }
-
-    &:focus {
-      border-color: var(--accent);
-    }
   }
 
   &__video-submit {
@@ -1143,38 +947,12 @@ watch(
     border-bottom: 1px solid var(--border-subtle);
   }
 
-  &__close-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: var(--space-1);
-    line-height: 1;
-
-    &:hover {
-      opacity: 0.7;
-    }
-  }
-
   &__edit-body {
     padding: var(--space-3);
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
     flex: 1;
-  }
-
-  &__edit-field {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-  }
-
-  &__field-label {
-    font-size: var(--fs-200);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    color: var(--text-muted);
   }
 
   &__edit-actions {
@@ -1214,6 +992,6 @@ watch(
   opacity: 0.9;
   border: 2px solid var(--accent);
   border-radius: var(--radius-base);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-md);
 }
 </style>

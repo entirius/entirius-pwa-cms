@@ -108,7 +108,9 @@ export default {
 .supplier-timeline__list {
   list-style: none;
   margin: 0;
-  padding: var(--space-5) 0;
-  border-top: 1px solid var(--border-subtle);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
 }
 </style>
