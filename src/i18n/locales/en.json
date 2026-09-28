@@ -1829,6 +1829,13 @@
     "copy_select_channel": "Select a channel",
     "copy_action": "Copy",
     "copied": "Copy created as draft",
+    "aspect_ratio_hint": "Recommended aspect ratio: 16:9",
+    "remove_image": "Remove image",
+    "gallery_empty": "No images in the gallery",
+    "gallery_image": "Gallery image",
+    "type_header": "Header",
+    "type_footer": "Footer",
+    "updated_by": "by {name}",
     "copy_no_channel": "Select a target channel first"
   },
   "pm": {

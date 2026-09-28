@@ -4,6 +4,7 @@ import BasicModal from "@/boots/BasicModal/index.vue";
 import { t } from "@/i18n";
 import { useCategoryFetch, usePageFetch } from "@/composables/useEntityFetch";
 import { useMuninStore } from "@/stores/munin";
+import { linkTypeOptions } from "@/functionals/linkTypeOptions";
 
 const props = defineProps({
   visible: {
@@ -34,6 +35,8 @@ const categoryFetch = computed(() => useCategoryFetch(props.channelIdx));
 const pageFetch = computed(() => usePageFetch());
 
 const emit = defineEmits(["save", "close"]);
+
+const linkTypes = computed(linkTypeOptions);
 
 const footerActions = computed(() => [
   { key: "cancel", label: t("common.cancel"), role: "secondary", onClick: () => emit("close") },
@@ -100,66 +103,49 @@ function onSave() {
     :actions="footerActions"
     @update:open="(open) => !open && emit('close')"
   >
-    <div class="form-group mb-8">
-      <div class="flex ai-ct jc-sb">
-        <label class="field-label required">{{ $t("layout_extender.label") }}</label>
-        <BasicButton
-          v-if="languages.length > 1"
-          variant="secondary"
-          class="translation-field__btn"
-          @click="translatingField = 'label'"
-        >
-          {{ $t('layout_extender.translations') }}
-        </BasicButton>
-      </div>
-      <BasicInput v-model="form.label" />
-    </div>
+    <div class="flex-column gap-4">
+      <FormField :label="$t('layout_extender.label')" required>
+        <div class="flex ai-st gap-3">
+          <BasicInput v-model="form.label" class="fg-1" />
+          <IconButton
+            v-if="languages.length > 1"
+            icon="translate"
+            :label="`${$t('layout_extender.translations')}: ${$t('layout_extender.label')}`"
+            variant="outline"
+            @click="translatingField = 'label'"
+          />
+        </div>
+      </FormField>
 
-    <div class="form-group mb-8">
-      <label class="field-label">{{ $t("layout_extender.link_type") }}</label>
-      <div class="radio-group">
-        <label class="radio-label">
-          <input type="radio" v-model="form.link_type" value="category" />
-          <span>{{ $t("layout_extender.category") }}</span>
-        </label>
-        <label class="radio-label">
-          <input type="radio" v-model="form.link_type" value="page" />
-          <span>{{ $t("layout_extender.content_page") }}</span>
-        </label>
-        <label class="radio-label">
-          <input type="radio" v-model="form.link_type" value="url" />
-          <span>{{ $t("layout_extender.url") }}</span>
-        </label>
-      </div>
-    </div>
+      <FormField :label="$t('layout_extender.link_type')">
+        <BasicRadioGroup v-model="form.link_type" :options="linkTypes" />
+      </FormField>
 
-    <div class="form-group mb-8">
-      <label class="field-label">
-        {{ form.link_type === "url" ? $t("layout_extender.url") : $t("layout_extender.link_value") }}
-      </label>
-      <EntitySearchPicker
-        v-if="form.link_type === 'category'"
-        :modelValue="form.link_value"
-        :displayValue="form.link_display"
-        :fetchFn="categoryFetch"
-        :placeholder="$t('layout_extender.search_category')"
-        :manual="!pimEnabled"
-        @update:modelValue="form.link_value = $event"
-        @update:displayValue="form.link_display = $event"
-        @clear="form.link_value = ''; form.link_display = ''"
-      />
-      <EntitySearchPicker
-        v-else-if="form.link_type === 'page'"
-        :modelValue="form.link_value"
-        :displayValue="form.link_display"
-        :fetchFn="pageFetch"
-        :placeholder="$t('layout_extender.search_page')"
-        :clientFilter="true"
-        @update:modelValue="form.link_value = $event"
-        @update:displayValue="form.link_display = $event"
-        @clear="form.link_value = ''; form.link_display = ''"
-      />
-      <BasicInput v-else v-model="form.link_value" :placeholder="'https://...'" />
+      <FormField :label="form.link_type === 'url' ? $t('layout_extender.url') : $t('layout_extender.link_value')">
+        <EntitySearchPicker
+          v-if="form.link_type === 'category'"
+          :modelValue="form.link_value"
+          :displayValue="form.link_display"
+          :fetchFn="categoryFetch"
+          :placeholder="$t('layout_extender.search_category')"
+          :manual="!pimEnabled"
+          @update:modelValue="form.link_value = $event"
+          @update:displayValue="form.link_display = $event"
+          @clear="form.link_value = ''; form.link_display = ''"
+        />
+        <EntitySearchPicker
+          v-else-if="form.link_type === 'page'"
+          :modelValue="form.link_value"
+          :displayValue="form.link_display"
+          :fetchFn="pageFetch"
+          :placeholder="$t('layout_extender.search_page')"
+          :clientFilter="true"
+          @update:modelValue="form.link_value = $event"
+          @update:displayValue="form.link_display = $event"
+          @clear="form.link_value = ''; form.link_display = ''"
+        />
+        <BasicInput v-else v-model="form.link_value" :placeholder="'https://...'" />
+      </FormField>
     </div>
   </BasicModal>
 
@@ -173,40 +159,3 @@ function onSave() {
     @save="onTranslationsSave"
   />
 </template>
-
-<style scoped>
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.radio-group {
-  display: flex;
-  align-items: center;
-  gap: var(--space-6);
-}
-
-.radio-label {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  cursor: pointer;
-  font-size: var(--fs-300);
-  color: var(--text-body);
-}
-
-.radio-label input[type="radio"] {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--accent);
-  margin: 0;
-  cursor: pointer;
-}
-
-.translation-field__btn {
-  flex-shrink: 0;
-}
-
-</style>

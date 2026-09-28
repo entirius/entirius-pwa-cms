@@ -5,12 +5,11 @@ import { t } from "@/i18n";
 import { GET_Images } from "@/api/contentDB/api";
 import { useCategoryFetch, usePageFetch } from "@/composables/useEntityFetch";
 import { useMuninStore } from "@/stores/munin";
+import { linkTypeOptions } from "@/functionals/linkTypeOptions";
 
-const FIELD_LABELS = {
-  caption: "Caption",
-  button_label: "Button label",
-  alt_text: "Alt text",
-};
+const GALLERY_PAGE_SIZE = 9;
+// In form order: the text fields under the image, each with its per-language values in `<field>_t9n`.
+const TRANSLATABLE_FIELDS = ["alt_text", "caption", "button_label"];
 
 const props = defineProps({
   visible: {
@@ -42,6 +41,8 @@ const pageFetch = computed(() => usePageFetch());
 
 const emit = defineEmits(["save", "close"]);
 
+const linkTypes = computed(linkTypeOptions);
+
 const footerActions = computed(() => [
   { key: "cancel", label: t("common.cancel"), role: "secondary", onClick: () => emit("close") },
   { key: "save", label: t("common.save"), role: "primary", onClick: onSave, testid: "modal-save" },
@@ -49,7 +50,9 @@ const footerActions = computed(() => [
 
 const translatingField = ref(null);
 
-const translatingFieldLabel = computed(() => FIELD_LABELS[translatingField.value] || "");
+const translatingFieldLabel = computed(() =>
+  TRANSLATABLE_FIELDS.includes(translatingField.value) ? t(`layout_extender.${translatingField.value}`) : ""
+);
 
 const translatingFieldValues = computed(() => {
   if (!translatingField.value) return {};
@@ -75,6 +78,10 @@ const galleryImages = ref([]);
 const galleryPage = ref(1);
 const galleryTotal = ref(0);
 const galleryLoading = ref(false);
+const galleryButtonText = computed(() =>
+  form.value.media_url ? t("layout_extender.change_image") : t("layout_extender.choose_from_gallery")
+);
+const galleryPages = computed(() => Math.ceil(galleryTotal.value / GALLERY_PAGE_SIZE));
 
 watch(
   () => props.visible,
@@ -136,7 +143,7 @@ async function loadGallery(page = 1) {
   galleryPage.value = page;
   galleryLoading.value = true;
   try {
-    const { data } = await GET_Images({ limit: 9, page });
+    const { data } = await GET_Images({ limit: GALLERY_PAGE_SIZE, page });
     galleryImages.value = data.data || [];
     galleryTotal.value = data.pagination?.total || 0;
   } catch {
@@ -150,6 +157,10 @@ function selectImage(image) {
   form.value.media_url = image.image;
   form.value.alt_text = image.meta?.alt || image.meta?.fileName || "";
   galleryOpen.value = false;
+}
+
+function translationsLabel(field) {
+  return `${t("layout_extender.translations")}: ${t(`layout_extender.${field}`)}`;
 }
 
 function onTranslationsSave({ values }) {
@@ -170,151 +181,111 @@ function onSave() {
     :actions="footerActions"
     @update:open="(open) => !open && emit('close')"
   >
-    <!-- Image area -->
-    <div class="form-group mb-8">
-      <label class="field-label">{{ $t("layout_extender.media_url") }}</label>
+    <div class="flex-column gap-4">
+      <FormField
+        id="banner-media"
+        :label="$t('layout_extender.media_url')"
+        :description="$t('layout_extender.aspect_ratio_hint')"
+      >
+        <div class="flex-column gap-2">
+          <div v-if="form.media_url" class="banner-image-area">
+            <img :src="resolveMediaUrl(form.media_url)" :alt="form.alt_text || ''" class="banner-image-preview" />
+            <span class="banner-image-area__remove">
+              <IconButton
+                icon="remove"
+                variant="danger"
+                size="sm"
+                :label="$t('layout_extender.remove_image')"
+                @click="clearImage"
+              />
+            </span>
+          </div>
 
-      <!-- Selected image preview -->
-      <div v-if="form.media_url" class="banner-image-area">
-        <img :src="resolveMediaUrl(form.media_url)" :alt="form.alt_text || ''" class="banner-image-preview" />
-        <span class="banner-image-remove" @click="clearImage">
-          <FontAwesomeIcon :icon="$icons.close" />
-        </span>
-      </div>
+          <!-- The field's control: the label's `for` targets it, its name is the label followed by its own text. -->
+          <BasicButton
+            v-if="!galleryOpen"
+            id="banner-media"
+            :label="`${$t('layout_extender.media_url')}: ${galleryButtonText}`"
+            @click="openGallery"
+          >
+            {{ galleryButtonText }}
+          </BasicButton>
 
-      <!-- Choose from gallery button -->
-      <button v-if="!galleryOpen" class="banner-gallery-btn" @click="openGallery">
-        <FontAwesomeIcon :icon="$icons.image" class="t-muted" />
-        <span>{{ form.media_url ? $t("layout_extender.change_image") : $t("layout_extender.choose_from_gallery") }}</span>
-      </button>
-
-      <!-- Inline gallery grid -->
-      <div v-if="galleryOpen" class="banner-gallery">
-        <div v-if="galleryLoading" class="banner-gallery__loading">
-          <span class="t-muted fs-200">Loading...</span>
+          <div v-else class="flex-column gap-2">
+            <Loader v-if="galleryLoading" />
+            <EmptyState
+              v-else-if="!galleryImages.length"
+              size="sm"
+              icon="image"
+              :title="$t('layout_extender.gallery_empty')"
+            />
+            <div v-else class="banner-gallery__grid">
+              <div
+                v-for="img in galleryImages"
+                :key="img.uid"
+                role="button"
+                tabindex="0"
+                class="banner-gallery__item"
+                :class="{ 'banner-gallery__item--selected': form.media_url === img.image }"
+                :aria-label="img.meta?.fileName || $t('layout_extender.gallery_image')"
+                :aria-pressed="form.media_url === img.image ? 'true' : 'false'"
+                @click="selectImage(img)"
+                @keydown.enter.prevent="selectImage(img)"
+                @keydown.space.prevent="selectImage(img)"
+              >
+                <img :src="resolveMediaUrl(img.image)" alt="" />
+              </div>
+            </div>
+            <!-- Outside the empty branch: a failed or empty page keeps the way back to the others. -->
+            <Pagination v-if="!galleryLoading" :page="galleryPage" :pages="galleryPages" @update:page="loadGallery" />
+          </div>
         </div>
-        <template v-else>
-          <div class="banner-gallery__grid">
-            <div
-              v-for="img in galleryImages"
-              :key="img.uid"
-              class="banner-gallery__item"
-              :class="{ 'banner-gallery__item--selected': form.media_url === img.image }"
-              @click="selectImage(img)"
-            >
-              <img :src="resolveMediaUrl(img.image)" :alt="img.meta?.fileName || ''" />
-            </div>
-            <div v-if="!galleryImages.length" class="banner-gallery__empty">
-              <FontAwesomeIcon :icon="$icons.image" class="t-muted" />
-              <span class="fs-200 t-muted">No images in gallery</span>
-            </div>
-          </div>
-          <!-- Pagination -->
-          <div v-if="galleryTotal > 9" class="banner-gallery__pagination">
-            <button class="banner-gallery__page-btn" :disabled="galleryPage <= 1" @click="loadGallery(galleryPage - 1)">
-              <FontAwesomeIcon :icon="$icons.prev" />
-            </button>
-            <span class="fs-200 t-secondary">{{ galleryPage }}</span>
-            <button class="banner-gallery__page-btn" :disabled="galleryImages.length < 9" @click="loadGallery(galleryPage + 1)">
-              <FontAwesomeIcon :icon="$icons.next" />
-            </button>
-          </div>
-        </template>
-      </div>
+      </FormField>
 
-      <p class="fs-200 t-accent">Recommended aspect ratio: 16:9</p>
-    </div>
+      <FormField v-for="field in TRANSLATABLE_FIELDS" :key="field" :label="$t(`layout_extender.${field}`)">
+        <div class="flex ai-st gap-3">
+          <BasicInput v-model="form[field]" class="fg-1" />
+          <IconButton
+            v-if="languages.length > 1"
+            icon="translate"
+            :label="translationsLabel(field)"
+            variant="outline"
+            @click="translatingField = field"
+          />
+        </div>
+      </FormField>
 
-    <div class="form-group mb-8">
-      <div class="flex ai-ct jc-sb">
-        <label class="field-label">{{ $t("layout_extender.alt_text") }}</label>
-        <BasicButton
-          v-if="languages.length > 1"
-          variant="secondary"
-          class="translation-field__btn"
-          @click="translatingField = 'alt_text'"
-        >
-          {{ $t('layout_extender.translations') }}
-        </BasicButton>
-      </div>
-      <BasicInput v-model="form.alt_text" />
-    </div>
+      <FormField :label="$t('layout_extender.link_type')">
+        <BasicRadioGroup v-model="form.button_link_type" :options="linkTypes" />
+      </FormField>
 
-    <div class="form-group mb-8">
-      <div class="flex ai-ct jc-sb">
-        <label class="field-label">{{ $t("layout_extender.caption") }}</label>
-        <BasicButton
-          v-if="languages.length > 1"
-          variant="secondary"
-          class="translation-field__btn"
-          @click="translatingField = 'caption'"
-        >
-          {{ $t('layout_extender.translations') }}
-        </BasicButton>
-      </div>
-      <BasicInput v-model="form.caption" />
-    </div>
-
-    <div class="form-group mb-8">
-      <div class="flex ai-ct jc-sb">
-        <label class="field-label">{{ $t("layout_extender.button_label") }}</label>
-        <BasicButton
-          v-if="languages.length > 1"
-          variant="secondary"
-          class="translation-field__btn"
-          @click="translatingField = 'button_label'"
-        >
-          {{ $t('layout_extender.translations') }}
-        </BasicButton>
-      </div>
-      <BasicInput v-model="form.button_label" />
-    </div>
-
-    <div class="form-group mb-8">
-      <label class="field-label">{{ $t("layout_extender.link_type") }}</label>
-      <div class="radio-group">
-        <label class="radio-label">
-          <input type="radio" v-model="form.button_link_type" value="category" />
-          <span>{{ $t("layout_extender.category") }}</span>
-        </label>
-        <label class="radio-label">
-          <input type="radio" v-model="form.button_link_type" value="page" />
-          <span>{{ $t("layout_extender.content_page") }}</span>
-        </label>
-        <label class="radio-label">
-          <input type="radio" v-model="form.button_link_type" value="url" />
-          <span>{{ $t("layout_extender.url") }}</span>
-        </label>
-      </div>
-    </div>
-
-    <div class="form-group mb-8">
-      <label class="field-label">
-        {{ form.button_link_type === "url" ? $t("layout_extender.url") : $t("layout_extender.link_value") }}
-      </label>
-      <EntitySearchPicker
-        v-if="form.button_link_type === 'category'"
-        :modelValue="form.button_link_value"
-        :displayValue="form.button_link_display"
-        :fetchFn="categoryFetch"
-        :placeholder="$t('layout_extender.search_category')"
-        :manual="!pimEnabled"
-        @update:modelValue="form.button_link_value = $event"
-        @update:displayValue="form.button_link_display = $event"
-        @clear="form.button_link_value = ''; form.button_link_display = ''"
-      />
-      <EntitySearchPicker
-        v-else-if="form.button_link_type === 'page'"
-        :modelValue="form.button_link_value"
-        :displayValue="form.button_link_display"
-        :fetchFn="pageFetch"
-        :placeholder="$t('layout_extender.search_page')"
-        :clientFilter="true"
-        @update:modelValue="form.button_link_value = $event"
-        @update:displayValue="form.button_link_display = $event"
-        @clear="form.button_link_value = ''; form.button_link_display = ''"
-      />
-      <BasicInput v-else v-model="form.button_link_value" :placeholder="'https://...'" />
+      <FormField
+        :label="form.button_link_type === 'url' ? $t('layout_extender.url') : $t('layout_extender.link_value')"
+      >
+        <EntitySearchPicker
+          v-if="form.button_link_type === 'category'"
+          :modelValue="form.button_link_value"
+          :displayValue="form.button_link_display"
+          :fetchFn="categoryFetch"
+          :placeholder="$t('layout_extender.search_category')"
+          :manual="!pimEnabled"
+          @update:modelValue="form.button_link_value = $event"
+          @update:displayValue="form.button_link_display = $event"
+          @clear="form.button_link_value = ''; form.button_link_display = ''"
+        />
+        <EntitySearchPicker
+          v-else-if="form.button_link_type === 'page'"
+          :modelValue="form.button_link_value"
+          :displayValue="form.button_link_display"
+          :fetchFn="pageFetch"
+          :placeholder="$t('layout_extender.search_page')"
+          :clientFilter="true"
+          @update:modelValue="form.button_link_value = $event"
+          @update:displayValue="form.button_link_display = $event"
+          @clear="form.button_link_value = ''; form.button_link_display = ''"
+        />
+        <BasicInput v-else v-model="form.button_link_value" :placeholder="'https://...'" />
+      </FormField>
     </div>
   </BasicModal>
 
@@ -330,36 +301,6 @@ function onSave() {
 </template>
 
 <style scoped>
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.radio-group {
-  display: flex;
-  align-items: center;
-  gap: var(--space-6);
-}
-
-.radio-label {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  cursor: pointer;
-  font-size: var(--fs-300);
-  color: var(--text-body);
-}
-
-.radio-label input[type="radio"] {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--accent);
-  margin: 0;
-  cursor: pointer;
-}
-
 .banner-image-area {
   position: relative;
   border: 1px solid var(--border-subtle);
@@ -378,62 +319,12 @@ function onSave() {
   object-fit: cover;
 }
 
-.banner-image-remove {
+.banner-image-area__remove {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: var(--space-2);
+  right: var(--space-2);
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
   background: var(--surface-base);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-full);
-  cursor: pointer;
-  color: var(--text-secondary);
-  transition: background 0.1s;
-}
-
-.banner-image-remove:hover {
-  background: var(--negative-subtle);
-  color: var(--negative);
-}
-
-.banner-gallery-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  width: 100%;
-  height: 40px;
-  font-size: var(--fs-250);
-  font-weight: 500;
-  font-family: inherit;
-  color: var(--text-body);
-  background: var(--surface-base);
-  border: 1px dashed var(--border-default);
-  border-radius: var(--radius-base);
-  cursor: pointer;
-  transition: background 0.1s, border-color 0.1s;
-}
-
-.banner-gallery-btn:hover {
-  background: var(--surface-raised);
-  border-color: var(--accent);
-  color: var(--text-accent);
-}
-
-.banner-gallery {
-  margin-top: var(--space-2);
-}
-
-.banner-gallery__loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-6);
-  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-base);
 }
 
@@ -457,12 +348,14 @@ function onSave() {
   transition: border-color 0.1s;
 }
 
-.banner-gallery__item:hover {
+.banner-gallery__item:hover,
+.banner-gallery__item--selected {
   border-color: var(--accent);
 }
 
-.banner-gallery__item--selected {
-  border-color: var(--accent);
+.banner-gallery__item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
 
 .banner-gallery__item img {
@@ -470,51 +363,4 @@ function onSave() {
   height: 100%;
   object-fit: cover;
 }
-
-.banner-gallery__empty {
-  grid-column: 1 / -1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-6);
-}
-
-.banner-gallery__pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-3);
-  margin-top: var(--space-2);
-}
-
-.banner-gallery__page-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  font-size: var(--fs-200);
-  font-family: inherit;
-  background: var(--surface-base);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-base);
-  cursor: pointer;
-  color: var(--text-body);
-  transition: background 0.1s;
-}
-
-.banner-gallery__page-btn:hover {
-  background: var(--surface-raised);
-}
-
-.banner-gallery__page-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.translation-field__btn {
-  flex-shrink: 0;
-}
-
 </style>
