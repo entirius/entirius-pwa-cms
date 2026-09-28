@@ -1,19 +1,5 @@
 [
   {
-    "screen": "pages-layout-editor",
-    "kind": "nonFocusable",
-    "selector": "span.handle",
-    "reason": "navigation editor drag handle (drag only; the reorder buttons are the keyboard path)",
-    "owner": "P5 plan 42 (LayoutExtenders)"
-  },
-  {
-    "screen": "promo-detail",
-    "kind": "nonFocusable",
-    "selector": "span.promo-code-value",
-    "reason": "voucher code copies on click only",
-    "owner": "P5 plan 44 (Promo)"
-  },
-  {
     "screen": "pim-categories-list",
     "kind": "nonFocusable",
     "selector": "div.tree-node__row",

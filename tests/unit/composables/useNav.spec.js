@@ -166,6 +166,11 @@ describe("buildCrumbs", () => {
     expect(crumbs.map((c) => c.label)).toEqual([t("panels.pages"), t("nav.content_list"), "Product Showcase"]);
   });
 
+  it("drops the entry crumb when it reads the same as the panel (Promo)", () => {
+    const crumbs = crumbsAt("/promo/7", "Summer sale");
+    expect(crumbs).toEqual([{ label: t("panels.promo"), to: "/promo/list" }, { label: "Summer sale" }]);
+  });
+
   it("walks meta.crumbParent with the params the parent takes", () => {
     const email = crumbsAt("/emails/templates/order/5");
     expect(email).toHaveLength(4);

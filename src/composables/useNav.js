@@ -90,12 +90,14 @@ export function crumbParents(route, records) {
 
 // R3: panel → entry → crumbParent chain → current page; nothing on the panel's list itself (its entry or its root:
 // Stock's entry `/stock` redirects to the root `/stock/manage`) or outside a panel.
-// A panel whose root is the entry keeps both crumbs (Figma S6: "Pages / Lista treści / Product Showcase").
+// A panel whose root is the entry keeps both crumbs (Figma S6: "Pages / Lista treści / Product Showcase"), unless the
+// entry reads the same as the panel (Promo: "Promotions / Promotions / <rule>").
 export function buildCrumbs(route, { panel, entry, parents = [], title }) {
   if (!panel || route.path === panel.root || route.path === entry?.route) return [];
+  const showEntry = entry && t(entry.labelKey) !== t(panel.labelKey);
   return [
     { label: t(panel.labelKey), to: panel.root },
-    ...(entry ? [{ label: t(entry.labelKey), to: { path: entry.route, query: entry.query } }] : []),
+    ...(showEntry ? [{ label: t(entry.labelKey), to: { path: entry.route, query: entry.query } }] : []),
     ...parents.map(({ record, params }) => ({ label: t(record.meta.titleKey), to: { name: record.name, params } })),
     { label: title || t(route.meta?.titleKey) },
   ];
