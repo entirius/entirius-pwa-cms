@@ -79,10 +79,10 @@
             {{ $t("emails.no_lang_configs") }}
           </div>
           <div class="emails-grid">
-            <div
+            <BasicCard
               v-for="config in langConfigs"
               :key="config.pk"
-              class="page-card emails-card pointer"
+              class="emails-card pointer"
               @click="editLangConfig(config.pk)"
             >
               <div class="fs-400 fw-600 t-body">
@@ -91,7 +91,7 @@
               <div v-if="config.shop_name" class="fs-200 t-muted mt-2">
                 {{ config.shop_name }}
               </div>
-            </div>
+            </BasicCard>
           </div>
         </div>
       </div>

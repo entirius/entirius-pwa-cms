@@ -14,10 +14,10 @@
             {{ $t("emails.no_channels") }}
           </div>
           <div class="emails-grid">
-            <div
+            <BasicCard
               v-for="channel in channels"
               :key="channel.pk"
-              class="page-card emails-card pointer"
+              class="emails-card pointer"
               @click="editChannel(channel.pk)"
             >
               <div class="flex ai-ct gap-5 mb-5">
@@ -36,7 +36,7 @@
               <div v-if="channel.from_email" class="fs-200 t-muted mt-2">
                 {{ channel.from_email }}
               </div>
-            </div>
+            </BasicCard>
           </div>
         </div>
 
@@ -46,17 +46,17 @@
             {{ $t("emails.template_types") }}
           </h2>
           <div class="emails-grid">
-            <div
+            <BasicCard
               v-for="emailType in emailTypes"
               :key="emailType.slug"
-              class="page-card emails-card pointer"
+              class="emails-card pointer"
               @click="editTemplates(emailType.slug)"
             >
               <div class="fs-400 fw-600 t-body mb-2">
                 {{ $t(`emails.types.${emailType.slug}`) }}
               </div>
               <div class="fs-200 t-muted">{{ $t(`emails.type_desc.${emailType.slug}`) }}</div>
-            </div>
+            </BasicCard>
           </div>
         </div>
       </div>

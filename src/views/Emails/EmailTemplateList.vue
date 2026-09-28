@@ -11,10 +11,10 @@
           {{ $t("emails.no_templates") }}
         </div>
         <div class="emails-grid">
-          <div
+          <BasicCard
             v-for="tpl in templates"
             :key="tpl.pk"
-            class="page-card emails-card pointer"
+            class="emails-card pointer"
             @click="editTemplate(tpl.pk)"
           >
             <div class="fs-400 fw-600 t-body mb-2">
@@ -31,7 +31,7 @@
               "
               class="mt-5"
             />
-          </div>
+          </BasicCard>
         </div>
       </div>
   </PageLayout>
