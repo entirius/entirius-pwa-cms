@@ -34,31 +34,24 @@
             @input="debouncedFetch(fetchProducts)"
           />
           <div v-if="productResults.length" class="fed__results mt-2">
-            <div
+            <BasicCheckbox
               v-for="p in productResults"
               :key="p.sku"
-              class="fed__result-row pointer"
-              @click="toggleProduct(p.sku)"
+              :model-value="local.products.includes(p.sku)"
+              class="fed__result-row"
+              @update:model-value="toggleProduct(p.sku)"
             >
-              <FontAwesomeIcon
-                v-if="local.products.includes(p.sku)"
-                :icon="$icons.check"
-                class="t-positive mr-2"
-              />
-              <span>{{ p.sku }}{{ p.name ? ` — ${p.name}` : '' }}</span>
-            </div>
+              {{ p.sku }}{{ p.name ? ` — ${p.name}` : '' }}
+            </BasicCheckbox>
           </div>
           <div v-if="local.products.length" class="fed__chips mt-2">
-            <span
+            <Tag
               v-for="sku in local.products"
               :key="sku"
-              class="fed__chip"
-            >
-              {{ sku }}
-              <button class="fed__chip-remove" @click="removeProduct(sku)">
-                <FontAwesomeIcon :icon="$icons.close" />
-              </button>
-            </span>
+              :label="sku"
+              removable
+              @remove="removeProduct(sku)"
+            />
           </div>
           <p v-if="!local.products.length" class="fed__empty-hint">
             {{ $t('promo.filter_no_products_selected') }}
@@ -144,31 +137,24 @@
             @input="debouncedFetch(fetchCustomers)"
           />
           <div v-if="customerResults.length" class="fed__results mt-2">
-            <div
+            <BasicCheckbox
               v-for="c in customerResults"
               :key="c.uid"
-              class="fed__result-row pointer"
-              @click="toggleCustomer(c.uid)"
+              :model-value="local.customers.includes(c.uid)"
+              class="fed__result-row"
+              @update:model-value="toggleCustomer(c.uid)"
             >
-              <FontAwesomeIcon
-                v-if="local.customers.includes(c.uid)"
-                :icon="$icons.check"
-                class="t-positive mr-2"
-              />
-              <span>{{ c.first_name || '' }} {{ c.last_name || '' }}{{ c.email ? ` (${c.email})` : '' }}</span>
-            </div>
+              {{ c.first_name || '' }} {{ c.last_name || '' }}{{ c.email ? ` (${c.email})` : '' }}
+            </BasicCheckbox>
           </div>
           <div v-if="local.customers.length" class="fed__chips mt-2">
-            <span
+            <Tag
               v-for="uid in local.customers"
               :key="uid"
-              class="fed__chip fed__chip--mono"
-            >
-              {{ uid }}
-              <button class="fed__chip-remove" @click="removeCustomer(uid)">
-                <FontAwesomeIcon :icon="$icons.close" />
-              </button>
-            </span>
+              :label="String(uid)"
+              removable
+              @remove="removeCustomer(uid)"
+            />
           </div>
           <p v-if="!local.customers.length" class="fed__empty-hint">
             {{ $t('promo.filter_no_customers_selected') }}
@@ -187,21 +173,7 @@
       </template>
 
       <!-- footer -->
-      <div class="fed__footer mt-10">
-        <BasicButton
-          variant="secondary"
-          @click="onClose"
-        >
-          {{ $t('common.cancel') }}
-        </BasicButton>
-        <BasicButton
-          variant="primary"
-          :disabled="saving"
-          @click="onSave"
-        >
-          {{ $t('common.save') }}
-        </BasicButton>
-      </div>
+      <ActionBar :actions="footerActions" class="fed__footer mt-10" />
     </div>
   </SideDrawer>
 </template>
@@ -292,6 +264,11 @@ const drawerTitle = computed(() => {
   if (props.kind === "threshold") return t("promo.filter_drawer_title_threshold");
   return t("promo.filter_drawer_title_product");
 });
+
+const footerActions = computed(() => [
+  { key: "cancel", role: "secondary", label: t("common.cancel"), onClick: onClose },
+  { key: "save", role: "primary", label: t("common.save"), onClick: onSave, disabled: saving.value },
+]);
 
 const inclusionOptions = computed(() => [
   { label: t("promo.inclusion"), value: "inclusion", description: t("promo.mode_inclusion_desc") },
@@ -488,6 +465,8 @@ function onClose() {
   color: var(--text-body);
 
   &__results {
+    display: flex;
+    flex-direction: column;
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-base);
     max-height: 180px;
@@ -496,11 +475,8 @@ function onClose() {
   }
 
   &__result-row {
-    display: flex;
-    align-items: center;
     padding: var(--space-1) var(--space-2);
     font-size: var(--fs-200);
-    color: var(--text-body);
     min-height: 36px;
 
     &:hover {
@@ -512,42 +488,6 @@ function onClose() {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2);
-  }
-
-  &__chip {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-1);
-    padding: 2px var(--space-2);
-    border-radius: var(--radius-base);
-    background: var(--accent-subtle);
-    color: var(--text-accent);
-    font-size: var(--fs-200);
-    font-weight: 500;
-
-    &--mono {
-      font-family: monospace;
-      font-size: var(--fs-200);
-    }
-  }
-
-  &__chip-remove {
-    background: none;
-    border: none;
-    padding: 0 2px;
-    cursor: pointer;
-    color: var(--text-accent);
-    line-height: 1;
-    min-width: 16px;
-    min-height: 16px;
-
-    &:hover {
-      color: var(--negative);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--accent);
-    }
   }
 
   &__empty-hint {
@@ -563,11 +503,7 @@ function onClose() {
   }
 
   &__footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: var(--space-5);
     padding-top: var(--space-8);
-    border-top: 1px solid var(--border-subtle);
     flex-shrink: 0;
   }
 }

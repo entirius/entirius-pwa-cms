@@ -3106,7 +3106,30 @@
     "cfg_require_pin_tip": "Gdy włączone, każdy bon dostaje też PIN; realizacja i sprawdzenie salda wymagają kodu + PIN (anty-fraud).",
     "cfg_require_approval_tip": "Bony SALE startują w stanie Oczekuje na zatwierdzenie (nieużywalne, bez maila z kodem), dopóki administrator ich nie zatwierdzi.",
     "cfg_max_failed_tip": "Liczba błędnych prób kodu/PIN, zanim bon zostanie tymczasowo zablokowany.",
-    "cfg_lockout_minutes_tip": "Jak długo (minuty) bon pozostaje zablokowany po zbyt wielu nieudanych próbach."
+    "cfg_lockout_minutes_tip": "Jak długo (minuty) bon pozostaje zablokowany po zbyt wielu nieudanych próbach.",
+    "enum_label": {
+      "tax_type": {
+        "mpv": "MPV",
+        "spv": "SPV"
+      },
+      "filter_mode": {
+        "inclusion": "Inkluzja",
+        "exclusion": "Ekskluzja"
+      },
+      "campaign_type": {
+        "sale": "Sprzedaż",
+        "admin_issued": "Wydane przez administratora"
+      },
+      "voucher_status": {
+        "active": "Aktywny",
+        "pending_approval": "Oczekuje na akceptację",
+        "locked": "Zablokowany tymczasowo",
+        "blocked": "Zablokowany",
+        "redeemed": "Wykorzystany",
+        "expired": "Wygasły",
+        "canceled": "Anulowany"
+      }
+    }
   },
   "pricefighter": {
     "gap_table": "Tabela luk cenowych",

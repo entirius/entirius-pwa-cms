@@ -44,7 +44,11 @@ async function openDrawer(kind) {
         SideDrawer: { template: "<div><slot /></div>" },
         FormField: { template: "<div><slot /></div>" },
         BasicSelect: SelectProbe,
-        BasicButton: { template: "<button @click=\"$emit('click')\"><slot /></button>" },
+        // The footer is an ActionBar (plan 44): one button per action, named by its label.
+        ActionBar: {
+          props: ["actions"],
+          template: "<div><button v-for='a in actions' :key='a.key' :data-key='a.key' @click='a.onClick()'>{{ a.label }}</button></div>",
+        },
         BasicSwitch: true,
         NumberInput: true,
       },
@@ -56,7 +60,7 @@ async function openDrawer(kind) {
 }
 
 const multiSelects = (wrapper) => wrapper.findAllComponents(SelectProbe).filter((s) => s.props("multiple") !== undefined);
-const save = (wrapper) => wrapper.findAll("button").find((b) => b.text() === "common.save").trigger("click");
+const save = (wrapper) => wrapper.find("button[data-key='save']").trigger("click");
 
 describe("FilterEditDrawer — multi selects", () => {
   beforeEach(() => {

@@ -1,40 +1,26 @@
 <template>
   <PageLayout class="fs-300 t-body">
-    <Teleport to="#promo-toolbar-left" defer>
-      <IconButton
-        icon="back"
-        :label="$t('common.back')"
-        @click="$router.push('/promo/list')"
-      />
-      <span class="fw-600 fs-400">
-        {{ isEdit ? form.name || $t("promo.edit_rule") : $t("promo.create_rule") }}
-      </span>
-    </Teleport>
-    <Teleport to="#promo-toolbar-right" defer>
-      <span v-if="isDirty" class="bg-warning-subtle t-warning fs-200 ph-2 rounded fw-600">
-        {{ $t("unsaved.changes") }}
-      </span>
-      <IconButton
-        v-if="isEdit"
-        icon="delete"
-        :label="$t('common.delete')"
-        variant="danger"
-        @click="showDeleteConfirm = true"
-      />
-      <BasicButton
-        variant="primary"
-        @click="saveRule"
-      >
-        {{ $t('common.save') }}
-      </BasicButton>
-    </Teleport>
+    <template v-if="!loading" #header>
+      <PageHeader :title="pageTitle" back="/promo/list">
+        <template #actions>
+          <div class="flex ai-ct jc-fe wrap gap-3">
+            <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
+            <BasicSwitch
+              v-model="form.is_active"
+              :label="$t('promo.field_is_active')"
+              :hint="$t('promo.hint_is_active')"
+            />
+            <ActionBar :actions="headerActions" />
+          </div>
+        </template>
+      </PageHeader>
+    </template>
       <Loader block v-if="loading" />
 
       <template v-else>
         <!-- Section: Basic info -->
-        <div class="detail-section mb-10">
-          <h2 class="fs-500 fw-600 mb-8">{{ $t("promo.section_basic") }}</h2>
-          <div class="detail-grid">
+        <BasicCard :title="$t('promo.section_basic')" gap class="mb-8">
+          <div class="form-grid">
             <FormField
               :label="$t('promo.field_name')"
               required
@@ -47,7 +33,7 @@
             <FormField
               :label="$t('promo.field_modifier')"
               required
-              :error="formErrors.getFieldError('modifier')?.msg"
+              :error="formErrors.getFieldError('modifier')?.msg || ''"
             >
               <BasicSelect
                 :options="modifierOptions"
@@ -72,12 +58,16 @@
               />
             </FormField>
           </div>
-        </div>
+        </BasicCard>
 
         <!-- Section: Extra value (modifier-specific) -->
-        <div v-if="extraValueKind && extraValueKind !== 'none'" class="detail-section mb-10">
-          <h2 class="fs-500 fw-600 mb-8">{{ $t("promo.section_extra_value") }}</h2>
-          <div class="detail-grid">
+        <BasicCard
+          v-if="extraValueKind && extraValueKind !== 'none'"
+          :title="$t('promo.section_extra_value')"
+          gap
+          class="mb-8"
+        >
+          <div class="form-grid">
             <!-- percent / amount / gratis_qty -->
             <template v-if="['percent', 'amount', 'gratis_qty'].includes(extraValueKind)">
               <FormField
@@ -114,7 +104,7 @@
 
             <!-- threshold_percent / threshold_amount / gratis_threshold / currency_threshold_price: per-currency rows -->
             <template v-else-if="['threshold_percent', 'threshold_amount', 'gratis_threshold', 'currency_threshold_price'].includes(extraValueKind)">
-              <FormField :label="extraValueLabel" class="detail-grid--full">
+              <FormField :label="extraValueLabel" class="form-grid__wide">
                 <!-- per-currency groups -->
                 <div
                   v-for="(group, groupIdx) in perCurrencyRows"
@@ -175,7 +165,7 @@
             <template v-else-if="extraValueKind === 'json'">
               <FormField
                 :label="$t('promo.extra_json')"
-                class="detail-grid--full"
+                class="form-grid__wide"
                 :error="jsonParseError || ''"
               >
                 <BasicTextarea
@@ -186,12 +176,11 @@
               </FormField>
             </template>
           </div>
-        </div>
+        </BasicCard>
 
         <!-- Section: Order conditions -->
-        <div class="detail-section mb-10">
-          <h2 class="fs-500 fw-600 mb-8">{{ $t("promo.section_conditions") }}</h2>
-          <div class="detail-grid">
+        <BasicCard :title="$t('promo.section_conditions')" gap class="mb-8">
+          <div class="form-grid">
             <FormField
               :label="$t('promo.field_min_order_amount')"
               :error="formErrors.getFieldError('min_order_amount')?.msg || ''"
@@ -201,27 +190,23 @@
                 :placeholder="$t('promo.min_order_amount_placeholder')"
               />
             </FormField>
-            <FormField :label="$t('promo.field_currencies')">
+            <FormField :label="$t('promo.field_currencies')" :description="$t('promo.currencies_hint')">
               <BasicSelect
                 v-model="form.currencies"
                 multiple
                 :options="currencySelectOptions"
                 :placeholder="$t('promo.field_currencies')"
               />
-              <p class="fs-200 t-muted mt-1">{{ $t("promo.currencies_hint") }}</p>
             </FormField>
-            <FormField :label="$t('promo.section_channels')">
+            <FormField :label="$t('promo.section_channels')" :description="$t('promo.channels_hint')">
               <BasicSelect
                 v-model="form.channels"
                 multiple
                 :options="channelSelectOptions"
                 :placeholder="$t('promo.section_channels')"
               />
-              <p class="fs-200 t-muted mt-1">{{ $t("promo.channels_hint") }}</p>
             </FormField>
-          </div>
-          <div v-if="form.free_shipping" class="detail-grid mt-8">
-            <FormField :label="$t('promo.field_free_shipping_methods')">
+            <FormField v-if="form.free_shipping" :label="$t('promo.field_free_shipping_methods')">
               <BasicSelect
                 v-model="form.free_shipping_methods"
                 multiple
@@ -230,17 +215,11 @@
               />
             </FormField>
           </div>
-        </div>
+        </BasicCard>
 
-        <!-- Section: Flags -->
-        <div class="detail-section mb-10">
-          <h2 class="fs-500 fw-600 mb-8">{{ $t("promo.section_flags") }}</h2>
-          <div class="detail-flags">
-            <BasicSwitch
-              :label="$t('promo.field_is_active')"
-              :hint="$t('promo.hint_is_active')"
-              v-model="form.is_active"
-            />
+        <!-- Section: Flags (the rule's on/off sits in the page header) -->
+        <BasicCard :title="$t('promo.section_flags')" gap class="mb-8">
+          <div class="form-grid">
             <BasicSwitch
               :label="$t('promo.field_automatic')"
               :hint="$t('promo.hint_automatic')"
@@ -272,31 +251,25 @@
               v-model="form.combine_with_other_rules"
             />
           </div>
-        </div>
+        </BasicCard>
 
         <!-- Section: Discount codes (edit only) -->
-        <div v-if="isEdit" class="detail-section mb-10">
-          <div class="flex ai-ct jc-sb mb-8">
-            <h2 class="fs-500 fw-600">{{ $t("promo.section_codes") }}</h2>
-            <BasicButton
-              variant="secondary"
-              @click="openAddCode"
-            >
+        <BasicCard v-if="isEdit" :title="$t('promo.section_codes')" gap class="mb-8">
+          <template #actions>
+            <BasicButton variant="secondary" @click="openAddCode">
               {{ $t('promo.add_code') }}
             </BasicButton>
-          </div>
+          </template>
 
-          <!-- Search -->
-          <div class="codes-search-row mb-8">
-            <BasicInput
-              v-model="codesSearch"
-              :placeholder="$t('promo.codes_search_placeholder')"
-              icon="search"
-              @input="debouncedFetch(() => fetchCodes(true))"
-            />
-          </div>
+          <BasicInput
+            v-model="codesSearch"
+            :placeholder="$t('promo.codes_search_placeholder')"
+            :aria-label="$t('promo.codes_search_placeholder')"
+            icon="search"
+            class="codes-search"
+            @input="debouncedFetch(() => fetchCodes(true))"
+          />
 
-          <!-- Codes DataTable -->
           <DataTable
             :columns="codesColumns"
             :rows="codes"
@@ -304,12 +277,10 @@
             row-key="id"
             :empty-text="$t('promo.no_codes')"
             @sort="onCodesSort"
+            @row-click="openEditCode"
           >
             <template #cell-code="{ row }">
-              <span
-                class="promo-code-value fw-600 pointer t-accent"
-                @click="openEditCode(row)"
-              >{{ row.code }}</span>
+              <span class="promo-code fw-600">{{ row.code }}</span>
             </template>
             <template #cell-used="{ row }">
               {{ row.current_used }} / {{ row.max_used !== null ? row.max_used : "∞" }}
@@ -342,19 +313,16 @@
             </template>
           </DataTable>
 
-          <!-- Codes pagination -->
-          <div v-if="codesCount > codesPageSize" class="flex jc-ct mt-8">
-            <Pagination
-              :page="codesPaginationState.page"
-              :pages="codesPaginationState.pages"
-              @update:page="onCodesPageChange"
-            />
-          </div>
+          <Pagination
+            v-if="codesCount > codesPageSize"
+            :page="codesPaginationState.page"
+            :pages="codesPaginationState.pages"
+            @update:page="onCodesPageChange"
+          />
 
           <!-- Add code form (inline) -->
-          <div v-if="showAddCode" class="detail-section mt-8">
-            <h3 class="fs-400 fw-600 mb-8">{{ $t("promo.new_code_title") }}</h3>
-            <div class="detail-grid">
+          <BasicCard v-if="showAddCode" :title="$t('promo.new_code_title')" gap>
+            <div class="form-grid">
               <FormField
                 :label="$t('promo.code_field_code')"
                 required
@@ -380,36 +348,18 @@
                 <BasicInput type="date" v-model="newCode.active_to" />
               </FormField>
             </div>
-            <div class="flex jc-fe gap-5 mt-8">
-              <BasicButton
-                variant="secondary"
-                @click="showAddCode = false"
-              >
-                {{ $t('common.cancel') }}
-              </BasicButton>
-              <BasicButton
-                variant="secondary"
-                @click="saveNewCode"
-              >
-                {{ $t('promo.save_code') }}
-              </BasicButton>
-            </div>
-          </div>
-        </div>
+            <ActionBar :actions="newCodeActions" />
+          </BasicCard>
+        </BasicCard>
 
         <!-- Section: Filters (edit only) -->
-        <div v-if="isEdit" class="detail-section mb-10">
-          <h2 class="fs-500 fw-600 mb-8">{{ $t("promo.section_filters") }}</h2>
-          <p class="fs-200 t-muted mb-8">{{ $t("promo.filters_hint") }}</p>
+        <BasicCard v-if="isEdit" :title="$t('promo.section_filters')" gap class="mb-8">
+          <p class="fs-200 t-muted">{{ $t("promo.filters_hint") }}</p>
 
-          <!-- Product filters -->
-          <div class="mb-10">
-            <div class="flex ai-ct jc-sb mb-5">
+          <div>
+            <div class="flex ai-ct jc-sb wrap gap-3 mb-5">
               <h3 class="fs-400 fw-600">{{ $t("promo.product_filters") }}</h3>
-              <BasicButton
-                variant="secondary"
-                @click="addProductFilter"
-              >
+              <BasicButton variant="secondary" @click="addProductFilter">
                 {{ $t('promo.add_filter') }}
               </BasicButton>
             </div>
@@ -418,7 +368,7 @@
               :rows="productFilters"
               row-key="id"
               :empty-text="$t('promo.no_filters')"
-              class="filter-table"
+              @row-click="(row) => openFilterDrawer('product', row)"
             >
               <template #cell-mode="{ row }">
                 <StatusBadge
@@ -427,7 +377,7 @@
                 />
               </template>
               <template #cell-summary="{ row }">
-                <span class="fs-200 pointer t-accent" @click="openFilterDrawer('product', row)">{{ filterSummary(row, 'product') }}</span>
+                <span class="fs-200">{{ filterSummary(row, 'product') }}</span>
               </template>
               <template #cell-actions="{ row }">
                 <div class="flex gap-2">
@@ -448,15 +398,10 @@
               </template>
             </DataTable>
           </div>
-
-          <!-- Customer filters -->
-          <div class="mb-10">
-            <div class="flex ai-ct jc-sb mb-5">
+          <div>
+            <div class="flex ai-ct jc-sb wrap gap-3 mb-5">
               <h3 class="fs-400 fw-600">{{ $t("promo.customer_filters") }}</h3>
-              <BasicButton
-                variant="secondary"
-                @click="addCustomerFilter"
-              >
+              <BasicButton variant="secondary" @click="addCustomerFilter">
                 {{ $t('promo.add_filter') }}
               </BasicButton>
             </div>
@@ -465,7 +410,7 @@
               :rows="customerFilters"
               row-key="id"
               :empty-text="$t('promo.no_filters')"
-              class="filter-table"
+              @row-click="(row) => openFilterDrawer('customer', row)"
             >
               <template #cell-mode="{ row }">
                 <StatusBadge
@@ -474,7 +419,7 @@
                 />
               </template>
               <template #cell-summary="{ row }">
-                <span class="fs-200 pointer t-accent" @click="openFilterDrawer('customer', row)">{{ filterSummary(row, 'customer') }}</span>
+                <span class="fs-200">{{ filterSummary(row, 'customer') }}</span>
               </template>
               <template #cell-actions="{ row }">
                 <div class="flex gap-2">
@@ -495,15 +440,10 @@
               </template>
             </DataTable>
           </div>
-
-          <!-- Threshold filters -->
           <div>
-            <div class="flex ai-ct jc-sb mb-5">
+            <div class="flex ai-ct jc-sb wrap gap-3 mb-5">
               <h3 class="fs-400 fw-600">{{ $t("promo.threshold_filters") }}</h3>
-              <BasicButton
-                variant="secondary"
-                @click="addThresholdFilter"
-              >
+              <BasicButton variant="secondary" @click="addThresholdFilter">
                 {{ $t('promo.add_filter') }}
               </BasicButton>
             </div>
@@ -512,7 +452,7 @@
               :rows="thresholdFilters"
               row-key="id"
               :empty-text="$t('promo.no_filters')"
-              class="filter-table"
+              @row-click="(row) => openFilterDrawer('threshold', row)"
             >
               <template #cell-mode="{ row }">
                 <StatusBadge
@@ -521,7 +461,7 @@
                 />
               </template>
               <template #cell-summary="{ row }">
-                <span class="fs-200 pointer t-accent" @click="openFilterDrawer('threshold', row)">{{ filterSummary(row, 'threshold') }}</span>
+                <span class="fs-200">{{ filterSummary(row, 'threshold') }}</span>
               </template>
               <template #cell-actions="{ row }">
                 <div class="flex gap-2">
@@ -542,7 +482,7 @@
               </template>
             </DataTable>
           </div>
-        </div>
+        </BasicCard>
       </template>
 
     <!-- Delete rule confirmation -->
@@ -589,6 +529,7 @@
       :open="showEditCodeModal"
       size="sm"
       :title="$t('promo.edit_code_title')"
+      :actions="editCodeActions"
       @update:open="(open) => open || closeEditCodeModal()"
     >
       <div class="edit-code-body">
@@ -614,20 +555,6 @@
           <NumberInput v-model="editCode.max_products_qty" />
         </FormField>
       </div>
-      <template #footer>
-        <BasicButton
-          variant="secondary"
-          @click="closeEditCodeModal"
-        >
-          {{ $t('common.cancel') }}
-        </BasicButton>
-        <BasicButton
-          variant="primary"
-          @click="saveEditCode"
-        >
-          {{ $t('common.save') }}
-        </BasicButton>
-      </template>
     </BasicModal>
 
     <ConfirmDialog
@@ -740,7 +667,8 @@ export default {
   },
   data() {
     return {
-      loading: false,
+      // Until the meta (and the rule) load: the header's Save and Delete never act on an empty form.
+      loading: true,
       showDeleteConfirm: false,
       showAddCode: false,
       showEditCodeModal: false,
@@ -821,6 +749,30 @@ export default {
     },
     ruleId() {
       return this.$route.params.id;
+    },
+    pageTitle() {
+      if (!this.isEdit) return this.$t("promo.create_rule");
+      return this.form.name || this.$t("promo.edit_rule");
+    },
+    headerActions() {
+      const del = { key: "delete", role: "utility", icon: "delete", variant: "danger", label: this.$t("common.delete"),
+        onClick: () => (this.showDeleteConfirm = true) };
+      return [
+        ...(this.isEdit ? [del] : []),
+        { key: "save", role: "primary", label: this.$t("common.save"), onClick: this.saveRule },
+      ];
+    },
+    newCodeActions() {
+      return [
+        { key: "cancel", role: "secondary", label: this.$t("common.cancel"), onClick: () => (this.showAddCode = false) },
+        { key: "save", role: "secondary", label: this.$t("promo.save_code"), onClick: this.saveNewCode },
+      ];
+    },
+    editCodeActions() {
+      return [
+        { key: "cancel", role: "secondary", label: this.$t("common.cancel"), onClick: this.closeEditCodeModal },
+        { key: "save", role: "primary", label: this.$t("common.save"), onClick: this.saveEditCode },
+      ];
     },
     modifierOptions() {
       return this.modifiers.map(m => {
@@ -938,6 +890,7 @@ export default {
       if (!this.form.channels.length) this.form.channels = [this.channel];
       this.snapshot(this.form);
       this.track(this.form);
+      this.loading = false;
     }
   },
   methods: {
@@ -1423,47 +1376,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.detail-section {
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-  padding: var(--space-5);
-}
-
-.detail-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: var(--space-8);
-
-  &--full {
-    grid-column: 1 / -1;
-  }
-}
-
-.detail-flags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-8);
-}
-
-.promo-channel-chip {
-  display: inline-flex;
-  align-items: center;
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-base);
-  background: var(--accent-subtle);
-  color: var(--text-strong);
-  font-size: var(--fs-200);
-  font-weight: 600;
-}
-
-.promo-code-row {
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-  padding: var(--space-2) var(--space-2);
-}
-
-.promo-code-value {
-  font-family: monospace;
+.promo-code {
+  font-family: var(--font-mono);
   font-size: var(--fs-300);
 }
 
@@ -1473,7 +1387,7 @@ export default {
   padding: var(--space-8);
 }
 
-.codes-search-row {
+.codes-search {
   max-width: 360px;
   min-width: 200px;
 }

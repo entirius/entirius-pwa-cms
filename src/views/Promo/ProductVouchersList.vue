@@ -25,9 +25,7 @@
         <span class="t-muted">{{ row.currency }}</span>
       </template>
       <template #cell-tax_type="{ row }">
-        <span class="config-badge bg-raised t-secondary">{{
-          taxLabel(row.tax_type)
-        }}</span>
+        <Tag :label="taxLabel(row.tax_type)" />
       </template>
       <template #cell-is_active="{ row }">
         <StatusBadge
@@ -58,7 +56,7 @@
             :min="1"
             :max="9999999"
           />
-          <span v-else class="t-secondary">#{{ form.product_id }}</span>
+          <BasicInput v-else :model-value="`#${form.product_id}`" readonly />
         </FormField>
 
         <div class="voucher-form__row">
@@ -85,7 +83,7 @@
               v-model="form.currency_iso3"
               :placeholder="$t('promo.pv_currency')"
             />
-            <span v-else class="t-secondary">{{ form.currency_iso3 }}</span>
+            <BasicInput v-else :model-value="form.currency_iso3" readonly />
           </FormField>
         </div>
 
@@ -152,10 +150,11 @@
             :key="f.id"
             class="filter-row flex ai-ct jc-sb"
           >
-            <span class="fs-200">
-              <span class="config-badge bg-raised t-secondary">{{
-                modeLabel(f.mode)
-              }}</span>
+            <span class="flex ai-ct wrap gap-2 fs-200">
+              <StatusBadge
+                :label="modeLabel(f.mode)"
+                :tone="f.mode === 'exclusion' ? 'negative' : 'positive'"
+              />
               {{
                 $t("promo.pv_filter_summary", {
                   p: f.products.length,
@@ -168,33 +167,30 @@
               >
             </span>
             <div class="flex ai-ct gap-2">
-              <BasicButton
-                variant="secondary"
-                @click="editFilter(f)"
-              >
-                {{ $t('promo.btn_edit') }}
-              </BasicButton>
-              <BasicButton
-                variant="secondary"
+              <IconButton icon="edit" :label="$t('promo.btn_edit')" size="sm" @click="editFilter(f)" />
+              <IconButton
+                icon="delete"
+                :label="$t('promo.btn_delete')"
+                variant="danger"
+                size="sm"
                 @click="deleteFilter(f.id)"
-              >
-                {{ $t('promo.btn_delete') }}
-              </BasicButton>
+              />
             </div>
           </div>
 
           <div class="filter-add">
-            <BasicSelect
-              :options="modeOptions"
-              v-model="newFilter.mode"
-              :placeholder="$t('promo.pv_filter_mode')"
-            />
-            <div
+            <FormField :label="$t('promo.pv_filter_mode')">
+              <BasicSelect
+                :options="modeOptions"
+                v-model="newFilter.mode"
+                :placeholder="$t('promo.pv_filter_mode')"
+              />
+            </FormField>
+            <FormField
               v-for="kind in entityKinds"
               :key="kind.type"
-              class="filter-picker"
+              :label="$t(kind.labelKey)"
             >
-              <label class="field-label">{{ $t(kind.labelKey) }}</label>
               <EntitySearchPicker
                 :model-value="null"
                 :fetch-fn="(s) => fetchEntities(kind.type, s)"
@@ -203,21 +199,15 @@
                 @update:display-value="(d) => onPickDisplay(kind.type, d)"
               />
               <div v-if="newFilter[kind.type].length" class="chips">
-                <span
+                <Tag
                   v-for="item in newFilter[kind.type]"
                   :key="item.pk"
-                  class="config-chip"
-                >
-                  {{ item.label }}
-                  <button
-                    class="config-chip__x"
-                    @click="removeEntity(kind.type, item.pk)"
-                  >
-                    &times;
-                  </button>
-                </span>
+                  :label="String(item.label)"
+                  removable
+                  @remove="removeEntity(kind.type, item.pk)"
+                />
               </div>
-            </div>
+            </FormField>
             <BasicSwitch
               :label="$t('promo.pv_filter_common')"
               :hint="$t('promo.filter_common_tip')"
@@ -243,22 +233,7 @@
           </div>
         </div>
 
-        <div class="voucher-form__actions">
-          <BasicButton
-            v-if="isEdit"
-            variant="secondary"
-            @click="showDelete = true"
-          >
-            {{ $t('promo.btn_delete') }}
-          </BasicButton>
-          <BasicButton
-            variant="primary"
-            :disabled="saving"
-            @click="save"
-          >
-            {{ $t('promo.btn_save') }}
-          </BasicButton>
-        </div>
+        <ActionBar :actions="drawerActions" class="mt-10" />
       </div>
     </SideDrawer>
 
@@ -293,7 +268,7 @@ import {
   DELETE_VoucherProductFilter,
   GET_VoucherMeta,
 } from "@/api/voucher/api";
-import { enumDescKey } from "./promo-enum-hints";
+import { enumDescKey, enumLabel } from "./promo-enum-hints";
 
 function emptyForm() {
   return {
@@ -413,6 +388,14 @@ export default {
         },
       ];
     },
+    drawerActions() {
+      const del = { key: "delete", role: "utility", icon: "delete", variant: "danger", label: this.$t("promo.btn_delete"),
+        onClick: () => (this.showDelete = true) };
+      return [
+        ...(this.isEdit ? [del] : []),
+        { key: "save", role: "primary", label: this.$t("promo.btn_save"), onClick: this.save, disabled: this.saving },
+      ];
+    },
     drawerTitle() {
       return this.isEdit ? this.$t("promo.pv_edit") : this.$t("promo.pv_new");
     },
@@ -442,11 +425,11 @@ export default {
     },
     taxLabel(v) {
       const f = this.meta.tax_types.find((t) => t.value === v);
-      return f ? f.label : v;
+      return enumLabel("tax_type", v, f?.label);
     },
     modeLabel(v) {
       const f = this.meta.filter_modes.find((t) => t.value === v);
-      return f ? f.label : v;
+      return enumLabel("filter_mode", v, f?.label);
     },
     async fetchMeta() {
       try {
@@ -753,13 +736,6 @@ export default {
   padding-top: var(--space-8);
 }
 
-.voucher-form__actions {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--space-5);
-  margin-top: var(--space-10);
-}
-
 .filter-row {
   padding: var(--space-5) 0;
   border-bottom: 1px solid var(--border-subtle);
@@ -772,45 +748,10 @@ export default {
   margin-top: var(--space-8);
 }
 
-.filter-picker {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-}
-
 .chips {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
   margin-top: var(--space-2);
-}
-
-.config-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  padding: 2px var(--space-2);
-  border-radius: var(--radius-base);
-  font-size: var(--fs-200);
-  background: var(--surface-raised);
-  color: var(--text-body);
-}
-
-.config-chip__x {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: var(--fs-300);
-  line-height: 1;
-  color: var(--text-muted);
-  padding: 0;
-}
-
-.config-badge {
-  display: inline-block;
-  padding: 2px var(--space-2);
-  border-radius: var(--radius-base);
-  font-size: var(--fs-200);
-  font-weight: 600;
 }
 </style>

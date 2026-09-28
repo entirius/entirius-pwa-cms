@@ -147,6 +147,20 @@ All notable changes to this project will be documented in this file.
   filters in the `PageLayout` toolbar (the gap table's channel, recommendation and competitor-only filters in a
   `MobileFilterPanel`) and their pagination in the list footer. The apply calls, payloads and confirmation are
   unchanged. Smoke spec `tests/e2e/p5-pricefighter-smoke.spec.js`.
+- P5 Promo (plan 44): the panel toolbar is gone. The promotions list has its H1 „Promotions” with the channel selector
+  in the PageHeader `meta` (panel-local `PromoChannelSelect`), the search and the filter panel (status chips + modifier
+  select) in the page toolbar and the pager in the footer; the Discounts / Vouchers switch shows only with the voucher
+  module (the lone „Discounts” pill is gone) or on a locked vouchers link. Modifier cells are `Tag`s, code counts
+  `CountBadge`s, the select-all banner links are ghost `BasicButton`s. The campaign form follows the detail-form
+  pattern: `BasicCard` sections on a `.form-grid`, hints as FormField descriptions, the unsaved badge, the Active
+  switch and Delete · Save in the PageHeader actions (rendered after the load); the codes table opens a code on row
+  click, the inline code form and the code dialog end in `ActionBar`s, filter tables open their drawer on row click.
+  The filter drawer picks search results with `BasicCheckbox`es and shows the picks as removable `Tag`s. The voucher
+  detail has its H1 („Voucher #id”) with the back arrow and Reveal code in the header, an order is a link. Campaign
+  type, tax type, filter mode and campaign cells are `Tag`s / `StatusBadge`s whose labels come from
+  `promo.enum_label` (the backend label only for an unknown value); the campaign and product-voucher drawers put
+  Delete (danger `IconButton`) and Save in an `ActionBar`. New read-only smoke spec `tests/e2e/p5-promo-smoke.spec.js`.
+
 - P5 LayoutExtenders (plan 42): the panel toolbar is gone. The layout list has its H1 „Layout Extenders” and the
   channel filter in the page toolbar; types and channels are `Tag`s, the update date goes through `formatDate`, the
   copy dialog is two `FormField`s with its Cancel · Copy in the dialog `ActionBar`. The navigation editor's H1 is the
