@@ -177,7 +177,8 @@
           </BasicButton>
         </template>
         <template #cell-quality="{ row }">
-          <div data-test="quality-cell">
+          <!-- The findings panel lives inside the row: its clicks must not select or open the row. -->
+          <div data-test="quality-cell" @click.stop>
             <BasicMenu
               v-if="qualityState(row) === 'gaps' && (!qualityFilterActive || qualityFindings(row).length)"
               :label="$t('pim.quality_show_details')"

@@ -656,6 +656,7 @@ watch(
               :selected="index === selectedIndex"
               @click="selectItem(index)"
               @keydown.enter.self="selectItem(index)"
+              @error.capture="onImgError(tileSrc(element))"
             >
               <template v-if="element.role === 'MAIN'" #overlay>
                 <Tag :label="$t('pim.role_main')" />

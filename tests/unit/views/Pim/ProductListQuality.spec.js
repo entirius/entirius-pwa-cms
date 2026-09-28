@@ -40,7 +40,9 @@ import BasicMenu from "@/boots/BasicMenu/index.vue";
 // Renders each row's quality cell, so the cell's menu is exercised without the real table.
 const QualityCellTable = {
   props: ["rows"],
-  template: '<div><div v-for="r in rows" :key="r.sku"><slot name="cell-quality" :row="r" /></div></div>',
+  emits: ["row-click"],
+  template:
+    '<div><div v-for="r in rows" :key="r.sku" @click="$emit(\'row-click\', r)"><slot name="cell-quality" :row="r" /></div></div>',
 };
 
 const mountList = () =>
@@ -94,10 +96,11 @@ describe("ProductList — quality column", () => {
     mockGetProducts.mockResolvedValue({ data: { results: [withGaps()], count: 1 } });
     mockGetGaps.mockResolvedValue(gapsResponse);
 
+    const push = vi.fn();
     const wrapper = mount(ProductList, {
       attachTo: document.body,
       global: {
-        mocks: { $route: { query: {}, path: "/pim/products" }, $router: { push() {}, replace() {} } },
+        mocks: { $route: { query: {}, path: "/pim/products" }, $router: { push, replace() {} } },
         components: { BasicMenu },
         stubs: {
           DataTable: QualityCellTable,
@@ -116,6 +119,8 @@ describe("ProductList — quality column", () => {
     expect(wrapper.find('[data-test="quality-popover"]').exists()).toBe(false); // only the count badge shows
     await toggle.trigger("click");
     expect(wrapper.find('[data-test="quality-popover"]').text()).toContain("Missing description");
+    await wrapper.find('[data-test="quality-popover"]').trigger("click");
+    expect(push).not.toHaveBeenCalled(); // a click in the panel never opens the row
     await toggle.trigger("click");
     expect(wrapper.find('[data-test="quality-popover"]').exists()).toBe(false); // click again dismisses it
     wrapper.unmount();

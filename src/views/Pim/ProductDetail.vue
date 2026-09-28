@@ -1,11 +1,11 @@
 <template>
   <PageLayout class="fs-300 t-body">
-    <template v-if="product.sku" #header>
-      <PageHeader :title="product.name || product.sku" back="/pim/products">
+    <template v-if="product.sku || !loading" #header>
+      <PageHeader :title="product.name || product.sku || $t('pim.product_detail')" back="/pim/products">
         <template #meta>
           <PimChannelSelect />
         </template>
-        <template #actions>
+        <template v-if="product.sku" #actions>
           <div class="flex ai-ct jc-fe wrap gap-3">
             <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
             <BasicSwitch v-model="form.is_enabled" :label="$t('pim.enabled')" />
