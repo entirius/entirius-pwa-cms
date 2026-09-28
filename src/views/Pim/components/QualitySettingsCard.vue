@@ -1,7 +1,7 @@
 <template>
-  <div
+  <BasicCard
     v-if="loaded"
-    class="page-card quality-settings"
+    class="quality-settings"
     data-test="quality-settings-card"
   >
     <h2 class="fs-400 fw-600 mb-8">{{ $t("pim.quality_settings") }}</h2>
@@ -53,7 +53,7 @@
         </ActionBar>
       </template>
     </BasicModal>
-  </div>
+  </BasicCard>
 </template>
 
 <script>

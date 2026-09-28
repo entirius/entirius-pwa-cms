@@ -52,7 +52,7 @@
             {{ category.breadcrumb_path }}
           </div>
 
-          <div class="page-card detail-section mb-10">
+          <BasicCard class="detail-section mb-10">
             <h2 class="fs-500 fw-600 mb-5">{{ $t("pim.basic_info") }}</h2>
             <div class="detail-grid">
               <div class="detail-field">
@@ -104,9 +104,9 @@
                 }}</span>
               </div>
             </div>
-          </div>
+          </BasicCard>
 
-          <div class="page-card detail-section mb-10">
+          <BasicCard class="detail-section mb-10">
             <div class="translation-field">
               <div class="translation-field__header">
                 <label class="field-label">{{ $t("pim.name") }} ({{ defaultLang.toUpperCase() }})</label>
@@ -144,9 +144,9 @@
                 <BasicTextarea v-model="form.desc" />
               </FormField>
             </div>
-          </div>
+          </BasicCard>
 
-          <div class="page-card detail-section mb-10">
+          <BasicCard class="detail-section mb-10">
             <h2 class="fs-500 fw-600 mb-5">{{ $t("pim.category_image") }}</h2>
             <div v-if="form.image_url" class="category-image">
               <img :src="fullImageUrl" class="category-image__preview" />
@@ -179,9 +179,9 @@
               style="display: none"
               @change="onCategoryImageUpload"
             />
-          </div>
+          </BasicCard>
 
-          <div class="page-card detail-section mb-10">
+          <BasicCard class="detail-section mb-10">
             <h2 class="fs-500 fw-600 mb-5">{{ $t("pim.seo_settings") }}</h2>
             <div class="detail-grid mb-8">
               <div class="detail-field">
@@ -254,7 +254,7 @@
               </div>
               <BasicInput v-model="form.canonical_url_t9n[defaultLang]" />
             </div>
-          </div>
+          </BasicCard>
         </div>
 
         <CategoryProducts

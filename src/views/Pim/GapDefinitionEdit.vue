@@ -26,7 +26,7 @@
     </Teleport>
 
     <div class="flex-1 ovy-auto page-pad">
-      <div class="page-card">
+      <BasicCard>
         <div class="gap-def-identity mb-10">
           <span class="fs-200 t-accent fw-600 tt-upper">
             {{ isCreate ? $t("pim.create_gap_definition") : $t("pim.gap_definition_detail") }}
@@ -181,7 +181,7 @@
             <p>{{ $t("pim.confirm_delete_gap_definition") }}</p>
           </template>
         </ConfirmDialog>
-      </div>
+      </BasicCard>
     </div>
   </div>
 </template>

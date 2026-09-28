@@ -1,5 +1,5 @@
 <template>
-  <div class="page-card pim-card">
+  <BasicCard class="pim-card">
     <div class="pim-card__header">
       <p class="fs-500 fw-600 pim-card__title">{{ title }}</p>
       <p v-if="subtitle" class="fs-200 t-muted pim-card__subtitle">
@@ -9,7 +9,7 @@
     <div class="pim-card__body">
       <slot />
     </div>
-  </div>
+  </BasicCard>
 </template>
 
 <script setup>

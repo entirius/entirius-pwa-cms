@@ -23,7 +23,7 @@
       </BasicButton>
     </Teleport>
     <div class="flex-1 ovy-auto page-pad">
-      <div class="page-card">
+      <BasicCard>
         <!-- Set identity -->
         <div class="set-identity mb-10">
           <span class="fs-200 t-accent fw-600 tt-upper">{{
@@ -369,7 +369,7 @@
         />
 
         <!-- Add group modal removed — inline creation panel used instead -->
-      </div>
+      </BasicCard>
     </div>
 
     <!-- Attribute Library sidebar (full height, right edge) -->
