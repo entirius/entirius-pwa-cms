@@ -337,7 +337,8 @@ Catalogue: `#selects` (`#basic-select`, `#entity-search-picker`, `#channel-multi
   `role="switch"` button with `aria-checked`, styles scoped to it.
 - **`BasicDatePicker`** — an input-looking trigger with the `calendar` icon opens an inline flatpickr; `v-model` (the
   flatpickr date string), `config` (a single date by default, `mode: "range"` for a range), `disabled`; the instance
-  is destroyed on unmount. Its label is the FormField's. The trigger's click reaches the document, so other
+  lives only while the calendar is open. `fixed` places the calendar against the viewport (upward when there is no
+  room below), so a scrolling parent such as a wide table does not clip it. Its label is the FormField's. The trigger's click reaches the document, so other
   popovers close; a click inside the open calendar never closes it.
 - **`SegmentedControl`** — contract id and `disabled`, named by the FormField label, `aria-pressed` on the active
   option. **`ColorInput`** — `disabled`, the text field reads the contract, the swatch is the native picker itself

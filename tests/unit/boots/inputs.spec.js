@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { defineComponent, h, ref } from "vue";
+import { defineComponent, h, nextTick, ref } from "vue";
 import { mount } from "@vue/test-utils";
 import { ICONS } from "@/boots/Icons/icons";
 import FormField from "@/boots/FormField/index.vue";
@@ -302,16 +302,37 @@ describe("SegmentedControl and ColorInput", () => {
 describe("BasicDatePicker", () => {
   const mountPicker = (props = {}) => mount(BasicDatePicker, { props, global: GLOBAL });
 
-  it("destroys its flatpickr instance on unmount", () => {
+  it("mounts its flatpickr instance only while open, destroyed on close and on unmount", async () => {
+    flatpickr.mockClear();
     flatpickrInstance.destroy.mockClear();
     const wrapper = mountPicker();
-    expect(flatpickr).toHaveBeenCalled();
-    wrapper.unmount();
+    expect(flatpickr).not.toHaveBeenCalled();
+    await wrapper.find("button").trigger("click");
+    expect(flatpickr).toHaveBeenCalledTimes(1);
+    await wrapper.find("button").trigger("click");
     expect(flatpickrInstance.destroy).toHaveBeenCalledTimes(1);
+    await wrapper.find("button").trigger("click");
+    wrapper.unmount();
+    expect(flatpickrInstance.destroy).toHaveBeenCalledTimes(2);
   });
 
-  it("emits v-model with the picked date", () => {
+  it("fixed: placed against the viewport, upward when there is no room below", async () => {
+    const wrapper = mount(BasicDatePicker, { props: { fixed: true }, global: GLOBAL, attachTo: document.body });
+    const trigger = wrapper.find("button").element;
+    trigger.getBoundingClientRect = () => ({ top: window.innerHeight - 40, bottom: window.innerHeight - 8, left: 30 });
+    Object.defineProperty(wrapper.find(".picker-wrapper").element, "offsetHeight", { value: 300 });
+    await wrapper.find("button").trigger("click");
+    await nextTick();
+    const style = wrapper.find(".picker-wrapper").element.style;
+    expect(style.position).toBe("fixed");
+    expect(style.left).toBe("30px");
+    expect(style.top).toBe(`${window.innerHeight - 340}px`);
+    wrapper.unmount();
+  });
+
+  it("emits v-model with the picked date", async () => {
     const wrapper = mountPicker();
+    await wrapper.find("button").trigger("click");
     const { onChange } = flatpickr.mock.calls.at(-1)[1];
     onChange([], "2026-09-01");
     expect(wrapper.emitted("update:modelValue")).toEqual([["2026-09-01"]]);
@@ -350,7 +371,8 @@ describe("BasicDatePicker", () => {
     flatpickrInstance.setDate.mockClear();
     const model = ref("2026-01-01");
     const Host = defineComponent({ render: () => h(BasicDatePicker, { modelValue: model.value }) });
-    mount(Host, { global: GLOBAL });
+    const wrapper = mount(Host, { global: GLOBAL });
+    await wrapper.find("button").trigger("click");
     model.value = "2026-02-02";
     await new Promise((resolve) => setTimeout(resolve));
     expect(flatpickrInstance.setDate).toHaveBeenCalledWith("2026-02-02", false);

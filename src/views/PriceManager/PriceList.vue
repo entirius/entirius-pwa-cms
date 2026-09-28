@@ -133,12 +133,14 @@
 
                 <!-- Special From -->
                 <BasicDatePicker
+                  fixed
                   :model-value="getDirtyField(rowKey(row), 'special_from_date', row.special_from_date || '')"
                   @update:model-value="setDirty(rowKey(row), 'special_from_date', $event, row)"
                 />
 
                 <!-- Special To -->
                 <BasicDatePicker
+                  fixed
                   :model-value="getDirtyField(rowKey(row), 'special_to_date', row.special_to_date || '')"
                   @update:model-value="setDirty(rowKey(row), 'special_to_date', $event, row)"
                 />
@@ -715,17 +717,12 @@ export default {
 
 // --- Table ---
 
-// The rows keep 1296 px (two date pickers); only the table box scrolls sideways, never the page.
+// The rows keep 1296 px (two date pickers); only the table box scrolls sideways, never the page. The row date
+// pickers are `fixed`, so this scroll box never clips their calendars.
 .pm-price-table {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-base);
   overflow-x: auto;
-
-  // A row date picker opens its calendar inside this scroll box: while one is open the box grows by the calendar's
-  // height, so the calendar of the last rows shows whole instead of being cut at the box edge.
-  &:has(.basic-date-picker__trigger[aria-expanded="true"]) {
-    padding-bottom: calc(3 * var(--space-30));
-  }
 }
 
 // SKU | Tax | Cur | Net | Gross | Spec.Net | Spec.Gross | From | To | Eye | Status

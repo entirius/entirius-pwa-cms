@@ -1,8 +1,8 @@
 <template>
   <PageLayout class="fs-300 t-body">
-    <template v-if="!loading" #header>
+    <template #header>
       <PageHeader :title="pageTitle" back="/pricing/tax-classes">
-        <template #actions>
+        <template v-if="!loading" #actions>
           <ActionBar :actions="headerActions" />
         </template>
       </PageHeader>

@@ -2,16 +2,17 @@
   <div class="basic-date-picker inline-block">
     <div v-out="close" class="relative">
       <button
+        ref="triggerEl"
         v-bind="attrs"
         type="button"
         class="basic-date-picker__trigger flex ai-ct gap-2"
         :aria-expanded="String(visible)"
-        @click="visible = !visible"
+        @click="visible ? close() : open()"
       >
         <FontAwesomeIcon :icon="ICONS.calendar" class="basic-date-picker__icon" aria-hidden="true" />
         <span :class="{ 't-muted': !current }">{{ current || $t("routes.set_new") }}</span>
       </button>
-      <div v-show="visible" class="picker-wrapper bg-inherit bg-base">
+      <div v-show="visible" ref="wrapperEl" class="picker-wrapper bg-inherit bg-base" :style="fixedStyle">
         <!-- flatpickr's element: its inline calendar lands right after it, inside the wrapper -->
         <div ref="pickerEl">
           <input type="text" data-input style="display: none" />
@@ -35,9 +36,11 @@ const DEFAULT_CONFIG = {
 <script setup>
 // Date or date range (docs/ui-components.md § P3 inputs): an input-looking trigger with the calendar icon opens an
 // inline flatpickr below it. `v-model` (the flatpickr date string), `config` (flatpickr options; a single date by default, `mode: "range"` for a range),
-// `disabled`; inside a FormField the trigger takes the contract's id, label and state. The instance is destroyed on
-// unmount.
-import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+// `disabled`; inside a FormField the trigger takes the contract's id, label and state. The flatpickr instance lives only
+// while the calendar is open (a table of pickers carries one calendar, not one per cell). `fixed`: the calendar is placed
+// against the viewport, so a scrolling parent (a wide table) does not clip it; it opens upward when there is no room
+// below and follows the trigger on scroll.
+import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue";
 import flatpickr from "flatpickr";
 import { Polish } from "flatpickr/dist/l10n/pl.js";
 import { ICONS } from "@/boots/Icons/icons";
@@ -47,31 +50,56 @@ const props = defineProps({
   modelValue: { type: String, default: undefined },
   config: { type: Object, default: () => DEFAULT_CONFIG },
   disabled: { type: Boolean, default: false },
+  fixed: { type: Boolean, default: false },
 });
 const emit = defineEmits(["update:modelValue"]);
 
 const { attrs } = useControlAttrs({ disabled: () => props.disabled });
 const visible = ref(false);
 const pickerEl = ref(null);
+const triggerEl = ref(null);
+const wrapperEl = ref(null);
+const fixedStyle = ref(null);
 const current = computed(() => props.modelValue ?? "");
 let instance = null;
-
-function close() {
-  visible.value = false;
-}
 
 function onChange(dates, dateString) {
   emit("update:modelValue", dateString);
 }
 
-onMounted(() => {
+async function open() {
+  visible.value = true;
   instance = flatpickr(pickerEl.value, { ...props.config, defaultDate: current.value, locale: Polish, onChange });
-});
+  if (!props.fixed) return;
+  await nextTick();
+  place();
+  window.addEventListener("scroll", place, { capture: true, passive: true });
+  window.addEventListener("resize", place);
+}
+
+function close() {
+  if (!visible.value) return;
+  visible.value = false;
+  instance?.destroy();
+  instance = null;
+  window.removeEventListener("scroll", place, { capture: true });
+  window.removeEventListener("resize", place);
+}
+
+// Below the trigger, or above it when the viewport has no room below and does above.
+function place() {
+  const trigger = triggerEl.value.getBoundingClientRect();
+  const height = wrapperEl.value.offsetHeight;
+  const up = window.innerHeight - trigger.bottom < height && trigger.top >= height;
+  const top = up ? trigger.top - height : trigger.bottom;
+  fixedStyle.value = { position: "fixed", top: `${top}px`, left: `${trigger.left}px`, bottom: "auto", transform: "none" };
+}
+
 // An outside change only: the picker's own pick is already in its input.
 watch(current, (date) => {
   if (instance && date !== instance.input.value) instance.setDate(date, false);
 });
-onBeforeUnmount(() => instance?.destroy());
+onBeforeUnmount(close);
 </script>
 
 <style lang="scss">

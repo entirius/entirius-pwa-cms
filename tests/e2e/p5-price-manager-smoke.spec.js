@@ -61,6 +61,10 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
 
       await expect(h1(page)).toHaveText(either((t) => t.pm.prices));
       await expect(page.getByRole('group', { name: either((t) => t.pm.price_filter) })).toBeVisible();
+      // Channels and rows load after the page settles: wait for the rows or the empty state before a check may skip.
+      const skuLinks = page.locator('.pm-price-table__row a');
+      const empty = page.locator('.empty-state').or(page.getByText(either((t) => t.pm.no_prices)));
+      await expect(skuLinks.first().or(empty.first())).toBeVisible({ timeout: 10000 });
       const channel = page.locator('.page-header').getByRole('combobox');
       if (await channel.count()) {
         await channel.click();
@@ -68,22 +72,24 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
         await page.keyboard.press('Escape');
       }
 
-      // The last row's promo calendar shows whole: the table's scroll box must not cut it off.
+      // The last row's promo calendar shows whole: the table's scroll box must not cut it off, and the table carries
+      // one calendar (the open one), not one per cell.
       const lastFrom = page.locator('.pm-price-table__row .basic-date-picker__trigger').nth(-2);
       if (await lastFrom.count()) {
         await lastFrom.scrollIntoViewIfNeeded();
         await lastFrom.click();
-        await expect(page.locator('.pm-price-table .flatpickr-calendar:visible')).toBeVisible();
-        // The box scrolls sideways only; a vertical scroll inside it means the calendar is cut at its bottom edge.
+        const calendar = page.locator('.pm-price-table .flatpickr-calendar');
+        await expect(calendar).toHaveCount(1);
+        await expect(calendar).toBeInViewport({ ratio: 1 });
+        // The box scrolls sideways only; a vertical scroll inside it means the calendar grew it.
         const hiddenBelow = await page
           .locator('.pm-price-table')
           .evaluate((box) => box.scrollHeight - box.clientHeight);
         expect(hiddenBelow).toBeLessThanOrEqual(1);
         await lastFrom.click();
+        await expect(calendar).toHaveCount(0);
       }
 
-      const skuLinks = page.locator('.pm-price-table__row a');
-      const empty = page.locator('.empty-state').or(page.getByText(either((t) => t.pm.no_prices)));
       if (await openFirst(page, skuLinks, empty, /\/pricing\/prices\/[^/]+$/)) {
         await expect(page.getByRole('button', { name: either((t) => t.pm.save) })).toBeVisible();
         const from = page.locator('.basic-date-picker__trigger').first();

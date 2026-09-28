@@ -95,3 +95,23 @@ describe("TaxClassDetail — rate unit", () => {
     expect(wrapper.vm.rateError).toBe("");
   });
 });
+
+// Plan 39 review: the header (title, back) stays while the record loads; only the actions wait for it.
+describe("TaxClassDetail — header while loading", () => {
+  it("renders the PageHeader without actions before the record arrives", async () => {
+    mockGetTaxClass.mockReset().mockReturnValue(new Promise(() => {}));
+    const PageHeader = { name: "PageHeader", props: ["title", "back"], template: '<header><slot name="actions" /></header>' };
+    const wrapper = mount(TaxClassDetail, {
+      global: {
+        mocks: { $route: { params: { idx: "standard" }, query: {} } },
+        stubs: { Teleport: true, PageHeader, ActionBar: true },
+      },
+    });
+    await flushPromises();
+
+    const header = wrapper.findComponent({ name: "PageHeader" });
+    expect(header.exists()).toBe(true);
+    expect(header.props("back")).toBe("/pricing/tax-classes");
+    expect(wrapper.findComponent({ name: "ActionBar" }).exists()).toBe(false);
+  });
+});
