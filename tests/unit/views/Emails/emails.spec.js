@@ -24,9 +24,9 @@ describe("Emails header actions", () => {
 });
 
 describe("EmailCard", () => {
-  const mountCard = () =>
+  const mountCard = (props = {}) =>
     mount(EmailCard, {
-      props: { to: "/emails/channels/7", title: "Default Europe", testid: "emails-channel-card" },
+      props: { to: "/emails/channels/7", title: "Default Europe", testid: "emails-channel-card", ...props },
       slots: { default: "<p>default-europe</p>" },
       global: { stubs: { RouterLink: RouterLinkStub, BasicCard: { template: "<section><slot /></section>" } } },
     });
@@ -36,6 +36,11 @@ describe("EmailCard", () => {
     expect(link.props("to")).toBe("/emails/channels/7");
     expect(link.text()).toBe("Default Europe");
     expect(link.attributes("data-testid")).toBe("emails-channel-card");
+  });
+
+  it("the title is an h3 by default, the given level otherwise", () => {
+    expect(mountCard().find("h3").exists()).toBe(true);
+    expect(mountCard({ level: 2 }).find("h2 a").exists()).toBe(true);
   });
 
   it("renders the lines under the title", () => {

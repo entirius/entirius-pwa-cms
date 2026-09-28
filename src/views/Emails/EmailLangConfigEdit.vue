@@ -5,7 +5,7 @@
         :title="`${$t('emails.lang_config')}: ${config.language || $t('emails.default_lang')}`"
         :back="goBack"
       >
-        <template #actions>
+        <template v-if="!loadFailed" #actions>
           <ActionBar :actions="headerActions" />
         </template>
       </PageHeader>
@@ -13,7 +13,7 @@
 
     <Loader block v-if="loading" />
 
-    <template v-else>
+    <template v-else-if="!loadFailed">
       <BasicCard :title="$t('emails.shop_details')" gap class="mb-8">
         <div class="form-grid">
           <FormField :label="$t('emails.shop_name')">
@@ -114,6 +114,7 @@ export default {
     return {
       config: {},
       loading: true,
+      loadFailed: false,
     };
   },
   computed: {
@@ -139,6 +140,7 @@ export default {
         const { data } = await GET_EmailLangConfig(this.$route.params.pk);
         this.config = data;
       } catch (err) {
+        this.loadFailed = true;
         this.notify.spawnNotification({
           type: "negative",
           msg: extractApiMessage(err, this.$t("emails.error_load_config")),

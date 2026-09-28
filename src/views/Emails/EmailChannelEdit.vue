@@ -8,7 +8,7 @@
         <template #meta>
           <span v-if="channel.idx" class="fs-200 t-muted">({{ channel.idx }})</span>
         </template>
-        <template #actions>
+        <template v-if="!loadFailed" #actions>
           <ActionBar :actions="headerActions" />
         </template>
       </PageHeader>
@@ -16,7 +16,7 @@
 
     <Loader block v-if="loading" />
 
-    <template v-else>
+    <template v-else-if="!loadFailed">
       <BasicCard :title="$t('emails.branding')" gap class="mb-8">
         <div class="form-grid">
           <FormField :label="$t('emails.from_name')">
@@ -38,11 +38,7 @@
             <ColorInput v-model="channel.brand_text_color" />
           </FormField>
           <FormField :label="$t('emails.font_family')">
-            <BasicSelect
-              v-model="channel.font_family"
-              :options="fontOptions"
-              :placeholder="$t('emails.font_family')"
-            />
+            <BasicSelect v-model="channel.font_family" :options="fontOptions" />
             <p
               v-if="channel.font_family"
               :style="{ fontFamily: channel.font_family }"
@@ -110,6 +106,7 @@ export default {
       channel: {},
       langConfigs: [],
       loading: true,
+      loadFailed: false,
       fontOptions: [
         { label: "Arial", value: "Arial, Helvetica, sans-serif" },
         { label: "Helvetica", value: "Helvetica, Arial, sans-serif" },
@@ -158,6 +155,7 @@ export default {
         this.channel = channelRes.data;
         this.langConfigs = configsRes.data.results || [];
       } catch (err) {
+        this.loadFailed = true;
         this.notify.spawnNotification({
           type: "negative",
           msg: extractApiMessage(err, this.$t("emails.error_load_channel")),

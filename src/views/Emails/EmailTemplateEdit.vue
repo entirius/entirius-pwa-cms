@@ -6,7 +6,7 @@
           <span class="fs-200 t-muted">({{ typeLabel }})</span>
           <span v-if="template.language_code" class="fs-200 t-accent fw-600">{{ template.language_code }}</span>
         </template>
-        <template #actions>
+        <template v-if="!loadFailed" #actions>
           <ActionBar :actions="headerActions" />
         </template>
       </PageHeader>
@@ -14,7 +14,7 @@
 
     <Loader block v-if="loading" />
 
-    <BasicCard v-else :title="$t('emails.template_content')" gap>
+    <BasicCard v-else-if="!loadFailed" :title="$t('emails.template_content')" gap>
       <div class="form-grid">
         <FormField :label="$t('emails.subject')" class="form-grid__wide">
           <BasicInput v-model="template.subject" />
@@ -227,6 +227,7 @@ export default {
     return {
       template: {},
       loading: true,
+      loadFailed: false,
     };
   },
   computed: {
@@ -264,6 +265,7 @@ export default {
         );
         this.template = data;
       } catch (err) {
+        this.loadFailed = true;
         this.notify.spawnNotification({
           type: "negative",
           msg: extractApiMessage(err, this.$t("emails.error_load_template")),

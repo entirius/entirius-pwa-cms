@@ -17,6 +17,7 @@
           :to="`/emails/templates/${emailType}/${tpl.pk}`"
           :title="tpl.subject || $t('emails.default_subject')"
           testid="emails-template-card"
+          :level="2"
         >
           <p class="fs-200 t-muted mt-2">
             {{ $t("emails.language") }}:
