@@ -136,11 +136,15 @@
 
     <FloatingActions :actions="fabActions" />
 
-    <TranslateAllContentModal
-      :visible="showTranslateModal"
-      :channel-idx="contentDBChannel.activeChannel?.idx || ''"
+    <TranslateDialog
+      v-model:open="showTranslateModal"
+      scope="content"
       :title="$t('builder.translate_all')"
-      @close="showTranslateModal = false"
+      :summary="$t('builder.translate_all_description')"
+      :languages="translateLanguages"
+      :source-language="contentDBChannel.defaultLanguage || ''"
+      :estimate-fn="translateFns.estimateFn"
+      :submit-fn="translateFns.submitFn"
       @translated="init({})"
     />
   </PageLayout>
@@ -165,7 +169,8 @@ const section_options = (value, look_for = null) => {
   return config_options[value];
 };
 
-import TranslateAllContentModal from "@/functionals/TranslateAllContentModal/index.vue";
+import TranslateDialog from "@/components/TranslateDialog/index.vue";
+import { contentTranslateFns } from "./translateFns";
 export default {
   setup() {
     const loader = useLoaderStore();
@@ -195,6 +200,12 @@ export default {
   computed: {
     translatorAvailable() {
       return this.munin.isModuleInstalled("contentdb_translator");
+    },
+    translateLanguages() {
+      return this.contentDBChannel.availableLanguages.map((lang) => ({ label: lang.toUpperCase(), value: lang }));
+    },
+    translateFns() {
+      return contentTranslateFns(this.contentDBChannel.activeChannel?.idx || "");
     },
     user() {
       return this.userStore.user;
@@ -456,7 +467,7 @@ export default {
     next();
   },
   components: {
-    TranslateAllContentModal,
+    TranslateDialog,
   },
 };
 </script>

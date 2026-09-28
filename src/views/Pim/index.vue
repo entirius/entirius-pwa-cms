@@ -44,11 +44,10 @@
     </div>
     <router-view />
 
-    <TranslateStoreDialog
-      :visible="showTranslateStore"
-      :channelIdx="pimChannel.activeChannelIdx"
-      @close="showTranslateStore = false"
-      @translated="showTranslateStore = false"
+    <PimTranslateDialog
+      v-model:open="showTranslateStore"
+      scope="store"
+      :channel-idx="pimChannel.activeChannelIdx"
     />
   </div>
 </template>
@@ -58,13 +57,13 @@ import { ref, provide } from "vue";
 import { usePimChannelStore } from "@/stores/pimChannel";
 import { useMuninStore } from "@/stores/munin";
 import { useQualityStore } from "@/stores/quality";
-import TranslateStoreDialog from "./components/TranslateStoreDialog.vue";
+import PimTranslateDialog from "./components/PimTranslateDialog.vue";
 
 const CHANNEL_IN_HEADER = new Set(["PimProducts", "PimProductCreate", "PimProductDetail"]);
 
 export default {
   name: "PimPanel",
-  components: { TranslateStoreDialog },
+  components: { PimTranslateDialog },
   setup() {
     const pimChannel = usePimChannelStore();
     const munin = useMuninStore();

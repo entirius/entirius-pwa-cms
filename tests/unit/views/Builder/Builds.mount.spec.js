@@ -20,7 +20,7 @@ vi.mock("@/stores/loader", () => ({ useLoaderStore: () => ({ loaderStart: vi.fn(
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification: vi.fn() }) }));
 vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isModuleInstalled: () => false }) }));
 vi.mock("@/stores/contentDBChannel", () => ({
-  useContentDBChannelStore: () => ({ fetchChannelsAndLanguages: async () => {}, languages: [], defaultLanguage: "en" }),
+  useContentDBChannelStore: () => ({ fetchChannelsAndLanguages: async () => {}, languages: [], availableLanguages: [], defaultLanguage: "en" }),
 }));
 // Build types in the opposite order of the content types.
 vi.mock("@/stores/user", () => ({
@@ -46,7 +46,7 @@ const mountBuilds = async () => {
         $router: { replace: vi.fn(() => Promise.resolve()), push: vi.fn() },
       },
       components: { FilterChip, FloatingActions },
-      stubs: { FilterChip: false, FloatingActions: true, DataTable: true, TranslateAllContentModal: true, ConfirmDialog: true },
+      stubs: { FilterChip: false, FloatingActions: true, DataTable: true, TranslateDialog: true, ConfirmDialog: true },
     },
   });
   await flushPromises();

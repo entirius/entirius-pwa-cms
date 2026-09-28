@@ -7,20 +7,12 @@ const mockContent = vi.fn();
 const handy = { handyType: {}, defaults: {}, open_Handykit: vi.fn(), pass_Asset: vi.fn() };
 
 vi.mock("@/api/contentDB/api", () => ({ _METHOD_content: (...a) => mockContent(...a) }));
-vi.mock("@/api/contentDB/translator", () => ({
-  POST_ContentTranslateEstimate: vi.fn(),
-  POST_ContentTranslateExecute: vi.fn(),
-}));
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification: vi.fn() }) }));
 vi.mock("@/stores/loader", () => ({ useLoaderStore: () => ({}) }));
 vi.mock("@/stores/handy", () => ({ useHandyStore: () => handy }));
-vi.mock("@/stores/contentDBChannel", () => ({
-  useContentDBChannelStore: () => ({ availableLanguages: ["pl", "en", "de"], defaultLanguage: "pl" }),
-}));
 
 import MetaKit from "@/functionals/Handy-kit/kits/meta-kit/meta-kit.vue";
 import RoutesList from "@/functionals/Handy-kit/kits/routes-kit/routes-list.vue";
-import TranslateAllContentModal from "@/functionals/TranslateAllContentModal/index.vue";
 import ButtonsController from "@/configs/builder/components/ButtonsController/index.vue";
 import GroupFieldsController from "@/configs/builder/components/GroupFieldsController/index.vue";
 
@@ -38,7 +30,6 @@ const stubs = {
   BasicImage: true,
   Pagination: true,
   ConfirmDialog: { props: ["open"], template: "<div v-if='open' class='confirm' />" },
-  BasicModal: { template: "<div><slot /></div>" },
   BasicMenu: true,
   draggable: true,
 };
@@ -128,16 +119,6 @@ describe("routes-list", () => {
     wrapper.findAllComponents(IconButton).at(-1).vm.$emit("click");
     expect(wrapper.vm.selected.map(({ value }) => value.url)).toEqual(["/b"]);
     expect(wrapper.vm.picked_setted).toBe(null);
-  });
-});
-
-describe("TranslateAllContentModal", () => {
-  it("toggles a picked target language", () => {
-    const wrapper = mountWith(TranslateAllContentModal, { channelIdx: "c1" });
-    pick(wrapper, BasicSelect, 1, "en");
-    expect(wrapper.vm.selectedLanguages).toEqual(["en"]);
-    pick(wrapper, BasicSelect, 1, "en");
-    expect(wrapper.vm.selectedLanguages).toEqual([]);
   });
 });
 

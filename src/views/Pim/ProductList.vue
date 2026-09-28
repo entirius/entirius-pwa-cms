@@ -236,14 +236,11 @@
       />
     </template>
 
-    <TranslateDialog
-      :visible="showTranslateDialog"
-      :channelIdx="channelIdx"
-      entityType="product"
-      :entityIds="translateEntityIds"
-      :title="translateDialogTitle"
-      @close="showTranslateDialog = false"
-      @translated="showTranslateDialog = false"
+    <PimTranslateDialog
+      v-model:open="showTranslateDialog"
+      scope="product"
+      :channel-idx="channelIdx"
+      :entity-ids="translateEntityIds"
     />
 
     <SpawnDialog
@@ -282,7 +279,7 @@ import {
 } from "./quality";
 import SpawnDialog from "./components/enrichment/SpawnDialog.vue";
 import GapStatusAlert from "./components/GapStatusAlert.vue";
-import TranslateDialog from "./components/TranslateDialog.vue";
+import PimTranslateDialog from "./components/PimTranslateDialog.vue";
 import PimChannelSelect from "./components/PimChannelSelect.vue";
 import { extractApiMessage } from "@/composables/useFormErrors";
 
@@ -298,7 +295,7 @@ function readHideQualitySensor() {
 
 export default {
   name: "ProductList",
-  components: { SpawnDialog, GapStatusAlert, TranslateDialog, PimChannelSelect },
+  components: { SpawnDialog, GapStatusAlert, PimTranslateDialog, PimChannelSelect },
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();
@@ -324,8 +321,7 @@ export default {
       filterableFeatures: [],
       attributeFilters: {},
       showTranslateDialog: false,
-      translateEntityIds: null,
-      translateDialogTitle: "",
+      translateEntityIds: [],
       supplierStatusMap: {},
       qualityMap: {},
       hasQualityData: false,
@@ -768,9 +764,6 @@ export default {
     },
     openTranslateSelected() {
       this.translateEntityIds = this.selectedProducts.map((p) => p.id);
-      this.translateDialogTitle = this.$t("pim.translate_selected", {
-        count: this.selectedProducts.length,
-      });
       this.showTranslateDialog = true;
     },
     handleBulkAction(actionKey, value) {

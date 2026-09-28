@@ -44,7 +44,7 @@ const mountList = () =>
     global: {
       components: { BasicSelect: SelectStub },
       mocks: { $route: { query: {}, path: "/pim/products" }, $router: { push() {}, replace() {} } },
-      stubs: { DataTable: true, Pagination: true, FloatingActions: true, BulkActionBar: true, SpawnDialog: true },
+      stubs: { DataTable: true, Pagination: true, FloatingActions: true, BulkActionBar: true, SpawnDialog: true, PimTranslateDialog: true },
     },
   });
 

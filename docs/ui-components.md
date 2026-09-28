@@ -117,6 +117,12 @@ The semantic layer, per `[data-theme]`: `src/assets/tokens/semantic.json`, gener
 
 Page patterns, boot choice by job and UI rules live in `docs/ui-rules.md`.
 
+- **`TranslateDialog`** (`src/components/TranslateDialog/`, P5 plan 50) — the one bulk-translate dialog (Pim product
+  and store, Pages „Przetłumacz wszystko”): `v-model:open`, `scope` `product` · `store` · `content`, `title`,
+  `summary`, `languages` `[{ label, value }]`, `sourceLanguage`; the caller keeps its API calls:
+  `estimateFn(request)` → the raw estimate, `submitFn(request, estimate)` → the number of jobs created. Slot
+  `languages` (under the targets; Pim adds a language to the channel through `PimTranslateDialog`).
+
 ## P3 components
 
 One section per P3/P4 plan, in plan order. A plan writes only its own section (dev-plans § Streams); each section
