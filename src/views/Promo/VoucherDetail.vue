@@ -1,5 +1,5 @@
 <template>
-  <div class="voucher-detail page-pad fs-300 t-body h-100 ovy-auto">
+  <PageLayout class="voucher-detail fs-300 t-body">
     <Teleport to="#promo-toolbar-left" defer>
       <IconButton
         icon="back"
@@ -181,7 +181,7 @@
         </div>
       </div>
     </SideDrawer>
-  </div>
+  </PageLayout>
 </template>
 
 <script>
