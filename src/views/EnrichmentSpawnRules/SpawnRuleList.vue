@@ -67,13 +67,13 @@
       </DataTable>
 
       <FloatingActions :actions="fabActions" />
-    <Pagination
-      v-if="totalCount > pageSize"
-      :page="paginationState.page"
-      :pages="paginationState.pages"
-      class="mt-5"
-      @update:page="onPageChange"
-    />
+    <template v-if="totalCount > pageSize" #footer>
+      <Pagination
+        :page="paginationState.page"
+        :pages="paginationState.pages"
+        @update:page="onPageChange"
+      />
+    </template>
   </PageLayout>
 </template>
 
@@ -241,7 +241,6 @@ export default {
   display: flex;
   align-items: center;
   gap: var(--space-5);
-  margin-bottom: var(--space-10);
   flex-wrap: wrap;
 }
 .spawn-rules-list__search {

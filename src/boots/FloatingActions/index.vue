@@ -132,11 +132,15 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import "@/assets/scss/utils/media-query";
+
+// Figma S4/S9: 24 px from the corner beside the sidebar; 16 px from the edge and above the tab bar wherever the tab
+// bar shows (up to 1023 px).
 .floating-actions {
   position: fixed;
-  bottom: var(--space-4);
-  right: var(--space-4);
+  bottom: var(--space-6);
+  right: var(--space-6);
   z-index: 90;
   display: flex;
   flex-direction: column;
@@ -144,8 +148,9 @@ onBeforeUnmount(() => {
   gap: var(--space-3);
 }
 
-@media only screen and (max-width: 768px) {
+@include max-shell {
   .floating-actions {
+    right: var(--space-4);
     bottom: calc(var(--bottom-bar-height) + var(--space-4));
   }
 }

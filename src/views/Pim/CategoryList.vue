@@ -170,7 +170,6 @@ export default {
   display: flex;
   align-items: center;
   gap: var(--space-5);
-  margin-bottom: var(--space-10);
   flex-wrap: wrap;
 }
 .category-list__search {

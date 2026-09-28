@@ -103,8 +103,9 @@ function goBack() {
 }
 
 @include max-tablet {
+  // A roomy PageLayout sets the larger phone title.
   .page-header__title {
-    font-size: var(--fs-500);
+    font-size: var(--page-header-title-size, var(--fs-500));
   }
 
   // A sticky box cannot leave its parent: the header gives up its box, so the head pins against the scroll body

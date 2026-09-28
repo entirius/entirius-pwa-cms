@@ -47,7 +47,7 @@
     <h3 id="basic-card" class="fs-500 mb-4">BasicCard</h3>
     <div class="display-grid display-grid--wide grid gap-3 mb-10">
       <CatalogueCell id="basic-card-actions-default" label="title + actions (ActionBar)">
-        <BasicCard title="Dane podstawowe">
+        <BasicCard title="Dane podstawowe" gap>
           <template #actions><ActionBar :actions="cardActions" /></template>
           <p class="fs-300">Nazwa, adres URL i kanały strony.</p>
         </BasicCard>

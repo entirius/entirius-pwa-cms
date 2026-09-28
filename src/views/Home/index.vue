@@ -1,7 +1,7 @@
 <template>
   <div class="home h-100 ov-h">
     <HomeGlow />
-    <PageLayout class="home__page">
+    <PageLayout class="home__page" roomy>
       <template #header>
         <PageHeader :overline="greeting" :title="$t('panels.choose_panel')" />
       </template>
@@ -53,24 +53,6 @@ const greeting = computed(() => {
 // Above the glow, which sits earlier in the flow.
 .home__page {
   position: relative;
-}
-
-// Figma S1/S2 frame: the title fills its row, and a phone keeps the desktop rhythm (40 top, 32 to the grid, the
-// 30 px title) where PageLayout / PageHeader use 20 / 20 / 20 px (handoff 26: the wave close decides for every page).
-.home :deep(.page-header__title) {
-  flex: 1 1 auto;
-}
-
-@include max-tablet {
-  .home .home__page {
-    --page-layout-pad-y: var(--space-10);
-
-    gap: var(--space-8);
-  }
-
-  .home :deep(.page-header__title) {
-    font-size: var(--fs-700);
-  }
 }
 
 .home__grid {

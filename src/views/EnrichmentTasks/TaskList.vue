@@ -44,13 +44,13 @@
         </template>
       </DataTable>
 
-    <Pagination
-      v-if="totalCount > pageSize"
-      :page="paginationState.page"
-      :pages="paginationState.pages"
-      class="mt-5"
-      @update:page="onPageChange"
-    />
+    <template v-if="totalCount > pageSize" #footer>
+      <Pagination
+        :page="paginationState.page"
+        :pages="paginationState.pages"
+        @update:page="onPageChange"
+      />
+    </template>
 
     <TaskQueueDrawer
       :visible="queueVisible"

@@ -1,5 +1,5 @@
 <template>
-  <section class="basic-card page-card flex-column gap-4">
+  <section class="basic-card page-card flex-column" :class="{ 'gap-4': gap }">
     <header v-if="title || $slots.actions" class="basic-card__header flex ai-ct jc-sb gap-3">
       <h2 v-if="title" class="basic-card__title">{{ title }}</h2>
       <slot name="actions" />
@@ -11,9 +11,11 @@
 <script setup>
 // The one card (the polish card class `.page-card`: border-subtle, card radius, 24 px padding, 16 px below tablet;
 // R4: the border belongs to the container). `title` is a section title (Inter 600, one step under the page H1);
-// the `actions` slot takes an ActionBar, right of the title.
+// the `actions` slot takes an ActionBar, right of the title. `gap` puts 16 px between the children; off by default,
+// so children that carry their own `mb-*` keep their spacing.
 defineProps({
   title: { type: String, default: "" },
+  gap: { type: Boolean, default: false },
 });
 </script>
 
