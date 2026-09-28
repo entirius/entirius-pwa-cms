@@ -11,6 +11,7 @@ export const ICONS = Object.freeze({
   delete: "trash-can",
   duplicate: "copy",
   close: "xmark",
+  remove: "circle-xmark",
   back: "arrow-left",
   search: "magnifying-glass",
   settings: "gears",

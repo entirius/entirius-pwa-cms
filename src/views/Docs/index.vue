@@ -18,7 +18,7 @@
       </div>
     </div>
     <div v-if="selected_view === 'eg'">
-      <FormField label="Wybierz przyklad" class="mb-5">
+      <FormField :label="$t('docs.pick_example')" class="mb-5">
         <BasicSelect
           style="min-width: 10rem"
           :options="sub_nav"
@@ -67,16 +67,6 @@ export default {
       fileContent: null,
       config_docs,
       props_docs,
-      nav: [
-        {
-          label: "Doc",
-          value: "doc",
-        },
-        {
-          label: "examples",
-          value: "eg",
-        },
-      ],
       selected_view: "doc",
       sub_nav,
       eg_prev: "core_config",
@@ -90,6 +80,12 @@ export default {
     };
   },
   computed: {
+    nav() {
+      return [
+        { label: this.$t("docs.tab_doc"), value: "doc" },
+        { label: this.$t("docs.tab_examples"), value: "eg" },
+      ];
+    },
     ex_preview() {
       return this[this.eg_prev];
     },

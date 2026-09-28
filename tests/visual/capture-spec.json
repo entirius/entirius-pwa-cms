@@ -1,5 +1,5 @@
 {
-  "source": "roadmap 00006-cms-redesign r04 capture-spec.md, r07 corrections (FAB rows dropped, e-mail resolvers on .emails-card, leads-company without the add link)",
+  "source": "roadmap 00006-cms-redesign r04 capture-spec.md, r07 corrections (FAB rows dropped, e-mail resolvers on the emails-*-card test ids, leads-company without the add link)",
   "freeze": "2026-09-26T10:00:00+02:00",
   "screens": [
     {
@@ -852,7 +852,7 @@
       "route": "/emails",
       "resolver": "first-link",
       "links": [
-        ".emails-card"
+        "[data-testid=\"emails-channel-card\"]"
       ],
       "state": "default",
       "viewports": [
@@ -886,7 +886,7 @@
       "route": "/emails/templates/accounts-new-account",
       "resolver": "first-link",
       "links": [
-        ".emails-card"
+        "[data-testid=\"emails-template-card\"]"
       ],
       "state": "default",
       "viewports": [
@@ -905,8 +905,8 @@
       "route": "/emails",
       "resolver": "first-link",
       "links": [
-        ".emails-card",
-        ".emails-card"
+        "[data-testid=\"emails-channel-card\"]",
+        "[data-testid=\"emails-lang-config-card\"]"
       ],
       "state": "default",
       "viewports": [

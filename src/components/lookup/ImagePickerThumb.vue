@@ -13,7 +13,7 @@
     <IconButton
       v-if="previewUrl"
       class="image-picker-thumb__remove"
-      icon="close"
+      icon="remove"
       :label="$t('lookup.box.remove_image')"
       variant="danger"
       size="sm"

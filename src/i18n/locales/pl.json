@@ -21,7 +21,7 @@
     "agm_definitions": "Zgody",
     "agm_consents": "Rejestr Zgód",
     "agm_people": "Osoby",
-    "email_dashboard": "Szablony",
+    "email_dashboard": "Konfiguracja e-mail",
     "faq_groups": "Grupy FAQ",
     "faq_items": "Pytania FAQ",
     "pm_prices": "Ceny",
@@ -595,6 +595,9 @@
     "source_manual": "Ręczny",
     "source_integration": "Integracja",
     "last_synced": "Ostatnia synchronizacja",
+    "time_ago_minutes": "{minutes} min temu",
+    "time_ago_hours": "{hours} godz. temu",
+    "time_ago_days": "{days} dni temu",
     "sku": "SKU",
     "quantity": "Ilość",
     "dispatch_time": "Czas realizacji",
@@ -1391,6 +1394,7 @@
   },
   "agm": {
     "definitions": "Definicje zgód",
+    "definition": "Definicja zgody",
     "create_definition": "Nowa zgoda",
     "definition_detail": "Szczegóły zgody",
     "consent_log": "Rejestr zgód",
@@ -1406,6 +1410,8 @@
     "active": "Aktywna",
     "inactive": "Nieaktywna",
     "no_definitions": "Nie znaleziono definicji zgód",
+    "no_versions": "Nie znaleziono wersji",
+    "toggle_content_history": "Pokaż historię strony prawnej",
     "filter_all": "Wszystkie",
     "filter_mandatory": "Obowiązkowe",
     "filter_marketing": "Marketingowe",
@@ -1596,6 +1602,7 @@
     "error_load_templates": "Nie udało się załadować szablonów",
     "error_load_template": "Nie udało się załadować szablonu",
     "error_save": "Zapis nie powiódł się",
+    "retry": "Ponów",
     "types": {
       "accounts-new-account": "Nowe konto",
       "accounts-reset-password": "Reset hasła",
@@ -3676,6 +3683,11 @@
       "inputs": "Pola formularzy",
       "shell": "Powłoka"
     }
+  },
+  "docs": {
+    "pick_example": "Wybierz przykład",
+    "tab_doc": "Dokumentacja",
+    "tab_examples": "Przykłady"
   },
   "shell": {
     "panels": "Panele",

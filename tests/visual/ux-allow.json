@@ -1,38 +1,10 @@
 [
   {
-    "screen": "emails-dashboard",
-    "kind": "nonFocusable",
-    "selector": "section.basic-card.page-card",
-    "reason": "clickable email cards (BasicCard since plan 25) without keyboard access",
-    "owner": "P5 plan 34 (Emails)"
-  },
-  {
-    "screen": "emails-channel-edit",
-    "kind": "nonFocusable",
-    "selector": "section.basic-card.page-card",
-    "reason": "clickable email cards (BasicCard since plan 25) without keyboard access",
-    "owner": "P5 plan 34 (Emails)"
-  },
-  {
-    "screen": "emails-template-list",
-    "kind": "nonFocusable",
-    "selector": "section.basic-card.page-card",
-    "reason": "clickable email cards (BasicCard since plan 25) without keyboard access",
-    "owner": "P5 plan 34 (Emails)"
-  },
-  {
     "screen": "pages-layout-editor",
     "kind": "nonFocusable",
     "selector": "span.handle",
     "reason": "navigation editor drag handle (drag only; the reorder buttons are the keyboard path)",
     "owner": "P5 plan 42 (LayoutExtenders)"
-  },
-  {
-    "screen": "agreements-detail",
-    "kind": "nonFocusable",
-    "selector": "div.agm-history-toggle",
-    "reason": "the legal page history section header toggles on click only",
-    "owner": "P5 plan 36 (Agreements)"
   },
   {
     "screen": "promo-detail",

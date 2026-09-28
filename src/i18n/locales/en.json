@@ -21,7 +21,7 @@
     "agm_definitions": "Agreements",
     "agm_consents": "Consent Log",
     "agm_people": "People",
-    "email_dashboard": "Templates",
+    "email_dashboard": "Email configuration",
     "faq_groups": "FAQ Groups",
     "faq_items": "FAQ Items",
     "pm_prices": "Prices",
@@ -595,6 +595,9 @@
     "source_manual": "Manual",
     "source_integration": "Integration",
     "last_synced": "Last synced",
+    "time_ago_minutes": "{minutes}m ago",
+    "time_ago_hours": "{hours}h ago",
+    "time_ago_days": "{days}d ago",
     "sku": "SKU",
     "quantity": "Quantity",
     "dispatch_time": "Dispatch time",
@@ -1392,6 +1395,7 @@
   },
   "agm": {
     "definitions": "Agreement Definitions",
+    "definition": "Agreement Definition",
     "create_definition": "Create Agreement",
     "definition_detail": "Agreement Detail",
     "consent_log": "Consent Log",
@@ -1407,6 +1411,8 @@
     "active": "Active",
     "inactive": "Inactive",
     "no_definitions": "No agreement definitions found",
+    "no_versions": "No versions found",
+    "toggle_content_history": "Show legal page history",
     "filter_all": "All",
     "filter_mandatory": "Mandatory",
     "filter_marketing": "Marketing",
@@ -1597,6 +1603,7 @@
     "error_load_templates": "Failed to load templates",
     "error_load_template": "Failed to load template",
     "error_save": "Save failed",
+    "retry": "Retry",
     "types": {
       "accounts-new-account": "New Account",
       "accounts-reset-password": "Reset Password",
@@ -3677,6 +3684,11 @@
       "inputs": "Inputs",
       "shell": "Shell"
     }
+  },
+  "docs": {
+    "pick_example": "Pick an example",
+    "tab_doc": "Documentation",
+    "tab_examples": "Examples"
   },
   "shell": {
     "panels": "Panels",
