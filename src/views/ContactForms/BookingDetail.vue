@@ -3,10 +3,11 @@
     <div
       class="page-card h-100 ovy-auto"
     >
+      <!-- the header renders in every state: its back control stays while loading or after a failed load -->
+      <PageHeader :title="$t('cf.booking_detail')" back="/forms/bookings" class="mb-10" />
       <Loader block v-if="loading" />
 
       <template v-else-if="booking">
-        <PageHeader :title="$t('cf.booking_detail')" back="/forms/bookings" class="mb-10" />
 
         <div class="cf-booking-grid">
           <div class="cf-card">

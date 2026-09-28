@@ -37,10 +37,11 @@
         </BasicButton>
       </Teleport>
 
+      <!-- the header renders in every state: its back control stays while loading or after a failed load -->
+      <PageHeader :title="$t('cf.lead_detail')" back="/forms/leads" class="mb-8" />
       <Loader block v-if="loading" />
 
       <template v-else-if="lead">
-        <PageHeader :title="$t('cf.lead_detail')" back="/forms/leads" class="mb-8" />
 
         <div class="cf-lead-grid">
           <!-- Editable fields -->

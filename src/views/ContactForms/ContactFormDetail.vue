@@ -3,20 +3,21 @@
     <div
       class="page-card h-100 ovy-auto"
     >
+      <!-- the header renders in every state: its back control stays while loading or after a failed load -->
+      <PageHeader :title="$t('cf.submission_detail')" back="/forms/list" class="mb-5">
+        <template v-if="submission" #actions>
+          <BasicSelect
+            :options="statusOptions"
+            :model-value="submission.status"
+            :placeholder="$t('cf.status')"
+            class="cf-status-dropdown"
+            @update:model-value="updateStatus"
+          />
+        </template>
+      </PageHeader>
       <Loader block v-if="loading" />
 
       <template v-else-if="submission">
-        <PageHeader :title="$t('cf.submission_detail')" back="/forms/list" class="mb-5">
-          <template #actions>
-            <BasicSelect
-              :options="statusOptions"
-              :model-value="submission.status"
-              :placeholder="$t('cf.status')"
-              class="cf-status-dropdown"
-              @update:model-value="updateStatus"
-            />
-          </template>
-        </PageHeader>
         <div class="mb-10">
           <StatusBadge
             :label="statusLabel(submission.status)"
