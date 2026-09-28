@@ -46,7 +46,8 @@ async function apiLogin() {
     }
   );
   if (!resp.ok) throw new Error(`API login failed: ${resp.status}`);
-  return (await resp.json()).access;
+  // The token endpoint answers in the API v2 envelope ({ meta, data: { access } }).
+  return (await resp.json()).data.access;
 }
 
 async function apiPost(token, path, body) {
