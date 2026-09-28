@@ -1,23 +1,25 @@
 <template>
   <div class="image-picker-thumb">
-    <button
-      type="button"
-      class="image-picker-thumb__button"
+    <BasicButton
+      class="image-picker-thumb__button jc-ct"
       :class="{ 'image-picker-thumb__button--dragover': dragActive }"
+      :label="$t('lookup.box.drop_hint')"
       data-testid="dedup-search-dropzone"
       @click="$refs.fileInput.click()"
     >
       <img v-if="previewUrl" :src="previewUrl" :alt="altText" />
       <FontAwesomeIcon v-else :icon="$icons.upload" />
-      <span
-        v-if="previewUrl"
-        class="image-picker-thumb__remove"
-        data-testid="dedup-search-remove-image"
-        @click.stop="$emit('remove')"
-      >
-        <FontAwesomeIcon :icon="$icons.close" />
-      </span>
-    </button>
+    </BasicButton>
+    <IconButton
+      v-if="previewUrl"
+      class="image-picker-thumb__remove"
+      icon="close"
+      :label="$t('lookup.box.remove_image')"
+      variant="danger"
+      size="sm"
+      data-testid="dedup-search-remove-image"
+      @click="$emit('remove')"
+    />
     <input
       ref="fileInput"
       type="file"
@@ -59,19 +61,14 @@ export default {
   &__button {
     width: 42px;
     height: 42px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    padding: 0;
     border: 1px dashed var(--border-default);
-    border-radius: var(--radius-base);
     background: var(--surface-base);
     color: var(--text-muted);
-    cursor: pointer;
-    overflow: hidden;
 
     img {
-      width: 100%;
-      height: 100%;
+      width: 40px;
+      height: 40px;
       object-fit: cover;
     }
 
@@ -83,19 +80,13 @@ export default {
       color: var(--text-accent);
     }
   }
-  &__remove {
+  // IconButton puts the class on its button, below the tooltip wrapper: out of reach of a scoped selector.
+  :deep(.image-picker-thumb__remove) {
     position: absolute;
     top: -6px;
     right: -6px;
-    width: 18px;
-    height: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     border-radius: var(--radius-full);
-    background: var(--negative-fill);
-    color: var(--text-on-status-fill);
-    font-size: var(--fs-200);
+    background: var(--surface-base);
   }
   &__file-input {
     display: none;

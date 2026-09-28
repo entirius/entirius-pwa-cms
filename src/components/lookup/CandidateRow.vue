@@ -52,15 +52,13 @@
     </div>
     <div class="candidate-row__actions">
       <slot name="actions" :hit="hit" />
-      <button
-        type="button"
-        class="row-action-btn bg-raised t-body"
-        :title="$t('lookup.row.open')"
+      <IconButton
+        icon="external"
+        :label="$t('lookup.row.open')"
+        variant="outline"
         data-testid="candidate-row-open"
         @click="open"
-      >
-        <FontAwesomeIcon :icon="$icons.external" />
-      </button>
+      />
     </div>
   </div>
 </template>
@@ -208,15 +206,5 @@ export default {
     align-items: center;
     gap: var(--space-2);
   }
-}
-.row-action-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border: none;
-  border-radius: var(--radius-base);
-  cursor: pointer;
 }
 </style>

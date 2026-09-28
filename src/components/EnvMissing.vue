@@ -71,14 +71,14 @@ defineProps({
     gap: var(--space-1);
 
     code {
-      font-size: 0.8em;
+      font-size: var(--fs-200);
     }
   }
 
   &__quickstart {
     code {
       display: block;
-      font-size: 0.85em;
+      font-size: var(--fs-200);
       padding: var(--space-2) var(--space-3);
       border-radius: var(--radius-base);
       background: var(--surface-hover);

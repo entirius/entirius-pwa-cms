@@ -20,14 +20,12 @@
           />
           <p v-if="notification.msg" class="fs-200" v-text="notification.msg" />
         </div>
-        <button
-          type="button"
+        <IconButton
+          icon="close"
+          :label="$t('common.dismiss')"
           class="notification__close"
-          :aria-label="$t('common.dismiss')"
           @click="notify.hideNotification(notification.uuid)"
-        >
-          ×
-        </button>
+        />
       </li>
     </transition-group>
   </div>
@@ -98,26 +96,7 @@ export default {
   border-left-color: var(--warning);
 }
 .notification__close {
-  background: transparent;
-  border: 0;
-  color: inherit;
-  font-size: var(--fs-500);
-  line-height: 1;
-  cursor: pointer;
-  padding: 0 var(--space-1);
   margin-left: var(--space-2);
-  opacity: 0.7;
-  transition: opacity 120ms ease;
-  min-width: 44px;
-  min-height: 44px;
-}
-.notification__close:hover {
-  opacity: 1;
-}
-.notification__close:focus-visible {
-  opacity: 1;
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
 }
 /* Phone: after the base rules so it wins — the toast fits the screen and sits at the bottom, clear of the header
    and the page's Back, and above a sticky action bar (`--action-bar-height`, set by ReviewActions) so it never covers
