@@ -3,9 +3,7 @@
     <div
       class="page-card flex-1 ovy-auto"
     >
-      <div class="flex ai-ct mb-10">
-        <h1 class="page-title">{{ $t("enrichment.tasks.title") }}</h1>
-      </div>
+      <PageHeader :title="$t('enrichment.tasks.title')" class="mb-10" />
 
       <div class="flex ai-ct flex-wrap gap-2 mb-10">
         <FilterChip

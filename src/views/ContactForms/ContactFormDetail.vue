@@ -18,16 +18,17 @@
       <Loader block v-if="loading" />
 
       <template v-else-if="submission">
-        <div class="flex ai-ct jc-sb mb-5">
-          <h1 class="page-title">{{ $t("cf.submission_detail") }}</h1>
-          <BasicSelect
-            :options="statusOptions"
-            :model-value="submission.status"
-            :placeholder="$t('cf.status')"
-            class="cf-status-dropdown"
-            @update:model-value="updateStatus"
-          />
-        </div>
+        <PageHeader :title="$t('cf.submission_detail')" class="mb-5">
+          <template #actions>
+            <BasicSelect
+              :options="statusOptions"
+              :model-value="submission.status"
+              :placeholder="$t('cf.status')"
+              class="cf-status-dropdown"
+              @update:model-value="updateStatus"
+            />
+          </template>
+        </PageHeader>
         <div class="mb-10">
           <StatusBadge
             :label="statusLabel(submission.status)"

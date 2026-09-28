@@ -3,17 +3,11 @@
     <div
       class="page-card h-100 ovy-auto"
     >
-      <div class="page-title-row flex ai-ct gap-5 mb-10">
-        <IconButton
-          icon="back"
-          :label="$t('common.back')"
-          @click="goBack"
-        />
-        <h1 class="page-title">
-          {{ $t("emails.lang_config") }}:
-          {{ config.language || $t("emails.default_lang") }}
-        </h1>
-      </div>
+      <PageHeader
+        :title="`${$t('emails.lang_config')}: ${config.language || $t('emails.default_lang')}`"
+        :back="goBack"
+        class="mb-10"
+      />
 
       <Loader block v-show="loading" />
 

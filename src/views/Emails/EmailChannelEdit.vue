@@ -3,19 +3,17 @@
     <div
       class="page-card h-100 ovy-auto"
     >
-      <div class="page-title-row flex ai-ct gap-5 mb-10">
-        <IconButton
-          icon="back"
-          :label="$t('common.back')"
-          @click="$router.push('/emails')"
-        />
-        <h1 class="page-title">
-          {{ channel.label || $t("emails.channel") }}
-        </h1>
-        <span v-if="channel.idx" class="fs-200 t-muted ml-2"
-          >({{ channel.idx }})</span
-        >
-      </div>
+      <PageHeader
+        :title="channel.label || $t('emails.channel')"
+        back="/emails"
+        class="mb-10"
+      >
+        <template #meta>
+          <span v-if="channel.idx" class="fs-200 t-muted ml-2"
+            >({{ channel.idx }})</span
+          >
+        </template>
+      </PageHeader>
 
       <Loader block v-show="loading" />
 

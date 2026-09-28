@@ -3,20 +3,16 @@
     <div
       class="page-card h-100 ovy-auto"
     >
-      <div class="page-title-row flex ai-ct gap-5 mb-10">
-        <IconButton
-          icon="back"
-          :label="$t('common.back')"
-          @click="goBack"
-        />
-        <h1 class="page-title">{{ $t("emails.edit_template") }}</h1>
-        <span class="fs-200 t-muted ml-2">({{ typeLabel }})</span>
-        <span
-          v-if="template.language_code"
-          class="fs-200 t-accent ml-2 fw-600"
-          >{{ template.language_code }}</span
-        >
-      </div>
+      <PageHeader :title="$t('emails.edit_template')" :back="goBack" class="mb-10">
+        <template #meta>
+          <span class="fs-200 t-muted ml-2">({{ typeLabel }})</span>
+          <span
+            v-if="template.language_code"
+            class="fs-200 t-accent ml-2 fw-600"
+            >{{ template.language_code }}</span
+          >
+        </template>
+      </PageHeader>
 
       <Loader block v-show="loading" />
 

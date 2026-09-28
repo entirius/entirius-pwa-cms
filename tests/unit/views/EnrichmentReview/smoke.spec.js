@@ -41,6 +41,8 @@ const stubs = {
   FocusMode: true,
   DriftModal: true,
   ImportCsvDialog: true,
+  // The page header renders its slots: the filter toggle sits in `actions`.
+  PageHeader: { props: ["title"], template: "<header><h1>{{ title }}</h1><slot name='meta' /><slot name='actions' /></header>" },
 };
 
 describe("EnrichmentReview compile smoke", () => {

@@ -3,9 +3,7 @@
     <div
       class="page-card flex-1 ovy-auto"
     >
-      <div class="flex ai-ct mb-10">
-        <h1 class="page-title">{{ $t("enrichment.spawn_rules.title") }}</h1>
-      </div>
+      <PageHeader :title="$t('enrichment.spawn_rules.title')" class="mb-10" />
 
       <div class="spawn-rules-list__toolbar">
         <BasicInput

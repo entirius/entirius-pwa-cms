@@ -1,9 +1,7 @@
 <template>
   <div class="acc-list__wrapper page-pad fs-300 t-body h-100 ov-h">
     <div class="page-card h-100 ovy-auto">
-      <div class="flex ai-ct mb-10">
-        <h1 class="page-title">{{ $t("accounts.customers") }}</h1>
-      </div>
+      <PageHeader :title="$t('accounts.customers')" class="mb-10" />
 
       <!-- Filters -->
       <div class="flex ai-ct mb-10">

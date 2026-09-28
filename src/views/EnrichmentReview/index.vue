@@ -3,40 +3,41 @@
     <div
       class="enrichment-review__toolbar p-8 b-subtle bb-100 bg-base"
     >
-      <div class="flex ai-ct gap-8 flex-wrap">
-        <h1 class="page-title m-0">{{ $t("enrichment.review.title") }}</h1>
-        <SegmentedControl
-          v-model="mode"
-          :options="modeOptions"
-          data-testid="enrichment-mode-switch"
-        />
-        <div class="flex ai-ct gap-5 ml-auto">
-          <button
-            class="enrichment-review__filters-toggle"
-            :class="{ 'is-active': filtersOpen }"
-            data-testid="enrichment-filters-toggle"
-            :aria-expanded="filtersOpen"
-            @click="filtersOpen = !filtersOpen"
-          >
-            <FontAwesomeIcon :icon="$icons.filter" />
-            {{ $t("enrichment.review.filters") }}
-            <span
-              v-if="activeFilterCount > 0"
-              class="enrichment-review__filters-badge"
-              data-testid="enrichment-filters-count"
-              >{{ activeFilterCount }}</span
+      <PageHeader :title="$t('enrichment.review.title')">
+        <template #actions>
+          <SegmentedControl
+            v-model="mode"
+            :options="modeOptions"
+            data-testid="enrichment-mode-switch"
+          />
+          <div class="flex ai-ct gap-5 ml-auto">
+            <button
+              class="enrichment-review__filters-toggle"
+              :class="{ 'is-active': filtersOpen }"
+              data-testid="enrichment-filters-toggle"
+              :aria-expanded="filtersOpen"
+              @click="filtersOpen = !filtersOpen"
             >
-          </button>
-          <button
-            class="enrichment-review__import bg-accent-fill t-on-accent-fill"
-            data-testid="enrichment-import-open"
-            @click="importVisible = true"
-          >
-            <FontAwesomeIcon :icon="$icons.importCsv" />
-            {{ $t("enrichment.import.open") }}
-          </button>
-        </div>
-      </div>
+              <FontAwesomeIcon :icon="$icons.filter" />
+              {{ $t("enrichment.review.filters") }}
+              <span
+                v-if="activeFilterCount > 0"
+                class="enrichment-review__filters-badge"
+                data-testid="enrichment-filters-count"
+                >{{ activeFilterCount }}</span
+              >
+            </button>
+            <button
+              class="enrichment-review__import bg-accent-fill t-on-accent-fill"
+              data-testid="enrichment-import-open"
+              @click="importVisible = true"
+            >
+              <FontAwesomeIcon :icon="$icons.importCsv" />
+              {{ $t("enrichment.import.open") }}
+            </button>
+          </div>
+        </template>
+      </PageHeader>
       <div class="flex ai-ct flex-wrap gap-2 mt-5">
         <FilterChip
           v-for="opt in statusOptions"

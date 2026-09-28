@@ -3,9 +3,7 @@
     <div
       class="page-card h-100 ovy-auto"
     >
-      <div class="flex ai-ct mb-10">
-        <h1 class="page-title">{{ $t("dp.types") }}</h1>
-      </div>
+      <PageHeader :title="$t('dp.types')" class="mb-10" />
 
       <!-- Inline create row -->
       <div class="create-row mb-10">

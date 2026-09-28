@@ -1,15 +1,7 @@
 <template>
   <div class="page-pad fs-300 t-body h-100 ov-h">
     <div class="page-card h-100 ovy-auto">
-      <div class="flex ai-ct mb-12">
-        <IconButton
-          icon="back"
-          :label="$t('common.back')"
-          @click="$router.push('/points/list')"
-        />
-      </div>
-
-      <h1 class="page-title mb-12">{{ $t("dp.import") }}</h1>
+      <PageHeader :title="$t('dp.import')" back="/points/list" class="mb-12" />
 
       <div class="import-card">
         <!-- File input -->

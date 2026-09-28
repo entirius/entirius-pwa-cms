@@ -27,15 +27,17 @@
       <Loader block v-if="loading" />
 
       <template v-else>
-        <div class="flex ai-ct jc-sb mb-12">
-          <h1 class="page-title">
-            {{ isEdit ? point.name || point.code : $t("dp.create_point") }}
-          </h1>
-          <BasicSwitch
-            :label="$t('dp.is_active')"
-            v-model="form.is_active"
-          />
-        </div>
+        <PageHeader
+          :title="isEdit ? String(point.name || point.code || '') : $t('dp.create_point')"
+          class="mb-12"
+        >
+          <template #actions>
+            <BasicSwitch
+              :label="$t('dp.is_active')"
+              v-model="form.is_active"
+            />
+          </template>
+        </PageHeader>
 
         <!-- Carrier read-only banner -->
         <div

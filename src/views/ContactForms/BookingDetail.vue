@@ -18,9 +18,7 @@
       <Loader block v-if="loading" />
 
       <template v-else-if="booking">
-        <div class="flex ai-ct mb-10">
-          <h1 class="page-title">{{ $t("cf.booking_detail") }}</h1>
-        </div>
+        <PageHeader :title="$t('cf.booking_detail')" class="mb-10" />
 
         <div class="cf-booking-grid">
           <div class="cf-card">

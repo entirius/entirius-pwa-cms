@@ -27,26 +27,24 @@
       <Loader block v-if="loading" />
 
       <template v-else>
-        <div class="flex ai-ct jc-sb flex-wrap gap-5 rg-3 mb-12">
-          <div class="flex ai-ct flex-wrap gap-5">
-            <h1 class="page-title">
-              {{
-                isEdit
-                  ? definition.name || definition.slug
-                  : $t("agm.create_definition")
-              }}
-            </h1>
+        <PageHeader
+          :title="isEdit ? (definition.name || definition.slug || '') : $t('agm.create_definition')"
+          class="mb-12"
+        >
+          <template #meta>
             <StatusBadge
               v-if="definition.is_system"
               :label="$t('agm.system_badge')"
               tone="info"
             />
-          </div>
-          <BasicSwitch
-            :label="$t('agm.is_active')"
-            v-model="form.is_active"
-          />
-        </div>
+          </template>
+          <template #actions>
+            <BasicSwitch
+              :label="$t('agm.is_active')"
+              v-model="form.is_active"
+            />
+          </template>
+        </PageHeader>
 
         <p v-if="definition.is_system" class="agm-system-info mb-10">
           {{ $t("agm.system_info") }}

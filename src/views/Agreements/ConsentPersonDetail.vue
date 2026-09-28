@@ -15,10 +15,7 @@
       </div>
 
       <div class="flex ai-ct jc-sb flex-wrap gap-5 mb-12">
-        <div class="person-detail__title">
-          <p class="fs-200 fw-600 t-muted mb-2">{{ $t("agm.email") }}</p>
-          <h1 class="page-title">{{ email }}</h1>
-        </div>
+        <PageHeader :title="email" :overline="$t('agm.email')" />
         <BasicTabs
           v-model="mode"
           :options="[
@@ -348,12 +345,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-// An e-mail breaks anywhere rather than mid-word at a hyphen, and the title keeps a readable width beside the tabs.
-.person-detail__title {
-  flex: 1 1 200px;
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
 
 .person-detail__grid {
   display: grid;

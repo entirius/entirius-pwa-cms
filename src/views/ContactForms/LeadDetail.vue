@@ -49,9 +49,7 @@
       <Loader block v-if="loading" />
 
       <template v-else-if="lead">
-        <div class="flex ai-ct mb-8">
-          <h1 class="page-title">{{ $t("cf.lead_detail") }}</h1>
-        </div>
+        <PageHeader :title="$t('cf.lead_detail')" class="mb-8" />
 
         <div class="cf-lead-grid">
           <!-- Editable fields -->

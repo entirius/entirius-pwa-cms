@@ -3,16 +3,17 @@
     <div
       class="page-card h-100 ovy-auto"
     >
-      <div class="flex ai-ct mb-10">
-        <h1 class="page-title flex-1">{{ $t("agm.people_list") }}</h1>
-        <BasicButton
-          v-if="mode === 'marketing_lists'"
-          variant="secondary"
-          @click="downloadCSV"
-        >
-          {{ $t('agm.download_csv') }}
-        </BasicButton>
-      </div>
+      <PageHeader :title="$t('agm.people_list')" class="mb-10">
+        <template #actions>
+          <BasicButton
+            v-if="mode === 'marketing_lists'"
+            variant="secondary"
+            @click="downloadCSV"
+          >
+            {{ $t('agm.download_csv') }}
+          </BasicButton>
+        </template>
+      </PageHeader>
 
       <div class="mb-10">
         <BasicTabs

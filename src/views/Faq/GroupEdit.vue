@@ -35,15 +35,17 @@
       <Loader block v-if="loading" />
 
       <template v-else>
-        <div class="flex ai-ct jc-sb mb-12">
-          <h1 class="page-title">
-            {{ isEdit ? group.name || group.idx : $t("faq.create_group") }}
-          </h1>
-          <BasicSwitch
-            :label="$t('faq.is_active')"
-            v-model="form.is_active"
-          />
-        </div>
+        <PageHeader
+          :title="isEdit ? String(group.name || group.idx || '') : $t('faq.create_group')"
+          class="mb-12"
+        >
+          <template #actions>
+            <BasicSwitch
+              :label="$t('faq.is_active')"
+              v-model="form.is_active"
+            />
+          </template>
+        </PageHeader>
 
         <!-- Main fields -->
         <div class="page-card detail-section mb-10">
@@ -86,6 +88,7 @@
                 :options="unassignedItemOptions"
                 :model-value="null"
                 :placeholder="$t('faq.add_existing_item')"
+                :aria-label="$t('faq.add_existing_item')"
                 class="add-item-select"
                 @update:model-value="addItemToGroup"
               />

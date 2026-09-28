@@ -28,15 +28,17 @@
       <Loader block v-if="loading" />
 
       <template v-else>
-        <div class="flex ai-ct jc-sb mb-12">
-          <h1 class="page-title">
-            {{ isEdit ? item.question || item.url_key : $t("faq.create_item") }}
-          </h1>
-          <BasicSwitch
-            :label="$t('faq.is_active')"
-            v-model="form.is_active"
-          />
-        </div>
+        <PageHeader
+          :title="isEdit ? String(item.question || item.url_key || '') : $t('faq.create_item')"
+          class="mb-12"
+        >
+          <template #actions>
+            <BasicSwitch
+              :label="$t('faq.is_active')"
+              v-model="form.is_active"
+            />
+          </template>
+        </PageHeader>
 
         <!-- Main fields -->
         <div class="page-card detail-section mb-10">

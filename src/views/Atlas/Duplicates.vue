@@ -3,9 +3,7 @@
     <div
       class="page-card h-100 ovy-auto"
     >
-      <div class="flex ai-ct jc-sb mb-10 gap-8">
-        <h1 class="page-title">{{ $t("atlas.duplicates.title") }}</h1>
-      </div>
+      <PageHeader :title="$t('atlas.duplicates.title')" class="mb-10" />
       <p class="fs-300 t-body mb-10">
         {{ $t("atlas.duplicates.subtitle") }}
       </p>

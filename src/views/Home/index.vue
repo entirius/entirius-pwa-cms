@@ -2,8 +2,7 @@
   <div class="home-view h-100 ov-h">
     <div class="home-inner h-100 ovy-auto">
       <div class="home-content">
-        <p class="home-greeting">{{ greeting }}</p>
-        <h1 class="page-title home-title">{{ $t("panels.choose_panel") }}</h1>
+        <PageHeader :overline="greeting" :title="$t('panels.choose_panel')" class="mb-8" />
 
         <div class="panel-grid">
           <component
@@ -83,18 +82,6 @@ export default {
   width: 100%;
   max-width: 860px;
   padding: var(--space-12) var(--space-8);
-}
-.home-greeting {
-  font-size: var(--fs-250);
-  font-weight: 500;
-  color: var(--text-muted);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  margin-bottom: var(--space-1);
-}
-.home-title {
-  color: var(--text-body);
-  margin-bottom: var(--space-8);
 }
 .panel-grid {
   display: grid;

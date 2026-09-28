@@ -3,9 +3,7 @@
     <div
       class="page-card flex-1 ovy-auto"
     >
-      <div class="flex ai-ct mb-10">
-        <h1 class="page-title">{{ $t("pim.products") }}</h1>
-      </div>
+      <PageHeader :title="$t('pim.products')" class="mb-10" />
 
       <GapStatusAlert v-if="hasQualityData" compact />
 

@@ -1,15 +1,16 @@
 <template>
   <div class="page-pad fs-300 t-body h-100 ov-h">
     <div class="page-card h-100 ovy-auto">
-      <div class="flex ai-ct jc-sb mb-10">
-        <h1 class="page-title">{{ $t('pricefighter.strategies') }}</h1>
-        <BasicButton
-          variant="primary"
-          @click="openCreate"
-        >
-          {{ $t('pricefighter.new_rule') }}
-        </BasicButton>
-      </div>
+      <PageHeader :title="$t('pricefighter.strategies')" class="mb-10">
+        <template #actions>
+          <BasicButton
+            variant="primary"
+            @click="openCreate"
+          >
+            {{ $t('pricefighter.new_rule') }}
+          </BasicButton>
+        </template>
+      </PageHeader>
 
       <Loader block v-show="loading" />
 

@@ -3,9 +3,7 @@
     <div
       class="page-card h-100 ovy-auto"
     >
-      <div class="flex ai-ct mb-10">
-        <h1 class="page-title">{{ $t("pim.category_tree") }}</h1>
-      </div>
+      <PageHeader :title="$t('pim.category_tree')" class="mb-10" />
 
       <div class="category-list__toolbar">
         <BasicInput

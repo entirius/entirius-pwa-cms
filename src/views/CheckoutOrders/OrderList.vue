@@ -20,9 +20,7 @@
       class="page-card h-100 ovy-auto"
     >
       <!-- Heading -->
-      <div class="flex ai-ct mb-10">
-        <h1 class="page-title">{{ $t("checkout_orders.orders") }}</h1>
-      </div>
+      <PageHeader :title="$t('checkout_orders.orders')" class="mb-10" />
 
       <!-- Status FilterChips -->
       <div class="flex ai-ct mb-10">

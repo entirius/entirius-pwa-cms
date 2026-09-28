@@ -3,16 +3,17 @@
     <div
       class="page-card h-100 ovy-auto"
     >
-      <div class="flex ai-ct jc-sb mb-10 gap-8">
-        <h1 class="page-title">{{ $t("atlas.list_title") }}</h1>
-        <BasicButton
-          variant="primary"
-          data-testid="suppliers-create-btn"
-          @click="openCreate"
-        >
-          {{ $t('atlas.create_button') }}
-        </BasicButton>
-      </div>
+      <PageHeader :title="$t('atlas.list_title')" class="mb-10">
+        <template #actions>
+          <BasicButton
+            variant="primary"
+            data-testid="suppliers-create-btn"
+            @click="openCreate"
+          >
+            {{ $t('atlas.create_button') }}
+          </BasicButton>
+        </template>
+      </PageHeader>
 
       <!-- Filter panel -->
       <div class="flex ai-ct mb-10">

@@ -1,16 +1,12 @@
 <template>
   <div class="spawn-rule-edit page-pad fs-300 t-body h-100 ov-h">
     <div class="page-card flex-1 ovy-auto">
-      <div class="page-title-row flex ai-ct gap-5 mb-10">
-        <IconButton
-          icon="back"
-          :label="$t('common.back')"
-          @click="$router.push('/enrichment/spawn-rules')"
-        />
-        <h1 class="page-title m-0">
-          {{ isCreate ? $t("enrichment.spawn_rules.create") : form.key }}
-        </h1>
-        <div class="flex ai-ct gap-5 ml-auto">
+      <PageHeader
+        :title="isCreate ? $t('enrichment.spawn_rules.create') : String(form.key || '')"
+        back="/enrichment/spawn-rules"
+        class="mb-10"
+      >
+        <template #actions>
           <BasicButton
             v-if="!isCreate"
             variant="secondary"
@@ -34,8 +30,8 @@
           >
             {{ $t('common.save') }}
           </BasicButton>
-        </div>
-      </div>
+        </template>
+      </PageHeader>
 
       <Loader block v-if="loading" />
 

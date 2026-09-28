@@ -3,9 +3,7 @@
     <div
       class="page-card h-100 ovy-auto"
     >
-      <div class="flex ai-ct mb-10">
-        <h1 class="page-title">{{ $t("agm.definitions") }}</h1>
-      </div>
+      <PageHeader :title="$t('agm.definitions')" class="mb-10" />
 
       <!-- Filter tabs -->
       <div class="flex ai-ct mb-10">

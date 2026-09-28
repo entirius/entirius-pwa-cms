@@ -1,12 +1,11 @@
 <template>
   <div class="page-pad fs-300 t-body h-100 ov-h relative">
     <Teleport to="#authors-toolbar-left" defer>
-      <IconButton
-        icon="back"
-        :label="$t('common.back')"
-        @click="$router.push('/pages/authors')"
+      <PageHeader
+        v-if="!loading"
+        :title="form.name || $t('authors.create')"
+        back="/pages/authors"
       />
-      <h1 class="page-title" v-if="!loading">{{ form.name || $t("authors.create") }}</h1>
     </Teleport>
     <Teleport to="#authors-toolbar-right" defer>
       <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />

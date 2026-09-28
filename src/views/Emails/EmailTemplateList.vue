@@ -3,14 +3,7 @@
     <div
       class="page-card h-100 ovy-auto"
     >
-      <div class="page-title-row flex ai-ct gap-5 mb-10">
-        <IconButton
-          icon="back"
-          :label="$t('common.back')"
-          @click="$router.push('/emails')"
-        />
-        <h1 class="page-title">{{ typeLabel }}</h1>
-      </div>
+      <PageHeader :title="typeLabel" back="/emails" class="mb-10" />
 
       <Loader block v-show="loading" />
 
