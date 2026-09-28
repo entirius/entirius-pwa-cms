@@ -115,6 +115,16 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- P5 Points (plan 43): the point form follows the detail pattern: Address (with the address search), Location,
+  Contact and Translations are `BasicCard`s with a `.form-grid` of `FormField`s (Code, Name and Type marked required;
+  the API's field errors land on the fields, the toast stays). Save and Delete moved from the panel toolbar into the
+  PageHeader `ActionBar` after the on/off switch; a locked carrier point still shows its fields disabled and offers no
+  Delete. The panel wrapper's toolbar is gone. The point list has its search, channel and status chips in the
+  `PageLayout` toolbar as one inline chip row (no filter panel on a phone) and its pagination in the list footer. The
+  point-type edit dialog is a `BasicModal` with FormFields and an `ActionBar` footer (Delete, Cancel, Save). The
+  unrouted `ImportDialog` is a `BasicModal` (file picker = Stock's `ImportChooseFile`, mode = `BasicRadioGroup`).
+  Handlers, API calls and payloads are unchanged. Smoke spec `tests/e2e/p5-points-smoke.spec.js`.
+
 - P5 PriceFighter (plan 41): the four raw tables are `DataTable`s: the observations of a gap row and of a history
   entry (one panel-local `ObservationsTable`), the apply preview and the apply report (now with column headers, both
   dialogs `lg`). The market cell of every PriceFighter table is one panel-local `MarketCell`: country · currency, and
