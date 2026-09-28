@@ -115,6 +115,20 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- P5 Atlas review (plan 48): the review queue sits in `PageLayout` with its PageHeader („Kolejka przeglądu”); the
+  mode switch, search, supplier filter and status chips form the page toolbar (the chips one inline row). The swipe
+  decision bar is right-aligned and pins to the bottom of the page scroll: Pomiń secondary, Odrzuć danger with its
+  outline, Zatwierdź primary rightmost, equal widths on a phone. The gallery and raw-data dialogs are `BasicModal`s
+  (focus trap, Esc, a bottom sheet on a phone); the gallery keeps ←/→ between images and its prev/next buttons and
+  counter sit under the image (the thumbnail strip is gone). The raw-data side panel is an `aside` named by its title;
+  its dates go through `formatDate` and its values are no longer monospaced. The product card's image placeholder is
+  centred; its gallery and raw-data buttons are `BasicButton`s. List mode: the bulk buttons are `BasicButton`s (Reject
+  danger), row checkboxes `BasicCheckbox`es, the detail drawer's approve / skip / reject an `ActionBar`; Events: the
+  acknowledge button is a `BasicButton`, dates formatted; Updated: one empty state. Duplicates: each EAN group's
+  table is a `DataTable` (weight and suppliers hide on a phone); Auto-matched: the pager sits in the page footer.
+  Handlers, API calls and payloads are unchanged. Smoke spec `tests/e2e/p5-atlas-review-smoke.spec.js`; spec 10 opens
+  the raw-data dialog by role.
+
 - P5 Atlas sources (plan 47): the panel toolbar is gone. A source's detail has its PageHeader (crumbs, back arrow, H1
   „name (idx)”) and the tabs are `BasicTabs` (a `tablist`, arrow keys; each tab body a `tabpanel`); the Overview Save
   moved from the toolbar into the header `ActionBar` (the tab emits it). A source that does not load shows an
