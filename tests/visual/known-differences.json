@@ -316,7 +316,7 @@
       "id": "KD-P5-S9-media-tile",
       "decision": "plan 29 (handoff 29, plan 30)",
       "figma": "the image fills a plain tile, no caption",
-      "code": "MediaTile keeps its 8 px inner padding and the caption / actions footer (image `object-fit: cover`); grid 4 × 188 on desktop, 2 × 188 from 769 to 1023 px (no frame), 2 × 150 on a phone",
+      "code": "MediaTile keeps its 8 px inner padding and the caption / actions footer (image `object-fit: cover`); grid 4 × 188 from 1280 px, 2 × 188 below (4 would overflow beside the sidebar; no frame), 2 × 150 on a phone",
       "scope": "Gallery grid tiles",
       "treatment": "mask"
     },

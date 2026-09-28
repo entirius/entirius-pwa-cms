@@ -145,8 +145,9 @@ Traps:
   renders a `<header>` inside `<main>`, so it is no banner landmark.
 - **R4 Space, not lines.** Header regions and page sections are separated by spacing tokens, never by divider
   lines (`bb-*`, a `border-bottom` under a header or toolbar, `<hr>`). Borders belong to containers: cards, section
-  blocks, tables and inputs. The content region is `PageLayout` (no border, no card, padding 40/80, 20 on a phone);
-  its `toolbar` slot holds the filters row.
+  blocks, tables and inputs. The content region is `PageLayout` (no border, no card, padding 40/80, 20 on a phone;
+  `roomy` keeps 40/32 and the 30 px title on a phone for the Figma P5 frames); its `toolbar` slot holds the filters
+  row, its `footer` slot a list's Pagination (pinned to the bottom edge while the list scrolls).
 - **R5 Action order.** Page and dialog actions are right-aligned and ordered by importance from the right. The
   primary action (accent fill, one per page or dialog) is rightmost, the secondary (outline) comes next, then the
   icon-only utilities. Every screen uses the same order: `ActionBar` renders it from the actions' `role`, and on a

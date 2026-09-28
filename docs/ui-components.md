@@ -229,9 +229,9 @@ Catalogue: `#overlays` (`#basic-modal`, `#confirm-dialog`, `#side-drawer`, `#tra
   placeholder; the image fills the box, `object-fit: cover`), `alt`, `caption` (truncated, full text in `title`), `selected` (accent
   border), `actions` slot (IconButtons `sm`), `overlay` slot (value chips, `Tag`, over the bottom of the image).
   Actions and overlay show on hover, keyboard focus inside the tile, when selected and always on a touch screen;
-  hidden they are `visibility: hidden`, and a tile with actions is focusable itself (`role="group"`, named by
-  caption or alt), so Tab reveals them. The page lays the tiles out (Gallery: fixed tracks, 4 × 188 on desktop,
-  2 below 1024 px, in a bordered container).
+  hidden actions are `visibility: hidden` (the chips only fade), and a tile with actions is focusable itself
+  (`role="group"`, named by caption or alt), so Tab reveals them. The page lays the tiles out (Gallery: fixed
+  tracks, 4 × 188 from 1280 px, 2 below, in a bordered container).
 - **`Loader`** — `size` 32 · 64 (64 by default), `block` centres it in a content area, `overlay` veils the
   screen (`overlay-loading`, 64 px rings, fades in and out), `overlay contained` veils the nearest
   positioned ancestor; `role="status"` with a visually hidden „Ładowanie…”.

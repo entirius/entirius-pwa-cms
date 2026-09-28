@@ -248,7 +248,7 @@ All notable changes to this project will be documented in this file.
   e-mail, FAQ, PIM detail cards); the PIM lists, enrichment tasks and spawn rules keep their pagination visible at
   the bottom edge while the list scrolls; the content-list FAB checks each type's document limit against that type's
   own documents; the gallery keeps the upload dialog, the file, alt and tags after a failed upload, clears the new
-  tag field after a tag is added, stops logging upload payloads and shows 4 fixed tile columns (2 on a phone); a
+  tag field after a tag is added, stops logging upload payloads and shows 4 fixed tile columns (2 below 1280 px); a
   gallery tile's hidden actions cannot be clicked, and Tab reaches them through the tile; the FAB sits 24 px from
   the corner on desktop and above the tab bar up to 1023 px on every page.
 - Handy-kit image library and upload preview borders used removed `--clr-gray-*` tokens and drew nothing; they use

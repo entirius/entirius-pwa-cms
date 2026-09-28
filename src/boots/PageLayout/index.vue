@@ -60,5 +60,10 @@ defineProps({
   z-index: 1;
   padding-block: var(--space-3);
   background-color: var(--surface-page);
+
+  // Keeps the pager out of the FAB's corner lane.
+  @include max-shell {
+    padding-right: calc(44px + var(--space-4));
+  }
 }
 </style>
