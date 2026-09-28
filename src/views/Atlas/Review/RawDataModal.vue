@@ -7,7 +7,7 @@
         @click.self="$emit('close')"
         data-testid="raw-data-modal"
       >
-        <div class="page-card raw-modal-container">
+        <BasicCard class="raw-modal-container">
           <div class="flex ai-ct jc-sb mb-5">
             <h2 class="fs-400 fw-600">{{ $t("atlas.review.raw_data_title") }}</h2>
             <button
@@ -21,7 +21,7 @@
           <pre class="raw-modal__pre bg-raised t-body p-5 rounded">{{
             formatted
           }}</pre>
-        </div>
+        </BasicCard>
       </div>
     </Transition>
   </Teleport>

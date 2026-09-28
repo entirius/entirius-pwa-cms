@@ -16,10 +16,10 @@
         icon="duplicate"
       />
 
-      <div
+      <BasicCard
         v-for="group in groups"
         :key="group.ean"
-        class="page-card duplicates-group mb-8"
+        class="duplicates-group mb-8"
       >
         <div class="flex ai-ct jc-sb mb-8 gap-5">
           <div>
@@ -86,7 +86,7 @@
             </tbody>
           </table>
         </div>
-      </div>
+      </BasicCard>
 
     <MergeConfirmationModal
       v-if="mergeModal.visible"

@@ -1,5 +1,5 @@
 <template>
-  <aside class="page-card raw-panel" v-if="product">
+  <BasicCard class="raw-panel" v-if="product">
     <h3 class="raw-panel__heading">
       {{ $t("atlas.review.raw_data_title") }}
     </h3>
@@ -57,7 +57,7 @@
         </li>
       </ul>
     </section>
-  </aside>
+  </BasicCard>
 </template>
 
 <script>

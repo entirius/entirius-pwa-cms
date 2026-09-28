@@ -7,7 +7,7 @@
         @click.self="$emit('close')"
         data-testid="test-feed-modal"
       >
-        <div class="page-card test-feed-container">
+        <BasicCard class="test-feed-container">
           <div class="flex ai-ct jc-sb mb-5">
             <h2 class="fs-400 fw-600">{{ $t("atlas.feeds.test.title") }}</h2>
             <button
@@ -66,7 +66,7 @@
           <div v-else-if="!busy && error" class="t-negative fs-300">
             <p>{{ error }}</p>
           </div>
-        </div>
+        </BasicCard>
       </div>
     </Transition>
   </Teleport>

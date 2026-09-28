@@ -15,10 +15,10 @@
     <Loader block v-show="loading" />
 
     <div v-show="!loading">
-      <div
+      <BasicCard
         v-for="profile in profiles"
         :key="profile.idx"
-        class="page-card mapping-profile mb-5"
+        class="mapping-profile mb-5"
         :data-testid="`mapping-profile-${profile.idx}`"
       >
         <div class="flex ai-ct jc-sb gap-5 flex-wrap mb-5">
@@ -172,7 +172,7 @@
             </button>
           </div>
         </details>
-      </div>
+      </BasicCard>
       <EmptyState
         v-if="!profiles.length"
         :title="$t('atlas.mappings.empty')"

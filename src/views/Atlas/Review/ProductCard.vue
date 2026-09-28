@@ -1,5 +1,5 @@
 <template>
-  <div class="page-card product-card shadow-sm">
+  <BasicCard class="product-card shadow-sm">
     <div class="product-card__hero" data-testid="product-card-hero">
       <img
         v-if="heroImage"
@@ -57,7 +57,7 @@
         {{ $t("atlas.review.show_raw_data") }}
       </button>
     </div>
-  </div>
+  </BasicCard>
 </template>
 
 <script>
