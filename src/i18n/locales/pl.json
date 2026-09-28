@@ -82,8 +82,8 @@
     "collapse_sidebar": "Zwiń panel",
     "no_title": "Brak tytułu",
     "log_out": "Wyloguj",
-    "light_mode": "Jasny motyw",
-    "dark_mode": "Ciemny motyw"
+    "light_mode": "Tryb jasny",
+    "dark_mode": "Tryb ciemny"
   },
   "user": {
     "change_password": "Zmień hasło",
@@ -3651,5 +3651,12 @@
       "inputs": "Pola formularzy",
       "shell": "Powłoka"
     }
+  },
+  "shell": {
+    "panels": "Panele",
+    "locked": "(niedostępny)",
+    "menu": "Menu",
+    "close_menu": "Zamknij menu",
+    "language": "Język"
   }
 }

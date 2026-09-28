@@ -23,6 +23,7 @@
       <slot v-if="isPanel && isOpen" name="panel" :close="close" />
       <template v-for="item in items" v-else-if="isOpen" :key="item.key">
         <div v-if="item.separator" role="separator" class="basic-menu__separator" />
+        <p v-else-if="item.heading" role="presentation" class="basic-menu__heading fs-200 t-muted">{{ item.label }}</p>
         <component
           :is="isLink(item) ? 'router-link' : 'button'"
           v-else
@@ -52,7 +53,8 @@ let nextId = 0;
 <script setup>
 // Anchored popover (docs/ui-rules.md C4): an action list or a free panel next to a trigger. The `trigger` slot holds
 // the control (a BasicButton or IconButton); the menu sets its `aria-haspopup`, `aria-expanded` and `aria-controls`
-// and toggles on its click. `items` = [{ key, label, icon?, danger?, separator?, disabled?, to?, testid? }] →
+// and toggles on its click. `items` = [{ key, label, icon?, danger?, separator?, heading?, disabled?, to?, testid? }]
+// (a `heading` is a caption above the items that follow, never focused) →
 // `role="menu"`: arrows, Home / End move between items, Enter / Space choose (emits `select` with the item), Esc and
 // Tab close; Esc returns focus to the trigger; a click outside closes. The `panel` slot (scope: `close`) replaces the
 // list with free content, `role="dialog"` named by `label`. `placement` is a floating-ui placement. `inline` renders
@@ -272,6 +274,13 @@ defineExpose({ open: openMenu, close });
 
 .basic-menu__item--danger .basic-menu__icon {
   color: inherit;
+}
+
+.basic-menu__heading {
+  padding: var(--space-1) var(--space-3);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .basic-menu__separator {

@@ -66,5 +66,12 @@ export default function registerBootComponents(app) {
   app.component("BasicRadioGroup", defineAsyncComponent(() => import("./BasicRadioGroup/index.vue")));
 
   // P4 shell (plan 21)
+  app.component("AppHeader", defineAsyncComponent(() => import("./AppHeader/index.vue")));
+  app.component("SidebarNav", defineAsyncComponent(() => import("./SidebarNav/index.vue")));
+  app.component("SidebarNavGroup", defineAsyncComponent(() => import("./SidebarNav/SidebarNavGroup.vue")));
+  app.component("SidebarNavItem", defineAsyncComponent(() => import("./SidebarNav/SidebarNavItem.vue")));
+  app.component("MobileMenu", defineAsyncComponent(() => import("./MobileMenu/index.vue")));
+  app.component("BottomTabBar", defineAsyncComponent(() => import("./BottomTabBar/index.vue")));
+  app.component("UserMenu", defineAsyncComponent(() => import("./UserMenu/index.vue")));
 
 }

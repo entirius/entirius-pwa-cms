@@ -6,8 +6,8 @@ const { screens } = require("./capture-spec.json");
 // cell, plus one per interaction state the cell lists in `data-cat-interact`; baselines in __screenshots__/components/,
 // written only by `npm run visual:approve:components` (operator, P3 close).
 const SECTIONS = ["icons", "actions", "overlays", "display", "page-frame", "selects", "inputs", "shell"];
-// Every component row of the catalogue spec (r02 tech-notes §6) except the P4 shell rows (AppHeader, SidebarNav,
-// MobileMenu, BottomTabBar, UserMenu): one anchor each. The icons.js registry row is the `icons` section.
+// Every component row of the catalogue spec (r02 tech-notes §6), the P4 shell rows included: one anchor each. The
+// icons.js registry row is the `icons` section.
 const COMPONENTS = [
   "basic-button", "icon-button", "action-bar", "floating-actions", "bulk-action-bar",
   "form-field", "basic-input", "basic-textarea", "number-input", "basic-select", "entity-search-picker",
@@ -16,6 +16,7 @@ const COMPONENTS = [
   "basic-modal", "confirm-dialog", "side-drawer", "translations-drawer", "basic-menu", "basic-tooltip",
   "mobile-filter-panel", "status-badge", "count-badge", "tag", "basic-tabs", "basic-card", "panel-card", "media-tile",
   "empty-state", "loader", "pagination", "data-table", "page-header", "breadcrumbs", "page-layout", "basic-logo",
+  "app-header", "sidebar-nav", "sidebar-nav-group", "sidebar-nav-item", "mobile-menu", "bottom-tab-bar", "user-menu",
 ];
 // The catalogue renders from static fixtures: it calls no API (the shell around it does).
 const API_ORIGIN = new URL(process.env.CMS_API_URL || "http://localhost:8100").origin;

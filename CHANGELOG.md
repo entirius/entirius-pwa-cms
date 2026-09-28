@@ -6,6 +6,15 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- Navigation model and shell components (P4 plan 21, not wired into `App.vue` yet): `src/composables/useNav.js`
+  (`usePanels`, `navTree`, `resolveNavEntry` exact → `activeOn` → `navParent` → prefix, `useActiveNav`,
+  `useBreadcrumbs` with `crumbParent` chains and a history-aware back target), `meta.navParent` on 9 detail/create
+  routes, `meta.crumbParent` on the two template editors, `SHELL_BREAKPOINT` read by `useIsDesktop`. New boots
+  `AppHeader`, `SidebarNav` (+ `SidebarNavGroup`, `SidebarNavItem`: disclosure groups, leaf panels, locked panels,
+  64 px rail), `MobileMenu` (focus-trapped dialog), `BottomTabBar`, `UserMenu` (on BasicMenu, which gains `heading`
+  items); `BasicLogo` draws the "ENTIRIUS CMS" wordmark. Catalogue `#shell` shows every cell; the theme item reads
+  "Tryb jasny" / "Tryb ciemny".
+
 - Input components (P3 plan 16): `FormField` owns label, hint, required marker, error and help tooltip, lays out
   `stacked` or `inline`, and provides the control contract (id, `aria-describedby`, `aria-invalid`, required,
   disabled); `BasicInput` gains `readonly` and a leading meaning icon; new `BasicTextarea` (counter), `BasicSwitch`
@@ -174,6 +183,11 @@ All notable changes to this project will be documented in this file.
   password and SSO login run the same code after the token call.
 
 ### Fixed
+
+- P3 review leftovers (plan 21): BasicTooltip adds or drops its `aria-describedby` id when its text or the
+  trigger's name changes, and removes it on unmount; a focus trap starts in the first editable field (not a checkbox,
+  radio or read-only value); the routes kit's manage list is filtered, capped at 10 rows, and offers no delete on a
+  route the document uses; the `@catalogue` API check counts calls made while the page mounts.
 
 - P3 close (plan 20): the PIM "Translate store", Builder "Translate all" and PIM option "Translations" buttons show
   the translate icon on a phone instead of an empty box; author, feature-set, option and gallery-tag fields take their

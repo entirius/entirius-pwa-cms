@@ -160,16 +160,6 @@
         </DataTable>
       </CatalogueCell>
     </div>
-
-    <h3 id="basic-logo" class="fs-500 mb-4">BasicLogo</h3>
-    <div class="display-grid grid gap-3 mb-10">
-      <CatalogueCell id="basic-logo-desktop-default" label="desktop, 32 px">
-        <div class="flex"><BasicLogo variant="full" :size="32" /></div>
-      </CatalogueCell>
-      <CatalogueCell id="basic-logo-mobile-default" label="mobile, 24 px">
-        <div class="flex"><BasicLogo variant="full" :size="24" /></div>
-      </CatalogueCell>
-    </div>
   </CatalogueSection>
 </template>
 

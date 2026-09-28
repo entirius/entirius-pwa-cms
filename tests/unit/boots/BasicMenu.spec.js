@@ -62,6 +62,14 @@ describe("BasicMenu", () => {
     expect(document.activeElement).toBe(items()[0]);
   });
 
+  it("a heading item is a caption: not a menuitem, never focused", async () => {
+    mountMenu({ items: [{ key: "who", heading: true, label: "admin" }, ...ITEMS] });
+    await open();
+    expect(document.querySelector(".basic-menu__heading").textContent).toBe("admin");
+    expect(items()).toHaveLength(3);
+    expect(document.activeElement).toBe(items()[0]);
+  });
+
   it("arrows skip the disabled item and wrap; Home / End jump", async () => {
     mountMenu();
     await open();

@@ -82,8 +82,8 @@
     "collapse_sidebar": "Collapse sidebar",
     "no_title": "No title set",
     "log_out": "Log out",
-    "light_mode": "Switch to light mode",
-    "dark_mode": "Switch to dark mode"
+    "light_mode": "Light mode",
+    "dark_mode": "Dark mode"
   },
   "user": {
     "change_password": "Change password",
@@ -3652,5 +3652,12 @@
       "inputs": "Inputs",
       "shell": "Shell"
     }
+  },
+  "shell": {
+    "panels": "Panels",
+    "locked": "(unavailable)",
+    "menu": "Menu",
+    "close_menu": "Close menu",
+    "language": "Language"
   }
 }

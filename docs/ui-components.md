@@ -340,3 +340,51 @@ Catalogue: `#inputs` (`#form-field`, `#basic-input`, `#basic-textarea`, `#number
 `#basic-radio-group`, `#basic-switch`, `#segmented-control`, `#basic-date-picker`, `#color-input`, `#basic-wysiwyg`).
 
 ### P4 shell (plan 21)
+
+Built and in the catalogue; `App.vue` still runs the old shell until plan 22 swaps it in.
+
+- **Nav model** — `src/composables/useNav.js`, the one answer to every shell question. `usePanels()` = the
+  `access.js` registry × Munin (`isEnabled`), locked panels dropped under `VUE_APP_HIDE_DISABLED_PANELS=TRUE`;
+  `navTree(ctx)` = `{ [panelIdx]: entries[] }` through `filterNavRoutes` per panel (`ctx` = `qualityAvailable`,
+  `isModuleEnabled`, `isDesktop`); `resolveNavEntry(entries, route)` lights an entry in the order exact path →
+  `activeOn` → `meta.navParent` → longest path prefix; `useActiveNav()` = `{ panelIdx, entry, tree }`, the panel from
+  `route.meta.panel` (`"home"` on `/`). A detail or create page whose path does not nest under its list sets
+  `meta.navParent: "<entry route>"` (9 routes: Points, Forms, Agreements, Atlas, Promo).
+- **Breadcrumbs** — `useBreadcrumbs(title?)` → `{ crumbs, backTarget, back }`: panel → entry → the
+  `meta.crumbParent` chain (route names, e.g. `EmailTemplateEdit` → `EmailTemplateList`, linked with the params the
+  parent takes) → the current page (`title`, else the route's `titleKey`). Nothing on a panel's list (R3); a panel
+  root that is also the entry keeps both crumbs. `back()` goes to the last linked crumb: history back when the
+  previous entry is that crumb (list filters survive), else a push.
+- **Breakpoint** — `SHELL_BREAKPOINT` (1024, `src/utils/breakpoints.js`) = `$breakpoint-shell`; `useIsDesktop`
+  reads it. A unit test holds the SCSS and script values together.
+- **`AppHeader`** — `<header data-fid="header">`: the wordmark home link (`data-fid="logo"`), then ConfigHealth and
+  the bell (conditional) and `UserMenu`. 88 px on desktop, 81 px below the shell breakpoint with a hairline separator
+  and the `menu` / `close` IconButton (`aria-expanded`, `aria-controls` = `menuId`, `v-model:menuOpen`). No title,
+  no panel switcher (R1, R2). `mobile` forces a layout.
+- **`SidebarNav`** — `<nav aria-label="Panele" data-testid="app-sidebar" data-fid="sidebar">`, 300 px, its own
+  scroll: "Panele", Home, every panel in registry order. A panel with more than one entry is a
+  `SidebarNavGroup` disclosure (`button[aria-expanded][aria-controls]`), one entry is a leaf link, a locked panel is
+  dimmed with a lock, unfocusable, "(niedostępny)" for screen readers. The active panel's group opens on
+  activation; the others toggle per session. `collapsed` (default: the user store, `cms_sidebar_collapsed`) is the
+  64 px rail: icons named by `aria-label` with a BasicTooltip, toggled by the footer IconButton (`aria-expanded`).
+  `flat` is the MobileMenu list (no title, no footer, each panel one link to its root).
+- **`SidebarNavItem`** — `label`, `icon` (a FontAwesome glyph of the nav model), `to`, `level` 1 (40 px, Lexend
+  16/400) / 2 (32 px, 14/400, 1 px `hairline` rail → `accent` when active), `active` (`aria-current="page"` on a
+  link), `locked`, `expanded` (set = a disclosure row, emits `toggle`), `collapsed`. Group rows hover with a
+  `surface-hover` pill, links change colour only; the inactive L2 text is `text-secondary` (KD22).
+- **`MobileMenu`** — `v-model:open`: a full-screen `role="dialog" aria-modal="true"` below the header with the flat
+  SidebarNav (`data-fid="mobile-menu"`); its close button sits over the header's menu button. `useFocusTrap`: focus on
+  close, Tab cycles, Esc closes, focus returns to the menu button, the background is inert; a navigation closes it.
+  `inline` = open in the page flow without a trap.
+- **`BottomTabBar`** — `<nav aria-label="<panel>" data-fid="tab-bar">`, 72 px (`--bottom-bar-height`): the current
+  panel's entries, icon + 12 px label, items ≥ 44 px, the lit one `aria-current`; hidden with ≤ 1 entry and on
+  `meta.noBottomBar`. `entries` / `label` / `current` take fixed data (catalogue). No panel has more than 5 phone
+  entries (a unit test guards it: there is no overflow design).
+- **`UserMenu`** — on BasicMenu (`aria-haspopup="menu"`): the user's name (a BasicMenu `heading` item), the theme
+  item naming its target ("Tryb jasny" / "Tryb ciemny"), the languages (current checked), configuration health (with
+  munin), change password, logout (`danger`). Trigger: IconButton `lg` `user`, `data-fid="user-button"`.
+- **`BasicLogo`** — `variant="full"` is the "ENTIRIUS CMS" wordmark, `size` its height (32 → 206 × 32, 24 → 154 × 24);
+  its gradients belong to the asset (D2), the name turns `text-strong` in the light theme.
+
+Catalogue: `#shell` (`#app-header`, `#sidebar-nav`, `#sidebar-nav-group`, `#sidebar-nav-item`, `#mobile-menu`,
+`#bottom-tab-bar`, `#user-menu`, `#basic-logo`).

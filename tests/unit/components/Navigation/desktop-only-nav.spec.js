@@ -3,8 +3,9 @@ import { mount } from "@vue/test-utils";
 import { setActivePinia, createPinia } from "pinia";
 import { buildNavRoutes, filterNavRoutes } from "@/components/Navigation/nav-routes";
 import { useMuninStore } from "@/stores/munin";
-import { useUserStore } from "@/stores/user";
-import Navigation from "@/components/Navigation/Navigation.vue";
+import BottomTabBar from "@/boots/BottomTabBar/index.vue";
+
+vi.mock("vue-router", () => ({ useRoute: () => ({ path: "/leads/inbox", meta: { panel: "leads" }, params: {}, query: {} }) }));
 
 const LEADS_MODULES = new Set(["leads", "communicator"]);
 const routesFor = (activeApp, isDesktop, modules = LEADS_MODULES) =>
@@ -19,16 +20,14 @@ const setViewport = (desktop) =>
     removeEventListener: () => {},
   }));
 
-const mountMobileNav = () =>
-  mount(Navigation, {
-    props: { mobile: true },
+const mountTabBar = () =>
+  mount(BottomTabBar, {
     global: { stubs: { RouterLink: { props: ["to"], template: "<a :data-to='to.path'><slot /></a>" } } },
   });
 
 describe("Leads nav (UX-002d: one panel, Settings instead of four entries)", () => {
   beforeEach(() => {
     setActivePinia(createPinia());
-    useUserStore().activeApp = "leads";
     const munin = useMuninStore();
     munin.loaded = true;
     munin.modules = [...LEADS_MODULES].map((key) => ({ key, enabled_in_cms: true }));
@@ -46,11 +45,17 @@ describe("Leads nav (UX-002d: one panel, Settings instead of four entries)", () 
     expect(routesFor("communicator", true)).toEqual([]);
   });
 
-  it("phone: Inbox · Settings — Settings is reachable from the bottom bar", () => {
+  it("phone: Inbox · Settings — Settings is reachable from the bottom tab bar", () => {
     expect(routesFor("leads", false)).toEqual(["/leads/inbox", "/leads/settings"]);
     setViewport(false);
-    const links = mountMobileNav().findAll("a").map((a) => a.attributes("data-to"));
+    const links = mountTabBar().findAll("a").map((a) => a.attributes("data-to"));
     expect(links).toEqual(["/leads/inbox", "/leads/settings"]);
+  });
+
+  it("desktop: Board and Import join the entries (the tab bar itself is the phone's)", () => {
+    setViewport(true);
+    const links = mountTabBar().findAll("a").map((a) => a.attributes("data-to"));
+    expect(links).toEqual(["/leads/inbox", "/leads/board", "/leads/import", "/leads/settings"]);
   });
 
   it("an entry whose backend module is off is not listed; without communicator Companies is the entry", () => {
