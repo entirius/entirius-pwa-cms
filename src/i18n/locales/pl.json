@@ -3102,6 +3102,7 @@
   },
   "pricefighter": {
     "gap_table": "Tabela luk cenowych",
+    "filters": "Filtry",
     "all_channels": "Wszystkie kanały",
     "all_recommendations": "Wszystkie rekomendacje",
     "competitor_only": "Ma konkurenta",

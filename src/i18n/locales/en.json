@@ -3103,6 +3103,7 @@
   },
   "pricefighter": {
     "gap_table": "Gap Table",
+    "filters": "Filters",
     "all_channels": "All channels",
     "all_recommendations": "All recommendations",
     "competitor_only": "Has competitor",

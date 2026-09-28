@@ -36,36 +36,7 @@
             <StatusBadge :label="`${validCount}/${observations.length} ${$t('pricefighter.valid')}`" tone="info" />
           </h4>
           <p v-if="loadError" class="t-negative fs-200">{{ loadError }}</p>
-          <p v-else-if="!observations.length" class="t-muted fs-200">{{ $t('pricefighter.no_observations') }}</p>
-          <table v-else class="gap-detail__obs">
-            <thead>
-              <tr>
-                <th>{{ $t('pricefighter.source') }}</th>
-                <th>{{ $t('pricefighter.price') }}</th>
-                <th>{{ $t('pricefighter.stock') }}</th>
-                <th>{{ $t('pricefighter.observed_at') }}</th>
-                <th>{{ $t('pricefighter.status') }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="(obs, i) in observations"
-                :key="i"
-                :class="{ 'gap-detail__obs-row--invalid': obs.flag !== 'valid' }"
-              >
-                <td>{{ obs.source_idx }}</td>
-                <td>{{ obs.price }} {{ obs.currency || '' }}</td>
-                <td>{{ obs.stock != null ? obs.stock : '—' }}</td>
-                <td>{{ formatDate(obs.ts) }}</td>
-                <td>
-                  <StatusBadge
-                    :label="$t(`pricefighter.flag_${obs.flag}`)"
-                    :tone="obs.flag === 'valid' ? 'positive' : 'neutral'"
-                  />
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <ObservationsTable v-else :observations="observations" />
         </div>
       </div>
     </template>
@@ -78,7 +49,7 @@ import { t } from '@/i18n'
 import { GET_PfDecisionDetail, GET_PfBounds } from '@/api/pricefighter/api'
 import { extractApiMessage } from '@/composables/useFormErrors'
 import { pfFormat } from '../constants'
-import { formatDate } from '@/utils/format'
+import ObservationsTable from './ObservationsTable.vue'
 
 const props = defineProps({
   row: {
@@ -163,29 +134,5 @@ onMounted(async () => {
     color: var(--text-body);
     font-weight: 600;
   }
-}
-
-.gap-detail__obs {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: var(--fs-200);
-
-  th {
-    text-align: left;
-    padding: var(--space-1) var(--space-2);
-    color: var(--text-muted);
-    text-transform: uppercase;
-    font-size: var(--fs-200);
-    border-bottom: 1px solid var(--border-subtle);
-  }
-
-  td {
-    padding: var(--space-1) var(--space-2);
-    border-bottom: 1px solid var(--border-subtle);
-  }
-}
-
-.gap-detail__obs-row--invalid {
-  color: var(--text-muted);
 }
 </style>

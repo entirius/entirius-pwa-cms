@@ -31,6 +31,8 @@ const stubs = {
   BasicSelect: control("BasicSelect"),
   BasicSwitch: control("BasicSwitch"),
   FormField: { template: "<div><slot /></div>" },
+  MobileFilterPanel: { template: "<div><slot /></div>" },
+  BasicModal: { template: "<div><slot /></div>" },
   DataTable: true,
   BulkActionBar: true,
   EntitySearchPicker: true,
@@ -76,5 +78,35 @@ describe("PriceFighter pickers on BasicSelect / BasicSwitch", () => {
     await pick(wrapper, "BasicSelect", "channel");
     expect(wrapper.vm.form.scopeType).toBe("channel");
     expect(wrapper.vm.form.scopeValue).toBe("");
+  });
+});
+
+// Plan 41: the rule modal is a BasicModal whose footer is an ActionBar; the gap filters sit in MobileFilterPanel.
+describe("PriceFighter P5 bindings", () => {
+  const keys = (actions) => actions.map((action) => action.key);
+
+  it("rule modal: a new rule has cancel and save; an existing one adds delete, which asks first", async () => {
+    const wrapper = mount(Strategies, { global: { stubs } });
+    await flushPromises();
+    wrapper.vm.openCreate();
+    expect(keys(wrapper.vm.ruleActions)).toEqual(["cancel", "save"]);
+    wrapper.vm.openEdit({ id: 3, sku: "SKU-1", strategy: "hold", price_war: false });
+    const remove = wrapper.vm.ruleActions.find((action) => action.key === "delete");
+    expect(remove).toMatchObject({ role: "utility", icon: "delete", variant: "danger" });
+    remove.onClick();
+    expect(wrapper.vm.showDeleteConfirm).toBe(true);
+    wrapper.vm.ruleActions.find((action) => action.key === "cancel").onClick();
+    expect(wrapper.vm.editingRule).toBeNull();
+  });
+
+  it("gap table: the filter count follows channel, recommendation and competitor-only", async () => {
+    const wrapper = mount(GapTable, { global: { stubs } });
+    await flushPromises();
+    expect(wrapper.vm.activeFilterCount).toBe(1);
+    await pick(wrapper, "BasicSelect", "b2c");
+    await pick(wrapper, "BasicSelect", "compete", 1);
+    expect(wrapper.vm.activeFilterCount).toBe(3);
+    await pick(wrapper, "BasicSwitch", false);
+    expect(wrapper.vm.activeFilterCount).toBe(2);
   });
 });

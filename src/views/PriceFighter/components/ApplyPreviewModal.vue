@@ -1,29 +1,18 @@
 <template>
-  <BasicModal :open="true" size="sm" :title="$t('pricefighter.apply_preview_title', { count: items.length })" @close="onCancel">
+  <BasicModal :open="true" size="lg" :title="$t('pricefighter.apply_preview_title', { count: items.length })" @close="onCancel">
     <div class="apply-preview__body">
-      <table class="apply-preview__table">
-        <thead>
-          <tr>
-            <th>{{ $t('pricefighter.sku') }}</th>
-            <th>{{ $t('pricefighter.market') }}</th>
-            <th>{{ $t('pricefighter.current_price') }}</th>
-            <th>{{ $t('pricefighter.suggested_price') }}</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="item in items" :key="item._rowKey">
-            <td>{{ item.sku }}</td>
-            <td>{{ item.channel_idx }} · {{ item.country }} / {{ item.currency }}</td>
-            <td>{{ item.current_price }}</td>
-            <td class="fw-600">{{ item.suggested_price }}</td>
-            <td>
-              <StatusBadge v-if="item.clamped_floor" :label="$t('pricefighter.clamped_floor')" tone="warning" />
-              <StatusBadge v-if="item.clamped_step" :label="$t('pricefighter.clamped_step')" tone="warning" />
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <DataTable :columns="columns" :rows="items" row-key="_rowKey">
+        <template #cell-market="{ row }">
+          <MarketCell :channel="row.channel_idx" :country="row.country" :currency="row.currency" />
+        </template>
+        <template #cell-suggested_price="{ row }">
+          <span class="fw-600">{{ row.suggested_price }}</span>
+        </template>
+        <template #cell-clamps="{ row }">
+          <StatusBadge v-if="row.clamped_floor" :label="$t('pricefighter.clamped_floor')" tone="warning" />
+          <StatusBadge v-if="row.clamped_step" :label="$t('pricefighter.clamped_step')" tone="warning" />
+        </template>
+      </DataTable>
 
       <div v-if="errorText" class="apply-preview__error t-negative fs-200">
         <FontAwesomeIcon :icon="$icons.warning" class="mr-2" />
@@ -51,11 +40,13 @@
 </template>
 
 <script>
+import MarketCell from './MarketCell.vue'
 import { POST_PfApply } from '@/api/pricefighter/api'
 import { extractApiMessage } from '@/composables/useFormErrors'
 
 export default {
   name: 'ApplyPreviewModal',
+  components: { MarketCell },
   props: {
     items: {
       type: Array,
@@ -68,6 +59,17 @@ export default {
       loading: false,
       errorText: '',
     }
+  },
+  computed: {
+    columns() {
+      return [
+        { key: 'sku', label: this.$t('pricefighter.sku'), width: '1fr' },
+        { key: 'market', label: this.$t('pricefighter.market'), width: '1fr' },
+        { key: 'current_price', label: this.$t('pricefighter.current_price'), numeric: true },
+        { key: 'suggested_price', label: this.$t('pricefighter.suggested_price'), numeric: true },
+        { key: 'clamps', label: this.$t('pricefighter.status'), width: 'max-content' },
+      ]
+    },
   },
   methods: {
     onCancel() {
@@ -103,27 +105,6 @@ export default {
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
-}
-
-.apply-preview__table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: var(--fs-200);
-  max-height: 320px;
-
-  th {
-    text-align: left;
-    padding: var(--space-1) var(--space-2);
-    color: var(--text-muted);
-    text-transform: uppercase;
-    font-size: var(--fs-200);
-    border-bottom: 1px solid var(--border-subtle);
-  }
-
-  td {
-    padding: var(--space-1) var(--space-2);
-    border-bottom: 1px solid var(--border-subtle);
-  }
 }
 
 .apply-preview__error {

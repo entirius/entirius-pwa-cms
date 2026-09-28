@@ -48,14 +48,14 @@
         </DataTable>
       </template>
 
-    <!-- Create/Edit modal -->
-    <div v-if="editingRule !== null" class="rule-modal-backdrop" @click.self="closeModal">
-      <div class="rule-modal">
-        <h2 class="fs-500 fw-600 mb-10">
-          {{ editingRule.id ? $t('pricefighter.edit_rule') : $t('pricefighter.new_rule') }}
-        </h2>
-
-        <FormField :label="$t('pricefighter.scope_type')" :tooltip="$t('pricefighter.scope_type_tooltip')" class="mb-8">
+    <BasicModal
+      :open="editingRule !== null"
+      :title="editingRule?.id ? $t('pricefighter.edit_rule') : $t('pricefighter.new_rule')"
+      :actions="ruleActions"
+      @close="closeModal"
+    >
+      <div class="form-grid">
+        <FormField :label="$t('pricefighter.scope_type')" :tooltip="$t('pricefighter.scope_type_tooltip')">
           <BasicSelect
             :model-value="form.scopeType"
             :options="scopeTypeOptions"
@@ -66,8 +66,8 @@
         <FormField
           v-if="form.scopeType === 'sku'"
           :label="$t('pricefighter.sku')"
-          :error="formErrors.getFieldError('sku')?.msg"
-          class="mb-8"
+          required
+          :error="formErrors.getFieldError('sku')?.msg || ''"
         >
           <EntitySearchPicker
             :modelValue="form.scopeValue"
@@ -83,8 +83,8 @@
         <FormField
           v-else-if="form.scopeType === 'category_idx'"
           :label="$t('pricefighter.category')"
-          :error="formErrors.getFieldError('category_idx')?.msg"
-          class="mb-8"
+          required
+          :error="formErrors.getFieldError('category_idx')?.msg || ''"
         >
           <EntitySearchPicker
             :modelValue="form.scopeValue"
@@ -101,8 +101,8 @@
           v-else
           :label="$t('pricefighter.market')"
           :tooltip="$t('pricefighter.market_tooltip')"
-          :error="formErrors.getFieldError('channel')?.msg"
-          class="mb-8"
+          required
+          :error="formErrors.getFieldError('channel')?.msg || ''"
         >
           <BasicSelect
             :options="channelOptions"
@@ -110,14 +110,18 @@
           />
         </FormField>
 
-        <FormField :label="$t('pricefighter.strategy')" :tooltip="$t('pricefighter.strategy_tooltip')" class="mb-8">
+        <FormField
+          :label="$t('pricefighter.strategy')"
+          :tooltip="$t('pricefighter.strategy_tooltip')"
+          class="form-grid__wide"
+        >
           <BasicSelect
             :options="strategyOptions"
             v-model="form.strategy"
           />
         </FormField>
 
-        <div class="flex ai-ct gap-8 mb-10">
+        <div class="form-grid__wide flex ai-ct wrap gap-8">
           <BasicSwitch
             :label="$t('pricefighter.price_war')"
             v-model="form.price_war"
@@ -129,33 +133,8 @@
             disabled
           />
         </div>
-
-        <div class="flex ai-ct jc-sb gap-5">
-          <IconButton
-            v-if="editingRule.id"
-            icon="delete"
-            :label="$t('common.delete')"
-            variant="danger"
-            @click="showDeleteConfirm = true"
-          />
-          <div v-else />
-          <div class="flex ai-ct gap-5">
-            <BasicButton
-              variant="secondary"
-              @click="closeModal"
-            >
-              {{ $t('common.cancel') }}
-            </BasicButton>
-            <BasicButton
-              variant="primary"
-              @click="saveRule"
-            >
-              {{ $t('common.save') }}
-            </BasicButton>
-          </div>
-        </div>
       </div>
-    </div>
+    </BasicModal>
 
     <ConfirmDialog
       tone="danger"
@@ -220,6 +199,15 @@ export default {
         label: this.$t(`pricefighter.recommendation_${s}`),
         description: this.$t(`pricefighter.recommendation_${s}_desc`),
       }))
+    },
+    ruleActions() {
+      const actions = [
+        { key: 'cancel', label: this.$t('common.cancel'), role: 'secondary', onClick: this.closeModal },
+        { key: 'save', label: this.$t('common.save'), role: 'primary', onClick: this.saveRule },
+      ]
+      if (!this.editingRule?.id) return actions
+      const remove = { key: 'delete', label: this.$t('common.delete'), role: 'utility', icon: 'delete', variant: 'danger' }
+      return [{ ...remove, onClick: () => (this.showDeleteConfirm = true) }, ...actions]
     },
     scopeTypeOptions() {
       return SCOPE_TYPES.map((s) => ({ value: s, label: this.$t(`pricefighter.scope_${s}`) }))
@@ -346,25 +334,3 @@ export default {
   },
 }
 </script>
-
-<style lang="scss" scoped>
-.rule-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: var(--overlay-heavy);
-  z-index: 200;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.rule-modal {
-  background: var(--surface-base);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  padding: var(--space-6);
-  min-width: min(420px, 95vw);
-  max-width: 560px;
-  width: 100%;
-}
-</style>

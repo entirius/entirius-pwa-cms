@@ -1,7 +1,10 @@
 <template>
   <PageLayout class="fs-300 t-body">
-      <!-- Toolbar -->
-      <div class="gap-table__toolbar">
+    <template #header>
+      <PageHeader :title="$t('pricefighter.gap_table')" />
+    </template>
+    <template #toolbar>
+      <MobileFilterPanel :active-count="activeFilterCount" :trigger-label="$t('pricefighter.filters')">
         <BasicSelect
           v-if="channelOptions.length"
           :model-value="channelFilter || ALL_OPTION"
@@ -23,7 +26,8 @@
           class="gap-table__competitor"
           @update:model-value="toggleCompetitorOnly"
         />
-      </div>
+      </MobileFilterPanel>
+    </template>
 
       <BulkActionBar
         v-if="selectedRows.length"
@@ -68,7 +72,7 @@
               </div>
             </template>
             <template #cell-market="{ row }">
-              <span class="t-muted">{{ row.channel_idx }}</span> · {{ row.country }} · {{ row.currency }}
+              <MarketCell :channel="row.channel_idx" :country="row.country" :currency="row.currency" />
             </template>
             <template #cell-current_price="{ row }">
               {{ fmt(row.current_price) }} <span class="gap-table__ccy">{{ row.currency }}</span>
@@ -103,15 +107,16 @@
               <GapRowDetail :row="row" />
             </template>
           </DataTable>
-
-          <Pagination
-            v-if="totalCount > pageSize"
-            :page="paginationState.page"
-            :pages="paginationState.pages"
-            @update:page="onPageChange"
-          />
         </template>
       </div>
+
+    <template v-if="!loading && totalCount > pageSize" #footer>
+      <Pagination
+        :page="paginationState.page"
+        :pages="paginationState.pages"
+        @update:page="onPageChange"
+      />
+    </template>
 
     <ApplyPreviewModal
       v-if="showPreview"
@@ -137,6 +142,7 @@ import { PF_PAGE_SIZE, RECOMMENDATIONS, RECOMMENDATION_VARIANTS, pfFormat } from
 import GapRowDetail from './components/GapRowDetail.vue'
 import ApplyPreviewModal from './components/ApplyPreviewModal.vue'
 import ApplyReport from './components/ApplyReport.vue'
+import MarketCell from './components/MarketCell.vue'
 
 const SORT_API_TOKEN = {
   sku: 'sku',
@@ -148,7 +154,7 @@ const SORT_API_TOKEN = {
 
 export default {
   name: 'PfGapTable',
-  components: { GapRowDetail, ApplyPreviewModal, ApplyReport },
+  components: { GapRowDetail, ApplyPreviewModal, ApplyReport, MarketCell },
   setup() {
     const loader = useLoaderStore()
     const notify = useNotifyStore()
@@ -174,6 +180,9 @@ export default {
     }
   },
   computed: {
+    activeFilterCount() {
+      return [this.channelFilter, this.recommendationFilter, this.competitorOnly].filter(Boolean).length
+    },
     bulkActions() {
       return [{ key: 'apply', labelKey: 'pricefighter.apply_selected', variant: 'primary' }]
     },
@@ -189,7 +198,7 @@ export default {
     columns() {
       return [
         { key: 'sku', label: this.$t('pricefighter.sku'), sortable: true, width: '1.5fr' },
-        { key: 'market', label: this.$t('pricefighter.market'), sortable: false, width: '1.1fr', truncate: true, priority: 2 },
+        { key: 'market', label: this.$t('pricefighter.market'), sortable: false, width: '1fr' },
         { key: 'current_price', label: this.$t('pricefighter.current_price'), sortable: true, width: '0.8fr', numeric: true, priority: 2 },
         { key: 'cost', label: this.$t('pricefighter.cost'), sortable: false, width: '0.7fr', numeric: true, priority: 2 },
         { key: 'reference_price', label: this.$t('pricefighter.competitor_price'), sortable: true, width: '0.8fr', numeric: true, priority: 2 },
@@ -290,14 +299,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.gap-table__toolbar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-5);
-  margin-bottom: var(--space-10);
-  flex-wrap: wrap;
-}
-
 .gap-table__channel,
 .gap-table__recommendation {
   min-width: 160px;

@@ -1,5 +1,5 @@
 <template>
-  <BasicModal :open="true" size="sm" :title="$t('pricefighter.apply_report_title')" @close="onClose">
+  <BasicModal :open="true" size="lg" :title="$t('pricefighter.apply_report_title')" @close="onClose">
     <div class="apply-report__body">
       <div class="apply-report__buckets">
         <StatusBadge
@@ -18,16 +18,14 @@
       <div v-for="bucket in buckets" :key="bucket.key" class="apply-report__bucket">
         <template v-if="safeReport[bucket.key].length">
           <h4 class="apply-report__bucket-heading">{{ $t(`pricefighter.${bucket.key}`) }}</h4>
-          <table class="apply-report__table">
-            <tbody>
-              <tr v-for="(item, i) in safeReport[bucket.key]" :key="i">
-                <td>{{ item.sku }}</td>
-                <td>{{ item.channel }} · {{ item.country }} / {{ item.currency }}</td>
-                <td>{{ item.expected_new_price }}</td>
-                <td class="t-muted">{{ item.reason }}</td>
-              </tr>
-            </tbody>
-          </table>
+          <DataTable :columns="columns" :rows="safeReport[bucket.key]">
+            <template #cell-market="{ row }">
+              <MarketCell :channel="row.channel" :country="row.country" :currency="row.currency" />
+            </template>
+            <template #cell-reason="{ row }">
+              <span class="t-muted">{{ row.reason }}</span>
+            </template>
+          </DataTable>
         </template>
       </div>
     </div>
@@ -38,6 +36,7 @@
 </template>
 
 <script>
+import MarketCell from './MarketCell.vue'
 const BUCKETS = [
   { key: 'applied', variant: 'positive' },
   { key: 'clamped', variant: 'warning' },
@@ -48,6 +47,7 @@ const BUCKETS = [
 
 export default {
   name: 'ApplyReport',
+  components: { MarketCell },
   props: {
     report: {
       type: Object,
@@ -59,6 +59,14 @@ export default {
     return { buckets: BUCKETS }
   },
   computed: {
+    columns() {
+      return [
+        { key: 'sku', label: this.$t('pricefighter.sku'), width: '1fr' },
+        { key: 'market', label: this.$t('pricefighter.market'), width: '1fr' },
+        { key: 'expected_new_price', label: this.$t('pricefighter.suggested_price'), numeric: true },
+        { key: 'reason', label: this.$t('pricefighter.reason'), width: '1.4fr', truncate: true },
+      ]
+    },
     // Defensive default — the API always returns all 5 buckets, but never trust the shape blindly.
     safeReport() {
       const r = this.report || {}
@@ -78,7 +86,6 @@ export default {
   display: flex;
   flex-direction: column;
   gap: var(--space-8);
-  max-width: 560px;
 }
 
 .apply-report__buckets {
@@ -102,16 +109,5 @@ export default {
   letter-spacing: 0.03em;
   color: var(--text-muted);
   margin: 0 0 var(--space-2) 0;
-}
-
-.apply-report__table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: var(--fs-200);
-
-  td {
-    padding: var(--space-1) var(--space-2);
-    border-bottom: 1px solid var(--border-subtle);
-  }
 }
 </style>
