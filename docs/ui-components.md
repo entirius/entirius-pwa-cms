@@ -46,6 +46,8 @@ Notable ones for list/form views:
 - **`FilterChip`** — toggleable filter pill. Props: `label` (required),
   `active`, `count`; emits `click`. A global component — do not redefine
   `.filter-chip` styles locally.
+  One chip set inline sits in `<div class="filter-chip-row" role="group" :aria-label="…">` (global, from this boot):
+  it wraps on desktop and scrolls sideways in one row below tablet.
 
 ### DataTable
 
