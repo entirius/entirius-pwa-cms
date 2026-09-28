@@ -115,6 +115,16 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- P5 Faq and the detail-form pattern (plan 33): the group and item forms are `BasicCard` sections with a `.form-grid`
+  of `FormField`s (2 columns above 768 px, `.form-grid__wide` spans both) — labels, required markers, hints (IDX and
+  URL key fixed after create, no channel = every channel) and errors all come from FormField. Save, Delete (danger
+  `IconButton`) and the group's Translations sit in the PageHeader `ActionBar`, beside the unsaved badge and the
+  Active switch; the Faq panel toolbar is gone. An item's per-field translations are an `IconButton` beside each
+  field. `ActionBar` utilities take `variant` (`danger` for an icon-only delete). The groups list has an inline chip
+  row, the items list keeps its filter panel; both lists carry a PageHeader and their pagination in the footer. Group
+  rows open from the keyboard, a group's questions are links. Pattern: `docs/ui-components.md` § Detail form. Smoke
+  spec `tests/e2e/p5-faq-smoke.spec.js`.
+
 - P5 pilot A (plan 31): Orders, Customers, Content sets and Translation jobs sit on the page frame. Each list's
   one chip set is an inline `FilterChip` row (`.filter-chip-row`: wraps on desktop, scrolls sideways on a phone) next
   to its search, instead of a `MobileFilterPanel`; the order and customer details carry their back arrow and title in
