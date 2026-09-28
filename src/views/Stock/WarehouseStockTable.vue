@@ -3,7 +3,6 @@
     <template #header>
       <PageHeader :title="$t('stock.manage')">
         <template #meta>
-          <StockWarehousePicker />
           <StatusBadge
             v-if="isManual && dirtyCount > 0"
             tone="warning"
@@ -11,8 +10,13 @@
             :label="`${$t('stock.unsaved')}: ${dirtyCount}`"
           />
         </template>
-        <template v-if="isManual" #actions>
-          <ActionBar :actions="headerActions" />
+        <!-- The picker is too wide for the meta beside the title (a 390 px phone squeezes the H1): it leads the
+             actions row, left of the ActionBar, so the primary stays rightmost (R5). -->
+        <template #actions>
+          <div class="flex ai-ct jc-fe wrap gap-3">
+            <StockWarehousePicker />
+            <ActionBar v-if="isManual" :actions="headerActions" />
+          </div>
         </template>
       </PageHeader>
     </template>

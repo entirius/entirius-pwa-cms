@@ -26,12 +26,12 @@ import WarehouseStockTable from "@/views/Stock/WarehouseStockTable.vue";
 
 const activeWarehouse = { code: "main", name: "Main", source_type: "manual" };
 
-function mountTable() {
+function mountTable(warehouse = activeWarehouse, extraStubs = {}) {
   return mount(WarehouseStockTable, {
     global: {
-      provide: { activeWarehouse: () => activeWarehouse },
+      provide: { activeWarehouse: () => warehouse },
       components: { NumberInput, DataTable },
-      stubs: { StockWarehousePicker: true, ActionBar: true, Pagination: true, ImportCSVModal: true },
+      stubs: { StockWarehousePicker: true, ActionBar: true, Pagination: true, ImportCSVModal: true, ...extraStubs },
     },
   });
 }
@@ -64,5 +64,25 @@ describe("WarehouseStockTable quantity cell", () => {
 
     await inputs[0].setValue("5");
     expect(wrapper.vm.isDirty("SKU-1")).toBe(true);
+  });
+});
+
+// Plan 40 review: the picker leads the actions row and the primary Save stays rightmost (R5); an integration
+// warehouse has no actions, so no ActionBar (a phone would show its "Actions" label above a lone select).
+describe("WarehouseStockTable header", () => {
+  const PageHeader = { template: '<header><slot name="meta" /><slot name="actions" /></header>' };
+
+  it("a manual warehouse: picker, then the ActionBar", async () => {
+    const wrapper = mountTable(activeWarehouse, { PageHeader });
+    await flushPromises();
+    const order = wrapper.findAll("header > div > *").map((el) => el.element.tagName.toLowerCase());
+    expect(order).toEqual(["stock-warehouse-picker-stub", "action-bar-stub"]);
+  });
+
+  it("an integration warehouse: the picker alone", async () => {
+    const wrapper = mountTable({ ...activeWarehouse, source_type: "integration" }, { PageHeader });
+    await flushPromises();
+    expect(wrapper.find("stock-warehouse-picker-stub").exists()).toBe(true);
+    expect(wrapper.find("action-bar-stub").exists()).toBe(false);
   });
 });

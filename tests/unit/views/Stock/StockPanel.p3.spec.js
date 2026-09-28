@@ -17,7 +17,7 @@ import StockWarehousePicker from "@/views/Stock/StockWarehousePicker.vue";
 
 const BasicSelect = { name: "BasicSelect", props: ["modelValue", "options"], emits: ["update:modelValue"], template: "<div />" };
 
-// Plan 38: the picker left the panel toolbar for the PageHeader `meta` of the stock table (and, when no
+// Plan 38: the picker left the panel toolbar for the PageHeader `actions` row of the stock table (and, when no
 // warehouse is active, the panel wrapper's own PageHeader); the panel wrapper still owns the warehouses and
 // provides them to the picker.
 const PickerRoute = { components: { StockWarehousePicker }, template: "<StockWarehousePicker />" };
