@@ -25,16 +25,15 @@
           />
         </div>
         <div class="grid grid-col-3 gap-5">
-          <pre
-            class="page-card fs-200 as-s"
-            v-for="(k, i) in ex_preview"
-          >
+          <BasicCard v-for="(k, i) in ex_preview" class="as-s">
+          <pre class="fs-200">
             
             <p class="t-accent">"{{ k }}":</p>
             <p>
               {{ v }}
             </p>
           </pre>
+          </BasicCard>
         </div>
       </div>
     </div>
