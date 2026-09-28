@@ -2,23 +2,22 @@
   <PageLayout class="fs-300 t-body">
     <template #header>
       <!-- the header renders in every state: its back control stays while loading or after a failed load -->
-      <PageHeader :title="lead?.name || $t('cf.lead_detail')" back="/forms/leads">
+      <PageHeader :title="$t('cf.lead_detail')" back="/forms/leads">
         <template v-if="lead" #meta>
+          <span class="fs-200 t-strong fw-600">{{ lead.name }}</span>
           <StatusBadge :label="leadStatusLabel($t, lead.status)" :tone="leadStatusVariant(lead.status)" />
+          <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
+          <BasicSelect
+            v-if="otherTransitions.length"
+            :options="otherTransitions"
+            :model-value="null"
+            :placeholder="$t('cf.change_status')"
+            class="cf-detail__transitions"
+            @update:model-value="onTransition"
+          />
         </template>
         <template v-if="lead" #actions>
-          <div class="flex ai-ct jc-fe wrap gap-3">
-            <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
-            <BasicSelect
-              v-if="otherTransitions.length"
-              :options="otherTransitions"
-              :model-value="null"
-              :placeholder="$t('cf.change_status')"
-              class="cf-detail__transitions"
-              @update:model-value="onTransition"
-            />
-            <ActionBar :actions="headerActions" />
-          </div>
+          <ActionBar :actions="headerActions" />
         </template>
       </PageHeader>
     </template>

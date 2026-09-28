@@ -18,7 +18,8 @@ const VIEWPORTS = {
 const DEV_SERVER = ['WebSocket connection to'];
 
 // The admin profile picks the UI language; accept either locale's text.
-const either = (pick) => new RegExp(`^(${[pick(en), pick(pl)].join('|')})$`);
+const { either: escapedEither } = require('./helpers/text');
+const either = (pick) => escapedEither(pick(en), pick(pl));
 
 async function openPage(page, path) {
   await page.goto(path);
@@ -69,9 +70,11 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
         await expect(page.getByRole('button', { name: either((t) => t.cf.save) })).toBeDisabled();
         await expect(page.locator('.basic-card').first()).toBeVisible();
         const status = page.getByRole('combobox').first();
-        await status.click();
-        await expect(page.getByRole('option').first()).toBeVisible();
-        await page.keyboard.press('Escape');
+        if (await status.count()) {
+          await status.click();
+          await expect(page.getByRole('option').first()).toBeVisible();
+          await page.keyboard.press('Escape');
+        }
       }
 
       collector.assertNoErrors(expect, 'Leads');

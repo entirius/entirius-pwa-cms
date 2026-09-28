@@ -37,8 +37,9 @@
                 v-model="form.slug"
               />
             </FormField>
-            <FormField :label="$t('authors.photo')" class="form-grid__wide">
-              <div class="flex ai-ct gap-8">
+            <div class="form-grid__wide">
+              <span id="author-photo-label" class="field-label">{{ $t("authors.photo") }}</span>
+              <div class="flex ai-ct gap-8" role="group" aria-labelledby="author-photo-label">
                 <div class="author-photo-preview">
                   <img
                     v-if="form.photo_url"
@@ -66,7 +67,7 @@
                   />
                 </div>
               </div>
-            </FormField>
+            </div>
           </div>
         </BasicCard>
 

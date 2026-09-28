@@ -4,15 +4,29 @@
       <PageHeader :title="$t('cf.bookings')" />
     </template>
     <template #toolbar>
-      <div class="flex-column gap-3">
-        <div class="flex ai-ct flex-wrap gap-8 rg-3">
-          <BasicInput
-            v-model="search"
-            :placeholder="$t('cf.search_placeholder')"
-            icon="search"
-            class="cf-list__search"
-            @input="debouncedFetch(searchAndFetch)"
-          />
+      <div class="flex ai-ct flex-wrap gap-8 rg-3">
+        <BasicInput
+          v-model="search"
+          :placeholder="$t('cf.search_placeholder')"
+          icon="search"
+          class="cf-list__search"
+          @input="debouncedFetch(searchAndFetch)"
+        />
+        <MobileFilterPanel
+          :active-count="activeFilterCount"
+          :trigger-label="$t('builder.filters')"
+        >
+          <p class="fs-200 t-secondary">{{ $t("cf.lead_status") }}</p>
+          <div class="filter-chip-row" role="group" :aria-label="$t('cf.lead_status')">
+            <FilterChip
+              v-for="opt in leadStatusOptions"
+              :key="opt.value"
+              :label="opt.label"
+              :active="leadStatusFilter === opt.value"
+              @click="onLeadStatusFilter(opt.value)"
+            />
+          </div>
+          <p class="fs-200 t-secondary">{{ $t("cf.channel") }}</p>
           <BasicSelect
             :options="channelOptions"
             :model-value="channelFilter"
@@ -20,29 +34,23 @@
             class="cf-list__filter"
             @update:model-value="onChannelFilter"
           />
-          <FormField :label="$t('cf.date_from')" layout="inline">
-            <BasicDatePicker :model-value="dateFrom" @update:model-value="onDateFrom" />
-          </FormField>
-          <FormField :label="$t('cf.date_to')" layout="inline">
-            <BasicDatePicker :model-value="dateTo" @update:model-value="onDateTo" />
-          </FormField>
-          <IconButton
-            v-if="dateFrom || dateTo"
-            icon="clear"
-            variant="ghost"
-            :label="$t('cf.clear_dates')"
-            @click="clearDates"
-          />
-        </div>
-        <div class="filter-chip-row" role="group" :aria-label="$t('cf.lead_status')">
-          <FilterChip
-            v-for="opt in leadStatusOptions"
-            :key="opt.value"
-            :label="opt.label"
-            :active="leadStatusFilter === opt.value"
-            @click="onLeadStatusFilter(opt.value)"
-          />
-        </div>
+          <p class="fs-200 t-secondary">{{ $t("cf.date_from") }} — {{ $t("cf.date_to") }}</p>
+          <div class="flex ai-ct gap-3">
+            <FormField :label="$t('cf.date_from')" layout="inline">
+              <BasicDatePicker :model-value="dateFrom" @update:model-value="onDateFrom" />
+            </FormField>
+            <FormField :label="$t('cf.date_to')" layout="inline">
+              <BasicDatePicker :model-value="dateTo" @update:model-value="onDateTo" />
+            </FormField>
+            <IconButton
+              v-if="dateFrom || dateTo"
+              icon="clear"
+              variant="ghost"
+              :label="$t('cf.clear_dates')"
+              @click="clearDates"
+            />
+          </div>
+        </MobileFilterPanel>
       </div>
     </template>
 
@@ -152,6 +160,13 @@ export default {
         opts.push({ label: this.$t(`cf.statuses.${st}`), value: st });
       }
       return opts;
+    },
+    activeFilterCount() {
+      let count = 0;
+      if (this.leadStatusFilter !== "__all") count++;
+      if (this.channelFilter !== "__all") count++;
+      if (this.dateFrom || this.dateTo) count++;
+      return count;
     },
     columns() {
       return [

@@ -193,14 +193,21 @@
             v-if="$data[field.key].length"
             v-model="$data[field.key]"
             :item-key="(uid) => uid"
+            handle=".drag-handle"
+            ghost-class="bg-accent-subtle"
+            :force-fallback="true"
+            fallback-class="drag-ghost"
             class="flex wrap gap-2 mb-2"
           >
             <template #item="{ element }">
-              <Tag
-                :label="authorNames[element] || element"
-                removable
-                @remove="removeAuthor(field.key, element)"
-              />
+              <div class="builder-author-panel__tag flex ai-ct gap-1">
+                <FontAwesomeIcon :icon="$icons.drag" class="drag-handle t-muted" />
+                <Tag
+                  :label="authorLabel(element)"
+                  removable
+                  @remove="removeAuthor(field.key, element)"
+                />
+              </div>
             </template>
           </draggable>
           <p v-else class="fs-200 t-muted mb-2">{{ $t("authors.no_authors") }}</p>
@@ -988,6 +995,7 @@ export default {
       authors: [],
       co_authors: [],
       authorNames: {},
+      authorRoles: {},
       supportsAuthors: false,
       authorPanelOpen: false,
       rename_modal: false,
@@ -1010,7 +1018,15 @@ export default {
       return found.map((a) => ({ label: a.name, value: a.uid, secondary: Object.values(a.role_t9n || {})[0] || "" }));
     },
     rememberAuthorNames(list) {
-      list.forEach((a) => (this.authorNames[a.uid] = a.name));
+      list.forEach((a) => {
+        this.authorNames[a.uid] = a.name;
+        this.authorRoles[a.uid] = Object.values(a.role_t9n || {})[0] || "";
+      });
+    },
+    authorLabel(uid) {
+      const role = this.authorRoles[uid];
+      const name = this.authorNames[uid] || uid;
+      return role ? `${name} — ${role}` : name;
     },
     addAuthor(key, uid) {
       if (uid && !this[key].includes(uid)) this[key] = [...this[key], uid];
@@ -1786,6 +1802,17 @@ export default {
     }
   }
 }
+
+// Unscoped — the SortableJS fallback clone is appended to <body>.
+.drag-ghost {
+  max-width: 600px;
+  opacity: 0.9;
+  background: var(--surface-base);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-base);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-3) var(--space-5);
+}
 </style>
 <style lang="scss" scoped>
 @import "@/assets/scss/utils/media-query";
@@ -1847,6 +1874,17 @@ export default {
 
   &__col {
     min-width: 15rem;
+  }
+
+  &__tag {
+    .drag-handle {
+      cursor: grab;
+      flex-shrink: 0;
+
+      &:active {
+        cursor: grabbing;
+      }
+    }
   }
 
   &__body {
