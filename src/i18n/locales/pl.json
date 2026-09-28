@@ -1829,6 +1829,13 @@
     "copy_select_channel": "Wybierz kanał",
     "copy_action": "Kopiuj",
     "copied": "Utworzono kopię jako szkic",
+    "aspect_ratio_hint": "Zalecane proporcje: 16:9",
+    "remove_image": "Usuń zdjęcie",
+    "gallery_empty": "Brak zdjęć w galerii",
+    "gallery_image": "Zdjęcie z galerii",
+    "type_header": "Nagłówek",
+    "type_footer": "Stopka",
+    "updated_by": "przez {name}",
     "copy_no_channel": "Najpierw wybierz kanał docelowy"
   },
   "pm": {

@@ -1,54 +1,30 @@
 <template>
   <PageLayout class="fs-300 t-body">
-    <!-- Left toolbar -->
-    <Teleport to="#layout-extender-toolbar-left" defer>
-      <IconButton
-        icon="back"
-        :label="$t('common.back')"
-        @click="$router.push('/pages/layout-extender')"
-      />
-      <div v-if="!loading" class="nav-editor__toolbar-name">
-        <span class="fw-600 t-body">{{ docName || $route.params.uid || "—" }}</span>
-      </div>
-      <ChannelMultiSelect
-        v-if="!loading"
-        v-model="selectedChannels"
-        :channels="contentDBChannelStore.channels"
-        :label="$t('layout_extender.channels')"
-        :all-label="$t('layout_extender.all')"
-        class="nav-editor__channel-dropdown"
-      />
-    </Teleport>
+    <template v-if="!loading" #header>
+      <PageHeader :title="docName || $route.params.uid || '—'" back="/pages/layout-extender">
+        <template #actions>
+          <div class="flex ai-ct jc-fe wrap gap-3">
+            <StatusBadge
+              v-if="isDirty"
+              tone="warning"
+              :dot="false"
+              :label="$t('layout_extender.unsaved')"
+              data-testid="nav-editor-unsaved-badge"
+            />
+            <ChannelMultiSelect
+              v-model="selectedChannels"
+              :channels="contentDBChannelStore.channels"
+              :label="$t('layout_extender.channels')"
+              :all-label="$t('layout_extender.all')"
+              class="nav-editor__channel-dropdown"
+            />
+            <ActionBar :actions="headerActions" />
+          </div>
+        </template>
+      </PageHeader>
+    </template>
 
-    <!-- Right toolbar -->
-    <Teleport to="#layout-extender-toolbar-right" defer>
-      <template v-if="!loading">
-        <StatusBadge
-          v-if="isDirty"
-          tone="warning"
-          :dot="false"
-          :label="$t('layout_extender.unsaved')"
-          data-testid="nav-editor-unsaved-badge"
-        />
-        <BasicButton
-          variant="secondary"
-          @click="saveDraft"
-        >
-          {{ $t('layout_extender.save_draft') }}
-        </BasicButton>
-        <BasicButton
-          variant="primary"
-          data-testid="nav-editor-publish"
-          :disabled="!uid"
-          @click="publish"
-        >
-          {{ $t('layout_extender.publish') }}
-        </BasicButton>
-      </template>
-    </Teleport>
-
-    <!-- Content -->
-      <Loader block v-show="loading" />
+    <Loader block v-if="loading" />
 
       <template v-if="!loading">
         <draggable
@@ -57,24 +33,20 @@
           handle=".handle"
           ghost-class="bg-accent-subtle"
           :force-fallback="true"
-          fallback-class="nav-drag-ghost"
+          fallback-class="drag-ghost"
           @change="markDirty"
         >
           <template #item="{ element, index }">
             <div class="nav-item">
               <!-- Item header row -->
               <div class="nav-item__row">
-                <span class="handle t-muted pointer">
-                  <FontAwesomeIcon :icon="$icons.drag" />
-                </span>
+                <IconButton icon="drag" :label="$t('layout_extender.reorder')" class="handle" />
                 <span class="nav-item__label fg-1 fw-500 t-body fs-300">{{ element.label || "—" }}</span>
-                <span
-                  class="nav-item__type fs-200 ph-2 rounded"
-                  :class="element.display_as === 'megamenu' ? 'bg-accent-subtle t-strong' : 'bg-hover t-body'"
+                <Tag
+                  class="nav-item__type"
+                  :label="element.display_as === 'megamenu' ? $t('layout_extender.mega_menu') : $t('layout_extender.simple_link')"
                   :data-testid="element.display_as === 'megamenu' ? 'nav-item-type-megamenu' : 'nav-item-type-link'"
-                >
-                  {{ element.display_as === "megamenu" ? $t("layout_extender.mega_menu") : $t("layout_extender.simple_link") }}
-                </span>
+                />
                 <SubscriberSetter
                   v-if="element.display_as === 'megamenu' && element.columns.length > 1"
                   :handyType="{ id: 'order-kit', label: $t('layout_extender.reorder_columns') }"
@@ -170,28 +142,40 @@
                         item-key="id"
                         handle=".link-handle"
                         ghost-class="bg-accent-subtle"
+                        :force-fallback="true"
+                        fallback-class="drag-ghost"
                         @change="markDirty"
                       >
                         <template #item="{ element: link, index: linkIdx }">
-                          <div class="nav-link-row" @click="openEditLink(element, index, col, colIdx, link, linkIdx)">
-                            <span class="link-handle t-muted">
-                              <FontAwesomeIcon :icon="$icons.drag" style="font-size: var(--fs-200)" />
-                            </span>
-                            <span class="nav-link-row__text">
-                              <span class="t-muted">·</span> {{ link.label }}
-                            </span>
-                            <span
-                              class="nav-link-row__delete"
-                              @click.stop="removeLink(index, colIdx, linkIdx)"
+                          <div class="nav-link-row">
+                            <IconButton icon="drag" :label="$t('layout_extender.reorder')" size="sm" class="link-handle" />
+                            <BasicButton
+                              variant="ghost"
+                              size="sm"
+                              class="nav-link-row__text"
+                              @click="openEditLink(element, index, col, colIdx, link, linkIdx)"
                             >
-                              <FontAwesomeIcon :icon="$icons.close" />
-                            </span>
+                              {{ link.label }}
+                            </BasicButton>
+                            <IconButton
+                              icon="delete"
+                              :label="$t('common.delete')"
+                              variant="danger"
+                              size="sm"
+                              class="nav-link-row__delete"
+                              @click="removeLink(index, colIdx, linkIdx)"
+                            />
                           </div>
                         </template>
                       </draggable>
-                      <a class="nav-add-link" @click="openAddLink(element, index, col, colIdx)">
-                        + {{ $t("layout_extender.add_link") }}
-                      </a>
+                      <BasicButton
+                        variant="ghost"
+                        size="sm"
+                        class="mt-1"
+                        @click="openAddLink(element, index, col, colIdx)"
+                      >
+                        {{ $t("layout_extender.add_link") }}
+                      </BasicButton>
                     </template>
 
                     <!-- Banner column -->
@@ -219,38 +203,33 @@
                         </div>
                       </div>
                       <p v-if="col.caption" class="fs-200 t-secondary mb-2">{{ col.caption }}</p>
-                      <button class="nav-btn-outline" @click="openEditColumn(element, index, col, colIdx)">
+                      <BasicButton size="sm" @click="openEditColumn(element, index, col, colIdx)">
                         {{ $t("layout_extender.edit_banner") }}
-                      </button>
+                      </BasicButton>
                     </template>
                   </div>
                 </div>
 
                 <!-- Add column buttons -->
                 <div class="flex gap-5 mt-8">
-                  <button
-                    class="nav-btn-outline"
-                    :disabled="element.columns.length >= 4"
-                    @click="addLinksColumn(index)"
-                  >
-                    + {{ $t("layout_extender.add_column") }}
-                  </button>
-                  <button
-                    class="nav-btn-outline"
-                    :disabled="element.columns.length >= 4"
-                    @click="addBannerColumn(index)"
-                  >
-                    + {{ $t("layout_extender.add_banner") }}
-                  </button>
+                  <BasicButton :disabled="element.columns.length >= 4" @click="addLinksColumn(index)">
+                    {{ $t("layout_extender.add_column") }}
+                  </BasicButton>
+                  <BasicButton :disabled="element.columns.length >= 4" @click="addBannerColumn(index)">
+                    {{ $t("layout_extender.add_banner") }}
+                  </BasicButton>
                 </div>
               </div>
             </div>
           </template>
         </draggable>
 
-        <div v-if="!navigationItems.length" class="nav-empty">
-          {{ $t("layout_extender.no_items") }}
-        </div>
+        <EmptyState
+          v-if="!navigationItems.length"
+          icon="empty"
+          :title="$t('layout_extender.no_items')"
+          class="nav-empty"
+        />
 
         <BasicButton
           variant="primary"
@@ -384,6 +363,19 @@ export default {
         if (ch?.default_language) return ch.default_language.toLowerCase();
       }
       return this.contentDBChannelStore.defaultLanguage;
+    },
+    headerActions() {
+      return [
+        { key: "save-draft", label: this.$t("layout_extender.save_draft"), role: "secondary", onClick: this.saveDraft },
+        {
+          key: "publish",
+          label: this.$t("layout_extender.publish"),
+          role: "primary",
+          disabled: !this.uid,
+          onClick: this.publish,
+          testid: "nav-editor-publish",
+        },
+      ];
     },
     translatingColumnValues() {
       if (!this.translatingColumnCtx) return {};
@@ -641,11 +633,6 @@ export default {
 <style lang="scss" scoped>
 @import "@/assets/scss/utils/media-query";
 
-.nav-editor__toolbar-name {
-  display: flex;
-  align-items: center;
-}
-
 .nav-item {
   margin-bottom: var(--space-3);
 }
@@ -679,8 +666,6 @@ export default {
 }
 
 .nav-item__type {
-  white-space: nowrap;
-
   @include max-tablet {
     margin-right: auto;
   }
@@ -739,68 +724,36 @@ export default {
 .nav-link-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: var(--space-1);
   padding: var(--space-1) 0;
-  cursor: pointer;
-  font-size: var(--fs-250);
-  color: var(--text-body);
-
-  &:hover {
-    color: var(--text-accent);
-  }
-
-  &:hover .nav-link-row__delete {
-    opacity: 1;
-  }
 }
 
 .nav-link-row__text {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
   flex: 1;
   min-width: 0;
 }
 
-.link-handle {
-  cursor: grab;
+// The drag handle and the delete button show on the row's hover or keyboard focus; a phone always shows them.
+// IconButton puts the class on its inner button, which carries no scope id: hence :deep().
+.nav-link-row :deep(.link-handle),
+.nav-link-row :deep(.nav-link-row__delete) {
   opacity: 0;
   transition: opacity 0.1s;
-  font-size: var(--fs-200);
-  flex-shrink: 0;
-}
 
-.nav-link-row:hover .link-handle {
-  opacity: 1;
-}
-
-.nav-link-row__delete {
-  opacity: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: var(--radius-base);
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: opacity 0.1s, color 0.1s;
-
-  &:hover {
-    color: var(--negative);
+  @include max-tablet {
+    opacity: 1;
   }
 }
 
-.nav-add-link {
-  display: inline-block;
-  margin-top: var(--space-1);
-  font-size: var(--fs-200);
-  color: var(--text-accent);
-  cursor: pointer;
-  font-weight: 500;
+.nav-link-row :deep(.link-handle) {
+  cursor: grab;
+}
 
-  &:hover {
-    text-decoration: underline;
+.nav-link-row:hover,
+.nav-link-row:focus-within {
+  :deep(.link-handle),
+  :deep(.nav-link-row__delete) {
+    opacity: 1;
   }
 }
 
@@ -821,52 +774,5 @@ export default {
   border-radius: var(--radius-base);
   border: 1px dashed var(--border-default);
 }
-
-.nav-btn-outline {
-  display: inline-flex;
-  align-items: center;
-  height: var(--elem-height);
-  padding: 0 var(--space-3);
-  font-size: var(--fs-250);
-  font-weight: 500;
-  font-family: inherit;
-  color: var(--text-body);
-  background: var(--surface-base);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-base);
-  cursor: pointer;
-  transition: background 0.1s;
-
-  &:hover {
-    background: var(--surface-raised);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-}
-
-.nav-empty {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-10);
-  border-radius: var(--radius-base);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-muted);
-  min-height: 8rem;
-}
 </style>
 
-<style lang="scss">
-.nav-drag-ghost {
-  max-width: 480px;
-  opacity: 0.9;
-  background: var(--surface-base);
-  border: 1px solid var(--accent);
-  border-radius: var(--radius-base);
-  box-shadow: var(--shadow-md);
-  padding: var(--space-3) var(--space-5);
-}
-</style>

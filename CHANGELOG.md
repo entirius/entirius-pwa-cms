@@ -147,6 +147,17 @@ All notable changes to this project will be documented in this file.
   filters in the `PageLayout` toolbar (the gap table's channel, recommendation and competitor-only filters in a
   `MobileFilterPanel`) and their pagination in the list footer. The apply calls, payloads and confirmation are
   unchanged. Smoke spec `tests/e2e/p5-pricefighter-smoke.spec.js`.
+- P5 LayoutExtenders (plan 42): the panel toolbar is gone. The layout list has its H1 „Layout Extenders” and the
+  channel filter in the page toolbar; types and channels are `Tag`s, the update date goes through `formatDate`, the
+  copy dialog is two `FormField`s with its Cancel · Copy in the dialog `ActionBar`. The navigation editor's H1 is the
+  document name with the back arrow; the unsaved badge, the channel scope and Save draft · Publish sit in the
+  PageHeader actions. Drag handles are `IconButton`s („Reorder”), a link row opens its dialog from a text button and
+  removes from a danger `IconButton`, Add link / Add column / Add banner / Edit banner are `BasicButton`s and the empty
+  list is an `EmptyState`. The item, link and banner dialogs hold every field in a `FormField` (per-field
+  translations are outline `IconButton`s named „Translations: <field>”), display-as and link type are
+  `BasicRadioGroup`s; the banner gallery's images are focusable, pick on Enter or Space, and page through
+  `Pagination`; its loading, empty and hint texts are translated. `tests/e2e/08-navigation-editor.spec.js` selects the
+  dialogs by role and the buttons by name.
 
 - P5 PriceManager (plan 39): the Pricing panel toolbar is gone. The channel selector sits in the PageHeader `meta` of
   the prices list and the price detail (one panel-local `PmChannelSelect`), and every list has its H1. Save all with
