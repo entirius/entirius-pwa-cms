@@ -2454,6 +2454,7 @@
     },
     "review": {
       "title": "Kolejka przeglądu",
+      "mode_label": "Tryb przeglądu",
       "modes": {
         "swipe": "Przesuwanie",
         "list": "Lista",
