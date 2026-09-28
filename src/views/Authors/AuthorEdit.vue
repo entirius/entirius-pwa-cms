@@ -1,12 +1,5 @@
 <template>
-  <div class="page-pad fs-300 t-body h-100 ov-h relative">
-    <Teleport to="#authors-toolbar-left" defer>
-      <PageHeader
-        v-if="!loading"
-        :title="form.name || $t('authors.create')"
-        back="/pages/authors"
-      />
-    </Teleport>
+  <div class="fs-300 t-body h-100 ov-h relative">
     <Teleport to="#authors-toolbar-right" defer>
       <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
       <template v-if="!loading">
@@ -26,7 +19,13 @@
       </template>
     </Teleport>
 
-    <div class="page-card h-100 ovy-auto relative">
+    <PageLayout>
+      <template v-if="!loading" #header>
+        <PageHeader
+          :title="form.name || $t('authors.create')"
+          back="/pages/authors"
+        />
+      </template>
       <Loader block v-if="loading" />
 
       <template v-else>
@@ -174,9 +173,9 @@
           </div>
         </div>
       </template>
-    </div>
+    </PageLayout>
 
-    <!-- Photo gallery (outside scrollable card so modal overlays correctly) -->
+    <!-- Photo gallery (outside the scrolling PageLayout so modal overlays correctly) -->
     <div class="author-photo-controller-hidden">
       <ImagesController
         ref="photoController"
