@@ -150,4 +150,12 @@ describe("Gallery", () => {
     expect(mockContent).toHaveBeenCalledWith(expect.objectContaining({ method: "post", payload: { slug: "Winter", label: "Winter" } }));
     expect(wrapper.vm.new_tag_input).toBe("");
   });
+
+  it("a second Upload click while the first is running posts once", async () => {
+    const wrapper = await mountGallery();
+    wrapper.vm.openDialog("upload");
+    wrapper.vm.file = "data:image/png;base64,AA";
+    await Promise.all([wrapper.vm.upload_File({}), wrapper.vm.upload_File({})]);
+    expect(mockContent.mock.calls.filter(([arg]) => arg.method === "post")).toHaveLength(1);
+  });
 });

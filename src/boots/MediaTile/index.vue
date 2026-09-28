@@ -15,7 +15,7 @@
     </div>
     <figcaption v-if="caption || $slots.actions" class="media-tile__footer flex ai-ct jc-sb gap-2">
       <span class="media-tile__caption" :title="caption || undefined">{{ caption }}</span>
-      <span v-if="$slots.actions" class="media-tile__reveal flex gap-1">
+      <span v-if="$slots.actions" class="media-tile__reveal media-tile__actions flex gap-1">
         <slot name="actions" />
       </span>
     </figcaption>
@@ -26,8 +26,9 @@
 // An image tile of a media grid (Figma S9/S10: 188 × 276 desktop, 150 × 240 below tablet). No `src` = the image
 // placeholder. `selected` draws the accent border. The `actions` slot takes IconButtons (`sm`), the `overlay` slot
 // value chips (`Tag`) over the bottom of the image; both show on hover, keyboard focus inside the tile, when selected
-// and always on a touch screen (no hover there). Hidden, they are `visibility: hidden` (no invisible clickable
-// button); a tile with actions takes keyboard focus itself, so Tab reveals them before it reaches them.
+// and always on a touch screen (no hover there). Hidden actions are `visibility: hidden` (no invisible clickable
+// button; the chips stay readable to a screen reader); a tile with actions takes keyboard focus itself, so Tab
+// reveals them before it reaches them.
 defineProps({
   src: { type: String, default: "" },
   alt: { type: String, default: "" },
@@ -52,6 +53,7 @@ defineProps({
 
   @include max-tablet {
     width: 150px;
+    max-width: 100%;
     height: 240px;
   }
 
@@ -79,8 +81,12 @@ defineProps({
   }
 
   &__reveal {
-    visibility: hidden;
     opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+
+  &__actions {
+    visibility: hidden;
     transition: opacity 0.15s ease, visibility 0s linear 0.15s;
   }
 

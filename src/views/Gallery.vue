@@ -231,6 +231,7 @@ export default {
       dialog: null,
       confirm: null,
       isDraggingOver: false,
+      uploading: false,
       tag_img_uid: "",
       edited_image_tags: null,
     };
@@ -290,7 +291,7 @@ export default {
           key: "upload",
           role: "primary",
           label: this.$t("gallery.upload"),
-          disabled: !this.file,
+          disabled: !this.file || this.uploading,
           onClick: () => this.upload_File({}),
         },
       ];
@@ -495,6 +496,8 @@ export default {
       });
     },
     async upload_File({ method = "post", url = "/images/" }) {
+      if (this.uploading) return;
+      this.uploading = true;
       try {
         if (this.file === null) throw new Error(`Photo missing`);
 
@@ -531,6 +534,8 @@ export default {
           msg: this.$t("notifications.unexpected_error"),
           type: "negative",
         });
+      } finally {
+        this.uploading = false;
       }
     },
     async filterByTags() {
@@ -763,7 +768,8 @@ export default {
 }
 
 // R4: the grid is a container, so it keeps its border. MediaTile owns the tile size (188 × 276, 150 × 240 on a phone).
-// Fixed tracks (plan 29): 4 columns on desktop, 2 below the shell breakpoint (no Figma frame there) and on a phone.
+// Fixed tracks (plan 29): 4 columns on a wide screen, 2 below it (4 × 188 overflows beside the sidebar up to 1279 px;
+// no Figma frame there); a phone narrower than 393 px shrinks the tiles instead of scrolling sideways.
 .gallery__grid {
   display: grid;
   grid-template-columns: repeat(4, 188px);
@@ -773,12 +779,12 @@ export default {
   border-radius: var(--radius-base);
   background: var(--surface-raised);
 
-  @include max-shell {
+  @include max-desktop {
     grid-template-columns: repeat(2, 188px);
   }
 
   @include max-tablet {
-    grid-template-columns: repeat(2, 150px);
+    grid-template-columns: repeat(2, minmax(0, 150px));
   }
 }
 
