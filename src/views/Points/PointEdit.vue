@@ -16,22 +16,22 @@
         {{ $t('common.save') }}
       </BasicButton>
     </Teleport>
+    <template v-if="!loading" #header>
+      <PageHeader
+        :title="isEdit ? String(point.name || point.code || '') : $t('dp.create_point')"
+        back="/points/list"
+      >
+        <template #actions>
+          <BasicSwitch
+            :label="$t('dp.is_active')"
+            v-model="form.is_active"
+          />
+        </template>
+      </PageHeader>
+    </template>
       <Loader block v-if="loading" />
 
       <template v-else>
-        <PageHeader
-          :title="isEdit ? String(point.name || point.code || '') : $t('dp.create_point')"
-          back="/points/list"
-          class="mb-12"
-        >
-          <template #actions>
-            <BasicSwitch
-              :label="$t('dp.is_active')"
-              v-model="form.is_active"
-            />
-          </template>
-        </PageHeader>
-
         <!-- Carrier read-only banner -->
         <div
           v-if="isCarrier"
