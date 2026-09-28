@@ -24,15 +24,16 @@
         />
       </FormField>
       <FormField :label="$t('atlas.mappings.category.source_value')">
-        <SourceValuePicker
+        <EntitySearchPicker
           v-if="isNew"
-          v-model="local.source_value"
-          :supplier-idx="supplierIdx"
-          :source-field="local.source_field"
+          :model-value="local.source_value || null"
+          :display-value="local.source_value"
+          :fetch-fn="sourceValueFetchFn"
           :placeholder="
             $t('atlas.mappings.category.source_value_placeholder')
           "
-          :test-id="`cat-mapping-value-${rowKey}`"
+          :data-testid="`cat-mapping-value-${rowKey}`"
+          @update:model-value="local.source_value = $event ?? ''"
         />
         <BasicInput
           v-else
@@ -72,31 +73,30 @@
         <FontAwesomeIcon :icon="$icons.warning" />
         <span class="fs-200 fw-600">{{ rowWarnings.length }}</span>
       </span>
-      <button
+      <IconButton
         v-if="!isNew"
-        class="row-action-btn bg-negative-subtle t-negative"
-        :title="$t('common.delete')"
+        icon="delete"
+        variant="danger"
+        size="sm"
+        :label="$t('common.delete')"
         :data-testid="`cat-mapping-delete-${rowKey}`"
         @click="$emit('delete', mapping)"
-      >
-        <FontAwesomeIcon :icon="$icons.delete" />
-      </button>
-      <button
-        class="suppliers-primary-btn"
+      />
+      <BasicButton
+        size="sm"
         :disabled="busy"
         :data-testid="`cat-mapping-save-${rowKey}`"
         @click="emitSave"
       >
-        <FontAwesomeIcon :icon="$icons.saveDraft" />
         {{ $t("common.save") }}
-      </button>
+      </BasicButton>
     </div>
   </div>
 </template>
 
 <script>
 import { GET_Categories } from "@/api/pim/api";
-import SourceValuePicker from "./SourceValuePicker.vue";
+import { GET_DataValues } from "@/api/atlas/api";
 
 const EMPTY = () => ({
   source_field: "",
@@ -106,7 +106,6 @@ const EMPTY = () => ({
 
 export default {
   name: "CategoryMappingRow",
-  components: { SourceValuePicker },
   props: {
     mapping: { type: Object, default: null },
     busy: { type: Boolean, default: false },
@@ -123,6 +122,7 @@ export default {
     return {
       local: this.mapping ? { ...this.mapping } : EMPTY(),
       _categoryCache: [],
+      sourceValues: { field: null, values: [] },
     };
   },
   computed: {
@@ -181,6 +181,31 @@ export default {
     sourceFieldFetchFn() {
       return Promise.resolve(this.sourceFieldOptions);
     },
+    // The feed's values of the chosen source field matching the search; the typed text itself comes first, so a
+    // value the feed does not carry (yet) can still be mapped, as the old free-text picker allowed.
+    async sourceValueFetchFn(search) {
+      const q = (search || "").trim();
+      const suffix = this.$t("atlas.mappings.category.source_value_picker_count_suffix");
+      const values = await this.loadSourceValues();
+      const options = values
+        .filter((v) => v.value.toLowerCase().includes(q.toLowerCase()))
+        .map((v) => ({ value: v.value, label: v.value, secondary: `${v.count} ${suffix}` }));
+      const typed = q && !values.some((v) => v.value === q);
+      return typed ? [{ value: q, label: q }, ...options] : options;
+    },
+    // One successful request per source field; a failed one leaves only the typed text and retries next time.
+    async loadSourceValues() {
+      const field = this.local.source_field;
+      if (!field) return [];
+      if (this.sourceValues.field === field) return this.sourceValues.values;
+      try {
+        const { data } = await GET_DataValues(this.supplierIdx, { source_field: field });
+        this.sourceValues = { field, values: data?.values || [] };
+        return this.sourceValues.values;
+      } catch {
+        return [];
+      }
+    },
     async categoryFetchFn(query) {
       if (!this.channelIdx) return [];
       try {
@@ -210,34 +235,6 @@ export default {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: var(--space-5);
-}
-.row-action-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border: none;
-  border-radius: var(--radius-base);
-  cursor: pointer;
-}
-.suppliers-primary-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  height: 32px;
-  padding: 0 var(--space-3);
-  font-size: var(--fs-200);
-  font-weight: 600;
-  border-radius: var(--radius-base);
-  border: 1px solid var(--accent);
-  background: var(--accent-fill);
-  color: var(--text-on-accent-fill);
-  cursor: pointer;
-}
-.suppliers-primary-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
 }
 .row-warning {
   display: inline-flex;
