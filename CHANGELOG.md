@@ -115,6 +115,17 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- P5 PriceFighter (plan 41): the four raw tables are `DataTable`s: the observations of a gap row and of a history
+  entry (one panel-local `ObservationsTable`), the apply preview and the apply report (now with column headers, both
+  dialogs `lg`). The market cell of every PriceFighter table is one panel-local `MarketCell`: country · currency, and
+  the channel on its own muted line that never truncates, so rows that differ only by channel stay apart, on a phone
+  too (the market column is no longer hidden there). The strategy rule modal is a `BasicModal` with the rule form on
+  a `.form-grid` (the scope value is marked required) and an `ActionBar` footer: Delete (danger utility, opens the
+  same `ConfirmDialog`), Cancel, Save. The gap table and the decision history have their H1 in a `PageHeader`, their
+  filters in the `PageLayout` toolbar (the gap table's channel, recommendation and competitor-only filters in a
+  `MobileFilterPanel`) and their pagination in the list footer. The apply calls, payloads and confirmation are
+  unchanged. Smoke spec `tests/e2e/p5-pricefighter-smoke.spec.js`.
+
 - P5 PriceManager (plan 39): the Pricing panel toolbar is gone. The channel selector sits in the PageHeader `meta` of
   the prices list and the price detail (one panel-local `PmChannelSelect`), and every list has its H1. Save all with
   its unsaved count, Sync from PIM, and each detail's Save and Delete are in PageHeader `ActionBar`s. The price
