@@ -4,24 +4,6 @@
       <PageHeader :title="$t('dp.points')" />
     </template>
     <template #toolbar>
-      <!-- Filter tabs -->
-      <div class="flex ai-ct">
-        <MobileFilterPanel
-          :active-count="activeFilter !== 'all' ? 1 : 0"
-          :trigger-label="$t('builder.filters')"
-        >
-          <p class="fs-200 t-secondary">{{ $t("builder.filters") }}</p>
-          <FilterChip
-            v-for="tab in filterTabs"
-            :key="tab.key"
-            :label="tab.label"
-            :active="activeFilter === tab.key"
-            @click="setFilter(tab.key)"
-          />
-        </MobileFilterPanel>
-      </div>
-    </template>
-
       <div class="point-list__toolbar">
         <BasicInput
           v-model="search"
@@ -37,47 +19,58 @@
           class="point-list__channel"
           @update:model-value="onChannelFilter"
         />
-      </div>
-
-      <Loader block v-show="loading" />
-
-      <DataTable
-        empty-size="md"
-        v-show="!loading"
-        :columns="columns"
-        :rows="points"
-        :sortable="true"
-        row-key="id"
-        :empty-text="$t('dp.no_points')"
-        @sort="onSort"
-        @row-click="onRowClick"
-      >
-        <template #cell-type_name="{ row }">
-          <span v-if="row.type" class="flex ai-ct gap-1">
-            <font-awesome-icon
-              v-if="row.type.is_carrier"
-              :icon="$icons.lock"
-            />
-            <StatusBadge tone="accent" :dot="false" :label="row.type.name" />
-          </span>
-          <span v-else class="t-muted">---</span>
-        </template>
-        <template #cell-is_active="{ value }">
-          <StatusBadge
-            :label="value ? $t('dp.active') : $t('dp.inactive')"
-            :tone="value ? 'positive' : 'negative'"
+        <div class="filter-chip-row" role="group" :aria-label="$t('dp.filters')">
+          <FilterChip
+            v-for="tab in filterTabs"
+            :key="tab.key"
+            :label="tab.label"
+            :active="activeFilter === tab.key"
+            @click="setFilter(tab.key)"
           />
-        </template>
-      </DataTable>
+        </div>
+      </div>
+    </template>
 
+    <Loader block v-show="loading" />
+
+    <DataTable
+      empty-size="md"
+      v-show="!loading"
+      :columns="columns"
+      :rows="points"
+      :sortable="true"
+      row-key="id"
+      :empty-text="$t('dp.no_points')"
+      @sort="onSort"
+      @row-click="onRowClick"
+    >
+      <template #cell-type_name="{ row }">
+        <span v-if="row.type" class="flex ai-ct gap-1">
+          <font-awesome-icon
+            v-if="row.type.is_carrier"
+            :icon="$icons.lock"
+          />
+          <StatusBadge tone="accent" :dot="false" :label="row.type.name" />
+        </span>
+        <span v-else class="t-muted">---</span>
+      </template>
+      <template #cell-is_active="{ value }">
+        <StatusBadge
+          :label="value ? $t('dp.active') : $t('dp.inactive')"
+          :tone="value ? 'positive' : 'negative'"
+        />
+      </template>
+    </DataTable>
+
+    <FloatingActions :actions="fabActions" />
+
+    <template v-if="!loading && points.length && totalCount > pageSize" #footer>
       <Pagination
-        v-if="totalCount > pageSize"
         :page="paginationState.page"
         :pages="paginationState.pages"
         @update:page="onPageChange"
       />
-
-      <FloatingActions :actions="fabActions" />
+    </template>
   </PageLayout>
 </template>
 
@@ -275,7 +268,6 @@ export default {
   display: flex;
   align-items: center;
   gap: var(--space-5);
-  margin-bottom: var(--space-10);
   flex-wrap: wrap;
 }
 .point-list__search {
@@ -289,5 +281,4 @@ export default {
   max-width: 200px;
   flex-shrink: 0;
 }
-
 </style>

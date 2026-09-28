@@ -1261,6 +1261,7 @@
     "confirm_delete_type": "Are you sure you want to delete this point type?",
     "confirm_delete_title": "Confirm deletion",
     "filter_all": "All Points",
+    "filters": "Filters",
     "filter_active": "Active",
     "filter_inactive": "Inactive",
     "filter_carrier": "Carrier",

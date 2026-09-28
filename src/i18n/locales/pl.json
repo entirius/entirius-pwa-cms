@@ -1260,6 +1260,7 @@
     "confirm_delete_type": "Czy na pewno chcesz usunąć ten typ punktu?",
     "confirm_delete_title": "Potwierdź usunięcie",
     "filter_all": "Wszystkie",
+    "filters": "Filtry",
     "filter_active": "Aktywne",
     "filter_inactive": "Nieaktywne",
     "filter_carrier": "Przewoźnik",

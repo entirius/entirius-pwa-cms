@@ -66,64 +66,34 @@
         </template>
       </DataTable>
 
-    <!-- Edit modal -->
-    <div
-      v-if="editingType"
-      class="type-modal-backdrop"
-      @click.self="cancelEdit"
+    <BasicModal
+      :open="!!editingType"
+      :title="editingType ? editingType.name || editingType.code : ''"
+      :actions="modalActions"
+      @close="cancelEdit"
     >
-      <div class="type-modal">
-        <h2 class="fs-500 fw-600 mb-10">
-          {{ editingType.name || editingType.code }}
-        </h2>
-        <div class="detail-grid mb-10">
-          <div class="detail-field">
-            <label class="field-label">{{ $t("dp.code") }}</label>
-            <BasicInput v-model="editForm.code" />
-          </div>
-          <div class="detail-field">
-            <label class="field-label">{{ $t("dp.name") }}</label>
-            <BasicInput v-model="editForm.name" />
-          </div>
-          <div class="detail-field">
-            <label class="field-label">{{ $t("dp.sort_order") }}</label>
-            <BasicInput v-model="editForm.sort_order" />
-          </div>
-        </div>
-        <div class="flex ai-ct gap-5 mb-10">
-          <BasicSwitch
-            :label="$t('dp.is_carrier')"
-            v-model="editForm.is_carrier"
-          />
-          <BasicSwitch
-            :label="$t('dp.is_active')"
-            v-model="editForm.is_active"
-          />
-        </div>
-        <div class="flex ai-ct jc-sb gap-5">
-          <IconButton
-            icon="delete"
-            :label="$t('common.delete')"
-            variant="danger"
-            @click="showDeleteConfirm = true"
-          />
-          <div class="flex ai-ct gap-5">
-            <BasicButton
-              variant="secondary"
-              @click="cancelEdit"
-            >
-              {{ $t('common.cancel') }}
-            </BasicButton>
-            <BasicButton
-              variant="primary"
-              @click="saveType"
-            >
-              {{ $t('common.save') }}
-            </BasicButton>
-          </div>
-        </div>
+      <div class="form-grid">
+        <FormField :label="$t('dp.code')">
+          <BasicInput v-model="editForm.code" />
+        </FormField>
+        <FormField :label="$t('dp.name')">
+          <BasicInput v-model="editForm.name" />
+        </FormField>
+        <FormField :label="$t('dp.sort_order')">
+          <BasicInput v-model="editForm.sort_order" />
+        </FormField>
       </div>
-    </div>
+      <div class="flex ai-ct wrap gap-5 mt-4">
+        <BasicSwitch
+          :label="$t('dp.is_carrier')"
+          v-model="editForm.is_carrier"
+        />
+        <BasicSwitch
+          :label="$t('dp.is_active')"
+          v-model="editForm.is_active"
+        />
+      </div>
+    </BasicModal>
 
     <ConfirmDialog
       tone="danger"
@@ -179,6 +149,14 @@ export default {
     };
   },
   computed: {
+    modalActions() {
+      return [
+        { key: "delete", role: "utility", icon: "delete", variant: "danger", label: this.$t("common.delete"),
+          onClick: () => (this.showDeleteConfirm = true) },
+        { key: "cancel", role: "secondary", label: this.$t("common.cancel"), onClick: this.cancelEdit },
+        { key: "save", role: "primary", label: this.$t("common.save"), onClick: this.saveType },
+      ];
+    },
     columns() {
       return [
         { key: "lock", label: "", sortable: false, width: "36px" },
@@ -366,37 +344,4 @@ export default {
   min-width: 140px;
   max-width: 220px;
 }
-
-.type-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: var(--overlay-heavy);
-  z-index: 200;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.type-modal {
-  background: var(--surface-base);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  padding: var(--space-6);
-  min-width: min(400px, 95vw);
-  max-width: 560px;
-  width: 100%;
-}
-
-.detail-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: var(--space-5);
-}
-
-.detail-field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-}
-
 </style>

@@ -1,93 +1,45 @@
 <template>
-  <PageLayout class="fs-300 t-body">
-    <template #header>
-      <PageHeader :title="$t('dp.import')" back="/points/list" />
-    </template>
+  <BasicModal
+    :open="open"
+    :title="$t('dp.import')"
+    :actions="actions"
+    @close="$emit('close')"
+  >
+    <div class="flex-column gap-4">
+      <FormField :label="$t('dp.import_file')" description=".csv">
+        <ImportChooseFile :file-name="selectedFile?.name" @select="onFileSelect" />
+      </FormField>
 
-      <div class="import-card">
-        <!-- File input -->
-        <div class="detail-field mb-10">
-          <label class="field-label">{{ $t("dp.import_file") }}</label>
-          <input
-            ref="fileInput"
-            type="file"
-            accept=".csv"
-            class="file-input"
-            @change="onFileChange"
-          />
-          <span v-if="!selectedFile" class="fs-200 t-muted">
-            {{ $t("dp.import_file") }} (.csv)
-          </span>
-          <span v-else class="fs-200 t-body fw-600">
-            {{ selectedFile.name }}
-          </span>
-          <BasicButton
-            variant="secondary"
-            class="mt-5"
-            @click="$refs.fileInput.click()"
-          >
-            {{ $t('gallery.upload') }}
-          </BasicButton>
-        </div>
+      <FormField :label="$t('dp.import_type')">
+        <BasicSelect
+          :options="typeOptions"
+          v-model="typeCode"
+          :placeholder="$t('common.select')"
+        />
+      </FormField>
 
-        <!-- Type selection -->
-        <div class="detail-field mb-10">
-          <label class="field-label">{{ $t("dp.import_type") }}</label>
-          <BasicSelect
-            :options="typeOptions"
-            v-model="typeCode"
-            :placeholder="$t('common.select')"
-          />
-        </div>
+      <FormField :label="$t('dp.import_mode')">
+        <BasicRadioGroup v-model="mode" name="points-import-mode" :options="modeOptions" />
+      </FormField>
 
-        <!-- Mode selection -->
-        <div class="detail-field mb-10">
-          <label class="field-label">{{ $t("dp.import_mode") }}</label>
-          <div class="flex flex-column gap-5 mt-2">
-            <label class="radio-option">
-              <input v-model="mode" type="radio" value="incremental" />
-              <span class="fs-300">{{ $t("dp.import_mode_incremental") }}</span>
-            </label>
-            <label class="radio-option">
-              <input v-model="mode" type="radio" value="full" />
-              <span class="fs-300">{{ $t("dp.import_mode_full") }}</span>
-            </label>
-          </div>
-        </div>
+      <FormField :label="$t('dp.import_channel')">
+        <BasicInput v-model="channelIdx" />
+      </FormField>
 
-        <!-- Optional channel -->
-        <div class="detail-field mb-12">
-          <label class="field-label">{{ $t("dp.import_channel") }}</label>
-          <BasicInput
-            v-model="channelIdx"
-            :placeholder="$t('dp.import_channel')"
-            class="import-input"
-          />
-        </div>
-
-        <!-- Result summary -->
-        <div v-if="importResult" class="import-result mb-10">
-          <StatusBadge label="Import complete" tone="positive" />
-          <p class="fs-300 t-body mt-5">
-            {{
-              $t("dp.import_success", {
-                created: importResult.created || 0,
-                updated: importResult.updated || 0,
-                disabled: importResult.disabled || 0,
-              })
-            }}
-          </p>
-        </div>
-
-        <BasicButton
-          variant="primary"
-          :disabled="submitting || !selectedFile"
-          @click="submitImport"
-        >
-          {{ $t('dp.import_submit') }}
-        </BasicButton>
+      <div v-if="importResult" class="flex-column gap-3">
+        <StatusBadge label="Import complete" tone="positive" />
+        <p class="fs-300 t-body">
+          {{
+            $t("dp.import_success", {
+              created: importResult.created || 0,
+              updated: importResult.updated || 0,
+              disabled: importResult.disabled || 0,
+            })
+          }}
+        </p>
       </div>
-  </PageLayout>
+    </div>
+  </BasicModal>
 </template>
 
 <script>
@@ -95,9 +47,17 @@ import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { GET_Types, POST_Import } from "@/api/deliverypoints/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import ImportChooseFile from "@/views/Stock/ImportChooseFile.vue";
 
+// The import is not routed (the service imports with `manage.py import_deliverypoints`); the dialog is kept for when
+// the panel opens it again.
 export default {
   name: "ImportDialog",
+  components: { ImportChooseFile },
+  props: {
+    open: { type: Boolean, default: false },
+  },
+  emits: ["close"],
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();
@@ -115,6 +75,19 @@ export default {
     };
   },
   computed: {
+    actions() {
+      return [
+        { key: "cancel", role: "secondary", label: this.$t("common.cancel"), onClick: () => this.$emit("close") },
+        { key: "import", role: "primary", label: this.$t("dp.import_submit"), onClick: this.submitImport,
+          disabled: this.submitting || !this.selectedFile, loading: this.submitting },
+      ];
+    },
+    modeOptions() {
+      return [
+        { value: "incremental", label: this.$t("dp.import_mode_incremental") },
+        { value: "full", label: this.$t("dp.import_mode_full") },
+      ];
+    },
     typeOptions() {
       return this.types.map((t) => ({ label: t.name, value: t.code }));
     },
@@ -134,8 +107,8 @@ export default {
         });
       }
     },
-    onFileChange(event) {
-      this.selectedFile = event.target.files[0] || null;
+    onFileSelect(file) {
+      this.selectedFile = file;
       this.importResult = null;
     },
     async submitImport() {
@@ -163,9 +136,6 @@ export default {
         });
 
         this.selectedFile = null;
-        if (this.$refs.fileInput) {
-          this.$refs.fileInput.value = "";
-        }
       } catch (err) {
         this.notify.spawnNotification({
           type: "negative",
@@ -179,40 +149,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.import-card {
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-  padding: var(--space-6);
-  max-width: 600px;
-}
-
-.detail-field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-}
-
-.import-input {
-  max-width: 300px;
-}
-
-.file-input {
-  display: none;
-}
-
-.radio-option {
-  display: flex;
-  align-items: center;
-  gap: var(--space-5);
-  cursor: pointer;
-}
-
-.import-result {
-  padding: var(--space-4);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-  background: var(--surface-raised);
-}
-</style>

@@ -1,31 +1,19 @@
 <template>
   <PageLayout class="fs-300 t-body">
-    <Teleport to="#points-toolbar-right" defer>
-      <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
-      <IconButton
-        v-if="isEdit && !isCarrier"
-        icon="delete"
-        :label="$t('common.delete')"
-        variant="danger"
-        @click="showDeleteConfirm = true"
-      />
-      <BasicButton
-        variant="primary"
-        @click="savePoint"
-      >
-        {{ $t('common.save') }}
-      </BasicButton>
-    </Teleport>
     <template v-if="!loading" #header>
       <PageHeader
         :title="isEdit ? String(point.name || point.code || '') : $t('dp.create_point')"
         back="/points/list"
       >
         <template #actions>
-          <BasicSwitch
-            :label="$t('dp.is_active')"
-            v-model="form.is_active"
-          />
+          <div class="flex ai-ct jc-fe wrap gap-3">
+            <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
+            <BasicSwitch
+              :label="$t('dp.is_active')"
+              v-model="form.is_active"
+            />
+            <ActionBar :actions="headerActions" />
+          </div>
         </template>
       </PageHeader>
     </template>
@@ -41,22 +29,18 @@
           <span>{{ $t("dp.carrier_point_read_only") }}</span>
         </div>
 
-        <!-- Address section -->
-        <div class="detail-section mb-10">
-          <h2 class="fs-500 fw-600 mb-8">{{ $t("dp.address") }}</h2>
-
+        <BasicCard :title="$t('dp.address')" gap class="mb-8">
           <!-- Geocode address search -->
-          <div v-if="!isCarrier" class="mb-8">
+          <template v-if="!isCarrier">
             <div
               v-if="!geocodeAvailable"
-              class="flex ai-ct gap-5 p-5 bg-accent-subtle rounded t-strong fs-200 mb-5"
+              class="flex ai-ct gap-5 p-5 bg-accent-subtle rounded t-strong fs-200"
             >
               <font-awesome-icon :icon="$icons.info" />
               <span>{{ $t("dp.geocoding_unavailable") }}</span>
             </div>
-            <div class="geocode-search">
-              <label class="field-label">{{ $t("dp.address_search") }}</label>
-              <div class="geocode-search__input-wrap">
+            <FormField :label="$t('dp.address_search')">
+              <div class="geocode-search">
                 <BasicInput
                   v-model="geocodeQuery"
                   :placeholder="$t('dp.address_search_placeholder')"
@@ -78,15 +62,14 @@
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
+            </FormField>
+          </template>
 
-          <div class="detail-grid">
+          <div class="form-grid">
             <FormField
-              class="detail-field"
               :label="$t('dp.code')"
               required
-              :error="formErrors.getFieldError('code')?.msg"
+              :error="formErrors.getFieldError('code')?.msg || ''"
             >
               <BasicInput
                 v-model="form.code"
@@ -94,10 +77,9 @@
               />
             </FormField>
             <FormField
-              class="detail-field"
               :label="$t('dp.name')"
               required
-              :error="formErrors.getFieldError('name')?.msg"
+              :error="formErrors.getFieldError('name')?.msg || ''"
             >
               <BasicInput
                 v-model="form.name"
@@ -105,10 +87,9 @@
               />
             </FormField>
             <FormField
-              class="detail-field"
               :label="$t('dp.type')"
               required
-              :error="formErrors.getFieldError('type_id')?.msg"
+              :error="formErrors.getFieldError('type_id')?.msg || ''"
             >
               <BasicSelect
                 :options="typeOptions"
@@ -117,7 +98,10 @@
                 :disabled="isCarrier || (isEdit && !typeChangeSupported)"
               />
             </FormField>
-            <FormField class="detail-field" :label="$t('dp.channels')">
+            <FormField
+              :label="$t('dp.channels')"
+              :error="formErrors.getFieldError('channel_ids')?.msg || ''"
+            >
               <BasicSelect
                 v-if="isCarrier"
                 :options="[{ label: $t('dp.global'), value: '__global' }]"
@@ -134,9 +118,8 @@
               />
             </FormField>
             <FormField
-              class="detail-field"
               :label="$t('dp.street')"
-              :error="formErrors.getFieldError('street')?.msg"
+              :error="formErrors.getFieldError('street')?.msg || ''"
             >
               <BasicInput
                 v-model="form.street"
@@ -144,9 +127,8 @@
               />
             </FormField>
             <FormField
-              class="detail-field"
               :label="$t('dp.city')"
-              :error="formErrors.getFieldError('city')?.msg"
+              :error="formErrors.getFieldError('city')?.msg || ''"
             >
               <BasicInput
                 v-model="form.city"
@@ -154,9 +136,8 @@
               />
             </FormField>
             <FormField
-              class="detail-field"
               :label="$t('dp.state')"
-              :error="formErrors.getFieldError('state')?.msg"
+              :error="formErrors.getFieldError('state')?.msg || ''"
             >
               <BasicInput
                 v-model="form.state"
@@ -164,9 +145,8 @@
               />
             </FormField>
             <FormField
-              class="detail-field"
               :label="$t('dp.post_code')"
-              :error="formErrors.getFieldError('post_code')?.msg"
+              :error="formErrors.getFieldError('post_code')?.msg || ''"
             >
               <BasicInput
                 v-model="form.post_code"
@@ -174,9 +154,8 @@
               />
             </FormField>
             <FormField
-              class="detail-field"
               :label="$t('dp.country')"
-              :error="formErrors.getFieldError('country')?.msg"
+              :error="formErrors.getFieldError('country')?.msg || ''"
             >
               <BasicSelect
                 v-if="isCarrier"
@@ -192,16 +171,13 @@
               />
             </FormField>
           </div>
-        </div>
+        </BasicCard>
 
-        <!-- Location section -->
-        <div class="detail-section mb-10">
-          <h2 class="fs-500 fw-600 mb-8">{{ $t("dp.location") }}</h2>
-          <div class="detail-grid">
+        <BasicCard :title="$t('dp.location')" gap class="mb-8">
+          <div class="form-grid">
             <FormField
-              class="detail-field"
               :label="$t('dp.lat')"
-              :error="formErrors.getFieldError('latitude')?.msg"
+              :error="formErrors.getFieldError('latitude')?.msg || ''"
             >
               <BasicInput
                 v-model="form.latitude"
@@ -209,9 +185,8 @@
               />
             </FormField>
             <FormField
-              class="detail-field"
               :label="$t('dp.lon')"
-              :error="formErrors.getFieldError('longitude')?.msg"
+              :error="formErrors.getFieldError('longitude')?.msg || ''"
             >
               <BasicInput
                 v-model="form.longitude"
@@ -219,16 +194,13 @@
               />
             </FormField>
           </div>
-        </div>
+        </BasicCard>
 
-        <!-- Contact section -->
-        <div class="detail-section mb-10">
-          <h2 class="fs-500 fw-600 mb-8">{{ $t("dp.contact") }}</h2>
-          <div class="detail-grid">
+        <BasicCard :title="$t('dp.contact')" gap class="mb-8">
+          <div class="form-grid">
             <FormField
-              class="detail-field"
               :label="$t('dp.phone')"
-              :error="formErrors.getFieldError('phone')?.msg"
+              :error="formErrors.getFieldError('phone')?.msg || ''"
             >
               <BasicInput
                 v-model="form.phone"
@@ -236,9 +208,8 @@
               />
             </FormField>
             <FormField
-              class="detail-field"
               :label="$t('dp.email')"
-              :error="formErrors.getFieldError('email')?.msg"
+              :error="formErrors.getFieldError('email')?.msg || ''"
             >
               <BasicInput
                 v-model="form.email"
@@ -246,45 +217,51 @@
               />
             </FormField>
             <FormField
-              class="detail-field"
               :label="$t('dp.website')"
-              :error="formErrors.getFieldError('website')?.msg"
+              :error="formErrors.getFieldError('website')?.msg || ''"
             >
               <BasicInput
                 v-model="form.website"
                 :disabled="isCarrier"
               />
             </FormField>
-            <div class="detail-field">
-              <label class="field-label">{{ $t("dp.opening_hours") }}</label>
+            <FormField
+              :label="$t('dp.opening_hours')"
+              :error="formErrors.getFieldError('opening_hours')?.msg || ''"
+            >
               <BasicInput
                 v-model="form.opening_hours"
                 :disabled="isCarrier"
               />
-            </div>
-          </div>
-          <div class="detail-field mt-8">
-            <label class="field-label">{{ $t("dp.hint") }}</label>
-            <BasicTextarea
-              v-model="form.hint"
-              rows="3"
-              :disabled="isCarrier"
-            />
-          </div>
-        </div>
-
-        <!-- Translations section (edit mode only, hidden for single-language setups) -->
-        <div v-if="isEdit && showTranslations" class="detail-section mb-10">
-          <div class="section-head mb-8">
-            <h2 class="fs-500 fw-600">{{ $t("dp.translations") }}</h2>
-            <div
-              v-if="availableLanguageCodes.length"
-              class="flex ai-ct gap-5"
+            </FormField>
+            <FormField
+              :label="$t('dp.hint')"
+              class="form-grid__wide"
+              :error="formErrors.getFieldError('hint')?.msg || ''"
             >
+              <BasicTextarea
+                v-model="form.hint"
+                rows="3"
+                :disabled="isCarrier"
+              />
+            </FormField>
+          </div>
+        </BasicCard>
+
+        <!-- Translations (edit mode only, hidden for single-language setups) -->
+        <BasicCard
+          v-if="isEdit && showTranslations"
+          :title="$t('dp.translations')"
+          gap
+          class="mb-8"
+        >
+          <template v-if="availableLanguageCodes.length" #actions>
+            <div class="flex ai-ct gap-3">
               <BasicSelect
                 :options="availableLanguageCodes"
                 v-model="addingLanguage"
                 :placeholder="$t('dp.language')"
+                :aria-label="$t('dp.language')"
                 class="t9n-lang-select"
               />
               <BasicButton
@@ -295,7 +272,7 @@
                 {{ $t('dp.add_translation') }}
               </BasicButton>
             </div>
-          </div>
+          </template>
 
           <EmptyState
             v-if="!translations.length"
@@ -303,12 +280,13 @@
             :title="$t('dp.no_translations')"
           />
 
-          <div
+          <section
             v-for="t9n in translations"
             :key="t9n.language"
-            class="t9n-row mb-8"
+            class="t9n-row"
+            :aria-label="t9n.language.toUpperCase()"
           >
-            <div class="t9n-lang-header flex ai-ct jc-sb mb-5">
+            <div class="t9n-lang-header flex ai-ct jc-sb mb-4">
               <span class="field-label t-accent">{{
                 t9n.language.toUpperCase()
               }}</span>
@@ -320,27 +298,18 @@
                 @click="deleteTranslation(t9n.language)"
               />
             </div>
-            <div class="detail-grid">
-              <div class="detail-field">
-                <label class="field-label">{{
-                  $t("dp.translation_name")
-                }}</label>
+            <div class="form-grid">
+              <FormField :label="$t('dp.translation_name')">
                 <BasicInput v-model="t9n.name" />
-              </div>
-              <div class="detail-field">
-                <label class="field-label">{{
-                  $t("dp.translation_opening_hours")
-                }}</label>
+              </FormField>
+              <FormField :label="$t('dp.translation_opening_hours')">
                 <BasicInput v-model="t9n.opening_hours" />
-              </div>
+              </FormField>
+              <FormField :label="$t('dp.translation_hint')" class="form-grid__wide">
+                <BasicInput v-model="t9n.hint" />
+              </FormField>
             </div>
-            <div class="detail-field mt-5">
-              <label class="field-label">{{
-                $t("dp.translation_hint")
-              }}</label>
-              <BasicInput v-model="t9n.hint" />
-            </div>
-            <div class="flex jc-fe mt-5">
+            <div class="flex jc-fe mt-4">
               <BasicButton
                 variant="secondary"
                 @click="saveTranslation(t9n)"
@@ -348,8 +317,8 @@
                 {{ $t('common.save') }}
               </BasicButton>
             </div>
-          </div>
-        </div>
+          </section>
+        </BasicCard>
       </template>
 
     <ConfirmDialog
@@ -445,6 +414,13 @@ export default {
     };
   },
   computed: {
+    // Delete is not offered for a carrier point: it is read-only apart from its on/off switch.
+    headerActions() {
+      const save = { key: "save", role: "primary", label: this.$t("common.save"), onClick: this.savePoint };
+      if (!this.isEdit || this.isCarrier) return [save];
+      const remove = { key: "delete", role: "utility", icon: "delete", variant: "danger", label: this.$t("common.delete") };
+      return [{ ...remove, onClick: () => (this.showDeleteConfirm = true) }, save];
+    },
     isEdit() {
       return !!this.$route.params.id;
     },
@@ -782,24 +758,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.detail-section {
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-  padding: var(--space-5);
-}
-
-.detail-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: var(--space-5);
-}
-
-.detail-field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-}
-
 .t9n-row {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-base);
@@ -816,12 +774,6 @@ export default {
 }
 
 .geocode-search {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-}
-
-.geocode-search__input-wrap {
   position: relative;
 }
 
