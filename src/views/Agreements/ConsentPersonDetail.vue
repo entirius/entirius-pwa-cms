@@ -27,10 +27,10 @@
               {{ $t("agm.current_consents") }}
             </h2>
             <div v-if="marketingStatuses.length" class="person-detail__grid">
-              <div
+              <BasicCard
                 v-for="item in marketingStatuses"
                 :key="item.slug"
-                class="page-card person-detail__card"
+                class="person-detail__card"
               >
                 <p class="fs-200 fw-600 t-secondary mb-5">
                   {{ item.name || item.slug }}
@@ -45,7 +45,7 @@
                       : 'negative'
                   "
                 />
-              </div>
+              </BasicCard>
             </div>
             <p v-else class="t-muted">{{ $t("agm.no_consents") }}</p>
           </section>
