@@ -1,5 +1,5 @@
 <template>
-  <div class="page-pad fs-300 t-body h-100 ov-h">
+  <PageLayout class="fs-300 t-body">
     <Teleport to="#pim-toolbar-left" defer>
       <IconButton
         icon="back"
@@ -23,7 +23,6 @@
         {{ $t('common.save') }}
       </BasicButton>
     </Teleport>
-    <div class="page-card h-100 ovy-auto">
       <!-- Breadcrumb -->
       <PimBreadcrumb :items="breadcrumbItems" />
       <Loader block v-if="loading" />
@@ -199,8 +198,7 @@
         :confirm-label="$t('unsaved.save_and_leave')"
         :discard-label="$t('unsaved.discard')"
       />
-    </div>
-  </div>
+  </PageLayout>
 </template>
 
 <script>

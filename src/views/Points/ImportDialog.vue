@@ -1,8 +1,9 @@
 <template>
-  <div class="page-pad fs-300 t-body h-100 ov-h">
-    <div class="page-card h-100 ovy-auto">
-      <PageHeader :title="$t('dp.import')" back="/points/list" class="mb-12" />
-
+  <PageLayout class="fs-300 t-body">
+    <template #header>
+      <PageHeader :title="$t('dp.import')" back="/points/list" />
+    </template>
+    <template #toolbar>
       <div class="import-card">
         <!-- File input -->
         <div class="detail-field mb-10">
@@ -86,8 +87,8 @@
           {{ $t('dp.import_submit') }}
         </BasicButton>
       </div>
-    </div>
-  </div>
+    </template>
+  </PageLayout>
 </template>
 
 <script>

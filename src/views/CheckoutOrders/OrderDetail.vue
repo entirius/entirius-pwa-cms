@@ -1,5 +1,5 @@
 <template>
-  <div class="order-detail page-pad fs-300 t-body h-100 ov-h">
+  <PageLayout class="order-detail fs-300 t-body">
     <Teleport to="#checkout-orders-toolbar-left" defer>
       <IconButton
         icon="back"
@@ -11,7 +11,7 @@
 
     <div v-if="loading" class="flex jc-ct p-12"><Loader /></div>
 
-    <div v-else-if="order.order_id" class="page-card h-100 ovy-auto">
+    <template v-else-if="order.order_id">
       <!-- Header: status + total + dates in one compact row -->
       <div class="order-detail__header mb-10">
         <div class="order-detail__header-left">
@@ -99,8 +99,8 @@
           <span>{{ att.name || `File #${att.file_id}` }}</span>
         </div>
       </div>
-    </div>
-  </div>
+    </template>
+  </PageLayout>
 </template>
 
 <script>

@@ -1,10 +1,9 @@
 <template>
-  <div class="spawn-rule-edit page-pad fs-300 t-body h-100 ov-h">
-    <div class="page-card flex-1 ovy-auto">
+  <PageLayout class="spawn-rule-edit fs-300 t-body">
+    <template #header>
       <PageHeader
         :title="isCreate ? $t('enrichment.spawn_rules.create') : String(form.key || '')"
         back="/enrichment/spawn-rules"
-        class="mb-10"
       >
         <template #actions>
           <BasicButton
@@ -32,6 +31,7 @@
           </BasicButton>
         </template>
       </PageHeader>
+    </template>
 
       <Loader block v-if="loading" />
 
@@ -144,8 +144,7 @@
           <p>{{ $t("enrichment.spawn_rules.confirm_delete") }}</p>
         </template>
       </ConfirmDialog>
-    </div>
-  </div>
+  </PageLayout>
 </template>
 
 <script>

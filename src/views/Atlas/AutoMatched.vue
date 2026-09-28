@@ -1,9 +1,7 @@
 <template>
-  <div class="page-pad fs-300 t-body h-100 ov-h">
-    <div
-      class="page-card h-100 ovy-auto"
-    >
-      <PageHeader :title="$t('atlas.auto_matched.title')" class="mb-10">
+  <PageLayout class="fs-300 t-body">
+    <template #header>
+      <PageHeader :title="$t('atlas.auto_matched.title')">
         <!-- the subtitle sits right of the title on desktop, on its own row on a phone (meta never wraps) -->
         <template #actions>
           <span class="fs-200 t-secondary">
@@ -11,9 +9,9 @@
           </span>
         </template>
       </PageHeader>
-
-      <!-- Filter chip bar -->
-      <div class="flex ai-ct flex-wrap gap-2 mb-10">
+    </template>
+    <template #toolbar>
+      <div class="flex ai-ct flex-wrap gap-2">
         <FilterChip
           :label="$t('atlas.auto_matched.filter.all')"
           :active="!hasViolationsOnly && !manualOverrideOnly && !supplierFilter"
@@ -33,6 +31,9 @@
           @click="toggleManualOverride"
         />
       </div>
+    </template>
+
+      <!-- Filter chip bar -->
 
       <Loader block v-show="loading" />
 
@@ -91,8 +92,7 @@
         class="mt-8"
         @update:page="onPageChange"
       />
-    </div>
-  </div>
+  </PageLayout>
 </template>
 
 <script>

@@ -1,5 +1,5 @@
 <template>
-  <div class="page-pad fs-300 t-body h-100 ov-h">
+  <PageLayout class="fs-300 t-body">
     <!-- Left toolbar -->
     <Teleport to="#layout-extender-toolbar-left" defer>
       <IconButton
@@ -48,7 +48,6 @@
     </Teleport>
 
     <!-- Content -->
-    <div class="page-card h-100 ovy-auto">
       <Loader block v-show="loading" />
 
       <template v-if="!loading">
@@ -262,7 +261,6 @@
           {{ $t('layout_extender.add_item') }}
         </BasicButton>
       </template>
-    </div>
 
     <!-- Edit item modal -->
     <EditMenuItemModal
@@ -307,7 +305,7 @@
       @cancel="translatingColumnCtx = null"
       @save="onColumnHeadingSave"
     />
-  </div>
+  </PageLayout>
 </template>
 
 <script>

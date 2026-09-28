@@ -1,8 +1,5 @@
 <template>
-  <div class="page-pad fs-300 t-body h-100 ov-h">
-    <div
-      class="page-card h-100 ovy-auto"
-    >
+  <PageLayout class="fs-300 t-body">
       <!-- Segment switcher: Discounts / Vouchers -->
       <div class="promo-list__tabs mb-10">
         <SegmentedControl v-model="activeTab" :options="tabOptions" />
@@ -179,8 +176,7 @@
           />
         </div>
       </template>
-    </div>
-  </div>
+  </PageLayout>
 </template>
 
 <script>

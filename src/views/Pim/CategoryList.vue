@@ -1,10 +1,9 @@
 <template>
-  <div class="page-pad fs-300 t-body h-100 ov-h">
-    <div
-      class="page-card h-100 ovy-auto"
-    >
-      <PageHeader :title="$t('pim.category_tree')" class="mb-10" />
-
+  <PageLayout class="fs-300 t-body">
+    <template #header>
+      <PageHeader :title="$t('pim.category_tree')" />
+    </template>
+    <template #toolbar>
       <div class="category-list__toolbar">
         <BasicInput
           v-model="search"
@@ -31,6 +30,7 @@
           {{ $t('pim.collapse_all') }}
         </BasicButton>
       </div>
+    </template>
 
       <Loader block v-if="loading" />
 
@@ -45,8 +45,7 @@
       />
 
       <FloatingActions :actions="fabActions" />
-    </div>
-  </div>
+  </PageLayout>
 </template>
 
 <script>

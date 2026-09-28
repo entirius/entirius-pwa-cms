@@ -1,5 +1,5 @@
 <template>
-  <div class="page-pad fs-300 t-body h-100 ov-h">
+  <PageLayout class="fs-300 t-body">
     <Teleport to="#points-toolbar-right" defer>
       <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
       <IconButton
@@ -16,7 +16,6 @@
         {{ $t('common.save') }}
       </BasicButton>
     </Teleport>
-    <div class="page-card h-100 ovy-auto">
       <Loader block v-if="loading" />
 
       <template v-else>
@@ -352,7 +351,6 @@
           </div>
         </div>
       </template>
-    </div>
 
     <ConfirmDialog
       tone="danger"
@@ -376,7 +374,7 @@
       :confirm-label="$t('unsaved.save_and_leave')"
       :discard-label="$t('unsaved.discard')"
     />
-  </div>
+  </PageLayout>
 </template>
 
 <script>

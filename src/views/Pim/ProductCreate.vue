@@ -1,5 +1,5 @@
 <template>
-  <div class="page-pad fs-300 t-body h-100 ov-h">
+  <PageLayout class="fs-300 t-body">
     <Teleport to="#pim-toolbar-left" defer>
       <IconButton
         icon="back"
@@ -15,7 +15,6 @@
         {{ $t('common.save') }}
       </BasicButton>
     </Teleport>
-    <div class="page-card h-100 ovy-auto">
       <div class="create-section mb-10">
         <h2 class="fs-500 fw-600 mb-5">{{ $t("pim.basic_info") }}</h2>
         <div class="create-grid">
@@ -145,8 +144,7 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
+  </PageLayout>
 </template>
 
 <script>

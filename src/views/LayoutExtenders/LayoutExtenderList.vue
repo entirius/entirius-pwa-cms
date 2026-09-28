@@ -1,5 +1,5 @@
 <template>
-  <div class="page-pad fs-300 t-body h-100 ov-h">
+  <PageLayout class="fs-300 t-body">
     <Teleport to="#layout-extender-toolbar-left" defer>
       <span class="fs-300 fw-600 t-body">{{ $t("layout_extender.list_title") }}</span>
       <BasicSelect
@@ -11,8 +11,6 @@
         @update:model-value="onChannelFilter"
       />
     </Teleport>
-
-    <div class="page-card h-100 ovy-auto">
       <Loader block v-show="loading" />
 
       <DataTable
@@ -79,7 +77,6 @@
           </div>
         </template>
       </DataTable>
-    </div>
 
     <ConfirmDialog
       tone="danger"
@@ -123,7 +120,7 @@
         </BasicButton>
       </template>
     </BasicModal>
-  </div>
+  </PageLayout>
 </template>
 
 <script>

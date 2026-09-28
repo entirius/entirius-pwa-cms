@@ -1,5 +1,5 @@
 <template>
-  <div class="page-pad fs-300 t-body h-100 ov-h">
+  <PageLayout class="fs-300 t-body">
     <Teleport to="#stock-toolbar-right" defer>
       <span
         v-if="dirtyCount > 0 && isManual"
@@ -32,8 +32,6 @@
       <FontAwesomeIcon :icon="$icons.lock" />
       <span>{{ $t("stock.integration_readonly") }}</span>
     </div>
-
-    <div class="page-card h-100 ovy-auto">
       <!-- Toolbar: search + filter chips -->
       <div class="stock-table__toolbar">
         <BasicInput
@@ -116,7 +114,6 @@
           @update:page="onPageChange"
         />
       </div>
-    </div>
 
     <!-- CSV Import Modal -->
     <ImportCSVModal
@@ -125,7 +122,7 @@
       @close="showImportModal = false"
       @imported="onCsvImported"
     />
-  </div>
+  </PageLayout>
 </template>
 
 <script>

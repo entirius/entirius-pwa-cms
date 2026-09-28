@@ -1,9 +1,8 @@
 <template>
-  <div class="pim-list-layout page-pad fs-300 t-body h-100 ov-h">
-    <div
-      class="page-card flex-1 ovy-auto"
-    >
-      <PageHeader :title="$t('pim.products')" class="mb-10" />
+  <PageLayout class="pim-list-layout fs-300 t-body">
+    <template #header>
+      <PageHeader :title="$t('pim.products')" />
+    </template>
 
       <GapStatusAlert v-if="hasQualityData" compact />
 
@@ -211,7 +210,6 @@
       </DataTable>
 
       <FloatingActions :actions="fabActions" />
-    </div>
     <Pagination
       v-if="totalCount > pageSize"
       :page="paginationState.page"
@@ -265,7 +263,7 @@
         </ul>
       </div>
     </Teleport>
-  </div>
+  </PageLayout>
 </template>
 
 <script>

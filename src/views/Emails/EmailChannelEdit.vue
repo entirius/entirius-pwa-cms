@@ -1,12 +1,9 @@
 <template>
-  <div class="page-pad fs-300 t-body h-100 ov-h">
-    <div
-      class="page-card h-100 ovy-auto"
-    >
+  <PageLayout class="fs-300 t-body">
+    <template #header>
       <PageHeader
         :title="channel.label || $t('emails.channel')"
         back="/emails"
-        class="mb-10"
       >
         <template #meta>
           <span v-if="channel.idx" class="fs-200 t-muted ml-2"
@@ -14,6 +11,7 @@
           >
         </template>
       </PageHeader>
+    </template>
 
       <Loader block v-show="loading" />
 
@@ -97,8 +95,7 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
+  </PageLayout>
 </template>
 
 <script>

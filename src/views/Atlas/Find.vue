@@ -1,9 +1,8 @@
 <template>
-  <div class="page-pad fs-300 t-body h-100 ov-h">
-    <div
-      class="page-card h-100 ovy-auto"
-    >
+  <PageLayout class="fs-300 t-body">
+    <template #header>
       <PageHeader :title="$t('lookup.find.title')" />
+    </template>
       <p class="fs-300 t-body mb-10">
         {{ $t("lookup.find.subtitle") }}
       </p>
@@ -80,8 +79,7 @@
           </div>
         </details>
       </div>
-    </div>
-  </div>
+  </PageLayout>
 </template>
 
 <script>

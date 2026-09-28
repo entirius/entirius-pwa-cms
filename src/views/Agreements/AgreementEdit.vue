@@ -1,5 +1,5 @@
 <template>
-  <div class="page-pad fs-300 t-body h-100 ov-h">
+  <PageLayout class="fs-300 t-body">
     <Teleport to="#agreements-toolbar-right" defer>
       <IconButton
         v-if="isEdit && !definition.is_system"
@@ -15,8 +15,6 @@
         {{ $t('agm.save') }}
       </BasicButton>
     </Teleport>
-
-    <div class="page-card h-100 ovy-auto">
       <Loader block v-if="loading" />
 
       <template v-else>
@@ -399,7 +397,6 @@
           </template>
         </div>
       </template>
-    </div>
 
     <ConfirmDialog
       tone="danger"
@@ -423,7 +420,7 @@
         ><p>{{ $t("agm.edit_published_confirm") }}</p></template
       >
     </ConfirmDialog>
-  </div>
+  </PageLayout>
 </template>
 
 <script>

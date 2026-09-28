@@ -1,7 +1,7 @@
 <template>
-  <div class="page-pad fs-300 t-body h-100 ov-h">
-    <div class="page-card h-100 ovy-auto">
-      <PageHeader :title="$t('pricefighter.strategies')" class="mb-10">
+  <PageLayout class="fs-300 t-body">
+    <template #header>
+      <PageHeader :title="$t('pricefighter.strategies')">
         <template #actions>
           <BasicButton
             variant="primary"
@@ -11,6 +11,7 @@
           </BasicButton>
         </template>
       </PageHeader>
+    </template>
 
       <Loader block v-show="loading" />
 
@@ -46,7 +47,6 @@
           </template>
         </DataTable>
       </template>
-    </div>
 
     <!-- Create/Edit modal -->
     <div v-if="editingRule !== null" class="rule-modal-backdrop" @click.self="closeModal">
@@ -166,7 +166,7 @@
     >
       <template #default><p>{{ $t('pricefighter.confirm_delete_rule') }}</p></template>
     </ConfirmDialog>
-  </div>
+  </PageLayout>
 </template>
 
 <script>

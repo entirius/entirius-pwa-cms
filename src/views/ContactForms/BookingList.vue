@@ -1,11 +1,10 @@
 <template>
-  <div class="cf-booking-list__wrapper page-pad fs-300 t-body h-100 ov-h">
-    <div
-      class="page-card h-100 ovy-auto"
-    >
-      <PageHeader :title="$t('cf.bookings')" class="mb-10" />
-
-      <div class="flex ai-ct flex-wrap gap-8 rg-3 mb-10">
+  <PageLayout class="cf-booking-list__wrapper fs-300 t-body">
+    <template #header>
+      <PageHeader :title="$t('cf.bookings')" />
+    </template>
+    <template #toolbar>
+      <div class="flex ai-ct flex-wrap gap-8 rg-3">
         <BasicInput
           v-model="search"
           :placeholder="$t('cf.search_placeholder')"
@@ -21,6 +20,7 @@
           @update:model-value="onChannelFilter"
         />
       </div>
+    </template>
 
       <div class="flex ai-ct mb-10">
         <MobileFilterPanel
@@ -110,8 +110,7 @@
         :pages="paginationState.pages"
         @update:page="onPageChange"
       />
-    </div>
-  </div>
+  </PageLayout>
 </template>
 
 <script>

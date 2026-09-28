@@ -1,9 +1,7 @@
 <template>
-  <div class="page-pad fs-300 t-body h-100 ov-h">
-    <div
-      class="page-card h-100 ovy-auto"
-    >
-      <PageHeader :title="$t('emails.edit_template')" :back="goBack" class="mb-10">
+  <PageLayout class="fs-300 t-body">
+    <template #header>
+      <PageHeader :title="$t('emails.edit_template')" :back="goBack">
         <template #meta>
           <span class="fs-200 t-muted ml-2">({{ typeLabel }})</span>
           <span
@@ -13,6 +11,7 @@
           >
         </template>
       </PageHeader>
+    </template>
 
       <Loader block v-show="loading" />
 
@@ -39,8 +38,7 @@
           </BasicButton>
         </div>
       </div>
-    </div>
-  </div>
+  </PageLayout>
 </template>
 
 <script>

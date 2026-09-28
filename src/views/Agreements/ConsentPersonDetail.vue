@@ -1,8 +1,5 @@
 <template>
-  <div class="page-pad fs-300 t-body h-100 ov-h">
-    <div
-      class="page-card h-100 ovy-auto"
-    >
+  <PageLayout class="fs-300 t-body">
       <div class="flex ai-ct jc-sb flex-wrap gap-5 mb-12">
         <PageHeader
           :title="email"
@@ -133,7 +130,6 @@
           </section>
         </template>
       </template>
-    </div>
 
     <!-- Legal text modal -->
     <Teleport to="body">
@@ -180,7 +176,7 @@
         </div>
       </div>
     </Teleport>
-  </div>
+  </PageLayout>
 </template>
 
 <script>

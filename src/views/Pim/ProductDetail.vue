@@ -1,5 +1,5 @@
 <template>
-  <div class="page-pad fs-300 t-body h-100 ov-h">
+  <PageLayout class="fs-300 t-body">
     <Teleport to="#pim-toolbar-left" defer>
       <IconButton
         icon="back"
@@ -121,7 +121,6 @@
         @click="showDeleteConfirm = true"
       />
     </Teleport>
-    <div class="page-card h-100 ovy-auto">
       <Loader block v-if="loading" />
 
       <!-- etap-12 #25: 404 on the chosen channel auto-switches to default and warns. -->
@@ -700,7 +699,6 @@
           </div>
         </div>
       </template>
-    </div>
 
     <ConfirmDialog
       tone="danger"
@@ -841,7 +839,7 @@
         </template>
       </template>
     </TranslationsDrawer>
-  </div>
+  </PageLayout>
 </template>
 
 <script>

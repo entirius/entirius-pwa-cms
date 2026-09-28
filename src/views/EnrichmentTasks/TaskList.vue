@@ -1,11 +1,10 @@
 <template>
-  <div class="task-list page-pad fs-300 t-body h-100 ov-h">
-    <div
-      class="page-card flex-1 ovy-auto"
-    >
-      <PageHeader :title="$t('enrichment.tasks.title')" class="mb-10" />
-
-      <div class="flex ai-ct flex-wrap gap-2 mb-10">
+  <PageLayout class="task-list fs-300 t-body">
+    <template #header>
+      <PageHeader :title="$t('enrichment.tasks.title')" />
+    </template>
+    <template #toolbar>
+      <div class="flex ai-ct flex-wrap gap-2">
         <FilterChip
           v-for="opt in statusOptions"
           :key="opt.value"
@@ -18,6 +17,7 @@
           {{ $t("enrichment.tasks.matching", { count: totalCount }) }}
         </span>
       </div>
+    </template>
 
       <Loader block v-show="loading" />
 
@@ -43,7 +43,6 @@
           <span class="fs-200 t-muted">{{ formatDate(row.created_at) }}</span>
         </template>
       </DataTable>
-    </div>
 
     <Pagination
       v-if="totalCount > pageSize"
@@ -59,7 +58,7 @@
       :task-label="queueLabel"
       @close="closeQueue"
     />
-  </div>
+  </PageLayout>
 </template>
 
 <script>

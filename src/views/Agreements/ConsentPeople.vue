@@ -1,9 +1,7 @@
 <template>
-  <div class="page-pad fs-300 t-body h-100 ov-h">
-    <div
-      class="page-card h-100 ovy-auto"
-    >
-      <PageHeader :title="$t('agm.people_list')" class="mb-10">
+  <PageLayout class="fs-300 t-body">
+    <template #header>
+      <PageHeader :title="$t('agm.people_list')">
         <template #actions>
           <BasicButton
             v-if="mode === 'marketing_lists'"
@@ -14,6 +12,7 @@
           </BasicButton>
         </template>
       </PageHeader>
+    </template>
 
       <div class="mb-10">
         <BasicTabs
@@ -94,8 +93,7 @@
           </div>
         </template>
       </template>
-    </div>
-  </div>
+  </PageLayout>
 </template>
 
 <script>

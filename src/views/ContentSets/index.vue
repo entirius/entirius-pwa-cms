@@ -1,6 +1,5 @@
 <template>
-  <div class="fs-200 t-secondary fg-1 relative page-pad h-100 ov-h">
-    <div class="page-card h-100 ovy-auto">
+  <PageLayout class="fs-200 t-secondary fg-1 relative">
       <div
         v-if="isSingleLanguage"
         class="flex ai-ct jc-ct gap-5 p-12 t-muted"
@@ -202,8 +201,7 @@
           </div>
         </div>
       </template>
-    </div>
-  </div>
+  </PageLayout>
 </template>
 
 <script>

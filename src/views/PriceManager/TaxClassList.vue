@@ -1,8 +1,6 @@
 <template>
-  <div class="page-pad fs-300 t-body h-100 ov-h">
+  <PageLayout class="fs-300 t-body">
     <!-- Title shown by router titleKey in header bar -->
-
-    <div class="page-card h-100 ovy-auto">
       <Loader block v-show="loading" />
 
       <div v-show="!loading">
@@ -23,8 +21,7 @@
       </div>
 
       <FloatingActions :actions="fabActions" />
-    </div>
-  </div>
+  </PageLayout>
 </template>
 
 <script>

@@ -1,5 +1,5 @@
 <template>
-  <div class="page-pad fs-300 t-body h-100 ov-h">
+  <PageLayout class="fs-300 t-body">
     <Teleport to="#promo-toolbar-left" defer>
       <IconButton
         icon="back"
@@ -28,8 +28,6 @@
         {{ $t('common.save') }}
       </BasicButton>
     </Teleport>
-
-    <div class="page-card h-100 ovy-auto">
       <Loader block v-if="loading" />
 
       <template v-else>
@@ -546,7 +544,6 @@
           </div>
         </div>
       </template>
-    </div>
 
     <!-- Delete rule confirmation -->
     <ConfirmDialog
@@ -653,7 +650,7 @@
       @close="closeFilterDrawer"
       @saved="onFilterSaved"
     />
-  </div>
+  </PageLayout>
 </template>
 
 <script>

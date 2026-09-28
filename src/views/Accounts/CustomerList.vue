@@ -1,10 +1,10 @@
 <template>
-  <div class="acc-list__wrapper page-pad fs-300 t-body h-100 ov-h">
-    <div class="page-card h-100 ovy-auto">
-      <PageHeader :title="$t('accounts.customers')" class="mb-10" />
-
-      <!-- Filters -->
-      <div class="flex ai-ct mb-10">
+  <PageLayout class="acc-list__wrapper fs-300 t-body">
+    <template #header>
+      <PageHeader :title="$t('accounts.customers')" />
+    </template>
+    <template #toolbar>
+      <div class="flex ai-ct">
         <MobileFilterPanel
           :active-count="activeFilterCount"
           :trigger-label="$t('builder.filters')"
@@ -19,6 +19,9 @@
           />
         </MobileFilterPanel>
       </div>
+    </template>
+
+      <!-- Filters -->
 
       <div class="flex ai-ct gap-8 mb-10 flex-wrap">
         <BasicInput
@@ -96,8 +99,7 @@
         :pages="paginationState.pages"
         @update:page="onPageChange"
       />
-    </div>
-  </div>
+  </PageLayout>
 </template>
 
 <script>

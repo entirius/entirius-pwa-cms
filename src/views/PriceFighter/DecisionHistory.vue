@@ -1,6 +1,5 @@
 <template>
-  <div class="page-pad fs-300 t-body h-100 ov-h">
-    <div class="page-card h-100 ovy-auto">
+  <PageLayout class="fs-300 t-body">
       <div class="history__toolbar">
         <BasicInput
           v-model="search"
@@ -127,8 +126,7 @@
           />
         </template>
       </div>
-    </div>
-  </div>
+  </PageLayout>
 </template>
 
 <script>

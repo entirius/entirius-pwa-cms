@@ -1,5 +1,5 @@
 <template>
-  <div class="acc-detail__wrapper page-pad fs-300 t-body h-100 ov-h">
+  <PageLayout class="acc-detail__wrapper fs-300 t-body">
     <Teleport to="#accounts-toolbar-left" defer>
       <IconButton
         icon="back"
@@ -11,7 +11,7 @@
 
     <Loader block v-if="loading" />
 
-    <div v-else-if="customer" class="page-card h-100 ovy-auto">
+    <template v-else-if="customer">
       <!-- Profile Card -->
       <div class="mb-10">
         <div class="field-label mb-5">{{ $t("accounts.customer_detail") }}</div>
@@ -116,8 +116,8 @@
       <div class="flex gap-10 t-muted fs-200">
         <span>{{ $t("accounts.wishlist_items") }}: {{ customer.wishlist_items_count }}</span>
       </div>
-    </div>
-  </div>
+    </template>
+  </PageLayout>
 </template>
 
 <script>

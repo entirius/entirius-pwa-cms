@@ -27,11 +27,15 @@ vi.mock("@/stores/checkoutChannel", () => ({
 
 import PromoList from "@/views/Promo/PromoList.vue";
 
+const PageFrameStub = { template: '<div><slot name="header" /><slot name="toolbar" /><slot /></div>' };
+
 function mountWith({ vouchers, tab } = {}) {
   mockIsModuleEnabled.mockImplementation((key) => key === "checkout_voucher" && vouchers);
   return mount(PromoList, {
     shallow: true,
     global: {
+      // The page frame renders its slots; every other child stays shallow.
+      stubs: { PageLayout: PageFrameStub },
       mocks: { $route: { params: {}, query: tab ? { tab } : {} }, $router: { push: vi.fn() } },
     },
   });

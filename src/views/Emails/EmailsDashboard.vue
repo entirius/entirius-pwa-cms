@@ -1,9 +1,8 @@
 <template>
-  <div class="page-pad fs-300 t-body h-100 ov-h">
-    <div
-      class="page-card h-100 ovy-auto"
-    >
-      <PageHeader :title="$t('emails.dashboard')" class="mb-10" />
+  <PageLayout class="fs-300 t-body">
+    <template #header>
+      <PageHeader :title="$t('emails.dashboard')" />
+    </template>
 
       <Loader block v-show="loading" />
 
@@ -61,8 +60,7 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
+  </PageLayout>
 </template>
 
 <script>

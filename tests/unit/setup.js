@@ -1,5 +1,6 @@
 import { config } from "@vue/test-utils";
 import { ICONS } from "@/boots/Icons/icons";
+import PageLayout from "@/boots/PageLayout/index.vue";
 
 // Simple i18n stubs reused by every test
 const $t = (key, params = {}) => {
@@ -15,6 +16,9 @@ config.global.mocks = {
   $route: { params: {}, query: {}, hash: "", path: "/" },
   $router: { push: () => {}, replace: () => {} },
 };
+
+// The page frame of every view (plan 25): real, so the views' header, toolbar and content slots render.
+config.global.components = { PageLayout };
 
 config.global.stubs = {
   FontAwesomeIcon: true,

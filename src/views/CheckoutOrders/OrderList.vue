@@ -1,5 +1,5 @@
 <template>
-  <div class="order-list page-pad fs-300 t-body h-100 ov-h">
+  <PageLayout class="order-list fs-300 t-body">
     <!-- Channel selector in toolbar (matches PIM pattern) -->
     <Teleport to="#checkout-orders-toolbar-left" defer>
       <span v-if="channels.length > 1" class="flex ai-ct gap-2">
@@ -16,14 +16,11 @@
       </span>
     </Teleport>
 
-    <div
-      class="page-card h-100 ovy-auto"
-    >
-      <!-- Heading -->
-      <PageHeader :title="$t('checkout_orders.orders')" class="mb-10" />
-
-      <!-- Status FilterChips -->
-      <div class="flex ai-ct mb-10">
+    <template #header>
+      <PageHeader :title="$t('checkout_orders.orders')" />
+    </template>
+    <template #toolbar>
+      <div class="flex ai-ct">
         <MobileFilterPanel
           :active-count="activeFilterCount"
           :trigger-label="$t('checkout_orders.filters')"
@@ -38,6 +35,10 @@
           />
         </MobileFilterPanel>
       </div>
+    </template>
+      <!-- Heading -->
+
+      <!-- Status FilterChips -->
 
       <!-- Search -->
       <div class="flex ai-ct gap-8 mb-10 flex-wrap">
@@ -86,8 +87,7 @@
         :pages="paginationState.pages"
         @update:page="onPageChange"
       />
-    </div>
-  </div>
+  </PageLayout>
 </template>
 
 <script>

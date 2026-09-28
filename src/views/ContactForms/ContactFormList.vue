@@ -1,11 +1,10 @@
 <template>
-  <div class="page-pad fs-300 t-body h-100 ov-h">
-    <div
-      class="page-card h-100 ovy-auto"
-    >
-      <PageHeader :title="$t('cf.submissions')" class="mb-10" />
-
-      <div class="flex ai-ct flex-wrap gap-8 rg-3 mb-10">
+  <PageLayout class="fs-300 t-body">
+    <template #header>
+      <PageHeader :title="$t('cf.submissions')" />
+    </template>
+    <template #toolbar>
+      <div class="flex ai-ct flex-wrap gap-8 rg-3">
         <BasicInput
           v-model="search"
           :placeholder="$t('common.start_typing')"
@@ -35,6 +34,7 @@
           @update:model-value="onStatusFilter"
         />
       </div>
+    </template>
 
       <Loader block v-show="loading" />
 
@@ -71,8 +71,7 @@
         :pages="paginationState.pages"
         @update:page="onPageChange"
       />
-    </div>
-  </div>
+  </PageLayout>
 </template>
 
 <script>

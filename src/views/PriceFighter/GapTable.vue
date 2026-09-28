@@ -1,6 +1,5 @@
 <template>
-  <div class="page-pad fs-300 t-body h-100 ov-h">
-    <div class="page-card h-100 ovy-auto">
+  <PageLayout class="fs-300 t-body">
       <!-- Toolbar -->
       <div class="gap-table__toolbar">
         <BasicSelect
@@ -113,7 +112,6 @@
           />
         </template>
       </div>
-    </div>
 
     <ApplyPreviewModal
       v-if="showPreview"
@@ -126,7 +124,7 @@
       :report="applyReport"
       @closed="onReportClosed"
     />
-  </div>
+  </PageLayout>
 </template>
 
 <script>

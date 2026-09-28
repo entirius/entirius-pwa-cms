@@ -1,12 +1,10 @@
 <template>
-  <div class="page-pad fs-300 t-body h-100 ov-h">
-    <div
-      class="page-card h-100 ovy-auto"
-    >
-      <PageHeader :title="$t('dp.types')" class="mb-10" />
-
-      <!-- Inline create row -->
-      <div class="create-row mb-10">
+  <PageLayout class="fs-300 t-body">
+    <template #header>
+      <PageHeader :title="$t('dp.types')" />
+    </template>
+    <template #toolbar>
+      <div class="create-row">
         <div class="create-row__fields">
           <BasicInput
             v-model="newType.code"
@@ -32,6 +30,9 @@
           {{ $t('common.add') }}
         </BasicButton>
       </div>
+    </template>
+
+      <!-- Inline create row -->
 
       <Loader block v-show="loading" />
 
@@ -66,7 +67,6 @@
           />
         </template>
       </DataTable>
-    </div>
 
     <!-- Edit modal -->
     <div
@@ -138,7 +138,7 @@
         ><p>{{ $t("dp.confirm_delete_type") }}</p></template
       >
     </ConfirmDialog>
-  </div>
+  </PageLayout>
 </template>
 
 <script>

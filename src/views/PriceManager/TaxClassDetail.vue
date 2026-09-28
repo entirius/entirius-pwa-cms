@@ -1,5 +1,5 @@
 <template>
-  <div class="page-pad fs-300 t-body h-100 ov-h">
+  <PageLayout class="fs-300 t-body">
     <Teleport to="#pricing-toolbar-left" defer>
       <IconButton
         icon="back"
@@ -25,8 +25,6 @@
         {{ $t('pm.save') }}
       </BasicButton>
     </Teleport>
-
-    <div class="page-card h-100 ovy-auto">
       <Loader block v-if="loading" />
 
       <template v-else>
@@ -97,7 +95,6 @@
           </div>
         </div>
       </template>
-    </div>
 
     <ConfirmDialog
       tone="danger"
@@ -108,7 +105,7 @@
     >
       <template #default><p>{{ $t('pm.confirm_delete_msg') }}</p></template>
     </ConfirmDialog>
-  </div>
+  </PageLayout>
 </template>
 
 <script>

@@ -1,5 +1,5 @@
 <template>
-  <div class="page-pad fs-300 t-body h-100 ov-h">
+  <PageLayout class="fs-300 t-body">
     <Teleport to="#pricing-toolbar-right" defer>
       <div v-if="dirtyCount > 0" class="flex ai-ct gap-2">
         <StatusBadge :label="`${dirtyCount} ${$t('pm.unsaved')}`" tone="warning" />
@@ -12,8 +12,6 @@
         </BasicButton>
       </div>
     </Teleport>
-
-    <div class="page-card h-100 ovy-auto">
 
       <!-- Toolbar -->
       <div class="price-list__toolbar">
@@ -236,7 +234,6 @@
           />
         </template>
       </div>
-    </div>
 
     <FloatingActions :actions="fabActions" />
 
@@ -259,7 +256,7 @@
     >
       <template #default><p>{{ $t('pm.delete_prices_confirm') }}</p></template>
     </ConfirmDialog>
-  </div>
+  </PageLayout>
 </template>
 
 <script>

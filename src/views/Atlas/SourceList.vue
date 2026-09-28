@@ -1,9 +1,7 @@
 <template>
-  <div class="page-pad fs-300 t-body h-100 ov-h">
-    <div
-      class="page-card h-100 ovy-auto"
-    >
-      <PageHeader :title="$t('atlas.list_title')" class="mb-10">
+  <PageLayout class="fs-300 t-body">
+    <template #header>
+      <PageHeader :title="$t('atlas.list_title')">
         <template #actions>
           <BasicButton
             variant="primary"
@@ -14,9 +12,9 @@
           </BasicButton>
         </template>
       </PageHeader>
-
-      <!-- Filter panel -->
-      <div class="flex ai-ct mb-10">
+    </template>
+    <template #toolbar>
+      <div class="flex ai-ct">
         <MobileFilterPanel
           :active-count="activeFilterCount"
           :trigger-label="$t('builder.filters')"
@@ -47,6 +45,9 @@
           </div>
         </MobileFilterPanel>
       </div>
+    </template>
+
+      <!-- Filter panel -->
 
       <div class="supplier-list__toolbar">
         <BasicInput
@@ -117,7 +118,6 @@
         :pages="paginationState.pages"
         @update:page="onPageChange"
       />
-    </div>
 
     <!-- Create supplier drawer -->
     <SideDrawer
@@ -286,7 +286,7 @@
         </BasicButton>
       </template>
     </BasicModal>
-  </div>
+  </PageLayout>
 </template>
 
 <script>

@@ -1,12 +1,10 @@
 <template>
-  <div class="page-pad fs-300 t-body h-100 ov-h">
-    <div
-      class="page-card h-100 ovy-auto"
-    >
-      <PageHeader :title="$t('dp.points')" class="mb-10" />
-
-      <!-- Filter tabs -->
-      <div class="flex ai-ct mb-10">
+  <PageLayout class="fs-300 t-body">
+    <template #header>
+      <PageHeader :title="$t('dp.points')" />
+    </template>
+    <template #toolbar>
+      <div class="flex ai-ct">
         <MobileFilterPanel
           :active-count="activeFilter !== 'all' ? 1 : 0"
           :trigger-label="$t('builder.filters')"
@@ -21,6 +19,9 @@
           />
         </MobileFilterPanel>
       </div>
+    </template>
+
+      <!-- Filter tabs -->
 
       <div class="point-list__toolbar">
         <BasicInput
@@ -78,8 +79,7 @@
       />
 
       <FloatingActions :actions="fabActions" />
-    </div>
-  </div>
+  </PageLayout>
 </template>
 
 <script>

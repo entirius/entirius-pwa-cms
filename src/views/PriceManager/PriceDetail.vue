@@ -1,5 +1,5 @@
 <template>
-  <div class="page-pad fs-300 t-body h-100 ov-h">
+  <PageLayout class="fs-300 t-body">
     <Teleport v-if="!embedded" to="#pricing-toolbar-left" defer>
       <IconButton
         icon="back"
@@ -8,8 +8,6 @@
       />
       <span class="fw-600 fs-400">{{ effectiveSku || $t('pm.price_detail') }}</span>
     </Teleport>
-
-    <div class="page-card h-100 ovy-auto">
       <Loader block v-if="loading" />
 
       <template v-else>
@@ -227,8 +225,7 @@
           </div>
         </template>
       </template>
-    </div>
-  </div>
+  </PageLayout>
 </template>
 
 <script>
