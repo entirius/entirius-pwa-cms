@@ -75,7 +75,8 @@
     "sso_in_progress": "Signing you in…",
     "sso_failed": "SSO login failed",
     "sso_state_mismatch": "This sign-in link is invalid or has already been used. Start the login again.",
-    "sso_provider_error": "The identity provider refused the login ({error})."
+    "sso_provider_error": "The identity provider refused the login ({error}).",
+    "show_password": "Show password"
   },
   "app": {
     "expand_sidebar": "Expand sidebar",
@@ -2523,7 +2524,8 @@
       "scope_pim": "PIM",
       "scope_atlas": "Atlas",
       "image_error": "Could not read that image.",
-      "image_too_large": "That image is too large (max 20 MB)."
+      "image_too_large": "That image is too large (max 20 MB).",
+      "remove_image": "Remove photo"
     },
     "kind": {
       "pim_product": "PIM",

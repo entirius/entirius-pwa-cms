@@ -10,24 +10,9 @@
   }
 }
 
-.auth-card__link {
-  display: block;
-  width: 100%;
-  background: none;
-  border: none;
-  color: var(--text-accent);
-  font-size: var(--fs-250);
-  cursor: pointer;
-  text-align: center;
-
-  &:hover {
-    text-decoration: underline;
-  }
-
-  // A thumb-sized target on a phone (the text line alone is 16 px).
-  @include max-tablet {
-    min-height: var(--space-10);
-  }
+// A-35: no orphan word when a title wraps on a phone.
+.auth-card__title {
+  text-wrap: balance;
 }
 
 .auth-card__divider {
@@ -68,23 +53,11 @@
   position: relative;
 }
 
+// The reveal IconButton sits inside the password field's right edge.
 .auth-card__pw-toggle {
   position: absolute;
-  right: 6px;
+  right: var(--space-1);
   top: 50%;
   transform: translateY(-50%);
   display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  border: none;
-  background: none;
-  color: var(--text-muted);
-  cursor: pointer;
-  font-size: var(--fs-250);
-
-  &:hover {
-    color: var(--text-body);
-  }
 }

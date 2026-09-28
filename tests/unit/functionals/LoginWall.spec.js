@@ -18,6 +18,7 @@ vi.mock("@/composables/useLoginSession", () => ({
 }));
 
 import LoginWall from "@/functionals/Login-wall/Login-wall.vue";
+import { POST_PasswordReset } from "@/api/contentDB/api";
 
 const mountWall = () => mount(LoginWall);
 const ssoButton = (wrapper) => wrapper.find('[data-testid="sso-login"]');
@@ -82,5 +83,30 @@ describe("Login-wall", () => {
 
     expect(mockPostLogin).toHaveBeenCalledWith({ username: "ops", password: "pw" });
     expect(completeLogin).toHaveBeenCalledWith({ access: "a", refresh: "r", customer_id: "c" });
+  });
+
+  // Plan 32: the fields sit in a <form>, so Enter in a field submits it (implicit submission).
+  it("submitting the login form logs in", async () => {
+    mockPostLogin.mockResolvedValue({ data: { data: { access: "a", refresh: "r" } } });
+    const wrapper = mountWall();
+    await wrapper.setData({ username: "ops", password: "pw" });
+
+    await wrapper.get("form").trigger("submit");
+    await flushPromises();
+
+    expect(mockPostLogin).toHaveBeenCalledWith({ username: "ops", password: "pw" });
+  });
+
+  it("submitting the forgot-password form sends the reset link", async () => {
+    const wrapper = mountWall();
+    wrapper.vm.showForgotPassword = true;
+    wrapper.vm.resetEmail = "ops@example.test";
+    await wrapper.vm.$nextTick();
+
+    await wrapper.get("form").trigger("submit");
+    await flushPromises();
+
+    expect(POST_PasswordReset).toHaveBeenCalledWith({ email: "ops@example.test" });
+    expect(wrapper.vm.resetEmailSent).toBe(true);
   });
 });
