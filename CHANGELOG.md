@@ -115,6 +115,18 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- P5 PriceManager (plan 39): the Pricing panel toolbar is gone. The channel selector sits in the PageHeader `meta` of
+  the prices list and the price detail (one panel-local `PmChannelSelect`), and every list has its H1. Save all with
+  its unsaved count, Sync from PIM, and each detail's Save and Delete are in PageHeader `ActionBar`s. The price
+  detail's Save, the countries and history toggles, and the two danger actions moved from a row under the form into
+  its header (under the form when the detail is embedded in the PIM product tab). The price, tax class and channel
+  details follow the detail-form pattern: `BasicCard` sections with a `.form-grid`, the calculated price is a
+  read-only `BasicInput`, and the tax rate fields are labelled `FormField`s with the same percent rules. The promo
+  dates are `BasicDatePicker`s in the detail and in the price rows, where the table box grows while a calendar is
+  open. The rows' "Show countries" control is a small `IconButton` toggle. SKU, channel IDX and tax class IDX cells
+  are links, which closes the two plan-39 `nonFocusable` allow-list entries. Pagination sits in the list footer.
+  Smoke spec `tests/e2e/p5-price-manager-smoke.spec.js`.
+
 - P5 ContactForms (plan 37): the lead and booking detail cards are `BasicCard`s (the view-local `cf-card` is gone).
   The lead's status badge sits beside the title (PageHeader `meta`), and the unsaved badge, the transitions
   `BasicSelect`, Mark as Won and Save sit in the PageHeader, with the same transition call and the same deal-value
