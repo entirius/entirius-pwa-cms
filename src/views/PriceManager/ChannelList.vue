@@ -18,7 +18,7 @@
           @row-click="onRowClick"
         >
           <template #cell-idx="{ row }">
-            <router-link :to="`/pricing/channels/${row.idx}`" class="fw-600 t-accent" @click.stop>
+            <router-link :to="`/pricing/channels/${encodeURIComponent(row.idx)}`" class="fw-600 t-accent" @click.stop>
               {{ row.idx }}
             </router-link>
           </template>

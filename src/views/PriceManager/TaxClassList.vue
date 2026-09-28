@@ -14,9 +14,12 @@
           @row-click="onRowClick"
         >
           <template #cell-idx="{ row }">
-            <router-link :to="`/pricing/tax-classes/${row.idx}`" class="fw-600 t-accent" @click.stop>
+            <router-link :to="`/pricing/tax-classes/${encodeURIComponent(row.idx)}`" class="fw-600 t-accent" @click.stop>
               {{ row.idx }}
             </router-link>
+          </template>
+          <template #cell-name="{ row }">
+            <span class="fw-600">{{ row.name }}</span>
           </template>
           <template #cell-rate_count="{ row }">
             <StatusBadge tone="accent" :dot="false" :label="`${row.rate_count ?? 0} ${$t('pm.rate_count')}`" />
