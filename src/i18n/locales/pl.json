@@ -628,7 +628,12 @@
     "no_products_found": "Nie znaleziono produktów",
     "no_stock_yet": "Brak stanów",
     "add_selected": "Dodaj wybrane",
-    "tab_stock": "Stany"
+    "tab_stock": "Stany",
+    "import_choose_file": "Wybierz plik",
+    "import_no_file": "Nie wybrano pliku",
+    "import_upload": "Wyślij",
+    "import_done": "Gotowe",
+    "import_row_error": "Wiersz {row}: {error}"
   },
   "accounts": {
     "filters": "Status klienta",

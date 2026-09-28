@@ -1,30 +1,44 @@
 <template>
   <PageLayout class="fs-300 t-body">
-    <Teleport to="#stock-toolbar-right" defer>
-      <span
-        v-if="dirtyCount > 0 && isManual"
-        class="bg-warning-subtle t-warning fs-200 ph-2 rounded"
-      >
-        {{ $t("stock.unsaved") }}: {{ dirtyCount }}
-      </span>
-      <BasicButton
-        v-if="isManual"
-        variant="secondary"
-        @click="showImportModal = true"
-      >
-        {{ $t('stock.import_csv') }}
-      </BasicButton>
-      <BasicButton
-        v-if="isManual"
-        variant="primary"
-        :disabled="dirtyCount === 0"
-        @click="saveAll"
-      >
-        {{ $t('stock.save_all') }}
-      </BasicButton>
-    </Teleport>
+    <template #header>
+      <PageHeader :title="$t('stock.manage')">
+        <template #actions>
+          <div class="flex ai-ct jc-fe wrap gap-3">
+            <StockWarehousePicker />
+            <StatusBadge
+              v-if="isManual && dirtyCount > 0"
+              tone="warning"
+              :dot="false"
+              :label="`${$t('stock.unsaved')}: ${dirtyCount}`"
+            />
+            <ActionBar v-if="isManual" :actions="headerActions" />
+          </div>
+        </template>
+      </PageHeader>
+    </template>
 
-    <!-- Integration warning -->
+    <template #toolbar>
+      <div class="stock-table__toolbar">
+        <BasicInput
+          v-model="search"
+          :placeholder="$t('stock.search_sku')"
+          :aria-label="$t('stock.search_sku')"
+          icon="search"
+          class="stock-table__search"
+          @input="onSearch"
+        />
+        <div class="filter-chip-row" role="group" :aria-label="$t('stock.status')">
+          <FilterChip
+            v-for="filter in filters"
+            :key="filter.key"
+            :label="filter.label"
+            :active="activeFilter === filter.key"
+            @click="setFilter(filter.key)"
+          />
+        </div>
+      </div>
+    </template>
+
     <div
       v-if="!isManual"
       class="flex ai-ct gap-5 mb-8 p-8 bg-accent-subtle rounded t-strong fs-200"
@@ -32,93 +46,53 @@
       <FontAwesomeIcon :icon="$icons.lock" />
       <span>{{ $t("stock.integration_readonly") }}</span>
     </div>
-      <!-- Toolbar: search + filter chips -->
-      <div class="stock-table__toolbar">
-        <BasicInput
-          v-model="search"
-          :placeholder="$t('stock.search_sku')"
-          icon="search"
-          class="stock-table__search"
-          @input="onSearch"
-        />
-        <FilterChip
-          :label="$t('stock.filter_all')"
-          :active="activeFilter === 'all'"
-          @click="setFilter('all')"
-        />
-        <FilterChip
-          :label="$t('stock.filter_with_stock')"
-          :active="activeFilter === 'with_stock'"
-          @click="setFilter('with_stock')"
-        />
-        <FilterChip
-          :label="$t('stock.filter_no_stock')"
-          :active="activeFilter === 'no_stock'"
-          @click="setFilter('no_stock')"
-        />
-      </div>
 
-      <!-- Table -->
-      <div v-if="loading" class="flex-center pv-12">
-        <Loader />
-      </div>
+    <Loader v-if="loading" block />
 
-      <div v-else-if="rows.length === 0" class="pv-12">
-        <EmptyState :title="$t('stock.no_stock')" icon="stock" />
-      </div>
-
-      <div v-else class="table-scroll">
-        <table class="table-basic stock-table">
-          <thead>
-            <tr>
-              <th class="stock-table__col-sku">{{ $t("stock.sku") }}</th>
-              <th class="stock-table__col-qty">{{ $t("stock.quantity") }}</th>
-              <th class="stock-table__col-dispatch">{{ $t("stock.dispatch_time") }}</th>
-              <th class="stock-table__col-status">{{ $t("stock.status") }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="item in rows" :key="item.sku">
-              <td class="stock-table__col-sku" :class="{ 't-negative': item.has_stock && item.quantity === 0 }">
-                {{ item.sku }}
-              </td>
-              <td class="stock-table__col-qty">
-                <NumberInput
-                  v-if="isManual"
-                  :modelValue="getDisplayQty(item)"
-                  :min="0"
-                  @update:modelValue="(val) => onQtyChange(item.sku, val, item)"
-                />
-                <span v-else>{{ item.has_stock ? item.quantity : '—' }}</span>
-              </td>
-              <td class="stock-table__col-dispatch">
-                <span v-if="item.dispatch_resolved != null">
-                  {{ $t("stock.dispatch_hours", { hours: item.dispatch_resolved }) }}
-                </span>
-                <span v-else class="t-muted fs-200">—</span>
-              </td>
-              <td class="stock-table__col-status">
-                <StatusBadge v-if="isDirty(item.sku)" :label="$t('stock.unsaved')" tone="warning" />
-                <StatusBadge v-else-if="!item.has_stock" :label="$t('stock.no_stock_label')" tone="neutral" />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Pagination -->
-      <div v-if="totalCount > pageSize" class="mt-8">
-        <Pagination
-          :page="currentPage"
-          :pages="Math.ceil(totalCount / pageSize)"
-          @update:page="onPageChange"
+    <DataTable
+      v-else
+      :columns="columns"
+      :rows="products"
+      row-key="sku"
+      empty-size="md"
+      :empty-text="$t('stock.no_stock')"
+    >
+      <template #cell-sku="{ row }">
+        <span :class="{ 't-negative': row.has_stock && row.quantity === 0 }">{{ row.sku }}</span>
+      </template>
+      <template #cell-quantity="{ row }">
+        <NumberInput
+          v-if="isManual"
+          :model-value="getDisplayQty(row)"
+          :min="0"
+          :aria-label="`${$t('stock.quantity')}: ${row.sku}`"
+          @update:model-value="(val) => onQtyChange(row.sku, val, row)"
         />
-      </div>
+        <span v-else>{{ row.has_stock ? row.quantity : "—" }}</span>
+      </template>
+      <template #cell-dispatch_resolved="{ row }">
+        <span v-if="row.dispatch_resolved != null">
+          {{ $t("stock.dispatch_hours", { hours: row.dispatch_resolved }) }}
+        </span>
+        <span v-else class="t-muted fs-200">—</span>
+      </template>
+      <template #cell-status="{ row }">
+        <StatusBadge v-if="isDirty(row.sku)" :label="$t('stock.unsaved')" tone="warning" />
+        <StatusBadge v-else-if="!row.has_stock" :label="$t('stock.no_stock_label')" tone="neutral" />
+      </template>
+    </DataTable>
 
-    <!-- CSV Import Modal -->
+    <template v-if="totalCount > pageSize" #footer>
+      <Pagination
+        :page="currentPage"
+        :pages="Math.ceil(totalCount / pageSize)"
+        @update:page="onPageChange"
+      />
+    </template>
+
     <ImportCSVModal
       v-if="showImportModal"
-      :warehouseCode="warehouse?.code"
+      :warehouse-code="warehouse?.code"
       @close="showImportModal = false"
       @imported="onCsvImported"
     />
@@ -131,10 +105,11 @@ import { useNotifyStore } from "@/stores/notify"
 import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors"
 import { GET_WarehouseProducts, PATCH_WarehouseStock } from "@/api/stock/api"
 import ImportCSVModal from "./ImportCSVModal.vue"
+import StockWarehousePicker from "./StockWarehousePicker.vue"
 
 export default {
   name: "WarehouseStockTable",
-  components: { ImportCSVModal },
+  components: { ImportCSVModal, StockWarehousePicker },
   inject: ["activeWarehouse"],
   setup() {
     const loader = useLoaderStore()
@@ -166,8 +141,32 @@ export default {
     dirtyCount() {
       return Object.keys(this.dirtyItems).length
     },
-    rows() {
-      return this.products
+    filters() {
+      return [
+        { key: "all", label: this.$t("stock.filter_all") },
+        { key: "with_stock", label: this.$t("stock.filter_with_stock") },
+        { key: "no_stock", label: this.$t("stock.filter_no_stock") },
+      ]
+    },
+    columns() {
+      return [
+        { key: "sku", label: this.$t("stock.sku"), truncate: true },
+        { key: "quantity", label: this.$t("stock.quantity"), width: "160px" },
+        { key: "dispatch_resolved", label: this.$t("stock.dispatch_time"), width: "max-content", priority: 2 },
+        { key: "status", label: this.$t("stock.status"), width: "max-content", align: "right" },
+      ]
+    },
+    headerActions() {
+      return [
+        { key: "import", label: this.$t("stock.import_csv"), role: "secondary", onClick: this.openImport },
+        {
+          key: "save",
+          label: this.$t("stock.save_all"),
+          role: "primary",
+          disabled: this.dirtyCount === 0,
+          onClick: this.saveAll,
+        },
+      ]
     },
   },
   watch: {
@@ -261,6 +260,9 @@ export default {
       this.dirtyItems = {}
       this.fetchProducts()
     },
+    openImport() {
+      this.showImportModal = true
+    },
     onCsvImported() {
       this.showImportModal = false
       this.fetchProducts()
@@ -274,7 +276,6 @@ export default {
   display: flex;
   align-items: center;
   gap: var(--space-5);
-  margin-bottom: var(--space-8);
   flex-wrap: wrap;
 }
 
@@ -282,28 +283,5 @@ export default {
   flex: 1;
   min-width: 150px;
   max-width: 400px;
-}
-
-.stock-table tr:hover td {
-  background: var(--surface-raised);
-}
-
-.stock-table__col-sku {
-  width: auto;
-}
-
-.stock-table__col-qty {
-  width: 140px;
-}
-
-.stock-table__col-status {
-  width: 120px;
-  text-align: right;
-}
-
-.flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 </style>
