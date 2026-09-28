@@ -115,6 +115,15 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- P5 Pim dialogs (plan 50): one translate dialog, `src/components/TranslateDialog/` on `BasicModal`, replaces the Pim
+  product and store dialogs and the Pages „Przetłumacz wszystko” modal. `scope` (`product` · `store` · `content`)
+  picks the extra options (content types, publish) and how the estimate reads (a `DataTable` per language or per
+  type, the total row last, the pages of a content estimate); the callers keep their translator calls
+  (`estimateFn`, `submitFn`: `src/views/Pim/translateFns.js`, `src/views/Builder/translateFns.js`), and
+  `PimTranslateDialog` adds the Pim language names and „Dodaj język do kanału”. Target languages are a
+  `BasicSelect multiple` with removable `Tag`s; strings live in the new `translate_dialog` namespace. Add to channel,
+  copy translations and the enrichment spawn dialog are `BasicModal`s with `FormField`, `BasicRadioGroup`,
+  `BasicCheckbox` and `BasicSelect`. Smoke `tests/e2e/p5-pim-dialogs-smoke.spec.js` opens each dialog and cancels.
 - P5 Pim products (plan 49): the product list, detail and create pages sit in `PageLayout` with a `PageHeader`; the
   channel selector moves from the Pim toolbar strip into the header `meta` of these three pages (`PimChannelSelect`;
   the wrapper keeps its own selector for the other Pim views until plan 51). The product detail header holds the
