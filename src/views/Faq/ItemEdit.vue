@@ -16,22 +16,22 @@
         {{ $t('common.save') }}
       </BasicButton>
     </Teleport>
+    <template v-if="!loading" #header>
+      <PageHeader
+        :title="isEdit ? String(item.question || item.url_key || '') : $t('faq.create_item')"
+        back="/faq/items"
+      >
+        <template #actions>
+          <BasicSwitch
+            :label="$t('faq.is_active')"
+            v-model="form.is_active"
+          />
+        </template>
+      </PageHeader>
+    </template>
       <Loader block v-if="loading" />
 
       <template v-else>
-        <PageHeader
-          :title="isEdit ? String(item.question || item.url_key || '') : $t('faq.create_item')"
-          back="/faq/items"
-          class="mb-12"
-        >
-          <template #actions>
-            <BasicSwitch
-              :label="$t('faq.is_active')"
-              v-model="form.is_active"
-            />
-          </template>
-        </PageHeader>
-
         <!-- Main fields -->
         <div class="page-card detail-section mb-10">
           <h2 class="fs-500 fw-600 mb-8">{{ $t("faq.item_details") }}</h2>
