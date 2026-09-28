@@ -115,6 +115,15 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- P5 ContactForms (plan 37): the lead and booking detail cards are `BasicCard`s (the view-local `cf-card` is gone).
+  The lead's status badge sits beside the title (PageHeader `meta`), and the unsaved badge, the transitions
+  `BasicSelect`, Mark as Won and Save sit in the PageHeader, with the same transition call and the same deal-value
+  dialog before "won". The dialog's buttons are its `ActionBar`. Open lead moved into the booking's PageHeader. The
+  submission's attachment download is an outline `IconButton` `download` named „Pobierz: <file>”. The bookings date
+  filters are `BasicDatePicker`s in inline `FormField`s with a clear button, and the lead status filter of both
+  lists is an inline `FilterChip` row (no filter panel). Pagination sits in the footer of the three lists, and the
+  Forms panel toolbar is gone. Smoke spec `tests/e2e/p5-contact-forms-smoke.spec.js`.
+
 - P5 Authors (plan 35): the content editor's Authors and Co-authors fields are `EntitySearchPicker`s inside
   `FormField`s — a picked author joins the list, the list is removable `Tag`s you can drag to reorder, an author
   already in either list is not offered again; the save payload (`author_uids`, `co_author_uids`) is unchanged. The
