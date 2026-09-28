@@ -1,19 +1,20 @@
 <template>
   <PageLayout class="fs-300 t-body">
-    <Teleport to="#pricing-toolbar-right" defer>
-      <div v-if="dirtyCount > 0" class="flex ai-ct gap-2">
-        <StatusBadge :label="`${dirtyCount} ${$t('pm.unsaved')}`" tone="warning" />
-        <BasicButton
-          variant="primary"
-          :disabled="saving"
-          @click="saveAll"
-        >
-          {{ saving ? $t('pm.saving') : $t('pm.save_all') }}
-        </BasicButton>
-      </div>
-    </Teleport>
+    <template #header>
+      <PageHeader :title="$t('pm.prices')">
+        <template #meta>
+          <PmChannelSelect />
+        </template>
+        <template v-if="dirtyCount > 0" #actions>
+          <div class="flex ai-ct jc-fe wrap gap-3">
+            <StatusBadge :label="`${dirtyCount} ${$t('pm.unsaved')}`" tone="warning" />
+            <ActionBar :actions="headerActions" />
+          </div>
+        </template>
+      </PageHeader>
+    </template>
 
-      <!-- Toolbar -->
+    <template #toolbar>
       <div class="price-list__toolbar">
         <!-- Currency multi-select -->
         <BasicSelect
@@ -42,7 +43,7 @@
         />
 
         <!-- Filter chips -->
-        <div class="flex ai-ct gap-2">
+        <div class="filter-chip-row" role="group" :aria-label="$t('pm.price_filter')">
           <FilterChip
             :label="$t('pm.all_products')"
             :active="activeFilter === 'all'"
@@ -59,9 +60,8 @@
             @click="setFilter('without_price')"
           />
         </div>
-
-        <!-- Save All is teleported to #pricing-toolbar-right -->
       </div>
+    </template>
 
       <Loader block v-show="loading" />
 
@@ -101,9 +101,9 @@
                 :class="{ 'pm-price-table__row--dirty': dirtyRows.has(rowKey(row)) }"
               >
                 <!-- SKU -->
-                <span class="fw-600 t-accent pointer text-truncate" @click="goToDetail(row.sku)">
+                <router-link :to="detailPath(row.sku)" class="fw-600 t-accent text-truncate">
                   {{ row.sku }}
-                </span>
+                </router-link>
 
                 <!-- Tax Class -->
                 <span class="t-muted fs-200">{{ row.tax_class || '—' }}</span>
@@ -132,32 +132,27 @@
                 <span class="t-muted">{{ formatPrice(specialGrossValue(row)) }}</span>
 
                 <!-- Special From -->
-                <input
-                  type="date"
-                  class="pm-date-native"
-                  :value="getDirtyField(rowKey(row), 'special_from_date', row.special_from_date || '')"
-                  @change="setDirty(rowKey(row), 'special_from_date', $event.target.value, row)"
+                <BasicDatePicker
+                  :model-value="getDirtyField(rowKey(row), 'special_from_date', row.special_from_date || '')"
+                  @update:model-value="setDirty(rowKey(row), 'special_from_date', $event, row)"
                 />
 
                 <!-- Special To -->
-                <input
-                  type="date"
-                  class="pm-date-native"
-                  :value="getDirtyField(rowKey(row), 'special_to_date', row.special_to_date || '')"
-                  @change="setDirty(rowKey(row), 'special_to_date', $event.target.value, row)"
+                <BasicDatePicker
+                  :model-value="getDirtyField(rowKey(row), 'special_to_date', row.special_to_date || '')"
+                  @update:model-value="setDirty(rowKey(row), 'special_to_date', $event, row)"
                 />
 
                 <!-- Actions: eye + flush special + delete -->
                 <div class="flex ai-ct gap-2">
-                  <button
+                  <IconButton
                     v-if="row.has_price && hasMultipleCountries"
-                    class="pm-expand-btn"
-                    :class="{ 'pm-expand-btn--active': expandedSkus.has(row.sku) }"
-                    :title="$t('pm.expand_countries')"
+                    icon="preview"
+                    :label="$t('pm.expand_countries')"
+                    size="sm"
+                    :pressed="expandedSkus.has(row.sku)"
                     @click="toggleExpand(row.sku)"
-                  >
-                    <FontAwesomeIcon :icon="$icons.preview" />
-                  </button>
+                  />
                   <IconButton
                     v-if="row.has_price"
                     icon="clear"
@@ -225,17 +220,18 @@
               </div>
             </template>
           </div>
-
-          <Pagination
-            v-if="totalCount > pageSize"
-            :page="paginationState.page"
-            :pages="paginationState.pages"
-            @update:page="onPageChange"
-          />
         </template>
       </div>
 
     <FloatingActions :actions="fabActions" />
+
+    <template v-if="!loading && channelIdx && rows.length && totalCount > pageSize" #footer>
+      <Pagination
+        :page="paginationState.page"
+        :pages="paginationState.pages"
+        @update:page="onPageChange"
+      />
+    </template>
 
     <ConfirmDialog
       tone="danger"
@@ -273,10 +269,11 @@ import {
   POST_PmFlushSpecial,
 } from '@/api/pricemanager/api'
 import { extractApiMessage } from '@/composables/useFormErrors'
+import PmChannelSelect from './PmChannelSelect.vue'
 
 export default {
   name: 'PmPriceList',
-  components: {},
+  components: { PmChannelSelect },
   inject: {
     pmChannelIdx: { default: null },
     pmActiveChannel: { default: null },
@@ -328,6 +325,12 @@ export default {
     },
     dirtyCount() {
       return this.dirtyRows.size
+    },
+    headerActions() {
+      return [
+        { key: 'save-all', role: 'primary', disabled: this.saving, onClick: this.saveAll,
+          label: this.saving ? this.$t('pm.saving') : this.$t('pm.save_all') },
+      ]
     },
     currencyOptions() {
       return this.availableCurrencies.map((c) => ({ value: c, label: c }))
@@ -502,8 +505,8 @@ export default {
       this.dirtyRows = new Map()
       this.fetchPrices()
     },
-    goToDetail(sku) {
-      this.$router.push(`/pricing/prices/${sku}`)
+    detailPath(sku) {
+      return `/pricing/prices/${encodeURIComponent(sku)}`
     },
     // --- Expand / collapse ---
     async toggleExpand(sku) {
@@ -691,7 +694,6 @@ export default {
   display: flex;
   align-items: center;
   gap: var(--space-5);
-  margin-bottom: var(--space-10);
   flex-wrap: wrap;
 }
 
@@ -713,12 +715,17 @@ export default {
 
 // --- Table ---
 
+// The rows keep 1296 px (two date pickers); only the table box scrolls sideways, never the page.
 .pm-price-table {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-base);
   overflow-x: auto;
-  // min-width ensures horizontal scroll instead of crushing columns
-  min-width: 1080px;
+
+  // A row date picker opens its calendar inside this scroll box: while one is open the box grows by the calendar's
+  // height, so the calendar of the last rows shows whole instead of being cut at the box edge.
+  &:has(.basic-date-picker__trigger[aria-expanded="true"]) {
+    padding-bottom: calc(3 * var(--space-30));
+  }
 }
 
 // SKU | Tax | Cur | Net | Gross | Spec.Net | Spec.Gross | From | To | Eye | Status
@@ -731,13 +738,14 @@ $cols:
   minmax(90px, 1fr)    // Gross (readonly)
   minmax(90px, 1fr)    // Special Net (input)
   minmax(90px, 0.8fr)  // Special Gross (readonly)
-  minmax(90px, 1fr)    // Promo Start
-  minmax(90px, 1fr)    // Promo End
+  minmax(12rem, 1fr)   // Promo Start (BasicDatePicker)
+  minmax(12rem, 1fr)   // Promo End (BasicDatePicker)
   112px                // Actions (eye + flush + delete)
   60px;                // Status
 
 .pm-price-table__head {
   display: grid;
+  min-width: 1296px;
   grid-template-columns: $cols;
   // The DataTable cell model: neighbouring columns keep 12 px between them.
   gap: var(--space-3);
@@ -752,6 +760,7 @@ $cols:
 
 .pm-price-table__row {
   display: grid;
+  min-width: 1296px;
   grid-template-columns: $cols;
   gap: var(--space-3);
   padding: var(--space-1) var(--space-3);
@@ -760,7 +769,7 @@ $cols:
   min-height: 40px;
 
   &--dirty {
-    background: rgba(255, 193, 7, 0.06);
+    background: var(--warning-subtle);
     border-left: 3px solid var(--warning);
   }
 
@@ -788,64 +797,10 @@ $cols:
   min-width: 0;
 }
 
-.pm-date-native {
-  height: var(--elem-height);
-  padding: 2px var(--space-1);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-base);
-  background: var(--surface-base);
-  color: var(--text-body);
-  font-size: var(--fs-200);
-  width: 100%;
-  max-width: 100%;
-  cursor: pointer;
-
-  &::-webkit-calendar-picker-indicator {
-    cursor: pointer;
-    filter: invert(0.5);
-  }
-
-  [data-theme="dark"] & {
-    background: var(--surface-raised);
-    border-color: var(--border-default);
-    color: var(--text-body);
-    color-scheme: dark;
-  }
-}
-
 .text-truncate {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-// --- Expand button ---
-
-.pm-expand-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-  background: var(--surface-base);
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
-  flex-shrink: 0;
-
-  &:hover {
-    background: var(--surface-raised);
-    border-color: var(--border-default);
-    color: var(--text-body);
-  }
-
-  &--active {
-    background: var(--accent-subtle);
-    border-color: var(--accent);
-    color: var(--text-strong);
-  }
 }
 
 // --- Expand sub-table ---
@@ -893,17 +848,6 @@ $expand-cols: 80px 80px 110px 110px 1fr;
 
   .price-list__search {
     max-width: 100%;
-  }
-
-  .pm-price-table__head,
-  .pm-price-table__row {
-    min-width: 1080px;
-  }
-
-  // The rows keep 1080 px; the box itself fits the card, so only the table scrolls, not the card.
-  .pm-price-table {
-    min-width: 0;
-    overflow-x: auto;
   }
 }
 </style>

@@ -35,20 +35,6 @@
     "owner": "P5 plan 36 (Agreements)"
   },
   {
-    "screen": "pricing-prices-list",
-    "kind": "nonFocusable",
-    "selector": "span.fw-600.t-accent",
-    "reason": "price table SKU cells open the product on click only (the grid is not on DataTable yet)",
-    "owner": "P5 plan 39 (PriceManager)"
-  },
-  {
-    "screen": "pricing-channels-list",
-    "kind": "nonFocusable",
-    "selector": "span.fw-600.t-accent",
-    "reason": "price table SKU cells open the product on click only (the grid is not on DataTable yet)",
-    "owner": "P5 plan 39 (PriceManager)"
-  },
-  {
     "screen": "promo-detail",
     "kind": "nonFocusable",
     "selector": "span.promo-code-value",

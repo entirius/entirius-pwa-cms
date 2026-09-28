@@ -1899,6 +1899,7 @@
     "all_products": "All",
     "with_price": "With price",
     "without_price": "Without price",
+    "price_filter": "Price status",
     "no_price_set": "No price",
     "no_tax_classes": "No tax classes",
     "no_channels": "No channels",

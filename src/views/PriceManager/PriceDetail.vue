@@ -1,13 +1,15 @@
 <template>
   <PageLayout class="fs-300 t-body">
-    <Teleport v-if="!embedded" to="#pricing-toolbar-left" defer>
-      <IconButton
-        icon="back"
-        :label="$t('common.back')"
-        @click="$router.push('/pricing/prices')"
-      />
-      <span class="fw-600 fs-400">{{ effectiveSku || $t('pm.price_detail') }}</span>
-    </Teleport>
+    <template v-if="!embedded" #header>
+      <PageHeader :title="effectiveSku || $t('pm.price_detail')" back="/pricing/prices">
+        <template #meta>
+          <PmChannelSelect />
+        </template>
+        <template v-if="showActions" #actions>
+          <ActionBar :actions="headerActions" />
+        </template>
+      </PageHeader>
+    </template>
       <Loader block v-if="loading" />
 
       <template v-else>
@@ -21,7 +23,7 @@
         <template v-else>
           <!-- Top bar: currency selector + meta info -->
           <div class="flex ai-ct gap-8 mb-10 flex-wrap">
-            <FormField class="pm-field" :label="$t('pm.currency')">
+            <FormField :label="$t('pm.currency')">
               <BasicSelect
                 :model-value="activeCurrency"
                 :options="currencyOptions"
@@ -60,14 +62,13 @@
           </div>
 
           <!-- Editable row -->
-          <BasicCard class="pm-edit-form mb-8">
-            <div class="pm-edit-fields">
+          <BasicCard :title="$t('pm.price_detail')" gap class="mb-8">
+            <div class="form-grid">
               <!-- Editable price (net or gross depending on direction) -->
               <FormField
-                class="pm-field"
                 :label="isNetEditable ? $t('pm.net') : $t('pm.gross')"
                 required
-                :error="formErrors.getFieldError('value')?.msg"
+                :error="formErrors.getFieldError('value')?.msg || ''"
               >
                 <BasicInput
                   v-model="form.value"
@@ -76,23 +77,17 @@
               </FormField>
 
               <!-- Calculated price (read-only) -->
-              <div class="pm-field">
-                <label class="field-label">
-                  {{ isNetEditable ? $t('pm.gross') : $t('pm.net') }}
-                  <span class="pm-lock-icon t-muted ml-1">
-                    <FontAwesomeIcon :icon="$icons.lock" />
-                  </span>
-                </label>
-                <div class="pm-readonly-value">
-                  {{ flatPrice ? fmt2(isNetEditable ? flatPrice.gross : flatPrice.net) : '—' }}
-                </div>
-              </div>
+              <FormField :label="isNetEditable ? $t('pm.gross') : $t('pm.net')">
+                <BasicInput
+                  :model-value="flatPrice ? fmt2(isNetEditable ? flatPrice.gross : flatPrice.net) : '—'"
+                  readonly
+                />
+              </FormField>
 
               <!-- Special price -->
               <FormField
-                class="pm-field"
                 :label="$t('pm.special_net')"
-                :error="formErrors.getFieldError('special_value')?.msg"
+                :error="formErrors.getFieldError('special_value')?.msg || ''"
               >
                 <BasicInput
                   v-model="form.special_value"
@@ -101,60 +96,17 @@
               </FormField>
 
               <!-- Promo dates -->
-              <div class="pm-field">
-                <label class="field-label">{{ $t('pm.special_from') }}</label>
-                <input
-                  type="date"
-                  class="pm-date-input"
-                  :value="form.special_from_date"
-                  @input="form.special_from_date = $event.target.value"
-                />
-              </div>
-              <div class="pm-field">
-                <label class="field-label">{{ $t('pm.special_to') }}</label>
-                <input
-                  type="date"
-                  class="pm-date-input"
-                  :value="form.special_to_date"
-                  @input="form.special_to_date = $event.target.value"
-                />
-              </div>
+              <FormField :label="$t('pm.special_from')">
+                <BasicDatePicker v-model="form.special_from_date" />
+              </FormField>
+              <FormField :label="$t('pm.special_to')">
+                <BasicDatePicker v-model="form.special_to_date" />
+              </FormField>
             </div>
           </BasicCard>
 
-          <!-- Actions row -->
-          <div class="flex gap-5 mb-10 flex-wrap ai-ct">
-            <BasicButton
-              variant="primary"
-              @click="save"
-            >
-              {{ $t('pm.save') }}
-            </BasicButton>
-            <BasicButton
-              variant="secondary"
-              @click="showCountries = !showCountries"
-            >
-              {{ showCountries ? $t('pm.hide_countries') : $t('pm.view_all_countries') }}
-            </BasicButton>
-            <BasicButton
-              variant="secondary"
-              @click="toggleHistory"
-            >
-              {{ showHistory ? $t('pm.hide_history') : $t('pm.view_history') }}
-            </BasicButton>
-            <IconButton
-              icon="clear"
-              variant="danger"
-              :label="$t('pm.flush_special')"
-              @click="showFlushConfirm = true"
-            />
-            <IconButton
-              icon="delete"
-              variant="danger"
-              :label="$t('pm.delete_prices')"
-              @click="showDeleteConfirm = true"
-            />
-          </div>
+          <!-- Embedded (Pim product tab): no page header, the actions sit under the form -->
+          <ActionBar v-if="embedded" class="mb-8" :actions="headerActions" />
 
           <!-- Confirmation modals -->
           <ConfirmDialog
@@ -178,8 +130,7 @@
           </ConfirmDialog>
 
           <!-- All-countries breakdown (collapsible) -->
-          <div v-if="showCountries" class="mb-10">
-            <h3 class="fs-400 fw-600 mb-5 t-secondary">{{ $t('pm.all_countries') }}</h3>
+          <BasicCard v-if="showCountries" :title="$t('pm.all_countries')" gap class="mb-8">
             <div class="pm-country-table">
               <div class="pm-country-table__head">
                 <span>{{ $t('pm.country') }}</span>
@@ -205,11 +156,10 @@
                 </span>
               </div>
             </div>
-          </div>
+          </BasicCard>
 
           <!-- History (collapsible) -->
-          <div v-if="showHistory" class="mt-5">
-            <h3 class="fs-400 fw-600 mb-5">{{ $t('pm.history') }}</h3>
+          <BasicCard v-if="showHistory" :title="$t('pm.history')" gap class="mb-8">
             <Loader v-if="historyLoading" />
             <EmptyState v-else-if="!history.length" icon="empty" size="sm" :title="$t('pm.no_history')" />
             <div
@@ -222,7 +172,7 @@
               <span>{{ entry.source }} — gross: {{ entry.gross_value }}, net: {{ entry.net_value }}</span>
               <span class="t-muted fs-200">{{ entry.changed_by }}</span>
             </div>
-          </div>
+          </BasicCard>
         </template>
       </template>
   </PageLayout>
@@ -234,10 +184,11 @@ import { useNotifyStore } from '@/stores/notify'
 import { useFormErrors, extractApiMessage } from '@/composables/useFormErrors'
 import { GET_PmPriceDetail, GET_PmPrices, PATCH_PmPrice, DELETE_PmPrice, POST_PmFlushSpecial, GET_PmPriceHistory } from '@/api/pricemanager/api'
 import { formatDate } from '@/utils/format'
+import PmChannelSelect from './PmChannelSelect.vue'
 
 export default {
   name: 'PmPriceDetail',
-  components: {},
+  components: { PmChannelSelect },
   inject: {
     pmChannelIdx: { default: null },
     pmActiveChannel: { default: null },
@@ -276,6 +227,23 @@ export default {
     }
   },
   computed: {
+    // The price actions exist once the product's prices loaded (not while loading, not for an unknown product).
+    showActions() {
+      return !this.loading && !this.productNotFound
+    },
+    headerActions() {
+      return [
+        { key: 'countries', role: 'secondary', onClick: () => (this.showCountries = !this.showCountries),
+          label: this.showCountries ? this.$t('pm.hide_countries') : this.$t('pm.view_all_countries') },
+        { key: 'history', role: 'secondary', onClick: this.toggleHistory,
+          label: this.showHistory ? this.$t('pm.hide_history') : this.$t('pm.view_history') },
+        { key: 'flush', role: 'utility', icon: 'clear', variant: 'danger', label: this.$t('pm.flush_special'),
+          onClick: () => (this.showFlushConfirm = true) },
+        { key: 'delete', role: 'utility', icon: 'delete', variant: 'danger', label: this.$t('pm.delete_prices'),
+          onClick: () => (this.showDeleteConfirm = true) },
+        { key: 'save', role: 'primary', label: this.$t('pm.save'), onClick: this.save },
+      ]
+    },
     effectiveSku() {
       return this.sku || this.$route?.params?.sku || ''
     },
@@ -544,35 +512,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.pm-edit-fields {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: var(--space-5);
-  align-items: end;
-}
-
-.pm-field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-}
-
-.pm-lock-icon {
-  font-size: var(--fs-200);
-}
-
-.pm-readonly-value {
-  height: var(--elem-height);
-  display: flex;
-  align-items: center;
-  padding: 0 var(--space-2);
-  background: var(--surface-raised);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-  color: var(--text-secondary);
-  font-size: var(--fs-300);
-}
-
 .pm-meta-item {
   display: flex;
   flex-direction: column;
@@ -611,24 +550,5 @@ export default {
   padding: var(--space-2) var(--space-5);
   border-bottom: 1px solid var(--border-subtle);
   font-size: var(--fs-200);
-}
-
-.pm-date-input {
-  height: var(--elem-height);
-  padding: 0 var(--space-2);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-base);
-  background: var(--surface-base);
-  color: var(--text-body);
-  font-size: var(--fs-300);
-  font-family: inherit;
-
-  &::-webkit-calendar-picker-indicator {
-    filter: var(--calendar-icon-filter, none);
-  }
-}
-
-[data-theme="dark"] .pm-date-input {
-  color-scheme: dark;
 }
 </style>

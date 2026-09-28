@@ -1898,6 +1898,7 @@
     "all_products": "Wszystkie",
     "with_price": "Z ceną",
     "without_price": "Bez ceny",
+    "price_filter": "Status ceny",
     "no_price_set": "Brak ceny",
     "no_tax_classes": "Brak klas podatkowych",
     "no_channels": "Brak kanałów",

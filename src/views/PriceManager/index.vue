@@ -1,41 +1,16 @@
 <template>
   <div class="pm-panel h-100">
-    <div class="panel-toolbar bg-raised fs-300">
-      <div class="panel-toolbar__title flex ai-ct gap-5">
-        <div id="pricing-toolbar-left" class="flex ai-ct gap-5"></div>
-        <div v-if="showChannelSelector && channelOptions.length" class="flex ai-ct gap-5">
-          <span id="pricing-channel-label" class="field-label">{{ $t('pm.channel') }}</span>
-          <BasicSelect
-            aria-labelledby="pricing-channel-label"
-            :model-value="activeChannelIdx"
-            :options="channelOptions"
-            @update:model-value="onChannelSelect"
-          />
-        </div>
-      </div>
-      <div id="pricing-toolbar-right" class="panel-toolbar__actions flex ai-ct gap-5"></div>
-    </div>
     <router-view />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, provide, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
 import { GET_PmChannels } from '@/api/pricemanager/api'
 
-const route = useRoute()
-const showChannelSelector = computed(() => {
-  const name = route.name || ''
-  return name.startsWith('PmPrice') // PmPriceList, PmPriceDetail
-})
-
+// The panel's channels and the active one, read by the price views and set by PmChannelSelect.
 const channels = ref([])
 const activeChannelIdx = ref('')
-
-const channelOptions = computed(() =>
-  channels.value.map((ch) => ({ value: ch.idx, label: ch.name }))
-)
 
 const activeChannel = computed(() =>
   channels.value.find((ch) => ch.idx === activeChannelIdx.value) || null
@@ -50,10 +25,6 @@ onMounted(async () => {
     // child views handle the empty state
   }
 })
-
-function onChannelSelect(value) {
-  activeChannelIdx.value = Array.isArray(value) ? value[0] : value
-}
 
 provide('pmChannelIdx', activeChannelIdx)
 provide('pmChannels', channels)

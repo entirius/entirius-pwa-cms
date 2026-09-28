@@ -26,6 +26,7 @@ vi.mock("vue-router", () => ({ useRoute: () => ({ name: "PmPriceList" }) }));
 
 import { GET_PmPrices } from "@/api/pricemanager/api";
 import PmPanel from "@/views/PriceManager/index.vue";
+import PmChannelSelect from "@/views/PriceManager/PmChannelSelect.vue";
 import ChannelDetail from "@/views/PriceManager/ChannelDetail.vue";
 import PriceList from "@/views/PriceManager/PriceList.vue";
 import PriceDetail from "@/views/PriceManager/PriceDetail.vue";
@@ -49,8 +50,9 @@ const pick = (wrapper, value, at = 0) =>
   wrapper.findAllComponents({ name: "BasicSelect" })[at].vm.$emit("update:modelValue", value);
 
 describe("PriceManager pickers on BasicSelect", () => {
-  it("panel: picking a channel makes it the active channel", async () => {
-    const wrapper = mount(PmPanel, { global: { stubs } });
+  it("panel: picking a channel in the header selector makes it the active channel", async () => {
+    // The routed view renders the selector (PageHeader meta); it reads and sets the panel's channel.
+    const wrapper = mount(PmPanel, { global: { stubs: { ...stubs, RouterView: PmChannelSelect } } });
     await flushPromises();
     const select = wrapper.findComponent({ name: "BasicSelect" });
     expect(select.props("modelValue")).toBe("b2c");

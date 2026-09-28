@@ -1,63 +1,33 @@
 <template>
   <PageLayout class="fs-300 t-body">
-    <Teleport to="#pricing-toolbar-left" defer>
-      <IconButton
-        icon="back"
-        :label="$t('common.back')"
-        @click="$router.push('/pricing/tax-classes')"
-      />
-      <span class="fw-600 fs-400">
-        {{ isEdit ? (taxClass.name || taxClass.idx) : $t('pm.create_tax_class') }}
-      </span>
-    </Teleport>
-    <Teleport to="#pricing-toolbar-right" defer>
-      <IconButton
-        v-if="isEdit"
-        icon="delete"
-        :label="$t('common.delete')"
-        variant="danger"
-        @click="showDeleteConfirm = true"
-      />
-      <BasicButton
-        variant="primary"
-        @click="save"
-      >
-        {{ $t('pm.save') }}
-      </BasicButton>
-    </Teleport>
+    <template v-if="!loading" #header>
+      <PageHeader :title="pageTitle" back="/pricing/tax-classes">
+        <template #actions>
+          <ActionBar :actions="headerActions" />
+        </template>
+      </PageHeader>
+    </template>
       <Loader block v-if="loading" />
 
       <template v-else>
-        <!-- Basic fields -->
-        <div class="pm-section mb-10">
-          <h2 class="fs-500 fw-600 mb-8">{{ $t('pm.tax_class_detail') }}</h2>
-          <div class="pm-grid">
-            <FormField class="pm-field" label="IDX" required :error="formErrors.getFieldError('idx')?.msg">
+        <BasicCard :title="$t('pm.tax_class_detail')" gap class="mb-8">
+          <div class="form-grid">
+            <FormField label="IDX" required :error="formErrors.getFieldError('idx')?.msg || ''">
               <BasicInput
                 v-model="form.idx"
                 :disabled="isEdit"
               />
             </FormField>
-            <FormField
-              class="pm-field"
-              :label="$t('pm.name')"
-              required
-              :error="formErrors.getFieldError('name')?.msg"
-            >
+            <FormField :label="$t('pm.name')" required :error="formErrors.getFieldError('name')?.msg || ''">
               <BasicInput
                 v-model="form.name"
               />
             </FormField>
           </div>
-        </div>
+        </BasicCard>
 
-        <!-- Rates table -->
-        <div v-if="isEdit" class="pm-section">
-          <div class="flex ai-ct jc-sb mb-8">
-            <h2 class="fs-500 fw-600">{{ $t('pm.rate_count') }}</h2>
-          </div>
-
-          <div v-if="rates.length" class="pm-rates-table mb-8">
+        <BasicCard v-if="isEdit" :title="$t('pm.rate_count')" gap class="mb-8">
+          <div v-if="rates.length" class="pm-rates-table">
             <div class="pm-rates-table__head">
               <span>{{ $t('pm.country') }}</span>
               <span>{{ $t('pm.percent') }}</span>
@@ -81,9 +51,11 @@
           </div>
 
           <!-- Add rate row -->
-          <div class="flex ai-st gap-5 flex-wrap">
-            <BasicInput v-model="newRate.country_iso2" :placeholder="$t('pm.iso2_placeholder')" class="pm-rate-input" />
-            <FormField :error="rateError" class="pm-rate-input">
+          <div class="flex ai-fe gap-5 flex-wrap">
+            <FormField :label="$t('pm.country')" class="pm-rate-input">
+              <BasicInput v-model="newRate.country_iso2" :placeholder="$t('pm.iso2_placeholder')" />
+            </FormField>
+            <FormField :label="$t('pm.percent')" :error="rateError" class="pm-rate-input">
               <NumberInput v-model="newRate.rate" :min="0" :max="100" :step="0.01" suffix="%" />
             </FormField>
             <BasicButton
@@ -93,7 +65,7 @@
               {{ $t('pm.add_rate') }}
             </BasicButton>
           </div>
-        </div>
+        </BasicCard>
       </template>
 
     <ConfirmDialog
@@ -144,6 +116,19 @@ export default {
   computed: {
     isEdit() {
       return !!this.$route.params.idx
+    },
+    pageTitle() {
+      if (!this.isEdit) return this.$t('pm.create_tax_class')
+      return this.taxClass.name || this.taxClass.idx || this.$t('pm.tax_class_detail')
+    },
+    headerActions() {
+      return [
+        ...(this.isEdit
+          ? [{ key: 'delete', role: 'utility', icon: 'delete', variant: 'danger', label: this.$t('common.delete'),
+              onClick: () => (this.showDeleteConfirm = true) }]
+          : []),
+        { key: 'save', role: 'primary', label: this.$t('pm.save'), onClick: this.save },
+      ]
     },
   },
   watch: {
@@ -267,24 +252,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.pm-section {
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-  padding: var(--space-5);
-}
-
-.pm-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: var(--space-5);
-}
-
-.pm-field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-}
-
 .pm-rates-table {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-base);

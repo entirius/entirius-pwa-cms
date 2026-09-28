@@ -1,14 +1,12 @@
 <template>
   <PageLayout class="fs-300 t-body">
-    <!-- Title shown by router titleKey in header bar -->
-    <Teleport to="#pricing-toolbar-right" defer>
-      <BasicButton
-        variant="secondary"
-        @click="syncChannels"
-      >
-        {{ $t('pm.sync_channels') }}
-      </BasicButton>
-    </Teleport>
+    <template #header>
+      <PageHeader :title="$t('pm.channels')">
+        <template #actions>
+          <ActionBar :actions="headerActions" />
+        </template>
+      </PageHeader>
+    </template>
       <Loader block v-show="loading" />
 
       <div v-show="!loading">
@@ -20,9 +18,9 @@
           @row-click="onRowClick"
         >
           <template #cell-idx="{ row }">
-            <span class="fw-600 t-accent pointer" @click.stop="$router.push(`/pricing/channels/${row.idx}`)">
+            <router-link :to="`/pricing/channels/${row.idx}`" class="fw-600 t-accent" @click.stop>
               {{ row.idx }}
-            </span>
+            </router-link>
           </template>
           <template #cell-calculate_direction="{ row }">
             <StatusBadge tone="neutral" :dot="false" :label="directionLabel(row)" />
@@ -57,6 +55,9 @@ export default {
     }
   },
   computed: {
+    headerActions() {
+      return [{ key: 'sync', role: 'secondary', label: this.$t('pm.sync_channels'), onClick: this.syncChannels }]
+    },
     columns() {
       return [
         { key: 'idx', label: 'IDX', width: '200px' },
