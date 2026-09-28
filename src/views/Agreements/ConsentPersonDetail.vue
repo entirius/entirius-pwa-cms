@@ -10,6 +10,7 @@
     <template #toolbar>
       <BasicTabs
         v-model="mode"
+        id-prefix="consent-person"
         :options="[
           { value: 'marketing', label: $t('agm.tab_marketing') },
           { value: 'legal', label: $t('agm.tab_legal') },
@@ -21,7 +22,12 @@
 
       <template v-if="!loading">
         <!-- Marketing tab -->
-        <template v-if="mode === 'marketing'">
+        <div
+          v-if="mode === 'marketing'"
+          id="consent-person-panel-marketing"
+          role="tabpanel"
+          aria-labelledby="consent-person-tab-marketing"
+        >
           <section class="mb-12">
             <h2 class="fs-400 fw-600 mb-8">
               {{ $t("agm.current_consents") }}
@@ -74,11 +80,16 @@
               </template>
             </DataTable>
           </section>
-        </template>
+        </div>
 
         <!-- Legal tab -->
-        <template v-if="mode === 'legal'">
-          <div class="flex ai-ct gap-5 mb-10">
+        <div
+          v-if="mode === 'legal'"
+          id="consent-person-panel-legal"
+          role="tabpanel"
+          aria-labelledby="consent-person-tab-legal"
+        >
+          <div class="filter-chip-row mb-10" role="group" :aria-label="$t('agm.category')">
             <FilterChip
               :label="$t('agm.filter_all')"
               :active="legalFilter === 'all'"
@@ -129,54 +140,33 @@
               </template>
             </DataTable>
           </section>
-        </template>
+        </div>
       </template>
 
-    <!-- Legal text modal -->
-    <Teleport to="body">
-      <div
-        v-if="consentTextModal.visible"
-        class="agm-modal-overlay"
-        @click.self="consentTextModal.visible = false"
+    <BasicModal
+      v-model:open="consentTextModal.visible"
+      :title="$t('agm.legal_text_at_consent')"
+      size="lg"
+    >
+      <p v-if="consentTextModal.data && consentTextModal.data.agreement_name" class="fs-200 t-muted mb-5">
+        {{ consentTextModal.data.agreement_name }} — v{{
+          consentTextModal.data.version_number
+        }}
+        — {{ formatDate(consentTextModal.data.consent_date) }}
+      </p>
+      <Loader v-if="consentTextModal.loading" />
+      <p
+        v-else-if="!consentTextModal.data || !consentTextModal.data.text_html"
+        class="t-muted"
       >
-        <div class="agm-modal bg-base b-subtle">
-          <div class="agm-modal__header flex ai-ct jc-sb p-10">
-            <div>
-              <h2 class="fs-500 fw-600">
-                {{ $t("agm.legal_text_at_consent") }}
-              </h2>
-              <p v-if="consentTextModal.data" class="fs-200 t-muted mt-2">
-                {{ consentTextModal.data.agreement_name }} — v{{
-                  consentTextModal.data.version_number
-                }}
-                — {{ formatDate(consentTextModal.data.consent_date) }}
-              </p>
-            </div>
-            <IconButton
-              icon="close"
-              :label="$t('common.close')"
-              @click="consentTextModal.visible = false"
-            />
-          </div>
-          <div class="agm-modal__body p-10">
-            <Loader v-if="consentTextModal.loading" />
-            <p
-              v-else-if="
-                !consentTextModal.data || !consentTextModal.data.text_html
-              "
-              class="t-muted"
-            >
-              {{ $t("agm.no_legal_text") }}
-            </p>
-            <div
-              v-else
-              class="agm-legal-text-preview"
-              v-html="consentTextModal.data.text_html"
-            />
-          </div>
-        </div>
-      </div>
-    </Teleport>
+        {{ $t("agm.no_legal_text") }}
+      </p>
+      <div
+        v-else
+        class="legal-text-preview"
+        v-html="consentTextModal.data.text_html"
+      />
+    </BasicModal>
   </PageLayout>
 </template>
 
@@ -336,46 +326,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-// An e-mail breaks anywhere rather than mid-word at a hyphen (PageHeader's title), and the header keeps a readable
-// width beside the tabs.
 .person-detail__grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: var(--space-8);
 }
 
-.agm-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: var(--overlay-100);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.agm-modal {
-  width: 90%;
-  max-width: 800px;
-  max-height: 80vh;
-  border-radius: var(--radius-lg);
-  display: flex;
-  flex-direction: column;
-  box-shadow: var(--shadow-200);
-}
-
-.agm-modal__header {
-  border-bottom: 1px solid var(--border-subtle);
-}
-
-.agm-modal__body {
-  overflow-y: auto;
-  flex: 1;
-}
-
-.agm-legal-text-preview {
-  max-height: 60vh;
-  overflow-y: auto;
+.legal-text-preview {
   padding: var(--space-4);
   background: var(--surface-raised);
   border-radius: var(--radius-base);
