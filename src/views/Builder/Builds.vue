@@ -1,5 +1,5 @@
 <template>
-  <PageLayout class="content-list">
+  <PageLayout class="content-list" roomy>
     <template #header>
       <PageHeader :title="$t('nav.content_list')" />
     </template>
@@ -134,7 +134,7 @@
       <p>{{ $t("builder.confirm_msg") }}</p>
     </ConfirmDialog>
 
-    <FloatingActions class="content-list__fab" :actions="fabActions" />
+    <FloatingActions :actions="fabActions" />
 
     <TranslateAllContentModal
       :visible="showTranslateModal"
@@ -216,9 +216,10 @@ export default {
       return this.docs.filter((doc) => this.activeFilters.includes(doc.type));
     },
     fabActions() {
-      return this.buildTypes.map((bt, index) => {
+      return this.buildTypes.map((bt) => {
         const config_max = this.section_options(bt.slug, "max_self");
-        const doc_count = this.docs[index] ? this.docs[index]["count"] : 0;
+        // Paired by type: the build types and the loaded groups come from two lists in different orders.
+        const doc_count = this.docs.find((doc) => doc.type === bt.slug)?.count ?? 0;
         const is_disabled =
           !bt.actions.includes("create") || doc_count >= config_max;
         return {
@@ -463,24 +464,6 @@ export default {
 <style lang="scss" scoped>
 @import "@/assets/scss/utils/media-query";
 
-// Figma S4/S5 frame: the title fills its row, and a phone keeps the desktop rhythm (40 top, 32 below the title, the
-// 30 px title) where PageLayout / PageHeader use 20 px (handoff 26/29: the wave close decides for every page).
-.content-list :deep(.page-header__title) {
-  flex: 1 1 auto;
-}
-
-@include max-tablet {
-  .content-list.page-layout {
-    --page-layout-pad-y: var(--space-10);
-
-    gap: var(--space-8);
-  }
-
-  .content-list :deep(.page-header__title) {
-    font-size: var(--fs-700);
-  }
-}
-
 // Filters row (Figma S4): "Filtry:" and the type chips left, the language select right; a phone stacks the label,
 // scrolls the chips sideways in one row and puts the labelled select under them (S5).
 .content-list__filters {
@@ -537,18 +520,6 @@ export default {
     max-width: 100%;
     overflow-x: auto;
     padding-block: var(--space-1);
-  }
-}
-
-// Figma S4/S5: the FAB sits 24 px from the corner beside the sidebar, 16 px from the edge and above the tab bar
-// wherever the tab bar shows (handoff 29: FloatingActions offsets only up to 768 px and uses 16 on desktop).
-.content-list .content-list__fab {
-  right: var(--space-6);
-  bottom: var(--space-6);
-
-  @include max-shell {
-    right: var(--space-4);
-    bottom: calc(var(--bottom-bar-height) + var(--space-4));
   }
 }
 

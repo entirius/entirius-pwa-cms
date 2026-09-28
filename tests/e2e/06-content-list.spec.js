@@ -44,8 +44,8 @@ test.describe('Content List Table', () => {
     const dateCol = rows.first().locator('[data-column="updated_at"]');
     await expect(dateCol).toBeVisible();
 
-    // First row: status pill with text
-    const statusPill = rows.first().locator('.data-table__status-pill');
+    // First row: status badge (StatusBadge) with text
+    const statusPill = rows.first().locator('.status-badge');
     await expect(statusPill).toBeVisible();
     const statusText = await statusPill.textContent();
     expect(statusText.trim().length).toBeGreaterThan(0);
