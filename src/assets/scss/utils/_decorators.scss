@@ -126,16 +126,20 @@
   font-size: var(--fs-200);
 }
 
-::-webkit-scrollbar {
-  width: 5px;
-}
+// Thin scrollbars for mouse screens only: on a touch screen a styled scrollbar stops overlaying, takes its width from
+// the page and widens the layout viewport past the screen, so every fixed element (FAB) sits off its corner.
+@media (hover: hover) and (pointer: fine) {
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
 
-::-webkit-scrollbar-thumb {
-  background: var(--surface-disabled);
+  ::-webkit-scrollbar-thumb {
+    background: var(--surface-disabled);
+  }
 }
 
 .underline-animation {
