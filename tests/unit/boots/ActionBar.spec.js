@@ -12,7 +12,7 @@ const stubs = {
   IconButton: {
     props: ["icon", "label", "variant", "disabled"],
     emits: ["click"],
-    template: "<button class='stub-icon' :data-icon='icon' @click=\"$emit('click')\">{{ label }}</button>",
+    template: "<button class='stub-icon' :data-icon='icon' :data-variant='variant' @click=\"$emit('click')\">{{ label }}</button>",
   },
 };
 
@@ -37,6 +37,14 @@ describe("ActionBar", () => {
     const wrapper = mountBar([action("utility", "Ustawienia", { icon: "settings" }), action("danger", "Usuń")]);
     expect(wrapper.find(".stub-icon").attributes("data-icon")).toBe("settings");
     expect(wrapper.find(".stub-basic").attributes("data-variant")).toBe("danger");
+  });
+
+  it("a utility is an outline IconButton unless it names its variant (an icon-only delete is danger)", () => {
+    const wrapper = mountBar([
+      action("utility", "Tłumaczenia", { icon: "translate" }),
+      action("utility", "Usuń", { icon: "delete", variant: "danger" }),
+    ]);
+    expect(wrapper.findAll(".stub-icon").map((b) => b.attributes("data-variant"))).toEqual(["outline", "danger"]);
   });
 
   it("calls the action's onClick", async () => {

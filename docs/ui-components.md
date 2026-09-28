@@ -406,3 +406,57 @@ In the catalogue and live: `App.vue` mounts `AppHeader`, `SidebarNav` (desktop),
 
 Catalogue: `#shell` (`#app-header`, `#sidebar-nav`, `#sidebar-nav-group`, `#sidebar-nav-item`, `#mobile-menu`,
 `#bottom-tab-bar`, `#user-menu`, `#basic-logo`).
+
+### Detail form (P5, plan 33)
+
+The layout of every detail (edit / create) screen; Faq (`src/views/Faq/GroupEdit.vue`, `ItemEdit.vue`) is the
+reference. It replaces the view-local `detail-section` / `detail-grid` / `detail-field` / `detail-label` classes.
+
+| Was | Is |
+|---|---|
+| `detail-section` + its `<h2>` | `BasicCard :title gap` (16 px under the title); cards 32 px apart (`mb-8`) |
+| `detail-grid` | `.form-grid` (`utils/_decorators.scss`): 1 column up to 768 px, 2 above; gaps 16 px rows, 24 px columns |
+| `detail-field` + `detail-label` / `.field-label` | `FormField` (`label`, `required`, `description`, `error`) around the boot control |
+| a field as wide as the card (question, rich-text answer) | `FormField class="form-grid__wide"` |
+| a section action (add a row, add an existing item) | BasicCard `actions` slot |
+| Save · Delete · Translations in the panel wrapper's toolbar | PageHeader `actions` → `ActionBar` |
+
+- **Fields.** One FormField per field; the control carries no label, placeholder-as-label or error of its own.
+  `:error="formErrors.getFieldError('<field>')?.msg || ''"` on every field the API can name, `required` where the
+  save validates or the API refuses an empty value, `description` for what a label cannot say (fixed after create,
+  empty = every channel). A field-level action (per-field translations) is an `IconButton` right of the control, in a
+  `flex ai-st gap-3` row, named after the field („Tłumaczenia: Pytanie”).
+- **Actions.** PageHeader `actions` holds, left to right: the unsaved `StatusBadge`, the record's on/off
+  `BasicSwitch` (when it has one), then an `ActionBar` — Translations (`utility`, `translate`), Delete (`utility`,
+  `delete`, `variant: "danger"`, opens a `ConfirmDialog tone="danger"`), Save (`primary`). An `ActionBar` utility
+  takes `variant` (the IconButton variant, `outline` by default). The header renders after the load, so Save and
+  Delete never act on an empty form. The panel wrapper keeps no toolbar.
+- **Lists inside a detail** (items of a group, associations) stay rows in the card; a row that opens a record is a
+  `router-link`, never a click-only `span`.
+
+```vue
+<template #header v-if="!loading">
+  <PageHeader :title="group.name" back="/faq/groups">
+    <template #actions>
+      <div class="flex ai-ct jc-fe wrap gap-3">
+        <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
+        <BasicSwitch v-model="form.is_active" :label="$t('faq.is_active')" />
+        <ActionBar :actions="headerActions" />
+      </div>
+    </template>
+  </PageHeader>
+</template>
+<BasicCard :title="$t('faq.group_details')" gap class="mb-8">
+  <div class="form-grid">
+    <FormField :label="$t('faq.name')" required :error="formErrors.getFieldError('name')?.msg || ''">
+      <BasicInput v-model="form.name" />
+    </FormField>
+    <FormField :label="$t('faq.channels')" :description="$t('faq.channels_hint')">
+      <BasicSelect v-model="form.channel_ids" multiple :options="channelOptions" />
+    </FormField>
+  </div>
+</BasicCard>
+```
+
+The `.detail-*` classes of the views not yet migrated are their own scoped styles; each P5 panel plan deletes its
+copy with the migration.

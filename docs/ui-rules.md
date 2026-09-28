@@ -220,6 +220,9 @@ Traps:
 ## Forms
 
 - Create `useFormErrors()` in `setup()` and return it as `formErrors`.
+- A detail screen follows the detail-form pattern (`docs/ui-components.md` § Detail form): `BasicCard` sections with a
+  `title`, a `.form-grid` of FormFields inside (2 columns above 768 px, `.form-grid__wide` spans both), the page's
+  actions in PageHeader `actions`. No view-local `detail-*` layout classes.
 - A field is built one way: `<FormField label description required error tooltip>` around one control. FormField
   owns the label, hint, error and help; the control never carries its own label or error text. It takes `v-model`
   and `disabled` (never `isDisabled`, `is_disabled`, `prevent`). `layout="inline"` for a toolbar field (label left of
