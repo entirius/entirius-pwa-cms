@@ -98,12 +98,13 @@ export default {
     };
   },
   computed: {
-    // One column set for every EAN group, so SKU, suppliers and actions line up from group to group.
+    // One column set for every EAN group, so SKU, suppliers and actions line up from group to group. The suppliers
+    // (★ = primary) stay on a phone: they tell which way to merge.
     columns() {
       return [
         { key: "sku", label: this.$t("atlas.duplicates.col.sku"), width: "1fr", truncate: true },
         { key: "weight", label: this.$t("atlas.duplicates.col.weight"), width: "100px", numeric: true, priority: 2 },
-        { key: "sources", label: this.$t("atlas.duplicates.col.suppliers"), width: "1fr", priority: 2 },
+        { key: "sources", label: this.$t("atlas.duplicates.col.suppliers"), width: "1fr" },
         { key: "actions", label: this.$t("atlas.duplicates.col.actions"), width: "280px", actions: true },
       ];
     },

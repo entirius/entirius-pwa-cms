@@ -116,7 +116,6 @@ export default {
           key: "message",
           label: this.$t("atlas.logs.col.message"),
           width: "2fr",
-          priority: 2,
         },
         { key: "acknowledged_at", label: "", actions: true },
       ];
