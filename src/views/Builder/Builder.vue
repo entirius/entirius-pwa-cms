@@ -183,24 +183,34 @@
         />
       </div>
       <div v-if="authorPanelOpen" class="builder-author-panel__body">
-        <div class="builder-author-panel__col flex-1">
-          <AuthorPicker
-            v-model="authors"
-            :label="$t('authors.primary')"
-            :exclude="co_authors"
-            :placeholder-search="$t('authors.search_authors')"
-            :placeholder-empty="$t('authors.no_authors')"
+        <FormField
+          v-for="field in authorFields"
+          :key="field.key"
+          :label="field.label"
+          class="builder-author-panel__col flex-1"
+        >
+          <draggable
+            v-if="$data[field.key].length"
+            v-model="$data[field.key]"
+            :item-key="(uid) => uid"
+            class="flex wrap gap-2 mb-2"
+          >
+            <template #item="{ element }">
+              <Tag
+                :label="authorNames[element] || element"
+                removable
+                @remove="removeAuthor(field.key, element)"
+              />
+            </template>
+          </draggable>
+          <p v-else class="fs-200 t-muted mb-2">{{ $t("authors.no_authors") }}</p>
+          <EntitySearchPicker
+            :model-value="null"
+            :fetch-fn="searchAuthors"
+            :placeholder="$t('authors.search_authors')"
+            @update:model-value="addAuthor(field.key, $event)"
           />
-        </div>
-        <div class="builder-author-panel__col flex-1">
-          <AuthorPicker
-            v-model="co_authors"
-            :label="$t('authors.co_authors')"
-            :exclude="authors"
-            :placeholder-search="$t('authors.search_authors')"
-            :placeholder-empty="$t('authors.no_authors')"
-          />
-        </div>
+        </FormField>
       </div>
     </div>
 
@@ -831,14 +841,14 @@ import { useUserStore } from "@/stores/user";
 import { useHandyStore } from "@/stores/handy";
 import { v4 as uuidv4 } from "uuid";
 
-import { _METHOD_content, GET_ContentTypes } from "@/api/contentDB/api";
+import { _METHOD_content, GET_Authors, GET_ContentTypes } from "@/api/contentDB/api";
+import draggable from "vuedraggable";
 import { useContentDBChannelStore } from "@/stores/contentDBChannel";
 
 import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
 import ImagesControllPreview from "@/configs/builder/components/ImagesController/_preview.vue";
 import GroupFieldsControllerPreview from "@/configs/builder/components/GroupFieldsController/_preview.vue";
 import RenameModal from "@/functionals/Rename-modal/index.vue";
-import AuthorPicker from "@/views/Authors/AuthorPicker.vue";
 import HomeVariantSwitcher from "@/views/Builder/HomeVariantSwitcher.vue";
 import { pluralKey } from "@/utils/plural";
 import { useMediaQuery } from "@/composables/useMediaQuery";
@@ -849,7 +859,7 @@ export default {
     ImagesControllPreview,
     GroupFieldsControllerPreview,
     RenameModal,
-    AuthorPicker,
+    draggable,
     HomeVariantSwitcher,
   },
   beforeRouteLeave(to, from, next) {
@@ -866,6 +876,12 @@ export default {
     return { notify, userStore, handy, ...unsaved, contentDBChannel, belowTablet };
   },
   computed: {
+    authorFields() {
+      return [
+        { key: "authors", label: this.$t("authors.primary") },
+        { key: "co_authors", label: this.$t("authors.co_authors") },
+      ];
+    },
     user() {
       return this.userStore.user;
     },
@@ -971,6 +987,7 @@ export default {
       advanced_options: false,
       authors: [],
       co_authors: [],
+      authorNames: {},
       supportsAuthors: false,
       authorPanelOpen: false,
       rename_modal: false,
@@ -982,6 +999,25 @@ export default {
     };
   },
   methods: {
+    // The author fields (EntitySearchPicker): the picker adds one author to a list, the Tags above it remove and
+    // reorder; an author already in either list is not offered again.
+    async searchAuthors(search) {
+      const params = { is_active: true, page_size: 20, ...(search ? { search } : {}) };
+      const { data } = await GET_Authors(params);
+      const picked = [...this.authors, ...this.co_authors];
+      const found = (data.results || []).filter((a) => !picked.includes(a.uid));
+      this.rememberAuthorNames(found);
+      return found.map((a) => ({ label: a.name, value: a.uid, secondary: Object.values(a.role_t9n || {})[0] || "" }));
+    },
+    rememberAuthorNames(list) {
+      list.forEach((a) => (this.authorNames[a.uid] = a.name));
+    },
+    addAuthor(key, uid) {
+      if (uid && !this[key].includes(uid)) this[key] = [...this[key], uid];
+    },
+    removeAuthor(key, uid) {
+      this[key] = this[key].filter((u) => u !== uid);
+    },
     formatCoreType(coreType) {
       if (!coreType) return "";
       return coreType
@@ -1499,6 +1535,7 @@ export default {
         this.channels = channels;
         this.authors = (authorsData || []).map((a) => a.uid);
         this.co_authors = (coAuthorsData || []).map((a) => a.uid);
+        this.rememberAuthorNames([...(authorsData || []), ...(coAuthorsData || [])]);
 
         // Check if content type supports authors
         try {
