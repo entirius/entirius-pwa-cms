@@ -35,7 +35,11 @@
         class="add-product__row flex ai-ct jc-sb"
         @click="toggleSku(p.sku)"
       >
-        <BasicCheckbox :model-value="selectedSkus.has(p.sku)" @click.stop="toggleSku(p.sku)">
+        <BasicCheckbox
+          :model-value="selectedSkus.has(p.sku)"
+          @update:model-value="toggleSku(p.sku)"
+          @click.stop
+        >
           <span class="fw-500">{{ p.sku }}</span>
         </BasicCheckbox>
         <StatusBadge

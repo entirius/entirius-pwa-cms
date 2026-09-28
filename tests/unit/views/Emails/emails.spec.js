@@ -22,6 +22,7 @@ vi.mock("@/stores/notify", () => ({
   useNotifyStore: () => ({ spawnNotification: vi.fn() }),
 }));
 
+import ActionBar from "@/boots/ActionBar/index.vue";
 import EmailCard from "@/views/Emails/EmailCard.vue";
 import EmailChannelEdit from "@/views/Emails/EmailChannelEdit.vue";
 import EmailTemplateEdit from "@/views/Emails/EmailTemplateEdit.vue";
@@ -81,5 +82,30 @@ describe("EmailChannelEdit failed load", () => {
     expect(wrapper.find('[data-testid="emails-save"]').exists()).toBe(false);
     expect(wrapper.find(".form-grid").exists()).toBe(false);
     expect(wrapper.findComponent({ name: "EmptyState" }).exists()).toBe(true);
+  });
+
+  it("recovers the form and Save when the retry loads", async () => {
+    mockGetChannel.mockReset().mockRejectedValueOnce(new Error("offline")).mockResolvedValue({ data: { idx: "c7" } });
+    mockGetLangConfigs.mockReset().mockResolvedValue({ data: { results: [] } });
+    const wrapper = mount(EmailChannelEdit, {
+      global: {
+        mocks: { $route: { params: { channelPk: "7" }, query: {}, path: "/emails/channels/7" } },
+        components: { ActionBar },
+        stubs: {
+          PageHeader: { template: '<div><slot name="actions" /></div>' },
+          IconButton: true,
+          EmptyState: { name: "EmptyState", template: "<div><slot /></div>" },
+          BasicButton: { template: "<button @click=\"$emit('click')\"><slot /></button>" },
+        },
+      },
+    });
+    await flushPromises();
+
+    await wrapper.findComponent({ name: "EmptyState" }).find("button").trigger("click");
+    await flushPromises();
+
+    expect(wrapper.findComponent({ name: "EmptyState" }).exists()).toBe(false);
+    expect(wrapper.find(".form-grid").exists()).toBe(true);
+    expect(wrapper.find('[data-testid="emails-save"]').exists()).toBe(true);
   });
 });

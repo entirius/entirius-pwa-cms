@@ -159,6 +159,7 @@ export default {
   methods: {
     async fetchData() {
       this.loading = true;
+      this.loadFailed = false;
       const pk = this.$route.params.channelPk;
       try {
         const [channelRes, configsRes] = await Promise.all([
