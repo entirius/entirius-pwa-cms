@@ -4,36 +4,33 @@
       <PageHeader :title="typeLabel" back="/emails" />
     </template>
 
-      <Loader block v-show="loading" />
+    <Loader block v-if="loading" />
 
-      <div v-show="!loading">
-        <div v-if="templates.length === 0" class="fs-300 t-muted">
-          {{ $t("emails.no_templates") }}
-        </div>
-        <div class="emails-grid">
-          <BasicCard
-            v-for="tpl in templates"
-            :key="tpl.pk"
-            class="emails-card pointer"
-            @click="editTemplate(tpl.pk)"
-          >
-            <div class="fs-400 fw-600 t-body mb-2">
-              {{ tpl.subject || $t("emails.default_subject") }}
-            </div>
-            <div class="fs-200 t-muted">
-              {{ $t("emails.language") }}:
-              {{ tpl.language_code || $t("emails.default_lang") }}
-            </div>
-            <StatusBadge
-              :tone="tpl.subject ? 'positive' : 'neutral'"
-              :label="
-                tpl.subject ? $t('emails.customized') : $t('emails.default')
-              "
-              class="mt-5"
-            />
-          </BasicCard>
-        </div>
+    <template v-else>
+      <p v-if="templates.length === 0" class="fs-300 t-muted">
+        {{ $t("emails.no_templates") }}
+      </p>
+      <div class="email-cards">
+        <EmailCard
+          v-for="tpl in templates"
+          :key="tpl.pk"
+          :to="`/emails/templates/${emailType}/${tpl.pk}`"
+          :title="tpl.subject || $t('emails.default_subject')"
+          testid="emails-template-card"
+          :level="2"
+        >
+          <p class="fs-200 t-muted mt-2">
+            {{ $t("emails.language") }}:
+            {{ tpl.language_code || $t("emails.default_lang") }}
+          </p>
+          <StatusBadge
+            :tone="tpl.subject ? 'positive' : 'neutral'"
+            :label="tpl.subject ? $t('emails.customized') : $t('emails.default')"
+            class="mt-5"
+          />
+        </EmailCard>
       </div>
+    </template>
   </PageLayout>
 </template>
 
@@ -43,9 +40,11 @@ import { useNotifyStore } from "@/stores/notify";
 import { GET_EmailTemplates } from "@/api/emails/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { emailTypeLabel } from "./emailTypes";
+import EmailCard from "./EmailCard.vue";
 
 export default {
   name: "EmailTemplateList",
+  components: { EmailCard },
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();
@@ -54,7 +53,7 @@ export default {
   data() {
     return {
       templates: [],
-      loading: false,
+      loading: true,
     };
   },
   computed: {
@@ -83,25 +82,6 @@ export default {
         this.loading = false;
       }
     },
-    editTemplate(pk) {
-      this.$router.push(`/emails/templates/${this.emailType}/${pk}`);
-    },
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.emails-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--space-4);
-}
-
-.emails-card {
-  transition: border-color 0.15s;
-
-  &:hover {
-    border-color: var(--accent);
-  }
-}
-</style>

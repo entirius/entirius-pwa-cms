@@ -1538,6 +1538,9 @@
     "unavailable_msg": "The authors feature is not enabled on this backend. Update the ContentDB module to enable author management."
   },
   "emails": {
+    "font_preview": "Hello, your order has been confirmed!",
+    "template_content": "Content",
+    "shop_details": "Shop",
     "dashboard": "Email Configuration",
     "channels": "Channels",
     "no_channels": "No channels found.",

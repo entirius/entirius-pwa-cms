@@ -1537,6 +1537,9 @@
     "unavailable_msg": "Funkcja autorów nie jest włączona na tym backendzie. Zaktualizuj moduł ContentDB, aby włączyć zarządzanie autorami."
   },
   "emails": {
+    "font_preview": "Dzień dobry, Twoje zamówienie zostało potwierdzone!",
+    "template_content": "Treść",
+    "shop_details": "Sklep",
     "dashboard": "Konfiguracja e-mail",
     "channels": "Kanały",
     "no_channels": "Nie znaleziono kanałów.",

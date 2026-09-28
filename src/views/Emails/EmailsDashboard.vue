@@ -4,62 +4,52 @@
       <PageHeader :title="$t('emails.dashboard')" />
     </template>
 
-      <Loader block v-show="loading" />
+    <Loader block v-if="loading" />
 
-      <div v-show="!loading">
-        <!-- Channels -->
-        <div class="mb-12">
-          <h2 class="fs-500 fw-600 mb-8">{{ $t("emails.channels") }}</h2>
-          <div v-if="channels.length === 0" class="fs-300 t-muted">
-            {{ $t("emails.no_channels") }}
-          </div>
-          <div class="emails-grid">
-            <BasicCard
-              v-for="channel in channels"
-              :key="channel.pk"
-              class="emails-card pointer"
-              @click="editChannel(channel.pk)"
-            >
-              <div class="flex ai-ct gap-5 mb-5">
-                <div
-                  class="emails-card__color-dot"
-                  :style="{
-                    backgroundColor:
-                      channel.main_background_color || 'var(--surface-hover)',
-                  }"
-                ></div>
-                <span class="fs-400 fw-600 t-body">{{
-                  channel.label
-                }}</span>
-              </div>
-              <div class="fs-200 t-muted">{{ channel.idx }}</div>
-              <div v-if="channel.from_email" class="fs-200 t-muted mt-2">
-                {{ channel.from_email }}
-              </div>
-            </BasicCard>
-          </div>
+    <template v-else>
+      <section class="mb-12">
+        <h2 class="fs-500 fw-600 mb-8">{{ $t("emails.channels") }}</h2>
+        <p v-if="channels.length === 0" class="fs-300 t-muted">
+          {{ $t("emails.no_channels") }}
+        </p>
+        <div class="email-cards">
+          <EmailCard
+            v-for="channel in channels"
+            :key="channel.pk"
+            :to="`/emails/channels/${channel.pk}`"
+            :title="channel.label"
+            testid="emails-channel-card"
+          >
+            <template #icon>
+              <span
+                class="color-dot"
+                :style="{ backgroundColor: channel.main_background_color || 'var(--surface-hover)' }"
+                aria-hidden="true"
+              ></span>
+            </template>
+            <p class="fs-200 t-muted mt-2">{{ channel.idx }}</p>
+            <p v-if="channel.from_email" class="fs-200 t-muted mt-2">
+              {{ channel.from_email }}
+            </p>
+          </EmailCard>
         </div>
+      </section>
 
-        <!-- Email Types -->
-        <div>
-          <h2 class="fs-500 fw-600 mb-8">
-            {{ $t("emails.template_types") }}
-          </h2>
-          <div class="emails-grid">
-            <BasicCard
-              v-for="emailType in emailTypes"
-              :key="emailType.slug"
-              class="emails-card pointer"
-              @click="editTemplates(emailType.slug)"
-            >
-              <div class="fs-400 fw-600 t-body mb-2">
-                {{ $t(`emails.types.${emailType.slug}`) }}
-              </div>
-              <div class="fs-200 t-muted">{{ $t(`emails.type_desc.${emailType.slug}`) }}</div>
-            </BasicCard>
-          </div>
+      <section>
+        <h2 class="fs-500 fw-600 mb-8">{{ $t("emails.template_types") }}</h2>
+        <div class="email-cards">
+          <EmailCard
+            v-for="emailType in emailTypes"
+            :key="emailType.slug"
+            :to="`/emails/templates/${emailType.slug}`"
+            :title="$t(`emails.types.${emailType.slug}`)"
+            testid="emails-type-card"
+          >
+            <p class="fs-200 t-muted mt-2">{{ $t(`emails.type_desc.${emailType.slug}`) }}</p>
+          </EmailCard>
         </div>
-      </div>
+      </section>
+    </template>
   </PageLayout>
 </template>
 
@@ -68,9 +58,11 @@ import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { GET_EmailChannels, GET_EmailTemplates } from "@/api/emails/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import EmailCard from "./EmailCard.vue";
 
 export default {
   name: "EmailsDashboard",
+  components: { EmailCard },
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();
@@ -79,7 +71,7 @@ export default {
   data() {
     return {
       channels: [],
-      loading: false,
+      loading: true,
       allEmailTypes: [
         {
           slug: "accounts-new-account"
@@ -143,32 +135,12 @@ export default {
         this.loading = false;
       }
     },
-    editChannel(pk) {
-      this.$router.push(`/emails/channels/${pk}`);
-    },
-    editTemplates(slug) {
-      this.$router.push(`/emails/templates/${slug}`);
-    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.emails-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--space-4);
-}
-
-.emails-card {
-  transition: border-color 0.15s;
-
-  &:hover {
-    border-color: var(--accent);
-  }
-}
-
-.emails-card__color-dot {
+.color-dot {
   width: 12px;
   height: 12px;
   border-radius: var(--radius-full);

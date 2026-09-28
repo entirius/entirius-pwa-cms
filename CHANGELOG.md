@@ -146,6 +146,19 @@ All notable changes to this project will be documented in this file.
   Edit button opens the gallery). The authors list keeps its filter panel in the page toolbar, shows the
   "not available" state as an `EmptyState` and its pagination in the footer; the Authors panel toolbar is gone.
   Smoke spec `tests/e2e/p5-authors-smoke.spec.js`.
+- Auth screens, Enrichment lists, Docs and the lookup/notification components on the P3 components (P5 plan 32):
+  login, forgot-password, password change and reset are `<form>`s (Enter submits), each password field has a
+  „Pokaż hasło” `IconButton` toggle inside the field, the links are `ghost` buttons and the titles balance their
+  lines; the task-queue drawer's SKU and pager, the lookup open, photo and remove controls and the toast close are
+  boots; the spawn-rule edit actions are an `ActionBar` in R5 order (delete · run · save) shown after the rule
+  loaded; Docs sits in `PageLayout` with a „Dokumentacja” `PageHeader` and its example cards show key and value.
+  Read-only smoke `tests/e2e/p5-pilot-b-smoke.spec.js`.
+- P5 Emails (plan 34): the channel, template-type, template and language-config tiles are `EmailCard`
+  (`src/views/Emails/EmailCard.vue`), a `BasicCard` whose title is the link to the record and covers the card — the
+  tiles open from the keyboard now (Tab, Enter). The channel, template and language-config forms are `BasicCard`
+  sections with a `.form-grid` (rich-text fields span both columns); Save moved from the foot of each form (mid-page on
+  the channel) into the PageHeader `ActionBar`. The header shows after the load. The font preview line is translated.
+  Smoke spec `tests/e2e/p5-emails-smoke.spec.js`.
 
 - P5 Faq and the detail-form pattern (plan 33): the group and item forms are `BasicCard` sections with a `.form-grid`
   of `FormField`s (2 columns above 768 px, `.form-grid__wide` spans both) — labels, required markers, hints (IDX and

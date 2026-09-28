@@ -1,100 +1,84 @@
 <template>
   <PageLayout class="fs-300 t-body">
-    <template #header>
+    <template v-if="!loading" #header>
       <PageHeader
         :title="channel.label || $t('emails.channel')"
         back="/emails"
       >
         <template #meta>
-          <span v-if="channel.idx" class="fs-200 t-muted ml-2"
-            >({{ channel.idx }})</span
-          >
+          <span v-if="channel.idx" class="fs-200 t-muted">({{ channel.idx }})</span>
+        </template>
+        <template v-if="!loadFailed" #actions>
+          <ActionBar :actions="headerActions" />
         </template>
       </PageHeader>
     </template>
 
-      <Loader block v-show="loading" />
+    <Loader block v-if="loading" />
 
-      <div v-show="!loading">
-        <!-- Branding Section -->
-        <div class="mb-12">
-          <h2 class="fs-500 fw-600 mb-8">{{ $t("emails.branding") }}</h2>
-          <div class="emails-form-grid">
-            <FormField :label="$t('emails.from_name')">
-              <BasicInput v-model="channel.from_name" />
-            </FormField>
-            <FormField :label="$t('emails.from_email')">
-              <BasicInput v-model="channel.from_email" />
-            </FormField>
-            <FormField :label="$t('emails.main_background_color')">
-              <ColorInput v-model="channel.main_background_color" />
-            </FormField>
-            <FormField :label="$t('emails.body_background_color')">
-              <ColorInput v-model="channel.body_background_color" />
-            </FormField>
-            <FormField :label="$t('emails.main_text_color')">
-              <ColorInput v-model="channel.main_text_color" />
-            </FormField>
-            <FormField :label="$t('emails.brand_text_color')">
-              <ColorInput v-model="channel.brand_text_color" />
-            </FormField>
-            <FormField :label="$t('emails.font_family')">
-              <BasicSelect
-                v-model="channel.font_family"
-                :options="fontOptions"
-                :placeholder="$t('emails.font_family')"
-              />
-              <p
-                v-if="channel.font_family"
-                :style="{ fontFamily: channel.font_family }"
-                class="fs-300 t-secondary mt-2"
-              >
-                Hello, your order has been confirmed!
-              </p>
-            </FormField>
-            <FormField :label="$t('emails.logo_max_width')">
-              <NumberInput
-                v-model="channel.logo_max_width"
-                suffix="px"
-                :min="0"
-                :max="1000"
-                :step="10"
-              />
-            </FormField>
-          </div>
-          <div class="flex jc-fe mt-8">
-            <BasicButton
-              variant="primary"
-              @click="saveChannel"
+    <template v-else-if="!loadFailed">
+      <BasicCard :title="$t('emails.branding')" gap class="mb-8">
+        <div class="form-grid">
+          <FormField :label="$t('emails.from_name')">
+            <BasicInput v-model="channel.from_name" />
+          </FormField>
+          <FormField :label="$t('emails.from_email')">
+            <BasicInput v-model="channel.from_email" />
+          </FormField>
+          <FormField :label="$t('emails.main_background_color')">
+            <ColorInput v-model="channel.main_background_color" />
+          </FormField>
+          <FormField :label="$t('emails.body_background_color')">
+            <ColorInput v-model="channel.body_background_color" />
+          </FormField>
+          <FormField :label="$t('emails.main_text_color')">
+            <ColorInput v-model="channel.main_text_color" />
+          </FormField>
+          <FormField :label="$t('emails.brand_text_color')">
+            <ColorInput v-model="channel.brand_text_color" />
+          </FormField>
+          <FormField :label="$t('emails.font_family')">
+            <BasicSelect v-model="channel.font_family" :options="fontOptions" />
+            <p
+              v-if="channel.font_family"
+              :style="{ fontFamily: channel.font_family }"
+              class="fs-300 t-secondary mt-2"
             >
-              {{ $t('common.save') }}
-            </BasicButton>
-          </div>
+              {{ $t("emails.font_preview") }}
+            </p>
+          </FormField>
+          <FormField :label="$t('emails.logo_max_width')">
+            <NumberInput
+              v-model="channel.logo_max_width"
+              suffix="px"
+              :min="0"
+              :max="1000"
+              :step="10"
+            />
+          </FormField>
         </div>
+      </BasicCard>
 
-        <!-- Language Configs Section -->
-        <div>
-          <h2 class="fs-500 fw-600 mb-8">{{ $t("emails.lang_configs") }}</h2>
-          <div v-if="langConfigs.length === 0" class="fs-300 t-muted">
-            {{ $t("emails.no_lang_configs") }}
-          </div>
-          <div class="emails-grid">
-            <BasicCard
-              v-for="config in langConfigs"
-              :key="config.pk"
-              class="emails-card pointer"
-              @click="editLangConfig(config.pk)"
-            >
-              <div class="fs-400 fw-600 t-body">
-                {{ config.language || $t("emails.default_lang") }}
-              </div>
-              <div v-if="config.shop_name" class="fs-200 t-muted mt-2">
-                {{ config.shop_name }}
-              </div>
-            </BasicCard>
-          </div>
+      <section>
+        <h2 class="fs-500 fw-600 mb-8">{{ $t("emails.lang_configs") }}</h2>
+        <p v-if="langConfigs.length === 0" class="fs-300 t-muted">
+          {{ $t("emails.no_lang_configs") }}
+        </p>
+        <div class="email-cards">
+          <EmailCard
+            v-for="config in langConfigs"
+            :key="config.pk"
+            :to="`/emails/lang-configs/${config.pk}`"
+            :title="config.language || $t('emails.default_lang')"
+            testid="emails-lang-config-card"
+          >
+            <p v-if="config.shop_name" class="fs-200 t-muted mt-2">
+              {{ config.shop_name }}
+            </p>
+          </EmailCard>
         </div>
-      </div>
+      </section>
+    </template>
   </PageLayout>
 </template>
 
@@ -107,8 +91,11 @@ import {
   PATCH_EmailChannel,
 } from "@/api/emails/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import EmailCard from "./EmailCard.vue";
+
 export default {
   name: "EmailChannelEdit",
+  components: { EmailCard },
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();
@@ -118,7 +105,8 @@ export default {
     return {
       channel: {},
       langConfigs: [],
-      loading: false,
+      loading: true,
+      loadFailed: false,
       fontOptions: [
         { label: "Arial", value: "Arial, Helvetica, sans-serif" },
         { label: "Helvetica", value: "Helvetica, Arial, sans-serif" },
@@ -139,6 +127,19 @@ export default {
       ],
     };
   },
+  computed: {
+    headerActions() {
+      return [
+        {
+          key: "save",
+          role: "primary",
+          label: this.$t("common.save"),
+          onClick: this.saveChannel,
+          testid: "emails-save",
+        },
+      ];
+    },
+  },
   mounted() {
     this.fetchData();
   },
@@ -154,6 +155,7 @@ export default {
         this.channel = channelRes.data;
         this.langConfigs = configsRes.data.results || [];
       } catch (err) {
+        this.loadFailed = true;
         this.notify.spawnNotification({
           type: "negative",
           msg: extractApiMessage(err, this.$t("emails.error_load_channel")),
@@ -190,31 +192,6 @@ export default {
         this.loader.loaderFinish();
       }
     },
-    editLangConfig(pk) {
-      this.$router.push(`/emails/lang-configs/${pk}`);
-    },
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.emails-form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--space-4);
-}
-
-.emails-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--space-4);
-}
-
-.emails-card {
-  transition: border-color 0.15s;
-
-  &:hover {
-    border-color: var(--accent);
-  }
-}
-</style>
