@@ -47,6 +47,7 @@ const mountEdit = (params = {}, routerMock = {}) =>
       stubs: {
         // The global FormField stub swallows slots — render them so the field inputs exist in DOM.
         FormField: { template: "<div><slot /></div>" },
+        PageHeader: { template: "<div><slot name='actions' /></div>" },
       },
     },
   });
@@ -148,6 +149,21 @@ describe("SpawnRuleEdit", () => {
     wrapper.vm.selectChannel("second"); // serves only "de" → selection resets to all-languages
     await flushPromises();
     expect(wrapper.vm.scopeLanguage).toBe("");
+  });
+
+  // Plan 32 (ui-rules § Loading): Save, Run and Delete need the rule, so they render only after it loaded.
+  it("shows the page actions only after the rule loaded", async () => {
+    let resolveRule;
+    mockGetRule.mockReturnValueOnce(new Promise((resolve) => (resolveRule = resolve)));
+    const wrapper = mountEdit({ key: "desc-pl" });
+    await wrapper.vm.$nextTick();
+    expect(wrapper.find('[data-test="spawn-rule-save-btn"]').exists()).toBe(false);
+
+    resolveRule({ data: { key: "desc-pl", module: "pim", check_key: "", task_type: "translate", scope: {} } });
+    await flushPromises();
+
+    expect(wrapper.find('[data-test="spawn-rule-save-btn"]').exists()).toBe(true);
+    expect(wrapper.find('[data-test="spawn-rule-delete-btn"]').exists()).toBe(true);
   });
 
   it("keeps a stored language the loaded channel list does not offer", async () => {
