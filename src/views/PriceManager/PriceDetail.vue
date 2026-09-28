@@ -60,7 +60,7 @@
           </div>
 
           <!-- Editable row -->
-          <div class="page-card pm-edit-form mb-8">
+          <BasicCard class="pm-edit-form mb-8">
             <div class="pm-edit-fields">
               <!-- Editable price (net or gross depending on direction) -->
               <FormField
@@ -120,7 +120,7 @@
                 />
               </div>
             </div>
-          </div>
+          </BasicCard>
 
           <!-- Actions row -->
           <div class="flex gap-5 mb-10 flex-wrap ai-ct">
