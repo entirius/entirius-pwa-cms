@@ -153,6 +153,15 @@ All notable changes to this project will be documented in this file.
   boots; the spawn-rule edit actions are an `ActionBar` in R5 order (delete · run · save) shown after the rule
   loaded; Docs sits in `PageLayout` with a „Dokumentacja” `PageHeader` and its example cards show key and value.
   Read-only smoke `tests/e2e/p5-pilot-b-smoke.spec.js`.
+- P5 Agreements (plan 36): the agreement form is `BasicCard` sections with a `.form-grid` of `FormField`s (API field
+  errors shown per field); Save and the danger Delete moved from the panel toolbar into the PageHeader `ActionBar`,
+  shown after the load (a failed load shows an `EmptyState`), and the Agreements toolbar is gone. The versions and
+  legal-page-history tables are `DataTable`s: a phone keeps version, status and actions, the draft edit form sits
+  under the table, a snapshot's legal text opens in the table's expand row, and the history section opens with a
+  labelled `IconButton` (was a click-only header). System display contexts are `Tag`s. The legal text at consent
+  opens in a `BasicModal` (focus trap, Esc, labelled close). The definitions list filters with an inline chip row
+  next to the search; list pagination sits in the page footer; the consent tabs render their `tabpanel`s. Smoke spec
+  `tests/e2e/p5-agreements-smoke.spec.js`.
 - P5 Emails (plan 34): the channel, template-type, template and language-config tiles are `EmailCard`
   (`src/views/Emails/EmailCard.vue`), a `BasicCard` whose title is the link to the record and covers the card — the
   tiles open from the keyboard now (Tab, Enter). The channel, template and language-config forms are `BasicCard`

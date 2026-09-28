@@ -2,14 +2,8 @@
   <PageLayout class="fs-300 t-body">
     <template #header>
       <PageHeader :title="$t('agm.people_list')">
-        <template #actions>
-          <BasicButton
-            v-if="mode === 'marketing_lists'"
-            variant="secondary"
-            @click="downloadCSV"
-          >
-            {{ $t('agm.download_csv') }}
-          </BasicButton>
+        <template v-if="mode === 'marketing_lists'" #actions>
+          <ActionBar :actions="headerActions" />
         </template>
       </PageHeader>
     </template>
@@ -17,6 +11,7 @@
       <div class="mb-10">
         <BasicTabs
           v-model="mode"
+          id-prefix="consent-people"
           :options="[
             { value: 'people', label: $t('agm.tab_people') },
             { value: 'marketing_lists', label: $t('agm.tab_marketing_lists') },
@@ -25,7 +20,12 @@
       </div>
 
       <!-- People tab -->
-      <template v-if="mode === 'people'">
+      <div
+        v-if="mode === 'people'"
+        id="consent-people-panel-people"
+        role="tabpanel"
+        aria-labelledby="consent-people-tab-people"
+      >
         <div class="flex ai-ct gap-8 mb-10">
           <BasicInput
             v-model="search"
@@ -52,16 +52,15 @@
           </template>
         </DataTable>
 
-        <Pagination
-          v-if="totalCount > pageSize"
-          :page="paginationState.page"
-          :pages="paginationState.pages"
-          @update:page="onPageChange"
-        />
-      </template>
+      </div>
 
       <!-- Marketing Lists tab -->
-      <template v-if="mode === 'marketing_lists'">
+      <div
+        v-if="mode === 'marketing_lists'"
+        id="consent-people-panel-marketing_lists"
+        role="tabpanel"
+        aria-labelledby="consent-people-tab-marketing_lists"
+      >
         <Loader block v-show="subscribersLoading" />
 
         <template v-if="!subscribersLoading">
@@ -76,7 +75,7 @@
           >
             <div class="flex ai-ct gap-5 mb-8">
               <h2 class="fs-400 fw-600">{{ group.name }}</h2>
-              <span class="consent-people__count-badge fs-200 t-muted">
+              <span class="fs-200 t-muted">
                 {{ group.items.length }} {{ $t("agm.subscribers_count") }}
               </span>
             </div>
@@ -92,7 +91,16 @@
             </DataTable>
           </div>
         </template>
-      </template>
+      </div>
+
+    <template #footer>
+      <Pagination
+        v-if="mode === 'people' && totalCount > pageSize"
+        :page="paginationState.page"
+        :pages="paginationState.pages"
+        @update:page="onPageChange"
+      />
+    </template>
   </PageLayout>
 </template>
 
@@ -128,6 +136,9 @@ export default {
     };
   },
   computed: {
+    headerActions() {
+      return [{ key: "csv", role: "secondary", label: this.$t("agm.download_csv"), onClick: this.downloadCSV }];
+    },
     columns() {
       return [
         {
@@ -141,12 +152,14 @@ export default {
           label: this.$t("agm.consent_count"),
           sortable: false,
           width: "120px",
+          numeric: true,
         },
         {
           key: "last_activity",
           label: this.$t("agm.last_activity"),
           sortable: false,
           width: "180px",
+          priority: 2,
         },
       ];
     },
@@ -163,6 +176,7 @@ export default {
           label: this.$t("agm.date"),
           sortable: false,
           width: "180px",
+          priority: 2,
         },
         {
           key: "channel_idx",
@@ -287,12 +301,5 @@ export default {
 .consent-people__search {
   flex: 1;
   max-width: 400px;
-}
-
-.consent-people__count-badge {
-  background: var(--surface-raised);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-  padding: 2px var(--space-2);
 }
 </style>

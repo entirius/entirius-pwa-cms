@@ -1,28 +1,10 @@
 <template>
-  <PageLayout class="agm-list__wrapper fs-300 t-body">
+  <PageLayout class="fs-300 t-body">
     <template #header>
       <PageHeader :title="$t('agm.definitions')" />
     </template>
     <template #toolbar>
-      <!-- Filter tabs -->
-      <div class="flex ai-ct">
-        <MobileFilterPanel
-          :active-count="activeFilter !== 'all' ? 1 : 0"
-          :trigger-label="$t('builder.filters')"
-        >
-          <p class="fs-200 t-secondary">{{ $t("builder.filters") }}</p>
-          <FilterChip
-            v-for="tab in filterTabs"
-            :key="tab.key"
-            :label="tab.label"
-            :active="activeFilter === tab.key"
-            @click="setFilter(tab.key)"
-          />
-        </MobileFilterPanel>
-      </div>
-    </template>
-
-      <div class="flex ai-ct gap-8 mb-10">
+      <div class="agm-list__toolbar">
         <BasicInput
           v-model="search"
           :placeholder="$t('common.start_typing')"
@@ -30,7 +12,17 @@
           class="agm-list__search"
           @input="debouncedFetch(searchAndFetch)"
         />
+        <div class="filter-chip-row" role="group" :aria-label="$t('agm.category')">
+          <FilterChip
+            v-for="tab in filterTabs"
+            :key="tab.key"
+            :label="tab.label"
+            :active="activeFilter === tab.key"
+            @click="setFilter(tab.key)"
+          />
+        </div>
       </div>
+    </template>
 
       <Loader block v-show="loading" />
 
@@ -46,7 +38,7 @@
         @row-click="onRowClick"
       >
         <template #cell-category="{ value }">
-          <StatusBadge v-if="value" tone="accent" :dot="false" :label="value" />
+          <Tag v-if="value" :label="value" />
           <span v-else class="t-muted">---</span>
         </template>
         <template #cell-is_active="{ value }">
@@ -57,14 +49,16 @@
         </template>
       </DataTable>
 
+      <FloatingActions :actions="fabActions" />
+
+    <template #footer>
       <Pagination
         v-if="totalCount > pageSize"
         :page="paginationState.page"
         :pages="paginationState.pages"
         @update:page="onPageChange"
       />
-
-      <FloatingActions :actions="fabActions" />
+    </template>
   </PageLayout>
 </template>
 
@@ -131,7 +125,7 @@ export default {
           key: "category",
           label: this.$t("agm.category"),
           sortable: false,
-          width: "120px",
+          width: "max-content",
           priority: 2,
         },
         {
@@ -145,7 +139,7 @@ export default {
           key: "is_active",
           label: this.$t("agm.status"),
           sortable: true,
-          width: "100px",
+          width: "max-content",
         },
       ];
     },
@@ -218,19 +212,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.agm-list__toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+}
+
 .agm-list__search {
   flex: 1;
+  min-width: 150px;
   max-width: 400px;
 }
-
-@media only screen and (max-width: 768px) {
-  .agm-list__wrapper {
-    overflow-x: visible !important;
-
-    > div {
-      overflow-x: visible !important;
-    }
-  }
-}
-
 </style>
