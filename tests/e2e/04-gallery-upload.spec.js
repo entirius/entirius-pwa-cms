@@ -24,8 +24,8 @@ test.describe('Gallery Upload Workflow', () => {
     await page.goto('/pages/gallery');
     await page.waitForLoadState('networkidle');
 
-    // Verify gallery loaded (look for gallery grid or filter area)
-    await expect(page.locator('.gallery-card, .tag-chip, [class*="gallery"]').first()).toBeVisible({ timeout: 10000 });
+    // Verify gallery loaded (look for the MediaTile grid or the tag filter chips)
+    await expect(page.locator('.media-tile, .filter-chip, [class*="gallery"]').first()).toBeVisible({ timeout: 10000 });
 
     // Step 3: Open FAB menu
     const fabTrigger = page.locator('.floating-actions__trigger');
@@ -37,8 +37,9 @@ test.describe('Gallery Upload Workflow', () => {
     await expect(addPhotoAction).toBeVisible({ timeout: 3000 });
     await addPhotoAction.click();
 
-    // Step 5: Verify we're in add_new mode (select from disk button should appear)
-    const selectFromDiskButton = page.locator('button:has-text("Wybierz z dysku")');
+    // Step 5: Verify the upload dialog is open (its drop zone picks a file on click)
+    const uploadDialog = page.getByRole('dialog');
+    const selectFromDiskButton = uploadDialog.getByRole('button', { name: /^(Upuść obraz tutaj|Drop image here)$/ });
     await expect(selectFromDiskButton).toBeVisible({ timeout: 5000 });
 
     // Step 6: Upload the test image via hidden file input
@@ -58,11 +59,11 @@ test.describe('Gallery Upload Workflow', () => {
     await page.waitForTimeout(1000);
 
     // Step 7: Fill in alt text
-    const altTextInput = page.locator('input[type="text"]').last();
+    const altTextInput = uploadDialog.locator('input[type="text"]').first();
     await altTextInput.fill(uploadedImageAlt);
 
     // Step 8: Click "Upload" button (PL: "Wgraj")
-    const uploadButton = page.locator('button:has-text("Wgraj")');
+    const uploadButton = uploadDialog.getByRole('button', { name: /^(Wgraj|Upload)$/ });
     await expect(uploadButton).toBeVisible({ timeout: 5000 });
     await uploadButton.click();
 
@@ -70,10 +71,10 @@ test.describe('Gallery Upload Workflow', () => {
     await page.waitForLoadState('networkidle', { timeout: 15000 });
 
     // Verify we're back on the gallery page (read mode with gallery grid)
-    await expect(page.locator('.gallery-card').first()).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('.media-tile').first()).toBeVisible({ timeout: 10000 });
 
     // Step 10: Verify gallery has images
-    const imageCount = await page.locator('.gallery-card').count();
+    const imageCount = await page.locator('.media-tile').count();
     expect(imageCount).toBeGreaterThan(0);
 
     await page.screenshot({ path: 'test-results/gallery-after-upload.png' });
@@ -118,17 +119,18 @@ test.describe('Gallery Upload Workflow', () => {
     await page.goto('/pages/gallery');
     await page.waitForLoadState('networkidle');
 
-    // Find the first gallery card and click it to select
-    const firstCard = page.locator('.gallery-card').first();
+    // Find the first tile and hover it: its actions show on hover and focus
+    const firstCard = page.locator('.media-tile').first();
 
     if (await firstCard.isVisible()) {
-      await firstCard.click();
+      await firstCard.hover();
 
-      // Click delete button in overlay (PL: "Usun")
-      const deleteButton = page.locator('.gallery-overlay__btn').first();
+      // Click the tile's delete button (PL: "Usuń zdjęcie"), then confirm
+      const deleteButton = firstCard.getByRole('button', { name: /^(Usuń zdjęcie|Delete photo)$/ });
 
       if (await deleteButton.isVisible({ timeout: 2000 }).catch(() => false)) {
         await deleteButton.click();
+        await page.getByTestId('confirm-dialog-confirm').click();
 
         // Wait for deletion to complete
         await page.waitForLoadState('networkidle');

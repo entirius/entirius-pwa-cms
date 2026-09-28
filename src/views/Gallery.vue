@@ -1,409 +1,190 @@
 <template>
-  <div
-    class="fs-200 page-pad flex-column jc-sb gap-10 image-gallery"
-    style="height: 100%"
-  >
-    <!-- Changed to 100vh -->
-    <div
-      class="fg-1 flex-column gap-10"
-      style="min-height: 0; overflow: hidden"
-    >
-      <FloatingActions
-        :actions="fabActions"
-        :back-handler="
-          mode !== 'read'
-            ? () => {
-                mode = 'read';
-              }
-            : null
-        "
-      />
-      <div
-        class="t-secondary fg-1 ovy-auto flex-column gap-8"
-        v-if="mode === 'tag'"
-      >
-        <div>
-          <p class="fs-200 t-secondary mb-2">{{ $t("gallery.tag_list") }}</p>
-          <div class="flex wrap ai-ct gap-2 mb-5">
-            <p
-              v-for="tag in tags"
-              :key="`manage-tag-${tag.slug}`"
-              class="tag-chip pointer"
-              :class="[isTagSelected(tag) ? 'tag-chip--active' : '']"
-              @click="
-                () => {
-                  const index = selected_tags.indexOf(tag.label);
-                  if (index === -1) {
-                    selected_tags.push(tag.label);
-                  } else {
-                    selected_tags.splice(index, 1);
-                  }
-                }
-              "
-            >
-              {{ tag.label }}
-            </p>
-            <button
-              v-if="selected_tags.length"
-              class="tag-chip tag-chip--danger pointer flex ai-ct gap-1"
-              @click="deleteSelectedTags()"
-            >
-              <FontAwesomeIcon :icon="$icons.delete" />
-              {{ $t("gallery.remove_tag") }}
-            </button>
-          </div>
-        </div>
-        <div class="flex ai-ct gap-2" style="max-width: 400px">
-          <FormField class="fg-1" :label="$t('gallery.add_new_tag')">
-            <BasicInput
-              class="bg-base lh-base-elem tag-input"
-              v-model="new_tag_input"
-            />
-          </FormField>
-          <button
-            class="tag-add-btn bg-accent-fill t-on-accent-fill rounded pointer"
-            @click="addNewTag()"
-          >
-            <FontAwesomeIcon :icon="$icons.add" />
-          </button>
-        </div>
-      </div>
-      <div v-if="mode === 'edit_tag'" class="flex-column gap-8">
-        <div>
-          <p class="fs-200 t-secondary mb-2">
-            {{ $t("gallery.select_tags") }}
-          </p>
-          <div v-if="tags.length" class="flex wrap ai-ct gap-2 mb-5">
-            <p
-              v-for="tag in tags"
-              :key="`edit-tag-${tag.slug}`"
-              class="tag-chip pointer"
-              :class="[isTagSelected(tag) ? 'tag-chip--active' : '']"
-              @click="
-                () => {
-                  const sIndex = selected_tags.indexOf(tag.label);
-                  if (sIndex === -1) {
-                    selected_tags.push(tag.label);
-                  } else {
-                    selected_tags.splice(sIndex, 1);
-                  }
-                  const eIndex = edited_image_tags.findIndex(
-                    (el) => el.label === tag.label
-                  );
-                  if (eIndex === -1) {
-                    edited_image_tags.push(tag);
-                  } else {
-                    edited_image_tags.splice(eIndex, 1);
-                  }
-                }
-              "
-            >
-              {{ tag.label }}
-            </p>
-          </div>
-          <div v-else class="flex ai-ct gap-2 p-5 rounded b-default bg-raised t-muted fs-200">
-            <FontAwesomeIcon :icon="$icons.info" />
-            <span>{{ $t("gallery.no_tags_yet") }}</span>
-            <button
-              class="t-accent pointer"
-              style="background: none; border: none; text-decoration: underline; font-size: inherit"
-              @click="mode = 'tag'"
-            >{{ $t("gallery.go_to_manage_tags") }}</button>
-          </div>
-        </div>
-        <div class="flex ai-ct gap-2">
-          <FormField class="fg-1" :label="$t('gallery.quick_add_tag')">
-            <BasicInput
-              class="bg-base lh-base-elem tag-input"
-              v-model="new_tag_input"
-              @keydown.enter.native="quickAddTag"
-            />
-          </FormField>
-          <button
-            class="tag-add-btn bg-accent-fill t-on-accent-fill rounded pointer"
-            @click="quickAddTag"
-          >
-            <FontAwesomeIcon :icon="$icons.add" />
-          </button>
-        </div>
-        <div class="flex gap-2">
-          <button
-            class="gallery-action-btn bg-accent-fill b-accent t-on-accent-fill"
-            @click="
-              addTagToImg();
-              mode = 'read';
-            "
-          >
-            <FontAwesomeIcon :icon="$icons.saveDraft" />
-            {{ $t("common.save") }}
-          </button>
-          <button
-            class="gallery-action-btn bg-base b-default t-body"
-            @click="mode = 'read'"
-          >
-            {{ $t("common.cancel") }}
-          </button>
-        </div>
-      </div>
-      <div
-        class="rounded t-secondary fg-1 ovy-auto flex-column"
-        v-if="mode === 'add_new'"
-      >
-        <div class="mb-10">
-          <div
-            class="gallery-dropzone"
-            :class="{ 'gallery-dropzone--dragover': isDraggingOver }"
-            role="button"
-            tabindex="0"
-            :aria-label="$t('gallery.drop_files_here')"
-            @click="$refs.file.click()"
-            @keydown.enter="$refs.file.click()"
-            @dragover.prevent="isDraggingOver = true"
-            @dragleave="isDraggingOver = false"
-            @drop.prevent="onDrop"
-          >
-            <FontAwesomeIcon :icon="$icons.upload" class="t-muted fs-500" />
-            <span class="t-muted fs-200">{{ $t('gallery.drop_files_here') }}</span>
-            <span class="t-muted fs-200">{{ $t('gallery.or_click_to_browse') }}</span>
-          </div>
-          <input
-            type="file"
-            name="file"
-            id="file"
-            class="sr-only"
-            ref="file"
-            accept="image/*"
-            @change="set_File"
+  <PageLayout class="gallery">
+    <template #header>
+      <PageHeader :title="$t('nav.gallery')" />
+    </template>
+    <template #toolbar>
+      <div class="gallery__controls">
+        <span id="gallery-filter-label" class="gallery__label">{{ $t("gallery.filter_by_tag") }}</span>
+        <div v-if="tags.length" class="gallery__chips" role="group" aria-labelledby="gallery-filter-label">
+          <FilterChip
+            v-for="tag in tags"
+            :key="`filter-${tag.slug}`"
+            :label="tag.label"
+            :active="filter_tags.includes(tag.slug)"
+            :aria-pressed="String(filter_tags.includes(tag.slug))"
+            @click="toggleFilterTag(tag)"
+          />
+          <IconButton
+            v-if="filter_tags.length"
+            icon="close"
+            size="sm"
+            :label="$t('gallery.reset_filters')"
+            @click="resetFilter"
           />
         </div>
-        <div
-          class="page-card fg-1 ovy-auto grid grid-col-2 gap-12"
-          v-if="filePreview"
-        >
-          <div>
-            <img :src="filePreview" alt="" class="" />
-          </div>
-          <div class="flex-column">
-            <div>
-              <p class="fs-200 t-info">Optionals</p>
-              <FormField :label="'Picture alt.'">
-                <BasicInput
-                  class="bg-base rounded t-secondary mt-8 lh-base-elem"
-                  v-model="meta.alt"
-                />
-              </FormField>
-              <p class="fs-200 t-secondary mt-5 mb-2">
-                {{ $t("gallery.select_tags") }}
-              </p>
-              <div class="flex wrap ai-ct gap-2">
-                <p
-                  v-for="tag in tags"
-                  :key="`upload-tag-${tag.slug}`"
-                  class="tag-chip pointer"
-                  :class="[isTagSelected(tag) ? 'tag-chip--active' : '']"
-                  @click="
-                    () => {
-                      const index = selected_tags.indexOf(tag.label);
-                      if (index === -1) {
-                        selected_tags.push(tag.label);
-                      } else {
-                        selected_tags.splice(index, 1);
-                      }
-                    }
-                  "
-                >
-                  {{ tag.label }}
-                </p>
-              </div>
-              <BasicButton
-                v-if="filePreview"
-                variant="primary"
-                class="jc-ct mt-5"
-                @click="upload_File({})"
-              >
-                {{ $t('gallery.upload') }}
-              </BasicButton>
-              <div class="mt-5"></div>
-            </div>
-          </div>
+        <div class="gallery__selects">
+          <BasicSelect
+            class="gallery__select"
+            :aria-label="$t('common.sort_by')"
+            :options="sortOptions"
+            :model-value="sort_by"
+            @update:model-value="setSort"
+          />
+          <BasicSelect
+            class="gallery__select"
+            :aria-label="$t('gallery.page_size')"
+            :options="pageSizeOptions"
+            :model-value="limit"
+            @update:model-value="setLimit"
+          />
         </div>
       </div>
+    </template>
 
-      <div
-        class="fg-1 ovy-auto"
-        style="min-height: 0"
-        v-if="gallery && mode === 'read'"
-      >
-        <div class="flex ai-ct jc-sb gap-5 mb-5">
-          <MobileFilterPanel
-            :active-count="mode === 'read' ? selected_tags.length : 0"
-            :trigger-label="$t('gallery.filter_by_tag')"
-          >
-            <p class="fs-200 t-secondary">{{ $t("gallery.filter_by_tag") }}</p>
-            <p
-              v-for="(t, idx) in tags"
-              :key="`t-${idx}`"
-              class="tag-chip pointer"
-              :class="[isTagSelected(t) ? 'tag-chip--active' : '']"
-              @click="
-                () => {
-                  const index = selected_tags.indexOf(t.slug);
-                  if (index === -1) {
-                    selected_tags.push(t.slug);
-                  } else {
-                    selected_tags.splice(index, 1);
-                  }
-                  filterByTags();
-                }
-              "
-            >
-              {{ t.label }}
-            </p>
-            <button
-              v-if="selected_tags.length"
-              class="tag-chip pointer flex ai-ct jc-ct"
-              :aria-label="$t('gallery.reset_filters')"
-              @click="
-                () => {
-                  selected_tags = [];
-                  filterByTags();
-                }
-              "
-            >
-              <FontAwesomeIcon :icon="$icons.close" />
-            </button>
-          </MobileFilterPanel>
-          <div class="gallery-selects flex gap-2 fs-0">
-            <BasicSelect
-              :placeholder="$t('common.sort_by')"
-              class="js-e"
-              :options="[
-                { label: $t('common.oldest_first'), value: 'created_at' },
-                { label: $t('common.newest_first'), value: '-created_at' },
-              ]"
-              :model-value="sort_by"
-              @update:model-value="
-                ($event) => {
-                  gallery = null;
-                  gallery_pagination = null;
-                  current_view_page = 1;
-                  sort_by = $event;
-                  this.set_page({ page: 1, limit, sort: sort_by });
-                }
-              "
-            />
-            <BasicSelect
-              class="js-e"
-              :options="[
-                { label: 18, value: 18 },
-                { label: 36, value: 36 },
-                { label: 54, value: 54 },
-              ]"
-              :model-value="limit"
-              @update:model-value="
-                ($event) => {
-                  gallery = null;
-                  gallery_pagination = null;
-                  current_view_page = 1;
-                  limit = $event;
-                  this.set_page({ page: 1, limit, sort: sort_by });
-                }
-              "
-            />
-          </div>
-        </div>
-        <div
-          class="page-card gallery-grid"
-          v-out="
-            () => {
-              selected = null;
-            }
-          "
-          @click.self="selected = null"
+    <Loader v-if="!gallery" block />
+    <template v-else>
+      <div v-if="currentImages.length" class="gallery__grid">
+        <MediaTile
+          v-for="image in currentImages"
+          :key="image.uid"
+          :src="thumbnailOf(image.set)"
+          :alt="image.meta?.alt || ''"
+          :caption="image.meta?.fileName || ''"
         >
-          <div
-            v-for="(image, index) in gallery[current_view_page]"
-            :class="[
-              'gallery-card relative bg-hover rounded b-default b-default-hover pointer',
-              { 'gallery-card--selected': selected === image.uid },
-            ]"
-            @click="selected = selected === image.uid ? null : image.uid"
-          >
-            <div class="relative ov-h h-100 w-100 rounded">
-              <BasicTooltip
-                :text="
-                  image.meta && image.meta.fileName
-                    ? image.meta.fileName
-                    : 'No title'
-                "
-                class="absolute absolute-ct w-100 h-100"
-              >
-                <BasicImage
-                  class="absolute absolute-ct w-100"
-                  :set="image.set"
-                  :higher_rez="false"
-                  :ommit_media_query="true"
-                  :key="image.uid"
-                />
-              </BasicTooltip>
-              <div v-if="image.tags && image.tags.length" class="gallery-tags">
-                <span
-                  v-for="tag in image.tags"
-                  :key="`img-tag-${image.uid}-${tag.slug}`"
-                  class="gallery-tags__pill"
-                  >{{ tag.label }}</span
-                >
-              </div>
-              <div
-                class="gallery-actions"
-                v-if="selected === image.uid"
-                @click.stop
-              >
-                <button
-                  class="gallery-actions__btn t-negative pointer"
-                  @click="
-                    DELETE_Image({
-                      url: `/images/${image.uid}`,
-                      method: 'delete',
-                    })
-                  "
-                >
-                  <FontAwesomeIcon :icon="$icons.delete" />
-                </button>
-                <button
-                  class="gallery-actions__btn t-secondary pointer"
-                  @click="
-                    mode = 'edit_tag';
-                    tag_img_uid = image.uid;
-                    get_image_tags();
-                  "
-                >
-                  <FontAwesomeIcon :icon="$icons.tag" />
-                </button>
-              </div>
-            </div>
-          </div>
-          <div
-            v-if="
-              gallery[current_view_page] && !gallery[current_view_page].length
-            "
-          >
-            {{ $t("gallery.no_photos") }}
-          </div>
-        </div>
+          <template v-if="image.tags?.length" #overlay>
+            <Tag v-for="tag in image.tags" :key="`img-tag-${image.uid}-${tag.slug}`" :label="tag.label" />
+          </template>
+          <template #actions>
+            <IconButton icon="tag" size="sm" :label="$t('gallery.edit_tags')" @click="openTagEditor(image)" />
+            <IconButton
+              icon="delete"
+              size="sm"
+              variant="danger"
+              :label="$t('gallery.delete_photo')"
+              @click="askDeleteImage(image)"
+            />
+          </template>
+        </MediaTile>
       </div>
-    </div>
-
-    <div v-if="gallery && mode === 'read'">
+      <EmptyState v-else icon="empty" :title="$t('gallery.no_photos')" />
       <Pagination
         v-if="gallery_pagination"
+        class="gallery__pagination"
         :nav_size="32"
         :page="current_view_page"
         :pages="gallery_pagination.pages"
         @update:page="set_page({ page: $event, limit, sort: sort_by })"
       />
-    </div>
-  </div>
+    </template>
+
+    <FloatingActions class="gallery__fab" :actions="fabActions" />
+
+    <BasicModal
+      :open="dialog === 'tags'"
+      :title="$t('gallery.go_to_manage_tags')"
+      :actions="tagManagerActions"
+      @update:open="closeDialog"
+    >
+      <div class="flex-column gap-4">
+        <FormField :label="$t('gallery.tag_list')">
+          <BasicSelect
+            v-model="selected_tags"
+            multiple
+            searchable
+            :options="tagOptions"
+            :placeholder="tags.length ? null : $t('gallery.no_tags')"
+          />
+        </FormField>
+        <FormField :label="$t('gallery.add_new_tag')">
+          <div class="flex ai-ct gap-2">
+            <BasicInput v-model="new_tag_input" class="fg-1" @on-key-down="addNewTag" />
+            <IconButton icon="add" variant="primary" :label="$t('gallery.add_tag')" @click="addNewTag" />
+          </div>
+        </FormField>
+      </div>
+    </BasicModal>
+
+    <BasicModal
+      :open="dialog === 'edit_tags'"
+      :title="$t('gallery.edit_tags')"
+      :actions="tagEditorActions"
+      @update:open="closeDialog"
+    >
+      <div class="flex-column gap-4">
+        <FormField v-if="tags.length" :label="$t('gallery.select_tags')">
+          <BasicSelect v-model="selected_tags" multiple searchable :options="tagOptions" />
+        </FormField>
+        <div v-else class="flex ai-ct gap-2 t-muted fs-200">
+          <span>{{ $t("gallery.no_tags_yet") }}</span>
+          <BasicButton variant="ghost" size="sm" @click="openDialog('tags')">
+            {{ $t("gallery.go_to_manage_tags") }}
+          </BasicButton>
+        </div>
+        <FormField :label="$t('gallery.quick_add_tag')">
+          <div class="flex ai-ct gap-2">
+            <BasicInput v-model="new_tag_input" class="fg-1" @on-key-down="quickAddTag" />
+            <IconButton icon="add" variant="primary" :label="$t('gallery.add_tag')" @click="quickAddTag" />
+          </div>
+        </FormField>
+      </div>
+    </BasicModal>
+
+    <BasicModal
+      :open="dialog === 'upload'"
+      :title="$t('images.add_photo')"
+      :actions="uploadActions"
+      @update:open="closeDialog"
+    >
+      <div class="flex-column gap-4">
+        <div
+          class="gallery-dropzone"
+          :class="{ 'gallery-dropzone--dragover': isDraggingOver }"
+          role="button"
+          tabindex="0"
+          :aria-label="$t('gallery.drop_files_here')"
+          @click="$refs.file.click()"
+          @keydown.enter="$refs.file.click()"
+          @keydown.space.prevent="$refs.file.click()"
+          @dragover.prevent="isDraggingOver = true"
+          @dragleave="isDraggingOver = false"
+          @drop.prevent="onDrop"
+        >
+          <FontAwesomeIcon :icon="$icons.upload" class="t-muted fs-500" />
+          <span class="t-muted fs-200">{{ $t("gallery.drop_files_here") }}</span>
+          <span class="t-muted fs-200">{{ $t("gallery.or_click_to_browse") }}</span>
+        </div>
+        <input
+          id="file"
+          ref="file"
+          type="file"
+          name="file"
+          class="sr-only"
+          accept="image/*"
+          @change="set_File"
+        />
+        <template v-if="filePreview">
+          <img :src="filePreview" alt="" class="gallery__preview" />
+          <FormField :label="$t('gallery.alt_text')">
+            <BasicInput v-model="meta.alt" />
+          </FormField>
+          <FormField :label="$t('gallery.select_tags')">
+            <BasicSelect v-model="selected_tags" multiple searchable :options="tagOptions" />
+          </FormField>
+        </template>
+      </div>
+    </BasicModal>
+
+    <ConfirmDialog
+      :open="!!confirm"
+      tone="danger"
+      :title="confirm?.title"
+      :message="confirm?.message"
+      :confirm-label="$t('common.delete')"
+      @confirm="runConfirm"
+      @cancel="confirm = null"
+    />
+  </PageLayout>
 </template>
 
 <script>
@@ -414,6 +195,10 @@ import {
 } from "@/api/contentDB/api";
 import { useNotifyStore } from "@/stores/notify";
 import { slugBuilder } from "@/utils/normalizers/assets-normalizers";
+import { thumbnailOf } from "@/utils/thumbnail";
+
+const PAGE_SIZES = [18, 36, 54];
+
 export default {
   setup() {
     const notify = useNotifyStore();
@@ -425,30 +210,29 @@ export default {
       limit: 18,
       gallery: null,
       gallery_pagination: null,
-      selected: null,
       sort_by: "-created_at",
       // uploader
       file: null,
       filePreview: null,
       // tags ---
-      force_update: 1,
       tags: [],
       edit_tag: null,
       new_tag: null,
       new_tag_input: "",
-      newFileTags: [],
+      // slugs of the active filter chips; labels picked in the tag dialogs
+      filter_tags: [],
       selected_tags: [],
       // ----
       meta: {
         alt: null,
         fileName: null,
       },
-      //
-      mode: "read",
+      // the open dialog: "tags" (manager) · "edit_tags" (one image) · "upload"; the pending delete confirmation
+      dialog: null,
+      confirm: null,
       isDraggingOver: false,
       tag_img_uid: "",
       edited_image_tags: null,
-      picToEdit: null,
     };
   },
   computed: {
@@ -457,29 +241,143 @@ export default {
         {
           icon: "upload",
           label: this.$t("images.add_photo"),
-          handler: () => this.toggleAddNewMode(),
+          handler: () => this.openDialog("upload"),
         },
         {
           icon: "tag",
           label: this.$t("gallery.add_tag"),
-          handler: () => this.toggleTagMode(),
+          handler: () => this.openDialog("tags"),
           variant: "secondary",
+        },
+      ];
+    },
+    currentImages() {
+      return this.gallery?.[this.current_view_page] || [];
+    },
+    sortOptions() {
+      return [
+        { label: this.$t("common.newest_first"), value: "-created_at" },
+        { label: this.$t("common.oldest_first"), value: "created_at" },
+      ];
+    },
+    pageSizeOptions() {
+      return PAGE_SIZES.map((size) => ({ label: String(size), value: size }));
+    },
+    tagOptions() {
+      return this.tags.map(({ label }) => ({ label, value: label }));
+    },
+    tagManagerActions() {
+      return [
+        {
+          key: "remove",
+          role: "danger",
+          label: this.$t("gallery.remove_tag"),
+          disabled: !this.selected_tags.length,
+          onClick: () => this.askDeleteTags(),
+        },
+      ];
+    },
+    tagEditorActions() {
+      return [
+        { key: "cancel", role: "secondary", label: this.$t("common.cancel"), onClick: () => this.closeDialog() },
+        { key: "save", role: "primary", label: this.$t("common.save"), onClick: () => this.saveImageTags() },
+      ];
+    },
+    uploadActions() {
+      return [
+        { key: "cancel", role: "secondary", label: this.$t("common.cancel"), onClick: () => this.closeDialog() },
+        {
+          key: "upload",
+          role: "primary",
+          label: this.$t("gallery.upload"),
+          disabled: !this.file,
+          onClick: () => this.upload_File({}),
         },
       ];
     },
   },
   methods: {
-    toggleTagMode() {
-      this.mode = this.mode === "tag" ? "read" : "tag";
+    thumbnailOf,
+    openDialog(name) {
+      this.selected_tags = [];
+      this.new_tag_input = "";
+      if (name === "upload") this.resetUpload();
+      this.dialog = name;
     },
-    toggleAddNewMode() {
-      this.mode = this.mode === "add_new" ? "read" : "add_new";
+    closeDialog() {
+      this.dialog = null;
     },
-    isTagSelected(currentTag) {
-      return (
-        this.selected_tags.includes(currentTag.label) ||
-        this.selected_tags.includes(currentTag.slug)
-      );
+    resetUpload() {
+      this.file = null;
+      this.filePreview = null;
+      this.meta = { alt: null, fileName: null };
+    },
+    toggleFilterTag({ slug }) {
+      const index = this.filter_tags.indexOf(slug);
+      if (index === -1) this.filter_tags.push(slug);
+      else this.filter_tags.splice(index, 1);
+      this.filterByTags();
+    },
+    resetFilter() {
+      this.filter_tags = [];
+      this.filterByTags();
+    },
+    reload({ sort = this.sort_by, limit = this.limit }) {
+      this.gallery = null;
+      this.gallery_pagination = null;
+      this.current_view_page = 1;
+      this.sort_by = sort;
+      this.limit = limit;
+      this.set_page({ page: 1, limit, sort });
+    },
+    setSort(sort) {
+      this.reload({ sort });
+    },
+    setLimit(limit) {
+      this.reload({ limit });
+    },
+    askDeleteImage({ uid }) {
+      this.confirm = {
+        title: this.$t("gallery.delete_photo"),
+        message: this.$t("gallery.confirm_delete"),
+        run: () => this.DELETE_Image({ url: `/images/${uid}`, method: "delete" }),
+      };
+    },
+    askDeleteTags() {
+      this.confirm = {
+        title: this.$t("gallery.remove_tag"),
+        message: this.$t("gallery.confirm_delete_tags"),
+        run: () => this.deleteSelectedTags(),
+      };
+    },
+    // A deleted tag leaves the filter, so the grid never stays filtered by a chip that is gone.
+    dropFilterTags(labels) {
+      const gone = this.tags.filter((tag) => labels.includes(tag.label)).map((tag) => tag.slug);
+      const kept = this.filter_tags.filter((slug) => !gone.includes(slug));
+      if (kept.length === this.filter_tags.length) return;
+      this.filter_tags = kept;
+      this.filterByTags();
+    },
+    runConfirm() {
+      const { run } = this.confirm;
+      this.confirm = null;
+      run();
+    },
+    openTagEditor(image) {
+      this.openDialog("edit_tags");
+      this.tag_img_uid = image.uid;
+      this.edited_image_tags = [...(image.tags || [])];
+      this.selected_tags = this.edited_image_tags.map((tag) => tag.label);
+    },
+    // The picked labels as tag objects: known tags first, the image's own tags cover a label the list lacks.
+    pickedTags() {
+      const known = new Map([...this.edited_image_tags, ...this.tags].map((tag) => [tag.label, tag]));
+      return this.selected_tags.map((label) => known.get(label)).filter(Boolean);
+    },
+    saveImageTags() {
+      this.edited_image_tags = this.pickedTags();
+      this.addTagToImg();
+      this.closeDialog();
     },
     init() {
       this.set_page({ page: this.current_view_page, limit: this.limit });
@@ -522,7 +420,7 @@ export default {
             page,
             sort: this.sort_by,
             limit,
-            tags: this.selected_tags,
+            tags: this.filter_tags,
           });
 
           _content[page] = response.map((img) => ({
@@ -622,7 +520,6 @@ export default {
         this.gallery_pagination = null;
         this.current_view_page = 1;
         this.set_page({ page: 1, limit: this.limit });
-        this.mode = "read";
       } catch (err) {
         if (err.message === "Photo missing") {
           this.notify.spawnNotification({
@@ -637,6 +534,7 @@ export default {
           type: "negative",
         });
       } finally {
+        this.closeDialog();
       }
     },
     async filterByTags() {
@@ -683,17 +581,6 @@ export default {
         payload: this.new_tag,
       });
     },
-    async get_image_tags() {
-      let found_img = this.gallery[this.current_view_page].find((el) => {
-        return el.uid === this.tag_img_uid;
-      });
-
-      this.edited_image_tags = found_img.tags;
-      this.selected_tags = found_img.tags.map((tag) => {
-        return tag.label;
-      });
-      this.picToEdit = found_img;
-    },
     async addTagToImg() {
       try {
         const tags_to_send = this.edited_image_tags.map(({ slug, label }) => ({
@@ -738,6 +625,7 @@ export default {
           msg: this.$t("notifications.tag_deleted"),
           type: "positive",
         });
+        this.dropFilterTags(this.selected_tags);
         this.GET_Tags({ url: `/image-tags/`, method: "get" });
         this.selected_tags = [];
       } catch ({ notify }) {
@@ -815,7 +703,6 @@ export default {
   },
 
   created() {
-    console.log("🔍 Gallery created, initial mode:", this.mode);
     this.init();
   },
   mounted() {},
@@ -825,87 +712,115 @@ export default {
 <style lang="scss" scoped>
 @import "@/assets/scss/utils/media-query";
 
-$btn-height: 36px;
+// Figma S9/S10 frame: the title fills its row, and a phone keeps the desktop rhythm (40 top, 32 below the title, the
+// 30 px title) where PageLayout / PageHeader use 20 px (handoff 26/29: the wave close decides for every page).
+.gallery :deep(.page-header__title) {
+  flex: 1 1 auto;
+}
 
-// A phone gives the sort and page-size selects half the row each, next to the filter trigger.
-.gallery-selects {
-  @include max-tablet {
-    flex: 1;
-    min-width: 0;
+@include max-tablet {
+  .gallery.page-layout {
+    --page-layout-pad-y: var(--space-10);
 
-    > * {
-      flex: 1;
-      min-width: 0;
-    }
+    gap: var(--space-8);
+  }
+
+  .gallery :deep(.page-header__title) {
+    font-size: var(--fs-700);
   }
 }
-$radius: 5px;
 
-.tag-chip {
-  display: inline-flex;
-  align-items: center;
-  height: 28px;
-  padding: 0 var(--space-3);
-  font-size: var(--fs-200);
-  border-radius: var(--radius-full);
-  border: 1px solid var(--border-default);
-  background-color: var(--surface-base);
-  color: var(--text-body);
-  white-space: nowrap;
-  transition: all 0.15s ease;
-  &:hover {
-    border-color: var(--border-default);
-    background-color: var(--surface-raised);
-  }
-  &--active {
-    background-color: var(--accent-fill);
-    border-color: var(--accent);
-    color: var(--text-on-accent-fill);
-    &:hover {
-      filter: brightness(1.1);
-      background-color: var(--accent-fill);
-      border-color: var(--accent);
-    }
-  }
-  &--danger {
-    color: var(--negative);
-    gap: var(--space-1);
-    &:hover {
-      background-color: var(--negative-fill);
-      border-color: var(--negative);
-      color: var(--text-on-status-fill);
-    }
-  }
-}
-.tag-input :deep(input) {
-  height: $btn-height;
-  box-sizing: border-box;
-}
-.tag-add-btn {
-  width: $btn-height;
-  height: $btn-height;
-  flex-shrink: 0;
+// Controls row (Figma S9): label, tag chips, then sort and page size; a phone stacks the label, scrolls the chips
+// sideways in one row and splits the row between the two selects.
+.gallery__controls {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-radius: $radius;
-  &:hover {
-    filter: brightness(1.1);
-  }
-}
-.gallery-action-btn {
-  display: inline-flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-2);
-  height: $btn-height;
-  padding: 0 var(--space-4);
-  font-size: var(--fs-200);
-  border-radius: $radius;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.15s ease;
 }
+
+.gallery__label {
+  font-size: var(--fs-200);
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.gallery__chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.gallery__selects {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.gallery__select {
+  width: 180px;
+}
+
+@include max-tablet {
+  .gallery__label,
+  .gallery__chips,
+  .gallery__selects {
+    flex: 1 0 100%;
+    min-width: 0;
+  }
+
+  // The chips' 36 px touch area stays inside the scroll box.
+  .gallery__chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-block: var(--space-1);
+  }
+
+  .gallery__select {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+  }
+}
+
+// R4: the grid is a container, so it keeps its border. MediaTile owns the tile size (188 × 276, 150 × 240 on a phone).
+.gallery__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 188px);
+  gap: var(--space-2);
+  padding: var(--space-5);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-base);
+  background: var(--surface-raised);
+
+  @include max-tablet {
+    grid-template-columns: repeat(auto-fill, 150px);
+  }
+}
+
+.gallery__pagination {
+  margin-top: var(--space-5);
+}
+
+// Figma S9/S10: the FAB sits 24 px from the corner beside the sidebar, 16 px from the edge and above the tab bar
+// wherever the tab bar shows (handoff 29: FloatingActions offsets only up to 768 px and uses 16 on desktop).
+.gallery .gallery__fab {
+  right: var(--space-6);
+  bottom: var(--space-6);
+
+  @include max-shell {
+    right: var(--space-4);
+    bottom: calc(var(--bottom-bar-height) + var(--space-4));
+  }
+}
+
+.gallery__preview {
+  max-width: 100%;
+  max-height: 240px;
+  object-fit: contain;
+  border-radius: var(--radius-base);
+}
+
 .gallery-dropzone {
   display: flex;
   flex-direction: column;
@@ -917,90 +832,17 @@ $radius: 5px;
   border-radius: var(--radius-base);
   cursor: pointer;
   transition: border-color 0.15s ease, background-color 0.15s ease;
+
   &:hover,
   &:focus-visible {
     border-color: var(--accent);
     background: var(--surface-raised);
     outline: none;
   }
+
   &--dragover {
     border-color: var(--accent);
     background: var(--accent-subtle);
-  }
-}
-.gallery-card {
-  aspect-ratio: 1 / 1;
-}
-.gallery-tags {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1);
-  padding: var(--space-1);
-  background: linear-gradient(transparent, var(--overlay-heavy));
-  border-radius: 0 0 $radius $radius;
-  opacity: 0;
-  transform: translateY(4px);
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  pointer-events: none;
-}
-.gallery-card:hover .gallery-tags {
-  opacity: 1;
-  transform: translateY(0);
-}
-.gallery-tags__pill {
-  font-size: var(--fs-200);
-  line-height: 1;
-  padding: 3px var(--space-2);
-  border-radius: var(--radius-full);
-  background-color: var(--surface-base);
-  color: var(--text-body);
-  white-space: nowrap;
-}
-.gallery-card--selected {
-  outline: 2px solid var(--accent);
-  outline-offset: -2px;
-}
-.gallery-actions {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-  gap: var(--space-1);
-  padding: var(--space-1);
-  background: var(--surface-raised);
-  border-top: 1px solid var(--border-default);
-  border-radius: 0 0 $radius $radius;
-}
-.gallery-actions__btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  font-size: var(--fs-200);
-  border: none;
-  border-radius: $radius;
-  background: none;
-  transition: background-color 0.15s ease;
-  &:hover {
-    background-color: var(--surface-hover);
-  }
-}
-.gallery-grid {
-  display: grid;
-  gap: var(--space-2);
-  grid-template-columns: repeat(6, 1fr);
-  @media only screen and (max-width: 1279px) {
-    grid-template-columns: repeat(4, 1fr);
-  }
-  @media only screen and (max-width: 768px) {
-    grid-template-columns: repeat(3, 1fr);
   }
 }
 </style>

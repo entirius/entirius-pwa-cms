@@ -230,7 +230,11 @@
     "or_click_to_browse": "lub kliknij, aby wybrać",
     "no_tags_yet": "Brak tagów.",
     "go_to_manage_tags": "Zarządzaj tagami",
-    "quick_add_tag": "Szybko dodaj tag"
+    "quick_add_tag": "Szybko dodaj tag",
+    "page_size": "Liczba zdjęć na stronie",
+    "edit_tags": "Edytuj tagi",
+    "alt_text": "Tekst alternatywny",
+    "confirm_delete_tags": "Czy na pewno chcesz usunąć wybrane tagi?"
   },
   "images": {
     "library": "Biblioteka",

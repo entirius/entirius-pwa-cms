@@ -230,7 +230,11 @@
     "or_click_to_browse": "or click to browse",
     "no_tags_yet": "No tags created yet.",
     "go_to_manage_tags": "Manage tags",
-    "quick_add_tag": "Quick add tag"
+    "quick_add_tag": "Quick add tag",
+    "page_size": "Photos per page",
+    "edit_tags": "Edit tags",
+    "alt_text": "Alt text",
+    "confirm_delete_tags": "Are you sure you want to delete the selected tags?"
   },
   "images": {
     "library": "Library",
