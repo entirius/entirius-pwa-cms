@@ -1,6 +1,7 @@
 <template>
   <PageLayout class="fs-300 t-body">
     <template #header>
+      <!-- the header renders in every state: its back control stays while loading or after a failed load -->
       <PageHeader :title="$t('cf.lead_detail')" back="/forms/leads" />
     </template>
       <Teleport v-if="toolbarReady" to="#forms-toolbar-left">
@@ -36,8 +37,6 @@
           {{ $t('cf.save') }}
         </BasicButton>
       </Teleport>
-
-      <!-- the header renders in every state: its back control stays while loading or after a failed load -->
       <Loader block v-if="loading" />
 
       <template v-else-if="lead">

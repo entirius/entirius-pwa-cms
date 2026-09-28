@@ -3,8 +3,9 @@
     <template #header>
       <PageHeader :title="$t('dp.types')" />
     </template>
-    <template #toolbar>
-      <div class="create-row">
+
+      <!-- Inline create row -->
+      <div class="create-row mb-10">
         <div class="create-row__fields">
           <BasicInput
             v-model="newType.code"
@@ -30,9 +31,6 @@
           {{ $t('common.add') }}
         </BasicButton>
       </div>
-    </template>
-
-      <!-- Inline create row -->
 
       <Loader block v-show="loading" />
 

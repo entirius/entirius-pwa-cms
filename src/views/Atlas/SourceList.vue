@@ -14,6 +14,7 @@
       </PageHeader>
     </template>
     <template #toolbar>
+      <!-- Filter panel -->
       <div class="flex ai-ct">
         <MobileFilterPanel
           :active-count="activeFilterCount"
@@ -46,8 +47,6 @@
         </MobileFilterPanel>
       </div>
     </template>
-
-      <!-- Filter panel -->
 
       <div class="supplier-list__toolbar">
         <BasicInput

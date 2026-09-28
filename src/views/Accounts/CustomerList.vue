@@ -4,6 +4,7 @@
       <PageHeader :title="$t('accounts.customers')" />
     </template>
     <template #toolbar>
+      <!-- Filters -->
       <div class="flex ai-ct">
         <MobileFilterPanel
           :active-count="activeFilterCount"
@@ -20,8 +21,6 @@
         </MobileFilterPanel>
       </div>
     </template>
-
-      <!-- Filters -->
 
       <div class="flex ai-ct gap-8 mb-10 flex-wrap">
         <BasicInput

@@ -4,6 +4,7 @@
       <PageHeader :title="$t('agm.definitions')" />
     </template>
     <template #toolbar>
+      <!-- Filter tabs -->
       <div class="flex ai-ct">
         <MobileFilterPanel
           :active-count="activeFilter !== 'all' ? 1 : 0"
@@ -20,8 +21,6 @@
         </MobileFilterPanel>
       </div>
     </template>
-
-      <!-- Filter tabs -->
 
       <div class="flex ai-ct gap-8 mb-10">
         <BasicInput

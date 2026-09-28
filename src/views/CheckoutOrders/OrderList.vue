@@ -17,9 +17,11 @@
     </Teleport>
 
     <template #header>
+      <!-- Heading -->
       <PageHeader :title="$t('checkout_orders.orders')" />
     </template>
     <template #toolbar>
+      <!-- Status FilterChips -->
       <div class="flex ai-ct">
         <MobileFilterPanel
           :active-count="activeFilterCount"
@@ -36,9 +38,6 @@
         </MobileFilterPanel>
       </div>
     </template>
-      <!-- Heading -->
-
-      <!-- Status FilterChips -->
 
       <!-- Search -->
       <div class="flex ai-ct gap-8 mb-10 flex-wrap">

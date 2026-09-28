@@ -3,7 +3,7 @@
     <template #header>
       <PageHeader :title="$t('dp.import')" back="/points/list" />
     </template>
-    <template #toolbar>
+
       <div class="import-card">
         <!-- File input -->
         <div class="detail-field mb-10">
@@ -87,7 +87,6 @@
           {{ $t('dp.import_submit') }}
         </BasicButton>
       </div>
-    </template>
   </PageLayout>
 </template>
 

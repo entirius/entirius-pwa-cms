@@ -11,6 +11,7 @@
       </PageHeader>
     </template>
     <template #toolbar>
+      <!-- Filter chip bar -->
       <div class="flex ai-ct flex-wrap gap-2">
         <FilterChip
           :label="$t('atlas.auto_matched.filter.all')"
@@ -32,8 +33,6 @@
         />
       </div>
     </template>
-
-      <!-- Filter chip bar -->
 
       <Loader block v-show="loading" />
 

@@ -1,9 +1,9 @@
 <template>
   <PageLayout class="fs-300 t-body">
     <template #header>
+      <!-- the header renders in every state: its back control stays while loading or after a failed load -->
       <PageHeader :title="$t('cf.booking_detail')" back="/forms/bookings" />
     </template>
-      <!-- the header renders in every state: its back control stays while loading or after a failed load -->
       <Loader block v-if="loading" />
 
       <template v-else-if="booking">

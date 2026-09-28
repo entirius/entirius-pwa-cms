@@ -1,6 +1,7 @@
 <template>
   <PageLayout class="fs-300 t-body">
     <template #header>
+      <!-- the header renders in every state: its back control stays while loading or after a failed load -->
       <PageHeader :title="$t('cf.submission_detail')" back="/forms/list">
         <template v-if="submission" #actions>
           <BasicSelect
@@ -13,7 +14,6 @@
         </template>
       </PageHeader>
     </template>
-      <!-- the header renders in every state: its back control stays while loading or after a failed load -->
       <Loader block v-if="loading" />
 
       <template v-else-if="submission">
