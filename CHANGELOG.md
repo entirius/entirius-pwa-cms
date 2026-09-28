@@ -115,6 +115,11 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- The page frame (P5 plan 25): every view outside Home, Gallery and the Pages builder renders in `PageLayout` —
+  no bordered page card, content on the page background with 40/80 px padding (20 on a phone), the view's
+  `PageHeader` in the `#header` slot (a loading page keeps its condition there) and the search/filter row in
+  `#toolbar`. The swap is the `p5-page-frame` codemod (`scripts/codemods/p5-page-frame.mjs`, `--check` in the gate);
+  section cards, local modal surfaces and the auth cards are `BasicCard`, the only renderer of `.page-card`.
 - The new shell in `App.vue` (P4 plan 22): AppHeader without a title, SidebarNav on every authenticated route (Home
   and single-entry panels included) from 1024 px, the mobile menu and a 72 px tab bar below it, `<main>` with the
   shell's page header: a view's `PageHeader` claims it (crumbs, back to the parent crumb, its title for the tab name),

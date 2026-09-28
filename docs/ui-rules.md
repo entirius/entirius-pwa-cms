@@ -173,11 +173,11 @@ Traps:
 - **Page frame.** The panel wrapper holds a toolbar (`.panel-toolbar`) with `#<panel>-toolbar-left` / `-right`
   anchors, and child views `<Teleport … defer>` into them. Left anchor: back arrow + H1 (R2, R3). Right anchor: actions
   in R5 order. The toolbar styles its children by role, never by position: `.panel-toolbar__actions` on the right
-  anchor, `.panel-toolbar__title` on a group around the left anchor (title + channel selector). The page wrapper
-  below it pads with `.page-pad`, and its content card scrolls (`flex: 1; min-height: 0; overflow-y: auto`); the
-  toolbar never shrinks. A toolbar with nothing in it (no teleported content, no selector or title of the panel's own)
-  is hidden by `.panel-toolbar` itself: never an empty strip. P3 replaces this with `PageLayout` + `PageHeader` +
-  `ActionBar`.
+  anchor, `.panel-toolbar__title` on a group around the left anchor (title + channel selector). Below it the page is
+  one `PageLayout` (padding and scroll body; `#header` = the view's `PageHeader`, a loader branch's condition on the
+  slot; `#toolbar` = the search/filter row); the toolbar never shrinks. A toolbar with nothing in it (no teleported
+  content, no selector or title of the panel's own) is hidden by `.panel-toolbar` itself: never an empty strip. The
+  P5 panel plans move the teleported actions into a `PageHeader` `ActionBar`.
 - **List view.** The toolbar holds a search `BasicInput` with `useSearchDebounce`, then filters in
   `MobileFilterPanel`, and it wraps (`flex-wrap`, `gap: var(--space-5)`). In `DataTable`, secondary columns get fixed
   widths and only the primary text column gets `1fr`, truncated with an ellipsis. A cell either fits (its column
@@ -199,9 +199,9 @@ Traps:
 - **Edit view.** A `FormField` wraps every field, validation follows § Forms, and there is one primary Save (R5).
   A dirty form shows the unsaved state next to the actions. Rhythm: 16 px (`--space-4`) between fields, 24 px
   (`--space-6`) between groups, 32 px (`--space-8`) between cards.
-- **Cards.** `.page-card` (`utils/_decorators.scss`) is the one card, for the page card and for a section card
-  inside it: `surface-base`, `border-subtle`, `--radius-3xl`, 24 px padding, 16 px below tablet. A view never sets
-  its own card padding, border or radius.
+- **Cards.** `BasicCard` is the one card (a section card, a modal surface, an auth card): `surface-base`,
+  `border-subtle`, `--radius-3xl`, 24 px padding, 16 px below tablet, from `.page-card` (`utils/_decorators.scss`),
+  which only `BasicCard` renders. A page is no card (R4). A view never sets its own card padding, border or radius.
 - **Dialogs.** Build on `BasicModal` (`size` sm · md · lg) or `ConfirmDialog`, never an overlay of the view's own:
   they trap focus, close on Esc and give focus back, and turn into a bottom sheet on a phone. Actions go in the
   footer as an `ActionBar` (R5). A dialog with an async action closes on success and on error.
@@ -243,8 +243,8 @@ Traps:
   panel strip, `.page-title-row` for an in-card back arrow + H1 + `ml-auto` actions, `.section-head` for an `h2` with
   its controls. Wrapped actions stay right-aligned (R5). Other rows use `.flex-wrap` (with `.rg-*` for the row gap);
   form rows stack to one column below tablet.
-- `.page-card` pads 16 px below tablet, and so does the page wrapper (`.page-pad`, `.page-pad-x` for the sides
-  only). Spacing utilities (`p-12` …) mean the same on every screen; an empty state or loader keeps its own. The
+- `BasicCard` pads 16 px below tablet; `PageLayout` pads 20 px (Home, Gallery and the Pages builder keep `.page-pad`
+  / `.page-pad-x` until their P5 plans). Spacing utilities (`p-12` …) mean the same on every screen; an empty state or loader keeps its own. The
   layout keeps every scroll region above the bottom bar.
 - A tap target is at least 40 × 40 px on mobile, and list rows are at least 36 px high. A small control keeps its
   visual and takes the `touch-target` mixin (`utils/_touch-target.scss`): a transparent `::after` hit area, below
