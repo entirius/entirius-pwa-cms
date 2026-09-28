@@ -10,6 +10,7 @@
       class="basic-tabs__tab"
       :class="{ 'basic-tabs__tab--active': modelValue === option.value }"
       :aria-selected="String(modelValue === option.value)"
+      :data-testid="option.testid || null"
       :tabindex="isFocusTarget(option) ? 0 : -1"
       @click="$emit('update:modelValue', option.value)"
     >
@@ -20,7 +21,7 @@
 </template>
 
 <script setup>
-// Tabs of one screen (docs/ui-components.md § P3 display): a `tablist` with one Tab stop (the active tab); arrow
+// Tabs of one screen (docs/ui-components.md § P3 display): `options` [{ label, value, count?, testid? }], a `tablist` with one Tab stop (the active tab); arrow
 // keys, Home and End move to a tab and select it. Counts are CountBadges. Tab ids are `<idPrefix>-tab-<value>`; each
 // tab controls `<idPrefix>-panel-<value>`, the call site's `role="tabpanel"` element. No options, no tablist.
 import { computed, ref, useId } from "vue";
