@@ -1,20 +1,21 @@
 <template>
   <PageLayout class="fs-300 t-body">
-      <div class="flex ai-ct jc-sb flex-wrap gap-5 mb-12">
-        <PageHeader
-          :title="email"
-          :overline="$t('agm.email')"
-          back="/agreements/consents"
-          class="person-detail__title"
-        />
-        <BasicTabs
-          v-model="mode"
-          :options="[
-            { value: 'marketing', label: $t('agm.tab_marketing') },
-            { value: 'legal', label: $t('agm.tab_legal') },
-          ]"
-        />
-      </div>
+    <template #header>
+      <PageHeader
+        :title="email"
+        :overline="$t('agm.email')"
+        back="/agreements/consents"
+      />
+    </template>
+    <template #toolbar>
+      <BasicTabs
+        v-model="mode"
+        :options="[
+          { value: 'marketing', label: $t('agm.tab_marketing') },
+          { value: 'legal', label: $t('agm.tab_legal') },
+        ]"
+      />
+    </template>
 
       <Loader block v-show="loading" />
 
@@ -337,11 +338,6 @@ export default {
 <style lang="scss" scoped>
 // An e-mail breaks anywhere rather than mid-word at a hyphen (PageHeader's title), and the header keeps a readable
 // width beside the tabs.
-.person-detail__title {
-  flex: 1 1 200px;
-  min-width: 0;
-}
-
 .person-detail__grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));

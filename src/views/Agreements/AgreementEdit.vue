@@ -15,29 +15,29 @@
         {{ $t('agm.save') }}
       </BasicButton>
     </Teleport>
+    <template v-if="!loading" #header>
+      <PageHeader
+        :title="isEdit ? (definition.name || definition.slug || '') : $t('agm.create_definition')"
+        back="/agreements/list"
+      >
+        <template #meta>
+          <StatusBadge
+            v-if="definition.is_system"
+            :label="$t('agm.system_badge')"
+            tone="info"
+          />
+        </template>
+        <template #actions>
+          <BasicSwitch
+            :label="$t('agm.is_active')"
+            v-model="form.is_active"
+          />
+        </template>
+      </PageHeader>
+    </template>
       <Loader block v-if="loading" />
 
       <template v-else>
-        <PageHeader
-          :title="isEdit ? (definition.name || definition.slug || '') : $t('agm.create_definition')"
-          back="/agreements/list"
-          class="mb-12"
-        >
-          <template #meta>
-            <StatusBadge
-              v-if="definition.is_system"
-              :label="$t('agm.system_badge')"
-              tone="info"
-            />
-          </template>
-          <template #actions>
-            <BasicSwitch
-              :label="$t('agm.is_active')"
-              v-model="form.is_active"
-            />
-          </template>
-        </PageHeader>
-
         <p v-if="definition.is_system" class="agm-system-info mb-10">
           {{ $t("agm.system_info") }}
         </p>
