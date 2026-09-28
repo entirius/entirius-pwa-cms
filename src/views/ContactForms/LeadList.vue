@@ -19,15 +19,7 @@
           class="cf-list__filter"
           @update:model-value="onChannelFilter"
         />
-      </div>
-    </template>
-
-      <div class="flex ai-ct mb-10">
-        <MobileFilterPanel
-          :active-count="statusFilter === '__all' ? 0 : 1"
-          :trigger-label="$t('cf.filters')"
-        >
-          <p class="fs-200 t-secondary">{{ $t("cf.filters") }}</p>
+        <div class="filter-chip-row" role="group" :aria-label="$t('cf.status')">
           <FilterChip
             v-for="opt in statusFilterOptions"
             :key="opt.value"
@@ -35,8 +27,9 @@
             :active="statusFilter === opt.value"
             @click="onStatusFilter(opt.value)"
           />
-        </MobileFilterPanel>
+        </div>
       </div>
+    </template>
 
       <Loader block v-show="loading" />
 
@@ -77,12 +70,13 @@
         </template>
       </DataTable>
 
+    <template v-if="totalCount > pageSize" #footer>
       <Pagination
-        v-if="totalCount > pageSize"
         :page="paginationState.page"
         :pages="paginationState.pages"
         @update:page="onPageChange"
       />
+    </template>
   </PageLayout>
 </template>
 

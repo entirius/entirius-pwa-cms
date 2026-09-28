@@ -4,60 +4,47 @@
       <PageHeader :title="$t('cf.bookings')" />
     </template>
     <template #toolbar>
-      <div class="flex ai-ct flex-wrap gap-8 rg-3">
-        <BasicInput
-          v-model="search"
-          :placeholder="$t('cf.search_placeholder')"
-          icon="search"
-          class="cf-list__search"
-          @input="debouncedFetch(searchAndFetch)"
-        />
-        <BasicSelect
-          :options="channelOptions"
-          :model-value="channelFilter"
-          :placeholder="$t('cf.channel')"
-          class="cf-list__filter"
-          @update:model-value="onChannelFilter"
-        />
+      <div class="flex-column gap-3">
+        <div class="flex ai-ct flex-wrap gap-8 rg-3">
+          <BasicInput
+            v-model="search"
+            :placeholder="$t('cf.search_placeholder')"
+            icon="search"
+            class="cf-list__search"
+            @input="debouncedFetch(searchAndFetch)"
+          />
+          <BasicSelect
+            :options="channelOptions"
+            :model-value="channelFilter"
+            :placeholder="$t('cf.channel')"
+            class="cf-list__filter"
+            @update:model-value="onChannelFilter"
+          />
+          <FormField :label="$t('cf.date_from')" layout="inline">
+            <BasicDatePicker :model-value="dateFrom" @update:model-value="onDateFrom" />
+          </FormField>
+          <FormField :label="$t('cf.date_to')" layout="inline">
+            <BasicDatePicker :model-value="dateTo" @update:model-value="onDateTo" />
+          </FormField>
+          <IconButton
+            v-if="dateFrom || dateTo"
+            icon="clear"
+            variant="ghost"
+            :label="$t('cf.clear_dates')"
+            @click="clearDates"
+          />
+        </div>
+        <div class="filter-chip-row" role="group" :aria-label="$t('cf.lead_status')">
+          <FilterChip
+            v-for="opt in leadStatusOptions"
+            :key="opt.value"
+            :label="opt.label"
+            :active="leadStatusFilter === opt.value"
+            @click="onLeadStatusFilter(opt.value)"
+          />
+        </div>
       </div>
     </template>
-
-      <div class="flex ai-ct mb-10">
-        <MobileFilterPanel
-          :active-count="activeFilterCount"
-          :trigger-label="$t('cf.filters')"
-        >
-          <p class="fs-200 t-secondary">{{ $t("cf.filters") }}</p>
-
-          <label class="cf-list__date-field">
-            <span class="field-label">{{ $t("cf.date_from") }}</span>
-            <input
-              v-model="dateFrom"
-              type="date"
-              class="cf-list__date-input"
-              @change="searchAndFetch"
-            />
-          </label>
-
-          <label class="cf-list__date-field">
-            <span class="field-label">{{ $t("cf.date_to") }}</span>
-            <input
-              v-model="dateTo"
-              type="date"
-              class="cf-list__date-input"
-              @change="searchAndFetch"
-            />
-          </label>
-
-          <BasicSelect
-            :options="leadStatusOptions"
-            :model-value="leadStatusFilter"
-            :placeholder="$t('cf.lead_status')"
-            class="cf-list__filter"
-            @update:model-value="onLeadStatusFilter"
-          />
-        </MobileFilterPanel>
-      </div>
 
       <Loader block v-show="loading" />
 
@@ -104,12 +91,13 @@
         </template>
       </DataTable>
 
+    <template v-if="totalCount > pageSize" #footer>
       <Pagination
-        v-if="totalCount > pageSize"
         :page="paginationState.page"
         :pages="paginationState.pages"
         @update:page="onPageChange"
       />
+    </template>
   </PageLayout>
 </template>
 
@@ -149,13 +137,6 @@ export default {
     };
   },
   computed: {
-    activeFilterCount() {
-      let count = 0;
-      if (this.leadStatusFilter !== "__all") count += 1;
-      if (this.dateFrom) count += 1;
-      if (this.dateTo) count += 1;
-      return count;
-    },
     channelOptions() {
       const opts = [{ label: this.$t("cf.all_channels"), value: "__all" }];
       for (const ch of this.pimChannel.channels) {
@@ -235,6 +216,19 @@ export default {
       this.currentPage = 1;
       this.fetchBookings();
     },
+    onDateFrom(value) {
+      this.dateFrom = value;
+      this.searchAndFetch();
+    },
+    onDateTo(value) {
+      this.dateTo = value;
+      this.searchAndFetch();
+    },
+    clearDates() {
+      this.dateFrom = "";
+      this.dateTo = "";
+      this.searchAndFetch();
+    },
     onLeadStatusFilter(value) {
       this.leadStatusFilter = value;
       this.currentPage = 1;
@@ -302,28 +296,6 @@ export default {
   flex-shrink: 0;
 }
 
-.cf-list__date-field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  font-size: var(--fs-200);
-}
-
-.cf-list__date-input {
-  height: var(--elem-height);
-  padding: 0 var(--space-2);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-base);
-  background: var(--surface-base);
-  color: var(--text-body);
-  font-size: var(--fs-300);
-  min-width: 150px;
-}
-
-.cf-list__date-input:focus {
-  outline: none;
-  border-color: var(--accent);
-}
 
 .cf-list__meet-link {
   display: inline-flex;

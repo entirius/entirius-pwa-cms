@@ -2,15 +2,18 @@
   <PageLayout class="fs-300 t-body">
     <template #header>
       <!-- the header renders in every state: its back control stays while loading or after a failed load -->
-      <PageHeader :title="$t('cf.booking_detail')" back="/forms/bookings" />
+      <PageHeader :title="$t('cf.booking_detail')" back="/forms/bookings">
+        <template v-if="booking?.linked_lead" #actions>
+          <ActionBar :actions="headerActions" />
+        </template>
+      </PageHeader>
     </template>
       <Loader block v-if="loading" />
 
       <template v-else-if="booking">
 
         <div class="cf-booking-grid">
-          <div class="cf-card">
-            <h2 class="cf-card__title">{{ $t("cf.meeting_start") }}</h2>
+          <BasicCard :title="$t('cf.meeting_start')" gap>
             <dl class="cf-field-list">
               <div class="cf-field-list__row">
                 <dt>{{ $t("cf.meeting_start") }}</dt>
@@ -70,10 +73,9 @@
                 <dd>{{ formatDateTime(booking.created_at) }}</dd>
               </div>
             </dl>
-          </div>
+          </BasicCard>
 
-          <div class="cf-card">
-            <h2 class="cf-card__title">{{ $t("cf.lead_status") }}</h2>
+          <BasicCard :title="$t('cf.lead_status')" gap>
             <template v-if="booking.linked_lead">
               <div class="mb-5">
                 <StatusBadge
@@ -105,16 +107,6 @@
                   </dd>
                 </div>
               </dl>
-              <div class="mt-8">
-                <BasicButton
-                  variant="primary"
-                  @click="
-                    $router.push(`/forms/leads/${booking.linked_lead.id}`)
-                  "
-                >
-                  {{ $t('cf.open_lead') }}
-                </BasicButton>
-              </div>
             </template>
             <EmptyState
               v-else
@@ -122,7 +114,7 @@
               :title="$t('cf.no_linked_lead')"
               :message="''"
             />
-          </div>
+          </BasicCard>
         </div>
       </template>
   </PageLayout>
@@ -147,6 +139,15 @@ export default {
       booking: null,
       loading: false,
     };
+  },
+  computed: {
+    headerActions() {
+      const leadId = this.booking.linked_lead.id;
+      return [
+        { key: "open-lead", role: "primary", label: this.$t("cf.open_lead"),
+          onClick: () => this.$router.push(`/forms/leads/${leadId}`) },
+      ];
+    },
   },
   mounted() {
     this.fetchBooking();
@@ -190,21 +191,6 @@ export default {
   gap: var(--space-8);
 }
 
-.cf-card {
-  padding: var(--space-8);
-  background: var(--surface-base);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-}
-
-.cf-card__title {
-  font-size: var(--fs-200);
-  font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin-bottom: var(--space-5);
-}
 
 .cf-field-list {
   display: flex;

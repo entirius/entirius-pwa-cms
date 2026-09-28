@@ -8,7 +8,7 @@
             :options="statusOptions"
             :model-value="submission.status"
             :placeholder="$t('cf.status')"
-            class="cf-status-dropdown"
+            class="cf-detail__status"
             @update:model-value="updateStatus"
           />
         </template>
@@ -119,12 +119,12 @@
             >
               <font-awesome-icon :icon="$icons.attachment" class="t-muted" />
               <span class="t-body fs-200">{{ att.name }}</span>
-              <BasicButton
-                variant="secondary"
+              <IconButton
+                icon="download"
+                variant="outline"
+                :label="`${$t('cf.download_attachment')}: ${att.name}`"
                 @click="downloadAttachment(att)"
-              >
-                {{ $t('cf.download_attachment') }}
-              </BasicButton>
+              />
             </div>
           </div>
         </div>
@@ -300,7 +300,7 @@ export default {
   grid-column: 1 / -1;
 }
 
-.cf-status-dropdown {
+.cf-detail__status {
   width: 160px;
   flex-shrink: 0;
 }

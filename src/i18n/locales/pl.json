@@ -1318,6 +1318,7 @@
     "filters": "Filtry",
     "date_from": "Od",
     "date_to": "Do",
+    "clear_dates": "Wyczyść daty",
     "search_placeholder": "Szukaj po imieniu, e-mailu lub ID",
     "meeting_start": "Początek spotkania",
     "meeting_end": "Koniec spotkania",

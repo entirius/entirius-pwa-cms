@@ -2,49 +2,33 @@
   <PageLayout class="fs-300 t-body">
     <template #header>
       <!-- the header renders in every state: its back control stays while loading or after a failed load -->
-      <PageHeader :title="$t('cf.lead_detail')" back="/forms/leads" />
+      <PageHeader :title="lead?.name || $t('cf.lead_detail')" back="/forms/leads">
+        <template v-if="lead" #meta>
+          <StatusBadge :label="leadStatusLabel($t, lead.status)" :tone="leadStatusVariant(lead.status)" />
+        </template>
+        <template v-if="lead" #actions>
+          <div class="flex ai-ct jc-fe wrap gap-3">
+            <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
+            <BasicSelect
+              v-if="otherTransitions.length"
+              :options="otherTransitions"
+              :model-value="null"
+              :placeholder="$t('cf.change_status')"
+              class="cf-detail__transitions"
+              @update:model-value="onTransition"
+            />
+            <ActionBar :actions="headerActions" />
+          </div>
+        </template>
+      </PageHeader>
     </template>
-      <Teleport v-if="toolbarReady" to="#forms-toolbar-left">
-        <span v-if="form.name" class="fw-600">{{ form.name }}</span>
-      </Teleport>
-      <Teleport v-if="toolbarReady" to="#forms-toolbar-right">
-        <StatusBadge
-          v-if="lead"
-          :label="leadStatusLabel($t, lead.status)"
-          :tone="leadStatusVariant(lead.status)"
-        />
-        <BasicButton
-          v-if="canMarkAsWon"
-          variant="secondary"
-          @click="openMarkAsWon"
-        >
-          {{ $t('cf.mark_as_won') }}
-        </BasicButton>
-        <BasicSelect
-          v-if="otherTransitions.length"
-          :options="otherTransitions"
-          :model-value="null"
-          :placeholder="$t('cf.change_status')"
-          class="cf-detail__transitions"
-          @update:model-value="onTransition"
-        />
-        <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
-        <BasicButton
-          variant="primary"
-          :disabled="!isDirty || saving"
-          @click="save"
-        >
-          {{ $t('cf.save') }}
-        </BasicButton>
-      </Teleport>
       <Loader block v-if="loading" />
 
       <template v-else-if="lead">
 
         <div class="cf-lead-grid">
           <!-- Editable fields -->
-          <div class="cf-card">
-            <h2 class="cf-card__title">{{ $t("cf.actions") }}</h2>
+          <BasicCard :title="$t('cf.actions')" gap>
             <FormField :label="$t('cf.name')" :error="formErrors.getFieldError('name')?.msg || ''">
               <BasicInput
                 v-model="form.name"
@@ -76,11 +60,10 @@
                 v-model="form.notes"
               />
             </FormField>
-          </div>
+          </BasicCard>
 
           <!-- Read-only facts -->
-          <div class="cf-card">
-            <h2 class="cf-card__title">{{ $t("cf.submission_detail") }}</h2>
+          <BasicCard :title="$t('cf.submission_detail')" gap>
             <dl class="cf-field-list">
               <div class="cf-field-list__row">
                 <dt>{{ $t("cf.email") }}</dt>
@@ -137,11 +120,10 @@
                 </dd>
               </div>
             </dl>
-          </div>
+          </BasicCard>
 
           <!-- Integrations card -->
-          <div class="cf-card">
-            <h2 class="cf-card__title">{{ $t("cf.integrations_title") }}</h2>
+          <BasicCard :title="$t('cf.integrations_title')" gap>
             <dl class="cf-field-list">
               <div class="cf-field-list__row">
                 <dt>{{ $t("cf.google_ads_enabled_label") }}</dt>
@@ -174,7 +156,7 @@
                 </dd>
               </div>
             </dl>
-          </div>
+          </BasicCard>
         </div>
       </template>
 
@@ -182,6 +164,7 @@
       :open="showMarkAsWon"
       size="sm"
       :title="$t('cf.mark_as_won_title')"
+      :actions="markAsWonActions"
       @update:open="(open) => open || cancelMarkAsWon()"
     >
       <p class="mb-5">{{ $t("cf.mark_as_won_description") }}</p>
@@ -207,14 +190,6 @@
         <font-awesome-icon :icon="$icons.info" />
         {{ $t("cf.google_ads_off_hint") }}
       </p>
-      <template #footer>
-        <button class="modal-btn modal-btn--secondary" @click="cancelMarkAsWon">
-          {{ $t("cf.cancel") }}
-        </button>
-        <button class="modal-btn modal-btn--confirm" @click="confirmMarkAsWon">
-          {{ $t("cf.confirm") }}
-        </button>
-      </template>
     </BasicModal>
   </PageLayout>
 </template>
@@ -248,7 +223,6 @@ export default {
       lead: null,
       loading: false,
       saving: false,
-      toolbarReady: false,
       integrations: null,
       showMarkAsWon: false,
       markAsWonDealValue: "",
@@ -264,6 +238,21 @@ export default {
     };
   },
   computed: {
+    headerActions() {
+      return [
+        ...(this.canMarkAsWon
+          ? [{ key: "mark-as-won", role: "secondary", label: this.$t("cf.mark_as_won"), onClick: this.openMarkAsWon }]
+          : []),
+        { key: "save", role: "primary", label: this.$t("cf.save"), disabled: !this.isDirty || this.saving,
+          onClick: this.save },
+      ];
+    },
+    markAsWonActions() {
+      return [
+        { key: "cancel", role: "secondary", label: this.$t("cf.cancel"), onClick: this.cancelMarkAsWon },
+        { key: "confirm", role: "primary", label: this.$t("cf.confirm"), onClick: this.confirmMarkAsWon },
+      ];
+    },
     canMarkAsWon() {
       if (!this.lead) return false;
       return allowedTransitions(this.lead.status).includes("won");
@@ -292,7 +281,6 @@ export default {
     },
   },
   mounted() {
-    this.toolbarReady = !!document.getElementById("forms-toolbar-left");
     this.fetchLead();
   },
   methods: {
@@ -480,21 +468,6 @@ export default {
   gap: var(--space-8);
 }
 
-.cf-card {
-  padding: var(--space-8);
-  background: var(--surface-base);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-}
-
-.cf-card__title {
-  font-size: var(--fs-200);
-  font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin-bottom: var(--space-5);
-}
 
 .cf-field-list {
   display: flex;

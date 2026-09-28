@@ -1319,6 +1319,7 @@
     "filters": "Filters",
     "date_from": "From",
     "date_to": "To",
+    "clear_dates": "Clear dates",
     "search_placeholder": "Search by name, email or ID",
     "meeting_start": "Meeting starts",
     "meeting_end": "Meeting ends",
