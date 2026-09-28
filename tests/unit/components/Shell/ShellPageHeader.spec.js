@@ -34,8 +34,9 @@ beforeEach(() => {
 });
 
 describe("ShellPageHeader", () => {
-  it("without a PageHeader renders the fallback: the crumbs and one H1 from titleKey", () => {
+  it("without a PageHeader renders the fallback: the crumbs and one H1 from titleKey, no back arrow (the view keeps its own)", () => {
     const { wrapper } = mountShell(false);
+    expect(wrapper.find(".icon-button").exists()).toBe(false);
     const h1s = wrapper.findAll("h1");
     expect(h1s).toHaveLength(1);
     expect(h1s[0].text()).toBe(t("dp.create_point"));
@@ -64,7 +65,7 @@ describe("ShellPageHeader", () => {
     await nextTick();
     expect(wrapper.findAll("h1").map((h1) => h1.text())).toEqual([t("dp.create_point"), "Demo"]);
     expect(wrapper.findAll(".breadcrumbs__label").at(-1).text()).toBe(t("dp.create_point"));
-    expect(wrapper.findAll(".icon-button")).toHaveLength(1);
+    expect(wrapper.findAll(".icon-button")).toHaveLength(0);
   });
 
   it("names the browser tab <page> · <panel> · Entirius CMS", async () => {

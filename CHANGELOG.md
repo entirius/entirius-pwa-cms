@@ -208,7 +208,10 @@ All notable changes to this project will be documented in this file.
   header shows no health icon (a phone; desktop with every check green); the Points, FAQ, Agreements, consent-person
   and contact-form detail pages show one back arrow (the page header's) instead of two; a long e-mail on the
   consent-person page wraps again; `/ui` names itself (its demo page headers no longer take the shell's title); every
-  shell control draws a full focus ring.
+  shell control draws a full focus ring. The shell's fallback page header draws no back arrow of its own (the view's
+  toolbar back stays, so detail pages without a PageHeader show one) and keeps the title off a panel toolbar below it;
+  the Atlas auto-matched title no longer collapses to one letter per line on a phone; promotion and voucher pages name
+  themselves in the breadcrumbs and the title instead of repeating „Promocje”.
 
 - P3 review leftovers (plan 21): BasicTooltip adds or drops its `aria-describedby` id when its text or the
   trigger's name changes, and removes it on unmount; a focus trap starts in the first editable field (not a checkbox,

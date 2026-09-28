@@ -863,7 +863,7 @@
         "dark",
         "light"
       ],
-      "readySelector": "h1 ~ span.t-muted",
+      "readySelector": ".page-header__meta span.t-muted",
       "file": "emails-channel-edit__{vp}__{theme}.png"
     },
     {

@@ -1199,7 +1199,7 @@ const routes = [
         meta: {
           navParent: "/promo/list",
           requiresAuth: true,
-          titleKey: "nav.promo_list",
+          titleKey: "promo.create_rule",
           panel: "promo",
         },
       },
@@ -1211,7 +1211,7 @@ const routes = [
         meta: {
           navParent: "/promo/list",
           requiresAuth: true,
-          titleKey: "nav.promo_list",
+          titleKey: "promo.voucher_title",
           panel: "promo",
           // The view fetches /api/checkout-voucher/* on mount — without the
           // module the route must not resolve even when the panel is enabled.
@@ -1226,7 +1226,7 @@ const routes = [
         meta: {
           navParent: "/promo/list",
           requiresAuth: true,
-          titleKey: "nav.promo_list",
+          titleKey: "promo.edit_rule",
           panel: "promo",
         },
       },

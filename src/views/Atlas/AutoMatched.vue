@@ -4,7 +4,8 @@
       class="page-card h-100 ovy-auto"
     >
       <PageHeader :title="$t('atlas.auto_matched.title')" class="mb-10">
-        <template #meta>
+        <!-- the subtitle sits right of the title on desktop, on its own row on a phone (meta never wraps) -->
+        <template #actions>
           <span class="fs-200 t-secondary">
             {{ $t("atlas.auto_matched.subtitle") }}
           </span>
