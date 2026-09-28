@@ -40,7 +40,7 @@
 
       <template v-else>
         <!-- Main fields -->
-        <div class="page-card detail-section mb-10">
+        <BasicCard class="detail-section mb-10">
           <h2 class="fs-500 fw-600 mb-8">{{ $t("faq.group_details") }}</h2>
           <div class="detail-grid">
             <div class="detail-field">
@@ -69,10 +69,10 @@
               />
             </div>
           </div>
-        </div>
+        </BasicCard>
 
         <!-- Items in this group — drag to reorder, add existing -->
-        <div v-if="isEdit" class="page-card detail-section mb-10">
+        <BasicCard v-if="isEdit" class="detail-section mb-10">
           <div class="section-head mb-8">
             <h2 class="fs-500 fw-600">{{ $t("faq.items_in_group") }}</h2>
             <div class="flex ai-ct gap-5">
@@ -127,7 +127,7 @@
               </div>
             </template>
           </draggable>
-        </div>
+        </BasicCard>
       </template>
 
     <ConfirmDialog

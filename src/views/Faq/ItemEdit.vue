@@ -33,7 +33,7 @@
 
       <template v-else>
         <!-- Main fields -->
-        <div class="page-card detail-section mb-10">
+        <BasicCard class="detail-section mb-10">
           <h2 class="fs-500 fw-600 mb-8">{{ $t("faq.item_details") }}</h2>
           <div class="detail-grid">
             <div class="detail-field">
@@ -64,10 +64,10 @@
               />
             </div>
           </div>
-        </div>
+        </BasicCard>
 
         <!-- Content fields — each with per-field Translations button -->
-        <div class="page-card detail-section mb-10">
+        <BasicCard class="detail-section mb-10">
           <h2 class="fs-500 fw-600 mb-8">{{ $t("faq.item_content") }}</h2>
 
           <div class="detail-field mb-8">
@@ -118,10 +118,10 @@
             </div>
             <BasicWysiwyg v-model="form.answer" />
           </div>
-        </div>
+        </BasicCard>
 
         <!-- Associations (edit mode only) -->
-        <div v-if="isEdit" class="page-card detail-section mb-10">
+        <BasicCard v-if="isEdit" class="detail-section mb-10">
           <div class="flex ai-ct jc-sb mb-8">
             <h2 class="fs-500 fw-600">{{ $t("faq.associations") }}</h2>
             <BasicButton
@@ -205,7 +205,7 @@
               {{ $t('faq.save_associations') }}
             </BasicButton>
           </div>
-        </div>
+        </BasicCard>
       </template>
 
     <!-- Per-field translations drawer -->
