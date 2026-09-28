@@ -1,5 +1,28 @@
 <template>
   <PageLayout class="fs-200 t-secondary fg-1 relative">
+    <template #header>
+      <PageHeader :title="$t('content_sets.title')" />
+    </template>
+    <template v-if="!isSingleLanguage" #toolbar>
+      <div class="content-sets__toolbar">
+        <div class="filter-chip-row" role="group" :aria-label="$t('content_sets.filters')">
+          <FilterChip
+            v-for="dt in docTypes"
+            :key="dt.value"
+            :label="$t(`config_option.${dt.value}`)"
+            :active="type === dt.value"
+            @click="switchType(dt.value)"
+          />
+        </div>
+        <SegmentedControl
+          v-model="mode"
+          :options="[
+            { value: 'list', label: $t('content_sets.list') },
+            { value: 'edit', label: $t('content_sets.edit_mode') },
+          ]"
+        />
+      </div>
+    </template>
       <div
         v-if="isSingleLanguage"
         class="flex ai-ct jc-ct gap-5 p-12 t-muted"
@@ -13,28 +36,6 @@
         </p>
       </div>
       <template v-else>
-        <div class="flex jc-sb ai-ct mv-8">
-          <MobileFilterPanel
-            :active-count="1"
-            :trigger-label="$t('builder.filters')"
-          >
-            <p class="fs-200 t-secondary">{{ $t("builder.filters") }}</p>
-            <FilterChip
-              v-for="dt in docTypes"
-              :key="dt.value"
-              :label="$t(`config_option.${dt.value}`)"
-              :active="type === dt.value"
-              @click="switchType(dt.value)"
-            />
-          </MobileFilterPanel>
-          <SegmentedControl
-            v-model="mode"
-            :options="[
-              { value: 'list', label: $t('content_sets.list') },
-              { value: 'edit', label: $t('content_sets.edit_mode') },
-            ]"
-          />
-        </div>
         <div v-if="DOCS && mode === 'list'">
           <div class="grid grid-col-3 gap-10">
             <div
@@ -73,6 +74,10 @@
                 >
                   <div
                     class="doc-tile"
+                    role="button"
+                    :tabindex="page_value.content_set ? -1 : 0"
+                    :aria-disabled="page_value.content_set ? 'true' : undefined"
+                    :aria-pressed="String(!!isDocSelected(lang, doc_index))"
                     :class="[
                       {
                         'doc-tile--linked':
@@ -87,25 +92,21 @@
                       DOCS_pagination[lang]['page']
                     ]"
                     :key="`single-doc-page-${page_index}-${lang}`"
-                    @click="
-                      () => {
-                        if (page_value.content_set) return;
-                        bind_set({
-                          lang,
-                          page: DOCS_pagination[lang]['page'],
-                          doc_index,
-                        });
-                      }
-                    "
+                    @click="pickDoc(lang, doc_index, page_value)"
+                    @keydown.enter.prevent="pickDoc(lang, doc_index, page_value)"
+                    @keydown.space.prevent="pickDoc(lang, doc_index, page_value)"
                   >
                     <div class="flex jc-sb ai-st gap-2">
                       <p class="fw-600 fs-300 lc-1">
                         {{ page_value.name ?? $t("content_sets.no_name") }}
                       </p>
-                      <span
+                      <StatusBadge
                         v-if="page_value.content_set && !isDocSelected(lang, doc_index)"
-                        class="doc-tile__badge"
-                      >{{ $t("content_sets.linked") }}</span>
+                        :label="$t('content_sets.linked')"
+                        tone="negative"
+                        size="sm"
+                        :dot="false"
+                      />
                     </div>
                     <p class="fs-200 t-muted lc-1 mt-1">
                       /{{ page_value.routes && page_value.routes.length
@@ -114,18 +115,32 @@
                     </p>
                   </div>
                 </template>
-                <template v-else>
-                  <div class="p-2 rounded b-default bg-raised t-muted">
-                    <p>{{ $t("content_sets.no_docs") }}</p>
-                  </div>
-                </template>
+                <EmptyState v-else size="sm" :title="$t('content_sets.no_docs')" />
               </div>
             </div>
           </div>
           <p class="fs-200 t-muted mt-8 mb-2">
             {{ $t("content_sets.instruction") }}
           </p>
-          <div class="flex gap-2">
+          <div class="flex jc-fe gap-2">
+            <BasicTooltip
+              v-if="!hasEnoughSelections"
+              :text="$t('content_sets.clear_set_tip')"
+            >
+              <BasicButton
+                variant="secondary"
+                :disabled="true"
+              >
+                {{ $t('content_sets.clear_set') }}
+              </BasicButton>
+            </BasicTooltip>
+            <BasicButton
+              v-else
+              variant="secondary"
+              @click="selected_set_members = null"
+            >
+              {{ $t('content_sets.clear_set') }}
+            </BasicButton>
             <BasicTooltip
               v-if="!hasEnoughSelections"
               :text="$t('content_sets.set_ready_tip')"
@@ -149,56 +164,34 @@
             >
               {{ $t('content_sets.set_ready') }}
             </BasicButton>
-            <BasicTooltip
-              v-if="!hasEnoughSelections"
-              :text="$t('content_sets.clear_set_tip')"
-            >
-              <BasicButton
-                variant="secondary"
-                :disabled="true"
-              >
-                {{ $t('content_sets.clear_set') }}
-              </BasicButton>
-            </BasicTooltip>
-            <BasicButton
-              v-else
-              variant="secondary"
-              @click="selected_set_members = null"
-            >
-              {{ $t('content_sets.clear_set') }}
-            </BasicButton>
           </div>
         </div>
         <div v-if="sets && mode === 'edit'" class="grid gap-5">
-          <div v-if="!sets.length" class="flex ai-ct jc-ct p-12 t-muted">
-            <p class="fs-200">{{ $t("content_sets.no_sets") }}</p>
-          </div>
-          <div
-            class="set-card b-subtle rounded p-5"
+          <EmptyState v-if="!sets.length" :title="$t('content_sets.no_sets')" />
+          <BasicCard
             v-for="({ uid, members }, i) in sets"
             :key="`set-${uid}`"
           >
             <div class="flex jc-sb ai-ct">
-              <div class="flex ai-ct gap-2 fg-1" style="min-width: 0">
+              <div class="flex flex-wrap ai-ct gap-2 fg-1" style="min-width: 0">
                 <span
                   v-for="({ name, language }, m_index) in members"
                   :key="`member-${uid}-${m_index}`"
-                  class="set-card__member"
+                  class="content-sets__member"
                   >{{ name || $t("content_sets.no_name") }}
                   <span class="t-muted">({{ language }})</span></span
                 >
               </div>
-              <button
-                class="set-card__delete pointer"
+              <IconButton
+                icon="delete"
+                variant="danger"
+                size="sm"
+                :label="$t('common.delete')"
                 @click="DELETE_Set({ url: `/content-sets/${uid}`, uid })"
-                :aria-label="$t('common.delete')"
-                tabindex="0"
-              >
-                <FontAwesomeIcon :icon="$icons.delete" />
-              </button>
+              />
             </div>
             <p class="fs-200 t-muted mt-1 lc-1">{{ uid }}</p>
-          </div>
+          </BasicCard>
         </div>
       </template>
   </PageLayout>
@@ -471,6 +464,10 @@ export default {
         ] === doc_index
       );
     },
+    pickDoc(lang, doc_index, doc) {
+      if (doc.content_set) return;
+      this.bind_set({ lang, page: this.DOCS_pagination[lang].page, doc_index });
+    },
     bind_set({ lang = null, page = null, doc_index = null }) {
       const _candidates = this.selected_set_members
         ? { ...this.selected_set_members }
@@ -510,53 +507,24 @@ export default {
     border-color: var(--accent);
     .fw-600, .fs-200 { color: var(--text-on-accent-fill); }
   }
-  &__badge {
-    flex-shrink: 0;
-    font-size: var(--fs-200);
-    line-height: 1;
-    padding: 3px var(--space-1);
-    border-radius: var(--radius-base);
-    background: var(--negative-subtle);
-    color: var(--negative);
-    white-space: nowrap;
-  }
 }
-.set-card {
-  transition: border-color 0.15s ease;
-  &:hover {
-    border-color: var(--border-default);
-  }
-  &__member {
-    display: inline-flex;
-    align-items: center;
-    gap: 2px;
-    font-size: var(--fs-250);
-    color: var(--text-body);
-    white-space: nowrap;
-    &:not(:last-child)::after {
-      content: "+";
-      margin: 0 var(--space-1);
-      color: var(--text-muted);
-    }
-  }
-  &__delete {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    flex-shrink: 0;
-    font-size: var(--fs-200);
-    border: 1px solid transparent;
-    border-radius: var(--radius-base);
-    background: none;
+.content-sets__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+}
+.content-sets__member {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: var(--fs-250);
+  color: var(--text-body);
+  &:not(:last-child)::after {
+    content: "+";
+    margin: 0 var(--space-1);
     color: var(--text-muted);
-    transition: all 0.15s ease;
-    &:hover {
-      color: var(--negative);
-      border-color: var(--negative);
-      background-color: var(--surface-raised);
-    }
   }
 }
 </style>

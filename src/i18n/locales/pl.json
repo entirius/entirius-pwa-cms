@@ -296,6 +296,7 @@
     "edit_category": "Edytuj kategorie"
   },
   "content_sets": {
+    "filters": "Typ dokumentu",
     "title": "Zestawy treści",
     "add_new": "Dodaj nowy zestaw",
     "set_name": "Nazwa zestawu",
@@ -629,6 +630,7 @@
     "tab_stock": "Stany"
   },
   "accounts": {
+    "filters": "Status klienta",
     "customers": "Klienci",
     "customer_detail": "Szczegóły klienta",
     "search": "Szukaj",
@@ -1906,6 +1908,7 @@
     "iso2_placeholder": "ISO2 (np. PL)"
   },
   "translation": {
+    "filters": "Status zadania",
     "jobs": "Zadania tłumaczenia",
     "all": "Wszystkie",
     "pending": "Oczekujące",

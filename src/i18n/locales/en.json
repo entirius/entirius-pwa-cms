@@ -296,6 +296,7 @@
     "edit_category": "Edit category"
   },
   "content_sets": {
+    "filters": "Document type",
     "title": "Content sets",
     "add_new": "Add new set",
     "set_name": "Set name",
@@ -629,6 +630,7 @@
     "tab_stock": "Stock"
   },
   "accounts": {
+    "filters": "Customer status",
     "customers": "Customers",
     "customer_detail": "Customer Detail",
     "search": "Search",
@@ -1907,6 +1909,7 @@
     "iso2_placeholder": "ISO2 (e.g. PL)"
   },
   "translation": {
+    "filters": "Job status",
     "jobs": "Translation Jobs",
     "all": "All",
     "pending": "Pending",

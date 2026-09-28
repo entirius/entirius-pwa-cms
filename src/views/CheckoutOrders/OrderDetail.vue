@@ -1,13 +1,8 @@
 <template>
   <PageLayout class="order-detail fs-300 t-body">
-    <Teleport to="#checkout-orders-toolbar-left" defer>
-      <IconButton
-        icon="back"
-        :label="$t('common.back')"
-        @click="goBack"
-      />
-      <span class="fw-600">{{ order.pretty_id || $t("checkout_orders.order_detail") }}</span>
-    </Teleport>
+    <template #header>
+      <PageHeader :title="order.pretty_id || $t('checkout_orders.order_detail')" :back="goBack" />
+    </template>
 
     <div v-if="loading" class="flex jc-ct p-12"><Loader /></div>
 

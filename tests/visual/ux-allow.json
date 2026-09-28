@@ -28,13 +28,6 @@
     "owner": "P5 plan 35 (Authors)"
   },
   {
-    "screen": "pages-content-sets",
-    "kind": "nonFocusable",
-    "selector": "div.doc-tile",
-    "reason": "content-set document tiles bind on click only",
-    "owner": "P5 plan 31 (ContentSets)"
-  },
-  {
     "screen": "pages-layout-editor",
     "kind": "nonFocusable",
     "selector": "span.handle",
