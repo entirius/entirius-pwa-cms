@@ -9,9 +9,10 @@
     </template>
 
     <template #toolbar>
-      <!-- Discounts / Vouchers: a switch only when there is something to switch to (B-83) -->
+      <!-- Discounts / Vouchers: a switch only when there is something to switch to (B-83), or a way back from a
+           locked vouchers deep link -->
       <SegmentedControl
-        v-if="tabOptions.length > 1"
+        v-if="showTabs"
         v-model="activeTab"
         :options="tabOptions"
         class="mb-8"
@@ -235,6 +236,9 @@ export default {
         tabs.push({ value: "vouchers", label: this.$t("promo.tab_vouchers") });
       }
       return tabs;
+    },
+    showTabs() {
+      return this.tabOptions.length > 1 || this.activeTab !== "discounts";
     },
     statusTabs() {
       return [

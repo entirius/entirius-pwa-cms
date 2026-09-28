@@ -68,5 +68,7 @@ describe("PromoList voucher gating", () => {
     expect(wrapper.vm.activeTab).toBe("vouchers");
     expect(wrapper.findComponent({ name: "VouchersSection" }).exists()).toBe(false);
     expect(wrapper.find(".promo-vouchers-disabled").exists()).toBe(true);
+    // The switch stays, so Discounts is one click away.
+    expect(wrapper.html().toLowerCase()).toContain("segmented");
   });
 });
