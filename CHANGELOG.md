@@ -115,6 +115,17 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- P5 Authors (plan 35): the content editor's Authors and Co-authors fields are `EntitySearchPicker`s inside
+  `FormField`s — a picked author joins the list, the list is removable `Tag`s you can drag to reorder, an author
+  already in either list is not offered again; the save payload (`author_uids`, `co_author_uids`) is unchanged. The
+  view-local `views/Authors/AuthorPicker.vue` is deleted. The author form follows the detail-form pattern: Basic
+  info, Translations (per-field translate `IconButton`), Contact and Social profiles are `BasicCard` sections with a
+  `.form-grid`; Save, danger Delete, the unsaved badge and the Active switch sit in the PageHeader; the reassign
+  select of the delete dialog is a `FormField`; the photo preview is no longer a click-only target (the Select /
+  Edit button opens the gallery). The authors list keeps its filter panel in the page toolbar, shows the
+  "not available" state as an `EmptyState` and its pagination in the footer; the Authors panel toolbar is gone.
+  Smoke spec `tests/e2e/p5-authors-smoke.spec.js`.
+
 - P5 Faq and the detail-form pattern (plan 33): the group and item forms are `BasicCard` sections with a `.form-grid`
   of `FormField`s (2 columns above 768 px, `.form-grid__wide` spans both) — labels, required markers, hints (IDX and
   URL key fixed after create, no channel = every channel) and errors all come from FormField. Save, Delete (danger
