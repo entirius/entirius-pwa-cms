@@ -56,6 +56,17 @@ describe("ShellPageHeader", () => {
     expect(wrapper.findAll("h1").map((h1) => h1.text())).toEqual([t("dp.create_point")]);
   });
 
+  it("a demo PageHeader (claimShell false) leaves the slot and the crumbs to the page", async () => {
+    const wrapper = mount(
+      { render: () => h(ShellPageHeader, null, { default: () => h(PageHeader, { title: "Demo", claimShell: false }) }) },
+      { global: { stubs: { RouterLink } } }
+    );
+    await nextTick();
+    expect(wrapper.findAll("h1").map((h1) => h1.text())).toEqual([t("dp.create_point"), "Demo"]);
+    expect(wrapper.findAll(".breadcrumbs__label").at(-1).text()).toBe(t("dp.create_point"));
+    expect(wrapper.findAll(".icon-button")).toHaveLength(1);
+  });
+
   it("names the browser tab <page> · <panel> · Entirius CMS", async () => {
     mountShell(true);
     await nextTick();

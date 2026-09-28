@@ -169,7 +169,7 @@ Reports land in `tests/visual/.report/` (`VISUAL_REPORT_DIR` overrides it): `cen
 Both are gitignored.
 
 **Screens.** `capture-spec.json` lists every screen: route, resolver (`fixed`, `first-row`, `first-link`), state
-(`default`, `switcher-open` (the mobile menu open; nothing on desktop), `user-menu-open`, `notif-open`, `health-open`, `fab-open`, `scrolled`), viewports and the
+(`default`, `switcher-open` (the mobile menu open; a mobile-only row), `user-menu-open`, `notif-open`, `health-open`, `fab-open`, `scrolled`), viewports and the
 baseline file name, plus an optional `readySelector` (below). Tests are named `<id>-<viewport>-<theme>`. P1 policy:
 dark on every screen and viewport, light only on the rows of Figma frames S1, S4, S6 and S9. Rows marked `needsData` (a review draft, a booking) skip with the reason
 when the seed has no such row. Take and check baselines on a fresh `make seed` with no BDD run since: BDD adds rows.

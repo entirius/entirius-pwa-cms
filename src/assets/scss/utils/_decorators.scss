@@ -272,16 +272,6 @@
   color: var(--negative);
 }
 
-// A labelled `sm` back control (a ghost BasicButton, 24 px) gets the 40 × 40 hit area of every other back control on
-// a phone; BasicButton clips its overflow, which would cut the hit area off.
-.back-hit-area {
-  @include touch-target;
-
-  @include max-tablet {
-    overflow: visible;
-  }
-}
-
 // Read by screen readers, never drawn (a locked panel's "(niedostępny)", the skip link until focused).
 .visually-hidden {
   position: absolute;

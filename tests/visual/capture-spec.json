@@ -43,7 +43,6 @@
       "resolver": "fixed",
       "state": "switcher-open",
       "viewports": [
-        "desktop",
         "mobile"
       ],
       "themes": [

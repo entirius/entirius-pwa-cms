@@ -3,22 +3,10 @@
     <div
       class="page-card h-100 ovy-auto"
     >
-      <Teleport v-if="toolbarReady" to="#forms-toolbar-left">
-        <BasicButton
-          variant="ghost"
-          size="sm"
-          icon="back"
-          class="back-hit-area"
-          @click="$router.push('/forms/list')"
-        >
-          {{ $t("cf.back_to_list") }}
-        </BasicButton>
-      </Teleport>
-
       <Loader block v-if="loading" />
 
       <template v-else-if="submission">
-        <PageHeader :title="$t('cf.submission_detail')" class="mb-5">
+        <PageHeader :title="$t('cf.submission_detail')" back="/forms/list" class="mb-5">
           <template #actions>
             <BasicSelect
               :options="statusOptions"
@@ -166,7 +154,6 @@ export default {
     return {
       submission: null,
       loading: false,
-      toolbarReady: false,
     };
   },
   computed: {
@@ -179,7 +166,6 @@ export default {
     },
   },
   mounted() {
-    this.toolbarReady = !!document.getElementById("forms-toolbar-left");
     this.fetchSubmission();
   },
   methods: {

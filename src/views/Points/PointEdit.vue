@@ -1,12 +1,5 @@
 <template>
   <div class="page-pad fs-300 t-body h-100 ov-h">
-    <Teleport to="#points-toolbar-left" defer>
-      <IconButton
-        icon="back"
-        :label="$t('common.back')"
-        @click="$router.push('/points/list')"
-      />
-    </Teleport>
     <Teleport to="#points-toolbar-right" defer>
       <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
       <IconButton
@@ -29,6 +22,7 @@
       <template v-else>
         <PageHeader
           :title="isEdit ? String(point.name || point.code || '') : $t('dp.create_point')"
+          back="/points/list"
           class="mb-12"
         >
           <template #actions>

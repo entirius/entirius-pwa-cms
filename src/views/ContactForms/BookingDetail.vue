@@ -3,22 +3,10 @@
     <div
       class="page-card h-100 ovy-auto"
     >
-      <Teleport v-if="toolbarReady" to="#forms-toolbar-left">
-        <BasicButton
-          variant="ghost"
-          size="sm"
-          icon="back"
-          class="back-hit-area"
-          @click="$router.push('/forms/bookings')"
-        >
-          {{ $t("cf.back_to_list") }}
-        </BasicButton>
-      </Teleport>
-
       <Loader block v-if="loading" />
 
       <template v-else-if="booking">
-        <PageHeader :title="$t('cf.booking_detail')" class="mb-10" />
+        <PageHeader :title="$t('cf.booking_detail')" back="/forms/bookings" class="mb-10" />
 
         <div class="cf-booking-grid">
           <div class="cf-card">
@@ -159,11 +147,9 @@ export default {
     return {
       booking: null,
       loading: false,
-      toolbarReady: false,
     };
   },
   mounted() {
-    this.toolbarReady = !!document.getElementById("forms-toolbar-left");
     this.fetchBooking();
   },
   methods: {

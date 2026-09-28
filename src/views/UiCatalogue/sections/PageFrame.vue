@@ -3,24 +3,24 @@
     <h3 id="page-header" class="fs-500 mb-4">PageHeader</h3>
     <div class="flex-column gap-3 mb-10">
       <CatalogueCell id="page-header-root-default" label="root: H1 only">
-        <PageHeader title="Lista treści" />
+        <PageHeader :claim-shell="false" title="Lista treści" />
       </CatalogueCell>
       <CatalogueCell id="page-header-home-default" label="home: overline + H1">
-        <PageHeader overline="Home" title="Witaj w Entirius CMS" />
+        <PageHeader :claim-shell="false" overline="Home" title="Witaj w Entirius CMS" />
       </CatalogueCell>
       <CatalogueCell id="page-header-detail-default" label="detail: crumbs + back + H1 + chip + ActionBar" interact="focus">
-        <PageHeader title="Product Showcase" :crumbs="CRUMBS" :back="noop">
+        <PageHeader :claim-shell="false" title="Product Showcase" :crumbs="CRUMBS" :back="noop">
           <template #meta><StatusBadge label="Opublikowany" tone="positive" /></template>
           <template #actions><ActionBar :actions="ACTIONS" /></template>
         </PageHeader>
       </CatalogueCell>
       <CatalogueCell id="page-header-overflow-default" label="long title: wraps, actions keep their place">
-        <PageHeader :title="LONG_TITLE" :crumbs="CRUMBS" :back="noop">
+        <PageHeader :claim-shell="false" :title="LONG_TITLE" :crumbs="CRUMBS" :back="noop">
           <template #actions><ActionBar :actions="ACTIONS" /></template>
         </PageHeader>
       </CatalogueCell>
       <CatalogueCell id="page-header-mobile-sticky" label="mobile sticky head (pinned below 768 px), actions row below" mobile>
-        <PageHeader title="Product Showcase" :crumbs="CRUMBS" :back="noop" sticky>
+        <PageHeader :claim-shell="false" title="Product Showcase" :crumbs="CRUMBS" :back="noop" sticky>
           <template #meta><StatusBadge label="Opublikowany" tone="positive" /></template>
           <template #actions><ActionBar :actions="ACTIONS" /></template>
         </PageHeader>
@@ -45,7 +45,7 @@
       <CatalogueCell id="page-layout-full-default" label="full: header + body">
         <div class="layout-frame bg-page">
           <PageLayout>
-            <template #header><PageHeader title="Lista treści" /></template>
+            <template #header><PageHeader :claim-shell="false" title="Lista treści" /></template>
             <p class="fs-300">Treść strony na tle strony, bez ramki.</p>
           </PageLayout>
         </div>
@@ -53,7 +53,7 @@
       <CatalogueCell id="page-layout-toolbar-default" label="with toolbar slot (filters row)">
         <div class="layout-frame bg-page">
           <PageLayout>
-            <template #header><PageHeader title="Lista treści" /></template>
+            <template #header><PageHeader :claim-shell="false" title="Lista treści" /></template>
             <template #toolbar>
               <div class="flex ai-ct gap-2">
                 <FilterChip label="Wszystkie" />

@@ -187,6 +187,24 @@ describe("configuration health", () => {
     expect(wrapper.findAll(".cfg-grid__item")).toHaveLength(2);
   });
 
+  it("without the icon, Esc in the panel returns focus to a named trigger", async () => {
+    api.GET_ConfigHealth.mockReturnValue(health(GREEN));
+    const store = useConfigHealthStore();
+    await store.poll();
+    store.panelOpen = true;
+    const wrapper = mount(ConfigHealthButton, {
+      attachTo: document.body,
+      global: { stubs: { teleport: true, RouterLink, BasicButton: false } },
+    });
+    await flushPromises();
+    await wrapper.get('[data-testid="config-health-panel"]').trigger("keydown", { key: "Escape" });
+    const anchor = wrapper.get('[data-testid="config-health-anchor"]');
+    expect(document.activeElement).toBe(anchor.element);
+    expect(anchor.text()).toBe("config_health.title");
+    expect(store.panelOpen).toBe(false);
+    wrapper.unmount();
+  });
+
   it("the banner shows only its own code", async () => {
     api.GET_ConfigHealth.mockReturnValue(
       health([

@@ -4,15 +4,6 @@
       class="page-card h-100 ovy-auto"
     >
       <Teleport v-if="toolbarReady" to="#forms-toolbar-left">
-        <BasicButton
-          variant="ghost"
-          size="sm"
-          icon="back"
-          class="back-hit-area"
-          @click="$router.push('/forms/leads')"
-        >
-          {{ $t("cf.back_to_list") }}
-        </BasicButton>
         <span v-if="form.name" class="fw-600">{{ form.name }}</span>
       </Teleport>
       <Teleport v-if="toolbarReady" to="#forms-toolbar-right">
@@ -49,7 +40,7 @@
       <Loader block v-if="loading" />
 
       <template v-else-if="lead">
-        <PageHeader :title="$t('cf.lead_detail')" class="mb-8" />
+        <PageHeader :title="$t('cf.lead_detail')" back="/forms/leads" class="mb-8" />
 
         <div class="cf-lead-grid">
           <!-- Editable fields -->

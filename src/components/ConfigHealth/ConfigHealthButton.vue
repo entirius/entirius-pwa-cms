@@ -17,6 +17,11 @@
         />
         <span v-if="!fixed" class="cfg-btn__count" data-testid="config-health-count">{{ store.failing.length }}</span>
       </span>
+      <span v-else class="visually-hidden">
+        <BasicButton variant="ghost" tabindex="-1" data-testid="config-health-anchor">
+          {{ $t("config_health.title") }}
+        </BasicButton>
+      </span>
     </template>
     <template #panel="{ close }">
       <ConfigHealthPanel @close="close" />
@@ -27,6 +32,7 @@
 <script setup>
 import { computed, onMounted, ref, watch } from "vue";
 import { t } from "@/i18n";
+import BasicButton from "@/boots/BasicButton/index.vue";
 import BasicMenu from "@/boots/BasicMenu/index.vue";
 import IconButton from "@/boots/IconButton/index.vue";
 import { useConfigHealthStore } from "@/stores/configHealth";
@@ -35,7 +41,8 @@ import ConfigHealthPanel from "./ConfigHealthPanel.vue";
 // Silence means healthy: the icon exists only while a check fails, plus ~10 s of green "fixed" after a flip.
 // The panel opens in BasicMenu's panel mode from both entry points: this icon, and the user menu, which sets
 // `store.panelOpen` (the menu then anchors under the icon's place in the header, icon or not). `showIcon` false keeps
-// the panel without the icon (a phone header).
+// the panel without the icon (a phone header). Without the icon the trigger is a visually hidden named button, out of
+// the tab order: the menu still has a control to name, anchor and return focus to when the panel closes.
 defineProps({ showIcon: { type: Boolean, default: true } });
 
 const store = useConfigHealthStore();

@@ -3,19 +3,13 @@
     <div
       class="page-card h-100 ovy-auto"
     >
-      <div class="flex ai-ct gap-8 mb-10">
-        <BasicButton
-          variant="ghost"
-          size="sm"
-          icon="back"
-          @click="$router.push('/agreements/consents')"
-        >
-          {{ $t("common.back") }}
-        </BasicButton>
-      </div>
-
       <div class="flex ai-ct jc-sb flex-wrap gap-5 mb-12">
-        <PageHeader :title="email" :overline="$t('agm.email')" />
+        <PageHeader
+          :title="email"
+          :overline="$t('agm.email')"
+          back="/agreements/consents"
+          class="person-detail__title"
+        />
         <BasicTabs
           v-model="mode"
           :options="[
@@ -345,6 +339,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+// An e-mail breaks anywhere rather than mid-word at a hyphen (PageHeader's title), and the header keeps a readable
+// width beside the tabs.
+.person-detail__title {
+  flex: 1 1 200px;
+  min-width: 0;
+}
 
 .person-detail__grid {
   display: grid;

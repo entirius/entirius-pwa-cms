@@ -1,6 +1,6 @@
 <template>
   <div class="ui-catalogue h-100 ovy-auto page-pad">
-    <h1 class="page-title mb-8">{{ $t("nav.ui_catalogue") }}</h1>
+    <PageHeader :title="$t('nav.ui_catalogue')" class="mb-8" />
     <IconsSection />
     <ActionsSection />
     <OverlaysSection />

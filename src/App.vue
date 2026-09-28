@@ -225,15 +225,11 @@ export default {
     transform: none;
   }
 }
-// Every shell control draws the focus-ring token.
-.skip-link,
-.app-header,
-.sidebar-nav,
-.bottom-tab-bar,
-.mobile-menu {
-  :focus-visible,
-  &:focus-visible {
-    outline-color: var(--focus-ring);
-  }
+// Every shell control draws a full focus ring in the focus-ring token; page content keeps the reset's. `:where` keeps
+// the rule just above the reset, so a component's own ring (the inset one of a nav row) still wins.
+.skip-link:focus-visible,
+:where(.app-header, .sidebar-nav, .bottom-tab-bar, .mobile-menu) :is(a, button):focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
 }
 </style>

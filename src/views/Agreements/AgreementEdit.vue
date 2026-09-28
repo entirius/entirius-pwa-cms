@@ -1,12 +1,5 @@
 <template>
   <div class="page-pad fs-300 t-body h-100 ov-h">
-    <Teleport to="#agreements-toolbar-left" defer>
-      <IconButton
-        icon="back"
-        :label="$t('common.back')"
-        @click="$router.push('/agreements/list')"
-      />
-    </Teleport>
     <Teleport to="#agreements-toolbar-right" defer>
       <IconButton
         v-if="isEdit && !definition.is_system"
@@ -29,6 +22,7 @@
       <template v-else>
         <PageHeader
           :title="isEdit ? (definition.name || definition.slug || '') : $t('agm.create_definition')"
+          back="/agreements/list"
           class="mb-12"
         >
           <template #meta>

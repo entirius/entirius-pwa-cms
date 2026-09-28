@@ -1,12 +1,5 @@
 <template>
   <div class="page-pad fs-300 t-body h-100 ov-h">
-    <Teleport to="#faq-toolbar-left" defer>
-      <IconButton
-        icon="back"
-        :label="$t('common.back')"
-        @click="$router.push('/faq/groups')"
-      />
-    </Teleport>
     <Teleport to="#faq-toolbar-right" defer>
       <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
       <BasicButton
@@ -37,6 +30,7 @@
       <template v-else>
         <PageHeader
           :title="isEdit ? String(group.name || group.idx || '') : $t('faq.create_group')"
+          back="/faq/groups"
           class="mb-12"
         >
           <template #actions>

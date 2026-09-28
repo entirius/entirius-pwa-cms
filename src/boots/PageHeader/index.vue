@@ -24,7 +24,8 @@
 // IconButton left of the H1 in any case. The title goes to the shell too: the last crumb and the browser tab name the
 // page by it. Slots: `meta` (chips beside the title) and `actions` (an ActionBar: in the title row on desktop, its
 // own row below 1024 px). `sticky` pins the head under the app header on a phone; the actions row scrolls away
-// (Figma S8). Mounting claims the shell's header slot.
+// (Figma S8). Mounting claims the shell's header slot; `claimShell` false keeps a demo instance (the UI catalogue) out
+// of it: no claim, no shell crumbs or back, the page keeps its own title.
 import { computed } from "vue";
 import { useRouter } from "vue-router";
 import Breadcrumbs from "@/boots/Breadcrumbs/index.vue";
@@ -37,10 +38,11 @@ const props = defineProps({
   crumbs: { type: Array, default: undefined },
   back: { type: [String, Object, Function], default: undefined },
   sticky: { type: Boolean, default: false },
+  claimShell: { type: Boolean, default: true },
 });
 
 const router = useRouter();
-const shell = usePageHeaderClaim(() => props.title);
+const shell = usePageHeaderClaim(() => props.title, props.claimShell);
 const trail = computed(() => props.crumbs ?? shell.crumbs.value);
 // The shell's crumbs bring the shell's back arrow (to the parent crumb); a `back` of the view wins.
 const backTo = computed(

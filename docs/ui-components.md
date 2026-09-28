@@ -256,7 +256,8 @@ Catalogue: `#display` (`#status-badge`, `#count-badge`, `#tag`, `#basic-tabs`, `
 - **Shell claim** — `src/composables/pageHeader.js`: `PAGE_HEADER_CLAIM` (injection key) and
   `usePageHeaderClaim()`. The shell (P4) provides `{ claim, release, crumbs }` and hides its fallback header while a
   claim is held; claims overlap during a route change, so the provider counts them. PageHeader claims on mount,
-  releases on unmount, and without a provider the claim is a no-op.
+  releases on unmount, and without a provider the claim is a no-op. `claim-shell="false"` keeps a demo instance (the
+  `/ui` catalogue) out of the slot: no claim, no shell crumbs, the page keeps its own header.
 - **`Breadcrumbs`** — `items` `[{ label, to? }]`, the last item is the current page (`aria-current="page"`, never a
   link); `<nav aria-label="Breadcrumb"><ol>`; Lexend Deca 16/400 (12 below tablet), `size="sm"` = 12 everywhere;
   ancestors `text-muted`, current `text-strong`, a `/` separator with 12 px gaps; long labels truncate with a `title`.
@@ -341,7 +342,8 @@ Catalogue: `#inputs` (`#form-field`, `#basic-input`, `#basic-textarea`, `#number
 
 ### P4 shell (plan 21)
 
-Built and in the catalogue; `App.vue` still runs the old shell until plan 22 swaps it in.
+In the catalogue and live: `App.vue` mounts `AppHeader`, `SidebarNav` (desktop), `MobileMenu` and `BottomTabBar`
+(below the shell breakpoint) and `ShellPageHeader` at the top of `<main>` (plan 22); the old shell is gone.
 
 - **Nav model** — `src/composables/useNav.js`, the one answer to every shell question. `usePanels()` = the
   `access.js` registry × Munin (`isEnabled`), locked panels dropped under `VUE_APP_HIDE_DISABLED_PANELS=TRUE`;

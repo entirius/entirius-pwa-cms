@@ -8,9 +8,10 @@ import { computed, inject, onBeforeUnmount, onMounted, watch } from "vue";
 export const PAGE_HEADER_CLAIM = Symbol("pageHeaderClaim");
 
 // Claims the slot on mount and releases it on unmount, and reports `title` (a getter); returns the shell's crumbs
-// ([] without a provider) and its back action (null without one).
-export function usePageHeaderClaim(title = () => "") {
-  const shell = inject(PAGE_HEADER_CLAIM, null);
+// ([] without a provider) and its back action (null without one). `enabled` false stays out of the shell: a demo
+// instance (the UI catalogue) acts as if there were no provider.
+export function usePageHeaderClaim(title = () => "", enabled = true) {
+  const shell = enabled ? inject(PAGE_HEADER_CLAIM, null) : null;
   onMounted(() => shell?.claim());
   onBeforeUnmount(() => shell?.release());
   if (shell?.title) watch(title, (value) => (shell.title.value = value), { immediate: true });
