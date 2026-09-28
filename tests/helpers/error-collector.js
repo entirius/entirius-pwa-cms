@@ -19,9 +19,12 @@ const DEFAULT_WHITELIST = [
  * @param {import('@playwright/test').Page} page
  * @param {Object} options
  * @param {string[]} options.whitelist - URL patterns to ignore
+ * @param {(entry: {status: number, url: string}) => boolean} [options.ignoreNetwork] -
+ *   predicate to drop a specific network error at collection time (e.g. a known,
+ *   named backend refusal), instead of editing the collector's arrays after the fact
  * @returns {Object} collector API
  */
-function createErrorCollector(page, { whitelist = [] } = {}) {
+function createErrorCollector(page, { whitelist = [], ignoreNetwork = () => false } = {}) {
   const ignorePatterns = [...DEFAULT_WHITELIST, ...whitelist];
 
   const errors = {
@@ -54,7 +57,7 @@ function createErrorCollector(page, { whitelist = [] } = {}) {
   page.on('response', (response) => {
     const status = response.status();
     const url = response.url();
-    if (status >= 400 && !isWhitelisted(url)) {
+    if (status >= 400 && !isWhitelisted(url) && !ignoreNetwork({ status, url })) {
       errors.network.push({ status, url });
     }
   });

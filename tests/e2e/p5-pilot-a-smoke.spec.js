@@ -16,19 +16,17 @@ const VIEWPORTS = {
 
 // The dev server's hot-reload socket (the zeno CMS container answers on another port) is not a page error.
 const DEV_SERVER = ['WebSocket connection to'];
-// The jobs list reads the AI toolbox through the translator modules; a stack whose toolbox refuses the call answers
-// 502, and the page must still render its frame and an empty state. The console line names no URL, so the network
-// entry is the check: only a 502 of the jobs endpoint is dropped, any other status or URL still fails.
-const TOOLBOX_DOWN_CONSOLE = ['status of 502'];
-
-function dropToolboxRefusals(collector) {
-  const { network } = collector.getErrors(); // the collector's own array
-  const kept = network.filter(({ status, url }) => !(status === 502 && url.includes('/bulk/jobs/')));
-  network.splice(0, network.length, ...kept);
+// The jobs list reads the AI toolbox through the translator modules' bulk/jobs/ endpoint; a stack whose toolbox
+// refuses the call answers 502 there, and the page must still render its frame and an empty state. Only that named
+// endpoint's 502 is dropped — any other status or URL still fails the test.
+const TRANSLATION_JOBS_URL = '/bulk/jobs/';
+function ignoreToolboxJobsRefusal({ status, url }) {
+  return status === 502 && url.includes(TRANSLATION_JOBS_URL);
 }
 
 // The admin profile picks the UI language; accept either locale's text.
-const either = (pick) => new RegExp(`^(${[pick(en), pick(pl)].join('|')})$`);
+const { either: escapedEither } = require('./helpers/text');
+const either = (pick) => escapedEither(pick(en), pick(pl));
 
 async function openPage(page, path) {
   await page.goto(path);
@@ -68,7 +66,10 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
     });
 
     test('translation jobs list renders', async ({ page }) => {
-      const collector = createErrorCollector(page, { whitelist: [...DEV_SERVER, ...TOOLBOX_DOWN_CONSOLE] });
+      const collector = createErrorCollector(page, {
+        whitelist: DEV_SERVER,
+        ignoreNetwork: ignoreToolboxJobsRefusal,
+      });
       await openPage(page, '/translation-jobs');
 
       await expect(page.getByRole('heading', { level: 1 })).toHaveText(either((t) => t.translation.jobs));
@@ -76,7 +77,6 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
       await expect(page.getByRole('group', { name: either((t) => t.translation.filters) })).toBeVisible();
       await expectListOrEmpty(page);
 
-      dropToolboxRefusals(collector);
       collector.assertNoErrors(expect, 'Translation jobs');
     });
   });

@@ -27,9 +27,7 @@
       <Loader block v-show="loading" />
 
       <div v-show="!loading">
-        <p v-if="!groups.length" class="t-muted fs-300">
-          {{ $t("faq.no_groups") }}
-        </p>
+        <EmptyState v-if="!groups.length" :title="$t('faq.no_groups')" />
 
         <draggable
           v-else

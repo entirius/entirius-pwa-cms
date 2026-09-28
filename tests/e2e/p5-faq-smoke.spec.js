@@ -18,7 +18,8 @@ const VIEWPORTS = {
 const DEV_SERVER = ['WebSocket connection to'];
 
 // The admin profile picks the UI language; accept either locale's text.
-const either = (pick) => new RegExp(`^(${[pick(en), pick(pl)].join('|')})$`);
+const { either: escapedEither } = require('./helpers/text');
+const either = (pick) => escapedEither(pick(en), pick(pl));
 
 async function openPage(page, path) {
   await page.goto(path);
@@ -75,6 +76,8 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
         await page.waitForURL(/\/faq\/items\/\d+$/);
         await page.waitForLoadState('networkidle');
         await expectDetail(page);
+      } else {
+        await expect(page.locator('.empty-state').getByText(either((t) => t.faq.no_items))).toBeVisible();
       }
 
       collector.assertNoErrors(expect, 'FAQ items');

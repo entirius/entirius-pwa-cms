@@ -536,6 +536,7 @@ export default {
       const valid = this.formErrors.validateRequired(this.form, {
         url_key: this.$t("faq.url_key"),
         question: this.$t("faq.question"),
+        answer: this.$t("faq.answer"),
       });
       if (!valid) return;
 
