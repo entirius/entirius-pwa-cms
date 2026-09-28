@@ -3,7 +3,7 @@
     <div class="panel-toolbar bg-raised fs-300">
       <div class="panel-toolbar__title flex ai-ct gap-8">
         <div id="pim-toolbar-left" class="flex ai-ct gap-5"></div>
-        <div class="pim-channel-selector flex ai-ct gap-8">
+        <div v-if="!channelInHeader" class="pim-channel-selector flex ai-ct gap-8">
           <span id="pim-channel-label" class="field-label">{{ $t("pim.channel") }}</span>
           <BasicSelect
             aria-labelledby="pim-channel-label"
@@ -60,6 +60,8 @@ import { useMuninStore } from "@/stores/munin";
 import { useQualityStore } from "@/stores/quality";
 import TranslateStoreDialog from "./components/TranslateStoreDialog.vue";
 
+const CHANNEL_IN_HEADER = new Set(["PimProducts", "PimProductCreate", "PimProductDetail"]);
+
 export default {
   name: "PimPanel",
   components: { TranslateStoreDialog },
@@ -77,6 +79,10 @@ export default {
     };
   },
   computed: {
+    // Views on the P5 page frame show the channel selector in their PageHeader `meta` (PimChannelSelect).
+    channelInHeader() {
+      return CHANNEL_IN_HEADER.has(this.$route.name);
+    },
     translatorAvailable() {
       return this.munin.isModuleInstalled("pim_translator");
     },

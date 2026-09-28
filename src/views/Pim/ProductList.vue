@@ -1,12 +1,15 @@
 <template>
   <PageLayout class="pim-list-layout fs-300 t-body">
     <template #header>
-      <PageHeader :title="$t('pim.products')" />
+      <PageHeader :title="$t('pim.products')">
+        <template #meta>
+          <PimChannelSelect />
+        </template>
+      </PageHeader>
     </template>
 
-      <GapStatusAlert v-if="hasQualityData" compact />
-
-      <div class="product-list__toolbar">
+    <template #toolbar>
+      <div class="flex ai-ct flex-wrap gap-5">
         <BasicInput
           v-model="search"
           :placeholder="$t('common.start_typing')"
@@ -14,98 +17,94 @@
           class="product-list__search"
           @input="debouncedFetch(searchAndFetch)"
         />
-        <button
-          class="product-list__filter-toggle"
-          @click="filtersExpanded = !filtersExpanded"
-        >
-          <FontAwesomeIcon :icon="$icons.filter" />
-          <span v-if="dropdownFilterCount" class="product-list__filter-badge">{{
-            dropdownFilterCount
-          }}</span>
-        </button>
-        <button
+        <MobileFilterPanel :active-count="dropdownFilterCount" :trigger-label="$t('pim.filters')">
+          <div class="product-list__filter-group">
+            <FilterChip
+              v-for="tab in filterTabs"
+              :key="tab.key"
+              :label="tab.label"
+              :active="activeFilter === tab.key"
+              @click="setFilter(tab.key)"
+            />
+          </div>
+          <div class="product-list__filter-group">
+            <BasicSelect
+              :options="visibilityOptions"
+              :model-value="visibilityFilter"
+              :placeholder="$t('pim.all_visibilities')"
+              :aria-label="$t('pim.visibility')"
+              class="product-list__filter-dropdown"
+              @update:model-value="onVisibilitySelect"
+            />
+            <BasicSelect
+              :options="productClassOptions"
+              :model-value="productClassFilter"
+              :placeholder="$t('pim.all_classes')"
+              :aria-label="$t('pim.product_class')"
+              class="product-list__filter-dropdown"
+              @update:model-value="onProductClassSelect"
+            />
+            <BasicSelect
+              :options="categoryOptions"
+              :model-value="categoryFilter"
+              :placeholder="$t('pim.all_categories')"
+              :aria-label="$t('pim.categories')"
+              class="product-list__filter-dropdown"
+              @update:model-value="onCategorySelect"
+            />
+            <BasicSelect
+              v-for="feat in filterableFeatures"
+              :key="feat.idx"
+              :options="featureFilterOptions(feat)"
+              :model-value="attributeFilters[feat.idx] ?? ''"
+              :placeholder="feat.name"
+              :aria-label="feat.name"
+              class="product-list__filter-dropdown"
+              @update:model-value="(val) => onAttributeFilter(feat.idx, val)"
+            />
+          </div>
+          <div v-if="hasQualityData" class="product-list__filter-group">
+            <span class="t-muted fs-200">{{ $t("pim.quality_filter_label") }}</span>
+            <FilterChip
+              :label="$t('pim.quality_only_critical')"
+              :title="$t('pim.quality_only_critical_hint')"
+              :active="gapSeverityFilter === 'critical'"
+              data-test="quality-only-critical"
+              @click="toggleOnlyCritical"
+            />
+            <FilterChip
+              :label="$t('pim.quality_only_source')"
+              :title="$t('pim.quality_only_source_hint')"
+              :active="onlySourceGaps"
+              data-test="quality-only-source"
+              @click="toggleOnlySource"
+            />
+          </div>
+          <BasicButton
+            v-if="dropdownFilterCount"
+            variant="ghost"
+            size="sm"
+            @click="clearAllDropdownFilters"
+          >
+            {{ $t("pim.clear_filters") }}
+          </BasicButton>
+        </MobileFilterPanel>
+        <IconButton
           v-if="hasQualityData"
-          class="product-list__filter-toggle"
-          :class="{ 'is-off': hideQualitySensor }"
-          :title="$t('pim.quality_hide_sensor')"
+          :icon="hideQualitySensor ? 'hide' : 'preview'"
+          variant="outline"
+          :pressed="!hideQualitySensor"
+          :label="$t('pim.quality_hide_sensor')"
           data-test="quality-toggle"
           @click="toggleQualitySensor"
-        >
-          <FontAwesomeIcon :icon="hideQualitySensor ? $icons.hide : $icons.preview" />
-        </button>
-        <div class="flex-1" />
-        <span v-if="totalCount > 0" class="fs-200 t-muted"
+        />
+        <span v-if="totalCount > 0" class="fs-200 t-muted ml-auto"
           >{{ totalCount }} {{ $t("pim.products").toLowerCase() }}</span
         >
       </div>
+    </template>
 
-      <div v-show="filtersExpanded" class="product-list__filters">
-        <div class="product-list__filter-chips">
-          <FilterChip
-            v-for="tab in filterTabs"
-            :key="tab.key"
-            :label="tab.label"
-            :active="activeFilter === tab.key"
-            @click="setFilter(tab.key)"
-          />
-        </div>
-        <BasicSelect
-          :options="visibilityOptions"
-          :model-value="visibilityFilter"
-          :placeholder="$t('pim.all_visibilities')"
-          class="product-list__filter-dropdown"
-          @update:model-value="onVisibilitySelect"
-        />
-        <BasicSelect
-          :options="productClassOptions"
-          :model-value="productClassFilter"
-          :placeholder="$t('pim.all_classes')"
-          class="product-list__filter-dropdown"
-          @update:model-value="onProductClassSelect"
-        />
-        <BasicSelect
-          :options="categoryOptions"
-          :model-value="categoryFilter"
-          :placeholder="$t('pim.all_categories')"
-          class="product-list__filter-dropdown"
-          @update:model-value="onCategorySelect"
-        />
-        <BasicSelect
-          v-for="feat in filterableFeatures"
-          :key="feat.idx"
-          :options="featureFilterOptions(feat)"
-          :model-value="attributeFilters[feat.idx] ?? ''"
-          :placeholder="feat.name"
-          class="product-list__filter-dropdown"
-          @update:model-value="(val) => onAttributeFilter(feat.idx, val)"
-        />
-        <template v-if="hasQualityData">
-          <span class="product-list__quality-filter-label t-muted fs-200">
-            {{ $t("pim.quality_filter_label") }}
-          </span>
-          <FilterChip
-            :label="$t('pim.quality_only_critical')"
-            :title="$t('pim.quality_only_critical_hint')"
-            :active="gapSeverityFilter === 'critical'"
-            data-test="quality-only-critical"
-            @click="toggleOnlyCritical"
-          />
-          <FilterChip
-            :label="$t('pim.quality_only_source')"
-            :title="$t('pim.quality_only_source_hint')"
-            :active="onlySourceGaps"
-            data-test="quality-only-source"
-            @click="toggleOnlySource"
-          />
-        </template>
-        <button
-          v-if="dropdownFilterCount"
-          class="product-list__clear-filters"
-          @click="clearAllDropdownFilters"
-        >
-          {{ $t("pim.clear_filters") }}
-        </button>
-      </div>
+      <GapStatusAlert v-if="hasQualityData" compact />
 
       <BulkActionBar
         v-if="selectedProducts.length"
@@ -167,38 +166,56 @@
           />
         </template>
         <template #cell-supplier_status="{ row }">
-          <span
+          <BasicButton
             v-if="supplierStatusMap[row.sku]?.unseen_count > 0"
-            class="product-list__supplier-badge"
-            role="button"
-            tabindex="0"
+            variant="ghost"
+            size="sm"
             :title="$t('pim.badge_updated_title')"
-            @click.stop="onSupplierBadgeClick(row.sku)"
-            @keydown.enter.stop.prevent="onSupplierBadgeClick(row.sku)"
+            @click="onSupplierBadgeClick(row.sku)"
           >
             <StatusBadge :label="$t('pim.badge_updated')" tone="warning" />
-          </span>
+          </BasicButton>
         </template>
         <template #cell-quality="{ row }">
-          <div class="product-list__quality" data-test="quality-cell">
-            <button
+          <div data-test="quality-cell">
+            <BasicMenu
               v-if="qualityState(row) === 'gaps' && (!qualityFilterActive || qualityFindings(row).length)"
-              type="button"
-              class="product-list__quality-toggle"
-              :aria-expanded="qualityPopover.pk === String(row.pk)"
-              :title="$t('pim.quality_show_details')"
-              data-test="quality-toggle-row"
-              @click.stop="toggleQualityPopover(row, $event)"
+              :label="$t('pim.quality_show_details')"
+              data-test="quality-menu"
             >
-              <StatusBadge
-                :label="String(qualityFilterActive ? qualityFindings(row).length : row.gap_count)"
-                :tone="qualityVariant(row)"
-              />
-              <FontAwesomeIcon
-                :icon="qualityPopover.pk === String(row.pk) ? $icons.collapse : $icons.expand"
-                class="product-list__quality-caret fs-200 t-muted"
-              />
-            </button>
+              <template #trigger="{ open }">
+                <BasicButton
+                  variant="ghost"
+                  size="sm"
+                  :title="$t('pim.quality_show_details')"
+                  data-test="quality-toggle-row"
+                >
+                  <StatusBadge
+                    :label="String(qualityFilterActive ? qualityFindings(row).length : row.gap_count)"
+                    :tone="qualityVariant(row)"
+                  />
+                  <FontAwesomeIcon
+                    :icon="open ? $icons.collapse : $icons.expand"
+                    class="fs-200 t-muted"
+                  />
+                </BasicButton>
+              </template>
+              <template #panel>
+                <ul class="product-list__gaps p-2" data-test="quality-popover">
+                  <li
+                    v-for="(f, i) in (qualityMap[String(row.pk)] || [])"
+                    :key="i"
+                    class="product-list__gap"
+                  >
+                    <span class="t-body">{{ gapLabel(f) }}</span>
+                    <Tag v-if="f.language" :label="f.language.toUpperCase()" />
+                    <span v-if="f.inherited" class="product-list__gap-inherited t-muted">
+                      {{ $t("pim.quality_fix_on", { channel: f.source_channel }) }}
+                    </span>
+                  </li>
+                </ul>
+              </template>
+            </BasicMenu>
             <StatusBadge
               v-else-if="qualityState(row) === 'unevaluated'"
               :label="$t('pim.quality_unevaluated')"
@@ -236,33 +253,6 @@
       @spawned="onSpawned"
     />
 
-    <!-- Quality findings bubble — floats over the table (teleported to body) so revealing
-         details never reflows the row. Closed by clicking elsewhere or scrolling. -->
-    <Teleport to="body">
-      <div
-        v-if="qualityPopover.pk"
-        class="quality-popover bg-base b-subtle ba-100"
-        :style="{ top: qualityPopover.top + 'px', left: qualityPopover.left + 'px' }"
-        data-test="quality-popover"
-        @click.stop
-      >
-        <ul class="product-list__gaps">
-          <li
-            v-for="(f, i) in (qualityMap[qualityPopover.pk] || [])"
-            :key="i"
-            class="product-list__gap"
-          >
-            <span class="product-list__gap-label">{{ gapLabel(f) }}</span>
-            <span v-if="f.language" class="product-list__gap-lang">{{
-              f.language
-            }}</span>
-            <span v-if="f.inherited" class="product-list__gap-inherited t-muted">
-              {{ $t("pim.quality_fix_on", { channel: f.source_channel }) }}
-            </span>
-          </li>
-        </ul>
-      </div>
-    </Teleport>
   </PageLayout>
 </template>
 
@@ -292,6 +282,7 @@ import {
 import SpawnDialog from "./components/enrichment/SpawnDialog.vue";
 import GapStatusAlert from "./components/GapStatusAlert.vue";
 import TranslateDialog from "./components/TranslateDialog.vue";
+import PimChannelSelect from "./components/PimChannelSelect.vue";
 import { extractApiMessage } from "@/composables/useFormErrors";
 
 const HIDE_QUALITY_KEY = "pim_hide_quality_sensor";
@@ -306,7 +297,7 @@ function readHideQualitySensor() {
 
 export default {
   name: "ProductList",
-  components: { SpawnDialog, GapStatusAlert, TranslateDialog },
+  components: { SpawnDialog, GapStatusAlert, TranslateDialog, PimChannelSelect },
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();
@@ -331,13 +322,11 @@ export default {
       categories: [],
       filterableFeatures: [],
       attributeFilters: {},
-      filtersExpanded: false,
       showTranslateDialog: false,
       translateEntityIds: null,
       translateDialogTitle: "",
       supplierStatusMap: {},
       qualityMap: {},
-      qualityPopover: { pk: null, top: 0, left: 0 },
       hasQualityData: false,
       hideQualitySensor: readHideQualitySensor(),
       gapSeverityFilter: null,
@@ -534,9 +523,6 @@ export default {
     this.fetchCategories();
     this.fetchFilterableFeatures();
     this.fetchProducts();
-  },
-  beforeUnmount() {
-    this.closeQualityPopover();
   },
   methods: {
     async fetchProducts() {
@@ -773,26 +759,6 @@ export default {
     qualityFindings(row) {
       return this.qualityMap[String(row.pk)] || [];
     },
-    // The cell shows only the gap-count badge; clicking it pops a bubble with the findings,
-    // positioned from the badge's viewport rect (fixed, teleported) so the row never reflows.
-    toggleQualityPopover(row, event) {
-      const key = String(row.pk);
-      if (this.qualityPopover.pk === key) {
-        this.closeQualityPopover();
-        return;
-      }
-      const rect = event.currentTarget.getBoundingClientRect();
-      const left = Math.min(rect.left, window.innerWidth - 248);
-      this.qualityPopover = { pk: key, top: rect.bottom + 4, left: Math.max(8, left) };
-      window.addEventListener("click", this.closeQualityPopover);
-      window.addEventListener("scroll", this.closeQualityPopover, true);
-    },
-    closeQualityPopover() {
-      if (!this.qualityPopover.pk) return;
-      this.qualityPopover = { pk: null, top: 0, left: 0 };
-      window.removeEventListener("click", this.closeQualityPopover);
-      window.removeEventListener("scroll", this.closeQualityPopover, true);
-    },
     gapLabel(finding) {
       return resolveGapLabel(finding, getLang());
     },
@@ -886,158 +852,33 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/scss/utils/media-query";
+
 .pim-list-layout {
   display: flex;
   flex-direction: column;
-}
-.product-list__toolbar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-5);
-  margin-bottom: var(--space-10);
-  flex-wrap: wrap;
 }
 .product-list__search {
   flex: 0 1 300px;
   min-width: 150px;
 }
-.product-list__filter-toggle {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  position: relative;
-  padding: 0 var(--space-3);
-  height: var(--elem-height);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-  background: var(--surface-base);
-  color: var(--text-body);
-  cursor: pointer;
-  font-size: var(--fs-300);
 
-  &:hover {
-    background: var(--surface-raised);
-  }
-}
-
-.product-list__filter-badge {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 var(--space-1);
-  border-radius: var(--radius-lg);
-  background: var(--accent-fill-hover);
-  color: var(--text-on-accent-fill);
-  font-size: var(--fs-200);
-  font-weight: 600;
-}
-
-.product-list__filters {
+// Filter groups sit apart (B-59): chips, selects and the quality filters read as three groups.
+.product-list__filter-group {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-5);
-  margin-bottom: var(--space-10);
-  padding: var(--space-8);
-  background: var(--surface-raised);
-  border-radius: var(--radius-base);
-}
-
-.product-list__filter-chips {
-  display: flex;
-  flex-wrap: wrap;
   gap: var(--space-2);
-  flex-basis: 100%;
+  margin-right: var(--space-4);
 }
 
 .product-list__filter-dropdown {
-  flex: 0 0 auto;
   min-width: 140px;
   max-width: 200px;
-}
 
-.product-list__clear-filters {
-  display: flex;
-  align-items: center;
-  padding: 0 var(--space-3);
-  height: var(--elem-height);
-  border: none;
-  border-radius: var(--radius-base);
-  background: none;
-  color: var(--negative);
-  cursor: pointer;
-  font-size: var(--fs-200);
-  font-weight: 600;
-
-  &:hover {
-    background: var(--negative-subtle);
-  }
-}
-
-@media only screen and (max-width: 768px) {
-  .product-list__filters {
-    flex-direction: column;
-    max-height: 50vh;
-    overflow-y: auto;
-  }
-
-  .product-list__filter-dropdown {
+  @include max-tablet {
     max-width: none;
   }
-}
-
-.product-list__supplier-badge {
-  display: inline-flex;
-  cursor: pointer;
-  outline: none;
-
-  &:focus-visible {
-    box-shadow: 0 0 0 2px var(--focus-ring);
-    border-radius: var(--radius-base);
-  }
-}
-
-.product-list__filter-toggle.is-off {
-  color: var(--text-muted);
-}
-
-.product-list__quality {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-}
-
-.product-list__quality-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  padding: 0;
-  border: none;
-  background: none;
-  cursor: pointer;
-  align-self: flex-start;
-}
-
-.product-list__quality-caret {
-  transition: transform 0.15s ease;
-}
-
-.product-list__quality-filter-label {
-  align-self: center;
-  margin-left: var(--space-2);
-  white-space: nowrap;
-}
-
-.quality-popover {
-  position: fixed;
-  z-index: 1000;
-  min-width: 180px;
-  max-width: 240px;
-  padding: var(--space-5);
-  border-radius: var(--radius-base);
-  box-shadow: var(--shadow-md);
 }
 
 .product-list__gaps {
@@ -1055,19 +896,6 @@ export default {
   align-items: center;
   gap: var(--space-1);
   font-size: var(--fs-200);
-}
-
-.product-list__gap-label {
-  color: var(--text-body);
-}
-
-.product-list__gap-lang {
-  padding: 0 var(--space-1);
-  border-radius: var(--radius-base);
-  background: var(--surface-raised);
-  color: var(--text-secondary);
-  font-size: var(--fs-200);
-  text-transform: uppercase;
 }
 
 .product-list__gap-inherited {

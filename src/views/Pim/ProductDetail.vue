@@ -1,704 +1,209 @@
 <template>
   <PageLayout class="fs-300 t-body">
-    <Teleport to="#pim-toolbar-left" defer>
-      <IconButton
-        icon="back"
-        :label="$t('common.back')"
-        @click="$router.push('/pim/products')"
-      />
-    </Teleport>
-    <Teleport to="#pim-toolbar-right" defer>
-      <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
-      <button
-        class="toolbar-action"
-        :title="$t('pim.channels')"
-        @click="showAddToChannelDialog = true"
-      >
-        <font-awesome-icon :icon="$icons.channels" class="toolbar-action__icon" />
-        <span class="toolbar-action__text">{{ $t("pim.channels") }}</span>
-      </button>
-      <template v-if="!pimChannel.isDefaultChannel">
-        <button
-          class="toolbar-action"
-          :title="$t('pim.copy_translations')"
-          @click="showCopyDialog = true"
-        >
-          <font-awesome-icon :icon="$icons.duplicate" class="toolbar-action__icon" />
-          <span class="toolbar-action__text">{{
-            $t("pim.copy_translations")
-          }}</span>
-        </button>
-        <div
-          v-if="pimChannel.activeChannelInheritanceEnabled"
-          class="inheritance-picker"
-        >
-          <button
-            type="button"
-            class="inheritance-picker__btn"
-            :class="{ 'inheritance-picker__btn--active': inheritanceCount > 0 }"
-            :title="$t('pim.inheritance')"
-            @click="showInheritancePicker = !showInheritancePicker"
-          >
-            <font-awesome-icon
-              :icon="$icons.variants"
-              class="toolbar-action__icon"
-            />
-            <span class="toolbar-action__text">{{
-              $t("pim.inheritance")
-            }}</span>
-            <span
-              v-if="inheritanceCount > 0"
-              class="inheritance-picker__count"
-              >{{ inheritanceCount }}</span
-            >
-          </button>
-          <div
-            v-if="showInheritancePicker"
-            class="inheritance-picker__dropdown"
-          >
-            <label
-              class="inheritance-picker__item"
-              :class="{
-                'inheritance-picker__item--active': product.inherit_attributes,
-              }"
-              @click.prevent="toggleInheritanceFlag('inherit_attributes')"
-            >
-              <span class="inheritance-picker__check">{{
-                product.inherit_attributes ? "✓" : ""
-              }}</span>
-              {{ $t("pim.inherit_attributes") }}
-            </label>
-            <label
-              class="inheritance-picker__item"
-              :class="{
-                'inheritance-picker__item--active':
-                  product.inherit_descriptions,
-              }"
-              @click.prevent="toggleInheritanceFlag('inherit_descriptions')"
-            >
-              <span class="inheritance-picker__check">{{
-                product.inherit_descriptions ? "✓" : ""
-              }}</span>
-              {{ $t("pim.inherit_descriptions") }}
-            </label>
-            <label
-              class="inheritance-picker__item"
-              :class="{
-                'inheritance-picker__item--active': product.inherit_images,
-              }"
-              @click.prevent="toggleInheritanceFlag('inherit_images')"
-            >
-              <span class="inheritance-picker__check">{{
-                product.inherit_images ? "✓" : ""
-              }}</span>
-              {{ $t("pim.inherit_images") }}
-            </label>
+    <template v-if="product.sku" #header>
+      <PageHeader :title="product.name || product.sku" back="/pim/products">
+        <template #meta>
+          <PimChannelSelect />
+        </template>
+        <template #actions>
+          <div class="flex ai-ct jc-fe wrap gap-3">
+            <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
+            <BasicSwitch v-model="form.is_enabled" :label="$t('pim.enabled')" />
+            <ActionBar>
+              <BasicMenu :items="moreMenuItems" :label="$t('pim.more_actions')" placement="bottom-end" @select="onMoreSelect">
+                <template #trigger>
+                  <IconButton icon="more" variant="outline" :label="$t('pim.more_actions')" data-testid="pim-product-more" />
+                </template>
+              </BasicMenu>
+              <IconButton
+                icon="delete"
+                variant="danger"
+                :label="$t('common.delete')"
+                @click="showDeleteConfirm = true"
+              />
+              <BasicButton variant="primary" @click="saveProduct">{{ $t("common.save") }}</BasicButton>
+            </ActionBar>
           </div>
-        </div>
-      </template>
-      <button
-        v-if="hasEnricherPanel"
-        class="toolbar-action"
-        :title="$t('enrichment.spawn.send_single')"
-        data-testid="enrichment-spawn-button"
-        @click="showSpawnDialog = true"
-      >
-        <font-awesome-icon :icon="$icons.enrich" class="toolbar-action__icon" />
-        <span class="toolbar-action__text">{{ $t("enrichment.spawn.send_single") }}</span>
-      </button>
-      <button
-        class="toolbar-action toolbar-action--save"
-        :title="$t('common.save')"
-        @click="saveProduct"
-      >
-        <font-awesome-icon :icon="$icons.saveDraft" class="toolbar-action__icon" />
-        <span class="toolbar-action__text">{{ $t("common.save") }}</span>
-      </button>
-      <IconButton
-        icon="delete"
-        :label="$t('common.delete')"
-        variant="danger"
-        @click="showDeleteConfirm = true"
-      />
-    </Teleport>
-      <Loader block v-if="loading" />
+        </template>
+      </PageHeader>
+    </template>
+    <Loader block v-if="loading" />
 
-      <!-- etap-12 #25: 404 on the chosen channel auto-switches to default and warns. -->
-      <div
-        v-if="channelMismatchWarning"
-        class="channel-mismatch-warning bg-warning-subtle t-warning p-8 rounded mb-8"
-        role="alert"
-      >
-        <font-awesome-icon :icon="$icons.warning" class="mr-5" />
-        {{ $t("pim.channel_mismatch_warning") }}
+    <!-- etap-12 #25: 404 on the chosen channel auto-switches to default and warns. -->
+    <div
+      v-if="channelMismatchWarning"
+      class="bg-warning-subtle t-warning p-8 rounded mb-8"
+      role="alert"
+    >
+      <font-awesome-icon :icon="$icons.warning" class="mr-5" />
+      {{ $t("pim.channel_mismatch_warning") }}
+    </div>
+
+    <template v-else-if="!loading">
+      <div class="product-layout">
+        <div class="product-layout__media">
+          <MediaGallery :channel-idx="channelIdx" :sku="product.sku" />
+        </div>
+
+        <div class="product-layout__content">
+          <BasicCard :title="$t('pim.basic_info')" gap class="mb-8">
+            <div class="flex flex-wrap ai-ct gap-5">
+              <span class="meta-item">SKU: <strong>{{ product.sku }}</strong></span>
+              <span v-if="product.product_class_name" class="meta-item">
+                {{ $t("pim.product_class") }}:
+                <strong :class="productClassColor">{{ productClassLabel }}</strong>
+              </span>
+              <span v-if="product.feature_set_idx" class="meta-item">
+                {{ $t("pim.feature_set") }}: <strong>{{ product.feature_set_idx }}</strong>
+              </span>
+              <span v-if="product.ean" class="meta-item">EAN: <strong>{{ product.ean }}</strong></span>
+            </div>
+            <StatusBadge
+              v-if="pimChannel.isDefaultChannel && product.inheriting_channels_count"
+              tone="accent"
+              :dot="false"
+              :label="$t('pim.channels_inherit', { count: product.inheriting_channels_count })"
+            />
+            <div class="form-grid">
+              <FormField :label="$t('pim.visibility')">
+                <BasicSelect :options="visibilityOptions" v-model="form.visibility" />
+              </FormField>
+              <FormField :label="$t('pim.feature_set')">
+                <BasicSelect
+                  :options="featureSetOptions"
+                  :model-value="form.feature_set_idx"
+                  :placeholder="$t('pim.select_feature_set')"
+                  :disabled="!featureSetOptions.length"
+                  @update:model-value="onFeatureSetSelect"
+                />
+              </FormField>
+              <ProductT9nField
+                v-for="field in T9N_TABS.info"
+                :key="field"
+                v-model="form[`${field}_t9n`][defaultLang]"
+                :label="t9nFieldLabel(field)"
+                :language="defaultLang"
+                :control="t9nControl(field)"
+                :inheritance="t9nInheritance(field)"
+                :translatable="secondaryLanguages.length > 0"
+                class="form-grid__wide"
+                @toggle-override="({ language, override }) => onToggleOverride({ featureIdx: field, language, override })"
+                @translate="openTranslations(field)"
+              />
+            </div>
+          </BasicCard>
+
+          <BasicCard :title="$t('pim.physical_properties')" gap class="mb-8">
+            <p class="fs-200 t-warning">{{ $t("pim.shared_warning") }}</p>
+            <div class="form-grid">
+              <FormField label="EAN">
+                <BasicInput v-model="form.ean" />
+              </FormField>
+              <FormField :label="$t('pim.weight')">
+                <BasicInput v-model="form.weight" />
+              </FormField>
+              <FormField :label="$t('pim.width')">
+                <BasicInput v-model="form.width" />
+              </FormField>
+              <FormField :label="$t('pim.height')">
+                <BasicInput v-model="form.height" />
+              </FormField>
+              <FormField :label="$t('pim.depth')">
+                <BasicInput v-model="form.deep" />
+              </FormField>
+            </div>
+          </BasicCard>
+        </div>
       </div>
 
-      <template v-else-if="!loading">
-        <!-- Two-column layout -->
-        <div class="product-layout">
-          <!-- Left column: Media Gallery -->
-          <div class="product-layout__media">
-            <MediaGallery :channel-idx="channelIdx" :sku="product.sku" />
-          </div>
+      <BasicTabs v-model="activeTab" :options="tabs" id-prefix="pim-product" class="mb-8" />
 
-          <!-- Right column: Info + Tabs -->
-          <div class="product-layout__content">
-            <!-- Product info card -->
-            <div class="info-card mb-10">
-              <h2 class="fs-600 fw-600 mb-5">
-                {{ product.name || product.sku }}
-              </h2>
-              <div class="info-card__meta flex flex-wrap ai-ct gap-5 mb-8">
-                <span class="meta-item"
-                  >SKU: <strong>{{ product.sku }}</strong></span
-                >
-                <span v-if="product.product_class_name" class="meta-dot"></span>
-                <span v-if="product.product_class_name" class="meta-item">
-                  {{ $t("pim.product_class") }}:
-                  <strong :class="productClassColor">{{
-                    productClassLabel
-                  }}</strong>
-                </span>
-                <span v-if="product.feature_set_idx" class="meta-dot"></span>
-                <span v-if="product.feature_set_idx" class="meta-item">
-                  {{ $t("pim.feature_set") }}:
-                  <strong>{{ product.feature_set_idx }}</strong>
-                </span>
-                <span v-if="product.ean" class="meta-dot"></span>
-                <span v-if="product.ean" class="meta-item"
-                  >EAN: <strong>{{ product.ean }}</strong></span
-                >
-              </div>
-              <div class="product-controls">
-                <div class="product-controls__field">
-                  <label class="product-controls__label field-label">{{
-                    $t("pim.visibility")
-                  }}</label>
-                  <BasicSelect
-                    :options="visibilityOptions"
-                    v-model="form.visibility"
-                  />
-                </div>
-                <div class="product-controls__field">
-                  <label class="product-controls__label field-label">{{
-                    $t("pim.feature_set")
-                  }}</label>
-                  <BasicSelect
-                    v-if="featureSetOptions.length"
-                    :options="featureSetOptions"
-                    :model-value="form.feature_set_idx"
-                    :placeholder="$t('pim.select_feature_set')"
-                    @update:model-value="onFeatureSetSelect"
-                  />
-                </div>
-                <BasicSwitch
-                  :label="$t('pim.enabled')"
-                  v-model="form.is_enabled"
-                />
-              </div>
-              <div
-                v-if="
-                  pimChannel.isDefaultChannel &&
-                  product.inheriting_channels_count
-                "
-                class="info-card__inheritance mt-5"
-              >
-                <StatusBadge tone="accent" :dot="false" :label="$t('pim.channels_inherit', {
-                      count: product.inheriting_channels_count,
-                    })" />
-              </div>
+      <div
+        role="tabpanel"
+        :id="`pim-product-panel-${activeTab}`"
+        :aria-labelledby="`pim-product-tab-${activeTab}`"
+      >
+        <AttributeEditor
+          v-if="activeTab === 'attributes'"
+          :attributes="product.attributes || []"
+          :feature-set-idx="form.feature_set_idx"
+          :channel-idx="channelIdx"
+          :languages="pimChannel.activeChannelLanguages"
+          @update:attributes="onAttributesChange"
+        />
 
-              <!-- Name field -->
-              <div class="translation-field mt-8">
-                <div class="translation-field__header">
-                  <label class="field-label"
-                    >{{ $t("pim.name") }} ({{
-                      defaultLang.toUpperCase()
-                    }})</label
-                  >
-                  <BasicButton
-                    v-if="secondaryLanguages.length"
-                    variant="secondary"
-                    class="translation-field__btn"
-                    @click="openTranslations('name')"
-                  >
-                    {{ $t('pim.translations') }}
-                  </BasicButton>
-                </div>
-                <InheritanceField
-                  v-if="!pimChannel.isDefaultChannel"
-                  :inherited="!!product.inherit_descriptions"
-                  :language="defaultLang"
-                  :overridden-langs="overriddenLangsMap.name || []"
-                  :inherited-value="defaultNameT9n[defaultLang] || ''"
-                  @toggle-override="
-                    ({ language, override }) =>
-                      onToggleOverride({
-                        featureIdx: 'name',
-                        language,
-                        override,
-                      })
-                  "
-                >
-                  <template #default="{ readonly }">
-                    <BasicInput
-                      v-model="form.name_t9n[defaultLang]"
-                      :disabled="readonly"
-                    />
-                  </template>
-                </InheritanceField>
-                <BasicInput v-else v-model="form.name_t9n[defaultLang]" />
-              </div>
-
-              <!-- Physical properties (shared across channels) -->
-              <div class="info-card__physical mt-8">
-                <p class="fs-200 t-warning mb-5">
-                  {{ $t("pim.shared_warning") }}
-                </p>
-                <div class="physical-row mb-5">
-                  <div class="detail-field">
-                    <label class="field-label">EAN</label>
-                    <BasicInput v-model="form.ean" />
-                  </div>
-                  <div class="detail-field">
-                    <label class="field-label">{{ $t("pim.weight") }}</label>
-                    <BasicInput v-model="form.weight" />
-                  </div>
-                </div>
-                <div class="physical-row physical-row--3">
-                  <div class="detail-field">
-                    <label class="field-label">{{ $t("pim.width") }}</label>
-                    <BasicInput v-model="form.width" />
-                  </div>
-                  <div class="detail-field">
-                    <label class="field-label">{{ $t("pim.height") }}</label>
-                    <BasicInput v-model="form.height" />
-                  </div>
-                  <div class="detail-field">
-                    <label class="field-label">{{ $t("pim.depth") }}</label>
-                    <BasicInput v-model="form.deep" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Tabs (full width, below 2-column grid) -->
-        <BasicTabs v-model="activeTab" :options="tabs" class="mb-10 mt-10" />
-
-        <div class="tab-content">
-          <!-- Attributes tab -->
-          <div v-if="activeTab === 'attributes'">
-            <AttributeEditor
-              :attributes="product.attributes || []"
-              :feature-set-idx="form.feature_set_idx"
-              :channel-idx="channelIdx"
-              :languages="pimChannel.activeChannelLanguages"
-              @update:attributes="onAttributesChange"
+        <BasicCard v-if="T9N_TABS[activeTab]" :title="activeTabLabel" gap>
+          <div class="form-grid">
+            <ProductT9nField
+              v-for="field in T9N_TABS[activeTab]"
+              :key="field"
+              v-model="form[`${field}_t9n`][defaultLang]"
+              :label="t9nFieldLabel(field)"
+              :language="defaultLang"
+              :control="t9nControl(field)"
+              :inheritance="t9nInheritance(field)"
+              :translatable="secondaryLanguages.length > 0"
+              class="form-grid__wide"
+              @toggle-override="({ language, override }) => onToggleOverride({ featureIdx: field, language, override })"
+              @translate="openTranslations(field)"
             />
-          </div>
-
-          <!-- Descriptions tab -->
-          <div v-if="activeTab === 'descriptions'" class="detail-section">
-            <div class="translation-field">
-              <div class="translation-field__header">
-                <label class="field-label"
-                  >Short Description ({{ defaultLang.toUpperCase() }})</label
-                >
-                <BasicButton
-                  v-if="secondaryLanguages.length"
-                  variant="secondary"
-                  class="translation-field__btn"
-                  @click="openTranslations('short_description')"
-                >
-                  {{ $t('pim.translations') }}
-                </BasicButton>
-              </div>
-              <InheritanceField
-                v-if="!pimChannel.isDefaultChannel"
-                :inherited="!!product.inherit_descriptions"
-                :language="defaultLang"
-                :overridden-langs="overriddenLangsMap.short_description || []"
-                :inherited-value="''"
-                @toggle-override="
-                  ({ language, override }) =>
-                    onToggleOverride({
-                      featureIdx: 'short_description',
-                      language,
-                      override,
-                    })
-                "
-              >
-                <template #default="{ readonly }">
-                  <BasicWysiwyg
-                    variant="lite"
-                    v-model="form.short_description_t9n[defaultLang]"
-                    :disabled="readonly"
-                  />
-                </template>
-              </InheritanceField>
-              <BasicWysiwyg
-                v-else
-                variant="lite"
-                v-model="form.short_description_t9n[defaultLang]"
-              />
-            </div>
-            <div class="translation-field mt-8">
-              <div class="translation-field__header">
-                <label class="field-label"
-                  >{{ $t("pim.description") }} ({{
-                    defaultLang.toUpperCase()
-                  }})</label
-                >
-                <BasicButton
-                  v-if="secondaryLanguages.length"
-                  variant="secondary"
-                  class="translation-field__btn"
-                  @click="openTranslations('description')"
-                >
-                  {{ $t('pim.translations') }}
-                </BasicButton>
-              </div>
-              <InheritanceField
-                v-if="!pimChannel.isDefaultChannel"
-                :inherited="!!product.inherit_descriptions"
-                :language="defaultLang"
-                :overridden-langs="overriddenLangsMap.description || []"
-                :inherited-value="defaultDescriptionT9n[defaultLang] || ''"
-                @toggle-override="
-                  ({ language, override }) =>
-                    onToggleOverride({
-                      featureIdx: 'description',
-                      language,
-                      override,
-                    })
-                "
-              >
-                <template #default="{ readonly }">
-                  <BasicWysiwyg
-                    variant="lite"
-                    v-model="form.description_t9n[defaultLang]"
-                    :disabled="readonly"
-                  />
-                </template>
-              </InheritanceField>
-              <BasicWysiwyg
-                v-else
-                variant="lite"
-                v-model="form.description_t9n[defaultLang]"
-              />
-            </div>
-          </div>
-
-          <!-- Product Tile tab -->
-          <div v-if="activeTab === 'product_tile'" class="detail-section">
-            <div class="translation-field">
-              <div class="translation-field__header">
-                <label class="field-label"
-                  >Subname ({{ defaultLang.toUpperCase() }})</label
-                >
-                <BasicButton
-                  v-if="secondaryLanguages.length"
-                  variant="secondary"
-                  class="translation-field__btn"
-                  @click="openTranslations('subname')"
-                >
-                  {{ $t('pim.translations') }}
-                </BasicButton>
-              </div>
-              <InheritanceField
-                v-if="!pimChannel.isDefaultChannel"
-                :inherited="!!product.inherit_attributes"
-                :language="defaultLang"
-                :overridden-langs="overriddenLangsMap.subname || []"
-                :inherited-value="''"
-                @toggle-override="
-                  ({ language, override }) =>
-                    onToggleOverride({
-                      featureIdx: 'subname',
-                      language,
-                      override,
-                    })
-                "
-              >
-                <template #default="{ readonly }">
-                  <BasicInput
-                    v-model="form.subname_t9n[defaultLang]"
-                    :disabled="readonly"
-                  />
-                </template>
-              </InheritanceField>
-              <BasicInput v-else v-model="form.subname_t9n[defaultLang]" />
-            </div>
-            <div class="translation-field mt-8">
-              <div class="translation-field__header">
-                <label class="field-label"
-                  >Subname 2 ({{ defaultLang.toUpperCase() }})</label
-                >
-                <BasicButton
-                  v-if="secondaryLanguages.length"
-                  variant="secondary"
-                  class="translation-field__btn"
-                  @click="openTranslations('subname2')"
-                >
-                  {{ $t('pim.translations') }}
-                </BasicButton>
-              </div>
-              <InheritanceField
-                v-if="!pimChannel.isDefaultChannel"
-                :inherited="!!product.inherit_attributes"
-                :language="defaultLang"
-                :overridden-langs="overriddenLangsMap.subname2 || []"
-                :inherited-value="''"
-                @toggle-override="
-                  ({ language, override }) =>
-                    onToggleOverride({
-                      featureIdx: 'subname2',
-                      language,
-                      override,
-                    })
-                "
-              >
-                <template #default="{ readonly }">
-                  <BasicInput
-                    v-model="form.subname2_t9n[defaultLang]"
-                    :disabled="readonly"
-                  />
-                </template>
-              </InheritanceField>
-              <BasicInput v-else v-model="form.subname2_t9n[defaultLang]" />
-            </div>
-          </div>
-
-          <!-- SEO tab -->
-          <div v-if="activeTab === 'seo'" class="detail-section">
-            <div class="translation-field">
-              <div class="translation-field__header">
-                <label class="field-label"
-                  >URL Key ({{ defaultLang.toUpperCase() }})</label
-                >
-                <BasicButton
-                  v-if="secondaryLanguages.length"
-                  variant="secondary"
-                  class="translation-field__btn"
-                  @click="openTranslations('url_key')"
-                >
-                  {{ $t('pim.translations') }}
-                </BasicButton>
-              </div>
-              <InheritanceField
-                v-if="!pimChannel.isDefaultChannel"
-                :inherited="!!product.inherit_attributes"
-                :language="defaultLang"
-                :overridden-langs="overriddenLangsMap.url_key || []"
-                :inherited-value="''"
-                @toggle-override="
-                  ({ language, override }) =>
-                    onToggleOverride({
-                      featureIdx: 'url_key',
-                      language,
-                      override,
-                    })
-                "
-              >
-                <template #default="{ readonly }">
-                  <BasicInput
-                    v-model="form.url_key_t9n[defaultLang]"
-                    :disabled="readonly"
-                  />
-                </template>
-              </InheritanceField>
-              <BasicInput v-else v-model="form.url_key_t9n[defaultLang]" />
-            </div>
-            <div class="translation-field mt-8">
-              <div class="translation-field__header">
-                <label class="field-label"
-                  >Meta Title ({{ defaultLang.toUpperCase() }})</label
-                >
-                <BasicButton
-                  v-if="secondaryLanguages.length"
-                  variant="secondary"
-                  class="translation-field__btn"
-                  @click="openTranslations('meta_title')"
-                >
-                  {{ $t('pim.translations') }}
-                </BasicButton>
-              </div>
-              <InheritanceField
-                v-if="!pimChannel.isDefaultChannel"
-                :inherited="!!product.inherit_attributes"
-                :language="defaultLang"
-                :overridden-langs="overriddenLangsMap.meta_title || []"
-                :inherited-value="''"
-                @toggle-override="
-                  ({ language, override }) =>
-                    onToggleOverride({
-                      featureIdx: 'meta_title',
-                      language,
-                      override,
-                    })
-                "
-              >
-                <template #default="{ readonly }">
-                  <BasicInput
-                    v-model="form.meta_title_t9n[defaultLang]"
-                    :disabled="readonly"
-                  />
-                </template>
-              </InheritanceField>
-              <BasicInput v-else v-model="form.meta_title_t9n[defaultLang]" />
-            </div>
-            <div class="translation-field mt-8">
-              <div class="translation-field__header">
-                <label class="field-label"
-                  >Meta Description ({{ defaultLang.toUpperCase() }})</label
-                >
-                <BasicButton
-                  v-if="secondaryLanguages.length"
-                  variant="secondary"
-                  class="translation-field__btn"
-                  @click="openTranslations('meta_description')"
-                >
-                  {{ $t('pim.translations') }}
-                </BasicButton>
-              </div>
-              <InheritanceField
-                v-if="!pimChannel.isDefaultChannel"
-                :inherited="!!product.inherit_attributes"
-                :language="defaultLang"
-                :overridden-langs="overriddenLangsMap.meta_description || []"
-                :inherited-value="''"
-                @toggle-override="
-                  ({ language, override }) =>
-                    onToggleOverride({
-                      featureIdx: 'meta_description',
-                      language,
-                      override,
-                    })
-                "
-              >
-                <template #default="{ readonly }">
-                  <BasicTextarea
-                    v-model="form.meta_description_t9n[defaultLang]"
-                    rows="3"
-                    :disabled="readonly"
-                  />
-                </template>
-              </InheritanceField>
-              <BasicTextarea
-                v-else
-                v-model="form.meta_description_t9n[defaultLang]"
-                rows="3"
-              />
-            </div>
-            <div class="translation-field mt-8">
-              <div class="translation-field__header">
-                <label class="field-label"
-                  >{{ $t("pim.canonical_url") }} ({{ defaultLang.toUpperCase() }})</label
-                >
-                <BasicButton
-                  v-if="secondaryLanguages.length"
-                  variant="secondary"
-                  class="translation-field__btn"
-                  @click="openTranslations('canonical_url')"
-                >
-                  {{ $t('pim.translations') }}
-                </BasicButton>
-              </div>
-              <InheritanceField
-                v-if="!pimChannel.isDefaultChannel"
-                :inherited="!!product.inherit_attributes"
-                :language="defaultLang"
-                :overridden-langs="overriddenLangsMap.canonical_url || []"
-                :inherited-value="''"
-                @toggle-override="
-                  ({ language, override }) =>
-                    onToggleOverride({
-                      featureIdx: 'canonical_url',
-                      language,
-                      override,
-                    })
-                "
-              >
-                <template #default="{ readonly }">
-                  <BasicInput
-                    v-model="form.canonical_url_t9n[defaultLang]"
-                    :disabled="readonly"
-                  />
-                </template>
-              </InheritanceField>
-              <BasicInput v-else v-model="form.canonical_url_t9n[defaultLang]" />
-            </div>
-            <div class="translation-field mt-8">
-              <label class="field-label">{{ $t("pim.og_image_url") }}</label>
-              <p class="fs-200 t-muted mb-2">{{ $t("pim.og_image_url_help") }}</p>
+            <FormField
+              v-if="activeTab === 'seo'"
+              :label="$t('pim.og_image_url')"
+              :description="$t('pim.og_image_url_help')"
+              class="form-grid__wide"
+            >
               <BasicInput v-model="form.og_image" />
-            </div>
+            </FormField>
           </div>
+        </BasicCard>
 
-          <!-- Categories tab -->
-          <div v-if="activeTab === 'categories'">
-            <CategoryAssignment
-              :categories="product.categories || []"
-              :channel-idx="channelIdx"
-              @update:category-idxs="onCategoryIdxsChange"
-            />
-          </div>
+        <CategoryAssignment
+          v-if="activeTab === 'categories'"
+          :categories="product.categories || []"
+          :channel-idx="channelIdx"
+          @update:category-idxs="onCategoryIdxsChange"
+        />
 
-          <!-- Files tab -->
-          <div v-if="activeTab === 'files'">
-            <ProductFiles :channel-idx="channelIdx" :sku="product.sku" />
-          </div>
+        <ProductFiles v-if="activeTab === 'files'" :channel-idx="channelIdx" :sku="product.sku" />
 
-          <!-- Linked products tab -->
-          <div v-if="activeTab === 'links'">
-            <ProductLinks :channel-idx="channelIdx" :sku="product.sku" />
-          </div>
+        <ProductLinks v-if="activeTab === 'links'" :channel-idx="channelIdx" :sku="product.sku" />
 
-          <!-- Variants tab (placeholder) -->
-          <div v-if="activeTab === 'variants'" class="tab-placeholder">
-            <p class="t-muted">{{ $t("pim.coming_soon") }}</p>
-          </div>
+        <EmptyState
+          v-if="activeTab === 'variants' || activeTab === 'audit_log'"
+          icon="empty"
+          size="sm"
+          :title="$t('pim.coming_soon')"
+        />
 
-          <!-- Audit Log tab (placeholder) -->
-          <div v-if="activeTab === 'audit_log'" class="tab-placeholder">
-            <p class="t-muted">{{ $t("pim.coming_soon") }}</p>
-          </div>
+        <PriceDetail
+          v-if="activeTab === 'pricing'"
+          :sku="product.sku || product.real_product?.sku || ''"
+          :channel-idx-prop="channelIdx"
+          :embedded="true"
+        />
 
-          <!-- Pricing tab -->
-          <div v-if="activeTab === 'pricing'">
-            <PriceDetail
-              :sku="product.sku || product.real_product?.sku || ''"
-              :channel-idx-prop="channelIdx"
-              :embedded="true"
-            />
-          </div>
+        <StockTab
+          v-if="activeTab === 'stock'"
+          :sku="product.sku || product.real_product?.sku || ''"
+          :embedded="true"
+        />
 
-          <div v-if="activeTab === 'stock'">
-            <StockTab
-              :sku="product.sku || product.real_product?.sku || ''"
-              :embedded="true"
-            />
-          </div>
+        <SupplierTab
+          v-if="activeTab === 'supplier' && hasSupplierTab"
+          :sku="product.sku || product.real_product?.sku || ''"
+          @refreshed="onSupplierRefreshed"
+        />
 
-          <div v-if="activeTab === 'supplier' && hasSupplierTab">
-            <SupplierTab
-              :sku="product.sku || product.real_product?.sku || ''"
-              @refreshed="onSupplierRefreshed"
-            />
-          </div>
-
-          <div v-if="activeTab === 'quality' && hasQualityData">
-            <QualityTab
-              :key="`${channelIdx}:${product.pk}`"
-              :product-pk="product.pk"
-              :channel-idx="channelIdx"
-              :evaluated-at="product.gap_evaluated_at"
-            />
-          </div>
-        </div>
-      </template>
+        <QualityTab
+          v-if="activeTab === 'quality' && hasQualityData"
+          :key="`${channelIdx}:${product.pk}`"
+          :product-pk="product.pk"
+          :channel-idx="channelIdx"
+          :evaluated-at="product.gap_evaluated_at"
+        />
+      </div>
+    </template>
 
     <ConfirmDialog
       tone="danger"
@@ -856,6 +361,8 @@ import InheritanceField from "./components/InheritanceField.vue";
 import ProductFiles from "./components/ProductFiles.vue";
 import CopyTranslationsDialog from "./components/CopyTranslationsDialog.vue";
 import AddToChannelDialog from "./components/AddToChannelDialog.vue";
+import PimChannelSelect from "./components/PimChannelSelect.vue";
+import ProductT9nField from "./components/ProductT9nField.vue";
 import {
   GET_Product,
   PATCH_Product,
@@ -867,9 +374,24 @@ import { GET_BulkHasChanges } from "@/api/atlas/api";
 import { hasQualityFields } from "./quality";
 import { extractApiMessage } from "@/composables/useFormErrors";
 
+// Translatable system fields per place: the info card and the text tabs (T9N_TABS[activeTab]).
+const T9N_TABS = {
+  info: ["name"],
+  descriptions: ["short_description", "description"],
+  product_tile: ["subname", "subname2"],
+  seo: ["url_key", "meta_title", "meta_description", "canonical_url"],
+};
+const DESCRIPTION_FIELDS = ["name", "description", "short_description"];
+const INHERIT_FLAGS = ["inherit_attributes", "inherit_descriptions", "inherit_images"];
+const WYSIWYG = { is: "BasicWysiwyg", attrs: { variant: "lite" } };
+const TEXTAREA = { is: "BasicTextarea", attrs: { rows: 3 } };
+const INPUT = { is: "BasicInput", attrs: {} };
+
 export default {
   name: "ProductDetail",
   components: {
+    PimChannelSelect,
+    ProductT9nField,
     MediaGallery,
     AttributeEditor,
     CategoryAssignment,
@@ -893,7 +415,7 @@ export default {
     const pimChannel = usePimChannelStore();
     const munin = useMuninStore();
     const unsaved = useUnsavedChanges();
-    return { loader, notify, pimChannel, munin, ...unsaved };
+    return { loader, notify, pimChannel, munin, ...unsaved, T9N_TABS };
   },
   data() {
     return {
@@ -907,7 +429,6 @@ export default {
       showCopyDialog: false,
       showAddToChannelDialog: false,
       showSpawnDialog: false,
-      showInheritancePicker: false,
       translatingField: null,
       overriddenLangsMap: {},
       featureSetOptions: [],
@@ -976,6 +497,35 @@ export default {
       }
       return tabs;
     },
+    activeTabLabel() {
+      return this.tabs.find((t) => t.value === this.activeTab)?.label || "";
+    },
+    // Secondary actions and the channel inheritance flags (B-29: Save keeps its label, the rest sits in "more").
+    moreMenuItems() {
+      const isChild = !this.pimChannel.isDefaultChannel;
+      const items = [
+        { key: "channels", label: this.$t("pim.channels"), icon: "channels" },
+        isChild && { key: "copy", label: this.$t("pim.copy_translations"), icon: "duplicate" },
+        this.hasEnricherPanel && {
+          key: "enrich",
+          label: this.$t("enrichment.spawn.send_single"),
+          icon: "enrich",
+          testid: "enrichment-spawn-button",
+        },
+      ];
+      if (isChild && this.pimChannel.activeChannelInheritanceEnabled) {
+        items.push(
+          { key: "inheritance-separator", separator: true },
+          { key: "inheritance-heading", heading: true, label: this.$t("pim.inheritance") },
+          ...INHERIT_FLAGS.map((flag) => ({
+            key: flag,
+            label: this.$t(`pim.${flag}`),
+            checked: !!this.product[flag],
+          }))
+        );
+      }
+      return items.filter(Boolean);
+    },
     hasSupplierTab() {
       return (
         this.munin.isPanelEnabled("atlas") &&
@@ -1007,13 +557,6 @@ export default {
       };
       return map[name?.toLowerCase()] || "t-body";
     },
-    inheritanceCount() {
-      let n = 0;
-      if (this.product.inherit_attributes) n++;
-      if (this.product.inherit_descriptions) n++;
-      if (this.product.inherit_images) n++;
-      return n;
-    },
     defaultNameT9n() {
       return this.product.default_channel_name_t9n || {};
     },
@@ -1037,33 +580,16 @@ export default {
       return `${this.translatingField}_t9n`;
     },
     translatingFieldLabel() {
-      const labels = {
-        name: this.$t("pim.name"),
-        description: this.$t("pim.description"),
-        short_description: "Short Description",
-        url_key: "URL Key",
-        meta_title: "Meta Title",
-        meta_description: "Meta Description",
-        canonical_url: this.$t("pim.canonical_url"),
-        subname: "Subname",
-        subname2: "Subname 2",
-      };
-      return labels[this.translatingField] || this.translatingField;
+      return this.t9nFieldLabel(this.translatingField);
     },
     translatingFieldIsWysiwyg() {
-      return ["description", "short_description"].includes(
-        this.translatingField
-      );
+      return this.t9nControl(this.translatingField) === WYSIWYG;
     },
     translatingFieldIsTextArea() {
-      return ["meta_description"].includes(this.translatingField);
+      return this.t9nControl(this.translatingField) === TEXTAREA;
     },
     translatingFieldInheritFlag() {
-      const descriptionFields = ["name", "description", "short_description"];
-      if (descriptionFields.includes(this.translatingField)) {
-        return this.product.inherit_descriptions;
-      }
-      return this.product.inherit_attributes;
+      return this.t9nInheritFlag(this.translatingField);
     },
   },
   watch: {
@@ -1093,20 +619,50 @@ export default {
     this.fetchFeatureSets();
     this.fetchSupplierStatus();
     this.applyHashToTab(this.$route.hash);
-    this._closeInheritancePicker = (e) => {
-      if (
-        this.showInheritancePicker &&
-        !e.target.closest(".inheritance-picker")
-      ) {
-        this.showInheritancePicker = false;
-      }
-    };
-    document.addEventListener("click", this._closeInheritancePicker);
-  },
-  beforeUnmount() {
-    document.removeEventListener("click", this._closeInheritancePicker);
   },
   methods: {
+    t9nFieldLabel(field) {
+      const labels = {
+        name: this.$t("pim.name"),
+        description: this.$t("pim.description"),
+        short_description: "Short Description",
+        url_key: "URL Key",
+        meta_title: "Meta Title",
+        meta_description: "Meta Description",
+        canonical_url: this.$t("pim.canonical_url"),
+        subname: "Subname",
+        subname2: "Subname 2",
+      };
+      return labels[field] || field;
+    },
+    t9nControl(field) {
+      if (["description", "short_description"].includes(field)) return WYSIWYG;
+      if (field === "meta_description") return TEXTAREA;
+      return INPUT;
+    },
+    t9nInheritFlag(field) {
+      return DESCRIPTION_FIELDS.includes(field)
+        ? this.product.inherit_descriptions
+        : this.product.inherit_attributes;
+    },
+    // The inheritance state of a field on a non-default channel; null on the default channel (no inheritance).
+    t9nInheritance(field) {
+      if (this.pimChannel.isDefaultChannel) return null;
+      const inheritedValues = { name: this.defaultNameT9n, description: this.defaultDescriptionT9n };
+      return {
+        inherited: !!this.t9nInheritFlag(field),
+        overriddenLangs: this.overriddenLangsMap[field] || [],
+        inheritedValue: inheritedValues[field]?.[this.defaultLang] || "",
+      };
+    },
+    onMoreSelect({ key }) {
+      if (INHERIT_FLAGS.includes(key)) {
+        this.toggleInheritanceFlag(key);
+        return;
+      }
+      const dialogs = { channels: "showAddToChannelDialog", copy: "showCopyDialog", enrich: "showSpawnDialog" };
+      this[dialogs[key]] = true;
+    },
     openTranslations(fieldName) {
       this.translatingField = fieldName;
     },
@@ -1451,213 +1007,21 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/scss/utils/media-query";
+
 .product-layout {
   display: grid;
   grid-template-columns: 380px 1fr;
   gap: var(--space-10);
 
-  @media (max-width: 960px) {
+  @include max-desktop {
     grid-template-columns: 1fr;
   }
 }
 
-.product-layout__media {
-  min-width: 0;
-}
-
+.product-layout__media,
 .product-layout__content {
   min-width: 0;
-}
-
-.info-card {
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-  padding: var(--space-5);
-}
-
-.info-card__inheritance {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1);
-}
-
-.inheritance-picker {
-  position: relative;
-  display: inline-block;
-}
-
-.inheritance-picker__btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: 0 var(--space-3);
-  height: var(--elem-height);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-  background: var(--surface-base);
-  color: var(--text-secondary);
-  font-size: var(--fs-300);
-  font-weight: 500;
-  cursor: pointer;
-  transition: border-color 0.15s, background 0.15s;
-
-  &:hover {
-    border-color: var(--accent);
-  }
-
-  &--active {
-    border-color: var(--accent);
-    background: var(--accent-subtle);
-    color: var(--text-strong);
-  }
-}
-
-.inheritance-picker__count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 18px;
-  height: 18px;
-  border-radius: var(--radius-lg);
-  background: var(--accent-fill);
-  color: var(--text-on-accent-fill);
-  font-size: var(--fs-200);
-  font-weight: 600;
-}
-
-.inheritance-picker__dropdown {
-  position: absolute;
-  top: calc(100% + 4px);
-  right: 0;
-  min-width: 200px;
-  background: var(--surface-base);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-  box-shadow: var(--shadow-lg);
-  z-index: 100;
-  padding: var(--space-1) 0;
-}
-
-.inheritance-picker__item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  cursor: pointer;
-  font-size: var(--fs-300);
-  color: var(--text-body);
-  transition: background 0.1s;
-
-  &:hover {
-    background: var(--surface-raised);
-  }
-
-  &--active {
-    color: var(--text-accent);
-    font-weight: 500;
-  }
-}
-
-.inheritance-picker__check {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  border-radius: var(--radius-base);
-  border: 1px solid var(--border-subtle);
-  font-size: var(--fs-200);
-  flex-shrink: 0;
-
-  .inheritance-picker__item--active & {
-    background: var(--accent-fill);
-    border-color: var(--accent);
-    color: var(--text-on-accent-fill);
-  }
-}
-
-.toolbar-action {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: 0 var(--space-3);
-  height: var(--elem-height);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-  background: var(--surface-base);
-  color: var(--text-secondary);
-  font-size: var(--fs-300);
-  font-weight: 500;
-  cursor: pointer;
-  transition: border-color 0.15s, background 0.15s;
-
-  &:hover {
-    border-color: var(--border-default);
-  }
-
-  &__icon {
-    font-size: var(--fs-300);
-    flex-shrink: 0;
-  }
-
-  &--save {
-    border: none;
-    background: var(--accent-fill);
-    color: var(--text-on-accent-fill);
-
-    &:hover {
-      background: var(--accent-fill);
-    }
-  }
-}
-
-@media (max-width: 960px) {
-  .toolbar-action {
-    justify-content: center;
-    width: var(--elem-height);
-    padding: 0;
-  }
-
-  .toolbar-action__text {
-    display: none;
-  }
-
-  .inheritance-picker__btn {
-    justify-content: center;
-    width: var(--elem-height);
-    padding: 0;
-  }
-
-  .inheritance-picker__btn .toolbar-action__text {
-    display: none;
-  }
-}
-
-.tab-content {
-  padding-top: var(--space-8);
-}
-
-.tab-placeholder {
-  padding: var(--space-10);
-  text-align: center;
-}
-
-.detail-section {
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-  padding: var(--space-5);
-}
-
-.detail-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: var(--space-5);
-}
-
-.detail-field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
 }
 
 .meta-item {
@@ -1669,56 +1033,4 @@ export default {
     color: var(--text-body);
   }
 }
-
-.meta-dot {
-  width: 3px;
-  height: 3px;
-  border-radius: var(--radius-full);
-  background: var(--surface-hover);
-  flex-shrink: 0;
-}
-
-.product-controls {
-  display: flex;
-  align-items: flex-end;
-  gap: var(--space-8);
-  flex-wrap: wrap;
-
-  &__field {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-  }
-}
-
-.info-card__physical {
-  border-top: 1px solid var(--border-subtle);
-  padding-top: var(--space-8);
-}
-
-.physical-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-5);
-
-  &--3 {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-}
-
-.translation-field {
-  &__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: var(--space-1);
-  }
-
-  &__btn {
-    line-height: 1;
-    padding: var(--space-1) var(--space-2);
-    font-size: var(--fs-200);
-  }
-}
 </style>
-

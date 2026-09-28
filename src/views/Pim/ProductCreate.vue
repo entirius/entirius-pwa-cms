@@ -1,149 +1,131 @@
 <template>
   <PageLayout class="fs-300 t-body">
-    <Teleport to="#pim-toolbar-left" defer>
-      <IconButton
-        icon="back"
-        :label="$t('common.back')"
-        @click="$router.push('/pim/products')"
-      />
-    </Teleport>
-    <Teleport to="#pim-toolbar-right" defer>
-      <BasicButton
-        variant="primary"
-        @click="createProduct"
-      >
-        {{ $t('common.save') }}
-      </BasicButton>
-    </Teleport>
-      <div class="create-section mb-10">
-        <h2 class="fs-500 fw-600 mb-5">{{ $t("pim.basic_info") }}</h2>
-        <div class="create-grid">
-          <FormField
-            class="create-field"
-            label="SKU"
-            required
-            :error="formErrors.getFieldError('sku')?.msg"
-          >
-            <BasicInput
-              v-model="form.sku"
-              :placeholder="$t('pim.sku_placeholder')"
-            />
-          </FormField>
-          <FormField
-            class="create-field"
-            :label="$t('pim.feature_set')"
-            required
-            :error="formErrors.getFieldError('feature_set_idx')?.msg"
-          >
-            <BasicSelect
-              v-model="form.feature_set_idx"
-              :options="featureSetOptions"
-              :placeholder="$t('pim.select_feature_set')"
-            />
-          </FormField>
-          <div class="create-field">
-            <label class="field-label">{{ $t("pim.visibility") }}</label>
-            <BasicSelect
-              :options="visibilityOptions"
-              v-model="form.visibility"
-            />
-          </div>
-          <div class="create-field">
-            <label class="field-label">{{ $t("pim.status") }}</label>
-            <BasicSwitch
-              :label="$t('pim.enabled')"
-              v-model="form.is_enabled"
-            />
-          </div>
-        </div>
+    <template #header>
+      <PageHeader :title="$t('pim.create_product')" back="/pim/products">
+        <template #meta>
+          <PimChannelSelect />
+        </template>
+        <template #actions>
+          <ActionBar :actions="headerActions" />
+        </template>
+      </PageHeader>
+    </template>
+    <BasicCard :title="$t('pim.basic_info')" gap class="mb-8">
+      <div class="form-grid">
+        <FormField
+          label="SKU"
+          required
+          :error="formErrors.getFieldError('sku')?.msg || ''"
+        >
+          <BasicInput
+            v-model="form.sku"
+            :placeholder="$t('pim.sku_placeholder')"
+          />
+        </FormField>
+        <FormField
+          :label="$t('pim.feature_set')"
+          required
+          :error="formErrors.getFieldError('feature_set_idx')?.msg || ''"
+        >
+          <BasicSelect
+            v-model="form.feature_set_idx"
+            :options="featureSetOptions"
+            :placeholder="$t('pim.select_feature_set')"
+          />
+        </FormField>
+        <FormField :label="$t('pim.visibility')">
+          <BasicSelect
+            :options="visibilityOptions"
+            v-model="form.visibility"
+          />
+        </FormField>
+        <FormField :label="$t('pim.status')">
+          <BasicSwitch
+            :label="$t('pim.enabled')"
+            v-model="form.is_enabled"
+          />
+        </FormField>
       </div>
+    </BasicCard>
 
-      <div class="create-section mb-10">
-        <h2 class="fs-500 fw-600 mb-5">
-          {{ $t("pim.physical_properties") }}
-        </h2>
-        <p class="fs-200 t-warning mb-5">
-          {{ $t("pim.shared_warning") }}
-        </p>
-        <div class="create-grid">
-          <FormField
-            class="create-field"
-            label="EAN"
-            :error="formErrors.getFieldError('ean')?.msg"
-          >
-            <BasicInput
-              v-model="form.ean"
-              placeholder="e.g. 5901234123457"
-            />
-          </FormField>
-          <FormField
-            class="create-field"
-            :label="$t('pim.weight')"
-            :error="formErrors.getFieldError('weight')?.msg"
-          >
-            <BasicInput
-              v-model="form.weight"
-              placeholder="kg"
-            />
-          </FormField>
-          <FormField
-            class="create-field"
-            :label="$t('pim.width')"
-            :error="formErrors.getFieldError('width')?.msg"
-          >
-            <BasicInput
-              v-model="form.width"
-              placeholder="cm"
-            />
-          </FormField>
-          <FormField
-            class="create-field"
-            :label="$t('pim.height')"
-            :error="formErrors.getFieldError('height')?.msg"
-          >
-            <BasicInput
-              v-model="form.height"
-              placeholder="cm"
-            />
-          </FormField>
-          <FormField
-            class="create-field"
-            :label="$t('pim.depth')"
-            :error="formErrors.getFieldError('deep')?.msg"
-          >
-            <BasicInput
-              v-model="form.deep"
-              placeholder="cm"
-            />
-          </FormField>
-        </div>
+    <BasicCard :title="$t('pim.physical_properties')" gap class="mb-8">
+      <p class="fs-200 t-warning">
+        {{ $t("pim.shared_warning") }}
+      </p>
+      <div class="form-grid">
+        <FormField
+          label="EAN"
+          :error="formErrors.getFieldError('ean')?.msg || ''"
+        >
+          <BasicInput
+            v-model="form.ean"
+            placeholder="e.g. 5901234123457"
+          />
+        </FormField>
+        <FormField
+          :label="$t('pim.weight')"
+          :error="formErrors.getFieldError('weight')?.msg || ''"
+        >
+          <BasicInput
+            v-model="form.weight"
+            placeholder="kg"
+          />
+        </FormField>
+        <FormField
+          :label="$t('pim.width')"
+          :error="formErrors.getFieldError('width')?.msg || ''"
+        >
+          <BasicInput
+            v-model="form.width"
+            placeholder="cm"
+          />
+        </FormField>
+        <FormField
+          :label="$t('pim.height')"
+          :error="formErrors.getFieldError('height')?.msg || ''"
+        >
+          <BasicInput
+            v-model="form.height"
+            placeholder="cm"
+          />
+        </FormField>
+        <FormField
+          :label="$t('pim.depth')"
+          :error="formErrors.getFieldError('deep')?.msg || ''"
+        >
+          <BasicInput
+            v-model="form.deep"
+            placeholder="cm"
+          />
+        </FormField>
       </div>
+    </BasicCard>
 
-      <div v-if="otherChannels.length" class="create-section mb-10">
-        <h2 class="fs-500 fw-600 mb-5">
-          {{ $t("pim.also_add_to_channels") }}
-        </h2>
-        <div class="channel-list">
-          <div v-for="ch in otherChannels" :key="ch.idx" class="channel-item">
-            <BasicCheckbox
-              :model-value="isChannelSelected(ch.idx)"
-              @update:model-value="(on) => toggleChannel(ch.idx, on)"
-            >
-              {{ ch.name + " (" + ch.idx + ")" }}
-            </BasicCheckbox>
-            <div v-if="isChannelSelected(ch.idx)" class="channel-item__options">
-              <BasicCheckbox
-                :model-value="getChannelOption(ch.idx, 'inherit')"
-                @update:model-value="
-                  (on) => setChannelOption(ch.idx, 'inherit', on)
-                "
-              >
-                {{ $t("pim.inherit_translations") }}
-              </BasicCheckbox>
-            </div>
-          </div>
-        </div>
+    <BasicCard
+      v-if="otherChannels.length"
+      :title="$t('pim.also_add_to_channels')"
+      gap
+      class="mb-8"
+    >
+      <div v-for="ch in otherChannels" :key="ch.idx" class="flex-column gap-1">
+        <BasicCheckbox
+          :model-value="isChannelSelected(ch.idx)"
+          @update:model-value="(on) => toggleChannel(ch.idx, on)"
+        >
+          {{ ch.name + " (" + ch.idx + ")" }}
+        </BasicCheckbox>
+        <BasicCheckbox
+          v-if="isChannelSelected(ch.idx)"
+          class="ml-6"
+          :model-value="getChannelOption(ch.idx, 'inherit')"
+          @update:model-value="
+            (on) => setChannelOption(ch.idx, 'inherit', on)
+          "
+        >
+          {{ $t("pim.inherit_translations") }}
+        </BasicCheckbox>
       </div>
+    </BasicCard>
   </PageLayout>
 </template>
 
@@ -157,9 +139,11 @@ import {
   GET_FeatureSets,
   POST_AddToChannel,
 } from "@/api/pim/api";
+import PimChannelSelect from "./components/PimChannelSelect.vue";
 
 export default {
   name: "ProductCreate",
+  components: { PimChannelSelect },
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();
@@ -191,6 +175,11 @@ export default {
     };
   },
   computed: {
+    headerActions() {
+      return [
+        { key: "save", role: "primary", label: this.$t("common.save"), onClick: this.createProduct },
+      ];
+    },
     channelIdx() {
       return this.pimChannel.activeChannelIdx;
     },
@@ -309,37 +298,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.create-section {
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-  padding: var(--space-5);
-}
-.create-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: var(--space-5);
-}
-.create-field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-}
-.channel-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-.channel-item {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-}
-.channel-item__options {
-  margin-left: var(--space-6);
-}
-</style>
