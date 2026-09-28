@@ -40,10 +40,10 @@ export default {
     formatRelativeTime(dateStr) {
       const diff = Date.now() - new Date(dateStr).getTime()
       const minutes = Math.floor(diff / 60000)
-      if (minutes < 60) return `${minutes}m ago`
+      if (minutes < 60) return this.$t("stock.time_ago_minutes", { minutes })
       const hours = Math.floor(minutes / 60)
-      if (hours < 24) return `${hours}h ago`
-      return `${Math.floor(hours / 24)}d ago`
+      if (hours < 24) return this.$t("stock.time_ago_hours", { hours })
+      return this.$t("stock.time_ago_days", { days: Math.floor(hours / 24) })
     },
   },
 }

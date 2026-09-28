@@ -2,17 +2,18 @@
   <PageLayout class="fs-300 t-body">
     <template #header>
       <PageHeader :title="$t('stock.manage')">
+        <template #meta>
+          <StatusBadge
+            v-if="isManual && dirtyCount > 0"
+            tone="warning"
+            :dot="false"
+            :label="`${$t('stock.unsaved')}: ${dirtyCount}`"
+          />
+        </template>
         <template #actions>
-          <div class="flex ai-ct jc-fe wrap gap-3">
+          <ActionBar :actions="isManual ? headerActions : []">
             <StockWarehousePicker />
-            <StatusBadge
-              v-if="isManual && dirtyCount > 0"
-              tone="warning"
-              :dot="false"
-              :label="`${$t('stock.unsaved')}: ${dirtyCount}`"
-            />
-            <ActionBar v-if="isManual" :actions="headerActions" />
-          </div>
+          </ActionBar>
         </template>
       </PageHeader>
     </template>

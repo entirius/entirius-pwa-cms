@@ -1,11 +1,21 @@
 <template>
   <div class="stock-panel h-100">
-    <div v-if="!activeWarehouse && !loading" class="flex ai-ct jc-ct h-100">
-      <EmptyState
-        :title="warehouses.length ? $t('stock.select_warehouse') : $t('stock.no_warehouses')"
-        icon="stock"
-      />
-    </div>
+    <PageLayout v-if="!activeWarehouse && !loading">
+      <template #header>
+        <PageHeader :title="$t('stock.manage')">
+          <template v-if="warehouses.length" #actions>
+            <StockWarehousePicker />
+          </template>
+        </PageHeader>
+      </template>
+
+      <div class="flex ai-ct jc-ct h-100">
+        <EmptyState
+          :title="warehouses.length ? $t('stock.select_warehouse') : $t('stock.no_warehouses')"
+          icon="stock"
+        />
+      </div>
+    </PageLayout>
 
     <router-view v-else-if="activeWarehouse" />
   </div>
@@ -16,9 +26,11 @@ import { useLoaderStore } from "@/stores/loader"
 import { useNotifyStore } from "@/stores/notify"
 import { GET_Warehouses } from "@/api/stock/api"
 import { extractApiMessage } from "@/composables/useFormErrors"
+import StockWarehousePicker from "./StockWarehousePicker.vue"
 
 export default {
   name: "StockPanel",
+  components: { StockWarehousePicker },
   setup() {
     const loader = useLoaderStore()
     const notify = useNotifyStore()

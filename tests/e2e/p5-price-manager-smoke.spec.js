@@ -18,7 +18,8 @@ const VIEWPORTS = {
 const DEV_SERVER = ['WebSocket connection to'];
 
 // The admin profile picks the UI language; accept either locale's text.
-const either = (pick) => new RegExp(`^(${[pick(en), pick(pl)].join('|')})$`);
+const { either: escapedEither } = require('./helpers/text');
+const either = (pick) => escapedEither(pick(en), pick(pl));
 const h1 = (page) => page.getByRole('heading', { level: 1 });
 
 async function openPage(page, path) {

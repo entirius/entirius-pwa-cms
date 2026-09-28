@@ -6,19 +6,8 @@
     :actions="footerActions"
     @close="$emit('close')"
   >
-    <FormField v-if="!report" id="stock-import-file" :label="$t('stock.import_select_file')">
-      <div class="flex ai-ct wrap gap-3">
-        <BasicButton @click="$refs.fileInput.click()">{{ $t("stock.import_choose_file") }}</BasicButton>
-        <span class="fs-300 t-secondary">{{ selectedFile?.name || $t("stock.import_no_file") }}</span>
-      </div>
-      <input
-        id="stock-import-file"
-        ref="fileInput"
-        type="file"
-        accept=".csv"
-        hidden
-        @change="onFileSelect"
-      />
+    <FormField v-if="!report" :label="$t('stock.import_select_file')">
+      <ImportChooseFile :file-name="selectedFile?.name" @select="onFileSelect" />
     </FormField>
 
     <div v-else class="flex fd-col gap-2">
@@ -51,9 +40,11 @@
 import { useNotifyStore } from "@/stores/notify"
 import { POST_ImportCSV } from "@/api/stock/api"
 import { extractApiMessage } from "@/composables/useFormErrors"
+import ImportChooseFile from "./ImportChooseFile.vue"
 
 export default {
   name: "ImportCSVModal",
+  components: { ImportChooseFile },
   props: {
     warehouseCode: { type: String, required: true },
   },
@@ -91,8 +82,8 @@ export default {
     },
   },
   methods: {
-    onFileSelect(event) {
-      this.selectedFile = event.target.files[0] || null
+    onFileSelect(file) {
+      this.selectedFile = file
     },
     async upload() {
       if (!this.selectedFile) return
