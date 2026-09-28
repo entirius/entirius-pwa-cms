@@ -191,6 +191,7 @@ import { Table } from "@tiptap/extension-table";
 import TableRow from "@tiptap/extension-table-row";
 import TableCell from "@tiptap/extension-table-cell";
 import TableHeader from "@tiptap/extension-table-header";
+import { useControlAttrs } from "@/boots/FormField/useControlAttrs";
 
 // Defined at module level — created once, not on every component mount
 const FaqTooltip = Mark.create({
@@ -267,6 +268,16 @@ export default {
     EditorContent,
   },
   setup(props, { emit }) {
+    // FormField contract (docs/ui-components.md § P3 inputs): the editable ProseMirror node is not a
+    // `for`-labelable element, so its accessible name/description are set directly via editorProps.attributes.
+    const { field, attrs: fieldAttrs } = useControlAttrs();
+    const editorAttributes = computed(() => {
+      const attrs = { id: fieldAttrs.value.id };
+      if (fieldAttrs.value["aria-describedby"]) attrs["aria-describedby"] = fieldAttrs.value["aria-describedby"];
+      if (field.labelId.value) attrs["aria-labelledby"] = field.labelId.value;
+      return attrs;
+    });
+
     // Munin — FAQ module check
     const muninStore = useMuninStore();
     const faqEnabled = computed(() => muninStore.isPanelEnabled("faq"));
@@ -367,31 +378,41 @@ export default {
           ]
         : [];
 
+    function transformPastedHTML(html) {
+      const div = document.createElement("div");
+      div.innerHTML = html;
+      div.querySelectorAll("[style]").forEach((el) => {
+        el.style.color = "";
+        el.style.fontFamily = "";
+        el.style.fontSize = "";
+        el.style.fontWeight = "";
+        el.style.backgroundColor = "";
+        el.style.lineHeight = "";
+        el.style.letterSpacing = "";
+        if (!el.getAttribute("style")?.trim()) el.removeAttribute("style");
+      });
+      return div.innerHTML;
+    }
+    const buildEditorProps = () => ({
+      transformPastedHTML,
+      attributes: editorAttributes.value,
+    });
+
     // Initialize editor with TipTap's official useEditor hook
     const editor = useEditor({
       content: props.modelValue || props.body || props.placeholder,
       autofocus: false,
       editable: true,
-      editorProps: {
-        transformPastedHTML(html) {
-          const div = document.createElement("div");
-          div.innerHTML = html;
-          div.querySelectorAll("[style]").forEach((el) => {
-            el.style.color = "";
-            el.style.fontFamily = "";
-            el.style.fontSize = "";
-            el.style.fontWeight = "";
-            el.style.backgroundColor = "";
-            el.style.lineHeight = "";
-            el.style.letterSpacing = "";
-            if (!el.getAttribute("style")?.trim()) el.removeAttribute("style");
-          });
-          return div.innerHTML;
-        },
-      },
+      editorProps: buildEditorProps(),
       extensions: [...baseExtensions, ...tableExtensions],
       onUpdate: handleEditorUpdate,
       onBlur: handleEditorBlur,
+    });
+
+    // The field's id/description/label can change after mount (an error appears, a label is added); keep the
+    // editable node's accessible name/description in sync.
+    watch(editorAttributes, () => {
+      editor.value?.setOptions({ editorProps: buildEditorProps() });
     });
 
     // FAQ Tooltip methods

@@ -12,10 +12,12 @@ import BasicSwitch from "@/boots/BasicSwitch/index.vue";
 import SegmentedControl from "@/boots/SegmentedControl/index.vue";
 import ColorInput from "@/boots/ColorInput/index.vue";
 import BasicDatePicker from "@/boots/BasicDatePicker/index.vue";
+import BasicWysiwyg from "@/boots/BasicWysiwyg/index.vue";
 
 const flatpickrInstance = { destroy: vi.fn(), setDate: vi.fn(), input: { value: "" } };
 const flatpickr = vi.fn(() => flatpickrInstance);
 vi.mock("flatpickr", () => ({ default: (...args) => flatpickr(...args) }));
+vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isPanelEnabled: () => false }) }));
 
 const GLOBAL = { stubs: { FormField: false, BasicInput: false, BasicTooltip: true }, directives: { out: {} } };
 
@@ -352,5 +354,37 @@ describe("BasicDatePicker", () => {
     model.value = "2026-02-02";
     await new Promise((resolve) => setTimeout(resolve));
     expect(flatpickrInstance.setDate).toHaveBeenCalledWith("2026-02-02", false);
+  });
+});
+
+describe("BasicWysiwyg", () => {
+  // The ProseMirror editable node is mounted async (EditorContent moves the DOM in on nextTick).
+  const settle = () => new Promise((resolve) => setTimeout(resolve, 50));
+
+  it("stands alone outside a FormField: own id, nothing described or labelled", async () => {
+    const wrapper = mount(BasicWysiwyg, { global: GLOBAL });
+    await settle();
+    const editable = wrapper.find(".ProseMirror");
+    expect(editable.attributes("id")).toBeTruthy();
+    expect(editable.attributes("aria-describedby")).toBeUndefined();
+    expect(editable.attributes("aria-labelledby")).toBeUndefined();
+  });
+
+  it("reads the FormField contract: the editable node carries the field's id, label and description", async () => {
+    const wrapper = inField(BasicWysiwyg, { label: "Body", description: "Shown in the store" });
+    await settle();
+    const editable = wrapper.find(".ProseMirror");
+    const label = wrapper.find("label.form-field__label");
+    const hint = wrapper.find(".form-field__desc");
+    expect(editable.attributes("id")).toBe(label.attributes("for"));
+    expect(editable.attributes("aria-labelledby")).toBe(label.attributes("id"));
+    expect(editable.attributes("aria-describedby")).toBe(hint.attributes("id"));
+  });
+
+  it("describes with the error instead of the hint once one appears", async () => {
+    const wrapper = inField(BasicWysiwyg, { label: "Body", description: "Hint", error: "Required" });
+    await settle();
+    const error = wrapper.find(".form-field__error");
+    expect(wrapper.find(".ProseMirror").attributes("aria-describedby")).toBe(error.attributes("id"));
   });
 });

@@ -59,6 +59,9 @@
       <CatalogueCell id="action-bar-overflow-default" label="6 actions wrap, primary stays last">
         <ActionBar :actions="manyActions" />
       </CatalogueCell>
+      <CatalogueCell id="action-bar-danger-utility-default" label="danger icon utility · secondary · primary">
+        <ActionBar :actions="dangerUtilityActions" />
+      </CatalogueCell>
     </div>
 
     <h3 id="floating-actions" class="fs-500 mb-4">FloatingActions</h3>
@@ -155,6 +158,11 @@ const manyActions = [
   ...pageActions,
   { key: "preview", label: "Podgląd", role: "utility", icon: "preview", onClick: noop },
   { key: "delete", label: "Usuń stronę", role: "danger", onClick: noop },
+];
+const dangerUtilityActions = [
+  saveAction,
+  { key: "draft", label: "Zapisz szkic", role: "secondary", icon: "saveDraft", onClick: noop },
+  { key: "delete", label: "Usuń stronę", role: "utility", icon: "delete", variant: "danger", onClick: noop },
 ];
 
 const fabActions = [

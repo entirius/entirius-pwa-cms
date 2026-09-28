@@ -3,7 +3,7 @@
     <slot name="header" />
     <div v-if="$slots.toolbar" class="page-layout__toolbar"><slot name="toolbar" /></div>
     <div class="page-layout__body"><slot /></div>
-    <div v-if="$slots.footer" class="page-layout__footer"><slot name="footer" /></div>
+    <div v-if="hasFooter" class="page-layout__footer"><slot name="footer" /></div>
   </div>
 </template>
 
@@ -13,9 +13,17 @@
 // row), `default` (the content), `footer` (a list's Pagination, pinned to the bottom edge while the body scrolls).
 // A sticky PageHeader pins inside this scroll body. `roomy` keeps the desktop rhythm on a phone (40 top, 32 below
 // the header, the 30 px title): the Figma P5 frames (Home, content list, gallery).
+import { computed, useSlots } from "vue";
+import { hasSlotContent } from "@/composables/useSlotContent";
+
 defineProps({
   roomy: { type: Boolean, default: false },
 });
+
+const slots = useSlots();
+// A footer slot can render nothing (e.g. `<Pagination v-if="pages > 1" />` on one page): a strip with no content
+// would still show. Only real vnodes (not a v-if's Comment placeholder or an empty Fragment) count as content.
+const hasFooter = computed(() => hasSlotContent(slots.footer?.()));
 </script>
 
 <style lang="scss" scoped>
