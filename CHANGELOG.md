@@ -244,14 +244,19 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- P5 wave-1 close (plan 30): cards no longer add a second 16 px gap under children that carry their own margin (auth,
+  e-mail, FAQ, PIM detail cards); the PIM lists, enrichment tasks and spawn rules keep their pagination visible at
+  the bottom edge while the list scrolls; the content-list FAB checks each type's document limit against that type's
+  own documents; the gallery keeps the upload dialog, the file, alt and tags after a failed upload, clears the new
+  tag field after a tag is added, stops logging upload payloads and shows 4 fixed tile columns (2 on a phone); a
+  gallery tile's hidden actions cannot be clicked, and Tab reaches them through the tile; the FAB sits 24 px from
+  the corner on desktop and above the tab bar up to 1023 px on every page.
 - Handy-kit image library and upload preview borders used removed `--clr-gray-*` tokens and drew nothing; they use
   the border tokens again.
 - Pages content list: one delete confirmation for the whole list (every content-type group rendered its own copy, so
   a delete opened one dialog per group).
 - Thin scrollbars apply to mouse screens only: on a touch screen the styled scrollbar widened the layout viewport past
   the screen and moved every fixed element (FAB, pill, toasts) 6 / 11 px off its corner.
-- The thin custom scrollbar applies to mouse screens only: on a touch screen it widened the layout viewport past the
-  screen (393 → 399 px), so fixed elements such as the FAB sat off their corner.
 
 - P4 close (plan 24): closing the configuration-health panel with Esc returns focus to a named control even where the
   header shows no health icon (a phone; desktop with every check green); the Points, FAQ, Agreements, consent-person

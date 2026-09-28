@@ -146,7 +146,8 @@ and one meaning per glyph (unit test). A new meaning adds its glyph to `fa-icons
   disabled?, loading?, testid? }]`, `role` `utility` (an IconButton, `icon` required) · `secondary` · `danger` ·
   `primary` (one at most, a second warns in dev); extra controls go into the default slot, already in order.
   Right-aligned, gap 12 px (8 px on a phone); below 768 px it takes its own row: the label „Akcje” above the actions, left-aligned (Figma S7).
-- **`FloatingActions`** — FAB 44 px `accent-fill`, 16 px inset, 16 px above the bottom bar, `data-fid="fab"`;
+- **`FloatingActions`** — FAB 44 px `accent-fill`, 24 px inset from 1024 px up; below it 16 px inset and 16 px above
+  the tab bar, `data-fid="fab"`;
   `actions[].icon` and `pill.icon` take meanings (other names still pass through until the sweeps). `pill` =
   `{ icon, label, handler, testid? }`: an important action with a visible label left of the FAB (R7). `open`
   starts with the speed-dial open.
@@ -218,16 +219,19 @@ Catalogue: `#overlays` (`#basic-modal`, `#confirm-dialog`, `#side-drawer`, `#tra
   panel as `<div role="tabpanel" :id="…-panel-<value>" :aria-labelledby="…-tab-<value>">`. Empty `options` render
   nothing.
 - **`BasicCard`** — the card of `.page-card` (border-subtle, `--radius-3xl`, 24 px / 16 px below tablet): `title`
-  (section title, Inter 600 16 px), `actions` slot (an ActionBar, right of the title), default slot.
+  (section title, Inter 600 16 px), `actions` slot (an ActionBar, right of the title), default slot; `gap` puts
+  16 px between the children (off by default: children with their own `mb-*` keep their spacing).
 - **`PanelCard`** — Home panel tile: `icon` (the panel's glyph from `configs/access.js`), `title` (Lexend Deca),
   `description`, `locked` + `lockedText` (opacity .5, lock, not focusable, no click), emits `click`; `surface-card`
   gradient, `--radius-3xl`, padding and gap 20 px, a plain 24 px icon, title and description 12 px apart; root class
   `panel-card` (e2e hook). The page sets `data-fid="panel-card"` on the one card Figma measures (Home: the first).
 - **`MediaTile`** — media grid tile, 188 × 276 (150 × 240 below tablet), `surface-raised`: `src` (none = image
-  placeholder; contained, not cropped), `alt`, `caption` (truncated, full text in `title`), `selected` (accent
+  placeholder; the image fills the box, `object-fit: cover`), `alt`, `caption` (truncated, full text in `title`), `selected` (accent
   border), `actions` slot (IconButtons `sm`), `overlay` slot (value chips, `Tag`, over the bottom of the image).
-  Actions and overlay show on hover, keyboard focus inside the tile, when selected and always on a touch screen.
-  The page lays the tiles out (Gallery: `repeat(auto-fill, <tile width>)` in a bordered container).
+  Actions and overlay show on hover, keyboard focus inside the tile, when selected and always on a touch screen;
+  hidden they are `visibility: hidden`, and a tile with actions is focusable itself (`role="group"`, named by
+  caption or alt), so Tab reveals them. The page lays the tiles out (Gallery: fixed tracks, 4 × 188 on desktop,
+  2 below 1024 px, in a bordered container).
 - **`Loader`** — `size` 32 · 64 (64 by default), `block` centres it in a content area, `overlay` veils the
   screen (`overlay-loading`, 64 px rings, fades in and out), `overlay contained` veils the nearest
   positioned ancestor; `role="status"` with a visually hidden „Ładowanie…”.
@@ -248,7 +252,9 @@ Catalogue: `#display` (`#status-badge`, `#count-badge`, `#tag`, `#basic-tabs`, `
 
 - **`PageLayout`** — a page's content region: no border, no card (R4), padding 40 top / 80 sides (20 below tablet),
   one scroll body (`h-100 ovy-auto`). Slots `header` (a PageHeader), `toolbar` (the filters row), default (the
-  content). It replaces the bordered page container when P5 adopts it (plan 25).
+  content), `footer` (a list's Pagination, pinned to the bottom edge while the body scrolls). `roomy` keeps the
+  desktop rhythm on a phone (40 top, 32 gap, the 30 px PageHeader title; Home, content list, Gallery). It replaces
+  the bordered page container (plan 25).
 - **`PageHeader`** — `title` is the page's only `<h1>` (`.page-title`: Lexend Deca 30/400, 20 below tablet) in the
   title row (back, H1, meta: `data-fid="page-title"`, Figma's "Heading" frame); `overline` (Inter 13/500 uppercase, Home); `crumbs` `[{ label, to? }]` 24 px above the
   title row — omitted = the crumbs the shell provides (none without a shell), `[]` = none; `back` (a route location
