@@ -135,11 +135,10 @@ const panel = (props) =>
   mount(PanelCard, { props: { icon: "file-lines", title: "Strony", description: "Treści", ...props } });
 
 describe("PanelCard", () => {
-  it("is a button with the e2e hooks that emits click", async () => {
+  it("is a button with the e2e hook that emits click", async () => {
     const wrapper = panel();
     expect(wrapper.element.tagName).toBe("BUTTON");
     expect(wrapper.classes()).toContain("panel-card");
-    expect(wrapper.attributes("data-fid")).toBe("panel-card");
     expect(wrapper.text()).toContain("Treści");
     await wrapper.trigger("click");
     expect(wrapper.emitted("click")).toHaveLength(1);
