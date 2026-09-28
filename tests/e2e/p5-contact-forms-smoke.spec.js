@@ -85,10 +85,13 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
       await openPage(page, '/forms/bookings');
 
       await expect(page.getByRole('heading', { level: 1 })).toHaveText(either((t) => t.cf.bookings));
-      await expect(page.getByRole('group', { name: either((t) => t.cf.lead_status) })).toBeVisible();
-      const from = page.getByRole('button', { name: either((t) => t.cf.date_from) });
+      // A phone keeps the filter groups in MobileFilterPanel: open it first.
+      const filters = page.getByRole('button', { name: either((t) => t.builder.filters) });
+      if (await filters.isVisible()) await filters.click();
+      await expect(page.getByRole('group', { name: either((t) => t.cf.lead_status) }).filter({ visible: true })).toBeVisible();
+      const from = page.getByRole('button', { name: either((t) => t.cf.date_from) }).filter({ visible: true });
       await from.click();
-      await expect(page.locator('.basic-date-picker .flatpickr-calendar').first()).toBeVisible();
+      await expect(page.locator('.basic-date-picker .flatpickr-calendar').filter({ visible: true }).first()).toBeVisible();
       await from.click();
 
       if (await openFirstRow(page, /\/forms\/bookings\/[^/]+$/)) {

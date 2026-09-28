@@ -37,11 +37,14 @@ async function expectNoEmptyErrorUI(page) {
   }
 }
 
+// Only toasts that are not already leaving: a leaving toast never settles, so a click on it waits out the test.
 async function dismissToasts(page) {
-  while (await page.locator('.notification__close').count()) {
-    await page.locator('.notification__close').first().click().catch(() => {});
+  const open = page.locator('.notification:not(.alert-leave-active) .notification__close');
+  while (await open.count()) {
+    await open.first().click().catch(() => {});
     await page.waitForTimeout(150);
   }
+  await expect(page.locator('.notification')).toHaveCount(0);
 }
 
 async function apiToken(page) {

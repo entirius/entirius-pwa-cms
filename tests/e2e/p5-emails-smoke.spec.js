@@ -38,15 +38,6 @@ async function openFirstCard(page, testid, url) {
 }
 
 // A card opens by pointer anywhere on it, not only on its title: click its bottom-right corner.
-async function clickFirstCardBody(page, testid, url) {
-  const card = page.locator('.email-card', { has: page.getByTestId(testid) }).first();
-  await expect(card).toBeVisible({ timeout: 10000 });
-  const box = await card.boundingBox();
-  await card.click({ position: { x: box.width - 12, y: box.height - 12 } });
-  await page.waitForURL(url);
-  await page.waitForLoadState('networkidle');
-}
-
 async function expectDetail(page) {
   await expect(page.getByRole('heading', { level: 1 })).not.toBeEmpty();
   await expect(page.getByTestId('emails-save')).toHaveText(either((t) => t.common.save));
@@ -78,7 +69,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
       const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
       await openDashboard(page);
 
-      await clickFirstCardBody(page, 'emails-type-card', /\/emails\/templates\/[^/]+$/);
+      await openFirstCard(page, 'emails-type-card', /\/emails\/templates\/[^/]+$/);
       await expect(page.getByRole('heading', { level: 1 })).not.toBeEmpty();
 
       await openFirstCard(page, 'emails-template-card', /\/emails\/templates\/[^/]+\/[^/]+$/);

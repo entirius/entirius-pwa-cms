@@ -42,6 +42,9 @@ function createErrorCollector(page, { whitelist = [], ignoreNetwork = () => fals
   page.on('console', (msg) => {
     if (msg.type() === 'error') {
       const text = msg.text();
+      // The browser logs a failed request once more as "Failed to load resource: … status of N"
+      const status = Number(text.match(/status of (\d+)/)?.[1]);
+      if (status && ignoreNetwork({ status, url: msg.location()?.url || '' })) return;
       if (!ignorePatterns.some((p) => text.includes(p))) {
         errors.console.push(text);
       }
