@@ -1,6 +1,9 @@
 <template>
+  <PageLayout>
+    <template #header>
+      <PageHeader :title="$t('translation.jobs')" />
+    </template>
   <div class="tj-dashboard">
-    <PageHeader class="mb-8" :title="$t('translation.jobs')" />
 
     <!-- Stats Cards -->
     <div class="tj-stats">
@@ -99,6 +102,7 @@
       </template>
     </DataTable>
   </div>
+  </PageLayout>
 </template>
 
 <script>

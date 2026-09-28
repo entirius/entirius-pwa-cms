@@ -6,11 +6,7 @@
       </div>
       <div id="translation-toolbar-right" class="panel-toolbar__actions flex ai-ct gap-5"></div>
     </div>
-    <div class="page-pad fs-300 t-body h-100 ov-h">
-      <div class="page-card h-100 ovy-auto">
-        <router-view />
-      </div>
-    </div>
+    <router-view class="fs-300 t-body" />
   </div>
 </template>
 
