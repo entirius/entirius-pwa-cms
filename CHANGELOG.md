@@ -122,6 +122,13 @@ All notable changes to this project will be documented in this file.
   boots; the spawn-rule edit actions are an `ActionBar` in R5 order (delete · run · save) shown after the rule
   loaded; Docs sits in `PageLayout` with a „Dokumentacja” `PageHeader` and its example cards show key and value.
   Read-only smoke `tests/e2e/p5-pilot-b-smoke.spec.js`.
+- P5 Stock (plan 38): the stock screen sits in the page frame — a „Stocks” `PageHeader` whose actions row holds the
+  warehouse picker (select, source badge, last sync), the unsaved `StatusBadge` and an `ActionBar` (Import CSV ·
+  Save All); the Stock panel toolbar and its teleport target are gone. The warehouse table and the product's stock
+  tab in PIM are `DataTable`s with a labelled `NumberInput` per editable row (a phone hides the dispatch column);
+  the SKU filters are an inline chip row and the pager sits in the page footer. The CSV import and add-product
+  dialogs use `BasicModal` footer actions; the import picks its file through a `FormField` with a „Choose file”
+  button, and its labels are translated. Smoke spec `tests/e2e/p5-stock-smoke.spec.js`.
 - P5 Agreements (plan 36): the agreement form is `BasicCard` sections with a `.form-grid` of `FormField`s (API field
   errors shown per field); Save and the danger Delete moved from the panel toolbar into the PageHeader `ActionBar`,
   shown after the load (a failed load shows an `EmptyState`), and the Agreements toolbar is gone. The versions and
