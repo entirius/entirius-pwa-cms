@@ -20,7 +20,7 @@
     <Loader block v-if="loading" />
 
     <template v-else-if="voucher">
-      <div class="page-card mb-10">
+      <BasicCard class="mb-10">
         <div class="flex ai-ct jc-sb mb-10">
           <StatusBadge
             :label="statusLabel(voucher.status)"
@@ -90,9 +90,9 @@
             <dd>{{ voucher.admin_notes }}</dd>
           </div>
         </dl>
-      </div>
+      </BasicCard>
 
-      <div class="page-card">
+      <BasicCard>
         <SegmentedControl
           v-model="historyTab"
           :options="historyTabs"
@@ -142,7 +142,7 @@
             formatDateTime(row.created_at)
           }}</template>
         </DataTable>
-      </div>
+      </BasicCard>
     </template>
 
     <SideDrawer
