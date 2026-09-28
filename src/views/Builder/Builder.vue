@@ -1,8 +1,38 @@
 <template>
-  <div
-    class="fs-300 t-body fg-1 flex-column relative page-pad-x pt-5 pb-30 ovy-auto builder-wrap"
-    :id="`container-${componentId}`"
-  >
+  <PageLayout class="builder-wrap fs-300 t-body">
+    <template #header>
+      <PageHeader
+        :title="custom_doc_name || $t('builder.set_name')"
+        :back="`/pages/${content_type}`"
+        sticky
+      >
+        <template #meta>
+          <ChannelMultiSelect
+            v-if="!loading"
+            v-model="channels"
+            :channels="available_channels"
+            :label="$t('builder.channels')"
+            :all-label="$t('builder.all')"
+          />
+          <HomeVariantSwitcher
+            v-if="!loading && isHomeDoc"
+            ref="homeVariantSwitcher"
+            :content-type="content_type"
+            :type="type"
+            :current-uid="uid"
+            :current-channel="channels && channels.length === 1 ? channels[0] : null"
+            :available-channels="available_channels"
+            @switch="onHomeVariantSwitch"
+          />
+        </template>
+        <template #actions>
+          <div v-if="!loading" class="builder-actions flex ai-ct jc-fe wrap gap-3">
+            <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
+            <ActionBar :actions="editorActions" />
+          </div>
+        </template>
+      </PageHeader>
+    </template>
     <ConfirmDialog
       tone="danger"
       :open="confirmation_modal"
@@ -77,116 +107,11 @@
         </FormField>
       </template>
     </RenameModal>
-    <!-- Left toolbar: back button, doc name, access level -->
-    <Teleport to="#builder-toolbar-left" defer>
-      <IconButton
-        icon="back"
-        :label="$t('common.back')"
-        @click="$router.push(`/pages/${content_type}`)"
-      />
-      <div v-if="!loading" class="builder-toolbar-name">
-        <span class="fs-200 t-muted">{{ $t("builder.doc_name") }}</span>
-        <span class="fs-300 fw-600 t-body">
-          {{ custom_doc_name || $t("builder.set_name") }}
-        </span>
-      </div>
-      <ChannelMultiSelect
-        v-if="!loading"
-        v-model="channels"
-        :channels="available_channels"
-        :label="$t('builder.channels')"
-        :all-label="$t('builder.all')"
-      />
-      <HomeVariantSwitcher
-        v-if="!loading && isHomeDoc"
-        ref="homeVariantSwitcher"
-        :content-type="content_type"
-        :type="type"
-        :current-uid="uid"
-        :current-channel="channels && channels.length === 1 ? channels[0] : null"
-        :available-channels="available_channels"
-        @switch="onHomeVariantSwitch"
-      />
-    </Teleport>
 
-    <!-- Right toolbar: unsaved badge, save, publish, duplicate, settings, advanced -->
-    <Teleport to="#builder-toolbar-right" defer>
-      <template v-if="!loading">
-        <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
-        <button
-          class="builder-tb-btn builder-tb-btn--secondary pointer"
-          @click="saveDraft"
-        >
-          <FontAwesomeIcon :icon="$icons.saveDraft" />
-          <span class="builder-tb-btn__label">{{
-            uid ? $t("builder.save_draw") : $t("builder.post_draw")
-          }}</span>
-        </button>
-        <button
-          class="builder-tb-btn builder-tb-btn--primary pointer"
-          :class="{ 'builder-tb-btn--disabled': !uid }"
-          :disabled="!uid"
-          @click="saveAndPublish"
-        >
-          <FontAwesomeIcon :icon="$icons.publish" />
-          <span class="builder-tb-btn__label">{{
-            $t("builder.publish_document")
-          }}</span>
-        </button>
-        <button
-          class="builder-toolbar-icon pointer"
-          :title="$t('builder.copy_document')"
-          @click="rename_modal = true"
-        >
-          <FontAwesomeIcon :icon="$icons.duplicate" />
-        </button>
-        <SubscriberSetter
-          v-if="has_options('document_configs')"
-          @on_AssetPass="
-            ({ reset, ...config }) => {
-              document_configs = config;
-            }
-          "
-          :handyType="{
-            id: 'configs-kit',
-            label: 'Document configurator',
-          }"
-          :options="{ config_type: 'document_configs' }"
-          :defaults="{
-            doc_type: type,
-            ...document_configs,
-            __channels: channels,
-          }"
-          class="builder-toolbar-icon pointer"
-          :title="$t('builder.document_options')"
-        >
-          <FontAwesomeIcon :icon="$icons.edit" />
-        </SubscriberSetter>
-        <NoticeMe
-          :active="
-            !advanced_options
-              ? !(Boolean(routes && routes.length) && Boolean(custom_doc_name))
-              : false
-          "
-          :stroke_color_class="'t-secondary'"
-          class="flex jc-ct ai-ct"
-        >
-          <button
-            @click="advanced_options = !advanced_options"
-            class="builder-toolbar-icon pointer"
-            :class="{ 't-negative': advanced_options }"
-            :title="$t('builder.advanced')"
-          >
-            <FontAwesomeIcon :icon="advanced_options ? $icons.close : $icons.settings" />
-          </button>
-        </NoticeMe>
-      </template>
-    </Teleport>
-
-    <!-- Advanced options row (collapsible, below toolbar) -->
+    <!-- Advanced options row (collapsible, below the header) -->
     <div
       v-if="advanced_options && !loading"
-      class="builder-advanced-row flex ai-ct gap-5 bg-base"
+      class="builder-advanced-row flex ai-ct gap-2"
     >
       <NoticeMe
         :stroke_color_class="'t-secondary'"
@@ -210,19 +135,14 @@
         <NoticeMe
           :active="!routes || !routes.length"
           :stroke_color_class="'t-secondary'"
-          class="pointer"
         >
-          <div
-            class="builder-adv-btn pointer"
-            :class="{ 'builder-adv-btn--disabled': isHomeDoc }"
-          >
-            <FontAwesomeIcon :icon="$icons.edit" />
+          <BasicButton :stop="false" :disabled="isHomeDoc">
             {{
               !routes || !routes.length
                 ? $t("builder.set_url")
                 : $t("builder.edit_url")
             }}
-          </div>
+          </BasicButton>
         </NoticeMe>
       </SubscriberSetter>
       <SubscriberSetter
@@ -230,20 +150,16 @@
         @on_AssetPass="meta = $event"
         :handyType="{ id: 'meta-kit', label: $t('builder.meta') }"
         :defaults="{ meta }"
-        class="builder-adv-btn pointer"
       >
-        <FontAwesomeIcon :icon="$icons.info" />
-        {{ $t("builder.meta") }}
+        <BasicButton :stop="false">{{ $t("builder.meta") }}</BasicButton>
       </SubscriberSetter>
       <SubscriberSetter
         v-if="content_type !== 'layout-extender'"
         @on_AssetPass="category = $event"
         :handyType="{ id: 'categories-kit', label: $t('builder.categories') }"
         :defaults="{ category }"
-        class="builder-adv-btn pointer"
       >
-        <FontAwesomeIcon :icon="$icons.tag" />
-        {{ $t("builder.categories") }}
+        <BasicButton :stop="false">{{ $t("builder.categories") }}</BasicButton>
       </SubscriberSetter>
     </div>
 
@@ -267,7 +183,7 @@
         />
       </div>
       <div v-if="authorPanelOpen" class="builder-author-panel__body">
-        <div class="flex-1" style="min-width: 240px">
+        <div class="builder-author-panel__col flex-1">
           <AuthorPicker
             v-model="authors"
             :label="$t('authors.primary')"
@@ -276,7 +192,7 @@
             :placeholder-empty="$t('authors.no_authors')"
           />
         </div>
-        <div class="flex-1" style="min-width: 240px">
+        <div class="builder-author-panel__col flex-1">
           <AuthorPicker
             v-model="co_authors"
             :label="$t('authors.co_authors')"
@@ -299,8 +215,27 @@
       :discard-label="$t('unsaved.discard')"
     />
 
-    <!-- Hidden SubscriberSetters triggered by FAB -->
+    <!-- Hidden SubscriberSetters triggered by the ActionBar and the FAB -->
     <div style="display: none">
+      <SubscriberSetter
+        v-if="has_options('document_configs')"
+        ref="documentConfigSetter"
+        @on_AssetPass="
+          ({ reset, ...config }) => {
+            document_configs = config;
+          }
+        "
+        :handyType="{
+          id: 'configs-kit',
+          label: 'Document configurator',
+        }"
+        :options="{ config_type: 'document_configs' }"
+        :defaults="{
+          doc_type: type,
+          ...document_configs,
+          __channels: channels,
+        }"
+      />
       <SubscriberSetter
         ref="newSectionSetter"
         @on_AssetPass="set_section"
@@ -325,77 +260,54 @@
       />
     </div>
 
-    <div v-if="!handyKitOpen" class="builder-fab-stack">
-      <div class="builder-fab-aux">
-        <button
-          v-if="isScrolled"
-          class="builder-fab-aux__btn pointer"
-          @click="scroll_into(`container-${componentId}`)"
-          :aria-label="$t('builder.scroll_top')"
-        >
-          <FontAwesomeIcon :icon="$icons.collapse" />
-        </button>
-      </div>
-      <FloatingActions :actions="fabActions" :pill="orderPill" />
-    </div>
+    <FloatingActions
+      v-if="!handyKitOpen"
+      class="builder-fab"
+      :actions="fabActions"
+      :pill="orderPill"
+    />
 
-    <nav
-      class="sections-options-menu flex ai-ct jc-fe pv-5 pt-5 pb-5 pl-12 pr-12 rounded bb-subtle bg-base mb-16"
+    <div
+      class="builder-blog-bar flex ai-ct jc-fe gap-2 mb-16"
       v-if="type === 'blog-post'"
     >
-      <div class="inline-flex ai-ct gap-2 mr-5">
-        <BasicTooltip
-          class="t-accent fs-200 relative"
-          :text="$t('builder.blog_repr_tip')"
+      <BasicTooltip :text="$t('builder.blog_repr_tip')">
+        <SubscriberSetter
+          @on_AssetPass="blog_extension = $event"
+          :handyType="{ id: 'configs-kit', label: 'Blog tile repr.' }"
+          :options="{
+            config_type: 'tile_configs',
+            prevent_configuration: ['core_type'],
+          }"
+          :defaults="
+            blog_extension
+              ? { doc_type: type, ...blog_extension, __channels: channels }
+              : { doc_type: type, core_type: 'blog-extension-tile', __channels: channels }
+          "
         >
-          <SubscriberSetter
-            @on_AssetPass="blog_extension = $event"
-            :handyType="{ id: 'configs-kit', label: 'Blog tile repr.' }"
-            :options="{
-              config_type: 'tile_configs',
-              prevent_configuration: ['core_type'],
-            }"
-            :defaults="
-              blog_extension
-                ? { doc_type: type, ...blog_extension, __channels: channels }
-                : { doc_type: type, core_type: 'blog-extension-tile', __channels: channels }
-            "
+          <NoticeMe
+            :active="!blog_extension"
+            :stroke_color_class="'t-warning'"
           >
-            <NoticeMe
-              :active="!blog_extension"
-              :stroke_color_class="'t-warning'"
+            <BasicButton
+              size="sm"
+              :icon="blog_extension ? null : 'warning'"
+              :stop="false"
             >
-              <div
-                class="flex ai-ct gap-2 p-1 fs-200 pointer rounded"
-                :class="[
-                  !blog_extension
-                    ? 'p-1 bg-hover t-warning  bg-inverse-hover'
-                    : 't-secondary bg-hover b-default',
-                ]"
-              >
-                <span
-                  class="relative"
-                  style="width: 15px; height: 15px"
-                  v-if="!blog_extension"
-                >
-                  <FontAwesomeIcon
-                    :icon="$icons.warning"
-                    :class="{
-                      'pulse-animation t-warning': !blog_extension,
-                    }"
-                  />
-                </span>
-                <span> {{ $t("builder.blog_repr_tile") }} </span>
-                <span v-if="blog_extension" @click.stop="blog_extension = null">
-                  <FontAwesomeIcon :icon="$icons.close" />
-                </span>
-              </div>
-            </NoticeMe>
-          </SubscriberSetter>
-        </BasicTooltip>
-      </div>
-    </nav>
-    <div class="grid grid-col-12">
+              {{ $t("builder.blog_repr_tile") }}
+            </BasicButton>
+          </NoticeMe>
+        </SubscriberSetter>
+      </BasicTooltip>
+      <IconButton
+        v-if="blog_extension"
+        icon="close"
+        size="sm"
+        :label="`${$t('common.delete')}: ${$t('builder.blog_repr_tile')}`"
+        @click="blog_extension = null"
+      />
+    </div>
+    <div class="grid grid-col-12 pb-30">
       <div class="grid gap-10 gc-s-1 gc-e-13">
         <EmptyState
           v-if="!loading && !sections_order.length"
@@ -434,24 +346,21 @@
                     </p>
                     <p
                       class="section-uid fs-200 t-muted pointer"
+                      role="button"
+                      tabindex="0"
                       @click="copyToClipboard(s_uid)"
+                      @keydown.enter="copyToClipboard(s_uid)"
                       :title="s_uid"
                     >
                       {{ s_uid.substring(0, 8) }}
                     </p>
                   </div>
-                  <div class="section-actions flex gap-1 as-s ai-ct">
-                    <BasicTooltip
-                      class="relative"
-                      :text="sectionConfigSummary(s_uid)"
-                    >
-                      <button
-                        class="section-icon-btn pointer"
-                        :aria-label="$t('builder.setted_config')"
-                      >
-                        <FontAwesomeIcon :icon="$icons.preview" />
-                      </button>
-                    </BasicTooltip>
+                  <div class="section-actions flex gap-1 as-s ai-ct" data-testid="builder-section-actions">
+                    <IconButton
+                      variant="outline"
+                      icon="preview"
+                      :label="`${$t('builder.setted_config')}: ${sectionConfigSummary(s_uid)}`"
+                    />
                     <SubscriberSetter
                       @onSet="edited_section_uid = s_uid"
                       @on_AssetPass="set_section"
@@ -461,13 +370,13 @@
                       }"
                       :options="{ config_type: 'section_configs' }"
                       :defaults="{ ...sections[s_uid], __channels: channels }"
-                      class="section-icon-btn pointer"
                     >
-                      <FontAwesomeIcon :icon="$icons.edit" />
+                      <IconButton variant="outline" icon="edit" :label="$t('common.edit')" :stop="false" />
                     </SubscriberSetter>
-                    <button
-                      class="section-icon-btn pointer"
-                      :aria-label="$t('common.copy')"
+                    <IconButton
+                      variant="outline"
+                      icon="duplicate"
+                      :label="$t('common.copy')"
                       @click="
                         copy_elem({
                           _to: [`sections_order`, 'sections'],
@@ -475,21 +384,18 @@
                           copy: sections[s_uid],
                         })
                       "
-                    >
-                      <FontAwesomeIcon :icon="$icons.duplicate" />
-                    </button>
-                    <button
-                      class="section-icon-btn section-icon-btn--danger pointer"
-                      :aria-label="$t('common.delete')"
+                    />
+                    <IconButton
+                      variant="danger"
+                      icon="delete"
+                      :label="$t('common.delete')"
                       @click="
                         () => {
                           confirmation_modal = true;
                           section_to_delete = s_uid;
                         }
                       "
-                    >
-                      <FontAwesomeIcon :icon="$icons.delete" />
-                    </button>
+                    />
                   </div>
                 </div>
                 <div>
@@ -520,13 +426,11 @@
                         :value="sections[s_uid][prop]"
                       />
                       <div v-if="type === 'buttons'" class="flex wrap gap-1">
-                        <span
+                        <Tag
                           v-for="(link, idx) in sections[s_uid][prop]"
                           :key="idx"
-                          class="builder-btn-chip"
-                        >
-                          {{ link.link_label || link.link_url || "—" }}
-                        </span>
+                          :label="link.link_label || link.link_url || '—'"
+                        />
                       </div>
                     </div>
                   </div>
@@ -589,23 +493,15 @@
                           section_core_type: sections[s_uid]['core_type'],
                           __channels: channels,
                         }"
-                        class="section-icon-btn section-icon-btn--primary pointer"
-                        :is_disabled="
-                          !Boolean(
-                            section_options(sections[s_uid]['core_type']) ===
-                              'no_options'
-                          ) &&
-                          Boolean(
-                            tiles_order[s_uid] &&
-                              tiles_order[s_uid].length ==
-                                section_options(
-                                  sections[s_uid]['core_type'],
-                                  'max_tiles'
-                                )
-                          )
-                        "
+                        :is_disabled="isTileLimitReached(s_uid)"
                       >
-                        <FontAwesomeIcon :icon="$icons.add" />
+                        <IconButton
+                          variant="primary"
+                          icon="add"
+                          :label="$t('builder.add_tile')"
+                          :disabled="isTileLimitReached(s_uid)"
+                          :stop="false"
+                        />
                       </SubscriberSetter>
 
                       <SubscriberSetter
@@ -629,26 +525,27 @@
                             return o;
                           }, {}),
                         }"
-                        class="section-icon-btn pointer"
                       >
-                        <FontAwesomeIcon :icon="$icons.reorder" />
+                        <IconButton
+                          variant="outline"
+                          icon="reorder"
+                          :label="$t('builder.manage_tile_order')"
+                          :stop="false"
+                        />
                       </SubscriberSetter>
-                      <button
+                      <IconButton
                         v-if="tiles_order[s_uid] && tiles_order[s_uid].length"
-                        class="section-icon-btn pointer"
+                        variant="outline"
+                        icon="preview"
+                        :label="$t('builder.preview')"
+                        :pressed="section_tiles_details === s_uid"
                         @click="
                           section_tiles_details &&
                           section_tiles_details == s_uid
                             ? (section_tiles_details = null)
                             : (section_tiles_details = s_uid)
                         "
-                      >
-                        <FontAwesomeIcon
-                          :icon="
-                            section_tiles_details === s_uid ? $icons.preview : $icons.preview
-                          "
-                        />
-                      </button>
+                      />
                     </div>
                   </div>
                 </template>
@@ -689,7 +586,7 @@
                       v-for="(t_uid, index) in tiles_order[s_uid]"
                       :key="t_uid"
                     >
-                      <div v-if="tiles[t_uid] && tiles[t_uid].core_type" class="swiper-slide pointer">
+                      <div v-if="tiles[t_uid] && tiles[t_uid].core_type" class="swiper-slide">
                         <div
                           class="bg-hover t-body rounded pl-2 pr-2 pt-2 pb-2 ai-ct grid gap-1"
                         >
@@ -727,25 +624,12 @@
                             </div>
                           </div>
 
-                          <div class="flex gap-1 jc-fe mt-5">
-                            <button
-                              class="section-icon-btn pointer"
-                              :aria-label="$t('common.copy')"
-                              :disabled="
-                                !Boolean(
-                                  section_options(
-                                    sections[s_uid]['core_type']
-                                  ) === 'no_options'
-                                ) &&
-                                Boolean(
-                                  tiles_order[s_uid] &&
-                                    tiles_order[s_uid].length ==
-                                      section_options(
-                                        sections[s_uid]['core_type'],
-                                        'max_tiles'
-                                      )
-                                )
-                              "
+                          <div class="tile-actions flex gap-1 jc-fe mt-5">
+                            <IconButton
+                              variant="outline"
+                              icon="duplicate"
+                              :label="$t('common.copy')"
+                              :disabled="isTileLimitReached(s_uid)"
                               @click="
                                 copy_elem({
                                   _to: [`tiles_order:${s_uid}`, 'tiles'],
@@ -753,9 +637,7 @@
                                   copy: tiles[t_uid],
                                 })
                               "
-                            >
-                              <FontAwesomeIcon :icon="$icons.duplicate" />
-                            </button>
+                            />
                             <SubscriberSetter
                               @onSet="
                                 () => {
@@ -775,13 +657,13 @@
                                 ...tiles[t_uid],
                                 __channels: channels,
                               }"
-                              class="section-icon-btn pointer"
                             >
-                              <FontAwesomeIcon :icon="$icons.edit" />
+                              <IconButton variant="outline" icon="edit" :label="$t('common.edit')" :stop="false" />
                             </SubscriberSetter>
-                            <button
-                              class="section-icon-btn section-icon-btn--danger pointer"
-                              :aria-label="$t('common.delete')"
+                            <IconButton
+                              variant="danger"
+                              icon="delete"
+                              :label="$t('common.delete')"
                               @click="
                                 () => {
                                   tile_confirmation_modal = true;
@@ -791,9 +673,7 @@
                                   };
                                 }
                               "
-                            >
-                              <FontAwesomeIcon :icon="$icons.delete" />
-                            </button>
+                            />
                           </div>
                         </div>
                       </div>
@@ -823,7 +703,10 @@
                                 </p>
                                 <p
                                   class="fs-200 t-muted pointer mt-1"
+                                  role="button"
+                                  tabindex="0"
                                   @click="copyToClipboard(t_uid)"
+                                  @keydown.enter="copyToClipboard(t_uid)"
                                   :title="t_uid"
                                 >
                                   {{ t_uid.substring(0, 8) }}
@@ -867,37 +750,22 @@
                                 v-if="type === 'buttons'"
                                 class="flex wrap gap-1"
                               >
-                                <span
+                                <Tag
                                   v-for="(link, idx) in tiles[t_uid][prop]"
                                   :key="idx"
-                                  class="builder-btn-chip"
-                                >
-                                  {{ link.link_label || link.link_url || "—" }}
-                                </span>
+                                  :label="link.link_label || link.link_url || '—'"
+                                />
                               </div>
                             </div>
                           </template>
                         </div>
 
-                        <div class="flex jc-fe gap-1 as-fe">
-                          <button
-                            class="section-icon-btn pointer"
-                            :aria-label="$t('common.copy')"
-                            :disabled="
-                              !Boolean(
-                                section_options(
-                                  sections[s_uid]['core_type']
-                                ) === 'no_options'
-                              ) &&
-                              Boolean(
-                                tiles_order[s_uid] &&
-                                  tiles_order[s_uid].length ==
-                                    section_options(
-                                      sections[s_uid]['core_type'],
-                                      'max_tiles'
-                                    )
-                              )
-                            "
+                        <div class="tile-actions flex jc-fe gap-1 as-fe">
+                          <IconButton
+                            variant="outline"
+                            icon="duplicate"
+                            :label="$t('common.copy')"
+                            :disabled="isTileLimitReached(s_uid)"
                             @click="
                               copy_elem({
                                 _to: [`tiles_order:${s_uid}`, 'tiles'],
@@ -905,9 +773,7 @@
                                 copy: tiles[t_uid],
                               })
                             "
-                          >
-                            <FontAwesomeIcon :icon="$icons.duplicate" />
-                          </button>
+                          />
                           <SubscriberSetter
                             @onSet="
                               () => {
@@ -927,13 +793,13 @@
                               ...tiles[t_uid],
                               __channels: channels,
                             }"
-                            class="section-icon-btn pointer"
                           >
-                            <FontAwesomeIcon :icon="$icons.edit" />
+                            <IconButton variant="outline" icon="edit" :label="$t('common.edit')" :stop="false" />
                           </SubscriberSetter>
-                          <button
-                            class="section-icon-btn section-icon-btn--danger pointer"
-                            :aria-label="$t('common.delete')"
+                          <IconButton
+                            variant="danger"
+                            icon="delete"
+                            :label="$t('common.delete')"
                             @click="
                               () => {
                                 tile_confirmation_modal = true;
@@ -943,9 +809,7 @@
                                 };
                               }
                             "
-                          >
-                            <FontAwesomeIcon :icon="$icons.delete" />
-                          </button>
+                          />
                         </div>
                       </div>
                     </div>
@@ -957,7 +821,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </PageLayout>
 </template>
 
 <script>
@@ -966,7 +830,6 @@ import { useNotifyStore } from "@/stores/notify";
 import { useUserStore } from "@/stores/user";
 import { useHandyStore } from "@/stores/handy";
 import { v4 as uuidv4 } from "uuid";
-import { getCurrentInstance } from "vue";
 
 import { _METHOD_content, GET_ContentTypes } from "@/api/contentDB/api";
 import { useContentDBChannelStore } from "@/stores/contentDBChannel";
@@ -1015,9 +878,6 @@ export default {
     isHomeDoc() {
       return Array.isArray(this.routes) && this.routes.includes("home");
     },
-    componentId() {
-      return getCurrentInstance()?.uid || "builder-container";
-    },
     isSectionLimitReached() {
       return (
         !Boolean(this.section_options(this.type) === "no_options") &&
@@ -1027,6 +887,23 @@ export default {
               this.section_options(this.type, "max_sections")
         )
       );
+    },
+    // R5 order comes from the roles (ActionBar): copy · advanced · document options · draft · publish.
+    editorActions() {
+      const utility = (key, icon, label, onClick) => ({ key, role: "utility", icon, label, onClick });
+      return [
+        utility("copy", "duplicate", this.$t("builder.copy"), () => (this.rename_modal = true)),
+        utility("advanced", this.advanced_options ? "close" : "settings", this.$t("builder.advanced"), () =>
+          (this.advanced_options = !this.advanced_options)),
+        ...(this.has_options("document_configs")
+          ? [utility("document-options", "edit", this.$t("builder.document_options"), () =>
+              this.$refs.documentConfigSetter?.$el?.click())]
+          : []),
+        { key: "draft", role: "secondary", icon: "saveDraft", onClick: this.saveDraft,
+          label: this.uid ? this.$t("builder.save_draw") : this.$t("builder.post_draw") },
+        { key: "publish", role: "primary", icon: "publish", onClick: this.saveAndPublish,
+          label: this.$t("builder.publish_document"), disabled: !this.uid },
+      ];
     },
     // R6, R7: the section order is an important action, so it gets a visible label next to the FAB.
     orderPill() {
@@ -1102,8 +979,6 @@ export default {
       section_to_delete: null,
       tile_confirmation_modal: false,
       tile_to_delete: { tile_uid: null, section_uid: null },
-      isScrolled: false,
-      _scrollContainer: null,
     };
   },
   methods: {
@@ -1189,9 +1064,6 @@ export default {
       });
       return _options;
     },
-    handleBuilderScroll(e) {
-      this.isScrolled = e.target.scrollTop > 200;
-    },
     sectionConfigSummary(s_uid) {
       if (!this.core_config || !this.optional_config) return "";
       return (
@@ -1203,6 +1075,13 @@ export default {
           )
           .join("\n") || "—"
       );
+    },
+    // A section whose type caps its tiles takes no more once the cap is reached (tile add and copy).
+    isTileLimitReached(s_uid) {
+      const coreType = this.sections[s_uid]?.core_type;
+      if (this.section_options(coreType) === "no_options") return false;
+      const order = this.tiles_order[s_uid];
+      return Boolean(order) && order.length == this.section_options(coreType, "max_tiles");
     },
     section_options(value, look_for = null) {
       if (!this.config_options || !this.config_options[value])
@@ -1789,43 +1668,10 @@ export default {
         this.$nextTick(() => this.snapshotFormState());
       }
     },
-    scroll_into(id) {
-      return scroll_into(id);
-    },
   },
   created() {
     this.init();
   },
-  mounted() {
-    this.$nextTick(() => {
-      this._scrollContainer = document.querySelector(
-        `#container-${this.componentId}`
-      );
-      if (this._scrollContainer) {
-        this._scrollContainer.addEventListener(
-          "scroll",
-          this.handleBuilderScroll
-        );
-      }
-    });
-  },
-  beforeUnmount() {
-    if (this._scrollContainer) {
-      this._scrollContainer.removeEventListener(
-        "scroll",
-        this.handleBuilderScroll
-      );
-    }
-  },
-};
-
-const scroll_into = (id) => {
-  if (!window || !document) return;
-  const _elem = document.querySelector(`#${id}`);
-  _elem.scroll({
-    behavior: "smooth",
-    top: 0,
-  });
 };
 </script>
 
@@ -1846,13 +1692,6 @@ const scroll_into = (id) => {
       padding-right: var(--space-4);
     }
   }
-}
-
-.sections-options-menu {
-  position: sticky;
-  top: 0;
-  right: 0;
-  z-index: 2;
 }
 
 [data-theme="dark"] .wysiwyg-container-preview span[style*="color"] {
@@ -1914,107 +1753,28 @@ const scroll_into = (id) => {
 <style lang="scss" scoped>
 @import "@/assets/scss/utils/media-query";
 
-.builder-toolbar-name {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  line-height: 1.2;
-}
-.builder-toolbar-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-base);
-  border: 1px solid var(--border-default);
-  background-color: var(--surface-base);
-  color: var(--text-secondary);
-  font-size: var(--fs-250);
-  transition: all 0.15s ease;
-  &:hover {
-    background-color: var(--surface-hover);
-    color: var(--text-body);
-  }
-}
-.builder-tb-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  height: var(--elem-height);
-  padding: 0 var(--space-3);
-  font-size: var(--fs-200);
-  font-family: inherit;
-  border-radius: var(--radius-base);
-  border: 1px solid;
-  white-space: nowrap;
-  transition: all 0.15s ease;
-
-  &--secondary {
-    background: var(--surface-base);
-    border-color: var(--border-default);
-    color: var(--text-body);
-    &:hover {
-      background: var(--surface-raised);
-    }
-  }
-
-  &--primary {
-    background: var(--accent-fill);
-    border-color: var(--accent);
-    color: var(--text-on-accent-fill);
-    &:hover {
-      filter: brightness(1.08);
-    }
-  }
-
-  &--disabled {
-    opacity: 0.4;
-    pointer-events: none;
+// On a phone the sticky page head holds the top edge: the blog bar scrolls with the content there.
+.builder-blog-bar {
+  @include min-tablet {
+    position: sticky;
+    top: 0;
+    z-index: 2;
   }
 }
 .builder-advanced-row {
-  flex-shrink: 0;
   flex-wrap: wrap;
-  padding: var(--space-3) var(--space-12);
-  margin-left: calc(-1 * var(--space-12));
-  margin-right: calc(-1 * var(--space-12));
-  border-bottom: 1px solid var(--border-subtle);
-}
-.builder-adv-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  height: var(--elem-height);
-  padding: 0 var(--space-3);
-  font-size: var(--fs-200);
-  border-radius: var(--radius-base);
-  border: 1px solid var(--border-default);
-  background: var(--surface-raised);
-  color: var(--text-secondary);
-  white-space: nowrap;
-  transition: all 0.15s ease;
-  &:hover {
-    background: var(--surface-hover);
-    color: var(--text-body);
-  }
-  &--disabled {
-    opacity: 0.4;
-    pointer-events: none;
-  }
 }
 .builder-author-panel {
   flex-shrink: 0;
-  margin-left: calc(-1 * var(--space-12));
-  margin-right: calc(-1 * var(--space-12));
-  border-bottom: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-base);
   background: var(--surface-base);
 
   &__header {
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    padding: var(--space-2) var(--space-12);
+    padding: var(--space-2) var(--space-4);
     font-size: var(--fs-200);
     font-weight: 600;
     text-transform: uppercase;
@@ -2048,11 +1808,15 @@ const scroll_into = (id) => {
     color: var(--text-strong);
   }
 
+  &__col {
+    min-width: 15rem;
+  }
+
   &__body {
     display: flex;
     gap: var(--space-10);
     flex-wrap: wrap;
-    padding: var(--space-4) var(--space-12);
+    padding: var(--space-4);
     border-top: 1px solid var(--border-subtle);
   }
 
@@ -2063,78 +1827,18 @@ const scroll_into = (id) => {
   }
 }
 
-.section-icon-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-base);
-  border: 1px solid var(--border-default);
-  background-color: var(--surface-base);
-  color: var(--text-secondary);
-  font-size: var(--fs-250);
-  transition: all 0.15s ease;
-  &:hover {
-    background-color: var(--surface-hover);
-    color: var(--text-body);
+// Figma S6–S8: 24 px inset on desktop, 16 px above the tab bar where it shows (as the content list).
+.builder-wrap .builder-fab {
+  right: var(--space-6);
+  bottom: var(--space-6);
+
+  @include max-shell {
+    right: var(--space-4);
+    bottom: calc(var(--bottom-bar-height) + var(--space-4));
   }
-  &--primary {
-    background-color: var(--accent-fill);
-    border-color: var(--accent);
-    color: var(--text-on-accent-fill);
-    &:hover {
-      filter: brightness(1.1);
-    }
-  }
-  &--danger {
-    &:hover {
-      color: var(--negative);
-      border-color: var(--negative);
-      background-color: var(--surface-base);
-    }
-  }
-  &:disabled {
-    opacity: 0.35;
-    pointer-events: none;
-  }
-}
-.builder-fab-stack {
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  z-index: 90;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: var(--space-3);
-}
-.builder-fab-stack :deep(.floating-actions) {
-  position: static;
-}
-.builder-fab-aux {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-2);
 }
 .section-title-wrap {
   min-width: 0;
-}
-.builder-btn-chip {
-  display: inline-flex;
-  align-items: center;
-  height: 22px;
-  padding: 0 var(--space-2);
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--border-default);
-  background: var(--surface-base);
-  color: var(--text-secondary);
-  font-size: var(--fs-200);
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 .tile-card-thumb {
   max-width: 100%;
@@ -2146,33 +1850,14 @@ const scroll_into = (id) => {
     border-radius: var(--radius-base);
   }
 }
-.builder-fab-aux__btn {
-  width: 38px;
-  height: 38px;
-  border-radius: var(--radius-full);
-  border: 1px solid var(--border-default);
-  background-color: var(--surface-base);
-  color: var(--text-secondary);
-  font-size: var(--fs-300);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--shadow-sm);
-  transition: all 0.15s ease;
-  &:hover {
-    background-color: var(--surface-raised);
-    color: var(--text-body);
-  }
-}
-// Save draft and Publish keep their labels on a phone (R7); the wrapping panel toolbar makes the room.
 @include max-tablet {
-  .section-icon-btn {
-    width: 36px;
-    height: 36px;
-  }
-  .builder-fab-stack {
-    bottom: calc(var(--bottom-bar-height) + 1rem);
-    right: 1rem;
+  // The C9 action rows take 36 px buttons on a phone (Figma S7), 32 above.
+  .section-actions,
+  .tiles-header,
+  .tile-actions {
+    :deep(.icon-button) {
+      --icon-button-size: calc(var(--space-8) + var(--space-1));
+    }
   }
   .section-header-row {
     flex-direction: column;
@@ -2194,16 +1879,6 @@ const scroll_into = (id) => {
   }
   .section-uid {
     display: none;
-  }
-  .builder-adv-btn {
-    font-size: 0;
-    padding: 0;
-    width: 32px;
-    height: 32px;
-    justify-content: center;
-    :deep(svg) {
-      font-size: var(--fs-300);
-    }
   }
   .tiles-header {
     flex-wrap: wrap;

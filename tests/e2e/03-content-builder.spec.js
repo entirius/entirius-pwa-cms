@@ -32,7 +32,7 @@ test.describe('Content Builder Workflow', () => {
     expect(headerText.length).toBeGreaterThan(0);
 
     // Section should have control buttons (eye, pen, copy, trash)
-    const sectionBtns = page.locator('.section-icon-btn');
+    const sectionBtns = page.getByTestId('builder-section-actions').first().getByRole('button');
     const btnCount = await sectionBtns.count();
     expect(btnCount).toBeGreaterThanOrEqual(4);
 

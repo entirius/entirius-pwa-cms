@@ -1,48 +1,12 @@
 <template>
-  <div class="home-switcher">
-    <button
-      class="home-switcher__trigger pointer flex ai-ct gap-2"
-      :title="$t('builder.home_variant')"
-      @click="open = !open"
-    >
-      <FontAwesomeIcon :icon="$icons.home" />
-      <span class="home-switcher__label fs-200">
-        {{ $t("builder.home_variant") }}: {{ currentChannelLabel }}
-      </span>
-      <FontAwesomeIcon :icon="$icons.expand" />
-    </button>
-    <div v-if="open" class="home-switcher__backdrop" @click="open = false" />
-    <div v-if="open" class="home-switcher__drop">
-      <div class="home-switcher__header">
-        {{ $t("builder.home_variant") }}
-      </div>
-      <div
-        v-for="ch in availableChannels"
-        :key="ch.idx"
-        class="home-switcher__item"
-        :class="{
-          'home-switcher__item--current': isCurrent(ch.idx),
-          'home-switcher__item--missing': !variants[ch.idx],
-        }"
-        @click="onSelect(ch)"
-      >
-        <span class="home-switcher__name">{{ ch.name || ch.idx }}</span>
-        <span class="home-switcher__status fs-200">
-          <template v-if="isCurrent(ch.idx)">
-            <FontAwesomeIcon :icon="$icons.check" class="t-accent" />
-            {{ $t("builder.home_current") }}
-          </template>
-          <template v-else-if="variants[ch.idx]">
-            {{ $t("builder.home_exists") }}
-          </template>
-          <template v-else>
-            <FontAwesomeIcon :icon="$icons.add" />
-            {{ $t("builder.home_create") }}
-          </template>
-        </span>
-      </div>
-    </div>
-  </div>
+  <FormField class="home-switcher" :label="$t('builder.home_variant')" layout="inline">
+    <BasicSelect
+      :model-value="currentChannel"
+      :options="options"
+      placeholder="—"
+      @update:model-value="onSelect"
+    />
+  </FormField>
 </template>
 
 <script>
@@ -60,15 +24,17 @@ export default {
   emits: ["switch"],
   data() {
     return {
-      open: false,
       variants: {},
     };
   },
   computed: {
-    currentChannelLabel() {
-      if (!this.currentChannel) return "—";
-      const ch = this.availableChannels.find((c) => c.idx === this.currentChannel);
-      return ch?.name || this.currentChannel;
+    // One option per channel; the description says whether its home is this one, exists, or gets created.
+    options() {
+      return this.availableChannels.map((ch) => ({
+        label: ch.name || ch.idx,
+        value: ch.idx,
+        description: this.$t(`builder.home_${this.variantState(ch.idx)}`),
+      }));
     },
   },
   watch: {
@@ -78,6 +44,10 @@ export default {
   methods: {
     isCurrent(channel_idx) {
       return channel_idx === this.currentChannel;
+    },
+    variantState(channel_idx) {
+      if (this.isCurrent(channel_idx)) return "current";
+      return this.variants[channel_idx] ? "exists" : "create";
     },
     async loadVariants() {
       if (!this.contentType || !this.type) return;
@@ -99,102 +69,13 @@ export default {
         console.warn("HomeVariantSwitcher: failed to load variants", error);
       }
     },
-    onSelect(ch) {
-      this.open = false;
-      if (this.isCurrent(ch.idx)) return;
+    onSelect(channel_idx) {
+      if (this.isCurrent(channel_idx)) return;
       this.$emit("switch", {
-        channel_idx: ch.idx,
-        target_uid: this.variants[ch.idx]?.uid || null,
+        channel_idx,
+        target_uid: this.variants[channel_idx]?.uid || null,
       });
     },
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.home-switcher {
-  position: relative;
-}
-
-.home-switcher__trigger {
-  height: var(--elem-height);
-  padding: 0 var(--space-2);
-  border-radius: var(--radius-base);
-  border: 1px solid var(--border-default);
-  background-color: var(--surface-base);
-  color: var(--text-secondary);
-  font-size: var(--fs-250);
-  transition: all 0.15s ease;
-  white-space: nowrap;
-  &:hover {
-    background-color: var(--surface-hover);
-    color: var(--text-body);
-  }
-}
-
-.home-switcher__label {
-  @media only screen and (max-width: 768px) {
-    display: none;
-  }
-}
-
-.home-switcher__backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 9;
-}
-
-.home-switcher__drop {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  min-width: 240px;
-  z-index: 10;
-  background: var(--surface-base);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-  box-shadow: var(--shadow-md);
-  overflow: hidden;
-}
-
-.home-switcher__header {
-  padding: var(--space-2) var(--space-3);
-  font-size: var(--fs-200);
-  font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-bottom: 1px solid var(--border-subtle);
-}
-
-.home-switcher__item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-2) var(--space-3);
-  font-size: var(--fs-250);
-  color: var(--text-body);
-  cursor: pointer;
-  transition: background-color 0.1s ease;
-  &:hover {
-    background-color: var(--surface-raised);
-  }
-  &--current {
-    background-color: var(--accent-subtle);
-    cursor: default;
-  }
-  &--missing {
-    color: var(--text-muted);
-  }
-  & + & {
-    border-top: 1px solid var(--border-subtle);
-  }
-}
-
-.home-switcher__status {
-  color: var(--text-muted);
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-}
-</style>
