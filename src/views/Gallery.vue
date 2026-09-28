@@ -1,5 +1,5 @@
 <template>
-  <PageLayout class="gallery">
+  <PageLayout class="gallery" roomy>
     <template #header>
       <PageHeader :title="$t('nav.gallery')" />
     </template>
@@ -78,7 +78,7 @@
       />
     </template>
 
-    <FloatingActions class="gallery__fab" :actions="fabActions" />
+    <FloatingActions :actions="fabActions" />
 
     <BasicModal
       :open="dialog === 'tags'"
@@ -306,10 +306,15 @@ export default {
     },
     closeDialog() {
       this.dialog = null;
+      this.revokePreview();
+    },
+    revokePreview() {
+      if (this.filePreview) URL.revokeObjectURL(this.filePreview);
+      this.filePreview = null;
     },
     resetUpload() {
       this.file = null;
-      this.filePreview = null;
+      this.revokePreview();
       this.meta = { alt: null, fileName: null };
     },
     toggleFilterTag({ slug }) {
@@ -340,7 +345,7 @@ export default {
       this.confirm = {
         title: this.$t("gallery.delete_photo"),
         message: this.$t("gallery.confirm_delete"),
-        run: () => this.DELETE_Image({ url: `/images/${uid}`, method: "delete" }),
+        run: () => this.DELETE_Image({ url: `/images/${uid}/`, method: "delete" }),
       };
     },
     askDeleteTags() {
@@ -397,7 +402,6 @@ export default {
           method,
           params: { page, limit, sort, tags },
         });
-        console.log(response);
 
         return response;
       } catch (error) {}
@@ -477,6 +481,7 @@ export default {
       this.loadFile(file);
     },
     async loadFile(file) {
+      this.revokePreview();
       this.filePreview = URL.createObjectURL(file);
       this.file = await this.create_Base64Image(file);
       this.meta.fileName = file.name;
@@ -492,15 +497,6 @@ export default {
     async upload_File({ method = "post", url = "/images/" }) {
       try {
         if (this.file === null) throw new Error(`Photo missing`);
-
-        console.log({
-          method,
-          url,
-          type: "images",
-          meta: this.meta,
-          image: this.file,
-          tags: this.tags,
-        });
 
         const { data: response } = await _METHOD_content({
           method,
@@ -520,6 +516,8 @@ export default {
         this.gallery_pagination = null;
         this.current_view_page = 1;
         this.set_page({ page: 1, limit: this.limit });
+        // Only a success closes the dialog: a failed upload keeps the picked file, alt and tags for a retry.
+        this.closeDialog();
       } catch (err) {
         if (err.message === "Photo missing") {
           this.notify.spawnNotification({
@@ -533,8 +531,6 @@ export default {
           msg: this.$t("notifications.unexpected_error"),
           type: "negative",
         });
-      } finally {
-        this.closeDialog();
       }
     },
     async filterByTags() {
@@ -664,6 +660,7 @@ export default {
         this.tags = [data, ...this.tags];
         this.edit_tag = null;
         this.new_tag = null;
+        this.new_tag_input = "";
       } catch (error) {
         console.log(error);
         this.notify.spawnNotification({
@@ -711,24 +708,6 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "@/assets/scss/utils/media-query";
-
-// Figma S9/S10 frame: the title fills its row, and a phone keeps the desktop rhythm (40 top, 32 below the title, the
-// 30 px title) where PageLayout / PageHeader use 20 px (handoff 26/29: the wave close decides for every page).
-.gallery :deep(.page-header__title) {
-  flex: 1 1 auto;
-}
-
-@include max-tablet {
-  .gallery.page-layout {
-    --page-layout-pad-y: var(--space-10);
-
-    gap: var(--space-8);
-  }
-
-  .gallery :deep(.page-header__title) {
-    font-size: var(--fs-700);
-  }
-}
 
 // Controls row (Figma S9): label, tag chips, then sort and page size; a phone stacks the label, scrolls the chips
 // sideways in one row and splits the row between the two selects.
@@ -784,34 +763,27 @@ export default {
 }
 
 // R4: the grid is a container, so it keeps its border. MediaTile owns the tile size (188 × 276, 150 × 240 on a phone).
+// Fixed tracks (plan 29): 4 columns on desktop, 2 below the shell breakpoint (no Figma frame there) and on a phone.
 .gallery__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, 188px);
+  grid-template-columns: repeat(4, 188px);
   gap: var(--space-2);
   padding: var(--space-5);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-base);
   background: var(--surface-raised);
 
+  @include max-shell {
+    grid-template-columns: repeat(2, 188px);
+  }
+
   @include max-tablet {
-    grid-template-columns: repeat(auto-fill, 150px);
+    grid-template-columns: repeat(2, 150px);
   }
 }
 
 .gallery__pagination {
   margin-top: var(--space-5);
-}
-
-// Figma S9/S10: the FAB sits 24 px from the corner beside the sidebar, 16 px from the edge and above the tab bar
-// wherever the tab bar shows (handoff 29: FloatingActions offsets only up to 768 px and uses 16 on desktop).
-.gallery .gallery__fab {
-  right: var(--space-6);
-  bottom: var(--space-6);
-
-  @include max-shell {
-    right: var(--space-4);
-    bottom: calc(var(--bottom-bar-height) + var(--space-4));
-  }
 }
 
 .gallery__preview {

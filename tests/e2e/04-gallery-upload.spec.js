@@ -9,12 +9,10 @@ const fs = require('fs');
  */
 
 test.describe('Gallery Upload Workflow', () => {
-  let uploadedImageAlt;
-
-  test.beforeEach(() => {
-    // Generate unique alt text for this test run to avoid conflicts
-    uploadedImageAlt = `test-${Date.now()}`;
-  });
+  // One alt text per run: the delete test finds the image the upload test added by it, never another tile of the
+  // shared stack's seeded gallery.
+  const uploadedImageAlt = `test-${Date.now()}`;
+  test.describe.configure({ mode: 'serial' });
 
   test('should upload image to gallery and verify it appears', async ({ page }) => {
     // Step 1: Login
@@ -119,27 +117,15 @@ test.describe('Gallery Upload Workflow', () => {
     await page.goto('/pages/gallery');
     await page.waitForLoadState('networkidle');
 
-    // Find the first tile and hover it: its actions show on hover and focus
-    const firstCard = page.locator('.media-tile').first();
+    // The tile of the uploaded image (newest first), found by its alt text; hover it: its actions show on hover and focus
+    const uploadedTile = page.locator('.media-tile').filter({ has: page.locator(`img[alt="${uploadedImageAlt}"]`) });
+    await expect(uploadedTile).toHaveCount(1, { timeout: 10000 });
+    await uploadedTile.hover();
 
-    if (await firstCard.isVisible()) {
-      await firstCard.hover();
-
-      // Click the tile's delete button (PL: "Usuń zdjęcie"), then confirm
-      const deleteButton = firstCard.getByRole('button', { name: /^(Usuń zdjęcie|Delete photo)$/ });
-
-      if (await deleteButton.isVisible({ timeout: 2000 }).catch(() => false)) {
-        await deleteButton.click();
-        await page.getByTestId('confirm-dialog-confirm').click();
-
-        // Wait for deletion to complete
-        await page.waitForLoadState('networkidle');
-
-        console.log('Test image deleted successfully');
-      } else {
-        console.log('Delete button not found - image may need to be deleted manually');
-      }
-    }
+    // Click the tile's delete button (PL: "Usuń zdjęcie"), then confirm
+    await uploadedTile.getByRole('button', { name: /^(Usuń zdjęcie|Delete photo)$/ }).click();
+    await page.getByTestId('confirm-dialog-confirm').click();
+    await expect(uploadedTile).toHaveCount(0, { timeout: 10000 });
 
     // Logout lives in the user menu (the header's user button)
     await page.locator('[data-fid="user-button"]').click();

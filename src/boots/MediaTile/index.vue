@@ -1,5 +1,11 @@
 <template>
-  <figure class="media-tile flex-column" :class="{ 'media-tile--selected': selected }">
+  <figure
+    class="media-tile flex-column"
+    :class="{ 'media-tile--selected': selected }"
+    :tabindex="$slots.actions ? 0 : undefined"
+    :role="$slots.actions ? 'group' : undefined"
+    :aria-label="$slots.actions ? caption || alt || undefined : undefined"
+  >
     <div class="media-tile__image flex jc-ct ai-ct">
       <img v-if="src" :src="src" :alt="alt" loading="lazy" />
       <FontAwesomeIcon v-else :icon="$icons.image" class="media-tile__placeholder" aria-hidden="true" />
@@ -20,7 +26,8 @@
 // An image tile of a media grid (Figma S9/S10: 188 × 276 desktop, 150 × 240 below tablet). No `src` = the image
 // placeholder. `selected` draws the accent border. The `actions` slot takes IconButtons (`sm`), the `overlay` slot
 // value chips (`Tag`) over the bottom of the image; both show on hover, keyboard focus inside the tile, when selected
-// and always on a touch screen (no hover there).
+// and always on a touch screen (no hover there). Hidden, they are `visibility: hidden` (no invisible clickable
+// button); a tile with actions takes keyboard focus itself, so Tab reveals them before it reaches them.
 defineProps({
   src: { type: String, default: "" },
   alt: { type: String, default: "" },
@@ -59,7 +66,7 @@ defineProps({
     img {
       width: 100%;
       height: 100%;
-      object-fit: contain;
+      object-fit: cover;
     }
   }
 
@@ -72,18 +79,22 @@ defineProps({
   }
 
   &__reveal {
+    visibility: hidden;
     opacity: 0;
-    transition: opacity 0.15s ease;
+    transition: opacity 0.15s ease, visibility 0s linear 0.15s;
   }
 
   &:hover &__reveal,
   &:focus-within &__reveal,
   &--selected &__reveal {
+    visibility: visible;
     opacity: 1;
+    transition-delay: 0s;
   }
 
   @media (hover: none) {
     &__reveal {
+      visibility: visible;
       opacity: 1;
     }
   }

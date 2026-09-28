@@ -102,7 +102,52 @@ describe("Gallery", () => {
     expect(mockContent).not.toHaveBeenCalledWith(expect.objectContaining({ method: "delete" }));
     wrapper.vm.runConfirm();
     await flushPromises();
-    expect(mockContent).toHaveBeenCalledWith({ url: "/images/img-1", method: "delete" });
+    expect(mockContent).toHaveBeenCalledWith({ url: "/images/img-1/", method: "delete" });
     expect(wrapper.vm.confirm).toBe(null);
+  });
+
+  it("the reset control, fourth in the controls row, clears an active tag filter", async () => {
+    const wrapper = await mountGallery();
+    expect(wrapper.find(".gallery__chips icon-button-stub").exists()).toBe(false);
+    await wrapper.findAll(".chip")[0].trigger("click");
+    await flushPromises();
+    wrapper.findComponent(".gallery__chips icon-button-stub").vm.$emit("click");
+    await flushPromises();
+    expect(wrapper.vm.filter_tags).toEqual([]);
+    expect(lastImagesQuery().params).toMatchObject({ page: 1, tags: [] });
+  });
+
+  it("a failed upload keeps the dialog, the picked file, alt and tags", async () => {
+    const wrapper = await mountGallery();
+    wrapper.vm.openDialog("upload");
+    Object.assign(wrapper.vm, { file: "data:image/png;base64,AA", selected_tags: ["Summer"] });
+    wrapper.vm.meta.alt = "A cat";
+    mockContent.mockRejectedValueOnce(new Error("500"));
+    await wrapper.vm.upload_File({});
+    expect(wrapper.vm.dialog).toBe("upload");
+    expect(wrapper.vm.file).toBe("data:image/png;base64,AA");
+    expect(wrapper.vm.meta.alt).toBe("A cat");
+    expect(wrapper.vm.selected_tags).toEqual(["Summer"]);
+  });
+
+  it("a successful upload closes the dialog and revokes the preview URL", async () => {
+    const revoke = vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
+    const wrapper = await mountGallery();
+    wrapper.vm.openDialog("upload");
+    Object.assign(wrapper.vm, { file: "data:image/png;base64,AA", filePreview: "blob:preview" });
+    await wrapper.vm.upload_File({});
+    expect(wrapper.vm.dialog).toBe(null);
+    expect(revoke).toHaveBeenCalledWith("blob:preview");
+    revoke.mockRestore();
+  });
+
+  it("the tag manager clears its input after the tag is created", async () => {
+    const wrapper = await mountGallery();
+    wrapper.vm.openDialog("tags");
+    wrapper.vm.new_tag_input = "Winter";
+    wrapper.vm.addNewTag();
+    await flushPromises();
+    expect(mockContent).toHaveBeenCalledWith(expect.objectContaining({ method: "post", payload: { slug: "Winter", label: "Winter" } }));
+    expect(wrapper.vm.new_tag_input).toBe("");
   });
 });
