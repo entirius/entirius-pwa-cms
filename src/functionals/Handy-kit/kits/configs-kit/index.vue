@@ -152,14 +152,14 @@
           >
             <div class="flex ai-ct jc-sb mb-1">
               <p class="field-label">{{ tProp(prop) }}</p>
-              <button
+              <BasicButton
                 v-if="skuPickerChannel"
-                class="fs-200 t-accent pointer"
-                style="background: none; border: none; text-decoration: underline"
+                variant="ghost"
+                size="sm"
                 @click="skuManualMode = !skuManualMode"
               >
                 {{ skuManualMode ? $t('builder.sku_switch_search') : $t('builder.sku_switch_manual') }}
-              </button>
+              </BasicButton>
             </div>
             <!-- Search mode -->
             <EntitySearchPicker

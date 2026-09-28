@@ -75,8 +75,7 @@
             </div>
             <div v-else class="relative w-100 h-100">
               <div
-                class="absolute bg-base rounded-lg ov-h t-negative"
-                style="top: 3px; right: 3px; z-index: 2"
+                class="meta-kit__remove absolute bg-base rounded-lg ov-h t-negative"
               >
                 <IconButton
                   icon="close"
@@ -296,3 +295,11 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.meta-kit__remove {
+  top: var(--space-1);
+  right: var(--space-1);
+  z-index: 2;
+}
+</style>

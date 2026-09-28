@@ -99,7 +99,7 @@ export default {
 
 <style lang="scss">
 .image-library {
-  border: 1px solid var(--clr-gray-300);
+  border: 1px solid var(--border-subtle);
   aspect-ratio: 1/1;
   overflow: hidden;
   &__picture {
@@ -112,7 +112,7 @@ export default {
       height: 100%;
       background-color: var(--overlay-loading);
       font-size: var(--fs-600);
-      color: var(--clr-gray-900);
+      color: var(--text-strong);
       opacity: 0;
       transition: opacity 0.1s ease-in, background-color 0.1s ease-in;
     }

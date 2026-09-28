@@ -2,7 +2,7 @@
   <div>
     <div class="flex jc-sb ai-ct mb-md">
       <label for="file" ref="fileInput">
-        <BasicButton size="sm" icon="add" @click="$refs.fileInput.click()">
+        <BasicButton size="sm" @click="$refs.fileInput.click()">
           {{ $t("images.add_photo") }}
         </BasicButton>
       </label>
@@ -146,7 +146,7 @@ export default {
 .input-file {
   display: none;
   &__preview {
-    border: 1px solid var(--clr-gray-500);
+    border: 1px solid var(--border-default);
   }
 }
 </style>
