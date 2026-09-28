@@ -11,8 +11,9 @@
         :title="$t('faq.title')"
         class="mb-10"
       />
+      <!-- Filters -->
       <div class="flex ai-ct mb-10">
-        <BasicInput v-model="search" type="search" />
+        <BasicInput v-model="search" icon="search" />
       </div>
       <Loader v-show="loading" />
       <DataTable v-show="!loading" :rows="rows" />

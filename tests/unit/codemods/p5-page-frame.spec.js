@@ -20,6 +20,10 @@ describe("p5-page-frame codemod", () => {
     expect(flags).toEqual([]);
   });
 
+  it("leaves an inline form row (no search, no filters) in the body", () => {
+    expect(rewrite("form-row").output).toBe(fixture("form-row.expected.vue"));
+  });
+
   it("keeps a conditional card's condition on a template and leaves its header where it is", () => {
     expect(rewrite("conditional").output).toBe(fixture("conditional.expected.vue"));
   });

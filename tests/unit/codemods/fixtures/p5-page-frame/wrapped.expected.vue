@@ -9,8 +9,9 @@
       />
     </template>
     <template #toolbar>
+      <!-- Filters -->
       <div class="flex ai-ct">
-        <BasicInput v-model="search" type="search" />
+        <BasicInput v-model="search" icon="search" />
       </div>
     </template>
       <Teleport v-if="ready" to="#faq-toolbar-left" defer><span>{{ title }}</span></Teleport>

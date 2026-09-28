@@ -31,7 +31,7 @@ import {
 const WRAPPER_CLASSES = ["page-pad", "h-100", "ov-h"];
 const CARD_HEIGHTS = ["h-100", "flex-1"];
 const CONDITIONS = ["if", "else-if", "else"];
-const TOOLBAR_CONTROLS = ["BasicInput", "FilterChip", "MobileFilterPanel"];
+const FILTER_CONTROLS = ["FilterChip", "MobileFilterPanel"];
 const SPACING = /^mb-\d+$/;
 
 export const isExcluded = (file) => file.startsWith("src/views/Home/") || file === "src/views/Gallery.vue";
@@ -70,10 +70,17 @@ function layoutTag(text, frame) {
   return ["<PageLayout", ...attrs.filter(Boolean)].join(" ") + ">";
 }
 
-// Source of a node that moves into a slot, without its `mb-*` (PageLayout's gap spaces the slots); `shift` indents
-// its continuation lines when the slot sits one level deeper than the node did.
+// Start of a node that moves, or of the comment right above it (`<!-- Filters -->` moves with its row).
+function movedStart(text, node) {
+  const before = text.slice(0, node.range[0]).trimEnd();
+  return before.endsWith("-->") ? before.lastIndexOf("<!--") : node.range[0];
+}
+
+// Source of a node that moves into a slot, its comment included, without its `mb-*` (PageLayout's gap spaces the
+// slots); `shift` indents its continuation lines when the slot sits one level deeper than the node did.
 function movedSource(text, node, shift) {
-  return withoutSpacing(text, node).replace(/\n(?!\n)/g, `\n${shift}`);
+  const source = text.slice(movedStart(text, node), node.range[0]) + withoutSpacing(text, node);
+  return source.replace(/\n(?!\n)/g, `\n${shift}`);
 }
 
 function withoutSpacing(text, node) {
@@ -87,15 +94,23 @@ function withoutSpacing(text, node) {
   return source.slice(0, start) + replacement + source.slice(attr.range[1] - node.range[0]);
 }
 
-function hasDescendant(node, names) {
-  return (node.children ?? []).some((child) => isElement(child) && (names.includes(child.rawName) || hasDescendant(child, names)));
+function hasDescendant(node, test) {
+  return (node.children ?? []).some((child) => isElement(child) && (test(child) || hasDescendant(child, test)));
 }
+
+const staticValue = (node, name) => findAttr(node, name, false)?.value?.value;
+const isFilter = (node) => FILTER_CONTROLS.includes(node.rawName);
+const isSearch = (node) =>
+  isElement(node, "BasicInput") && [staticValue(node, "icon"), staticValue(node, "type")].includes("search");
 
 const isUnconditional = (node) => !findDirective(node, [...CONDITIONS, "show", "for"]);
 
+// A row of search and filters: a `*__toolbar`, or a row holding a search BasicInput, FilterChips or a
+// MobileFilterPanel. An inline form (plain BasicInputs, a file input) stays in the body.
 function isToolbar(node) {
   if (!isElement(node, "div") || !isUnconditional(node)) return false;
-  return staticClasses(node).some((name) => name.endsWith("__toolbar")) || hasDescendant(node, TOOLBAR_CONTROLS);
+  const named = staticClasses(node).some((name) => name.endsWith("__toolbar"));
+  return named || hasDescendant(node, (child) => isFilter(child) || isSearch(child));
 }
 
 // The card's PageHeader (Teleports before it skipped) and the toolbar row right after it, when unconditional.
@@ -112,7 +127,8 @@ function slotTemplates(text, card, indent, result, shift = "") {
   const { header, toolbar } = findDirective(card, CONDITIONS) ? {} : slotNodes(card);
   const slot = (name, node) => `<template #${name}>\n${indent}  ${movedSource(text, node, shift)}\n${indent}</template>`;
   const slots = [header && slot("header", header), toolbar && slot("toolbar", toolbar)].filter(Boolean);
-  [header, toolbar].filter(Boolean).forEach((node) => removeNode(text, node, result));
+  const moved = [header, toolbar].filter(Boolean);
+  moved.forEach((node) => removeNode(text, { range: [movedStart(text, node), node.range[1]] }, result));
   return slots.join(`\n${indent}`);
 }
 
