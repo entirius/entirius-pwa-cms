@@ -3,6 +3,7 @@
     <template #header>
       <PageHeader :title="$t('stock.manage')">
         <template #meta>
+          <StockWarehousePicker />
           <StatusBadge
             v-if="isManual && dirtyCount > 0"
             tone="warning"
@@ -10,10 +11,8 @@
             :label="`${$t('stock.unsaved')}: ${dirtyCount}`"
           />
         </template>
-        <template #actions>
-          <ActionBar :actions="isManual ? headerActions : []">
-            <StockWarehousePicker />
-          </ActionBar>
+        <template v-if="isManual" #actions>
+          <ActionBar :actions="headerActions" />
         </template>
       </PageHeader>
     </template>

@@ -3,7 +3,7 @@
     <PageLayout v-if="!activeWarehouse && !loading">
       <template #header>
         <PageHeader :title="$t('stock.manage')">
-          <template v-if="warehouses.length" #actions>
+          <template v-if="warehouses.length" #meta>
             <StockWarehousePicker />
           </template>
         </PageHeader>

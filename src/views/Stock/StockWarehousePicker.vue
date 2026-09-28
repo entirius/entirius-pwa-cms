@@ -20,7 +20,7 @@
 </template>
 
 <script>
-// The panel-wide warehouse choice (P5 page frame: a control for the whole panel sits in the PageHeader actions row).
+// The panel-wide warehouse choice (P5 page frame: it sits in the PageHeader meta, left of the actions).
 // The Stock panel wrapper owns the warehouses and the active one; this picker only shows and changes them.
 export default {
   name: "StockWarehousePicker",
