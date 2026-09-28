@@ -48,6 +48,15 @@ describe("FaqItemEdit.saveItem — required answer", () => {
     expect(api.PATCH_FaqItem).not.toHaveBeenCalled();
   });
 
+  it("treats the editor's empty document (<p></p>, whitespace, &nbsp;) as an empty answer", async () => {
+    for (const answer of ["<p></p>", "<p> </p>", "<p>&nbsp;</p><p><br></p>"]) {
+      const ctx = state({ url_key: "shipping", question: "How long?", answer, short_answer: "" });
+      await ItemEdit.methods.saveItem.call(ctx);
+      expect(ctx.formErrors.getFieldError("answer")).toBeTruthy();
+    }
+    expect(api.POST_FaqItem).not.toHaveBeenCalled();
+  });
+
   it("sends the request once every required field is filled", async () => {
     api.POST_FaqItem.mockResolvedValue({ data: { id: 7 } });
     const ctx = state({

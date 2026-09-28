@@ -533,7 +533,9 @@ export default {
       this.confirmLeave();
     },
     async saveItem() {
-      const valid = this.formErrors.validateRequired(this.form, {
+      // The rich-text editor emits `<p></p>` for an empty document: required means visible text.
+      const answerText = (this.form.answer || "").replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim();
+      const valid = this.formErrors.validateRequired({ ...this.form, answer: answerText && this.form.answer }, {
         url_key: this.$t("faq.url_key"),
         question: this.$t("faq.question"),
         answer: this.$t("faq.answer"),
