@@ -36,6 +36,18 @@
   gap: var(--space-4);
 }
 
+// The SortableJS fallback clone of every sortable list (`fallback-class="drag-ghost"`): appended to <body>, so no
+// scoped style reaches it.
+.drag-ghost {
+  max-width: 600px;
+  opacity: 0.9;
+  background: var(--surface-base);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-base);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-3) var(--space-5);
+}
+
 // The page wrapper around a panel's content card: 48 px, 16 px below tablet (a phone keeps 361 of its 393 px).
 // `.page-pad-x` pads the sides only, for a wrapper whose rows bring their own vertical rhythm.
 .page-pad,

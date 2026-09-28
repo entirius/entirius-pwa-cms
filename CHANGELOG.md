@@ -337,7 +337,10 @@ All notable changes to this project will be documented in this file.
   retry; wysiwyg editors inside a form field are labelled by it; the sticky page footer appears only when it has
   content; picked authors show their role again and drag by a handle; booking filters sit in the phone filter panel;
   the channel and tax-class IDX links are URL-encoded and the tax-class name is bold again; the e-mail panel's nav
-  entry is „Konfiguracja e-mail”, so channel crumbs no longer pass through „Szablony”.
+  entry reads "Email configuration" (`nav.email_dashboard`), so channel crumbs no longer pass through the templates
+  entry. A click on a SKU's label in the stock add-products dialog selects it once (it toggled twice); a retried
+  e-mail channel load shows the form again; the price list mounts one promo calendar at a time and the table's
+  scroll box no longer clips or grows around it; channel and tax-class details keep their header while loading.
 
 - P5 wave-1 close (plan 30): cards no longer add a second 16 px gap under children that carry their own margin (auth,
   e-mail, FAQ, PIM detail cards); the PIM lists, enrichment tasks and spawn rules keep their pagination visible at

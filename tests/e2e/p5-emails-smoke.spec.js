@@ -37,7 +37,6 @@ async function openFirstCard(page, testid, url) {
   await page.waitForLoadState('networkidle');
 }
 
-// A card opens by pointer anywhere on it, not only on its title: click its bottom-right corner.
 async function expectDetail(page) {
   await expect(page.getByRole('heading', { level: 1 })).not.toBeEmpty();
   await expect(page.getByTestId('emails-save')).toHaveText(either((t) => t.common.save));

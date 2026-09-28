@@ -518,15 +518,3 @@ export default {
 }
 
 </style>
-
-<style lang="scss">
-.drag-ghost {
-  max-width: 600px;
-  opacity: 0.9;
-  background: var(--surface-base);
-  border: 1px solid var(--accent);
-  border-radius: var(--radius-base);
-  box-shadow: var(--shadow-md);
-  padding: var(--space-3) var(--space-5);
-}
-</style>
