@@ -21,9 +21,7 @@
       @row-click="openEdit"
     >
       <template #cell-typ="{ row }">
-        <span class="config-badge bg-raised t-secondary">{{
-          typLabel(row.typ)
-        }}</span>
+        <Tag :label="typLabel(row.typ)" />
       </template>
       <template #cell-valid_from="{ row }">{{
         formatDate(row.valid_from)
@@ -95,22 +93,7 @@
           />
         </FormField>
 
-        <div class="voucher-form__actions">
-          <BasicButton
-            v-if="isEdit"
-            variant="secondary"
-            @click="showDelete = true"
-          >
-            {{ $t('promo.btn_delete') }}
-          </BasicButton>
-          <BasicButton
-            variant="primary"
-            :disabled="saving"
-            @click="save"
-          >
-            {{ $t('promo.btn_save') }}
-          </BasicButton>
-        </div>
+        <ActionBar :actions="drawerActions" class="mt-10" />
       </div>
     </SideDrawer>
 
@@ -138,7 +121,7 @@ import {
   DELETE_Campaign,
   GET_VoucherMeta,
 } from "@/api/voucher/api";
-import { enumDescKey } from "./promo-enum-hints";
+import { enumDescKey, enumLabel } from "./promo-enum-hints";
 import { useCheckoutChannelStore } from "@/stores/checkoutChannel";
 
 function emptyForm() {
@@ -218,6 +201,14 @@ export default {
         },
       ];
     },
+    drawerActions() {
+      const del = { key: "delete", role: "utility", icon: "delete", variant: "danger", label: this.$t("promo.btn_delete"),
+        onClick: () => (this.showDelete = true) };
+      return [
+        ...(this.isEdit ? [del] : []),
+        { key: "save", role: "primary", label: this.$t("promo.btn_save"), onClick: this.save, disabled: this.saving },
+      ];
+    },
     drawerTitle() {
       return this.isEdit
         ? this.$t("promo.campaign_edit")
@@ -244,7 +235,7 @@ export default {
   methods: {
     typLabel(v) {
       const f = this.types.find((t) => t.value === v);
-      return f ? f.label : v;
+      return enumLabel("campaign_type", v, f?.label);
     },
     formatDate(v) {
       return v ? v.split("T")[0] : "—";
@@ -389,20 +380,5 @@ export default {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-8);
-}
-
-.voucher-form__actions {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--space-5);
-  margin-top: var(--space-10);
-}
-
-.config-badge {
-  display: inline-block;
-  padding: 2px var(--space-2);
-  border-radius: var(--radius-base);
-  font-size: var(--fs-200);
-  font-weight: 600;
 }
 </style>

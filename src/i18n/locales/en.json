@@ -3106,7 +3106,30 @@
     "cfg_require_pin_tip": "When on, each voucher also gets a PIN; redemption and balance lookup require code + PIN (anti-fraud).",
     "cfg_require_approval_tip": "SALE vouchers start in Pending approval (unusable, no code email) until an admin approves them.",
     "cfg_max_failed_tip": "Number of wrong code/PIN attempts before a voucher is temporarily locked.",
-    "cfg_lockout_minutes_tip": "How long (minutes) a voucher stays locked after too many failed attempts."
+    "cfg_lockout_minutes_tip": "How long (minutes) a voucher stays locked after too many failed attempts.",
+    "enum_label": {
+      "tax_type": {
+        "mpv": "MPV",
+        "spv": "SPV"
+      },
+      "filter_mode": {
+        "inclusion": "Inclusion",
+        "exclusion": "Exclusion"
+      },
+      "campaign_type": {
+        "sale": "Sale",
+        "admin_issued": "Admin issued"
+      },
+      "voucher_status": {
+        "active": "Active",
+        "pending_approval": "Pending approval",
+        "locked": "Locked",
+        "blocked": "Blocked",
+        "redeemed": "Redeemed",
+        "expired": "Expired",
+        "canceled": "Canceled"
+      }
+    }
   },
   "pricefighter": {
     "gap_table": "Gap Table",

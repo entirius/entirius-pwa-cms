@@ -4,6 +4,7 @@
       <BasicInput
         v-model="search"
         :placeholder="$t('promo.voucher_search_placeholder')"
+        :aria-label="$t('promo.voucher_search_placeholder')"
         icon="search"
         class="vouchers-list__search"
         @input="debouncedFetch(searchAndFetch)"
@@ -13,6 +14,7 @@
         <BasicInput
           v-model="lookupCode"
           :placeholder="$t('promo.voucher_lookup_placeholder')"
+          :aria-label="$t('promo.voucher_lookup_placeholder')"
           @keyup.enter="doLookup"
         />
         <BasicButton
@@ -40,6 +42,7 @@
           :options="campaignOptions"
           :model-value="campaignFilter"
           :placeholder="$t('promo.voucher_all_campaigns')"
+          :aria-label="$t('promo.voucher_col_campaign')"
           class="vouchers-list__campaign-filter"
           @update:model-value="onCampaignFilter"
         />
@@ -77,11 +80,7 @@
         <span class="t-secondary">{{ formatDate(row.expires_at) }}</span>
       </template>
       <template #cell-voucher_campaign_id="{ row }">
-        <span
-          class="vouchers-badge bg-raised t-secondary"
-          :title="campaignName(row.voucher_campaign_id)"
-          >{{ campaignName(row.voucher_campaign_id) }}</span
-        >
+        <Tag :label="campaignName(row.voucher_campaign_id)" />
       </template>
     </DataTable>
 
@@ -105,6 +104,7 @@ import {
   POST_VoucherLookup,
 } from "@/api/voucher/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { enumLabel } from "./promo-enum-hints";
 
 const STATUS_VARIANT = {
   active: "positive",
@@ -149,7 +149,7 @@ export default {
     statusOptions() {
       const opts = [{ key: "all", label: this.$t("promo.filter_all") }];
       for (const s of this.statuses)
-        opts.push({ key: s.value, label: this.shortStatus(s.label) });
+        opts.push({ key: s.value, label: this.statusLabel(s.value) });
       return opts;
     },
     campaignOptions() {
@@ -219,7 +219,7 @@ export default {
     },
     statusLabel(status) {
       const found = this.statuses.find((s) => s.value === status);
-      return found ? this.shortStatus(found.label) : status;
+      return enumLabel("voucher_status", status, found && this.shortStatus(found.label));
     },
     shortStatus(label) {
       return label ? label.split("—")[0].trim() : label;
@@ -333,18 +333,5 @@ export default {
   min-width: 150px;
   max-width: 220px;
   flex-shrink: 0;
-}
-
-.vouchers-badge {
-  display: inline-block;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  vertical-align: middle;
-  padding: 2px var(--space-2);
-  border-radius: var(--radius-base);
-  font-size: var(--fs-200);
-  font-weight: 600;
 }
 </style>
