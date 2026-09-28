@@ -23,9 +23,10 @@ import SpawnDialog from "@/views/Pim/components/enrichment/SpawnDialog.vue";
 import { POST_SpawnTask } from "@/api/enrichment/api";
 
 const stubs = {
-  Teleport: true,
+  BasicModal: true,
   FormField: true,
-  Dropdown: true,
+  BasicSelect: true,
+  BasicRadioGroup: true,
   ChannelMultiSelect: true,
   FontAwesomeIcon: true,
 };

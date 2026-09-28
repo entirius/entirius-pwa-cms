@@ -38,8 +38,22 @@ export default {
     sourceChannelIdx() {
       return this.pimChannel.defaultChannelIdx;
     },
-    availableLanguages() {
-      return this.pimChannel.activeChannelLanguages;
+    modeOptions() {
+      return [
+        { label: this.$t("pim.all_matching_languages"), value: "all" },
+        { label: this.$t("pim.single_language_only"), value: "single" },
+      ];
+    },
+    languageOptions() {
+      return this.pimChannel.activeChannelLanguages.map((lang) => ({ label: lang.toUpperCase(), value: lang }));
+    },
+    // Cancel · Copy (R5).
+    actions() {
+      return [
+        { key: "cancel", role: "secondary", label: this.$t("common.cancel"), onClick: () => this.$emit("close") },
+        { key: "copy", role: "primary", label: this.$t("common.copy"), testid: "pim-copy-translations-submit",
+          disabled: this.copyMode === "single" && !this.selectedLanguage, onClick: this.confirmCopy },
+      ];
     },
   },
   methods: {
@@ -72,159 +86,21 @@ export default {
 </script>
 
 <template>
-  <div v-if="visible" class="copy-dialog-overlay" @click.self="$emit('close')">
-    <div class="copy-dialog">
-      <h3 class="copy-dialog__title">{{ $t("pim.copy_translations") }}</h3>
-      <p class="copy-dialog__desc t-muted fs-200">
+  <BasicModal
+    :open="visible"
+    :title="$t('pim.copy_translations')"
+    size="sm"
+    :actions="actions"
+    @close="$emit('close')"
+  >
+    <div class="flex-column gap-4" data-testid="pim-copy-translations-dialog">
+      <p class="t-muted fs-200">
         {{ $t("pim.copy_translations_desc", { channel: sourceChannelIdx }) }}
       </p>
-
-      <div class="copy-dialog__options">
-        <label class="copy-dialog__option">
-          <input type="radio" v-model="copyMode" value="all" />
-          {{ $t("pim.all_matching_languages") }}
-        </label>
-        <label class="copy-dialog__option">
-          <input type="radio" v-model="copyMode" value="single" />
-          {{ $t("pim.single_language_only") }}
-        </label>
-        <div v-if="copyMode === 'single'" class="copy-dialog__lang-select">
-          <select v-model="selectedLanguage" class="copy-dialog__select">
-            <option value="" disabled>{{ $t("pim.select_language") }}</option>
-            <option
-              v-for="lang in availableLanguages"
-              :key="lang"
-              :value="lang"
-            >
-              {{ lang.toUpperCase() }}
-            </option>
-          </select>
-        </div>
-      </div>
-
-      <div class="copy-dialog__actions">
-        <button
-          class="pim-btn pim-btn--secondary"
-          type="button"
-          @click="$emit('close')"
-        >
-          {{ $t("common.cancel") }}
-        </button>
-        <button
-          class="pim-btn pim-btn--primary"
-          type="button"
-          :disabled="copyMode === 'single' && !selectedLanguage"
-          @click="confirmCopy"
-        >
-          {{ $t("common.copy") }}
-        </button>
-      </div>
+      <BasicRadioGroup v-model="copyMode" :options="modeOptions" :aria-label="$t('pim.copy_translations')" />
+      <FormField v-if="copyMode === 'single'" :label="$t('pim.select_language')">
+        <BasicSelect v-model="selectedLanguage" :options="languageOptions" :placeholder="$t('pim.select_language')" />
+      </FormField>
     </div>
-  </div>
+  </BasicModal>
 </template>
-
-<style lang="scss" scoped>
-.copy-dialog-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--overlay-heavy);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.copy-dialog {
-  background: var(--surface-base);
-  border-radius: var(--radius-lg);
-  padding: var(--space-6);
-  min-width: 360px;
-  max-width: 480px;
-  box-shadow: var(--shadow-lg);
-  border: 1px solid var(--border-subtle);
-}
-
-.copy-dialog__title {
-  margin: 0 0 var(--space-2);
-  font-size: var(--fs-500);
-  font-weight: 600;
-  color: var(--text-body);
-}
-
-.copy-dialog__desc {
-  margin: 0 0 var(--space-4);
-}
-
-.copy-dialog__options {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  margin-bottom: var(--space-5);
-}
-
-.copy-dialog__option {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  cursor: pointer;
-  font-size: var(--fs-300);
-  color: var(--text-body);
-}
-
-.copy-dialog__lang-select {
-  margin-left: var(--space-6);
-}
-
-.copy-dialog__select {
-  padding: var(--space-1) var(--space-2);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-  background: var(--surface-base);
-  color: var(--text-body);
-  font-size: var(--fs-300);
-}
-
-.copy-dialog__actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--space-2);
-}
-
-.pim-btn {
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-base);
-  border: 1px solid var(--border-subtle);
-  cursor: pointer;
-  font-size: var(--fs-300);
-  font-weight: 500;
-  transition: background 0.15s, border-color 0.15s;
-
-  &--primary {
-    background: var(--accent-fill);
-    color: var(--text-on-accent-fill);
-    border-color: var(--accent);
-
-    &:hover:not(:disabled) {
-      background: var(--accent-fill);
-      border-color: var(--accent);
-    }
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-  }
-
-  &--secondary {
-    background: var(--surface-base);
-    color: var(--text-body);
-
-    &:hover {
-      background: var(--surface-raised);
-    }
-  }
-}
-</style>

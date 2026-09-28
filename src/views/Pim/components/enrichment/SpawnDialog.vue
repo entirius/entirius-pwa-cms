@@ -1,136 +1,73 @@
 <template>
-  <Teleport to="body">
-    <Transition name="spawn-modal">
-      <div
-        v-if="visible"
-        class="spawn-modal__overlay"
-        @click.self="$emit('close')"
+  <BasicModal
+    :open="visible"
+    :actions="actions"
+    :persistent="busy"
+    @close="$emit('close')"
+  >
+    <template #title>
+      <h2 class="flex ai-ct gap-2 fs-400 fw-600 t-body">
+        <FontAwesomeIcon :icon="$icons.enrich" class="t-accent" aria-hidden="true" />
+        {{ $t("enrichment.spawn.title") }}
+      </h2>
+    </template>
+
+    <div class="flex-column gap-4" data-testid="enrichment-spawn-dialog">
+      <FormField :label="$t('enrichment.spawn.operation')">
+        <BasicSelect
+          :options="opOptions"
+          v-model="op"
+          :placeholder="$t('enrichment.spawn.operation')"
+          data-testid="enrichment-spawn-op"
+        />
+      </FormField>
+
+      <FormField
+        :label="$t('enrichment.spawn.feature')"
+        :description="$t('enrichment.spawn.feature_hint')"
       >
-        <div
-          class="spawn-modal__box bg-base"
-          role="dialog"
-          aria-modal="true"
-          data-testid="enrichment-spawn-dialog"
-        >
-          <div class="spawn-modal__header b-subtle bb-100">
-            <FontAwesomeIcon :icon="$icons.enrich" class="t-accent" />
-            <h2 class="fs-400 fw-600 m-0">
-              {{ $t("enrichment.spawn.title") }}
-            </h2>
-          </div>
+        <BasicSelect
+          :options="featureOptions"
+          v-model="feature"
+          :placeholder="$t('enrichment.spawn.feature_placeholder')"
+          data-testid="enrichment-spawn-feature"
+        />
+      </FormField>
 
-          <div class="spawn-modal__body">
-            <FormField :label="$t('enrichment.spawn.operation')">
-              <BasicSelect
-                :options="opOptions"
-                v-model="op"
-                :placeholder="$t('enrichment.spawn.operation')"
-                data-testid="enrichment-spawn-op"
-              />
-            </FormField>
+      <FormField
+        :label="$t('enrichment.spawn.languages')"
+        :description="availableLanguages.length ? '' : $t('enrichment.spawn.no_languages')"
+      >
+        <BasicSelect
+          v-model="languages"
+          multiple
+          :options="languageOptions"
+          :disabled="!availableLanguages.length"
+          data-testid="enrichment-spawn-languages"
+        />
+      </FormField>
 
-            <FormField
-              :label="$t('enrichment.spawn.feature')"
-              :description="$t('enrichment.spawn.feature_hint')"
-            >
-              <BasicSelect
-                :options="featureOptions"
-                v-model="feature"
-                :placeholder="$t('enrichment.spawn.feature_placeholder')"
-                data-testid="enrichment-spawn-feature"
-              />
-            </FormField>
+      <FormField
+        :label="$t('enrichment.spawn.channels')"
+        :description="$t('enrichment.spawn.channels_hint')"
+      >
+        <ChannelMultiSelect
+          v-model="channels"
+          :channels="channelList"
+          :label="$t('enrichment.spawn.channels')"
+          :all-label="$t('common.all')"
+        />
+      </FormField>
 
-            <FormField :label="$t('enrichment.spawn.languages')">
-              <div class="spawn-modal__langs flex ai-ct gap-5 flex-wrap">
-                <label
-                  v-for="lang in availableLanguages"
-                  :key="lang"
-                  class="spawn-modal__lang fs-200"
-                  :class="{ 'spawn-modal__lang--on': languages.includes(lang) }"
-                >
-                  <input
-                    type="checkbox"
-                    :value="lang"
-                    :checked="languages.includes(lang)"
-                    @change="toggleLang(lang)"
-                  />
-                  {{ lang.toUpperCase() }}
-                </label>
-                <span
-                  v-if="!availableLanguages.length"
-                  class="fs-200 t-muted"
-                  >{{ $t("enrichment.spawn.no_languages") }}</span
-                >
-              </div>
-            </FormField>
+      <FormField :label="$t('enrichment.spawn.scope')">
+        <BasicRadioGroup v-model="scope" :options="scopeOptions" />
+      </FormField>
 
-            <FormField
-              :label="$t('enrichment.spawn.channels')"
-              :description="$t('enrichment.spawn.channels_hint')"
-            >
-              <ChannelMultiSelect
-                v-model="channels"
-                :channels="channelList"
-                :label="$t('enrichment.spawn.channels')"
-                :all-label="$t('common.all')"
-              />
-            </FormField>
-
-            <FormField :label="$t('enrichment.spawn.scope')">
-              <div class="flex flex-column gap-2">
-                <label class="spawn-modal__scope fs-200">
-                  <input
-                    type="radio"
-                    value="list"
-                    :checked="scope === 'list'"
-                    @change="scope = 'list'"
-                    :disabled="!skus.length"
-                  />
-                  {{
-                    $t("enrichment.spawn.scope_selection", {
-                      count: skus.length,
-                    })
-                  }}
-                </label>
-                <label v-if="hasFilter" class="spawn-modal__scope fs-200">
-                  <input
-                    type="radio"
-                    value="filter"
-                    :checked="scope === 'filter'"
-                    @change="scope = 'filter'"
-                  />
-                  {{ $t("enrichment.spawn.scope_filter") }}
-                </label>
-              </div>
-            </FormField>
-
-            <p class="spawn-modal__summary fs-200 t-muted">
-              {{ summaryLine }}
-            </p>
-          </div>
-
-          <div class="spawn-modal__footer b-subtle bt-100">
-            <button
-              class="spawn-modal__btn bg-raised t-secondary"
-              :disabled="busy"
-              @click="$emit('close')"
-            >
-              {{ $t("common.cancel") }}
-            </button>
-            <button
-              class="spawn-modal__btn bg-accent-fill t-on-accent-fill"
-              :disabled="busy || !canSpawn"
-              data-testid="enrichment-spawn-submit"
-              @click="spawn"
-            >
-              {{ $t("enrichment.spawn.submit") }}
-            </button>
-          </div>
-        </div>
-      </div>
-    </Transition>
-  </Teleport>
+      <p class="fs-200 t-muted">
+        {{ summaryLine }}
+      </p>
+    </div>
+  </BasicModal>
 </template>
 
 <script>
@@ -168,6 +105,25 @@ export default {
     };
   },
   computed: {
+    // Cancel · Create tasks (R5).
+    actions() {
+      return [
+        { key: "cancel", role: "secondary", label: this.$t("common.cancel"), disabled: this.busy,
+          onClick: () => this.$emit("close") },
+        { key: "submit", role: "primary", label: this.$t("enrichment.spawn.submit"), testid: "enrichment-spawn-submit",
+          disabled: this.busy || !this.canSpawn, loading: this.busy, onClick: this.spawn },
+      ];
+    },
+    languageOptions() {
+      return this.availableLanguages.map((lang) => ({ label: lang.toUpperCase(), value: lang }));
+    },
+    // The selection needs picked products; "all matching the filter" shows only with a list filter.
+    scopeOptions() {
+      const selection = { value: "list", disabled: !this.skus.length,
+        label: this.$t("enrichment.spawn.scope_selection", { count: this.skus.length }) };
+      if (!this.hasFilter) return [selection];
+      return [selection, { value: "filter", label: this.$t("enrichment.spawn.scope_filter") }];
+    },
     opOptions() {
       return OPERATIONS.map((o) => ({
         value: o,
@@ -225,11 +181,6 @@ export default {
       const active = this.pimChannel.activeChannelIdx;
       this.channels = active ? [active] : [];
       this.fetchFeatures();
-    },
-    toggleLang(lang) {
-      const i = this.languages.indexOf(lang);
-      if (i > -1) this.languages.splice(i, 1);
-      else this.languages.push(lang);
     },
     async fetchFeatures() {
       try {
@@ -314,85 +265,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.spawn-modal__overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  background: var(--overlay-backdrop);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-8);
-}
-.spawn-modal__box {
-  width: 100%;
-  max-width: 520px;
-  border-radius: var(--radius-base);
-  box-shadow: var(--shadow-md);
-  display: flex;
-  flex-direction: column;
-  max-height: 90vh;
-}
-.spawn-modal__header {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-8);
-}
-.spawn-modal__body {
-  padding: var(--space-8);
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-8);
-}
-.spawn-modal__lang {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-1) var(--space-2);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-base);
-  cursor: pointer;
-  &--on {
-    border-color: var(--accent);
-    color: var(--text-accent);
-  }
-}
-.spawn-modal__scope {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-.spawn-modal__summary {
-  margin: 0;
-}
-.spawn-modal__footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--space-2);
-  padding: var(--space-8);
-}
-.spawn-modal__btn {
-  height: var(--elem-height);
-  padding: 0 var(--space-4);
-  border: none;
-  border-radius: var(--radius-base);
-  font-size: var(--fs-200);
-  cursor: pointer;
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-}
-.spawn-modal-enter-active,
-.spawn-modal-leave-active {
-  transition: opacity 0.15s ease;
-}
-.spawn-modal-enter-from,
-.spawn-modal-leave-to {
-  opacity: 0;
-}
-</style>
