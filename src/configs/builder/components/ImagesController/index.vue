@@ -254,7 +254,8 @@
         />
 
         <div v-if="filePreview" class="mt-8">
-          <div class="page-card grid grid-col-2 gap-10">
+          <BasicCard>
+          <div class="grid grid-col-2 gap-10">
             <img :src="filePreview" alt="" style="max-width: 100%; border-radius: var(--radius-base)" />
             <div class="flex-column gap-5 ai-fs">
               <FormField :label="'alt'">
@@ -295,6 +296,7 @@
               </BasicButton>
             </div>
           </div>
+          </BasicCard>
         </div>
       </div>
     </div>

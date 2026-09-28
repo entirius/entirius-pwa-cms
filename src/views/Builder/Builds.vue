@@ -174,10 +174,10 @@
       </ConfirmDialog>
     </template>
 
-    <div
+    <BasicCard
       v-if="contentTypes !== null && !hasVisibleContent"
-      class="page-card flex ai-ct jc-ct gap-5 t-muted"
-      style="min-height: 14rem; flex-direction: column"
+      class="ai-ct jc-ct t-muted"
+      style="min-height: 14rem"
     >
       <p class="fs-400 fw-600 t-secondary">
         {{ $t("builder.no_content_title") }}
@@ -185,7 +185,7 @@
       <p class="fs-200 t-muted ta-ct" style="max-width: 30rem">
         {{ $t("builder.no_content_msg") }}
       </p>
-    </div>
+    </BasicCard>
 
     <TranslateAllContentModal
       :visible="showTranslateModal"
