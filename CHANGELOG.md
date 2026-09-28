@@ -389,6 +389,9 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- P5 wave-3 close (plan 46): a breadcrumb trail no longer repeats the panel when its nav entry reads the same
+  ("Promocje / Promocje / <rule>", "Zgody / Zgody / …", "Ceny / Ceny / …" → "Promocje / <rule>").
+
 - P5 wave-2 close (plan 40): the Stock page offers its warehouse picker when no warehouse is active yet (it was only
   inside the table, so a fresh session hit a dead end); FAQ lists show an empty state; a FAQ answer is required before
   the save request; e-mail channel Save shows its progress and cannot be sent twice, a failed channel load offers a
