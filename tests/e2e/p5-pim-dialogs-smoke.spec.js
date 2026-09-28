@@ -1,0 +1,113 @@
+const { test, expect } = require('@playwright/test');
+const { login } = require('../helpers/auth');
+const { createErrorCollector } = require('../helpers/error-collector');
+const en = require('../../src/i18n/locales/en.json');
+const pl = require('../../src/i18n/locales/pl.json');
+
+/**
+ * P5 Pim dialogs smoke (plan 50): the product's channel and enrichment dialogs, the one translate dialog from the
+ * Pim wrapper („Tłumacz sklep”), the product list selection and the Pages content list („Przetłumacz wszystko”).
+ * Read-only: every dialog is opened, checked and cancelled; nothing is estimated, added, spawned or translated.
+ */
+
+// The dev server's hot-reload socket (the zeno CMS container answers on another port) is not a page error.
+const DEV_SERVER = ['WebSocket connection to'];
+// A product without a stock record answers 404 in the Stock tab.
+const NO_STOCK = ({ status, url }) => status === 404 && url.includes('/stock-by-sku/');
+// A PIM without the system language list answers 404; the dialog then names languages by their code (non-critical).
+const NO_SYSTEM_LANGUAGES = ({ status, url }) => status === 404 && url.includes('/pim/v2/admin/languages/');
+
+const { either: escapedEither } = require('./helpers/text');
+const either = (pick) => escapedEither(pick(en), pick(pl));
+
+async function openPage(page, path) {
+  await page.goto(path);
+  await page.waitForLoadState('networkidle');
+}
+
+async function expectDialogThenCancel(page, title) {
+  const dialog = page.getByRole('dialog', { name: title });
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole('button', { name: either((t) => t.common.cancel) }).click();
+  await expect(dialog).toBeHidden();
+}
+
+async function expectTranslateDialog(page, title) {
+  const dialog = page.getByRole('dialog', { name: title });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByRole('combobox', { name: either((t) => t.translate_dialog.source_language) })).toBeVisible();
+  await expect(dialog.getByTestId('translate-dialog-estimate')).toBeDisabled();
+  await dialog.getByRole('button', { name: either((t) => t.common.cancel) }).click();
+  await expect(dialog).toBeHidden();
+}
+
+async function openFirstProduct(page) {
+  await openPage(page, '/pim/products');
+  const rows = page.locator('.page-layout .data-table__row');
+  await expect(rows.first().or(page.locator('.empty-state').first())).toBeVisible({ timeout: 10000 });
+  test.skip(!(await rows.count()), 'no products in the stack');
+  return rows;
+}
+
+test.describe('P5 Pim dialogs', () => {
+  test.use({ viewport: { width: 1280, height: 720 } });
+
+  test.beforeEach(async ({ page }) => {
+    await login(page);
+  });
+
+  test('product detail: channel presence and enrichment dialogs', async ({ page }) => {
+    const collector = createErrorCollector(page, { whitelist: DEV_SERVER, ignoreNetwork: NO_STOCK });
+    const rows = await openFirstProduct(page);
+    await rows.first().click();
+    await page.waitForURL(/\/pim\/products\/.+/);
+    await page.waitForLoadState('networkidle');
+
+    await page.getByTestId('pim-product-more').click();
+    await page.getByRole('menuitem', { name: either((t) => t.pim.channels) }).click();
+    await expect(page.getByTestId('pim-add-to-channel-dialog')).toBeVisible();
+    await expectDialogThenCancel(page, either((t) => t.pim.channel_presence));
+
+    await page.getByTestId('pim-product-more').click();
+    const enrich = page.getByTestId('enrichment-spawn-button');
+    if (await enrich.count()) {
+      await enrich.click();
+      await expect(page.getByTestId('enrichment-spawn-submit')).toBeVisible();
+      await expectDialogThenCancel(page, either((t) => t.enrichment.spawn.title));
+    } else {
+      await page.keyboard.press('Escape');
+    }
+
+    collector.assertNoErrors(expect, 'Pim product dialogs');
+  });
+
+  test('translate dialog: the store from the Pim wrapper, the selection from the product list', async ({ page }) => {
+    const collector = createErrorCollector(page, { whitelist: DEV_SERVER, ignoreNetwork: NO_SYSTEM_LANGUAGES });
+    const rows = await openFirstProduct(page);
+    const store = page.getByRole('button', { name: either((t) => t.pim.translate_store) });
+    test.skip(!(await store.count()), 'pim_translator is not installed');
+
+    await store.click();
+    await expectTranslateDialog(page, either((t) => t.pim.translate_store));
+
+    await rows.first().locator('input[type="checkbox"], [role="checkbox"]').first().click();
+    await page.getByRole('button', { name: either((t) => t.pim.translate) }).first().click();
+    await expectTranslateDialog(page, /1/);
+
+    collector.assertNoErrors(expect, 'Pim translate dialog');
+  });
+
+  test('translate dialog: every page from the Pages content list', async ({ page }) => {
+    const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+    await openPage(page, '/pages/content');
+    const translateAll = page.getByRole('button', { name: either((t) => t.builder.translate_all) });
+    // The button waits for the module registry; without contentdb_translator it never comes.
+    await translateAll.waitFor({ timeout: 5000 }).catch(() => {});
+    test.skip(!(await translateAll.count()), 'contentdb_translator is not installed');
+
+    await translateAll.click();
+    await expectTranslateDialog(page, either((t) => t.builder.translate_all));
+
+    collector.assertNoErrors(expect, 'Pages translate dialog');
+  });
+});
