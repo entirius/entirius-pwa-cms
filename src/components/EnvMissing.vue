@@ -1,6 +1,6 @@
 <template>
-  <div
-    class="page-card env-missing absolute fs-300 t-body shadow-down"
+  <BasicCard
+    class="env-missing absolute fs-300 t-body shadow-down"
   >
     <p class="fs-700 fw-600 txt-center mb-1">Configuration Required</p>
     <p class="fs-300 t-secondary txt-center mb-12">
@@ -39,7 +39,7 @@
         Then fill in the required values and restart the dev server.
       </p>
     </div>
-  </div>
+  </BasicCard>
 </template>
 
 <script setup>

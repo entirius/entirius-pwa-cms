@@ -1,6 +1,6 @@
 <template>
-  <div
-    class="page-card auth-card fs-300 t-body shadow-down"
+  <BasicCard
+    class="auth-card fs-300 t-body shadow-down"
   >
     <template v-if="errorMessage">
       <p class="fs-700 fw-600 txt-center mb-1">{{ $t("login.sso_failed") }}</p>
@@ -18,7 +18,7 @@
     <p v-else class="fs-500 fw-500 txt-center">
       {{ $t("login.sso_in_progress") }}
     </p>
-  </div>
+  </BasicCard>
 </template>
 
 <script>

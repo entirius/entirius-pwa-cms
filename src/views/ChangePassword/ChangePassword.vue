@@ -1,6 +1,6 @@
 <template>
-  <div
-    class="page-card auth-card fs-300 t-body shadow-down"
+  <BasicCard
+    class="auth-card fs-300 t-body shadow-down"
   >
     <!-- Success state -->
     <template v-if="success">
@@ -83,7 +83,7 @@
         {{ $t('user.change_password_submit') }}
       </BasicButton>
     </template>
-  </div>
+  </BasicCard>
 </template>
 
 <script>

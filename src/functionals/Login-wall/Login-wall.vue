@@ -1,6 +1,6 @@
 <template>
-  <div
-    class="page-card auth-card fs-300 t-body shadow-down"
+  <BasicCard
+    class="auth-card fs-300 t-body shadow-down"
   >
     <!-- Forgot password mode -->
     <template v-if="showForgotPassword">
@@ -104,7 +104,7 @@
         {{ $t("login.forgot_password") }}
       </button>
     </template>
-  </div>
+  </BasicCard>
 </template>
 
 <script>
