@@ -115,6 +115,20 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- The Pages content editor (P5 plan 28, Figma S6–S8): `PageLayout` with a `PageHeader` — crumbs Pages / Lista treści /
+  <document>, a back arrow to the list, the document name as the H1 and the „Kanały” `ChannelMultiSelect` chip beside
+  it; the head sticks under the app header on a phone. The toolbar that teleported into the Pages wrapper is an
+  `ActionBar` in R5 order: „Kopiuj” · „Zaawansowane” (· „Opcje dokumentu”) · „Zapisz szkic” · „Zapisz i publikuj”, with
+  the unsaved badge beside it; on a phone it is its own row under „Akcje”. Section, tile-group and tile actions are
+  `IconButton`s (32 px, 36 on a phone; add = primary, reorder = `reorder`, delete = danger), link chips are `Tag`s,
+  the advanced row's URL / meta / category buttons are `BasicButton`s, the home variant switch is a `BasicSelect`
+  and the FAB with the „Zarządzaj kolejnością” pill sits 24 px from the corner (16 px above the tab bar below 1024 px).
+  The scroll-to-top button above the FAB is gone (not in the design). Handy-kit: the images kit tabs are `BasicTabs`,
+  the SKU picker's mode switch is a ghost `BasicButton`.
+- Page frame boots follow Figma S6–S8: `data-fid="page-title"` marks the PageHeader title row (back, H1, meta);
+  breadcrumbs set Lexend Deca at line-height 1.1 (the title row moves 6 px up on desktop, 5 px on a phone); the
+  sticky head sits flush under the app header, full width; the phone `ActionBar` puts „Akcje” above one left-aligned
+  row of actions. On a phone the rich-text mode select takes its own row above the tools (A-54).
 - The Pages content list (P5 plan 27, Figma S4/S5): `PageLayout` with the „Lista treści” `PageHeader`; the filters
   row holds „Filtry:” with the content-type `FilterChip`s (a „Wyczyść filtry” IconButton instead of the „✕” chip) and
   the language `BasicSelect` in an inline `FormField` „Język treści”; on a phone the chips scroll sideways in one row
@@ -215,6 +229,8 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- Handy-kit image library and upload preview borders used removed `--clr-gray-*` tokens and drew nothing; they use
+  the border tokens again.
 - Pages content list: one delete confirmation for the whole list (every content-type group rendered its own copy, so
   a delete opened one dialog per group).
 - Thin scrollbars apply to mouse screens only: on a touch screen the styled scrollbar widened the layout viewport past

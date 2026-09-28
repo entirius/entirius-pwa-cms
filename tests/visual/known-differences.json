@@ -271,6 +271,30 @@
       "code": "the label is the FormField field label (12/600 uppercase, text-muted); „Przetłumacz wszystko” (contentdb_translator installed) is a secondary button left of the labelled select, above it on a phone",
       "scope": "Pages content list filters row",
       "treatment": "geometry-tolerance"
+    },
+    {
+      "id": "KD-P5-S6-actions",
+      "decision": "plan 28 (R5, ui-rules § Edit view)",
+      "figma": "copy · settings · „Zapisz szkic” · „Zapisz i publikuj” only (S6 46:6574)",
+      "code": "a dirty document shows the „Niezapisane zmiany” badge left of the ActionBar; „Opcje dokumentu” (edit) follows settings when the client config defines document options; settings toggles the advanced row and shows close while it is open",
+      "scope": "Pages content editor header",
+      "treatment": "geometry-tolerance"
+    },
+    {
+      "id": "KD-P5-S6-section-actions",
+      "decision": "plan 28 (C6, R6)",
+      "figma": "section trash drawn as an outline 32 px box like eye/pen/copy; mobile tile-group reorder is the old grid-dot glyph (S7 52:1641)",
+      "code": "delete is a danger IconButton (no box, negative icon); reorder is the `reorder` meaning on both viewports; the eye is named „Aktualna konfiguracja: <values>” (its tooltip)",
+      "scope": "Pages content editor section blocks and tile groups",
+      "treatment": "mask"
+    },
+    {
+      "id": "KD-P5-S7-sticky-hairline",
+      "decision": "plan 28 (R4)",
+      "figma": "bottom hairline under the sticky page header (S7 52:1271)",
+      "code": "no line: the head sits on the page background, spacing separates it",
+      "scope": "Pages content editor sticky header (phone)",
+      "treatment": "geometry-tolerance"
     }
   ]
 }

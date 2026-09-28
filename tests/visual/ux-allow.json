@@ -28,27 +28,6 @@
     "owner": "P5 plan 35 (Authors)"
   },
   {
-    "screen": "*",
-    "kind": "nonFocusable",
-    "selector": "div.subscriber-setter",
-    "reason": "content editor tile reorder/set controls inside SubscriberSetter (a BasicButton would swallow the setter click, plan 02)",
-    "owner": "P5 plan 28 (Pages content editor + Handy-kit)"
-  },
-  {
-    "screen": "*",
-    "kind": "nonFocusable",
-    "selector": "div.swiper-slide",
-    "reason": "content editor tile slider: slides select a tile on click only",
-    "owner": "P5 plan 28 (Pages content editor + Handy-kit)"
-  },
-  {
-    "screen": "*",
-    "kind": "nonFocusable",
-    "selector": "p.section-uid",
-    "reason": "content editor section id copies on click only",
-    "owner": "P5 plan 28 (Pages content editor + Handy-kit)"
-  },
-  {
     "screen": "pages-content-sets",
     "kind": "nonFocusable",
     "selector": "div.doc-tile",
