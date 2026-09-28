@@ -97,7 +97,7 @@
         </template>
       </div>
 
-    <template v-if="!loading && totalCount > pageSize" #footer>
+    <template v-if="!loading && decisions.length && totalCount > pageSize" #footer>
       <Pagination
         :page="paginationState.page"
         :pages="paginationState.pages"
