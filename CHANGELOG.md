@@ -115,6 +115,25 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- P5 Pim products (plan 49): the product list, detail and create pages sit in `PageLayout` with a `PageHeader`; the
+  channel selector moves from the Pim toolbar strip into the header `meta` of these three pages (`PimChannelSelect`;
+  the wrapper keeps its own selector for the other Pim views until plan 51). The product detail header holds the
+  unsaved state, the Enabled switch and an `ActionBar`: a „More actions” menu (Channels, Copy translations, Send to
+  enrichment, and the channel inheritance flags as checked items), Delete (danger icon) and Save, which keeps its label
+  on a phone. Basic information, physical properties and the Descriptions, Product tile and SEO tabs are `BasicCard`s
+  with `FormField`s on a `.form-grid`; each translatable field has its translations `IconButton` beside the control,
+  and on a child channel `InheritanceField` shows Inherited / Overridden as a `Tag` with an Override / Inherit button
+  (the toggle the badge only described before). The tab strip scrolls in its box; Variants and Audit log show an
+  `EmptyState`. The create form follows the same pattern with Save in the header. The product list filters sit in a
+  `MobileFilterPanel` in three groups (status chips, selects, quality), inline on desktop instead of behind the
+  Filters toggle; the quality sensor toggle is an `IconButton`, a row's quality findings open in a `BasicMenu` panel
+  and the supplier „Updated” badge is a ghost `BasicButton`. The media gallery shows its assets as `MediaTile`s in one
+  sideways-scrolling row (MAIN as a `Tag`, edit and delete `IconButton`s); product files and links use `IconButton`
+  row actions, links' drawer errors sit on the `FormField`s; assigned categories are removable `Tag`s with an
+  `EntitySearchPicker` to add one (the chips no longer link to the category); supplier timeline entries and the
+  supplier status block are `BasicCard`s. Handlers, API calls and payloads are unchanged. Smoke spec
+  `tests/e2e/p5-pim-products-smoke.spec.js`.
+
 - P5 EnrichmentReview (plan 45): the page sits in `PageLayout`: the List | Focus switch in the PageHeader `meta`,
   Import CSV a secondary `ActionBar` action, the status chips one inline row with the match count, and the other
   filters (search, module, kind, source, batch, minimum confidence) in a `MobileFilterPanel` (inline on desktop, a
