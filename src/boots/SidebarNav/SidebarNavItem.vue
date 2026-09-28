@@ -1,18 +1,16 @@
 <template>
-  <component :is="collapsed ? BasicTooltip : Plain" :text="label" placement="right">
+  <component :is="collapsed && !locked ? BasicTooltip : Plain" :text="label" placement="right">
     <span
       v-if="locked"
       class="sidebar-nav-item flex ai-ct gap-2"
       :class="classes"
       aria-disabled="true"
-      :aria-label="collapsed ? `${label} ${$t('shell.locked')}` : undefined"
+      :title="collapsed ? label : undefined"
     >
       <FontAwesomeIcon :icon="icon" class="sidebar-nav-item__icon" aria-hidden="true" />
-      <template v-if="!collapsed">
-        <span class="sidebar-nav-item__label">{{ label }}</span>
-        <span class="visually-hidden">{{ $t("shell.locked") }}</span>
-        <FontAwesomeIcon :icon="ICONS.lock" class="sidebar-nav-item__end" aria-hidden="true" />
-      </template>
+      <span class="sidebar-nav-item__label" :class="{ 'visually-hidden': collapsed }">{{ label }}</span>
+      <span class="visually-hidden">{{ $t("shell.locked") }}</span>
+      <FontAwesomeIcon v-if="!collapsed" :icon="ICONS.lock" class="sidebar-nav-item__end" aria-hidden="true" />
     </span>
     <button
       v-else-if="isDisclosure"
@@ -47,7 +45,7 @@
 // `toggle`. Level 2 = a sub-page (32 px, 14/400, 1 px rail that turns accent when active). `active` lights the row
 // and marks a link `aria-current="page"`. `locked` = a panel Munin keeps off: dimmed, a lock, not focusable, a
 // visually hidden "(niedostępny)". `collapsed` = the 64 px rail: the icon alone, named by `aria-label`, the label as a
-// BasicTooltip. `icon` is a FontAwesome glyph name (the panel and entry glyphs of the nav model, not meanings).
+// BasicTooltip (a locked row keeps its text for screen readers and takes no tooltip: it must stay out of the tab order). `icon` is a FontAwesome glyph name (the panel and entry glyphs of the nav model, not meanings).
 import { computed } from "vue";
 import { ICONS } from "@/boots/Icons/icons";
 import BasicTooltip from "@/boots/BasicTooltip/index.vue";

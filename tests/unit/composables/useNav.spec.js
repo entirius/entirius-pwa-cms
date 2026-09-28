@@ -146,6 +146,7 @@ const crumbsAt = (path, title) => {
 describe("buildCrumbs", () => {
   it("shows nothing on a panel's list (R3), on Home and outside a panel", () => {
     expect(crumbsAt("/pim/products")).toEqual([]);
+    expect(crumbsAt("/stock/manage")).toEqual([]);
     expect(crumbsAt("/")).toEqual([]);
     expect(crumbsAt("/ui")).toEqual([]);
   });

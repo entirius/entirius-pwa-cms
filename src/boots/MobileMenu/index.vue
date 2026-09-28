@@ -16,11 +16,10 @@
         class="mobile-menu__close"
         size="lg"
         icon="close"
-        :pressed="true"
         :label="$t('shell.close_menu')"
         @click="close"
       />
-      <div class="mobile-menu__panel" data-fid="mobile-menu">
+      <div class="mobile-menu__panel" data-fid="mobile-menu" @click="onPanelClick">
         <SidebarNav flat />
       </div>
     </div>
@@ -41,7 +40,7 @@ import { useFocusTrap } from "@/composables/useFocusTrap";
 
 const props = defineProps({
   open: { type: Boolean, default: false },
-  id: { type: String, default: "mobile-menu" },
+  id: { type: String, default: "app-mobile-menu" },
   inline: { type: Boolean, default: false },
 });
 const emit = defineEmits(["update:open"]);
@@ -55,6 +54,11 @@ useFocusTrap(root, {
   initialFocus: () => root.value?.querySelector(".mobile-menu__close"),
   onEscape: close,
 });
+
+// A link closes the menu even when it points at the page already open (the router then does not navigate).
+function onPanelClick(event) {
+  if (!props.inline && event.target.closest("a[href]")) close();
+}
 
 watch(
   () => route.path,
@@ -78,6 +82,8 @@ watch(
   position: absolute;
   top: var(--space-5);
   right: var(--space-5);
+  color: var(--text-body);
+  background-color: var(--surface-hover);
 }
 
 .mobile-menu__panel {

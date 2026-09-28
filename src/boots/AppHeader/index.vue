@@ -15,7 +15,7 @@
           size="lg"
           :icon="menuOpen ? 'close' : 'menu'"
           :label="menuOpen ? $t('shell.close_menu') : $t('shell.menu')"
-          :pressed="menuOpen"
+          :class="{ 'app-header__menu--open': menuOpen }"
           :aria-expanded="String(menuOpen)"
           :aria-controls="menuId"
           @click="$emit('update:menuOpen', !menuOpen)"
@@ -42,7 +42,7 @@ import { useIsDesktop } from "@/composables/useIsDesktop";
 
 const props = defineProps({
   menuOpen: { type: Boolean, default: false },
-  menuId: { type: String, default: "mobile-menu" },
+  menuId: { type: String, default: "app-mobile-menu" },
   mobile: { type: Boolean, default: undefined },
 });
 defineEmits(["update:menuOpen"]);
@@ -80,6 +80,12 @@ const healthEnabled = computed(() => munin.loaded && munin.isModuleEnabled("muni
 
 .app-header__tools {
   margin-left: auto;
+}
+
+// The open state looks pressed (Figma S3) but is announced by aria-expanded alone.
+.app-header :deep(.app-header__menu--open) {
+  color: var(--text-body);
+  background-color: var(--surface-hover);
 }
 
 .app-header__separator {

@@ -34,6 +34,7 @@ import BottomTabBar from "@/boots/BottomTabBar/index.vue";
 import UserMenu from "@/boots/UserMenu/index.vue";
 import AppHeader from "@/boots/AppHeader/index.vue";
 import { t } from "@/i18n";
+import { panels } from "@/configs/access";
 
 const RouterLink = {
   props: ["to"],
@@ -74,7 +75,8 @@ describe("SidebarNav", () => {
     expect(nav.attributes("aria-label")).toBe("shell.panels");
     expect(nav.attributes("data-testid")).toBe("app-sidebar");
     expect(nav.attributes("data-fid")).toBe("sidebar");
-    expect(nav.findAll(":scope > div > ul > li")[0].text()).toBe("nav.home");
+    const rows = nav.findAll(":scope > div > ul > li").map((li) => li.find(".sidebar-nav-item__label").text());
+    expect(rows).toEqual(["nav.home", ...panels.map((p) => t(p.labelKey))]);
   });
 
   it("opens the active panel's group and marks its entry aria-current; nothing else is current", () => {
@@ -114,12 +116,19 @@ describe("SidebarNav", () => {
     expect(locked.element.matches("a, button, [tabindex]")).toBe(false);
   });
 
+  it("a locked panel in the rail stays out of the tab order and keeps its name for screen readers", () => {
+    user.isSidebarCollapsed = true;
+    const locked = mountIt(SidebarNav).get("[aria-disabled='true']");
+    expect(locked.element.closest("[tabindex]")).toBe(null);
+    expect(locked.text()).toContain(t("panels.stock"));
+  });
+
   it("the collapsed rail shows icon links named by aria-label; the footer toggle reports and flips the state", async () => {
     user.isSidebarCollapsed = true;
     const wrapper = mountIt(SidebarNav);
     expect(wrapper.find("nav").classes()).toContain("sidebar-nav--collapsed");
     expect(wrapper.find("a").attributes("aria-label")).toBe("nav.home");
-    expect(wrapper.find(".sidebar-nav-item__label").exists()).toBe(false);
+    expect(wrapper.find("a .sidebar-nav-item__label").exists()).toBe(false);
     const toggle = wrapper.get(".sidebar-nav__footer button");
     expect(toggle.attributes("aria-expanded")).toBe("false");
     expect(toggle.attributes("aria-controls")).toBe(wrapper.get("nav").attributes("id"));
@@ -161,10 +170,13 @@ describe("MobileMenu", () => {
     expect(dialog.getAttribute("role")).toBe("dialog");
     expect(dialog.getAttribute("aria-modal")).toBe("true");
     expect(document.activeElement.classList).toContain("mobile-menu__close");
+    const close = document.activeElement;
     const last = [...dialog.querySelectorAll("a[href]")].at(-1);
     last.focus();
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab", bubbles: true, cancelable: true }));
-    expect(dialog.contains(document.activeElement)).toBe(true);
+    expect(document.activeElement).toBe(close);
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab", shiftKey: true, bubbles: true, cancelable: true }));
+    expect(document.activeElement).toBe(last);
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
     expect(wrapper.emitted("update:open")).toEqual([[false]]);
     await wrapper.setProps({ open: false });
@@ -172,13 +184,15 @@ describe("MobileMenu", () => {
     expect(document.activeElement).toBe(menuButton);
   });
 
-  it("closes on navigation, the close button closes too", async () => {
+  it("closes on navigation, on a link to the page already open, and from its close button", async () => {
     const wrapper = mountIt(MobileMenu, { open: true });
     await flushPromises();
     await goTo("/pim/products", { panel: "pim" });
     expect(wrapper.emitted("update:open")).toEqual([[false]]);
-    document.querySelector(".mobile-menu__close").click();
+    document.querySelector(".mobile-menu__panel a[href]").click();
     expect(wrapper.emitted("update:open")).toHaveLength(2);
+    document.querySelector(".mobile-menu__close").click();
+    expect(wrapper.emitted("update:open")).toHaveLength(3);
   });
 
   it("inline: in the page flow, no trap, no close button", async () => {
@@ -253,7 +267,7 @@ describe("AppHeader", () => {
     const wrapper = mountIt(AppHeader, { mobile: false });
     expect(wrapper.get("header").attributes("data-fid")).toBe("header");
     expect(wrapper.get("[data-fid='logo']").attributes("href")).toBe("/");
-    expect(wrapper.find("[aria-controls='mobile-menu']").exists()).toBe(false);
+    expect(wrapper.find("[aria-controls='app-mobile-menu']").exists()).toBe(false);
     expect(wrapper.find("h1, h2").exists()).toBe(false);
   });
 
