@@ -336,6 +336,7 @@ const routes = [
         component: () =>
           import(/* webpackChunkName: "points" */ "../views/Points/PointEdit.vue"),
         meta: {
+          navParent: "/points/list",
           requiresAuth: true,
           titleKey: "dp.create_point",
           panel: "points",
@@ -370,6 +371,7 @@ const routes = [
         component: () =>
           import(/* webpackChunkName: "points" */ "../views/Points/PointEdit.vue"),
         meta: {
+          navParent: "/points/list",
           requiresAuth: true,
           titleKey: "dp.point_detail",
           panel: "points",
@@ -453,6 +455,7 @@ const routes = [
         component: () =>
           import(/* webpackChunkName: "forms" */ "../views/ContactForms/ContactFormDetail.vue"),
         meta: {
+          navParent: "/forms/list",
           requiresAuth: true,
           titleKey: "cf.submission_detail",
           panel: "forms",
@@ -492,6 +495,7 @@ const routes = [
         component: () =>
           import(/* webpackChunkName: "agreements" */ "../views/Agreements/AgreementEdit.vue"),
         meta: {
+          navParent: "/agreements/list",
           requiresAuth: true,
           titleKey: "agm.create_definition",
           panel: "agreements",
@@ -525,6 +529,7 @@ const routes = [
         component: () =>
           import(/* webpackChunkName: "agreements" */ "../views/Agreements/AgreementEdit.vue"),
         meta: {
+          navParent: "/agreements/list",
           requiresAuth: true,
           titleKey: "agm.definition_detail",
           panel: "agreements",
@@ -671,6 +676,7 @@ const routes = [
         component: () =>
           import(/* webpackChunkName: "emails" */ "../views/Emails/EmailTemplateEdit.vue"),
         meta: {
+          crumbParent: "EmailTemplateList",
           requiresAuth: true,
           titleKey: "emails.edit_template",
           panel: "emails",
@@ -930,6 +936,7 @@ const routes = [
         component: () =>
           import(/* webpackChunkName: "atlas" */ "../views/Atlas/SourceDetail.vue"),
         meta: {
+          navParent: "/atlas/list",
           requiresAuth: true,
           titleKey: "atlas.detail_title",
           panel: "atlas",
@@ -1050,7 +1057,7 @@ const routes = [
         path: "settings/templates/:id",
         name: "CommunicatorTemplateEdit",
         component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/TemplateEdit.vue"),
-        meta: { requiresAuth: true, titleKey: "communicator.template.title", panel: "leads", module: "communicator", page: true },
+        meta: { requiresAuth: true, titleKey: "communicator.template.title", panel: "leads", module: "communicator", page: true, crumbParent: "CommunicatorTemplates" },
       },
       {
         path: "settings/sequences",
@@ -1190,6 +1197,7 @@ const routes = [
         component: () =>
           import(/* webpackChunkName: "promo" */ "../views/Promo/PromoEdit.vue"),
         meta: {
+          navParent: "/promo/list",
           requiresAuth: true,
           titleKey: "nav.promo_list",
           panel: "promo",
@@ -1201,6 +1209,7 @@ const routes = [
         component: () =>
           import(/* webpackChunkName: "promo" */ "../views/Promo/VoucherDetail.vue"),
         meta: {
+          navParent: "/promo/list",
           requiresAuth: true,
           titleKey: "nav.promo_list",
           panel: "promo",
@@ -1215,6 +1224,7 @@ const routes = [
         component: () =>
           import(/* webpackChunkName: "promo" */ "../views/Promo/PromoEdit.vue"),
         meta: {
+          navParent: "/promo/list",
           requiresAuth: true,
           titleKey: "nav.promo_list",
           panel: "promo",

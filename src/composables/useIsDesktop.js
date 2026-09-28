@@ -1,6 +1,7 @@
 import { useMediaQuery } from "@/composables/useMediaQuery";
+import { SHELL_QUERY } from "@/utils/breakpoints";
 
-// Desktop screens of the leads platform are laid out for >= 1024 px (plan 14).
+// The shell breakpoint: sidebar layout, `desktopOnly` nav entries and the Leads desktop screens (plan 14) from here up.
 export function useIsDesktop() {
-  return useMediaQuery("(min-width: 1024px)", true);
+  return useMediaQuery(SHELL_QUERY, true);
 }
