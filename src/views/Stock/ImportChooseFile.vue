@@ -14,7 +14,7 @@
       type="file"
       accept=".csv"
       hidden
-      @change="$emit('select', $event.target.files[0] || null)"
+      @change="onChange"
     />
   </div>
 </template>
@@ -31,9 +31,15 @@ import { useControlAttrs } from "@/boots/FormField/useControlAttrs"
 defineProps({
   fileName: { type: String, default: "" },
 })
-defineEmits(["select"])
+const emit = defineEmits(["select"])
 
 const { field, attrs } = useControlAttrs()
 const labelledBy = computed(() => [field.labelId?.value, attrs.value.id].filter(Boolean).join(" "))
 const fileInput = ref(null)
+
+// Cleared after each pick, so picking the same file again (after an import) still fires `change`.
+function onChange(event) {
+  emit("select", event.target.files[0] || null)
+  event.target.value = ""
+}
 </script>

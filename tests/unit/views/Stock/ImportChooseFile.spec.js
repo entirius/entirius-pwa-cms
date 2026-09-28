@@ -18,4 +18,17 @@ describe("ImportChooseFile in a FormField", () => {
     expect(label.attributes("for")).toBe(button.attributes("id"));
     expect(button.attributes("aria-labelledby")).toBe(`${label.attributes("id")} ${button.attributes("id")}`);
   });
+
+  it("emits the picked file and clears the input, so the same file can be picked again", async () => {
+    const wrapper = mount(ImportChooseFile, { global: { stubs: { BasicButton: true } } });
+    const input = wrapper.find('input[type="file"]');
+    const file = new File(["code;name"], "points.csv", { type: "text/csv" });
+    const cleared = [];
+    Object.defineProperty(input.element, "files", { value: [file] });
+    Object.defineProperty(input.element, "value", { set: (v) => cleared.push(v), get: () => "" });
+    await input.trigger("change");
+
+    expect(wrapper.emitted("select")[0]).toEqual([file]);
+    expect(cleared).toEqual([""]);
+  });
 });
