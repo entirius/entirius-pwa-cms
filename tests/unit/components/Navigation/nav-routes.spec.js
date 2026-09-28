@@ -14,7 +14,7 @@ const routes = [
 describe("filterNavRoutes — requiresModule gating", () => {
   it("hides a requiresModule entry when the module is disabled", () => {
     const visible = filterNavRoutes(routes, {
-      activeApp: "atlas",
+      panel: "atlas",
       isModuleEnabled: () => false,
     });
     expect(visible.map((r) => r.route)).toEqual(["/atlas/list"]);
@@ -22,14 +22,14 @@ describe("filterNavRoutes — requiresModule gating", () => {
 
   it("shows a requiresModule entry once the module is enabled", () => {
     const visible = filterNavRoutes(routes, {
-      activeApp: "atlas",
+      panel: "atlas",
       isModuleEnabled: (key) => key === "lookup",
     });
     expect(visible.map((r) => r.route)).toEqual(["/atlas/list", "/atlas/find"]);
   });
 
   it("hides a requiresModule entry when no isModuleEnabled callback is provided", () => {
-    const visible = filterNavRoutes(routes, { activeApp: "atlas" });
+    const visible = filterNavRoutes(routes, { panel: "atlas" });
     expect(visible.map((r) => r.route)).toEqual(["/atlas/list"]);
   });
 });
@@ -38,7 +38,7 @@ describe("filterNavRoutes — requiresModule gating", () => {
 // UX-010: with communicator the Inbox entry owns both lists, so opening a company card never moves the lit entry.
 const leadsEntries = (modules) =>
   filterNavRoutes(buildNavRoutes(), {
-    activeApp: "leads",
+    panel: "leads",
     isDesktop: true,
     isModuleEnabled: (key) => modules.includes(key),
   });

@@ -4,7 +4,7 @@ import Cookies from "universal-cookie";
 import { setActivePinia, createPinia } from "pinia";
 import { useUserStore } from "@/stores/user";
 import { useLoginSession } from "@/composables/useLoginSession";
-import Navigation from "@/components/Navigation/Navigation.vue";
+import SidebarNav from "@/boots/SidebarNav/index.vue";
 import { jwtExpiringIn } from "../../helpers/jwt";
 
 // r04 §9 defect 3: isAuth flipped before the profile and permissions calls resolved, so a click on a home card
@@ -16,12 +16,16 @@ vi.mock("@/api/contentDB/api", () => ({
   GET_UserDetails: (...args) => mockGetUserDetails(...args),
   PATCH_UserProfile: async () => ({}),
 }));
+vi.mock("vue-router", () => ({
+  useRoute: () => ({ path: "/pages/content", meta: { panel: "pages" }, params: {}, query: {}, matched: [] }),
+  useRouter: () => ({ resolve: (to) => ({ path: typeof to === "string" ? to : to.path }) }),
+}));
 vi.mock("@/api/munin/api", () => ({
   GET_Modules: async () => ({ data: { modules: {} } }),
 }));
 
 const mountDesktopNav = () =>
-  mount(Navigation, {
+  mount(SidebarNav, {
     global: { stubs: { RouterLink: { props: ["to"], template: "<a class='nav-link'><slot /></a>" } } },
   });
 

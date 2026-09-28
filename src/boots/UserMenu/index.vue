@@ -8,8 +8,8 @@
 
 <script setup>
 // The user menu of the header (r05 §8.6, Q3): the user's name, the theme item that names its target state
-// ("Tryb jasny" / "Tryb ciemny"), the languages (the current one checked), configuration health (with the munin
-// module, as the header icon), change password, logout (danger). On BasicMenu: the trigger gets
+// ("Tryb jasny" / "Tryb ciemny"), the languages (radio items, the current one checked), configuration health (with
+// the munin module, as the header icon), change password, logout (danger). On BasicMenu: the trigger gets
 // `aria-haspopup="menu"`, arrows move, Esc closes and returns focus. `inline` renders it open (catalogue).
 import { computed } from "vue";
 import { t } from "@/i18n";
@@ -29,13 +29,16 @@ const userStore = useUserStore();
 const munin = useMuninStore();
 const configHealth = useConfigHealthStore();
 
-const userName = computed(() => userStore.user?.username || userStore.user?.email || "User");
+const userName = computed(() => userStore.user?.username || userStore.user?.email || t("shell.user"));
 const isDark = computed(() => userStore.theme === "dark");
-// Admin data loaded (the health endpoint is admin-only) and munin itself enabled: the header icon's gate.
-const healthEnabled = computed(() => munin.loaded && munin.isModuleEnabled("munin"));
 
 const languageItems = () =>
-  LANGUAGES.map(({ code, label }) => ({ key: `lang-${code}`, label, icon: userStore.lang === code ? "check" : undefined }));
+  LANGUAGES.map(({ code, label }) => ({
+    key: `lang-${code}`,
+    label,
+    icon: userStore.lang === code ? "check" : undefined,
+    checked: userStore.lang === code,
+  }));
 
 const items = computed(() => [
   { key: "name", heading: true, label: userName.value },
@@ -44,7 +47,7 @@ const items = computed(() => [
   { key: "lang", heading: true, label: t("shell.language") },
   ...languageItems(),
   { key: "sep-account", separator: true },
-  ...(healthEnabled.value
+  ...(munin.healthAvailable
     ? [{ key: "health", label: t("config_health.title"), icon: "success", testid: "config-health-menu" }]
     : []),
   { key: "password", label: t("user.change_password"), icon: "password", to: "/change-password" },

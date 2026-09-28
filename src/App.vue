@@ -1,91 +1,44 @@
 <template>
   <div
     id="app"
-    class="bg-page flex-column ai-ct jc-ct"
-    :class="{ 'app--no-panel-nav': hasPanel && !showBottomBar }"
+    class="bg-page flex-column"
+    :class="{ 'app--no-panel-nav': !showBottomBar }"
   >
     <EnvMissing v-if="!envValid" :status="envStatus" />
     <router-view v-else-if="isAuth && isFullscreen" />
     <template v-else-if="isAuth">
-      <div
-        class="app-header flex ai-ct bb-subtle w-100 bg-base relative"
-        style="z-index: 10"
-      >
-        <div
-          v-if="hasPanel && showPanelNav"
-          class="app-sidebar-col flex ai-ct br-subtle"
-          style="align-self: stretch"
-          :class="
-            isSidebarCollapsed ? 'sidebar-collapsed jc-ct' : 'p-2 pl-8'
-          "
+      <a href="#main" class="skip-link" @click.prevent="focusMain">
+        {{ $t("shell.skip_to_content") }}
+      </a>
+      <AppHeader v-model:menu-open="menuOpen" :menu-id="MOBILE_MENU_ID" />
+      <div class="app-body flex">
+        <SidebarNav
+          v-if="isDesktop"
+          :class="{ 'sidebar-disabled': handyType }"
+          :inert="handyType || undefined"
+        />
+        <main
+          id="main"
+          ref="main"
+          class="app-main flex-column"
+          tabindex="-1"
+          data-fid="content"
         >
-          <router-link to="/" class="app-logo-link">
-            <BasicLogo
-              :size="isSidebarCollapsed ? 30 : 22"
-              :variant="isSidebarCollapsed ? 'icon' : 'full'"
-            />
-          </router-link>
-        </div>
-        <div v-else class="flex ai-ct p-2 pl-8">
-          <router-link to="/" class="app-logo-link">
-            <BasicLogo :size="22" variant="full" />
-          </router-link>
-        </div>
-        <div v-if="hasPanel" class="app-header-mobile-logo hide-mobile">
-          <router-link to="/" class="app-logo-link">
-            <BasicLogo :size="22" variant="full" />
-          </router-link>
-        </div>
-        <div
-          class="app-content-col p-2 pl-8 flex ai-ct jc-sb"
-          style="overflow: visible"
-        >
-          <h2 v-if="hasPanel" class="fs-400 fw-600 t-body route-title">
-            {{ routeTitle }}
-          </h2>
-          <span v-else></span>
-          <HeaderControls />
-        </div>
+          <ShellPageHeader>
+            <div class="app-main__view">
+              <router-view class="h-100" />
+            </div>
+          </ShellPageHeader>
+        </main>
       </div>
-      <div class="layout flex relative">
-        <template v-if="hasPanel && showPanelNav">
-          <Navigation
-            class="app-sidebar-col bg-base br-subtle"
-            :class="{
-              'sidebar-collapsed': isSidebarCollapsed,
-              'sidebar-disabled': handyType,
-            }"
-          />
-          <button
-            class="sidebar-edge-toggle"
-            :class="{ 'sidebar-edge-toggle--disabled': handyType }"
-            :style="{ left: isSidebarCollapsed ? '48px' : '240px' }"
-            :tabindex="handyType ? -1 : 0"
-            :aria-label="
-              isSidebarCollapsed
-                ? $t('app.expand_sidebar')
-                : $t('app.collapse_sidebar')
-            "
-            @click="!handyType && toggleSidebar()"
-            @keydown.enter="!handyType && toggleSidebar()"
-          >
-            <FontAwesomeIcon
-              :icon="isSidebarCollapsed ? $icons.next : $icons.prev"
-            />
-          </button>
-        </template>
-        <div class="app-content-col ov-h router-container">
-          <router-view class="h-100" />
-        </div>
-      </div>
+      <BottomTabBar v-if="showBottomBar" />
+      <MobileMenu
+        v-if="!isDesktop"
+        :id="MOBILE_MENU_ID"
+        v-model:open="menuOpen"
+      />
       <Transition name="loader-fade"><Loader v-if="loading" overlay /></Transition>
       <handy-kit v-if="handyType" />
-      <nav
-        v-if="hasPanel && showBottomBar"
-        class="mobile-bottom-bar show-mobile"
-      >
-        <Navigation :mobile="true" />
-      </nav>
     </template>
     <router-view v-else-if="isPublicRoute" />
     <LoginWall v-else />
@@ -101,12 +54,8 @@ import { useMuninStore } from "@/stores/munin";
 import { useNotificationsStore } from "@/stores/notifications";
 import { useConfigHealthStore } from "@/stores/configHealth";
 import { useLeadTypesStore } from "@/stores/leadTypes";
-import { useQualityStore } from "@/stores/quality";
 import { useIsDesktop } from "@/composables/useIsDesktop";
-import {
-  buildNavRoutes,
-  filterNavRoutes,
-} from "./components/Navigation/nav-routes";
+import { tabBarShown, useActiveNav } from "@/composables/useNav";
 
 import { envStatus } from "@/utils/env-check";
 import { clearCompanyNames } from "@/utils/leadsCompanyNames";
@@ -114,26 +63,32 @@ import "@/utils/client-config-check";
 import EnvMissing from "./components/EnvMissing.vue";
 import LoginWall from "./functionals/Login-wall/Login-wall.vue";
 import Notifications from "./components/Notifications/Notifications.vue";
-import Navigation from "./components/Navigation/Navigation.vue";
-import HeaderControls from "./components/Navigation/HeaderControls.vue";
+import ShellPageHeader from "./components/Shell/ShellPageHeader.vue";
+import AppHeader from "./boots/AppHeader/index.vue";
+import SidebarNav from "./boots/SidebarNav/index.vue";
+import BottomTabBar from "./boots/BottomTabBar/index.vue";
+import MobileMenu from "./boots/MobileMenu/index.vue";
 
 import HandyKit from "./functionals/Handy-kit/Handy-kit.vue";
 
+// The shell (R1, R2; r05): skip link → AppHeader → SidebarNav (from the shell breakpoint up, every authenticated
+// route) + <main> (fallback page header, router view) → BottomTabBar + MobileMenu (below it). `meta.fullscreen`,
+// the login wall and public routes stay shell-less. A path change moves focus to <main>; a query change does not.
 export default {
   setup() {
     const loader = useLoaderStore();
     const userStore = useUserStore();
     const handy = useHandyStore();
     const munin = useMuninStore();
-    const quality = useQualityStore();
     const notificationBar = useNotificationsStore();
     const configHealth = useConfigHealthStore();
     const leadTypes = useLeadTypesStore();
     const isDesktop = useIsDesktop();
-    return { loader, userStore, handy, munin, quality, notificationBar, configHealth, leadTypes, isDesktop };
+    const { panelIdx, tree } = useActiveNav();
+    return { loader, userStore, handy, munin, notificationBar, configHealth, leadTypes, isDesktop, panelIdx, tree };
   },
   data() {
-    return { envStatus, navRoutes: buildNavRoutes() };
+    return { envStatus, menuOpen: false, MOBILE_MENU_ID: "app-mobile-menu" };
   },
   computed: {
     envValid() {
@@ -151,47 +106,20 @@ export default {
     notificationsActive() {
       return this.userStore.isAuth && this.munin.isModuleEnabled("notifications");
     },
-    // Health polling needs admin data (`munin.loaded`) — the endpoint is admin-only.
     configHealthActive() {
-      return this.userStore.isAuth && this.munin.loaded && this.munin.isModuleEnabled("munin");
+      return this.userStore.isAuth && this.munin.healthAvailable;
     },
-    isSidebarCollapsed() {
-      return this.userStore.isSidebarCollapsed;
-    },
-    hasPanel() {
-      return !!this.$route.meta?.panel;
-    },
-    // A panel with a single nav entry (enrichment, emails, accounts, checkout, stock) needs no
-    // sub-navigation — hide the sidebar + edge toggle + mobile bottom bar and let content fill.
-    // A screen with its own sticky actions at the bottom (Leads Review) keeps the phone's bottom bar off it.
+    // A phone shows the tab bar for a panel with two or more entries, never on `meta.noBottomBar` (Leads Review keeps
+    // its sticky actions); without it `--bottom-bar-height` is 0 (the FloatingActions offset).
     showBottomBar() {
-      return this.showPanelNav && !this.$route.meta?.noBottomBar;
-    },
-    showPanelNav() {
-      return (
-        filterNavRoutes(this.navRoutes, {
-          activeApp: this.userStore.activeApp,
-          qualityAvailable: this.quality.available,
-          isModuleEnabled: this.munin.isModuleEnabled,
-          isDesktop: this.isDesktop,
-        }).length > 1
-      );
+      const entries = this.tree[this.panelIdx] ?? [];
+      return this.isAuth && !this.isDesktop && tabBarShown(entries, this.$route);
     },
     isPublicRoute() {
       return this.$route.meta?.requiresAuth === false;
     },
     isFullscreen() {
       return !!this.$route.meta?.fullscreen;
-    },
-    routeTitle() {
-      // Vue Router 4: Check matched routes from deepest to shallowest
-      const matched = this.$route.matched;
-      for (let i = matched.length - 1; i >= 0; i--) {
-        if (matched[i].meta && matched[i].meta.titleKey) {
-          return this.$t(matched[i].meta.titleKey);
-        }
-      }
-      return this.$t("app.no_title");
     },
   },
   watch: {
@@ -210,6 +138,10 @@ export default {
       },
       immediate: true,
     },
+    // The mobile menu does not outlive the phone layout.
+    isDesktop(desktop) {
+      if (desktop) this.menuOpen = false;
+    },
     // Logout drops the leads caches that outlive a view — the next user may work another channel.
     isAuth(auth) {
       if (auth) return;
@@ -218,12 +150,16 @@ export default {
     },
   },
   methods: {
-    toggleSidebar() {
-      this.userStore.toggleSidebar();
+    focusMain() {
+      this.$refs.main?.focus({ preventScroll: true });
     },
   },
 
   async created() {
+    // Not on the first navigation: the page loads with focus at the top, so the skip link comes first.
+    this.$router.afterEach((to, from) => {
+      if (from.matched.length && to.path !== from.path) this.$nextTick(this.focusMain);
+    });
     this.userStore.appInit();
     if (this.userStore.isAuth) {
       this.munin.ensureLoaded();
@@ -232,8 +168,11 @@ export default {
   components: {
     EnvMissing,
     Notifications,
-    Navigation,
-    HeaderControls,
+    ShellPageHeader,
+    AppHeader,
+    SidebarNav,
+    BottomTabBar,
+    MobileMenu,
     HandyKit,
     LoginWall,
   },
@@ -247,110 +186,54 @@ export default {
   height: 100vh;
   overflow: hidden;
 }
-// Single-tab panels hide the mobile bottom bar — reclaim the height it would have reserved so the
-// content area isn't left with an empty strip (the var also drives the FloatingActions offset).
+// A screen without the tab bar reclaims its height: the var also drives the FloatingActions offset.
 .app--no-panel-nav {
   --bottom-bar-height: 0px;
 }
-.app-logo-link {
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-  cursor: pointer;
+.app-body {
+  flex: 1;
+  min-height: 0;
 }
-.app-sidebar-col {
-  width: 240px;
-  flex-shrink: 0;
-  transition: width 0.3s ease, opacity 0.2s ease;
-  overflow: hidden;
-
-  &.sidebar-collapsed {
-    width: 48px;
-  }
-  &.sidebar-disabled {
-    opacity: 0.4;
-    pointer-events: none;
-  }
-}
-.app-content-col {
+// The content area is the page's scroll and focus region; the view below the page header fills the rest.
+.app-main {
   flex: 1;
   min-width: 0;
   overflow: hidden;
+  outline: none;
 }
-.layout {
-  overflow: hidden;
-  width: 100%;
-  height: 100%;
-  .router-container {
-    & > div {
-    }
-  }
+.app-main__view {
+  flex: 1;
+  min-height: 0;
 }
-.sidebar-edge-toggle {
-  position: absolute;
-  top: 50%;
-  transform: translate(-60%, -50%);
-  transition: left 0.3s ease, opacity 0.2s ease;
-  z-index: 10;
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-full);
-  border: 1px solid var(--border-subtle);
-  background: var(--surface-base);
-  color: var(--text-secondary);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--fs-200);
-  box-shadow: var(--shadow-sm);
-  &:hover {
-    background: var(--surface-raised);
-  }
-  &--disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-    pointer-events: none;
-  }
+// Handy-kit (the builder's editing tools) keeps the sidebar dimmed and out of reach.
+.sidebar-disabled {
+  opacity: 0.4;
+  pointer-events: none;
 }
-.app-header-mobile-logo {
-  display: none;
-}
-.route-title {
-  @media only screen and (max-width: 768px) {
-    max-width: 40vw;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-}
-.mobile-bottom-bar {
+.skip-link {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 56px;
-  background-color: var(--surface-base);
-  border-top: 1px solid var(--border-subtle);
-  z-index: 20;
+  z-index: 300;
+  top: var(--space-2);
+  left: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-base);
+  color: var(--text-on-accent-fill);
+  background: var(--accent-fill);
+  transform: translateY(-200%);
+
+  &:focus-visible {
+    transform: none;
+  }
 }
-@media only screen and (max-width: 768px) {
-  .app-sidebar-col,
-  .sidebar-edge-toggle {
-    display: none !important;
-  }
-  .app-header-mobile-logo {
-    display: flex;
-    align-items: center;
-    padding: var(--space-1) var(--space-1) var(--space-1) var(--space-4);
-  }
-  // The layout takes the height the header leaves; its padding keeps every scroll region above the fixed
-  // bottom bar.
-  .layout {
-    flex: 1;
-    height: auto;
-    min-height: 0;
-    padding-bottom: calc(var(--bottom-bar-height) + env(safe-area-inset-bottom, 0px));
+// Every shell control draws the focus-ring token.
+.skip-link,
+.app-header,
+.sidebar-nav,
+.bottom-tab-bar,
+.mobile-menu {
+  :focus-visible,
+  &:focus-visible {
+    outline-color: var(--focus-ring);
   }
 }
 </style>

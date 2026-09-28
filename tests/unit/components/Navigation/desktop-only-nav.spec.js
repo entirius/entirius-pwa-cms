@@ -8,8 +8,8 @@ import BottomTabBar from "@/boots/BottomTabBar/index.vue";
 vi.mock("vue-router", () => ({ useRoute: () => ({ path: "/leads/inbox", meta: { panel: "leads" }, params: {}, query: {} }) }));
 
 const LEADS_MODULES = new Set(["leads", "communicator"]);
-const routesFor = (activeApp, isDesktop, modules = LEADS_MODULES) =>
-  filterNavRoutes(buildNavRoutes(), { activeApp, isDesktop, isModuleEnabled: (key) => modules.has(key) }).map(
+const routesFor = (panel, isDesktop, modules = LEADS_MODULES) =>
+  filterNavRoutes(buildNavRoutes(), { panel, isDesktop, isModuleEnabled: (key) => modules.has(key) }).map(
     (r) => r.route
   );
 

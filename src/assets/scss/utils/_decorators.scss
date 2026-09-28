@@ -226,12 +226,6 @@
   box-shadow: var(--shadow-around);
 }
 
-.router-link-active {
-  font-size: var(--fs-400) !important;
-  color: var(--text-body) !important;
-  font-weight: 600;
-}
-
 .pulse-animation {
   position: absolute;
   animation: pulse_animation 0.85s ease-in-out infinite;

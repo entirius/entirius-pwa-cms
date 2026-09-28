@@ -3,11 +3,9 @@
     <router-link to="/" class="app-header__logo flex ai-ct" data-fid="logo">
       <BasicLogo variant="full" :size="isMobile ? 24 : 32" />
     </router-link>
-    <div class="app-header__tools flex ai-ct gap-2">
-      <template v-if="!isMobile">
-        <ConfigHealthButton v-if="healthEnabled" />
-        <NotificationBell v-if="munin.isModuleEnabled('notifications')" />
-      </template>
+    <div class="app-header__tools flex ai-ct gap-3">
+      <ConfigHealthButton v-if="munin.healthAvailable" :show-icon="!isMobile" />
+      <NotificationBell v-if="munin.isModuleEnabled('notifications')" />
       <UserMenu />
       <template v-if="isMobile">
         <span class="app-header__separator" aria-hidden="true" />
@@ -26,11 +24,12 @@
 </template>
 
 <script setup>
-// The app bar (R1, R2; r05 §5, Figma S1/S2): the wordmark (home link) and, on the right, configuration health and
-// the notification bell (both conditional, as before) and the user menu. No page title, no panel switcher. Desktop
-// 88 px (wordmark 206 × 32 at x 40); below the shell breakpoint 81 px (wordmark 154 × 24) with the menu button after
-// a hairline separator: it toggles `menuOpen` (v-model) and controls the MobileMenu `menuId`. `mobile` forces a
-// layout (catalogue); by default the breakpoint decides.
+// The app bar (R1, R2; r05 §5, Figma S1/S2): the wordmark (home link) and, on the right, configuration health and the
+// notification bell (both conditional, as before) and the user menu, 12 px apart. A phone keeps the bell and reaches
+// configuration health through the user menu (no room for the icon). No page title, no panel switcher. Desktop 88 px
+// (wordmark 206 × 32 at x 40); below the shell breakpoint 81 px (wordmark 154 × 24) with the menu button after a
+// hairline separator: it toggles `menuOpen` (v-model) and controls the MobileMenu `menuId`. `mobile` forces a layout
+// (catalogue); by default the breakpoint decides.
 import { computed } from "vue";
 import BasicLogo from "@/boots/BasicLogo/index.vue";
 import IconButton from "@/boots/IconButton/index.vue";
@@ -50,8 +49,6 @@ defineEmits(["update:menuOpen"]);
 const munin = useMuninStore();
 const isDesktop = useIsDesktop();
 const isMobile = computed(() => props.mobile ?? !isDesktop.value);
-// Admin data loaded (the health endpoint is admin-only) and munin itself enabled.
-const healthEnabled = computed(() => munin.loaded && munin.isModuleEnabled("munin"));
 </script>
 
 <style lang="scss" scoped>
@@ -80,6 +77,12 @@ const healthEnabled = computed(() => munin.loaded && munin.isModuleEnabled("muni
 
 .app-header__tools {
   margin-left: auto;
+}
+
+// Figma S1: the user button sits 20 px from the top of the 88 px bar, the wordmark is centred.
+.app-header:not(.app-header--mobile) .app-header__tools {
+  align-self: flex-start;
+  padding-top: var(--space-5);
 }
 
 // The open state looks pressed (Figma S3) but is announced by aria-expanded alone.

@@ -114,12 +114,12 @@ const ORDERS_ENTRIES = [entry("/checkout-orders/orders", "nav.checkout_orders", 
 const LEADS_ENTRIES = [entry("/leads/inbox", "nav.leads_inbox", "inbox"), entry("/leads/settings", "nav.leads_settings", "gear")];
 
 const L1 = { label: "Pages", icon: "file-code", to: "/pages/content" };
-const L2 = { label: "Lista treści", icon: "file-code", to: "/pages/content", level: 2 };
-const LONG = "Zestawy treści sezonowych dla wszystkich kanałów sprzedaży";
+const L2 = { label: "Content list", icon: "file-code", to: "/pages/content", level: 2 };
+const LONG = "Seasonal content sets for every sales channel of the store";
 const ITEM_CELLS = [
-  { id: "l1-default", label: "L1 link (Home, a leaf panel)", props: { ...L1, label: "Strona główna", icon: ICONS.home, to: "/" }, interact: "hover,focus" },
-  { id: "l1-active", label: "L1 active (aria-current)", props: { ...L1, label: "Strona główna", icon: ICONS.home, to: "/", active: true } },
-  { id: "l1-locked", label: "L1 locked", props: { ...L1, label: "Stany magazynowe", icon: "warehouse", locked: true } },
+  { id: "l1-default", label: "L1 link (Home, a leaf panel)", props: { ...L1, label: "Home", icon: ICONS.home, to: "/" }, interact: "hover,focus" },
+  { id: "l1-active", label: "L1 active (aria-current)", props: { ...L1, label: "Home", icon: ICONS.home, to: "/", active: true } },
+  { id: "l1-locked", label: "L1 locked", props: { ...L1, label: "Stock", icon: "warehouse", locked: true } },
   { id: "l1-expanded", label: "L1 group open (chevron up)", props: { ...L1, expanded: true }, interact: "hover,focus" },
   { id: "l1-closed", label: "L1 group closed (chevron down)", props: { ...L1, expanded: false } },
   { id: "l1-group-active", label: "L1 group of the active panel", props: { ...L1, expanded: true, active: true } },

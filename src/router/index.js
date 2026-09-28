@@ -1331,7 +1331,6 @@ router.beforeEach(async (to, from, next) => {
       next(moduleFallback(panels.find((p) => p.idx === panel), to.path));
       return;
     }
-    userStore.activeApp = panel;
   }
   next();
 });

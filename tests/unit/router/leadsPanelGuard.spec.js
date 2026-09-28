@@ -15,7 +15,7 @@ vi.mock("@/stores/munin", () => ({
 }));
 
 vi.mock("@/stores/user", () => ({
-  useUserStore: () => ({ isAuth: true, activeApp: null }),
+  useUserStore: () => ({ isAuth: true }),
 }));
 
 const GET_Companies = vi.hoisted(() => vi.fn());

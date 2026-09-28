@@ -16,13 +16,14 @@
 <script setup>
 // The phone sub-navigation (r05 §6, Figma S5): the current panel's entries (icon + 12 px label), the lit one
 // `aria-current="page"` by the nav resolver. Hidden with one entry or none and on `meta.noBottomBar` (Leads Review
-// keeps its sticky actions). 72 px high; `--bottom-bar-height` names that height (FloatingActions sits above it).
+// keeps its sticky actions). 72 px high: `--bottom-bar-height` on `:root` (`utils/_mobile.scss`) names that height, so
+// FloatingActions and fixed bottom bars sit above it.
 // `entries`, `label` and `current` replace the route's panel with fixed data (catalogue).
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 import { t } from "@/i18n";
 import { panels } from "@/configs/access";
-import { useActiveNav } from "@/composables/useNav";
+import { tabBarShown, useActiveNav } from "@/composables/useNav";
 
 const props = defineProps({
   entries: { type: Array, default: null },
@@ -35,7 +36,7 @@ const { panelIdx, entry, tree } = useActiveNav();
 
 const items = computed(() => props.entries ?? tree.value[panelIdx.value] ?? []);
 const currentRoute = computed(() => (props.entries ? props.current : entry.value?.route));
-const shown = computed(() => items.value.length > 1 && !route.meta?.noBottomBar);
+const shown = computed(() => tabBarShown(items.value, route));
 const navLabel = computed(() => {
   if (props.label) return props.label;
   const panel = panels.find((p) => p.idx === panelIdx.value);
@@ -45,11 +46,9 @@ const navLabel = computed(() => {
 
 <style lang="scss" scoped>
 .bottom-tab-bar {
-  --bottom-bar-height: calc(var(--space-16) + var(--space-2));
-
   box-sizing: border-box;
   width: 100%;
-  height: var(--bottom-bar-height);
+  height: calc(var(--space-16) + var(--space-2));
   padding: var(--space-2);
   border-top: 1px solid var(--border-subtle);
   background: var(--surface-page);

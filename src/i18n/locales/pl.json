@@ -3657,6 +3657,8 @@
     "locked": "(niedostępny)",
     "menu": "Menu",
     "close_menu": "Zamknij menu",
-    "language": "Język"
+    "language": "Język",
+    "user": "Użytkownik",
+    "skip_to_content": "Przejdź do treści"
   }
 }

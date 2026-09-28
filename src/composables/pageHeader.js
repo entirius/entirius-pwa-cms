@@ -1,14 +1,18 @@
-import { computed, inject, onBeforeUnmount, onMounted } from "vue";
+import { computed, inject, onBeforeUnmount, onMounted, watch } from "vue";
 
-// The shell's page-header slot (R2): the shell provides `{ claim, release, crumbs? }` under PAGE_HEADER_CLAIM and hides
-// its fallback header while a PageHeader holds a claim. Claims can overlap during a route change (the next page mounts
-// before the last one unmounts), so the provider counts them. `crumbs` is a ref of the route's `[{ label, to? }]`.
+// The shell's page-header slot (R2): the shell (ShellPageHeader) provides `{ claim, release, crumbs?, back?, title? }`
+// under PAGE_HEADER_CLAIM and hides its fallback header while a PageHeader holds a claim. Claims can overlap during a
+// route change (the next page mounts before the last one unmounts), so the provider counts them. `crumbs` is a ref of
+// the route's `[{ label, to? }]`, `back` goes to the parent crumb, `title` is a ref the page's title is written to
+// (the last crumb and `document.title` read it).
 export const PAGE_HEADER_CLAIM = Symbol("pageHeaderClaim");
 
-// Claims the slot on mount and releases it on unmount; returns the shell's crumbs ([] without a provider).
-export function usePageHeaderClaim() {
+// Claims the slot on mount and releases it on unmount, and reports `title` (a getter); returns the shell's crumbs
+// ([] without a provider) and its back action (null without one).
+export function usePageHeaderClaim(title = () => "") {
   const shell = inject(PAGE_HEADER_CLAIM, null);
   onMounted(() => shell?.claim());
   onBeforeUnmount(() => shell?.release());
-  return computed(() => shell?.crumbs?.value ?? []);
+  if (shell?.title) watch(title, (value) => (shell.title.value = value), { immediate: true });
+  return { crumbs: computed(() => shell?.crumbs?.value ?? []), back: shell?.back ?? null };
 }

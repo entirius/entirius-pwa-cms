@@ -3658,6 +3658,8 @@
     "locked": "(unavailable)",
     "menu": "Menu",
     "close_menu": "Close menu",
-    "language": "Language"
+    "language": "Language",
+    "user": "User",
+    "skip_to_content": "Skip to content"
   }
 }

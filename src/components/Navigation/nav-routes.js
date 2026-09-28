@@ -344,7 +344,7 @@ export function buildNavRoutes() {
   ];
 }
 
-// Routes visible for the active panel. `requiresQuality` items are hidden until the backend's gaps
+// The entries of one panel (`panel` = its idx). `requiresQuality` items are hidden until the backend's gaps
 // capability probe resolves true (old backends never see the quality-rules nav item).
 // `requiresModule` items are hidden until that optional django-munin module reports enabled
 // (mirrors the router guard's `meta.module` gate — see router/index.js); `hiddenWithModule` items give way
@@ -358,10 +358,10 @@ export function isNavActive(route, path = "") {
 
 export function filterNavRoutes(
   routes,
-  { activeApp, qualityAvailable, isModuleEnabled, isDesktop }
+  { panel, qualityAvailable, isModuleEnabled, isDesktop }
 ) {
   return routes.filter((r) => {
-    if (r.app.indexOf(activeApp) === -1) return false;
+    if (r.app.indexOf(panel) === -1) return false;
     if (r.requiresQuality && qualityAvailable !== true) return false;
     if (r.requiresModule && !isModuleEnabled?.(r.requiresModule)) return false;
     if (r.hiddenWithModule && isModuleEnabled?.(r.hiddenWithModule)) return false;

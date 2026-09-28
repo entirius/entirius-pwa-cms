@@ -1,39 +1,42 @@
 <template>
-  <div class="notif-sheet" :style="anchorStyle" data-testid="notif-sheet">
-    <div class="notif-sheet__backdrop" data-testid="notif-backdrop" @click="emit('close')"></div>
-    <div class="notif-list" role="dialog" :aria-label="$t('notification_bar.title')" data-testid="notif-list">
-      <div class="notif-list__head">
-        <span class="notif-list__grip" aria-hidden="true"></span>
-        <p class="notif-list__title">{{ $t("notification_bar.title") }}</p>
-        <IconButton
-          icon="close"
-          :label="$t('notification_bar.close')"
-          data-testid="notif-close"
-          @click="emit('close')"
-        />
-      </div>
-      <p v-if="!store.items.length" class="notif-list__empty">{{ $t("notification_bar.empty") }}</p>
-      <button
-        v-for="item in store.items"
-        :key="item.id"
-        class="notif-row"
-        :class="`notif-row--${item.severity}`"
-        data-testid="notif-row"
-        @click="openItem(item)"
-      >
-        <span class="notif-row__dot" aria-hidden="true"></span>
-        <span class="notif-row__text">
-          <span class="notif-row__title">{{ rowTitle(item) }}</span>
-          <span v-if="preview(item.body)" class="notif-row__preview" data-testid="notif-preview">{{ preview(item.body) }}</span>
-          <span class="notif-row__age">{{ formatDayTime(item.created_at) }}</span>
-        </span>
-      </button>
+  <div class="notif-list" data-testid="notif-list">
+    <div class="notif-list__head">
+      <p class="notif-list__title">{{ $t("notification_bar.title") }}</p>
+      <IconButton
+        icon="close"
+        :label="$t('notification_bar.close')"
+        data-testid="notif-close"
+        @click="emit('close')"
+      />
     </div>
+    <p v-if="!store.items.length" class="notif-list__empty">
+      {{ $t("notification_bar.empty") }}
+    </p>
+    <button
+      v-for="item in store.items"
+      :key="item.id"
+      class="notif-row"
+      :class="`notif-row--${item.severity}`"
+      data-testid="notif-row"
+      @click="openItem(item)"
+    >
+      <span class="notif-row__dot" aria-hidden="true"></span>
+      <span class="notif-row__text">
+        <span class="notif-row__title">{{ rowTitle(item) }}</span>
+        <span
+          v-if="preview(item.body)"
+          class="notif-row__preview"
+          data-testid="notif-preview"
+          >{{ preview(item.body) }}</span
+        >
+        <span class="notif-row__age">{{ formatDayTime(item.created_at) }}</span>
+      </span>
+    </button>
   </div>
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { GET_Company } from "@/api/leads/api";
 import { useMuninStore } from "@/stores/munin";
@@ -41,9 +44,8 @@ import { useNotificationsStore } from "@/stores/notifications";
 import { formatDayTime } from "@/utils/leadsTime";
 import { companyIdFromSubjectRef } from "@/utils/subjectRef";
 
-// Phone: a bottom sheet, rows in thumb reach. Desktop (>= 1024 px): a popover anchored under the bell
-// (`anchor` = viewport offsets of the bell). Escape closes both.
-const props = defineProps({ anchor: { type: Object, default: null } });
+// The bell's panel (BasicMenu `panel` mode: the menu anchors it, names it and closes it on Esc). `close` asks the
+// menu to close: the close button, and a row that jumps elsewhere.
 const emit = defineEmits(["close"]);
 const store = useNotificationsStore();
 const munin = useMuninStore();
@@ -51,30 +53,31 @@ const router = useRouter();
 const companyNames = ref({});
 const EMAIL = /\S+@\S+/;
 
-const anchorStyle = computed(() =>
-  props.anchor ? { "--notif-top": `${props.anchor.top}px`, "--notif-right": `${props.anchor.right}px` } : {}
-);
-
 // A leads notification names its company, never a bare address ("Possible opt-out · Example Shop 6").
 function rowTitle(item) {
   const name = companyNames.value[companyIdFromSubjectRef(item.subject_ref)];
   if (!name || item.title.includes(name)) return item.title;
-  return EMAIL.test(item.title) ? item.title.replace(EMAIL, name) : `${item.title} · ${name}`;
+  return EMAIL.test(item.title)
+    ? item.title.replace(EMAIL, name)
+    : `${item.title} · ${name}`;
 }
 
 async function loadCompanyNames(items) {
   if (!munin.isModuleEnabled("leads")) return;
-  const ids = [...new Set(items.map((item) => companyIdFromSubjectRef(item.subject_ref)).filter(Boolean))];
+  const ids = [
+    ...new Set(
+      items
+        .map((item) => companyIdFromSubjectRef(item.subject_ref))
+        .filter(Boolean)
+    ),
+  ];
   const results = await Promise.allSettled(ids.map((id) => GET_Company(id)));
   results.forEach((result, i) => {
-    if (result.status === "fulfilled") companyNames.value[ids[i]] = result.value.data.name;
+    if (result.status === "fulfilled")
+      companyNames.value[ids[i]] = result.value.data.name;
   });
 }
 watch(() => store.items, loadCompanyNames, { immediate: true });
-
-const onKey = (event) => event.key === "Escape" && emit("close");
-onMounted(() => document.addEventListener("keydown", onKey));
-onBeforeUnmount(() => document.removeEventListener("keydown", onKey));
 
 async function openItem(item) {
   const route = await store.open(item);
@@ -101,25 +104,11 @@ const preview = (body) =>
 </script>
 
 <style scoped>
-.notif-sheet__backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.32);
-  z-index: 90;
-}
 .notif-list {
-  position: fixed;
-  left: 50%;
-  bottom: 0;
-  transform: translateX(-50%);
-  width: min(32rem, 100vw);
-  max-height: 70vh;
+  width: 20rem;
+  max-width: 100%;
+  max-height: 60vh;
   overflow-y: auto;
-  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
-  background: var(--surface-base);
-  border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
-  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.16);
-  z-index: 91;
 }
 .notif-list__head {
   position: sticky;
@@ -128,18 +117,8 @@ const preview = (body) =>
   align-items: center;
   justify-content: space-between;
   padding: var(--space-3) var(--space-2) var(--space-2) var(--space-4);
-  background: var(--surface-base);
+  background: var(--surface-raised);
   border-bottom: 1px solid var(--border-subtle);
-}
-.notif-list__grip {
-  position: absolute;
-  top: 0.35rem;
-  left: 50%;
-  width: 2.5rem;
-  height: 0.25rem;
-  margin-left: -1.25rem;
-  border-radius: var(--radius-full);
-  background: var(--surface-hover);
 }
 .notif-list__title {
   margin: 0;
@@ -205,26 +184,6 @@ const preview = (body) =>
     --btn-height: var(--space-10);
 
     margin: calc((var(--elem-height) - var(--space-10)) / 2);
-  }
-}
-@media (min-width: 1024px) {
-  .notif-sheet__backdrop {
-    background: transparent;
-  }
-  .notif-list {
-    top: var(--notif-top, 3.5rem);
-    right: var(--notif-right, 1rem);
-    bottom: auto;
-    left: auto;
-    transform: none;
-    width: 24rem;
-    max-height: 60vh;
-    padding-bottom: 0;
-    border-radius: var(--radius-xl);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
-  }
-  .notif-list__grip {
-    display: none;
   }
 }
 </style>

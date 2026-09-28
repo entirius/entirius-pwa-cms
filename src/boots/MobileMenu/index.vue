@@ -73,7 +73,12 @@ watch(
 
   position: fixed;
   z-index: 150;
-  inset: 0;
+  top: 0;
+  left: 0;
+  // The app's own box (App.vue #app): a fixed `inset: 0` layer spans the layout viewport, which a phone may widen
+  // past the visible one.
+  width: 100vw;
+  height: 100vh;
   outline: none;
 }
 

@@ -10,7 +10,7 @@ import { t } from "@/i18n";
 // The one navigation model of the shell (r05 §2–§4): which panels exist (`usePanels`), which entries each has
 // (`navTree`), which entry a route lights (`resolveNavEntry`), where the user is (`useActiveNav`) and the trail above
 // the title (`useBreadcrumbs`). Pure functions carry the rules; the composables feed them the stores and the route.
-// The active panel comes from `route.meta.panel` ("home" on `/`), never from `userStore.activeApp`.
+// The active panel comes from `route.meta.panel` ("home" on `/`).
 export const HOME = "home";
 export const HOME_ROUTE = "/";
 const HIDE_DISABLED = (process.env.VUE_APP_HIDE_DISABLED_PANELS || "").toUpperCase() === "TRUE";
@@ -28,7 +28,9 @@ export function usePanels() {
 
 // `{ [panelIdx]: entries[] }`; ctx = { qualityAvailable, isModuleEnabled, isDesktop }.
 export function navTree(ctx, routes = buildNavRoutes()) {
-  return Object.fromEntries(REGISTRY.map((panel) => [panel.idx, filterNavRoutes(routes, { ...ctx, activeApp: panel.idx })]));
+  return Object.fromEntries(
+    REGISTRY.map((panel) => [panel.idx, filterNavRoutes(routes, { ...ctx, panel: panel.idx })])
+  );
 }
 
 export function useNavTree() {
@@ -57,6 +59,10 @@ export function resolveNavEntry(entries, route) {
     null
   );
 }
+
+// The phone tab bar lists the active panel's entries: shown with two or more, never on `meta.noBottomBar`
+// (Leads Review).
+export const tabBarShown = (entries, route) => entries.length > 1 && !route.meta?.noBottomBar;
 
 export const activePanelOf = (route) => (route.path === HOME_ROUTE ? HOME : route.meta?.panel ?? null);
 

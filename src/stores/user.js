@@ -22,7 +22,6 @@ export const useUserStore = defineStore('user', () => {
   const customer_id = ref(null)
   const expiryDate = ref(null)
   const isAuth = ref(false)
-  const activeApp = ref('pages')
   const isSidebarCollapsed = ref(false)
   const theme = ref('default')
   const lang = ref(getLang())
@@ -237,7 +236,7 @@ export const useUserStore = defineStore('user', () => {
 
   return {
     user, token, refresh, customer_id, expiryDate, isAuth,
-    activeApp, isSidebarCollapsed, theme, lang, preferences,
+    isSidebarCollapsed, theme, lang, preferences,
     setAuth, markAuthenticated, clearAuth, logout, setUser, toggleSidebar, setTheme,
     setLanguage, loadPreferences, savePreference,
     readCookies, appInit, sessionExpiredLogout

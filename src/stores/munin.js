@@ -145,9 +145,14 @@ export const useMuninStore = defineStore("munin", () => {
     return maj !== rMaj ? maj > rMaj : min !== rMin ? min > rMin : pat >= rPat;
   }
 
+  // Configuration health: its endpoint is admin-only (admin data loaded) and needs munin itself enabled. One gate
+  // for the header icon, the user-menu item and the polling (App.vue).
+  const healthAvailable = computed(() => loaded.value && isModuleEnabled("munin"));
+
   return {
     modules,
     loaded,
+    healthAvailable,
     loading,
     enabledPanels,
     isPanelEnabled,

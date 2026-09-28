@@ -38,7 +38,7 @@
         :label="isCollapsed ? $t('app.expand_sidebar') : $t('app.collapse_sidebar')"
         :aria-expanded="String(!isCollapsed)"
         :aria-controls="navId"
-        @click="userStore.toggleSidebar()"
+        @click="toggle"
       />
     </div>
   </nav>
@@ -50,10 +50,11 @@ let nextId = 0;
 
 <script setup>
 // The persistent left navigation (R1, r05 §4): "Panele", Home, then every panel of the registry in order, each a
-// SidebarNavGroup. The active panel's group opens when the panel becomes active; the others open and close on
-// click (session state of this nav, not persisted). 300 px, scrolls on its own; `collapsed` (default: the user
-// store's `isSidebarCollapsed`, persisted as `cms_sidebar_collapsed`) is the 64 px icon rail, toggled from the
-// footer button. `flat` is the MobileMenu list: no title, no footer, every panel one link to its root.
+// SidebarNavGroup. The active panel's group opens when the panel becomes active; the others open and close on click
+// (session state of this nav, not persisted). 300 px, scrolls on its own; `collapsed` (default: the user store's
+// `isSidebarCollapsed`, persisted as `cms_sidebar_collapsed`) is the 64 px icon rail, toggled from the footer button
+// (`v-model:collapsed` when the prop is set). `flat` is the MobileMenu list: no title, no footer, every panel one
+// link to its root.
 import { computed, reactive, watch } from "vue";
 import { ICONS } from "@/boots/Icons/icons";
 import IconButton from "@/boots/IconButton/index.vue";
@@ -66,6 +67,7 @@ const props = defineProps({
   flat: { type: Boolean, default: false },
   collapsed: { type: Boolean, default: undefined },
 });
+const emit = defineEmits(["update:collapsed"]);
 
 nextId += 1;
 const navId = `sidebar-nav-${nextId}`;
@@ -76,6 +78,12 @@ const open = reactive(new Set());
 
 const isCollapsed = computed(() => props.collapsed ?? userStore.isSidebarCollapsed);
 const railed = computed(() => isCollapsed.value && !props.flat);
+
+// A `collapsed` prop owns the rail (catalogue): the toggle reports it and writes no preference.
+function toggle() {
+  if (props.collapsed === undefined) userStore.toggleSidebar();
+  else emit("update:collapsed", !props.collapsed);
+}
 
 function toggleGroup(idx) {
   if (open.has(idx)) open.delete(idx);
@@ -92,6 +100,11 @@ watch(panelIdx, (idx) => idx && open.add(idx), { immediate: true });
   height: 100%;
   border-right: 1px solid var(--border-hairline);
   background: var(--surface-page);
+  transition: width 0.2s ease;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
 }
 
 .sidebar-nav__scroll {

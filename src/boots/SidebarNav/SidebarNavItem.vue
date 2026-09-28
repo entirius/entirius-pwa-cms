@@ -30,7 +30,7 @@
       :to="to"
       class="sidebar-nav-item flex ai-ct gap-2"
       :class="classes"
-      :aria-current="active ? 'page' : undefined"
+      :aria-current="current"
       :aria-label="collapsed ? label : undefined"
     >
       <FontAwesomeIcon :icon="icon" class="sidebar-nav-item__icon" aria-hidden="true" />
@@ -43,10 +43,13 @@
 // One row of the sidebar (r05 §4, decision 4). Level 1 = Home or a panel (40 px, Lexend 16/400): a link, or with
 // `expanded` set a disclosure button (`aria-expanded`, `aria-controls`, chevron down closed / up open) that emits
 // `toggle`. Level 2 = a sub-page (32 px, 14/400, 1 px rail that turns accent when active). `active` lights the row
-// and marks a link `aria-current="page"`. `locked` = a panel Munin keeps off: dimmed, a lock, not focusable, a
-// visually hidden "(niedostępny)". `collapsed` = the 64 px rail: the icon alone, named by `aria-label`, the label as a
-// BasicTooltip (a locked row keeps its text for screen readers and takes no tooltip: it must stay out of the tab order). `icon` is a FontAwesome glyph name (the panel and entry glyphs of the nav model, not meanings).
+// and marks a link `aria-current`: "page" on the page it links to, "true" below it. `locked` = a panel Munin keeps
+// off: dimmed, a lock, not focusable, a visually hidden "(niedostępny)". `collapsed` = the 64 px rail: the icon
+// alone, named by `aria-label`, the label as a BasicTooltip (a locked row keeps its text for screen readers and takes
+// no tooltip: it must stay out of the tab order). `icon` is a FontAwesome glyph name (the panel and entry glyphs of
+// the nav model, not meanings).
 import { computed } from "vue";
+import { useRoute } from "vue-router";
 import { ICONS } from "@/boots/Icons/icons";
 import BasicTooltip from "@/boots/BasicTooltip/index.vue";
 
@@ -67,6 +70,15 @@ defineEmits(["toggle"]);
 // The expanded row renders bare: no tooltip wrapper, no stray attributes.
 const Plain = (_, { slots }) => slots.default();
 Plain.inheritAttrs = false;
+
+const route = useRoute();
+// The lit link is the page itself ("page") or marks the section the open page belongs to ("true"): a panel row in the
+// rail or the mobile menu on another sub-page, an entry on its detail pages.
+const current = computed(() => {
+  if (!props.active) return undefined;
+  const path = typeof props.to === "string" ? props.to : props.to?.path;
+  return path === route.path ? "page" : "true";
+});
 
 const isDisclosure = computed(() => props.expanded !== undefined && !props.collapsed);
 const classes = computed(() => ({

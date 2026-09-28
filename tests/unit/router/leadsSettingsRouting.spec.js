@@ -11,7 +11,7 @@ vi.mock("@/stores/munin", () => ({
     ensureLoaded: vi.fn(),
   }),
 }));
-vi.mock("@/stores/user", () => ({ useUserStore: () => ({ isAuth: true, activeApp: null }) }));
+vi.mock("@/stores/user", () => ({ useUserStore: () => ({ isAuth: true }) }));
 
 import router from "@/router";
 import { panels } from "@/configs/access";

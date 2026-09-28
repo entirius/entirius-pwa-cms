@@ -29,7 +29,8 @@
           v-else
           :to="isLink(item) ? item.to : undefined"
           :type="isLink(item) ? undefined : 'button'"
-          role="menuitem"
+          :role="item.checked === undefined ? 'menuitem' : 'menuitemradio'"
+          :aria-checked="item.checked === undefined ? undefined : String(item.checked)"
           tabindex="-1"
           class="basic-menu__item flex ai-ct gap-2 pointer"
           :class="{ 'basic-menu__item--danger': item.danger }"
@@ -92,9 +93,11 @@ const { style } = useFloatingPosition(anchor, popover, {
   active: computed(() => expanded.value && !props.inline),
 });
 
+const ITEM_SELECTOR = ':is([role="menuitem"], [role="menuitemradio"]):not([aria-disabled="true"])';
+
 // A disabled `to` item renders as a button: a disabled router-link would still navigate.
 const isLink = (item) => Boolean(item.to) && !item.disabled;
-const enabledItems = () => [...(popover.value?.querySelectorAll('[role="menuitem"]:not([aria-disabled="true"])') ?? [])];
+const enabledItems = () => [...(popover.value?.querySelectorAll(ITEM_SELECTOR) ?? [])];
 
 function focusFirst() {
   const target = isPanel.value ? focusableIn(popover.value)[0] ?? popover.value : enabledItems()[0];

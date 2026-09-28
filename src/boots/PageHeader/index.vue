@@ -8,7 +8,7 @@
       <p v-if="overline" class="page-header__overline type-overline t-muted">{{ overline }}</p>
       <Breadcrumbs v-if="trail.length" class="page-header__crumbs" :items="trail" />
       <div class="page-header__title-row flex ai-ct gap-5">
-        <IconButton v-if="back" icon="back" :label="$t('common.back')" @click="goBack" />
+        <IconButton v-if="backTo" icon="back" :label="$t('common.back')" @click="goBack" />
         <h1 class="page-header__title page-title" data-fid="page-title">{{ title }}</h1>
         <div v-if="$slots.meta" class="page-header__meta flex ai-ct gap-2"><slot name="meta" /></div>
       </div>
@@ -18,11 +18,13 @@
 </template>
 
 <script setup>
-// The page's frame head (R2, R3, R5): `title` is the page's only <h1>; `overline` sits above it (Home); `crumbs`
-// ([{ label, to? }]) sit 24 px above the title row, and when omitted the shell's crumbs show (none without a shell);
-// `back` (a route location, or a handler) puts a back IconButton left of the H1. Slots: `meta` (chips beside the
-// title) and `actions` (an ActionBar: in the title row on desktop, its own row below 1024 px). `sticky` pins the head
-// under the app header on a phone; the actions row scrolls away (Figma S8). Mounting claims the shell's header slot.
+// The page's frame head (R2, R3, R5): `title` is the page's only <h1>; `overline` sits above it (Home);
+// `crumbs` ([{ label, to? }]) sit 24 px above the title row, and when omitted the shell's crumbs show (none without a
+// shell) with the shell's back arrow to the parent crumb; `back` (a route location, or a handler) puts a back
+// IconButton left of the H1 in any case. The title goes to the shell too: the last crumb and the browser tab name the
+// page by it. Slots: `meta` (chips beside the title) and `actions` (an ActionBar: in the title row on desktop, its
+// own row below 1024 px). `sticky` pins the head under the app header on a phone; the actions row scrolls away
+// (Figma S8). Mounting claims the shell's header slot.
 import { computed } from "vue";
 import { useRouter } from "vue-router";
 import Breadcrumbs from "@/boots/Breadcrumbs/index.vue";
@@ -38,12 +40,16 @@ const props = defineProps({
 });
 
 const router = useRouter();
-const shellCrumbs = usePageHeaderClaim();
-const trail = computed(() => props.crumbs ?? shellCrumbs.value);
+const shell = usePageHeaderClaim(() => props.title);
+const trail = computed(() => props.crumbs ?? shell.crumbs.value);
+// The shell's crumbs bring the shell's back arrow (to the parent crumb); a `back` of the view wins.
+const backTo = computed(
+  () => props.back ?? (props.crumbs === undefined && trail.value.length ? shell.back : undefined)
+);
 
 function goBack() {
-  if (typeof props.back === "function") props.back();
-  else router.push(props.back);
+  if (typeof backTo.value === "function") backTo.value();
+  else router.push(backTo.value);
 }
 </script>
 

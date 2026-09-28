@@ -70,13 +70,17 @@ describe("notification bar", () => {
     expect(wrapper.findAll('[data-testid="notif-row"]')).toHaveLength(2);
   });
 
-  it("opens as a bottom sheet that the backdrop closes", async () => {
+  it("opens in a menu panel named by the list title; the bell announces it", async () => {
     const wrapper = mountBell();
-    await wrapper.get('[data-testid="notif-bell"]').trigger("click");
+    const bell = wrapper.get('[data-testid="notif-bell"]');
     await flushPromises();
-    expect(wrapper.find('[data-testid="notif-sheet"]').exists()).toBe(true);
-    await wrapper.get('[data-testid="notif-backdrop"]').trigger("click");
-    expect(wrapper.find('[data-testid="notif-sheet"]').exists()).toBe(false);
+    expect(bell.attributes("aria-haspopup")).toBe("dialog");
+    await bell.trigger("click");
+    await flushPromises();
+    const panel = wrapper.get('[role="dialog"]');
+    expect(panel.attributes("aria-label")).toBe("notification_bar.title");
+    expect(panel.find('[data-testid="notif-list"]').exists()).toBe(true);
+    expect(bell.attributes("aria-expanded")).toBe("true");
   });
 
   it("one tap on a row marks it read and jumps to the thread", async () => {
@@ -249,15 +253,12 @@ describe("notification bar", () => {
     ]);
   });
 
-  it("on desktop the bell opens an anchored popover that Escape closes", async () => {
+  it("Escape in the panel closes it", async () => {
     const wrapper = mountBell();
     await wrapper.get('[data-testid="notif-bell"]').trigger("click");
     await flushPromises();
-    const style = wrapper.get('[data-testid="notif-sheet"]').attributes("style");
-    expect(style).toContain("--notif-top");
-    expect(style).toContain("--notif-right");
-    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    await wrapper.get('[role="dialog"]').trigger("keydown", { key: "Escape" });
     await flushPromises();
-    expect(wrapper.find('[data-testid="notif-sheet"]').exists()).toBe(false);
+    expect(wrapper.find('[data-testid="notif-list"]').exists()).toBe(false);
   });
 });

@@ -22,6 +22,7 @@ vi.mock("@/stores/quality", () => ({ useQualityStore: () => ({ available: true }
 vi.mock("@/stores/munin", () => ({
   useMuninStore: () => ({
     loaded: true,
+    healthAvailable: true,
     isPanelEnabled: (idx) => idx !== "stock",
     isModuleEnabled: (key) => ["leads", "communicator", "munin"].includes(key),
   }),
@@ -70,7 +71,7 @@ afterEach(() => {
 describe("SidebarNav", () => {
   const groupButton = (wrapper, label) => wrapper.findAll("button[aria-expanded]").find((b) => b.text() === label);
 
-  it("is the 'Panele' landmark with the harness ids; Home, then every panel in registry order", () => {
+  it("is the panels landmark (shell.panels) with the harness ids; Home, then every panel in registry order", () => {
     const nav = mountIt(SidebarNav).get("nav");
     expect(nav.attributes("aria-label")).toBe("shell.panels");
     expect(nav.attributes("data-testid")).toBe("app-sidebar");
@@ -87,12 +88,28 @@ describe("SidebarNav", () => {
     expect(current.map((a) => a.attributes("href"))).toEqual(["/pages/content"]);
   });
 
-  it("lights Home on / and a detail page's entry through the resolver", async () => {
+  it("lights Home on / and a detail page's entry through the resolver (current section, not page)", async () => {
     const wrapper = mountIt(SidebarNav);
     await goTo("/", {});
     expect(wrapper.find("[aria-current='page']").attributes("href")).toBe("/");
     await goTo("/points/5", { panel: "points", navParent: "/points/list" });
-    expect(wrapper.find("[aria-current='page']").attributes("href")).toBe("/points/list");
+    expect(wrapper.find("[aria-current='page']").exists()).toBe(false);
+    expect(wrapper.get("[aria-current='true']").attributes("href")).toBe("/points/list");
+  });
+
+  it("rail and flat: the active panel's link is the page on its root, the section below it", async () => {
+    const flat = mountIt(SidebarNav, { flat: true });
+    const pages = () => flat.findAll("a").find((a) => a.text() === t("panels.pages"));
+    expect(pages().attributes("aria-current")).toBe("page");
+    await goTo("/pages/gallery", { panel: "pages" });
+    expect(pages().attributes("aria-current")).toBe("true");
+  });
+
+  it("with the collapsed prop the footer toggle reports v-model and writes no preference", async () => {
+    const wrapper = mountIt(SidebarNav, { collapsed: true });
+    await wrapper.get(".sidebar-nav__footer button").trigger("click");
+    expect(wrapper.emitted("update:collapsed")).toEqual([[false]]);
+    expect(user.toggleSidebar).not.toHaveBeenCalled();
   });
 
   it("a group button toggles its list (Enter / Space are native button clicks) and controls it", async () => {
@@ -148,7 +165,7 @@ describe("SidebarNav", () => {
 
 describe("SidebarNavItem", () => {
   it("a level-2 active link is aria-current with the accent rail class", () => {
-    const item = mountIt(SidebarNavItem, { label: "Lista", icon: "file", to: "/x", level: 2, active: true }).get("a");
+    const item = mountIt(SidebarNavItem, { label: "List", icon: "file", to: "/pages/content", level: 2, active: true }).get("a");
     expect(item.attributes("aria-current")).toBe("page");
     expect(item.classes()).toEqual(expect.arrayContaining(["sidebar-nav-item--l2", "sidebar-nav-item--active"]));
   });
@@ -224,8 +241,9 @@ describe("BottomTabBar", () => {
 });
 
 describe("UserMenu", () => {
-  const labels = () => [...document.querySelectorAll('[role="menuitem"]')].map((el) => el.textContent.trim());
-  const item = (text) => [...document.querySelectorAll('[role="menuitem"]')].find((el) => el.textContent.includes(text));
+  const ITEMS = '[role="menuitem"], [role="menuitemradio"]';
+  const labels = () => [...document.querySelectorAll(ITEMS)].map((el) => el.textContent.trim());
+  const item = (text) => [...document.querySelectorAll(ITEMS)].find((el) => el.textContent.includes(text));
 
   it("opens from a named trigger with aria-haspopup=menu: theme names its target, languages, health, password, logout", async () => {
     const wrapper = mountIt(UserMenu);
@@ -243,6 +261,11 @@ describe("UserMenu", () => {
       t("config_health.title"),
       t("user.change_password"),
       t("app.log_out"),
+    ]);
+    const radios = [...document.querySelectorAll('[role="menuitemradio"]')];
+    expect(radios.map((el) => [el.textContent.trim(), el.getAttribute("aria-checked")])).toEqual([
+      ["English", "false"],
+      ["Polski", "true"],
     ]);
   });
 
