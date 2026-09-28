@@ -1,69 +1,54 @@
 <template>
-  <div class="enrichment-review h-100 ovy-auto">
-    <div
-      class="enrichment-review__toolbar p-8 b-subtle bb-100 bg-base"
-    >
+  <PageLayout class="enrichment-review">
+    <template #header>
       <PageHeader :title="$t('enrichment.review.title')">
-        <template #actions>
+        <template #meta>
           <SegmentedControl
             v-model="mode"
             :options="modeOptions"
             data-testid="enrichment-mode-switch"
           />
-          <div class="flex ai-ct gap-5 ml-auto">
-            <button
-              class="enrichment-review__filters-toggle"
-              :class="{ 'is-active': filtersOpen }"
-              data-testid="enrichment-filters-toggle"
-              :aria-expanded="filtersOpen"
-              @click="filtersOpen = !filtersOpen"
-            >
-              <FontAwesomeIcon :icon="$icons.filter" />
-              {{ $t("enrichment.review.filters") }}
-              <span
-                v-if="activeFilterCount > 0"
-                class="enrichment-review__filters-badge"
-                data-testid="enrichment-filters-count"
-                >{{ activeFilterCount }}</span
-              >
-            </button>
-            <button
-              class="enrichment-review__import bg-accent-fill t-on-accent-fill"
-              data-testid="enrichment-import-open"
-              @click="importVisible = true"
-            >
-              <FontAwesomeIcon :icon="$icons.importCsv" />
-              {{ $t("enrichment.import.open") }}
-            </button>
-          </div>
+        </template>
+        <template #actions>
+          <ActionBar :actions="pageActions" />
         </template>
       </PageHeader>
-      <div class="flex ai-ct flex-wrap gap-2 mt-5">
-        <FilterChip
-          v-for="opt in statusOptions"
-          :key="opt.value"
-          :label="opt.label"
-          :active="filters.status === opt.value"
-          :data-testid="`enrichment-status-${opt.value}`"
-          @click="onFilterChange('status', opt.value)"
-        />
-        <span
-          class="enrichment-review__count fs-200 t-muted ml-auto"
-          data-testid="enrichment-count"
-        >
-          {{ $t("enrichment.review.matching", { count: totalCount }) }}
-        </span>
-      </div>
+    </template>
 
-      <Transition name="enrichment-filters">
-        <div
-          v-if="filtersOpen"
-          class="enrichment-review__filters flex ai-ct flex-wrap gap-5 mt-5"
+    <template #toolbar>
+      <div class="flex-column gap-5">
+        <div class="flex ai-ct gap-5">
+          <div
+            class="filter-chip-row"
+            role="group"
+            :aria-label="$t('enrichment.review.col.status')"
+          >
+            <FilterChip
+              v-for="opt in statusOptions"
+              :key="opt.value"
+              :label="opt.label"
+              :active="filters.status === opt.value"
+              :data-testid="`enrichment-status-${opt.value}`"
+              @click="onFilterChange('status', opt.value)"
+            />
+          </div>
+          <span
+            class="enrichment-review__count fs-200 t-muted ml-auto"
+            data-testid="enrichment-count"
+          >
+            {{ $t("enrichment.review.matching", { count: totalCount }) }}
+          </span>
+        </div>
+
+        <MobileFilterPanel
+          :active-count="activeFilterCount"
+          :trigger-label="$t('enrichment.review.filters')"
           data-testid="enrichment-filters-row"
         >
           <BasicInput
             v-model="filters.search"
             :placeholder="$t('enrichment.review.search_placeholder')"
+            :aria-label="$t('enrichment.review.search_placeholder')"
             icon="search"
             class="enrichment-review__search"
             data-testid="enrichment-search-input"
@@ -73,6 +58,7 @@
             :options="moduleOptions"
             :model-value="filters.target_module"
             :placeholder="$t('enrichment.review.col.module')"
+            :aria-label="$t('enrichment.review.col.module')"
             data-testid="enrichment-module-filter"
             @update:model-value="(v) => onFilterChange('target_module', v)"
           />
@@ -80,6 +66,7 @@
             :options="kindOptions"
             :model-value="filters.target_kind"
             :placeholder="$t('enrichment.review.col.kind')"
+            :aria-label="$t('enrichment.review.col.kind')"
             data-testid="enrichment-kind-filter"
             @update:model-value="(v) => onFilterChange('target_kind', v)"
           />
@@ -87,12 +74,14 @@
             :options="sourceOptions"
             :model-value="filters.source"
             :placeholder="$t('enrichment.review.col.source')"
+            :aria-label="$t('enrichment.review.col.source')"
             data-testid="enrichment-source-filter"
             @update:model-value="(v) => onFilterChange('source', v)"
           />
           <BasicInput
             v-model="filters.batch_id"
             :placeholder="$t('enrichment.review.col.batch')"
+            :aria-label="$t('enrichment.review.col.batch')"
             class="enrichment-review__batch"
             data-testid="enrichment-batch-filter"
             @input="onSearchChange"
@@ -101,45 +90,49 @@
             v-model="filters.confidence_min"
             type="number"
             :placeholder="$t('enrichment.review.confidence_min')"
+            :aria-label="$t('enrichment.review.confidence_min')"
             class="enrichment-review__confidence"
             data-testid="enrichment-confidence-filter"
             @input="onSearchChange"
           />
-        </div>
-      </Transition>
-    </div>
+        </MobileFilterPanel>
+      </div>
+    </template>
 
-    <div class="enrichment-review__body p-8">
-      <ListMode
-        v-if="mode === 'list'"
-        :rows="rows"
-        :loading="loading"
+    <ListMode
+      v-if="mode === 'list'"
+      :rows="rows"
+      :loading="loading"
+      :total-count="totalCount"
+      :busy="busy"
+      @accept="acceptOne"
+      @reject="rejectOne"
+      @bulk-accept="bulkAccept"
+      @bulk-reject="bulkReject"
+      @bulk-undo="bulkUndo"
+      @reconfirm="openDrift"
+      @row-focus="onRowFocus"
+      @preview-product="openProductPreview"
+    />
+    <FocusMode
+      v-else
+      :rows="rows"
+      :loading="loading"
+      :page="page"
+      :page-size="pageSize"
+      :total-count="totalCount"
+      :initial-index="focusIndex"
+      @need-more="loadNextPage"
+      @exit="exitFocus"
+    />
+
+    <template v-if="mode === 'list' && !loading && totalCount > pageSize" #footer>
+      <Pagination
         :page="page"
-        :page-size="pageSize"
-        :total-count="totalCount"
-        :busy="busy"
-        @accept="acceptOne"
-        @reject="rejectOne"
-        @bulk-accept="bulkAccept"
-        @bulk-reject="bulkReject"
-        @bulk-undo="bulkUndo"
-        @reconfirm="openDrift"
-        @page="onPage"
-        @row-focus="onRowFocus"
-        @preview-product="openProductPreview"
+        :pages="Math.ceil(totalCount / pageSize)"
+        @update:page="onPage"
       />
-      <FocusMode
-        v-else
-        :rows="rows"
-        :loading="loading"
-        :page="page"
-        :page-size="pageSize"
-        :total-count="totalCount"
-        :initial-index="focusIndex"
-        @need-more="loadNextPage"
-        @exit="exitFocus"
-      />
-    </div>
+    </template>
 
     <DriftModal
       :visible="driftVisible"
@@ -162,7 +155,7 @@
       :channel-idx="pimChannel.activeChannelIdx"
       @close="closeProductPreview"
     />
-  </div>
+  </PageLayout>
 </template>
 
 <script>
@@ -222,15 +215,14 @@ export default {
       driftVisible: false,
       driftProposal: null,
       importVisible: false,
-      filtersOpen: false,
       focusIndex: 0,
       previewSku: null,
       previewVisible: false,
     };
   },
   computed: {
-    // Count of active collapsible filters (status lives in its own always-visible
-    // chip row, so it's excluded) — surfaced as a badge on the Filters toggle.
+    // Count of the filters in the filter panel (status lives in its own always-visible
+    // chip row, so it's excluded) — the badge on the panel's phone trigger.
     activeFilterCount() {
       let n = 0;
       if (this.filters.target_module !== "__all") n += 1;
@@ -241,6 +233,12 @@ export default {
         n += 1;
       if (this.filters.search) n += 1;
       return n;
+    },
+    pageActions() {
+      return [
+        { key: "import", role: "secondary", label: this.$t("enrichment.import.open"),
+          testid: "enrichment-import-open", onClick: () => (this.importVisible = true) },
+      ];
     },
     modeOptions() {
       return [
@@ -579,16 +577,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.enrichment-review {
-  display: flex;
-  flex-direction: column;
-}
-.enrichment-review__toolbar {
+.enrichment-review__count {
   flex-shrink: 0;
-}
-.enrichment-review__body {
-  flex: 1;
-  overflow: auto;
+  white-space: nowrap;
 }
 .enrichment-review__search {
   min-width: 180px;
@@ -597,61 +588,5 @@ export default {
 .enrichment-review__batch,
 .enrichment-review__confidence {
   max-width: 140px;
-}
-.enrichment-review__import {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  height: var(--elem-height);
-  padding: 0 var(--space-4);
-  border: none;
-  border-radius: var(--radius-base);
-  font-size: var(--fs-200);
-  white-space: nowrap;
-  flex-shrink: 0;
-  cursor: pointer;
-}
-.enrichment-review__filters-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  height: var(--elem-height);
-  padding: 0 var(--space-3);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-base);
-  background-color: var(--surface-base);
-  color: var(--text-secondary);
-  font-size: var(--fs-200);
-  white-space: nowrap;
-  flex-shrink: 0;
-  cursor: pointer;
-  transition: background-color 0.15s ease, border-color 0.15s ease,
-    color 0.15s ease;
-}
-.enrichment-review__filters-toggle:hover,
-.enrichment-review__filters-toggle.is-active {
-  background-color: var(--surface-raised);
-  border-color: var(--border-default);
-  color: var(--text-body);
-}
-.enrichment-review__filters-badge {
-  min-width: 16px;
-  height: 16px;
-  padding: 0 var(--space-1);
-  font-size: var(--fs-200);
-  font-weight: 600;
-  line-height: 16px;
-  text-align: center;
-  border-radius: var(--radius-full);
-  background-color: var(--accent-fill);
-  color: var(--text-on-accent-fill);
-}
-.enrichment-filters-enter-active,
-.enrichment-filters-leave-active {
-  transition: opacity 0.15s ease;
-}
-.enrichment-filters-enter-from,
-.enrichment-filters-leave-to {
-  opacity: 0;
 }
 </style>

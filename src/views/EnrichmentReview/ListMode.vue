@@ -52,19 +52,19 @@
       :rows="rows"
       row-key="id"
       :empty-text="$t('enrichment.review.empty')"
-      @row-click="$emit('row-focus', row)"
+      @row-click="(row) => $emit('row-focus', row)"
     >
       <template #cell-subject="{ row }">
         <!-- PIM subject: open the product preview drawer (stop the row → focus click). -->
-        <button
+        <BasicButton
           v-if="isPimRow(row)"
-          type="button"
-          class="list-mode__link list-mode__link--btn t-accent"
+          variant="ghost"
+          size="sm"
           :data-testid="`enrichment-subject-${row.id}`"
-          @click.stop="$emit('preview-product', row)"
+          @click="$emit('preview-product', row)"
         >
           {{ row.subject_label || row.subject_ref }}
-        </button>
+        </BasicButton>
         <a
           v-else-if="row.subject_url"
           :href="row.subject_url"
@@ -144,28 +144,6 @@
       :message="$t('enrichment.review.empty_message')"
     />
 
-    <div
-      v-if="totalPages > 1"
-      class="list-mode__pager flex ai-ct jc-ct gap-5 mt-8"
-    >
-      <BasicButton
-        variant="secondary"
-        :disabled="page <= 1 || busy"
-        @click="$emit('page', page - 1)"
-      >
-        {{ $t('enrichment.review.prev') }}
-      </BasicButton>
-      <span class="fs-200 t-muted">{{
-        $t("enrichment.review.page_of", { page, total: totalPages })
-      }}</span>
-      <BasicButton
-        variant="secondary"
-        :disabled="page >= totalPages || busy"
-        @click="$emit('page', page + 1)"
-      >
-        {{ $t('enrichment.review.next') }}
-      </BasicButton>
-    </div>
   </div>
 </template>
 
@@ -189,8 +167,6 @@ export default {
     rows: { type: Array, default: () => [] },
     loading: { type: Boolean, default: false },
     busy: { type: Boolean, default: false },
-    page: { type: Number, default: 1 },
-    pageSize: { type: Number, default: 25 },
     totalCount: { type: Number, default: 0 },
   },
   emits: [
@@ -200,7 +176,6 @@ export default {
     "bulk-reject",
     "bulk-undo",
     "reconfirm",
-    "page",
     "row-focus",
     "preview-product",
   ],
@@ -268,9 +243,6 @@ export default {
         { key: "actions", label: "", actions: true },
       ];
     },
-    totalPages() {
-      return Math.max(1, Math.ceil(this.totalCount / this.pageSize));
-    },
     // Bulk accept/reject only makes sense when the queue holds pending work.
     actionableFilter() {
       return this.rows.some((r) => r.status === "pending");
@@ -312,13 +284,5 @@ export default {
   &:hover {
     text-decoration: underline;
   }
-}
-.list-mode__link--btn {
-  background: none;
-  border: none;
-  padding: 0;
-  font: inherit;
-  cursor: pointer;
-  text-align: left;
 }
 </style>

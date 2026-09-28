@@ -1,5 +1,15 @@
 <template>
-  <div class="product-preview">
+  <BasicCard class="product-preview" :title="product && !loading ? product.name || sku : ''">
+    <template v-if="product && !loading" #actions>
+      <BasicButton
+        variant="secondary"
+        data-testid="enrichment-preview-go-pim"
+        @click="goToPim"
+      >
+        {{ $t("enrichment.preview.go_to_pim") }}
+      </BasicButton>
+    </template>
+
     <Loader v-show="loading" />
 
     <template v-if="!loading && product">
@@ -14,8 +24,6 @@
           <FontAwesomeIcon :icon="$icons.image" />
         </div>
       </div>
-
-      <h3 class="fs-400 fw-600 mb-5">{{ product.name || sku }}</h3>
 
       <dl class="product-preview__meta">
         <div class="product-preview__row">
@@ -69,19 +77,7 @@
       :title="$t('enrichment.preview.not_found')"
       :message="sku || ''"
     />
-
-    <div v-if="product" class="product-preview__actions">
-      <button
-        type="button"
-        class="product-preview__btn bg-accent-fill t-on-accent-fill"
-        data-testid="enrichment-preview-go-pim"
-        @click="goToPim"
-      >
-        <FontAwesomeIcon :icon="$icons.external" />
-        {{ $t("enrichment.preview.go_to_pim") }}
-      </button>
-    </div>
-  </div>
+  </BasicCard>
 </template>
 
 <script>
@@ -146,9 +142,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.product-preview {
-  padding: var(--space-8);
-}
 .product-preview__hero {
   width: 100%;
   display: flex;
@@ -188,24 +181,6 @@ export default {
   dd {
     margin: 0;
     word-break: break-word;
-  }
-}
-.product-preview__actions {
-  margin-top: var(--space-8);
-}
-.product-preview__btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  height: var(--elem-height);
-  padding: 0 var(--space-4);
-  border: none;
-  border-radius: var(--radius-base);
-  font-size: var(--fs-200);
-  cursor: pointer;
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
   }
 }
 </style>

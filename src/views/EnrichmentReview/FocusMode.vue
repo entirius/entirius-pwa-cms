@@ -9,102 +9,75 @@
       :message="$t('enrichment.review.empty_message')"
     />
 
-    <div
-      v-else-if="current"
-      class="focus-mode__card bg-base b-subtle rounded"
-    >
-      <div class="focus-mode__head flex ai-ct jc-sb flex-wrap gap-5">
-        <div>
-          <a
-            v-if="current.subject_url"
-            :href="current.subject_url"
-            target="_blank"
-            rel="noopener"
-            class="focus-mode__subject fs-400 fw-600 t-accent"
-            >{{ current.subject_label || current.subject_ref }}</a
+    <div v-else-if="current" class="focus-mode__column flex-column gap-8">
+      <BasicCard>
+        <div class="flex ai-ct jc-sb flex-wrap gap-5">
+          <div>
+            <a
+              v-if="current.subject_url"
+              :href="current.subject_url"
+              target="_blank"
+              rel="noopener"
+              class="focus-mode__subject fs-400 fw-600 t-accent"
+              >{{ current.subject_label || current.subject_ref }}</a
+            >
+            <span v-else class="focus-mode__subject fs-400 fw-600">{{
+              current.subject_label || current.subject_ref
+            }}</span>
+            <div class="fs-200 t-muted mt-2">{{ metaLine }}</div>
+          </div>
+          <span
+            class="fs-200 t-secondary"
+            data-testid="enrichment-focus-progress"
           >
-          <span v-else class="focus-mode__subject fs-400 fw-600">{{
-            current.subject_label || current.subject_ref
-          }}</span>
-          <div class="fs-200 t-muted mt-2">{{ metaLine }}</div>
+            {{
+              $t("enrichment.review.progress", {
+                index: globalIndex + 1,
+                total: totalCount,
+              })
+            }}
+          </span>
         </div>
-        <span
-          class="fs-200 t-secondary"
-          data-testid="enrichment-focus-progress"
-        >
-          {{
-            $t("enrichment.review.progress", {
-              index: globalIndex + 1,
-              total: totalCount,
-            })
-          }}
-        </span>
-      </div>
 
-      <div
-        v-if="driftMode"
-        class="focus-mode__drift bg-warning-subtle t-warning rounded"
-        data-testid="enrichment-focus-drift"
-      >
-        <FontAwesomeIcon :icon="$icons.warning" />
-        {{ $t("enrichment.drift.intro") }}
-      </div>
-
-      <div class="focus-mode__diff">
-        <DiffRenderer
-          :target-kind="current.target_kind"
-          :proposed="current.proposed_value"
-          :current="current.current_snapshot"
-          :proposal-id="current.id"
-          :subject-label="current.subject_label || current.subject_ref"
-        />
-      </div>
-
-      <textarea
-        v-model="reason"
-        class="focus-mode__reason"
-        rows="2"
-        :placeholder="$t('enrichment.review.reject_reason_placeholder')"
-        data-testid="enrichment-focus-reason"
-      />
-
-      <div class="focus-mode__actions flex ai-ct gap-2 flex-wrap">
-        <button
-          class="focus-mode__btn bg-positive-fill t-on-status-fill"
-          :disabled="acting"
-          data-testid="enrichment-focus-accept"
-          @click="accept"
+        <div
+          v-if="driftMode"
+          class="focus-mode__drift bg-warning-subtle t-warning rounded"
+          data-testid="enrichment-focus-drift"
         >
-          {{ driftMode ? $t("enrichment.drift.confirm") : $t("common.accept") }}
-          <kbd>a</kbd>
-        </button>
-        <button
-          class="focus-mode__btn bg-negative-subtle t-negative"
-          :disabled="acting"
-          data-testid="enrichment-focus-reject"
-          @click="reject"
-        >
-          {{ $t("common.reject") }} <kbd>r</kbd>
-        </button>
-        <button
-          class="focus-mode__btn bg-raised t-secondary"
-          :disabled="acting"
-          data-testid="enrichment-focus-skip"
-          @click="skip"
-        >
-          {{ $t("enrichment.review.skip") }} <kbd>s</kbd>
-        </button>
-        <div class="ml-auto fs-200 t-muted">
-          {{ $t("enrichment.review.shortcuts_hint") }}
+          <FontAwesomeIcon :icon="$icons.warning" />
+          {{ $t("enrichment.drift.intro") }}
         </div>
-      </div>
+
+        <div class="focus-mode__diff">
+          <DiffRenderer
+            :target-kind="current.target_kind"
+            :proposed="current.proposed_value"
+            :current="current.current_snapshot"
+            :proposal-id="current.id"
+            :subject-label="current.subject_label || current.subject_ref"
+          />
+        </div>
+
+        <FormField :label="$t('enrichment.review.reject_reason')" class="mb-8">
+          <BasicTextarea
+            v-model="reason"
+            :rows="2"
+            :placeholder="$t('enrichment.review.reject_reason_placeholder')"
+            data-testid="enrichment-focus-reason"
+          />
+        </FormField>
+
+        <div class="flex ai-ct jc-sb flex-wrap gap-5">
+          <span class="fs-200 t-muted">{{ $t("enrichment.review.shortcuts_hint") }}</span>
+          <ActionBar :actions="actions" />
+        </div>
+      </BasicCard>
 
       <ProductPreviewCard
         v-if="isPimCurrent"
         :key="current.subject_ref"
         :sku="current.subject_ref"
         :channel-idx="pimChannel.activeChannelIdx"
-        class="focus-mode__product"
       />
     </div>
   </div>
@@ -145,6 +118,17 @@ export default {
     };
   },
   computed: {
+    // One primary per mode (FIX-02): accept is the primary, reject the danger, skip the secondary.
+    actions() {
+      return [
+        { key: "skip", role: "secondary", label: this.$t("enrichment.review.skip"), disabled: this.acting,
+          testid: "enrichment-focus-skip", onClick: this.skip },
+        { key: "reject", role: "danger", label: this.$t("common.reject"), disabled: this.acting,
+          testid: "enrichment-focus-reject", onClick: this.reject },
+        { key: "accept", role: "primary", disabled: this.acting, testid: "enrichment-focus-accept",
+          label: this.driftMode ? this.$t("enrichment.drift.confirm") : this.$t("common.accept"), onClick: this.accept },
+      ];
+    },
     current() {
       // During drift re-confirm, show the refreshed proposal returned by accept()
       // without mutating the parent-owned `rows` prop.
@@ -298,10 +282,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.focus-mode__card {
+.focus-mode__column {
   max-width: 860px;
   margin: 0 auto;
-  padding: var(--space-10);
 }
 .focus-mode__subject {
   text-decoration: none;
@@ -319,43 +302,5 @@ export default {
 }
 .focus-mode__diff {
   margin: var(--space-8) 0;
-}
-.focus-mode__product {
-  margin-top: var(--space-8);
-  border-top: 1px solid var(--border-subtle);
-}
-.focus-mode__reason {
-  width: 100%;
-  padding: var(--space-5);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-base);
-  background: var(--surface-base);
-  color: var(--text-body);
-  font-size: var(--fs-200);
-  resize: vertical;
-  margin-bottom: var(--space-8);
-}
-.focus-mode__btn {
-  height: var(--elem-height);
-  padding: 0 var(--space-4);
-  border: none;
-  border-radius: var(--radius-base);
-  font-size: var(--fs-200);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-  kbd {
-    font-size: var(--fs-200);
-    background: var(--surface-base);
-    color: var(--text-secondary);
-    border-radius: var(--radius-base);
-    padding: 0 var(--space-1);
-    opacity: 0.8;
-  }
 }
 </style>
