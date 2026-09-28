@@ -110,7 +110,7 @@ test.describe('Critical Smoke Tests', () => {
     await expect(page.locator('input[type="password"]')).toBeHidden();
 
     // Header controls visible (proves app rendered authenticated state)
-    await expect(page.locator('.hc').first()).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('[data-fid="user-button"]:visible')).toBeVisible({ timeout: 10000 });
   });
 
 });

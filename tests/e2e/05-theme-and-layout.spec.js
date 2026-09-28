@@ -113,8 +113,8 @@ test.describe('Panel Switching', () => {
     await expect(pimGroup).toHaveAttribute('aria-expanded', 'true');
 
     await page.locator(`#${await pimGroup.getAttribute('aria-controls')}`).getByRole('link').first().click();
-    await page.waitForLoadState('networkidle');
-    expect(page.url()).toContain('/pim/');
+    // networkidle resolves before the lazy route chunk lands: wait for the URL itself.
+    await expect(page).toHaveURL(/\/pim\//);
   });
 
   test('home cards navigate to correct panel', async ({ page }) => {
