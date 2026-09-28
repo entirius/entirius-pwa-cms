@@ -1,130 +1,104 @@
 <template>
   <div class="fs-300 t-body h-100 ov-h relative">
-    <Teleport to="#authors-toolbar-right" defer>
-      <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
-      <template v-if="!loading">
-        <IconButton
-          v-if="isEdit"
-          icon="delete"
-          :label="$t('common.delete')"
-          variant="danger"
-          @click="showDeleteConfirm = true"
-        />
-        <BasicButton
-          variant="primary"
-          @click="save"
-        >
-          {{ $t('common.save') }}
-        </BasicButton>
-      </template>
-    </Teleport>
-
     <PageLayout>
       <template v-if="!loading" #header>
         <PageHeader
           :title="form.name || $t('authors.create')"
           back="/pages/authors"
-        />
+        >
+          <template #actions>
+            <div class="flex ai-ct jc-fe wrap gap-3">
+              <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
+              <BasicSwitch
+                :label="$t('authors.is_active')"
+                v-model="form.is_active"
+              />
+              <ActionBar :actions="headerActions" />
+            </div>
+          </template>
+        </PageHeader>
       </template>
       <Loader block v-if="loading" />
 
       <template v-else>
-        <!-- Basic info -->
-        <BasicCard class="author-edit__section mb-10">
-          <div class="section-label mb-8">{{ $t("pim.basic_info") }}</div>
-          <div class="flex gap-8 mb-8" style="flex-wrap: wrap">
+        <BasicCard :title="$t('pim.basic_info')" gap class="mb-8">
+          <div class="form-grid">
             <FormField
-              class="flex-1"
-              style="min-width: 200px"
               :label="$t('authors.name')"
+              required
               :error="formErrors.getFieldError('name')?.msg || ''"
             >
               <BasicInput
                 v-model="form.name"
               />
             </FormField>
-            <FormField class="flex-1" style="min-width: 200px" :label="$t('authors.slug')">
+            <FormField :label="$t('authors.slug')" :error="formErrors.getFieldError('slug')?.msg || ''">
               <BasicInput
                 v-model="form.slug"
               />
             </FormField>
-          </div>
-          <BasicSwitch
-            :label="$t('authors.is_active')"
-            v-model="form.is_active"
-          />
-
-          <!-- Photo -->
-          <div class="mt-8">
-            <label class="field-label mb-2 db">
-              {{ $t("authors.photo") }}
-            </label>
-            <div class="flex ai-ct gap-8">
-              <div class="author-photo-preview pointer" @click="$refs.photoController.init()">
-                <img
-                  v-if="form.photo_url"
-                  :src="form.photo_url"
-                  alt="Author photo"
-                  class="author-photo-preview__img"
-                />
-                <div v-else class="author-photo-preview__placeholder">
-                  <FontAwesomeIcon :icon="$icons.user" class="t-muted" style="font-size: var(--fs-600)" />
+            <FormField :label="$t('authors.photo')" class="form-grid__wide">
+              <div class="flex ai-ct gap-8">
+                <div class="author-photo-preview">
+                  <img
+                    v-if="form.photo_url"
+                    :src="form.photo_url"
+                    :alt="$t('authors.photo')"
+                    class="author-photo-preview__img"
+                  />
+                  <div v-else class="author-photo-preview__placeholder">
+                    <FontAwesomeIcon :icon="$icons.user" class="t-muted fs-600" />
+                  </div>
+                </div>
+                <div class="flex ai-ct gap-2">
+                  <BasicButton
+                    variant="secondary"
+                    @click="$refs.photoController.init()"
+                  >
+                    {{ form.photo_uid ? $t('common.edit') : $t('common.select') }}
+                  </BasicButton>
+                  <IconButton
+                    v-if="form.photo_uid"
+                    icon="close"
+                    :label="$t('gallery.delete_photo')"
+                    variant="danger"
+                    @click="clearPhoto"
+                  />
                 </div>
               </div>
-              <div class="flex ai-ct gap-2">
-                <BasicButton
-                  variant="secondary"
-                  @click="$refs.photoController.init()"
-                >
-                  {{ form.photo_uid ? $t('common.edit') : $t('common.select') }}
-                </BasicButton>
+            </FormField>
+          </div>
+        </BasicCard>
+
+        <BasicCard :title="$t('pim.translations')" gap class="mb-8">
+          <div class="form-grid">
+            <FormField
+              v-for="field in t9nFields"
+              :key="field.key"
+              :label="`${field.label} (${defaultLang.toUpperCase()})`"
+              class="form-grid__wide"
+              :error="formErrors.getFieldError(field.key)?.msg || ''"
+            >
+              <div class="flex ai-st gap-3">
+                <BasicInput
+                  v-model="form[field.key][defaultLang]"
+                  class="flex-1"
+                />
                 <IconButton
-                  v-if="form.photo_uid"
-                  icon="close"
-                  :label="$t('gallery.delete_photo')"
-                  variant="danger"
-                  @click="clearPhoto"
+                  v-if="availableLanguages.length > 1"
+                  icon="translate"
+                  :label="$t('authors.translations_of', { field: field.label })"
+                  variant="outline"
+                  @click="openTranslations(field.name)"
                 />
               </div>
-            </div>
+            </FormField>
           </div>
         </BasicCard>
 
-        <!-- Translated fields -->
-        <BasicCard class="author-edit__section mb-10">
-          <div class="section-label mb-8">{{ $t("pim.translations") }}</div>
-
-          <div
-            v-for="field in t9nFields"
-            :key="field.key"
-            class="translation-field mb-8"
-          >
-            <div class="translation-field__header">
-              <label class="field-label">
-                {{ field.label }} ({{ defaultLang.toUpperCase() }})
-              </label>
-              <BasicButton
-                v-if="availableLanguages.length > 1"
-                variant="secondary"
-                class="translation-field__btn"
-                @click="openTranslations(field.name)"
-              >
-                {{ $t('pim.translations') }}
-              </BasicButton>
-            </div>
-            <BasicInput
-              v-model="form[field.key][defaultLang]"
-            />
-          </div>
-        </BasicCard>
-
-        <!-- Contact info -->
-        <BasicCard class="author-edit__section mb-10">
-          <div class="section-label mb-8">{{ $t("dp.contact") }}</div>
-          <div class="flex gap-8 mb-8" style="flex-wrap: wrap">
+        <BasicCard :title="$t('dp.contact')" gap class="mb-8">
+          <div class="form-grid">
             <FormField
-              class="flex-1"
-              style="min-width: 200px"
               :label="$t('authors.contact_email')"
               :error="formErrors.getFieldError('contact_email')?.msg || ''"
             >
@@ -133,8 +107,6 @@
               />
             </FormField>
             <FormField
-              class="flex-1"
-              style="min-width: 200px"
               :label="$t('authors.contact_phone')"
               :error="formErrors.getFieldError('contact_phone')?.msg || ''"
             >
@@ -142,28 +114,23 @@
                 v-model="form.contact_phone"
               />
             </FormField>
+            <FormField
+              :label="$t('authors.contact_url')"
+              class="form-grid__wide"
+              :error="formErrors.getFieldError('contact_url')?.msg || ''"
+            >
+              <BasicInput
+                v-model="form.contact_url"
+              />
+            </FormField>
           </div>
-          <FormField
-            :label="$t('authors.contact_url')"
-            :error="formErrors.getFieldError('contact_url')?.msg || ''"
-          >
-            <BasicInput
-              v-model="form.contact_url"
-            />
-          </FormField>
         </BasicCard>
 
-        <!-- Social profiles -->
-        <BasicCard class="author-edit__section mb-10">
-          <div class="section-label mb-8">
-            {{ $t("authors.social_profiles") }}
-          </div>
-          <div class="flex gap-8" style="flex-wrap: wrap">
+        <BasicCard :title="$t('authors.social_profiles')" gap class="mb-8">
+          <div class="form-grid">
             <FormField
               v-for="platform in knownPlatforms"
               :key="platform"
-              class="flex-1"
-              style="min-width: 200px"
               :label="platform"
             >
               <BasicInput
@@ -209,14 +176,13 @@
         <p v-if="form.post_count" class="mt-5 t-secondary fs-200">
           {{ $t("authors.post_count") }}: <strong>{{ form.post_count }}</strong>
         </p>
-        <div v-if="reassignOptions.length" class="mt-8">
-          <p class="fs-200 fw-600 mb-2">{{ $t("authors.reassign_label") }}</p>
+        <FormField v-if="reassignOptions.length" :label="$t('authors.reassign_label')" class="mt-8">
           <BasicSelect
             :options="reassignOptions"
             v-model="reassignTo"
             :placeholder="$t('authors.reassign_none')"
           />
-        </div>
+        </FormField>
       </template>
     </ConfirmDialog>
   </div>
@@ -283,6 +249,15 @@ export default {
     };
   },
   computed: {
+    headerActions() {
+      return [
+        ...(this.isEdit
+          ? [{ key: "delete", role: "utility", icon: "delete", variant: "danger", label: this.$t("common.delete"),
+              onClick: () => (this.showDeleteConfirm = true) }]
+          : []),
+        { key: "save", role: "primary", label: this.$t("common.save"), onClick: this.save },
+      ];
+    },
     isEdit() {
       return Boolean(this.$route.params.uid);
     },
@@ -521,26 +496,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.translation-field {
-  &__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: var(--space-1);
-  }
-
-  &__btn {
-    line-height: 1;
-    padding: var(--space-1) var(--space-2);
-    font-size: var(--fs-200);
-  }
-}
-
-.tt-upper {
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
 .author-photo-preview {
   width: 80px;
   height: 80px;
@@ -575,9 +530,4 @@ export default {
     padding: 0;
   }
 }
-
-.db {
-  display: block;
-}
 </style>
-

@@ -1522,6 +1522,7 @@
     "remove_author": "Remove author",
     "no_authors": "No authors assigned",
     "search_authors": "Search authors",
+    "translations_of": "Translations: {field}",
     "overlap_error": "An author cannot be both author and co-author",
     "delete_confirm": "Delete author?",
     "reassign_label": "Reassign posts to",

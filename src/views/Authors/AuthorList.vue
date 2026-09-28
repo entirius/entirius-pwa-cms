@@ -3,22 +3,15 @@
     <template #header>
       <PageHeader :title="$t('authors.title')" />
     </template>
-
-      <div
-        v-if="unavailable"
-        class="flex ai-ct jc-ct gap-5 p-12 t-muted"
-        style="min-height: 14rem; flex-direction: column"
-      >
-        <p class="fs-400 fw-600 t-secondary">
-          {{ $t("authors.unavailable_title") }}
-        </p>
-        <p class="fs-200 t-muted ta-ct" style="max-width: 30rem">
-          {{ $t("authors.unavailable_msg") }}
-        </p>
-      </div>
-
-      <template v-if="!unavailable">
-      <div class="flex ai-ct mb-10">
+    <template v-if="!unavailable" #toolbar>
+      <div class="author-list__toolbar">
+        <BasicInput
+          v-model="search"
+          :placeholder="$t('common.start_typing')"
+          icon="search"
+          class="author-list__search"
+          @input="debouncedFetch(searchAndFetch)"
+        />
         <MobileFilterPanel
           :active-count="activeFilterCount"
           :trigger-label="$t('builder.filters')"
@@ -41,17 +34,16 @@
           />
         </MobileFilterPanel>
       </div>
+    </template>
 
-      <div class="author-list__toolbar">
-        <BasicInput
-          v-model="search"
-          :placeholder="$t('common.start_typing')"
-          icon="search"
-          class="author-list__search"
-          @input="debouncedFetch(searchAndFetch)"
-        />
-      </div>
+    <EmptyState
+      v-if="unavailable"
+      icon="author"
+      :title="$t('authors.unavailable_title')"
+      :message="$t('authors.unavailable_msg')"
+    />
 
+    <template v-else>
       <Loader block v-show="loading" />
 
       <DataTable
@@ -76,12 +68,12 @@
           <span class="t-secondary">{{ value ?? 0 }}</span>
         </template>
       </DataTable>
+    </template>
 
+    <template v-if="!unavailable && totalCount > pageSize" #footer>
       <Pagination
-        v-if="totalCount > pageSize"
         :page="paginationState.page"
         :pages="paginationState.pages"
-        class="mt-5"
         @update:page="onPageChange"
       />
     </template>
@@ -231,7 +223,6 @@ export default {
   display: flex;
   align-items: center;
   gap: var(--space-5);
-  margin-bottom: var(--space-10);
   flex-wrap: wrap;
 }
 .author-list__search {

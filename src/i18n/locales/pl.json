@@ -1521,6 +1521,7 @@
     "remove_author": "Usuń autora",
     "no_authors": "Brak przypisanych autorów",
     "search_authors": "Szukaj autorów",
+    "translations_of": "Tłumaczenia: {field}",
     "overlap_error": "Autor nie może być jednocześnie autorem i współautorem",
     "delete_confirm": "Usunąć autora?",
     "reassign_label": "Przepisz posty do",

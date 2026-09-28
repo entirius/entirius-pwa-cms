@@ -21,13 +21,6 @@
     "owner": "P5 plan 34 (Emails)"
   },
   {
-    "screen": "*",
-    "kind": "nonFocusable",
-    "selector": "div.author-photo-preview",
-    "reason": "the author photo opens the gallery picker on click only",
-    "owner": "P5 plan 35 (Authors)"
-  },
-  {
     "screen": "pages-layout-editor",
     "kind": "nonFocusable",
     "selector": "span.handle",
