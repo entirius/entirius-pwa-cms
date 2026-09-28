@@ -221,7 +221,8 @@ Catalogue: `#overlays` (`#basic-modal`, `#confirm-dialog`, `#side-drawer`, `#tra
   (section title, Inter 600 16 px), `actions` slot (an ActionBar, right of the title), default slot.
 - **`PanelCard`** — Home panel tile: `icon` (the panel's glyph from `configs/access.js`), `title` (Lexend Deca),
   `description`, `locked` + `lockedText` (opacity .5, lock, not focusable, no click), emits `click`; `surface-card`
-  gradient, `--radius-3xl`, padding and gap 20 px; root class `panel-card`, `data-fid="panel-card"`.
+  gradient, `--radius-3xl`, padding and gap 20 px, a plain 24 px icon, title and description 12 px apart; root class
+  `panel-card` (e2e hook). The page sets `data-fid="panel-card"` on the one card Figma measures (Home: the first).
 - **`MediaTile`** — media grid tile, 188 × 276 (150 × 240 below tablet), `surface-raised`: `src` (none = image
   placeholder), `alt`, `caption`, `selected` (accent border), `actions` slot (IconButtons `sm`).
 - **`Loader`** — `size` 32 · 64 (64 by default), `block` centres it in a content area, `overlay` veils the

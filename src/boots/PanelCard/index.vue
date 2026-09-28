@@ -4,26 +4,28 @@
     :type="locked ? null : 'button'"
     class="panel-card flex-column"
     :class="{ 'panel-card--locked': locked }"
-    data-fid="panel-card"
     @click="!locked && $emit('click')"
   >
     <span class="panel-card__icon inline-flex jc-ct ai-ct">
       <FontAwesomeIcon :icon="icon" aria-hidden="true" />
     </span>
-    <span class="panel-card__title type-title">{{ title }}</span>
-    <span v-if="locked" class="panel-card__text inline-flex ai-ct gap-1">
-      <FontAwesomeIcon :icon="$icons.lock" aria-hidden="true" />
-      {{ lockedText }}
+    <span class="panel-card__body flex-column gap-3">
+      <span class="panel-card__title type-title">{{ title }}</span>
+      <span v-if="locked" class="panel-card__text type-description inline-flex ai-ct gap-1">
+        <FontAwesomeIcon :icon="$icons.lock" aria-hidden="true" />
+        {{ lockedText }}
+      </span>
+      <span v-else-if="description" class="panel-card__text type-description">{{ description }}</span>
     </span>
-    <span v-else-if="description" class="panel-card__text">{{ description }}</span>
   </component>
 </template>
 
 <script setup>
-// A Home panel tile (Figma S1/S2): the named `card` gradient, `--radius-3xl`, 20 px padding and gap; icon, title
-// (Lexend Deca), description. `locked` (panel off for this user) = opacity .5, a lock and `lockedText` in place of
-// the description, not focusable, no click. `icon` is the panel's glyph from the nav model (configs/access.js),
-// not a meaning. Root class `panel-card` and `data-fid="panel-card"` are the e2e and landmarks hooks.
+// A Home panel tile (Figma S1/S2): the named `card` gradient, `--radius-3xl`, 20 px padding and gap; a plain 24 px
+// icon (no tile), then title (Lexend Deca 20) and description (14/300) 12 px apart. `locked` (panel off for this user)
+// = opacity .5, a lock and `lockedText` in place of the description, not focusable, no click. `icon` is the panel's
+// glyph from the nav model (configs/access.js), not a meaning. Root class `panel-card` is the e2e hook; the page
+// puts the landmark (`data-fid="panel-card"`) on the card Figma measures.
 defineProps({
   icon: { type: String, required: true },
   title: { type: String, required: true },
@@ -55,11 +57,9 @@ defineEmits(["click"]);
   }
 
   &__icon {
-    width: var(--space-10);
-    height: var(--space-10);
-    border-radius: var(--radius-xl);
-    background: var(--surface-raised);
-    color: var(--text-accent);
+    width: var(--space-6);
+    height: var(--space-6);
+    color: var(--text-strong);
     font-size: var(--fs-500);
   }
 
@@ -68,8 +68,6 @@ defineEmits(["click"]);
   }
 
   &__text {
-    font-size: var(--fs-250);
-    line-height: 1.4;
     color: var(--text-muted);
   }
 }

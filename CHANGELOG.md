@@ -140,6 +140,12 @@ All notable changes to this project will be documented in this file.
   `PageHeader` in the `#header` slot (a loading page keeps its condition there) and the search/filter row in
   `#toolbar`. The swap is the `p5-page-frame` codemod (`scripts/codemods/p5-page-frame.mjs`, `--check` in the gate);
   section cards, local modal surfaces and the auth cards are `BasicCard`, the only renderer of `.page-card`.
+- Home is the Figma S1/S2 screen (P5 plan 26): `PageLayout` + `PageHeader` (greeting overline, title), a left-aligned
+  `PanelCard` grid (3 columns from 1024 px, 2 from 769 px, 1 on a phone, 12 px gap) with the panel's own glyph, locked
+  panels dimmed with the lock, and the blurred Entirius sign behind the content as decoration. `PanelCard` draws the
+  plain 24 px icon (no tinted tile) and keeps title and description 12 px apart; the page, not the card, sets
+  `data-fid="panel-card"` (Home: the first card). On a phone Home keeps the Figma rhythm (40 px top, 30 px title).
+
 - The new shell in `App.vue` (P4 plan 22): AppHeader without a title, SidebarNav on every authenticated route (Home
   and single-entry panels included) from 1024 px, the mobile menu and a 72 px tab bar below it, `<main>` with the
   shell's page header: a view's `PageHeader` claims it (crumbs, back to the parent crumb, its title for the tab name),
