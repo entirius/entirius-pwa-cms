@@ -40,7 +40,8 @@
 // of icons.js), `readonly` (the value behind a lock, the former LockedField), `disabled`, and the native `maxlength`,
 // `autocomplete`, `inputmode`, `min`, `max`, `step` (on the <input>, never the wrapper). Inside a
 // FormField it takes id, aria-describedby, aria-invalid, required and disabled from the contract; the label and the
-// error text are the FormField's. `null` and `false` show an empty field, `0` shows "0". `focusOnCreate` focuses it on mount;
+// error text are the FormField's. A caller's `aria-describedby` joins the field's. `null` and `false` show an empty
+// field, `0` shows "0". `focusOnCreate` focuses it on mount;
 // `onFocusout` / `onKeyDown` (Enter) emit the current text. `size`: md = --elem-height (default), lg = 40 px (the
 // sign-in screens, AuthLayout). Slot `trailing`: a control inside the right edge (the password reveal), the text
 // stops before it. `format` (src/utils/formats.js: money, integer, ean, key, …) shows the model in that format, puts
@@ -75,6 +76,7 @@ const props = defineProps({
   format: { type: String, default: null, validator: (value) => value in FORMATS },
   // The API regex of a `code` / `key` format.
   pattern: { type: String, default: null },
+  ariaDescribedby: { type: String, default: "" },
 });
 const emit = defineEmits(["update:modelValue", "onFocusout", "onKeyDown"]);
 
@@ -96,6 +98,7 @@ const { attrs, field } = useControlAttrs({
   id: () => props.id,
   disabled: () => props.disabled,
   invalid: () => Boolean(formatMessage.value),
+  describedBy: () => props.ariaDescribedby,
 });
 
 function onInput(event) {

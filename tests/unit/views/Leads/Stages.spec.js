@@ -174,6 +174,25 @@ describe("Leads Stages", () => {
     expect(wrapper.find('[data-testid="stage-error"]').exists()).toBe(false);
   });
 
+  // Plan 61c: a rename that fails after a newer one was committed does not bring its old label back as saved.
+  it("a failed rename keeps a label committed while it ran", async () => {
+    let failFirst;
+    api.PATCH_Stage.mockReturnValueOnce(new Promise((_, reject) => (failFirst = reject))).mockResolvedValue({ data: {} });
+    const wrapper = mount(Stages, { global: { components: leadsFrame.components, stubs } });
+    await flushPromises();
+    const label = () => wrapper.findAllComponents('[data-testid="stage-label"]')[0];
+    label().vm.$emit("update:modelValue", "Fresh");
+    label().vm.$emit("onFocusout");
+    label().vm.$emit("update:modelValue", "Newer");
+    label().vm.$emit("onKeyDown");
+    await flushPromises();
+    failFirst({ response: { data: { detail: "Busy" } } });
+    await flushPromises();
+    label().vm.$emit("onFocusout");
+    await flushPromises();
+    expect(api.PATCH_Stage.mock.calls).toEqual([[1, { label: "Fresh" }], [1, { label: "Newer" }]]);
+  });
+
   it("an empty label is a field error before the request", async () => {
     const wrapper = mount(Stages, { global: { components: leadsFrame.components, stubs } });
     await flushPromises();

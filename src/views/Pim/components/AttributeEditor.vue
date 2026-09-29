@@ -143,6 +143,8 @@ const editableRows = ref([]);
 const optionsCache = ref({});
 const storedLabels = ref({});
 const searchLoads = new Set();
+// Bumped by every reset: a loop of an earlier scope stops even when the channel is switched there and back (A → B → A).
+let generation = 0;
 const collapsedGroups = reactive(new Set());
 const translatingRow = ref(null);
 
@@ -305,11 +307,11 @@ const notifyValuesFailed = () => notify.spawnNotification({ type: "negative", ms
 // values that page lacks; the editor shows at once. The other selects load when they open. One notice per round,
 // however many selects failed; none for a round of a channel or feature set that is no longer shown.
 async function prefetchStoredOptions(rows) {
-  const scope = scopeKey();
+  const started = generation;
   const loads = rows
     .filter((r) => isSelectType(r.feature_type) && storedValues(r).length)
     .map((r) => prefetchSelect(r.feature_idx, storedValues(r)));
-  if ((await Promise.all(loads)).includes(false) && scopeKey() === scope) notifyValuesFailed();
+  if ((await Promise.all(loads)).includes(false) && generation === started) notifyValuesFailed();
 }
 
 async function prefetchSelect(featureIdx, stored) {
@@ -338,7 +340,7 @@ async function loadAllOptions(featureIdx) {
   const key = cacheKey(featureIdx);
   if (searchLoads.has(key)) return;
   searchLoads.add(key);
-  const outcome = await loadPagesUpToCap(featureIdx, key);
+  const outcome = await loadPagesUpToCap(featureIdx);
   if (outcome === "failed") {
     searchLoads.delete(key);
     notifyValuesFailed();
@@ -347,8 +349,9 @@ async function loadAllOptions(featureIdx) {
 }
 
 // → "done" | "capped" | "failed" | "stale" (the channel or feature set changed under the loop: it stops, silent).
-async function loadPagesUpToCap(featureIdx, key) {
-  const outcomeOf = (ok) => (cacheKey(featureIdx) !== key ? "stale" : ok ? null : "failed");
+async function loadPagesUpToCap(featureIdx) {
+  const started = generation;
+  const outcomeOf = (ok) => (generation !== started ? "stale" : ok ? null : "failed");
   let stop = outcomeOf(await ensureOptions(featureIdx));
   while (!stop && hasMoreOptions(featureIdx) && getOptions(featureIdx).length < SEARCH_CAP) {
     stop = outcomeOf(await loadOptionsPage(featureIdx));
@@ -410,6 +413,7 @@ function labelsOf(featureIdx) {
 }
 
 function resetOptions() {
+  generation += 1;
   optionsCache.value = {};
   storedLabels.value = {};
   searchLoads.clear();

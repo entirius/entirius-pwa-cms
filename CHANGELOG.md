@@ -145,6 +145,15 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- The sign-in screens share one brand-led frame, `AuthLayout` (plan 59, "quiet light"): on desktop a dark brand stage
+  (slow light fields on transform only, paused while typing and still under reduced motion; wordmark, an editorial
+  line, the copyright line) beside the form column, which follows the theme; below 1024 px the stage is a top band and
+  the form a sheet over it. The login wall, password reset, change password and the SSO callback moved onto it.
+  Title „Zaloguj się” / `Sign in` (`login.welcome`), new subtitle. Form errors now show under their field and once in
+  an `aria-live` summary instead of a toast; the submit button shows its loading state; a caps-lock hint under a
+  password field; `autocomplete` `username` / `current-password` / `new-password` / `email`. Fields, requests,
+  redirects and the SSO flow are unchanged. New: `size="lg"` (40 px) on `BasicButton` and `BasicInput`, a `trailing`
+  slot on `BasicInput`, `onDark` on `BasicLogo`; `src/assets/scss/utils/_auth-card.scss` removed.
 - One field-hint pattern (plan 60): FormField `hint` + `hintLevel` replace `description` (a caption under the field)
   and `tooltip`, both removed (UI lint, C2). The hint is a 16 px `?` after the label — `subtle` a hollow ring,
   `important` filled `accent-subtle` for a constraint, format, limit or consequence; hover or keyboard focus opens it,
@@ -586,6 +595,35 @@ All notable changes to this project will be documented in this file.
   badge is no longer cut to „Un…”, and the header counter says how many prices and rows are unsaved when one price
   (SKU and currency) sits on several country rows.
 - Sign-in: the caps-lock warning under the password shows again (FormField lost `description` in plan 60).
+- Review leftovers of plans 61b–61d (plan 61e): a failed reload of the Leads company card (after an action, or after
+  a refused stage or type change) shows a notice and keeps the card instead of an unhandled rejection. The sign-in
+  caps-lock hint sits in a live region that is always there and is named by the password input's `aria-describedby`
+  while it shows. The builder's section config summary is muted text under the section title, not a button without an
+  action. `BasicMenu` drops the `tabindex` its focus fallback puts on the menu once focus leaves it. A failed profile
+  call on sign-in keeps the stored hints choice (only a profile without one resets it to on). A caller's
+  `aria-describedby` on `BasicSelect` or `BasicInput` joins the FormField's error or hint id instead of replacing it.
+- Field hints, review fixes of plan 60 (plan 61d): a hint opened with Enter or Space closes when focus leaves it (a
+  tap still toggles it on a touch screen). The hints choice is reset on every sign-in and cleared on sign-out, so a
+  profile without one gets hints on, never the previous user's. The "no languages" note of the translate and
+  enrichment dialogs is linked to its select (`aria-describedby`). A disabled primary `IconButton` fades as a whole
+  instead of painting a `text-disabled` glyph on the accent fill. The builder's "add one first" (buttons, group
+  fields) is visible text, not a help mark that hints-off hides. The removed-prop lint rule catches `<form-field>`.
+
+- Late answers and 56b review leftovers (plan 61c): a slow answer never lands on a screen the user has left — the
+  Leads company card drops a load, stage move or type change answer (or error) of an earlier open, so its header
+  actions never act on another company; the Communicate dialog ignores the template list of an earlier open; the PIM attribute search
+  loop and prefetch round stop on every channel or feature-set reset, even after a switch there and back (one loop,
+  one notice). A failed stage or lead-type rename keeps a label committed while it ran. A text selection outside an
+  earlier-thread summary no longer blocks its tap. The Builder section config summary is an `IconButton` (a real
+  button; focus shows the summary), no longer a focusable `role="img"`. Sign-in frame (plan-59 review): no channel
+  chip (it showed the slug), the focus halo sits outside the ring, the caps-lock hint stays next to a password error
+  (test id `caps-lock-hint`), no permanent `will-change` on the light fields. The live supplier e2e spec opens the
+  `/atlas/…` routes and says in its header that it writes (never on a shared stack).
+- `BasicMenu` phone sheet edges from the plan-56d review (plan 61b): an open sheet crossing the phone breakpoint (a
+  rotation) stays open and moves its popover between the page and the backdrop without a remount — the panel keeps
+  its state and does not load again; on a phone it is trapped with the trigger as the opener. The trap has one
+  activation path. A sheet whose trigger holds no focusable control returns focus to the menu itself on close, never
+  to `<body>`. Menus that are no sheet share one in-place layer component.
 - P5 wave-5 close (plan 57): the Leads company card's Overview shows its field names whole (they were cut to the
   header's width); a Leads Settings section shows one back arrow, its PageHeader's (the layout added a second one
   above it).

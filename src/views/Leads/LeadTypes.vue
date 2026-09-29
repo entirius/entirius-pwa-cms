@@ -121,13 +121,15 @@ async function save(type, body) {
 }
 
 // The label field commits on blur and Enter, as the native change did: only a changed label is sent. It counts as
-// saved while the PATCH runs (Enter then blur sends once) and is forgotten on a refusal, so blur or Enter retries.
+// saved while the PATCH runs (Enter then blur sends once) and is forgotten on a refusal, so blur or Enter retries —
+// unless a newer label was committed meanwhile: that one stays.
 async function rename(type) {
   const previous = savedLabels[type.id];
-  if (type.label === previous) return;
-  savedLabels[type.id] = type.label;
-  if (await attempt(type.id, () => PATCH_LeadType(type.id, { label: type.label }))) await load();
-  else savedLabels[type.id] = previous;
+  const sent = type.label;
+  if (sent === previous) return;
+  savedLabels[type.id] = sent;
+  if (await attempt(type.id, () => PATCH_LeadType(type.id, { label: sent }))) await load();
+  else if (savedLabels[type.id] === sent) savedLabels[type.id] = previous;
 }
 
 async function shift(index, delta) {

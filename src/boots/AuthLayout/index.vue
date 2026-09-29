@@ -12,7 +12,6 @@
         <p class="auth-layout__line">{{ $t("login.stage_line") }}</p>
       </div>
       <div v-if="isDesktop" class="auth-layout__foot fs-200 t-body">
-        <span v-if="channel" class="auth-layout__chip">{{ channel }}</span>
         <span>{{ $t("login.stage_rights", { year }) }}</span>
       </div>
     </div>
@@ -50,7 +49,6 @@ defineProps({
 });
 
 const isDesktop = useIsDesktop();
-const channel = process.env.VUE_APP_CHANNEL || "";
 const year = new Date().getFullYear();
 </script>
 
@@ -118,7 +116,6 @@ $grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width=
   position: absolute;
   aspect-ratio: 1;
   border-radius: var(--radius-full);
-  will-change: transform;
   animation: auth-drift 38s ease-in-out infinite alternate;
 
   &--a {
@@ -202,14 +199,6 @@ $grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width=
   margin-top: var(--space-16);
 }
 
-.auth-layout__chip {
-  padding: var(--space-1) var(--space-3);
-  border: 1px solid color-mix(in srgb, var(--text-strong) 18%, transparent);
-  border-radius: var(--radius-full);
-  background-color: color-mix(in srgb, var(--text-strong) 8%, transparent);
-  backdrop-filter: blur(12px);
-}
-
 .auth-layout__sheet {
   display: flex;
   align-items: center;
@@ -267,9 +256,10 @@ $grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width=
   margin-top: var(--space-8);
 }
 
-// A soft accent halo around the focus ring of every control in the form.
+// A soft accent halo outside the focus ring of every control in the form: the global ring is a 2 px outline at a 2 px
+// offset (4 px out), so the halo spreads to 8 px and its outer 4 px show.
 .auth-layout__body :deep(:focus-visible) {
-  box-shadow: 0 0 0 var(--space-1) color-mix(in srgb, var(--focus-ring) 28%, transparent);
+  box-shadow: 0 0 0 var(--space-2) color-mix(in srgb, var(--focus-ring) 28%, transparent);
 }
 
 // Below the shell breakpoint: the stage is a band on top, the form a sheet that rises over it.

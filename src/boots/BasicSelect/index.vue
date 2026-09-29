@@ -25,10 +25,10 @@
           class="basic-select__control flex ai-ct gap-2"
           :class="{ 'basic-select__control--empty': !selectedOptions.length }"
           :disabled="isDisabled"
-          :aria-describedby="field.describedBy.value || undefined"
           :aria-invalid="field.invalid.value ? 'true' : undefined"
           :aria-required="field.required.value ? 'true' : undefined"
           v-bind="controlAttrs"
+          :aria-describedby="joinIds(field.describedBy.value, attrs['aria-describedby'])"
         >
           <span class="basic-select__value">{{ display }}</span>
           <FontAwesomeIcon :icon="ICONS.expand" class="basic-select__caret" aria-hidden="true" />
@@ -78,8 +78,8 @@
 // `clearable` a clear button while something is chosen. The closed control is a `role="combobox"` button; the list
 // opens in BasicMenu's panel (position, flip, outside click, Esc, focus return) as a listbox driven by
 // `aria-activedescendant` (useListbox: arrows, Home / End, type-ahead, Enter / Space). Inside a FormField the
-// control takes the field's id, description, invalid, required and disabled; `aria-label` / `aria-labelledby` on
-// the tag name it outside one. `placement` and `inline` go to BasicMenu (`inline`: open in the page flow, catalogue).
+// control takes the field's id, description, invalid, required and disabled (a caller's `aria-describedby` joins the
+// description); `aria-label` / `aria-labelledby` on the tag name it outside one. `placement` and `inline` go to BasicMenu (`inline`: open in the page flow, catalogue).
 // `moreLabel` adds an action row at the end of the list for options that are not loaded yet: never filtered out,
 // choosing it emits `more` and keeps the menu open. `search` carries the trimmed filter text on every change.
 // `floatingLabel` names a select that stands without a FormField (toolbars, card headers): the empty control shows it
@@ -90,6 +90,7 @@ import BasicMenu from "@/boots/BasicMenu/index.vue";
 import IconButton from "@/boots/IconButton/index.vue";
 import { ICONS } from "@/boots/Icons/icons";
 import { useFormFieldControl } from "@/composables/formField";
+import { joinIds } from "@/boots/FormField/useControlAttrs";
 import { t } from "@/i18n";
 import OptionList from "./OptionList.vue";
 import { useListbox } from "./useListbox";

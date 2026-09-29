@@ -4,7 +4,7 @@
     <template #header>
       <PageHeader :title="$t('leads.company.title')">
         <template v-if="company" #actions>
-          <CompanyActions :company="company" @changed="load" />
+          <CompanyActions :company="company" @changed="reload" />
         </template>
       </PageHeader>
     </template>
@@ -45,7 +45,7 @@
       <div :id="`company-panel-${tab}`" role="tabpanel" :aria-labelledby="`company-tab-${tab}`">
         <OverviewTab v-if="tab === 'overview'" :company="company" />
         <IntelTab v-else-if="tab === 'intel'" :company="company" />
-        <ContactsTab v-else-if="tab === 'contacts'" :company="company" @changed="load" />
+        <ContactsTab v-else-if="tab === 'contacts'" :company="company" @changed="reload" />
         <Thread v-else />
       </div>
     </template>
@@ -97,41 +97,63 @@ function openTab(value) {
   router.replace({ query: { ...route.query, tab: value } });
 }
 
+// Every open() numbers the card (plan 61c): an answer of an earlier open — another company, or this one opened again
+// meanwhile — is dropped, so it never shows or acts under the URL the user is on now.
+let opened = 0;
+const isCurrent = (opening) => opening === opened;
+
 async function load() {
+  const opening = opened;
   const [companyRes, stageRes] = await Promise.all([GET_Company(route.params.id), GET_Stages(), leadTypes.load()]);
+  if (!isCurrent(opening)) return;
   company.value = companyRes.data;
   stages.value = stageRes.data.results;
 }
 
-async function transition(stageKey) {
-  if (stageKey === company.value.stage.key) return; // the current stage picked again: no move
+// A reload of the open card (after an action or a refused change): a failure leaves the card as it was and says so.
+async function reload() {
+  const opening = opened;
   try {
-    company.value = (await POST_Transition(company.value.id, stageKey)).data;
-  } catch (err) {
-    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.board.move_failed")), type: "negative" });
     await load();
+  } catch (err) {
+    if (!isCurrent(opening)) return;
+    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.review.error")), type: "negative" });
   }
 }
 
-async function retype(code) {
-  if (code === company.value.lead_type) return;
+// A stage move or a type change: its answer replaces the card while the card is still open; a refusal reloads it.
+async function change(request, failedMessage) {
+  const opening = opened;
   try {
-    company.value = (await PATCH_Company(company.value.id, { lead_type: code })).data;
+    const { data } = await request();
+    if (isCurrent(opening)) company.value = data;
   } catch (err) {
-    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.review.error")), type: "negative" });
-    await load();
+    if (!isCurrent(opening)) return;
+    notify.spawnNotification({ msg: extractApiMessage(err, failedMessage), type: "negative" });
+    await reload();
   }
+}
+
+function transition(stageKey) {
+  if (stageKey === company.value.stage.key) return; // the current stage picked again: no move
+  return change(() => POST_Transition(company.value.id, stageKey), t("leads.board.move_failed"));
+}
+
+function retype(code) {
+  if (code === company.value.lead_type) return;
+  return change(() => PATCH_Company(company.value.id, { lead_type: code }), t("leads.review.error"));
 }
 
 // The header stands while the card loads and when it fails; only its actions wait for the company.
 // Another company: the previous one's card and header actions go until the new one arrives.
 async function open() {
+  const opening = ++opened;
   company.value = null;
   loadError.value = "";
   try {
     await load();
   } catch (err) {
-    loadError.value = extractApiMessage(err, t("leads.review.error"));
+    if (isCurrent(opening)) loadError.value = extractApiMessage(err, t("leads.review.error"));
   }
 }
 

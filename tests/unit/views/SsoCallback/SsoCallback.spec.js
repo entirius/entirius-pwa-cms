@@ -63,6 +63,21 @@ describe("SsoCallback", () => {
     expect(sessionStorage.getItem(STATE_KEY)).toBeNull();
   });
 
+  // Plan 61c: one H1 in both states — "in progress" while the exchange runs, "failed" next to `sso-error`.
+  it("has one H1 in progress and one H1 with the error when it fails", async () => {
+    sessionStorage.setItem(STATE_KEY, "st-1");
+    mockCallback.mockReturnValue(new Promise(() => {}));
+    const pending = mountCallback({ code: "code-1", state: "st-1" }).wrapper;
+    await flushPromises();
+    expect(pending.findAll("h1").map((h1) => h1.text())).toEqual(["login.sso_in_progress"]);
+    expect(pending.find('[data-testid="sso-error"]').exists()).toBe(false);
+
+    const failed = mountCallback({ code: "code-1", state: "forged" }).wrapper;
+    await flushPromises();
+    expect(failed.findAll("h1").map((h1) => h1.text())).toEqual(["login.sso_failed"]);
+    expect(failed.find('[data-testid="sso-error"]').exists()).toBe(true);
+  });
+
   it("refuses a state it did not issue, without calling the backend", async () => {
     sessionStorage.setItem(STATE_KEY, "st-1");
 

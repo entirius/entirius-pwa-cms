@@ -146,6 +146,19 @@ describe("BasicTooltip", () => {
     expect(bubble(wrapper).isVisible()).toBe(false);
   });
 
+  it("help opened with Enter closes when Tab moves focus on", async () => {
+    const wrapper = mountTip({ variant: "help" }, "");
+    const next = document.body.appendChild(document.createElement("button"));
+    const help = wrapper.find("button").element;
+    help.focus();
+    help.dispatchEvent(new MouseEvent("click", { detail: 0, bubbles: true }));
+    await nextTick();
+    expect(bubble(wrapper).isVisible()).toBe(true);
+    next.focus();
+    await nextTick();
+    expect(bubble(wrapper).isVisible()).toBe(false);
+  });
+
   it("help on a hybrid device: after a tap, a real mouse hover shows it again", async () => {
     const wrapper = mountTip({ variant: "help" }, "");
     const button = wrapper.find("button").element;

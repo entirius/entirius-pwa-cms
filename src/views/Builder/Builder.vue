@@ -371,20 +371,11 @@
                     >
                       {{ s_uid.substring(0, 8) }}
                     </p>
+                    <p class="fs-200 t-muted" data-testid="builder-section-config">
+                      {{ $t('builder.setted_config') }}: {{ sectionConfigSummary(s_uid) }}
+                    </p>
                   </div>
                   <div class="section-actions flex gap-1 as-s ai-ct" data-testid="builder-section-actions">
-                    <!-- Display only: a tab stop and a tap show the summary (the edit button next to it opens the config). -->
-                    <BasicTooltip :text="`${$t('builder.setted_config')}: ${sectionConfigSummary(s_uid)}`">
-                      <span
-                        class="section-config-eye inline-flex jc-ct ai-ct t-muted"
-                        role="img"
-                        tabindex="0"
-                        :aria-label="`${$t('builder.setted_config')}: ${sectionConfigSummary(s_uid)}`"
-                        data-testid="builder-section-config"
-                      >
-                        <FontAwesomeIcon :icon="$icons.preview" aria-hidden="true" />
-                      </span>
-                    </BasicTooltip>
                     <SubscriberSetter
                       @onSet="edited_section_uid = s_uid"
                       @on_AssetPass="set_section"
@@ -1837,10 +1828,6 @@ export default {
 }
 .builder-advanced-row {
   flex-wrap: wrap;
-}
-.section-config-eye {
-  width: var(--elem-height);
-  height: var(--elem-height);
 }
 .builder-author-panel {
   flex-shrink: 0;

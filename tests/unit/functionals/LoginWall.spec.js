@@ -17,9 +17,17 @@ vi.mock("@/composables/useLoginSession", () => ({
 }));
 
 import LoginWall from "@/functionals/Login-wall/Login-wall.vue";
+import BasicButton from "@/boots/BasicButton/index.vue";
+import BasicInput from "@/boots/BasicInput/index.vue";
+import FormField from "@/boots/FormField/index.vue";
+import IconButton from "@/boots/IconButton/index.vue";
 import { POST_PasswordReset } from "@/api/contentDB/api";
 
 const mountWall = () => mount(LoginWall);
+// Plan 61c: the boots resolved, so a test reads what the button and the inputs render, not a stub's attributes. The
+// global setup stubs three of them; handing the real component in as the "stub" is what reaches PasswordField too.
+const mountWithBoots = () =>
+  mount(LoginWall, { global: { components: { IconButton }, stubs: { BasicButton, BasicInput, FormField } } });
 const ssoButton = (wrapper) => wrapper.find('[data-testid="sso-login"]');
 const summary = (wrapper) => wrapper.find('[aria-live="polite"]').text();
 // The fields through the instance: the error-clearing watchers pin them to `data`, where setData would not write.
@@ -150,18 +158,22 @@ describe("Login-wall", () => {
   it("the submit button shows its loading state while signing in", async () => {
     let answer;
     mockPostLogin.mockReturnValue(new Promise((resolve) => (answer = resolve)));
-    const wrapper = mountWall();
+    const wrapper = mountWithBoots();
     await fill(wrapper, { username: "ops", password: "pw" });
-    const submit = () => wrapper.get('[type="submit"]');
+    const submit = () => wrapper.get('button[type="submit"]');
+    expect(submit().attributes("aria-busy")).toBeUndefined();
 
     const pending = wrapper.vm.login();
     await nextTick();
-    expect(submit().attributes("loading")).toBe("true");
+    expect(submit().attributes("aria-busy")).toBe("true");
+    expect(submit().attributes("disabled")).toBeDefined();
+    expect(submit().find(".button-basic__spinner").exists()).toBe(true);
 
     answer({ data: { data: {} } });
     await pending;
     await nextTick();
-    expect(submit().attributes("loading")).toBe("false");
+    expect(submit().attributes("aria-busy")).toBeUndefined();
+    expect(submit().attributes("disabled")).toBeUndefined();
   });
 
   it("an expired session is stated in the summary as a warning", async () => {
@@ -175,9 +187,9 @@ describe("Login-wall", () => {
   });
 
   it("the fields carry their autocomplete purpose", () => {
-    const wrapper = mount(LoginWall, { global: { stubs: { FormField: { template: "<div><slot /></div>" } } } });
+    const wrapper = mountWithBoots();
 
-    expect(wrapper.find('[autocomplete="username"]').exists()).toBe(true);
-    expect(wrapper.find('[autocomplete="current-password"]').exists()).toBe(true);
+    expect(wrapper.find('input[autocomplete="username"]').exists()).toBe(true);
+    expect(wrapper.find('input[autocomplete="current-password"]').exists()).toBe(true);
   });
 });

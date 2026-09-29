@@ -134,7 +134,11 @@ const communicateActions = computed(() => [
   },
 ]);
 
+// Each open numbers its template request; the answer of an earlier open never lands in a reopened dialog.
+let templatesRequest = 0;
+
 async function openCommunicate() {
+  const request = ++templatesRequest;
   templateKey.value = "";
   communicateError.value = "";
   templates.value = [];
@@ -142,9 +146,9 @@ async function openCommunicate() {
   communicating.value = true;
   try {
     const { data } = await GET_Templates();
-    templates.value = data.results.filter((tpl) => tpl.is_active);
+    if (request === templatesRequest) templates.value = data.results.filter((tpl) => tpl.is_active);
   } catch (err) {
-    communicateError.value = extractApiMessage(err, t("leads.review.error"));
+    if (request === templatesRequest) communicateError.value = extractApiMessage(err, t("leads.review.error"));
   }
 }
 

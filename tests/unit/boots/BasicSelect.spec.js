@@ -305,4 +305,17 @@ describe("BasicSelect", () => {
     await nextTick();
     expect(control().disabled).toBe(true);
   });
+
+  // Plan 61e: a caller's `aria-describedby` (a note under the select) joins the field's description.
+  it("form-field contract: a caller's aria-describedby joins the field's description", async () => {
+    const Host = defineComponent({
+      setup() {
+        provide(FORM_FIELD, { id: ref("f"), describedBy: ref("f-error"), invalid: ref(true), required: ref(false), disabled: ref(false) });
+        return () => h(BasicSelect, { options: OPTIONS, modelValue: null, "aria-describedby": "note" });
+      },
+    });
+    wrappers.push(mount(Host, { attachTo: document.body }));
+    await settle();
+    expect(control().getAttribute("aria-describedby")).toBe("f-error note");
+  });
 });

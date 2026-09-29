@@ -80,4 +80,3 @@ describe("PasswordReset", () => {
     expect(summary(wrapper)).toBe("reset.invalid_link");
   });
 });
-

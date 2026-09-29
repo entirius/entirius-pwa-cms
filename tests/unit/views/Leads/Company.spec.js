@@ -136,6 +136,7 @@ describe("Company card actions", () => {
 // Plan 53: the card header's stage and lead-type selects are BasicSelects with a floating label (operator request).
 describe("Company card header", () => {
   beforeEach(() => {
+    useRoute().params.id = "7"; // a test that switched companies and failed midway leaves no other card open
     setActivePinia(createPinia());
     vi.clearAllMocks();
     leads.GET_Company.mockResolvedValue({ data: { ...company(), name: "Shop", lead_type: "RETAILER", stage: { key: "new" } } });
@@ -199,6 +200,84 @@ describe("Company card header", () => {
     expect(wrapper.get('[data-testid="company-load-error"]').text()).toBe("Not found.");
     useRoute().params.id = "7";
     await flushPromises();
+  });
+
+  // Plan 61c: a late answer of the company the user has left never lands on the card of the next one.
+  const loadsB = () => Promise.resolve({ data: { ...company(), id: 8, name: "Shop B", stage: { key: "new" } } });
+  const failsB = () => Promise.reject({ response: { data: { detail: "B not found." } } });
+  it.each([
+    ["loads late", "loads", true, loadsB, "Shop B"],
+    ["loads late", "fails", true, failsB, "B not found."],
+    ["fails late", "loads", false, loadsB, "Shop B"],
+  ])("A's answer that %s is dropped after a switch to B that %s", async (_a, _b, aLoads, answerB, shownB) => {
+    let settleA;
+    leads.GET_Company.mockReturnValueOnce(new Promise((resolve, reject) => (settleA = aLoads ? resolve : reject)));
+    const wrapper = await mountCard();
+    leads.GET_Company.mockImplementation(answerB);
+    useRoute().params.id = "8";
+    await flushPromises();
+    expect(wrapper.text()).toContain(shownB);
+    const before = wrapper.html();
+    settleA(aLoads ? { data: { ...company(), name: "Shop A", stage: { key: "new" } } } : { response: { data: { detail: "A failed." } } });
+    await flushPromises();
+    expect(wrapper.html()).toBe(before);
+    useRoute().params.id = "7";
+    await flushPromises();
+  });
+
+  it.each([
+    ["stage move", "POST_Transition", "company-stage", "won"],
+    ["type change", "PATCH_Company", "company-lead-type", "UNKNOWN"],
+  ])("A's %s answering after a switch to B never lands on B's card", async (_, call, control, value) => {
+    let settleA;
+    leads[call].mockReturnValueOnce(new Promise((resolve) => (settleA = resolve)));
+    const wrapper = await mountCard();
+    await setControl(wrapper, control, value);
+    leads.GET_Company.mockResolvedValue({ data: { ...company(), id: 8, name: "Shop B", stage: { key: "new" } } });
+    useRoute().params.id = "8";
+    await flushPromises();
+    settleA({ data: { ...company(), name: "Shop A", stage: { key: "won" } } });
+    await flushPromises();
+    expect(wrapper.get('[data-testid="thread-company"]').text()).toBe("Shop B");
+    useRoute().params.id = "7";
+    await flushPromises();
+  });
+
+  it("A opened again (A → B → A): the first open's late failure does not stand next to the loaded card", async () => {
+    let failFirst;
+    leads.GET_Company.mockReturnValueOnce(new Promise((_, reject) => (failFirst = reject)));
+    const wrapper = await mountCard();
+    useRoute().params.id = "8";
+    await flushPromises();
+    useRoute().params.id = "7";
+    await flushPromises();
+    failFirst({ response: { data: { detail: "A failed." } } });
+    await flushPromises();
+    expect(wrapper.find('[data-testid="company-load-error"]').exists()).toBe(false);
+    expect(wrapper.get('[data-testid="thread-company"]').text()).toBe("Shop");
+  });
+
+  // Plan 61e: a reload that fails keeps the card as it was and says so — no unhandled rejection.
+  const reloadFails = () => leads.GET_Company.mockRejectedValueOnce({ response: { data: { detail: "Reload failed." } } });
+  const notices = () => notify.spawnNotification.mock.calls.map(([notice]) => notice.msg);
+
+  it("a refused stage move whose reload fails keeps the card and shows both notices", async () => {
+    leads.POST_Transition.mockRejectedValueOnce({ response: { data: { detail: "Move refused." } } });
+    const wrapper = await mountCard();
+    reloadFails();
+    await setControl(wrapper, "company-stage", "won");
+    await flushPromises();
+    expect(notices()).toEqual(["Move refused.", "Reload failed."]);
+    expect(wrapper.get('[data-testid="thread-company"]').text()).toBe("Shop");
+  });
+
+  it("a failed reload after an action (@changed) is a notice, the card stays", async () => {
+    const wrapper = await mountCard();
+    reloadFails();
+    wrapper.findComponent({ name: "CompanyActions" }).vm.$emit("changed");
+    await flushPromises();
+    expect(notices()).toEqual(["Reload failed."]);
+    expect(wrapper.find("company-actions-stub").exists()).toBe(true);
   });
 
   it("picking the current stage or type again sends nothing", async () => {
@@ -272,6 +351,23 @@ describe("Leads Communicate dialog", () => {
     expect(control(wrapper, "communicate-template").props("options")).toEqual([]);
     communicator.GET_Templates.mockReturnValueOnce(new Promise(() => {}));
     await reopen();
+    expect(has(wrapper, "communicate-error")).toBe(false);
+  });
+
+  // Plan 61c: the template answer (or error) of an earlier open never lands in a quickly reopened dialog.
+  it.each([
+    ["answer", (resolve) => resolve({ data: { results: [{ id: 3, key: "stale", language: "pl", is_active: true }] } })],
+    ["error", (_, reject) => reject({ response: { data: { detail: "Stale error" } } })],
+  ])("an earlier open's template %s is ignored after a reopen", async (_, settle) => {
+    let settleFirst;
+    communicator.GET_Templates.mockReturnValueOnce(new Promise((resolve, reject) => (settleFirst = () => settle(resolve, reject))));
+    const wrapper = await openDialog();
+    await wrapper.findComponent({ name: "BasicModal" }).props("actions").find((a) => a.key === "cancel").onClick();
+    await wrapper.get('[data-testid="company-communicate"]').trigger("click");
+    await flushPromises();
+    settleFirst();
+    await flushPromises();
+    expect(control(wrapper, "communicate-template").props("options")).toEqual([{ value: "cold", label: "cold (pl)" }]);
     expect(has(wrapper, "communicate-error")).toBe(false);
   });
 

@@ -54,6 +54,14 @@ describe("FormField contract", () => {
     expect(invalid.find("input").attributes("aria-invalid")).toBe("true");
   });
 
+  // Plan 61e: a caller's own description (a note under the control) joins the field's, never replaces it.
+  it("a caller's aria-describedby joins the field's error", () => {
+    const wrapper = inField(BasicInput, { error: "Required field" }, { "aria-describedby": "note" });
+    const errorId = wrapper.find(".form-field__error").attributes("id");
+    expect(wrapper.find("input").attributes("aria-describedby")).toBe(`${errorId} note`);
+    expect(wrapper.find(".input-basic-wrapper").attributes("aria-describedby")).toBeUndefined();
+  });
+
   it("hints off (the account-menu switch): no mark, nothing described by the hint; errors and required stay", async () => {
     hintsOn.value = false;
     try {

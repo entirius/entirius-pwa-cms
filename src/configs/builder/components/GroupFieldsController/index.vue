@@ -4,15 +4,14 @@
       <div class="flex jc-sb ai-ct mb-2">
         <p v-if="label">{{ label }}</p>
         <BasicTooltip
+          v-if="value"
           class="t-accent fs-200"
-          :text="
-            Object.keys(groups).length
-              ? $t('controllers.tooltip_select_group')
-              : $t('controllers.tooltip_add_group')
-          "
+          :text="$t('controllers.tooltip_select_group')"
           variant="help"
         >
         </BasicTooltip>
+        <!-- Why the items menu is disabled: content, visible with hints off too. -->
+        <p v-else class="t-muted fs-200 m-0">{{ $t('controllers.tooltip_add_group') }}</p>
       </div>
       <div class="flex gap-2">
         <BasicButton
@@ -182,7 +181,6 @@ export default {
       editing: null,
       group: null,
       group_rules: null,
-      groups: {},
       force_refresh: 1,
     };
   },

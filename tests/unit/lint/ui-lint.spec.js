@@ -27,6 +27,15 @@ describe("UI lint", () => {
     ]);
   });
 
+  it("the removed FormField props are caught in kebab case too", async () => {
+    const code = `<template><form-field description="b" :tooltip="c"><i /></form-field></template>`;
+    const messages = await lintVue("src/views/Probe.vue", code);
+    expect(messages.map(({ message }) => message.split(":")[0])).toEqual([
+      "FormField description is removed",
+      "FormField tooltip is removed",
+    ]);
+  });
+
   it("an off-token spacing value is an error", async () => {
     const warnings = await lintScss(".probe { margin: 5px; }");
     expect(warnings.map(({ severity, rule }) => [severity, rule])).toEqual([

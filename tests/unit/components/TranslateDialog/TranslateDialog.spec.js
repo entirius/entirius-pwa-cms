@@ -7,7 +7,9 @@ const spawnNotification = vi.fn();
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification }) }));
 
 import TranslateDialog from "@/components/TranslateDialog/index.vue";
+import RealBasicSelect from "@/boots/BasicSelect/index.vue";
 import { t } from "@/i18n";
+import { DescribedFormField, FIELD_DESCRIPTION } from "../../helpers/describedFormField";
 
 const BasicModal = { name: "BasicModal", props: ["open", "actions", "title"], template: "<div v-if='open'><slot /></div>" };
 const BasicSelect = { name: "BasicSelect", props: ["modelValue", "options", "multiple"], template: "<div />" };
@@ -165,5 +167,36 @@ describe("TranslateDialog — content scope", () => {
     const tables = wrapper.findAllComponents(DataTable);
     expect(tables).toHaveLength(2);
     expect(tables[1].props("rows")).toEqual([{ key: "Home", name: "Home", items: 2, chars: "90" }]);
+  });
+});
+
+describe("TranslateDialog — no target language", () => {
+  it("shows why the list is empty and links the note to the select", () => {
+    const wrapper = mount(TranslateDialog, {
+      props: { open: true, scope: "product", languages: LANGUAGES.slice(0, 1), sourceLanguage: "pl", estimateFn: vi.fn(), submitFn: vi.fn() },
+      global: { stubs },
+    });
+    const note = wrapper.find("p[id]");
+    expect(note.text()).toBe(t("translate_dialog.no_languages"));
+    expect(wrapper.findAllComponents(BasicSelect)[1].attributes("aria-describedby")).toBe(note.attributes("id"));
+  });
+
+  // Plan 61e: the note joins the field's own description on the rendered control, never replaces it.
+  it("keeps the field's description next to the note's id", () => {
+    const wrapper = mount(TranslateDialog, {
+      props: { open: true, scope: "product", languages: LANGUAGES.slice(0, 1), sourceLanguage: "pl", estimateFn: vi.fn(), submitFn: vi.fn() },
+      global: { stubs: { ...stubs, BasicSelect: false, FormField: DescribedFormField }, components: { BasicSelect: RealBasicSelect } },
+    });
+    const noteId = wrapper.get("p[id]").attributes("id");
+    const targets = wrapper.findAll('[role="combobox"]')[1];
+    expect(targets.attributes("aria-describedby")).toBe(`${FIELD_DESCRIPTION} ${noteId}`);
+  });
+});
+
+describe("TranslateDialog — target languages available", () => {
+  it("adds no description of its own to the select", () => {
+    const { wrapper } = build("product");
+    expect(wrapper.find("p[id]").exists()).toBe(false);
+    expect(wrapper.findAllComponents(BasicSelect)[1].attributes("aria-describedby")).toBeUndefined();
   });
 });

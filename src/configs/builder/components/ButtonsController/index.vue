@@ -4,15 +4,14 @@
       <span v-if="label">{{ label }}</span>
 
       <BasicTooltip
+        v-if="value"
         class="t-accent fs-200"
-        :text="
-          value
-            ? $t('controllers.tooltip_select_button')
-            : $t('controllers.tooltip_add_button')
-        "
+        :text="$t('controllers.tooltip_select_button')"
         variant="help"
       >
       </BasicTooltip>
+      <!-- Why the items menu is disabled: content, visible with hints off too. -->
+      <p v-else class="t-muted fs-200 m-0">{{ $t('controllers.tooltip_add_button') }}</p>
     </div>
 
     <div class="grid grid-col-3 gap-2 mt-5" v-if="mode">

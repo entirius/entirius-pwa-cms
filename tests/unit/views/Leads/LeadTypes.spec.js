@@ -119,6 +119,29 @@ it("a failed rename is retried by the next blur", async () => {
   expect(api.PATCH_LeadType.mock.calls).toEqual([[1, { label: "Shops" }], [1, { label: "Shops" }]]);
 });
 
+// Plan 61c: a rename that fails after a newer one was committed does not bring its old label back as saved.
+it("a failed rename keeps a label committed while it ran", async () => {
+  setActivePinia(createPinia());
+  vi.clearAllMocks();
+  let failFirst;
+  api.PATCH_LeadType.mockReturnValueOnce(new Promise((_, reject) => (failFirst = reject))).mockImplementationOnce((id, body) => {
+    rows.list[0].label = body.label;
+    return Promise.resolve({ data: {} });
+  });
+  const wrapper = await mountScreen();
+  const label = () => row(wrapper, "RETAILER").findComponent('[data-testid="lead-type-label"]');
+  label().vm.$emit("update:modelValue", "Shops");
+  label().vm.$emit("onFocusout");
+  label().vm.$emit("update:modelValue", "Stores");
+  label().vm.$emit("onKeyDown");
+  await flushPromises();
+  failFirst({ response: { data: { detail: "Busy" } } });
+  await flushPromises();
+  label().vm.$emit("onFocusout");
+  await flushPromises();
+  expect(api.PATCH_LeadType.mock.calls).toEqual([[1, { label: "Shops" }], [1, { label: "Stores" }]]);
+});
+
 it("an empty label is a field error before the request", async () => {
   setActivePinia(createPinia());
   vi.clearAllMocks();

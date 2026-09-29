@@ -178,12 +178,15 @@ function shift(index, delta) {
 }
 
 // The label field commits on blur and Enter, as the native change did: only a changed label is sent. It counts as
-// saved while the PATCH runs (Enter then blur sends once) and is forgotten on a refusal, so blur or Enter retries.
+// saved while the PATCH runs (Enter then blur sends once) and is forgotten on a refusal, so blur or Enter retries —
+// unless a newer label was committed meanwhile: that one stays.
 async function rename(stage) {
   const previous = savedLabels[stage.id];
-  if (stage.label === previous) return;
-  savedLabels[stage.id] = stage.label;
-  if (!(await attempt(stage.id, () => PATCH_Stage(stage.id, { label: stage.label })))) savedLabels[stage.id] = previous;
+  const sent = stage.label;
+  if (sent === previous) return;
+  savedLabels[stage.id] = sent;
+  if (await attempt(stage.id, () => PATCH_Stage(stage.id, { label: sent }))) return;
+  if (savedLabels[stage.id] === sent) savedLabels[stage.id] = previous;
 }
 
 async function remove(stage) {

@@ -41,6 +41,7 @@ import Review from "@/views/Leads/Review.vue";
 import BasicButton from "@/boots/BasicButton/index.vue";
 import BasicInput from "@/boots/BasicInput/index.vue";
 import BasicMenu from "@/boots/BasicMenu/index.vue";
+import RealBasicModal from "@/boots/BasicModal/index.vue";
 import BasicTextarea from "@/boots/BasicTextarea/index.vue";
 import { leadsFrame } from "./leadsFrame";
 
@@ -182,22 +183,30 @@ describe("Leads Review", () => {
   });
 
   // Plan 56b: the dialog stays mounted (its leave transition runs) and focus goes back to the more button.
+  // Plan 61c: the real BasicMenu and BasicModal, in the order a user meets them — the pick hands focus back to the menu
+  // trigger, the dialog's focus trap takes it as its opener and restores it on close.
   it("the rewrite dialog closes through v-model:open and hands focus back to the more button", async () => {
     const wrapper = mount(Review, {
       attachTo: document.body,
       global: {
-        components: { ...leadsFrame.components, BasicMenu },
-        stubs: { ...leadsFrame.stubs, BasicButton, BasicInput, BasicTextarea, BasicModal, IntelCard: true, RouterLink: true },
+        components: { ...leadsFrame.components, BasicMenu, BasicModal: RealBasicModal },
+        stubs: { ...leadsFrame.stubs, BasicButton, BasicInput, BasicTextarea, IntelCard: true, RouterLink: true },
       },
     });
     await flushPromises();
-    wrapper.findComponent(ReviewActions).vm.$emit("rewrite");
+    await wrapper.get('[data-testid="review-more"]').trigger("click");
     await flushPromises();
-    expect(wrapper.findComponent({ name: "BasicModal" }).props("open")).toBe(true);
-    await wrapper.get('[data-testid="rewrite-cancel"]').trigger("click");
+    const item = document.querySelector('[data-testid="review-rewrite"]');
+    item.focus();
+    item.click();
     await flushPromises();
-    expect(wrapper.findComponent({ name: "BasicModal" }).exists()).toBe(true);
-    expect(wrapper.findComponent({ name: "BasicModal" }).props("open")).toBe(false);
+    const modal = wrapper.findComponent(RealBasicModal);
+    expect(modal.props("open")).toBe(true);
+    expect(document.querySelector('[data-testid="rewrite-modal"]').contains(document.activeElement)).toBe(true);
+    document.querySelector('[data-testid="rewrite-cancel"]').click();
+    await flushPromises();
+    expect(wrapper.findComponent(RealBasicModal).exists()).toBe(true);
+    expect(wrapper.findComponent(RealBasicModal).props("open")).toBe(false);
     expect(document.activeElement.getAttribute("data-testid")).toBe("review-more");
     wrapper.unmount();
   });

@@ -165,3 +165,16 @@ describe("GroupFieldsController", () => {
     expect(field.findComponent(BasicSelect).attributes("floating-label")).toBeUndefined();
   });
 });
+
+// Plan 61d: "add one first" says why the items menu is disabled — visible text, not a help mark hints-off would hide.
+describe("builder controllers — the empty-list reason", () => {
+  it.each([
+    ["ButtonsController", ButtonsController, "controllers.tooltip_add_button"],
+    ["GroupFieldsController", GroupFieldsController, "controllers.tooltip_add_group"],
+  ])("%s: visible text without a list, a help mark with one", (_, component, key) => {
+    const empty = mountWith(component, { value: null });
+    expect(empty.text()).toContain(key);
+    expect(empty.findComponent({ name: "BasicTooltip" }).exists()).toBe(false);
+    expect(mountWith(component, { value: [] }).findComponent({ name: "BasicTooltip" }).exists()).toBe(true);
+  });
+});

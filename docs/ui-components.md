@@ -475,14 +475,15 @@ the component recipe.
 - **`AuthLayout`** (`src/boots/AuthLayout/`, imported locally, not in `register-elems.js`) — the frame of the login
   wall, password reset, change password and the SSO callback. Desktop (from the shell breakpoint): the brand stage
   (always dark, `aria-hidden`: three light fields drifting on transform only, 31–45 s, paused while focus is in the
-  form and still under reduced motion; grain, a fading dot grid, the wordmark, an editorial line, the channel chip)
+  form and still under reduced motion; grain, a fading dot grid, the wordmark, an editorial line, the copyright line)
   beside the form column (380 px, `surface-page`, follows the theme). Below it the stage is a 32 vh band with the
   wordmark and the form a sheet over it (24 px top radius; 480 px column on a tablet). Props: `title` (the one H1),
   `subtitle`, `statusTone` (`negative` · `positive` · `warning`); slot `status` = the one `aria-live` summary (session
   expired, form errors, link sent), default slot = the form. Form controls use `size="lg"`; a focused control gets a
-  soft accent halo around its ring.
+  soft accent halo outside its ring (spread 8 px beyond the 2 px outline at a 2 px offset).
 - **`AuthLayout/PasswordField`** — FormField + `lg` BasicInput with the show/hide `IconButton` (`pressed`) in its
-  `trailing` slot and a caps-lock hint as the field description, only while caps lock is on. `autocomplete`
+  `trailing` slot and a caps-lock hint under the input (its own line, not the description, so it stays next to a
+  password error), only while caps lock is on. `autocomplete`
   `current-password` (default) or `new-password`.
 - Errors go under their field (FormField `error`) and once into the `status` slot; never a toast. The new-password
   checks (filled, confirmation matches) are `passwordErrors` in `src/utils/passwordForm.js`.

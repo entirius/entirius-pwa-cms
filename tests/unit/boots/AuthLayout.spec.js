@@ -5,16 +5,20 @@ import { mount, flushPromises } from "@vue/test-utils";
 import AuthLayout from "@/boots/AuthLayout/index.vue";
 import PasswordField from "@/boots/AuthLayout/PasswordField.vue";
 import BasicInput from "@/boots/BasicInput/index.vue";
+import { DescribedFormField, FIELD_DESCRIPTION } from "../helpers/describedFormField";
 
 const layout = ({ props = {}, slots = {} } = {}) =>
   mount(AuthLayout, { props: { title: "Zaloguj się", ...props }, slots });
 
-// FormField renders its slot, the caps-lock line with it.
-const FormField = { props: ["label", "error"], template: "<div><slot /></div>" };
+// FormField renders its slot and, like the real one, shows the error in place of the description.
+const FormField = {
+  props: ["label", "error", "description"],
+  template: "<div><slot /><p v-if='error' class='error'>{{ error }}</p><p v-else class='desc'>{{ description }}</p></div>",
+};
 const IconButton = { props: ["label", "pressed", "icon"], emits: ["click"], template: "<button :aria-pressed='String(pressed)' @click=\"$emit('click')\" />" };
-const field = () =>
+const field = (props = {}) =>
   mount(PasswordField, {
-    props: { label: "Hasło", modelValue: "" },
+    props: { label: "Hasło", modelValue: "", ...props },
     global: { stubs: { FormField, BasicInput: false }, components: { BasicInput, IconButton } },
   });
 
@@ -37,6 +41,7 @@ describe("AuthLayout", () => {
     expect(stage.attributes("data-theme")).toBe("dark");
     expect(stage.findAll(".auth-layout__field")).toHaveLength(3);
     expect(stage.text()).toContain("login.stage_line");
+    expect(stage.find(".auth-layout__chip").exists()).toBe(false); // plan 61c: a slug is no name — no channel chip
   });
 
   it("has one live region that is there before any status, empty until one comes", async () => {
@@ -76,30 +81,66 @@ describe("AuthLayout PasswordField", () => {
     expect(wrapper.get("button").attributes("aria-pressed")).toBe("true");
   });
 
+  // Vue drops an event stamped before its listener was attached; happy-dom's event clock can lag behind under load.
+  const settle = () => new Promise((resolve) => setTimeout(resolve, 10));
+  const pressKey = (wrapper, type, on) => {
+    // happy-dom knows no CapsLock modifier: the event answers for it.
+    const event = new KeyboardEvent(type, { key: "a", bubbles: true });
+    Object.defineProperty(event, "getModifierState", { value: (name) => name === "CapsLock" && on });
+    wrapper.get("input").element.dispatchEvent(event);
+    return flushPromises();
+  };
+
   it("hints caps lock only while it is on, and drops the hint on leaving the field", async () => {
     const wrapper = field();
-    // Vue drops an event stamped before its listener was attached; happy-dom's event clock can lag behind under load.
-    await new Promise((resolve) => setTimeout(resolve, 10));
-    const hint = () => {
-      const line = wrapper.find(".password-field__caps");
-      return line.exists() ? line.text() : "";
-    };
-    const key = (type, on) => {
-      // happy-dom knows no CapsLock modifier: the event answers for it.
-      const event = new KeyboardEvent(type, { key: "a", bubbles: true });
-      Object.defineProperty(event, "getModifierState", { value: (name) => name === "CapsLock" && on });
-      wrapper.get("input").element.dispatchEvent(event);
-      return flushPromises();
-    };
+    await settle();
+    const hint = () => wrapper.find('[data-testid="caps-lock-hint"]');
+    const key = (type, on) => pressKey(wrapper, type, on);
 
     await key("keydown", true);
-    expect(hint()).toBe("login.caps_lock");
+    expect(hint().text()).toBe("login.caps_lock");
     await key("keyup", false);
-    expect(hint()).toBe("");
+    expect(hint().text()).toBe("");
 
     await key("keydown", true);
     await wrapper.get("input").trigger("focusout");
-    expect(hint()).toBe("");
+    expect(hint().text()).toBe("");
+  });
+
+  // Plan 61e: the live region is there before its text (so it is announced) and the input names it while it shows.
+  it("announces the caps-lock hint from a standing live region the input points at", async () => {
+    const wrapper = field({ error: "Złe hasło." });
+    await settle();
+    const hint = wrapper.get('[data-testid="caps-lock-hint"]');
+    const describedBy = () => wrapper.get("input").attributes("aria-describedby");
+    expect(hint.attributes("role")).toBe("status");
+    expect(hint.classes()).toContain("visually-hidden");
+    expect(describedBy()).toBeUndefined();
+
+    await pressKey(wrapper, "keydown", true);
+    expect(hint.classes()).not.toContain("visually-hidden");
+    expect(describedBy()).toBe(hint.attributes("id"));
+  });
+
+  it("names the caps-lock hint next to the field's own description (an error), never instead of it", async () => {
+    const wrapper = mount(PasswordField, {
+      props: { label: "Hasło", modelValue: "" },
+      global: { stubs: { FormField: DescribedFormField, BasicInput: false }, components: { BasicInput, IconButton } },
+    });
+    await settle();
+    const describedBy = () => wrapper.get("input").attributes("aria-describedby");
+    expect(describedBy()).toBe(FIELD_DESCRIPTION);
+    await pressKey(wrapper, "keydown", true);
+    expect(describedBy()).toBe(`${FIELD_DESCRIPTION} ${wrapper.get('[data-testid="caps-lock-hint"]').attributes("id")}`);
+  });
+
+  // Plan 61c: the hint is its own line, not the description a password error replaces.
+  it("keeps the caps-lock hint next to a password error", async () => {
+    const wrapper = field({ error: "Złe hasło." });
+    await settle();
+    await pressKey(wrapper, "keydown", true);
+    expect(wrapper.get('[data-testid="caps-lock-hint"]').text()).toBe("login.caps_lock");
+    expect(wrapper.get(".error").text()).toBe("Złe hasło.");
   });
 
   it("passes typing up as v-model", async () => {
