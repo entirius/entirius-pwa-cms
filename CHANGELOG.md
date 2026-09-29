@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- `BasicModal` puts the caller's other attributes (`data-testid`) on its `role="dialog"` element instead of losing
+  them at the Teleport; `ConfirmDialog` takes `confirmTestid` for its confirm button (default
+  `confirm-dialog-confirm`) — the Leads stages dialog keeps the page-object ids `confirm-sheet` / `confirm-ok` (P5
+  plan 54).
+
 - `floatingLabel` on `BasicSelect` and `ChannelMultiSelect` (P5 plan 53, operator request): a select without a
   FormField label shows its name as the placeholder while empty and as a 12 px muted line above the chosen value; the
   text is also its accessible name. The Leads company card and board card name their stage and lead-type selects with
@@ -119,6 +124,15 @@ All notable changes to this project will be documented in this file.
   `docs/sso-login.md`. Unset, nothing changes.
 
 ### Changed
+
+- P5 Leads inbox (plan 54): Review sits in `PageLayout` with a `PageHeader` („Przegląd”, back to the Inbox); its
+  action bar is an `ActionBar` (the more menu on `BasicMenu`, Not now, Send as the one primary) pinned in the layout
+  footer on every size — on a phone the open screen now takes the height of the view, so the bar stays at the bottom.
+  The edit form and the failed-rewrite box use `FormField`, `BasicInput`, `BasicTextarea` and `ActionBar`; the rewrite
+  and communicate dialogs are `BasicModal`s (template = `BasicSelect`, contact = `BasicRadioGroup`), the Communicate
+  dialog no longer imports the `desktop.scss` kit. Conversation and the phone company thread get the page frame
+  („Rozmowa” / „Firma”, back on a phone); Inbox Refresh / Show more, Send now, the quote and opt-out buttons are
+  `BasicButton`s, the earlier-thread toggle an `IconButton`, the opt-out badges `StatusBadge`s.
 
 - P5 Leads companies (plan 53): the company list, company card, add lead, board, import, stages and lead types sit in
   `PageLayout` with a `PageHeader` (title from the nav model; Stages and Lead types go back to Settings, the company
@@ -688,6 +702,9 @@ All notable changes to this project will be documented in this file.
   rendered it blank. It now carries a "Download" / "Pobierz" label. The Polish "Załączniki" heading has its diacritics.
 
 ### Removed
+
+- `src/views/Leads/ConfirmSheet.vue` (P5 plan 54): the review discard, stage delete, contact remove, text-pool remove
+  and mail-footer confirmations are `ConfirmDialog`s.
 
 - The old shell (P4 plan 22): the header route title, the grip panel switcher, the three logo copies, the sidebar
   edge toggle, `Navigation.vue`, `HeaderControls.vue`, `userStore.activeApp` and its write in the router guard, the
