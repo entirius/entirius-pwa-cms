@@ -233,6 +233,11 @@ export default {
       justify-content: center;
     }
   }
+
+  /* PageLayout's footer lane: the FAB's corner stays clear of Approve. */
+  @include max-shell {
+    padding-right: calc(44px + var(--space-4));
+  }
 }
 
 .text-center {

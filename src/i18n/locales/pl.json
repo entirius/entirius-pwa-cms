@@ -2444,6 +2444,7 @@
       "gallery_title": "Galeria produktu",
       "gallery_prev": "Poprzedni obraz",
       "gallery_next": "Następny obraz",
+      "gallery_jump": "Przejdź do obrazu",
       "raw_panel": {
         "core_section": "Pola podstawowe",
         "attributes_section": "Atrybuty dostawcy",

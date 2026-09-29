@@ -1,8 +1,8 @@
 <template>
   <div class="events-mode">
     <div class="flex ai-ct flex-wrap gap-5 mb-8">
-      <span id="events-severity-label" class="t-secondary fs-200">{{ $t("atlas.severity.label") }}</span>
-      <div class="filter-chip-row" role="group" aria-labelledby="events-severity-label">
+      <span :id="severityLabelId" class="t-secondary fs-200">{{ $t("atlas.severity.label") }}</span>
+      <div class="filter-chip-row" role="group" :aria-labelledby="severityLabelId">
         <FilterChip
           v-for="opt in severityOptions"
           :key="opt.value"
@@ -50,6 +50,7 @@
 </template>
 
 <script>
+import { useId } from "vue";
 import { useNotifyStore } from "@/stores/notify";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { formatDate } from "@/utils/format";
@@ -70,7 +71,7 @@ export default {
     filters: { type: Object, required: true },
   },
   setup() {
-    return { notify: useNotifyStore() };
+    return { notify: useNotifyStore(), severityLabelId: `${useId()}-severity` };
   },
   data() {
     return {

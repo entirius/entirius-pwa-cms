@@ -2445,6 +2445,7 @@
       "gallery_title": "Product gallery",
       "gallery_prev": "Previous image",
       "gallery_next": "Next image",
+      "gallery_jump": "Go to image",
       "raw_panel": {
         "core_section": "Core fields",
         "attributes_section": "Vendor attributes",

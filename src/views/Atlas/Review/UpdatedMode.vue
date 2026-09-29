@@ -58,14 +58,12 @@
     <Loader block v-show="loading" />
 
     <DataTable
-      empty-size="md"
       v-show="!loading"
       :columns="columns"
       :rows="visibleRows"
       row-key="id"
       selectable
       multi-select
-      :empty-text="$t('atlas.review.updated.empty')"
       @select="onSelect"
     >
       <template #cell-source_name="{ row }">
