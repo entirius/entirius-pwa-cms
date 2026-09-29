@@ -144,8 +144,8 @@
                           @click="removeColumn(index, colIdx)"
                         />
                       </div>
-                      <!-- Sortable's fallback drag, like the item list: the handle is a <button>, which Firefox never
-                           starts a native HTML5 drag from. -->
+                      <!-- Sortable's fallback drag, like the item list: the handle is a button element, which Firefox
+                           never starts a native HTML5 drag from. -->
                       <draggable
                         v-model="col.links"
                         item-key="id"
