@@ -456,6 +456,30 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- P5 panel review fixes (plan 54b), the review findings of waves 1–3 in their own panels:
+  - Promo: a rule that failed to load keeps Save, Delete and the Active switch disabled (a save would have overwritten
+    the stored rule with the empty form); a nameless campaign or a missing enum value gets a label (the id, a dash),
+    a rule without `code_count` a 0 badge.
+  - Enrichment review: the Focus row resets when the list reloads (page, filter, a row removed by an action) and when
+    the operator goes back to List, so a keyboard shortcut never acts on a stale row; the footer pager stays while the
+    list loads and ignores a page change while an action runs; the product preview in its drawer is flat, with the
+    name as text instead of a second heading.
+  - Content editor: the advanced toggle is the accent `IconButton` named "Advanced: set the document name and URL"
+    while either is missing and the row is closed (the old toolbar pulsed); the section eye is display-only with a
+    one-line summary; the id copy targets react to Space; on a phone the unsaved badge sits left, above the actions;
+    the images kit shows blocked tabs disabled (`BasicTabs` options take `disabled`, arrow keys skip them).
+  - PriceFighter: the apply report's reason wraps instead of truncating; invalid observations are muted rows; the
+    phone filter badge counts only filters moved off their default (a fresh page shows none).
+  - Layout extenders: every drag handle moves its row with Alt+↑ / Alt+↓ and is named after it; the navigation editor
+    keeps its header while the document loads; the list keeps its table mounted across a refetch; the banner dialog's
+    gallery button stays while the gallery is open (it hides it) and a failed gallery load shows an error with a retry.
+    The link rows drag through Sortable's fallback, like the item rows since 1.0.0: their handle is a button element,
+    which Firefox never starts a native drag from.
+  - Points: a stale `?page=N` that comes back empty or 404 goes to page 1; a point type's sort order is a
+    `NumberInput` saved as a number; the import dialog loads its types when it opens, starts clean and translates
+    "Import complete". Stock's file picker clears after each pick, so the same CSV can be picked again (plan 43, shared
+    with the Points import dialog).
+
 - P5 wave-4 close (plan 52): on a phone the page header's chips (the Pim channel selector, its scope badge and
   „Tłumacz sklep”) wrap under the title instead of squeezing it to one letter per line; the product translate dialog
   refuses to send without a picked product (the translator reads an empty list as the whole channel); a busy dialog
