@@ -2,7 +2,7 @@
   <article class="tg" :class="{ 'tg--reply': holdsReply }" data-testid="earlier-thread">
     <div class="tg__head flex ai-st gap-3">
       <!-- the whole summary toggles for a tap on a phone; the IconButton is the keyboard and screen-reader control -->
-      <div class="tg__summary flex flex-wrap ai-ct pointer" data-testid="earlier-thread-summary" @click="toggle">
+      <div class="tg__summary flex flex-wrap ai-ct pointer" data-testid="earlier-thread-summary" @click="onSummaryClick">
         <span class="tg__subject" data-testid="earlier-thread-subject">{{ title }}</span>
         <span class="tg__meta" data-testid="earlier-thread-to">{{ $t("leads.review.to") }}: {{ recipient }}</span>
         <span class="tg__meta">
@@ -83,6 +83,11 @@ async function loadDetail() {
 
 function toggle() {
   open.value = !open.value;
+}
+
+// A drag that selects the subject or recipient to copy it is no tap: it leaves the thread as it is.
+function onSummaryClick() {
+  if (!window.getSelection()?.toString()) toggle();
 }
 
 onMounted(loadDetail);

@@ -57,4 +57,13 @@ describe("Leads ThreadGroup", () => {
     await wrapper.get('[data-testid="earlier-thread-toggle"]').trigger("click");
     expect(wrapper.find('[data-testid="thread-timeline"]').exists()).toBe(false);
   });
+
+  it("a text selection dragged over the summary does not toggle it", async () => {
+    const wrapper = mount(ThreadGroup, { props: { thread }, global: { stubs: { Loader: true } } });
+    await flushPromises();
+    const selection = vi.spyOn(window, "getSelection").mockReturnValue({ toString: () => "Your shop" });
+    await wrapper.get('[data-testid="earlier-thread-summary"]').trigger("click");
+    selection.mockRestore();
+    expect(wrapper.find('[data-testid="thread-timeline"]').exists()).toBe(false);
+  });
 });
