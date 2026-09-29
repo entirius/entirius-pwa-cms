@@ -22,8 +22,15 @@ const SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const text = (value) => (value === null || value === undefined ? "" : String(value).trim());
-// "1 234,5" → "1234.5": spaces (thousands) go, the comma reads as the decimal point.
-const numeric = (value) => text(value).replace(/\s/g, "").replace(",", ".");
+// Thousands groups split by spaces: "1 234,5".
+const THOUSANDS_RE = /^-?\d{1,3}(\s\d{3})+([.,]\d*)?$/;
+
+// "1 234,5" → "1234.5": the spaces between thousands groups go, the comma reads as the decimal point. Any other inner
+// space stays, so the check reports it ("12 5" is never read as 125).
+function numeric(value) {
+  const typed = text(value);
+  return (THOUSANDS_RE.test(typed) ? typed.replace(/\s/g, "") : typed).replace(",", ".");
+}
 const dropLeadingZeros = (whole) => whole.replace(/^(-?)0+(?=\d)/, "$1");
 
 function decimalSeparator() {
@@ -101,7 +108,7 @@ function checkUrl(value) {
 }
 
 const upper = (value) => text(value).toUpperCase();
-const letters = (length) => (value) => (new RegExp(`^[A-Z]{${length}}$`).test(text(value)) ? "" : `formats.iso${length}`);
+const letters = (length, key) => (value) => (new RegExp(`^[A-Z]{${length}}$`).test(text(value)) ? "" : key);
 
 export const FORMATS = {
   money: { parse: parseMoney, display: (value) => localised(parseMoney(value)), check: checkMoney },
@@ -119,8 +126,8 @@ export const FORMATS = {
   },
   email: { parse: text, display: text, check: (value) => (EMAIL_RE.test(text(value)) ? "" : "formats.email") },
   url: { parse: text, display: text, check: checkUrl },
-  iso2: { parse: upper, display: text, check: letters(2) },
-  iso4217: { parse: upper, display: text, check: letters(3) },
+  iso2: { parse: upper, display: text, check: letters(2, "formats.iso2") },
+  iso4217: { parse: upper, display: text, check: letters(3, "formats.iso4217") },
 };
 
 const isEmpty = (value) => text(value) === "";

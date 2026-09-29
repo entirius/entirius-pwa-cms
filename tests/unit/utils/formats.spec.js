@@ -25,8 +25,15 @@ describe("formats", () => {
       expect(check("money", "2.345")).toBe("formats.money");
     });
 
-    it.each(["abc", "12.", ".5", "1.2.3", "12,5 zł"])("rejects %j", (typed) => {
+    it.each(["abc", "12.", ".5", "1.2.3", "12,5 zł", "12 5", "1 23 456", "1234 567"])("rejects %j", (typed) => {
       expect(check("money", typed)).toBe("formats.money");
+    });
+
+    it("keeps an inner space outside thousands groups as typed: 12 5 is never 125", () => {
+      expect(parseFormat("money", "12 5")).toBe("12 5");
+      expect(parseFormat("integer", "12 5")).toBe("12 5");
+      expect(check("integer", "12 5")).toBe("formats.integer");
+      expect(parseFormat("integer", "12 345 678")).toBe("12345678");
     });
 
     it("takes no negative amount unless the rules allow it; an unset rule keeps the limit", () => {
@@ -132,7 +139,7 @@ describe("formats", () => {
       expect(parseFormat("iso2", "pl")).toBe("PL");
       expect(check("iso2", "POL")).toBe("formats.iso2");
       expect(parseFormat("iso4217", "eur")).toBe("EUR");
-      expect(check("iso4217", "EU")).toBe("formats.iso3");
+      expect(check("iso4217", "EU")).toBe("formats.iso4217");
     });
   });
 

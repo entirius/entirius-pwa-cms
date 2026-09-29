@@ -3764,9 +3764,9 @@
     "key": "Use letters, digits, '-' or '_' without spaces, e.g. {example}",
     "slug": "Use lower-case letters, digits and '-', e.g. {example}",
     "email": "Enter an email address, e.g. {example}",
-    "url": "Enter a full address starting with https://, e.g. {example}",
+    "url": "Enter a full address starting with http:// or https://, e.g. {example}",
     "iso2": "Enter a two-letter country code, e.g. {example}",
-    "iso3": "Enter a three-letter currency code, e.g. {example}",
+    "iso4217": "Enter a three-letter currency code, e.g. {example}",
     "invalid_rows": "Fix the highlighted values before saving",
     "example": {
       "money": "232.00",

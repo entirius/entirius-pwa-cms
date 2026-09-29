@@ -3763,9 +3763,9 @@
     "key": "Użyj liter, cyfr, „-” lub „_”, bez spacji, np. {example}",
     "slug": "Użyj małych liter, cyfr i „-”, np. {example}",
     "email": "Podaj adres e-mail, np. {example}",
-    "url": "Podaj pełny adres zaczynający się od https://, np. {example}",
+    "url": "Podaj pełny adres zaczynający się od http:// lub https://, np. {example}",
     "iso2": "Podaj dwuliterowy kod kraju, np. {example}",
-    "iso3": "Podaj trzyliterowy kod waluty, np. {example}",
+    "iso4217": "Podaj trzyliterowy kod waluty, np. {example}",
     "invalid_rows": "Popraw zaznaczone wartości przed zapisem",
     "example": {
       "money": "232,00",
