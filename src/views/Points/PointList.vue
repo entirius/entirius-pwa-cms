@@ -224,7 +224,9 @@ export default {
             : await GET_Points(params);
         this.points = data.results || [];
         this.totalCount = data.count || 0;
+        if (!this.points.length && this.currentPage > 1) this.resetToFirstPage();
       } catch (err) {
+        if (err?.response?.status === 404 && this.currentPage > 1) return this.resetToFirstPage();
         this.notify.spawnNotification({
           type: "negative",
           msg: extractApiMessage(err, this.$t("notifications.error")),
@@ -249,6 +251,12 @@ export default {
         this.ordering = direction === "desc" ? `-${key}` : key;
       }
       this.fetchPoints();
+    },
+    // A stale `?page=N` (the list shrank, a filter changed) comes back empty or 404: go to page 1, never an empty page
+    // without a pager. Dropping the query key refetches through the `$route.query.page` watcher.
+    resetToFirstPage() {
+      const { page, ...query } = this.$route.query;
+      this.$router.replace({ path: this.$route.path, query });
     },
     onPageChange(page) {
       this.$router.push({

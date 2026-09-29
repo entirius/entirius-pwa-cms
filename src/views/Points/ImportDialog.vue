@@ -27,7 +27,7 @@
       </FormField>
 
       <div v-if="importResult" class="flex-column gap-3">
-        <StatusBadge label="Import complete" tone="positive" />
+        <StatusBadge :label="$t('dp.import_complete')" tone="positive" />
         <p class="fs-300 t-body">
           {{
             $t("dp.import_success", {
@@ -92,8 +92,17 @@ export default {
       return this.types.map((t) => ({ label: t.name, value: t.code }));
     },
   },
-  mounted() {
-    this.fetchTypes();
+  // Mounted while closed: the types load, and the last file and result clear, each time the dialog opens.
+  watch: {
+    open: {
+      immediate: true,
+      handler(isOpen) {
+        if (!isOpen) return;
+        this.selectedFile = null;
+        this.importResult = null;
+        this.fetchTypes();
+      },
+    },
   },
   methods: {
     async fetchTypes() {

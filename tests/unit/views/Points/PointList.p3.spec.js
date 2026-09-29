@@ -30,3 +30,38 @@ describe("PointList — channel filter on BasicSelect", () => {
     expect(GET_Points).toHaveBeenCalledTimes(1);
   });
 });
+
+// Plan 54b: a stale `?page=N` that comes back empty (or 404) goes to page 1 instead of an empty page without a pager.
+describe("PointList — stale page", () => {
+  const mountOnPage = (replace) =>
+    mount(PointList, {
+      global: {
+        stubs: { BasicSelect, DataTable: true, MobileFilterPanel: true, Pagination: true, FloatingActions: true },
+        mocks: { $route: { path: "/points", query: { page: "4", search: "x" } }, $router: { push: vi.fn(), replace } },
+      },
+    });
+
+  it("drops the page from the query when the page comes back empty", async () => {
+    GET_Points.mockResolvedValueOnce({ data: { results: [], count: 30 } });
+    const replace = vi.fn();
+    mountOnPage(replace);
+    await flushPromises();
+    expect(replace).toHaveBeenCalledWith({ path: "/points", query: { search: "x" } });
+  });
+
+  it("does the same for the API's 404 on a page past the end", async () => {
+    GET_Points.mockRejectedValueOnce({ response: { status: 404 } });
+    const replace = vi.fn();
+    mountOnPage(replace);
+    await flushPromises();
+    expect(replace).toHaveBeenCalledWith({ path: "/points", query: { search: "x" } });
+  });
+
+  it("stays on a page with rows", async () => {
+    GET_Points.mockResolvedValueOnce({ data: { results: [{ id: 1 }], count: 30 } });
+    const replace = vi.fn();
+    mountOnPage(replace);
+    await flushPromises();
+    expect(replace).not.toHaveBeenCalled();
+  });
+});

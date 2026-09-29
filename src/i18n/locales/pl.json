@@ -1257,6 +1257,7 @@
     "import_mode_full": "Pełny (upsert, dezaktywuj brakujące)",
     "import_channel": "Kanał (opcjonalnie)",
     "import_submit": "Rozpocznij import",
+    "import_complete": "Import zakończony",
     "import_success": "Import zakończony: {created} utworzono, {updated} zaktualizowano, {disabled} dezaktywowano",
     "back_to_list": "Wróć do listy",
     "address": "Adres",

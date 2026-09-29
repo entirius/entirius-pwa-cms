@@ -80,7 +80,7 @@
           <BasicInput v-model="editForm.name" />
         </FormField>
         <FormField :label="$t('dp.sort_order')">
-          <BasicInput v-model="editForm.sort_order" />
+          <NumberInput v-model="editForm.sort_order" />
         </FormField>
       </div>
       <div class="flex ai-ct wrap gap-5 mt-4">
@@ -278,7 +278,8 @@ export default {
           name: this.editForm.name,
           is_carrier: this.editForm.is_carrier,
           is_active: this.editForm.is_active,
-          sort_order: this.editForm.sort_order,
+          // NumberInput emits text: the API gets a number.
+          sort_order: Number(this.editForm.sort_order) || 0,
         });
         this.notify.spawnNotification({
           type: "positive",
