@@ -58,12 +58,10 @@
     </div>
 
     <BasicModal
-      v-if="rewriteOpen"
-      :open="true"
+      v-model:open="rewriteOpen"
       :title="$t('leads.rewrite.title')"
       :actions="rewriteActions"
       data-testid="rewrite-modal"
-      @close="rewriteOpen = false"
     >
       <FormField :label="$t('leads.rewrite.label')" :description="$t('leads.rewrite.hint')">
         <BasicTextarea v-model="rewriteNotes" :rows="4" :placeholder="$t('leads.rewrite.placeholder')" data-testid="rewrite-notes" />
@@ -83,6 +81,7 @@
     <!-- pinned to the bottom of the scroll body on every size; Review keeps the phone tab bar off (meta.noBottomBar) -->
     <template v-if="message && !editing && !scheduledLabel && !failedVersion" #footer>
       <ReviewActions
+        ref="reviewActions"
         :busy="busy"
         :ai-disabled="aiDisabled"
         @send="accept"
@@ -96,7 +95,7 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, ref, watch } from "vue";
+import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue";
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 import { t } from "@/i18n";
 import { isConflict } from "@/api/createClient";
@@ -295,6 +294,11 @@ function openRewrite() {
   rewriteNotes.value = "";
   rewriteOpen.value = true;
 }
+
+// The rewrite dialog opens from a menu item that is gone once it closes: focus goes back to the more button (after
+// the dialog's focus trap has let go).
+const reviewActions = ref(null);
+watch(rewriteOpen, (open) => open || nextTick(() => reviewActions.value?.focusMore()));
 
 function retryRewrite() {
   failedVersion.value = null;

@@ -33,6 +33,9 @@ const menuItems = computed(() => [
   { key: "skip-company", label: t("leads.review.skip_company"), testid: "review-skip-company" },
 ]);
 
+// Where focus returns after a dialog opened from the more menu closes (the menu item is gone by then).
+defineExpose({ focusMore: () => bar.value?.querySelector('[data-testid="review-more"]')?.focus() });
+
 // A phone toast sits above this bar (Notifications.vue), so Send / Not now stay reachable while one is on screen.
 const root = document.documentElement.style;
 // Re-measured on every resize: orientation, text wrap, a late web font or a language switch change the bar's height.

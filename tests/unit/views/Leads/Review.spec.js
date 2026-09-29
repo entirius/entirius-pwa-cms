@@ -181,6 +181,27 @@ describe("Leads Review", () => {
     route.current.params.id = "5";
   });
 
+  // Plan 56b: the dialog stays mounted (its leave transition runs) and focus goes back to the more button.
+  it("the rewrite dialog closes through v-model:open and hands focus back to the more button", async () => {
+    const wrapper = mount(Review, {
+      attachTo: document.body,
+      global: {
+        components: { ...leadsFrame.components, BasicMenu },
+        stubs: { ...leadsFrame.stubs, BasicButton, BasicInput, BasicTextarea, BasicModal, IntelCard: true, RouterLink: true },
+      },
+    });
+    await flushPromises();
+    wrapper.findComponent(ReviewActions).vm.$emit("rewrite");
+    await flushPromises();
+    expect(wrapper.findComponent({ name: "BasicModal" }).props("open")).toBe(true);
+    await wrapper.get('[data-testid="rewrite-cancel"]').trigger("click");
+    await flushPromises();
+    expect(wrapper.findComponent({ name: "BasicModal" }).exists()).toBe(true);
+    expect(wrapper.findComponent({ name: "BasicModal" }).props("open")).toBe(false);
+    expect(document.activeElement.getAttribute("data-testid")).toBe("review-more");
+    wrapper.unmount();
+  });
+
   it("a failed rewrite shows its reason with Retry and Back, never another draft", async () => {
     api.POST_ReviewRewrite.mockReturnValue(ok({ ...draft, id: 9, status: "failed", failure_code: "upstream", failure_detail: "ToolboxError: 503" }));
     const wrapper = await mountReview();

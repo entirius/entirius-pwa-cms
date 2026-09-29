@@ -27,13 +27,11 @@
       @cancel="confirming = false"
     />
     <BasicModal
-      v-if="communicating"
-      :open="true"
+      v-model:open="communicating"
       :title="$t('leads.company.communicate')"
       :actions="communicateActions"
       :persistent="sending"
       data-testid="communicate-modal"
-      @close="communicating = false"
     >
       <div class="flex-column gap-4">
         <FormField :label="$t('leads.communicate.template')">

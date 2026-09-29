@@ -193,7 +193,7 @@ describe("Company card header", () => {
 
 // Plan 54: the dialog is a BasicModal; the stub renders its body and hands its actions out as props.
 describe("Leads Communicate dialog", () => {
-  const BasicModal = { name: "BasicModal", props: ["open", "title", "actions", "persistent"], template: "<div><slot /></div>" };
+  const BasicModal = { name: "BasicModal", props: ["open", "title", "actions", "persistent"], template: "<div v-if=\"open\"><slot /></div>" };
   const BasicRadioGroup = { name: "BasicRadioGroup", props: ["modelValue", "options"], template: "<div />" };
   const contacts = [
     { id: 1, first_name: "Anna", last_name: "Nowak", email: "anna@shop.test", is_primary: false },
