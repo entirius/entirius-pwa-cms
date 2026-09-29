@@ -267,7 +267,8 @@ async function fetchFeatureSet() {
       position: f.position || 0,
     }));
     editableRows.value = mergeWithExisting(normalized);
-    await prefetchSelectOptions(normalized);
+    // Not awaited: the editor shows at once and each select fills in as its values arrive.
+    prefetchSelectOptions(normalized);
   } finally {
     loading.value = false;
   }
@@ -280,23 +281,27 @@ async function prefetchSelectOptions(features) {
   );
 }
 
+// Every value of a select feature, page by page (the searchable select filters them in the browser). A failed page
+// keeps the values that arrived before it.
 async function fetchAttributeOptions(featureIdx) {
   if (optionsCache.value[featureIdx]) return;
-  try {
-    optionsCache.value[featureIdx] = await fetchAllAttributeOptions(featureIdx);
-  } catch {
-    optionsCache.value[featureIdx] = [];
+  optionsCache.value[featureIdx] = [];
+  for (let page = 1; ; page += 1) {
+    const data = await fetchOptionsPage(featureIdx, page);
+    if (!data) return;
+    const results = data.results || data || [];
+    const options = results.map((a) => ({ label: a.name || a.idx, value: a.idx }));
+    optionsCache.value[featureIdx] = [...optionsCache.value[featureIdx], ...options];
+    if (!data.next) return;
   }
 }
 
-// Every value of a select feature, page by page: the searchable select filters them in the browser.
-async function fetchAllAttributeOptions(featureIdx) {
-  const options = [];
-  for (let page = 1; ; page += 1) {
+async function fetchOptionsPage(featureIdx, page) {
+  try {
     const { data } = await GET_FeatureAttributes(featureIdx, props.channelIdx, { page_size: 100, page });
-    const results = data.results || data || [];
-    options.push(...results.map((a) => ({ label: a.name || a.idx, value: a.idx })));
-    if (!data.next) return options;
+    return data;
+  } catch {
+    return null;
   }
 }
 

@@ -194,7 +194,7 @@
       :open="showDeleteConfirm"
       @confirm="deleteCategory"
       @cancel="showDeleteConfirm = false"
-      :title="$t('pim.confirm_delete')"
+      :title="$t('pim.confirm_delete_title')"
     >
       <template #default>
         <p>

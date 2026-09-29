@@ -128,4 +128,15 @@ describe("AttributeEditor — P3 controls", () => {
     expect(values).toEqual(["red", "blue", "legacy"]);
     expect(mockGetFeatureAttributes).toHaveBeenCalledWith("colour", "default-europe", { page_size: 100, page: 2 });
   });
+
+  it("a failed page keeps the values that arrived before it", async () => {
+    mockGetFeatureAttributes.mockImplementation((idx, channel, params) => {
+      if (idx !== "colour") return page([]);
+      return params.page === 1 ? page([{ idx: "red", name: "Red" }], "next-url") : Promise.reject(new Error("boom"));
+    });
+    const wrapper = mountEditor();
+    await flushPromises();
+
+    expect(selectOf(wrapper, false).props("options")).toEqual([{ label: "Red", value: "red" }]);
+  });
 });
