@@ -9,8 +9,8 @@ import BasicInput from "@/boots/BasicInput/index.vue";
 const layout = ({ props = {}, slots = {} } = {}) =>
   mount(AuthLayout, { props: { title: "Zaloguj się", ...props }, slots });
 
-// FormField renders its slot and shows the description it gets, so the caps-lock hint is visible to the test.
-const FormField = { props: ["label", "error", "description"], template: "<div><slot /><p class='desc'>{{ description }}</p></div>" };
+// FormField renders its slot, the caps-lock line with it.
+const FormField = { props: ["label", "error"], template: "<div><slot /></div>" };
 const IconButton = { props: ["label", "pressed", "icon"], emits: ["click"], template: "<button :aria-pressed='String(pressed)' @click=\"$emit('click')\" />" };
 const field = () =>
   mount(PasswordField, {
@@ -80,7 +80,10 @@ describe("AuthLayout PasswordField", () => {
     const wrapper = field();
     // Vue drops an event stamped before its listener was attached; happy-dom's event clock can lag behind under load.
     await new Promise((resolve) => setTimeout(resolve, 10));
-    const hint = () => wrapper.get(".desc").text();
+    const hint = () => {
+      const line = wrapper.find(".password-field__caps");
+      return line.exists() ? line.text() : "";
+    };
     const key = (type, on) => {
       // happy-dom knows no CapsLock modifier: the event answers for it.
       const event = new KeyboardEvent(type, { key: "a", bubbles: true });

@@ -1,5 +1,5 @@
 <template>
-  <FormField :label="label" :error="error" :description="capsLock ? $t('login.caps_lock') : ''">
+  <FormField :label="label" :error="error">
     <BasicInput
       :model-value="modelValue"
       size="lg"
@@ -19,13 +19,14 @@
         />
       </template>
     </BasicInput>
+    <p v-if="capsLock" class="password-field__caps fs-200 t-muted" role="status">{{ $t("login.caps_lock") }}</p>
   </FormField>
 </template>
 
 <script setup>
 // A password field of the sign-in screens (AuthLayout): FormField + a `lg` BasicInput with the show/hide toggle in its
-// `trailing` slot (an IconButton, `pressed` while shown) and a caps-lock hint as the field's description, only while
-// caps lock is on. `autocomplete` is `current-password` or `new-password`.
+// `trailing` slot (an IconButton, `pressed` while shown) and a caps-lock line under the field, only while caps lock is
+// on (FormField has no description since plan 60; a hint would hide it behind the help mark). `autocomplete` is `current-password` or `new-password`.
 import { ref } from "vue";
 
 defineProps({
