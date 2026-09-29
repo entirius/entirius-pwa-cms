@@ -1,14 +1,15 @@
 <template>
   <Thread v-if="!isDesktop" desktop-hint />
   <PageLayout v-else data-testid="company-card">
-    <template v-if="company" #header>
+    <template #header>
       <PageHeader :title="$t('leads.company.title')">
-        <template #actions>
+        <template v-if="company" #actions>
           <CompanyActions :company="company" @changed="load" />
         </template>
       </PageHeader>
     </template>
-    <Loader v-if="!company" block />
+    <p v-if="loadError" class="t-negative m-0" role="alert" data-testid="company-load-error">{{ loadError }}</p>
+    <Loader v-else-if="!company" block />
     <template v-else>
       <header class="company__head flex ai-fe wrap gap-5">
         <div class="company__name flex-column gap-1">
@@ -74,6 +75,7 @@ const router = useRouter();
 const notify = useNotifyStore();
 const isDesktop = useIsDesktop();
 const company = ref(null);
+const loadError = ref("");
 const stages = ref([]);
 const leadTypes = useLeadTypesStore();
 // The active types, plus the company's own type when it was deactivated since (it still reads, it is not offered).
@@ -121,9 +123,19 @@ async function retype(code) {
   }
 }
 
+// The header stands while the card loads and when it fails; only its actions wait for the company.
+async function open() {
+  loadError.value = "";
+  try {
+    await load();
+  } catch (err) {
+    loadError.value = extractApiMessage(err, t("leads.review.error"));
+  }
+}
+
 watch(
   () => [isDesktop.value, route.params.id],
-  ([desktop, id]) => desktop && id && load(),
+  ([desktop, id]) => desktop && id && open(),
   { immediate: true }
 );
 </script>

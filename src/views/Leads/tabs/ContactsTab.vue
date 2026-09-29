@@ -28,7 +28,13 @@
     </div>
     <p v-if="status" class="t-muted m-0" role="status" data-testid="contact-status">{{ status }}</p>
 
-    <DataTable :columns="columns" :rows="company.contacts" row-key="id" data-testid="company-contacts">
+    <DataTable
+      :columns="columns"
+      :rows="company.contacts"
+      row-key="id"
+      :row-attrs="rowAttrs"
+      data-testid="company-contacts"
+    >
       <template #cell-is_primary="{ row }">
         <IconButton
           v-if="!row.anonymised_at"
@@ -44,7 +50,7 @@
       </template>
       <!-- one cell per person (name, job title, email): the card's column is narrow next to the Inbox list -->
       <template #cell-name="{ row }">
-        <span class="contacts__person" :class="{ 't-muted': row.anonymised_at }" :data-contact="row.id" data-testid="contact-row">
+        <span class="contacts__person" :class="{ 't-muted': row.anonymised_at }">
           {{ row.first_name }} {{ row.last_name }}
           <span v-if="row.job_title" class="t-muted fs-200">{{ row.job_title }}</span>
           <span v-if="row.email" class="contacts__email fs-200">{{ row.email }}</span>
@@ -138,6 +144,8 @@ const columns = computed(() => [
   { key: "legal_basis", label: t("leads.contacts.legal_basis"), width: "max-content" },
   { key: "actions", label: t("leads.contacts.actions"), actions: true },
 ]);
+// The row carries the test id, so a contact's star, Edit and Remove are found inside its row.
+const rowAttrs = (contact) => ({ "data-testid": "contact-row", "data-contact": contact.id });
 const nameOf = (contact) =>
   `${contact.first_name} ${contact.last_name}`.trim() || contact.email || "—";
 const valuesOf = (contact) => ({

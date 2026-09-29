@@ -169,6 +169,18 @@ describe("Company card header", () => {
     expect(leads.PATCH_Company).toHaveBeenCalledWith(7, { lead_type: "UNKNOWN" });
   });
 
+  it("the header stands while the card loads and when it fails; only its actions wait for the company", async () => {
+    leads.GET_Company.mockReturnValueOnce(new Promise(() => {}));
+    const loading = await mountCard();
+    expect(loading.get("h1").text()).toBe("leads.company.title");
+    expect(loading.find("company-actions-stub").exists()).toBe(false);
+    leads.GET_Company.mockRejectedValueOnce({ response: { data: { detail: "Not found." } } });
+    const failed = await mountCard();
+    expect(failed.get("h1").text()).toBe("leads.company.title");
+    expect(failed.get('[data-testid="company-load-error"]').text()).toBe("Not found.");
+    expect((await mountCard()).find("company-actions-stub").exists()).toBe(true);
+  });
+
   it("picking the current stage or type again sends nothing", async () => {
     const wrapper = await mountCard();
     await setControl(wrapper, "company-stage", "new");

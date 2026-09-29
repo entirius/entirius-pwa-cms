@@ -68,6 +68,14 @@ const submit = async (wrapper, form) => {
 describe("Company card — Contacts tab", () => {
   beforeEach(() => vi.clearAllMocks());
 
+  it("the contact-row test id sits on the row: its star, Edit and Remove are inside it", async () => {
+    const wrapper = await mountTab();
+    const row = wrapper.findAll('[data-testid="contact-row"]')[0];
+    expect(row.classes()).toContain("data-table__row");
+    expect(row.attributes("data-contact")).toBeDefined();
+    ["contact-primary", "contact-edit", "contact-remove"].forEach((id) => expect(row.find(`[data-testid="${id}"]`).exists()).toBe(true));
+  });
+
   it("adds a contact with the add-lead fields plus job title, phone, language and primary", async () => {
     const wrapper = await mountTab();
     await wrapper.get('[data-testid="contact-add"]').trigger("click");
