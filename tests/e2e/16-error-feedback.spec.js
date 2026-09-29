@@ -1,6 +1,9 @@
 const { test, expect } = require('@playwright/test');
 const { login } = require('../helpers/auth');
 const { createErrorCollector } = require('../helpers/error-collector');
+const { either } = require('./helpers/text');
+const en = require('../../src/i18n/locales/en.json');
+const pl = require('../../src/i18n/locales/pl.json');
 
 /**
  * Error Feedback Tests (cms-error-handling-global)
@@ -67,10 +70,8 @@ async function firstExistingSku(page) {
 }
 
 async function selectFirstFeatureSet(page) {
-  const dropdown = page
-    .locator('button[role="combobox"]', { hasText: 'Select feature set' })
-    .first();
-  await dropdown.click();
+  // Named by its FormField label in either UI language.
+  await page.getByRole('combobox', { name: either(en.pim.feature_set, pl.pim.feature_set) }).click();
   await page.getByRole('option').first().click();
 }
 
@@ -88,7 +89,10 @@ test.describe('Scenario A — required-field validation', () => {
     await expect(skuError).toBeVisible();
     expect((await skuError.innerText()).trim()).not.toBe('');
 
-    await expect(page.locator('button[role="combobox"][aria-invalid="true"]')).toBeVisible();
+    await expect(page.getByRole('combobox', { name: either(en.pim.feature_set, pl.pim.feature_set) })).toHaveAttribute(
+      'aria-invalid',
+      'true'
+    );
     await expectNoEmptyErrorUI(page);
 
     expect(collector.getErrors().exceptions).toEqual([]);

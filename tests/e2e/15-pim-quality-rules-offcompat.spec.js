@@ -1,6 +1,9 @@
 const { test, expect } = require('@playwright/test');
 const { login } = require('../helpers/auth');
 const { createErrorCollector } = require('../helpers/error-collector');
+const { either } = require('./helpers/text');
+const en = require('../../src/i18n/locales/en.json');
+const pl = require('../../src/i18n/locales/pl.json');
 
 /**
  * PIM Quality Rules — soft-compat OFF (etap-06).
@@ -22,6 +25,8 @@ const FONT_WHITELIST = [
   'gaps/status',
   'gap-definitions',
   'Failed to load resource',
+  // The dev server's hot-reload socket is not a page error.
+  'WebSocket connection to',
 ];
 
 async function stubGapsOff(page) {
@@ -44,8 +49,10 @@ test.describe('PIM Quality Rules — soft-compat OFF', () => {
     await page.waitForLoadState('networkidle');
 
     // The quality-rules nav entry must not be offered, in the sidebar nor in the tab bar.
-    const navItem = page.getByRole('navigation').getByRole('link', { name: /Quality Rules|Reguły jakości/ });
-    await expect(page.getByRole('navigation', { name: /^(Panele|Panels)$/ })).toBeVisible();
+    const navItem = page.getByRole('navigation').getByRole('link', {
+      name: either(en.nav.pim_gap_definitions, pl.nav.pim_gap_definitions),
+    });
+    await expect(page.getByRole('navigation', { name: either(en.shell.panels, pl.shell.panels) })).toBeVisible();
     expect(await navItem.count()).toBe(0);
 
     collector.assertNoErrors(expect, 'soft-compat OFF — product list');
