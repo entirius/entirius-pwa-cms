@@ -1,29 +1,20 @@
 <template>
-  <div class="ld-field" data-testid="test-generate">
-    <input
-      v-model="search"
-      class="ld-input"
-      type="search"
-      :placeholder="$t('communicator.test.search')"
-      data-testid="test-generate-search"
-      @input="find"
-    />
-    <button
-      v-for="company in companies"
-      :key="company.id"
-      class="ld-btn"
-      data-testid="test-generate-company"
-      @click="generate(company)"
-    >
-      {{ company.domain }}
-    </button>
-    <p v-if="busy" class="ld-muted">{{ $t("communicator.test.generating") }}</p>
-    <p v-if="error" class="ld-error" data-testid="test-generate-error">{{ error }}</p>
-    <article v-if="preview" data-testid="test-generate-preview">
-      <p class="ld-muted">{{ $t("communicator.test.not_saved") }}</p>
+  <div class="flex-column gap-4" data-testid="test-generate">
+    <FormField :label="$t('communicator.test.search')">
+      <BasicInput v-model="search" type="search" icon="search" data-testid="test-generate-search" @update:model-value="find" />
+    </FormField>
+    <div v-if="companies.length" class="flex flex-wrap gap-3">
+      <BasicButton v-for="company in companies" :key="company.id" size="sm" data-testid="test-generate-company" @click="generate(company)">
+        {{ company.domain }}
+      </BasicButton>
+    </div>
+    <p v-if="busy" class="t-muted m-0" role="status">{{ $t("communicator.test.generating") }}</p>
+    <p v-if="error" class="t-negative m-0" role="alert" data-testid="test-generate-error">{{ error }}</p>
+    <BasicCard v-if="preview" data-testid="test-generate-preview">
+      <p class="t-muted m-0">{{ $t("communicator.test.not_saved") }}</p>
       <h4 data-testid="test-generate-subject">{{ preview.subject }}</h4>
       <p v-for="(paragraph, i) in paragraphs" :key="i">{{ paragraph }}</p>
-    </article>
+    </BasicCard>
   </div>
 </template>
 
@@ -68,5 +59,3 @@ async function generate(company) {
   }
 }
 </script>
-
-<style lang="scss" src="@/views/Leads/desktop.scss"></style>

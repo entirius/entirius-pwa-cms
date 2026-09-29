@@ -12,6 +12,7 @@ const notify = vi.hoisted(() => ({ spawnNotification: vi.fn() }));
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => notify }));
 
 import SettingsFooter from "@/views/Communicator/settings/SettingsFooter.vue";
+import { mountOptions } from "./communicatorFrame";
 
 const SegmentedControl = {
   props: ["modelValue", "options", "disabled"],
@@ -19,7 +20,7 @@ const SegmentedControl = {
   template: "<div><button v-for='o in options' :key='o.value' type='button' :disabled='disabled' :data-testid='o.testid' @click=\"$emit('update:modelValue', o.value)\">{{ o.label }}</button></div>",
 };
 const mountFooter = async () => {
-  const wrapper = mount(SettingsFooter, { global: { stubs: { SegmentedControl } } });
+  const wrapper = mount(SettingsFooter, mountOptions({ SegmentedControl }));
   await flushPromises();
   return wrapper;
 };
@@ -36,9 +37,9 @@ describe("Send settings — mail footer", () => {
     const wrapper = await mountFooter();
     expect(wrapper.findAll('[data-testid^="footer-lang-"]').map((b) => b.text())).toEqual(["EN", "PL"]);
     await wrapper.get('[data-testid="footer-lang-pl"]').trigger("click");
-    expect(wrapper.get('[data-testid="footer-html"]').element.value).toBe("<p>Zespół</p>{{ legal }}");
+    expect(wrapper.get('[data-testid="footer-html"] textarea').element.value).toBe("<p>Zespół</p>{{ legal }}");
     await wrapper.get('[data-testid="footer-lang-en"]').trigger("click");
-    expect(wrapper.get('[data-testid="footer-html"]').element.value).toBe("");
+    expect(wrapper.get('[data-testid="footer-html"] textarea').element.value).toBe("");
   });
 
   it("the preview puts the sample legal text where {{ legal }} is, in an empty sandbox", async () => {
@@ -54,11 +55,11 @@ describe("Send settings — mail footer", () => {
     api.PUT_Footer.mockResolvedValue({ data: { language: "pl", html: "<p>Clean</p>{{ legal }}" } });
     const wrapper = await mountFooter();
     await wrapper.get('[data-testid="footer-lang-pl"]').trigger("click");
-    await wrapper.get('[data-testid="footer-html"]').setValue("<p onclick='x()'>Clean</p>{{ legal }}");
+    await wrapper.get('[data-testid="footer-html"] textarea').setValue("<p onclick='x()'>Clean</p>{{ legal }}");
     await wrapper.get("form").trigger("submit");
     await flushPromises();
     expect(api.PUT_Footer).toHaveBeenCalledWith("pl", "<p onclick='x()'>Clean</p>{{ legal }}");
-    expect(wrapper.get('[data-testid="footer-html"]').element.value).toBe("<p>Clean</p>{{ legal }}");
+    expect(wrapper.get('[data-testid="footer-html"] textarea').element.value).toBe("<p>Clean</p>{{ legal }}");
     expect(notify.spawnNotification).toHaveBeenCalled();
   });
 
@@ -69,7 +70,7 @@ describe("Send settings — mail footer", () => {
       details: [{ field: "html", description: "The footer must contain {{ legal }} exactly once." }],
     });
     const wrapper = await mountFooter();
-    await wrapper.get('[data-testid="footer-html"]').setValue("<p>No legal</p>");
+    await wrapper.get('[data-testid="footer-html"] textarea').setValue("<p>No legal</p>");
     expect(wrapper.find('[data-testid="footer-hint"]').exists()).toBe(true);
     await wrapper.get("form").trigger("submit");
     await flushPromises();
@@ -81,7 +82,7 @@ describe("Send settings — mail footer", () => {
     api.PUT_Footer.mockImplementation(() => new Promise((resolve) => (answer = resolve)));
     const wrapper = await mountFooter();
     await wrapper.get('[data-testid="footer-lang-pl"]').trigger("click");
-    await wrapper.get('[data-testid="footer-html"]').setValue("<p>Nowa</p>{{ legal }}");
+    await wrapper.get('[data-testid="footer-html"] textarea').setValue("<p>Nowa</p>{{ legal }}");
     await wrapper.get("form").trigger("submit");
     expect(wrapper.get('[data-testid="footer-lang-en"]').element.disabled).toBe(true);
     answer({ data: { language: "pl", html: "<p>Nowa</p>{{ legal }}" } });
@@ -89,20 +90,20 @@ describe("Send settings — mail footer", () => {
     expect(api.PUT_Footer).toHaveBeenCalledWith("pl", "<p>Nowa</p>{{ legal }}");
     expect(wrapper.get('[data-testid="footer-lang-en"]').element.disabled).toBe(false);
     await wrapper.get('[data-testid="footer-lang-en"]').trigger("click");
-    expect(wrapper.get('[data-testid="footer-html"]').element.value).toBe("");
+    expect(wrapper.get('[data-testid="footer-html"] textarea').element.value).toBe("");
     await wrapper.get('[data-testid="footer-lang-pl"]').trigger("click");
-    expect(wrapper.get('[data-testid="footer-html"]').element.value).toBe("<p>Nowa</p>{{ legal }}");
+    expect(wrapper.get('[data-testid="footer-html"] textarea').element.value).toBe("<p>Nowa</p>{{ legal }}");
   });
 
   it("switching the language over unsaved edits asks first", async () => {
     const wrapper = await mountFooter();
-    await wrapper.get('[data-testid="footer-html"]').setValue("<p>Draft</p>{{ legal }}");
+    await wrapper.get('[data-testid="footer-html"] textarea').setValue("<p>Draft</p>{{ legal }}");
     await wrapper.get('[data-testid="footer-lang-pl"]').trigger("click");
-    await wrapper.get('[data-testid="confirm-cancel"]').trigger("click");
-    expect(wrapper.get('[data-testid="footer-html"]').element.value).toBe("<p>Draft</p>{{ legal }}");
+    await wrapper.get('[data-testid="confirm-dialog-cancel"]').trigger("click");
+    expect(wrapper.get('[data-testid="footer-html"] textarea').element.value).toBe("<p>Draft</p>{{ legal }}");
     await wrapper.get('[data-testid="footer-lang-pl"]').trigger("click");
-    await wrapper.get('[data-testid="confirm-ok"]').trigger("click");
-    expect(wrapper.get('[data-testid="footer-html"]').element.value).toBe("<p>Zespół</p>{{ legal }}");
+    await wrapper.get('[data-testid="confirm-dialog-confirm"]').trigger("click");
+    expect(wrapper.get('[data-testid="footer-html"] textarea').element.value).toBe("<p>Zespół</p>{{ legal }}");
     expect(api.PUT_Footer).not.toHaveBeenCalled();
   });
 
@@ -112,12 +113,21 @@ describe("Send settings — mail footer", () => {
     expect(wrapper.find('[data-testid="footer-remove"]').exists()).toBe(false); // EN has no footer
     await wrapper.get('[data-testid="footer-lang-pl"]').trigger("click");
     await wrapper.get('[data-testid="footer-remove"]').trigger("click");
-    await wrapper.get('[data-testid="confirm-ok"]').trigger("click");
+    await wrapper.get('[data-testid="confirm-dialog-confirm"]').trigger("click");
     await flushPromises();
     expect(api.DELETE_Footer).toHaveBeenCalledWith("pl");
-    expect(wrapper.get('[data-testid="footer-html"]').element.value).toBe("");
+    expect(wrapper.get('[data-testid="footer-html"] textarea').element.value).toBe("");
     expect(wrapper.find('[data-testid="footer-remove"]').exists()).toBe(false);
     expect(notify.spawnNotification).toHaveBeenCalled();
+  });
+
+  // C-29: an empty field previews the mail without a footer — the sample legal text alone, never a blank page.
+  it("an empty footer previews the legal text alone", async () => {
+    const wrapper = await mountFooter();
+    await wrapper.get('[data-testid="footer-lang-en"]').trigger("click");
+    const srcdoc = wrapper.get('[data-testid="footer-preview"]').attributes("srcdoc");
+    expect(srcdoc).toContain("<p>");
+    expect(srcdoc).not.toContain("{{ legal }}");
   });
 
   it("footers that cannot load say so quietly; template languages still show", async () => {

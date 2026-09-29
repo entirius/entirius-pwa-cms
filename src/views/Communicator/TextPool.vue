@@ -10,42 +10,38 @@
         data-testid="pool-text"
       >
         <form v-if="editing === text.id" class="pool__edit" @submit.prevent="saveEdit(text)">
-          <textarea v-model="draft" class="ld-input" rows="3" required maxlength="4000" data-testid="pool-text-input"></textarea>
-          <div class="ld-row">
-            <button class="ld-btn ld-btn--primary" type="submit" :disabled="!draft.trim()" data-testid="pool-text-save">
+          <FormField :label="$t('communicator.pool.text')" required>
+            <BasicTextarea v-model="draft" :rows="3" :maxlength="4000" data-testid="pool-text-input" />
+          </FormField>
+          <div class="flex jc-fe flex-wrap gap-3">
+            <BasicButton data-testid="pool-text-cancel" @click="editing = null">{{ $t("common.cancel") }}</BasicButton>
+            <BasicButton variant="primary" type="submit" :disabled="!draft.trim()" data-testid="pool-text-save">
               {{ $t("communicator.pool.save") }}
-            </button>
-            <button class="ld-btn" type="button" data-testid="pool-text-cancel" @click="editing = null">{{ $t("common.cancel") }}</button>
+            </BasicButton>
           </div>
         </form>
         <template v-else>
-          <!-- the text itself is the edit control: one tap, no hover -->
-          <button class="pool__body" type="button" :disabled="!text.is_active" data-testid="pool-text-body" @click="startEdit(text)">
-            {{ text.body }}
-          </button>
-          <span v-if="!text.is_active" class="ld-badge">{{ $t("communicator.pool.inactive") }}</span>
-          <button
-            v-if="text.is_active"
-            class="ld-btn ld-btn--danger ld-btn--icon"
-            :aria-label="$t('communicator.pool.remove')"
-            :title="$t('communicator.pool.remove')"
-            data-testid="pool-text-remove"
-            @click="confirming = text"
-          >
-            <FontAwesomeIcon :icon="$icons.delete" />
-          </button>
-          <button v-else class="ld-btn" data-testid="pool-text-restore" @click="restore(text)">{{ $t("communicator.pool.restore") }}</button>
+          <p class="pool__body m-0" data-testid="pool-text-body">{{ text.body }}</p>
+          <template v-if="text.is_active">
+            <IconButton icon="edit" variant="outline" :label="$t('communicator.pool.edit')" data-testid="pool-text-edit" @click="startEdit(text)" />
+            <IconButton icon="delete" variant="danger" :label="$t('communicator.pool.remove')" data-testid="pool-text-remove" @click="confirming = text" />
+          </template>
+          <template v-else>
+            <StatusBadge tone="neutral" size="sm" :dot="false" :label="$t('communicator.pool.inactive')" />
+            <BasicButton size="sm" data-testid="pool-text-restore" @click="restore(text)">{{ $t("communicator.pool.restore") }}</BasicButton>
+          </template>
         </template>
       </li>
     </ul>
-    <p v-if="status" class="ld-muted" role="status" data-testid="pool-status">{{ status }}</p>
-    <p v-if="error" class="ld-error" data-testid="pool-error">{{ error }}</p>
-    <ConfirmSheet
-      v-if="confirming"
+    <p v-if="status" class="t-muted m-0" role="status" data-testid="pool-status">{{ status }}</p>
+    <p v-if="error" class="t-negative m-0" role="alert" data-testid="pool-error">{{ error }}</p>
+    <ConfirmDialog
+      :open="Boolean(confirming)"
       :title="$t('communicator.pool.remove_title')"
-      :message="confirming.body"
+      :message="confirming?.body"
       :confirm-label="$t('communicator.pool.remove')"
       :cancel-label="$t('common.cancel')"
+      tone="danger"
       @confirm="remove(confirming)"
       @cancel="confirming = null"
     />
@@ -57,10 +53,9 @@ import { ref } from "vue";
 import { t } from "@/i18n";
 import { DELETE_SequenceText, PATCH_SequenceText } from "@/api/communicator/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
-import ConfirmSheet from "@/views/Leads/ConfirmSheet.vue";
 
-// The follow-up text pool of one sequence (UX-005): tap a text to edit it (future follow-ups only — sent mail keeps
-// its body), remove with a confirmation. A text a thread already got is deactivated, not deleted (its usage history
+// The follow-up text pool of one sequence (UX-005, C-33): a row is the text with its edit and remove squares on the
+// right; edit changes future follow-ups only (sent mail keeps its body), remove asks first. A text a thread already got is deactivated, not deleted (its usage history
 // keeps a thread from getting it twice): it stays listed, dimmed, with Restore.
 const props = defineProps({
   sequenceId: { type: Number, required: true },
@@ -113,12 +108,11 @@ function remove(text) {
 }
 </script>
 
-<style lang="scss" src="@/views/Leads/desktop.scss"></style>
 <style scoped>
 .pool__list {
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: var(--space-3);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -127,31 +121,20 @@ function remove(text) {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-5);
+  gap: var(--space-3);
 }
 .pool__item--inactive .pool__body {
   opacity: 0.5;
 }
 .pool__body {
   flex: 1 1 16rem;
-  min-height: 44px;
-  padding: var(--space-2) var(--space-5);
-  border: 1px solid transparent;
-  border-radius: var(--radius-base);
-  background: none;
   color: var(--text-body);
-  font: inherit;
-  text-align: left;
-  cursor: text;
-}
-.pool__body:not(:disabled):focus-visible,
-.pool__body:not(:disabled):active {
-  border-color: var(--border-subtle);
+  white-space: pre-line;
 }
 .pool__edit {
   display: flex;
   flex: 1 1 100%;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: var(--space-3);
 }
 </style>

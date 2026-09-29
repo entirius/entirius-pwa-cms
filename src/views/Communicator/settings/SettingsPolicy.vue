@@ -1,37 +1,30 @@
 <template>
-  <form class="ld-field" data-testid="settings-policy" @submit.prevent="save">
-    <h3>{{ $t("communicator.policy.title") }}</h3>
-    <p class="ld-muted">{{ $t("communicator.policy.zone", { timezone: meta.timezone, country: meta.country }) }}</p>
-    <label><input v-model="form.business_days_only" type="checkbox" /> {{ $t("communicator.policy.business_days") }}</label>
-    <label><input v-model="form.spread" type="checkbox" /> {{ $t("communicator.policy.spread") }}</label>
-    <label class="ld-field"><span class="ld-field__label">{{ $t("communicator.policy.daily_cap") }}</span>
-      <input v-model.number="form.daily_cap" class="ld-input" type="number" min="0" max="10000" required data-testid="policy-cap" />
-    </label>
-    <div v-for="(window, i) in form.windows" :key="i" class="ld-row" data-testid="policy-window">
-      <label class="ld-field"><span class="ld-field__label">{{ $t("communicator.policy.window_start") }}</span>
-        <input v-model="window.start_time" v-bind="TIME_INPUT" :placeholder="$t('communicator.policy.time_format')" data-testid="policy-window-start" />
-      </label>
-      <label class="ld-field"><span class="ld-field__label">{{ $t("communicator.policy.window_end") }}</span>
-        <input v-model="window.end_time" v-bind="TIME_INPUT" :placeholder="$t('communicator.policy.time_format')" data-testid="policy-window-end" />
-      </label>
-      <button
-        class="ld-btn ld-btn--danger ld-btn--icon"
-        type="button"
-        :aria-label="$t('communicator.policy.remove_window')"
-        :title="$t('communicator.policy.remove_window')"
-        @click="form.windows.splice(i, 1)"
-      >
-        <FontAwesomeIcon :icon="$icons.delete" />
-      </button>
-    </div>
-    <div class="ld-row">
-      <button class="ld-btn" type="button" @click="form.windows.push({ start_time: '08:00', end_time: '17:00' })">
-        {{ $t("communicator.policy.add_window") }}
-      </button>
-      <button class="ld-btn ld-btn--primary" type="submit" data-testid="policy-save">{{ $t("communicator.template.save") }}</button>
-    </div>
-    <p v-if="error" class="ld-error">{{ error }}</p>
-  </form>
+  <BasicCard :title="$t('communicator.policy.title')" data-testid="settings-policy">
+    <form class="flex-column gap-4" @submit.prevent="save">
+      <p class="t-muted m-0">{{ $t("communicator.policy.zone", { timezone: meta.timezone, country: meta.country }) }}</p>
+      <BasicCheckbox v-model="form.business_days_only">{{ $t("communicator.policy.business_days") }}</BasicCheckbox>
+      <BasicCheckbox v-model="form.spread">{{ $t("communicator.policy.spread") }}</BasicCheckbox>
+      <FormField class="policy__cap" :label="$t('communicator.policy.daily_cap')" required>
+        <NumberInput v-model.number="form.daily_cap" :min="0" :max="10000" data-testid="policy-cap" />
+      </FormField>
+      <div v-for="(window, i) in form.windows" :key="i" class="flex ai-fe flex-wrap gap-5" data-testid="policy-window">
+        <FormField :label="$t('communicator.policy.window_start')" required>
+          <BasicInput v-model="window.start_time" :placeholder="$t('communicator.policy.time_format')" data-testid="policy-window-start" />
+        </FormField>
+        <FormField :label="$t('communicator.policy.window_end')" required>
+          <BasicInput v-model="window.end_time" :placeholder="$t('communicator.policy.time_format')" data-testid="policy-window-end" />
+        </FormField>
+        <IconButton icon="delete" variant="danger" :label="$t('communicator.policy.remove_window')" @click="form.windows.splice(i, 1)" />
+      </div>
+      <p v-if="error" class="t-negative m-0" role="alert" data-testid="policy-error">{{ error }}</p>
+      <div class="flex jc-fe flex-wrap gap-3">
+        <BasicButton @click="form.windows.push({ start_time: '08:00', end_time: '17:00' })">
+          {{ $t("communicator.policy.add_window") }}
+        </BasicButton>
+        <BasicButton variant="primary" type="submit" data-testid="policy-save">{{ $t("communicator.template.save") }}</BasicButton>
+      </div>
+    </form>
+  </BasicCard>
 </template>
 
 <script setup>
@@ -50,8 +43,9 @@ const error = ref("");
 const hhmm = (value) => (value || "").slice(0, 5);
 
 // A text field, not `type="time"`: the browser's time picker follows the OS locale and may show "08:00 AM", while
-// the panel reads 24 h everywhere.
-const TIME_INPUT = { class: "ld-input", type: "text", inputmode: "numeric", maxlength: 5, pattern: "([01]\\d|2[0-3]):[0-5]\\d", required: true };
+// the panel reads 24 h everywhere. The format is checked here, before the save.
+const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
+const badWindow = (w) => !TIME.test(w.start_time) || !TIME.test(w.end_time);
 
 function apply(data) {
   Object.assign(form, {
@@ -64,7 +58,8 @@ function apply(data) {
 }
 
 async function save() {
-  error.value = "";
+  error.value = form.windows.some(badWindow) ? t("communicator.policy.time_invalid") : "";
+  if (error.value) return;
   try {
     const windows = form.windows.map((w, order) => ({ ...w, order }));
     apply((await PUT_Policy({ ...form, windows })).data);
@@ -83,4 +78,8 @@ onMounted(async () => {
 });
 </script>
 
-<style lang="scss" src="@/views/Leads/desktop.scss"></style>
+<style scoped>
+.policy__cap {
+  max-width: 12rem;
+}
+</style>

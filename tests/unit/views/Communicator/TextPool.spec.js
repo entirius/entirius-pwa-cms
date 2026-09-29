@@ -5,23 +5,25 @@ const api = vi.hoisted(() => ({ PATCH_SequenceText: vi.fn(), DELETE_SequenceText
 vi.mock("@/api/communicator/api", () => api);
 
 import TextPool from "@/views/Communicator/TextPool.vue";
+import { mountOptions } from "./communicatorFrame";
 
 const texts = [
   { id: 1, body: "TEST follow-up 1/6", is_active: true },
   { id: 2, body: "TEST follow-up 2/6", is_active: false },
 ];
-const mountPool = () => mount(TextPool, { props: { sequenceId: 4, texts } });
+const mountPool = () => mount(TextPool, { props: { sequenceId: 4, texts }, ...mountOptions() });
 const row = (wrapper, id) => wrapper.get(`[data-text="${id}"]`);
 
 // UX-005: follow-up texts edit in place and are removed — a used text is deactivated, not deleted.
+// C-33 (plan 55): a row is the text with its edit and remove squares.
 describe("Communicator text pool", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("a tap on a text opens it for edit; Save sends the body and asks for a reload", async () => {
+  it("the edit square opens the text for edit; Save sends the body and asks for a reload", async () => {
     api.PATCH_SequenceText.mockResolvedValue({ status: 200, data: {} });
     const wrapper = mountPool();
-    await row(wrapper, 1).get('[data-testid="pool-text-body"]').trigger("click");
-    await row(wrapper, 1).get('[data-testid="pool-text-input"]').setValue("Edited text");
+    await row(wrapper, 1).get('[data-testid="pool-text-edit"]').trigger("click");
+    await row(wrapper, 1).get('[data-testid="pool-text-input"] textarea').setValue("Edited text");
     await row(wrapper, 1).get("form").trigger("submit");
     await flushPromises();
     expect(api.PATCH_SequenceText).toHaveBeenCalledWith(4, 1, { body: "Edited text" });
@@ -31,7 +33,7 @@ describe("Communicator text pool", () => {
 
   it("Cancel leaves the text as it was", async () => {
     const wrapper = mountPool();
-    await row(wrapper, 1).get('[data-testid="pool-text-body"]').trigger("click");
+    await row(wrapper, 1).get('[data-testid="pool-text-edit"]').trigger("click");
     await row(wrapper, 1).get('[data-testid="pool-text-cancel"]').trigger("click");
     expect(api.PATCH_SequenceText).not.toHaveBeenCalled();
     expect(row(wrapper, 1).text()).toContain("TEST follow-up 1/6");
@@ -45,7 +47,7 @@ describe("Communicator text pool", () => {
     const wrapper = mountPool();
     await row(wrapper, 1).get('[data-testid="pool-text-remove"]').trigger("click");
     expect(api.DELETE_SequenceText).not.toHaveBeenCalled();
-    await wrapper.get('[data-testid="confirm-ok"]').trigger("click");
+    await wrapper.get('[data-testid="confirm-dialog-confirm"]').trigger("click");
     await flushPromises();
     expect(api.DELETE_SequenceText).toHaveBeenCalledWith(4, 1);
     expect(wrapper.get('[data-testid="pool-status"]').text()).toBe(message);
@@ -56,7 +58,7 @@ describe("Communicator text pool", () => {
     const wrapper = mountPool();
     const inactive = row(wrapper, 2);
     expect(inactive.classes()).toContain("pool__item--inactive");
-    expect(inactive.get('[data-testid="pool-text-body"]').attributes("disabled")).toBeDefined();
+    expect(inactive.find('[data-testid="pool-text-edit"]').exists()).toBe(false);
     expect(inactive.find('[data-testid="pool-text-remove"]').exists()).toBe(false);
     await inactive.get('[data-testid="pool-text-restore"]').trigger("click");
     await flushPromises();
@@ -66,7 +68,7 @@ describe("Communicator text pool", () => {
   it("a refused edit shows the API message", async () => {
     api.PATCH_SequenceText.mockRejectedValue({ error: "VALIDATION_ERROR", message: "Body too long" });
     const wrapper = mountPool();
-    await row(wrapper, 1).get('[data-testid="pool-text-body"]').trigger("click");
+    await row(wrapper, 1).get('[data-testid="pool-text-edit"]').trigger("click");
     await row(wrapper, 1).get("form").trigger("submit");
     await flushPromises();
     expect(wrapper.get('[data-testid="pool-error"]').text()).toBe("Body too long");

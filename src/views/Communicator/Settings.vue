@@ -1,12 +1,16 @@
 <template>
-  <div class="ld-page" data-testid="communicator-settings">
-    <h2 class="ld-title">{{ $t("communicator.settings.title") }}</h2>
-    <SettingsPolicy />
-    <SettingsChannel />
-    <SettingsFooter />
-    <SettingsScheduled />
-    <SettingsSuppressions />
-  </div>
+  <PageLayout data-testid="communicator-settings">
+    <template #header>
+      <PageHeader :title="$t('communicator.settings.title')" :back="{ name: 'LeadsSettings' }" />
+    </template>
+    <div class="flex-column gap-8">
+      <SettingsPolicy />
+      <SettingsChannel />
+      <SettingsFooter />
+      <SettingsScheduled />
+      <SettingsSuppressions />
+    </div>
+  </PageLayout>
 </template>
 
 <script setup>
@@ -16,5 +20,3 @@ import SettingsPolicy from "./settings/SettingsPolicy.vue";
 import SettingsScheduled from "./settings/SettingsScheduled.vue";
 import SettingsSuppressions from "./settings/SettingsSuppressions.vue";
 </script>
-
-<style lang="scss" src="@/views/Leads/desktop.scss"></style>

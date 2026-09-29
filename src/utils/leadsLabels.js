@@ -9,6 +9,10 @@ export const stageKindLabel = (value) => label(`leads.stage_kind.${value}`, valu
 
 export const statusLabel = (value) => label(`leads.status.${value}`, value);
 
+export const templateKindLabel = (value) => label(`communicator.template.kinds.${value}`, value);
+
+export const suppressionKindLabel = (value) => label(`communicator.suppressions.kinds.${value}`, value);
+
 // One wording for a waiting mail's departure: Review, the Inbox summary, the waiting table and the thread say the same.
 export const sendStateLabel = ({ state, time, window }) =>
   t(`leads.send_state.${window ? "held_window" : state}`, { time, window });

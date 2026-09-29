@@ -1,17 +1,22 @@
 <template>
-  <div class="ld-page" data-testid="leads-settings">
-    <router-link
-      v-for="section in sections"
-      :key="section.route"
-      :to="{ name: section.route }"
-      class="settings-row"
-      :data-testid="`settings-${section.key}`"
-    >
-      <FontAwesomeIcon :icon="section.icon" class="settings-row__icon" />
-      <span class="settings-row__label">{{ $t(section.labelKey) }}</span>
-      <FontAwesomeIcon :icon="$icons.next" class="settings-row__go" />
-    </router-link>
-  </div>
+  <PageLayout data-testid="leads-settings">
+    <template #header>
+      <PageHeader :title="$t('nav.leads_settings')" />
+    </template>
+    <nav class="settings-list flex-column gap-3" :aria-label="$t('nav.leads_settings')">
+      <router-link
+        v-for="section in sections"
+        :key="section.route"
+        :to="{ name: section.route }"
+        class="settings-row"
+        :data-testid="`settings-${section.key}`"
+      >
+        <FontAwesomeIcon :icon="section.icon" class="settings-row__icon" />
+        <span class="settings-row__label">{{ $t(section.labelKey) }}</span>
+        <FontAwesomeIcon :icon="$icons.next" class="settings-row__go" />
+      </router-link>
+    </nav>
+  </PageLayout>
 </template>
 
 <script setup>
@@ -32,9 +37,8 @@ const munin = useMuninStore();
 const sections = computed(() => SECTIONS.filter((section) => munin.isModuleEnabled(section.module)));
 </script>
 
-<style lang="scss" src="@/views/Leads/desktop.scss"></style>
 <style scoped>
-.ld-page {
+.settings-list {
   max-width: 720px;
 }
 .settings-row {

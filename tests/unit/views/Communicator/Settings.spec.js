@@ -5,6 +5,7 @@ const api = vi.hoisted(() => ({
   GET_Channel: vi.fn(),
   PATCH_Channel: vi.fn(),
   GET_Policy: vi.fn(),
+  PUT_Policy: vi.fn(),
   GET_WaitingMessages: vi.fn(),
   POST_SendNow: vi.fn(),
 }));
@@ -16,10 +17,21 @@ import SettingsPolicy from "@/views/Communicator/settings/SettingsPolicy.vue";
 import SettingsScheduled from "@/views/Communicator/settings/SettingsScheduled.vue";
 import { t } from "@/i18n";
 import { channelTimeZone } from "@/utils/leadsTime";
+import { mountOptions } from "./communicatorFrame";
 
 const stubs = {
   SegmentedControl: { props: ["modelValue", "options"], emits: ["update:modelValue"], template: "<div />" },
 };
+
+const POLICY = {
+  timezone: "UTC",
+  country: "PL",
+  business_days_only: true,
+  spread: true,
+  daily_cap: 10,
+  windows: [{ start_time: "08:00:00", end_time: "17:00:00" }],
+};
+const timeField = (wrapper, side) => wrapper.get(`[data-testid="policy-window-${side}"] input`);
 
 describe("Communicator settings", () => {
   beforeEach(() => {
@@ -30,30 +42,48 @@ describe("Communicator settings", () => {
 
   async function mountScheduled(waiting) {
     api.GET_WaitingMessages.mockResolvedValue(waiting);
-    const wrapper = mount(SettingsScheduled);
+    const wrapper = mount(SettingsScheduled, mountOptions());
+    await flushPromises();
+    return wrapper;
+  }
+
+  async function mountPolicy() {
+    api.GET_Policy.mockResolvedValue({ data: POLICY });
+    const wrapper = mount(SettingsPolicy, mountOptions());
     await flushPromises();
     return wrapper;
   }
 
   async function mountChannel() {
-    const wrapper = mount(SettingsChannel, { global: { stubs } });
+    const wrapper = mount(SettingsChannel, mountOptions(stubs));
     await flushPromises();
     return wrapper;
   }
 
   // FIX-17c item 8: the send-window fields read and take 24 h times, never the browser's "08:00 AM".
+  // Plan 55: the fields are BasicInputs, so the format is checked before the save instead of by a native pattern.
   it("send-window fields are 24 h text fields with the policy's hours", async () => {
-    api.GET_Policy.mockResolvedValue({
-      data: { timezone: "UTC", country: "PL", business_days_only: true, spread: true, daily_cap: 10, windows: [{ start_time: "08:00:00", end_time: "17:00:00" }] },
-    });
-    const wrapper = mount(SettingsPolicy);
-    await flushPromises();
-    const [start, end] = [wrapper.get('[data-testid="policy-window-start"]'), wrapper.get('[data-testid="policy-window-end"]')];
+    const wrapper = await mountPolicy();
+    const [start, end] = [timeField(wrapper, "start"), timeField(wrapper, "end")];
     expect([start.element.value, end.element.value]).toEqual(["08:00", "17:00"]);
     expect(start.attributes("type")).toBe("text");
-    const pattern = new RegExp(`^(?:${end.attributes("pattern")})$`);
-    expect(["00:00", "17:00", "23:59"].every((value) => pattern.test(value))).toBe(true);
-    expect(["5:00 PM", "24:00", "08:60", "8:00"].some((value) => pattern.test(value))).toBe(false);
+  });
+
+  it.each(["5:00 PM", "24:00", "08:60", "8:00"])("a window hour %s is refused before the save", async (value) => {
+    const wrapper = await mountPolicy();
+    await timeField(wrapper, "end").setValue(value);
+    await wrapper.get("form").trigger("submit");
+    expect(api.PUT_Policy).not.toHaveBeenCalled();
+    expect(wrapper.get('[data-testid="policy-error"]').text()).toBe(t("communicator.policy.time_invalid"));
+  });
+
+  it.each(["00:00", "23:59"])("a window hour %s saves", async (value) => {
+    api.PUT_Policy.mockResolvedValue({ data: POLICY });
+    const wrapper = await mountPolicy();
+    await timeField(wrapper, "end").setValue(value);
+    await wrapper.get("form").trigger("submit");
+    await flushPromises();
+    expect(api.PUT_Policy.mock.calls[0][0].windows[0]).toEqual({ start_time: "08:00", end_time: value, order: 0 });
   });
 
   it("sandbox without a mailbox is refused in the form (C-30)", async () => {
@@ -85,9 +115,9 @@ describe("Communicator settings", () => {
       row = { ...row, scheduled_at: "2020-01-01T10:00:00Z", next_slot: "2020-01-01T10:00:00Z" };
       return Promise.resolve({ data: { id: 5 } });
     });
-    const wrapper = mount(SettingsScheduled);
+    const wrapper = mount(SettingsScheduled, mountOptions());
     await flushPromises();
-    expect(wrapper.find(".scheduled__scroll table.ld-table").exists()).toBe(true);
+    expect(wrapper.find('.data-table__row[data-testid="scheduled-row"][data-message="5"]').exists()).toBe(true);
     await wrapper.find('[data-testid="scheduled-send-now"]').trigger("click");
     await flushPromises();
     expect(api.POST_SendNow).toHaveBeenCalledWith(5);

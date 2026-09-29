@@ -3527,7 +3527,8 @@
   "communicator": {
     "templates": {
       "title": "Templates",
-      "back": "Templates"
+      "back": "Templates",
+      "empty": "No templates"
     },
     "template": {
       "title": "Template",
@@ -3551,7 +3552,11 @@
       "schema_invalid": "Invalid JSON",
       "audience": "Audience",
       "audience_all": "All types",
-      "audience_help": "The lead type this variant is for; the other types get the “All types” template."
+      "audience_help": "The lead type this variant is for; the other types get the “All types” template.",
+      "kinds": {
+        "static": "Static text",
+        "ai_prompt": "AI prompt"
+      }
     },
     "test": {
       "search": "Find a company",
@@ -3583,7 +3588,8 @@
       "add_window": "Add window",
       "window_start": "From",
       "window_end": "To",
-      "time_format": "HH:MM"
+      "time_format": "HH:MM",
+      "time_invalid": "Enter the window hours as HH:MM (00:00–23:59)"
     },
     "channel": {
       "title": "Channel mode",
@@ -3602,7 +3608,14 @@
       "title": "Suppressions",
       "value": "Email or domain",
       "reason": "Reason",
-      "add": "Suppress"
+      "add": "Suppress",
+      "kind": "Type",
+      "kinds": {
+        "email": "Email",
+        "domain": "Domain",
+        "email_token": "Erased address"
+      },
+      "empty": "No suppressions"
     },
     "scheduled": {
       "title": "Waiting to be sent",
@@ -3624,7 +3637,9 @@
       "saved": "Text saved — future follow-ups use it",
       "restored": "Text restored",
       "removed": "Text removed",
-      "deactivated": "Text was already used — deactivated"
+      "deactivated": "Text was already used — deactivated",
+      "edit": "Edit text",
+      "text": "Follow-up text"
     },
     "footer": {
       "title": "Mail footer",

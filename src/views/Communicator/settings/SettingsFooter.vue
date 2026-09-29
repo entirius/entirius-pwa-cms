@@ -1,57 +1,55 @@
 <template>
-  <form class="ld-field" data-testid="settings-footer" @submit.prevent="save">
-    <h3>{{ $t("communicator.footer.title") }}</h3>
-    <p class="ld-muted">{{ $t("communicator.footer.help") }}</p>
-    <p v-if="loadError" class="ld-muted" role="status" data-testid="footer-load-error">{{ $t("communicator.footer.load_error") }}</p>
-    <!-- a save or remove in flight is bound to its language: the switch waits for it -->
-    <SegmentedControl
-      v-if="languages.length > 1"
-      :model-value="language"
-      :options="languageOptions"
-      :disabled="busy"
-      @update:model-value="pickLanguage"
-    />
-    <label class="ld-field"><span class="ld-field__label">{{ $t("communicator.footer.html", { language: language.toUpperCase() }) }}</span>
-      <textarea
-        v-model="html"
-        class="ld-input footer__html"
-        rows="8"
-        :placeholder="$t('communicator.footer.placeholder')"
-        data-testid="footer-html"
-      ></textarea>
-    </label>
-    <p v-if="error" class="ld-error" data-testid="footer-error">{{ error }}</p>
-    <p v-else-if="html && !hasPlaceholder" class="ld-muted" data-testid="footer-hint">{{ $t("communicator.footer.needs_legal") }}</p>
-    <div class="ld-row">
-      <button class="ld-btn ld-btn--primary" type="submit" :disabled="busy || !html.trim()" data-testid="footer-save">
-        {{ $t("communicator.template.save") }}
-      </button>
-      <button v-if="saved" class="ld-btn ld-btn--danger" type="button" :disabled="busy" data-testid="footer-remove" @click="removing = true">
-        {{ $t("communicator.footer.remove") }}
-      </button>
-    </div>
-    <p class="footer__preview-title">{{ $t("communicator.footer.preview") }}</p>
-    <!-- unsaved HTML is not sanitised yet: the preview runs in an empty sandbox (no scripts, no same origin) -->
-    <iframe class="footer__preview" sandbox="" :srcdoc="previewDoc" :title="$t('communicator.footer.preview')" data-testid="footer-preview"></iframe>
-    <ConfirmSheet
-      v-if="switchTo"
+  <BasicCard :title="$t('communicator.footer.title')" data-testid="settings-footer">
+    <form class="flex-column gap-4" @submit.prevent="save">
+      <p class="t-muted m-0">{{ $t("communicator.footer.help") }}</p>
+      <p v-if="loadError" class="t-muted m-0" role="status" data-testid="footer-load-error">{{ $t("communicator.footer.load_error") }}</p>
+      <!-- a save or remove in flight is bound to its language: the switch waits for it -->
+      <SegmentedControl
+        v-if="languages.length > 1"
+        :model-value="language"
+        :options="languageOptions"
+        :disabled="busy"
+        :aria-label="$t('communicator.template.language')"
+        @update:model-value="pickLanguage"
+      />
+      <FormField :label="$t('communicator.footer.html', { language: language.toUpperCase() })">
+        <BasicTextarea v-model="html" :rows="8" :placeholder="$t('communicator.footer.placeholder')" data-testid="footer-html" />
+      </FormField>
+      <p v-if="error" class="t-negative m-0" role="alert" data-testid="footer-error">{{ error }}</p>
+      <p v-else-if="html && !hasPlaceholder" class="t-muted m-0" data-testid="footer-hint">{{ $t("communicator.footer.needs_legal") }}</p>
+      <div class="flex jc-fe flex-wrap gap-3">
+        <BasicButton v-if="saved" variant="danger" :disabled="busy" data-testid="footer-remove" @click="removing = true">
+          {{ $t("communicator.footer.remove") }}
+        </BasicButton>
+        <BasicButton variant="primary" type="submit" :disabled="busy || !html.trim()" data-testid="footer-save">
+          {{ $t("communicator.template.save") }}
+        </BasicButton>
+      </div>
+      <p class="footer__preview-title m-0">{{ $t("communicator.footer.preview") }}</p>
+      <!-- unsaved HTML is not sanitised yet: the preview runs in an empty sandbox (no scripts, no same origin) -->
+      <iframe class="footer__preview" sandbox="" :srcdoc="previewDoc" :title="$t('communicator.footer.preview')" data-testid="footer-preview"></iframe>
+    </form>
+    <ConfirmDialog
+      :open="Boolean(switchTo)"
       :title="$t('leads.review.discard_title')"
       :message="$t('communicator.footer.discard_confirm')"
       :confirm-label="$t('leads.review.discard_yes')"
       :cancel-label="$t('common.cancel')"
+      tone="danger"
       @confirm="showLanguage(switchTo)"
       @cancel="switchTo = null"
     />
-    <ConfirmSheet
-      v-if="removing"
+    <ConfirmDialog
+      :open="removing"
       :title="$t('communicator.footer.remove_title', { language: language.toUpperCase() })"
       :message="$t('communicator.footer.remove_message')"
       :confirm-label="$t('communicator.footer.remove')"
       :cancel-label="$t('common.cancel')"
+      tone="danger"
       @confirm="remove"
       @cancel="removing = false"
     />
-  </form>
+  </BasicCard>
 </template>
 
 <script setup>
@@ -60,7 +58,6 @@ import { t } from "@/i18n";
 import { DELETE_Footer, GET_Footers, GET_Templates, PUT_Footer } from "@/api/communicator/api";
 import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
 import { useNotifyStore } from "@/stores/notify";
-import ConfirmSheet from "@/views/Leads/ConfirmSheet.vue";
 
 // One mail footer per language (UX-007): the channel's HTML block — signature, logo, company data — around the legal
 // text of the contact's legal basis, which agreements supply at send time as `{{ legal }}`. The server sanitises on
@@ -88,9 +85,11 @@ const hasPlaceholder = computed(() => PLACEHOLDER.test(html.value));
 // The sample legal text as the mail renders it: escaped paragraphs in place of the placeholder.
 const sampleLegal = computed(() => t("communicator.footer.sample_legal").split("\n\n").map((line) => `<p>${line}</p>`).join(""));
 // The mail is read on a white canvas whatever the CMS theme, so the white belongs to the previewed document.
-const previewDoc = computed(
-  () => `<!doctype html><html><body style="font-family:sans-serif;margin:8px;background:#fff">${html.value.replace(PLACEHOLDER, sampleLegal.value)}</body></html>`
-);
+// An empty field previews the mail without a footer: the legal text alone (C-29).
+const previewDoc = computed(() => {
+  const footer = (html.value.trim() ? html.value : "{{ legal }}").replace(PLACEHOLDER, sampleLegal.value);
+  return `<!doctype html><html><body style="font-family:sans-serif;margin:8px;background:#fff">${footer}</body></html>`;
+});
 
 function showLanguage(code) {
   switchTo.value = null;
@@ -159,14 +158,8 @@ onMounted(async () => {
 });
 </script>
 
-<style lang="scss" src="@/views/Leads/desktop.scss"></style>
 <style scoped>
-.footer__html {
-  width: 100%;
-  box-sizing: border-box;
-}
 .footer__preview-title {
-  margin: 0;
   font-weight: 600;
 }
 .footer__preview {

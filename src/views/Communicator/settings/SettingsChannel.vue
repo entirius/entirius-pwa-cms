@@ -1,17 +1,21 @@
 <template>
-  <form class="ld-field" data-testid="settings-channel" @submit.prevent="save">
-    <h3>{{ $t("communicator.channel.title") }}</h3>
-    <SegmentedControl v-model="mode" :options="modeOptions" />
-    <label v-if="mode === 'sandbox'" class="ld-field"><span class="ld-field__label">{{ $t("communicator.channel.sandbox_mailbox") }}</span>
-      <input v-model="mailbox" class="ld-input" type="email" data-testid="channel-mailbox" />
-    </label>
-    <p v-if="mode === 'live'" class="ld-muted" data-testid="channel-live-gate">{{ $t("communicator.channel.live_gate") }}</p>
-    <p class="ld-muted" data-testid="channel-live-enabled">
-      {{ liveEnabled ? $t("communicator.channel.live_enabled_on") : $t("communicator.channel.live_enabled_off") }}
-    </p>
-    <p v-if="error" class="ld-error" data-testid="channel-error">{{ error }}</p>
-    <button class="ld-btn ld-btn--primary" type="submit" data-testid="channel-save">{{ $t("communicator.template.save") }}</button>
-  </form>
+  <BasicCard :title="$t('communicator.channel.title')" data-testid="settings-channel">
+    <form class="flex-column gap-4" @submit.prevent="save">
+      <SegmentedControl v-model="mode" :options="modeOptions" :aria-label="$t('communicator.channel.title')" />
+      <!-- no native required: an empty mailbox gets the C-30 message below, not the browser's bubble -->
+      <FormField v-if="mode === 'sandbox'" :label="$t('communicator.channel.sandbox_mailbox')">
+        <BasicInput v-model="mailbox" type="email" data-testid="channel-mailbox" />
+      </FormField>
+      <p v-if="mode === 'live'" class="t-muted m-0" data-testid="channel-live-gate">{{ $t("communicator.channel.live_gate") }}</p>
+      <p class="t-muted m-0" data-testid="channel-live-enabled">
+        {{ liveEnabled ? $t("communicator.channel.live_enabled_on") : $t("communicator.channel.live_enabled_off") }}
+      </p>
+      <p v-if="error" class="t-negative m-0" role="alert" data-testid="channel-error">{{ error }}</p>
+      <div class="flex jc-fe">
+        <BasicButton variant="primary" type="submit" data-testid="channel-save">{{ $t("communicator.template.save") }}</BasicButton>
+      </div>
+    </form>
+  </BasicCard>
 </template>
 
 <script setup>
@@ -54,4 +58,3 @@ async function save() {
 onMounted(async () => apply((await GET_Channel()).data));
 </script>
 
-<style lang="scss" src="@/views/Leads/desktop.scss"></style>

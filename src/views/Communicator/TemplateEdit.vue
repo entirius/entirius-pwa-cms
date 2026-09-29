@@ -1,55 +1,46 @@
 <template>
-  <div class="ld-page" data-testid="communicator-template-edit">
-    <div class="ld-row">
-      <router-link :to="{ name: 'CommunicatorTemplates' }">{{ $t("communicator.templates.back") }}</router-link>
-      <h2 class="ld-title">{{ form.key }}</h2>
-      <button class="ld-btn" data-testid="template-versions" @click="drawer = 'versions'">
-        {{ $t("communicator.template.versions") }}
-      </button>
-      <button class="ld-btn" data-testid="template-test-generate" @click="drawer = 'test'">
-        {{ $t("communicator.template.test_generate") }}
-      </button>
-    </div>
-    <form v-if="loaded" class="ld-field form" @submit.prevent="save">
-      <label class="ld-field"><span class="ld-field__label">{{ $t("communicator.template.kind") }}</span>
-        <select v-model="form.kind" class="ld-input"><option value="static">static</option><option value="ai_prompt">ai_prompt</option></select>
-      </label>
-      <label class="ld-field"><span class="ld-field__label">{{ $t("communicator.template.language") }}</span>
-        <input v-model="form.language" class="ld-input" maxlength="2" required />
-      </label>
-      <!-- the lead type this variant is for (audience cascade); without leads the value travels back unchanged -->
-      <label v-if="hasLeads" class="ld-field"><span class="ld-field__label">{{ $t("communicator.template.audience") }}</span>
-        <select v-model="form.audience" class="ld-input" data-testid="template-audience">
-          <option value="">{{ $t("communicator.template.audience_all") }}</option>
-          <option v-for="type in audiences" :key="type.code" :value="type.code">{{ type.label }}</option>
-        </select>
-        <span class="ld-muted">{{ $t("communicator.template.audience_help") }}</span>
-      </label>
-      <label class="ld-field"><span class="ld-field__label">{{ $t("communicator.template.subject") }}</span>
-        <input v-model="form.subject" class="ld-input" data-testid="template-subject" />
-      </label>
-      <label class="ld-field"><span class="ld-field__label">{{ $t("communicator.template.body") }}</span>
-        <textarea v-model="form.body" class="ld-input" rows="10" required data-testid="template-body"></textarea>
-      </label>
-      <label class="ld-field"><span class="ld-field__label">{{ $t("communicator.template.model") }}</span>
-        <select v-model="form.model" class="ld-input" data-testid="template-model">
-          <option value="">—</option>
-          <option v-for="m in models" :key="m.model_id" :value="m.model_id">{{ m.model_id }} ({{ m.provider }})</option>
-        </select>
-      </label>
-      <label class="ld-field"><span class="ld-field__label">{{ $t("communicator.template.json_schema") }}</span>
-        <textarea v-model="schemaText" class="ld-input" rows="6" data-testid="template-schema"></textarea>
-      </label>
-      <p v-if="schemaError" class="ld-error" data-testid="template-schema-error">{{ schemaError }}</p>
-      <label><input v-model="form.requires_legal_footer" type="checkbox" /> {{ $t("communicator.template.requires_legal_footer") }}</label>
-      <label><input v-model="form.is_active" type="checkbox" /> {{ $t("communicator.template.is_active") }}</label>
-      <p class="ld-muted" data-testid="template-auto-approve">
-        {{ $t("communicator.template.auto_approve") }}: {{ form.auto_approve ? "✓" : "✗" }} — {{ $t("communicator.template.grappelli") }}
-      </p>
-      <p v-if="error" class="ld-error">{{ error }}</p>
-      <button class="ld-btn ld-btn--primary" type="submit" :disabled="Boolean(schemaError)" data-testid="template-save">
-        {{ $t("communicator.template.save") }}
-      </button>
+  <PageLayout data-testid="communicator-template-edit">
+    <template v-if="loaded" #header>
+      <PageHeader :title="form.key" :back="{ name: 'CommunicatorTemplates' }">
+        <template #actions>
+          <ActionBar :actions="headerActions" />
+        </template>
+      </PageHeader>
+    </template>
+    <form v-if="loaded" ref="formEl" class="template-form flex-column gap-4" @submit.prevent="save">
+      <BasicCard :title="$t('communicator.template.title')" gap>
+        <div class="form-grid">
+          <FormField :label="$t('communicator.template.kind')">
+            <BasicSelect v-model="form.kind" :options="kindOptions" data-testid="template-kind" />
+          </FormField>
+          <FormField :label="$t('communicator.template.language')" required>
+            <BasicInput v-model="form.language" :maxlength="2" data-testid="template-language" />
+          </FormField>
+          <!-- the lead type this variant is for (audience cascade); without leads the value travels back unchanged -->
+          <FormField v-if="hasLeads" :label="$t('communicator.template.audience')" :description="$t('communicator.template.audience_help')">
+            <BasicSelect v-model="form.audience" :options="audienceOptions" data-testid="template-audience" />
+          </FormField>
+          <FormField :label="$t('communicator.template.model')">
+            <BasicSelect v-model="form.model" :options="modelOptions" data-testid="template-model" />
+          </FormField>
+          <FormField class="form-grid__wide" :label="$t('communicator.template.subject')">
+            <BasicInput v-model="form.subject" data-testid="template-subject" />
+          </FormField>
+          <FormField class="form-grid__wide" :label="$t('communicator.template.body')" required>
+            <BasicTextarea v-model="form.body" :rows="10" data-testid="template-body" />
+          </FormField>
+          <FormField class="form-grid__wide" :label="$t('communicator.template.json_schema')">
+            <BasicTextarea v-model="schemaText" :rows="6" data-testid="template-schema" />
+          </FormField>
+        </div>
+        <p v-if="schemaError" class="t-negative m-0" role="alert" data-testid="template-schema-error">{{ schemaError }}</p>
+        <BasicCheckbox v-model="form.requires_legal_footer">{{ $t("communicator.template.requires_legal_footer") }}</BasicCheckbox>
+        <BasicCheckbox v-model="form.is_active">{{ $t("communicator.template.is_active") }}</BasicCheckbox>
+        <p class="t-muted m-0" data-testid="template-auto-approve">
+          {{ $t("communicator.template.auto_approve") }}: {{ form.auto_approve ? "✓" : "✗" }} — {{ $t("communicator.template.grappelli") }}
+        </p>
+      </BasicCard>
+      <p v-if="error" class="t-negative m-0" role="alert">{{ error }}</p>
     </form>
     <SideDrawer :visible="drawer === 'versions'" :title="$t('communicator.template.versions')" @close="drawer = ''">
       <TemplateVersions v-if="drawer === 'versions'" :template-id="templateId" />
@@ -57,7 +48,7 @@
     <SideDrawer :visible="drawer === 'test'" :title="$t('communicator.template.test_generate')" @close="drawer = ''">
       <TestGenerate v-if="drawer === 'test'" :template-id="templateId" />
     </SideDrawer>
-  </div>
+  </PageLayout>
 </template>
 
 <script setup>
@@ -69,6 +60,7 @@ import { extractApiMessage } from "@/composables/useFormErrors";
 import { useLeadTypesStore } from "@/stores/leadTypes";
 import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
+import { templateKindLabel } from "@/utils/leadsLabels";
 import TemplateVersions from "./TemplateVersions.vue";
 import TestGenerate from "./TestGenerate.vue";
 
@@ -85,6 +77,15 @@ const audiences = computed(() => {
   const own = form.audience && !leadTypes.active.some((type) => type.code === form.audience);
   return own ? [...leadTypes.active, { code: form.audience, label: leadTypes.label(form.audience) }] : leadTypes.active;
 });
+const audienceOptions = computed(() => [
+  { value: "", label: t("communicator.template.audience_all") },
+  ...audiences.value.map((type) => ({ value: type.code, label: type.label })),
+]);
+const kindOptions = ["static", "ai_prompt"].map((value) => ({ value, label: templateKindLabel(value) }));
+const modelOptions = computed(() => [
+  { value: "", label: "—" },
+  ...models.value.map((m) => ({ value: m.model_id, label: `${m.model_id} (${m.provider})` })),
+]);
 const templateId = computed(() => route.params.id);
 const form = reactive({});
 const schemaText = ref("");
@@ -104,6 +105,16 @@ function parseSchema(text) {
   }
 }
 const schemaError = computed(() => parseSchema(schemaText.value).error || "");
+
+// Detail form (plan 33): versions and test generate open side drawers; Save is the one primary, off while the
+// schema does not parse. Save sits outside the form, so it asks the form's own checks (required fields) first.
+const formEl = ref(null);
+const submit = () => formEl.value.reportValidity() && save();
+const headerActions = computed(() => [
+  { key: "versions", label: t("communicator.template.versions"), role: "secondary", testid: "template-versions", onClick: () => (drawer.value = "versions") },
+  { key: "test", label: t("communicator.template.test_generate"), role: "secondary", testid: "template-test-generate", onClick: () => (drawer.value = "test") },
+  { key: "save", label: t("communicator.template.save"), role: "primary", testid: "template-save", disabled: Boolean(schemaError.value), onClick: submit },
+]);
 
 async function save() {
   error.value = "";
@@ -127,9 +138,8 @@ onMounted(async () => {
 });
 </script>
 
-<style lang="scss" src="@/views/Leads/desktop.scss"></style>
 <style scoped>
-.form {
-  max-width: 760px;
+.template-form {
+  max-width: 960px;
 }
 </style>

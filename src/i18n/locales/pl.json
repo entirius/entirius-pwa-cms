@@ -3526,7 +3526,8 @@
   "communicator": {
     "templates": {
       "title": "Szablony",
-      "back": "Szablony"
+      "back": "Szablony",
+      "empty": "Brak szablonów"
     },
     "template": {
       "title": "Szablon",
@@ -3550,7 +3551,11 @@
       "schema_invalid": "Niepoprawny JSON",
       "audience": "Odbiorcy",
       "audience_all": "Wszystkie typy",
-      "audience_help": "Typ leada, dla którego jest ten wariant; pozostałe typy dostają szablon „Wszystkie typy”."
+      "audience_help": "Typ leada, dla którego jest ten wariant; pozostałe typy dostają szablon „Wszystkie typy”.",
+      "kinds": {
+        "static": "Stały tekst",
+        "ai_prompt": "Prompt AI"
+      }
     },
     "test": {
       "search": "Znajdź firmę",
@@ -3582,7 +3587,8 @@
       "add_window": "Dodaj okno",
       "window_start": "Od",
       "window_end": "Do",
-      "time_format": "GG:MM"
+      "time_format": "GG:MM",
+      "time_invalid": "Godziny okna wpisz jako GG:MM (00:00–23:59)"
     },
     "channel": {
       "title": "Tryb kanału",
@@ -3601,7 +3607,14 @@
       "title": "Blokady",
       "value": "E-mail lub domena",
       "reason": "Powód",
-      "add": "Zablokuj"
+      "add": "Zablokuj",
+      "kind": "Rodzaj",
+      "kinds": {
+        "email": "E-mail",
+        "domain": "Domena",
+        "email_token": "Usunięty adres"
+      },
+      "empty": "Brak blokad"
     },
     "scheduled": {
       "title": "Czeka na wysyłkę",
@@ -3623,7 +3636,9 @@
       "saved": "Tekst zapisany — użyją go kolejne follow-upy",
       "restored": "Tekst przywrócony",
       "removed": "Tekst usunięty",
-      "deactivated": "Tekst był już użyty — wyłączony"
+      "deactivated": "Tekst był już użyty — wyłączony",
+      "edit": "Edytuj tekst",
+      "text": "Tekst follow-upu"
     },
     "footer": {
       "title": "Stopka maila",

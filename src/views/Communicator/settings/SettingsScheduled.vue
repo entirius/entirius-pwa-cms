@@ -1,39 +1,31 @@
 <template>
-  <section class="ld-field" data-testid="settings-scheduled">
-    <h3>{{ $t("communicator.scheduled.title") }}</h3>
-    <p class="ld-muted">{{ $t("communicator.scheduled.note") }}</p>
-    <EmptyState v-if="!rows.length" icon="empty" :title="$t('communicator.scheduled.empty')" />
-    <div v-else class="scheduled__scroll">
-      <table class="table-basic ld-table">
-        <thead>
-          <tr>
-            <th>{{ $t("communicator.scheduled.company") }}</th>
-            <th>{{ $t("communicator.scheduled.recipient") }}</th>
-            <th>{{ $t("communicator.template.subject") }}</th>
-            <th>{{ $t("communicator.scheduled.status") }}</th>
-            <th>{{ $t("communicator.scheduled.goes_out") }}</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="row in rows" :key="row.id" :data-message="row.id" data-testid="scheduled-row">
-            <td>{{ companyName(row) }}</td>
-            <td data-testid="scheduled-recipient">{{ recipient(row) || "—" }}</td>
-            <td>{{ row.subject }}</td>
-            <td>{{ statusLabel(row.status) }}</td>
-            <td><span class="ld-badge" data-testid="scheduled-state">{{ sendStateLabel(row.state) }}</span></td>
-            <td>
-              <button v-if="row.movable" class="ld-btn" data-testid="scheduled-send-now" @click="sendNow(row)">
-                {{ $t("communicator.scheduled.send_now") }}
-              </button>
-              <span v-else class="ld-muted" data-testid="scheduled-asap">{{ $t("communicator.scheduled.asap") }}</span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <p v-if="error" class="ld-error">{{ error }}</p>
-  </section>
+  <BasicCard :title="$t('communicator.scheduled.title')" gap data-testid="settings-scheduled">
+    <p class="t-muted m-0">{{ $t("communicator.scheduled.note") }}</p>
+    <DataTable
+      :columns="columns"
+      :rows="rows"
+      row-key="id"
+      :row-attrs="(row) => ({ 'data-testid': 'scheduled-row', 'data-message': row.id })"
+      :empty-text="$t('communicator.scheduled.empty')"
+    >
+      <template #cell-company="{ row }">
+        <span class="scheduled__who flex-column">
+          <span class="scheduled__line">{{ row.company }}</span>
+          <span class="scheduled__line t-muted" data-testid="scheduled-recipient">{{ recipient(row) || "—" }}</span>
+        </span>
+      </template>
+      <template #cell-state="{ row }">
+        <StatusBadge tone="info" size="sm" :dot="false" :label="sendStateLabel(row.state)" data-testid="scheduled-state" />
+      </template>
+      <template #cell-action="{ row }">
+        <BasicButton v-if="row.movable" size="sm" data-testid="scheduled-send-now" @click="sendNow(row)">
+          {{ $t("communicator.scheduled.send_now") }}
+        </BasicButton>
+        <span v-else class="t-muted" data-testid="scheduled-asap">{{ $t("communicator.scheduled.asap") }}</span>
+      </template>
+    </DataTable>
+    <p v-if="error" class="t-negative m-0" role="alert">{{ error }}</p>
+  </BasicCard>
 </template>
 
 <script setup>
@@ -53,10 +45,22 @@ const error = ref("");
 const rows = computed(() =>
   waiting.value.map((row) => ({
     ...row,
+    company: companyName(row),
+    statusText: statusLabel(row.status),
     state: sendState(row.next_slot),
     movable: canSendNow(row),
   }))
 );
+
+// C-31: the recipient sits under the company, the text cells truncate and the action column never shrinks, so
+// Send now stays inside the card at 1280 px with the sidebar open.
+const columns = [
+  { key: "company", label: `${t("communicator.scheduled.company")} · ${t("communicator.scheduled.recipient")}`, width: "1fr", truncate: true },
+  { key: "subject", label: t("communicator.template.subject"), width: "1fr", priority: 3 },
+  { key: "statusText", label: t("communicator.scheduled.status"), width: "max-content", truncate: false, priority: 2 },
+  { key: "state", label: t("communicator.scheduled.goes_out"), width: "max-content" },
+  { key: "action", label: "", actions: true },
+];
 
 const recipient = (row) => row.thread?.recipient_email || row.thread?.recipient_name || "";
 
@@ -82,14 +86,14 @@ async function sendNow(row) {
 onMounted(load);
 </script>
 
-<style lang="scss" src="@/views/Leads/desktop.scss"></style>
 <style scoped>
-/* The app content column clips (overflow: hidden): the table scrolls in its own box and its cells wrap, so
-   the Send now column stays on screen at 1280 px with the sidebar open. */
-.scheduled__scroll {
-  overflow-x: auto;
+.scheduled__who {
+  min-width: 0;
+  max-width: 100%;
 }
-.ld-table td {
-  overflow-wrap: anywhere;
+.scheduled__line {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>
