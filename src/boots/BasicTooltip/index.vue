@@ -131,9 +131,13 @@ function onEscape(event) {
   tapped.value = false;
 }
 
+// Focus leaving the tooltip closes a tapped hint too: one opened with Enter never stays behind a Tab.
 function onLeave(event) {
   if (event.type === "mouseleave") hovered.value = false;
-  else if (!root.value?.contains(event.relatedTarget)) focused.value = false;
+  else if (!root.value?.contains(event.relatedTarget)) {
+    focused.value = false;
+    tapped.value = false;
+  }
   if (!hovered.value && !focused.value && !tapped.value) dismissed.value = false;
 }
 
