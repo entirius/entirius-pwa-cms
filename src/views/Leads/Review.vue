@@ -57,7 +57,18 @@
       </article>
     </div>
 
-    <RewriteModal v-if="rewriteOpen" @submit="rewrite" @close="rewriteOpen = false" />
+    <BasicModal
+      v-if="rewriteOpen"
+      :open="true"
+      :title="$t('leads.rewrite.title')"
+      :actions="rewriteActions"
+      data-testid="rewrite-modal"
+      @close="rewriteOpen = false"
+    >
+      <FormField :label="$t('leads.rewrite.label')" :description="$t('leads.rewrite.hint')">
+        <BasicTextarea v-model="rewriteNotes" :rows="4" :placeholder="$t('leads.rewrite.placeholder')" data-testid="rewrite-notes" />
+      </FormField>
+    </BasicModal>
     <ConfirmDialog
       :open="discarding"
       :title="$t('leads.review.discard_title')"
@@ -76,7 +87,7 @@
         :ai-disabled="aiDisabled"
         @send="accept"
         @skip="skip"
-        @rewrite="rewriteOpen = true"
+        @rewrite="openRewrite"
         @edit="startEdit"
         @skip-company="skipCompany"
       />
@@ -102,7 +113,6 @@ import ConfigBanner from "@/components/ConfigHealth/ConfigBanner.vue";
 import { useConfigHealthStore } from "@/stores/configHealth";
 import IntelCard from "./IntelCard.vue";
 import ReviewActions from "./ReviewActions.vue";
-import RewriteModal from "./RewriteModal.vue";
 
 const SCHEDULED_MS = 4000;
 
@@ -118,6 +128,7 @@ const loading = ref(false);
 const busy = ref(false);
 const editing = ref(false);
 const rewriteOpen = ref(false);
+const rewriteNotes = ref("");
 const scheduledLabel = ref("");
 const failedVersion = ref(null);
 const draft = ref({ subject: "", body_text: "" });
@@ -141,6 +152,18 @@ const failedActions = computed(() => [
 const editActions = computed(() => [
   { key: "cancel", label: t("leads.review.cancel"), role: "secondary", testid: "edit-cancel", onClick: cancelEdit },
   { key: "save", label: t("leads.review.save"), role: "primary", disabled: busy.value, testid: "edit-save", onClick: saveEdit },
+]);
+// The reviewer's note for an AI rewrite of the draft.
+const rewriteActions = computed(() => [
+  { key: "cancel", label: t("leads.review.cancel"), role: "secondary", testid: "rewrite-cancel", onClick: () => (rewriteOpen.value = false) },
+  {
+    key: "submit",
+    label: t("leads.rewrite.submit"),
+    role: "primary",
+    disabled: !rewriteNotes.value.trim(),
+    testid: "rewrite-submit",
+    onClick: () => rewrite(rewriteNotes.value.trim()),
+  },
 ]);
 const unsaved = computed(
   () => editing.value && (draft.value.subject !== message.value?.subject || draft.value.body_text !== message.value?.body_text)
@@ -268,9 +291,14 @@ function openVersion(data) {
   router.replace({ name: "LeadsReview", params: { id: data.id } });
 }
 
+function openRewrite() {
+  rewriteNotes.value = "";
+  rewriteOpen.value = true;
+}
+
 function retryRewrite() {
   failedVersion.value = null;
-  rewriteOpen.value = true;
+  openRewrite();
 }
 
 function rewrite(notes) {

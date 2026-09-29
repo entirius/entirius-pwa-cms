@@ -194,7 +194,7 @@ describe("Leads Review", () => {
     expect(api.GET_ReviewNext).not.toHaveBeenCalled();
     await wrapper.get('[data-testid="failed-retry"]').trigger("click");
     expect(wrapper.find('[data-testid="rewrite-notes"]').exists()).toBe(true);
-    wrapper.findComponent({ name: "RewriteModal" }).vm.$emit("close");
+    await wrapper.get('[data-testid="rewrite-cancel"]').trigger("click");
     await flushPromises();
     expect(wrapper.get('[data-testid="review-subject"]').text()).toBe("Audit");
   });

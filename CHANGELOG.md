@@ -129,8 +129,9 @@ All notable changes to this project will be documented in this file.
   action bar is an `ActionBar` (the more menu on `BasicMenu`, Not now, Send as the one primary) pinned in the layout
   footer on every size — on a phone the open screen now takes the height of the view, so the bar stays at the bottom.
   The edit form and the failed-rewrite box use `FormField`, `BasicInput`, `BasicTextarea` and `ActionBar`; the rewrite
-  and communicate dialogs are `BasicModal`s (template = `BasicSelect`, contact = `BasicRadioGroup`), the Communicate
-  dialog no longer imports the `desktop.scss` kit. Conversation and the phone company thread get the page frame
+  and communicate dialogs are `BasicModal`s inline in `Review.vue` and `CompanyActions.vue` (template = `BasicSelect`,
+  contact = `BasicRadioGroup`); `RewriteModal.vue` and `CommunicateModal.vue` are deleted, and with them the last
+  `desktop.scss` kit import of the Communicate dialog. Conversation and the phone company thread get the page frame
   („Rozmowa” / „Firma”, back on a phone); Inbox Refresh / Show more, Send now, the quote and opt-out buttons are
   `BasicButton`s, the earlier-thread toggle an `IconButton`, the opt-out badges `StatusBadge`s.
 
