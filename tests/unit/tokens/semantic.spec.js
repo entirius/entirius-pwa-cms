@@ -7,6 +7,7 @@ import path from "node:path";
 const ROOT = path.resolve(__dirname, "../../..");
 const SCRIPT = path.join(ROOT, "scripts/tokens/build-theme.mjs");
 const GENERATED = path.join(ROOT, "src/assets/scss/themes/_semantic.generated.scss");
+const CONTRAST = path.join(ROOT, "scripts/tokens/contrast-light.mjs");
 
 describe("semantic token layer", () => {
   it("the committed theme matches semantic.json (regenerate: node scripts/tokens/build-theme.mjs)", () => {
@@ -18,5 +19,9 @@ describe("semantic token layer", () => {
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }
+  });
+
+  it("every light text/background and control-border pair meets its WCAG minimum (node scripts/tokens/contrast-light.mjs)", () => {
+    expect(() => execFileSync(process.execPath, [CONTRAST], { stdio: "pipe" })).not.toThrow();
   });
 });
