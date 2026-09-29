@@ -552,8 +552,8 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 
 - Late answers and 56b review leftovers (plan 61c): a slow answer never lands on a screen the user has left — the
-  Leads company card drops the answer (or error) of the company it no longer shows, so its header actions never act
-  on another company; the Communicate dialog ignores the template list of an earlier open; the PIM attribute search
+  Leads company card drops a load, stage move or type change answer (or error) of an earlier open, so its header
+  actions never act on another company; the Communicate dialog ignores the template list of an earlier open; the PIM attribute search
   loop and prefetch round stop on every channel or feature-set reset, even after a switch there and back (one loop,
   one notice). A failed stage or lead-type rename keeps a label committed while it ran. A text selection outside an
   earlier-thread summary no longer blocks its tap. The Builder section config summary is an `IconButton` (a real
