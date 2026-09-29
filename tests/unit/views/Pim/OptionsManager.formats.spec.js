@@ -43,4 +43,14 @@ describe("OptionsManager — create an option", () => {
     const error = wrapper.find(".options-manager__add-form .form-field__error");
     expect(error.text()).toContain("without spaces");
   });
+
+  it("Cancel drops the code error, so the form opens again clean", async () => {
+    const wrapper = await openAddForm();
+    wrapper.vm.newOption.idx = "red wine";
+    await wrapper.vm.createOption();
+    wrapper.vm.closeAddForm();
+    wrapper.vm.showAddForm = true;
+    await flushPromises();
+    expect(wrapper.find(".options-manager__add-form .form-field__error").exists()).toBe(false);
+  });
 });

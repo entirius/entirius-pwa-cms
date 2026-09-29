@@ -55,7 +55,7 @@
       </BasicButton>
       <BasicButton
         variant="secondary"
-        @click="showAddForm = false"
+        @click="closeAddForm"
       >
         {{ $t('common.cancel') }}
       </BasicButton>
@@ -321,6 +321,10 @@ export default {
         this.page = 1;
         this.fetchOptions();
       }, 300);
+    },
+    closeAddForm() {
+      this.showAddForm = false;
+      this.formErrors.clearErrors();
     },
     async createOption() {
       if (!this.newOption.idx || !this.formErrors.validateFormats(this.newOption, { idx: { format: "key" } })) return;
