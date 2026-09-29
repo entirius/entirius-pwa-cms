@@ -568,6 +568,13 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- Field hints, review fixes of plan 60 (plan 61d): a hint opened with Enter or Space closes when focus leaves it (a
+  tap still toggles it on a touch screen). The hints choice is reset on every sign-in and cleared on sign-out, so a
+  profile without one gets hints on, never the previous user's. The "no languages" note of the translate and
+  enrichment dialogs is linked to its select (`aria-describedby`). A disabled primary `IconButton` fades as a whole
+  instead of painting a `text-disabled` glyph on the accent fill. The builder's "add one first" (buttons, group
+  fields) is visible text, not a help mark that hints-off hides. The removed-prop lint rule catches `<form-field>`.
+
 - Late answers and 56b review leftovers (plan 61c): a slow answer never lands on a screen the user has left — the
   Leads company card drops a load, stage move or type change answer (or error) of an earlier open, so its header
   actions never act on another company; the Communicate dialog ignores the template list of an earlier open; the PIM attribute search
