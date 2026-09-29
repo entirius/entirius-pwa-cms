@@ -55,8 +55,8 @@
     "ui_catalogue": "Component catalogue"
   },
   "login": {
-    "welcome": "Welcome!",
-    "subtitle": "Log in to your CMS account",
+    "welcome": "Sign in",
+    "subtitle": "Use your administrator account.",
     "username": "Username",
     "password": "Password",
     "submit": "Log in",
@@ -76,7 +76,14 @@
     "sso_failed": "SSO login failed",
     "sso_state_mismatch": "This sign-in link is invalid or has already been used. Start the login again.",
     "sso_provider_error": "The identity provider refused the login ({error}).",
-    "show_password": "Show password"
+    "show_password": "Show password",
+    "username_required": "Enter your username",
+    "password_required": "Enter your password",
+    "unknown_error": "Unknown error. Contact the administrator.",
+    "caps_lock": "Caps Lock is on",
+    "stage_overline": "Administration panel",
+    "stage_line": "Content, products and sales — in one calm place.",
+    "stage_rights": "© {year} Entirius"
   },
   "app": {
     "expand_sidebar": "Expand sidebar",

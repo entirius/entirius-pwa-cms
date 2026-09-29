@@ -1,120 +1,74 @@
 <template>
-  <BasicCard
-    class="auth-card fs-300 t-body shadow-down"
-  >
-    <!-- Success state -->
-    <template v-if="success">
-      <p class="auth-card__title fs-700 fw-600 txt-center mb-1">
-        {{ $t("reset.success_title") }}
-      </p>
-      <div class="auth-card__banner auth-card__banner--success mb-10">
-        <p class="fs-300 fw-500">{{ $t("reset.success_message") }}</p>
-      </div>
-      <BasicButton
-        @click="goToLogin"
-        variant="primary"
-        class="jc-ct w-100 rounded"
-      >
-        {{ $t('reset.back_to_login') }}
-      </BasicButton>
-    </template>
+  <AuthLayout :title="title" :subtitle="done ? '' : $t('reset.subtitle')" :status-tone="success ? 'positive' : 'negative'">
+    <template v-if="statusText" #status>{{ statusText }}</template>
 
-    <!-- Error state (invalid/expired key) -->
-    <template v-else-if="error">
-      <p class="auth-card__title fs-700 fw-600 txt-center mb-1">
-        {{ $t("reset.error_title") }}
-      </p>
-      <div class="auth-card__banner auth-card__banner--error mb-10">
-        <p class="fs-300 fw-500">{{ errorMessage }}</p>
-      </div>
-      <BasicButton
-        @click="goToLogin"
-        variant="primary"
-        class="jc-ct w-100 rounded"
-      >
-        {{ $t('reset.back_to_login') }}
-      </BasicButton>
-    </template>
+    <BasicButton v-if="done" variant="primary" size="lg" class="jc-ct w-100" @click="goToLogin">
+      {{ $t("reset.back_to_login") }}
+    </BasicButton>
 
-    <!-- Reset form -->
-    <template v-else>
-      <p class="auth-card__title fs-700 fw-600 txt-center mb-1">{{ $t("reset.title") }}</p>
-      <p class="fs-300 t-secondary txt-center mb-12">
-        {{ $t("reset.subtitle") }}
-      </p>
-      <form @submit.prevent="handleReset">
-        <FormField :label="$t('reset.new_password')" class="mb-10">
-          <div class="auth-card__pw-field">
-            <BasicInput
-              v-model="newPassword"
-              class="bg-raised lh-base-elem"
-              :type="pwVisible ? 'text' : 'password'"
-            />
-            <span class="auth-card__pw-toggle">
-              <IconButton
-                :icon="pwVisible ? 'hide' : 'preview'"
-                :label="$t('login.show_password')"
-                :pressed="pwVisible"
-                size="sm"
-                @click="pwVisible = !pwVisible"
-              />
-            </span>
-          </div>
-        </FormField>
-        <FormField :label="$t('reset.confirm_password')" class="mb-8">
-          <div class="auth-card__pw-field">
-            <BasicInput
-              v-model="confirmPassword"
-              class="bg-raised lh-base-elem"
-              :type="pwVisible ? 'text' : 'password'"
-            />
-            <span class="auth-card__pw-toggle">
-              <IconButton
-                :icon="pwVisible ? 'hide' : 'preview'"
-                :label="$t('login.show_password')"
-                :pressed="pwVisible"
-                size="sm"
-                @click="pwVisible = !pwVisible"
-              />
-            </span>
-          </div>
-        </FormField>
-        <BasicButton
-          type="submit"
-          variant="primary"
-          class="jc-ct w-100 rounded"
-        >
-          {{ $t('reset.submit') }}
-        </BasicButton>
-      </form>
-    </template>
-  </BasicCard>
+    <form v-else class="flex-column gap-6" @submit.prevent="handleReset">
+      <div class="flex-column gap-4">
+        <PasswordField
+          v-model="newPassword"
+          :label="$t('reset.new_password')"
+          :error="errors.newPassword"
+          autocomplete="new-password"
+        />
+        <PasswordField
+          v-model="confirmPassword"
+          :label="$t('reset.confirm_password')"
+          :error="errors.confirmPassword"
+          autocomplete="new-password"
+        />
+      </div>
+      <BasicButton type="submit" variant="primary" size="lg" :loading="saving" class="jc-ct w-100">
+        {{ $t("reset.submit") }}
+      </BasicButton>
+    </form>
+  </AuthLayout>
 </template>
 
 <script>
 import { POST_PasswordResetConfirm } from "@/api/contentDB/api";
-import { useNotifyStore } from "@/stores/notify";
 import { parsePasswordError } from "@/utils/password-errors";
+import { passwordErrors } from "@/utils/passwordForm";
+import AuthLayout from "@/boots/AuthLayout/index.vue";
+import PasswordField from "@/boots/AuthLayout/PasswordField.vue";
 
+// Errors show under their field and once in the AuthLayout live summary (plan 59), never as a toast.
 export default {
-  setup() {
-    const notify = useNotifyStore();
-    return { notify };
-  },
+  components: { AuthLayout, PasswordField },
   data() {
     return {
       newPassword: "",
       confirmPassword: "",
-      pwVisible: false,
+      saving: false,
       success: false,
       error: false,
       errorMessage: "",
+      errors: {},
+      formError: "",
     };
   },
   computed: {
     resetKey() {
       return this.$route.query.key || "";
     },
+    done() {
+      return this.success || this.error;
+    },
+    title() {
+      if (this.success) return this.$t("reset.success_title");
+      return this.$t(this.error ? "reset.error_title" : "reset.title");
+    },
+    statusText() {
+      if (this.success) return this.$t("reset.success_message");
+      return this.error ? this.errorMessage : this.formError;
+    },
+  },
+  watch: {
+    newPassword: "clearErrors",
+    confirmPassword: "clearErrors",
   },
   mounted() {
     if (!this.resetKey) {
@@ -123,23 +77,20 @@ export default {
     }
   },
   methods: {
+    clearErrors() {
+      this.errors = {};
+      this.formError = "";
+    },
+    validate() {
+      const { newPassword, confirmPassword } = this;
+      const { errors, summary } = passwordErrors(this.$t, { newPassword, confirmPassword });
+      this.errors = errors;
+      this.formError = summary;
+      return !summary;
+    },
     async handleReset() {
-      if (!this.newPassword || !this.confirmPassword) {
-        this.notify.spawnNotification({
-          title: this.$t("user.fill_all_fields"),
-          type: "negative",
-          timeout: "2500",
-        });
-        return;
-      }
-      if (this.newPassword !== this.confirmPassword) {
-        this.notify.spawnNotification({
-          title: this.$t("user.passwords_dont_match"),
-          type: "negative",
-          timeout: "2500",
-        });
-        return;
-      }
+      if (!this.validate()) return;
+      this.saving = true;
       try {
         await POST_PasswordResetConfirm({
           key: this.resetKey,
@@ -148,21 +99,19 @@ export default {
         });
         this.success = true;
       } catch (err) {
-        const { isTerminal, message } = parsePasswordError(err);
-        if (isTerminal) {
-          this.error = true;
-          this.errorMessage = message || this.$t("reset.error_message");
-        } else if (message) {
-          this.notify.spawnNotification({
-            title: message,
-            type: "negative",
-            timeout: "3000",
-          });
-        } else {
-          this.error = true;
-          this.errorMessage = this.$t("reset.error_message");
-        }
+        this.showRequestError(err);
+      } finally {
+        this.saving = false;
       }
+    },
+    showRequestError(err) {
+      const { isTerminal, message } = parsePasswordError(err);
+      if (message && !isTerminal) {
+        this.formError = message;
+        return;
+      }
+      this.error = true;
+      this.errorMessage = message || this.$t("reset.error_message");
     },
     goToLogin() {
       this.$router.push("/");
