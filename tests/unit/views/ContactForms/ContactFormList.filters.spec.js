@@ -16,7 +16,7 @@ import ContactFormList from "@/views/ContactForms/ContactFormList.vue";
 
 const SelectProbe = {
   name: "BasicSelect",
-  props: ["options", "modelValue", "placeholder"],
+  props: ["options", "modelValue", "floatingLabel"],
   emits: ["update:modelValue"],
   template: "<div />",
 };
@@ -30,7 +30,7 @@ describe("ContactFormList — filter selects", () => {
     ["cf.type", "typeFilter"],
     ["cf.channel", "channelFilter"],
     ["cf.status", "statusFilter"],
-  ])("the %s select sets %s and reloads page 1", async (placeholder, field) => {
+  ])("the %s select sets %s and reloads page 1", async (label, field) => {
     const wrapper = mount(ContactFormList, {
       global: { stubs: { BasicSelect: SelectProbe, DataTable: true, Pagination: true, MobileFilterPanel: true } },
     });
@@ -38,7 +38,7 @@ describe("ContactFormList — filter selects", () => {
     wrapper.vm.currentPage = 3;
     mockGetSubmissions.mockClear();
 
-    const select = wrapper.findAllComponents(SelectProbe).find((s) => s.props("placeholder") === placeholder);
+    const select = wrapper.findAllComponents(SelectProbe).find((s) => s.props("floatingLabel") === label);
     await select.vm.$emit("update:modelValue", "picked");
     await flushPromises();
 

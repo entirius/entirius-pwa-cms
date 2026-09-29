@@ -15,8 +15,8 @@
           <div class="fg-1">
             <div class="flex ai-ct gap-1">
               <BasicSelect
+                :floating-label="$t('routes.list_of_paths')"
                 class="fg-1"
-                :placeholder="`${$t('routes.list_of_paths')} (${routes.length})`"
                 :options="routes"
                 :model-value="shown_route"
                 :aria-invalid="error ? 'true' : undefined"
@@ -76,13 +76,11 @@
               </p>
               <div class="flex ai-ct gap-1">
                 <BasicSelect
+                  :floating-label="$t('routes.setted_routes')"
                   v-model="picked_setted"
                   class="fg-1"
                   :disabled="!selected"
                   :options="!selected ? [] : selected"
-                  :placeholder="`${$t('routes.setted_routes')} (${
-                    !selected ? 0 : selected.length
-                  })`"
                 />
                 <IconButton
                   v-if="picked_setted"

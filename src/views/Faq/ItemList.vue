@@ -25,9 +25,9 @@
             @click="setFilter(tab.key)"
           />
           <BasicSelect
+            :floating-label="$t('faq.group')"
             :options="groupFilterOptions"
             :model-value="groupFilter"
-            :placeholder="$t('faq.all_groups')"
             class="item-list__group-filter"
             @update:model-value="onGroupFilter"
           />

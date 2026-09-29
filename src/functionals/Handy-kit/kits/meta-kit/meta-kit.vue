@@ -114,7 +114,7 @@
         </div>
         <div class="flex jc-sb mt-5">
           <BasicSelect
-            :placeholder="$t('common.sort_by')"
+            :floating-label="$t('common.sort_by')"
             :options="[
               { label: $t('common.oldest_first'), value: 'created_at' },
               { label: $t('common.newest_first'), value: '-created_at' },

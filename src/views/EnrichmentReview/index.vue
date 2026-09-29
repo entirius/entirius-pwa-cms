@@ -55,26 +55,23 @@
             @input="onSearchChange"
           />
           <BasicSelect
+            :floating-label="$t('enrichment.review.col.module')"
             :options="moduleOptions"
             :model-value="filters.target_module"
-            :placeholder="$t('enrichment.review.col.module')"
-            :aria-label="$t('enrichment.review.col.module')"
             data-testid="enrichment-module-filter"
             @update:model-value="(v) => onFilterChange('target_module', v)"
           />
           <BasicSelect
+            :floating-label="$t('enrichment.review.col.kind')"
             :options="kindOptions"
             :model-value="filters.target_kind"
-            :placeholder="$t('enrichment.review.col.kind')"
-            :aria-label="$t('enrichment.review.col.kind')"
             data-testid="enrichment-kind-filter"
             @update:model-value="(v) => onFilterChange('target_kind', v)"
           />
           <BasicSelect
+            :floating-label="$t('enrichment.review.col.source')"
             :options="sourceOptions"
             :model-value="filters.source"
-            :placeholder="$t('enrichment.review.col.source')"
-            :aria-label="$t('enrichment.review.col.source')"
             data-testid="enrichment-source-filter"
             @update:model-value="(v) => onFilterChange('source', v)"
           />

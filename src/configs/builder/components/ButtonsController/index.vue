@@ -29,8 +29,8 @@
         />
       </FormField>
       <BasicSelect
+        :floating-label="$t('controllers.link_type')"
         v-model="link_type"
-        :placeholder="$t('controllers.link_type')"
         :options="[
           { label: tFieldLabel('internal', 'In'), value: 'internal' },
           { label: tFieldLabel('external', 'Out'), value: 'external' },
@@ -40,9 +40,9 @@
 
     <div class="grid grid-col-3 gap-2 mt-2 ai-ct" v-if="mode">
       <BasicSelect
+        :floating-label="$t('controllers.decorator')"
         v-if="config && config.decorator && config.decorators.length"
         v-model="link_decorator"
-        :placeholder="$t('controllers.select_decorator')"
         :options="
           config.decorators.map((d) => {
             return { label: d, value: d };
@@ -95,13 +95,9 @@
           {{ !mode ? $t('routes.set_new') : $t('common.close') }}
         </BasicButton>
         <BasicSelect
+          :floating-label="$t('controllers.set_items')"
           class="fg-1"
           :model-value="editing"
-          :placeholder="`${$t('controllers.setted')} (${
-            !value ? [].length : value.length
-          }/${
-            config && config.max ? config.max : $t('controllers.unlimited')
-          })`"
           :disabled="!Boolean(value)"
           :options="
             !value

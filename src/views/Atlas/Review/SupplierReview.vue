@@ -20,10 +20,9 @@
           @input="onSearchChange"
         />
         <BasicSelect
+          :floating-label="$t('atlas.review.list.col.supplier')"
           :options="supplierFilterOptions"
           :model-value="filters.supplier"
-          :placeholder="$t('atlas.col.name')"
-          :aria-label="$t('atlas.review.list.col.supplier')"
           class="review-supplier-filter"
           data-testid="review-supplier-filter"
           @update:model-value="onSupplierChange"

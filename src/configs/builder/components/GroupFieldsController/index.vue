@@ -109,8 +109,8 @@
             <BasicWysiwyg v-model="group[key]" :key="`wysiwyg-${key}`" />
           </div>
           <div v-if="props_handlers[field.type] === 'Dropdown'">
-            <p class="mb-1">{{ tFieldLabel(key, field.label) }}</p>
             <BasicSelect
+              :floating-label="tFieldLabel(key, field.label)"
               :model-value="group[key]"
               :options="field.options"
               @update:model-value="

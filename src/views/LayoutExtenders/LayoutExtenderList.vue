@@ -6,10 +6,9 @@
 
     <template v-if="channelOptions.length" #toolbar>
       <BasicSelect
+        :floating-label="$t('layout_extender.channels')"
         :options="channelOptions"
         :model-value="selectedChannel"
-        :placeholder="$t('layout_extender.all_channels')"
-        :aria-label="$t('layout_extender.channels')"
         class="le-list__channel-dropdown"
         @update:model-value="onChannelFilter"
       />

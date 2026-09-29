@@ -7,6 +7,7 @@
     <div v-if="selected_view === 'doc'">
       <div class="mb-5">
         <BasicSelect
+          :floating-label="$t('docs.document')"
           style="max-width: 10rem"
           :options="docs_nav"
           v-model="doc_prev"

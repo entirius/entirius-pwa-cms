@@ -735,7 +735,6 @@
     "all": "Wszystkie",
     "yes": "Tak",
     "no": "Nie",
-    "filter_status": "Filtruj po statusie",
     "filters": "Filtry",
     "more_actions": "Więcej akcji",
     "overridden": "Nadpisane",
@@ -1479,7 +1478,6 @@
     "remove_group": "Usuń grupę",
     "setted": "ustawione",
     "unlimited": "bez limitu",
-    "select_decorator": "Wybierz dekorator (opcjonalne)",
     "rtl_label": "Od prawej do lewej (opcjonalne)",
     "rtl_tip": "Zmień kolejność (ikona vs tekst)",
     "tooltip_select_button": "Wybierz przycisk z listy aby edytować",
@@ -1488,7 +1486,12 @@
     "tooltip_add_group": "Najpierw dodaj nową grupę",
     "position": "Pozycja",
     "drag": "przeciągnij",
-    "max_group_size": "Osiągnięto limit grup"
+    "max_group_size": "Osiągnięto limit grup",
+    "decorator": "Dekorator",
+    "set_items": "Ustawione",
+    "field_type": "Typ pola",
+    "field_required": "Wymagalność",
+    "attribute": "Atrybut"
   },
   "translations_modal": {
     "title": "Edytuj tłumaczenia",
@@ -1810,7 +1813,6 @@
     "search_page": "Szukaj stron...",
     "no_results": "Brak wyników",
     "searching": "Szukanie...",
-    "all_channels": "Wszystkie kanały",
     "all": "Wszystkie",
     "copy_title": "Kopiuj nawigację",
     "copy_target_channel": "Skopiuj do kanału",
@@ -3186,7 +3188,8 @@
     "no_change": "bez zmiany",
     "no_snapshot": "Brak zapisanego snapshotu decyzji.",
     "active": "Aktywna",
-    "search_category": "Szukaj kategorii..."
+    "search_category": "Szukaj kategorii...",
+    "channel": "Kanał"
   },
   "leads": {
     "inbox": {
@@ -3706,7 +3709,8 @@
   "docs": {
     "pick_example": "Wybierz przykład",
     "tab_doc": "Dokumentacja",
-    "tab_examples": "Przykłady"
+    "tab_examples": "Przykłady",
+    "document": "Dokument"
   },
   "shell": {
     "panels": "Panele",

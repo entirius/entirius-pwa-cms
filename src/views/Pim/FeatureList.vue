@@ -21,15 +21,15 @@
           :trigger-label="$t('builder.filters')"
         >
           <BasicSelect
+            :floating-label="$t('pim.feature_type')"
             :options="typeFilterOptions"
             :model-value="typeFilter ?? ''"
-            :placeholder="$t('pim.feature_type')"
             @update:model-value="onFilterType"
           />
           <BasicSelect
+            :floating-label="$t('pim.scope')"
             :options="scopeFilterOptions"
             :model-value="scopeFilter ?? ''"
-            :placeholder="$t('pim.scope')"
             @update:model-value="onFilterScope"
           />
         </MobileFilterPanel>

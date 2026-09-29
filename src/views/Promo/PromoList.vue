@@ -39,10 +39,9 @@
             @click="setStatusFilter(tab.key)"
           />
           <BasicSelect
+            :floating-label="$t('promo.col_modifier')"
             :options="modifierOptions"
             :model-value="modifierFilter"
-            :placeholder="$t('promo.all_modifiers')"
-            :aria-label="$t('promo.col_modifier')"
             class="promo-list__modifier-filter"
             @update:model-value="onModifierFilter"
           />

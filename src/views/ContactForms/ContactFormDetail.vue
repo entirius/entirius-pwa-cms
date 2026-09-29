@@ -5,9 +5,9 @@
       <PageHeader :title="$t('cf.submission_detail')" back="/forms/list">
         <template v-if="submission" #actions>
           <BasicSelect
+            :floating-label="$t('cf.status')"
             :options="statusOptions"
             :model-value="submission.status"
-            :placeholder="$t('cf.status')"
             class="cf-detail__status"
             @update:model-value="updateStatus"
           />

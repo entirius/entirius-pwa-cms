@@ -13,23 +13,23 @@
           @input="debouncedFetch(searchAndFetch)"
         />
         <BasicSelect
+          :floating-label="$t('cf.type')"
           :options="typeFilterOptions"
           :model-value="typeFilter"
-          :placeholder="$t('cf.type')"
           class="form-list__filter"
           @update:model-value="onTypeFilter"
         />
         <BasicSelect
+          :floating-label="$t('cf.channel')"
           :options="channelFilterOptions"
           :model-value="channelFilter"
-          :placeholder="$t('cf.channel')"
           class="form-list__filter"
           @update:model-value="onChannelFilter"
         />
         <BasicSelect
+          :floating-label="$t('cf.status')"
           :options="statusFilterOptions"
           :model-value="statusFilter"
-          :placeholder="$t('cf.status')"
           class="form-list__filter"
           @update:model-value="onStatusFilter"
         />

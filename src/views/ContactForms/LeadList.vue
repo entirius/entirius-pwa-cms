@@ -13,9 +13,9 @@
           @input="debouncedFetch(searchAndFetch)"
         />
         <BasicSelect
+          :floating-label="$t('cf.channel')"
           :options="channelOptions"
           :model-value="channelFilter"
-          :placeholder="$t('cf.channel')"
           class="cf-list__filter"
           @update:model-value="onChannelFilter"
         />

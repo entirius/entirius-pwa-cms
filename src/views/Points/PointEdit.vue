@@ -258,10 +258,9 @@
           <template v-if="availableLanguageCodes.length" #actions>
             <div class="flex ai-ct gap-3">
               <BasicSelect
+                :floating-label="$t('dp.language')"
                 :options="availableLanguageCodes"
                 v-model="addingLanguage"
-                :placeholder="$t('dp.language')"
-                :aria-label="$t('dp.language')"
                 class="t9n-lang-select"
               />
               <BasicButton

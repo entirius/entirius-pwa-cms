@@ -11,10 +11,10 @@
           @click="setMode(opt.value)"
         />
         <BasicSelect
+          :floating-label="$t('pim.supplier.timeline.source_label')"
           v-if="mode === 'by_source' && sourceOptions.length > 1"
           :options="sourceOptions"
           v-model="selectedSource"
-          :placeholder="$t('pim.supplier.timeline.source_label')"
           class="supplier-timeline__source-dropdown"
           @update:model-value="onSourceSelect"
         />

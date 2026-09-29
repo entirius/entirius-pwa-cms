@@ -39,10 +39,9 @@
           @click="setStatusFilter(opt.key)"
         />
         <BasicSelect
+          :floating-label="$t('promo.voucher_col_campaign')"
           :options="campaignOptions"
           :model-value="campaignFilter"
-          :placeholder="$t('promo.voucher_all_campaigns')"
-          :aria-label="$t('promo.voucher_col_campaign')"
           class="vouchers-list__campaign-filter"
           @update:model-value="onCampaignFilter"
         />

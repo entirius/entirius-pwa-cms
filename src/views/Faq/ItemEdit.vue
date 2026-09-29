@@ -138,10 +138,9 @@
             class="assoc-row flex ai-ct gap-5 mb-5"
           >
             <BasicSelect
+              :floating-label="$t('faq.entity_type')"
               :options="entityTypeOptions"
               :model-value="assoc.entity_type"
-              :placeholder="$t('faq.entity_type')"
-              :aria-label="$t('faq.entity_type')"
               class="assoc-type-select"
               @update:model-value="(val) => { assoc.entity_type = val; assoc.entity_identifier = ''; assoc.entity_display = ''; }"
             />

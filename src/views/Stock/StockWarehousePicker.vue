@@ -1,10 +1,9 @@
 <template>
   <div class="flex ai-ct wrap gap-3">
     <BasicSelect
+      :floating-label="$t('stock.warehouse')"
       :model-value="warehouse?.code ?? null"
       :options="options"
-      :placeholder="$t('stock.select_warehouse')"
-      :aria-label="$t('stock.select_warehouse')"
       class="stock-picker__select"
       @update:model-value="selectWarehouse"
     />

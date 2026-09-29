@@ -6,17 +6,17 @@
     <template #toolbar>
       <MobileFilterPanel :active-count="activeFilterCount" :trigger-label="$t('pricefighter.filters')">
         <BasicSelect
+          :floating-label="$t('pricefighter.market')"
           v-if="channelOptions.length"
           :model-value="channelFilter || ALL_OPTION"
           :options="channelFilterOptions"
-          :aria-label="$t('pricefighter.market')"
           class="gap-table__channel"
           @update:model-value="onChannelSelect"
         />
         <BasicSelect
+          :floating-label="$t('pricefighter.recommendation')"
           :model-value="recommendationFilter || ALL_OPTION"
           :options="recommendationFilterOptions"
-          :aria-label="$t('pricefighter.recommendation')"
           class="gap-table__recommendation"
           @update:model-value="onRecommendationSelect"
         />

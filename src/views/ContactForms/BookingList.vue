@@ -28,9 +28,9 @@
           </div>
           <p class="cf-list__caption fs-200 t-secondary">{{ $t("cf.channel") }}</p>
           <BasicSelect
+            :floating-label="$t('cf.channel')"
             :options="channelOptions"
             :model-value="channelFilter"
-            :placeholder="$t('cf.channel')"
             class="cf-list__filter"
             @update:model-value="onChannelFilter"
           />

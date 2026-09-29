@@ -17,7 +17,7 @@
       <template v-if="attrs_list">
         <div class="grid grid-col-3 gap-2 mb-2">
           <BasicSelect
-            :placeholder="'Attr'"
+            :floating-label="$t('controllers.attribute')"
             :model-value="attr_to_edit"
             :options="
               attrs_list.map(({ label = null, slug }) => {

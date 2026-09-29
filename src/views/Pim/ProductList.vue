@@ -29,36 +29,32 @@
           </div>
           <div class="product-list__filter-group">
             <BasicSelect
+              :floating-label="$t('pim.visibility')"
               :options="visibilityOptions"
               :model-value="visibilityFilter"
-              :placeholder="$t('pim.all_visibilities')"
-              :aria-label="$t('pim.visibility')"
               class="product-list__filter-dropdown"
               @update:model-value="onVisibilitySelect"
             />
             <BasicSelect
+              :floating-label="$t('pim.product_class')"
               :options="productClassOptions"
               :model-value="productClassFilter"
-              :placeholder="$t('pim.all_classes')"
-              :aria-label="$t('pim.product_class')"
               class="product-list__filter-dropdown"
               @update:model-value="onProductClassSelect"
             />
             <BasicSelect
+              :floating-label="$t('pim.categories')"
               :options="categoryOptions"
               :model-value="categoryFilter"
-              :placeholder="$t('pim.all_categories')"
-              :aria-label="$t('pim.categories')"
               class="product-list__filter-dropdown"
               @update:model-value="onCategorySelect"
             />
             <BasicSelect
               v-for="feat in filterableFeatures"
               :key="feat.idx"
+              :floating-label="feat.name"
               :options="featureFilterOptions(feat)"
               :model-value="attributeFilters[feat.idx] ?? ''"
-              :placeholder="feat.name"
-              :aria-label="feat.name"
               class="product-list__filter-dropdown"
               @update:model-value="(val) => onAttributeFilter(feat.idx, val)"
             />

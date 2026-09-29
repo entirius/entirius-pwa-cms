@@ -735,7 +735,6 @@
     "all": "All",
     "yes": "Yes",
     "no": "No",
-    "filter_status": "Filter by status",
     "filters": "Filters",
     "more_actions": "More actions",
     "overridden": "Overridden",
@@ -1480,7 +1479,6 @@
     "remove_group": "Remove group",
     "setted": "setted",
     "unlimited": "unlimited",
-    "select_decorator": "Select decorator (optional)",
     "rtl_label": "Right to left (optional)",
     "rtl_tip": "Change order (icon vs text)",
     "tooltip_select_button": "Select button from dropdown to edit",
@@ -1489,7 +1487,12 @@
     "tooltip_add_group": "First add new group",
     "position": "Position",
     "drag": "drag",
-    "max_group_size": "Max group size"
+    "max_group_size": "Max group size",
+    "decorator": "Decorator",
+    "set_items": "Set items",
+    "field_type": "Field type",
+    "field_required": "Required",
+    "attribute": "Attribute"
   },
   "translations_modal": {
     "title": "Edit Translations",
@@ -1811,7 +1814,6 @@
     "search_page": "Search pages...",
     "no_results": "No results found",
     "searching": "Searching...",
-    "all_channels": "All channels",
     "all": "All",
     "copy_title": "Copy navigation",
     "copy_target_channel": "Copy to channel",
@@ -3187,7 +3189,8 @@
     "no_change": "no change",
     "no_snapshot": "No decision snapshot recorded.",
     "active": "Active",
-    "search_category": "Search category..."
+    "search_category": "Search category...",
+    "channel": "Channel"
   },
   "leads": {
     "inbox": {
@@ -3707,7 +3710,8 @@
   "docs": {
     "pick_example": "Pick an example",
     "tab_doc": "Documentation",
-    "tab_examples": "Examples"
+    "tab_examples": "Examples",
+    "document": "Document"
   },
   "shell": {
     "panels": "Panels",

@@ -13,18 +13,18 @@
           @input="debouncedFetch(searchAndFetch)"
         />
         <BasicSelect
+          :floating-label="$t('accounts.group')"
           v-if="groupOptions.length"
           :options="groupOptions"
           :model-value="groupFilter"
-          :placeholder="$t('accounts.group')"
           class="acc-list__filter-dropdown"
           @update:model-value="setGroupFilter"
         />
         <BasicSelect
+          :floating-label="$t('accounts.channel')"
           v-if="channelOptions.length"
           :options="channelOptions"
           :model-value="channelFilter"
-          :placeholder="$t('accounts.channel')"
           class="acc-list__filter-dropdown"
           @update:model-value="setChannelFilter"
         />

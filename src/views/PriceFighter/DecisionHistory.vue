@@ -13,10 +13,10 @@
           @input="debouncedFetch(doSearch)"
         />
         <BasicSelect
+          :floating-label="$t('pricefighter.channel')"
           v-if="channelOptions.length"
           :model-value="channelFilter"
           :options="channelOptions"
-          :placeholder="$t('pricefighter.all_channels')"
           clearable
           class="history__channel"
           @update:model-value="onChannelSelect"

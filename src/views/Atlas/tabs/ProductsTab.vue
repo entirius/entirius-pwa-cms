@@ -57,6 +57,7 @@
         @blur="resetAndFetch"
       />
       <BasicSelect
+        :floating-label="$t('common.sort_by')"
         :options="orderingOptions"
         :model-value="filters.ordering"
         class="products-filters__ordering"

@@ -25,15 +25,15 @@
         </div>
         <div class="gallery__selects">
           <BasicSelect
+            :floating-label="$t('common.sort_by')"
             class="gallery__select"
-            :aria-label="$t('common.sort_by')"
             :options="sortOptions"
             :model-value="sort_by"
             @update:model-value="setSort"
           />
           <BasicSelect
+            :floating-label="$t('gallery.page_size')"
             class="gallery__select"
-            :aria-label="$t('gallery.page_size')"
             :options="pageSizeOptions"
             :model-value="limit"
             @update:model-value="setLimit"

@@ -13,9 +13,9 @@
           @input="debouncedFetch(searchAndFetch)"
         />
         <BasicSelect
+          :floating-label="$t('dp.channel')"
           :model-value="channelFilter"
           :options="channelFilterOptions"
-          :placeholder="$t('dp.channel')"
           class="point-list__channel"
           @update:model-value="onChannelFilter"
         />

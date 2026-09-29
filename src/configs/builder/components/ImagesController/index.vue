@@ -14,10 +14,8 @@
         {{ $t('routes.set_new') }}
       </BasicButton>
       <BasicSelect
+        :floating-label="$t('controllers.set_items')"
         v-model="picked_image"
-        :placeholder="`${$t('controllers.setted')} (${
-          Object.keys(value ?? {}).length
-        })`"
         class="fg-1"
         :disabled="!Boolean(value)"
         :options="
@@ -70,7 +68,7 @@
           />
           <div class="flex gap-1">
             <BasicSelect
-              :placeholder="$t('common.sort_by')"
+              :floating-label="$t('common.sort_by')"
               :options="[
                 { label: $t('common.oldest_first'), value: 'created_at' },
                 { label: $t('common.newest_first'), value: '-created_at' },
@@ -84,6 +82,7 @@
               "
             />
             <BasicSelect
+              :floating-label="$t('gallery.page_size')"
               :options="[
                 { label: 10, value: 10 },
                 { label: 20, value: 20 },
