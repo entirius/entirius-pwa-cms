@@ -97,8 +97,13 @@ function openTab(value) {
   router.replace({ query: { ...route.query, tab: value } });
 }
 
+// A late answer for a company the user has already left is dropped (plan 61c): it must not act under another URL.
+const isCurrent = (id) => String(route.params.id) === id;
+
 async function load() {
-  const [companyRes, stageRes] = await Promise.all([GET_Company(route.params.id), GET_Stages(), leadTypes.load()]);
+  const id = String(route.params.id);
+  const [companyRes, stageRes] = await Promise.all([GET_Company(id), GET_Stages(), leadTypes.load()]);
+  if (!isCurrent(id)) return;
   company.value = companyRes.data;
   stages.value = stageRes.data.results;
 }
@@ -126,12 +131,13 @@ async function retype(code) {
 // The header stands while the card loads and when it fails; only its actions wait for the company.
 // Another company: the previous one's card and header actions go until the new one arrives.
 async function open() {
+  const id = String(route.params.id);
   company.value = null;
   loadError.value = "";
   try {
     await load();
   } catch (err) {
-    loadError.value = extractApiMessage(err, t("leads.review.error"));
+    if (isCurrent(id)) loadError.value = extractApiMessage(err, t("leads.review.error"));
   }
 }
 

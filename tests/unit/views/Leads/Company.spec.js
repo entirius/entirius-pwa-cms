@@ -201,6 +201,29 @@ describe("Company card header", () => {
     await flushPromises();
   });
 
+  // Plan 61c: a late answer of the company the user has left never lands on the card of the next one.
+  const loadsB = () => Promise.resolve({ data: { ...company(), id: 8, name: "Shop B", stage: { key: "new" } } });
+  const failsB = () => Promise.reject({ response: { data: { detail: "B not found." } } });
+  it.each([
+    ["loads late", "loads", true, loadsB, "Shop B"],
+    ["loads late", "fails", true, failsB, "B not found."],
+    ["fails late", "loads", false, loadsB, "Shop B"],
+  ])("A's answer that %s is dropped after a switch to B that %s", async (_a, _b, aLoads, answerB, shownB) => {
+    let settleA;
+    leads.GET_Company.mockReturnValueOnce(new Promise((resolve, reject) => (settleA = aLoads ? resolve : reject)));
+    const wrapper = await mountCard();
+    leads.GET_Company.mockImplementation(answerB);
+    useRoute().params.id = "8";
+    await flushPromises();
+    expect(wrapper.text()).toContain(shownB);
+    const before = wrapper.html();
+    settleA(aLoads ? { data: { ...company(), name: "Shop A", stage: { key: "new" } } } : { response: { data: { detail: "A failed." } } });
+    await flushPromises();
+    expect(wrapper.html()).toBe(before);
+    useRoute().params.id = "7";
+    await flushPromises();
+  });
+
   it("picking the current stage or type again sends nothing", async () => {
     const wrapper = await mountCard();
     await setControl(wrapper, "company-stage", "new");
