@@ -167,6 +167,11 @@ npm run visual:approve:components  # operator only: write the @components baseli
 The census opens every capture-spec screen once (~5 s a screen, ~9 min for the list on one worker); `census.json`
 keeps each screen's findings with up to three element samples. Text inside an SVG (the logo wordmark) is part of the
 drawing and stays out of the font-size count.
+The census runs dark + desktop only: light-theme and mobile-only values (the BasicMenu bottom sheet, `max-tablet`
+rules) are never measured. The `needsData` screens skip it (`forms-submission-detail`, `forms-booking-detail`,
+`forms-lead-detail`, `orders-detail`, `leads-conversation`, `leads-review`). An inline background is measured like a
+stylesheet one unless its element carries `data-census="data"`: a stored colour (the ColorInput swatch, the Emails
+channel dot). A new data swatch takes the marker; a script-bound styling colour must not.
 
 Reports land in `tests/visual/.report/` (`VISUAL_REPORT_DIR` overrides it): `census.json`, `fonts.json`,
 `contrast.json`, `landmarks/<S>.json`, `ux/` and the HTML report in `html/`. Test artefacts go to `tests/visual/test-results/`.
@@ -226,7 +231,7 @@ folder, so it never wipes the last full report. The pixel layer (`@screens`) and
 |---|---|---|
 | `zeroSize` | an interactive element under 8 px wide or high while visible, or cut by an `overflow: hidden` ancestor | high |
 | `offViewport` | an interactive element past the viewport width that no sideways scroller brings back | high |
-| `underBottomBar` | an interactive element a fixed bottom bar still covers with every scroller at its end (an open dialog or bottom sheet is no bar) | high |
+| `underBottomBar` | an interactive element a fixed bottom bar still covers with every scroller at its end. Only the dialog layer itself (`[role="dialog"]`) or the BasicMenu bottom sheet (`.basic-menu__popover--bottom`) is no bar: a sticky bar inside a dialog is measured and reported when it covers the dialog's controls | high |
 | `nonFocusable` | a clickable `span`/`div` without `tabindex` or without an accessible name | high |
 | `overlap` | table row: the content of neighbouring cells intersects (> 1 px) or is 1–8 px apart; toolbar (a flex row of controls): neighbours intersect or sit 1–8 px apart. Flush neighbours are one group by design | medium |
 | `overflow` | clipped text without a `title`, content cut by `overflow: hidden`, a sideways scroller with a 0 px scrollbar, a `PageLayout` or card wider than its box on mobile (`card-x`) | medium |

@@ -199,7 +199,11 @@ Catalogue: `#actions` (`#basic-button`, `#icon-button`, `#action-bar`, `#floatin
   (`role="menu"`; emits `select` with the item) or the `panel` slot (scope `close`, `role="dialog"` named by
   `label`); `placement` (floating-ui, default `bottom-start`); `sheet` (plan 56) for a panel that reads as text
   (configuration health): up to 32rem wide above a phone, a full-width bottom sheet pinned to the bottom edge on one
-  (no floating position, `max-height: 85vh`, its own scroll). Keyboard: ArrowDown on the trigger opens, arrows /
+  (no floating position, `max-height: 85vh`, its own scroll). On a phone the sheet is modal like BasicModal's:
+  teleported to `<body>` over a backdrop, body scroll locked, focus trapped (Tab cycles inside, it does not close the
+  sheet), Esc or a backdrop tap closes it, focus returns to the trigger. `sheet` is fixed per instance: it is read
+  once at setup, so a `sheet` that turns true after mount never becomes a bottom sheet — mount a new instance
+  (`:key`) instead. Keyboard: ArrowDown on the trigger opens, arrows /
   Home / End move, Enter / Space choose, Esc closes and returns focus, Tab and a click outside close.
 - **`BasicTooltip`** — wraps its trigger (default slot; its first focusable gets `aria-describedby`): `text`,
   `placement` `top` · `bottom` · `left` · `right` (flips when there is no room), `variant` `help` (a `?` button
