@@ -1229,6 +1229,7 @@
     "is_active": "Aktywny",
     "is_carrier": "Przewoźnik",
     "sort_order": "Kolejność",
+    "sort_order_required": "Podaj kolejność",
     "status": "Status",
     "active": "Aktywny",
     "inactive": "Nieaktywny",

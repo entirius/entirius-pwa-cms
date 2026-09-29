@@ -79,7 +79,7 @@
         <FormField :label="$t('dp.name')">
           <BasicInput v-model="editForm.name" />
         </FormField>
-        <FormField :label="$t('dp.sort_order')">
+        <FormField :label="$t('dp.sort_order')" required :error="sortOrderError">
           <NumberInput v-model="editForm.sort_order" />
         </FormField>
       </div>
@@ -149,6 +149,10 @@ export default {
     };
   },
   computed: {
+    // An emptied sort order is refused, never saved as 0 (that would move the type to the top).
+    sortOrderError() {
+      return String(this.editForm.sort_order ?? "").trim() === "" ? this.$t("dp.sort_order_required") : "";
+    },
     modalActions() {
       return [
         { key: "delete", role: "utility", icon: "delete", variant: "danger", label: this.$t("common.delete"),
@@ -271,6 +275,7 @@ export default {
       }
     },
     async saveType() {
+      if (this.sortOrderError) return;
       this.loader.loaderStart();
       try {
         await PATCH_Type(this.editingType.id, {
@@ -279,7 +284,7 @@ export default {
           is_carrier: this.editForm.is_carrier,
           is_active: this.editForm.is_active,
           // NumberInput emits text: the API gets a number.
-          sort_order: Number(this.editForm.sort_order) || 0,
+          sort_order: Number(this.editForm.sort_order),
         });
         this.notify.spawnNotification({
           type: "positive",

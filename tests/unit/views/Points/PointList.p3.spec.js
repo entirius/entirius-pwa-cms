@@ -65,3 +65,28 @@ describe("PointList — stale page", () => {
     expect(replace).not.toHaveBeenCalled();
   });
 });
+
+// Plan 56b: the smoke finds a carrier point by its marker's test id, not by any icon in the type column.
+describe("PointList — carrier marker", () => {
+  it("marks a carrier point's type with point-carrier, and only that one", async () => {
+    const { default: DataTable } = await import("@/boots/DataTable/index.vue");
+    GET_Points.mockResolvedValueOnce({
+      data: {
+        count: 2,
+        results: [
+          { id: 1, code: "a", type: { name: "InPost", is_carrier: true } },
+          { id: 2, code: "b", type: { name: "Own", is_carrier: false } },
+        ],
+      },
+    });
+    const wrapper = mount(PointList, {
+      global: {
+        components: { DataTable },
+        stubs: { BasicSelect, MobileFilterPanel: true, Pagination: true, FloatingActions: true },
+      },
+    });
+    await flushPromises();
+    const rows = wrapper.findAll(".data-table__row");
+    expect(rows.map((row) => row.find('[data-testid="point-carrier"]').exists())).toEqual([true, false]);
+  });
+});

@@ -76,4 +76,22 @@ describe("TypeList — sort order", () => {
     await wrapper.findComponent({ name: "BasicModal" }).props("actions").find((action) => action.key === "save").onClick();
     expect(PATCH_Type).toHaveBeenCalledWith(3, expect.objectContaining({ sort_order: 7 }));
   });
+
+  // Plan 56b: an emptied field is a field error, never a silent 0 (which would move the type to the top).
+  it("an emptied sort order is a field error and nothing is saved", async () => {
+    PATCH_Type.mockClear();
+    const NumberInput = { name: "NumberInput", props: ["modelValue"], emits: ["update:modelValue"], template: "<div />" };
+    const FormField = { name: "FormField", props: ["label", "error", "required"], template: "<div><slot /></div>" };
+    const wrapper = mount(TypeList, {
+      global: { stubs: { BasicModal, NumberInput, FormField, DataTable: true, ConfirmDialog: true, BasicSwitch: true, PageHeader: true } },
+    });
+    await flushPromises();
+    wrapper.vm.onRowClick({ id: 3, code: "locker", name: "Locker", is_carrier: false, is_active: true, sort_order: 2 });
+    await wrapper.vm.$nextTick();
+    await wrapper.findComponent(NumberInput).vm.$emit("update:modelValue", "");
+    await wrapper.findComponent({ name: "BasicModal" }).props("actions").find((action) => action.key === "save").onClick();
+    const field = wrapper.findAllComponents(FormField).find((f) => f.props("label") === "dp.sort_order");
+    expect(field.props("error")).toBe("dp.sort_order_required");
+    expect(PATCH_Type).not.toHaveBeenCalled();
+  });
 });

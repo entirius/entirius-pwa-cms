@@ -1230,6 +1230,7 @@
     "is_active": "Active",
     "is_carrier": "Carrier",
     "sort_order": "Sort Order",
+    "sort_order_required": "Enter a sort order",
     "status": "Status",
     "active": "Active",
     "inactive": "Inactive",

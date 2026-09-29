@@ -49,6 +49,7 @@
           <font-awesome-icon
             v-if="row.type.is_carrier"
             :icon="$icons.lock"
+            data-testid="point-carrier"
           />
           <StatusBadge tone="accent" :dot="false" :label="row.type.name" />
         </span>

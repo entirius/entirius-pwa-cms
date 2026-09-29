@@ -75,7 +75,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
       const filters = page.getByRole('group', { name: either((t) => t.dp.filters) });
       await filters.getByRole('button', { name: either((t) => t.dp.filter_carrier) }).click();
       await page.waitForLoadState('networkidle');
-      const carriers = (await listRows(page)).filter({ has: page.locator('[data-column="type_name"] svg') });
+      const carriers = (await listRows(page)).filter({ has: page.getByTestId('point-carrier') });
       test.skip(!(await carriers.count()), 'no carrier point on this stack');
 
       await carriers.first().click();
