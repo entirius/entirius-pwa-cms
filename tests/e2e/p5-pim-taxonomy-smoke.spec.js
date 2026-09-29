@@ -35,10 +35,9 @@ async function expectHeader(page) {
   await expect(page.locator('.panel-toolbar')).toHaveCount(0);
 }
 
-// A list screen (already open when `path` is null): its H1, then the first data row (or the empty state). Returns the
-// data rows.
+// A list screen: its H1, then the first data row (or the empty state). Returns the data rows.
 async function openList(page, path, title) {
-  if (path) await openPage(page, path);
+  await openPage(page, path);
   await expect(h1(page)).toHaveText(either(title));
   await expectHeader(page);
   const rows = page.getByRole('row').filter({ has: page.getByRole('gridcell') });
@@ -130,21 +129,21 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
       collector.assertNoErrors(expect, 'Pim feature sets');
     });
 
-    test('quality rules: the list with its settings, the first rule and the create form', async ({ page }) => {
+    test('quality rules: the create form, the list with its settings, the first rule', async ({ page }) => {
       const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
-      await openPage(page, '/pim/gap-definitions');
-      test.skip(page.url().includes('/pim/products'), 'the quality API is off on this stack');
-
-      const rows = await openList(page, null, (t) => t.pim.gap_definitions);
-      if (await openFirstRow(page, rows, /\/pim\/gap-definitions\/.+/)) {
-        await expect(page.getByTestId('gap-save-btn')).toBeVisible();
-        await expect(h1(page)).not.toHaveText(either((t) => t.pim.gap_definition_detail));
-      }
-
       await openPage(page, '/pim/gap-definitions/create');
+      test.skip(page.url().includes('/pim/products'), 'the quality API is off on this stack');
       await expect(h1(page)).toHaveText(either((t) => t.pim.create_gap_definition));
       await expectHeader(page);
       await expect(page.getByTestId('gap-save-btn')).toBeVisible();
+
+      // Last: the rule form loads its own chunks, so nothing navigates away while they arrive.
+      const rows = await openList(page, '/pim/gap-definitions', (t) => t.pim.gap_definitions);
+      if (await openFirstRow(page, rows, /\/pim\/gap-definitions\/.+/)) {
+        await expect(page.getByTestId('gap-save-btn')).toBeVisible();
+        await expect(h1(page)).not.toHaveText(either((t) => t.pim.gap_definition_detail));
+        await page.waitForLoadState('networkidle');
+      }
 
       collector.assertNoErrors(expect, 'Pim quality rules');
     });
