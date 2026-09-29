@@ -53,6 +53,7 @@
         >
           <BasicInput
             v-model="form.name"
+            :maxlength="128"
             :placeholder="$t('promo.campaign_name')"
           />
         </FormField>

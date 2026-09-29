@@ -19,6 +19,8 @@
         >
           <BasicInput
             v-model="form.sku"
+            format="key"
+            :maxlength="128"
             :placeholder="$t('pim.sku_placeholder')"
           />
         </FormField>
@@ -59,6 +61,8 @@
         >
           <BasicInput
             v-model="form.ean"
+            format="ean"
+            :maxlength="16"
             placeholder="e.g. 5901234123457"
           />
         </FormField>
@@ -134,6 +138,8 @@ import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { usePimChannelStore } from "@/stores/pimChannel";
 import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
+
+const PRODUCT_FORMATS = { sku: { format: "key" }, ean: { format: "ean" } };
 import {
   POST_Product,
   GET_FeatureSets,
@@ -244,7 +250,7 @@ export default {
         sku: "SKU",
         feature_set_idx: this.$t("pim.feature_set"),
       });
-      if (!valid) return;
+      if (!valid || !this.formErrors.validateFormats(this.form, PRODUCT_FORMATS)) return;
 
       this.loader.loaderStart();
       try {

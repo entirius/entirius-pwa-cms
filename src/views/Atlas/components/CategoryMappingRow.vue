@@ -28,6 +28,7 @@
         <div class="flex gap-1">
           <BasicInput
             v-model="local.source_value"
+            :maxlength="512"
             class="flex-1"
             :disabled="!isNew"
             :placeholder="isNew ? $t('atlas.mappings.category.source_value_placeholder') : ''"
@@ -64,6 +65,7 @@
           :data-testid="`cat-mapping-target-${rowKey}`"
         />
         <BasicInput
+          :maxlength="64"
           v-else
           v-model="local.target_category_idx"
           :placeholder="

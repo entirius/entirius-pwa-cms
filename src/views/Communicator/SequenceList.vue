@@ -23,7 +23,7 @@
       <BasicCard :title="$t('communicator.sequences.add')" data-testid="sequence-add">
         <form class="flex-column gap-4" @submit.prevent="addSequence">
           <FormField class="sequence__key" :label="$t('communicator.template.key')" :error="keyError" required>
-            <BasicInput v-model="draft.key" data-testid="sequence-key" />
+            <BasicInput v-model="draft.key" :maxlength="64" data-testid="sequence-key" />
           </FormField>
           <div v-for="(step, i) in draft.steps" :key="i" class="flex ai-fe flex-wrap gap-5" data-testid="sequence-step">
             <span class="sequence__number">#{{ i + 1 }}</span>
@@ -31,7 +31,7 @@
               <NumberInput v-model.number="step.days_after_previous" :min="0" :max="365" />
             </FormField>
             <FormField :label="$t('communicator.template.key')" required>
-              <BasicInput v-model="step.template_key" />
+              <BasicInput v-model="step.template_key" :maxlength="128" />
             </FormField>
           </div>
           <p v-if="errors.add" class="t-negative m-0" role="alert" data-testid="sequence-error">{{ errors.add }}</p>

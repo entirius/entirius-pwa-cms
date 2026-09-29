@@ -29,6 +29,7 @@
             >
               <BasicInput
                 v-model="form.name"
+                :maxlength="128"
               />
             </FormField>
             <FormField
@@ -56,6 +57,7 @@
             >
               <NumberInput
                 v-model="form.priority"
+                :max="INT_MAX"
               />
             </FormField>
           </div>
@@ -77,6 +79,7 @@
               >
                 <NumberInput
                   v-model="form.extra_value"
+                  :max="extraValueKind === 'percent' ? 100 : INT_MAX"
                 />
               </FormField>
             </template>
@@ -188,6 +191,7 @@
             >
               <BasicInput
                 v-model="form.min_order_amount"
+                format="money"
                 :placeholder="$t('promo.min_order_amount_placeholder')"
               />
             </FormField>
@@ -331,16 +335,18 @@
               >
                 <BasicInput
                   v-model="newCode.code"
+                  format="key"
+                  :maxlength="40"
                 />
               </FormField>
               <FormField :label="$t('promo.code_field_max_used')">
-                <NumberInput v-model="newCode.max_used" />
+                <NumberInput v-model="newCode.max_used" :min="1" :max="INT_MAX" />
               </FormField>
               <FormField :label="$t('promo.code_field_max_per_user')">
-                <NumberInput v-model="newCode.max_uses_per_user" />
+                <NumberInput v-model="newCode.max_uses_per_user" :min="1" :max="INT_MAX" />
               </FormField>
               <FormField :label="$t('promo.code_field_max_qty')">
-                <NumberInput v-model="newCode.max_products_qty" />
+                <NumberInput v-model="newCode.max_products_qty" :min="1" :max="INT_MAX" />
               </FormField>
               <FormField :label="$t('promo.code_field_active_from')">
                 <BasicInput type="date" v-model="newCode.active_from" />
@@ -537,14 +543,19 @@
         <p class="fs-200 t-muted mb-8">
           {{ $t("promo.code_field_current_used") }}: <strong>{{ editCode.current_used }}</strong>
         </p>
-        <FormField :label="$t('promo.code_field_code')" required class="mb-5">
-          <BasicInput v-model="editCode.code" />
+        <FormField
+          :label="$t('promo.code_field_code')"
+          required
+          class="mb-5"
+          :error="codeFormErrors.getFieldError('code')?.msg || ''"
+        >
+          <BasicInput v-model="editCode.code" format="key" :maxlength="40" />
         </FormField>
         <FormField :label="$t('promo.code_field_max_used')" class="mb-5">
-          <NumberInput v-model="editCode.max_used" />
+          <NumberInput v-model="editCode.max_used" :min="1" :max="INT_MAX" />
         </FormField>
         <FormField :label="$t('promo.code_field_max_per_user')" class="mb-5">
-          <NumberInput v-model="editCode.max_uses_per_user" />
+          <NumberInput v-model="editCode.max_uses_per_user" :min="1" :max="INT_MAX" />
         </FormField>
         <FormField :label="$t('promo.code_field_active_from')" class="mb-5">
           <BasicInput type="date" v-model="editCode.active_from" />
@@ -553,7 +564,7 @@
           <BasicInput type="date" v-model="editCode.active_to" />
         </FormField>
         <FormField :label="$t('promo.code_field_max_qty')">
-          <NumberInput v-model="editCode.max_products_qty" />
+          <NumberInput v-model="editCode.max_products_qty" :min="1" :max="INT_MAX" />
         </FormField>
       </div>
     </BasicModal>
@@ -610,6 +621,10 @@ import {
   GET_Currencies,
 } from "@/api/promo/api";
 import FilterEditDrawer from "./FilterEditDrawer.vue";
+import { INT_MAX } from "@/utils/formats";
+
+const RULE_FORMATS = { min_order_amount: { format: "money" } };
+const CODE_FORMATS = { code: { format: "key" } };
 
 const EXTRA_VALUE_KINDS_SCALAR = ["percent", "amount", "gratis_qty"];
 const EXTRA_VALUE_KINDS_THRESHOLD = [
@@ -664,7 +679,7 @@ export default {
     const codeFormErrors = useFormErrors();
     const unsaved = useUnsavedChanges();
     const { search: codesSearch, debouncedFetch } = useSearchDebounce();
-    return { loader, notify, checkoutChannel, formErrors, codeFormErrors, ...unsaved, codesSearch, debouncedFetch };
+    return { loader, notify, checkoutChannel, formErrors, codeFormErrors, ...unsaved, codesSearch, debouncedFetch, INT_MAX };
   },
   data() {
     return {
@@ -1100,6 +1115,7 @@ export default {
         max_products_qty: code.max_products_qty ?? null,
         current_used: code.current_used ?? 0,
       };
+      this.codeFormErrors.clearErrors();
       this.showEditCodeModal = true;
     },
     closeEditCodeModal() {
@@ -1114,6 +1130,7 @@ export default {
       return extractApiMessage(err, this.$t("notifications.save_error"));
     },
     async saveEditCode() {
+      if (!this.codeFormErrors.validateFormats(this.editCode, CODE_FORMATS)) return;
       const codeId = this.editCode.id;
       this.loader.loaderStart();
       try {
@@ -1208,7 +1225,7 @@ export default {
       const valid = this.codeFormErrors.validateRequired(this.newCode, {
         code: this.$t("promo.code_field_code"),
       });
-      if (!valid) return;
+      if (!valid || !this.codeFormErrors.validateFormats(this.newCode, CODE_FORMATS)) return;
 
       this.loader.loaderStart();
       try {
@@ -1327,7 +1344,7 @@ export default {
         name: this.$t("promo.field_name"),
         modifier: this.$t("promo.field_modifier"),
       });
-      if (!valid) return;
+      if (!valid || !this.formErrors.validateFormats(this.form, RULE_FORMATS)) return;
 
       if (this.extraValueKind === "json" && this.jsonParseError) return;
 

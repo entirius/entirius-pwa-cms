@@ -17,6 +17,7 @@
       <FormField :label="$t('atlas.duplicates.merge_modal.reason_label')">
         <BasicTextarea
           v-model="reason"
+          :maxlength="512"
           :placeholder="$t('atlas.duplicates.merge_modal.reason_placeholder')"
           rows="3"
           :disabled="loading"

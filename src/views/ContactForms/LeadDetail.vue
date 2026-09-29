@@ -35,16 +35,20 @@
             <FormField :label="$t('cf.name')" :error="formErrors.getFieldError('name')?.msg || ''">
               <BasicInput
                 v-model="form.name"
+                :maxlength="255"
               />
             </FormField>
             <FormField :label="$t('cf.phone')" :error="formErrors.getFieldError('phone')?.msg || ''">
               <BasicInput
                 v-model="form.phone"
+                type="tel"
+                :maxlength="32"
               />
             </FormField>
             <FormField :label="$t('cf.company')" :error="formErrors.getFieldError('company')?.msg || ''">
               <BasicInput
                 v-model="form.company"
+                :maxlength="255"
               />
             </FormField>
             <FormField

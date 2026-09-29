@@ -17,6 +17,7 @@
             <span class="visually-hidden">{{ $t("leads.lead_types.label") }}</span>
             <BasicInput
               v-model="type.label"
+              :maxlength="128"
               data-testid="lead-type-label"
               @on-focusout="rename(type)"
               @on-key-down="rename(type)"
@@ -62,12 +63,13 @@
         <FormField :label="$t('leads.lead_types.code')" hint-level="important" :hint="$t('leads.lead_types.code_help')" required>
           <BasicInput
             :model-value="draft.code"
+            :maxlength="32"
             data-testid="lead-type-new-code"
             @update:model-value="draft.code = $event.toUpperCase()"
           />
         </FormField>
         <FormField :label="$t('leads.lead_types.label')" required :error="errors.label || ''">
-          <BasicInput v-model="draft.label" data-testid="lead-type-new-label" />
+          <BasicInput v-model="draft.label" :maxlength="128" data-testid="lead-type-new-label" />
         </FormField>
         <BasicButton class="lead-type__submit" variant="primary" type="submit" data-testid="lead-type-save">
           {{ $t("leads.lead_types.add") }}

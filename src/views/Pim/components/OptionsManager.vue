@@ -34,6 +34,8 @@
       <FormField class="flex-1" :label="$t('pim.option_code')">
         <BasicInput
           v-model="newOption.idx"
+          format="key"
+          :maxlength="128"
         />
       </FormField>
       <FormField class="flex-1" :label="$t('pim.default_label')">
@@ -175,6 +177,7 @@ import {
 
 import OptionTranslationsDrawer from "./OptionTranslationsDrawer.vue";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { formatError } from "@/utils/formats";
 
 const PAGE_SIZE = 50;
 
@@ -316,7 +319,8 @@ export default {
       }, 300);
     },
     async createOption() {
-      if (!this.newOption.idx) return;
+      // An invalid code is already marked in its field (BasicInput format).
+      if (!this.newOption.idx || formatError("key", this.newOption.idx)) return;
       this.loader.loaderStart();
       try {
         const name_t9n = {};

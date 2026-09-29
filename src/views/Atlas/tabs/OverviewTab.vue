@@ -17,7 +17,7 @@
       required
       :error="errors.name?.msg || ''"
     >
-      <BasicInput v-model="form.name" data-testid="overview-name" />
+      <BasicInput v-model="form.name" :maxlength="128" data-testid="overview-name" />
     </FormField>
     <FormField
       :label="$t('atlas.form.kind_label')"
@@ -99,9 +99,12 @@
       :label="$t('atlas.form.sku_prefix_label')"
       hint-level="important"
       :hint="$t('atlas.form.sku_prefix_tooltip')"
+      :error="errors.sku_prefix?.msg || ''"
     >
       <BasicInput
         v-model="form.sku_prefix"
+        format="key"
+        :maxlength="10"
         data-testid="overview-sku-prefix"
       />
     </FormField>
@@ -113,6 +116,7 @@
     >
       <BasicInput
         v-model="form.target_warehouse_code"
+        :maxlength="64"
         placeholder="WH-MAIN"
         data-testid="overview-warehouse"
       />
@@ -124,6 +128,7 @@
     >
       <BasicInput
         v-model="form.default_feature_set_idx"
+        :maxlength="64"
         data-testid="overview-feature-set"
       />
     </FormField>
@@ -168,9 +173,13 @@
     <FormField
       :label="$t('atlas.form.contact_email_label')"
       :hint="$t('atlas.form.contact_email_tooltip')"
+      :error="errors.contact_email?.msg || ''"
     >
       <BasicInput
         v-model="form.contact_email"
+        format="email"
+        type="email"
+        :maxlength="254"
         placeholder="ops@example.com"
         data-testid="overview-contact-email"
       />
@@ -181,6 +190,8 @@
     >
       <BasicInput
         v-model="form.contact_phone"
+        type="tel"
+        :maxlength="32"
         data-testid="overview-contact-phone"
       />
     </FormField>
@@ -190,6 +201,7 @@
     >
       <BasicInput
         v-model="form.contact_person"
+        :maxlength="128"
         data-testid="overview-contact-person"
       />
     </FormField>
@@ -200,6 +212,7 @@
     >
       <BasicInput
         v-model="form.company_name"
+        :maxlength="128"
         data-testid="overview-company"
       />
     </FormField>
@@ -286,6 +299,8 @@
 import { useNotifyStore } from "@/stores/notify";
 import { useRegionalStore } from "@/stores/regional";
 import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
+
+const OVERVIEW_FORMATS = { sku_prefix: { format: "key" }, contact_email: { format: "email" } };
 import { PATCH_Source } from "@/api/atlas/api";
 
 const FIELDS = [
@@ -324,7 +339,7 @@ export default {
   },
   emits: ["updated", "header-actions"],
   setup() {
-    const { errors, handleApiError, clearErrors } = useFormErrors();
+    const { errors, handleApiError, clearErrors, validateFormats } = useFormErrors();
     const regionalStore = useRegionalStore();
     regionalStore.fetchAll();
     return {
@@ -333,6 +348,7 @@ export default {
       errors,
       handleApiError,
       clearErrors,
+      validateFormats,
     };
   },
   data() {
@@ -452,10 +468,15 @@ export default {
         return null;
       return "";
     },
+    // Only a value changed here is checked: a stored one the operator did not touch never blocks the save.
+    changedFormats() {
+      return Object.fromEntries(Object.entries(OVERVIEW_FORMATS).filter(([k]) => this.form[k] !== this.original[k]));
+    },
     async save() {
       if (!this.supplier) return;
-      this.saving = true;
       this.clearErrors();
+      if (!this.validateFormats(this.form, this.changedFormats())) return;
+      this.saving = true;
       try {
         const payload = {};
         for (const k of FIELDS) {

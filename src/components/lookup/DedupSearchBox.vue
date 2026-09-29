@@ -13,6 +13,7 @@
     <div class="dedup-search-box__row">
       <BasicInput
         v-model="q"
+        :maxlength="500"
         :placeholder="$t('lookup.box.placeholder')"
         class="dedup-search-box__input"
         data-testid="dedup-search-input"

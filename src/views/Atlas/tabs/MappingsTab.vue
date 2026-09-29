@@ -186,7 +186,7 @@
     >
       <form class="flex flex-column gap-5" @submit.prevent="submitForm">
         <FormField :label="$t('atlas.form.name_label')" required>
-          <BasicInput v-model="formData.name" data-testid="mapping-form-name" />
+          <BasicInput v-model="formData.name" :maxlength="128" data-testid="mapping-form-name" />
         </FormField>
         <FormField
           :label="$t('atlas.form.idx_label')"
@@ -195,6 +195,8 @@
         >
           <BasicInput
             :model-value="formData.idx"
+            format="key"
+            :maxlength="64"
             placeholder="default"
             :disabled="!!editingIdx"
             data-testid="mapping-form-idx"
@@ -324,8 +326,8 @@ export default {
   },
   setup() {
     const notify = useNotifyStore();
-    const { errors, handleApiError, clearErrors } = useFormErrors();
-    return { notify, errors, handleApiError, clearErrors };
+    const { errors, handleApiError, clearErrors, validateFormats } = useFormErrors();
+    return { notify, errors, handleApiError, clearErrors, validateFormats };
   },
   data() {
     return {
@@ -536,8 +538,9 @@ export default {
     },
     async submitForm() {
       if (!this.supplier?.idx) return;
-      this.formBusy = true;
       this.clearErrors();
+      if (!this.editingIdx && !this.validateFormats(this.formData, { idx: { format: "key" } })) return;
+      this.formBusy = true;
       try {
         const isEdit = !!this.editingIdx;
         const payload = {

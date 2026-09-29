@@ -13,6 +13,7 @@
       <FormField :label="forceLabel">
         <BasicTextarea
           v-model="reason"
+          :maxlength="512"
           :placeholder="$t('pim.supplier.force_preferred_modal.reason_placeholder')"
           rows="3"
           :disabled="loading"

@@ -13,8 +13,14 @@
 
     <BasicCard :title="$t('pim.basic_info')" gap class="mb-8">
       <div class="form-grid">
-        <FormField label="IDX" required hint-level="important" :hint="$t('pim.category_idx_hint')">
-          <BasicInput v-model="form.idx" />
+        <FormField
+          label="IDX"
+          required
+          hint-level="important"
+          :hint="$t('pim.category_idx_hint')"
+          :error="formErrors.getFieldError('idx')?.msg || ''"
+        >
+          <BasicInput v-model="form.idx" format="key" :maxlength="128" />
         </FormField>
         <FormField :label="$t('pim.parent')">
           <BasicSelect
@@ -99,7 +105,7 @@ import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { usePimChannelStore } from "@/stores/pimChannel";
 import { POST_Category, GET_Categories } from "@/api/pim/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
 import PimChannelSelect from "./components/PimChannelSelect.vue";
 
 export default {
@@ -109,7 +115,8 @@ export default {
     const loader = useLoaderStore();
     const notify = useNotifyStore();
     const pimChannel = usePimChannelStore();
-    return { loader, notify, pimChannel };
+    const formErrors = useFormErrors();
+    return { loader, notify, pimChannel, formErrors };
   },
   data() {
     return {
@@ -183,6 +190,7 @@ export default {
         });
         return;
       }
+      if (!this.formErrors.validateFormats(this.form, { idx: { format: "key" } })) return;
 
       this.loader.loaderStart();
       try {

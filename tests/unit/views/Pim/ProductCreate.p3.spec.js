@@ -1,8 +1,9 @@
 import { describe, it, expect, vi } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
 
+const postProduct = vi.fn();
 vi.mock("@/api/pim/api", () => ({
-  POST_Product: vi.fn(),
+  POST_Product: (...args) => postProduct(...args),
   GET_FeatureSets: () => Promise.resolve({ data: { results: [{ idx: "outdoor", name: "Outdoor" }] } }),
   POST_AddToChannel: vi.fn(),
 }));
@@ -55,5 +56,25 @@ describe("ProductCreate — P3 controls", () => {
 
     await channel.vm.$emit("update:modelValue", false);
     expect(wrapper.vm.selectedChannels).toEqual({});
+  });
+});
+
+describe("ProductCreate — formats (plan 61)", () => {
+  it("an EAN with a wrong check digit blocks the create with a field error, no request", async () => {
+    const wrapper = mountCreate();
+    await flushPromises();
+    Object.assign(wrapper.vm.form, { sku: "CHAIR-1", feature_set_idx: "outdoor", ean: "5901234123458" });
+    await wrapper.vm.createProduct();
+    expect(postProduct).not.toHaveBeenCalled();
+    expect(wrapper.vm.formErrors.getFieldError("ean").msg).toMatch(/check digit/);
+  });
+
+  it("a SKU with a space blocks the create", async () => {
+    const wrapper = mountCreate();
+    await flushPromises();
+    Object.assign(wrapper.vm.form, { sku: "CHAIR 1", feature_set_idx: "outdoor", ean: "" });
+    await wrapper.vm.createProduct();
+    expect(postProduct).not.toHaveBeenCalled();
+    expect(wrapper.vm.formErrors.getFieldError("sku").msg).toMatch(/without spaces/);
   });
 });

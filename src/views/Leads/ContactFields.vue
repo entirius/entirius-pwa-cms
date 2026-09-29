@@ -11,18 +11,19 @@
       />
     </FormField>
     <FormField :label="$t('leads.add.first_name')">
-      <BasicInput v-model.trim="form.first_name" autocomplete="off" :data-testid="`${testid}-first-name`" />
+      <BasicInput v-model.trim="form.first_name" :maxlength="128" autocomplete="off" :data-testid="`${testid}-first-name`" />
     </FormField>
     <FormField :label="$t('leads.add.last_name')">
-      <BasicInput v-model.trim="form.last_name" autocomplete="off" :data-testid="`${testid}-last-name`" />
+      <BasicInput v-model.trim="form.last_name" :maxlength="128" autocomplete="off" :data-testid="`${testid}-last-name`" />
     </FormField>
     <template v-if="full">
       <FormField :label="$t('leads.contacts.job_title')">
-        <BasicInput v-model.trim="form.job_title" autocomplete="off" :data-testid="`${testid}-job-title`" />
+        <BasicInput v-model.trim="form.job_title" :maxlength="128" autocomplete="off" :data-testid="`${testid}-job-title`" />
       </FormField>
       <FormField :label="$t('leads.contacts.phone')" :error="errorOf('phone')">
         <BasicInput
           v-model.trim="form.phone"
+          :maxlength="32"
           type="tel"
           inputmode="tel"
           autocomplete="off"
@@ -48,7 +49,7 @@
       required
       :error="errorOf('consent_ref')"
     >
-      <BasicInput v-model.trim="form.consent_ref" autocomplete="off" :data-testid="`${testid}-consent-ref`" />
+      <BasicInput v-model.trim="form.consent_ref" :maxlength="255" autocomplete="off" :data-testid="`${testid}-consent-ref`" />
     </FormField>
     <BasicCheckbox v-if="full" v-model="form.is_primary" class="form-grid__wide" :data-testid="`${testid}-primary`">
       {{ $t("leads.contacts.primary") }}

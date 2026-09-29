@@ -23,7 +23,7 @@
             :hint="$t('pim.gap_key_hint')"
             :error="fieldErr('key')"
           >
-            <BasicInput v-model="form.key" :disabled="!isCreate" />
+            <BasicInput v-model="form.key" format="key" :maxlength="64" :disabled="!isCreate" />
           </FormField>
 
           <FormField :label="$t('pim.gap_check')" :error="fieldErr('check_key')">
@@ -411,6 +411,7 @@ export default {
       }
       this.rawParamsError = "";
       if (!this.validateLocal(params)) return;
+      if (this.isCreate && !this.validateFormats(this.form, { key: { format: "key" } })) return;
 
       const payload = {
         check_key: this.form.check_key,

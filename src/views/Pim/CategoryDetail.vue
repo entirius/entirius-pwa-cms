@@ -147,8 +147,9 @@
                 :label="$t('pim.og_image_url')"
                 :hint="$t('pim.og_image_url_help')"
                 class="form-grid__wide"
+                :error="formErrors.getFieldError('og_image_url')?.msg || ''"
               >
-                <BasicInput v-model="form.og_image_url" />
+                <BasicInput v-model="form.og_image_url" format="url" type="url" :maxlength="512" />
               </FormField>
               <ProductT9nField
                 v-for="field in SEO_FIELDS"
@@ -231,7 +232,7 @@ import { GET_Category, PATCH_Category, DELETE_Category, POST_UploadPicture } fro
 import CategoryProducts from "./components/CategoryProducts.vue";
 import PimChannelSelect from "./components/PimChannelSelect.vue";
 import ProductT9nField from "./components/ProductT9nField.vue";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
 import { isNotFound } from "@/api/createClient";
 
 // Translatable fields per card, and the control each one takes (the drawer uses the same).
@@ -256,7 +257,8 @@ export default {
     const notify = useNotifyStore();
     const pimChannel = usePimChannelStore();
     const unsaved = useUnsavedChanges();
-    return { loader, notify, pimChannel, ...unsaved, CONTENT_FIELDS, SEO_FIELDS };
+    const formErrors = useFormErrors();
+    return { loader, notify, pimChannel, formErrors, ...unsaved, CONTENT_FIELDS, SEO_FIELDS };
   },
   data() {
     return {
@@ -443,6 +445,9 @@ export default {
       this.track(this.form);
     },
     async saveCategory() {
+      // Only a URL typed here is checked: a stored one the operator did not touch never blocks other edits.
+      const urlChanged = this.form.og_image_url !== (this.category.og_image_url || "");
+      if (urlChanged && !this.formErrors.validateFormats(this.form, { og_image_url: { format: "url" } })) return;
       this.loader.loaderStart();
       try {
         const payload = {};

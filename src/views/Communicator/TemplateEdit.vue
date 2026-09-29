@@ -24,7 +24,7 @@
             <BasicSelect v-model="form.model" :options="modelOptions" data-testid="template-model" />
           </FormField>
           <FormField class="form-grid__wide" :label="$t('communicator.template.subject')">
-            <BasicInput v-model="form.subject" data-testid="template-subject" />
+            <BasicInput v-model="form.subject" :maxlength="255" data-testid="template-subject" />
           </FormField>
           <FormField class="form-grid__wide" :label="$t('communicator.template.body')" required>
             <BasicTextarea v-model="form.body" :rows="10" data-testid="template-body" />

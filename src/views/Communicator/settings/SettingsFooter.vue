@@ -13,7 +13,7 @@
         @update:model-value="pickLanguage"
       />
       <FormField :label="$t('communicator.footer.html', { language: language.toUpperCase() })">
-        <BasicTextarea v-model="html" :rows="8" :placeholder="$t('communicator.footer.placeholder')" data-testid="footer-html" />
+        <BasicTextarea v-model="html" :maxlength="20000" :rows="8" :placeholder="$t('communicator.footer.placeholder')" data-testid="footer-html" />
       </FormField>
       <p v-if="error" class="t-negative m-0" role="alert" data-testid="footer-error">{{ error }}</p>
       <p v-else-if="html && !hasPlaceholder" class="t-muted m-0" data-testid="footer-hint">{{ $t("communicator.footer.needs_legal") }}</p>

@@ -46,7 +46,7 @@
             :hint="$t('enrichment.spawn_rules.key_hint')"
             :error="fieldErr('key')"
           >
-            <BasicInput v-model="form.key" :disabled="!isCreate" data-test="spawn-rule-key" />
+            <BasicInput v-model="form.key" :maxlength="64" :disabled="!isCreate" data-test="spawn-rule-key" />
           </FormField>
 
           <FormField
@@ -68,7 +68,7 @@
               :placeholder="$t('common.select')"
             />
             <!-- Soft-compat: no PIM gaps API (old backend / other module) → free text. -->
-            <BasicInput v-else v-model="form.check_key" data-test="spawn-rule-check-input" />
+            <BasicInput v-else v-model="form.check_key" :maxlength="64" data-test="spawn-rule-check-input" />
           </FormField>
 
           <FormField :label="$t('enrichment.spawn_rules.col_task_type')">

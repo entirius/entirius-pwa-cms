@@ -64,25 +64,25 @@
             :label="$t('emails.footer_signature_copy_1')"
             :hint="$t('emails.footer_signature_copy_1_hint')"
           >
-            <BasicInput v-model="config.footer_signature_copy_1" />
+            <BasicInput v-model="config.footer_signature_copy_1" :maxlength="512" />
           </FormField>
           <FormField
             :label="$t('emails.footer_signature_copy_2')"
             :hint="$t('emails.footer_signature_copy_2_hint')"
           >
-            <BasicInput v-model="config.footer_signature_copy_2" />
+            <BasicInput v-model="config.footer_signature_copy_2" :maxlength="512" />
           </FormField>
           <FormField
             :label="$t('emails.footer_socials_copy')"
             :hint="$t('emails.footer_socials_copy_hint')"
           >
-            <BasicInput v-model="config.footer_socials_copy" />
+            <BasicInput v-model="config.footer_socials_copy" :maxlength="512" />
           </FormField>
           <FormField
             :label="$t('emails.footer_unsubscribe_label')"
             :hint="$t('emails.footer_unsubscribe_label_hint')"
           >
-            <BasicInput v-model="config.footer_unsubscribe_label" />
+            <BasicInput v-model="config.footer_unsubscribe_label" :maxlength="256" />
           </FormField>
           <FormField
             :label="$t('emails.footer_automatic_copy')"

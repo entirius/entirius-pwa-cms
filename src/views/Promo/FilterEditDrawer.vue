@@ -101,28 +101,28 @@
         <!-- numeric ranges -->
         <div class="fed__range-grid mt-8">
           <FormField :label="$t('promo.filter_field_product_price_from')">
-            <NumberInput v-model="local.product_price_from" />
+            <NumberInput v-model="local.product_price_from" :max="INT_MAX" />
           </FormField>
           <FormField :label="$t('promo.filter_field_product_price_to')">
-            <NumberInput v-model="local.product_price_to" />
+            <NumberInput v-model="local.product_price_to" :max="INT_MAX" />
           </FormField>
           <FormField :label="$t('promo.filter_field_cart_price_from')">
-            <NumberInput v-model="local.cart_price_from" />
+            <NumberInput v-model="local.cart_price_from" :max="INT_MAX" />
           </FormField>
           <FormField :label="$t('promo.filter_field_cart_price_to')">
-            <NumberInput v-model="local.cart_price_to" />
+            <NumberInput v-model="local.cart_price_to" :max="INT_MAX" />
           </FormField>
           <FormField :label="$t('promo.filter_field_qty_from')">
-            <NumberInput v-model="local.qty_from" />
+            <NumberInput v-model="local.qty_from" :max="INT_MAX" />
           </FormField>
           <FormField :label="$t('promo.filter_field_qty_to')">
-            <NumberInput v-model="local.qty_to" />
+            <NumberInput v-model="local.qty_to" :max="INT_MAX" />
           </FormField>
           <FormField :label="$t('promo.filter_field_cart_qty_from')">
-            <NumberInput v-model="local.cart_qty_from" />
+            <NumberInput v-model="local.cart_qty_from" :max="INT_MAX" />
           </FormField>
           <FormField :label="$t('promo.filter_field_cart_qty_to')">
-            <NumberInput v-model="local.cart_qty_to" />
+            <NumberInput v-model="local.cart_qty_to" :max="INT_MAX" />
           </FormField>
         </div>
       </template>
@@ -195,6 +195,7 @@ import {
 } from "@/api/promo/api";
 import { useNotifyStore } from "@/stores/notify";
 import { useLoaderStore } from "@/stores/loader";
+import { INT_MAX } from "@/utils/formats";
 
 const props = defineProps({
   visible: { type: Boolean, default: false },

@@ -22,6 +22,7 @@
       <FormField :label="$t('enrichment.review.reject_reason')">
         <BasicTextarea
           v-model="reason"
+          :maxlength="512"
           :rows="2"
           :placeholder="$t('enrichment.review.reject_reason_placeholder')"
           data-testid="enrichment-drift-reason"

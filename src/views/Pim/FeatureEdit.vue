@@ -31,8 +31,9 @@
               :label="$t('pim.feature_code')"
               :hint="$t('pim.attribute_code_help')"
               :required="isCreate"
+              :error="formErrors.getFieldError('idx')?.msg || ''"
             >
-              <BasicInput v-if="isCreate" v-model="form.idx" />
+              <BasicInput v-if="isCreate" v-model="form.idx" format="key" :maxlength="128" />
               <BasicInput v-else :model-value="form.idx" readonly />
             </FormField>
             <FormField
@@ -53,8 +54,8 @@
             >
               <BasicInput :model-value="selectedScopeLabel" readonly />
             </FormField>
-            <FormField :label="$t('pim.display_order')">
-              <BasicInput v-model="form.display_order" type="number" />
+            <FormField :label="$t('pim.display_order')" :error="formErrors.getFieldError('display_order')?.msg || ''">
+              <BasicInput v-model="form.display_order" format="integer" inputmode="numeric" :min="0" />
             </FormField>
             <FormField :label="$t('pim.frontend_input_type')">
               <BasicSelect
@@ -191,7 +192,10 @@ import {
 } from "./helpers/pimEnums";
 import OptionsManager from "./components/OptionsManager.vue";
 import PimChannelSelect from "./components/PimChannelSelect.vue";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
+
+const ORDER_FORMAT = { display_order: { format: "integer", min: 0 } };
+const CREATE_FORMATS = { ...ORDER_FORMAT, idx: { format: "key" } };
 
 export default {
   name: "FeatureEdit",
@@ -204,6 +208,7 @@ export default {
     const notify = useNotifyStore();
     const unsaved = useUnsavedChanges();
     const pimChannel = usePimChannelStore();
+    const formErrors = useFormErrors();
     const isGlobalScope = inject("isGlobalScope", null);
     onMounted(() => {
       nextTick(() => {
@@ -213,7 +218,7 @@ export default {
     onBeforeUnmount(() => {
       if (isGlobalScope) isGlobalScope.value = false;
     });
-    return { loader, notify, pimChannel, ...unsaved };
+    return { loader, notify, pimChannel, formErrors, ...unsaved };
   },
   data() {
     return {
@@ -448,6 +453,7 @@ export default {
       return { payload, changedFields };
     },
     async save() {
+      if (!this.formErrors.validateFormats(this.form, this.isCreate ? CREATE_FORMATS : ORDER_FORMAT)) return;
       this.loader.loaderStart();
       try {
         if (this.isCreate) {

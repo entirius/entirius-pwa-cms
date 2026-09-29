@@ -129,6 +129,7 @@
         <FormField :label="$t('atlas.linked.external_id_label')">
           <BasicInput
             v-model="formData.external_id"
+            :maxlength="128"
             data-testid="linked-form-external-id"
           />
         </FormField>

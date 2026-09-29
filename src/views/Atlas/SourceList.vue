@@ -131,6 +131,8 @@
         >
           <BasicInput
             v-model="createForm.idx"
+            format="key"
+            :maxlength="64"
             placeholder="example-supplier"
             data-testid="suppliers-create-idx"
           />
@@ -142,6 +144,7 @@
         >
           <BasicInput
             v-model="createForm.name"
+            :maxlength="128"
             data-testid="suppliers-create-name"
           />
         </FormField>
@@ -175,9 +178,11 @@
             data-testid="suppliers-create-currency"
           />
         </FormField>
-        <FormField :label="$t('atlas.form.sku_prefix_label')">
+        <FormField :label="$t('atlas.form.sku_prefix_label')" :error="errors.sku_prefix?.msg || ''">
           <BasicInput
             v-model="createForm.sku_prefix"
+            format="key"
+            :maxlength="10"
             placeholder="SUP"
             data-testid="suppliers-create-sku-prefix"
           />
@@ -279,6 +284,8 @@ import { useNotifyStore } from "@/stores/notify";
 import { useRegionalStore } from "@/stores/regional";
 import { useSearchDebounce } from "@/composables/useSearchDebounce";
 import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
+
+const CREATE_FORMATS = { idx: { format: "key" }, sku_prefix: { format: "key" } };
 import {
   GET_Sources,
   POST_Source,
@@ -309,7 +316,7 @@ export default {
     const regionalStore = useRegionalStore();
     regionalStore.fetchAll();
     const { search, debouncedFetch } = useSearchDebounce();
-    const { errors, handleApiError, clearErrors } = useFormErrors();
+    const { errors, handleApiError, clearErrors, validateFormats } = useFormErrors();
     return {
       notify,
       regionalStore,
@@ -318,6 +325,7 @@ export default {
       errors,
       handleApiError,
       clearErrors,
+      validateFormats,
     };
   },
   data() {
@@ -525,8 +533,9 @@ export default {
       this.createVisible = false;
     },
     async submitCreate() {
-      this.creating = true;
       this.clearErrors();
+      if (!this.validateFormats(this.createForm, CREATE_FORMATS)) return;
+      this.creating = true;
       try {
         const payload = { ...this.createForm };
         Object.keys(payload).forEach((k) => {

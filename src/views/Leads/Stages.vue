@@ -13,6 +13,7 @@
               <span class="visually-hidden">{{ $t("leads.stages.label") }}</span>
               <BasicInput
                 v-model="element.label"
+                :maxlength="128"
                 data-testid="stage-label"
                 @on-focusout="rename(element)"
                 @on-key-down="rename(element)"
@@ -67,7 +68,7 @@
       </draggable>
       <form class="flex ai-st flex-wrap gap-5" data-testid="stage-add" @submit.prevent="add">
         <FormField :label="$t('leads.stages.key')" hint-level="important" :hint="$t('leads.stages.key_help')" required>
-          <BasicInput v-model="draft.key" data-testid="stage-new-key" />
+          <BasicInput v-model="draft.key" :maxlength="64" data-testid="stage-new-key" />
         </FormField>
         <FormField
           :label="$t('leads.stages.label')"
@@ -75,7 +76,7 @@
           required
           :error="errors.label || ''"
         >
-          <BasicInput v-model="draft.label" data-testid="stage-new-label" />
+          <BasicInput v-model="draft.label" :maxlength="128" data-testid="stage-new-label" />
         </FormField>
         <BasicButton class="stage__submit" variant="primary" type="submit" data-testid="stage-save">
           {{ $t("leads.stages.add") }}

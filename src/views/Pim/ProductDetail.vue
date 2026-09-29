@@ -96,8 +96,8 @@
           <BasicCard :title="$t('pim.physical_properties')" gap class="mb-8">
             <p class="fs-200 t-warning">{{ $t("pim.shared_warning") }}</p>
             <div class="form-grid">
-              <FormField label="EAN">
-                <BasicInput v-model="form.ean" />
+              <FormField label="EAN" :error="formErrors.getFieldError('ean')?.msg || ''">
+                <BasicInput v-model="form.ean" format="ean" :maxlength="16" />
               </FormField>
               <FormField :label="$t('pim.weight')">
                 <BasicInput v-model="form.weight" />
@@ -372,7 +372,7 @@ import {
 } from "@/api/pim/api";
 import { GET_BulkHasChanges } from "@/api/atlas/api";
 import { hasQualityFields } from "./quality";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
 
 // Translatable system fields per place: the info card and the text tabs (T9N_TABS[activeTab]).
 const T9N_TABS = {
@@ -417,7 +417,8 @@ export default {
     const pimChannel = usePimChannelStore();
     const munin = useMuninStore();
     const unsaved = useUnsavedChanges();
-    return { loader, notify, pimChannel, munin, ...unsaved, T9N_TABS };
+    const formErrors = useFormErrors();
+    return { loader, notify, pimChannel, munin, formErrors, ...unsaved, T9N_TABS };
   },
   data() {
     return {
@@ -819,6 +820,9 @@ export default {
       this.isDirty = true;
     },
     async saveProduct() {
+      // Only an EAN typed here is checked: a stored one the operator did not touch never blocks other edits.
+      const eanChanged = this.form.ean !== (this.product.ean || "");
+      if (eanChanged && !this.formErrors.validateFormats(this.form, { ean: { format: "ean" } })) return;
       this.loader.loaderStart();
       try {
         const payload = {};

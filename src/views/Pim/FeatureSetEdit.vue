@@ -27,7 +27,7 @@
           </FormField>
           <template v-if="!loading">
             <FormField :label="$t('pim.name')">
-              <BasicInput v-model="form.name" />
+              <BasicInput v-model="form.name" :maxlength="256" />
             </FormField>
             <FormField
               :label="$t('pim.internal_desc_label')"
@@ -181,6 +181,7 @@
                   <FormField v-else :error="renameError">
                     <BasicInput
                       :model-value="group.name"
+                      :maxlength="256"
                       :aria-label="$t('pim.rename')"
                       class="rename-input"
                       focus-on-create
