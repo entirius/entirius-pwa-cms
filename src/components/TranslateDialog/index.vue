@@ -42,7 +42,7 @@
       </div>
     </div>
 
-    <div v-else class="flex-column gap-4" data-testid="translate-dialog-estimate">
+    <div v-else class="flex-column gap-4" data-testid="translate-dialog-estimate-step">
       <DataTable :columns="costColumns" :rows="costRows" row-key="key" />
       <template v-if="drafts.length">
         <h3 class="field-label">{{ t("translate_dialog.pages_to_translate") }}</h3>
@@ -82,6 +82,8 @@ const step = ref("config");
 const estimate = ref(null);
 const estimating = ref(false);
 const executing = ref(false);
+// Bumped on every open and close: an estimate that answers for an earlier opening is dropped.
+let estimateToken = 0;
 const form = reactive({ source: "", targets: [], force: false, publish: false, types: {} });
 
 const targetOptions = computed(() => props.languages.filter((lang) => lang.value !== form.source));
@@ -123,11 +125,15 @@ const footerActions = computed(() => {
 function reset() {
   step.value = "config";
   estimate.value = null;
+  estimating.value = false;
   Object.assign(form, { source: props.sourceLanguage, targets: [], force: false, publish: false });
   form.types = Object.fromEntries(STORE_TYPES.map((type) => [type.value, true]));
 }
 
-watch(() => props.open, (value) => value && reset(), { immediate: true });
+watch(() => props.open, (value) => {
+  estimateToken += 1;
+  if (value) reset();
+}, { immediate: true });
 watch(() => form.source, (source) => {
   form.targets = form.targets.filter((lang) => lang !== source);
 });
@@ -157,14 +163,17 @@ function notifyError(err, key) {
 }
 
 async function fetchEstimate() {
+  const token = estimateToken;
   estimating.value = true;
   try {
-    estimate.value = await props.estimateFn(buildRequest());
+    const answer = await props.estimateFn(buildRequest());
+    if (token !== estimateToken) return;
+    estimate.value = answer;
     step.value = "estimate";
   } catch (err) {
-    notifyError(err, "translate_dialog.estimate_failed");
+    if (token === estimateToken) notifyError(err, "translate_dialog.estimate_failed");
   } finally {
-    estimating.value = false;
+    if (token === estimateToken) estimating.value = false;
   }
 }
 

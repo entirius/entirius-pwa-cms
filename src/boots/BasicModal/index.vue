@@ -24,7 +24,13 @@
                 <h2 class="fs-400 fw-600 t-body">{{ title }}</h2>
               </slot>
             </div>
-            <IconButton icon="close" :label="$t('common.close')" data-testid="basic-modal-close" @click="close" />
+            <IconButton
+              icon="close"
+              :label="$t('common.close')"
+              :disabled="persistent"
+              data-testid="basic-modal-close"
+              @click="close"
+            />
           </header>
           <div class="basic-modal__body">
             <slot />
@@ -48,9 +54,9 @@ let nextId = 0;
 // The one centred dialog (docs/ui-rules.md § Dialogs): `v-model:open`, `title` (the dialog's <h2> and its name; the
 // `title` slot takes richer markup), `ariaLabel` (the name of a dialog without a title: the root is a Teleport, so a
 // fallthrough `aria-label` never reaches the dialog),
-// `size` sm · md · lg, `persistent` (Esc and the backdrop do not close it; the close button does), default slot =
-// body, `footer` slot or `actions` (→ ActionBar, R5). Focus is trapped while open and goes back to the opener on
-// close. Below the tablet breakpoint it is a full-width sheet at the bottom. `inline` renders the open state in the
+// `size` sm · md · lg, `persistent` (busy: Esc and the backdrop do not close it, the close button is disabled),
+// default slot = body, `footer` slot or `actions` (→ ActionBar, R5). Focus is trapped while open and goes back to the
+// opener on close. Below the tablet breakpoint it is a full-width sheet at the bottom. `inline` renders the open state in the
 // page flow (catalogue): no Teleport, no backdrop, no trap.
 import { computed, ref } from "vue";
 import IconButton from "@/boots/IconButton/index.vue";

@@ -70,6 +70,21 @@ describe("TranslateDialog — product scope", () => {
     ]);
   });
 
+  it("drops an estimate that answers after the dialog closed", async () => {
+    let answer;
+    const estimateFn = vi.fn(() => new Promise((resolve) => (answer = resolve)));
+    const { wrapper } = build("product", { estimateFn });
+    await pickTargets(wrapper, ["en"]);
+    action(wrapper, "estimate").onClick();
+    await wrapper.setProps({ open: false });
+    await wrapper.setProps({ open: true });
+    answer({ per_language: [], estimated_cost_usd: 0 });
+    await flushPromises();
+
+    expect(wrapper.find('[data-testid="translate-dialog-config"]').exists()).toBe(true);
+    expect(action(wrapper, "estimate").loading).toBe(false);
+  });
+
   it("offers no target equal to the source and drops it when the source changes", async () => {
     const { wrapper } = build("product");
     await pickTargets(wrapper, ["en", "de"]);

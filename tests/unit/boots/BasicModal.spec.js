@@ -58,14 +58,15 @@ describe("BasicModal", () => {
     expect(wrapper.emitted("close")).toHaveLength(3);
   });
 
-  it("persistent: Esc and the backdrop keep it open, the close button still closes", async () => {
+  it("persistent: Esc, the backdrop and the disabled close button keep it open", async () => {
     const wrapper = mountModal({ persistent: true });
     await settle();
     escape();
     backdropClick();
+    const closeButton = document.querySelector('[data-testid="basic-modal-close"]');
+    closeButton.click();
+    expect(closeButton.disabled).toBe(true);
     expect(wrapper.emitted("update:open")).toBeUndefined();
-    document.querySelector('[data-testid="basic-modal-close"]').click();
-    expect(wrapper.emitted("update:open")).toEqual([[false]]);
   });
 
   it("renders `actions` as an ActionBar footer, or the footer slot", async () => {

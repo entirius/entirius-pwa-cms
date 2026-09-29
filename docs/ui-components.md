@@ -176,9 +176,9 @@ Catalogue: `#actions` (`#basic-button`, `#icon-button`, `#action-bar`, `#floatin
   overlay never activates one. Positioning of menus and tooltips: `useFloatingPosition` (`@floating-ui/dom`, flip +
   shift + offset, `position: fixed`).
 - **`BasicModal`** — `v-model:open`, `title` (the `<h2>` that names the dialog; the `title` slot takes richer
-  markup), `size` `sm` · `md` · `lg`, `persistent` (Esc and backdrop do not close; the close button does), default
-  slot = body, `footer` slot or `actions` (→ `ActionBar`); emits `update:open` and `close`. `role="dialog"
-  aria-modal`, teleported to `<body>`, `overlay-backdrop`, `surface-raised`, `--radius-xl`, `shadow-lg`, focus
+  markup), `size` `sm` · `md` · `lg`, `persistent` (busy: Esc and backdrop do not close, the close button is
+  disabled), default slot = body, `footer` slot or `actions` (→ `ActionBar`); emits `update:open` and `close`.
+  `role="dialog" aria-modal`, teleported to `<body>`, `overlay-backdrop`, `surface-raised`, `--radius-xl`, `shadow-lg`, focus
   trapped. Below the tablet breakpoint: a full-width sheet at the bottom. Close button test id `basic-modal-close`.
 - **`ConfirmDialog`** — on BasicModal `sm`: `v-model:open`, `title` (or slot), `message` (or the default slot),
   `confirmLabel` / `cancelLabel` (default „Akceptuj” / „Anuluj”), `tone` `default` (primary confirm) · `danger`

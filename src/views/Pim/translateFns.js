@@ -4,8 +4,15 @@ import { POST_TranslateEstimate, POST_TranslateExecute } from "@/api/pim/transla
 
 const jobCount = ({ data }) => data.job_ids?.length || 0;
 
+// The translator reads an empty or missing `entity_ids` as "every product of the channel": the product scope refuses
+// to send one, a channel-wide run is the store scope.
+function productPayload(request, entityIds) {
+  if (!entityIds.length) throw new Error("Product translation needs at least one picked product");
+  return { ...request, entity_ids: entityIds };
+}
+
 export function productTranslateFns(channelIdx, entityIds) {
-  const payload = (request) => ({ ...request, entity_ids: entityIds });
+  const payload = (request) => productPayload(request, entityIds);
   return {
     estimateFn: async (request) => (await POST_TranslateEstimate(channelIdx, "product", payload(request))).data,
     submitFn: async (request) => jobCount(await POST_TranslateExecute(channelIdx, "product", payload(request))),

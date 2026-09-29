@@ -31,7 +31,7 @@
             :placeholder="$t('pim.translate_select_new_language')"
           />
           <BasicButton @click="closeAdding">{{ $t("common.cancel") }}</BasicButton>
-          <BasicButton :disabled="!newLanguage" :loading="addingLanguage" @click="addLanguage">
+          <BasicButton variant="primary" :disabled="!newLanguage" :loading="addingLanguage" @click="addLanguage">
             {{ $t("pim.translate_add_language") }}
           </BasicButton>
         </div>

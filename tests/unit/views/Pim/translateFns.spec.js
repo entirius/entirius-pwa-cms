@@ -34,6 +34,17 @@ describe("Pim product scope", () => {
   });
 });
 
+describe("Pim product scope without a pick", () => {
+  it("sends nothing: an empty entity_ids would translate the whole channel", async () => {
+    const fns = productTranslateFns("ch1", []);
+
+    await expect(fns.estimateFn(request)).rejects.toThrow();
+    await expect(fns.submitFn(request)).rejects.toThrow();
+    expect(POST_TranslateEstimate).not.toHaveBeenCalled();
+    expect(POST_TranslateExecute).not.toHaveBeenCalled();
+  });
+});
+
 describe("Pim store scope", () => {
   it("estimates each content type without the type list in the payload", async () => {
     POST_TranslateEstimate.mockImplementation((_, type) => Promise.resolve({ data: { entity_type: type } }));
@@ -42,6 +53,7 @@ describe("Pim store scope", () => {
     const estimates = await fns.estimateFn({ ...request, entity_types: ["product", "feature"] });
     expect(estimates).toEqual([{ entity_type: "product" }, { entity_type: "feature" }]);
     expect(POST_TranslateEstimate.mock.calls).toEqual([["ch1", "product", request], ["ch1", "feature", request]]);
+    expect(POST_TranslateEstimate.mock.calls.every(([, , payload]) => !("entity_ids" in payload))).toBe(true);
   });
 
   it("executes only the types with items and counts every job", async () => {

@@ -21,9 +21,9 @@ vi.mock("@/stores/notify", () => ({
 
 import SpawnDialog from "@/views/Pim/components/enrichment/SpawnDialog.vue";
 import { POST_SpawnTask } from "@/api/enrichment/api";
+import BasicModal from "@/boots/BasicModal/index.vue";
 
 const stubs = {
-  BasicModal: true,
   FormField: true,
   BasicSelect: true,
   BasicRadioGroup: true,
@@ -34,7 +34,7 @@ const stubs = {
 function build(props = {}) {
   return mount(SpawnDialog, {
     props: { visible: false, skus: ["A", "B"], filterParams: {}, ...props },
-    global: { stubs },
+    global: { components: { BasicModal }, stubs },
   });
 }
 
