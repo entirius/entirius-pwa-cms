@@ -145,7 +145,7 @@ and one meaning per glyph (unit test). A new meaning adds its glyph to `fa-icons
 
 - **`BasicButton`** — `variant` `primary` (accent fill, white text) · `secondary` (outline) · `ghost` · `danger`
   (every delete/remove/reject) · `danger-solid` (the destructive confirm of a dialog); `size` `md`
-  (`--elem-height`) · `sm` (24 px) · `lg` (40 px, the sign-in screens; `primary` gets a soft top light on hover); label in the default slot; `icon` = a meaning of `icons.js`, drawn before the
+  (`--elem-height`) · `sm` (24 px) · `lg` (40 px at `radius-xl`, the sign-in screens; `primary` gets a soft top light on hover); label in the default slot; `icon` = a meaning of `icons.js`, drawn before the
   label (6 px gap); `loading` swaps the icon for a spinner, disables and sets `aria-busy`; `disabled`; `type`
   (`button` by default); without a `variant` it is `secondary`. The click stops at the button (`:stop="false"` lets
   it through).
@@ -372,7 +372,7 @@ Catalogue: `#selects` (`#basic-select`, `#entity-search-picker`, `#channel-multi
   control) joins the field's error / hint id — `"<field id> <caller id>"` (`joinIds`) — instead of replacing it.
 - **`BasicInput`** — `v-model`, `type`, `placeholder`, `icon` (a leading meaning of `icons.js`), `readonly` (the
   value behind a `lock`, the former `LockedField`), `disabled`, the native `maxlength`, `autocomplete`, `inputmode`, `min`, `max`, `step` (props, so they reach
-  the `<input>`, not the wrapper); `--elem-height` (`size="lg"`: 40 px, the sign-in screens), slot `trailing` (a
+  the `<input>`, not the wrapper); `--elem-height` (`size="lg"`: 40 px at `radius-xl`, the sign-in screens), slot `trailing` (a
   control inside the right edge, the text stops before it: the password reveal), `border-control`, the polish disabled
   look. No label or error text of its own (the FormField's). `null` / `false` show an empty field, `0` shows „0”.
   `focusOnCreate` focuses it on mount; events `onFocusout` / `onKeyDown` (Enter) carry the text; unknown listeners

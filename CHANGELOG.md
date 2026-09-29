@@ -149,6 +149,8 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- Sign-in controls (`BasicButton` / `BasicInput` `size="lg"`) round at `radius-xl` (12 px, the brand radius of 40 px
+  buttons) instead of 4 px.
 - Light theme (plan 61f): `border-control` moves to `light.neutral.600` `#646A78` — 3:1 (WCAG 1.4.11) on every
   surface a control sits on, `surface-hover` included (`light.basic.400` gave 2.92:1 there); every light form field
   edge is darker, and `border-strong` (its hover and focus edge) moves to `light.neutral.700` so it stays darker than

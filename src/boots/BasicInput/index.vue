@@ -42,8 +42,8 @@
 // FormField it takes id, aria-describedby, aria-invalid, required and disabled from the contract; the label and the
 // error text are the FormField's. A caller's `aria-describedby` joins the field's. `null` and `false` show an empty
 // field, `0` shows "0". `focusOnCreate` focuses it on mount;
-// `onFocusout` / `onKeyDown` (Enter) emit the current text. `size`: md = --elem-height (default), lg = 40 px (the
-// sign-in screens, AuthLayout). Slot `trailing`: a control inside the right edge (the password reveal), the text
+// `onFocusout` / `onKeyDown` (Enter) emit the current text. `size`: md = --elem-height (default), lg = 40 px
+// at --radius-xl like its button (the sign-in screens, AuthLayout). Slot `trailing`: a control inside the right edge (the password reveal), the text
 // stops before it. `format` (src/utils/formats.js: money, integer, ean, key, …) shows the model in that format, puts
 // the parsed value in the model as it is typed ("232,5" → "232.50"), and once the field is left shows what is wrong
 // through the FormField error (the red border alone outside one); `min` / `max` / `pattern` are its rules. A save still
@@ -207,5 +207,9 @@ onMounted(() => props.focusOnCreate && inputEl.value.focus());
 
 .input-basic-wrapper--lg {
   --input-height: var(--space-10);
+
+  .input-field {
+    border-radius: var(--radius-xl);
+  }
 }
 </style>

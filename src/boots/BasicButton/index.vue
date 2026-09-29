@@ -24,7 +24,8 @@
 </template>
 
 <script>
-// Sizes: md = --elem-height (inputs share it), sm = row actions, lg = 40 px (the sign-in screens, AuthLayout). `variant` is the role: primary, secondary, ghost,
+// Sizes: md = --elem-height (inputs share it), sm = row actions, lg = 40 px at --radius-xl (the sign-in screens,
+// AuthLayout). `variant` is the role: primary, secondary, ghost,
 // danger (every delete/remove/reject), danger-solid (the destructive confirm in a dialog). The label is the default
 // slot; `icon` is a meaning of icons.js, drawn before the label; `loading` swaps the icon for a spinner and disables.
 import { ICONS } from "@/boots/Icons/icons";
@@ -132,6 +133,7 @@ button.button-basic {
   &.button-basic--lg {
     --btn-height: var(--space-10);
 
+    border-radius: var(--radius-xl);
     padding: 0 var(--space-5);
     font-size: var(--fs-300);
   }
