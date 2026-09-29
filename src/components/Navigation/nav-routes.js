@@ -9,6 +9,16 @@
 // Keeping the list here (not inline in Navigation) lets both consumers agree on the count without
 // duplicating the route table.
 
+// The sections of Leads → Settings (the hub behind the one "/leads/settings" entry): nav glyphs like the entries
+// below, not icons.js meanings; `module` hides a section whose backend is off.
+export const LEADS_SETTINGS_SECTIONS = [
+  { key: "stages", route: "LeadsStages", labelKey: "nav.leads_stages", icon: "list-ol", module: "leads" },
+  { key: "lead-types", route: "LeadsLeadTypes", labelKey: "leads.lead_types.title", icon: "tags", module: "leads" },
+  { key: "templates", route: "CommunicatorTemplates", labelKey: "nav.communicator_templates", icon: "file-lines", module: "communicator" },
+  { key: "sequences", route: "CommunicatorSequences", labelKey: "nav.communicator_sequences", icon: "repeat", module: "communicator" },
+  { key: "sending", route: "CommunicatorSettings", labelKey: "nav.communicator_settings", icon: "paper-plane", module: "communicator" },
+];
+
 export function buildNavRoutes() {
   const defaultLang = (process.env.VUE_APP_LANG || "EN").toLowerCase();
   return [

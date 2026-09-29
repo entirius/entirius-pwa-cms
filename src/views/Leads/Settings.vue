@@ -21,20 +21,15 @@
 
 <script setup>
 import { computed } from "vue";
+import { LEADS_SETTINGS_SECTIONS } from "@/components/Navigation/nav-routes";
 import { useMuninStore } from "@/stores/munin";
 
 // Leads → Settings (UX-002d): the configuration of both backends in one list. A section whose module is off is
-// not listed — the backends stay separate (leads decides what and to whom, communicator how and when).
-const SECTIONS = [
-  { key: "stages", route: "LeadsStages", labelKey: "nav.leads_stages", icon: "list-ol", module: "leads" },
-  { key: "lead-types", route: "LeadsLeadTypes", labelKey: "leads.lead_types.title", icon: "tags", module: "leads" },
-  { key: "templates", route: "CommunicatorTemplates", labelKey: "nav.communicator_templates", icon: "file-lines", module: "communicator" },
-  { key: "sequences", route: "CommunicatorSequences", labelKey: "nav.communicator_sequences", icon: "repeat", module: "communicator" },
-  { key: "sending", route: "CommunicatorSettings", labelKey: "nav.communicator_settings", icon: "paper-plane", module: "communicator" },
-];
+// not listed — the backends stay separate (leads decides what and to whom, communicator how and when). The sections
+// and their glyphs come from the nav model.
 
 const munin = useMuninStore();
-const sections = computed(() => SECTIONS.filter((section) => munin.isModuleEnabled(section.module)));
+const sections = computed(() => LEADS_SETTINGS_SECTIONS.filter((section) => munin.isModuleEnabled(section.module)));
 </script>
 
 <style scoped>
