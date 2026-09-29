@@ -84,4 +84,17 @@ describe("Builder — section config summary", () => {
     expect(summary.text()).toBe("builder.setted_config: —");
     wrapper.unmount();
   });
+
+  it("a populated summary wraps to two lines at most, the full text in its title", async () => {
+    const wrapper = await mountBuilder();
+    Object.assign(wrapper.vm, { core_config: [{ prop: "bg" }], optional_config: [{ prop: "cols" }] });
+    wrapper.vm.props_dictionary = { bg: "Background", cols: "Columns" };
+    Object.assign(wrapper.vm.sections.s1, { bg: "dark", cols: 3 });
+    await flushPromises();
+    const summary = wrapper.get('[data-testid="builder-section-config"]');
+    expect(summary.text()).toBe("builder.setted_config: Background: dark · Columns: 3");
+    expect(summary.attributes("title")).toBe("Background: dark · Columns: 3");
+    expect(summary.classes()).toContain("lc-2");
+    wrapper.unmount();
+  });
 });

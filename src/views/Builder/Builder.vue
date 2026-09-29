@@ -371,7 +371,12 @@
                     >
                       {{ s_uid.substring(0, 8) }}
                     </p>
-                    <p class="fs-200 t-muted" data-testid="builder-section-config">
+                    <!-- Two lines at most, so many props never push the header; the full text is the title. -->
+                    <p
+                      class="section-config fs-200 t-muted lc-2"
+                      data-testid="builder-section-config"
+                      :title="sectionConfigSummary(s_uid)"
+                    >
                       {{ $t('builder.setted_config') }}: {{ sectionConfigSummary(s_uid) }}
                     </p>
                   </div>
@@ -1905,6 +1910,9 @@ export default {
 
 .section-title-wrap {
   min-width: 0;
+}
+.section-config {
+  overflow-wrap: anywhere;
 }
 .tile-card-thumb {
   max-width: 100%;
