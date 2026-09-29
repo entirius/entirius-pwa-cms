@@ -30,7 +30,7 @@
             v-else
             :to="isLink(item) ? item.to : undefined"
             :type="isLink(item) ? undefined : 'button'"
-            :role="item.checked === undefined ? 'menuitem' : 'menuitemradio'"
+            :role="itemRole(item)"
             :aria-checked="item.checked === undefined ? undefined : String(item.checked)"
             tabindex="-1"
             class="basic-menu__item flex ai-ct gap-2 pointer"
@@ -114,7 +114,11 @@ const trap = useFocusTrap(popover, {
   onEscape: () => close({ returnFocus: true }),
 });
 
-const ITEM_SELECTOR = ':is([role="menuitem"], [role="menuitemradio"]):not([aria-disabled="true"])';
+const ITEM_SELECTOR = ':is([role="menuitem"], [role="menuitemradio"], [role="menuitemcheckbox"]):not([aria-disabled="true"])';
+const itemRole = (item) => {
+  if (item.checked === undefined) return "menuitem";
+  return item.checkbox ? "menuitemcheckbox" : "menuitemradio";
+};
 
 // A disabled `to` item renders as a button: a disabled router-link would still navigate.
 const isLink = (item) => Boolean(item.to) && !item.disabled;

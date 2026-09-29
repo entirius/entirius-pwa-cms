@@ -6,6 +6,7 @@ import { PATCH_UserProfile, POST_Logout } from '@/api/contentDB/api'
 import { endRefreshSession, refreshAccessToken, SessionEndedError } from '@/api/createClient'
 import { setLang, getLang } from '@/i18n'
 import { expiresSoon, refreshDelay } from '@/utils/jwt'
+import { hintsOn } from '@/composables/fieldHints'
 
 // Upper bound for the whole logout (refresh + blacklist); the local logout always happens within it.
 const LOGOUT_BUDGET_MS = 6000
@@ -26,6 +27,8 @@ export const useUserStore = defineStore('user', () => {
   const theme = ref('default')
   const lang = ref(getLang())
   const preferences = ref({})
+  // Field hints on/off: the store is the writer of the shared state the boots read (src/composables/fieldHints.js).
+  const hints = hintsOn
   let logoutRun = null
 
   function setStateViaCookies(cookiesKeys) {
@@ -167,6 +170,14 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
+  function setHints(on, persist = true) {
+    hints.value = on
+    localStorage.setItem('cms_hints', String(on))
+    if (persist && isAuth.value) {
+      savePreference('cms_hints', on)
+    }
+  }
+
   function loadPreferences(extra) {
     if (extra && typeof extra === 'object') {
       preferences.value = { ...extra }
@@ -176,6 +187,8 @@ export const useUserStore = defineStore('user', () => {
       if (extra.cms_lang) {
         setLanguage(extra.cms_lang, false)
       }
+      // Every sign-in applies its own choice: a profile without one gets hints on, never the last user's.
+      setHints(extra.cms_hints !== false, false)
       if (extra.cms_sidebar_collapsed !== undefined) {
         isSidebarCollapsed.value = extra.cms_sidebar_collapsed
         localStorage.setItem('cms_sidebar_collapsed', extra.cms_sidebar_collapsed)
@@ -225,6 +238,9 @@ export const useUserStore = defineStore('user', () => {
     const savedLang = localStorage.getItem('cms_lang')
     if (savedLang) setLanguage(savedLang, false)
 
+    const savedHints = localStorage.getItem('cms_hints')
+    if (savedHints !== null) setHints(savedHints !== 'false', false)
+
     const savedSidebar = localStorage.getItem('cms_sidebar_collapsed')
     if (savedSidebar !== null) isSidebarCollapsed.value = savedSidebar === 'true'
 
@@ -236,8 +252,8 @@ export const useUserStore = defineStore('user', () => {
 
   return {
     user, token, refresh, customer_id, expiryDate, isAuth,
-    isSidebarCollapsed, theme, lang, preferences,
-    setAuth, markAuthenticated, clearAuth, logout, setUser, toggleSidebar, setTheme,
+    isSidebarCollapsed, theme, lang, preferences, hints,
+    setAuth, markAuthenticated, clearAuth, logout, setUser, toggleSidebar, setTheme, setHints,
     setLanguage, loadPreferences, savePreference,
     readCookies, appInit, sessionExpiredLogout
   }

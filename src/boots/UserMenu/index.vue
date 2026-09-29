@@ -8,7 +8,7 @@
 
 <script setup>
 // The user menu of the header (r05 §8.6, Q3): the user's name, the theme item that names its target state
-// ("Tryb jasny" / "Tryb ciemny"), the languages (radio items, the current one checked), configuration health (with
+// ("Tryb jasny" / "Tryb ciemny"), the field-hints switch (a checkbox item, on by default, plan 60), the languages (radio items, the current one checked), configuration health (with
 // the munin module, as the header icon), change password, logout (danger). On BasicMenu: the trigger gets
 // `aria-haspopup="menu"`, arrows move, Esc closes and returns focus. `inline` renders it open (catalogue).
 import { computed } from "vue";
@@ -43,6 +43,14 @@ const languageItems = () =>
 const items = computed(() => [
   { key: "name", heading: true, label: userName.value },
   { key: "theme", label: t(isDark.value ? "app.light_mode" : "app.dark_mode"), icon: isDark.value ? "themeLight" : "themeDark" },
+  {
+    key: "hints",
+    label: t("shell.field_hints"),
+    icon: userStore.hints ? "check" : undefined,
+    checkbox: true,
+    checked: userStore.hints,
+    testid: "field-hints-toggle",
+  },
   { key: "sep-lang", separator: true },
   { key: "lang", heading: true, label: t("shell.language") },
   ...languageItems(),
@@ -56,6 +64,7 @@ const items = computed(() => [
 
 const ACTIONS = {
   theme: () => userStore.setTheme(isDark.value ? "default" : "dark"),
+  hints: () => userStore.setHints(!userStore.hints),
   health: () => (configHealth.panelOpen = true),
   logout: () => userStore.logout(),
 };

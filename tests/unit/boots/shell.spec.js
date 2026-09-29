@@ -10,8 +10,10 @@ const user = reactive({
   isSidebarCollapsed: false,
   theme: "dark",
   lang: "PL",
+  hints: true,
   toggleSidebar: vi.fn(),
   setTheme: vi.fn(),
+  setHints: vi.fn(),
   setLanguage: vi.fn(),
   logout: vi.fn(),
 });
@@ -241,7 +243,7 @@ describe("BottomTabBar", () => {
 });
 
 describe("UserMenu", () => {
-  const ITEMS = '[role="menuitem"], [role="menuitemradio"]';
+  const ITEMS = '[role="menuitem"], [role="menuitemradio"], [role="menuitemcheckbox"]';
   const labels = () => [...document.querySelectorAll(ITEMS)].map((el) => el.textContent.trim());
   const item = (text) => [...document.querySelectorAll(ITEMS)].find((el) => el.textContent.includes(text));
 
@@ -256,6 +258,7 @@ describe("UserMenu", () => {
     expect(document.querySelector(".basic-menu__heading").textContent).toBe("ops");
     expect(labels()).toEqual([
       t("app.light_mode"),
+      t("shell.field_hints"),
       "English",
       "Polski",
       t("config_health.title"),
@@ -267,6 +270,20 @@ describe("UserMenu", () => {
       ["English", "false"],
       ["Polski", "true"],
     ]);
+  });
+
+  it("field hints is a checkbox item, checked while hints are on; choosing it flips them", async () => {
+    mountIt(UserMenu, { inline: true });
+    await flushPromises();
+    const hints = document.querySelector('[role="menuitemcheckbox"]');
+    expect(hints.textContent.trim()).toBe(t("shell.field_hints"));
+    expect(hints.getAttribute("aria-checked")).toBe("true");
+    hints.click();
+    expect(user.setHints).toHaveBeenCalledWith(false);
+    user.hints = false;
+    await flushPromises();
+    expect(document.querySelector('[role="menuitemcheckbox"]').getAttribute("aria-checked")).toBe("false");
+    user.hints = true;
   });
 
   it("the items act: theme flips, another language is set, health opens, logout logs out", async () => {
