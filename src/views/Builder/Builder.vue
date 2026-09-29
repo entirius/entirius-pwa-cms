@@ -367,17 +367,24 @@
                       tabindex="0"
                       @click="copyToClipboard(s_uid)"
                       @keydown.enter="copyToClipboard(s_uid)"
+                      @keydown.space.prevent="copyToClipboard(s_uid)"
                       :title="s_uid"
                     >
                       {{ s_uid.substring(0, 8) }}
                     </p>
                   </div>
                   <div class="section-actions flex gap-1 as-s ai-ct" data-testid="builder-section-actions">
-                    <IconButton
-                      variant="outline"
-                      icon="preview"
-                      :label="`${$t('builder.setted_config')}: ${sectionConfigSummary(s_uid)}`"
-                    />
+                    <!-- Display only: the summary on hover, no tab stop (the edit button next to it opens the config). -->
+                    <BasicTooltip :text="`${$t('builder.setted_config')}: ${sectionConfigSummary(s_uid)}`">
+                      <span
+                        class="section-config-eye inline-flex jc-ct ai-ct t-muted"
+                        role="img"
+                        :aria-label="`${$t('builder.setted_config')}: ${sectionConfigSummary(s_uid)}`"
+                        data-testid="builder-section-config"
+                      >
+                        <FontAwesomeIcon :icon="$icons.preview" aria-hidden="true" />
+                      </span>
+                    </BasicTooltip>
                     <SubscriberSetter
                       @onSet="edited_section_uid = s_uid"
                       @on_AssetPass="set_section"
@@ -724,6 +731,7 @@
                                   tabindex="0"
                                   @click="copyToClipboard(t_uid)"
                                   @keydown.enter="copyToClipboard(t_uid)"
+                                  @keydown.space.prevent="copyToClipboard(t_uid)"
                                   :title="t_uid"
                                 >
                                   {{ t_uid.substring(0, 8) }}
@@ -911,13 +919,24 @@ export default {
         )
       );
     },
+    // The closed advanced row holds the name and URL: while either is missing its toggle asks for attention.
+    advancedNeedsAttention() {
+      const urlMissing = this.content_type !== "layout-extender" && !this.routes?.length;
+      return !this.advanced_options && (urlMissing || !this.custom_doc_name);
+    },
     // R5 order comes from the roles (ActionBar): copy · advanced · document options · draft · publish.
     editorActions() {
       const utility = (key, icon, label, onClick) => ({ key, role: "utility", icon, label, onClick });
       return [
         utility("copy", "duplicate", this.$t("builder.copy"), () => (this.rename_modal = true)),
-        utility("advanced", this.advanced_options ? "close" : "settings", this.$t("builder.advanced"), () =>
-          (this.advanced_options = !this.advanced_options)),
+        {
+          ...utility("advanced", this.advanced_options ? "close" : "settings", this.$t("builder.advanced"), () =>
+            (this.advanced_options = !this.advanced_options)),
+          ...(this.advancedNeedsAttention
+            ? { variant: "primary", label: this.$t("builder.advanced_missing") }
+            : {}),
+          testid: "builder-advanced-toggle",
+        },
         ...(this.has_options("document_configs")
           ? [utility("document-options", "edit", this.$t("builder.document_options"), () =>
               this.$refs.documentConfigSetter?.$el?.click())]
@@ -1117,7 +1136,7 @@ export default {
       return _options;
     },
     sectionConfigSummary(s_uid) {
-      if (!this.core_config || !this.optional_config) return "";
+      if (!this.core_config || !this.optional_config) return "—";
       return (
         [...this.core_config, ...this.optional_config]
           .filter(({ prop }) => this.sections[s_uid]?.[prop])
@@ -1125,7 +1144,7 @@ export default {
             ({ prop }) =>
               `${this.props_dictionary[prop]}: ${this.sections[s_uid][prop]}`
           )
-          .join("\n") || "—"
+          .join(" · ") || "—"
       );
     },
     // A section whose type caps its tiles takes no more once the cap is reached (tile add and copy).
@@ -1817,6 +1836,10 @@ export default {
 .builder-advanced-row {
   flex-wrap: wrap;
 }
+.section-config-eye {
+  width: var(--elem-height);
+  height: var(--elem-height);
+}
 .builder-author-panel {
   flex-shrink: 0;
   border: 1px solid var(--border-subtle);
@@ -1915,6 +1938,10 @@ export default {
   }
 }
 @include max-tablet {
+  // The ActionBar takes a left-aligned row of its own: the unsaved badge sits left above it, not across the page.
+  .builder-actions {
+    justify-content: flex-start;
+  }
   // The C9 action rows take 36 px buttons on a phone (Figma S7), 32 above.
   .section-actions,
   .tiles-header,

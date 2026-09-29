@@ -169,6 +169,7 @@
     "tile": "Kafelek",
     "tiles": "Kafelki",
     "advanced": "Zaawansowane",
+    "advanced_missing": "Zaawansowane: ustaw nazwę i URL dokumentu",
     "count": "Ilość",
     "doc_limit_reached": "Nie możesz utworzyć więcej dokumentów tego typu.",
     "no_content_title": "Brak treści",
