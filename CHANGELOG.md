@@ -535,7 +535,8 @@ All notable changes to this project will be documented in this file.
     list; Request draft asks for one draft per click (the dialog is persistent and its actions disabled while it
     runs). The rewrite and communicate dialogs stay mounted on `v-model:open` (their leave transition runs), and focus
     returns to Review's more button after the rewrite dialog. A tap on an earlier thread's summary opens it. The
-    company card keeps its header while it loads and when the load fails (an inline error, not a spinner forever).
+    company card keeps its header while it loads and when the load fails (an inline error, not a spinner forever);
+    opening another company drops the previous one's header actions until the new one arrives.
     A failed stage or lead-type rename is retried by the next blur or Enter; an empty label is a field error before
     the request. The contact and add-lead fields refuse the browser's autofill (`autocomplete="off"`, `inputmode`),
     the contact language stops at 2 characters; the company list's add action, the card tabs' table columns and

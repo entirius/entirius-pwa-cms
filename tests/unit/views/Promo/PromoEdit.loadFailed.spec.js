@@ -60,11 +60,12 @@ describe("PromoEdit — failed rule load", () => {
     const wrapper = await mountEdit(new Error("503"));
     const save = wrapper.findAll(".action-bar button").find((button) => button.text() === "common.save");
     expect(save.attributes("disabled")).toBeDefined();
+    const checked = wrapper.get('[role="switch"]').attributes("aria-checked");
     await save.trigger("click");
     await wrapper.get('[role="switch"]').trigger("click");
     await flushPromises();
     expect(api.PATCH_DiscountRule).not.toHaveBeenCalled();
-    expect(wrapper.get('[role="switch"]').attributes("aria-checked")).toBe(String(wrapper.vm.form.is_active));
+    expect(wrapper.get('[role="switch"]').attributes("aria-checked")).toBe(checked);
     expect(wrapper.findComponent(BasicSwitch).emitted("update:modelValue")).toBeUndefined();
   });
 

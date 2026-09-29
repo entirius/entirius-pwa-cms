@@ -124,7 +124,9 @@ async function retype(code) {
 }
 
 // The header stands while the card loads and when it fails; only its actions wait for the company.
+// Another company: the previous one's card and header actions go until the new one arrives.
 async function open() {
+  company.value = null;
   loadError.value = "";
   try {
     await load();

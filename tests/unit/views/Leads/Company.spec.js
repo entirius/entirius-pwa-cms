@@ -12,7 +12,11 @@ const leads = vi.hoisted(() => ({
   POST_Transition: vi.fn(),
 }));
 const route = vi.hoisted(() => ({ name: "LeadsThread", params: { id: "7" }, query: {} }));
-vi.mock("vue-router", () => ({ useRoute: () => route, useRouter: () => ({ replace: vi.fn() }) }));
+vi.mock("vue-router", async () => {
+  const { reactive } = await import("vue");
+  const live = reactive(route); // a changed params.id reaches the card's watcher
+  return { useRoute: () => live, useRouter: () => ({ replace: vi.fn() }) };
+});
 vi.mock("@/composables/useIsDesktop", async () => {
   const { ref } = await import("vue");
   return { useIsDesktop: () => ref(true) };
@@ -28,6 +32,7 @@ vi.mock("@/stores/munin", () => ({ useMuninStore: () => munin }));
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => notify }));
 
 import { createPinia, setActivePinia } from "pinia";
+import { useRoute } from "vue-router";
 import Company from "@/views/Leads/Company.vue";
 import CompanyActions from "@/views/Leads/CompanyActions.vue";
 import { control, leadsFrame, setControl } from "./leadsFrame";
@@ -181,6 +186,21 @@ describe("Company card header", () => {
     expect((await mountCard()).find("company-actions-stub").exists()).toBe(true);
   });
 
+  it("another company's load drops the previous company's actions until it arrives", async () => {
+    const wrapper = await mountCard();
+    expect(wrapper.find("company-actions-stub").exists()).toBe(true);
+    const shop = leads.GET_Company.getMockImplementation();
+    leads.GET_Company.mockImplementation((id) =>
+      id === "8" ? Promise.reject({ response: { data: { detail: "Not found." } } }) : shop(id)
+    );
+    useRoute().params.id = "8";
+    await flushPromises();
+    expect(wrapper.find("company-actions-stub").exists()).toBe(false);
+    expect(wrapper.get('[data-testid="company-load-error"]').text()).toBe("Not found.");
+    useRoute().params.id = "7";
+    await flushPromises();
+  });
+
   it("picking the current stage or type again sends nothing", async () => {
     const wrapper = await mountCard();
     await setControl(wrapper, "company-stage", "new");
@@ -238,17 +258,21 @@ describe("Leads Communicate dialog", () => {
     expect(has(wrapper, "communicate-modal")).toBe(false);
   });
 
-  it("a failed template list shows its message in the dialog; the next open starts with no list", async () => {
-    communicator.GET_Templates.mockRejectedValueOnce({ response: { data: { detail: "Toolbox down" } } });
+  it("a failed template list shows its message in the dialog; every open starts with no list and no error", async () => {
     const wrapper = await openDialog();
+    expect(control(wrapper, "communicate-template").props("options")).not.toEqual([]);
+    const reopen = async () => {
+      await wrapper.findComponent({ name: "BasicModal" }).props("actions").find((a) => a.key === "cancel").onClick();
+      await wrapper.get('[data-testid="company-communicate"]').trigger("click");
+      await flushPromises();
+    };
+    communicator.GET_Templates.mockRejectedValueOnce({ response: { data: { detail: "Toolbox down" } } });
+    await reopen();
     expect(wrapper.get('[data-testid="communicate-error"]').text()).toBe("Toolbox down");
     expect(control(wrapper, "communicate-template").props("options")).toEqual([]);
     communicator.GET_Templates.mockReturnValueOnce(new Promise(() => {}));
-    await wrapper.findComponent({ name: "BasicModal" }).props("actions").find((a) => a.key === "cancel").onClick();
-    await wrapper.get('[data-testid="company-communicate"]').trigger("click");
-    await flushPromises();
+    await reopen();
     expect(has(wrapper, "communicate-error")).toBe(false);
-    expect(control(wrapper, "communicate-template").props("options")).toEqual([]);
   });
 
   it("a double click on Request draft asks for one draft; the dialog is persistent while it runs", async () => {
