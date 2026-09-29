@@ -5,7 +5,7 @@
       <IconButton
         icon="close"
         :label="$t('config_health.close')"
-        @click="emit('close')"
+        @click="emit('close', { returnFocus: true })"
       />
     </div>
 

@@ -189,16 +189,29 @@ describe("BasicMenu", () => {
       expect(document.activeElement).toBe(trigger());
     });
 
-    it("a tap on the backdrop closes it and focus returns to the trigger; a tap inside does not", async () => {
+    it("a tap on the backdrop closes it on its click and focus returns to the trigger; a tap inside does not", async () => {
       vi.stubGlobal("matchMedia", phone);
       await openSheet();
       menu().dispatchEvent(new Event("pointerdown", { bubbles: true }));
+      menu().click();
       await settle();
       expect(trigger().getAttribute("aria-expanded")).toBe("true");
       backdrop().dispatchEvent(new Event("pointerdown", { bubbles: true }));
       await settle();
+      expect(trigger().getAttribute("aria-expanded")).toBe("true"); // the press alone: the tap's click is still to come
+      backdrop().click();
+      await settle();
       expect(trigger().getAttribute("aria-expanded")).toBe("false");
       expect(document.activeElement).toBe(trigger());
+    });
+
+    it("a panel close without returnFocus (a link that navigates) leaves focus alone", async () => {
+      vi.stubGlobal("matchMedia", phone);
+      await openSheet();
+      wrappers[0].vm.close();
+      await settle();
+      expect(trigger().getAttribute("aria-expanded")).toBe("false");
+      expect(document.activeElement).not.toBe(trigger());
     });
   });
 

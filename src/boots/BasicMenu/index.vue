@@ -8,7 +8,12 @@
       <slot name="trigger" :open="isOpen" />
     </span>
     <Teleport to="body" :disabled="!asSheet">
-      <div ref="layer" :class="asSheet && isOpen ? 'basic-menu__backdrop' : 'basic-menu__layer'">
+      <div
+        ref="layer"
+        :class="asSheet && isOpen ? 'basic-menu__backdrop' : 'basic-menu__layer'"
+        @pointerdown.self="pressedOnBackdrop = true"
+        @click.self="onBackdropClick"
+      >
         <div
           v-show="isOpen"
           :id="menuId"
@@ -94,6 +99,7 @@ const trigger = ref(null);
 const popover = ref(null);
 const layer = ref(null);
 const expanded = ref(false);
+let pressedOnBackdrop = false;
 
 const isOpen = computed(() => props.inline || expanded.value);
 // Only a sheet listens to the viewport: every BasicSelect is a BasicMenu. `sheet` is fixed per instance.
@@ -134,9 +140,11 @@ function close({ returnFocus = false } = {}) {
   if (!expanded.value) return;
   expanded.value = false;
   emit("close");
-  // A sheet always hands focus back, once its trap has lifted `inert` from the page.
-  if (asSheet.value) nextTick(() => triggerControl()?.focus());
-  else if (returnFocus) triggerControl()?.focus();
+  if (!returnFocus) return;
+  // A sheet hands focus back once its trap has lifted `inert` from the page.
+  const refocus = () => triggerControl()?.focus();
+  if (asSheet.value) nextTick(refocus);
+  else refocus();
 }
 
 function onTriggerClick() {
@@ -190,7 +198,15 @@ function onPopoverKeydown(event) {
   }
 }
 
+// A sheet closes on a click that also started on its backdrop (like BasicModal): closing on the press would let the
+// tap's click land on the page under the finger.
+function onBackdropClick() {
+  if (pressedOnBackdrop) close({ returnFocus: true });
+  pressedOnBackdrop = false;
+}
+
 function onDocumentPointer(event) {
+  if (asSheet.value) return;
   const inside = [root.value, popover.value].some((el) => el?.contains(event.target));
   if (expanded.value && !inside) close();
 }
