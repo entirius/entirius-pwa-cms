@@ -32,6 +32,8 @@ const POLICY = {
   windows: [{ start_time: "08:00:00", end_time: "17:00:00" }],
 };
 const timeField = (wrapper, side) => wrapper.get(`[data-testid="policy-window-${side}"] input`);
+const fieldError = (wrapper, side) =>
+  timeField(wrapper, side).element.closest(".form-field").querySelector(".form-field__error")?.textContent.replace("⚠", "").trim() ?? null;
 
 describe("Communicator settings", () => {
   beforeEach(() => {
@@ -74,7 +76,20 @@ describe("Communicator settings", () => {
     await timeField(wrapper, "end").setValue(value);
     await wrapper.get("form").trigger("submit");
     expect(api.PUT_Policy).not.toHaveBeenCalled();
-    expect(wrapper.get('[data-testid="policy-error"]').text()).toBe(t("communicator.policy.time_invalid"));
+    expect(fieldError(wrapper, "end")).toBe(t("communicator.policy.time_invalid"));
+    expect(timeField(wrapper, "end").attributes("aria-invalid")).toBe("true");
+    expect(fieldError(wrapper, "start")).toBeNull();
+    expect(timeField(wrapper, "start").attributes("aria-invalid")).toBeUndefined();
+    expect(wrapper.find('[data-testid="policy-error"]').exists()).toBe(false);
+  });
+
+  it("a corrected hour clears its field error", async () => {
+    const wrapper = await mountPolicy();
+    await timeField(wrapper, "start").setValue("8:00");
+    await wrapper.get("form").trigger("submit");
+    expect(fieldError(wrapper, "start")).toBe(t("communicator.policy.time_invalid"));
+    await timeField(wrapper, "start").setValue("08:00");
+    expect(fieldError(wrapper, "start")).toBeNull();
   });
 
   it.each(["00:00", "23:59"])("a window hour %s saves", async (value) => {

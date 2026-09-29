@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- Review fixes of plans 54c and 55 (P5 plan 54d): `moreLabel` on `BasicSelect` — an action row at the end of the list
+  for options not loaded yet, never filtered out, emits `more` and keeps the menu open; a `search` event with the
+  filter text. `form` on an `ActionBar` action: the button submits that form from outside it. `--fab-lane` on
+  `PageLayout`: the right padding a bottom-pinned row takes to keep the FAB's corner clear.
+
 - `rowAttrs` on `DataTable` (P5 plan 55): `(row) => ({ … })` binds attributes on each row element, the hooks a page
   object finds a row by (the waiting mails keep `scheduled-row` + `data-message`).
 
@@ -129,7 +134,9 @@ All notable changes to this project will be documented in this file.
   native select, input, textarea or table and no Leads kit class is left in Communicator. The four tables are
   DataTables: a template row opens the template, kinds and suppression types read as words (C-13, C-39); the waiting
   table puts the recipient under the company so Send now stays inside the card at 1280 px with the sidebar open
-  (C-31). A text-pool row is the text with edit and remove squares (C-33); the remove and the footer's discard and
+  (C-31). A text-pool row is the text with edit and remove squares (C-33: test ids `pool-text-edit`, new, and
+  `pool-text-remove`; `pool-text-body` is now the plain paragraph and no longer opens the editor — a text-pool page
+  object uses `pool-text-edit`); the remove and the footer's discard and
   remove confirmations are ConfirmDialogs. An empty footer previews the legal text alone (C-29). Send-window hours
   and a new sequence key are checked before the save (the boots carry no native `pattern`). Smoke spec
   `tests/e2e/p5-communicator-smoke.spec.js`.
@@ -487,6 +494,21 @@ All notable changes to this project will be documented in this file.
   password and SSO login run the same code after the token call.
 
 ### Fixed
+
+- P5 review fixes of plans 54c and 55 (plan 54d):
+  - PIM product attributes: a select or multiselect value beyond the loaded page can be found by typing again. The
+    channel values endpoint takes no search param, so the first typed query loads the pages left once (up to 2 000
+    values, a notice past that) and the list filters them; "Load more values…" is never filtered out and loads the next
+    page without closing the list or picking anything. Loaded values and stored-value names are kept per channel +
+    feature set + feature and reset when either changes; stored-value names are looked up at most 6 at a time, in the
+    channel's language; a product open whose value prefetch fails shows one notice, not one per select.
+  - Atlas: the supplier delete dialog's line follows the chosen option — neutral for the safe deactivation, negative
+    "cannot be undone" for the permanent delete (`suppliers-delete-note` / `suppliers-delete-warning`). The category
+    mapping's values menu shows the full list while the field holds a list value exactly and filters only on typed
+    text. The swipe review's decision bar reads PageLayout's `--fab-lane` instead of a copied FAB size.
+  - Communicator: Enter in the template's Language or Subject saves again (the header Save submits the form through
+    the native `form` attribute, required fields checked first). A send-window hour that is not HH:MM and an invalid
+    new sequence key show the error on their own field (`aria-invalid`), not in one card-level line.
 
 - P5 panel review fixes (plan 54c), the review findings of wave 4 in Atlas and PIM:
   - Atlas category mapping: the source value is a text field again and keeps what the operator types (the plan-47

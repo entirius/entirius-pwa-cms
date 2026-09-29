@@ -104,13 +104,14 @@ test.describe('P5 Communicator settings', () => {
     // The seed carries the follow-up sequence and its text pool.
     await expect(page.getByTestId('sequence').first()).toBeVisible();
     await expect(page.getByTestId('text-pool').first()).toBeVisible();
+    // An active text has its edit and remove squares (C-33); remove asks first and is cancelled here.
+    await expect(page.getByTestId('pool-text-edit').first()).toBeVisible();
     const remove = page.getByTestId('pool-text-remove').first();
-    if (await remove.count()) {
-      await remove.click();
-      await expect(page.getByTestId('confirm-dialog-cancel')).toBeVisible();
-      await page.getByTestId('confirm-dialog-cancel').click();
-      await expect(page.getByTestId('confirm-dialog-cancel')).toHaveCount(0);
-    }
+    await expect(remove).toBeVisible();
+    await remove.click();
+    await expect(page.getByTestId('confirm-dialog-cancel')).toBeVisible();
+    await page.getByTestId('confirm-dialog-cancel').click();
+    await expect(page.getByTestId('confirm-dialog-cancel')).toHaveCount(0);
 
     collector.assertNoErrors(expect, 'Sequences');
   });

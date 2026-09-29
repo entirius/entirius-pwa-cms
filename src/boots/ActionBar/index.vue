@@ -15,6 +15,8 @@
         <BasicButton
           v-else
           :variant="action.role"
+          :type="action.form ? 'submit' : 'button'"
+          :form="action.form"
           :icon="action.icon"
           :disabled="action.disabled"
           :loading="action.loading"
@@ -39,7 +41,8 @@ const ROLES = ["utility", "secondary", "danger", "primary"];
 // Page and dialog actions in R5 order (docs/ui-rules.md): icon utilities · secondary · danger · primary, right-aligned,
 // the one primary rightmost. `actions` = [{ key, label, role, onClick, icon?, variant?, disabled?, loading?, expanded?,
 // testid? }] (`variant` = the IconButton variant of a utility, `outline` by default; `danger` for an icon-only delete;
-// `expanded` = aria-expanded of a text button that shows or hides a section); a
+// `expanded` = aria-expanded of a text button that shows or hides a section; `form` = the id of a form the button
+// submits from outside it — native checks, the form's own submit handler, and Enter in a field presses it); a
 // caller with its own controls passes them in the default slot, already in R5 order. Below the shell breakpoint the
 // bar takes its own row with the visible label "Akcje" (Figma S7).
 import { computed, watchEffect } from "vue";

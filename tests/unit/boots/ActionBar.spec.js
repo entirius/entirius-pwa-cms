@@ -5,9 +5,9 @@ import ActionBar from "@/boots/ActionBar/index.vue";
 
 const stubs = {
   BasicButton: {
-    props: ["variant", "icon", "disabled", "loading"],
+    props: ["variant", "icon", "disabled", "loading", "type"],
     emits: ["click"],
-    template: "<button class='stub-basic' :data-variant='variant' @click=\"$emit('click')\"><slot /></button>",
+    template: "<button class='stub-basic' :type='type' :data-variant='variant' @click=\"$emit('click')\"><slot /></button>",
   },
   IconButton: {
     props: ["icon", "label", "variant", "disabled"],
@@ -31,6 +31,14 @@ describe("ActionBar", () => {
     ]);
     const labels = wrapper.findAll(".action-bar__actions button").map((b) => b.text());
     expect(labels).toEqual(["Ustawienia", "Zapisz szkic", "Usuń", "Zapisz i publikuj"]);
+  });
+
+  it("form: the button submits that form from outside it; without one it stays a plain button", () => {
+    const wrapper = mountBar([action("secondary", "Wersje"), action("primary", "Zapisz", { form: "edit-form" })]);
+    const [versions, save] = wrapper.findAll(".stub-basic");
+    expect(save.attributes()).toMatchObject({ type: "submit", form: "edit-form" });
+    expect(versions.attributes("type")).toBe("button");
+    expect(versions.attributes("form")).toBeUndefined();
   });
 
   it("expanded: aria-expanded on the button only when the action sets it", () => {

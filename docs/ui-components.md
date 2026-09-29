@@ -156,7 +156,9 @@ and one meaning per glyph (unit test). A new meaning adds its glyph to `fa-icons
   the hit area grows to 40 × 40 around the box, the box keeps its size. `md` matches the text button, not Figma's
   32 px (KD23).
 - **`ActionBar`** — page and dialog actions in R5 order: `actions` = `[{ key, label, role, onClick, icon?,
-  disabled?, loading?, expanded?, testid? }]` (`expanded` = `aria-expanded` of a button that shows a section), `role` `utility` (an IconButton, `icon` required) · `secondary` · `danger` ·
+  disabled?, loading?, expanded?, form?, testid? }]` (`expanded` = `aria-expanded` of a button that shows a section;
+  `form` = the id of a form the header button submits from outside it — native checks, the form's submit handler,
+  and Enter in a field presses it), `role` `utility` (an IconButton, `icon` required) · `secondary` · `danger` ·
   `primary` (one at most, a second warns in dev); extra controls go into the default slot, already in order.
   Right-aligned, gap 12 px (8 px on a phone); below 768 px it takes its own row: the label „Akcje” above the actions, left-aligned (Figma S7).
 - **`FloatingActions`** — FAB 44 px `accent-fill`, 24 px inset from 1024 px up; below it 16 px inset and 16 px above

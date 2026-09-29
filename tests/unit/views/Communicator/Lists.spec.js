@@ -51,7 +51,11 @@ describe("Communicator lists", () => {
     await wrapper.get('[data-testid="sequence-key"] input').setValue("bad key");
     await wrapper.get('[data-testid="sequence-add"] form').trigger("submit");
     expect(api.POST_Sequence).not.toHaveBeenCalled();
-    expect(wrapper.get('[data-testid="sequence-error"]').text()).toBe("A key may hold only letters, digits, “-” and “_”");
+    // Plan 54d: the error sits on the key field (FormField error, aria-invalid), not in the card.
+    const field = wrapper.get('[data-testid="sequence-key"]').element.closest(".form-field");
+    expect(field.querySelector(".form-field__error").textContent).toContain("A key may hold only letters, digits, “-” and “_”");
+    expect(wrapper.get('[data-testid="sequence-key"] input').attributes("aria-invalid")).toBe("true");
+    expect(wrapper.find('[data-testid="sequence-error"]').exists()).toBe(false);
   });
 
   it("a valid sequence is created with its steps numbered", async () => {

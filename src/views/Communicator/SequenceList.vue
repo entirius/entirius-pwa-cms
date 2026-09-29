@@ -22,7 +22,7 @@
       </BasicCard>
       <BasicCard :title="$t('communicator.sequences.add')" data-testid="sequence-add">
         <form class="flex-column gap-4" @submit.prevent="addSequence">
-          <FormField class="sequence__key" :label="$t('communicator.template.key')" required>
+          <FormField class="sequence__key" :label="$t('communicator.template.key')" :error="keyError" required>
             <BasicInput v-model="draft.key" data-testid="sequence-key" />
           </FormField>
           <div v-for="(step, i) in draft.steps" :key="i" class="flex ai-fe flex-wrap gap-5" data-testid="sequence-step">
@@ -63,6 +63,7 @@ const sequences = ref([]);
 const texts = reactive({});
 const newText = reactive({});
 const errors = reactive({}); // sequence id → its add-text error; `add` → the new sequence's
+const keyError = ref(""); // on the key field itself
 const emptyStep = () => ({ days_after_previous: 3, template_key: "" });
 const draft = reactive({ key: "", steps: [emptyStep()] });
 
@@ -90,10 +91,8 @@ async function addText(id) {
 }
 
 async function addSequence() {
-  if (!KEY_PATTERN.test(draft.key)) {
-    errors.add = t("leads.stages.key_invalid");
-    return;
-  }
+  keyError.value = KEY_PATTERN.test(draft.key) ? "" : t("leads.stages.key_invalid");
+  if (keyError.value) return;
   const steps = draft.steps.map((step, i) => ({ ...step, number: i + 1 }));
   if (await attempt("add", () => POST_Sequence({ key: draft.key, steps }))) Object.assign(draft, { key: "", steps: [emptyStep()] });
 }

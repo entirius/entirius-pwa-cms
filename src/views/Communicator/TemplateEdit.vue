@@ -7,7 +7,7 @@
         </template>
       </PageHeader>
     </template>
-    <form v-if="loaded" ref="formEl" class="template-form flex-column gap-4" @submit.prevent="save">
+    <form v-if="loaded" :id="FORM_ID" class="template-form flex-column gap-4" @submit.prevent="save">
       <BasicCard :title="$t('communicator.template.title')" gap>
         <div class="form-grid">
           <FormField :label="$t('communicator.template.kind')">
@@ -107,13 +107,13 @@ function parseSchema(text) {
 const schemaError = computed(() => parseSchema(schemaText.value).error || "");
 
 // Detail form (plan 33): versions and test generate open side drawers; Save is the one primary, off while the
-// schema does not parse. Save sits outside the form, so it asks the form's own checks (required fields) first.
-const formEl = ref(null);
-const submit = () => formEl.value.reportValidity() && save();
+// schema does not parse. Save sits in the header, outside the form, and submits it through the native `form`
+// attribute: the required fields are checked first, and Enter in a field saves (the form's default button).
+const FORM_ID = "template-edit-form";
 const headerActions = computed(() => [
   { key: "versions", label: t("communicator.template.versions"), role: "secondary", testid: "template-versions", onClick: () => (drawer.value = "versions") },
   { key: "test", label: t("communicator.template.test_generate"), role: "secondary", testid: "template-test-generate", onClick: () => (drawer.value = "test") },
-  { key: "save", label: t("communicator.template.save"), role: "primary", testid: "template-save", disabled: Boolean(schemaError.value), onClick: submit },
+  { key: "save", label: t("communicator.template.save"), role: "primary", testid: "template-save", disabled: Boolean(schemaError.value), form: FORM_ID },
 ]);
 
 async function save() {

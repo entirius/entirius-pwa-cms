@@ -8,10 +8,10 @@
         <NumberInput v-model.number="form.daily_cap" :min="0" :max="10000" data-testid="policy-cap" />
       </FormField>
       <div v-for="(window, i) in form.windows" :key="i" class="flex ai-fe flex-wrap gap-5" data-testid="policy-window">
-        <FormField :label="$t('communicator.policy.window_start')" required>
+        <FormField :label="$t('communicator.policy.window_start')" :error="timeError(window.start_time)" required>
           <BasicInput v-model="window.start_time" :placeholder="$t('communicator.policy.time_format')" data-testid="policy-window-start" />
         </FormField>
-        <FormField :label="$t('communicator.policy.window_end')" required>
+        <FormField :label="$t('communicator.policy.window_end')" :error="timeError(window.end_time)" required>
           <BasicInput v-model="window.end_time" :placeholder="$t('communicator.policy.time_format')" data-testid="policy-window-end" />
         </FormField>
         <IconButton icon="delete" variant="danger" :label="$t('communicator.policy.remove_window')" @click="form.windows.splice(i, 1)" />
@@ -39,6 +39,8 @@ const notify = useNotifyStore();
 const form = reactive({ business_days_only: true, spread: true, daily_cap: 10, windows: [] });
 const meta = reactive({ timezone: "", country: "" });
 const error = ref("");
+// Set by a save the hours refused: from then on every failing start/end field carries its own error.
+const timesChecked = ref(false);
 
 const hhmm = (value) => (value || "").slice(0, 5);
 
@@ -46,6 +48,7 @@ const hhmm = (value) => (value || "").slice(0, 5);
 // the panel reads 24 h everywhere. The format is checked here, before the save.
 const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
 const badWindow = (w) => !TIME.test(w.start_time) || !TIME.test(w.end_time);
+const timeError = (value) => (timesChecked.value && !TIME.test(value) ? t("communicator.policy.time_invalid") : "");
 
 function apply(data) {
   Object.assign(form, {
@@ -58,8 +61,9 @@ function apply(data) {
 }
 
 async function save() {
-  error.value = form.windows.some(badWindow) ? t("communicator.policy.time_invalid") : "";
-  if (error.value) return;
+  error.value = "";
+  timesChecked.value = form.windows.some(badWindow);
+  if (timesChecked.value) return;
   try {
     const windows = form.windows.map((w, order) => ({ ...w, order }));
     apply((await PUT_Policy({ ...form, windows })).data);

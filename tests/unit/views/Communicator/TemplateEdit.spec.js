@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 
@@ -33,10 +33,15 @@ describe("Communicator TemplateEdit", () => {
   });
 
   async function mountEdit() {
-    const wrapper = mount(TemplateEdit, mountOptions({ RouterLink: true, SideDrawer: true }));
+    // Attached: the header Save reaches the form through its `form` attribute, a document lookup.
+    const wrapper = mount(TemplateEdit, { ...mountOptions({ RouterLink: true, SideDrawer: true }), attachTo: document.body });
     await flushPromises();
     return wrapper;
   }
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
 
   it("refuses invalid JSON schema and a non-object, saves a valid one parsed", async () => {
     api.PUT_Template.mockResolvedValue({ data: template });
@@ -95,6 +100,17 @@ describe("Communicator TemplateEdit", () => {
     await wrapper.get('[data-testid="template-save"]').trigger("click");
     await flushPromises();
     expect(api.PUT_Template).not.toHaveBeenCalled();
+  });
+
+  it("Enter in Language or Subject saves: the header Save is the form's submit button", async () => {
+    api.PUT_Template.mockResolvedValue({ data: template });
+    const wrapper = await mountEdit();
+    const save = wrapper.get('[data-testid="template-save"]').element;
+    expect(save.type).toBe("submit");
+    expect(save.form).toBe(wrapper.get("form").element);
+    wrapper.get("form").element.requestSubmit();
+    await flushPromises();
+    expect(api.PUT_Template).toHaveBeenCalledTimes(1);
   });
 
   // C-39 (plan 55): the kind reads as words, the raw enum is only the value.
