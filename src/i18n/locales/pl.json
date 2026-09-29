@@ -691,6 +691,8 @@
     "external_id": "ID zewnętrzne"
   },
   "pim": {
+    "attribute_values_more": "Wczytaj więcej wartości…",
+    "attribute_values_failed": "Nie udało się wczytać wartości atrybutu",
     "products": "Produkty",
     "categories": "Kategorie",
     "create_product": "Nowy produkt",

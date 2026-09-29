@@ -691,6 +691,8 @@
     "external_id": "External ID"
   },
   "pim": {
+    "attribute_values_more": "Load more values…",
+    "attribute_values_failed": "The attribute values could not be loaded",
     "products": "Products",
     "categories": "Categories",
     "create_product": "Create product",
