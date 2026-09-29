@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- `rowAttrs` on `DataTable` (P5 plan 55): `(row) => ({ … })` binds attributes on each row element, the hooks a page
+  object finds a row by (the waiting mails keep `scheduled-row` + `data-message`).
+
 - `floatingLabel` on `BasicSelect` and `ChannelMultiSelect` (P5 plan 53, operator request): a select without a
   FormField label shows its name as the placeholder while empty and as a 12 px muted line above the chosen value; the
   text is also its accessible name. The Leads company card and board card name their stage and lead-type selects with
@@ -119,6 +122,17 @@ All notable changes to this project will be documented in this file.
   `docs/sso-login.md`. Unset, nothing changes.
 
 ### Changed
+
+- P5 Communicator settings (plan 55): Leads → Settings, templates, the template editor, sequences and the send
+  settings (policy, channel, footer, waiting mails, suppressions) sit in PageLayout + PageHeader (back to the hub;
+  the template editor's Versions · Test generate · Save in an ActionBar) and run on the boots in FormFields — no
+  native select, input, textarea or table and no Leads kit class is left in Communicator. The four tables are
+  DataTables: a template row opens the template, kinds and suppression types read as words (C-13, C-39); the waiting
+  table puts the recipient under the company so Send now stays inside the card at 1280 px with the sidebar open
+  (C-31). A text-pool row is the text with edit and remove squares (C-33); the remove and the footer's discard and
+  remove confirmations are ConfirmDialogs. An empty footer previews the legal text alone (C-29). Send-window hours
+  and a new sequence key are checked before the save (the boots carry no native `pattern`). Smoke spec
+  `tests/e2e/p5-communicator-smoke.spec.js`.
 
 - P5 Leads companies (plan 53): the company list, company card, add lead, board, import, stages and lead types sit in
   `PageLayout` with a `PageHeader` (title from the nav model; Stages and Lead types go back to Settings, the company
