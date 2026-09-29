@@ -245,6 +245,36 @@ describe("BasicMenu", () => {
       await settle();
       expect(document.activeElement).toBe(wrappers[0].element);
     });
+
+    // Plan 61e: the fallback leaves no focusable span behind once focus moves on.
+    it("the menu stops being focusable once focus leaves it after the fallback", async () => {
+      await openSheet({ items: [] }, { trigger: "<span class='trigger'>Więcej</span>" });
+      wrappers[0].vm.open();
+      await settle();
+      key(document.activeElement, "Escape");
+      await settle();
+      const root = wrappers[0].element;
+      expect(document.activeElement).toBe(root);
+      expect(root.getAttribute("tabindex")).toBe("-1");
+      root.blur();
+      expect(root.hasAttribute("tabindex")).toBe(false);
+    });
+
+    it("keeps the fallback while focus is in the sheet, drops it when focus moves on to the page", async () => {
+      await openSheet({ items: [] }, { trigger: "<span class='trigger'>Więcej</span>", panel: "<button class='fix'>Fix</button>" });
+      wrappers[0].vm.open();
+      await settle();
+      const root = wrappers[0].element;
+      expect(document.activeElement).toBe(menu().querySelector(".fix"));
+      expect(root.getAttribute("tabindex")).toBe("-1");
+      key(document.activeElement, "Escape");
+      await settle();
+      expect(document.activeElement).toBe(root);
+      const outside = document.body.appendChild(document.createElement("button"));
+      outside.focus();
+      expect(root.hasAttribute("tabindex")).toBe(false);
+      outside.remove();
+    });
   });
 
   describe("an open sheet crossing the phone breakpoint (a rotation)", () => {

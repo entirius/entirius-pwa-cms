@@ -3,6 +3,7 @@
     ref="root"
     class="basic-menu"
     :class="{ 'basic-menu--inline': inline, 'basic-menu--inline-up': inline && placement.startsWith('top') }"
+    @blur="onRootBlur"
   >
     <span ref="trigger" class="basic-menu__trigger" @click.capture="onTriggerClick" @keydown="onTriggerKeydown">
       <slot name="trigger" :open="isOpen" />
@@ -142,7 +143,8 @@ async function openMenu() {
 }
 
 // The trap returns focus to the element focused when it activates: the trigger, before focus moves in. A trigger with
-// no focusable control (none, or a disabled one) leaves the menu itself as the opener, never <body>.
+// no focusable control (none, or a disabled one) leaves the menu itself as the opener, never <body>: focusable only
+// until focus leaves it for anywhere but the sheet (the trap brings it back there on close).
 function trapSheet() {
   focusOpener();
   trap.activate();
@@ -154,6 +156,10 @@ function focusOpener() {
   if (control && document.activeElement === control) return;
   root.value.tabIndex = -1;
   root.value.focus();
+}
+
+function onRootBlur(event) {
+  if (!popover.value?.contains(event.relatedTarget)) root.value.removeAttribute("tabindex");
 }
 
 function close({ returnFocus = false } = {}) {
