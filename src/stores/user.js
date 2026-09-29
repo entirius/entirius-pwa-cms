@@ -78,6 +78,8 @@ export const useUserStore = defineStore('user', () => {
     refresh.value = null
     expiryDate.value = null
     isAuth.value = false
+    hints.value = true
+    localStorage.removeItem('cms_hints')
 
     const allCookies = cookies.getAll()
     Object.keys(allCookies).forEach((cookieName) => {
@@ -179,6 +181,9 @@ export const useUserStore = defineStore('user', () => {
   }
 
   function loadPreferences(extra) {
+    // Every sign-in applies its own choice: a profile without one (or without `extra`) gets hints on, never the
+    // last user's.
+    setHints(extra?.cms_hints !== false, false)
     if (extra && typeof extra === 'object') {
       preferences.value = { ...extra }
       if (extra.cms_theme) {
@@ -187,8 +192,6 @@ export const useUserStore = defineStore('user', () => {
       if (extra.cms_lang) {
         setLanguage(extra.cms_lang, false)
       }
-      // Every sign-in applies its own choice: a profile without one gets hints on, never the last user's.
-      setHints(extra.cms_hints !== false, false)
       if (extra.cms_sidebar_collapsed !== undefined) {
         isSidebarCollapsed.value = extra.cms_sidebar_collapsed
         localStorage.setItem('cms_sidebar_collapsed', extra.cms_sidebar_collapsed)

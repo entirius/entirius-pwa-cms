@@ -60,4 +60,16 @@ describe("user store — field hints preference", () => {
     expect(hintsOn.value).toBe(true);
     expect(localStorage.getItem("cms_hints")).toBe("true");
   });
+
+  it("sign-out clears the choice; the next user without a profile extra gets hints on", () => {
+    const store = useUserStore();
+    store.loadPreferences({ cms_hints: false });
+    store.clearAuth();
+    expect(hintsOn.value).toBe(true);
+    expect(localStorage.getItem("cms_hints")).toBeNull();
+
+    hintsOn.value = false;
+    store.loadPreferences(null);
+    expect(hintsOn.value).toBe(true);
+  });
 });
