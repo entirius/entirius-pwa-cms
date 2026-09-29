@@ -4,14 +4,14 @@
       <h3 class="fs-300 fw-600 m-0">
         {{ $t("atlas.products.drawer.mapping_title") }}
       </h3>
-      <button
+      <BasicButton
         v-if="supplierIdx"
-        class="sp-mapping-section__link"
+        size="sm"
         :data-testid="`drawer-open-mappings-${supplierIdx}`"
         @click="$emit('open-mappings')"
       >
         {{ $t("atlas.products.drawer.open_mappings_tab") }}
-      </button>
+      </BasicButton>
     </header>
     <Loader block v-if="loading" />
     <p v-else-if="!profiles.length" class="fs-200 t-muted m-0">
@@ -105,19 +105,6 @@ export default {
   justify-content: space-between;
   gap: var(--space-5);
   margin-bottom: var(--space-2);
-}
-.sp-mapping-section__link {
-  background: transparent;
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-  padding: var(--space-1) var(--space-3);
-  font-size: var(--fs-200);
-  color: var(--text-body);
-  cursor: pointer;
-
-  &:hover {
-    background: var(--surface-raised);
-  }
 }
 .sp-mapping-section__profiles {
   list-style: none;

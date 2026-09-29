@@ -1,5 +1,5 @@
 <template>
-  <div class="feeds-tab p-8 ovy-auto h-100">
+  <div class="flex flex-column">
     <div class="flex ai-ct jc-sb mb-8">
       <h2 class="fs-400 fw-600">{{ $t("atlas.tabs.feeds") }}</h2>
       <p class="fs-200 t-muted m-0">
@@ -39,14 +39,13 @@
       </template>
       <template #cell-actions="{ row }">
         <div class="flex ai-ct gap-2" @click.stop>
-          <button
-            class="row-action-btn bg-positive-subtle t-positive"
-            :title="$t('atlas.feeds.trigger_button')"
+          <IconButton
+            icon="play"
+            size="sm"
+            :label="$t('atlas.feeds.trigger_button')"
             :data-testid="`feeds-trigger-${row.idx}`"
             @click="triggerFeed(row)"
-          >
-            <FontAwesomeIcon :icon="$icons.play" />
-          </button>
+          />
         </div>
       </template>
     </DataTable>
@@ -206,26 +205,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.feeds-tab {
-  display: flex;
-  flex-direction: column;
-}
-
-.row-action-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border: none;
-  border-radius: var(--radius-base);
-  cursor: pointer;
-  transition: opacity 0.15s ease;
-}
-
-.row-action-btn:hover {
-  opacity: 0.85;
-}
-</style>

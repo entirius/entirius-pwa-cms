@@ -19,16 +19,14 @@
         :hit="hit"
       >
         <template #actions>
-          <button
-            type="button"
-            class="row-action-btn bg-positive-subtle t-positive"
+          <IconButton
+            icon="link"
+            size="sm"
             :disabled="linkingSku === hit.basic?.sku"
-            :title="$t('lookup.row.link')"
+            :label="$t('lookup.row.link')"
             :data-testid="`find-in-pim-link-${hit.basic?.sku}`"
             @click="link(hit)"
-          >
-            <FontAwesomeIcon :icon="$icons.link" />
-          </button>
+          />
         </template>
       </CandidateRow>
 
@@ -55,16 +53,14 @@
             :hit="hit"
           >
             <template #actions>
-              <button
-                type="button"
-                class="row-action-btn bg-positive-subtle t-positive"
+              <IconButton
+                icon="link"
+                size="sm"
                 :disabled="linkingSku === hit.basic?.sku"
-                :title="$t('lookup.row.link')"
+                :label="$t('lookup.row.link')"
                 :data-testid="`find-in-pim-link-${hit.basic?.sku}`"
                 @click="link(hit)"
-              >
-                <FontAwesomeIcon :icon="$icons.link" />
-              </button>
+              />
             </template>
           </CandidateRow>
         </div>
@@ -146,21 +142,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.row-action-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border: none;
-  border-radius: var(--radius-base);
-  cursor: pointer;
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-}
-</style>

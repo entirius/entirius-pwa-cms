@@ -64,7 +64,7 @@ test.describe('Suppliers panel — live backend', () => {
     await page.goto('/suppliers/demo-supplier');
     await page.waitForLoadState('networkidle', { timeout: 15000 });
     // Activate Feeds tab
-    const feedsTab = page.getByRole('button', { name: /feeds/i }).first();
+    const feedsTab = page.getByRole('tab', { name: /feeds/i }).first();
     if (await feedsTab.count()) {
       await feedsTab.click();
       await page.waitForLoadState('networkidle');
@@ -78,7 +78,7 @@ test.describe('Suppliers panel — live backend', () => {
   test('4. Mappings tab — attribute mappings render', async ({ page }) => {
     await page.goto('/suppliers/demo-supplier');
     await page.waitForLoadState('networkidle', { timeout: 15000 });
-    const mappingsTab = page.getByRole('button', { name: /mappings/i }).first();
+    const mappingsTab = page.getByRole('tab', { name: /mappings/i }).first();
     if (await mappingsTab.count()) {
       await mappingsTab.click();
       await page.waitForLoadState('networkidle');
@@ -92,7 +92,7 @@ test.describe('Suppliers panel — live backend', () => {
   test('5. Products tab — 5 SupplierProducts from fixture', async ({ page }) => {
     await page.goto('/suppliers/demo-supplier');
     await page.waitForLoadState('networkidle', { timeout: 15000 });
-    const productsTab = page.getByRole('button', { name: /products/i }).first();
+    const productsTab = page.getByRole('tab', { name: /products/i }).first();
     if (await productsTab.count()) {
       await productsTab.click();
       await page.waitForLoadState('networkidle');

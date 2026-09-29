@@ -206,19 +206,24 @@ test.describe('Suppliers panel', () => {
     });
 
     test('Back button returns to list', async ({ page }) => {
-      await page.getByTestId('suppliers-detail-back').click();
+      // The PageHeader back arrow, named by common.back in either UI language.
+      await page
+        .locator('.page-header')
+        .getByRole('button', { name: /^(Back|Wstecz)$/ })
+        .click();
       await page.waitForLoadState('networkidle');
       await expect(page).toHaveURL(/\/atlas\/list/);
     });
 
-    test('Tabs switch active segment for all 6 tabs', async ({ page }) => {
+    test('Tabs select each of the 6 tabs', async ({ page }) => {
       // Skip "overview" — it's already the default active tab so clicking
       // it does not flip activeTab and the URL watcher does not re-emit.
       const tabs = ['feeds', 'mappings', 'products', 'linked', 'logs', 'overview'];
       for (const key of tabs) {
         const btn = page.getByTestId(`suppliers-tab-${key}`);
         await btn.click();
-        await expect(btn).toHaveClass(/segmented-control__option--active/);
+        await expect(btn).toHaveAttribute('role', 'tab');
+        await expect(btn).toHaveAttribute('aria-selected', 'true');
       }
     });
   });

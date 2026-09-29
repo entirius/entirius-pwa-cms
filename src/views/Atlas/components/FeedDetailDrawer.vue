@@ -86,14 +86,14 @@
           <h3 class="feed-detail__heading m-0">
             {{ $t("atlas.feeds.detail.preview_section") }}
           </h3>
-          <button
-            class="feed-detail__refresh-btn"
+          <IconButton
+            icon="refresh"
+            variant="outline"
+            size="sm"
             :disabled="previewBusy"
-            :title="$t('atlas.feeds.detail.preview_refresh')"
+            :label="$t('atlas.feeds.detail.preview_refresh')"
             @click="loadPreview"
-          >
-            <FontAwesomeIcon :icon="$icons.refresh" :spin="previewBusy" />
-          </button>
+          />
         </div>
         <p v-if="previewBusy" class="fs-200 t-muted">
           {{ $t("atlas.feeds.detail.preview_loading") }}
@@ -295,28 +295,5 @@ export default {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-base);
   padding: var(--space-2) var(--space-3);
-}
-
-.feed-detail__refresh-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border: 1px solid var(--border-subtle);
-  background: transparent;
-  color: var(--text-body);
-  border-radius: var(--radius-base);
-  cursor: pointer;
-  transition: background 0.15s ease;
-
-  &:hover:not(:disabled) {
-    background: var(--surface-raised);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
 }
 </style>

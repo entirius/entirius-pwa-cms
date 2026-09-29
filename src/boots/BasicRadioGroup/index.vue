@@ -23,6 +23,7 @@
         :checked="modelValue === option.value"
         :disabled="controlDisabled || option.disabled"
         :aria-invalid="attrs['aria-invalid']"
+        :data-testid="option.testid || null"
         @change="emit('update:modelValue', option.value)"
       />
       <span>{{ option.label }}</span>
@@ -31,7 +32,7 @@
 </template>
 
 <script setup>
-// Single choice (docs/ui-components.md § P3 inputs): `options` [{ label, value, disabled? }], `v-model`, `name`,
+// Single choice (docs/ui-components.md § P3 inputs): `options` [{ label, value, disabled?, testid? }], `v-model`, `name`,
 // `disabled`. Native radios sharing one `name`: Tab enters the group on the checked option, the arrow keys move and
 // select inside it (role="radiogroup"). Inside a FormField the group is named by the field's label and takes
 // aria-describedby, aria-invalid, required and disabled from the contract.

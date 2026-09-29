@@ -99,24 +99,23 @@
         <FontAwesomeIcon :icon="$icons.warning" />
         <span class="fs-200 fw-600">{{ rowWarnings.length }}</span>
       </span>
-      <button
+      <IconButton
         v-if="!isNew"
-        class="row-action-btn bg-negative-subtle t-negative"
-        :title="$t('common.delete')"
+        icon="delete"
+        variant="danger"
+        size="sm"
+        :label="$t('common.delete')"
         :data-testid="`attr-mapping-delete-${rowKey}`"
         @click="$emit('delete', mapping)"
-      >
-        <FontAwesomeIcon :icon="$icons.delete" />
-      </button>
-      <button
-        class="suppliers-primary-btn"
+      />
+      <BasicButton
+        size="sm"
         :disabled="busy"
         :data-testid="`attr-mapping-save-${rowKey}`"
         @click="emitSave"
       >
-        <FontAwesomeIcon :icon="$icons.saveDraft" />
         {{ $t("common.save") }}
-      </button>
+      </BasicButton>
     </div>
   </div>
 </template>
@@ -307,34 +306,6 @@ export default {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: var(--space-5);
-}
-.row-action-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border: none;
-  border-radius: var(--radius-base);
-  cursor: pointer;
-}
-.suppliers-primary-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  height: 32px;
-  padding: 0 var(--space-3);
-  font-size: var(--fs-200);
-  font-weight: 600;
-  border-radius: var(--radius-base);
-  border: 1px solid var(--accent);
-  background: var(--accent-fill);
-  color: var(--text-on-accent-fill);
-  cursor: pointer;
-}
-.suppliers-primary-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
 }
 .row-warning {
   display: inline-flex;

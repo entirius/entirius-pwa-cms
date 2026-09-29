@@ -1,15 +1,16 @@
 <template>
   <form class="feed-config-form flex flex-column gap-5" @submit.prevent="submit">
-    <FormField :label="$t('atlas.feeds.form.idx_label')" required>
+    <FormField
+      :label="$t('atlas.feeds.form.idx_label')"
+      required
+      :error="errors.idx?.msg || ''"
+    >
       <BasicInput
         v-model="local.idx"
         :disabled="!!feed"
         placeholder="xml-1"
         data-testid="feed-form-idx"
       />
-      <p v-if="errors.idx" class="form-error t-negative fs-200">
-        {{ errors.idx.msg }}
-      </p>
     </FormField>
 
     <FormField :label="$t('atlas.feeds.form.connector_label')" required>
@@ -102,23 +103,17 @@
     </FormField>
 
     <div class="flex ai-ct jc-end gap-5 mt-8">
-      <button
-        type="button"
-        class="suppliers-secondary-btn"
-        data-testid="feed-form-cancel"
-        @click="$emit('cancel')"
-      >
+      <BasicButton data-testid="feed-form-cancel" @click="$emit('cancel')">
         {{ $t("common.cancel") }}
-      </button>
-      <button
+      </BasicButton>
+      <BasicButton
+        variant="primary"
         type="submit"
-        class="suppliers-primary-btn"
         :disabled="busy"
         data-testid="feed-form-submit"
       >
-        <FontAwesomeIcon :icon="$icons.saveDraft" />
         {{ $t("common.save") }}
-      </button>
+      </BasicButton>
     </div>
   </form>
 </template>
@@ -209,45 +204,5 @@ export default {
 <style lang="scss" scoped>
 .feed-config-form {
   width: 100%;
-}
-.form-error {
-  margin: 0;
-  margin-top: 2px;
-}
-.suppliers-primary-btn,
-.suppliers-secondary-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  height: 36px;
-  padding: 0 var(--space-4);
-  font-size: var(--fs-250);
-  font-weight: 500;
-  border-radius: var(--radius-base);
-  border: 1px solid;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  white-space: nowrap;
-}
-.suppliers-primary-btn {
-  background: var(--accent-fill);
-  border-color: var(--accent);
-  color: var(--text-on-accent-fill);
-}
-.suppliers-primary-btn:hover:not(:disabled) {
-  filter: brightness(1.05);
-}
-.suppliers-primary-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-.suppliers-secondary-btn {
-  background: var(--surface-base);
-  border-color: var(--border-default);
-  color: var(--text-body);
-}
-.suppliers-secondary-btn:hover {
-  background: var(--surface-raised);
-  border-color: var(--border-default);
 }
 </style>

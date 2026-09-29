@@ -1,5 +1,5 @@
 <template>
-  <div class="logs-tab p-8 ovy-auto h-100">
+  <div>
     <div class="flex ai-ct mb-8 gap-5">
       <SegmentedControl
         v-model="activeMode"
@@ -58,15 +58,14 @@
           <StatusBadge :label="value" :tone="severityVariant(value)" />
         </template>
         <template #cell-acknowledged_at="{ row }">
-          <button
+          <BasicButton
             v-if="!row.acknowledged_at"
-            class="logs-ack-btn bg-accent-subtle t-strong"
+            size="sm"
             :data-testid="`logs-ack-${row.id}`"
-            @click.stop="acknowledge(row)"
+            @click="acknowledge(row)"
           >
-            <FontAwesomeIcon :icon="$icons.check" />
             {{ $t("atlas.logs.acknowledge") }}
-          </button>
+          </BasicButton>
           <span v-else class="t-muted fs-200">{{
             row.acknowledged_at
           }}</span>
@@ -295,24 +294,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.logs-tab {
-  display: flex;
-  flex-direction: column;
-}
-.logs-ack-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  border: none;
-  border-radius: var(--radius-base);
-  padding: var(--space-1) var(--space-2);
-  font-size: var(--fs-200);
-  font-weight: 600;
-  cursor: pointer;
-}
-.logs-ack-btn:hover {
-  opacity: 0.85;
-}
-</style>

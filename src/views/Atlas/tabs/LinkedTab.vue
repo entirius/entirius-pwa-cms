@@ -1,15 +1,14 @@
 <template>
-  <div class="linked-tab p-8 ovy-auto h-100">
+  <div class="flex flex-column">
     <div class="flex ai-ct jc-sb mb-8 flex-wrap gap-5">
       <h2 class="fs-400 fw-600">{{ $t("atlas.tabs.linked") }}</h2>
-      <button
-        class="suppliers-primary-btn"
+      <BasicButton
+        variant="primary"
         data-testid="linked-create-btn"
         @click="openCreate"
       >
-        <FontAwesomeIcon :icon="$icons.add" />
         {{ $t("atlas.linked.create_button") }}
-      </button>
+      </BasicButton>
     </div>
 
     <div
@@ -47,40 +46,38 @@
       </template>
       <template #cell-actions="{ row }">
         <div class="flex ai-ct gap-2" @click.stop>
-          <button
+          <IconButton
             v-if="!isMonitoringSupplier && !row.is_primary"
-            class="row-action-btn bg-positive-subtle t-positive"
-            :title="$t('atlas.linked.set_preferred_button')"
+            icon="primary"
+            size="sm"
+            :label="$t('atlas.linked.set_preferred_button')"
             :data-testid="`linked-set-preferred-${row.id}`"
             @click="setPrimary(row)"
-          >
-            <FontAwesomeIcon :icon="$icons.primary" />
-          </button>
-          <button
+          />
+          <IconButton
             v-else-if="!isMonitoringSupplier"
-            class="row-action-btn bg-warning-subtle t-warning"
-            :title="$t('atlas.linked.unset_preferred_button')"
+            icon="primary"
+            size="sm"
+            :pressed="true"
+            :label="$t('atlas.linked.unset_preferred_button')"
             :data-testid="`linked-unset-preferred-${row.id}`"
             @click="unsetPrimary(row)"
-          >
-            <FontAwesomeIcon :icon="$icons.primary" />
-          </button>
-          <button
-            class="row-action-btn bg-raised t-body"
-            :title="$t('common.edit')"
+          />
+          <IconButton
+            icon="edit"
+            size="sm"
+            :label="$t('common.edit')"
             :data-testid="`linked-edit-${row.id}`"
             @click="openEdit(row)"
-          >
-            <FontAwesomeIcon :icon="$icons.edit" />
-          </button>
-          <button
-            class="row-action-btn bg-negative-subtle t-negative"
-            :title="$t('common.delete')"
+          />
+          <IconButton
+            icon="delete"
+            variant="danger"
+            size="sm"
+            :label="$t('common.delete')"
             :data-testid="`linked-delete-${row.id}`"
             @click="confirmDelete(row)"
-          >
-            <FontAwesomeIcon :icon="$icons.delete" />
-          </button>
+          />
         </div>
       </template>
     </DataTable>
@@ -97,8 +94,9 @@
         <FormField
           :label="$t('atlas.linked.real_product_sku_label')"
           required
+          :error="errors.real_product_sku?.msg || ''"
         >
-          <div class="flex ai-ct gap-5">
+          <div class="flex ai-ct gap-3">
             <EntitySearchPicker
               v-model="formData.real_product_sku"
               :display-value="skuLabel"
@@ -110,23 +108,15 @@
               @update:display-value="skuLabel = $event"
               @clear="skuLabel = ''"
             />
-            <button
+            <IconButton
               v-if="formData.real_product_sku"
-              type="button"
-              class="row-action-btn bg-raised t-body"
-              :title="$t('atlas.linked.sku_preview')"
+              icon="preview"
+              variant="outline"
+              :label="$t('atlas.linked.sku_preview')"
               data-testid="linked-sku-preview-btn"
               @click="openPreview"
-            >
-              <FontAwesomeIcon :icon="$icons.search" />
-            </button>
+            />
           </div>
-          <p
-            v-if="errors.real_product_sku"
-            class="form-error t-negative fs-200"
-          >
-            {{ errors.real_product_sku.msg }}
-          </p>
         </FormField>
         <FormField :label="$t('atlas.linked.priority_label')">
           <NumberInput
@@ -164,23 +154,17 @@
           />
         </FormField>
         <div class="flex ai-ct jc-end gap-5 mt-8">
-          <button
-            type="button"
-            class="suppliers-secondary-btn"
-            data-testid="linked-form-cancel"
-            @click="closeForm"
-          >
+          <BasicButton data-testid="linked-form-cancel" @click="closeForm">
             {{ $t("common.cancel") }}
-          </button>
-          <button
+          </BasicButton>
+          <BasicButton
+            variant="primary"
             type="submit"
-            class="suppliers-primary-btn"
             :disabled="formBusy"
             data-testid="linked-form-submit"
           >
-            <FontAwesomeIcon :icon="$icons.saveDraft" />
             {{ $t("common.save") }}
-          </button>
+          </BasicButton>
         </div>
       </form>
     </SideDrawer>
@@ -532,53 +516,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.linked-tab {
-  display: flex;
-  flex-direction: column;
-}
-.suppliers-primary-btn,
-.suppliers-secondary-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  height: 36px;
-  padding: 0 var(--space-4);
-  font-size: var(--fs-250);
-  font-weight: 500;
-  border-radius: var(--radius-base);
-  border: 1px solid;
-  cursor: pointer;
-}
-.suppliers-primary-btn {
-  background: var(--accent-fill);
-  border-color: var(--accent);
-  color: var(--text-on-accent-fill);
-}
-.suppliers-primary-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-.suppliers-secondary-btn {
-  background: var(--surface-base);
-  border-color: var(--border-default);
-  color: var(--text-body);
-}
-.row-action-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border: none;
-  border-radius: var(--radius-base);
-  cursor: pointer;
-}
-.form-error {
-  margin: 0;
-  margin-top: 2px;
-}
 .sku-preview {
-  padding: var(--spacing-300, 12px);
+  padding: var(--space-3);
 }
 .sku-preview__image {
   display: flex;
@@ -596,7 +535,7 @@ export default {
   }
 }
 .sku-preview__placeholder {
-  font-size: 48px;
+  font-size: var(--fs-700);
   color: var(--text-muted);
 }
 .sku-preview__meta {

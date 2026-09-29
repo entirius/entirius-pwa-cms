@@ -1,5 +1,5 @@
 <template>
-  <div class="products-tab p-8 ovy-auto h-100 fs-300">
+  <div class="flex flex-column">
     <div class="flex ai-ct jc-sb mb-5 flex-wrap gap-5">
       <h2 class="fs-400 fw-600">{{ $t("atlas.tabs.products") }}</h2>
       <div class="flex ai-ct flex-wrap gap-2">
@@ -63,15 +63,14 @@
         data-testid="products-filter-ordering"
         @update:model-value="(val) => onOrderingChange(val)"
       />
-      <button
+      <BasicButton
         v-if="hasActiveFilters"
-        class="products-filters__clear"
+        variant="ghost"
         data-testid="products-filter-clear"
         @click="clearFilters"
       >
-        <FontAwesomeIcon :icon="$icons.close" />
         {{ $t("atlas.products.filters.clear") }}
-      </button>
+      </BasicButton>
     </div>
 
     <BulkActionBar
@@ -120,59 +119,54 @@
       <template #cell-actions="{ row }">
         <div class="flex ai-ct gap-2" @click.stop>
           <!-- etap-12 #19: per-row quick actions for new/queued SPs, complementary to the bulk bar. -->
-          <button
+          <IconButton
             v-if="canApprove(row)"
-            class="row-action-btn bg-accent-subtle t-strong"
-            :title="$t('atlas.products.row_actions.review')"
+            icon="preview"
+            size="sm"
+            :label="$t('atlas.products.row_actions.review')"
             :data-testid="`products-review-${row.id}`"
             @click="reviewProduct(row)"
-          >
-            <FontAwesomeIcon :icon="$icons.preview" />
-          </button>
-          <button
+          />
+          <IconButton
             v-if="canApprove(row)"
-            class="row-action-btn bg-positive-subtle t-positive"
-            :title="$t('atlas.products.row_actions.approve')"
+            icon="check"
+            size="sm"
+            :label="$t('atlas.products.row_actions.approve')"
             :data-testid="`products-approve-${row.id}`"
             @click="quickApprove(row)"
-          >
-            <FontAwesomeIcon :icon="$icons.check" />
-          </button>
-          <button
+          />
+          <IconButton
             v-if="canApprove(row)"
-            class="row-action-btn bg-negative-subtle t-negative"
-            :title="$t('atlas.products.row_actions.reject')"
+            icon="close"
+            variant="danger"
+            size="sm"
+            :label="$t('atlas.products.row_actions.reject')"
             :data-testid="`products-reject-${row.id}`"
             @click="quickReject(row)"
-          >
-            <FontAwesomeIcon :icon="$icons.close" />
-          </button>
-          <button
+          />
+          <IconButton
             v-if="canPush(row)"
-            class="row-action-btn bg-positive-subtle t-positive"
-            :title="$t('atlas.products.push_button')"
+            icon="publish"
+            size="sm"
+            :label="$t('atlas.products.push_button')"
             :data-testid="`products-push-${row.id}`"
             @click="pushProduct(row)"
-          >
-            <FontAwesomeIcon :icon="$icons.publish" />
-          </button>
-          <button
+          />
+          <IconButton
             v-if="canForceRepush(row)"
-            class="row-action-btn bg-warning-subtle t-warning"
-            :title="$t('atlas.products.force_repush_button')"
+            icon="refresh"
+            size="sm"
+            :label="$t('atlas.products.force_repush_button')"
             :data-testid="`products-force-repush-${row.id}`"
             @click="confirmForceRepush(row)"
-          >
-            <FontAwesomeIcon :icon="$icons.refresh" />
-          </button>
-          <button
-            class="row-action-btn bg-raised t-body"
-            :title="$t('atlas.review.show_raw_data')"
+          />
+          <IconButton
+            icon="file"
+            size="sm"
+            :label="$t('atlas.review.show_raw_data')"
             :data-testid="`products-raw-${row.id}`"
             @click="showRaw(row)"
-          >
-            <FontAwesomeIcon :icon="$icons.preview" />
-          </button>
+          />
         </div>
       </template>
     </DataTable>
@@ -231,14 +225,14 @@
             v-if="canFindInPim(detailProduct)"
             class="products-detail__find-in-pim"
           >
-            <button
-              class="detail-btn detail-btn--find"
+            <BasicButton
+              size="sm"
+              :aria-expanded="String(showFindInPim)"
               data-testid="drawer-find-in-pim-toggle"
               @click="showFindInPim = !showFindInPim"
             >
-              <FontAwesomeIcon :icon="$icons.search" />
               {{ $t("lookup.source_detail.find_in_pim") }}
-            </button>
+            </BasicButton>
             <FindInPimPanel
               v-if="showFindInPim"
               :product-id="detailProduct.id"
@@ -250,52 +244,8 @@
             />
           </div>
         </div>
-        <div class="products-detail__actions">
-          <button
-            v-if="canApprove(detailProduct)"
-            class="detail-btn detail-btn--approve"
-            :disabled="detailBusy"
-            @click="detailAction('approve')"
-          >
-            <FontAwesomeIcon :icon="$icons.check" />
-            {{ $t("atlas.review.approve_button") }}
-          </button>
-          <button
-            v-if="canSkip(detailProduct)"
-            class="detail-btn detail-btn--skip"
-            :disabled="detailBusy"
-            @click="detailAction('skip')"
-          >
-            <FontAwesomeIcon :icon="$icons.refresh" />
-            {{ $t("atlas.review.skip_button") }}
-          </button>
-          <button
-            v-if="canReject(detailProduct)"
-            class="detail-btn detail-btn--reject"
-            :disabled="detailBusy"
-            @click="detailAction('reject')"
-          >
-            <FontAwesomeIcon :icon="$icons.close" />
-            {{ $t("atlas.review.reject_button") }}
-          </button>
-          <button
-            v-if="canPush(detailProduct)"
-            class="detail-btn detail-btn--push"
-            :disabled="detailBusy"
-            @click="detailPush"
-          >
-            <FontAwesomeIcon :icon="$icons.publish" />
-            {{ $t("atlas.products.push_button") }}
-          </button>
-          <button
-            v-if="canForceRepush(detailProduct)"
-            class="detail-btn detail-btn--repush"
-            :disabled="detailBusy"
-            @click="detailForceRepush"
-          >
-            <FontAwesomeIcon :icon="$icons.refresh" />
-            {{ $t("atlas.products.force_repush_button") }}
-          </button>
+        <div v-if="detailActions.length" class="products-detail__actions">
+          <ActionBar :actions="detailActions" />
         </div>
       </div>
     </SideDrawer>
@@ -424,6 +374,30 @@ export default {
     };
   },
   computed: {
+    // The drawer's footer (R5): the one primary is approve, push or re-push — the statuses never overlap.
+    detailActions() {
+      const p = this.detailProduct;
+      if (!p) return [];
+      const action = (key, label, role, onClick) => ({
+        key,
+        label: this.$t(label),
+        role,
+        disabled: this.detailBusy,
+        testid: `drawer-action-${key}`,
+        onClick,
+      });
+      return [
+        this.canApprove(p) &&
+          action("approve", "atlas.review.approve_button", "primary", () => this.detailAction("approve")),
+        this.canSkip(p) &&
+          action("skip", "atlas.review.skip_button", "secondary", () => this.detailAction("skip")),
+        this.canReject(p) &&
+          action("reject", "atlas.review.reject_button", "danger", () => this.detailAction("reject")),
+        this.canPush(p) && action("push", "atlas.products.push_button", "primary", this.detailPush),
+        this.canForceRepush(p) &&
+          action("repush", "atlas.products.force_repush_button", "primary", this.detailForceRepush),
+      ].filter(Boolean);
+    },
     statusOptions() {
       const all = [
         { value: "__all", label: this.$t("common.all") },
@@ -938,11 +912,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.products-tab {
-  display: flex;
-  flex-direction: column;
-}
-
 .products-filters {
   display: flex;
   align-items: center;
@@ -962,22 +931,6 @@ export default {
 }
 .products-filters__ordering {
   flex: 0 0 200px;
-}
-.products-filters__clear {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  background: transparent;
-  border: 1px solid var(--border-subtle);
-  color: var(--text-secondary);
-  border-radius: var(--radius-base);
-  padding: var(--space-1) var(--space-3);
-  font-size: var(--fs-200);
-  cursor: pointer;
-
-  &:hover {
-    background: var(--surface-raised);
-  }
 }
 
 /* Fill the drawer body so the content scrolls and the action bar pins to the bottom. */
@@ -999,84 +952,18 @@ export default {
 
 .products-detail__actions {
   flex-shrink: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-5);
   padding: var(--space-5) var(--space-8);
   /* Negative margins make the footer span the panel's full width and sit flush
      against its bottom edge, past the panel padding. */
   margin: 0 calc(-1 * var(--space-8)) calc(-1 * var(--space-8));
   background: var(--surface-base);
   border-top: 1px solid var(--border-subtle);
-  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.04);
 }
 
-.detail-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  height: 32px;
-  padding: 0 var(--space-3);
-  font-size: var(--fs-200);
-  font-weight: 600;
-  border-radius: var(--radius-base);
-  border: 1px solid;
-  cursor: pointer;
-  transition: filter 0.15s ease;
-
-  &:hover:not(:disabled) {
-    filter: brightness(0.97);
-  }
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-}
-.detail-btn--approve {
-  background: var(--positive-subtle);
-  border-color: var(--positive);
-  color: var(--positive);
-}
-.detail-btn--skip {
-  background: var(--surface-base);
-  border-color: var(--border-default);
-  color: var(--text-body);
-}
-.detail-btn--reject {
-  background: var(--negative-subtle);
-  border-color: var(--negative);
-  color: var(--negative);
-}
-.detail-btn--push {
-  background: var(--accent-subtle);
-  border-color: var(--accent);
-  color: var(--text-strong);
-}
-.detail-btn--repush {
-  background: var(--warning-subtle);
-  border-color: var(--warning);
-  color: var(--warning);
-}
-.detail-btn--find {
-  background: var(--surface-base);
-  border-color: var(--border-default);
-  color: var(--text-body);
-}
 .products-detail__find-in-pim {
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
   align-items: flex-start;
-}
-
-.row-action-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border: none;
-  border-radius: var(--radius-base);
-  cursor: pointer;
 }
 </style>

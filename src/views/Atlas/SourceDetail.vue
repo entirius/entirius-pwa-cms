@@ -1,31 +1,41 @@
 <template>
-  <div class="supplier-detail h-100 ovy-auto">
-    <!-- Toolbar buttons teleported into parent index.vue toolbar anchors -->
-    <Teleport to="#suppliers-toolbar-left" defer>
-      <IconButton
-        icon="back"
-        :label="$t('common.back')"
-        data-testid="suppliers-detail-back"
-        @click="goBack"
+  <PageLayout class="fs-300 t-body">
+    <template #header>
+      <PageHeader :title="headerLabel" back="/atlas/list">
+        <template v-if="tabActions.length" #actions>
+          <ActionBar :actions="tabActions" />
+        </template>
+      </PageHeader>
+    </template>
+    <template v-if="supplier" #toolbar>
+      <BasicTabs
+        :model-value="visibleTab"
+        :id-prefix="TAB_PREFIX"
+        :options="tabOptions"
+        data-testid="suppliers-detail-tabs"
+        @update:model-value="activeTab = $event"
       />
-      <span class="t-body fw-600 fs-400">{{ headerLabel }}</span>
-    </Teleport>
+    </template>
 
     <Loader block v-if="loading" />
-    <div v-else-if="!supplier" class="p-12 t-muted">
-      {{ $t("atlas.detail_not_found") }}
+    <EmptyState
+      v-else-if="!supplier"
+      icon="empty"
+      :title="$t('atlas.detail_not_found')"
+    />
+    <div
+      v-else
+      :id="`${TAB_PREFIX}-panel-${visibleTab}`"
+      role="tabpanel"
+      :aria-labelledby="`${TAB_PREFIX}-tab-${visibleTab}`"
+    >
+      <component
+        :is="TAB_COMPONENTS[visibleTab]"
+        :supplier="supplier"
+        @header-actions="tabActions = $event"
+      />
     </div>
-    <div v-else class="supplier-detail__body">
-      <div class="supplier-detail__tabs p-8 b-subtle bb-100">
-        <SegmentedControl
-          v-model="activeTab"
-          :options="tabOptions"
-          data-testid="suppliers-detail-tabs"
-        />
-      </div>
-      <component :is="activeTabComponent" :supplier="supplier" />
-    </div>
-  </div>
+  </PageLayout>
 </template>
 
 <script>
@@ -42,6 +52,15 @@ import { useNotifyStore } from "@/stores/notify";
 import { GET_Source } from "@/api/atlas/api";
 
 const TABS = ["overview", "feeds", "mappings", "products", "linked", "logs"];
+const TAB_PREFIX = "atlas-source";
+const TAB_COMPONENTS = {
+  overview: "OverviewTab",
+  feeds: "FeedsTab",
+  mappings: "MappingsTab",
+  products: "ProductsTab",
+  linked: "LinkedTab",
+  logs: "LogsTab",
+};
 
 export default {
   name: "SourceDetail",
@@ -54,12 +73,14 @@ export default {
     LogsTab,
   },
   setup() {
-    return { notify: useNotifyStore() };
+    return { notify: useNotifyStore(), TAB_PREFIX, TAB_COMPONENTS };
   },
   data() {
     return {
       supplier: null,
       loading: false,
+      // PageHeader actions of the open tab (OverviewTab's Save): the tab emits them, and [] when it unmounts.
+      tabActions: [],
       activeTab:
         this.$route.query.tab && TABS.includes(this.$route.query.tab)
           ? this.$route.query.tab
@@ -88,19 +109,10 @@ export default {
         testid: `suppliers-tab-${key}`,
       }));
     },
-    activeTabComponent() {
-      const map = {
-        overview: "OverviewTab",
-        feeds: "FeedsTab",
-        mappings: "MappingsTab",
-        products: "ProductsTab",
-        linked: "LinkedTab",
-        logs: "LogsTab",
-      };
+    visibleTab() {
       // Guard deep-links to a tab hidden for this role (e.g. ?tab=mappings on monitoring).
       const available = this.tabOptions.map((t) => t.value);
-      if (!available.includes(this.activeTab)) return "OverviewTab";
-      return map[this.activeTab] || "OverviewTab";
+      return available.includes(this.activeTab) ? this.activeTab : "overview";
     },
   },
   watch: {
@@ -143,25 +155,6 @@ export default {
         this.loading = false;
       }
     },
-    goBack() {
-      this.$router.push("/atlas/list");
-    },
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.supplier-detail {
-  display: flex;
-  flex-direction: column;
-}
-.supplier-detail__body {
-  display: flex;
-  flex-direction: column;
-}
-.supplier-detail__tabs {
-  display: flex;
-  align-items: center;
-  gap: var(--space-5);
-}
-</style>

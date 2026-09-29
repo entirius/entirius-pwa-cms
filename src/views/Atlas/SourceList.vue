@@ -14,8 +14,15 @@
       </PageHeader>
     </template>
     <template #toolbar>
-      <!-- Filter panel -->
-      <div class="flex ai-ct">
+      <div class="flex ai-ct flex-wrap gap-5">
+        <BasicInput
+          v-model="search"
+          :placeholder="$t('common.start_typing')"
+          icon="search"
+          class="supplier-list__search"
+          data-testid="suppliers-search-input"
+          @input="debouncedFetch(searchAndFetch)"
+        />
         <MobileFilterPanel
           :active-count="activeFilterCount"
           :trigger-label="$t('builder.filters')"
@@ -47,17 +54,6 @@
         </MobileFilterPanel>
       </div>
     </template>
-
-      <div class="supplier-list__toolbar">
-        <BasicInput
-          v-model="search"
-          :placeholder="$t('common.start_typing')"
-          icon="search"
-          class="supplier-list__search"
-          data-testid="suppliers-search-input"
-          @input="debouncedFetch(searchAndFetch)"
-        />
-      </div>
 
       <Loader block v-show="loading" />
 
@@ -111,12 +107,14 @@
         </template>
       </DataTable>
 
+    <template #footer>
       <Pagination
         v-if="totalCount > pageSize"
         :page="paginationState.page"
         :pages="paginationState.pages"
         @update:page="onPageChange"
       />
+    </template>
 
     <!-- Create supplier drawer -->
     <SideDrawer
@@ -126,28 +124,26 @@
       @close="closeCreate"
     >
       <form class="flex flex-column gap-5" @submit.prevent="submitCreate">
-        <FormField :label="$t('atlas.form.idx_label')" required>
+        <FormField
+          :label="$t('atlas.form.idx_label')"
+          required
+          :error="errors.idx?.msg || ''"
+        >
           <BasicInput
             v-model="createForm.idx"
             placeholder="example-supplier"
             data-testid="suppliers-create-idx"
           />
-          <p
-            v-if="errors.idx"
-            class="form-error t-negative fs-200"
-            data-testid="suppliers-create-error-idx"
-          >
-            {{ errors.idx.msg }}
-          </p>
         </FormField>
-        <FormField :label="$t('atlas.form.name_label')" required>
+        <FormField
+          :label="$t('atlas.form.name_label')"
+          required
+          :error="errors.name?.msg || ''"
+        >
           <BasicInput
             v-model="createForm.name"
             data-testid="suppliers-create-name"
           />
-          <p v-if="errors.name" class="form-error t-negative fs-200">
-            {{ errors.name.msg }}
-          </p>
         </FormField>
         <FormField :label="$t('atlas.form.kind_label')">
           <BasicSelect
@@ -217,30 +213,12 @@
       <p class="mb-5">
         <strong>{{ deleteTarget?.name }}</strong> ({{ deleteTarget?.idx }})
       </p>
-      <div class="flex flex-column gap-2 mb-5">
-        <label class="flex ai-ct gap-2 pointer">
-          <input
-            type="radio"
-            :value="false"
-            v-model="deleteForce"
-            data-testid="suppliers-delete-soft-radio"
-          />
-          <span class="fs-300">{{
-            $t("atlas.delete.mode_soft_label")
-          }}</span>
-        </label>
-        <label class="flex ai-ct gap-2 pointer">
-          <input
-            type="radio"
-            :value="true"
-            v-model="deleteForce"
-            data-testid="suppliers-delete-hard-radio"
-          />
-          <span class="fs-300 t-negative fw-600">{{
-            $t("atlas.delete.mode_hard_label")
-          }}</span>
-        </label>
-      </div>
+      <BasicRadioGroup
+        v-model="deleteForce"
+        :options="deleteModeOptions"
+        :aria-label="$t('atlas.delete.modal_title')"
+        class="mb-5"
+      />
       <div
         v-if="deleteForce && deleteImpact"
         class="suppliers-delete-impact"
@@ -274,7 +252,6 @@
         </BasicButton>
         <BasicButton
           variant="danger-solid"
-          class="modal-btn--delete"
           :disabled="deleting"
           data-testid="suppliers-delete-confirm"
           @click="submitDelete"
@@ -383,6 +360,20 @@ export default {
         { value: "procurement", label: this.$t("atlas.kind.procurement") },
         { value: "monitoring", label: this.$t("atlas.kind.monitoring") },
         { value: "enrichment", label: this.$t("atlas.kind.enrichment") },
+      ];
+    },
+    deleteModeOptions() {
+      return [
+        {
+          value: false,
+          label: this.$t("atlas.delete.mode_soft_label"),
+          testid: "suppliers-delete-soft-radio",
+        },
+        {
+          value: true,
+          label: this.$t("atlas.delete.mode_hard_label"),
+          testid: "suppliers-delete-hard-radio",
+        },
       ];
     },
     typeDropdownOptions() {
@@ -606,13 +597,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.supplier-list__toolbar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-5);
-  margin-bottom: var(--space-10);
-  flex-wrap: wrap;
-}
 .supplier-list__search {
   flex: 1;
   min-width: 150px;
@@ -623,9 +607,5 @@ export default {
   color: var(--negative);
   padding: var(--space-5);
   border-radius: var(--radius-base);
-}
-.form-error {
-  margin: 0;
-  margin-top: 2px;
 }
 </style>
