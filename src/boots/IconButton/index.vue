@@ -72,7 +72,7 @@ function onClick(event) {
   background-color: transparent;
   font-size: var(--fs-400);
 
-  // One disabled glyph for every variant: the disabled text role, clearly weaker than the enabled one (plan 60).
+  // One disabled glyph for every variant but primary: the disabled text role, clearly weaker than the enabled one.
   &[disabled] {
     color: var(--text-disabled);
     cursor: not-allowed;
@@ -123,8 +123,11 @@ function onClick(event) {
     background-color: var(--accent-fill-hover);
   }
 
+  // Its own disabled look: the on-fill glyph stays, the whole button fades (a text-disabled glyph would vanish on
+  // the fill).
   &[disabled] {
-    background-color: var(--accent-fill-hover);
+    color: var(--text-on-accent-fill);
+    opacity: 0.5;
   }
 }
 
