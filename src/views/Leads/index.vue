@@ -139,6 +139,11 @@ onMounted(async () => {
   .leads--detail .leads__inbox {
     display: none;
   }
+  /* A phone shows the open screen alone at the height of the view: its PageLayout scrolls, so the Review actions in
+     its footer stay pinned at the bottom (Review keeps the tab bar off, meta.noBottomBar). */
+  .leads--detail {
+    grid-template-rows: minmax(0, 1fr);
+  }
 }
 @media (min-width: 1024px) {
   .leads {

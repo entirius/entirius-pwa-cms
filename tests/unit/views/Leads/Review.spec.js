@@ -38,6 +38,11 @@ vi.mock("vue-router", async () => {
 });
 
 import Review from "@/views/Leads/Review.vue";
+import BasicButton from "@/boots/BasicButton/index.vue";
+import BasicInput from "@/boots/BasicInput/index.vue";
+import BasicMenu from "@/boots/BasicMenu/index.vue";
+import BasicTextarea from "@/boots/BasicTextarea/index.vue";
+import { leadsFrame } from "./leadsFrame";
 
 enableAutoUnmount(afterEach);
 import ReviewActions from "@/views/Leads/ReviewActions.vue";
@@ -55,9 +60,22 @@ const conflictClient = (error, message) => {
     );
   return client;
 };
+// The rewrite dialog renders its body and actions in place while open (no Teleport); buttons and fields are real.
+const BasicModal = { name: "BasicModal", props: ["open", "title", "actions"], template: '<div v-if="open"><slot /><ActionBar :actions="actions" /></div>' };
 const mountReview = async () => {
   const wrapper = mount(Review, {
-    global: { directives: { out: {} }, stubs: { IntelCard: true, RouterLink: { template: "<a><slot /></a>" } } },
+    global: {
+      components: { ...leadsFrame.components, BasicMenu },
+      stubs: {
+        ...leadsFrame.stubs,
+        BasicButton,
+        BasicInput,
+        BasicTextarea,
+        BasicModal,
+        IntelCard: true,
+        RouterLink: { template: "<a><slot /></a>" },
+      },
+    },
   });
   await flushPromises();
   return wrapper;
@@ -141,7 +159,7 @@ describe("Leads Review", () => {
     const wrapper = await mountReview();
     wrapper.findComponent(ReviewActions).vm.$emit("rewrite");
     await flushPromises();
-    await wrapper.get('[data-testid="rewrite-notes"]').setValue("shorter");
+    await wrapper.get('[data-testid="rewrite-notes"] textarea').setValue("shorter");
     await wrapper.get('[data-testid="rewrite-submit"]').trigger("click");
     await flushPromises();
     expect(api.POST_ReviewRewrite).toHaveBeenCalledWith(5, { notes: "shorter" });
@@ -153,7 +171,7 @@ describe("Leads Review", () => {
     const wrapper = await mountReview();
     wrapper.findComponent(ReviewActions).vm.$emit("rewrite");
     await flushPromises();
-    await wrapper.get('[data-testid="rewrite-notes"]').setValue("shorter");
+    await wrapper.get('[data-testid="rewrite-notes"] textarea').setValue("shorter");
     await wrapper.get('[data-testid="rewrite-submit"]').trigger("click");
     route.current.params.id = "9";
     await flushPromises();
@@ -168,7 +186,7 @@ describe("Leads Review", () => {
     const wrapper = await mountReview();
     wrapper.findComponent(ReviewActions).vm.$emit("rewrite");
     await flushPromises();
-    await wrapper.get('[data-testid="rewrite-notes"]').setValue("shorter");
+    await wrapper.get('[data-testid="rewrite-notes"] textarea').setValue("shorter");
     await wrapper.get('[data-testid="rewrite-submit"]').trigger("click");
     await flushPromises();
     expect(wrapper.get('[data-testid="review-failed"]').text()).toContain("ToolboxError: 503");
@@ -176,7 +194,7 @@ describe("Leads Review", () => {
     expect(api.GET_ReviewNext).not.toHaveBeenCalled();
     await wrapper.get('[data-testid="failed-retry"]').trigger("click");
     expect(wrapper.find('[data-testid="rewrite-notes"]').exists()).toBe(true);
-    wrapper.findComponent({ name: "RewriteModal" }).vm.$emit("close");
+    await wrapper.get('[data-testid="rewrite-cancel"]').trigger("click");
     await flushPromises();
     expect(wrapper.get('[data-testid="review-subject"]').text()).toBe("Audit");
   });
@@ -186,7 +204,7 @@ describe("Leads Review", () => {
     const wrapper = await mountReview();
     wrapper.findComponent(ReviewActions).vm.$emit("edit");
     await flushPromises();
-    await wrapper.get('[data-testid="edit-subject"]').setValue("New subject");
+    await wrapper.get('[data-testid="edit-subject"] input').setValue("New subject");
     await wrapper.get('[data-testid="edit-save"]').trigger("click");
     await flushPromises();
     expect(api.POST_ReviewEdit).toHaveBeenCalledWith(5, { subject: "New subject", body_text: "Hello" });
@@ -207,6 +225,15 @@ describe("Leads Review", () => {
     expect(wrapper.get('[data-testid="review-rewrite"]').attributes("disabled")).toBeDefined();
     expect(wrapper.find('[data-testid="review-edit"]').exists()).toBe(true);
     expect(wrapper.get('[data-code="toolbox.status"]').text()).toContain("Entirius AI Toolbox");
+  });
+
+  it("a more-menu item runs its action: Edit opens the edit form", async () => {
+    const wrapper = await mountReview();
+    await wrapper.get('[data-testid="review-more"]').trigger("click");
+    await wrapper.get('[data-testid="review-edit"]').trigger("click");
+    await flushPromises();
+    expect(wrapper.get('[data-testid="edit-subject"] input').element.value).toBe("Audit");
+    expect(wrapper.find('[data-testid="review-actions"]').exists()).toBe(false);
   });
 
   it("a channel without outgoing mail is named on the Review screen before any send", async () => {
@@ -236,7 +263,7 @@ describe("Leads Review", () => {
     const wrapper = await mountReview();
     wrapper.findComponent(ReviewActions).vm.$emit("rewrite");
     await flushPromises();
-    await wrapper.get('[data-testid="rewrite-notes"]').setValue("shorter");
+    await wrapper.get('[data-testid="rewrite-notes"] textarea').setValue("shorter");
     await wrapper.get('[data-testid="rewrite-submit"]').trigger("click");
     await flushPromises();
     expect(api.GET_ReviewMessage).toHaveBeenCalledTimes(1);
@@ -289,16 +316,15 @@ describe("Leads Review", () => {
     wrapper.findComponent(ReviewActions).vm.$emit("edit");
     await flushPromises();
     await expect(guards.leave()).resolves.toBe(true);
-    expect(wrapper.find('[data-testid="confirm-sheet"]').exists()).toBe(false);
+    expect(wrapper.find('[data-testid="confirm-dialog-cancel"]').exists()).toBe(false);
 
-    await wrapper.get('[data-testid="edit-body"]').setValue("Changed");
+    await wrapper.get('[data-testid="edit-body"] textarea').setValue("Changed");
     await wrapper.get('[data-testid="edit-cancel"]').trigger("click");
-    expect(wrapper.find('[data-testid="confirm-sheet"]').exists()).toBe(true);
-    await wrapper.get('[data-testid="confirm-cancel"]').trigger("click");
+    await wrapper.get('[data-testid="confirm-dialog-cancel"]').trigger("click");
     expect(wrapper.find('[data-testid="edit-body"]').exists()).toBe(true);
 
     await wrapper.get('[data-testid="edit-cancel"]').trigger("click");
-    await wrapper.get('[data-testid="confirm-ok"]').trigger("click");
+    await wrapper.get('[data-testid="confirm-dialog-confirm"]').trigger("click");
     await flushPromises();
     expect(wrapper.find('[data-testid="edit-body"]').exists()).toBe(false);
     expect(confirm).not.toHaveBeenCalled();

@@ -1,12 +1,17 @@
 <template>
   <section class="earlier" data-testid="earlier-threads">
-    <button class="earlier__toggle" :aria-expanded="String(open)" data-testid="earlier-toggle" @click="open = !open">
-      <span>{{ $t("leads.thread.earlier", { count }) }}</span>
-      <span v-if="pendingCount" class="earlier__badge" data-testid="earlier-optout-badge">
-        {{ $t("leads.thread.earlier_optout", { count: pendingCount }) }}
-      </span>
-      <FontAwesomeIcon :icon="open ? $icons.collapse : $icons.expand" />
-    </button>
+    <div class="earlier__head flex ai-ct flex-wrap gap-3">
+      <BasicButton variant="ghost" :aria-expanded="String(open)" data-testid="earlier-toggle" @click="open = !open">
+        {{ $t("leads.thread.earlier", { count }) }}
+        <FontAwesomeIcon :icon="open ? $icons.collapse : $icons.expand" class="ml-2" />
+      </BasicButton>
+      <StatusBadge
+        v-if="pendingCount"
+        tone="negative"
+        :label="$t('leads.thread.earlier_optout', { count: pendingCount })"
+        data-testid="earlier-optout-badge"
+      />
+    </div>
     <div v-if="open" class="earlier__list">
       <ThreadGroup
         v-for="thread in allThreads"
@@ -17,9 +22,9 @@
         :waiting="waitingOf(waiting, thread.id)"
         @changed="$emit('changed')"
       />
-      <button v-if="hasMore" class="earlier__more" :disabled="loading" data-testid="earlier-more" @click="loadMore">
+      <BasicButton v-if="hasMore" class="as-s" :disabled="loading" data-testid="earlier-more" @click="loadMore">
         {{ $t("leads.thread.earlier_more") }}
-      </button>
+      </BasicButton>
     </div>
   </section>
 </template>
@@ -76,27 +81,8 @@ async function loadMore() {
   border-radius: var(--radius-lg);
   background: var(--surface-base);
 }
-.earlier__toggle {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-5);
-  align-items: center;
-  width: 100%;
-  min-height: 44px;
-  padding: 0 var(--space-8);
-  border: none;
-  background: none;
-  color: var(--text-body);
-  font-weight: 600;
-  cursor: pointer;
-}
-.earlier__toggle > :first-child {
-  flex: 1;
-  text-align: left;
-}
-.earlier__badge {
-  color: var(--negative);
-  font-size: var(--fs-200);
+.earlier__head {
+  padding: var(--space-2) var(--space-5);
 }
 .earlier__list {
   display: flex;
@@ -108,13 +94,5 @@ async function loadMore() {
   .earlier__list {
     padding: 0 var(--space-5) var(--space-5);
   }
-}
-.earlier__more {
-  min-height: 44px;
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  background: var(--surface-base);
-  color: var(--text-body);
-  cursor: pointer;
 }
 </style>

@@ -5,6 +5,7 @@ const leads = vi.hoisted(() => ({
   PATCH_Company: vi.fn(),
   POST_CreateCustomer: vi.fn(),
   POST_RequestAudit: vi.fn(),
+  POST_Communicate: vi.fn(),
   GET_Company: vi.fn(),
   GET_Stages: vi.fn(),
   GET_LeadTypes: vi.fn(),
@@ -16,6 +17,8 @@ vi.mock("@/composables/useIsDesktop", async () => {
   const { ref } = await import("vue");
   return { useIsDesktop: () => ref(true) };
 });
+const communicator = vi.hoisted(() => ({ GET_Templates: vi.fn() }));
+vi.mock("@/api/communicator/api", () => communicator);
 const siteintel = vi.hoisted(() => ({ GET_LatestAudit: vi.fn(), POST_AuditRerun: vi.fn() }));
 const munin = vi.hoisted(() => ({ isModuleInstalled: vi.fn() }));
 const notify = vi.hoisted(() => ({ spawnNotification: vi.fn() }));
@@ -35,7 +38,7 @@ const mountActions = (props) =>
     props,
     global: {
       components: leadsFrame.components,
-      stubs: { ...leadsFrame.stubs, CommunicateModal: true, RouterLink: { props: ["to"], template: "<a :data-to='to.name'><slot /></a>" } },
+      stubs: { ...leadsFrame.stubs, RouterLink: { props: ["to"], template: "<a :data-to='to.name'><slot /></a>" } },
     },
   });
 const has = (wrapper, id) => wrapper.find(`[data-testid="${id}"]`).exists();
@@ -115,7 +118,7 @@ describe("Company card actions", () => {
       global: {
         mocks: { $route: { fullPath: "/leads/companies/7" } },
         components: leadsFrame.components,
-        stubs: { ...leadsFrame.stubs, CommunicateModal: true, RouterLink: { props: ["to"], template: "<a :data-back='to.query.back'><slot /></a>" } },
+        stubs: { ...leadsFrame.stubs, RouterLink: { props: ["to"], template: "<a :data-back='to.query.back'><slot /></a>" } },
       },
     }).get('[data-testid="company-known-customer"]');
     expect(link.classes()).toContain("t-accent");
@@ -173,5 +176,53 @@ describe("Company card header", () => {
     await flushPromises();
     expect(leads.POST_Transition).not.toHaveBeenCalled();
     expect(leads.PATCH_Company).not.toHaveBeenCalled();
+  });
+});
+
+// Plan 54: the dialog is a BasicModal; the stub renders its body and hands its actions out as props.
+describe("Leads Communicate dialog", () => {
+  const BasicModal = { name: "BasicModal", props: ["open", "title", "actions"], template: "<div><slot /></div>" };
+  const BasicRadioGroup = { name: "BasicRadioGroup", props: ["modelValue", "options"], template: "<div />" };
+  const contacts = [
+    { id: 1, first_name: "Anna", last_name: "Nowak", email: "anna@shop.test", is_primary: false },
+    { id: 2, first_name: "Jan", last_name: "Kowal", email: "jan@shop.test", is_primary: true },
+    { id: 3, first_name: "Opt", last_name: "Out", email: "out@shop.test", opt_out_at: "2026-09-01" },
+  ];
+  const openDialog = async () => {
+    const wrapper = mount(CompanyActions, {
+      props: { company: { ...company(), contacts } },
+      global: { components: leadsFrame.components, stubs: { ...leadsFrame.stubs, BasicModal, BasicRadioGroup } },
+    });
+    await wrapper.get('[data-testid="company-communicate"]').trigger("click");
+    await flushPromises();
+    return wrapper;
+  };
+  const submit = (wrapper) => wrapper.findComponent({ name: "BasicModal" }).props("actions").find((a) => a.key === "submit");
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    communicator.GET_Templates.mockResolvedValue({
+      data: { results: [{ id: 1, key: "cold", language: "pl", is_active: true }, { id: 2, key: "old", language: "en", is_active: false }] },
+    });
+  });
+
+  it("offers the active templates and the contacts that can get mail, the primary one picked", async () => {
+    const wrapper = await openDialog();
+    expect(control(wrapper, "communicate-template").props("options")).toEqual([{ value: "cold", label: "cold (pl)" }]);
+    const radios = wrapper.findComponent({ name: "BasicRadioGroup" });
+    expect(radios.props("options").map((o) => o.value)).toEqual([1, 2]);
+    expect(radios.props("modelValue")).toBe(2);
+  });
+
+  it("Request draft waits for a template, then posts the pick and closes", async () => {
+    leads.POST_Communicate.mockResolvedValue({ data: {} });
+    const wrapper = await openDialog();
+    expect(submit(wrapper).disabled).toBe(true);
+    await setControl(wrapper, "communicate-template", "cold");
+    expect(submit(wrapper).disabled).toBe(false);
+    await submit(wrapper).onClick();
+    await flushPromises();
+    expect(leads.POST_Communicate).toHaveBeenCalledWith(7, { template_key: "cold", contact_id: 2 });
+    expect(has(wrapper, "communicate-modal")).toBe(false);
   });
 });

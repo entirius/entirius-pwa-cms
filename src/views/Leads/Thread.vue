@@ -1,55 +1,58 @@
 <template>
-  <div class="thread" data-testid="leads-thread">
-    <BasicButton v-if="desktopHint" class="thread__back" variant="ghost" size="sm" icon="back" @click="goBack">
-      {{ $t("leads.thread.back") }}
-    </BasicButton>
-    <Loader block v-show="loading" />
-    <h3 v-if="company && desktopHint" class="thread__company" data-testid="thread-company">{{ company.name }}</h3>
-    <p v-if="companyMissing" class="thread__none" role="status" data-testid="thread-company-missing">
-      {{ $t("leads.thread.company_unavailable") }}
-    </p>
-    <p v-if="desktopHint" class="thread__none" data-testid="thread-desktop-hint">{{ $t("leads.thread.desktop_hint") }}</p>
-    <ConfigBanner v-if="company" code="toolbox.status" />
-    <IntelCard v-if="company && munin.isModuleEnabled('siteintel')" :context="company" />
-    <p v-if="mailMissing" class="thread__none" role="status" data-testid="thread-mail-missing">
-      {{ $t("leads.thread.mail_unavailable") }}
-    </p>
-    <p v-else-if="!loading && !newest" class="thread__none">{{ $t("leads.thread.no_thread") }}</p>
-    <p v-if="newest" class="thread__subject" data-testid="thread-subject">
-      <strong>{{ threadSubject(newest.timeline) }}</strong>
-      <span class="thread__state"> · {{ $t(`leads.thread.state.${newest.status}`) }}</span>
-    </p>
-    <p v-if="replyThreadId" class="thread__none" data-testid="thread-reply-below">{{ $t("leads.thread.reply_below") }}</p>
-    <ThreadTimeline
-      v-if="!mailMissing && !loading"
-      :busy="optoutBusy"
-      :messages="newest?.timeline || []"
-      :optouts="newest?.optouts || []"
-      :waiting="newest ? waitingOf(waiting, newest.id) : []"
-      @confirm-optout="confirmOptout"
-    />
-    <EarlierThreads
-      v-if="older.count"
-      :key="subjectRef"
-      :subject-ref="subjectRef"
-      :threads="older.threads"
-      :count="older.count"
-      :next="older.next"
-      :page-size="PAGE_SIZE"
-      :pending-threads="pendingThreads"
-      :waiting="waiting"
-      :open-thread-id="replyThreadId"
-      @changed="loadPendingOptouts"
-    />
-    <details v-if="desktopHint && activities.length" class="thread__activity" data-testid="thread-activity">
-      <summary>{{ $t("leads.thread.activity", { count: activities.length }) }}</summary>
-      <ul>
-        <li v-for="activity in activities" :key="activity.id">
-        {{ formatTime(activity.created_at) }} · {{ activityText(activity.message) }}
-      </li>
-      </ul>
-    </details>
-  </div>
+  <!-- a phone gets the thread alone as the company card (a page); the desktop card embeds it as its timeline tab -->
+  <component :is="desktopHint ? PageLayout : 'div'" data-testid="leads-thread">
+    <template v-if="desktopHint" #header>
+      <PageHeader :title="$t('leads.company.title')" :back="goBack" />
+    </template>
+    <div class="thread flex-column gap-4">
+      <Loader block v-show="loading" />
+      <h2 v-if="company && desktopHint" class="thread__wrap fs-400 fw-600 m-0" data-testid="thread-company">{{ company.name }}</h2>
+      <p v-if="companyMissing" class="t-muted m-0" role="status" data-testid="thread-company-missing">
+        {{ $t("leads.thread.company_unavailable") }}
+      </p>
+      <p v-if="desktopHint" class="t-muted m-0" data-testid="thread-desktop-hint">{{ $t("leads.thread.desktop_hint") }}</p>
+      <ConfigBanner v-if="company" code="toolbox.status" />
+      <IntelCard v-if="company && munin.isModuleEnabled('siteintel')" :context="company" />
+      <p v-if="mailMissing" class="t-muted m-0" role="status" data-testid="thread-mail-missing">
+        {{ $t("leads.thread.mail_unavailable") }}
+      </p>
+      <p v-else-if="!loading && !newest" class="t-muted m-0">{{ $t("leads.thread.no_thread") }}</p>
+      <p v-if="newest" class="thread__wrap m-0" data-testid="thread-subject">
+        <strong>{{ threadSubject(newest.timeline) }}</strong>
+        <span class="t-secondary fs-200"> · {{ $t(`leads.thread.state.${newest.status}`) }}</span>
+      </p>
+      <p v-if="replyThreadId" class="t-muted m-0" data-testid="thread-reply-below">{{ $t("leads.thread.reply_below") }}</p>
+      <ThreadTimeline
+        v-if="!mailMissing && !loading"
+        :busy="optoutBusy"
+        :messages="newest?.timeline || []"
+        :optouts="newest?.optouts || []"
+        :waiting="newest ? waitingOf(waiting, newest.id) : []"
+        @confirm-optout="confirmOptout"
+      />
+      <EarlierThreads
+        v-if="older.count"
+        :key="subjectRef"
+        :subject-ref="subjectRef"
+        :threads="older.threads"
+        :count="older.count"
+        :next="older.next"
+        :page-size="PAGE_SIZE"
+        :pending-threads="pendingThreads"
+        :waiting="waiting"
+        :open-thread-id="replyThreadId"
+        @changed="loadPendingOptouts"
+      />
+      <details v-if="desktopHint && activities.length" class="thread__activity" data-testid="thread-activity">
+        <summary>{{ $t("leads.thread.activity", { count: activities.length }) }}</summary>
+        <ul>
+          <li v-for="activity in activities" :key="activity.id">
+          {{ formatTime(activity.created_at) }} · {{ activityText(activity.message) }}
+        </li>
+        </ul>
+      </details>
+    </div>
+  </component>
 </template>
 
 <script setup>
@@ -70,6 +73,7 @@ import { useNotifyStore } from "@/stores/notify";
 import { activityText } from "@/utils/leadsLabels";
 import { threadSubject, waitingOf } from "@/utils/leadsThread";
 import { formatTime } from "@/utils/leadsTime";
+import PageLayout from "@/boots/PageLayout/index.vue";
 import ConfigBanner from "@/components/ConfigHealth/ConfigBanner.vue";
 import EarlierThreads from "./EarlierThreads.vue";
 import IntelCard from "./IntelCard.vue";
@@ -175,32 +179,10 @@ watch(() => route.params.id, (id) => id && load());
 
 <style scoped>
 .thread {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
-  padding: var(--space-8);
-  overflow-x: hidden;
+  overflow-x: clip;
 }
-.thread__back {
-  align-self: flex-start;
-  min-height: 44px;
-}
-.thread__company {
-  margin: 0;
-  font-size: var(--fs-400);
+.thread__wrap {
   overflow-wrap: anywhere;
-}
-.thread__none {
-  margin: 0;
-  color: var(--text-muted);
-}
-.thread__subject {
-  margin: 0;
-  overflow-wrap: anywhere;
-}
-.thread__state {
-  color: var(--text-secondary);
-  font-size: var(--fs-200);
 }
 .thread__activity {
   color: var(--text-secondary);

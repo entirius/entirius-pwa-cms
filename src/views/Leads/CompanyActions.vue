@@ -26,19 +26,37 @@
       @confirm="markDoNotContact"
       @cancel="confirming = false"
     />
-    <CommunicateModal v-if="communicating" :company="company" @close="communicating = false" />
+    <BasicModal
+      v-if="communicating"
+      :open="true"
+      :title="$t('leads.company.communicate')"
+      :actions="communicateActions"
+      data-testid="communicate-modal"
+      @close="communicating = false"
+    >
+      <div class="flex-column gap-4">
+        <FormField :label="$t('leads.communicate.template')">
+          <BasicSelect v-model="templateKey" :options="templateOptions" data-testid="communicate-template" />
+        </FormField>
+        <FormField :label="$t('leads.communicate.contact')">
+          <BasicRadioGroup v-if="contacts.length" v-model="contactId" :options="contactOptions" name="communicate-contact" />
+          <p v-else class="t-muted m-0">{{ $t("leads.communicate.no_contacts") }}</p>
+        </FormField>
+        <p v-if="communicateError" class="t-negative m-0" role="alert" data-testid="communicate-error">{{ communicateError }}</p>
+      </div>
+    </BasicModal>
   </div>
 </template>
 
 <script setup>
 import { computed, ref } from "vue";
 import { t } from "@/i18n";
-import { PATCH_Company, POST_CreateCustomer, POST_RequestAudit } from "@/api/leads/api";
+import { PATCH_Company, POST_Communicate, POST_CreateCustomer, POST_RequestAudit } from "@/api/leads/api";
+import { GET_Templates } from "@/api/communicator/api";
 import { GET_LatestAudit, POST_AuditRerun } from "@/api/siteintel/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
-import CommunicateModal from "./CommunicateModal.vue";
 
 const props = defineProps({ company: { type: Object, required: true } });
 const emit = defineEmits(["changed"]);
@@ -46,6 +64,10 @@ const munin = useMuninStore();
 const notify = useNotifyStore();
 const communicating = ref(false);
 const confirming = ref(false);
+const templates = ref([]);
+const templateKey = ref("");
+const contactId = ref(null);
+const communicateError = ref("");
 
 const hasAccounts = computed(() => munin.isModuleInstalled("accounts"));
 
@@ -72,7 +94,7 @@ const actions = computed(() =>
       label: t("leads.company.communicate"),
       role: "primary",
       testid: "company-communicate",
-      onClick: () => (communicating.value = true),
+      onClick: openCommunicate,
     },
   ].filter(Boolean)
 );
@@ -80,6 +102,50 @@ const actions = computed(() =>
 const canCreateCustomer = computed(
   () => hasAccounts.value && props.company.stage.kind === "won" && !props.company.customer_uid
 );
+
+// Manual outreach: an active template + a contact with an email → a draft in the review queue.
+const contacts = computed(() => props.company.contacts.filter((c) => c.email && !c.opt_out_at && !c.anonymised_at));
+const templateOptions = computed(() =>
+  templates.value.map((tpl) => ({ value: tpl.key, label: `${tpl.key} (${tpl.language})` }))
+);
+const contactOptions = computed(() =>
+  contacts.value.map((c) => ({
+    value: c.id,
+    label: `${c.first_name} ${c.last_name} <${c.email}>`,
+    testid: "communicate-contact",
+  }))
+);
+const communicateActions = computed(() => [
+  { key: "cancel", label: t("leads.review.cancel"), role: "secondary", onClick: () => (communicating.value = false) },
+  {
+    key: "submit",
+    label: t("leads.communicate.submit"),
+    role: "primary",
+    disabled: !templateKey.value || !contactId.value,
+    testid: "communicate-submit",
+    onClick: communicate,
+  },
+]);
+
+async function openCommunicate() {
+  templateKey.value = "";
+  communicateError.value = "";
+  contactId.value = contacts.value.find((c) => c.is_primary)?.id ?? null;
+  communicating.value = true;
+  const { data } = await GET_Templates();
+  templates.value = data.results.filter((tpl) => tpl.is_active);
+}
+
+async function communicate() {
+  communicateError.value = "";
+  try {
+    await POST_Communicate(props.company.id, { template_key: templateKey.value, contact_id: contactId.value });
+    notify.spawnNotification({ msg: t("leads.communicate.done") });
+    communicating.value = false;
+  } catch (err) {
+    communicateError.value = extractApiMessage(err, t("leads.review.error"));
+  }
+}
 
 async function run(call, successKey) {
   try {

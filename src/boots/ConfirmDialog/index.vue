@@ -29,7 +29,7 @@
         <BasicButton
           :variant="tone === 'danger' ? 'danger-solid' : 'primary'"
           :loading="loading"
-          data-testid="confirm-dialog-confirm"
+          :data-testid="confirmTestid"
           @click="emit('confirm')"
         >
           {{ confirmLabel || $t("common.accept") }}
@@ -44,7 +44,8 @@
 // slot), `ariaLabel` (the name without a title; defaults to `message`), `confirmLabel`, `cancelLabel`, `tone`
 // default (primary confirm) · danger (`danger-solid` confirm: every delete, remove, flush), `loading` (spinner on confirm; Esc, backdrop and close blocked). Emits `confirm` and
 // `cancel` (Cancel, close, Esc, backdrop); the caller closes it. `discardLabel` adds a third action, `discard` (unsaved changes: stay · discard ·
-// save). The confirm button's test id is `confirm-dialog-confirm`.
+// save). The confirm button's test id is `confirmTestid` (`confirm-dialog-confirm`; a page-object contract may name
+// another); other attributes (`data-testid`) land on the dialog element.
 import BasicModal from "@/boots/BasicModal/index.vue";
 import ActionBar from "@/boots/ActionBar/index.vue";
 
@@ -59,6 +60,7 @@ const props = defineProps({
   tone: { type: String, default: "default", validator: (value) => ["default", "danger"].includes(value) },
   loading: { type: Boolean, default: false },
   inline: { type: Boolean, default: false },
+  confirmTestid: { type: String, default: "confirm-dialog-confirm" },
 });
 const emit = defineEmits(["update:open", "confirm", "cancel", "discard"]);
 

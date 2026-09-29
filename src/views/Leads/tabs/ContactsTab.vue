@@ -81,12 +81,13 @@
       </template>
     </DataTable>
 
-    <ConfirmSheet
-      v-if="confirming"
-      :title="$t('leads.contacts.remove_title', { name: nameOf(confirming) })"
+    <ConfirmDialog
+      :open="Boolean(confirming)"
+      :title="confirming ? $t('leads.contacts.remove_title', { name: nameOf(confirming) }) : ''"
       :message="$t('leads.contacts.remove_message')"
       :confirm-label="$t('leads.contacts.remove')"
       :cancel-label="$t('common.cancel')"
+      tone="danger"
       @confirm="remove(confirming)"
       @cancel="confirming = null"
     />
@@ -100,7 +101,6 @@ import { GET_Suppressions } from "@/api/communicator/api";
 import { DELETE_Contact, PATCH_Contact, POST_Contact } from "@/api/leads/api";
 import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
 import { legalBasisLabel } from "@/utils/leadsLabels";
-import ConfirmSheet from "../ConfirmSheet.vue";
 import ContactFields from "../ContactFields.vue";
 
 // Contacts of the company card (UX-011): add, edit, remove, primary star — one form open at a time, above the table.

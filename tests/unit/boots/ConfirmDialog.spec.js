@@ -83,4 +83,13 @@ describe("ConfirmDialog", () => {
     await nextTick();
     expect(dialog().getAttribute("aria-label")).toBe("Usuwanie strony");
   });
+
+  it("a caller's test id lands on the dialog, and `confirmTestid` renames the confirm button", async () => {
+    mountDialog({ "data-testid": "confirm-sheet", confirmTestid: "confirm-ok" });
+    await nextTick();
+    const dialog = byTestId("confirm-sheet");
+    expect(dialog.getAttribute("role")).toBe("dialog");
+    expect(dialog.querySelector('[data-testid="confirm-ok"]')).not.toBeNull();
+    expect(byTestId("confirm-dialog-confirm")).toBeNull();
+  });
 });

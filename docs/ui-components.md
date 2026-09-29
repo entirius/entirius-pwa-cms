@@ -187,11 +187,12 @@ Catalogue: `#actions` (`#basic-button`, `#icon-button`, `#action-bar`, `#floatin
   disabled), default slot = body, `footer` slot or `actions` (→ `ActionBar`); emits `update:open` and `close`.
   `role="dialog" aria-modal`, teleported to `<body>`, `overlay-backdrop`, `surface-raised`, `--radius-xl`, `shadow-lg`, focus
   trapped. Below the tablet breakpoint: a full-width sheet at the bottom. Close button test id `basic-modal-close`.
+  Other attributes (`data-testid`) land on the `role="dialog"` element.
 - **`ConfirmDialog`** — on BasicModal `sm`: `v-model:open`, `title` (or slot), `message` (or the default slot),
   `confirmLabel` / `cancelLabel` (default „Akceptuj” / „Anuluj”), `tone` `default` (primary confirm) · `danger`
   (`danger-solid`), `loading` (spinner, Esc blocked), `discardLabel` (a third `danger` action for unsaved changes);
   emits `confirm`, `cancel` (Cancel, close, Esc, backdrop), `discard`. The caller closes it. Test ids
-  `confirm-dialog-confirm` / `-cancel` / `-discard`.
+  `confirm-dialog-confirm` / `-cancel` / `-discard`; `confirmTestid` renames the confirm one (a page-object contract).
 - **`BasicMenu`** — `trigger` slot (the menu sets the control's `aria-haspopup`, `aria-expanded`, `aria-controls`
   and toggles on its click), `items` = `[{ key, label, icon?, danger?, separator?, disabled?, to?, testid? }]`
   (`role="menu"`; emits `select` with the item) or the `panel` slot (scope `close`, `role="dialog"` named by

@@ -1,14 +1,11 @@
 <template>
   <section class="intel" data-testid="intel-card">
-    <button
-      class="intel__toggle"
-      :aria-expanded="String(open)"
-      data-testid="intel-toggle"
-      @click="open = !open"
-    >
-      <span>{{ $t("leads.intel.title") }}</span>
-      <FontAwesomeIcon :icon="open ? $icons.collapse : $icons.expand" />
-    </button>
+    <div class="intel__head">
+      <BasicButton variant="ghost" :aria-expanded="String(open)" data-testid="intel-toggle" @click="open = !open">
+        {{ $t("leads.intel.title") }}
+        <FontAwesomeIcon :icon="open ? $icons.collapse : $icons.expand" class="ml-2" />
+      </BasicButton>
+    </div>
     <div v-if="open" class="intel__body" data-testid="intel-body">
       <p v-if="context.platform" class="intel__fact">
         {{ $t("leads.intel.platform") }}: <strong>{{ context.platform }}</strong>
@@ -45,18 +42,8 @@ const hooks = computed(() => props.context?.hooks || []);
   border-radius: var(--radius-lg);
   background: var(--surface-base);
 }
-.intel__toggle {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  min-height: 44px;
-  padding: 0 var(--space-8);
-  border: none;
-  background: none;
-  color: var(--text-body);
-  font-weight: 600;
-  cursor: pointer;
+.intel__head {
+  padding: var(--space-2) var(--space-5);
 }
 .intel__body {
   padding: 0 var(--space-8) var(--space-8);

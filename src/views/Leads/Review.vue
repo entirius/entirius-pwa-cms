@@ -1,9 +1,9 @@
 <template>
-  <div class="review" data-testid="leads-review">
-    <div class="review__scroll">
-      <BasicButton class="review__back" variant="ghost" size="sm" icon="back" @click="goInbox">
-        {{ $t("leads.review.back") }}
-      </BasicButton>
+  <PageLayout class="review" data-testid="leads-review">
+    <template #header>
+      <PageHeader :title="$t('leads.review.title')" :back="goInbox" />
+    </template>
+    <div class="review__body flex-column gap-4">
       <Loader block v-show="loading" />
 
       <p v-if="scheduledLabel" class="review__scheduled" role="status" data-testid="review-scheduled">
@@ -13,32 +13,27 @@
       <ConfigBanner code="toolbox.status" />
       <ConfigBanner code="communicator.smtp" />
 
-      <div v-if="failedVersion" class="review__failed" role="alert" data-testid="review-failed">
-        <p class="review__failed-text">
+      <div v-if="failedVersion" class="review__failed flex-column gap-4" role="alert" data-testid="review-failed">
+        <p class="review__failed-text m-0">
           {{ $t("leads.review.rewrite_failed", { reason: failedVersion.failure_detail || failedVersion.failure_code }) }}
         </p>
-        <div class="review__edit-actions">
-          <button class="review__btn" data-testid="failed-back" @click="failedVersion = null">{{ $t("leads.review.cancel") }}</button>
-          <button class="review__btn review__btn--primary" data-testid="failed-retry" @click="retryRewrite">
-            {{ $t("leads.review.retry") }}
-          </button>
-        </div>
+        <ActionBar :actions="failedActions" />
       </div>
 
       <article
         v-else-if="message && !scheduledLabel"
-        class="review__draft"
+        class="review__draft flex-column gap-4"
         :style="{ transform: `translateX(${offset}px)` }"
         data-testid="review-draft"
         v-on="editing ? {} : handlers"
       >
-        <header class="review__head">
+        <header class="flex-column">
           <router-link v-if="companyId" :to="{ name: 'LeadsThread', params: { id: companyId } }" class="review__company">
             {{ companyName }}
           </router-link>
           <span v-else class="review__company">{{ companyName }}</span>
-          <span class="review__to">{{ $t("leads.review.to") }}: {{ message.thread?.recipient_email }}</span>
-          <span v-if="queueTotal" class="review__position" data-testid="review-position">
+          <span class="review__meta">{{ $t("leads.review.to") }}: {{ message.thread?.recipient_email }}</span>
+          <span v-if="queueTotal" class="review__meta" data-testid="review-position">
             {{ $t("leads.review.queue_position", { index: queueIndex, count: queueTotal }) }}
           </span>
         </header>
@@ -46,46 +41,58 @@
         <IntelCard v-if="munin.isModuleEnabled('siteintel')" :context="message.render_context" />
 
         <template v-if="editing">
-          <label class="review__label"><span class="field-label">{{ $t("leads.review.subject") }}</span>
-            <input v-model="draft.subject" class="review__input" data-testid="edit-subject" />
-          </label>
-          <label class="review__label"><span class="field-label">{{ $t("leads.review.body") }}</span>
-            <textarea v-model="draft.body_text" class="review__input" rows="12" data-testid="edit-body"></textarea>
-          </label>
-          <div class="review__edit-actions">
-            <button class="review__btn" data-testid="edit-cancel" @click="cancelEdit">{{ $t("leads.review.cancel") }}</button>
-            <button class="review__btn review__btn--primary" :disabled="busy" data-testid="edit-save" @click="saveEdit">{{ $t("leads.review.save") }}</button>
-          </div>
+          <FormField :label="$t('leads.review.subject')">
+            <BasicInput v-model="draft.subject" data-testid="edit-subject" />
+          </FormField>
+          <FormField :label="$t('leads.review.body')">
+            <BasicTextarea v-model="draft.body_text" :rows="12" data-testid="edit-body" />
+          </FormField>
+          <ActionBar :actions="editActions" />
         </template>
         <template v-else>
-          <h3 class="review__subject" data-testid="review-subject">{{ message.subject }}</h3>
-          <p class="review__body" data-testid="review-body">{{ message.body_text }}</p>
-          <p class="review__hint">{{ $t("leads.review.swipe_hint") }}</p>
+          <h2 class="review__subject fs-400 fw-600 m-0" data-testid="review-subject">{{ message.subject }}</h2>
+          <p class="review__text m-0" data-testid="review-body">{{ message.body_text }}</p>
+          <p class="t-muted fs-200 m-0">{{ $t("leads.review.swipe_hint") }}</p>
         </template>
       </article>
     </div>
 
-    <ReviewActions
-      v-if="message && !editing && !scheduledLabel && !failedVersion"
-      :busy="busy"
-      :ai-disabled="aiDisabled"
-      @send="accept"
-      @skip="skip"
-      @rewrite="rewriteOpen = true"
-      @edit="startEdit"
-      @skip-company="skipCompany"
-    />
-    <RewriteModal v-if="rewriteOpen" @submit="rewrite" @close="rewriteOpen = false" />
-    <ConfirmSheet
-      v-if="discarding"
+    <BasicModal
+      v-if="rewriteOpen"
+      :open="true"
+      :title="$t('leads.rewrite.title')"
+      :actions="rewriteActions"
+      data-testid="rewrite-modal"
+      @close="rewriteOpen = false"
+    >
+      <FormField :label="$t('leads.rewrite.label')" :description="$t('leads.rewrite.hint')">
+        <BasicTextarea v-model="rewriteNotes" :rows="4" :placeholder="$t('leads.rewrite.placeholder')" data-testid="rewrite-notes" />
+      </FormField>
+    </BasicModal>
+    <ConfirmDialog
+      :open="discarding"
       :title="$t('leads.review.discard_title')"
       :message="$t('leads.review.discard_confirm')"
       :confirm-label="$t('leads.review.discard_yes')"
       :cancel-label="$t('leads.review.discard_keep')"
+      tone="danger"
       @confirm="settleDiscard(true)"
       @cancel="settleDiscard(false)"
     />
-  </div>
+
+    <!-- pinned to the bottom of the scroll body on every size; Review keeps the phone tab bar off (meta.noBottomBar) -->
+    <template v-if="message && !editing && !scheduledLabel && !failedVersion" #footer>
+      <ReviewActions
+        :busy="busy"
+        :ai-disabled="aiDisabled"
+        @send="accept"
+        @skip="skip"
+        @rewrite="openRewrite"
+        @edit="startEdit"
+        @skip-company="skipCompany"
+      />
+    </template>
+  </PageLayout>
 </template>
 
 <script setup>
@@ -104,10 +111,8 @@ import { sendStateSentence } from "@/utils/leadsLabels";
 import { sendState } from "@/utils/leadsTime";
 import ConfigBanner from "@/components/ConfigHealth/ConfigBanner.vue";
 import { useConfigHealthStore } from "@/stores/configHealth";
-import ConfirmSheet from "./ConfirmSheet.vue";
 import IntelCard from "./IntelCard.vue";
 import ReviewActions from "./ReviewActions.vue";
-import RewriteModal from "./RewriteModal.vue";
 
 const SCHEDULED_MS = 4000;
 
@@ -123,6 +128,7 @@ const loading = ref(false);
 const busy = ref(false);
 const editing = ref(false);
 const rewriteOpen = ref(false);
+const rewriteNotes = ref("");
 const scheduledLabel = ref("");
 const failedVersion = ref(null);
 const draft = ref({ subject: "", body_text: "" });
@@ -139,6 +145,26 @@ const companyName = computed(
   () => message.value?.render_context?.company_name || message.value?.thread?.recipient_name || ""
 );
 const aiDisabled = computed(() => configHealth.stateOf("toolbox.status") === "unconfigured");
+const failedActions = computed(() => [
+  { key: "back", label: t("leads.review.cancel"), role: "secondary", testid: "failed-back", onClick: () => (failedVersion.value = null) },
+  { key: "retry", label: t("leads.review.retry"), role: "primary", testid: "failed-retry", onClick: retryRewrite },
+]);
+const editActions = computed(() => [
+  { key: "cancel", label: t("leads.review.cancel"), role: "secondary", testid: "edit-cancel", onClick: cancelEdit },
+  { key: "save", label: t("leads.review.save"), role: "primary", disabled: busy.value, testid: "edit-save", onClick: saveEdit },
+]);
+// The reviewer's note for an AI rewrite of the draft.
+const rewriteActions = computed(() => [
+  { key: "cancel", label: t("leads.review.cancel"), role: "secondary", testid: "rewrite-cancel", onClick: () => (rewriteOpen.value = false) },
+  {
+    key: "submit",
+    label: t("leads.rewrite.submit"),
+    role: "primary",
+    disabled: !rewriteNotes.value.trim(),
+    testid: "rewrite-submit",
+    onClick: () => rewrite(rewriteNotes.value.trim()),
+  },
+]);
 const unsaved = computed(
   () => editing.value && (draft.value.subject !== message.value?.subject || draft.value.body_text !== message.value?.body_text)
 );
@@ -265,9 +291,14 @@ function openVersion(data) {
   router.replace({ name: "LeadsReview", params: { id: data.id } });
 }
 
+function openRewrite() {
+  rewriteNotes.value = "";
+  rewriteOpen.value = true;
+}
+
 function retryRewrite() {
   failedVersion.value = null;
-  rewriteOpen.value = true;
+  openRewrite();
 }
 
 function rewrite(notes) {
@@ -307,22 +338,9 @@ onBeforeUnmount(() => clearTimeout(nextTimer));
 </script>
 
 <style scoped>
-.review {
-  display: flex;
-  flex-direction: column;
-  min-height: 100%;
-}
-.review__scroll {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
-  padding: var(--space-8);
-  overflow-x: hidden;
-}
-.review__back {
-  align-self: flex-start;
-  min-height: 44px;
+/* The draft moves sideways under a swipe; the page never scrolls sideways with it. */
+.review__body {
+  overflow-x: clip;
 }
 .review__scheduled {
   margin: var(--space-10) 0;
@@ -335,29 +353,17 @@ onBeforeUnmount(() => clearTimeout(nextTimer));
   text-align: center;
 }
 .review__failed {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
   padding: var(--space-8);
   border-radius: var(--radius-lg);
   background: var(--negative-subtle);
 }
 .review__failed-text {
-  margin: 0;
   color: var(--text-body);
   overflow-wrap: anywhere;
 }
 .review__draft {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
   touch-action: pan-y;
   transition: transform 0.1s ease;
-}
-.review__head {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
 }
 .review__company {
   font-weight: 600;
@@ -365,58 +371,17 @@ onBeforeUnmount(() => clearTimeout(nextTimer));
   color: var(--text-body);
   overflow-wrap: anywhere;
 }
-.review__to,
-.review__position {
+.review__meta {
   color: var(--text-secondary);
   overflow-wrap: anywhere;
 }
 .review__subject {
-  margin: var(--space-5) 0 0;
-  font-size: var(--fs-400);
+  margin-top: var(--space-5);
   overflow-wrap: anywhere;
 }
-.review__body {
-  margin: 0;
+.review__text {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   line-height: 1.5;
-}
-.review__hint {
-  margin: 0;
-  font-size: var(--fs-200);
-  color: var(--text-secondary);
-}
-.review__label {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-.review__input {
-  box-sizing: border-box;
-  width: 100%;
-  padding: var(--space-5);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  font: inherit;
-  font-weight: 400;
-}
-.review__edit-actions {
-  display: flex;
-  gap: var(--space-5);
-}
-.review__btn {
-  flex: 1;
-  min-height: 48px;
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  background: var(--surface-base);
-  color: var(--text-body);
-  font-weight: 600;
-  cursor: pointer;
-}
-.review__btn--primary {
-  border-color: var(--accent);
-  background: var(--accent-fill);
-  color: var(--text-on-accent-fill);
 }
 </style>

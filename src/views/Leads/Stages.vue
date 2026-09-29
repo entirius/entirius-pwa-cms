@@ -78,12 +78,16 @@
       </form>
       <p v-if="errors.add" class="t-negative m-0" data-testid="stage-add-error">{{ errors.add }}</p>
     </div>
-    <ConfirmSheet
-      v-if="confirming"
+    <!-- the test ids are the stages page object's contract (test package cms_pages/stages.py) -->
+    <ConfirmDialog
+      :open="Boolean(confirming)"
       :title="$t('leads.stages.delete_title')"
-      :message="confirming.message"
+      :message="confirming?.message"
       :confirm-label="$t('leads.stages.delete')"
       :cancel-label="$t('leads.review.cancel')"
+      tone="danger"
+      data-testid="confirm-sheet"
+      confirm-testid="confirm-ok"
       @confirm="remove(confirming.stage)"
       @cancel="confirming = null"
     />
@@ -99,7 +103,6 @@ import { extractApiMessage } from "@/composables/useFormErrors";
 import { useNotifyStore } from "@/stores/notify";
 import { stageKindLabel } from "@/utils/leadsLabels";
 import { pluralKey } from "@/utils/plural";
-import ConfirmSheet from "./ConfirmSheet.vue";
 
 // Stages admin: order by drag or up/down (PATCH `order` per moved stage), rename inline, delete with the 409 inline (L-18).
 const ORDER_STEP = 10;

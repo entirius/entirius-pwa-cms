@@ -1,48 +1,37 @@
 <template>
-  <div ref="bar" class="ra" data-testid="review-actions">
-    <button class="ra-btn ra-btn--secondary" :disabled="busy" data-testid="review-skip" @click="$emit('skip')">
-      {{ $t("leads.review.not_now") }}
-    </button>
-    <button class="ra-btn ra-btn--primary" :disabled="busy" data-testid="review-send" @click="$emit('send')">
-      <FontAwesomeIcon :icon="$icons.send" />
-      {{ $t("leads.review.send") }}
-    </button>
-    <div class="ra__more" v-out="() => (menuOpen = false)">
-      <button
-        class="ra-btn ra-btn--icon"
-        :disabled="busy"
-        :aria-label="$t('leads.review.more')"
-        :aria-expanded="String(menuOpen)"
-        data-testid="review-more"
-        @click="menuOpen = !menuOpen"
-      >
-        <FontAwesomeIcon :icon="$icons.more" />
-      </button>
-      <div v-if="menuOpen" class="ra__menu" role="menu">
-        <button role="menuitem" :disabled="aiDisabled" data-testid="review-rewrite" @click="pick('rewrite')">
-          {{ $t("leads.review.rewrite") }}
-        </button>
-        <button role="menuitem" data-testid="review-edit" @click="pick('edit')">
-          {{ $t("leads.review.edit") }}
-        </button>
-        <button role="menuitem" data-testid="review-skip-company" @click="pick('skip-company')">
-          {{ $t("leads.review.skip_company") }}
-        </button>
-      </div>
-    </div>
+  <div ref="bar" class="review-actions" data-testid="review-actions">
+    <!-- R5 in the slot: the more menu (utility) · Not now · Send, the one primary, rightmost -->
+    <ActionBar>
+      <BasicMenu :items="menuItems" :label="$t('leads.review.more')" placement="top-end" @select="emit($event.key)">
+        <template #trigger>
+          <IconButton icon="more" variant="outline" :label="$t('leads.review.more')" :disabled="busy" data-testid="review-more" />
+        </template>
+      </BasicMenu>
+      <BasicButton :disabled="busy" data-testid="review-skip" @click="emit('skip')">{{ $t("leads.review.not_now") }}</BasicButton>
+      <BasicButton variant="primary" :disabled="busy" data-testid="review-send" @click="emit('send')">
+        {{ $t("leads.review.send") }}
+      </BasicButton>
+    </ActionBar>
   </div>
 </template>
 
 <script setup>
-import { onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { t } from "@/i18n";
 
-defineProps({
+const props = defineProps({
   busy: { type: Boolean, default: false },
   aiDisabled: { type: Boolean, default: false },
 });
 const emit = defineEmits(["send", "skip", "rewrite", "edit", "skip-company"]);
-const menuOpen = ref(false);
 const bar = ref(null);
+
+// An item's key is the event it emits.
+const menuItems = computed(() => [
+  { key: "rewrite", label: t("leads.review.rewrite"), disabled: props.aiDisabled, testid: "review-rewrite" },
+  { key: "edit", label: t("leads.review.edit"), testid: "review-edit" },
+  { key: "skip-company", label: t("leads.review.skip_company"), testid: "review-skip-company" },
+]);
 
 // A phone toast sits above this bar (Notifications.vue), so Send / Not now stay reachable while one is on screen.
 const root = document.documentElement.style;
@@ -56,80 +45,4 @@ onBeforeUnmount(() => {
   window.removeEventListener("resize", measure);
   root.removeProperty("--action-bar-height");
 });
-
-function pick(name) {
-  menuOpen.value = false;
-  emit(name);
-}
 </script>
-
-<style scoped>
-.ra {
-  position: sticky;
-  bottom: 0;
-  display: flex;
-  gap: var(--space-5);
-  padding: var(--space-5) var(--space-8);
-  background: var(--surface-base);
-  border-top: 1px solid var(--border-subtle);
-  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.04);
-}
-.ra-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  min-height: 48px;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-subtle);
-  background: var(--surface-base);
-  color: var(--text-body);
-  font-weight: 600;
-  cursor: pointer;
-}
-.ra-btn:disabled {
-  opacity: 0.5;
-  cursor: default;
-}
-.ra-btn--secondary {
-  flex: 1;
-}
-.ra-btn--primary {
-  flex: 2;
-  border-color: var(--positive);
-  background: var(--positive-fill);
-  color: var(--text-on-status-fill);
-}
-.ra-btn--icon {
-  width: 48px;
-}
-.ra__more {
-  position: relative;
-}
-.ra__menu {
-  position: absolute;
-  right: 0;
-  bottom: calc(100% + 0.5rem);
-  display: flex;
-  flex-direction: column;
-  min-width: 13rem;
-  background: var(--surface-base);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  z-index: 20;
-}
-.ra__menu button {
-  min-height: 44px;
-  padding: 0 var(--space-8);
-  border: none;
-  background: none;
-  color: var(--text-body);
-  text-align: left;
-  cursor: pointer;
-}
-.ra__menu button:disabled {
-  opacity: 0.5;
-  cursor: default;
-}
-</style>
