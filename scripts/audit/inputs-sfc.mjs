@@ -8,7 +8,7 @@ const ATTRIBUTE = 6;
 const DIRECTIVE = 7;
 const INPUTS = new Set(["BasicInput", "NumberInput", "BasicTextarea", "BasicDatePicker", "ColorInput", "input", "textarea"]);
 const NATIVE_SKIP = new Set(["checkbox", "radio", "file", "hidden", "range", "submit", "button", "color"]);
-const CONSTRAINTS = ["type", "step", "min", "max", "maxlength", "inputmode", "pattern", "required", "suffix", "decimals", "readonly", "disabled"];
+const CONSTRAINTS = ["type", "step", "min", "max", "maxlength", "inputmode", "pattern", "required", "suffix", "decimals", "readonly", "disabled", "format"];
 // NumberInput's own defaults (src/boots/NumberInput): a stepper without min/max still clamps to 0…9999.
 const NUMBER_DEFAULTS = { min: "0", max: "9999", step: "1" };
 

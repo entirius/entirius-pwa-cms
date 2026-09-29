@@ -116,6 +116,15 @@ describe("input audit — classification and mismatches", () => {
     expect(mismatches(price, "money", api("value")).map((m) => m.kind)).toEqual(["api-only", "display-format"]);
   });
 
+  it("a price with the money format (plan 61): no free-text or display mismatch left", () => {
+    const price = byModel("form.price_net");
+    const formatted = { ...price, constraints: { ...price.constraints, format: "money" } };
+    expect(classify(formatted, "value", api("value"))).toBe("money");
+    expect(mismatches(formatted, "money", api("value"))).toEqual([]);
+    const key = { ...price, constraints: { format: "key" } };
+    expect(classify(key, "value", {})).toBe("sku");
+  });
+
   it("an EAN whose maxlength differs from the API; a stepper whose range differs", () => {
     expect(classify(byModel("form.ean"), "ean", api("ean"))).toBe("ean");
     expect(mismatches(byModel("form.ean"), "ean", api("ean"))).toEqual([{ kind: "cms-different", detail: "maxlength 14 vs API 16" }]);

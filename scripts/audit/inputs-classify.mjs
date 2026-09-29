@@ -16,6 +16,8 @@ const NAME_CLASSES = [
   ["sku", /(^|_)(sku|mpn|code|idx|key|identifier|ref)(_|$)/],
 ];
 const NUMERIC = new Set(["money", "percent", "integer", "decimal"]);
+// The BasicInput `format` prop (plan 61, src/utils/formats.js) names its class; `code` and `key` are identifiers.
+const FORMAT_CLASS = { code: "sku", key: "sku" };
 
 export const PROPOSED = {
   money: "decimal with 2 places: NumberInput step 0.01, shown and sent as 232.00, ',' accepted as '.'",
@@ -58,6 +60,8 @@ function apiClass(api, name) {
 export function classify(input, field, api = {}) {
   const last = (field || input.model || "").split(/[.[\]]/).filter(Boolean).pop() || "";
   const name = last.replace(/([a-z\d])([A-Z])/g, "$1_$2").toLowerCase();
+  const own = input.constraints.format;
+  if (own && !isBound(own)) return FORMAT_CLASS[own] || own;
   const byApi = apiClass(api, name);
   if (byApi) return byApi;
   const byName = NAME_CLASSES.find(([, re]) => re.test(name))?.[0];
@@ -95,7 +99,7 @@ function rangeChecks(cms, api) {
 function numericChecks(input, cls, api) {
   const cms = input.constraints;
   const numericApi = api.type === "integer" || api.type === "number" || api.format === "decimal";
-  if (numericApi && input.component !== "NumberInput" && !["number"].includes(cms.type)) {
+  if (numericApi && input.component !== "NumberInput" && !["number"].includes(cms.type) && !NUMERIC.has(cms.format)) {
     return [["api-only", `numeric API field (${api.format || api.type}) in a free-text input`]];
   }
   if (input.component === "NumberInput" && api.places > 0 && cms.decimals === 0) {
@@ -114,7 +118,7 @@ function formatChecks(input, api) {
 }
 
 function displayChecks(input, cls, api) {
-  if (!["money", "decimal", "percent"].includes(cls) || !api.places) return [];
+  if (!["money", "decimal", "percent"].includes(cls) || !api.places || input.constraints.format === cls) return [];
   return [["display-format", `shown as typed (232), stored with ${api.places} places (232.${"0".repeat(api.places)})`]];
 }
 
