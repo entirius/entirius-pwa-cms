@@ -1,119 +1,48 @@
 <template>
-  <BasicCard
-    class="auth-card fs-300 t-body shadow-down"
-  >
+  <AuthLayout :title="title" :subtitle="subtitle" :status-tone="statusTone">
+    <template v-if="statusText" #status>{{ statusText }}</template>
+
     <!-- Forgot password mode -->
     <template v-if="showForgotPassword">
-      <p class="auth-card__title fs-700 fw-600 txt-center mb-1">
-        {{ $t("login.forgot_title") }}
-      </p>
-      <p class="fs-300 t-secondary txt-center mb-12">
-        {{ $t("login.forgot_subtitle") }}
-      </p>
-
-      <template v-if="resetEmailSent">
-        <div class="auth-card__banner auth-card__banner--success mb-10">
-          <p class="fs-300 fw-500">{{ $t("login.reset_email_sent") }}</p>
-        </div>
-      </template>
-      <form v-else @submit.prevent="sendResetLink">
-        <FormField :label="$t('login.email')">
-          <BasicInput
-            v-model="resetEmail"
-            class="bg-raised mb-8 lh-base-elem"
-          />
+      <form v-if="!resetEmailSent" class="flex-column gap-6" @submit.prevent="sendResetLink">
+        <FormField :label="$t('login.email')" :error="errors.email">
+          <BasicInput v-model="resetEmail" size="lg" autocomplete="email" inputmode="email" />
         </FormField>
-        <BasicButton
-          type="submit"
-          variant="primary"
-          class="jc-ct w-100 rounded"
-        >
-          {{ $t('login.send_reset_link') }}
+        <BasicButton type="submit" variant="primary" size="lg" class="jc-ct w-100">
+          {{ $t("login.send_reset_link") }}
         </BasicButton>
       </form>
-
-      <BasicButton
-        variant="ghost"
-        class="jc-ct w-100 mt-8"
-        @click="
-          showForgotPassword = false;
-          resetEmailSent = false;
-        "
-      >
+      <BasicButton variant="ghost" size="lg" class="jc-ct w-100 mt-4" @click="closeForgotPassword">
         {{ $t("login.back_to_login") }}
       </BasicButton>
     </template>
 
     <!-- Login mode -->
     <template v-else>
-      <div
-        v-if="sessionExpired"
-        class="auth-card__banner auth-card__banner--warning mb-10"
-      >
-        <p class="fs-300 fw-500">{{ $t("login.session_expired") }}</p>
-      </div>
-      <p class="auth-card__title fs-700 fw-600 txt-center mb-1">{{ $t("login.welcome") }}</p>
-      <p class="fs-300 t-secondary txt-center mb-12">
-        {{ $t("login.subtitle") }}
-      </p>
-      <form @submit.prevent="login">
-        <FormField :label="$t('login.username')">
-          <BasicInput
-            v-model="username"
-            class="bg-raised mb-10 lh-base-elem"
-          />
-        </FormField>
-        <FormField :label="$t('login.password')" class="mb-8">
-          <div class="auth-card__pw-field">
-            <BasicInput
-              v-model="password"
-              class="bg-raised lh-base-elem"
-              :type="pwVisible ? 'text' : 'password'"
-            />
-            <span class="auth-card__pw-toggle">
-              <IconButton
-                :icon="pwVisible ? 'hide' : 'preview'"
-                :label="$t('login.show_password')"
-                :pressed="pwVisible"
-                size="sm"
-                @click="pwVisible = !pwVisible"
-              />
-            </span>
-          </div>
-        </FormField>
-
-        <BasicButton
-          type="submit"
-          variant="primary"
-          class="jc-ct w-100 rounded"
-        >
-          {{ $t('login.submit') }}
+      <form class="flex-column gap-6" @submit.prevent="login">
+        <div class="flex-column gap-4">
+          <FormField :label="$t('login.username')" :error="errors.username">
+            <BasicInput v-model="username" size="lg" autocomplete="username" />
+          </FormField>
+          <PasswordField v-model="password" :label="$t('login.password')" :error="errors.password" />
+        </div>
+        <BasicButton type="submit" variant="primary" size="lg" :loading="signingIn" class="jc-ct w-100">
+          {{ $t("login.submit") }}
         </BasicButton>
       </form>
 
       <template v-if="ssoEnabled">
-        <p class="auth-card__divider fs-200 t-muted mt-8 mb-8">
-          {{ $t("login.sso_or") }}
-        </p>
-        <BasicButton
-          data-testid="sso-login"
-          @click="startSsoLogin"
-          variant="secondary"
-          class="jc-ct w-100 rounded"
-        >
-          {{ $t('login.sso_submit') }}
+        <p class="login-wall__divider fs-200 t-muted mv-5">{{ $t("login.sso_or") }}</p>
+        <BasicButton data-testid="sso-login" variant="secondary" size="lg" class="jc-ct w-100" @click="startSsoLogin">
+          {{ $t("login.sso_submit") }}
         </BasicButton>
       </template>
 
-      <BasicButton
-        variant="ghost"
-        class="jc-ct w-100 mt-8"
-        @click="showForgotPassword = true"
-      >
+      <BasicButton variant="ghost" size="lg" class="jc-ct w-100 mt-4" @click="openForgotPassword">
         {{ $t("login.forgot_password") }}
       </BasicButton>
     </template>
-  </BasicCard>
+  </AuthLayout>
 </template>
 
 <script>
@@ -129,30 +58,57 @@ import {
   isSsoEnabled,
   ssoRedirectUri,
 } from "@/api/sso/api";
-import { useNotifyStore } from "@/stores/notify";
 import { useLoginSession, consumeReturnRoute } from "@/composables/useLoginSession";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import AuthLayout from "@/boots/AuthLayout/index.vue";
+import PasswordField from "@/boots/AuthLayout/PasswordField.vue";
+
+const noErrors = () => ({ username: "", password: "", email: "" });
+
+// Errors show under their field and once in the AuthLayout live summary (plan 59), never as a toast.
 export default {
+  components: { AuthLayout, PasswordField },
   setup() {
-    const notify = useNotifyStore();
     const { completeLogin } = useLoginSession();
-    return { notify, completeLogin };
+    return { completeLogin };
   },
   data() {
     return {
       username: environment || debugMode ? username : "",
       password: environment || debugMode ? password : "",
-      pwVisible: false,
+      signingIn: false,
       sessionExpired: false,
       showForgotPassword: false,
       resetEmail: "",
       resetEmailSent: false,
+      errors: noErrors(),
+      formError: "",
     };
   },
   computed: {
     ssoEnabled() {
       return isSsoEnabled();
     },
+    title() {
+      return this.$t(this.showForgotPassword ? "login.forgot_title" : "login.welcome");
+    },
+    subtitle() {
+      return this.$t(this.showForgotPassword ? "login.forgot_subtitle" : "login.subtitle");
+    },
+    statusText() {
+      if (this.formError) return this.formError;
+      if (this.showForgotPassword) return this.resetEmailSent ? this.$t("login.reset_email_sent") : "";
+      return this.sessionExpired ? this.$t("login.session_expired") : "";
+    },
+    statusTone() {
+      if (this.formError) return "negative";
+      return this.showForgotPassword ? "positive" : "warning";
+    },
+  },
+  watch: {
+    username: "clearErrors",
+    password: "clearErrors",
+    resetEmail: "clearErrors",
   },
   mounted() {
     if (localStorage.getItem("session_expired") === "1") {
@@ -161,17 +117,22 @@ export default {
     }
   },
   methods: {
+    clearErrors() {
+      this.errors = noErrors();
+      this.formError = "";
+    },
+    validateCredentials() {
+      this.errors.username = this.username ? "" : this.$t("login.username_required");
+      this.errors.password = this.password ? "" : this.$t("login.password_required");
+      const missing = this.errors.username || this.errors.password;
+      this.formError = missing ? this.$t("login.empty_credentials") : "";
+      return !missing;
+    },
     async login() {
       this.sessionExpired = false;
+      if (!this.validateCredentials()) return;
+      this.signingIn = true;
       try {
-        // err handler
-        if (![this.username, this.password].every(Boolean)) {
-          const err = new Error();
-          err.status = 403;
-          err.response = this.$t("login.empty_credentials");
-          throw err;
-        }
-
         const { data } = await POST_Login({
           username: this.username,
           password: this.password,
@@ -183,37 +144,34 @@ export default {
           this.$router.push(returnRoute);
         }
       } catch (error) {
-        const title = extractApiMessage(
-          error,
-          "Unknown error. Contact administrator."
-        );
-        this.notify.spawnNotification({
-          title,
-          type: "negative",
-          timeout: "2500",
-        });
+        this.formError = extractApiMessage(error, this.$t("login.unknown_error"));
+      } finally {
+        this.signingIn = false;
       }
     },
     async startSsoLogin() {
+      this.clearErrors();
       try {
         const { data } = await POST_SsoLoginUrl({ redirectUri: ssoRedirectUri() });
         sessionStorage.setItem(SSO_STATE_KEY, data.state);
         window.location.assign(data.authorization_url);
       } catch (error) {
-        this.notify.spawnNotification({
-          title: extractApiMessage(error, this.$t("login.sso_failed")),
-          type: "negative",
-          timeout: "2500",
-        });
+        this.formError = extractApiMessage(error, this.$t("login.sso_failed"));
       }
+    },
+    openForgotPassword() {
+      this.clearErrors();
+      this.showForgotPassword = true;
+    },
+    closeForgotPassword() {
+      this.clearErrors();
+      this.showForgotPassword = false;
+      this.resetEmailSent = false;
     },
     async sendResetLink() {
       if (!this.resetEmail) {
-        this.notify.spawnNotification({
-          title: this.$t("login.enter_email"),
-          type: "negative",
-          timeout: "2500",
-        });
+        this.errors.email = this.$t("common.required");
+        this.formError = this.$t("login.enter_email");
         return;
       }
       try {
@@ -226,3 +184,18 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.login-wall__divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    border-top: 1px solid var(--border-subtle);
+  }
+}
+</style>

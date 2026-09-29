@@ -1,24 +1,13 @@
 <template>
-  <BasicCard
-    class="auth-card fs-300 t-body shadow-down"
-  >
-    <template v-if="errorMessage">
-      <p class="auth-card__title fs-700 fw-600 txt-center mb-1">{{ $t("login.sso_failed") }}</p>
-      <div class="auth-card__banner auth-card__banner--error mb-10">
-        <p class="fs-300 fw-500" data-testid="sso-error">{{ errorMessage }}</p>
-      </div>
-      <BasicButton
-        @click="goToLogin"
-        variant="primary"
-        class="jc-ct w-100 rounded"
-      >
-        {{ $t('login.back_to_login') }}
-      </BasicButton>
+  <AuthLayout :title="$t(errorMessage ? 'login.sso_failed' : 'login.sso_in_progress')">
+    <template v-if="errorMessage" #status>
+      <span data-testid="sso-error">{{ errorMessage }}</span>
     </template>
-    <p v-else class="fs-500 fw-500 txt-center">
-      {{ $t("login.sso_in_progress") }}
-    </p>
-  </BasicCard>
+    <BasicButton v-if="errorMessage" variant="primary" size="lg" class="jc-ct w-100" @click="goToLogin">
+      {{ $t("login.back_to_login") }}
+    </BasicButton>
+    <Loader v-else />
+  </AuthLayout>
 </template>
 
 <script>
@@ -31,8 +20,10 @@ import {
 import { useUserStore } from "@/stores/user";
 import { useLoginSession, consumeReturnRoute } from "@/composables/useLoginSession";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import AuthLayout from "@/boots/AuthLayout/index.vue";
 
 export default {
+  components: { AuthLayout },
   setup() {
     const userStore = useUserStore();
     const { completeLogin } = useLoginSession();

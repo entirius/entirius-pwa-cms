@@ -55,8 +55,8 @@
     "ui_catalogue": "Katalog komponentów"
   },
   "login": {
-    "welcome": "Witaj!",
-    "subtitle": "Zaloguj się do swojego konta CMS",
+    "welcome": "Zaloguj się",
+    "subtitle": "Użyj swojego konta administratora.",
     "username": "Login",
     "password": "Hasło",
     "submit": "Zaloguj",
@@ -76,7 +76,14 @@
     "sso_failed": "Logowanie SSO nie powiodło się",
     "sso_state_mismatch": "Ten link logowania jest nieprawidłowy albo został już użyty. Zacznij logowanie od nowa.",
     "sso_provider_error": "Dostawca tożsamości odrzucił logowanie ({error}).",
-    "show_password": "Pokaż hasło"
+    "show_password": "Pokaż hasło",
+    "username_required": "Podaj login",
+    "password_required": "Podaj hasło",
+    "unknown_error": "Nieznany błąd. Skontaktuj się z administratorem.",
+    "caps_lock": "Caps Lock jest włączony",
+    "stage_overline": "Panel administracyjny",
+    "stage_line": "Treści, produkty i sprzedaż — w jednym, spokojnym miejscu.",
+    "stage_rights": "© {year} Entirius"
   },
   "app": {
     "expand_sidebar": "Rozwiń panel",

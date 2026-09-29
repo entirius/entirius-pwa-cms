@@ -1,12 +1,12 @@
 <template>
-  <div class="input-basic-wrapper">
+  <div class="input-basic-wrapper" :class="[`input-basic-wrapper--${size}`, { relative: $slots.trailing }]">
     <div class="input-basic h-100 relative flex br-inherit">
       <input
         ref="inputEl"
         v-bind="attrs"
         :type="type"
         class="input-field w-100 bg-inherit"
-        :class="{ 'has-placeholder': placeholder, 'input-field--icon': leadingIcon }"
+        :class="{ 'has-placeholder': placeholder, 'input-field--icon': leadingIcon, 'input-field--trailing': $slots.trailing }"
         :placeholder="placeholder"
         :maxlength="maxlength"
         :autocomplete="autocomplete"
@@ -29,6 +29,9 @@
         <FontAwesomeIcon :icon="ICONS[leadingIcon]" />
       </div>
     </div>
+    <div v-if="$slots.trailing" class="input-trailing absolute flex jc-ct ai-ct">
+      <slot name="trailing" />
+    </div>
   </div>
 </template>
 
@@ -38,7 +41,9 @@
 // `autocomplete`, `inputmode`, `min`, `max`, `step` (on the <input>, never the wrapper). Inside a
 // FormField it takes id, aria-describedby, aria-invalid, required and disabled from the contract; the label and the
 // error text are the FormField's. `null` and `false` show an empty field, `0` shows "0". `focusOnCreate` focuses it on mount;
-// `onFocusout` / `onKeyDown` (Enter) emit the current text.
+// `onFocusout` / `onKeyDown` (Enter) emit the current text. `size`: md = --elem-height (default), lg = 40 px (the
+// sign-in screens, AuthLayout). Slot `trailing`: a control inside the right edge (the password reveal), the text
+// stops before it.
 import { computed, onMounted, ref } from "vue";
 import { ICONS } from "@/boots/Icons/icons";
 import { useControlAttrs } from "@/boots/FormField/useControlAttrs";
@@ -62,6 +67,7 @@ const props = defineProps({
   min: { type: [Number, String], default: null },
   max: { type: [Number, String], default: null },
   step: { type: [Number, String], default: null },
+  size: { type: String, default: "md", validator: (value) => ["md", "lg"].includes(value) },
 });
 const emit = defineEmits(["update:modelValue", "onFocusout", "onKeyDown"]);
 
@@ -78,13 +84,15 @@ onMounted(() => props.focusOnCreate && inputEl.value.focus());
 
 <style lang="scss">
 .input-basic-wrapper {
+  --input-height: var(--elem-height);
+
   background-color: transparent;
   color: var(--text-body);
   .input-field {
     overflow: hidden;
     border-radius: inherit;
     padding: var(--space-1) var(--space-2);
-    height: var(--elem-height);
+    height: var(--input-height);
     font-size: inherit;
     font-family: inherit;
     border: 1px solid;
@@ -103,7 +111,11 @@ onMounted(() => props.focusOnCreate && inputEl.value.focus());
     }
 
     &--icon {
-      padding-left: var(--elem-height);
+      padding-left: var(--input-height);
+    }
+
+    &--trailing {
+      padding-right: var(--input-height);
     }
 
     // The former LockedField: the value stays readable and selectable behind the lock icon.
@@ -130,11 +142,23 @@ onMounted(() => props.focusOnCreate && inputEl.value.focus());
   // Leading and decorative (no caller acts on it): a click goes through to the input.
   .icon-wrapper {
     pointer-events: none;
-    width: var(--elem-height);
-    height: var(--elem-height);
+    width: var(--input-height);
+    height: var(--input-height);
     left: 0;
     top: 50%;
     transform: translate(0, -50%);
   }
+
+  .input-trailing {
+    top: 50%;
+    right: 0;
+    width: var(--input-height);
+    height: var(--input-height);
+    transform: translateY(-50%);
+  }
+}
+
+.input-basic-wrapper--lg {
+  --input-height: var(--space-10);
 }
 </style>
