@@ -1862,6 +1862,7 @@
     "from_net_to_gross": "Net to Gross",
     "from_gross_to_net": "Gross to Net",
     "unsaved": "Unsaved",
+    "unsaved_prices_rows": "Unsaved prices: {prices} · rows: {rows}",
     "save_all": "Save All",
     "saving": "Saving...",
     "bulk_save_success": "{updated} prices updated, {logged} changes logged",
@@ -3750,5 +3751,35 @@
     "jobs_created": "{count} translation job(s) created",
     "estimate_failed": "Failed to estimate translation cost",
     "execute_failed": "Failed to create translation jobs"
+  },
+  "formats": {
+    "money": "Enter an amount with at most two decimal places, e.g. {example}",
+    "percent": "Enter a percentage from 0 to 100 with at most two decimal places, e.g. {example}",
+    "integer": "Enter a whole number, e.g. {example}",
+    "min": "Enter {min} or more",
+    "max": "Enter {max} or less",
+    "ean": "An EAN has 8, 12, 13 or 14 digits, e.g. {example}",
+    "ean_checksum": "The check digit (the last one) does not match: look for a typo in the EAN",
+    "code": "Use capital letters, digits and '_' without spaces, e.g. {example}",
+    "key": "Use letters, digits, '-' or '_' without spaces, e.g. {example}",
+    "slug": "Use lower-case letters, digits and '-', e.g. {example}",
+    "email": "Enter an email address, e.g. {example}",
+    "url": "Enter a full address starting with https://, e.g. {example}",
+    "iso2": "Enter a two-letter country code, e.g. {example}",
+    "iso3": "Enter a three-letter currency code, e.g. {example}",
+    "invalid_rows": "Fix the highlighted values before saving",
+    "example": {
+      "money": "232.00",
+      "percent": "8.5",
+      "integer": "12",
+      "ean": "5901234123457",
+      "code": "NEW_LEAD",
+      "key": "summer-sale",
+      "slug": "summer-sale",
+      "email": "name@example.com",
+      "url": "https://example.com/image.jpg",
+      "iso2": "PL",
+      "iso4217": "EUR"
+    }
   }
 }

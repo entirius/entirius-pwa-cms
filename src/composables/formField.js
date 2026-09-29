@@ -5,6 +5,8 @@ import { inject, ref, useId } from "vue";
 // labelId }, every value a ref: the control puts `id` on its native element (the label's `for`), `describedBy` into
 // `aria-describedby`, and reflects `invalid` / `required` / `disabled`. `labelId` (`""` without a label) names a
 // control a `for` cannot reach (`aria-labelledby`: a radio group, a segmented control, a select's open list).
+// `reportError(message)` (plan 61) lets a control that checks its own format show it as the field's error; optional —
+// outside a FormField there is none.
 export const FORM_FIELD = Symbol("FormField");
 
 // Call in setup(). Outside a FormField the control stands alone: its own id, nothing else set.

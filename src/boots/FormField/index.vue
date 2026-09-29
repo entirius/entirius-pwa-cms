@@ -1,5 +1,5 @@
 <template>
-  <div class="form-field" :class="[`form-field--${layout}`, { 'form-field--invalid': !!error }]">
+  <div class="form-field" :class="[`form-field--${layout}`, { 'form-field--invalid': !!shownError }]">
     <div v-if="label || hintShown" class="form-field__head">
       <label
         v-if="label"
@@ -13,9 +13,9 @@
     </div>
     <div class="form-field__body">
       <slot />
-      <p v-if="error" :id="errorId" class="form-field__error" role="alert">
+      <p v-if="shownError" :id="errorId" class="form-field__error" role="alert">
         <span aria-hidden="true" class="form-field__error-icon">⚠</span>
-        <span>{{ error }}</span>
+        <span>{{ shownError }}</span>
       </p>
     </div>
   </div>
@@ -26,9 +26,10 @@
 // is a `?` after the label (BasicTooltip help), `hintLevel` subtle | important (plan 60); the account-menu hints switch
 // hides it. It provides FORM_FIELD (src/composables/formField.js) to the control inside: `id` for the label's `for`,
 // `describedBy` (the error, else the hint while hints are on), `invalid`, `required`, `disabled`; plus
-// `labelId` for a control a `for` cannot name (a radio group, a segmented control). `layout="inline"`: label left,
-// control right from 1024 px, stacked below.
-import { computed, provide, useId } from "vue";
+// `labelId` for a control a `for` cannot name (a radio group, a segmented control), and `reportError` for a control that
+// checks its own format (BasicInput `format`, plan 61) — the caller's `error` wins over it. `layout="inline"`: label
+// left, control right from 1024 px, stacked below.
+import { computed, provide, ref, useId } from "vue";
 import { FORM_FIELD } from "@/composables/formField";
 import BasicTooltip from "@/boots/BasicTooltip/index.vue";
 import { useHintsOn } from "@/composables/fieldHints";
@@ -52,6 +53,8 @@ const errorId = `${generatedId}-error`;
 const hintId = `${generatedId}-hint`;
 const hintsOn = useHintsOn();
 const hintShown = computed(() => Boolean(props.hint) && hintsOn.value);
+const controlError = ref("");
+const shownError = computed(() => props.error || controlError.value);
 
 // Several controls in one field (a v-for of rows): the first one mounted takes the field's id, the rest keep their own,
 // so no id repeats and the label points at one control.
@@ -68,11 +71,12 @@ provide(FORM_FIELD, {
   claim,
   release,
   id: controlId,
-  describedBy: computed(() => (props.error ? errorId : hintShown.value ? hintId : "")),
-  invalid: computed(() => !!props.error),
+  describedBy: computed(() => (shownError.value ? errorId : hintShown.value ? hintId : "")),
+  invalid: computed(() => !!shownError.value),
   required: computed(() => props.required),
   disabled: computed(() => props.disabled),
   labelId: computed(() => (props.label ? labelId : "")),
+  reportError: (message) => (controlError.value = message),
 });
 </script>
 

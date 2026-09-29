@@ -115,3 +115,25 @@ describe("useFormErrors.handleApiError", () => {
     expect(fe.getFieldError("code")).toEqual({ status: "error", msg: "dup" })
   })
 })
+
+describe("validateFormats (plan 61)", () => {
+  const RULES = { value: { format: "money" }, ean: { format: "ean" }, max_used: { format: "integer", min: 1 } }
+
+  it("blocks the save with a field error per invalid value", () => {
+    const { validateFormats, getFieldError } = useFormErrors()
+    expect(validateFormats({ value: "2.345", ean: "5901234123458", max_used: "0" }, RULES)).toBe(false)
+    expect(getFieldError("value").msg).toBe("Enter an amount with at most two decimal places, e.g. 232.00")
+    expect(getFieldError("ean").msg).toMatch(/check digit/)
+    expect(getFieldError("max_used").msg).toBe("Enter 1 or more")
+  })
+
+  it("passes valid and empty values, keeps a required error and clears a fixed one", () => {
+    const { validateRequired, validateFormats, getFieldError } = useFormErrors()
+    validateRequired({ ean: "" }, { ean: "EAN" })
+    validateFormats({ value: "2.345" }, RULES)
+    expect(getFieldError("value")).not.toBeNull()
+    expect(validateFormats({ value: "232.00", ean: "", max_used: null }, RULES)).toBe(true)
+    expect(getFieldError("ean").msg).toBe("EAN is required")
+    expect(getFieldError("value")).toBeNull()
+  })
+})

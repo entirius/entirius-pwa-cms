@@ -17,8 +17,8 @@
         :name="attrs.id"
         :value="shown"
         :readonly="readonly"
-        @input="emit('update:modelValue', $event.target.value)"
-        @focusout="emit('onFocusout', $event.target.value)"
+        @input="onInput"
+        @focusout="onFocusout"
         @keydown.enter="emit('onKeyDown', $event.target.value)"
       />
       <div
@@ -43,8 +43,12 @@
 // error text are the FormField's. `null` and `false` show an empty field, `0` shows "0". `focusOnCreate` focuses it on mount;
 // `onFocusout` / `onKeyDown` (Enter) emit the current text. `size`: md = --elem-height (default), lg = 40 px (the
 // sign-in screens, AuthLayout). Slot `trailing`: a control inside the right edge (the password reveal), the text
-// stops before it.
-import { computed, onMounted, ref } from "vue";
+// stops before it. `format` (src/utils/formats.js: money, integer, ean, key, …) shows the model in that format, puts
+// the parsed value in the model as it is typed ("232,5" → "232.50"), and once the field is left shows what is wrong
+// through the FormField error (the red border alone outside one); `min` / `max` / `pattern` are its rules. A save still
+// checks the form itself (useFormErrors `validateFormats`).
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { FORMATS, displayFormat, formatError, parseFormat } from "@/utils/formats";
 import { ICONS } from "@/boots/Icons/icons";
 import { useControlAttrs } from "@/boots/FormField/useControlAttrs";
 
@@ -68,16 +72,48 @@ const props = defineProps({
   max: { type: [Number, String], default: null },
   step: { type: [Number, String], default: null },
   size: { type: String, default: "md", validator: (value) => ["md", "lg"].includes(value) },
+  format: { type: String, default: null, validator: (value) => value in FORMATS },
+  // The API regex of a `code` / `key` format.
+  pattern: { type: String, default: null },
 });
 const emit = defineEmits(["update:modelValue", "onFocusout", "onKeyDown"]);
 
 const inputEl = ref(null);
-const shown = computed(() => (props.modelValue === null || props.modelValue === false ? "" : props.modelValue));
+// The text as typed while the field has focus (a format shows the model its own way once the field is left).
+const draft = ref(null);
+const left = ref(false);
+const shown = computed(() => {
+  if (draft.value !== null) return draft.value;
+  if (props.modelValue === null || props.modelValue === false) return "";
+  return props.format ? displayFormat(props.format, props.modelValue) : props.modelValue;
+});
+const formatMessage = computed(() => {
+  if (!props.format || !left.value) return "";
+  return formatError(props.format, props.modelValue, { min: props.min, max: props.max, pattern: props.pattern });
+});
 const leadingIcon = computed(() => (props.readonly ? "lock" : props.icon));
-const { attrs } = useControlAttrs({
+const { attrs, field } = useControlAttrs({
   id: () => props.id,
   disabled: () => props.disabled,
+  invalid: () => Boolean(formatMessage.value),
 });
+
+function onInput(event) {
+  const text = event.target.value;
+  if (!props.format) return emit("update:modelValue", text);
+  draft.value = text;
+  left.value = false;
+  emit("update:modelValue", parseFormat(props.format, text));
+}
+
+function onFocusout(event) {
+  draft.value = null;
+  left.value = true;
+  emit("onFocusout", event.target.value);
+}
+
+watch(formatMessage, (message) => field.reportError?.(message));
+onBeforeUnmount(() => formatMessage.value && field.reportError?.(""));
 
 onMounted(() => props.focusOnCreate && inputEl.value.focus());
 </script>

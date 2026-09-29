@@ -203,6 +203,73 @@ describe("BasicInput", () => {
   });
 });
 
+describe("BasicInput format (plan 61)", () => {
+  const mountInput = (props = {}) => mount(BasicInput, { props, global: GLOBAL });
+  const lastModel = (wrapper) => wrapper.emitted("update:modelValue").at(-1)[0];
+
+  it("shows the model in the format and keeps the text as typed while focused", async () => {
+    const wrapper = mountInput({ format: "money", modelValue: "232.00" });
+    const input = wrapper.find("input");
+    expect(input.element.value).toBe("232.00");
+    await input.setValue("232,5");
+    expect(lastModel(wrapper)).toBe("232.50");
+    await wrapper.setProps({ modelValue: "232.50" });
+    expect(input.element.value).toBe("232,5");
+    await input.trigger("focusout");
+    expect(input.element.value).toBe("232.50");
+  });
+
+  it("normalises the model to the format: 232 → 232.00, a code upper-case", async () => {
+    const money = mountInput({ format: "money" });
+    await money.find("input").setValue("232");
+    expect(lastModel(money)).toBe("232.00");
+    const code = mountInput({ format: "code" });
+    await code.find("input").setValue(" new_lead ");
+    expect(lastModel(code)).toBe("NEW_LEAD");
+  });
+
+  it("marks an invalid value once the field is left, not while it is typed", async () => {
+    const wrapper = mountInput({ format: "ean", modelValue: "" });
+    const input = wrapper.find("input");
+    await input.setValue("590123412345");
+    await wrapper.setProps({ modelValue: lastModel(wrapper) });
+    expect(input.attributes("aria-invalid")).toBeUndefined();
+    await input.trigger("focusout");
+    expect(input.attributes("aria-invalid")).toBe("true");
+    await wrapper.setProps({ modelValue: "5901234123457" });
+    expect(input.attributes("aria-invalid")).toBeUndefined();
+  });
+
+  it("shows the format error through its FormField; the caller's error wins", async () => {
+    const wrapper = inField(BasicInput, {}, { format: "money", modelValue: "2.345" });
+    await wrapper.find("input").trigger("focusout");
+    const error = wrapper.find(".form-field__error");
+    expect(error.text()).toContain("Enter an amount with at most two decimal places, e.g. 232.00");
+    expect(wrapper.find("input").attributes("aria-describedby")).toBe(error.attributes("id"));
+    const withCallerError = inField(BasicInput, { error: "Server says no" }, { format: "money", modelValue: "2.345" });
+    await withCallerError.find("input").trigger("focusout");
+    expect(withCallerError.find(".form-field__error").text()).toContain("Server says no");
+  });
+
+  it("checks min, max and the API pattern", async () => {
+    const key = mountInput({ format: "key", pattern: "^[a-z0-9][a-z0-9_-]*$", modelValue: "Fill" });
+    await key.find("input").trigger("focusout");
+    expect(key.find("input").attributes("aria-invalid")).toBe("true");
+    const negative = mountInput({ format: "money", modelValue: "-5.00" });
+    await negative.find("input").trigger("focusout");
+    expect(negative.find("input").attributes("aria-invalid")).toBe("true");
+    const integer = mountInput({ format: "integer", min: 1, modelValue: "0" });
+    await integer.find("input").trigger("focusout");
+    expect(integer.find("input").attributes("aria-invalid")).toBe("true");
+  });
+
+  it("without a format the text goes to the model untouched", async () => {
+    const wrapper = mountInput({ modelValue: "" });
+    await wrapper.find("input").setValue(" 232,5 ");
+    expect(lastModel(wrapper)).toBe(" 232,5 ");
+  });
+});
+
 describe("BasicTextarea", () => {
   it("runs v-model and counts toward maxlength", async () => {
     const wrapper = mount(BasicTextarea, { props: { modelValue: "abc", maxlength: 10 } });

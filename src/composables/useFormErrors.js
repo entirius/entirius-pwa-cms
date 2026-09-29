@@ -1,6 +1,7 @@
 import { reactive, ref, computed } from "vue"
 import { t } from "@/i18n"
 import { SessionEndedError } from "@/api/createClient"
+import { formatError } from "@/utils/formats"
 
 /** Join a DRF field value ([msg] | msg) into a single non-empty string. */
 function asMessage(value) {
@@ -151,6 +152,19 @@ export function useFormErrors() {
     return valid
   }
 
+  // Formats (src/utils/formats.js) before a save: rules = { field: { format, min, max, pattern } }. Keeps the errors
+  // already set (run it after validateRequired); an empty value is required's business, a valid one loses its old error.
+  function validateFormats(form, rules) {
+    let valid = true
+    for (const [field, { format, ...limits }] of Object.entries(rules)) {
+      const msg = formatError(format, form[field], limits)
+      if (msg) errors[field] = fieldError(msg)
+      else if (form[field] !== null && form[field] !== undefined && form[field] !== "") delete errors[field]
+      valid = valid && !msg
+    }
+    return valid
+  }
+
   return {
     errors,
     hasErrors,
@@ -162,5 +176,6 @@ export function useFormErrors() {
     clearFieldError,
     clearErrors,
     validateRequired,
+    validateFormats,
   }
 }

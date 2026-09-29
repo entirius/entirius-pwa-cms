@@ -242,8 +242,13 @@ Traps:
   12 px / 600, uppercase, `text-muted`, 4 px above the control. A raw `<label>` takes `.field-label`; never a local
   copy of the style. The required marker is the `.required` class (a `negative` `*` after the label), never a `*`
   typed into the text.
-- Run `validateRequired(form, rules)` before the request, and `formErrors.handleApiError(err)` in `catch`, before
-  the toast.
+- A value whose format matters takes BasicInput `format` (`src/utils/formats.js`: `money`, `percent`, `integer`,
+  `ean`, `code`, `key`, `slug`, `email`, `url`, `iso2`, `iso4217`) and the API `maxlength`: the field shows the
+  format (a price „232,00”), fills the model in the API's type as it is typed (`232` → `"232.00"`) and marks a wrong
+  value when it is left. Never round or correct into another value (`2,345` for money is an error). An existing
+  record checks only the formatted values the operator changed — a stored legacy value never blocks other edits.
+- Run `validateRequired(form, rules)` and then `validateFormats(form, rules)` (`{ field: { format, min, max, pattern }
+  }`) before the request, and `formErrors.handleApiError(err)` in `catch`, before the toast.
 - A deep watcher on the form clears the errors when the user edits. Never show a generic toast only.
 
 ## Mobile

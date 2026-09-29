@@ -355,7 +355,7 @@ Catalogue: `#selects` (`#basic-select`, `#entity-search-picker`, `#channel-multi
   control's id, `disabled` disables it. It provides `FORM_FIELD` (`src/composables/formField.js`): `id` (the label's
   `for`), `describedBy` (the error, else the hint while hints are on), `invalid`, `required`, `disabled`, plus
   `labelId` for a control a
-  `for` cannot name. Of several controls in one field (rows of a `v-for`) only the first takes the field's id.
+  `for` cannot name, and `reportError(message)` for a control that checks its own format (BasicInput `format`). Of several controls in one field (rows of a `v-for`) only the first takes the field's id.
   Controls read it through `useControlAttrs()` (`src/boots/FormField/useControlAttrs.js`) and
   paint their own error border.
 - **`BasicInput`** — `v-model`, `type`, `placeholder`, `icon` (a leading meaning of `icons.js`), `readonly` (the
@@ -364,7 +364,12 @@ Catalogue: `#selects` (`#basic-select`, `#entity-search-picker`, `#channel-multi
   control inside the right edge, the text stops before it: the password reveal), `border-control`, the polish disabled
   look. No label or error text of its own (the FormField's). `null` / `false` show an empty field, `0` shows „0”.
   `focusOnCreate` focuses it on mount; events `onFocusout` / `onKeyDown` (Enter) carry the text; unknown listeners
-  and classes land on the wrapper.
+  and classes land on the wrapper. `format` (plan 61, `src/utils/formats.js`: `money` · `percent` · `integer` · `ean`
+  · `code` · `key` · `slug` · `email` · `url` · `iso2` · `iso4217`) shows the model in that format (money with the
+  UI language's decimal separator), keeps the text as typed while focused and puts the parsed value in the model
+  (`"232,5"` → `"232.50"`); once the field is left a wrong value is `aria-invalid` and its message is the FormField's
+  error (`reportError` of `FORM_FIELD`; the caller's `error` wins). `min` / `max` / `pattern` (the API regex of a
+  `code` / `key`) are its rules. The save still checks the form: `useFormErrors().validateFormats`.
 - **`BasicTextarea`** — replaces `TextAreaBasic`: `v-model`, `rows` (4), `maxlength` (with an „n / max” counter),
   `placeholder`, `disabled`, `readonly`.
 - **`NumberInput`** — `disabled`; the value field reads the contract.

@@ -1861,6 +1861,7 @@
     "from_net_to_gross": "Netto na brutto",
     "from_gross_to_net": "Brutto na netto",
     "unsaved": "Niezapisane",
+    "unsaved_prices_rows": "Niezapisane ceny: {prices} · wiersze: {rows}",
     "save_all": "Zapisz wszystko",
     "saving": "Zapisywanie...",
     "bulk_save_success": "Zaktualizowano {updated} cen, {logged} zmian zarejestrowanych",
@@ -3749,5 +3750,35 @@
     "jobs_created": "Utworzono {count} zadań tłumaczenia",
     "estimate_failed": "Nie udało się oszacować kosztu tłumaczenia",
     "execute_failed": "Nie udało się utworzyć zadań tłumaczenia"
+  },
+  "formats": {
+    "money": "Podaj kwotę z najwyżej dwoma miejscami po przecinku, np. {example}",
+    "percent": "Podaj procent od 0 do 100 z najwyżej dwoma miejscami po przecinku, np. {example}",
+    "integer": "Podaj liczbę całkowitą, np. {example}",
+    "min": "Podaj {min} lub więcej",
+    "max": "Podaj {max} lub mniej",
+    "ean": "EAN ma 8, 12, 13 lub 14 cyfr, np. {example}",
+    "ean_checksum": "Cyfra kontrolna (ostatnia) się nie zgadza: sprawdź, czy w EAN nie ma literówki",
+    "code": "Użyj wielkich liter, cyfr i „_”, bez spacji, np. {example}",
+    "key": "Użyj liter, cyfr, „-” lub „_”, bez spacji, np. {example}",
+    "slug": "Użyj małych liter, cyfr i „-”, np. {example}",
+    "email": "Podaj adres e-mail, np. {example}",
+    "url": "Podaj pełny adres zaczynający się od https://, np. {example}",
+    "iso2": "Podaj dwuliterowy kod kraju, np. {example}",
+    "iso3": "Podaj trzyliterowy kod waluty, np. {example}",
+    "invalid_rows": "Popraw zaznaczone wartości przed zapisem",
+    "example": {
+      "money": "232,00",
+      "percent": "8,5",
+      "integer": "12",
+      "ean": "5901234123457",
+      "code": "NEW_LEAD",
+      "key": "summer-sale",
+      "slug": "summer-sale",
+      "email": "jan@example.com",
+      "url": "https://example.com/obraz.jpg",
+      "iso2": "PL",
+      "iso4217": "EUR"
+    }
   }
 }

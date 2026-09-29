@@ -4,6 +4,9 @@ import { getLang } from "@/i18n";
 // the CMS shows and takes percent. Both directions round to 2 percent decimals.
 const LOCALES = { PL: "pl-PL", EN: "en-GB" };
 
+// The Intl locale of the UI language (formats.js reads its decimal separator from it).
+export const numberLocale = () => LOCALES[getLang()] || LOCALES.EN;
+
 const round2 = (n) => Math.round(n * 100) / 100;
 
 // null for a missing or non-numeric value: an empty field is never a silent zero.
@@ -27,6 +30,5 @@ export function percentToRate(percent) {
 export function formatTaxRate(rate) {
   const percent = rateToPercent(rate);
   if (percent === null) return "";
-  const locale = LOCALES[getLang()] || LOCALES.EN;
-  return `${new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(percent)} %`;
+  return `${new Intl.NumberFormat(numberLocale(), { maximumFractionDigits: 2 }).format(percent)} %`;
 }
