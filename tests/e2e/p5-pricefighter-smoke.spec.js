@@ -1,6 +1,7 @@
 const { test, expect } = require('@playwright/test');
 const { login } = require('../helpers/auth');
 const { createErrorCollector } = require('../helpers/error-collector');
+const { either: escapedEither } = require('./helpers/text');
 const en = require('../../src/i18n/locales/en.json');
 const pl = require('../../src/i18n/locales/pl.json');
 
@@ -18,7 +19,6 @@ const VIEWPORTS = {
 const DEV_SERVER = ['WebSocket connection to'];
 
 // The admin profile picks the UI language; accept either locale's text.
-const { either: escapedEither } = require('./helpers/text');
 const either = (pick) => escapedEither(pick(en), pick(pl));
 const h1 = (page) => page.getByRole('heading', { level: 1 });
 

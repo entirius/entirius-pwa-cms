@@ -1,13 +1,17 @@
 <template>
   <DataTable :columns="columns" :rows="observations" :empty-text="$t('pricefighter.no_observations')">
+    <!-- An invalid observation is a muted row: every value cell, not only its badge (DataTable has no row class). -->
+    <template #cell-source_idx="{ row }">
+      <span :class="mutedClass(row)">{{ row.source_idx }}</span>
+    </template>
     <template #cell-price="{ row }">
-      {{ row.price }} {{ row.currency || '' }}
+      <span :class="mutedClass(row)">{{ row.price }} {{ row.currency || '' }}</span>
     </template>
     <template #cell-stock="{ row }">
-      {{ row.stock != null ? row.stock : '—' }}
+      <span :class="mutedClass(row)">{{ row.stock != null ? row.stock : '—' }}</span>
     </template>
     <template #cell-ts="{ row }">
-      {{ formatDate(row.ts) }}
+      <span :class="mutedClass(row)">{{ formatDate(row.ts) }}</span>
     </template>
     <template #cell-flag="{ row }">
       <StatusBadge
@@ -30,6 +34,8 @@ defineProps({
     required: true,
   },
 })
+
+const mutedClass = (row) => (row.flag === 'valid' ? null : 't-muted')
 
 const columns = computed(() => [
   { key: 'source_idx', label: t('pricefighter.source'), width: '1.2fr' },
