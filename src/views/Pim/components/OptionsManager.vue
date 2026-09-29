@@ -20,6 +20,8 @@
       <BasicInput
         v-model="searchQuery"
         :placeholder="$t('pim.search_to_add')"
+        :aria-label="$t('pim.options')"
+        icon="search"
         @update:model-value="onSearch"
       />
     </div>
@@ -55,19 +57,9 @@
 
     <Loader block v-if="loading" />
 
-    <div
-      v-else-if="!options.length && !searchQuery"
-      class="t-muted fs-200 p-8"
-    >
-      {{ $t("pim.no_options") }}
-    </div>
+    <EmptyState v-else-if="!options.length && !searchQuery" size="sm" :title="$t('pim.no_options')" />
 
-    <div
-      v-else-if="!options.length && searchQuery"
-      class="t-muted fs-200 p-8"
-    >
-      {{ $t("pim.no_results") }}
-    </div>
+    <EmptyState v-else-if="!options.length && searchQuery" size="sm" :title="$t('pim.no_results')" />
 
     <template v-else>
       <Pagination
@@ -87,7 +79,7 @@
         <span class="options-table__col--label hide-mobile"
           >{{ $t("pim.default_label").toUpperCase() }} (EN)</span
         >
-        <span class="options-table__col--actions">ACTIONS</span>
+        <span class="options-table__col--actions">{{ $t("common.actions").toUpperCase() }}</span>
       </div>
 
       <draggable
@@ -115,15 +107,13 @@
               getDefaultLabel(element)
             }}</span>
             <span class="options-table__col--actions flex ai-ct gap-2">
-              <BasicButton
-                :label="$t('pim.translations')"
+              <IconButton
                 icon="translate"
-                variant="secondary"
-                class="icon-only-mobile"
+                variant="outline"
+                size="sm"
+                :label="`${$t('pim.translations')}: ${element.idx}`"
                 @click="openTranslations(element)"
-              >
-                {{ $t('pim.translations') }}
-              </BasicButton>
+              />
               <IconButton
                 icon="delete"
                 :label="$t('common.delete')"

@@ -1,12 +1,12 @@
 <template>
   <BasicCard
     v-if="loaded"
-    class="quality-settings"
+    :title="$t('pim.quality_settings')"
+    gap
+    class="mb-8"
     data-test="quality-settings-card"
   >
-    <h2 class="fs-400 fw-600 mb-8">{{ $t("pim.quality_settings") }}</h2>
-
-    <div class="quality-settings__row">
+    <div class="form-grid">
       <FormField
         :label="$t('pim.gaps_skip_default_label')"
         :tooltip="$t('pim.gaps_skip_default_tooltip')"
@@ -23,7 +23,6 @@
         v-if="allSets.length"
         :label="$t('pim.default_feature_set')"
         :tooltip="$t('pim.default_feature_set_tooltip')"
-        class="quality-settings__picker"
       >
         <BasicSelect
           :options="setOptions"
@@ -35,24 +34,15 @@
       </FormField>
     </div>
 
-    <BasicModal
+    <ConfirmDialog
       :open="pendingDefaultIdx != null"
-      size="sm"
       :title="$t('pim.default_feature_set')"
-      @close="pendingDefaultIdx = null"
-    >
-      <p>{{ defaultConfirmMessage }}</p>
-      <template #footer>
-        <ActionBar>
-          <BasicButton variant="secondary" @click="pendingDefaultIdx = null">
-            {{ $t("common.cancel") }}
-          </BasicButton>
-          <BasicButton variant="primary" @click="confirmDefaultChange">
-            {{ $t("common.confirm") }}
-          </BasicButton>
-        </ActionBar>
-      </template>
-    </BasicModal>
+      :message="defaultConfirmMessage"
+      :confirm-label="$t('common.confirm')"
+      :cancel-label="$t('common.cancel')"
+      @confirm="confirmDefaultChange"
+      @cancel="pendingDefaultIdx = null"
+    />
   </BasicCard>
 </template>
 
@@ -67,7 +57,7 @@ import {
 import { extractApiMessage } from "@/composables/useFormErrors";
 
 export default {
-  name: "QualitySettingsCard",
+  name: "QualitySettings",
   setup() {
     const notify = useNotifyStore();
     return { notify };
@@ -175,18 +165,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.quality-settings {
-  margin-bottom: var(--space-10);
-}
-.quality-settings__row {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-12);
-  flex-wrap: wrap;
-}
-.quality-settings__picker {
-  min-width: 260px;
-}
-</style>

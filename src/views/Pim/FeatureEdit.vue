@@ -1,30 +1,18 @@
 <template>
   <PageLayout class="fs-300 t-body">
-    <Teleport to="#pim-toolbar-left" defer>
-      <IconButton
-        icon="back"
-        :label="$t('common.back')"
-        @click="$router.push('/pim/features')"
-      />
-    </Teleport>
-    <Teleport to="#pim-toolbar-right" defer>
-      <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
-      <IconButton
-        v-if="!isCreate && !isSystem"
-        icon="delete"
-        :label="$t('common.delete')"
-        variant="danger"
-        @click="showDeleteConfirm = true"
-      />
-      <BasicButton
-        variant="primary"
-        @click="save"
-      >
-        {{ $t('common.save') }}
-      </BasicButton>
-    </Teleport>
-      <!-- Breadcrumb -->
-      <PimBreadcrumb :items="breadcrumbItems" />
+    <template v-if="!loading" #header>
+      <PageHeader :title="pageTitle" back="/pim/features">
+        <template #meta>
+          <PimChannelSelect />
+        </template>
+        <template #actions>
+          <div class="flex ai-ct jc-fe wrap gap-3">
+            <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
+            <ActionBar :actions="headerActions" />
+          </div>
+        </template>
+      </PageHeader>
+    </template>
       <Loader block v-if="loading" />
 
       <template v-else>
@@ -37,18 +25,14 @@
           <span>{{ $t("pim.system_feature_notice") }}</span>
         </div>
 
-        <!-- Section 1: General Information -->
-        <PimCard :title="$t('pim.general_info')" class="mb-10">
-          <div class="grid grid-col-2 gap-8 mb-8">
+        <BasicCard :title="$t('pim.general_info')" gap class="mb-8">
+          <div class="form-grid">
             <FormField
               :label="$t('pim.feature_code')"
               :description="$t('pim.attribute_code_help')"
+              :required="isCreate"
             >
-              <BasicInput
-                v-if="isCreate"
-                v-model="form.idx"
-                :placeholder="$t('pim.feature_code')"
-              />
+              <BasicInput v-if="isCreate" v-model="form.idx" />
               <BasicInput v-else :model-value="form.idx" readonly />
             </FormField>
             <FormField
@@ -63,13 +47,14 @@
                 @update:model-value="onTypeSelect"
               />
             </FormField>
-          </div>
-          <div class="grid grid-col-3 gap-8 mb-8">
             <FormField
               :label="$t('pim.scope')"
               :description="$t('pim.scope_help')"
             >
               <BasicInput :model-value="selectedScopeLabel" readonly />
+            </FormField>
+            <FormField :label="$t('pim.display_order')">
+              <BasicInput v-model="form.display_order" type="number" />
             </FormField>
             <FormField :label="$t('pim.frontend_input_type')">
               <BasicSelect
@@ -85,49 +70,35 @@
                 :placeholder="$t('pim.filter_type')"
               />
             </FormField>
-          </div>
-          <div class="grid grid-col-3 gap-8">
-            <FormField :label="$t('pim.display_order')">
-              <BasicInput v-model="form.display_order" type="number" />
+            <FormField
+              v-if="hasDesc"
+              :label="$t('pim.internal_desc_label')"
+              :tooltip="$t('pim.internal_desc_tooltip')"
+              class="form-grid__wide"
+            >
+              <BasicTextarea v-model="form.desc" />
             </FormField>
           </div>
-          <FormField
-            v-if="hasDesc"
-            :label="$t('pim.internal_desc_label')"
-            :tooltip="$t('pim.internal_desc_tooltip')"
-            class="mt-8"
-          >
-            <BasicTextarea v-model="form.desc" />
-          </FormField>
-        </PimCard>
+        </BasicCard>
 
-        <!-- Section 2: Labels (name_t9n) -->
-        <PimCard
-          :title="$t('pim.labels')"
-          :subtitle="$t('pim.base_language')"
-          class="mb-10"
-        >
-          <div class="grid grid-col-2 gap-8">
-            <div v-for="(lang, index) in languages" :key="lang">
-              <StatusBadge
-                tone="accent"
-                size="sm"
-                :dot="false"
-                :label="lang.toUpperCase()"
-              />
+        <BasicCard :title="$t('pim.labels')" gap class="mb-8">
+          <p class="fs-200 t-muted">{{ $t("pim.base_language") }}</p>
+          <div class="form-grid">
+            <FormField
+              v-for="lang in languages"
+              :key="lang"
+              :label="`${$t('pim.name')} (${lang.toUpperCase()})`"
+            >
               <BasicInput
                 :model-value="form.name_t9n[lang] || ''"
-                :placeholder="`${$t('pim.name')} (${lang})`"
-                class="mt-2"
-                @update:modelValue="(val) => (form.name_t9n[lang] = val)"
+                @update:model-value="(val) => (form.name_t9n[lang] = val)"
               />
-            </div>
+            </FormField>
           </div>
-        </PimCard>
+        </BasicCard>
 
-        <!-- Section 3: Flags & Options -->
-        <PimCard :title="$t('pim.flags_and_options')">
-          <div class="grid grid-col-3 gap-8 mb-10">
+        <BasicCard :title="$t('pim.flags_and_options')" gap>
+          <div class="form-grid">
             <BasicSwitch
               :label="$t('pim.is_required')"
               v-model="form.is_required"
@@ -168,10 +139,8 @@
           </div>
 
           <!-- Options Manager (only for Select/Multi-select) -->
-          <div v-if="isSelectType" class="mt-8">
-            <OptionsManager :feature-idx="form.idx" :languages="languages" />
-          </div>
-        </PimCard>
+          <OptionsManager v-if="isSelectType" :feature-idx="form.idx" :languages="languages" />
+        </BasicCard>
       </template>
 
       <!-- Delete confirmation -->
@@ -221,16 +190,14 @@ import {
   isSelectType as checkSelectType,
 } from "./helpers/pimEnums";
 import OptionsManager from "./components/OptionsManager.vue";
-import PimBreadcrumb from "./components/PimBreadcrumb.vue";
-import PimCard from "./components/PimCard.vue";
+import PimChannelSelect from "./components/PimChannelSelect.vue";
 import { extractApiMessage } from "@/composables/useFormErrors";
 
 export default {
   name: "FeatureEdit",
   components: {
     OptionsManager,
-    PimBreadcrumb,
-    PimCard,
+    PimChannelSelect,
   },
   setup() {
     const loader = useLoaderStore();
@@ -328,19 +295,18 @@ export default {
       const ft = FILTER_TYPES.find((t) => t.value === this.form.filter_type);
       return ft ? ft.label : "";
     },
-    breadcrumbItems() {
-      const items = [
-        { label: this.$t("pim.settings"), route: "/pim/feature-sets" },
-        { label: this.$t("pim.features"), route: "/pim/features" },
+    pageTitle() {
+      if (this.isCreate) return this.$t("pim.create_feature");
+      return this.featureName || this.$t("pim.feature_detail");
+    },
+    headerActions() {
+      return [
+        ...(!this.isCreate && !this.isSystem
+          ? [{ key: "delete", role: "utility", icon: "delete", variant: "danger", label: this.$t("common.delete"),
+              onClick: () => (this.showDeleteConfirm = true) }]
+          : []),
+        { key: "save", role: "primary", label: this.$t("common.save"), onClick: this.save },
       ];
-      if (this.isCreate) {
-        items.push({ label: this.$t("pim.create_feature") });
-      } else {
-        items.push({
-          label: this.$t("pim.edit_attribute", { name: this.featureName }),
-        });
-      }
-      return items;
     },
   },
   beforeRouteLeave(to, from, next) {

@@ -37,7 +37,11 @@
             :title="element.feature_name || element.feature_idx"
             >{{ element.feature_name || element.feature_idx }}</span
           >
-          <TypeBadge :feature-type="element.feature_type" />
+          <StatusBadge
+            :tone="featureTypeTone(element.feature_type)"
+            :dot="false"
+            :label="$t(featureTypeLabel(element.feature_type))"
+          />
         </div>
       </template>
     </draggable>
@@ -62,14 +66,13 @@
 import { useNotifyStore } from "@/stores/notify";
 import { usePimChannelStore } from "@/stores/pimChannel";
 import { GET_Features } from "@/api/pim/api";
-import { featureTypeLabel } from "../helpers/pimEnums";
-import TypeBadge from "./TypeBadge.vue";
+import { featureTypeLabel, featureTypeTone } from "../helpers/pimEnums";
 import draggable from "vuedraggable";
 import { extractApiMessage } from "@/composables/useFormErrors";
 
 export default {
   name: "AttributeLibrary",
-  components: { TypeBadge, draggable },
+  components: { draggable },
   props: {
     featureSetIdx: {
       type: String,
@@ -119,6 +122,7 @@ export default {
   },
   methods: {
     featureTypeLabel,
+    featureTypeTone,
     async fetchFeatures() {
       this.loading = true;
       try {

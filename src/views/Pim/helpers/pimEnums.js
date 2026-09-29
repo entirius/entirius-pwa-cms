@@ -67,3 +67,12 @@ export function scopeLabel(value) {
   const s = FEATURE_SCOPES.find(sc => sc.value === value)
   return s ? s.labelKey : String(value)
 }
+
+/** StatusBadge tone per feature type: select accent, text neutral, number negative, bool positive, date warning */
+export function featureTypeTone(value) {
+  if (value === 7 || value === 8) return "accent"
+  if (value === 2 || (value >= 12 && value <= 14)) return "negative"
+  if (value === 1) return "positive"
+  if (value === 10) return "warning"
+  return "neutral"
+}

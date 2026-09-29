@@ -1,11 +1,9 @@
 <template>
   <div class="category-products">
-    <!-- Pinned products panel -->
-    <div class="panel mb-10">
-      <h3 class="panel-title fs-400 fw-600 mb-5 t-body">
-        {{ $t("pim.pinned_products") }}
-        <span class="t-muted fw-400">({{ positioned.length }})</span>
-      </h3>
+    <BasicCard :title="$t('pim.pinned_products')" gap class="mb-8">
+      <template #actions>
+        <CountBadge :count="positioned.length" />
+      </template>
       <draggable
         v-model="positioned"
         :group="{ name: 'category-products' }"
@@ -15,118 +13,71 @@
           { 'product-grid--empty': !positioned.length },
         ]"
         :data-empty-hint="$t('pim.drag_to_pin')"
-        ghost-class="product-card--ghost"
+        ghost-class="sortable-product--ghost"
         @end="onDragEnd"
       >
         <template #item="{ element, index }">
-          <div class="product-card product-card--pinned">
-            <div class="product-card__handle">
-              <font-awesome-icon :icon="$icons.drag" class="t-muted" />
+          <div class="sortable-product sortable-product--pinned">
+              <font-awesome-icon :icon="$icons.drag" class="t-muted" aria-hidden="true" />
+              <span class="sortable-product__position bg-accent-subtle t-strong">#{{ index + 1 }}</span>
+              <div
+                v-if="element.thumbnail_url"
+                class="sortable-product__thumb"
+                :style="{ backgroundImage: `url(${element.thumbnail_url})` }"
+              />
+              <div v-else class="sortable-product__thumb sortable-product__thumb--empty">
+                <font-awesome-icon :icon="$icons.image" class="t-muted" aria-hidden="true" />
+              </div>
+              <div class="sortable-product__info">
+                <span class="sortable-product__sku fs-200 t-muted">{{ element.sku }}</span>
+                <span class="sortable-product__name fs-300 t-body">{{ element.name || "---" }}</span>
+              </div>
             </div>
-            <span class="product-card__position bg-accent-subtle t-strong">
-              #{{ index + 1 }}
-            </span>
-            <div
-              v-if="element.thumbnail_url"
-              class="product-card__thumb"
-              :style="{ backgroundImage: `url(${element.thumbnail_url})` }"
-            />
-            <div v-else class="product-card__thumb product-card__thumb--empty">
-              <font-awesome-icon :icon="$icons.image" class="t-muted" />
-            </div>
-            <div class="product-card__info">
-              <span class="product-card__sku fs-200 t-muted">{{
-                element.sku
-              }}</span>
-              <span class="product-card__name fs-300 t-body">{{
-                element.name || "---"
-              }}</span>
-            </div>
-          </div>
         </template>
       </draggable>
-    </div>
+    </BasicCard>
 
-    <!-- Unpositioned products panel -->
-    <div class="panel">
-      <h3 class="panel-title fs-400 fw-600 t-body mb-5">
-        {{ $t("pim.all_products") }}
-        <span class="t-muted fw-400">({{ unpositionedCount }})</span>
-      </h3>
+    <BasicCard :title="$t('pim.all_products')" gap>
+      <template #actions>
+        <CountBadge :count="unpositionedCount" />
+      </template>
       <BasicInput
         v-model="searchQuery"
         :placeholder="$t('common.start_typing')"
-        class="search-input mb-5"
+        :aria-label="$t('pim.search_products')"
+        icon="search"
+        class="search-input"
       />
       <draggable
         v-model="unpositioned"
         :group="{ name: 'category-products' }"
         item-key="sku"
         class="product-grid"
-        ghost-class="product-card--ghost"
+        ghost-class="sortable-product--ghost"
         @end="onDragEnd"
       >
         <template #item="{ element }">
-          <div class="product-card">
-            <div class="product-card__handle">
-              <font-awesome-icon :icon="$icons.drag" class="t-muted" />
+          <div class="sortable-product">
+              <font-awesome-icon :icon="$icons.drag" class="t-muted" aria-hidden="true" />
+              <div
+                v-if="element.thumbnail_url"
+                class="sortable-product__thumb"
+                :style="{ backgroundImage: `url(${element.thumbnail_url})` }"
+              />
+              <div v-else class="sortable-product__thumb sortable-product__thumb--empty">
+                <font-awesome-icon :icon="$icons.image" class="t-muted" aria-hidden="true" />
+              </div>
+              <div class="sortable-product__info">
+                <span class="sortable-product__sku fs-200 t-muted">{{ element.sku }}</span>
+                <span class="sortable-product__name fs-300 t-body">{{ element.name || "---" }}</span>
+              </div>
             </div>
-            <div
-              v-if="element.thumbnail_url"
-              class="product-card__thumb"
-              :style="{ backgroundImage: `url(${element.thumbnail_url})` }"
-            />
-            <div v-else class="product-card__thumb product-card__thumb--empty">
-              <font-awesome-icon :icon="$icons.image" class="t-muted" />
-            </div>
-            <div class="product-card__info">
-              <span class="product-card__sku fs-200 t-muted">{{
-                element.sku
-              }}</span>
-              <span class="product-card__name fs-300 t-body">{{
-                element.name || "---"
-              }}</span>
-            </div>
-          </div>
         </template>
       </draggable>
-      <div
-        v-if="!unpositioned.length && !loading"
-        class="empty-state t-muted fs-300"
-      >
-        {{ $t("common.no_data") }}
-      </div>
+      <EmptyState v-if="!unpositioned.length && !loading" size="sm" :title="$t('common.no_data')" />
 
-      <!-- Pagination -->
-      <div
-        v-if="totalPages > 1"
-        class="pagination flex ai-center jc-center gap-2 mt-8"
-      >
-        <button
-          class="page-btn"
-          :disabled="currentPage <= 1"
-          @click="goToPage(currentPage - 1)"
-        >
-          <font-awesome-icon :icon="$icons.prev" />
-        </button>
-        <button
-          v-for="p in visiblePages"
-          :key="p"
-          class="page-btn"
-          :class="{ 'page-btn--active': p === currentPage }"
-          @click="goToPage(p)"
-        >
-          {{ p }}
-        </button>
-        <button
-          class="page-btn"
-          :disabled="currentPage >= totalPages"
-          @click="goToPage(currentPage + 1)"
-        >
-          <font-awesome-icon :icon="$icons.next" />
-        </button>
-      </div>
-    </div>
+      <Pagination :page="currentPage" :pages="totalPages" @update:page="goToPage" />
+    </BasicCard>
   </div>
 </template>
 
@@ -163,16 +114,6 @@ let searchTimeout = null;
 const totalPages = computed(() =>
   Math.max(1, Math.ceil(unpositionedCount.value / pageSize))
 );
-
-const visiblePages = computed(() => {
-  const pages = [];
-  const start = Math.max(1, currentPage.value - 2);
-  const end = Math.min(totalPages.value, currentPage.value + 2);
-  for (let i = start; i <= end; i++) {
-    pages.push(i);
-  }
-  return pages;
-});
 
 async function fetchProducts() {
   loading.value = true;
@@ -263,21 +204,6 @@ onMounted(() => fetchProducts());
 </script>
 
 <style lang="scss" scoped>
-.category-products {
-  padding: var(--space-1) 0;
-}
-
-.panel {
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-  padding: var(--space-5);
-}
-
-.panel-header {
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
 .search-input {
   width: 250px;
   max-width: 100%;
@@ -310,7 +236,8 @@ onMounted(() => fetchProducts());
   }
 }
 
-.product-card {
+// One product in the sortable grids: a drag handle, not a card (the grid sits in a BasicCard).
+.sortable-product {
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -320,19 +247,9 @@ onMounted(() => fetchProducts());
   background: var(--surface-base);
   cursor: grab;
   user-select: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
-
-  &:hover {
-    border-color: var(--border-subtle);
-  }
 
   &--pinned {
     border-left: 3px solid var(--accent);
-  }
-
-  &__handle {
-    flex-shrink: 0;
-    cursor: grab;
   }
 
   &__position {
@@ -368,7 +285,7 @@ onMounted(() => fetchProducts());
   }
 
   &__sku {
-    font-family: monospace;
+    font-family: var(--font-mono);
   }
 
   &__name {
@@ -377,59 +294,11 @@ onMounted(() => fetchProducts());
     white-space: nowrap;
   }
 }
-
-.empty-state {
-  padding: var(--space-6);
-  text-align: center;
-  border: 2px dashed var(--border-subtle);
-  border-radius: var(--radius-base);
-}
-
-.pagination {
-  padding-top: var(--space-5);
-}
-
-.page-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 32px;
-  height: 32px;
-  padding: 0 var(--space-2);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-  background: var(--surface-base);
-  color: var(--text-secondary);
-  cursor: pointer;
-  font-size: var(--fs-200);
-  transition: all 0.15s;
-
-  &:hover:not(:disabled) {
-    border-color: var(--border-subtle);
-    background: var(--surface-raised);
-  }
-
-  &--active {
-    background: var(--accent-fill);
-    color: var(--text-on-accent-fill);
-    border-color: var(--accent);
-
-    &:hover {
-      background: var(--accent-fill);
-      border-color: var(--accent);
-    }
-  }
-
-  &:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-}
 </style>
 
 <!-- Unscoped: SortableJS ghost is appended to <body> -->
 <style>
-.product-card--ghost {
+.sortable-product--ghost {
   opacity: 0.4;
   border: 2px dashed var(--accent) !important;
   background: var(--accent-subtle) !important;

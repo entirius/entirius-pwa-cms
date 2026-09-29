@@ -1,7 +1,11 @@
 <template>
   <PageLayout class="fs-300 t-body">
     <template #header>
-      <PageHeader :title="$t('pim.category_tree')" />
+      <PageHeader :title="$t('pim.category_tree')">
+        <template #meta>
+          <PimChannelSelect />
+        </template>
+      </PageHeader>
     </template>
     <template #toolbar>
       <div class="category-list__toolbar">
@@ -54,11 +58,12 @@ import { useNotifyStore } from "@/stores/notify";
 import { usePimChannelStore } from "@/stores/pimChannel";
 import { GET_Categories, PATCH_CategoriesReorder } from "@/api/pim/api";
 import CategoryTree from "./components/CategoryTree.vue";
+import PimChannelSelect from "./components/PimChannelSelect.vue";
 import { extractApiMessage } from "@/composables/useFormErrors";
 
 export default {
   name: "CategoryList",
-  components: { CategoryTree },
+  components: { CategoryTree, PimChannelSelect },
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();

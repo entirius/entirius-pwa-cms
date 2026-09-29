@@ -100,6 +100,16 @@
   flex: 1;
 }
 
+// A flex child that may shrink below its content (a truncating text, a control in a row).
+.min-w-0 {
+  min-width: 0;
+}
+
+// Pushes a flex child to the end of its row.
+.ml-auto {
+  margin-left: auto;
+}
+
 .fg-0 {
   flex-grow: 0;
 }

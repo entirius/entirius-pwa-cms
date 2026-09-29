@@ -47,6 +47,7 @@ const mountEdit = (push = vi.fn()) =>
         SideDrawer: true,
         AttributeLibrary: true,
         draggable: true,
+        FormField: { template: "<div><slot /></div>" },
       },
     },
   });
@@ -73,5 +74,32 @@ describe("FeatureSetEdit — P3 controls", () => {
 
     wrapper.vm.confirmDefaultChange();
     expect(wrapper.vm.form.is_default).toBe(true);
+  });
+
+  it("rename finishes once: Enter and the focus leaving the field do not patch twice", async () => {
+    const { PATCH_AttributesGroup } = await import("@/api/pim/api");
+    PATCH_AttributesGroup.mockResolvedValue({ data: {} });
+    const wrapper = mountEdit();
+    await flushPromises();
+
+    const group = { idx: "frame", name: "Frame", name_t9n: {}, features: [] };
+    wrapper.vm.startRename(group);
+    group.name = "Rama";
+    await Promise.all([wrapper.vm.finishRename(group), wrapper.vm.finishRename(group)]);
+
+    expect(PATCH_AttributesGroup).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.renamingGroupIdx).toBe(null);
+  });
+
+  it("the group menu renames or removes the group", async () => {
+    const wrapper = mountEdit();
+    await flushPromises();
+    wrapper.vm.groups = [{ idx: "frame", name: "Frame", name_t9n: {}, features: [] }];
+
+    wrapper.vm.onGroupMenu(wrapper.vm.groups[0], { key: "rename" });
+    expect(wrapper.vm.renamingGroupIdx).toBe("frame");
+
+    wrapper.vm.onGroupMenu(wrapper.vm.groups[0], { key: "remove" });
+    expect(wrapper.vm.groups).toHaveLength(0);
   });
 });

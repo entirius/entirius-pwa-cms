@@ -106,14 +106,21 @@ function onDragEnd() {
       @drop="onDrop"
       @dragend="onDragEnd"
     >
-      <span
+      <font-awesome-icon
         v-if="isDraggable"
-        class="tree-node__drag-handle t-muted cursor-grab"
-        >&#x2630;</span
-      >
-      <span class="tree-node__toggle">
-        <template v-if="hasChildren">{{ isExpanded ? "▼" : "▶" }}</template>
-      </span>
+        :icon="$icons.drag"
+        class="tree-node__drag-handle t-muted"
+        aria-hidden="true"
+      />
+      <IconButton
+        v-if="hasChildren"
+        :icon="isExpanded ? 'collapse' : 'expand'"
+        :label="$t(isExpanded ? 'pim.collapse_group' : 'pim.expand_group', { name: displayName })"
+        :aria-expanded="String(isExpanded)"
+        size="sm"
+        @click="emit('toggle', node.idx)"
+      />
+      <span v-else class="tree-node__toggle" />
       <span class="tree-node__icon t-muted"
         ><font-awesome-icon :icon="$icons.category"
       /></span>
@@ -123,7 +130,7 @@ function onDragEnd() {
         tone="accent"
         size="sm"
         :dot="false"
-        label="Root"
+        :label="$t('pim.root_badge')"
         class="tree-node__root-badge"
       />
       <StatusBadge tone="neutral" :dot="false" :label="node.product_count || 0" class="tree-node__count" />
@@ -142,10 +149,9 @@ function onDragEnd() {
       >
         <font-awesome-icon v-if="!node.is_in_menu" :icon="$icons.hide" />
       </span>
-      <button class="tree-node__edit" @click.stop="emit('select', node)">
-        <font-awesome-icon :icon="$icons.edit" />
+      <BasicButton variant="ghost" size="sm" @click="emit('select', node)">
         {{ $t("common.edit") }}
-      </button>
+      </BasicButton>
     </div>
     <template v-if="isExpanded">
       <CategoryTreeNode
@@ -174,7 +180,6 @@ function onDragEnd() {
   padding-top: var(--space-2);
   padding-right: var(--space-3);
   padding-bottom: var(--space-2);
-  cursor: pointer;
   border-bottom: 1px solid var(--border-subtle);
   transition: background 0.15s;
   position: relative;
@@ -182,6 +187,11 @@ function onDragEnd() {
   &:hover {
     background: var(--surface-base);
   }
+}
+
+// A category below the root is dragged by its row; the toggle button expands it (a click on the row does too).
+.tree-node__row[draggable="true"] {
+  cursor: grab;
 }
 
 .tree-node__row--dragging {
@@ -218,16 +228,12 @@ function onDragEnd() {
 
 .tree-node__drag-handle {
   flex-shrink: 0;
-  font-size: var(--fs-300);
 }
 
+// The toggle's place in a row without children, so the names line up.
 .tree-node__toggle {
-  width: 20px;
-  text-align: center;
+  width: 24px;
   flex-shrink: 0;
-  cursor: pointer;
-  font-size: var(--fs-200);
-  color: var(--text-muted);
 }
 
 .tree-node__icon {
@@ -248,27 +254,6 @@ function onDragEnd() {
 .tree-node__count {
   min-width: 2.5em;
   justify-content: center;
-}
-
-.tree-node__edit {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-1) var(--space-2);
-  font-size: var(--fs-200);
-  color: var(--text-secondary);
-  background: none;
-  border: 1px solid transparent;
-  border-radius: var(--radius-base);
-  cursor: pointer;
-  white-space: nowrap;
-  flex-shrink: 0;
-  transition: all 0.15s ease;
-
-  &:hover {
-    background-color: var(--surface-hover);
-    border-color: var(--border-default);
-  }
 }
 
 .tree-node__hidden {

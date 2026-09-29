@@ -1,152 +1,95 @@
 <template>
   <PageLayout class="fs-300 t-body">
-    <Teleport to="#pim-toolbar-left" defer>
-      <IconButton
-        icon="back"
-        :label="$t('common.back')"
-        @click="$router.push('/pim/categories')"
-      />
-    </Teleport>
-    <Teleport to="#pim-toolbar-right" defer>
-      <BasicButton
-        variant="primary"
-        @click="createCategory"
-      >
-        {{ $t('common.save') }}
-      </BasicButton>
-    </Teleport>
-      <div class="create-section mb-10">
-        <h2 class="fs-500 fw-600 mb-5">{{ $t("pim.basic_info") }}</h2>
-        <div class="create-grid">
-          <div class="create-field">
-            <label class="field-label required">IDX</label>
-            <BasicInput v-model="form.idx" placeholder="e.g. furniture" />
-          </div>
-          <div class="create-field">
-            <label class="field-label">{{ $t("pim.parent") }}</label>
-            <BasicSelect
-              v-model="form.parent_category_idx"
-              :options="parentOptions"
-              :placeholder="$t('pim.select_parent')"
-            />
-          </div>
-          <div class="create-field">
-            <label class="field-label">{{ $t("pim.position") }}</label>
-            <BasicInput v-model="form.position" type="number" />
-          </div>
-          <div class="create-field">
-            <label class="field-label">{{ $t("pim.status") }}</label>
-            <BasicSwitch
-              :label="$t('pim.active')"
-              v-model="form.is_active"
-            />
-          </div>
-          <div class="create-field">
-            <label class="field-label">{{ $t("pim.in_menu") }}</label>
-            <BasicSwitch
-              :label="$t('pim.show_in_menu')"
-              v-model="form.is_in_menu"
-            />
-          </div>
-        </div>
-      </div>
+    <template #header>
+      <PageHeader :title="$t('pim.create_category')" back="/pim/categories">
+        <template #meta>
+          <PimChannelSelect />
+        </template>
+        <template #actions>
+          <ActionBar :actions="headerActions" />
+        </template>
+      </PageHeader>
+    </template>
 
-      <div class="create-section mb-10">
-        <h2 class="fs-500 fw-600 mb-5 required">{{ $t("pim.name") }}</h2>
-        <div class="grid grid-col-2 gap-8">
-          <div v-for="lang in formLanguages" :key="`name-${lang}`">
-            <StatusBadge
-              tone="accent"
-              size="sm"
-              :dot="false"
-              :label="lang.toUpperCase()"
-            />
-            <BasicInput
-              :model-value="form.name_t9n[lang] || ''"
-              class="mt-2"
-              @update:model-value="
-                (val) => (form.name_t9n = { ...form.name_t9n, [lang]: val })
-              "
-            />
-          </div>
-        </div>
+    <BasicCard :title="$t('pim.basic_info')" gap class="mb-8">
+      <div class="form-grid">
+        <FormField label="IDX" required :description="$t('pim.category_idx_hint')">
+          <BasicInput v-model="form.idx" />
+        </FormField>
+        <FormField :label="$t('pim.parent')">
+          <BasicSelect
+            v-model="form.parent_category_idx"
+            :options="parentOptions"
+            :placeholder="$t('pim.select_parent')"
+          />
+        </FormField>
+        <FormField :label="$t('pim.position')">
+          <BasicInput v-model="form.position" type="number" />
+        </FormField>
+        <FormField :label="$t('pim.status')">
+          <BasicSwitch v-model="form.is_active" :label="$t('pim.active')" />
+        </FormField>
+        <FormField :label="$t('pim.in_menu')">
+          <BasicSwitch v-model="form.is_in_menu" :label="$t('pim.show_in_menu')" />
+        </FormField>
       </div>
+    </BasicCard>
 
-      <div class="create-section mb-10">
-        <h2 class="fs-500 fw-600 mb-5">{{ $t("pim.description") }}</h2>
-        <div class="grid grid-col-2 gap-8">
-          <div v-for="lang in formLanguages" :key="`desc-${lang}`">
-            <StatusBadge
-              tone="accent"
-              size="sm"
-              :dot="false"
-              :label="lang.toUpperCase()"
-            />
-            <BasicTextarea
-              :model-value="form.description_t9n[lang] || ''"
-              class="mt-2"
-              @update:model-value="
-                (val) =>
-                  (form.description_t9n = {
-                    ...form.description_t9n,
-                    [lang]: val,
-                  })
-              "
-            />
-          </div>
-        </div>
+    <BasicCard :title="$t('pim.name')" gap class="mb-8">
+      <div class="form-grid">
+        <FormField
+          v-for="(lang, index) in formLanguages"
+          :key="`name-${lang}`"
+          :label="langLabel('pim.name', lang)"
+          :required="index === 0"
+        >
+          <BasicInput
+            :model-value="form.name_t9n[lang] || ''"
+            @update:model-value="(val) => setT9n('name_t9n', lang, val)"
+          />
+        </FormField>
       </div>
+    </BasicCard>
 
-      <div class="create-section mb-10">
-        <h2 class="fs-500 fw-600 mb-5">{{ $t("pim.seo") }}</h2>
-        <div class="grid grid-col-2 gap-8 mb-8">
-          <div v-for="lang in formLanguages" :key="`meta-title-${lang}`">
-            <StatusBadge
-              tone="accent"
-              size="sm"
-              :dot="false"
-              :label="lang.toUpperCase()"
-            />
-            <BasicInput
-              :model-value="form.meta_title_t9n[lang] || ''"
-              :placeholder="$t('meta.meta_title')"
-              class="mt-2"
-              @update:model-value="
-                (val) =>
-                  (form.meta_title_t9n = {
-                    ...form.meta_title_t9n,
-                    [lang]: val,
-                  })
-              "
-            />
-          </div>
-        </div>
-        <h3 class="fs-300 fw-600 t-muted mb-5">
-          {{ $t("meta.meta_description") }}
-        </h3>
-        <div class="grid grid-col-2 gap-8">
-          <div v-for="lang in formLanguages" :key="`meta-desc-${lang}`">
-            <StatusBadge
-              tone="accent"
-              size="sm"
-              :dot="false"
-              :label="lang.toUpperCase()"
-            />
-            <BasicTextarea
-              :model-value="form.meta_description_t9n[lang] || ''"
-              :placeholder="$t('meta.meta_description')"
-              class="mt-2"
-              @update:model-value="
-                (val) =>
-                  (form.meta_description_t9n = {
-                    ...form.meta_description_t9n,
-                    [lang]: val,
-                  })
-              "
-            />
-          </div>
-        </div>
+    <BasicCard :title="$t('pim.description')" gap class="mb-8">
+      <div class="form-grid">
+        <FormField
+          v-for="lang in formLanguages"
+          :key="`desc-${lang}`"
+          :label="langLabel('pim.description', lang)"
+        >
+          <BasicTextarea
+            :model-value="form.description_t9n[lang] || ''"
+            @update:model-value="(val) => setT9n('description_t9n', lang, val)"
+          />
+        </FormField>
       </div>
+    </BasicCard>
+
+    <BasicCard :title="$t('pim.seo')" gap class="mb-8">
+      <div class="form-grid">
+        <FormField
+          v-for="lang in formLanguages"
+          :key="`meta-title-${lang}`"
+          :label="langLabel('meta.meta_title', lang)"
+        >
+          <BasicInput
+            :model-value="form.meta_title_t9n[lang] || ''"
+            @update:model-value="(val) => setT9n('meta_title_t9n', lang, val)"
+          />
+        </FormField>
+        <FormField
+          v-for="lang in formLanguages"
+          :key="`meta-desc-${lang}`"
+          :label="langLabel('meta.meta_description', lang)"
+        >
+          <BasicTextarea
+            :model-value="form.meta_description_t9n[lang] || ''"
+            @update:model-value="(val) => setT9n('meta_description_t9n', lang, val)"
+          />
+        </FormField>
+      </div>
+    </BasicCard>
   </PageLayout>
 </template>
 
@@ -157,9 +100,11 @@ import { useNotifyStore } from "@/stores/notify";
 import { usePimChannelStore } from "@/stores/pimChannel";
 import { POST_Category, GET_Categories } from "@/api/pim/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import PimChannelSelect from "./components/PimChannelSelect.vue";
 
 export default {
   name: "CategoryCreate",
+  components: { PimChannelSelect },
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();
@@ -191,6 +136,9 @@ export default {
         ? this.pimChannel.activeChannelLanguages
         : ["en"];
     },
+    headerActions() {
+      return [{ key: "save", role: "primary", label: this.$t("common.save"), onClick: this.createCategory }];
+    },
   },
   watch: {
     "pimChannel.activeChannelIdx"() {
@@ -216,6 +164,12 @@ export default {
       } catch {
         // Categories may not exist yet
       }
+    },
+    langLabel(key, lang) {
+      return `${this.$t(key)} (${lang.toUpperCase()})`;
+    },
+    setT9n(field, lang, value) {
+      this.form[field] = { ...this.form[field], [lang]: value };
     },
     hasAnyValue(t9nObj) {
       return Object.values(t9nObj || {}).some((v) => !!v);
@@ -270,21 +224,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.create-section {
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-  padding: var(--space-5);
-}
-.create-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: var(--space-4);
-}
-.create-field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-}
-</style>

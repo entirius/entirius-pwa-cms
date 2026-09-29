@@ -1,19 +1,5 @@
 [
   {
-    "screen": "pim-categories-list",
-    "kind": "nonFocusable",
-    "selector": "div.tree-node__row",
-    "reason": "category tree rows expand on click only (the row's Edit button is focusable)",
-    "owner": "P5 plan 51 (Pim taxonomy)"
-  },
-  {
-    "screen": "pim-feature-set-detail",
-    "kind": "nonFocusable",
-    "selector": "span.collapse-chevron",
-    "reason": "feature group chevron collapses on click only",
-    "owner": "P5 plan 51 (Pim taxonomy)"
-  },
-  {
     "screen": "leads-board",
     "kind": "nonFocusable",
     "selector": "board-card",

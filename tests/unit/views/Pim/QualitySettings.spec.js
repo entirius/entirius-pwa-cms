@@ -17,7 +17,7 @@ vi.mock("@/stores/notify", () => ({
   useNotifyStore: () => ({ spawnNotification }),
 }));
 
-import QualitySettingsCard from "@/views/Pim/components/QualitySettingsCard.vue";
+import QualitySettings from "@/views/Pim/components/QualitySettings.vue";
 
 const sets = [
   { idx: "default", name: "Default", is_default: true },
@@ -28,18 +28,18 @@ const SwitchStub = { name: "BasicSwitch", props: ["modelValue", "disabled"], emi
 const SelectStub = { name: "BasicSelect", props: ["modelValue", "options"], emits: ["update:modelValue"], template: "<div />" };
 
 const mountCard = () =>
-  mount(QualitySettingsCard, {
+  mount(QualitySettings, {
     global: {
       components: { BasicSwitch: SwitchStub, BasicSelect: SelectStub },
       stubs: {
-        BasicModal: true,
+        ConfirmDialog: true,
         // Slot-rendering stub so the select (data-test="default-set-picker") is reachable.
         FormField: { template: "<div><slot /></div>" },
       },
     },
   });
 
-describe("QualitySettingsCard", () => {
+describe("QualitySettings", () => {
   beforeEach(() => {
     mockGetSettings.mockReset();
     mockPatchSettings.mockReset();

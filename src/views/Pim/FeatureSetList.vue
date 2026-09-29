@@ -1,7 +1,11 @@
 <template>
-  <PageLayout class="pim-list-layout fs-300 t-body">
+  <PageLayout class="fs-300 t-body">
     <template #header>
-      <PageHeader :title="$t('pim.feature_sets')" />
+      <PageHeader :title="$t('pim.feature_sets')">
+        <template #meta>
+          <PimChannelSelect />
+        </template>
+      </PageHeader>
     </template>
     <template #toolbar>
       <div class="feature-set-list__toolbar">
@@ -54,10 +58,12 @@ import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { useSearchDebounce } from "@/composables/useSearchDebounce";
 import { GET_FeatureSetsGlobal, POST_FeatureSet } from "@/api/pim/api";
+import PimChannelSelect from "./components/PimChannelSelect.vue";
 import { extractApiMessage } from "@/composables/useFormErrors";
 
 export default {
   name: "FeatureSetList",
+  components: { PimChannelSelect },
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();
@@ -199,10 +205,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.pim-list-layout {
-  display: flex;
-  flex-direction: column;
-}
 .feature-set-list__toolbar {
   display: flex;
   align-items: center;

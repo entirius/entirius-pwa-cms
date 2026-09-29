@@ -1,12 +1,16 @@
 <template>
-  <PageLayout class="pim-list-layout fs-300 t-body">
+  <PageLayout class="fs-300 t-body">
     <template #header>
-      <PageHeader :title="$t('pim.gap_definitions')" />
+      <PageHeader :title="$t('pim.gap_definitions')">
+        <template #meta>
+          <PimChannelSelect />
+        </template>
+      </PageHeader>
     </template>
 
       <GapStatusAlert />
 
-      <QualitySettingsCard />
+      <QualitySettings />
 
       <div class="gap-def-list__toolbar">
         <BasicInput
@@ -79,12 +83,13 @@ import { GET_GapDefinitions } from "@/api/pim/api";
 import { gapBadgeVariant, resolveGapLabel } from "./quality";
 import { getLang } from "@/i18n";
 import GapStatusAlert from "./components/GapStatusAlert.vue";
-import QualitySettingsCard from "./components/QualitySettingsCard.vue";
+import PimChannelSelect from "./components/PimChannelSelect.vue";
+import QualitySettings from "./components/QualitySettings.vue";
 import { extractApiMessage } from "@/composables/useFormErrors";
 
 export default {
   name: "GapDefinitionList",
-  components: { GapStatusAlert, QualitySettingsCard },
+  components: { GapStatusAlert, QualitySettings, PimChannelSelect },
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();
@@ -226,10 +231,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.pim-list-layout {
-  display: flex;
-  flex-direction: column;
-}
 .gap-def-list__toolbar {
   display: flex;
   align-items: center;

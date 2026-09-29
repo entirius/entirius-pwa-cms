@@ -1,7 +1,11 @@
 <template>
   <PageLayout class="pim-list-layout fs-300 t-body">
     <template #header>
-      <PageHeader :title="$t('pim.features')" />
+      <PageHeader :title="$t('pim.features')">
+        <template #meta>
+          <PimChannelSelect />
+        </template>
+      </PageHeader>
     </template>
     <template #toolbar>
       <div class="feature-list__toolbar">
@@ -78,10 +82,12 @@ import {
   featureTypeLabel,
   scopeLabel,
 } from "./helpers/pimEnums";
+import PimChannelSelect from "./components/PimChannelSelect.vue";
 import { extractApiMessage } from "@/composables/useFormErrors";
 
 export default {
   name: "FeatureList",
+  components: { PimChannelSelect },
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();
@@ -265,10 +271,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.pim-list-layout {
-  display: flex;
-  flex-direction: column;
-}
 .feature-list__toolbar {
   display: flex;
   align-items: center;

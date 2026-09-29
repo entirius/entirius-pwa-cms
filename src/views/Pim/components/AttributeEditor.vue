@@ -1,472 +1,64 @@
 <template>
   <div class="attribute-editor">
-    <div
-      v-if="!featureSetIdx"
-      class="attribute-editor__empty t-muted fs-300"
-    >
-      {{ $t("pim.no_feature_set_attributes") }}
-    </div>
+    <EmptyState v-if="!featureSetIdx" size="sm" :title="$t('pim.no_feature_set_attributes')" />
 
     <Loader block v-else-if="loading" />
 
     <template v-else>
-      <!-- Ungrouped features -->
-      <div
-        v-for="row in groupedRows.ungrouped"
-        :key="row.feature_idx"
-        class="attribute-row"
-      >
-        <div class="attribute-row__label">
-          <router-link
-            :to="'/pim/features/' + row.feature_idx"
-            class="fw-600 t-body attribute-row__link"
-          >
-            {{ row.feature_name || row.feature_idx }}
-          </router-link>
-          <span
-            v-if="row.is_required"
-            class="required-mark t-negative"
-            :title="$t('pim.required_field')"
-            >*</span
-          >
-        </div>
-        <div class="attribute-row__input">
-          <template v-if="row.feature_type === 1">
-            <BasicSwitch
-              :label="row.value_bool ? $t('pim.yes') : $t('pim.no')"
-              :model-value="row.value_bool || false"
-              @update:model-value="(on) => updateField(row.feature_idx, 'value_bool', on)"
-            />
-          </template>
-          <template v-else-if="row.feature_type === 2">
-            <BasicInput
-              :model-value="row.value_decimal"
-              type="number"
-              @update:model-value="
-                (val) => updateField(row.feature_idx, 'value_decimal', val)
-              "
-            />
-          </template>
-          <template v-else-if="row.feature_type === 3">
-            <BasicInput
-              :model-value="row.value_txt"
-              @update:model-value="
-                (val) => updateField(row.feature_idx, 'value_txt', val)
-              "
-            />
-          </template>
-          <template v-else-if="row.feature_type === 4">
-            <div class="translation-field">
-              <div class="translation-field__header">
-                <span class="lang-tag fs-200 t-muted">{{ defaultLang }}</span>
-                <BasicButton
-                  v-if="hasSecondaryLanguages"
-                  variant="secondary"
-                  class="translation-field__btn"
-                  @click="openTranslationsDrawer(row.feature_idx)"
-                >
-                  {{ $t('pim.translations') }}
-                </BasicButton>
-              </div>
-              <BasicInput
-                :model-value="(row.value_txt_t9n || {})[defaultLang]"
-                @update:model-value="
-                  (val) =>
-                    updateT9nField(
-                      row.feature_idx,
-                      'value_txt_t9n',
-                      defaultLang,
-                      val
-                    )
-                "
-              />
-            </div>
-          </template>
-          <template v-else-if="row.feature_type === 5">
-            <BasicWysiwyg
-              variant="lite"
-              :model-value="row.value_txt"
-              @update:model-value="
-                (val) => updateField(row.feature_idx, 'value_txt', val)
-              "
-            />
-          </template>
-          <template v-else-if="row.feature_type === 6">
-            <div class="translation-field">
-              <div class="translation-field__header">
-                <span class="lang-tag fs-200 t-muted">{{ defaultLang }}</span>
-                <BasicButton
-                  v-if="hasSecondaryLanguages"
-                  variant="secondary"
-                  class="translation-field__btn"
-                  @click="openTranslationsDrawer(row.feature_idx)"
-                >
-                  {{ $t('pim.translations') }}
-                </BasicButton>
-              </div>
-              <BasicWysiwyg
-                variant="lite"
-                :model-value="(row.value_txt_t9n || {})[defaultLang]"
-                @update:model-value="
-                  (val) =>
-                    updateT9nField(
-                      row.feature_idx,
-                      'value_txt_t9n',
-                      defaultLang,
-                      val
-                    )
-                "
-              />
-            </div>
-          </template>
-          <template v-else-if="row.feature_type === 7">
-            <SearchableSelect
-              :options="getOptions(row.feature_idx).options"
-              :selected="row.attribute_idx"
-              :feature-idx="row.feature_idx"
-              :channel-idx="channelIdx"
-              :option-count="getOptions(row.feature_idx).count"
-              :placeholder="$t('pim.add_attribute_value')"
-              @update:selected="
-                (val) => updateField(row.feature_idx, 'attribute_idx', val)
-              "
-            />
-          </template>
-          <template v-else-if="row.feature_type === 8">
-            <MultiselectPicker
-              :options="getOptions(row.feature_idx).options"
-              :selected="row.attribute_idxs || []"
-              :feature-idx="row.feature_idx"
-              :channel-idx="channelIdx"
-              :option-count="getOptions(row.feature_idx).count"
-              @update:selected="
-                (idxs) => onMultiselectUpdate(row.feature_idx, idxs)
-              "
-            />
-          </template>
-          <template v-else-if="row.feature_type === 9">
-            <BasicTextarea
-              :model-value="jsonToString(row.value_json)"
-              :placeholder="'{}'"
-              @update:model-value="
-                (val) => updateJsonField(row.feature_idx, val)
-              "
-            />
-          </template>
-          <template v-else-if="row.feature_type === 10">
-            <BasicDatePicker
-              :model-value="row.value_datetime"
-              :config="DATE_PICKER_CONFIG"
-              @update:model-value="
-                (val) => updateField(row.feature_idx, 'value_datetime', val)
-              "
-            />
-          </template>
-          <template v-else-if="row.feature_type === 11">
-            <div class="translation-field">
-              <div class="translation-field__header">
-                <span class="lang-tag fs-200 t-muted">{{ defaultLang }}</span>
-                <BasicButton
-                  v-if="hasSecondaryLanguages"
-                  variant="secondary"
-                  class="translation-field__btn"
-                  @click="openTranslationsDrawer(row.feature_idx)"
-                >
-                  {{ $t('pim.translations') }}
-                </BasicButton>
-              </div>
-              <BasicTextarea
-                :model-value="jsonToString((row.value_json || {})[defaultLang])"
-                :placeholder="'{}'"
-                @update:model-value="
-                  (val) => updateJsonT9nField(row.feature_idx, defaultLang, val)
-                "
-              />
-            </div>
-          </template>
-          <template v-else-if="row.feature_type === 12">
-            <div class="input-with-unit">
-              <BasicInput
-                :model-value="row.value_decimal"
-                type="number"
-                @update:model-value="
-                  (val) => updateField(row.feature_idx, 'value_decimal', val)
-                "
-              />
-              <span class="unit-suffix t-muted">°C</span>
-            </div>
-          </template>
-          <template v-else-if="row.feature_type === 13">
-            <div class="input-with-unit">
-              <BasicInput
-                :model-value="row.value_decimal"
-                type="number"
-                @update:model-value="
-                  (val) => updateField(row.feature_idx, 'value_decimal', val)
-                "
-              />
-              <span class="unit-suffix t-muted">cm</span>
-            </div>
-          </template>
-          <template v-else-if="row.feature_type === 14">
-            <div class="input-with-unit">
-              <BasicInput
-                :model-value="row.value_decimal"
-                type="number"
-                @update:model-value="
-                  (val) => updateField(row.feature_idx, 'value_decimal', val)
-                "
-              />
-              <span class="unit-suffix t-muted">kg</span>
-            </div>
-          </template>
-        </div>
-      </div>
-
-      <!-- Grouped features -->
-      <div
-        v-for="group in groupedRows.groups"
-        :key="group.idx"
-        class="attribute-group"
-      >
-        <div
-          class="attribute-group__header"
-          @click="toggleGroupCollapse(group.idx)"
-        >
-          <span
-            class="collapse-chevron"
-            :class="{ 'is-collapsed': collapsedGroups.has(group.idx) }"
-            >&#x25BC;</span
-          >
-          <span class="attribute-group__name">{{ group.name }}</span>
-          <StatusBadge
-            tone="neutral"
-            :dot="false"
-            :label="group.rows.length"
-            class="fs-200"
+      <BasicCard v-if="groupedRows.ungrouped.length" gap class="mb-8">
+        <div class="form-grid">
+          <AttributeField
+            v-for="row in groupedRows.ungrouped"
+            :key="row.feature_idx"
+            :row="row"
+            :options="getOptions(row.feature_idx)"
+            :language="defaultLang"
+            :translatable="hasSecondaryLanguages"
+            :class="{ 'form-grid__wide': WIDE_TYPES.includes(row.feature_type) }"
+            @update="(field, value) => updateField(row.feature_idx, field, value)"
+            @update-t9n="(field, value) => updateT9nField(row.feature_idx, field, defaultLang, value)"
+            @update-json="(raw) => updateJsonField(row.feature_idx, raw)"
+            @update-json-t9n="(raw) => updateJsonT9nField(row.feature_idx, defaultLang, raw)"
+            @translate="openTranslationsDrawer(row.feature_idx)"
           />
         </div>
+      </BasicCard>
 
-        <div
-          v-show="!collapsedGroups.has(group.idx)"
-          class="attribute-group__body"
-        >
-          <div
+      <BasicCard
+        v-for="group in groupedRows.groups"
+        :key="group.idx"
+        :title="group.name"
+        gap
+        class="mb-8"
+      >
+        <template #actions>
+          <div class="flex ai-ct gap-3">
+            <CountBadge :count="group.rows.length" />
+            <IconButton
+              :icon="collapsedGroups.has(group.idx) ? 'expand' : 'collapse'"
+              :label="$t(collapsedGroups.has(group.idx) ? 'pim.expand_group' : 'pim.collapse_group', { name: group.name })"
+              :aria-expanded="String(!collapsedGroups.has(group.idx))"
+              @click="toggleGroupCollapse(group.idx)"
+            />
+          </div>
+        </template>
+        <div v-show="!collapsedGroups.has(group.idx)" class="form-grid">
+          <AttributeField
             v-for="row in group.rows"
             :key="row.feature_idx"
-            class="attribute-row"
-          >
-            <div class="attribute-row__label">
-              <router-link
-                :to="'/pim/features/' + row.feature_idx"
-                class="fw-600 t-body attribute-row__link"
-              >
-                {{ row.feature_name || row.feature_idx }}
-              </router-link>
-              <span
-                v-if="row.is_required"
-                class="required-mark t-negative"
-                :title="$t('pim.required_field')"
-                >*</span
-              >
-            </div>
-            <div class="attribute-row__input">
-              <template v-if="row.feature_type === 1">
-                <BasicSwitch
-                  :label="row.value_bool ? $t('pim.yes') : $t('pim.no')"
-                  :model-value="row.value_bool || false"
-                  @update:model-value="(on) => updateField(row.feature_idx, 'value_bool', on)"
-                />
-              </template>
-              <template v-else-if="row.feature_type === 2">
-                <BasicInput
-                  :model-value="row.value_decimal"
-                  type="number"
-                  @update:model-value="
-                    (val) => updateField(row.feature_idx, 'value_decimal', val)
-                  "
-                />
-              </template>
-              <template v-else-if="row.feature_type === 3">
-                <BasicInput
-                  :model-value="row.value_txt"
-                  @update:model-value="
-                    (val) => updateField(row.feature_idx, 'value_txt', val)
-                  "
-                />
-              </template>
-              <template v-else-if="row.feature_type === 4">
-                <div class="translation-field">
-                  <div class="translation-field__header">
-                    <span class="lang-tag fs-200 t-muted">{{ defaultLang }}</span>
-                    <BasicButton
-                      v-if="hasSecondaryLanguages"
-                      variant="secondary"
-                      class="translation-field__btn"
-                      @click="openTranslationsDrawer(row.feature_idx)"
-                    >
-                      {{ $t('pim.translations') }}
-                    </BasicButton>
-                  </div>
-                  <BasicInput
-                    :model-value="(row.value_txt_t9n || {})[defaultLang]"
-                    @update:model-value="
-                      (val) =>
-                        updateT9nField(
-                          row.feature_idx,
-                          'value_txt_t9n',
-                          defaultLang,
-                          val
-                        )
-                    "
-                  />
-                </div>
-              </template>
-              <template v-else-if="row.feature_type === 5">
-                <BasicWysiwyg
-                  variant="lite"
-                  :model-value="row.value_txt"
-                  @update:model-value="
-                    (val) => updateField(row.feature_idx, 'value_txt', val)
-                  "
-                />
-              </template>
-              <template v-else-if="row.feature_type === 6">
-                <div class="translation-field">
-                  <div class="translation-field__header">
-                    <span class="lang-tag fs-200 t-muted">{{ defaultLang }}</span>
-                    <BasicButton
-                      v-if="hasSecondaryLanguages"
-                      variant="secondary"
-                      class="translation-field__btn"
-                      @click="openTranslationsDrawer(row.feature_idx)"
-                    >
-                      {{ $t('pim.translations') }}
-                    </BasicButton>
-                  </div>
-                  <BasicWysiwyg
-                    variant="lite"
-                    :model-value="(row.value_txt_t9n || {})[defaultLang]"
-                    @update:model-value="
-                      (val) =>
-                        updateT9nField(
-                          row.feature_idx,
-                          'value_txt_t9n',
-                          defaultLang,
-                          val
-                        )
-                    "
-                  />
-                </div>
-              </template>
-              <template v-else-if="row.feature_type === 7">
-                <SearchableSelect
-                  :options="getOptions(row.feature_idx).options"
-                  :selected="row.attribute_idx"
-                  :feature-idx="row.feature_idx"
-                  :channel-idx="channelIdx"
-                  :option-count="getOptions(row.feature_idx).count"
-                  :placeholder="$t('pim.add_attribute_value')"
-                  @update:selected="
-                    (val) => updateField(row.feature_idx, 'attribute_idx', val)
-                  "
-                />
-              </template>
-              <template v-else-if="row.feature_type === 8">
-                <MultiselectPicker
-                  :options="getOptions(row.feature_idx).options"
-                  :selected="row.attribute_idxs || []"
-                  :feature-idx="row.feature_idx"
-                  :channel-idx="channelIdx"
-                  :option-count="getOptions(row.feature_idx).count"
-                  @update:selected="
-                    (idxs) => onMultiselectUpdate(row.feature_idx, idxs)
-                  "
-                />
-              </template>
-              <template v-else-if="row.feature_type === 9">
-                <BasicTextarea
-                  :model-value="jsonToString(row.value_json)"
-                  :placeholder="'{}'"
-                  @update:model-value="
-                    (val) => updateJsonField(row.feature_idx, val)
-                  "
-                />
-              </template>
-              <template v-else-if="row.feature_type === 10">
-                <BasicDatePicker
-                  :model-value="row.value_datetime"
-                  :config="DATE_PICKER_CONFIG"
-                  @update:model-value="
-                    (val) => updateField(row.feature_idx, 'value_datetime', val)
-                  "
-                />
-              </template>
-              <template v-else-if="row.feature_type === 11">
-                <div class="translation-field">
-                  <div class="translation-field__header">
-                    <span class="lang-tag fs-200 t-muted">{{ defaultLang }}</span>
-                    <BasicButton
-                      v-if="hasSecondaryLanguages"
-                      variant="secondary"
-                      class="translation-field__btn"
-                      @click="openTranslationsDrawer(row.feature_idx)"
-                    >
-                      {{ $t('pim.translations') }}
-                    </BasicButton>
-                  </div>
-                  <BasicTextarea
-                    :model-value="jsonToString((row.value_json || {})[defaultLang])"
-                    :placeholder="'{}'"
-                    @update:model-value="
-                      (val) => updateJsonT9nField(row.feature_idx, defaultLang, val)
-                    "
-                  />
-                </div>
-              </template>
-              <template v-else-if="row.feature_type === 12">
-                <div class="input-with-unit">
-                  <BasicInput
-                    :model-value="row.value_decimal"
-                    type="number"
-                    @update:model-value="
-                      (val) =>
-                        updateField(row.feature_idx, 'value_decimal', val)
-                    "
-                  />
-                  <span class="unit-suffix t-muted">°C</span>
-                </div>
-              </template>
-              <template v-else-if="row.feature_type === 13">
-                <div class="input-with-unit">
-                  <BasicInput
-                    :model-value="row.value_decimal"
-                    type="number"
-                    @update:model-value="
-                      (val) =>
-                        updateField(row.feature_idx, 'value_decimal', val)
-                    "
-                  />
-                  <span class="unit-suffix t-muted">cm</span>
-                </div>
-              </template>
-              <template v-else-if="row.feature_type === 14">
-                <div class="input-with-unit">
-                  <BasicInput
-                    :model-value="row.value_decimal"
-                    type="number"
-                    @update:model-value="
-                      (val) =>
-                        updateField(row.feature_idx, 'value_decimal', val)
-                    "
-                  />
-                  <span class="unit-suffix t-muted">kg</span>
-                </div>
-              </template>
-            </div>
-          </div>
+            :row="row"
+            :options="getOptions(row.feature_idx)"
+            :language="defaultLang"
+            :translatable="hasSecondaryLanguages"
+            :class="{ 'form-grid__wide': WIDE_TYPES.includes(row.feature_type) }"
+            @update="(field, value) => updateField(row.feature_idx, field, value)"
+            @update-t9n="(field, value) => updateT9nField(row.feature_idx, field, defaultLang, value)"
+            @update-json="(raw) => updateJsonField(row.feature_idx, raw)"
+            @update-json-t9n="(raw) => updateJsonT9nField(row.feature_idx, defaultLang, raw)"
+            @translate="openTranslationsDrawer(row.feature_idx)"
+          />
         </div>
-      </div>
+      </BasicCard>
     </template>
 
     <!-- Translations drawer -->
@@ -506,8 +98,8 @@
 import { ref, reactive, computed, watch, onMounted } from "vue";
 import { GET_FeatureSetFeatures, GET_FeatureAttributes } from "@/api/pim/api";
 import { isSelectType } from "../helpers/pimEnums";
-import SearchableSelect from "./SearchableSelect.vue";
-import MultiselectPicker from "./MultiselectPicker.vue";
+import { jsonToString } from "../helpers/attributeValues";
+import AttributeField from "./AttributeField.vue";
 
 const props = defineProps({
   attributes: { type: Array, default: () => [] },
@@ -518,8 +110,8 @@ const props = defineProps({
 
 const emit = defineEmits(["update:attributes"]);
 
-// Datetime attributes (feature_type 10) hold one date.
-const DATE_PICKER_CONFIG = { mode: "single", wrap: true, inline: true };
+// Rich text and JSON attributes take the full width of the form grid.
+const WIDE_TYPES = [5, 6, 9, 11];
 
 const effectiveLanguages = computed(() =>
   props.languages.length > 0 ? props.languages : ["en"]
@@ -691,22 +283,25 @@ async function prefetchSelectOptions(features) {
 async function fetchAttributeOptions(featureIdx) {
   if (optionsCache.value[featureIdx]) return;
   try {
-    const { data } = await GET_FeatureAttributes(featureIdx, props.channelIdx, {
-      page_size: 100,
-    });
-    const results = data.results || data || [];
-    const count = data.count ?? results.length;
-    optionsCache.value[featureIdx] = {
-      options: results.map((a) => ({ label: a.name || a.idx, value: a.idx })),
-      count,
-    };
+    optionsCache.value[featureIdx] = await fetchAllAttributeOptions(featureIdx);
   } catch {
-    optionsCache.value[featureIdx] = { options: [], count: 0 };
+    optionsCache.value[featureIdx] = [];
+  }
+}
+
+// Every value of a select feature, page by page: the searchable select filters them in the browser.
+async function fetchAllAttributeOptions(featureIdx) {
+  const options = [];
+  for (let page = 1; ; page += 1) {
+    const { data } = await GET_FeatureAttributes(featureIdx, props.channelIdx, { page_size: 100, page });
+    const results = data.results || data || [];
+    options.push(...results.map((a) => ({ label: a.name || a.idx, value: a.idx })));
+    if (!data.next) return options;
   }
 }
 
 function getOptions(featureIdx) {
-  return optionsCache.value[featureIdx] || { options: [], count: 0 };
+  return optionsCache.value[featureIdx] || [];
 }
 
 // --- Field updates ---
@@ -750,19 +345,6 @@ function updateJsonT9nField(featureIdx, lang, rawString) {
   emitAttributes();
 }
 
-function onMultiselectUpdate(featureIdx, idxs) {
-  const row = editableRows.value.find((r) => r.feature_idx === featureIdx);
-  if (!row) return;
-  row.attribute_idxs = idxs;
-  emitAttributes();
-}
-
-function jsonToString(value) {
-  if (value === null || value === undefined) return "";
-  if (typeof value === "string") return value;
-  return JSON.stringify(value, null, 2);
-}
-
 function emitAttributes() {
   const payload = editableRows.value.map((r) => ({
     feature_idx: r.feature_idx,
@@ -802,142 +384,3 @@ onMounted(() => {
   if (props.featureSetIdx) fetchFeatureSet();
 });
 </script>
-
-<style lang="scss" scoped>
-@import "@/assets/scss/utils/media-query";
-
-.attribute-editor {
-  display: flex;
-  flex-direction: column;
-
-  &__empty {
-    padding: var(--space-10);
-    text-align: center;
-  }
-}
-
-.attribute-group {
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-base);
-  margin-bottom: var(--space-8);
-
-  &__header {
-    display: flex;
-    align-items: center;
-    gap: var(--space-5);
-    padding: var(--space-2) var(--space-4);
-    background: var(--surface-raised);
-    cursor: pointer;
-    border-left: 3px solid var(--accent);
-    user-select: none;
-  }
-
-  &__name {
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: var(--fs-200);
-    color: var(--text-accent);
-  }
-
-  &__body {
-    padding: 0 var(--space-4);
-  }
-}
-
-.collapse-chevron {
-  cursor: pointer;
-  transition: transform 0.2s;
-  font-size: var(--fs-200);
-  color: var(--text-muted);
-
-  &.is-collapsed {
-    transform: rotate(-90deg);
-  }
-}
-
-.attribute-row {
-  display: grid;
-  grid-template-columns: 240px 1fr;
-  gap: var(--space-8);
-  align-items: start;
-  padding: var(--space-3) 0;
-  border-bottom: 1px solid var(--border-subtle);
-
-  // A phone puts the label above its value editor, so the editor gets the full width.
-  @include max-tablet {
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-2);
-  }
-
-  &:last-child {
-    border-bottom: none;
-  }
-
-  &__label {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-    padding-top: var(--space-1);
-  }
-
-  &__link {
-    text-decoration: none;
-    &:hover {
-      text-decoration: underline;
-      color: var(--text-accent);
-    }
-  }
-
-  &__input {
-    min-width: 0;
-  }
-}
-
-.required-mark {
-  font-size: var(--fs-400);
-  font-weight: 600;
-  line-height: 1;
-}
-
-.lang-tag {
-  display: inline-block;
-  padding: 2px var(--space-1);
-  border-radius: var(--radius-base);
-  background: var(--surface-raised);
-  color: var(--text-muted);
-  font-weight: 600;
-  text-transform: uppercase;
-  min-width: 28px;
-  text-align: center;
-  flex-shrink: 0;
-}
-
-.translation-field {
-  &__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: var(--space-1);
-  }
-
-  &__btn {
-    line-height: 1;
-    padding: var(--space-1) var(--space-2);
-    font-size: var(--fs-200);
-  }
-}
-
-.input-with-unit {
-  display: flex;
-  align-items: center;
-  gap: var(--space-5);
-
-  .unit-suffix {
-    font-size: var(--fs-300);
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-}
-</style>
-
