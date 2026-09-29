@@ -8,8 +8,9 @@
 
 <script setup>
 // The user menu of the header (r05 §8.6, Q3): the user's name, the theme item that names its target state
-// ("Tryb jasny" / "Tryb ciemny"), the field-hints switch (a checkbox item, on by default, plan 60), the languages (radio items, the current one checked), configuration health (with
-// the munin module, as the header icon), change password, logout (danger). On BasicMenu: the trigger gets
+// ("Tryb jasny" / "Tryb ciemny"), the field-hints switch (a checkbox item, on by default, plan 60), the languages
+// (radio items, the current one checked), configuration health (with the munin module, as the header icon), change
+// password, logout (danger). On BasicMenu: the trigger gets
 // `aria-haspopup="menu"`, arrows move, Esc closes and returns focus. `inline` renders it open (catalogue).
 import { computed } from "vue";
 import { t } from "@/i18n";
