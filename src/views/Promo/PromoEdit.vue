@@ -721,6 +721,8 @@ export default {
         max_products_qty: null,
         current_used: 0,
       },
+      // The code as stored when the edit opened: a legacy value the operator leaves alone never blocks the save.
+      editCodeStored: "",
       newCode: {
         code: "",
         max_used: null,
@@ -1105,6 +1107,7 @@ export default {
       }
     },
     openEditCode(code) {
+      this.editCodeStored = code.code;
       this.editCode = {
         id: code.id,
         code: code.code,
@@ -1130,7 +1133,8 @@ export default {
       return extractApiMessage(err, this.$t("notifications.save_error"));
     },
     async saveEditCode() {
-      if (!this.codeFormErrors.validateFormats(this.editCode, CODE_FORMATS)) return;
+      const formats = this.editCode.code === this.editCodeStored ? {} : CODE_FORMATS;
+      if (!this.codeFormErrors.validateFormats(this.editCode, formats)) return;
       const codeId = this.editCode.id;
       this.loader.loaderStart();
       try {
