@@ -280,7 +280,6 @@
 
     <FloatingActions
       v-if="!handyKitOpen"
-      class="builder-fab"
       :actions="fabActions"
       :pill="orderPill"
     />
@@ -1916,16 +1915,6 @@ export default {
   }
 }
 
-// Figma S6–S8: 24 px inset on desktop, 16 px above the tab bar where it shows (as the content list).
-.builder-wrap .builder-fab {
-  right: var(--space-6);
-  bottom: var(--space-6);
-
-  @include max-shell {
-    right: var(--space-4);
-    bottom: calc(var(--bottom-bar-height) + var(--space-4));
-  }
-}
 .section-title-wrap {
   min-width: 0;
 }
