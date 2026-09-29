@@ -19,6 +19,7 @@
           :options="activeFilterOptions"
           :model-value="isActiveFilter ?? ''"
           :placeholder="$t('pim.filter_status')"
+          :aria-label="$t('pim.filter_status')"
           @update:model-value="onFilterActive"
         />
         <BasicButton

@@ -115,6 +115,19 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- P5 Pim taxonomy (plan 51): categories, features, feature sets and quality rules sit in `PageLayout` with a
+  `PageHeader` (back, the unsaved badge, an `ActionBar` with Delete and Save) and follow the detail-form pattern
+  (`BasicCard` sections, `.form-grid`, `FormField` around every control; translatable category fields reuse
+  `ProductT9nField`). The Pim wrapper bar is gone: `PimChannelSelect` carries the channel selector and „Tłumacz
+  sklep” in every Pim view's header `meta`. The Pim-local boot copies are deleted — `SearchableSelect` and
+  `MultiselectPicker` (attribute values are a searchable `BasicSelect`, every value loaded page by page, in the new
+  `AttributeField`), `TypeBadge` (a `StatusBadge` through `featureTypeTone`), `PimCard`, `QualitySettingsCard` (now
+  `QualitySettings` on `BasicCard` with a `ConfirmDialog`) and `PimBreadcrumb`. Category tree rows and feature-set
+  groups expand through a named `IconButton` (`aria-expanded`), the group menu is a `BasicMenu`, a group is added
+  from an existing one through a `BasicSelect` action picker, category products page with `Pagination`. Inherit on
+  an overridden product field asks first (`ConfirmDialog`); `Tag` takes `to` (the product's categories link to
+  their detail), `MediaTile` takes `video` (play badge, video placeholder); `min-w-0` and `ml-auto` are utilities.
+  Smoke `tests/e2e/p5-pim-taxonomy-smoke.spec.js`; specs 12-16 select by role and either UI language.
 - P5 Pim dialogs (plan 50): one translate dialog, `src/components/TranslateDialog/` on `BasicModal`, replaces the Pim
   product and store dialogs and the Pages „Przetłumacz wszystko” modal. `scope` (`product` · `store` · `content`)
   picks the extra options (content types, publish) and how the estimate reads (a `DataTable` per language or per
