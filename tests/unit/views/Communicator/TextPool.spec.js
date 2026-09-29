@@ -5,12 +5,13 @@ const api = vi.hoisted(() => ({ PATCH_SequenceText: vi.fn(), DELETE_SequenceText
 vi.mock("@/api/communicator/api", () => api);
 
 import TextPool from "@/views/Communicator/TextPool.vue";
+import { leadsFrame } from "../Leads/leadsFrame";
 
 const texts = [
   { id: 1, body: "TEST follow-up 1/6", is_active: true },
   { id: 2, body: "TEST follow-up 2/6", is_active: false },
 ];
-const mountPool = () => mount(TextPool, { props: { sequenceId: 4, texts } });
+const mountPool = () => mount(TextPool, { props: { sequenceId: 4, texts }, global: { stubs: { ConfirmDialog: leadsFrame.stubs.ConfirmDialog } } });
 const row = (wrapper, id) => wrapper.get(`[data-text="${id}"]`);
 
 // UX-005: follow-up texts edit in place and are removed — a used text is deactivated, not deleted.
@@ -45,7 +46,7 @@ describe("Communicator text pool", () => {
     const wrapper = mountPool();
     await row(wrapper, 1).get('[data-testid="pool-text-remove"]').trigger("click");
     expect(api.DELETE_SequenceText).not.toHaveBeenCalled();
-    await wrapper.get('[data-testid="confirm-ok"]').trigger("click");
+    await wrapper.get('[data-testid="confirm-dialog-confirm"]').trigger("click");
     await flushPromises();
     expect(api.DELETE_SequenceText).toHaveBeenCalledWith(4, 1);
     expect(wrapper.get('[data-testid="pool-status"]').text()).toBe(message);

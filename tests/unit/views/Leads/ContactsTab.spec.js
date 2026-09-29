@@ -177,10 +177,10 @@ describe("Company card — Contacts tab", () => {
       .get('[data-testid="contact-remove"]')
       .trigger("click");
     expect(leads.DELETE_Contact).not.toHaveBeenCalled();
-    expect(wrapper.get('[data-testid="confirm-sheet"]').text()).toContain(
+    expect(wrapper.findComponent({ name: "ConfirmDialog" }).text()).toContain(
       'remove_title::{"name":"Marek"}'
     ); // $t is the key in tests
-    await wrapper.get('[data-testid="confirm-ok"]').trigger("click");
+    await wrapper.get('[data-testid="confirm-dialog-confirm"]').trigger("click");
     await flushPromises();
     expect(leads.DELETE_Contact).toHaveBeenCalledWith(2);
     expect(wrapper.get('[data-testid="contact-status"]').text()).toBe(
@@ -198,7 +198,7 @@ describe("Company card — Contacts tab", () => {
     await rows(wrapper)[0]
       .get('[data-testid="contact-remove"]')
       .trigger("click");
-    await wrapper.get('[data-testid="confirm-ok"]').trigger("click");
+    await wrapper.get('[data-testid="confirm-dialog-confirm"]').trigger("click");
     await flushPromises();
     expect(wrapper.get('[data-testid="contact-status"]').text()).toContain(
       "anonymised"
@@ -210,9 +210,9 @@ describe("Company card — Contacts tab", () => {
     await rows(wrapper)[1]
       .get('[data-testid="contact-remove"]')
       .trigger("click");
-    await wrapper.get('[data-testid="confirm-cancel"]').trigger("click");
+    await wrapper.get('[data-testid="confirm-dialog-cancel"]').trigger("click");
     expect(leads.DELETE_Contact).not.toHaveBeenCalled();
-    expect(wrapper.find('[data-testid="confirm-sheet"]').exists()).toBe(false);
+    expect(wrapper.find('[data-testid="confirm-dialog-confirm"]').exists()).toBe(false);
   });
 
   it("the star toggles primary; an anonymised row has no star, edit or remove", async () => {

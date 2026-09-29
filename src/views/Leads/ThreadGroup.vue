@@ -1,15 +1,30 @@
 <template>
   <article class="tg" :class="{ 'tg--reply': holdsReply }" data-testid="earlier-thread">
-    <button class="tg__head" :aria-expanded="String(open)" data-testid="earlier-thread-toggle" @click="toggle">
-      <span class="tg__subject" data-testid="earlier-thread-subject">{{ title }}</span>
-      <span class="tg__meta" data-testid="earlier-thread-to">{{ $t("leads.review.to") }}: {{ recipient }}</span>
-      <span class="tg__meta">
-        {{ $t(`leads.thread.state.${thread.status}`) }}<template v-if="thread.last_message_at">
-          · {{ formatTime(thread.last_message_at) }}</template>
-      </span>
-      <span v-if="holdsReply" class="tg__reply" data-testid="earlier-thread-reply">{{ $t("leads.thread.earlier_reply") }}</span>
-      <span v-if="pending" class="tg__badge" data-testid="earlier-thread-optout">{{ $t("leads.thread.optout_suspected") }}</span>
-    </button>
+    <div class="tg__head flex ai-st gap-3">
+      <div class="tg__summary flex flex-wrap ai-ct">
+        <span class="tg__subject" data-testid="earlier-thread-subject">{{ title }}</span>
+        <span class="tg__meta" data-testid="earlier-thread-to">{{ $t("leads.review.to") }}: {{ recipient }}</span>
+        <span class="tg__meta">
+          {{ $t(`leads.thread.state.${thread.status}`) }}<template v-if="thread.last_message_at">
+            · {{ formatTime(thread.last_message_at) }}</template>
+        </span>
+        <span v-if="holdsReply" class="tg__reply" data-testid="earlier-thread-reply">{{ $t("leads.thread.earlier_reply") }}</span>
+        <StatusBadge
+          v-if="pending"
+          tone="negative"
+          size="sm"
+          :label="$t('leads.thread.optout_suspected')"
+          data-testid="earlier-thread-optout"
+        />
+      </div>
+      <IconButton
+        :icon="open ? 'collapse' : 'expand'"
+        :label="$t(open ? 'leads.thread.hide_thread' : 'leads.thread.show_thread')"
+        :aria-expanded="String(open)"
+        data-testid="earlier-thread-toggle"
+        @click="toggle"
+      />
+    </div>
     <Loader block v-show="loading" />
     <ThreadTimeline
       v-if="open && detail"
@@ -94,18 +109,10 @@ async function confirmOptout(replyId) {
   padding-top: var(--space-5);
   border-top: 1px solid var(--border-subtle);
 }
-.tg__head {
-  display: flex;
-  flex-wrap: wrap;
+.tg__summary {
+  flex: 1;
+  min-width: 0;
   gap: var(--space-2) var(--space-5);
-  align-items: baseline;
-  min-height: 44px;
-  padding: 0;
-  border: none;
-  background: none;
-  color: var(--text-body);
-  text-align: left;
-  cursor: pointer;
 }
 .tg__subject {
   flex: 1 1 100%;
@@ -123,10 +130,5 @@ async function confirmOptout(replyId) {
   font-size: var(--fs-200);
   font-weight: 600;
   color: var(--text-accent);
-}
-.tg__badge {
-  font-size: var(--fs-200);
-  font-weight: 600;
-  color: var(--negative);
 }
 </style>

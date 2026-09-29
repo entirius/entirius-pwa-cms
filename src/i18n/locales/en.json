@@ -3267,6 +3267,9 @@
     },
     "thread": {
       "title": "Company thread",
+      "conversation": "Conversation",
+      "show_thread": "Show the thread",
+      "hide_thread": "Hide the thread",
       "back": "Back",
       "empty": "No messages with this company yet",
       "note": "Note",

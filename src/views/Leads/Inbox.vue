@@ -23,11 +23,9 @@
       :message="emptyMessage"
       data-testid="inbox-empty"
     >
-      <button class="inbox__refresh" data-testid="inbox-refresh" @click="reload">
-        {{ $t("leads.inbox.refresh") }}
-      </button>
+      <BasicButton data-testid="inbox-refresh" @click="reload">{{ $t("leads.inbox.refresh") }}</BasicButton>
     </EmptyState>
-    <p v-else-if="!loading && !rows.length" class="inbox__none" data-testid="inbox-empty">{{ emptySentence }}</p>
+    <p v-else-if="!loading && !rows.length" class="t-muted m-0" data-testid="inbox-empty">{{ emptySentence }}</p>
 
     <InboxRow
       v-for="row in rows"
@@ -37,10 +35,10 @@
       :active="isActive(row)"
       @send-now="sendNow"
     />
-    <button v-if="next" class="inbox__more" :disabled="loading" data-testid="inbox-more" @click="loadPage(page + 1)">
+    <BasicButton v-if="next" class="as-s" :disabled="loading" data-testid="inbox-more" @click="loadPage(page + 1)">
       {{ $t("leads.thread.earlier_more") }}
-    </button>
-    <p v-if="error" class="inbox__error">{{ error }}</p>
+    </BasicButton>
+    <p v-if="error" class="t-negative m-0" role="alert">{{ error }}</p>
   </div>
 </template>
 
@@ -213,23 +211,5 @@ defineExpose({ reload });
 }
 .inbox__chip--empty {
   opacity: 0.5;
-}
-.inbox__none {
-  margin: 0;
-  color: var(--text-muted);
-}
-.inbox__refresh,
-.inbox__more {
-  min-height: 44px;
-  padding: 0 var(--space-10);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  background: var(--surface-base);
-  color: var(--text-body);
-  cursor: pointer;
-}
-.inbox__error {
-  margin: 0;
-  color: var(--negative);
 }
 </style>

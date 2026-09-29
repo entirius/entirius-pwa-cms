@@ -22,14 +22,11 @@
         <template v-else>{{ $t(`leads.thread.state.${row.status}`) }}</template><template v-if="detail"> · {{ detail }}</template>
       </span>
     </router-link>
-    <button
-      v-if="marker === 'waiting' && canSendNow(row.waiting)"
-      class="inbox-row__send"
-      data-testid="inbox-item-send-now"
-      @click="$emit('send-now', row.waiting.id)"
-    >
-      {{ $t("communicator.scheduled.send_now") }}
-    </button>
+    <div v-if="marker === 'waiting' && canSendNow(row.waiting)" class="inbox-row__send">
+      <BasicButton size="sm" data-testid="inbox-item-send-now" @click="$emit('send-now', row.waiting.id)">
+        {{ $t("communicator.scheduled.send_now") }}
+      </BasicButton>
+    </div>
   </article>
 </template>
 
@@ -117,7 +114,7 @@ onMounted(async () => {
 .inbox-row__link {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 0.15rem var(--space-5);
+  gap: var(--space-1) var(--space-5);
   min-height: 56px;
   padding: var(--space-5) var(--space-8);
   color: var(--text-body);
@@ -158,14 +155,6 @@ onMounted(async () => {
   color: var(--text-muted);
 }
 .inbox-row__send {
-  align-self: flex-start;
-  min-height: 44px;
-  margin: 0 var(--space-8) var(--space-5);
-  padding: 0 var(--space-10);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  background: var(--surface-base);
-  color: var(--text-body);
-  cursor: pointer;
+  padding: 0 var(--space-8) var(--space-5);
 }
 </style>

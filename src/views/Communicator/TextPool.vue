@@ -40,12 +40,13 @@
     </ul>
     <p v-if="status" class="ld-muted" role="status" data-testid="pool-status">{{ status }}</p>
     <p v-if="error" class="ld-error" data-testid="pool-error">{{ error }}</p>
-    <ConfirmSheet
-      v-if="confirming"
+    <ConfirmDialog
+      :open="Boolean(confirming)"
       :title="$t('communicator.pool.remove_title')"
-      :message="confirming.body"
+      :message="confirming?.body"
       :confirm-label="$t('communicator.pool.remove')"
       :cancel-label="$t('common.cancel')"
+      tone="danger"
       @confirm="remove(confirming)"
       @cancel="confirming = null"
     />
@@ -57,7 +58,6 @@ import { ref } from "vue";
 import { t } from "@/i18n";
 import { DELETE_SequenceText, PATCH_SequenceText } from "@/api/communicator/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
-import ConfirmSheet from "@/views/Leads/ConfirmSheet.vue";
 
 // The follow-up text pool of one sequence (UX-005): tap a text to edit it (future follow-ups only — sent mail keeps
 // its body), remove with a confirmation. A text a thread already got is deactivated, not deleted (its usage history

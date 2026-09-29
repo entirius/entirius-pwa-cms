@@ -1,35 +1,22 @@
 <template>
-  <div class="cm" role="dialog" :aria-label="$t('leads.company.communicate')" data-testid="communicate-modal">
-    <div class="cm__sheet ld-field">
-      <p class="ld-title">{{ $t("leads.company.communicate") }}</p>
-      <label class="ld-field">
-        <span class="ld-field__label">{{ $t("leads.communicate.template") }}</span>
-        <select v-model="templateKey" class="ld-input" data-testid="communicate-template">
-          <option v-for="tpl in templates" :key="tpl.id" :value="tpl.key">{{ tpl.key }} ({{ tpl.language }})</option>
-        </select>
-      </label>
-      <fieldset class="ld-field">
-        <legend>{{ $t("leads.communicate.contact") }}</legend>
-        <label v-for="contact in contacts" :key="contact.id">
-          <input v-model="contactId" type="radio" :value="contact.id" data-testid="communicate-contact" />
-          {{ contact.first_name }} {{ contact.last_name }} &lt;{{ contact.email }}&gt;
-        </label>
-        <p v-if="!contacts.length" class="ld-muted">{{ $t("leads.communicate.no_contacts") }}</p>
-      </fieldset>
-      <p v-if="error" class="ld-error" data-testid="communicate-error">{{ error }}</p>
-      <div class="ld-row">
-        <button class="ld-btn" @click="$emit('close')">{{ $t("leads.review.cancel") }}</button>
-        <button
-          class="ld-btn ld-btn--primary"
-          :disabled="!templateKey || !contactId"
-          data-testid="communicate-submit"
-          @click="submit"
-        >
-          {{ $t("leads.communicate.submit") }}
-        </button>
-      </div>
+  <BasicModal
+    :open="true"
+    :title="$t('leads.company.communicate')"
+    :actions="actions"
+    data-testid="communicate-modal"
+    @close="$emit('close')"
+  >
+    <div class="flex-column gap-4">
+      <FormField :label="$t('leads.communicate.template')">
+        <BasicSelect v-model="templateKey" :options="templateOptions" data-testid="communicate-template" />
+      </FormField>
+      <FormField :label="$t('leads.communicate.contact')">
+        <BasicRadioGroup v-if="contacts.length" v-model="contactId" :options="contactOptions" name="communicate-contact" />
+        <p v-else class="t-muted m-0">{{ $t("leads.communicate.no_contacts") }}</p>
+      </FormField>
+      <p v-if="error" class="t-negative m-0" role="alert" data-testid="communicate-error">{{ error }}</p>
     </div>
-  </div>
+  </BasicModal>
 </template>
 
 <script setup>
@@ -50,6 +37,27 @@ const contactId = ref(null);
 const error = ref("");
 
 const contacts = computed(() => props.company.contacts.filter((c) => c.email && !c.opt_out_at && !c.anonymised_at));
+const templateOptions = computed(() =>
+  templates.value.map((tpl) => ({ value: tpl.key, label: `${tpl.key} (${tpl.language})` }))
+);
+const contactOptions = computed(() =>
+  contacts.value.map((c) => ({
+    value: c.id,
+    label: `${c.first_name} ${c.last_name} <${c.email}>`,
+    testid: "communicate-contact",
+  }))
+);
+const actions = computed(() => [
+  { key: "cancel", label: t("leads.review.cancel"), role: "secondary", onClick: () => emit("close") },
+  {
+    key: "submit",
+    label: t("leads.communicate.submit"),
+    role: "primary",
+    disabled: !templateKey.value || !contactId.value,
+    testid: "communicate-submit",
+    onClick: submit,
+  },
+]);
 
 async function submit() {
   error.value = "";
@@ -68,22 +76,3 @@ onMounted(async () => {
   contactId.value = contacts.value.find((c) => c.is_primary)?.id ?? null;
 });
 </script>
-
-<style lang="scss" src="@/views/Leads/desktop.scss"></style>
-<style scoped>
-.cm {
-  position: fixed;
-  inset: 0;
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgb(0 0 0 / 35%);
-}
-.cm__sheet {
-  width: min(520px, 100%);
-  padding: var(--space-8);
-  border-radius: var(--radius-lg);
-  background: var(--surface-base);
-}
-</style>

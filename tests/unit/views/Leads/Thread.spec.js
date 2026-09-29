@@ -36,8 +36,9 @@ vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification }
 vi.mock("vue-router", () => ({ useRoute: () => ({ params: { id: "42" } }), useRouter: () => ({}) }));
 
 import Thread from "@/views/Leads/Thread.vue";
+import BasicButton from "@/boots/BasicButton/index.vue";
 
-const stubs = { Loader: true, ConfigBanner: true };
+const stubs = { Loader: true, ConfigBanner: true, BasicButton };
 const mountThread = (props = {}) => mount(Thread, { props, global: { stubs } });
 
 beforeEach(() => {
@@ -146,7 +147,7 @@ describe("Leads Thread", () => {
     });
     const wrapper = mountThread();
     await flushPromises();
-    expect(wrapper.get('[data-testid="earlier-optout-badge"]').text()).toContain('"count":1');
+    expect(wrapper.get('[data-testid="earlier-optout-badge"]').attributes("label")).toContain('"count":1');
   });
 
   it("the phone card keeps activities apart from the mail, the desktop timeline tab has none", async () => {

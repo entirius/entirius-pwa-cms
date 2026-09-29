@@ -1,27 +1,30 @@
 <template>
-  <div class="conversation" data-testid="leads-conversation">
-    <BasicButton v-if="!isDesktop" class="conversation__back" variant="ghost" size="sm" icon="back" @click="goBack">
-      {{ $t("leads.thread.back") }}
-    </BasicButton>
-    <Loader block v-show="loading" />
-    <p v-if="missing" class="conversation__none" role="status" data-testid="conversation-missing">
-      {{ $t("leads.thread.mail_unavailable") }}
-    </p>
-    <template v-if="thread">
-      <h3 class="conversation__title" data-testid="conversation-recipient">{{ recipient }}</h3>
-      <p class="conversation__subject" data-testid="thread-subject">
-        <strong>{{ threadSubject(thread.timeline) }}</strong>
-        <span class="conversation__state"> · {{ $t(`leads.thread.state.${thread.status}`) }}</span>
-      </p>
-      <ThreadTimeline
-        :busy="optoutBusy"
-        :messages="thread.timeline || []"
-        :optouts="thread.optouts || []"
-        :waiting="waitingOf(waiting, thread.id)"
-        @confirm-optout="confirmOptout"
-      />
+  <PageLayout data-testid="leads-conversation">
+    <template #header>
+      <!-- a phone shows the conversation alone: back to the list; the desktop keeps the list beside it -->
+      <PageHeader :title="$t('leads.thread.conversation')" :back="isDesktop ? undefined : goBack" />
     </template>
-  </div>
+    <div class="conversation flex-column gap-4">
+      <Loader block v-show="loading" />
+      <p v-if="missing" class="t-muted m-0" role="status" data-testid="conversation-missing">
+        {{ $t("leads.thread.mail_unavailable") }}
+      </p>
+      <template v-if="thread">
+        <h2 class="conversation__wrap fs-400 fw-600 m-0" data-testid="conversation-recipient">{{ recipient }}</h2>
+        <p class="conversation__wrap m-0" data-testid="thread-subject">
+          <strong>{{ threadSubject(thread.timeline) }}</strong>
+          <span class="t-secondary fs-200"> · {{ $t(`leads.thread.state.${thread.status}`) }}</span>
+        </p>
+        <ThreadTimeline
+          :busy="optoutBusy"
+          :messages="thread.timeline || []"
+          :optouts="thread.optouts || []"
+          :waiting="waitingOf(waiting, thread.id)"
+          @confirm-optout="confirmOptout"
+        />
+      </template>
+    </div>
+  </PageLayout>
 </template>
 
 <script setup>
@@ -89,31 +92,9 @@ watch(() => route.params.id, (id) => id && route.name === "LeadsConversation" &&
 
 <style scoped>
 .conversation {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
-  padding: var(--space-8);
-  overflow-x: hidden;
+  overflow-x: clip;
 }
-.conversation__back {
-  align-self: flex-start;
-  min-height: 44px;
-}
-.conversation__title {
-  margin: 0;
-  font-size: var(--fs-400);
+.conversation__wrap {
   overflow-wrap: anywhere;
-}
-.conversation__none {
-  margin: 0;
-  color: var(--text-muted);
-}
-.conversation__subject {
-  margin: 0;
-  overflow-wrap: anywhere;
-}
-.conversation__state {
-  color: var(--text-secondary);
-  font-size: var(--fs-200);
 }
 </style>

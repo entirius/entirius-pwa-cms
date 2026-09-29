@@ -33,21 +33,23 @@
     <p class="footer__preview-title">{{ $t("communicator.footer.preview") }}</p>
     <!-- unsaved HTML is not sanitised yet: the preview runs in an empty sandbox (no scripts, no same origin) -->
     <iframe class="footer__preview" sandbox="" :srcdoc="previewDoc" :title="$t('communicator.footer.preview')" data-testid="footer-preview"></iframe>
-    <ConfirmSheet
-      v-if="switchTo"
+    <ConfirmDialog
+      :open="Boolean(switchTo)"
       :title="$t('leads.review.discard_title')"
       :message="$t('communicator.footer.discard_confirm')"
       :confirm-label="$t('leads.review.discard_yes')"
       :cancel-label="$t('common.cancel')"
+      tone="danger"
       @confirm="showLanguage(switchTo)"
       @cancel="switchTo = null"
     />
-    <ConfirmSheet
-      v-if="removing"
+    <ConfirmDialog
+      :open="removing"
       :title="$t('communicator.footer.remove_title', { language: language.toUpperCase() })"
       :message="$t('communicator.footer.remove_message')"
       :confirm-label="$t('communicator.footer.remove')"
       :cancel-label="$t('common.cancel')"
+      tone="danger"
       @confirm="remove"
       @cancel="removing = false"
     />
@@ -60,7 +62,6 @@ import { t } from "@/i18n";
 import { DELETE_Footer, GET_Footers, GET_Templates, PUT_Footer } from "@/api/communicator/api";
 import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
 import { useNotifyStore } from "@/stores/notify";
-import ConfirmSheet from "@/views/Leads/ConfirmSheet.vue";
 
 // One mail footer per language (UX-007): the channel's HTML block — signature, logo, company data — around the legal
 // text of the contact's legal basis, which agreements supply at send time as `{{ legal }}`. The server sanitises on

@@ -52,7 +52,7 @@ describe("Leads Stages", () => {
     const sheet = wrapper.get('[data-testid="confirm-sheet"]');
     expect(sheet.text()).toContain("Delete the stage “New”? It holds no companies.");
     expect(api.DELETE_Stage).not.toHaveBeenCalled();
-    await sheet.get('[data-testid="confirm-cancel"]').trigger("click");
+    await sheet.get('[data-testid="confirm-dialog-cancel"]').trigger("click");
     expect(wrapper.find('[data-testid="confirm-sheet"]').exists()).toBe(false);
     expect(api.DELETE_Stage).not.toHaveBeenCalled();
   });

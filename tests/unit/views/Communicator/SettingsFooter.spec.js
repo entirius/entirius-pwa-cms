@@ -12,6 +12,7 @@ const notify = vi.hoisted(() => ({ spawnNotification: vi.fn() }));
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => notify }));
 
 import SettingsFooter from "@/views/Communicator/settings/SettingsFooter.vue";
+import { leadsFrame } from "../Leads/leadsFrame";
 
 const SegmentedControl = {
   props: ["modelValue", "options", "disabled"],
@@ -19,7 +20,7 @@ const SegmentedControl = {
   template: "<div><button v-for='o in options' :key='o.value' type='button' :disabled='disabled' :data-testid='o.testid' @click=\"$emit('update:modelValue', o.value)\">{{ o.label }}</button></div>",
 };
 const mountFooter = async () => {
-  const wrapper = mount(SettingsFooter, { global: { stubs: { SegmentedControl } } });
+  const wrapper = mount(SettingsFooter, { global: { stubs: { SegmentedControl, ConfirmDialog: leadsFrame.stubs.ConfirmDialog } } });
   await flushPromises();
   return wrapper;
 };
@@ -98,10 +99,10 @@ describe("Send settings — mail footer", () => {
     const wrapper = await mountFooter();
     await wrapper.get('[data-testid="footer-html"]').setValue("<p>Draft</p>{{ legal }}");
     await wrapper.get('[data-testid="footer-lang-pl"]').trigger("click");
-    await wrapper.get('[data-testid="confirm-cancel"]').trigger("click");
+    await wrapper.get('[data-testid="confirm-dialog-cancel"]').trigger("click");
     expect(wrapper.get('[data-testid="footer-html"]').element.value).toBe("<p>Draft</p>{{ legal }}");
     await wrapper.get('[data-testid="footer-lang-pl"]').trigger("click");
-    await wrapper.get('[data-testid="confirm-ok"]').trigger("click");
+    await wrapper.get('[data-testid="confirm-dialog-confirm"]').trigger("click");
     expect(wrapper.get('[data-testid="footer-html"]').element.value).toBe("<p>Zespół</p>{{ legal }}");
     expect(api.PUT_Footer).not.toHaveBeenCalled();
   });
@@ -112,7 +113,7 @@ describe("Send settings — mail footer", () => {
     expect(wrapper.find('[data-testid="footer-remove"]').exists()).toBe(false); // EN has no footer
     await wrapper.get('[data-testid="footer-lang-pl"]').trigger("click");
     await wrapper.get('[data-testid="footer-remove"]').trigger("click");
-    await wrapper.get('[data-testid="confirm-ok"]').trigger("click");
+    await wrapper.get('[data-testid="confirm-dialog-confirm"]').trigger("click");
     await flushPromises();
     expect(api.DELETE_Footer).toHaveBeenCalledWith("pl");
     expect(wrapper.get('[data-testid="footer-html"]').element.value).toBe("");

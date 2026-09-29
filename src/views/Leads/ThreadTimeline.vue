@@ -13,14 +13,16 @@
         <p v-if="entry.subject" class="tl__subject">{{ entry.subject }}</p>
         <p class="tl__body">{{ entry.text.own }}</p>
         <template v-if="entry.text.quoted">
-          <button
+          <BasicButton
             class="tl__quote-toggle"
+            variant="ghost"
+            size="sm"
             :aria-expanded="String(quotesOpen.has(i))"
             data-testid="timeline-quote-toggle"
             @click="toggleQuote(i)"
           >
             {{ $t(quotesOpen.has(i) ? "leads.thread.quote_hide" : "leads.thread.quote_show") }}
-          </button>
+          </BasicButton>
           <p v-if="quotesOpen.has(i)" class="tl__body tl__quote" data-testid="timeline-quote">{{ entry.text.quoted }}</p>
         </template>
         <p class="tl__meta">
@@ -33,9 +35,9 @@
           <span v-if="entry.optout.optout_confirmed_at">{{ $t("leads.thread.optout_confirmed") }}</span>
           <template v-else>
             <span>{{ $t("leads.thread.optout_suspected") }}</span>
-            <button class="tl__confirm" :disabled="busy" data-testid="confirm-optout" @click="$emit('confirm-optout', entry.optout.id)">
+            <BasicButton variant="danger" :disabled="busy" data-testid="confirm-optout" @click="$emit('confirm-optout', entry.optout.id)">
               {{ $t("leads.thread.confirm_optout") }}
-            </button>
+            </BasicButton>
           </template>
         </div>
       </div>
@@ -153,15 +155,7 @@ const entries = computed(() => {
   overflow-wrap: anywhere;
 }
 .tl__quote-toggle {
-  min-height: 24px;
   margin-top: var(--space-2);
-  padding: 0;
-  border: none;
-  background: none;
-  color: var(--text-accent);
-  font-size: var(--fs-200);
-  text-decoration: underline;
-  cursor: pointer;
 }
 .tl__quote {
   margin-top: var(--space-2);
@@ -181,19 +175,5 @@ const entries = computed(() => {
   align-items: center;
   margin-top: var(--space-5);
   color: var(--negative);
-}
-.tl__confirm {
-  min-height: 44px;
-  padding: 0 var(--space-8);
-  border: 1px solid var(--negative);
-  border-radius: var(--radius-lg);
-  background: var(--surface-base);
-  color: var(--negative);
-  font-weight: 600;
-  cursor: pointer;
-}
-.tl__confirm:disabled {
-  opacity: 0.5;
-  cursor: default;
 }
 </style>

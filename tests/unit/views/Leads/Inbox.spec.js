@@ -269,6 +269,6 @@ describe("Leads Inbox (one list: drafts, waiting mails, conversations)", () => {
     const wrapper = mountInbox();
     await flushPromises();
     expect(chip(wrapper, "all").classes()).toContain("on");
-    expect(wrapper.get(".inbox__error").text()).toBe("Could not load the inbox — it tries again on the next refresh");
+    expect(wrapper.get('[role="alert"]').text()).toBe("Could not load the inbox — it tries again on the next refresh");
   });
 });

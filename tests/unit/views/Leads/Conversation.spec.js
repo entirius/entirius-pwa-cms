@@ -51,8 +51,8 @@ describe("Leads Conversation (a thread by id)", () => {
   it("Back on a directly opened thread (no history) goes to the Inbox", async () => {
     api.GET_ThreadWithOptouts.mockResolvedValue({ id: 23, status: "open", timeline, optouts: [] });
     const length = vi.spyOn(window.history, "length", "get").mockReturnValue(1);
-    const BasicButton = { emits: ["click"], template: "<button data-testid='back' @click=\"$emit('click')\" />" };
-    const wrapper = mount(Conversation, { global: { stubs: { Loader: true, BasicButton } } });
+    const PageHeader = { props: ["title", "back"], template: "<button data-testid='back' @click='back()' />" };
+    const wrapper = mount(Conversation, { global: { stubs: { Loader: true, PageHeader } } });
     await flushPromises();
     await wrapper.get('[data-testid="back"]').trigger("click");
     expect(push).toHaveBeenCalledWith({ name: "LeadsInbox" });

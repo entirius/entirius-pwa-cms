@@ -21,7 +21,16 @@ export const leadsFrame = {
     BasicSwitch: stub("BasicSwitch", ["modelValue", "label"]),
     BasicCheckbox: stub("BasicCheckbox", ["modelValue"], "<label><slot /></label>"),
     IconButton: stub("IconButton", ["icon", "label", "pressed", "disabled", "variant", "size"], "<button :aria-pressed='pressed' :disabled='disabled' />"),
-    ConfirmDialog: stub("ConfirmDialog", ["open", "title", "message", "confirmLabel", "cancelLabel", "tone"]),
+    // Open, it shows its title and message and the two actions (the confirm under the caller's `confirmTestid`).
+    ConfirmDialog: {
+      name: "ConfirmDialog",
+      props: ["open", "title", "message", "confirmLabel", "cancelLabel", "tone", "confirmTestid"],
+      emits: ["confirm", "cancel"],
+      template: `<div v-if="open">{{ title }} {{ message }}
+        <button data-testid="confirm-dialog-cancel" @click="$emit('cancel')" />
+        <button :data-testid="confirmTestid || 'confirm-dialog-confirm'" @click="$emit('confirm')" />
+      </div>`,
+    },
     CountBadge: stub("CountBadge", ["count"]),
   },
 };
