@@ -87,7 +87,12 @@ textarea.ld-input {
   padding: var(--space-2);
   font-family: var(--font-mono);
 }
-/* Cells come from the shared `.table-basic` (the DataTable cell model); `.ld-table` only marks the kit's tables. */
+/* Cells come from the shared `.table-basic` (the DataTable cell model); `.ld-table` only marks the kit's tables.
+   A settings page scrolls a wide one sideways in its own box. */
+.leads-page .ld-table {
+  display: block;
+  overflow-x: auto;
+}
 .ld-field {
   display: flex;
   flex-direction: column;

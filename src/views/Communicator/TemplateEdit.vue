@@ -127,6 +127,7 @@ onMounted(async () => {
 });
 </script>
 
+<style lang="scss" src="@/views/Leads/desktop.scss"></style>
 <style scoped>
 .form {
   max-width: 760px;

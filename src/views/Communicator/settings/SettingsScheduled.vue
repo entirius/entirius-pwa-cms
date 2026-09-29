@@ -82,6 +82,7 @@ async function sendNow(row) {
 onMounted(load);
 </script>
 
+<style lang="scss" src="@/views/Leads/desktop.scss"></style>
 <style scoped>
 /* The app content column clips (overflow: hidden): the table scrolls in its own box and its cells wrap, so
    the Send now column stays on screen at 1280 px with the sidebar open. */

@@ -159,6 +159,7 @@ onMounted(async () => {
 });
 </script>
 
+<style lang="scss" src="@/views/Leads/desktop.scss"></style>
 <style scoped>
 .footer__html {
   width: 100%;

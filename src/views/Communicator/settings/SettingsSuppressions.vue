@@ -66,3 +66,5 @@ const remove = (id) => attempt(() => DELETE_Suppression(id));
 
 onMounted(load);
 </script>
+
+<style lang="scss" src="@/views/Leads/desktop.scss"></style>
