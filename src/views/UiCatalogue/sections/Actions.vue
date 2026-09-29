@@ -115,7 +115,7 @@ const STATES = ["default", "disabled", "loading"];
 const ICON_STATES = ["default", "disabled", "pressed"];
 const noop = () => {};
 
-const buttonCells = Object.entries(BUTTONS).flatMap(([variant, { text, icon }]) =>
+const generatedButtonCells = Object.entries(BUTTONS).flatMap(([variant, { text, icon }]) =>
   ["md", "sm"].flatMap((size) =>
     [false, true].flatMap((withIcon) =>
       STATES.map((state) => ({
@@ -131,6 +131,21 @@ const buttonCells = Object.entries(BUTTONS).flatMap(([variant, { text, icon }]) 
     )
   )
 );
+
+// `size="lg"` (40 px) is for the sign-in screens only (AuthLayout): one primary cell shows it and its hover light. Its
+// text is not „Zaloguj”: the visual harness reads a button with it as the login wall.
+const buttonCells = [
+  ...generatedButtonCells,
+  {
+    id: "basic-button-primary-lg-text-default",
+    label: "primary · lg (sign-in) · text · default",
+    interact: "hover,focus",
+    variant: "primary",
+    size: "lg",
+    text: "Ustaw hasło",
+    state: "default",
+  },
+];
 
 const iconCells = Object.entries(ICON_BUTTONS).flatMap(([variant, { icon, text }]) =>
   ["sm", "md", "lg"].flatMap((size) =>

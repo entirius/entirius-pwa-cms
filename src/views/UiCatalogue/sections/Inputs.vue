@@ -25,6 +25,19 @@
       </CatalogueCell>
     </div>
 
+    <h3 class="fs-500 mb-4">BasicInput size="lg" (sign-in screens)</h3>
+    <div class="inputs-grid grid gap-3 mb-10">
+      <CatalogueCell id="basic-input-lg-trailing-filled" label="lg, a trailing reveal control, filled" interact="focus">
+        <FormField label="Hasło">
+          <BasicInput v-model="values['basic-input-lg-trailing-filled']" size="lg" type="password">
+            <template #trailing>
+              <IconButton icon="preview" label="Pokaż hasło" />
+            </template>
+          </BasicInput>
+        </FormField>
+      </CatalogueCell>
+    </div>
+
     <h3 id="basic-textarea" class="fs-500 mb-4">BasicTextarea</h3>
     <div class="inputs-grid grid gap-3 mb-10">
       <CatalogueCell v-for="cell in textareaCells" :id="cell.id" :key="cell.id" :label="cell.label" interact="focus">
@@ -226,6 +239,7 @@ const INITIAL = {
   "basic-input-readonly-disabled": "SKU-2026-0042",
   "basic-input-readonly-error": "SKU-2026-0042",
   "basic-input-password-filled": "tajne-haslo",
+  "basic-input-lg-trailing-filled": "tajne-haslo",
   "basic-textarea-default-filled": FILLED,
   "basic-textarea-maxlength-filled": FILLED,
   "number-input-plain-at-min": "0",

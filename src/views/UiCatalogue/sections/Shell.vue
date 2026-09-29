@@ -87,6 +87,9 @@
       <CatalogueCell id="basic-logo-mobile-default" label="mobile header, 154 × 24">
         <div class="flex"><BasicLogo variant="full" :size="24" /></div>
       </CatalogueCell>
+      <CatalogueCell id="basic-logo-on-dark-default" label="onDark: the always-dark sign-in stage, in both themes">
+        <div class="flex p-4 bg-page" data-theme="dark"><BasicLogo variant="full" :size="32" on-dark /></div>
+      </CatalogueCell>
     </div>
   </CatalogueSection>
 </template>
