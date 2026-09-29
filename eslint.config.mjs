@@ -23,10 +23,11 @@ const NO_REMOVED_COMPONENT = Object.entries(REMOVED_COMPONENTS).map(([old, repla
   selector: `VElement[rawName='${old}']`,
   message: `${old} is removed: use <${replacement}> (${RULES} § Components).`,
 }));
-// C2 removed FormField props (plan 60): one field-hint pattern, `hint` + `hintLevel`.
+// C2 removed FormField props (plan 60): one field-hint pattern, `hint` + `hintLevel`. Matched on the normalised name
+// (`formfield` / `form-field`), so the kebab-case tag is caught too.
 const NO_REMOVED_FIELD_PROP = ["description", "tooltip"].flatMap((prop) =>
   [`[directive=false][key.name='${prop}']`, `[directive=true][key.argument.name='${prop}']`].map((attr) => ({
-    selector: `VElement[rawName='FormField'] > VStartTag > VAttribute${attr}`,
+    selector: `VElement[name=/^form-?field$/] > VStartTag > VAttribute${attr}`,
     message: `FormField ${prop} is removed: use hint + hintLevel (${RULES} § Forms).`,
   }))
 );
@@ -76,8 +77,9 @@ export default [
     },
   },
   {
-    // C2 removed components (P3 closed them) and removed FormField props (plan 60): an error, boots included. The vue plugin under a second name keeps this
-    // list apart from the inline-style and icon list above (a later block would replace its options).
+    // C2 removed components (P3 closed them) and removed FormField props (plan 60): an error, boots included. The vue
+    // plugin under a second name keeps this list apart from the inline-style and icon list above (a later block would
+    // replace its options).
     files: ["src/**/*.vue"],
     plugins: { "vue-p3": vue },
     rules: { "vue-p3/no-restricted-syntax": ["error", ...NO_REMOVED_COMPONENT, ...NO_REMOVED_FIELD_PROP] },
