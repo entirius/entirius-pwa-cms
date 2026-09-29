@@ -20,7 +20,8 @@ in `src/boots/`. This file names them and never restates a value. Lint enforces 
 Two layers: `@entirius/brand-tokens` (`--brand-*`, never used directly in views) and the CMS semantic layer on top
 of it. The semantic source is `src/assets/tokens/semantic.json`: its `color`, `overlay`, `shadow` and `type` groups
 are generated into `themes/_semantic.generated.scss` (`node scripts/tokens/build-theme.mjs`, a unit test fails when it
-is stale; never edit the output by hand). Its `space`, `radius`, `font-size` and `font` groups name the scales that
+is stale; never edit the output by hand; `node scripts/tokens/contrast-light.mjs` proves the light theme's WCAG
+pairs and runs in the same unit spec). Its `space`, `radius`, `font-size` and `font` groups name the scales that
 `main.scss` emits from the lists in `src/assets/scss/variables/`; the parity check (`@parity`) holds both to the same
 values.
 

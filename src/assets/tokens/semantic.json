@@ -3,20 +3,20 @@
 
   "color": {
     "surface": {
-      "surface-page":     { "dark": "{black}",        "light": "{light.basic.50}",  "class": "bg-page",     "role": "app shell: page, header, sidebar, mobile tab bar (Figma #0D0A09, #0E0B0A)" },
-      "surface-base":     { "dark": "{basic.200}",    "light": "{white}",           "class": "bg-base",     "role": "containers: section blocks, tables, drawers, modals, dropdown menus (Figma #111111)" },
-      "surface-raised":   { "dark": "{basic.300}",    "light": "{light.basic.100}", "class": "bg-raised",   "role": "inside containers: table header, block header, tiles (Figma #1A1A1A, #1E2830 fill)" },
-      "surface-sunken":   { "dark": "{basic.100}",    "light": "{white}",           "class": "bg-sunken",   "role": "inputs, selects, textareas, icon buttons in content (Figma #0C1017)" },
-      "surface-hover":    { "dark": "{basic.400}",    "light": "{light.basic.150}", "class": "bg-hover",    "role": "row / item / nav hover" },
-      "surface-disabled": { "dark": "{basic.300}",    "light": "{light.basic.150}", "class": "bg-disabled", "role": "disabled controls" },
-      "surface-inverse":  { "dark": "{basic.950}",    "light": "{basic.200}",       "class": "bg-inverse",  "role": "tooltips, toasts" },
-      "surface-card":     { "dark": "{gradient.card}", "light": "{white}",          "class": "bg-card",     "role": "panel cards (D2); light has no gradient: flat + border-subtle", "type": "background" }
+      "surface-page":     { "dark": "{black}",        "light": "{light.neutral.150}", "class": "bg-page",     "role": "app shell: page, header, sidebar, mobile tab bar (Figma #0D0A09, #0E0B0A)" },
+      "surface-base":     { "dark": "{basic.200}",    "light": "{light.neutral.50}",  "class": "bg-base",     "role": "containers: section blocks, tables, drawers, modals, dropdown menus (Figma #111111)" },
+      "surface-raised":   { "dark": "{basic.300}",    "light": "{light.neutral.100}", "class": "bg-raised",   "role": "inside containers: table header, block header, tiles (Figma #1A1A1A, #1E2830 fill)" },
+      "surface-sunken":   { "dark": "{basic.100}",    "light": "{light.neutral.50}",  "class": "bg-sunken",   "role": "inputs, selects, textareas, icon buttons in content (Figma #0C1017)" },
+      "surface-hover":    { "dark": "{basic.400}",    "light": "{light.neutral.200}", "class": "bg-hover",    "role": "row / item / nav hover" },
+      "surface-disabled": { "dark": "{basic.300}",    "light": "{light.neutral.200}", "class": "bg-disabled", "role": "disabled controls" },
+      "surface-inverse":  { "dark": "{basic.950}",    "light": "{basic.200}",         "class": "bg-inverse",  "role": "tooltips, toasts" },
+      "surface-card":     { "dark": "{gradient.card}", "light": "{light.neutral.50}",  "class": "bg-card",     "role": "panel cards (D2); light has no gradient: flat + border-subtle", "type": "background" }
     },
     "text": {
-      "text-strong":        { "dark": "{basic.950}",   "light": "{basic.100}",   "class": "t-strong",        "role": "H1, titles, nav items, icons (Figma #EBEDF2)" },
-      "text-body":          { "dark": "{basic.900}",   "light": "{basic.200}",   "class": "t-body",          "role": "default text, table cells, input values (Figma #B4C3D1)" },
-      "text-secondary":     { "dark": "{basic.800}",   "light": "{basic.500}",   "class": "t-secondary",     "role": "labels, row actions, secondary info (Figma #9A9CAA, #8899AB)" },
-      "text-muted":         { "dark": "{basic.750}",   "light": "{basic.600}",   "class": "t-muted",         "role": "hints, descriptions, breadcrumbs, placeholders, meta, sub-items (Figma #727276, #5A6B7D)" },
+      "text-strong":        { "dark": "{basic.950}",   "light": "{light.neutral.900}",   "class": "t-strong",        "role": "H1, titles, nav items, icons (Figma #EBEDF2)" },
+      "text-body":          { "dark": "{basic.900}",   "light": "{light.neutral.800}",   "class": "t-body",          "role": "default text, table cells, input values (Figma #B4C3D1)" },
+      "text-secondary":     { "dark": "{basic.800}",   "light": "{light.neutral.700}",   "class": "t-secondary",     "role": "labels, row actions, secondary info (Figma #9A9CAA, #8899AB)" },
+      "text-muted":         { "dark": "{basic.750}",   "light": "{light.neutral.600}",   "class": "t-muted",         "role": "hints, descriptions, breadcrumbs, placeholders, meta, sub-items (Figma #727276, #5A6B7D)" },
       "text-disabled":      { "dark": "{basic.600}",   "light": "{basic.800}",   "class": "t-disabled",      "role": "disabled controls, locked panels (Figma #2B2B2B); WCAG-exempt" },
       "text-accent":        { "dark": "{primary.100}", "light": "{tertiary.200}", "class": "t-accent",       "role": "links, active nav item, accent labels (Figma #239AAB -> Q1)" },
       "text-on-accent-fill":{ "dark": "{white}",       "light": "{white}",       "class": "t-on-accent-fill", "role": "text/icons on accent-fill (D1)" },
@@ -24,32 +24,32 @@
       "text-inverse":       { "dark": "{basic.100}",   "light": "{white}",       "class": "t-inverse",       "role": "text on surface-inverse" }
     },
     "border": {
-      "border-hairline": { "dark": "{hairline}",     "light": "{light.basic.200}", "class": "b-hairline", "role": "shell dividers only: sidebar rail, header/sidebar edge (Figma #2B2B2B@.5); R4: never to split page sections" },
-      "border-subtle":   { "dark": "{basic.400}",    "light": "{light.basic.200}", "class": "b-subtle",   "role": "container borders, table row dividers (Figma #1E2830)" },
-      "border-default":  { "dark": "{basic.500}",    "light": "{light.basic.300}", "class": "b-default",  "role": "labelled controls: outline buttons, chips, icon buttons (Figma #2D3A48); the label identifies them, so no 3:1 boundary is required" },
-      "border-control":  { "dark": "{basic.500}",    "light": "{light.basic.300}", "class": "b-control",  "role": "form fields: input, select, textarea, checkbox, radio; Q-7: same as border-default, keeps Figma's faint input borders (#2D3A48)" },
-      "border-strong":   { "dark": "{basic.750}",    "light": "{basic.700}",       "class": "b-strong",   "role": "hover of border-control / border-default; inactive sidebar sub-item rail (Figma #727276 fill)" },
-      "focus-ring":      { "dark": "{primary.100}",  "light": "{tertiary.200}",    "class": null,         "role": "2px outline on :focus-visible" }
+      "border-hairline": { "dark": "{hairline}",     "light": "{light.neutral.300}", "class": "b-hairline", "role": "shell dividers only: sidebar rail, header/sidebar edge (Figma #2B2B2B@.5); R4: never to split page sections" },
+      "border-subtle":   { "dark": "{basic.400}",    "light": "{light.neutral.300}", "class": "b-subtle",   "role": "container borders, table row dividers (Figma #1E2830)" },
+      "border-default":  { "dark": "{basic.500}",    "light": "{light.neutral.400}", "class": "b-default",  "role": "labelled controls: outline buttons, chips, icon buttons (Figma #2D3A48); the label identifies them, so no 3:1 boundary is required" },
+      "border-control":  { "dark": "{basic.500}",    "light": "{light.basic.400}",   "class": "b-control",  "role": "form fields: input, select, textarea, checkbox, radio; dark (Q-7): same as border-default, keeps Figma's faint input borders (#2D3A48); light: >= 3:1 on its surfaces (WCAG 1.4.11)" },
+      "border-strong":   { "dark": "{basic.750}",    "light": "{basic.700}",         "class": "b-strong",   "role": "hover of border-control / border-default; inactive sidebar sub-item rail (Figma #727276 fill)" },
+      "focus-ring":      { "dark": "{primary.100}",  "light": "{tertiary.200}",      "class": null,         "role": "2px outline on :focus-visible" }
     },
     "accent": {
       "accent":            { "dark": "{primary.100}",      "light": "{tertiary.200}",     "class": "accent",       "role": "active indicators (sidebar rail), selected borders, checkbox/radio, icons" },
       "accent-hover":      { "dark": "{primary.200}",      "light": "{tertiary.100}",     "class": "accent-hover", "role": "hover of accent text/borders" },
       "accent-fill":       { "dark": "{tertiary.100}",     "light": "{tertiary.100}",     "class": "accent-fill",  "role": "primary button, FAB, active chip, count badge (D1)" },
       "accent-fill-hover": { "dark": "{tertiary.200}",     "light": "{tertiary.200}",     "class": null,           "role": "hover/pressed of accent-fill" },
-      "accent-subtle":     { "dark": "{primary.300}",      "light": "{light.primary.50}", "class": "accent-subtle", "role": "selected row, active nav background, tinted info" }
+      "accent-subtle":     { "dark": "{primary.300}",      "light": "{light.tint.primary}", "class": "accent-subtle", "role": "selected row, active nav background, tinted info" }
     },
     "status": {
       "positive":        { "dark": "{positive.100}",    "light": "{light.positive.600}",    "role": "success text, icons, borders" },
-      "positive-subtle": { "dark": "{positive.200}",    "light": "{light.positive.50}",     "role": "success badge / alert background (Figma #0D2618)" },
+      "positive-subtle": { "dark": "{positive.200}",    "light": "{light.tint.positive}",     "role": "success badge / alert background (Figma #0D2618)" },
       "positive-fill":   { "dark": "{positive.100}",    "light": "{light.positive.600}",    "role": "solid success fill, text-on-status-fill on it" },
       "negative":        { "dark": "{negative.100}",    "light": "{light.negative.600}",    "role": "error text, invalid field border" },
-      "negative-subtle": { "dark": "{negative.300}",    "light": "{light.negative.50}",     "role": "error alert / badge background" },
+      "negative-subtle": { "dark": "{negative.300}",    "light": "{light.tint.negative}",     "role": "error alert / badge background" },
       "negative-fill":   { "dark": "{negative.100}",    "light": "{light.negative.600}",    "role": "danger button" },
       "warning":         { "dark": "{notice.200}",      "light": "{light.notice.600}",      "role": "warning text" },
-      "warning-subtle":  { "dark": "{notice.300}",      "light": "{light.notice.50}",       "role": "warning background" },
+      "warning-subtle":  { "dark": "{notice.300}",      "light": "{light.tint.notice}",       "role": "warning background" },
       "warning-fill":    { "dark": "{notice.200}",      "light": "{light.notice.600}",      "role": "solid warning fill" },
       "info":            { "dark": "{informative.100}", "light": "{light.informative.600}", "role": "info text" },
-      "info-subtle":     { "dark": "{informative.200}", "light": "{light.informative.50}",  "role": "info background" },
+      "info-subtle":     { "dark": "{informative.200}", "light": "{light.tint.informative}",  "role": "info background" },
       "info-fill":       { "dark": "{informative.100}", "light": "{light.informative.600}", "role": "solid info fill" }
     }
   },
