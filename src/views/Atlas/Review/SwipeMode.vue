@@ -235,7 +235,6 @@ export default {
       justify-content: center;
     }
   }
-
 }
 
 .text-center {

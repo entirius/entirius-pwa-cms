@@ -232,14 +232,16 @@ Catalogue: `#overlays` (`#basic-modal`, `#confirm-dialog`, `#side-drawer`, `#tra
   BasicTabs, FilterChip and the MobileFilterPanel trigger show their counts with it.
 - **`Tag`** — a value chip (a picked entity, a media tag): `label`, `removable` adds a `close` IconButton `sm` named
   „Usuń: <label>” that emits `remove`, `to` makes the label a `router-link` to the entity (accent text).
-- **`BasicTabs`** — `options` `[{ label, value, count?, testid? }]` + `v-model` (unchanged); a `tablist` with one Tab stop
-  (the active tab), ←/→ (wrapping), Home and End select and focus a tab; active = accent text + 2 px accent underline.
+- **`BasicTabs`** — `options` `[{ label, value, count?, testid?, disabled? }]` + `v-model` (unchanged); a `tablist` with one
+  Tab stop (the active tab, else the first enabled one — never a disabled tab), ←/→ (wrapping), Home and End select and
+  focus a tab, skipping disabled ones (a disabled tab takes no click either); active = accent text + 2 px accent underline.
   Tab `i` is `id="<idPrefix>-tab-<value>"` with `aria-controls="<idPrefix>-panel-<value>"`: the call site renders the
   panel as `<div role="tabpanel" :id="…-panel-<value>" :aria-labelledby="…-tab-<value>">`. Empty `options` render
   nothing. An option's `testid` lands on its tab.
 - **`BasicCard`** — the card of `.page-card` (border-subtle, `--radius-3xl`, 24 px / 16 px below tablet): `title`
   (section title, Inter 600 16 px), `actions` slot (an ActionBar, right of the title), default slot; `gap` puts
-  16 px between the children (off by default: children with their own `mb-*` keep their spacing).
+  16 px between the children (off by default: children with their own `mb-*` keep their spacing). `flat` drops the
+  frame (no border, no padding) for a card inside a container that already frames it (a SideDrawer, a modal).
 - **`PanelCard`** — Home panel tile: `icon` (the panel's glyph from `configs/access.js`), `title` (Lexend Deca),
   `description`, `locked` + `lockedText` (opacity .5, lock, not focusable, no click), emits `click`; `surface-card`
   gradient, `--radius-3xl`, padding and gap 20 px, a plain 24 px icon, title and description 12 px apart; root class

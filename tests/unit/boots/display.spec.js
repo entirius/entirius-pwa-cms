@@ -134,6 +134,14 @@ describe("BasicTabs", () => {
     expect(wrapper.findAll('[role="tab"]').map((t) => t.attributes("tabindex"))).toEqual(["0", "-1", "-1"]);
     wrapper.unmount();
   });
+
+  it("never puts the one Tab stop on a disabled tab: the first enabled one takes it", () => {
+    const stops = (options, modelValue) =>
+      mount(BasicTabs, { props: { options, modelValue } }).findAll('[role="tab"]').map((t) => t.attributes("tabindex"));
+    const firstOff = TABS.map((tab, i) => ({ ...tab, disabled: i === 0 }));
+    expect(stops(firstOff, null)).toEqual(["-1", "0", "-1"]);
+    expect(stops(firstOff, TABS[0].value)).toEqual(["-1", "0", "-1"]);
+  });
 });
 
 describe("BasicCard", () => {

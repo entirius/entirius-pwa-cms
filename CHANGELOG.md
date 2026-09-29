@@ -539,8 +539,8 @@ All notable changes to this project will be documented in this file.
     labelled like the listed values (the editor's default language); a product open whose value prefetch fails shows one notice, not one per select.
   - Atlas: the supplier delete dialog's line follows the chosen option — neutral for the safe deactivation, negative
     "cannot be undone" for the permanent delete (`suppliers-delete-note` / `suppliers-delete-warning`). The category
-    mapping's values menu shows the full list while the field holds a list value exactly and filters only on typed
-    text. The swipe review's decision bar reads PageLayout's `--fab-lane` instead of a copied FAB size.
+    mapping's values menu shows the full list again after a value is picked from it and filters on typed text (a
+    typed value, even an exact list value, filters). The swipe review's decision bar reads PageLayout's `--fab-lane` instead of a copied FAB size.
   - Communicator: Enter in the template's Language or Subject saves again (the header Save submits the form through
     the native `form` attribute, required fields checked first). A send-window hour that is not HH:MM and an invalid
     new sequence key show the error on their own field (`aria-invalid`), not in one card-level line.

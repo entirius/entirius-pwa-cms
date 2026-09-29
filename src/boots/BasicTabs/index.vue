@@ -40,11 +40,12 @@ const listRef = ref(null);
 
 const STEP = { ArrowRight: 1, ArrowLeft: -1 };
 
-// Without a selected tab the first one takes the Tab stop.
-function isFocusTarget(option) {
-  const selected = props.options.some((o) => o.value === props.modelValue);
-  return selected ? option.value === props.modelValue : option === props.options[0];
-}
+// The one Tab stop: the selected tab, else (none selected, or the selected one disabled) the first enabled one.
+const focusTarget = computed(() => {
+  const enabled = props.options.filter((o) => !o.disabled);
+  return enabled.find((o) => o.value === props.modelValue) ?? enabled[0];
+});
+const isFocusTarget = (option) => option === focusTarget.value;
 
 function targetIndex(key, current, last) {
   if (key === "Home") return 0;

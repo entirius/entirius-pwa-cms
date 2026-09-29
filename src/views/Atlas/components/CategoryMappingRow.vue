@@ -28,10 +28,10 @@
           <BasicInput
             v-model="local.source_value"
             class="flex-1"
-            @update:model-value="sourceValuePicked = false"
             :disabled="!isNew"
             :placeholder="isNew ? $t('atlas.mappings.category.source_value_placeholder') : ''"
             :data-testid="`cat-mapping-value-${rowKey}`"
+            @update:model-value="sourceValuePicked = false"
           />
           <BasicMenu
             v-if="isNew"
@@ -135,6 +135,8 @@ export default {
       sourceValues: { field: null, values: [] },
       sourceValuesState: "idle",
       sourceValuesError: "",
+      // A value picked from the menu shows the full list again; typing filters it. Not reset by a new source_field:
+      // that field's full list shows, which is what a pick there would show anyway.
       sourceValuePicked: false,
     };
   },
