@@ -145,7 +145,7 @@ All notable changes to this project will be documented in this file.
   Title „Zaloguj się” / `Sign in` (`login.welcome`), new subtitle. Form errors now show under their field and once in
   an `aria-live` summary instead of a toast; the submit button shows its loading state; a caps-lock hint under a
   password field; `autocomplete` `username` / `current-password` / `new-password` / `email`. Fields, requests,
-  redirects and the SSO flow are unchanged. New: `size="lg"` (40 px) on `BasicButton` and `BasicInput`, `onDark` on
+  redirects and the SSO flow are unchanged. New: `size="lg"` (40 px) on `BasicButton` and `BasicInput`, a `trailing` slot on `BasicInput`, `onDark` on
   `BasicLogo`; `src/assets/scss/utils/_auth-card.scss` removed.
 - Accessible names renamed by the floating labels (P5 plan 56, listed in plan 56c for the test package): the Stock
   warehouse picker `Select warehouse` / „Wybierz magazyn” → `Warehouse` / „Magazyn”; the Pim category status filter

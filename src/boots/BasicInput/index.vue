@@ -1,5 +1,5 @@
 <template>
-  <div class="input-basic-wrapper" :class="`input-basic-wrapper--${size}`">
+  <div class="input-basic-wrapper" :class="[`input-basic-wrapper--${size}`, { relative: $slots.trailing }]">
     <div class="input-basic h-100 relative flex br-inherit">
       <input
         ref="inputEl"
@@ -28,9 +28,9 @@
       >
         <FontAwesomeIcon :icon="ICONS[leadingIcon]" />
       </div>
-      <div v-if="$slots.trailing" class="input-trailing absolute flex jc-ct ai-ct">
-        <slot name="trailing" />
-      </div>
+    </div>
+    <div v-if="$slots.trailing" class="input-trailing absolute flex jc-ct ai-ct">
+      <slot name="trailing" />
     </div>
   </div>
 </template>
