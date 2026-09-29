@@ -456,6 +456,12 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- P5 wave-4 close (plan 52): on a phone the page header's chips (the Pim channel selector, its scope badge and
+  „Tłumacz sklep”) wrap under the title instead of squeezing it to one letter per line; the product translate dialog
+  refuses to send without a picked product (the translator reads an empty list as the whole channel); a busy dialog
+  (translate, enrichment spawn, a confirm in progress) disables its header close button too; an estimate that answers
+  after the translate dialog closed is dropped; the Atlas products tab draws „Pokaż surowe dane” with its own icon.
+
 - P5 wave-3 close (plan 46): a breadcrumb trail no longer repeats the panel when its nav entry reads the same
   ("Promocje / Promocje / <rule>", "Zgody / Zgody / …", "Ceny / Ceny / …" → "Promocje / <rule>").
 
