@@ -542,6 +542,11 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- `BasicMenu` phone sheet (P5 plan 56d): only an open phone sheet renders the teleported backdrop layer — every other
+  menu (every `BasicSelect`, `EntitySearchPicker`) is the trigger and the popover again, as before plan 56c. The focus
+  trap's container is the popover itself (`tabindex="-1"`), so a sheet in items mode or with no focusable content keeps
+  focus inside; the trigger is focused and taken as the trap's opener before focus moves in, so every close — Esc, the
+  backdrop, a panel link, `store.panelOpen = false` — returns focus to it.
 - P5 review fixes of plans 54c and 55 (plan 54d):
   - PIM product attributes: a select or multiselect value beyond the loaded page can be found by typing again. The
     channel values endpoint takes no search param, so the first typed query loads the pages left once (up to 2 000

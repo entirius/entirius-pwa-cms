@@ -1,5 +1,3 @@
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
 import { setActivePinia, createPinia } from "pinia";
@@ -104,11 +102,10 @@ describe("configuration health", () => {
     expect(textTokens(undefined)).toEqual([]);
   });
 
-  it("a long word that is no token stays plain text, and the row text breaks it when it cannot fit", () => {
-    const words = ["DEBUG", "mail.example.test:587", "/etc/app/settings.py", "Konfiguracjapowiadomieńsystemowych"];
+  // Whether such a word fits a phone is measured by @ux on the health-open state (tests/visual/support/state.js).
+  it("a long word that is no token stays plain text", () => {
+    const words = ["DEBUG", "mail.example.test:587", "/etc/app/settings.py", "Notificationdeliveryconfiguration"];
     words.forEach((word) => expect(textTokens(word)).toEqual([{ text: word, code: false }]));
-    const panel = readFileSync(resolve(__dirname, "../../../../src/components/ConfigHealth/ConfigHealthPanel.vue"), "utf8");
-    expect(panel).toMatch(/\.cfg-row__title,\s*\.cfg-row__detail\s*\{\s*overflow-wrap: break-word;/);
   });
 
   it("a CMS-path fix link is a router link", async () => {
