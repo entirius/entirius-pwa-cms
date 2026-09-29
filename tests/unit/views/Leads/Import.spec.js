@@ -3,12 +3,15 @@ import { mount, flushPromises } from "@vue/test-utils";
 
 const api = vi.hoisted(() => ({ POST_Import: vi.fn(), GET_Import: vi.fn() }));
 vi.mock("@/api/leads/api", () => api);
+const push = vi.hoisted(() => vi.fn());
+vi.mock("vue-router", () => ({ useRouter: () => ({ push }) }));
 
 import Import from "@/views/Leads/Import.vue";
+import { leadsFrame } from "./leadsFrame";
 import { t } from "@/i18n";
 
 function mountWithFile() {
-  const wrapper = mount(Import, { global: { stubs: { RouterLink: true } } });
+  const wrapper = mount(Import, { global: { components: leadsFrame.components, stubs: { ...leadsFrame.stubs, RouterLink: true } } });
   const input = wrapper.find('[data-testid="import-file"]');
   Object.defineProperty(input.element, "files", { value: [new File(["domain\n"], "leads.csv", { type: "text/csv" })] });
   return input.trigger("change").then(() => wrapper);
@@ -28,7 +31,7 @@ describe("Leads Import", () => {
     await vi.advanceTimersByTimeAsync(2000);
     await flushPromises();
     expect(wrapper.find('[data-testid="import-error"]').text()).toBe("gone");
-    expect(wrapper.find('[data-testid="import-upload"]').attributes("disabled")).toBeUndefined();
+    expect(wrapper.find('[data-testid="import-upload"]').attributes("disabled")).toBe("false");
     await vi.advanceTimersByTimeAsync(10000);
     expect(api.GET_Import).toHaveBeenCalledTimes(2);
   });
@@ -37,7 +40,7 @@ describe("Leads Import", () => {
     const batch = { id: 4, status: "done", created_count: 2, matched_count: 1, skipped_count: 0, report: [] };
     api.POST_Import.mockResolvedValue({ data: { ...batch, status: "pending" } });
     api.GET_Import.mockResolvedValue({ data: batch });
-    const wrapper = mount(Import, { global: { stubs: { RouterLink: true } } });
+    const wrapper = mount(Import, { global: { components: leadsFrame.components, stubs: { ...leadsFrame.stubs, RouterLink: true } } });
     const file = new File(["domain\n"], "leads.csv", { type: "text/csv" });
     const input = wrapper.find('[data-testid="import-file"]');
     Object.defineProperty(input.element, "files", { value: [file] });
@@ -51,7 +54,7 @@ describe("Leads Import", () => {
 
   // FIX-17 item 13: the screen says which columns, which legal bases and what happens next, and offers a sample.
   it("explains the columns, the legal bases and what happens after the upload", () => {
-    const wrapper = mount(Import, { global: { stubs: { RouterLink: true } } });
+    const wrapper = mount(Import, { global: { components: leadsFrame.components, stubs: { ...leadsFrame.stubs, RouterLink: true } } });
     expect(wrapper.findAll('[data-testid="import-columns"] li')).toHaveLength(4);
     expect(t("leads.import.column_company")).toContain("company_name");
     expect(t("leads.import.column_legal_basis")).toContain("consent, legitimate_interest, contract");

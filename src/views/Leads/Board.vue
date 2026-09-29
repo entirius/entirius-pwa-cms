@@ -1,56 +1,64 @@
 <template>
-  <div class="ld-page" data-testid="leads-board">
-    <div class="ld-row">
-      <h2 class="ld-title">{{ $t("leads.board.title") }}</h2>
-      <input
-        v-model="search"
-        class="ld-input"
-        type="search"
-        :placeholder="$t('leads.board.search')"
-        data-testid="board-search"
-        @keydown.enter="load"
-      />
-      <FilterChip
-        v-for="type in leadTypes.active"
-        :key="type.code"
-        :label="type.label"
-        :active="filters.lead_type === type.code"
-        :data-testid="`board-filter-type-${type.code}`"
-        @click="setFilter('lead_type', filters.lead_type === type.code ? '' : type.code)"
-      />
-      <FilterChip
-        :label="$t('leads.board.has_reply')"
-        :active="filters.has_reply"
-        data-testid="board-filter-reply"
-        @click="setFilter('has_reply', !filters.has_reply)"
-      />
-      <FilterChip
-        :label="$t('leads.company.do_not_contact')"
-        :active="filters.do_not_contact"
-        data-testid="board-filter-dnc"
-        @click="setFilter('do_not_contact', !filters.do_not_contact)"
-      />
-    </div>
-    <div class="board__wrap">
-      <div ref="boardEl" class="board" data-testid="board-columns" @scroll="measure">
-        <BoardColumn
-          v-for="stage in stages"
-          :key="stage.key"
-          :stage="stage"
-          :stages="stages"
-          :cards="columns[stage.key]?.cards || []"
-          :count="columns[stage.key]?.count || 0"
-          :has-more="Boolean(columns[stage.key]?.next)"
-          :rules="rulesByStage[stage.id] || []"
-          @move="move"
-          @more="loadColumn(stage.key, columns[stage.key].page + 1)"
-        />
+  <PageLayout data-testid="leads-board">
+    <template #header>
+      <PageHeader :title="$t('leads.board.title')" />
+    </template>
+    <template #toolbar>
+      <div class="flex ai-ct flex-wrap gap-5 rg-3">
+        <!-- the label names the field and carries the test id: a page object fills it through the label -->
+        <label class="board__search" data-testid="board-search">
+          <span class="visually-hidden">{{ $t("leads.board.search") }}</span>
+          <BasicInput
+            v-model="search"
+            type="search"
+            icon="search"
+            :placeholder="$t('leads.board.search')"
+            @on-key-down="load()"
+          />
+        </label>
+        <div class="filter-chip-row" role="group" :aria-label="$t('leads.board.filters')">
+          <FilterChip
+            v-for="type in leadTypes.active"
+            :key="type.code"
+            :label="type.label"
+            :active="filters.lead_type === type.code"
+            :data-testid="`board-filter-type-${type.code}`"
+            @click="setFilter('lead_type', filters.lead_type === type.code ? '' : type.code)"
+          />
+          <FilterChip
+            :label="$t('leads.board.has_reply')"
+            :active="filters.has_reply"
+            data-testid="board-filter-reply"
+            @click="setFilter('has_reply', !filters.has_reply)"
+          />
+          <FilterChip
+            :label="$t('leads.company.do_not_contact')"
+            :active="filters.do_not_contact"
+            data-testid="board-filter-dnc"
+            @click="setFilter('do_not_contact', !filters.do_not_contact)"
+          />
+        </div>
+        <!-- columns past the right edge: announced at the toolbar's end, never over a column header (C-17) -->
+        <BasicButton v-if="moreRight" class="ml-auto" data-testid="board-scroll-right" @click="scrollRight">
+          {{ $t("leads.board.more_stages") }}
+        </BasicButton>
       </div>
-      <button v-if="moreRight" class="board__more" data-testid="board-scroll-right" @click="scrollRight">
-        {{ $t("leads.board.more_stages") }} <FontAwesomeIcon :icon="$icons.next" />
-      </button>
+    </template>
+    <div ref="boardEl" class="board" data-testid="board-columns" @scroll="measure">
+      <BoardColumn
+        v-for="stage in stages"
+        :key="stage.key"
+        :stage="stage"
+        :stages="stages"
+        :cards="columns[stage.key]?.cards || []"
+        :count="columns[stage.key]?.count || 0"
+        :has-more="Boolean(columns[stage.key]?.next)"
+        :rules="rulesByStage[stage.id] || []"
+        @move="move"
+        @more="loadColumn(stage.key, columns[stage.key].page + 1)"
+      />
     </div>
-  </div>
+  </PageLayout>
 </template>
 
 <script setup>
@@ -160,25 +168,9 @@ onBeforeUnmount(() => window.removeEventListener("resize", measure));
 </script>
 
 <style scoped>
-.board__wrap {
-  position: relative;
-}
-.board__more {
-  position: absolute;
-  top: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  min-height: 44px;
-  padding: 0 var(--space-8);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  background: var(--surface-base);
-  box-shadow: -12px 0 16px var(--surface-base);
-  color: var(--text-body);
-  font-weight: 600;
-  cursor: pointer;
+.board__search {
+  flex: 0 1 20rem;
+  min-width: 12rem;
 }
 .board {
   display: flex;

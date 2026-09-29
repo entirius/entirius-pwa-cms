@@ -6,6 +6,7 @@ const siteintel = vi.hoisted(() => ({ GET_LatestAudit: vi.fn() }));
 vi.mock("@/api/siteintel/api", () => siteintel);
 
 import IntelTab from "@/views/Leads/tabs/IntelTab.vue";
+import { leadsFrame } from "./leadsFrame";
 
 const audit = {
   status: "completed",
@@ -17,7 +18,7 @@ const audit = {
 
 async function mountTab(latest) {
   siteintel.GET_LatestAudit.mockResolvedValue(latest);
-  const wrapper = mount(IntelTab, { props: { company: { domain: "shop.test" } }, global: { mocks: { $t: t } } });
+  const wrapper = mount(IntelTab, { props: { company: { domain: "shop.test" } }, global: { mocks: { $t: t }, components: leadsFrame.components } });
   await flushPromises();
   return wrapper;
 }

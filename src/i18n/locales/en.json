@@ -3261,7 +3261,9 @@
         "mobile": "Mobile performance"
       },
       "sources": "Sources",
-      "unavailable": "Not available"
+      "unavailable": "Not available",
+      "test": "Test",
+      "score": "Score"
     },
     "thread": {
       "title": "Company thread",
@@ -3331,7 +3333,8 @@
       "rules_many": "{count} rules",
       "more_stages": "More stages",
       "last_activity": "last activity {time}",
-      "no_activity": "No activity yet"
+      "no_activity": "No activity yet",
+      "filters": "Filters"
     },
     "company": {
       "do_not_contact": "Do not contact",
@@ -3356,7 +3359,9 @@
       "last_activity": "Last activity",
       "customer": "Customer",
       "activities": "Recent activity",
-      "title": "Company"
+      "title": "Company",
+      "field": "Field",
+      "value": "Value"
     },
     "communicate": {
       "template": "Template",
@@ -3425,7 +3430,8 @@
       "label_help": "Label — the name shown on the board",
       "delete_busy_one": "The stage “{label}” holds 1 company. Move it to another stage first — a stage that still holds companies cannot be deleted.",
       "delete_busy_few": "The stage “{label}” holds {count} companies. Move them to another stage first — a stage that still holds companies cannot be deleted.",
-      "delete_busy_many": "The stage “{label}” holds {count} companies. Move them to another stage first — a stage that still holds companies cannot be deleted."
+      "delete_busy_many": "The stage “{label}” holds {count} companies. Move them to another stage first — a stage that still holds companies cannot be deleted.",
+      "key_invalid": "A key may hold only letters, digits, “-” and “_”"
     },
     "legal_basis": {
       "consent": "Consent",
@@ -3482,7 +3488,8 @@
       "code_help": "Upper-case, e.g. RETAILER — fixed after it is added",
       "active": "Active",
       "add": "Add type",
-      "unknown": "Type unknown"
+      "unknown": "Type unknown",
+      "code_invalid": "A code may hold only letters, digits and “_”"
     }
   },
   "notification_bar": {

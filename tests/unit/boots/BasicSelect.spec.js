@@ -4,6 +4,7 @@ import { mount } from "@vue/test-utils";
 
 import BasicSelect from "@/boots/BasicSelect/index.vue";
 import { FORM_FIELD } from "@/composables/formField";
+import { t } from "@/i18n";
 
 const OPTIONS = [
   { label: "Polski", value: "pl" },
@@ -239,6 +240,26 @@ describe("BasicSelect", () => {
     expect(control().getAttribute("aria-labelledby")).toBe("channel-label");
     expect(wrapper.attributes("data-testid")).toBe("channel-select");
     expect(wrapper.attributes("aria-labelledby")).toBeUndefined();
+  });
+
+  // Operator request 2026-09-29 (plan 53): a select without a FormField label keeps its name in sight.
+  it("floatingLabel: the placeholder while empty, a mini label above the chosen value, the accessible name", async () => {
+    const wrapper = mountSelect({ floatingLabel: "Etap", placeholder: "Wybierz" });
+    await settle();
+    expect(control().textContent.trim()).toBe("Etap");
+    expect(control().getAttribute("aria-label")).toBe("Etap");
+    expect(wrapper.find(".basic-select__floating").exists()).toBe(false);
+    await wrapper.setProps({ modelValue: "en" });
+    expect(control().textContent.trim()).toBe("English");
+    expect(wrapper.get(".basic-select__floating").text()).toBe("Etap");
+    expect(control().getAttribute("aria-label")).toBe("Etap");
+  });
+
+  it("floatingLabel with several values: the label above, the count as the value", async () => {
+    const wrapper = mountSelect({ floatingLabel: "Języki", multiple: true, modelValue: ["pl", "cs"] });
+    await settle();
+    expect(wrapper.get(".basic-select__floating").text()).toBe("Języki");
+    expect(control().textContent.trim()).toBe(t("select.selected_count", { count: 2 }));
   });
 
   it("form-field contract: takes the field's id, description, invalid, required and disabled", async () => {

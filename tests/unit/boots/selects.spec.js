@@ -5,6 +5,7 @@ import { flushPromises, mount } from "@vue/test-utils";
 import EntitySearchPicker from "@/boots/EntitySearchPicker/index.vue";
 import ChannelMultiSelect from "@/boots/ChannelMultiSelect/index.vue";
 import Tag from "@/boots/Tag/index.vue";
+import { t } from "@/i18n";
 
 const RESULTS = [
   { label: "Buty trekkingowe", value: "sku-1", secondary: "SKU-1" },
@@ -164,6 +165,24 @@ describe("ChannelMultiSelect", () => {
     await wrapper.setProps({ compact: true });
     expect(wrapper.find(".channel-select__full").exists()).toBe(false);
     expect(wrapper.find(".channel-select__short").text()).toBe("Kanały");
+  });
+
+  // Operator request 2026-09-29 (plan 53): the floating label names the chip, empty or chosen.
+  it("floatingLabel: the label while empty, then the channel name with the label above it", async () => {
+    const wrapper = mountChip({ floatingLabel: "Kanał sklepu" });
+    expect(trigger().textContent.trim()).toBe("Kanał sklepu");
+    expect(trigger().getAttribute("aria-label")).toBe("Kanał sklepu");
+    expect(wrapper.find(".channel-select__floating").exists()).toBe(false);
+    await wrapper.setProps({ modelValue: ["de"] });
+    expect(trigger().textContent.trim()).toBe("Niemcy");
+    expect(wrapper.get(".channel-select__floating").text()).toBe("Kanał sklepu");
+    expect(trigger().getAttribute("aria-label")).toBe("Kanał sklepu: Niemcy");
+  });
+
+  it("floatingLabel with several channels: the label above, the count as the value", async () => {
+    const wrapper = mountChip({ floatingLabel: "Kanał sklepu", modelValue: ["pl", "de"] });
+    expect(wrapper.get(".channel-select__floating").text()).toBe("Kanał sklepu");
+    expect(trigger().textContent.trim()).toBe(t("select.selected_count", { count: 2 }));
   });
 
   it("with no channel chosen it opens on the first channel", async () => {

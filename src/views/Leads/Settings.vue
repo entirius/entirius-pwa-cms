@@ -32,6 +32,7 @@ const munin = useMuninStore();
 const sections = computed(() => SECTIONS.filter((section) => munin.isModuleEnabled(section.module)));
 </script>
 
+<style lang="scss" src="@/views/Leads/desktop.scss"></style>
 <style scoped>
 .ld-page {
   max-width: 720px;

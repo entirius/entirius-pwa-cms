@@ -3,18 +3,16 @@
     <router-view />
   </DesktopOnly>
   <!-- Settings and its sections: full width, one scroller, usable on a phone (wide tables scroll in their box) -->
-  <div v-else-if="route.meta?.page" class="desktop-page leads-page" data-testid="leads-page">
-    <!-- a section leads back to the hub; a template edit has its own link back to the template list -->
-    <BasicButton
+  <div v-else-if="route.meta?.page" class="leads-page h-100 ovy-auto" data-testid="leads-page">
+    <!-- a section leads back to the hub (a section on PageHeader has its own back); a template edit has its own link
+         back to the template list -->
+    <IconButton
       v-if="!NO_BACK_BAR.includes(route.name)"
       class="leads-page__back"
-      variant="ghost"
-      size="sm"
       icon="back"
+      :label="$t('leads.thread.back')"
       @click="router.push({ name: 'LeadsSettings' })"
-    >
-      {{ $t("leads.thread.back") }}
-    </BasicButton>
+    />
     <router-view />
   </div>
   <div v-else class="leads" :class="{ 'leads--detail': hasDetail, 'leads--solo': !hasInbox }" data-testid="leads-layout">
@@ -47,7 +45,12 @@
         :title="$t('leads.inbox.detail_empty_title')"
         :message="$t('leads.inbox.detail_empty')"
       >
-        <router-link v-if="isDesktop" class="ld-link" :to="{ name: 'LeadsBoard' }" data-testid="leads-open-board">
+        <router-link
+          v-if="isDesktop"
+          class="leads__open-board t-accent"
+          :to="{ name: 'LeadsBoard' }"
+          data-testid="leads-open-board"
+        >
           {{ $t("leads.inbox.open_board") }}
         </router-link>
       </EmptyState>
@@ -73,7 +76,7 @@ import Inbox from "./Inbox.vue";
 // The Inbox is communicator data — without that module the detail takes the whole width.
 const route = useRoute();
 const router = useRouter();
-const NO_BACK_BAR = ["LeadsSettings", "CommunicatorTemplateEdit"];
+const NO_BACK_BAR = ["LeadsSettings", "CommunicatorTemplateEdit", "LeadsStages", "LeadsLeadTypes"];
 const munin = useMuninStore();
 const reviewQueue = useLeadsReviewStore();
 const isDesktop = useIsDesktop();
@@ -108,16 +111,9 @@ onMounted(async () => {
 });
 </script>
 
-<style lang="scss" src="./desktop.scss"></style>
-
 <style scoped>
 .leads-page__back {
-  min-height: 44px;
   margin: var(--space-5) var(--space-8) 0;
-}
-.leads-page :deep(.ld-table) {
-  display: block;
-  overflow-x: auto;
 }
 /* The app content column clips (overflow: hidden) — the layout is its own scroller, so long threads
    and the Review edit form stay reachable and the sticky Review actions pin to its bottom. */
@@ -173,11 +169,10 @@ onMounted(async () => {
   .leads__placeholder p {
     margin: 0;
   }
-  .ld-link {
+  .leads__open-board {
     min-height: 32px;
     display: inline-flex;
     align-items: center;
-    color: var(--text-accent);
     text-decoration: underline;
   }
 }

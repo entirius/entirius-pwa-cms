@@ -1,57 +1,81 @@
 <template>
-  <div class="ld-page" data-testid="leads-lead-types">
-    <p class="ld-muted">{{ $t("leads.lead_types.help") }}</p>
-    <div v-for="(type, index) in types" :key="type.id" class="lead-type" :data-code="type.code" data-testid="lead-type-row">
-      <input v-model="type.label" class="ld-input" :aria-label="$t('leads.lead_types.label')" @change="save(type, { label: type.label })" />
-      <span class="ld-badge lead-type__code">{{ type.code }}</span>
-      <label class="lead-type__active">
-        <input type="checkbox" :checked="type.is_active" data-testid="lead-type-active" @change="save(type, { is_active: $event.target.checked })" />
-        {{ $t("leads.lead_types.active") }}
-      </label>
-      <div class="lead-type__controls">
-        <button
-          class="ld-btn ld-btn--icon"
-          :disabled="shifting || index === 0"
-          :aria-label="$t('leads.stages.up')"
-          :title="$t('leads.stages.up')"
-          @click="shift(index, -1)"
+  <PageLayout data-testid="leads-lead-types">
+    <template #header>
+      <PageHeader :title="$t('leads.lead_types.title')" :back="{ name: 'LeadsSettings' }" />
+    </template>
+    <div class="lead-types flex-column gap-8">
+      <p class="t-muted m-0">{{ $t("leads.lead_types.help") }}</p>
+      <div class="flex-column gap-3">
+        <div
+          v-for="(type, index) in types"
+          :key="type.id"
+          class="lead-type"
+          :data-code="type.code"
+          data-testid="lead-type-row"
         >
-          <FontAwesomeIcon :icon="$icons.moveUp" />
-        </button>
-        <button
-          class="ld-btn ld-btn--icon"
-          :disabled="shifting || index === types.length - 1"
-          :aria-label="$t('leads.stages.down')"
-          :title="$t('leads.stages.down')"
-          @click="shift(index, 1)"
-        >
-          <FontAwesomeIcon :icon="$icons.moveDown" />
-        </button>
-        <button
-          class="ld-btn ld-btn--danger ld-btn--icon"
-          :aria-label="$t('leads.stages.delete')"
-          :title="$t('leads.stages.delete')"
-          data-testid="lead-type-delete"
-          @click="remove(type)"
-        >
-          <FontAwesomeIcon :icon="$icons.delete" />
-        </button>
+          <label class="lead-type__label">
+            <span class="visually-hidden">{{ $t("leads.lead_types.label") }}</span>
+            <BasicInput
+              v-model="type.label"
+              data-testid="lead-type-label"
+              @on-focusout="rename(type)"
+              @on-key-down="rename(type)"
+            />
+          </label>
+          <StatusBadge class="lead-type__code" tone="neutral" size="sm" :dot="false" :label="type.code" />
+          <BasicSwitch
+            :model-value="type.is_active"
+            :label="$t('leads.lead_types.active')"
+            data-testid="lead-type-active"
+            @update:model-value="save(type, { is_active: $event })"
+          />
+          <div class="lead-type__controls">
+            <IconButton
+              icon="moveUp"
+              variant="outline"
+              :label="$t('leads.stages.up')"
+              :disabled="shifting || index === 0"
+              @click="shift(index, -1)"
+            />
+            <IconButton
+              icon="moveDown"
+              variant="outline"
+              :label="$t('leads.stages.down')"
+              :disabled="shifting || index === types.length - 1"
+              @click="shift(index, 1)"
+            />
+            <IconButton
+              icon="delete"
+              variant="danger"
+              :label="$t('leads.stages.delete')"
+              data-testid="lead-type-delete"
+              @click="remove(type)"
+            />
+          </div>
+          <p v-if="errors[type.id]" class="lead-type__error t-negative m-0" data-testid="lead-type-error">
+            {{ errors[type.id] }}
+          </p>
+        </div>
       </div>
-      <p v-if="errors[type.id]" class="ld-error lead-type__error" data-testid="lead-type-error">{{ errors[type.id] }}</p>
+      <p v-if="errors.order" class="t-negative m-0" data-testid="lead-type-order-error">{{ errors.order }}</p>
+      <form class="flex ai-st flex-wrap gap-5" data-testid="lead-type-add" @submit.prevent="add">
+        <FormField :label="$t('leads.lead_types.code')" :description="$t('leads.lead_types.code_help')" required>
+          <BasicInput
+            :model-value="draft.code"
+            data-testid="lead-type-new-code"
+            @update:model-value="draft.code = $event.toUpperCase()"
+          />
+        </FormField>
+        <FormField :label="$t('leads.lead_types.label')" required>
+          <BasicInput v-model="draft.label" data-testid="lead-type-new-label" />
+        </FormField>
+        <BasicButton class="lead-type__submit" variant="primary" type="submit" data-testid="lead-type-save">
+          {{ $t("leads.lead_types.add") }}
+        </BasicButton>
+      </form>
+      <p v-if="errors.add" class="t-negative m-0" data-testid="lead-type-add-error">{{ errors.add }}</p>
     </div>
-    <p v-if="errors.order" class="ld-error" data-testid="lead-type-order-error">{{ errors.order }}</p>
-    <form class="ld-row lead-type__add" data-testid="lead-type-add" @submit.prevent="add">
-      <label class="ld-field"><span class="ld-field__label">{{ $t("leads.lead_types.code") }}</span>
-        <input v-model="draft.code" class="ld-input" required pattern="[A-Za-z0-9_]+" data-testid="lead-type-new-code" @input="draft.code = draft.code.toUpperCase()" />
-        <span class="ld-muted">{{ $t("leads.lead_types.code_help") }}</span>
-      </label>
-      <label class="ld-field"><span class="ld-field__label">{{ $t("leads.lead_types.label") }}</span>
-        <input v-model="draft.label" class="ld-input" required data-testid="lead-type-new-label" />
-      </label>
-      <button class="ld-btn ld-btn--primary" type="submit" data-testid="lead-type-save">{{ $t("leads.lead_types.add") }}</button>
-    </form>
-    <p v-if="errors.add" class="ld-error" data-testid="lead-type-add-error">{{ errors.add }}</p>
-  </div>
+  </PageLayout>
 </template>
 
 <script setup>
@@ -65,14 +89,17 @@ import { useLeadTypesStore } from "@/stores/leadTypes";
 // row, deactivate (a type in use stays on its companies), delete refused inline while companies carry the code.
 // The code is fixed after create — companies and template audiences hold it.
 const ORDER_STEP = 10;
+const CODE_PATTERN = /^[A-Za-z0-9_]+$/;
 const store = useLeadTypesStore();
 const types = ref([]);
 const errors = reactive({});
 const draft = reactive({ code: "", label: "" });
 const shifting = ref(false); // one move at a time: the PATCHes of a move run one after another
+let savedLabels = {}; // id → the label the server holds: a blur without an edit sends nothing
 
 async function load() {
   types.value = (await GET_LeadTypes()).data.results || [];
+  savedLabels = Object.fromEntries(types.value.map((type) => [type.id, type.label]));
   store.load(true); // the chips, selects and labels elsewhere read the new list
 }
 
@@ -89,6 +116,13 @@ async function attempt(key, call) {
 
 async function save(type, body) {
   if (await attempt(type.id, () => PATCH_LeadType(type.id, body))) await load();
+}
+
+// The label field commits on blur and Enter, as the native change did: only a changed label is sent.
+function rename(type) {
+  if (type.label === savedLabels[type.id]) return;
+  savedLabels[type.id] = type.label;
+  return save(type, { label: type.label });
 }
 
 async function shift(index, delta) {
@@ -112,6 +146,10 @@ async function remove(type) {
 }
 
 async function add() {
+  if (!CODE_PATTERN.test(draft.code)) {
+    errors.add = t("leads.lead_types.code_invalid");
+    return;
+  }
   const order = Math.max(-ORDER_STEP, ...types.value.map((type) => type.order)) + ORDER_STEP;
   if (await attempt("add", () => POST_LeadType({ code: draft.code, label: draft.label, order }))) {
     Object.assign(draft, { code: "", label: "" });
@@ -122,27 +160,17 @@ async function add() {
 onMounted(load);
 </script>
 
-<style lang="scss" src="./desktop.scss"></style>
 <style lang="scss" scoped>
 @import "@/assets/scss/utils/media-query";
 
-.ld-page {
+.lead-types {
   max-width: 900px;
 }
 .lead-type {
   display: grid;
-  grid-template-columns: minmax(8rem, 1fr) auto auto auto;
+  grid-template-columns: minmax(8rem, 1fr) 12rem auto auto;
   align-items: center;
   gap: var(--space-5);
-}
-.lead-type__code {
-  font-family: monospace;
-}
-.lead-type__active {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  min-height: 44px;
 }
 .lead-type__controls {
   display: flex;
@@ -151,15 +179,19 @@ onMounted(load);
 .lead-type__error {
   grid-column: 1 / -1;
 }
-.lead-type__add {
-  align-items: flex-start;
+.lead-type__submit {
+  margin-top: var(--space-5);
+}
+/* The code column has one width down the list, so the fields and controls line up whatever the code is long. */
+.lead-type__code {
+  justify-self: start;
 }
 /* Below tablet: label on its own line, the rest wraps below it */
 @include max-tablet {
   .lead-type {
     grid-template-columns: 1fr auto;
   }
-  .lead-type .ld-input {
+  .lead-type__label {
     grid-column: 1 / -1;
   }
 }

@@ -14,6 +14,7 @@ vi.mock("@/api/communicator/api", () => ({
 }));
 
 import ContactsTab from "@/views/Leads/tabs/ContactsTab.vue";
+import { fieldError, leadsFrame, setControl } from "./leadsFrame";
 
 const contact = (fields) => ({
   first_name: "",
@@ -49,14 +50,14 @@ const company = {
 };
 
 const mountTab = async () => {
-  const wrapper = mount(ContactsTab, { props: { company } });
+  const wrapper = mount(ContactsTab, { props: { company }, global: leadsFrame });
   await flushPromises();
   return wrapper;
 };
-const rows = (wrapper) => wrapper.findAll('[data-testid="contact-row"]');
+const rows = (wrapper) => wrapper.findAll(".data-table__row");
 const fill = async (wrapper, prefix, fields) => {
   for (const [id, value] of Object.entries(fields))
-    await wrapper.get(`[data-testid="${prefix}-${id}"]`).setValue(value);
+    await setControl(wrapper, `${prefix}-${id}`, value);
 };
 const submit = async (wrapper, form) => {
   await wrapper.get(`[data-testid="${form}"]`).trigger("submit");
@@ -110,14 +111,14 @@ describe("Company card — Contacts tab", () => {
     await wrapper.get('[data-testid="contact-add"]').trigger("click");
     await fill(wrapper, "contact-new", { email: "anna@shop.pl" });
     await submit(wrapper, "contact-add-form");
-    expect(wrapper.get('[data-testid="contact-new-email-error"]').text()).toBe(
+    expect(fieldError(wrapper, "leads.contacts.email")).toBe(
       "Already a contact of this company."
     );
     expect(wrapper.find('[data-testid="contact-error"]').exists()).toBe(false);
     expect(wrapper.emitted("changed")).toBeUndefined();
   });
 
-  it("edits a row in place: email read-only once set, only the changed fields are sent", async () => {
+  it("edits a row in the form above the table: email read-only once set, only the changed fields are sent", async () => {
     const wrapper = await mountTab();
     await rows(wrapper)[0].get('[data-testid="contact-edit"]').trigger("click");
     expect(
@@ -145,7 +146,7 @@ describe("Company card — Contacts tab", () => {
     await rows(wrapper)[1].get('[data-testid="contact-edit"]').trigger("click");
     const email = wrapper.get('[data-testid="contact-edit-email"]');
     expect(email.attributes("readonly")).toBeUndefined();
-    await email.setValue("marek@shop.pl");
+    await setControl(wrapper, "contact-edit-email", "marek@shop.pl");
     await submit(wrapper, "contact-edit-form");
     expect(leads.PATCH_Contact).toHaveBeenCalledWith(2, {
       email: "marek@shop.pl",
@@ -162,9 +163,9 @@ describe("Company card — Contacts tab", () => {
     await rows(wrapper)[1].get('[data-testid="contact-edit"]').trigger("click");
     await fill(wrapper, "contact-edit", { language: "xx" });
     await submit(wrapper, "contact-edit-form");
-    expect(
-      wrapper.get('[data-testid="contact-edit-language-error"]').text()
-    ).toBe("unknown language");
+    expect(fieldError(wrapper, "leads.contacts.language")).toBe(
+      "unknown language"
+    );
     expect(wrapper.find('[data-testid="contact-edit-form"]').exists()).toBe(
       true
     );
@@ -236,6 +237,8 @@ describe("Company card — Contacts tab", () => {
     expect(anonymised.find('[data-testid="contact-remove"]').exists()).toBe(
       false
     );
-    expect(anonymised.text()).toContain("leads.contacts.anonymised");
+    expect(
+      anonymised.findComponent({ name: "StatusBadge" }).attributes("label")
+    ).toBe("leads.contacts.anonymised");
   });
 });

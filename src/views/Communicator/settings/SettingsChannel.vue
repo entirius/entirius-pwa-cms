@@ -53,3 +53,5 @@ async function save() {
 
 onMounted(async () => apply((await GET_Channel()).data));
 </script>
+
+<style lang="scss" src="@/views/Leads/desktop.scss"></style>

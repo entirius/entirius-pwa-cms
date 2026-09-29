@@ -18,3 +18,5 @@ onMounted(async () => {
   versions.value = (await GET_TemplateVersions(props.templateId)).data.results;
 });
 </script>
+
+<style lang="scss" src="@/views/Leads/desktop.scss"></style>

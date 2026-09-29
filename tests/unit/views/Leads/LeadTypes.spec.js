@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
+import { t } from "@/i18n";
 
 const rows = vi.hoisted(() => ({ list: [] }));
 const api = vi.hoisted(() => ({
@@ -12,9 +13,10 @@ const api = vi.hoisted(() => ({
 vi.mock("@/api/leads/api", () => api);
 
 import LeadTypes from "@/views/Leads/LeadTypes.vue";
+import { leadsFrame, setControl } from "./leadsFrame";
 
 const mountScreen = async () => {
-  const wrapper = mount(LeadTypes, { global: { stubs: { FontAwesomeIcon: true } } });
+  const wrapper = mount(LeadTypes, { global: leadsFrame });
   await flushPromises();
   return wrapper;
 };
@@ -33,8 +35,8 @@ describe("Leads → Settings → Lead types", () => {
 
   it("adds a type with an upper-case code after the last one", async () => {
     const wrapper = await mountScreen();
-    await wrapper.get('[data-testid="lead-type-new-code"]').setValue("agency");
-    await wrapper.get('[data-testid="lead-type-new-label"]').setValue("Agency");
+    await setControl(wrapper, "lead-type-new-code", "agency");
+    await setControl(wrapper, "lead-type-new-label", "Agency");
     await wrapper.get('[data-testid="lead-type-add"]').trigger("submit");
     await flushPromises();
     expect(api.POST_LeadType).toHaveBeenCalledWith({ code: "AGENCY", label: "Agency", order: 20 });
@@ -42,10 +44,10 @@ describe("Leads → Settings → Lead types", () => {
 
   it("renames, deactivates and reorders by PATCH", async () => {
     const wrapper = await mountScreen();
-    const input = row(wrapper, "WHOLESALE").get("input.ld-input");
-    await input.setValue("B2B");
-    await input.trigger("change");
-    await row(wrapper, "RETAILER").get('[data-testid="lead-type-active"]').setValue(false);
+    const label = row(wrapper, "WHOLESALE").findComponent('[data-testid="lead-type-label"]');
+    label.vm.$emit("update:modelValue", "B2B");
+    label.vm.$emit("onFocusout");
+    row(wrapper, "RETAILER").findComponent('[data-testid="lead-type-active"]').vm.$emit("update:modelValue", false);
     await flushPromises();
     expect(api.PATCH_LeadType).toHaveBeenCalledWith(2, { label: "B2B" });
     expect(api.PATCH_LeadType).toHaveBeenCalledWith(1, { is_active: false });
@@ -75,6 +77,30 @@ describe("Leads → Settings → Lead types", () => {
     expect(wrapper.get('[data-testid="lead-type-order-error"]').text()).toBe("Order not saved");
     expect(row(wrapper, "RETAILER").findAll("button")[1].attributes("disabled")).toBeUndefined();
   });
+});
+
+// Plan 53: the label field (BasicInput) commits on blur and Enter like the native change did — only when it changed.
+it("a blur without an edit renames nothing", async () => {
+  setActivePinia(createPinia());
+  vi.clearAllMocks();
+  const wrapper = await mountScreen();
+  row(wrapper, "RETAILER").findComponent('[data-testid="lead-type-label"]').vm.$emit("onFocusout");
+  row(wrapper, "RETAILER").findComponent('[data-testid="lead-type-label"]').vm.$emit("onKeyDown");
+  await flushPromises();
+  expect(api.PATCH_LeadType).not.toHaveBeenCalled();
+});
+
+// Plan 53: the code is checked before the request, as the native pattern did.
+it("a code outside letters, digits and _ is refused before the request", async () => {
+  setActivePinia(createPinia());
+  vi.clearAllMocks();
+  const wrapper = await mountScreen();
+  await setControl(wrapper, "lead-type-new-code", "B2B-SHOP");
+  await setControl(wrapper, "lead-type-new-label", "Shop");
+  await wrapper.get('[data-testid="lead-type-add"]').trigger("submit");
+  await flushPromises();
+  expect(api.POST_LeadType).not.toHaveBeenCalled();
+  expect(wrapper.get('[data-testid="lead-type-add-error"]').text()).toBe(t("leads.lead_types.code_invalid"));
 });
 
 describe("lead types store", () => {

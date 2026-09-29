@@ -1,197 +1,85 @@
 <template>
-  <div class="contacts" data-testid="contacts-tab">
+  <div class="contacts flex-column gap-8" data-testid="contacts-tab">
+    <!-- one form at a time: a new contact, or the one in edit (its row stays in the table below) -->
     <form
-      v-if="mode === 'add'"
-      class="contacts__form"
-      data-testid="contact-add-form"
+      v-if="mode"
+      class="contacts__form flex-column gap-5"
+      :data-testid="editing ? 'contact-edit-form' : 'contact-add-form'"
       novalidate
-      @submit.prevent="save(null)"
+      @submit.prevent="save(editing)"
     >
-      <p class="contacts__legend">{{ $t("leads.contacts.add") }}</p>
+      <p class="fs-400 fw-600 m-0">{{ editing ? nameOf(editing) : $t("leads.contacts.add") }}</p>
       <ContactFields
         :form="draft"
         :error-of="fieldError"
-        testid="contact-new"
+        :testid="editing ? 'contact-edit' : 'contact-new'"
         full
+        :email-locked="Boolean(editing?.email)"
+        :consent-recorded="editing?.legal_basis === 'consent'"
       />
-      <p v-if="error" class="ld-error" data-testid="contact-error">
-        {{ error }}
-      </p>
-      <div class="ld-row">
-        <button
-          class="ld-btn ld-btn--primary"
-          type="submit"
-          :disabled="busy"
-          data-testid="contact-save"
-        >
-          {{ $t("common.save") }}
-        </button>
-        <button
-          class="ld-btn"
-          type="button"
-          data-testid="contact-cancel"
-          @click="close"
-        >
-          {{ $t("common.cancel") }}
-        </button>
+      <p v-if="error" class="t-negative m-0" data-testid="contact-error">{{ error }}</p>
+      <div class="flex ai-ct jc-fe gap-3">
+        <BasicButton variant="ghost" data-testid="contact-cancel" @click="close">{{ $t("common.cancel") }}</BasicButton>
+        <BasicButton type="submit" :loading="busy" data-testid="contact-save">{{ $t("common.save") }}</BasicButton>
       </div>
     </form>
-    <div v-else class="ld-row">
-      <button
-        class="ld-btn ld-btn--primary"
-        type="button"
-        data-testid="contact-add"
-        @click="open('add')"
-      >
-        {{ $t("leads.contacts.add") }}
-      </button>
+    <div v-else class="flex jc-fe">
+      <BasicButton data-testid="contact-add" @click="open('add')">{{ $t("leads.contacts.add") }}</BasicButton>
     </div>
-    <p
-      v-if="status"
-      class="ld-muted"
-      role="status"
-      data-testid="contact-status"
-    >
-      {{ status }}
-    </p>
+    <p v-if="status" class="t-muted m-0" role="status" data-testid="contact-status">{{ status }}</p>
 
-    <div class="contacts__scroll">
-      <table class="table-basic ld-table" data-testid="company-contacts">
-        <thead>
-          <tr>
-            <th>{{ $t("leads.contacts.primary") }}</th>
-            <th>{{ $t("leads.contacts.name") }}</th>
-            <th>{{ $t("leads.contacts.email") }}</th>
-            <th>{{ $t("leads.contacts.legal_basis") }}</th>
-            <th>{{ $t("leads.contacts.suppressed") }}</th>
-            <th>
-              <span class="contacts__sr">{{
-                $t("leads.contacts.actions")
-              }}</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <template v-for="contact in company.contacts" :key="contact.id">
-            <tr v-if="mode === contact.id" data-testid="contact-edit-row">
-              <td colspan="6">
-                <form
-                  class="contacts__form"
-                  novalidate
-                  data-testid="contact-edit-form"
-                  @submit.prevent="save(contact)"
-                >
-                  <ContactFields
-                    :form="draft"
-                    :error-of="fieldError"
-                    testid="contact-edit"
-                    full
-                    :email-locked="Boolean(contact.email)"
-                    :consent-recorded="contact.legal_basis === 'consent'"
-                  />
-                  <p v-if="error" class="ld-error" data-testid="contact-error">
-                    {{ error }}
-                  </p>
-                  <div class="ld-row">
-                    <button
-                      class="ld-btn ld-btn--primary"
-                      type="submit"
-                      :disabled="busy"
-                      data-testid="contact-save"
-                    >
-                      {{ $t("common.save") }}
-                    </button>
-                    <button
-                      class="ld-btn"
-                      type="button"
-                      data-testid="contact-cancel"
-                      @click="close"
-                    >
-                      {{ $t("common.cancel") }}
-                    </button>
-                  </div>
-                </form>
-              </td>
-            </tr>
-            <tr
-              v-else
-              data-testid="contact-row"
-              :class="{ 'contacts__row--anonymised': contact.anonymised_at }"
-            >
-              <td>
-                <button
-                  v-if="!contact.anonymised_at"
-                  class="contacts__star"
-                  :class="{ 'contacts__star--on': contact.is_primary }"
-                  type="button"
-                  :aria-pressed="contact.is_primary"
-                  :title="
-                    $t(
-                      contact.is_primary
-                        ? 'leads.contacts.primary'
-                        : 'leads.contacts.make_primary'
-                    )
-                  "
-                  :aria-label="
-                    $t(
-                      contact.is_primary
-                        ? 'leads.contacts.primary'
-                        : 'leads.contacts.make_primary'
-                    )
-                  "
-                  :disabled="busy"
-                  data-testid="contact-primary"
-                  @click="togglePrimary(contact)"
-                >
-                  <FontAwesomeIcon :icon="$icons.primary" />
-                </button>
-              </td>
-              <td>
-                {{ contact.first_name }} {{ contact.last_name }}
-                <span v-if="contact.job_title" class="ld-muted contacts__job">{{
-                  contact.job_title
-                }}</span>
-              </td>
-              <td class="contacts__email">{{ contact.email }}</td>
-              <td>
-                <span v-if="contact.anonymised_at" class="ld-badge">{{
-                  $t("leads.contacts.anonymised")
-                }}</span>
-                <span v-else-if="contact.legal_basis" class="ld-badge">{{
-                  legalBasisLabel(contact.legal_basis)
-                }}</span>
-              </td>
-              <td>
-                {{ isSuppressed(contact) ? $t("leads.contacts.yes") : "" }}
-              </td>
-              <td>
-                <div
-                  v-if="!contact.anonymised_at"
-                  class="ld-row contacts__actions"
-                >
-                  <button
-                    class="ld-btn"
-                    type="button"
-                    data-testid="contact-edit"
-                    @click="open(contact.id, contact)"
-                  >
-                    {{ $t("common.edit") }}
-                  </button>
-                  <button
-                    class="ld-btn ld-btn--danger"
-                    type="button"
-                    data-testid="contact-remove"
-                    @click="confirming = contact"
-                  >
-                    {{ $t("leads.contacts.remove") }}
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </template>
-        </tbody>
-      </table>
-    </div>
+    <DataTable :columns="columns" :rows="company.contacts" row-key="id" data-testid="company-contacts">
+      <template #cell-is_primary="{ row }">
+        <IconButton
+          v-if="!row.anonymised_at"
+          icon="primary"
+          size="sm"
+          :label="$t(row.is_primary ? 'leads.contacts.primary' : 'leads.contacts.make_primary')"
+          :pressed="row.is_primary"
+          :disabled="busy"
+          :data-contact="row.id"
+          data-testid="contact-primary"
+          @click="togglePrimary(row)"
+        />
+      </template>
+      <!-- one cell per person (name, job title, email): the card's column is narrow next to the Inbox list -->
+      <template #cell-name="{ row }">
+        <span class="contacts__person" :class="{ 't-muted': row.anonymised_at }" :data-contact="row.id" data-testid="contact-row">
+          {{ row.first_name }} {{ row.last_name }}
+          <span v-if="row.job_title" class="t-muted fs-200">{{ row.job_title }}</span>
+          <span v-if="row.email" class="contacts__email fs-200">{{ row.email }}</span>
+        </span>
+      </template>
+      <template #cell-legal_basis="{ row }">
+        <span class="flex flex-wrap gap-1">
+          <StatusBadge v-if="row.anonymised_at" tone="neutral" :dot="false" :label="$t('leads.contacts.anonymised')" />
+          <StatusBadge v-else-if="row.legal_basis" tone="info" :dot="false" :label="legalBasisLabel(row.legal_basis)" />
+          <StatusBadge
+            v-if="isSuppressed(row)"
+            tone="warning"
+            :dot="false"
+            :label="$t('leads.contacts.suppressed')"
+            data-testid="contact-suppressed"
+          />
+        </span>
+      </template>
+      <template #cell-actions="{ row }">
+        <div v-if="!row.anonymised_at" class="flex ai-ct gap-2">
+          <BasicButton variant="ghost" size="sm" :data-contact="row.id" data-testid="contact-edit" @click="open(row.id, row)">
+            {{ $t("common.edit") }}
+          </BasicButton>
+          <IconButton
+            icon="delete"
+            variant="danger"
+            size="sm"
+            :label="$t('leads.contacts.remove')"
+            :data-contact="row.id"
+            data-testid="contact-remove"
+            @click="confirming = row"
+          />
+        </div>
+      </template>
+    </DataTable>
 
     <ConfirmSheet
       v-if="confirming"
@@ -206,7 +94,7 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import { t } from "@/i18n";
 import { GET_Suppressions } from "@/api/communicator/api";
 import { DELETE_Contact, PATCH_Contact, POST_Contact } from "@/api/leads/api";
@@ -215,7 +103,7 @@ import { legalBasisLabel } from "@/utils/leadsLabels";
 import ConfirmSheet from "../ConfirmSheet.vue";
 import ContactFields from "../ContactFields.vue";
 
-// Contacts of the company card (UX-011): add, edit in place, remove, primary star — one form open at a time.
+// Contacts of the company card (UX-011): add, edit, remove, primary star — one form open at a time, above the table.
 // Remove answers 204 (never used, deleted) or 200 (used, anonymised: the thread and timeline keep it), and the line
 // under the button says which. An anonymised row is history only: no star, no edit, no remove.
 // Suppressed = opted out, anonymised, or the email/domain on the communicator suppression list.
@@ -242,6 +130,14 @@ const error = ref("");
 const status = ref("");
 
 const fieldError = (name) => getFieldError(name)?.msg || "";
+// The contact in edit (mode = its id), null while adding or closed.
+const editing = computed(() => props.company.contacts.find((contact) => contact.id === mode.value) || null);
+const columns = [
+  { key: "is_primary", label: t("leads.contacts.primary"), width: "max-content" },
+  { key: "name", label: t("leads.contacts.name"), width: "1fr" },
+  { key: "legal_basis", label: t("leads.contacts.legal_basis"), width: "max-content" },
+  { key: "actions", label: t("leads.contacts.actions"), actions: true },
+];
 const nameOf = (contact) =>
   `${contact.first_name} ${contact.last_name}`.trim() || contact.email || "—";
 const valuesOf = (contact) => ({
@@ -361,54 +257,16 @@ onMounted(async () => {
 });
 </script>
 
-<style lang="scss" src="../desktop.scss"></style>
 <style scoped>
-.contacts {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-8);
-}
 .contacts__form {
+  max-width: 48rem;
+}
+.contacts__person {
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
-  max-width: 640px;
-}
-.contacts__legend {
-  margin: 0;
-  font-weight: 600;
-}
-.contacts__actions {
-  justify-content: flex-end;
-}
-.contacts__scroll {
-  overflow-x: auto;
+  min-width: 0;
 }
 .contacts__email {
   overflow-wrap: anywhere;
-}
-.contacts__job {
-  display: block;
-}
-.contacts__star {
-  min-width: 44px;
-  min-height: 44px;
-  border: none;
-  background: none;
-  color: var(--text-muted);
-  cursor: pointer;
-}
-.contacts__star--on {
-  color: var(--warning);
-}
-.contacts__row--anonymised td {
-  color: var(--text-muted);
-}
-.contacts__sr {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
 }
 </style>

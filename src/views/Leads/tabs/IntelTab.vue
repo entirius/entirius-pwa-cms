@@ -1,19 +1,16 @@
 <template>
-  <section class="ld-field" data-testid="company-intel">
+  <section class="flex-column gap-5" data-testid="company-intel">
     <IntelCard :context="company" expanded />
-    <p v-if="!audit" class="ld-muted" data-testid="intel-no-audit">{{ $t("leads.intel.no_audit") }}</p>
+    <EmptyState v-if="!audit" icon="empty" size="sm" :title="$t('leads.intel.no_audit')" data-testid="intel-no-audit" />
     <template v-else>
-      <p>{{ $t("leads.intel.audit_status") }}: <strong data-testid="intel-audit-status">{{ audit.status }}</strong></p>
-      <table class="table-basic ld-table" data-testid="intel-scores">
-        <tbody>
-          <tr v-for="(summary, strategy) in strategies" :key="strategy" :data-testid="`intel-score-${strategy}`">
-            <th>{{ $t(`leads.intel.strategy.${strategy}`) }}</th>
-            <td>{{ scoreText(summary) }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <h3>{{ $t("leads.intel.sources") }}</h3>
-      <ul>
+      <p class="m-0">{{ $t("leads.intel.audit_status") }}: <strong data-testid="intel-audit-status">{{ audit.status }}</strong></p>
+      <DataTable :columns="columns" :rows="scoreRows" row-key="strategy" data-testid="intel-scores">
+        <template #cell-score="{ row }">
+          <span :data-testid="`intel-score-${row.strategy}`">{{ row.score }}</span>
+        </template>
+      </DataTable>
+      <h3 class="fs-400 fw-600 m-0">{{ $t("leads.intel.sources") }}</h3>
+      <ul class="intel__sources m-0">
         <li v-for="report in audit.reports" :key="report.source" data-testid="intel-source">
           {{ report.source }} — {{ report.status }}
         </li>
@@ -37,6 +34,18 @@ const strategies = computed(() => {
   return lighthouse?.processed?.strategies || {};
 });
 
+const columns = [
+  { key: "label", label: t("leads.intel.test"), width: "1fr" },
+  { key: "score", label: t("leads.intel.score"), width: "max-content", numeric: true },
+];
+const scoreRows = computed(() =>
+  Object.entries(strategies.value).map(([strategy, summary]) => ({
+    strategy,
+    label: t(`leads.intel.strategy.${strategy}`),
+    score: scoreText(summary),
+  }))
+);
+
 function scoreText(summary) {
   const score = summary?.scores?.performance;
   return typeof score === "number" ? `${Math.round(score * 100)} / 100` : t("leads.intel.unavailable");
@@ -46,3 +55,9 @@ onMounted(async () => {
   audit.value = await GET_LatestAudit(props.company.domain);
 });
 </script>
+
+<style scoped>
+.intel__sources {
+  padding-left: var(--space-4);
+}
+</style>

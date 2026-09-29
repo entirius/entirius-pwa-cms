@@ -1,7 +1,21 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
 
-const leads = vi.hoisted(() => ({ PATCH_Company: vi.fn(), POST_CreateCustomer: vi.fn(), POST_RequestAudit: vi.fn() }));
+const leads = vi.hoisted(() => ({
+  PATCH_Company: vi.fn(),
+  POST_CreateCustomer: vi.fn(),
+  POST_RequestAudit: vi.fn(),
+  GET_Company: vi.fn(),
+  GET_Stages: vi.fn(),
+  GET_LeadTypes: vi.fn(),
+  POST_Transition: vi.fn(),
+}));
+const route = vi.hoisted(() => ({ name: "LeadsThread", params: { id: "7" }, query: {} }));
+vi.mock("vue-router", () => ({ useRoute: () => route, useRouter: () => ({ replace: vi.fn() }) }));
+vi.mock("@/composables/useIsDesktop", async () => {
+  const { ref } = await import("vue");
+  return { useIsDesktop: () => ref(true) };
+});
 const siteintel = vi.hoisted(() => ({ GET_LatestAudit: vi.fn(), POST_AuditRerun: vi.fn() }));
 const munin = vi.hoisted(() => ({ isModuleInstalled: vi.fn() }));
 const notify = vi.hoisted(() => ({ spawnNotification: vi.fn() }));
@@ -10,11 +24,20 @@ vi.mock("@/api/siteintel/api", () => siteintel);
 vi.mock("@/stores/munin", () => ({ useMuninStore: () => munin }));
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => notify }));
 
+import { createPinia, setActivePinia } from "pinia";
+import Company from "@/views/Leads/Company.vue";
 import CompanyActions from "@/views/Leads/CompanyActions.vue";
+import { control, leadsFrame, setControl } from "./leadsFrame";
 
 const company = (kind = "open") => ({ id: 7, domain: "shop.test", do_not_contact: false, customer_uid: null, stage: { key: kind, kind }, contacts: [] });
 const mountActions = (props) =>
-  mount(CompanyActions, { props, global: { stubs: { CommunicateModal: true, RouterLink: { props: ["to"], template: "<a :data-to='to.name'><slot /></a>" } } } });
+  mount(CompanyActions, {
+    props,
+    global: {
+      components: leadsFrame.components,
+      stubs: { ...leadsFrame.stubs, CommunicateModal: true, RouterLink: { props: ["to"], template: "<a :data-to='to.name'><slot /></a>" } },
+    },
+  });
 const has = (wrapper, id) => wrapper.find(`[data-testid="${id}"]`).exists();
 
 describe("Company card actions", () => {
@@ -43,9 +66,12 @@ describe("Company card actions", () => {
   it("do not contact asks first and patches only after the confirm", async () => {
     leads.PATCH_Company.mockResolvedValue({ data: {} });
     const wrapper = mountActions({ company: company() });
+    const dialog = wrapper.findComponent({ name: "ConfirmDialog" });
+    expect(dialog.props("open")).toBe(false);
     await wrapper.find('[data-testid="company-dnc"]').trigger("click");
+    expect(dialog.props("open")).toBe(true);
     expect(leads.PATCH_Company).not.toHaveBeenCalled();
-    await wrapper.find('[data-testid="company-dnc-yes"]').trigger("click");
+    dialog.vm.$emit("confirm");
     await flushPromises();
     expect(leads.PATCH_Company).toHaveBeenCalledWith(7, { do_not_contact: true });
     expect(wrapper.emitted("changed")).toHaveLength(1);
@@ -72,6 +98,15 @@ describe("Company card actions", () => {
 
   // FIX-17 item 14: the link target is at least 24 px and the card names the customer, never the bare uid.
   // FIX-17b item 4: it looks like a link, and the customer page's back arrow returns to this card.
+  // Plan 53 (C-16, R5): the actions sit in one ActionBar — secondary, danger, then the one primary „Napisz” rightmost.
+  it("orders the actions secondary · danger · primary", () => {
+    munin.isModuleInstalled.mockReturnValue(true);
+    const ids = mountActions({ company: company("won") })
+      .findAll(".action-bar [data-testid]")
+      .map((button) => button.attributes("data-testid"));
+    expect(ids).toEqual(["company-create-customer", "company-reaudit", "company-dnc", "company-communicate"]);
+  });
+
   it("the known-customer link is a 32 px link that carries the customer name and the way back", () => {
     munin.isModuleInstalled.mockReturnValue(true);
     const linked = { ...company(), customer_uid: "91010000-0000", customer_name: "Jan Kowalski" };
@@ -79,12 +114,64 @@ describe("Company card actions", () => {
       props: { company: linked },
       global: {
         mocks: { $route: { fullPath: "/leads/companies/7" } },
-        stubs: { CommunicateModal: true, RouterLink: { props: ["to"], template: "<a :data-back='to.query.back'><slot /></a>" } },
+        components: leadsFrame.components,
+        stubs: { ...leadsFrame.stubs, CommunicateModal: true, RouterLink: { props: ["to"], template: "<a :data-back='to.query.back'><slot /></a>" } },
       },
     }).get('[data-testid="company-known-customer"]');
-    expect(link.classes()).toContain("ld-link");
+    expect(link.classes()).toContain("t-accent");
     expect(link.attributes("data-back")).toBe("/leads/companies/7");
     expect(link.text()).toContain("Jan Kowalski");
     expect(link.text()).not.toContain("91010000");
+  });
+});
+
+// Plan 53: the card header's stage and lead-type selects are BasicSelects with a floating label (operator request).
+describe("Company card header", () => {
+  beforeEach(() => {
+    setActivePinia(createPinia());
+    vi.clearAllMocks();
+    leads.GET_Company.mockResolvedValue({ data: { ...company(), name: "Shop", lead_type: "RETAILER", stage: { key: "new" } } });
+    leads.GET_Stages.mockResolvedValue({ data: { results: [{ key: "new", label: "New" }, { key: "won", label: "Won" }] } });
+    leads.GET_LeadTypes.mockResolvedValue({ data: { results: [{ code: "RETAILER", label: "Retailer", is_active: true }] } });
+  });
+
+  const mountCard = async () => {
+    const stubs = { ...leadsFrame.stubs, CompanyActions: true, Thread: true, OverviewTab: true, IntelTab: true, ContactsTab: true };
+    const wrapper = mount(Company, { global: { components: leadsFrame.components, stubs } });
+    await flushPromises();
+    return wrapper;
+  };
+
+  it("names both selects with their floating label and offers the stages and Unknown + the active types", async () => {
+    const wrapper = await mountCard();
+    const stage = control(wrapper, "company-stage");
+    expect(stage.props("floatingLabel")).toBe("leads.company.stage");
+    expect(stage.props("modelValue")).toBe("new");
+    expect(stage.props("options").map((option) => option.value)).toEqual(["new", "won"]);
+    const type = control(wrapper, "company-lead-type");
+    expect(type.props("floatingLabel")).toBe("leads.company.type");
+    expect(type.props("options").map((option) => option.value)).toEqual(["UNKNOWN", "RETAILER"]);
+    expect(wrapper.get('[data-testid="thread-company"]').text()).toBe("Shop");
+  });
+
+  it("a stage pick transitions, a type pick patches the company", async () => {
+    leads.POST_Transition.mockResolvedValue({ data: { ...company(), stage: { key: "won" } } });
+    leads.PATCH_Company.mockResolvedValue({ data: { ...company(), lead_type: "UNKNOWN" } });
+    const wrapper = await mountCard();
+    await setControl(wrapper, "company-stage", "won");
+    await flushPromises();
+    expect(leads.POST_Transition).toHaveBeenCalledWith(7, "won");
+    await setControl(wrapper, "company-lead-type", "UNKNOWN");
+    await flushPromises();
+    expect(leads.PATCH_Company).toHaveBeenCalledWith(7, { lead_type: "UNKNOWN" });
+  });
+
+  it("picking the current stage or type again sends nothing", async () => {
+    const wrapper = await mountCard();
+    await setControl(wrapper, "company-stage", "new");
+    await setControl(wrapper, "company-lead-type", "RETAILER");
+    await flushPromises();
+    expect(leads.POST_Transition).not.toHaveBeenCalled();
+    expect(leads.PATCH_Company).not.toHaveBeenCalled();
   });
 });

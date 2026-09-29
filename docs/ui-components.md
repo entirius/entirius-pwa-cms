@@ -296,6 +296,9 @@ Catalogue: `#page-frame` (`#page-header`, `#breadcrumbs`, `#page-layout`).
   type-ahead, Enter / Space; checkboxes when `multiple`, a check on the chosen option otherwise. Inside a FormField
   it takes the field's id, `aria-describedby`, invalid, required and disabled (`useFormFieldControl()`); outside one,
   `aria-label` / `aria-labelledby` on the tag name the control. `placement` and `inline` go to BasicMenu.
+  `floatingLabel` (plan 53) names a select that stands without a FormField (toolbar, filter row, card header): empty,
+  the control shows it as the placeholder; with a value it sits above the control as a 12 px `text-muted` line (not
+  uppercase) and stays there; it is the control's `aria-label` unless `aria-labelledby` is given.
 - **`EntitySearchPicker`** — async entity search: `fetchFn(search)` → `[{ label, value, secondary? }]` (300 ms
   debounce; `clientFilter` fetches once and filters here), `v-model` + `v-model:displayValue`, `placeholder`,
   `disabled`. The chosen entity is a removable `Tag` (remove → both cleared, `clear`); the list opens in
@@ -305,6 +308,8 @@ Catalogue: `#page-frame` (`#page-header`, `#breadcrumbs`, `#page-layout`).
 - **`ChannelMultiSelect`** — channel scope chip (`channels` icon): „Kanały: Wszystkie” / „Kanały: 2”; `compact`
   (and every chip below the tablet breakpoint) shows „Kanały”. `v-model` = channel idxs, `channels` =
   `[{ idx, name? }]`, `label`, `allLabel`; the list is a multi-select listbox with checkboxes in BasicMenu's panel.
+  `floatingLabel` (plan 53): the empty chip shows it; picked channels show the channel name („Wybrano: N” for several)
+  in `text-body`, with the label above as in BasicSelect; the accessible name is „<label>: <value>”.
 - The three share `src/boots/BasicSelect/OptionList.vue` (listbox rendering) and `useListbox.js` (keyboard).
   BasicMenu `inline` with a `top` placement draws the list above the trigger (the catalogue's drop-up).
 - Removed (lint, `scripts/lint/removed-components/selects.json`): `Dropdown` → `BasicSelect`.
@@ -315,7 +320,7 @@ Catalogue: `#page-frame` (`#page-header`, `#breadcrumbs`, `#page-layout`).
   `validate`, `custom_droplist`, `complex_values`, `can_remove_selected`, `@onUse`, `@onRemoveSelected`,
   `@onExtension*`, options with `label_ext*` in the file, any other attribute.
 
-Catalogue: `#selects` (`#basic-select`, `#entity-search-picker`, `#channel-multi-select`).
+Catalogue: `#selects` (`#basic-select`, `#entity-search-picker`, `#channel-multi-select`; the `*-floating-*` cells).
 
 ### P3 inputs (plan 16)
 

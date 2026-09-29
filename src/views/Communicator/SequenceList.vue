@@ -82,3 +82,5 @@ async function addSequence() {
 
 onMounted(load);
 </script>
+
+<style lang="scss" src="@/views/Leads/desktop.scss"></style>

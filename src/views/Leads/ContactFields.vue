@@ -1,124 +1,44 @@
 <template>
-  <div class="contact-fields">
-    <label class="ld-field">
-      <span class="ld-field__label">{{ $t("leads.contacts.email") }}</span>
-      <input
-        v-model.trim="form.email"
-        class="ld-input"
-        type="email"
-        inputmode="email"
-        autocomplete="off"
-        :readonly="emailLocked"
-        :data-testid="`${testid}-email`"
-      />
-      <span
-        v-if="errorOf('email')"
-        class="ld-error"
-        :data-testid="`${testid}-email-error`"
-        >{{ errorOf("email") }}</span
-      >
-    </label>
-    <div class="contact-fields__pair">
-      <label class="ld-field">
-        <span class="ld-field__label">{{ $t("leads.add.first_name") }}</span>
-        <input
-          v-model.trim="form.first_name"
-          class="ld-input"
-          autocomplete="off"
-          :data-testid="`${testid}-first-name`"
-        />
-      </label>
-      <label class="ld-field">
-        <span class="ld-field__label">{{ $t("leads.add.last_name") }}</span>
-        <input
-          v-model.trim="form.last_name"
-          class="ld-input"
-          autocomplete="off"
-          :data-testid="`${testid}-last-name`"
-        />
-      </label>
-    </div>
-    <div v-if="full" class="contact-fields__pair">
-      <label class="ld-field">
-        <span class="ld-field__label">{{ $t("leads.contacts.job_title") }}</span>
-        <input
-          v-model.trim="form.job_title"
-          class="ld-input"
-          autocomplete="off"
-          :data-testid="`${testid}-job-title`"
-        />
-      </label>
-      <label class="ld-field">
-        <span class="ld-field__label">{{ $t("leads.contacts.phone") }}</span>
-        <input
-          v-model.trim="form.phone"
-          class="ld-input"
-          type="tel"
-          autocomplete="off"
-          :data-testid="`${testid}-phone`"
-        />
-        <span v-if="errorOf('phone')" class="ld-error">{{
-          errorOf("phone")
-        }}</span>
-      </label>
-      <label class="ld-field">
-        <span class="ld-field__label">{{ $t("leads.contacts.language") }}</span>
-        <input
-          v-model.trim="form.language"
-          class="ld-input"
-          maxlength="2"
-          autocomplete="off"
-          placeholder="pl"
-          :data-testid="`${testid}-language`"
-        />
-        <span
-          v-if="errorOf('language')"
-          class="ld-error"
-          :data-testid="`${testid}-language-error`"
-          >{{ errorOf("language") }}</span
-        >
-      </label>
-    </div>
-    <label class="ld-field">
-      <span class="ld-field__label">{{ $t("leads.contacts.legal_basis") }}</span>
-      <select
-        v-model="form.legal_basis"
-        class="ld-input"
-        :data-testid="`${testid}-basis`"
-      >
-        <option value="">{{ $t("leads.add.basis_none") }}</option>
-        <option v-for="basis in BASES" :key="basis" :value="basis">
-          {{ legalBasisLabel(basis) }}
-        </option>
-      </select>
-      <span class="ld-muted">{{ $t("leads.add.basis_hint") }}</span>
-    </label>
-    <label
+  <div class="form-grid">
+    <FormField class="form-grid__wide" :label="$t('leads.contacts.email')" :error="errorOf('email')">
+      <BasicInput v-model.trim="form.email" type="email" :readonly="emailLocked" :data-testid="`${testid}-email`" />
+    </FormField>
+    <FormField :label="$t('leads.add.first_name')">
+      <BasicInput v-model.trim="form.first_name" :data-testid="`${testid}-first-name`" />
+    </FormField>
+    <FormField :label="$t('leads.add.last_name')">
+      <BasicInput v-model.trim="form.last_name" :data-testid="`${testid}-last-name`" />
+    </FormField>
+    <template v-if="full">
+      <FormField :label="$t('leads.contacts.job_title')">
+        <BasicInput v-model.trim="form.job_title" :data-testid="`${testid}-job-title`" />
+      </FormField>
+      <FormField :label="$t('leads.contacts.phone')" :error="errorOf('phone')">
+        <BasicInput v-model.trim="form.phone" type="tel" :data-testid="`${testid}-phone`" />
+      </FormField>
+      <FormField :label="$t('leads.contacts.language')" :error="errorOf('language')">
+        <BasicInput v-model.trim="form.language" placeholder="pl" :data-testid="`${testid}-language`" />
+      </FormField>
+    </template>
+    <FormField :label="$t('leads.contacts.legal_basis')" :description="$t('leads.add.basis_hint')">
+      <BasicSelect v-model="form.legal_basis" :options="basisOptions" :data-testid="`${testid}-basis`" />
+    </FormField>
+    <FormField
       v-if="form.legal_basis === 'consent' && !consentRecorded"
-      class="ld-field"
+      :label="$t('leads.add.consent_ref')"
+      required
+      :error="errorOf('consent_ref')"
     >
-      <span class="ld-field__label required">{{ $t("leads.add.consent_ref") }}</span>
-      <input
-        v-model.trim="form.consent_ref"
-        class="ld-input"
-        :data-testid="`${testid}-consent-ref`"
-      />
-      <span v-if="errorOf('consent_ref')" class="ld-error">{{
-        errorOf("consent_ref")
-      }}</span>
-    </label>
-    <label v-if="full" class="contact-fields__check">
-      <input
-        v-model="form.is_primary"
-        type="checkbox"
-        :data-testid="`${testid}-primary`"
-      />
+      <BasicInput v-model.trim="form.consent_ref" :data-testid="`${testid}-consent-ref`" />
+    </FormField>
+    <BasicCheckbox v-if="full" v-model="form.is_primary" class="form-grid__wide" :data-testid="`${testid}-primary`">
       {{ $t("leads.contacts.primary") }}
-    </label>
+    </BasicCheckbox>
   </div>
 </template>
 
 <script setup>
+import { t } from "@/i18n";
 import { legalBasisLabel } from "@/utils/leadsLabels";
 
 // The contact part of every contact form (add lead, Contacts tab): one set of fields and one legal-basis rule.
@@ -133,31 +53,8 @@ defineProps({
   consentRecorded: { type: Boolean, default: false }, // the saved basis is already consent — no new reference asked
 });
 const BASES = ["legitimate_interest", "consent", "contract"];
+const basisOptions = [
+  { value: "", label: t("leads.add.basis_none") },
+  ...BASES.map((basis) => ({ value: basis, label: legalBasisLabel(basis) })),
+];
 </script>
-
-<style scoped>
-.contact-fields {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
-}
-.contact-fields__pair {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: var(--space-5);
-}
-.contact-fields .ld-input {
-  min-height: 44px;
-  width: 100%;
-  box-sizing: border-box;
-}
-.contact-fields .ld-input[readonly] {
-  background: var(--surface-raised);
-}
-.contact-fields__check {
-  display: flex;
-  align-items: center;
-  gap: var(--space-5);
-  min-height: 44px;
-}
-</style>

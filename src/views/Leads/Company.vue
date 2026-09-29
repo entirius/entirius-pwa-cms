@@ -1,43 +1,54 @@
 <template>
   <Thread v-if="!isDesktop" desktop-hint />
-  <div v-else class="ld-page" data-testid="company-card">
-    <header v-if="company" class="ld-row">
-      <div class="ld-field">
-        <h2 class="ld-title" data-testid="thread-company">{{ company.name }}</h2>
-        <span class="ld-muted" data-testid="company-domain">{{ company.domain }}</span>
-      </div>
-      <select
-        class="ld-input"
-        :value="company.stage.key"
-        :aria-label="$t('leads.board.move_to')"
-        data-testid="company-stage"
-        @change="transition($event.target.value)"
-      >
-        <option v-for="stage in stages" :key="stage.key" :value="stage.key">{{ stage.label }}</option>
-      </select>
-      <select
-        class="ld-input"
-        :value="company.lead_type"
-        :aria-label="$t('leads.company.type')"
-        data-testid="company-lead-type"
-        @change="retype($event.target.value)"
-      >
-        <option value="UNKNOWN">{{ $t("leads.lead_types.unknown") }}</option>
-        <option v-for="type in typeOptions" :key="type.code" :value="type.code">{{ type.label }}</option>
-      </select>
-      <span v-if="company.do_not_contact" class="ld-badge" data-testid="company-dnc-badge">
-        {{ $t("leads.company.do_not_contact") }}
-      </span>
-      <CompanyActions :company="company" @changed="load" />
-    </header>
-    <SegmentedControl :options="tabOptions" :model-value="tab" @update:model-value="openTab" />
-    <template v-if="company">
-      <OverviewTab v-if="tab === 'overview'" :company="company" />
-      <IntelTab v-else-if="tab === 'intel'" :company="company" />
-      <ContactsTab v-else-if="tab === 'contacts'" :company="company" @changed="load" />
-      <Thread v-else />
+  <PageLayout v-else data-testid="company-card">
+    <template v-if="company" #header>
+      <PageHeader :title="$t('leads.company.title')">
+        <template #actions>
+          <CompanyActions :company="company" @changed="load" />
+        </template>
+      </PageHeader>
     </template>
-  </div>
+    <Loader v-if="!company" block />
+    <template v-else>
+      <header class="company__head flex ai-fe wrap gap-5">
+        <div class="company__name flex-column gap-1">
+          <h2 class="fs-500 fw-600 m-0" data-testid="thread-company">{{ company.name }}</h2>
+          <span class="t-muted fs-200" data-testid="company-domain">{{ company.domain }}</span>
+        </div>
+        <StatusBadge
+          v-if="company.do_not_contact"
+          tone="negative"
+          :label="$t('leads.company.do_not_contact')"
+          data-testid="company-dnc-badge"
+        />
+        <div class="company__selects flex ai-fe wrap gap-3">
+          <BasicSelect
+            class="company__select"
+            :model-value="company.stage.key"
+            :options="stageOptions"
+            :floating-label="$t('leads.company.stage')"
+            data-testid="company-stage"
+            @update:model-value="transition"
+          />
+          <BasicSelect
+            class="company__select"
+            :model-value="company.lead_type"
+            :options="typeOptions"
+            :floating-label="$t('leads.company.type')"
+            data-testid="company-lead-type"
+            @update:model-value="retype"
+          />
+        </div>
+      </header>
+      <BasicTabs class="company__tabs" id-prefix="company" :options="tabOptions" :model-value="tab" @update:model-value="openTab" />
+      <div :id="`company-panel-${tab}`" role="tabpanel" :aria-labelledby="`company-tab-${tab}`">
+        <OverviewTab v-if="tab === 'overview'" :company="company" />
+        <IntelTab v-else-if="tab === 'intel'" :company="company" />
+        <ContactsTab v-else-if="tab === 'contacts'" :company="company" @changed="load" />
+        <Thread v-else />
+      </div>
+    </template>
+  </PageLayout>
 </template>
 
 <script setup>
@@ -55,7 +66,8 @@ import ContactsTab from "./tabs/ContactsTab.vue";
 import IntelTab from "./tabs/IntelTab.vue";
 import OverviewTab from "./tabs/OverviewTab.vue";
 
-// Company card: the plan-13 thread on a phone; header, stage picker, actions and tabs from 1024 px.
+// Company card: the plan-13 thread on a phone; from 1024 px the page frame (actions in the PageHeader), the card
+// header (name, domain, stage and lead-type selects) and the tabs.
 const TABS = ["overview", "intel", "contacts", "timeline"];
 const route = useRoute();
 const router = useRouter();
@@ -68,8 +80,13 @@ const leadTypes = useLeadTypesStore();
 const typeOptions = computed(() => {
   const code = company.value?.lead_type;
   const own = code && code !== "UNKNOWN" && !leadTypes.active.some((type) => type.code === code);
-  return own ? [...leadTypes.active, { code, label: leadTypes.label(code) }] : leadTypes.active;
+  const types = own ? [...leadTypes.active, { code, label: leadTypes.label(code) }] : leadTypes.active;
+  return [
+    { value: "UNKNOWN", label: t("leads.lead_types.unknown") },
+    ...types.map((type) => ({ value: type.code, label: type.label })),
+  ];
 });
+const stageOptions = computed(() => stages.value.map((stage) => ({ value: stage.key, label: stage.label })));
 
 const tab = computed(() => (TABS.includes(route.query.tab) ? route.query.tab : "overview"));
 const tabOptions = TABS.map((value) => ({ value, label: t(`leads.company.tabs.${value}`), testid: `company-tab-${value}` }));
@@ -85,6 +102,7 @@ async function load() {
 }
 
 async function transition(stageKey) {
+  if (stageKey === company.value.stage.key) return; // the current stage picked again: no move
   try {
     company.value = (await POST_Transition(company.value.id, stageKey)).data;
   } catch (err) {
@@ -94,6 +112,7 @@ async function transition(stageKey) {
 }
 
 async function retype(code) {
+  if (code === company.value.lead_type) return;
   try {
     company.value = (await PATCH_Company(company.value.id, { lead_type: code })).data;
   } catch (err) {
@@ -109,4 +128,19 @@ watch(
 );
 </script>
 
-<style lang="scss" src="./desktop.scss"></style>
+<style scoped>
+.company__head {
+  margin-bottom: var(--space-6);
+}
+.company__name {
+  flex: 1 1 16rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.company__select {
+  width: 14rem;
+}
+.company__tabs {
+  margin-bottom: var(--space-6);
+}
+</style>

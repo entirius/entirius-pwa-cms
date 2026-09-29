@@ -16,3 +16,5 @@ import SettingsPolicy from "./settings/SettingsPolicy.vue";
 import SettingsScheduled from "./settings/SettingsScheduled.vue";
 import SettingsSuppressions from "./settings/SettingsSuppressions.vue";
 </script>
+
+<style lang="scss" src="@/views/Leads/desktop.scss"></style>

@@ -1,57 +1,65 @@
 <template>
-  <div class="ld-page" data-testid="leads-import">
-    <p>{{ $t("leads.import.hint") }}</p>
-    <section class="ld-field" data-testid="import-columns">
-      <h3 class="import__head">{{ $t("leads.import.columns_title") }}</h3>
-      <ul class="import__list">
-        <li v-for="key in COLUMN_KEYS" :key="key">{{ $t(`leads.import.${key}`) }}</li>
-      </ul>
-    </section>
-    <section class="ld-field" data-testid="import-after">
-      <h3 class="import__head">{{ $t("leads.import.after_title") }}</h3>
-      <p>{{ $t("leads.import.after") }}</p>
-    </section>
-    <div class="ld-row">
-      <label class="ld-btn import__pick">
-        {{ $t("leads.import.choose") }}
+  <PageLayout data-testid="leads-import">
+    <template #header>
+      <PageHeader :title="$t('leads.import.title')">
+        <template #actions>
+          <ActionBar :actions="actions" />
+        </template>
+      </PageHeader>
+    </template>
+    <div class="import flex-column gap-8">
+      <p class="m-0">{{ $t("leads.import.hint") }}</p>
+      <BasicCard :title="$t('leads.import.columns_title')" gap data-testid="import-columns">
+        <ul class="import__list">
+          <li v-for="key in COLUMN_KEYS" :key="key">{{ $t(`leads.import.${key}`) }}</li>
+        </ul>
+      </BasicCard>
+      <BasicCard :title="$t('leads.import.after_title')" gap data-testid="import-after">
+        <p class="m-0">{{ $t("leads.import.after") }}</p>
+      </BasicCard>
+      <div class="flex ai-ct flex-wrap gap-5">
+        <!-- the native picker stays scriptable (a page object sets its files); the button opens it -->
         <input
           ref="fileInput"
-          class="import__input"
+          class="visually-hidden"
           type="file"
           accept=".csv,text/csv"
+          tabindex="-1"
           data-testid="import-file"
           @change="pick"
         />
-      </label>
-      <span data-testid="import-file-name">{{ file?.name || $t("leads.import.no_file") }}</span>
-      <button class="ld-btn ld-btn--primary" :disabled="!file || busy" data-testid="import-upload" @click="upload">
-        {{ $t("leads.import.upload") }}
-      </button>
-      <button class="ld-btn" data-testid="import-sample" @click="downloadSample">{{ $t("leads.import.sample") }}</button>
-      <router-link :to="{ name: 'LeadsCompanyNew' }" class="ld-btn import__one" data-testid="import-add-one">
-        {{ $t("leads.add.one") }}
-      </router-link>
+        <BasicButton data-testid="import-choose" @click="fileInput.click()">{{ $t("leads.import.choose") }}</BasicButton>
+        <span data-testid="import-file-name">{{ file?.name || $t("leads.import.no_file") }}</span>
+      </div>
+      <p v-if="error" class="t-negative m-0" data-testid="import-error">{{ error }}</p>
+      <BasicCard v-if="batch" data-testid="import-report">
+        <div class="flex-column gap-3">
+          <p class="m-0">{{ $t("leads.import.status") }}: <strong data-testid="import-status">{{ batch.status }}</strong></p>
+          <p class="m-0" data-testid="import-counts">
+            {{ $t("leads.import.counts", { created: batch.created_count, matched: batch.matched_count, skipped: batch.skipped_count }) }}
+          </p>
+          <ul v-if="batch.report?.length" class="import__list">
+            <li v-for="entry in batch.report" :key="`${entry.row}-${entry.reason}`">
+              {{ $t("leads.import.row", { row: entry.row }) }}: {{ entry.reason }}
+            </li>
+          </ul>
+          <router-link
+            v-if="batch.status === 'done'"
+            class="t-accent"
+            :to="{ name: 'LeadsBoard' }"
+            data-testid="import-to-board"
+          >
+            {{ $t("leads.import.to_board") }}
+          </router-link>
+        </div>
+      </BasicCard>
     </div>
-    <p v-if="error" class="ld-error" data-testid="import-error">{{ error }}</p>
-    <section v-if="batch" class="ld-field" data-testid="import-report">
-      <p>{{ $t("leads.import.status") }}: <strong data-testid="import-status">{{ batch.status }}</strong></p>
-      <p data-testid="import-counts">
-        {{ $t("leads.import.counts", { created: batch.created_count, matched: batch.matched_count, skipped: batch.skipped_count }) }}
-      </p>
-      <ul v-if="batch.report?.length">
-        <li v-for="entry in batch.report" :key="`${entry.row}-${entry.reason}`">
-          {{ $t("leads.import.row", { row: entry.row }) }}: {{ entry.reason }}
-        </li>
-      </ul>
-      <router-link v-if="batch.status === 'done'" :to="{ name: 'LeadsBoard' }" data-testid="import-to-board">
-        {{ $t("leads.import.to_board") }}
-      </router-link>
-    </section>
-  </div>
+  </PageLayout>
 </template>
 
 <script setup>
-import { onBeforeUnmount, ref } from "vue";
+import { computed, onBeforeUnmount, ref } from "vue";
+import { useRouter } from "vue-router";
 import { t } from "@/i18n";
 import { GET_Import, POST_Import } from "@/api/leads/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
@@ -67,11 +75,33 @@ const SAMPLE_CSV = [
   "",
 ].join("\n");
 const FINISHED = ["done", "failed"];
+const router = useRouter();
+const fileInput = ref(null);
 const file = ref(null);
 const batch = ref(null);
 const busy = ref(false);
 const error = ref("");
 let timer = null;
+
+// R5: the secondary ways in, then Upload — the one primary — rightmost.
+const actions = computed(() => [
+  { key: "sample", label: t("leads.import.sample"), role: "secondary", testid: "import-sample", onClick: downloadSample },
+  {
+    key: "one",
+    label: t("leads.add.one"),
+    role: "secondary",
+    testid: "import-add-one",
+    onClick: () => router.push({ name: "LeadsCompanyNew" }),
+  },
+  {
+    key: "upload",
+    label: t("leads.import.upload"),
+    role: "primary",
+    testid: "import-upload",
+    disabled: !file.value || busy.value,
+    onClick: upload,
+  },
+]);
 
 function pick(event) {
   file.value = event.target.files?.[0] || null;
@@ -117,33 +147,8 @@ onBeforeUnmount(() => clearTimeout(timer));
 </script>
 
 <style scoped>
-.import__one {
-  display: inline-flex;
-  align-items: center;
-  text-decoration: none;
-}
-.import__head {
-  margin: 0;
-  font-size: var(--fs-300);
-}
 .import__list {
   margin: 0;
   padding-left: var(--space-4);
-}
-/* The native file control stays focusable and scriptable; the label is what the user sees and clicks. The input is
-   sized to the label instead of clipped by it, so the label's phone hit area (`.ld-btn::after`) is not clipped. */
-.import__pick {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  cursor: pointer;
-}
-.import__input {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  cursor: pointer;
 }
 </style>
