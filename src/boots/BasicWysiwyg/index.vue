@@ -36,9 +36,7 @@
             @click="editor_size = editor_size ? null : 'full'"
           >
             <font-awesome-icon
-              :icon="
-                editor_size ? 'fa-solid fa-compress' : 'fa-solid fa-expand'
-              "
+              :icon="editor_size ? $icons.exitFullscreen : $icons.fullscreen"
             />
           </button>
         </div>
@@ -693,8 +691,8 @@ export default {
     color: var(--text-body);
     cursor: text;
     line-height: 1.7;
-    margin-top: 0.25em;
-    margin-bottom: 0.75em;
+    margin-top: var(--space-1);
+    margin-bottom: var(--space-3);
 
     h1,
     h2,

@@ -1,4 +1,4 @@
-import { describe, it, expect, afterEach } from "vitest";
+import { describe, it, expect, afterEach, vi } from "vitest";
 import { nextTick } from "vue";
 import { mount } from "@vue/test-utils";
 
@@ -129,6 +129,27 @@ describe("BasicMenu", () => {
     expect(items()[0].tagName).toBe("BUTTON");
     items()[0].click();
     expect(wrapper.emitted("select")).toBeUndefined();
+  });
+
+  it("sheet: a wide floating popover above a phone, an unpositioned bottom sheet on one", async () => {
+    mountMenu({ items: [], sheet: true }, { panel: "<p>Stan</p>" });
+    await open();
+    expect(menu().classList).toContain("basic-menu__popover--sheet");
+    expect(menu().classList).not.toContain("basic-menu__popover--bottom");
+    expect(menu().style.position).toBe("fixed");
+    wrappers.splice(0).forEach((wrapper) => wrapper.unmount());
+    document.body.innerHTML = "";
+
+    const phone = (query) => ({ matches: query === "(max-width: 768px)", addEventListener() {}, removeEventListener() {} });
+    vi.stubGlobal("matchMedia", phone);
+    try {
+      mountMenu({ items: [], sheet: true }, { panel: "<p>Stan</p>" });
+      await open();
+      expect(menu().classList).toContain("basic-menu__popover--bottom");
+      expect(menu().style.position).toBe("");
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 
   it("Esc on the trigger closes an open panel with nothing focusable", async () => {

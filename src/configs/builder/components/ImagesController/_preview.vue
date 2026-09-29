@@ -78,7 +78,7 @@ export default {
 
     right: 0;
     z-index: 1;
-    font-size: 8px;
+    font-size: var(--fs-100);
   }
   .scaled-image-preview {
     left: 0;

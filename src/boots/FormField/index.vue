@@ -124,7 +124,7 @@ provide(FORM_FIELD, {
 }
 
 .form-field__error-icon {
-  font-size: 0.9em;
+  font-size: var(--fs-150);
   line-height: 1;
 }
 </style>

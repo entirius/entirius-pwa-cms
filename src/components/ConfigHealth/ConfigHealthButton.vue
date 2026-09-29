@@ -3,6 +3,7 @@
     ref="menu"
     :label="$t('config_health.title')"
     placement="bottom-end"
+    sheet
     @open="store.panelOpen = true"
     @close="store.panelOpen = false"
   >

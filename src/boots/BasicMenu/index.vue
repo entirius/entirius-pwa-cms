@@ -12,12 +12,12 @@
       :id="menuId"
       ref="popover"
       class="basic-menu__popover flex-column"
-      :class="{ 'basic-menu__popover--panel': isPanel }"
+      :class="{ 'basic-menu__popover--panel': isPanel, 'basic-menu__popover--sheet': sheet, 'basic-menu__popover--bottom': asSheet }"
       :role="isPanel ? 'dialog' : 'menu'"
       :aria-label="labelledby ? undefined : label || undefined"
       :aria-labelledby="labelledby || undefined"
       tabindex="-1"
-      :style="inline ? undefined : style"
+      :style="inline || asSheet ? undefined : style"
       @keydown="onPopoverKeydown"
     >
       <slot v-if="isPanel && isOpen" name="panel" :close="close" />
@@ -60,11 +60,15 @@ let nextId = 0;
 // Tab close; Esc returns focus to the trigger; a click outside closes. The `panel` slot (scope: `close`) replaces the
 // list with free content, `role="dialog"` named by `label`. `placement` is a floating-ui placement. `inline` renders
 // it open in the page flow (catalogue), above the trigger for a `top` placement (the drop-up state). A closed menu
-// mounts neither items nor panel: a closed select holds no hidden copy of its option labels.
+// mounts neither items nor panel: a closed select holds no hidden copy of its option labels. `sheet` is for a panel
+// that reads as a page of text (configuration health): a wide popover (≤ 32rem) above a phone, a full-width bottom
+// sheet on one.
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useSlots, watch } from "vue";
 import { ICONS } from "@/boots/Icons/icons";
 import { FOCUSABLE, focusableIn } from "@/composables/useFocusTrap";
 import { useFloatingPosition } from "@/composables/useFloatingPosition";
+import { useMediaQuery } from "@/composables/useMediaQuery";
+import { MAX_TABLET_QUERY } from "@/utils/breakpoints";
 
 const props = defineProps({
   items: { type: Array, default: () => [] },
@@ -73,6 +77,7 @@ const props = defineProps({
   labelledby: { type: String, default: "" },
   placement: { type: String, default: "bottom-start" },
   inline: { type: Boolean, default: false },
+  sheet: { type: Boolean, default: false },
 });
 const emit = defineEmits(["select", "open", "close"]);
 
@@ -85,12 +90,14 @@ const popover = ref(null);
 const expanded = ref(false);
 
 const isOpen = computed(() => props.inline || expanded.value);
+const isPhone = useMediaQuery(MAX_TABLET_QUERY);
+const asSheet = computed(() => props.sheet && isPhone.value && !props.inline);
 const isPanel = computed(() => Boolean(slots.panel));
 const triggerControl = () => trigger.value?.querySelector(FOCUSABLE) ?? trigger.value;
 const anchor = computed(() => (expanded.value ? triggerControl() : null));
 const { style } = useFloatingPosition(anchor, popover, {
   placement: () => props.placement,
-  active: computed(() => expanded.value && !props.inline),
+  active: computed(() => expanded.value && !props.inline && !asSheet.value),
 });
 
 const ITEM_SELECTOR = ':is([role="menuitem"], [role="menuitemradio"]):not([aria-disabled="true"])';
@@ -240,6 +247,23 @@ defineExpose({ open: openMenu, close });
 
 .basic-menu__popover--panel {
   padding: var(--space-4);
+}
+
+.basic-menu__popover--sheet {
+  max-width: min(32rem, calc(100vw - var(--space-4)));
+}
+
+// The phone sheet: pinned to the bottom edge at full width, the page above it stays visible.
+.basic-menu__popover--bottom {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  max-width: none;
+  max-height: 85vh;
+  overflow-y: auto;
+  border-bottom: none;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
 .basic-menu__item {

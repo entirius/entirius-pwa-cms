@@ -23,10 +23,16 @@
       :class="`cfg-row--${row.severity}`"
       data-testid="config-health-row"
     >
-      <span class="cfg-row__text">
-        <span class="cfg-row__title">{{ checkText(row) }}</span>
-        <span v-if="row.detail" class="cfg-row__detail">{{ row.detail }}</span>
-      </span>
+      <p class="cfg-row__title">
+        <template v-for="(part, i) in textTokens(checkText(row))" :key="i">
+          <code v-if="part.code" class="cfg-token">{{ part.text }}</code><template v-else>{{ part.text }}</template>
+        </template>
+      </p>
+      <p v-if="row.detail" class="cfg-row__detail">
+        <template v-for="(part, i) in textTokens(row.detail)" :key="i">
+          <code v-if="part.code" class="cfg-token">{{ part.text }}</code><template v-else>{{ part.text }}</template>
+        </template>
+      </p>
       <router-link
         v-if="isInternalFix(row.fix_url)"
         :to="row.fix_url"
@@ -78,10 +84,11 @@
 import { computed } from "vue";
 import { t } from "@/i18n";
 import { useConfigHealthStore } from "@/stores/configHealth";
-import { checkName, checkText, isInternalFix } from "@/utils/configHealth";
+import { checkName, checkText, isInternalFix, textTokens } from "@/utils/configHealth";
 
 // The configuration-health panel (BasicMenu `panel` mode in ConfigHealthButton: the menu anchors it, names it and
-// closes it on Esc). `close` asks the menu to close: the close button, and a fix link.
+// closes it on Esc; `sheet`: a wide popover on desktop, a bottom sheet on a phone). `close` asks the menu to close: the
+// close button, and a fix link. A check reads top-down: the title, the detail, then "How to fix" under them.
 const emit = defineEmits(["close"]);
 const store = useConfigHealthStore();
 
@@ -100,10 +107,15 @@ const checkedAgo = computed(() => {
 @import "@/assets/scss/utils/touch-target";
 
 .cfg-panel {
-  width: 20rem;
+  width: 30rem;
   max-width: 100%;
   max-height: 60vh;
   overflow-y: auto;
+
+  @include max-tablet {
+    width: 100%;
+    max-height: none;
+  }
 }
 .cfg-panel__head {
   position: sticky;
@@ -126,8 +138,9 @@ const checkedAgo = computed(() => {
 }
 .cfg-row {
   display: flex;
-  gap: var(--space-3);
+  flex-direction: column;
   align-items: flex-start;
+  gap: var(--space-1);
   padding: var(--space-3) var(--space-4);
   border-bottom: 1px solid var(--border-subtle);
   border-left: 3px solid var(--warning);
@@ -136,26 +149,27 @@ const checkedAgo = computed(() => {
 .cfg-row--high {
   border-left-color: var(--negative);
 }
-.cfg-row__text {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 0.15rem;
-  min-width: 0;
-}
 .cfg-row__title {
-  overflow-wrap: anywhere;
+  margin: 0;
+  font-size: var(--fs-400);
+  font-weight: 600;
+  line-height: 1.4;
 }
 .cfg-row__detail {
-  font-size: var(--fs-200);
+  margin: 0;
+  font-size: var(--fs-300);
   color: var(--text-secondary);
+}
+// Only an env-var name or a URL may break mid-word; the words around it wrap between words.
+.cfg-token {
+  font-family: var(--font-mono);
   overflow-wrap: anywhere;
 }
 .cfg-row__fix {
-  flex-shrink: 0;
-  min-height: 44px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  min-height: var(--space-8);
+  font-size: var(--fs-300);
   font-weight: 600;
   color: var(--text-accent);
 }

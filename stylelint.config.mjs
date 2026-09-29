@@ -1,6 +1,5 @@
 // CMS UI lint, style side. Rule IDs (T1…) refer to docs/ui-rules.md § Tokens.
-// P1 ships it as warnings (debt report); P5 flips defaultSeverity to "error".
-// Old token and class names (removed in P2) are errors already: they no longer render.
+// Every rule is an error (P5 plan 56): a UI-rule violation fails `npm run lint:ui`.
 import { readdirSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 
@@ -10,7 +9,6 @@ const OLD_SCALE_VAR = /var\(\s*--(space-(50|100|200|300|400|500|600|700)|radius-
 // Old spacing steps, radius from spacing (br-50, br-tl-50, br-50-mobile), plan-06 radius names, removed sizes/weights.
 const OLD_SCALE_CLASS =
   /\.((p|pt|pr|pb|pl|pv|ph|m|mt|mr|mb|ml|mv|mh|gap)-(50|100|200|300|400|500|600|700)|(br|radius)-((tl|tr|bl|br)-)?(\d+|sm|md|base|lg|xl|2xl|3xl|4xl|full)|fs-(800|900|1000)|fw-(100|700))(?!\w)/;
-const OLD_NAME = (value) => OLD_COLOUR_VAR.test(value) || OLD_SCALE_VAR.test(value);
 const BASE_VALUES = ["0", "auto", "inherit", "initial", "unset", "none"];
 const MARGIN_PADDING = "/^(margin|padding)-(top|right|bottom|left|inline|block)(-(start|end))?$/";
 // T3 1–3 px hairline alignments (border compensation, focus offsets, icon nudges) have no step and stay raw
@@ -36,7 +34,7 @@ function cmsCustomProperties() {
 }
 
 export default {
-  defaultSeverity: "warning",
+  defaultSeverity: "error",
   plugins: ["stylelint-declaration-strict-value", "stylelint-value-no-unknown-custom-properties"],
   overrides: [
     { files: ["**/*.vue"], customSyntax: "postcss-html" },
@@ -61,10 +59,9 @@ export default {
         // T4 radius comes from the radius scale, never from spacing (var(--space-50) as a radius)
         "/radius$/": ["/var\\(\\s*--(?!radius-)/"],
       },
-      { severity: (property, value) => (OLD_NAME(value) ? "error" : "warning") },
     ],
     // T1/T3/T4 no old palette, spacing or radius class as a selector
-    "selector-disallowed-list": [[OLD_COLOUR_CLASS, OLD_SCALE_CLASS], { severity: "error" }],
+    "selector-disallowed-list": [[OLD_COLOUR_CLASS, OLD_SCALE_CLASS]],
     // T1–T5 a var() names a token that exists: the brand package, the semantic layer, the CMS scales, or a local one
     "csstools/value-no-unknown-custom-properties": [
       true,

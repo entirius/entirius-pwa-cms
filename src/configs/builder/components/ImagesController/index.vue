@@ -551,7 +551,7 @@ export default {
 
   &--selected {
     border-color: var(--accent);
-    box-shadow: 0 0 0 1px var(--focus-ring);
+    outline: 1px solid var(--focus-ring);
   }
 }
 

@@ -252,7 +252,7 @@ $base-size: 64px;
   transform: translate(-50%, -50%);
 
   &__circle {
-    border: 14px solid var(--clr-primary-200);
+    border: 14px solid var(--accent-subtle);
     width: $base-size;
     height: $base-size;
     opacity: 1;

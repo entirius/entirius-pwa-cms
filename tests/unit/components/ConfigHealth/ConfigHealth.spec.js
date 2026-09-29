@@ -12,6 +12,7 @@ vi.mock("@/api/munin/api", () => api);
 import { useConfigHealthStore } from "@/stores/configHealth";
 import ConfigHealthButton from "@/components/ConfigHealth/ConfigHealthButton.vue";
 import ConfigBanner from "@/components/ConfigHealth/ConfigBanner.vue";
+import { textTokens } from "@/utils/configHealth";
 
 const SMTP = {
   code: "communicator.smtp",
@@ -70,6 +71,35 @@ describe("configuration health", () => {
     expect(
       wrapper.get('[data-testid="config-health-passing"]').text()
     ).toContain("AI toolbox");
+  });
+
+  it("env-var names and URLs are code tokens; the words around them stay plain text", async () => {
+    api.GET_ConfigHealth.mockReturnValue(
+      health([{ ...SMTP, detail: "Set EMAIL_HOST_PASSWORD, see https://docs.test/smtp-setup for the steps." }])
+    );
+    await useConfigHealthStore().poll();
+    const wrapper = mountButton();
+    await flushPromises();
+    await wrapper.get('[data-testid="config-health-button"]').trigger("click");
+    const detail = wrapper.get(".cfg-row__detail");
+    expect(detail.findAll("code").map((code) => code.text())).toEqual([
+      "EMAIL_HOST_PASSWORD",
+      "https://docs.test/smtp-setup",
+    ]);
+    expect(detail.text()).toBe("Set EMAIL_HOST_PASSWORD, see https://docs.test/smtp-setup for the steps.");
+  });
+
+  it("textTokens splits out env-var names and URLs only", () => {
+    expect(textTokens("Missing SMTP_HOST (or URL_1) at http://x.test/a, not Name_Case")).toEqual([
+      { text: "Missing ", code: false },
+      { text: "SMTP_HOST", code: true },
+      { text: " (or ", code: false },
+      { text: "URL_1", code: true },
+      { text: ") at ", code: false },
+      { text: "http://x.test/a", code: true },
+      { text: ", not Name_Case", code: false },
+    ]);
+    expect(textTokens(undefined)).toEqual([]);
   });
 
   it("a CMS-path fix link is a router link", async () => {

@@ -1,11 +1,11 @@
 // CMS UI lint, template side. Rule IDs (C1…, T1…) refer to docs/ui-rules.md.
-// Templates only, no JS style rules. P1 ships LEVEL = "warn" (debt report); P5 sets "error". P3 closed C2 (removed
-// components) and C5 (icon-font glyphs): those are errors now, under the "vue-p3" plugin name.
+// Templates only, no JS style rules. Every UI rule is an error (LEVEL, P5 plan 56); C2 (removed components) and C5
+// (icon-font glyphs) run under the "vue-p3" plugin name, the old class names under "vue-p2".
 import { readdirSync, readFileSync } from "node:fs";
 import vue from "eslint-plugin-vue";
 import vueParser from "vue-eslint-parser";
 
-const LEVEL = "warn";
+const LEVEL = "error";
 const RULES = "docs/ui-rules.md";
 
 // C2 removed component → its replacement, merged from scripts/lint/removed-components/*.json ({ "Old": "New" }). The P3
@@ -98,14 +98,15 @@ export default [
     },
   },
   {
-    // Old class names, boots included. The vue plugin under a second name gives this check its own severity:
-    // vue/no-restricted-class above stays in warn mode.
+    // Old class names, boots included. The vue plugin under a second name keeps this list apart from the C3 list
+    // above (a later block would replace its options).
     files: ["src/**/*.vue"],
     plugins: { "vue-p2": vue },
     rules: { "vue-p2/no-restricted-class": ["error", ...OLD_CLASSES] },
   },
   {
-    // C1 views, panel components and functionals build UI from boots; boots are the implementations.
+    // C1 views, panel components and functionals build UI from boots; boots are the implementations. No native
+    // <select> outside the boots: BasicSelect (a select without a FormField label takes `floatingLabel`).
     files: ["src/views/**/*.vue", "src/components/**/*.vue", "src/functionals/**/*.vue", "src/App.vue"],
     rules: {
       "vue/no-restricted-html-elements": [

@@ -78,7 +78,7 @@
                 @click.stop="toggleExpand(row)"
               >
                 <FontAwesomeIcon
-                  :icon="isExpanded(row) ? 'chevron-down' : 'chevron-right'"
+                  :icon="isExpanded(row) ? $icons.collapse : $icons.expand"
                 />
               </button>
             </div>

@@ -22,3 +22,14 @@ export function checkName(code) {
 export function isInternalFix(url) {
   return typeof url === "string" && url.startsWith("/");
 }
+
+// Env-var names (EMAIL_HOST) and URLs are the only parts of a check's text that may break mid-word: split them out so
+// the panel sets them in the mono font. `[{ text, code }]`, in order; `code` marks a name or a URL.
+const CODE_TOKEN = /(https?:\/\/[^\s)]*[^\s).,;:]|\b[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+\b)/;
+
+export function textTokens(text) {
+  return String(text ?? "")
+    .split(CODE_TOKEN)
+    .filter(Boolean)
+    .map((part) => ({ text: part, code: CODE_TOKEN.test(part) }));
+}
