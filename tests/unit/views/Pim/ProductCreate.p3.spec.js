@@ -77,4 +77,12 @@ describe("ProductCreate — formats (plan 61)", () => {
     expect(postProduct).not.toHaveBeenCalled();
     expect(wrapper.vm.formErrors.getFieldError("sku").msg).toMatch(/without spaces/);
   });
+
+  it("the EAN placeholder comes from i18n, not a hard-coded English example", async () => {
+    const wrapper = mountCreate();
+    await flushPromises();
+
+    const ean = wrapper.findAllComponents({ name: "BasicInput" }).find((input) => input.attributes("format") === "ean");
+    expect(ean.attributes("placeholder")).toBe("pim.ean_placeholder");
+  });
 });

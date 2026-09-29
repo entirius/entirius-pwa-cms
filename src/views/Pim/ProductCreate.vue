@@ -63,7 +63,7 @@
             v-model="form.ean"
             format="ean"
             :maxlength="16"
-            placeholder="e.g. 5901234123457"
+            :placeholder="$t('pim.ean_placeholder')"
           />
         </FormField>
         <FormField

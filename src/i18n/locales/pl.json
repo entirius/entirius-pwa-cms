@@ -1192,6 +1192,8 @@
     "tab_product_tile": "Kafelek produktu",
     "upload_or": "lub",
     "sku_placeholder": "np. CHAIR-001",
+    "ean_placeholder": "np. 5901234123457",
+    "file_category_code_placeholder": "np. manual",
     "code": "Kod",
     "open_feature": "Otwórz atrybut: {name}",
     "expand_group": "Rozwiń grupę: {name}",

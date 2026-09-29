@@ -432,7 +432,10 @@ onMounted(() => {
           <div class="product-files__cat-create-fields">
             <div class="product-files__field">
               <label class="product-files__label field-label required">{{ $t("pim.code") }}</label>
-              <BasicInput v-model="newCategoryCode" placeholder="e.g. manual" />
+              <BasicInput
+                v-model="newCategoryCode"
+                :placeholder="$t('pim.file_category_code_placeholder')"
+              />
             </div>
             <div
               v-for="lang in formLanguages"

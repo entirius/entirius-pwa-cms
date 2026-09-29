@@ -1193,6 +1193,8 @@
     "tab_product_tile": "Product tile",
     "upload_or": "or",
     "sku_placeholder": "e.g. CHAIR-001",
+    "ean_placeholder": "e.g. 5901234123457",
+    "file_category_code_placeholder": "e.g. manual",
     "code": "Code",
     "open_feature": "Open attribute: {name}",
     "expand_group": "Expand group: {name}",
