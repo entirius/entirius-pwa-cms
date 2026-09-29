@@ -65,3 +65,29 @@ describe("CategoryDetail — missing category", () => {
     expect(mockNotify).toHaveBeenCalledWith(expect.objectContaining({ type: "negative" }));
   });
 });
+
+describe("CategoryDetail — header actions while loading", () => {
+  it("hides Save, Delete and the Active switch while the category reloads", async () => {
+    mockGetCategory.mockResolvedValueOnce({ data: { idx: "shoes", name: "Shoes", is_active: true } });
+    const wrapper = mount(CategoryDetail, {
+      global: {
+        mocks: { $route: { params: { idx: "shoes" }, query: {} } },
+        stubs: {
+          Teleport: true,
+          BasicTabs: true,
+          PimChannelSelect: true,
+          PageHeader: { template: "<header><slot name='actions' /></header>" },
+          ActionBar: { template: "<div class='stub-actions' />" },
+        },
+      },
+    });
+    await flushPromises();
+    expect(wrapper.find(".stub-actions").exists()).toBe(true);
+
+    mockGetCategory.mockReturnValueOnce(new Promise(() => {}));
+    wrapper.vm.fetchCategory();
+    await flushPromises();
+    expect(wrapper.find(".stub-actions").exists()).toBe(false);
+    expect(wrapper.find("basic-switch-stub").exists()).toBe(false);
+  });
+});

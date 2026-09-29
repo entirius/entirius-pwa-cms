@@ -6,7 +6,7 @@
           <template #meta>
             <PimChannelSelect />
           </template>
-          <template #actions>
+          <template v-if="!loading" #actions>
             <div class="flex ai-ct jc-fe wrap gap-3">
               <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
               <ActionBar :actions="headerActions" />
@@ -35,11 +35,9 @@
             >
               <BasicInput v-model="form.desc" />
             </FormField>
-            <BasicSwitch
-              :label="$t('pim.is_default')"
-              :model-value="form.is_default"
-              @update:model-value="onToggleDefault"
-            />
+            <FormField :label="$t('pim.is_default')">
+              <BasicSwitch :model-value="form.is_default" @update:model-value="onToggleDefault" />
+            </FormField>
           </template>
         </div>
       </BasicCard>
@@ -180,16 +178,18 @@
                   <h2 v-if="renamingGroupIdx !== group.idx" class="feature-group__name">
                     {{ group.name || group.idx }}
                   </h2>
-                  <BasicInput
-                    v-else
-                    :model-value="group.name"
-                    :aria-label="$t('pim.rename')"
-                    class="rename-input"
-                    focus-on-create
-                    @update:model-value="(val) => (group.name = val)"
-                    @on-focusout="finishRename(group)"
-                    @on-key-down="finishRename(group)"
-                  />
+                  <FormField v-else :error="renameError">
+                    <BasicInput
+                      :model-value="group.name"
+                      :aria-label="$t('pim.rename')"
+                      class="rename-input"
+                      focus-on-create
+                      @update:model-value="(val) => (group.name = val)"
+                      @on-focusout="finishRename(group)"
+                      @on-key-down="finishRename(group)"
+                      @keydown.esc="cancelRename(group)"
+                    />
+                  </FormField>
                   <CountBadge :count="group.features.length" />
                 </div>
                 <BasicMenu
@@ -374,6 +374,7 @@ export default {
       groups: [],
       featureSearch: "",
       renamingGroupIdx: null,
+      renameError: "",
       newGroupName: "",
       collapsedGroups: [],
     };
@@ -489,11 +490,20 @@ export default {
     },
     startRename(group) {
       this._oldGroupName = group.name;
+      this.renameError = "";
       this.renamingGroupIdx = group.idx;
     },
+    cancelRename(group) {
+      group.name = this._oldGroupName;
+      this.renamingGroupIdx = null;
+    },
     async finishRename(group) {
-      // Enter and the focus leaving the field both finish; the first one wins.
+      // Enter and the focus leaving the field both finish; the first one wins. An empty name stays in the field.
       if (this.renamingGroupIdx !== group.idx) return;
+      if (!group.name?.trim()) {
+        this.renameError = this.$t("pim.required_field");
+        return;
+      }
       this.renamingGroupIdx = null;
       if (group.name === this._oldGroupName) return;
       const lang = this.$i18n?.locale?.toLowerCase() || "en";
