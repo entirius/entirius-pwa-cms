@@ -118,6 +118,17 @@ describe("BasicTabs", () => {
     wrapper.unmount();
   });
 
+  it("renders a disabled tab that neither a click nor the arrow keys select", async () => {
+    const options = TABS.map((tab) => ({ ...tab, disabled: tab.value === "variants" }));
+    const wrapper = mount(BasicTabs, { props: { options, modelValue: "desc" }, attachTo: document.body });
+    const all = wrapper.findAll('[role="tab"]');
+    expect(all.map((t) => t.attributes("disabled"))).toEqual([undefined, "", undefined]);
+    await all[1].trigger("click");
+    await wrapper.trigger("keydown", { key: "ArrowRight" });
+    expect(wrapper.emitted("update:modelValue")).toEqual([["media"]]);
+    wrapper.unmount();
+  });
+
   it("gives the first tab the Tab stop when none is selected", () => {
     const wrapper = tabs(null);
     expect(wrapper.findAll('[role="tab"]').map((t) => t.attributes("tabindex"))).toEqual(["0", "-1", "-1"]);

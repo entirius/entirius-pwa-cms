@@ -12,6 +12,7 @@
       :aria-selected="String(modelValue === option.value)"
       :data-testid="option.testid || null"
       :tabindex="isFocusTarget(option) ? 0 : -1"
+      :disabled="option.disabled || undefined"
       @click="$emit('update:modelValue', option.value)"
     >
       {{ option.label }}
@@ -21,8 +22,8 @@
 </template>
 
 <script setup>
-// Tabs of one screen (docs/ui-components.md § P3 display): `options` [{ label, value, count?, testid? }], a `tablist` with one Tab stop (the active tab); arrow
-// keys, Home and End move to a tab and select it. Counts are CountBadges. Tab ids are `<idPrefix>-tab-<value>`; each
+// Tabs of one screen (docs/ui-components.md § P3 display): `options` [{ label, value, count?, testid?, disabled? }], a `tablist` with one Tab stop (the active tab); arrow
+// keys, Home and End move to a tab and select it, skipping disabled ones. Counts are CountBadges. Tab ids are `<idPrefix>-tab-<value>`; each
 // tab controls `<idPrefix>-panel-<value>`, the call site's `role="tabpanel"` element. No options, no tablist.
 import { computed, ref, useId } from "vue";
 import CountBadge from "@/boots/CountBadge/index.vue";
@@ -45,8 +46,7 @@ function isFocusTarget(option) {
   return selected ? option.value === props.modelValue : option === props.options[0];
 }
 
-function targetIndex(key, current) {
-  const last = props.options.length - 1;
+function targetIndex(key, current, last) {
   if (key === "Home") return 0;
   if (key === "End") return last;
   if (!STEP[key]) return null;
@@ -54,9 +54,11 @@ function targetIndex(key, current) {
 }
 
 function onKeydown(event) {
-  const current = props.options.findIndex((o) => o.value === props.modelValue);
-  const next = targetIndex(event.key, Math.max(current, 0));
-  if (next === null) return;
+  const enabled = props.options.flatMap((o, index) => (o.disabled ? [] : [index]));
+  const current = enabled.indexOf(props.options.findIndex((o) => o.value === props.modelValue));
+  const step = targetIndex(event.key, Math.max(current, 0), enabled.length - 1);
+  const next = step === null ? undefined : enabled[step];
+  if (next === undefined) return;
   event.preventDefault();
   emit("update:modelValue", props.options[next].value);
   listRef.value?.querySelectorAll('[role="tab"]')[next]?.focus();
@@ -91,8 +93,13 @@ function onKeydown(event) {
     border-bottom: 2px solid transparent;
     transition: color 0.15s, border-color 0.15s;
 
-    &:hover:not(&--active) {
+    &:hover:not(&--active):not(:disabled) {
       color: var(--text-body);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
     }
 
     &--active {
