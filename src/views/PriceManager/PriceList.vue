@@ -18,7 +18,7 @@
       <div class="price-list__toolbar">
         <!-- Currency multi-select -->
         <BasicSelect
-          :floating-label="$t('pm.currency')"
+          :floating-label="`${$t('pm.currency')} (${selectedCurrencies.length}/${availableCurrencies.length})`"
           v-if="availableCurrencies.length"
           :model-value="selectedCurrencies"
           :options="currencyOptions"

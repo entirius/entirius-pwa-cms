@@ -8,7 +8,6 @@
       >
         <template #meta>
           <ChannelMultiSelect
-            :floating-label="$t('builder.channels')"
             v-if="!loading"
             v-model="channels"
             :channels="available_channels"

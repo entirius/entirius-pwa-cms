@@ -95,7 +95,9 @@
           {{ !mode ? $t('routes.set_new') : $t('common.close') }}
         </BasicButton>
         <BasicSelect
-          :floating-label="$t('controllers.set_items')"
+          :floating-label="`${$t('controllers.set_items')} (${value ? value.length : 0}/${
+            config && config.max ? config.max : $t('controllers.unlimited')
+          })`"
           class="fg-1"
           :model-value="editing"
           :disabled="!Boolean(value)"

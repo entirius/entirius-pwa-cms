@@ -1487,7 +1487,7 @@
     "position": "Pozycja",
     "drag": "przeciągnij",
     "max_group_size": "Osiągnięto limit grup",
-    "decorator": "Dekorator",
+    "decorator": "Dekorator (opcjonalnie)",
     "set_items": "Ustawione",
     "field_type": "Typ pola",
     "field_required": "Wymagalność",

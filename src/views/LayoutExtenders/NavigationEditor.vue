@@ -12,7 +12,6 @@
               data-testid="nav-editor-unsaved-badge"
             />
             <ChannelMultiSelect
-              :floating-label="$t('layout_extender.channels')"
               v-model="selectedChannels"
               :channels="contentDBChannelStore.channels"
               :label="$t('layout_extender.channels')"

@@ -165,7 +165,10 @@ const checkedAgo = computed(() => {
   font-family: var(--font-mono);
   overflow-wrap: anywhere;
 }
+// A phone opens the panel as a sheet: the link keeps a 40 px hit area there.
 .cfg-row__fix {
+  @include touch-target;
+
   display: inline-flex;
   align-items: center;
   min-height: var(--space-8);

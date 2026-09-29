@@ -90,7 +90,8 @@ const popover = ref(null);
 const expanded = ref(false);
 
 const isOpen = computed(() => props.inline || expanded.value);
-const isPhone = useMediaQuery(MAX_TABLET_QUERY);
+// Only a sheet listens to the viewport: every BasicSelect is a BasicMenu. `sheet` is fixed per instance.
+const isPhone = props.sheet ? useMediaQuery(MAX_TABLET_QUERY) : ref(false);
 const asSheet = computed(() => props.sheet && isPhone.value && !props.inline);
 const isPanel = computed(() => Boolean(slots.panel));
 const triggerControl = () => trigger.value?.querySelector(FOCUSABLE) ?? trigger.value;

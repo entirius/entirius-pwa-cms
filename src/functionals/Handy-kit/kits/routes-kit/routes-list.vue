@@ -15,7 +15,7 @@
           <div class="fg-1">
             <div class="flex ai-ct gap-1">
               <BasicSelect
-                :floating-label="$t('routes.list_of_paths')"
+                :floating-label="`${$t('routes.list_of_paths')} (${routes.length})`"
                 class="fg-1"
                 :options="routes"
                 :model-value="shown_route"
@@ -76,7 +76,7 @@
               </p>
               <div class="flex ai-ct gap-1">
                 <BasicSelect
-                  :floating-label="$t('routes.setted_routes')"
+                  :floating-label="`${$t('routes.setted_routes')} (${selected ? selected.length : 0})`"
                   v-model="picked_setted"
                   class="fg-1"
                   :disabled="!selected"

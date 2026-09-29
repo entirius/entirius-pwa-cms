@@ -14,7 +14,7 @@
         {{ $t('routes.set_new') }}
       </BasicButton>
       <BasicSelect
-        :floating-label="$t('controllers.set_items')"
+        :floating-label="`${$t('controllers.set_items')} (${Object.keys(value ?? {}).length})`"
         v-model="picked_image"
         class="fg-1"
         :disabled="!Boolean(value)"

@@ -1488,7 +1488,7 @@
     "position": "Position",
     "drag": "drag",
     "max_group_size": "Max group size",
-    "decorator": "Decorator",
+    "decorator": "Decorator (optional)",
     "set_items": "Set items",
     "field_type": "Field type",
     "field_required": "Required",
