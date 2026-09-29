@@ -25,7 +25,7 @@
 
     <div
       v-if="perSupplierCounts.length"
-      class="updated-mode__sidebar flex ai-ct flex-wrap gap-2 mb-8"
+      class="flex ai-ct flex-wrap gap-2 mb-8"
       data-testid="updated-sidebar"
     >
       <FilterChip
@@ -88,14 +88,14 @@
       <template #cell-last_change="{ row }">
         <span class="fs-200 t-secondary">{{ formatDate(row.data_changed_at) }}</span>
       </template>
+      <template #empty>
+        <EmptyState
+          icon="notificationsOff"
+          :title="$t('atlas.review.updated.empty')"
+          :message="$t('atlas.review.updated.empty_message')"
+        />
+      </template>
     </DataTable>
-
-    <EmptyState
-      v-if="!loading && !visibleRows.length"
-      icon="notificationsOff"
-      :title="$t('atlas.review.updated.empty')"
-      :message="$t('atlas.review.updated.empty_message')"
-    />
   </div>
 </template>
 
@@ -332,9 +332,5 @@ export default {
 .updated-mode {
   display: flex;
   flex-direction: column;
-}
-.updated-mode__sidebar {
-  padding: var(--space-2) 0;
-  border-bottom: 1px solid var(--border-subtle);
 }
 </style>

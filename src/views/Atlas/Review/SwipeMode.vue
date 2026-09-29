@@ -1,55 +1,40 @@
 <template>
-  <div class="swipe-mode">
-    <!-- Scrollable content area. Action bar is a sibling outside this scroll
-         container so it stays docked at the bottom regardless of RawDataPanel
-         internal overflow. -->
-    <div class="swipe-mode__scroll">
-      <Loader block v-show="loading" />
+  <div>
+    <Loader block v-show="loading" />
 
-      <div v-if="!loading && !current" class="text-center mt-10">
-        <EmptyState
-          :title="$t('atlas.review.empty_state_title')"
-          :message="$t('atlas.review.empty_state_message')"
-          icon="checkboxOn"
+    <EmptyState
+      v-if="!loading && !current"
+      class="mt-10"
+      :title="$t('atlas.review.empty_state_title')"
+      :message="$t('atlas.review.empty_state_message')"
+      icon="checkboxOn"
+    />
+
+    <div v-else-if="current">
+      <p class="t-muted fs-200 text-center mb-5" data-testid="swipe-counter">
+        {{ index + 1 }} / {{ queue.length }}
+      </p>
+
+      <div class="swipe-mode__layout">
+        <ProductCard
+          :product="current"
+          @show-raw="rawVisible = true"
+          @show-gallery="galleryVisible = true"
         />
-      </div>
-
-      <div v-else-if="current" class="swipe-mode__content">
-        <p
-          class="t-muted fs-200 text-center mb-5"
-          data-testid="swipe-counter"
-        >
-          {{ index + 1 }} / {{ queue.length }}
-        </p>
-
-        <div class="swipe-mode__layout">
-          <ProductCard
-            :product="current"
-            @show-raw="rawVisible = true"
-            @show-gallery="galleryVisible = true"
-          />
-          <!-- Desktop-only side panel. Mobile users see the modal via "Show raw data" button. -->
-          <div class="swipe-mode__raw-panel">
-            <RawDataPanel :product="current" />
-          </div>
-        </div>
+        <!-- Desktop-only side panel. Mobile users see the modal via "Show raw data" button. -->
+        <RawDataPanel :product="current" class="hide-mobile" />
       </div>
     </div>
 
-    <!-- Action bar — sibling of scroll area, always pinned to the bottom of the panel. -->
+    <!-- The decision bar pins to the bottom edge of the page scroll body (as the PageLayout footer does). R5 order:
+         Skip (secondary) · Reject (danger, outlined) · Approve (primary) rightmost; equal widths on a phone. -->
     <div
       v-if="current"
-      class="swipe-mode__actions"
+      class="swipe-mode__actions flex ai-ct jc-fe gap-3"
+      role="group"
+      :aria-label="$t('common.actions')"
       data-testid="swipe-actions-bar"
     >
-      <BasicButton
-        variant="danger"
-        :disabled="busy"
-        data-testid="swipe-reject-btn"
-        @click="reviewProduct('reject')"
-      >
-        {{ $t('atlas.review.reject_button') }}
-      </BasicButton>
       <BasicButton
         v-if="!isMonitoringRow"
         variant="secondary"
@@ -58,6 +43,14 @@
         @click="reviewProduct('skip')"
       >
         {{ $t('atlas.review.skip_button') }}
+      </BasicButton>
+      <BasicButton
+        variant="danger"
+        :disabled="busy"
+        data-testid="swipe-reject-btn"
+        @click="reviewProduct('reject')"
+      >
+        {{ $t('atlas.review.reject_button') }}
       </BasicButton>
       <BasicButton
         v-if="!isMonitoringRow && kind === 'procurement'"
@@ -200,26 +193,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/* Layout: fill the parent (supplier-review__body) so action bar can dock at the bottom.
-   Scroll happens inside .swipe-mode__scroll — action bar lives as sibling and reaches
-   edge-to-edge (parent body has no padding; List/Events modes apply their own). */
-.swipe-mode {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  min-height: 0;
-}
-
-.swipe-mode__scroll {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  padding: var(--space-8);
-}
-
-.swipe-mode__content {
-  margin: 0 auto;
-}
+@import "@/assets/scss/utils/media-query";
 
 /* Desktop: side-by-side card + raw panel. Mobile: stacked, panel hidden (modal fallback). */
 .swipe-mode__layout {
@@ -229,36 +203,23 @@ export default {
   align-items: start;
   max-width: 1100px;
   margin: 0 auto;
-}
 
-.swipe-mode__raw-panel {
-  min-width: 0;
-}
-
-@media (max-width: 768px) {
-  .swipe-mode__layout {
+  @include max-tablet {
     grid-template-columns: 1fr;
   }
-  .swipe-mode__raw-panel {
-    display: none;
-  }
 }
 
-/* Action bar — sibling of scroll area, never overlapped by inner overflow.
-   Edge-to-edge (no horizontal gap) and compact height matching the toolbar above. */
 .swipe-mode__actions {
-  flex-shrink: 0;
-  display: flex;
-  justify-content: center;
-  gap: var(--space-5);
-  flex-wrap: wrap;
-  padding: var(--space-2) var(--space-8);
-  background: var(--surface-base);
-  border-top: 1px solid var(--border-subtle);
-  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.04);
+  position: sticky;
+  /* PageLayout's padding, as PageHeader's sticky head reads it (the fallback is its phone value). */
+  bottom: calc(-1 * var(--page-layout-pad-y, var(--space-5)));
+  z-index: 1;
+  margin-top: var(--space-8);
+  padding-block: var(--space-3);
+  background-color: var(--surface-page);
 
-  /* A decision bar: Reject is outlined so it reads as a button beside Skip and Approve. */
-  .button-basic--danger {
+  /* FIX-02: Reject keeps its outline, so it reads as a button beside Skip and Approve. */
+  :deep(.button-basic--danger) {
     border-color: var(--negative);
 
     &[disabled] {
@@ -266,11 +227,8 @@ export default {
     }
   }
 
-  @media (max-width: 768px) {
-    flex-wrap: nowrap;
-    padding: var(--space-2) var(--space-4);
-
-    .button-basic {
+  @include max-tablet {
+    :deep(.button-basic) {
       flex: 1 1 0;
       justify-content: center;
     }

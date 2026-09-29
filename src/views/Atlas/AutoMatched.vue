@@ -84,13 +84,14 @@
         </template>
       </DataTable>
 
+    <template #footer>
       <Pagination
         v-if="!loading && totalCount > pageSize"
         :page="paginationState.page"
         :pages="paginationState.pages"
-        class="mt-8"
         @update:page="onPageChange"
       />
+    </template>
   </PageLayout>
 </template>
 

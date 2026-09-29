@@ -1,17 +1,17 @@
 <template>
   <div class="events-mode">
     <div class="flex ai-ct flex-wrap gap-5 mb-8">
-      <span class="t-secondary fs-200">{{
-        $t("atlas.severity.label")
-      }}</span>
-      <FilterChip
-        v-for="opt in severityOptions"
-        :key="opt.value"
-        :label="opt.label"
-        :active="severityFilter === opt.value"
-        :data-testid="`events-severity-${opt.value}`"
-        @click="setSeverity(opt.value)"
-      />
+      <span id="events-severity-label" class="t-secondary fs-200">{{ $t("atlas.severity.label") }}</span>
+      <div class="filter-chip-row" role="group" aria-labelledby="events-severity-label">
+        <FilterChip
+          v-for="opt in severityOptions"
+          :key="opt.value"
+          :label="opt.label"
+          :active="severityFilter === opt.value"
+          :data-testid="`events-severity-${opt.value}`"
+          @click="setSeverity(opt.value)"
+        />
+      </div>
       <BasicSwitch
         :label="$t('atlas.logs.show_acknowledged')"
         v-model="showAcknowledged"
@@ -28,19 +28,21 @@
       row-key="id"
       :empty-text="$t('atlas.review.events.empty_state')"
     >
+      <template #cell-created_at="{ value }">
+        <span class="fs-200 t-secondary">{{ formatDate(value) }}</span>
+      </template>
       <template #cell-severity="{ value }">
         <StatusBadge :label="value" :tone="severityVariant(value)" />
       </template>
       <template #cell-acknowledged_at="{ row }">
-        <button
+        <BasicButton
           v-if="!row.acknowledged_at"
-          class="events-ack-btn bg-accent-subtle t-strong"
+          size="sm"
           :data-testid="`events-ack-${row.id}`"
-          @click.stop="acknowledge(row)"
+          @click="acknowledge(row)"
         >
-          <FontAwesomeIcon :icon="$icons.check" />
           {{ $t("atlas.review.events.acknowledge_button") }}
-        </button>
+        </BasicButton>
         <span v-else class="t-muted fs-200">{{ formatDate(row.acknowledged_at) }}</span>
       </template>
     </DataTable>
@@ -97,12 +99,13 @@ export default {
         {
           key: "severity",
           label: this.$t("atlas.severity.label"),
-          width: "100px",
+          width: "max-content",
         },
         {
           key: "source_idx",
           label: this.$t("atlas.review.list.col.supplier"),
           width: "120px",
+          priority: 2,
         },
         {
           key: "event_type",
@@ -114,7 +117,7 @@ export default {
           label: this.$t("atlas.logs.col.message"),
           width: "2fr",
         },
-        { key: "acknowledged_at", label: "", width: "160px" },
+        { key: "acknowledged_at", label: "", actions: true },
       ];
     },
   },
@@ -188,19 +191,5 @@ export default {
 .events-mode {
   display: flex;
   flex-direction: column;
-}
-.events-ack-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  border: none;
-  border-radius: var(--radius-base);
-  padding: var(--space-1) var(--space-2);
-  font-size: var(--fs-200);
-  font-weight: 600;
-  cursor: pointer;
-}
-.events-ack-btn:hover {
-  opacity: 0.85;
 }
 </style>

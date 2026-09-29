@@ -1,76 +1,47 @@
 <template>
-  <Teleport to="body">
-    <Transition name="modal">
-      <div
-        v-if="visible"
-        class="gallery-overlay"
-        @click.self="$emit('close')"
-        data-testid="gallery-modal"
-      >
-        <div class="gallery-container bg-base b-subtle rounded-lg">
-          <header class="gallery-header">
-            <h2 class="fs-400 fw-600">
-              {{ $t("atlas.review.gallery_title") }}
-              <span class="t-muted fw-400">({{ images.length }})</span>
-            </h2>
-            <button
-              class="gallery-close"
-              data-testid="gallery-modal-close"
-              @click="$emit('close')"
-            >
-              <FontAwesomeIcon :icon="$icons.close" />
-            </button>
-          </header>
+  <BasicModal :open="visible" size="lg" @close="$emit('close')">
+    <template #title>
+      <h2>
+        {{ $t("atlas.review.gallery_title") }}
+        <span class="t-muted fw-400">({{ images.length }})</span>
+      </h2>
+    </template>
 
-          <!-- Lightbox: large active image + thumbnail strip -->
-          <div class="gallery-body">
-            <div class="gallery-stage">
-              <img
-                v-if="activeImage"
-                :src="activeImage"
-                :alt="productName"
-                class="gallery-stage__image"
-              />
-              <button
-                v-if="images.length > 1"
-                class="gallery-nav gallery-nav--prev"
-                :title="$t('atlas.review.gallery_prev')"
-                @click="prev"
-              >
-                <FontAwesomeIcon :icon="$icons.prev" />
-              </button>
-              <button
-                v-if="images.length > 1"
-                class="gallery-nav gallery-nav--next"
-                :title="$t('atlas.review.gallery_next')"
-                @click="next"
-              >
-                <FontAwesomeIcon :icon="$icons.next" />
-              </button>
-              <span v-if="images.length > 1" class="gallery-counter">
-                {{ activeIndex + 1 }} / {{ images.length }}
-              </span>
-            </div>
-
-            <div v-if="images.length > 1" class="gallery-thumbs">
-              <button
-                v-for="(img, i) in images"
-                :key="i"
-                class="gallery-thumb"
-                :class="{ 'gallery-thumb--active': i === activeIndex }"
-                @click="activeIndex = i"
-              >
-                <img :src="img" :alt="''" loading="lazy" />
-              </button>
-            </div>
-          </div>
-        </div>
+    <div class="flex-column gap-4" data-testid="gallery-modal">
+      <div class="gallery-stage flex ai-ct jc-ct bg-raised rounded">
+        <img
+          v-if="activeImage"
+          :src="activeImage"
+          :alt="productName"
+          class="gallery-stage__image"
+        />
       </div>
-    </Transition>
-  </Teleport>
+
+      <div v-if="images.length > 1" class="flex ai-ct jc-ct gap-4">
+        <IconButton
+          icon="prev"
+          variant="outline"
+          :label="$t('atlas.review.gallery_prev')"
+          data-testid="gallery-modal-prev"
+          @click="prev"
+        />
+        <span class="fs-200 fw-600 t-secondary" data-testid="gallery-modal-counter">
+          {{ activeIndex + 1 }} / {{ images.length }}
+        </span>
+        <IconButton
+          icon="next"
+          variant="outline"
+          :label="$t('atlas.review.gallery_next')"
+          data-testid="gallery-modal-next"
+          @click="next"
+        />
+      </div>
+    </div>
+  </BasicModal>
 </template>
 
 <script>
+// Product images in a BasicModal (Esc, backdrop and focus from the boot); ←/→ move between images while it is open.
 export default {
   name: "GalleryModal",
   props: {
@@ -113,9 +84,7 @@ export default {
       this.activeIndex = (this.activeIndex + 1) % this.images.length;
     },
     onKey(e) {
-      if (!this.visible) return;
-      if (e.key === "Escape") this.$emit("close");
-      else if (e.key === "ArrowLeft") this.prev();
+      if (e.key === "ArrowLeft") this.prev();
       else if (e.key === "ArrowRight") this.next();
     },
   },
@@ -123,158 +92,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.gallery-overlay {
-  position: fixed;
-  inset: 0;
-  background: var(--overlay-backdrop);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-  padding: var(--space-8);
-}
-
-.gallery-container {
-  width: min(1100px, 100%);
-  max-height: 92vh;
-  display: flex;
-  flex-direction: column;
-  box-shadow: var(--shadow-lg);
-  overflow: hidden;
-}
-
-.gallery-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-5) var(--space-8);
-  border-bottom: 1px solid var(--border-subtle);
-}
-
-.gallery-close {
-  background: transparent;
-  border: none;
-  font-size: var(--fs-500);
-  color: var(--text-muted);
-  cursor: pointer;
-  padding: 0;
-
-  &:hover {
-    color: var(--text-body);
-  }
-}
-
-.gallery-body {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-height: 0;
-}
-
 .gallery-stage {
-  position: relative;
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--surface-raised);
   min-height: 0;
   overflow: hidden;
 }
 
 .gallery-stage__image {
-  max-width: 100%;
-  max-height: 70vh;
-  object-fit: contain;
   display: block;
-}
-
-.gallery-nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-full);
-  border: none;
-  background: rgba(0, 0, 0, 0.45);
-  color: white;
-  font-size: var(--fs-400);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.15s ease;
-
-  &:hover {
-    background: rgba(0, 0, 0, 0.65);
-  }
-
-  &--prev {
-    left: 12px;
-  }
-  &--next {
-    right: 12px;
-  }
-}
-
-.gallery-counter {
-  position: absolute;
-  bottom: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: var(--space-1) var(--space-2);
-  background: rgba(0, 0, 0, 0.55);
-  color: white;
-  border-radius: var(--radius-base);
-  font-size: var(--fs-200);
-  font-weight: 600;
-}
-
-.gallery-thumbs {
-  display: flex;
-  gap: var(--space-2);
-  padding: var(--space-5) var(--space-8);
-  overflow-x: auto;
-  overflow-y: hidden;
-  border-top: 1px solid var(--border-subtle);
-  background: var(--surface-base);
-}
-
-.gallery-thumb {
-  flex: 0 0 auto;
-  width: 64px;
-  height: 64px;
-  padding: 0;
-  border: 2px solid transparent;
-  border-radius: var(--radius-base);
-  background: var(--surface-raised);
-  cursor: pointer;
-  overflow: hidden;
-  transition: border-color 0.15s ease;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
-  &:hover {
-    border-color: var(--border-default);
-  }
-
-  &--active {
-    border-color: var(--accent);
-  }
-}
-
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.15s ease;
-}
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
+  max-width: 100%;
+  max-height: 60vh;
+  object-fit: contain;
 }
 </style>

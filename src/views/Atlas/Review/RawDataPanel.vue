@@ -1,67 +1,73 @@
 <template>
-  <BasicCard class="raw-panel" v-if="product">
-    <h3 class="raw-panel__heading">
-      {{ $t("atlas.review.raw_data_title") }}
-    </h3>
+  <aside v-if="product" class="raw-panel" :aria-labelledby="headingId">
+    <BasicCard class="gap-8">
+      <h2 :id="headingId" class="raw-panel__heading">
+        {{ $t("atlas.review.raw_data_title") }}
+      </h2>
 
-    <!-- Core fields -->
-    <section class="raw-panel__section">
-      <h4 class="raw-panel__subheading">{{ $t("atlas.review.raw_panel.core_section") }}</h4>
-      <dl class="raw-panel__grid">
-        <template v-for="row in coreRows" :key="row.label">
-          <dt>{{ row.label }}</dt>
-          <dd :class="{ 'raw-panel__mono': row.mono }">{{ row.value }}</dd>
-        </template>
-      </dl>
-    </section>
+      <!-- Core fields -->
+      <section class="raw-panel__section">
+        <h3 class="raw-panel__subheading">{{ $t("atlas.review.raw_panel.core_section") }}</h3>
+        <dl class="raw-panel__grid">
+          <template v-for="row in coreRows" :key="row.label">
+            <dt>{{ row.label }}</dt>
+            <dd>{{ row.value }}</dd>
+          </template>
+        </dl>
+      </section>
 
-    <!-- Vendor attributes (the `data` JSONField from SupplierProduct) -->
-    <section v-if="attributeRows.length" class="raw-panel__section">
-      <h4 class="raw-panel__subheading">
-        {{ $t("atlas.review.raw_panel.attributes_section") }}
-      </h4>
-      <dl class="raw-panel__grid">
-        <template v-for="row in attributeRows" :key="row.key">
-          <dt :title="row.key">{{ row.key }}</dt>
-          <dd>
-            <pre v-if="row.isJson" class="raw-panel__json">{{ row.value }}</pre>
-            <template v-else-if="row.long">
-              <span :class="{ 'raw-panel__clamp': !expanded[row.key] }">{{ row.value }}</span>
-              <button
-                type="button"
-                class="raw-panel__expand-btn"
-                @click="toggle(row.key)"
-              >
-                {{ expanded[row.key]
-                  ? $t("atlas.review.raw_panel.collapse")
-                  : $t("atlas.review.raw_panel.expand") }}
-              </button>
-            </template>
-            <span v-else>{{ row.value }}</span>
-          </dd>
-        </template>
-      </dl>
-    </section>
+      <!-- Vendor attributes (the `data` JSONField from SupplierProduct) -->
+      <section v-if="attributeRows.length" class="raw-panel__section">
+        <h3 class="raw-panel__subheading">
+          {{ $t("atlas.review.raw_panel.attributes_section") }}
+        </h3>
+        <dl class="raw-panel__grid">
+          <template v-for="row in attributeRows" :key="row.key">
+            <dt :title="row.key">{{ row.key }}</dt>
+            <dd>
+              <pre v-if="row.isJson" class="raw-panel__json">{{ row.value }}</pre>
+              <template v-else-if="row.long">
+                <span :class="{ 'raw-panel__clamp': !expanded[row.key] }">{{ row.value }}</span>
+                <BasicButton
+                  variant="ghost"
+                  size="sm"
+                  class="mt-1"
+                  :aria-expanded="String(!!expanded[row.key])"
+                  @click="toggle(row.key)"
+                >
+                  {{ expanded[row.key]
+                    ? $t("atlas.review.raw_panel.collapse")
+                    : $t("atlas.review.raw_panel.expand") }}
+                </BasicButton>
+              </template>
+              <span v-else>{{ row.value }}</span>
+            </dd>
+          </template>
+        </dl>
+      </section>
 
-    <!-- Image URLs (compact list — full gallery on click) -->
-    <section v-if="imageUrls.length" class="raw-panel__section">
-      <h4 class="raw-panel__subheading">
-        {{ $t("atlas.review.raw_panel.images_section") }}
-        <span class="raw-panel__count">({{ imageUrls.length }})</span>
-      </h4>
-      <ul class="raw-panel__images">
-        <li v-for="(u, i) in imageUrls" :key="i">
-          <a :href="u" target="_blank" rel="noopener" class="raw-panel__image-link">
-            {{ shortenUrl(u) }}
-          </a>
-        </li>
-      </ul>
-    </section>
-  </BasicCard>
+      <!-- Image URLs (compact list — full gallery on click) -->
+      <section v-if="imageUrls.length" class="raw-panel__section">
+        <h3 class="raw-panel__subheading">
+          {{ $t("atlas.review.raw_panel.images_section") }}
+          <span class="raw-panel__count">({{ imageUrls.length }})</span>
+        </h3>
+        <ul class="raw-panel__images">
+          <li v-for="(u, i) in imageUrls" :key="i">
+            <a :href="u" target="_blank" rel="noopener" class="raw-panel__image-link">
+              {{ shortenUrl(u) }}
+            </a>
+          </li>
+        </ul>
+      </section>
+    </BasicCard>
+  </aside>
 </template>
 
 <script>
-import { formatCost } from "@/utils/format";
+import { formatCost, formatDate } from "@/utils/format";
+
+let nextId = 0;
 
 const LONG_TEXT_THRESHOLD = 120;
 
@@ -71,7 +77,8 @@ export default {
     product: { type: Object, default: null },
   },
   data() {
-    return { expanded: {} };
+    nextId += 1;
+    return { expanded: {}, headingId: `raw-panel-title-${nextId}` };
   },
   watch: {
     "product.id"() {
@@ -83,15 +90,15 @@ export default {
       const p = this.product;
       if (!p) return [];
       return [
-        { label: "ID", value: p.id, mono: true },
-        { label: this.$t("atlas.review.raw_panel.external_id"), value: p.external_id || "—", mono: true },
+        { label: "ID", value: p.id },
+        { label: this.$t("atlas.review.raw_panel.external_id"), value: p.external_id || "—" },
         { label: this.$t("atlas.review.raw_panel.status"), value: p.status || "—" },
         { label: this.$t("atlas.review.raw_panel.cost"), value: formatCost(p.cost, p.currency) || "—" },
         { label: this.$t("atlas.review.raw_panel.stock"), value: p.stock ?? "—" },
-        { label: "EAN", value: p.ean || "—", mono: true },
-        { label: "URL", value: p.url || "—", mono: true },
-        { label: this.$t("atlas.review.raw_panel.last_synced"), value: this.formatDate(p.last_synced_at) },
-        { label: this.$t("atlas.review.raw_panel.data_changed"), value: this.formatDate(p.data_changed_at) },
+        { label: "EAN", value: p.ean || "—" },
+        { label: "URL", value: p.url || "—" },
+        { label: this.$t("atlas.review.raw_panel.last_synced"), value: formatDate(p.last_synced_at) || "—" },
+        { label: this.$t("atlas.review.raw_panel.data_changed"), value: formatDate(p.data_changed_at) || "—" },
       ];
     },
     attributeRows() {
@@ -128,14 +135,6 @@ export default {
         long: str.length > LONG_TEXT_THRESHOLD,
       };
     },
-    formatDate(iso) {
-      if (!iso) return "—";
-      try {
-        return new Date(iso).toLocaleString();
-      } catch {
-        return iso;
-      }
-    },
     shortenUrl(u) {
       try {
         const url = new URL(u);
@@ -150,9 +149,6 @@ export default {
 
 <style lang="scss" scoped>
 .raw-panel {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-8);
   max-height: calc(100vh - 200px);
   overflow-y: auto;
 }
@@ -160,20 +156,13 @@ export default {
 .raw-panel__heading {
   font-size: var(--fs-400);
   font-weight: 600;
-  margin: 0 0 var(--space-5);
+  margin: 0;
   color: var(--text-body);
 }
 
 .raw-panel__section {
   display: flex;
   flex-direction: column;
-  border-bottom: 1px solid var(--border-subtle);
-  padding-bottom: var(--space-5);
-
-  &:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-  }
 }
 
 .raw-panel__subheading {
@@ -214,17 +203,13 @@ export default {
   }
 }
 
-.raw-panel__mono {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-}
-
 .raw-panel__json {
   background: var(--surface-raised);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-base);
   padding: var(--space-1) var(--space-2);
   margin: 0;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: var(--fs-200);
   max-height: 140px;
   overflow: auto;
@@ -237,22 +222,6 @@ export default {
   line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
-}
-
-.raw-panel__expand-btn {
-  display: inline-block;
-  margin-top: var(--space-1);
-  padding: 0;
-  background: transparent;
-  border: none;
-  color: var(--text-accent);
-  font-size: var(--fs-200);
-  font-weight: 500;
-  cursor: pointer;
-
-  &:hover {
-    text-decoration: underline;
-  }
 }
 
 .raw-panel__images {
@@ -268,7 +237,6 @@ export default {
   font-size: var(--fs-200);
   color: var(--text-accent);
   text-decoration: none;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 
   &:hover {
     text-decoration: underline;

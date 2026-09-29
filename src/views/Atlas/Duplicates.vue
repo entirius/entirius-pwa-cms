@@ -36,56 +36,35 @@
         </div>
         <p class="fs-200 t-secondary mb-8">{{ group.suggestion_detail }}</p>
 
-        <div class="table-scroll">
-          <table class="table-basic duplicates-table">
-            <colgroup>
-              <col class="duplicates-table__sku" />
-              <col class="duplicates-table__weight" />
-              <col />
-              <col class="duplicates-table__actions" />
-            </colgroup>
-            <thead>
-              <tr>
-                <th>{{ $t("atlas.duplicates.col.sku") }}</th>
-                <th class="table-basic__numeric">{{ $t("atlas.duplicates.col.weight") }}</th>
-                <th>{{ $t("atlas.duplicates.col.suppliers") }}</th>
-                <th>{{ $t("atlas.duplicates.col.actions") }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="rp in group.realproducts" :key="rp.sku">
-                <td>
-                  <span class="fw-600">{{ rp.sku }}</span>
-                </td>
-                <td class="table-basic__numeric">{{ rp.weight ?? "—" }}</td>
-                <td>
-                  <div class="flex ai-ct flex-wrap gap-2">
-                    <StatusBadge
-                      v-for="s in rp.sources"
-                      :key="s.idx"
-                      :label="s.is_primary ? `★ ${s.name || s.idx}` : (s.name || s.idx)"
-                      :tone="s.is_primary ? 'positive' : 'neutral'"
-                    />
-                  </div>
-                </td>
-                <td>
-                  <div class="flex ai-ct flex-wrap gap-2">
-                    <BasicButton
-                      v-for="other in otherRps(group, rp)"
-                      size="sm"
-                      variant="secondary"
-                      :key="other.sku"
-                      :data-testid="`duplicates-merge-${rp.sku}-to-${other.sku}`"
-                      @click="openMergeModal(other.sku, rp.sku)"
-                    >
-                      {{ $t('atlas.duplicates.action.merge_to', { sku: other.sku }) }}
-                    </BasicButton>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <DataTable :columns="columns" :rows="group.realproducts" row-key="sku">
+          <template #cell-sku="{ value }">
+            <span class="fw-600">{{ value }}</span>
+          </template>
+          <template #cell-sources="{ row }">
+            <div class="flex ai-ct flex-wrap gap-2">
+              <StatusBadge
+                v-for="s in row.sources"
+                :key="s.idx"
+                :label="s.is_primary ? `★ ${s.name || s.idx}` : (s.name || s.idx)"
+                :tone="s.is_primary ? 'positive' : 'neutral'"
+              />
+            </div>
+          </template>
+          <template #cell-actions="{ row }">
+            <div class="flex ai-ct flex-wrap jc-fe gap-2">
+              <BasicButton
+                v-for="other in otherRps(group, row)"
+                size="sm"
+                variant="secondary"
+                :key="other.sku"
+                :data-testid="`duplicates-merge-${row.sku}-to-${other.sku}`"
+                @click="openMergeModal(other.sku, row.sku)"
+              >
+                {{ $t('atlas.duplicates.action.merge_to', { sku: other.sku }) }}
+              </BasicButton>
+            </div>
+          </template>
+        </DataTable>
       </BasicCard>
 
     <MergeConfirmationModal
@@ -119,6 +98,16 @@ export default {
     };
   },
   computed: {
+    // One column set for every EAN group, so SKU, suppliers and actions line up from group to group. The suppliers
+    // (★ = primary) stay on a phone: they tell which way to merge.
+    columns() {
+      return [
+        { key: "sku", label: this.$t("atlas.duplicates.col.sku"), width: "1fr", truncate: true },
+        { key: "weight", label: this.$t("atlas.duplicates.col.weight"), width: "100px", numeric: true, priority: 2 },
+        { key: "sources", label: this.$t("atlas.duplicates.col.suppliers"), width: "1fr" },
+        { key: "actions", label: this.$t("atlas.duplicates.col.actions"), width: "280px", actions: true },
+      ];
+    },
     hasSuppliersPanel() {
       return useMuninStore().isPanelEnabled("atlas");
     },
@@ -174,24 +163,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-// Every EAN group shares one column grid, so SKU, suppliers and actions line up from group to group.
-.duplicates-table {
-  table-layout: fixed;
-  min-width: 760px;
-}
-
-.duplicates-table__sku {
-  width: 200px;
-}
-
-.duplicates-table__weight {
-  width: 100px;
-}
-
-.duplicates-table__actions {
-  width: 280px;
-}
-
-</style>
