@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
 
 // P5 Atlas sources (plan 47): the bindings that moved — OverviewTab's Save into SourceDetail's PageHeader, the
-// product drawer's footer into an ActionBar, the category mapping's source value onto EntitySearchPicker.
+// product drawer's footer into an ActionBar, the category mapping's source value (a text field plus a menu of the feed's values).
 
 const mockGetSource = vi.fn();
 const mockGetDataValues = vi.fn();
@@ -34,6 +34,7 @@ import SourceDetail from "@/views/Atlas/SourceDetail.vue";
 import OverviewTab from "@/views/Atlas/tabs/OverviewTab.vue";
 import ProductsTab from "@/views/Atlas/tabs/ProductsTab.vue";
 import CategoryMappingRow from "@/views/Atlas/components/CategoryMappingRow.vue";
+import BasicInput from "@/boots/BasicInput/index.vue";
 
 const supplier = { idx: "acme", name: "Acme Corp", kind: "procurement" };
 const $t = (key) => key;
@@ -113,6 +114,7 @@ describe("OverviewTab — Save in the page header", () => {
       global: {
         mocks: { $t },
         stubs: {
+          BasicInput,
           FormField: { template: "<div><slot/></div>" },
           BasicInput: true,
           BasicSelect: true,
@@ -172,52 +174,93 @@ describe("ProductsTab — drawer ActionBar", () => {
   });
 });
 
-describe("CategoryMappingRow — source value picker", () => {
+describe("CategoryMappingRow — source value", () => {
+  // The value is a text field (stored as typed); a menu beside it lists the feed's values of the source field.
+  const BasicMenuStub = {
+    props: ["items", "label"],
+    emits: ["open", "select"],
+    template: `<div class="stub-menu"><slot name="trigger"/>
+      <button class="stub-open" @click="$emit('open')"/>
+      <p v-for="item in items" :key="item.key" :class="item.heading ? 'stub-heading' : 'stub-item'"
+        @click="item.heading || $emit('select', item)">{{ item.label }}</p></div>`,
+  };
+
   function mountRow(local = {}) {
-    const wrapper = mount(CategoryMappingRow, {
-      props: { supplierIdx: "acme" },
-      global: { mocks: { $t }, stubs: { FormField: true, EntitySearchPicker: true, BasicInput: true } },
+    return mount(CategoryMappingRow, {
+      props: { supplierIdx: "acme", mapping: { source_field: "", source_value: "", ...local } },
+      global: {
+        mocks: { $t },
+        stubs: {
+          BasicInput,
+          FormField: { template: "<div><slot/></div>" },
+          EntitySearchPicker: true,
+          IconButton: { props: ["disabled"], template: "<button class='stub-values' :disabled='disabled'/>" },
+          BasicMenu: BasicMenuStub,
+        },
+      },
     });
-    Object.assign(wrapper.vm.$data.local, local);
-    return wrapper;
   }
+
+  async function openValues(wrapper) {
+    await wrapper.find(".stub-open").trigger("click");
+    await flushPromises();
+  }
+
+  const labels = (wrapper, cls) => wrapper.findAll(cls).map((p) => p.text());
 
   beforeEach(() => {
     mockGetDataValues.mockReset();
   });
 
-  it("lists the feed's values of the chosen source field with their counts", async () => {
-    mockGetDataValues.mockResolvedValue({ data: { values: [{ value: "Drills", count: 12 }] } });
+  it("stores the typed text as it is, without a pick from the list", async () => {
     const wrapper = mountRow({ source_field: "category" });
-    const options = await wrapper.vm.sourceValueFetchFn("");
+    await wrapper.find('[data-testid="cat-mapping-value-new"] input').setValue("Games/Board");
+    await wrapper.find('[data-testid="cat-mapping-save-new"]').trigger("click");
+    expect(wrapper.emitted("save")[0][0].source_value).toBe("Games/Board");
+    expect(mockGetDataValues).not.toHaveBeenCalled();
+  });
+
+  it("lists the feed's values with their counts, skipping null and reading numbers as text", async () => {
+    mockGetDataValues.mockResolvedValue({
+      data: { values: [{ value: null, count: 4 }, { value: 42, count: 2 }, { value: "Drills", count: 12 }] },
+    });
+    const wrapper = mountRow({ source_field: "category" });
+    await openValues(wrapper);
     expect(mockGetDataValues).toHaveBeenCalledWith("acme", { source_field: "category" });
-    expect(options).toEqual([
-      { value: "Drills", label: "Drills", secondary: "12 atlas.mappings.category.source_value_picker_count_suffix" },
+    expect(labels(wrapper, ".stub-item")).toEqual([
+      "42 · 2 atlas.mappings.category.source_value_picker_count_suffix",
+      "Drills · 12 atlas.mappings.category.source_value_picker_count_suffix",
     ]);
   });
 
-  it("offers the typed text first, filters the values, and asks once per source field", async () => {
+  it("filters the values by the typed text, sets a picked one, and asks once per source field", async () => {
     mockGetDataValues.mockResolvedValue({
       data: { values: [{ value: "Drills", count: 12 }, { value: "Saws", count: 3 }] },
     });
-    const wrapper = mountRow({ source_field: "category" });
-    const options = await wrapper.vm.sourceValueFetchFn("dri");
-    expect(options.map((o) => o.value)).toEqual(["dri", "Drills"]);
-    expect((await wrapper.vm.sourceValueFetchFn("Saws")).map((o) => o.value)).toEqual(["Saws"]);
+    const wrapper = mountRow({ source_field: "category", source_value: "dri" });
+    await openValues(wrapper);
+    expect(wrapper.findAll(".stub-item")).toHaveLength(1);
+    await wrapper.find(".stub-item").trigger("click");
+    expect(wrapper.find('[data-testid="cat-mapping-value-new"] input').element.value).toBe("Drills");
+    await openValues(wrapper);
     expect(mockGetDataValues).toHaveBeenCalledTimes(1);
   });
 
-  it("keeps free text when the values fail to load, and asks nothing before a source field is chosen", async () => {
-    mockGetDataValues.mockRejectedValueOnce(new Error("500"));
+  it("shows the API message when the values fail to load, and asks again on the next open", async () => {
+    mockGetDataValues.mockRejectedValueOnce({ response: { data: { message: "Feed unavailable" } } });
     mockGetDataValues.mockResolvedValueOnce({ data: { values: [{ value: "Hammers", count: 2 }] } });
     const wrapper = mountRow({ source_field: "category" });
-    expect(await wrapper.vm.sourceValueFetchFn("Hammers")).toEqual([{ value: "Hammers", label: "Hammers" }]);
-    // The failure is not cached: the next open asks again.
-    expect((await wrapper.vm.sourceValueFetchFn("Hammers"))[0].secondary).toBeDefined();
+    await openValues(wrapper);
+    expect(labels(wrapper, ".stub-heading")).toEqual(["Feed unavailable"]);
+    await openValues(wrapper);
+    expect(labels(wrapper, ".stub-heading")).toEqual([]);
+    expect(wrapper.findAll(".stub-item")).toHaveLength(1);
+  });
 
-    const empty = mountRow();
-    mockGetDataValues.mockClear();
-    expect(await empty.vm.sourceValueFetchFn("")).toEqual([]);
+  it("offers no values before a source field is chosen", async () => {
+    const wrapper = mountRow();
+    expect(wrapper.find(".stub-values").element.disabled).toBe(true);
+    await openValues(wrapper);
     expect(mockGetDataValues).not.toHaveBeenCalled();
   });
 });

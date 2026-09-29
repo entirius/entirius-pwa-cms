@@ -24,23 +24,31 @@
         />
       </FormField>
       <FormField :label="$t('atlas.mappings.category.source_value')">
-        <EntitySearchPicker
-          v-if="isNew"
-          :model-value="local.source_value || null"
-          :display-value="local.source_value"
-          :fetch-fn="sourceValueFetchFn"
-          :placeholder="
-            $t('atlas.mappings.category.source_value_placeholder')
-          "
-          :data-testid="`cat-mapping-value-${rowKey}`"
-          @update:model-value="local.source_value = $event ?? ''"
-        />
-        <BasicInput
-          v-else
-          v-model="local.source_value"
-          :disabled="true"
-          :data-testid="`cat-mapping-value-${rowKey}`"
-        />
+        <div class="flex gap-1">
+          <BasicInput
+            v-model="local.source_value"
+            class="flex-1"
+            :disabled="!isNew"
+            :placeholder="isNew ? $t('atlas.mappings.category.source_value_placeholder') : ''"
+            :data-testid="`cat-mapping-value-${rowKey}`"
+          />
+          <BasicMenu
+            v-if="isNew"
+            :items="sourceValueItems"
+            :label="$t('atlas.mappings.category.source_value_picker_open')"
+            @open="loadSourceValues"
+            @select="local.source_value = $event.value"
+          >
+            <template #trigger>
+              <IconButton
+                icon="expand"
+                :label="$t('atlas.mappings.category.source_value_picker_open')"
+                :disabled="!local.source_field"
+                :data-testid="`cat-mapping-values-${rowKey}`"
+              />
+            </template>
+          </BasicMenu>
+        </div>
       </FormField>
       <FormField :label="$t('atlas.mappings.category.target_category_idx')">
         <EntitySearchPicker
@@ -97,6 +105,7 @@
 <script>
 import { GET_Categories } from "@/api/pim/api";
 import { GET_DataValues } from "@/api/atlas/api";
+import { extractApiMessage } from "@/composables/useFormErrors";
 
 const EMPTY = () => ({
   source_field: "",
@@ -123,6 +132,8 @@ export default {
       local: this.mapping ? { ...this.mapping } : EMPTY(),
       _categoryCache: [],
       sourceValues: { field: null, values: [] },
+      sourceValuesState: "idle",
+      sourceValuesError: "",
     };
   },
   computed: {
@@ -146,6 +157,19 @@ export default {
         }`,
       }));
       return [...tokens, ...dataKeys];
+    },
+    // The feed's values of the source field that contain the typed text; null values are skipped, numbers read as
+    // text. A failed load shows the API message instead of the list.
+    sourceValueItems() {
+      const note = (label) => [{ key: "note", heading: true, label }];
+      if (this.sourceValuesState === "loading") return note(this.$t("entity_picker.searching"));
+      if (this.sourceValuesState === "error") return note(this.sourceValuesError);
+      const q = String(this.local.source_value ?? "").trim().toLowerCase();
+      const suffix = this.$t("atlas.mappings.category.source_value_picker_count_suffix");
+      const items = this.sourceValues.values
+        .filter((v) => v.value != null && String(v.value).toLowerCase().includes(q))
+        .map((v) => ({ key: String(v.value), value: String(v.value), label: `${v.value} · ${v.count} ${suffix}` }));
+      return items.length ? items : note(this.$t("entity_picker.no_results"));
     },
     categoryDisplayValue() {
       const cached = this._categoryCache.find(
@@ -181,29 +205,18 @@ export default {
     sourceFieldFetchFn() {
       return Promise.resolve(this.sourceFieldOptions);
     },
-    // The feed's values of the chosen source field matching the search; the typed text itself comes first, so a
-    // value the feed does not carry (yet) can still be mapped, as the old free-text picker allowed.
-    async sourceValueFetchFn(search) {
-      const q = (search || "").trim();
-      const suffix = this.$t("atlas.mappings.category.source_value_picker_count_suffix");
-      const values = await this.loadSourceValues();
-      const options = values
-        .filter((v) => v.value.toLowerCase().includes(q.toLowerCase()))
-        .map((v) => ({ value: v.value, label: v.value, secondary: `${v.count} ${suffix}` }));
-      const typed = q && !values.some((v) => v.value === q);
-      return typed ? [{ value: q, label: q }, ...options] : options;
-    },
-    // One successful request per source field; a failed one leaves only the typed text and retries next time.
+    // One successful request per source field; a failed one is not kept, the next open asks again.
     async loadSourceValues() {
       const field = this.local.source_field;
-      if (!field) return [];
-      if (this.sourceValues.field === field) return this.sourceValues.values;
+      if (!field || this.sourceValues.field === field) return;
+      this.sourceValuesState = "loading";
       try {
         const { data } = await GET_DataValues(this.supplierIdx, { source_field: field });
         this.sourceValues = { field, values: data?.values || [] };
-        return this.sourceValues.values;
-      } catch {
-        return [];
+        this.sourceValuesState = "idle";
+      } catch (err) {
+        this.sourceValuesError = extractApiMessage(err, this.$t("notifications.error"));
+        this.sourceValuesState = "error";
       }
     },
     async categoryFetchFn(query) {
