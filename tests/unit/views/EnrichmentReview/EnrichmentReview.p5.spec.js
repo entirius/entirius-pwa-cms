@@ -27,7 +27,7 @@ import DriftModal from "@/views/EnrichmentReview/DriftModal.vue";
 const PageLayout = { template: "<div><slot name='header' /><slot name='toolbar' /><slot /><slot name='footer' /></div>" };
 const PageHeader = { template: "<header><slot name='meta' /><slot name='actions' /></header>" };
 const ActionBar = { name: "ActionBar", props: ["actions"], template: "<div />" };
-const Pagination = { name: "Pagination", props: ["page", "pages"], emits: ["update:page"], template: "<nav />" };
+const Pagination = { name: "Pagination", props: ["page", "pages", "disabled"], emits: ["update:page"], template: "<nav />" };
 const BasicModal = { name: "BasicModal", props: ["open", "title", "actions"], template: "<div v-if='open'><slot /></div>" };
 
 async function mountPage() {
@@ -54,7 +54,7 @@ describe("EnrichmentReview page frame", () => {
   it("pages the list through the footer Pagination", async () => {
     const w = await mountPage();
     const pager = w.findComponent({ name: "Pagination" });
-    expect(pager.props()).toEqual({ page: 1, pages: 3 });
+    expect(pager.props()).toEqual({ page: 1, pages: 3, disabled: false });
     pager.vm.$emit("update:page", 2);
     await flushPromises();
     expect(w.vm.page).toBe(2);
@@ -67,10 +67,16 @@ describe("EnrichmentReview page frame", () => {
     await w.vm.$nextTick();
     const pager = w.findComponent({ name: "Pagination" });
     expect(pager.exists()).toBe(true);
+    expect(pager.props("disabled")).toBe(true);
     w.vm.loading = false;
     w.vm.busy = true;
+    await w.vm.$nextTick();
+    expect(pager.props("disabled")).toBe(true);
     pager.vm.$emit("update:page", 3);
     expect(w.vm.page).toBe(1);
+    w.vm.busy = false;
+    await w.vm.$nextTick();
+    expect(pager.props("disabled")).toBe(false);
   });
 
   it("has no pager in focus mode", async () => {

@@ -258,7 +258,8 @@ Catalogue: `#overlays` (`#basic-modal`, `#confirm-dialog`, `#side-drawer`, `#tra
   positioned ancestor; `role="status"` with a visually hidden „Ładowanie…”.
 - **`Pagination`** — `v-model:page` + `pages`; 32 px page squares 4 px apart, the current one boxed in accent, round
   prev/next arrows at opacity .5 when disabled, an ellipsis for many pages, nothing for one page. A computed page
-  count is `:pages="Math.ceil(total / perPage)"` at the call site.
+  count is `:pages="Math.ceil(total / perPage)"` at the call site. `disabled` (a list still loading or busy) disables
+  every cell, so a click is refused visibly instead of dropped.
 - **`EmptyState`** — `icon` is a meaning of `icons.js` (`empty` for a list with no rows).
 - **`MobileFilterPanel`** — the trigger is an `outline` IconButton `filter` named by `triggerLabel`, with a CountBadge.
 - Codemod `scripts/codemods/p3-display.mjs` (sweeps 17/18): `.chip` + colour classes → `StatusBadge` `tone`

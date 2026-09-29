@@ -9,7 +9,7 @@
     <button
       type="button"
       class="page-cell page-cell--arrow"
-      :disabled="state.page <= 1"
+      :disabled="disabled || state.page <= 1"
       aria-label="previous page"
       @click="
         changePage({ num: state.page - 1, isDisabled: false }, 'prev')
@@ -35,6 +35,7 @@
         class="page-cell"
         :class="{ 'page-cell--active': state.page === num.num }"
         :aria-current="state.page === num.num ? 'page' : null"
+        :disabled="disabled || undefined"
         @click="changePage(num)"
       >
         {{ num.num }}
@@ -44,7 +45,7 @@
     <button
       type="button"
       class="page-cell page-cell--arrow"
-      :disabled="state.page >= state.pages"
+      :disabled="disabled || state.page >= state.pages"
       aria-label="next page"
       @click="
         changePage({ num: state.page + 1, isDisabled: false }, 'next')
@@ -56,7 +57,7 @@
 </template>
 
 <script>
-// `v-model:page` + `pages` (docs/ui-components.md § P3 display).
+// `v-model:page` + `pages` (docs/ui-components.md § P3 display); `disabled` while the list loads: no page is taken.
 export default {
   emits: ["update:page"],
   props: {
@@ -67,6 +68,10 @@ export default {
     pages: {
       type: Number,
       default: 1,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
     nav_size: {
       type: Number,

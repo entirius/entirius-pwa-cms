@@ -126,7 +126,7 @@
         :label="cell.label"
         :interact="cell.interact"
       >
-        <Pagination :page="cell.page" :pages="cell.pages" />
+        <Pagination :page="cell.page" :pages="cell.pages" :disabled="cell.disabled" />
       </CatalogueCell>
     </div>
 
@@ -221,7 +221,7 @@ const pageCells = [1, 5, 40].flatMap((pages) =>
       page: pageOf(pages),
       pages,
     }))
-);
+).concat({ id: "pagination-5-disabled", label: "5 pages · disabled (loading)", interact: "", page: 3, pages: 5, disabled: true });
 
 const chipCells = [null, 12].flatMap((count) =>
   [false, true].map((active) => ({

@@ -128,6 +128,7 @@
       <Pagination
         :page="page"
         :pages="Math.ceil(totalCount / pageSize)"
+        :disabled="loading || busy"
         @update:page="onPage"
       />
     </template>
