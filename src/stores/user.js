@@ -181,10 +181,10 @@ export const useUserStore = defineStore('user', () => {
   }
 
   function loadPreferences(extra) {
-    // Every sign-in applies its own choice: a profile without one (or without `extra`) gets hints on, never the
-    // last user's.
-    setHints(extra?.cms_hints !== false, false)
+    // `extra` null: the profile call failed — the stored hints choice stands. A profile applies its own choice; one
+    // without it gets hints on, never the last user's.
     if (extra && typeof extra === 'object') {
+      setHints(extra.cms_hints !== false, false)
       preferences.value = { ...extra }
       if (extra.cms_theme) {
         setTheme(extra.cms_theme, false)

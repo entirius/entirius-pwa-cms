@@ -65,8 +65,9 @@ async function fetchContentPermissions() {
 async function fetchProfile(uid) {
   try {
     const { data } = await GET_UserDetails({ uid })
-    const { username = "", first_name = "", last_name = "", email = "", extra = null } = data?.data || {}
-    return { username, first_name, last_name, email, extra }
+    const { username = "", first_name = "", last_name = "", email = "", extra } = data?.data || {}
+    // A profile without `extra` is still a profile: `{}`, so its defaults apply. `null` means no profile answered.
+    return { username, first_name, last_name, email, extra: extra ?? {} }
   } catch (e) {
     console.warn("Profile endpoint unavailable — using defaults", e)
     return { username: "", first_name: "", last_name: "", email: "", extra: null }

@@ -69,7 +69,17 @@ describe("user store — field hints preference", () => {
     expect(localStorage.getItem("cms_hints")).toBeNull();
 
     hintsOn.value = false;
-    store.loadPreferences(null);
+    store.loadPreferences({});
     expect(hintsOn.value).toBe(true);
+  });
+
+  // Plan 61e: a failed profile call (`extra` null) is no profile — it must not turn the user's hints back on.
+  it("a failed profile call keeps the user's stored choice", () => {
+    localStorage.setItem("cms_hints", "false");
+    const store = useUserStore();
+    store.appInit();
+    store.loadPreferences(null);
+    expect(hintsOn.value).toBe(false);
+    expect(localStorage.getItem("cms_hints")).toBe("false");
   });
 });

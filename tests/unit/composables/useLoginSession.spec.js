@@ -63,6 +63,15 @@ describe("useLoginSession.completeLogin", () => {
     expect(fetchModules).toHaveBeenCalled();
   });
 
+  // Plan 61e: `null` is kept for "no profile answered", so the store keeps the stored hints choice only then.
+  it("a profile without extra loads empty preferences, not null", async () => {
+    mockGetUserDetails.mockResolvedValue({ data: { data: { username: "ops", extra: null } } });
+
+    await useLoginSession().completeLogin(TOKENS);
+
+    expect(loadPreferences).toHaveBeenCalledWith({});
+  });
+
   it("does not abort when the optional profile and permissions calls fail", async () => {
     mockGetUser.mockRejectedValue(new Error("404"));
     mockGetUserDetails.mockRejectedValue(new Error("404"));
