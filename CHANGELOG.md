@@ -456,6 +456,28 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- P5 panel review fixes (plan 54c), the review findings of wave 4 in Atlas and PIM:
+  - Atlas category mapping: the source value is a text field again and keeps what the operator types (the plan-47
+    picker stored only a value picked from its list); the feed's values of the source field open from the button
+    beside it, filtered by the typed text. A null feed value no longer breaks the list (numbers read as text), and a
+    failed `data-values` call shows the API message in that list instead of an empty one.
+  - PIM product attributes: select and multiselect values are no longer all downloaded when a product opens. A select
+    loads its first page (100) when it gets focus, a select holding a value loads it at once for the label (in
+    parallel), and "Load more values…" at the end of the list asks for the next page. A failed page shows a notice
+    and is asked again on the next open or "more"; the values that arrived stay.
+  - Atlas sources: the hard-delete warning stays in view in negative tone (the permanent option is irreversible);
+    the unused `TestFeedModal` and `FeedConfigForm` are deleted with their `atlas.feeds.form` / `sync_mode` / `test`
+    keys.
+  - Atlas review: the gallery's "N / M" counter is a select that jumps to image N; the monitoring reason of a locked
+    bulk action is a tooltip around the disabled button (it was a `title`); the sticky decision bar keeps the FAB's
+    corner lane on a phone; the severity chips' label id is generated.
+  - PIM taxonomy: Save, Delete and the Active switch of a category, and the feature-set actions, are hidden while the
+    record reloads; the feature set's `is_default` switch sits in a FormField; a group rename cancels on Escape and
+    an empty name is a field error instead of a PATCH; feature-type tones come from the `FEATURE_TYPES` table.
+  - e2e: the error collector ignores only the dev server's `/ws` hot-reload socket (it ignored every WebSocket
+    error), PIM specs 13–15 and the taxonomy smoke drop their own copies; the taxonomy smoke asserts the tree toggle,
+    the first category, feature, feature set and quality rule instead of passing without them.
+
 - P5 panel review fixes (plan 54b), the review findings of waves 1–3 in their own panels:
   - Promo: a rule that failed to load keeps Save, Delete and the Active switch disabled (a save would have overwritten
     the stored rule with the empty form); a nameless campaign or a missing enum value gets a label (the id, a dash),
