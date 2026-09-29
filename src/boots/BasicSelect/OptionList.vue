@@ -7,15 +7,16 @@
       ref="items"
       role="option"
       class="option-list__option flex ai-ct gap-2 pointer"
-      :class="{ 'option-list__option--active': i === active }"
-      :aria-selected="String(isSelected(option))"
+      :class="{ 'option-list__option--active': i === active, 'option-list__option--action': option.action }"
+      :data-action="option.action"
+      :aria-selected="option.action ? undefined : String(isSelected(option))"
       :aria-disabled="option.disabled ? 'true' : undefined"
       @mousedown.prevent
       @pointermove="option.disabled || $emit('hover', i)"
       @click="option.disabled || $emit('choose', option)"
     >
       <FontAwesomeIcon
-        v-if="multiple"
+        v-if="multiple && !option.action"
         :icon="isSelected(option) ? ICONS.checkboxOn : ICONS.checkboxOff"
         class="option-list__box"
         aria-hidden="true"
@@ -37,7 +38,8 @@
 <script setup>
 // The option list of BasicSelect, EntitySearchPicker and ChannelMultiSelect: `role="listbox"` of `option`s with ids
 // `<id>-<index>` (the owner's `aria-activedescendant`), `active` highlighted and kept in view, a checkbox per option
-// when `multiple`, a check on the selected one otherwise. Options = [{ label, value, description?, disabled? }].
+// when `multiple`, a check on the selected one otherwise. Options = [{ label, value, description?, disabled?, action? }];
+// an `action` row (BasicSelect's load-more) is a command, never a value: no checkbox, no selected state.
 // Emits `choose` (click on an enabled option) and `hover` (index under the pointer). A mousedown never takes the
 // focus from the owner's list or filter input.
 import { ref, watch } from "vue";
@@ -85,6 +87,10 @@ watch(
     color: var(--text-muted);
     cursor: not-allowed;
   }
+}
+
+.option-list__option--action {
+  color: var(--text-accent);
 }
 
 .option-list__option--active {

@@ -170,6 +170,25 @@ describe("BasicSelect", () => {
     expect(emitted(wrapper)).toEqual(["pl"]);
   });
 
+  it("moreLabel: an action row that no query hides; Enter on it emits more, keeps the menu open, picks nothing", async () => {
+    const wrapper = mountSelect({ searchable: true, moreLabel: "Load more" });
+    await open();
+    const input = document.querySelector('input[type="search"]');
+    input.value = "zzz";
+    input.dispatchEvent(new Event("input"));
+    await settle();
+    expect(wrapper.emitted("search").at(-1)).toEqual(["zzz"]);
+    expect(document.body.textContent).toContain("select.no_results");
+    const row = options()[0];
+    expect(row.dataset.action).toBe("more");
+    expect(row.hasAttribute("aria-selected")).toBe(false);
+    key(input, "Enter");
+    await settle();
+    expect(wrapper.emitted("more")).toHaveLength(1);
+    expect(emitted(wrapper)).toEqual([]);
+    expect(control().getAttribute("aria-expanded")).toBe("true");
+  });
+
   it("clearable: a clear button while a value is chosen emits null (an empty array when multiple)", async () => {
     const wrapper = mountSelect({ clearable: true, modelValue: "pl" });
     await settle();

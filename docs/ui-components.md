@@ -33,7 +33,11 @@ Notable ones for list/form views:
 - **`ChannelMultiSelect`** — multi-select for channel scoping (`v-model`
   array of channel idx). Props: `modelValue`, `channels`, `label`, `allLabel`.
 - **`BasicSelect`** — an option may carry `description`, a muted line under its label. Never put a `?` tooltip
-  inside an option: the bubble clips against the list's `overflow`.
+  inside an option: the bubble clips against the list's `overflow`. Options loaded in pages: `moreLabel` adds an
+  action row at the end of the list that no query filters out; choosing it (click, Enter) emits `more`, keeps the menu
+  open and its scroll position, and picks nothing. `search` emits the trimmed filter text on every change — the
+  owner loads what the filter must reach (the PIM attribute values load the pages left on the first query, capped).
+  Filtering stays local; there is no remote-search mode.
 - **`BulkActionBar`** — sticky bar for bulk row actions. Props: `count`
   (required), `actions` (required: `variant` per action, `secondary` without one; an action with `options` is an
   action picker, a BasicSelect), `selectedLabelKey`, `clearLabelKey`.

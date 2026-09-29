@@ -64,7 +64,7 @@
             @hover="listbox.active.value = $event"
             @choose="choose"
           />
-          <p v-if="!visible.length" class="basic-select__empty fs-200 t-muted">{{ $t("select.no_results") }}</p>
+          <p v-if="!matching.length" class="basic-select__empty fs-200 t-muted">{{ $t("select.no_results") }}</p>
         </div>
       </template>
     </BasicMenu>
@@ -80,6 +80,8 @@
 // `aria-activedescendant` (useListbox: arrows, Home / End, type-ahead, Enter / Space). Inside a FormField the
 // control takes the field's id, description, invalid, required and disabled; `aria-label` / `aria-labelledby` on
 // the tag name it outside one. `placement` and `inline` go to BasicMenu (`inline`: open in the page flow, catalogue).
+// `moreLabel` adds an action row at the end of the list for options that are not loaded yet: never filtered out,
+// choosing it emits `more` and keeps the menu open. `search` carries the trimmed filter text on every change.
 // `floatingLabel` names a select that stands without a FormField (toolbars, card headers): the empty control shows it
 // as the placeholder, a chosen value puts it above the control as a 12 px muted line; it is the accessible name too.
 import { computed, ref, useAttrs, useId, watch } from "vue";
@@ -105,8 +107,11 @@ const props = defineProps({
   placement: { type: String, default: "bottom-start" },
   inline: { type: Boolean, default: false },
   floatingLabel: { type: String, default: "" },
+  moreLabel: { type: String, default: "" },
 });
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits(["update:modelValue", "more", "search"]);
+
+const MORE = "__basic_select_more__";
 
 const field = useFormFieldControl();
 const attrs = useAttrs();
@@ -134,11 +139,13 @@ const isSelected = (option) => values.value.some((value) => isEqual(value, optio
 const selectedOptions = computed(() => props.options.filter(isSelected));
 const showClear = computed(() => props.clearable && !isDisabled.value && selectedOptions.value.length > 0);
 
-const visible = computed(() => {
+const matching = computed(() => {
   const needle = query.value.trim().toLowerCase();
   if (!needle) return props.options;
   return props.options.filter((option) => String(option.label).toLowerCase().includes(needle));
 });
+const moreRow = computed(() => (props.moreLabel ? [{ label: props.moreLabel, value: MORE, action: "more" }] : []));
+const visible = computed(() => [...matching.value, ...moreRow.value]);
 
 const display = computed(() => {
   const picked = selectedOptions.value;
@@ -149,7 +156,14 @@ const display = computed(() => {
 const listbox = useListbox(visible, choose);
 const activeId = computed(() => (listbox.active.value >= 0 ? `${listId}-${listbox.active.value}` : undefined));
 // Sync: onOpen clears the query and then points at the chosen option; a queued reset would undo that.
-watch(query, () => listbox.reset(), { flush: "sync" });
+watch(
+  query,
+  (value) => {
+    listbox.reset();
+    emit("search", value.trim());
+  },
+  { flush: "sync" }
+);
 
 // Single choice takes Space on keyup: focus returns to the trigger button, whose own Space keyup would reopen.
 function onListKeydown(event) {
@@ -164,6 +178,10 @@ function onOpen() {
 }
 
 function choose(option) {
+  if (option.action) {
+    emit("more");
+    return;
+  }
   if (!props.multiple) {
     emit("update:modelValue", option.value);
     menu.value?.close({ returnFocus: true });

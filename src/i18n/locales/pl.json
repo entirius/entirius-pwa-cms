@@ -693,6 +693,7 @@
   "pim": {
     "attribute_values_more": "Wczytaj więcej wartości…",
     "attribute_values_failed": "Nie udało się wczytać wartości atrybutu",
+    "attribute_values_capped": "Wyszukiwanie obejmuje tylko pierwsze {count} wartości",
     "products": "Produkty",
     "categories": "Kategorie",
     "create_product": "Nowy produkt",

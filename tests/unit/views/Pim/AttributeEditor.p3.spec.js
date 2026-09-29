@@ -29,17 +29,17 @@ const SwitchStub = { name: "BasicSwitch", props: ["modelValue", "label"], emits:
 const DateStub = { name: "BasicDatePicker", props: ["modelValue", "config"], emits: ["update:modelValue"], template: "<div />" };
 const SelectStub = {
   name: "BasicSelect",
-  props: { modelValue: null, options: Array, multiple: Boolean, searchable: Boolean, clearable: Boolean },
-  emits: ["update:modelValue"],
+  props: { modelValue: null, options: Array, multiple: Boolean, searchable: Boolean, clearable: Boolean, moreLabel: String },
+  emits: ["update:modelValue", "more", "search"],
   template: "<div />",
 };
 const SlotStub = { template: "<div><slot name=\"actions\" /><slot /></div>" };
 
 const page = (results, next = null) => Promise.resolve({ data: { results, next } });
 
-const mountEditor = (attributes = []) =>
+const mountEditor = (attributes = [], props = {}) =>
   mount(AttributeEditor, {
-    props: { featureSetIdx: "outdoor", channelIdx: "default-europe", attributes },
+    props: { featureSetIdx: "outdoor", channelIdx: "default-europe", attributes, ...props },
     global: {
       components: { BasicSwitch: SwitchStub, BasicDatePicker: DateStub, BasicSelect: SelectStub },
       stubs: {
@@ -60,6 +60,8 @@ async function openSelect(wrapper, multiple) {
   await selectOf(wrapper, multiple).trigger("focusin");
   await flushPromises();
 }
+
+const optionValues = (wrapper, multiple = false) => selectOf(wrapper, multiple).props("options").map((o) => o.value);
 
 const lastRow = (wrapper, idx) =>
   wrapper.emitted("update:attributes").at(-1)[0].find((r) => r.feature_idx === idx);
@@ -130,8 +132,11 @@ describe("AttributeEditor — P3 controls", () => {
 });
 
 describe("AttributeEditor — select values load lazily", () => {
-  const optionValues = (wrapper, multiple) => selectOf(wrapper, multiple).props("options").map((o) => o.value);
-  const moreOption = (wrapper, multiple) => selectOf(wrapper, multiple).props("options").at(-1);
+  const hasMore = (wrapper, multiple) => Boolean(selectOf(wrapper, multiple).props("moreLabel"));
+  const more = async (wrapper, multiple) => {
+    await selectOf(wrapper, multiple).vm.$emit("more");
+    await flushPromises();
+  };
 
   beforeEach(() => {
     mockGetFeatureAttributes.mockReset();
@@ -177,31 +182,30 @@ describe("AttributeEditor — select values load lazily", () => {
     ]);
   });
 
-  it("further pages load on demand through the last option, and a stored value outside them still shows", async () => {
+  it("further pages load on demand through the more row, and a stored value outside them still shows", async () => {
     mockGetFeatureAttributes.mockImplementation((idx, channel, params) =>
       params.page === 1 ? page([{ idx: "red", name: "Red" }], "next-url") : page([{ idx: "blue", name: "Blue" }])
     );
     const wrapper = mountEditor([{ feature_idx: "colour", attribute_idx: "legacy" }]);
     await flushPromises();
-    const more = moreOption(wrapper, false);
-    expect(optionValues(wrapper, false)).toEqual(["red", "legacy", more.value]);
+    expect(optionValues(wrapper, false)).toEqual(["red", "legacy"]);
+    expect(hasMore(wrapper, false)).toBe(true);
 
-    await selectOf(wrapper, false).vm.$emit("update:modelValue", more.value);
-    await flushPromises();
+    await more(wrapper, false);
     expect(mockGetFeatureAttributes).toHaveBeenLastCalledWith("colour", "default-europe", { page_size: 100, page: 2 });
     expect(optionValues(wrapper, false)).toEqual(["red", "blue", "legacy"]);
+    expect(hasMore(wrapper, false)).toBe(false);
     expect(wrapper.emitted("update:attributes")).toBeUndefined();
   });
 
-  it("the last option of a multiselect loads the next page without touching the picked list", async () => {
+  it("the more row of a multiselect loads the next page without touching the picked list", async () => {
     mockGetFeatureAttributes.mockImplementation((idx, channel, params) =>
       params.page === 1 ? page([{ idx: "s", name: "S" }], "next-url") : page([{ idx: "m", name: "M" }])
     );
     const wrapper = mountEditor([{ feature_idx: "sizes", attribute_idx: "s" }]);
     await flushPromises();
 
-    await selectOf(wrapper, true).vm.$emit("update:modelValue", ["s", moreOption(wrapper, true).value]);
-    await flushPromises();
+    await more(wrapper, true);
     expect(optionValues(wrapper, true)).toEqual(["s", "m"]);
     expect(wrapper.emitted("update:attributes")).toBeUndefined();
   });
@@ -228,13 +232,124 @@ describe("AttributeEditor — select values load lazily", () => {
     await flushPromises();
     await openSelect(wrapper, false);
 
-    await selectOf(wrapper, false).vm.$emit("update:modelValue", moreOption(wrapper, false).value);
-    await flushPromises();
+    await more(wrapper, false);
     expect(mockNotify).toHaveBeenCalledTimes(1);
-    expect(optionValues(wrapper, false)).toEqual(["red", moreOption(wrapper, false).value]);
+    expect(optionValues(wrapper, false)).toEqual(["red"]);
+    expect(hasMore(wrapper, false)).toBe(true);
 
-    await selectOf(wrapper, false).vm.$emit("update:modelValue", moreOption(wrapper, false).value);
-    await flushPromises();
+    await more(wrapper, false);
     expect(optionValues(wrapper, false)).toEqual(["red", "blue"]);
+  });
+});
+
+describe("AttributeEditor — search, cache scope, label lookups, notices", () => {
+  const values = (from, count) => Array.from({ length: count }, (_, i) => ({ idx: `v${from + i}`, name: `V${from + i}` }));
+  const optionCount = (wrapper) => selectOf(wrapper, false).props("options").length;
+
+  beforeEach(() => {
+    mockGetFeatureAttributes.mockReset();
+    mockNotify.mockReset();
+    mockGetAttribute.mockReset();
+    mockGetAttribute.mockRejectedValue(new Error("404"));
+  });
+
+  it("a typed query loads every page left once, then the select filters them all", async () => {
+    mockGetFeatureAttributes.mockImplementation((idx, channel, { page: n }) =>
+      page(values((n - 1) * 100, 100), n < 3 ? "next-url" : null)
+    );
+    const wrapper = mountEditor();
+    await flushPromises();
+    await openSelect(wrapper, false);
+
+    await selectOf(wrapper, false).vm.$emit("search", "v");
+    await selectOf(wrapper, false).vm.$emit("search", "v");
+    await flushPromises();
+    expect(mockGetFeatureAttributes.mock.calls.map((call) => call[2].page)).toEqual([1, 2, 3]);
+    expect(optionCount(wrapper)).toBe(300);
+    expect(selectOf(wrapper, false).props("moreLabel")).toBeFalsy();
+    expect(mockNotify).not.toHaveBeenCalled();
+  });
+
+  it("the search load stops at 2 000 values with a notice and keeps the more row", async () => {
+    mockGetFeatureAttributes.mockImplementation((idx, channel, { page: n }) => page(values((n - 1) * 100, 100), "next"));
+    const wrapper = mountEditor();
+    await flushPromises();
+    await openSelect(wrapper, false);
+
+    await selectOf(wrapper, false).vm.$emit("search", "v");
+    await flushPromises();
+    expect(mockGetFeatureAttributes).toHaveBeenCalledTimes(20);
+    expect(optionCount(wrapper)).toBe(2000);
+    expect(selectOf(wrapper, false).props("moreLabel")).toBeTruthy();
+    expect(mockNotify).toHaveBeenCalledTimes(1);
+    expect(mockNotify).toHaveBeenCalledWith(expect.objectContaining({ type: "info" }));
+  });
+
+  it("another channel does not reuse the values of the previous one and asks its own", async () => {
+    mockGetFeatureAttributes.mockImplementation((idx, channel) => page([{ idx: channel, name: channel }]));
+    const wrapper = mountEditor([{ feature_idx: "colour", attribute_idx: "default-europe" }]);
+    await flushPromises();
+    expect(optionValues(wrapper)).toEqual(["default-europe"]);
+
+    await wrapper.setProps({ channelIdx: "b2b" });
+    await flushPromises();
+    expect(mockGetFeatureAttributes).toHaveBeenLastCalledWith("colour", "b2b", { page_size: 100, page: 1 });
+    expect(optionValues(wrapper)).toEqual(["b2b", "default-europe"]);
+  });
+
+  it("a late answer of the previous channel is never shown", async () => {
+    let answerOld;
+    mockGetFeatureAttributes.mockImplementation((idx, channel) =>
+      channel === "default-europe"
+        ? new Promise((resolve) => (answerOld = () => resolve({ data: { results: [{ idx: "old", name: "Old" }] } })))
+        : page([{ idx: "new", name: "New" }])
+    );
+    const wrapper = mountEditor([{ feature_idx: "colour", attribute_idx: "new" }]);
+    await flushPromises();
+    await wrapper.setProps({ channelIdx: "b2b" });
+    await flushPromises();
+    answerOld();
+    await flushPromises();
+    expect(optionValues(wrapper)).toEqual(["new"]);
+  });
+
+  it("stored-value names are looked up at most 6 at a time, in the channel's language", async () => {
+    const stored = Array.from({ length: 10 }, (_, i) => `s${i}`);
+    let inFlight = 0;
+    let peak = 0;
+    mockGetFeatureAttributes.mockImplementation(() => page([]));
+    mockGetAttribute.mockImplementation(async (feature, idx) => {
+      peak = Math.max(peak, ++inFlight);
+      await new Promise((resolve) => setTimeout(resolve, 1));
+      inFlight -= 1;
+      return { data: { idx, name: `Global ${idx}`, name_t9n: { pl: `PL ${idx}` } } };
+    });
+    const attributes = stored.map((idx) => ({ feature_idx: "sizes", attribute_idx: idx }));
+    const wrapper = mountEditor(attributes, { languages: ["pl"] });
+    await vi.waitFor(() => expect(mockGetAttribute).toHaveBeenCalledTimes(10));
+    await vi.waitFor(() => expect(inFlight).toBe(0));
+    await flushPromises();
+    expect(peak).toBe(6);
+    expect(selectOf(wrapper, true).props("options")[0]).toEqual({ label: "PL s0", value: "s0" });
+  });
+
+  it("a failed prefetch round shows one notice, however many selects failed", async () => {
+    mockGetFeatureAttributes.mockRejectedValue(new Error("down"));
+    mountEditor([
+      { feature_idx: "colour", attribute_idx: "red" },
+      { feature_idx: "sizes", attribute_idx: "s" },
+    ]);
+    await flushPromises();
+    expect(mockGetFeatureAttributes).toHaveBeenCalledTimes(2);
+    expect(mockNotify).toHaveBeenCalledTimes(1);
+  });
+
+  it("a select the operator opens keeps its own notice", async () => {
+    mockGetFeatureAttributes.mockRejectedValue(new Error("down"));
+    const wrapper = mountEditor();
+    await flushPromises();
+    await openSelect(wrapper, false);
+    await openSelect(wrapper, true);
+    expect(mockNotify).toHaveBeenCalledTimes(2);
   });
 });

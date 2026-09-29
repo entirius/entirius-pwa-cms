@@ -13,7 +13,7 @@
             :row="row"
             :options="getOptions(row.feature_idx)"
             :has-more="hasMoreOptions(row.feature_idx)"
-            :stored-labels="storedLabels[row.feature_idx]"
+            :stored-labels="labelsOf(row.feature_idx)"
             :language="defaultLang"
             :translatable="hasSecondaryLanguages"
             :class="{ 'form-grid__wide': WIDE_TYPES.includes(row.feature_type) }"
@@ -22,8 +22,9 @@
             @update-json="(raw) => updateJsonField(row.feature_idx, raw)"
             @update-json-t9n="(raw) => updateJsonT9nField(row.feature_idx, defaultLang, raw)"
             @translate="openTranslationsDrawer(row.feature_idx)"
-            @open-options="ensureOptions(row.feature_idx)"
-            @load-more="loadOptionsPage(row.feature_idx)"
+            @open-options="openOptions(row.feature_idx)"
+            @load-more="loadMoreOptions(row.feature_idx)"
+            @search="loadAllOptions(row.feature_idx)"
           />
         </div>
       </BasicCard>
@@ -53,7 +54,7 @@
             :row="row"
             :options="getOptions(row.feature_idx)"
             :has-more="hasMoreOptions(row.feature_idx)"
-            :stored-labels="storedLabels[row.feature_idx]"
+            :stored-labels="labelsOf(row.feature_idx)"
             :language="defaultLang"
             :translatable="hasSecondaryLanguages"
             :class="{ 'form-grid__wide': WIDE_TYPES.includes(row.feature_type) }"
@@ -62,8 +63,9 @@
             @update-json="(raw) => updateJsonField(row.feature_idx, raw)"
             @update-json-t9n="(raw) => updateJsonT9nField(row.feature_idx, defaultLang, raw)"
             @translate="openTranslationsDrawer(row.feature_idx)"
-            @open-options="ensureOptions(row.feature_idx)"
-            @load-more="loadOptionsPage(row.feature_idx)"
+            @open-options="openOptions(row.feature_idx)"
+            @load-more="loadMoreOptions(row.feature_idx)"
+            @search="loadAllOptions(row.feature_idx)"
           />
         </div>
       </BasicCard>
@@ -107,6 +109,7 @@ import { ref, reactive, computed, watch, onMounted } from "vue";
 import { GET_FeatureSetFeatures, GET_FeatureAttributes, GET_Attribute } from "@/api/pim/api";
 import { useNotifyStore } from "@/stores/notify";
 import { t } from "@/i18n";
+import { createLimiter } from "@/utils/limit";
 import { isSelectType } from "../helpers/pimEnums";
 import { jsonToString } from "../helpers/attributeValues";
 import AttributeField from "./AttributeField.vue";
@@ -124,6 +127,10 @@ const notify = useNotifyStore();
 // Rich text and JSON attributes take the full width of the form grid.
 const WIDE_TYPES = [5, 6, 9, 11];
 const OPTIONS_PAGE_SIZE = 100;
+// A typed query loads the values left up to this many; past it the operator is told the search is partial.
+const SEARCH_CAP = 2000;
+// Name lookups of stored values in flight at once, for the whole editor.
+const limitLabels = createLimiter(6);
 
 const effectiveLanguages = computed(() =>
   props.languages.length > 0 ? props.languages : ["en"]
@@ -131,8 +138,11 @@ const effectiveLanguages = computed(() =>
 
 const loading = ref(false);
 const editableRows = ref([]);
+// Loaded values and stored-value names per channel + feature set + feature (`cacheKey`), reset when either changes:
+// a late answer of the previous channel lands under its own key and is never shown.
 const optionsCache = ref({});
 const storedLabels = ref({});
+const searchLoads = new Set();
 const collapsedGroups = reactive(new Set());
 const translatingRow = ref(null);
 
@@ -286,57 +296,110 @@ async function fetchFeatureSet() {
   }
 }
 
+const cacheKey = (featureIdx) => `${props.channelIdx}/${props.featureSetIdx}/${featureIdx}`;
+const storedValues = (row) => [...new Set([row.attribute_idx, ...row.attribute_idxs].filter(Boolean))];
+const notifyValuesFailed = () => notify.spawnNotification({ type: "negative", msg: t("pim.attribute_values_failed") });
+
 // Fire-and-forget: the first page of every select that holds a value, in parallel, then the names of the stored
-// values that page lacks; the editor shows at once. The other selects load when they open.
-function prefetchStoredOptions(rows) {
-  rows
-    .filter((r) => isSelectType(r.feature_type))
-    .forEach((r) => {
-      const stored = [...new Set([r.attribute_idx, ...r.attribute_idxs].filter(Boolean))];
-      if (stored.length) ensureOptions(r.feature_idx).then(() => loadStoredLabels(r.feature_idx, stored));
-    });
+// values that page lacks; the editor shows at once. The other selects load when they open. One notice per round,
+// however many selects failed.
+async function prefetchStoredOptions(rows) {
+  const loads = rows
+    .filter((r) => isSelectType(r.feature_type) && storedValues(r).length)
+    .map((r) => prefetchSelect(r.feature_idx, storedValues(r)));
+  if ((await Promise.all(loads)).includes(false)) notifyValuesFailed();
+}
+
+async function prefetchSelect(featureIdx, stored) {
+  const ok = await ensureOptions(featureIdx);
+  if (ok) await loadStoredLabels(featureIdx, stored);
+  return ok;
 }
 
 function ensureOptions(featureIdx) {
-  return optionsCache.value[featureIdx] ? Promise.resolve() : loadOptionsPage(featureIdx);
+  return optionsCache.value[cacheKey(featureIdx)] ? Promise.resolve(true) : loadOptionsPage(featureIdx);
 }
 
-// One request per stored value missing from the loaded values, in parallel; a failed one keeps its idx as the label.
+// A select the operator opens, or its "more" row: a failure gets its own notice.
+async function openOptions(featureIdx) {
+  if (!(await ensureOptions(featureIdx))) notifyValuesFailed();
+}
+
+async function loadMoreOptions(featureIdx) {
+  if (!(await loadOptionsPage(featureIdx))) notifyValuesFailed();
+}
+
+// A typed query must reach every value (the channel endpoint takes no search param): the pages left load once, up to
+// SEARCH_CAP values, while BasicSelect filters what has arrived. A failure lets the next query try again.
+async function loadAllOptions(featureIdx) {
+  const key = cacheKey(featureIdx);
+  if (searchLoads.has(key)) return;
+  searchLoads.add(key);
+  while (hasMoreOptions(featureIdx) && getOptions(featureIdx).length < SEARCH_CAP) {
+    if (await loadOptionsPage(featureIdx)) continue;
+    searchLoads.delete(key);
+    notifyValuesFailed();
+    return;
+  }
+  if (hasMoreOptions(featureIdx)) notify.spawnNotification({ type: "info", msg: t("pim.attribute_values_capped", { count: SEARCH_CAP }) });
+}
+
+// The names of stored values missing from the loaded values, through the shared limiter, in the channel's language;
+// a failed one keeps its idx as the label.
 async function loadStoredLabels(featureIdx, idxs) {
+  const key = cacheKey(featureIdx);
   const missing = idxs.filter((idx) => !getOptions(featureIdx).some((o) => o.value === idx));
   if (!missing.length) return;
   const nameOf = (idx) =>
-    GET_Attribute(featureIdx, idx).then(({ data }) => [idx, data.name || idx], () => [idx, idx]);
-  storedLabels.value[featureIdx] = Object.fromEntries(await Promise.all(missing.map(nameOf)));
+    limitLabels(() => GET_Attribute(featureIdx, idx))
+      .then(({ data }) => [idx, labelOf(data, idx)])
+      .catch(() => [idx, idx]);
+  storedLabels.value[key] = Object.fromEntries(await Promise.all(missing.map(nameOf)));
 }
 
-// The next page of a select feature's values. A failed page shows a notice and stays next: the next open (first
-// page) or "more" asks it again.
-async function loadOptionsPage(featureIdx) {
-  optionsCache.value[featureIdx] ??= { options: [], nextPage: 1, loading: false };
-  const entry = optionsCache.value[featureIdx];
-  if (entry.loading || !entry.nextPage) return;
-  entry.loading = true;
+const labelOf = (attribute, idx) => attribute.name_t9n?.[defaultLang.value] || attribute.name || idx;
+
+// The next page of a select feature's values → true when it arrived. Concurrent callers share the request in flight;
+// a failed page stays next, a failed first page drops the entry so the next open asks again.
+function loadOptionsPage(featureIdx) {
+  const key = cacheKey(featureIdx);
+  const entry = (optionsCache.value[key] ??= { options: [], nextPage: 1, pending: null });
+  if (!entry.nextPage) return Promise.resolve(true);
+  entry.pending ??= fetchOptionsPage(featureIdx, key).finally(() => (entry.pending = null));
+  return entry.pending;
+}
+
+async function fetchOptionsPage(featureIdx, key) {
+  const entry = optionsCache.value[key];
   try {
     const params = { page_size: OPTIONS_PAGE_SIZE, page: entry.nextPage };
     const { data } = await GET_FeatureAttributes(featureIdx, props.channelIdx, params);
     const options = (data.results || data || []).map((a) => ({ label: a.name || a.idx, value: a.idx }));
     entry.options = [...entry.options, ...options];
     entry.nextPage = data.next ? entry.nextPage + 1 : null;
+    return true;
   } catch {
-    if (!entry.options.length) delete optionsCache.value[featureIdx];
-    notify.spawnNotification({ type: "negative", msg: t("pim.attribute_values_failed") });
-  } finally {
-    entry.loading = false;
+    if (!entry.options.length && optionsCache.value[key] === entry) delete optionsCache.value[key];
+    return false;
   }
 }
 
 function getOptions(featureIdx) {
-  return optionsCache.value[featureIdx]?.options || [];
+  return optionsCache.value[cacheKey(featureIdx)]?.options || [];
 }
 
 function hasMoreOptions(featureIdx) {
-  return Boolean(optionsCache.value[featureIdx]?.nextPage);
+  return Boolean(optionsCache.value[cacheKey(featureIdx)]?.nextPage);
+}
+
+function labelsOf(featureIdx) {
+  return storedLabels.value[cacheKey(featureIdx)];
+}
+
+function resetOptions() {
+  optionsCache.value = {};
+  storedLabels.value = {};
+  searchLoads.clear();
 }
 
 // --- Field updates ---
@@ -400,8 +463,17 @@ function emitAttributes() {
 watch(
   () => props.featureSetIdx,
   (val) => {
+    resetOptions();
     if (val) fetchFeatureSet();
     else editableRows.value = [];
+  }
+);
+
+watch(
+  () => props.channelIdx,
+  () => {
+    resetOptions();
+    prefetchStoredOptions(editableRows.value);
   }
 );
 
