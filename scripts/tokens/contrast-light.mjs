@@ -26,6 +26,8 @@ const RULES = [
   ...STATUS.flatMap((status) => on(status, [...TEXT_SURFACES, `${status}-subtle`], 4.5)),
   ...on("border-control", CONTROL_SURFACES, 3),
 ];
+// [hover role, resting role, minimum step]: a hover or focus edge must be darker than the resting one, never fainter.
+const DARKER = [["border-strong", "border-control", 1.2]];
 
 // "{light.neutral.150}" → "#F1F2F4", following references inside brand.json.
 function resolver(brand) {
@@ -59,7 +61,8 @@ function ratio(fg, bg) {
 
 function check() {
   const hex = lightRoles();
-  const rows = RULES.map(([fg, bg, min]) => ({ fg, bg, min, value: ratio(hex[fg], hex[bg]) }));
+  const darker = ([fg, bg, min]) => ({ fg, bg, min, value: luminance(hex[fg]) < luminance(hex[bg]) ? ratio(hex[fg], hex[bg]) : 0 });
+  const rows = [...RULES.map(([fg, bg, min]) => ({ fg, bg, min, value: ratio(hex[fg], hex[bg]) })), ...DARKER.map(darker)];
   const lines = rows.map(({ fg, bg, min, value }) =>
     `| ${fg} | ${hex[fg]} | ${bg} | ${hex[bg]} | ${value.toFixed(2)}:1 | ${min}:1 | ${value >= min ? "pass" : "FAIL"} |`
   );

@@ -151,8 +151,9 @@ All notable changes to this project will be documented in this file.
 
 - Light theme (plan 61f): `border-control` moves to `light.neutral.600` `#646A78` — 3:1 (WCAG 1.4.11) on every
   surface a control sits on, `surface-hover` included (`light.basic.400` gave 2.92:1 there); every light form field
-  edge is darker. `scripts/tokens/contrast-light.mjs` proves text on `surface-raised`, `surface-hover` and
-  `accent-subtle` and the status colours on every text surface; the unit spec prints the failing pairs. Dark is
+  edge is darker, and `border-strong` (its hover and focus edge) moves to `light.neutral.700` so it stays darker than
+  the rest edge. `scripts/tokens/contrast-light.mjs` proves text on `surface-raised`, `surface-hover` and
+  `accent-subtle`, the status colours on every text surface and that order; the unit spec prints the failing pairs. Dark is
   unchanged. `docs/ui-rules.md` T1 allows `text-accent` on `accent-subtle` in light (5.87:1).
 
 - The sign-in screens share one brand-led frame, `AuthLayout` (plan 59, "quiet light"): on desktop a dark brand stage

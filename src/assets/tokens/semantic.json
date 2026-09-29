@@ -28,7 +28,7 @@
       "border-subtle":   { "dark": "{basic.400}",    "light": "{light.neutral.300}", "class": "b-subtle",   "role": "container borders, table row dividers (Figma #1E2830)" },
       "border-default":  { "dark": "{basic.500}",    "light": "{light.neutral.400}", "class": "b-default",  "role": "labelled controls: outline buttons, chips, icon buttons (Figma #2D3A48); the label identifies them, so no 3:1 boundary is required" },
       "border-control":  { "dark": "{basic.500}",    "light": "{light.neutral.600}", "class": "b-control",  "role": "form fields: input, select, textarea, checkbox, radio; dark (Q-7): same as border-default, keeps Figma's faint input borders (#2D3A48); light: >= 3:1 on every surface a control sits on, surface-hover included (WCAG 1.4.11; light.basic.400 gave 2.92:1 there)" },
-      "border-strong":   { "dark": "{basic.750}",    "light": "{basic.700}",         "class": "b-strong",   "role": "hover of border-control / border-default; inactive sidebar sub-item rail (Figma #727276 fill)" },
+      "border-strong":   { "dark": "{basic.750}",    "light": "{light.neutral.700}", "class": "b-strong",   "role": "hover of border-control / border-default; inactive sidebar sub-item rail (Figma #727276 fill); light: darker than border-control (the only focus mark of a textarea)" },
       "focus-ring":      { "dark": "{primary.100}",  "light": "{tertiary.200}",      "class": null,         "role": "2px outline on :focus-visible" }
     },
     "accent": {
