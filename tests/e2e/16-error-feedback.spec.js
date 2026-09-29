@@ -1,9 +1,12 @@
 const { test, expect } = require('@playwright/test');
 const { login } = require('../helpers/auth');
 const { createErrorCollector } = require('../helpers/error-collector');
-const { either } = require('./helpers/text');
+const { escapeRegExp } = require('./helpers/text');
 const en = require('../../src/i18n/locales/en.json');
 const pl = require('../../src/i18n/locales/pl.json');
+
+// The feature set is required: FormField's marker (` *`, CSS content) is part of the combobox's accessible name.
+const FEATURE_SET = new RegExp(`^(${escapeRegExp(en.pim.feature_set)}|${escapeRegExp(pl.pim.feature_set)}) \\*$`);
 
 /**
  * Error Feedback Tests (cms-error-handling-global)
@@ -71,7 +74,7 @@ async function firstExistingSku(page) {
 
 async function selectFirstFeatureSet(page) {
   // Named by its FormField label in either UI language.
-  await page.getByRole('combobox', { name: either(en.pim.feature_set, pl.pim.feature_set) }).click();
+  await page.getByRole('combobox', { name: FEATURE_SET }).click();
   await page.getByRole('option').first().click();
 }
 
@@ -89,7 +92,7 @@ test.describe('Scenario A — required-field validation', () => {
     await expect(skuError).toBeVisible();
     expect((await skuError.innerText()).trim()).not.toBe('');
 
-    await expect(page.getByRole('combobox', { name: either(en.pim.feature_set, pl.pim.feature_set) })).toHaveAttribute(
+    await expect(page.getByRole('combobox', { name: FEATURE_SET })).toHaveAttribute(
       'aria-invalid',
       'true'
     );
