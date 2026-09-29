@@ -395,6 +395,25 @@ describe("AttributeEditor — search, cache scope, label lookups, notices", () =
     expect(mockNotify).not.toHaveBeenCalled();
   });
 
+  // Plan 61c: A → B → A while a loop runs is a new scope too — the old loop stops, the new query runs one loop.
+  it("a search loop stops after a channel switch there and back: one loop, one notice", async () => {
+    let resolveOld;
+    mockGetFeatureAttributes
+      .mockImplementationOnce(() => new Promise((resolve) => (resolveOld = () => resolve({ data: { results: values(0, 100), next: "next" } }))))
+      .mockImplementation((idx, channel, { page: n }) => page(values((n - 1) * 100, 100), "next"));
+    const wrapper = mountEditor();
+    await flushPromises();
+    selectOf(wrapper, false).vm.$emit("search", "v");
+    await wrapper.setProps({ channelIdx: "b2b" });
+    await wrapper.setProps({ channelIdx: "default-europe" });
+    await flushPromises();
+    selectOf(wrapper, false).vm.$emit("search", "v");
+    resolveOld();
+    await flushPromises();
+    expect(optionCount(wrapper)).toBe(2000);
+    expect(mockNotify).toHaveBeenCalledTimes(1);
+  });
+
   it("a prefetch round of the previous channel that fails after the switch raises no notice", async () => {
     let failOld;
     mockGetFeatureAttributes.mockImplementation((idx, channel) =>
