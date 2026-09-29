@@ -28,6 +28,7 @@ vi.mock("@/composables/useFormErrors", () => ({
     hasErrors: false,
     clearErrors: () => {},
     validateRequired: () => true,
+    validateFormats: () => true,
     handleApiError: () => {},
   }),
 }));

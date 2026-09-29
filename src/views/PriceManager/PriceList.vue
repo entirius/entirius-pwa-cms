@@ -7,7 +7,7 @@
         </template>
         <template v-if="dirtyCount > 0" #actions>
           <div class="flex ai-ct jc-fe wrap gap-3">
-            <StatusBadge :label="`${dirtyCount} ${$t('pm.unsaved')}`" tone="warning" />
+            <StatusBadge :label="unsavedLabel" tone="warning" />
             <ActionBar :actions="headerActions" />
           </div>
         </template>
@@ -113,8 +113,9 @@
                 <!-- Net -->
                 <BasicInput
                   :modelValue="getDirtyField(rowKey(row), 'value', primaryValue(row))"
+                  format="money"
                   class="pm-price-input"
-                  @change="setDirty(rowKey(row), 'value', $event.target.value, row)"
+                  @update:model-value="setDirty(rowKey(row), 'value', $event, row)"
                 />
 
                 <!-- Calculated: Gross (or Net), read-only -->
@@ -123,8 +124,9 @@
                 <!-- Special -->
                 <BasicInput
                   :modelValue="getDirtyField(rowKey(row), 'special_value', specialValue(row))"
+                  format="money"
                   class="pm-price-input"
-                  @change="setDirty(rowKey(row), 'special_value', $event.target.value, row)"
+                  @update:model-value="setDirty(rowKey(row), 'special_value', $event, row)"
                 />
 
                 <!-- Special Gross (read-only) -->
@@ -270,6 +272,9 @@ import {
   POST_PmFlushSpecial,
 } from '@/api/pricemanager/api'
 import { extractApiMessage } from '@/composables/useFormErrors'
+import { formatError } from '@/utils/formats'
+
+const ROW_IDENTITY = ['sku', 'currency', '_original']
 import PmChannelSelect from './PmChannelSelect.vue'
 
 export default {
@@ -326,6 +331,13 @@ export default {
     },
     dirtyCount() {
       return this.dirtyRows.size
+    },
+    // One unsaved entry is one SKU price in one currency (what the save writes); the flat list shows it on each of its
+    // country rows, and every one of them is marked. The counter names both when they differ.
+    unsavedLabel() {
+      const rows = this.rows.filter((row) => this.dirtyRows.has(this.rowKey(row))).length
+      if (rows <= this.dirtyCount) return `${this.dirtyCount} ${this.$t('pm.unsaved')}`
+      return this.$t('pm.unsaved_prices_rows', { prices: this.dirtyCount, rows })
     },
     headerActions() {
       return [
@@ -545,9 +557,18 @@ export default {
       if ((field === 'value' || field === 'special_value') && value) {
         value = String(value).replace(',', '.').trim()
       }
-      existing[field] = value
-      this.dirtyRows.set(key, existing)
+      // A cell typed back to its stored value is clean again (the money cell updates on every keystroke).
+      if (value === this.storedField(row, field)) delete existing[field]
+      else existing[field] = value
+      const edited = Object.keys(existing).some((k) => !ROW_IDENTITY.includes(k))
+      if (edited) this.dirtyRows.set(key, existing)
+      else this.dirtyRows.delete(key)
       this.dirtyRows = new Map(this.dirtyRows)
+    },
+    storedField(row, field) {
+      if (field === 'value') return this.primaryValue(row)
+      if (field === 'special_value') return this.specialValue(row)
+      return row[field] || ''
     },
     // --- Price helpers ---
     primaryValue(row) {
@@ -584,8 +605,16 @@ export default {
       return num.toFixed(2)
     },
     // --- Save ---
+    // A value the money format rejects is marked in its cell; the save waits until it is fixed.
+    hasInvalidPrice() {
+      return [...this.dirtyRows.values()].some((r) => formatError('money', r.value) || formatError('money', r.special_value))
+    },
     async saveAll() {
       if (!this.dirtyRows.size) return
+      if (this.hasInvalidPrice()) {
+        this.notify.spawnNotification({ type: 'negative', msg: this.$t('formats.invalid_rows') })
+        return
+      }
       this.saving = true
       this.loader.loaderStart()
       try {
@@ -716,7 +745,7 @@ export default {
 
 // --- Table ---
 
-// The rows keep 1296 px (two date pickers); only the table box scrolls sideways, never the page. The row date
+// The rows keep $min-width (two date pickers); only the table box scrolls sideways, never the page. The row date
 // pickers are `fixed`, so this scroll box never clips their calendars.
 .pm-price-table {
   border: 1px solid var(--border-subtle);
@@ -725,7 +754,8 @@ export default {
 }
 
 // SKU | Tax | Cur | Net | Gross | Spec.Net | Spec.Gross | From | To | Eye | Status
-// minmax keeps columns readable; fr units share leftover space
+// minmax keeps columns readable; fr units share leftover space. Status fits the longest badge ("Niezapisane").
+$min-width: 1360px;
 $cols:
   minmax(100px, 1.5fr) // SKU
   minmax(70px, 1fr)    // Tax Class
@@ -737,11 +767,11 @@ $cols:
   minmax(12rem, 1fr)   // Promo Start (BasicDatePicker)
   minmax(12rem, 1fr)   // Promo End (BasicDatePicker)
   112px                // Actions (eye + flush + delete)
-  60px;                // Status
+  124px;               // Status
 
 .pm-price-table__head {
   display: grid;
-  min-width: 1296px;
+  min-width: $min-width;
   grid-template-columns: $cols;
   // The DataTable cell model: neighbouring columns keep 12 px between them.
   gap: var(--space-3);
@@ -756,17 +786,19 @@ $cols:
 
 .pm-price-table__row {
   display: grid;
-  min-width: 1296px;
+  min-width: $min-width;
   grid-template-columns: $cols;
   gap: var(--space-3);
   padding: var(--space-1) var(--space-3);
   border-top: 1px solid var(--border-subtle);
+  // Every row keeps the bar's width, so marking one moves nothing.
+  border-left: 3px solid transparent;
   align-items: center;
   min-height: 40px;
 
+  // Unsaved: an accent bar on the leading edge and the Status badge, the row itself stays calm.
   &--dirty {
-    background: var(--warning-subtle);
-    border-left: 3px solid var(--warning);
+    border-left-color: var(--warning);
   }
 
   &:hover {

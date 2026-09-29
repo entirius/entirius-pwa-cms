@@ -70,10 +70,7 @@
                 required
                 :error="formErrors.getFieldError('value')?.msg || ''"
               >
-                <BasicInput
-                  v-model="form.value"
-                  @blur="form.value = normalizePrice(form.value)"
-                />
+                <BasicInput v-model="form.value" format="money" />
               </FormField>
 
               <!-- Calculated price (read-only) -->
@@ -89,10 +86,7 @@
                 :label="$t('pm.special_net')"
                 :error="formErrors.getFieldError('special_value')?.msg || ''"
               >
-                <BasicInput
-                  v-model="form.special_value"
-                  @blur="form.special_value = normalizePrice(form.special_value)"
-                />
+                <BasicInput v-model="form.special_value" format="money" />
               </FormField>
 
               <!-- Promo dates -->
@@ -185,6 +179,8 @@ import { useFormErrors, extractApiMessage } from '@/composables/useFormErrors'
 import { GET_PmPriceDetail, GET_PmPrices, PATCH_PmPrice, DELETE_PmPrice, POST_PmFlushSpecial, GET_PmPriceHistory } from '@/api/pricemanager/api'
 import { formatDate } from '@/utils/format'
 import PmChannelSelect from './PmChannelSelect.vue'
+
+const PRICE_FORMATS = { value: { format: 'money' }, special_value: { format: 'money' } }
 
 export default {
   name: 'PmPriceDetail',
@@ -389,13 +385,6 @@ export default {
         // silent — currencies dropdown will be empty
       }
     },
-    normalizePrice(val) {
-      if (!val) return val
-      const s = String(val).replace(',', '.').trim()
-      const num = Number(s)
-      if (isNaN(num) || num < 0) return s
-      return num.toFixed(2)
-    },
     fmt2(val) {
       if (val == null || val === '') return ''
       const num = Number(val)
@@ -438,7 +427,7 @@ export default {
       const valid = this.formErrors.validateRequired(this.form, {
         value: this.isNetEditable ? this.$t('pm.net') : this.$t('pm.gross'),
       })
-      if (!valid) return
+      if (!valid || !this.formErrors.validateFormats(this.form, PRICE_FORMATS)) return
 
       this.loader.loaderStart()
       try {
