@@ -31,10 +31,11 @@ test.describe('Content Builder Workflow', () => {
     const headerText = await sectionHeader.textContent();
     expect(headerText.length).toBeGreaterThan(0);
 
-    // Section should have control buttons (eye, pen, copy, trash)
+    // Section should have control buttons (pen, copy, trash); the eye is a display-only config summary
     const sectionBtns = page.getByTestId('builder-section-actions').first().getByRole('button');
     const btnCount = await sectionBtns.count();
-    expect(btnCount).toBeGreaterThanOrEqual(4);
+    expect(btnCount).toBeGreaterThanOrEqual(3);
+    await expect(page.getByTestId('builder-section-config').first()).toBeVisible();
 
     await page.screenshot({ path: 'test-results/content-builder-sections.png' });
   });
