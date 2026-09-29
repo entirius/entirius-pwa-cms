@@ -115,6 +115,14 @@ function onFocusout(event) {
   emit("onFocusout", event.target.value);
 }
 
+// A model the parent changes or resets while the field has focus (a submit on Enter) wins over the typed text; the
+// field's own emit parses back to the model and keeps it.
+watch(
+  () => props.modelValue,
+  (value) => {
+    if (draft.value !== null && parseFormat(props.format, draft.value) !== value) draft.value = null;
+  },
+);
 watch(formatMessage, (message) => field.reportError?.(message));
 onBeforeUnmount(() => formatMessage.value && field.reportError?.(""));
 

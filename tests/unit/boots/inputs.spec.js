@@ -227,6 +227,18 @@ describe("BasicInput format (plan 61)", () => {
     expect(input.element.value).toBe("232.50");
   });
 
+  it("drops the typed text when the parent changes the model while the field has focus", async () => {
+    const wrapper = mountInput({ format: "money", modelValue: "" });
+    const input = wrapper.find("input");
+    await input.setValue("232,5");
+    await wrapper.setProps({ modelValue: lastModel(wrapper) });
+    expect(input.element.value).toBe("232,5");
+    await wrapper.setProps({ modelValue: "" });
+    expect(input.element.value).toBe("");
+    await wrapper.setProps({ modelValue: "10.00" });
+    expect(input.element.value).toBe("10.00");
+  });
+
   it("normalises the model to the format: 232 → 232.00, a code upper-case", async () => {
     const money = mountInput({ format: "money" });
     await money.find("input").setValue("232");
