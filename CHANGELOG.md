@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- Display type step (plan 61f): `--fs-display` 48 px in the size scale and the `type-display` role (Lexend Deca 300,
+  48/56, brand tracking); the sign-in editorial line uses it instead of 30 px. Catalogue cells for the sign-in sizes
+  (`BasicButton` / `BasicInput` `size="lg"`, the input with a `trailing` control) and `BasicLogo onDark`.
+
 - Input formats (plan 61): `src/utils/formats.js` parses, shows and checks `money`, `percent`, `integer`, `ean`
   (8/12/13/14 digits, GS1 check digit), `code`, `key`, `slug`, `email`, `url`, `iso2`, `iso4217`; BasicInput takes
   it as `format` (with `pattern`, `min`, `max`) and shows a wrong value as the FormField error when the field is left;
@@ -144,6 +148,12 @@ All notable changes to this project will be documented in this file.
   `docs/sso-login.md`. Unset, nothing changes.
 
 ### Changed
+
+- Light theme (plan 61f): `border-control` moves to `light.neutral.600` `#646A78` — 3:1 (WCAG 1.4.11) on every
+  surface a control sits on, `surface-hover` included (`light.basic.400` gave 2.92:1 there); every light form field
+  edge is darker. `scripts/tokens/contrast-light.mjs` proves text on `surface-raised`, `surface-hover` and
+  `accent-subtle` and the status colours on every text surface; the unit spec prints the failing pairs. Dark is
+  unchanged. `docs/ui-rules.md` T1 allows `text-accent` on `accent-subtle` in light (5.87:1).
 
 - The sign-in screens share one brand-led frame, `AuthLayout` (plan 59, "quiet light"): on desktop a dark brand stage
   (slow light fields on transform only, paused while typing and still under reduced motion; wordmark, an editorial
@@ -583,6 +593,16 @@ All notable changes to this project will be documented in this file.
   password and SSO login run the same code after the token call.
 
 ### Fixed
+
+- Review leftovers of plans 58–61e (plan 61f): a formatted BasicInput drops the typed text when the parent changes or
+  resets the model while it has focus (a submit on Enter); editing a discount code checks the code only when it was
+  changed, so a stored legacy code never blocks other edits; `12 5` is no longer read as `125` (only thousands groups
+  may hold a space); the URL message names http:// and https://, the currency-code message key is
+  `formats.iso4217`; a refused PriceManager save marks each invalid price cell with its field error; an invalid option
+  code on create is a field error, not a silent return; a failed reload of the Leads company card says the card
+  could not be refreshed (`leads.company.refresh_failed`), not that the action failed; the builder's section config
+  summary wraps to two lines with the full text in its title. Visual harness: a catalogue cell taller than the phone
+  viewport is captured whole, and `g-password-reset` captures the form (`?key=visual-fixture`).
 
 - Input formats (plan 61): prices (PriceManager list and detail, Promo minimum order) show and send two decimal
   places — `232` became `232.00`, `,` is read as `.`, `2,345` is an error instead of a server 400; EANs are checked
