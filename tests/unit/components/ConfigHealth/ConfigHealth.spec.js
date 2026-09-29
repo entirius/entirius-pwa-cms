@@ -102,6 +102,12 @@ describe("configuration health", () => {
     expect(textTokens(undefined)).toEqual([]);
   });
 
+  // Whether such a word fits a phone is measured by @ux on the health-open state (tests/visual/support/state.js).
+  it("a long word that is no token stays plain text", () => {
+    const words = ["DEBUG", "mail.example.test:587", "/etc/app/settings.py", "Notificationdeliveryconfiguration"];
+    words.forEach((word) => expect(textTokens(word)).toEqual([{ text: word, code: false }]));
+  });
+
   it("a CMS-path fix link is a router link", async () => {
     api.GET_ConfigHealth.mockReturnValue(
       health([{ ...SMTP, fix_url: "/communicator/settings" }])

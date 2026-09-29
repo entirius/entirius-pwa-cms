@@ -138,6 +138,18 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- Accessible names renamed by the floating labels (P5 plan 56, listed in plan 56c for the test package): the Stock
+  warehouse picker `Select warehouse` / „Wybierz magazyn” → `Warehouse` / „Magazyn”; the Pim category status filter
+  `Filter by status` / „Filtruj po statusie” → `Status`; the Atlas supplier-review filter keeps its name `Supplier` /
+  „Dostawca” but loses the `Name` / „Nazwa” placeholder. `stock.select_warehouse` stays: it is the Stock empty-state
+  title.
+- Review fixes of plan 56 (P5 plan 56c): the `BasicMenu` phone sheet is modal — a backdrop, scroll lock and focus
+  trap; Esc or a backdrop tap closes it and focus returns to the trigger. Configuration-health rows break a long word
+  that is no token (`DEBUG`, a hostname, a path). The builder group dropdown keeps its FormField label, its counter
+  uses `controllers.set_items` (`controllers.setted` deleted), and the selected-image ring stays visible next to a
+  focus outline. The census measures an inline background unless it carries `data-census="data"` (the ColorInput and
+  Emails channel swatches), and `@ux` reports a sticky bar inside a dialog; only the dialog layer or the BasicMenu
+  bottom sheet itself is no bottom bar.
 - UI lint fails on every rule (P5 plan 56): `eslint.config.mjs` `LEVEL = "error"`, `stylelint.config.mjs`
   `defaultSeverity: "error"`, so a raw control, a native `<select>` outside the boots, a literal icon glyph or an
   off-token value fails `npm run lint:ui`. The last warnings are fixed at their source: BasicWysiwyg focus mode and
@@ -556,6 +568,11 @@ All notable changes to this project will be documented in this file.
     `confirm-cancel` (every confirmation's cancel is `confirm-dialog-cancel`); `confirm-sheet` / `confirm-ok` remain
     only on the Stages delete dialog. New: `point-carrier` (the carrier marker of the points list),
     `earlier-thread-summary`, `company-load-error`.
+- `BasicMenu` phone sheet (P5 plan 56d): only an open phone sheet renders the teleported backdrop layer — every other
+  menu (every `BasicSelect`, `EntitySearchPicker`) is the trigger and the popover again, as before plan 56c. The focus
+  trap's container is the popover itself (`tabindex="-1"`), so a sheet in items mode or with no focusable content keeps
+  focus inside; the trigger is focused and taken as the trap's opener before focus moves in, so every close — Esc, the
+  backdrop, a panel link, `store.panelOpen = false` — returns focus to it.
 - P5 review fixes of plans 54c and 55 (plan 54d):
   - PIM product attributes: a select or multiselect value beyond the loaded page can be found by typing again. The
     channel values endpoint takes no search param, so the first typed query loads the pages left once (up to 2 000

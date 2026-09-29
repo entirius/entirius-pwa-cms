@@ -69,8 +69,8 @@ export default [
     },
   },
   {
-    // C2 removed components (P3 closed them): an error, boots included. The vue plugin under a second name gives this
-    // check its own severity.
+    // C2 removed components (P3 closed them): an error, boots included. The vue plugin under a second name keeps this
+    // list apart from the inline-style and icon list above (a later block would replace its options).
     files: ["src/**/*.vue"],
     plugins: { "vue-p3": vue },
     rules: { "vue-p3/no-restricted-syntax": ["error", ...NO_REMOVED_COMPONENT] },

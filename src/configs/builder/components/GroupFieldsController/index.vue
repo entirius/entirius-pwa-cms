@@ -23,11 +23,11 @@
           {{ !mode ? $t('routes.set_new') : $t('common.close') }}
         </BasicButton>
 
-        <BasicMenu class="fg-1" :label="$t('controllers.setted')">
+        <BasicMenu class="fg-1" :label="$t('controllers.set_items')">
           <template #trigger>
             <BasicButton variant="secondary" class="w-100 fs-200" :disabled="!Boolean(value)">
               {{
-                `${$t('controllers.setted')} (${!value ? [].length : value.length}${
+                `${$t('controllers.set_items')} (${!value ? [].length : value.length}${
                   group_rules && group_rules.max ? `/${group_rules.max}` : `/${$t('controllers.unlimited')}`
                 })`
               }}
@@ -108,9 +108,8 @@
             <p class="mb-1">{{ tFieldLabel(key, field.label) }}</p>
             <BasicWysiwyg v-model="group[key]" :key="`wysiwyg-${key}`" />
           </div>
-          <div v-if="props_handlers[field.type] === 'Dropdown'">
+          <FormField v-if="props_handlers[field.type] === 'Dropdown'" :label="tFieldLabel(key, field.label)">
             <BasicSelect
-              :floating-label="tFieldLabel(key, field.label)"
               :model-value="group[key]"
               :options="field.options"
               @update:model-value="
@@ -121,7 +120,7 @@
               "
               :key="`${force_refresh}-${index}`"
             />
-          </div>
+          </FormField>
           <div v-if="props_handlers[field.type] === 'Switcher'">
             <p class="mb-1">{{ tFieldLabel(key, field.label) }}</p>
             <BasicSwitch

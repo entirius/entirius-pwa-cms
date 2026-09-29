@@ -31,6 +31,7 @@ const stubs = {
   Pagination: true,
   ConfirmDialog: { props: ["open"], template: "<div v-if='open' class='confirm' />" },
   BasicMenu: true,
+  FormField: { name: "FormField", props: ["label"], template: "<div><slot /></div>" },
   draggable: true,
 };
 const mountWith = (component, props = {}) => mount(component, { props, global: { stubs } });
@@ -142,7 +143,7 @@ describe("ButtonsController", () => {
 
 describe("GroupFieldsController", () => {
   const config = {
-    fields: { on: { type: "switcher" }, size: { type: "dropdown", options: [{ label: "S", value: "s" }] } },
+    fields: { on: { type: "switcher" }, size: { type: "dropdown", label: "Size", options: [{ label: "S", value: "s" }] } },
   };
 
   it("flips a switcher field and sets a dropdown field of the group", async () => {
@@ -153,5 +154,14 @@ describe("GroupFieldsController", () => {
     expect(wrapper.vm.group.on).toBe(true);
     pick(wrapper, BasicSelect, 0, "s");
     expect(wrapper.vm.group.size).toBe("s");
+  });
+
+  it("names a dropdown field with a FormField label, never a floating one", async () => {
+    const wrapper = mountWith(GroupFieldsController, { config });
+    wrapper.vm.mode = "add";
+    await wrapper.vm.$nextTick();
+    const field = wrapper.findAllComponents({ name: "FormField" }).find((f) => f.findComponent(BasicSelect).exists());
+    expect(field.props("label")).toBe("Size");
+    expect(field.findComponent(BasicSelect).attributes("floating-label")).toBeUndefined();
   });
 });

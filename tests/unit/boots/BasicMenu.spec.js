@@ -152,6 +152,99 @@ describe("BasicMenu", () => {
     }
   });
 
+  describe("phone sheet: modal like BasicModal", () => {
+    const phone = (query) => ({ matches: query === "(max-width: 768px)", addEventListener() {}, removeEventListener() {} });
+    const backdrop = () => document.querySelector(".basic-menu__backdrop");
+    // The trigger is not focused before the tap (a phone does not focus a tapped button): the sheet focuses it itself.
+    const openSheet = async (props = { items: [] }, slots = { panel: "<button class='fix'>Fix</button>" }) => {
+      vi.stubGlobal("matchMedia", phone);
+      mountMenu({ sheet: true, ...props }, slots);
+      await open();
+      await nextTick();
+    };
+    const settle = async () => {
+      await nextTick();
+      await nextTick();
+    };
+
+    afterEach(() => vi.unstubAllGlobals());
+
+    it("opens over a backdrop with the page locked and inert, focus inside", async () => {
+      await openSheet();
+      expect(backdrop().parentElement).toBe(document.body);
+      expect(backdrop().contains(menu())).toBe(true);
+      expect(document.body.style.overflow).toBe("hidden");
+      expect(trigger().closest("[inert]")).not.toBeNull();
+      expect(document.activeElement.classList).toContain("fix");
+    });
+
+    it("Esc closes it and focus returns to the trigger", async () => {
+      await openSheet();
+      key(document.activeElement, "Escape");
+      await settle();
+      expect(trigger().getAttribute("aria-expanded")).toBe("false");
+      expect(backdrop()).toBeNull();
+      expect(document.body.style.overflow).toBe("");
+      expect(document.activeElement).toBe(trigger());
+    });
+
+    it("a tap on the backdrop closes it on its click and focus returns to the trigger; a tap inside does not", async () => {
+      await openSheet();
+      menu().dispatchEvent(new Event("pointerdown", { bubbles: true }));
+      menu().click();
+      await settle();
+      expect(trigger().getAttribute("aria-expanded")).toBe("true");
+      backdrop().dispatchEvent(new Event("pointerdown", { bubbles: true }));
+      await settle();
+      expect(trigger().getAttribute("aria-expanded")).toBe("true"); // the press alone: the tap's click is still to come
+      backdrop().click();
+      await settle();
+      expect(trigger().getAttribute("aria-expanded")).toBe("false");
+      expect(document.activeElement).toBe(trigger());
+    });
+
+    it("a close without returnFocus (a panel link, store.panelOpen = false) returns focus to the trigger too", async () => {
+      await openSheet();
+      wrappers[0].vm.close();
+      await settle();
+      expect(trigger().getAttribute("aria-expanded")).toBe("false");
+      expect(document.activeElement).toBe(trigger());
+    });
+
+    it("in items mode focus starts on the first item and Tab keeps it inside, on the sheet itself", async () => {
+      await openSheet({ items: ITEMS }, {});
+      expect(document.activeElement).toBe(items()[0]);
+      key(document.activeElement, "Tab");
+      expect(document.activeElement).toBe(menu());
+      key(document.activeElement, "Escape");
+      await settle();
+      expect(document.activeElement).toBe(trigger());
+    });
+
+    it("a panel with no focusable content keeps focus on the sheet", async () => {
+      await openSheet({ items: [] }, { panel: "<p>All checks passed</p>" });
+      expect(document.activeElement).toBe(menu());
+      key(document.activeElement, "Tab");
+      expect(document.activeElement).toBe(menu());
+    });
+
+    it("a closed phone sheet renders no backdrop layer: the popover is back in the menu", async () => {
+      await openSheet();
+      wrappers[0].vm.close();
+      await settle();
+      expect(backdrop()).toBeNull();
+      expect(menu().parentElement.classList).toContain("basic-menu");
+    });
+  });
+
+  it("a menu that is no sheet renders no layer: the popover is the menu's own child, nothing is teleported", async () => {
+    const wrapper = mountMenu();
+    await open();
+    expect(menu().parentElement).toBe(wrapper.element);
+    expect(wrapper.element.children).toHaveLength(2);
+    expect(document.body.children).toHaveLength(1);
+  });
+
   it("Esc on the trigger closes an open panel with nothing focusable", async () => {
     mountMenu({ items: [] }, { panel: "<p>Brak powiadomień</p>" });
     await open();

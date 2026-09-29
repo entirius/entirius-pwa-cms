@@ -31,6 +31,8 @@ const HEALTH_BODY = {
       state: "unconfigured",
       severity: "low",
       title: "Visual harness fixture check",
+      // A hostname and a path are no tokens: the row breaks them, so @ux measures the long words on a phone.
+      detail: "Point EMAIL_HOST at smtp-relay.notifications.eu-central-1.example.test and restart after editing /srv/entirius/volkanos/main/settings_local.py.",
       scope: "default-europe",
     },
   ],

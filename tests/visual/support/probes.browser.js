@@ -62,10 +62,11 @@
       .filter(({ style, box }) => box.width > 0 && box.height > 0 && style.visibility !== "hidden" && Number(style.opacity) > 0);
   }
 
-  // An inline background is data, not styling (a stored colour in the ColorInput swatch): lint already refuses a
-  // literal colour in a template's style attribute.
+  // A background marked `data-census="data"` is data, not styling (a stored colour in the ColorInput swatch); any
+  // other inline background — a script-bound colour — is measured like a stylesheet one.
+  const isDataColour = (el) => el.dataset?.census === "data";
   function colourSamples({ el, style }) {
-    const samples = el.style.backgroundColor ? [] : [["background-color", style.backgroundColor]];
+    const samples = isDataColour(el) ? [] : [["background-color", style.backgroundColor]];
     if (hasOwnText(el)) samples.push(["color", style.color]);
     if (parseFloat(style.borderTopWidth) > 0) samples.push(["border-color", style.borderTopColor]);
     return samples.map(([property, value]) => ({ property, value, el }));

@@ -7,43 +7,45 @@
     <span ref="trigger" class="basic-menu__trigger" @click.capture="onTriggerClick" @keydown="onTriggerKeydown">
       <slot name="trigger" :open="isOpen" />
     </span>
-    <div
-      v-show="isOpen"
-      :id="menuId"
-      ref="popover"
-      class="basic-menu__popover flex-column"
-      :class="{ 'basic-menu__popover--panel': isPanel, 'basic-menu__popover--sheet': sheet, 'basic-menu__popover--bottom': asSheet }"
-      :role="isPanel ? 'dialog' : 'menu'"
-      :aria-label="labelledby ? undefined : label || undefined"
-      :aria-labelledby="labelledby || undefined"
-      tabindex="-1"
-      :style="inline || asSheet ? undefined : style"
-      @keydown="onPopoverKeydown"
-    >
-      <slot v-if="isPanel && isOpen" name="panel" :close="close" />
-      <template v-for="item in items" v-else-if="isOpen" :key="item.key">
-        <div v-if="item.separator" role="separator" class="basic-menu__separator" />
-        <p v-else-if="item.heading" role="presentation" class="basic-menu__heading fs-200 t-muted">{{ item.label }}</p>
-        <component
-          :is="isLink(item) ? 'router-link' : 'button'"
-          v-else
-          :to="isLink(item) ? item.to : undefined"
-          :type="isLink(item) ? undefined : 'button'"
-          :role="item.checked === undefined ? 'menuitem' : 'menuitemradio'"
-          :aria-checked="item.checked === undefined ? undefined : String(item.checked)"
-          tabindex="-1"
-          class="basic-menu__item flex ai-ct gap-2 pointer"
-          :class="{ 'basic-menu__item--danger': item.danger }"
-          :disabled="isLink(item) ? undefined : item.disabled"
-          :aria-disabled="item.disabled ? 'true' : undefined"
-          :data-testid="item.testid"
-          @click="choose(item, $event)"
-        >
-          <FontAwesomeIcon v-if="item.icon" :icon="ICONS[item.icon]" class="basic-menu__icon" aria-hidden="true" />
-          <span>{{ item.label }}</span>
-        </component>
-      </template>
-    </div>
+    <component :is="asSheet && expanded ? SheetLayer : InPlace" @dismiss="close">
+      <div
+        v-show="isOpen"
+        :id="menuId"
+        ref="popover"
+        class="basic-menu__popover flex-column"
+        :class="{ 'basic-menu__popover--panel': isPanel, 'basic-menu__popover--sheet': sheet, 'basic-menu__popover--bottom': asSheet }"
+        :role="isPanel ? 'dialog' : 'menu'"
+        :aria-label="labelledby ? undefined : label || undefined"
+        :aria-labelledby="labelledby || undefined"
+        tabindex="-1"
+        :style="inline || asSheet ? undefined : style"
+        @keydown="onPopoverKeydown"
+      >
+        <slot v-if="isPanel && isOpen" name="panel" :close="close" />
+        <template v-for="item in items" v-else-if="isOpen" :key="item.key">
+          <div v-if="item.separator" role="separator" class="basic-menu__separator" />
+          <p v-else-if="item.heading" role="presentation" class="basic-menu__heading fs-200 t-muted">{{ item.label }}</p>
+          <component
+            :is="isLink(item) ? 'router-link' : 'button'"
+            v-else
+            :to="isLink(item) ? item.to : undefined"
+            :type="isLink(item) ? undefined : 'button'"
+            :role="item.checked === undefined ? 'menuitem' : 'menuitemradio'"
+            :aria-checked="item.checked === undefined ? undefined : String(item.checked)"
+            tabindex="-1"
+            class="basic-menu__item flex ai-ct gap-2 pointer"
+            :class="{ 'basic-menu__item--danger': item.danger }"
+            :disabled="isLink(item) ? undefined : item.disabled"
+            :aria-disabled="item.disabled ? 'true' : undefined"
+            :data-testid="item.testid"
+            @click="choose(item, $event)"
+          >
+            <FontAwesomeIcon v-if="item.icon" :icon="ICONS[item.icon]" class="basic-menu__icon" aria-hidden="true" />
+            <span>{{ item.label }}</span>
+          </component>
+        </template>
+      </div>
+    </component>
   </span>
 </template>
 
@@ -62,13 +64,16 @@ let nextId = 0;
 // it open in the page flow (catalogue), above the trigger for a `top` placement (the drop-up state). A closed menu
 // mounts neither items nor panel: a closed select holds no hidden copy of its option labels. `sheet` is for a panel
 // that reads as a page of text (configuration health): a wide popover (≤ 32rem) above a phone, a full-width bottom
-// sheet on one.
+// sheet on one — modal there like BasicModal's: a backdrop, scroll lock and focus trap; every close (Esc, a tap on the
+// backdrop, a panel link, a programmatic one) returns focus to the trigger. Only an open phone sheet renders the
+// backdrop layer; every other menu is the trigger and the popover. `sheet` is fixed per instance (read once at setup).
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useSlots, watch } from "vue";
 import { ICONS } from "@/boots/Icons/icons";
-import { FOCUSABLE, focusableIn } from "@/composables/useFocusTrap";
+import { FOCUSABLE, focusableIn, useFocusTrap } from "@/composables/useFocusTrap";
 import { useFloatingPosition } from "@/composables/useFloatingPosition";
 import { useMediaQuery } from "@/composables/useMediaQuery";
 import { MAX_TABLET_QUERY } from "@/utils/breakpoints";
+import SheetLayer from "./SheetLayer.vue";
 
 const props = defineProps({
   items: { type: Array, default: () => [] },
@@ -88,6 +93,8 @@ const root = ref(null);
 const trigger = ref(null);
 const popover = ref(null);
 const expanded = ref(false);
+// Outside an open phone sheet the popover renders in place, with no wrapper element.
+const InPlace = Object.assign((_, { slots }) => slots.default(), { inheritAttrs: false });
 
 const isOpen = computed(() => props.inline || expanded.value);
 // Only a sheet listens to the viewport: every BasicSelect is a BasicMenu. `sheet` is fixed per instance.
@@ -99,6 +106,12 @@ const anchor = computed(() => (expanded.value ? triggerControl() : null));
 const { style } = useFloatingPosition(anchor, popover, {
   placement: () => props.placement,
   active: computed(() => expanded.value && !props.inline && !asSheet.value),
+});
+
+// The popover is the trap's container (tabindex -1): a sheet with no tab stop inside keeps focus on it.
+const trap = useFocusTrap(popover, {
+  active: computed(() => expanded.value && asSheet.value),
+  onEscape: () => close({ returnFocus: true }),
 });
 
 const ITEM_SELECTOR = ':is([role="menuitem"], [role="menuitemradio"]):not([aria-disabled="true"])';
@@ -116,14 +129,22 @@ async function openMenu() {
   expanded.value = true;
   emit("open");
   await nextTick();
+  if (asSheet.value) trapSheet();
   focusFirst();
+}
+
+// The trap returns focus to the element focused when it activates: the trigger, before focus moves in.
+function trapSheet() {
+  triggerControl()?.focus();
+  trap.activate();
 }
 
 function close({ returnFocus = false } = {}) {
   if (!expanded.value) return;
   expanded.value = false;
   emit("close");
-  if (returnFocus) triggerControl()?.focus();
+  // A sheet's trap hands focus back to the trigger on every close, once it has lifted `inert` from the page.
+  if (returnFocus && !asSheet.value) triggerControl()?.focus();
 }
 
 function onTriggerClick() {
@@ -166,7 +187,7 @@ function onPopoverKeydown(event) {
   if (event.key === "Escape") {
     event.stopPropagation();
     close({ returnFocus: true });
-  } else if (event.key === "Tab") {
+  } else if (event.key === "Tab" && !asSheet.value) {
     close();
   } else if (!isPanel.value && ["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) {
     event.preventDefault();
@@ -178,7 +199,9 @@ function onPopoverKeydown(event) {
 }
 
 function onDocumentPointer(event) {
-  if (expanded.value && !root.value?.contains(event.target)) close();
+  if (asSheet.value) return;
+  const inside = [root.value, popover.value].some((el) => el?.contains(event.target));
+  if (expanded.value && !inside) close();
 }
 
 // The trigger control is slot content: its ARIA state is set on the element itself.
@@ -254,7 +277,7 @@ defineExpose({ open: openMenu, close });
   max-width: min(32rem, calc(100vw - var(--space-4)));
 }
 
-// The phone sheet: pinned to the bottom edge at full width, the page above it stays visible.
+// The phone sheet: pinned to the bottom edge at full width over the backdrop.
 .basic-menu__popover--bottom {
   position: fixed;
   right: 0;

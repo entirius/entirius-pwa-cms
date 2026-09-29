@@ -548,9 +548,18 @@ export default {
     border-color: var(--border-strong);
   }
 
+  // The selection ring is its own layer, not an outline: a focus outline never replaces it and it follows the radius.
   &--selected {
     border-color: var(--accent);
-    outline: 1px solid var(--focus-ring);
+  }
+
+  &--selected::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 1px solid var(--focus-ring);
+    border-radius: inherit;
+    pointer-events: none;
   }
 }
 
