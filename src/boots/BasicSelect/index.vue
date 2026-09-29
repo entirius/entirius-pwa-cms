@@ -1,5 +1,12 @@
 <template>
-  <div class="basic-select relative" :class="{ 'basic-select--clearable': showClear }" v-bind="rootAttrs">
+  <div
+    class="basic-select relative"
+    :class="{ 'basic-select--clearable': showClear, 'basic-select--floating': floatingLabel }"
+    v-bind="rootAttrs"
+  >
+    <span v-if="floatingLabel && selectedOptions.length" class="basic-select__floating" aria-hidden="true">
+      {{ floatingLabel }}
+    </span>
     <BasicMenu
       ref="menu"
       class="basic-select__menu"
@@ -73,6 +80,8 @@
 // `aria-activedescendant` (useListbox: arrows, Home / End, type-ahead, Enter / Space). Inside a FormField the
 // control takes the field's id, description, invalid, required and disabled; `aria-label` / `aria-labelledby` on
 // the tag name it outside one. `placement` and `inline` go to BasicMenu (`inline`: open in the page flow, catalogue).
+// `floatingLabel` names a select that stands without a FormField (toolbars, card headers): the empty control shows it
+// as the placeholder, a chosen value puts it above the control as a 12 px muted line; it is the accessible name too.
 import { computed, ref, useAttrs, useId, watch } from "vue";
 import { isEqual } from "lodash";
 import BasicMenu from "@/boots/BasicMenu/index.vue";
@@ -95,6 +104,7 @@ const props = defineProps({
   disabled: { type: Boolean, default: false },
   placement: { type: String, default: "bottom-start" },
   inline: { type: Boolean, default: false },
+  floatingLabel: { type: String, default: "" },
 });
 const emit = defineEmits(["update:modelValue"]);
 
@@ -107,9 +117,15 @@ const query = ref("");
 const width = ref(0);
 
 const isAria = (name) => name.startsWith("aria-");
-const controlAttrs = computed(() => Object.fromEntries(Object.entries(attrs).filter(([name]) => isAria(name))));
+const floatingName = computed(() =>
+  props.floatingLabel && !attrs["aria-labelledby"] ? { "aria-label": props.floatingLabel } : {}
+);
+const controlAttrs = computed(() => ({
+  ...floatingName.value,
+  ...Object.fromEntries(Object.entries(attrs).filter(([name]) => isAria(name))),
+}));
 const rootAttrs = computed(() => Object.fromEntries(Object.entries(attrs).filter(([name]) => !isAria(name))));
-const menuLabel = computed(() => attrs["aria-label"] ?? "");
+const menuLabel = computed(() => controlAttrs.value["aria-label"] ?? "");
 const menuLabelledby = computed(() => attrs["aria-labelledby"] ?? field.labelId?.value ?? "");
 const isDisabled = computed(() => props.disabled || field.disabled.value);
 
@@ -127,7 +143,7 @@ const visible = computed(() => {
 const display = computed(() => {
   const picked = selectedOptions.value;
   if (picked.length > 1) return t("select.selected_count", { count: picked.length });
-  return picked[0]?.label ?? props.placeholder ?? t("common.select");
+  return picked[0]?.label ?? (props.floatingLabel || (props.placeholder ?? t("common.select")));
 });
 
 const listbox = useListbox(visible, choose);
@@ -166,6 +182,15 @@ function clear() {
 <style lang="scss" scoped>
 .basic-select {
   min-width: 0;
+}
+
+// The floating label: a compact line above the chosen value, never a second placeholder.
+.basic-select__floating {
+  display: block;
+  margin-bottom: var(--space-1);
+  color: var(--text-muted);
+  font-size: var(--fs-200);
+  line-height: 1.25;
 }
 
 // The control fills the select's width; BasicMenu is inline-flex by default.
@@ -250,9 +275,9 @@ function clear() {
 
 .basic-select__clear {
   position: absolute;
-  top: 50%;
+  bottom: calc(var(--elem-height) / 2);
   right: calc(var(--space-3) + var(--space-5));
-  transform: translateY(-50%);
+  transform: translateY(50%);
 }
 
 .basic-select__search {

@@ -25,6 +25,11 @@
           </component>
         </div>
       </CatalogueCell>
+      <CatalogueCell v-for="cell in floatingCells" :id="cell.id" :key="cell.id" :label="cell.label">
+        <div class="select-frame">
+          <BasicSelect v-model="floating[cell.id]" :options="LANGUAGES" :multiple="cell.multiple" floating-label="Język" />
+        </div>
+      </CatalogueCell>
     </div>
 
     <h3 id="entity-search-picker" class="fs-500 mb-4">EntitySearchPicker</h3>
@@ -67,6 +72,17 @@
             :inline="cell.open"
             label="Kanały"
             all-label="Wszystkie"
+          />
+        </div>
+      </CatalogueCell>
+      <CatalogueCell v-for="cell in channelFloatingCells" :id="cell.id" :key="cell.id" :label="cell.label">
+        <div class="select-frame">
+          <ChannelMultiSelect
+            v-model="channels[cell.id]"
+            :channels="CHANNELS"
+            label="Kanały"
+            all-label="Wszystkie"
+            floating-label="Kanał sklepu"
           />
         </div>
       </CatalogueCell>
@@ -123,6 +139,13 @@ const selectCells = VARIANTS.flatMap((variant) =>
   }))
 );
 const models = reactive(Object.fromEntries(selectCells.map((cell) => [cell.id, cell.value])));
+// Plan 53: a select without a FormField label keeps its name as a floating label.
+const floatingCells = [
+  { id: "basic-select-floating-empty", label: "floating label · empty", value: null },
+  { id: "basic-select-floating-chosen", label: "floating label · chosen", value: "pl" },
+  { id: "basic-select-floating-multiple", label: "floating label · 2 chosen", value: ["pl", "en"], multiple: true },
+];
+const floating = reactive(Object.fromEntries(floatingCells.map((cell) => [cell.id, cell.value])));
 
 const PRODUCTS = [
   { label: "Skarpety trekkingowe merino", value: "sku-101", secondary: "SKU-101 · 3 warianty" },
@@ -167,7 +190,14 @@ const channelCells = ["full", "compact"].flatMap((variant) =>
     compact: variant === "compact",
   }))
 );
-const channels = reactive(Object.fromEntries(channelCells.map((cell) => [cell.id, cell.value])));
+const channelFloatingCells = [
+  { id: "channel-multi-select-floating-none", label: "floating label · none", value: [] },
+  { id: "channel-multi-select-floating-one", label: "floating label · 1 selected", value: ["pl"] },
+  { id: "channel-multi-select-floating-two", label: "floating label · 2 selected", value: ["pl", "de"] },
+];
+const channels = reactive(
+  Object.fromEntries([...channelCells, ...channelFloatingCells].map((cell) => [cell.id, cell.value]))
+);
 
 // A FormField stand-in: label, error text and the FORM_FIELD contract with `invalid` and `required` on.
 const FieldStub = defineComponent({

@@ -88,7 +88,7 @@ Traps:
 | multi-line text | `BasicTextarea` |
 | on/off · one boolean with a text · one of 2–5 choices, all visible | `BasicSwitch` · `BasicCheckbox` (boolean `v-model`, label in the slot) · `BasicRadioGroup` |
 | date / range | `BasicDatePicker` (`mode: "range"` in `config`) |
-| choice from a list · async entity search · channel scope | `BasicSelect` (`multiple`, `searchable`) · `EntitySearchPicker` · `ChannelMultiSelect` |
+| choice from a list · async entity search · channel scope | `BasicSelect` (`multiple`, `searchable`) · `EntitySearchPicker` · `ChannelMultiSelect`; without a FormField label (toolbar, card header) both take `floatingLabel` |
 | action picker (a transition, "add an existing item") | `BasicSelect :model-value="null"`, the placeholder as the prompt, the handler on `@update:model-value` |
 | field label, hint, required, error, help | `FormField`, around every field |
 | status / category pill · value chip (picked entity, media tag) · number next to a title, tab or filter | `StatusBadge` (`tone`) · `Tag` · `CountBadge` |
