@@ -155,11 +155,6 @@
 .shadow-arrow {
   box-shadow: var(--shadow-arrow);
 }
-.basic-badge {
-  display: inline-block;
-  padding: 0.35em;
-  font-size: var(--fs-200);
-}
 
 // Thin scrollbars for mouse screens only: on a touch screen a styled scrollbar stops overlaying, takes its width from
 // the page and widens the layout viewport past the screen, so every fixed element (FAB) sits off its corner.
@@ -288,8 +283,7 @@
 }
 
 // The one form-label style (FormField, BasicInput labels, raw <label>s): 12 px / 600, uppercase, muted.
-.field-label,
-.ld-field__label {
+.field-label {
   font-size: var(--fs-200);
   font-weight: 600;
   line-height: 1.25;

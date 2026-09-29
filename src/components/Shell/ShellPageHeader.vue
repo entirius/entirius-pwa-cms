@@ -1,21 +1,18 @@
 <template>
-  <header v-if="!claims" class="shell-page-header">
-    <Breadcrumbs v-if="crumbs.length" class="shell-page-header__crumbs" :items="crumbs" />
-    <h1 class="page-title" data-fid="page-title">{{ routeTitle }}</h1>
-  </header>
+  <PageHeader v-if="!claims" class="shell-page-header" :title="routeTitle" :crumbs="crumbs" :claim-shell="false" />
   <slot />
 </template>
 
 <script setup>
 // The page-header slot of the shell (R2, R3; r05 #4) at the top of <main>. A view's PageHeader claims it
 // (PAGE_HEADER_CLAIM) and gets the route's crumbs, the back action to the parent crumb and a place for its title;
-// while nobody claims it, this renders the fallback: the crumbs and the H1 from the route's `titleKey`, so every page
-// has exactly one H1. The fallback draws no back arrow: a view without a PageHeader keeps its own back control (a
+// while nobody claims it, this renders the fallback: a PageHeader (out of the claim) with the crumbs and the H1 from
+// the route's `titleKey`, so every page has exactly one H1. The fallback draws no back arrow: a view without a PageHeader keeps its own back control (a
 // toolbar IconButton that may carry its own target), so a page shows one. The browser tab reads `<page> · <panel> · Entirius CMS`.
 import { computed, onBeforeUnmount, provide, ref, watchEffect } from "vue";
 import { useRoute } from "vue-router";
 import { t } from "@/i18n";
-import Breadcrumbs from "@/boots/Breadcrumbs/index.vue";
+import PageHeader from "@/boots/PageHeader/index.vue";
 import { PAGE_HEADER_CLAIM } from "@/composables/pageHeader";
 import { useActiveNav, useBreadcrumbs, usePanels } from "@/composables/useNav";
 
@@ -64,9 +61,5 @@ onBeforeUnmount(() => (document.title = APP_NAME));
   @include max-tablet {
     padding: var(--space-5) var(--space-5) var(--space-2);
   }
-}
-
-.shell-page-header__crumbs {
-  margin-bottom: var(--space-6);
 }
 </style>

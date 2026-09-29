@@ -31,7 +31,8 @@ vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isModuleEnabled: (key
 import { useNotificationsStore } from "@/stores/notifications";
 import NotificationBell from "@/components/NotificationBar/NotificationBell.vue";
 
-const mountBell = () => mount(NotificationBell, { global: { stubs: { teleport: true } } });
+// The rows are BasicButtons whose slot holds the title and preview: render the real boot, not the global stub.
+const mountBell = () => mount(NotificationBell, { global: { stubs: { teleport: true, BasicButton: false } } });
 
 describe("notification bar", () => {
   beforeEach(() => {

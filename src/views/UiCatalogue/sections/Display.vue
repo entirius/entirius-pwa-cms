@@ -102,7 +102,7 @@
     <div class="mb-10">
       <CatalogueCell id="empty-state-default-default" label="icon + title + message + action">
         <EmptyState icon="search" title="Brak treści" message="Żadna treść nie pasuje do filtra „Szkice”.">
-          <BasicButton variant="primary" icon="add">Dodaj treść</BasicButton>
+          <BasicButton variant="primary">Dodaj treść</BasicButton>
         </EmptyState>
       </CatalogueCell>
     </div>

@@ -12,9 +12,10 @@
     <p v-if="!store.items.length" class="notif-list__empty">
       {{ $t("notification_bar.empty") }}
     </p>
-    <button
+    <BasicButton
       v-for="item in store.items"
       :key="item.id"
+      variant="ghost"
       class="notif-row"
       :class="`notif-row--${item.severity}`"
       data-testid="notif-row"
@@ -31,7 +32,7 @@
         >
         <span class="notif-row__age">{{ formatDayTime(item.created_at) }}</span>
       </span>
-    </button>
+    </BasicButton>
   </div>
 </template>
 
@@ -39,6 +40,7 @@
 import { ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { GET_Company } from "@/api/leads/api";
+import BasicButton from "@/boots/BasicButton/index.vue";
 import { useMuninStore } from "@/stores/munin";
 import { useNotificationsStore } from "@/stores/notifications";
 import { formatDayTime } from "@/utils/leadsTime";
@@ -129,22 +131,27 @@ const preview = (body) =>
   padding: var(--space-4);
   color: var(--text-muted);
 }
-.notif-row {
-  display: flex;
-  gap: var(--space-3);
+/* A row is a ghost BasicButton laid out as a list row: full width, wrapping text, top-aligned. */
+.notif-list .notif-row {
+  justify-content: flex-start;
   align-items: flex-start;
   width: 100%;
   min-height: 3rem;
   padding: var(--space-3) var(--space-4);
-  background: none;
   border: none;
   border-bottom: 1px solid var(--border-subtle);
+  border-radius: 0;
   text-align: left;
+  font-size: inherit;
+  font-weight: inherit;
+  white-space: normal;
   color: var(--text-body);
-  cursor: pointer;
 }
-.notif-row:hover {
-  background: var(--surface-raised);
+.notif-row :deep(.btn-text) {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  min-width: 0;
 }
 .notif-row__dot {
   flex-shrink: 0;
@@ -160,7 +167,7 @@ const preview = (body) =>
 .notif-row__text {
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: var(--space-1);
   min-width: 0;
 }
 .notif-row__title {

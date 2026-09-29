@@ -40,7 +40,7 @@ describe("ShellPageHeader", () => {
     const h1s = wrapper.findAll("h1");
     expect(h1s).toHaveLength(1);
     expect(h1s[0].text()).toBe(t("dp.create_point"));
-    expect(h1s[0].attributes("data-fid")).toBe("page-title");
+    expect(wrapper.get('[data-fid="page-title"] h1').text()).toBe(t("dp.create_point"));
     expect(wrapper.findAll(".breadcrumbs__label").map((label) => label.text())).toEqual([t("panels.points"), t("nav.dp_points"), t("dp.create_point")]);
   });
 
