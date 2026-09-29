@@ -408,6 +408,10 @@ export default {
     },
   },
   watch: {
+    // No unsaved price left (saved, discarded, another page or channel): the refused-save marks go with them.
+    dirtyCount(count) {
+      if (!count) this.saveRefused = false
+    },
     channelIdx(val) {
       if (!val) return
       this.dirtyRows = new Map()
@@ -556,11 +560,8 @@ export default {
       return entry[field]
     },
     setDirty(key, field, value, row) {
+      // A price cell (BasicInput format="money") already emits the API decimal; it is stored unchanged.
       const existing = this.dirtyRows.get(key) || { sku: row.sku, currency: row.currency, _original: row }
-      // Normalize commas to dots for price fields
-      if ((field === 'value' || field === 'special_value') && value) {
-        value = String(value).replace(',', '.').trim()
-      }
       // A cell typed back to its stored value is clean again (the money cell updates on every keystroke).
       if (value === this.storedField(row, field)) delete existing[field]
       else existing[field] = value

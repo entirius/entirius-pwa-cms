@@ -82,4 +82,16 @@ describe("PriceList — money cells and the unsaved state (plan 61)", () => {
     await input.setValue("2.34");
     expect(wrapper.find(".pm-price-input .form-field__error").exists()).toBe(false);
   });
+
+  it("the refused-save marks go once no price is unsaved: a later invalid value waits for the next save", async () => {
+    const wrapper = await mountList();
+    const input = wrapper.find(".pm-price-input input");
+    await input.setValue("2.345");
+    await wrapper.vm.saveAll();
+    await input.setValue("232");
+    expect(wrapper.vm.dirtyCount).toBe(0);
+    await input.setValue("2.345");
+    await flushPromises();
+    expect(wrapper.find(".pm-price-input .form-field__error").exists()).toBe(false);
+  });
 });
