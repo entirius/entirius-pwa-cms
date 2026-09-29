@@ -86,7 +86,8 @@ function toggle() {
 }
 
 // A drag that selects the subject or recipient to copy it is no tap: it leaves the thread as it is. Text selected
-// outside this summary (the draft body, another thread) does not block the tap.
+// outside this summary (the draft body, another thread) does not block the tap. A click reaches the summary only when
+// the drag ended inside it, so one of the selection's ends is there.
 function onSummaryClick(event) {
   const selection = window.getSelection();
   const inSummary = [selection?.anchorNode, selection?.focusNode].some((node) => event.currentTarget.contains(node));
