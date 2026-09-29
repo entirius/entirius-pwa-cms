@@ -414,7 +414,7 @@
         "dark",
         "light"
       ],
-      "readySelector": ".detail-section",
+      "readySelector": ".basic-card input",
       "file": "pim-category-detail__{vp}__{theme}.png"
     },
     {
