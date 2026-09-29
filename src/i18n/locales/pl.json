@@ -3283,7 +3283,9 @@
         "mobile": "Wydajność na telefonie"
       },
       "sources": "Źródła",
-      "unavailable": "Niedostępne"
+      "unavailable": "Niedostępne",
+      "test": "Test",
+      "score": "Wynik"
     },
     "thread": {
       "title": "Wątek firmy",
@@ -3353,7 +3355,8 @@
       "rules_many": "{count} reguł",
       "more_stages": "Więcej etapów",
       "last_activity": "ostatnia aktywność {time}",
-      "no_activity": "Brak aktywności"
+      "no_activity": "Brak aktywności",
+      "filters": "Filtry"
     },
     "company": {
       "do_not_contact": "Nie kontaktować",
@@ -3378,7 +3381,9 @@
       "last_activity": "Ostatnia aktywność",
       "customer": "Klient",
       "activities": "Ostatnie zdarzenia",
-      "title": "Firma"
+      "title": "Firma",
+      "field": "Pole",
+      "value": "Wartość"
     },
     "communicate": {
       "template": "Szablon",
@@ -3447,7 +3452,8 @@
       "label_help": "Etykieta — nazwa widoczna na tablicy",
       "delete_busy_one": "Etap „{label}” zawiera 1 firmę. Najpierw przenieś ją do innego etapu — etapu, w którym są firmy, nie można usunąć.",
       "delete_busy_few": "Etap „{label}” zawiera {count} firmy. Najpierw przenieś je do innego etapu — etapu, w którym są firmy, nie można usunąć.",
-      "delete_busy_many": "Etap „{label}” zawiera {count} firm. Najpierw przenieś je do innego etapu — etapu, w którym są firmy, nie można usunąć."
+      "delete_busy_many": "Etap „{label}” zawiera {count} firm. Najpierw przenieś je do innego etapu — etapu, w którym są firmy, nie można usunąć.",
+      "key_invalid": "Klucz może zawierać tylko litery, cyfry, „-” i „_”"
     },
     "legal_basis": {
       "consent": "Zgoda",
@@ -3504,7 +3510,8 @@
       "code_help": "Wielkimi literami, np. RETAILER — po dodaniu nie można go zmienić",
       "active": "Aktywny",
       "add": "Dodaj typ",
-      "unknown": "Typ nieznany"
+      "unknown": "Typ nieznany",
+      "code_invalid": "Kod może zawierać tylko litery, cyfry i „_”"
     }
   },
   "notification_bar": {

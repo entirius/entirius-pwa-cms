@@ -1,69 +1,83 @@
 <template>
-  <div class="ld-page" data-testid="leads-stages">
-    <p class="ld-muted" data-testid="stages-help">{{ $t("leads.stages.help") }}</p>
-    <draggable :list="stages" item-key="id" handle=".stage__handle" class="ld-field" @end="saveOrder">
-      <template #item="{ element, index }">
-        <div class="stage" :data-stage="element.key" data-testid="stage-row">
-          <FontAwesomeIcon :icon="$icons.drag" class="stage__handle" />
-          <input v-model="element.label" class="ld-input" :aria-label="$t('leads.stages.label')" @change="rename(element)" />
-          <span class="stage__tags">
-            <span class="ld-badge stage__key" :title="$t('leads.stages.key_help')">
-              {{ element.key }} · {{ stageKindLabel(element.kind) }}
+  <PageLayout data-testid="leads-stages">
+    <template #header>
+      <PageHeader :title="$t('leads.stages.title')" :back="{ name: 'LeadsSettings' }" />
+    </template>
+    <div class="flex-column gap-8">
+      <p class="t-muted m-0" data-testid="stages-help">{{ $t("leads.stages.help") }}</p>
+      <draggable :list="stages" item-key="id" handle=".stage__handle" class="flex-column gap-3" @end="saveOrder">
+        <template #item="{ element, index }">
+          <div class="stage" :data-stage="element.key" data-testid="stage-row">
+            <FontAwesomeIcon :icon="$icons.drag" class="stage__handle" />
+            <label>
+              <span class="visually-hidden">{{ $t("leads.stages.label") }}</span>
+              <BasicInput
+                v-model="element.label"
+                data-testid="stage-label"
+                @on-focusout="rename(element)"
+                @on-key-down="rename(element)"
+              />
+            </label>
+            <span class="stage__tags">
+              <StatusBadge
+                tone="neutral"
+                size="sm"
+                :dot="false"
+                :label="`${element.key} · ${stageKindLabel(element.kind)}`"
+                :title="$t('leads.stages.key_help')"
+              />
+              <StatusBadge
+                v-if="rulesByStage[element.id]"
+                tone="info"
+                size="sm"
+                :dot="false"
+                :label="rulesLabel(rulesByStage[element.id])"
+                :title="rulesText(rulesByStage[element.id])"
+                data-testid="stage-rules"
+              />
             </span>
-            <span
-              v-if="rulesByStage[element.id]"
-              class="ld-badge"
-              :title="rulesText(rulesByStage[element.id])"
-              data-testid="stage-rules"
-            >
-              {{ $t(`leads.board.rules_${pluralKey(rulesByStage[element.id].length)}`, { count: rulesByStage[element.id].length }) }}
-            </span>
-          </span>
-          <div class="stage__controls">
-            <button
-              class="ld-btn ld-btn--icon"
-              :disabled="index === 0"
-              :aria-label="$t('leads.stages.up')"
-              :title="$t('leads.stages.up')"
-              @click="shift(index, -1)"
-            >
-              <FontAwesomeIcon :icon="$icons.moveUp" />
-            </button>
-            <button
-              class="ld-btn ld-btn--icon"
-              :disabled="index === stages.length - 1"
-              :aria-label="$t('leads.stages.down')"
-              :title="$t('leads.stages.down')"
-              @click="shift(index, 1)"
-            >
-              <FontAwesomeIcon :icon="$icons.moveDown" />
-            </button>
-            <button
-              class="ld-btn ld-btn--danger ld-btn--icon"
-              :aria-label="$t('leads.stages.delete')"
-              :title="$t('leads.stages.delete')"
-              data-testid="stage-delete"
-              @click="askDelete(element)"
-            >
-              <FontAwesomeIcon :icon="$icons.delete" />
-            </button>
+            <div class="stage__controls">
+              <IconButton
+                icon="moveUp"
+                variant="outline"
+                :label="$t('leads.stages.up')"
+                :disabled="index === 0"
+                @click="shift(index, -1)"
+              />
+              <IconButton
+                icon="moveDown"
+                variant="outline"
+                :label="$t('leads.stages.down')"
+                :disabled="index === stages.length - 1"
+                @click="shift(index, 1)"
+              />
+              <IconButton
+                icon="delete"
+                variant="danger"
+                :label="$t('leads.stages.delete')"
+                data-testid="stage-delete"
+                @click="askDelete(element)"
+              />
+            </div>
+            <p v-if="errors[element.id]" class="stage__error t-negative m-0" data-testid="stage-error">
+              {{ errors[element.id] }}
+            </p>
           </div>
-          <p v-if="errors[element.id]" class="ld-error" data-testid="stage-error">{{ errors[element.id] }}</p>
-        </div>
-      </template>
-    </draggable>
-    <form class="ld-row stage__add" data-testid="stage-add" @submit.prevent="add">
-      <label class="ld-field"><span class="ld-field__label">{{ $t("leads.stages.key") }}</span>
-        <input v-model="draft.key" class="ld-input" required pattern="[-a-zA-Z0-9_]+" />
-        <span class="ld-muted">{{ $t("leads.stages.key_help") }}</span>
-      </label>
-      <label class="ld-field"><span class="ld-field__label">{{ $t("leads.stages.label") }}</span>
-        <input v-model="draft.label" class="ld-input" required />
-        <span class="ld-muted">{{ $t("leads.stages.label_help") }}</span>
-      </label>
-      <button class="ld-btn ld-btn--primary" type="submit">{{ $t("leads.stages.add") }}</button>
-    </form>
-    <p v-if="errors.add" class="ld-error">{{ errors.add }}</p>
+        </template>
+      </draggable>
+      <form class="flex ai-fs flex-wrap gap-5" data-testid="stage-add" @submit.prevent="add">
+        <FormField :label="$t('leads.stages.key')" :description="$t('leads.stages.key_help')" required>
+          <BasicInput v-model="draft.key" data-testid="stage-new-key" />
+        </FormField>
+        <FormField :label="$t('leads.stages.label')" :description="$t('leads.stages.label_help')" required>
+          <BasicInput v-model="draft.label" data-testid="stage-new-label" />
+        </FormField>
+        <BasicButton class="stage__submit" variant="primary" type="submit" data-testid="stage-save">
+          {{ $t("leads.stages.add") }}
+        </BasicButton>
+      </form>
+      <p v-if="errors.add" class="t-negative m-0" data-testid="stage-add-error">{{ errors.add }}</p>
+    </div>
     <ConfirmSheet
       v-if="confirming"
       :title="$t('leads.stages.delete_title')"
@@ -73,7 +87,7 @@
       @confirm="remove(confirming.stage)"
       @cancel="confirming = null"
     />
-  </div>
+  </PageLayout>
 </template>
 
 <script setup>
@@ -89,15 +103,18 @@ import ConfirmSheet from "./ConfirmSheet.vue";
 
 // Stages admin: order by drag or up/down (PATCH `order` per moved stage), rename inline, delete with the 409 inline (L-18).
 const ORDER_STEP = 10;
+const KEY_PATTERN = /^[-a-zA-Z0-9_]+$/;
 const notify = useNotifyStore();
 const stages = ref([]);
 const errors = reactive({});
 const draft = reactive({ key: "", label: "" });
 const confirming = ref(null); // { stage, message } while the delete sheet is open
 const rulesByStage = ref({});
+let savedLabels = {}; // id → the label the server holds: a blur without an edit sends nothing
 
 async function load() {
   stages.value = (await GET_Stages()).data.results;
+  savedLabels = Object.fromEntries(stages.value.map((stage) => [stage.id, stage.label]));
 }
 
 // The rules the Board badges, shown here too (the stages payload carries none).
@@ -107,6 +124,7 @@ async function loadRules() {
 }
 
 const rulesText = (rules) => rules.map((rule) => `${rule.action} ${rule.template_key}`).join("\n");
+const rulesLabel = (rules) => t(`leads.board.rules_${pluralKey(rules.length)}`, { count: rules.length });
 
 // The question names how many companies the stage holds — a stage that holds any cannot be deleted. A failed
 // count is never read as zero: the question says the count is unknown.
@@ -150,7 +168,12 @@ function shift(index, delta) {
   return saveOrder();
 }
 
-const rename = (stage) => attempt(stage.id, () => PATCH_Stage(stage.id, { label: stage.label }));
+// The label field commits on blur and Enter, as the native change did: only a changed label is sent.
+function rename(stage) {
+  if (stage.label === savedLabels[stage.id]) return;
+  savedLabels[stage.id] = stage.label;
+  return attempt(stage.id, () => PATCH_Stage(stage.id, { label: stage.label }));
+}
 
 async function remove(stage) {
   confirming.value = null;
@@ -158,6 +181,10 @@ async function remove(stage) {
 }
 
 async function add() {
+  if (!KEY_PATTERN.test(draft.key)) {
+    errors.add = t("leads.stages.key_invalid");
+    return;
+  }
   const order = Math.max(-ORDER_STEP, ...stages.value.map((stage) => stage.order)) + ORDER_STEP;
   if (await attempt("add", () => POST_Stage({ key: draft.key, label: draft.label, order }))) {
     Object.assign(draft, { key: "", label: "" });
@@ -186,19 +213,14 @@ onMounted(() => Promise.all([load(), loadRules().catch(() => {})]));
   gap: var(--space-2);
   min-width: 0;
 }
-.stage__add {
-  align-items: flex-start;
-}
-.stage__key {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+.stage__submit {
+  margin-top: var(--space-5);
 }
 .stage__controls {
   display: flex;
   gap: var(--space-5);
 }
-.stage .ld-error {
+.stage__error {
   grid-column: 1 / -1;
 }
 /* Below tablet (as in LeadTypes): name beside the handle, then the tags, then the controls, right-aligned */

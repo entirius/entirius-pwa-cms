@@ -1,55 +1,48 @@
 <template>
-  <form class="ld-page add-lead" data-testid="add-lead" novalidate @submit.prevent="save">
-    <h2 class="ld-title">{{ $t("leads.add.title") }}</h2>
+  <PageLayout>
+    <template #header>
+      <PageHeader :title="$t('leads.add.title')">
+        <template #actions>
+          <ActionBar :actions="actions" />
+        </template>
+      </PageHeader>
+    </template>
+    <form class="add-lead flex-column gap-8" data-testid="add-lead" novalidate @submit.prevent="save">
+      <!-- the company is saved; only its contact failed — it stays here, one tap from the card -->
+      <p v-if="company" class="add-lead__saved" role="status" data-testid="add-lead-company-saved">
+        {{ $t("leads.add.company_saved") }}
+        <router-link class="t-accent" :to="cardRoute(company.id)">{{ company.name }}</router-link>
+      </p>
 
-    <!-- the company is saved; only its contact failed — it stays here, one tap from the card -->
-    <p v-if="company" class="add-lead__saved" role="status" data-testid="add-lead-company-saved">
-      {{ $t("leads.add.company_saved") }}
-      <router-link :to="cardRoute(company.id)">{{ company.name }}</router-link>
-    </p>
-
-    <fieldset class="add-lead__group" :disabled="Boolean(company)">
-      <legend>{{ $t("leads.add.company") }}</legend>
-      <label class="ld-field">
-        <span class="ld-field__label required">{{ $t("leads.add.domain") }}</span>
-        <input v-model.trim="form.domain" class="ld-input" inputmode="url" autocomplete="off" :placeholder="$t('leads.add.domain_hint')" data-testid="add-lead-domain" />
-        <span v-if="fieldError('domain')" class="ld-error" data-testid="add-lead-domain-error">{{ fieldError("domain") }}</span>
-        <span v-if="existing" class="ld-error" data-testid="add-lead-exists">
+      <BasicCard :title="$t('leads.add.company')" gap>
+        <div class="form-grid">
+          <FormField :label="$t('leads.add.domain')" required :disabled="Boolean(company)" :error="fieldError('domain')">
+            <BasicInput v-model.trim="form.domain" :placeholder="$t('leads.add.domain_hint')" data-testid="add-lead-domain" />
+          </FormField>
+          <FormField :label="$t('leads.add.name')" :disabled="Boolean(company)">
+            <BasicInput v-model.trim="form.name" data-testid="add-lead-name" />
+          </FormField>
+          <FormField :label="$t('leads.add.lead_type')" :disabled="Boolean(company)" :error="fieldError('lead_type')">
+            <BasicSelect v-model="form.lead_type" :options="typeOptions" data-testid="add-lead-type" />
+          </FormField>
+        </div>
+        <p v-if="existing" class="t-negative m-0" data-testid="add-lead-exists">
           {{ $t("leads.add.exists") }}
-          <router-link :to="cardRoute(existing.id)">{{ existing.name || existing.domain }}</router-link>
-        </span>
-      </label>
-      <label class="ld-field">
-        <span class="ld-field__label">{{ $t("leads.add.name") }}</span>
-        <input v-model.trim="form.name" class="ld-input" data-testid="add-lead-name" />
-      </label>
-      <label class="ld-field">
-        <span class="ld-field__label">{{ $t("leads.add.lead_type") }}</span>
-        <select v-model="form.lead_type" class="ld-input" data-testid="add-lead-type">
-          <option value="UNKNOWN">{{ $t("leads.lead_types.unknown") }}</option>
-          <option v-for="type in leadTypes.active" :key="type.code" :value="type.code">{{ type.label }}</option>
-        </select>
-        <span v-if="fieldError('lead_type')" class="ld-error">{{ fieldError("lead_type") }}</span>
-      </label>
-    </fieldset>
+          <router-link class="t-accent" :to="cardRoute(existing.id)">{{ existing.name || existing.domain }}</router-link>
+        </p>
+      </BasicCard>
 
-    <fieldset class="add-lead__group">
-      <legend>{{ $t("leads.add.contact") }}</legend>
-      <ContactFields :form="form" :error-of="fieldError" testid="add-lead" />
-    </fieldset>
+      <BasicCard :title="$t('leads.add.contact')" gap>
+        <ContactFields :form="form" :error-of="fieldError" testid="add-lead" />
+      </BasicCard>
 
-    <p v-if="error" class="ld-error" data-testid="add-lead-error">{{ error }}</p>
-    <div class="ld-row">
-      <button type="submit" class="ld-btn ld-btn--primary" :disabled="busy || !form.domain" data-testid="add-lead-save">
-        {{ $t(company ? "leads.add.save_contact" : "leads.add.save") }}
-      </button>
-      <router-link v-if="!company" :to="{ name: 'LeadsCompanies' }" class="ld-btn add-lead__cancel">{{ $t("common.cancel") }}</router-link>
-    </div>
-  </form>
+      <p v-if="error" class="t-negative m-0" data-testid="add-lead-error">{{ error }}</p>
+    </form>
+  </PageLayout>
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { t } from "@/i18n";
 import { GET_Companies, POST_Company, POST_Contact } from "@/api/leads/api";
@@ -72,6 +65,31 @@ const error = ref("");
 const busy = ref(false);
 
 const cardRoute = (id) => ({ name: "LeadsThread", params: { id } });
+const typeOptions = computed(() => [
+  { value: "UNKNOWN", label: t("leads.lead_types.unknown") },
+  ...leadTypes.active.map((type) => ({ value: type.code, label: type.label })),
+]);
+
+// R5: Cancel (until the company exists), then the one primary, Save, rightmost.
+const actions = computed(() =>
+  [
+    !company.value && {
+      key: "cancel",
+      label: t("common.cancel"),
+      role: "secondary",
+      testid: "add-lead-cancel",
+      onClick: () => router.push({ name: "LeadsCompanies" }),
+    },
+    {
+      key: "save",
+      label: t(company.value ? "leads.add.save_contact" : "leads.add.save"),
+      role: "primary",
+      testid: "add-lead-save",
+      disabled: busy.value || !form.domain,
+      onClick: save,
+    },
+  ].filter(Boolean)
+);
 const fieldError = (name) => getFieldError(name)?.msg || "";
 const errorCode = (err) => (err?.response?.data || err)?.error || "";
 const hasContact = () => ["email", "first_name", "last_name"].some((field) => form[field]);
@@ -132,37 +150,14 @@ async function save() {
 onMounted(() => leadTypes.load()); // a failed load leaves Unknown only
 </script>
 
-<style lang="scss" src="./desktop.scss"></style>
 <style scoped>
 .add-lead {
-  max-width: 640px;
-}
-.add-lead__group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
-  margin: 0;
-  padding: 0;
-  border: none;
-}
-.add-lead__group legend {
-  margin-bottom: var(--space-5);
-  font-weight: 600;
-}
-.add-lead .ld-input {
-  min-height: 44px;
-  width: 100%;
-  box-sizing: border-box;
+  max-width: 48rem;
 }
 .add-lead__saved {
   margin: 0;
   padding: var(--space-5) var(--space-8);
   border-radius: var(--radius-lg);
   background: var(--surface-raised);
-}
-.add-lead__cancel {
-  display: inline-flex;
-  align-items: center;
-  text-decoration: none;
 }
 </style>

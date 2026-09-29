@@ -1,6 +1,6 @@
 <template>
-  <!-- the app content column clips (overflow: hidden): a desktop screen scrolls in its own box, one per layout -->
-  <div v-if="isDesktop" class="desktop-page" data-testid="desktop-page">
+  <!-- the app content column clips (overflow: hidden): the screen's PageLayout is its one scroll box -->
+  <div v-if="isDesktop" class="h-100" data-testid="desktop-page">
     <slot />
   </div>
   <EmptyState
@@ -20,5 +20,3 @@ import { useIsDesktop } from "@/composables/useIsDesktop";
 // Below 1024 px a desktop screen says so and links back to the Inbox — never a broken layout.
 const isDesktop = useIsDesktop();
 </script>
-
-<style lang="scss" src="./desktop.scss"></style>

@@ -7,6 +7,9 @@ vi.mock("@/stores/munin", () => ({ useMuninStore: () => munin }));
 vi.mock("vue-router", () => ({ useRoute: () => ({ fullPath: "/leads/companies/100" }) }));
 
 import OverviewTab from "@/views/Leads/tabs/OverviewTab.vue";
+import { leadsFrame } from "./leadsFrame";
+
+const { components } = leadsFrame;
 
 const company = {
   name: "Example Shop 2",
@@ -29,7 +32,7 @@ describe("Company overview tab", () => {
   beforeEach(() => setActivePinia(createPinia()));
 
   it("names the customer, the lead type and the activity status", () => {
-    const text = mount(OverviewTab, { props: { company } }).text();
+    const text = mount(OverviewTab, { props: { company }, global: { components } }).text();
     expect(text).toContain("Jan Kowalski");
     expect(text).not.toContain("91010000");
     expect(text).toContain("Type unknown");
@@ -38,13 +41,13 @@ describe("Company overview tab", () => {
   });
 
   it("falls back to the uid while the name is unknown", () => {
-    const text = mount(OverviewTab, { props: { company: { ...company, customer_name: "" } } }).text();
+    const text = mount(OverviewTab, { props: { company: { ...company, customer_name: "" } }, global: { components } }).text();
     expect(text).toContain("91010000-0000-0000-0000-000000000000");
   });
 
   // FIX-17b item 1: every activity line reads as a sentence — no snake_case, no None, no ASCII arrow.
   it("reads the activity lines as sentences", () => {
-    const text = mount(OverviewTab, { props: { company } }).text();
+    const text = mount(OverviewTab, { props: { company }, global: { components } }).text();
     expect(text).toContain("Blocked: no eligible contact");
     expect(text).toContain("Legal basis set to legitimate interest");
     expect(text).toContain("Stage: new → replied");
@@ -55,7 +58,7 @@ describe("Company overview tab", () => {
   it("links the customer row when accounts is installed", () => {
     munin.isModuleInstalled.mockReturnValue(true);
     const RouterLink = { props: ["to"], template: "<a :data-uid='to.params.uid' :data-back='to.query.back'><slot /></a>" };
-    const link = mount(OverviewTab, { props: { company }, global: { stubs: { RouterLink } } }).get('[data-testid="overview-customer"] a');
+    const link = mount(OverviewTab, { props: { company }, global: { components, stubs: { RouterLink } } }).get('[data-testid="overview-customer"] a');
     expect(link.attributes("data-uid")).toBe(company.customer_uid);
     expect(link.attributes("data-back")).toBe("/leads/companies/100");
     expect(link.text()).toBe("Jan Kowalski");

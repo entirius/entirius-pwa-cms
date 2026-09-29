@@ -1,40 +1,31 @@
 <template>
-  <div class="ld-row" data-testid="company-actions">
+  <div class="flex ai-ct jc-fe wrap gap-3" data-testid="company-actions">
     <router-link
       v-if="company.customer_uid && hasAccounts"
-      class="ld-link"
+      class="company-actions__customer t-accent"
       :to="{ name: 'CustomerDetail', params: { uid: company.customer_uid }, query: { back: $route.fullPath } }"
       data-testid="company-known-customer"
     >
       {{ $t("leads.company.known_customer") }}<template v-if="company.customer_name">: {{ company.customer_name }}</template>
     </router-link>
-    <span v-else-if="company.customer_uid" class="ld-badge" data-testid="company-known-customer">
-      {{ $t("leads.company.known_customer") }}
-    </span>
-    <button class="ld-btn ld-btn--primary" data-testid="company-communicate" @click="communicating = true">
-      {{ $t("leads.company.communicate") }}
-    </button>
-    <button class="ld-btn" data-testid="company-reaudit" @click="reaudit">{{ $t("leads.company.reaudit") }}</button>
-    <button
-      v-if="!company.do_not_contact"
-      class="ld-btn ld-btn--danger"
-      data-testid="company-dnc"
-      @click="confirming = true"
-    >
-      {{ $t("leads.company.mark_dnc") }}
-    </button>
-    <button v-if="canCreateCustomer" class="ld-btn" data-testid="company-create-customer" @click="createCustomer">
-      {{ $t("leads.company.create_customer") }}
-    </button>
-    <div v-if="confirming" class="confirm" role="dialog" data-testid="company-dnc-confirm">
-      <p>{{ $t("leads.company.dnc_confirm", { domain: company.domain }) }}</p>
-      <div class="ld-row">
-        <button class="ld-btn" @click="confirming = false">{{ $t("leads.review.cancel") }}</button>
-        <button class="ld-btn ld-btn--danger" data-testid="company-dnc-yes" @click="markDoNotContact">
-          {{ $t("leads.company.mark_dnc") }}
-        </button>
-      </div>
-    </div>
+    <StatusBadge
+      v-else-if="company.customer_uid"
+      tone="info"
+      :label="$t('leads.company.known_customer')"
+      data-testid="company-known-customer"
+    />
+    <ActionBar :actions="actions" />
+    <ConfirmDialog
+      :open="confirming"
+      tone="danger"
+      :title="$t('leads.company.mark_dnc')"
+      :message="$t('leads.company.dnc_confirm', { domain: company.domain })"
+      :confirm-label="$t('leads.company.mark_dnc')"
+      :cancel-label="$t('leads.review.cancel')"
+      data-testid="company-dnc-confirm"
+      @confirm="markDoNotContact"
+      @cancel="confirming = false"
+    />
     <CommunicateModal v-if="communicating" :company="company" @close="communicating = false" />
   </div>
 </template>
@@ -57,6 +48,34 @@ const communicating = ref(false);
 const confirming = ref(false);
 
 const hasAccounts = computed(() => munin.isModuleInstalled("accounts"));
+
+// R5: secondary · danger · the one primary („Napisz”) rightmost; ActionBar orders them by role.
+const actions = computed(() =>
+  [
+    canCreateCustomer.value && {
+      key: "customer",
+      label: t("leads.company.create_customer"),
+      role: "secondary",
+      testid: "company-create-customer",
+      onClick: createCustomer,
+    },
+    { key: "reaudit", label: t("leads.company.reaudit"), role: "secondary", testid: "company-reaudit", onClick: reaudit },
+    !props.company.do_not_contact && {
+      key: "dnc",
+      label: t("leads.company.mark_dnc"),
+      role: "danger",
+      testid: "company-dnc",
+      onClick: () => (confirming.value = true),
+    },
+    {
+      key: "communicate",
+      label: t("leads.company.communicate"),
+      role: "primary",
+      testid: "company-communicate",
+      onClick: () => (communicating.value = true),
+    },
+  ].filter(Boolean)
+);
 // L-15: the won seam exists only with accounts installed.
 const canCreateCustomer = computed(
   () => hasAccounts.value && props.company.stage.kind === "won" && !props.company.customer_uid
@@ -91,16 +110,11 @@ function createCustomer() {
 </script>
 
 <style scoped>
-.confirm {
-  position: fixed;
-  top: 30%;
-  left: 50%;
-  z-index: 20;
-  transform: translateX(-50%);
-  padding: var(--space-8);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  background: var(--surface-base);
-  box-shadow: 0 8px 24px rgb(0 0 0 / 20%);
+/* C-43: the customer link reads at body size and keeps a 32 px target. */
+.company-actions__customer {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  text-decoration: underline;
 }
 </style>

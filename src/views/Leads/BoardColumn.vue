@@ -2,10 +2,16 @@
   <section class="column" :data-stage="stage.key" data-testid="board-column">
     <header class="column__head">
       <strong>{{ stage.label }}</strong>
-      <span class="ld-badge" data-testid="board-column-count">{{ count }}</span>
-      <span v-if="rules.length" class="ld-badge" :title="rulesTooltip" data-testid="board-column-rules">
-        {{ $t(`leads.board.rules_${pluralKey(rules.length)}`, { count: rules.length }) }}
-      </span>
+      <CountBadge :count="count" data-testid="board-column-count" />
+      <StatusBadge
+        v-if="rules.length"
+        tone="info"
+        size="sm"
+        :dot="false"
+        :label="$t(`leads.board.rules_${pluralKey(rules.length)}`, { count: rules.length })"
+        :title="rulesTooltip"
+        data-testid="board-column-rules"
+      />
     </header>
     <draggable
       :list="cards"
@@ -18,9 +24,9 @@
         <CompanyCard :company="element" :stages="stages" @move="forwardMove" />
       </template>
     </draggable>
-    <button v-if="hasMore" class="ld-btn" data-testid="board-column-more" @click="$emit('more')">
+    <BasicButton v-if="hasMore" size="sm" data-testid="board-column-more" @click="$emit('more')">
       {{ $t("leads.board.more") }}
-    </button>
+    </BasicButton>
   </section>
 </template>
 

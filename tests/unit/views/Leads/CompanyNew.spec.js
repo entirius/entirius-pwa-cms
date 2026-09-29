@@ -15,11 +15,13 @@ const api = vi.hoisted(() => ({
 vi.mock("@/api/leads/api", () => api);
 
 import CompanyNew from "@/views/Leads/CompanyNew.vue";
+import { control, fieldError, leadsFrame, setControl } from "./leadsFrame";
 
 const RouterLink = { props: ["to"], template: "<a :data-to='JSON.stringify(to)'><slot /></a>" };
-const mountForm = () => mount(CompanyNew, { global: { stubs: { RouterLink } } });
+const mountForm = () =>
+  mount(CompanyNew, { global: { components: leadsFrame.components, stubs: { ...leadsFrame.stubs, RouterLink } } });
 const fill = async (wrapper, fields) => {
-  for (const [id, value] of Object.entries(fields)) await wrapper.get(`[data-testid="add-lead-${id}"]`).setValue(value);
+  for (const [id, value] of Object.entries(fields)) await setControl(wrapper, `add-lead-${id}`, value);
 };
 const submit = async (wrapper) => {
   await wrapper.get('[data-testid="add-lead"]').trigger("submit");
@@ -36,7 +38,7 @@ describe("Leads — add one lead", () => {
   it("offers the channel's active lead types and Unknown", async () => {
     const wrapper = mountForm();
     await flushPromises();
-    const options = wrapper.findAll('[data-testid="add-lead-type"] option').map((option) => option.element.value);
+    const options = control(wrapper, "add-lead-type").props("options").map((option) => option.value);
     expect(options).toEqual(["UNKNOWN", "RETAILER"]);
   });
 
@@ -78,7 +80,7 @@ describe("Leads — add one lead", () => {
     await flushPromises();
     await fill(wrapper, { domain: "???" });
     await submit(wrapper);
-    expect(wrapper.get('[data-testid="add-lead-domain-error"]').text()).toBe("Not a domain");
+    expect(fieldError(wrapper, "leads.add.domain")).toBe("Not a domain");
   });
 
   it("a failed contact keeps the saved company and retries the contact only", async () => {
@@ -88,12 +90,24 @@ describe("Leads — add one lead", () => {
     await fill(wrapper, { domain: "new-shop.test", email: "anna@" });
     await submit(wrapper);
     expect(wrapper.get('[data-testid="add-lead-company-saved"]').text()).toContain("New Shop");
-    expect(wrapper.get('[data-testid="add-lead-email-error"]').text()).toBe("Enter a valid email");
+    expect(fieldError(wrapper, "leads.contacts.email")).toBe("Enter a valid email");
     expect(push).not.toHaveBeenCalled();
     await fill(wrapper, { email: "anna@new-shop.test" });
     await submit(wrapper);
     expect(api.POST_Company).toHaveBeenCalledTimes(1);
     expect(api.POST_Contact).toHaveBeenLastCalledWith({ company_id: 200, email: "anna@new-shop.test" });
+    expect(push).toHaveBeenCalledWith({ name: "LeadsThread", params: { id: 200 } });
+  });
+
+  // Plan 53: Save is the PageHeader's one primary — disabled until a domain is typed, the same save as the form's.
+  it("the header Save waits for a domain and saves like the form", async () => {
+    const wrapper = mountForm();
+    await flushPromises();
+    expect(wrapper.get('[data-testid="add-lead-save"]').attributes("disabled")).toBe("true");
+    await fill(wrapper, { domain: "new-shop.test" });
+    expect(wrapper.get('[data-testid="add-lead-save"]').attributes("disabled")).toBe("false");
+    await wrapper.get('[data-testid="add-lead-save"]').trigger("click");
+    await flushPromises();
     expect(push).toHaveBeenCalledWith({ name: "LeadsThread", params: { id: 200 } });
   });
 });

@@ -1,46 +1,62 @@
 <template>
-  <div class="ld-page" data-testid="leads-companies">
-    <!-- embedded: search and Add share one row; alone: title + Add, the search below -->
-    <div class="companies__head" :class="{ 'companies__head--embedded': embedded }">
-      <!-- in the Inbox column the toggle above already says "Companies" -->
-      <h2 v-if="!embedded" class="ld-title">{{ $t("leads.companies.title") }}</h2>
-      <router-link :to="{ name: 'LeadsCompanyNew' }" class="ld-btn ld-btn--primary companies__add" data-testid="companies-add">
-        {{ $t("leads.add.open") }}
-      </router-link>
-      <input
-        v-model="search"
-        class="ld-input companies__search"
-        type="search"
-        :placeholder="$t('leads.board.search')"
-        data-testid="companies-search"
-        @keyup.enter="load()"
+  <!-- alone: a page (PageHeader + Add); in the Inbox column the toggle above already says "Companies" -->
+  <component :is="embedded ? 'div' : PageLayout" class="companies" data-testid="leads-companies">
+    <template v-if="!embedded" #header>
+      <PageHeader :title="$t('leads.companies.title')">
+        <template #actions>
+          <ActionBar :actions="[addAction]" />
+        </template>
+      </PageHeader>
+    </template>
+    <div class="companies__body">
+      <div class="companies__head flex ai-ct gap-3">
+        <BasicInput
+          v-model="search"
+          class="companies__search"
+          type="search"
+          icon="search"
+          :placeholder="$t('leads.board.search')"
+          data-testid="companies-search"
+          @on-key-down="load()"
+        />
+        <BasicButton v-if="embedded" variant="primary" data-testid="companies-add" @click="addAction.onClick">
+          {{ addAction.label }}
+        </BasicButton>
+      </div>
+      <EmptyState
+        v-if="!loading && !companies.length"
+        icon="empty"
+        size="sm"
+        :title="$t('leads.companies.empty')"
+        data-testid="companies-empty"
       />
+      <div class="companies__list">
+        <router-link
+          v-for="company in companies"
+          :key="company.id"
+          :to="{ name: 'LeadsThread', params: { id: company.id } }"
+          class="company-row"
+          :class="{ 'company-row--active': isActive(company) }"
+          active-class=""
+          exact-active-class=""
+          data-testid="companies-item"
+        >
+          <span class="company-row__domain">{{ company.name || company.domain }}</span>
+          <span class="t-muted fs-200">{{ company.stage?.label }} · {{ formatTime(company.last_activity_at) || "—" }}</span>
+        </router-link>
+      </div>
+      <BasicButton v-if="next" class="companies__more" :loading="loading" data-testid="companies-more" @click="load(page + 1)">
+        {{ $t("leads.board.more") }}
+      </BasicButton>
     </div>
-    <p v-if="!loading && !companies.length" class="ld-muted" data-testid="companies-empty">
-      {{ $t("leads.companies.empty") }}
-    </p>
-    <router-link
-      v-for="company in companies"
-      :key="company.id"
-      :to="{ name: 'LeadsThread', params: { id: company.id } }"
-      class="company-row"
-      :class="{ 'company-row--active': isActive(company) }"
-      active-class=""
-      exact-active-class=""
-      data-testid="companies-item"
-    >
-      <span class="company-row__domain">{{ company.name || company.domain }}</span>
-      <span class="ld-muted">{{ company.stage?.label }} · {{ formatTime(company.last_activity_at) || "—" }}</span>
-    </router-link>
-    <button v-if="next" class="ld-btn" :disabled="loading" data-testid="companies-more" @click="load(page + 1)">
-      {{ $t("leads.board.more") }}
-    </button>
-  </div>
+  </component>
 </template>
 
 <script setup>
 import { onMounted, ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
+import PageLayout from "@/boots/PageLayout/index.vue";
+import { t } from "@/i18n";
 import { GET_Companies } from "@/api/leads/api";
 import { formatTime } from "@/utils/leadsTime";
 
@@ -48,6 +64,14 @@ import { formatTime } from "@/utils/leadsTime";
 // Companies side of the Inbox column (`embedded`), next to the card it opened.
 defineProps({ embedded: { type: Boolean, default: false } });
 const route = useRoute();
+const router = useRouter();
+const addAction = {
+  key: "add",
+  label: t("leads.add.open"),
+  role: "primary",
+  testid: "companies-add",
+  onClick: () => router.push({ name: "LeadsCompanyNew" }),
+};
 const isActive = (company) => route.name === "LeadsThread" && String(route.params.id) === String(company.id);
 const companies = ref([]);
 const search = ref("");
@@ -70,50 +94,40 @@ async function load(nextPage = 1) {
 onMounted(() => load());
 </script>
 
-<style lang="scss" src="./desktop.scss"></style>
 <style scoped>
-.companies__head {
+.companies__body {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   gap: var(--space-5);
 }
-.companies__head {
-  flex-wrap: wrap;
+div.companies {
+  padding: var(--space-8);
+}
+.companies__more {
+  align-self: flex-start;
 }
 .companies__search {
-  order: 1;
-  flex: 1 0 100%;
-}
-.companies__head--embedded {
-  flex-wrap: nowrap;
-}
-.companies__head--embedded .companies__search {
-  order: 0;
   flex: 1 1 auto;
   min-width: 0;
-  min-height: 44px;
 }
-.companies__head--embedded .companies__add {
-  order: 1;
-  flex-shrink: 0;
-  white-space: nowrap;
-}
-.companies__add {
-  text-decoration: none;
+.companies__list {
+  display: flex;
+  flex-direction: column;
 }
 .company-row {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-1);
   min-height: 44px;
-  padding: var(--space-5);
+  padding: var(--space-3) var(--space-4);
   border-bottom: 1px solid var(--border-subtle);
   color: inherit;
   text-decoration: none;
 }
+/* The open card's row: a 3 px accent edge inside the row's own padding, so the text does not move. */
 .company-row--active {
-  box-shadow: inset 3px 0 0 var(--focus-ring);
+  padding-left: calc(var(--space-4) - 3px);
+  border-left: 3px solid var(--focus-ring);
   background: var(--surface-raised);
 }
 .company-row__domain {

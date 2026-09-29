@@ -144,12 +144,12 @@ drag or the card's stage select → `companies/<id>/transition/`, refused move s
 Settings (`meta.page`: full width, one scroller, no DesktopOnly wall — wide `.ld-table`s scroll in their own box):
 `/leads/settings` lists the sections, each its own route — `settings/stages` (reorder = `PATCH stages/<id>/ {order}`
 per moved stage — there is no bulk order endpoint; delete 409 inline), `settings/templates` (+ `/:id`),
-`settings/sequences`, `settings/sending`, `settings/lead-types` (the Stages pattern: rename, reorder by PATCH `order`, deactivate, delete 409 inline; the code is fixed after create); a section has a Back bar to the hub. Lead types are one list for the whole panel — `src/stores/leadTypes.js` (loaded once — a failed load is retried, logout resets it in `App.vue` together with the Inbox company-name cache `src/utils/leadsCompanyNames.js` — `label(code)`, `UNKNOWN` built in): Board chips = the active types in order, the company card's type select, the add-lead form and the template Audience (list column + edit select, shown only with the `leads` module; an audience a communicator does not send is never sent back). `/communicator/*` and `/leads/stages`
+`settings/sequences`, `settings/sending`, `settings/lead-types` (the Stages pattern: rename, reorder by PATCH `order`, deactivate, delete 409 inline; the code is fixed after create); a section leads back to the hub (the PageHeader `back` on Stages and Lead types, a back button above the others). Lead types are one list for the whole panel — `src/stores/leadTypes.js` (loaded once — a failed load is retried, logout resets it in `App.vue` together with the Inbox company-name cache `src/utils/leadsCompanyNames.js` — `label(code)`, `UNKNOWN` built in): Board chips = the active types in order, the company card's type select, the add-lead form and the template Audience (list column + edit select, shown only with the `leads` module; an audience a communicator does not send is never sent back). `/communicator/*` and `/leads/stages`
 redirect there; the route names (`CommunicatorTemplates`, `CommunicatorSettings`, `LeadsStages`, …) did not change. `/leads/companies/:id` on desktop is the company card (`Company.vue`, tabs via `?tab=`
 overview | intel | contacts | timeline; timeline = the plan-13 thread, which a phone still gets alone);
 notification jumps open `?tab=timeline`.
-The Contacts tab (`tabs/ContactsTab.vue`, UX-011) adds, edits in place and removes contacts, one form at a time, with the
-primary star (one per company, server-side); the fields are `ContactFields.vue`, shared with the add-lead form. Remove
+The Contacts tab (`tabs/ContactsTab.vue`, UX-011) adds, edits and removes contacts — one form at a time, above the
+contacts DataTable — with the primary star (one per company, server-side); the fields are `ContactFields.vue`, shared with the add-lead form. Remove
 answers 204 (never used, deleted) or 200 (used, anonymised) and the status line says which; anonymised rows are history only.
 
 ### Communicator sections of Settings
