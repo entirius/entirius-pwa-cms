@@ -74,7 +74,7 @@
 
     <h3 id="user-menu" class="fs-500 mb-4">UserMenu</h3>
     <div class="flex gap-3 mb-10">
-      <CatalogueCell id="user-menu-open-inline" label="open: name · theme · languages · health · password · logout">
+      <CatalogueCell id="user-menu-open-inline" label="open: name · theme · field hints · languages · health · password · logout">
         <UserMenu inline />
       </CatalogueCell>
     </div>

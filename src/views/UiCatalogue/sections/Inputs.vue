@@ -3,9 +3,11 @@
     <h3 id="form-field" class="fs-500 mb-4">FormField</h3>
     <div class="inputs-grid grid gap-3 mb-10">
       <CatalogueCell v-for="cell in fieldCells" :id="cell.id" :key="cell.id" :label="cell.label">
-        <FormField v-bind="cell.field">
-          <BasicInput v-model="values[cell.id]" placeholder="Wpisz nazwę" />
-        </FormField>
+        <PinHints :on="cell.hints">
+          <FormField v-bind="cell.field">
+            <BasicInput v-model="values[cell.id]" placeholder="Wpisz nazwę" />
+          </FormField>
+        </PinHints>
       </CatalogueCell>
       <CatalogueCell id="form-field-overflow-default" label="long label wraps above the control">
         <FormField :label="LONG_LABEL" required>
@@ -62,9 +64,17 @@
     <h3 id="basic-switch" class="fs-500 mb-4">BasicSwitch</h3>
     <div class="inputs-grid grid gap-3 mb-10">
       <CatalogueCell v-for="cell in switchCells" :id="cell.id" :key="cell.id" :label="cell.label" interact="focus">
-        <div class="flex">
-          <BasicSwitch v-model="values[cell.id]" label="Aktywny" :hint="cell.hint" :disabled="cell.disabled" />
-        </div>
+        <PinHints :on="true">
+          <div class="flex">
+            <BasicSwitch
+              v-model="values[cell.id]"
+              label="Aktywny"
+              :hint="cell.hint"
+              :hint-level="cell.hintLevel"
+              :disabled="cell.disabled"
+            />
+          </div>
+        </PinHints>
       </CatalogueCell>
     </div>
 
@@ -103,18 +113,20 @@
 </template>
 
 <script setup>
-// Plan 16 cells (r02 §6): FormField stacked / inline / tooltip / required × default, error, description; BasicInput
+// Plan 16 cells (r02 §6): FormField stacked / inline / hint subtle / hint important / required × default, error, plus
+// both hints with hints off; every hint cell pins the account-menu hints switch (plan 60); BasicInput
 // text / icon / readonly / password and BasicTextarea default / maxlength × empty, filled, disabled, error; NumberInput
 // plain / suffix × empty, at min, at max, disabled; BasicCheckbox, BasicRadioGroup, BasicSwitch, SegmentedControl,
 // BasicDatePicker, ColorInput and BasicWysiwyg in their states. Static fixtures; every control keeps its own v-model.
 import { reactive } from "vue";
 import CatalogueSection from "../CatalogueSection.vue";
 import CatalogueCell from "../CatalogueCell.vue";
+import PinHints from "../PinHints.vue";
 
 const LONG_LABEL = "Nazwa produktu widoczna w sklepie, w wynikach wyszukiwania i w kanałach marketplace";
 const ERROR = "Pole jest wymagane";
-const DESCRIPTION = "Widoczna w sklepie i w wynikach wyszukiwania.";
-const TOOLTIP = "Nazwa, którą klient widzi na karcie produktu.";
+const HINT = "Nazwa, którą klient widzi na karcie produktu.";
+const HINT_IMPORTANT = "Najwyżej 120 znaków; nie można jej zmienić po publikacji.";
 const FILLED = "Letnia kurtka outdoorowa";
 const VISIBILITY = [
   { label: "Publiczna", value: "public" },
@@ -133,13 +145,24 @@ const cells = (component, variants, states, build) =>
 const FIELD_VARIANTS = {
   stacked: { label: "Nazwa produktu" },
   inline: { label: "Język treści", layout: "inline" },
-  tooltip: { label: "Nazwa produktu", tooltip: TOOLTIP },
+  "hint-subtle": { label: "Nazwa produktu", hint: HINT },
+  "hint-important": { label: "Nazwa produktu", hint: HINT_IMPORTANT, hintLevel: "important" },
   required: { label: "Nazwa produktu", required: true },
 };
-const FIELD_STATES = { default: {}, error: { error: ERROR }, description: { description: DESCRIPTION } };
+const FIELD_STATES = { default: {}, error: { error: ERROR } };
 const fieldCells = cells("form-field", Object.keys(FIELD_VARIANTS), Object.keys(FIELD_STATES), (variant, state) => ({
   field: { ...FIELD_VARIANTS[variant], ...FIELD_STATES[state] },
+  hints: true,
 }));
+
+fieldCells.push(
+  ...["hint-subtle", "hint-important"].map((variant) => ({
+    id: `form-field-${variant}-hints-off`,
+    label: `${variant}, hints off`,
+    field: FIELD_VARIANTS[variant],
+    hints: false,
+  }))
+);
 
 const INPUT_VARIANTS = {
   text: { placeholder: "Wpisz nazwę" },
@@ -168,8 +191,9 @@ const checkboxCells = cells("basic-checkbox", ["single"], ["unchecked", "checked
 const radioCells = cells("basic-radio-group", ["3-options"], ["none", "one-selected", "disabled"], (variant, state) => ({
   disabled: state === "disabled",
 }));
-const switchCells = cells("basic-switch", ["label", "hint"], ["off", "on", "disabled"], (variant, state) => ({
-  hint: variant === "hint" ? "Nieaktywna promocja nie trafia do koszyka." : "",
+const switchCells = cells("basic-switch", ["label", "hint", "hint-important"], ["off", "on", "disabled"], (variant, state) => ({
+  hint: variant === "label" ? "" : "Nieaktywna promocja nie trafia do koszyka.",
+  hintLevel: variant === "hint-important" ? "important" : "subtle",
   disabled: state === "disabled",
 }));
 const SEGMENTS = {

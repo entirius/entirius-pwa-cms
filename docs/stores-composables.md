@@ -48,7 +48,8 @@ All 12 stores (`src/stores/`) use composition (setup) syntax with `defineStore`.
   session, then blacklists the refresh token (a failure is ignored), then
   `clearAuth()`; a request waiting on a refresh of the ended session never
   settles, so no panel toasts it — theme (`"default"`/`"dark"`), sidebar,
-  language, preferences. Cookie persistence via `universal-cookie`.
+  language, field hints (`hints` / `setHints`, the `cms_hints` preference; the boots read the same ref from
+  `src/composables/fieldHints.js`), preferences. Cookie persistence via `universal-cookie`.
 
 ### `useMuninStore` API
 

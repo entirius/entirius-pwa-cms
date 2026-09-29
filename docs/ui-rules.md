@@ -103,7 +103,7 @@ Traps:
 | side panel · per-language editing | `SideDrawer` · `TranslationsDrawer` |
 | dialog · confirmation (yes/no, unsaved changes) | `BasicModal` · `ConfirmDialog` (`tone="danger"` for a delete) |
 | action menu or popover panel · a panel of text (configuration health) · floating action (+ labelled pill) | `BasicMenu` · `BasicMenu sheet` (a ≤ 32rem popover, a bottom sheet on a phone) · `FloatingActions` (`pill`) |
-| help next to a label · hint on a control | `FormField :tooltip` (else `BasicTooltip variant="help"`) · `BasicTooltip` |
+| field hint next to a label · tooltip on a control | `FormField hint` + `hintLevel` (else `BasicTooltip variant="help"`) · `BasicTooltip` |
 
 - **C5 One icon set: FontAwesome, picked by meaning.** A template names the meaning, never the glyph:
   `<FontAwesomeIcon :icon="$icons.edit" />` (`src/boots/Icons/icons.js`, keys camelCase). A new meaning adds its glyph
@@ -228,10 +228,16 @@ Traps:
 - A detail screen follows the detail-form pattern (`docs/ui-components.md` § Detail form): `BasicCard` sections with a
   `title`, a `.form-grid` of FormFields inside (2 columns above 768 px, `.form-grid__wide` spans both), the page's
   actions in PageHeader `actions`. No view-local `detail-*` layout classes.
-- A field is built one way: `<FormField label description required error tooltip>` around one control. FormField
-  owns the label, hint, error and help; the control never carries its own label or error text. It takes `v-model`
+- A field is built one way: `<FormField label hint hint-level required error>` around one control. FormField
+  owns the label, hint, error and required marker; the control never carries its own label or error text. It takes `v-model`
   and `disabled` (never `isDisabled`, `is_disabled`, `prevent`). `layout="inline"` for a toolbar field (label left of
   the control from 1024 px). The error is `:error="formErrors.getFieldError('field')?.msg || ''"` on the FormField.
+- One hint pattern: `hint` shows a `?` after the label that opens the text on hover, keyboard focus or a tap.
+  `hintLevel="important"` (filled) when the hint holds a constraint, a format, a limit or a consequence („nie można
+  zmienić po zapisie”, „0 = bez limitu”); `subtle` (hollow, the default) for everything else. No caption paragraph
+  under a field, no `description` / `tooltip` (removed, lint). The error replaces the hint in `aria-describedby`.
+- Hints are optional help: users can turn them off in the account menu. Never put information a user must see only
+  in a hint — a state that blocks the form („brak języków”) or a live value is content, shown under the control.
 - One label style: `FormField` renders `.field-label` —
   12 px / 600, uppercase, `text-muted`, 4 px above the control. A raw `<label>` takes `.field-label`; never a local
   copy of the style. The required marker is the `.required` class (a `negative` `*` after the label), never a `*`
