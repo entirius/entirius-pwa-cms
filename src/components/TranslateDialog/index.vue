@@ -18,7 +18,7 @@
           multiple
           :options="targetOptions"
           :placeholder="t('translate_dialog.select_language')"
-          :aria-describedby="targetOptions.length ? undefined : noLanguagesId"
+          v-bind="targetOptions.length ? {} : { 'aria-describedby': noLanguagesId }"
         />
         <p v-if="!targetOptions.length" :id="noLanguagesId" class="t-muted fs-200 m-0">{{ t("translate_dialog.no_languages") }}</p>
         <div v-if="form.targets.length" class="flex flex-wrap gap-1 mt-2">

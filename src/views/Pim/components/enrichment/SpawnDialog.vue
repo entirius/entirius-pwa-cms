@@ -40,7 +40,7 @@
           multiple
           :options="languageOptions"
           :disabled="!availableLanguages.length"
-          :aria-describedby="availableLanguages.length ? undefined : noLanguagesId"
+          v-bind="availableLanguages.length ? {} : { 'aria-describedby': noLanguagesId }"
           data-testid="enrichment-spawn-languages"
         />
         <p v-if="!availableLanguages.length" :id="noLanguagesId" class="t-muted fs-200 m-0">{{ $t("enrichment.spawn.no_languages") }}</p>

@@ -179,3 +179,11 @@ describe("TranslateDialog — no target language", () => {
     expect(wrapper.findAllComponents(BasicSelect)[1].attributes("aria-describedby")).toBe(note.attributes("id"));
   });
 });
+
+describe("TranslateDialog — target languages available", () => {
+  it("adds no description of its own to the select", () => {
+    const { wrapper } = build("product");
+    expect(wrapper.find("p[id]").exists()).toBe(false);
+    expect(wrapper.findAllComponents(BasicSelect)[1].attributes("aria-describedby")).toBeUndefined();
+  });
+});
