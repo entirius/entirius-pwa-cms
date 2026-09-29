@@ -11,6 +11,9 @@ const DEFAULT_WHITELIST = [
   'hot-update',
   'sockjs-node',
   '__webpack_hmr',
+  // The dev server's hot-reload socket: zeno maps the CMS to host port 8180, the client dials the container's 8080.
+  // The CMS itself opens no WebSocket.
+  "WebSocket connection to 'ws://",
 ];
 
 /**
