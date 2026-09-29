@@ -654,6 +654,7 @@ watch(
               :alt="element.altText || ''"
               :caption="tileCaption(element)"
               :selected="index === selectedIndex"
+              :video="element.type === 'video'"
               @click="selectItem(index)"
               @keydown.enter.self="selectItem(index)"
               @error.capture="onImgError(tileSrc(element))"

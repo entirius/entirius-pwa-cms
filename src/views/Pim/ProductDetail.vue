@@ -383,6 +383,8 @@ const T9N_TABS = {
 };
 const DESCRIPTION_FIELDS = ["name", "description", "short_description"];
 const INHERIT_FLAGS = ["inherit_attributes", "inherit_descriptions", "inherit_images"];
+// The "more" menu items that open a dialog, by key (the inheritance flags toggle instead).
+const MORE_DIALOGS = { channels: "showAddToChannelDialog", copy: "showCopyDialog", enrich: "showSpawnDialog" };
 const WYSIWYG = { is: "BasicWysiwyg", attrs: { variant: "lite" } };
 const TEXTAREA = { is: "BasicTextarea", attrs: { rows: 3 } };
 const INPUT = { is: "BasicInput", attrs: {} };
@@ -622,18 +624,7 @@ export default {
   },
   methods: {
     t9nFieldLabel(field) {
-      const labels = {
-        name: this.$t("pim.name"),
-        description: this.$t("pim.description"),
-        short_description: "Short Description",
-        url_key: "URL Key",
-        meta_title: "Meta Title",
-        meta_description: "Meta Description",
-        canonical_url: this.$t("pim.canonical_url"),
-        subname: "Subname",
-        subname2: "Subname 2",
-      };
-      return labels[field] || field;
+      return this.$t(`pim.${field}`);
     },
     t9nControl(field) {
       if (["description", "short_description"].includes(field)) return WYSIWYG;
@@ -660,8 +651,8 @@ export default {
         this.toggleInheritanceFlag(key);
         return;
       }
-      const dialogs = { channels: "showAddToChannelDialog", copy: "showCopyDialog", enrich: "showSpawnDialog" };
-      this[dialogs[key]] = true;
+      const dialog = MORE_DIALOGS[key];
+      if (dialog) this[dialog] = true;
     },
     openTranslations(fieldName) {
       this.translatingField = fieldName;

@@ -30,6 +30,9 @@ export default {
     const pimChannel = usePimChannelStore();
     return { pimChannel };
   },
+  data() {
+    return { confirmInherit: false };
+  },
   computed: {
     isOnDefaultChannel() {
       return this.pimChannel.isDefaultChannel;
@@ -45,11 +48,17 @@ export default {
     },
   },
   methods: {
+    // Override takes effect at once; going back to the inherited value drops the override, so it asks first.
     toggleOverride() {
-      this.$emit("toggle-override", {
-        language: this.language,
-        override: this.isInherited,
-      });
+      if (this.isInherited) this.emitToggle(true);
+      else this.confirmInherit = true;
+    },
+    onConfirmInherit() {
+      this.confirmInherit = false;
+      this.emitToggle(false);
+    },
+    emitToggle(override) {
+      this.$emit("toggle-override", { language: this.language, override });
     },
   },
 };
@@ -83,6 +92,15 @@ export default {
     >
       {{ $t("pim.default_value", { value: inheritedValue }) }}
     </div>
+    <ConfirmDialog
+      :open="confirmInherit"
+      tone="danger"
+      :title="$t('pim.inherit_confirm_title')"
+      :message="$t('pim.inherit_confirm_message', { language: language.toUpperCase() })"
+      :confirm-label="$t('pim.inherit')"
+      @confirm="onConfirmInherit"
+      @cancel="confirmInherit = false"
+    />
   </div>
 </template>
 

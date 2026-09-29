@@ -8,6 +8,7 @@ import BasicTabs from "@/boots/BasicTabs/index.vue";
 import BasicCard from "@/boots/BasicCard/index.vue";
 import PanelCard from "@/boots/PanelCard/index.vue";
 import MediaTile from "@/boots/MediaTile/index.vue";
+import { ICONS } from "@/boots/Icons/icons";
 
 const badge = (props) => mount(StatusBadge, { props: { label: "Opublikowany", ...props } });
 
@@ -53,6 +54,16 @@ describe("Tag", () => {
     expect(button.attributes("aria-label")).toBe("common.delete: lato");
     await button.trigger("click");
     expect(wrapper.emitted("remove")).toHaveLength(1);
+  });
+
+  it("to: the label links to the entity, the remove button stays", () => {
+    const wrapper = mount(Tag, {
+      props: { label: "Rowery", to: "/pim/categories/bikes", removable: true },
+      global: { stubs: { RouterLink: { props: ["to"], template: "<a :href='to'><slot /></a>" } } },
+    });
+    expect(wrapper.find("a").attributes("href")).toBe("/pim/categories/bikes");
+    expect(wrapper.find("a").text()).toBe("Rowery");
+    expect(wrapper.find("button").exists()).toBe(true);
   });
 });
 
@@ -164,6 +175,14 @@ describe("MediaTile", () => {
     const empty = mount(MediaTile);
     expect(empty.find("img").exists()).toBe(false);
     expect(empty.find(".media-tile__placeholder").exists()).toBe(true);
+  });
+
+  it("video: a play badge over the image and the video icon as the placeholder", () => {
+    const withThumb = mount(MediaTile, { props: { src: "/v.jpg", video: true } });
+    expect(withThumb.find(".media-tile__image .media-tile__play").exists()).toBe(true);
+    const noThumb = mount(MediaTile, { props: { video: true } });
+    expect(noThumb.find(".media-tile__placeholder").attributes("icon")).toBe(String(ICONS.video));
+    expect(mount(MediaTile, { props: { src: "/a.jpg" } }).find(".media-tile__play").exists()).toBe(false);
   });
 
   it("marks the selected tile and renders the actions slot", () => {

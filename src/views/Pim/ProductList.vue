@@ -94,7 +94,7 @@
           :icon="hideQualitySensor ? 'hide' : 'preview'"
           variant="outline"
           :pressed="!hideQualitySensor"
-          :label="$t('pim.quality_hide_sensor')"
+          :label="$t('pim.quality_show_sensor')"
           data-test="quality-toggle"
           @click="toggleQualitySensor"
         />

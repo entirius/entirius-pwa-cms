@@ -1024,7 +1024,6 @@
     "quality_show_details": "Show problem details",
     "quality_no_gaps": "No gaps found",
     "quality_fix_on": "→ fix on {channel}",
-    "quality_hide_sensor": "Toggle quality sensor",
     "quality_filter_label": "Quality:",
     "quality_only_critical": "Critical only",
     "quality_only_critical_hint": "Show only products that have critical-severity gaps",
@@ -1195,7 +1194,14 @@
     "search_features": "Search attributes in the set",
     "gap_scope": "Scope",
     "search_products": "Search products",
-    "root_badge": "Root"
+    "root_badge": "Root",
+    "inherit_confirm_title": "Inherit the value again?",
+    "inherit_confirm_message": "The overridden value ({language}) is removed and the field takes the value of the default channel.",
+    "short_description": "Short description",
+    "url_key": "URL key",
+    "subname": "Subname",
+    "subname2": "Subname 2",
+    "quality_show_sensor": "Show quality sensor"
   },
   "dp": {
     "points": "Delivery Points",

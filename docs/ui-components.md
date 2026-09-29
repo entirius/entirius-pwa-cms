@@ -220,7 +220,7 @@ Catalogue: `#overlays` (`#basic-modal`, `#confirm-dialog`, `#side-drawer`, `#tra
 - **`CountBadge`** — `count` in a 20 px pill (`surface-hover`, 11 px Inter 600, `type-count`), `999+` above 999.
   BasicTabs, FilterChip and the MobileFilterPanel trigger show their counts with it.
 - **`Tag`** — a value chip (a picked entity, a media tag): `label`, `removable` adds a `close` IconButton `sm` named
-  „Usuń: <label>” that emits `remove`.
+  „Usuń: <label>” that emits `remove`, `to` makes the label a `router-link` to the entity (accent text).
 - **`BasicTabs`** — `options` `[{ label, value, count? }]` + `v-model` (unchanged); a `tablist` with one Tab stop
   (the active tab), ←/→ (wrapping), Home and End select and focus a tab; active = accent text + 2 px accent underline.
   Tab `i` is `id="<idPrefix>-tab-<value>"` with `aria-controls="<idPrefix>-panel-<value>"`: the call site renders the
@@ -234,7 +234,7 @@ Catalogue: `#overlays` (`#basic-modal`, `#confirm-dialog`, `#side-drawer`, `#tra
   gradient, `--radius-3xl`, padding and gap 20 px, a plain 24 px icon, title and description 12 px apart; root class
   `panel-card` (e2e hook). The page sets `data-fid="panel-card"` on the one card Figma measures (Home: the first).
 - **`MediaTile`** — media grid tile, 188 × 276 (150 × 240 below tablet), `surface-raised`: `src` (none = image
-  placeholder; the image fills the box, `object-fit: cover`), `alt`, `caption` (truncated, full text in `title`), `selected` (accent
+  placeholder; `video` = a play badge over the image and the video icon as the placeholder; the image fills the box, `object-fit: cover`), `alt`, `caption` (truncated, full text in `title`), `selected` (accent
   border), `actions` slot (IconButtons `sm`), `overlay` slot (value chips, `Tag`, over the bottom of the image).
   Actions and overlay show on hover, keyboard focus inside the tile, when selected and always on a touch screen;
   hidden actions are `visibility: hidden` (the chips only fade), and a tile with actions is focusable itself

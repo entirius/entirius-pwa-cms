@@ -22,6 +22,13 @@
 const { test, expect, request } = require('@playwright/test');
 const { login } = require('../helpers/auth');
 const { createErrorCollector } = require('../helpers/error-collector');
+const { escapeRegExp } = require('./helpers/text');
+const en = require('../../src/i18n/locales/en.json');
+const pl = require('../../src/i18n/locales/pl.json');
+
+// The admin profile picks the UI language: a name matches either locale's text (a substring, as Playwright's
+// default string match — a tab name carries its count).
+const inEither = (pick) => new RegExp(`${escapeRegExp(pick(en))}|${escapeRegExp(pick(pl))}`, 'i');
 
 const API_BASE = process.env.VUE_APP_API_URL || 'http://localhost:8000';
 const CHANNEL = 'england';
@@ -67,7 +74,7 @@ async function openLinkedProductsTab(page) {
   await page.goto(`/pim/products/${PRODUCT_SKU}`);
   await page.waitForLoadState('networkidle', { timeout: 15000 });
   // Click the "Linked products" tab via its label
-  await page.getByRole('tab', { name: 'Linked products' }).click();
+  await page.getByRole('tab', { name: inEither((t) => t.pim.tab_links) }).click();
   await page.waitForSelector('[data-testid="linked-create-btn"]', { timeout: 5000 });
 }
 
@@ -119,7 +126,7 @@ test.describe('PIM Linked products', () => {
       .getByRole('combobox')
       .click();
     // Type a search term that matches the linked SKU (the picker panel opens in a popover)
-    const skuInput = page.getByRole('combobox', { name: 'Search by SKU or name' });
+    const skuInput = page.getByRole('combobox', { name: inEither((t) => t.pim.links.linked_sku_placeholder) });
     await skuInput.fill('1310');
     // Wait for picker debounce + API + render
     const firstOption = page.getByRole('option').first();
@@ -131,7 +138,7 @@ test.describe('PIM Linked products', () => {
       .locator('[data-testid="linked-form-type"]')
       .getByRole('combobox')
       .click();
-    await page.getByRole('option', { name: 'Related' }).first().click();
+    await page.getByRole('option', { name: inEither((t) => t.pim.links.type_related) }).first().click();
 
     // Submit
     await page.locator('[data-testid="linked-form-submit"]').click();

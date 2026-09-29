@@ -1,6 +1,7 @@
 <template>
   <span class="tag inline-flex ai-ct gap-1" :class="{ 'tag--removable': removable }" :title="label">
-    <span class="tag__label">{{ label }}</span>
+    <router-link v-if="to" :to="to" class="tag__label tag__link">{{ label }}</router-link>
+    <span v-else class="tag__label">{{ label }}</span>
     <IconButton
       v-if="removable"
       icon="close"
@@ -13,12 +14,13 @@
 
 <script setup>
 // A value chip (a picked entity, a media tag), never a state (StatusBadge) or a number (CountBadge). `removable`
-// adds a close IconButton named "Usuń: <label>" that emits `remove`.
+// adds a close IconButton named "Usuń: <label>" that emits `remove`; `to` makes the label a link to the entity.
 import IconButton from "@/boots/IconButton/index.vue";
 
 defineProps({
   label: { type: String, required: true },
   removable: { type: Boolean, default: false },
+  to: { type: [String, Object], default: null },
 });
 defineEmits(["remove"]);
 </script>
@@ -42,6 +44,15 @@ defineEmits(["remove"]);
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+}
+
+.tag__link {
+  color: var(--text-accent);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
   }
 }
 

@@ -60,6 +60,7 @@ async function fetchCategories(search) {
         v-for="cat in localCategories"
         :key="cat.idx"
         :label="cat.name || cat.idx"
+        :to="`/pim/categories/${cat.idx}`"
         removable
         @remove="removeCategory(cat.idx)"
       />

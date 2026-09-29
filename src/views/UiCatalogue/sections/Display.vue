@@ -29,6 +29,9 @@
       <CatalogueCell id="tag-removable-default" label="removable" interact="hover">
         <div class="flex"><Tag label="lato-2026" removable /></div>
       </CatalogueCell>
+      <CatalogueCell id="tag-link-default" label="link (to)">
+        <div class="flex"><Tag label="lato-2026" to="/ui#tag" removable /></div>
+      </CatalogueCell>
     </div>
 
     <h3 id="basic-tabs" class="fs-500 mb-4">BasicTabs</h3>
@@ -89,6 +92,9 @@
             <IconButton icon="delete" label="Usuń" size="sm" variant="danger" />
           </template>
         </MediaTile>
+      </CatalogueCell>
+      <CatalogueCell id="media-tile-video-default" label="video">
+        <MediaTile :src="logo" alt="" caption="film-lato.mp4" video />
       </CatalogueCell>
     </div>
 

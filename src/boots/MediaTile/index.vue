@@ -8,7 +8,15 @@
   >
     <div class="media-tile__image flex jc-ct ai-ct">
       <img v-if="src" :src="src" :alt="alt" loading="lazy" />
-      <FontAwesomeIcon v-else :icon="$icons.image" class="media-tile__placeholder" aria-hidden="true" />
+      <FontAwesomeIcon
+        v-else
+        :icon="video ? $icons.video : $icons.image"
+        class="media-tile__placeholder"
+        aria-hidden="true"
+      />
+      <span v-if="video" class="media-tile__play flex jc-ct ai-ct" aria-hidden="true">
+        <FontAwesomeIcon :icon="$icons.play" />
+      </span>
       <div v-if="$slots.overlay" class="media-tile__overlay media-tile__reveal flex flex-wrap gap-1">
         <slot name="overlay" />
       </div>
@@ -28,12 +36,14 @@
 // value chips (`Tag`) over the bottom of the image; both show on hover, keyboard focus inside the tile, when selected
 // and always on a touch screen (no hover there). Hidden actions are `visibility: hidden` (no invisible clickable
 // button; the chips stay readable to a screen reader); a tile with actions takes keyboard focus itself, so Tab
-// reveals them before it reaches them.
+// reveals them before it reaches them. `video` marks a video: a play badge over the image, the video icon as the
+// placeholder.
 defineProps({
   src: { type: String, default: "" },
   alt: { type: String, default: "" },
   caption: { type: String, default: "" },
   selected: { type: Boolean, default: false },
+  video: { type: Boolean, default: false },
 });
 </script>
 
@@ -103,6 +113,19 @@ defineProps({
       visibility: visible;
       opacity: 1;
     }
+  }
+
+  &__play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--space-10);
+    height: var(--space-10);
+    transform: translate(-50%, -50%);
+    border-radius: var(--radius-full);
+    background: var(--overlay-backdrop);
+    color: var(--text-on-accent-fill);
+    pointer-events: none;
   }
 
   &__placeholder {
