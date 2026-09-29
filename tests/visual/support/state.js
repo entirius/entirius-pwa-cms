@@ -330,4 +330,5 @@ module.exports = {
   prepareContext,
   openScreen,
   openPinned,
+  PROBES,
 };

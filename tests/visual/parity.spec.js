@@ -1,12 +1,14 @@
 const { AxeBuilder } = require("@axe-core/playwright");
-const { test, expect, THEME_VALUES, openPinned } = require("./support/state");
-const { expectedTokens, themeColors, brandFamilies } = require("./support/tokens");
+const { test, expect, THEME_VALUES, openPinned, prepareContext, openScreen, PROBES } = require("./support/state");
+const { expectedTokens, themeColors, brandFamilies, censusScale } = require("./support/tokens");
 const { writeReport, mergeReport } = require("./support/report");
+const { screens } = require("./capture-spec.json");
+const { differences } = require("./known-differences.json");
 
-// Layer 1 — token parity. Gates: token resolution (semantic tokens, the space/radius/type scales) and body text in Inter.
-// Census, the other fonts and contrast are reports.
+// Layer 1 — token parity. Gates: token resolution (semantic tokens, the space/radius/type scales), body text in Inter
+// and the census (every capture-spec screen: no off-token colour, radius or font size beyond known-differences.json).
+// The other fonts and contrast are reports.
 const THEMES = ["dark", "light"];
-const CENSUS_SCREENS = ["g-home", "pages-content-list", "pages-content-editor", "pim-products-list"]; // S1, S4, S6, PIM
 const CONTRAST_SCREENS = ["g-home", "pages-content-list", "pages-content-editor"]; // S1, S4, S6
 const FONT_TARGETS = { title: ".page-title", navLabel: ".sidebar-nav-item__label", button: ".data-table__action-btn" };
 const FAMILIES = brandFamilies();
@@ -29,14 +31,28 @@ for (const theme of THEMES) {
   });
 }
 
-test.describe("census (report, dark)", () => {
+// A known difference excuses a census finding by `census: [{ property, value }]` (a colour, radius or font size).
+const EXCUSED = new Set(differences.flatMap((kd) => (kd.census || []).map(({ property, value }) => `${property}|${value}`)));
+const unexcused = (groups) => groups.filter(({ property, value }) => !EXCUSED.has(`${property}|${value}`));
+
+test.describe("census (dark)", () => {
   test.use({ colorScheme: "dark" });
-  for (const id of CENSUS_SCREENS) {
-    test(`census ${id}`, REPORT, async ({ context, page }) => {
-      await openPinned({ context, page }, id, "dark");
-      const names = Object.keys(themeColors("dark"));
-      const census = await page.evaluate((tokens) => window.visualProbes.census(tokens), names);
-      mergeReport("census.json", id, census);
+  for (const screen of screens) {
+    test.describe(() => {
+      test.use({ needsAuth: !screen.noAuth });
+      test(`census ${screen.id}`, { tag: ["@parity", "@desktop"] }, async ({ context, page }) => {
+        await prepareContext(context, { theme: "dark", collapsed: screen.collapsed });
+        const skipReason = await openScreen(page, screen);
+        test.skip(Boolean(skipReason), skipReason);
+        await page.addScriptTag({ path: PROBES });
+        const names = Object.keys(themeColors("dark"));
+        const census = await page.evaluate(([tokens, scale]) => window.visualProbes.census(tokens, scale), [
+          names,
+          censusScale(),
+        ]);
+        mergeReport("census.json", screen.id, census);
+        expect(unexcused([...census.offToken, ...census.offScale])).toEqual([]);
+      });
     });
   }
 });

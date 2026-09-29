@@ -79,4 +79,7 @@ function brandFamilies() {
 // Colour token names of the semantic layer for a theme (census input).
 const themeColors = (theme) => semanticTokens(theme).color;
 
-module.exports = { expectedTokens, themeColors, brandFamilies };
+// The census scale: every radius and font-size step as a computed px value.
+const censusScale = () => ({ radius: Object.values(scale("radius")), fontSize: Object.values(scale("font-size")) });
+
+module.exports = { expectedTokens, themeColors, brandFamilies, censusScale };

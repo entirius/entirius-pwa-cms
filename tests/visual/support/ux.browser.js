@@ -364,7 +364,7 @@
   // nested in another label is its text, not a second label. A label that wraps its control is measured on its text:
   // the label itself when the text sits in it directly, else its first child with text that is neither a control nor
   // holds one.
-  const FIELD_LABEL = "label, .form-field__label, .ld-field__label";
+  const FIELD_LABEL = "label, .form-field__label";
   const OPTION_LABEL =
     'input[type="checkbox"], input[type="radio"], input[type="file"], [role="switch"], [role="checkbox"]';
   const CONTROL = "input, select, textarea, [contenteditable]";

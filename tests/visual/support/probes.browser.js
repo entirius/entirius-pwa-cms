@@ -29,11 +29,15 @@
   function colourClassifier(colorTokenNames) {
     const { normalise, dispose } = normaliser();
     const html = getComputedStyle(document.documentElement);
-    const tokens = new Set(colorTokenNames.map((name) => normalise("color", html.getPropertyValue(name).trim())));
+    const values = colorTokenNames.map((name) => normalise("color", html.getPropertyValue(name).trim()));
     dispose();
+    // A token may carry its own alpha (the hairline, the overlays): its exact value is the token, not a tint.
+    const exact = new Set(values);
+    const tokens = new Set(values.map((value) => `rgb(${channels(value).slice(0, 3).join(", ")})`));
     return (color) => {
       const [r, g, b, a] = channels(color);
       if (a === 0) return "transparent";
+      if (exact.has(color)) return "token";
       if (!tokens.has(`rgb(${r}, ${g}, ${b})`)) return "off-token";
       return a === 1 ? "token" : "tint";
     };
@@ -58,8 +62,10 @@
       .filter(({ style, box }) => box.width > 0 && box.height > 0 && style.visibility !== "hidden" && Number(style.opacity) > 0);
   }
 
+  // An inline background is data, not styling (a stored colour in the ColorInput swatch): lint already refuses a
+  // literal colour in a template's style attribute.
   function colourSamples({ el, style }) {
-    const samples = [["background-color", style.backgroundColor]];
+    const samples = el.style.backgroundColor ? [] : [["background-color", style.backgroundColor]];
     if (hasOwnText(el)) samples.push(["color", style.color]);
     if (parseFloat(style.borderTopWidth) > 0) samples.push(["border-color", style.borderTopColor]);
     return samples.map(([property, value]) => ({ property, value, el }));
@@ -79,8 +85,22 @@
   const distinct = (values) => [...new Set(values)].sort((a, b) => parseFloat(a) - parseFloat(b) || a.localeCompare(b));
   const firstFamily = (style) => style.fontFamily.split(",")[0].trim().replace(/["']/g, "");
 
-  // Census of every visible element against the theme's semantic colour tokens (report only).
-  function census(colorTokenNames) {
+  // A radius or font size of an element that is not on its scale (`scale` = { radius: [px…], fontSize: [px…] }).
+  // Text inside an SVG (the logo wordmark) is part of the drawing, sized in its viewBox: not UI type.
+  const isUiText = (el) => hasOwnText(el) && !(el instanceof SVGElement);
+  function offScale(elements, scale) {
+    const corners = (style) =>
+      new Set([style.borderTopLeftRadius, style.borderTopRightRadius, style.borderBottomRightRadius, style.borderBottomLeftRadius]);
+    const samples = elements.flatMap(({ el, style }) => [
+      ...[...corners(style)].map((value) => ({ property: "border-radius", value, el })),
+      ...(isUiText(el) ? [{ property: "font-size", value: style.fontSize, el }] : []),
+    ]);
+    const allowed = { "border-radius": new Set(["0px", ...scale.radius]), "font-size": new Set(scale.fontSize) };
+    return groupOffToken(samples.filter(({ property, value }) => !allowed[property].has(value)));
+  }
+
+  // Census of every visible element against the theme's semantic colour tokens and the radius / type scales.
+  function census(colorTokenNames, scale) {
     const classify = colourClassifier(colorTokenNames);
     const elements = visibleElements();
     const samples = elements.flatMap(colourSamples);
@@ -89,6 +109,7 @@
     return {
       elements: elements.length,
       offToken: groupOffToken(samples.filter((s) => classify(s.value) === "off-token")),
+      offScale: offScale(elements, scale),
       tints,
       radii: distinct(elements.map(({ style }) => style.borderTopLeftRadius)),
       fontSizes: distinct(elements.map(({ style }) => style.fontSize)),
