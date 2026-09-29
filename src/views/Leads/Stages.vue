@@ -69,7 +69,12 @@
         <FormField :label="$t('leads.stages.key')" :description="$t('leads.stages.key_help')" required>
           <BasicInput v-model="draft.key" data-testid="stage-new-key" />
         </FormField>
-        <FormField :label="$t('leads.stages.label')" :description="$t('leads.stages.label_help')" required>
+        <FormField
+          :label="$t('leads.stages.label')"
+          :description="$t('leads.stages.label_help')"
+          required
+          :error="errors.label || ''"
+        >
           <BasicInput v-model="draft.label" data-testid="stage-new-label" />
         </FormField>
         <BasicButton class="stage__submit" variant="primary" type="submit" data-testid="stage-save">
@@ -171,11 +176,13 @@ function shift(index, delta) {
   return saveOrder();
 }
 
-// The label field commits on blur and Enter, as the native change did: only a changed label is sent.
-function rename(stage) {
-  if (stage.label === savedLabels[stage.id]) return;
+// The label field commits on blur and Enter, as the native change did: only a changed label is sent. It counts as
+// saved while the PATCH runs (Enter then blur sends once) and is forgotten on a refusal, so blur or Enter retries.
+async function rename(stage) {
+  const previous = savedLabels[stage.id];
+  if (stage.label === previous) return;
   savedLabels[stage.id] = stage.label;
-  return attempt(stage.id, () => PATCH_Stage(stage.id, { label: stage.label }));
+  if (!(await attempt(stage.id, () => PATCH_Stage(stage.id, { label: stage.label })))) savedLabels[stage.id] = previous;
 }
 
 async function remove(stage) {
@@ -184,8 +191,14 @@ async function remove(stage) {
 }
 
 async function add() {
+  delete errors.add;
+  delete errors.label;
   if (!KEY_PATTERN.test(draft.key)) {
     errors.add = t("leads.stages.key_invalid");
+    return;
+  }
+  if (!draft.label.trim()) {
+    errors.label = t("leads.stages.label_required");
     return;
   }
   const order = Math.max(-ORDER_STEP, ...stages.value.map((stage) => stage.order)) + ORDER_STEP;

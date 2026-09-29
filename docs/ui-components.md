@@ -346,7 +346,8 @@ Catalogue: `#selects` (`#basic-select`, `#entity-search-picker`, `#channel-multi
   Controls read it through `useControlAttrs()` (`src/boots/FormField/useControlAttrs.js`) and
   paint their own error border.
 - **`BasicInput`** — `v-model`, `type`, `placeholder`, `icon` (a leading meaning of `icons.js`), `readonly` (the
-  value behind a `lock`, the former `LockedField`), `disabled`, `maxlength` (the native limit); `--elem-height`, `border-control`, the polish disabled
+  value behind a `lock`, the former `LockedField`), `disabled`, the native `maxlength`, `autocomplete`, `inputmode`, `min`, `max`, `step` (props, so they reach
+  the `<input>`, not the wrapper); `--elem-height`, `border-control`, the polish disabled
   look. No label or error text of its own (the FormField's). `null` / `false` show an empty field, `0` shows „0”.
   `focusOnCreate` focuses it on mount; events `onFocusout` / `onKeyDown` (Enter) carry the text; unknown listeners
   and classes land on the wrapper.

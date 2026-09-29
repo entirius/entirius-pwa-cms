@@ -124,6 +124,14 @@ describe("BasicInput", () => {
     expect(mountInput().find("input").attributes("maxlength")).toBeUndefined();
   });
 
+  it("takes autocomplete, inputmode, min, max and step onto the native field, not the wrapper", () => {
+    const native = { autocomplete: "off", inputmode: "decimal", min: "0", max: "10", step: "0.01" };
+    const wrapper = mountInput({ type: "number", ...native });
+    expect(wrapper.find("input").attributes()).toMatchObject(native);
+    Object.keys(native).forEach((name) => expect(wrapper.attributes(name)).toBeUndefined());
+    Object.keys(native).forEach((name) => expect(mountInput().find("input").attributes(name)).toBeUndefined());
+  });
+
   it("takes disabled", () => {
     expect(mountInput({ disabled: true }).find("input").attributes("disabled")).toBeDefined();
     expect(mountInput().find("input").attributes("disabled")).toBeUndefined();

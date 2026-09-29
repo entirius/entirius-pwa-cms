@@ -40,10 +40,10 @@ const customerRoute = computed(() => ({
   query: { back: route.fullPath },
 }));
 const formatDate = (iso) => formatTime(iso) || "—";
-const columns = [
+const columns = computed(() => [
   { key: "label", label: t("leads.company.field"), width: "max-content" },
   { key: "value", label: t("leads.company.value"), width: "1fr" },
-];
+]);
 const rows = computed(() => {
   const company = props.company;
   return [

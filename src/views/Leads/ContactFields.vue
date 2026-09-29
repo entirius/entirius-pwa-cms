@@ -1,23 +1,42 @@
 <template>
   <div class="form-grid">
     <FormField class="form-grid__wide" :label="$t('leads.contacts.email')" :error="errorOf('email')">
-      <BasicInput v-model.trim="form.email" type="email" :readonly="emailLocked" :data-testid="`${testid}-email`" />
+      <BasicInput
+        v-model.trim="form.email"
+        type="email"
+        inputmode="email"
+        autocomplete="off"
+        :readonly="emailLocked"
+        :data-testid="`${testid}-email`"
+      />
     </FormField>
     <FormField :label="$t('leads.add.first_name')">
-      <BasicInput v-model.trim="form.first_name" :data-testid="`${testid}-first-name`" />
+      <BasicInput v-model.trim="form.first_name" autocomplete="off" :data-testid="`${testid}-first-name`" />
     </FormField>
     <FormField :label="$t('leads.add.last_name')">
-      <BasicInput v-model.trim="form.last_name" :data-testid="`${testid}-last-name`" />
+      <BasicInput v-model.trim="form.last_name" autocomplete="off" :data-testid="`${testid}-last-name`" />
     </FormField>
     <template v-if="full">
       <FormField :label="$t('leads.contacts.job_title')">
-        <BasicInput v-model.trim="form.job_title" :data-testid="`${testid}-job-title`" />
+        <BasicInput v-model.trim="form.job_title" autocomplete="off" :data-testid="`${testid}-job-title`" />
       </FormField>
       <FormField :label="$t('leads.contacts.phone')" :error="errorOf('phone')">
-        <BasicInput v-model.trim="form.phone" type="tel" :data-testid="`${testid}-phone`" />
+        <BasicInput
+          v-model.trim="form.phone"
+          type="tel"
+          inputmode="tel"
+          autocomplete="off"
+          :data-testid="`${testid}-phone`"
+        />
       </FormField>
       <FormField :label="$t('leads.contacts.language')" :error="errorOf('language')">
-        <BasicInput v-model.trim="form.language" placeholder="pl" :data-testid="`${testid}-language`" />
+        <BasicInput
+          v-model.trim="form.language"
+          placeholder="pl"
+          :maxlength="2"
+          autocomplete="off"
+          :data-testid="`${testid}-language`"
+        />
       </FormField>
     </template>
     <FormField :label="$t('leads.contacts.legal_basis')" :description="$t('leads.add.basis_hint')">
@@ -29,7 +48,7 @@
       required
       :error="errorOf('consent_ref')"
     >
-      <BasicInput v-model.trim="form.consent_ref" :data-testid="`${testid}-consent-ref`" />
+      <BasicInput v-model.trim="form.consent_ref" autocomplete="off" :data-testid="`${testid}-consent-ref`" />
     </FormField>
     <BasicCheckbox v-if="full" v-model="form.is_primary" class="form-grid__wide" :data-testid="`${testid}-primary`">
       {{ $t("leads.contacts.primary") }}
@@ -38,6 +57,7 @@
 </template>
 
 <script setup>
+import { computed } from "vue";
 import { t } from "@/i18n";
 import { legalBasisLabel } from "@/utils/leadsLabels";
 
@@ -53,8 +73,8 @@ defineProps({
   consentRecorded: { type: Boolean, default: false }, // the saved basis is already consent — no new reference asked
 });
 const BASES = ["legitimate_interest", "consent", "contract"];
-const basisOptions = [
+const basisOptions = computed(() => [
   { value: "", label: t("leads.add.basis_none") },
   ...BASES.map((basis) => ({ value: basis, label: legalBasisLabel(basis) })),
-];
+]);
 </script>

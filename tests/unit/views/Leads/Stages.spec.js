@@ -15,7 +15,7 @@ vi.mock("@/api/leads/api", () => api);
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => notify }));
 
 import Stages from "@/views/Leads/Stages.vue";
-import { leadsFrame, setControl } from "./leadsFrame";
+import { fieldError, leadsFrame, setControl } from "./leadsFrame";
 
 const stubs = { ...leadsFrame.stubs, draggable: { props: ["list"], template: "<div><slot v-for='(el, i) in list' name='item' :element='el' :index='i' /></div>" } };
 const stages = () => [{ id: 1, key: "new", label: "New", order: 0, kind: "open" }, { id: 2, key: "won", label: "Won", order: 10, kind: "won" }];
@@ -156,5 +156,32 @@ describe("Leads Stages", () => {
     await flushPromises();
     expect(api.POST_Stage).not.toHaveBeenCalled();
     expect(wrapper.get('[data-testid="stage-add-error"]').text()).toBe(t("leads.stages.key_invalid"));
+  });
+
+  // Plan 56b: a refused rename is not remembered as saved — the next blur or Enter sends it again.
+  it("a failed rename is retried by the next blur", async () => {
+    api.PATCH_Stage.mockRejectedValueOnce({ response: { data: { detail: "Busy" } } }).mockResolvedValueOnce({ data: {} });
+    const wrapper = mount(Stages, { global: { components: leadsFrame.components, stubs } });
+    await flushPromises();
+    const label = () => wrapper.findAllComponents('[data-testid="stage-label"]')[0];
+    label().vm.$emit("update:modelValue", "Fresh");
+    label().vm.$emit("onFocusout");
+    await flushPromises();
+    expect(wrapper.get('[data-testid="stage-error"]').text()).toBe("Busy");
+    label().vm.$emit("onKeyDown");
+    await flushPromises();
+    expect(api.PATCH_Stage.mock.calls).toEqual([[1, { label: "Fresh" }], [1, { label: "Fresh" }]]);
+    expect(wrapper.find('[data-testid="stage-error"]').exists()).toBe(false);
+  });
+
+  it("an empty label is a field error before the request", async () => {
+    const wrapper = mount(Stages, { global: { components: leadsFrame.components, stubs } });
+    await flushPromises();
+    await setControl(wrapper, "stage-new-key", "lost");
+    await setControl(wrapper, "stage-new-label", "  ");
+    await wrapper.find('[data-testid="stage-add"]').trigger("submit");
+    await flushPromises();
+    expect(api.POST_Stage).not.toHaveBeenCalled();
+    expect(fieldError(wrapper, "leads.stages.label")).toBe(t("leads.stages.label_required"));
   });
 });

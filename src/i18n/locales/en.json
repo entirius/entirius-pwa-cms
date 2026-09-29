@@ -3439,7 +3439,8 @@
       "delete_busy_one": "The stage “{label}” holds 1 company. Move it to another stage first — a stage that still holds companies cannot be deleted.",
       "delete_busy_few": "The stage “{label}” holds {count} companies. Move them to another stage first — a stage that still holds companies cannot be deleted.",
       "delete_busy_many": "The stage “{label}” holds {count} companies. Move them to another stage first — a stage that still holds companies cannot be deleted.",
-      "key_invalid": "A key may hold only letters, digits, “-” and “_”"
+      "key_invalid": "A key may hold only letters, digits, “-” and “_”",
+      "label_required": "Enter a label"
     },
     "legal_basis": {
       "consent": "Consent",
@@ -3497,7 +3498,8 @@
       "active": "Active",
       "add": "Add type",
       "unknown": "Type unknown",
-      "code_invalid": "A code may hold only letters, digits and “_”"
+      "code_invalid": "A code may hold only letters, digits and “_”",
+      "label_required": "Enter a label"
     }
   },
   "notification_bar": {

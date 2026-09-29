@@ -3438,7 +3438,8 @@
       "delete_busy_one": "Etap „{label}” zawiera 1 firmę. Najpierw przenieś ją do innego etapu — etapu, w którym są firmy, nie można usunąć.",
       "delete_busy_few": "Etap „{label}” zawiera {count} firmy. Najpierw przenieś je do innego etapu — etapu, w którym są firmy, nie można usunąć.",
       "delete_busy_many": "Etap „{label}” zawiera {count} firm. Najpierw przenieś je do innego etapu — etapu, w którym są firmy, nie można usunąć.",
-      "key_invalid": "Klucz może zawierać tylko litery, cyfry, „-” i „_”"
+      "key_invalid": "Klucz może zawierać tylko litery, cyfry, „-” i „_”",
+      "label_required": "Podaj etykietę"
     },
     "legal_basis": {
       "consent": "Zgoda",
@@ -3496,7 +3497,8 @@
       "active": "Aktywny",
       "add": "Dodaj typ",
       "unknown": "Typ nieznany",
-      "code_invalid": "Kod może zawierać tylko litery, cyfry i „_”"
+      "code_invalid": "Kod może zawierać tylko litery, cyfry i „_”",
+      "label_required": "Podaj nazwę"
     }
   },
   "notification_bar": {

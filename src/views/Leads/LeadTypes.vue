@@ -66,7 +66,7 @@
             @update:model-value="draft.code = $event.toUpperCase()"
           />
         </FormField>
-        <FormField :label="$t('leads.lead_types.label')" required>
+        <FormField :label="$t('leads.lead_types.label')" required :error="errors.label || ''">
           <BasicInput v-model="draft.label" data-testid="lead-type-new-label" />
         </FormField>
         <BasicButton class="lead-type__submit" variant="primary" type="submit" data-testid="lead-type-save">
@@ -118,11 +118,14 @@ async function save(type, body) {
   if (await attempt(type.id, () => PATCH_LeadType(type.id, body))) await load();
 }
 
-// The label field commits on blur and Enter, as the native change did: only a changed label is sent.
-function rename(type) {
-  if (type.label === savedLabels[type.id]) return;
+// The label field commits on blur and Enter, as the native change did: only a changed label is sent. It counts as
+// saved while the PATCH runs (Enter then blur sends once) and is forgotten on a refusal, so blur or Enter retries.
+async function rename(type) {
+  const previous = savedLabels[type.id];
+  if (type.label === previous) return;
   savedLabels[type.id] = type.label;
-  return save(type, { label: type.label });
+  if (await attempt(type.id, () => PATCH_LeadType(type.id, { label: type.label }))) await load();
+  else savedLabels[type.id] = previous;
 }
 
 async function shift(index, delta) {
@@ -146,8 +149,14 @@ async function remove(type) {
 }
 
 async function add() {
+  delete errors.add;
+  delete errors.label;
   if (!CODE_PATTERN.test(draft.code)) {
     errors.add = t("leads.lead_types.code_invalid");
+    return;
+  }
+  if (!draft.label.trim()) {
+    errors.label = t("leads.lead_types.label_required");
     return;
   }
   const order = Math.max(-ORDER_STEP, ...types.value.map((type) => type.order)) + ORDER_STEP;

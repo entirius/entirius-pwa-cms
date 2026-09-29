@@ -23,10 +23,16 @@
       <BasicCard :title="$t('leads.add.company')" gap>
         <div class="form-grid">
           <FormField :label="$t('leads.add.domain')" required :disabled="Boolean(company)" :error="fieldError('domain')">
-            <BasicInput v-model.trim="form.domain" :placeholder="$t('leads.add.domain_hint')" data-testid="add-lead-domain" />
+            <BasicInput
+              v-model.trim="form.domain"
+              inputmode="url"
+              autocomplete="off"
+              :placeholder="$t('leads.add.domain_hint')"
+              data-testid="add-lead-domain"
+            />
           </FormField>
           <FormField :label="$t('leads.add.name')" :disabled="Boolean(company)">
-            <BasicInput v-model.trim="form.name" data-testid="add-lead-name" />
+            <BasicInput v-model.trim="form.name" autocomplete="off" data-testid="add-lead-name" />
           </FormField>
           <FormField :label="$t('leads.add.lead_type')" :disabled="Boolean(company)" :error="fieldError('lead_type')">
             <BasicSelect v-model="form.lead_type" :options="typeOptions" data-testid="add-lead-type" />

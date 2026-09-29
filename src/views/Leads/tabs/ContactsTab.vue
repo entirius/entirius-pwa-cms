@@ -132,12 +132,12 @@ const status = ref("");
 const fieldError = (name) => getFieldError(name)?.msg || "";
 // The contact in edit (mode = its id), null while adding or closed.
 const editing = computed(() => props.company.contacts.find((contact) => contact.id === mode.value) || null);
-const columns = [
+const columns = computed(() => [
   { key: "is_primary", label: t("leads.contacts.primary"), width: "max-content" },
   { key: "name", label: t("leads.contacts.name"), width: "1fr" },
   { key: "legal_basis", label: t("leads.contacts.legal_basis"), width: "max-content" },
   { key: "actions", label: t("leads.contacts.actions"), actions: true },
-];
+]);
 const nameOf = (contact) =>
   `${contact.first_name} ${contact.last_name}`.trim() || contact.email || "—";
 const valuesOf = (contact) => ({

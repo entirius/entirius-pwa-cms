@@ -13,7 +13,7 @@ const api = vi.hoisted(() => ({
 vi.mock("@/api/leads/api", () => api);
 
 import LeadTypes from "@/views/Leads/LeadTypes.vue";
-import { leadsFrame, setControl } from "./leadsFrame";
+import { fieldError, leadsFrame, setControl } from "./leadsFrame";
 
 const mountScreen = async () => {
   const wrapper = mount(LeadTypes, { global: leadsFrame });
@@ -101,6 +101,34 @@ it("a code outside letters, digits and _ is refused before the request", async (
   await flushPromises();
   expect(api.POST_LeadType).not.toHaveBeenCalled();
   expect(wrapper.get('[data-testid="lead-type-add-error"]').text()).toBe(t("leads.lead_types.code_invalid"));
+});
+
+// Plan 56b: a refused rename is not remembered as saved; an empty label never reaches the API.
+it("a failed rename is retried by the next blur", async () => {
+  setActivePinia(createPinia());
+  vi.clearAllMocks();
+  api.PATCH_LeadType.mockRejectedValueOnce({ response: { data: { detail: "Busy" } } });
+  const wrapper = await mountScreen();
+  const label = () => row(wrapper, "RETAILER").findComponent('[data-testid="lead-type-label"]');
+  label().vm.$emit("update:modelValue", "Shops");
+  label().vm.$emit("onFocusout");
+  await flushPromises();
+  expect(wrapper.get('[data-testid="lead-type-error"]').text()).toBe("Busy");
+  label().vm.$emit("onKeyDown");
+  await flushPromises();
+  expect(api.PATCH_LeadType.mock.calls).toEqual([[1, { label: "Shops" }], [1, { label: "Shops" }]]);
+});
+
+it("an empty label is a field error before the request", async () => {
+  setActivePinia(createPinia());
+  vi.clearAllMocks();
+  const wrapper = await mountScreen();
+  await setControl(wrapper, "lead-type-new-code", "SHOP");
+  await setControl(wrapper, "lead-type-new-label", "");
+  await wrapper.get('[data-testid="lead-type-add"]').trigger("submit");
+  await flushPromises();
+  expect(api.POST_LeadType).not.toHaveBeenCalled();
+  expect(fieldError(wrapper, "leads.lead_types.label")).toBe(t("leads.lead_types.label_required"));
 });
 
 describe("lead types store", () => {

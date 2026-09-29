@@ -34,10 +34,10 @@ const strategies = computed(() => {
   return lighthouse?.processed?.strategies || {};
 });
 
-const columns = [
+const columns = computed(() => [
   { key: "label", label: t("leads.intel.test"), width: "1fr" },
   { key: "score", label: t("leads.intel.score"), width: "max-content", numeric: true },
-];
+]);
 const scoreRows = computed(() =>
   Object.entries(strategies.value).map(([strategy, summary]) => ({
     strategy,

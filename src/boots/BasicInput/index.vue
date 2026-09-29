@@ -9,6 +9,11 @@
         :class="{ 'has-placeholder': placeholder, 'input-field--icon': leadingIcon }"
         :placeholder="placeholder"
         :maxlength="maxlength"
+        :autocomplete="autocomplete"
+        :inputmode="inputmode"
+        :min="min"
+        :max="max"
+        :step="step"
         :name="attrs.id"
         :value="shown"
         :readonly="readonly"
@@ -29,7 +34,8 @@
 
 <script setup>
 // Single-line text (docs/ui-components.md § P3 inputs): `v-model`, `type`, `placeholder`, `icon` (a leading meaning
-// of icons.js), `readonly` (the value behind a lock, the former LockedField), `disabled`, `maxlength`. Inside a
+// of icons.js), `readonly` (the value behind a lock, the former LockedField), `disabled`, and the native `maxlength`,
+// `autocomplete`, `inputmode`, `min`, `max`, `step` (on the <input>, never the wrapper). Inside a
 // FormField it takes id, aria-describedby, aria-invalid, required and disabled from the contract; the label and the
 // error text are the FormField's. `null` and `false` show an empty field, `0` shows "0". `focusOnCreate` focuses it on mount;
 // `onFocusout` / `onKeyDown` (Enter) emit the current text.
@@ -50,6 +56,12 @@ const props = defineProps({
   disabled: { type: Boolean, default: false },
   // The native length limit (a language code, an address the API caps).
   maxlength: { type: Number, default: null },
+  // "off" keeps the browser from offering the operator's own name, email or phone in someone else's record.
+  autocomplete: { type: String, default: null },
+  inputmode: { type: String, default: null },
+  min: { type: [Number, String], default: null },
+  max: { type: [Number, String], default: null },
+  step: { type: [Number, String], default: null },
 });
 const emit = defineEmits(["update:modelValue", "onFocusout", "onKeyDown"]);
 

@@ -56,7 +56,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import PageLayout from "@/boots/PageLayout/index.vue";
 import { t } from "@/i18n";
@@ -68,13 +68,13 @@ import { formatTime } from "@/utils/leadsTime";
 defineProps({ embedded: { type: Boolean, default: false } });
 const route = useRoute();
 const router = useRouter();
-const addAction = {
+const addAction = computed(() => ({
   key: "add",
   label: t("leads.add.open"),
   role: "primary",
   testid: "companies-add",
   onClick: () => router.push({ name: "LeadsCompanyNew" }),
-};
+}));
 const isActive = (company) => route.name === "LeadsThread" && String(route.params.id) === String(company.id);
 const companies = ref([]);
 const search = ref("");
