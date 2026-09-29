@@ -298,6 +298,23 @@ describe("Leads Communicate dialog", () => {
     expect(has(wrapper, "communicate-error")).toBe(false);
   });
 
+  // Plan 61c: the template answer (or error) of an earlier open never lands in a quickly reopened dialog.
+  it.each([
+    ["answer", (resolve) => resolve({ data: { results: [{ id: 3, key: "stale", language: "pl", is_active: true }] } })],
+    ["error", (_, reject) => reject({ response: { data: { detail: "Stale error" } } })],
+  ])("an earlier open's template %s is ignored after a reopen", async (_, settle) => {
+    let settleFirst;
+    communicator.GET_Templates.mockReturnValueOnce(new Promise((resolve, reject) => (settleFirst = () => settle(resolve, reject))));
+    const wrapper = await openDialog();
+    await wrapper.findComponent({ name: "BasicModal" }).props("actions").find((a) => a.key === "cancel").onClick();
+    await wrapper.get('[data-testid="company-communicate"]').trigger("click");
+    await flushPromises();
+    settleFirst();
+    await flushPromises();
+    expect(control(wrapper, "communicate-template").props("options")).toEqual([{ value: "cold", label: "cold (pl)" }]);
+    expect(has(wrapper, "communicate-error")).toBe(false);
+  });
+
   it("a double click on Request draft asks for one draft; the dialog is persistent while it runs", async () => {
     let resolve;
     leads.POST_Communicate.mockReturnValue(new Promise((r) => (resolve = r)));
