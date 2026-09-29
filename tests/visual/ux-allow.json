@@ -1,9 +1,1 @@
-[
-  {
-    "screen": "leads-board",
-    "kind": "nonFocusable",
-    "selector": "board-card",
-    "reason": "board cards are drag targets; the card's stage select is the keyboard path",
-    "owner": "P5 plan 53 (Leads board)"
-  }
-]
+[]

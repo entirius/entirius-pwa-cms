@@ -9,12 +9,12 @@
     </template>
     <div class="import flex-column gap-8">
       <p class="m-0">{{ $t("leads.import.hint") }}</p>
-      <BasicCard :title="$t('leads.import.columns_title')" data-testid="import-columns">
+      <BasicCard :title="$t('leads.import.columns_title')" gap data-testid="import-columns">
         <ul class="import__list">
           <li v-for="key in COLUMN_KEYS" :key="key">{{ $t(`leads.import.${key}`) }}</li>
         </ul>
       </BasicCard>
-      <BasicCard :title="$t('leads.import.after_title')" data-testid="import-after">
+      <BasicCard :title="$t('leads.import.after_title')" gap data-testid="import-after">
         <p class="m-0">{{ $t("leads.import.after") }}</p>
       </BasicCard>
       <div class="flex ai-ct flex-wrap gap-5">

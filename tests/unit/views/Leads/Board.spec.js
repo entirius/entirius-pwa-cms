@@ -152,14 +152,16 @@ describe("Leads Board", () => {
   });
 
   // FIX-17b item 6: the whole card opens the company; no activity is said in words, never a bare dash.
-  it("a click anywhere on the card opens the company, the stage select does not", async () => {
+  // Plan 53: through the name link stretched over the card — no click-only card (@ux nonFocusable).
+  it("the card opens through its name link, never a click handler of its own", async () => {
     const wrapper = await mountBoard();
     const card = wrapper.get('[data-testid="board-card"]');
     expect(card.get('[data-testid="board-card-activity"]').text()).toContain("No activity yet");
-    await card.get('[data-testid="board-card-stage"]').trigger("click");
-    expect(push).not.toHaveBeenCalled();
+    const link = card.get('[data-testid="board-card-name"]');
+    expect(link.classes()).toContain("card__name");
+    expect(link.attributes("draggable")).toBe("false");
     await card.get(".card__domain").trigger("click");
-    expect(push).toHaveBeenCalledWith({ name: "LeadsThread", params: { id: 1 } });
+    expect(push).not.toHaveBeenCalled();
   });
 
   // Plan 53: the card's stage select is a BasicSelect with the floating label „Etap”; a pick moves the card.

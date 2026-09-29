@@ -42,18 +42,26 @@
           @click="togglePrimary(row)"
         />
       </template>
+      <!-- one cell per person (name, job title, email): the card's column is narrow next to the Inbox list -->
       <template #cell-name="{ row }">
-        <span :class="{ 't-muted': row.anonymised_at }" :data-contact="row.id" data-testid="contact-row">
+        <span class="contacts__person" :class="{ 't-muted': row.anonymised_at }" :data-contact="row.id" data-testid="contact-row">
           {{ row.first_name }} {{ row.last_name }}
-          <span v-if="row.job_title" class="contacts__job t-muted fs-200">{{ row.job_title }}</span>
+          <span v-if="row.job_title" class="t-muted fs-200">{{ row.job_title }}</span>
+          <span v-if="row.email" class="contacts__email fs-200">{{ row.email }}</span>
         </span>
       </template>
       <template #cell-legal_basis="{ row }">
-        <StatusBadge v-if="row.anonymised_at" tone="neutral" :dot="false" :label="$t('leads.contacts.anonymised')" />
-        <StatusBadge v-else-if="row.legal_basis" tone="info" :dot="false" :label="legalBasisLabel(row.legal_basis)" />
-      </template>
-      <template #cell-suppressed="{ row }">
-        {{ isSuppressed(row) ? $t("leads.contacts.yes") : "" }}
+        <span class="flex flex-wrap gap-1">
+          <StatusBadge v-if="row.anonymised_at" tone="neutral" :dot="false" :label="$t('leads.contacts.anonymised')" />
+          <StatusBadge v-else-if="row.legal_basis" tone="info" :dot="false" :label="legalBasisLabel(row.legal_basis)" />
+          <StatusBadge
+            v-if="isSuppressed(row)"
+            tone="warning"
+            :dot="false"
+            :label="$t('leads.contacts.suppressed')"
+            data-testid="contact-suppressed"
+          />
+        </span>
       </template>
       <template #cell-actions="{ row }">
         <div v-if="!row.anonymised_at" class="flex ai-ct gap-2">
@@ -127,9 +135,7 @@ const editing = computed(() => props.company.contacts.find((contact) => contact.
 const columns = [
   { key: "is_primary", label: t("leads.contacts.primary"), width: "max-content" },
   { key: "name", label: t("leads.contacts.name"), width: "1fr" },
-  { key: "email", label: t("leads.contacts.email"), width: "1fr", priority: 2 },
   { key: "legal_basis", label: t("leads.contacts.legal_basis"), width: "max-content" },
-  { key: "suppressed", label: t("leads.contacts.suppressed"), width: "max-content", priority: 2 },
   { key: "actions", label: t("leads.contacts.actions"), actions: true },
 ];
 const nameOf = (contact) =>
@@ -255,7 +261,12 @@ onMounted(async () => {
 .contacts__form {
   max-width: 48rem;
 }
-.contacts__job {
-  display: block;
+.contacts__person {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.contacts__email {
+  overflow-wrap: anywhere;
 }
 </style>

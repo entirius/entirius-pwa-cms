@@ -22,7 +22,7 @@
               @on-key-down="rename(type)"
             />
           </label>
-          <StatusBadge tone="neutral" size="sm" :dot="false" :label="type.code" />
+          <StatusBadge class="lead-type__code" tone="neutral" size="sm" :dot="false" :label="type.code" />
           <BasicSwitch
             :model-value="type.is_active"
             :label="$t('leads.lead_types.active')"
@@ -58,7 +58,7 @@
         </div>
       </div>
       <p v-if="errors.order" class="t-negative m-0" data-testid="lead-type-order-error">{{ errors.order }}</p>
-      <form class="flex ai-fs flex-wrap gap-5" data-testid="lead-type-add" @submit.prevent="add">
+      <form class="flex ai-st flex-wrap gap-5" data-testid="lead-type-add" @submit.prevent="add">
         <FormField :label="$t('leads.lead_types.code')" :description="$t('leads.lead_types.code_help')" required>
           <BasicInput
             :model-value="draft.code"
@@ -168,7 +168,7 @@ onMounted(load);
 }
 .lead-type {
   display: grid;
-  grid-template-columns: minmax(8rem, 1fr) auto auto auto;
+  grid-template-columns: minmax(8rem, 1fr) 12rem auto auto;
   align-items: center;
   gap: var(--space-5);
 }
@@ -181,6 +181,10 @@ onMounted(load);
 }
 .lead-type__submit {
   margin-top: var(--space-5);
+}
+/* The code column has one width down the list, so the fields and controls line up whatever the code is long. */
+.lead-type__code {
+  justify-self: start;
 }
 /* Below tablet: label on its own line, the rest wraps below it */
 @include max-tablet {

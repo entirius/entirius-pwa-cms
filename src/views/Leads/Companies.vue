@@ -9,7 +9,11 @@
       </PageHeader>
     </template>
     <div class="companies__body">
-      <div class="companies__head flex ai-ct gap-3">
+      <!-- C-18: the search takes its own full-width row, so its placeholder is never cut -->
+      <div class="flex ai-ct jc-fe flex-wrap gap-3">
+        <BasicButton v-if="embedded" variant="primary" data-testid="companies-add" @click="addAction.onClick">
+          {{ addAction.label }}
+        </BasicButton>
         <BasicInput
           v-model="search"
           class="companies__search"
@@ -19,9 +23,6 @@
           data-testid="companies-search"
           @on-key-down="load()"
         />
-        <BasicButton v-if="embedded" variant="primary" data-testid="companies-add" @click="addAction.onClick">
-          {{ addAction.label }}
-        </BasicButton>
       </div>
       <EmptyState
         v-if="!loading && !companies.length"
@@ -107,7 +108,7 @@ div.companies {
   align-self: flex-start;
 }
 .companies__search {
-  flex: 1 1 auto;
+  flex: 1 1 100%;
   min-width: 0;
 }
 .companies__list {
