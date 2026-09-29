@@ -275,6 +275,8 @@ export default {
   },
   watch: {
     mode(val) {
+      // Only a row click picks the Focus row; back in List the next Focus starts at the top.
+      if (val === "list") this.focusIndex = 0;
       this.$router.replace({
         path: this.$route.path,
         query: { ...this.$route.query, mode: val },
@@ -346,6 +348,8 @@ export default {
       return f;
     },
     async fetchRows() {
+      // A reloaded list (page, filter, a row removed by an action) has other rows under the old index.
+      this.focusIndex = 0;
       this.loading = true;
       try {
         const { data } = await GET_Proposals(this.buildParams());
