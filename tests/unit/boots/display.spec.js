@@ -151,6 +151,12 @@ describe("BasicCard", () => {
   it("has no header without title and actions", () => {
     expect(mount(BasicCard, { slots: { default: "x" } }).find("header").exists()).toBe(false);
   });
+
+  it("drops the frame when flat (a card inside a drawer or a modal)", () => {
+    const wrapper = mount(BasicCard, { props: { flat: true }, slots: { default: "x" } });
+    expect(wrapper.classes()).toContain("basic-card--flat");
+    expect(wrapper.classes()).not.toContain("page-card");
+  });
 });
 
 const panel = (props) =>

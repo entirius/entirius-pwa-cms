@@ -126,7 +126,8 @@
       @exit="exitFocus"
     />
 
-    <template v-if="mode === 'list' && !loading && totalCount > pageSize" #footer>
+    <!-- Mounted while the list loads (no footer jump); a page change waits for the running fetch or action. -->
+    <template v-if="mode === 'list' && totalCount > pageSize" #footer>
       <Pagination
         :page="page"
         :pages="Math.ceil(totalCount / pageSize)"
@@ -385,6 +386,7 @@ export default {
       }, 300);
     },
     onPage(page) {
+      if (this.loading || this.busy) return;
       this.page = page;
       this.fetchRows();
     },

@@ -1,5 +1,6 @@
 <template>
-  <BasicCard class="product-preview" :title="product && !loading ? product.name || sku : ''">
+  <!-- Flat inside the preview drawer: the drawer is the frame and holds the dialog's heading, the name is plain text. -->
+  <BasicCard class="product-preview" :flat="flat" :title="product && !loading && !flat ? productName : ''">
     <template v-if="product && !loading" #actions>
       <BasicButton
         variant="secondary"
@@ -13,6 +14,7 @@
     <Loader v-show="loading" />
 
     <template v-if="!loading && product">
+      <p v-if="flat" class="product-preview__name fs-400 fw-600 t-strong">{{ productName }}</p>
       <div class="product-preview__hero">
         <img
           v-if="heroUrl"
@@ -90,6 +92,7 @@ export default {
   props: {
     sku: { type: String, default: null },
     channelIdx: { type: String, default: "" },
+    flat: { type: Boolean, default: false },
   },
   setup() {
     return { notify: useNotifyStore() };
@@ -101,6 +104,9 @@ export default {
     };
   },
   computed: {
+    productName() {
+      return this.product?.name || this.sku;
+    },
     heroUrl() {
       const path = this.product?.og_image;
       if (!path) return "";

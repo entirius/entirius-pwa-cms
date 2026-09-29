@@ -187,7 +187,7 @@ All notable changes to this project will be documented in this file.
   filters (search, module, kind, source, batch, minimum confidence) in a `MobileFilterPanel` (inline on desktop, a
   filter button with the count on a phone) instead of the Filters toggle. The list pager is a `Pagination` in the page
   footer. One primary per mode: in the list the bulk Accept all (row Accept secondary, Reject danger), in Focus the
-  Accept („Apply anyway” while re-confirming a drift) with Reject (danger) and Skip in an `ActionBar`; the proposal is
+  Accept ("Apply anyway" while re-confirming a drift) with Reject (danger) and Skip in an `ActionBar`; the proposal is
   a `BasicCard` and the reject reason a `BasicTextarea` in a `FormField`. A PIM subject in the list is a ghost
   `BasicButton`, and clicking a row now opens Focus on that row (it always opened the first). The drift and CSV-import
   dialogs are `BasicModal`s with `ActionBar` footers (the file picker stays a raw input in the drop zone); the product

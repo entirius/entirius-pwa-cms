@@ -68,10 +68,20 @@ describe("EnrichmentReview compile smoke", () => {
 
   it("counts the panel filters on the MobileFilterPanel, status excluded", async () => {
     const MobileFilterPanel = { name: "MobileFilterPanel", props: ["activeCount", "triggerLabel"], template: "<div><slot /></div>" };
-    const w = mount(EnrichmentReview, { global: { stubs: { ...stubs, MobileFilterPanel } } });
+    const control = (name) => ({ name, props: ["modelValue"], emits: ["update:modelValue"], template: "<div />" });
+    const BasicSelect = control("BasicSelect");
+    const BasicInput = control("BasicInput");
+    const w = mount(EnrichmentReview, { global: { stubs: { ...stubs, MobileFilterPanel, BasicSelect, BasicInput } } });
     await flushPromises();
-    expect(w.findComponent({ name: "MobileFilterPanel" }).props("activeCount")).toBe(0);
-    const filters = { ...w.vm.filters, status: "applied", source: "ai", search: "x" };
-    expect(EnrichmentReview.computed.activeFilterCount.call({ filters })).toBe(2);
+    const panel = w.findComponent({ name: "MobileFilterPanel" });
+    expect(panel.props("activeCount")).toBe(0);
+
+    // Driven through the controls: the status chips stay out of the count, the source select and the search go in.
+    await w.find('[data-testid="enrichment-status-applied"]').trigger("click");
+    await panel.findAllComponents(BasicSelect)[2].vm.$emit("update:modelValue", "ai");
+    await panel.findAllComponents(BasicInput)[0].vm.$emit("update:modelValue", "x");
+    await flushPromises();
+    expect(w.vm.filters.status).toBe("applied");
+    expect(panel.props("activeCount")).toBe(2);
   });
 });
