@@ -206,9 +206,9 @@ test.describe('Suppliers panel', () => {
     });
 
     test('Back button returns to list', async ({ page }) => {
-      // The PageHeader back arrow, named by common.back in either UI language.
+      // The PageHeader back arrow in the main landmark, named by common.back in either UI language.
       await page
-        .locator('.page-header')
+        .getByRole('main')
         .getByRole('button', { name: /^(Back|Wstecz)$/ })
         .click();
       await page.waitForLoadState('networkidle');

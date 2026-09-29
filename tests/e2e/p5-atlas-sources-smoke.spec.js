@@ -74,7 +74,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
       await page.waitForLoadState('networkidle');
 
       await expect(h1(page)).not.toBeEmpty();
-      await expect(page.locator('.page-header').getByRole('button', { name: either((t) => t.common.back) })).toBeVisible();
+      await expect(page.getByRole('main').getByRole('button', { name: either((t) => t.common.back) })).toBeVisible();
       const actions = page.getByRole('group', { name: either((t) => t.common.actions) });
       await expect(actions.getByTestId('suppliers-overview-save')).toBeDisabled();
 

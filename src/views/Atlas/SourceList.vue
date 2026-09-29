@@ -217,8 +217,13 @@
         v-model="deleteForce"
         :options="deleteModeOptions"
         :aria-label="$t('atlas.delete.modal_title')"
-        class="mb-5"
+        class="mb-3"
       />
+      <!-- The permanent option is irreversible: its warning stays in view before it is chosen. -->
+      <p class="flex ai-ct gap-2 fs-200 fw-600 t-negative mb-5" data-testid="suppliers-delete-warning">
+        <FontAwesomeIcon :icon="$icons.warning" aria-hidden="true" />
+        {{ $t("atlas.delete.default_warning") }}
+      </p>
       <div
         v-if="deleteForce && deleteImpact"
         class="suppliers-delete-impact"
@@ -239,9 +244,6 @@
           }}
         </p>
       </div>
-      <p v-if="!deleteForce" class="fs-200 t-muted mt-5">
-        {{ $t("atlas.delete.default_warning") }}
-      </p>
       <template #footer>
         <BasicButton
           variant="secondary"

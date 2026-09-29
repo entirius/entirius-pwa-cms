@@ -2203,34 +2203,6 @@
         "preview_empty": "Feed nie zwrócił żadnych produktów.",
         "preview_open_source": "Otwórz stronę źródłową"
       },
-      "form": {
-        "idx_label": "Identyfikator feedu",
-        "connector_label": "Konektor",
-        "schedule_label": "Harmonogram cron",
-        "schedule_hint": "np. 0 */6 * * * — pusto dla trybu ręcznego",
-        "sync_mode_label": "Tryb synchronizacji",
-        "language_label": "Kod języka",
-        "currency_label": "Kod waluty",
-        "xml": {
-          "feed_url": "URL feedu",
-          "product_xpath": "XPath produktu",
-          "image_xpath": "XPath obrazka"
-        },
-        "scraper": {
-          "scraper_id": "ID scrapera",
-          "catalog_url": "URL katalogu"
-        }
-      },
-      "sync_mode": {
-        "full": "Pełna",
-        "delta": "Delta"
-      },
-      "test": {
-        "title": "Test feedu",
-        "results_count": "Pobrano {count} surowych produktów",
-        "async_dispatched": "Wysłano zadanie asynchroniczne {task_id}. Wyniki pojawią się w logach importu po zakończeniu.",
-        "suppressed": "Wysyłka scrapera jest wyłączona w ustawieniach dostawców."
-      },
       "toast": {
         "created": "Feed {idx} utworzony.",
         "updated": "Feed {idx} zaktualizowany.",
