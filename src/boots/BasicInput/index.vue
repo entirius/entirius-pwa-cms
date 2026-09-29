@@ -6,7 +6,7 @@
         v-bind="attrs"
         :type="type"
         class="input-field w-100 bg-inherit"
-        :class="{ 'has-placeholder': placeholder, 'input-field--icon': leadingIcon }"
+        :class="{ 'has-placeholder': placeholder, 'input-field--icon': leadingIcon, 'input-field--trailing': $slots.trailing }"
         :placeholder="placeholder"
         :maxlength="maxlength"
         :autocomplete="autocomplete"
@@ -28,6 +28,9 @@
       >
         <FontAwesomeIcon :icon="ICONS[leadingIcon]" />
       </div>
+      <div v-if="$slots.trailing" class="input-trailing absolute flex jc-ct ai-ct">
+        <slot name="trailing" />
+      </div>
     </div>
   </div>
 </template>
@@ -39,7 +42,8 @@
 // FormField it takes id, aria-describedby, aria-invalid, required and disabled from the contract; the label and the
 // error text are the FormField's. `null` and `false` show an empty field, `0` shows "0". `focusOnCreate` focuses it on mount;
 // `onFocusout` / `onKeyDown` (Enter) emit the current text. `size`: md = --elem-height (default), lg = 40 px (the
-// sign-in screens, AuthLayout).
+// sign-in screens, AuthLayout). Slot `trailing`: a control inside the right edge (the password reveal), the text
+// stops before it.
 import { computed, onMounted, ref } from "vue";
 import { ICONS } from "@/boots/Icons/icons";
 import { useControlAttrs } from "@/boots/FormField/useControlAttrs";
@@ -110,6 +114,10 @@ onMounted(() => props.focusOnCreate && inputEl.value.focus());
       padding-left: var(--input-height);
     }
 
+    &--trailing {
+      padding-right: var(--input-height);
+    }
+
     // The former LockedField: the value stays readable and selectable behind the lock icon.
     &:read-only:not(:disabled) {
       background-color: var(--surface-raised);
@@ -139,6 +147,14 @@ onMounted(() => props.focusOnCreate && inputEl.value.focus());
     left: 0;
     top: 50%;
     transform: translate(0, -50%);
+  }
+
+  .input-trailing {
+    top: 50%;
+    right: 0;
+    width: var(--input-height);
+    height: var(--input-height);
+    transform: translateY(-50%);
   }
 }
 

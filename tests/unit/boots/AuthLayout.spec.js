@@ -66,6 +66,9 @@ describe("AuthLayout PasswordField", () => {
     const input = () => wrapper.get("input");
     expect(input().attributes("type")).toBe("password");
     expect(input().attributes("autocomplete")).toBe("current-password");
+    // The toggle sits in BasicInput's trailing slot: the text stops before it.
+    expect(input().classes()).toContain("input-field--trailing");
+    expect(wrapper.find(".input-trailing button").exists()).toBe(true);
 
     await wrapper.get("button").trigger("click");
 

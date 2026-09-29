@@ -354,7 +354,8 @@ Catalogue: `#selects` (`#basic-select`, `#entity-search-picker`, `#channel-multi
   paint their own error border.
 - **`BasicInput`** — `v-model`, `type`, `placeholder`, `icon` (a leading meaning of `icons.js`), `readonly` (the
   value behind a `lock`, the former `LockedField`), `disabled`, the native `maxlength`, `autocomplete`, `inputmode`, `min`, `max`, `step` (props, so they reach
-  the `<input>`, not the wrapper); `--elem-height` (`size="lg"`: 40 px, the sign-in screens), `border-control`, the polish disabled
+  the `<input>`, not the wrapper); `--elem-height` (`size="lg"`: 40 px, the sign-in screens), slot `trailing` (a
+  control inside the right edge, the text stops before it: the password reveal), `border-control`, the polish disabled
   look. No label or error text of its own (the FormField's). `null` / `false` show an empty field, `0` shows „0”.
   `focusOnCreate` focuses it on mount; events `onFocusout` / `onKeyDown` (Enter) carry the text; unknown listeners
   and classes land on the wrapper.
@@ -468,8 +469,8 @@ the component recipe.
   `subtitle`, `statusTone` (`negative` · `positive` · `warning`); slot `status` = the one `aria-live` summary (session
   expired, form errors, link sent), default slot = the form. Form controls use `size="lg"`; a focused control gets a
   soft accent halo around its ring.
-- **`AuthLayout/PasswordField`** — FormField + `lg` BasicInput with the show/hide `IconButton` (`pressed`) inside its
-  right edge and a caps-lock hint as the field description, only while caps lock is on. `autocomplete`
+- **`AuthLayout/PasswordField`** — FormField + `lg` BasicInput with the show/hide `IconButton` (`pressed`) in its
+  `trailing` slot and a caps-lock hint as the field description, only while caps lock is on. `autocomplete`
   `current-password` (default) or `new-password`.
 - Errors go under their field (FormField `error`) and once into the `status` slot; never a toast. The new-password
   checks (filled, confirmation matches) are `passwordErrors` in `src/utils/passwordForm.js`.
