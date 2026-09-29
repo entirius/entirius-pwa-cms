@@ -373,11 +373,12 @@
                     </p>
                   </div>
                   <div class="section-actions flex gap-1 as-s ai-ct" data-testid="builder-section-actions">
-                    <!-- Display only: the summary on hover, no tab stop (the edit button next to it opens the config). -->
+                    <!-- Display only: a tab stop and a tap show the summary (the edit button next to it opens the config). -->
                     <BasicTooltip :text="`${$t('builder.setted_config')}: ${sectionConfigSummary(s_uid)}`">
                       <span
                         class="section-config-eye inline-flex jc-ct ai-ct t-muted"
                         role="img"
+                        tabindex="0"
                         :aria-label="`${$t('builder.setted_config')}: ${sectionConfigSummary(s_uid)}`"
                         data-testid="builder-section-config"
                       >
@@ -931,9 +932,10 @@ export default {
         {
           ...utility("advanced", this.advanced_options ? "close" : "settings", this.$t("builder.advanced"), () =>
             (this.advanced_options = !this.advanced_options)),
-          // The cue is the warning icon and the name, not the accent fill: that stays Publish's (R5).
+          // The cue is the warning icon and the name, not the accent fill: that stays Publish's (R5). A layout extender
+          // has no URL, so its name asks for the document name only.
           ...(this.advancedNeedsAttention
-            ? { icon: "warning", label: this.$t("builder.advanced_missing") }
+            ? { icon: "warning", label: this.$t(this.content_type === "layout-extender" ? "builder.advanced_missing_name" : "builder.advanced_missing") }
             : {}),
           testid: "builder-advanced-toggle",
         },

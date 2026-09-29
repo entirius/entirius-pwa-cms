@@ -149,5 +149,7 @@ describe("Builder — mounted header", () => {
   it("asks a layout extender for its name only (it has no URL)", async () => {
     const wrapper = mountHeader({ content_type: "layout-extender", custom_doc_name: "Footer", routes: [] });
     expect(toggle(wrapper).icon).toBe("settings");
+    const unnamed = mountHeader({ content_type: "layout-extender", custom_doc_name: "", routes: [] });
+    expect(toggle(unnamed)).toMatchObject({ icon: "warning", label: "builder.advanced_missing_name" });
   });
 });

@@ -170,6 +170,7 @@
     "tiles": "Tiles",
     "advanced": "Advanced",
     "advanced_missing": "Advanced: set the document name and URL",
+    "advanced_missing_name": "Advanced: set the document name",
     "count": "Count",
     "doc_limit_reached": "Cannot create more documents of this type.",
     "no_content_title": "No content yet",
