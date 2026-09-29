@@ -31,7 +31,11 @@
       v-if="showAddForm"
       class="options-manager__add-form flex ai-ct gap-5 mb-8"
     >
-      <FormField class="flex-1" :label="$t('pim.option_code')">
+      <FormField
+        class="flex-1"
+        :label="$t('pim.option_code')"
+        :error="formErrors.getFieldError('idx')?.msg || ''"
+      >
         <BasicInput
           v-model="newOption.idx"
           format="key"
@@ -176,8 +180,7 @@ import {
 } from "@/api/pim/api";
 
 import OptionTranslationsDrawer from "./OptionTranslationsDrawer.vue";
-import { extractApiMessage } from "@/composables/useFormErrors";
-import { formatError } from "@/utils/formats";
+import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
 
 const PAGE_SIZE = 50;
 
@@ -198,7 +201,8 @@ export default {
     const loader = useLoaderStore();
     const notify = useNotifyStore();
     const pimChannel = usePimChannelStore();
-    return { loader, notify, pimChannel };
+    const formErrors = useFormErrors();
+    return { loader, notify, pimChannel, formErrors };
   },
   data() {
     return {
@@ -319,8 +323,7 @@ export default {
       }, 300);
     },
     async createOption() {
-      // An invalid code is already marked in its field (BasicInput format).
-      if (!this.newOption.idx || formatError("key", this.newOption.idx)) return;
+      if (!this.newOption.idx || !this.formErrors.validateFormats(this.newOption, { idx: { format: "key" } })) return;
       this.loader.loaderStart();
       try {
         const name_t9n = {};
