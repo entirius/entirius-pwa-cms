@@ -6,6 +6,13 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- Input formats (plan 61): `src/utils/formats.js` parses, shows and checks `money`, `percent`, `integer`, `ean`
+  (8/12/13/14 digits, GS1 check digit), `code`, `key`, `slug`, `email`, `url`, `iso2`, `iso4217`; BasicInput takes
+  it as `format` (with `pattern`, `min`, `max`) and shows a wrong value as the FormField error when the field is left;
+  `useFormErrors().validateFormats(form, rules)` blocks the save with the same field errors, messages in both
+  languages with an example („Podaj kwotę z najwyżej dwoma miejscami po przecinku, np. 232,00”). The input audit
+  (`scripts/audit/inputs.mjs`) reads the `format` prop.
+
 - `sheet` on `BasicMenu` (P5 plan 56): a panel of text as a popover up to 32rem wide, a full-width bottom sheet on a
   phone. Configuration health uses it (operator request): check titles at 16 px / 600, „Jak naprawić” as a link under
   the title, env-var names and URLs in the mono font and the only text that breaks mid-word (`textTokens`).
@@ -568,6 +575,17 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- Input formats (plan 61): prices (PriceManager list and detail, Promo minimum order) show and send two decimal
+  places — `232` became `232.00`, `,` is read as `.`, `2,345` is an error instead of a server 400; EANs are checked
+  (length and check digit) before a PIM save; new SKUs, idx codes, supplier and mapping identifiers, SKU prefixes
+  and discount codes take no spaces; the supplier contact email and the category OG image URL are checked; promo
+  limits take the API minimum (1 for code uses) and no longer stop at 9999; every text field the API caps has its
+  `maxlength`. Stored units and payloads are unchanged. Of the audit's 83 mismatched fields 79 are fixed; the other
+  4 (communicator sequence key, lead-stage key, lead-type code, spawn-rule key) were already checked in the view.
+- Prices table: an unsaved row is marked by a warning bar on its left edge instead of a yellow row, its „Niezapisane”
+  badge is no longer cut to „Un…”, and the header counter says how many prices and rows are unsaved when one price
+  (SKU and currency) sits on several country rows.
+- Sign-in: the caps-lock warning under the password shows again (FormField lost `description` in plan 60).
 - P5 wave-5 close (plan 57): the Leads company card's Overview shows its field names whole (they were cut to the
   header's width); a Leads Settings section shows one back arrow, its PageHeader's (the layout added a second one
   above it).
