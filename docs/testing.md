@@ -141,10 +141,10 @@ CMS (the zeno stack, `CMS_BASE_URL`, default `http://localhost:8180`, API `CMS_A
 server. Config: `tests/visual/playwright.visual.config.js` (projects `desktop` 1680×1168 and `mobile` 393×852,
 DPR 1, `pl-PL`, `Europe/Warsaw`, one worker).
 
-| Layer | Spec (tag) | Question | P1 mode |
+| Layer | Spec (tag) | Question | Mode |
 |---|---|---|---|
-| 1 Token parity | `parity.spec.js` (`@parity`) | Does every token of `src/assets/tokens/semantic.json` (colour, overlay, shadow and the `space`, `radius`, `font-size` scales) resolve on `/` to its `@entirius/brand-tokens` value, both themes? Does body text render in the UI font (CDP `CSS.getPlatformFontsForNode`, families read from the brand tokens)? Plus census (off-token colours, radii, font sizes), the other font targets and axe `color-contrast` | token resolution and the body-text font gate; census, other fonts, contrast are reports |
-| 2 Figma landmarks | `landmarks.spec.js` (`@landmarks`) | Do elements with `data-fid="<id>"` sit where `figma/figma-landmarks.json` puts them (±2 px)? | gate for the shell ids (`header`, `logo`, `user-button`, `sidebar`, `tab-bar`, `mobile-menu`, `content`: off or missing fails the frame; a Figma box is clipped to its frame first); `page-title`, `panel-card`, `sticky-header`, `fab` stay reports until their P5 screens |
+| 1 Token parity | `parity.spec.js` (`@parity`) | Does every token of `src/assets/tokens/semantic.json` (colour, overlay, shadow and the `space`, `radius`, `font-size` scales) resolve on `/` to its `@entirius/brand-tokens` value, both themes? Does body text render in the UI font (CDP `CSS.getPlatformFontsForNode`, families read from the brand tokens)? Census: does any visible element of a `capture-spec.json` screen (desktop, dark) carry a colour off the semantic tokens (tints of a token pass), a radius off the radius scale or a font size off the type scale? Plus the other font targets and axe `color-contrast` | gate: token resolution, the body-text font and the census (a finding passes only when a `known-differences.json` entry lists it under `census: [{ property, value }]`); other fonts and contrast are reports |
+| 2 Figma landmarks | `landmarks.spec.js` (`@landmarks`) | Do elements with `data-fid="<id>"` sit where `figma/figma-landmarks.json` puts them (±2 px)? | gate for every id of S1–S10: the shell ids (`header`, `logo`, `user-button`, `sidebar`, `tab-bar`, `mobile-menu`, `content`) and the page ids (`page-title`, `panel-card`, `sticky-header`, `fab`); one off or missing fails the frame; a Figma box is clipped to its frame first; radii are listed, not judged (KD09) |
 | 3 Regression | `screens.spec.js` (`@screens`) | Did any screen of `capture-spec.json` change? `toHaveScreenshot`, `threshold 0.1`, `maxDiffPixels 20` | gate once baselines exist |
 | 4 UX checks | `ux.spec.js` (`@ux`) | Is anything on a `capture-spec.json` screen broken, unreachable or inconsistent? Every screen × viewport, dark (below) | gate on `high` (owned allow-list); `medium` is a report |
 | Accessibility | `a11y.spec.js` (`@a11y`) | axe on Home, a list and a detail screen at both viewports (no `serious` / `critical` violation); keyboard: skip link → `<main>`, Tab through the sidebar and Enter opens a group (desktop), the mobile menu keeps Tab inside and gives focus back to its button on Esc | gate |
@@ -163,6 +163,10 @@ npm run visual:components   # @components against the approved cell baselines
 npm run visual:approve      # operator only: write layer-3 baselines
 npm run visual:approve:components  # operator only: write the @components baselines
 ```
+
+The census opens every capture-spec screen once (~5 s a screen, ~9 min for the list on one worker); `census.json`
+keeps each screen's findings with up to three element samples. Text inside an SVG (the logo wordmark) is part of the
+drawing and stays out of the font-size count.
 
 Reports land in `tests/visual/.report/` (`VISUAL_REPORT_DIR` overrides it): `census.json`, `fonts.json`,
 `contrast.json`, `landmarks/<S>.json`, `ux/` and the HTML report in `html/`. Test artefacts go to `tests/visual/test-results/`.
@@ -207,9 +211,8 @@ Interactive = `button`, `a[href]`, `[role=button]`, `input`, `select`, plus clic
 **Guard and allow-list.** A known, deliberate `high` finding goes into `tests/visual/ux-allow.json`: `screen` (an id or
 `"*"`), optional `viewport`, `kind`, `selector` (contained in the reported element's own selector step — its tag and
 first two classes, plus its `data-testid` — never matched against an ancestor), `reason` and `owner` (the plan that
-removes it). An entry without an owner or a reason fails every screen. Empty is the target: the plan that fixes a
-component deletes its entries. Plan 07 of the polish track left the `Dropdown` and `Switcher` boots (P3 plans 15/16)
-and click-only rows, cards and handles of P5 plans there.
+removes it). An entry without an owner or a reason fails every screen. The list is empty since P5 (plan 56): every
+`high` finding is fixed at its source, and a new entry is an exception with its owning plan and reason.
 
 `npm run visual:ux` runs 6 workers, fully parallel (~3 min instead of ~10): the layer only reads the page. Each
 screen is measured once its DOM has settled (element count unchanged for 500 ms, at most 5 s after the data wait),
@@ -231,7 +234,7 @@ folder, so it never wipes the last full report. The pixel layer (`@screens`) and
 
 Buttons are grouped by role (`primary` = accent fill, `danger` = negative colour or a delete label/icon, `icon-only`,
 `outline`, `secondary`) with their height, horizontal padding, radius, font size and border. Two censuses count
-consistency, not defects: `labelStyles` (every field label — `label`, `.form-field__label`, `.ld-field__label` or any
+consistency, not defects: `labelStyles` (every field label — `label`, `.form-field__label` or any
 element a control names in `aria-labelledby`, not the text beside a checkbox, radio or switch — by font size, weight,
 case and colour; labels inside a dialog the screen list never opens stay out of the count) and `cardPaddings` (every
 bordered, filled box of at least 240 × 96 that is not a control or table part, by padding), each value with the
@@ -286,3 +289,10 @@ Commit the PNGs from `tests/visual/__screenshots__/<project>/` in the same PR as
 `figma/figma-landmarks.json` is generated from the Figma node JSON:
 `node tests/visual/scripts/figma-landmarks.mjs <cms.json>`. `known-differences.json` lists where the code
 deliberately differs from Figma (KD01–KD22) and how each layer treats it.
+
+**Panel done-check.** A panel screen is done when the zeno harness's `p5_check.py` (roadmap `r06-views/scripts/`, run
+from the zeno root: `python3 <script> repos/pwa/entirius-pwa-cms src/views src/components src/functionals src/App.vue`)
+reports 0 files: no raw control or table outside the boots (the hidden file picker excepted), no view-local class
+family, no `detail-*` form class, no removed part, no page-frame leftover, no raw `<h1>`, no local modal file, no
+view-local boot copy. `npm run lint:ui` (every rule an error) and `@ux` (no `high` finding, empty allow-list) guard
+the same ground in this repo.

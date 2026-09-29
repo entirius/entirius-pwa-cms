@@ -6,6 +6,12 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- `sheet` on `BasicMenu` (P5 plan 56): a panel of text as a popover up to 32rem wide, a full-width bottom sheet on a
+  phone. Configuration health uses it (operator request): check titles at 16 px / 600, „Jak naprawić” as a link under
+  the title, env-var names and URLs in the mono font and the only text that breaks mid-word (`textTokens`).
+- UI lint spec (`tests/unit/lint/ui-lint.spec.js`, P5 plan 56): a native `<select>` in a view, and an off-token spacing
+  value, are errors; a boot keeps its native control.
+
 - Review fixes of plans 54c and 55 (P5 plan 54d): `moreLabel` on `BasicSelect` — an action row at the end of the list
   for options not loaded yet, never filtered out, emits `more` and keeps the menu open; a `search` event with the
   filter text. `form` on an `ActionBar` action: the button submits that form from outside it. `--fab-lane` on
@@ -131,6 +137,22 @@ All notable changes to this project will be documented in this file.
   `docs/sso-login.md`. Unset, nothing changes.
 
 ### Changed
+
+- UI lint fails on every rule (P5 plan 56): `eslint.config.mjs` `LEVEL = "error"`, `stylelint.config.mjs`
+  `defaultSeverity: "error"`, so a raw control, a native `<select>` outside the boots, a literal icon glyph or an
+  off-token value fails `npm run lint:ui`. The last warnings are fixed at their source: BasicWysiwyg focus mode and
+  DataTable row expanders pick icons by meaning (a collapsed row shows `expand`, an open one `collapse`), the
+  BasicImage ripple, BasicWysiwyg, FormField and builder image-controller styles are on tokens.
+- The visual census is a gate (P5 plan 56): `@parity` opens every capture-spec screen (desktop, dark) and fails on a
+  colour off the semantic tokens, a radius off the radius scale or a font size off the type scale, unless a
+  `known-differences.json` entry lists it under `census`. SVG text (the logo wordmark) stays out of the font count.
+- Every `BasicSelect` without a FormField label takes `floatingLabel` — its field name, with the count its placeholder
+  carried („Ustawione (2/5)”) — in the filter rows, toolbars, card and page headers, builder controllers and the Handy
+  kit (P5 plan 56, operator request, the plan-53 handoff list); action pickers keep their prompt, and the
+  `ChannelMultiSelect` chips keep „Kanały: Wszystkie”. New i18n keys `docs.document`, `pricefighter.channel`,
+  `controllers.{decorator,set_items,field_type,field_required,attribute}`.
+- Notification rows are ghost `BasicButton`s and the shell's fallback title is a `PageHeader` (P5 plan 56): no raw
+  control or `<h1>` is left in views, components or functionals.
 
 - P5 Communicator settings (plan 55): Leads → Settings, templates, the template editor, sequences and the send
   settings (policy, channel, footer, waiting mails, suppressions) sit in PageLayout + PageHeader (back to the hub;
@@ -737,6 +759,11 @@ All notable changes to this project will be documented in this file.
   rendered it blank. It now carries a "Download" / "Pobierz" label. The Polish "Załączniki" heading has its diacritics.
 
 ### Removed
+
+- The Leads kit `src/views/Leads/desktop.scss` and its `.ld-field__label` alias (P5 plan 56): every Leads and
+  Communicator screen is on the boots. The unused `.basic-badge` rule, the `.panel-toolbar` / `.page-title-row` /
+  `.section-head` partial (`utils/_panel-toolbar.scss`, no user left after P5), the Builder's copy of the FAB inset and
+  the retired `p5-page-frame` codemod with its spec.
 
 - `src/views/Leads/ConfirmSheet.vue` (P5 plan 54): the review discard, stage delete, contact remove, text-pool remove
   and mail-footer confirmations are `ConfirmDialog`s.

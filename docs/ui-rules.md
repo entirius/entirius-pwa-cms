@@ -68,12 +68,12 @@ Traps:
 ## Components
 
 - **C1 Build UI from boots.** Views, `src/components/` and `src/functionals/` use no raw `<button>`, `<input>`
-  (except the hidden `type="file"` picker), `<select>` or `<textarea>`. A click handler sits on a boot or a focusable,
-  named element: a click-only `span`/`div` fails `@ux` (`nonFocusable`) unless `tests/visual/ux-allow.json` names the
-  plan that removes it. A decorative icon carries no pointer and no handler (`BasicInput`'s icon is `aria-hidden`).
+  (except the hidden `type="file"` picker), `<select>` or `<textarea>`: each is a lint error (a native `<select>` →
+  `BasicSelect`). A click handler sits on a boot or a focusable, named element: a click-only `span`/`div` fails `@ux`
+  (`nonFocusable`). A decorative icon carries no pointer and no handler (`BasicInput`'s icon is `aria-hidden`).
 - **C2 One component, one implementation.** Before writing a component, check `src/boots/` and `src/functionals/`.
   If one does most of the job, extend it with a prop or variant. If it is broken, fix it in place. Never make a
-  panel-local copy (`PimDataTable`, `ld-btn`). New shared UI goes into `src/boots/` + `register-elems.js`. Builder
+  panel-local copy of a boot or a panel kit of classes. New shared UI goes into `src/boots/` + `register-elems.js`. Builder
   controllers also register in `src/configs/builder/components/register-elems.js`. A removed component is a lint
   error (`scripts/lint/removed-components/*.json`): `Dropdown` → `BasicSelect`, `Switcher` → `BasicSwitch`,
   `TextAreaBasic` → `BasicTextarea`, `LockedField` → `BasicInput readonly`, `ToolTip` / `HelpTooltip` / `HoverMe` →
@@ -88,7 +88,7 @@ Traps:
 | multi-line text | `BasicTextarea` |
 | on/off · one boolean with a text · one of 2–5 choices, all visible | `BasicSwitch` · `BasicCheckbox` (boolean `v-model`, label in the slot) · `BasicRadioGroup` |
 | date / range | `BasicDatePicker` (`mode: "range"` in `config`) |
-| choice from a list · async entity search · channel scope | `BasicSelect` (`multiple`, `searchable`) · `EntitySearchPicker` · `ChannelMultiSelect`; without a FormField label (toolbar, card header) both take `floatingLabel` |
+| choice from a list · async entity search · channel scope | `BasicSelect` (`multiple`, `searchable`) · `EntitySearchPicker` · `ChannelMultiSelect`; a `BasicSelect` without a FormField label (a filter row, a toolbar, a card or page header) takes `floatingLabel`, its field name; the `ChannelMultiSelect` chip names itself („Kanały: Wszystkie”) |
 | action picker (a transition, "add an existing item") | `BasicSelect :model-value="null"`, the placeholder as the prompt, the handler on `@update:model-value` |
 | field label, hint, required, error, help | `FormField`, around every field |
 | status / category pill · value chip (picked entity, media tag) · number next to a title, tab or filter | `StatusBadge` (`tone`) · `Tag` · `CountBadge` |
@@ -101,7 +101,7 @@ Traps:
 | text action · icon-only action · page or dialog actions | `BasicButton` · `IconButton` · `ActionBar` |
 | side panel · per-language editing | `SideDrawer` · `TranslationsDrawer` |
 | dialog · confirmation (yes/no, unsaved changes) | `BasicModal` · `ConfirmDialog` (`tone="danger"` for a delete) |
-| action menu or popover panel · floating action (+ labelled pill) | `BasicMenu` · `FloatingActions` (`pill`) |
+| action menu or popover panel · a panel of text (configuration health) · floating action (+ labelled pill) | `BasicMenu` · `BasicMenu sheet` (a ≤ 32rem popover, a bottom sheet on a phone) · `FloatingActions` (`pill`) |
 | help next to a label · hint on a control | `FormField :tooltip` (else `BasicTooltip variant="help"`) · `BasicTooltip` |
 
 - **C5 One icon set: FontAwesome, picked by meaning.** A template names the meaning, never the glyph:
@@ -122,8 +122,8 @@ Traps:
   An icon-only action is an `IconButton` (`sm` / `md` like the text button,
   `lg` 40 in the header), `variant` `ghost` · `outline` · `primary` · `danger`, `pressed` for a toggle; an icon-only
   `BasicButton` without `label` warns in the dev console. One toolbar uses one size. Back is the PageHeader `back`
-  arrow (R3). Until a view has a PageHeader: `IconButton icon="back"` named „Wstecz”, or with a visible label a
-  `BasicButton variant="ghost" size="sm" icon="back"`. The click stops at the button; inside a wrapper that acts on the click
+  arrow (R3); a back control inside a page (a Settings section's way back to the hub) is `IconButton icon="back"`
+  named „Wstecz”. The click stops at the button; inside a wrapper that acts on the click
   (`SubscriberSetter`) pass `:stop="false"`. An icon-only button is named by its short action (`label`), and that is
   its one tooltip (IconButton draws it as a `BasicTooltip`): no tooltip wrapper on top of it.
   Never pass `bg-*` / `t-*` utilities to pick a role, and never set a button height or font size from a view.
@@ -146,8 +146,10 @@ Traps:
 - **R4 Space, not lines.** Header regions and page sections are separated by spacing tokens, never by divider
   lines (`bb-*`, a `border-bottom` under a header or toolbar, `<hr>`). Borders belong to containers: cards, section
   blocks, tables and inputs. The content region is `PageLayout` (no border, no card, padding 40/80, 20 on a phone;
-  `roomy` keeps 40/32 and the 30 px title on a phone for the Figma P5 frames); its `toolbar` slot holds the filters
-  row, its `footer` slot a list's Pagination (pinned to the bottom edge while the list scrolls).
+  `roomy` keeps 40/32 and the 30 px title on a phone for the Figma frames: Home, content list, gallery); its `toolbar`
+  slot holds the filters row, its `footer` slot a list's Pagination (pinned to the bottom edge while the list
+  scrolls). A view never overrides the frame (`:deep(.page-header__title)`, the PageLayout padding or gap, the FAB
+  position): a missing look is a prop of PageLayout, PageHeader or FloatingActions.
 - **R5 Action order.** Page and dialog actions are right-aligned and ordered by importance from the right. The
   primary action (accent fill, one per page or dialog) is rightmost, the secondary (outline) comes next, then the
   icon-only utilities. Every screen uses the same order: `ActionBar` renders it from the actions' `role`, and on a
@@ -155,8 +157,9 @@ Traps:
   the title on desktop, own row below 1024 px.
 - **R6 One icon, one meaning.** An icon stands for one action across the CMS, and it is never reused for another
   action (reorder `arrows-up-down` ≠ menu `grip` ≠ drag handle `grip-vertical`). Pick the meaning from `$icons`
-  (`icons.js`: one glyph per meaning, one meaning per glyph); lint warns on a literal glyph name in `icon="…"` or
-  inside an `:icon` binding, and `scripts/codemods/p3-icons.mjs` rewrites it. A meaning that is missing is added to
+  (`icons.js`: one glyph per meaning, one meaning per glyph); a literal glyph name in `icon="…"` or inside an `:icon`
+  binding is a lint error, and `scripts/codemods/p3-icons.mjs` rewrites it. An icon shows the action it runs (a
+  collapsed row shows `expand`, an open one `collapse`). A meaning that is missing is added to
   `icons.js`. Tile-group rows use distinct icons for add, reorder and
   preview.
 - **R7 Label important actions.** An action that is important, or not obvious from its icon, carries a visible
@@ -171,16 +174,17 @@ Traps:
 
 ## Page patterns
 
-- **Page frame.** The panel wrapper holds a toolbar (`.panel-toolbar`) with `#<panel>-toolbar-left` / `-right`
-  anchors, and child views `<Teleport … defer>` into them. Left anchor: back arrow + H1 (R2, R3). Right anchor: actions
-  in R5 order. The toolbar styles its children by role, never by position: `.panel-toolbar__actions` on the right
-  anchor, `.panel-toolbar__title` on a group around the left anchor (title + channel selector). Below it the page is
-  one `PageLayout` (padding and scroll body; `#header` = the view's `PageHeader`, a loader branch's condition on the
-  slot; `#toolbar` = the search/filter row); the toolbar never shrinks. A toolbar with nothing in it (no teleported
-  content, no selector or title of the panel's own) is hidden by `.panel-toolbar` itself: never an empty strip. The
-  P5 panel plans move the teleported actions into a `PageHeader` `ActionBar`.
-- **List view.** The toolbar holds a search `BasicInput` with `useSearchDebounce`, then the filters (one chip set
-  inline, more groups in `MobileFilterPanel`), and it wraps (`flex-wrap`, `gap: var(--space-5)`). In `DataTable`, secondary columns get fixed
+- **Page frame.** Every view is one `PageLayout` (padding and scroll body): `#header` = the view's `PageHeader` (crumbs,
+  back, H1, `meta` chips, `actions`), a loader branch's condition on the slot; `#toolbar` = the search/filter row;
+  `#footer` = the Pagination. Page actions are an `ActionBar` in PageHeader `actions` (R5); controls for the whole
+  panel (a channel selector, „Tłumacz sklep”) sit in PageHeader `meta` or the ActionBar. A panel wrapper holds no
+  toolbar strip and no teleport targets.
+- **Floating action.** `FloatingActions` sits 24 px from the bottom-right corner beside the sidebar (Figma S4) and
+  16 px from the edge above the tab bar below 1024 px; a view never moves it. Bottom-pinned rows (the PageLayout
+  footer, a sticky decision bar) keep the FAB's corner clear through `--fab-lane`.
+- **List view.** The toolbar holds a search `BasicInput` with `useSearchDebounce`, then the filters, and it wraps.
+  Filters: one chip set is an inline `FilterChip` row (it scrolls sideways on a phone); more than one filter group
+  goes into `MobileFilterPanel`; a filter select is a `BasicSelect` with `floatingLabel`. The row wraps (`flex-wrap`, `gap: var(--space-5)`). In `DataTable`, secondary columns get fixed
   widths and only the primary text column gets `1fr`, truncated with an ellipsis. A cell either fits (its column
   grows to the badge or buttons) or truncates with a `title`, never spills into its neighbour; a status badge column
   is `max-content`, never truncated; numbers take
@@ -243,12 +247,10 @@ Traps:
 - Breakpoints come from the mixins, never from raw media queries. Check every screen at 390 px (one thumb) and on
   desktop. The page never scrolls horizontally, and neither does a card: a wide table (`DataTable`, or a raw table in
   an `overflow-x: auto` box), `BasicTabs` and `SegmentedControl` scroll inside their own box.
-- Rows wrap instead of overflowing, through the shared classes (`utils/_panel-toolbar.scss`): `.panel-toolbar` for the
-  panel strip, `.page-title-row` for an in-card back arrow + H1 + `ml-auto` actions, `.section-head` for an `h2` with
-  its controls. Wrapped actions stay right-aligned (R5). Other rows use `.flex-wrap` (with `.rg-*` for the row gap);
-  form rows stack to one column below tablet.
-- `BasicCard` pads 16 px below tablet; `PageLayout` pads 20 px (Home, Gallery and the Pages builder keep `.page-pad`
-  / `.page-pad-x` until their P5 plans). Spacing utilities (`p-12` …) mean the same on every screen; an empty state or loader keeps its own. The
+- Rows wrap instead of overflowing: `PageHeader` wraps its actions under the title, right-aligned (R5); other rows use
+  `.flex-wrap` (with `.rg-*` for the row gap); form rows stack to one column below tablet. A row switches at one
+  breakpoint (`max-tablet` or `max-shell`), never at both.
+- `BasicCard` pads 16 px below tablet; `PageLayout` pads 20 px. Spacing utilities (`p-12` …) mean the same on every screen; an empty state or loader keeps its own. The
   layout keeps every scroll region above the bottom bar.
 - A tap target is at least 40 × 40 px on mobile, and list rows are at least 36 px high. A small control keeps its
   visual and takes the `touch-target` mixin (`utils/_touch-target.scss`): a transparent `::after` hit area, below
@@ -277,10 +279,12 @@ from this file and the catalogue page. The designer updates Figma afterwards, an
 
 ## Before merge
 
-1. `npm run lint:ui` adds no warning in the files you touched.
+1. `npm run lint:ui` passes: every UI rule is an error, and a rule that is wrong for a real case gets a narrow,
+   commented exception in `eslint.config.mjs` / `stylelint.config.mjs`, never an inline disable.
 2. `npm run test:unit` and `npm run test:smoke` pass.
 3. You checked the screen in both themes, at 390 px and on desktop.
-4. The fidelity check is green for the screens you touched (P1).
-5. `npm run visual:ux` is green: no `high` finding outside `tests/visual/ux-allow.json`, and an entry you add names
-   its owning plan.
+4. `@parity` (token resolution, the census of every capture-spec screen) and `@landmarks` are green
+   (`docs/testing.md` § Visual fidelity harness).
+5. `npm run visual:ux` is green: no `high` finding. `tests/visual/ux-allow.json` is empty; an entry names its owning
+   plan and the reason.
 6. A boot you added or changed has its cells on `/ui` and `npm run visual:catalogue` is green.

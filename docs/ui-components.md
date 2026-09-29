@@ -2,18 +2,19 @@
 
 ## Global Components (Boots)
 
-47 components registered globally in `src/boots/register-elems.js` (plus
+54 components registered globally in `src/boots/register-elems.js` (plus
 FontAwesome icon registration in `src/boots/Icons/fa-icons.js`, loaded
 separately in `main.js` — not a component — and the icon meaning registry
 `src/boots/Icons/icons.js`, `$icons` in templates). Every component is shown on the catalogue page `/ui`
 (§ P3 components).
 
-Full list (generated from `register-elems.js`): ActionBar, BasicButton, BasicCard, BasicCheckbox, BasicDatePicker,
-BasicImage, BasicInput, BasicLogo, BasicMenu, BasicModal, BasicRadioGroup, BasicSelect, BasicSwiper, BasicSwitch,
-BasicTabs, BasicTextarea, BasicTooltip, BasicWysiwyg, Breadcrumbs, BulkActionBar, ChannelMultiSelect, ColorInput,
-ConfirmDialog, CountBadge, DataTable, EmptyState, EntitySearchPicker, FilterChip, FloatingActions, FormField,
-IconButton, Loader, MediaTile, MobileFilterPanel, NoticeMe, NumberInput, PageHeader, PageLayout, Pagination,
-PanelCard, SegmentedControl, SideDrawer, StanceSwitcher, StatusBadge, SubscriberSetter, Tag, TranslationsDrawer.
+Full list (generated from `register-elems.js`): ActionBar, AppHeader, BasicButton, BasicCard, BasicCheckbox,
+BasicDatePicker, BasicImage, BasicInput, BasicLogo, BasicMenu, BasicModal, BasicRadioGroup, BasicSelect, BasicSwiper,
+BasicSwitch, BasicTabs, BasicTextarea, BasicTooltip, BasicWysiwyg, BottomTabBar, Breadcrumbs, BulkActionBar,
+ChannelMultiSelect, ColorInput, ConfirmDialog, CountBadge, DataTable, EmptyState, EntitySearchPicker, FilterChip,
+FloatingActions, FormField, IconButton, Loader, MediaTile, MobileFilterPanel, MobileMenu, NoticeMe, NumberInput,
+PageHeader, PageLayout, Pagination, PanelCard, SegmentedControl, SidebarNav, SidebarNavGroup, SidebarNavItem,
+SideDrawer, StanceSwitcher, StatusBadge, SubscriberSetter, Tag, TranslationsDrawer, UserMenu.
 
 New boots use `<script setup>` (plain JS). See `FloatingActions/index.vue` and
 `DataTable/index.vue` as patterns.
@@ -31,7 +32,7 @@ Notable ones for list/form views:
 - **`NumberInput`** — stepper field. A fractional `step` turns on decimal entry; typed text keeps one leading minus
   (only when `min` < 0), one decimal separator and digits. `disabled` locks the value and both steppers.
 - **`ChannelMultiSelect`** — multi-select for channel scoping (`v-model`
-  array of channel idx). Props: `modelValue`, `channels`, `label`, `allLabel`.
+  array of channel idx). Props: `modelValue`, `channels`, `label`, `allLabel`, `floatingLabel`.
 - **`BasicSelect`** — an option may carry `description`, a muted line under its label. Never put a `?` tooltip
   inside an option: the bubble clips against the list's `overflow`. Options loaded in pages: `moreLabel` adds an
   action row at the end of the list that no query filters out; choosing it (click, Enter) emits `more`, keeps the menu
@@ -196,7 +197,9 @@ Catalogue: `#actions` (`#basic-button`, `#icon-button`, `#action-bar`, `#floatin
 - **`BasicMenu`** — `trigger` slot (the menu sets the control's `aria-haspopup`, `aria-expanded`, `aria-controls`
   and toggles on its click), `items` = `[{ key, label, icon?, danger?, separator?, disabled?, to?, testid? }]`
   (`role="menu"`; emits `select` with the item) or the `panel` slot (scope `close`, `role="dialog"` named by
-  `label`); `placement` (floating-ui, default `bottom-start`). Keyboard: ArrowDown on the trigger opens, arrows /
+  `label`); `placement` (floating-ui, default `bottom-start`); `sheet` (plan 56) for a panel that reads as text
+  (configuration health): up to 32rem wide above a phone, a full-width bottom sheet pinned to the bottom edge on one
+  (no floating position, `max-height: 85vh`, its own scroll). Keyboard: ArrowDown on the trigger opens, arrows /
   Home / End move, Enter / Space choose, Esc closes and returns focus, Tab and a click outside close.
 - **`BasicTooltip`** — wraps its trigger (default slot; its first focusable gets `aria-describedby`): `text`,
   `placement` `top` · `bottom` · `left` · `right` (flips when there is no room), `variant` `help` (a `?` button
@@ -313,8 +316,8 @@ Catalogue: `#page-frame` (`#page-header`, `#breadcrumbs`, `#page-layout`).
   debounce; `clientFilter` fetches once and filters here), `v-model` + `v-model:displayValue`, `placeholder`,
   `disabled`. The chosen entity is a removable `Tag` (remove → both cleared, `clear`); the list opens in
   BasicMenu's panel: a filter input driving a listbox, `secondary` as the option description. i18n `entity_picker.*`.
-  Transition until the sweeps: the `disabled` prop is the old manual-entry fallback (a text field for the value,
-  used by the Edit* modals without PIM); a FormField's `disabled` disables the control.
+  `disabled` (or a FormField's) disables the control; `manual` swaps it for a plain text field for the value, no
+  search (the Edit* modals without PIM).
 - **`ChannelMultiSelect`** — channel scope chip (`channels` icon): „Kanały: Wszystkie” / „Kanały: 2”; `compact`
   (and every chip below the tablet breakpoint) shows „Kanały”. `v-model` = channel idxs, `channels` =
   `[{ idx, name? }]`, `label`, `allLabel`; the list is a multi-select listbox with checkboxes in BasicMenu's panel.
@@ -430,7 +433,40 @@ In the catalogue and live: `App.vue` mounts `AppHeader`, `SidebarNav` (desktop),
 Catalogue: `#shell` (`#app-header`, `#sidebar-nav`, `#sidebar-nav-group`, `#sidebar-nav-item`, `#mobile-menu`,
 `#bottom-tab-bar`, `#user-menu`, `#basic-logo`).
 
-### Detail form (P5, plan 33)
+## P5 patterns
+
+How a panel screen is put together since P5. The rules are `docs/ui-rules.md` (Page patterns, Forms); this section is
+the component recipe.
+
+### Page frame (plans 25, 56)
+
+- One `PageLayout` per view: `#header` = `PageHeader` (the only H1), `#toolbar` = the search and filter row, default
+  slot = the content, `#footer` = `Pagination`. `roomy` only on the Figma frames (Home, content list, gallery).
+- Page actions: PageHeader `actions` → `ActionBar` (R5). Panel-wide controls (channel selector, „Tłumacz sklep”):
+  PageHeader `meta` or the ActionBar. No panel toolbar strip, no `<Teleport to="#…toolbar">`.
+- A route without a PageHeader still gets one H1: the shell's fallback `PageHeader` (crumbs + the route's `titleKey`).
+- `FloatingActions` keeps its own inset (24 px desktop, 16 px above the tab bar); a view passes `actions` / `pill`,
+  never a position. A view never overrides the frame from outside (`:deep(.page-header__title)`, PageLayout padding).
+
+### Filters (r06 §8)
+
+- One chip set: `FilterChip`s in one `.filter-chip-row` inline in `#toolbar` (wraps on desktop, scrolls sideways on a
+  phone). More than one filter group: `MobileFilterPanel`.
+- A filter select is a `BasicSelect` with `floatingLabel` (the field's name, never „Wszystkie …”: that is the empty
+  option's label). The same goes for every `BasicSelect` outside a FormField (card and page headers, the builder
+  controllers, the Handy kit); a count the old placeholder carried stays in the label („Ustawione (2/5)”). An action
+  picker (`:model-value="null"` with its handler on `@update:model-value`: „Dodaj istniejące pytanie”, „Zmień
+  status”) keeps its prompt as the placeholder: it holds no value to name. A `ChannelMultiSelect` chip names itself
+  („Kanały: Wszystkie”): an empty pick means every channel, which a floating label would hide.
+
+### Configuration health panel (plan 56)
+
+`BasicMenu sheet`: ≈ 30rem wide on desktop, a bottom sheet on a phone. A failing check reads top-down — the title at
+16 px / 600, the detail at 14 px, „Jak naprawić” as a link under them — with its status stripe on the left; env-var
+names (`EMAIL_HOST`) and URLs are `<code>` in the mono font and the only text that may break mid-word
+(`textTokens`, `src/utils/configHealth.js`). Passing checks are the chip row, then „Sprawdzono …” and „Sprawdź ponownie”.
+
+### Detail form (plan 33)
 
 The layout of every detail (edit / create) screen; Faq (`src/views/Faq/GroupEdit.vue`, `ItemEdit.vue`) is the
 reference. It replaces the view-local `detail-section` / `detail-grid` / `detail-field` / `detail-label` classes.
@@ -481,5 +517,4 @@ reference. It replaces the view-local `detail-section` / `detail-grid` / `detail
 </BasicCard>
 ```
 
-The `.detail-*` classes of the views not yet migrated are their own scoped styles; each P5 panel plan deletes its
-copy with the migration.
+No view has `.detail-*` classes any more, and `utils/_decorators.scss` holds no `.detail-*` rule.

@@ -57,7 +57,7 @@ path prefix and lazy-loaded (`() => import(...)`). Grouped by panel:
 | `/pricefighter/...` | GapTable, Strategies, DecisionHistory |
 | `/enrichment/...` | EnrichmentReview, EnrichmentSpawnRules List/Edit, EnrichmentTasks |
 | `/promo/...` | PromoList/Edit, VoucherDetail |
-| `/leads/...`, `/communicator/*` + `/leads/stages` (legacy redirects) | Inbox, Companies, Company, Review, Thread, Board, Import, Settings and its sections (communicator templates, sequences, sending, stages, lead types) |
+| `/leads/...`, `/communicator/*` + `/leads/stages` (legacy redirects) | Inbox, Companies, Company, Review, Thread, Board, Import, Settings and its sections (communicator templates, sequences, sending, stages, lead types); every screen on PageLayout + PageHeader and the boots, with no panel stylesheet of its own |
 | `/change-password`, `/password-reset` | ChangePassword (authenticated), PasswordReset (unauthenticated, from email link) |
 | `/sso/callback` | SsoCallback (unauthenticated, return leg of the optional SSO login; `docs/sso-login.md`) |
 
