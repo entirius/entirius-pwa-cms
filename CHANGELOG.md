@@ -6,935 +6,129 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- Display type step (plan 61f): `--fs-display` 48 px in the size scale and the `type-display` role (Lexend Deca 300,
-  48/56, brand tracking); the sign-in editorial line uses it instead of 30 px. Catalogue cells for the sign-in sizes
-  (`BasicButton` / `BasicInput` `size="lg"`, the input with a `trailing` control) and `BasicLogo onDark`.
-
-- Input formats (plan 61): `src/utils/formats.js` parses, shows and checks `money`, `percent`, `integer`, `ean`
-  (8/12/13/14 digits, GS1 check digit), `code`, `key`, `slug`, `email`, `url`, `iso2`, `iso4217`; BasicInput takes
-  it as `format` (with `pattern`, `min`, `max`) and shows a wrong value as the FormField error when the field is left;
-  `useFormErrors().validateFormats(form, rules)` blocks the save with the same field errors, messages in both
-  languages with an example („Podaj kwotę z najwyżej dwoma miejscami po przecinku, np. 232,00”). The input audit
-  (`scripts/audit/inputs.mjs`) reads the `format` prop.
-
-- `sheet` on `BasicMenu` (P5 plan 56): a panel of text as a popover up to 32rem wide, a full-width bottom sheet on a
-  phone. Configuration health uses it (operator request): check titles at 16 px / 600, „Jak naprawić” as a link under
-  the title, env-var names and URLs in the mono font and the only text that breaks mid-word (`textTokens`).
-- UI lint spec (`tests/unit/lint/ui-lint.spec.js`, P5 plan 56): a native `<select>` in a view, and an off-token spacing
-  value, are errors; a boot keeps its native control.
-
-- Review fixes of plans 54c and 55 (P5 plan 54d): `moreLabel` on `BasicSelect` — an action row at the end of the list
-  for options not loaded yet, never filtered out, emits `more` and keeps the menu open; a `search` event with the
-  filter text. `form` on an `ActionBar` action: the button submits that form from outside it. `--fab-lane` on
-  `PageLayout`: the right padding a bottom-pinned row takes to keep the FAB's corner clear.
-
-- `rowAttrs` on `DataTable` (P5 plan 55): `(row) => ({ … })` binds attributes on each row element, the hooks a page
-  object finds a row by (the waiting mails keep `scheduled-row` + `data-message`).
-- `BasicModal` puts the caller's other attributes (`data-testid`) on its `role="dialog"` element instead of losing
-  them at the Teleport; `ConfirmDialog` takes `confirmTestid` for its confirm button (default
-  `confirm-dialog-confirm`) — the Leads stages dialog keeps the page-object ids `confirm-sheet` / `confirm-ok` (P5
-  plan 54).
-
-- `floatingLabel` on `BasicSelect` and `ChannelMultiSelect` (P5 plan 53, operator request): a select without a
-  FormField label shows its name as the placeholder while empty and as a 12 px muted line above the chosen value; the
-  text is also its accessible name. The Leads company card and board card name their stage and lead-type selects with
-  it; catalogue cells `*-floating-*`.
-
-- Accessibility baseline of the shell (P4 plan 22): landmarks (`header`, the "Panele" sidebar `nav`, `main#main`, the
-  tab-bar `nav`, the breadcrumb `nav`), a skip link („Przejdź do treści”), `<html lang>` from the UI language,
-  focus to `<main>` after a path change (not a query change), `document.title` = `<page> · <panel> · Entirius CMS`,
-  the `focus-ring` token on every shell control, sidebar transitions off under `prefers-reduced-motion`. Visual
-  `@a11y` (`tests/visual/a11y.spec.js`): axe with no serious/critical violation on Home, a list and a detail at both
-  viewports, and the keyboard script (skip link, sidebar group, mobile menu trap and Esc).
-
-- Navigation model and shell components (P4 plan 21, not wired into `App.vue` yet): `src/composables/useNav.js`
-  (`usePanels`, `navTree`, `resolveNavEntry` exact → `activeOn` → `navParent` → prefix, `useActiveNav`,
-  `useBreadcrumbs` with `crumbParent` chains and a history-aware back target), `meta.navParent` on 9 detail/create
-  routes, `meta.crumbParent` on the two template editors, `SHELL_BREAKPOINT` read by `useIsDesktop`. New boots
-  `AppHeader`, `SidebarNav` (+ `SidebarNavGroup`, `SidebarNavItem`: disclosure groups, leaf panels, locked panels,
-  64 px rail), `MobileMenu` (focus-trapped dialog), `BottomTabBar`, `UserMenu` (on BasicMenu, which gains `heading`
-  items); `BasicLogo` draws the "ENTIRIUS CMS" wordmark. Catalogue `#shell` shows every cell; the theme item reads
-  "Tryb jasny" / "Tryb ciemny".
-
-- Input components (P3 plan 16): `FormField` owns label, hint, required marker, error and help tooltip, lays out
-  `stacked` or `inline`, and provides the control contract (id, `aria-describedby`, `aria-invalid`, required,
-  disabled); `BasicInput` gains `readonly` and a leading meaning icon; new `BasicTextarea` (counter), `BasicSwitch`
-  (`role="switch"`) and `BasicRadioGroup`; `BasicCheckbox` takes a boolean `v-model`; every control takes `disabled`.
-  `BasicDatePicker` destroys its flatpickr on unmount and has an input-style trigger with `v-model`. Catalogue
-  `#inputs` shows every cell; `scripts/codemods/p3-inputs.mjs` moves the call sites in the sweeps.
-
-- Page frame components (P3 plan 14): `PageLayout` (borderless content region, scroll body, `header` / `toolbar`
-  slots), `PageHeader` (the one H1, overline, crumbs, back arrow, `meta` chips, ActionBar `actions`, mobile `sticky`
-  head; claims the shell's header slot through `src/composables/pageHeader.js`) and `Breadcrumbs` (`aria-current`
-  trail, 16 / 12 px). Catalogue `#page-frame` shows every cell. `BackBar` is a removed component: its 36 call sites
-  are an `IconButton` `back` or, with a label, a ghost `BasicButton` `back` (same handler, `v-if`, class and test id).
-
-- Display components (P3 plan 13): `StatusBadge` `tone` (positive, negative, warning, info, neutral, accent), `dot`
-  and `size` in the badge type role (`variant` stays an alias); new `CountBadge` (999+), `Tag` (removable value chip),
-  `BasicCard` (the polish card with title and actions), `PanelCard` (Home panel tile, locked state) and `MediaTile`
-  (media grid tile, selected state). `BasicTabs` is a keyboard tablist; `Loader` takes `size` and an `overlay` that
-  replaces `Loading.vue`; `Pagination` takes `v-model:page` + `pages`; `EmptyState` takes a meaning icon; tab, filter
-  chip and filter-trigger counts are CountBadges. Catalogue `#display` shows every cell;
-  `scripts/codemods/p3-display.mjs` moves `.chip` and `<Loading>` call sites in the sweeps.
-- Select components (P3 plan 15): new `BasicSelect` (`v-model` value or array with `multiple`, `searchable`,
-  `clearable`, option descriptions; a keyboard combobox whose listbox opens in BasicMenu's panel, FormField contract);
-  `EntitySearchPicker` and `ChannelMultiSelect` run on BasicMenu with the same listbox (the picker shows its value as
-  a `Tag`, the chip reads „Kanały: 2” and has a `compact` form). BasicMenu `inline` draws a `top` placement above the
-  trigger. Catalogue `#selects`; `scripts/codemods/p3-selects.mjs` moves `Dropdown` call sites in the sweeps and
-  `Dropdown` is a removed component. `p3-actions` counts legacy `txt-*` / numbered colour classes as colours.
-- Overlay components (P3 plan 12): `BasicModal` (sizes, footer ActionBar, bottom sheet on a phone), `ConfirmDialog`
-  (`tone`, `loading`, unsaved-changes discard), `BasicMenu` (keyboard menu or panel, `@floating-ui/dom`
-  positioning), `BasicTooltip` (hover and focus, `help` variant) and `useFocusTrap`: every dialog traps focus,
-  closes on Esc and gives focus back. SideDrawer traps focus in focused mode and closes on Esc in both modes;
-  TranslationsDrawer's footer is an ActionBar; IconButton shows its label as a BasicTooltip. The eight shared modals
-  in `src/functionals/` run on BasicModal / ConfirmDialog (Confirmation-modal and Unsaved-changes-modal as thin
-  wrappers); catalogue `#overlays`; `scripts/codemods/p3-overlays.mjs` moves the call sites in the sweeps.
-- Display components (P3 plan 13): `StatusBadge` `tone` (positive, negative, warning, info, neutral, accent), `dot`
-  and `size` in the badge type role (`variant` stays an alias); new `CountBadge` (999+), `Tag` (removable value chip),
-  `BasicCard` (the polish card with title and actions), `PanelCard` (Home panel tile, locked state) and `MediaTile`
-  (media grid tile, selected state). `BasicTabs` is a keyboard tablist; `Loader` takes `size` and an `overlay` that
-  replaces `Loading.vue`; `Pagination` takes `v-model:page` + `pages`; `EmptyState` takes a meaning icon; tab, filter
-  chip and filter-trigger counts are CountBadges. Catalogue `#display` shows every cell;
-  `scripts/codemods/p3-display.mjs` moves `.chip` and `<Loading>` call sites in the sweeps.
-
-- Action components (P3 plan 11): `BasicButton` `variant` (primary, secondary, ghost, danger, danger-solid), meaning
-  `icon`, `loading`, `disabled`, label in the default slot; new `IconButton` (every icon-only action, `label`
-  required, `pressed` toggle) and `ActionBar` (R5 order, „Akcje” row on a phone); `FloatingActions` `pill` (labelled
-  action next to the FAB, R7) and meaning icons; `BulkActionBar` actions take `variant`. Catalogue `#actions` shows
-  every cell; `scripts/codemods/p3-actions.mjs` moves the call sites in the sweeps.
-
-- Component catalogue `/ui` (any logged-in operator, in no nav): every component from static fixtures, one section
-  per P3/P4 plan, `?theme=dark|light`; visual layers `@catalogue` (`npm run visual:catalogue`) and `@components`
-  (`npm run visual:components`, baselines via `visual:approve:components`).
-- Icon meaning registry `src/boots/Icons/icons.js` (`$icons` in templates): one glyph per meaning; lint warns on a
-  literal glyph name (R6) and `scripts/codemods/p3-icons.mjs` rewrites it. The legacy font glyphs in views, kits and
-  builder controllers, `BasicInput icon` and Pagination use the registry; the builder reorder buttons show the reorder
-  glyph instead of the menu grid.
-- P3 plan slots: per-plan blocks in `register-elems.js` and `docs/ui-components.md`, removed-component lists in
-  `scripts/lint/removed-components/`, the codemod library (`scripts/codemods/p3-lib.mjs`, sweep partitions) and the
-  FormField control contract `src/composables/formField.js`.
-- UI rules in `docs/ui-rules.md` and `npm run lint:ui` (stylelint + eslint, warnings = debt).
-- Visual fidelity harness in `tests/visual/` (`npm run visual`): token parity, Figma landmarks report and screen
-  regression over the 106-screen capture spec; baselines are approved by the operator (`docs/testing.md`).
-- **Leads desktop screens** (plan 14, ≥ 1024 px, "Open on a desktop" below): stage board with drag-and-drop
-  and a stage select per card, type / do-not-contact / search filters and rule badges; company card with
-  overview, intel (lighthouse score per strategy, audit sources), contacts and timeline tabs plus Communicate,
-  Re-audit, Mark do not contact and Create customer (only for `won` with `accounts` installed); CSV import with
-  the batch report; stages admin with drag or up/down reorder, inline rename and the delete refusal inline.
-  On a phone the company thread says stage, Communicate and do-not-contact are available on desktop.
-  A company linked to a shop customer carries a "Known customer" badge linking to the customer; a scheduled
-  mail past the send beat says the send window or the daily cap holds it (Inbox and timeline).
-- **Communicator panel** (`/communicator/*`, munin key `communicator`): templates list and edit (model list,
-  validated JSON schema, versions drawer, test generate without saving), sequences with the follow-up text
-  pool, send settings (policy windows and cap, channel mode with the sandbox mailbox rule and the live gate text,
-  suppressions, waiting messages with Send now that only reschedules).
-- **Leads panel** (`/leads/inbox`, `/leads/inbox/:id`, `/leads/companies/:id`; munin keys `leads`,
-  `communicator`): mobile-first Inbox and one-draft Review (Send / Not now docked in thumb reach, swipe with
-  button fallback, "more" menu with rewrite-with-note, edit, skip company; "Scheduled HH:MM" after Send; empty
-  queue says how many are scheduled and when the next goes out), a company thread as one chat timeline over
-  every thread of the company (messages, replies, follow-ups, activity notes, opt-out confirm) with a collapsible intel card, and a
-  two-column layout at ≥ 1024 px. Channel from `VUE_APP_LEADS_CHANNEL` (default `default-europe`).
-- **Toolbox teaser** on Review and the company thread, driven by munin `platform.toolbox_status`:
-  `unconfigured` disables AI actions under one "available with the Entirius AI Toolbox" banner, `unreachable`
-  keeps them enabled with an inline error.
-- **Notification bar** in the header (django-notifications): unread badge polled every 30 s while logged in
-  and the tab is visible, list as a bottom sheet (thumb reach on a phone), one tap marks read and jumps to the subject (`src/utils/subjectRef.js`).
-- **Optional SSO login** (login wall + `/sso/callback`): with
-  `VUE_APP_SSO_API_BASE` set, the login wall offers "Log in with SSO". The CMS
-  asks the backend for the provider's authorization URL, keeps the one-time
-  `state` in `sessionStorage`, and on return exchanges the code for the same
-  token pair the password login returns. Refresh and logout are unchanged. The
-  CMS knows no identity provider, only two backend endpoints; contract in
-  `docs/sso-login.md`. Unset, nothing changes.
+- Leads panel for django-leads and django-communicator, mobile first (one thumb at 390 px, two columns from 1024 px):
+  Inbox with one row per conversation and All / Drafts / Waiting / Replies filters with counts, one-draft Review
+  (Send / Not now in thumb reach, swipe with a button fallback, rewrite with a note, edit, skip company), and a company
+  thread as one timeline over every thread of the company, with older threads behind an "Earlier threads" expander.
+- Leads desktop screens: pipeline board with drag-and-drop between stages, rule badges and type / do-not-contact /
+  search filters; company card with Overview, Intel, Contacts and Timeline tabs, Communicate, Re-audit, Mark do not
+  contact and Create customer (won leads, with the accounts module); add a single lead by hand; CSV import with the
+  batch report. Below 1024 px these screens say "Open on a desktop".
+- Leads contacts: add, edit and remove contacts on the company card, with one primary contact per company; a contact
+  already used in mail is anonymised instead of deleted.
+- Leads Settings: stages and lead types (rename, reorder, deactivate, delete refused inline when in use), mail
+  templates (versions, test generate without saving), sequences with a follow-up text pool (edit, remove, restore),
+  send policy, channel mode (sandbox mailbox, live gate), an HTML mail footer per language with a sandboxed preview,
+  suppressions and waiting mails with Send now. Each section shows only when its backend module is on;
+  `/communicator/*` links redirect here.
+- Waiting mails state when they go out (an hour, due, daily cap reached, or waiting for the send window) the same way
+  on the Inbox, Review, the thread and the waiting table.
+- A company linked to a shop customer carries a "Known customer" badge linking to the customer.
+- Configuration health (needs django-munin with `health/`): a header warning icon while a check fails, a panel with
+  fix links and "Check again", and an inline banner on screens that depend on a failing check (such as the AI toolbox
+  or outgoing SMTP).
+- Notification bell in the header (django-notifications): unread count polled every 30 s while the tab is visible;
+  one tap marks a notification read and opens its subject.
+- Optional SSO login: with `VUE_APP_SSO_API_BASE` set the sign-in page offers "Log in with SSO"; unset, nothing
+  changes. Contract in `docs/sso-login.md`.
+- Input format checks on money, percent, integer, EAN (length and check digit), codes, slugs, email, URL, country and
+  currency fields: a wrong value shows under the field when it is left and blocks the save, with an example in the
+  message.
+- Field hints: a `?` mark after a field label opens its hint on hover, focus or tap; important hints (limits, formats,
+  consequences) are filled. The account menu can turn hints off.
+- Accessibility baseline: landmarks, a "Skip to content" link, page language from the UI language, focus moved to the
+  content after navigation, browser tab titles `<page> · <panel> · Entirius CMS`, visible focus rings on every
+  control, reduced motion respected; every dialog traps focus, closes on Esc and returns focus.
+- Component catalogue at `/ui` (any signed-in operator): every shared component in both themes from static fixtures.
+- UI lint (`npm run lint:ui`, stylelint + eslint): off-token colours, spacing, radii and type sizes, raw controls,
+  native `<select>` in views, literal icon names and removed components fail the lint. Rules in `docs/ui-rules.md`.
+- Visual fidelity harness (`npm run visual`): token parity, a census that fails on off-token colours, radii and font
+  sizes, screen regression with operator-approved baselines, UX guard (off-viewport, click-only, under the bottom bar)
+  and axe accessibility checks at desktop and phone sizes. See `docs/testing.md`.
+- Dependency on `@entirius/brand-tokens`; Inter and Lexend Deca are self-hosted.
 
 ### Changed
 
-- Sign-in controls (`BasicButton` / `BasicInput` `size="lg"`) round at `radius-xl` (12 px, the brand radius of 40 px
-  buttons) instead of 4 px.
-- Light theme (plan 61f): `border-control` moves to `light.neutral.600` `#646A78` — 3:1 (WCAG 1.4.11) on every
-  surface a control sits on, `surface-hover` included (`light.basic.400` gave 2.92:1 there); every light form field
-  edge is darker, and `border-strong` (its hover and focus edge) moves to `light.neutral.700` so it stays darker than
-  the rest edge. `scripts/tokens/contrast-light.mjs` proves text on `surface-raised`, `surface-hover` and
-  `accent-subtle`, the status colours on every text surface and that order; the unit spec prints the failing pairs. Dark is
-  unchanged. `docs/ui-rules.md` T1 allows `text-accent` on `accent-subtle` in light (5.87:1).
-
-- The sign-in screens share one brand-led frame, `AuthLayout` (plan 59, "quiet light"): on desktop a dark brand stage
-  (slow light fields on transform only, paused while typing and still under reduced motion; wordmark, an editorial
-  line, the copyright line) beside the form column, which follows the theme; below 1024 px the stage is a top band and
-  the form a sheet over it. The login wall, password reset, change password and the SSO callback moved onto it.
-  Title „Zaloguj się” / `Sign in` (`login.welcome`), new subtitle. Form errors now show under their field and once in
-  an `aria-live` summary instead of a toast; the submit button shows its loading state; a caps-lock hint under a
-  password field; `autocomplete` `username` / `current-password` / `new-password` / `email`. Fields, requests,
-  redirects and the SSO flow are unchanged. New: `size="lg"` (40 px) on `BasicButton` and `BasicInput`, a `trailing`
-  slot on `BasicInput`, `onDark` on `BasicLogo`; `src/assets/scss/utils/_auth-card.scss` removed.
-- One field-hint pattern (plan 60): FormField `hint` + `hintLevel` replace `description` (a caption under the field)
-  and `tooltip`, both removed (UI lint, C2). The hint is a 16 px `?` after the label — `subtle` a hollow ring,
-  `important` filled `accent-subtle` for a constraint, format, limit or consequence; hover or keyboard focus opens it,
-  a tap toggles it on touch, Esc closes it. Every call site moved with a level (37 important of 94, plus BasicSwitch
-  `hintLevel`). The account menu gets „Podpowiedzi przy polach” (`menuitemcheckbox`, on by default, saved as
-  `cms_hints` like the theme): off hides every hint mark and drops the hint from `aria-describedby`; errors and
-  required markers stay. BasicMenu items take `checkbox`. Catalogue cells `form-field-hint-*`, `*-hints-off`,
-  `basic-tooltip-help-important-*`, `basic-switch-hint-important-*`; e2e `17-field-hints.spec.js`.
-- A disabled IconButton reads as disabled (plan 60, P5 close flag): its glyph is `text-disabled` in every variant
-  instead of `text-muted`, clearly weaker than the enabled `text-secondary` in both themes.
-
-- Calmer light theme (plan 58, token-only; dark unchanged): the light roles map to the brand `light.neutral.*` and
-  `light.tint.*` steps — warm-grey page `#F1F2F4`, off-white containers `#FAFAFB`, text `#1E222B` / `#2E333D` /
-  `#4F5563` / `#646A78` instead of near-black on white, low-chroma accent and status tints. Form-field borders
-  (`border-control`) move to `light.basic.400` `#898A8F` to reach 3:1 on every surface (WCAG 1.4.11).
-  `node scripts/tokens/contrast-light.mjs` proves every light contrast rule; the token unit spec runs it.
-
-- The sign-in screens share one brand-led frame, `AuthLayout` (plan 59, "quiet light"): on desktop a dark brand stage
-  (slow light fields on transform only, paused while typing and still under reduced motion; wordmark, an editorial
-  line, the channel chip) beside the form column, which follows the theme; below 1024 px the stage is a top band and
-  the form a sheet over it. The login wall, password reset, change password and the SSO callback moved onto it.
-  Title „Zaloguj się” / `Sign in` (`login.welcome`), new subtitle. Form errors now show under their field and once in
-  an `aria-live` summary instead of a toast; the submit button shows its loading state; a caps-lock hint under a
-  password field; `autocomplete` `username` / `current-password` / `new-password` / `email`. Fields, requests,
-  redirects and the SSO flow are unchanged. New: `size="lg"` (40 px) on `BasicButton` and `BasicInput`, a `trailing` slot on `BasicInput`, `onDark` on
-  `BasicLogo`; `src/assets/scss/utils/_auth-card.scss` removed.
-- Accessible names renamed by the floating labels (P5 plan 56, listed in plan 56c for the test package): the Stock
-  warehouse picker `Select warehouse` / „Wybierz magazyn” → `Warehouse` / „Magazyn”; the Pim category status filter
-  `Filter by status` / „Filtruj po statusie” → `Status`; the Atlas supplier-review filter keeps its name `Supplier` /
-  „Dostawca” but loses the `Name` / „Nazwa” placeholder. `stock.select_warehouse` stays: it is the Stock empty-state
-  title.
-- Review fixes of plan 56 (P5 plan 56c): the `BasicMenu` phone sheet is modal — a backdrop, scroll lock and focus
-  trap; Esc or a backdrop tap closes it and focus returns to the trigger. Configuration-health rows break a long word
-  that is no token (`DEBUG`, a hostname, a path). The builder group dropdown keeps its FormField label, its counter
-  uses `controllers.set_items` (`controllers.setted` deleted), and the selected-image ring stays visible next to a
-  focus outline. The census measures an inline background unless it carries `data-census="data"` (the ColorInput and
-  Emails channel swatches), and `@ux` reports a sticky bar inside a dialog; only the dialog layer or the BasicMenu
-  bottom sheet itself is no bottom bar.
-- UI lint fails on every rule (P5 plan 56): `eslint.config.mjs` `LEVEL = "error"`, `stylelint.config.mjs`
-  `defaultSeverity: "error"`, so a raw control, a native `<select>` outside the boots, a literal icon glyph or an
-  off-token value fails `npm run lint:ui`. The last warnings are fixed at their source: BasicWysiwyg focus mode and
-  DataTable row expanders pick icons by meaning (a collapsed row shows `expand`, an open one `collapse`), the
-  BasicImage ripple, BasicWysiwyg, FormField and builder image-controller styles are on tokens.
-- The visual census is a gate (P5 plan 56): `@parity` opens every capture-spec screen (desktop, dark) and fails on a
-  colour off the semantic tokens, a radius off the radius scale or a font size off the type scale, unless a
-  `known-differences.json` entry lists it under `census`. SVG text (the logo wordmark) stays out of the font count.
-- Every `BasicSelect` without a FormField label takes `floatingLabel` — its field name, with the count its placeholder
-  carried („Ustawione (2/5)”) — in the filter rows, toolbars, card and page headers, builder controllers and the Handy
-  kit (P5 plan 56, operator request, the plan-53 handoff list); action pickers keep their prompt, and the
-  `ChannelMultiSelect` chips keep „Kanały: Wszystkie”. New i18n keys `docs.document`, `pricefighter.channel`,
-  `controllers.{decorator,set_items,field_type,field_required,attribute}`.
-- Notification rows are ghost `BasicButton`s and the shell's fallback title is a `PageHeader` (P5 plan 56): no raw
-  control or `<h1>` is left in views, components or functionals.
-
-- P5 Communicator settings (plan 55): Leads → Settings, templates, the template editor, sequences and the send
-  settings (policy, channel, footer, waiting mails, suppressions) sit in PageLayout + PageHeader (back to the hub;
-  the template editor's Versions · Test generate · Save in an ActionBar) and run on the boots in FormFields — no
-  native select, input, textarea or table and no Leads kit class is left in Communicator. The four tables are
-  DataTables: a template row opens the template, kinds and suppression types read as words (C-13, C-39); the waiting
-  table puts the recipient under the company so Send now stays inside the card at 1280 px with the sidebar open
-  (C-31). A text-pool row is the text with edit and remove squares (C-33: test ids `pool-text-edit`, new, and
-  `pool-text-remove`; `pool-text-body` is now the plain paragraph and no longer opens the editor — a text-pool page
-  object uses `pool-text-edit`); the remove and the footer's discard and
-  remove confirmations are ConfirmDialogs. An empty footer previews the legal text alone (C-29). Send-window hours
-  and a new sequence key are checked before the save (the boots carry no native `pattern`). Smoke spec
-  `tests/e2e/p5-communicator-smoke.spec.js`.
-- P5 Leads inbox (plan 54): Review sits in `PageLayout` with a `PageHeader` („Przegląd”, back to the Inbox); its
-  action bar is an `ActionBar` (the more menu on `BasicMenu`, Not now, Send as the one primary) pinned in the layout
-  footer on every size — on a phone the open screen now takes the height of the view, so the bar stays at the bottom.
-  The edit form and the failed-rewrite box use `FormField`, `BasicInput`, `BasicTextarea` and `ActionBar`; the rewrite
-  and communicate dialogs are `BasicModal`s inline in `Review.vue` and `CompanyActions.vue` (template = `BasicSelect`,
-  contact = `BasicRadioGroup`); `RewriteModal.vue` and `CommunicateModal.vue` are deleted, and with them the last
-  `desktop.scss` kit import of the Communicate dialog. Conversation and the phone company thread get the page frame
-  („Rozmowa” / „Firma”, back on a phone); Inbox Refresh / Show more, Send now, the quote and opt-out buttons are
-  `BasicButton`s, the earlier-thread toggle an `IconButton`, the opt-out badges `StatusBadge`s.
-
-- P5 Leads companies (plan 53): the company list, company card, add lead, board, import, stages and lead types sit in
-  `PageLayout` with a `PageHeader` (title from the nav model; Stages and Lead types go back to Settings, the company
-  card gets the shell crumbs and back) and use no `ld-*` kit class and no `desktop.scss` import any more — the
-  communicator sections, Settings and the Communicate modal import the kit themselves until plans 54–56. Raw controls
-  are boots in `FormField`s (`.form-grid`), the Overview, Intel and Contacts tables are `DataTable`s (a contact is
-  edited in the one form above the table; its email sits under the name, suppression is a badge), badges are
-  `StatusBadge` / `CountBadge`, the do-not-contact confirmation is a `ConfirmDialog`, the company tabs `BasicTabs`,
-  the active flag of a lead type a `BasicSwitch`, and page actions an `ActionBar` in R5 order (C-16). The board card
-  opens through its name link stretched over the card (no click-only card; the `ux-allow.json` entry is gone), its
-  „Więcej etapów” sits at the end of the toolbar (C-17); the company search takes its own row (C-18). A stage or
-  lead-type label is saved on blur or Enter only when it changed; the stage key and lead-type code are checked before
-  the request. Smoke spec `tests/e2e/p5-leads-companies-smoke.spec.js`.
-
-- P5 Pim taxonomy (plan 51): categories, features, feature sets and quality rules sit in `PageLayout` with a
-  `PageHeader` (back, the unsaved badge, an `ActionBar` with Delete and Save) and follow the detail-form pattern
-  (`BasicCard` sections, `.form-grid`, `FormField` around every control; translatable category fields reuse
-  `ProductT9nField`). The Pim wrapper bar is gone: `PimChannelSelect` carries the channel selector and „Tłumacz
-  sklep” in every Pim view's header `meta`. The Pim-local boot copies are deleted — `SearchableSelect` and
-  `MultiselectPicker` (attribute values are a searchable `BasicSelect`, every value loaded page by page, in the new
-  `AttributeField`), `TypeBadge` (a `StatusBadge` through `featureTypeTone`), `PimCard`, `QualitySettingsCard` (now
-  `QualitySettings` on `BasicCard` with a `ConfirmDialog`) and `PimBreadcrumb`. Category tree rows and feature-set
-  groups expand through a named `IconButton` (`aria-expanded`), the group menu is a `BasicMenu`, a group is added
-  from an existing one through a `BasicSelect` action picker, category products page with `Pagination`. Inherit on
-  an overridden product field asks first (`ConfirmDialog`); `Tag` takes `to` (the product's categories link to
-  their detail), `MediaTile` takes `video` (play badge, video placeholder); `min-w-0` and `ml-auto` are utilities.
-  Smoke `tests/e2e/p5-pim-taxonomy-smoke.spec.js`; specs 12-16 select by role and either UI language.
-- P5 Pim dialogs (plan 50): one translate dialog, `src/components/TranslateDialog/` on `BasicModal`, replaces the Pim
-  product and store dialogs and the Pages „Przetłumacz wszystko” modal. `scope` (`product` · `store` · `content`)
-  picks the extra options (content types, publish) and how the estimate reads (a `DataTable` per language or per
-  type, the total row last, the pages of a content estimate); the callers keep their translator calls
-  (`estimateFn`, `submitFn`: `src/views/Pim/translateFns.js`, `src/views/Builder/translateFns.js`), and
-  `PimTranslateDialog` adds the Pim language names and „Dodaj język do kanału”. Target languages are a
-  `BasicSelect multiple` with removable `Tag`s; strings live in the new `translate_dialog` namespace. Add to channel,
-  copy translations and the enrichment spawn dialog are `BasicModal`s with `FormField`, `BasicRadioGroup`,
-  `BasicCheckbox` and `BasicSelect`. Smoke `tests/e2e/p5-pim-dialogs-smoke.spec.js` opens each dialog and cancels.
-- P5 Pim products (plan 49): the product list, detail and create pages sit in `PageLayout` with a `PageHeader`; the
-  channel selector moves from the Pim toolbar strip into the header `meta` of these three pages (`PimChannelSelect`;
-  the wrapper keeps its own selector for the other Pim views until plan 51). The product detail header holds the
-  unsaved state, the Enabled switch and an `ActionBar`: a „More actions” menu (Channels, Copy translations, Send to
-  enrichment, and the channel inheritance flags as checked items), Delete (danger icon) and Save, which keeps its label
-  on a phone. Basic information, physical properties and the Descriptions, Product tile and SEO tabs are `BasicCard`s
-  with `FormField`s on a `.form-grid`; each translatable field has its translations `IconButton` beside the control,
-  and on a child channel `InheritanceField` shows Inherited / Overridden as a `Tag` with an Override / Inherit button
-  (the toggle the badge only described before). The tab strip scrolls in its box; Variants and Audit log show an
-  `EmptyState`. The create form follows the same pattern with Save in the header. The product list filters sit in a
-  `MobileFilterPanel` in three groups (status chips, selects, quality), inline on desktop instead of behind the
-  Filters toggle; the quality sensor toggle is an `IconButton`, a row's quality findings open in a `BasicMenu` panel
-  and the supplier „Updated” badge is a ghost `BasicButton`. The media gallery shows its assets as `MediaTile`s in one
-  sideways-scrolling row (MAIN as a `Tag`, edit and delete `IconButton`s); product files and links use `IconButton`
-  row actions, links' drawer errors sit on the `FormField`s; assigned categories are removable `Tag`s with an
-  `EntitySearchPicker` to add one (the chips no longer link to the category); supplier timeline entries and the
-  supplier status block are `BasicCard`s. Handlers, API calls and payloads are unchanged. Smoke spec
-  `tests/e2e/p5-pim-products-smoke.spec.js`.
-- P5 Atlas review (plan 48): the review queue sits in `PageLayout` with its PageHeader („Kolejka przeglądu”); the
-  mode switch, search, supplier filter and status chips form the page toolbar (the chips one inline row). The swipe
-  decision bar is right-aligned and pins to the bottom of the page scroll: Pomiń secondary, Odrzuć danger with its
-  outline, Zatwierdź primary rightmost, equal widths on a phone. The gallery and raw-data dialogs are `BasicModal`s
-  (focus trap, Esc, a bottom sheet on a phone); the gallery keeps ←/→ between images and its prev/next buttons and
-  counter sit under the image (the thumbnail strip is gone). The raw-data side panel is an `aside` named by its title;
-  its dates go through `formatDate` and its values are no longer monospaced. The product card's image placeholder is
-  centred; its gallery and raw-data buttons are `BasicButton`s. List mode: the bulk buttons are `BasicButton`s (Reject
-  danger), row checkboxes `BasicCheckbox`es, the detail drawer's approve / skip / reject an `ActionBar`; Events: the
-  acknowledge button is a `BasicButton`, dates formatted; Updated: one empty state. Duplicates: each EAN group's
-  table is a `DataTable` (weight hides on a phone); Auto-matched: the pager sits in the page footer.
-  Handlers, API calls and payloads are unchanged. Smoke spec `tests/e2e/p5-atlas-review-smoke.spec.js`; spec 10 opens
-  the raw-data dialog by role.
-
-- P5 Atlas sources (plan 47): the panel toolbar is gone. A source's detail has its PageHeader (crumbs, back arrow, H1
-  „name (idx)”) and the tabs are `BasicTabs` (a `tablist`, arrow keys; each tab body a `tabpanel`); the Overview Save
-  moved from the toolbar into the header `ActionBar` (the tab emits it). A source that does not load shows an
-  `EmptyState`. The list's search sits in the page toolbar beside the filter panel and the pager in the page footer;
-  the delete dialog's soft/hard choice is a `BasicRadioGroup`. Every raw button of the list, tabs, mapping rows, feed
-  form, feed drawer and Find-in-PIM panel is a `BasicButton` (Create/Save primary, row and inline-form actions
-  secondary) or an `IconButton` (row actions, delete `danger`); the product drawer's approve / skip / reject / push /
-  re-push are an `ActionBar`. The test-feed modal is a `BasicModal`. `SourceValuePicker` is deleted: the category
-  mapping's source value is an `EntitySearchPicker` over the feed's values that still takes a typed value the feed
-  does not carry. Field errors sit on their `FormField`s. `BasicTabs` and `BasicRadioGroup` options take a `testid`.
-  Handlers, API calls and payloads are unchanged. Smoke spec `tests/e2e/p5-atlas-sources-smoke.spec.js`; specs 09
-  and 11 select the tabs and the back arrow by role.
-
-- P5 EnrichmentReview (plan 45): the page sits in `PageLayout`: the List | Focus switch in the PageHeader `meta`,
-  Import CSV a secondary `ActionBar` action, the status chips one inline row with the match count, and the other
-  filters (search, module, kind, source, batch, minimum confidence) in a `MobileFilterPanel` (inline on desktop, a
-  filter button with the count on a phone) instead of the Filters toggle. The list pager is a `Pagination` in the page
-  footer. One primary per mode: in the list the bulk Accept all (row Accept secondary, Reject danger), in Focus the
-  Accept ("Apply anyway" while re-confirming a drift) with Reject (danger) and Skip in an `ActionBar`; the proposal is
-  a `BasicCard` and the reject reason a `BasicTextarea` in a `FormField`. A PIM subject in the list is a ghost
-  `BasicButton`, and clicking a row now opens Focus on that row (it always opened the first). The drift and CSV-import
-  dialogs are `BasicModal`s with `ActionBar` footers (the file picker stays a raw input in the drop zone); the product
-  preview is a `BasicCard` with Go to PIM (secondary) in its header. Handlers, API calls and payloads are unchanged.
-  Smoke spec `tests/e2e/p5-enrichment-review-smoke.spec.js`.
-
-- P5 Points (plan 43): the point form follows the detail pattern: Address (with the address search), Location,
-  Contact and Translations are `BasicCard`s with a `.form-grid` of `FormField`s (Code, Name and Type marked required;
-  the API's field errors land on the fields, the toast stays). Save and Delete moved from the panel toolbar into the
-  PageHeader `ActionBar` after the on/off switch; a locked carrier point still shows its fields disabled and offers no
-  Delete. The panel wrapper's toolbar is gone. The point list has its search, channel and status chips in the
-  `PageLayout` toolbar as one inline chip row (no filter panel on a phone) and its pagination in the list footer. The
-  point-type edit dialog is a `BasicModal` with FormFields and an `ActionBar` footer (Delete, Cancel, Save). The
-  unrouted `ImportDialog` is a `BasicModal` (file picker = Stock's `ImportChooseFile`, mode = `BasicRadioGroup`).
-  Handlers, API calls and payloads are unchanged. Smoke spec `tests/e2e/p5-points-smoke.spec.js`.
-
-- P5 PriceFighter (plan 41): the four raw tables are `DataTable`s: the observations of a gap row and of a history
-  entry (one panel-local `ObservationsTable`), the apply preview and the apply report (now with column headers, both
-  dialogs `lg`). The market cell of every PriceFighter table is one panel-local `MarketCell`: country · currency, and
-  the channel on its own muted line that never truncates, so rows that differ only by channel stay apart, on a phone
-  too (the market column is no longer hidden there). The strategy rule modal is a `BasicModal` with the rule form on
-  a `.form-grid` (the scope value is marked required) and an `ActionBar` footer: Delete (danger utility, opens the
-  same `ConfirmDialog`), Cancel, Save. The gap table and the decision history have their H1 in a `PageHeader`, their
-  filters in the `PageLayout` toolbar (the gap table's channel, recommendation and competitor-only filters in a
-  `MobileFilterPanel`) and their pagination in the list footer. The apply calls, payloads and confirmation are
-  unchanged. Smoke spec `tests/e2e/p5-pricefighter-smoke.spec.js`.
-- P5 Promo (plan 44): the panel toolbar is gone. The promotions list has its H1 „Promotions” with the channel selector
-  in the PageHeader `meta` (panel-local `PromoChannelSelect`), the search and the filter panel (status chips + modifier
-  select) in the page toolbar and the pager in the footer; the Discounts / Vouchers switch shows only with the voucher
-  module (the lone „Discounts” pill is gone) or on a locked vouchers link. Modifier cells are `Tag`s, code counts
-  `CountBadge`s, the select-all banner links are ghost `BasicButton`s. The campaign form follows the detail-form
-  pattern: `BasicCard` sections on a `.form-grid`, hints as FormField descriptions, the unsaved badge, the Active
-  switch and Delete · Save in the PageHeader actions (rendered after the load); the codes table opens a code on row
-  click, the inline code form and the code dialog end in `ActionBar`s, filter tables open their drawer on row click.
-  The filter drawer picks search results with `BasicCheckbox`es and shows the picks as removable `Tag`s. The voucher
-  detail has its H1 („Voucher #id”) with the back arrow and Reveal code in the header, an order is a link. Campaign
-  type, tax type, filter mode and campaign cells are `Tag`s / `StatusBadge`s whose labels come from
-  `promo.enum_label` (the backend label only for an unknown value); the campaign and product-voucher drawers put
-  Delete (danger `IconButton`) and Save in an `ActionBar`. New read-only smoke spec `tests/e2e/p5-promo-smoke.spec.js`.
-
-- P5 LayoutExtenders (plan 42): the panel toolbar is gone. The layout list has its H1 „Layout Extenders” and the
-  channel filter in the page toolbar; types and channels are `Tag`s, the update date goes through `formatDate`, the
-  copy dialog is two `FormField`s with its Cancel · Copy in the dialog `ActionBar`. The navigation editor's H1 is the
-  document name with the back arrow; the unsaved badge, the channel scope and Save draft · Publish sit in the
-  PageHeader actions. Drag handles are `IconButton`s („Reorder”), a link row opens its dialog from a text button and
-  removes from a danger `IconButton`, Add link / Add column / Add banner / Edit banner are `BasicButton`s and the empty
-  list is an `EmptyState`. The item, link and banner dialogs hold every field in a `FormField` (per-field
-  translations are outline `IconButton`s named „Translations: <field>”), display-as and link type are
-  `BasicRadioGroup`s; the banner gallery's images are focusable, pick on Enter or Space, and page through
-  `Pagination`; its loading, empty and hint texts are translated. `tests/e2e/08-navigation-editor.spec.js` selects the
-  dialogs by role and the buttons by name.
-
-- P5 PriceManager (plan 39): the Pricing panel toolbar is gone. The channel selector sits in the PageHeader `meta` of
-  the prices list and the price detail (one panel-local `PmChannelSelect`), and every list has its H1. Save all with
-  its unsaved count, Sync from PIM, and each detail's Save and Delete are in PageHeader `ActionBar`s. The price
-  detail's Save, the countries and history toggles, and the two danger actions moved from a row under the form into
-  its header (under the form when the detail is embedded in the PIM product tab). The price, tax class and channel
-  details follow the detail-form pattern: `BasicCard` sections with a `.form-grid`, the calculated price is a
-  read-only `BasicInput`, and the tax rate fields are labelled `FormField`s with the same percent rules. The promo
-  dates are `BasicDatePicker`s in the detail and in the price rows, where the table box grows while a calendar is
-  open. The rows' "Show countries" control is a small `IconButton` toggle. SKU, channel IDX and tax class IDX cells
-  are links, which closes the two plan-39 `nonFocusable` allow-list entries. Pagination sits in the list footer.
-  Smoke spec `tests/e2e/p5-price-manager-smoke.spec.js`.
-
-- P5 ContactForms (plan 37): the lead and booking detail cards are `BasicCard`s (the view-local `cf-card` is gone).
-  The lead's status badge sits beside the title (PageHeader `meta`), and the unsaved badge, the transitions
-  `BasicSelect`, Mark as Won and Save sit in the PageHeader, with the same transition call and the same deal-value
-  dialog before "won". The dialog's buttons are its `ActionBar`. Open lead moved into the booking's PageHeader. The
-  submission's attachment download is an outline `IconButton` `download` named by `cf.download_attachment` + the file name. The bookings date
-  filters are `BasicDatePicker`s in inline `FormField`s with a clear button, and the lead status filter of both
-  lists is an inline `FilterChip` row (no filter panel). Pagination sits in the footer of the three lists, and the
-  Forms panel toolbar is gone. Smoke spec `tests/e2e/p5-contact-forms-smoke.spec.js`.
-
-- P5 Authors (plan 35): the content editor's Authors and Co-authors fields are `EntitySearchPicker`s inside
-  `FormField`s — a picked author joins the list, the list is removable `Tag`s you can drag to reorder, an author
-  already in either list is not offered again; the save payload (`author_uids`, `co_author_uids`) is unchanged. The
-  view-local `views/Authors/AuthorPicker.vue` is deleted. The author form follows the detail-form pattern: Basic
-  info, Translations (per-field translate `IconButton`), Contact and Social profiles are `BasicCard` sections with a
-  `.form-grid`; Save, danger Delete, the unsaved badge and the Active switch sit in the PageHeader; the reassign
-  select of the delete dialog is a `FormField`; the photo preview is no longer a click-only target (the Select /
-  Edit button opens the gallery). The authors list keeps its filter panel in the page toolbar, shows the
-  "not available" state as an `EmptyState` and its pagination in the footer; the Authors panel toolbar is gone.
-  Smoke spec `tests/e2e/p5-authors-smoke.spec.js`.
-- Auth screens, Enrichment lists, Docs and the lookup/notification components on the P3 components (P5 plan 32):
-  login, forgot-password, password change and reset are `<form>`s (Enter submits), each password field has a
-  „Pokaż hasło” `IconButton` toggle inside the field, the links are `ghost` buttons and the titles balance their
-  lines; the task-queue drawer's SKU and pager, the lookup open, photo and remove controls and the toast close are
-  boots; the spawn-rule edit actions are an `ActionBar` in R5 order (delete · run · save) shown after the rule
-  loaded; Docs sits in `PageLayout` with a „Dokumentacja” `PageHeader` and its example cards show key and value.
-  Read-only smoke `tests/e2e/p5-pilot-b-smoke.spec.js`.
-- P5 Stock (plan 38): the stock screen sits in the page frame — a „Stocks” `PageHeader` whose actions row holds the
-  warehouse picker (select, source badge, last sync), the unsaved `StatusBadge` and an `ActionBar` (Import CSV ·
-  Save All); the Stock panel toolbar and its teleport target are gone. The warehouse table and the product's stock
-  tab in PIM are `DataTable`s with a labelled `NumberInput` per editable row (a phone hides the dispatch column);
-  the SKU filters are an inline chip row and the pager sits in the page footer. The CSV import and add-product
-  dialogs use `BasicModal` footer actions; the import picks its file through a `FormField` with a „Choose file”
-  button, and its labels are translated. Smoke spec `tests/e2e/p5-stock-smoke.spec.js`.
-- P5 Agreements (plan 36): the agreement form is `BasicCard` sections with a `.form-grid` of `FormField`s (API field
-  errors shown per field); Save and the danger Delete moved from the panel toolbar into the PageHeader `ActionBar`,
-  shown after the load (a failed load shows an `EmptyState`), and the Agreements toolbar is gone. The versions and
-  legal-page-history tables are `DataTable`s: a phone keeps version, status and actions, the draft edit form sits
-  under the table, a snapshot's legal text opens in the table's expand row, and the history section opens with a
-  labelled `IconButton` (was a click-only header). System display contexts are `Tag`s. The legal text at consent
-  opens in a `BasicModal` (focus trap, Esc, labelled close). The definitions list filters with an inline chip row
-  next to the search; list pagination sits in the page footer; the consent tabs render their `tabpanel`s. Smoke spec
-  `tests/e2e/p5-agreements-smoke.spec.js`.
-- P5 Emails (plan 34): the channel, template-type, template and language-config tiles are `EmailCard`
-  (`src/views/Emails/EmailCard.vue`), a `BasicCard` whose title is the link to the record and covers the card — the
-  tiles open from the keyboard now (Tab, Enter). The channel, template and language-config forms are `BasicCard`
-  sections with a `.form-grid` (rich-text fields span both columns); Save moved from the foot of each form (mid-page on
-  the channel) into the PageHeader `ActionBar`. The header shows after the load. The font preview line is translated.
-  Smoke spec `tests/e2e/p5-emails-smoke.spec.js`.
-
-- P5 Faq and the detail-form pattern (plan 33): the group and item forms are `BasicCard` sections with a `.form-grid`
-  of `FormField`s (2 columns above 768 px, `.form-grid__wide` spans both) — labels, required markers, hints (IDX and
-  URL key fixed after create, no channel = every channel) and errors all come from FormField. Save, Delete (danger
-  `IconButton`) and the group's Translations sit in the PageHeader `ActionBar`, beside the unsaved badge and the
-  Active switch; the Faq panel toolbar is gone. An item's per-field translations are an `IconButton` beside each
-  field. `ActionBar` utilities take `variant` (`danger` for an icon-only delete). The groups list has an inline chip
-  row, the items list keeps its filter panel; both lists carry a PageHeader and their pagination in the footer. Group
-  rows open from the keyboard, a group's questions are links. Pattern: `docs/ui-components.md` § Detail form. Smoke
-  spec `tests/e2e/p5-faq-smoke.spec.js`.
-
-- P5 pilot A (plan 31): Orders, Customers, Content sets and Translation jobs sit on the page frame. Each list's
-  one chip set is an inline `FilterChip` row (`.filter-chip-row`: wraps on desktop, scrolls sideways on a phone) next
-  to its search, instead of a `MobileFilterPanel`; the order and customer details carry their back arrow and title in
-  `PageHeader`, the orders channel select sits in its `meta`, the Translation jobs Refresh in its `ActionBar`. The
-  three panel toolbars are gone. Content sets: the sets are `BasicCard`s with an `IconButton` delete, the
-  „Powiązany z zestawem” badge is a `StatusBadge`, document tiles are keyboard buttons, „Wyczyść zestaw” sits left of the
-  primary „Ustaw zestaw” on the right, and empty columns show `EmptyState`. Translation jobs: stat cards are
-  `BasicCard`s, the source badge a `StatusBadge`. Smoke spec `tests/e2e/p5-pilot-a-smoke.spec.js`.
-- Auth screens, Enrichment lists, Docs and the lookup/notification components on the P3 components (P5 plan 32):
-  login, forgot-password, password change and reset are `<form>`s (Enter submits), each password field has a
-  „Pokaż hasło” `IconButton` toggle inside the field, the links are `ghost` buttons and the titles balance their
-  lines; the task-queue drawer's SKU and pager, the lookup open, photo and remove controls and the toast close are
-  boots; the spawn-rule edit actions are an `ActionBar` in R5 order (delete · run · save) shown after the rule
-  loaded; Docs sits in `PageLayout` with a „Dokumentacja” `PageHeader` and its example cards show key and value.
-  Read-only smoke `tests/e2e/p5-pilot-b-smoke.spec.js`.
-
-- The Pages content editor (P5 plan 28, Figma S6–S8): `PageLayout` with a `PageHeader` — crumbs Pages / Lista treści /
-  <document>, a back arrow to the list, the document name as the H1 and the „Kanały” `ChannelMultiSelect` chip beside
-  it; the head sticks under the app header on a phone. The toolbar that teleported into the Pages wrapper is an
-  `ActionBar` in R5 order: „Kopiuj” · „Zaawansowane” (· „Opcje dokumentu”) · „Zapisz szkic” · „Zapisz i publikuj”, with
-  the unsaved badge beside it; on a phone it is its own row under „Akcje”. Section, tile-group and tile actions are
-  `IconButton`s (32 px, 36 on a phone; add = primary, reorder = `reorder`, delete = danger), link chips are `Tag`s,
-  the advanced row's URL / meta / category buttons are `BasicButton`s, the home variant switch is a `BasicSelect`
-  and the FAB with the „Zarządzaj kolejnością” pill sits 24 px from the corner (16 px above the tab bar below 1024 px).
-  The scroll-to-top button above the FAB is gone (not in the design). Handy-kit: the images kit tabs are `BasicTabs`,
-  the SKU picker's mode switch is a ghost `BasicButton`.
-- Page frame boots follow Figma S6–S8: `data-fid="page-title"` marks the PageHeader title row (back, H1, meta);
-  breadcrumbs set Lexend Deca at line-height 1.1 (the title row moves 6 px up on desktop, 5 px on a phone); the
-  sticky head sits flush under the app header, full width; the phone `ActionBar` puts „Akcje” above one left-aligned
-  row of actions. On a phone the rich-text mode select takes its own row above the tools (A-54).
-- The Pages content list (P5 plan 27, Figma S4/S5): `PageLayout` with the „Lista treści” `PageHeader`; the filters
-  row holds „Filtry:” with the content-type `FilterChip`s (a „Wyczyść filtry” IconButton instead of the „✕” chip) and
-  the language `BasicSelect` in an inline `FormField` „Język treści”; on a phone the chips scroll sideways in one row
-  and the select stacks under its label (no `MobileFilterPanel` on this screen). Each content type is a table with an
-  uppercase title and a `CountBadge`; the empty list is an `EmptyState`; the FAB sits 24 px from the corner on
-  desktop and 16 px above the tab bar below 1024 px. „Przetłumacz wszystko” drops its icon.
-- The page frame (P5 plan 25): every view outside Home, Gallery and the Pages builder renders in `PageLayout` —
-  no bordered page card, content on the page background with 40/80 px padding (20 on a phone), the view's
-  `PageHeader` in the `#header` slot (a loading page keeps its condition there) and the search/filter row in
-  `#toolbar`. The swap is the `p5-page-frame` codemod (`scripts/codemods/p5-page-frame.mjs`, `--check` in the gate);
-  section cards, local modal surfaces and the auth cards are `BasicCard`, the only renderer of `.page-card`.
-- The gallery is the Figma S9/S10 screen (P5 plan 29): `PageLayout` + `PageHeader` „Galeria”, a controls row with
-  the label „Filtruj po tagu”, the tag filter as `FilterChip`s (one sideways-scrolling row on a phone) and the sort
-  and page-size `BasicSelect`s (180 px; side by side under the label on a phone), a bordered grid of `MediaTile`s
-  (188 × 276, 150 × 240 on a phone; file name as caption, tags over the image) with labelled `IconButton` actions
-  (edit tags, delete behind a `ConfirmDialog`), pagination below and the FAB 24 px from the corner. Tag manager, tag
-  editor and upload are `BasicModal`s with `BasicSelect multiple` tag pickers; the filter keeps its own tag list, so
-  editing or uploading no longer changes it. `MediaTile` gains an `overlay` slot and shows actions and overlay on
-  hover, keyboard focus, selection and always on a touch screen; images are contained, not cropped.
-
-- Home is the Figma S1/S2 screen (P5 plan 26): `PageLayout` + `PageHeader` (greeting overline, title), a left-aligned
-  `PanelCard` grid (3 columns from 1024 px, 2 from 769 px, 1 on a phone, 12 px gap) with the panel's own glyph, locked
-  panels dimmed with the lock, and the blurred Entirius sign behind the content as decoration. `PanelCard` draws the
-  plain 24 px icon (no tinted tile) and keeps title and description 12 px apart; the page, not the card, sets
-  `data-fid="panel-card"` (Home: the first card). On a phone Home keeps the Figma rhythm (40 px top, 30 px title).
-
-- The new shell in `App.vue` (P4 plan 22): AppHeader without a title, SidebarNav on every authenticated route (Home
-  and single-entry panels included) from 1024 px, the mobile menu and a 72 px tab bar below it, `<main>` with the
-  shell's page header: a view's `PageHeader` claims it (crumbs, back to the parent crumb, its title for the tab name),
-  otherwise a fallback shows the crumbs and the H1 from `titleKey`. The 40 views with a raw `<h1>` render
-  `PageHeader` (their title-row content in `meta` / `actions`, a back arrow beside the H1 as `back`), so every page
-  has exactly one H1. The bell and configuration health are IconButtons that open their lists in BasicMenu's
-  `panel` mode (on a phone configuration health opens from the user menu). `--bottom-bar-height` lives on `:root`
-  (72 px below the shell breakpoint, 0 without the bar). User-menu languages are `menuitemradio` items with
-  `aria-checked` (BasicMenu items take `checked`); the user fallback name goes through i18n; one
-  `munin.healthAvailable` gate serves the header, the user menu and the polling. The sidebar entry of a page below it
-  is `aria-current="true"`, the page itself `"page"`. Landmarks: the shell ids are a gate (±2 px, S1–S10).
-  CMS e2e `01`, `04`, `05`, `14`, `15` target the new shell by role (run in plan 24).
-
-- P3 join (plan 19): the rich-text formatting tools are IconButtons and its mode switch a BasicSelect;
-  BulkActionBar pickers are BasicSelects; FAB and empty-state icons resolve only as meanings; selects open on an
-  active option and their list is named by the field label; dialogs start in their first field; tabs name their
-  panels; route edit / delete in the routes kit act on their own row again; one name per breakpoint
-  (`$breakpoint-shell`, `$breakpoint-wide`); a min-* mixin never overlaps its max-* partner (768 stays a phone). Lint: C2 and C5 are
-  errors; the catalogue spec fails on a missing component anchor or an API call.
-
-- P3 sweep, partition 1 (plan 17): Pim, Points, PriceManager, PriceFighter, Stock, Agreements, the functionals,
-  the builder controllers and the shell use the P3 components — buttons by `variant`, icon-only actions on
-  `IconButton`, icons by meaning, confirmations on `ConfirmDialog` / `BasicModal`, chips on `StatusBadge`, `Loader`,
-  `BasicSelect`, `BasicSwitch`, `BasicTextarea`, field errors and floating labels on `FormField`. The Handy-kit
-  lists that did more than pick a value (reorder, edit, delete per row) open in a `BasicMenu` panel. The P3 codemods
-  no longer reject a rewrite that closes a tag (`<StatusBadge />`).
-
-- P3 sweep, partition 2 (plan 18): Promo, Atlas, Faq, forms, enrichment, content, Leads and the other partition-2
-  views use the P3 components — icons by meaning, buttons by variant, icon-only actions on `IconButton`,
-  confirmations on `ConfirmDialog` (custom footers on `BasicModal`), `.chip` on `StatusBadge`, `Dropdown` on
-  `BasicSelect` (the custom check lists are `multiple` selects), `Switcher` / `TextAreaBasic` on `BasicSwitch` /
-  `BasicTextarea`, field errors on `FormField`. The Builder section order is a labelled FloatingActions pill;
-  the Atlas preferred-strategy and evaluation-frequency selects show their value again (they passed `v-model` to a
-  Dropdown that ignored it); the forms back control has a 40 × 40 hit area on a phone.
-- Rich-text table tools are short text buttons (four "add" and three "delete" tools shared one icon each); the
-  pricing detail flush/delete buttons carry one tooltip (their label); the standalone `ToolTip` hint is a `note`
-  described by its text; the FAB sits 16 px from the edge and its speed-dial back button uses the `back` meaning.
-
-- **Forms, type and spacing follow one rhythm** (`docs/ui-rules.md` T5, Cards, Forms): one form-label style
-  (`.field-label`: 12 px / 600, uppercase, muted) from `FormField`, the `BasicInput` / `LockedField` labels and every
-  raw label, with local copies removed; the required marker is always the red `*` of `.required` or
-  `FormField :required` (no typed asterisks; key fields on quality rules and spawn rules marked). Inputs, selects,
-  number and colour inputs and buttons are 32 px (`--elem-height`); the colour swatch has an edge; Leads fields use
-  the field surface and control border. One card class (`.page-card`: faint border, 24 px radius, 24 px padding,
-  16 px on a phone) replaces the 48 / 40 / 32 / 20 / 8 px page and section cards. Every H1 is the page title in
-  Lexend Deca 30 px; FAQ and author screens show their title once. Meaningful text is at least 12 px (10–11 px only
-  for badge counts). The rich-text mode select follows the theme. Filter chips sit 8 px apart.
-- **Polish copy:** diacritics in the contact-form strings; e-mail template types, field labels and hints, the home
-  greeting, rich-text modes, atlas raw data and stock, customer columns and address headers, the PIM product-tile
-  tab, upload "or" and placeholders go through i18n; tile, channel and FAQ-question counts use Polish plurals;
-  channel selects show the choice alone ("Wybrano: 2") instead of nested parentheses.
-- **One button family** (`BasicButton`): two sizes (`md` = the input height, `sm` = row actions), 12 px labels that
-  never wrap, a 1 px border on every variant, and the roles primary / secondary / ghost / danger / danger-fill as
-  classes (`docs/ui-rules.md` C6). Every delete, remove and reject is a danger button; icon-only buttons are squares
-  with a FontAwesome icon and an accessible name; back arrows are ghost icon buttons instead of a 14 px strip. The
-  Leads kit (`ld-btn`), the config-health panel, atlas, pricing, enrichment review and pagination follow the same
-  metrics; layout-list and navigation-editor row actions and the rich-text toolbar are keyboard-reachable and named.
-- **Brand token layer (P2, additive):** the CMS loads `@entirius/brand-tokens` and self-hosts Inter and Lexend Deca
-  (`@fontsource-variable`, wght axis, latin + latin-ext); Google Fonts is no longer requested. Body text renders in
-  Inter from the app bundle. New tokens beside the old ones: the semantic colour layer (`--surface-*`, `--text-*`,
-  `--border-*`, `--accent*`, status) for both themes with its `t-` / `bg-` / `b-` classes, generated from
-  `src/assets/tokens/semantic.json`; brand spacing `--space-0` … `--space-30`, radius `--radius-base` … `--radius-full`,
-  `--fs-150` / `--fs-250`, font families `--font-ui` / `--font-brand` / `--font-mono` and the `type-*` role classes.
-  Shadows and overlays now come from the semantic layer; the dark loading veil is black-based instead of blue.
-  PIM supplier diffs that already read `var(--font-mono, monospace)` now get the brand mono stack.
-  The visual parity gate checks every semantic token in both themes and fails when body text is not Inter.
-- **Every colour comes from the semantic layer (P2):** the old palette (`--c-<colour>-<shade>`, the
-  `t-` / `bg-` / `b-` / `bb-` / `bt-` / `bl-` / `br-` / `o-` / `stroke-<colour>-<shade>` classes, `themes/__dark.scss`,
-  `themes/__default.scss`) is gone; each use was moved by the role it plays (`scripts/codemods/p2-colours.mjs`;
-  `--check` exits 1 while anything is left to rewrite). Visible: the brand palette in both themes (warm black shell, `#00ACC1` accent,
-  white text on the teal `accent-fill`), inputs, selects and checkboxes on `surface-sunken` with the `border-control`
-  edge, accent and muted text on `accent-subtle` chips become `text-strong`, the app background is the flat
-  `surface-page` (the `--gradient-*` variables and `.bg-gradient-*` / `.text-gradient-*` / `.main-bg-theme` are removed),
-  the content-builder tables use `accent-subtle` / `surface-raised` / `text-strong`. `npm run lint:ui` fails on an old
-  palette var or class. Client config is untouched; the CMS has no per-client theme overrides.
-- **Spacing, radius and type on the brand scales (P2):** spacing uses the brand step names (`--space-1` = 4 px …
-  `--space-30`, classes `p-1`, `mb-8`, `gap-5` …), radius classes are `rounded` / `rounded-lg` … `rounded-full` from the
-  radius scale (`br-` is border-right only), `--fs-500` is 20 px and `--fs-700` 30 px. The old names (`--space-50` …
-  `--space-700`, their classes and `-m` / `-d` variants, `--radius-sm` / `--radius-md`, `.br-<n>`, `.radius-<name>`,
-  `--fs-800` … `--fs-1000`, `fw-100` / `fw-700`) are deleted and `npm run lint:ui` fails on them; it also flags a
-  `var()` that names no token. Raw margin, padding, gap, radius and font-size values became tokens, and off-grid ones
-  snapped to the nearest step (`scripts/codemods/p2-scales.mjs`, `--check` exits 1 while anything is left to rewrite;
-  every snap and every value left raw is listed in `scripts/codemods/p2-scales-report.txt`). Visible: 5 → 4, 10 → 8,
-  30 → 32, 50 → 48 and 60 → 64 px spacing, 5/6 → 4 px radii, 10–12 px radii → 12, 18 → 20 and 28 → 30 px type.
-- **Post-login session setup is shared** (`src/composables/useLoginSession.js`):
-  password and SSO login run the same code after the token call.
+- Admin CMS redesign on the Entirius brand: warm-black dark theme and a calmer warm-grey light theme, teal accent,
+  Inter for text and Lexend Deca for titles, brand spacing, radius and type scales. Light form-field edges reach 3:1
+  contrast on every surface. Google Fonts is no longer requested.
+- New app shell: header with user menu (theme, language, field hints), sidebar navigation with collapsible groups
+  from 1024 px, a mobile menu and bottom tab bar below it, breadcrumbs and one page title per screen.
+- Every panel uses one page frame: title, breadcrumbs and back arrow in the page header, page actions in one action
+  bar (on a phone under "Actions"), filters in the toolbar, pagination in the footer. The per-panel toolbars are gone.
+- Detail forms across panels follow one pattern: card sections with a two-column field grid, labels, required
+  markers and API field errors on each field, Save and Delete in the page header next to the unsaved badge.
+- Sign-in, password reset, change password and the SSO callback share one brand frame; errors show under their field,
+  the submit button shows progress, a caps-lock hint appears under the password, and Enter submits.
+- Home: panel cards in a responsive grid with each panel's icon; locked panels dimmed.
+- Buttons: one family with primary, secondary, ghost and danger roles, one primary per page, every delete a danger
+  action, icon-only buttons named with a tooltip. Icons are chosen by meaning, one glyph per action across panels.
+- Tables: cells never overlap, long text truncates with a tooltip, numbers are right-aligned, empty values show "—",
+  secondary columns step back on a phone. Empty lists show one empty state.
+- Selects are searchable keyboard comboboxes; a select without a label shows its name as a floating label. Some
+  accessible names changed with it (Stock warehouse picker "Warehouse", PIM category status filter "Status").
+- Dialogs open as bottom sheets on a phone; menus with longer text open as a panel on desktop and a sheet on a phone.
+- Phone layout: every action is reachable, nothing sits under the bottom bar, small controls get thumb-sized hit
+  areas, wide tables and tab rows scroll in their own box.
+- Pages: the content list groups documents by type with filter chips and a language select; the content editor has
+  its actions (Copy, Advanced, Save draft, Save and publish) in the page header and named icon actions per section
+  and tile; authors and co-authors are picked by search and reordered by drag.
+- Gallery: tag filter chips, sort and page-size selects, a tile grid with edit-tags and delete actions; upload, tag
+  manager and tag editor are dialogs.
+- PIM products: channel selector, Enabled switch, More actions menu, Delete and Save in the header; translation and
+  inherit / override controls next to each field; filters inline on desktop; media in one scrolling row.
+- PIM product attributes load their values on demand (first page on focus, more on request, search across all
+  values) instead of downloading every value when a product opens.
+- PIM taxonomy (categories, features, feature sets, quality rules): detail-form pattern; attribute values are a
+  searchable select; inheriting an overridden field asks first.
+- One translate dialog for PIM products, PIM store and Pages "Translate all", with an estimate table per language or
+  content type.
+- Atlas sources and review queue: tabs are keyboard tablists, gallery and raw data open in dialogs, the swipe
+  decision bar (Skip, Reject, Approve) pins to the bottom; EAN duplicate groups are tables.
+- Enrichment review: filters in a filter panel, one primary action per mode; clicking a row opens Focus on that row.
+- Points, Pricing, PriceFighter, Promo, Stock, Agreements, Emails, FAQ, Contact forms, Layout extenders, Orders,
+  Customers, Content sets, Translation jobs and Docs: moved to the page frame and detail-form pattern; their tables
+  are data tables and their dialogs follow the shared dialog layout.
+- PriceFighter: the market cell shows country, currency and channel, so rows that differ only by channel stay apart,
+  also on a phone.
+- Email configuration tiles open from the keyboard; the nav entry reads "Email configuration".
+- Prices table: an unsaved row is marked by a bar on its left edge; the header counts unsaved prices and rows.
+- Tax rates are shown and entered in percent ("23 %", "8,5 %") and stored as a fraction.
+- Removed for developers: the legacy components (`Dropdown`, `Switcher`, `TextAreaBasic`, `LockedField`, `ToolTip`,
+  `BackBar`, `Loading`, the old modal wrappers, the icon font), the old colour palette and spacing names, and
+  `/playground` (replaced by `/ui`). The UI lint reports any remaining use.
 
 ### Fixed
 
-- Review leftovers of plans 58–61e (plan 61f): a formatted BasicInput drops the typed text when the parent changes or
-  resets the model while it has focus (a submit on Enter); editing a discount code checks the code only when it was
-  changed, so a stored legacy code never blocks other edits; `12 5` is no longer read as `125` (only thousands groups
-  may hold a space); the URL message names http:// and https://, the currency-code message key is
-  `formats.iso4217`; a refused PriceManager save marks each invalid price cell with its field error; an invalid option
-  code on create is a field error, not a silent return; a failed reload of the Leads company card says the card
-  could not be refreshed (`leads.company.refresh_failed`), not that the action failed; the builder's section config
-  summary wraps to two lines with the full text in its title. Visual harness: a catalogue cell taller than the phone
-  viewport is captured whole, and `g-password-reset` captures the form (`?key=visual-fixture`).
-
-- Input formats (plan 61): prices (PriceManager list and detail, Promo minimum order) show and send two decimal
-  places — `232` became `232.00`, `,` is read as `.`, `2,345` is an error instead of a server 400; EANs are checked
-  (length and check digit) before a PIM save; new SKUs, idx codes, supplier and mapping identifiers, SKU prefixes
-  and discount codes take no spaces; the supplier contact email and the category OG image URL are checked; promo
-  limits take the API minimum (1 for code uses) and no longer stop at 9999; every text field the API caps has its
-  `maxlength`. Stored units and payloads are unchanged. Of the audit's 83 mismatched fields 79 are fixed; the other
-  4 (communicator sequence key, lead-stage key, lead-type code, spawn-rule key) were already checked in the view.
-- Prices table: an unsaved row is marked by a warning bar on its left edge instead of a yellow row, its „Niezapisane”
-  badge is no longer cut to „Un…”, and the header counter says how many prices and rows are unsaved when one price
-  (SKU and currency) sits on several country rows.
-- Sign-in: the caps-lock warning under the password shows again (FormField lost `description` in plan 60).
-- Review leftovers of plans 61b–61d (plan 61e): a failed reload of the Leads company card (after an action, or after
-  a refused stage or type change) shows a notice and keeps the card instead of an unhandled rejection. The sign-in
-  caps-lock hint sits in a live region that is always there and is named by the password input's `aria-describedby`
-  while it shows. The builder's section config summary is muted text under the section title, not a button without an
-  action. `BasicMenu` drops the `tabindex` its focus fallback puts on the menu once focus leaves it. A failed profile
-  call on sign-in keeps the stored hints choice (only a profile without one resets it to on). A caller's
-  `aria-describedby` on `BasicSelect` or `BasicInput` joins the FormField's error or hint id instead of replacing it.
-- Field hints, review fixes of plan 60 (plan 61d): a hint opened with Enter or Space closes when focus leaves it (a
-  tap still toggles it on a touch screen). The hints choice is reset on every sign-in and cleared on sign-out, so a
-  profile without one gets hints on, never the previous user's. The "no languages" note of the translate and
-  enrichment dialogs is linked to its select (`aria-describedby`). A disabled primary `IconButton` fades as a whole
-  instead of painting a `text-disabled` glyph on the accent fill. The builder's "add one first" (buttons, group
-  fields) is visible text, not a help mark that hints-off hides. The removed-prop lint rule catches `<form-field>`.
-
-- Late answers and 56b review leftovers (plan 61c): a slow answer never lands on a screen the user has left — the
-  Leads company card drops a load, stage move or type change answer (or error) of an earlier open, so its header
-  actions never act on another company; the Communicate dialog ignores the template list of an earlier open; the PIM attribute search
-  loop and prefetch round stop on every channel or feature-set reset, even after a switch there and back (one loop,
-  one notice). A failed stage or lead-type rename keeps a label committed while it ran. A text selection outside an
-  earlier-thread summary no longer blocks its tap. The Builder section config summary is an `IconButton` (a real
-  button; focus shows the summary), no longer a focusable `role="img"`. Sign-in frame (plan-59 review): no channel
-  chip (it showed the slug), the focus halo sits outside the ring, the caps-lock hint stays next to a password error
-  (test id `caps-lock-hint`), no permanent `will-change` on the light fields. The live supplier e2e spec opens the
-  `/atlas/…` routes and says in its header that it writes (never on a shared stack).
-- `BasicMenu` phone sheet edges from the plan-56d review (plan 61b): an open sheet crossing the phone breakpoint (a
-  rotation) stays open and moves its popover between the page and the backdrop without a remount — the panel keeps
-  its state and does not load again; on a phone it is trapped with the trigger as the opener. The trap has one
-  activation path. A sheet whose trigger holds no focusable control returns focus to the menu itself on close, never
-  to `<body>`. Menus that are no sheet share one in-place layer component.
-- P5 wave-5 close (plan 57): the Leads company card's Overview shows its field names whole (they were cut to the
-  header's width); a Leads Settings section shows one back arrow, its PageHeader's (the layout added a second one
-  above it).
-- P5 review leftovers of plans 47/48, 53, 54, 54b and 54d (plan 56b):
-  - Leads: the Communicate dialog shows a failed template list as its error and starts every open without the old
-    list; Request draft asks for one draft per click (the dialog is persistent and its actions disabled while it
-    runs). The rewrite and communicate dialogs stay mounted on `v-model:open` (their leave transition runs), and focus
-    returns to Review's more button after the rewrite dialog. A tap on an earlier thread's summary opens it. The
-    company card keeps its header while it loads and when the load fails (an inline error, not a spinner forever);
-    opening another company drops the previous one's header actions until the new one arrives.
-    A failed stage or lead-type rename is retried by the next blur or Enter; an empty label is a field error before
-    the request. The contact and add-lead fields refuse the browser's autofill (`autocomplete="off"`, `inputmode`),
-    the contact language stops at 2 characters; the company list's add action, the card tabs' table columns and
-    the legal-basis options follow a UI language switch. `contact-row` sits on the contacts table row again.
-  - `BasicInput` passes `autocomplete`, `inputmode`, `min`, `max` and `step` to its `<input>` (they landed on the
-    wrapper: the `min`/`step` of the contact-form deal value did nothing). `BasicModal` pins where caller attributes
-    land (the dialog element; its own `role`, `aria-modal` and `tabindex` win). `BasicTabs` never gives its Tab stop
-    to a disabled tab. `Pagination` takes `disabled`; the enrichment review pager is disabled while the list loads
-    or an action runs instead of dropping the click.
-  - Promo: `saveRule()` and `deleteRule()` refuse to run on a rule that failed to load (not only their buttons).
-  - PIM product attributes: one search loop per query (one notice on a failure or at the cap), a loop stops when the
-    channel or feature set changes, and a prefetch round of a previous channel raises no notice.
-  - Communicator: the new sequence's key error clears while the key is corrected, and an older API error does not
-    stay next to it. Points: an emptied type sort order is a field error, never saved as 0. Builder: the section
-    config summary is a tab stop; a layout extender's advanced cue asks for the name only.
-  - Test ids gone since plan 54 (no page object reads them): `rewrite-hint` (the hint is the FormField description),
-    `confirm-cancel` (every confirmation's cancel is `confirm-dialog-cancel`); `confirm-sheet` / `confirm-ok` remain
-    only on the Stages delete dialog. New: `point-carrier` (the carrier marker of the points list),
-    `earlier-thread-summary`, `company-load-error`.
-- `BasicMenu` phone sheet (P5 plan 56d): only an open phone sheet renders the teleported backdrop layer — every other
-  menu (every `BasicSelect`, `EntitySearchPicker`) is the trigger and the popover again, as before plan 56c. The focus
-  trap's container is the popover itself (`tabindex="-1"`), so a sheet in items mode or with no focusable content keeps
-  focus inside; the trigger is focused and taken as the trap's opener before focus moves in, so every close — Esc, the
-  backdrop, a panel link, `store.panelOpen = false` — returns focus to it.
-- P5 review fixes of plans 54c and 55 (plan 54d):
-  - PIM product attributes: a select or multiselect value beyond the loaded page can be found by typing again. The
-    channel values endpoint takes no search param, so the first typed query loads the pages left once (up to 2 000
-    values, a notice past that) and the list filters them; "Load more values…" is never filtered out and loads the next
-    page without closing the list or picking anything. Loaded values and stored-value names are kept per channel +
-    feature set + feature and reset when either changes; stored-value names are looked up at most 6 at a time and
-    labelled like the listed values (the editor's default language); a product open whose value prefetch fails shows one notice, not one per select.
-  - Atlas: the supplier delete dialog's line follows the chosen option — neutral for the safe deactivation, negative
-    "cannot be undone" for the permanent delete (`suppliers-delete-note` / `suppliers-delete-warning`). The category
-    mapping's values menu shows the full list again after a value is picked from it and filters on typed text (a
-    typed value, even an exact list value, filters). The swipe review's decision bar reads PageLayout's `--fab-lane` instead of a copied FAB size.
-  - Communicator: Enter in the template's Language or Subject saves again (the header Save submits the form through
-    the native `form` attribute, required fields checked first). A send-window hour that is not HH:MM and an invalid
-    new sequence key show the error on their own field (`aria-invalid`), not in one card-level line.
-
-- P5 panel review fixes (plan 54c), the review findings of wave 4 in Atlas and PIM:
-  - Atlas category mapping: the source value is a text field again and keeps what the operator types (the plan-47
-    picker stored only a value picked from its list); the feed's values of the source field open from the button
-    beside it, filtered by the typed text. A null feed value no longer breaks the list (numbers read as text), and a
-    failed `data-values` call shows the API message in that list instead of an empty one; a late answer for a source
-    field that is no longer chosen is dropped.
-  - PIM product attributes: select and multiselect values are no longer all downloaded when a product opens. A select
-    loads its first page (100) when it gets focus; a select holding a value loads it at once (in parallel), and a
-    stored value outside that page gets its name from its own request; "Load more values…" at the end of the list
-    asks for the next page. A failed page shows a notice
-    and is asked again on the next open or "more"; the values that arrived stay.
-  - Atlas sources: the hard-delete warning stays in view in negative tone (the permanent option is irreversible);
-    the unused `TestFeedModal` and `FeedConfigForm` are deleted with their `atlas.feeds.form` / `sync_mode` / `test`
-    keys.
-  - Atlas review: the gallery's "N / M" counter is a select that jumps to image N; the monitoring reason of a locked
-    bulk action is a tooltip around the disabled button (it was a `title`); the sticky decision bar keeps the FAB's
-    corner lane on a phone; the severity chips' label id is generated.
-  - PIM taxonomy: Save, Delete and the Active switch of a category, and the feature-set actions, are hidden while the
-    record reloads; the feature set's `is_default` switch sits in a FormField; a group rename cancels on Escape and
-    an empty name is a field error instead of a PATCH (another rename gives that group its old name back); feature-type tones come from the `FEATURE_TYPES` table.
-  - e2e: the error collector ignores only the dev server's `/ws` hot-reload socket (it ignored every WebSocket
-    error), PIM specs 13–15 and the taxonomy smoke drop their own copies; the taxonomy smoke asserts the tree toggle,
-    the first category, feature, feature set and quality rule instead of passing without them.
-
-- P5 panel review fixes (plan 54b), the review findings of waves 1–3 in their own panels:
-  - Promo: a rule that failed to load keeps Save, Delete and the Active switch disabled (a save would have overwritten
-    the stored rule with the empty form); a nameless campaign or a missing enum value gets a label (the id, a dash),
-    a rule without `code_count` a 0 badge.
-  - Enrichment review: the Focus row resets when the list reloads (page, filter, a row removed by an action) and when
-    the operator goes back to List, so a keyboard shortcut never acts on a stale row; the footer pager stays while the
-    list loads and ignores a page change while an action runs; the product preview in its drawer is flat, with the
-    name as text instead of a second heading.
-  - Content editor: the advanced toggle shows the `warning` icon and is named "Advanced: set the document name and
-    URL" while either is missing and the row is closed (the old toolbar pulsed); the section eye is display-only with a
-    one-line summary; the id copy targets react to Space; on a phone the unsaved badge sits left, above the actions;
-    the images kit shows blocked tabs disabled (`BasicTabs` options take `disabled`, arrow keys skip them).
-  - PriceFighter: the apply report's reason wraps instead of truncating; invalid observations are muted rows; the
-    phone filter badge counts only filters moved off their default (a fresh page shows none).
-  - Layout extenders: every drag handle moves its row with Alt+↑ / Alt+↓ and is named after it; the navigation editor
-    keeps its header while the document loads; the list keeps its table mounted across a refetch; the banner dialog's
-    gallery button stays while the gallery is open (it hides it) and a failed gallery load shows an error with a retry.
-    The link rows drag through Sortable's fallback, like the item rows since 1.0.0: their handle is a button element,
-    which Firefox never starts a native drag from.
-  - Points: a stale `?page=N` that comes back empty or 404 goes to page 1; a point type's sort order is a
-    `NumberInput` saved as a number; the import dialog loads its types when it opens, starts clean and translates
-    "Import complete". Stock's file picker clears after each pick, so the same CSV can be picked again (plan 43, shared
-    with the Points import dialog).
-
-- P5 wave-4 close (plan 52): on a phone the page header's chips (the Pim channel selector, its scope badge and
-  „Tłumacz sklep”) wrap under the title instead of squeezing it to one letter per line; the product translate dialog
-  refuses to send without a picked product (the translator reads an empty list as the whole channel); a busy dialog
-  (translate, enrichment spawn, a confirm in progress) disables its header close button too; an estimate that answers
-  after the translate dialog closed is dropped; the Atlas products tab draws „Pokaż surowe dane” with its own icon.
-
-- P5 wave-3 close (plan 46): a breadcrumb trail no longer repeats the panel when its nav entry reads the same
-  ("Promocje / Promocje / <rule>", "Zgody / Zgody / …", "Ceny / Ceny / …" → "Promocje / <rule>").
-
-- P5 wave-2 close (plan 40): the Stock page offers its warehouse picker when no warehouse is active yet (it was only
-  inside the table, so a fresh session hit a dead end); FAQ lists show an empty state; a FAQ answer is required before
-  the save request; e-mail channel Save shows its progress and cannot be sent twice, a failed channel load offers a
-  retry; wysiwyg editors inside a form field are labelled by it; the sticky page footer appears only when it has
-  content; picked authors show their role again and drag by a handle; booking filters sit in the phone filter panel;
-  the channel and tax-class IDX links are URL-encoded and the tax-class name is bold again; the e-mail panel's nav
-  entry reads "Email configuration" (`nav.email_dashboard`), so channel crumbs no longer pass through the templates
-  entry. A click on a SKU's label in the stock add-products dialog selects it once (it toggled twice); a retried
-  e-mail channel load shows the form again; the price list mounts one promo calendar at a time and the table's
-  scroll box no longer clips or grows around it; channel and tax-class details keep their header while loading.
-
-- P5 wave-1 close (plan 30): cards no longer add a second 16 px gap under children that carry their own margin (auth,
-  e-mail, FAQ, PIM detail cards); the PIM lists, enrichment tasks and spawn rules keep their pagination visible at
-  the bottom edge while the list scrolls; the content-list FAB checks each type's document limit against that type's
-  own documents; the gallery keeps the upload dialog, the file, alt and tags after a failed upload, clears the new
-  tag field after a tag is added, stops logging upload payloads and shows 4 fixed tile columns (2 below 1280 px); a
-  gallery tile's hidden actions cannot be clicked, and Tab reaches them through the tile; the FAB sits 24 px from
-  the corner on desktop and above the tab bar up to 1023 px on every page.
-- Handy-kit image library and upload preview borders used removed `--clr-gray-*` tokens and drew nothing; they use
-  the border tokens again.
-- Pages content list: one delete confirmation for the whole list (every content-type group rendered its own copy, so
-  a delete opened one dialog per group).
-- Thin scrollbars apply to mouse screens only: on a touch screen the styled scrollbar widened the layout viewport past
-  the screen and moved every fixed element (FAB, pill, toasts) 6 / 11 px off its corner.
-
-- P4 close (plan 24): closing the configuration-health panel with Esc returns focus to a named control even where the
-  header shows no health icon (a phone; desktop with every check green); the Points, FAQ, Agreements, consent-person
-  and contact-form detail pages show one back arrow (the page header's) instead of two; a long e-mail on the
-  consent-person page wraps again; `/ui` names itself (its demo page headers no longer take the shell's title); every
-  shell control draws a full focus ring. The shell's fallback page header draws no back arrow of its own (the view's
-  toolbar back stays, so detail pages without a PageHeader show one) and keeps the title off a panel toolbar below it;
-  the Atlas auto-matched title no longer collapses to one letter per line on a phone; promotion and voucher pages name
-  themselves in the breadcrumbs and the title instead of repeating „Promocje”.
-
-- P3 review leftovers (plan 21): BasicTooltip adds or drops its `aria-describedby` id when its text or the
-  trigger's name changes, and removes it on unmount; a focus trap starts in the first editable field (not a checkbox,
-  radio or read-only value); the routes kit's manage list is filtered, capped at 10 rows, and offers no delete on a
-  route the document uses; the `@catalogue` API check counts calls made while the page mounts.
-
-- P3 close (plan 20): the PIM "Translate store", Builder "Translate all" and PIM option "Translations" buttons show
-  the translate icon on a phone instead of an empty box; author, feature-set, option and gallery-tag fields take their
-  share of the row again; a portrait image stays inside its gallery tile; the Find-product empty state shows its
-  search icon; a dialog without a title is named by `ariaLabel`. The visual harness waits until no request is in
-  flight before a capture, so detail screens opened by a row click keep their lazily loaded fields. A closed menu or
-  select mounts no items, so the page holds no hidden copy of its option labels.
-
-- The Handy-kit categories list loads its next page when the end of the list comes into view, so a first page that
-  does not fill the box no longer stops at six categories.
-
-- Handy-kit category picker loads the first page and the next one when its list is scrolled to the end (plan 10
-  loaded every page on open); P3 codemods resolve the repo root from a path with spaces and report a missing or
-  unparsable file as one error line.
-- UX polish track closed (plans 01–07, FIX-02…06): 189 audited defects accounted for — buttons in one family (sizes,
-  roles, named icon-only squares, FAQ delete and unlink work again), values and loaders shown right, every action
-  reachable on a phone, tables that fit or truncate on purpose, one label, card and type rhythm. `@ux` is now a guard:
-  a `high` finding (zero-size, off-viewport, under the bottom bar, click-only element) fails its screen unless
-  `tests/visual/ux-allow.json` names the plan that removes it (Dropdown and Switcher → P3, click-only rows and cards →
-  their P5 panel plans); a partial `@ux` run no longer wipes the last full report. Closing fixes: no empty panel
-  toolbar strip (28 screens), content sets scroll on a phone, the search icon of `BasicInput` is decorative and lets
-  the click through, `ToolTip` wrappers leave focus to their control, `Confirmation-modal` is destructive only when a
-  delete or remove asks for it, `BasicButton :stop="false"` for wrappers that act on the click (navigation editor
-  reorder), rich-text table tools are named icon buttons, channel and author-picker labels name their control.
-- Touch and layout rules (phone): small controls keep their look and get a thumb-sized hit area from one mixin
-  (`touch-target`): the help "?", table row checkboxes and the expander, `NumberInput` − / +, filter chips, the
-  config-health close and the Leads kit buttons; neighbouring hit areas never overlap. The back arrow is 40 px on a
-  phone only and shows its tooltip on desktop. Page wrappers pad 16 px on a phone through `.page-pad` instead of a
-  global `!important` override of `p-12`, so empty states and loaders keep their spacing. Focus rings of tabs and
-  segmented options are drawn inside, never clipped by the scrolling row. Leads stage and lead-type rows stack at the
-  shared tablet breakpoint; the Builder tile row scrolls natively below tablet (was: on a touch pointer); the
-  customer status badges wrap without borrowing the title-row class; the panel toolbar styles its title group and
-  actions by role class. `@ux` reports a page card that scrolls sideways on a phone (`overflow` / `card-x`).
-- Tables keep what a row showed and stay pageable: PriceFighter gap and decision tables show the channel in the
-  market cell again, so rows that differ only by channel are told apart; status badge columns (layout extenders,
-  recommendation, strategy) size to their longest label instead of truncating; a chip in a narrow cell ends in an
-  ellipsis (`.chip__label`) with the full text as a tooltip. A truncated flexible column is never narrower than its
-  header, and a truncated slot cell's tooltip is its rendered text, not the raw value. `Pagination` also takes
-  `current` / `total` / `perPage` (and emits `change`), so the Stock tables page again. `DataTable` switches to the
-  phone layout at the shared `max-tablet` breakpoint (768 px). Promo modifier labels are back to their previous
-  wording (now translated) and the Stock "Sold out" badge is gone.
-- Page titles only: the page-title face moved from the `h1` element rule to `.page-title`, carried by every page H1,
-  so a heading typed in the rich-text editor, a content or e-mail preview and the docs view look as before. Every
-  form label uses the shared label style (translation dialogs, layout-extender modals, channel selectors, Leads
-  review and rewrite, drift reason, voucher filters); the Leads kit labels by `.ld-field__label`, not by position,
-  so a hint or badge placed first is not restyled. A `BasicInput` / `LockedField` label stays on one line inside its
-  control, with an ellipsis and the full text as a tooltip. The `@ux` label census also counts `.ld-field__label` and
-  `aria-labelledby` targets.
-- Tax rates: an empty, non-numeric or out-of-range (0–100) rate never posts; the field says "Podaj stawkę 0–100".
-  `NumberInput` takes one leading minus (only when `min` < 0), one decimal separator ("," reads as ".", a second
-  one is dropped) and digits, and looks disabled (muted text, no focus ring, steppers off) with `isDisabled`.
-- Empty states: an empty table inside a detail screen is one line (icon and text); list screens keep the full
-  block. The tax class, price channel and price history lists use `EmptyState` instead of a muted dash.
-- Loaders in modals, side panels and buttons keep their place again; content-area loaders stay centred (`block`).
-- Enrichment spawn rules: a channel typed into the free-text fallback drops a language it cannot vouch for, like a
-  picked channel does.
-- Buttons: one primary per page. Row, bulk, section and inline-form actions beside a page primary are secondary
-  (enrichment row accept, lead "Mark as won", promo bulk activate, agreement versions, FAQ associations, PIM groups,
-  options and files, point translations, tax rates, voucher filters, promo codes). Delete and remove confirmations
-  are filled danger (the shared confirmation modal and the supplier delete); non-destructive confirms (edit published
-  agreement, feed trigger, force re-push, atlas bulk approve/requeue) stay primary. An icon-only `BasicButton`
-  without `label` warns in dev. The rich-text table tools are one size (`sm`, text); every back control is
-  `BackBar`; sheet and notification close buttons, `BackBar` and the leads kit have a 40 px hit area on a phone;
-  the price detail flush/delete buttons carry one tooltip; the navigation reorder handle is a real button; the
-  atlas swipe bar shows Reject outlined with three equal buttons on a phone; builds rows say "Edit" / "Preview".
-- Tables: nothing overlaps, everything fits or truncates on purpose. `DataTable` cells pad 12 px, a column is never
-  narrower than its header or an untruncated cell (badges, buttons), text cells truncate on one line with the full
-  value in a tooltip, numbers are right-aligned with tabular figures, and an empty value shows "—". Columns carry a
-  priority: on a phone the secondary columns step back and the name gets the width. `StatusBadge` and `.chip` stay
-  inside their cell. Raw tables (stock, atlas duplicates, agreement versions, the leads kit) share `.table-basic`;
-  atlas duplicate groups line up, the price grid keeps its columns apart and names its currency column, the promo
-  modifier is a translated neutral badge, enrichment JSON scrolls instead of breaking keys mid-word, stock shows its
-  status as a badge ("Sold out" for a zero quantity). Pagination hides for a single page.
-- Mobile: every action is reachable on a phone. Scroll regions end above the bottom bar (pagination, the last form
-  fields and the atlas swipe actions were under it); panel toolbars, in-card title rows and section headings wrap, so
-  Save, Publish and Import no longer sit past the viewport; page cards pad 16 px instead of 48 px. Wide tables
-  (prices, stock, atlas duplicates, agreement versions), tabs and segmented controls scroll in their own box, never
-  the card. Forms stack to one column (PIM attributes and feature sets, forms-list filters, the atlas find box, leads
-  stages); PIM and Promo show their channel selector again; builder Save draft and Publish keep their labels. The
-  `.flex-wrap` utility 49 rows relied on did not exist and now does.
-- Tax rates read and are entered in percent: the tax class showed the stored fraction as "0.2300%"; it now shows
-  "23 %" / "8,5 %", and a typed 23 is stored as 0.2300. `NumberInput` with a fractional `step` takes decimals
-  ("8,5" or "8.5"); it used to strip the separator, so 8,5 became 85.
-- Edit forms show the values the record has: the enrichment rule edit showed "Select" for a check and task type
-  outside the loaded lists (atlas rules) and for a rule without a channel scope ("All channels" now); task types
-  carry labels. A carrier delivery point shows its type.
-- Dates: price decision history, gap observations, price history and atlas events show the CMS date format instead
-  of raw ISO timestamps.
-- Loading states: the loader sits centred in the content area (it was a faint corner ripple, so edit screens read as
-  blank for a second); author edit shows Save and Delete after the load; a missing PIM category shows a not-found
-  state instead of a blank editable form.
-- Empty states have one look (`EmptyState`): lists without rows show it below the table, visible on a phone (the
-  text used to sit off-screen in the scrolling grid); point translations, waiting mails, the Inbox detail pane
-  ("No drafts to review") and an empty new document ("Add the first section") use it too.
-- Disabled inputs look disabled, like disabled selects.
-- FAQ items and groups can be deleted and unlinked again: their delete, remove-from-group and unlink buttons
-  rendered 0 px high because the legacy icon font lacks the glyph.
-- The session refreshes its access token a minute before it expires, whatever lifetime the service issues. The
-  CMS assumed 15 minutes against a 5-minute token and refreshed far too late.
-- A token refreshed by a request (expired on page load, or a 401 retry) moves the next scheduled refresh too; the
-  CMS no longer sends a second refresh at the old token's time.
-- Logging out while the session refreshes no longer signs you back in: a refresh answered after the logout is
-  dropped and writes no cookie. One that fails after the logout no longer shows the "session expired" screen or
-  signs out a login made in the meantime. A refresh failing while the logout request is still out no longer does
-  either, and a panel request waiting on that refresh shows no error toast. Logging out always ends on a clean
-  login screen: the CMS refreshes an expiring token first, tells the server without the refresh machinery (5 s at
-  most, a failure still logs you out) and reloads the page.
-- Opening the CMS after the access token expired (a tab reopened later) refreshes the session first. Panels outside
-  `VUE_APP_PANELS` no longer bounce to the home page.
-- The desktop sidebar is no longer empty after a fast click right after login: the CMS leaves the login screen only
-  once the user profile is loaded.
-- Router `meta.module` guard no longer loops when the panel root itself needs the missing module.
-- Read-only fields are read-only again: `BasicInput`, `TextAreaBasic` and `Dropdown` take `isDisabled`, and the
-  `disabled` passed by PIM product inherited fields, system agreement definitions (category, consent channel) and
-  the Atlas feed/source key landed on the wrapper, which left them editable.
-- The contact form attachment download button is visible. It was icon-only with a glyph the icon font lacks, which
-  rendered it blank. It now carries a "Download" / "Pobierz" label. The Polish "Załączniki" heading has its diacritics.
-
-### Removed
-
-- `promo.filter_no_options`, `promo.no_currencies`, `promo.no_channels`, `promo.no_shipping_methods` (unused since
-  the selects became BasicSelect, which shows its own empty text) (plan 56b).
-- The Leads kit `src/views/Leads/desktop.scss` and its `.ld-field__label` alias (P5 plan 56): every Leads and
-  Communicator screen is on the boots. The unused `.basic-badge` rule, the `.panel-toolbar` / `.page-title-row` /
-  `.section-head` partial (`utils/_panel-toolbar.scss`, no user left after P5), the Builder's copy of the FAB inset and
-  the retired `p5-page-frame` codemod with its spec.
-
-- `src/views/Leads/ConfirmSheet.vue` (P5 plan 54): the review discard, stage delete, contact remove, text-pool remove
-  and mail-footer confirmations are `ConfirmDialog`s.
-
-- The old shell (P4 plan 22): the header route title, the grip panel switcher, the three logo copies, the sidebar
-  edge toggle, `Navigation.vue`, `HeaderControls.vue`, `userStore.activeApp` and its write in the router guard, the
-  global `.router-link-active` decorator (it resized 24 unrelated links), the theme logo PNGs.
-
-- `/playground` and `Playground.vue` (replaced by `/ui`), the unused `Accordion` boot and `LazyScroll` (a Vue 2
-  directive that never fired): the builder category kit now loads every category page instead of only the first.
-- P3 join (plan 19): the retired boots `Dropdown`, `Switcher`, `TextAreaBasic`, `LockedField`, `ToolTip`,
-  `HelpTooltip`, `HoverMe`, `BackBar`, `components/Loading.vue`, the `Confirmation-modal`, `Unsaved-changes-modal` and
-  `Translations-modal` wrappers, the icon font and the global `.chip`; the transition APIs `BasicButton` `text` /
-  `isDisabled` / `custom` / btn-* classes (secondary by default), `BasicInput` floating `label` / `validate` /
-  `isDisabled`, `NumberInput` `isDisabled`, `StatusBadge` `variant`, `Pagination` `pagination` / `current` / `total` /
-  `perPage` / `onChangePage` / `change`, `BulkActionBar` `buttonClass`, `BasicDatePicker` `value` / `label` /
-  `onChange`, the `BasicCheckbox` array API, `Loader` `h` / `w` and the `EmptyState` glyph fallback. A removed
-  component and an icon-font class are lint errors.
+- Session: the access token refreshes a minute before it expires, whatever lifetime the service issues; a reopened
+  tab with an expired token refreshes first; logging out during a refresh no longer signs the user back in.
+- The sidebar is no longer empty after a fast click right after sign-in.
+- Panels outside `VUE_APP_PANELS` no longer bounce to Home; the module route guard no longer loops when a panel root
+  needs a missing module.
+- Read-only fields are read-only again (PIM inherited fields, system agreement definitions, Atlas feed and source
+  keys).
+- Prices and promo minimum order show and send two decimals, a comma reads as a decimal point, and malformed values
+  show a field error instead of a server 400; EANs are checked before a PIM save; promo limits no longer stop at 9999;
+  text fields carry the API's length limits.
+- Number inputs with a fractional step accept decimals ("8,5" no longer becomes 85).
+- FAQ items and groups can be deleted and unlinked again; a FAQ answer is required before saving.
+- The contact form attachment download button is visible and labelled; the deal value's min and step apply.
+- Edit forms show stored values outside the loaded lists (enrichment rules, carrier point types); a missing PIM
+  category shows a not-found state instead of a blank form.
+- Dates in price history, decision history, gap observations and Atlas events use the CMS date format.
+- Stock offers its warehouse picker when no warehouse is active yet; the same CSV file can be picked twice in a row.
+- Pages content list opens one delete confirmation, not one per content-type group; its add button checks each
+  type's own document limit.
+- Gallery keeps the upload dialog and its fields after a failed upload and no longer logs upload payloads.
+- Promo: a rule that failed to load cannot be saved over the stored rule.
+- Email channel Save cannot be sent twice, and a failed channel load offers a retry.
+- Atlas preferred-strategy and evaluation-frequency selects show their value again.
+- Layout extender link rows can be dragged in Firefox, and every drag handle also moves its row with Alt+Up / Alt+Down.
+- The product translate dialog refuses to send without a picked product (an empty list meant the whole channel).
+- Handy-kit category lists load their next page when scrolled to the end.
+- On touch screens the styled scrollbar no longer pushes the floating button and toasts off their corner.
+- Enrichment spawn rules drop a language a typed channel cannot vouch for.
+- Points: a stale page number that comes back empty goes to page 1.
 
 ## [2.1.0] (2026-09-01)
 
