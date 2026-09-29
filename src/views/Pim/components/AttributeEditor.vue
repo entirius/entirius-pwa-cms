@@ -296,18 +296,20 @@ async function fetchFeatureSet() {
   }
 }
 
-const cacheKey = (featureIdx) => `${props.channelIdx}/${props.featureSetIdx}/${featureIdx}`;
+const scopeKey = () => `${props.channelIdx}/${props.featureSetIdx}`;
+const cacheKey = (featureIdx) => `${scopeKey()}/${featureIdx}`;
 const storedValues = (row) => [...new Set([row.attribute_idx, ...row.attribute_idxs].filter(Boolean))];
 const notifyValuesFailed = () => notify.spawnNotification({ type: "negative", msg: t("pim.attribute_values_failed") });
 
 // Fire-and-forget: the first page of every select that holds a value, in parallel, then the names of the stored
 // values that page lacks; the editor shows at once. The other selects load when they open. One notice per round,
-// however many selects failed.
+// however many selects failed; none for a round of a channel or feature set that is no longer shown.
 async function prefetchStoredOptions(rows) {
+  const scope = scopeKey();
   const loads = rows
     .filter((r) => isSelectType(r.feature_type) && storedValues(r).length)
     .map((r) => prefetchSelect(r.feature_idx, storedValues(r)));
-  if ((await Promise.all(loads)).includes(false)) notifyValuesFailed();
+  if ((await Promise.all(loads)).includes(false) && scopeKey() === scope) notifyValuesFailed();
 }
 
 async function prefetchSelect(featureIdx, stored) {
@@ -330,19 +332,28 @@ async function loadMoreOptions(featureIdx) {
 }
 
 // A typed query must reach every value (the channel endpoint takes no search param): the pages left load once, up to
-// SEARCH_CAP values, while BasicSelect filters what has arrived. A failure lets the next query try again.
+// SEARCH_CAP values, while BasicSelect filters what has arrived. The key is taken before the first await, so the
+// keystrokes of one query run one loop and raise one notice. A failure lets the next query try again.
 async function loadAllOptions(featureIdx) {
   const key = cacheKey(featureIdx);
   if (searchLoads.has(key)) return;
-  if (!(await ensureOptions(featureIdx))) return notifyValuesFailed();
   searchLoads.add(key);
-  while (hasMoreOptions(featureIdx) && getOptions(featureIdx).length < SEARCH_CAP) {
-    if (await loadOptionsPage(featureIdx)) continue;
+  const outcome = await loadPagesUpToCap(featureIdx, key);
+  if (outcome === "failed") {
     searchLoads.delete(key);
     notifyValuesFailed();
-    return;
   }
-  if (hasMoreOptions(featureIdx)) notify.spawnNotification({ type: "info", msg: t("pim.attribute_values_capped", { count: SEARCH_CAP }) });
+  if (outcome === "capped") notify.spawnNotification({ type: "info", msg: t("pim.attribute_values_capped", { count: SEARCH_CAP }) });
+}
+
+// → "done" | "capped" | "failed" | "stale" (the channel or feature set changed under the loop: it stops, silent).
+async function loadPagesUpToCap(featureIdx, key) {
+  const outcomeOf = (ok) => (cacheKey(featureIdx) !== key ? "stale" : ok ? null : "failed");
+  let stop = outcomeOf(await ensureOptions(featureIdx));
+  while (!stop && hasMoreOptions(featureIdx) && getOptions(featureIdx).length < SEARCH_CAP) {
+    stop = outcomeOf(await loadOptionsPage(featureIdx));
+  }
+  return stop || (hasMoreOptions(featureIdx) ? "capped" : "done");
 }
 
 // The names of stored values missing from the loaded values, through the shared limiter (the channel list takes no

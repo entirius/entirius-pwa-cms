@@ -359,6 +359,75 @@ describe("AttributeEditor — search, cache scope, label lookups, notices", () =
     expect(mockNotify).toHaveBeenCalledTimes(1);
   });
 
+  // Plan 56b (54d review): one loop and one notice per query, a stale loop stops, a stale round stays silent.
+  it("two quick keystrokes before the first page run one loop: one notice when it fails", async () => {
+    let failFirst;
+    mockGetFeatureAttributes.mockImplementationOnce(() => new Promise((_, reject) => (failFirst = reject)));
+    const wrapper = mountEditor();
+    await flushPromises();
+    selectOf(wrapper, false).vm.$emit("search", "v");
+    selectOf(wrapper, false).vm.$emit("search", "va");
+    await flushPromises();
+    failFirst(new Error("down"));
+    await flushPromises();
+    expect(mockGetFeatureAttributes).toHaveBeenCalledTimes(1);
+    expect(mockNotify).toHaveBeenCalledTimes(1);
+  });
+
+  it("a search loop stops when the channel changes and never loads the new channel's pages for it", async () => {
+    const pending = [];
+    mockGetFeatureAttributes.mockImplementation((idx, channel, { page: n }) =>
+      channel === "b2b"
+        ? page(values(n * 100, 100), "next")
+        : new Promise((resolve) => pending.push(() => resolve({ data: { results: values(n * 100, 100), next: "next" } })))
+    );
+    const wrapper = mountEditor([{ feature_idx: "colour", attribute_idx: "v100" }]);
+    await flushPromises();
+    selectOf(wrapper, false).vm.$emit("search", "v");
+    pending.shift()();
+    await flushPromises();
+    await wrapper.setProps({ channelIdx: "b2b" });
+    await flushPromises();
+    pending.shift()();
+    await flushPromises();
+    const b2bPages = mockGetFeatureAttributes.mock.calls.filter((call) => call[1] === "b2b").map((call) => call[2].page);
+    expect(b2bPages).toEqual([1]);
+    expect(mockNotify).not.toHaveBeenCalled();
+  });
+
+  it("a prefetch round of the previous channel that fails after the switch raises no notice", async () => {
+    let failOld;
+    mockGetFeatureAttributes.mockImplementation((idx, channel) =>
+      channel === "default-europe"
+        ? new Promise((_, reject) => (failOld = () => reject(new Error("down"))))
+        : page([{ idx: "red", name: "Red" }])
+    );
+    const wrapper = mountEditor([{ feature_idx: "colour", attribute_idx: "red" }]);
+    await flushPromises();
+    await wrapper.setProps({ channelIdx: "b2b" });
+    await flushPromises();
+    failOld();
+    await flushPromises();
+    expect(mockNotify).not.toHaveBeenCalled();
+    expect(optionValues(wrapper)).toEqual(["red"]);
+  });
+
+  it("a listed value reads in the editor's default language, else its name", async () => {
+    mockGetFeatureAttributes.mockImplementation(() =>
+      page([
+        { idx: "red", name: "Red", name_t9n: { pl: "Czerwony" } },
+        { idx: "blue", name: "Blue", name_t9n: { en: "Blue EN" } },
+      ])
+    );
+    const wrapper = mountEditor([], { languages: ["pl"] });
+    await flushPromises();
+    await openSelect(wrapper, false);
+    expect(selectOf(wrapper, false).props("options")).toEqual([
+      { label: "Czerwony", value: "red" },
+      { label: "Blue", value: "blue" },
+    ]);
+  });
+
   it("a select the operator opens keeps its own notice", async () => {
     mockGetFeatureAttributes.mockRejectedValue(new Error("down"));
     const wrapper = mountEditor();
