@@ -55,6 +55,7 @@ export const ICONS = Object.freeze({
   moveDown: "arrow-down",
   primary: "star",
   file: "file",
+  rawData: "code",
   attachment: "paperclip",
   password: "key",
   scheduled: "clock",

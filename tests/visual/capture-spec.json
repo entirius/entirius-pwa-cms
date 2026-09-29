@@ -1188,7 +1188,7 @@
         "dark",
         "light"
       ],
-      "readySelector": ".supplier-detail__body input",
+      "readySelector": "[role=\"tabpanel\"] input",
       "file": "atlas-source-detail__{vp}__{theme}.png"
     },
     {

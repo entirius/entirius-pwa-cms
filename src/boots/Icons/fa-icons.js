@@ -118,6 +118,7 @@ import {
   faFileArrowUp,
   faFile,
   faPaperclip,
+  faCode,
 } from "@fortawesome/free-solid-svg-icons";
 
 /* import font awesome icon component */
@@ -241,7 +242,8 @@ export default function registerFontAwesome(app) {
     faArrowsUpDown,
     faFileArrowUp,
     faFile,
-    faPaperclip
+    faPaperclip,
+    faCode
   );
 
   /* add font awesome icon component */

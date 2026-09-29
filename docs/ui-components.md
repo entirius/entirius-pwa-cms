@@ -221,11 +221,11 @@ Catalogue: `#overlays` (`#basic-modal`, `#confirm-dialog`, `#side-drawer`, `#tra
   BasicTabs, FilterChip and the MobileFilterPanel trigger show their counts with it.
 - **`Tag`** — a value chip (a picked entity, a media tag): `label`, `removable` adds a `close` IconButton `sm` named
   „Usuń: <label>” that emits `remove`, `to` makes the label a `router-link` to the entity (accent text).
-- **`BasicTabs`** — `options` `[{ label, value, count? }]` + `v-model` (unchanged); a `tablist` with one Tab stop
+- **`BasicTabs`** — `options` `[{ label, value, count?, testid? }]` + `v-model` (unchanged); a `tablist` with one Tab stop
   (the active tab), ←/→ (wrapping), Home and End select and focus a tab; active = accent text + 2 px accent underline.
   Tab `i` is `id="<idPrefix>-tab-<value>"` with `aria-controls="<idPrefix>-panel-<value>"`: the call site renders the
   panel as `<div role="tabpanel" :id="…-panel-<value>" :aria-labelledby="…-tab-<value>">`. Empty `options` render
-  nothing.
+  nothing. An option's `testid` lands on its tab.
 - **`BasicCard`** — the card of `.page-card` (border-subtle, `--radius-3xl`, 24 px / 16 px below tablet): `title`
   (section title, Inter 600 16 px), `actions` slot (an ActionBar, right of the title), default slot; `gap` puts
   16 px between the children (off by default: children with their own `mb-*` keep their spacing).
@@ -337,8 +337,9 @@ Catalogue: `#selects` (`#basic-select`, `#entity-search-picker`, `#channel-multi
 - **`NumberInput`** — `disabled`; the value field reads the contract.
 - **`BasicCheckbox`** — one checkbox: a boolean `v-model`, its label in the default slot, `disabled`. A list of ids
   is `BasicSelect multiple`.
-- **`BasicRadioGroup`** — `options` `[{ label, value, disabled? }]`, `v-model`, `name`, `disabled`; native radios in a
-  `role="radiogroup"` (one Tab stop, the arrow keys move and select), named by the FormField label.
+- **`BasicRadioGroup`** — `options` `[{ label, value, disabled?, testid? }]`, `v-model`, `name`, `disabled`; native
+  radios in a `role="radiogroup"` (one Tab stop, the arrow keys move and select), named by the FormField label. An
+  option's `testid` lands on its radio input.
 - **`BasicSwitch`** — replaces `Switcher`: `v-model`, `label`, `hint` (a help tooltip), `disabled`; a
   `role="switch"` button with `aria-checked`, styles scoped to it.
 - **`BasicDatePicker`** — an input-looking trigger with the `calendar` icon opens an inline flatpickr; `v-model` (the

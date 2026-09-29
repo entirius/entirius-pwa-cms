@@ -161,7 +161,7 @@
             @click="confirmForceRepush(row)"
           />
           <IconButton
-            icon="file"
+            icon="rawData"
             size="sm"
             :label="$t('atlas.review.show_raw_data')"
             :data-testid="`products-raw-${row.id}`"
