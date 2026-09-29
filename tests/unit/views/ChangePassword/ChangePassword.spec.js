@@ -56,4 +56,3 @@ describe("ChangePassword", () => {
     expect(purposes).toEqual(["current-password", "new-password", "new-password"]);
   });
 });
-

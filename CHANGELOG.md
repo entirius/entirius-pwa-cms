@@ -140,13 +140,13 @@ All notable changes to this project will be documented in this file.
 
 - The sign-in screens share one brand-led frame, `AuthLayout` (plan 59, "quiet light"): on desktop a dark brand stage
   (slow light fields on transform only, paused while typing and still under reduced motion; wordmark, an editorial
-  line, the channel chip) beside the form column, which follows the theme; below 1024 px the stage is a top band and
+  line, the copyright line) beside the form column, which follows the theme; below 1024 px the stage is a top band and
   the form a sheet over it. The login wall, password reset, change password and the SSO callback moved onto it.
   Title „Zaloguj się” / `Sign in` (`login.welcome`), new subtitle. Form errors now show under their field and once in
   an `aria-live` summary instead of a toast; the submit button shows its loading state; a caps-lock hint under a
   password field; `autocomplete` `username` / `current-password` / `new-password` / `email`. Fields, requests,
-  redirects and the SSO flow are unchanged. New: `size="lg"` (40 px) on `BasicButton` and `BasicInput`, a `trailing` slot on `BasicInput`, `onDark` on
-  `BasicLogo`; `src/assets/scss/utils/_auth-card.scss` removed.
+  redirects and the SSO flow are unchanged. New: `size="lg"` (40 px) on `BasicButton` and `BasicInput`, a `trailing`
+  slot on `BasicInput`, `onDark` on `BasicLogo`; `src/assets/scss/utils/_auth-card.scss` removed.
 - Accessible names renamed by the floating labels (P5 plan 56, listed in plan 56c for the test package): the Stock
   warehouse picker `Select warehouse` / „Wybierz magazyn” → `Warehouse` / „Magazyn”; the Pim category status filter
   `Filter by status` / „Filtruj po statusie” → `Status`; the Atlas supplier-review filter keeps its name `Supplier` /
@@ -551,6 +551,16 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- Late answers and 56b review leftovers (plan 61c): a slow answer never lands on a screen the user has left — the
+  Leads company card drops the answer (or error) of the company it no longer shows, so its header actions never act
+  on another company; the Communicate dialog ignores the template list of an earlier open; the PIM attribute search
+  loop and prefetch round stop on every channel or feature-set reset, even after a switch there and back (one loop,
+  one notice). A failed stage or lead-type rename keeps a label committed while it ran. A text selection outside an
+  earlier-thread summary no longer blocks its tap. The Builder section config summary is an `IconButton` (a real
+  button; focus shows the summary), no longer a focusable `role="img"`. Sign-in frame (plan-59 review): no channel
+  chip (it showed the slug), the focus halo sits outside the ring, the caps-lock hint stays next to a password error
+  (test id `caps-lock-hint`), no permanent `will-change` on the light fields. The live supplier e2e spec opens the
+  `/atlas/…` routes and says in its header that it writes (never on a shared stack).
 - `BasicMenu` phone sheet edges from the plan-56d review (plan 61b): an open sheet crossing the phone breakpoint (a
   rotation) stays open and moves its popover between the page and the backdrop without a remount — the panel keeps
   its state and does not load again; on a phone it is trapped with the trigger as the opener. The trap has one
