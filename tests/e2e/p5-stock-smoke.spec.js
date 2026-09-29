@@ -25,13 +25,13 @@ async function expectTableLoaded(page) {
 }
 
 async function pickWarehouse(page, name) {
-  await page.getByRole('combobox', { name: either((t) => t.stock.select_warehouse) }).click();
+  await page.getByRole('combobox', { name: either((t) => t.stock.warehouse) }).click();
   await page.getByRole('menuitemradio', { name }).click();
   await page.waitForLoadState('networkidle');
 }
 
 async function warehouseNames(page) {
-  const combobox = page.getByRole('combobox', { name: either((t) => t.stock.select_warehouse) });
+  const combobox = page.getByRole('combobox', { name: either((t) => t.stock.warehouse) });
   await combobox.click();
   const names = await page.getByRole('menuitemradio').allInnerTexts();
   await page.keyboard.press('Escape');
