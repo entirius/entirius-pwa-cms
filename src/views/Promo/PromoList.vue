@@ -117,7 +117,7 @@
           />
         </template>
         <template #cell-code_count="{ row }">
-          <CountBadge :count="row.code_count" />
+          <CountBadge :count="row.code_count ?? 0" />
         </template>
         <template #cell-is_active="{ row }">
           <StatusBadge

@@ -467,8 +467,6 @@ export default {
   gap: var(--space-8);
 }
 
-
-
 .voucher-detail__code {
   display: flex;
   align-items: center;

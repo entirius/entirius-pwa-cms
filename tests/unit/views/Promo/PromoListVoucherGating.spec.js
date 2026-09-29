@@ -28,6 +28,7 @@ vi.mock("@/stores/checkoutChannel", () => ({
 import PromoList from "@/views/Promo/PromoList.vue";
 
 const PageFrameStub = { template: '<div><slot name="header" /><slot name="toolbar" /><slot /></div>' };
+const SegmentedControl = { name: "SegmentedControl", props: ["options", "modelValue"], template: "<div />" };
 
 function mountWith({ vouchers, tab } = {}) {
   mockIsModuleEnabled.mockImplementation((key) => key === "checkout_voucher" && vouchers);
@@ -35,7 +36,7 @@ function mountWith({ vouchers, tab } = {}) {
     shallow: true,
     global: {
       // The page frame renders its slots; every other child stays shallow.
-      stubs: { PageLayout: PageFrameStub },
+      stubs: { PageLayout: PageFrameStub, SegmentedControl },
       mocks: { $route: { params: {}, query: tab ? { tab } : {} }, $router: { push: vi.fn() } },
     },
   });
@@ -50,7 +51,7 @@ describe("PromoList voucher gating", () => {
 
     expect(wrapper.vm.tabOptions.map((t) => t.value)).toEqual(["discounts"]);
     // Nothing to switch to: no lone "Discounts" segment (B-83).
-    expect(wrapper.html().toLowerCase()).not.toContain("segmented");
+    expect(wrapper.findComponent(SegmentedControl).exists()).toBe(false);
   });
 
   it("offers the Vouchers segment when checkout_voucher is enabled", async () => {
@@ -58,7 +59,8 @@ describe("PromoList voucher gating", () => {
     await flushPromises();
 
     expect(wrapper.vm.tabOptions.map((t) => t.value)).toEqual(["discounts", "vouchers"]);
-    expect(wrapper.html().toLowerCase()).toContain("segmented");
+    const segments = wrapper.findComponent(SegmentedControl);
+    expect(segments.props("options").map((option) => option.value)).toEqual(["discounts", "vouchers"]);
   });
 
   it("shows the locked EmptyState on a vouchers deep link without the module", async () => {
@@ -69,6 +71,6 @@ describe("PromoList voucher gating", () => {
     expect(wrapper.findComponent({ name: "VouchersSection" }).exists()).toBe(false);
     expect(wrapper.find(".promo-vouchers-disabled").exists()).toBe(true);
     // The switch stays, so Discounts is one click away.
-    expect(wrapper.html().toLowerCase()).toContain("segmented");
+    expect(wrapper.findComponent(SegmentedControl).props("options").map((option) => option.value)).toContain("discounts");
   });
 });

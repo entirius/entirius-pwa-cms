@@ -34,5 +34,7 @@ export function enumDescKey(kind, value) {
 export function enumLabel(kind, value, fallback) {
   const key = `promo.enum_label.${kind}.${value}`;
   const label = t(key);
-  return label === key ? fallback || value : label;
+  if (label !== key) return label;
+  // Tag needs a string label: an unknown value shows as itself, a missing one as a dash.
+  return fallback || (value == null || value === "" ? "—" : String(value));
 }

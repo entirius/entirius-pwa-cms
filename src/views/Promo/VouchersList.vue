@@ -226,7 +226,8 @@ export default {
     },
     campaignName(id) {
       const found = this.campaigns.find((c) => c.id === id);
-      return found ? found.name : `#${id}`;
+      // A nameless or unknown campaign still gets a label (Tag needs a string): its id.
+      return found?.name || `#${id}`;
     },
     formatDate(value) {
       return value ? value.split("T")[0] : "—";
