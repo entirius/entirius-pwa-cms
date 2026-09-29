@@ -181,7 +181,7 @@ describe("Company card header", () => {
 
 // Plan 54: the dialog is a BasicModal; the stub renders its body and hands its actions out as props.
 describe("Leads Communicate dialog", () => {
-  const BasicModal = { name: "BasicModal", props: ["open", "title", "actions"], template: "<div><slot /></div>" };
+  const BasicModal = { name: "BasicModal", props: ["open", "title", "actions", "persistent"], template: "<div><slot /></div>" };
   const BasicRadioGroup = { name: "BasicRadioGroup", props: ["modelValue", "options"], template: "<div />" };
   const contacts = [
     { id: 1, first_name: "Anna", last_name: "Nowak", email: "anna@shop.test", is_primary: false },
@@ -223,6 +223,35 @@ describe("Leads Communicate dialog", () => {
     await submit(wrapper).onClick();
     await flushPromises();
     expect(leads.POST_Communicate).toHaveBeenCalledWith(7, { template_key: "cold", contact_id: 2 });
+    expect(has(wrapper, "communicate-modal")).toBe(false);
+  });
+
+  it("a failed template list shows its message in the dialog; the next open starts with no list", async () => {
+    communicator.GET_Templates.mockRejectedValueOnce({ response: { data: { detail: "Toolbox down" } } });
+    const wrapper = await openDialog();
+    expect(wrapper.get('[data-testid="communicate-error"]').text()).toBe("Toolbox down");
+    expect(control(wrapper, "communicate-template").props("options")).toEqual([]);
+    communicator.GET_Templates.mockReturnValueOnce(new Promise(() => {}));
+    await wrapper.findComponent({ name: "BasicModal" }).props("actions").find((a) => a.key === "cancel").onClick();
+    await wrapper.get('[data-testid="company-communicate"]').trigger("click");
+    await flushPromises();
+    expect(has(wrapper, "communicate-error")).toBe(false);
+    expect(control(wrapper, "communicate-template").props("options")).toEqual([]);
+  });
+
+  it("a double click on Request draft asks for one draft; the dialog is persistent while it runs", async () => {
+    let resolve;
+    leads.POST_Communicate.mockReturnValue(new Promise((r) => (resolve = r)));
+    const wrapper = await openDialog();
+    await setControl(wrapper, "communicate-template", "cold");
+    submit(wrapper).onClick();
+    submit(wrapper).onClick();
+    await flushPromises();
+    expect(leads.POST_Communicate).toHaveBeenCalledTimes(1);
+    expect(submit(wrapper).disabled).toBe(true);
+    expect(wrapper.findComponent({ name: "BasicModal" }).props("persistent")).toBe(true);
+    resolve({ data: {} });
+    await flushPromises();
     expect(has(wrapper, "communicate-modal")).toBe(false);
   });
 });

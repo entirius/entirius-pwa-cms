@@ -58,7 +58,8 @@ let nextId = 0;
 // `size` sm · md · lg, `persistent` (busy: Esc and the backdrop do not close it, the close button is disabled),
 // default slot = body, `footer` slot or `actions` (→ ActionBar, R5). Focus is trapped while open and goes back to the
 // opener on close. Below the tablet breakpoint it is a full-width sheet at the bottom. `inline` renders the open state in the
-// page flow (catalogue): no Teleport, no backdrop, no trap. Other attributes (`data-testid`) land on the dialog element.
+// page flow (catalogue): no Teleport, no backdrop, no trap. Other attributes (`data-testid`, `class`, listeners) land on
+// the dialog element; `role`, `aria-*` and `tabindex` are bound after `$attrs`, so the dialog's own values always win.
 import { computed, ref } from "vue";
 import IconButton from "@/boots/IconButton/index.vue";
 import ActionBar from "@/boots/ActionBar/index.vue";

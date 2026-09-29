@@ -31,6 +31,7 @@
       :open="true"
       :title="$t('leads.company.communicate')"
       :actions="communicateActions"
+      :persistent="sending"
       data-testid="communicate-modal"
       @close="communicating = false"
     >
@@ -68,6 +69,7 @@ const templates = ref([]);
 const templateKey = ref("");
 const contactId = ref(null);
 const communicateError = ref("");
+const sending = ref(false);
 
 const hasAccounts = computed(() => munin.isModuleInstalled("accounts"));
 
@@ -116,12 +118,19 @@ const contactOptions = computed(() =>
   }))
 );
 const communicateActions = computed(() => [
-  { key: "cancel", label: t("leads.review.cancel"), role: "secondary", onClick: () => (communicating.value = false) },
+  {
+    key: "cancel",
+    label: t("leads.review.cancel"),
+    role: "secondary",
+    disabled: sending.value,
+    onClick: () => (communicating.value = false),
+  },
   {
     key: "submit",
     label: t("leads.communicate.submit"),
     role: "primary",
-    disabled: !templateKey.value || !contactId.value,
+    disabled: sending.value || !templateKey.value || !contactId.value,
+    loading: sending.value,
     testid: "communicate-submit",
     onClick: communicate,
   },
@@ -130,13 +139,21 @@ const communicateActions = computed(() => [
 async function openCommunicate() {
   templateKey.value = "";
   communicateError.value = "";
+  templates.value = [];
   contactId.value = contacts.value.find((c) => c.is_primary)?.id ?? null;
   communicating.value = true;
-  const { data } = await GET_Templates();
-  templates.value = data.results.filter((tpl) => tpl.is_active);
+  try {
+    const { data } = await GET_Templates();
+    templates.value = data.results.filter((tpl) => tpl.is_active);
+  } catch (err) {
+    communicateError.value = extractApiMessage(err, t("leads.review.error"));
+  }
 }
 
+// One draft per click: the dialog is persistent and its actions disabled while the request runs.
 async function communicate() {
+  if (sending.value) return;
+  sending.value = true;
   communicateError.value = "";
   try {
     await POST_Communicate(props.company.id, { template_key: templateKey.value, contact_id: contactId.value });
@@ -144,6 +161,8 @@ async function communicate() {
     communicating.value = false;
   } catch (err) {
     communicateError.value = extractApiMessage(err, t("leads.review.error"));
+  } finally {
+    sending.value = false;
   }
 }
 

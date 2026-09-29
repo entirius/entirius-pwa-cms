@@ -118,6 +118,22 @@ describe("BasicModal", () => {
     expect(wrapper.emitted("update:open")).toBeUndefined();
   });
 
+  it("caller attributes land on the dialog; its own role, aria-modal and tabindex win", async () => {
+    const wrapper = mount(BasicModal, {
+      props: { open: true, title: "Edytuj baner" },
+      attrs: { "data-testid": "banner-dialog", class: "own-class", role: "region", "aria-modal": "false", tabindex: "0" },
+      attachTo: document.body,
+    });
+    wrappers.push(wrapper);
+    await settle();
+    expect(dialog().getAttribute("data-testid")).toBe("banner-dialog");
+    expect(dialog().classList).toContain("own-class");
+    expect(dialog().classList).toContain("basic-modal__panel");
+    expect(dialog().getAttribute("aria-modal")).toBe("true");
+    expect(dialog().getAttribute("tabindex")).toBe("-1");
+    expect(document.querySelector(".basic-modal").hasAttribute("data-testid")).toBe(false);
+  });
+
   it("renders nothing while closed", () => {
     mountModal({ open: false });
     expect(dialog()).toBeNull();
