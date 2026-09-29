@@ -136,6 +136,7 @@ describe("Company card actions", () => {
 // Plan 53: the card header's stage and lead-type selects are BasicSelects with a floating label (operator request).
 describe("Company card header", () => {
   beforeEach(() => {
+    useRoute().params.id = "7"; // a test that switched companies and failed midway leaves no other card open
     setActivePinia(createPinia());
     vi.clearAllMocks();
     leads.GET_Company.mockResolvedValue({ data: { ...company(), name: "Shop", lead_type: "RETAILER", stage: { key: "new" } } });
@@ -222,6 +223,38 @@ describe("Company card header", () => {
     expect(wrapper.html()).toBe(before);
     useRoute().params.id = "7";
     await flushPromises();
+  });
+
+  it.each([
+    ["stage move", "POST_Transition", "company-stage", "won"],
+    ["type change", "PATCH_Company", "company-lead-type", "UNKNOWN"],
+  ])("A's %s answering after a switch to B never lands on B's card", async (_, call, control, value) => {
+    let settleA;
+    leads[call].mockReturnValueOnce(new Promise((resolve) => (settleA = resolve)));
+    const wrapper = await mountCard();
+    await setControl(wrapper, control, value);
+    leads.GET_Company.mockResolvedValue({ data: { ...company(), id: 8, name: "Shop B", stage: { key: "new" } } });
+    useRoute().params.id = "8";
+    await flushPromises();
+    settleA({ data: { ...company(), name: "Shop A", stage: { key: "won" } } });
+    await flushPromises();
+    expect(wrapper.get('[data-testid="thread-company"]').text()).toBe("Shop B");
+    useRoute().params.id = "7";
+    await flushPromises();
+  });
+
+  it("A opened again (A → B → A): the first open's late failure does not stand next to the loaded card", async () => {
+    let failFirst;
+    leads.GET_Company.mockReturnValueOnce(new Promise((_, reject) => (failFirst = reject)));
+    const wrapper = await mountCard();
+    useRoute().params.id = "8";
+    await flushPromises();
+    useRoute().params.id = "7";
+    await flushPromises();
+    failFirst({ response: { data: { detail: "A failed." } } });
+    await flushPromises();
+    expect(wrapper.find('[data-testid="company-load-error"]').exists()).toBe(false);
+    expect(wrapper.get('[data-testid="thread-company"]').text()).toBe("Shop");
   });
 
   it("picking the current stage or type again sends nothing", async () => {
