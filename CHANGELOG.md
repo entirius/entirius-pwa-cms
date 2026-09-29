@@ -568,6 +568,13 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- Review leftovers of plans 61b–61d (plan 61e): a failed reload of the Leads company card (after an action, or after
+  a refused stage or type change) shows a notice and keeps the card instead of an unhandled rejection. The sign-in
+  caps-lock hint sits in a live region that is always there and is named by the password input's `aria-describedby`
+  while it shows. The builder's section config summary is muted text under the section title, not a button without an
+  action. `BasicMenu` drops the `tabindex` its focus fallback puts on the menu once focus leaves it. A failed profile
+  call on sign-in keeps the stored hints choice (only a profile without one resets it to on). A caller's
+  `aria-describedby` on `BasicSelect` or `BasicInput` joins the FormField's error or hint id instead of replacing it.
 - Field hints, review fixes of plan 60 (plan 61d): a hint opened with Enter or Space closes when focus leaves it (a
   tap still toggles it on a touch screen). The hints choice is reset on every sign-in and cleared on sign-out, so a
   profile without one gets hints on, never the previous user's. The "no languages" note of the translate and
