@@ -96,6 +96,8 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
       await openFirstRow(page, rows, /\/pim\/features\/.+/);
       await expect(saveButton(page)).toBeVisible();
       await expect(page.locator('.basic-card .form-grid').first()).toBeVisible();
+      // The switches load as async chunks after the form shows; leaving earlier aborts them (a false request failure).
+      await expect(page.getByRole('switch').first()).toBeVisible();
 
       await openPage(page, '/pim/features/create');
       await expect(h1(page)).toHaveText(either((t) => t.pim.create_feature));
