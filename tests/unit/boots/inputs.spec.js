@@ -13,6 +13,7 @@ import SegmentedControl from "@/boots/SegmentedControl/index.vue";
 import ColorInput from "@/boots/ColorInput/index.vue";
 import BasicDatePicker from "@/boots/BasicDatePicker/index.vue";
 import BasicWysiwyg from "@/boots/BasicWysiwyg/index.vue";
+import { hintsOn } from "@/composables/fieldHints";
 
 const flatpickrInstance = { destroy: vi.fn(), setDate: vi.fn(), input: { value: "" } };
 const flatpickr = vi.fn(() => flatpickrInstance);
@@ -40,18 +41,41 @@ describe("FormField contract", () => {
   });
 
   it("describes the control with the hint, and with the error instead of it", async () => {
-    const wrapper = inField(BasicInput, { description: "Visible in the store" });
+    const wrapper = inField(BasicInput, { hint: "Visible in the store" });
     const input = () => wrapper.find("input");
-    const hint = wrapper.find(".form-field__desc");
-    expect(input().attributes("aria-describedby")).toBe(hint.attributes("id"));
+    const tip = wrapper.findComponent({ name: "BasicTooltip" });
+    expect(input().attributes("aria-describedby")).toBe(tip.props("tipId"));
     expect(input().attributes("aria-invalid")).toBeUndefined();
 
-    const invalid = inField(BasicInput, { description: "Visible in the store", error: "Required field" });
+    const invalid = inField(BasicInput, { hint: "Visible in the store", error: "Required field" });
     const error = invalid.find(".form-field__error");
     expect(error.attributes("role")).toBe("alert");
     expect(invalid.find("input").attributes("aria-describedby")).toBe(error.attributes("id"));
     expect(invalid.find("input").attributes("aria-invalid")).toBe("true");
-    expect(invalid.find(".form-field__desc").exists()).toBe(false);
+  });
+
+  it("hints off (the account-menu switch): no mark, nothing described by the hint; errors and required stay", async () => {
+    hintsOn.value = false;
+    try {
+      const wrapper = inField(BasicInput, { hint: "Visible in the store", required: true });
+      expect(wrapper.findComponent({ name: "BasicTooltip" }).exists()).toBe(false);
+      expect(wrapper.find("input").attributes("aria-describedby")).toBeUndefined();
+      expect(wrapper.find("label").classes()).toContain("required");
+      const invalid = inField(BasicInput, { hint: "Visible in the store", error: "Required field" });
+      expect(invalid.find("input").attributes("aria-describedby")).toBe(invalid.find(".form-field__error").attributes("id"));
+    } finally {
+      hintsOn.value = true;
+    }
+  });
+
+  it("follows the switch live: turning hints back on restores the mark and the description", async () => {
+    hintsOn.value = false;
+    const wrapper = inField(BasicInput, { hint: "Visible in the store" });
+    hintsOn.value = true;
+    await nextTick();
+    const tip = wrapper.findComponent({ name: "BasicTooltip" });
+    expect(tip.exists()).toBe(true);
+    expect(wrapper.find("input").attributes("aria-describedby")).toBe(tip.props("tipId"));
   });
 
   it("marks required and disables the control", () => {
@@ -77,12 +101,15 @@ describe("FormField contract", () => {
     expect(wrapper.find("label").attributes("for")).toBe(ids[0]);
   });
 
-  it("shows the help tooltip on BasicTooltip, outside the label", () => {
-    const wrapper = inField(BasicInput, { tooltip: "Name in the store" });
+  it("shows the hint as the help mark after the label: subtle by default, important on request", () => {
+    const wrapper = inField(BasicInput, { hint: "Name in the store" });
     const tip = wrapper.findComponent({ name: "BasicTooltip" });
     expect(tip.attributes("variant")).toBe("help");
     expect(tip.attributes("text")).toBe("Name in the store");
+    expect(tip.attributes("level")).toBe("subtle");
     expect(wrapper.find("label").find("basic-tooltip-stub").exists()).toBe(false);
+    const important = inField(BasicInput, { hint: "Fixed after create", hintLevel: "important" });
+    expect(important.findComponent({ name: "BasicTooltip" }).attributes("level")).toBe("important");
   });
 
   it("lays out inline on request", () => {
@@ -278,9 +305,11 @@ describe("BasicSwitch", () => {
     expect(wrapper.emitted("update:modelValue")).toBeUndefined();
   });
 
-  it("shows its hint as a help tooltip", () => {
-    const wrapper = mount(BasicSwitch, { props: { label: "A", hint: "Hint" }, global: GLOBAL });
-    expect(wrapper.findComponent({ name: "BasicTooltip" }).attributes("variant")).toBe("help");
+  it("shows its hint as the field-hint mark, at its level", () => {
+    const wrapper = mount(BasicSwitch, { props: { label: "A", hint: "Hint", hintLevel: "important" }, global: GLOBAL });
+    const tip = wrapper.findComponent({ name: "BasicTooltip" });
+    expect(tip.attributes("variant")).toBe("help");
+    expect(tip.attributes("level")).toBe("important");
   });
 
   it("inside a FormField the field's label names it", () => {
@@ -415,19 +444,19 @@ describe("BasicWysiwyg", () => {
     expect(editable.attributes("aria-labelledby")).toBeUndefined();
   });
 
-  it("reads the FormField contract: the editable node carries the field's id, label and description", async () => {
-    const wrapper = inField(BasicWysiwyg, { label: "Body", description: "Shown in the store" });
+  it("reads the FormField contract: the editable node carries the field's id, label and hint", async () => {
+    const wrapper = inField(BasicWysiwyg, { label: "Body", hint: "Shown in the store" });
     await settle();
     const editable = wrapper.find(".ProseMirror");
     const label = wrapper.find("label.form-field__label");
-    const hint = wrapper.find(".form-field__desc");
+    const tip = wrapper.findComponent({ name: "BasicTooltip" });
     expect(editable.attributes("id")).toBe(label.attributes("for"));
     expect(editable.attributes("aria-labelledby")).toBe(label.attributes("id"));
-    expect(editable.attributes("aria-describedby")).toBe(hint.attributes("id"));
+    expect(editable.attributes("aria-describedby")).toBe(tip.props("tipId"));
   });
 
   it("describes with the error instead of the hint once one appears", async () => {
-    const wrapper = inField(BasicWysiwyg, { label: "Body", description: "Hint", error: "Required" });
+    const wrapper = inField(BasicWysiwyg, { label: "Body", hint: "Hint", error: "Required" });
     await settle();
     const error = wrapper.find(".form-field__error");
     expect(wrapper.find(".ProseMirror").attributes("aria-describedby")).toBe(error.attributes("id"));

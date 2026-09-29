@@ -72,8 +72,9 @@ function onClick(event) {
   background-color: transparent;
   font-size: var(--fs-400);
 
+  // One disabled glyph for every variant: the disabled text role, clearly weaker than the enabled one (plan 60).
   &[disabled] {
-    color: var(--text-muted);
+    color: var(--text-disabled);
     cursor: not-allowed;
   }
 }

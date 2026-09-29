@@ -42,7 +42,8 @@
           <FormField
             :label="$t('enrichment.spawn_rules.col_key')"
             :required="isCreate"
-            :tooltip="$t('enrichment.spawn_rules.key_hint')"
+            hint-level="important"
+            :hint="$t('enrichment.spawn_rules.key_hint')"
             :error="fieldErr('key')"
           >
             <BasicInput v-model="form.key" :disabled="!isCreate" data-test="spawn-rule-key" />
@@ -50,14 +51,14 @@
 
           <FormField
             :label="$t('enrichment.spawn_rules.col_module')"
-            :tooltip="$t('enrichment.spawn_rules.module_hint')"
+            :hint="$t('enrichment.spawn_rules.module_hint')"
           >
             <BasicInput v-model="form.module" :disabled="true" />
           </FormField>
 
           <FormField
             :label="$t('enrichment.spawn_rules.col_check')"
-            :tooltip="$t('enrichment.spawn_rules.check_hint')"
+            :hint="$t('enrichment.spawn_rules.check_hint')"
             :error="fieldErr('check_key')"
           >
             <BasicSelect
@@ -96,7 +97,7 @@
 
           <FormField
             :label="$t('enrichment.spawn_rules.scope_language')"
-            :tooltip="$t('enrichment.spawn_rules.scope_language_hint')"
+            :hint="$t('enrichment.spawn_rules.scope_language_hint')"
           >
             <BasicSelect
               :options="languageOptions"
@@ -107,14 +108,14 @@
 
           <FormField
             :label="$t('enrichment.spawn_rules.limit')"
-            :tooltip="$t('enrichment.spawn_rules.limit_hint')"
+            :hint="$t('enrichment.spawn_rules.limit_hint')"
           >
             <BasicInput v-model="limitStr" :placeholder="$t('enrichment.spawn_rules.backend_default')" />
           </FormField>
 
           <FormField
             :label="$t('enrichment.spawn_rules.cooldown_days')"
-            :tooltip="$t('enrichment.spawn_rules.cooldown_hint')"
+            :hint="$t('enrichment.spawn_rules.cooldown_hint')"
           >
             <BasicInput
               v-model="cooldownStr"

@@ -66,12 +66,12 @@
         </template>
       </draggable>
       <form class="flex ai-st flex-wrap gap-5" data-testid="stage-add" @submit.prevent="add">
-        <FormField :label="$t('leads.stages.key')" :description="$t('leads.stages.key_help')" required>
+        <FormField :label="$t('leads.stages.key')" hint-level="important" :hint="$t('leads.stages.key_help')" required>
           <BasicInput v-model="draft.key" data-testid="stage-new-key" />
         </FormField>
         <FormField
           :label="$t('leads.stages.label')"
-          :description="$t('leads.stages.label_help')"
+          :hint="$t('leads.stages.label_help')"
           required
           :error="errors.label || ''"
         >

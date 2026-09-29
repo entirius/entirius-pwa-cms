@@ -104,11 +104,19 @@
         :label="cell.label"
         :interact="cell.interact"
       >
-        <div class="tooltip-frame flex jc-ct ai-ct">
-          <BasicTooltip :text="cell.text" :variant="cell.variant" :placement="cell.placement" :open="cell.open">
-            <BasicButton variant="secondary">Zapisz szkic</BasicButton>
-          </BasicTooltip>
-        </div>
+        <PinHints :on="true">
+          <div class="tooltip-frame flex jc-ct ai-ct">
+            <BasicTooltip
+              :text="cell.text"
+              :variant="cell.variant"
+              :level="cell.level"
+              :placement="cell.placement"
+              :open="cell.open"
+            >
+              <BasicButton variant="secondary">Zapisz szkic</BasicButton>
+            </BasicTooltip>
+          </div>
+        </PinHints>
       </CatalogueCell>
     </div>
 
@@ -143,6 +151,7 @@
 // Teleport, no trap), tooltips are forced `open`; the buttons at the top open the real overlays.
 import { reactive } from "vue";
 import CatalogueSection from "../CatalogueSection.vue";
+import PinHints from "../PinHints.vue";
 import CatalogueCell from "../CatalogueCell.vue";
 
 const LANGUAGES = ["pl", "en", "de"];
@@ -169,15 +178,17 @@ const menuItems = [
   { key: "delete", label: "Usuń stronę", icon: "delete", danger: true },
 ];
 
-const tooltipCells = ["default", "help"].flatMap((variant) =>
+// `help-important` is the help variant at the important level (plan 60): the filled field-hint mark.
+const tooltipCells = ["default", "help", "help-important"].flatMap((name) =>
   ["top", "bottom"].map((placement) => ({
-    id: `basic-tooltip-${variant}-${placement}`,
-    label: `${variant} · ${placement} · shown`,
+    id: `basic-tooltip-${name}-${placement}`,
+    label: `${name} · ${placement} · shown`,
     interact: "",
     open: true,
-    variant,
+    variant: name === "default" ? "default" : "help",
+    level: name === "help-important" ? "important" : "subtle",
     placement,
-    text: variant === "help" ? "Wersja robocza nie jest widoczna w sklepie." : "Zapisz bez publikowania",
+    text: name === "default" ? "Zapisz bez publikowania" : "Wersja robocza nie jest widoczna w sklepie.",
   }))
 );
 tooltipCells.push({
@@ -186,6 +197,7 @@ tooltipCells.push({
   interact: "hover,focus",
   open: false,
   variant: "default",
+  level: "subtle",
   placement: "top",
   text: "Zapisz bez publikowania",
 });

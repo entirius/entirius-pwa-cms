@@ -23,6 +23,13 @@ const NO_REMOVED_COMPONENT = Object.entries(REMOVED_COMPONENTS).map(([old, repla
   selector: `VElement[rawName='${old}']`,
   message: `${old} is removed: use <${replacement}> (${RULES} § Components).`,
 }));
+// C2 removed FormField props (plan 60): one field-hint pattern, `hint` + `hintLevel`.
+const NO_REMOVED_FIELD_PROP = ["description", "tooltip"].flatMap((prop) =>
+  [`[directive=false][key.name='${prop}']`, `[directive=true][key.argument.name='${prop}']`].map((attr) => ({
+    selector: `VElement[rawName='FormField'] > VStartTag > VAttribute${attr}`,
+    message: `FormField ${prop} is removed: use hint + hintLevel (${RULES} § Forms).`,
+  }))
+);
 // T1/T3 no raw colour or px in a static style attribute.
 const NO_RAW_INLINE_STYLE = {
   selector: "VAttribute[directive=false][key.name='style'][value.value=/#[0-9a-fA-F]{3,8}\\b|rgba?\\(|\\d+px/]",
@@ -69,11 +76,11 @@ export default [
     },
   },
   {
-    // C2 removed components (P3 closed them): an error, boots included. The vue plugin under a second name keeps this
+    // C2 removed components (P3 closed them) and removed FormField props (plan 60): an error, boots included. The vue plugin under a second name keeps this
     // list apart from the inline-style and icon list above (a later block would replace its options).
     files: ["src/**/*.vue"],
     plugins: { "vue-p3": vue },
-    rules: { "vue-p3/no-restricted-syntax": ["error", ...NO_REMOVED_COMPONENT] },
+    rules: { "vue-p3/no-restricted-syntax": ["error", ...NO_REMOVED_COMPONENT, ...NO_REMOVED_FIELD_PROP] },
   },
   {
     // C5 no icon-font glyph (the font is deleted, a glyph class draws nothing): an error. Boots own icon-* classes of

@@ -3724,7 +3724,8 @@
     "close_menu": "Zamknij menu",
     "language": "Język",
     "user": "Użytkownik",
-    "skip_to_content": "Przejdź do treści"
+    "skip_to_content": "Przejdź do treści",
+    "field_hints": "Podpowiedzi przy polach"
   },
   "translate_dialog": {
     "title": "Tłumacz",

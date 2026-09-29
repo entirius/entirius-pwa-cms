@@ -150,7 +150,7 @@
             <FormField
               v-if="activeTab === 'seo'"
               :label="$t('pim.og_image_url')"
-              :description="$t('pim.og_image_url_help')"
+              :hint="$t('pim.og_image_url_help')"
               class="form-grid__wide"
             >
               <BasicInput v-model="form.og_image" />

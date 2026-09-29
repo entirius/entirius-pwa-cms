@@ -63,7 +63,7 @@
       :actions="rewriteActions"
       data-testid="rewrite-modal"
     >
-      <FormField :label="$t('leads.rewrite.label')" :description="$t('leads.rewrite.hint')">
+      <FormField :label="$t('leads.rewrite.label')" hint-level="important" :hint="$t('leads.rewrite.hint')">
         <BasicTextarea v-model="rewriteNotes" :rows="4" :placeholder="$t('leads.rewrite.placeholder')" data-testid="rewrite-notes" />
       </FormField>
     </BasicModal>

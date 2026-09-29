@@ -31,7 +31,7 @@
             </FormField>
             <FormField
               :label="$t('pim.internal_desc_label')"
-              :tooltip="$t('pim.internal_desc_tooltip')"
+              :hint="$t('pim.internal_desc_tooltip')"
             >
               <BasicInput v-model="form.desc" />
             </FormField>

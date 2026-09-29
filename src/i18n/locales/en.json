@@ -3725,7 +3725,8 @@
     "close_menu": "Close menu",
     "language": "Language",
     "user": "User",
-    "skip_to_content": "Skip to content"
+    "skip_to_content": "Skip to content",
+    "field_hints": "Field hints"
   },
   "translate_dialog": {
     "title": "Translate",

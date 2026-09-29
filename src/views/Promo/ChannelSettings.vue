@@ -20,7 +20,7 @@
         <FormField :label="$t('promo.cfg_label')">
           <BasicInput v-model="form.label" />
         </FormField>
-        <FormField :label="$t('promo.cfg_validity_days')" :tooltip="$t('promo.cfg_validity_days_tip')">
+        <FormField :label="$t('promo.cfg_validity_days')" :hint="$t('promo.cfg_validity_days_tip')">
           <NumberInput
             v-model="form.default_validity_period_days"
             :min="1"
@@ -39,12 +39,12 @@
             v-model="form.expiry_starts_from"
           />
         </FormField>
-        <FormField :label="$t('promo.cfg_allow_extension')" :tooltip="$t('promo.cfg_allow_extension_tip')">
+        <FormField :label="$t('promo.cfg_allow_extension')" :hint="$t('promo.cfg_allow_extension_tip')">
           <BasicSwitch
             v-model="form.allow_extension"
           />
         </FormField>
-        <FormField :label="$t('promo.cfg_extension_days')" :tooltip="$t('promo.cfg_extension_days_tip')">
+        <FormField :label="$t('promo.cfg_extension_days')" :hint="$t('promo.cfg_extension_days_tip')">
           <NumberInput
             v-model="form.extension_period_days"
             :min="1"
@@ -55,26 +55,26 @@
 
       <h4 class="cfg-section">{{ $t("promo.cfg_section_limits") }}</h4>
       <div class="cfg-grid">
-        <FormField :label="$t('promo.cfg_min_value')" :tooltip="$t('promo.cfg_min_value_tip')">
+        <FormField :label="$t('promo.cfg_min_value')" :hint="$t('promo.cfg_min_value_tip')">
           <BasicInput v-model="form.min_value" type="number" />
         </FormField>
-        <FormField :label="$t('promo.cfg_max_value')" :tooltip="$t('promo.cfg_max_value_tip')">
+        <FormField :label="$t('promo.cfg_max_value')" :hint="$t('promo.cfg_max_value_tip')">
           <BasicInput v-model="form.max_value" type="number" />
         </FormField>
-        <FormField :label="$t('promo.cfg_max_per_cart')" :tooltip="$t('promo.cfg_max_per_cart_tip')">
+        <FormField :label="$t('promo.cfg_max_per_cart')" :hint="$t('promo.cfg_max_per_cart_tip')">
           <NumberInput
             v-model="form.max_vouchers_per_cart"
             :min="1"
             :max="99"
           />
         </FormField>
-        <FormField :label="$t('promo.cfg_max_total_per_cart')" :tooltip="$t('promo.cfg_max_total_per_cart_tip')">
+        <FormField :label="$t('promo.cfg_max_total_per_cart')" :hint="$t('promo.cfg_max_total_per_cart_tip')">
           <BasicInput
             v-model="form.max_total_voucher_value_per_cart"
             type="number"
           />
         </FormField>
-        <FormField :label="$t('promo.cfg_allow_stacking')" :tooltip="$t('promo.cfg_allow_stacking_tip')">
+        <FormField :label="$t('promo.cfg_allow_stacking')" hint-level="important" :hint="$t('promo.cfg_allow_stacking_tip')">
           <BasicSwitch
             v-model="form.allow_stacking_with_discount_codes"
           />
@@ -83,13 +83,13 @@
 
       <h4 class="cfg-section">{{ $t("promo.cfg_section_code") }}</h4>
       <div class="cfg-grid">
-        <FormField :label="$t('promo.cfg_code_charset')" :tooltip="$t('promo.cfg_code_charset_tip')">
+        <FormField :label="$t('promo.cfg_code_charset')" hint-level="important" :hint="$t('promo.cfg_code_charset_tip')">
           <BasicInput v-model="form.code_charset" />
         </FormField>
-        <FormField :label="$t('promo.cfg_code_length')" :tooltip="$t('promo.cfg_code_length_tip')">
+        <FormField :label="$t('promo.cfg_code_length')" :hint="$t('promo.cfg_code_length_tip')">
           <NumberInput v-model="form.code_length" :min="8" :max="32" />
         </FormField>
-        <FormField :label="$t('promo.cfg_require_pin')" :tooltip="$t('promo.cfg_require_pin_tip')">
+        <FormField :label="$t('promo.cfg_require_pin')" hint-level="important" :hint="$t('promo.cfg_require_pin_tip')">
           <BasicSwitch
             v-model="form.require_pin"
           />
@@ -98,15 +98,15 @@
 
       <h4 class="cfg-section">{{ $t("promo.cfg_section_security") }}</h4>
       <div class="cfg-grid">
-        <FormField :label="$t('promo.cfg_require_approval')" :tooltip="$t('promo.cfg_require_approval_tip')">
+        <FormField :label="$t('promo.cfg_require_approval')" hint-level="important" :hint="$t('promo.cfg_require_approval_tip')">
           <BasicSwitch
             v-model="form.require_issuance_approval"
           />
         </FormField>
-        <FormField :label="$t('promo.cfg_max_failed')" :tooltip="$t('promo.cfg_max_failed_tip')">
+        <FormField :label="$t('promo.cfg_max_failed')" :hint="$t('promo.cfg_max_failed_tip')">
           <NumberInput v-model="form.max_failed_attempts" :min="1" :max="99" />
         </FormField>
-        <FormField :label="$t('promo.cfg_lockout_minutes')" :tooltip="$t('promo.cfg_lockout_minutes_tip')">
+        <FormField :label="$t('promo.cfg_lockout_minutes')" :hint="$t('promo.cfg_lockout_minutes_tip')">
           <NumberInput
             v-model="form.failed_attempt_lockout_minutes"
             :min="0"

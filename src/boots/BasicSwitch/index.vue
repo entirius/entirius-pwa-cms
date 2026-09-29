@@ -1,7 +1,7 @@
 <template>
   <div class="basic-switch inline-flex ai-ct gap-2" :class="{ 'basic-switch--disabled': controlDisabled }">
     <label v-if="label" :for="attrs.id" class="basic-switch__label">{{ label }}</label>
-    <BasicTooltip v-if="hint" variant="help" :text="hint" />
+    <BasicTooltip v-if="hint" variant="help" :level="hintLevel" :text="hint" />
     <button
       type="button"
       role="switch"
@@ -18,9 +18,9 @@
 </template>
 
 <script setup>
-// On/off toggle (docs/ui-components.md § P3 inputs), replaces Switcher: `v-model`, `label`, `hint` (a help tooltip
-// next to the label), `disabled`. A `role="switch"` button with `aria-checked`; its own `label` names it, inside a
-// FormField the field's label does (`for` = the contract id).
+// On/off toggle (docs/ui-components.md § P3 inputs), replaces Switcher: `v-model`, `label`, `hint` + `hintLevel` (the
+// field-hint mark next to the label, as FormField's), `disabled`. A `role="switch"` button with `aria-checked`; its
+// own `label` names it, inside a FormField the field's label does (`for` = the contract id).
 import BasicTooltip from "@/boots/BasicTooltip/index.vue";
 import { useControlAttrs } from "@/boots/FormField/useControlAttrs";
 
@@ -28,6 +28,7 @@ const props = defineProps({
   modelValue: { type: Boolean, default: false },
   label: { type: String, default: "" },
   hint: { type: String, default: "" },
+  hintLevel: { type: String, default: "subtle", validator: (value) => ["subtle", "important"].includes(value) },
   disabled: { type: Boolean, default: false },
 });
 const emit = defineEmits(["update:modelValue"]);

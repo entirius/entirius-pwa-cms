@@ -2,7 +2,8 @@
   <div class="overview-grid">
     <FormField
       :label="$t('atlas.form.idx_label')"
-      :tooltip="$t('atlas.form.idx_tooltip')"
+      hint-level="important"
+      :hint="$t('atlas.form.idx_tooltip')"
     >
       <BasicInput
         :model-value="form.idx"
@@ -12,7 +13,7 @@
     </FormField>
     <FormField
       :label="$t('atlas.form.name_label')"
-      :tooltip="$t('atlas.form.name_tooltip')"
+      :hint="$t('atlas.form.name_tooltip')"
       required
       :error="errors.name?.msg || ''"
     >
@@ -20,7 +21,7 @@
     </FormField>
     <FormField
       :label="$t('atlas.form.kind_label')"
-      :tooltip="$t('atlas.form.kind_tooltip')"
+      :hint="$t('atlas.form.kind_tooltip')"
     >
       <BasicSelect
         :options="kindOptions"
@@ -30,7 +31,8 @@
     </FormField>
     <FormField
       :label="$t('atlas.form.type_label')"
-      :tooltip="$t('atlas.form.type_tooltip')"
+      hint-level="important"
+      :hint="$t('atlas.form.type_tooltip')"
     >
       <BasicSelect
         :options="typeOptions"
@@ -40,7 +42,8 @@
     </FormField>
     <FormField
       :label="$t('atlas.form.review_mode_label')"
-      :tooltip="$t('atlas.form.review_mode_tooltip')"
+      hint-level="important"
+      :hint="$t('atlas.form.review_mode_tooltip')"
     >
       <BasicSelect
         :options="reviewModeOptions"
@@ -50,7 +53,8 @@
     </FormField>
     <FormField
       :label="$t('atlas.form.is_active_label')"
-      :tooltip="$t('atlas.form.is_active_tooltip')"
+      hint-level="important"
+      :hint="$t('atlas.form.is_active_tooltip')"
     >
       <BasicSwitch
         v-model="form.is_active"
@@ -59,7 +63,7 @@
     </FormField>
     <FormField
       :label="$t('atlas.form.default_language_label')"
-      :tooltip="$t('atlas.form.default_language_tooltip')"
+      :hint="$t('atlas.form.default_language_tooltip')"
     >
       <BasicSelect
         :options="regionalStore.languageOptions"
@@ -70,7 +74,7 @@
     </FormField>
     <FormField
       :label="$t('atlas.form.default_currency_label')"
-      :tooltip="$t('atlas.form.default_currency_tooltip')"
+      :hint="$t('atlas.form.default_currency_tooltip')"
     >
       <BasicSelect
         :options="regionalStore.currencyOptions"
@@ -81,7 +85,7 @@
     </FormField>
     <FormField
       :label="$t('atlas.form.country_label')"
-      :tooltip="$t('atlas.form.country_tooltip')"
+      :hint="$t('atlas.form.country_tooltip')"
     >
       <BasicSelect
         :options="regionalStore.countryOptions"
@@ -93,7 +97,8 @@
     <FormField
       v-if="!isMonitoringSupplier"
       :label="$t('atlas.form.sku_prefix_label')"
-      :tooltip="$t('atlas.form.sku_prefix_tooltip')"
+      hint-level="important"
+      :hint="$t('atlas.form.sku_prefix_tooltip')"
     >
       <BasicInput
         v-model="form.sku_prefix"
@@ -103,7 +108,8 @@
     <FormField
       v-if="!isMonitoringSupplier"
       :label="$t('atlas.form.warehouse_label')"
-      :tooltip="$t('atlas.form.warehouse_tooltip')"
+      hint-level="important"
+      :hint="$t('atlas.form.warehouse_tooltip')"
     >
       <BasicInput
         v-model="form.target_warehouse_code"
@@ -114,7 +120,7 @@
     <FormField
       v-if="!isMonitoringSupplier"
       :label="$t('atlas.form.feature_set_label')"
-      :tooltip="$t('atlas.form.feature_set_tooltip')"
+      :hint="$t('atlas.form.feature_set_tooltip')"
     >
       <BasicInput
         v-model="form.default_feature_set_idx"
@@ -124,7 +130,8 @@
     <FormField
       v-if="!isMonitoringSupplier"
       :label="$t('atlas.form.qty_subtract_label')"
-      :tooltip="$t('atlas.form.qty_subtract_tooltip')"
+      hint-level="important"
+      :hint="$t('atlas.form.qty_subtract_tooltip')"
     >
       <NumberInput
         v-model="form.qty_subtract"
@@ -136,7 +143,8 @@
     <FormField
       v-if="!isMonitoringSupplier"
       :label="$t('atlas.form.qty_minimum_label')"
-      :tooltip="$t('atlas.form.qty_minimum_tooltip')"
+      hint-level="important"
+      :hint="$t('atlas.form.qty_minimum_tooltip')"
     >
       <NumberInput
         v-model="form.qty_minimum"
@@ -148,7 +156,7 @@
     <FormField
       v-if="!isMonitoringSupplier"
       :label="$t('atlas.form.lead_time_label')"
-      :tooltip="$t('atlas.form.lead_time_tooltip')"
+      :hint="$t('atlas.form.lead_time_tooltip')"
     >
       <NumberInput
         v-model="form.lead_time_days"
@@ -159,7 +167,7 @@
     </FormField>
     <FormField
       :label="$t('atlas.form.contact_email_label')"
-      :tooltip="$t('atlas.form.contact_email_tooltip')"
+      :hint="$t('atlas.form.contact_email_tooltip')"
     >
       <BasicInput
         v-model="form.contact_email"
@@ -169,7 +177,7 @@
     </FormField>
     <FormField
       :label="$t('atlas.form.contact_phone_label')"
-      :tooltip="$t('atlas.form.contact_phone_tooltip')"
+      :hint="$t('atlas.form.contact_phone_tooltip')"
     >
       <BasicInput
         v-model="form.contact_phone"
@@ -178,7 +186,7 @@
     </FormField>
     <FormField
       :label="$t('atlas.form.contact_person_label')"
-      :tooltip="$t('atlas.form.contact_person_tooltip')"
+      :hint="$t('atlas.form.contact_person_tooltip')"
     >
       <BasicInput
         v-model="form.contact_person"
@@ -187,7 +195,7 @@
     </FormField>
     <FormField
       :label="$t('atlas.form.company_name_label')"
-      :tooltip="$t('atlas.form.company_name_tooltip')"
+      :hint="$t('atlas.form.company_name_tooltip')"
       class="overview-grid__wide"
     >
       <BasicInput
@@ -197,7 +205,7 @@
     </FormField>
     <FormField
       :label="$t('atlas.form.notes_label')"
-      :tooltip="$t('atlas.form.notes_tooltip')"
+      :hint="$t('atlas.form.notes_tooltip')"
       class="overview-grid__wide"
     >
       <BasicInput v-model="form.notes" data-testid="overview-notes" />
@@ -208,7 +216,8 @@
       :label="
         $t('atlas.form.allow_physical_writes_from_non_preferred_label')
       "
-      :tooltip="
+      hint-level="important"
+      :hint="
         $t('atlas.form.allow_physical_writes_from_non_preferred_tooltip')
       "
       class="overview-grid__wide"
@@ -224,7 +233,7 @@
     <FormField
       v-if="!isMonitoringSupplier"
       :label="$t('atlas.form.preferred_strategy_label')"
-      :tooltip="$t('atlas.form.preferred_strategy_tooltip')"
+      :hint="$t('atlas.form.preferred_strategy_tooltip')"
     >
       <BasicSelect
         v-model="form.primary_strategy"
@@ -235,7 +244,8 @@
     <FormField
       v-if="!isMonitoringSupplier"
       :label="$t('atlas.form.preferred_switch_cooldown_hours_label')"
-      :tooltip="$t('atlas.form.preferred_switch_cooldown_hours_tooltip')"
+      hint-level="important"
+      :hint="$t('atlas.form.preferred_switch_cooldown_hours_tooltip')"
     >
       <NumberInput
         v-model="form.primary_switch_cooldown_hours"
@@ -247,7 +257,8 @@
     <FormField
       v-if="!isMonitoringSupplier"
       :label="$t('atlas.form.preferred_switch_hysteresis_pct_label')"
-      :tooltip="$t('atlas.form.preferred_switch_hysteresis_pct_tooltip')"
+      hint-level="important"
+      :hint="$t('atlas.form.preferred_switch_hysteresis_pct_tooltip')"
     >
       <NumberInput
         v-model="form.primary_switch_hysteresis_pct"
@@ -259,7 +270,8 @@
     <FormField
       v-if="!isMonitoringSupplier"
       :label="$t('atlas.form.eval_frequency_label')"
-      :tooltip="$t('atlas.form.eval_frequency_tooltip')"
+      hint-level="important"
+      :hint="$t('atlas.form.eval_frequency_tooltip')"
     >
       <BasicSelect
         v-model="form.eval_frequency"

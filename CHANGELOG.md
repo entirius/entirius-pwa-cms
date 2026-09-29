@@ -147,6 +147,23 @@ All notable changes to this project will be documented in this file.
   password field; `autocomplete` `username` / `current-password` / `new-password` / `email`. Fields, requests,
   redirects and the SSO flow are unchanged. New: `size="lg"` (40 px) on `BasicButton` and `BasicInput`, a `trailing`
   slot on `BasicInput`, `onDark` on `BasicLogo`; `src/assets/scss/utils/_auth-card.scss` removed.
+- One field-hint pattern (plan 60): FormField `hint` + `hintLevel` replace `description` (a caption under the field)
+  and `tooltip`, both removed (UI lint, C2). The hint is a 16 px `?` after the label — `subtle` a hollow ring,
+  `important` filled `accent-subtle` for a constraint, format, limit or consequence; hover or keyboard focus opens it,
+  a tap toggles it on touch, Esc closes it. Every call site moved with a level (37 important of 94, plus BasicSwitch
+  `hintLevel`). The account menu gets „Podpowiedzi przy polach” (`menuitemcheckbox`, on by default, saved as
+  `cms_hints` like the theme): off hides every hint mark and drops the hint from `aria-describedby`; errors and
+  required markers stay. BasicMenu items take `checkbox`. Catalogue cells `form-field-hint-*`, `*-hints-off`,
+  `basic-tooltip-help-important-*`, `basic-switch-hint-important-*`; e2e `17-field-hints.spec.js`.
+- A disabled IconButton reads as disabled (plan 60, P5 close flag): its glyph is `text-disabled` in every variant
+  instead of `text-muted`, clearly weaker than the enabled `text-secondary` in both themes.
+
+- Calmer light theme (plan 58, token-only; dark unchanged): the light roles map to the brand `light.neutral.*` and
+  `light.tint.*` steps — warm-grey page `#F1F2F4`, off-white containers `#FAFAFB`, text `#1E222B` / `#2E333D` /
+  `#4F5563` / `#646A78` instead of near-black on white, low-chroma accent and status tints. Form-field borders
+  (`border-control`) move to `light.basic.400` `#898A8F` to reach 3:1 on every surface (WCAG 1.4.11).
+  `node scripts/tokens/contrast-light.mjs` proves every light contrast rule; the token unit spec runs it.
+
 - Accessible names renamed by the floating labels (P5 plan 56, listed in plan 56c for the test package): the Stock
   warehouse picker `Select warehouse` / „Wybierz magazyn” → `Warehouse` / „Magazyn”; the Pim category status filter
   `Filter by status` / „Filtruj po statusie” → `Status`; the Atlas supplier-review filter keeps its name `Supplier` /

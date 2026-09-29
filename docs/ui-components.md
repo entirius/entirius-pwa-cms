@@ -22,8 +22,8 @@ New boots use `<script setup>` (plain JS). See `FloatingActions/index.vue` and
 Notable ones for list/form views:
 
 - **`DataTable`** — see API below.
-- **`FormField`** — label/description/tooltip/required wrapper for form
-  inputs. Props: `label`, `description`, `tooltip`, `required`.
+- **`FormField`** — label/hint/required/error wrapper for form
+  inputs. Props: `label`, `hint`, `hintLevel`, `required`, `error`.
 - **`EmptyState`** — placeholder for empty lists and panels. Props: `title`, `message`,
   `icon`, `size` (`md` full block, default; `sm` one line); the default slot takes an action. `DataTable` renders it
   for `emptyText`, one line by default; a list screen whose only content is the table passes `empty-size="md"`.
@@ -151,7 +151,8 @@ and one meaning per glyph (unit test). A new meaning adds its glyph to `fa-icons
   it through).
 - **`IconButton`** — every icon-only action: `icon` (meaning, required), `label` (required: `aria-label` + `title`),
   `variant` `ghost` · `outline` · `primary` · `danger`, `size` `sm` 24 · `md` `--elem-height` · `lg` 40 (header,
-  mobile menu, `--radius-xl`), `pressed` (a toggle: `aria-pressed`, `surface-hover` fill), `disabled`. `danger` is
+  mobile menu, `--radius-xl`), `pressed` (a toggle: `aria-pressed`, `surface-hover` fill), `disabled` (the glyph
+  turns `text-disabled` in every variant). `danger` is
   every icon-only delete or remove (C6). The click stops at the button by default (`:stop="false"` to opt out).
   A back control: `<IconButton icon="back" :label="$t('common.back')" />`. On a phone
   the hit area grows to 40 × 40 around the box, the box keeps its size. `md` matches the text button, not Figma's
@@ -195,7 +196,8 @@ Catalogue: `#actions` (`#basic-button`, `#icon-button`, `#action-bar`, `#floatin
   emits `confirm`, `cancel` (Cancel, close, Esc, backdrop), `discard`. The caller closes it. Test ids
   `confirm-dialog-confirm` / `-cancel` / `-discard`; `confirmTestid` renames the confirm one (a page-object contract).
 - **`BasicMenu`** — `trigger` slot (the menu sets the control's `aria-haspopup`, `aria-expanded`, `aria-controls`
-  and toggles on its click), `items` = `[{ key, label, icon?, danger?, separator?, disabled?, to?, testid? }]`
+  and toggles on its click), `items` = `[{ key, label, icon?, danger?, separator?, disabled?, to?, testid?,
+  checked?, checkbox? }]` (`checked` = `menuitemradio`, with `checkbox` = `menuitemcheckbox`)
   (`role="menu"`; emits `select` with the item) or the `panel` slot (scope `close`, `role="dialog"` named by
   `label`); `placement` (floating-ui, default `bottom-start`); `sheet` (plan 56) for a panel that reads as text
   (configuration health): up to 32rem wide above a phone, a full-width bottom sheet pinned to the bottom edge on one
@@ -206,9 +208,10 @@ Catalogue: `#actions` (`#basic-button`, `#icon-button`, `#action-bar`, `#floatin
   (`:key`) instead. Keyboard: ArrowDown on the trigger opens, arrows /
   Home / End move, Enter / Space choose, Esc closes and returns focus, Tab and a click outside close.
 - **`BasicTooltip`** — wraps its trigger (default slot; its first focusable gets `aria-describedby`): `text`,
-  `placement` `top` · `bottom` · `left` · `right` (flips when there is no room), `variant` `help` (a `?` button
-  named „Pomoc” instead of the slot), `open` (forced). Shows on hover and keyboard focus, hides on Esc, blur and
-  leave. A trigger holding only a disabled control makes the wrapper the tab stop (disabled with a reason).
+  `placement` `top` · `bottom` · `left` · `right` (flips when there is no room), `variant` `help` (the field-hint
+  mark: a `?` button named „Pomoc” instead of the slot), `level` (help: `subtle` · `important`), `tipId` (a fixed id
+  for the tip), `open` (forced). Shows on hover and keyboard focus, hides on Esc, blur and leave; a help mark toggles
+  on a tap (touch) and closes on a tap elsewhere, and the hints switch (`src/composables/fieldHints.js`) removes it. A trigger holding only a disabled control makes the wrapper the tab stop (disabled with a reason).
   `IconButton` shows its `label` through it (no `title`).
 - **`SideDrawer`** — focus trapped in `focused` mode (`role="dialog" aria-modal`, named by its title), Esc closes in
   both modes (sticky: while focus is inside), close = `IconButton` (`side-drawer-close`). **`TranslationsDrawer`**
@@ -344,11 +347,14 @@ Catalogue: `#selects` (`#basic-select`, `#entity-search-picker`, `#channel-multi
 
 ### P3 inputs (plan 16)
 
-- **`FormField`** — the only owner of a field's `label`, `description` (hint), `required` (the red `*`), `error`
-  (`role="alert"`, replaces the hint) and `tooltip` (a BasicTooltip `help` button after the label); `layout`
+- **`FormField`** — the only owner of a field's `label`, `required` (the red `*`), `error` (`role="alert"`, under
+  the control) and `hint` (plan 60: the field-hint mark after the label — BasicTooltip `help`, a 16 px `?` in a 24 px
+  hit area, 40 px on a phone; `hintLevel` `subtle` (default: a hollow ring, `text-muted` glyph) · `important`
+  (filled `accent-subtle`, `accent` ring, semibold `text-strong` glyph) — see `docs/ui-rules.md` § Forms); `layout`
   `stacked` · `inline` (label left, control right from 1024 px, stacked below — Figma „Język treści”); `id` fixes the
   control's id, `disabled` disables it. It provides `FORM_FIELD` (`src/composables/formField.js`): `id` (the label's
-  `for`), `describedBy` (the hint or error shown), `invalid`, `required`, `disabled`, plus `labelId` for a control a
+  `for`), `describedBy` (the error, else the hint while hints are on), `invalid`, `required`, `disabled`, plus
+  `labelId` for a control a
   `for` cannot name. Of several controls in one field (rows of a `v-for`) only the first takes the field's id.
   Controls read it through `useControlAttrs()` (`src/boots/FormField/useControlAttrs.js`) and
   paint their own error border.
@@ -367,7 +373,7 @@ Catalogue: `#selects` (`#basic-select`, `#entity-search-picker`, `#channel-multi
 - **`BasicRadioGroup`** — `options` `[{ label, value, disabled?, testid? }]`, `v-model`, `name`, `disabled`; native
   radios in a `role="radiogroup"` (one Tab stop, the arrow keys move and select), named by the FormField label. An
   option's `testid` lands on its radio input.
-- **`BasicSwitch`** — replaces `Switcher`: `v-model`, `label`, `hint` (a help tooltip), `disabled`; a
+- **`BasicSwitch`** — replaces `Switcher`: `v-model`, `label`, `hint` + `hintLevel` (the field-hint mark), `disabled`; a
   `role="switch"` button with `aria-checked`, styles scoped to it.
 - **`BasicDatePicker`** — an input-looking trigger with the `calendar` icon opens an inline flatpickr; `v-model` (the
   flatpickr date string), `config` (a single date by default, `mode: "range"` for a range), `disabled`; the instance
@@ -433,7 +439,8 @@ In the catalogue and live: `App.vue` mounts `AppHeader`, `SidebarNav` (desktop),
   `meta.noBottomBar`. `entries` / `label` / `current` take fixed data (catalogue). No panel has more than 5 phone
   entries (a unit test guards it: there is no overflow design).
 - **`UserMenu`** — on BasicMenu (`aria-haspopup="menu"`): the user's name (a BasicMenu `heading` item), the theme
-  item naming its target ("Tryb jasny" / "Tryb ciemny"), the languages (`menuitemradio`, the current one
+  item naming its target ("Tryb jasny" / "Tryb ciemny"), „Podpowiedzi przy polach” (`menuitemcheckbox`, on by
+  default; `setHints` saves `cms_hints` like the theme: profile `extra`, localStorage, applied on sign-in), the languages (`menuitemradio`, the current one
   `aria-checked`; BasicMenu items take `checked`), configuration health (with
   munin), change password, logout (`danger`). Trigger: IconButton `lg` `user`, `data-fid="user-button"`.
 - **`BasicLogo`** — `variant="full"` is the "ENTIRIUS CMS" wordmark, `size` its height (32 → 206 × 32, 24 → 154 × 24);
@@ -503,15 +510,15 @@ reference. It replaces the view-local `detail-section` / `detail-grid` / `detail
 |---|---|
 | `detail-section` + its `<h2>` | `BasicCard :title gap` (16 px under the title); cards 32 px apart (`mb-8`) |
 | `detail-grid` | `.form-grid` (`utils/_decorators.scss`): 1 column up to 768 px, 2 above; gaps 16 px rows, 24 px columns |
-| `detail-field` + `detail-label` / `.field-label` | `FormField` (`label`, `required`, `description`, `error`) around the boot control |
+| `detail-field` + `detail-label` / `.field-label` | `FormField` (`label`, `required`, `hint`, `error`) around the boot control |
 | a field as wide as the card (question, rich-text answer) | `FormField class="form-grid__wide"` |
 | a section action (add a row, add an existing item) | BasicCard `actions` slot |
 | Save · Delete · Translations in the panel wrapper's toolbar | PageHeader `actions` → `ActionBar` |
 
 - **Fields.** One FormField per field; the control carries no label, placeholder-as-label or error of its own.
   `:error="formErrors.getFieldError('<field>')?.msg || ''"` on every field the API can name, `required` where the
-  save validates or the API refuses an empty value, `description` for what a label cannot say (fixed after create,
-  empty = every channel). A field-level action (per-field translations) is an `IconButton` right of the control, in a
+  save validates or the API refuses an empty value, `hint` for what a label cannot say (`hintLevel="important"` for
+  fixed after create, a subtle hint for empty = every channel). A field-level action (per-field translations) is an `IconButton` right of the control, in a
   `flex ai-st gap-3` row, named after the field („Tłumaczenia: Pytanie”).
 - **Actions.** PageHeader `actions` holds, left to right: the unsaved `StatusBadge`, the record's on/off
   `BasicSwitch` (when it has one), then an `ActionBar` — Translations (`utility`, `translate`), Delete (`utility`,
@@ -538,7 +545,7 @@ reference. It replaces the view-local `detail-section` / `detail-grid` / `detail
     <FormField :label="$t('faq.name')" required :error="formErrors.getFieldError('name')?.msg || ''">
       <BasicInput v-model="form.name" />
     </FormField>
-    <FormField :label="$t('faq.channels')" :description="$t('faq.channels_hint')">
+    <FormField :label="$t('faq.channels')" :hint="$t('faq.channels_hint')">
       <BasicSelect v-model="form.channel_ids" multiple :options="channelOptions" />
     </FormField>
   </div>

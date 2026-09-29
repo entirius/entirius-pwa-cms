@@ -19,7 +19,8 @@
           <FormField
             :label="$t('pim.gap_key')"
             :required="isCreate"
-            :tooltip="$t('pim.gap_key_hint')"
+            hint-level="important"
+            :hint="$t('pim.gap_key_hint')"
             :error="fieldErr('key')"
           >
             <BasicInput v-model="form.key" :disabled="!isCreate" />
@@ -57,7 +58,7 @@
           <FormField
             v-if="!rawParamsMode && needsRole"
             :label="$t('pim.gap_param_role')"
-            :tooltip="$t('pim.gap_param_role_hint')"
+            :hint="$t('pim.gap_param_role_hint')"
           >
             <BasicSelect
               :options="roleOptions"
@@ -115,7 +116,7 @@
 
       <BasicCard :title="$t('pim.gap_scope')" gap class="mb-8">
         <div class="form-grid">
-          <FormField :label="$t('pim.gap_languages')" :tooltip="$t('pim.gap_scope_all_hint')">
+          <FormField :label="$t('pim.gap_languages')" :hint="$t('pim.gap_scope_all_hint')">
             <div class="filter-chip-row" role="group" :aria-label="$t('pim.gap_languages')">
               <FilterChip
                 v-for="lang in availableLangs"
@@ -126,7 +127,7 @@
               />
             </div>
           </FormField>
-          <FormField :label="$t('pim.gap_channels')" :tooltip="$t('pim.gap_scope_all_hint')">
+          <FormField :label="$t('pim.gap_channels')" :hint="$t('pim.gap_scope_all_hint')">
             <ChannelMultiSelect
               v-model="form.channels"
               :channels="pimChannel.channels"

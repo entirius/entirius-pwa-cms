@@ -62,31 +62,32 @@
         <div class="form-grid">
           <FormField
             :label="$t('emails.footer_signature_copy_1')"
-            :description="$t('emails.footer_signature_copy_1_hint')"
+            :hint="$t('emails.footer_signature_copy_1_hint')"
           >
             <BasicInput v-model="config.footer_signature_copy_1" />
           </FormField>
           <FormField
             :label="$t('emails.footer_signature_copy_2')"
-            :description="$t('emails.footer_signature_copy_2_hint')"
+            :hint="$t('emails.footer_signature_copy_2_hint')"
           >
             <BasicInput v-model="config.footer_signature_copy_2" />
           </FormField>
           <FormField
             :label="$t('emails.footer_socials_copy')"
-            :description="$t('emails.footer_socials_copy_hint')"
+            :hint="$t('emails.footer_socials_copy_hint')"
           >
             <BasicInput v-model="config.footer_socials_copy" />
           </FormField>
           <FormField
             :label="$t('emails.footer_unsubscribe_label')"
-            :description="$t('emails.footer_unsubscribe_label_hint')"
+            :hint="$t('emails.footer_unsubscribe_label_hint')"
           >
             <BasicInput v-model="config.footer_unsubscribe_label" />
           </FormField>
           <FormField
             :label="$t('emails.footer_automatic_copy')"
-            :description="$t('emails.footer_automatic_copy_hint')"
+            hint-level="important"
+            :hint="$t('emails.footer_automatic_copy_hint')"
             class="form-grid__wide"
           >
             <BasicWysiwyg v-model="config.footer_automatic_copy" />
