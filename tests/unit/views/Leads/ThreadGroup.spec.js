@@ -45,4 +45,16 @@ describe("Leads ThreadGroup", () => {
     expect(wrapper.find('[data-testid="thread-timeline"]').exists()).toBe(false);
     expect(wrapper.get('[data-testid="earlier-thread-subject"]').text()).toBe("Your shop audit");
   });
+
+  // Plan 56b: a phone tap on the subject opens the thread; the IconButton keeps its state for the keyboard.
+  it("a tap on the summary toggles the thread, the toggle button follows", async () => {
+    const IconButton = { name: "IconButton", props: ["icon", "label"], template: "<button />" };
+    const wrapper = mount(ThreadGroup, { props: { thread }, global: { stubs: { Loader: true, IconButton } } });
+    await flushPromises();
+    await wrapper.get('[data-testid="earlier-thread-subject"]').trigger("click");
+    expect(wrapper.find('[data-testid="thread-timeline"]').exists()).toBe(true);
+    expect(wrapper.get('[data-testid="earlier-thread-toggle"]').attributes("aria-expanded")).toBe("true");
+    await wrapper.get('[data-testid="earlier-thread-toggle"]').trigger("click");
+    expect(wrapper.find('[data-testid="thread-timeline"]').exists()).toBe(false);
+  });
 });

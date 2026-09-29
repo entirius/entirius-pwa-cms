@@ -46,7 +46,7 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import { t } from "@/i18n";
 import { GET_SequenceTexts, GET_Sequences, POST_Sequence, POST_SequenceText } from "@/api/communicator/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
@@ -63,7 +63,9 @@ const sequences = ref([]);
 const texts = reactive({});
 const newText = reactive({});
 const errors = reactive({}); // sequence id → its add-text error; `add` → the new sequence's
-const keyError = ref(""); // on the key field itself
+// On the key field itself, live after the first refused create (as SettingsPolicy): it clears while the key is fixed.
+const keyChecked = ref(false);
+const keyError = computed(() => (keyChecked.value && !KEY_PATTERN.test(draft.key) ? t("leads.stages.key_invalid") : ""));
 const emptyStep = () => ({ days_after_previous: 3, template_key: "" });
 const draft = reactive({ key: "", steps: [emptyStep()] });
 
@@ -91,10 +93,15 @@ async function addText(id) {
 }
 
 async function addSequence() {
-  keyError.value = KEY_PATTERN.test(draft.key) ? "" : t("leads.stages.key_invalid");
-  if (keyError.value) return;
+  keyChecked.value = true;
+  if (keyError.value) {
+    errors.add = ""; // the field error stands alone, no older API error next to it
+    return;
+  }
   const steps = draft.steps.map((step, i) => ({ ...step, number: i + 1 }));
-  if (await attempt("add", () => POST_Sequence({ key: draft.key, steps }))) Object.assign(draft, { key: "", steps: [emptyStep()] });
+  if (!(await attempt("add", () => POST_Sequence({ key: draft.key, steps })))) return;
+  Object.assign(draft, { key: "", steps: [emptyStep()] });
+  keyChecked.value = false;
 }
 
 onMounted(load);
