@@ -15,9 +15,6 @@ const VIEWPORTS = {
   phone: { width: 390, height: 844 },
 };
 
-// The dev server's hot-reload socket (the zeno CMS container answers on another port) is not a page error.
-const DEV_SERVER = ['WebSocket connection to'];
-
 // The admin profile picks the UI language; accept either locale's text.
 const { either: escapedEither } = require('./helpers/text');
 const either = (pick) => escapedEither(pick(en), pick(pl));
@@ -95,7 +92,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
     });
 
     test('review queue: swipe, list, events, updated', async ({ page }) => {
-      const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+      const collector = createErrorCollector(page);
       await checkSwipe(page, name === 'phone');
       await checkList(page);
       await checkOtherModes(page);
@@ -103,7 +100,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
     });
 
     test('find, duplicates and auto-matched', async ({ page }) => {
-      const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+      const collector = createErrorCollector(page);
       for (const [path, title] of PAGES) {
         await page.goto(path);
         await page.waitForLoadState('networkidle');

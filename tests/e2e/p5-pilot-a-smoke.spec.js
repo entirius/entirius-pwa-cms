@@ -14,8 +14,6 @@ const VIEWPORTS = {
   phone: { width: 390, height: 844 },
 };
 
-// The dev server's hot-reload socket (the zeno CMS container answers on another port) is not a page error.
-const DEV_SERVER = ['WebSocket connection to'];
 // The jobs list reads the AI toolbox through the translator modules' bulk/jobs/ endpoint; a stack whose toolbox
 // refuses the call answers 502 there, and the page must still render its frame and an empty state. Only that named
 // endpoint's 502 is dropped — any other status or URL still fails the test.
@@ -46,7 +44,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
     });
 
     test('customers list opens the first customer', async ({ page }) => {
-      const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+      const collector = createErrorCollector(page);
       await openPage(page, '/accounts/customers');
 
       await expect(page.getByRole('heading', { level: 1 })).toHaveText(either((t) => t.accounts.customers));
@@ -67,7 +65,6 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
 
     test('translation jobs list renders', async ({ page }) => {
       const collector = createErrorCollector(page, {
-        whitelist: DEV_SERVER,
         ignoreNetwork: ignoreToolboxJobsRefusal,
       });
       await openPage(page, '/translation-jobs');

@@ -15,9 +15,6 @@ const VIEWPORTS = {
   phone: { width: 390, height: 844 },
 };
 
-// The dev server's hot-reload socket (the zeno CMS container answers on another port) is not a page error.
-const DEV_SERVER = ['WebSocket connection to'];
-
 // The admin profile picks the UI language; accept either locale's text.
 const either = (pick) => escapedEither(pick(en), pick(pl));
 // A required field's name ends with its " *" marker.
@@ -50,7 +47,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
     });
 
     test('point list: inline filters, the first point opens', async ({ page }) => {
-      const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+      const collector = createErrorCollector(page);
       await openPage(page, '/points/list');
 
       await expect(h1(page)).toHaveText(either((t) => t.dp.points));
@@ -69,7 +66,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
     });
 
     test('carrier point: the lock banner, disabled fields and no Delete', async ({ page }) => {
-      const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+      const collector = createErrorCollector(page);
       await openPage(page, '/points/list');
 
       const filters = page.getByRole('group', { name: either((t) => t.dp.filters) });
@@ -89,7 +86,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
     });
 
     test('create form: the detail pattern with the required fields marked', async ({ page }) => {
-      const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+      const collector = createErrorCollector(page);
       await openPage(page, '/points/create');
 
       await expect(h1(page)).toHaveText(either((t) => t.dp.create_point));
@@ -100,7 +97,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
     });
 
     test('type list: the edit dialog of the first custom type opens and cancels', async ({ page }) => {
-      const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+      const collector = createErrorCollector(page);
       await openPage(page, '/points/types');
 
       await expect(h1(page)).toHaveText(either((t) => t.dp.types));

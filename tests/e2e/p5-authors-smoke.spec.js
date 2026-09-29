@@ -14,9 +14,6 @@ const VIEWPORTS = {
   phone: { width: 390, height: 844 },
 };
 
-// The dev server's hot-reload socket (the zeno CMS container answers on another port) is not a page error.
-const DEV_SERVER = ['WebSocket connection to'];
-
 // The admin profile picks the UI language; accept either locale's text.
 const { either: escapedEither } = require('./helpers/text');
 const either = (pick) => escapedEither(pick(en), pick(pl));
@@ -35,7 +32,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
     });
 
     test('authors list opens the first author', async ({ page }) => {
-      const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+      const collector = createErrorCollector(page);
       await openPage(page, '/pages/authors');
 
       await expect(page.getByRole('heading', { level: 1 })).toHaveText(either((t) => t.authors.title));
@@ -57,7 +54,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
     });
 
     test('the content editor author field opens its menu', async ({ page }) => {
-      const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+      const collector = createErrorCollector(page);
       await openPage(page, '/pages/content');
 
       const blogPost = page.locator('a.data-table__name-link[href*="/blog-post/"]').first();

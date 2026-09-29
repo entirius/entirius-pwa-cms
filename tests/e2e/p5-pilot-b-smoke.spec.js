@@ -15,9 +15,6 @@ const VIEWPORTS = {
   phone: { width: 390, height: 844 },
 };
 
-// The dev server's hot-reload socket (the zeno CMS container answers on another port) is not a page error.
-const DEV_SERVER = ['WebSocket connection to'];
-
 // The admin profile (or, logged out, the build default) picks the UI language; accept either locale's text.
 const { either: escapedEither } = require('./helpers/text');
 const either = (pick) => escapedEither(pick(en), pick(pl));
@@ -42,7 +39,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
     test.use({ viewport });
 
     test('login wall renders its labelled form', async ({ page }) => {
-      const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+      const collector = createErrorCollector(page);
       await openPage(page, '/');
 
       await expect(page.getByText(either((t) => t.login.welcome))).toBeVisible();
@@ -55,7 +52,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
     });
 
     test('password reset page renders its form', async ({ page }) => {
-      const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+      const collector = createErrorCollector(page);
       await openPage(page, '/password-reset?key=smoke');
 
       await expect(page.getByText(either((t) => t.reset.title))).toBeVisible();
@@ -74,7 +71,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
     });
 
     test('enrichment task list renders', async ({ page }) => {
-      const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+      const collector = createErrorCollector(page);
       await openPage(page, '/enrichment/tasks');
 
       await expect(page.getByRole('heading', { level: 1 })).toHaveText(either((t) => t.enrichment.tasks.title));
@@ -84,7 +81,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
     });
 
     test('spawn-rule list opens the first rule', async ({ page }) => {
-      const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+      const collector = createErrorCollector(page);
       await openPage(page, '/enrichment/spawn-rules');
 
       await expect(page.getByRole('heading', { level: 1 })).toHaveText(either((t) => t.enrichment.spawn_rules.title));
@@ -106,7 +103,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
     });
 
     test('docs render', async ({ page }) => {
-      const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+      const collector = createErrorCollector(page);
       await openPage(page, '/pages/doc');
 
       await expect(page.getByRole('heading', { level: 1 })).toHaveText(either((t) => t.nav.docs));

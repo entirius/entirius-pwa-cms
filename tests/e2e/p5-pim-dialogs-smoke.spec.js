@@ -10,8 +10,6 @@ const pl = require('../../src/i18n/locales/pl.json');
  * Read-only: every dialog is opened, checked and cancelled; nothing is estimated, added, spawned or translated.
  */
 
-// The dev server's hot-reload socket (the zeno CMS container answers on another port) is not a page error.
-const DEV_SERVER = ['WebSocket connection to'];
 // A product without a stock record answers 404 in the Stock tab.
 const NO_STOCK = ({ status, url }) => status === 404 && url.includes('/stock-by-sku/');
 // A PIM without the system language list answers 404; the dialog then names languages by their code (non-critical).
@@ -57,7 +55,7 @@ test.describe('P5 Pim dialogs', () => {
   });
 
   test('product detail: channel presence and enrichment dialogs', async ({ page }) => {
-    const collector = createErrorCollector(page, { whitelist: DEV_SERVER, ignoreNetwork: NO_STOCK });
+    const collector = createErrorCollector(page, { ignoreNetwork: NO_STOCK });
     const rows = await openFirstProduct(page);
     await rows.first().click();
     await page.waitForURL(/\/pim\/products\/.+/);
@@ -82,7 +80,7 @@ test.describe('P5 Pim dialogs', () => {
   });
 
   test('translate dialog: the store from the Pim wrapper, the selection from the product list', async ({ page }) => {
-    const collector = createErrorCollector(page, { whitelist: DEV_SERVER, ignoreNetwork: NO_SYSTEM_LANGUAGES });
+    const collector = createErrorCollector(page, { ignoreNetwork: NO_SYSTEM_LANGUAGES });
     const rows = await openFirstProduct(page);
     const store = page.getByRole('button', { name: either((t) => t.pim.translate_store) });
     test.skip(!(await store.count()), 'pim_translator is not installed');
@@ -98,7 +96,7 @@ test.describe('P5 Pim dialogs', () => {
   });
 
   test('translate dialog: every page from the Pages content list', async ({ page }) => {
-    const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+    const collector = createErrorCollector(page);
     await openPage(page, '/pages/content');
     const translateAll = page.getByRole('button', { name: either((t) => t.builder.translate_all) });
     // The button waits for the module registry; without contentdb_translator it never comes.

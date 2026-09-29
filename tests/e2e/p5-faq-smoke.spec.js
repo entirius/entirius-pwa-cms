@@ -14,9 +14,6 @@ const VIEWPORTS = {
   phone: { width: 390, height: 844 },
 };
 
-// The dev server's hot-reload socket (the zeno CMS container answers on another port) is not a page error.
-const DEV_SERVER = ['WebSocket connection to'];
-
 // The admin profile picks the UI language; accept either locale's text.
 const { either: escapedEither } = require('./helpers/text');
 const either = (pick) => escapedEither(pick(en), pick(pl));
@@ -41,7 +38,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
     });
 
     test('groups list opens the first group', async ({ page }) => {
-      const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+      const collector = createErrorCollector(page);
       await openPage(page, '/faq/groups');
 
       await expect(page.getByRole('heading', { level: 1 })).toHaveText(either((t) => t.faq.groups));
@@ -63,7 +60,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
     });
 
     test('items list opens the first item', async ({ page }) => {
-      const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+      const collector = createErrorCollector(page);
       await openPage(page, '/faq/items');
 
       await expect(page.getByRole('heading', { level: 1 })).toHaveText(either((t) => t.faq.items));

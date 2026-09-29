@@ -15,9 +15,6 @@ const VIEWPORTS = {
   phone: { width: 390, height: 844 },
 };
 
-// The dev server's hot-reload socket (the zeno CMS container answers on another port) is not a page error.
-const DEV_SERVER = ['WebSocket connection to'];
-
 // The admin profile picks the UI language; accept either locale's text.
 const either = (pick) => escapedEither(pick(en), pick(pl));
 const h1 = (page) => page.getByRole('heading', { level: 1 });
@@ -52,7 +49,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
     });
 
     test('gap table: filters and the first row expanded', async ({ page }) => {
-      const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+      const collector = createErrorCollector(page);
       await openPage(page, '/pricefighter/gap');
 
       await expect(h1(page)).toHaveText(either((t) => t.pricefighter.gap_table));
@@ -77,7 +74,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
     });
 
     test('strategies: the rule modal opens and closes', async ({ page }) => {
-      const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+      const collector = createErrorCollector(page);
       await openPage(page, '/pricefighter/strategies');
 
       await expect(h1(page)).toHaveText(either((t) => t.pricefighter.strategies));
@@ -104,7 +101,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
     });
 
     test('history: list and the first entry expanded', async ({ page }) => {
-      const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+      const collector = createErrorCollector(page);
       await openPage(page, '/pricefighter/history');
 
       await expect(h1(page)).toHaveText(either((t) => t.pricefighter.history));

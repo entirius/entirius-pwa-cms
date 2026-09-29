@@ -12,9 +12,6 @@ const pl = require('../../src/i18n/locales/pl.json');
 
 test.use({ viewport: { width: 1280, height: 720 } });
 
-// The dev server's hot-reload socket (the zeno CMS container answers on another port) is not a page error.
-const DEV_SERVER = ['WebSocket connection to'];
-
 // The admin profile picks the UI language; accept either locale's text.
 const { either: escapedEither } = require('./helpers/text');
 const either = (pick) => escapedEither(pick(en), pick(pl));
@@ -31,7 +28,7 @@ test.describe('P5 Leads companies (desktop)', () => {
   });
 
   test('companies list opens the first company card with its tabs and header selects', async ({ page }) => {
-    const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+    const collector = createErrorCollector(page);
     await openPage(page, '/leads/companies');
 
     await expect(page.getByTestId('companies-add')).toBeVisible();
@@ -70,7 +67,7 @@ test.describe('P5 Leads companies (desktop)', () => {
   });
 
   test('add lead: the page title and a Save that waits for a domain', async ({ page }) => {
-    const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+    const collector = createErrorCollector(page);
     await openPage(page, '/leads/companies/new');
 
     await expect(h1(page)).toHaveText(either((t) => t.leads.add.title));
@@ -81,7 +78,7 @@ test.describe('P5 Leads companies (desktop)', () => {
   });
 
   test('board: title, search, chips and the stage columns', async ({ page }) => {
-    const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+    const collector = createErrorCollector(page);
     await openPage(page, '/leads/board');
 
     await expect(h1(page)).toHaveText(either((t) => t.leads.board.title));
@@ -93,7 +90,7 @@ test.describe('P5 Leads companies (desktop)', () => {
   });
 
   test('import: title, sections and an Upload that waits for a file', async ({ page }) => {
-    const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+    const collector = createErrorCollector(page);
     await openPage(page, '/leads/import');
 
     await expect(h1(page)).toHaveText(either((t) => t.leads.import.title));
@@ -105,7 +102,7 @@ test.describe('P5 Leads companies (desktop)', () => {
   });
 
   test('stages and lead types: title, rows and the way back to Settings', async ({ page }) => {
-    const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+    const collector = createErrorCollector(page);
     await openPage(page, '/leads/settings/stages');
 
     await expect(h1(page)).toHaveText(either((t) => t.leads.stages.title));

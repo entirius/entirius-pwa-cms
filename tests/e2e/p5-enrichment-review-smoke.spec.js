@@ -15,8 +15,6 @@ const VIEWPORTS = {
   phone: { width: 390, height: 844 },
 };
 
-// The dev server's hot-reload socket (the zeno CMS container answers on another port) is not a page error.
-const DEV_SERVER = ['WebSocket connection to'];
 const PROPOSALS = '**/api/enrichment/v2/admin/proposals/?*';
 
 // The admin profile picks the UI language; accept either locale's text.
@@ -47,7 +45,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
     });
 
     test('list mode: the bulk primary or the empty state, the import dialog opens and cancels', async ({ page }) => {
-      const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+      const collector = createErrorCollector(page);
       await openReview(page);
 
       const bulkAccept = page.getByTestId('enrichment-bulk-accept');
@@ -63,7 +61,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
     });
 
     test('focus mode: Accept is the one primary, Reject and Skip beside it', async ({ page }) => {
-      const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+      const collector = createErrorCollector(page);
       await openReview(page);
 
       await page.getByTestId('enrichment-mode-focus').click();
@@ -83,7 +81,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
     });
 
     test('drift dialog: re-confirm opens it, Cancel closes it', async ({ page }) => {
-      const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+      const collector = createErrorCollector(page);
       await page.route(PROPOSALS, async (route) => {
         const response = await route.fetch();
         const body = await response.json();

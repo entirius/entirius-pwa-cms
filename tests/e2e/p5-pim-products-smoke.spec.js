@@ -14,9 +14,6 @@ const VIEWPORTS = {
   phone: { width: 390, height: 844 },
 };
 
-// The dev server's hot-reload socket (the zeno CMS container answers on another port) is not a page error.
-const DEV_SERVER = ['WebSocket connection to'];
-
 // A product without a stock record answers 404 in the Stock tab (the tab shows its empty state).
 const NO_STOCK = ({ status, url }) => status === 404 && url.includes('/stock-by-sku/');
 
@@ -44,7 +41,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
     });
 
     test('product list: header channel selector, filters, the first product opens', async ({ page }) => {
-      const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+      const collector = createErrorCollector(page);
       await openPage(page, '/pim/products');
 
       await expect(h1(page)).toHaveText(either((t) => t.pim.products));
@@ -68,7 +65,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
     });
 
     test('product detail: more menu, every tab, no toolbar strip for the channel', async ({ page }) => {
-      const collector = createErrorCollector(page, { whitelist: DEV_SERVER, ignoreNetwork: NO_STOCK });
+      const collector = createErrorCollector(page, { ignoreNetwork: NO_STOCK });
       await openPage(page, '/pim/products');
       const rows = page.locator('.page-layout .data-table__row');
       await expect(rows.first().or(page.locator('.empty-state').first())).toBeVisible({ timeout: 10000 });
@@ -99,7 +96,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
     });
 
     test('create form: the detail pattern with Save in the header', async ({ page }) => {
-      const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+      const collector = createErrorCollector(page);
       await openPage(page, '/pim/products/create');
 
       await expect(h1(page)).toHaveText(either((t) => t.pim.create_product));

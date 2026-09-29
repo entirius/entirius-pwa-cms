@@ -13,9 +13,9 @@ const pl = require('../../src/i18n/locales/pl.json');
 
 test.use({ viewport: { width: 1280, height: 800 } });
 
-// The dev server's hot-reload socket (the zeno CMS container answers on another port) is not a page error, nor is
-// Chromium's note on the footer preview: it logs a blocked script for every sandboxed srcdoc frame, even an empty one.
-const DEV_SERVER = ['WebSocket connection to', "Blocked script execution in 'about:srcdoc'"];
+// Chromium's note on the footer preview is not a page error: it logs a blocked script for every sandboxed srcdoc
+// frame, even an empty one.
+const SRCDOC_NOTE = ["Blocked script execution in 'about:srcdoc'"];
 
 // C-31 needs a waiting mail with long cells; a read-only smoke never creates one, so the outbox answer is stubbed.
 const WAITING = {
@@ -51,7 +51,7 @@ test.describe('P5 Communicator settings', () => {
   });
 
   test('settings hub lists the sections and opens the templates', async ({ page }) => {
-    const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+    const collector = createErrorCollector(page, { whitelist: SRCDOC_NOTE });
     await openPage(page, '/leads/settings');
 
     await expect(h1(page)).toHaveText(either((t) => t.nav.leads_settings));
@@ -66,7 +66,7 @@ test.describe('P5 Communicator settings', () => {
   });
 
   test('template list opens the first template with its drawers', async ({ page }) => {
-    const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+    const collector = createErrorCollector(page, { whitelist: SRCDOC_NOTE });
     await openPage(page, '/leads/settings/templates');
 
     await expect(page.getByRole('button', { name: either((t) => t.common.back) }).first()).toBeVisible();
@@ -96,7 +96,7 @@ test.describe('P5 Communicator settings', () => {
   });
 
   test('sequences: steps, the text pool and a remove that asks first', async ({ page }) => {
-    const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+    const collector = createErrorCollector(page, { whitelist: SRCDOC_NOTE });
     await openPage(page, '/leads/settings/sequences');
 
     await expect(h1(page)).toHaveText(either((t) => t.communicator.sequences.title));
@@ -117,7 +117,7 @@ test.describe('P5 Communicator settings', () => {
   });
 
   test('sending settings: every section, and Send now stays on screen (C-31)', async ({ page }) => {
-    const collector = createErrorCollector(page, { whitelist: DEV_SERVER });
+    const collector = createErrorCollector(page, { whitelist: SRCDOC_NOTE });
     await stubWaitingMails(page);
     await openPage(page, '/leads/settings/sending');
 
