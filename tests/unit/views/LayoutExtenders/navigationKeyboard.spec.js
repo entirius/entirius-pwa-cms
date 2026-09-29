@@ -48,6 +48,9 @@ describe("NavigationEditor — keyboard reorder", () => {
     expect(wrapper.vm.navigationItems.map((i) => i.id)).toEqual(["b", "a", "c"]);
     await press(handles()[2], "ArrowUp");
     expect(wrapper.vm.navigationItems.map((i) => i.id)).toEqual(["b", "c", "a"]);
+    await flushPromises();
+    // The moved row's handle keeps the focus, so the operator can press again.
+    expect(document.activeElement.getAttribute("aria-label")).toContain('"label":"c"');
     wrapper.unmount();
   });
 

@@ -464,8 +464,8 @@ All notable changes to this project will be documented in this file.
     the operator goes back to List, so a keyboard shortcut never acts on a stale row; the footer pager stays while the
     list loads and ignores a page change while an action runs; the product preview in its drawer is flat, with the
     name as text instead of a second heading.
-  - Content editor: the advanced toggle is the accent `IconButton` named "Advanced: set the document name and URL"
-    while either is missing and the row is closed (the old toolbar pulsed); the section eye is display-only with a
+  - Content editor: the advanced toggle shows the `warning` icon and is named "Advanced: set the document name and
+    URL" while either is missing and the row is closed (the old toolbar pulsed); the section eye is display-only with a
     one-line summary; the id copy targets react to Space; on a phone the unsaved badge sits left, above the actions;
     the images kit shows blocked tabs disabled (`BasicTabs` options take `disabled`, arrow keys skip them).
   - PriceFighter: the apply report's reason wraps instead of truncating; invalid observations are muted rows; the

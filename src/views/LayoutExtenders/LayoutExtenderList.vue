@@ -15,7 +15,7 @@
       />
     </template>
 
-    <!-- v-show, not v-if: the table stays mounted across fetchItems() (after delete, copy), keeping its scroll and sort. -->
+    <!-- v-show, not v-if: the table stays mounted across fetchItems() (after delete, copy), keeping its sort. -->
     <Loader block v-show="loading" />
 
     <DataTable

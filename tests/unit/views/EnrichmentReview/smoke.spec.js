@@ -78,8 +78,9 @@ describe("EnrichmentReview compile smoke", () => {
 
     // Driven through the controls: the status chips stay out of the count, the source select and the search go in.
     await w.find('[data-testid="enrichment-status-applied"]').trigger("click");
-    await panel.findAllComponents(BasicSelect)[2].vm.$emit("update:modelValue", "ai");
-    await panel.findAllComponents(BasicInput)[0].vm.$emit("update:modelValue", "x");
+    const byTestId = (stub, id) => panel.findAllComponents(stub).find((c) => c.attributes("data-testid") === id);
+    await byTestId(BasicSelect, "enrichment-source-filter").vm.$emit("update:modelValue", "ai");
+    await byTestId(BasicInput, "enrichment-search-input").vm.$emit("update:modelValue", "x");
     await flushPromises();
     expect(w.vm.filters.status).toBe("applied");
     expect(panel.props("activeCount")).toBe(2);

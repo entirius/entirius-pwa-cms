@@ -135,19 +135,19 @@ describe("Builder — mounted header", () => {
     expect(wrapper.findComponent(PageHeader).props()).toMatchObject({ title: "Home", back: "/pages/blog", sticky: true });
     const keys = wrapper.findComponent(ActionBar).props("actions").map(({ key }) => key);
     expect(keys).toEqual(["copy", "advanced", "draft", "publish"]);
-    expect(toggle(wrapper)).toMatchObject({ label: "builder.advanced" });
-    expect(toggle(wrapper).variant).toBeUndefined();
+    expect(toggle(wrapper)).toMatchObject({ label: "builder.advanced", icon: "settings" });
   });
 
   it("marks the closed advanced toggle while the name or the URL is missing", async () => {
     const missingUrl = mountHeader({ custom_doc_name: "Home", routes: [] });
-    expect(toggle(missingUrl)).toMatchObject({ variant: "primary", label: "builder.advanced_missing" });
-    expect(toggle(mountHeader({ routes: ["/"] })).variant).toBe("primary");
-    expect(toggle(mountHeader({ routes: [], advanced_options: true })).variant).toBeUndefined();
+    expect(toggle(missingUrl)).toMatchObject({ icon: "warning", label: "builder.advanced_missing" });
+    expect(toggle(missingUrl).variant).toBeUndefined();
+    expect(toggle(mountHeader({ routes: ["/"] })).icon).toBe("warning");
+    expect(toggle(mountHeader({ routes: [], advanced_options: true })).icon).toBe("close");
   });
 
   it("asks a layout extender for its name only (it has no URL)", async () => {
     const wrapper = mountHeader({ content_type: "layout-extender", custom_doc_name: "Footer", routes: [] });
-    expect(toggle(wrapper).variant).toBeUndefined();
+    expect(toggle(wrapper).icon).toBe("settings");
   });
 });

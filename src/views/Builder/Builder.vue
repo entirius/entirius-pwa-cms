@@ -932,8 +932,9 @@ export default {
         {
           ...utility("advanced", this.advanced_options ? "close" : "settings", this.$t("builder.advanced"), () =>
             (this.advanced_options = !this.advanced_options)),
+          // The cue is the warning icon and the name, not the accent fill: that stays Publish's (R5).
           ...(this.advancedNeedsAttention
-            ? { variant: "primary", label: this.$t("builder.advanced_missing") }
+            ? { icon: "warning", label: this.$t("builder.advanced_missing") }
             : {}),
           testid: "builder-advanced-toggle",
         },
