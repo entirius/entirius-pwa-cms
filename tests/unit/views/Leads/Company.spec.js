@@ -165,4 +165,13 @@ describe("Company card header", () => {
     await flushPromises();
     expect(leads.PATCH_Company).toHaveBeenCalledWith(7, { lead_type: "UNKNOWN" });
   });
+
+  it("picking the current stage or type again sends nothing", async () => {
+    const wrapper = await mountCard();
+    await setControl(wrapper, "company-stage", "new");
+    await setControl(wrapper, "company-lead-type", "RETAILER");
+    await flushPromises();
+    expect(leads.POST_Transition).not.toHaveBeenCalled();
+    expect(leads.PATCH_Company).not.toHaveBeenCalled();
+  });
 });

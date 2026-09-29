@@ -14,15 +14,17 @@
         <BasicButton v-if="embedded" variant="primary" data-testid="companies-add" @click="addAction.onClick">
           {{ addAction.label }}
         </BasicButton>
-        <BasicInput
-          v-model="search"
-          class="companies__search"
-          type="search"
-          icon="search"
-          :placeholder="$t('leads.board.search')"
-          data-testid="companies-search"
-          @on-key-down="load()"
-        />
+        <label class="companies__search">
+          <span class="visually-hidden">{{ $t("leads.board.search") }}</span>
+          <BasicInput
+            v-model="search"
+            type="search"
+            icon="search"
+            :placeholder="$t('leads.board.search')"
+            data-testid="companies-search"
+            @on-key-down="load()"
+          />
+        </label>
       </div>
       <EmptyState
         v-if="!loading && !companies.length"

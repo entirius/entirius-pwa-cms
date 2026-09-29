@@ -79,9 +79,21 @@ describe("Leads → Settings → Lead types", () => {
   });
 });
 
+// Plan 53: the label field (BasicInput) commits on blur and Enter like the native change did — only when it changed.
+it("a blur without an edit renames nothing", async () => {
+  setActivePinia(createPinia());
+  vi.clearAllMocks();
+  const wrapper = await mountScreen();
+  row(wrapper, "RETAILER").findComponent('[data-testid="lead-type-label"]').vm.$emit("onFocusout");
+  row(wrapper, "RETAILER").findComponent('[data-testid="lead-type-label"]').vm.$emit("onKeyDown");
+  await flushPromises();
+  expect(api.PATCH_LeadType).not.toHaveBeenCalled();
+});
+
 // Plan 53: the code is checked before the request, as the native pattern did.
 it("a code outside letters, digits and _ is refused before the request", async () => {
   setActivePinia(createPinia());
+  vi.clearAllMocks();
   const wrapper = await mountScreen();
   await setControl(wrapper, "lead-type-new-code", "B2B-SHOP");
   await setControl(wrapper, "lead-type-new-label", "Shop");

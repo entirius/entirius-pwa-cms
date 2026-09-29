@@ -110,4 +110,18 @@ describe("Leads — add one lead", () => {
     await flushPromises();
     expect(push).toHaveBeenCalledWith({ name: "LeadsThread", params: { id: 200 } });
   });
+
+  it("Enter in a field saves once a domain is typed, never before", async () => {
+    const wrapper = mountForm();
+    await flushPromises();
+    const enter = () => wrapper.get('[data-testid="add-lead"] input').trigger("keydown", { key: "Enter" });
+    await wrapper.get('[data-testid="add-lead"]').element.insertAdjacentHTML("afterbegin", "<input />");
+    await enter();
+    await flushPromises();
+    expect(api.POST_Company).not.toHaveBeenCalled();
+    await fill(wrapper, { domain: "new-shop.test" });
+    await enter();
+    await flushPromises();
+    expect(api.POST_Company).toHaveBeenCalledTimes(1);
+  });
 });

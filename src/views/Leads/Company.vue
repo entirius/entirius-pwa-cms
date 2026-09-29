@@ -102,6 +102,7 @@ async function load() {
 }
 
 async function transition(stageKey) {
+  if (stageKey === company.value.stage.key) return; // the current stage picked again: no move
   try {
     company.value = (await POST_Transition(company.value.id, stageKey)).data;
   } catch (err) {
@@ -111,6 +112,7 @@ async function transition(stageKey) {
 }
 
 async function retype(code) {
+  if (code === company.value.lead_type) return;
   try {
     company.value = (await PATCH_Company(company.value.id, { lead_type: code })).data;
   } catch (err) {

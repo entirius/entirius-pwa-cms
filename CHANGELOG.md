@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- `floatingLabel` on `BasicSelect` and `ChannelMultiSelect` (P5 plan 53, operator request): a select without a
+  FormField label shows its name as the placeholder while empty and as a 12 px muted line above the chosen value; the
+  text is also its accessible name. The Leads company card and board card name their stage and lead-type selects with
+  it; catalogue cells `*-floating-*`.
+
 - Accessibility baseline of the shell (P4 plan 22): landmarks (`header`, the "Panele" sidebar `nav`, `main#main`, the
   tab-bar `nav`, the breadcrumb `nav`), a skip link („Przejdź do treści”), `<html lang>` from the UI language,
   focus to `<main>` after a path change (not a query change), `document.title` = `<page> · <panel> · Entirius CMS`,
@@ -114,6 +119,19 @@ All notable changes to this project will be documented in this file.
   `docs/sso-login.md`. Unset, nothing changes.
 
 ### Changed
+
+- P5 Leads companies (plan 53): the company list, company card, add lead, board, import, stages and lead types sit in
+  `PageLayout` with a `PageHeader` (title from the nav model; Stages and Lead types go back to Settings, the company
+  card gets the shell crumbs and back) and use no `ld-*` kit class and no `desktop.scss` import any more — the
+  communicator sections, Settings and the Communicate modal import the kit themselves until plans 54–56. Raw controls
+  are boots in `FormField`s (`.form-grid`), the Overview, Intel and Contacts tables are `DataTable`s (a contact is
+  edited in the one form above the table; its email sits under the name, suppression is a badge), badges are
+  `StatusBadge` / `CountBadge`, the do-not-contact confirmation is a `ConfirmDialog`, the company tabs `BasicTabs`,
+  the active flag of a lead type a `BasicSwitch`, and page actions an `ActionBar` in R5 order (C-16). The board card
+  opens through its name link stretched over the card (no click-only card; the `ux-allow.json` entry is gone), its
+  „Więcej etapów” sits at the end of the toolbar (C-17); the company search takes its own row (C-18). A stage or
+  lead-type label is saved on blur or Enter only when it changed; the stage key and lead-type code are checked before
+  the request. Smoke spec `tests/e2e/p5-leads-companies-smoke.spec.js`.
 
 - P5 Pim taxonomy (plan 51): categories, features, feature sets and quality rules sit in `PageLayout` with a
   `PageHeader` (back, the unsaved badge, an `ActionBar` with Delete and Save) and follow the detail-form pattern

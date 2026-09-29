@@ -7,7 +7,13 @@
         </template>
       </PageHeader>
     </template>
-    <form class="add-lead flex-column gap-8" data-testid="add-lead" novalidate @submit.prevent="save">
+    <form
+      class="add-lead flex-column gap-8"
+      data-testid="add-lead"
+      novalidate
+      @submit.prevent="save"
+      @keydown.enter="saveFromField"
+    >
       <!-- the company is saved; only its contact failed — it stays here, one tap from the card -->
       <p v-if="company" class="add-lead__saved" role="status" data-testid="add-lead-company-saved">
         {{ $t("leads.add.company_saved") }}
@@ -130,6 +136,13 @@ async function createContact() {
     error.value = extractApiMessage(err, t("leads.review.error"));
     return false;
   }
+}
+
+// Enter in a text field saves, as the form's own submit button did before Save moved into the PageHeader.
+function saveFromField(event) {
+  if (event.target.tagName !== "INPUT" || busy.value || !form.domain) return;
+  event.preventDefault();
+  save();
 }
 
 async function save() {
