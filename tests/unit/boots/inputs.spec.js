@@ -119,6 +119,11 @@ describe("BasicInput", () => {
     expect(wrapper.find("input").classes()).toContain("input-field--icon");
   });
 
+  it("takes maxlength onto the native field", () => {
+    expect(mountInput({ maxlength: 2 }).find("input").attributes("maxlength")).toBe("2");
+    expect(mountInput().find("input").attributes("maxlength")).toBeUndefined();
+  });
+
   it("takes disabled", () => {
     expect(mountInput({ disabled: true }).find("input").attributes("disabled")).toBeDefined();
     expect(mountInput().find("input").attributes("disabled")).toBeUndefined();

@@ -56,6 +56,7 @@
       <template v-if="rows && rows.length">
         <template v-for="(row, index) in rows" :key="row[rowKey] ?? index">
           <div
+            v-bind="rowAttrs?.(row)"
             class="data-table__row"
             :class="{
               'data-table__row--selected': selectable && isSelected(row),
@@ -192,6 +193,11 @@ const props = defineProps({
   rowKey: {
     type: String,
     default: "uid",
+  },
+  // Attributes of a row element from its data (`(row) => ({ "data-testid": "…" })`): the hooks tests find a row by.
+  rowAttrs: {
+    type: Function,
+    default: null,
   },
   // Opt-in inline expand row. Renders the #expand slot in a full-width row below the
   // clicked row. Default off — existing panels (PIM, PriceManager) keep prior behavior.

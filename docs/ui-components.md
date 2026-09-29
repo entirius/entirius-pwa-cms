@@ -54,7 +54,8 @@ Notable ones for list/form views:
 CSS Grid table for all list views. Uses `<script setup>`.
 
 **Props:** `columns` (required), `rows`, `emptyText`, `sortable`,
-`selectable`, `multiSelect`, `rowKey` (default `'uid'`)
+`selectable`, `multiSelect`, `rowKey` (default `'uid'`), `rowAttrs` (`(row) => ({ "data-testid": … })`: attributes
+of each row element, the hooks a page object finds a row by)
 **Events:** `sort`, `select`, `row-click`
 **Slots:** `cell-{key}`, `header-{key}`, `empty`
 
@@ -333,7 +334,7 @@ Catalogue: `#selects` (`#basic-select`, `#entity-search-picker`, `#channel-multi
   Controls read it through `useControlAttrs()` (`src/boots/FormField/useControlAttrs.js`) and
   paint their own error border.
 - **`BasicInput`** — `v-model`, `type`, `placeholder`, `icon` (a leading meaning of `icons.js`), `readonly` (the
-  value behind a `lock`, the former `LockedField`), `disabled`; `--elem-height`, `border-control`, the polish disabled
+  value behind a `lock`, the former `LockedField`), `disabled`, `maxlength` (the native limit); `--elem-height`, `border-control`, the polish disabled
   look. No label or error text of its own (the FormField's). `null` / `false` show an empty field, `0` shows „0”.
   `focusOnCreate` focuses it on mount; events `onFocusout` / `onKeyDown` (Enter) carry the text; unknown listeners
   and classes land on the wrapper.

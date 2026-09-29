@@ -8,6 +8,7 @@
         class="input-field w-100 bg-inherit"
         :class="{ 'has-placeholder': placeholder, 'input-field--icon': leadingIcon }"
         :placeholder="placeholder"
+        :maxlength="maxlength"
         :name="attrs.id"
         :value="shown"
         :readonly="readonly"
@@ -28,9 +29,9 @@
 
 <script setup>
 // Single-line text (docs/ui-components.md § P3 inputs): `v-model`, `type`, `placeholder`, `icon` (a leading meaning
-// of icons.js), `readonly` (the value behind a lock, the former LockedField), `disabled`. Inside a FormField it takes
-// id, aria-describedby, aria-invalid, required and disabled from the contract; the label and the error text are the
-// FormField's. `null` and `false` show an empty field, `0` shows "0". `focusOnCreate` focuses it on mount;
+// of icons.js), `readonly` (the value behind a lock, the former LockedField), `disabled`, `maxlength`. Inside a
+// FormField it takes id, aria-describedby, aria-invalid, required and disabled from the contract; the label and the
+// error text are the FormField's. `null` and `false` show an empty field, `0` shows "0". `focusOnCreate` focuses it on mount;
 // `onFocusout` / `onKeyDown` (Enter) emit the current text.
 import { computed, onMounted, ref } from "vue";
 import { ICONS } from "@/boots/Icons/icons";
@@ -47,6 +48,8 @@ const props = defineProps({
   icon: { type: String, default: null },
   readonly: { type: Boolean, default: false },
   disabled: { type: Boolean, default: false },
+  // The native length limit (a language code, an address the API caps).
+  maxlength: { type: Number, default: null },
 });
 const emit = defineEmits(["update:modelValue", "onFocusout", "onKeyDown"]);
 
