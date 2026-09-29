@@ -85,9 +85,12 @@ function toggle() {
   open.value = !open.value;
 }
 
-// A drag that selects the subject or recipient to copy it is no tap: it leaves the thread as it is.
-function onSummaryClick() {
-  if (!window.getSelection()?.toString()) toggle();
+// A drag that selects the subject or recipient to copy it is no tap: it leaves the thread as it is. Text selected
+// outside this summary (the draft body, another thread) does not block the tap.
+function onSummaryClick(event) {
+  const selection = window.getSelection();
+  const inSummary = [selection?.anchorNode, selection?.focusNode].some((node) => event.currentTarget.contains(node));
+  if (!selection?.toString() || !inSummary) toggle();
 }
 
 onMounted(loadDetail);

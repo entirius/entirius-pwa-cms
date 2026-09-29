@@ -58,12 +58,18 @@ describe("Leads ThreadGroup", () => {
     expect(wrapper.find('[data-testid="thread-timeline"]').exists()).toBe(false);
   });
 
-  it("a text selection dragged over the summary does not toggle it", async () => {
-    const wrapper = mount(ThreadGroup, { props: { thread }, global: { stubs: { Loader: true } } });
+  // Plan 61c: only a selection inside this summary blocks the tap; text selected elsewhere does not.
+  it.each([
+    ["over the summary", false, (wrapper) => wrapper.get('[data-testid="earlier-thread-subject"]').element],
+    ["elsewhere on the page", true, () => document.getElementById("outside")],
+  ])("a text selection %s → the tap toggles: %s", async (_, toggles, target) => {
+    document.body.innerHTML = '<p id="outside">Draft body</p><div id="app"></div>';
+    const wrapper = mount(ThreadGroup, { props: { thread }, attachTo: "#app", global: { stubs: { Loader: true } } });
     await flushPromises();
-    const selection = vi.spyOn(window, "getSelection").mockReturnValue({ toString: () => "Your shop" });
+    window.getSelection().selectAllChildren(target(wrapper));
     await wrapper.get('[data-testid="earlier-thread-summary"]').trigger("click");
-    selection.mockRestore();
-    expect(wrapper.find('[data-testid="thread-timeline"]').exists()).toBe(false);
+    window.getSelection().removeAllRanges();
+    expect(wrapper.find('[data-testid="thread-timeline"]').exists()).toBe(toggles);
+    wrapper.unmount();
   });
 });
