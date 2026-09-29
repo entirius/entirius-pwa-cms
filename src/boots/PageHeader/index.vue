@@ -86,7 +86,7 @@ function goBack() {
   overflow-wrap: anywhere;
 }
 
-// The chips keep their width; the title gives way and wraps.
+// The chips keep their width; the title gives way and wraps (on a phone the chips wrap under it instead).
 .page-header__meta {
   flex: none;
 }
@@ -103,8 +103,15 @@ function goBack() {
 }
 
 @include max-tablet {
+  // Chips that do not fit beside the whole title wrap under it: the title never shrinks for them. It stays on the
+  // back arrow's line (its width leaves room for the arrow and the gap).
+  .page-header__title-row {
+    flex-wrap: wrap;
+  }
+
   // A roomy PageLayout sets the larger phone title.
   .page-header__title {
+    max-width: calc(100% - var(--elem-height) - var(--space-5));
     font-size: var(--page-header-title-size, var(--fs-500));
   }
 
