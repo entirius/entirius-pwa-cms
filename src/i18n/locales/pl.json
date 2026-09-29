@@ -3372,7 +3372,8 @@
       "activities": "Ostatnie zdarzenia",
       "title": "Firma",
       "field": "Pole",
-      "value": "Wartość"
+      "value": "Wartość",
+      "refresh_failed": "Nie udało się odświeżyć karty firmy. Przeładuj stronę, aby zobaczyć aktualne dane."
     },
     "communicate": {
       "template": "Szablon",

@@ -280,6 +280,14 @@ describe("Company card header", () => {
     expect(wrapper.find("company-actions-stub").exists()).toBe(true);
   });
 
+  it("a failed reload without an API message says the card could not be refreshed, not that the action failed", async () => {
+    const wrapper = await mountCard();
+    leads.GET_Company.mockRejectedValueOnce(new Error("Network Error"));
+    wrapper.findComponent({ name: "CompanyActions" }).vm.$emit("changed");
+    await flushPromises();
+    expect(notices()).toEqual(["The company card could not be refreshed. Reload the page to see the latest data."]);
+  });
+
   it("picking the current stage or type again sends nothing", async () => {
     const wrapper = await mountCard();
     await setControl(wrapper, "company-stage", "new");

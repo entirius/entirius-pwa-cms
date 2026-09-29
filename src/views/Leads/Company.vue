@@ -110,14 +110,15 @@ async function load() {
   stages.value = stageRes.data.results;
 }
 
-// A reload of the open card (after an action or a refused change): a failure leaves the card as it was and says so.
+// A reload of the open card (after an action or a refused change): a failure leaves the card as it was and says the
+// card could not be refreshed — the action itself went through.
 async function reload() {
   const opening = opened;
   try {
     await load();
   } catch (err) {
     if (!isCurrent(opening)) return;
-    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.review.error")), type: "negative" });
+    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.company.refresh_failed")), type: "negative" });
   }
 }
 

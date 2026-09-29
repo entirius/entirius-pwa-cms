@@ -3373,7 +3373,8 @@
       "activities": "Recent activity",
       "title": "Company",
       "field": "Field",
-      "value": "Value"
+      "value": "Value",
+      "refresh_failed": "The company card could not be refreshed. Reload the page to see the latest data."
     },
     "communicate": {
       "template": "Template",
