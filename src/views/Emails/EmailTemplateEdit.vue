@@ -23,7 +23,8 @@
           v-for="field in contentFields"
           :key="field.key"
           :label="$t(field.label)"
-          :description="field.description ? $t(field.description) : ''"
+          :hint="field.hint ? $t(field.hint) : ''"
+          :hint-level="field.hintLevel"
           :class="{ 'form-grid__wide': field.wysiwyg }"
         >
           <BasicWysiwyg v-if="field.wysiwyg" v-model="template[field.key]" />
@@ -41,12 +42,20 @@ import { GET_EmailTemplate, PATCH_EmailTemplate } from "@/api/emails/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { emailTypeLabel } from "./emailTypes";
 
+// A hint naming a placeholder the text can carry changes what the user types: an important hint (plan 60).
+const PLACEHOLDER_HINTS = [
+  "emails.field_hints.user_name",
+  "emails.field_hints.order_id",
+  "emails.field_hints.return_id",
+  "emails.field_hints.greeting",
+];
+
 const TYPE_FIELDS = {
   "accounts-new-account": [
     {
       key: "welcome",
       label: "emails.fields.welcome",
-      description: "emails.field_hints.user_name",
+      hint: "emails.field_hints.user_name",
       wysiwyg: true,
     },
     { key: "announce", label: "emails.fields.announce", wysiwyg: true },
@@ -63,13 +72,13 @@ const TYPE_FIELDS = {
     {
       key: "welcome",
       label: "emails.fields.welcome",
-      description: "emails.field_hints.user_name",
+      hint: "emails.field_hints.user_name",
       wysiwyg: true,
     },
     {
       key: "order",
       label: "emails.fields.order",
-      description: "emails.field_hints.order_id",
+      hint: "emails.field_hints.order_id",
       wysiwyg: true,
     },
     { key: "products", label: "emails.fields.products", wysiwyg: false },
@@ -86,7 +95,7 @@ const TYPE_FIELDS = {
     {
       key: "welcome",
       label: "emails.fields.welcome",
-      description: "emails.field_hints.user_name",
+      hint: "emails.field_hints.user_name",
       wysiwyg: true,
     },
     { key: "thank_you", label: "emails.fields.thank_you", wysiwyg: true },
@@ -98,13 +107,13 @@ const TYPE_FIELDS = {
     {
       key: "welcome",
       label: "emails.fields.welcome",
-      description: "emails.field_hints.user_name",
+      hint: "emails.field_hints.user_name",
       wysiwyg: true,
     },
     {
       key: "return_copy",
       label: "emails.fields.return_copy",
-      description: "emails.field_hints.return_id",
+      hint: "emails.field_hints.return_id",
       wysiwyg: true,
     },
     { key: "comment_copy", label: "emails.fields.comment_copy", wysiwyg: true },
@@ -115,13 +124,13 @@ const TYPE_FIELDS = {
     {
       key: "welcome",
       label: "emails.fields.welcome",
-      description: "emails.field_hints.user_name",
+      hint: "emails.field_hints.user_name",
       wysiwyg: true,
     },
     {
       key: "order",
       label: "emails.fields.order",
-      description: "emails.field_hints.order_id",
+      hint: "emails.field_hints.order_id",
       wysiwyg: true,
     },
     { key: "products", label: "emails.fields.products", wysiwyg: false },
@@ -138,7 +147,7 @@ const TYPE_FIELDS = {
     {
       key: "welcome",
       label: "emails.fields.welcome",
-      description: "emails.field_hints.user_name",
+      hint: "emails.field_hints.user_name",
       wysiwyg: true,
     },
     { key: "confirm_copy", label: "emails.fields.confirm_copy", wysiwyg: true },
@@ -149,19 +158,19 @@ const TYPE_FIELDS = {
     {
       key: "header_title",
       label: "emails.fields.header_title",
-      description: "emails.field_hints.header_booking",
+      hint: "emails.field_hints.header_booking",
       wysiwyg: false,
     },
     {
       key: "greeting_template",
       label: "emails.fields.greeting_template",
-      description: "emails.field_hints.greeting",
+      hint: "emails.field_hints.greeting",
       wysiwyg: false,
     },
     {
       key: "intro_copy",
       label: "emails.fields.intro_copy",
-      description: "emails.field_hints.intro_booking",
+      hint: "emails.field_hints.intro_booking",
       wysiwyg: true,
     },
     { key: "label_datetime", label: "emails.fields.label_datetime", wysiwyg: false },
@@ -173,7 +182,7 @@ const TYPE_FIELDS = {
     {
       key: "closing_copy",
       label: "emails.fields.closing_copy",
-      description: "emails.field_hints.closing_booking",
+      hint: "emails.field_hints.closing_booking",
       wysiwyg: true,
     },
   ],
@@ -181,13 +190,13 @@ const TYPE_FIELDS = {
     {
       key: "header_title",
       label: "emails.fields.header_title",
-      description: "emails.field_hints.header_admin_booking",
+      hint: "emails.field_hints.header_admin_booking",
       wysiwyg: false,
     },
     {
       key: "intro_copy",
       label: "emails.fields.intro_copy",
-      description: "emails.field_hints.intro_booking",
+      hint: "emails.field_hints.intro_booking",
       wysiwyg: true,
     },
     { key: "label_datetime", label: "emails.fields.label_datetime", wysiwyg: false },
@@ -203,7 +212,7 @@ const TYPE_FIELDS = {
     {
       key: "header_title",
       label: "emails.fields.header_title",
-      description: "emails.field_hints.header_submission",
+      hint: "emails.field_hints.header_submission",
       wysiwyg: false,
     },
     { key: "intro_copy", label: "emails.fields.intro_copy", wysiwyg: true },
@@ -238,7 +247,10 @@ export default {
       return emailTypeLabel(this.$t, this.emailType);
     },
     contentFields() {
-      return TYPE_FIELDS[this.emailType] || [];
+      return (TYPE_FIELDS[this.emailType] || []).map((field) => ({
+        ...field,
+        hintLevel: PLACEHOLDER_HINTS.includes(field.hint) ? "important" : "subtle",
+      }));
     },
     headerActions() {
       return [

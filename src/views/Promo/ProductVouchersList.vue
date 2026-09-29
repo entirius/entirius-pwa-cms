@@ -46,7 +46,7 @@
       <div class="voucher-form">
         <FormField
           :label="$t('promo.pv_product_id')"
-          :tooltip="$t('promo.pv_product_id_tip')"
+          :hint="$t('promo.pv_product_id_tip')"
           required
           :error="errors.product_id"
         >
@@ -62,7 +62,7 @@
         <div class="voucher-form__row">
           <FormField
             :label="$t('promo.pv_face_value')"
-            :tooltip="$t('promo.pv_face_value_tip')"
+            :hint="$t('promo.pv_face_value_tip')"
             required
             :error="errors.face_value"
           >
@@ -98,7 +98,7 @@
         <div class="voucher-form__row">
           <FormField
             :label="$t('promo.pv_validity_days')"
-            :tooltip="$t('promo.pv_validity_days_tip')"
+            :hint="$t('promo.pv_validity_days_tip')"
           >
             <NumberInput
               v-model="form.validity_period_days_override"
@@ -125,7 +125,8 @@
 
         <FormField
           :label="$t('promo.pv_blacklist')"
-          :tooltip="$t('promo.pv_blacklist_tip')"
+          hint-level="important"
+          :hint="$t('promo.pv_blacklist_tip')"
         >
           <BasicSwitch
             v-model="form.blacklist_other_vouchers"

@@ -9,7 +9,7 @@
     <div class="form-grid">
       <FormField
         :label="$t('pim.gaps_skip_default_label')"
-        :tooltip="$t('pim.gaps_skip_default_tooltip')"
+        :hint="$t('pim.gaps_skip_default_tooltip')"
       >
         <BasicSwitch
           :model-value="settings.gaps_skip_default_featureset"
@@ -22,7 +22,7 @@
       <FormField
         v-if="allSets.length"
         :label="$t('pim.default_feature_set')"
-        :tooltip="$t('pim.default_feature_set_tooltip')"
+        :hint="$t('pim.default_feature_set_tooltip')"
       >
         <BasicSelect
           :options="setOptions"

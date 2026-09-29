@@ -17,7 +17,7 @@
             <BasicInput v-model="form.language" :maxlength="2" data-testid="template-language" />
           </FormField>
           <!-- the lead type this variant is for (audience cascade); without leads the value travels back unchanged -->
-          <FormField v-if="hasLeads" :label="$t('communicator.template.audience')" :description="$t('communicator.template.audience_help')">
+          <FormField v-if="hasLeads" :label="$t('communicator.template.audience')" :hint="$t('communicator.template.audience_help')">
             <BasicSelect v-model="form.audience" :options="audienceOptions" data-testid="template-audience" />
           </FormField>
           <FormField :label="$t('communicator.template.model')">

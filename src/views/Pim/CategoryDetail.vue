@@ -82,7 +82,7 @@
               <FormField
                 v-if="hasDesc"
                 :label="$t('pim.internal_desc_label')"
-                :tooltip="$t('pim.internal_desc_tooltip')"
+                :hint="$t('pim.internal_desc_tooltip')"
                 class="form-grid__wide"
               >
                 <BasicTextarea v-model="form.desc" />
@@ -131,13 +131,13 @@
 
           <BasicCard :title="$t('pim.seo_settings')" gap class="mb-8">
             <div class="form-grid">
-              <FormField :label="$t('pim.index')" :tooltip="$t('pim.index_help')">
+              <FormField :label="$t('pim.index')" :hint="$t('pim.index_help')">
                 <BasicSwitch
                   :model-value="!form.noindex"
                   @update:model-value="(on) => (form.noindex = !on)"
                 />
               </FormField>
-              <FormField :label="$t('pim.follow')" :tooltip="$t('pim.follow_help')">
+              <FormField :label="$t('pim.follow')" :hint="$t('pim.follow_help')">
                 <BasicSwitch
                   :model-value="!form.nofollow"
                   @update:model-value="(on) => (form.nofollow = !on)"
@@ -145,7 +145,7 @@
               </FormField>
               <FormField
                 :label="$t('pim.og_image_url')"
-                :tooltip="$t('pim.og_image_url_help')"
+                :hint="$t('pim.og_image_url_help')"
                 class="form-grid__wide"
               >
                 <BasicInput v-model="form.og_image_url" />

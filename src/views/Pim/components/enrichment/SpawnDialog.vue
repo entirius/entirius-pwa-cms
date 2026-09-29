@@ -24,7 +24,7 @@
 
       <FormField
         :label="$t('enrichment.spawn.feature')"
-        :description="$t('enrichment.spawn.feature_hint')"
+        :hint="$t('enrichment.spawn.feature_hint')"
       >
         <BasicSelect
           :options="featureOptions"
@@ -34,10 +34,7 @@
         />
       </FormField>
 
-      <FormField
-        :label="$t('enrichment.spawn.languages')"
-        :description="availableLanguages.length ? '' : $t('enrichment.spawn.no_languages')"
-      >
+      <FormField :label="$t('enrichment.spawn.languages')">
         <BasicSelect
           v-model="languages"
           multiple
@@ -45,11 +42,13 @@
           :disabled="!availableLanguages.length"
           data-testid="enrichment-spawn-languages"
         />
+        <p v-if="!availableLanguages.length" class="t-muted fs-200 m-0">{{ $t("enrichment.spawn.no_languages") }}</p>
       </FormField>
 
       <FormField
         :label="$t('enrichment.spawn.channels')"
-        :description="$t('enrichment.spawn.channels_hint')"
+        hint-level="important"
+        :hint="$t('enrichment.spawn.channels_hint')"
       >
         <ChannelMultiSelect
           v-model="channels"

@@ -81,7 +81,8 @@
 
         <FormField
           :label="$t('promo.campaign_max_uses')"
-          :tooltip="$t('promo.campaign_max_uses_tip')"
+          hint-level="important"
+          :hint="$t('promo.campaign_max_uses_tip')"
           :error="errors.max_uses_per_customer"
         >
           <NumberInput v-model="form.max_uses_per_customer" :min="0" />

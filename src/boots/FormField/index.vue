@@ -1,6 +1,6 @@
 <template>
   <div class="form-field" :class="[`form-field--${layout}`, { 'form-field--invalid': !!error }]">
-    <div v-if="label || tooltip" class="form-field__head">
+    <div v-if="label || hintShown" class="form-field__head">
       <label
         v-if="label"
         :id="labelId"
@@ -9,7 +9,7 @@
         :class="{ required }"
         >{{ label }}</label
       >
-      <BasicTooltip v-if="tooltip" variant="help" :text="tooltip" />
+      <BasicTooltip v-if="hintShown" variant="help" :level="hintLevel" :text="hint" :tip-id="hintId" />
     </div>
     <div class="form-field__body">
       <slot />
@@ -17,25 +17,26 @@
         <span aria-hidden="true" class="form-field__error-icon">⚠</span>
         <span>{{ error }}</span>
       </p>
-      <p v-else-if="description" :id="descriptionId" class="form-field__desc">{{ description }}</p>
     </div>
   </div>
 </template>
 
 <script setup>
-// The only owner of a field's label, hint (`description`), required marker, error and help `tooltip`
-// (docs/ui-components.md § P3 inputs). It provides FORM_FIELD (src/composables/formField.js) to the control inside:
-// `id` for the label's `for`, `describedBy` (the hint or error shown), `invalid`, `required`, `disabled`; plus
+// The only owner of a field's label, required marker, error and `hint` (docs/ui-components.md § P3 inputs). The hint
+// is a `?` after the label (BasicTooltip help), `hintLevel` subtle | important (plan 60); the account-menu hints switch
+// hides it. It provides FORM_FIELD (src/composables/formField.js) to the control inside: `id` for the label's `for`,
+// `describedBy` (the error, else the hint while hints are on), `invalid`, `required`, `disabled`; plus
 // `labelId` for a control a `for` cannot name (a radio group, a segmented control). `layout="inline"`: label left,
 // control right from 1024 px, stacked below.
 import { computed, provide, useId } from "vue";
 import { FORM_FIELD } from "@/composables/formField";
 import BasicTooltip from "@/boots/BasicTooltip/index.vue";
+import { useHintsOn } from "@/composables/fieldHints";
 
 const props = defineProps({
   label: { type: String, default: "" },
-  description: { type: String, default: "" },
-  tooltip: { type: String, default: "" },
+  hint: { type: String, default: "" },
+  hintLevel: { type: String, default: "subtle", validator: (value) => ["subtle", "important"].includes(value) },
   required: { type: Boolean, default: false },
   error: { type: String, default: "" },
   disabled: { type: Boolean, default: false },
@@ -48,7 +49,9 @@ const generatedId = useId();
 const controlId = computed(() => props.id || `${generatedId}-control`);
 const labelId = `${generatedId}-label`;
 const errorId = `${generatedId}-error`;
-const descriptionId = `${generatedId}-description`;
+const hintId = `${generatedId}-hint`;
+const hintsOn = useHintsOn();
+const hintShown = computed(() => Boolean(props.hint) && hintsOn.value);
 
 // Several controls in one field (a v-for of rows): the first one mounted takes the field's id, the rest keep their own,
 // so no id repeats and the label points at one control.
@@ -65,7 +68,7 @@ provide(FORM_FIELD, {
   claim,
   release,
   id: controlId,
-  describedBy: computed(() => (props.error ? errorId : props.description ? descriptionId : "")),
+  describedBy: computed(() => (props.error ? errorId : hintShown.value ? hintId : "")),
   invalid: computed(() => !!props.error),
   required: computed(() => props.required),
   disabled: computed(() => props.disabled),
@@ -106,12 +109,6 @@ provide(FORM_FIELD, {
       min-width: 0;
     }
   }
-}
-
-.form-field__desc {
-  font-size: var(--fs-200);
-  color: var(--text-muted);
-  margin: 0;
 }
 
 .form-field__error {

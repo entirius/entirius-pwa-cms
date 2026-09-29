@@ -25,7 +25,8 @@
             <FormField
               :label="$t('faq.idx')"
               required
-              :description="$t('faq.idx_hint')"
+              hint-level="important"
+              :hint="$t('faq.idx_hint')"
               :error="formErrors.getFieldError('idx')?.msg || ''"
             >
               <BasicInput
@@ -40,7 +41,7 @@
             </FormField>
             <FormField
               :label="$t('faq.channels')"
-              :description="$t('faq.channels_hint')"
+              :hint="$t('faq.channels_hint')"
               :error="formErrors.getFieldError('channel_ids')?.msg || ''"
             >
               <BasicSelect

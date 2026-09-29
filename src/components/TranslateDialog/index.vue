@@ -12,16 +12,14 @@
       <FormField :label="t('translate_dialog.source_language')">
         <BasicSelect v-model="form.source" :options="languages" :placeholder="t('translate_dialog.select_language')" />
       </FormField>
-      <FormField
-        :label="t('translate_dialog.target_languages')"
-        :description="targetOptions.length ? '' : t('translate_dialog.no_languages')"
-      >
+      <FormField :label="t('translate_dialog.target_languages')">
         <BasicSelect
           v-model="form.targets"
           multiple
           :options="targetOptions"
           :placeholder="t('translate_dialog.select_language')"
         />
+        <p v-if="!targetOptions.length" class="t-muted fs-200 m-0">{{ t("translate_dialog.no_languages") }}</p>
         <div v-if="form.targets.length" class="flex flex-wrap gap-1 mt-2">
           <Tag v-for="lang in form.targets" :key="lang" :label="lang.toUpperCase()" removable @remove="removeTarget(lang)" />
         </div>

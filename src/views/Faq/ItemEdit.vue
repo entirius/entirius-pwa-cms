@@ -26,7 +26,8 @@
               id="faq-item-url-key"
               :label="$t('faq.url_key')"
               required
-              :description="$t('faq.url_key_hint')"
+              hint-level="important"
+              :hint="$t('faq.url_key_hint')"
               :error="formErrors.getFieldError('url_key')?.msg || ''"
             >
               <div class="flex ai-st gap-3">

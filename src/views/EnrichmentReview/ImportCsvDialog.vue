@@ -8,7 +8,8 @@
     <div class="flex-column gap-4" data-testid="enrichment-import-dialog">
       <FormField
         :label="$t('enrichment.import.file')"
-        :description="$t('enrichment.import.format_hint')"
+        hint-level="important"
+        :hint="$t('enrichment.import.format_hint')"
       >
         <label
           class="import-csv__drop"

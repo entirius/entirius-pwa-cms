@@ -13,7 +13,7 @@
 
     <BasicCard :title="$t('pim.basic_info')" gap class="mb-8">
       <div class="form-grid">
-        <FormField label="IDX" required :description="$t('pim.category_idx_hint')">
+        <FormField label="IDX" required hint-level="important" :hint="$t('pim.category_idx_hint')">
           <BasicInput v-model="form.idx" />
         </FormField>
         <FormField :label="$t('pim.parent')">

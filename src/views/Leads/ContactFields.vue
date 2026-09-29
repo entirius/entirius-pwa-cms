@@ -39,7 +39,7 @@
         />
       </FormField>
     </template>
-    <FormField :label="$t('leads.contacts.legal_basis')" :description="$t('leads.add.basis_hint')">
+    <FormField :label="$t('leads.contacts.legal_basis')" hint-level="important" :hint="$t('leads.add.basis_hint')">
       <BasicSelect v-model="form.legal_basis" :options="basisOptions" :data-testid="`${testid}-basis`" />
     </FormField>
     <FormField

@@ -6,7 +6,7 @@
     @close="$emit('close')"
   >
     <div class="flex-column gap-4">
-      <FormField :label="$t('dp.import_file')" description=".csv">
+      <FormField :label="$t('dp.import_file')" hint-level="important" hint=".csv">
         <ImportChooseFile :file-name="selectedFile?.name" @select="onFileSelect" />
       </FormField>
 

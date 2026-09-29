@@ -18,6 +18,15 @@ describe("UI lint", () => {
     expect(await lintVue("src/boots/Probe/index.vue", "<template><select><option>a</option></select></template>")).toEqual([]);
   });
 
+  it("FormField description and tooltip are removed props (hint + hintLevel)", async () => {
+    const code = `<template><FormField label="a" description="b" :tooltip="c" hint="d"><i /></FormField></template>`;
+    const messages = await lintVue("src/views/Probe.vue", code);
+    expect(messages.map(({ severity, message }) => [severity, message.split(":")[0]])).toEqual([
+      [2, "FormField description is removed"],
+      [2, "FormField tooltip is removed"],
+    ]);
+  });
+
   it("an off-token spacing value is an error", async () => {
     const warnings = await lintScss(".probe { margin: 5px; }");
     expect(warnings.map(({ severity, rule }) => [severity, rule])).toEqual([

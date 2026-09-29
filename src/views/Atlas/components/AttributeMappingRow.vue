@@ -3,7 +3,8 @@
     <div class="mapping-row__grid">
       <FormField
         :label="$t('atlas.mappings.attribute.source_field')"
-        :tooltip="$t('atlas.mappings.attribute.source_field_help')"
+        hint-level="important"
+        :hint="$t('atlas.mappings.attribute.source_field_help')"
       >
         <EntitySearchPicker
           v-if="isNew"

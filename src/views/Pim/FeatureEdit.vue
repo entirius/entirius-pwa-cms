@@ -29,7 +29,7 @@
           <div class="form-grid">
             <FormField
               :label="$t('pim.feature_code')"
-              :description="$t('pim.attribute_code_help')"
+              :hint="$t('pim.attribute_code_help')"
               :required="isCreate"
             >
               <BasicInput v-if="isCreate" v-model="form.idx" />
@@ -37,7 +37,7 @@
             </FormField>
             <FormField
               :label="$t('pim.feature_type')"
-              :description="$t('pim.feature_type_help')"
+              :hint="$t('pim.feature_type_help')"
             >
               <BasicSelect
                 :options="typeOptions"
@@ -49,7 +49,7 @@
             </FormField>
             <FormField
               :label="$t('pim.scope')"
-              :description="$t('pim.scope_help')"
+              :hint="$t('pim.scope_help')"
             >
               <BasicInput :model-value="selectedScopeLabel" readonly />
             </FormField>
@@ -73,7 +73,7 @@
             <FormField
               v-if="hasDesc"
               :label="$t('pim.internal_desc_label')"
-              :tooltip="$t('pim.internal_desc_tooltip')"
+              :hint="$t('pim.internal_desc_tooltip')"
               class="form-grid__wide"
             >
               <BasicTextarea v-model="form.desc" />

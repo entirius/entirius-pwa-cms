@@ -196,7 +196,8 @@ function onSave() {
       <FormField
         id="banner-media"
         :label="$t('layout_extender.media_url')"
-        :description="$t('layout_extender.aspect_ratio_hint')"
+        hint-level="important"
+        :hint="$t('layout_extender.aspect_ratio_hint')"
       >
         <div class="flex-column gap-2">
           <div v-if="form.media_url" class="banner-image-area">

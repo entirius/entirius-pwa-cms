@@ -55,7 +55,7 @@
       @close="closeModal"
     >
       <div class="form-grid">
-        <FormField :label="$t('pricefighter.scope_type')" :tooltip="$t('pricefighter.scope_type_tooltip')">
+        <FormField :label="$t('pricefighter.scope_type')" hint-level="important" :hint="$t('pricefighter.scope_type_tooltip')">
           <BasicSelect
             :model-value="form.scopeType"
             :options="scopeTypeOptions"
@@ -100,7 +100,7 @@
         <FormField
           v-else
           :label="$t('pricefighter.market')"
-          :tooltip="$t('pricefighter.market_tooltip')"
+          :hint="$t('pricefighter.market_tooltip')"
           required
           :error="formErrors.getFieldError('channel')?.msg || ''"
         >
@@ -112,7 +112,8 @@
 
         <FormField
           :label="$t('pricefighter.strategy')"
-          :tooltip="$t('pricefighter.strategy_tooltip')"
+          hint-level="important"
+          :hint="$t('pricefighter.strategy_tooltip')"
           class="form-grid__wide"
         >
           <BasicSelect
@@ -129,6 +130,7 @@
           <BasicSwitch
             :label="$t('pricefighter.mode_authoritative')"
             :hint="$t('pricefighter.mode_v2_note')"
+            hint-level="important"
             :model-value="false"
             disabled
           />

@@ -203,7 +203,7 @@
         </FormField>
         <FormField
           :label="$t('atlas.mappings.target_channels_label')"
-          :description="$t('atlas.mappings.target_channels_hint_select')"
+          :hint="$t('atlas.mappings.target_channels_hint_select')"
         >
           <ChannelMultiSelect
             v-model="formData.target_channel_idxs"

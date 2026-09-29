@@ -59,7 +59,7 @@
       </div>
       <p v-if="errors.order" class="t-negative m-0" data-testid="lead-type-order-error">{{ errors.order }}</p>
       <form class="flex ai-st flex-wrap gap-5" data-testid="lead-type-add" @submit.prevent="add">
-        <FormField :label="$t('leads.lead_types.code')" :description="$t('leads.lead_types.code_help')" required>
+        <FormField :label="$t('leads.lead_types.code')" hint-level="important" :hint="$t('leads.lead_types.code_help')" required>
           <BasicInput
             :model-value="draft.code"
             data-testid="lead-type-new-code"

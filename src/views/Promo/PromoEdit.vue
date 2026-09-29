@@ -191,7 +191,7 @@
                 :placeholder="$t('promo.min_order_amount_placeholder')"
               />
             </FormField>
-            <FormField :label="$t('promo.field_currencies')" :description="$t('promo.currencies_hint')">
+            <FormField :label="$t('promo.field_currencies')" :hint="$t('promo.currencies_hint')">
               <BasicSelect
                 v-model="form.currencies"
                 multiple
@@ -199,7 +199,7 @@
                 :placeholder="$t('promo.field_currencies')"
               />
             </FormField>
-            <FormField :label="$t('promo.section_channels')" :description="$t('promo.channels_hint')">
+            <FormField :label="$t('promo.section_channels')" hint-level="important" :hint="$t('promo.channels_hint')">
               <BasicSelect
                 v-model="form.channels"
                 multiple
