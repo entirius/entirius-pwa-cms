@@ -30,8 +30,9 @@ values.
   `t-*` (text), `b-*` / `bt-*` / `bb-*` / `bl-*` / `br-*` (borders), all three for accent and status, most with a
   `-hover` variant (`t-accent-hover`, `bg-accent-hover`, `b-accent-hover` are the `accent-hover` token itself). Pick the token by the role the map gives it, never by a number. No hex, `rgb()`, `rgba()`,
   `hsl()` or named colours outside the token files. Form fields (input, select, textarea, checkbox, radio) sit on
-  `surface-sunken` with a `border-control` edge. On `accent-subtle` text is `text-strong` or `text-body`, never
-  `text-accent` or `text-muted`; on `accent-fill` it is `text-on-accent-fill`.
+  `surface-sunken` with a `border-control` edge. On `accent-subtle` text is `text-strong` or `text-body`, in light also
+  `text-accent` (5.87:1, proven by `scripts/tokens/contrast-light.mjs`), never `text-muted` and never `text-accent` in
+  dark; on `accent-fill` it is `text-on-accent-fill`.
 - **T2 No fallback on a token.** `var(--text-body, #fff)` hides a missing token in one theme. Every `var()` names a
   token that exists (brand, semantic, a scale below, or one declared in the same file); lint flags unknown ones.
 - **T3 Spacing comes from `--space-*`.** The brand steps on the 4 px grid: `--space-0`, `-1` (4 px), `-2`, `-3`, `-4`,

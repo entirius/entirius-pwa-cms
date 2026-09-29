@@ -9,22 +9,21 @@ import { fileURLToPath } from "node:url";
 const SEMANTIC = new URL("../../src/assets/tokens/semantic.json", import.meta.url);
 const BRAND = fileURLToPath(import.meta.resolve("@entirius/brand-tokens/tokens.json"));
 
-const TEXT_SURFACES = ["surface-page", "surface-base"];
-const CONTROL_SURFACES = ["surface-sunken", "surface-base", "surface-page", "surface-raised"];
+// Every surface text sits on: the page, containers, table headers and tiles, hovered rows and nav, selected rows.
+const TEXT_SURFACES = ["surface-page", "surface-base", "surface-raised", "surface-hover", "accent-subtle"];
+const CONTROL_SURFACES = ["surface-sunken", "surface-base", "surface-page", "surface-raised", "surface-hover"];
+const STATUS = ["positive", "negative", "warning", "info"];
 const on = (fg, bgs, min) => bgs.map((bg) => [fg, bg, min]);
 
 // [foreground role, background role, minimum ratio]
 const RULES = [
-  ...on("text-strong", [...TEXT_SURFACES, "accent-subtle"], 7),
-  ...on("text-body", [...TEXT_SURFACES, "accent-subtle"], 7),
+  ...on("text-strong", TEXT_SURFACES, 7),
+  ...on("text-body", TEXT_SURFACES, 7),
   ...on("text-secondary", TEXT_SURFACES, 4.5),
   ...on("text-muted", TEXT_SURFACES, 4.5),
-  ...on("text-accent", [...TEXT_SURFACES, "accent-subtle"], 4.5),
+  ...on("text-accent", TEXT_SURFACES, 4.5),
   ["text-on-accent-fill", "accent-fill", 4.5],
-  ["positive", "positive-subtle", 4.5],
-  ["negative", "negative-subtle", 4.5],
-  ["warning", "warning-subtle", 4.5],
-  ["info", "info-subtle", 4.5],
+  ...STATUS.flatMap((status) => on(status, [...TEXT_SURFACES, `${status}-subtle`], 4.5)),
   ...on("border-control", CONTROL_SURFACES, 3),
 ];
 

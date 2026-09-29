@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -22,6 +22,9 @@ describe("semantic token layer", () => {
   });
 
   it("every light text/background and control-border pair meets its WCAG minimum (node scripts/tokens/contrast-light.mjs)", () => {
-    expect(() => execFileSync(process.execPath, [CONTRAST], { stdio: "pipe" })).not.toThrow();
+    const result = spawnSync(process.execPath, [CONTRAST], { encoding: "utf8" });
+    const failing = result.stdout.split("\n").filter((row) => row.includes("| FAIL |"));
+    expect(failing).toEqual([]);
+    expect(result.status).toBe(0);
   });
 });
