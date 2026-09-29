@@ -226,7 +226,7 @@ folder, so it never wipes the last full report. The pixel layer (`@screens`) and
 |---|---|---|
 | `zeroSize` | an interactive element under 8 px wide or high while visible, or cut by an `overflow: hidden` ancestor | high |
 | `offViewport` | an interactive element past the viewport width that no sideways scroller brings back | high |
-| `underBottomBar` | an interactive element a fixed bottom bar still covers with every scroller at its end | high |
+| `underBottomBar` | an interactive element a fixed bottom bar still covers with every scroller at its end (an open dialog or bottom sheet is no bar) | high |
 | `nonFocusable` | a clickable `span`/`div` without `tabindex` or without an accessible name | high |
 | `overlap` | table row: the content of neighbouring cells intersects (> 1 px) or is 1–8 px apart; toolbar (a flex row of controls): neighbours intersect or sit 1–8 px apart. Flush neighbours are one group by design | medium |
 | `overflow` | clipped text without a `title`, content cut by `overflow: hidden`, a sideways scroller with a 0 px scrollbar, a `PageLayout` or card wider than its box on mobile (`card-x`) | medium |

@@ -291,10 +291,11 @@
       .map((el) => issue("overflow", "card-x", el));
   }
 
-  // A fixed or sticky bar across the bottom of the viewport (the mobile bottom nav, a sticky action bar).
+  // A fixed or sticky bar across the bottom of the viewport (the mobile bottom nav, a sticky action bar). An open
+  // dialog or bottom sheet (`role="dialog"`: BasicMenu `sheet`) covers the page on purpose: it is no bar.
   function findBottomBar(shown) {
     return shown.find((el) => {
-      if (!/^(fixed|sticky)$/.test(styleOf(el).position)) return false;
+      if (!/^(fixed|sticky)$/.test(styleOf(el).position) || el.closest('[role="dialog"]')) return false;
       const b = el.getBoundingClientRect();
       const acrossBottom = b.bottom >= innerHeight - 2 && b.width >= viewportWidth * 0.6;
       return acrossBottom && b.height > 0 && b.height <= innerHeight * 0.3;
