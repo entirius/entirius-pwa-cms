@@ -4,7 +4,7 @@
       class="color-input flex ai-ct"
       :class="{ 'color-input--disabled': controlDisabled, 'color-input--invalid': invalid }"
     >
-      <div class="color-input__swatch" :style="{ backgroundColor: modelValue || 'transparent' }">
+      <div class="color-input__swatch" data-census="data" :style="{ backgroundColor: modelValue || 'transparent' }">
         <input
           type="color"
           class="color-input__native"

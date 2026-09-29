@@ -291,11 +291,13 @@
       .map((el) => issue("overflow", "card-x", el));
   }
 
-  // A fixed or sticky bar across the bottom of the viewport (the mobile bottom nav, a sticky action bar). An open
-  // dialog or bottom sheet (`role="dialog"`: BasicMenu `sheet`) covers the page on purpose: it is no bar.
+  // A fixed or sticky bar across the bottom of the viewport (the mobile bottom nav, a sticky action bar). The dialog
+  // layer itself and the BasicMenu bottom sheet cover the page on purpose: they are no bar. A sticky bar INSIDE a
+  // dialog is one — it can cover the dialog's own controls.
+  const COVERING_LAYER = '[role="dialog"], .basic-menu__popover--bottom';
   function findBottomBar(shown) {
     return shown.find((el) => {
-      if (!/^(fixed|sticky)$/.test(styleOf(el).position) || el.closest('[role="dialog"]')) return false;
+      if (!/^(fixed|sticky)$/.test(styleOf(el).position) || el.matches(COVERING_LAYER)) return false;
       const b = el.getBoundingClientRect();
       const acrossBottom = b.bottom >= innerHeight - 2 && b.width >= viewportWidth * 0.6;
       return acrossBottom && b.height > 0 && b.height <= innerHeight * 0.3;

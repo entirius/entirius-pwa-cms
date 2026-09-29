@@ -23,6 +23,7 @@
             <template #icon>
               <span
                 class="color-dot"
+                data-census="data"
                 :style="{ backgroundColor: channel.main_background_color || 'var(--surface-hover)' }"
                 aria-hidden="true"
               ></span>
