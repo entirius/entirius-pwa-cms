@@ -530,6 +530,31 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- P5 review leftovers of plans 47/48, 53, 54, 54b and 54d (plan 56b):
+  - Leads: the Communicate dialog shows a failed template list as its error and starts every open without the old
+    list; Request draft asks for one draft per click (the dialog is persistent and its actions disabled while it
+    runs). The rewrite and communicate dialogs stay mounted on `v-model:open` (their leave transition runs), and focus
+    returns to Review's more button after the rewrite dialog. A tap on an earlier thread's summary opens it. The
+    company card keeps its header while it loads and when the load fails (an inline error, not a spinner forever).
+    A failed stage or lead-type rename is retried by the next blur or Enter; an empty label is a field error before
+    the request. The contact and add-lead fields refuse the browser's autofill (`autocomplete="off"`, `inputmode`),
+    the contact language stops at 2 characters; the company list's add action, the card tabs' table columns and
+    the legal-basis options follow a UI language switch. `contact-row` sits on the contacts table row again.
+  - `BasicInput` passes `autocomplete`, `inputmode`, `min`, `max` and `step` to its `<input>` (they landed on the
+    wrapper: the `min`/`step` of the contact-form deal value did nothing). `BasicModal` pins where caller attributes
+    land (the dialog element; its own `role`, `aria-modal` and `tabindex` win). `BasicTabs` never gives its Tab stop
+    to a disabled tab. `Pagination` takes `disabled`; the enrichment review pager is disabled while the list loads
+    or an action runs instead of dropping the click.
+  - Promo: `saveRule()` and `deleteRule()` refuse to run on a rule that failed to load (not only their buttons).
+  - PIM product attributes: one search loop per query (one notice on a failure or at the cap), a loop stops when the
+    channel or feature set changes, and a prefetch round of a previous channel raises no notice.
+  - Communicator: the new sequence's key error clears while the key is corrected, and an older API error does not
+    stay next to it. Points: an emptied type sort order is a field error, never saved as 0. Builder: the section
+    config summary is a tab stop; a layout extender's advanced cue asks for the name only.
+  - Test ids gone since plan 54 (no page object reads them): `rewrite-hint` (the hint is the FormField description),
+    `confirm-cancel` (every confirmation's cancel is `confirm-dialog-cancel`); `confirm-sheet` / `confirm-ok` remain
+    only on the Stages delete dialog. New: `point-carrier` (the carrier marker of the points list),
+    `earlier-thread-summary`, `company-load-error`.
 - P5 review fixes of plans 54c and 55 (plan 54d):
   - PIM product attributes: a select or multiselect value beyond the loaded page can be found by typing again. The
     channel values endpoint takes no search param, so the first typed query loads the pages left once (up to 2 000
@@ -760,6 +785,8 @@ All notable changes to this project will be documented in this file.
 
 ### Removed
 
+- `promo.filter_no_options`, `promo.no_currencies`, `promo.no_channels`, `promo.no_shipping_methods` (unused since
+  the selects became BasicSelect, which shows its own empty text) (plan 56b).
 - The Leads kit `src/views/Leads/desktop.scss` and its `.ld-field__label` alias (P5 plan 56): every Leads and
   Communicator screen is on the boots. The unused `.basic-badge` rule, the `.panel-toolbar` / `.page-title-row` /
   `.section-head` partial (`utils/_panel-toolbar.scss`, no user left after P5), the Builder's copy of the FAB inset and
