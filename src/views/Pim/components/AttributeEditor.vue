@@ -13,6 +13,7 @@
             :row="row"
             :options="getOptions(row.feature_idx)"
             :has-more="hasMoreOptions(row.feature_idx)"
+            :stored-labels="storedLabels[row.feature_idx]"
             :language="defaultLang"
             :translatable="hasSecondaryLanguages"
             :class="{ 'form-grid__wide': WIDE_TYPES.includes(row.feature_type) }"
@@ -52,6 +53,7 @@
             :row="row"
             :options="getOptions(row.feature_idx)"
             :has-more="hasMoreOptions(row.feature_idx)"
+            :stored-labels="storedLabels[row.feature_idx]"
             :language="defaultLang"
             :translatable="hasSecondaryLanguages"
             :class="{ 'form-grid__wide': WIDE_TYPES.includes(row.feature_type) }"
@@ -102,7 +104,7 @@
 
 <script setup>
 import { ref, reactive, computed, watch, onMounted } from "vue";
-import { GET_FeatureSetFeatures, GET_FeatureAttributes } from "@/api/pim/api";
+import { GET_FeatureSetFeatures, GET_FeatureAttributes, GET_Attribute } from "@/api/pim/api";
 import { useNotifyStore } from "@/stores/notify";
 import { t } from "@/i18n";
 import { isSelectType } from "../helpers/pimEnums";
@@ -130,6 +132,7 @@ const effectiveLanguages = computed(() =>
 const loading = ref(false);
 const editableRows = ref([]);
 const optionsCache = ref({});
+const storedLabels = ref({});
 const collapsedGroups = reactive(new Set());
 const translatingRow = ref(null);
 
@@ -283,16 +286,28 @@ async function fetchFeatureSet() {
   }
 }
 
-// Fire-and-forget: the first page of every select that holds a value (its label), in parallel; the editor shows at
-// once. The other selects load when they open.
+// Fire-and-forget: the first page of every select that holds a value, in parallel, then the names of the stored
+// values that page lacks; the editor shows at once. The other selects load when they open.
 function prefetchStoredOptions(rows) {
   rows
-    .filter((r) => isSelectType(r.feature_type) && (r.attribute_idx || r.attribute_idxs.length))
-    .forEach((r) => ensureOptions(r.feature_idx));
+    .filter((r) => isSelectType(r.feature_type))
+    .forEach((r) => {
+      const stored = [...new Set([r.attribute_idx, ...r.attribute_idxs].filter(Boolean))];
+      if (stored.length) ensureOptions(r.feature_idx).then(() => loadStoredLabels(r.feature_idx, stored));
+    });
 }
 
 function ensureOptions(featureIdx) {
-  if (!optionsCache.value[featureIdx]) loadOptionsPage(featureIdx);
+  return optionsCache.value[featureIdx] ? Promise.resolve() : loadOptionsPage(featureIdx);
+}
+
+// One request per stored value missing from the loaded values, in parallel; a failed one keeps its idx as the label.
+async function loadStoredLabels(featureIdx, idxs) {
+  const missing = idxs.filter((idx) => !getOptions(featureIdx).some((o) => o.value === idx));
+  if (!missing.length) return;
+  const nameOf = (idx) =>
+    GET_Attribute(featureIdx, idx).then(({ data }) => [idx, data.name || idx], () => [idx, idx]);
+  storedLabels.value[featureIdx] = Object.fromEntries(await Promise.all(missing.map(nameOf)));
 }
 
 // The next page of a select feature's values. A failed page shows a notice and stays next: the next open (first

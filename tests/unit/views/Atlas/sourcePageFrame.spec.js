@@ -257,6 +257,19 @@ describe("CategoryMappingRow — source value", () => {
     expect(wrapper.findAll(".stub-item")).toHaveLength(1);
   });
 
+  it("drops a late answer for a source field that is no longer chosen", async () => {
+    let answerCategory;
+    mockGetDataValues.mockReturnValueOnce(new Promise((resolve) => (answerCategory = resolve)));
+    mockGetDataValues.mockResolvedValueOnce({ data: { values: [{ value: "Nails", count: 5 }] } });
+    const wrapper = mountRow({ source_field: "category" });
+    await openValues(wrapper);
+    wrapper.vm.local.source_field = "group";
+    await openValues(wrapper);
+    answerCategory({ data: { values: [{ value: "Drills", count: 12 }] } });
+    await flushPromises();
+    expect(labels(wrapper, ".stub-item")).toEqual(["Nails · 5 atlas.mappings.category.source_value_picker_count_suffix"]);
+  });
+
   it("offers no values before a source field is chosen", async () => {
     const wrapper = mountRow();
     expect(wrapper.find(".stub-values").element.disabled).toBe(true);

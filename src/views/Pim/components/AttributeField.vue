@@ -119,17 +119,20 @@ const props = defineProps({
   language: { type: String, required: true },
   translatable: { type: Boolean, default: false },
   hasMore: { type: Boolean, default: false },
+  // Names of stored values the loaded options lack (idx → name).
+  storedLabels: { type: Object, default: () => ({}) },
 });
 const emit = defineEmits(["update", "update-t9n", "update-json", "update-json-t9n", "translate", "open-options", "load-more"]);
 
 const type = computed(() => props.row.feature_type);
 const name = computed(() => props.row.feature_name || props.row.feature_idx);
 const label = computed(() => (T9N_TYPES.includes(type.value) ? `${name.value} (${props.language.toUpperCase()})` : name.value));
-// A stored value the loaded options lack still shows (its idx as the label).
+// A stored value the loaded options lack still shows (its name when known, else its idx).
+const withStored = (options, idx) => withStoredOption(options, idx, props.storedLabels[idx] ?? idx);
 const moreOption = computed(() => (props.hasMore ? [{ label: t("pim.attribute_values_more"), value: LOAD_MORE }] : []));
-const singleOptions = computed(() => [...withStoredOption(props.options, props.row.attribute_idx), ...moreOption.value]);
+const singleOptions = computed(() => [...withStored(props.options, props.row.attribute_idx), ...moreOption.value]);
 const multiOptions = computed(() => [
-  ...(props.row.attribute_idxs || []).reduce((options, idx) => withStoredOption(options, idx), props.options),
+  ...(props.row.attribute_idxs || []).reduce(withStored, props.options),
   ...moreOption.value,
 ]);
 

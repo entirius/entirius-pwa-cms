@@ -489,6 +489,9 @@ export default {
       this.newGroupName = "";
     },
     startRename(group) {
+      // A rename still open (an empty name left with an error) gets its old name back first.
+      const open = this.groups.find((g) => g.idx === this.renamingGroupIdx);
+      if (open) open.name = this._oldGroupName;
       this._oldGroupName = group.name;
       this.renameError = "";
       this.renamingGroupIdx = group.idx;

@@ -205,16 +205,19 @@ export default {
     sourceFieldFetchFn() {
       return Promise.resolve(this.sourceFieldOptions);
     },
-    // One successful request per source field; a failed one is not kept, the next open asks again.
+    // One successful request per source field; a failed one is not kept, the next open asks again. An answer for a
+    // source field that is no longer chosen is dropped.
     async loadSourceValues() {
       const field = this.local.source_field;
       if (!field || this.sourceValues.field === field) return;
       this.sourceValuesState = "loading";
       try {
         const { data } = await GET_DataValues(this.supplierIdx, { source_field: field });
+        if (field !== this.local.source_field) return;
         this.sourceValues = { field, values: data?.values || [] };
         this.sourceValuesState = "idle";
       } catch (err) {
+        if (field !== this.local.source_field) return;
         this.sourceValuesError = extractApiMessage(err, this.$t("notifications.error"));
         this.sourceValuesState = "error";
       }

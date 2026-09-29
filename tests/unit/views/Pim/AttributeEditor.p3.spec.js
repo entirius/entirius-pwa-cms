@@ -3,6 +3,7 @@ import { mount, flushPromises } from "@vue/test-utils";
 
 const mockGetFeatureAttributes = vi.fn();
 const mockNotify = vi.fn();
+const mockGetAttribute = vi.fn();
 
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification: mockNotify }) }));
 
@@ -19,6 +20,7 @@ vi.mock("@/api/pim/api", () => ({
       },
     }),
   GET_FeatureAttributes: (...args) => mockGetFeatureAttributes(...args),
+  GET_Attribute: (...args) => mockGetAttribute(...args),
 }));
 
 import AttributeEditor from "@/views/Pim/components/AttributeEditor.vue";
@@ -134,6 +136,8 @@ describe("AttributeEditor — select values load lazily", () => {
   beforeEach(() => {
     mockGetFeatureAttributes.mockReset();
     mockNotify.mockReset();
+    mockGetAttribute.mockReset();
+    mockGetAttribute.mockRejectedValue(new Error("404"));
   });
 
   it("opening a product asks for no values; a select loads its first page when it opens, once", async () => {
@@ -157,6 +161,20 @@ describe("AttributeEditor — select values load lazily", () => {
     ]);
     await flushPromises();
     expect(mockGetFeatureAttributes.mock.calls.map((call) => call[0])).toEqual(["colour", "sizes"]);
+  });
+
+  it("a stored value outside the first page shows its own name, asked for once", async () => {
+    mockGetFeatureAttributes.mockImplementation(() => page([{ idx: "red", name: "Red" }], "next-url"));
+    mockGetAttribute.mockResolvedValue({ data: { idx: "teal", name: "Teal" } });
+    const wrapper = mountEditor([{ feature_idx: "colour", attribute_idx: "teal" }]);
+    await flushPromises();
+
+    expect(mockGetAttribute).toHaveBeenCalledTimes(1);
+    expect(mockGetAttribute).toHaveBeenCalledWith("colour", "teal");
+    expect(selectOf(wrapper, false).props("options").slice(0, 2)).toEqual([
+      { label: "Red", value: "red" },
+      { label: "Teal", value: "teal" },
+    ]);
   });
 
   it("further pages load on demand through the last option, and a stored value outside them still shows", async () => {

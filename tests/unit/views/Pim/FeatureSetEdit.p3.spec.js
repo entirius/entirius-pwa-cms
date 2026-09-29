@@ -174,4 +174,16 @@ describe("FeatureSetEdit — review fixes (plan 54c)", () => {
     expect(wrapper.vm.renamingGroupIdx).toBe("frame");
     expect(wrapper.find(".rename-input").element.closest(".stub-field").dataset.error).toBe("pim.required_field");
   });
+
+  it("starting another rename gives a group left with an empty name its old name back", async () => {
+    const { wrapper, input } = await renaming();
+    wrapper.vm.groups.push({ idx: "wheels", name: "Wheels", name_t9n: {}, features: [] });
+    await input.setValue("");
+    await input.trigger("keydown", { key: "Enter" });
+
+    wrapper.vm.onGroupMenu(wrapper.vm.groups[1], { key: "rename" });
+    expect(wrapper.vm.groups[0].name).toBe("Frame");
+    wrapper.vm.cancelRename(wrapper.vm.groups[1]);
+    expect(wrapper.vm.groups[1].name).toBe("Wheels");
+  });
 });
