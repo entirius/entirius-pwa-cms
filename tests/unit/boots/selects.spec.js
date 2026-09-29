@@ -98,7 +98,7 @@ describe("EntitySearchPicker", () => {
     const wrapper = mountPicker({ modelValue: "sku-1", displayValue: "Buty trekkingowe" });
     await settle();
     const tag = wrapper.findComponent(Tag);
-    expect(tag.props()).toEqual({ label: "Buty trekkingowe", removable: true });
+    expect(tag.props()).toMatchObject({ label: "Buty trekkingowe", removable: true, to: null });
     tag.vm.$emit("remove");
     expect(wrapper.emitted("update:modelValue")).toEqual([[null]]);
     expect(wrapper.emitted("update:displayValue")).toEqual([[""]]);

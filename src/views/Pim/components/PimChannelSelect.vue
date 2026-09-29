@@ -23,9 +23,17 @@
       :label="$t('pim.default')"
     />
     <template v-if="translatorAvailable">
-      <BasicButton data-testid="pim-translate-store" @click="showTranslateStore = true">
+      <BasicButton v-if="isDesktop" data-testid="pim-translate-store" @click="showTranslateStore = true">
         {{ $t("pim.translate_store") }}
       </BasicButton>
+      <IconButton
+        v-else
+        icon="translate"
+        variant="outline"
+        :label="$t('pim.translate_store')"
+        data-testid="pim-translate-store"
+        @click="showTranslateStore = true"
+      />
       <PimTranslateDialog
         v-model:open="showTranslateStore"
         scope="store"
@@ -37,11 +45,13 @@
 
 <script setup>
 // The whole-panel controls of Pim in a view's PageHeader `meta` (P5 page frame): the channel selector and
-// „Tłumacz sklep”. The store owns the channels and the active channel; the panel wrapper (index.vue) provides the
-// global-scope flag and fetches the channels.
+// „Tłumacz sklep” (an IconButton of the same name below the shell breakpoint: the meta row keeps its width, so a
+// phone has no room for the text). The store owns the channels and the active channel; the panel wrapper
+// (index.vue) provides the global-scope flag and fetches the channels.
 import { computed, inject, ref } from "vue";
 import { usePimChannelStore } from "@/stores/pimChannel";
 import { useMuninStore } from "@/stores/munin";
+import { useIsDesktop } from "@/composables/useIsDesktop";
 import PimTranslateDialog from "./PimTranslateDialog.vue";
 
 const pimChannel = usePimChannelStore();
@@ -50,6 +60,7 @@ const globalScope = inject("isGlobalScope", ref(false));
 const isGlobalScope = computed(() => globalScope.value);
 const translatorAvailable = computed(() => munin.isModuleInstalled("pim_translator"));
 const showTranslateStore = ref(false);
+const isDesktop = useIsDesktop();
 
 const channelOptions = computed(() => {
   if (!pimChannel.channels.length) {
