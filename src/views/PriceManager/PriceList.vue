@@ -111,23 +111,25 @@
                 <span class="fw-600 fs-200">{{ row.currency || activeCurrency }}</span>
 
                 <!-- Net -->
-                <BasicInput
-                  :modelValue="getDirtyField(rowKey(row), 'value', primaryValue(row))"
-                  format="money"
-                  class="pm-price-input"
-                  @update:model-value="setDirty(rowKey(row), 'value', $event, row)"
-                />
+                <FormField class="pm-price-input" :error="cellError(row, 'value')">
+                  <BasicInput
+                    :modelValue="getDirtyField(rowKey(row), 'value', primaryValue(row))"
+                    format="money"
+                    @update:model-value="setDirty(rowKey(row), 'value', $event, row)"
+                  />
+                </FormField>
 
                 <!-- Calculated: Gross (or Net), read-only -->
                 <span class="t-muted">{{ formatPrice(calculatedValue(row)) }}</span>
 
                 <!-- Special -->
-                <BasicInput
-                  :modelValue="getDirtyField(rowKey(row), 'special_value', specialValue(row))"
-                  format="money"
-                  class="pm-price-input"
-                  @update:model-value="setDirty(rowKey(row), 'special_value', $event, row)"
-                />
+                <FormField class="pm-price-input" :error="cellError(row, 'special_value')">
+                  <BasicInput
+                    :modelValue="getDirtyField(rowKey(row), 'special_value', specialValue(row))"
+                    format="money"
+                    @update:model-value="setDirty(rowKey(row), 'special_value', $event, row)"
+                  />
+                </FormField>
 
                 <!-- Special Gross (read-only) -->
                 <span class="t-muted">{{ formatPrice(specialGrossValue(row)) }}</span>
@@ -306,6 +308,8 @@ export default {
       availableCurrencies: [],
       activeFilter: 'all',
       dirtyRows: new Map(),
+      // A save refused for an invalid price: the invalid cells show their error until they are fixed.
+      saveRefused: false,
       expandedSkus: new Set(),
       expandedData: {},
     }
@@ -609,9 +613,15 @@ export default {
     hasInvalidPrice() {
       return [...this.dirtyRows.values()].some((r) => formatError('money', r.value) || formatError('money', r.special_value))
     },
+    cellError(row, field) {
+      if (!this.saveRefused) return ''
+      const entry = this.dirtyRows.get(this.rowKey(row))
+      return entry && field in entry ? formatError('money', entry[field]) : ''
+    },
     async saveAll() {
       if (!this.dirtyRows.size) return
-      if (this.hasInvalidPrice()) {
+      this.saveRefused = this.hasInvalidPrice()
+      if (this.saveRefused) {
         this.notify.spawnNotification({ type: 'negative', msg: this.$t('formats.invalid_rows') })
         return
       }

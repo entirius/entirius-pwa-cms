@@ -19,13 +19,14 @@ vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification: 
 
 import PriceList from "@/views/PriceManager/PriceList.vue";
 import BasicInput from "@/boots/BasicInput/index.vue";
+import FormField from "@/boots/FormField/index.vue";
 
 async function mountList() {
   const wrapper = mount(PriceList, {
     global: {
       provide: { pmChannelIdx: "default-europe", pmActiveChannel: { calculate_direction: "from_net_to_gross" } },
-      components: { BasicInput },
-      stubs: { PmChannelSelect: true, BasicDatePicker: true, BasicInput: false },
+      components: { BasicInput, FormField },
+      stubs: { PmChannelSelect: true, BasicDatePicker: true, BasicInput: false, FormField: false, BasicTooltip: true },
     },
   });
   await flushPromises();
@@ -66,5 +67,19 @@ describe("PriceList — money cells and the unsaved state (plan 61)", () => {
     await wrapper.vm.saveAll();
     expect(patchBulk).not.toHaveBeenCalled();
     expect(notify).toHaveBeenCalledWith({ type: "negative", msg: "formats.invalid_rows" });
+  });
+
+  it("a refused save marks the invalid cell: red border and its message, named by the input", async () => {
+    const wrapper = await mountList();
+    const input = wrapper.find(".pm-price-input input");
+    await input.setValue("2.345");
+    await wrapper.vm.saveAll();
+    await flushPromises();
+    const error = wrapper.find(".pm-price-input .form-field__error");
+    expect(error.text()).toContain("Enter an amount with at most two decimal places");
+    expect(input.attributes("aria-invalid")).toBe("true");
+    expect(input.attributes("aria-describedby")).toBe(error.attributes("id"));
+    await input.setValue("2.34");
+    expect(wrapper.find(".pm-price-input .form-field__error").exists()).toBe(false);
   });
 });
