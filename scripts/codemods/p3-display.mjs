@@ -17,11 +17,13 @@ import { pathToFileURL } from "node:url";
 import vueParser from "vue-eslint-parser";
 import {
   collector,
+  componentsObject,
   contentChildren,
   findAttr,
   lineIndent,
   normalName,
   parseSfc,
+  removeProperties,
   runCodemod,
   sourceOf,
   staticClasses,
@@ -139,12 +141,6 @@ function loadingEdits(text, node, result) {
 
 const tagKey = (name) => name.toLowerCase().replace(/-/g, "");
 
-function componentsObject(ast) {
-  const exported = ast.body.find((node) => node.type === "ExportDefaultDeclaration")?.declaration;
-  const option = exported?.properties?.find((p) => (p.key?.name ?? p.key?.value) === "components");
-  return option?.value?.type === "ObjectExpression" ? option.value : null;
-}
-
 const within = (node, outer) => node.range[0] >= outer.range[0] && node.range[1] <= outer.range[1];
 
 // Identifiers named `local` in the script outside the given nodes (the import, its `components` entries).
@@ -177,20 +173,6 @@ function loadingUse(ast) {
   const names = [local, ...entries.map((p) => p.key.name ?? p.key.value)];
   const elsewhere = otherReferences(ast, local, [declaration, ...entries]) > 0;
   return { declaration, components, entries, elsewhere, tags: new Set(names.map(tagKey)) };
-}
-
-// Removes properties of an object literal with their commas, one edit per run of neighbours; all of them leave `{}`.
-function removeProperties(object, removed, result) {
-  const properties = object.properties;
-  if (removed.size === properties.length) return result.edit(object.range[0], object.range[1], "{}");
-  properties.forEach((property, i) => {
-    if (!removed.has(property) || removed.has(properties[i - 1])) return;
-    let last = i;
-    while (removed.has(properties[last + 1])) last += 1;
-    const next = properties[last + 1];
-    if (next) result.edit(property.range[0], next.range[0], "");
-    else result.edit(properties[i - 1].range[1], properties[last].range[1], "");
-  });
 }
 
 // The Loading.vue import and its `components` entries, only once every tag of it is rewritten.

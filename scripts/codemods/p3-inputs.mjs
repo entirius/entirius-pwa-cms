@@ -15,12 +15,15 @@
 // partition and resolve the flags. The three tags are global registrations, so no import changes. CLI: see p3-lib.mjs.
 import { pathToFileURL } from "node:url";
 import {
+  addAttribute,
   applyEdits,
   collector,
   lineIndent,
   normalName,
   parseSfc,
   removeNode,
+  renameKey,
+  renameTag,
   runCodemod,
   sourceOf,
   walkTemplate,
@@ -84,23 +87,6 @@ function idOf(attr) {
 const findById = (node, id) => node.startTag.attributes.find((attr) => idOf(attr) === id);
 
 // --- element edits -----------------------------------------------------------------------------------------------
-
-function renameTag(node, target, result) {
-  const nameStart = node.startTag.range[0] + 1;
-  result.edit(nameStart, nameStart + node.rawName.length, target);
-  if (node.endTag) result.edit(node.endTag.range[0] + 2, node.endTag.range[1] - 1, target);
-}
-
-function renameKey(attr, name, result) {
-  const key = attr.directive ? attr.key.argument : attr.key;
-  result.edit(key.range[0], key.range[1], name);
-}
-
-function addAttribute(node, attribute, result) {
-  const tag = node.startTag;
-  const at = tag.attributes.at(-1)?.range[1] ?? tag.range[0] + 1 + node.rawName.length;
-  result.edit(at, at, ` ${attribute}`);
-}
 
 // isDisabled / is-disabled / is_disabled → disabled; both spellings on one element are flagged.
 function disabledEdits(node, result) {

@@ -15,13 +15,16 @@
 // The sweeps (plans 17, 18) run it per partition and resolve the flags. CLI: see p3-lib.mjs.
 import { pathToFileURL } from "node:url";
 import {
+  addAttributes,
   collector,
+  componentsObject,
   contentChildren,
   expressionOf,
-  lineIndent,
   normalName,
   parseSfc,
   removeNode,
+  removeProperties,
+  renameTag,
   runCodemod,
   sourceOf,
   staticClasses,
@@ -125,22 +128,6 @@ function attributeEdits(text, node, map, result) {
 
 // --- tag edits -------------------------------------------------------------------------------------------------
 
-function renameTag(node, target, result) {
-  const nameStart = node.startTag.range[0] + 1;
-  result.edit(nameStart, nameStart + node.rawName.length, target);
-  if (node.endTag) result.edit(node.endTag.range[0] + 2, node.endTag.range[1] - 1, target);
-}
-
-// New attributes go after the last one, on their own lines when the start tag is multi-line.
-function addAttributes(text, node, attributes, result) {
-  if (!attributes.length) return;
-  const tag = node.startTag;
-  const at = tag.attributes.at(-1)?.range[1] ?? tag.range[0] + 1 + node.rawName.length;
-  const multiline = sourceOf(text, tag).includes("\n");
-  const separator = multiline ? `\n${lineIndent(text, node.range[0])}  ` : " ";
-  result.edit(at, at, attributes.map((attribute) => `${separator}${attribute}`).join(""));
-}
-
 // An expression as an attribute value: its double-quoted strings become single-quoted; null when it has both.
 function bindable(expression) {
   if (!expression.includes('"')) return expression;
@@ -241,26 +228,6 @@ const EDITS = {
 };
 
 // --- imports -----------------------------------------------------------------------------------------------------
-
-// Removes properties of an object literal with their commas, one edit per run of neighbours; all of them leave `{}`.
-function removeProperties(object, removed, result) {
-  const properties = object.properties;
-  if (removed.size === properties.length) return result.edit(object.range[0], object.range[1], "{}");
-  properties.forEach((property, i) => {
-    if (!removed.has(property) || removed.has(properties[i - 1])) return;
-    let last = i;
-    while (removed.has(properties[last + 1])) last += 1;
-    const next = properties[last + 1];
-    if (next) result.edit(property.range[0], next.range[0], "");
-    else result.edit(properties[i - 1].range[1], properties[last].range[1], "");
-  });
-}
-
-function componentsObject(ast) {
-  const exported = ast.body.find((node) => node.type === "ExportDefaultDeclaration")?.declaration;
-  const option = exported?.properties?.find((p) => (p.key?.name ?? p.key?.value) === "components");
-  return option?.value?.type === "ObjectExpression" ? option.value : null;
-}
 
 // Drops the import of every removed component whose tags are all converted, and its `components` entry.
 function importEdits(text, ast, done, result) {

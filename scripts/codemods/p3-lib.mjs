@@ -50,6 +50,57 @@ export function collector() {
   return result;
 }
 
+// --- shared edits of the P3 codemods -----------------------------------------------------------------------------
+
+export function renameTag(node, target, result) {
+  const nameStart = node.startTag.range[0] + 1;
+  result.edit(nameStart, nameStart + node.rawName.length, target);
+  if (node.endTag) result.edit(node.endTag.range[0] + 2, node.endTag.range[1] - 1, target);
+}
+
+export function renameKey(attr, name, result) {
+  const key = attr.directive ? attr.key.argument : attr.key;
+  result.edit(key.range[0], key.range[1], name);
+}
+
+// One attribute after the last one, on the same line.
+export function addAttribute(node, attribute, result) {
+  const tag = node.startTag;
+  const at = tag.attributes.at(-1)?.range[1] ?? tag.range[0] + 1 + node.rawName.length;
+  result.edit(at, at, ` ${attribute}`);
+}
+
+// New attributes go after the last one, on their own lines when the start tag is multi-line.
+export function addAttributes(text, node, attributes, result) {
+  if (!attributes.length) return;
+  const tag = node.startTag;
+  const at = tag.attributes.at(-1)?.range[1] ?? tag.range[0] + 1 + node.rawName.length;
+  const multiline = sourceOf(text, tag).includes("\n");
+  const separator = multiline ? `\n${lineIndent(text, node.range[0])}  ` : " ";
+  result.edit(at, at, attributes.map((attribute) => `${separator}${attribute}`).join(""));
+}
+
+// Removes properties of an object literal with their commas, one edit per run of neighbours; all of them leave `{}`.
+export function removeProperties(object, removed, result) {
+  const properties = object.properties;
+  if (removed.size === properties.length) return result.edit(object.range[0], object.range[1], "{}");
+  properties.forEach((property, i) => {
+    if (!removed.has(property) || removed.has(properties[i - 1])) return;
+    let last = i;
+    while (removed.has(properties[last + 1])) last += 1;
+    const next = properties[last + 1];
+    if (next) result.edit(property.range[0], next.range[0], "");
+    else result.edit(properties[i - 1].range[1], properties[last].range[1], "");
+  });
+}
+
+// The `components` option of an Options API default export, when it is an object literal.
+export function componentsObject(ast) {
+  const exported = ast.body.find((node) => node.type === "ExportDefaultDeclaration")?.declaration;
+  const option = exported?.properties?.find((p) => (p.key?.name ?? p.key?.value) === "components");
+  return option?.value?.type === "ObjectExpression" ? option.value : null;
+}
+
 // Removes a node (an attribute, an element) together with the whitespace in front of it.
 export function removeNode(text, node, result) {
   let start = node.range[0];

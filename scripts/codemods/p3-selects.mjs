@@ -12,7 +12,17 @@
 // Dropdown tags are touched: Switcher and BasicCheckbox emit onSelect with other payloads (r02 §8).
 // The sweeps (plans 17, 18) run it per partition and resolve the flags. CLI: see p3-lib.mjs.
 import { pathToFileURL } from "node:url";
-import { collector, normalName, parseSfc, removeNode, runCodemod, sourceOf, walkTemplate } from "./p3-lib.mjs";
+import {
+  collector,
+  normalName,
+  parseSfc,
+  removeNode,
+  renameKey,
+  renameTag,
+  runCodemod,
+  sourceOf,
+  walkTemplate,
+} from "./p3-lib.mjs";
 
 const TARGET = "BasicSelect";
 const NOT_ON_BASIC_SELECT = new Set([
@@ -99,17 +109,6 @@ function handlerKind(text, attr, value, functions) {
 
 // --- one tag -----------------------------------------------------------------------------------------------------
 
-function renameKey(attr, name, result) {
-  const key = attr.directive ? attr.key.argument : attr.key;
-  result.edit(key.range[0], key.range[1], name);
-}
-
-function renameTag(node, result) {
-  const nameStart = node.startTag.range[0] + 1;
-  result.edit(nameStart, nameStart + node.rawName.length, TARGET);
-  if (node.endTag) result.edit(node.endTag.range[0] + 2, node.endTag.range[1] - 1, TARGET);
-}
-
 // Attributes outside the map; false when the tag is flagged.
 function checkAttributes(text, node, result) {
   for (const attr of node.startTag.attributes) {
@@ -143,7 +142,7 @@ function tagEdits(text, node, functions, result) {
   if (!checkAttributes(text, node, result)) return;
   modelEdits(text, node, functions, result);
   if (result.flags.length) return;
-  renameTag(node, result);
+  renameTag(node, TARGET, result);
   for (const attr of node.startTag.attributes) {
     const name = normalName(attr);
     if (name === "values") renameKey(attr, "options", result);
