@@ -30,8 +30,11 @@ const stubs = {
   IconButton: true,
 };
 
-async function open(component, props = {}) {
-  const wrapper = mount(component, { props: { visible: false, ...props }, global: { stubs } });
+const EmptyStateStub = { props: ["title"], template: "<div :data-title='title'><slot /></div>" };
+const ButtonStub = { emits: ["click"], template: "<button v-bind='$attrs' @click=\"$emit('click')\"><slot /></button>" };
+
+async function open(component, props = {}, extraStubs = {}) {
+  const wrapper = mount(component, { props: { visible: false, ...props }, global: { stubs: { ...stubs, ...extraStubs } } });
   await wrapper.setProps({ visible: true });
   return wrapper;
 }
@@ -100,6 +103,35 @@ describe("EditBannerModal", () => {
     await flushPromises();
     expect(wrapper.find(".banner-gallery__grid").exists()).toBe(false);
     expect(wrapper.findComponent({ name: "Pagination" }).props()).toMatchObject({ page: 2, pages: 3 });
+  });
+
+  // Plan 54b: an outage is an error with a retry, not "No images"; the label's control stays while the gallery is open.
+  it("shows a failed load as an error that retries the same page", async () => {
+    mockImages.mockRejectedValueOnce(new Error("down"));
+    const wrapper = await open(EditBannerModal, {}, { EmptyState: EmptyStateStub, BasicButton: ButtonStub });
+    await wrapper.find("button#banner-media").trigger("click");
+    await flushPromises();
+    const error = wrapper.find('[data-testid="banner-gallery-error"]');
+    expect(error.attributes("data-title")).toBe("layout_extender.gallery_error");
+
+    mockImages.mockResolvedValueOnce({ data: { data: [{ uid: "a", image: "/a.jpg" }], pagination: { total: 1 } } });
+    await error.find("button").trigger("click");
+    await flushPromises();
+    expect(mockImages).toHaveBeenLastCalledWith({ limit: 9, page: 1 });
+    expect(wrapper.find('[data-testid="banner-gallery-error"]').exists()).toBe(false);
+    expect(wrapper.find(".banner-gallery__grid").exists()).toBe(true);
+  });
+
+  it("keeps the labelled gallery button while the gallery is open, and hides the gallery with it", async () => {
+    mockImages.mockResolvedValue({ data: { data: [], pagination: { total: 0 } } });
+    const wrapper = await open(EditBannerModal, {}, { EmptyState: EmptyStateStub, BasicButton: ButtonStub });
+    await wrapper.find("button#banner-media").trigger("click");
+    await flushPromises();
+    const button = wrapper.find("button#banner-media");
+    expect(button.attributes("aria-expanded")).toBe("true");
+    await button.trigger("click");
+    expect(wrapper.vm.galleryOpen).toBe(false);
+    expect(wrapper.find("button#banner-media").attributes("aria-expanded")).toBe("false");
   });
 
   it("titles the translations drawer with the field's label", async () => {

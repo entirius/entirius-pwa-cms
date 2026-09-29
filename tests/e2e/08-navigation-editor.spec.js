@@ -432,11 +432,7 @@ test.describe("Navigation Editor", () => {
       await expect(megaItem.locator(".nav-column")).toHaveCount(2);
 
       // Remove banner column (second)
-      await megaItem
-        .locator(".nav-column")
-        .nth(1)
-        .getByRole("button", { name: either((t) => t.common.delete) })
-        .click();
+      await megaItem.locator(".nav-column").nth(1).getByTestId("nav-column-delete").click();
 
       await expect(megaItem.locator(".nav-column")).toHaveCount(1);
     });
