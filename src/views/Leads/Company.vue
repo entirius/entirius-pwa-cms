@@ -4,7 +4,7 @@
     <template #header>
       <PageHeader :title="$t('leads.company.title')">
         <template v-if="company" #actions>
-          <CompanyActions :company="company" @changed="load" />
+          <CompanyActions :company="company" @changed="reload" />
         </template>
       </PageHeader>
     </template>
@@ -45,7 +45,7 @@
       <div :id="`company-panel-${tab}`" role="tabpanel" :aria-labelledby="`company-tab-${tab}`">
         <OverviewTab v-if="tab === 'overview'" :company="company" />
         <IntelTab v-else-if="tab === 'intel'" :company="company" />
-        <ContactsTab v-else-if="tab === 'contacts'" :company="company" @changed="load" />
+        <ContactsTab v-else-if="tab === 'contacts'" :company="company" @changed="reload" />
         <Thread v-else />
       </div>
     </template>
@@ -110,6 +110,17 @@ async function load() {
   stages.value = stageRes.data.results;
 }
 
+// A reload of the open card (after an action or a refused change): a failure leaves the card as it was and says so.
+async function reload() {
+  const opening = opened;
+  try {
+    await load();
+  } catch (err) {
+    if (!isCurrent(opening)) return;
+    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.review.error")), type: "negative" });
+  }
+}
+
 // A stage move or a type change: its answer replaces the card while the card is still open; a refusal reloads it.
 async function change(request, failedMessage) {
   const opening = opened;
@@ -119,7 +130,7 @@ async function change(request, failedMessage) {
   } catch (err) {
     if (!isCurrent(opening)) return;
     notify.spawnNotification({ msg: extractApiMessage(err, failedMessage), type: "negative" });
-    await load();
+    await reload();
   }
 }
 

@@ -257,6 +257,29 @@ describe("Company card header", () => {
     expect(wrapper.get('[data-testid="thread-company"]').text()).toBe("Shop");
   });
 
+  // Plan 61e: a reload that fails keeps the card as it was and says so — no unhandled rejection.
+  const reloadFails = () => leads.GET_Company.mockRejectedValueOnce({ response: { data: { detail: "Reload failed." } } });
+  const notices = () => notify.spawnNotification.mock.calls.map(([notice]) => notice.msg);
+
+  it("a refused stage move whose reload fails keeps the card and shows both notices", async () => {
+    leads.POST_Transition.mockRejectedValueOnce({ response: { data: { detail: "Move refused." } } });
+    const wrapper = await mountCard();
+    reloadFails();
+    await setControl(wrapper, "company-stage", "won");
+    await flushPromises();
+    expect(notices()).toEqual(["Move refused.", "Reload failed."]);
+    expect(wrapper.get('[data-testid="thread-company"]').text()).toBe("Shop");
+  });
+
+  it("a failed reload after an action (@changed) is a notice, the card stays", async () => {
+    const wrapper = await mountCard();
+    reloadFails();
+    wrapper.findComponent({ name: "CompanyActions" }).vm.$emit("changed");
+    await flushPromises();
+    expect(notices()).toEqual(["Reload failed."]);
+    expect(wrapper.find("company-actions-stub").exists()).toBe(true);
+  });
+
   it("picking the current stage or type again sends nothing", async () => {
     const wrapper = await mountCard();
     await setControl(wrapper, "company-stage", "new");
