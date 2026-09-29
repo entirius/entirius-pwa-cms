@@ -9,12 +9,15 @@ import BasicInput from "@/boots/BasicInput/index.vue";
 const layout = ({ props = {}, slots = {} } = {}) =>
   mount(AuthLayout, { props: { title: "Zaloguj się", ...props }, slots });
 
-// FormField renders its slot and shows the description it gets, so the caps-lock hint is visible to the test.
-const FormField = { props: ["label", "error", "description"], template: "<div><slot /><p class='desc'>{{ description }}</p></div>" };
+// FormField renders its slot and, like the real one, shows the error in place of the description.
+const FormField = {
+  props: ["label", "error", "description"],
+  template: "<div><slot /><p v-if='error' class='error'>{{ error }}</p><p v-else class='desc'>{{ description }}</p></div>",
+};
 const IconButton = { props: ["label", "pressed", "icon"], emits: ["click"], template: "<button :aria-pressed='String(pressed)' @click=\"$emit('click')\" />" };
-const field = () =>
+const field = (props = {}) =>
   mount(PasswordField, {
-    props: { label: "Hasło", modelValue: "" },
+    props: { label: "Hasło", modelValue: "", ...props },
     global: { stubs: { FormField, BasicInput: false }, components: { BasicInput, IconButton } },
   });
 
@@ -37,6 +40,7 @@ describe("AuthLayout", () => {
     expect(stage.attributes("data-theme")).toBe("dark");
     expect(stage.findAll(".auth-layout__field")).toHaveLength(3);
     expect(stage.text()).toContain("login.stage_line");
+    expect(stage.find(".auth-layout__chip").exists()).toBe(false); // plan 61c: a slug is no name — no channel chip
   });
 
   it("has one live region that is there before any status, empty until one comes", async () => {
@@ -76,27 +80,39 @@ describe("AuthLayout PasswordField", () => {
     expect(wrapper.get("button").attributes("aria-pressed")).toBe("true");
   });
 
+  // Vue drops an event stamped before its listener was attached; happy-dom's event clock can lag behind under load.
+  const settle = () => new Promise((resolve) => setTimeout(resolve, 10));
+  const pressKey = (wrapper, type, on) => {
+    // happy-dom knows no CapsLock modifier: the event answers for it.
+    const event = new KeyboardEvent(type, { key: "a", bubbles: true });
+    Object.defineProperty(event, "getModifierState", { value: (name) => name === "CapsLock" && on });
+    wrapper.get("input").element.dispatchEvent(event);
+    return flushPromises();
+  };
+
   it("hints caps lock only while it is on, and drops the hint on leaving the field", async () => {
     const wrapper = field();
-    // Vue drops an event stamped before its listener was attached; happy-dom's event clock can lag behind under load.
-    await new Promise((resolve) => setTimeout(resolve, 10));
-    const hint = () => wrapper.get(".desc").text();
-    const key = (type, on) => {
-      // happy-dom knows no CapsLock modifier: the event answers for it.
-      const event = new KeyboardEvent(type, { key: "a", bubbles: true });
-      Object.defineProperty(event, "getModifierState", { value: (name) => name === "CapsLock" && on });
-      wrapper.get("input").element.dispatchEvent(event);
-      return flushPromises();
-    };
+    await settle();
+    const hint = () => wrapper.find('[data-testid="caps-lock-hint"]');
+    const key = (type, on) => pressKey(wrapper, type, on);
 
     await key("keydown", true);
-    expect(hint()).toBe("login.caps_lock");
+    expect(hint().text()).toBe("login.caps_lock");
     await key("keyup", false);
-    expect(hint()).toBe("");
+    expect(hint().exists()).toBe(false);
 
     await key("keydown", true);
     await wrapper.get("input").trigger("focusout");
-    expect(hint()).toBe("");
+    expect(hint().exists()).toBe(false);
+  });
+
+  // Plan 61c: the hint is its own line, not the description a password error replaces.
+  it("keeps the caps-lock hint next to a password error", async () => {
+    const wrapper = field({ error: "Złe hasło." });
+    await settle();
+    await pressKey(wrapper, "keydown", true);
+    expect(wrapper.get('[data-testid="caps-lock-hint"]').text()).toBe("login.caps_lock");
+    expect(wrapper.get(".error").text()).toBe("Złe hasło.");
   });
 
   it("passes typing up as v-model", async () => {
