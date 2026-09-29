@@ -1320,7 +1320,9 @@ export default {
       await this.saveRule();
       this.confirmLeave();
     },
+    // A rule that failed to load holds the empty default form: never write it over the stored rule.
     async saveRule() {
+      if (this.loadFailed) return;
       const valid = this.formErrors.validateRequired(this.form, {
         name: this.$t("promo.field_name"),
         modifier: this.$t("promo.field_modifier"),
@@ -1353,6 +1355,7 @@ export default {
     },
     async deleteRule() {
       this.showDeleteConfirm = false;
+      if (this.loadFailed) return;
       this.loader.loaderStart();
       try {
         await DELETE_DiscountRule(this.channel, this.ruleId);
