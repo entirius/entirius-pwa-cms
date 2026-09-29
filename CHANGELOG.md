@@ -138,6 +138,15 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- The sign-in screens share one brand-led frame, `AuthLayout` (plan 59, "quiet light"): on desktop a dark brand stage
+  (slow light fields on transform only, paused while typing and still under reduced motion; wordmark, an editorial
+  line, the channel chip) beside the form column, which follows the theme; below 1024 px the stage is a top band and
+  the form a sheet over it. The login wall, password reset, change password and the SSO callback moved onto it.
+  Title „Zaloguj się” / `Sign in` (`login.welcome`), new subtitle. Form errors now show under their field and once in
+  an `aria-live` summary instead of a toast; the submit button shows its loading state; a caps-lock hint under a
+  password field; `autocomplete` `username` / `current-password` / `new-password` / `email`. Fields, requests,
+  redirects and the SSO flow are unchanged. New: `size="lg"` (40 px) on `BasicButton` and `BasicInput`, `onDark` on
+  `BasicLogo`; `src/assets/scss/utils/_auth-card.scss` removed.
 - Accessible names renamed by the floating labels (P5 plan 56, listed in plan 56c for the test package): the Stock
   warehouse picker `Select warehouse` / „Wybierz magazyn” → `Warehouse` / „Magazyn”; the Pim category status filter
   `Filter by status` / „Filtruj po statusie” → `Status`; the Atlas supplier-review filter keeps its name `Supplier` /
