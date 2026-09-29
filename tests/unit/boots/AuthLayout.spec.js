@@ -5,6 +5,7 @@ import { mount, flushPromises } from "@vue/test-utils";
 import AuthLayout from "@/boots/AuthLayout/index.vue";
 import PasswordField from "@/boots/AuthLayout/PasswordField.vue";
 import BasicInput from "@/boots/BasicInput/index.vue";
+import { DescribedFormField, FIELD_DESCRIPTION } from "../helpers/describedFormField";
 
 const layout = ({ props = {}, slots = {} } = {}) =>
   mount(AuthLayout, { props: { title: "Zaloguj się", ...props }, slots });
@@ -99,11 +100,38 @@ describe("AuthLayout PasswordField", () => {
     await key("keydown", true);
     expect(hint().text()).toBe("login.caps_lock");
     await key("keyup", false);
-    expect(hint().exists()).toBe(false);
+    expect(hint().text()).toBe("");
 
     await key("keydown", true);
     await wrapper.get("input").trigger("focusout");
-    expect(hint().exists()).toBe(false);
+    expect(hint().text()).toBe("");
+  });
+
+  // Plan 61e: the live region is there before its text (so it is announced) and the input names it while it shows.
+  it("announces the caps-lock hint from a standing live region the input points at", async () => {
+    const wrapper = field({ error: "Złe hasło." });
+    await settle();
+    const hint = wrapper.get('[data-testid="caps-lock-hint"]');
+    const describedBy = () => wrapper.get("input").attributes("aria-describedby");
+    expect(hint.attributes("role")).toBe("status");
+    expect(hint.classes()).toContain("visually-hidden");
+    expect(describedBy()).toBeUndefined();
+
+    await pressKey(wrapper, "keydown", true);
+    expect(hint.classes()).not.toContain("visually-hidden");
+    expect(describedBy()).toBe(hint.attributes("id"));
+  });
+
+  it("names the caps-lock hint next to the field's own description (an error), never instead of it", async () => {
+    const wrapper = mount(PasswordField, {
+      props: { label: "Hasło", modelValue: "" },
+      global: { stubs: { FormField: DescribedFormField, BasicInput: false }, components: { BasicInput, IconButton } },
+    });
+    await settle();
+    const describedBy = () => wrapper.get("input").attributes("aria-describedby");
+    expect(describedBy()).toBe(FIELD_DESCRIPTION);
+    await pressKey(wrapper, "keydown", true);
+    expect(describedBy()).toBe(`${FIELD_DESCRIPTION} ${wrapper.get('[data-testid="caps-lock-hint"]').attributes("id")}`);
   });
 
   // Plan 61c: the hint is its own line, not the description a password error replaces.
