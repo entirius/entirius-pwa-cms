@@ -371,15 +371,11 @@
                     >
                       {{ s_uid.substring(0, 8) }}
                     </p>
+                    <p class="fs-200 t-muted" data-testid="builder-section-config">
+                      {{ $t('builder.setted_config') }}: {{ sectionConfigSummary(s_uid) }}
+                    </p>
                   </div>
                   <div class="section-actions flex gap-1 as-s ai-ct" data-testid="builder-section-actions">
-                    <!-- Display only: a real button whose focus, hover or tap shows the summary as its tooltip (the
-                         edit button next to it opens the config). -->
-                    <IconButton
-                      icon="preview"
-                      :label="`${$t('builder.setted_config')}: ${sectionConfigSummary(s_uid)}`"
-                      data-testid="builder-section-config"
-                    />
                     <SubscriberSetter
                       @onSet="edited_section_uid = s_uid"
                       @on_AssetPass="set_section"

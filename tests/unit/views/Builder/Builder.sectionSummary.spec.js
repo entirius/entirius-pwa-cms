@@ -14,8 +14,7 @@ vi.mock("@/api/contentDB/api", async (importOriginal) => ({
   _METHOD_content: vi.fn(),
 }));
 
-// Plan 61c: the section config summary is a real button (IconButton), not a focusable role="img" span; its keyboard
-// focus opens the tooltip with the summary.
+// Plan 61e: the section config summary is visible text under the section title, not a control without an action.
 const CONTENT_RESPONSE = {
   data: {
     data: {
@@ -75,19 +74,14 @@ describe("Builder — section config summary", () => {
     GET_Languages.mockReset().mockResolvedValue({ data: { data: [] } });
   });
 
-  it("is a button named by the summary whose keyboard focus opens the tooltip", async () => {
+  it("is visible text, not a control", async () => {
     const wrapper = await mountBuilder();
-    const trigger = wrapper.get('[data-testid="builder-section-config"]');
-    expect(trigger.element.tagName).toBe("BUTTON");
-    expect(trigger.attributes("role")).toBeUndefined();
-    const name = trigger.attributes("aria-label");
-    expect(name).toMatch(/^builder\.setted_config: /);
-    const tooltip = wrapper.get(`#${trigger.element.closest(".basic-tooltip").querySelector("[role=tooltip]").id}`);
-    expect(tooltip.isVisible()).toBe(false);
-    trigger.element.focus();
-    await flushPromises();
-    expect(tooltip.isVisible()).toBe(true);
-    expect(tooltip.text()).toBe(name);
+    const summary = wrapper.get('[data-testid="builder-section-config"]');
+    expect(summary.element.tagName).toBe("P");
+    expect(summary.attributes("role")).toBeUndefined();
+    expect(summary.attributes("tabindex")).toBeUndefined();
+    expect(summary.isVisible()).toBe(true);
+    expect(summary.text()).toBe("builder.setted_config: —");
     wrapper.unmount();
   });
 });
