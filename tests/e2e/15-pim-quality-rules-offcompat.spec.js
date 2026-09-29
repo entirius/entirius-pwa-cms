@@ -25,8 +25,6 @@ const FONT_WHITELIST = [
   'gaps/status',
   'gap-definitions',
   'Failed to load resource',
-  // The dev server's hot-reload socket is not a page error.
-  'WebSocket connection to',
 ];
 
 async function stubGapsOff(page) {
