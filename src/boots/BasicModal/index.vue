@@ -12,6 +12,7 @@
         <div
           class="basic-modal__panel flex-column"
           :class="`basic-modal__panel--${size}`"
+          v-bind="$attrs"
           role="dialog"
           :aria-modal="inline ? undefined : 'true'"
           :aria-labelledby="title || $slots.title ? titleId : undefined"
@@ -57,11 +58,13 @@ let nextId = 0;
 // `size` sm · md · lg, `persistent` (busy: Esc and the backdrop do not close it, the close button is disabled),
 // default slot = body, `footer` slot or `actions` (→ ActionBar, R5). Focus is trapped while open and goes back to the
 // opener on close. Below the tablet breakpoint it is a full-width sheet at the bottom. `inline` renders the open state in the
-// page flow (catalogue): no Teleport, no backdrop, no trap.
+// page flow (catalogue): no Teleport, no backdrop, no trap. Other attributes (`data-testid`) land on the dialog element.
 import { computed, ref } from "vue";
 import IconButton from "@/boots/IconButton/index.vue";
 import ActionBar from "@/boots/ActionBar/index.vue";
 import { useFocusTrap } from "@/composables/useFocusTrap";
+
+defineOptions({ inheritAttrs: false });
 
 const props = defineProps({
   open: { type: Boolean, default: false },
