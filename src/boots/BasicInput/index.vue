@@ -40,7 +40,8 @@
 // of icons.js), `readonly` (the value behind a lock, the former LockedField), `disabled`, and the native `maxlength`,
 // `autocomplete`, `inputmode`, `min`, `max`, `step` (on the <input>, never the wrapper). Inside a
 // FormField it takes id, aria-describedby, aria-invalid, required and disabled from the contract; the label and the
-// error text are the FormField's. `null` and `false` show an empty field, `0` shows "0". `focusOnCreate` focuses it on mount;
+// error text are the FormField's. A caller's `aria-describedby` joins the field's. `null` and `false` show an empty
+// field, `0` shows "0". `focusOnCreate` focuses it on mount;
 // `onFocusout` / `onKeyDown` (Enter) emit the current text. `size`: md = --elem-height (default), lg = 40 px (the
 // sign-in screens, AuthLayout). Slot `trailing`: a control inside the right edge (the password reveal), the text
 // stops before it.
@@ -68,6 +69,7 @@ const props = defineProps({
   max: { type: [Number, String], default: null },
   step: { type: [Number, String], default: null },
   size: { type: String, default: "md", validator: (value) => ["md", "lg"].includes(value) },
+  ariaDescribedby: { type: String, default: "" },
 });
 const emit = defineEmits(["update:modelValue", "onFocusout", "onKeyDown"]);
 
@@ -77,6 +79,7 @@ const leadingIcon = computed(() => (props.readonly ? "lock" : props.icon));
 const { attrs } = useControlAttrs({
   id: () => props.id,
   disabled: () => props.disabled,
+  describedBy: () => props.ariaDescribedby,
 });
 
 onMounted(() => props.focusOnCreate && inputEl.value.focus());
