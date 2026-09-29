@@ -1,5 +1,5 @@
 <template>
-  <div class="basic-logo">
+  <div class="basic-logo" :class="{ 'basic-logo--on-dark': onDark }">
     <svg
       v-if="variant === 'full'"
       class="basic-logo__wordmark"
@@ -69,11 +69,12 @@ let nextId = 0;
 <script setup>
 // The brand mark (D2: its gradients belong to the asset, not to the tokens). `variant="full"` is the "ENTIRIUS CMS"
 // wordmark (Figma: 206 × 32 in the desktop header, 154 × 24 on a phone), `size` its height; the name turns
-// `text-strong` in the light theme. `variant="icon"` is the square sign. Gradient ids are per instance: two logos on
+// `text-strong` in the light theme, unless `onDark` (an always-dark surface: the sign-in stage). `variant="icon"` is the square sign. Gradient ids are per instance: two logos on
 // one page never share (or lose) a gradient.
 defineProps({
   size: { type: Number, default: 32 },
   variant: { type: String, default: "icon", validator: (value) => ["full", "icon"].includes(value) },
+  onDark: { type: Boolean, default: false },
 });
 
 const WORDMARK_WIDTH = 154;
@@ -96,7 +97,7 @@ const uid = `basic-logo-${nextId}`;
   font-weight: 400;
 }
 
-[data-theme="default"] .basic-logo__name {
+[data-theme="default"] .basic-logo:not(.basic-logo--on-dark) .basic-logo__name {
   fill: var(--text-strong);
 }
 </style>

@@ -24,7 +24,7 @@
 </template>
 
 <script>
-// Sizes: md = --elem-height (inputs share it), sm = row actions. `variant` is the role: primary, secondary, ghost,
+// Sizes: md = --elem-height (inputs share it), sm = row actions, lg = 40 px (the sign-in screens, AuthLayout). `variant` is the role: primary, secondary, ghost,
 // danger (every delete/remove/reject), danger-solid (the destructive confirm in a dialog). The label is the default
 // slot; `icon` is a meaning of icons.js, drawn before the label; `loading` swaps the icon for a spinner and disables.
 import { ICONS } from "@/boots/Icons/icons";
@@ -59,7 +59,7 @@ export default {
     size: {
       type: String,
       default: "md",
-      validator: (value) => ["md", "sm"].includes(value),
+      validator: (value) => ["md", "sm", "lg"].includes(value),
     },
     label: {
       type: String,
@@ -129,6 +129,13 @@ button.button-basic {
     padding: 0 var(--space-3);
   }
 
+  &.button-basic--lg {
+    --btn-height: var(--space-10);
+
+    padding: 0 var(--space-5);
+    font-size: var(--fs-300);
+  }
+
   &.button-basic--labelled {
     gap: calc(var(--space-1) * 1.5);
   }
@@ -188,6 +195,11 @@ button.button-basic {
 
     &[disabled] {
       background-color: var(--accent-fill-hover);
+    }
+
+    // The sign-in button: a soft light from the top edge on hover.
+    &.button-basic--lg:hover:not([disabled]) {
+      background-image: linear-gradient(color-mix(in srgb, var(--text-on-accent-fill) 16%, transparent), transparent 60%);
     }
   }
 
