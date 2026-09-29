@@ -94,16 +94,17 @@ describe("Leads layout", () => {
   });
 
   // UX-002d: Settings and its sections take the full width in one scroller — no Inbox column, no DesktopOnly wall.
-  it("a settings page renders alone, with a way back to the hub from a section", () => {
+  // Plan 57: a section's way back is its PageHeader's; the layout adds no second back control.
+  it("a settings page renders alone, without a back control of the layout", () => {
     enable("leads", "communicator");
     route.current.name = "LeadsSettings";
     route.current.meta = { page: true };
     const hub = mountLayout();
     expect(hub.find('[data-testid="leads-page"]').exists()).toBe(true);
     expect(hub.find('[data-testid="inbox"]').exists()).toBe(false);
-    expect(hub.find(".leads-page__back").exists()).toBe(false);
     route.current.name = "CommunicatorSequences";
-    expect(mountLayout().find(".leads-page__back").exists()).toBe(true);
+    const section = mountLayout().get('[data-testid="leads-page"]');
+    expect([...section.element.children].map((el) => el.dataset.testid)).toEqual(["detail"]);
     route.current.meta = undefined;
   });
 

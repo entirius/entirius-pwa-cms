@@ -41,7 +41,7 @@ const customerRoute = computed(() => ({
 }));
 const formatDate = (iso) => formatTime(iso) || "—";
 const columns = computed(() => [
-  { key: "label", label: t("leads.company.field"), width: "max-content" },
+  { key: "label", label: t("leads.company.field"), width: "max-content", truncate: false },
   { key: "value", label: t("leads.company.value"), width: "1fr" },
 ]);
 const rows = computed(() => {

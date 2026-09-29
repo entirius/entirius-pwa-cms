@@ -4,15 +4,6 @@
   </DesktopOnly>
   <!-- Settings and its sections: full width, one scroller, usable on a phone (wide tables scroll in their box) -->
   <div v-else-if="route.meta?.page" class="leads-page h-100 ovy-auto" data-testid="leads-page">
-    <!-- a section leads back to the hub (a section on PageHeader has its own back); a template edit has its own link
-         back to the template list -->
-    <IconButton
-      v-if="!NO_BACK_BAR.includes(route.name)"
-      class="leads-page__back"
-      icon="back"
-      :label="$t('leads.thread.back')"
-      @click="router.push({ name: 'LeadsSettings' })"
-    />
     <router-view />
   </div>
   <div v-else class="leads" :class="{ 'leads--detail': hasDetail, 'leads--solo': !hasInbox }" data-testid="leads-layout">
@@ -76,7 +67,6 @@ import Inbox from "./Inbox.vue";
 // The Inbox is communicator data — without that module the detail takes the whole width.
 const route = useRoute();
 const router = useRouter();
-const NO_BACK_BAR = ["LeadsSettings", "CommunicatorTemplateEdit", "LeadsStages", "LeadsLeadTypes"];
 const munin = useMuninStore();
 const reviewQueue = useLeadsReviewStore();
 const isDesktop = useIsDesktop();
@@ -112,9 +102,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.leads-page__back {
-  margin: var(--space-5) var(--space-8) 0;
-}
 /* The app content column clips (overflow: hidden) — the layout is its own scroller, so long threads
    and the Review edit form stay reachable and the sticky Review actions pin to its bottom. */
 .leads {

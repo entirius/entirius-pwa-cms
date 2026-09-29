@@ -64,4 +64,12 @@ describe("Company overview tab", () => {
     expect(link.text()).toBe("Jan Kowalski");
     munin.isModuleInstalled.mockReturnValue(false);
   });
+
+  // Plan 57: a truncated cell adds nothing to a max-content track, so the field names were cut to the header's width.
+  it("keeps the field names whole", () => {
+    const wrapper = mount(OverviewTab, { props: { company }, global: { components } });
+    const cells = wrapper.findAll(".data-table__cell").filter((cell) => cell.text() === "Last activity");
+    expect(cells).toHaveLength(1);
+    expect(cells[0].classes()).not.toContain("data-table__cell--truncate");
+  });
 });

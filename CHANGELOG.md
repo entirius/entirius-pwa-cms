@@ -542,6 +542,9 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- P5 wave-5 close (plan 57): the Leads company card's Overview shows its field names whole (they were cut to the
+  header's width); a Leads Settings section shows one back arrow, its PageHeader's (the layout added a second one
+  above it).
 - P5 review leftovers of plans 47/48, 53, 54, 54b and 54d (plan 56b):
   - Leads: the Communicate dialog shows a failed template list as its error and starts every open without the old
     list; Request draft asks for one draft per click (the dialog is persistent and its actions disabled while it
