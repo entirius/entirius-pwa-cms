@@ -104,7 +104,8 @@
   "font-size": {
     "$description": "--fs-* is the Figma size scale behind the .fs-<step> classes; new text uses type roles.",
     "fs-100": "10px", "fs-150": "11px", "fs-200": "12px", "fs-250": "13px", "fs-300": "14px",
-    "fs-400": "16px", "fs-500": "20px", "fs-600": "24px", "fs-700": "30px"
+    "fs-400": "16px", "fs-500": "20px", "fs-600": "24px", "fs-700": "30px",
+    "fs-display": "48px"
   },
 
   "font": {
@@ -116,6 +117,7 @@
 
   "type": {
     "$description": "Type roles from the Figma CMS frames. Emits .type-<role> classes and --type-<role> (font shorthand) + --tracking-<role>. brand = Lexend Deca, ui = Inter.",
+    "display":      { "family": "brand", "weight": 300, "size": "48px", "line": "56px", "tracking": "{font.tracking.brand}", "color": "text-strong",    "figma": "sign-in editorial line (1); desktop only" },
     "page-title":   { "family": "brand", "weight": 400, "size": "30px", "line": "33px", "tracking": "{font.tracking.brand}", "color": "text-strong",    "figma": "H1 (8 uses)" },
     "title":        { "family": "brand", "weight": 400, "size": "20px", "line": "22px", "tracking": "{font.tracking.brand}", "color": "text-strong",    "figma": "home card titles, mobile H2 (42)" },
     "nav":          { "family": "brand", "weight": 400, "size": "16px", "line": "24px", "tracking": "{font.tracking.brand}", "color": "text-strong",    "figma": "sidebar items (74); desktop breadcrumbs 16/18 (5)" },

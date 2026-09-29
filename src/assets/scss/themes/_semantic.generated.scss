@@ -156,6 +156,14 @@ $semantic-classes: (
   "info-fill": (name: "info-fill", families: t bg b, hover: true, background: background-color),
 );
 
+:root .type-display {
+  font-family: var(--font-brand);
+  font-weight: 300;
+  font-size: 48px;
+  line-height: 56px;
+  letter-spacing: var(--brand-font-tracking-brand);
+}
+
 :root .type-page-title {
   font-family: var(--font-brand);
   font-weight: 400;

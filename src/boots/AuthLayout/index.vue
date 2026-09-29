@@ -9,7 +9,7 @@
       <BasicLogo class="auth-layout__logo" variant="full" :size="isDesktop ? 32 : 24" on-dark />
       <div v-if="isDesktop" class="auth-layout__copy">
         <p class="type-overline t-body">{{ $t("login.stage_overline") }}</p>
-        <p class="auth-layout__line">{{ $t("login.stage_line") }}</p>
+        <p class="auth-layout__line type-display">{{ $t("login.stage_line") }}</p>
       </div>
       <div v-if="isDesktop" class="auth-layout__foot fs-200 t-body">
         <span>{{ $t("login.stage_rights", { year }) }}</span>
@@ -184,11 +184,6 @@ $grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width=
 
 // The editorial line: Lexend Deca light at the largest step of the type scale (a display size is a handoff request).
 .auth-layout__line {
-  font-family: var(--font-brand);
-  font-size: var(--fs-700);
-  font-weight: 300;
-  line-height: 1.25;
-  letter-spacing: var(--brand-font-tracking-brand);
   text-wrap: balance;
 }
 
