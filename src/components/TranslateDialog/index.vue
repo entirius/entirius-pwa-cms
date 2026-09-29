@@ -18,8 +18,9 @@
           multiple
           :options="targetOptions"
           :placeholder="t('translate_dialog.select_language')"
+          :aria-describedby="targetOptions.length ? undefined : noLanguagesId"
         />
-        <p v-if="!targetOptions.length" class="t-muted fs-200 m-0">{{ t("translate_dialog.no_languages") }}</p>
+        <p v-if="!targetOptions.length" :id="noLanguagesId" class="t-muted fs-200 m-0">{{ t("translate_dialog.no_languages") }}</p>
         <div v-if="form.targets.length" class="flex flex-wrap gap-1 mt-2">
           <Tag v-for="lang in form.targets" :key="lang" :label="lang.toUpperCase()" removable @remove="removeTarget(lang)" />
         </div>
@@ -56,7 +57,7 @@
 // `estimateFn(request)` resolves to the raw estimate, `submitFn(request, estimate)` to the number of jobs created.
 // `request` = { source_language, target_languages, force } + `publish` (content) + `entity_types` (store).
 // The `languages` slot sits under the target languages (Pim: add a language to the channel).
-import { computed, reactive, ref, watch } from "vue";
+import { computed, reactive, ref, useId, watch } from "vue";
 import { t } from "@/i18n";
 import { useNotifyStore } from "@/stores/notify";
 import { extractApiMessage } from "@/composables/useFormErrors";
@@ -76,6 +77,8 @@ const props = defineProps({
 const emit = defineEmits(["update:open", "translated"]);
 
 const notify = useNotifyStore();
+// The "no languages" note says why the list is empty: content, linked to the select (never a hideable hint).
+const noLanguagesId = useId();
 const step = ref("config");
 const estimate = ref(null);
 const estimating = ref(false);

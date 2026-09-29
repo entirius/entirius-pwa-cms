@@ -167,3 +167,15 @@ describe("TranslateDialog — content scope", () => {
     expect(tables[1].props("rows")).toEqual([{ key: "Home", name: "Home", items: 2, chars: "90" }]);
   });
 });
+
+describe("TranslateDialog — no target language", () => {
+  it("shows why the list is empty and links the note to the select", () => {
+    const wrapper = mount(TranslateDialog, {
+      props: { open: true, scope: "product", languages: LANGUAGES.slice(0, 1), sourceLanguage: "pl", estimateFn: vi.fn(), submitFn: vi.fn() },
+      global: { stubs },
+    });
+    const note = wrapper.find("p[id]");
+    expect(note.text()).toBe(t("translate_dialog.no_languages"));
+    expect(wrapper.findAllComponents(BasicSelect)[1].attributes("aria-describedby")).toBe(note.attributes("id"));
+  });
+});

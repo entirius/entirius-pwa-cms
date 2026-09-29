@@ -40,9 +40,10 @@
           multiple
           :options="languageOptions"
           :disabled="!availableLanguages.length"
+          :aria-describedby="availableLanguages.length ? undefined : noLanguagesId"
           data-testid="enrichment-spawn-languages"
         />
-        <p v-if="!availableLanguages.length" class="t-muted fs-200 m-0">{{ $t("enrichment.spawn.no_languages") }}</p>
+        <p v-if="!availableLanguages.length" :id="noLanguagesId" class="t-muted fs-200 m-0">{{ $t("enrichment.spawn.no_languages") }}</p>
       </FormField>
 
       <FormField
@@ -70,6 +71,7 @@
 </template>
 
 <script>
+import { useId } from "vue";
 import { usePimChannelStore } from "@/stores/pimChannel";
 import { useNotifyStore } from "@/stores/notify";
 import { extractApiMessage } from "@/composables/useFormErrors";
@@ -90,7 +92,8 @@ export default {
   },
   emits: ["close", "spawned"],
   setup() {
-    return { pimChannel: usePimChannelStore(), notify: useNotifyStore() };
+    // The "no languages" note says why the select is disabled: content, linked to it (never a hideable hint).
+    return { pimChannel: usePimChannelStore(), notify: useNotifyStore(), noLanguagesId: useId() };
   },
   data() {
     return {
