@@ -107,14 +107,17 @@ async function screenshotCell(page, { id, interact }, suffix) {
   const file = (state) => `${id}${state ? `--${state}` : ""}__${suffix}.png`;
   await cell.scrollIntoViewIfNeeded();
   const restoreViewport = await fitViewport(page, cell);
-  await expect.soft(cell).toHaveScreenshot(["components", file()]);
-  for (const state of interact.split(",").map((s) => s.trim()).filter(Boolean)) {
-    if (!INTERACTIONS[state]) throw new Error(`${id}: unknown interact state "${state}"`);
-    await INTERACTIONS[state](cell);
-    await expect.soft(cell).toHaveScreenshot(["components", file(state)]);
-    await resetInteraction(page);
+  try {
+    await expect.soft(cell).toHaveScreenshot(["components", file()]);
+    for (const state of interact.split(",").map((s) => s.trim()).filter(Boolean)) {
+      if (!INTERACTIONS[state]) throw new Error(`${id}: unknown interact state "${state}"`);
+      await INTERACTIONS[state](cell);
+      await expect.soft(cell).toHaveScreenshot(["components", file(state)]);
+      await resetInteraction(page);
+    }
+  } finally {
+    await restoreViewport();
   }
-  await restoreViewport();
 }
 
 for (const theme of THEMES) {
