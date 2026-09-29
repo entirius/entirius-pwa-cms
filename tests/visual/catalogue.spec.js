@@ -89,10 +89,24 @@ async function resetInteraction(page) {
   await page.evaluate(() => document.activeElement?.blur());
 }
 
+// A cell taller than the viewport (the flat mobile menu on a phone) is captured in a viewport that holds it with
+// room for the shell header above it (81 px on a phone), centred: scrolled to the top of a shorter one, the header
+// covered its first rows. Returns the restore step.
+const HEADER_ROOM = 120;
+async function fitViewport(page, cell) {
+  const viewport = page.viewportSize();
+  const { height } = await cell.boundingBox();
+  if (height <= viewport.height - HEADER_ROOM) return async () => {};
+  await page.setViewportSize({ width: viewport.width, height: Math.ceil(height) + 2 * HEADER_ROOM });
+  await cell.evaluate((el) => el.scrollIntoView({ block: "center" }));
+  return () => page.setViewportSize(viewport);
+}
+
 async function screenshotCell(page, { id, interact }, suffix) {
   const cell = page.locator(`[data-testid="${id}"]`);
   const file = (state) => `${id}${state ? `--${state}` : ""}__${suffix}.png`;
   await cell.scrollIntoViewIfNeeded();
+  const restoreViewport = await fitViewport(page, cell);
   await expect.soft(cell).toHaveScreenshot(["components", file()]);
   for (const state of interact.split(",").map((s) => s.trim()).filter(Boolean)) {
     if (!INTERACTIONS[state]) throw new Error(`${id}: unknown interact state "${state}"`);
@@ -100,6 +114,7 @@ async function screenshotCell(page, { id, interact }, suffix) {
     await expect.soft(cell).toHaveScreenshot(["components", file(state)]);
     await resetInteraction(page);
   }
+  await restoreViewport();
 }
 
 for (const theme of THEMES) {

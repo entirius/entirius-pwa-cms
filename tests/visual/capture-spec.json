@@ -131,7 +131,7 @@
     },
     {
       "id": "g-password-reset",
-      "route": "/password-reset",
+      "route": "/password-reset?key=visual-fixture",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
