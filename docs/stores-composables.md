@@ -49,7 +49,10 @@ All 12 stores (`src/stores/`) use composition (setup) syntax with `defineStore`.
   `clearAuth()`; a request waiting on a refresh of the ended session never
   settles, so no panel toasts it — theme (`"default"`/`"dark"`), sidebar,
   language, field hints (`hints` / `setHints`, the `cms_hints` preference; the boots read the same ref from
-  `src/composables/fieldHints.js`), preferences. Cookie persistence via `universal-cookie`.
+  `src/composables/fieldHints.js`), preferences. `loadPreferences(extra)` applies the hints choice only from a real
+  profile: `extra` an object (one without `cms_hints` → hints on); `extra` null means the profile call failed and
+  the stored choice stands. `useLoginSession` hands `{}` for a profile without `extra`. `clearAuth()` sets hints on
+  and removes `cms_hints` from localStorage. Cookie persistence via `universal-cookie`.
 
 ### `useMuninStore` API
 

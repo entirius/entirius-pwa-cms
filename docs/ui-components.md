@@ -152,7 +152,8 @@ and one meaning per glyph (unit test). A new meaning adds its glyph to `fa-icons
 - **`IconButton`** — every icon-only action: `icon` (meaning, required), `label` (required: `aria-label` + `title`),
   `variant` `ghost` · `outline` · `primary` · `danger`, `size` `sm` 24 · `md` `--elem-height` · `lg` 40 (header,
   mobile menu, `--radius-xl`), `pressed` (a toggle: `aria-pressed`, `surface-hover` fill), `disabled` (the glyph
-  turns `text-disabled` in every variant). `danger` is
+  turns `text-disabled` in every variant but `primary`: a disabled `primary` keeps its `text-on-accent-fill` glyph
+  and the whole button fades, `opacity: 0.5`, as FloatingActions). `danger` is
   every icon-only delete or remove (C6). The click stops at the button by default (`:stop="false"` to opt out).
   A back control: `<IconButton icon="back" :label="$t('common.back')" />`. On a phone
   the hit area grows to 40 × 40 around the box, the box keeps its size. `md` matches the text button, not Figma's
@@ -203,15 +204,25 @@ Catalogue: `#actions` (`#basic-button`, `#icon-button`, `#action-bar`, `#floatin
   (configuration health): up to 32rem wide above a phone, a full-width bottom sheet pinned to the bottom edge on one
   (no floating position, `max-height: 85vh`, its own scroll). On a phone the sheet is modal like BasicModal's:
   teleported to `<body>` over a backdrop, body scroll locked, focus trapped (Tab cycles inside, it does not close the
-  sheet), Esc or a backdrop tap closes it, focus returns to the trigger. `sheet` is fixed per instance: it is read
-  once at setup, so a `sheet` that turns true after mount never becomes a bottom sheet — mount a new instance
+  sheet), Esc or a backdrop tap closes it, focus returns to the trigger. A trigger with no focusable control (none,
+  or a disabled one) leaves the menu root (`.basic-menu`, given `tabindex="-1"`) as the opener, never `<body>`; the
+  root's `tabindex` goes again once focus leaves it for anywhere but the sheet. An open sheet survives a breakpoint
+  crossing (a rotation) without a remount: the popover moves between the in-place slot and the bottom-sheet layer,
+  the panel keeps its state and does not load again (its scroll position resets: the node is re-inserted). A `sheet`
+  menu always renders a box-less `.basic-menu__layer` wrapper around the popover, so the popover is not a direct child
+  of `.basic-menu`: never write a `.basic-menu > .basic-menu__popover` selector. `sheet` is fixed per instance: it is
+  read once at setup, so a `sheet` that turns true after mount never becomes a bottom sheet — mount a new instance
   (`:key`) instead. Keyboard: ArrowDown on the trigger opens, arrows /
   Home / End move, Enter / Space choose, Esc closes and returns focus, Tab and a click outside close.
 - **`BasicTooltip`** — wraps its trigger (default slot; its first focusable gets `aria-describedby`): `text`,
   `placement` `top` · `bottom` · `left` · `right` (flips when there is no room), `variant` `help` (the field-hint
   mark: a `?` button named „Pomoc” instead of the slot), `level` (help: `subtle` · `important`), `tipId` (a fixed id
   for the tip), `open` (forced). Shows on hover and keyboard focus, hides on Esc, blur and leave; a help mark toggles
-  on a tap (touch) and closes on a tap elsewhere, and the hints switch (`src/composables/fieldHints.js`) removes it. A trigger holding only a disabled control makes the wrapper the tab stop (disabled with a reason).
+  on a tap (touch); one opened with Enter / Space or a tap closes when focus leaves the tooltip, on a tap elsewhere
+  and on Esc. The hints switch (`src/composables/fieldHints.js`) removes every help mark, the direct ones included
+  (the builder's `ButtonsController` ×2, `GroupFieldsController`). There a reason why the items menu is disabled
+  („add one first”) is a visible muted line, not a mark; only „select … to edit” and the RTL tip stay marks. A
+  trigger holding only a disabled control makes the wrapper the tab stop (disabled with a reason).
   `IconButton` shows its `label` through it (no `title`).
 - **`SideDrawer`** — focus trapped in `focused` mode (`role="dialog" aria-modal`, named by its title), Esc closes in
   both modes (sticky: while focus is inside), close = `IconButton` (`side-drawer-close`). **`TranslationsDrawer`**
@@ -357,7 +368,8 @@ Catalogue: `#selects` (`#basic-select`, `#entity-search-picker`, `#channel-multi
   `labelId` for a control a
   `for` cannot name, and `reportError(message)` for a control that checks its own format (BasicInput `format`). Of several controls in one field (rows of a `v-for`) only the first takes the field's id.
   Controls read it through `useControlAttrs()` (`src/boots/FormField/useControlAttrs.js`) and
-  paint their own error border.
+  paint their own error border. In BasicSelect and BasicInput a caller's `aria-describedby` (a note under the
+  control) joins the field's error / hint id — `"<field id> <caller id>"` (`joinIds`) — instead of replacing it.
 - **`BasicInput`** — `v-model`, `type`, `placeholder`, `icon` (a leading meaning of `icons.js`), `readonly` (the
   value behind a `lock`, the former `LockedField`), `disabled`, the native `maxlength`, `autocomplete`, `inputmode`, `min`, `max`, `step` (props, so they reach
   the `<input>`, not the wrapper); `--elem-height` (`size="lg"`: 40 px, the sign-in screens), slot `trailing` (a
@@ -479,11 +491,14 @@ the component recipe.
   beside the form column (380 px, `surface-page`, follows the theme). Below it the stage is a 32 vh band with the
   wordmark and the form a sheet over it (24 px top radius; 480 px column on a tablet). Props: `title` (the one H1),
   `subtitle`, `statusTone` (`negative` · `positive` · `warning`); slot `status` = the one `aria-live` summary (session
-  expired, form errors, link sent), default slot = the form. Form controls use `size="lg"`; a focused control gets a
+  expired, form errors, link sent), default slot = the form. The editorial line is the `type-display` role (Lexend
+  Deca 300, 48/56 px, brand tracking; `--fs-display` 48 px is its step in the size scale the census checks). Form
+  controls use `size="lg"`; a focused control gets a
   soft accent halo outside its ring (spread 8 px beyond the 2 px outline at a 2 px offset).
 - **`AuthLayout/PasswordField`** — FormField + `lg` BasicInput with the show/hide `IconButton` (`pressed`) in its
   `trailing` slot and a caps-lock hint under the input (its own line, not the description, so it stays next to a
-  password error), only while caps lock is on. `autocomplete`
+  password error): an always-present `role="status"` line, visually hidden and empty while caps lock is off, named
+  by the input's `aria-describedby` while it shows. `autocomplete`
   `current-password` (default) or `new-password`.
 - Errors go under their field (FormField `error`) and once into the `status` slot; never a toast. The new-password
   checks (filled, confirmation matches) are `passwordErrors` in `src/utils/passwordForm.js`.

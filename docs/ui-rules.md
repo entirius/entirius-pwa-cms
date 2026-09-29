@@ -79,7 +79,9 @@ Traps:
   controllers also register in `src/configs/builder/components/register-elems.js`. A removed component is a lint
   error (`scripts/lint/removed-components/*.json`): `Dropdown` → `BasicSelect`, `Switcher` → `BasicSwitch`,
   `TextAreaBasic` → `BasicTextarea`, `LockedField` → `BasicInput readonly`, `ToolTip` / `HelpTooltip` / `HoverMe` →
-  `BasicTooltip`, `BackBar` → PageHeader `back`, `Loading` → `Loader`, `PimField` → `FormField`.
+  `BasicTooltip`, `BackBar` → PageHeader `back`, `Loading` → `Loader`, `PimField` → `FormField`. The removed
+  FormField props (`description`, `tooltip`) are a lint error too, matched on the normalised tag name (`<FormField>`
+  and `<form-field>`).
 - **C3 Do not restyle a boot from outside.** No local `.filter-chip`, `.status-badge`, `.chip` or badge and button
   class families. A missing look is a variant of the boot.
 - **C4 Pick the boot by job:**
@@ -100,6 +102,7 @@ Traps:
 | list · pages · bulk actions · empty list | `DataTable` · `Pagination` (`v-model:page` + `pages`) · `BulkActionBar` · `EmptyState` |
 | loading | `Loader` (`block` in a content area, `overlay` for the whole screen, `overlay contained` in a panel) |
 | page frame · page title row (crumbs, back, H1, chips, actions) · breadcrumbs | `PageLayout` · `PageHeader` · `Breadcrumbs` |
+| sign-in screen frame · password field | `AuthLayout` · `AuthLayout/PasswordField` |
 | text action · icon-only action · page or dialog actions | `BasicButton` · `IconButton` · `ActionBar` |
 | side panel · per-language editing | `SideDrawer` · `TranslationsDrawer` |
 | dialog · confirmation (yes/no, unsaved changes) | `BasicModal` · `ConfirmDialog` (`tone="danger"` for a delete) |
@@ -116,7 +119,8 @@ Traps:
   with `label` (its accessible name: `aria-label` and `title`), and it gets a visible text label when it is
   important or not obvious (R7).
 - **C6 One button family.** `BasicButton` owns height, padding, type and border: `size="md"` (default,
-  `--elem-height`, the toolbar and form size) or `size="sm"` (row actions); labels never wrap. The role is
+  `--elem-height`, the toolbar and form size) or `size="sm"` (row actions); labels never wrap. `size="lg"` (40 px,
+  on `BasicButton` and `BasicInput`) is for the sign-in screens only. The role is
   `variant`: `primary` (one per page, R5: row, bulk, section and inline-form actions are `secondary` beside it; a
   dialog or drawer has its own), `secondary`, `ghost` (close, row edit), `danger` (every delete, remove, reject),
   `danger-solid` (the destructive confirm in a dialog: a delete, remove or flush is a `ConfirmDialog tone="danger"`;
@@ -239,6 +243,9 @@ Traps:
   under a field, no `description` / `tooltip` (removed, lint). The error replaces the hint in `aria-describedby`.
 - Hints are optional help: users can turn them off in the account menu. Never put information a user must see only
   in a hint — a state that blocks the form („brak języków”) or a live value is content, shown under the control.
+  A note that explains a disabled or empty control (TranslateDialog / SpawnDialog „no languages”) is visible, has an
+  id and is linked from the control's `aria-describedby`, where it joins the field's own description (BasicSelect
+  and BasicInput merge them: `"<field id> <caller id>"`).
 - One label style: `FormField` renders `.field-label` —
   12 px / 600, uppercase, `text-muted`, 4 px above the control. A raw `<label>` takes `.field-label`; never a local
   copy of the style. The required marker is the `.required` class (a `negative` `*` after the label), never a `*`
@@ -251,6 +258,7 @@ Traps:
 - Run `validateRequired(form, rules)` and then `validateFormats(form, rules)` (`{ field: { format, min, max, pattern }
   }`) before the request, and `formErrors.handleApiError(err)` in `catch`, before the toast.
 - A deep watcher on the form clears the errors when the user edits. Never show a generic toast only.
+- On the sign-in screens an error goes under its field and into the `AuthLayout` `status` summary, never a toast.
 
 ## Mobile
 
