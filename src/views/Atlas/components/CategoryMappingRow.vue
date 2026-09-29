@@ -158,16 +158,19 @@ export default {
       }));
       return [...tokens, ...dataKeys];
     },
-    // The feed's values of the source field that contain the typed text; null values are skipped, numbers read as
-    // text. A failed load shows the API message instead of the list.
+    // The feed's values of the source field that contain the typed text — all of them while the field holds one of
+    // the values exactly (a picked value reopens the full list); null values are skipped, numbers read as text. A
+    // failed load shows the API message instead of the list.
     sourceValueItems() {
       const note = (label) => [{ key: "note", heading: true, label }];
       if (this.sourceValuesState === "loading") return note(this.$t("entity_picker.searching"));
       if (this.sourceValuesState === "error") return note(this.sourceValuesError);
-      const q = String(this.local.source_value ?? "").trim().toLowerCase();
+      const typed = String(this.local.source_value ?? "");
+      const values = this.sourceValues.values.filter((v) => v.value != null);
+      const q = values.some((v) => String(v.value) === typed) ? "" : typed.trim().toLowerCase();
       const suffix = this.$t("atlas.mappings.category.source_value_picker_count_suffix");
-      const items = this.sourceValues.values
-        .filter((v) => v.value != null && String(v.value).toLowerCase().includes(q))
+      const items = values
+        .filter((v) => String(v.value).toLowerCase().includes(q))
         .map((v) => ({ key: String(v.value), value: String(v.value), label: `${v.value} · ${v.count} ${suffix}` }));
       return items.length ? items : note(this.$t("entity_picker.no_results"));
     },

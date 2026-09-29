@@ -2401,7 +2401,8 @@
       "impact_pushed_skus": "{count} SKUs in PIM will be orphaned -- manual cleanup required.",
       "confirm_button_soft": "Deactivate",
       "confirm_button_hard": "Delete permanently",
-      "default_warning": "Default: deactivation (safe). Hard delete only if you know what you are doing."
+      "soft_note": "Deactivation is safe: no data is removed.",
+      "hard_warning": "Permanent delete cannot be undone."
     },
     "toast": {
       "created": "Supplier {name} created.",

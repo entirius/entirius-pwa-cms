@@ -37,6 +37,8 @@ const hasFooter = () => hasSlotContent(slots.footer?.());
   // Shared with PageHeader: its sticky head reaches the edge through this padding.
   --page-layout-pad-y: var(--space-10);
   --page-layout-pad-x: calc(2 * var(--space-10));
+  // The FAB's corner lane: bottom-pinned rows (the footer, a view's sticky decision bar) keep their right edge clear.
+  --fab-lane: 0px;
 
   gap: var(--space-8);
   padding: var(--page-layout-pad-y) var(--page-layout-pad-x);
@@ -46,6 +48,10 @@ const hasFooter = () => hasSlotContent(slots.footer?.());
     --page-layout-pad-x: var(--space-5);
 
     gap: var(--space-5);
+  }
+
+  @include max-shell {
+    --fab-lane: calc(44px + var(--space-4));
   }
 }
 
@@ -70,10 +76,7 @@ const hasFooter = () => hasSlotContent(slots.footer?.());
   z-index: 1;
   padding-block: var(--space-3);
   background-color: var(--surface-page);
-
   // Keeps the pager out of the FAB's corner lane.
-  @include max-shell {
-    padding-right: calc(44px + var(--space-4));
-  }
+  padding-right: var(--fab-lane);
 }
 </style>

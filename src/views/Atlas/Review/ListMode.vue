@@ -242,8 +242,7 @@ export default {
       ];
     },
     // Bulk actions on the selection: secondary (R5), reject danger; approve and push are PIM-bound, so a
-    // monitoring row in the selection disables them with the reason in the title.
-    // A monitoring row locks approve and push: those carry the reason (disabled with a tooltip).
+    // monitoring row in the selection locks them: disabled, the reason in a tooltip.
     bulkActions() {
       const selected = this.selected.length > 0;
       const locked = this.hasMonitoringSelected ? this.$t("atlas.products.monitoring_tooltip") : "";

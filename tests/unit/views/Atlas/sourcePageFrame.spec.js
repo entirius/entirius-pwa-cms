@@ -114,7 +114,6 @@ describe("OverviewTab — Save in the page header", () => {
       global: {
         mocks: { $t },
         stubs: {
-          BasicInput,
           FormField: { template: "<div><slot/></div>" },
           BasicInput: true,
           BasicSelect: true,
@@ -244,6 +243,19 @@ describe("CategoryMappingRow — source value", () => {
     expect(wrapper.find('[data-testid="cat-mapping-value-new"] input').element.value).toBe("Drills");
     await openValues(wrapper);
     expect(mockGetDataValues).toHaveBeenCalledTimes(1);
+  });
+
+  it("reopens the full list while the field holds a value of the list exactly, and filters again on typing", async () => {
+    mockGetDataValues.mockResolvedValue({
+      data: { values: [{ value: "Drills", count: 12 }, { value: "Saws", count: 3 }, { value: 7, count: 1 }] },
+    });
+    const wrapper = mountRow({ source_field: "category", source_value: "Drills" });
+    await openValues(wrapper);
+    expect(wrapper.findAll(".stub-item")).toHaveLength(3);
+    await wrapper.find('[data-testid="cat-mapping-value-new"] input').setValue("7");
+    expect(wrapper.findAll(".stub-item")).toHaveLength(3);
+    await wrapper.find('[data-testid="cat-mapping-value-new"] input').setValue("Drill");
+    expect(labels(wrapper, ".stub-item")).toEqual(["Drills · 12 atlas.mappings.category.source_value_picker_count_suffix"]);
   });
 
   it("shows the API message when the values fail to load, and asks again on the next open", async () => {

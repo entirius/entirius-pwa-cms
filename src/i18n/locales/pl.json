@@ -2400,7 +2400,8 @@
       "impact_pushed_skus": "{count} SKU w PIM zostanie sierotą -- wymaga ręcznego czyszczenia.",
       "confirm_button_soft": "Dezaktywuj",
       "confirm_button_hard": "Usuń trwale",
-      "default_warning": "Domyślnie: dezaktywacja (bezpieczna). Twarde usunięcie tylko jeśli wiesz, co robisz."
+      "soft_note": "Dezaktywacja jest bezpieczna: żadne dane nie są usuwane.",
+      "hard_warning": "Trwałego usunięcia nie można cofnąć."
     },
     "toast": {
       "created": "Dostawca {name} utworzony.",

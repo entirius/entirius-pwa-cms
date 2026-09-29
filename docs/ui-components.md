@@ -267,7 +267,9 @@ Catalogue: `#display` (`#status-badge`, `#count-badge`, `#tag`, `#basic-tabs`, `
   one scroll body (`h-100 ovy-auto`). Slots `header` (a PageHeader), `toolbar` (the filters row), default (the
   content), `footer` (a list's Pagination, pinned to the bottom edge while the body scrolls). `roomy` keeps the
   desktop rhythm on a phone (40 top, 32 gap, the 30 px PageHeader title; Home, content list, Gallery). It replaces
-  the bordered page container (plan 25).
+  the bordered page container (plan 25). `--fab-lane` (set on the layout: the FAB's width plus its gap below the shell
+  breakpoint, 0 above) is the right padding a bottom-pinned row takes to keep the FAB's corner clear — the footer
+  uses it, a view's own sticky bar reads it (`padding-right: var(--fab-lane, 0px)`) instead of copying the size.
 - **`PageHeader`** — `title` is the page's only `<h1>` (`.page-title`: Lexend Deca 30/400, 20 below tablet) in the
   title row (back, H1, meta: `data-fid="page-title"`, Figma's "Heading" frame); `overline` (Inter 13/500 uppercase, Home); `crumbs` `[{ label, to? }]` 24 px above the
   title row — omitted = the crumbs the shell provides (none without a shell), `[]` = none; `back` (a route location

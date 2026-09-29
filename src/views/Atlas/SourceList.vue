@@ -219,10 +219,17 @@
         :aria-label="$t('atlas.delete.modal_title')"
         class="mb-3"
       />
-      <!-- The permanent option is irreversible: its warning stays in view before it is chosen. -->
-      <p class="flex ai-ct gap-2 fs-200 fw-600 t-negative mb-5" data-testid="suppliers-delete-warning">
+      <!-- The line follows the chosen option: the safe deactivation reads neutral, the permanent delete negative. -->
+      <p
+        v-if="deleteForce"
+        class="flex ai-ct gap-2 fs-200 fw-600 t-negative mb-5"
+        data-testid="suppliers-delete-warning"
+      >
         <FontAwesomeIcon :icon="$icons.warning" aria-hidden="true" />
-        {{ $t("atlas.delete.default_warning") }}
+        {{ $t("atlas.delete.hard_warning") }}
+      </p>
+      <p v-else class="fs-200 t-muted mb-5" data-testid="suppliers-delete-note">
+        {{ $t("atlas.delete.soft_note") }}
       </p>
       <div
         v-if="deleteForce && deleteImpact"

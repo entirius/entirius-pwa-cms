@@ -234,10 +234,8 @@ export default {
     }
   }
 
-  /* PageLayout's footer lane: the FAB's corner stays clear of Approve. */
-  @include max-shell {
-    padding-right: calc(44px + var(--space-4));
-  }
+  /* PageLayout's FAB lane: the FAB's corner stays clear of Approve. */
+  padding-right: var(--fab-lane, 0px);
 }
 
 .text-center {
