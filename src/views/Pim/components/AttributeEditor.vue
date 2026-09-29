@@ -334,6 +334,7 @@ async function loadMoreOptions(featureIdx) {
 async function loadAllOptions(featureIdx) {
   const key = cacheKey(featureIdx);
   if (searchLoads.has(key)) return;
+  if (!(await ensureOptions(featureIdx))) return notifyValuesFailed();
   searchLoads.add(key);
   while (hasMoreOptions(featureIdx) && getOptions(featureIdx).length < SEARCH_CAP) {
     if (await loadOptionsPage(featureIdx)) continue;
@@ -344,8 +345,8 @@ async function loadAllOptions(featureIdx) {
   if (hasMoreOptions(featureIdx)) notify.spawnNotification({ type: "info", msg: t("pim.attribute_values_capped", { count: SEARCH_CAP }) });
 }
 
-// The names of stored values missing from the loaded values, through the shared limiter, in the channel's language;
-// a failed one keeps its idx as the label.
+// The names of stored values missing from the loaded values, through the shared limiter (the channel list takes no
+// idx filter, so each is its own global request); a failed one keeps its idx as the label.
 async function loadStoredLabels(featureIdx, idxs) {
   const key = cacheKey(featureIdx);
   const missing = idxs.filter((idx) => !getOptions(featureIdx).some((o) => o.value === idx));
@@ -357,6 +358,7 @@ async function loadStoredLabels(featureIdx, idxs) {
   storedLabels.value[key] = Object.fromEntries(await Promise.all(missing.map(nameOf)));
 }
 
+// One label rule for listed and stored values: the editor's default language, else the name, else the idx.
 const labelOf = (attribute, idx) => attribute.name_t9n?.[defaultLang.value] || attribute.name || idx;
 
 // The next page of a select feature's values → true when it arrived. Concurrent callers share the request in flight;
@@ -374,7 +376,7 @@ async function fetchOptionsPage(featureIdx, key) {
   try {
     const params = { page_size: OPTIONS_PAGE_SIZE, page: entry.nextPage };
     const { data } = await GET_FeatureAttributes(featureIdx, props.channelIdx, params);
-    const options = (data.results || data || []).map((a) => ({ label: a.name || a.idx, value: a.idx }));
+    const options = (data.results || data || []).map((a) => ({ label: labelOf(a, a.idx), value: a.idx }));
     entry.options = [...entry.options, ...options];
     entry.nextPage = data.next ? entry.nextPage + 1 : null;
     return true;

@@ -216,6 +216,8 @@ export default {
   z-index: 1;
   margin-top: var(--space-8);
   padding-block: var(--space-3);
+  /* PageLayout's FAB lane: the FAB's corner stays clear of Approve. */
+  padding-right: var(--fab-lane, 0px);
   background-color: var(--surface-page);
 
   /* FIX-02: Reject keeps its outline, so it reads as a button beside Skip and Approve. */
@@ -234,8 +236,6 @@ export default {
     }
   }
 
-  /* PageLayout's FAB lane: the FAB's corner stays clear of Approve. */
-  padding-right: var(--fab-lane, 0px);
 }
 
 .text-center {

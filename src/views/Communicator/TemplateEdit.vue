@@ -93,6 +93,8 @@ const models = ref([]);
 const loaded = ref(false);
 const drawer = ref("");
 const error = ref("");
+// Enter saves too: a save in flight turns Save off and ignores the next submit.
+const saving = ref(false);
 
 // Empty = no schema; otherwise the textarea must hold a JSON object.
 function parseSchema(text) {
@@ -113,10 +115,12 @@ const FORM_ID = "template-edit-form";
 const headerActions = computed(() => [
   { key: "versions", label: t("communicator.template.versions"), role: "secondary", testid: "template-versions", onClick: () => (drawer.value = "versions") },
   { key: "test", label: t("communicator.template.test_generate"), role: "secondary", testid: "template-test-generate", onClick: () => (drawer.value = "test") },
-  { key: "save", label: t("communicator.template.save"), role: "primary", testid: "template-save", disabled: Boolean(schemaError.value), form: FORM_ID },
+  { key: "save", label: t("communicator.template.save"), role: "primary", testid: "template-save", disabled: Boolean(schemaError.value), loading: saving.value, form: FORM_ID },
 ]);
 
 async function save() {
+  if (saving.value) return;
+  saving.value = true;
   error.value = "";
   try {
     const { data } = await PUT_Template(templateId.value, { ...form, json_schema: parseSchema(schemaText.value).value });
@@ -124,6 +128,8 @@ async function save() {
     notify.spawnNotification({ msg: t("communicator.template.saved") });
   } catch (err) {
     error.value = extractApiMessage(err, t("leads.review.error"));
+  } finally {
+    saving.value = false;
   }
 }
 

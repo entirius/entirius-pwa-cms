@@ -28,6 +28,7 @@
           <BasicInput
             v-model="local.source_value"
             class="flex-1"
+            @update:model-value="sourceValuePicked = false"
             :disabled="!isNew"
             :placeholder="isNew ? $t('atlas.mappings.category.source_value_placeholder') : ''"
             :data-testid="`cat-mapping-value-${rowKey}`"
@@ -37,7 +38,7 @@
             :items="sourceValueItems"
             :label="$t('atlas.mappings.category.source_value_picker_open')"
             @open="loadSourceValues"
-            @select="local.source_value = $event.value"
+            @select="pickSourceValue($event.value)"
           >
             <template #trigger>
               <IconButton
@@ -134,6 +135,7 @@ export default {
       sourceValues: { field: null, values: [] },
       sourceValuesState: "idle",
       sourceValuesError: "",
+      sourceValuePicked: false,
     };
   },
   computed: {
@@ -158,16 +160,15 @@ export default {
       }));
       return [...tokens, ...dataKeys];
     },
-    // The feed's values of the source field that contain the typed text — all of them while the field holds one of
-    // the values exactly (a picked value reopens the full list); null values are skipped, numbers read as text. A
-    // failed load shows the API message instead of the list.
+    // The feed's values of the source field that contain the typed text — all of them while the field holds a value
+    // picked from this list and not typed over since (reopening shows the full list); null values are skipped,
+    // numbers read as text. A failed load shows the API message instead of the list.
     sourceValueItems() {
       const note = (label) => [{ key: "note", heading: true, label }];
       if (this.sourceValuesState === "loading") return note(this.$t("entity_picker.searching"));
       if (this.sourceValuesState === "error") return note(this.sourceValuesError);
-      const typed = String(this.local.source_value ?? "");
       const values = this.sourceValues.values.filter((v) => v.value != null);
-      const q = values.some((v) => String(v.value) === typed) ? "" : typed.trim().toLowerCase();
+      const q = this.sourceValuePicked ? "" : String(this.local.source_value ?? "").trim().toLowerCase();
       const suffix = this.$t("atlas.mappings.category.source_value_picker_count_suffix");
       const items = values
         .filter((v) => String(v.value).toLowerCase().includes(q))
@@ -202,6 +203,10 @@ export default {
     },
   },
   methods: {
+    pickSourceValue(value) {
+      this.local.source_value = value;
+      this.sourceValuePicked = true;
+    },
     emitSave() {
       this.$emit("save", { ...this.local, id: this.mapping?.id });
     },

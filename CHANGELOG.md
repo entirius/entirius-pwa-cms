@@ -500,8 +500,8 @@ All notable changes to this project will be documented in this file.
     channel values endpoint takes no search param, so the first typed query loads the pages left once (up to 2 000
     values, a notice past that) and the list filters them; "Load more values…" is never filtered out and loads the next
     page without closing the list or picking anything. Loaded values and stored-value names are kept per channel +
-    feature set + feature and reset when either changes; stored-value names are looked up at most 6 at a time, in the
-    channel's language; a product open whose value prefetch fails shows one notice, not one per select.
+    feature set + feature and reset when either changes; stored-value names are looked up at most 6 at a time and
+    labelled like the listed values (the editor's default language); a product open whose value prefetch fails shows one notice, not one per select.
   - Atlas: the supplier delete dialog's line follows the chosen option — neutral for the safe deactivation, negative
     "cannot be undone" for the permanent delete (`suppliers-delete-note` / `suppliers-delete-warning`). The category
     mapping's values menu shows the full list while the field holds a list value exactly and filters only on typed

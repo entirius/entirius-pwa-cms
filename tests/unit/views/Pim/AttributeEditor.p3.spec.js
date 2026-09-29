@@ -270,6 +270,21 @@ describe("AttributeEditor — search, cache scope, label lookups, notices", () =
     expect(mockNotify).not.toHaveBeenCalled();
   });
 
+  it("a query after a failed first page asks that page again and then the rest", async () => {
+    mockGetFeatureAttributes
+      .mockImplementationOnce(() => Promise.reject(new Error("down")))
+      .mockImplementation((idx, channel, { page: n }) => page(values((n - 1) * 100, 100), n < 2 ? "next-url" : null));
+    const wrapper = mountEditor();
+    await flushPromises();
+    await openSelect(wrapper, false);
+    expect(mockNotify).toHaveBeenCalledTimes(1);
+
+    await selectOf(wrapper, false).vm.$emit("search", "v");
+    await flushPromises();
+    expect(mockGetFeatureAttributes.mock.calls.map((call) => call[2].page)).toEqual([1, 1, 2]);
+    expect(optionCount(wrapper)).toBe(200);
+  });
+
   it("the search load stops at 2 000 values with a notice and keeps the more row", async () => {
     mockGetFeatureAttributes.mockImplementation((idx, channel, { page: n }) => page(values((n - 1) * 100, 100), "next"));
     const wrapper = mountEditor();

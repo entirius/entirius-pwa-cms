@@ -88,6 +88,27 @@ describe("AttributeField — a select with more values than the loaded page", ()
     expect(control().getAttribute("aria-expanded")).toBe("true");
   });
 
+  it("Enter on the load-more row loads the next page into the same open list, which keeps its place", async () => {
+    const wrapper = mountField(7);
+    await open();
+    const list = document.querySelector('[role="listbox"]');
+    list.scrollTop = 4000;
+    // Up from the first option wraps to the last row, the load-more one.
+    search().dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowUp", bubbles: true }));
+    await settle();
+    expect(search().getAttribute("aria-activedescendant")).toBe(moreRow().id);
+    search().dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    await settle();
+    expect(wrapper.emitted("load-more")).toHaveLength(1);
+    expect(wrapper.emitted("update")).toBeUndefined();
+
+    await wrapper.setProps({ options: [...PAGE, { label: "Value 100", value: "v100" }] });
+    await settle();
+    expect(document.querySelector('[role="listbox"]')).toBe(list);
+    expect(list.scrollTop).toBe(4000);
+    expect(labels().at(-2)).toBe("Value 100");
+  });
+
   it("a multiselect loads the next page without touching the picked list", async () => {
     const wrapper = mountField(8, { attribute_idxs: ["v1"] });
     await open();

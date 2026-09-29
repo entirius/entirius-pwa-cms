@@ -245,17 +245,17 @@ describe("CategoryMappingRow — source value", () => {
     expect(mockGetDataValues).toHaveBeenCalledTimes(1);
   });
 
-  it("reopens the full list while the field holds a value of the list exactly, and filters again on typing", async () => {
+  it("reopens the full list after a pick, and filters again on typing, an exact list value included", async () => {
     mockGetDataValues.mockResolvedValue({
-      data: { values: [{ value: "Drills", count: 12 }, { value: "Saws", count: 3 }, { value: 7, count: 1 }] },
+      data: { values: [{ value: "S", count: 12 }, { value: "SM", count: 3 }, { value: "XL", count: 1 }] },
     });
-    const wrapper = mountRow({ source_field: "category", source_value: "Drills" });
+    const wrapper = mountRow({ source_field: "category" });
+    await openValues(wrapper);
+    await wrapper.findAll(".stub-item")[1].trigger("click");
     await openValues(wrapper);
     expect(wrapper.findAll(".stub-item")).toHaveLength(3);
-    await wrapper.find('[data-testid="cat-mapping-value-new"] input').setValue("7");
-    expect(wrapper.findAll(".stub-item")).toHaveLength(3);
-    await wrapper.find('[data-testid="cat-mapping-value-new"] input').setValue("Drill");
-    expect(labels(wrapper, ".stub-item")).toEqual(["Drills · 12 atlas.mappings.category.source_value_picker_count_suffix"]);
+    await wrapper.find('[data-testid="cat-mapping-value-new"] input').setValue("S");
+    expect(wrapper.findAll(".stub-item")).toHaveLength(2);
   });
 
   it("shows the API message when the values fail to load, and asks again on the next open", async () => {

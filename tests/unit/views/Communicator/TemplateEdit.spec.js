@@ -108,9 +108,33 @@ describe("Communicator TemplateEdit", () => {
     const save = wrapper.get('[data-testid="template-save"]').element;
     expect(save.type).toBe("submit");
     expect(save.form).toBe(wrapper.get("form").element);
-    wrapper.get("form").element.requestSubmit();
+    wrapper.get("form").element.requestSubmit(save);
     await flushPromises();
     expect(api.PUT_Template).toHaveBeenCalledTimes(1);
+  });
+
+  it("a second submit while the save is in flight sends nothing", async () => {
+    let answer;
+    api.PUT_Template.mockImplementation(() => new Promise((resolve) => (answer = () => resolve({ data: template }))));
+    const wrapper = await mountEdit();
+    const form = wrapper.get("form").element;
+    form.requestSubmit();
+    form.requestSubmit();
+    await flushPromises();
+    expect(api.PUT_Template).toHaveBeenCalledTimes(1);
+    answer();
+    await flushPromises();
+    form.requestSubmit();
+    expect(api.PUT_Template).toHaveBeenCalledTimes(2);
+  });
+
+  // A disabled default button blocks implicit submission (HTML): with a broken schema Enter does not save either.
+  it("with a broken schema the form's submit button is disabled", async () => {
+    const wrapper = await mountEdit();
+    await wrapper.get('[data-testid="template-schema"] textarea').setValue("{oops");
+    const save = wrapper.get('[data-testid="template-save"]').element;
+    expect(save.form).toBe(wrapper.get("form").element);
+    expect(save.disabled).toBe(true);
   });
 
   // C-39 (plan 55): the kind reads as words, the raw enum is only the value.
