@@ -65,9 +65,9 @@
           :data-testid="`cat-mapping-target-${rowKey}`"
         />
         <BasicInput
-          :maxlength="64"
           v-else
           v-model="local.target_category_idx"
+          :maxlength="64"
           :placeholder="
             $t('atlas.mappings.category.target_category_no_channel_hint')
           "

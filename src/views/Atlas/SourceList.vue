@@ -284,14 +284,14 @@ import { useNotifyStore } from "@/stores/notify";
 import { useRegionalStore } from "@/stores/regional";
 import { useSearchDebounce } from "@/composables/useSearchDebounce";
 import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
-
-const CREATE_FORMATS = { idx: { format: "key" }, sku_prefix: { format: "key" } };
 import {
   GET_Sources,
   POST_Source,
   DELETE_Source,
   GET_SupplierDeleteImpact,
 } from "@/api/atlas/api";
+
+const CREATE_FORMATS = { idx: { format: "key" }, sku_prefix: { format: "key" } };
 
 const KIND_VARIANTS = {
   procurement: "positive",

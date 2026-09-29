@@ -138,14 +138,14 @@ import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { usePimChannelStore } from "@/stores/pimChannel";
 import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
-
-const PRODUCT_FORMATS = { sku: { format: "key" }, ean: { format: "ean" } };
 import {
   POST_Product,
   GET_FeatureSets,
   POST_AddToChannel,
 } from "@/api/pim/api";
 import PimChannelSelect from "./components/PimChannelSelect.vue";
+
+const PRODUCT_FORMATS = { sku: { format: "key" }, ean: { format: "ean" } };
 
 export default {
   name: "ProductCreate",

@@ -299,9 +299,9 @@
 import { useNotifyStore } from "@/stores/notify";
 import { useRegionalStore } from "@/stores/regional";
 import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
+import { PATCH_Source } from "@/api/atlas/api";
 
 const OVERVIEW_FORMATS = { sku_prefix: { format: "key" }, contact_email: { format: "email" } };
-import { PATCH_Source } from "@/api/atlas/api";
 
 const FIELDS = [
   "name",

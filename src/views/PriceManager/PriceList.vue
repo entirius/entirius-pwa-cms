@@ -275,9 +275,9 @@ import {
 } from '@/api/pricemanager/api'
 import { extractApiMessage } from '@/composables/useFormErrors'
 import { formatError } from '@/utils/formats'
+import PmChannelSelect from './PmChannelSelect.vue'
 
 const ROW_IDENTITY = ['sku', 'currency', '_original']
-import PmChannelSelect from './PmChannelSelect.vue'
 
 export default {
   name: 'PmPriceList',
