@@ -16,16 +16,13 @@ const pl = require('../../src/i18n/locales/pl.json');
  * Run: `npx playwright test tests/e2e/13-pim-quality.spec.js`
  */
 
-// The dev server's hot-reload socket (the zeno CMS container answers on another port) is not a page error.
-const DEV_SERVER = 'WebSocket connection to';
-
 test.describe('PIM Quality Gaps', () => {
   test('product list loads with no console errors (soft-compat)', async ({ page }) => {
     await login(page);
     // Whitelist the Google Fonts CDN — some sandboxes block it (ERR_BLOCKED_BY_ORB);
     // that third-party failure is unrelated to the quality highlighter's correctness.
     const collector = createErrorCollector(page, {
-      whitelist: ["fonts.googleapis.com", "fonts.gstatic.com", DEV_SERVER],
+      whitelist: ["fonts.googleapis.com", "fonts.gstatic.com"],
     });
 
     await page.goto('/pim/products');
@@ -56,7 +53,7 @@ test.describe('PIM Quality Gaps', () => {
     // Whitelist the Google Fonts CDN — some sandboxes block it (ERR_BLOCKED_BY_ORB);
     // that third-party failure is unrelated to the quality highlighter's correctness.
     const collector = createErrorCollector(page, {
-      whitelist: ["fonts.googleapis.com", "fonts.gstatic.com", DEV_SERVER],
+      whitelist: ["fonts.googleapis.com", "fonts.gstatic.com"],
     });
 
     await page.goto('/pim/products');

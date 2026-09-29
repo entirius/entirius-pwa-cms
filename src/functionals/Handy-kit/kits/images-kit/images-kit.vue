@@ -45,12 +45,13 @@ export default {
     },
   },
   computed: {
+    // A kit opened on one tab (handy.preventOtherTabs) shows the others disabled.
     tabs() {
       return [
         { value: "ImagesLibrary", label: this.$t("images.library") },
         { value: "AddNewImage", label: this.$t("images.new_photo") },
         { value: "AddNewCategory", label: this.$t("images.add_new_category") },
-      ];
+      ].map((tab) => ({ ...tab, disabled: Boolean(this.preventOtherTabs) && tab.value !== this.fold }));
     },
     handyFold() {
       return this.handy.handyFold;

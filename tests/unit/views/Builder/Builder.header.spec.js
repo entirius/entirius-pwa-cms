@@ -1,4 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
+import { mount } from "@vue/test-utils";
+import { createPinia } from "pinia";
 import Builder from "@/views/Builder/Builder.vue";
 import HomeVariantSwitcher from "@/views/Builder/HomeVariantSwitcher.vue";
 
@@ -105,5 +107,47 @@ describe("HomeVariantSwitcher — BasicSelect options", () => {
       ["switch", { channel_idx: "de", target_uid: "home-de" }],
       ["switch", { channel_idx: "en", target_uid: null }],
     ]);
+  });
+});
+
+// Plan 54b: the header mounted — the back target, the action order, and the advanced toggle's attention cue.
+describe("Builder — mounted header", () => {
+  const PageLayout = { template: "<div><slot name='header' /></div>" };
+  const PageHeader = { name: "PageHeader", props: { title: String, back: String, sticky: Boolean }, template: "<header><slot name='actions' /></header>" };
+  const ActionBar = { name: "ActionBar", props: ["actions"], template: "<div />" };
+
+  // The state goes in before the mount: init() (API + configs) is replaced, the header renders from data alone.
+  const mountHeader = (state) => {
+    const view = {
+      ...Builder,
+      data() {
+        return { ...Builder.data.call(this), content_type: "blog", uid: "doc-1", ...state };
+      },
+      methods: { ...Builder.methods, init: vi.fn() },
+    };
+    return mount(view, { shallow: true, global: { plugins: [createPinia()], stubs: { PageLayout, PageHeader, ActionBar } } });
+  };
+  const toggle = (wrapper) =>
+    wrapper.findComponent(ActionBar).props("actions").find((action) => action.key === "advanced");
+
+  it("goes back to the content type's list and keeps the R5 action order", async () => {
+    const wrapper = mountHeader({ custom_doc_name: "Home", routes: ["/"] });
+    expect(wrapper.findComponent(PageHeader).props()).toMatchObject({ title: "Home", back: "/pages/blog", sticky: true });
+    const keys = wrapper.findComponent(ActionBar).props("actions").map(({ key }) => key);
+    expect(keys).toEqual(["copy", "advanced", "draft", "publish"]);
+    expect(toggle(wrapper)).toMatchObject({ label: "builder.advanced", icon: "settings" });
+  });
+
+  it("marks the closed advanced toggle while the name or the URL is missing", async () => {
+    const missingUrl = mountHeader({ custom_doc_name: "Home", routes: [] });
+    expect(toggle(missingUrl)).toMatchObject({ icon: "warning", label: "builder.advanced_missing" });
+    expect(toggle(missingUrl).variant).toBeUndefined();
+    expect(toggle(mountHeader({ routes: ["/"] })).icon).toBe("warning");
+    expect(toggle(mountHeader({ routes: [], advanced_options: true })).icon).toBe("close");
+  });
+
+  it("asks a layout extender for its name only (it has no URL)", async () => {
+    const wrapper = mountHeader({ content_type: "layout-extender", custom_doc_name: "Footer", routes: [] });
+    expect(toggle(wrapper).icon).toBe("settings");
   });
 });

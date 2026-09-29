@@ -64,7 +64,8 @@ export default {
         { key: 'sku', label: this.$t('pricefighter.sku'), width: '1fr' },
         { key: 'market', label: this.$t('pricefighter.market'), width: '1fr' },
         { key: 'expected_new_price', label: this.$t('pricefighter.suggested_price'), numeric: true },
-        { key: 'reason', label: this.$t('pricefighter.reason'), width: '1.4fr', truncate: true },
+        // The reason says why an item was skipped, clamped or failed: it wraps, never truncates (no tooltip on a phone).
+        { key: 'reason', label: this.$t('pricefighter.reason'), width: '1.4fr', truncate: false },
       ]
     },
     // Defensive default — the API always returns all 5 buckets, but never trust the shape blindly.

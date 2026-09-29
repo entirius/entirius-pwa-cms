@@ -78,9 +78,12 @@ const galleryImages = ref([]);
 const galleryPage = ref(1);
 const galleryTotal = ref(0);
 const galleryLoading = ref(false);
-const galleryButtonText = computed(() =>
-  form.value.media_url ? t("layout_extender.change_image") : t("layout_extender.choose_from_gallery")
-);
+// A failed page load is an error with a retry, never the "no images" empty state.
+const galleryError = ref(false);
+const galleryButtonText = computed(() => {
+  if (galleryOpen.value) return t("layout_extender.hide_gallery");
+  return form.value.media_url ? t("layout_extender.change_image") : t("layout_extender.choose_from_gallery");
+});
 const galleryPages = computed(() => Math.ceil(galleryTotal.value / GALLERY_PAGE_SIZE));
 
 watch(
@@ -89,6 +92,7 @@ watch(
     if (!val) return;
     galleryOpen.value = false;
     galleryImages.value = [];
+    galleryError.value = false;
     galleryPage.value = 1;
     translatingField.value = null;
     skipLinkTypeClear.value = true;
@@ -139,15 +143,22 @@ async function openGallery() {
   await loadGallery(1);
 }
 
+function toggleGallery() {
+  if (galleryOpen.value) galleryOpen.value = false;
+  else openGallery();
+}
+
 async function loadGallery(page = 1) {
   galleryPage.value = page;
   galleryLoading.value = true;
+  galleryError.value = false;
   try {
     const { data } = await GET_Images({ limit: GALLERY_PAGE_SIZE, page });
     galleryImages.value = data.data || [];
     galleryTotal.value = data.pagination?.total || 0;
   } catch {
     galleryImages.value = [];
+    galleryError.value = true;
   } finally {
     galleryLoading.value = false;
   }
@@ -201,18 +212,30 @@ function onSave() {
             </span>
           </div>
 
-          <!-- The field's control: the label's `for` targets it, its name is the label followed by its own text. -->
+          <!-- The field's control, open gallery or not: the label's `for` targets it, its name is the label followed by
+               its own text; it opens and hides the gallery below. -->
           <BasicButton
-            v-if="!galleryOpen"
             id="banner-media"
             :label="`${$t('layout_extender.media_url')}: ${galleryButtonText}`"
-            @click="openGallery"
+            :aria-expanded="String(galleryOpen)"
+            @click="toggleGallery"
           >
             {{ galleryButtonText }}
           </BasicButton>
 
-          <div v-else class="flex-column gap-2">
+          <div v-if="galleryOpen" class="flex-column gap-2">
             <Loader v-if="galleryLoading" />
+            <EmptyState
+              v-else-if="galleryError"
+              size="sm"
+              icon="warning"
+              :title="$t('layout_extender.gallery_error')"
+              data-testid="banner-gallery-error"
+            >
+              <BasicButton size="sm" variant="secondary" @click="loadGallery(galleryPage)">
+                {{ $t("layout_extender.gallery_retry") }}
+              </BasicButton>
+            </EmptyState>
             <EmptyState
               v-else-if="!galleryImages.length"
               size="sm"

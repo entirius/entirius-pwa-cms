@@ -60,6 +60,19 @@ describe("EnrichmentReview page frame", () => {
     expect(w.vm.page).toBe(2);
   });
 
+  // Plan 54b: no footer jump while a page loads, and no page change racing a running action.
+  it("keeps the pager while the list loads and ignores it while an action runs", async () => {
+    const w = await mountPage();
+    w.vm.loading = true;
+    await w.vm.$nextTick();
+    const pager = w.findComponent({ name: "Pagination" });
+    expect(pager.exists()).toBe(true);
+    w.vm.loading = false;
+    w.vm.busy = true;
+    pager.vm.$emit("update:page", 3);
+    expect(w.vm.page).toBe(1);
+  });
+
   it("has no pager in focus mode", async () => {
     const w = await mountPage();
     w.vm.mode = "focus";
@@ -91,7 +104,7 @@ describe("FocusMode actions", () => {
     expect(actions.map((a) => [a.key, a.role])).toEqual([["skip", "secondary"], ["reject", "danger"], ["accept", "primary"]]);
   });
 
-  it("names Accept „apply anyway” while re-confirming a drift", async () => {
+  it('names Accept "apply anyway" while re-confirming a drift', async () => {
     const w = mountFocus();
     w.vm.driftMode = true;
     await w.vm.$nextTick();

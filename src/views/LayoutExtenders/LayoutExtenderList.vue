@@ -15,10 +15,11 @@
       />
     </template>
 
-    <Loader block v-if="loading" />
+    <!-- v-show, not v-if: the table stays mounted across fetchItems() (after delete, copy), keeping its sort. -->
+    <Loader block v-show="loading" />
 
     <DataTable
-      v-else
+      v-show="!loading"
       empty-size="md"
       :columns="columns"
       :rows="filteredItems"

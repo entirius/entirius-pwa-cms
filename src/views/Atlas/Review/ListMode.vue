@@ -13,17 +13,22 @@
           $t("atlas.review.list.selected_count", { count: selected.length })
         }}
       </span>
-      <BasicButton
-        v-for="action in bulkActions"
-        :key="action.key"
-        :variant="action.variant"
-        :disabled="action.disabled"
-        :title="action.title"
-        :data-testid="`list-bulk-${action.key}`"
-        @click="action.onClick"
-      >
-        {{ action.label }}
-      </BasicButton>
+      <template v-for="action in bulkActions" :key="action.key">
+        <BasicTooltip v-if="action.reason" :text="action.reason">
+          <BasicButton :variant="action.variant" :disabled="true" :data-testid="`list-bulk-${action.key}`">
+            {{ action.label }}
+          </BasicButton>
+        </BasicTooltip>
+        <BasicButton
+          v-else
+          :variant="action.variant"
+          :disabled="action.disabled"
+          :data-testid="`list-bulk-${action.key}`"
+          @click="action.onClick"
+        >
+          {{ action.label }}
+        </BasicButton>
+      </template>
     </div>
 
     <Loader block v-show="loading" />
@@ -151,6 +156,13 @@ const ACTION_FN = {
   skip: POST_QueueProduct,
 };
 
+const BULK_LABELS = {
+  approve: "atlas.review.list.bulk_approve",
+  reject: "atlas.review.list.bulk_reject",
+  requeue: "atlas.review.list.bulk_requeue",
+  push: "atlas.review.list.push_approved",
+};
+
 export default {
   name: "ListMode",
   components: {
@@ -231,41 +243,24 @@ export default {
     },
     // Bulk actions on the selection: secondary (R5), reject danger; approve and push are PIM-bound, so a
     // monitoring row in the selection disables them with the reason in the title.
+    // A monitoring row locks approve and push: those carry the reason (disabled with a tooltip).
     bulkActions() {
-      const count = this.selected.length;
-      const monitoringTitle = this.hasMonitoringSelected ? this.$t("atlas.products.monitoring_tooltip") : "";
+      const selected = this.selected.length > 0;
+      const locked = this.hasMonitoringSelected ? this.$t("atlas.products.monitoring_tooltip") : "";
       const procurement = this.kind === "procurement";
+      const bulk = (key, variant, enabled, reason = "") => ({
+        key,
+        label: this.$t(BULK_LABELS[key]),
+        variant,
+        reason,
+        disabled: !enabled || this.busy || Boolean(reason),
+        onClick: key === "push" ? this.bulkPush : () => this.bulkConfirm(key),
+      });
       return [
-        procurement && {
-          key: "approve",
-          label: this.$t("atlas.review.list.bulk_approve"),
-          variant: "secondary",
-          disabled: !count || this.busy || this.hasMonitoringSelected,
-          title: monitoringTitle,
-          onClick: () => this.bulkConfirm("approve"),
-        },
-        {
-          key: "reject",
-          label: this.$t("atlas.review.list.bulk_reject"),
-          variant: "danger",
-          disabled: !count || this.busy,
-          onClick: () => this.bulkConfirm("reject"),
-        },
-        {
-          key: "requeue",
-          label: this.$t("atlas.review.list.bulk_requeue"),
-          variant: "secondary",
-          disabled: !this.hasRejectedSelected || this.busy,
-          onClick: () => this.bulkConfirm("requeue"),
-        },
-        procurement && {
-          key: "push",
-          label: this.$t("atlas.review.list.push_approved"),
-          variant: "secondary",
-          disabled: !this.hasApprovedSelected || this.busy || this.hasMonitoringSelected,
-          title: monitoringTitle,
-          onClick: this.bulkPush,
-        },
+        procurement && bulk("approve", "secondary", selected, locked),
+        bulk("reject", "danger", selected),
+        bulk("requeue", "secondary", this.hasRejectedSelected),
+        procurement && bulk("push", "secondary", this.hasApprovedSelected, locked),
       ].filter(Boolean);
     },
     // The drawer's footer (R5): approve is the one primary, skip secondary, reject danger.

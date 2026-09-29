@@ -12,6 +12,8 @@
             :key="row.feature_idx"
             :row="row"
             :options="getOptions(row.feature_idx)"
+            :has-more="hasMoreOptions(row.feature_idx)"
+            :stored-labels="storedLabels[row.feature_idx]"
             :language="defaultLang"
             :translatable="hasSecondaryLanguages"
             :class="{ 'form-grid__wide': WIDE_TYPES.includes(row.feature_type) }"
@@ -20,6 +22,8 @@
             @update-json="(raw) => updateJsonField(row.feature_idx, raw)"
             @update-json-t9n="(raw) => updateJsonT9nField(row.feature_idx, defaultLang, raw)"
             @translate="openTranslationsDrawer(row.feature_idx)"
+            @open-options="ensureOptions(row.feature_idx)"
+            @load-more="loadOptionsPage(row.feature_idx)"
           />
         </div>
       </BasicCard>
@@ -48,6 +52,8 @@
             :key="row.feature_idx"
             :row="row"
             :options="getOptions(row.feature_idx)"
+            :has-more="hasMoreOptions(row.feature_idx)"
+            :stored-labels="storedLabels[row.feature_idx]"
             :language="defaultLang"
             :translatable="hasSecondaryLanguages"
             :class="{ 'form-grid__wide': WIDE_TYPES.includes(row.feature_type) }"
@@ -56,6 +62,8 @@
             @update-json="(raw) => updateJsonField(row.feature_idx, raw)"
             @update-json-t9n="(raw) => updateJsonT9nField(row.feature_idx, defaultLang, raw)"
             @translate="openTranslationsDrawer(row.feature_idx)"
+            @open-options="ensureOptions(row.feature_idx)"
+            @load-more="loadOptionsPage(row.feature_idx)"
           />
         </div>
       </BasicCard>
@@ -96,7 +104,9 @@
 
 <script setup>
 import { ref, reactive, computed, watch, onMounted } from "vue";
-import { GET_FeatureSetFeatures, GET_FeatureAttributes } from "@/api/pim/api";
+import { GET_FeatureSetFeatures, GET_FeatureAttributes, GET_Attribute } from "@/api/pim/api";
+import { useNotifyStore } from "@/stores/notify";
+import { t } from "@/i18n";
 import { isSelectType } from "../helpers/pimEnums";
 import { jsonToString } from "../helpers/attributeValues";
 import AttributeField from "./AttributeField.vue";
@@ -109,9 +119,11 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["update:attributes"]);
+const notify = useNotifyStore();
 
 // Rich text and JSON attributes take the full width of the form grid.
 const WIDE_TYPES = [5, 6, 9, 11];
+const OPTIONS_PAGE_SIZE = 100;
 
 const effectiveLanguages = computed(() =>
   props.languages.length > 0 ? props.languages : ["en"]
@@ -120,6 +132,7 @@ const effectiveLanguages = computed(() =>
 const loading = ref(false);
 const editableRows = ref([]);
 const optionsCache = ref({});
+const storedLabels = ref({});
 const collapsedGroups = reactive(new Set());
 const translatingRow = ref(null);
 
@@ -267,46 +280,63 @@ async function fetchFeatureSet() {
       position: f.position || 0,
     }));
     editableRows.value = mergeWithExisting(normalized);
-    // Not awaited: the editor shows at once and each select fills in as its values arrive.
-    prefetchSelectOptions(normalized);
+    prefetchStoredOptions(editableRows.value);
   } finally {
     loading.value = false;
   }
 }
 
-async function prefetchSelectOptions(features) {
-  const selectFeatures = features.filter((f) => isSelectType(f.feature_type));
-  await Promise.all(
-    selectFeatures.map((f) => fetchAttributeOptions(f.feature_idx))
-  );
+// Fire-and-forget: the first page of every select that holds a value, in parallel, then the names of the stored
+// values that page lacks; the editor shows at once. The other selects load when they open.
+function prefetchStoredOptions(rows) {
+  rows
+    .filter((r) => isSelectType(r.feature_type))
+    .forEach((r) => {
+      const stored = [...new Set([r.attribute_idx, ...r.attribute_idxs].filter(Boolean))];
+      if (stored.length) ensureOptions(r.feature_idx).then(() => loadStoredLabels(r.feature_idx, stored));
+    });
 }
 
-// Every value of a select feature, page by page (the searchable select filters them in the browser). A failed page
-// keeps the values that arrived before it.
-async function fetchAttributeOptions(featureIdx) {
-  if (optionsCache.value[featureIdx]) return;
-  optionsCache.value[featureIdx] = [];
-  for (let page = 1; ; page += 1) {
-    const data = await fetchOptionsPage(featureIdx, page);
-    if (!data) return;
-    const results = data.results || data || [];
-    const options = results.map((a) => ({ label: a.name || a.idx, value: a.idx }));
-    optionsCache.value[featureIdx] = [...optionsCache.value[featureIdx], ...options];
-    if (!data.next) return;
-  }
+function ensureOptions(featureIdx) {
+  return optionsCache.value[featureIdx] ? Promise.resolve() : loadOptionsPage(featureIdx);
 }
 
-async function fetchOptionsPage(featureIdx, page) {
+// One request per stored value missing from the loaded values, in parallel; a failed one keeps its idx as the label.
+async function loadStoredLabels(featureIdx, idxs) {
+  const missing = idxs.filter((idx) => !getOptions(featureIdx).some((o) => o.value === idx));
+  if (!missing.length) return;
+  const nameOf = (idx) =>
+    GET_Attribute(featureIdx, idx).then(({ data }) => [idx, data.name || idx], () => [idx, idx]);
+  storedLabels.value[featureIdx] = Object.fromEntries(await Promise.all(missing.map(nameOf)));
+}
+
+// The next page of a select feature's values. A failed page shows a notice and stays next: the next open (first
+// page) or "more" asks it again.
+async function loadOptionsPage(featureIdx) {
+  optionsCache.value[featureIdx] ??= { options: [], nextPage: 1, loading: false };
+  const entry = optionsCache.value[featureIdx];
+  if (entry.loading || !entry.nextPage) return;
+  entry.loading = true;
   try {
-    const { data } = await GET_FeatureAttributes(featureIdx, props.channelIdx, { page_size: 100, page });
-    return data;
+    const params = { page_size: OPTIONS_PAGE_SIZE, page: entry.nextPage };
+    const { data } = await GET_FeatureAttributes(featureIdx, props.channelIdx, params);
+    const options = (data.results || data || []).map((a) => ({ label: a.name || a.idx, value: a.idx }));
+    entry.options = [...entry.options, ...options];
+    entry.nextPage = data.next ? entry.nextPage + 1 : null;
   } catch {
-    return null;
+    if (!entry.options.length) delete optionsCache.value[featureIdx];
+    notify.spawnNotification({ type: "negative", msg: t("pim.attribute_values_failed") });
+  } finally {
+    entry.loading = false;
   }
 }
 
 function getOptions(featureIdx) {
-  return optionsCache.value[featureIdx] || [];
+  return optionsCache.value[featureIdx]?.options || [];
+}
+
+function hasMoreOptions(featureIdx) {
+  return Boolean(optionsCache.value[featureIdx]?.nextPage);
 }
 
 // --- Field updates ---

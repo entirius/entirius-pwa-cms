@@ -16,6 +16,7 @@ import CampaignsList from "@/views/Promo/CampaignsList.vue";
 import ProductVouchersList from "@/views/Promo/ProductVouchersList.vue";
 import VoucherDetail from "@/views/Promo/VoucherDetail.vue";
 import PromoChannelSelect from "@/views/Promo/PromoChannelSelect.vue";
+import VouchersListView from "@/views/Promo/VouchersList.vue";
 
 const $t = (key) => key;
 const roles = (actions) => actions.map((action) => [action.key, action.role]);
@@ -118,5 +119,21 @@ describe("PromoChannelSelect", () => {
     ]);
     await select.vm.$emit("update:model-value", "b2b");
     expect(mockStore.setActiveChannel).toHaveBeenCalledWith("b2b");
+  });
+});
+
+// Plan 54b: Tag and CountBadge always get their typed values — a missing campaign name, enum value or code count
+// falls back instead of passing null/undefined.
+describe("Promo labels for missing values", () => {
+  it("names a nameless or unknown campaign by its id", () => {
+    const ctx = { campaigns: [{ id: 3, name: null }, { id: 4, name: "Spring" }] };
+    expect(VouchersListView.methods.campaignName.call(ctx, 3)).toBe("#3");
+    expect(VouchersListView.methods.campaignName.call(ctx, 4)).toBe("Spring");
+    expect(VouchersListView.methods.campaignName.call(ctx, 9)).toBe("#9");
+  });
+
+  it("shows a dash for a missing enum value", () => {
+    expect(enumLabel("tax_type", null)).toBe("—");
+    expect(enumLabel("campaign_type", undefined)).toBe("—");
   });
 });

@@ -180,8 +180,9 @@ export default {
     }
   },
   computed: {
+    // Only filters moved off their default count: competitor-only is on by default, so turning it off is the filter.
     activeFilterCount() {
-      return [this.channelFilter, this.recommendationFilter, this.competitorOnly].filter(Boolean).length
+      return [this.channelFilter, this.recommendationFilter, !this.competitorOnly].filter(Boolean).length
     },
     bulkActions() {
       return [{ key: 'apply', labelKey: 'pricefighter.apply_selected', variant: 'primary' }]

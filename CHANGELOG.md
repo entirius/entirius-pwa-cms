@@ -219,7 +219,7 @@ All notable changes to this project will be documented in this file.
   filters (search, module, kind, source, batch, minimum confidence) in a `MobileFilterPanel` (inline on desktop, a
   filter button with the count on a phone) instead of the Filters toggle. The list pager is a `Pagination` in the page
   footer. One primary per mode: in the list the bulk Accept all (row Accept secondary, Reject danger), in Focus the
-  Accept („Apply anyway” while re-confirming a drift) with Reject (danger) and Skip in an `ActionBar`; the proposal is
+  Accept ("Apply anyway" while re-confirming a drift) with Reject (danger) and Skip in an `ActionBar`; the proposal is
   a `BasicCard` and the reject reason a `BasicTextarea` in a `FormField`. A PIM subject in the list is a ghost
   `BasicButton`, and clicking a row now opens Focus on that row (it always opened the first). The drift and CSV-import
   dialogs are `BasicModal`s with `ActionBar` footers (the file picker stays a raw input in the drop zone); the product
@@ -487,6 +487,54 @@ All notable changes to this project will be documented in this file.
   password and SSO login run the same code after the token call.
 
 ### Fixed
+
+- P5 panel review fixes (plan 54c), the review findings of wave 4 in Atlas and PIM:
+  - Atlas category mapping: the source value is a text field again and keeps what the operator types (the plan-47
+    picker stored only a value picked from its list); the feed's values of the source field open from the button
+    beside it, filtered by the typed text. A null feed value no longer breaks the list (numbers read as text), and a
+    failed `data-values` call shows the API message in that list instead of an empty one; a late answer for a source
+    field that is no longer chosen is dropped.
+  - PIM product attributes: select and multiselect values are no longer all downloaded when a product opens. A select
+    loads its first page (100) when it gets focus; a select holding a value loads it at once (in parallel), and a
+    stored value outside that page gets its name from its own request; "Load more values…" at the end of the list
+    asks for the next page. A failed page shows a notice
+    and is asked again on the next open or "more"; the values that arrived stay.
+  - Atlas sources: the hard-delete warning stays in view in negative tone (the permanent option is irreversible);
+    the unused `TestFeedModal` and `FeedConfigForm` are deleted with their `atlas.feeds.form` / `sync_mode` / `test`
+    keys.
+  - Atlas review: the gallery's "N / M" counter is a select that jumps to image N; the monitoring reason of a locked
+    bulk action is a tooltip around the disabled button (it was a `title`); the sticky decision bar keeps the FAB's
+    corner lane on a phone; the severity chips' label id is generated.
+  - PIM taxonomy: Save, Delete and the Active switch of a category, and the feature-set actions, are hidden while the
+    record reloads; the feature set's `is_default` switch sits in a FormField; a group rename cancels on Escape and
+    an empty name is a field error instead of a PATCH (another rename gives that group its old name back); feature-type tones come from the `FEATURE_TYPES` table.
+  - e2e: the error collector ignores only the dev server's `/ws` hot-reload socket (it ignored every WebSocket
+    error), PIM specs 13–15 and the taxonomy smoke drop their own copies; the taxonomy smoke asserts the tree toggle,
+    the first category, feature, feature set and quality rule instead of passing without them.
+
+- P5 panel review fixes (plan 54b), the review findings of waves 1–3 in their own panels:
+  - Promo: a rule that failed to load keeps Save, Delete and the Active switch disabled (a save would have overwritten
+    the stored rule with the empty form); a nameless campaign or a missing enum value gets a label (the id, a dash),
+    a rule without `code_count` a 0 badge.
+  - Enrichment review: the Focus row resets when the list reloads (page, filter, a row removed by an action) and when
+    the operator goes back to List, so a keyboard shortcut never acts on a stale row; the footer pager stays while the
+    list loads and ignores a page change while an action runs; the product preview in its drawer is flat, with the
+    name as text instead of a second heading.
+  - Content editor: the advanced toggle shows the `warning` icon and is named "Advanced: set the document name and
+    URL" while either is missing and the row is closed (the old toolbar pulsed); the section eye is display-only with a
+    one-line summary; the id copy targets react to Space; on a phone the unsaved badge sits left, above the actions;
+    the images kit shows blocked tabs disabled (`BasicTabs` options take `disabled`, arrow keys skip them).
+  - PriceFighter: the apply report's reason wraps instead of truncating; invalid observations are muted rows; the
+    phone filter badge counts only filters moved off their default (a fresh page shows none).
+  - Layout extenders: every drag handle moves its row with Alt+↑ / Alt+↓ and is named after it; the navigation editor
+    keeps its header while the document loads; the list keeps its table mounted across a refetch; the banner dialog's
+    gallery button stays while the gallery is open (it hides it) and a failed gallery load shows an error with a retry.
+    The link rows drag through Sortable's fallback, like the item rows since 1.0.0: their handle is a button element,
+    which Firefox never starts a native drag from.
+  - Points: a stale `?page=N` that comes back empty or 404 goes to page 1; a point type's sort order is a
+    `NumberInput` saved as a number; the import dialog loads its types when it opens, starts clean and translates
+    "Import complete". Stock's file picker clears after each pick, so the same CSV can be picked again (plan 43, shared
+    with the Points import dialog).
 
 - P5 wave-4 close (plan 52): on a phone the page header's chips (the Pim channel selector, its scope badge and
   „Tłumacz sklep”) wrap under the title instead of squeezing it to one letter per line; the product translate dialog

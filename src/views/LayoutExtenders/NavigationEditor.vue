@@ -1,8 +1,8 @@
 <template>
   <PageLayout class="fs-300 t-body">
-    <template v-if="!loading" #header>
+    <template #header>
       <PageHeader :title="docName || $route.params.uid || '—'" back="/pages/layout-extender">
-        <template #actions>
+        <template v-if="!loading" #actions>
           <div class="flex ai-ct jc-fe wrap gap-3">
             <StatusBadge
               v-if="isDirty"
@@ -40,7 +40,13 @@
             <div class="nav-item">
               <!-- Item header row -->
               <div class="nav-item__row">
-                <IconButton icon="drag" :label="$t('layout_extender.reorder')" class="handle" />
+                <IconButton
+                  icon="drag"
+                  :label="$t('layout_extender.reorder_item', { label: element.label || '—' })"
+                  class="handle"
+                  @keydown.alt.up.prevent="moveInList(navigationItems, index, -1, $event)"
+                  @keydown.alt.down.prevent="moveInList(navigationItems, index, 1, $event)"
+                />
                 <span class="nav-item__label fg-1 fw-500 t-body fs-300">{{ element.label || "—" }}</span>
                 <Tag
                   class="nav-item__type"
@@ -134,9 +140,12 @@
                           :label="$t('common.delete')"
                           variant="danger"
                           size="sm"
+                          data-testid="nav-column-delete"
                           @click="removeColumn(index, colIdx)"
                         />
                       </div>
+                      <!-- Sortable's fallback drag, like the item list: the handle is a button element, which Firefox
+                           never starts a native HTML5 drag from. -->
                       <draggable
                         v-model="col.links"
                         item-key="id"
@@ -148,7 +157,14 @@
                       >
                         <template #item="{ element: link, index: linkIdx }">
                           <div class="nav-link-row">
-                            <IconButton icon="drag" :label="$t('layout_extender.reorder')" size="sm" class="link-handle" />
+                            <IconButton
+                              icon="drag"
+                              :label="$t('layout_extender.reorder_item', { label: link.label || '—' })"
+                              size="sm"
+                              class="link-handle"
+                              @keydown.alt.up.prevent="moveInList(col.links, linkIdx, -1, $event)"
+                              @keydown.alt.down.prevent="moveInList(col.links, linkIdx, 1, $event)"
+                            />
                             <BasicButton
                               variant="ghost"
                               size="sm"
@@ -187,6 +203,7 @@
                           :label="$t('common.delete')"
                           variant="danger"
                           size="sm"
+                          data-testid="nav-column-delete"
                           @click="removeColumn(index, colIdx)"
                         />
                       </div>
@@ -426,6 +443,15 @@ export default {
     },
     markDirty() {
       // vuedraggable already mutates navigationItems — computed isDirty picks it up
+    },
+    // The keyboard path of a drag handle (Alt+Arrow): one step up or down inside its own list. Moving the row's node
+    // drops the focus, so the handle takes it back.
+    moveInList(list, index, delta, event) {
+      const target = index + delta;
+      if (target < 0 || target >= list.length) return;
+      const handle = event?.currentTarget;
+      list.splice(target, 0, list.splice(index, 1)[0]);
+      this.$nextTick(() => handle?.focus());
     },
     resolveMediaUrl(path) {
       if (!path) return "";

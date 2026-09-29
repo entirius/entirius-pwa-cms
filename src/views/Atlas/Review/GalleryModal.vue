@@ -25,9 +25,14 @@
           data-testid="gallery-modal-prev"
           @click="prev"
         />
-        <span class="fs-200 fw-600 t-secondary" data-testid="gallery-modal-counter">
-          {{ activeIndex + 1 }} / {{ images.length }}
-        </span>
+        <div class="gallery-picker">
+          <BasicSelect
+            v-model="activeIndex"
+            :options="imageOptions"
+            :aria-label="$t('atlas.review.gallery_jump')"
+            data-testid="gallery-modal-counter"
+          />
+        </div>
         <IconButton
           icon="next"
           variant="outline"
@@ -41,7 +46,8 @@
 </template>
 
 <script>
-// Product images in a BasicModal (Esc, backdrop and focus from the boot); ←/→ move between images while it is open.
+// Product images in a BasicModal (Esc, backdrop and focus from the boot); ←/→ and prev/next move between images
+// while it is open, the "N / M" select jumps to image N.
 export default {
   name: "GalleryModal",
   props: {
@@ -56,6 +62,9 @@ export default {
   computed: {
     activeImage() {
       return this.images[this.activeIndex] || null;
+    },
+    imageOptions() {
+      return this.images.map((_, i) => ({ value: i, label: `${i + 1} / ${this.images.length}` }));
     },
   },
   watch: {
@@ -95,6 +104,10 @@ export default {
 .gallery-stage {
   min-height: 0;
   overflow: hidden;
+}
+
+.gallery-picker {
+  width: 7rem;
 }
 
 .gallery-stage__image {

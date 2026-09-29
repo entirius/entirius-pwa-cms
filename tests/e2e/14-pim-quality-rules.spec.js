@@ -14,8 +14,8 @@ const { createErrorCollector } = require('../helpers/error-collector');
  * Run: `npx playwright test tests/e2e/14-pim-quality-rules.spec.js`
  */
 
-// Google Fonts may be blocked in a sandbox; the dev server's hot-reload socket is not a page error.
-const FONT_WHITELIST = ['fonts.googleapis.com', 'fonts.gstatic.com', 'WebSocket connection to'];
+// Google Fonts may be blocked in a sandbox (the collector ignores the dev server's hot-reload socket itself).
+const FONT_WHITELIST = ['fonts.googleapis.com', 'fonts.gstatic.com'];
 
 test.describe('PIM Quality Rules', () => {
   test('rules screen loads with no console errors (capability ON)', async ({ page }) => {

@@ -15,6 +15,7 @@ vi.mock("@/stores/loader", () => ({ useLoaderStore: () => ({ loaderStart() {}, l
 const notify = vi.hoisted(() => ({ spawnNotification: vi.fn() }));
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => notify }));
 
+import { PATCH_Type } from "@/api/deliverypoints/api";
 import TypeList from "@/views/Points/TypeList.vue";
 
 const BasicModal = {
@@ -58,5 +59,21 @@ describe("TypeList — edit dialog on BasicModal", () => {
 
     expect(wrapper.findComponent({ name: "BasicModal" }).props("open")).toBe(false);
     expect(notify.spawnNotification).toHaveBeenCalledWith(expect.objectContaining({ msg: "dp.carrier_read_only" }));
+  });
+});
+
+// Plan 54b: sort order is a NumberInput and goes to the API as a number.
+describe("TypeList — sort order", () => {
+  it("saves the edited sort order as a number", async () => {
+    const NumberInput = { name: "NumberInput", props: ["modelValue"], emits: ["update:modelValue"], template: "<div />" };
+    const wrapper = mount(TypeList, {
+      global: { stubs: { BasicModal, NumberInput, FormField: { template: "<div><slot /></div>" }, DataTable: true, ConfirmDialog: true, BasicSwitch: true, PageHeader: true } },
+    });
+    await flushPromises();
+    wrapper.vm.onRowClick({ id: 3, code: "locker", name: "Locker", is_carrier: false, is_active: true, sort_order: 2 });
+    await wrapper.vm.$nextTick();
+    await wrapper.findComponent(NumberInput).vm.$emit("update:modelValue", "7");
+    await wrapper.findComponent({ name: "BasicModal" }).props("actions").find((action) => action.key === "save").onClick();
+    expect(PATCH_Type).toHaveBeenCalledWith(3, expect.objectContaining({ sort_order: 7 }));
   });
 });

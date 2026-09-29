@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
 
 const mockGetSupplierProducts = vi.fn();
@@ -24,6 +24,9 @@ vi.mock("@/stores/notify", () => ({
 import ListMode from "@/views/Atlas/Review/ListMode.vue";
 import SwipeMode from "@/views/Atlas/Review/SwipeMode.vue";
 import GalleryModal from "@/views/Atlas/Review/GalleryModal.vue";
+import BasicModal from "@/boots/BasicModal/index.vue";
+import IconButton from "@/boots/IconButton/index.vue";
+import BasicSelect from "@/boots/BasicSelect/index.vue";
 
 const filters = { supplier: "__all", status: "__all", search: "" };
 const stubs = {
@@ -36,7 +39,11 @@ const stubs = {
   RawDataPanel: true,
   RawDataModal: true,
   GalleryModal: true,
-  BasicButton: { props: ["variant", "disabled"], template: "<button :data-variant='variant'><slot /></button>" },
+  BasicButton: {
+    props: ["variant", "disabled"],
+    template: "<button :data-variant='variant' :disabled='disabled'><slot /></button>",
+  },
+  BasicTooltip: { props: ["text"], template: "<span class='stub-tooltip' :data-text='text'><slot /></span>" },
 };
 
 const row = (id, status, kind = "procurement") => ({ id, status, kind, name: `P${id}` });
@@ -72,13 +79,28 @@ describe("ListMode bulk actions", () => {
     let actions = byKey(wrapper.vm.bulkActions);
     expect(actions.requeue.disabled).toBe(false);
     expect(actions.push.disabled).toBe(false);
-    expect(actions.approve.title).toBe("");
+    expect(actions.approve.reason).toBe("");
 
     wrapper.vm.toggleSelect(3);
     actions = byKey(wrapper.vm.bulkActions);
     expect(actions.approve.disabled).toBe(true);
     expect(actions.push.disabled).toBe(true);
-    expect(actions.push.title).toBe("atlas.products.monitoring_tooltip");
+    expect(actions.push.reason).toBe("atlas.products.monitoring_tooltip");
+  });
+
+  it("show the monitoring reason in a tooltip around the disabled button, not in a title", async () => {
+    const wrapper = mountList([row(1, "approved"), row(3, "queued", "monitoring")]);
+    await flushPromises();
+    wrapper.vm.toggleSelect(1);
+    wrapper.vm.toggleSelect(3);
+    await flushPromises();
+    const tips = wrapper.findAll(".stub-tooltip");
+    expect(tips.map((tip) => tip.attributes("data-text"))).toEqual([
+      "atlas.products.monitoring_tooltip",
+      "atlas.products.monitoring_tooltip",
+    ]);
+    expect(tips[0].find("button").attributes("disabled")).toBeDefined();
+    expect(wrapper.find("[data-testid='list-bulk-toolbar'] [title]").exists()).toBe(false);
   });
 
   it("have no approve or push on a monitoring review", async () => {
@@ -134,23 +156,64 @@ describe("SwipeMode decision bar", () => {
   });
 });
 
-describe("GalleryModal", () => {
+describe("GalleryModal (mounted with the real modal, buttons and select)", () => {
   const images = ["a.jpg", "b.jpg", "c.jpg"];
-  const mountGallery = () =>
-    mount(GalleryModal, { props: { visible: false, images }, global: { stubs: { BasicModal: true, IconButton: true } } });
+  const byTestId = (id) => document.querySelector(`[data-testid="${id}"]`);
+  const counter = () => byTestId("gallery-modal-counter").textContent.trim();
+  const shown = () => document.querySelector(".gallery-stage__image").getAttribute("src");
+  let wrapper;
 
-  it("moves between images with the arrow keys while open", async () => {
-    const wrapper = mountGallery();
+  async function openGallery() {
+    wrapper = mount(GalleryModal, {
+      props: { visible: false, images },
+      attachTo: document.body,
+      global: { components: { BasicModal, IconButton, BasicSelect } },
+    });
     await wrapper.setProps({ visible: true });
+    await flushPromises();
+  }
+
+  // A closed modal's leave transition never ends in jsdom: clear what it left in <body>.
+  afterEach(() => {
+    wrapper?.unmount();
+    document.body.innerHTML = "";
+  });
+
+  it("prev and next move through the images and wrap around, the counter follows", async () => {
+    await openGallery();
+    expect(counter()).toBe("1 / 3");
+    byTestId("gallery-modal-prev").click();
+    await flushPromises();
+    expect(counter()).toBe("3 / 3");
+    expect(shown()).toBe("c.jpg");
+    byTestId("gallery-modal-next").click();
+    byTestId("gallery-modal-next").click();
+    await flushPromises();
+    expect(counter()).toBe("2 / 3");
+  });
+
+  it("the arrow keys move while open and stop when closed", async () => {
+    await openGallery();
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft" }));
-    expect(wrapper.vm.activeImage).toBe("c.jpg");
+    await flushPromises();
+    expect(shown()).toBe("c.jpg");
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
-    expect(wrapper.vm.activeImage).toBe("b.jpg");
+    await flushPromises();
+    expect(counter()).toBe("2 / 3");
 
     await wrapper.setProps({ visible: false });
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
     expect(wrapper.vm.activeIndex).toBe(1);
-    wrapper.unmount();
+  });
+
+  it("the counter select jumps straight to image N", async () => {
+    await openGallery();
+    document.querySelector('[data-testid="gallery-modal-counter"] [role="combobox"]').click();
+    await flushPromises();
+    [...document.querySelectorAll('[role="option"]')].find((o) => o.textContent.includes("3 / 3")).click();
+    await flushPromises();
+    expect(counter()).toBe("3 / 3");
+    expect(shown()).toBe("c.jpg");
   });
 });

@@ -169,6 +169,7 @@
     "tile": "Tile",
     "tiles": "Tiles",
     "advanced": "Advanced",
+    "advanced_missing": "Advanced: set the document name and URL",
     "count": "Count",
     "doc_limit_reached": "Cannot create more documents of this type.",
     "no_content_title": "No content yet",
@@ -690,6 +691,8 @@
     "external_id": "External ID"
   },
   "pim": {
+    "attribute_values_more": "Load more values…",
+    "attribute_values_failed": "The attribute values could not be loaded",
     "products": "Products",
     "categories": "Categories",
     "create_product": "Create product",
@@ -1257,6 +1260,7 @@
     "import_mode_full": "Full (upsert, disable missing)",
     "import_channel": "Channel (optional)",
     "import_submit": "Start Import",
+    "import_complete": "Import complete",
     "import_success": "Import complete: {created} created, {updated} updated, {disabled} disabled",
     "back_to_list": "Back to list",
     "address": "Address",
@@ -1760,7 +1764,7 @@
     "add_column": "Add column",
     "add_banner": "Add banner",
     "reorder_columns": "Reorder columns",
-    "reorder": "Reorder",
+    "reorder_item": "Reorder {label} (Alt+↑ / Alt+↓)",
     "add_link": "Add link",
     "caption": "Caption",
     "button_label": "Button label",
@@ -1817,6 +1821,9 @@
     "aspect_ratio_hint": "Recommended aspect ratio: 16:9",
     "remove_image": "Remove image",
     "gallery_empty": "No images in the gallery",
+    "hide_gallery": "Hide gallery",
+    "gallery_error": "The gallery could not be loaded",
+    "gallery_retry": "Try again",
     "gallery_image": "Gallery image",
     "type_header": "Header",
     "type_footer": "Footer",
@@ -2197,34 +2204,6 @@
         "preview_empty": "Feed returned no products.",
         "preview_open_source": "Open source page"
       },
-      "form": {
-        "idx_label": "Feed identifier",
-        "connector_label": "Connector",
-        "schedule_label": "Cron schedule",
-        "schedule_hint": "e.g. 0 */6 * * * — empty for manual only",
-        "sync_mode_label": "Sync mode",
-        "language_label": "Language code",
-        "currency_label": "Currency code",
-        "xml": {
-          "feed_url": "Feed URL",
-          "product_xpath": "Product XPath",
-          "image_xpath": "Image XPath"
-        },
-        "scraper": {
-          "scraper_id": "Scraper ID",
-          "catalog_url": "Catalog URL"
-        }
-      },
-      "sync_mode": {
-        "full": "Full",
-        "delta": "Delta"
-      },
-      "test": {
-        "title": "Test feed",
-        "results_count": "{count} raw products fetched",
-        "async_dispatched": "Dispatched async task {task_id}. Results will appear in the import logs once the worker completes.",
-        "suppressed": "Scraper dispatch is disabled in supplier settings."
-      },
       "toast": {
         "created": "Feed {idx} created.",
         "updated": "Feed {idx} updated.",
@@ -2466,6 +2445,7 @@
       "gallery_title": "Product gallery",
       "gallery_prev": "Previous image",
       "gallery_next": "Next image",
+      "gallery_jump": "Go to image",
       "raw_panel": {
         "core_section": "Core fields",
         "attributes_section": "Vendor attributes",
@@ -2709,9 +2689,6 @@
       "skip": "Skip",
       "shortcuts_hint": "a accept · r reject · s skip · arrows navigate",
       "progress": "{index} of {total}",
-      "page_of": "Page {page} of {total}",
-      "prev": "Previous",
-      "next": "Next",
       "empty": "Nothing to review",
       "empty_message": "No proposals match the current filter.",
       "reject_reason": "Reason (optional)",

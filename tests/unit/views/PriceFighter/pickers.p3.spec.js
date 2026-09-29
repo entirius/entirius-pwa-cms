@@ -99,14 +99,14 @@ describe("PriceFighter P5 bindings", () => {
     expect(wrapper.vm.editingRule).toBeNull();
   });
 
-  it("gap table: the filter count follows channel, recommendation and competitor-only", async () => {
+  it("gap table: the filter count follows channel, recommendation and competitor-only off its default", async () => {
     const wrapper = mount(GapTable, { global: { stubs } });
     await flushPromises();
-    expect(wrapper.vm.activeFilterCount).toBe(1);
+    expect(wrapper.vm.activeFilterCount).toBe(0);
     await pick(wrapper, "BasicSelect", "b2c");
     await pick(wrapper, "BasicSelect", "compete", 1);
-    expect(wrapper.vm.activeFilterCount).toBe(3);
-    await pick(wrapper, "BasicSwitch", false);
     expect(wrapper.vm.activeFilterCount).toBe(2);
+    await pick(wrapper, "BasicSwitch", false);
+    expect(wrapper.vm.activeFilterCount).toBe(3);
   });
 });

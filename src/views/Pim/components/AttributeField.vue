@@ -40,12 +40,13 @@
         />
         <BasicSelect
           v-else-if="type === 7"
-          :options="withStoredOption(options, row.attribute_idx)"
+          :options="singleOptions"
           :model-value="row.attribute_idx"
           :placeholder="$t('pim.add_attribute_value')"
           searchable
           clearable
-          @update:model-value="(val) => $emit('update', 'attribute_idx', val)"
+          @focusin="$emit('open-options')"
+          @update:model-value="onSinglePick"
         />
         <BasicSelect
           v-else-if="type === 8"
@@ -54,7 +55,8 @@
           :placeholder="$t('pim.no_values_selected')"
           multiple
           searchable
-          @update:model-value="(idxs) => $emit('update', 'attribute_idxs', idxs)"
+          @focusin="$emit('open-options')"
+          @update:model-value="onMultiPick"
         />
         <BasicTextarea
           v-else-if="type === 9"
@@ -100,11 +102,14 @@
 // an event; the editor owns the rows and the payload.
 import { computed } from "vue";
 import { withStoredOption } from "@/utils/options";
+import { t } from "@/i18n";
 import { jsonToString } from "../helpers/attributeValues";
 
 // Number types and their unit suffix (decimal has none).
 const NUMBER_UNITS = { 2: "", 12: "°C", 13: "cm", 14: "kg" };
 const T9N_TYPES = [4, 6, 11];
+// The last option of a select whose values have a next page: picking it loads that page, it is never a value.
+const LOAD_MORE = "__load_more__";
 // Datetime attributes (feature_type 10) hold one date.
 const DATE_PICKER_CONFIG = { mode: "single", wrap: true, inline: true };
 
@@ -113,16 +118,33 @@ const props = defineProps({
   options: { type: Array, default: () => [] },
   language: { type: String, required: true },
   translatable: { type: Boolean, default: false },
+  hasMore: { type: Boolean, default: false },
+  // Names of stored values the loaded options lack (idx → name).
+  storedLabels: { type: Object, default: () => ({}) },
 });
-defineEmits(["update", "update-t9n", "update-json", "update-json-t9n", "translate"]);
+const emit = defineEmits(["update", "update-t9n", "update-json", "update-json-t9n", "translate", "open-options", "load-more"]);
 
 const type = computed(() => props.row.feature_type);
 const name = computed(() => props.row.feature_name || props.row.feature_idx);
 const label = computed(() => (T9N_TYPES.includes(type.value) ? `${name.value} (${props.language.toUpperCase()})` : name.value));
-// A stored value the loaded options lack still shows (its idx as the label).
-const multiOptions = computed(() =>
-  (props.row.attribute_idxs || []).reduce((options, idx) => withStoredOption(options, idx), props.options)
-);
+// A stored value the loaded options lack still shows (its name when known, else its idx).
+const withStored = (options, idx) => withStoredOption(options, idx, props.storedLabels[idx] ?? idx);
+const moreOption = computed(() => (props.hasMore ? [{ label: t("pim.attribute_values_more"), value: LOAD_MORE }] : []));
+const singleOptions = computed(() => [...withStored(props.options, props.row.attribute_idx), ...moreOption.value]);
+const multiOptions = computed(() => [
+  ...(props.row.attribute_idxs || []).reduce(withStored, props.options),
+  ...moreOption.value,
+]);
+
+function onSinglePick(value) {
+  if (value === LOAD_MORE) emit("load-more");
+  else emit("update", "attribute_idx", value);
+}
+
+function onMultiPick(values) {
+  if (values.includes(LOAD_MORE)) emit("load-more");
+  else emit("update", "attribute_idxs", values);
+}
 </script>
 
 <style lang="scss" scoped>

@@ -93,10 +93,8 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
       await openReview(page);
 
       const reconfirm = page.locator('[data-testid^="enrichment-reconfirm-"]').first();
-      if (!(await reconfirm.count())) {
-        test.info().annotations.push({ type: 'skipped', description: 'no proposal on this stack: drift dialog not opened' });
-        return;
-      }
+      // Reported as skipped, never as passed, when there is nothing to open.
+      test.skip(!(await reconfirm.count()), 'no proposal on this stack: drift dialog not opened');
       await reconfirm.click();
       const dialog = page.getByRole('dialog', { name: either((t) => t.enrichment.drift.title) });
       await expect(dialog).toBeVisible();

@@ -7,6 +7,7 @@
             <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
             <BasicSwitch
               v-model="form.is_active"
+              :disabled="loadFailed"
               :label="$t('promo.field_is_active')"
               :hint="$t('promo.hint_is_active')"
             />
@@ -667,8 +668,10 @@ export default {
   },
   data() {
     return {
-      // Until the meta (and the rule) load: the header's Save and Delete never act on an empty form.
+      // Until the meta (and the rule) load the header is hidden; after a failed load its Save, Delete and Active
+      // switch stay disabled, so the empty default form never overwrites the stored rule.
       loading: true,
+      loadFailed: false,
       showDeleteConfirm: false,
       showAddCode: false,
       showEditCodeModal: false,
@@ -756,10 +759,10 @@ export default {
     },
     headerActions() {
       const del = { key: "delete", role: "utility", icon: "delete", variant: "danger", label: this.$t("common.delete"),
-        onClick: () => (this.showDeleteConfirm = true) };
+        disabled: this.loadFailed, onClick: () => (this.showDeleteConfirm = true) };
       return [
         ...(this.isEdit ? [del] : []),
-        { key: "save", role: "primary", label: this.$t("common.save"), onClick: this.saveRule },
+        { key: "save", role: "primary", label: this.$t("common.save"), disabled: this.loadFailed, onClick: this.saveRule },
       ];
     },
     newCodeActions() {
@@ -972,7 +975,9 @@ export default {
         this.resetFormFromData(data);
         this.snapshot(this.form);
         this.track(this.form);
+        this.loadFailed = false;
       } catch (err) {
+        this.loadFailed = true;
         this.notify.spawnNotification({
           type: "negative",
           msg: this.codeErrorMessage(err),

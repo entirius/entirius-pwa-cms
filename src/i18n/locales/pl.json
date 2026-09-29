@@ -169,6 +169,7 @@
     "tile": "Kafelek",
     "tiles": "Kafelki",
     "advanced": "Zaawansowane",
+    "advanced_missing": "Zaawansowane: ustaw nazwę i URL dokumentu",
     "count": "Ilość",
     "doc_limit_reached": "Nie możesz utworzyć więcej dokumentów tego typu.",
     "no_content_title": "Brak treści",
@@ -690,6 +691,8 @@
     "external_id": "ID zewnętrzne"
   },
   "pim": {
+    "attribute_values_more": "Wczytaj więcej wartości…",
+    "attribute_values_failed": "Nie udało się wczytać wartości atrybutu",
     "products": "Produkty",
     "categories": "Kategorie",
     "create_product": "Nowy produkt",
@@ -1256,6 +1259,7 @@
     "import_mode_full": "Pełny (upsert, dezaktywuj brakujące)",
     "import_channel": "Kanał (opcjonalnie)",
     "import_submit": "Rozpocznij import",
+    "import_complete": "Import zakończony",
     "import_success": "Import zakończony: {created} utworzono, {updated} zaktualizowano, {disabled} dezaktywowano",
     "back_to_list": "Wróć do listy",
     "address": "Adres",
@@ -1759,7 +1763,7 @@
     "add_column": "Dodaj kolumnę",
     "add_banner": "Dodaj baner",
     "reorder_columns": "Zmień kolejność kolumn",
-    "reorder": "Kolejność",
+    "reorder_item": "Zmień kolejność: {label} (Alt+↑ / Alt+↓)",
     "add_link": "Dodaj link",
     "caption": "Podpis",
     "button_label": "Etykieta przycisku",
@@ -1816,6 +1820,9 @@
     "aspect_ratio_hint": "Zalecane proporcje: 16:9",
     "remove_image": "Usuń zdjęcie",
     "gallery_empty": "Brak zdjęć w galerii",
+    "hide_gallery": "Ukryj galerię",
+    "gallery_error": "Nie udało się wczytać galerii",
+    "gallery_retry": "Spróbuj ponownie",
     "gallery_image": "Zdjęcie z galerii",
     "type_header": "Nagłówek",
     "type_footer": "Stopka",
@@ -2196,34 +2203,6 @@
         "preview_empty": "Feed nie zwrócił żadnych produktów.",
         "preview_open_source": "Otwórz stronę źródłową"
       },
-      "form": {
-        "idx_label": "Identyfikator feedu",
-        "connector_label": "Konektor",
-        "schedule_label": "Harmonogram cron",
-        "schedule_hint": "np. 0 */6 * * * — pusto dla trybu ręcznego",
-        "sync_mode_label": "Tryb synchronizacji",
-        "language_label": "Kod języka",
-        "currency_label": "Kod waluty",
-        "xml": {
-          "feed_url": "URL feedu",
-          "product_xpath": "XPath produktu",
-          "image_xpath": "XPath obrazka"
-        },
-        "scraper": {
-          "scraper_id": "ID scrapera",
-          "catalog_url": "URL katalogu"
-        }
-      },
-      "sync_mode": {
-        "full": "Pełna",
-        "delta": "Delta"
-      },
-      "test": {
-        "title": "Test feedu",
-        "results_count": "Pobrano {count} surowych produktów",
-        "async_dispatched": "Wysłano zadanie asynchroniczne {task_id}. Wyniki pojawią się w logach importu po zakończeniu.",
-        "suppressed": "Wysyłka scrapera jest wyłączona w ustawieniach dostawców."
-      },
       "toast": {
         "created": "Feed {idx} utworzony.",
         "updated": "Feed {idx} zaktualizowany.",
@@ -2465,6 +2444,7 @@
       "gallery_title": "Galeria produktu",
       "gallery_prev": "Poprzedni obraz",
       "gallery_next": "Następny obraz",
+      "gallery_jump": "Przejdź do obrazu",
       "raw_panel": {
         "core_section": "Pola podstawowe",
         "attributes_section": "Atrybuty dostawcy",
@@ -2708,9 +2688,6 @@
       "skip": "Pomiń",
       "shortcuts_hint": "a akceptuj · r odrzuć · s pomiń · strzałki nawigacja",
       "progress": "{index} z {total}",
-      "page_of": "Strona {page} z {total}",
-      "prev": "Poprzednia",
-      "next": "Następna",
       "empty": "Brak propozycji do recenzji",
       "empty_message": "Żadna propozycja nie pasuje do bieżącego filtra.",
       "reject_reason": "Powód (opcjonalnie)",

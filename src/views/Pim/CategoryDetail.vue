@@ -5,7 +5,7 @@
         <template #meta>
           <PimChannelSelect />
         </template>
-        <template v-if="activeTab === 'details' && !notFound" #actions>
+        <template v-if="activeTab === 'details' && !notFound && !loading" #actions>
           <div class="flex ai-ct jc-fe wrap gap-3">
             <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
             <BasicSwitch v-model="form.is_active" :label="$t('pim.active')" />
