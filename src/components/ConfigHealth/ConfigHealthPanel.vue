@@ -149,6 +149,11 @@ const checkedAgo = computed(() => {
 .cfg-row--high {
   border-left-color: var(--negative);
 }
+// A long word that is no token (DEBUG, a hostname or a path without a scheme) still breaks when it cannot fit the line.
+.cfg-row__title,
+.cfg-row__detail {
+  overflow-wrap: break-word;
+}
 .cfg-row__title {
   margin: 0;
   font-size: var(--fs-400);
