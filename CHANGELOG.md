@@ -138,6 +138,18 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- Accessible names renamed by the floating labels (P5 plan 56, listed in plan 56c for the test package): the Stock
+  warehouse picker `Select warehouse` / „Wybierz magazyn” → `Warehouse` / „Magazyn”; the Pim category status filter
+  `Filter by status` / „Filtruj po statusie” → `Status`; the Atlas supplier-review filter keeps its name `Supplier` /
+  „Dostawca” but loses the `Name` / „Nazwa” placeholder. `stock.select_warehouse` stays: it is the Stock empty-state
+  title.
+- Review fixes of plan 56 (P5 plan 56c): the `BasicMenu` phone sheet is modal — a backdrop, scroll lock and focus
+  trap; Esc or a backdrop tap closes it and focus returns to the trigger. Configuration-health rows break a long word
+  that is no token (`DEBUG`, a hostname, a path). The builder group dropdown keeps its FormField label, its counter
+  uses `controllers.set_items` (`controllers.setted` deleted), and the selected-image ring stays visible next to a
+  focus outline. The census measures an inline background unless it carries `data-census="data"` (the ColorInput and
+  Emails channel swatches), and `@ux` reports a sticky bar inside a dialog; only the dialog layer or the BasicMenu
+  bottom sheet itself is no bottom bar.
 - UI lint fails on every rule (P5 plan 56): `eslint.config.mjs` `LEVEL = "error"`, `stylelint.config.mjs`
   `defaultSeverity: "error"`, so a raw control, a native `<select>` outside the boots, a literal icon glyph or an
   off-token value fails `npm run lint:ui`. The last warnings are fixed at their source: BasicWysiwyg focus mode and
