@@ -7,7 +7,7 @@
     <span ref="trigger" class="basic-menu__trigger" @click.capture="onTriggerClick" @keydown="onTriggerKeydown">
       <slot name="trigger" :open="isOpen" />
     </span>
-    <component :is="asSheet && expanded ? SheetLayer : InPlace" @dismiss="close">
+    <component :is="sheet ? SheetLayer : InPlace" :active="asSheet && expanded" @dismiss="close">
       <div
         v-show="isOpen"
         :id="menuId"
@@ -51,6 +51,8 @@
 
 <script>
 let nextId = 0;
+// A menu that is no sheet renders its popover in place, with no wrapper element.
+const InPlace = Object.assign((_, { slots }) => slots.default(), { inheritAttrs: false });
 </script>
 
 <script setup>
@@ -65,8 +67,10 @@ let nextId = 0;
 // mounts neither items nor panel: a closed select holds no hidden copy of its option labels. `sheet` is for a panel
 // that reads as a page of text (configuration health): a wide popover (≤ 32rem) above a phone, a full-width bottom
 // sheet on one — modal there like BasicModal's: a backdrop, scroll lock and focus trap; every close (Esc, a tap on the
-// backdrop, a panel link, a programmatic one) returns focus to the trigger. Only an open phone sheet renders the
-// backdrop layer; every other menu is the trigger and the popover. `sheet` is fixed per instance (read once at setup).
+// backdrop, a panel link, a programmatic one) returns focus to the trigger — to the menu itself when the trigger holds
+// no focusable control. Only an open phone sheet renders the backdrop layer; a menu that is no sheet is the trigger and
+// the popover. An open sheet crossing the phone breakpoint (a rotation) stays open: the popover moves between the page
+// and the backdrop without a remount, the trap follows. `sheet` is fixed per instance (read once at setup).
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useSlots, watch } from "vue";
 import { ICONS } from "@/boots/Icons/icons";
 import { FOCUSABLE, focusableIn, useFocusTrap } from "@/composables/useFocusTrap";
@@ -93,8 +97,6 @@ const root = ref(null);
 const trigger = ref(null);
 const popover = ref(null);
 const expanded = ref(false);
-// Outside an open phone sheet the popover renders in place, with no wrapper element.
-const InPlace = Object.assign((_, { slots }) => slots.default(), { inheritAttrs: false });
 
 const isOpen = computed(() => props.inline || expanded.value);
 // Only a sheet listens to the viewport: every BasicSelect is a BasicMenu. `sheet` is fixed per instance.
@@ -108,11 +110,14 @@ const { style } = useFloatingPosition(anchor, popover, {
   active: computed(() => expanded.value && !props.inline && !asSheet.value),
 });
 
-// The popover is the trap's container (tabindex -1): a sheet with no tab stop inside keeps focus on it.
-const trap = useFocusTrap(popover, {
-  active: computed(() => expanded.value && asSheet.value),
-  onEscape: () => close({ returnFocus: true }),
-});
+// The popover is the trap's container (tabindex -1): a sheet with no tab stop inside keeps focus on it. The menu owns
+// the trap's only activation path (post flush: the popover is already on the backdrop).
+const trap = useFocusTrap(popover, { onEscape: () => close({ returnFocus: true }) });
+watch(
+  () => expanded.value && asSheet.value,
+  (on) => (on ? trapSheet() : trap.deactivate()),
+  { flush: "post" }
+);
 
 const ITEM_SELECTOR = ':is([role="menuitem"], [role="menuitemradio"]):not([aria-disabled="true"])';
 
@@ -129,14 +134,22 @@ async function openMenu() {
   expanded.value = true;
   emit("open");
   await nextTick();
-  if (asSheet.value) trapSheet();
   focusFirst();
 }
 
-// The trap returns focus to the element focused when it activates: the trigger, before focus moves in.
+// The trap returns focus to the element focused when it activates: the trigger, before focus moves in. A trigger with
+// no focusable control (none, or a disabled one) leaves the menu itself as the opener, never <body>.
 function trapSheet() {
-  triggerControl()?.focus();
+  focusOpener();
   trap.activate();
+}
+
+function focusOpener() {
+  const control = trigger.value.querySelector(FOCUSABLE);
+  control?.focus();
+  if (control && document.activeElement === control) return;
+  root.value.tabIndex = -1;
+  root.value.focus();
 }
 
 function close({ returnFocus = false } = {}) {

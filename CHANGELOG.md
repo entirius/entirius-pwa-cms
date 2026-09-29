@@ -551,6 +551,11 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- `BasicMenu` phone sheet edges from the plan-56d review (plan 61b): an open sheet crossing the phone breakpoint (a
+  rotation) stays open and moves its popover between the page and the backdrop without a remount — the panel keeps
+  its state and does not load again; on a phone it is trapped with the trigger as the opener. The trap has one
+  activation path. A sheet whose trigger holds no focusable control returns focus to the menu itself on close, never
+  to `<body>`. Menus that are no sheet share one in-place layer component.
 - P5 wave-5 close (plan 57): the Leads company card's Overview shows its field names whole (they were cut to the
   header's width); a Leads Settings section shows one back arrow, its PageHeader's (the layout added a second one
   above it).
