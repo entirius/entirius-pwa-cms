@@ -102,6 +102,10 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- Security: the open Dependabot alerts and every `npm audit` finding are closed — TipTap 3.31 (ReDoS in Markdown
+  attribute parsing, `mergeAttributes` prototype key), webpack-dev-server 5.2.6 (source exposure, CSRF, HMR socket),
+  PostCSS 8.5.26 everywhere (the Vue 2 compiler utils no longer pull PostCSS 7), svgo 2.8.4, fast-uri 3.1.8,
+  brace-expansion, joi and qs; `npm audit` reports 0 vulnerabilities.
 - Session: the access token refreshes a minute before it expires, whatever lifetime the service issues; a reopened
   tab with an expired token refreshes first; logging out during a refresh no longer signs the user back in.
 - The sidebar is no longer empty after a fast click right after sign-in.
