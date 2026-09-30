@@ -10,6 +10,8 @@ All notable changes to this project will be documented in this file.
   Inbox with one row per conversation and All / Drafts / Waiting / Replies filters with counts, one-draft Review
   (Send / Not now in thumb reach, swipe with a button fallback, rewrite with a note, edit, skip company), and a company
   thread as one timeline over every thread of the company, with older threads behind an "Earlier threads" expander.
+  Every Leads and Communicator call uses the channel from `VUE_APP_LEADS_CHANNEL` (default `default-europe`), never
+  `VUE_APP_CHANNEL` — set it per deployment.
 - Leads desktop screens: pipeline board with drag-and-drop between stages, rule badges and type / do-not-contact /
   search filters; company card with Overview, Intel, Contacts and Timeline tabs, Communicate, Re-audit, Mark do not
   contact and Create customer (won leads, with the accounts module); add a single lead by hand; CSV import with the
