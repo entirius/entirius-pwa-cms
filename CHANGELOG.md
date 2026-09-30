@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [3.0.1] (2026-09-30)
+
+### Fixed
+
+- Section and element config drawer: the Type, Variant and other config selects render and can be picked again, so the rest of the configuration loads. (Redmine #34300)
+
 ## [3.0.0] (2026-09-30)
 
 The admin CMS redesigned on the Entirius brand.
