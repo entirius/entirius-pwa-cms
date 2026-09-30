@@ -21,7 +21,6 @@
               {
                 prop = null,
                 label = null,
-                type = null,
                 __value = null,
                 _for = null,
                 hidden = false,
@@ -29,7 +28,7 @@
               i
             ) in core_config"
           >
-            <component
+            <BasicSelect
               v-if="
                 !hidden &&
                 _for[processing_config_type] &&
@@ -45,9 +44,8 @@
                   )
                 )
               "
-              :is="props_handlers[type]"
-              :placeholder="tConfig(prop)"
-              :values="
+              :floatingLabel="tConfig(prop)"
+              :options="
                 _for[processing_config_type].map(
                   ({ label = null, value = null, variants = null }) => {
                     const opt = cores_dependency_check('options', {
@@ -59,14 +57,13 @@
                   }
                 )
               "
-              :selected="[__value]"
-              @onSelect="
+              :modelValue="__value"
+              @update:modelValue="
                 set_config('core_config', { key: prop, value: $event });
                 reset({ setter: prop, _in: 'core_config' });
                 reset({ setter: null, _in: 'optional_config' });
               "
-              class="bg-base b-default mb-1 rounded shadow-down fs-200 t-body"
-            ></component>
+            />
           </template>
         </div>
 
@@ -77,7 +74,6 @@
               {
                 prop = null,
                 label = null,
-                type = null,
                 __value = null,
                 _for = null,
                 hidden = false,
@@ -85,7 +81,7 @@
               i
             ) in optional_config"
           >
-            <component
+            <BasicSelect
               v-if="
                 !hidden &&
                 _for[processing_config_type] &&
@@ -101,9 +97,8 @@
                   )
                 )
               "
-              :is="props_handlers[type]"
-              :placeholder="tConfig(prop)"
-              :values="
+              :floatingLabel="tConfig(prop)"
+              :options="
                 _for[processing_config_type].map(
                   ({ label = null, value = null, variants = null }) => {
                     const opt = cores_dependency_check('options', {
@@ -115,13 +110,12 @@
                   }
                 )
               "
-              :selected="[__value]"
-              @onSelect="
+              :modelValue="__value"
+              @update:modelValue="
                 set_config('optional_config', { key: prop, value: $event })
               "
               :style="prop === 'dye' ? 'grid-column: span 2' : null"
-              class="bg-base b-default mb-1 rounded shadow-down fs-200 t-body"
-            ></component>
+            />
           </template>
         </div>
 
