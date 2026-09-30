@@ -133,6 +133,14 @@
                     />
                   </div>
                   <div class="flex ai-ct gap-2">
+                    <RequiredOverrideControl
+                      v-if="requiredPerFeatureSet"
+                      :model-value="element.is_required_override ?? null"
+                      :feature-required="Boolean(element.feature?.is_required)"
+                      :name="element.feature_name || element.feature_idx"
+                      :disabled="element.feature?.scope === 1"
+                      @update:model-value="(value) => onRequiredChange(element, value)"
+                    />
                     <IconButton
                       icon="edit"
                       :label="$t('common.edit')"
@@ -235,6 +243,14 @@
                         />
                       </div>
                       <div class="flex ai-ct gap-2">
+                        <RequiredOverrideControl
+                          v-if="requiredPerFeatureSet"
+                          :model-value="element.is_required_override ?? null"
+                          :feature-required="Boolean(element.feature?.is_required)"
+                          :name="element.feature_name || element.feature_idx"
+                          :disabled="element.feature?.scope === 1"
+                          @update:model-value="(value) => onRequiredChange(element, value)"
+                        />
                         <IconButton
                           icon="edit"
                           :label="$t('common.edit')"
@@ -333,10 +349,13 @@ import {
   GET_AttributesGroups,
   POST_AttributesGroup,
   PATCH_AttributesGroup,
+  PATCH_FeatureSetFeature,
 } from "@/api/pim/api";
 import { featureTypeLabel, featureTypeTone } from "./helpers/pimEnums";
 import AttributeLibrary from "./components/AttributeLibrary.vue";
 import PimChannelSelect from "./components/PimChannelSelect.vue";
+import RequiredOverrideControl from "./components/RequiredOverrideControl.vue";
+import { usePimCapabilities, noteFeatureList } from "@/composables/usePimCapabilities";
 import { extractApiMessage } from "@/composables/useFormErrors";
 
 export default {
@@ -345,6 +364,7 @@ export default {
     draggable,
     AttributeLibrary,
     PimChannelSelect,
+    RequiredOverrideControl,
   },
   setup() {
     const loader = useLoaderStore();
@@ -359,7 +379,8 @@ export default {
     onBeforeUnmount(() => {
       if (isGlobalScope) isGlobalScope.value = false;
     });
-    return { loader, notify, ...unsaved };
+    const { requiredPerFeatureSet } = usePimCapabilities();
+    return { loader, notify, requiredPerFeatureSet, ...unsaved };
   },
   data() {
     return {
@@ -603,6 +624,7 @@ export default {
         this.snapshot(this.form);
         this.track(this.form);
         this.featuresInSet = featRes.data.results || featRes.data || [];
+        noteFeatureList(this.featuresInSet);
         this.allGroups = groupsRes.data.results || groupsRes.data || [];
         this.buildGroups();
       } catch (err) {
@@ -690,6 +712,22 @@ export default {
         });
       } finally {
         this.loader.loaderFinish();
+      }
+    },
+    // PIM >= 3.3.0: the override is saved at once (it is not part of the set's Save); a refused change snaps back.
+    async onRequiredChange(element, value) {
+      const before = element.is_required_override ?? null;
+      element.is_required_override = value;
+      try {
+        const { data } = await PATCH_FeatureSetFeature(this.featureSetIdx, element.feature_idx, { is_required: value });
+        element.is_required_override = data.is_required_override ?? value;
+        element.is_required = data.is_required ?? element.is_required;
+      } catch (err) {
+        element.is_required_override = before;
+        this.notify.spawnNotification({
+          type: "negative",
+          msg: extractApiMessage(err, this.$t("notifications.error")),
+        });
       }
     },
     async saveReorder() {

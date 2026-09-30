@@ -4,6 +4,29 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [3.1.0] (2026-09-30)
+
+Required features per feature set.
+
+### Upgrade
+
+- Backend: entirius-django-pim >= 3.3.0 for the new behaviour. Against 3.2.x the CMS detects the missing
+  `required-features/` endpoint (404, once per session) and keeps the previous behaviour.
+
+### Added
+
+- Feature set edit: per feature an Inherit / Required / Optional control (Inherit shows the feature's own flag),
+  saved at once through `PATCH feature-sets/{idx}/features/{feature_idx}/`; disabled for system features.
+- Product create: after a feature set is picked, the set's required features (at least `name`) get inputs marked
+  required and go out as `attributes`; `REQUIRED_FEATURE_MISSING` / `UNRESOLVED_ATTRIBUTE` answers land on the
+  feature's field.
+- `usePimCapabilities`: one probe per session decides between the new and the legacy mode.
+
+### Changed
+
+- The product attribute editor marks a feature required by the set's effective flag (`is_required`) before the
+  feature's own default.
+
 ## [3.0.0] (2026-09-30)
 
 The admin CMS redesigned on the Entirius brand.
