@@ -88,6 +88,11 @@ components keep using stores directly via the `setup()` return pattern.
   `detail`, DRF field dicts) into per-field errors. Returns `errors`,
   `hasErrors`, `summary`, `handleApiError(err)`, `getFieldError`,
   `clearErrors`, `validateRequired(form, rules)`.
+- **`usePimCapabilities`** — PIM version capabilities by probing, not by version
+  string. `requiredPerFeatureSet` (PIM >= 3.3.0: per-set required flags) is
+  decided once per session: `loadRequiredFeatures(setIdx)` probes
+  `required-features/` (404 = legacy, cached) and `noteFeatureList(items)` reads
+  `is_required_override` from a features list. Views gate new UI on it.
 - **`useHandyKitSubscriber`** — watches `handy.triggerListener` to bind
   Handy-kit payloads onto component data (`instance`/`flat`/`custom`/`mixed`
   bind modes). Returns `{ setupSubscriber, open_Handykit }`.
