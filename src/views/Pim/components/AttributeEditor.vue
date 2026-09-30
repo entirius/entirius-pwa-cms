@@ -111,6 +111,8 @@ import { useNotifyStore } from "@/stores/notify";
 import { t } from "@/i18n";
 import { createLimiter } from "@/utils/limit";
 import { isSelectType } from "../helpers/pimEnums";
+import { effectiveRequired } from "../helpers/requiredFeatures";
+import { noteFeatureList } from "@/composables/usePimCapabilities";
 import { jsonToString } from "../helpers/attributeValues";
 import AttributeField from "./AttributeField.vue";
 
@@ -282,11 +284,12 @@ async function fetchFeatureSet() {
       props.featureSetIdx
     );
     const results = data.results || data || [];
+    noteFeatureList(results);
     const normalized = results.map((f) => ({
       feature_idx: f.feature?.idx || f.feature_idx,
       feature_name: f.feature?.name || f.feature_name,
       feature_type: f.feature?.feature_type ?? f.feature_type,
-      is_required: f.feature?.is_required ?? f.is_required ?? false,
+      is_required: effectiveRequired(f),
       attributes_group_idx: f.attributes_group_idx || null,
       attributes_group_name: f.attributes_group_name || null,
       position: f.position || 0,
