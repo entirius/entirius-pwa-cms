@@ -5,71 +5,72 @@
          backend contract. -->
     <div
       v-if="totalCount > 0 && (actionableFilter || undoableFilter)"
-      class="list-mode__bulk flex ai-ct gap-200 mb-300 p-200 bg-support-100 br-50 flex-wrap"
+      class="list-mode__bulk flex ai-ct gap-5 mb-8 p-5 bg-accent-subtle rounded flex-wrap"
       data-testid="enrichment-bulk-bar"
     >
-      <span class="fs-200 t-support-400 fw-600">
+      <span class="fs-200 t-accent fw-600">
         {{ $t("enrichment.review.bulk.matching", { count: totalCount }) }}
       </span>
-      <div class="flex ai-ct gap-100 ml-auto flex-wrap">
-        <button
+      <div class="flex ai-ct gap-2 ml-auto flex-wrap">
+        <BasicButton
           v-if="actionableFilter"
-          class="list-mode__btn bg-positive-100 t-positive-300"
+          variant="primary"
           :disabled="busy"
           data-testid="enrichment-bulk-accept"
           @click="$emit('bulk-accept')"
         >
-          {{ $t("enrichment.review.bulk.accept_all") }}
-        </button>
-        <button
+          {{ $t('enrichment.review.bulk.accept_all') }}
+        </BasicButton>
+        <BasicButton
           v-if="actionableFilter"
-          class="list-mode__btn bg-negative-100 t-negative-300"
+          variant="danger"
           :disabled="busy"
           data-testid="enrichment-bulk-reject"
           @click="$emit('bulk-reject', '')"
         >
-          {{ $t("enrichment.review.bulk.reject_all") }}
-        </button>
-        <button
+          {{ $t('enrichment.review.bulk.reject_all') }}
+        </BasicButton>
+        <BasicButton
           v-if="undoableFilter"
-          class="list-mode__btn bg-basic-200 t-basic-600"
+          variant="secondary"
           :disabled="busy"
           :title="$t('enrichment.review.undo_hint')"
           data-testid="enrichment-undo"
           @click="$emit('bulk-undo')"
         >
-          {{ $t("enrichment.review.undo") }}
-        </button>
+          {{ $t('enrichment.review.undo') }}
+        </BasicButton>
       </div>
     </div>
 
-    <Loader v-show="loading" />
+    <Loader block v-show="loading" />
 
     <DataTable
+      empty-size="md"
       v-show="!loading"
       :columns="columns"
       :rows="rows"
       row-key="id"
       :empty-text="$t('enrichment.review.empty')"
-      @row-click="$emit('row-focus', row)"
+      @row-click="(row) => $emit('row-focus', row)"
     >
       <template #cell-subject="{ row }">
         <!-- PIM subject: open the product preview drawer (stop the row → focus click). -->
-        <button
+        <BasicButton
           v-if="isPimRow(row)"
-          type="button"
-          class="list-mode__link list-mode__link--btn t-primary-300"
+          variant="ghost"
+          size="sm"
           :data-testid="`enrichment-subject-${row.id}`"
-          @click.stop="$emit('preview-product', row)"
+          @click="$emit('preview-product', row)"
         >
           {{ row.subject_label || row.subject_ref }}
-        </button>
+        </BasicButton>
         <a
           v-else-if="row.subject_url"
           :href="row.subject_url"
           target="_blank"
           rel="noopener"
-          class="list-mode__link t-primary-300"
+          class="list-mode__link t-accent"
           :data-testid="`enrichment-subject-${row.id}`"
           @click.stop
           >{{ row.subject_label || row.subject_ref }}</a
@@ -77,7 +78,7 @@
         <span v-else>{{ row.subject_label || row.subject_ref }}</span>
       </template>
       <template #cell-field="{ row }">
-        <span class="fs-200 t-basic-600">{{ fieldLabel(row) }}</span>
+        <span class="fs-200 t-secondary">{{ fieldLabel(row) }}</span>
       </template>
       <template #cell-change="{ row }">
         <DiffRenderer
@@ -91,77 +92,58 @@
       <template #cell-status="{ value }">
         <StatusBadge
           :label="$t(`enrichment.status.${value}`)"
-          :variant="statusVariant(value)"
+          :tone="statusVariant(value)"
         />
       </template>
       <template #cell-confidence="{ value }">
         <span class="fs-200">{{ formatConfidence(value) }}</span>
       </template>
       <template #cell-age="{ row }">
-        <span class="fs-200 t-basic-500">{{ formatDate(row.created_at) }}</span>
+        <span class="fs-200 t-muted">{{ formatDate(row.created_at) }}</span>
       </template>
       <template #cell-actions="{ row }">
-        <div v-if="isActionable(row)" class="flex ai-ct gap-100">
-          <button
+        <div v-if="isActionable(row)" class="flex ai-ct gap-2">
+          <BasicButton
             v-if="row.status === 'drifted'"
-            class="list-mode__btn bg-warning-100 t-warning-300"
+            size="sm"
+            variant="secondary"
             :disabled="busy"
             :data-testid="`enrichment-reconfirm-${row.id}`"
-            @click.stop="$emit('reconfirm', row)"
+            @click="$emit('reconfirm', row)"
           >
-            {{ $t("enrichment.review.reconfirm") }}
-          </button>
-          <button
+            {{ $t('enrichment.review.reconfirm') }}
+          </BasicButton>
+          <BasicButton
             v-else
-            class="list-mode__btn bg-positive-100 t-positive-300"
+            size="sm"
+            variant="secondary"
             :disabled="busy"
             :data-testid="`enrichment-accept-${row.id}`"
-            @click.stop="$emit('accept', row)"
+            @click="$emit('accept', row)"
           >
-            {{ $t("common.accept") }}
-          </button>
-          <button
-            class="list-mode__btn bg-negative-100 t-negative-300"
+            {{ $t('common.accept') }}
+          </BasicButton>
+          <BasicButton
+            size="sm"
+            variant="danger"
             :disabled="busy"
             :data-testid="`enrichment-reject-${row.id}`"
-            @click.stop="$emit('reject', { proposal: row, reason: '' })"
+            @click="$emit('reject', { proposal: row, reason: '' })"
           >
-            {{ $t("common.reject") }}
-          </button>
+            {{ $t('common.reject') }}
+          </BasicButton>
         </div>
-        <span v-else class="fs-200 t-basic-400">—</span>
+        <span v-else class="fs-200 t-muted">—</span>
       </template>
     </DataTable>
 
     <EmptyState
       v-if="!loading && !rows.length"
-      icon="wand-magic-sparkles"
+      icon="enrich"
       :title="$t('enrichment.review.empty')"
       :message="$t('enrichment.review.empty_message')"
     />
 
-    <div
-      v-if="totalPages > 1"
-      class="list-mode__pager flex ai-ct jc-ct gap-200 mt-300"
-    >
-      <button
-        class="list-mode__btn bg-basic-200 t-basic-600"
-        :disabled="page <= 1 || busy"
-        @click="$emit('page', page - 1)"
-      >
-        {{ $t("enrichment.review.prev") }}
-      </button>
-      <span class="fs-200 t-basic-500">{{
-        $t("enrichment.review.page_of", { page, total: totalPages })
-      }}</span>
-      <button
-        class="list-mode__btn bg-basic-200 t-basic-600"
-        :disabled="page >= totalPages || busy"
-        @click="$emit('page', page + 1)"
-      >
-        {{ $t("enrichment.review.next") }}
-      </button>
-    </div>
   </div>
 </template>
 
@@ -170,7 +152,7 @@ import { formatDate } from "@/utils/format";
 import DiffRenderer from "./DiffRenderer.vue";
 
 const STATUS_VARIANTS = {
-  pending: "informative",
+  pending: "info",
   applied: "positive",
   rejected: "negative",
   superseded: "neutral",
@@ -185,8 +167,6 @@ export default {
     rows: { type: Array, default: () => [] },
     loading: { type: Boolean, default: false },
     busy: { type: Boolean, default: false },
-    page: { type: Number, default: 1 },
-    pageSize: { type: Number, default: 25 },
     totalCount: { type: Number, default: 0 },
   },
   emits: [
@@ -196,7 +176,6 @@ export default {
     "bulk-reject",
     "bulk-undo",
     "reconfirm",
-    "page",
     "row-focus",
     "preview-product",
   ],
@@ -212,21 +191,25 @@ export default {
           key: "target_module",
           label: this.$t("enrichment.review.col.module"),
           width: "90px",
+          priority: 2,
         },
         {
           key: "target_kind",
           label: this.$t("enrichment.review.col.kind"),
           width: "90px",
+          priority: 2,
         },
         {
           key: "field",
           label: this.$t("enrichment.review.col.field"),
           width: "130px",
+          priority: 2,
         },
         {
           key: "change",
           label: this.$t("enrichment.review.col.change"),
-          width: "minmax(240px, 2fr)",
+          width: "minmax(360px, 2fr)",
+          priority: 2,
         },
         {
           key: "status",
@@ -237,27 +220,28 @@ export default {
           key: "confidence",
           label: this.$t("enrichment.review.col.confidence"),
           width: "90px",
+          priority: 2,
         },
         {
           key: "source",
           label: this.$t("enrichment.review.col.source"),
           width: "110px",
+          priority: 2,
         },
         {
           key: "batch_id",
           label: this.$t("enrichment.review.col.batch"),
           width: "100px",
+          priority: 2,
         },
         {
           key: "age",
           label: this.$t("enrichment.review.col.age"),
           width: "120px",
+          priority: 2,
         },
-        { key: "actions", label: "", width: "150px" },
+        { key: "actions", label: "", actions: true },
       ];
-    },
-    totalPages() {
-      return Math.max(1, Math.ceil(this.totalCount / this.pageSize));
     },
     // Bulk accept/reject only makes sense when the queue holds pending work.
     actionableFilter() {
@@ -299,26 +283,6 @@ export default {
   text-decoration: none;
   &:hover {
     text-decoration: underline;
-  }
-}
-.list-mode__link--btn {
-  background: none;
-  border: none;
-  padding: 0;
-  font: inherit;
-  cursor: pointer;
-  text-align: left;
-}
-.list-mode__btn {
-  height: var(--elem-height);
-  padding: 0 12px;
-  border: none;
-  border-radius: var(--radius-sm);
-  font-size: var(--fs-200);
-  cursor: pointer;
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
   }
 }
 </style>

@@ -2,6 +2,153 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+## [3.0.0] (2026-09-30)
+
+The admin CMS redesigned on the Entirius brand.
+
+### Upgrade
+
+- Backend: django-munin >= 2.2.0 (configuration health), django-communicator >= 0.3.0 and django-leads >= 0.3.0
+  (Leads screens) — all in entirius-service-volkanos 3.0.0rc9. Against munin 2.1.0 the health poll 404s quietly.
+- Node >= 20.19. Brand tokens come from `@entirius/brand-tokens` 0.1.0 (github.com/entirius/entirius-pwa-brand-tokens).
+- Set `VUE_APP_LEADS_CHANNEL` per deployment (default `default-europe`).
+- Removed: the legacy components replaced by the unified boots, the old palette and spacing names, `/playground`;
+  client `__client` overrides that used them need the new names (`docs/ui-components.md`, `docs/ui-rules.md`).
+
+### Added
+
+- Leads panel for django-leads and django-communicator, mobile first (one thumb at 390 px, two columns from 1024 px):
+  Inbox with one row per conversation and All / Drafts / Waiting / Replies filters with counts, one-draft Review
+  (Send / Not now in thumb reach, swipe with a button fallback, rewrite with a note, edit, skip company), and a company
+  thread as one timeline over every thread of the company, with older threads behind an "Earlier threads" expander.
+  Every Leads and Communicator call uses the channel from `VUE_APP_LEADS_CHANNEL` (default `default-europe`), never
+  `VUE_APP_CHANNEL` — set it per deployment.
+- Leads desktop screens: pipeline board with drag-and-drop between stages, rule badges and type / do-not-contact /
+  search filters; company card with Overview, Intel, Contacts and Timeline tabs, Communicate, Re-audit, Mark do not
+  contact and Create customer (won leads, with the accounts module); add a single lead by hand; CSV import with the
+  batch report. Below 1024 px these screens say "Open on a desktop".
+- Leads contacts: add, edit and remove contacts on the company card, with one primary contact per company; a contact
+  already used in mail is anonymised instead of deleted.
+- Leads Settings: stages and lead types (rename, reorder, deactivate, delete refused inline when in use), mail
+  templates (versions, test generate without saving), sequences with a follow-up text pool (edit, remove, restore),
+  send policy, channel mode (sandbox mailbox, live gate), an HTML mail footer per language with a sandboxed preview,
+  suppressions and waiting mails with Send now. Each section shows only when its backend module is on;
+  `/communicator/*` links redirect here.
+- Waiting mails state when they go out (an hour, due, daily cap reached, or waiting for the send window) the same way
+  on the Inbox, Review, the thread and the waiting table.
+- A company linked to a shop customer carries a "Known customer" badge linking to the customer.
+- Configuration health (needs django-munin with `health/`): a header warning icon while a check fails, a panel with
+  fix links and "Check again", and an inline banner on screens that depend on a failing check (such as the AI toolbox
+  or outgoing SMTP).
+- Notification bell in the header (django-notifications): unread count polled every 30 s while the tab is visible;
+  one tap marks a notification read and opens its subject.
+- Optional SSO login: with `VUE_APP_SSO_API_BASE` set the sign-in page offers "Log in with SSO"; unset, nothing
+  changes. Contract in `docs/sso-login.md`.
+- Input format checks on money, percent, integer, EAN (length and check digit), codes, slugs, email, URL, country and
+  currency fields: a wrong value shows under the field when it is left and blocks the save, with an example in the
+  message.
+- Field hints: a `?` mark after a field label opens its hint on hover, focus or tap; important hints (limits, formats,
+  consequences) are filled. The account menu can turn hints off.
+- Accessibility baseline: landmarks, a "Skip to content" link, page language from the UI language, focus moved to the
+  content after navigation, browser tab titles `<page> · <panel> · Entirius CMS`, visible focus rings on every
+  control, reduced motion respected; every dialog traps focus, closes on Esc and returns focus.
+- Component catalogue at `/ui` (any signed-in operator): every shared component in both themes from static fixtures.
+- UI lint (`npm run lint:ui`, stylelint + eslint): off-token colours, spacing, radii and type sizes, raw controls,
+  native `<select>` in views, literal icon names and removed components fail the lint. Rules in `docs/ui-rules.md`.
+- Visual fidelity harness (`npm run visual`): token parity, a census that fails on off-token colours, radii and font
+  sizes, screen regression with operator-approved baselines, UX guard (off-viewport, click-only, under the bottom bar)
+  and axe accessibility checks at desktop and phone sizes. See `docs/testing.md`.
+- Dependency on `@entirius/brand-tokens`; Inter and Lexend Deca are self-hosted.
+
+### Changed
+
+- Admin CMS redesign on the Entirius brand: warm-black dark theme and a calmer warm-grey light theme, teal accent,
+  Inter for text and Lexend Deca for titles, brand spacing, radius and type scales. Light form-field edges reach 3:1
+  contrast on every surface. Google Fonts is no longer requested.
+- New app shell: header with user menu (theme, language, field hints), sidebar navigation with collapsible groups
+  from 1024 px, a mobile menu and bottom tab bar below it, breadcrumbs and one page title per screen.
+- Every panel uses one page frame: title, breadcrumbs and back arrow in the page header, page actions in one action
+  bar (on a phone under "Actions"), filters in the toolbar, pagination in the footer. The per-panel toolbars are gone.
+- Detail forms across panels follow one pattern: card sections with a two-column field grid, labels, required
+  markers and API field errors on each field, Save and Delete in the page header next to the unsaved badge.
+- Sign-in, password reset, change password and the SSO callback share one brand frame; errors show under their field,
+  the submit button shows progress, a caps-lock hint appears under the password, and Enter submits.
+- Home: panel cards in a responsive grid with each panel's icon; locked panels dimmed.
+- Buttons: one family with primary, secondary, ghost and danger roles, one primary per page, every delete a danger
+  action, icon-only buttons named with a tooltip. Icons are chosen by meaning, one glyph per action across panels.
+- Tables: cells never overlap, long text truncates with a tooltip, numbers are right-aligned, empty values show "—",
+  secondary columns step back on a phone. Empty lists show one empty state.
+- Selects are searchable keyboard comboboxes; a select without a label shows its name as a floating label. Some
+  accessible names changed with it (Stock warehouse picker "Warehouse", PIM category status filter "Status").
+- Dialogs open as bottom sheets on a phone; menus with longer text open as a panel on desktop and a sheet on a phone.
+- Phone layout: every action is reachable, nothing sits under the bottom bar, small controls get thumb-sized hit
+  areas, wide tables and tab rows scroll in their own box.
+- Pages: the content list groups documents by type with filter chips and a language select; the content editor has
+  its actions (Copy, Advanced, Save draft, Save and publish) in the page header and named icon actions per section
+  and tile; authors and co-authors are picked by search and reordered by drag.
+- Gallery: tag filter chips, sort and page-size selects, a tile grid with edit-tags and delete actions; upload, tag
+  manager and tag editor are dialogs.
+- PIM products: channel selector, Enabled switch, More actions menu, Delete and Save in the header; translation and
+  inherit / override controls next to each field; filters inline on desktop; media in one scrolling row.
+- PIM product attributes load their values on demand (first page on focus, more on request, search across all
+  values) instead of downloading every value when a product opens.
+- PIM taxonomy (categories, features, feature sets, quality rules): detail-form pattern; attribute values are a
+  searchable select; inheriting an overridden field asks first.
+- One translate dialog for PIM products, PIM store and Pages "Translate all", with an estimate table per language or
+  content type.
+- Atlas sources and review queue: tabs are keyboard tablists, gallery and raw data open in dialogs, the swipe
+  decision bar (Skip, Reject, Approve) pins to the bottom; EAN duplicate groups are tables.
+- Enrichment review: filters in a filter panel, one primary action per mode; clicking a row opens Focus on that row.
+- Points, Pricing, PriceFighter, Promo, Stock, Agreements, Emails, FAQ, Contact forms, Layout extenders, Orders,
+  Customers, Content sets, Translation jobs and Docs: moved to the page frame and detail-form pattern; their tables
+  are data tables and their dialogs follow the shared dialog layout.
+- PriceFighter: the market cell shows country, currency and channel, so rows that differ only by channel stay apart,
+  also on a phone.
+- Email configuration tiles open from the keyboard; the nav entry reads "Email configuration".
+- Prices table: an unsaved row is marked by a bar on its left edge; the header counts unsaved prices and rows.
+- Tax rates are shown and entered in percent ("23 %", "8,5 %") and stored as a fraction.
+- Removed for developers: the legacy components (`Dropdown`, `Switcher`, `TextAreaBasic`, `LockedField`, `ToolTip`,
+  `BackBar`, `Loading`, the old modal wrappers, the icon font), the old colour palette and spacing names, and
+  `/playground` (replaced by `/ui`). The UI lint reports any remaining use.
+
+### Fixed
+
+- Security: the open Dependabot alerts and every `npm audit` finding are closed — TipTap 3.31 (ReDoS in Markdown
+  attribute parsing, `mergeAttributes` prototype key), webpack-dev-server 5.2.6 (source exposure, CSRF, HMR socket),
+  PostCSS 8.5.26 everywhere (the Vue 2 compiler utils no longer pull PostCSS 7), svgo 2.8.4, fast-uri 3.1.8,
+  brace-expansion, joi and qs; `npm audit` reports 0 vulnerabilities.
+- Session: the access token refreshes a minute before it expires, whatever lifetime the service issues; a reopened
+  tab with an expired token refreshes first; logging out during a refresh no longer signs the user back in.
+- The sidebar is no longer empty after a fast click right after sign-in.
+- Panels outside `VUE_APP_PANELS` no longer bounce to Home; the module route guard no longer loops when a panel root
+  needs a missing module.
+- Read-only fields are read-only again (PIM inherited fields, system agreement definitions, Atlas feed and source
+  keys).
+- Prices and promo minimum order show and send two decimals, a comma reads as a decimal point, and malformed values
+  show a field error instead of a server 400; EANs are checked before a PIM save; promo limits no longer stop at 9999;
+  text fields carry the API's length limits.
+- Number inputs with a fractional step accept decimals ("8,5" no longer becomes 85).
+- FAQ items and groups can be deleted and unlinked again; a FAQ answer is required before saving.
+- The contact form attachment download button is visible and labelled; the deal value's min and step apply.
+- Edit forms show stored values outside the loaded lists (enrichment rules, carrier point types); a missing PIM
+  category shows a not-found state instead of a blank form.
+- Dates in price history, decision history, gap observations and Atlas events use the CMS date format.
+- Stock offers its warehouse picker when no warehouse is active yet; the same CSV file can be picked twice in a row.
+- Pages content list opens one delete confirmation, not one per content-type group; its add button checks each
+  type's own document limit.
+- Gallery keeps the upload dialog and its fields after a failed upload and no longer logs upload payloads.
+- Promo: a rule that failed to load cannot be saved over the stored rule.
+- Email channel Save cannot be sent twice, and a failed channel load offers a retry.
+- Atlas preferred-strategy and evaluation-frequency selects show their value again.
+- Layout extender link rows can be dragged in Firefox, and every drag handle also moves its row with Alt+Up / Alt+Down.
+- The product translate dialog refuses to send without a picked product (an empty list meant the whole channel).
+- Handy-kit category lists load their next page when scrolled to the end.
+- On touch screens the styled scrollbar no longer pushes the floating button and toasts off their corner.
+- Enrichment spawn rules drop a language a typed channel cannot vouch for.
+- Points: a stale page number that comes back empty goes to page 1.
+
 ## [2.1.0] (2026-09-01)
 
 ### Added

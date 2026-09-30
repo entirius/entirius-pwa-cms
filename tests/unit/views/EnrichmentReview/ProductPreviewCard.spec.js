@@ -91,3 +91,19 @@ describe("ProductPreviewCard", () => {
     expect(mockGetProduct.mock.calls.at(-1)).toEqual(["escootersclinic", "00193089"]);
   });
 });
+
+// Plan 54b: inside the preview drawer the card is flat — the drawer frames it and holds the dialog's one heading.
+describe("ProductPreviewCard in the drawer", () => {
+  it("renders flat, with the name as text instead of a second H2", async () => {
+    const { default: BasicCard } = await import("@/boots/BasicCard/index.vue");
+    mockGetProduct.mockResolvedValueOnce({ data: product() });
+    const wrapper = mount(ProductPreviewCard, {
+      props: { sku: "00079331", channelIdx: "escootersclinic", flat: true },
+      global: { components: { BasicCard }, stubs: { Loader: true, StatusBadge: true, EmptyState: true, FontAwesomeIcon: true } },
+    });
+    await flushPromises();
+    expect(wrapper.find(".basic-card--flat").exists()).toBe(true);
+    expect(wrapper.find("h2").exists()).toBe(false);
+    expect(wrapper.find(".product-preview__name").text()).toBe("Dualtron Spider 2");
+  });
+});

@@ -4,6 +4,7 @@
       <BasicInput
         v-model="search"
         :placeholder="$t('promo.voucher_search_placeholder')"
+        :aria-label="$t('promo.voucher_search_placeholder')"
         icon="search"
         class="vouchers-list__search"
         @input="debouncedFetch(searchAndFetch)"
@@ -13,21 +14,23 @@
         <BasicInput
           v-model="lookupCode"
           :placeholder="$t('promo.voucher_lookup_placeholder')"
+          :aria-label="$t('promo.voucher_lookup_placeholder')"
           @keyup.enter="doLookup"
         />
         <BasicButton
-          :text="$t('promo.voucher_lookup_btn')"
-          class="btn-secondary"
-          :is-disabled="!lookupCode"
+          variant="secondary"
+          :disabled="!lookupCode"
           @click="doLookup"
-        />
+        >
+          {{ $t('promo.voucher_lookup_btn') }}
+        </BasicButton>
       </div>
 
       <MobileFilterPanel
         :active-count="activeFilterCount"
         :trigger-label="$t('builder.filters')"
       >
-        <p class="fs-200 t-basic-600">{{ $t("promo.voucher_status") }}</p>
+        <p class="fs-200 t-secondary">{{ $t("promo.voucher_status") }}</p>
         <FilterChip
           v-for="opt in statusOptions"
           :key="opt.key"
@@ -35,19 +38,20 @@
           :active="statusFilter === opt.key"
           @click="setStatusFilter(opt.key)"
         />
-        <Dropdown
-          :values="campaignOptions"
-          :selected="campaignFilter ? [campaignFilter] : []"
-          :placeholder="$t('promo.voucher_all_campaigns')"
+        <BasicSelect
+          :floating-label="$t('promo.voucher_col_campaign')"
+          :options="campaignOptions"
+          :model-value="campaignFilter"
           class="vouchers-list__campaign-filter"
-          @onSelect="onCampaignFilter"
+          @update:model-value="onCampaignFilter"
         />
       </MobileFilterPanel>
     </div>
 
-    <Loader v-show="loading" />
+    <Loader block v-show="loading" />
 
     <DataTable
+      empty-size="md"
       v-show="!loading"
       :columns="columns"
       :rows="vouchers"
@@ -57,36 +61,33 @@
     >
       <template #cell-recipient_email="{ row }">
         <span v-if="row.recipient_email">{{ row.recipient_email }}</span>
-        <span v-else class="t-basic-400">—</span>
+        <span v-else class="t-muted">—</span>
       </template>
       <template #cell-status="{ row }">
         <StatusBadge
           :label="statusLabel(row.status)"
-          :variant="statusVariant(row.status)"
+          :tone="statusVariant(row.status)"
         />
       </template>
       <template #cell-balance="{ row }">
         <span class="fw-600">{{ row.balance }}</span>
-        <span class="t-basic-400">
+        <span class="t-muted">
           / {{ row.face_value }} {{ row.currency }}</span
         >
       </template>
       <template #cell-expires_at="{ row }">
-        <span class="t-basic-600">{{ formatDate(row.expires_at) }}</span>
+        <span class="t-secondary">{{ formatDate(row.expires_at) }}</span>
       </template>
       <template #cell-voucher_campaign_id="{ row }">
-        <span
-          class="vouchers-badge bg-basic-200 t-basic-600"
-          :title="campaignName(row.voucher_campaign_id)"
-          >{{ campaignName(row.voucher_campaign_id) }}</span
-        >
+        <Tag :label="campaignName(row.voucher_campaign_id)" />
       </template>
     </DataTable>
 
     <Pagination
       v-if="totalCount > pageSize"
-      :pagination="paginationState"
-      @onChangePage="onPageChange"
+      :page="paginationState.page"
+      :pages="paginationState.pages"
+      @update:page="onPageChange"
     />
   </div>
 </template>
@@ -102,6 +103,7 @@ import {
   POST_VoucherLookup,
 } from "@/api/voucher/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { enumLabel } from "./promo-enum-hints";
 
 const STATUS_VARIANT = {
   active: "positive",
@@ -146,7 +148,7 @@ export default {
     statusOptions() {
       const opts = [{ key: "all", label: this.$t("promo.filter_all") }];
       for (const s of this.statuses)
-        opts.push({ key: s.value, label: this.shortStatus(s.label) });
+        opts.push({ key: s.value, label: this.statusLabel(s.value) });
       return opts;
     },
     campaignOptions() {
@@ -186,6 +188,7 @@ export default {
           key: "voucher_campaign_id",
           label: this.$t("promo.voucher_col_campaign"),
           width: "160px",
+          truncate: true,
         },
       ];
     },
@@ -215,14 +218,15 @@ export default {
     },
     statusLabel(status) {
       const found = this.statuses.find((s) => s.value === status);
-      return found ? this.shortStatus(found.label) : status;
+      return enumLabel("voucher_status", status, found && this.shortStatus(found.label));
     },
     shortStatus(label) {
       return label ? label.split("—")[0].trim() : label;
     },
     campaignName(id) {
       const found = this.campaigns.find((c) => c.id === id);
-      return found ? found.name : `#${id}`;
+      // A nameless or unknown campaign still gets a label (Tag needs a string): its id.
+      return found?.name || `#${id}`;
     },
     formatDate(value) {
       return value ? value.split("T")[0] : "—";
@@ -307,8 +311,8 @@ export default {
 .vouchers-list__toolbar {
   display: flex;
   align-items: center;
-  gap: var(--space-200);
-  margin-bottom: var(--space-400);
+  gap: var(--space-5);
+  margin-bottom: var(--space-10);
   flex-wrap: wrap;
 }
 
@@ -321,7 +325,7 @@ export default {
 .vouchers-list__lookup {
   display: flex;
   align-items: center;
-  gap: var(--space-100);
+  gap: var(--space-2);
   flex-shrink: 0;
 }
 
@@ -329,18 +333,5 @@ export default {
   min-width: 150px;
   max-width: 220px;
   flex-shrink: 0;
-}
-
-.vouchers-badge {
-  display: inline-block;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  vertical-align: middle;
-  padding: 2px 8px;
-  border-radius: var(--radius-sm);
-  font-size: var(--fs-200);
-  font-weight: 600;
 }
 </style>

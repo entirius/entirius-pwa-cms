@@ -46,7 +46,7 @@ const mountList = (routerMock = {}) =>
         Pagination: true,
         FloatingActions: true,
         GapStatusAlert: true,
-        QualitySettingsCard: true,
+        QualitySettings: true,
       },
     },
   });

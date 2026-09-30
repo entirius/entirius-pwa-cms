@@ -1,89 +1,48 @@
 <template>
-  <div
-    class="auth-card fs-300 p-400 t-basic-700 br-50 bg-basic-100 b-basic-300 shadow-down"
-  >
+  <AuthLayout :title="title" :subtitle="subtitle" :status-tone="statusTone">
+    <template v-if="statusText" #status>{{ statusText }}</template>
+
     <!-- Forgot password mode -->
     <template v-if="showForgotPassword">
-      <p class="fs-700 fw-600 txt-center mb-50">
-        {{ $t("login.forgot_title") }}
-      </p>
-      <p class="fs-300 t-basic-600 txt-center mb-500">
-        {{ $t("login.forgot_subtitle") }}
-      </p>
-
-      <template v-if="resetEmailSent">
-        <div class="auth-card__banner auth-card__banner--success mb-400">
-          <p class="fs-300 fw-500">{{ $t("login.reset_email_sent") }}</p>
-        </div>
-      </template>
-      <template v-else>
-        <BasicInput
-          v-model="resetEmail"
-          class="bg-basic-200 mb-300 lh-base-elem"
-          :label="$t('login.email')"
-        />
-        <BasicButton
-          :text="$t('login.send_reset_link')"
-          @click="sendResetLink"
-          class="bg-support-400 b-support-400 jc-ct t-basic-100 w-100 br-50"
-        />
-      </template>
-
-      <button
-        class="auth-card__link mt-300"
-        @click="
-          showForgotPassword = false;
-          resetEmailSent = false;
-        "
-      >
+      <form v-if="!resetEmailSent" class="flex-column gap-6" @submit.prevent="sendResetLink">
+        <FormField :label="$t('login.email')" :error="errors.email">
+          <BasicInput v-model="resetEmail" size="lg" autocomplete="email" inputmode="email" />
+        </FormField>
+        <BasicButton type="submit" variant="primary" size="lg" class="jc-ct w-100">
+          {{ $t("login.send_reset_link") }}
+        </BasicButton>
+      </form>
+      <BasicButton variant="ghost" size="lg" class="jc-ct w-100 mt-4" @click="closeForgotPassword">
         {{ $t("login.back_to_login") }}
-      </button>
+      </BasicButton>
     </template>
 
     <!-- Login mode -->
     <template v-else>
-      <div
-        v-if="sessionExpired"
-        class="auth-card__banner auth-card__banner--warning mb-400"
-      >
-        <p class="fs-300 fw-500">{{ $t("login.session_expired") }}</p>
-      </div>
-      <p class="fs-700 fw-600 txt-center mb-50">{{ $t("login.welcome") }}</p>
-      <p class="fs-300 t-basic-600 txt-center mb-500">
-        {{ $t("login.subtitle") }}
-      </p>
-      <BasicInput
-        v-model="username"
-        class="bg-basic-200 mb-400 lh-base-elem"
-        :label="$t('login.username')"
-      />
-      <div class="auth-card__pw-field mb-300">
-        <BasicInput
-          v-model="password"
-          class="bg-basic-200 lh-base-elem"
-          :label="$t('login.password')"
-          :type="pwVisible ? 'text' : 'password'"
-        />
-        <button
-          class="auth-card__pw-toggle"
-          type="button"
-          @click="pwVisible = !pwVisible"
-        >
-          <FontAwesomeIcon :icon="pwVisible ? 'eye-slash' : 'eye'" />
-        </button>
-      </div>
+      <form class="flex-column gap-6" @submit.prevent="login">
+        <div class="flex-column gap-4">
+          <FormField :label="$t('login.username')" :error="errors.username">
+            <BasicInput v-model="username" size="lg" autocomplete="username" />
+          </FormField>
+          <PasswordField v-model="password" :label="$t('login.password')" :error="errors.password" />
+        </div>
+        <BasicButton type="submit" variant="primary" size="lg" :loading="signingIn" class="jc-ct w-100">
+          {{ $t("login.submit") }}
+        </BasicButton>
+      </form>
 
-      <BasicButton
-        :text="$t('login.submit')"
-        @click="login"
-        class="bg-support-400 b-support-400 jc-ct t-basic-100 w-100 br-50"
-      />
+      <template v-if="ssoEnabled">
+        <p class="login-wall__divider fs-200 t-muted mv-5">{{ $t("login.sso_or") }}</p>
+        <BasicButton data-testid="sso-login" variant="secondary" size="lg" class="jc-ct w-100" @click="startSsoLogin">
+          {{ $t("login.sso_submit") }}
+        </BasicButton>
+      </template>
 
-      <button class="auth-card__link mt-300" @click="showForgotPassword = true">
+      <BasicButton variant="ghost" size="lg" class="jc-ct w-100 mt-4" @click="openForgotPassword">
         {{ $t("login.forgot_password") }}
-      </button>
+      </BasicButton>
     </template>
-  </div>
+  </AuthLayout>
 </template>
 
 <script>
@@ -92,33 +51,64 @@ const environment = process.env.NODE_ENV === "development";
 const username = process.env.VUE_APP_USERNAME;
 const password = process.env.VUE_APP_PASSWORD;
 
+import { POST_Login, POST_PasswordReset } from "../../api/contentDB/api";
 import {
-  POST_Login,
-  GET_User,
-  GET_UserDetails,
-  POST_PasswordReset,
-} from "../../api/contentDB/api";
-import { useNotifyStore } from "@/stores/notify";
-import { useUserStore } from "@/stores/user";
-import { useMuninStore } from "@/stores/munin";
+  POST_SsoLoginUrl,
+  SSO_STATE_KEY,
+  isSsoEnabled,
+  ssoRedirectUri,
+} from "@/api/sso/api";
+import { useLoginSession, consumeReturnRoute } from "@/composables/useLoginSession";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import AuthLayout from "@/boots/AuthLayout/index.vue";
+import PasswordField from "@/boots/AuthLayout/PasswordField.vue";
+
+const noErrors = () => ({ username: "", password: "", email: "" });
+
+// Errors show under their field and once in the AuthLayout live summary (plan 59), never as a toast.
 export default {
+  components: { AuthLayout, PasswordField },
   setup() {
-    const notify = useNotifyStore();
-    const userStore = useUserStore();
-    const munin = useMuninStore();
-    return { notify, userStore, munin };
+    const { completeLogin } = useLoginSession();
+    return { completeLogin };
   },
   data() {
     return {
       username: environment || debugMode ? username : "",
       password: environment || debugMode ? password : "",
-      pwVisible: false,
+      signingIn: false,
       sessionExpired: false,
       showForgotPassword: false,
       resetEmail: "",
       resetEmailSent: false,
+      errors: noErrors(),
+      formError: "",
     };
+  },
+  computed: {
+    ssoEnabled() {
+      return isSsoEnabled();
+    },
+    title() {
+      return this.$t(this.showForgotPassword ? "login.forgot_title" : "login.welcome");
+    },
+    subtitle() {
+      return this.$t(this.showForgotPassword ? "login.forgot_subtitle" : "login.subtitle");
+    },
+    statusText() {
+      if (this.formError) return this.formError;
+      if (this.showForgotPassword) return this.resetEmailSent ? this.$t("login.reset_email_sent") : "";
+      return this.sessionExpired ? this.$t("login.session_expired") : "";
+    },
+    statusTone() {
+      if (this.formError) return "negative";
+      return this.showForgotPassword ? "positive" : "warning";
+    },
+  },
+  watch: {
+    username: "clearErrors",
+    password: "clearErrors",
+    resetEmail: "clearErrors",
   },
   mounted() {
     if (localStorage.getItem("session_expired") === "1") {
@@ -127,119 +117,61 @@ export default {
     }
   },
   methods: {
+    clearErrors() {
+      this.errors = noErrors();
+      this.formError = "";
+    },
+    validateCredentials() {
+      this.errors.username = this.username ? "" : this.$t("login.username_required");
+      this.errors.password = this.password ? "" : this.$t("login.password_required");
+      const missing = this.errors.username || this.errors.password;
+      this.formError = missing ? this.$t("login.empty_credentials") : "";
+      return !missing;
+    },
     async login() {
       this.sessionExpired = false;
+      if (!this.validateCredentials()) return;
+      this.signingIn = true;
       try {
-        // err handler
-        if (![this.username, this.password].every(Boolean)) {
-          const err = new Error();
-          err.status = 403;
-          err.response = this.$t("login.empty_credentials");
-          throw err;
-        }
-
         const { data } = await POST_Login({
           username: this.username,
           password: this.password,
         });
-        const { data: loginData = {}, meta: loginMeta = {} } = data;
-        const { access, refresh, customer_id = null } = loginData;
+        await this.completeLogin(data.data || {});
 
-        // SET EXPIRATION TIME
-        // ------------
-        // 15 mins
-        const remainingMilliseconds = 15 * 60 * 1000;
-
-        const expiryDate = new Date(
-          new Date().getTime() + remainingMilliseconds
-        );
-        // ------------
-
-        this.userStore.setAuth({
-          token: access,
-          refresh,
-          customer_id,
-          expiryDate: expiryDate,
-        });
-
-        // ------------------------
-        // Content permissions live in ContentDB (Pages panel). On lean stacks
-        // without contentdb this 404s — it must NOT abort login, otherwise
-        // setUser() never runs and the left menu renders empty. Default to [].
-        let permissions = [];
-        try {
-          const { data: userData } = await GET_User({});
-          permissions = userData?.data || [];
-        } catch (e) {
-          console.warn("content-permissions unavailable (contentdb not installed)", e);
-        }
-
-        let username = "";
-        let first_name = "";
-        let last_name = "";
-        let email = "";
-        let extra = null;
-        try {
-          const { data: userDetailsResponse } = await GET_UserDetails({
-            uid: customer_id,
-          });
-          const { data: userDetails } = userDetailsResponse;
-          ({
-            username = "",
-            first_name = "",
-            last_name = "",
-            email = "",
-            extra = null,
-          } = userDetails);
-        } catch (e) {
-          console.warn("Profile endpoint unavailable — using defaults", e);
-        }
-        this.userStore.loadPreferences(extra);
-        // TODO fix later
-        // permissions per content types
-        const layout_ext = ["header", "footer"];
-        const perms = permissions.map((p) => {
-          return {
-            ...p,
-            _for: layout_ext.includes(p.slug) ? "layout-extender" : "content",
-            _limit: layout_ext.includes(p.slug) ? 1 : null,
-          };
-        });
-
-        this.userStore.setUser({
-          username,
-          first_name,
-          last_name,
-          email,
-          permissions: perms,
-        });
-
-        await this.munin.fetchModules();
-
-        const returnRoute = localStorage.getItem("cms_return_route");
-        if (returnRoute && returnRoute !== "/") {
-          localStorage.removeItem("cms_return_route");
+        const returnRoute = consumeReturnRoute();
+        if (returnRoute) {
           this.$router.push(returnRoute);
         }
       } catch (error) {
-        const title = extractApiMessage(
-          error,
-          "Unknown error. Contact administrator."
-        );
-        this.notify.spawnNotification({
-          title,
-          type: "negative",
-          timeout: "2500",
-        });
+        this.formError = extractApiMessage(error, this.$t("login.unknown_error"));
+      } finally {
+        this.signingIn = false;
       }
+    },
+    async startSsoLogin() {
+      this.clearErrors();
+      try {
+        const { data } = await POST_SsoLoginUrl({ redirectUri: ssoRedirectUri() });
+        sessionStorage.setItem(SSO_STATE_KEY, data.state);
+        window.location.assign(data.authorization_url);
+      } catch (error) {
+        this.formError = extractApiMessage(error, this.$t("login.sso_failed"));
+      }
+    },
+    openForgotPassword() {
+      this.clearErrors();
+      this.showForgotPassword = true;
+    },
+    closeForgotPassword() {
+      this.clearErrors();
+      this.showForgotPassword = false;
+      this.resetEmailSent = false;
     },
     async sendResetLink() {
       if (!this.resetEmail) {
-        this.notify.spawnNotification({
-          title: this.$t("login.enter_email"),
-          type: "negative",
-          timeout: "2500",
-        });
+        this.errors.email = this.$t("common.required");
+        this.formError = this.$t("login.enter_email");
         return;
       }
       try {
@@ -252,3 +184,18 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.login-wall__divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    border-top: 1px solid var(--border-subtle);
+  }
+}
+</style>

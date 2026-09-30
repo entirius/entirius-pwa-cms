@@ -17,7 +17,7 @@ vi.mock("@/stores/munin", () => ({
 }));
 
 vi.mock("@/stores/user", () => ({
-  useUserStore: () => ({ isAuth: true, activeApp: null }),
+  useUserStore: () => ({ isAuth: true }),
 }));
 
 import router from "@/router";
@@ -43,5 +43,14 @@ describe("router meta.module guard", () => {
     await router.push("/promo/voucher/5");
 
     expect(router.currentRoute.value.path).toBe("/promo/voucher/5");
+  });
+
+  it("resolves the SSO callback without a session or panel check", async () => {
+    mockIsPanelEnabled.mockReturnValue(false);
+
+    await router.push("/sso/callback?code=c&state=s");
+
+    expect(router.currentRoute.value.path).toBe("/sso/callback");
+    expect(mockIsPanelEnabled).not.toHaveBeenCalled();
   });
 });

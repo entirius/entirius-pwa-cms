@@ -20,14 +20,14 @@ const routes = [
     },
   },
   {
-    path: "/playground",
-    name: "Playground",
+    // Component catalogue (plan 10): any logged-in operator, no panel, in no nav, in every build.
+    path: "/ui",
+    name: "UiCatalogue",
     component: () =>
-      import(/* webpackChunkName: "about" */ "../views/Playground.vue"),
+      import(/* webpackChunkName: "ui-catalogue" */ "../views/UiCatalogue/index.vue"),
     meta: {
       requiresAuth: true,
-      titleKey: "nav.home",
-      panel: "pages",
+      titleKey: "nav.ui_catalogue",
     },
   },
   {
@@ -336,6 +336,7 @@ const routes = [
         component: () =>
           import(/* webpackChunkName: "points" */ "../views/Points/PointEdit.vue"),
         meta: {
+          navParent: "/points/list",
           requiresAuth: true,
           titleKey: "dp.create_point",
           panel: "points",
@@ -370,6 +371,7 @@ const routes = [
         component: () =>
           import(/* webpackChunkName: "points" */ "../views/Points/PointEdit.vue"),
         meta: {
+          navParent: "/points/list",
           requiresAuth: true,
           titleKey: "dp.point_detail",
           panel: "points",
@@ -453,6 +455,7 @@ const routes = [
         component: () =>
           import(/* webpackChunkName: "forms" */ "../views/ContactForms/ContactFormDetail.vue"),
         meta: {
+          navParent: "/forms/list",
           requiresAuth: true,
           titleKey: "cf.submission_detail",
           panel: "forms",
@@ -492,6 +495,7 @@ const routes = [
         component: () =>
           import(/* webpackChunkName: "agreements" */ "../views/Agreements/AgreementEdit.vue"),
         meta: {
+          navParent: "/agreements/list",
           requiresAuth: true,
           titleKey: "agm.create_definition",
           panel: "agreements",
@@ -525,6 +529,7 @@ const routes = [
         component: () =>
           import(/* webpackChunkName: "agreements" */ "../views/Agreements/AgreementEdit.vue"),
         meta: {
+          navParent: "/agreements/list",
           requiresAuth: true,
           titleKey: "agm.definition_detail",
           panel: "agreements",
@@ -671,6 +676,7 @@ const routes = [
         component: () =>
           import(/* webpackChunkName: "emails" */ "../views/Emails/EmailTemplateEdit.vue"),
         meta: {
+          crumbParent: "EmailTemplateList",
           requiresAuth: true,
           titleKey: "emails.edit_template",
           panel: "emails",
@@ -930,6 +936,7 @@ const routes = [
         component: () =>
           import(/* webpackChunkName: "atlas" */ "../views/Atlas/SourceDetail.vue"),
         meta: {
+          navParent: "/atlas/list",
           requiresAuth: true,
           titleKey: "atlas.detail_title",
           panel: "atlas",
@@ -954,6 +961,125 @@ const routes = [
       query: to.query,
     }),
   },
+
+  // Leads panel (plan 13): Inbox as the left column, Review/Thread on the right at >= 1024 px
+  {
+    path: "/leads",
+    component: () =>
+      import(/* webpackChunkName: "leads" */ "../views/Leads/index.vue"),
+    meta: { requiresAuth: true, panel: "leads" },
+    children: [
+      { path: "", redirect: "/leads/inbox" },
+      {
+        path: "inbox",
+        name: "LeadsInbox",
+        component: () =>
+          import(/* webpackChunkName: "leads" */ "../views/Leads/Inbox.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.inbox.title", panel: "leads", module: "communicator" },
+      },
+      {
+        path: "inbox/:id",
+        name: "LeadsReview",
+        component: () =>
+          import(/* webpackChunkName: "leads" */ "../views/Leads/Review.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.review.title", panel: "leads", module: "communicator", noBottomBar: true },
+      },
+      // A thread by id — the screen of a conversation that belongs to no company, reached from the Inbox and the bell
+      { path: "conversations", redirect: "/leads/inbox" },
+      {
+        path: "conversations/:id",
+        name: "LeadsConversation",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Conversation.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.inbox.title", panel: "leads", module: "communicator" },
+      },
+      // Leads-only entry (the panel fallback): a company list that works on a phone
+      {
+        path: "companies",
+        name: "LeadsCompanies",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Companies.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.companies.title", panel: "leads", module: "leads" },
+      },
+      // UX-006: one lead by hand — company + its contact, phone-usable
+      {
+        path: "companies/new",
+        name: "LeadsCompanyNew",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/CompanyNew.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.add.title", panel: "leads", module: "leads" },
+      },
+      {
+        path: "companies/:id",
+        name: "LeadsThread",
+        component: () =>
+          import(/* webpackChunkName: "leads" */ "../views/Leads/Company.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.company.title", panel: "leads", module: "leads" },
+      },
+      // Plan 14 desktop screens: full width, "Open on a desktop" below 1024 px
+      {
+        path: "board",
+        name: "LeadsBoard",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Board.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.board.title", panel: "leads", module: "leads", desktop: true },
+      },
+      {
+        path: "import",
+        name: "LeadsImport",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Import.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.import.title", panel: "leads", module: "leads", desktop: true },
+      },
+      // Settings (UX-002d): one hub for the configuration of leads and communicator — each section its own route,
+      // shown only when its backend module is on; full width, reachable on a phone (`page`, no DesktopOnly wall)
+      { path: "stages", redirect: "/leads/settings/stages" },
+      {
+        path: "settings",
+        name: "LeadsSettings",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Settings.vue"),
+        meta: { requiresAuth: true, titleKey: "nav.leads_settings", panel: "leads", page: true },
+      },
+      {
+        path: "settings/stages",
+        name: "LeadsStages",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Stages.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.stages.title", panel: "leads", module: "leads", page: true },
+      },
+      {
+        path: "settings/lead-types",
+        name: "LeadsLeadTypes",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/LeadTypes.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.lead_types.title", panel: "leads", module: "leads", page: true },
+      },
+      {
+        path: "settings/templates",
+        name: "CommunicatorTemplates",
+        component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/TemplateList.vue"),
+        meta: { requiresAuth: true, titleKey: "communicator.templates.title", panel: "leads", module: "communicator", page: true },
+      },
+      {
+        path: "settings/templates/:id",
+        name: "CommunicatorTemplateEdit",
+        component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/TemplateEdit.vue"),
+        meta: { requiresAuth: true, titleKey: "communicator.template.title", panel: "leads", module: "communicator", page: true, crumbParent: "CommunicatorTemplates" },
+      },
+      {
+        path: "settings/sequences",
+        name: "CommunicatorSequences",
+        component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/SequenceList.vue"),
+        meta: { requiresAuth: true, titleKey: "communicator.sequences.title", panel: "leads", module: "communicator", page: true },
+      },
+      {
+        path: "settings/sending",
+        name: "CommunicatorSettings",
+        component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/Settings.vue"),
+        meta: { requiresAuth: true, titleKey: "communicator.settings.title", panel: "leads", module: "communicator", page: true },
+      },
+    ],
+  },
+
+  // The Communicator panel became Leads → Settings (UX-002d): old deep links land on the same screens
+  { path: "/communicator", redirect: "/leads/settings" },
+  { path: "/communicator/templates", redirect: "/leads/settings/templates" },
+  { path: "/communicator/templates/:id", redirect: (to) => `/leads/settings/templates/${to.params.id}` },
+  { path: "/communicator/sequences", redirect: "/leads/settings/sequences" },
+  { path: "/communicator/settings", redirect: "/leads/settings/sending" },
 
   // Enrichment review panel (etap-06 / etap-06b)
   {
@@ -1071,8 +1197,9 @@ const routes = [
         component: () =>
           import(/* webpackChunkName: "promo" */ "../views/Promo/PromoEdit.vue"),
         meta: {
+          navParent: "/promo/list",
           requiresAuth: true,
-          titleKey: "nav.promo_list",
+          titleKey: "promo.create_rule",
           panel: "promo",
         },
       },
@@ -1082,8 +1209,9 @@ const routes = [
         component: () =>
           import(/* webpackChunkName: "promo" */ "../views/Promo/VoucherDetail.vue"),
         meta: {
+          navParent: "/promo/list",
           requiresAuth: true,
-          titleKey: "nav.promo_list",
+          titleKey: "promo.voucher_title",
           panel: "promo",
           // The view fetches /api/checkout-voucher/* on mount — without the
           // module the route must not resolve even when the panel is enabled.
@@ -1096,8 +1224,9 @@ const routes = [
         component: () =>
           import(/* webpackChunkName: "promo" */ "../views/Promo/PromoEdit.vue"),
         meta: {
+          navParent: "/promo/list",
           requiresAuth: true,
-          titleKey: "nav.promo_list",
+          titleKey: "promo.edit_rule",
           panel: "promo",
         },
       },
@@ -1134,6 +1263,15 @@ const routes = [
 
   // Password reset (from email link — no auth required)
   {
+    path: "/sso/callback",
+    name: "SsoCallback",
+    component: () =>
+      import(/* webpackChunkName: "auth" */ "../views/SsoCallback/SsoCallback.vue"),
+    meta: {
+      requiresAuth: false,
+    },
+  },
+  {
     path: "/password-reset",
     name: "PasswordReset",
     component: () =>
@@ -1156,6 +1294,14 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
 });
+
+// A route whose module is absent goes to its panel root; the root itself (Leads inbox) goes to the panel
+// fallback (Leads company list), and the fallback home — never a loop.
+function moduleFallback(panel, path) {
+  if (path === panel?.root) return panel.fallback || "/";
+  if (path === panel?.fallback) return "/";
+  return panel?.root || "/";
+}
 
 router.beforeEach(async (to, from, next) => {
   // Allow unauthenticated routes (password reset)
@@ -1182,10 +1328,9 @@ router.beforeEach(async (to, from, next) => {
     // when the module is absent, even if their panel is enabled.
     const module = to.meta?.module;
     if (module && !munin.isModuleEnabled(module)) {
-      next(panels.find((p) => p.idx === panel)?.root || "/");
+      next(moduleFallback(panels.find((p) => p.idx === panel), to.path));
       return;
     }
-    userStore.activeApp = panel;
   }
   next();
 });

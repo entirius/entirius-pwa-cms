@@ -6,8 +6,13 @@ const messages = { EN: en, PL: pl };
 
 const state = reactive({ lang: (process.env.VUE_APP_LANG || "EN").toUpperCase() });
 
+// `<html lang>` follows the UI language (screen readers pick the voice from it).
+const applyDocumentLang = () => document.documentElement.setAttribute("lang", state.lang.toLowerCase());
+applyDocumentLang();
+
 export function setLang(l) {
   state.lang = l.toUpperCase();
+  applyDocumentLang();
 }
 
 export function getLang() {

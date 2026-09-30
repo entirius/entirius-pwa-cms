@@ -1,6 +1,6 @@
 <template>
   <div class="vouchers-section">
-    <div class="vouchers-section__subnav mb-400">
+    <div class="vouchers-section__subnav mb-10">
       <SegmentedControl v-model="subTab" :options="subTabOptions" />
     </div>
     <VouchersList v-if="subTab === 'vouchers'" />

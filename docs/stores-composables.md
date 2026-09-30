@@ -21,6 +21,7 @@ All 12 stores (`src/stores/`) use composition (setup) syntax with `defineStore`.
   back-navigation from a hit's details does not wipe the results. One search,
   no history, in-memory only.
 - **`useMuninStore`** (`munin.js`) — module/panel enablement. See below.
+- **`useConfigHealthStore`** (`configHealth.js`) — munin `health/` rows (`failing`, `passing`, `stateOf(code)`, `failingFor(code)`), 30 s poll, `recheck()` runs the probes. See AGENTS.md "Configuration health".
 - **`useNotifyStore`** (`notify.js`) — `spawnNotification({ title, msg, type,
   timeout })`. Types: `informative`, `positive`, `negative`, `warning`. Queues
   beyond 3 visible toasts (`MAX_VISIBLE`), pause/resume timers on hover.
@@ -39,8 +40,19 @@ All 12 stores (`src/stores/`) use composition (setup) syntax with `defineStore`.
   ContentDB translation jobs. `fetchJobs(channelIdx)`, `startPolling()` (polls
   while `hasActiveJobs`), `stopPolling()`, `setStatusFilter()`.
 - **`useUserStore`** (`user.js`) — auth (JWT + refresh), session-expiry
-  monitor, theme (`"default"`/`"dark"`), sidebar, `activeApp`, language,
-  preferences. Cookie persistence via `universal-cookie`.
+  monitor (refresh 60 s before the access token expires, at least 10 s out;
+  the expiry is the token's `exp` - `iat` counted from receipt, kept in the
+  `expiryDate` cookie, so client clock skew does not matter; the call is
+  `refreshAccessToken()` in `api/createClient.js`, shared with the 401 retry
+  and the pre-request check), `logout()` — the only logout: ends the refresh
+  session, then blacklists the refresh token (a failure is ignored), then
+  `clearAuth()`; a request waiting on a refresh of the ended session never
+  settles, so no panel toasts it — theme (`"default"`/`"dark"`), sidebar,
+  language, field hints (`hints` / `setHints`, the `cms_hints` preference; the boots read the same ref from
+  `src/composables/fieldHints.js`), preferences. `loadPreferences(extra)` applies the hints choice only from a real
+  profile: `extra` an object (one without `cms_hints` → hints on); `extra` null means the profile call failed and
+  the stored choice stands. `useLoginSession` hands `{}` for a profile without `extra`. `clearAuth()` sets hints on
+  and removes `cms_hints` from localStorage. Cookie persistence via `universal-cookie`.
 
 ### `useMuninStore` API
 
@@ -66,7 +78,7 @@ Backs panel/module gating (see `docs/panels-routing.md` for the full model).
 
 ## Composables
 
-Located in `src/composables/` (9 total). Opt-in for new code; existing
+Located in `src/composables/` (12 total). Opt-in for new code; existing
 components keep using stores directly via the `setup()` return pattern.
 
 - **`useEntityFetch`** — factories for async-search inputs:
@@ -79,6 +91,12 @@ components keep using stores directly via the `setup()` return pattern.
 - **`useHandyKitSubscriber`** — watches `handy.triggerListener` to bind
   Handy-kit payloads onto component data (`instance`/`flat`/`custom`/`mixed`
   bind modes). Returns `{ setupSubscriber, open_Handykit }`.
+- **`useLoginSession`** — turns a token pair into a CMS session (cookies,
+  content permissions, profile + preferences, user, munin modules), then
+  `markAuthenticated()` — the app leaves the login wall only after all of it.
+  Every login method calls `completeLogin({ access, refresh, customer_id })`;
+  `consumeReturnRoute()` returns and forgets the route a session-expired
+  logout stored.
 - **`useLoader`** — thin wrapper over `useLoaderStore`. Returns `{ loading,
   handyLoading, start, finish, handyStart, handyFinish }`.
 - **`useNotify`** — notification shortcuts over `useNotifyStore`: `{ success,
