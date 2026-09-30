@@ -27,6 +27,11 @@ const MODULE_TO_PANEL = {
   enrichment: "enricher",
   pim_translator: "translation",
   contentdb_translator: "translation",
+  // siteintel and notifications gate in-view (isModuleEnabled) — mapping them would
+  // show the Leads panel without leads/communicator.
+  leads: "leads",
+  // communicator's screens are sections of Leads → Settings (UX-002d); there is no Communicator panel
+  communicator: "leads",
 };
 
 // Env fallback: parse VUE_APP_PANELS the same way access.js used to
@@ -140,9 +145,14 @@ export const useMuninStore = defineStore("munin", () => {
     return maj !== rMaj ? maj > rMaj : min !== rMin ? min > rMin : pat >= rPat;
   }
 
+  // Configuration health: its endpoint is admin-only (admin data loaded) and needs munin itself enabled. One gate
+  // for the header icon, the user-menu item and the polling (App.vue).
+  const healthAvailable = computed(() => loaded.value && isModuleEnabled("munin"));
+
   return {
     modules,
     loaded,
+    healthAvailable,
     loading,
     enabledPanels,
     isPanelEnabled,

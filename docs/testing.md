@@ -68,6 +68,11 @@ npm run test:e2e:ui         # Playwright UI mode
 npm run test:smoke          # quick sanity (~2 min)
 ```
 
+The suite starts `npm run serve` on `:8080` unless `CMS_BASE_URL` points it at a running CMS (zeno:
+`CMS_BASE_URL=http://localhost:8180`, then no dev server starts). Against zeno also set `VUE_APP_API_URL` and
+`VOLKANOS_API_BASE` (live supplier fixtures) to `http://localhost:8100`, `VUE_APP_USERNAME=admin`, `VUE_APP_PASSWORD=admin123` and `VUE_APP_CHANNEL=default-europe`; the defaults (`admin` /
+`admin`, `default-local`) never pass the zeno login.
+
 Helpers: `tests/helpers/auth.js` (`login(page)`, `logout(page)`),
 `error-collector.js`, `suppliers-mock.js`, `suppliers-live-fixtures.js`.
 Fixture data: `tests/fixtures/`.
@@ -127,3 +132,172 @@ test('should do something', async ({ page }) => {
 
 Use `waitForLoadState('networkidle')` not `waitForTimeout`. Prefer
 `text=Button` selectors.
+
+## Visual fidelity harness
+
+`tests/visual/` proves what a redesign change did to the CMS, in four layers plus the catalogue layers. It runs against an already running
+CMS (the zeno stack, `CMS_BASE_URL`, default `http://localhost:8180`, API `CMS_API_URL`, default
+`http://localhost:8100`), logs in as `CMS_USER` / `CMS_PASSWORD` (default `admin` / `admin123`) and never starts a
+server. Config: `tests/visual/playwright.visual.config.js` (projects `desktop` 1680×1168 and `mobile` 393×852,
+DPR 1, `pl-PL`, `Europe/Warsaw`, one worker).
+
+| Layer | Spec (tag) | Question | Mode |
+|---|---|---|---|
+| 1 Token parity | `parity.spec.js` (`@parity`) | Does every token of `src/assets/tokens/semantic.json` (colour, overlay, shadow and the `space`, `radius`, `font-size` scales) resolve on `/` to its `@entirius/brand-tokens` value, both themes? Does body text render in the UI font (CDP `CSS.getPlatformFontsForNode`, families read from the brand tokens)? Census: does any visible element of a `capture-spec.json` screen (desktop, dark) carry a colour off the semantic tokens (tints of a token pass), a radius off the radius scale or a font size off the type scale? Plus the other font targets and axe `color-contrast` | gate: token resolution, the body-text font and the census (a finding passes only when a `known-differences.json` entry lists it under `census: [{ property, value }]`); other fonts and contrast are reports |
+| 2 Figma landmarks | `landmarks.spec.js` (`@landmarks`) | Do elements with `data-fid="<id>"` sit where `figma/figma-landmarks.json` puts them (±2 px)? | gate for every id of S1–S10: the shell ids (`header`, `logo`, `user-button`, `sidebar`, `tab-bar`, `mobile-menu`, `content`) and the page ids (`page-title`, `panel-card`, `sticky-header`, `fab`); one off or missing fails the frame; a Figma box is clipped to its frame first; radii are listed, not judged (KD09) |
+| 3 Regression | `screens.spec.js` (`@screens`) | Did any screen of `capture-spec.json` change? `toHaveScreenshot`, `threshold 0.1`, `maxDiffPixels 20` | gate once baselines exist |
+| 4 UX checks | `ux.spec.js` (`@ux`) | Is anything on a `capture-spec.json` screen broken, unreachable or inconsistent? Every screen × viewport, dark (below) | gate on `high` (owned allow-list); `medium` is a report |
+| Accessibility | `a11y.spec.js` (`@a11y`) | axe on Home, a list and a detail screen at both viewports (no `serious` / `critical` violation); keyboard: skip link → `<main>`, Tab through the sidebar and Enter opens a group (desktop), the mobile menu keeps Tab inside and gives focus back to its button on Esc | gate |
+| Catalogue | `catalogue.spec.js` (`@catalogue`) | Does `/ui` show every section anchor and every `cat-*` cell with a box, without a console error? Both viewports and themes, no screenshot | gate (tier-1 plan gates run it) |
+| Components | `catalogue.spec.js` (`@components`) | Did any catalogue cell change? One screenshot per cell and interaction state, both viewports and themes | gate once the P3 close (plan 20) approved the baselines; tier-1 gates never run it |
+
+```bash
+npm run visual              # all layers
+npm run visual:parity       # layer 1
+npm run visual:landmarks    # layer 2
+npm run visual:screens      # layer 3 against the approved baselines
+npm run visual:ux           # layer 4
+npm run visual:catalogue    # @catalogue
+npx playwright test -c tests/visual/playwright.visual.config.js --grep @a11y   # accessibility
+npm run visual:components   # @components against the approved cell baselines
+npm run visual:approve      # operator only: write layer-3 baselines
+npm run visual:approve:components  # operator only: write the @components baselines
+```
+
+The census opens every capture-spec screen once (~5 s a screen, ~9 min for the list on one worker); `census.json`
+keeps each screen's findings with up to three element samples. Text inside an SVG (the logo wordmark) is part of the
+drawing and stays out of the font-size count.
+The census runs dark + desktop only: light-theme and mobile-only values (the BasicMenu bottom sheet, `max-tablet`
+rules) are never measured. The `needsData` screens skip it (`forms-submission-detail`, `forms-booking-detail`,
+`forms-lead-detail`, `orders-detail`, `leads-conversation`, `leads-review`). An inline background is measured like a
+stylesheet one unless its element carries `data-census="data"`: a stored colour (the ColorInput swatch, the Emails
+channel dot). A new data swatch takes the marker; a script-bound styling colour must not.
+
+Reports land in `tests/visual/.report/` (`VISUAL_REPORT_DIR` overrides it): `census.json`, `fonts.json`,
+`contrast.json`, `landmarks/<S>.json`, `ux/` and the HTML report in `html/`. Test artefacts go to `tests/visual/test-results/`.
+Both are gitignored.
+
+**Screens.** `capture-spec.json` lists every screen: route, resolver (`fixed`, `first-row`, `first-link`), state
+(`default`, `switcher-open` (the mobile menu open; a mobile-only row), `user-menu-open`, `notif-open`, `health-open`, `fab-open`, `scrolled`), viewports and the
+baseline file name, plus an optional `readySelector` (below). Tests are named `<id>-<viewport>-<theme>`. P1 policy:
+dark on every screen and viewport, light only on the rows of Figma frames S1, S4, S6 and S9. Rows marked `needsData` (a review draft, a booking) skip with the reason
+when the seed has no such row. Take and check baselines on a fresh `make seed` with no BDD run since: BDD adds rows.
+
+**Deterministic state** (`support/state.js`): a login at most 3 minutes old (the access JWT lives 300 s; the CMS
+refreshes before the `expiryDate` it set at login, which the frozen clock `2026-09-26T10:00:00+02:00` never reaches), theme, language `PL`
+and sidebar pinned through `localStorage` on every page load (the profile GET is rewritten too, so the shared profile never
+leaks in at login), transitions, animations and the caret off, notification and config-health polls answered with
+fixed bodies. A screen is captured only once its data has rendered: after `networkidle` — and after 500 ms with no request
+in flight, counted per page, because `networkidle` resolves at once after an in-app navigation while the new route still
+loads its data and its async boot chunks — `openScreen` waits until
+no loader is visible (`.loader`, `.loader-element`, `.skeleton`, `[aria-busy="true"]`, an element whose own text
+starts with "Ładowanie"/"Loading" and ends in an ellipsis — "Ładowanie…" next to a spinner counts, a permanent
+"Ładowanie palet" does not; so every loading message ends in an ellipsis, `docs/ui-rules.md` § Copy) and, when the row has a `readySelector`, until that selector is visible — 10 s, then
+`INFRA:`.
+A detail or edit screen that paints its frame before the data (an empty form, no loader) gets a `readySelector`
+naming an element only the loaded state has (`.ProseMirror` of a loaded editor, a `StatusBadge`). Every write to the API is answered `200 {}` (only login and token refresh pass through), so a run
+changes no data on the shared stack. The harness never clicks the theme toggle or the language switch: both PATCH
+the admin profile every parallel session shares.
+
+**Exit contract.** A failing screenshot, parity assertion or state action (a FAB, menu or button that is no longer
+there) is a real difference. A test that throws an error starting with `INFRA:` (stack down, login failed, deep link
+redirected, login wall instead of the screen, a list with no row to open) is infrastructure. `npm run visual` exits 1
+for both; the zeno wrapper (`make visual-check`, an operator step still to come) maps a run whose failures are all
+`INFRA:` to exit 2, so infrastructure never goes back to the coder.
+
+**UX checks** (`@ux`, guard mode: a `high` finding fails its screen × viewport, a `medium` one is only reported; a
+screen that does not open is listed under `errors` in the summary). `support/ux.browser.js` measures what a user can
+see — `display:none`, `visibility:hidden`, `opacity: 0`, `aria-hidden`/`inert` subtrees, visually-hidden a11y text
+(clipped away, or an absolute 1 × 1 px box that cuts its overflow), closed off-canvas layers and content clipped away
+entirely are skipped; an absolute control that collapsed to 0 px on one axis is not hidden and counts as `zeroSize`.
+Interactive = `button`, `a[href]`, `[role=button]`, `input`, `select`, plus clickable `span`/`div`s (the outermost
+`cursor: pointer` element without semantics). The native input of a custom checkbox or radio is sized by its `label`.
+
+**Guard and allow-list.** A known, deliberate `high` finding goes into `tests/visual/ux-allow.json`: `screen` (an id or
+`"*"`), optional `viewport`, `kind`, `selector` (contained in the reported element's own selector step — its tag and
+first two classes, plus its `data-testid` — never matched against an ancestor), `reason` and `owner` (the plan that
+removes it). An entry without an owner or a reason fails every screen. The list is empty since P5 (plan 56): every
+`high` finding is fixed at its source, and a new entry is an exception with its owning plan and reason.
+
+`npm run visual:ux` runs 6 workers, fully parallel (~3 min instead of ~10): the layer only reads the page. Each
+screen is measured once its DOM has settled (element count unchanged for 500 ms, at most 5 s after the data wait),
+so editors and lazy widgets are in the measurement at any load. Every run writes to its own folder,
+`.report/ux/runs/<runId>/` (files written then renamed); `support/global-teardown.js` rebuilds the run's
+`ux-summary.json` once all workers finished. A full run — every screen × viewport measured, skipped (`needsData`) or
+failed to open — replaces the report in `.report/ux/` and prunes `runs/`; a partial run (`--grep`) stays in its
+folder, so it never wipes the last full report. The pixel layer (`@screens`) and the other layers keep one worker.
+
+| Kind | Finds | Class |
+|---|---|---|
+| `zeroSize` | an interactive element under 8 px wide or high while visible, or cut by an `overflow: hidden` ancestor | high |
+| `offViewport` | an interactive element past the viewport width that no sideways scroller brings back | high |
+| `underBottomBar` | an interactive element a fixed bottom bar still covers with every scroller at its end. Only the dialog layer itself (`[role="dialog"]`) or the BasicMenu bottom sheet (`.basic-menu__popover--bottom`) is no bar: a sticky bar inside a dialog is measured and reported when it covers the dialog's controls | high |
+| `nonFocusable` | a clickable `span`/`div` without `tabindex` or without an accessible name | high |
+| `overlap` | table row: the content of neighbouring cells intersects (> 1 px) or is 1–8 px apart; toolbar (a flex row of controls): neighbours intersect or sit 1–8 px apart. Flush neighbours are one group by design | medium |
+| `overflow` | clipped text without a `title`, content cut by `overflow: hidden`, a sideways scroller with a 0 px scrollbar, a `PageLayout` or card wider than its box on mobile (`card-x`) | medium |
+| `tapTarget` | mobile only: an interactive element (or its `label`) under 40×40; inline text links are exempt | medium |
+
+Buttons are grouped by role (`primary` = accent fill, `danger` = negative colour or a delete label/icon, `icon-only`,
+`outline`, `secondary`) with their height, horizontal padding, radius, font size and border. Two censuses count
+consistency, not defects: `labelStyles` (every field label — `label`, `.form-field__label` or any
+element a control names in `aria-labelledby`, not the text beside a checkbox, radio or switch — by font size, weight,
+case and colour; labels inside a dialog the screen list never opens stay out of the count) and `cardPaddings` (every
+bordered, filled box of at least 240 × 96 that is not a control or table part, by padding), each value with the
+number of screens per viewport it appears on.
+
+Not findings, on purpose: neighbours 0–1 px apart (a tab bar, a joined input + button, a segmented control are one
+group, and a 1 px gap is a shared border, not a cramped pair); a vertical scroller with a hidden scrollbar (scrolling
+down is expected everywhere, and mobile emulation draws every scrollbar at 0 px, so it would flag each list); the
+document scroller and the scrollbar gutter (mobile emulation keeps the custom scrollbar as a classic one, the 6 px
+"page scroll" of every mobile screen). Output in `tests/visual/.report/ux/`: `<screen>__<viewport>.json` (every issue
+with kind, class, detail, selector, text and box, the bottom bar found, every button) and `ux-summary.json`, the shape
+later gates read — keep it stable:
+
+```json
+{
+  "totals": { "<kind>": { "desktop": 0, "mobile": 0 } },
+  "screens": { "<screen>__<viewport>": { "<kind>": 0 } },
+  "buttonMetrics": { "<role>": { "height": [], "paddingX": [], "radius": [], "fontSize": [], "border": [] } },
+  "labelStyles": { "<size weight case colour>": { "desktop": 0, "mobile": 0 } },
+  "cardPaddings": { "<top right bottom left>": { "desktop": 0, "mobile": 0 } },
+  "severity": { "<kind>": "high|medium" },
+  "errors": { "<screen>__<viewport>": "INFRA: ..." },
+  "skipped": { "<screen>__<viewport>": "<id>: <note> (not in this seed)" },
+  "runId": "..."
+}
+```
+
+**Catalogue** (`/ui`, `src/views/UiCatalogue/`). A logged-in page in no nav that renders every component from static
+fixtures: no API call, no timer, no random id, fixed Polish copy. `?theme=dark|light` sets `data-theme` on `<html>`
+for the page only (never through the user store, which PATCHes the shared profile). One section file per P3/P4 plan
+(`sections/<Section>.vue`, anchors `#icons`, `#actions`, `#overlays`, `#display`, `#page-frame`, `#selects`,
+`#inputs`, `#shell`), inside it one `CatalogueSection` per component (anchor `#<component>`) and one `CatalogueCell`
+per variant × state: `data-testid="cat-<component>-<variant>-<state>"`, kebab-case. Static states come from props;
+hover and focus are listed on the cell (`interact="hover,focus"` → `data-cat-interact`) and driven by `@components`
+(`hover()`, `focus()` on the first focusable element), which screenshots them as `<id>--<state>`; never fake them
+with classes. A mobile-only component renders in a 393 px frame (`mobile`). Capture-spec row `ui-catalogue` puts
+the page under `@ux` and `@screens` too. `@catalogue` ignores the dev server's hot-reload socket error (zeno maps
+the CMS to 8180, the client dials 8080). Baselines: `__screenshots__/components/<id>[--<state>]__<d|m>__<theme>.png`.
+
+**Approving baselines** (operator only; agents never update baselines). The config has `updateSnapshots: "none"`, so a
+missing baseline fails instead of being written silently. On a fresh seed, review the HTML report (expected / actual /
+diff), then write the baselines, all or only some screens (the second `--grep` replaces the first):
+
+```bash
+npm run visual:approve                        # every screen
+npm run visual:approve -- --grep "g-home-"    # only g-home, both viewports and themes
+```
+
+Commit the PNGs from `tests/visual/__screenshots__/<project>/` in the same PR as the code that changed them.
+
+**Figma inputs.** `figma/S1.png` … `figma/S10.png` are the frozen Figma frames at @1x, and
+`figma/figma-landmarks.json` is generated from the Figma node JSON:
+`node tests/visual/scripts/figma-landmarks.mjs <cms.json>`. `known-differences.json` lists where the code
+deliberately differs from Figma (KD01–KD22) and how each layer treats it.
+
+**Panel done-check.** A panel screen is done when the zeno harness's `p5_check.py` (roadmap `r06-views/scripts/`, run
+from the zeno root: `python3 <script> repos/pwa/entirius-pwa-cms src/views src/components src/functionals src/App.vue`)
+reports 0 files: no raw control or table outside the boots (the hidden file picker excepted), no view-local class
+family, no `detail-*` form class, no removed part, no page-frame leftover, no raw `<h1>`, no local modal file, no
+view-local boot copy. `npm run lint:ui` (every rule an error) and `@ux` (no `high` finding, empty allow-list) guard
+the same ground in this repo.

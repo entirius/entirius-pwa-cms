@@ -1,3 +1,4 @@
+import axios from "axios";
 import { api } from "./client";
 
 import { PWATrimmerNormalizer } from "../../utils/normalizers/content-normalizers";
@@ -33,26 +34,12 @@ export const POST_Login = async ({ username = null, password = null }) => {
 //
 //
 //
-// --- AUTH -------------- LOGIN
-export const POST_refreshToken = async ({ refresh = null }) => {
-  const url = `${accounts}/customer/tokens/refresh/`;
-
-  return api.post(url, { refresh });
-};
-//
-//
-//
-//
-// -------------------------------------------------------------------------------------------------
-//
-//
-//
-//
 // --- AUTH -------------- LOGOUT
-export const POST_Logout = async ({ refresh = null }) => {
-  const url = `${accounts}/customer/tokens/blacklist/`;
+// Plain axios, never `api`: its refresh interceptors would refresh the very session this request ends.
+export const POST_Logout = async ({ access, refresh }) => {
+  const url = `${process.env.VUE_APP_API_URL}${accounts}/customer/tokens/blacklist/`;
 
-  return api.post(url, { refresh });
+  return axios.post(url, { refresh }, { headers: { Authorization: `Bearer ${access}` }, timeout: 5000 });
 };
 //
 //

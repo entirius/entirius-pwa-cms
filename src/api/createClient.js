@@ -1,23 +1,21 @@
 import axios from 'axios'
 import Cookies from 'universal-cookie'
+import { expiresSoon, tokenExpiry } from '@/utils/jwt'
 
 const debugMode = JSON.parse((process.env.VUE_APP_DEBUG || 'false').toLowerCase())
 const cookies = new Cookies()
 const _CHANNEL = process.env.VUE_APP_CHANNEL
 
-let isRefreshing = false
-let failedQueue = []
+let refreshPromise = null
+// Bumped by every logout: a refresh that started under an older generation drops its answer.
+let sessionGeneration = 0
 
-function processQueue(error, token = null) {
-  failedQueue.forEach(({ resolve, reject }) => {
-    if (error) {
-      reject(error)
-    } else {
-      resolve(token)
-    }
-  })
-  failedQueue = []
-}
+/**
+ * A refresh that settled after a logout, answered or failed: nothing expired, the session had already ended.
+ * It is not an error to report: the refresh paths neither log out again nor redirect, and a request waiting on that
+ * refresh never sees it — the interceptors leave that request pending (`refreshOrLogout`), so no caller toasts it.
+ */
+export class SessionEndedError extends Error {}
 
 function clearAllCookies() {
   const allCookies = cookies.getAll()
@@ -26,11 +24,104 @@ function clearAllCookies() {
   })
 }
 
+// Only a visit that held a session was logged out: a first visit (no token cookie) meets a plain login screen.
 function sessionExpiredRedirect() {
-  localStorage.setItem('session_expired', '1')
+  if (cookies.get('token')) localStorage.setItem('session_expired', '1')
   localStorage.setItem('cms_return_route', window.location.pathname + window.location.search)
   clearAllCookies()
   window.location.href = '/'
+}
+
+// The unwrapped v2 body carries no HTTP status (a 409 reads INVALID_REQUEST) — keep it as a
+// non-enumerable `httpStatus` so callers can tell a conflict apart (isConflict).
+function rejectWithBody(err) {
+  const body = err.response.data
+  if (body && typeof body === 'object') {
+    Object.defineProperty(body, 'httpStatus', { value: err.response.status, configurable: true })
+  }
+  return Promise.reject(body || err)
+}
+
+export const isConflict = (err) => (err?.httpStatus ?? err?.response?.status) === 409
+export const isNotFound = (err) => (err?.httpStatus ?? err?.response?.status) === 404
+
+// The single token refresh: the 401 retry, the pre-request check and the user store's timer share one
+// in-flight call, so a rotated refresh token is never sent twice.
+export function refreshAccessToken() {
+  if (!refreshPromise) {
+    const promise = postRefresh().finally(() => {
+      if (refreshPromise === promise) refreshPromise = null
+    })
+    refreshPromise = promise
+  }
+  return refreshPromise
+}
+
+// The user store's logout calls this: the in-flight refresh is dropped, and the next session never joins it.
+export function endRefreshSession() {
+  sessionGeneration += 1
+  refreshPromise = null
+}
+
+// Resolved at call time: the store imports the API clients, so a static import here would make building a client
+// depend on which module loaded first.
+async function userStore() {
+  const { useUserStore } = await import('@/stores/user')
+  return useUserStore()
+}
+
+function assertSameSession(generation) {
+  if (generation !== sessionGeneration) throw new SessionEndedError('Logged out during the token refresh')
+}
+
+// A logout while the POST was in flight turns either outcome into SessionEndedError: a refresh token blacklisted
+// by that logout answers 401, and that is not an expired session.
+async function postInSession(url, body, generation) {
+  try {
+    return await axios.post(url, body)
+  } catch (error) {
+    assertSameSession(generation)
+    throw error
+  }
+}
+
+// Every refresh lands in the store's `setAuth`, which stores the pair and re-arms the one refresh timer — unless
+// the user logged out while the request was in flight: then the answer is dropped and nothing is written.
+async function postRefresh() {
+  const generation = sessionGeneration
+  const refreshCookie = cookies.get('refresh')
+  if (!refreshCookie) throw new Error('No refresh token')
+
+  const url = `${process.env.VUE_APP_API_URL}/api/accounts/v1/${_CHANNEL ?? ''}/customer/tokens/refresh/`
+  const { data } = await postInSession(url, { refresh: refreshCookie }, generation)
+  const store = await userStore()
+  assertSameSession(generation)
+  const { access, refresh } = data.data || data
+
+  // The API only returns a new refresh token when rotation is enabled server-side — keep the old one otherwise.
+  store.setAuth({ token: access, refresh: refresh || refreshCookie, expiryDate: tokenExpiry(access) })
+  return access
+}
+
+// Shared by both interceptors (the 401 retry and the pre-request check). A request waiting on a refresh of an ended
+// session is abandoned, not rejected: its promise never settles. The user logged out and is on the way to the login
+// screen, the waiting components unmount — a rejection would reach ~280 call sites that toast on any error.
+async function refreshOrLogout() {
+  try {
+    return await refreshAccessToken()
+  } catch (error) {
+    if (error instanceof SessionEndedError) return new Promise(() => {})
+    sessionExpiredRedirect()
+    throw error
+  }
+}
+
+// A cold load can hold a token that expired while the tab was closed. Munin answers it anonymously instead of
+// with a 401, so the 401 retry never runs and admin panels vanish — refresh before sending instead.
+async function refreshIfExpiring() {
+  if (cookies.get('refresh') && expiresSoon(cookies.get('expiryDate'))) {
+    await refreshOrLogout()
+  }
 }
 
 function attachTokenRefresh(client) {
@@ -43,67 +134,20 @@ function attachTokenRefresh(client) {
 
       // 403 = permission denied (not session expired) — do NOT logout
       if (err.response.status === 403) {
-        return Promise.reject(err.response?.data || err)
+        return rejectWithBody(err)
       }
 
       if (err.response.status !== 401 || originalConfig._retry) {
-        return Promise.reject(err.response?.data || err)
+        return rejectWithBody(err)
       }
 
       // 401 — attempt token refresh
       originalConfig._retry = true
+      const access = await refreshOrLogout()
 
-      if (isRefreshing) {
-        // Another request already triggered refresh — wait for it
-        return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject })
-        }).then((token) => {
-          originalConfig.headers.Authorization = `Bearer ${token}`
-          return client(originalConfig)
-        })
-      }
-
-      isRefreshing = true
-
-      const refreshCookie = cookies.get('refresh')
-      if (!refreshCookie) {
-        isRefreshing = false
-        processQueue(new Error('No refresh token'), null)
-        sessionExpiredRedirect()
-        return
-      }
-
-      try {
-        const url = `/api/accounts/v1/${_CHANNEL ?? ''}/customer/tokens/refresh/`
-        const { data } = await axios.post(
-          `${client.defaults.baseURL}${url}`,
-          { refresh: refreshCookie }
-        )
-
-        const { access, refresh } = data.data || data
-        const expiryDate = new Date(Date.now() + 15 * 60 * 1000)
-
-        const cookieOpts = { path: '/', maxAge: 7 * 24 * 60 * 60 }
-        cookies.set('token', access, cookieOpts)
-        cookies.set('expiryDate', expiryDate, cookieOpts)
-        // The API only returns a new refresh token when rotation is enabled server-side.
-        // Overwriting the cookie with undefined logs the user out on the next refresh.
-        if (refresh) {
-          cookies.set('refresh', refresh, cookieOpts)
-        }
-
-        client.defaults.headers.common.Authorization = `Bearer ${access}`
-        isRefreshing = false
-        processQueue(null, access)
-
-        originalConfig.headers.Authorization = `Bearer ${access}`
-        return client(originalConfig)
-      } catch (_error) {
-        isRefreshing = false
-        processQueue(_error, null)
-        sessionExpiredRedirect()
-        return Promise.reject(_error)
-      }
+      client.defaults.headers.common.Authorization = `Bearer ${access}`
+      originalConfig.headers.Authorization = `Bearer ${access}`
+      return client(originalConfig)
     }
   )
 }
@@ -113,6 +157,7 @@ export function createApiClient(baseURL, { authHeaderFn = null, tokenRefresh = f
 
   if (authHeaderFn) {
     client.interceptors.request.use(async (request) => {
+      if (tokenRefresh) await refreshIfExpiring()
       const authHeader = authHeaderFn()
       if (authHeader) {
         request.headers.Authorization = authHeader

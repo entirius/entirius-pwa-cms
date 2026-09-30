@@ -1,36 +1,35 @@
 <template>
   <div
-    class="bulk-bar bg-support-100 flex ai-ct jc-sb pl-400 pr-400 pt-200 pb-200"
+    class="bulk-bar bg-accent-subtle flex ai-ct jc-sb pl-10 pr-10 pt-5 pb-5"
   >
-    <div class="flex ai-ct gap-300">
-      <span class="fs-300 fw-600 t-support-400">
+    <div class="flex ai-ct gap-8">
+      <span class="fs-300 fw-600 t-accent">
         {{ count }} {{ $t(selectedLabelKey) }}
       </span>
       <template v-for="action in actions" :key="action.key">
-        <Dropdown
+        <BasicSelect
           v-if="action.options"
-          :values="action.options"
+          :model-value="null"
+          :options="action.options"
           :placeholder="$t(action.labelKey)"
+          :aria-label="$t(action.labelKey)"
           class="bulk-bar__dropdown"
-          @onSelect="(val) => $emit('action', action.key, val)"
+          @update:model-value="(val) => $emit('action', action.key, val)"
         />
-        <BasicButton
-          v-else
-          :text="$t(action.labelKey)"
-          :class="action.buttonClass"
-          @click="$emit('action', action.key)"
-        />
+        <BasicButton v-else :variant="action.variant ?? 'secondary'" @click="$emit('action', action.key)">
+          {{ $t(action.labelKey) }}
+        </BasicButton>
       </template>
     </div>
-    <BasicButton
-      :text="$t(clearLabelKey)"
-      class="bg-basic-300 t-basic-700"
-      @click="$emit('clear')"
-    />
+    <BasicButton variant="ghost" @click="$emit('clear')">
+      {{ $t(clearLabelKey) }}
+    </BasicButton>
   </div>
 </template>
 
 <script setup>
+// actions = [{ key, labelKey, variant?, options? }]: `variant` is a BasicButton variant (default secondary); an action
+// with `options` is an action picker (BasicSelect without a value of its own, `options` = [{ label, value }]).
 defineProps({
   count: {
     type: Number,
@@ -57,8 +56,8 @@ defineEmits(["action", "clear"]);
 
 <style lang="scss" scoped>
 .bulk-bar {
-  border-radius: 6px;
-  margin-bottom: 16px;
+  border-radius: var(--radius-base);
+  margin-bottom: var(--space-4);
 }
 .bulk-bar__dropdown {
   min-width: 180px;

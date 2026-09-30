@@ -1,0 +1,91 @@
+/**
+ * Plan 54b — a list row click opens Focus on that row; once the list changes (page, filter, reload after an action)
+ * or the operator goes back to List, the next Focus starts at the top, so a keyboard shortcut never acts on a stale row.
+ */
+import { describe, it, expect, vi, afterEach } from "vitest";
+import { mount, flushPromises, enableAutoUnmount } from "@vue/test-utils";
+
+const api = vi.hoisted(() => ({
+  GET_Proposals: vi.fn(({ page }) => {
+    const results = Array.from({ length: 7 }, (_, i) => ({ id: page * 10 + i + 1, status: "pending", target_locator: {} }));
+    return Promise.resolve({ data: { results, count: 60 } });
+  }),
+  POST_AcceptProposal: vi.fn(() => Promise.resolve({ data: { status: "applied" } })),
+  POST_RejectProposal: vi.fn(),
+  POST_BulkAcceptProposals: vi.fn(),
+  POST_BulkRejectProposals: vi.fn(),
+  POST_BulkUndoProposals: vi.fn(),
+}));
+vi.mock("@/api/enrichment/api", () => api);
+vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification: vi.fn() }) }));
+vi.mock("@/stores/pimChannel", () => ({
+  usePimChannelStore: () => ({ channels: [], fetchChannels: vi.fn(), activeChannelIdx: "c1" }),
+}));
+
+import EnrichmentReview from "@/views/EnrichmentReview/index.vue";
+import FocusMode from "@/views/EnrichmentReview/FocusMode.vue";
+
+// FocusMode listens on window: a test that fails before its end must not leave its listener behind.
+enableAutoUnmount(afterEach);
+
+const DataTable = { name: "DataTable", props: ["rows"], emits: ["row-click"], template: "<div />" };
+const Pagination = { name: "Pagination", props: ["page", "pages"], emits: ["update:page"], template: "<nav />" };
+const PageLayout = { template: "<div><slot name='header' /><slot /><slot name='footer' /></div>" };
+
+async function mountPage() {
+  const w = mount(EnrichmentReview, {
+    attachTo: document.body,
+    global: {
+      // The view loads FocusMode lazily; the stub hands it the real component synchronously.
+      stubs: { FocusMode, PageLayout, PageHeader: true, DataTable, Pagination, ActionBar: true, DiffRenderer: true,
+        ProductPreviewCard: true, FormField: true, BasicTextarea: true, BulkActionBar: true, BulkUndo: true,
+        DriftModal: true, ImportCsvDialog: true, ProductPreviewDrawer: true, MobileFilterPanel: true },
+    },
+  });
+  await flushPromises();
+  return w;
+}
+
+async function clickRow(w, index) {
+  const table = w.findComponent(DataTable);
+  table.vm.$emit("row-click", table.props("rows")[index]);
+  await flushPromises();
+}
+
+async function setMode(w, mode) {
+  w.vm.mode = mode;
+  await flushPromises();
+}
+
+async function pressAccept() {
+  api.POST_AcceptProposal.mockClear();
+  window.dispatchEvent(new KeyboardEvent("keydown", { key: "a" }));
+  await flushPromises();
+  return api.POST_AcceptProposal.mock.calls[0][0];
+}
+
+describe("EnrichmentReview — focus index", () => {
+  it("opens Focus on the clicked row", async () => {
+    const w = await mountPage();
+    await clickRow(w, 5);
+    expect(await pressAccept()).toBe(16);
+  });
+
+  it("acts on row 0 of the new page after a row click and a page change", async () => {
+    const w = await mountPage();
+    await clickRow(w, 5);
+    await setMode(w, "list");
+    w.findComponent(Pagination).vm.$emit("update:page", 2);
+    await flushPromises();
+    await setMode(w, "focus");
+    expect(await pressAccept()).toBe(21);
+  });
+
+  it("starts at the top again when the operator goes back to List without changing the list", async () => {
+    const w = await mountPage();
+    await clickRow(w, 5);
+    await setMode(w, "list");
+    await setMode(w, "focus");
+    expect(await pressAccept()).toBe(11);
+  });
+});

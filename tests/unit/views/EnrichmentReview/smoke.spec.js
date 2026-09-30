@@ -41,6 +41,9 @@ const stubs = {
   FocusMode: true,
   DriftModal: true,
   ImportCsvDialog: true,
+  // The page frame renders its slots: the filters sit in the `toolbar`.
+  PageLayout: { template: "<div><slot name='header' /><slot name='toolbar' /><slot /><slot name='footer' /></div>" },
+  PageHeader: { props: ["title"], template: "<header><h1>{{ title }}</h1><slot name='meta' /><slot name='actions' /></header>" },
 };
 
 describe("EnrichmentReview compile smoke", () => {
@@ -63,16 +66,23 @@ describe("EnrichmentReview compile smoke", () => {
     expect(w.exists()).toBe(true);
   });
 
-  it("keeps filters collapsed behind a toggle until clicked", async () => {
-    const w = mount(EnrichmentReview, { global: { stubs } });
+  it("counts the panel filters on the MobileFilterPanel, status excluded", async () => {
+    const MobileFilterPanel = { name: "MobileFilterPanel", props: ["activeCount", "triggerLabel"], template: "<div><slot /></div>" };
+    const control = (name) => ({ name, props: ["modelValue"], emits: ["update:modelValue"], template: "<div />" });
+    const BasicSelect = control("BasicSelect");
+    const BasicInput = control("BasicInput");
+    const w = mount(EnrichmentReview, { global: { stubs: { ...stubs, MobileFilterPanel, BasicSelect, BasicInput } } });
     await flushPromises();
-    // Collapsed by default — no filter row, no count badge.
-    expect(w.find('[data-testid="enrichment-filters-row"]').exists()).toBe(false);
-    expect(w.find('[data-testid="enrichment-filters-count"]').exists()).toBe(false);
-    // Toggle reveals the filter row.
-    await w.find('[data-testid="enrichment-filters-toggle"]').trigger("click");
-    expect(w.find('[data-testid="enrichment-filters-row"]').exists()).toBe(true);
-    // activeFilterCount drives the badge: 0 when all filters are at defaults.
-    expect(w.vm.activeFilterCount).toBe(0);
+    const panel = w.findComponent({ name: "MobileFilterPanel" });
+    expect(panel.props("activeCount")).toBe(0);
+
+    // Driven through the controls: the status chips stay out of the count, the source select and the search go in.
+    await w.find('[data-testid="enrichment-status-applied"]').trigger("click");
+    const byTestId = (stub, id) => panel.findAllComponents(stub).find((c) => c.attributes("data-testid") === id);
+    await byTestId(BasicSelect, "enrichment-source-filter").vm.$emit("update:modelValue", "ai");
+    await byTestId(BasicInput, "enrichment-search-input").vm.$emit("update:modelValue", "x");
+    await flushPromises();
+    expect(w.vm.filters.status).toBe("applied");
+    expect(panel.props("activeCount")).toBe(2);
   });
 });

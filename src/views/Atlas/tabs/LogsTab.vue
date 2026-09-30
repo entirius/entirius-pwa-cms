@@ -1,6 +1,6 @@
 <template>
-  <div class="logs-tab p-300 ovy-auto h-100">
-    <div class="flex ai-ct mb-300 gap-200">
+  <div>
+    <div class="flex ai-ct mb-8 gap-5">
       <SegmentedControl
         v-model="activeMode"
         :options="modeOptions"
@@ -10,7 +10,7 @@
 
     <!-- Feed Runs -->
     <div v-if="activeMode === 'feed_runs'">
-      <Loader v-show="loading" />
+      <Loader block v-show="loading" />
       <DataTable
         v-show="!loading"
         :columns="feedRunColumns"
@@ -19,17 +19,17 @@
         :empty-text="$t('atlas.logs.no_runs')"
       >
         <template #cell-status="{ value }">
-          <StatusBadge :label="value" :variant="logStatusVariant(value)" />
+          <StatusBadge :label="value" :tone="logStatusVariant(value)" />
         </template>
         <template #cell-mode="{ value }">
-          <span class="t-basic-600 fs-200">{{ value }}</span>
+          <span class="t-secondary fs-200">{{ value }}</span>
         </template>
       </DataTable>
     </div>
 
     <!-- Events -->
     <div v-else>
-      <div class="flex ai-ct flex-wrap gap-200 mb-300">
+      <div class="flex ai-ct flex-wrap gap-5 mb-8">
         <FilterChip
           v-for="opt in severityOptions"
           :key="opt.value"
@@ -38,15 +38,14 @@
           :data-testid="`logs-severity-${opt.value}`"
           @click="setSeverity(opt.value)"
         />
-        <Switcher
+        <BasicSwitch
+          v-model="showAcknowledged"
           :label="$t('atlas.logs.show_acknowledged')"
-          :selected="showAcknowledged"
           data-testid="logs-show-ack-toggle"
-          @onSelect="toggleAcknowledged"
         />
       </div>
 
-      <Loader v-show="loading" />
+      <Loader block v-show="loading" />
       <DataTable
         v-show="!loading"
         :columns="eventColumns"
@@ -56,19 +55,18 @@
         @row-click="onEventRowClick"
       >
         <template #cell-severity="{ value }">
-          <StatusBadge :label="value" :variant="severityVariant(value)" />
+          <StatusBadge :label="value" :tone="severityVariant(value)" />
         </template>
         <template #cell-acknowledged_at="{ row }">
-          <button
+          <BasicButton
             v-if="!row.acknowledged_at"
-            class="logs-ack-btn bg-support-100 t-support-400"
+            size="sm"
             :data-testid="`logs-ack-${row.id}`"
-            @click.stop="acknowledge(row)"
+            @click="acknowledge(row)"
           >
-            <FontAwesomeIcon icon="check" />
             {{ $t("atlas.logs.acknowledge") }}
-          </button>
-          <span v-else class="t-basic-500 fs-200">{{
+          </BasicButton>
+          <span v-else class="t-muted fs-200">{{
             row.acknowledged_at
           }}</span>
         </template>
@@ -87,7 +85,7 @@ import {
 } from "@/api/atlas/api";
 
 const LOG_STATUS_VARIANTS = {
-  running: "informative",
+  running: "info",
   success: "positive",
   partial: "warning",
   failed: "negative",
@@ -95,7 +93,7 @@ const LOG_STATUS_VARIANTS = {
 const SEVERITY_VARIANTS = {
   critical: "negative",
   warning: "warning",
-  info: "informative",
+  info: "info",
 };
 
 export default {
@@ -231,9 +229,6 @@ export default {
     setSeverity(value) {
       this.severityFilter = value;
     },
-    toggleAcknowledged() {
-      this.showAcknowledged = !this.showAcknowledged;
-    },
     async fetchLogs() {
       if (!this.supplier?.idx) return;
       this.loading = true;
@@ -299,24 +294,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.logs-tab {
-  display: flex;
-  flex-direction: column;
-}
-.logs-ack-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: 4px 8px;
-  font-size: var(--fs-200);
-  font-weight: 600;
-  cursor: pointer;
-}
-.logs-ack-btn:hover {
-  opacity: 0.85;
-}
-</style>

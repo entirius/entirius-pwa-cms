@@ -7,25 +7,27 @@ vi.mock("@/api/enrichment/api", () => ({
 vi.mock("@/api/pim/api", () => ({
   GET_Features: vi.fn(() => Promise.resolve({ data: { results: [] } })),
 }));
-vi.mock("@/stores/pimChannel", () => ({
-  usePimChannelStore: () => ({
-    channels: [{ idx: "c1" }, { idx: "c2" }],
-    activeChannelIdx: "c1",
-    activeChannelLanguages: ["en", "pl"],
-    allLanguages: ["en", "pl"],
-  }),
+const pimChannel = vi.hoisted(() => ({
+  channels: [{ idx: "c1" }, { idx: "c2" }],
+  activeChannelIdx: "c1",
+  activeChannelLanguages: ["en", "pl"],
+  allLanguages: ["en", "pl"],
 }));
+vi.mock("@/stores/pimChannel", () => ({ usePimChannelStore: () => pimChannel }));
 vi.mock("@/stores/notify", () => ({
   useNotifyStore: () => ({ spawnNotification: vi.fn() }),
 }));
 
 import SpawnDialog from "@/views/Pim/components/enrichment/SpawnDialog.vue";
 import { POST_SpawnTask } from "@/api/enrichment/api";
+import BasicModal from "@/boots/BasicModal/index.vue";
+import BasicSelect from "@/boots/BasicSelect/index.vue";
+import { DescribedFormField, FIELD_DESCRIPTION } from "../../helpers/describedFormField";
 
 const stubs = {
-  Teleport: true,
   FormField: true,
-  Dropdown: true,
+  BasicSelect: true,
+  BasicRadioGroup: true,
   ChannelMultiSelect: true,
   FontAwesomeIcon: true,
 };
@@ -33,7 +35,7 @@ const stubs = {
 function build(props = {}) {
   return mount(SpawnDialog, {
     props: { visible: false, skus: ["A", "B"], filterParams: {}, ...props },
-    global: { stubs },
+    global: { components: { BasicModal }, stubs },
   });
 }
 
@@ -87,5 +89,37 @@ describe("SpawnDialog payload", () => {
     w.vm.feature = "description";
     w.vm.languages = [];
     expect(w.vm.canSpawn).toBe(false);
+  });
+});
+
+// Plan 61e: the "no languages" note is linked from the languages select and joins the field's own description.
+describe("SpawnDialog languages note", () => {
+  const languagesControl = (wrapper) => wrapper.get('[data-testid="enrichment-spawn-languages"] [role="combobox"]');
+  const buildDescribed = () =>
+    mount(SpawnDialog, {
+      props: { visible: true, skus: ["A"], filterParams: {} },
+      global: {
+        components: { BasicSelect },
+        stubs: { ...stubs, BasicSelect: false, FormField: DescribedFormField, BasicModal: { template: "<div><slot /></div>" } },
+      },
+    });
+
+  it("no language to pick: the disabled select names the note next to the field's description", () => {
+    pimChannel.activeChannelLanguages = [];
+    pimChannel.allLanguages = [];
+    try {
+      const wrapper = buildDescribed();
+      const noteId = wrapper.get("p[id]").attributes("id");
+      expect(languagesControl(wrapper).attributes("aria-describedby")).toBe(`${FIELD_DESCRIPTION} ${noteId}`);
+    } finally {
+      pimChannel.activeChannelLanguages = ["en", "pl"];
+      pimChannel.allLanguages = ["en", "pl"];
+    }
+  });
+
+  it("languages available: no note, the select keeps only the field's description", () => {
+    const wrapper = buildDescribed();
+    expect(wrapper.find("p[id]").exists()).toBe(false);
+    expect(languagesControl(wrapper).attributes("aria-describedby")).toBe(FIELD_DESCRIPTION);
   });
 });

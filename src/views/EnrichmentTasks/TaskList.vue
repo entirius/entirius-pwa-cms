@@ -1,13 +1,10 @@
 <template>
-  <div class="task-list p-500 fs-300 t-basic-800 h-100 ov-h">
-    <div
-      class="bg-basic-100 b-basic-300 br-50 flex-1 ovy-auto pl-500 pt-500 pb-500 pr-500"
-    >
-      <div class="flex ai-ct mb-400">
-        <h1 class="fs-700 fw-600">{{ $t("enrichment.tasks.title") }}</h1>
-      </div>
-
-      <div class="flex ai-ct flex-wrap gap-100 mb-400">
+  <PageLayout class="task-list fs-300 t-body">
+    <template #header>
+      <PageHeader :title="$t('enrichment.tasks.title')" />
+    </template>
+    <template #toolbar>
+      <div class="flex ai-ct flex-wrap gap-2">
         <FilterChip
           v-for="opt in statusOptions"
           :key="opt.value"
@@ -16,14 +13,16 @@
           :data-testid="`enrichment-task-status-${opt.value}`"
           @click="onFilterChange(opt.value)"
         />
-        <span class="fs-200 t-basic-500 ml-auto">
+        <span class="fs-200 t-muted ml-auto">
           {{ $t("enrichment.tasks.matching", { count: totalCount }) }}
         </span>
       </div>
+    </template>
 
-      <Loader v-show="loading" />
+      <Loader block v-show="loading" />
 
       <DataTable
+        empty-size="md"
         v-show="!loading"
         :columns="columns"
         :rows="tasks"
@@ -34,24 +33,24 @@
         <template #cell-status="{ value }">
           <StatusBadge
             :label="$t(`enrichment.task_status.${value}`)"
-            :variant="statusVariant(value)"
+            :tone="statusVariant(value)"
           />
         </template>
         <template #cell-progress="{ row }">
-          <span class="t-basic-600">{{ formatCounts(row.counts) }}</span>
+          <span class="t-secondary">{{ formatCounts(row.counts) }}</span>
         </template>
         <template #cell-created="{ row }">
-          <span class="fs-200 t-basic-500">{{ formatDate(row.created_at) }}</span>
+          <span class="fs-200 t-muted">{{ formatDate(row.created_at) }}</span>
         </template>
       </DataTable>
-    </div>
 
-    <Pagination
-      v-if="totalCount > pageSize"
-      :pagination="paginationState"
-      class="mt-200"
-      @onChangePage="onPageChange"
-    />
+    <template v-if="totalCount > pageSize" #footer>
+      <Pagination
+        :page="paginationState.page"
+        :pages="paginationState.pages"
+        @update:page="onPageChange"
+      />
+    </template>
 
     <TaskQueueDrawer
       :visible="queueVisible"
@@ -59,7 +58,7 @@
       :task-label="queueLabel"
       @close="closeQueue"
     />
-  </div>
+  </PageLayout>
 </template>
 
 <script>
@@ -72,7 +71,7 @@ import TaskQueueDrawer from "./TaskQueueDrawer.vue";
 // Mirrors django_enrichment.enums.TaskStatus.
 const TASK_STATUSES = ["open", "in_progress", "done", "cancelled", "failed"];
 const STATUS_VARIANT = {
-  open: "informative",
+  open: "info",
   in_progress: "warning",
   done: "positive",
   cancelled: "neutral",

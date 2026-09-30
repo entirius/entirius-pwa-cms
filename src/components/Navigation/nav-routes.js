@@ -9,6 +9,16 @@
 // Keeping the list here (not inline in Navigation) lets both consumers agree on the count without
 // duplicating the route table.
 
+// The sections of Leads → Settings (the hub behind the one "/leads/settings" entry): nav glyphs like the entries
+// below, not icons.js meanings; `module` hides a section whose backend is off.
+export const LEADS_SETTINGS_SECTIONS = [
+  { key: "stages", route: "LeadsStages", labelKey: "nav.leads_stages", icon: "list-ol", module: "leads" },
+  { key: "lead-types", route: "LeadsLeadTypes", labelKey: "leads.lead_types.title", icon: "tags", module: "leads" },
+  { key: "templates", route: "CommunicatorTemplates", labelKey: "nav.communicator_templates", icon: "file-lines", module: "communicator" },
+  { key: "sequences", route: "CommunicatorSequences", labelKey: "nav.communicator_sequences", icon: "repeat", module: "communicator" },
+  { key: "sending", route: "CommunicatorSettings", labelKey: "nav.communicator_settings", icon: "paper-plane", module: "communicator" },
+];
+
 export function buildNavRoutes() {
   const defaultLang = (process.env.VUE_APP_LANG || "EN").toLowerCase();
   return [
@@ -171,7 +181,7 @@ export function buildNavRoutes() {
     {
       route: "/agreements/consents",
       labelKey: "nav.agm_people",
-      icon: "clock-rotate-left",
+      icon: "users",
       query: {},
       app: ["agreements"],
     },
@@ -272,6 +282,55 @@ export function buildNavRoutes() {
       requiresModule: "lookup",
     },
     {
+      route: "/leads/inbox",
+      labelKey: "nav.leads_inbox",
+      icon: "inbox",
+      query: {},
+      app: ["leads"],
+      requiresModule: "communicator",
+      // One entry for both lists (UX-010): its Conversations | Companies toggle, Review, a thread without a company and
+      // a company card are all Inbox work, so the Inbox stays lit — the menu never jumps when a row opens a card
+      activeOn: ["/leads/inbox/", "/leads/conversations", "/leads/companies"],
+    },
+    {
+      // Leads without communicator: no Inbox, no toggle — the company list is the entry (the panel fallback)
+      route: "/leads/companies",
+      labelKey: "nav.leads_companies",
+      icon: "building",
+      query: {},
+      app: ["leads"],
+      requiresModule: "leads",
+      hiddenWithModule: "communicator",
+      activeOn: ["/leads/companies/"], // a company card
+    },
+    {
+      route: "/leads/board",
+      labelKey: "nav.leads_board",
+      icon: "table-columns",
+      query: {},
+      app: ["leads"],
+      requiresModule: "leads",
+      desktopOnly: true,
+    },
+    {
+      route: "/leads/import",
+      labelKey: "nav.leads_import",
+      icon: "file-import",
+      query: {},
+      app: ["leads"],
+      requiresModule: "leads",
+      desktopOnly: true,
+    },
+    {
+      // Stages, templates, sequences and send settings live here as sections (UX-002d) — one entry fits a phone
+      route: "/leads/settings",
+      labelKey: "nav.leads_settings",
+      icon: "gear",
+      query: {},
+      app: ["leads"],
+      activeOn: ["/leads/settings/"], // every section
+    },
+    {
       route: "/enrichment",
       labelKey: "nav.enrichment_review",
       icon: "wand-magic-sparkles",
@@ -295,18 +354,28 @@ export function buildNavRoutes() {
   ];
 }
 
-// Routes visible for the active panel. `requiresQuality` items are hidden until the backend's gaps
+// The entries of one panel (`panel` = its idx). `requiresQuality` items are hidden until the backend's gaps
 // capability probe resolves true (old backends never see the quality-rules nav item).
 // `requiresModule` items are hidden until that optional django-munin module reports enabled
-// (mirrors the router guard's `meta.module` gate — see router/index.js).
+// (mirrors the router guard's `meta.module` gate — see router/index.js); `hiddenWithModule` items give way
+// once that module is enabled (another entry covers their pages then).
+// `desktopOnly` items are hidden below the desktop breakpoint (useIsDesktop) — on a phone the
+// leads panel keeps its plan-13 shape: no bottom bar over the Inbox/Review sticky actions.
+// An entry is also lit on the pages it owns without a nav item of their own (`activeOn` path prefixes).
+export function isNavActive(route, path = "") {
+  return (route.activeOn || []).some((prefix) => path.startsWith(prefix));
+}
+
 export function filterNavRoutes(
   routes,
-  { activeApp, qualityAvailable, isModuleEnabled }
+  { panel, qualityAvailable, isModuleEnabled, isDesktop }
 ) {
   return routes.filter((r) => {
-    if (r.app.indexOf(activeApp) === -1) return false;
+    if (r.app.indexOf(panel) === -1) return false;
     if (r.requiresQuality && qualityAvailable !== true) return false;
     if (r.requiresModule && !isModuleEnabled?.(r.requiresModule)) return false;
+    if (r.hiddenWithModule && isModuleEnabled?.(r.hiddenWithModule)) return false;
+    if (r.desktopOnly && !isDesktop) return false;
     return true;
   });
 }
