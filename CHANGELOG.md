@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [3.0.0] (2026-09-30)
+
+The admin CMS redesigned on the Entirius brand.
+
+### Upgrade
+
+- Backend: django-munin >= 2.2.0 (configuration health), django-communicator >= 0.3.0 and django-leads >= 0.3.0
+  (Leads screens) — all in entirius-service-volkanos 3.0.0rc9. Against munin 2.1.0 the health poll 404s quietly.
+- Node >= 20.19. Brand tokens come from `@entirius/brand-tokens` 0.1.0 (github.com/entirius/entirius-pwa-brand-tokens).
+- Set `VUE_APP_LEADS_CHANNEL` per deployment (default `default-europe`).
+- Removed: the legacy components replaced by the unified boots, the old palette and spacing names, `/playground`;
+  client `__client` overrides that used them need the new names (`docs/ui-components.md`, `docs/ui-rules.md`).
+
 ### Added
 
 - Leads panel for django-leads and django-communicator, mobile first (one thumb at 390 px, two columns from 1024 px):
