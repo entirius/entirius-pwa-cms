@@ -48,7 +48,7 @@
     "visual:approve:components": "playwright test -c tests/visual/playwright.visual.config.js --grep @components --update-snapshots"
   },
   "dependencies": {
-    "@entirius/brand-tokens": "file:../entirius-brand-tokens",
+    "@entirius/brand-tokens": "github:entirius/entirius-pwa-brand-tokens#v0.1.0",
     "@floating-ui/dom": "^1.8.0",
     "@fontsource-variable/inter": "5.3.0",
     "@fontsource-variable/lexend-deca": "5.3.0",
