@@ -50,6 +50,14 @@
       </div>
     </BasicCard>
 
+    <RequiredAttributeFields
+      :rows="requiredRows"
+      :channel-idx="channelIdx"
+      :language="language"
+      :error-of="requiredError"
+      @change="(idx) => formErrors.clearFieldError(idx)"
+    />
+
     <BasicCard :title="$t('pim.physical_properties')" gap class="mb-8">
       <p class="fs-200 t-warning">
         {{ $t("pim.shared_warning") }}
@@ -143,13 +151,16 @@ import {
   GET_FeatureSets,
   POST_AddToChannel,
 } from "@/api/pim/api";
+import { loadRequiredFeatures } from "@/composables/usePimCapabilities";
 import PimChannelSelect from "./components/PimChannelSelect.vue";
+import RequiredAttributeFields from "./components/RequiredAttributeFields.vue";
+import { buildAttributePayload, isRowFilled, rowsFromRequired } from "./helpers/requiredFeatures";
 
 const PRODUCT_FORMATS = { sku: { format: "key" }, ean: { format: "ean" } };
 
 export default {
   name: "ProductCreate",
-  components: { PimChannelSelect },
+  components: { PimChannelSelect, RequiredAttributeFields },
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();
@@ -178,6 +189,8 @@ export default {
         { label: "Catalog & Search", value: 4 },
       ],
       selectedChannels: {},
+      // Inputs of the set's required features; stays empty on a PIM older than 3.3.0 (legacy create).
+      requiredRows: [],
     };
   },
   computed: {
@@ -189,6 +202,9 @@ export default {
     channelIdx() {
       return this.pimChannel.activeChannelIdx;
     },
+    language() {
+      return (this.pimChannel.activeChannelLanguages?.[0] || "en").toLowerCase();
+    },
     otherChannels() {
       return this.pimChannel.channels.filter(
         (ch) => ch.idx !== this.channelIdx
@@ -198,6 +214,9 @@ export default {
   watch: {
     "pimChannel.activeChannelIdx"() {
       this.fetchFeatureSets();
+    },
+    "form.feature_set_idx"(idx) {
+      this.fetchRequiredFeatures(idx);
     },
     form: {
       deep: true,
@@ -220,6 +239,24 @@ export default {
       } catch {
         // Feature sets may not be available yet
       }
+    },
+    async fetchRequiredFeatures(idx) {
+      this.requiredRows = [];
+      const data = await loadRequiredFeatures(idx);
+      if (!data || idx !== this.form.feature_set_idx) return;
+      this.requiredRows = rowsFromRequired(data);
+    },
+    requiredError(idx) {
+      return this.formErrors.getFieldError(idx)?.msg || "";
+    },
+    validateRequiredRows() {
+      let valid = true;
+      for (const row of this.requiredRows) {
+        if (isRowFilled(row)) continue;
+        this.formErrors.errors[row.feature_idx] = { status: "error", msg: this.$t("pim.required_field") };
+        valid = false;
+      }
+      return valid;
     },
     isChannelSelected(idx) {
       return !!this.selectedChannels[idx];
@@ -251,6 +288,7 @@ export default {
         feature_set_idx: this.$t("pim.feature_set"),
       });
       if (!valid || !this.formErrors.validateFormats(this.form, PRODUCT_FORMATS)) return;
+      if (!this.validateRequiredRows()) return;
 
       this.loader.loaderStart();
       try {
@@ -265,6 +303,7 @@ export default {
         if (this.form.width) payload.width = this.form.width;
         if (this.form.height) payload.height = this.form.height;
         if (this.form.deep) payload.deep = this.form.deep;
+        if (this.requiredRows.length) payload.attributes = buildAttributePayload(this.requiredRows);
 
         const { data } = await POST_Product(this.channelIdx, payload);
 

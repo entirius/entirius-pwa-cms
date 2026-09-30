@@ -1,5 +1,5 @@
 <template>
-  <FormField :label="label" :required="row.is_required">
+  <FormField :label="label" :required="row.is_required" :error="error">
     <div class="flex ai-st gap-3">
       <div class="flex-1 min-w-0">
         <BasicSwitch
@@ -125,6 +125,7 @@ const props = defineProps({
   hasMore: { type: Boolean, default: false },
   // Names of stored values the loaded options lack (idx → name).
   storedLabels: { type: Object, default: () => ({}) },
+  error: { type: String, default: "" },
 });
 // `load-more`: the next page of values; `search`: the operator typed a query, so every value must be searchable.
 const emit = defineEmits([
