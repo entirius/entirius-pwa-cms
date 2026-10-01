@@ -79,6 +79,7 @@ watch(
   // past the visible one.
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   outline: none;
 }
 
