@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [3.1.1] (2026-10-01)
+
+Phone layout fixes (Android report).
+
+### Fixed
+
+- The bottom tab bar no longer disappears under Android's system bar: the app fills the visible viewport (`100dvh`)
+  instead of the browser's largest one.
+- PIM page headers on a phone keep the title, the channel select and the translate button on one line.
+- List toolbars on a phone: the search takes its own row and the filters line up under it.
+
 ## [3.1.0] (2026-09-30)
 
 Required features per feature set.
