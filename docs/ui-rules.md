@@ -92,7 +92,7 @@ Traps:
 | multi-line text | `BasicTextarea` |
 | on/off · one boolean with a text · one of 2–5 choices, all visible | `BasicSwitch` · `BasicCheckbox` (boolean `v-model`, label in the slot) · `BasicRadioGroup` |
 | date / range | `BasicDatePicker` (`mode: "range"` in `config`) |
-| choice from a list · async entity search · channel scope | `BasicSelect` (`multiple`, `searchable`) · `EntitySearchPicker` · `ChannelMultiSelect`; a `BasicSelect` without a FormField label (a filter row, a toolbar, a card or page header) takes `floatingLabel`, its field name; the `ChannelMultiSelect` chip names itself („Kanały: Wszystkie”) |
+| choice from a list · async entity search · channel scope | `BasicSelect` (`multiple`, `searchable`) · `EntitySearchPicker` · `ChannelMultiSelect`; a `BasicSelect` without a FormField label (a filter row, a toolbar, a card or page header) takes `floatingLabel`, its field name — except in a PageHeader `meta` row below 1024 px, where it is named by `aria-label` only (any label above it pushes the select off the line of the title and the buttons); the `ChannelMultiSelect` chip names itself („Kanały: Wszystkie”) |
 | action picker (a transition, "add an existing item") | `BasicSelect :model-value="null"`, the placeholder as the prompt, the handler on `@update:model-value` |
 | field label, hint, required, error, help | `FormField`, around every field |
 | status / category pill · value chip (picked entity, media tag) · number next to a title, tab or filter | `StatusBadge` (`tone`) · `Tag` · `CountBadge` |
@@ -140,7 +140,9 @@ Traps:
   The header has no panel switcher. To add a page, add its entry to `src/components/Navigation/nav-routes.js`. Never
   hard-code a menu in a view.
 - **R2 One page title.** The page title appears once, as the only `<h1>`, at the top of the content area. The
-  header, sidebar and toolbar never repeat it. The content area is the page's only scroll and focus region. The H1
+  header, sidebar and toolbar never repeat it. The content area is the page's only scroll and focus region, so the
+  app box is the dynamic viewport (`100dvh`, App.vue; a full-screen layer likewise): with 100vh Android's browser
+  toolbar never collapses and the tab bar ends up under the system bar. The H1
   is `PageHeader` `title` (the component carries `.page-title`, and `data-fid="page-title"` on its title row); a view writes no raw
   `<h1>`. A route whose view has no PageHeader gets the shell's fallback header (crumbs + H1 from `titleKey`), so
   every page has exactly one H1.
@@ -190,7 +192,7 @@ Traps:
   footer, a sticky decision bar) keep the FAB's corner clear through `--fab-lane`.
 - **List view.** The toolbar holds a search `BasicInput` with `useSearchDebounce`, then the filters, and it wraps.
   Filters: one chip set is an inline `FilterChip` row (it scrolls sideways on a phone); more than one filter group
-  goes into `MobileFilterPanel`; a filter select is a `BasicSelect` with `floatingLabel`. The row wraps (`flex-wrap`, `gap: var(--space-5)`). In `DataTable`, secondary columns get fixed
+  goes into `MobileFilterPanel`; a filter select is a `BasicSelect` with `floatingLabel`. The row wraps (`flex-wrap`, `gap: var(--space-5)`); below 768 px the search (the row's first control) takes the whole row and the filters line up under it (PageLayout sets it — a view never sizes its search for a phone). In `DataTable`, secondary columns get fixed
   widths and only the primary text column gets `1fr`, truncated with an ellipsis. A cell either fits (its column
   grows to the badge or buttons) or truncates with a `title`, never spills into its neighbour; a status badge column
   is `max-content`, never truncated; numbers take

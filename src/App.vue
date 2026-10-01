@@ -181,9 +181,12 @@ export default {
 
 <style lang="scss">
 @import "./assets/scss/main.scss";
+// The dynamic viewport: the document never scrolls (the scroll body is <main>), so Android's browser toolbar never
+// collapses and 100vh stays taller than the visible area — the bottom tab bar would sit under the system bar.
 #app {
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
 }
 // A screen without the tab bar reclaims its height: the var also drives the FloatingActions offset.
