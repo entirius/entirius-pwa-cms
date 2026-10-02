@@ -51,10 +51,10 @@ src/
 │                 # (contentDB, pim, munin, suppliers, promo, voucher, orders, …)
 ├── boots/        # 37 global UI components, registered in register-elems.js
 ├── composables/  # 12 shared Composition API helpers (useFormErrors, useLoginSession, …)
-├── configs/      # access.js — panel registry (idx, icon, root); builder/ controllers
+├── configs/      # access.js — panel registry (idx, icon, root, access areas); builder/ controllers
 ├── functionals/  # builder UI kit (Handy-kit), Login-wall, Confirmation-modal
 ├── i18n/         # hand-rolled $t over en.json/pl.json (no vue-i18n, no $tc)
-├── router/       # routes + munin guard (meta.panel / meta.module redirects)
+├── router/       # routes + munin and access guard (meta.panel / meta.module / meta.area redirects)
 ├── stores/       # 11 Pinia stores (munin, user, notify, per-panel channels, …)
 └── views/        # route components, one directory per panel
 __client/         # per-deploy JSON configs, generated — never commit

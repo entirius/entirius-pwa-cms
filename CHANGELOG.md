@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- django-access awareness: the CMS loads `GET /api/access/v2/me/` at login and on a cold load (memory only) and
+  hides panels and nav entries the user cannot read; a deep link to a refused panel goes to Home with a notice.
+  Routes carry `meta.area`, panels `areas` (`docs/panels-routing.md`). Without the access module nothing changes;
+  with it installed and `me` failing, area-gated panels stay hidden and Home offers Retry.
+- One standard toast for an access-gate 403 (one per burst) and one `me` refresh at most every 5 s.
+- A customer (non-staff) account sees "No access to the admin panel" with Log out instead of an empty shell.
+- Access managers see a Home warning while the gate is not in `enforce` mode.
+- Content create follows `content.pages:write` when django-access is installed.
+
+### Removed
+
+- The dead role filter of `src/configs/access.js` (`grantAccess`, `routes`, `builderTypes`, the `access` arrays).
+
 ## [3.1.0] (2026-09-30)
 
 Required features per feature set.

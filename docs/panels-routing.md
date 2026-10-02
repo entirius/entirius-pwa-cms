@@ -6,9 +6,11 @@ metadata lives in `src/configs/access.js`; route gating lives in
 
 ## Panel Registry
 
-`src/configs/access.js` exports `panels` (the `apps` array). Each entry:
-`{ name, idx, icon, root, labelKey, descriptionKey, access }`. `icon` is a
-Font Awesome icon name rendered via `FontAwesomeIcon`.
+`src/configs/access.js` exports `panels`. Each entry:
+`{ name, idx, icon, root, fallback?, labelKey, descriptionKey, areas }`. `icon`
+is a Font Awesome icon name rendered via `FontAwesomeIcon`; `areas` are the
+django-access areas the panel works on (catalogue keys such as
+`pim.products`) — the panel is shown when the user can read any of them.
 
 | idx | Name | Root | Icon |
 |---|---|---|---|
@@ -31,7 +33,8 @@ Font Awesome icon name rendered via `FontAwesomeIcon`.
 | `leads` | Leads | `/leads/inbox` (fallback `/leads/companies`) | `inbox` |
 
 This array is static metadata only. Whether a panel is *usable* is decided at
-runtime by `useMuninStore().isPanelEnabled(idx)`.
+runtime by `useMuninStore().isPanelEnabled(idx)` (the module is on) and
+`useAccessStore().canAny(panel.areas)` (the user may read it).
 
 ## Route Table
 
@@ -97,6 +100,42 @@ resolve even when the `promo` panel itself is enabled via `checkout`. If
 `munin.isModuleEnabled(module)` is false, the guard redirects to the panel's
 `root` (from the registry), not to `/`.
 
+### `meta.area` — the user's permission (django-access)
+
+`useAccessStore` (`src/stores/access.js`) holds the user's `me` from
+`GET /api/access/v2/me/`, loaded at login (after munin) and on a cold load,
+in memory only. A route that belongs to one area carries `meta.area` (the
+catalogue key, e.g. `pim.categories`); after the munin checks the guard needs
+read on it — or, on a route without `meta.area`, read on any of its panel's
+`areas`. A refused panel root (the Home card, the sidebar leaf) opens the
+panel's first nav entry the user can read; any other refused route goes to
+`/`, and Home names the panel ("You do not have access to …", a different
+notice from a module that is off). Routes without `meta.panel` are untouched.
+
+- **Without the access module** (munin does not list `access`) every check
+  passes — the behaviour before django-access.
+- **Installed but `me` failed** (network, 5xx): every area-gated panel is
+  hidden and Home shows "Could not load your permissions" with Retry. Never
+  allow-all. A failed *refresh* keeps the `me` it had.
+- **Nav:** a panel the user cannot read is always hidden (never dimmed like a
+  module that is off); a nav entry takes its route's `meta.area` and is
+  hidden without read on it.
+- **403 from the gate** (`PERMISSION_DENIED` with issue `ACCESS_DENIED`,
+  `STAFF_ONLY` or `UNMAPPED_ROUTE`): `createClient` shows one standard toast
+  per burst, refreshes `me` (at most once per 5 s) and still rejects to the
+  view, the body marked `accessHandled`; the view's own toast for it is
+  covered by the standard one (`extractApiMessage` returns the same text; any
+  negative toast in the first second after it is dropped too).
+- **Non-staff account** (`me.user.is_staff === false`): App shows a full-screen
+  notice in the `AuthLayout` frame with Log out instead of the shell.
+- **Access managers** (`me.manages_access`) see a Home warning while
+  `me.gate_mode` is not `enforce`.
+- Content create (`Builder/Builds.vue` `canCreate`) is
+  `can("content.pages", "write")` while the module is there, else the contentdb
+  content permissions.
+
+The server is the authority; these checks only keep the UI honest.
+
 ### `VUE_APP_HIDE_DISABLED_PANELS`
 
 Controls how locked panels render in the UI (not routing — the guard always
@@ -109,7 +148,8 @@ blocks disabled panels regardless of this flag):
   enabled panels appear.
 
 `panelList()` / `usePanels()` (`src/composables/useNav.js`) implement it once:
-the registry mapped through `munin.isPanelEnabled`, then filtered by the flag.
+the registry mapped through `munin.isPanelEnabled`, then filtered by the flag
+(and by `access.canAny(panel.areas)`).
 
 ## Navigation model
 
@@ -139,6 +179,6 @@ One model feeds every region of the shell (`src/composables/useNav.js`):
   from there up, the header menu button, `MobileMenu` and `BottomTabBar` below.
   `desktopOnly` entries follow the same number.
 
-To add a page: its route (`meta.panel`, `meta.titleKey`, `navParent` when its
-path does not nest under the list), and an entry in `nav-routes.js` if the
-sidebar should list it.
+To add a page: its route (`meta.panel`, `meta.titleKey`, `meta.area` when it
+belongs to one area, `navParent` when its path does not nest under the list),
+and an entry in `nav-routes.js` if the sidebar should list it.
