@@ -2,7 +2,9 @@ import { createRouter, createWebHistory } from "vue-router";
 
 import { useUserStore } from "@/stores/user";
 import { useMuninStore } from "@/stores/munin";
+import { useAccessStore } from "@/stores/access";
 import { panels } from "@/configs/access";
+import { buildNavRoutes } from "@/components/Navigation/nav-routes";
 
 import Home from "../views/Home/index.vue";
 import rv_builds from "../views/Builder/index.vue";
@@ -39,6 +41,7 @@ const routes = [
       requiresAuth: true,
       titleKey: "nav.gallery",
       panel: "pages",
+      area: "content.media",
     },
   },
   {
@@ -50,6 +53,7 @@ const routes = [
       requiresAuth: true,
       titleKey: "nav.content_sets",
       panel: "pages",
+      area: "content.schema",
     },
   },
   {
@@ -73,19 +77,19 @@ const routes = [
         path: "",
         name: "AuthorList",
         component: () => import("../views/Authors/AuthorList.vue"),
-        meta: { requiresAuth: true, titleKey: "authors.title", panel: "pages" },
+        meta: { requiresAuth: true, titleKey: "authors.title", panel: "pages", area: "content.pages" },
       },
       {
         path: "create",
         name: "AuthorCreate",
         component: () => import("../views/Authors/AuthorEdit.vue"),
-        meta: { requiresAuth: true, titleKey: "authors.create", panel: "pages" },
+        meta: { requiresAuth: true, titleKey: "authors.create", panel: "pages", area: "content.pages" },
       },
       {
         path: ":uid",
         name: "AuthorDetail",
         component: () => import("../views/Authors/AuthorEdit.vue"),
-        meta: { requiresAuth: true, titleKey: "authors.edit", panel: "pages" },
+        meta: { requiresAuth: true, titleKey: "authors.edit", panel: "pages", area: "content.pages" },
       },
     ],
   },
@@ -100,13 +104,13 @@ const routes = [
         path: "",
         name: "LayoutExtenders",
         component: () => import("../views/LayoutExtenders/LayoutExtenderList.vue"),
-        meta: { requiresAuth: true, titleKey: "layout_extender.list_title", panel: "pages" },
+        meta: { requiresAuth: true, titleKey: "layout_extender.list_title", panel: "pages", area: "content.pages" },
       },
       {
         path: ":type/:uid?",
         name: "NavigationEditor",
         component: () => import("../views/LayoutExtenders/NavigationEditor.vue"),
-        meta: { requiresAuth: true, titleKey: "layout_extender.title", panel: "pages" },
+        meta: { requiresAuth: true, titleKey: "layout_extender.title", panel: "pages", area: "content.pages" },
       },
     ],
   },
@@ -127,6 +131,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "nav.content_list",
           panel: "pages",
+          area: "content.pages",
         },
       },
       {
@@ -138,6 +143,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "nav.content_list",
           panel: "pages",
+          area: "content.pages",
         },
       },
     ],
@@ -166,6 +172,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "pim.products",
           panel: "pim",
+          area: "pim.products",
         },
       },
       {
@@ -177,6 +184,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "pim.create_product",
           panel: "pim",
+          area: "pim.products",
         },
       },
       {
@@ -188,6 +196,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "pim.product_detail",
           panel: "pim",
+          area: "pim.products",
         },
       },
       {
@@ -199,6 +208,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "pim.categories",
           panel: "pim",
+          area: "pim.categories",
         },
       },
       {
@@ -210,6 +220,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "pim.create_category",
           panel: "pim",
+          area: "pim.categories",
         },
       },
       {
@@ -221,6 +232,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "pim.category_detail",
           panel: "pim",
+          area: "pim.categories",
         },
       },
       {
@@ -232,6 +244,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "pim.feature_sets",
           panel: "pim",
+          area: "pim.schema",
         },
       },
       {
@@ -243,6 +256,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "pim.feature_set_detail",
           panel: "pim",
+          area: "pim.schema",
         },
       },
       {
@@ -254,6 +268,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "pim.features",
           panel: "pim",
+          area: "pim.schema",
         },
       },
       // Quality rules (etap-06) — soft-compat: the views self-guard when the backend
@@ -267,6 +282,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "pim.gap_definitions",
           panel: "pim",
+          area: "pim.quality",
         },
       },
       {
@@ -278,6 +294,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "pim.create_gap_definition",
           panel: "pim",
+          area: "pim.quality",
         },
       },
       {
@@ -289,6 +306,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "pim.gap_definition_detail",
           panel: "pim",
+          area: "pim.quality",
         },
       },
       {
@@ -300,6 +318,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "pim.feature_detail",
           panel: "pim",
+          area: "pim.schema",
         },
       },
     ],
@@ -328,6 +347,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "dp.points",
           panel: "points",
+          area: "deliverypoints.points",
         },
       },
       {
@@ -340,6 +360,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "dp.create_point",
           panel: "points",
+          area: "deliverypoints.points",
         },
       },
       {
@@ -351,6 +372,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "dp.types",
           panel: "points",
+          area: "deliverypoints.points",
         },
       },
       // Import disabled — use manage.py import_deliverypoints instead
@@ -375,6 +397,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "dp.point_detail",
           panel: "points",
+          area: "deliverypoints.points",
         },
       },
     ],
@@ -403,6 +426,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "cf.submissions",
           panel: "forms",
+          area: "contact_forms.submissions",
         },
       },
       {
@@ -414,6 +438,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "cf.bookings",
           panel: "forms",
+          area: "contact_forms.submissions",
         },
       },
       {
@@ -425,6 +450,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "cf.booking_detail",
           panel: "forms",
+          area: "contact_forms.submissions",
         },
       },
       {
@@ -436,6 +462,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "cf.leads",
           panel: "forms",
+          area: "contact_forms.leads",
         },
       },
       {
@@ -447,6 +474,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "cf.lead_detail",
           panel: "forms",
+          area: "contact_forms.leads",
         },
       },
       {
@@ -459,6 +487,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "cf.submission_detail",
           panel: "forms",
+          area: "contact_forms.submissions",
         },
       },
     ],
@@ -487,6 +516,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "agm.definitions",
           panel: "agreements",
+          area: "agreements.definitions",
         },
       },
       {
@@ -499,6 +529,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "agm.create_definition",
           panel: "agreements",
+          area: "agreements.definitions",
         },
       },
       {
@@ -510,6 +541,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "agm.people_list",
           panel: "agreements",
+          area: "agreements.consents",
         },
       },
       {
@@ -521,6 +553,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "agm.person_detail",
           panel: "agreements",
+          area: "agreements.consents",
         },
       },
       {
@@ -533,6 +566,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "agm.definition_detail",
           panel: "agreements",
+          area: "agreements.definitions",
         },
       },
     ],
@@ -561,6 +595,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "accounts.customers",
           panel: "accounts",
+          area: "accounts.customers",
         },
       },
       {
@@ -572,6 +607,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "accounts.customer_detail",
           panel: "accounts",
+          area: "accounts.customers",
         },
       },
     ],
@@ -600,6 +636,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "checkout_orders.orders",
           panel: "checkout",
+          area: "checkout.orders",
         },
       },
       {
@@ -611,6 +648,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "checkout_orders.order_detail",
           panel: "checkout",
+          area: "checkout.orders",
         },
       },
     ],
@@ -635,6 +673,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "emails.dashboard",
           panel: "emails",
+          area: "email.templates",
         },
       },
       {
@@ -646,6 +685,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "emails.channel",
           panel: "emails",
+          area: "email.templates",
         },
       },
       {
@@ -657,6 +697,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "emails.lang_config",
           panel: "emails",
+          area: "email.templates",
         },
       },
       {
@@ -668,6 +709,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "emails.template_types",
           panel: "emails",
+          area: "email.templates",
         },
       },
       {
@@ -680,6 +722,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "emails.edit_template",
           panel: "emails",
+          area: "email.templates",
         },
       },
     ],
@@ -708,6 +751,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "faq.groups",
           panel: "faq",
+          area: "faq.faq",
         },
       },
       {
@@ -719,6 +763,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "faq.create_group",
           panel: "faq",
+          area: "faq.faq",
         },
       },
       {
@@ -730,6 +775,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "faq.group_detail",
           panel: "faq",
+          area: "faq.faq",
         },
       },
       {
@@ -741,6 +787,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "faq.items",
           panel: "faq",
+          area: "faq.faq",
         },
       },
       {
@@ -752,6 +799,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "faq.create_item",
           panel: "faq",
+          area: "faq.faq",
         },
       },
       {
@@ -763,6 +811,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "faq.item_detail",
           panel: "faq",
+          area: "faq.faq",
         },
       },
     ],
@@ -779,49 +828,49 @@ const routes = [
         path: "prices",
         name: "PmPriceList",
         component: () => import(/* webpackChunkName: "pricing" */ "../views/PriceManager/PriceList.vue"),
-        meta: { requiresAuth: true, titleKey: "pm.prices", panel: "pricing" },
+        meta: { requiresAuth: true, titleKey: "pm.prices", panel: "pricing", area: "pricemanager.prices" },
       },
       {
         path: "prices/:sku",
         name: "PmPriceDetail",
         component: () => import(/* webpackChunkName: "pricing" */ "../views/PriceManager/PriceDetail.vue"),
-        meta: { requiresAuth: true, titleKey: "pm.price_detail", panel: "pricing" },
+        meta: { requiresAuth: true, titleKey: "pm.price_detail", panel: "pricing", area: "pricemanager.prices" },
       },
       {
         path: "tax-classes",
         name: "PmTaxClassList",
         component: () => import(/* webpackChunkName: "pricing" */ "../views/PriceManager/TaxClassList.vue"),
-        meta: { requiresAuth: true, titleKey: "pm.tax_classes", panel: "pricing" },
+        meta: { requiresAuth: true, titleKey: "pm.tax_classes", panel: "pricing", area: "pricemanager.settings" },
       },
       {
         path: "tax-classes/create",
         name: "PmTaxClassCreate",
         component: () => import(/* webpackChunkName: "pricing" */ "../views/PriceManager/TaxClassDetail.vue"),
-        meta: { requiresAuth: true, titleKey: "pm.create_tax_class", panel: "pricing" },
+        meta: { requiresAuth: true, titleKey: "pm.create_tax_class", panel: "pricing", area: "pricemanager.settings" },
       },
       {
         path: "tax-classes/:idx",
         name: "PmTaxClassDetail",
         component: () => import(/* webpackChunkName: "pricing" */ "../views/PriceManager/TaxClassDetail.vue"),
-        meta: { requiresAuth: true, titleKey: "pm.tax_class_detail", panel: "pricing" },
+        meta: { requiresAuth: true, titleKey: "pm.tax_class_detail", panel: "pricing", area: "pricemanager.settings" },
       },
       {
         path: "channels",
         name: "PmChannelList",
         component: () => import(/* webpackChunkName: "pricing" */ "../views/PriceManager/ChannelList.vue"),
-        meta: { requiresAuth: true, titleKey: "pm.channels", panel: "pricing" },
+        meta: { requiresAuth: true, titleKey: "pm.channels", panel: "pricing", area: "pricemanager.settings" },
       },
       {
         path: "channels/create",
         name: "PmChannelCreate",
         component: () => import(/* webpackChunkName: "pricing" */ "../views/PriceManager/ChannelDetail.vue"),
-        meta: { requiresAuth: true, titleKey: "pm.create_channel", panel: "pricing" },
+        meta: { requiresAuth: true, titleKey: "pm.create_channel", panel: "pricing", area: "pricemanager.settings" },
       },
       {
         path: "channels/:idx",
         name: "PmChannelDetail",
         component: () => import(/* webpackChunkName: "pricing" */ "../views/PriceManager/ChannelDetail.vue"),
-        meta: { requiresAuth: true, titleKey: "pm.channel_detail", panel: "pricing" },
+        meta: { requiresAuth: true, titleKey: "pm.channel_detail", panel: "pricing", area: "pricemanager.settings" },
       },
     ],
   },
@@ -837,19 +886,19 @@ const routes = [
         path: "gap",
         name: "PfGapTable",
         component: () => import(/* webpackChunkName: "pricefighter" */ "../views/PriceFighter/GapTable.vue"),
-        meta: { requiresAuth: true, titleKey: "pricefighter.gap_table", panel: "pricefighter" },
+        meta: { requiresAuth: true, titleKey: "pricefighter.gap_table", panel: "pricefighter", area: "pricefighter.decisions" },
       },
       {
         path: "strategies",
         name: "PfStrategies",
         component: () => import(/* webpackChunkName: "pricefighter" */ "../views/PriceFighter/Strategies.vue"),
-        meta: { requiresAuth: true, titleKey: "pricefighter.strategies", panel: "pricefighter" },
+        meta: { requiresAuth: true, titleKey: "pricefighter.strategies", panel: "pricefighter", area: "pricefighter.rules" },
       },
       {
         path: "history",
         name: "PfDecisionHistory",
         component: () => import(/* webpackChunkName: "pricefighter" */ "../views/PriceFighter/DecisionHistory.vue"),
-        meta: { requiresAuth: true, titleKey: "pricefighter.history", panel: "pricefighter" },
+        meta: { requiresAuth: true, titleKey: "pricefighter.history", panel: "pricefighter", area: "pricefighter.decisions" },
       },
     ],
   },
@@ -877,6 +926,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "atlas.list_title",
           panel: "atlas",
+          area: "atlas.sources",
         },
       },
       {
@@ -889,6 +939,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "atlas.auto_matched.title",
           panel: "atlas",
+          area: "atlas.products",
         },
       },
       {
@@ -901,6 +952,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "atlas.duplicates.title",
           panel: "atlas",
+          area: "atlas.products",
         },
       },
       {
@@ -913,6 +965,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "atlas.review.title",
           panel: "atlas",
+          area: "atlas.products",
         },
       },
       {
@@ -925,6 +978,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "lookup.find.title",
           panel: "atlas",
+          area: "lookup.search",
           // Optional django-lookup backend module — the view calls its
           // search/check API and must stay dormant without it.
           module: "lookup",
@@ -940,6 +994,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "atlas.detail_title",
           panel: "atlas",
+          area: "atlas.sources",
         },
       },
     ],
@@ -975,14 +1030,14 @@ const routes = [
         name: "LeadsInbox",
         component: () =>
           import(/* webpackChunkName: "leads" */ "../views/Leads/Inbox.vue"),
-        meta: { requiresAuth: true, titleKey: "leads.inbox.title", panel: "leads", module: "communicator" },
+        meta: { requiresAuth: true, titleKey: "leads.inbox.title", panel: "leads", area: "communicator.conversations", module: "communicator" },
       },
       {
         path: "inbox/:id",
         name: "LeadsReview",
         component: () =>
           import(/* webpackChunkName: "leads" */ "../views/Leads/Review.vue"),
-        meta: { requiresAuth: true, titleKey: "leads.review.title", panel: "leads", module: "communicator", noBottomBar: true },
+        meta: { requiresAuth: true, titleKey: "leads.review.title", panel: "leads", area: "communicator.review", module: "communicator", noBottomBar: true },
       },
       // A thread by id — the screen of a conversation that belongs to no company, reached from the Inbox and the bell
       { path: "conversations", redirect: "/leads/inbox" },
@@ -990,41 +1045,41 @@ const routes = [
         path: "conversations/:id",
         name: "LeadsConversation",
         component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Conversation.vue"),
-        meta: { requiresAuth: true, titleKey: "leads.inbox.title", panel: "leads", module: "communicator" },
+        meta: { requiresAuth: true, titleKey: "leads.inbox.title", panel: "leads", area: "communicator.conversations", module: "communicator" },
       },
       // Leads-only entry (the panel fallback): a company list that works on a phone
       {
         path: "companies",
         name: "LeadsCompanies",
         component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Companies.vue"),
-        meta: { requiresAuth: true, titleKey: "leads.companies.title", panel: "leads", module: "leads" },
+        meta: { requiresAuth: true, titleKey: "leads.companies.title", panel: "leads", area: "leads.companies", module: "leads" },
       },
       // UX-006: one lead by hand — company + its contact, phone-usable
       {
         path: "companies/new",
         name: "LeadsCompanyNew",
         component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/CompanyNew.vue"),
-        meta: { requiresAuth: true, titleKey: "leads.add.title", panel: "leads", module: "leads" },
+        meta: { requiresAuth: true, titleKey: "leads.add.title", panel: "leads", area: "leads.companies", module: "leads" },
       },
       {
         path: "companies/:id",
         name: "LeadsThread",
         component: () =>
           import(/* webpackChunkName: "leads" */ "../views/Leads/Company.vue"),
-        meta: { requiresAuth: true, titleKey: "leads.company.title", panel: "leads", module: "leads" },
+        meta: { requiresAuth: true, titleKey: "leads.company.title", panel: "leads", area: "leads.companies", module: "leads" },
       },
       // Plan 14 desktop screens: full width, "Open on a desktop" below 1024 px
       {
         path: "board",
         name: "LeadsBoard",
         component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Board.vue"),
-        meta: { requiresAuth: true, titleKey: "leads.board.title", panel: "leads", module: "leads", desktop: true },
+        meta: { requiresAuth: true, titleKey: "leads.board.title", panel: "leads", area: "leads.companies", module: "leads", desktop: true },
       },
       {
         path: "import",
         name: "LeadsImport",
         component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Import.vue"),
-        meta: { requiresAuth: true, titleKey: "leads.import.title", panel: "leads", module: "leads", desktop: true },
+        meta: { requiresAuth: true, titleKey: "leads.import.title", panel: "leads", area: "leads.companies", module: "leads", desktop: true },
       },
       // Settings (UX-002d): one hub for the configuration of leads and communicator — each section its own route,
       // shown only when its backend module is on; full width, reachable on a phone (`page`, no DesktopOnly wall)
@@ -1039,37 +1094,37 @@ const routes = [
         path: "settings/stages",
         name: "LeadsStages",
         component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Stages.vue"),
-        meta: { requiresAuth: true, titleKey: "leads.stages.title", panel: "leads", module: "leads", page: true },
+        meta: { requiresAuth: true, titleKey: "leads.stages.title", panel: "leads", area: "leads.settings", module: "leads", page: true },
       },
       {
         path: "settings/lead-types",
         name: "LeadsLeadTypes",
         component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/LeadTypes.vue"),
-        meta: { requiresAuth: true, titleKey: "leads.lead_types.title", panel: "leads", module: "leads", page: true },
+        meta: { requiresAuth: true, titleKey: "leads.lead_types.title", panel: "leads", area: "leads.settings", module: "leads", page: true },
       },
       {
         path: "settings/templates",
         name: "CommunicatorTemplates",
         component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/TemplateList.vue"),
-        meta: { requiresAuth: true, titleKey: "communicator.templates.title", panel: "leads", module: "communicator", page: true },
+        meta: { requiresAuth: true, titleKey: "communicator.templates.title", panel: "leads", area: "communicator.content", module: "communicator", page: true },
       },
       {
         path: "settings/templates/:id",
         name: "CommunicatorTemplateEdit",
         component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/TemplateEdit.vue"),
-        meta: { requiresAuth: true, titleKey: "communicator.template.title", panel: "leads", module: "communicator", page: true, crumbParent: "CommunicatorTemplates" },
+        meta: { requiresAuth: true, titleKey: "communicator.template.title", panel: "leads", area: "communicator.content", module: "communicator", page: true, crumbParent: "CommunicatorTemplates" },
       },
       {
         path: "settings/sequences",
         name: "CommunicatorSequences",
         component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/SequenceList.vue"),
-        meta: { requiresAuth: true, titleKey: "communicator.sequences.title", panel: "leads", module: "communicator", page: true },
+        meta: { requiresAuth: true, titleKey: "communicator.sequences.title", panel: "leads", area: "communicator.content", module: "communicator", page: true },
       },
       {
         path: "settings/sending",
         name: "CommunicatorSettings",
         component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/Settings.vue"),
-        meta: { requiresAuth: true, titleKey: "communicator.settings.title", panel: "leads", module: "communicator", page: true },
+        meta: { requiresAuth: true, titleKey: "communicator.settings.title", panel: "leads", area: "communicator.settings", module: "communicator", page: true },
       },
     ],
   },
@@ -1091,6 +1146,7 @@ const routes = [
       requiresAuth: true,
       titleKey: "enrichment.review.title",
       panel: "enricher",
+      area: "enrichment.proposals",
     },
   },
 
@@ -1104,6 +1160,7 @@ const routes = [
       requiresAuth: true,
       titleKey: "enrichment.spawn_rules.title",
       panel: "enricher",
+      area: "enrichment.rules",
     },
   },
   {
@@ -1115,6 +1172,7 @@ const routes = [
       requiresAuth: true,
       titleKey: "enrichment.spawn_rules.create",
       panel: "enricher",
+      area: "enrichment.rules",
     },
   },
   {
@@ -1126,6 +1184,7 @@ const routes = [
       requiresAuth: true,
       titleKey: "enrichment.spawn_rules.title",
       panel: "enricher",
+      area: "enrichment.rules",
     },
   },
 
@@ -1139,6 +1198,7 @@ const routes = [
       requiresAuth: true,
       titleKey: "enrichment.tasks.title",
       panel: "enricher",
+      area: "enrichment.proposals",
     },
   },
 
@@ -1189,6 +1249,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "nav.promo_list",
           panel: "promo",
+          area: "checkout.discounts",
         },
       },
       {
@@ -1201,6 +1262,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "promo.create_rule",
           panel: "promo",
+          area: "checkout.discounts",
         },
       },
       {
@@ -1213,6 +1275,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "promo.voucher_title",
           panel: "promo",
+          area: "checkout.discounts",
           // The view fetches /api/checkout-voucher/* on mount — without the
           // module the route must not resolve even when the panel is enabled.
           module: "checkout_voucher",
@@ -1228,6 +1291,7 @@ const routes = [
           requiresAuth: true,
           titleKey: "promo.edit_rule",
           panel: "promo",
+          area: "checkout.discounts",
         },
       },
     ],
@@ -1244,7 +1308,7 @@ const routes = [
         path: "manage",
         name: "StockManage",
         component: () => import(/* webpackChunkName: "stock" */ "../views/Stock/WarehouseStockTable.vue"),
-        meta: { requiresAuth: true, titleKey: "stock.manage", panel: "stock" },
+        meta: { requiresAuth: true, titleKey: "stock.manage", panel: "stock", area: "qms.stock" },
       },
     ],
   },
@@ -1331,8 +1395,36 @@ router.beforeEach(async (to, from, next) => {
       next(moduleFallback(panels.find((p) => p.idx === panel), to.path));
       return;
     }
+    if (userStore.isAuth && !(await canReadRoute(to, panel))) {
+      next(accessFallback(to, panel));
+      return;
+    }
   }
   next();
 });
+
+// A refused panel root (the Home card, the sidebar leaf) opens the panel's first readable page; anything else goes
+// Home, which names the panel — unless the permissions failed to load (Home says that instead).
+function accessFallback(to, panel) {
+  const access = useAccessStore();
+  const root = panels.find((p) => p.idx === panel);
+  const landing =
+    [root?.root, root?.fallback].includes(to.path) &&
+    buildNavRoutes().find((entry) => {
+      const area = entry.app.includes(panel) && router.resolve(entry.route).meta?.area;
+      return area && access.can(area);
+    });
+  if (landing) return { path: landing.route, query: landing.query };
+  if (access.status !== "error") access.deniedPanel = panel;
+  return "/";
+}
+
+// django-access: read on the route's area, or on any area of its panel when the route carries none.
+async function canReadRoute(to, panel) {
+  const access = useAccessStore();
+  await access.ensureLoaded();
+  const area = to.meta?.area;
+  return area ? access.can(area) : access.canAny(panels.find((p) => p.idx === panel)?.areas);
+}
 
 export default router;
