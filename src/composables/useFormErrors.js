@@ -61,6 +61,8 @@ function resolveErrorBody(err) {
 export function extractApiMessage(err, fallback = "") {
   const data = resolveErrorBody(err)
   if (!data) return fallback
+  // An access refusal already has its standard toast (createClient): the same text, so the view's toast is covered.
+  if (data.accessHandled) return t("access.denied_action")
   if (typeof data.message === "string" && data.message) return data.message
   if (typeof data.detail === "string" && data.detail) return data.detail
   if (Array.isArray(data.details) && data.details[0]?.description) return data.details[0].description
