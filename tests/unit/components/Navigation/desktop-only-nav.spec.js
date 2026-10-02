@@ -5,7 +5,10 @@ import { buildNavRoutes, filterNavRoutes } from "@/components/Navigation/nav-rou
 import { useMuninStore } from "@/stores/munin";
 import BottomTabBar from "@/boots/BottomTabBar/index.vue";
 
-vi.mock("vue-router", () => ({ useRoute: () => ({ path: "/leads/inbox", meta: { panel: "leads" }, params: {}, query: {} }) }));
+vi.mock("vue-router", () => ({
+  useRoute: () => ({ path: "/leads/inbox", meta: { panel: "leads" }, params: {}, query: {} }),
+  useRouter: () => null,
+}));
 
 const LEADS_MODULES = new Set(["leads", "communicator"]);
 const routesFor = (panel, isDesktop, modules = LEADS_MODULES) =>
