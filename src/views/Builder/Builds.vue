@@ -161,6 +161,7 @@ import { useNotifyStore } from "@/stores/notify";
 import { useUserStore } from "@/stores/user";
 import { useContentDBChannelStore } from "@/stores/contentDBChannel";
 import { useMuninStore } from "@/stores/munin";
+import { useAccessStore } from "@/stores/access";
 import config_options from "@/../__client/configs/__config_options";
 
 const section_options = (value, look_for = null) => {
@@ -178,7 +179,8 @@ export default {
     const userStore = useUserStore();
     const contentDBChannel = useContentDBChannelStore();
     const munin = useMuninStore();
-    return { loader, notify, userStore, contentDBChannel, munin };
+    const access = useAccessStore();
+    return { loader, notify, userStore, contentDBChannel, munin, access };
   },
   data() {
     return {
@@ -210,7 +212,9 @@ export default {
     user() {
       return this.userStore.user;
     },
+    // django-access decides when it is there; without it, the contentdb content-permissions (today's logic).
     canCreate() {
+      if (this.access.available) return this.access.can("content.pages", "write");
       return Boolean(this.user?.buildTypes?.some((type) => type.actions?.includes("create")));
     },
     availableLanguages() {

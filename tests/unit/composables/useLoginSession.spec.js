@@ -7,6 +7,7 @@ const markAuthenticated = vi.fn();
 const setUser = vi.fn();
 const loadPreferences = vi.fn();
 const fetchModules = vi.fn();
+const ensureAccessLoaded = vi.fn();
 
 vi.mock("@/api/contentDB/api", () => ({
   GET_User: (...a) => mockGetUser(...a),
@@ -17,6 +18,9 @@ vi.mock("@/stores/user", () => ({
 }));
 vi.mock("@/stores/munin", () => ({
   useMuninStore: () => ({ fetchModules }),
+}));
+vi.mock("@/stores/access", () => ({
+  useAccessStore: () => ({ ensureLoaded: ensureAccessLoaded }),
 }));
 
 import { useLoginSession, consumeReturnRoute } from "@/composables/useLoginSession";

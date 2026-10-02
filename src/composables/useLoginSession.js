@@ -1,6 +1,7 @@
 import { GET_User, GET_UserDetails } from "@/api/contentDB/api"
 import { useUserStore } from "@/stores/user"
 import { useMuninStore } from "@/stores/munin"
+import { useAccessStore } from "@/stores/access"
 import { tokenExpiry } from "@/utils/jwt"
 
 const RETURN_ROUTE_KEY = "cms_return_route"
@@ -23,6 +24,7 @@ const LAYOUT_EXTENDERS = ["header", "footer"]
 export function useLoginSession() {
   const userStore = useUserStore()
   const munin = useMuninStore()
+  const accessStore = useAccessStore()
 
   async function completeLogin({ access, refresh, customer_id = null }) {
     userStore.setAuth({ token: access, refresh, customer_id, expiryDate: tokenExpiry(access) })
@@ -33,6 +35,8 @@ export function useLoginSession() {
     userStore.setUser({ ...profile, permissions: permissions.map(toBuildType) })
 
     await munin.fetchModules()
+    // After munin, which tells whether django-access is installed; a failure leaves the store in `error`.
+    await accessStore.ensureLoaded()
     // Last: leaving the login wall earlier let a fast click outrun the user cookie (empty sidebar on reloads).
     userStore.markAuthenticated()
   }

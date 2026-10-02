@@ -3788,5 +3788,15 @@
       "iso2": "PL",
       "iso4217": "EUR"
     }
+  },
+  "access": {
+    "denied_action": "Nie masz uprawnień do tej akcji",
+    "denied_panel": "Nie masz dostępu do panelu {panel}",
+    "load_failed": "Nie udało się wczytać Twoich uprawnień",
+    "retry": "Spróbuj ponownie",
+    "gate_mode": "Kontrola dostępu działa w trybie {mode} — odmowy nie są egzekwowane",
+    "staff_only_title": "Brak dostępu do panelu administracyjnego",
+    "staff_only_message": "To konto nie ma dostępu do panelu administracyjnego. Zaloguj się kontem pracownika.",
+    "dismiss": "Zamknij"
   }
 }

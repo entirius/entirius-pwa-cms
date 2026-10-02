@@ -3789,5 +3789,15 @@
       "iso2": "PL",
       "iso4217": "EUR"
     }
+  },
+  "access": {
+    "denied_action": "You do not have permission for this action",
+    "denied_panel": "You do not have access to {panel}",
+    "load_failed": "Could not load your permissions",
+    "retry": "Retry",
+    "gate_mode": "Access control is in {mode} mode — refusals are not enforced",
+    "staff_only_title": "No access to the admin panel",
+    "staff_only_message": "This account has no access to the admin panel. Log in with a staff account.",
+    "dismiss": "Dismiss"
   }
 }

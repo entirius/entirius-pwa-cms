@@ -5,6 +5,7 @@
     :class="{ 'app--no-panel-nav': !showBottomBar }"
   >
     <EnvMissing v-if="!envValid" :status="envStatus" />
+    <StaffOnlyWall v-else-if="isAuth && !access.isStaff" />
     <router-view v-else-if="isAuth && isFullscreen" />
     <template v-else-if="isAuth">
       <a href="#main" class="skip-link" @click.prevent="focusMain">
@@ -51,6 +52,7 @@ import { useLoaderStore } from "@/stores/loader";
 import { useUserStore } from "@/stores/user";
 import { useHandyStore } from "@/stores/handy";
 import { useMuninStore } from "@/stores/munin";
+import { useAccessStore } from "@/stores/access";
 import { useNotificationsStore } from "@/stores/notifications";
 import { useConfigHealthStore } from "@/stores/configHealth";
 import { useLeadTypesStore } from "@/stores/leadTypes";
@@ -62,6 +64,7 @@ import { clearCompanyNames } from "@/utils/leadsCompanyNames";
 import "@/utils/client-config-check";
 import EnvMissing from "./components/EnvMissing.vue";
 import LoginWall from "./functionals/Login-wall/Login-wall.vue";
+import StaffOnlyWall from "./components/Access/StaffOnlyWall.vue";
 import Notifications from "./components/Notifications/Notifications.vue";
 import ShellPageHeader from "./components/Shell/ShellPageHeader.vue";
 import AppHeader from "./boots/AppHeader/index.vue";
@@ -80,12 +83,13 @@ export default {
     const userStore = useUserStore();
     const handy = useHandyStore();
     const munin = useMuninStore();
+    const access = useAccessStore();
     const notificationBar = useNotificationsStore();
     const configHealth = useConfigHealthStore();
     const leadTypes = useLeadTypesStore();
     const isDesktop = useIsDesktop();
     const { panelIdx, tree } = useActiveNav();
-    return { loader, userStore, handy, munin, notificationBar, configHealth, leadTypes, isDesktop, panelIdx, tree };
+    return { loader, userStore, handy, munin, access, notificationBar, configHealth, leadTypes, isDesktop, panelIdx, tree };
   },
   data() {
     return { envStatus, menuOpen: false, MOBILE_MENU_ID: "app-mobile-menu" };
@@ -104,10 +108,10 @@ export default {
       return this.userStore.isAuth;
     },
     notificationsActive() {
-      return this.userStore.isAuth && this.munin.isModuleEnabled("notifications");
+      return this.userStore.isAuth && this.access.isStaff && this.munin.isModuleEnabled("notifications");
     },
     configHealthActive() {
-      return this.userStore.isAuth && this.munin.healthAvailable;
+      return this.userStore.isAuth && this.access.isStaff && this.munin.healthAvailable;
     },
     // A phone shows the tab bar for a panel with two or more entries, never on `meta.noBottomBar` (Leads Review keeps
     // its sticky actions); without it `--bottom-bar-height` is 0 (the FloatingActions offset).
@@ -142,9 +146,10 @@ export default {
     isDesktop(desktop) {
       if (desktop) this.menuOpen = false;
     },
-    // Logout drops the leads caches that outlive a view — the next user may work another channel.
+    // Logout drops the caches that outlive a view — the next user may work another channel or hold other rights.
     isAuth(auth) {
       if (auth) return;
+      this.access.reset();
       this.leadTypes.reset();
       clearCompanyNames();
     },
@@ -163,6 +168,7 @@ export default {
     this.userStore.appInit();
     if (this.userStore.isAuth) {
       this.munin.ensureLoaded();
+      this.access.ensureLoaded();
     }
   },
   components: {
@@ -175,6 +181,7 @@ export default {
     MobileMenu,
     HandyKit,
     LoginWall,
+    StaffOnlyWall,
   },
 };
 </script>

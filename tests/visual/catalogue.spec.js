@@ -39,8 +39,9 @@ function collectErrors(page) {
   return errors;
 }
 
-// The shell's own boot calls and polls, made on every screen (App.vue): Munin modules and health, the bell's count.
-const SHELL_CALLS = [/\/api\/munin\/v2\/(health\/)?$/, /\/notifications\/unread-count\/$/];
+// The shell's own boot calls and polls, made on every screen (App.vue): Munin modules and health, the access `me`,
+// the bell's count.
+const SHELL_CALLS = [/\/api\/munin\/v2\/(health\/)?$/, /\/api\/access\/v2\/me\/$/, /\/notifications\/unread-count\/$/];
 
 // API calls from before the first navigation, so the catalogue's mount counts too. The shell's are not its: a GET
 // matching SHELL_CALLS passes while the page boots, and afterwards only as a repeat (a poll) of one the shell made
