@@ -106,6 +106,7 @@ Traps:
 | text action · icon-only action · page or dialog actions | `BasicButton` · `IconButton` · `ActionBar` |
 | side panel · per-language editing | `SideDrawer` · `TranslationsDrawer` |
 | dialog · confirmation (yes/no, unsaved changes) | `BasicModal` · `ConfirmDialog` (`tone="danger"` for a delete) |
+| a secret shown once (a new API token) | `SecretReveal` (never a toast, a store, the router or a log) |
 | action menu or popover panel · a panel of text (configuration health) · floating action (+ labelled pill) | `BasicMenu` · `BasicMenu sheet` (a ≤ 32rem popover, a bottom sheet on a phone) · `FloatingActions` (`pill`) |
 | field hint next to a label · tooltip on a control | `FormField hint` + `hintLevel` (else `BasicTooltip variant="help"`) · `BasicTooltip` |
 

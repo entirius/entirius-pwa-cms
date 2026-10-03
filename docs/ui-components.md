@@ -240,7 +240,16 @@ Catalogue: `#actions` (`#basic-button`, `#icon-button`, `#action-bar`, `#floatin
   or HelpTooltip → `variant="help"`), imports dropped; flags a custom `#footer`, a missing title, a computed
   `is_wrapper` and attributes outside the map.
 
-Catalogue: `#overlays` (`#basic-modal`, `#confirm-dialog`, `#side-drawer`, `#translations-drawer`, `#basic-menu`,
+- **`SecretReveal`** (`src/boots/SecretReveal/`, access plan 22) — a value shown once (a new or rotated API token): on
+  BasicModal `md`; props `secret`, `title`, `open` (`v-model:open`), `inline` (catalogue). The value sits in a read-only
+  monospace field (`autocomplete="off"`, `spellcheck="false"`) under the warning "This value is shown once…"; Copy
+  uses `navigator.clipboard` and, without it, selects the text for a manual copy (a status line says which). Close
+  (and Esc, the backdrop, the close button) works only after "I have stored it" is ticked. The value is copied into
+  the boot's own state and `update:secret` hands the caller `""` at once — bind `v-model:secret` so the page drops its
+  copy; close and unmount clear it, and the field is emptied before the dialog leaves. Never pass the value to a toast,
+  a store, the router or a log. Test ids `secret-reveal-value` / `-copy` / `-stored` / `-close`.
+
+Catalogue: `#overlays` (`#basic-modal`, `#confirm-dialog`, `#secret-reveal`, `#side-drawer`, `#translations-drawer`, `#basic-menu`,
 `#basic-tooltip`), plus buttons that open the real overlays.
 
 ### P3 display (plan 13)

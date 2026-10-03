@@ -27,6 +27,19 @@ All notable changes to this project will be documented in this file.
   role on a staff account or a group, and the access audit log with action, actor and date filters (superuser access
   through the gate grouped per actor and day by default). A revoke refused by the lockout guard reads "At least one
   person must keep access management". Staff accounts and groups are still created in Django admin.
+- Access → Applications: machine clients with their state, token count and legacy marker; an application page edits
+  its name, description and active state and manages its tokens — New token (scopes in two groups that never mix,
+  "reaches browsers" and "server-to-server only", an optional channel pin, an expiry: a server-to-server token
+  expires within 365 days, 365 by default), Rotate (0–168 hours of overlap), Set expiry and Revoke (a publishable key
+  warns that storefronts lose it at once). Legacy keys show their source and last use and never expire by themselves;
+  Set expiry gives them one. New boot `SecretReveal` shows a new token's value once (Copy, close after "I have stored
+  it", the value dropped on close and unmount) with a `/ui` cell.
+
+### Security
+
+- With `VUE_APP_DEBUG` on, the API client no longer logs the body of a request flagged `sensitive` or of its response
+  (`[redacted]`); every access token call carries the flag, so a created or rotated token's value never reaches the
+  console.
 
 ### Removed
 
