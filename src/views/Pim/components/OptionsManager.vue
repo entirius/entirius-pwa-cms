@@ -47,7 +47,7 @@
           v-model="newOption.label"
         />
       </FormField>
-      <BasicButton
+      <BasicButton mutates
         variant="secondary"
         @click="createOption"
       >

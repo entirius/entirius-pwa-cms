@@ -97,7 +97,7 @@
                   :label="element.is_active ? $t('faq.active') : $t('faq.inactive')"
                   :tone="element.is_active ? 'positive' : 'negative'"
                 />
-                <IconButton
+                <IconButton mutates
                   icon="close"
                   :label="$t('faq.remove_from_group')"
                   variant="danger"

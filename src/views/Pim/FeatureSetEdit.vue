@@ -76,7 +76,7 @@
                   class="flex-1"
                   @on-key-down="createGroup"
                 />
-                <BasicButton variant="secondary" @click="createGroup">
+                <BasicButton mutates variant="secondary" @click="createGroup">
                   {{ $t('pim.create_group') }}
                 </BasicButton>
               </div>
@@ -147,7 +147,7 @@
                       size="sm"
                       @click="$router.push(`/pim/features/${element.feature_idx}`)"
                     />
-                    <IconButton
+                    <IconButton mutates
                       icon="close"
                       :label="$t('pim.remove_from_set')"
                       variant="danger"
@@ -257,7 +257,7 @@
                           size="sm"
                           @click="$router.push(`/pim/features/${element.feature_idx}`)"
                         />
-                        <IconButton
+                        <IconButton mutates
                           icon="close"
                           :label="$t('pim.remove_from_set')"
                           variant="danger"

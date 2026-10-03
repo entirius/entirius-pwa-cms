@@ -620,7 +620,7 @@ watch(
           </div>
 
           <div class="media-gallery__edit-actions">
-            <BasicButton
+            <BasicButton mutates
               variant="primary"
               @click="saveEdit"
             >
@@ -718,7 +718,7 @@ watch(
             :placeholder="$t('pim.video_url_placeholder')"
             @on-key-down="addVideo"
           />
-          <BasicButton
+          <BasicButton mutates
             variant="secondary"
             class="media-gallery__video-submit"
             :disabled="addingVideo || !newVideoUrl.trim()"
