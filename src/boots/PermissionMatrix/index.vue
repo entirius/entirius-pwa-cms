@@ -113,11 +113,14 @@ const emitValue = (value) => emit("update:modelValue", value);
     color: var(--text-body);
   }
 
+  // The SegmentedControl's look: a 2 px hairline inset around and between the options.
   &__levels {
+    --levels-pad: 2px;
+
     display: inline-flex;
     flex-shrink: 0;
-    padding: 2px;
-    gap: 2px;
+    padding: var(--levels-pad);
+    gap: var(--levels-pad);
     background-color: var(--surface-raised);
     border-radius: var(--radius-full);
   }
