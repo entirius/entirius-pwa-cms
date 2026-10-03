@@ -57,7 +57,7 @@ path prefix and lazy-loaded (`() => import(...)`). Grouped by panel:
 | `/pricing/...` | PriceList/Detail, TaxClassList/Detail, ChannelList/Detail |
 | `/stock/...` | WarehouseStockTable |
 | `/translation-jobs` | TranslationDashboard |
-| `/access/...` | RoleList, RoleDetail (`roles/new`, `roles/:key`; a built-in role opens read-only, Duplicate = `roles/new?from=<key>`) |
+| `/access/...` | RoleList, RoleDetail (`roles/new`, `roles/:key`; a built-in role opens read-only, Duplicate = `roles/new?from=<key>`); StaffList (`staff`), StaffDetail (`staff/:id` — direct grants, group roles read-only), GroupList (`groups`), AuditList (`audit`) |
 | `/atlas/...`, `/suppliers/*` + `/supplier-review` (legacy redirects) | SupplierList/Detail, AutoMatched, Duplicates, SupplierReview (Review/) |
 | `/pricefighter/...` | GapTable, Strategies, DecisionHistory |
 | `/enrichment/...` | EnrichmentReview, EnrichmentSpawnRules List/Edit, EnrichmentTasks |

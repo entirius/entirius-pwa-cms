@@ -23,6 +23,10 @@ All notable changes to this project will be documented in this file.
   page edits a custom role's name, description and permissions, and opens a built-in read-only with Duplicate. A
   custom role never offers `access.manage` (built-in Administrator only). New boot `PermissionMatrix` with a `/ui`
   cell.
+- Access → Staff, Groups and Audit: staff accounts with their roles (direct and "via <group>"), grant and revoke a
+  role on a staff account or a group, and the access audit log with action, actor and date filters (superuser access
+  through the gate grouped per actor and day by default). A revoke refused by the lockout guard reads "At least one
+  person must keep access management". Staff accounts and groups are still created in Django admin.
 
 ### Removed
 
