@@ -36,8 +36,11 @@ test.describe('Access staff and audit (desktop)', () => {
     await page.waitForURL(/\/access\/staff\/\d+$/);
     await page.waitForLoadState('networkidle');
     await expect(page.locator('[data-testid="grant-row-viewer"]')).toBeVisible();
+    await expect(page.locator('[data-testid="grant-role-select"]')).toBeVisible();
 
-    await page.goto('/access/audit');
+    // In-app navigation: a full reload here would abort the detail page's lazily loaded chunks.
+    await page.getByRole('link', { name: either((t) => t.nav.access.audit) }).click();
+    await page.waitForURL(/\/access\/audit$/);
     await page.waitForLoadState('networkidle');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(either((t) => t.access.audit.title));
     const filtered = page.waitForResponse((r) => r.url().includes('/admin/audit/') && r.url().includes('action=grant.migrate'));
