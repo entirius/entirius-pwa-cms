@@ -31,7 +31,7 @@ describe("Access panel", () => {
     await router.push("/ui");
   });
 
-  it("is registered: munin key, registry entry on access.manage, a Roles nav entry", async () => {
+  it("is registered: munin key, registry entry on access.manage, Roles, Staff, Groups and Audit nav entries", async () => {
     const { useMuninStore } = await vi.importActual("@/stores/munin");
     setActivePinia(createPinia());
     const munin = useMuninStore();
@@ -39,7 +39,7 @@ describe("Access panel", () => {
     expect(munin.isPanelEnabled("access")).toBe(true);
     expect(accessPanel).toMatchObject({ root: "/access/roles", areas: ["access.manage"] });
     const nav = filterNavRoutes(buildNavRoutes(), { panel: "access" });
-    expect(nav.map((entry) => entry.route)).toEqual(["/access/roles"]);
+    expect(nav.map((entry) => entry.route)).toEqual(["/access/roles", "/access/staff", "/access/groups", "/access/audit"]);
   });
 
   it("is hidden and refused without access.manage read", async () => {
@@ -56,5 +56,14 @@ describe("Access panel", () => {
     await router.push("/access/roles/viewer");
     expect(router.currentRoute.value.path).toBe("/access/roles/viewer");
     expect(router.currentRoute.value.meta).toMatchObject({ panel: "access", area: "access.manage" });
+  });
+
+  it("staff, groups and audit routes sit on access.manage", async () => {
+    readable.add("access.manage");
+    for (const path of ["/access/staff", "/access/staff/12", "/access/groups", "/access/audit"]) {
+      await router.push(path);
+      expect(router.currentRoute.value.path).toBe(path);
+      expect(router.currentRoute.value.meta).toMatchObject({ panel: "access", area: "access.manage" });
+    }
   });
 });
