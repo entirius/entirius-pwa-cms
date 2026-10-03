@@ -21,7 +21,7 @@
     >
       <template #cell-name="{ row }">
         <div class="flex ai-ct flex-wrap gap-2">
-          <router-link :to="applicationLink(row)" class="fw-600 t-accent" @click.stop>{{ row.name }}</router-link>
+          <router-link :to="applicationLink(row)" class="application-name fw-600 t-accent" @click.stop>{{ row.name }}</router-link>
           <Tag v-if="row.legacy" :label="$t('access.tokens.legacy')" />
         </div>
       </template>
@@ -67,7 +67,7 @@ export default {
   computed: {
     columns() {
       return [
-        { key: "name", label: this.$t("access.applications.name"), width: "1fr", truncate: true },
+        { key: "name", label: this.$t("access.applications.name"), width: "1fr" },
         { key: "is_active", label: this.$t("access.applications.state"), width: "max-content" },
         { key: "token_count", label: this.$t("access.applications.tokens"), width: "120px", numeric: true, priority: 2 },
       ];
@@ -103,3 +103,10 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+// Application names are free text (a BDD run names them by a 32-hex id): a long word wraps instead of clipping.
+.application-name {
+  overflow-wrap: anywhere;
+}
+</style>
