@@ -4029,6 +4029,134 @@
       "scopes_required": "Pick at least one scope",
       "created_title": "New token",
       "rotated_title": "Rotated token"
+    },
+    "areas": {
+      "pim": {
+        "products": "Products and media",
+        "categories": "Categories and positions",
+        "schema": "Features, attributes, sets and link types",
+        "quality": "Quality gaps",
+        "product_delete": "Delete products (SKU)"
+      },
+      "pim_translator": {
+        "translate": "AI translation (catalogue)"
+      },
+      "pricemanager": {
+        "prices": "Prices",
+        "settings": "Price channels and tax classes"
+      },
+      "pricefighter": {
+        "decisions": "Repricing decisions and apply",
+        "rules": "Repricing rules"
+      },
+      "qms": {
+        "stock": "Warehouses and stock"
+      },
+      "suppliers": {
+        "sources": "Suppliers, feeds, mappings and logs",
+        "products": "Supplier product queue and links",
+        "credentials": "Supplier credentials"
+      },
+      "atlas": {
+        "sources": "Sources, suppliers, competitors, feeds and mappings",
+        "products": "Source products, links and observations",
+        "credentials": "Source credentials"
+      },
+      "enrichment": {
+        "rules": "Enrichment spawn rules",
+        "proposals": "Enrichment tasks and proposals"
+      },
+      "lookup": {
+        "search": "Product lookup"
+      },
+      "content": {
+        "pages": "Pages, layouts, routes and blog",
+        "publish": "Publish and unpublish content",
+        "media": "Images and image tags",
+        "schema": "Content types, sets, attributes and languages"
+      },
+      "contentdb_translator": {
+        "translate": "AI translation (content)"
+      },
+      "faq": {
+        "faq": "FAQ"
+      },
+      "deliverypoints": {
+        "points": "Delivery points and types"
+      },
+      "email": {
+        "templates": "E-mail templates and sender configuration"
+      },
+      "agreements": {
+        "definitions": "Agreement texts and versions",
+        "consents": "Consents, people and subscribers"
+      },
+      "accounts": {
+        "customers": "Customers and customer groups"
+      },
+      "checkout": {
+        "orders": "Orders",
+        "discounts": "Discounts and discount codes"
+      },
+      "returns": {
+        "attachments": "Return documents"
+      },
+      "contact_forms": {
+        "submissions": "Form submissions and bookings",
+        "leads": "Form leads and ad conversions",
+        "settings": "Form notifications and integrations"
+      },
+      "leads": {
+        "companies": "Companies, contacts and imports",
+        "settings": "Pipeline stages, lead types, rules and profiles",
+        "gdpr": "GDPR export and erasure"
+      },
+      "communicator": {
+        "review": "Draft review queue",
+        "content": "Templates, sequences and footers",
+        "conversations": "Outbox, threads, replies and suppressions",
+        "settings": "Channel, send policy and mailbox"
+      },
+      "siteintel": {
+        "audits": "Site audits"
+      },
+      "notifications": {
+        "inbox": "Staff notifications"
+      },
+      "munin": {
+        "config": "Runtime configuration and health"
+      },
+      "access": {
+        "manage": "Roles, grants, application tokens and audit"
+      },
+      "platform": {
+        "devtools": "Development-only test endpoints"
+      }
+    },
+    "scopes": {
+      "checkout": {
+        "storefront": "Storefront carts and orders",
+        "erase": "Anonymise a customer's orders (GDPR)"
+      },
+      "accounts": {
+        "erase": "Delete a customer account (GDPR)"
+      },
+      "contact_forms": {
+        "submit": "Submit contact forms",
+        "booking": "Booking slots and bookings"
+      },
+      "returns": {
+        "api": "Order returns"
+      },
+      "reviews": {
+        "moderate": "Review moderation"
+      },
+      "vault": {
+        "api": "Stored payment cards"
+      },
+      "agreements": {
+        "subscribe": "Newsletter subscription"
+      }
     }
   },
   "secret_reveal": {

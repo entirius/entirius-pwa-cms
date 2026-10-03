@@ -3898,7 +3898,7 @@
     },
     "groups": {
       "title": "Grupy",
-      "help": "Grupy i ich członków zarządza się w panelu Django; rola nadana grupie trafia do każdego członka.",
+      "help": "Grupami i ich członkami zarządza się w panelu Django; rola nadana grupie trafia do każdego członka.",
       "empty": "Brak grup",
       "name": "Grupa",
       "members": "Członkowie",
@@ -4028,6 +4028,134 @@
       "scopes_required": "Wybierz co najmniej jeden zakres",
       "created_title": "Nowy token",
       "rotated_title": "Wymieniony token"
+    },
+    "areas": {
+      "pim": {
+        "products": "Produkty i media",
+        "categories": "Kategorie i pozycje",
+        "schema": "Cechy, atrybuty, zestawy i typy powiązań",
+        "quality": "Braki jakości",
+        "product_delete": "Usuwanie produktów (SKU)"
+      },
+      "pim_translator": {
+        "translate": "Tłumaczenie AI (katalog)"
+      },
+      "pricemanager": {
+        "prices": "Ceny",
+        "settings": "Kanały cenowe i klasy podatkowe"
+      },
+      "pricefighter": {
+        "decisions": "Decyzje repricingu i ich zastosowanie",
+        "rules": "Reguły repricingu"
+      },
+      "qms": {
+        "stock": "Magazyny i stany"
+      },
+      "suppliers": {
+        "sources": "Dostawcy, feedy, mapowania i logi",
+        "products": "Kolejka produktów dostawców i powiązania",
+        "credentials": "Dane dostępowe dostawców"
+      },
+      "atlas": {
+        "sources": "Źródła, dostawcy, konkurenci, feedy i mapowania",
+        "products": "Produkty źródłowe, powiązania i obserwacje",
+        "credentials": "Dane dostępowe źródeł"
+      },
+      "enrichment": {
+        "rules": "Reguły tworzenia zadań wzbogacania",
+        "proposals": "Zadania i propozycje wzbogacania"
+      },
+      "lookup": {
+        "search": "Wyszukiwanie produktów"
+      },
+      "content": {
+        "pages": "Strony, układy, ścieżki i blog",
+        "publish": "Publikowanie i wycofywanie treści",
+        "media": "Obrazy i tagi obrazów",
+        "schema": "Typy treści, zestawy, atrybuty i języki"
+      },
+      "contentdb_translator": {
+        "translate": "Tłumaczenie AI (treści)"
+      },
+      "faq": {
+        "faq": "FAQ"
+      },
+      "deliverypoints": {
+        "points": "Punkty odbioru i ich typy"
+      },
+      "email": {
+        "templates": "Szablony e-maili i konfiguracja nadawcy"
+      },
+      "agreements": {
+        "definitions": "Treści zgód i ich wersje",
+        "consents": "Zgody, osoby i subskrybenci"
+      },
+      "accounts": {
+        "customers": "Klienci i grupy klientów"
+      },
+      "checkout": {
+        "orders": "Zamówienia",
+        "discounts": "Rabaty i kody rabatowe"
+      },
+      "returns": {
+        "attachments": "Dokumenty zwrotów"
+      },
+      "contact_forms": {
+        "submissions": "Zgłoszenia z formularzy i rezerwacje",
+        "leads": "Leady z formularzy i konwersje reklam",
+        "settings": "Powiadomienia i integracje formularzy"
+      },
+      "leads": {
+        "companies": "Firmy, kontakty i importy",
+        "settings": "Etapy lejka, typy leadów, reguły i profile",
+        "gdpr": "Eksport i usuwanie danych (RODO)"
+      },
+      "communicator": {
+        "review": "Kolejka szkiców do przeglądu",
+        "content": "Szablony, sekwencje i stopki",
+        "conversations": "Skrzynka nadawcza, wątki, odpowiedzi i wykluczenia",
+        "settings": "Kanał, zasady wysyłki i skrzynka pocztowa"
+      },
+      "siteintel": {
+        "audits": "Audyty stron"
+      },
+      "notifications": {
+        "inbox": "Powiadomienia dla pracowników"
+      },
+      "munin": {
+        "config": "Konfiguracja działania i stan systemu"
+      },
+      "access": {
+        "manage": "Role, nadania, tokeny aplikacji i dziennik zmian"
+      },
+      "platform": {
+        "devtools": "Endpointy testowe (tylko środowisko deweloperskie)"
+      }
+    },
+    "scopes": {
+      "checkout": {
+        "storefront": "Koszyki i zamówienia w sklepie",
+        "erase": "Anonimizacja zamówień klienta (RODO)"
+      },
+      "accounts": {
+        "erase": "Usunięcie konta klienta (RODO)"
+      },
+      "contact_forms": {
+        "submit": "Wysyłanie formularzy kontaktowych",
+        "booking": "Terminy i rezerwacje"
+      },
+      "returns": {
+        "api": "Zwroty zamówień"
+      },
+      "reviews": {
+        "moderate": "Moderacja opinii"
+      },
+      "vault": {
+        "api": "Zapisane karty płatnicze"
+      },
+      "agreements": {
+        "subscribe": "Zapis do newslettera"
+      }
     }
   },
   "secret_reveal": {

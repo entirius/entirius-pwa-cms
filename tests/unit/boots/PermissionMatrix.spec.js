@@ -59,9 +59,13 @@ describe("PermissionMatrix", () => {
 
   it("is one labelled radio group per area, sensitive flags as tags", () => {
     const wrapper = mountMatrix({ modelValue: { "pim.products": "read" } });
-    const group = wrapper.find('[data-area="pim.products"] [role="radiogroup"]');
-    const label = wrapper.find(`[id="${group.attributes("aria-labelledby")}"]`);
-    expect(label.text()).toBe("Label pim.products");
+    const labelOf = (key) => {
+      const group = wrapper.find(`[data-area="${key}"] [role="radiogroup"]`);
+      return wrapper.find(`[id="${group.attributes("aria-labelledby")}"]`).text();
+    };
+    // A translated area takes its `access.areas.<key>` label; an unknown one keeps the catalogue's.
+    expect(labelOf("pim.products")).toBe("Products and media");
+    expect(labelOf("access.extra")).toBe("Label access.extra");
     expect(radio(wrapper, "pim.products", "read").element.checked).toBe(true);
     expect(wrapper.find('[data-area="accounts.customers"]').text()).toContain("access.sensitive.pii");
   });
