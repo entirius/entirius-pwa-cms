@@ -121,6 +121,10 @@ components keep using stores directly via the `setup()` return pattern.
 - **`useUnsavedChanges`** — dirty-tracking for edit forms: `snapshot(data)`,
   `track(formData)`, `isDirty`, `guardNavigation(to, from, next)`,
   `confirmLeave()`/`cancelLeave()`. Warns on `beforeunload` while dirty.
+- **`useReadonly`** — the read-only mode of a page (django-access). `PageLayout`
+  calls `usePageReadonly(force)` (the route's `meta.area`, else its panel's first
+  area; the access store injected as `ACCESS_STORE`, provided by `App.vue`) and
+  `provideReadonly(flag)`; the boots read `useReadonly()` (false outside a page).
 - **`useVariantMatching`** — pure functions for variant-based conditional
   field visibility in config-driven UIs (Pages builder config-kit):
   `buildSettedConfigsValues`, `checkCoresDependency`, `checkPropsDependency`,

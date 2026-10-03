@@ -148,22 +148,25 @@ and one meaning per glyph (unit test). A new meaning adds its glyph to `fa-icons
   (`--elem-height`) · `sm` (24 px) · `lg` (40 px at `radius-xl`, the sign-in screens; `primary` gets a soft top light on hover); label in the default slot; `icon` = a meaning of `icons.js`, drawn before the
   label (6 px gap); `loading` swaps the icon for a spinner, disables and sets `aria-busy`; `disabled`; `type`
   (`button` by default); without a `variant` it is `secondary`. The click stops at the button (`:stop="false"` lets
-  it through).
+  it through). `mutates`: the button creates, changes or deletes — a read-only page hides it (`docs/ui-rules.md` §
+  Page patterns).
 - **`IconButton`** — every icon-only action: `icon` (meaning, required), `label` (required: `aria-label` + `title`),
   `variant` `ghost` · `outline` · `primary` · `danger`, `size` `sm` 24 · `md` `--elem-height` · `lg` 40 (header,
   mobile menu, `--radius-xl`), `pressed` (a toggle: `aria-pressed`, `surface-hover` fill), `disabled` (the glyph
   turns `text-disabled` in every variant but `primary`: a disabled `primary` keeps its `text-on-accent-fill` glyph
   and the whole button fades, `opacity: 0.5`, as FloatingActions). `danger` is
   every icon-only delete or remove (C6). The click stops at the button by default (`:stop="false"` to opt out).
+  `mutates` (a row's delete, a remove): hidden on a read-only page; view and open actions leave it off.
   A back control: `<IconButton icon="back" :label="$t('common.back')" />`. On a phone
   the hit area grows to 40 × 40 around the box, the box keeps its size. `md` matches the text button, not Figma's
   32 px (KD23).
 - **`ActionBar`** — page and dialog actions in R5 order: `actions` = `[{ key, label, role, onClick, icon?,
-  disabled?, loading?, expanded?, form?, testid? }]` (`expanded` = `aria-expanded` of a button that shows a section;
+  disabled?, loading?, expanded?, form?, mutates?, testid? }]` (`expanded` = `aria-expanded` of a button that shows a section;
   `form` = the id of a form the header button submits from outside it — native checks, the form's submit handler,
   and Enter in a field presses it), `role` `utility` (an IconButton, `icon` required) · `secondary` · `danger` ·
   `primary` (one at most, a second warns in dev); extra controls go into the default slot, already in order.
   Right-aligned, gap 12 px (8 px on a phone); below 768 px it takes its own row: the label „Akcje” above the actions, left-aligned (Figma S7).
+  On a read-only page only the utilities stay, minus a `danger` one; `mutates` (true/false) overrides the role.
 - **`FloatingActions`** — FAB 44 px `accent-fill`, 24 px inset from 1024 px up; below it 16 px inset and 16 px above
   the tab bar, `data-fid="fab"`;
   `actions[].icon` and `pill.icon` take meanings (other names still pass through until the sweeps). `pill` =
@@ -297,6 +300,10 @@ Catalogue: `#display` (`#status-badge`, `#count-badge`, `#tag`, `#basic-tabs`, `
   the bordered page container (plan 25). `--fab-lane` (set on the layout: the FAB's width plus its gap below the shell
   breakpoint, 0 above) is the right padding a bottom-pinned row takes to keep the FAB's corner clear — the footer
   uses it, a view's own sticky bar reads it (`padding-right: var(--fab-lane, 0px)`) instead of copying the size.
+  It decides the page's read-only mode (`src/composables/useReadonly.js`) and provides it to the page; `readonly`
+  forces it on. A read-only page shows one notice line under the header; FloatingActions (but its back button) and
+  BulkActionBar render nothing and FormField disables its control — except in the toolbar and the PageHeader `meta`
+  (filters and the channel picker read; `ReadonlyOff` lifts the flag there).
 - **`PageHeader`** — `title` is the page's only `<h1>` (`.page-title`: Lexend Deca 30/400, 20 below tablet) in the
   title row (back, H1, meta: `data-fid="page-title"`, Figma's "Heading" frame); `overline` (Inter 13/500 uppercase, Home); `crumbs` `[{ label, to? }]` 24 px above the
   title row — omitted = the crumbs the shell provides (none without a shell), `[]` = none; `back` (a route location

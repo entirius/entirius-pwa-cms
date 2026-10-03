@@ -130,6 +130,11 @@ notice from a module that is off). Routes without `meta.panel` are untouched.
   notice in the `AuthLayout` frame with Log out instead of the shell.
 - **Access managers** (`me.manages_access`) see a Home warning while
   `me.gate_mode` is not `enforce`.
+- **Read-only mode:** a page whose area the user can read but not write
+  shows no Save, Delete, create, FAB or bulk action, disabled fields and one
+  notice line; decided once in `PageLayout` (`src/composables/useReadonly.js`,
+  `docs/ui-rules.md` § Page patterns). The PIM product Delete needs
+  `pim.product_delete:write` (an Editor edits without it).
 - Content create (`Builder/Builds.vue` `canCreate`) is
   `can("content.pages", "write")` while the module is there, else the contentdb
   content permissions.

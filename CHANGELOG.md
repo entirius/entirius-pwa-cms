@@ -14,6 +14,11 @@ All notable changes to this project will be documented in this file.
 - A customer (non-staff) account sees "No access to the admin panel" with Log out instead of an empty shell.
 - Access managers see a Home warning while the gate is not in `enforce` mode.
 - Content create follows `content.pages:write` when django-access is installed.
+- Read-only mode: a page the user can read but not write shows no Save, Delete, create, FAB or bulk actions, its
+  form fields are disabled and one line says why. Decided once in `PageLayout` from the route's area; `BasicButton`
+  and `IconButton` take `mutates` for the other writing buttons. `scripts/audit/readonly.mjs` lists the writing
+  buttons the mode does not reach (Pages, PIM, FAQ, Pricing and Forms are clean).
+- The PIM product Delete shows only with `pim.product_delete:write`.
 
 ### Removed
 

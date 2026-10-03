@@ -185,6 +185,13 @@ Traps:
   `#footer` = the Pagination. Page actions are an `ActionBar` in PageHeader `actions` (R5); controls for the whole
   panel (a channel selector, „Tłumacz sklep”) sit in PageHeader `meta` or the ActionBar. A panel wrapper holds no
   toolbar strip and no teleport targets.
+- **Read-only page.** `PageLayout` decides it once (the route's `meta.area`, else the panel's first area, without
+  write in django-access `me`) and shows one notice line under the header. ActionBar keeps only its utilities (not a
+  `danger` one; an action's `mutates` true/false overrides its role), FloatingActions (but its back button) and
+  BulkActionBar are gone, FormField disables its control. The PageLayout toolbar and the PageHeader `meta` (search,
+  filters, the channel picker) stay enabled: they read, never write. Any other button that creates, changes or deletes (a row's delete, an inline save) is a `BasicButton` or
+  `IconButton` with `mutates`; `node scripts/audit/readonly.mjs` lists the ones that are not. A view never checks
+  write permission itself for this; `:readonly` on PageLayout forces it on, never off.
 - **Floating action.** `FloatingActions` sits 24 px from the bottom-right corner beside the sidebar (Figma S4) and
   16 px from the edge above the tab bar below 1024 px; a view never moves it. Bottom-pinned rows (the PageLayout
   footer, a sticky decision bar) keep the FAB's corner clear through `--fab-lane`.
