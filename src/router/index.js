@@ -1313,6 +1313,46 @@ const routes = [
     ],
   },
 
+  // Access panel (django-access): roles; staff, applications and audit join in plans 21–22
+  {
+    path: "/access",
+    component: () => import(/* webpackChunkName: "access" */ "../views/Access/index.vue"),
+    meta: { requiresAuth: true, panel: "access" },
+    children: [
+      { path: "", redirect: "/access/roles" },
+      {
+        path: "roles",
+        name: "AccessRoles",
+        component: () => import(/* webpackChunkName: "access" */ "../views/Access/RoleList.vue"),
+        meta: { requiresAuth: true, titleKey: "access.roles.title", panel: "access", area: "access.manage" },
+      },
+      {
+        path: "roles/new",
+        name: "AccessRoleCreate",
+        component: () => import(/* webpackChunkName: "access" */ "../views/Access/RoleDetail.vue"),
+        meta: {
+          requiresAuth: true,
+          titleKey: "access.roles.create",
+          panel: "access",
+          area: "access.manage",
+          navParent: "/access/roles",
+        },
+      },
+      {
+        path: "roles/:key",
+        name: "AccessRoleDetail",
+        component: () => import(/* webpackChunkName: "access" */ "../views/Access/RoleDetail.vue"),
+        meta: {
+          requiresAuth: true,
+          titleKey: "access.roles.detail",
+          panel: "access",
+          area: "access.manage",
+          navParent: "/access/roles",
+        },
+      },
+    ],
+  },
+
   // Change password (authenticated)
   {
     path: "/change-password",

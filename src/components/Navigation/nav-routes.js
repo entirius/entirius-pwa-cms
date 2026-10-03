@@ -351,6 +351,13 @@ export function buildNavRoutes() {
       query: {},
       app: ["enricher"],
     },
+    {
+      route: "/access/roles",
+      labelKey: "nav.access.roles",
+      icon: "user-shield",
+      query: {},
+      app: ["access"],
+    },
   ];
 }
 

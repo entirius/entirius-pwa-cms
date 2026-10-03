@@ -165,6 +165,15 @@ export const panels = [
       "siteintel.audits",
     ],
   },
+  {
+    name: "Access",
+    idx: "access",
+    icon: "user-shield",
+    root: "/access/roles",
+    labelKey: "panels.access",
+    descriptionKey: "panels.access_desc",
+    areas: ["access.manage"],
+  },
 ];
 
 export const User = class {
