@@ -1657,6 +1657,101 @@
       "file": "leads-sending__{vp}__{theme}.png"
     },
     {
+      "id": "access-roles-list",
+      "route": "/access/roles",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "access-roles-list__{vp}__{theme}.png"
+    },
+    {
+      "id": "access-role-builtin",
+      "route": "/access/roles/viewer",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "readySelector": "[data-testid=\"permission-matrix\"]",
+      "file": "access-role-builtin__{vp}__{theme}.png"
+    },
+    {
+      "id": "access-staff-list",
+      "route": "/access/staff",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "access-staff-list__{vp}__{theme}.png"
+    },
+    {
+      "id": "access-audit",
+      "route": "/access/audit",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "access-audit__{vp}__{theme}.png"
+    },
+    {
+      "id": "access-applications-list",
+      "route": "/access/applications",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "access-applications-list__{vp}__{theme}.png"
+    },
+    {
+      "id": "access-application-detail",
+      "route": "/access/applications",
+      "resolver": "first-link",
+      "links": [
+        "a[href^=\"/access/applications/\"]:not([href=\"/access/applications/new\"])"
+      ],
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "readySelector": "[data-testid=\"application-name\"]",
+      "file": "access-application-detail__{vp}__{theme}.png"
+    },
+    {
       "id": "ui-catalogue",
       "route": "/ui",
       "resolver": "fixed",
