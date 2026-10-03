@@ -1,7 +1,12 @@
 <template>
   <div class="page-layout h-100 ovy-auto" :class="{ 'page-layout--roomy': roomy }">
     <slot name="header" />
-    <div v-if="$slots.toolbar" class="page-layout__toolbar"><slot name="toolbar" /></div>
+    <NoticeMe v-if="readonly" class="page-layout__readonly" stroke_color_class="t-warning">
+      <p class="page-layout__readonly-text fs-200" role="status" data-testid="readonly-notice">
+        {{ $t("access.readonly_notice") }}
+      </p>
+    </NoticeMe>
+    <div v-if="$slots.toolbar" class="page-layout__toolbar"><ReadonlyOff><slot name="toolbar" /></ReadonlyOff></div>
     <div class="page-layout__body"><slot /></div>
     <div v-if="hasFooter()" class="page-layout__footer"><slot name="footer" /></div>
   </div>
@@ -13,12 +18,20 @@
 // row), `default` (the content), `footer` (a list's Pagination, pinned to the bottom edge while the body scrolls).
 // A sticky PageHeader pins inside this scroll body. `roomy` keeps the desktop rhythm on a phone (40 top, 32 below
 // the header, the 30 px title): the Figma P5 frames (Home, content list, gallery).
+// Read-only mode (plan 19): decided here once, from the route's area (src/composables/useReadonly.js), and provided to
+// the page; one notice line under the header says why. `readonly` forces it on, it never lifts it. The toolbar (search
+// and filters) is outside it: reading needs it.
 import { useSlots } from "vue";
 import { hasSlotContent } from "@/composables/useSlotContent";
+import { ReadonlyOff, provideReadonly, usePageReadonly } from "@/composables/useReadonly";
+import NoticeMe from "@/boots/NoticeMe/index.vue";
 
-defineProps({
+const props = defineProps({
   roomy: { type: Boolean, default: false },
+  readonly: { type: Boolean, default: false },
 });
+
+const readonly = provideReadonly(usePageReadonly(() => props.readonly));
 
 const slots = useSlots();
 // A footer slot can render nothing (e.g. `<Pagination v-if="pages > 1" />` on one page): a strip with no content
@@ -63,6 +76,12 @@ const hasFooter = () => hasSlotContent(slots.footer?.());
 
     gap: var(--space-8);
   }
+}
+
+.page-layout__readonly-text {
+  margin: 0;
+  padding: var(--space-3) var(--space-5);
+  color: var(--text-body);
 }
 
 .page-layout__body {

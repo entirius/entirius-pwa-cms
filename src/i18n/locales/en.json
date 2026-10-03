@@ -3798,6 +3798,7 @@
     "gate_mode": "Access control is in {mode} mode — refusals are not enforced",
     "staff_only_title": "No access to the admin panel",
     "staff_only_message": "This account has no access to the admin panel. Log in with a staff account.",
-    "dismiss": "Dismiss"
+    "dismiss": "Dismiss",
+    "readonly_notice": "Read-only: your role can view this page but not change it"
   }
 }

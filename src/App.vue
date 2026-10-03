@@ -48,11 +48,13 @@
 </template>
 
 <script>
+import { provide } from "vue";
 import { useLoaderStore } from "@/stores/loader";
 import { useUserStore } from "@/stores/user";
 import { useHandyStore } from "@/stores/handy";
 import { useMuninStore } from "@/stores/munin";
 import { useAccessStore } from "@/stores/access";
+import { ACCESS_STORE } from "@/composables/useReadonly";
 import { useNotificationsStore } from "@/stores/notifications";
 import { useConfigHealthStore } from "@/stores/configHealth";
 import { useLeadTypesStore } from "@/stores/leadTypes";
@@ -84,6 +86,8 @@ export default {
     const handy = useHandyStore();
     const munin = useMuninStore();
     const access = useAccessStore();
+    // Every PageLayout reads it to decide its read-only mode (src/composables/useReadonly.js).
+    provide(ACCESS_STORE, access);
     const notificationBar = useNotificationsStore();
     const configHealth = useConfigHealthStore();
     const leadTypes = useLeadTypesStore();

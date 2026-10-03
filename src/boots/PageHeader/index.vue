@@ -10,7 +10,9 @@
       <div class="page-header__title-row flex ai-ct gap-5" data-fid="page-title">
         <IconButton v-if="backTo" icon="back" :label="$t('common.back')" @click="goBack" />
         <h1 class="page-header__title page-title" :class="{ 'page-header__title--after-back': backTo }">{{ title }}</h1>
-        <div v-if="$slots.meta" class="page-header__meta flex ai-ct gap-2"><slot name="meta" /></div>
+        <div v-if="$slots.meta" class="page-header__meta flex ai-ct gap-2">
+          <ReadonlyOff><slot name="meta" /></ReadonlyOff>
+        </div>
       </div>
     </div>
     <div v-if="$slots.actions" class="page-header__actions"><slot name="actions" /></div>
@@ -32,6 +34,8 @@ import { useRouter } from "vue-router";
 import Breadcrumbs from "@/boots/Breadcrumbs/index.vue";
 import IconButton from "@/boots/IconButton/index.vue";
 import { usePageHeaderClaim } from "@/composables/pageHeader";
+// `meta` holds the panel's channel picker: it navigates, so a read-only page keeps it enabled.
+import { ReadonlyOff } from "@/composables/useReadonly";
 
 const props = defineProps({
   title: { type: String, required: true },

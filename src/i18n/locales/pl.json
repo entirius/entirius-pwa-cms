@@ -3797,6 +3797,7 @@
     "gate_mode": "Kontrola dostępu działa w trybie {mode} — odmowy nie są egzekwowane",
     "staff_only_title": "Brak dostępu do panelu administracyjnego",
     "staff_only_message": "To konto nie ma dostępu do panelu administracyjnego. Zaloguj się kontem pracownika.",
-    "dismiss": "Zamknij"
+    "dismiss": "Zamknij",
+    "readonly_notice": "Tylko odczyt: Twoja rola pozwala oglądać tę stronę, ale nie zmieniać jej"
   }
 }

@@ -28,9 +28,10 @@
 // `describedBy` (the error, else the hint while hints are on), `invalid`, `required`, `disabled`; plus
 // `labelId` for a control a `for` cannot name (a radio group, a segmented control), and `reportError` for a control that
 // checks its own format (BasicInput `format`, plan 61) — the caller's `error` wins over it. `layout="inline"`: label
-// left, control right from 1024 px, stacked below.
+// left, control right from 1024 px, stacked below. On a read-only page (useReadonly, plan 19) `disabled` is always on.
 import { computed, provide, ref, useId } from "vue";
 import { FORM_FIELD } from "@/composables/formField";
+import { useReadonly } from "@/composables/useReadonly";
 import BasicTooltip from "@/boots/BasicTooltip/index.vue";
 import { useHintsOn } from "@/composables/fieldHints";
 
@@ -52,6 +53,7 @@ const labelId = `${generatedId}-label`;
 const errorId = `${generatedId}-error`;
 const hintId = `${generatedId}-hint`;
 const hintsOn = useHintsOn();
+const readonly = useReadonly();
 const hintShown = computed(() => Boolean(props.hint) && hintsOn.value);
 const controlError = ref("");
 const shownError = computed(() => props.error || controlError.value);
@@ -74,7 +76,7 @@ provide(FORM_FIELD, {
   describedBy: computed(() => (shownError.value ? errorId : hintShown.value ? hintId : "")),
   invalid: computed(() => !!shownError.value),
   required: computed(() => props.required),
-  disabled: computed(() => props.disabled),
+  disabled: computed(() => props.disabled || readonly.value),
   labelId: computed(() => (props.label ? labelId : "")),
   reportError: (message) => (controlError.value = message),
 });
