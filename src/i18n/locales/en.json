@@ -52,7 +52,10 @@
     "communicator_templates": "Templates",
     "communicator_sequences": "Sequences",
     "communicator_settings": "Send settings",
-    "ui_catalogue": "Component catalogue"
+    "ui_catalogue": "Component catalogue",
+    "access": {
+      "roles": "Roles"
+    }
   },
   "login": {
     "welcome": "Sign in",
@@ -575,7 +578,9 @@
     "communicator": "Communicator",
     "communicator_desc": "Outreach templates, follow-up sequences, send policy and channel mode",
     "greeting": "Hello",
-    "greeting_name": "Hello, {name}"
+    "greeting_name": "Hello, {name}",
+    "access": "Access",
+    "access_desc": "Staff roles and what each role may read and change"
   },
   "stock": {
     "manage": "Stocks",
@@ -3799,6 +3804,76 @@
     "staff_only_title": "No access to the admin panel",
     "staff_only_message": "This account has no access to the admin panel. Log in with a staff account.",
     "dismiss": "Dismiss",
-    "readonly_notice": "Read-only: your role can view this page but not change it"
+    "readonly_notice": "Read-only: your role can view this page but not change it",
+    "roles": {
+      "title": "Roles",
+      "create": "New role",
+      "detail": "Role",
+      "empty": "No roles yet",
+      "name": "Name",
+      "key": "Key",
+      "key_hint": "Lowercase letters, digits, - and _; fixed after create",
+      "key_reserved": "This key is reserved, pick another one",
+      "type": "Type",
+      "grants": "Grants",
+      "builtin": "Built-in",
+      "custom": "Custom",
+      "not_found": "This role does not exist",
+      "builtin_notice": "Built-in role — copy it to change permissions",
+      "reserved_dropped": "Access management is not copied: it belongs to the built-in Administrator role only",
+      "reserved_error": "Access management belongs to the built-in Administrator role only",
+      "details": "Role",
+      "description": "Description",
+      "permissions": "Permissions",
+      "duplicate": "Duplicate",
+      "copy_of": "Copy of {name}",
+      "delete_title": "Delete role",
+      "delete_message": "Delete the role {name}? Everyone who holds it loses its permissions.",
+      "saved": "Role saved",
+      "deleted": "Role deleted"
+    },
+    "matrix": {
+      "set_all": "Set all: {module}",
+      "levels": {
+        "none": "None",
+        "read": "Read",
+        "write": "Write"
+      }
+    },
+    "sensitive": {
+      "pii": "Personal data",
+      "money": "Money",
+      "secret": "Secrets",
+      "ai_cost": "AI cost",
+      "config": "Configuration",
+      "destructive": "Destructive"
+    },
+    "modules": {
+      "django_pim": "PIM",
+      "django_pim_translator": "PIM translation",
+      "django_pricemanager": "Pricing",
+      "django_pricefighter": "PriceFighter",
+      "django_qms": "Stock",
+      "django_suppliers": "Suppliers",
+      "django_atlas": "Atlas",
+      "django_enrichment": "Enricher",
+      "django_lookup": "Product lookup",
+      "django_contentdb": "Pages",
+      "django_contentdb_translator": "Page translation",
+      "django_faq": "FAQ",
+      "django_deliverypoints": "Points",
+      "django_email": "Emails",
+      "django_agreements": "Agreements",
+      "django_accounts": "Accounts",
+      "django_checkout": "Orders and checkout",
+      "django_returns": "Returns",
+      "django_contact_forms": "Forms",
+      "django_leads": "Leads",
+      "django_communicator": "Communicator",
+      "django_siteintel": "Site intelligence",
+      "django_notifications": "Notifications",
+      "django_munin": "Platform",
+      "django_access": "Access"
+    }
   }
 }

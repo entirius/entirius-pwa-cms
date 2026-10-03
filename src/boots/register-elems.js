@@ -74,4 +74,7 @@ export default function registerBootComponents(app) {
   app.component("BottomTabBar", defineAsyncComponent(() => import("./BottomTabBar/index.vue")));
   app.component("UserMenu", defineAsyncComponent(() => import("./UserMenu/index.vue")));
 
+  // Access panel (access plan 20)
+  app.component("PermissionMatrix", defineAsyncComponent(() => import("./PermissionMatrix/index.vue")));
+
 }

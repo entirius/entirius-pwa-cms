@@ -52,7 +52,10 @@
     "communicator_templates": "Szablony",
     "communicator_sequences": "Sekwencje",
     "communicator_settings": "Ustawienia wysyłki",
-    "ui_catalogue": "Katalog komponentów"
+    "ui_catalogue": "Katalog komponentów",
+    "access": {
+      "roles": "Role"
+    }
   },
   "login": {
     "welcome": "Zaloguj się",
@@ -575,7 +578,9 @@
     "communicator": "Communicator",
     "communicator_desc": "Szablony wiadomości, sekwencje follow-upów, polityka wysyłki i tryb kanału",
     "greeting": "Dzień dobry",
-    "greeting_name": "Dzień dobry, {name}"
+    "greeting_name": "Dzień dobry, {name}",
+    "access": "Dostęp",
+    "access_desc": "Role pracowników i to, co każda rola może czytać i zmieniać"
   },
   "stock": {
     "manage": "Stany",
@@ -3798,6 +3803,76 @@
     "staff_only_title": "Brak dostępu do panelu administracyjnego",
     "staff_only_message": "To konto nie ma dostępu do panelu administracyjnego. Zaloguj się kontem pracownika.",
     "dismiss": "Zamknij",
-    "readonly_notice": "Tylko odczyt: Twoja rola pozwala oglądać tę stronę, ale nie zmieniać jej"
+    "readonly_notice": "Tylko odczyt: Twoja rola pozwala oglądać tę stronę, ale nie zmieniać jej",
+    "roles": {
+      "title": "Role",
+      "create": "Nowa rola",
+      "detail": "Rola",
+      "empty": "Brak ról",
+      "name": "Nazwa",
+      "key": "Klucz",
+      "key_hint": "Małe litery, cyfry, - i _; nie zmienia się po utworzeniu",
+      "key_reserved": "Ten klucz jest zarezerwowany, wybierz inny",
+      "type": "Typ",
+      "grants": "Nadania",
+      "builtin": "Wbudowana",
+      "custom": "Własna",
+      "not_found": "Ta rola nie istnieje",
+      "builtin_notice": "Rola wbudowana — skopiuj ją, aby zmienić uprawnienia",
+      "reserved_dropped": "Zarządzanie dostępem nie zostało skopiowane: należy tylko do wbudowanej roli Administrator",
+      "reserved_error": "Zarządzanie dostępem należy tylko do wbudowanej roli Administrator",
+      "details": "Rola",
+      "description": "Opis",
+      "permissions": "Uprawnienia",
+      "duplicate": "Duplikuj",
+      "copy_of": "Kopia: {name}",
+      "delete_title": "Usuń rolę",
+      "delete_message": "Usunąć rolę {name}? Wszyscy, którzy ją mają, stracą jej uprawnienia.",
+      "saved": "Rola zapisana",
+      "deleted": "Rola usunięta"
+    },
+    "matrix": {
+      "set_all": "Ustaw wszystko: {module}",
+      "levels": {
+        "none": "Brak",
+        "read": "Odczyt",
+        "write": "Zapis"
+      }
+    },
+    "sensitive": {
+      "pii": "Dane osobowe",
+      "money": "Pieniądze",
+      "secret": "Sekrety",
+      "ai_cost": "Koszt AI",
+      "config": "Konfiguracja",
+      "destructive": "Nieodwracalne"
+    },
+    "modules": {
+      "django_pim": "PIM",
+      "django_pim_translator": "Tłumaczenie PIM",
+      "django_pricemanager": "Ceny",
+      "django_pricefighter": "PriceFighter",
+      "django_qms": "Magazyn",
+      "django_suppliers": "Dostawcy",
+      "django_atlas": "Atlas",
+      "django_enrichment": "Wzbogacanie",
+      "django_lookup": "Wyszukiwanie produktów",
+      "django_contentdb": "Strony",
+      "django_contentdb_translator": "Tłumaczenie stron",
+      "django_faq": "FAQ",
+      "django_deliverypoints": "Punkty",
+      "django_email": "E-maile",
+      "django_agreements": "Zgody",
+      "django_accounts": "Konta",
+      "django_checkout": "Zamówienia i koszyk",
+      "django_returns": "Zwroty",
+      "django_contact_forms": "Formularze",
+      "django_leads": "Leady",
+      "django_communicator": "Komunikator",
+      "django_siteintel": "Analiza stron",
+      "django_notifications": "Powiadomienia",
+      "django_munin": "Platforma",
+      "django_access": "Dostęp"
+    }
   }
 }
