@@ -17,7 +17,7 @@
           :aria-label="$t('promo.voucher_lookup_placeholder')"
           @keyup.enter="doLookup"
         />
-        <BasicButton
+        <BasicButton :mutates="false"
           variant="secondary"
           :disabled="!lookupCode"
           @click="doLookup"

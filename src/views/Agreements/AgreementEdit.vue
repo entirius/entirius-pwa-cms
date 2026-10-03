@@ -118,7 +118,7 @@
               <BasicButton variant="secondary" @click="cancelVersionForm">
                 {{ $t('common.cancel') }}
               </BasicButton>
-              <BasicButton variant="secondary" @click="createVersion">
+              <BasicButton mutates variant="secondary" @click="createVersion">
                 {{ $t('agm.create_version') }}
               </BasicButton>
             </div>
@@ -156,7 +156,7 @@
                 size="sm"
                 @click="startEditPublished(row)"
               />
-              <BasicButton
+              <BasicButton mutates
                 v-if="!row.published_at"
                 variant="secondary"
                 size="sm"
@@ -182,7 +182,7 @@
               <BasicButton variant="secondary" @click="cancelEditVersion">
                 {{ $t('common.cancel') }}
               </BasicButton>
-              <BasicButton variant="secondary" @click="saveDraftVersion(editingVersion.id)">
+              <BasicButton mutates variant="secondary" @click="saveDraftVersion(editingVersion.id)">
                 {{ $t('common.save') }}
               </BasicButton>
             </div>

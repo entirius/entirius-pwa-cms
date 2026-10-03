@@ -145,7 +145,7 @@
             :data-testid="`products-reject-${row.id}`"
             @click="quickReject(row)"
           />
-          <IconButton
+          <IconButton mutates
             v-if="canPush(row)"
             icon="publish"
             size="sm"

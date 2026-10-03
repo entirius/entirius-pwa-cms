@@ -15,6 +15,7 @@ import FormField from "@/boots/FormField/index.vue";
 import BasicInput from "@/boots/BasicInput/index.vue";
 import BasicButton from "@/boots/BasicButton/index.vue";
 import IconButton from "@/boots/IconButton/index.vue";
+import Tag from "@/boots/Tag/index.vue";
 import PageHeader from "@/boots/PageHeader/index.vue";
 import { ACCESS_STORE, READONLY, isAreaReadonly, routeArea, useReadonly } from "@/composables/useReadonly";
 
@@ -165,5 +166,16 @@ describe("boots under the read-only flag", () => {
     });
     expect(labels(mount(Buttons, inReadonly(true)))).toEqual(["Podgląd", "Otwórz"]);
     expect(labels(mount(Buttons, inReadonly(false)))).toEqual(["Usuń", "Podgląd", "Usuń wiersz", "Otwórz"]);
+  });
+
+  // A role chip's remove (GroupList, StaffDetail) revokes a grant: Tag passes `mutates` to its IconButton.
+  it("a removable Tag marked `mutates` loses its remove, a picked-value Tag keeps it", () => {
+    const Tags = defineComponent({
+      components: { Tag },
+      template: `<div><Tag label="Editor" removable mutates /><Tag label="Red" removable /></div>`,
+    });
+    const removes = (wrapper) => wrapper.findAll(".tag").map((tag) => tag.find("button").exists());
+    expect(removes(mount(Tags, inReadonly(true)))).toEqual([false, true]);
+    expect(removes(mount(Tags, inReadonly(false)))).toEqual([true, true]);
   });
 });

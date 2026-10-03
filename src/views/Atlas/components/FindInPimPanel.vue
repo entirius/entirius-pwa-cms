@@ -19,7 +19,7 @@
         :hit="hit"
       >
         <template #actions>
-          <IconButton
+          <IconButton mutates
             icon="link"
             size="sm"
             :disabled="linkingSku === hit.basic?.sku"
@@ -53,7 +53,7 @@
             :hit="hit"
           >
             <template #actions>
-              <IconButton
+              <IconButton mutates
                 icon="link"
                 size="sm"
                 :disabled="linkingSku === hit.basic?.sku"

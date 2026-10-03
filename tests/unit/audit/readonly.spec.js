@@ -1,7 +1,7 @@
 // @vitest-environment node
 // Plan 19: the read-only audit flags a template click that reaches a write API outside the read-only-aware boots.
 import { describe, it, expect } from "vitest";
-import { auditSource, mutatingNames, routedViews } from "../../../scripts/audit/readonly.mjs";
+import { audit, auditSource, mutatingNames, routedViews } from "../../../scripts/audit/readonly.mjs";
 
 const sfc = (template) => `<template>
   <div>
@@ -42,6 +42,15 @@ describe("readonly audit", () => {
   it("accepts `mutates` on a BasicButton or IconButton, not on a raw element", () => {
     expect(auditSource(sfc(`    <IconButton mutates icon="delete" label="x" @click="remove(1)" />`))).toEqual([]);
     expect(auditSource(sfc(`    <button mutates @click="remove(1)">x</button>`))).toHaveLength(1);
+  });
+
+  it("takes `:mutates=\"false\"` as the declaration of a POST that only reads", () => {
+    expect(auditSource(sfc(`    <BasicButton :mutates="false" @click="remove(1)">x</BasicButton>`))).toEqual([]);
+  });
+
+  // The guard itself: a new write control without `mutates` in any panel fails the unit suite, not only lint:ui.
+  it("finds nothing in the real views of every panel", () => {
+    expect(audit()).toEqual([]);
   });
 
   it("maps routed views to their panel, the webpack chunk comment included", () => {

@@ -86,7 +86,7 @@
           <h3 class="feed-detail__heading m-0">
             {{ $t("atlas.feeds.detail.preview_section") }}
           </h3>
-          <IconButton
+          <IconButton :mutates="false"
             icon="refresh"
             variant="outline"
             size="sm"

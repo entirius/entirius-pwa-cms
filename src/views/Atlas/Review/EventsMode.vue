@@ -35,7 +35,7 @@
         <StatusBadge :label="value" :tone="severityVariant(value)" />
       </template>
       <template #cell-acknowledged_at="{ row }">
-        <BasicButton
+        <BasicButton mutates
           v-if="!row.acknowledged_at"
           size="sm"
           :data-testid="`events-ack-${row.id}`"

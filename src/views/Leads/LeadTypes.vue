@@ -31,21 +31,21 @@
             @update:model-value="save(type, { is_active: $event })"
           />
           <div class="lead-type__controls">
-            <IconButton
+            <IconButton mutates
               icon="moveUp"
               variant="outline"
               :label="$t('leads.stages.up')"
               :disabled="shifting || index === 0"
               @click="shift(index, -1)"
             />
-            <IconButton
+            <IconButton mutates
               icon="moveDown"
               variant="outline"
               :label="$t('leads.stages.down')"
               :disabled="shifting || index === types.length - 1"
               @click="shift(index, 1)"
             />
-            <IconButton
+            <IconButton mutates
               icon="delete"
               variant="danger"
               :label="$t('leads.stages.delete')"

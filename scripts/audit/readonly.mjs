@@ -3,13 +3,15 @@
 // finding is a template `@click` whose handler calls — directly or through the file's own functions — a POST, PUT,
 // PATCH or DELETE function imported from `@/api`, on an element that is not a `BasicButton`/`IconButton` marked
 // `mutates` (those hide themselves under a read-only PageLayout). ActionBar, FloatingActions and BulkActionBar take
-// their actions as data, so they never show up here. Code only, no page is opened; a heuristic, not a proof.
+// their actions as data, so they never show up here. Code only, no page is opened; a heuristic, not a proof. A button
+// whose POST only reads (a lookup, a preview, a validation) says so with `:mutates="false"`: it stays on a read-only
+// page and the audit takes the declaration. `npm run audit:readonly` (part of `lint:ui`) fails on any finding.
 // Usage: node scripts/audit/readonly.mjs [--panels pages,pim] [--fail-on-findings]
 import { readFileSync, readdirSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
-const ROOT = new URL("../../", import.meta.url).pathname;
+const ROOT = fileURLToPath(new URL("../../", import.meta.url));
 const ROUTER = "src/router/index.js";
 const VIEWS = "src/views";
 const WRITE_API = /^(POST|PUT|PATCH|DELETE)_/;
@@ -93,7 +95,8 @@ export function auditSource(source) {
   });
 }
 
-function audit(panels) {
+/** [{ panel, file, line, tag, handler }] over the routed views of `panels` (every panel when null). */
+export function audit(panels = null) {
   const views = routedViews(read(ROUTER));
   const wanted = panels ?? [...new Set(views.map((view) => view.panel))].sort();
   return wanted.flatMap((panel) =>

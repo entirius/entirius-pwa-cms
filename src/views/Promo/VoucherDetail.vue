@@ -26,7 +26,7 @@
         </div>
 
         <div v-if="availableActions.length" class="voucher-detail__bok mb-10">
-          <BasicButton
+          <BasicButton mutates
             v-for="act in availableActions"
             :key="act.action"
             variant="secondary"

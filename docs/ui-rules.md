@@ -191,7 +191,8 @@ Traps:
   `danger` one; an action's `mutates` true/false overrides its role), FloatingActions (but its back button) and
   BulkActionBar are gone, FormField disables its control. The PageLayout toolbar and the PageHeader `meta` (search,
   filters, the channel picker) stay enabled: they read, never write. Any other button that creates, changes or deletes (a row's delete, an inline save) is a `BasicButton` or
-  `IconButton` with `mutates`; `node scripts/audit/readonly.mjs` lists the ones that are not. A view never checks
+  `IconButton` with `mutates`; one whose POST only reads (a lookup, a preview, a validation) says `:mutates="false"`.
+  `npm run audit:readonly` (part of `lint:ui`) fails on a write button with neither. A view never checks
   write permission itself for this; `:readonly` on PageLayout forces it on, never off.
 - **Floating action.** `FloatingActions` sits 24 px from the bottom-right corner beside the sidebar (Figma S4) and
   16 px from the edge above the tab bar below 1024 px; a view never moves it. Bottom-pinned rows (the PageLayout

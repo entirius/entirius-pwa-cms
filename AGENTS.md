@@ -17,7 +17,8 @@ django-munin module registry. Backend for local dev: entirius-zeno at `http://lo
 | `npm test` | build check + full Playwright e2e (needs a running backend) |
 | `npm run test:smoke` | quick e2e sanity (~2 min) |
 | `npm run pretty` | Prettier over `*.vue` |
-| `npm run lint:ui` | UI lint (stylelint + eslint + the P2 scale codemod `--check`), warnings = debt, old token names fail |
+| `npm run lint:ui` | UI lint (stylelint + eslint + the P2 scale codemod `--check` + `audit:readonly`), warnings = debt, old token names fail |
+| `npm run audit:readonly` | fails on a write control the read-only mode does not reach (`scripts/audit/readonly.mjs`; mark it `mutates`, or `:mutates="false"` for a POST that only reads) |
 
 ## Conventions
 

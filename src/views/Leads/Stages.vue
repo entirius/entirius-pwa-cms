@@ -38,14 +38,14 @@
               />
             </span>
             <div class="stage__controls">
-              <IconButton
+              <IconButton mutates
                 icon="moveUp"
                 variant="outline"
                 :label="$t('leads.stages.up')"
                 :disabled="index === 0"
                 @click="shift(index, -1)"
               />
-              <IconButton
+              <IconButton mutates
                 icon="moveDown"
                 variant="outline"
                 :label="$t('leads.stages.down')"
