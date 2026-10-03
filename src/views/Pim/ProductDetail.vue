@@ -357,6 +357,7 @@ import { useNotifyStore } from "@/stores/notify";
 import { usePimChannelStore } from "@/stores/pimChannel";
 import { useMuninStore } from "@/stores/munin";
 import { useAccessStore } from "@/stores/access";
+import { AREAS } from "@/configs/areas";
 import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
 import MediaGallery from "./components/MediaGallery.vue";
 import AttributeEditor from "./components/AttributeEditor.vue";
@@ -387,7 +388,6 @@ const T9N_TABS = {
 };
 const DESCRIPTION_FIELDS = ["name", "description", "short_description"];
 const INHERIT_FLAGS = ["inherit_attributes", "inherit_descriptions", "inherit_images"];
-const PRODUCT_DELETE_AREA = "pim.product_delete";
 // The "more" menu items that open a dialog, by key (the inheritance flags toggle instead).
 const MORE_DIALOGS = { channels: "showAddToChannelDialog", copy: "showCopyDialog", enrich: "showSpawnDialog" };
 const WYSIWYG = { is: "BasicWysiwyg", attrs: { variant: "lite" } };
@@ -425,7 +425,7 @@ export default {
     const formErrors = useFormErrors();
     const access = useAccessStore();
     // Deleting a SKU is its own permission (access plan 09b): an Editor edits but does not delete. UX only.
-    const canDeleteProduct = computed(() => access.can(PRODUCT_DELETE_AREA, "write"));
+    const canDeleteProduct = computed(() => access.can(AREAS.PIM_PRODUCT_DELETE, "write"));
     return { loader, notify, pimChannel, munin, formErrors, canDeleteProduct, ...unsaved, T9N_TABS };
   },
   data() {

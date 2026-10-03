@@ -1,29 +1,16 @@
 import { describe, it, expect } from "vitest";
 import en from "@/i18n/locales/en.json";
 import pl from "@/i18n/locales/pl.json";
+import catalogue from "../../fixtures/access-catalogue.json";
 
 // Access plan 23: every access string exists in both locales — the panel, its nav, the read-only notice, the non-staff
 // wall, SecretReveal — plus one label per catalogue area and token scope (`access.areas.<key>`, `access.scopes.<key>`).
-// The lists below are the django-access catalogue (49 areas, 9 scopes); a new area or scope needs a line here and a
-// label in both files.
+// The area and scope keys come from the committed catalogue snapshot (`tests/fixtures/access-catalogue.json`, the keys
+// of `GET /api/access/v2/admin/catalogue/`), shared with `tests/unit/configs/areas.spec.js`; the e2e
+// `access-catalogue.spec.js` diffs the live catalogue against it and against these labels, so a new catalogue area
+// fails there until the snapshot and both locales carry it.
 
-const AREAS = [
-  "pim.products", "pim.categories", "pim.schema", "pim.quality", "pim.product_delete", "pim_translator.translate",
-  "pricemanager.prices", "pricemanager.settings", "pricefighter.decisions", "pricefighter.rules", "qms.stock",
-  "suppliers.sources", "suppliers.products", "suppliers.credentials", "atlas.sources", "atlas.products",
-  "atlas.credentials", "enrichment.rules", "enrichment.proposals", "lookup.search", "content.pages", "content.publish",
-  "content.media", "content.schema", "contentdb_translator.translate", "faq.faq", "deliverypoints.points",
-  "email.templates", "agreements.definitions", "agreements.consents", "accounts.customers", "checkout.orders",
-  "checkout.discounts", "returns.attachments", "contact_forms.submissions", "contact_forms.leads",
-  "contact_forms.settings", "leads.companies", "leads.settings", "leads.gdpr", "communicator.review",
-  "communicator.content", "communicator.conversations", "communicator.settings", "siteintel.audits",
-  "notifications.inbox", "munin.config", "access.manage", "platform.devtools",
-];
-
-const SCOPES = [
-  "checkout.storefront", "checkout.erase", "accounts.erase", "contact_forms.submit", "contact_forms.booking",
-  "returns.api", "reviews.moderate", "vault.api", "agreements.subscribe",
-];
+const { areas: AREAS, scopes: SCOPES } = catalogue;
 
 // The namespaces the access work owns; `panels` is shared, so only its two access keys count.
 const NAMESPACES = ["access", "nav.access", "secret_reveal"];
@@ -49,14 +36,14 @@ describe("access i18n keys", () => {
     expect(missingIn(pl, PANEL_KEYS)).toEqual([]);
   });
 
-  it("labels all 49 catalogue areas in both locales", () => {
+  it("labels every catalogue area in both locales", () => {
     const keys = AREAS.map((area) => `access.areas.${area}`);
-    expect(new Set(AREAS).size).toBe(49);
+    expect(new Set(AREAS).size).toBe(AREAS.length);
     expect(missingIn(en, keys)).toEqual([]);
     expect(missingIn(pl, keys)).toEqual([]);
   });
 
-  it("labels all 9 token scopes in both locales", () => {
+  it("labels every token scope in both locales", () => {
     const keys = SCOPES.map((scope) => `access.scopes.${scope}`);
     expect(missingIn(en, keys)).toEqual([]);
     expect(missingIn(pl, keys)).toEqual([]);

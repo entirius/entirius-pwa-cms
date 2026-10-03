@@ -162,6 +162,7 @@ import { useUserStore } from "@/stores/user";
 import { useContentDBChannelStore } from "@/stores/contentDBChannel";
 import { useMuninStore } from "@/stores/munin";
 import { useAccessStore } from "@/stores/access";
+import { AREAS } from "@/configs/areas";
 import config_options from "@/../__client/configs/__config_options";
 
 const section_options = (value, look_for = null) => {
@@ -214,7 +215,7 @@ export default {
     },
     // django-access decides when it is there; without it, the contentdb content-permissions (today's logic).
     canCreate() {
-      if (this.access.available) return this.access.can("content.pages", "write");
+      if (this.access.available) return this.access.can(AREAS.CONTENT_PAGES, "write");
       return Boolean(this.user?.buildTypes?.some((type) => type.actions?.includes("create")));
     },
     availableLanguages() {

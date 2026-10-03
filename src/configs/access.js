@@ -1,3 +1,5 @@
+import { AREAS } from "@/configs/areas";
+
 // The panel registry: one entry per CMS panel. `areas` are the django-access areas the panel works on (the area
 // catalogue keys); a panel is shown when the user can read any of them (`useAccessStore().canAny`).
 export const panels = [
@@ -8,7 +10,7 @@ export const panels = [
     root: "/pages/content",
     labelKey: "panels.pages",
     descriptionKey: "panels.pages_desc",
-    areas: ["content.pages", "content.publish", "content.media", "content.schema"],
+    areas: [AREAS.CONTENT_PAGES, AREAS.CONTENT_PUBLISH, AREAS.CONTENT_MEDIA, AREAS.CONTENT_SCHEMA],
   },
   {
     name: "PIM",
@@ -17,7 +19,7 @@ export const panels = [
     root: "/pim/products",
     labelKey: "panels.pim",
     descriptionKey: "panels.pim_desc",
-    areas: ["pim.products", "pim.categories", "pim.schema", "pim.quality", "suppliers.sources", "suppliers.products"],
+    areas: [AREAS.PIM_PRODUCTS, AREAS.PIM_CATEGORIES, AREAS.PIM_SCHEMA, AREAS.PIM_QUALITY, AREAS.SUPPLIERS_SOURCES, AREAS.SUPPLIERS_PRODUCTS],
   },
   {
     name: "Points",
@@ -26,7 +28,7 @@ export const panels = [
     root: "/points/list",
     labelKey: "panels.points",
     descriptionKey: "panels.points_desc",
-    areas: ["deliverypoints.points"],
+    areas: [AREAS.DELIVERYPOINTS_POINTS],
   },
   {
     name: "Forms",
@@ -35,7 +37,7 @@ export const panels = [
     root: "/forms/list",
     labelKey: "panels.forms",
     descriptionKey: "panels.forms_desc",
-    areas: ["contact_forms.submissions", "contact_forms.leads", "contact_forms.settings"],
+    areas: [AREAS.CONTACT_FORMS_SUBMISSIONS, AREAS.CONTACT_FORMS_LEADS, AREAS.CONTACT_FORMS_SETTINGS],
   },
   {
     name: "Accounts",
@@ -44,7 +46,7 @@ export const panels = [
     root: "/accounts/customers",
     labelKey: "panels.accounts",
     descriptionKey: "panels.accounts_desc",
-    areas: ["accounts.customers"],
+    areas: [AREAS.ACCOUNTS_CUSTOMERS],
   },
   {
     name: "Orders",
@@ -53,7 +55,7 @@ export const panels = [
     root: "/checkout-orders/orders",
     labelKey: "panels.checkout_orders",
     descriptionKey: "panels.checkout_orders_desc",
-    areas: ["checkout.orders"],
+    areas: [AREAS.CHECKOUT_ORDERS],
   },
   {
     name: "Agreements",
@@ -62,7 +64,7 @@ export const panels = [
     root: "/agreements/list",
     labelKey: "panels.agreements",
     descriptionKey: "panels.agreements_desc",
-    areas: ["agreements.definitions", "agreements.consents"],
+    areas: [AREAS.AGREEMENTS_DEFINITIONS, AREAS.AGREEMENTS_CONSENTS],
   },
   {
     name: "Emails",
@@ -71,7 +73,7 @@ export const panels = [
     root: "/emails",
     labelKey: "panels.emails",
     descriptionKey: "panels.emails_desc",
-    areas: ["email.templates"],
+    areas: [AREAS.EMAIL_TEMPLATES],
   },
   {
     name: "FAQ",
@@ -80,7 +82,7 @@ export const panels = [
     root: "/faq/groups",
     labelKey: "panels.faq",
     descriptionKey: "panels.faq_desc",
-    areas: ["faq.faq"],
+    areas: [AREAS.FAQ_FAQ],
   },
   {
     name: "Pricing",
@@ -89,7 +91,7 @@ export const panels = [
     root: "/pricing/prices",
     labelKey: "panels.pricing",
     descriptionKey: "panels.pricing_desc",
-    areas: ["pricemanager.prices", "pricemanager.settings"],
+    areas: [AREAS.PRICEMANAGER_PRICES, AREAS.PRICEMANAGER_SETTINGS],
   },
   {
     name: "Stock",
@@ -98,7 +100,7 @@ export const panels = [
     root: "/stock/manage",
     labelKey: "panels.stock",
     descriptionKey: "panels.stock_desc",
-    areas: ["qms.stock"],
+    areas: [AREAS.QMS_STOCK],
   },
   {
     name: "Translation",
@@ -107,7 +109,7 @@ export const panels = [
     root: "/translation-jobs",
     labelKey: "panels.translation",
     descriptionKey: "panels.translation_desc",
-    areas: ["pim_translator.translate", "contentdb_translator.translate"],
+    areas: [AREAS.PIM_TRANSLATOR_TRANSLATE, AREAS.CONTENTDB_TRANSLATOR_TRANSLATE],
   },
   {
     name: "Atlas",
@@ -116,7 +118,7 @@ export const panels = [
     root: "/atlas/list",
     labelKey: "panels.atlas",
     descriptionKey: "panels.atlas_desc",
-    areas: ["atlas.sources", "atlas.products", "atlas.credentials", "lookup.search"],
+    areas: [AREAS.ATLAS_SOURCES, AREAS.ATLAS_PRODUCTS, AREAS.ATLAS_CREDENTIALS, AREAS.LOOKUP_SEARCH],
   },
   {
     name: "Enricher",
@@ -125,7 +127,7 @@ export const panels = [
     root: "/enrichment",
     labelKey: "panels.enricher",
     descriptionKey: "panels.enricher_desc",
-    areas: ["enrichment.rules", "enrichment.proposals"],
+    areas: [AREAS.ENRICHMENT_RULES, AREAS.ENRICHMENT_PROPOSALS],
   },
   {
     name: "Promo",
@@ -134,7 +136,7 @@ export const panels = [
     root: "/promo/list",
     labelKey: "panels.promo",
     descriptionKey: "panels.promo_desc",
-    areas: ["checkout.discounts"],
+    areas: [AREAS.CHECKOUT_DISCOUNTS],
   },
   {
     name: "PriceFighter",
@@ -143,7 +145,7 @@ export const panels = [
     root: "/pricefighter/gap",
     labelKey: "panels.pricefighter",
     descriptionKey: "panels.pricefighter_desc",
-    areas: ["pricefighter.decisions", "pricefighter.rules"],
+    areas: [AREAS.PRICEFIGHTER_DECISIONS, AREAS.PRICEFIGHTER_RULES],
   },
   {
     name: "Leads",
@@ -155,14 +157,14 @@ export const panels = [
     labelKey: "panels.leads",
     descriptionKey: "panels.leads_desc",
     areas: [
-      "leads.companies",
-      "leads.settings",
-      "leads.gdpr",
-      "communicator.review",
-      "communicator.content",
-      "communicator.conversations",
-      "communicator.settings",
-      "siteintel.audits",
+      AREAS.LEADS_COMPANIES,
+      AREAS.LEADS_SETTINGS,
+      AREAS.LEADS_GDPR,
+      AREAS.COMMUNICATOR_REVIEW,
+      AREAS.COMMUNICATOR_CONTENT,
+      AREAS.COMMUNICATOR_CONVERSATIONS,
+      AREAS.COMMUNICATOR_SETTINGS,
+      AREAS.SITEINTEL_AUDITS,
     ],
   },
   {
@@ -172,7 +174,7 @@ export const panels = [
     root: "/access/roles",
     labelKey: "panels.access",
     descriptionKey: "panels.access_desc",
-    areas: ["access.manage"],
+    areas: [AREAS.ACCESS_MANAGE],
   },
 ];
 
