@@ -1749,7 +1749,9 @@
         "light"
       ],
       "readySelector": "[data-testid=\"application-name\"]",
-      "file": "access-application-detail__{vp}__{theme}.png"
+      "file": "access-application-detail__{vp}__{theme}.png",
+      "needsData": true,
+      "note": "a fresh seed has no access application (only BDD scenarios create them)"
     },
     {
       "id": "ui-catalogue",

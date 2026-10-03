@@ -37,9 +37,15 @@ each offering `read`, `write` or both. The CMS uses them in two places:
 - **Routes** — a route that works on one area carries `meta.area`; a nav entry takes its route's area and is hidden
   without read on it.
 
+Code never spells an area key: `src/configs/areas.js` holds one constant per key the CMS uses (`AREAS.PIM_PRODUCTS`),
+imported by the panel registry, the routes and the in-view checks; `tests/unit/configs/areas.spec.js` keeps each one
+in the catalogue snapshot.
+
 Labels: `access.areas.<key>` and `access.scopes.<key>` (the 9 token scopes) in both locales;
-`tests/unit/i18n/accessKeys.spec.js` fails on a missing one and lists the catalogue. A new area or scope in the
-module needs a line there and a label in `en.json` and `pl.json`; until then the UI shows the catalogue's English
+`tests/unit/i18n/accessKeys.spec.js` fails on a missing one against the catalogue snapshot
+(`tests/fixtures/access-catalogue.json`), and the e2e `access-catalogue.spec.js` diffs the live catalogue against the
+snapshot and the labels. A new area or scope in the module needs a line in the snapshot and a label in `en.json` and
+`pl.json`; until then the UI shows the catalogue's English
 label.
 
 ## The guard
@@ -71,11 +77,14 @@ it anyway (`STAFF_ONLY`).
 A page whose area the user can read but not write is read-only, decided once in `PageLayout` from the route's area
 (`src/composables/useReadonly.js`). It hides Save, Delete, create, the FAB and bulk actions, disables the form fields
 (through `FormField`) and shows one notice line (`data-testid="readonly-notice"`). A button that writes outside those
-boots takes `mutates`. Views never check write permission themselves. Rules: `docs/ui-rules.md` § Page patterns;
-`node scripts/audit/readonly.mjs` lists writing buttons the mode does not reach.
+boots takes `mutates`; one whose POST only reads (a lookup, a preview, a validation) declares `:mutates="false"` and
+stays. Views never check write permission themselves. Rules: `docs/ui-rules.md` § Page patterns;
+`npm run audit:readonly` (in `lint:ui` and the unit suite) fails on a writing button the mode does not reach, in every
+panel.
 
 Known gaps: a control outside a `FormField` stays live (the FAQ group's header "Active" switch and its "Add existing
-item" select, the PIM header "Enabled" switch) — Save is hidden, and the gate refuses what they send.
+item" select, the PIM header "Enabled" switch) — Save is hidden, and the gate refuses what they send. The
+application's header "Active" switch sits in a `FormField` and is disabled with the rest.
 
 ## The Access panel
 
@@ -95,8 +104,8 @@ A revoke the server's lockout guard refuses reads "At least one person must keep
 ## Token values (SecretReveal)
 
 A new or rotated token's value comes once, in the create or rotate response. The page hands it to `SecretReveal`
-(`docs/ui-components.md`) and nowhere else: never a toast, a store, the router, a log. The boot copies it into its
-own state and empties the caller's copy at once (`v-model:secret`); Close works only after "I have stored it"; the
+(`docs/ui-components.md`) and nowhere else: never a toast, a store, the router, a log. The page calls `show(raw)` on the
+boot's ref, so the value never sits in the page's reactive data; Close works only after "I have stored it"; the
 field is emptied before the dialog leaves and on unmount; a route leave is refused while it is open. Token API calls
 carry `sensitive`, so `VUE_APP_DEBUG` logs `[redacted]` for them. The token list shows `prefix…last_four` only.
 
@@ -104,12 +113,14 @@ carry `sensitive`, so `VUE_APP_DEBUG` logs `[redacted]` for them. The token list
 
 | Layer | Where |
 |---|---|
-| Unit | `tests/unit/stores/access.spec.js`, `tests/unit/router/accessGuard.spec.js` + `accessPanel.spec.js`, `tests/unit/components/Access/`, `tests/unit/composables/useNavAccess.spec.js`, `tests/unit/views/Access/`, `tests/unit/boots/PermissionMatrix.spec.js`, `tests/unit/i18n/accessKeys.spec.js` |
-| e2e, read-only | `tests/e2e/access-users.spec.js` (admin, viewer, editor, customer; the viewer's write refused by the gate; one toast per refusal burst), `access-roles-smoke`, `access-staff-smoke`, `access-applications-smoke` |
+| Unit | `tests/unit/stores/access.spec.js`, `tests/unit/router/accessGuard.spec.js` + `accessPanel.spec.js`, `tests/unit/components/Access/`, `tests/unit/composables/useNavAccess.spec.js`, `tests/unit/views/Access/`, `tests/unit/boots/PermissionMatrix.spec.js`, `tests/unit/i18n/accessKeys.spec.js`, `tests/unit/configs/areas.spec.js`, `tests/unit/audit/readonly.spec.js` (the read-only audit over every panel's views) |
+| e2e, read-only | `tests/e2e/access-users.spec.js` (admin, viewer, editor, customer; the viewer's write refused by the gate; one toast per refusal burst), `access-roles-smoke`, `access-staff-smoke`, `access-applications-smoke`, `access-catalogue` (the live catalogue against the snapshot and both locales' labels) |
 | e2e, writes | `tests/e2e/access-secret.spec.js` — creates an application and a secret token, proves the value is in no console message, web storage, cookie, URL, page HTML or later API response; revokes and deactivates in cleanup |
-| Visual | capture ids `access-roles-list`, `access-role-builtin`, `access-staff-list`, `access-audit`, `access-applications-list`, `access-application-detail` |
+| Visual | capture ids `access-roles-list`, `access-role-builtin`, `access-staff-list`, `access-audit`, `access-applications-list`, `access-application-detail` (`needsData`: a fresh seed has no application, the row skips) |
 
-The e2e specs need the seeded users of the test package (`viewer`/`viewer123`, `editor`/`editor123`,
-`testuser`/`testuser123`; overridable as `ACCESS_<KIND>_USERNAME` / `ACCESS_<KIND>_PASSWORD`). The customer case
-skips with the reason when the seed gives `testuser` no Customer row on `VUE_APP_CHANNEL`; the next test proves the
-wall from a real session whose `me` says non-staff.
+The e2e specs need the seeded staff users of the test package (viewer and editor; names and passwords: the test
+package's `scripts/seed-access.py` and README § Key settings), overridable as `ACCESS_<KIND>_USERNAME` /
+`ACCESS_<KIND>_PASSWORD` (`VIEWER`, `EDITOR`). The zeno seed gives no non-staff account a Customer row on the channel,
+so the real-customer case runs only when the run names one (`ACCESS_CUSTOMER_USERNAME` = its email,
+`ACCESS_CUSTOMER_PASSWORD`) and then fails when that login fails on `VUE_APP_CHANNEL`; without it the case skips with
+that reason, and the next test proves the wall from a real session whose `me` says non-staff.

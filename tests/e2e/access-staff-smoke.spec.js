@@ -7,7 +7,9 @@ const { either: escapedEither } = require('./helpers/text');
 
 /**
  * Access plan 21 smoke: the admin opens Access → Staff, finds the seeded `viewer` and sees the Viewer role, opens the
- * account, then filters the Audit by "grant.migrate". Read-only: never grants or revokes (the BDD covers writes).
+ * account, then filters the Audit by "grant.create" — the seed grants every test role through the service, so a fresh
+ * seed always has those rows (`grant.migrate` exists only on a database that had staff before django-access). Read-only:
+ * never grants or revokes (the BDD covers writes).
  */
 
 const either = (pick) => escapedEither(pick(en), pick(pl));
@@ -43,12 +45,14 @@ test.describe('Access staff and audit (desktop)', () => {
     await page.waitForURL(/\/access\/audit$/);
     await page.waitForLoadState('networkidle');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(either((t) => t.access.audit.title));
-    const filtered = page.waitForResponse((r) => r.url().includes('/admin/audit/') && r.url().includes('action=grant.migrate'));
+    const filtered = page.waitForResponse((r) => r.url().includes('/admin/audit/') && r.url().includes('action=grant.create'));
     await page.getByRole('combobox', { name: either((t) => t.access.audit.action) }).click();
-    await page.getByRole('option', { name: either((t) => t.access.audit.actions.grant.migrate) }).click();
+    await page.getByRole('option', { name: either((t) => t.access.audit.actions.grant.create) }).click();
     expect((await filtered).status()).toBe(200);
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('[data-testid^="audit-row-"]:not([data-testid="audit-row-grant.migrate"])')).toHaveCount(0);
+    // A filter that dropped every row would pass the exclusion alone: the seeded grant rows must be there.
+    await expect(page.locator('[data-testid="audit-row-grant.create"]').first()).toBeVisible();
+    await expect(page.locator('[data-testid^="audit-row-"]:not([data-testid="audit-row-grant.create"])')).toHaveCount(0);
 
     collector.assertNoErrors(expect, 'Access staff and audit');
   });

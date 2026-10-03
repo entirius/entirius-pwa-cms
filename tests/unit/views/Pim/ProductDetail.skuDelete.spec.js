@@ -41,6 +41,7 @@ const stubs = {
   PageHeader: { template: "<div><slot name='actions' /></div>" },
   ActionBar: { template: "<div><slot /></div>" },
   IconButton: { props: ["label"], template: "<button>{{ label }}</button>" },
+  BasicButton: { template: "<button class='stub-basic-button'><slot /></button>" },
 };
 
 async function mountWith(permissions) {
@@ -55,6 +56,7 @@ async function mountWith(permissions) {
 }
 
 const deleteButton = (wrapper) => wrapper.find('[data-testid="pim-product-delete"]');
+const saveButton = (wrapper) => wrapper.findAll(".stub-basic-button").filter((b) => b.text() === wrapper.vm.$t("common.save"));
 
 describe("ProductDetail — SKU delete permission", () => {
   beforeEach(() => vi.clearAllMocks());
@@ -67,5 +69,6 @@ describe("ProductDetail — SKU delete permission", () => {
   it("hides Delete from an Editor (pim.products write, no pim.product_delete)", async () => {
     const wrapper = await mountWith({ "pim.products": "write" });
     expect(deleteButton(wrapper).exists()).toBe(false);
+    expect(saveButton(wrapper)).toHaveLength(1);
   });
 });

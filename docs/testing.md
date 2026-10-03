@@ -95,7 +95,8 @@ Fixture data: `tests/fixtures/`.
 | — | `13-pim-quality.spec.js`, `14-pim-quality-rules.spec.js`, `15-pim-quality-rules-offcompat.spec.js` | PIM quality/gap rules, soft-compat with older backends |
 | — | `16-error-feedback.spec.js` | API error surface in the UI |
 | — | `access-users.spec.js` | Admin, viewer, editor and customer see what their roles allow; the gate refuses the viewer's write; one toast per refusal burst (seeded users, read-only) |
-| — | `access-secret.spec.js` | A new token's value never leaves SecretReveal (writes: one application and one token, revoked and deactivated in cleanup) |
+| — | `access-secret.spec.js` | A new token's value never leaves SecretReveal (writes: one application and one token, revoked and deactivated in cleanup — the API deletes neither, so each run leaves an inactive `e2e-secret-<run>` application until the next `make seed`, and ApplicationList reads one token list per application) |
+| — | `access-catalogue.spec.js` | The live django-access catalogue equals `tests/fixtures/access-catalogue.json` and every area and scope has an EN and PL label (read-only) |
 | — | `access-roles-smoke.spec.js`, `access-staff-smoke.spec.js`, `access-applications-smoke.spec.js` | Access panel smokes (read-only) |
 | `test:comprehensive` | `03`, `04`, `05`, `06` | Combined run of the four core suites |
 | `test:build` | — | Production build check (`tests/build/build-test.js`) |

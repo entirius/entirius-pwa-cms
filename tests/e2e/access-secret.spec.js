@@ -8,7 +8,9 @@ const { createErrorCollector } = require('../helpers/error-collector');
  * confirmed and closed; then the value must be in no console message, web storage entry, cookie, visited URL, the page
  * (text and fields, before and after a reload), page error, or any API response but the create's own (the token
  * list after the create, the reloaded application detail and token list). Cleanup revokes
- * the token and deactivates the application. The value is never printed: every assertion is a yes/no named by the
+ * the token and deactivates the application — the API deletes neither, so every run leaves an inactive
+ * `e2e-secret-<run>` application with one revoked token until the next `make seed`; ApplicationList reads one token
+ * list per application, so many runs on one seed make that page slower (docs/testing.md). The value is never printed: every assertion is a yes/no named by the
  * token id, and trace, screenshot and video are off (they would keep the field's content on disk).
  * The one access spec that writes.
  */
@@ -117,8 +119,9 @@ test.describe('Access: a token value stays in SecretReveal (desktop)', () => {
     const id = `token ${created.tokenId}`;
     const holds = (text) => String(text).includes(secret);
     expect(secret.startsWith('ent_api_') && secret.length > 20, `${id}: the dialog showed a token value`).toBe(true);
-    // The page that showed it: the closed dialog left the value in no text and no field.
+    // The page that showed it: the closed dialog left the value in no text, no field and no attribute.
     expect((await liveText(page)).some(holds), `${id} on the page after close`).toBe(false);
+    expect(holds(await page.content()), `${id} in the page HTML after close`).toBe(false);
 
     // A fresh load of the application detail and its token list.
     await page.reload();

@@ -15,11 +15,12 @@ const { either: escapedEither } = require('./helpers/text');
 
 const API = process.env.VUE_APP_API_URL || 'http://localhost:8100';
 const CHANNEL = process.env.VUE_APP_CHANNEL || 'default-europe';
-// Seeded users (todo/access README § Contract) — dev defaults, never real.
+// Seeded users (todo/access README § Contract) — dev defaults, never real. The customer has none: the zeno seed gives no
+// non-staff account a Customer row on the channel, so the run names one (the login is the email) or the case skips.
 const USERS = {
   viewer: [process.env.ACCESS_VIEWER_USERNAME || 'viewer', process.env.ACCESS_VIEWER_PASSWORD || 'viewer123'],
   editor: [process.env.ACCESS_EDITOR_USERNAME || 'editor', process.env.ACCESS_EDITOR_PASSWORD || 'editor123'],
-  customer: [process.env.ACCESS_CUSTOMER_USERNAME || 'testuser', process.env.ACCESS_CUSTOMER_PASSWORD || 'testuser123'],
+  customer: [process.env.ACCESS_CUSTOMER_USERNAME, process.env.ACCESS_CUSTOMER_PASSWORD],
 };
 // The seeded FAQ group (capture-spec `faq-group-detail` uses it too).
 const FAQ_GROUP = 'shipping';
@@ -110,8 +111,11 @@ test.describe('Access: who sees what (desktop)', () => {
 
   test('customer meets the no-access wall and logs out', async ({ page }) => {
     const [email, password] = USERS.customer;
+    // Runs only when the run names its customer; then a failed login is a broken seed and fails, never a skip. Without
+    // one the next test still proves the wall from a real session.
+    test.skip(!email, 'no customer named (ACCESS_CUSTOMER_USERNAME = its email, ACCESS_CUSTOMER_PASSWORD)');
     const probe = await page.request.post(`${API}/api/accounts/v1/${CHANNEL}/customer/tokens/`, { data: { email, password } });
-    test.skip(!probe.ok(), `the seed gives ${email} no Customer row on ${CHANNEL} (login answers ${probe.status()})`);
+    expect(probe.ok(), `the named customer ${email} logs in on ${CHANNEL} (answers ${probe.status()})`).toBe(true);
 
     await login(page, email, password);
     await expectWall(page);
