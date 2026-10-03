@@ -1313,7 +1313,7 @@ const routes = [
     ],
   },
 
-  // Access panel (django-access): roles, staff, groups, audit; applications join in plan 22
+  // Access panel (django-access): roles, staff, groups, applications and their tokens, audit
   {
     path: "/access",
     component: () => import(/* webpackChunkName: "access" */ "../views/Access/index.vue"),
@@ -1373,6 +1373,36 @@ const routes = [
         name: "AccessGroups",
         component: () => import(/* webpackChunkName: "access" */ "../views/Access/GroupList.vue"),
         meta: { requiresAuth: true, titleKey: "access.groups.title", panel: "access", area: "access.manage" },
+      },
+      {
+        path: "applications",
+        name: "AccessApplications",
+        component: () => import(/* webpackChunkName: "access" */ "../views/Access/ApplicationList.vue"),
+        meta: { requiresAuth: true, titleKey: "access.applications.title", panel: "access", area: "access.manage" },
+      },
+      {
+        path: "applications/new",
+        name: "AccessApplicationCreate",
+        component: () => import(/* webpackChunkName: "access" */ "../views/Access/ApplicationDetail.vue"),
+        meta: {
+          requiresAuth: true,
+          titleKey: "access.applications.create",
+          panel: "access",
+          area: "access.manage",
+          navParent: "/access/applications",
+        },
+      },
+      {
+        path: "applications/:id(\\d+)",
+        name: "AccessApplicationDetail",
+        component: () => import(/* webpackChunkName: "access" */ "../views/Access/ApplicationDetail.vue"),
+        meta: {
+          requiresAuth: true,
+          titleKey: "access.applications.detail",
+          panel: "access",
+          area: "access.manage",
+          navParent: "/access/applications",
+        },
       },
       {
         path: "audit",

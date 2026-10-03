@@ -373,6 +373,13 @@ export function buildNavRoutes() {
       app: ["access"],
     },
     {
+      route: "/access/applications",
+      labelKey: "nav.access.applications",
+      icon: "key",
+      query: {},
+      app: ["access"],
+    },
+    {
       route: "/access/audit",
       labelKey: "nav.access.audit",
       icon: "clock-rotate-left",
