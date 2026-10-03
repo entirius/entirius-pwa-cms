@@ -9,7 +9,7 @@ const SECTIONS = ["icons", "actions", "overlays", "display", "page-frame", "sele
 // Every component row of the catalogue spec (r02 tech-notes §6), the P4 shell rows included: one anchor each. The
 // icons.js registry row is the `icons` section.
 const COMPONENTS = [
-  "basic-button", "icon-button", "action-bar", "floating-actions", "bulk-action-bar",
+  "basic-button", "icon-button", "action-bar", "floating-actions", "bulk-action-bar", "readonly-mode",
   "form-field", "basic-input", "basic-textarea", "number-input", "basic-select", "entity-search-picker",
   "channel-multi-select", "basic-checkbox", "basic-radio-group", "basic-switch", "segmented-control", "filter-chip",
   "basic-date-picker", "color-input", "basic-wysiwyg",
