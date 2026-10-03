@@ -71,13 +71,13 @@
 import { useNotifyStore } from "@/stores/notify";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { formatDate } from "@/utils/format";
-import { GET_AccessAudit, GET_AccessStaff } from "@/api/access/api";
+import { GET_AccessAudit, GET_AccessAllStaff } from "@/api/access/api";
 import { AUDIT_ACTIONS, AUDIT_PAGE_SIZE, BYPASS, auditParams, groupBypass } from "./audit";
 
 // The access audit log (django-access), newest first. Labels, targets and details are what users typed or the server
 // stored — rendered as text only. A superuser's writes through the gate (`gate.bypass`, one per request) fold into
-// one row per actor and day unless that action is the filter or the chip is off.
-const STAFF_PAGE_SIZE = 100;
+// one row per actor and day unless that action is the filter or the chip is off. The actor filter offers every staff
+// account (all pages, searchable); an actor that is no staff account any more is not offered.
 
 export default {
   name: "AccessAuditList",
@@ -160,7 +160,7 @@ export default {
     },
     async fetchStaff() {
       try {
-        this.staff = (await GET_AccessStaff({ page_size: STAFF_PAGE_SIZE })).data.results || [];
+        this.staff = await GET_AccessAllStaff();
       } catch {
         // No actor choices: the other filters still work.
       }

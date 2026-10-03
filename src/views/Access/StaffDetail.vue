@@ -42,6 +42,9 @@
             {{ $t("access.grants.add") }}
           </BasicButton>
         </div>
+        <p v-if="lockout" class="staff-detail__notice m-0" role="alert" data-testid="grant-lockout">
+          {{ $t("access.grants.lockout") }}
+        </p>
       </BasicCard>
 
       <BasicCard :title="$t('access.staff.group_roles')" gap class="mb-8">
@@ -71,14 +74,14 @@
 <script>
 import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
-import { isNotFound } from "@/api/createClient";
+import { isConflict, isNotFound } from "@/api/createClient";
 import { formatDate } from "@/utils/format";
-import { GET_AccessStaffUser, GET_AccessRoles, POST_AccessGrant, DELETE_AccessGrant } from "@/api/access/api";
+import { GET_AccessStaffUser, GET_AccessAllRoles, POST_AccessGrant, DELETE_AccessGrant } from "@/api/access/api";
 import { grantPayload, grantErrorMessage, roleOptions } from "./grants";
 
 // One staff account (django-access): roles granted directly (revoke, add) and the roles its groups bring, read-only
-// here — a group's roles change on the Groups page.
-const ROLE_PAGE_SIZE = 100;
+// here — a group's roles change on the Groups page. A revoke the lockout guard refuses (409) stays as a notice line in
+// the card until the next grant change; other refusals are toasts.
 
 export default {
   name: "AccessStaffDetail",
@@ -86,7 +89,16 @@ export default {
     return { loader: useLoaderStore(), notify: useNotifyStore() };
   },
   data() {
-    return { user: {}, roles: [], newRole: null, pendingRevoke: null, loading: true, notFound: false, loadFailed: false };
+    return {
+      user: {},
+      roles: [],
+      newRole: null,
+      pendingRevoke: null,
+      lockout: false,
+      loading: true,
+      notFound: false,
+      loadFailed: false,
+    };
   },
   computed: {
     grantColumns() {
@@ -135,7 +147,7 @@ export default {
     },
     async fetchRoles() {
       try {
-        this.roles = (await GET_AccessRoles({ page_size: ROLE_PAGE_SIZE })).data.results || [];
+        this.roles = await GET_AccessAllRoles();
       } catch {
         // No roles to offer: the grants still show and revoke.
       }
@@ -160,13 +172,15 @@ export default {
     },
     // A grant change, then the account again (its group roles may name the same role); errors as sentences.
     async mutate(change, options = {}) {
+      this.lockout = false;
       this.loader.loaderStart();
       try {
         const doneKey = await change();
         this.notify.spawnNotification({ type: "positive", msg: this.$t(doneKey) });
         await this.reloadUser();
       } catch (err) {
-        this.notifyError(err, options);
+        if (options.revoking && isConflict(err)) this.lockout = true;
+        else this.notifyError(err, options);
       } finally {
         this.loader.loaderFinish();
       }
@@ -181,5 +195,13 @@ export default {
 <style lang="scss" scoped>
 .staff-detail__add {
   min-width: 220px;
+}
+
+// The lockout refusal: the notice bar of docs/ui-rules.md § Locked / system entity, under the grant controls.
+.staff-detail__notice {
+  color: var(--text-strong);
+  background: var(--warning-subtle);
+  border-radius: var(--radius-base);
+  padding: var(--space-2) var(--space-4);
 }
 </style>

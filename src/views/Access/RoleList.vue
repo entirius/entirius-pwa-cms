@@ -33,11 +33,10 @@
 
 <script>
 import { useNotifyStore } from "@/stores/notify";
-import { GET_AccessRoles } from "@/api/access/api";
+import { GET_AccessAllRoles } from "@/api/access/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 
-// Built-in and custom roles (django-access): the API pages by 20, a role list is short — one page of the maximum.
-const PAGE_SIZE = 100;
+// Built-in and custom roles (django-access), every page of them.
 
 export default {
   name: "AccessRoleList",
@@ -73,8 +72,7 @@ export default {
     async fetchRoles() {
       this.loading = true;
       try {
-        const { data } = await GET_AccessRoles({ page_size: PAGE_SIZE });
-        this.roles = data.results || [];
+        this.roles = await GET_AccessAllRoles();
       } catch (err) {
         this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
       } finally {

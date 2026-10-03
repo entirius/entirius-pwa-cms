@@ -6,7 +6,7 @@ import { defineComponent, h } from "vue";
 // and says so, a save never sends access.manage, and the server's ACCESS_MANAGE_RESERVED reads as a sentence.
 const api = vi.hoisted(() => ({
   GET_AccessCatalogue: vi.fn(),
-  GET_AccessRoles: vi.fn(),
+  GET_AccessAllRoles: vi.fn(),
   GET_AccessRole: vi.fn(),
   POST_AccessRole: vi.fn(),
   PATCH_AccessRole: vi.fn(),
@@ -66,7 +66,7 @@ describe("RoleDetail", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     api.GET_AccessCatalogue.mockResolvedValue({ data: CATALOGUE });
-    api.GET_AccessRoles.mockResolvedValue({ data: { results: ROLES } });
+    api.GET_AccessAllRoles.mockResolvedValue(ROLES);
     api.GET_AccessRole.mockImplementation((id) => Promise.resolve({ data: DETAILS[id] }));
   });
 

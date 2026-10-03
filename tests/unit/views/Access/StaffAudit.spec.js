@@ -2,12 +2,12 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
 import { defineComponent, h } from "vue";
 
-// Access plan 21: a staff account's grants are added and revoked by id, the lockout 409 reads as a sentence, and the
-// audit filters reach the query string. The real English messages, so the sentences are what a user reads.
+// Access plan 21: a staff account's grants are added and revoked by id, the lockout 409 reads as a notice line in the
+// card, and the audit filters reach the query string. The real English messages, so the sentences are what a user reads.
 const api = vi.hoisted(() => ({
   GET_AccessStaffUser: vi.fn(),
-  GET_AccessStaff: vi.fn(),
-  GET_AccessRoles: vi.fn(),
+  GET_AccessAllStaff: vi.fn(),
+  GET_AccessAllRoles: vi.fn(),
   GET_AccessAudit: vi.fn(),
   POST_AccessGrant: vi.fn(),
   DELETE_AccessGrant: vi.fn(),
@@ -58,7 +58,7 @@ describe("StaffDetail", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     api.GET_AccessStaffUser.mockResolvedValue({ data: USER });
-    api.GET_AccessRoles.mockResolvedValue({ data: { results: ROLES } });
+    api.GET_AccessAllRoles.mockResolvedValue(ROLES);
   });
 
   it("splits direct grants from group roles and offers only roles not held directly", async () => {
@@ -82,19 +82,34 @@ describe("StaffDetail", () => {
     expect(lastToast()).toEqual({ type: "positive", msg: "Role revoked" });
   });
 
-  it("the lockout 409 on a revoke reads as the sentence", async () => {
+  it("the lockout 409 on a revoke stays as the sentence in the card, not a toast, until the next change", async () => {
     api.DELETE_AccessGrant.mockRejectedValue({ response: { status: 409, data: { error: "CONFLICT", message: "Nobody active" } } });
+    api.POST_AccessGrant.mockResolvedValue({ data: {} });
     const wrapper = await mountView(StaffDetail, { params: { id: "5" } });
     wrapper.vm.pendingRevoke = USER.grants[0];
     await wrapper.vm.revokeGrant();
-    expect(lastToast()).toEqual({
-      type: "negative",
-      msg: "At least one person must keep access management — grant it to someone else first",
-    });
+    await flushPromises();
+    expect(notify.spawnNotification).not.toHaveBeenCalled();
+    expect(wrapper.find('[data-testid="grant-lockout"]').text()).toBe(
+      "At least one person must keep access management — grant it to someone else first"
+    );
+    wrapper.vm.newRole = "administrator";
+    await wrapper.vm.addGrant();
+    await flushPromises();
+    expect(wrapper.find('[data-testid="grant-lockout"]').exists()).toBe(false);
+  });
+
+  it("another refused revoke is a toast with the server's description", async () => {
+    api.DELETE_AccessGrant.mockRejectedValue({ response: { status: 400, data: { message: "Not staff" } } });
+    const wrapper = await mountView(StaffDetail, { params: { id: "5" } });
+    wrapper.vm.pendingRevoke = USER.grants[0];
+    await wrapper.vm.revokeGrant();
+    expect(lastToast()).toEqual({ type: "negative", msg: "Not staff" });
+    expect(wrapper.find('[data-testid="grant-lockout"]').exists()).toBe(false);
   });
 
   it("a failed role list leaves the account readable, with nothing to add", async () => {
-    api.GET_AccessRoles.mockRejectedValue(new Error("down"));
+    api.GET_AccessAllRoles.mockRejectedValue(new Error("down"));
     const wrapper = await mountView(StaffDetail, { params: { id: "5" } });
     expect(wrapper.vm.loadFailed).toBe(false);
     expect(wrapper.vm.directGrants).toHaveLength(1);
@@ -113,7 +128,7 @@ describe("AuditList", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     api.GET_AccessAudit.mockResolvedValue({ data: { count: 0, results: [] } });
-    api.GET_AccessStaff.mockResolvedValue({ data: { results: [{ id: 7, username: "admin", name: "" }] } });
+    api.GET_AccessAllStaff.mockResolvedValue([{ id: 7, username: "admin", name: "" }]);
   });
 
   it("filters reach the query and go back to the first page", async () => {

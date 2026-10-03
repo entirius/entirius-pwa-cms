@@ -88,7 +88,7 @@ import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
 import { isNotFound } from "@/api/createClient";
 import {
   GET_AccessCatalogue,
-  GET_AccessRoles,
+  GET_AccessAllRoles,
   GET_AccessRole,
   POST_AccessRole,
   PATCH_AccessRole,
@@ -99,9 +99,8 @@ import { assignableOnly, toPermissionKeys } from "@/boots/PermissionMatrix/matri
 // A role (django-access): custom roles are edited here; the four built-ins open read-only and offer Duplicate, which
 // opens the create form prefilled (`?from=<key>`) without access.manage — that area belongs to the built-in
 // Administrator only (the server answers 400 ACCESS_MANAGE_RESERVED otherwise). The route carries the role key; the
-// API addresses roles by id, so the key is looked up in the role list.
+// API addresses roles by id, so the key is looked up in the role list, every page of it.
 export const RESERVED_ISSUE = "ACCESS_MANAGE_RESERVED";
-const ROLE_PAGE_SIZE = 100;
 const EMPTY_FORM = { key: "", name: "", description: "", permissions: {} };
 // `roles/new` is the create route, so a role keyed "new" could never be opened.
 const CREATE_SEGMENT = "new";
@@ -161,7 +160,8 @@ export default {
   beforeRouteLeave(to, from, next) {
     this.guardNavigation(to, from, next);
   },
-  // Another role or another copy source: the same route record, remounted by the panel's keyed router-view.
+  // Another role: the same route record, remounted by the panel's router-view (keyed on the path, so a query change
+  // never remounts a view).
   beforeRouteUpdate(to, from, next) {
     this.guardNavigation(to, from, next);
   },
@@ -187,8 +187,7 @@ export default {
       }
     },
     async fetchRole(key) {
-      const { data } = await GET_AccessRoles({ page_size: ROLE_PAGE_SIZE });
-      const found = (data.results || []).find((role) => role.key === key);
+      const found = (await GET_AccessAllRoles()).find((role) => role.key === key);
       if (!found) throw Object.assign(new Error(`No role ${key}`), { notFound: true });
       return (await GET_AccessRole(found.id)).data;
     },

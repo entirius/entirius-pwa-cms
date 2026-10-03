@@ -2,7 +2,8 @@
 // that the server's lockout guard answers 409 when nobody active would be left to manage access — the user reads that
 // as a sentence, never as the code.
 
-const httpStatus = (err) => err?.httpStatus ?? err?.response?.status;
+import { isConflict } from "@/api/createClient";
+
 const errorBody = (err) => err?.response?.data ?? err;
 
 export function grantPayload(role, { userId, groupId }) {
@@ -22,7 +23,7 @@ export function roleOptions(roles, heldKeys) {
 // A revoke refused by the lockout guard → the sentence; a refused grant (a non-staff account, a duplicate) → the
 // server's own description.
 export function grantErrorMessage(err, t, { revoking = false } = {}) {
-  if (revoking && httpStatus(err) === 409) return t("access.grants.lockout");
+  if (revoking && isConflict(err)) return t("access.grants.lockout");
   const body = errorBody(err);
   return body?.details?.[0]?.description || body?.message || t("notifications.error");
 }

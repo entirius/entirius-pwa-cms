@@ -71,13 +71,12 @@
 import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { extractApiMessage } from "@/composables/useFormErrors";
-import { GET_AccessGroups, GET_AccessRoles, POST_AccessGrant, DELETE_AccessGrant } from "@/api/access/api";
+import { GET_AccessGroups, GET_AccessAllRoles, POST_AccessGrant, DELETE_AccessGrant } from "@/api/access/api";
 import { grantPayload, grantErrorMessage, roleOptions } from "./grants";
 
 // auth.Groups with their member counts and roles (django-access): a role granted to a group reaches every member.
 // Groups and memberships are managed outside the CMS (Django admin); roles are added and revoked here.
 const PAGE_SIZE = 20;
-const ROLE_PAGE_SIZE = 100;
 
 export default {
   name: "AccessGroupList",
@@ -128,7 +127,7 @@ export default {
     },
     async fetchRoles() {
       try {
-        this.roles = (await GET_AccessRoles({ page_size: ROLE_PAGE_SIZE })).data.results || [];
+        this.roles = await GET_AccessAllRoles();
       } catch {
         // No roles to offer: the add dialog stays empty, the list still shows.
       }
