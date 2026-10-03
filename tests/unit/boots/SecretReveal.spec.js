@@ -50,6 +50,19 @@ describe("SecretReveal", () => {
     expect(wrapper.emitted("update:secret")).toEqual([[""]]);
   });
 
+  it("takes the value from show() before it opens, with no secret prop and nothing handed back", async () => {
+    const wrapper = await mountReveal({ open: false, secret: "" });
+    wrapper.vm.show(FAKE);
+    await wrapper.setProps({ open: true });
+    await nextTick();
+    expect(field().value).toBe(FAKE);
+    expect(wrapper.emitted("update:secret")).toBeUndefined();
+    await tickStored();
+    byTestId("secret-reveal-close").click();
+    await nextTick();
+    expect(field()?.value ?? "").toBe("");
+  });
+
   it("copies to the clipboard; without one it selects the text for a manual copy", async () => {
     const writeText = vi.fn().mockResolvedValue();
     vi.stubGlobal("navigator", { clipboard: { writeText } });

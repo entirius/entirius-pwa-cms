@@ -17,6 +17,7 @@ const api = vi.hoisted(() => ({
   POST_AccessTokenExpiry: vi.fn(),
 }));
 const notify = vi.hoisted(() => ({ spawnNotification: vi.fn() }));
+const revealShow = vi.hoisted(() => vi.fn());
 vi.mock("@/api/access/api", () => api);
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => notify }));
 vi.mock("@/stores/loader", () => ({ useLoaderStore: () => ({ loaderStart: vi.fn(), loaderFinish: vi.fn() }) }));
@@ -58,7 +59,8 @@ const stubs = {
   BasicModal: slots("BasicModal"), FormField: slots("FormField"), PageHeader: slots("PageHeader"), BasicCard: slots("BasicCard"),
   ConfirmDialog: slots("ConfirmDialog"), BasicCheckbox: true, BasicSelect: true, BasicInput: true, BasicTextarea: true,
   BasicRadioGroup: true, BasicDatePicker: true, NumberInput: true, BasicSwitch: true, DataTable: true, ActionBar: true,
-  SecretReveal: true, Tag: true, EmptyState: true, Loader: true, FloatingActions: true,
+  SecretReveal: defineComponent({ name: "SecretReveal", setup: (_, { expose }) => (expose({ show: revealShow }), () => null) }),
+  Tag: true, EmptyState: true, Loader: true, FloatingActions: true,
 };
 const mountWith = (component, props = {}, route = {}) =>
   mount(component, {
@@ -224,6 +226,8 @@ describe("ApplicationDetail", () => {
     expect(vm.expiryText(LEGACY)).toBe("No expiry");
     expect(vm.expiryText(SECRET_TOKEN)).toMatch(/^in \d+ days · /);
     expect(vm.rowName(LEGACY)).toBe("legacy");
+    expect(vm.lastUsedText(LEGACY.last_used_at)).toBe(t("access.tokens.never_used"));
+    expect(vm.lastUsedText(TOKEN.last_used_at)).not.toBe(t("access.tokens.never_used"));
     expect(vm.tokenMenu(LEGACY).map((item) => item.key)).toEqual(["rotate", "expiry", "revoke"]);
   });
 
@@ -249,7 +253,9 @@ describe("ApplicationDetail", () => {
     const { vm } = await openDetail();
     await vm.createToken({ name: "Shop", scopes: ["checkout.storefront"], channel_idx: null, expires_at: null });
     expect(api.POST_AccessToken).toHaveBeenCalledWith(3, expect.objectContaining({ name: "Shop" }));
-    expect(vm.reveal).toEqual({ open: true, secret: FAKE, title: t("access.tokens.created_title") });
+    expect(revealShow).toHaveBeenCalledWith(FAKE);
+    expect(vm.reveal).toEqual({ open: true, title: t("access.tokens.created_title") });
+    expect(JSON.stringify(vm.$data)).not.toContain(FAKE);
     expect(notify.spawnNotification).not.toHaveBeenCalled();
 
     vm.rotating = SECRET_TOKEN;
@@ -266,10 +272,10 @@ describe("ApplicationDetail", () => {
   it("does not leave the page while a shown-once value is open", async () => {
     const wrapper = await openDetail();
     const next = vi.fn();
-    wrapper.vm.reveal = { open: true, secret: "", title: "" };
+    wrapper.vm.reveal = { open: true, title: "" };
     ApplicationDetail.beforeRouteLeave.call(wrapper.vm, {}, {}, next);
     expect(next).toHaveBeenCalledWith(false);
-    wrapper.vm.reveal = { open: false, secret: "", title: "" };
+    wrapper.vm.reveal = { open: false, title: "" };
     ApplicationDetail.beforeRouteLeave.call(wrapper.vm, {}, {}, next);
     expect(next).toHaveBeenLastCalledWith();
   });
@@ -299,5 +305,39 @@ describe("ApplicationList", () => {
       { id: 3, token_count: 1, legacy: true },
       { id: 4, token_count: null, legacy: false },
     ]);
+  });
+
+  it("shows the list before the summaries and reads at most four applications' tokens at a time", async () => {
+    vi.clearAllMocks();
+    api.GET_AccessAllApplications.mockResolvedValue(Array.from({ length: 10 }, (_, i) => ({ id: i + 1, name: `App ${i}`, is_active: true })));
+    const pending = [];
+    api.GET_AccessAllTokens.mockImplementation(() => new Promise((resolve) => pending.push(resolve)));
+    const wrapper = mountWith(ApplicationList);
+    await flushPromises();
+    expect(wrapper.vm.loading).toBe(false);
+    expect(wrapper.vm.applications).toHaveLength(10);
+    expect(api.GET_AccessAllTokens).toHaveBeenCalledTimes(4);
+    pending.shift()([TOKEN, LEGACY]);
+    await flushPromises();
+    expect(api.GET_AccessAllTokens).toHaveBeenCalledTimes(5);
+    expect(wrapper.vm.applications[0]).toMatchObject({ token_count: 2, legacy: true });
+    while (pending.length) {
+      pending.shift()([]);
+      await flushPromises();
+    }
+    expect(api.GET_AccessAllTokens).toHaveBeenCalledTimes(10);
+  });
+
+  it("stops reading token lists once the page is left", async () => {
+    vi.clearAllMocks();
+    api.GET_AccessAllApplications.mockResolvedValue(Array.from({ length: 10 }, (_, i) => ({ id: i + 1, name: `App ${i}`, is_active: true })));
+    const pending = [];
+    api.GET_AccessAllTokens.mockImplementation(() => new Promise((resolve) => pending.push(resolve)));
+    const wrapper = mountWith(ApplicationList);
+    await flushPromises();
+    wrapper.unmount();
+    pending.splice(0).forEach((resolve) => resolve([]));
+    await flushPromises();
+    expect(api.GET_AccessAllTokens).toHaveBeenCalledTimes(4);
   });
 });

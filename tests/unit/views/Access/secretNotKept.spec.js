@@ -56,7 +56,7 @@ describe("a created token's value is not kept", () => {
     await wrapper.vm.createToken({ name: "Shop", scopes: ["checkout.storefront"], channel_idx: null, expires_at: null });
     await nextTick();
     expect(byTestId("secret-reveal-value").value).toBe(FAKE);
-    expect(wrapper.vm.reveal.secret).toBe("");
+    expect(JSON.stringify(wrapper.vm.$data)).not.toContain(FAKE);
 
     byTestId("secret-reveal-stored").querySelector("input").click();
     await nextTick();

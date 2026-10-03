@@ -5,12 +5,9 @@
         <template v-if="!notFound && !loadFailed" #actions>
           <div class="flex ai-ct jc-fe wrap gap-3">
             <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
-            <BasicSwitch
-              v-if="!isCreate"
-              v-model="form.is_active"
-              :label="$t('common.active')"
-              data-testid="application-active"
-            />
+            <FormField v-if="!isCreate">
+              <BasicSwitch v-model="form.is_active" :label="$t('common.active')" data-testid="application-active" />
+            </FormField>
             <ActionBar :actions="headerActions" />
           </div>
         </template>
@@ -74,7 +71,7 @@
             <span data-testid="token-expires">{{ expiryText(row) }}</span>
           </template>
           <template #cell-last_used_at="{ value }">
-            <span data-testid="token-last-used">{{ value ? formatDate(value) : $t("access.tokens.never_used") }}</span>
+            <span data-testid="token-last-used">{{ lastUsedText(value) }}</span>
           </template>
           <template #cell-state="{ row }">
             <StatusBadge :tone="STATE_TONES[row.state]" :label="$t(`access.tokens.states.${row.state}`)" />
@@ -142,7 +139,7 @@
       </p>
     </ConfirmDialog>
 
-    <SecretReveal v-model:open="reveal.open" v-model:secret="reveal.secret" :title="reveal.title" />
+    <SecretReveal ref="secretReveal" v-model:open="reveal.open" :title="reveal.title" />
 
     <ConfirmDialog
       :open="!!pendingNav"
@@ -177,21 +174,24 @@ import {
   POST_AccessTokenRevoke,
   POST_AccessTokenExpiry,
 } from "@/api/access/api";
+import SecretReveal from "@/boots/SecretReveal/index.vue";
 import TokenCreateDialog from "./TokenCreateDialog.vue";
 import TokenRotateDialog from "./TokenRotateDialog.vue";
 import TokenExpiryDialog from "./TokenExpiryDialog.vue";
 import { isPublishable, relativeDays, tokenKey } from "./tokens";
 
 // An application (django-access) and its tokens. New token and Rotate answer the raw value once: it goes from the
-// response straight into SecretReveal (`v-model:secret` empties this page's copy at once), never into a toast, a store,
-// the router or a log. Legacy keys show their source and last use and never expire by themselves (D28) — Set expiry
-// gives one only when an administrator picks it. Revoking a publishable key warns that storefronts lose it at once.
+// response straight into SecretReveal (`show()` on the boot — never this page's data), never into a toast, a store,
+// the router or a log. SecretReveal is imported, not the global async one, so its ref is there at the first token. The
+// header's Active switch sits in a FormField: a read-only page disables it with every other field. Legacy keys show
+// their source and last use and never expire by themselves (D28) — Set expiry gives one only when an administrator
+// picks it. Revoking a publishable key warns that storefronts lose it at once.
 const EMPTY_FORM = { name: "", description: "", is_active: true };
 const STATE_TONES = { active: "positive", expired: "warning", revoked: "neutral" };
 
 export default {
   name: "AccessApplicationDetail",
-  components: { TokenCreateDialog, TokenRotateDialog, TokenExpiryDialog },
+  components: { SecretReveal, TokenCreateDialog, TokenRotateDialog, TokenExpiryDialog },
   setup() {
     const formErrors = useFormErrors();
     return {
@@ -216,7 +216,7 @@ export default {
       rotating: null,
       expiring: null,
       revoking: null,
-      reveal: { open: false, secret: "", title: "" },
+      reveal: { open: false, title: "" },
     };
   },
   computed: {
@@ -290,6 +290,9 @@ export default {
     editForm({ name, description, is_active }) {
       return { name, description: description || "", is_active };
     },
+    lastUsedText(iso) {
+      return iso ? formatDate(iso) : this.$t("access.tokens.never_used");
+    },
     rowName(token) {
       return token.name || tokenKey(token);
     },
@@ -314,7 +317,8 @@ export default {
       this.creating = false;
       this.rotating = null;
       await this.$nextTick();
-      this.reveal = { open: true, secret: raw, title: this.$t(titleKey) };
+      this.$refs.secretReveal.show(raw);
+      this.reveal = { open: true, title: this.$t(titleKey) };
     },
     // The dialogs' calls: a refusal goes back to the dialog (its field errors), success refreshes the tokens.
     async createToken(payload) {

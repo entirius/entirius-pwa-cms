@@ -37,9 +37,11 @@ let nextId = 0;
 // The shown-once secret (access plan 22): a token's raw value in a read-only monospace field with Copy
 // (`navigator.clipboard`, else the text is selected for the user's own copy), the warning that it is never shown again,
 // and Close only after "I have stored it" is ticked (until then Esc, the backdrop and the close button do nothing).
-// The value lives only here: `secret` is copied into local state on open and `update:secret` hands the caller an empty
-// string back at once (`v-model:secret` drops the caller's copy); close and unmount clear it, and the field is empty
-// before the dialog leaves. No store, no log, no URL.
+// The value lives only here. A page hands it over with `show(secret)` (a ref call, before it sets `open`): the value
+// goes from the API response straight into this boot's state and never into the page's reactive data. The `secret`
+// prop (the /ui cell's static fake) is copied into local state on open and `update:secret` hands the caller an empty
+// string back at once; close and unmount clear it, and the field is empty before the dialog leaves. No store, no log,
+// no URL.
 import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue";
 import { t } from "@/i18n";
 import BasicModal from "@/boots/BasicModal/index.vue";
@@ -88,6 +90,12 @@ watch(
   { immediate: true }
 );
 onBeforeUnmount(clear);
+
+// The non-reactive handoff: the caller opens the dialog right after.
+function show(secret) {
+  value.value = secret;
+}
+defineExpose({ show });
 
 function selectAll() {
   field.value?.select();

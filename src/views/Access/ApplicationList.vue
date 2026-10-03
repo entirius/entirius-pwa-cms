@@ -44,8 +44,10 @@ import { GET_AccessAllApplications, GET_AccessAllTokens } from "@/api/access/api
 import { extractApiMessage } from "@/composables/useFormErrors";
 
 // Applications (django-access): the machine clients that hold API tokens, with their state, token count and whether
-// they carry imported legacy keys. The application list answers neither, so each application's tokens are read — a
-// failed read leaves that row's count empty, never the list.
+// they carry imported legacy keys. The application list answers neither (ApplicationResponse has no token_count or
+// legacy), so each application's tokens are read after the list shows, SUMMARY_CONCURRENCY at a time — the page does
+// not fire one request per application at once. A failed read leaves that row's count empty, never the list.
+const SUMMARY_CONCURRENCY = 4;
 
 async function tokenSummary(application) {
   try {
@@ -56,13 +58,23 @@ async function tokenSummary(application) {
   }
 }
 
+// Fills each row's summary in place (the rows are the page's reactive ones), by a few workers sharing one queue; they
+// stop taking rows once `stopped()` (the page was left).
+async function fillSummaries(rows, stopped) {
+  const queue = [...rows];
+  const worker = async () => {
+    for (let row = queue.shift(); row && !stopped(); row = queue.shift()) Object.assign(row, await tokenSummary(row));
+  };
+  await Promise.all(Array.from({ length: SUMMARY_CONCURRENCY }, worker));
+}
+
 export default {
   name: "AccessApplicationList",
   setup() {
     return { notify: useNotifyStore() };
   },
   data() {
-    return { applications: [], loading: false };
+    return { applications: [], loading: false, left: false };
   },
   computed: {
     columns() {
@@ -81,6 +93,9 @@ export default {
   mounted() {
     this.fetchApplications();
   },
+  beforeUnmount() {
+    this.left = true;
+  },
   methods: {
     applicationLink(row) {
       return `/access/applications/${row.id}`;
@@ -92,13 +107,13 @@ export default {
       this.loading = true;
       try {
         const applications = await GET_AccessAllApplications();
-        const summaries = await Promise.all(applications.map(tokenSummary));
-        this.applications = applications.map((application, i) => ({ ...application, ...summaries[i] }));
+        this.applications = applications.map((application) => ({ ...application, token_count: null, legacy: false }));
       } catch (err) {
         this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
       } finally {
         this.loading = false;
       }
+      await fillSummaries(this.applications, () => this.left);
     },
   },
 };

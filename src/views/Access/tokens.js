@@ -4,9 +4,9 @@
 // means the start of that day in the browser's time zone (the `access_token expire --at` rule), so tomorrow is the
 // earliest. The server checks all of it again; its 400 issue codes read as the same field errors.
 
-export const SECRET_MAX_DAYS = 365;
+const SECRET_MAX_DAYS = 365;
 const DAY_MS = 86400000;
-export const EXPIRY_ISSUES = ["EXPIRY_REQUIRED", "EXPIRY_TOO_LONG", "EXPIRY_IN_PAST"];
+const EXPIRY_ISSUES = ["EXPIRY_REQUIRED", "EXPIRY_TOO_LONG", "EXPIRY_IN_PAST"];
 export const PUBLISHABLE = "publishable";
 export const SECRET = "secret";
 

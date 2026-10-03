@@ -1,6 +1,6 @@
 <template>
   <div class="access-panel h-100">
-    <router-view :key="$route.fullPath" />
+    <router-view :key="$route.path" />
   </div>
 </template>
 
