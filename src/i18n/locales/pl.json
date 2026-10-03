@@ -3987,6 +3987,10 @@
       "expiry_date": "Data wygaśnięcia",
       "no_expiry": "Bez wygaśnięcia",
       "on_date": "W dniu",
+      "age": "Wiek",
+      "rotation_due": "Zalecana wymiana",
+      "rotation_due_tip": "Starszy niż {days} dni — wymień go z okresem przejściowym, potem unieważnij stary",
+      "rotation_hint": "Tokeny nie wygasają, dopóki nie ustawisz daty; zalecamy wymianę co {days} dni",
       "last_used": "Ostatnie użycie",
       "never_used": "Nigdy",
       "state": "Stan",
@@ -4009,9 +4013,8 @@
       "expiry_legacy": "Klucz legacy z {source}. Sam nigdy nie wygasa — wybierz datę, gdy zespół go wycofuje.",
       "expiry_saved": "Zapisano wygaśnięcie",
       "expiry_errors": {
-        "EXPIRY_REQUIRED": "Token serwer–serwer musi mieć datę wygaśnięcia",
-        "EXPIRY_TOO_LONG": "Token serwer–serwer wygasa najpóźniej po 365 dniach",
-        "EXPIRY_IN_PAST": "Wybierz dzień od jutra"
+        "EXPIRY_IN_PAST": "Wybierz dzień od jutra",
+        "DATE_MISSING": "Wybierz dzień albo „Bez wygaśnięcia”"
       },
       "revoke": "Unieważnij",
       "revoke_title": "Unieważnij token",
@@ -4021,9 +4024,9 @@
       "revoked": "Unieważniono token",
       "groups": {
         "publishable": "Trafia do przeglądarek",
-        "publishable_hint": "Zakresy publiczne: klucz jest w kodzie sklepu i widżetów, każdy może go odczytać. Może działać bez wygaśnięcia.",
+        "publishable_hint": "Zakresy publiczne: klucz jest w kodzie sklepu i widżetów, każdy może go odczytać.",
         "secret": "Tylko serwer–serwer",
-        "secret_hint": "Zakresy tajne: nigdy nie umieszczaj klucza na stronie. Token wygasa najpóźniej po 365 dniach."
+        "secret_hint": "Zakresy tajne: nigdy nie umieszczaj klucza na stronie."
       },
       "scopes_required": "Wybierz co najmniej jeden zakres",
       "created_title": "Nowy token",

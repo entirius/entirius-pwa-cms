@@ -55,10 +55,15 @@
                 <Tag :label="$t('access.tokens.legacy_key')" />
                 <span class="token-source t-muted fs-200" data-testid="token-legacy-source">{{ row.legacy_source }}</span>
               </span>
+              <BasicTooltip v-if="row.rotation_due" :text="$t('access.tokens.rotation_due_tip', { days: rotationDays })">
+                <span tabindex="0" class="token-rotation" data-testid="token-rotation-due">
+                  <StatusBadge tone="warning" size="sm" :label="$t('access.tokens.rotation_due')" />
+                </span>
+              </BasicTooltip>
             </div>
           </template>
           <template #cell-scopes="{ row }">
-            <div class="flex-column gap-1">
+            <div class="token-scopes flex-column gap-1">
               <div class="flex flex-wrap gap-2">
                 <Tag v-for="key in row.scopes" :key="key" :label="scopeLabel(key)" />
               </div>
@@ -69,6 +74,9 @@
           </template>
           <template #cell-expires_at="{ row }">
             <span data-testid="token-expires">{{ expiryText(row) }}</span>
+          </template>
+          <template #cell-age_days="{ row }">
+            <span data-testid="token-age">{{ ageText(row.age_days) }}</span>
           </template>
           <template #cell-last_used_at="{ value }">
             <span data-testid="token-last-used">{{ lastUsedText(value) }}</span>
@@ -103,13 +111,13 @@
       v-model:open="creating"
       :scopes="scopes"
       :channels="channelOptions"
+      :rotation-days="rotationDays"
       :submit="createToken"
     />
     <TokenRotateDialog
       v-if="rotating"
       :open="!!rotating"
       :token="rotating"
-      :scopes="scopes"
       :submit="rotateToken"
       @update:open="rotating = null"
     />
@@ -117,7 +125,6 @@
       v-if="expiring"
       :open="!!expiring"
       :token="expiring"
-      :scopes="scopes"
       :submit="setExpiry"
       @update:open="expiring = null"
     />
@@ -178,14 +185,16 @@ import SecretReveal from "@/boots/SecretReveal/index.vue";
 import TokenCreateDialog from "./TokenCreateDialog.vue";
 import TokenRotateDialog from "./TokenRotateDialog.vue";
 import TokenExpiryDialog from "./TokenExpiryDialog.vue";
-import { isPublishable, relativeDays, tokenKey } from "./tokens";
+import { ageText, isPublishable, relativeDays, tokenKey } from "./tokens";
 
 // An application (django-access) and its tokens. New token and Rotate answer the raw value once: it goes from the
 // response straight into SecretReveal (`show()` on the boot — never this page's data), never into a toast, a store,
 // the router or a log. SecretReveal is imported, not the global async one, so its ref is there at the first token. The
 // header's Active switch sits in a FormField: a read-only page disables it with every other field. Legacy keys show
 // their source and last use and never expire by themselves (D28) — Set expiry gives one only when an administrator
-// picks it. Revoking a publishable key warns that storefronts lose it at once.
+// picks it. No token has to expire (D31): each row shows its age, and "Rotation recommended" when the API says
+// `rotation_due` (the catalogue's `token_rotation_days` in the tooltip). Revoking a publishable key warns that
+// storefronts lose it at once.
 const EMPTY_FORM = { name: "", description: "", is_active: true };
 const STATE_TONES = { active: "positive", expired: "warning", revoked: "neutral" };
 
@@ -209,6 +218,7 @@ export default {
       form: { ...EMPTY_FORM },
       tokens: [],
       scopes: [],
+      rotationDays: 0,
       loading: true,
       notFound: false,
       loadFailed: false,
@@ -231,6 +241,7 @@ export default {
         { key: "name", label: this.$t("access.tokens.name"), width: "minmax(160px, 1fr)" },
         { key: "scopes", label: this.$t("access.tokens.scopes"), width: "minmax(140px, 1fr)", priority: 2 },
         { key: "expires_at", label: this.$t("access.tokens.expires"), width: "120px", priority: 2 },
+        { key: "age_days", label: this.$t("access.tokens.age"), width: "80px", priority: 2 },
         { key: "last_used_at", label: this.$t("access.tokens.last_used"), width: "120px", priority: 2 },
         { key: "state", label: this.$t("access.tokens.state"), width: "max-content" },
         { key: "actions", label: "", actions: true },
@@ -281,6 +292,7 @@ export default {
       this.application = application.data;
       this.form = this.editForm(application.data);
       this.scopes = catalogue.data.scopes || [];
+      this.rotationDays = catalogue.data.token_rotation_days || 0;
       this.channelStore.fetchChannels();
       await this.fetchTokens();
     },
@@ -289,6 +301,9 @@ export default {
     },
     editForm({ name, description, is_active }) {
       return { name, description: description || "", is_active };
+    },
+    ageText(days) {
+      return ageText(days, getLang().toLowerCase());
     },
     lastUsedText(iso) {
       return iso ? formatDate(iso) : this.$t("access.tokens.never_used");
@@ -398,6 +413,17 @@ export default {
 <style lang="scss" scoped>
 .token-key {
   font-family: var(--font-mono);
+}
+
+// A long scope label ends in an ellipsis (Tag's own `title`) instead of running under the next column.
+.token-scopes {
+  min-width: 0;
+}
+
+// The badge is the tooltip's tab stop: keyboard users reach the rotation advice too.
+.token-rotation {
+  display: inline-flex;
+  border-radius: var(--radius-full);
 }
 
 // `<app>.<Model>#<pk>`, comma-separated for a secret found in several rows: it wraps anywhere instead of clipping.

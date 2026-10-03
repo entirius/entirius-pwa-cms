@@ -7,13 +7,16 @@ const { either: escapedEither } = require('./helpers/text');
 
 /**
  * Access plan 22 smoke: the admin opens Access → Applications, finds the seeded legacy checkout application with its
- * legacy marker, opens it and reads the legacy key's source, its last use and "No expiry". Read-only: never creates,
+ * legacy marker, opens it and reads the legacy key's source, its last use, "No expiry" and its age (FIX-04: counted from
+ * the import, "today" or whole days). Read-only: never creates,
  * rotates or revokes a token (the BDD covers writes).
  */
 
 const either = (pick) => escapedEither(pick(en), pick(pl));
 // The seed names it after the module's app label ("Legacy keys: django_checkout").
 const LEGACY_CHECKOUT = /^Legacy keys: (django_)?checkout$/;
+// "today" / "12 days" in either UI language (Intl, not the locale files).
+const AGE = /^(today|dzisiaj|\d+ (day|days|dzień|dni))$/;
 
 test.describe('Access applications (desktop)', () => {
   test.use({ viewport: { width: 1280, height: 720 } });
@@ -22,7 +25,7 @@ test.describe('Access applications (desktop)', () => {
     await login(page);
   });
 
-  test('legacy checkout keys show their source, last use and no expiry', async ({ page }) => {
+  test('legacy checkout keys show their source, last use, no expiry and their age', async ({ page }) => {
     const collector = createErrorCollector(page);
     await page.goto('/access/applications');
     await page.waitForLoadState('networkidle');
@@ -45,6 +48,8 @@ test.describe('Access applications (desktop)', () => {
     await expect(token.locator('.tag', { hasText: either((t) => t.access.tokens.legacy_key) })).toBeVisible();
     await expect(token.locator('[data-testid="token-expires"]')).toHaveText(either((t) => t.access.tokens.no_expiry));
     await expect(token.locator('[data-testid="token-last-used"]')).not.toBeEmpty();
+    await expect(page.getByRole('columnheader', { name: either((t) => t.access.tokens.age) })).toBeVisible();
+    await expect(token.locator('[data-testid="token-age"]')).toHaveText(AGE);
 
     collector.assertNoErrors(expect, 'Access applications');
   });

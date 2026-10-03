@@ -41,7 +41,10 @@
           data-testid="token-channel"
         />
       </FormField>
-      <ExpiryField v-model="form.date" :required="secret" :capped="secret" :error="expiryError()" />
+      <ExpiryField v-model="form.date" v-model:pending="datePending" :error="expiryError()" />
+      <p v-if="rotationDays" class="m-0 t-muted fs-200" data-testid="token-rotation-hint">
+        {{ $t("access.tokens.rotation_hint", { days: rotationDays }) }}
+      </p>
     </div>
   </BasicModal>
 </template>
@@ -49,22 +52,25 @@
 <script setup>
 // New token (access plan 22): name, scopes in two groups — publishable ("reaches browsers") and secret
 // ("server-to-server only"); ticking one group disables the other, a token never mixes them — an optional channel pin,
-// and the expiry (a secret token: a date within 365 days, 365 by default; operator Q5). `submit` is the page's call.
-import { computed, reactive } from "vue";
+// and the expiry ("No expiry" by default for every token, D31; the hint names the catalogue's `token_rotation_days`).
+// `submit` is the page's call.
+import { computed, reactive, ref } from "vue";
 import { t } from "@/i18n";
 import ExpiryField from "./ExpiryField.vue";
 import { useTokenDialog } from "./useTokenDialog";
-import { PUBLISHABLE, SECRET, blockedGroup, expiryInstant, expiryIssue, isSecret, scopeGroup } from "./tokens";
+import { PUBLISHABLE, SECRET, blockedGroup, expiryInstant, expiryIssue, scopeGroup } from "./tokens";
 
 const props = defineProps({
   open: { type: Boolean, default: false },
   scopes: { type: Array, default: () => [] },
   channels: { type: Array, default: () => [] },
+  rotationDays: { type: Number, default: 0 },
   submit: { type: Function, required: true },
 });
 const emit = defineEmits(["update:open"]);
 
 const form = reactive({ name: "", scopes: [], channel_idx: null, date: "" });
+const datePending = ref(false);
 const close = () => emit("update:open", false);
 const { formErrors, busy, expiryError, setExpiryIssue, run } = useTokenDialog(close, ["name", "scopes", "expires_at"]);
 
@@ -72,7 +78,6 @@ const groups = computed(() =>
   [PUBLISHABLE, SECRET].map((key) => ({ key, scopes: props.scopes.filter((s) => scopeGroup(s.key, props.scopes) === key) }))
 );
 const blocked = computed(() => blockedGroup(form.scopes, props.scopes));
-const secret = computed(() => isSecret(form.scopes, props.scopes));
 
 // The catalogue's English label unless the UI language has the scope.
 function scopeLabel(scope) {
@@ -89,7 +94,7 @@ function toggleScope(key, on) {
 function validate() {
   formErrors.clearErrors();
   if (!form.scopes.length) formErrors.errors.scopes = { status: "error", msg: t("access.tokens.scopes_required") };
-  const issue = expiryIssue({ date: form.date, required: secret.value, capped: secret.value });
+  const issue = expiryIssue({ date: form.date, pending: datePending.value });
   if (issue) setExpiryIssue(issue);
   return !formErrors.hasErrors.value;
 }

@@ -1,12 +1,13 @@
 // Application tokens (django-access): the rules the token dialogs share. A token is publishable (reaches browsers) or
-// secret (server-to-server); one token never holds both groups. A secret token must expire, at most 365 days ahead
-// (D21) — legacy keys excepted: they never expire by themselves and take any future date or none (D28). A picked date
-// means the start of that day in the browser's time zone (the `access_token expire --at` rule), so tomorrow is the
-// earliest. The server checks all of it again; its 400 issue codes read as the same field errors.
+// secret (server-to-server); one token never holds both groups. No token has to expire and there is no maximum lifetime
+// (D31): every token, legacy or not, takes any future date or none; the API flags an old one `rotation_due` instead. A
+// picked date means the start of that day in the browser's time zone (the `access_token expire --at` rule), so
+// tomorrow is the earliest. The server checks it again; its 400 `EXPIRY_IN_PAST` reads as the same field error.
 
-const SECRET_MAX_DAYS = 365;
 const DAY_MS = 86400000;
-const EXPIRY_ISSUES = ["EXPIRY_REQUIRED", "EXPIRY_TOO_LONG", "EXPIRY_IN_PAST"];
+const EXPIRY_IN_PAST = "EXPIRY_IN_PAST";
+// Client-only: "On a date" with no day picked — never sent as "No expiry".
+const DATE_MISSING = "DATE_MISSING";
 export const PUBLISHABLE = "publishable";
 export const SECRET = "secret";
 
@@ -18,7 +19,7 @@ export function scopeGroup(key, scopes) {
   return scopes.find((scope) => scope.key === key)?.publishable ? PUBLISHABLE : SECRET;
 }
 
-export const isSecret = (keys, scopes) => keys.some((key) => scopeGroup(key, scopes) === SECRET);
+const isSecret = (keys, scopes) => keys.some((key) => scopeGroup(key, scopes) === SECRET);
 export const isPublishable = (keys, scopes) => keys.some((key) => scopeGroup(key, scopes) === PUBLISHABLE);
 
 // The group a selection rules out (its checkboxes are disabled), or null while nothing is ticked.
@@ -35,9 +36,6 @@ function dayFromToday(days, now) {
 }
 
 export const minExpiryDate = (now = new Date()) => dayFromToday(1, now);
-// The local day of the instant 365 days ahead: its midnight never passes the server's `now + 365 days`, a DST change in
-// between included.
-export const maxExpiryDate = (now = new Date()) => dateString(new Date(now.getTime() + SECRET_MAX_DAYS * DAY_MS));
 
 // "2027-10-03" → the ISO instant of that day's local start; empty → null (no expiry).
 export function expiryInstant(date) {
@@ -46,20 +44,19 @@ export function expiryInstant(date) {
   return new Date(year, month - 1, day).toISOString();
 }
 
-// The client-side check of an expiry field: null when fine, else the issue code the server would answer.
-export function expiryIssue({ date, required, capped }, now = new Date()) {
-  if (!date) return required ? "EXPIRY_REQUIRED" : null;
-  if (date < minExpiryDate(now)) return "EXPIRY_IN_PAST";
-  if (capped && date > maxExpiryDate(now)) return "EXPIRY_TOO_LONG";
-  return null;
+// The client-side check of an expiry field ("" = no expiry; `pending`: "On a date" without a day): null when fine, else
+// the issue code.
+export function expiryIssue({ date, pending }, now = new Date()) {
+  if (pending) return DATE_MISSING;
+  return date && date < minExpiryDate(now) ? EXPIRY_IN_PAST : null;
 }
 
-// The issue code of the server's expiry refusal (`details[].field === "expires_at"`) when it is one of ours, else null
-// (the field then shows the server's own text).
+// The issue code of the server's expiry refusal (`details[].field === "expires_at"`) when it is ours, else null (the
+// field then shows the server's own text).
 export function refusedExpiryIssue(err) {
   const body = err?.response?.data ?? err;
   const detail = (Array.isArray(body?.details) ? body.details : []).find((d) => d?.field === "expires_at");
-  return EXPIRY_ISSUES.includes(detail?.issue) ? detail.issue : null;
+  return detail?.issue === EXPIRY_IN_PAST ? EXPIRY_IN_PAST : null;
 }
 
 // The local date of an ISO expiry, for a dialog that edits it.
@@ -69,4 +66,12 @@ export const isoToDate = (iso) => (iso ? dateString(new Date(iso)) : "");
 export function relativeDays(iso, lang, now = new Date()) {
   const days = Math.round((new Date(iso).getTime() - now.getTime()) / DAY_MS);
   return new Intl.RelativeTimeFormat(lang, { numeric: "auto" }).format(days, "day");
+}
+
+// A token's `age_days` (whole days since issue or import): "today" / "1 day" / "12 days" in the UI language; "—" from an
+// API without it.
+export function ageText(days, lang) {
+  if (days == null) return "—";
+  if (days === 0) return new Intl.RelativeTimeFormat(lang, { numeric: "auto" }).format(0, "day");
+  return new Intl.NumberFormat(lang, { style: "unit", unit: "day", unitDisplay: "long" }).format(days);
 }

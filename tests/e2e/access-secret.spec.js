@@ -17,7 +17,7 @@ const { createErrorCollector } = require('../helpers/error-collector');
 
 const API = process.env.VUE_APP_API_URL || 'http://localhost:8100';
 const ADMIN = `${API}/api/access/v2/admin`;
-// A server-to-server scope with the least reach (review moderation); a secret scope gets the 365-day expiry default.
+// A server-to-server scope with the least reach (review moderation); like every token it gets no expiry by default (D31).
 const SECRET_SCOPE = 'reviews.moderate';
 const TOKEN_CREATE = /\/api\/access\/v2\/admin\/applications\/\d+\/tokens\/$/;
 
@@ -77,7 +77,9 @@ async function createToken(page, name) {
     page.locator('[data-testid="token-create-save"]').click(),
   ]);
   expect(response.status(), 'token create').toBe(201);
-  created.tokenId = (await response.json()).id;
+  const body = await response.json();
+  created.tokenId = body.id;
+  expect(body.expires_at, `token ${body.id}: no expiry by default`).toBeNull();
 }
 
 // Reads the shown-once value into a local variable, confirms it was stored and closes the dialog.

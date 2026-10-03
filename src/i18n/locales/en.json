@@ -3988,6 +3988,10 @@
       "expiry_date": "Expiry date",
       "no_expiry": "No expiry",
       "on_date": "On a date",
+      "age": "Age",
+      "rotation_due": "Rotation recommended",
+      "rotation_due_tip": "Older than {days} days — rotate it with overlap, then revoke the old one",
+      "rotation_hint": "Tokens never expire unless you set a date; we recommend rotating every {days} days",
       "last_used": "Last used",
       "never_used": "Never",
       "state": "State",
@@ -4010,9 +4014,8 @@
       "expiry_legacy": "Legacy key from {source}. It never expires by itself — pick a date when your team retires it.",
       "expiry_saved": "Expiry saved",
       "expiry_errors": {
-        "EXPIRY_REQUIRED": "A server-to-server token needs an expiry",
-        "EXPIRY_TOO_LONG": "A server-to-server token expires within 365 days",
-        "EXPIRY_IN_PAST": "Pick a day from tomorrow on"
+        "EXPIRY_IN_PAST": "Pick a day from tomorrow on",
+        "DATE_MISSING": "Pick a day, or choose No expiry"
       },
       "revoke": "Revoke",
       "revoke_title": "Revoke token",
@@ -4022,9 +4025,9 @@
       "revoked": "Token revoked",
       "groups": {
         "publishable": "Reaches browsers",
-        "publishable_hint": "Publishable scopes: the key sits in storefront and widget code, anyone can read it. It may run without an expiry.",
+        "publishable_hint": "Publishable scopes: the key sits in storefront and widget code, anyone can read it.",
         "secret": "Server-to-server only",
-        "secret_hint": "Secret scopes: never put the key in a page. The token expires within 365 days."
+        "secret_hint": "Secret scopes: never put the key in a page."
       },
       "scopes_required": "Pick at least one scope",
       "created_title": "New token",
