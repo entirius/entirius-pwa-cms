@@ -13,7 +13,7 @@ const COMPONENTS = [
   "form-field", "basic-input", "basic-textarea", "number-input", "basic-select", "entity-search-picker",
   "channel-multi-select", "basic-checkbox", "basic-radio-group", "basic-switch", "segmented-control", "filter-chip",
   "basic-date-picker", "color-input", "basic-wysiwyg", "permission-matrix",
-  "basic-modal", "confirm-dialog", "side-drawer", "translations-drawer", "basic-menu", "basic-tooltip",
+  "basic-modal", "confirm-dialog", "secret-reveal", "side-drawer", "translations-drawer", "basic-menu", "basic-tooltip",
   "mobile-filter-panel", "status-badge", "count-badge", "tag", "basic-tabs", "basic-card", "panel-card", "media-tile",
   "empty-state", "loader", "pagination", "data-table", "page-header", "breadcrumbs", "page-layout", "basic-logo",
   "app-header", "sidebar-nav", "sidebar-nav-group", "sidebar-nav-item", "mobile-menu", "bottom-tab-bar", "user-menu",

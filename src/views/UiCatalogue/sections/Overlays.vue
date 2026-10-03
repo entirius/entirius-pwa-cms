@@ -54,6 +54,11 @@
       </CatalogueCell>
     </div>
 
+    <h3 id="secret-reveal" class="fs-500 mb-4">SecretReveal</h3>
+    <CatalogueCell id="secret-reveal-open" label="shown once · close after the confirmation" class="mb-10">
+      <SecretReveal open inline title="Nowy token" :secret="FAKE_SECRET" />
+    </CatalogueCell>
+
     <h3 id="side-drawer" class="fs-500 mb-4">SideDrawer</h3>
     <div class="overlays-grid grid gap-3 mb-10">
       <CatalogueCell id="side-drawer-focused-open" label="focused">
@@ -147,7 +152,7 @@
 </template>
 
 <script setup>
-// Plan 12: every overlay from static fixtures (r02 §6). The open state is drawn `inline` (in the page flow, no
+// Plan 12: every overlay from static fixtures (r02 §6), SecretReveal (access plan 22) included. The open state is drawn `inline` (in the page flow, no
 // Teleport, no trap), tooltips are forced `open`; the buttons at the top open the real overlays.
 import { reactive } from "vue";
 import CatalogueSection from "../CatalogueSection.vue";
@@ -157,6 +162,8 @@ import CatalogueCell from "../CatalogueCell.vue";
 const LANGUAGES = ["pl", "en", "de"];
 const VALUES = { pl: "Nowa kolekcja", en: "New collection", de: "Neue Kollektion" };
 const noop = () => {};
+// SecretReveal (access plan 22): a fake shorter than a real token, so no capture holds a token-shaped string.
+const FAKE_SECRET = "ent_api_EXAMPLE-not-a-token";
 
 const live = reactive({ modal: false, confirm: false, drawer: false, translations: false });
 const close = () => (live.modal = false);

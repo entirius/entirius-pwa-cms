@@ -57,7 +57,8 @@
       "roles": "Role",
       "staff": "Pracownicy",
       "groups": "Grupy",
-      "audit": "Dziennik zmian"
+      "audit": "Dziennik zmian",
+      "applications": "Aplikacje"
     }
   },
   "login": {
@@ -3957,6 +3958,83 @@
           "bypass": "Dostęp superużytkownika"
         }
       }
+    },
+    "applications": {
+      "title": "Aplikacje",
+      "help": "Klienci maszynowi — sklepy, widżety, integracje — wołający API z tokenem. Aplikacje się dezaktywuje, nigdy nie usuwa.",
+      "empty": "Brak aplikacji",
+      "not_found": "Ta aplikacja nie istnieje",
+      "name": "Nazwa",
+      "description": "Opis",
+      "state": "Stan",
+      "tokens": "Tokeny",
+      "create": "Nowa aplikacja",
+      "detail": "Aplikacja",
+      "details": "Szczegóły",
+      "saved": "Zapisano aplikację"
+    },
+    "tokens": {
+      "title": "Tokeny",
+      "empty": "Brak tokenów",
+      "create": "Nowy token",
+      "name": "Nazwa",
+      "key": "Klucz",
+      "scopes": "Zakresy",
+      "channel": "Kanał",
+      "channel_hint": "Puste: token działa w każdym kanale.",
+      "every_channel": "Każdy kanał",
+      "expires": "Wygasa",
+      "expiry_date": "Data wygaśnięcia",
+      "no_expiry": "Bez wygaśnięcia",
+      "on_date": "W dniu",
+      "last_used": "Ostatnie użycie",
+      "never_used": "Nigdy",
+      "state": "Stan",
+      "states": {
+        "active": "Aktywny",
+        "expired": "Wygasły",
+        "revoked": "Unieważniony"
+      },
+      "legacy": "Klucze legacy",
+      "legacy_key": "Klucz legacy",
+      "actions": "Akcje: {token}",
+      "rotate": "Wymień",
+      "rotate_title": "Wymień {token}",
+      "rotate_message": "Nowy token z tymi samymi zakresami i kanałem zastąpi ten. Stary działa jeszcze przez okres przejściowy, żeby klienci zdążyli się przełączyć.",
+      "overlap_hours": "Okres przejściowy (godziny)",
+      "overlap_hint": "Jak długo stary token jeszcze działa: 0–168 godzin; 0 wyłącza go od razu.",
+      "overlap_invalid": "Podaj pełne godziny od 0 do 168",
+      "set_expiry": "Ustaw wygaśnięcie",
+      "expiry_title": "Wygaśnięcie: {token}",
+      "expiry_legacy": "Klucz legacy z {source}. Sam nigdy nie wygasa — wybierz datę, gdy zespół go wycofuje.",
+      "expiry_saved": "Zapisano wygaśnięcie",
+      "expiry_errors": {
+        "EXPIRY_REQUIRED": "Token serwer–serwer musi mieć datę wygaśnięcia",
+        "EXPIRY_TOO_LONG": "Token serwer–serwer wygasa najpóźniej po 365 dniach",
+        "EXPIRY_IN_PAST": "Wybierz dzień od jutra"
+      },
+      "revoke": "Unieważnij",
+      "revoke_title": "Unieważnij token",
+      "revoke_message": "Unieważnić {token}? Przestanie działać od razu i nie da się go przywrócić.",
+      "revoke_legacy": "Klucz legacy z {source}.",
+      "revoke_publishable": "Sklepy i widżety używające tego klucza przestaną działać od razu.",
+      "revoked": "Unieważniono token",
+      "groups": {
+        "publishable": "Trafia do przeglądarek",
+        "publishable_hint": "Zakresy publiczne: klucz jest w kodzie sklepu i widżetów, każdy może go odczytać. Może działać bez wygaśnięcia.",
+        "secret": "Tylko serwer–serwer",
+        "secret_hint": "Zakresy tajne: nigdy nie umieszczaj klucza na stronie. Token wygasa najpóźniej po 365 dniach."
+      },
+      "scopes_required": "Wybierz co najmniej jeden zakres",
+      "created_title": "Nowy token",
+      "rotated_title": "Wymieniony token"
     }
+  },
+  "secret_reveal": {
+    "label": "Wartość tokenu",
+    "warning": "Ta wartość jest pokazywana tylko raz. Zapisz ją teraz — nie da się jej wyświetlić ponownie",
+    "stored": "Mam ją zapisaną",
+    "copied": "Skopiowano do schowka",
+    "copy_manually": "Wartość jest zaznaczona — skopiuj ją przez Ctrl+C (⌘C na Macu)"
   }
 }

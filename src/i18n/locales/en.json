@@ -57,7 +57,8 @@
       "roles": "Roles",
       "staff": "Staff",
       "groups": "Groups",
-      "audit": "Audit"
+      "audit": "Audit",
+      "applications": "Applications"
     }
   },
   "login": {
@@ -3958,6 +3959,83 @@
           "bypass": "Superuser access"
         }
       }
+    },
+    "applications": {
+      "title": "Applications",
+      "help": "Machine clients — storefronts, widgets, integrations — calling the API with a token. Applications are deactivated, never deleted.",
+      "empty": "No applications",
+      "not_found": "This application does not exist",
+      "name": "Name",
+      "description": "Description",
+      "state": "State",
+      "tokens": "Tokens",
+      "create": "New application",
+      "detail": "Application",
+      "details": "Details",
+      "saved": "Application saved"
+    },
+    "tokens": {
+      "title": "Tokens",
+      "empty": "No tokens yet",
+      "create": "New token",
+      "name": "Name",
+      "key": "Key",
+      "scopes": "Scopes",
+      "channel": "Channel",
+      "channel_hint": "Empty: the token works on every channel.",
+      "every_channel": "Every channel",
+      "expires": "Expires",
+      "expiry_date": "Expiry date",
+      "no_expiry": "No expiry",
+      "on_date": "On a date",
+      "last_used": "Last used",
+      "never_used": "Never",
+      "state": "State",
+      "states": {
+        "active": "Active",
+        "expired": "Expired",
+        "revoked": "Revoked"
+      },
+      "legacy": "Legacy keys",
+      "legacy_key": "Legacy key",
+      "actions": "Actions: {token}",
+      "rotate": "Rotate",
+      "rotate_title": "Rotate {token}",
+      "rotate_message": "A new token with the same scopes and channel replaces this one. The old token keeps working for the overlap, so the clients can switch.",
+      "overlap_hours": "Overlap (hours)",
+      "overlap_hint": "How long the old token keeps working: 0–168 hours; 0 stops it at once.",
+      "overlap_invalid": "Enter whole hours from 0 to 168",
+      "set_expiry": "Set expiry",
+      "expiry_title": "Expiry of {token}",
+      "expiry_legacy": "Legacy key from {source}. It never expires by itself — pick a date when your team retires it.",
+      "expiry_saved": "Expiry saved",
+      "expiry_errors": {
+        "EXPIRY_REQUIRED": "A server-to-server token needs an expiry",
+        "EXPIRY_TOO_LONG": "A server-to-server token expires within 365 days",
+        "EXPIRY_IN_PAST": "Pick a day from tomorrow on"
+      },
+      "revoke": "Revoke",
+      "revoke_title": "Revoke token",
+      "revoke_message": "Revoke {token}? It stops working at once and cannot be restored.",
+      "revoke_legacy": "Legacy key from {source}.",
+      "revoke_publishable": "Storefronts and widgets using this key stop working at once.",
+      "revoked": "Token revoked",
+      "groups": {
+        "publishable": "Reaches browsers",
+        "publishable_hint": "Publishable scopes: the key sits in storefront and widget code, anyone can read it. It may run without an expiry.",
+        "secret": "Server-to-server only",
+        "secret_hint": "Secret scopes: never put the key in a page. The token expires within 365 days."
+      },
+      "scopes_required": "Pick at least one scope",
+      "created_title": "New token",
+      "rotated_title": "Rotated token"
     }
+  },
+  "secret_reveal": {
+    "label": "Token value",
+    "warning": "This value is shown once. Store it now — it cannot be displayed again",
+    "stored": "I have stored it",
+    "copied": "Copied to the clipboard",
+    "copy_manually": "The value is selected — copy it with Ctrl+C (⌘C on a Mac)"
   }
 }

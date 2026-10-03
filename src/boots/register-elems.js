@@ -77,4 +77,7 @@ export default function registerBootComponents(app) {
   // Access panel (access plan 20)
   app.component("PermissionMatrix", defineAsyncComponent(() => import("./PermissionMatrix/index.vue")));
 
+  // Access tokens (access plan 22)
+  app.component("SecretReveal", defineAsyncComponent(() => import("./SecretReveal/index.vue")));
+
 }
