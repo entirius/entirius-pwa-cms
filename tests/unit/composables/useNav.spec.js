@@ -64,7 +64,8 @@ describe("navTree", () => {
 
   it("single-entry panels have one entry (leaf links, decision 2)", () => {
     const single = Object.entries(tree()).filter(([, entries]) => entries.length === 1).map(([idx]) => idx);
-    expect(single.sort()).toEqual(["accounts", "checkout", "emails", "promo", "stock", "translation"]);
+    // Access has Roles only until Staff, Applications and Audit join (access plans 21–22).
+    expect(single.sort()).toEqual(["access", "accounts", "checkout", "emails", "promo", "stock", "translation"]);
   });
 
   // r05 §6: the tab bar has 5 slots at 393 px and no overflow design.
