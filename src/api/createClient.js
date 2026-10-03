@@ -178,6 +178,11 @@ function attachTokenRefresh(client) {
   )
 }
 
+// A request flagged `sensitive` (the access token calls: a create or rotate answer holds a raw token) never has its
+// body in the debug log, the request's or the response's.
+const REDACTED = '[redacted]'
+const debugBody = (config, data) => (config?.sensitive ? REDACTED : data)
+
 export function createApiClient(baseURL, { authHeaderFn = null, tokenRefresh = false } = {}) {
   const client = axios.create({ baseURL })
 
@@ -199,14 +204,14 @@ export function createApiClient(baseURL, { authHeaderFn = null, tokenRefresh = f
   if (debugMode) {
     client.interceptors.request.use((request) => {
       console.log(`%c${process.env.NODE_ENV} - REQUEST`, 'color:#68baaf')
-      console.log(request.method?.toUpperCase(), request.url, request.data)
+      console.log(request.method?.toUpperCase(), request.url, debugBody(request, request.data))
       return request
     })
 
     client.interceptors.response.use((response) => {
       console.log(`%c${response.config.url}`, 'color:#307a54;background:#aeebcc')
       console.log(`status: %c${response.status}`, 'color:#68baaf')
-      console.log(response.data)
+      console.log(debugBody(response.config, response.data))
       return response
     })
   }
