@@ -10,28 +10,30 @@ metadata lives in `src/configs/access.js`; route gating lives in
 `{ name, idx, icon, root, fallback?, labelKey, descriptionKey, areas }`. `icon`
 is a Font Awesome icon name rendered via `FontAwesomeIcon`; `areas` are the
 django-access areas the panel works on (catalogue keys such as
-`pim.products`) — the panel is shown when the user can read any of them.
+`pim.products`) — the panel is shown when the user can read any of them. The
+first area is the read-only default of a route without `meta.area`
+(`routeArea`, `src/composables/useReadonly.js`).
 
-| idx | Name | Root | Icon |
-|---|---|---|---|
-| `pages` | Pages | `/pages/content` | `file-code` |
-| `pim` | PIM | `/pim/products` | `boxes-stacked` |
-| `points` | Points | `/points/list` | `location-dot` |
-| `forms` | Forms | `/forms/list` | `envelope` |
-| `accounts` | Accounts | `/accounts/customers` | `users` |
-| `checkout` | Orders | `/checkout-orders/orders` | `shopping-cart` |
-| `agreements` | Agreements | `/agreements/list` | `file-contract` |
-| `emails` | Emails | `/emails` | `at` |
-| `faq` | FAQ | `/faq/groups` | `circle-question` |
-| `pricing` | Pricing | `/pricing/prices` | `money-bill-wave` |
-| `stock` | Stock | `/stock/manage` | `warehouse` |
-| `translation` | Translation | `/translation-jobs` | `language` |
-| `atlas` | Atlas | `/atlas/list` | `globe` |
-| `pricefighter` | PriceFighter | `/pricefighter/gap` | `scale-balanced` |
-| `enricher` | Enricher | `/enrichment` | `wand-magic-sparkles` |
-| `promo` | Promo | `/promo/list` | `tags` |
-| `leads` | Leads | `/leads/inbox` (fallback `/leads/companies`) | `inbox` |
-| `access` | Access | `/access/roles` | `user-shield` |
+| idx | Name | Root | Icon | Areas |
+|---|---|---|---|---|
+| `pages` | Pages | `/pages/content` | `file-code` | `content.pages`, `content.publish`, `content.media`, `content.schema` |
+| `pim` | PIM | `/pim/products` | `boxes-stacked` | `pim.products`, `pim.categories`, `pim.schema`, `pim.quality`, `suppliers.sources`, `suppliers.products` |
+| `points` | Points | `/points/list` | `location-dot` | `deliverypoints.points` |
+| `forms` | Forms | `/forms/list` | `envelope` | `contact_forms.submissions`, `contact_forms.leads`, `contact_forms.settings` |
+| `accounts` | Accounts | `/accounts/customers` | `users` | `accounts.customers` |
+| `checkout` | Orders | `/checkout-orders/orders` | `shopping-cart` | `checkout.orders` |
+| `agreements` | Agreements | `/agreements/list` | `file-contract` | `agreements.definitions`, `agreements.consents` |
+| `emails` | Emails | `/emails` | `at` | `email.templates` |
+| `faq` | FAQ | `/faq/groups` | `circle-question` | `faq.faq` |
+| `pricing` | Pricing | `/pricing/prices` | `money-bill-wave` | `pricemanager.prices`, `pricemanager.settings` |
+| `stock` | Stock | `/stock/manage` | `warehouse` | `qms.stock` |
+| `translation` | Translation | `/translation-jobs` | `language` | `pim_translator.translate`, `contentdb_translator.translate` |
+| `atlas` | Atlas | `/atlas/list` | `globe` | `atlas.sources`, `atlas.products`, `atlas.credentials`, `lookup.search` |
+| `pricefighter` | PriceFighter | `/pricefighter/gap` | `scale-balanced` | `pricefighter.decisions`, `pricefighter.rules` |
+| `enricher` | Enricher | `/enrichment` | `wand-magic-sparkles` | `enrichment.rules`, `enrichment.proposals` |
+| `promo` | Promo | `/promo/list` | `tags` | `checkout.discounts` |
+| `leads` | Leads | `/leads/inbox` (fallback `/leads/companies`) | `inbox` | `leads.companies`, `leads.settings`, `leads.gdpr`, `communicator.review`, `communicator.content`, `communicator.conversations`, `communicator.settings`, `siteintel.audits` |
+| `access` | Access | `/access/roles` | `user-shield` | `access.manage` |
 
 This array is static metadata only. Whether a panel is *usable* is decided at
 runtime by `useMuninStore().isPanelEnabled(idx)` (the module is on) and
@@ -103,6 +105,9 @@ resolve even when the `promo` panel itself is enabled via `checkout`. If
 `root` (from the registry), not to `/`.
 
 ### `meta.area` — the user's permission (django-access)
+
+The whole access picture — store, refusals, read-only pages, the Access panel, token values — is
+`docs/access.md`; this section is the routing part.
 
 `useAccessStore` (`src/stores/access.js`) holds the user's `me` from
 `GET /api/access/v2/me/`, loaded at login (after munin) and on a cold load,

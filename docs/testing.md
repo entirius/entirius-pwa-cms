@@ -94,6 +94,9 @@ Fixture data: `tests/fixtures/`.
 | — | `12-pim-product-links.spec.js` | PIM product deep links |
 | — | `13-pim-quality.spec.js`, `14-pim-quality-rules.spec.js`, `15-pim-quality-rules-offcompat.spec.js` | PIM quality/gap rules, soft-compat with older backends |
 | — | `16-error-feedback.spec.js` | API error surface in the UI |
+| — | `access-users.spec.js` | Admin, viewer, editor and customer see what their roles allow; the gate refuses the viewer's write; one toast per refusal burst (seeded users, read-only) |
+| — | `access-secret.spec.js` | A new token's value never leaves SecretReveal (writes: one application and one token, revoked and deactivated in cleanup) |
+| — | `access-roles-smoke.spec.js`, `access-staff-smoke.spec.js`, `access-applications-smoke.spec.js` | Access panel smokes (read-only) |
 | `test:comprehensive` | `03`, `04`, `05`, `06` | Combined run of the four core suites |
 | `test:build` | — | Production build check (`tests/build/build-test.js`) |
 

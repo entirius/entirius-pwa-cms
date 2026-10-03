@@ -82,6 +82,7 @@ tests/            # unit/ (Vitest) + e2e/ (Playwright) + helpers/
 | File | Content |
 |---|---|
 | `docs/panels-routing.md` | panel registry, route table, munin gating, access control |
+| `docs/access.md` | django-access: the access store and `can()`, areas, guard, 403 handling, read-only pages, the Access panel, SecretReveal rules |
 | `docs/stores-composables.md` | all Pinia stores and composables, usage patterns |
 | `docs/ui-rules.md` | CMS UI rules: tokens, components, layout R1–R9, page patterns, merge checklist |
 | `docs/ui-components.md` | boot components, DataTable API, directives, theming, RWD |

@@ -247,7 +247,8 @@ Catalogue: `#actions` (`#basic-button`, `#icon-button`, `#action-bar`, `#floatin
   (and Esc, the backdrop, the close button) works only after "I have stored it" is ticked. The value is copied into
   the boot's own state and `update:secret` hands the caller `""` at once — bind `v-model:secret` so the page drops its
   copy; close and unmount clear it, and the field is emptied before the dialog leaves. Never pass the value to a toast,
-  a store, the router or a log. Test ids `secret-reveal-value` / `-copy` / `-stored` / `-close`.
+  a store, the router or a log. Test ids `secret-reveal-value` / `-copy` / `-stored` / `-close`. `tests/e2e/access-secret.spec.js`
+  proves a created token's value is nowhere after close (`docs/access.md` § Token values).
 
 Catalogue: `#overlays` (`#basic-modal`, `#confirm-dialog`, `#secret-reveal`, `#side-drawer`, `#translations-drawer`, `#basic-menu`,
 `#basic-tooltip`), plus buttons that open the real overlays.
@@ -437,7 +438,8 @@ view; a custom role never sees them). Each area is one native radio group named 
 not offer is disabled (struck through). Each module has a "set all" `SegmentedControl` that clamps per area (write
 on a read-only area = read, read on a write-only area = none) and never reaches a hidden area. Sensitivity flags
 are `Tag`s (`access.sensitive.<flag>`). Labels are text only: `access.areas.<key>` / `access.modules.<module>` when
-translated, else the catalogue's English label. The rules are `matrix.js` (`toPermissionKeys` builds the API's
+translated, else the catalogue's English label — every area of today's catalogue has both locales
+(`tests/unit/i18n/accessKeys.spec.js`). The rules are `matrix.js` (`toPermissionKeys` builds the API's
 `<area>:<level>` list from assignable areas only).
 
 ### P4 shell (plan 21)

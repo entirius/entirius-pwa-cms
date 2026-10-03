@@ -34,6 +34,19 @@ All notable changes to this project will be documented in this file.
   warns that storefronts lose it at once). Legacy keys show their source and last use and never expire by themselves;
   Set expiry gives them one. New boot `SecretReveal` shows a new token's value once (Copy, close after "I have stored
   it", the value dropped on close and unmount) with a `/ui` cell.
+- Access strings complete in Polish and English, including a label for each of the 49 catalogue areas and 9 token
+  scopes (the role matrix and the token dialog no longer fall back to the catalogue's English); a unit test fails on
+  a missing key in either locale.
+- `docs/access.md`: the access store and `can()`, areas, the guard, 403 handling, read-only pages, the Access panel
+  and the SecretReveal rules.
+- e2e `access-users.spec.js` (admin, viewer, editor and customer each see what their roles allow; the gate refuses
+  the viewer's own write; three refusals on a page show one toast and refresh permissions once) and
+  `access-secret.spec.js` (a new token's value is in no console message, web storage, cookie, URL, page HTML or later
+  API response). Visual capture ids for six Access screens (baselines not approved yet).
+
+### Fixed
+
+- Access → Applications: a long application name wraps on a phone instead of being clipped.
 
 ### Security
 
