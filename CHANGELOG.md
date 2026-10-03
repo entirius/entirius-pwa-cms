@@ -29,11 +29,14 @@ All notable changes to this project will be documented in this file.
   person must keep access management". Staff accounts and groups are still created in Django admin.
 - Access → Applications: machine clients with their state, token count and legacy marker; an application page edits
   its name, description and active state and manages its tokens — New token (scopes in two groups that never mix,
-  "reaches browsers" and "server-to-server only", an optional channel pin, an expiry: a server-to-server token
-  expires within 365 days, 365 by default), Rotate (0–168 hours of overlap), Set expiry and Revoke (a publishable key
-  warns that storefronts lose it at once). Legacy keys show their source and last use and never expire by themselves;
-  Set expiry gives them one. New boot `SecretReveal` shows a new token's value once (Copy, close after "I have stored
+  "reaches browsers" and "server-to-server only", an optional channel pin, an optional expiry — "No expiry" by
+  default for every token, no maximum lifetime: D31 replaced the 365-day cap), Rotate (0–168 hours of overlap), Set
+  expiry and Revoke (a publishable key warns that storefronts lose it at once). Legacy keys show their source and last
+  use and never expire by themselves; Set expiry gives them one. New boot `SecretReveal` shows a new token's value once (Copy, close after "I have stored
   it", the value dropped on close and unmount) with a `/ui` cell.
+- Access → Applications: each token row shows its age and, when the API flags `rotation_due`, a "Rotation
+  recommended" badge whose tooltip names the catalogue's `token_rotation_days`; the New token dialog says tokens never
+  expire unless a date is set and how often to rotate.
 - Access strings complete in Polish and English, including a label for each of the 49 catalogue areas and 9 token
   scopes (the role matrix and the token dialog no longer fall back to the catalogue's English); a unit test fails on
   a missing key in either locale.

@@ -101,6 +101,16 @@ Munin key `access`; every route needs `access.manage` (built-in Administrator, o
 
 A revoke the server's lockout guard refuses reads "At least one person must keep access management".
 
+## Token expiry and rotation
+
+No token has to expire and there is no maximum lifetime (D31 replaced the 365-day cap on server-to-server tokens).
+New token, Rotate and Set expiry open on "No expiry" for every scope; "On a date" takes any day from tomorrow on. The
+client-side checks left: a past day (`EXPIRY_IN_PAST`, also the server's 400 code) and "On a date" with no day picked
+(never saved as "No expiry"). The tokens table shows
+each token's age (`age_days`: "today", "N days"; a legacy key counts from its import) and a warning "Rotation
+recommended" when the API says `rotation_due`; its tooltip and the New token hint name the catalogue's
+`token_rotation_days`. Nothing is refused because of age: rotate with overlap, then revoke the old token.
+
 ## Token values (SecretReveal)
 
 A new or rotated token's value comes once, in the create or rotate response. The page hands it to `SecretReveal`
