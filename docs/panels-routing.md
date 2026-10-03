@@ -1,6 +1,6 @@
 # Panels and Routing
 
-17 self-contained panels, each gated by a django-munin backend module. Panel
+18 self-contained panels, each gated by a django-munin backend module. Panel
 metadata lives in `src/configs/access.js`; route gating lives in
 `src/router/index.js` and `src/stores/munin.js`.
 
@@ -31,6 +31,7 @@ django-access areas the panel works on (catalogue keys such as
 | `enricher` | Enricher | `/enrichment` | `wand-magic-sparkles` |
 | `promo` | Promo | `/promo/list` | `tags` |
 | `leads` | Leads | `/leads/inbox` (fallback `/leads/companies`) | `inbox` |
+| `access` | Access | `/access/roles` | `user-shield` |
 
 This array is static metadata only. Whether a panel is *usable* is decided at
 runtime by `useMuninStore().isPanelEnabled(idx)` (the module is on) and
@@ -56,6 +57,7 @@ path prefix and lazy-loaded (`() => import(...)`). Grouped by panel:
 | `/pricing/...` | PriceList/Detail, TaxClassList/Detail, ChannelList/Detail |
 | `/stock/...` | WarehouseStockTable |
 | `/translation-jobs` | TranslationDashboard |
+| `/access/...` | RoleList, RoleDetail (`roles/new`, `roles/:key`; a built-in role opens read-only, Duplicate = `roles/new?from=<key>`) |
 | `/atlas/...`, `/suppliers/*` + `/supplier-review` (legacy redirects) | SupplierList/Detail, AutoMatched, Duplicates, SupplierReview (Review/) |
 | `/pricefighter/...` | GapTable, Strategies, DecisionHistory |
 | `/enrichment/...` | EnrichmentReview, EnrichmentSpawnRules List/Edit, EnrichmentTasks |

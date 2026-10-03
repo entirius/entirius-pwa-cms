@@ -19,6 +19,10 @@ All notable changes to this project will be documented in this file.
   and `IconButton` take `mutates` for the other writing buttons. `scripts/audit/readonly.mjs` lists the writing
   buttons the mode does not reach (Pages, PIM, FAQ, Pricing and Forms are clean).
 - The PIM product Delete shows only with `pim.product_delete:write`.
+- Access panel (munin key `access`, needs `access.manage` read): Roles lists the built-in and custom roles; a role
+  page edits a custom role's name, description and permissions, and opens a built-in read-only with Duplicate. A
+  custom role never offers `access.manage` (built-in Administrator only). New boot `PermissionMatrix` with a `/ui`
+  cell.
 
 ### Removed
 

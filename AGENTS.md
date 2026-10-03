@@ -1,9 +1,9 @@
 # AGENTS.md
 
 entirius-pwa-cms — admin CMS for the Entirius platform: a Vue 3 SPA with a
-visual page builder and 17 self-contained panels (Pages, PIM, Points, Forms,
+visual page builder and 18 self-contained panels (Pages, PIM, Points, Forms,
 Accounts, Checkout, Agreements, Emails, FAQ, Pricing, Stock, Translation,
-Atlas, Enricher, Promo, PriceFighter, Leads — communicator included), each enabled per backend by the
+Atlas, Enricher, Promo, PriceFighter, Leads — communicator included, Access), each enabled per backend by the
 django-munin module registry. Backend for local dev: entirius-zeno at `http://localhost:8100`.
 
 ## Commands

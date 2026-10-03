@@ -415,7 +415,21 @@ Catalogue: `#selects` (`#basic-select`, `#entity-search-picker`, `#channel-multi
   `LockedField` are removed components (`removed-components/inputs.json`).
 
 Catalogue: `#inputs` (`#form-field`, `#basic-input`, `#basic-textarea`, `#number-input`, `#basic-checkbox`,
-`#basic-radio-group`, `#basic-switch`, `#segmented-control`, `#basic-date-picker`, `#color-input`, `#basic-wysiwyg`).
+`#basic-radio-group`, `#basic-switch`, `#segmented-control`, `#basic-date-picker`, `#color-input`, `#basic-wysiwyg`,
+`#permission-matrix`).
+
+### PermissionMatrix
+
+**`PermissionMatrix`** (`src/boots/PermissionMatrix/`, access plan 20) — the areas of the django-access catalogue ×
+none/read/write. Props: `areas` (the catalogue's `modules`: `[{ module, areas: [{ key, label, levels, sensitive,
+assignable }] }]`), `v-model` (`{ "<area>": "read" | "write" }`, no key = none), `disabled` (also on a read-only
+page), `showReserved` (renders the `assignable: false` areas — `access.manage` — for a built-in role's read-only
+view; a custom role never sees them). Each area is one native radio group named by its label; a level the area does
+not offer is disabled (struck through). Each module has a "set all" `SegmentedControl` that clamps per area (write
+on a read-only area = read, read on a write-only area = none) and never reaches a hidden area. Sensitivity flags
+are `Tag`s (`access.sensitive.<flag>`). Labels are text only: `access.areas.<key>` / `access.modules.<module>` when
+translated, else the catalogue's English label. The rules are `matrix.js` (`toPermissionKeys` builds the API's
+`<area>:<level>` list from assignable areas only).
 
 ### P4 shell (plan 21)
 
