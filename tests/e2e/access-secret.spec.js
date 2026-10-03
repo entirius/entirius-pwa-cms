@@ -6,7 +6,8 @@ const { createErrorCollector } = require('../helpers/error-collector');
  * Access plan 23: a token's value never leaves the SecretReveal dialog. The admin creates a run-unique application and
  * a token with one secret scope; the value is read from the dialog's field into a local variable only, the dialog is
  * confirmed and closed; then the value must be in no console message, web storage entry, cookie, visited URL, the page
- * HTML, or any API response after the create (the token list and the application detail, reloaded). Cleanup revokes
+ * (text and fields, before and after a reload), page error, or any API response but the create's own (the token
+ * list after the create, the reloaded application detail and token list). Cleanup revokes
  * the token and deactivates the application. The value is never printed: every assertion is a yes/no named by the
  * token id, and trace, screenshot and video are off (they would keep the field's content on disk).
  * The one access spec that writes.
@@ -28,16 +29,23 @@ async function bearer(page) {
   return { Authorization: `Bearer ${cookie.value}` };
 }
 
-// Every console message and URL the page visits from now on; API response bodies once `bodies` is switched on.
+const isTokenCreate = (response) => response.request().method() === 'POST' && TOKEN_CREATE.test(response.url());
+
+// Every console message, visited URL and API response body from now on — but the token create's own answer, the one
+// response that carries the value.
 function recordTraces(page) {
-  const traces = { console: [], urls: [page.url()], bodies: [], recordBodies: false };
+  const traces = { console: [], urls: [page.url()], bodies: [] };
   page.on('console', (msg) => traces.console.push(msg.text()));
   page.on('framenavigated', (frame) => frame === page.mainFrame() && traces.urls.push(frame.url()));
   page.on('response', (response) => {
-    if (traces.recordBodies && response.url().startsWith(API)) traces.bodies.push(response.text().catch(() => ''));
+    if (response.url().startsWith(API) && !isTokenCreate(response)) traces.bodies.push(response.text().catch(() => ''));
   });
   return traces;
 }
+
+// What the page shows and holds right now: its text and every field's value (a DOM property, not in the HTML).
+const liveText = (page) =>
+  page.evaluate(() => [document.body.innerText, ...[...document.querySelectorAll('input, textarea')].map((f) => f.value)]);
 
 async function webStorage(page) {
   return page.evaluate(() =>
@@ -63,7 +71,7 @@ async function createToken(page, name) {
   await page.locator('[data-testid="token-name"] input').fill(name);
   await checkbox(page, `token-scope-${SECRET_SCOPE}`).click();
   const [response] = await Promise.all([
-    page.waitForResponse((r) => r.request().method() === 'POST' && TOKEN_CREATE.test(r.url())),
+    page.waitForResponse(isTokenCreate),
     page.locator('[data-testid="token-create-save"]').click(),
   ]);
   expect(response.status(), 'token create').toBe(201);
@@ -86,9 +94,14 @@ test.describe('Access: a token value stays in SecretReveal (desktop)', () => {
 
   test.afterEach(async ({ page }) => {
     const headers = await bearer(page);
-    if (created.tokenId) await page.request.post(`${ADMIN}/tokens/${created.tokenId}/revoke/`, { headers });
+    if (created.tokenId) {
+      const revoked = await page.request.post(`${ADMIN}/tokens/${created.tokenId}/revoke/`, { headers });
+      expect(revoked.ok(), `cleanup: revoke token ${created.tokenId}`).toBe(true);
+    }
     if (created.applicationId) {
-      await page.request.patch(`${ADMIN}/applications/${created.applicationId}/`, { headers, data: { is_active: false } });
+      const url = `${ADMIN}/applications/${created.applicationId}/`;
+      const deactivated = await page.request.patch(url, { headers, data: { is_active: false } });
+      expect(deactivated.ok(), `cleanup: deactivate application ${created.applicationId}`).toBe(true);
     }
   });
 
@@ -102,24 +115,27 @@ test.describe('Access: a token value stays in SecretReveal (desktop)', () => {
 
     const secret = await takeSecret(page);
     const id = `token ${created.tokenId}`;
+    const holds = (text) => String(text).includes(secret);
     expect(secret.startsWith('ent_api_') && secret.length > 20, `${id}: the dialog showed a token value`).toBe(true);
+    // The page that showed it: the closed dialog left the value in no text and no field.
+    expect((await liveText(page)).some(holds), `${id} on the page after close`).toBe(false);
 
-    // Every API answer after the create: the reloaded application detail and token list.
-    traces.recordBodies = true;
+    // A fresh load of the application detail and its token list.
     await page.reload();
     await page.waitForLoadState('networkidle');
     await expect(page.locator(`[data-testid="token-row-${created.tokenId}"]`)).toBeVisible();
 
-    const holds = (text) => String(text).includes(secret);
     expect(traces.console.some(holds), `${id} in a console message`).toBe(false);
     expect((await webStorage(page)).some(holds), `${id} in web storage`).toBe(false);
     expect((await page.context().cookies()).some((c) => holds(c.value)), `${id} in a cookie`).toBe(false);
     expect([...traces.urls, page.url()].some(holds), `${id} in a visited URL`).toBe(false);
     expect(holds(await page.content()), `${id} in the page HTML`).toBe(false);
     const bodies = await Promise.all(traces.bodies);
-    expect(bodies.length, 'API responses after the reload').toBeGreaterThan(0);
-    expect(bodies.some(holds), `${id} in a later API response`).toBe(false);
+    expect(bodies.length, 'API responses recorded').toBeGreaterThan(0);
+    expect(bodies.some(holds), `${id} in an API response other than the create`).toBe(false);
 
+    // Checked before the collector prints its page errors.
+    expect(collector.getErrors().exceptions.some(holds), `${id} in a page error`).toBe(false);
     collector.assertNoErrors(expect, 'Access secret');
   });
 });

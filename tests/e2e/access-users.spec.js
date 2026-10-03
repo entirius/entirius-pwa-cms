@@ -101,7 +101,8 @@ test.describe('Access: who sees what (desktop)', () => {
     await openPage(page, '/pricing/tax-classes');
     await page.locator('a[href^="/pricing/tax-classes/"]:not([href$="/create"])').first().click();
     await page.waitForURL(/\/pricing\/tax-classes\/[^/]+$/);
-    await page.waitForLoadState('networkidle');
+    // An in-app navigation: the loaded form (its header actions render with it), not `networkidle`.
+    await expect(page.locator('.basic-card .form-grid input').first()).toBeDisabled();
     await expect(page.locator('[data-testid="readonly-notice"]')).toBeVisible();
     await expect(page.getByRole('button', { name: either((t) => t.common.save) })).toHaveCount(0);
     collector.assertNoErrors(expect, 'Access editor');
@@ -169,11 +170,12 @@ test.describe('Access: the server is the authority (desktop)', () => {
     await page.locator('.group-row').first().click();
     await page.waitForURL(/\/faq\/groups\/[^/]+$/);
     await expect.poll(() => refused, { message: 'refused list calls' }).toBe(3);
+    // Inside the toast's 5 s life.
+    await expect(page.locator('.notification')).toHaveCount(1);
+    await expect(page.locator('.notification p')).toHaveText(either((t) => t.access.denied_action));
     await expect.poll(() => meCalls, { message: '`me` calls after the refusals' }).toBe(1);
     await page.waitForLoadState('networkidle');
 
-    await expect(page.locator('.notification')).toHaveCount(1);
-    await expect(page.locator('.notification p')).toHaveText(either((t) => t.access.denied_action));
     expect(refused, 'refused list calls').toBe(3);
     expect(meCalls, '`me` calls after the refusals').toBe(1);
   });

@@ -44,10 +44,6 @@ All notable changes to this project will be documented in this file.
   `access-secret.spec.js` (a new token's value is in no console message, web storage, cookie, URL, page HTML or later
   API response). Visual capture ids for six Access screens (baselines not approved yet).
 
-### Fixed
-
-- Access → Applications: a long application name wraps on a phone instead of being clipped.
-
 ### Security
 
 - With `VUE_APP_DEBUG` on, the API client no longer logs the body of a request flagged `sensitive` or of its response
