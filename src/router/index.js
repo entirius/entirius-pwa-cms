@@ -1313,7 +1313,7 @@ const routes = [
     ],
   },
 
-  // Access panel (django-access): roles; staff, applications and audit join in plans 21–22
+  // Access panel (django-access): roles, staff, groups, audit; applications join in plan 22
   {
     path: "/access",
     component: () => import(/* webpackChunkName: "access" */ "../views/Access/index.vue"),
@@ -1349,6 +1349,36 @@ const routes = [
           area: "access.manage",
           navParent: "/access/roles",
         },
+      },
+      {
+        path: "staff",
+        name: "AccessStaff",
+        component: () => import(/* webpackChunkName: "access" */ "../views/Access/StaffList.vue"),
+        meta: { requiresAuth: true, titleKey: "access.staff.title", panel: "access", area: "access.manage" },
+      },
+      {
+        path: "staff/:id(\\d+)",
+        name: "AccessStaffDetail",
+        component: () => import(/* webpackChunkName: "access" */ "../views/Access/StaffDetail.vue"),
+        meta: {
+          requiresAuth: true,
+          titleKey: "access.staff.detail",
+          panel: "access",
+          area: "access.manage",
+          navParent: "/access/staff",
+        },
+      },
+      {
+        path: "groups",
+        name: "AccessGroups",
+        component: () => import(/* webpackChunkName: "access" */ "../views/Access/GroupList.vue"),
+        meta: { requiresAuth: true, titleKey: "access.groups.title", panel: "access", area: "access.manage" },
+      },
+      {
+        path: "audit",
+        name: "AccessAudit",
+        component: () => import(/* webpackChunkName: "access" */ "../views/Access/AuditList.vue"),
+        meta: { requiresAuth: true, titleKey: "access.audit.title", panel: "access", area: "access.manage" },
       },
     ],
   },

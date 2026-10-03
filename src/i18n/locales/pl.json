@@ -54,7 +54,10 @@
     "communicator_settings": "Ustawienia wysyłki",
     "ui_catalogue": "Katalog komponentów",
     "access": {
-      "roles": "Role"
+      "roles": "Role",
+      "staff": "Pracownicy",
+      "groups": "Grupy",
+      "audit": "Dziennik zmian"
     }
   },
   "login": {
@@ -3873,6 +3876,87 @@
       "django_notifications": "Powiadomienia",
       "django_munin": "Platforma",
       "django_access": "Dostęp"
+    },
+    "staff": {
+      "title": "Pracownicy",
+      "detail": "Konto pracownika",
+      "help": "Konta pracowników zakłada się w panelu Django, nie tutaj — ta strona nadaje im role.",
+      "search": "Szukaj po nazwisku, loginie lub e-mailu",
+      "empty": "Brak kont pracowników",
+      "not_found": "To konto pracownika nie istnieje",
+      "name": "Imię i nazwisko",
+      "username": "Login",
+      "email": "E-mail",
+      "roles": "Role",
+      "superuser": "Superużytkownik",
+      "via": "przez {group}",
+      "direct_roles": "Role nadane bezpośrednio",
+      "no_direct_roles": "Brak ról nadanych bezpośrednio",
+      "group_roles": "Grupy i ich role",
+      "no_groups": "Nie należy do żadnej grupy"
+    },
+    "groups": {
+      "title": "Grupy",
+      "help": "Grupy i ich członków zarządza się w panelu Django; rola nadana grupie trafia do każdego członka.",
+      "empty": "Brak grup",
+      "name": "Grupa",
+      "members": "Członkowie",
+      "add_role": "Dodaj rolę grupie {group}"
+    },
+    "grants": {
+      "role": "Rola",
+      "granted_at": "Nadano",
+      "add_role": "Dodaj rolę",
+      "add": "Dodaj",
+      "revoke_role": "Odbierz rolę {role}",
+      "revoke_title": "Odbierz rolę",
+      "revoke_message": "Odebrać rolę {role} ({holder})?",
+      "granted": "Nadano rolę",
+      "revoked": "Odebrano rolę",
+      "lockout": "Przynajmniej jedna osoba musi zachować zarządzanie dostępem — najpierw nadaj je komuś innemu"
+    },
+    "audit": {
+      "title": "Dziennik zmian",
+      "filters": "Filtry",
+      "action": "Akcja",
+      "actor": "Kto",
+      "from": "Od",
+      "to": "Do",
+      "group_bypass": "Grupuj dostęp superużytkownika po dniach",
+      "empty": "Brak wpisów w dzienniku",
+      "time": "Czas",
+      "target": "Obiekt",
+      "ip": "Adres IP",
+      "requests": "Żądania: {count}",
+      "actions": {
+        "role": {
+          "create": "Utworzono rolę",
+          "update": "Zmieniono rolę",
+          "delete": "Usunięto rolę"
+        },
+        "grant": {
+          "create": "Nadano rolę",
+          "delete": "Odebrano rolę",
+          "migrate": "Nadano rolę przy instalacji"
+        },
+        "application": {
+          "create": "Utworzono aplikację",
+          "update": "Zmieniono aplikację"
+        },
+        "token": {
+          "create": "Wydano token",
+          "rotate": "Odnowiono token",
+          "revoke": "Unieważniono token",
+          "expiry": "Zmieniono ważność tokenu"
+        },
+        "legacy": {
+          "import": "Zaimportowano stare klucze",
+          "purge": "Usunięto stare klucze"
+        },
+        "gate": {
+          "bypass": "Dostęp superużytkownika"
+        }
+      }
     }
   }
 }

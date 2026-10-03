@@ -358,6 +358,27 @@ export function buildNavRoutes() {
       query: {},
       app: ["access"],
     },
+    {
+      route: "/access/staff",
+      labelKey: "nav.access.staff",
+      icon: "user",
+      query: {},
+      app: ["access"],
+    },
+    {
+      route: "/access/groups",
+      labelKey: "nav.access.groups",
+      icon: "users",
+      query: {},
+      app: ["access"],
+    },
+    {
+      route: "/access/audit",
+      labelKey: "nav.access.audit",
+      icon: "clock-rotate-left",
+      query: {},
+      app: ["access"],
+    },
   ];
 }
 

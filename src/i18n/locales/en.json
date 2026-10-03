@@ -54,7 +54,10 @@
     "communicator_settings": "Send settings",
     "ui_catalogue": "Component catalogue",
     "access": {
-      "roles": "Roles"
+      "roles": "Roles",
+      "staff": "Staff",
+      "groups": "Groups",
+      "audit": "Audit"
     }
   },
   "login": {
@@ -3874,6 +3877,87 @@
       "django_notifications": "Notifications",
       "django_munin": "Platform",
       "django_access": "Access"
+    },
+    "staff": {
+      "title": "Staff",
+      "detail": "Staff account",
+      "help": "Staff accounts are created in Django admin, not here — this page grants them roles.",
+      "search": "Search by name, username or email",
+      "empty": "No staff accounts",
+      "not_found": "This staff account does not exist",
+      "name": "Name",
+      "username": "Username",
+      "email": "Email",
+      "roles": "Roles",
+      "superuser": "Superuser",
+      "via": "via {group}",
+      "direct_roles": "Roles granted directly",
+      "no_direct_roles": "No roles granted directly",
+      "group_roles": "Groups and their roles",
+      "no_groups": "Not a member of any group"
+    },
+    "groups": {
+      "title": "Groups",
+      "help": "Groups and their members are managed in Django admin; a role given to a group reaches every member.",
+      "empty": "No groups",
+      "name": "Group",
+      "members": "Members",
+      "add_role": "Add a role to {group}"
+    },
+    "grants": {
+      "role": "Role",
+      "granted_at": "Granted",
+      "add_role": "Add role",
+      "add": "Add",
+      "revoke_role": "Revoke {role}",
+      "revoke_title": "Revoke role",
+      "revoke_message": "Revoke the role {role} from {holder}?",
+      "granted": "Role granted",
+      "revoked": "Role revoked",
+      "lockout": "At least one person must keep access management — grant it to someone else first"
+    },
+    "audit": {
+      "title": "Audit",
+      "filters": "Filters",
+      "action": "Action",
+      "actor": "Who",
+      "from": "From",
+      "to": "To",
+      "group_bypass": "Group superuser access by day",
+      "empty": "No audit entries",
+      "time": "Time",
+      "target": "Target",
+      "ip": "IP address",
+      "requests": "{count} requests",
+      "actions": {
+        "role": {
+          "create": "Role created",
+          "update": "Role changed",
+          "delete": "Role deleted"
+        },
+        "grant": {
+          "create": "Role granted",
+          "delete": "Role revoked",
+          "migrate": "Role granted at install"
+        },
+        "application": {
+          "create": "Application created",
+          "update": "Application changed"
+        },
+        "token": {
+          "create": "Token issued",
+          "rotate": "Token rotated",
+          "revoke": "Token revoked",
+          "expiry": "Token expiry changed"
+        },
+        "legacy": {
+          "import": "Legacy keys imported",
+          "purge": "Legacy keys purged"
+        },
+        "gate": {
+          "bypass": "Superuser access"
+        }
+      }
     }
   }
 }

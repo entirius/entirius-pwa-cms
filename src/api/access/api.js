@@ -13,3 +13,11 @@ export const GET_AccessRole = (id) => accessApi.get(`${ADMIN}/roles/${id}/`)
 export const POST_AccessRole = (payload) => accessApi.post(`${ADMIN}/roles/`, payload)
 export const PATCH_AccessRole = (id, payload) => accessApi.patch(`${ADMIN}/roles/${id}/`, payload)
 export const DELETE_AccessRole = (id) => accessApi.delete(`${ADMIN}/roles/${id}/`)
+
+// Staff directory, groups, grants (a role to one staff user or one group) and the audit log, newest first.
+export const GET_AccessStaff = (params = {}) => accessApi.get(`${ADMIN}/staff/`, { params })
+export const GET_AccessStaffUser = (id) => accessApi.get(`${ADMIN}/staff/${id}/`)
+export const GET_AccessGroups = (params = {}) => accessApi.get(`${ADMIN}/groups/`, { params })
+export const POST_AccessGrant = (payload) => accessApi.post(`${ADMIN}/grants/`, payload)
+export const DELETE_AccessGrant = (id) => accessApi.delete(`${ADMIN}/grants/${id}/`)
+export const GET_AccessAudit = (params = {}) => accessApi.get(`${ADMIN}/audit/`, { params })
