@@ -18,7 +18,9 @@ const USERS = {
   admin: [process.env.ACCESS_ADMIN_USERNAME || 'accessadmin', process.env.ACCESS_ADMIN_PASSWORD || 'accessadmin123'],
 };
 const ACCESS_ADMIN = `${API}/api/access/v2/admin`;
+const CHANNEL = process.env.VUE_APP_CHANNEL || 'default-europe';
 const QMS_ADMIN = `${API}/api/qms/v2/admin`;
+const PIM_ADMIN = `${API}/api/pim/v2/admin/${CHANNEL}`;
 const PIM_LIST = /\/api\/pim\/v2\/admin\/[^/]+\/products\/\?/;
 const CONFIG_HEALTH = /\/api\/munin\/v2\/health\//;
 // The poll runs every 30 s (src/stores/configHealth.js); one period and a margin.
@@ -67,7 +69,12 @@ async function manualStockSku(page) {
   const manual = warehouses.find((warehouse) => warehouse.source_type === 'manual');
   expect(manual, 'the seed has a manual warehouse').toBeTruthy();
   const stock = await (await page.request.get(`${QMS_ADMIN}/warehouses/${manual.code}/stock/`, { headers })).json();
-  return stock.results[0].sku;
+  // BDD leaves stock rows for SKUs that are not PIM products (BDD-QMS-001); the product page needs a real one.
+  for (const { sku } of stock.results) {
+    const product = await page.request.get(`${PIM_ADMIN}/products/${encodeURIComponent(sku)}/`, { headers });
+    if (product.ok()) return sku;
+  }
+  throw new Error(`no PIM product among the stock rows of ${manual.code}`);
 }
 
 test.describe('Access read-only gaps (desktop)', () => {
