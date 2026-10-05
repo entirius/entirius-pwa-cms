@@ -46,5 +46,6 @@ export const AREAS = Object.freeze({
   COMMUNICATOR_CONVERSATIONS: "communicator.conversations",
   COMMUNICATOR_SETTINGS: "communicator.settings",
   SITEINTEL_AUDITS: "siteintel.audits",
+  MUNIN_CONFIG: "munin.config",
   ACCESS_MANAGE: "access.manage",
 });

@@ -55,6 +55,7 @@ import { useHandyStore } from "@/stores/handy";
 import { useMuninStore } from "@/stores/munin";
 import { useAccessStore } from "@/stores/access";
 import { ACCESS_STORE } from "@/composables/useReadonly";
+import { AREAS } from "@/configs/areas";
 import { useNotificationsStore } from "@/stores/notifications";
 import { useConfigHealthStore } from "@/stores/configHealth";
 import { useLeadTypesStore } from "@/stores/leadTypes";
@@ -114,8 +115,10 @@ export default {
     notificationsActive() {
       return this.userStore.isAuth && this.access.isStaff && this.munin.isModuleEnabled("notifications");
     },
+    // `health/` is the `munin.config` area: a role without it would collect a 403 every poll. Decided once `me` is in.
     configHealthActive() {
-      return this.userStore.isAuth && this.access.isStaff && this.munin.healthAvailable;
+      const allowed = this.access.loaded && this.access.can(AREAS.MUNIN_CONFIG);
+      return this.userStore.isAuth && this.access.isStaff && allowed && this.munin.healthAvailable;
     },
     // A phone shows the tab bar for a panel with two or more entries, never on `meta.noBottomBar` (Leads Review keeps
     // its sticky actions); without it `--bottom-bar-height` is 0 (the FloatingActions offset).

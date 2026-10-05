@@ -12,6 +12,7 @@ const editor = (overrides = {}) => ({
   has_options: () => false,
   saveDraft: vi.fn(),
   saveAndPublish: vi.fn(),
+  canPublish: true,
   $refs: {},
   ...overrides,
 });
@@ -45,6 +46,11 @@ describe("Builder — header actions", () => {
     expect(vm.rename_modal).toBe(true);
     expect(vm.advanced_options).toBe(true);
     expect(actionsOf(vm)[1].icon).toBe("close");
+  });
+
+  // FIX-09 #17: Publish is the `content.publish` area; a role that only edits pages keeps the draft.
+  it("leaves Publish out for a role that cannot publish", () => {
+    expect(actionsOf(editor({ canPublish: false })).map(({ key }) => key)).toEqual(["copy", "advanced", "draft"]);
   });
 
   it("adds the document options utility when the config has them, opening its kit", () => {
