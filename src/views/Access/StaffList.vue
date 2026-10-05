@@ -1,11 +1,7 @@
 <template>
   <PageLayout class="fs-300 t-body">
     <template #header>
-      <PageHeader :title="$t('access.staff.title')">
-        <template #meta>
-          <p class="t-muted fs-200 m-0" data-testid="staff-help">{{ $t("access.staff.help") }}</p>
-        </template>
-      </PageHeader>
+      <PageHeader :title="$t('access.staff.title')" :description="$t('access.staff.help')" />
     </template>
     <template #toolbar>
       <div class="flex ai-ct flex-wrap gap-5">

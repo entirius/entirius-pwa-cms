@@ -1,11 +1,7 @@
 <template>
   <PageLayout class="fs-300 t-body">
     <template #header>
-      <PageHeader :title="$t('access.applications.title')">
-        <template #meta>
-          <p class="t-muted fs-200 m-0">{{ $t("access.applications.help") }}</p>
-        </template>
-      </PageHeader>
+      <PageHeader :title="$t('access.applications.title')" :description="$t('access.applications.help')" />
     </template>
     <Loader block v-if="loading" />
 

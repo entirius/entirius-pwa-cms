@@ -34,6 +34,13 @@ describe("PageHeader", () => {
     expect(wrapper.find(".page-header__overline").text()).toBe("Home");
   });
 
+  it("renders the description under the title row only when given", () => {
+    expect(header().find(".page-header__description").exists()).toBe(false);
+    const description = header({ description: "Who can sign in." }).find(".page-header__description");
+    expect(description.text()).toBe("Who can sign in.");
+    expect(description.element.closest(".page-header__title-row")).toBeNull();
+  });
+
   it("shows no crumbs and no back arrow unless given (no shell)", () => {
     const wrapper = header();
     expect(wrapper.find("nav").exists()).toBe(false);
