@@ -190,11 +190,16 @@ Traps:
 - **Read-only page.** `PageLayout` decides it once (the route's `meta.area`, else the panel's first area, without
   write in django-access `me`) and shows one notice line under the header. ActionBar keeps only its utilities (not a
   `danger` one; an action's `mutates` true/false overrides its role), FloatingActions (but its back button) and
-  BulkActionBar are gone, FormField disables its control. The PageLayout toolbar and the PageHeader `meta` (search,
-  filters, the channel picker) stay enabled: they read, never write. Any other button that creates, changes or deletes (a row's delete, an inline save) is a `BasicButton` or
+  BulkActionBar are gone, and every control boot is disabled, in a FormField or not (a switch or select that saves on
+  change too). The PageLayout toolbar and the PageHeader `meta` (search, filters, the channel picker) stay enabled:
+  they read, never write. A control elsewhere that only reads or navigates (a search box in a card, a mode switch, a
+  list toggle) sits in `ReadonlyOff`. Any other button that creates, changes or deletes (a row's delete, an inline save) is a `BasicButton` or
   `IconButton` with `mutates`; one whose POST only reads (a lookup, a preview, a validation) says `:mutates="false"`.
-  `npm run audit:readonly` (part of `lint:ui`) fails on a write button with neither. A view never checks
-  write permission itself for this; `:readonly` on PageLayout forces it on, never off.
+  A `draggable`, a drop zone or a file input binds the flag itself (`:disabled="readonly"`, `v-if="!readonly"`; a view
+  reads its own page's flag with `usePageReadonly()`, a component inside the page with `useReadonly()`). A tab that
+  embeds another panel's screen (a product's prices, stock, supplier) sits in `ReadonlyArea :area` and is shown only
+  when that area is readable. `npm run audit:readonly` (part of `lint:ui`) fails on a write control the mode does not
+  reach. A view never checks write permission itself for this; `:readonly` on PageLayout forces it on, never off.
 - **Floating action.** `FloatingActions` sits 24 px from the bottom-right corner beside the sidebar (Figma S4) and
   16 px from the edge above the tab bar below 1024 px; a view never moves it. Bottom-pinned rows (the PageLayout
   footer, a sticky decision bar) keep the FAB's corner clear through `--fab-lane`.

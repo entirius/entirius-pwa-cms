@@ -170,8 +170,8 @@ is the one slot the Inbox rows, the Review confirmation (looked up after accept)
 
 ## Configuration health
 
-`src/stores/configHealth.js` polls munin `GET health/` (admin-only, 30 s, like the bell) while `munin.loaded` and
-the `munin` module is on; "Check again" = `POST health/check/` (adds the live probes). State, not events: nothing is
+`src/stores/configHealth.js` polls munin `GET health/` (admin-only, 30 s, like the bell) while `munin.loaded`, the
+`munin` module is on and the user can read `munin.config` (django-access); "Check again" = `POST health/check/` (adds the live probes). State, not events: nothing is
 marked read, a fixed config clears on the next poll. The header triangle (`ConfigHealthButton.vue`, next to the bell)
 exists only while a check fails — plus ~10 s of green "fixed" after a bad → good flip; the user menu always opens the
 panel (green grid on demand). Text lives once in `config_health.checks.<code with _>.<state>` (`{scope}` = channel),

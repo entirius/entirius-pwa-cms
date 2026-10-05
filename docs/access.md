@@ -63,8 +63,8 @@ The gate's body is the v2 envelope `PERMISSION_DENIED` with a detail issue `ACCE
 1. one standard toast, "You do not have permission for this action" — one per burst: three refused calls of one page
    show one toast;
 2. `access.refresh()` — the user's roles may have changed;
-3. the rejection still reaches the view, marked `accessHandled`; the view's own error toast is covered by the
-   standard one.
+3. the rejection still reaches the view, marked `accessHandled`; the view's own error toast of that request (raised
+   in the same task as the rejection) is covered by the standard one — another request's error still shows.
 
 ## Non-staff accounts
 
@@ -82,9 +82,15 @@ stays. Views never check write permission themselves. Rules: `docs/ui-rules.md` 
 `npm run audit:readonly` (in `lint:ui` and the unit suite) fails on a writing button the mode does not reach, in every
 panel.
 
-Known gaps: a control outside a `FormField` stays live (the FAQ group's header "Active" switch and its "Add existing
-item" select, the PIM header "Enabled" switch) — Save is hidden, and the gate refuses what they send. The
-application's header "Active" switch sits in a `FormField` and is disabled with the rest.
+A control outside a `FormField` follows the page too (the FAQ group's "Active" switch, a lead type's switch, the
+company card's stage select), and so do the drag lists (stages, FAQ groups, feature sets). A product's prices, stock
+and supplier tabs are read-only by their own areas (`pricemanager.prices`, `qms.stock`, `atlas.products`), not by
+`pim.products`, and are not shown without read on them. The audit also follows `@update:model-value`, `@change`,
+`@end` and `@drop`.
+
+Other in-view gates: Builder's Publish needs `content.publish:write`; the Leads → Settings hub lists only the sections
+the user can read; the configuration-health poll runs only with read on `munin.config`. Editing your own grants on the
+staff page asks `me` again at once (`refresh(true)`). A deep link opened before login is guarded again after it.
 
 ## The Access panel
 
