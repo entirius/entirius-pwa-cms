@@ -8,6 +8,8 @@ const setUser = vi.fn();
 const loadPreferences = vi.fn();
 const fetchModules = vi.fn();
 const ensureAccessLoaded = vi.fn();
+const replace = vi.fn();
+const currentRoute = { value: { path: "/pim/products", query: { page: "2" }, hash: "" } };
 
 vi.mock("@/api/contentDB/api", () => ({
   GET_User: (...a) => mockGetUser(...a),
@@ -21,6 +23,10 @@ vi.mock("@/stores/munin", () => ({
 }));
 vi.mock("@/stores/access", () => ({
   useAccessStore: () => ({ ensureLoaded: ensureAccessLoaded }),
+}));
+
+vi.mock("vue-router", () => ({
+  useRouter: () => ({ currentRoute, replace }),
 }));
 
 import { useLoginSession, consumeReturnRoute } from "@/composables/useLoginSession";
@@ -85,6 +91,15 @@ describe("useLoginSession.completeLogin", () => {
     expect(loadPreferences).toHaveBeenCalledWith(null);
     expect(setUser).toHaveBeenCalledWith({ username: "", first_name: "", last_name: "", email: "", permissions: [] });
     expect(fetchModules).toHaveBeenCalled();
+  });
+
+  // FIX-09 #6: a deep link opened before login passed the guard without the access check.
+  it("re-runs the guard on the current route after the access check and before leaving the wall", async () => {
+    await useLoginSession().completeLogin(TOKENS);
+
+    expect(replace).toHaveBeenCalledWith({ path: "/pim/products", query: { page: "2" }, hash: "", force: true });
+    expect(ensureAccessLoaded.mock.invocationCallOrder[0]).toBeLessThan(replace.mock.invocationCallOrder[0]);
+    expect(replace.mock.invocationCallOrder[0]).toBeLessThan(markAuthenticated.mock.invocationCallOrder[0]);
   });
 });
 

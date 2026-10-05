@@ -1479,9 +1479,11 @@ router.beforeEach(async (to, from, next) => {
   if (panel) {
     const munin = useMuninStore();
     const userStore = useUserStore();
+    // The token is there from the first step of a login: the login re-runs this guard before it leaves the wall.
+    const signedIn = userStore.isAuth || Boolean(userStore.token);
 
     // Wait for Munin data if user is authenticated but modules not yet loaded
-    if (userStore.isAuth && !munin.loaded) {
+    if (signedIn && !munin.loaded) {
       await munin.ensureLoaded();
     }
 
@@ -1496,7 +1498,7 @@ router.beforeEach(async (to, from, next) => {
       next(moduleFallback(panels.find((p) => p.idx === panel), to.path));
       return;
     }
-    if (userStore.isAuth && !(await canReadRoute(to, panel))) {
+    if (signedIn && !(await canReadRoute(to, panel))) {
       next(accessFallback(to, panel));
       return;
     }

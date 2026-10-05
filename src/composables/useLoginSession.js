@@ -1,3 +1,4 @@
+import { useRouter } from "vue-router"
 import { GET_User, GET_UserDetails } from "@/api/contentDB/api"
 import { useUserStore } from "@/stores/user"
 import { useMuninStore } from "@/stores/munin"
@@ -25,6 +26,7 @@ export function useLoginSession() {
   const userStore = useUserStore()
   const munin = useMuninStore()
   const accessStore = useAccessStore()
+  const router = useRouter()
 
   async function completeLogin({ access, refresh, customer_id = null }) {
     userStore.setAuth({ token: access, refresh, customer_id, expiryDate: tokenExpiry(access) })
@@ -37,11 +39,19 @@ export function useLoginSession() {
     await munin.fetchModules()
     // After munin, which tells whether django-access is installed; a failure leaves the store in `error`.
     await accessStore.ensureLoaded()
+    // A route opened before login passed the guard without the access check: guard it again for this user before the
+    // shell renders it (a panel they cannot read lands on Home).
+    await reguard(router)
     // Last: leaving the login wall earlier let a fast click outrun the user cookie (empty sidebar on reloads).
     userStore.markAuthenticated()
   }
 
   return { completeLogin }
+}
+
+function reguard(router) {
+  const { path, query, hash } = router.currentRoute.value
+  return router.replace({ path, query, hash, force: true })
 }
 
 /**
