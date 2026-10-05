@@ -301,9 +301,7 @@ Commit the PNGs from `tests/visual/__screenshots__/<project>/` in the same PR as
 `node tests/visual/scripts/figma-landmarks.mjs <cms.json>`. `known-differences.json` lists where the code
 deliberately differs from Figma (KD01–KD22) and how each layer treats it.
 
-**Panel done-check.** A panel screen is done when the zeno harness's `p5_check.py` (roadmap `r06-views/scripts/`, run
-from the zeno root: `python3 <script> repos/pwa/entirius-pwa-cms src/views src/components src/functionals src/App.vue`)
-reports 0 files: no raw control or table outside the boots (the hidden file picker excepted), no view-local class
-family, no `detail-*` form class, no removed part, no page-frame leftover, no raw `<h1>`, no local modal file, no
-view-local boot copy. `npm run lint:ui` (every rule an error) and `@ux` (no `high` finding, empty allow-list) guard
-the same ground in this repo.
+**Panel done-check.** A panel screen is done when it has no raw control or table outside the boots (the hidden file
+picker excepted), no view-local class family, no `detail-*` form class, no removed part, no page-frame leftover, no
+raw `<h1>`, no local modal file and no view-local boot copy. `npm run lint:ui` (every rule an error) and `@ux` (no
+`high` finding, empty allow-list) guard that ground in this repo.
