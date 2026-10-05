@@ -183,7 +183,9 @@ Both are gitignored.
 
 **Screens.** `capture-spec.json` lists every screen: route, resolver (`fixed`, `first-row`, `first-link`), state
 (`default`, `switcher-open` (the mobile menu open; a mobile-only row), `user-menu-open`, `notif-open`, `health-open`, `fab-open`, `scrolled`), viewports and the
-baseline file name, plus an optional `readySelector` (below). Tests are named `<id>-<viewport>-<theme>`. P1 policy:
+baseline file name, plus an optional `readySelector` (below) and optional `masks` (CSS selectors of seed-date cells: a
+date, a token age, an audit time; masked in the capture, so the seed's day does not change it). Tests are named
+`<id>-<viewport>-<theme>`. P1 policy:
 dark on every screen and viewport, light only on the rows of Figma frames S1, S4, S6 and S9. Rows marked `needsData` (a review draft, a booking) skip with the reason
 when the seed has no such row. Take and check baselines on a fresh `make seed` with no BDD run since: BDD adds rows.
 

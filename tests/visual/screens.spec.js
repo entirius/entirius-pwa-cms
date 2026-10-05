@@ -20,6 +20,9 @@ function badgeMasks(page, stubs) {
   return unstubbed.filter(Boolean).map((css) => page.locator(css));
 }
 
+// A row's `masks` cover seed-date cells (dates, ages, times): the seed's day must not change the capture.
+const rowMasks = (page, screen) => (screen.masks || []).map((css) => page.locator(css));
+
 function defineScreenTest(screen, viewport, theme) {
   const file = screen.file.replace("{vp}", VP_SHORT[viewport]).replace("{theme}", theme);
   test.describe(() => {
@@ -31,7 +34,7 @@ function defineScreenTest(screen, viewport, theme) {
       await expect(page).toHaveScreenshot([testInfo.project.name, file], {
         animations: "disabled",
         caret: "hide",
-        mask: badgeMasks(page, stubs),
+        mask: [...badgeMasks(page, stubs), ...rowMasks(page, screen)],
       });
     });
   });

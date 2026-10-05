@@ -706,7 +706,10 @@
         "dark",
         "light"
       ],
-      "file": "accounts-customers-list__{vp}__{theme}.png"
+      "file": "accounts-customers-list__{vp}__{theme}.png",
+      "masks": [
+        ".data-table__cell[data-column=\"created_at\"]"
+      ]
     },
     {
       "id": "accounts-customer-detail",
@@ -1715,7 +1718,10 @@
         "dark",
         "light"
       ],
-      "file": "access-audit__{vp}__{theme}.png"
+      "file": "access-audit__{vp}__{theme}.png",
+      "masks": [
+        ".data-table__cell[data-column=\"created_at\"]"
+      ]
     },
     {
       "id": "access-applications-list",
@@ -1751,7 +1757,12 @@
       "readySelector": "[data-testid=\"application-name\"]",
       "file": "access-application-detail__{vp}__{theme}.png",
       "needsData": true,
-      "note": "a fresh seed has no access application (only BDD scenarios create them)"
+      "note": "a fresh seed has no access application (only BDD scenarios create them)",
+      "masks": [
+        ".data-table__cell[data-column=\"expires_at\"]",
+        ".data-table__cell[data-column=\"age_days\"]",
+        ".data-table__cell[data-column=\"last_used_at\"]"
+      ]
     },
     {
       "id": "ui-catalogue",
