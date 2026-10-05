@@ -1,5 +1,6 @@
 const { test, expect } = require('@playwright/test');
 const { login } = require('../helpers/auth');
+const { SUPERUSER } = require('./helpers/users');
 const { createErrorCollector } = require('../helpers/error-collector');
 const en = require('../../src/i18n/locales/en.json');
 const pl = require('../../src/i18n/locales/pl.json');
@@ -22,7 +23,7 @@ test.describe('Access applications (desktop)', () => {
   test.use({ viewport: { width: 1280, height: 720 } });
 
   test.beforeEach(async ({ page }) => {
-    await login(page);
+    await login(page, ...SUPERUSER);
   });
 
   test('legacy checkout keys show their source, last use, no expiry and their age', async ({ page }) => {

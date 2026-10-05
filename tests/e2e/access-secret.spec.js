@@ -1,5 +1,6 @@
 const { test, expect } = require('@playwright/test');
 const { login } = require('../helpers/auth');
+const { SUPERUSER } = require('./helpers/users');
 const { createErrorCollector } = require('../helpers/error-collector');
 
 /**
@@ -110,7 +111,7 @@ test.describe('Access: a token value stays in SecretReveal (desktop)', () => {
   });
 
   test('the value is shown once and found nowhere after close', async ({ page }) => {
-    await login(page);
+    await login(page, ...SUPERUSER);
     const collector = createErrorCollector(page);
     const traces = recordTraces(page);
     const run = `${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;

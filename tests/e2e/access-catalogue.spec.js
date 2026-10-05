@@ -1,5 +1,6 @@
 const { test, expect } = require('@playwright/test');
 const { login } = require('../helpers/auth');
+const { SUPERUSER } = require('./helpers/users');
 const en = require('../../src/i18n/locales/en.json');
 const pl = require('../../src/i18n/locales/pl.json');
 const snapshot = require('../fixtures/access-catalogue.json');
@@ -27,7 +28,7 @@ const leaves = (node, prefix = '') =>
   );
 
 test('the live catalogue matches the snapshot and every key has a label in EN and PL', async ({ page }) => {
-  await login(page);
+  await login(page, ...SUPERUSER);
   const response = await page.request.get(CATALOGUE, { headers: await bearer(page) });
   expect(response.status()).toBe(200);
   const catalogue = await response.json();
