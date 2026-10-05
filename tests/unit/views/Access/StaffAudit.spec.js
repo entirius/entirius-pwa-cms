@@ -15,6 +15,8 @@ const api = vi.hoisted(() => ({
 const notify = vi.hoisted(() => ({ spawnNotification: vi.fn() }));
 vi.mock("@/api/access/api", () => api);
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => notify }));
+const access = vi.hoisted(() => ({ me: { user: { id: 1 } }, refresh: vi.fn() }));
+vi.mock("@/stores/access", () => ({ useAccessStore: () => access }));
 vi.mock("@/stores/loader", () => ({ useLoaderStore: () => ({ loaderStart: vi.fn(), loaderFinish: vi.fn() }) }));
 
 import { t } from "@/i18n";
@@ -80,6 +82,20 @@ describe("StaffDetail", () => {
     await wrapper.vm.revokeGrant();
     expect(api.DELETE_AccessGrant).toHaveBeenCalledWith(11);
     expect(lastToast()).toEqual({ type: "positive", msg: "Role revoked" });
+  });
+
+  // FIX-09 #17: your own grants change what the sidebar and the read-only pages may show — `me` is asked again now.
+  it("a grant change on your own account refreshes `me` at once; on another account it does not", async () => {
+    api.POST_AccessGrant.mockResolvedValue({ data: {} });
+    const wrapper = await mountView(StaffDetail, { params: { id: "5" } });
+    wrapper.vm.newRole = "administrator";
+    await wrapper.vm.addGrant();
+    expect(access.refresh).not.toHaveBeenCalled();
+    access.me = { user: { id: 5 } };
+    wrapper.vm.newRole = "administrator";
+    await wrapper.vm.addGrant();
+    expect(access.refresh).toHaveBeenCalledWith(true);
+    access.me = { user: { id: 1 } };
   });
 
   it("the lockout 409 on a revoke stays as the sentence in the card, not a toast, until the next change", async () => {

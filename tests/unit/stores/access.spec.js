@@ -149,6 +149,47 @@ describe("access store", () => {
     expect(access.status).toBe("idle");
   });
 
+  // FIX-09 #17: the old request's `finally` must not clear the newer request in flight (a second `me` call).
+  it("a request outdated by reset does not clear the newer one in flight when it settles", async () => {
+    let resolveOld;
+    let resolveNew;
+    GET_Me.mockReturnValueOnce(new Promise((r) => (resolveOld = r)));
+    GET_Me.mockReturnValueOnce(new Promise((r) => (resolveNew = r)));
+    const access = useAccessStore();
+    const old = access.ensureLoaded();
+    await Promise.resolve();
+    access.reset();
+    const current = access.ensureLoaded();
+    await vi.waitFor(() => expect(GET_Me).toHaveBeenCalledTimes(2));
+    resolveOld({ data: { ...ME, permissions: {} } });
+    await old;
+    // Still the newer request: a caller joins it instead of starting a third.
+    access.ensureLoaded();
+    expect(GET_Me).toHaveBeenCalledTimes(2);
+    resolveNew({ data: ME });
+    await current;
+    expect(access.can("faq.faq", "write")).toBe(true);
+  });
+
+  it("a forced refresh asks again now and drops the answer already on its way", async () => {
+    vi.useFakeTimers();
+    answer(ME);
+    const access = useAccessStore();
+    await access.ensureLoaded();
+    let resolveStale;
+    GET_Me.mockReturnValueOnce(new Promise((r) => (resolveStale = r)));
+    vi.advanceTimersByTime(REFRESH_INTERVAL_MS);
+    const stale = access.refresh();
+    await vi.waitFor(() => expect(GET_Me).toHaveBeenCalledTimes(2));
+    GET_Me.mockResolvedValueOnce({ data: { ...ME, permissions: { "faq.faq": "read" } } });
+    await access.refresh(true);
+    expect(GET_Me).toHaveBeenCalledTimes(3);
+    resolveStale({ data: ME });
+    await stale;
+    expect(access.can("faq.faq", "write")).toBe(false);
+    expect(access.can("faq.faq")).toBe(true);
+  });
+
   it("reset forgets `me` and the refused panel", async () => {
     answer(ME);
     const access = useAccessStore();

@@ -5,8 +5,6 @@ import { t } from '@/i18n'
 
 const MAX_VISIBLE = 3
 const DEFAULT_TIMEOUT = 5000
-// A view's catch runs right after the rejection: its own text (any text) lands inside this window.
-const COVER_QUIET_MS = 1000
 
 // Module-scope (not reactive) — setTimeout handles and pause state per uuid.
 const timers = new Map()       // uuid -> setTimeout handle
@@ -32,11 +30,11 @@ export const useNotifyStore = defineStore('notify', () => {
   }
 
   // A toast spawned with `covers` (the standard access refusal) stands for its own text and the texts it covers
-  // while it is shown, and for any negative toast in the first COVER_QUIET_MS (the view's own toast of that error).
+  // while it is shown, and for any negative toast until the current task ends: the view's catch of the refused
+  // request runs in that task's microtasks (its own text, any text). Another request's error lands in a later task.
   function isCovered(msg) {
-    const now = Date.now()
     return [...notifications.value, ...pending.value].some(
-      (n) => n.covers.length && (n.msg === msg || n.covers.includes(msg) || now < n.quietUntil)
+      (n) => n.covers.length && (n.msg === msg || n.covers.includes(msg) || n.quiet)
     )
   }
 
@@ -46,7 +44,8 @@ export const useNotifyStore = defineStore('notify', () => {
     if (type === 'negative' && isCovered(msg)) return null
     const uuid = `alert-${uuidv4()}`
     const cover = covers.filter(Boolean)
-    const item = { uuid, title, msg, type, timeout, covers: cover, quietUntil: cover.length ? Date.now() + COVER_QUIET_MS : 0 }
+    const item = { uuid, title, msg, type, timeout, covers: cover, quiet: cover.length > 0 }
+    if (item.quiet) setTimeout(() => (item.quiet = false))
     if (notifications.value.length >= MAX_VISIBLE) {
       pending.value.push(item)
       return uuid

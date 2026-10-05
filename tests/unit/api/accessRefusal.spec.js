@@ -68,15 +68,14 @@ describe("access refusal (403 from the gate)", () => {
     expect(GET_Me).toHaveBeenCalledTimes(1);
   });
 
-  it("covers the view's own toast of the refusal, whatever its text, but not a later unrelated error", async () => {
-    vi.useFakeTimers({ toFake: ["Date"] });
-    await refusingClient().get("/x/").catch(() => {});
-    notify.spawnNotification({ type: "negative", msg: refusal().message });
-    notify.spawnNotification({ type: "negative", msg: "leads.review.error" });
-    vi.setSystemTime(Date.now() + 1500);
+  // FIX-09 #17: the view's toast of the refused request, not every negative toast that lands within a second.
+  it("covers the view's own toast of the refusal, whatever its text, but not another request's error", async () => {
+    await refusingClient().get("/x/").catch(() => {
+      notify.spawnNotification({ type: "negative", msg: "leads.review.error" });
+    });
+    await new Promise((resolve) => setTimeout(resolve));
     notify.spawnNotification({ type: "negative", msg: refusal().message });
     notify.spawnNotification({ type: "negative", msg: "Stock is negative" });
-    vi.useRealTimers();
     expect(notify.notifications.map((n) => n.msg)).toEqual([t("access.denied_action"), "Stock is negative"]);
     await refreshLanded();
   });

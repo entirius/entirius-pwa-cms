@@ -74,6 +74,7 @@
 <script>
 import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
+import { useAccessStore } from "@/stores/access";
 import { isConflict, isNotFound } from "@/api/createClient";
 import { formatDate } from "@/utils/format";
 import { GET_AccessStaffUser, GET_AccessAllRoles, POST_AccessGrant, DELETE_AccessGrant } from "@/api/access/api";
@@ -86,7 +87,7 @@ import { grantPayload, grantErrorMessage, roleOptions } from "./grants";
 export default {
   name: "AccessStaffDetail",
   setup() {
-    return { loader: useLoaderStore(), notify: useNotifyStore() };
+    return { loader: useLoaderStore(), notify: useNotifyStore(), access: useAccessStore() };
   },
   data() {
     return {
@@ -178,6 +179,8 @@ export default {
         const doneKey = await change();
         this.notify.spawnNotification({ type: "positive", msg: this.$t(doneKey) });
         await this.reloadUser();
+        // Your own grants: the sidebar and read-only pages follow now, not after the next refusal.
+        if (this.user.id === this.access.me?.user?.id) this.access.refresh(true);
       } catch (err) {
         if (options.revoking && isConflict(err)) this.lockout = true;
         else this.notifyError(err, options);

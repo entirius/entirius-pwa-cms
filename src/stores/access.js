@@ -67,16 +67,26 @@ export const useAccessStore = defineStore("access", () => {
       lastFetchAt = Date.now();
       // Only the first load shows as `loading`: a refresh keeps `me`, a retry keeps `error` until it lands.
       if (status.value === "idle") status.value = "loading";
-      inflight = load().finally(() => (inflight = null));
+      const started = generation;
+      // A request a reset (or a forced refresh) outdated must not clear the newer one in flight.
+      inflight = load().finally(() => {
+        if (started === generation) inflight = null;
+      });
     }
     return inflight;
   }
 
   const ensureLoaded = () => (loaded.value ? Promise.resolve() : fetchMe());
 
-  // After a refusal: at most one `me` call per REFRESH_INTERVAL_MS, never without the module.
-  function refresh() {
+  // After a refusal: at most one `me` call per REFRESH_INTERVAL_MS, never without the module. `force` (the user's own
+  // grants just changed) asks again now: an answer already on its way predates the change and is dropped.
+  function refresh(force = false) {
     if (status.value === "absent") return Promise.resolve();
+    if (force) {
+      generation += 1;
+      inflight = null;
+      return fetchMe();
+    }
     if (inflight || Date.now() - lastFetchAt < REFRESH_INTERVAL_MS) return inflight ?? Promise.resolve();
     return fetchMe();
   }
