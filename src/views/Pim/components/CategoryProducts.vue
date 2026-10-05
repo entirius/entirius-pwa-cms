@@ -6,6 +6,7 @@
       </template>
       <draggable
         v-model="positioned"
+        :disabled="readonly"
         :group="{ name: 'category-products' }"
         item-key="sku"
         :class="[
@@ -41,15 +42,18 @@
       <template #actions>
         <CountBadge :count="unpositionedCount" />
       </template>
-      <BasicInput
-        v-model="searchQuery"
-        :placeholder="$t('common.start_typing')"
-        :aria-label="$t('pim.search_products')"
-        icon="search"
-        class="search-input"
-      />
+      <ReadonlyOff>
+        <BasicInput
+          v-model="searchQuery"
+          :placeholder="$t('common.start_typing')"
+          :aria-label="$t('pim.search_products')"
+          icon="search"
+          class="search-input"
+        />
+      </ReadonlyOff>
       <draggable
         v-model="unpositioned"
+        :disabled="readonly"
         :group="{ name: 'category-products' }"
         item-key="sku"
         class="product-grid"
@@ -85,6 +89,7 @@
 import { ref, computed, watch, onMounted } from "vue";
 import { t } from "@/i18n";
 import draggable from "vuedraggable";
+import { ReadonlyOff, useReadonly } from "@/composables/useReadonly";
 import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import {
@@ -100,6 +105,7 @@ const props = defineProps({
 
 const loader = useLoaderStore();
 const notify = useNotifyStore();
+const readonly = useReadonly();
 
 const positioned = ref([]);
 const unpositioned = ref([]);

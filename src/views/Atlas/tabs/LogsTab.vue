@@ -1,11 +1,13 @@
 <template>
   <div>
     <div class="flex ai-ct mb-8 gap-5">
-      <SegmentedControl
-        v-model="activeMode"
-        :options="modeOptions"
-        data-testid="logs-mode-switch"
-      />
+      <ReadonlyOff>
+        <SegmentedControl
+          v-model="activeMode"
+          :options="modeOptions"
+          data-testid="logs-mode-switch"
+        />
+      </ReadonlyOff>
     </div>
 
     <!-- Feed Runs -->
@@ -38,11 +40,13 @@
           :data-testid="`logs-severity-${opt.value}`"
           @click="setSeverity(opt.value)"
         />
-        <BasicSwitch
-          v-model="showAcknowledged"
-          :label="$t('atlas.logs.show_acknowledged')"
-          data-testid="logs-show-ack-toggle"
-        />
+        <ReadonlyOff>
+          <BasicSwitch
+            v-model="showAcknowledged"
+            :label="$t('atlas.logs.show_acknowledged')"
+            data-testid="logs-show-ack-toggle"
+          />
+        </ReadonlyOff>
       </div>
 
       <Loader block v-show="loading" />
@@ -83,6 +87,7 @@ import {
   GET_IntegrationEvents,
   POST_AcknowledgeEvent,
 } from "@/api/atlas/api";
+import { ReadonlyOff } from "@/composables/useReadonly";
 
 const LOG_STATUS_VARIANTS = {
   running: "info",
@@ -98,6 +103,7 @@ const SEVERITY_VARIANTS = {
 
 export default {
   name: "LogsTab",
+  components: { ReadonlyOff },
   props: {
     supplier: { type: Object, default: null },
   },

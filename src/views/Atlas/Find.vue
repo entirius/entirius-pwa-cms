@@ -7,14 +7,16 @@
         {{ $t("lookup.find.subtitle") }}
       </p>
 
-      <DedupSearchBox
-        :initial-query="initialQuery"
-        :initial-image="initialImage"
-        :scope="initialScope"
-        data-testid="atlas-find-box"
-        @results="onResults"
-        @error="onSearchError"
-      />
+      <ReadonlyOff>
+        <DedupSearchBox
+          :initial-query="initialQuery"
+          :initial-image="initialImage"
+          :scope="initialScope"
+          data-testid="atlas-find-box"
+          @results="onResults"
+          @error="onSearchError"
+        />
+      </ReadonlyOff>
 
       <p v-if="understoodLine" class="fs-200 t-muted mt-8">
         {{ $t("lookup.find.understood_prefix") }} {{ understoodLine }}
@@ -88,12 +90,13 @@ import CandidateRow from "@/components/lookup/CandidateRow.vue";
 import { groupHits } from "@/utils/lookupMatch";
 import { markRaw } from "vue";
 import { useLookupFindStore } from "@/stores/lookupFind";
+import { ReadonlyOff } from "@/composables/useReadonly";
 
 const DEFAULT_SCOPE = ["pim_product", "atlas_source_product"];
 
 export default {
   name: "AtlasFind",
-  components: { DedupSearchBox, CandidateRow },
+  components: { ReadonlyOff, DedupSearchBox, CandidateRow },
   setup() {
     return { findStore: useLookupFindStore() };
   },

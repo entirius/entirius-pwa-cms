@@ -179,24 +179,21 @@
           :title="$t('pim.coming_soon')"
         />
 
-        <PriceDetail
-          v-if="activeTab === 'pricing'"
-          :sku="product.sku || product.real_product?.sku || ''"
-          :channel-idx-prop="channelIdx"
-          :embedded="true"
-        />
+        <ReadonlyArea v-if="activeTab === 'pricing'" :area="EMBEDDED_AREAS.pricing">
+          <PriceDetail
+            :sku="product.sku || product.real_product?.sku || ''"
+            :channel-idx-prop="channelIdx"
+            :embedded="true"
+          />
+        </ReadonlyArea>
 
-        <StockTab
-          v-if="activeTab === 'stock'"
-          :sku="product.sku || product.real_product?.sku || ''"
-          :embedded="true"
-        />
+        <ReadonlyArea v-if="activeTab === 'stock'" :area="EMBEDDED_AREAS.stock">
+          <StockTab :sku="product.sku || product.real_product?.sku || ''" :embedded="true" />
+        </ReadonlyArea>
 
-        <SupplierTab
-          v-if="activeTab === 'supplier' && hasSupplierTab"
-          :sku="product.sku || product.real_product?.sku || ''"
-          @refreshed="onSupplierRefreshed"
-        />
+        <ReadonlyArea v-if="activeTab === 'supplier' && hasSupplierTab" :area="EMBEDDED_AREAS.supplier">
+          <SupplierTab :sku="product.sku || product.real_product?.sku || ''" @refreshed="onSupplierRefreshed" />
+        </ReadonlyArea>
 
         <QualityTab
           v-if="activeTab === 'quality' && hasQualityData"
@@ -359,6 +356,7 @@ import { useMuninStore } from "@/stores/munin";
 import { useAccessStore } from "@/stores/access";
 import { AREAS } from "@/configs/areas";
 import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
+import { ReadonlyArea } from "@/composables/useReadonly";
 import MediaGallery from "./components/MediaGallery.vue";
 import AttributeEditor from "./components/AttributeEditor.vue";
 import CategoryAssignment from "./components/CategoryAssignment.vue";
@@ -393,10 +391,14 @@ const MORE_DIALOGS = { channels: "showAddToChannelDialog", copy: "showCopyDialog
 const WYSIWYG = { is: "BasicWysiwyg", attrs: { variant: "lite" } };
 const TEXTAREA = { is: "BasicTextarea", attrs: { rows: 3 } };
 const INPUT = { is: "BasicInput", attrs: {} };
+// The tabs that embed another panel's screen work on that panel's area: shown only when it is readable, read-only by
+// it alone (not by the product's `pim.products`).
+const EMBEDDED_AREAS = { pricing: AREAS.PRICEMANAGER_PRICES, stock: AREAS.QMS_STOCK, supplier: AREAS.ATLAS_PRODUCTS };
 
 export default {
   name: "ProductDetail",
   components: {
+    ReadonlyArea,
     PimChannelSelect,
     ProductT9nField,
     MediaGallery,
@@ -426,7 +428,8 @@ export default {
     const access = useAccessStore();
     // Deleting a SKU is its own permission (access plan 09b): an Editor edits but does not delete. UX only.
     const canDeleteProduct = computed(() => access.can(AREAS.PIM_PRODUCT_DELETE, "write"));
-    return { loader, notify, pimChannel, munin, formErrors, canDeleteProduct, ...unsaved, T9N_TABS };
+    const canReadTab = (tab) => access.can(EMBEDDED_AREAS[tab]);
+    return { loader, notify, pimChannel, munin, formErrors, canDeleteProduct, canReadTab, ...unsaved, T9N_TABS, EMBEDDED_AREAS };
   },
   data() {
     return {
@@ -494,10 +497,10 @@ export default {
         { value: "variants", label: this.$t("pim.tab_variants") },
         { value: "audit_log", label: this.$t("pim.tab_audit_log") },
       ];
-      if (this.munin.isPanelEnabled("pricing")) {
+      if (this.munin.isPanelEnabled("pricing") && this.canReadTab("pricing")) {
         tabs.push({ value: "pricing", label: this.$t("pm.tab_pricing") });
       }
-      if (this.munin.isPanelEnabled("stock")) {
+      if (this.munin.isPanelEnabled("stock") && this.canReadTab("stock")) {
         tabs.push({ value: "stock", label: this.$t("stock.tab_stock") });
       }
       if (this.hasSupplierTab) {
@@ -540,6 +543,7 @@ export default {
     hasSupplierTab() {
       return (
         this.munin.isPanelEnabled("atlas") &&
+        this.canReadTab("supplier") &&
         this.supplierStatus?.has_source === true
       );
     },
@@ -967,7 +971,7 @@ export default {
       }
     },
     async fetchSupplierStatus() {
-      if (!this.munin.isPanelEnabled("atlas")) {
+      if (!this.munin.isPanelEnabled("atlas") || !this.canReadTab("supplier")) {
         this.supplierStatus = null;
         return;
       }

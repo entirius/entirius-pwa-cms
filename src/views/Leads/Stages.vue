@@ -5,7 +5,14 @@
     </template>
     <div class="flex-column gap-8">
       <p class="t-muted m-0" data-testid="stages-help">{{ $t("leads.stages.help") }}</p>
-      <draggable :list="stages" item-key="id" handle=".stage__handle" class="flex-column gap-3" @end="saveOrder">
+      <draggable
+        :list="stages"
+        :disabled="readonly"
+        item-key="id"
+        handle=".stage__handle"
+        class="flex-column gap-3"
+        @end="saveOrder"
+      >
         <template #item="{ element, index }">
           <div class="stage" :data-stage="element.key" data-testid="stage-row">
             <FontAwesomeIcon :icon="$icons.drag" class="stage__handle" />
@@ -107,6 +114,7 @@ import { t } from "@/i18n";
 import { DELETE_Stage, GET_Companies, GET_Rules, GET_Stages, PATCH_Stage, POST_Stage } from "@/api/leads/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { useNotifyStore } from "@/stores/notify";
+import { usePageReadonly } from "@/composables/useReadonly";
 import { stageKindLabel } from "@/utils/leadsLabels";
 import { pluralKey } from "@/utils/plural";
 
@@ -114,6 +122,7 @@ import { pluralKey } from "@/utils/plural";
 const ORDER_STEP = 10;
 const KEY_PATTERN = /^[-a-zA-Z0-9_]+$/;
 const notify = useNotifyStore();
+const readonly = usePageReadonly();
 const stages = ref([]);
 const errors = reactive({});
 const draft = reactive({ key: "", label: "" });

@@ -21,58 +21,60 @@
       </div>
     </div>
 
-    <div class="products-filters mb-8">
-      <BasicInput
-        v-model="filters.search"
-        :placeholder="$t('atlas.products.filters.search_placeholder')"
-        icon="search"
-        class="products-filters__search"
-        data-testid="products-filter-search"
-        @input="onSearchInput"
-      />
-      <BasicInput
-        v-model="filters.ean"
-        :placeholder="$t('atlas.products.filters.ean_placeholder')"
-        class="products-filters__ean"
-        data-testid="products-filter-ean"
-        @keyup.enter="resetAndFetch"
-        @blur="resetAndFetch"
-      />
-      <BasicInput
-        v-model="filters.costMin"
-        type="number"
-        :placeholder="$t('atlas.products.filters.cost_min_placeholder')"
-        class="products-filters__cost"
-        data-testid="products-filter-cost-min"
-        @keyup.enter="resetAndFetch"
-        @blur="resetAndFetch"
-      />
-      <BasicInput
-        v-model="filters.costMax"
-        type="number"
-        :placeholder="$t('atlas.products.filters.cost_max_placeholder')"
-        class="products-filters__cost"
-        data-testid="products-filter-cost-max"
-        @keyup.enter="resetAndFetch"
-        @blur="resetAndFetch"
-      />
-      <BasicSelect
-        :floating-label="$t('common.sort_by')"
-        :options="orderingOptions"
-        :model-value="filters.ordering"
-        class="products-filters__ordering"
-        data-testid="products-filter-ordering"
-        @update:model-value="(val) => onOrderingChange(val)"
-      />
-      <BasicButton
-        v-if="hasActiveFilters"
-        variant="ghost"
-        data-testid="products-filter-clear"
-        @click="clearFilters"
-      >
-        {{ $t("atlas.products.filters.clear") }}
-      </BasicButton>
-    </div>
+    <ReadonlyOff>
+      <div class="products-filters mb-8">
+        <BasicInput
+          v-model="filters.search"
+          :placeholder="$t('atlas.products.filters.search_placeholder')"
+          icon="search"
+          class="products-filters__search"
+          data-testid="products-filter-search"
+          @input="onSearchInput"
+        />
+        <BasicInput
+          v-model="filters.ean"
+          :placeholder="$t('atlas.products.filters.ean_placeholder')"
+          class="products-filters__ean"
+          data-testid="products-filter-ean"
+          @keyup.enter="resetAndFetch"
+          @blur="resetAndFetch"
+        />
+        <BasicInput
+          v-model="filters.costMin"
+          type="number"
+          :placeholder="$t('atlas.products.filters.cost_min_placeholder')"
+          class="products-filters__cost"
+          data-testid="products-filter-cost-min"
+          @keyup.enter="resetAndFetch"
+          @blur="resetAndFetch"
+        />
+        <BasicInput
+          v-model="filters.costMax"
+          type="number"
+          :placeholder="$t('atlas.products.filters.cost_max_placeholder')"
+          class="products-filters__cost"
+          data-testid="products-filter-cost-max"
+          @keyup.enter="resetAndFetch"
+          @blur="resetAndFetch"
+        />
+        <BasicSelect
+          :floating-label="$t('common.sort_by')"
+          :options="orderingOptions"
+          :model-value="filters.ordering"
+          class="products-filters__ordering"
+          data-testid="products-filter-ordering"
+          @update:model-value="(val) => onOrderingChange(val)"
+        />
+        <BasicButton
+          v-if="hasActiveFilters"
+          variant="ghost"
+          data-testid="products-filter-clear"
+          @click="clearFilters"
+        >
+          {{ $t("atlas.products.filters.clear") }}
+        </BasicButton>
+      </div>
+    </ReadonlyOff>
 
     <BulkActionBar
       v-if="hasSuppliersPanel && selectedProducts.length"
@@ -303,6 +305,7 @@ import {
   POST_PushProduct,
   POST_ForceRepushProduct,
 } from "@/api/atlas/api";
+import { ReadonlyOff } from "@/composables/useReadonly";
 
 const UPDATED_STATUSES = new Set(["pushed", "pushed_pending_images"]);
 
@@ -324,6 +327,7 @@ const STATUS_VARIANTS = {
 export default {
   name: "ProductsTab",
   components: {
+    ReadonlyOff,
     RawDataModal,
     GalleryModal,
     ProductCard,

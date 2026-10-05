@@ -74,6 +74,7 @@
           <draggable
             v-else
             v-model="groupItems"
+            :disabled="readonly"
             item-key="id"
             handle=".drag-handle"
             ghost-class="bg-accent-subtle"
@@ -148,6 +149,7 @@
 
 <script>
 import draggable from "vuedraggable";
+import { usePageReadonly } from "@/composables/useReadonly";
 import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
@@ -174,7 +176,8 @@ export default {
     const notify = useNotifyStore();
     const unsaved = useUnsavedChanges();
     const formErrors = useFormErrors();
-    return { loader, notify, ...unsaved, formErrors };
+    // The page's read-only mode reaches the drag (FormField and the buttons follow it on their own).
+    return { loader, notify, ...unsaved, formErrors, readonly: usePageReadonly() };
   },
   data() {
     return {

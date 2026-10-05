@@ -46,13 +46,15 @@
 
       <template v-else>
         <div class="flex ai-ct flex-wrap gap-5 rg-3 mb-8">
-          <BasicInput
-            v-model="featureSearch"
-            :placeholder="$t('common.start_typing')"
-            :aria-label="$t('pim.search_features')"
-            icon="search"
-            class="flex-1"
-          />
+          <ReadonlyOff>
+            <BasicInput
+              v-model="featureSearch"
+              :placeholder="$t('common.start_typing')"
+              :aria-label="$t('pim.search_features')"
+              icon="search"
+              class="flex-1"
+            />
+          </ReadonlyOff>
           <BasicButton
             variant="secondary"
             :aria-expanded="String(showAddGroup)"
@@ -109,6 +111,7 @@
           <div v-show="!isCollapsed('__default')">
             <draggable
               v-model="ungroupedFeatures"
+              :disabled="readonly"
               group="features"
               ghost-class="bg-accent-subtle"
               :force-fallback="true"
@@ -138,7 +141,7 @@
                       :model-value="element.is_required_override ?? null"
                       :feature-required="Boolean(element.feature?.is_required)"
                       :name="element.feature_name || element.feature_idx"
-                      :disabled="element.feature?.scope === 1"
+                      :disabled="readonly || element.feature?.scope === 1"
                       @update:model-value="(value) => onRequiredChange(element, value)"
                     />
                     <IconButton
@@ -167,6 +170,7 @@
         <!-- Named groups (drag to reorder) -->
         <draggable
           v-model="groups"
+          :disabled="readonly"
           ghost-class="bg-accent-subtle"
           handle=".group-drag-handle"
           :item-key="(el) => el.idx"
@@ -219,6 +223,7 @@
               <div v-show="!isCollapsed(group.idx)">
                 <draggable
                   v-model="group.features"
+                  :disabled="readonly"
                   group="features"
                   ghost-class="bg-accent-subtle"
                   :force-fallback="true"
@@ -248,7 +253,7 @@
                           :model-value="element.is_required_override ?? null"
                           :feature-required="Boolean(element.feature?.is_required)"
                           :name="element.feature_name || element.feature_idx"
-                          :disabled="element.feature?.scope === 1"
+                          :disabled="readonly || element.feature?.scope === 1"
                           @update:model-value="(value) => onRequiredChange(element, value)"
                         />
                         <IconButton
@@ -336,6 +341,7 @@ import { inject, onMounted, onBeforeUnmount, nextTick } from "vue";
 import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
+import { ReadonlyOff, usePageReadonly } from "@/composables/useReadonly";
 import draggable from "vuedraggable";
 import {
   GET_FeatureSetGlobal,
@@ -361,6 +367,7 @@ import { extractApiMessage } from "@/composables/useFormErrors";
 export default {
   name: "FeatureSetEdit",
   components: {
+    ReadonlyOff,
     draggable,
     AttributeLibrary,
     PimChannelSelect,
@@ -380,7 +387,8 @@ export default {
       if (isGlobalScope) isGlobalScope.value = false;
     });
     const { requiredPerFeatureSet } = usePimCapabilities();
-    return { loader, notify, requiredPerFeatureSet, ...unsaved };
+    // The page's read-only mode reaches the drags and the per-set required control.
+    return { loader, notify, requiredPerFeatureSet, ...unsaved, readonly: usePageReadonly() };
   },
   data() {
     return {

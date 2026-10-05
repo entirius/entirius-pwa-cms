@@ -12,11 +12,13 @@
           @click="setSeverity(opt.value)"
         />
       </div>
-      <BasicSwitch
-        :label="$t('atlas.logs.show_acknowledged')"
-        v-model="showAcknowledged"
-        data-testid="events-show-ack-toggle"
-      />
+      <ReadonlyOff>
+        <BasicSwitch
+          :label="$t('atlas.logs.show_acknowledged')"
+          v-model="showAcknowledged"
+          data-testid="events-show-ack-toggle"
+        />
+      </ReadonlyOff>
     </div>
 
     <Loader block v-show="loading" />
@@ -58,6 +60,7 @@ import {
   GET_IntegrationEvents,
   POST_AcknowledgeEvent,
 } from "@/api/atlas/api";
+import { ReadonlyOff } from "@/composables/useReadonly";
 
 const SEVERITY_VARIANTS = {
   critical: "negative",
@@ -67,6 +70,7 @@ const SEVERITY_VARIANTS = {
 
 export default {
   name: "EventsMode",
+  components: { ReadonlyOff },
   props: {
     filters: { type: Object, required: true },
   },

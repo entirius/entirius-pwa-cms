@@ -84,11 +84,13 @@
       </BasicCard>
 
       <BasicCard>
-        <SegmentedControl
-          v-model="historyTab"
-          :options="historyTabs"
-          class="mb-10"
-        />
+        <ReadonlyOff>
+          <SegmentedControl
+            v-model="historyTab"
+            :options="historyTabs"
+            class="mb-10"
+          />
+        </ReadonlyOff>
         <DataTable
           v-if="historyTab === 'events'"
           :columns="eventColumns"
@@ -181,6 +183,7 @@ import {
   POST_VoucherAction,
 } from "@/api/voucher/api";
 import { enumLabel } from "./promo-enum-hints";
+import { ReadonlyOff } from "@/composables/useReadonly";
 
 const STATUS_VARIANT = {
   active: "positive",
@@ -212,6 +215,7 @@ const STATUS_ACTIONS = {
 
 export default {
   name: "VoucherDetail",
+  components: { ReadonlyOff },
   setup() {
     const notify = useNotifyStore();
     const munin = useMuninStore();

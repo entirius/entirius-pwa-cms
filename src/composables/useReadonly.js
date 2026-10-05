@@ -32,6 +32,18 @@ export const ReadonlyOff = defineComponent({
   },
 });
 
+/** A region of a page that works on another area (a product's embedded prices, stock or supplier tab): read-only by
+ * that area alone, whatever the route's area says. */
+export const ReadonlyArea = defineComponent({
+  name: "ReadonlyArea",
+  props: { area: { type: String, required: true } },
+  setup(props, { slots }) {
+    const access = inject(ACCESS_STORE, null);
+    provideReadonly(computed(() => !!access && isAreaReadonly(access, props.area)));
+    return () => slots.default?.();
+  },
+});
+
 /** The area a route works on: its own `meta.area`, else its panel's first area; null without a panel. */
 export function routeArea(route) {
   const meta = route?.meta ?? {};
@@ -43,8 +55,10 @@ export function isAreaReadonly(access, area) {
   return Boolean(area) && access.available && !access.can(area, "write");
 }
 
-/** PageLayout's decision: `force()` (the view's `readonly` prop), an enclosing page's flag, or the route's area. */
-export function usePageReadonly(force) {
+/** PageLayout's decision: `force()` (the view's `readonly` prop), an enclosing page's flag, or the route's area. A
+ * view that renders the PageLayout calls it without `force` to read the same decision (its own PageLayout provides the
+ * flag to the view's children only, so `useReadonly()` in the view itself is always false). */
+export function usePageReadonly(force = () => false) {
   const outer = useReadonly();
   const route = inject(routeLocationKey, null);
   const access = inject(ACCESS_STORE, null);

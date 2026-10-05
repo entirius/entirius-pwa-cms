@@ -26,12 +26,14 @@
           @click="prev"
         />
         <div class="gallery-picker">
-          <BasicSelect
-            v-model="activeIndex"
-            :options="imageOptions"
-            :aria-label="$t('atlas.review.gallery_jump')"
-            data-testid="gallery-modal-counter"
-          />
+          <ReadonlyOff>
+            <BasicSelect
+              v-model="activeIndex"
+              :options="imageOptions"
+              :aria-label="$t('atlas.review.gallery_jump')"
+              data-testid="gallery-modal-counter"
+            />
+          </ReadonlyOff>
         </div>
         <IconButton
           icon="next"
@@ -46,10 +48,12 @@
 </template>
 
 <script>
+import { ReadonlyOff } from "@/composables/useReadonly";
 // Product images in a BasicModal (Esc, backdrop and focus from the boot); ←/→ and prev/next move between images
 // while it is open, the "N / M" select jumps to image N.
 export default {
   name: "GalleryModal",
+  components: { ReadonlyOff },
   props: {
     visible: { type: Boolean, default: false },
     images: { type: Array, default: () => [] },

@@ -17,7 +17,15 @@ import BasicButton from "@/boots/BasicButton/index.vue";
 import IconButton from "@/boots/IconButton/index.vue";
 import Tag from "@/boots/Tag/index.vue";
 import PageHeader from "@/boots/PageHeader/index.vue";
-import { ACCESS_STORE, READONLY, isAreaReadonly, routeArea, useReadonly } from "@/composables/useReadonly";
+import {
+  ACCESS_STORE,
+  READONLY,
+  ReadonlyArea,
+  isAreaReadonly,
+  routeArea,
+  usePageReadonly,
+  useReadonly,
+} from "@/composables/useReadonly";
 
 // The access store's surface PageLayout reads: `available` and `can(area, level)`.
 const accessWith = (permissions, available = true) => ({
@@ -62,6 +70,36 @@ describe("useReadonly", () => {
     expect(isAreaReadonly(accessWith({ "faq.faq": "read" }), "faq.faq")).toBe(true);
     expect(isAreaReadonly(accessWith({ "faq.faq": "write" }), "faq.faq")).toBe(false);
     expect(isAreaReadonly(accessWith({}), null)).toBe(false);
+  });
+});
+
+// FIX-09 #8: a product's prices, stock and supplier tabs work on their own areas, not on `pim.products`.
+describe("ReadonlyArea", () => {
+  const region = (area, permissions) =>
+    mountPage({
+      meta: { area: "pim.products" },
+      access: accessWith(permissions),
+      slots: { default: () => h(ReadonlyArea, { area }, { default: () => h(Probe) }) },
+    }).find(".probe").text();
+
+  it("decides by its own area alone, whatever the page decided", () => {
+    expect(region("pricemanager.prices", { "pim.products": "write", "pricemanager.prices": "read" })).toBe("true");
+    expect(region("qms.stock", { "pim.products": "read", "qms.stock": "write" })).toBe("false");
+  });
+});
+
+describe("usePageReadonly in the view that renders the PageLayout", () => {
+  it("reads the same decision as its PageLayout, without a `force`", () => {
+    let flag;
+    const View = defineComponent({
+      setup() {
+        flag = usePageReadonly();
+        return () => h("i");
+      },
+    });
+    const access = accessWith({ "faq.faq": "read" });
+    mount(View, { global: { provide: { [routeLocationKey]: reactive({ meta: { area: "faq.faq" } }), [ACCESS_STORE]: access } } });
+    expect(flag.value).toBe(true);
   });
 });
 

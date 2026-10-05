@@ -15,6 +15,7 @@
     </header>
     <draggable
       :list="cards"
+      :disabled="readonly"
       group="board"
       item-key="id"
       class="column__cards"
@@ -33,6 +34,7 @@
 <script setup>
 import { computed } from "vue";
 import draggable from "vuedraggable";
+import { useReadonly } from "@/composables/useReadonly";
 import { pluralKey } from "@/utils/plural";
 import CompanyCard from "./CompanyCard.vue";
 
@@ -45,6 +47,8 @@ const props = defineProps({
   rules: { type: Array, default: () => [] },
 });
 const emit = defineEmits(["move", "more"]);
+// The board page's read-only mode: a viewer moves no card (the card's stage select follows it on its own).
+const readonly = useReadonly();
 
 const rulesTooltip = computed(() =>
   props.rules.map((rule) => `${rule.action} ${rule.template_key} · ${rule.contact_strategy}`).join("\n")

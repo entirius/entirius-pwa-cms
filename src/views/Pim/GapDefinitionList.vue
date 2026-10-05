@@ -13,13 +13,15 @@
       <QualitySettings />
 
       <div class="gap-def-list__toolbar">
-        <BasicInput
-          v-model="search"
-          :placeholder="$t('common.start_typing')"
-          icon="search"
-          class="gap-def-list__search"
-          @input="debouncedFetch(searchAndFetch)"
-        />
+        <ReadonlyOff>
+          <BasicInput
+            v-model="search"
+            :placeholder="$t('common.start_typing')"
+            icon="search"
+            class="gap-def-list__search"
+            @input="debouncedFetch(searchAndFetch)"
+          />
+        </ReadonlyOff>
         <FilterChip
           :label="$t('pim.gap_only_active')"
           :active="onlyActive"
@@ -86,10 +88,11 @@ import GapStatusAlert from "./components/GapStatusAlert.vue";
 import PimChannelSelect from "./components/PimChannelSelect.vue";
 import QualitySettings from "./components/QualitySettings.vue";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { ReadonlyOff } from "@/composables/useReadonly";
 
 export default {
   name: "GapDefinitionList",
-  components: { GapStatusAlert, QualitySettings, PimChannelSelect },
+  components: { ReadonlyOff, GapStatusAlert, QualitySettings, PimChannelSelect },
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();

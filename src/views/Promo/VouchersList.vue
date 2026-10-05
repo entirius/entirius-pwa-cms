@@ -1,52 +1,54 @@
 <template>
   <div class="vouchers-list">
-    <div class="vouchers-list__toolbar">
-      <BasicInput
-        v-model="search"
-        :placeholder="$t('promo.voucher_search_placeholder')"
-        :aria-label="$t('promo.voucher_search_placeholder')"
-        icon="search"
-        class="vouchers-list__search"
-        @input="debouncedFetch(searchAndFetch)"
-      />
-
-      <div class="vouchers-list__lookup">
+    <ReadonlyOff>
+      <div class="vouchers-list__toolbar">
         <BasicInput
-          v-model="lookupCode"
-          :placeholder="$t('promo.voucher_lookup_placeholder')"
-          :aria-label="$t('promo.voucher_lookup_placeholder')"
-          @keyup.enter="doLookup"
+          v-model="search"
+          :placeholder="$t('promo.voucher_search_placeholder')"
+          :aria-label="$t('promo.voucher_search_placeholder')"
+          icon="search"
+          class="vouchers-list__search"
+          @input="debouncedFetch(searchAndFetch)"
         />
-        <BasicButton :mutates="false"
-          variant="secondary"
-          :disabled="!lookupCode"
-          @click="doLookup"
-        >
-          {{ $t('promo.voucher_lookup_btn') }}
-        </BasicButton>
-      </div>
 
-      <MobileFilterPanel
-        :active-count="activeFilterCount"
-        :trigger-label="$t('builder.filters')"
-      >
-        <p class="fs-200 t-secondary">{{ $t("promo.voucher_status") }}</p>
-        <FilterChip
-          v-for="opt in statusOptions"
-          :key="opt.key"
-          :label="opt.label"
-          :active="statusFilter === opt.key"
-          @click="setStatusFilter(opt.key)"
-        />
-        <BasicSelect
-          :floating-label="$t('promo.voucher_col_campaign')"
-          :options="campaignOptions"
-          :model-value="campaignFilter"
-          class="vouchers-list__campaign-filter"
-          @update:model-value="onCampaignFilter"
-        />
-      </MobileFilterPanel>
-    </div>
+        <div class="vouchers-list__lookup">
+          <BasicInput
+            v-model="lookupCode"
+            :placeholder="$t('promo.voucher_lookup_placeholder')"
+            :aria-label="$t('promo.voucher_lookup_placeholder')"
+            @keyup.enter="doLookup"
+          />
+          <BasicButton :mutates="false"
+            variant="secondary"
+            :disabled="!lookupCode"
+            @click="doLookup"
+          >
+            {{ $t('promo.voucher_lookup_btn') }}
+          </BasicButton>
+        </div>
+
+        <MobileFilterPanel
+          :active-count="activeFilterCount"
+          :trigger-label="$t('builder.filters')"
+        >
+          <p class="fs-200 t-secondary">{{ $t("promo.voucher_status") }}</p>
+          <FilterChip
+            v-for="opt in statusOptions"
+            :key="opt.key"
+            :label="opt.label"
+            :active="statusFilter === opt.key"
+            @click="setStatusFilter(opt.key)"
+          />
+          <BasicSelect
+            :floating-label="$t('promo.voucher_col_campaign')"
+            :options="campaignOptions"
+            :model-value="campaignFilter"
+            class="vouchers-list__campaign-filter"
+            @update:model-value="onCampaignFilter"
+          />
+        </MobileFilterPanel>
+      </div>
+    </ReadonlyOff>
 
     <Loader block v-show="loading" />
 
@@ -104,6 +106,7 @@ import {
 } from "@/api/voucher/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { enumLabel } from "./promo-enum-hints";
+import { ReadonlyOff } from "@/composables/useReadonly";
 
 const STATUS_VARIANT = {
   active: "positive",
@@ -117,6 +120,7 @@ const STATUS_VARIANT = {
 
 export default {
   name: "VouchersList",
+  components: { ReadonlyOff },
   setup() {
     const notify = useNotifyStore();
     const checkoutChannel = useCheckoutChannelStore();
