@@ -279,6 +279,9 @@ Traps:
   visual and takes the `touch-target` mixin (`utils/_touch-target.scss`): a transparent `::after` hit area, below
   tablet only. Hit areas never overlap: where a neighbour is closer, the area is the control plus half the gap on
   each side (the help "?" above its field, wrapped filter chips, table rows).
+- Focus is visible and calm. Buttons, tabs, links and other non-field controls get the global 2 px `--accent`
+  outline at a 2 px offset. Text fields (`input`, `textarea`, `select`) mark focus on the field: `--accent` border
+  plus a 2 px glow at 30 % (`utils/_reset.scss`), no outline, no extra halo — not even on the sign-in screen.
 - A control in a scrolling box (`BasicTabs`, `SegmentedControl`) draws its focus ring inside (`outline-offset:
   -2px`), so the box never clips it.
 - A button with icon + text drops its text on mobile via `icon-only-mobile`. It keeps an accessible label. The page's

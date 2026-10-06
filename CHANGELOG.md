@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- Text fields show focus on the field itself: an accent border and a soft 2 px glow instead of a 2 px outline at a
+  2 px offset; the sign-in screen's 8 px halo is gone. Buttons, tabs and links keep the outline.
+
 ## [3.1.1] (2026-10-01)
 
 Phone layout fixes (Android report).
