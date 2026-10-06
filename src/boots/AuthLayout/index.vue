@@ -251,12 +251,6 @@ $grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width=
   margin-top: var(--space-8);
 }
 
-// A soft accent halo outside the focus ring of every control in the form: the global ring is a 2 px outline at a 2 px
-// offset (4 px out), so the halo spreads to 8 px and its outer 4 px show.
-.auth-layout__body :deep(:focus-visible) {
-  box-shadow: 0 0 0 var(--space-2) color-mix(in srgb, var(--focus-ring) 28%, transparent);
-}
-
 // Below the shell breakpoint: the stage is a band on top, the form a sheet that rises over it.
 @include max-shell {
   .auth-layout {
