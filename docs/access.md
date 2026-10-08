@@ -100,7 +100,7 @@ Munin key `access`; every route needs `access.manage` (built-in Administrator, o
 |---|---|---|
 | Roles | `/access/roles` | built-in and custom roles |
 | Role | `/access/roles/new`, `/access/roles/:key` | name, description, `PermissionMatrix`; a built-in role is read-only with Duplicate (`new?from=<key>`); `access.manage` is never offered to a custom role |
-| Staff | `/access/staff`, `/access/staff/:id` | staff accounts, direct grants, roles via groups (read-only); accounts are created in Django admin |
+| Staff | `/access/staff`, `/access/staff/:id` | staff accounts, direct grants, roles via groups (read-only); New staff member creates an account with one role, a generated password shown once in SecretReveal |
 | Groups | `/access/groups` | a role per group |
 | Applications | `/access/applications`, `/access/applications/new`, `/access/applications/:id` | machine clients and their tokens: new, rotate, set expiry, revoke |
 | Audit | `/access/audit` | the access audit log, filters by action, actor and date |
@@ -132,11 +132,12 @@ carry `sensitive`, so `VUE_APP_DEBUG` logs `[redacted]` for them. The token list
 | Unit | `tests/unit/stores/access.spec.js`, `tests/unit/router/accessGuard.spec.js` + `accessPanel.spec.js`, `tests/unit/components/Access/`, `tests/unit/composables/useNavAccess.spec.js`, `tests/unit/views/Access/`, `tests/unit/boots/PermissionMatrix.spec.js`, `tests/unit/i18n/accessKeys.spec.js`, `tests/unit/configs/areas.spec.js`, `tests/unit/audit/readonly.spec.js` (the read-only audit over every panel's views) |
 | e2e, read-only | `tests/e2e/access-users.spec.js` (admin, viewer, editor, customer; the viewer's write refused by the gate; one toast per refusal burst), `access-roles-smoke`, `access-staff-smoke`, `access-applications-smoke`, `access-catalogue` (the live catalogue against the snapshot and both locales' labels) |
 | e2e, writes | `tests/e2e/access-secret.spec.js` — creates an application and a secret token, proves the value is in no console message, web storage, cookie, URL, page HTML or later API response; revokes and deactivates in cleanup |
+| e2e, writes | `tests/e2e/access-staff-create.spec.js` — `accessadmin` creates `e2e-staff-<run>` (Viewer, generated password shown once), the password signs it in read-only; `manager` sees no Access panel. Each run leaves one account until the next `make seed` |
 | Visual | capture ids `access-roles-list`, `access-role-builtin`, `access-staff-list`, `access-audit`, `access-applications-list`, `access-application-detail` (`needsData`: a fresh seed has no application, the row skips) |
 
-The e2e specs need the seeded staff users of the test package (viewer and editor; names and passwords: the test
+The e2e specs need the seeded staff users of the test package (viewer, editor, manager, accessadmin; names and passwords: the test
 package's `scripts/seed-access.py` and README § Key settings), overridable as `ACCESS_<KIND>_USERNAME` /
-`ACCESS_<KIND>_PASSWORD` (`VIEWER`, `EDITOR`). The zeno seed gives no non-staff account a Customer row on the channel,
+`ACCESS_<KIND>_PASSWORD` (`VIEWER`, `EDITOR`, `MANAGER`, `ADMIN`). The zeno seed gives no non-staff account a Customer row on the channel,
 so the real-customer case runs only when the run names one (`ACCESS_CUSTOMER_USERNAME` = its email,
 `ACCESS_CUSTOMER_PASSWORD`) and then fails when that login fails on `VUE_APP_CHANNEL`; without it the case skips with
 that reason, and the next test proves the wall from a real session whose `me` says non-staff.

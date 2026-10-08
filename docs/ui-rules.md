@@ -230,7 +230,8 @@ Traps:
   which only `BasicCard` renders. A page is no card (R4). A view never sets its own card padding, border or radius.
 - **Dialogs.** Build on `BasicModal` (`size` sm · md · lg) or `ConfirmDialog`, never an overlay of the view's own:
   they trap focus, close on Esc and give focus back, and turn into a bottom sheet on a phone. Actions go in the
-  footer as an `ActionBar` (R5). A dialog with an async action closes on success and on error.
+  footer as an `ActionBar` (R5). A dialog with an async action closes on success and on error — but a refusal that
+  names one of its fields (a create dialog's 400 or 409) keeps it open with the error on that field.
 - **Locked / system entity.** Show a notice bar at the top. Pass `disabled` to each boot (or to the `FormField`), or
   show the value as `BasicInput readonly`. Disabled controls share one look (`--surface-disabled`, `--border-subtle`,
   muted text).

@@ -13,7 +13,7 @@ const { createErrorCollector } = require('../helpers/error-collector');
  * `e2e-secret-<run>` application with one revoked token until the next `make seed`; ApplicationList reads one token
  * list per application, so many runs on one seed make that page slower (docs/testing.md). The value is never printed: every assertion is a yes/no named by the
  * token id, and trace, screenshot and video are off (they would keep the field's content on disk).
- * The one access spec that writes.
+ * One of the two access specs that write (with access-staff-create).
  */
 
 const API = process.env.VUE_APP_API_URL || 'http://localhost:8100';
