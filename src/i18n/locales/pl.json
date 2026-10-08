@@ -3881,7 +3881,7 @@
     "staff": {
       "title": "Pracownicy",
       "detail": "Konto pracownika",
-      "help": "Konta pracowników zakłada się w panelu Django, nie tutaj — ta strona nadaje im role.",
+      "help": "Konta pracowników zakłada się tutaj; role nadaje się na stronie konta.",
       "search": "Szukaj po nazwisku, loginie lub e-mailu",
       "empty": "Brak kont pracowników",
       "not_found": "To konto pracownika nie istnieje",
@@ -3894,7 +3894,15 @@
       "direct_roles": "Role nadane bezpośrednio",
       "no_direct_roles": "Brak ról nadanych bezpośrednio",
       "group_roles": "Grupy i ich role",
-      "no_groups": "Nie należy do żadnej grupy"
+      "no_groups": "Nie należy do żadnej grupy",
+      "create": "Nowy pracownik",
+      "role": "Rola",
+      "password": "Hasło",
+      "generate_password": "Wygeneruj hasło",
+      "generate_hint": "Pokazane raz, zaraz po założeniu konta.",
+      "password_title": "Hasło nowego konta",
+      "created": "Założono konto pracownika {username}.",
+      "open_account": "Otwórz konto"
     },
     "groups": {
       "title": "Grupy",
@@ -3939,6 +3947,9 @@
           "create": "Nadano rolę",
           "delete": "Odebrano rolę",
           "migrate": "Nadano rolę przy instalacji"
+        },
+        "staff": {
+          "create": "Założono konto pracownika"
         },
         "application": {
           "create": "Utworzono aplikację",

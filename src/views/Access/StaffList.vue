@@ -1,7 +1,11 @@
 <template>
   <PageLayout class="fs-300 t-body">
     <template #header>
-      <PageHeader :title="$t('access.staff.title')" :description="$t('access.staff.help')" />
+      <PageHeader :title="$t('access.staff.title')" :description="$t('access.staff.help')">
+        <template #actions>
+          <ActionBar :actions="headerActions" />
+        </template>
+      </PageHeader>
     </template>
     <template #toolbar>
       <div class="flex ai-ct flex-wrap gap-5">
@@ -14,6 +18,12 @@
           data-testid="staff-search"
           @input="debouncedFetch(searchAndFetch)"
         />
+        <p v-if="created" class="m-0 fs-200" role="status" data-testid="staff-created">
+          {{ $t("access.staff.created", { username: created.username }) }}
+          <router-link :to="userLink(created)" class="fw-600 t-accent" data-testid="staff-created-open">
+            {{ $t("access.staff.open_account") }}
+          </router-link>
+        </p>
       </div>
     </template>
 
@@ -45,6 +55,9 @@
     <template #footer>
       <Pagination v-if="pages > 1" :page="page" :pages="pages" @update:page="changePage" />
     </template>
+
+    <StaffCreateDialog v-model:open="creating" :roles="roles" :submit="createStaff" />
+    <SecretReveal ref="secretReveal" v-model:open="reveal" :title="$t('access.staff.password_title')" />
   </PageLayout>
 </template>
 
@@ -52,22 +65,33 @@
 import { useNotifyStore } from "@/stores/notify";
 import { useSearchDebounce } from "@/composables/useSearchDebounce";
 import { extractApiMessage } from "@/composables/useFormErrors";
-import { GET_AccessStaff } from "@/api/access/api";
+import { GET_AccessStaff, GET_AccessAllRoles, POST_AccessStaff } from "@/api/access/api";
+import SecretReveal from "@/boots/SecretReveal/index.vue";
+import StaffCreateDialog from "./StaffCreateDialog.vue";
 import { roleLabel } from "./grants";
 
-// Active staff accounts with their roles, direct and through groups (django-access). Accounts are created outside the
-// CMS (Django admin, createsuperuser): the header and the empty state say so.
+// Active staff accounts with their roles, direct and through groups (django-access). "New staff member" creates one
+// with one role (more on the account page). A generated password comes once in the create answer: it goes straight
+// into SecretReveal (`show()` on the boot, never this page's data, a toast, a store, the router or a log), and the page
+// does not leave while it is open. A typed password is never shown again. The action is a primary header action: a
+// read-only page hides it.
 const PAGE_SIZE = 20;
 
 export default {
   name: "AccessStaffList",
+  components: { SecretReveal, StaffCreateDialog },
   setup() {
     return { notify: useNotifyStore(), ...useSearchDebounce() };
   },
   data() {
-    return { staff: [], count: 0, page: 1, loading: false };
+    return { staff: [], count: 0, page: 1, loading: false, roles: [], creating: false, reveal: false, created: null };
   },
   computed: {
+    headerActions() {
+      return [
+        { key: "create", role: "primary", label: this.$t("access.staff.create"), onClick: this.openCreate, testid: "staff-create" },
+      ];
+    },
     columns() {
       return [
         { key: "name", label: this.$t("access.staff.name"), width: "1fr", truncate: true },
@@ -79,6 +103,10 @@ export default {
     pages() {
       return Math.ceil(this.count / PAGE_SIZE);
     },
+  },
+  beforeRouteLeave(to, from, next) {
+    if (this.reveal) return next(false);
+    next();
   },
   mounted() {
     this.fetchStaff();
@@ -101,10 +129,35 @@ export default {
       this.page = page;
       this.fetchStaff();
     },
+    async openCreate() {
+      try {
+        if (!this.roles.length) this.roles = await GET_AccessAllRoles();
+        this.creating = true;
+      } catch (err) {
+        this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+      }
+    },
+    // The dialog's call: a refusal goes back to the dialog (its field errors). The dialog goes first (its focus trap
+    // hands focus back), then a generated password opens in SecretReveal.
+    async createStaff(payload) {
+      const { data } = await POST_AccessStaff(payload);
+      this.creating = false;
+      this.created = { id: data.id, username: data.username };
+      if (data.password) {
+        await this.$nextTick();
+        this.$refs.secretReveal.show(data.password);
+        this.reveal = true;
+      }
+      await this.fetchStaff();
+    },
     async fetchStaff() {
       this.loading = true;
       try {
-        const params = { page: this.page, page_size: PAGE_SIZE, ...(this.search ? { search: this.search } : {}) };
+        const params = {
+          page: this.page,
+          page_size: PAGE_SIZE,
+          ...(this.search ? { search: this.search } : {}),
+        };
         const { data } = await GET_AccessStaff(params);
         this.staff = data.results || [];
         this.count = data.count || 0;

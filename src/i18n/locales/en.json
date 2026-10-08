@@ -3882,7 +3882,7 @@
     "staff": {
       "title": "Staff",
       "detail": "Staff account",
-      "help": "Staff accounts are created in Django admin, not here — this page grants them roles.",
+      "help": "Staff accounts are created here; roles are granted on the account's page.",
       "search": "Search by name, username or email",
       "empty": "No staff accounts",
       "not_found": "This staff account does not exist",
@@ -3895,7 +3895,15 @@
       "direct_roles": "Roles granted directly",
       "no_direct_roles": "No roles granted directly",
       "group_roles": "Groups and their roles",
-      "no_groups": "Not a member of any group"
+      "no_groups": "Not a member of any group",
+      "create": "New staff member",
+      "role": "Role",
+      "password": "Password",
+      "generate_password": "Generate a password",
+      "generate_hint": "Shown once, right after the account is created.",
+      "password_title": "Password of the new account",
+      "created": "Staff account {username} created.",
+      "open_account": "Open account"
     },
     "groups": {
       "title": "Groups",
@@ -3940,6 +3948,9 @@
           "create": "Role granted",
           "delete": "Role revoked",
           "migrate": "Role granted at install"
+        },
+        "staff": {
+          "create": "Staff account created"
         },
         "application": {
           "create": "Application created",

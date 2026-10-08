@@ -40,6 +40,10 @@ export const GET_AccessAudit = (params = {}) => accessApi.get(`${ADMIN}/audit/`,
 // value, which the caller hands straight to SecretReveal and nowhere else.
 const SENSITIVE = { sensitive: true }
 
+// A new staff account with one role (`{ username, email, role, password? }`). The answer carries the generated password
+// when none was sent — `sensitive` like a token.
+export const POST_AccessStaff = (payload) => accessApi.post(`${ADMIN}/staff/`, payload, SENSITIVE)
+
 export const GET_AccessApplications = (params = {}) => accessApi.get(`${ADMIN}/applications/`, { params })
 export const GET_AccessApplication = (id) => accessApi.get(`${ADMIN}/applications/${id}/`)
 export const POST_AccessApplication = (payload) => accessApi.post(`${ADMIN}/applications/`, payload)

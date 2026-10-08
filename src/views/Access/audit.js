@@ -9,6 +9,7 @@ export const AUDIT_ACTIONS = [
   "grant.create",
   "grant.delete",
   "grant.migrate",
+  "staff.create",
   "application.create",
   "application.update",
   "token.create",
