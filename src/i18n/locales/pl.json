@@ -52,7 +52,14 @@
     "communicator_templates": "Szablony",
     "communicator_sequences": "Sekwencje",
     "communicator_settings": "Ustawienia wysyłki",
-    "ui_catalogue": "Katalog komponentów"
+    "ui_catalogue": "Katalog komponentów",
+    "access": {
+      "roles": "Role",
+      "staff": "Pracownicy",
+      "groups": "Grupy",
+      "audit": "Dziennik zmian",
+      "applications": "Aplikacje"
+    }
   },
   "login": {
     "welcome": "Zaloguj się",
@@ -575,7 +582,9 @@
     "communicator": "Communicator",
     "communicator_desc": "Szablony wiadomości, sekwencje follow-upów, polityka wysyłki i tryb kanału",
     "greeting": "Dzień dobry",
-    "greeting_name": "Dzień dobry, {name}"
+    "greeting_name": "Dzień dobry, {name}",
+    "access": "Dostęp",
+    "access_desc": "Role pracowników i to, co każda rola może czytać i zmieniać"
   },
   "stock": {
     "manage": "Stany",
@@ -3788,5 +3797,386 @@
       "iso2": "PL",
       "iso4217": "EUR"
     }
+  },
+  "access": {
+    "denied_action": "Nie masz uprawnień do tej akcji",
+    "denied_panel": "Nie masz dostępu do panelu {panel}",
+    "load_failed": "Nie udało się wczytać Twoich uprawnień",
+    "retry": "Spróbuj ponownie",
+    "gate_mode": "Kontrola dostępu działa w trybie {mode} — odmowy nie są egzekwowane",
+    "staff_only_title": "Brak dostępu do panelu administracyjnego",
+    "staff_only_message": "To konto nie ma dostępu do panelu administracyjnego. Zaloguj się kontem pracownika.",
+    "dismiss": "Zamknij",
+    "readonly_notice": "Tylko odczyt: Twoja rola pozwala oglądać tę stronę, ale nie zmieniać jej",
+    "roles": {
+      "title": "Role",
+      "create": "Nowa rola",
+      "detail": "Rola",
+      "empty": "Brak ról",
+      "name": "Nazwa",
+      "key": "Klucz",
+      "key_hint": "Małe litery, cyfry, - i _; nie zmienia się po utworzeniu",
+      "key_reserved": "Ten klucz jest zarezerwowany, wybierz inny",
+      "type": "Typ",
+      "grants": "Nadania",
+      "builtin": "Wbudowana",
+      "custom": "Własna",
+      "not_found": "Ta rola nie istnieje",
+      "builtin_notice": "Rola wbudowana — skopiuj ją, aby zmienić uprawnienia",
+      "reserved_dropped": "Zarządzanie dostępem nie zostało skopiowane: należy tylko do wbudowanej roli Administrator",
+      "reserved_error": "Zarządzanie dostępem należy tylko do wbudowanej roli Administrator",
+      "details": "Rola",
+      "description": "Opis",
+      "permissions": "Uprawnienia",
+      "duplicate": "Duplikuj",
+      "copy_of": "Kopia: {name}",
+      "delete_title": "Usuń rolę",
+      "delete_message": "Usunąć rolę {name}? Wszyscy, którzy ją mają, stracą jej uprawnienia.",
+      "saved": "Rola zapisana",
+      "deleted": "Rola usunięta"
+    },
+    "matrix": {
+      "set_all": "Ustaw wszystko: {module}",
+      "levels": {
+        "none": "Brak",
+        "read": "Odczyt",
+        "write": "Zapis"
+      }
+    },
+    "sensitive": {
+      "pii": "Dane osobowe",
+      "money": "Pieniądze",
+      "secret": "Sekrety",
+      "ai_cost": "Koszt AI",
+      "config": "Konfiguracja",
+      "destructive": "Nieodwracalne"
+    },
+    "modules": {
+      "django_pim": "PIM",
+      "django_pim_translator": "Tłumaczenie PIM",
+      "django_pricemanager": "Ceny",
+      "django_pricefighter": "PriceFighter",
+      "django_qms": "Magazyn",
+      "django_suppliers": "Dostawcy",
+      "django_atlas": "Atlas",
+      "django_enrichment": "Wzbogacanie",
+      "django_lookup": "Wyszukiwanie produktów",
+      "django_contentdb": "Strony",
+      "django_contentdb_translator": "Tłumaczenie stron",
+      "django_faq": "FAQ",
+      "django_deliverypoints": "Punkty",
+      "django_email": "E-maile",
+      "django_agreements": "Zgody",
+      "django_accounts": "Konta",
+      "django_checkout": "Zamówienia i koszyk",
+      "django_returns": "Zwroty",
+      "django_contact_forms": "Formularze",
+      "django_leads": "Leady",
+      "django_communicator": "Komunikator",
+      "django_siteintel": "Analiza stron",
+      "django_notifications": "Powiadomienia",
+      "django_munin": "Platforma",
+      "django_access": "Dostęp"
+    },
+    "staff": {
+      "title": "Pracownicy",
+      "detail": "Konto pracownika",
+      "help": "Konta pracowników zakłada się tutaj; role nadaje się na stronie konta.",
+      "search": "Szukaj po nazwisku, loginie lub e-mailu",
+      "empty": "Brak kont pracowników",
+      "not_found": "To konto pracownika nie istnieje",
+      "name": "Imię i nazwisko",
+      "username": "Login",
+      "email": "E-mail",
+      "roles": "Role",
+      "superuser": "Superużytkownik",
+      "via": "przez {group}",
+      "direct_roles": "Role nadane bezpośrednio",
+      "no_direct_roles": "Brak ról nadanych bezpośrednio",
+      "group_roles": "Grupy i ich role",
+      "no_groups": "Nie należy do żadnej grupy",
+      "create": "Nowy pracownik",
+      "role": "Rola",
+      "password": "Hasło",
+      "generate_password": "Wygeneruj hasło",
+      "generate_hint": "Pokazane raz, zaraz po założeniu konta.",
+      "password_title": "Hasło nowego konta",
+      "created": "Założono konto pracownika {username}.",
+      "open_account": "Otwórz konto"
+    },
+    "groups": {
+      "title": "Grupy",
+      "help": "Grupami i ich członkami zarządza się w panelu Django; rola nadana grupie trafia do każdego członka.",
+      "empty": "Brak grup",
+      "name": "Grupa",
+      "members": "Członkowie",
+      "add_role": "Dodaj rolę grupie {group}"
+    },
+    "grants": {
+      "role": "Rola",
+      "granted_at": "Nadano",
+      "add_role": "Dodaj rolę",
+      "add": "Dodaj",
+      "revoke_role": "Odbierz rolę {role}",
+      "revoke_title": "Odbierz rolę",
+      "revoke_message": "Odebrać rolę {role} ({holder})?",
+      "granted": "Nadano rolę",
+      "revoked": "Odebrano rolę",
+      "lockout": "Przynajmniej jedna osoba musi zachować zarządzanie dostępem — najpierw nadaj je komuś innemu"
+    },
+    "audit": {
+      "title": "Dziennik zmian",
+      "filters": "Filtry",
+      "action": "Akcja",
+      "actor": "Kto",
+      "from": "Od",
+      "to": "Do",
+      "group_bypass": "Grupuj dostęp superużytkownika po dniach",
+      "empty": "Brak wpisów w dzienniku",
+      "time": "Czas",
+      "target": "Obiekt",
+      "ip": "Adres IP",
+      "requests": "Żądania: {count}",
+      "actions": {
+        "role": {
+          "create": "Utworzono rolę",
+          "update": "Zmieniono rolę",
+          "delete": "Usunięto rolę"
+        },
+        "grant": {
+          "create": "Nadano rolę",
+          "delete": "Odebrano rolę",
+          "migrate": "Nadano rolę przy instalacji"
+        },
+        "staff": {
+          "create": "Założono konto pracownika"
+        },
+        "application": {
+          "create": "Utworzono aplikację",
+          "update": "Zmieniono aplikację"
+        },
+        "token": {
+          "create": "Wydano token",
+          "rotate": "Odnowiono token",
+          "revoke": "Unieważniono token",
+          "expiry": "Zmieniono ważność tokenu"
+        },
+        "legacy": {
+          "import": "Zaimportowano stare klucze",
+          "purge": "Usunięto stare klucze"
+        },
+        "gate": {
+          "bypass": "Dostęp superużytkownika"
+        }
+      }
+    },
+    "applications": {
+      "title": "Aplikacje",
+      "help": "Klienci maszynowi — sklepy, widżety, integracje — wołający API z tokenem. Aplikacje się dezaktywuje, nigdy nie usuwa.",
+      "empty": "Brak aplikacji",
+      "not_found": "Ta aplikacja nie istnieje",
+      "name": "Nazwa",
+      "description": "Opis",
+      "state": "Stan",
+      "tokens": "Tokeny",
+      "create": "Nowa aplikacja",
+      "detail": "Aplikacja",
+      "details": "Szczegóły",
+      "saved": "Zapisano aplikację"
+    },
+    "tokens": {
+      "title": "Tokeny",
+      "empty": "Brak tokenów",
+      "create": "Nowy token",
+      "name": "Nazwa",
+      "key": "Klucz",
+      "scopes": "Zakresy",
+      "channel": "Kanał",
+      "channel_hint": "Puste: token działa w każdym kanale.",
+      "every_channel": "Każdy kanał",
+      "expires": "Wygasa",
+      "expiry_date": "Data wygaśnięcia",
+      "no_expiry": "Bez wygaśnięcia",
+      "on_date": "W dniu",
+      "age": "Wiek",
+      "rotation_due": "Zalecana wymiana",
+      "rotation_due_tip": "Starszy niż {days} dni — wymień go z okresem przejściowym, potem unieważnij stary",
+      "rotation_hint": "Tokeny nie wygasają, dopóki nie ustawisz daty; zalecamy wymianę co {days} dni",
+      "last_used": "Ostatnie użycie",
+      "never_used": "Nigdy",
+      "state": "Stan",
+      "states": {
+        "active": "Aktywny",
+        "expired": "Wygasły",
+        "revoked": "Unieważniony"
+      },
+      "legacy": "Klucze legacy",
+      "legacy_key": "Klucz legacy",
+      "actions": "Akcje: {token}",
+      "rotate": "Wymień",
+      "rotate_title": "Wymień {token}",
+      "rotate_message": "Nowy token z tymi samymi zakresami i kanałem zastąpi ten. Stary działa jeszcze przez okres przejściowy, żeby klienci zdążyli się przełączyć.",
+      "overlap_hours": "Okres przejściowy (godziny)",
+      "overlap_hint": "Jak długo stary token jeszcze działa: 0–168 godzin; 0 wyłącza go od razu.",
+      "overlap_invalid": "Podaj pełne godziny od 0 do 168",
+      "set_expiry": "Ustaw wygaśnięcie",
+      "expiry_title": "Wygaśnięcie: {token}",
+      "expiry_legacy": "Klucz legacy z {source}. Sam nigdy nie wygasa — wybierz datę, gdy zespół go wycofuje.",
+      "expiry_saved": "Zapisano wygaśnięcie",
+      "expiry_errors": {
+        "EXPIRY_IN_PAST": "Wybierz dzień od jutra",
+        "DATE_MISSING": "Wybierz dzień albo „Bez wygaśnięcia”"
+      },
+      "revoke": "Unieważnij",
+      "revoke_title": "Unieważnij token",
+      "revoke_message": "Unieważnić {token}? Przestanie działać od razu i nie da się go przywrócić.",
+      "revoke_legacy": "Klucz legacy z {source}.",
+      "revoke_publishable": "Sklepy i widżety używające tego klucza przestaną działać od razu.",
+      "revoked": "Unieważniono token",
+      "groups": {
+        "publishable": "Trafia do przeglądarek",
+        "publishable_hint": "Zakresy publiczne: klucz jest w kodzie sklepu i widżetów, każdy może go odczytać.",
+        "secret": "Tylko serwer–serwer",
+        "secret_hint": "Zakresy tajne: nigdy nie umieszczaj klucza na stronie."
+      },
+      "scopes_required": "Wybierz co najmniej jeden zakres",
+      "created_title": "Nowy token",
+      "rotated_title": "Wymieniony token"
+    },
+    "areas": {
+      "pim": {
+        "products": "Produkty i media",
+        "categories": "Kategorie i pozycje",
+        "schema": "Cechy, atrybuty, zestawy i typy powiązań",
+        "quality": "Braki jakości",
+        "product_delete": "Usuwanie produktów (SKU)"
+      },
+      "pim_translator": {
+        "translate": "Tłumaczenie AI (katalog)"
+      },
+      "pricemanager": {
+        "prices": "Ceny",
+        "settings": "Kanały cenowe i klasy podatkowe"
+      },
+      "pricefighter": {
+        "decisions": "Decyzje repricingu i ich zastosowanie",
+        "rules": "Reguły repricingu"
+      },
+      "qms": {
+        "stock": "Magazyny i stany"
+      },
+      "suppliers": {
+        "sources": "Dostawcy, feedy, mapowania i logi",
+        "products": "Kolejka produktów dostawców i powiązania",
+        "credentials": "Dane dostępowe dostawców"
+      },
+      "atlas": {
+        "sources": "Źródła, dostawcy, konkurenci, feedy i mapowania",
+        "products": "Produkty źródłowe, powiązania i obserwacje",
+        "credentials": "Dane dostępowe źródeł"
+      },
+      "enrichment": {
+        "rules": "Reguły tworzenia zadań wzbogacania",
+        "proposals": "Zadania i propozycje wzbogacania"
+      },
+      "lookup": {
+        "search": "Wyszukiwanie produktów"
+      },
+      "content": {
+        "pages": "Strony, układy, ścieżki i blog",
+        "publish": "Publikowanie i wycofywanie treści",
+        "media": "Obrazy i tagi obrazów",
+        "schema": "Typy treści, zestawy, atrybuty i języki"
+      },
+      "contentdb_translator": {
+        "translate": "Tłumaczenie AI (treści)"
+      },
+      "faq": {
+        "faq": "FAQ"
+      },
+      "deliverypoints": {
+        "points": "Punkty odbioru i ich typy"
+      },
+      "email": {
+        "templates": "Szablony e-maili i konfiguracja nadawcy"
+      },
+      "agreements": {
+        "definitions": "Treści zgód i ich wersje",
+        "consents": "Zgody, osoby i subskrybenci"
+      },
+      "accounts": {
+        "customers": "Klienci i grupy klientów"
+      },
+      "checkout": {
+        "orders": "Zamówienia",
+        "discounts": "Rabaty i kody rabatowe"
+      },
+      "returns": {
+        "attachments": "Dokumenty zwrotów"
+      },
+      "contact_forms": {
+        "submissions": "Zgłoszenia z formularzy i rezerwacje",
+        "leads": "Leady z formularzy i konwersje reklam",
+        "settings": "Powiadomienia i integracje formularzy"
+      },
+      "leads": {
+        "companies": "Firmy, kontakty i importy",
+        "settings": "Etapy lejka, typy leadów, reguły i profile",
+        "gdpr": "Eksport i usuwanie danych (RODO)"
+      },
+      "communicator": {
+        "review": "Kolejka szkiców do przeglądu",
+        "content": "Szablony, sekwencje i stopki",
+        "conversations": "Skrzynka nadawcza, wątki, odpowiedzi i wykluczenia",
+        "settings": "Kanał, zasady wysyłki i skrzynka pocztowa"
+      },
+      "siteintel": {
+        "audits": "Audyty stron"
+      },
+      "notifications": {
+        "inbox": "Powiadomienia dla pracowników"
+      },
+      "munin": {
+        "config": "Konfiguracja działania i stan systemu"
+      },
+      "access": {
+        "manage": "Role, nadania, tokeny aplikacji i dziennik zmian"
+      },
+      "platform": {
+        "devtools": "Endpointy testowe (tylko środowisko deweloperskie)"
+      }
+    },
+    "scopes": {
+      "checkout": {
+        "storefront": "Koszyki i zamówienia w sklepie",
+        "erase": "Anonimizacja zamówień klienta (RODO)"
+      },
+      "accounts": {
+        "erase": "Usunięcie konta klienta (RODO)"
+      },
+      "contact_forms": {
+        "submit": "Wysyłanie formularzy kontaktowych",
+        "booking": "Terminy i rezerwacje"
+      },
+      "returns": {
+        "api": "Zwroty zamówień"
+      },
+      "reviews": {
+        "moderate": "Moderacja opinii"
+      },
+      "vault": {
+        "api": "Zapisane karty płatnicze"
+      },
+      "agreements": {
+        "subscribe": "Zapis do newslettera"
+      }
+    }
+  },
+  "secret_reveal": {
+    "label": "Wartość tokenu",
+    "warning": "Ta wartość jest pokazywana tylko raz. Zapisz ją teraz — nie da się jej wyświetlić ponownie",
+    "stored": "Mam ją zapisaną",
+    "copied": "Skopiowano do schowka",
+    "copy_manually": "Wartość jest zaznaczona — skopiuj ją przez Ctrl+C (⌘C na Macu)"
   }
 }

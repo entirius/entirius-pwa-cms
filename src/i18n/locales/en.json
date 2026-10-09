@@ -52,7 +52,14 @@
     "communicator_templates": "Templates",
     "communicator_sequences": "Sequences",
     "communicator_settings": "Send settings",
-    "ui_catalogue": "Component catalogue"
+    "ui_catalogue": "Component catalogue",
+    "access": {
+      "roles": "Roles",
+      "staff": "Staff",
+      "groups": "Groups",
+      "audit": "Audit",
+      "applications": "Applications"
+    }
   },
   "login": {
     "welcome": "Sign in",
@@ -575,7 +582,9 @@
     "communicator": "Communicator",
     "communicator_desc": "Outreach templates, follow-up sequences, send policy and channel mode",
     "greeting": "Hello",
-    "greeting_name": "Hello, {name}"
+    "greeting_name": "Hello, {name}",
+    "access": "Access",
+    "access_desc": "Staff roles and what each role may read and change"
   },
   "stock": {
     "manage": "Stocks",
@@ -3789,5 +3798,386 @@
       "iso2": "PL",
       "iso4217": "EUR"
     }
+  },
+  "access": {
+    "denied_action": "You do not have permission for this action",
+    "denied_panel": "You do not have access to {panel}",
+    "load_failed": "Could not load your permissions",
+    "retry": "Retry",
+    "gate_mode": "Access control is in {mode} mode — refusals are not enforced",
+    "staff_only_title": "No access to the admin panel",
+    "staff_only_message": "This account has no access to the admin panel. Log in with a staff account.",
+    "dismiss": "Dismiss",
+    "readonly_notice": "Read-only: your role can view this page but not change it",
+    "roles": {
+      "title": "Roles",
+      "create": "New role",
+      "detail": "Role",
+      "empty": "No roles yet",
+      "name": "Name",
+      "key": "Key",
+      "key_hint": "Lowercase letters, digits, - and _; fixed after create",
+      "key_reserved": "This key is reserved, pick another one",
+      "type": "Type",
+      "grants": "Grants",
+      "builtin": "Built-in",
+      "custom": "Custom",
+      "not_found": "This role does not exist",
+      "builtin_notice": "Built-in role — copy it to change permissions",
+      "reserved_dropped": "Access management is not copied: it belongs to the built-in Administrator role only",
+      "reserved_error": "Access management belongs to the built-in Administrator role only",
+      "details": "Role",
+      "description": "Description",
+      "permissions": "Permissions",
+      "duplicate": "Duplicate",
+      "copy_of": "Copy of {name}",
+      "delete_title": "Delete role",
+      "delete_message": "Delete the role {name}? Everyone who holds it loses its permissions.",
+      "saved": "Role saved",
+      "deleted": "Role deleted"
+    },
+    "matrix": {
+      "set_all": "Set all: {module}",
+      "levels": {
+        "none": "None",
+        "read": "Read",
+        "write": "Write"
+      }
+    },
+    "sensitive": {
+      "pii": "Personal data",
+      "money": "Money",
+      "secret": "Secrets",
+      "ai_cost": "AI cost",
+      "config": "Configuration",
+      "destructive": "Destructive"
+    },
+    "modules": {
+      "django_pim": "PIM",
+      "django_pim_translator": "PIM translation",
+      "django_pricemanager": "Pricing",
+      "django_pricefighter": "PriceFighter",
+      "django_qms": "Stock",
+      "django_suppliers": "Suppliers",
+      "django_atlas": "Atlas",
+      "django_enrichment": "Enricher",
+      "django_lookup": "Product lookup",
+      "django_contentdb": "Pages",
+      "django_contentdb_translator": "Page translation",
+      "django_faq": "FAQ",
+      "django_deliverypoints": "Points",
+      "django_email": "Emails",
+      "django_agreements": "Agreements",
+      "django_accounts": "Accounts",
+      "django_checkout": "Orders and checkout",
+      "django_returns": "Returns",
+      "django_contact_forms": "Forms",
+      "django_leads": "Leads",
+      "django_communicator": "Communicator",
+      "django_siteintel": "Site intelligence",
+      "django_notifications": "Notifications",
+      "django_munin": "Platform",
+      "django_access": "Access"
+    },
+    "staff": {
+      "title": "Staff",
+      "detail": "Staff account",
+      "help": "Staff accounts are created here; roles are granted on the account's page.",
+      "search": "Search by name, username or email",
+      "empty": "No staff accounts",
+      "not_found": "This staff account does not exist",
+      "name": "Name",
+      "username": "Username",
+      "email": "Email",
+      "roles": "Roles",
+      "superuser": "Superuser",
+      "via": "via {group}",
+      "direct_roles": "Roles granted directly",
+      "no_direct_roles": "No roles granted directly",
+      "group_roles": "Groups and their roles",
+      "no_groups": "Not a member of any group",
+      "create": "New staff member",
+      "role": "Role",
+      "password": "Password",
+      "generate_password": "Generate a password",
+      "generate_hint": "Shown once, right after the account is created.",
+      "password_title": "Password of the new account",
+      "created": "Staff account {username} created.",
+      "open_account": "Open account"
+    },
+    "groups": {
+      "title": "Groups",
+      "help": "Groups and their members are managed in Django admin; a role given to a group reaches every member.",
+      "empty": "No groups",
+      "name": "Group",
+      "members": "Members",
+      "add_role": "Add a role to {group}"
+    },
+    "grants": {
+      "role": "Role",
+      "granted_at": "Granted",
+      "add_role": "Add role",
+      "add": "Add",
+      "revoke_role": "Revoke {role}",
+      "revoke_title": "Revoke role",
+      "revoke_message": "Revoke the role {role} from {holder}?",
+      "granted": "Role granted",
+      "revoked": "Role revoked",
+      "lockout": "At least one person must keep access management — grant it to someone else first"
+    },
+    "audit": {
+      "title": "Audit",
+      "filters": "Filters",
+      "action": "Action",
+      "actor": "Who",
+      "from": "From",
+      "to": "To",
+      "group_bypass": "Group superuser access by day",
+      "empty": "No audit entries",
+      "time": "Time",
+      "target": "Target",
+      "ip": "IP address",
+      "requests": "{count} requests",
+      "actions": {
+        "role": {
+          "create": "Role created",
+          "update": "Role changed",
+          "delete": "Role deleted"
+        },
+        "grant": {
+          "create": "Role granted",
+          "delete": "Role revoked",
+          "migrate": "Role granted at install"
+        },
+        "staff": {
+          "create": "Staff account created"
+        },
+        "application": {
+          "create": "Application created",
+          "update": "Application changed"
+        },
+        "token": {
+          "create": "Token issued",
+          "rotate": "Token rotated",
+          "revoke": "Token revoked",
+          "expiry": "Token expiry changed"
+        },
+        "legacy": {
+          "import": "Legacy keys imported",
+          "purge": "Legacy keys purged"
+        },
+        "gate": {
+          "bypass": "Superuser access"
+        }
+      }
+    },
+    "applications": {
+      "title": "Applications",
+      "help": "Machine clients — storefronts, widgets, integrations — calling the API with a token. Applications are deactivated, never deleted.",
+      "empty": "No applications",
+      "not_found": "This application does not exist",
+      "name": "Name",
+      "description": "Description",
+      "state": "State",
+      "tokens": "Tokens",
+      "create": "New application",
+      "detail": "Application",
+      "details": "Details",
+      "saved": "Application saved"
+    },
+    "tokens": {
+      "title": "Tokens",
+      "empty": "No tokens yet",
+      "create": "New token",
+      "name": "Name",
+      "key": "Key",
+      "scopes": "Scopes",
+      "channel": "Channel",
+      "channel_hint": "Empty: the token works on every channel.",
+      "every_channel": "Every channel",
+      "expires": "Expires",
+      "expiry_date": "Expiry date",
+      "no_expiry": "No expiry",
+      "on_date": "On a date",
+      "age": "Age",
+      "rotation_due": "Rotation recommended",
+      "rotation_due_tip": "Older than {days} days — rotate it with overlap, then revoke the old one",
+      "rotation_hint": "Tokens never expire unless you set a date; we recommend rotating every {days} days",
+      "last_used": "Last used",
+      "never_used": "Never",
+      "state": "State",
+      "states": {
+        "active": "Active",
+        "expired": "Expired",
+        "revoked": "Revoked"
+      },
+      "legacy": "Legacy keys",
+      "legacy_key": "Legacy key",
+      "actions": "Actions: {token}",
+      "rotate": "Rotate",
+      "rotate_title": "Rotate {token}",
+      "rotate_message": "A new token with the same scopes and channel replaces this one. The old token keeps working for the overlap, so the clients can switch.",
+      "overlap_hours": "Overlap (hours)",
+      "overlap_hint": "How long the old token keeps working: 0–168 hours; 0 stops it at once.",
+      "overlap_invalid": "Enter whole hours from 0 to 168",
+      "set_expiry": "Set expiry",
+      "expiry_title": "Expiry of {token}",
+      "expiry_legacy": "Legacy key from {source}. It never expires by itself — pick a date when your team retires it.",
+      "expiry_saved": "Expiry saved",
+      "expiry_errors": {
+        "EXPIRY_IN_PAST": "Pick a day from tomorrow on",
+        "DATE_MISSING": "Pick a day, or choose No expiry"
+      },
+      "revoke": "Revoke",
+      "revoke_title": "Revoke token",
+      "revoke_message": "Revoke {token}? It stops working at once and cannot be restored.",
+      "revoke_legacy": "Legacy key from {source}.",
+      "revoke_publishable": "Storefronts and widgets using this key stop working at once.",
+      "revoked": "Token revoked",
+      "groups": {
+        "publishable": "Reaches browsers",
+        "publishable_hint": "Publishable scopes: the key sits in storefront and widget code, anyone can read it.",
+        "secret": "Server-to-server only",
+        "secret_hint": "Secret scopes: never put the key in a page."
+      },
+      "scopes_required": "Pick at least one scope",
+      "created_title": "New token",
+      "rotated_title": "Rotated token"
+    },
+    "areas": {
+      "pim": {
+        "products": "Products and media",
+        "categories": "Categories and positions",
+        "schema": "Features, attributes, sets and link types",
+        "quality": "Quality gaps",
+        "product_delete": "Delete products (SKU)"
+      },
+      "pim_translator": {
+        "translate": "AI translation (catalogue)"
+      },
+      "pricemanager": {
+        "prices": "Prices",
+        "settings": "Price channels and tax classes"
+      },
+      "pricefighter": {
+        "decisions": "Repricing decisions and apply",
+        "rules": "Repricing rules"
+      },
+      "qms": {
+        "stock": "Warehouses and stock"
+      },
+      "suppliers": {
+        "sources": "Suppliers, feeds, mappings and logs",
+        "products": "Supplier product queue and links",
+        "credentials": "Supplier credentials"
+      },
+      "atlas": {
+        "sources": "Sources, suppliers, competitors, feeds and mappings",
+        "products": "Source products, links and observations",
+        "credentials": "Source credentials"
+      },
+      "enrichment": {
+        "rules": "Enrichment spawn rules",
+        "proposals": "Enrichment tasks and proposals"
+      },
+      "lookup": {
+        "search": "Product lookup"
+      },
+      "content": {
+        "pages": "Pages, layouts, routes and blog",
+        "publish": "Publish and unpublish content",
+        "media": "Images and image tags",
+        "schema": "Content types, sets, attributes and languages"
+      },
+      "contentdb_translator": {
+        "translate": "AI translation (content)"
+      },
+      "faq": {
+        "faq": "FAQ"
+      },
+      "deliverypoints": {
+        "points": "Delivery points and types"
+      },
+      "email": {
+        "templates": "E-mail templates and sender configuration"
+      },
+      "agreements": {
+        "definitions": "Agreement texts and versions",
+        "consents": "Consents, people and subscribers"
+      },
+      "accounts": {
+        "customers": "Customers and customer groups"
+      },
+      "checkout": {
+        "orders": "Orders",
+        "discounts": "Discounts and discount codes"
+      },
+      "returns": {
+        "attachments": "Return documents"
+      },
+      "contact_forms": {
+        "submissions": "Form submissions and bookings",
+        "leads": "Form leads and ad conversions",
+        "settings": "Form notifications and integrations"
+      },
+      "leads": {
+        "companies": "Companies, contacts and imports",
+        "settings": "Pipeline stages, lead types, rules and profiles",
+        "gdpr": "GDPR export and erasure"
+      },
+      "communicator": {
+        "review": "Draft review queue",
+        "content": "Templates, sequences and footers",
+        "conversations": "Outbox, threads, replies and suppressions",
+        "settings": "Channel, send policy and mailbox"
+      },
+      "siteintel": {
+        "audits": "Site audits"
+      },
+      "notifications": {
+        "inbox": "Staff notifications"
+      },
+      "munin": {
+        "config": "Runtime configuration and health"
+      },
+      "access": {
+        "manage": "Roles, grants, application tokens and audit"
+      },
+      "platform": {
+        "devtools": "Development-only test endpoints"
+      }
+    },
+    "scopes": {
+      "checkout": {
+        "storefront": "Storefront carts and orders",
+        "erase": "Anonymise a customer's orders (GDPR)"
+      },
+      "accounts": {
+        "erase": "Delete a customer account (GDPR)"
+      },
+      "contact_forms": {
+        "submit": "Submit contact forms",
+        "booking": "Booking slots and bookings"
+      },
+      "returns": {
+        "api": "Order returns"
+      },
+      "reviews": {
+        "moderate": "Review moderation"
+      },
+      "vault": {
+        "api": "Stored payment cards"
+      },
+      "agreements": {
+        "subscribe": "Newsletter subscription"
+      }
+    }
+  },
+  "secret_reveal": {
+    "label": "Token value",
+    "warning": "This value is shown once. Store it now — it cannot be displayed again",
+    "stored": "I have stored it",
+    "copied": "Copied to the clipboard",
+    "copy_manually": "The value is selected — copy it with Ctrl+C (⌘C on a Mac)"
   }
 }

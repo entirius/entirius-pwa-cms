@@ -20,6 +20,7 @@
     <draggable
       v-if="!loading"
       v-model="normalizedFeatures"
+      :disabled="readonly"
       :group="{ name: 'features', pull: 'clone', put: true }"
       :sort="false"
       ghost-class="bg-accent-subtle"
@@ -68,6 +69,7 @@ import { usePimChannelStore } from "@/stores/pimChannel";
 import { GET_Features } from "@/api/pim/api";
 import { featureTypeLabel, featureTypeTone } from "../helpers/pimEnums";
 import draggable from "vuedraggable";
+import { useReadonly } from "@/composables/useReadonly";
 import { extractApiMessage } from "@/composables/useFormErrors";
 
 export default {
@@ -87,7 +89,7 @@ export default {
   setup() {
     const notify = useNotifyStore();
     const pimChannel = usePimChannelStore();
-    return { notify, pimChannel };
+    return { notify, pimChannel, readonly: useReadonly() };
   },
   data() {
     return {

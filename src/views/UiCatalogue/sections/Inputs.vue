@@ -122,6 +122,18 @@
         <BasicWysiwyg v-model="values[cell.id]" :variant="cell.variant" placeholder="Treść strony" />
       </CatalogueCell>
     </div>
+
+    <h3 id="permission-matrix" class="fs-500 mb-4">PermissionMatrix</h3>
+    <div class="inputs-grid inputs-grid--wide grid gap-3 mb-10">
+      <CatalogueCell v-for="cell in matrixCells" :id="cell.id" :key="cell.id" :label="cell.label">
+        <PermissionMatrix
+          v-model="matrices[cell.id]"
+          :areas="MATRIX_AREAS"
+          :disabled="cell.disabled"
+          :show-reserved="cell.disabled"
+        />
+      </CatalogueCell>
+    </div>
   </CatalogueSection>
 </template>
 
@@ -130,7 +142,8 @@
 // both hints with hints off; every hint cell pins the account-menu hints switch (plan 60); BasicInput
 // text / icon / readonly / password and BasicTextarea default / maxlength × empty, filled, disabled, error; NumberInput
 // plain / suffix × empty, at min, at max, disabled; BasicCheckbox, BasicRadioGroup, BasicSwitch, SegmentedControl,
-// BasicDatePicker, ColorInput and BasicWysiwyg in their states. Static fixtures; every control keeps its own v-model.
+// BasicDatePicker, ColorInput and BasicWysiwyg in their states; PermissionMatrix (access plan 20) editable and
+// read-only. Static fixtures; every control keeps its own v-model.
 import { reactive } from "vue";
 import CatalogueSection from "../CatalogueSection.vue";
 import CatalogueCell from "../CatalogueCell.vue";
@@ -147,6 +160,30 @@ const VISIBILITY = [
   { label: "Ukryta", value: "hidden" },
 ];
 const DATE_CONFIG = { single: { mode: "single", wrap: true, inline: true }, range: { mode: "range", wrap: true, inline: true } };
+// A sample of the django-access catalogue: every level shape (read+write, read only, write only), the sensitive tags
+// and the reserved area a custom role never shows.
+const area = (key, label, levels = ["read", "write"], sensitive = [], assignable = true) =>
+  ({ key, label, levels, sensitive, assignable });
+const MATRIX_AREAS = [
+  { module: "django_pim", areas: [
+    area("pim.products", "Produkty i media"),
+    area("pim.product_delete", "Usuwanie produktów (SKU)", ["write"], ["destructive"]),
+  ] },
+  { module: "django_accounts", areas: [area("accounts.customers", "Klienci", ["read"], ["pii"])] },
+  { module: "django_pricemanager", areas: [area("pricemanager.prices", "Ceny", ["read", "write"], ["money"])] },
+  { module: "django_access", areas: [area("access.manage", "Role, nadania i tokeny", ["read", "write"], ["secret"], false)] },
+];
+const matrixCells = [
+  { id: "permission-matrix-custom-editable", label: "custom role: editable, set all per module, no access.manage" },
+  { id: "permission-matrix-builtin-disabled", label: "built-in role: read-only, access.manage shown", disabled: true },
+];
+const matrices = reactive({
+  "permission-matrix-custom-editable": { "pim.products": "write", "accounts.customers": "read" },
+  "permission-matrix-builtin-disabled": {
+    "pim.products": "write", "pim.product_delete": "write", "accounts.customers": "read",
+    "pricemanager.prices": "write", "access.manage": "write",
+  },
+});
 const CONTENT = "<p>Letnia <strong>wyprzedaż</strong> kolekcji outdoorowej: kurtki, plecaki i namioty.</p>";
 
 // Cells of `variants` × `states`, each built by `build(variant, state)`; `id` = "<component>-<variant>-<state>".

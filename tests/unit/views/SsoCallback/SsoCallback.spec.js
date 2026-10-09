@@ -9,6 +9,10 @@ vi.mock("axios", () => ({ default: { post: (...a) => mockCallback(...a) } }));
 vi.mock("@/stores/user", () => ({ useUserStore: () => userStore }));
 // consumeReturnRoute stays real; its module's own imports are not needed here.
 vi.mock("@/api/contentDB/api", () => ({}));
+// django-access is not under test here: allow-all, as without the module.
+vi.mock("@/stores/access", () => ({
+  useAccessStore: () => ({ can: () => true, canAny: () => true, ensureLoaded: () => Promise.resolve(), available: false, isStaff: true }),
+}));
 vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({}) }));
 vi.mock("@/composables/useLoginSession", async (importOriginal) => ({
   ...(await importOriginal()),

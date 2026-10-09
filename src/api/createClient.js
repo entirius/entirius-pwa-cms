@@ -1,6 +1,8 @@
 import axios from 'axios'
 import Cookies from 'universal-cookie'
 import { expiresSoon, tokenExpiry } from '@/utils/jwt'
+import { useNotifyStore } from '@/stores/notify'
+import { t } from '@/i18n'
 
 const debugMode = JSON.parse((process.env.VUE_APP_DEBUG || 'false').toLowerCase())
 const cookies = new Cookies()
@@ -40,6 +42,29 @@ function rejectWithBody(err) {
     Object.defineProperty(body, 'httpStatus', { value: err.response.status, configurable: true })
   }
   return Promise.reject(body || err)
+}
+
+// The access gate's refusal (django-access): the v2 PERMISSION_DENIED envelope with one of the gate's issues.
+const ACCESS_ISSUES = ['ACCESS_DENIED', 'STAFF_ONLY', 'UNMAPPED_ROUTE']
+export const isAccessRefusal = (body) =>
+  body?.error === 'PERMISSION_DENIED' && Array.isArray(body.details) && body.details.some((d) => ACCESS_ISSUES.includes(d?.issue))
+
+// Resolved at call time like the user store: the access store imports an API client built here.
+async function refreshAccess() {
+  const { useAccessStore } = await import('@/stores/access')
+  return useAccessStore().refresh()
+}
+
+// One standard toast per burst and one throttled `me` refresh; the rejection still reaches the view, marked
+// `accessHandled` — its own toast (the server text, or any text right after the refusal) is covered by the standard one.
+function announceAccessRefusal(body) {
+  Object.defineProperty(body, 'accessHandled', { value: true, configurable: true })
+  useNotifyStore().spawnNotification({
+    type: 'negative',
+    msg: t('access.denied_action'),
+    covers: [t('access.denied_action'), body.message],
+  })
+  refreshAccess().catch(() => {})
 }
 
 export const isConflict = (err) => (err?.httpStatus ?? err?.response?.status) === 409
@@ -134,6 +159,7 @@ function attachTokenRefresh(client) {
 
       // 403 = permission denied (not session expired) — do NOT logout
       if (err.response.status === 403) {
+        if (isAccessRefusal(err.response.data)) announceAccessRefusal(err.response.data)
         return rejectWithBody(err)
       }
 
@@ -151,6 +177,11 @@ function attachTokenRefresh(client) {
     }
   )
 }
+
+// A request flagged `sensitive` (the access token calls: a create or rotate answer holds a raw token) never has its
+// body in the debug log, the request's or the response's.
+const REDACTED = '[redacted]'
+const debugBody = (config, data) => (config?.sensitive ? REDACTED : data)
 
 export function createApiClient(baseURL, { authHeaderFn = null, tokenRefresh = false } = {}) {
   const client = axios.create({ baseURL })
@@ -173,14 +204,14 @@ export function createApiClient(baseURL, { authHeaderFn = null, tokenRefresh = f
   if (debugMode) {
     client.interceptors.request.use((request) => {
       console.log(`%c${process.env.NODE_ENV} - REQUEST`, 'color:#68baaf')
-      console.log(request.method?.toUpperCase(), request.url, request.data)
+      console.log(request.method?.toUpperCase(), request.url, debugBody(request, request.data))
       return request
     })
 
     client.interceptors.response.use((response) => {
       console.log(`%c${response.config.url}`, 'color:#307a54;background:#aeebcc')
       console.log(`status: %c${response.status}`, 'color:#68baaf')
-      console.log(response.data)
+      console.log(debugBody(response.config, response.data))
       return response
     })
   }

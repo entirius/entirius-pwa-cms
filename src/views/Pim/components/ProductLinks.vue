@@ -8,10 +8,12 @@
     </div>
 
     <div class="flex ai-ct gap-5 mb-5 flex-wrap">
-      <SegmentedControl
-        v-model="activeLinkType"
-        :options="filterOptions"
-      />
+      <ReadonlyOff>
+        <SegmentedControl
+          v-model="activeLinkType"
+          :options="filterOptions"
+        />
+      </ReadonlyOff>
     </div>
 
     <p
@@ -37,7 +39,7 @@
       <draggable
         v-model="links"
         item-key="pk"
-        :disabled="!activeLinkType || reordering"
+        :disabled="readonly || !activeLinkType || reordering"
         handle=".links-table__handle"
         ghost-class="links-table__row--ghost"
         @end="onDragEnd"
@@ -174,6 +176,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from "vue";
 import draggable from "vuedraggable";
+import { ReadonlyOff, useReadonly } from "@/composables/useReadonly";
 import { t } from "@/i18n";
 import { useNotifyStore } from "@/stores/notify";
 import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
@@ -192,6 +195,7 @@ const props = defineProps({
 });
 
 const notify = useNotifyStore();
+const readonly = useReadonly();
 const { errors, handleApiError, clearErrors, validateRequired } = useFormErrors();
 
 const links = ref([]);

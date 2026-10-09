@@ -9,7 +9,7 @@
     <template v-else>
       <div v-if="dirtyCount > 0" class="sku-stock__actions flex ai-ct jc-fe gap-5 mb-5">
         <StatusBadge tone="warning" :dot="false" :label="`${$t('stock.unsaved')}: ${dirtyCount}`" />
-        <BasicButton variant="primary" @click="saveAll">
+        <BasicButton mutates variant="primary" @click="saveAll">
           {{ $t("stock.save_all") }}
         </BasicButton>
       </div>

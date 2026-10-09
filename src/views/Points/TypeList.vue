@@ -24,7 +24,7 @@
             />
           </div>
         </div>
-        <BasicButton
+        <BasicButton mutates
           variant="primary"
           @click="createType"
         >

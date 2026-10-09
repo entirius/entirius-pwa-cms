@@ -706,7 +706,10 @@
         "dark",
         "light"
       ],
-      "file": "accounts-customers-list__{vp}__{theme}.png"
+      "file": "accounts-customers-list__{vp}__{theme}.png",
+      "masks": [
+        ".data-table__cell[data-column=\"created_at\"]"
+      ]
     },
     {
       "id": "accounts-customer-detail",
@@ -1655,6 +1658,111 @@
         "light"
       ],
       "file": "leads-sending__{vp}__{theme}.png"
+    },
+    {
+      "id": "access-roles-list",
+      "route": "/access/roles",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "access-roles-list__{vp}__{theme}.png"
+    },
+    {
+      "id": "access-role-builtin",
+      "route": "/access/roles/viewer",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "readySelector": "[data-testid=\"permission-matrix\"]",
+      "file": "access-role-builtin__{vp}__{theme}.png"
+    },
+    {
+      "id": "access-staff-list",
+      "route": "/access/staff",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "access-staff-list__{vp}__{theme}.png"
+    },
+    {
+      "id": "access-audit",
+      "route": "/access/audit",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "access-audit__{vp}__{theme}.png",
+      "masks": [
+        ".data-table__cell[data-column=\"created_at\"]"
+      ]
+    },
+    {
+      "id": "access-applications-list",
+      "route": "/access/applications",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "access-applications-list__{vp}__{theme}.png"
+    },
+    {
+      "id": "access-application-detail",
+      "route": "/access/applications",
+      "resolver": "first-link",
+      "links": [
+        "a[href^=\"/access/applications/\"]:not([href=\"/access/applications/new\"])"
+      ],
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "readySelector": "[data-testid=\"application-name\"]",
+      "file": "access-application-detail__{vp}__{theme}.png",
+      "needsData": true,
+      "note": "a fresh seed has no access application (only BDD scenarios create them)",
+      "masks": [
+        ".data-table__cell[data-column=\"expires_at\"]",
+        ".data-table__cell[data-column=\"age_days\"]",
+        ".data-table__cell[data-column=\"last_used_at\"]"
+      ]
     },
     {
       "id": "ui-catalogue",

@@ -47,7 +47,7 @@
           v-model="newOption.label"
         />
       </FormField>
-      <BasicButton
+      <BasicButton mutates
         variant="secondary"
         @click="createOption"
       >
@@ -93,7 +93,7 @@
         ghost-class="bg-accent-subtle"
         handle=".drag-handle"
         :item-key="(el) => el.idx"
-        :disabled="!!searchQuery"
+        :disabled="readonly || !!searchQuery"
         @end="onReorder"
       >
         <template #item="{ element, index }">
@@ -170,6 +170,7 @@ import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { usePimChannelStore } from "@/stores/pimChannel";
 import draggable from "vuedraggable";
+import { useReadonly } from "@/composables/useReadonly";
 import {
   GET_FeatureAttributes,
   GET_Attributes,
@@ -202,7 +203,7 @@ export default {
     const notify = useNotifyStore();
     const pimChannel = usePimChannelStore();
     const formErrors = useFormErrors();
-    return { loader, notify, pimChannel, formErrors };
+    return { loader, notify, pimChannel, formErrors, readonly: useReadonly() };
   },
   data() {
     return {

@@ -55,13 +55,15 @@
                   @update:page="SET_Page({ language: lang, page: $event })"
                 />
               </div>
-              <BasicInput
-                :modelValue="langSearch[lang] || ''"
-                @update:modelValue="(val) => onLangSearch(lang, val)"
-                icon="search"
-                :placeholder="$t('content_sets.search_placeholder')"
-                class="mt-2"
-              />
+              <ReadonlyOff>
+                <BasicInput
+                  :modelValue="langSearch[lang] || ''"
+                  @update:modelValue="(val) => onLangSearch(lang, val)"
+                  icon="search"
+                  :placeholder="$t('content_sets.search_placeholder')"
+                  class="mt-2"
+                />
+              </ReadonlyOff>
               <div
                 class="rounded fs-200 t-secondary mt-2 grid gap-5 doc-list"
                 :class="{ 'doc-list--loading': langLoading[lang] }"
@@ -204,7 +206,9 @@ import { useUserStore } from "@/stores/user";
 import { useContentDBChannelStore } from "@/stores/contentDBChannel";
 import { _METHOD_content } from "@/api/contentDB/api";
 import hidden_config from "@/../__client/configs/__hidden_config";
+import { ReadonlyOff } from "@/composables/useReadonly";
 export default {
+  components: { ReadonlyOff },
   setup() {
     const notify = useNotifyStore();
     const loader = useLoaderStore();

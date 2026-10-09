@@ -94,6 +94,7 @@
             <div v-if="form.image_url" class="category-image">
               <img :src="fullImageUrl" :alt="$t('pim.category_image')" class="category-image__preview" />
               <IconButton
+                mutates
                 icon="delete"
                 variant="danger"
                 size="sm"
@@ -103,7 +104,7 @@
               />
             </div>
             <div
-              v-else
+              v-else-if="!readonly"
               class="category-image__dropzone"
               :class="{ 'category-image__dropzone--dragover': isDraggingImage }"
               role="button"
@@ -125,6 +126,7 @@
               type="file"
               accept="image/*"
               style="display: none"
+              :disabled="readonly"
               @change="onCategoryImageUpload"
             />
           </BasicCard>
@@ -228,6 +230,7 @@ import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { usePimChannelStore } from "@/stores/pimChannel";
 import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
+import { usePageReadonly } from "@/composables/useReadonly";
 import { GET_Category, PATCH_Category, DELETE_Category, POST_UploadPicture } from "@/api/pim/api";
 import CategoryProducts from "./components/CategoryProducts.vue";
 import PimChannelSelect from "./components/PimChannelSelect.vue";
@@ -258,7 +261,9 @@ export default {
     const pimChannel = usePimChannelStore();
     const unsaved = useUnsavedChanges();
     const formErrors = useFormErrors();
-    return { loader, notify, pimChannel, formErrors, ...unsaved, CONTENT_FIELDS, SEO_FIELDS };
+    // The page's read-only mode reaches the image drop zone (FormField and the buttons follow it on their own).
+    const readonly = usePageReadonly();
+    return { loader, notify, pimChannel, formErrors, ...unsaved, CONTENT_FIELDS, SEO_FIELDS, readonly };
   },
   data() {
     return {

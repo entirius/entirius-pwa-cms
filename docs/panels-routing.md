@@ -1,37 +1,43 @@
 # Panels and Routing
 
-17 self-contained panels, each gated by a django-munin backend module. Panel
+18 self-contained panels, each gated by a django-munin backend module. Panel
 metadata lives in `src/configs/access.js`; route gating lives in
 `src/router/index.js` and `src/stores/munin.js`.
 
 ## Panel Registry
 
-`src/configs/access.js` exports `panels` (the `apps` array). Each entry:
-`{ name, idx, icon, root, labelKey, descriptionKey, access }`. `icon` is a
-Font Awesome icon name rendered via `FontAwesomeIcon`.
+`src/configs/access.js` exports `panels`. Each entry:
+`{ name, idx, icon, root, fallback?, labelKey, descriptionKey, areas }`. `icon`
+is a Font Awesome icon name rendered via `FontAwesomeIcon`; `areas` are the
+django-access areas the panel works on (catalogue keys such as
+`pim.products`) — the panel is shown when the user can read any of them. The
+first area is the read-only default of a route without `meta.area`
+(`routeArea`, `src/composables/useReadonly.js`).
 
-| idx | Name | Root | Icon |
-|---|---|---|---|
-| `pages` | Pages | `/pages/content` | `file-code` |
-| `pim` | PIM | `/pim/products` | `boxes-stacked` |
-| `points` | Points | `/points/list` | `location-dot` |
-| `forms` | Forms | `/forms/list` | `envelope` |
-| `accounts` | Accounts | `/accounts/customers` | `users` |
-| `checkout` | Orders | `/checkout-orders/orders` | `shopping-cart` |
-| `agreements` | Agreements | `/agreements/list` | `file-contract` |
-| `emails` | Emails | `/emails` | `at` |
-| `faq` | FAQ | `/faq/groups` | `circle-question` |
-| `pricing` | Pricing | `/pricing/prices` | `money-bill-wave` |
-| `stock` | Stock | `/stock/manage` | `warehouse` |
-| `translation` | Translation | `/translation-jobs` | `language` |
-| `atlas` | Atlas | `/atlas/list` | `globe` |
-| `pricefighter` | PriceFighter | `/pricefighter/gap` | `scale-balanced` |
-| `enricher` | Enricher | `/enrichment` | `wand-magic-sparkles` |
-| `promo` | Promo | `/promo/list` | `tags` |
-| `leads` | Leads | `/leads/inbox` (fallback `/leads/companies`) | `inbox` |
+| idx | Name | Root | Icon | Areas |
+|---|---|---|---|---|
+| `pages` | Pages | `/pages/content` | `file-code` | `content.pages`, `content.publish`, `content.media`, `content.schema` |
+| `pim` | PIM | `/pim/products` | `boxes-stacked` | `pim.products`, `pim.categories`, `pim.schema`, `pim.quality`, `suppliers.sources`, `suppliers.products` |
+| `points` | Points | `/points/list` | `location-dot` | `deliverypoints.points` |
+| `forms` | Forms | `/forms/list` | `envelope` | `contact_forms.submissions`, `contact_forms.leads`, `contact_forms.settings` |
+| `accounts` | Accounts | `/accounts/customers` | `users` | `accounts.customers` |
+| `checkout` | Orders | `/checkout-orders/orders` | `shopping-cart` | `checkout.orders` |
+| `agreements` | Agreements | `/agreements/list` | `file-contract` | `agreements.definitions`, `agreements.consents` |
+| `emails` | Emails | `/emails` | `at` | `email.templates` |
+| `faq` | FAQ | `/faq/groups` | `circle-question` | `faq.faq` |
+| `pricing` | Pricing | `/pricing/prices` | `money-bill-wave` | `pricemanager.prices`, `pricemanager.settings` |
+| `stock` | Stock | `/stock/manage` | `warehouse` | `qms.stock` |
+| `translation` | Translation | `/translation-jobs` | `language` | `pim_translator.translate`, `contentdb_translator.translate` |
+| `atlas` | Atlas | `/atlas/list` | `globe` | `atlas.sources`, `atlas.products`, `atlas.credentials`, `lookup.search` |
+| `pricefighter` | PriceFighter | `/pricefighter/gap` | `scale-balanced` | `pricefighter.decisions`, `pricefighter.rules` |
+| `enricher` | Enricher | `/enrichment` | `wand-magic-sparkles` | `enrichment.rules`, `enrichment.proposals` |
+| `promo` | Promo | `/promo/list` | `tags` | `checkout.discounts` |
+| `leads` | Leads | `/leads/inbox` (fallback `/leads/companies`) | `inbox` | `leads.companies`, `leads.settings`, `leads.gdpr`, `communicator.review`, `communicator.content`, `communicator.conversations`, `communicator.settings`, `siteintel.audits` |
+| `access` | Access | `/access/roles` | `user-shield` | `access.manage` |
 
 This array is static metadata only. Whether a panel is *usable* is decided at
-runtime by `useMuninStore().isPanelEnabled(idx)`.
+runtime by `useMuninStore().isPanelEnabled(idx)` (the module is on) and
+`useAccessStore().canAny(panel.areas)` (the user may read it).
 
 ## Route Table
 
@@ -53,6 +59,7 @@ path prefix and lazy-loaded (`() => import(...)`). Grouped by panel:
 | `/pricing/...` | PriceList/Detail, TaxClassList/Detail, ChannelList/Detail |
 | `/stock/...` | WarehouseStockTable |
 | `/translation-jobs` | TranslationDashboard |
+| `/access/...` | RoleList, RoleDetail (`roles/new`, `roles/:key`; a built-in role opens read-only, Duplicate = `roles/new?from=<key>`); StaffList (`staff`), StaffDetail (`staff/:id` — direct grants, group roles read-only), GroupList (`groups`), ApplicationList (`applications`), ApplicationDetail (`applications/new`, `applications/:id` — tokens: new, rotate, set expiry, revoke; the raw value only in `SecretReveal`), AuditList (`audit`) |
 | `/atlas/...`, `/suppliers/*` + `/supplier-review` (legacy redirects) | SupplierList/Detail, AutoMatched, Duplicates, SupplierReview (Review/) |
 | `/pricefighter/...` | GapTable, Strategies, DecisionHistory |
 | `/enrichment/...` | EnrichmentReview, EnrichmentSpawnRules List/Edit, EnrichmentTasks |
@@ -97,6 +104,50 @@ resolve even when the `promo` panel itself is enabled via `checkout`. If
 `munin.isModuleEnabled(module)` is false, the guard redirects to the panel's
 `root` (from the registry), not to `/`.
 
+### `meta.area` — the user's permission (django-access)
+
+The whole access picture — store, refusals, read-only pages, the Access panel, token values — is
+`docs/access.md`; this section is the routing part.
+
+`useAccessStore` (`src/stores/access.js`) holds the user's `me` from
+`GET /api/access/v2/me/`, loaded at login (after munin) and on a cold load,
+in memory only. A route that belongs to one area carries `meta.area` (the
+catalogue key, e.g. `pim.categories`); after the munin checks the guard needs
+read on it — or, on a route without `meta.area`, read on any of its panel's
+`areas`. A refused panel root (the Home card, the sidebar leaf) opens the
+panel's first nav entry the user can read; any other refused route goes to
+`/`, and Home names the panel ("You do not have access to …", a different
+notice from a module that is off). Routes without `meta.panel` are untouched.
+
+- **Without the access module** (munin does not list `access`) every check
+  passes — the behaviour before django-access.
+- **Installed but `me` failed** (network, 5xx): every area-gated panel is
+  hidden and Home shows "Could not load your permissions" with Retry. Never
+  allow-all. A failed *refresh* keeps the `me` it had.
+- **Nav:** a panel the user cannot read is always hidden (never dimmed like a
+  module that is off); a nav entry takes its route's `meta.area` and is
+  hidden without read on it.
+- **403 from the gate** (`PERMISSION_DENIED` with issue `ACCESS_DENIED`,
+  `STAFF_ONLY` or `UNMAPPED_ROUTE`): `createClient` shows one standard toast
+  per burst, refreshes `me` (at most once per 5 s) and still rejects to the
+  view, the body marked `accessHandled`; the view's own toast for it is
+  covered by the standard one (`extractApiMessage` returns the same text; any
+  negative toast in the first second after it is dropped too).
+- **Non-staff account** (`me.user.is_staff === false`): App shows a full-screen
+  notice in the `AuthLayout` frame with Log out instead of the shell.
+- **Access managers** (`me.manages_access`) see a Home warning while
+  `me.gate_mode` is not `enforce`.
+- **Read-only mode:** a page whose area the user can read but not write
+  shows no Save, Delete, create, FAB or bulk action, disabled fields and one
+  notice line; decided once in `PageLayout` (`src/composables/useReadonly.js`,
+  `docs/ui-rules.md` § Page patterns). The PIM product Delete needs
+  `pim.product_delete:write` (an Editor edits without it).
+- Content create (`Builder/Builds.vue` `canCreate`) is
+  `can("content.pages", "write")` while the module is there, else the contentdb
+  content permissions.
+
+The server is the authority; these checks only keep the UI honest.
+
 ### `VUE_APP_HIDE_DISABLED_PANELS`
 
 Controls how locked panels render in the UI (not routing — the guard always
@@ -109,7 +160,8 @@ blocks disabled panels regardless of this flag):
   enabled panels appear.
 
 `panelList()` / `usePanels()` (`src/composables/useNav.js`) implement it once:
-the registry mapped through `munin.isPanelEnabled`, then filtered by the flag.
+the registry mapped through `munin.isPanelEnabled`, then filtered by the flag
+(and by `access.canAny(panel.areas)`).
 
 ## Navigation model
 
@@ -139,6 +191,6 @@ One model feeds every region of the shell (`src/composables/useNav.js`):
   from there up, the header menu button, `MobileMenu` and `BottomTabBar` below.
   `desktopOnly` entries follow the same number.
 
-To add a page: its route (`meta.panel`, `meta.titleKey`, `navParent` when its
-path does not nest under the list), and an entry in `nav-routes.js` if the
-sidebar should list it.
+To add a page: its route (`meta.panel`, `meta.titleKey`, `meta.area` when it
+belongs to one area, `navParent` when its path does not nest under the list),
+and an entry in `nav-routes.js` if the sidebar should list it.

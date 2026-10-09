@@ -458,7 +458,7 @@ onMounted(() => {
             </div>
           </div>
           <div class="product-files__cat-create-actions mt-2">
-            <BasicButton
+            <BasicButton mutates
               variant="secondary"
               :disabled="creatingCategory || !newCategoryCode"
               @click="createCategory"
@@ -475,7 +475,7 @@ onMounted(() => {
         </div>
 
         <div class="product-files__popup-actions mt-5">
-          <BasicButton
+          <BasicButton mutates
             variant="primary"
             :disabled="uploadingFile"
             @click="confirmUpload"
@@ -543,7 +543,7 @@ onMounted(() => {
               :label="$t('pim.settings')"
               @click="toggleEditRow(fileData(pf).pk)"
             />
-            <IconButton
+            <IconButton mutates
               v-if="!readonly"
               icon="delete"
               size="sm"
@@ -602,7 +602,7 @@ onMounted(() => {
               </div>
             </div>
             <div class="product-files__row-edit-actions mt-2">
-              <BasicButton
+              <BasicButton mutates
                 variant="secondary"
                 :disabled="savingFilePk === fileData(pf).pk"
                 @click="saveFileMetadata(fileData(pf).pk)"

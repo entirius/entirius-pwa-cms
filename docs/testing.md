@@ -94,6 +94,11 @@ Fixture data: `tests/fixtures/`.
 | — | `12-pim-product-links.spec.js` | PIM product deep links |
 | — | `13-pim-quality.spec.js`, `14-pim-quality-rules.spec.js`, `15-pim-quality-rules-offcompat.spec.js` | PIM quality/gap rules, soft-compat with older backends |
 | — | `16-error-feedback.spec.js` | API error surface in the UI |
+| — | `access-users.spec.js` | Admin, viewer, editor and customer see what their roles allow; the gate refuses the viewer's write; one toast per refusal burst (seeded users, read-only) |
+| — | `access-secret.spec.js` | A new token's value never leaves SecretReveal (writes: one application and one token, revoked and deactivated in cleanup — the API deletes neither, so each run leaves an inactive `e2e-secret-<run>` application until the next `make seed`, and ApplicationList reads one token list per application) |
+| — | `access-staff-create.spec.js` | New staff member: `accessadmin` creates a Viewer with a generated password shown once, which signs the account in read-only; `manager` sees no Access panel (writes: one `e2e-staff-<run>` account per run until the next `make seed`) |
+| — | `access-catalogue.spec.js` | The live django-access catalogue equals `tests/fixtures/access-catalogue.json` and every area and scope has an EN and PL label (read-only) |
+| — | `access-roles-smoke.spec.js`, `access-staff-smoke.spec.js`, `access-applications-smoke.spec.js` | Access panel smokes (read-only) |
 | `test:comprehensive` | `03`, `04`, `05`, `06` | Combined run of the four core suites |
 | `test:build` | — | Production build check (`tests/build/build-test.js`) |
 
@@ -179,7 +184,9 @@ Both are gitignored.
 
 **Screens.** `capture-spec.json` lists every screen: route, resolver (`fixed`, `first-row`, `first-link`), state
 (`default`, `switcher-open` (the mobile menu open; a mobile-only row), `user-menu-open`, `notif-open`, `health-open`, `fab-open`, `scrolled`), viewports and the
-baseline file name, plus an optional `readySelector` (below). Tests are named `<id>-<viewport>-<theme>`. P1 policy:
+baseline file name, plus an optional `readySelector` (below) and optional `masks` (CSS selectors of seed-date cells: a
+date, a token age, an audit time; masked in the capture, so the seed's day does not change it). Tests are named
+`<id>-<viewport>-<theme>`. P1 policy:
 dark on every screen and viewport, light only on the rows of Figma frames S1, S4, S6 and S9. Rows marked `needsData` (a review draft, a booking) skip with the reason
 when the seed has no such row. Take and check baselines on a fresh `make seed` with no BDD run since: BDD adds rows.
 
@@ -295,9 +302,7 @@ Commit the PNGs from `tests/visual/__screenshots__/<project>/` in the same PR as
 `node tests/visual/scripts/figma-landmarks.mjs <cms.json>`. `known-differences.json` lists where the code
 deliberately differs from Figma (KD01–KD22) and how each layer treats it.
 
-**Panel done-check.** A panel screen is done when the zeno harness's `p5_check.py` (roadmap `r06-views/scripts/`, run
-from the zeno root: `python3 <script> repos/pwa/entirius-pwa-cms src/views src/components src/functionals src/App.vue`)
-reports 0 files: no raw control or table outside the boots (the hidden file picker excepted), no view-local class
-family, no `detail-*` form class, no removed part, no page-frame leftover, no raw `<h1>`, no local modal file, no
-view-local boot copy. `npm run lint:ui` (every rule an error) and `@ux` (no `high` finding, empty allow-list) guard
-the same ground in this repo.
+**Panel done-check.** A panel screen is done when it has no raw control or table outside the boots (the hidden file
+picker excepted), no view-local class family, no `detail-*` form class, no removed part, no page-frame leftover, no
+raw `<h1>`, no local modal file and no view-local boot copy. `npm run lint:ui` (every rule an error) and `@ux` (no
+`high` finding, empty allow-list) guard that ground in this repo.

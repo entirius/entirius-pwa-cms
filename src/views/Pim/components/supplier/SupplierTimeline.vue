@@ -10,14 +10,16 @@
           :active="mode === opt.value"
           @click="setMode(opt.value)"
         />
-        <BasicSelect
-          :floating-label="$t('pim.supplier.timeline.source_label')"
-          v-if="mode === 'by_source' && sourceOptions.length > 1"
-          :options="sourceOptions"
-          v-model="selectedSource"
-          class="supplier-timeline__source-dropdown"
-          @update:model-value="onSourceSelect"
-        />
+        <ReadonlyOff>
+          <BasicSelect
+            :floating-label="$t('pim.supplier.timeline.source_label')"
+            v-if="mode === 'by_source' && sourceOptions.length > 1"
+            :options="sourceOptions"
+            v-model="selectedSource"
+            class="supplier-timeline__source-dropdown"
+            @update:model-value="onSourceSelect"
+          />
+        </ReadonlyOff>
       </div>
     </div>
     <ul v-if="filteredEntries.length" class="supplier-timeline__list">
@@ -34,10 +36,11 @@
 
 <script>
 import TimelineEntry from "./TimelineEntry.vue";
+import { ReadonlyOff } from "@/composables/useReadonly";
 
 export default {
   name: "SupplierTimeline",
-  components: { TimelineEntry },
+  components: { ReadonlyOff, TimelineEntry },
   props: {
     entries: { type: Array, default: () => [] },
   },

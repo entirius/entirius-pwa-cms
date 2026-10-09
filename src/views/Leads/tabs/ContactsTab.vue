@@ -36,7 +36,7 @@
       data-testid="company-contacts"
     >
       <template #cell-is_primary="{ row }">
-        <IconButton
+        <IconButton mutates
           v-if="!row.anonymised_at"
           icon="primary"
           size="sm"

@@ -32,6 +32,7 @@ const MODULE_TO_PANEL = {
   leads: "leads",
   // communicator's screens are sections of Leads → Settings (UX-002d); there is no Communicator panel
   communicator: "leads",
+  access: "access",
 };
 
 // Env fallback: parse VUE_APP_PANELS the same way access.js used to

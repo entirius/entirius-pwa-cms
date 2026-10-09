@@ -8,6 +8,10 @@ vi.mock("vue-router", () => ({
   useRoute: () => route,
   useRouter: () => ({ push, back: vi.fn(), resolve: (to) => ({ path: typeof to === "string" ? to : to.path }), getRoutes: () => [] }),
 }));
+// django-access is not under test here: allow-all, as without the module.
+vi.mock("@/stores/access", () => ({
+  useAccessStore: () => ({ can: () => true, canAny: () => true, ensureLoaded: () => Promise.resolve(), available: false, isStaff: true }),
+}));
 vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isPanelEnabled: () => true, isModuleEnabled: () => true }) }));
 vi.mock("@/stores/quality", () => ({ useQualityStore: () => ({ available: true }) }));
 

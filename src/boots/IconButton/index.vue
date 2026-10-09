@@ -1,5 +1,5 @@
 <template>
-  <BasicTooltip :text="label" class="icon-button__tip">
+  <BasicTooltip v-if="!(mutates && readonly)" :text="label" class="icon-button__tip">
     <button
       v-bind="$attrs"
       :type="type"
@@ -20,9 +20,11 @@
 // (aria-label) and its BasicTooltip; attributes (class, test id) land on the button, not on the tooltip wrapper.
 // Sizes: sm 24, md --elem-height (lines up with a text button in an ActionBar), lg 40 (header, mobile menu).
 // `danger` is every icon-only delete/remove (C6). `pressed` makes it a toggle (aria-pressed). The click stops at the
-// button, as BasicButton's does (rows and cards may act on a click).
+// button, as BasicButton's does (rows and cards may act on a click). `mutates`: the action creates, changes or deletes
+// something (a DataTable row's delete) — a read-only page (useReadonly, plan 19) hides it; view/open actions stay.
 import { ICONS } from "@/boots/Icons/icons";
 import BasicTooltip from "@/boots/BasicTooltip/index.vue";
+import { useReadonly } from "@/composables/useReadonly";
 
 defineOptions({ inheritAttrs: false });
 
@@ -39,7 +41,9 @@ const props = defineProps({
   disabled: { type: Boolean, default: false },
   type: { type: String, default: "button" },
   stop: { type: Boolean, default: true },
+  mutates: { type: Boolean, default: false },
 });
+const readonly = useReadonly();
 const emit = defineEmits(["click"]);
 
 function onClick(event) {

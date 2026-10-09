@@ -55,7 +55,7 @@
           <span v-else class="t-muted">—</span>
         </template>
         <template #cell-actions="{ row }">
-          <BasicButton
+          <BasicButton mutates
             size="sm"
             variant="secondary"
             :data-test="`spawn-rule-run-${row.key}`"

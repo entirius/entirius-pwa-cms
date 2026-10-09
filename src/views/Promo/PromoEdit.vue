@@ -266,14 +266,16 @@
             </BasicButton>
           </template>
 
-          <BasicInput
-            v-model="codesSearch"
-            :placeholder="$t('promo.codes_search_placeholder')"
-            :aria-label="$t('promo.codes_search_placeholder')"
-            icon="search"
-            class="codes-search"
-            @input="debouncedFetch(() => fetchCodes(true))"
-          />
+          <ReadonlyOff>
+            <BasicInput
+              v-model="codesSearch"
+              :placeholder="$t('promo.codes_search_placeholder')"
+              :aria-label="$t('promo.codes_search_placeholder')"
+              icon="search"
+              class="codes-search"
+              @input="debouncedFetch(() => fetchCodes(true))"
+            />
+          </ReadonlyOff>
 
           <DataTable
             :columns="codesColumns"
@@ -622,6 +624,7 @@ import {
 } from "@/api/promo/api";
 import FilterEditDrawer from "./FilterEditDrawer.vue";
 import { INT_MAX } from "@/utils/formats";
+import { ReadonlyOff } from "@/composables/useReadonly";
 
 const RULE_FORMATS = { min_order_amount: { format: "money" } };
 const CODE_FORMATS = { code: { format: "key" } };
@@ -670,7 +673,7 @@ function buildExtraValuePayload(form, extraValueKind) {
 
 export default {
   name: "PromoEdit",
-  components: { FilterEditDrawer, Pagination },
+  components: { ReadonlyOff, FilterEditDrawer, Pagination },
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();

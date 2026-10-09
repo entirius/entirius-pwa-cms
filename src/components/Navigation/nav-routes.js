@@ -351,6 +351,41 @@ export function buildNavRoutes() {
       query: {},
       app: ["enricher"],
     },
+    {
+      route: "/access/roles",
+      labelKey: "nav.access.roles",
+      icon: "user-shield",
+      query: {},
+      app: ["access"],
+    },
+    {
+      route: "/access/staff",
+      labelKey: "nav.access.staff",
+      icon: "user",
+      query: {},
+      app: ["access"],
+    },
+    {
+      route: "/access/groups",
+      labelKey: "nav.access.groups",
+      icon: "users",
+      query: {},
+      app: ["access"],
+    },
+    {
+      route: "/access/applications",
+      labelKey: "nav.access.applications",
+      icon: "key",
+      query: {},
+      app: ["access"],
+    },
+    {
+      route: "/access/audit",
+      labelKey: "nav.access.audit",
+      icon: "clock-rotate-left",
+      query: {},
+      app: ["access"],
+    },
   ];
 }
 
@@ -362,13 +397,14 @@ export function buildNavRoutes() {
 // `desktopOnly` items are hidden below the desktop breakpoint (useIsDesktop) — on a phone the
 // leads panel keeps its plan-13 shape: no bottom bar over the Inbox/Review sticky actions.
 // An entry is also lit on the pages it owns without a nav item of their own (`activeOn` path prefixes).
+// An entry with an `area` (its route's `meta.area`) is hidden when `canRead(area)` is false (django-access).
 export function isNavActive(route, path = "") {
   return (route.activeOn || []).some((prefix) => path.startsWith(prefix));
 }
 
 export function filterNavRoutes(
   routes,
-  { panel, qualityAvailable, isModuleEnabled, isDesktop }
+  { panel, qualityAvailable, isModuleEnabled, isDesktop, canRead }
 ) {
   return routes.filter((r) => {
     if (r.app.indexOf(panel) === -1) return false;
@@ -376,6 +412,7 @@ export function filterNavRoutes(
     if (r.requiresModule && !isModuleEnabled?.(r.requiresModule)) return false;
     if (r.hiddenWithModule && isModuleEnabled?.(r.hiddenWithModule)) return false;
     if (r.desktopOnly && !isDesktop) return false;
+    if (r.area && canRead && !canRead(r.area)) return false;
     return true;
   });
 }

@@ -263,7 +263,7 @@
                 v-model="addingLanguage"
                 class="t9n-lang-select"
               />
-              <BasicButton
+              <BasicButton mutates
                 variant="secondary"
                 :disabled="!addingLanguage"
                 @click="addTranslation"
@@ -289,7 +289,7 @@
               <span class="field-label t-accent">{{
                 t9n.language.toUpperCase()
               }}</span>
-              <IconButton
+              <IconButton mutates
                 icon="delete"
                 :label="$t('common.delete')"
                 variant="danger"
@@ -309,7 +309,7 @@
               </FormField>
             </div>
             <div class="flex jc-fe mt-4">
-              <BasicButton
+              <BasicButton mutates
                 variant="secondary"
                 @click="saveTranslation(t9n)"
               >

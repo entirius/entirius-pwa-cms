@@ -1,9 +1,9 @@
 # AGENTS.md
 
 entirius-pwa-cms — admin CMS for the Entirius platform: a Vue 3 SPA with a
-visual page builder and 17 self-contained panels (Pages, PIM, Points, Forms,
+visual page builder and 18 self-contained panels (Pages, PIM, Points, Forms,
 Accounts, Checkout, Agreements, Emails, FAQ, Pricing, Stock, Translation,
-Atlas, Enricher, Promo, PriceFighter, Leads — communicator included), each enabled per backend by the
+Atlas, Enricher, Promo, PriceFighter, Leads — communicator included, Access), each enabled per backend by the
 django-munin module registry. Backend for local dev: entirius-zeno at `http://localhost:8100`.
 
 ## Commands
@@ -17,7 +17,8 @@ django-munin module registry. Backend for local dev: entirius-zeno at `http://lo
 | `npm test` | build check + full Playwright e2e (needs a running backend) |
 | `npm run test:smoke` | quick e2e sanity (~2 min) |
 | `npm run pretty` | Prettier over `*.vue` |
-| `npm run lint:ui` | UI lint (stylelint + eslint + the P2 scale codemod `--check`), warnings = debt, old token names fail |
+| `npm run lint:ui` | UI lint (stylelint + eslint + the P2 scale codemod `--check` + `audit:readonly`), warnings = debt, old token names fail |
+| `npm run audit:readonly` | fails on a write control the read-only mode does not reach (`scripts/audit/readonly.mjs`; mark it `mutates`, or `:mutates="false"` for a POST that only reads) |
 
 ## Conventions
 
@@ -51,10 +52,10 @@ src/
 │                 # (contentDB, pim, munin, suppliers, promo, voucher, orders, …)
 ├── boots/        # 37 global UI components, registered in register-elems.js
 ├── composables/  # 12 shared Composition API helpers (useFormErrors, useLoginSession, …)
-├── configs/      # access.js — panel registry (idx, icon, root); builder/ controllers
+├── configs/      # access.js — panel registry (idx, icon, root, access areas); builder/ controllers
 ├── functionals/  # builder UI kit (Handy-kit), Login-wall, Confirmation-modal
 ├── i18n/         # hand-rolled $t over en.json/pl.json (no vue-i18n, no $tc)
-├── router/       # routes + munin guard (meta.panel / meta.module redirects)
+├── router/       # routes + munin and access guard (meta.panel / meta.module / meta.area redirects)
 ├── stores/       # 11 Pinia stores (munin, user, notify, per-panel channels, …)
 └── views/        # route components, one directory per panel
 __client/         # per-deploy JSON configs, generated — never commit
@@ -82,6 +83,7 @@ tests/            # unit/ (Vitest) + e2e/ (Playwright) + helpers/
 | File | Content |
 |---|---|
 | `docs/panels-routing.md` | panel registry, route table, munin gating, access control |
+| `docs/access.md` | django-access: the access store and `can()`, areas, guard, 403 handling, read-only pages, the Access panel, SecretReveal rules |
 | `docs/stores-composables.md` | all Pinia stores and composables, usage patterns |
 | `docs/ui-rules.md` | CMS UI rules: tokens, components, layout R1–R9, page patterns, merge checklist |
 | `docs/ui-components.md` | boot components, DataTable API, directives, theming, RWD |
@@ -168,8 +170,8 @@ is the one slot the Inbox rows, the Review confirmation (looked up after accept)
 
 ## Configuration health
 
-`src/stores/configHealth.js` polls munin `GET health/` (admin-only, 30 s, like the bell) while `munin.loaded` and
-the `munin` module is on; "Check again" = `POST health/check/` (adds the live probes). State, not events: nothing is
+`src/stores/configHealth.js` polls munin `GET health/` (admin-only, 30 s, like the bell) while `munin.loaded`, the
+`munin` module is on and the user can read `munin.config` (django-access); "Check again" = `POST health/check/` (adds the live probes). State, not events: nothing is
 marked read, a fixed config clears on the next poll. The header triangle (`ConfigHealthButton.vue`, next to the bell)
 exists only while a check fails — plus ~10 s of green "fixed" after a bad → good flip; the user menu always opens the
 panel (green grid on demand). Text lives once in `config_health.checks.<code with _>.<state>` (`{scope}` = channel),

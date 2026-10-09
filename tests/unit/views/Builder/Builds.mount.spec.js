@@ -18,6 +18,10 @@ vi.mock("@/../__client/configs/__config_options", () => ({
 }));
 vi.mock("@/stores/loader", () => ({ useLoaderStore: () => ({ loaderStart: vi.fn(), loaderFinish: vi.fn() }) }));
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification: vi.fn() }) }));
+// django-access is not under test here: allow-all, as without the module.
+vi.mock("@/stores/access", () => ({
+  useAccessStore: () => ({ can: () => true, canAny: () => true, ensureLoaded: () => Promise.resolve(), available: false, isStaff: true }),
+}));
 vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isModuleInstalled: () => false }) }));
 vi.mock("@/stores/contentDBChannel", () => ({
   useContentDBChannelStore: () => ({ fetchChannelsAndLanguages: async () => {}, languages: [], availableLanguages: [], defaultLanguage: "en" }),

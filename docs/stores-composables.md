@@ -21,6 +21,12 @@ All 12 stores (`src/stores/`) use composition (setup) syntax with `defineStore`.
   back-navigation from a hit's details does not wipe the results. One search,
   no history, in-memory only.
 - **`useMuninStore`** (`munin.js`) — module/panel enablement. See below.
+- **`useAccessStore`** (`access.js`) — what the logged-in user may do, from django-access `GET /api/access/v2/me/`
+  (memory only — never a cookie, web storage or router state). `can(area, level = "read")`, `canAny(areas, level)`,
+  `isStaff`, `managesAccess`, `gateMode`, `available`, `status` (`idle` · `loading` · `ready` · `absent` · `error`),
+  `ensureLoaded()` (single-flight), `refresh()` (at most once per 5 s), `reset()`. Without the access module
+  (munin) every `can` is true; installed but `me` failed (`error`) every `can` is false until a retry loads it. See
+  `docs/panels-routing.md` § `meta.area`.
 - **`useConfigHealthStore`** (`configHealth.js`) — munin `health/` rows (`failing`, `passing`, `stateOf(code)`, `failingFor(code)`), 30 s poll, `recheck()` runs the probes. See AGENTS.md "Configuration health".
 - **`useNotifyStore`** (`notify.js`) — `spawnNotification({ title, msg, type,
   timeout })`. Types: `informative`, `positive`, `negative`, `warning`. Queues
@@ -97,7 +103,7 @@ components keep using stores directly via the `setup()` return pattern.
   Handy-kit payloads onto component data (`instance`/`flat`/`custom`/`mixed`
   bind modes). Returns `{ setupSubscriber, open_Handykit }`.
 - **`useLoginSession`** — turns a token pair into a CMS session (cookies,
-  content permissions, profile + preferences, user, munin modules), then
+  content permissions, profile + preferences, user, munin modules, access `me`), then
   `markAuthenticated()` — the app leaves the login wall only after all of it.
   Every login method calls `completeLogin({ access, refresh, customer_id })`;
   `consumeReturnRoute()` returns and forgets the route a session-expired
@@ -115,6 +121,10 @@ components keep using stores directly via the `setup()` return pattern.
 - **`useUnsavedChanges`** — dirty-tracking for edit forms: `snapshot(data)`,
   `track(formData)`, `isDirty`, `guardNavigation(to, from, next)`,
   `confirmLeave()`/`cancelLeave()`. Warns on `beforeunload` while dirty.
+- **`useReadonly`** — the read-only mode of a page (django-access). `PageLayout`
+  calls `usePageReadonly(force)` (the route's `meta.area`, else its panel's first
+  area; the access store injected as `ACCESS_STORE`, provided by `App.vue`) and
+  `provideReadonly(flag)`; the boots read `useReadonly()` (false outside a page).
 - **`useVariantMatching`** — pure functions for variant-based conditional
   field visibility in config-driven UIs (Pages builder config-kit):
   `buildSettedConfigsValues`, `checkCoresDependency`, `checkPropsDependency`,

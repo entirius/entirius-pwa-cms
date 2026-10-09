@@ -21,15 +21,23 @@
 
 <script setup>
 import { computed } from "vue";
+import { useRouter } from "vue-router";
 import { LEADS_SETTINGS_SECTIONS } from "@/components/Navigation/nav-routes";
 import { useMuninStore } from "@/stores/munin";
+import { useAccessStore } from "@/stores/access";
 
 // Leads → Settings (UX-002d): the configuration of both backends in one list. A section whose module is off is
 // not listed — the backends stay separate (leads decides what and to whom, communicator how and when). The sections
-// and their glyphs come from the nav model.
+// and their glyphs come from the nav model. A section whose area (its route's `meta.area`) the user cannot read is not
+// listed either: the guard would refuse it.
 
 const munin = useMuninStore();
-const sections = computed(() => LEADS_SETTINGS_SECTIONS.filter((section) => munin.isModuleEnabled(section.module)));
+const access = useAccessStore();
+const router = useRouter();
+const readable = (section) => access.can(router.resolve({ name: section.route }).meta.area);
+const sections = computed(() =>
+  LEADS_SETTINGS_SECTIONS.filter((section) => munin.isModuleEnabled(section.module) && readable(section))
+);
 </script>
 
 <style scoped>

@@ -6,7 +6,7 @@
         <h3 class="fs-400 fw-600">
           {{ $t("promo.cfg_title") }} · {{ form.idx }}
         </h3>
-        <BasicButton
+        <BasicButton mutates
           variant="primary"
           :disabled="saving"
           @click="save"

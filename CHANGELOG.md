@@ -4,6 +4,58 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- django-access awareness: the CMS loads `GET /api/access/v2/me/` at login and on a cold load (memory only) and
+  hides panels and nav entries the user cannot read; a deep link to a refused panel goes to Home with a notice.
+  Routes carry `meta.area`, panels `areas` (`docs/panels-routing.md`). Without the access module nothing changes;
+  with it installed and `me` failing, area-gated panels stay hidden and Home offers Retry.
+- One standard toast for an access-gate 403 (one per burst) and one `me` refresh at most every 5 s.
+- A customer (non-staff) account sees "No access to the admin panel" with Log out instead of an empty shell.
+- Access managers see a Home warning while the gate is not in `enforce` mode.
+- Content create follows `content.pages:write` when django-access is installed.
+- Read-only mode: a page the user can read but not write shows no Save, Delete, create, FAB or bulk actions, its
+  form fields are disabled and one line says why. Decided once in `PageLayout` from the route's area; `BasicButton`
+  and `IconButton` take `mutates` for the other writing buttons. `scripts/audit/readonly.mjs` lists the writing
+  buttons the mode does not reach (Pages, PIM, FAQ, Pricing and Forms are clean).
+- The PIM product Delete shows only with `pim.product_delete:write`.
+- Access panel (munin key `access`, needs `access.manage` read): Roles lists the built-in and custom roles; a role
+  page edits a custom role's name, description and permissions, and opens a built-in read-only with Duplicate. A
+  custom role never offers `access.manage` (built-in Administrator only). New boot `PermissionMatrix` with a `/ui`
+  cell.
+- Access → Staff, Groups and Audit: staff accounts with their roles (direct and "via <group>"), grant and revoke a
+  role on a staff account or a group, and the access audit log with action, actor and date filters (superuser access
+  through the gate grouped per actor and day by default). A revoke refused by the lockout guard reads "At least one
+  person must keep access management". Staff accounts and groups are still created in Django admin.
+- Access → Applications: machine clients with their state, token count and legacy marker; an application page edits
+  its name, description and active state and manages its tokens — New token (scopes in two groups that never mix,
+  "reaches browsers" and "server-to-server only", an optional channel pin, an optional expiry — "No expiry" by
+  default for every token, no maximum lifetime: D31 replaced the 365-day cap), Rotate (0–168 hours of overlap), Set
+  expiry and Revoke (a publishable key warns that storefronts lose it at once). Legacy keys show their source and last
+  use and never expire by themselves; Set expiry gives them one. New boot `SecretReveal` shows a new token's value once (Copy, close after "I have stored
+  it", the value dropped on close and unmount) with a `/ui` cell.
+- Access → Applications: each token row shows its age and, when the API flags `rotation_due`, a "Rotation
+  recommended" badge whose tooltip names the catalogue's `token_rotation_days`; the New token dialog says tokens never
+  expire unless a date is set and how often to rotate.
+- Access strings complete in Polish and English, including a label for each of the 49 catalogue areas and 9 token
+  scopes (the role matrix and the token dialog no longer fall back to the catalogue's English); a unit test fails on
+  a missing key in either locale.
+- `docs/access.md`: the access store and `can()`, areas, the guard, 403 handling, read-only pages, the Access panel
+  and the SecretReveal rules.
+- e2e `access-users.spec.js` (admin, viewer, editor and customer each see what their roles allow; the gate refuses
+  the viewer's own write; three refusals on a page show one toast and refresh permissions once) and
+  `access-secret.spec.js` (a new token's value is in no console message, web storage, cookie, URL, page HTML or later
+  API response). Visual capture ids for six Access screens (baselines not approved yet).
+
+### Security
+
+- With `VUE_APP_DEBUG` on, the API client no longer logs the body of a request flagged `sensitive` or of its response
+  (`[redacted]`); every access token call carries the flag, so a created or rotated token's value never reaches the
+  console.
+
+### Removed
+
+- The dead role filter of `src/configs/access.js` (`grantAccess`, `routes`, `builderTypes`, the `access` arrays).
 ### Changed
 
 - Text fields show focus on the field itself: an accent border and a soft 2 px glow instead of a 2 px outline at a

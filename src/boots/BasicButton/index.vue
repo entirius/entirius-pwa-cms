@@ -1,5 +1,6 @@
 <template>
   <button
+    v-if="!hidden"
     :type="type"
     :disabled="isOff"
     :aria-busy="loading || undefined"
@@ -28,12 +29,17 @@
 // AuthLayout). `variant` is the role: primary, secondary, ghost,
 // danger (every delete/remove/reject), danger-solid (the destructive confirm in a dialog). The label is the default
 // slot; `icon` is a meaning of icons.js, drawn before the label; `loading` swaps the icon for a spinner and disables.
+// `mutates`: the button creates, changes or deletes something — a read-only page (useReadonly, plan 19) hides it.
 import { ICONS } from "@/boots/Icons/icons";
+import { useReadonly } from "@/composables/useReadonly";
 
 const VARIANTS = ["primary", "secondary", "ghost", "danger", "danger-solid"];
 
 export default {
   emits: ["click"],
+  setup() {
+    return { readonly: useReadonly() };
+  },
   props: {
     disabled: {
       type: Boolean,
@@ -72,8 +78,15 @@ export default {
       type: Boolean,
       default: true,
     },
+    mutates: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
+    hidden() {
+      return this.mutates && this.readonly;
+    },
     isOff() {
       return this.disabled || this.loading;
     },

@@ -148,22 +148,25 @@ and one meaning per glyph (unit test). A new meaning adds its glyph to `fa-icons
   (`--elem-height`) · `sm` (24 px) · `lg` (40 px at `radius-xl`, the sign-in screens; `primary` gets a soft top light on hover); label in the default slot; `icon` = a meaning of `icons.js`, drawn before the
   label (6 px gap); `loading` swaps the icon for a spinner, disables and sets `aria-busy`; `disabled`; `type`
   (`button` by default); without a `variant` it is `secondary`. The click stops at the button (`:stop="false"` lets
-  it through).
+  it through). `mutates`: the button creates, changes or deletes — a read-only page hides it (`docs/ui-rules.md` §
+  Page patterns).
 - **`IconButton`** — every icon-only action: `icon` (meaning, required), `label` (required: `aria-label` + `title`),
   `variant` `ghost` · `outline` · `primary` · `danger`, `size` `sm` 24 · `md` `--elem-height` · `lg` 40 (header,
   mobile menu, `--radius-xl`), `pressed` (a toggle: `aria-pressed`, `surface-hover` fill), `disabled` (the glyph
   turns `text-disabled` in every variant but `primary`: a disabled `primary` keeps its `text-on-accent-fill` glyph
   and the whole button fades, `opacity: 0.5`, as FloatingActions). `danger` is
   every icon-only delete or remove (C6). The click stops at the button by default (`:stop="false"` to opt out).
+  `mutates` (a row's delete, a remove): hidden on a read-only page; view and open actions leave it off.
   A back control: `<IconButton icon="back" :label="$t('common.back')" />`. On a phone
   the hit area grows to 40 × 40 around the box, the box keeps its size. `md` matches the text button, not Figma's
   32 px (KD23).
 - **`ActionBar`** — page and dialog actions in R5 order: `actions` = `[{ key, label, role, onClick, icon?,
-  disabled?, loading?, expanded?, form?, testid? }]` (`expanded` = `aria-expanded` of a button that shows a section;
+  disabled?, loading?, expanded?, form?, mutates?, testid? }]` (`expanded` = `aria-expanded` of a button that shows a section;
   `form` = the id of a form the header button submits from outside it — native checks, the form's submit handler,
   and Enter in a field presses it), `role` `utility` (an IconButton, `icon` required) · `secondary` · `danger` ·
   `primary` (one at most, a second warns in dev); extra controls go into the default slot, already in order.
   Right-aligned, gap 12 px (8 px on a phone); below 768 px it takes its own row: the label „Akcje” above the actions, left-aligned (Figma S7).
+  On a read-only page only the utilities stay, minus a `danger` one; `mutates` (true/false) overrides the role.
 - **`FloatingActions`** — FAB 44 px `accent-fill`, 24 px inset from 1024 px up; below it 16 px inset and 16 px above
   the tab bar, `data-fid="fab"`;
   `actions[].icon` and `pill.icon` take meanings (other names still pass through until the sweeps). `pill` =
@@ -237,7 +240,17 @@ Catalogue: `#actions` (`#basic-button`, `#icon-button`, `#action-bar`, `#floatin
   or HelpTooltip → `variant="help"`), imports dropped; flags a custom `#footer`, a missing title, a computed
   `is_wrapper` and attributes outside the map.
 
-Catalogue: `#overlays` (`#basic-modal`, `#confirm-dialog`, `#side-drawer`, `#translations-drawer`, `#basic-menu`,
+- **`SecretReveal`** (`src/boots/SecretReveal/`, access plan 22) — a value shown once (a new or rotated API token): on
+  BasicModal `md`; props `secret`, `title`, `open` (`v-model:open`), `inline` (catalogue). The value sits in a read-only
+  monospace field (`autocomplete="off"`, `spellcheck="false"`) under the warning "This value is shown once…"; Copy
+  uses `navigator.clipboard` and, without it, selects the text for a manual copy (a status line says which). Close
+  (and Esc, the backdrop, the close button) works only after "I have stored it" is ticked. The value is copied into
+  the boot's own state and `update:secret` hands the caller `""` at once — bind `v-model:secret` so the page drops its
+  copy; close and unmount clear it, and the field is emptied before the dialog leaves. Never pass the value to a toast,
+  a store, the router or a log. Test ids `secret-reveal-value` / `-copy` / `-stored` / `-close`. `tests/e2e/access-secret.spec.js`
+  proves a created token's value is nowhere after close (`docs/access.md` § Token values).
+
+Catalogue: `#overlays` (`#basic-modal`, `#confirm-dialog`, `#secret-reveal`, `#side-drawer`, `#translations-drawer`, `#basic-menu`,
 `#basic-tooltip`), plus buttons that open the real overlays.
 
 ### P3 display (plan 13)
@@ -297,6 +310,10 @@ Catalogue: `#display` (`#status-badge`, `#count-badge`, `#tag`, `#basic-tabs`, `
   the bordered page container (plan 25). `--fab-lane` (set on the layout: the FAB's width plus its gap below the shell
   breakpoint, 0 above) is the right padding a bottom-pinned row takes to keep the FAB's corner clear — the footer
   uses it, a view's own sticky bar reads it (`padding-right: var(--fab-lane, 0px)`) instead of copying the size.
+  It decides the page's read-only mode (`src/composables/useReadonly.js`) and provides it to the page; `readonly`
+  forces it on. A read-only page shows one notice line under the header; FloatingActions (but its back button) and
+  BulkActionBar render nothing and FormField disables its control — except in the toolbar and the PageHeader `meta`
+  (filters and the channel picker read; `ReadonlyOff` lifts the flag there).
 - **`PageHeader`** — `title` is the page's only `<h1>` (`.page-title`: Lexend Deca 30/400, 20 below tablet) in the
   title row (back, H1, meta: `data-fid="page-title"`, Figma's "Heading" frame); `overline` (Inter 13/500 uppercase, Home); `crumbs` `[{ label, to? }]` 24 px above the
   title row — omitted = the crumbs the shell provides (none without a shell), `[]` = none; `back` (a route location
@@ -408,7 +425,22 @@ Catalogue: `#selects` (`#basic-select`, `#entity-search-picker`, `#channel-multi
   `LockedField` are removed components (`removed-components/inputs.json`).
 
 Catalogue: `#inputs` (`#form-field`, `#basic-input`, `#basic-textarea`, `#number-input`, `#basic-checkbox`,
-`#basic-radio-group`, `#basic-switch`, `#segmented-control`, `#basic-date-picker`, `#color-input`, `#basic-wysiwyg`).
+`#basic-radio-group`, `#basic-switch`, `#segmented-control`, `#basic-date-picker`, `#color-input`, `#basic-wysiwyg`,
+`#permission-matrix`).
+
+### PermissionMatrix
+
+**`PermissionMatrix`** (`src/boots/PermissionMatrix/`, access plan 20) — the areas of the django-access catalogue ×
+none/read/write. Props: `areas` (the catalogue's `modules`: `[{ module, areas: [{ key, label, levels, sensitive,
+assignable }] }]`), `v-model` (`{ "<area>": "read" | "write" }`, no key = none), `disabled` (also on a read-only
+page), `showReserved` (renders the `assignable: false` areas — `access.manage` — for a built-in role's read-only
+view; a custom role never sees them). Each area is one native radio group named by its label; a level the area does
+not offer is disabled (struck through). Each module has a "set all" `SegmentedControl` that clamps per area (write
+on a read-only area = read, read on a write-only area = none) and never reaches a hidden area. Sensitivity flags
+are `Tag`s (`access.sensitive.<flag>`). Labels are text only: `access.areas.<key>` / `access.modules.<module>` when
+translated, else the catalogue's English label — every area of today's catalogue has both locales
+(`tests/unit/i18n/accessKeys.spec.js`). The rules are `matrix.js` (`toPermissionKeys` builds the API's
+`<area>:<level>` list from assignable areas only).
 
 ### P4 shell (plan 21)
 

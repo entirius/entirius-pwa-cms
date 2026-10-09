@@ -106,6 +106,7 @@ Traps:
 | text action · icon-only action · page or dialog actions | `BasicButton` · `IconButton` · `ActionBar` |
 | side panel · per-language editing | `SideDrawer` · `TranslationsDrawer` |
 | dialog · confirmation (yes/no, unsaved changes) | `BasicModal` · `ConfirmDialog` (`tone="danger"` for a delete) |
+| a secret shown once (a new API token) | `SecretReveal` (never a toast, a store, the router or a log) |
 | action menu or popover panel · a panel of text (configuration health) · floating action (+ labelled pill) | `BasicMenu` · `BasicMenu sheet` (a ≤ 32rem popover, a bottom sheet on a phone) · `FloatingActions` (`pill`) |
 | field hint next to a label · tooltip on a control | `FormField hint` + `hintLevel` (else `BasicTooltip variant="help"`) · `BasicTooltip` |
 
@@ -183,10 +184,24 @@ Traps:
 ## Page patterns
 
 - **Page frame.** Every view is one `PageLayout` (padding and scroll body): `#header` = the view's `PageHeader` (crumbs,
-  back, H1, `meta` chips, `actions`), a loader branch's condition on the slot; `#toolbar` = the search/filter row;
+  back, H1, `meta` chips, `actions`, `description` = the page's help line under the title row, never in `meta`), a
+  loader branch's condition on the slot; `#toolbar` = the search/filter row;
   `#footer` = the Pagination. Page actions are an `ActionBar` in PageHeader `actions` (R5); controls for the whole
   panel (a channel selector, „Tłumacz sklep”) sit in PageHeader `meta` or the ActionBar. A panel wrapper holds no
   toolbar strip and no teleport targets.
+- **Read-only page.** `PageLayout` decides it once (the route's `meta.area`, else the panel's first area, without
+  write in django-access `me`) and shows one notice line under the header. ActionBar keeps only its utilities (not a
+  `danger` one; an action's `mutates` true/false overrides its role), FloatingActions (but its back button) and
+  BulkActionBar are gone, and every control boot is disabled, in a FormField or not (a switch or select that saves on
+  change too). The PageLayout toolbar and the PageHeader `meta` (search, filters, the channel picker) stay enabled:
+  they read, never write. A control elsewhere that only reads or navigates (a search box in a card, a mode switch, a
+  list toggle) sits in `ReadonlyOff`. Any other button that creates, changes or deletes (a row's delete, an inline save) is a `BasicButton` or
+  `IconButton` with `mutates`; one whose POST only reads (a lookup, a preview, a validation) says `:mutates="false"`.
+  A `draggable`, a drop zone or a file input binds the flag itself (`:disabled="readonly"`, `v-if="!readonly"`; a view
+  reads its own page's flag with `usePageReadonly()`, a component inside the page with `useReadonly()`). A tab that
+  embeds another panel's screen (a product's prices, stock, supplier) sits in `ReadonlyArea :area` and is shown only
+  when that area is readable. `npm run audit:readonly` (part of `lint:ui`) fails on a write control the mode does not
+  reach. A view never checks write permission itself for this; `:readonly` on PageLayout forces it on, never off.
 - **Floating action.** `FloatingActions` sits 24 px from the bottom-right corner beside the sidebar (Figma S4) and
   16 px from the edge above the tab bar below 1024 px; a view never moves it. Bottom-pinned rows (the PageLayout
   footer, a sticky decision bar) keep the FAB's corner clear through `--fab-lane`.
@@ -217,7 +232,8 @@ Traps:
   which only `BasicCard` renders. A page is no card (R4). A view never sets its own card padding, border or radius.
 - **Dialogs.** Build on `BasicModal` (`size` sm · md · lg) or `ConfirmDialog`, never an overlay of the view's own:
   they trap focus, close on Esc and give focus back, and turn into a bottom sheet on a phone. Actions go in the
-  footer as an `ActionBar` (R5). A dialog with an async action closes on success and on error.
+  footer as an `ActionBar` (R5). A dialog with an async action closes on success and on error — but a refusal that
+  names one of its fields (a create dialog's 400 or 409) keeps it open with the error on that field.
 - **Locked / system entity.** Show a notice bar at the top. Pass `disabled` to each boot (or to the `FormField`), or
   show the value as `BasicInput readonly`. Disabled controls share one look (`--surface-disabled`, `--border-subtle`,
   muted text).

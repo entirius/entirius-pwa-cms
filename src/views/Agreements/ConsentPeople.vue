@@ -27,13 +27,15 @@
         aria-labelledby="consent-people-tab-people"
       >
         <div class="flex ai-ct gap-8 mb-10">
-          <BasicInput
-            v-model="search"
-            :placeholder="$t('agm.search_by_email')"
-            icon="search"
-            class="consent-people__search"
-            @input="debouncedFetch(searchAndFetch)"
-          />
+          <ReadonlyOff>
+            <BasicInput
+              v-model="search"
+              :placeholder="$t('agm.search_by_email')"
+              icon="search"
+              class="consent-people__search"
+              @input="debouncedFetch(searchAndFetch)"
+            />
+          </ReadonlyOff>
         </div>
 
         <Loader block v-show="loading" />
@@ -114,9 +116,11 @@ import {
   GET_MarketingSubscribersExport,
 } from "@/api/agreements/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { ReadonlyOff } from "@/composables/useReadonly";
 
 export default {
   name: "ConsentPeople",
+  components: { ReadonlyOff },
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();

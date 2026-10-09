@@ -29,6 +29,7 @@
       <template v-if="!loading">
         <draggable
           v-model="navigationItems"
+          :disabled="readonly"
           item-key="id"
           handle=".handle"
           ghost-class="bg-accent-subtle"
@@ -148,6 +149,7 @@
                            never starts a native HTML5 drag from. -->
                       <draggable
                         v-model="col.links"
+                        :disabled="readonly"
                         item-key="id"
                         handle=".link-handle"
                         ghost-class="bg-accent-subtle"
@@ -315,6 +317,7 @@ import EditMenuItemModal from "@/functionals/EditMenuItemModal.vue";
 import EditLinkModal from "@/functionals/EditLinkModal.vue";
 import EditBannerModal from "@/functionals/EditBannerModal.vue";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { usePageReadonly } from "@/composables/useReadonly";
 
 function uuid() {
   return crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Date.now().toString(36);
@@ -328,7 +331,7 @@ export default {
     const notify = useNotifyStore();
     const contentDBChannelStore = useContentDBChannelStore();
     const pimChannelStore = usePimChannelStore();
-    return { loader, notify, contentDBChannelStore, pimChannelStore };
+    return { loader, notify, contentDBChannelStore, pimChannelStore, readonly: usePageReadonly() };
   },
   data() {
     return {

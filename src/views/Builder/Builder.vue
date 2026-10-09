@@ -846,10 +846,13 @@
 </template>
 
 <script>
+import { computed } from "vue";
 import { cloneDeep } from "lodash";
 import { useNotifyStore } from "@/stores/notify";
 import { useUserStore } from "@/stores/user";
 import { useHandyStore } from "@/stores/handy";
+import { useAccessStore } from "@/stores/access";
+import { AREAS } from "@/configs/areas";
 import { v4 as uuidv4 } from "uuid";
 
 import { _METHOD_content, GET_Authors, GET_ContentTypes } from "@/api/contentDB/api";
@@ -884,7 +887,10 @@ export default {
     const contentDBChannel = useContentDBChannelStore();
     // Below tablet the tile row scrolls natively (a real sideways scroller); wider screens keep Swiper's drag.
     const belowTablet = useMediaQuery(MAX_TABLET_QUERY);
-    return { notify, userStore, handy, ...unsaved, contentDBChannel, belowTablet };
+    // Publishing is its own area: a role that edits pages but does not publish keeps the draft only. UX only.
+    const access = useAccessStore();
+    const canPublish = computed(() => access.can(AREAS.CONTENT_PUBLISH, "write"));
+    return { notify, userStore, handy, ...unsaved, contentDBChannel, belowTablet, canPublish };
   },
   computed: {
     authorFields() {
@@ -941,9 +947,9 @@ export default {
           : []),
         { key: "draft", role: "secondary", icon: "saveDraft", onClick: this.saveDraft,
           label: this.uid ? this.$t("builder.save_draw") : this.$t("builder.post_draw") },
-        { key: "publish", role: "primary", icon: "publish", onClick: this.saveAndPublish,
+        this.canPublish && { key: "publish", role: "primary", icon: "publish", onClick: this.saveAndPublish,
           label: this.$t("builder.publish_document"), disabled: !this.uid },
-      ];
+      ].filter(Boolean);
     },
     // R6, R7: the section order is an important action, so it gets a visible label next to the FAB.
     orderPill() {

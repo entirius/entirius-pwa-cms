@@ -30,7 +30,7 @@
           </div>
           <div class="flex-column gap-5">
             <div class="supplier-action">
-              <BasicButton
+              <BasicButton mutates
                 variant="secondary"
                 :disabled="repushing"
                 data-test="supplier-force-repush"
@@ -43,7 +43,7 @@
               </span>
             </div>
             <div class="supplier-action">
-              <BasicButton
+              <BasicButton mutates
                 variant="secondary"
                 :disabled="acknowledging || unseenCount === 0"
                 data-test="supplier-acknowledge"
@@ -68,7 +68,7 @@
               </span>
             </div>
             <div class="supplier-action">
-              <BasicButton
+              <BasicButton mutates
                 variant="secondary"
                 :disabled="resetting"
                 data-test="supplier-reset-auto"
