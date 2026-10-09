@@ -84,6 +84,15 @@ const hasFooter = () => hasSlotContent(slots.footer?.());
   color: var(--text-body);
 }
 
+// On a phone the search (the first control of a view's toolbar row) takes the whole row and the filters line up under
+// it, instead of wrapping wherever each view's own search width runs out.
+@include max-tablet {
+  .page-layout__toolbar > :deep(* > .input-basic-wrapper:first-child) {
+    flex: 1 1 100%;
+    max-width: none;
+  }
+}
+
 .page-layout__body {
   min-width: 0;
 }

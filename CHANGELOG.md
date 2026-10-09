@@ -56,6 +56,21 @@ All notable changes to this project will be documented in this file.
 ### Removed
 
 - The dead role filter of `src/configs/access.js` (`grantAccess`, `routes`, `builderTypes`, the `access` arrays).
+### Changed
+
+- Text fields show focus on the field itself: an accent border and a soft 2 px glow instead of a 2 px outline at a
+  2 px offset; the sign-in screen's 8 px halo is gone. Buttons, tabs and links keep the outline.
+
+## [3.1.1] (2026-10-01)
+
+Phone layout fixes (Android report).
+
+### Fixed
+
+- The bottom tab bar no longer disappears under Android's system bar: the app fills the visible viewport (`100dvh`)
+  instead of the browser's largest one.
+- PIM page headers on a phone keep the title, the channel select and the translate button on one line.
+- List toolbars on a phone: the search takes its own row and the filters line up under it.
 
 ## [3.1.0] (2026-09-30)
 
