@@ -18,7 +18,7 @@
         <StatusBadge tone="info" size="sm" :dot="false" :label="sendStateLabel(row.state)" data-testid="scheduled-state" />
       </template>
       <template #cell-action="{ row }">
-        <BasicButton v-if="row.movable" size="sm" data-testid="scheduled-send-now" @click="sendNow(row)">
+        <BasicButton mutates v-if="row.movable" size="sm" data-testid="scheduled-send-now" @click="sendNow(row)">
           {{ $t("communicator.scheduled.send_now") }}
         </BasicButton>
         <span v-else class="t-muted" data-testid="scheduled-asap">{{ $t("communicator.scheduled.asap") }}</span>

@@ -57,13 +57,13 @@
           {{ $t("promo.bulk_selected", { n: selectionCount }) }}
         </span>
         <div class="promo-list__bulk-actions">
-          <BasicButton variant="secondary" @click="startBulk('activate')">
+          <BasicButton mutates variant="secondary" @click="startBulk('activate')">
             {{ $t('promo.bulk_activate') }}
           </BasicButton>
-          <BasicButton variant="secondary" @click="startBulk('deactivate')">
+          <BasicButton mutates variant="secondary" @click="startBulk('deactivate')">
             {{ $t('promo.bulk_deactivate') }}
           </BasicButton>
-          <BasicButton variant="danger" @click="startBulk('delete')">
+          <BasicButton mutates variant="danger" @click="startBulk('delete')">
             {{ $t('promo.bulk_delete') }}
           </BasicButton>
           <BasicButton variant="secondary" @click="clearSelection">

@@ -18,7 +18,11 @@ vi.mock("@/api/contentDB/api", () => ({
 }));
 vi.mock("vue-router", () => ({
   useRoute: () => ({ path: "/pages/content", meta: { panel: "pages" }, params: {}, query: {}, matched: [] }),
-  useRouter: () => ({ resolve: (to) => ({ path: typeof to === "string" ? to : to.path }) }),
+  useRouter: () => ({
+    resolve: (to) => ({ path: typeof to === "string" ? to : to.path }),
+    currentRoute: { value: { path: "/", query: {}, hash: "" } },
+    replace: async () => {},
+  }),
 }));
 vi.mock("@/api/munin/api", () => ({
   GET_Modules: async () => ({ data: { modules: {} } }),

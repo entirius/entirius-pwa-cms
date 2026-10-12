@@ -1,6 +1,10 @@
 import { describe, it, expect, vi } from "vitest";
 import { mount } from "@vue/test-utils";
 
+// django-access is not under test here: allow-all, as without the module.
+vi.mock("@/stores/access", () => ({
+  useAccessStore: () => ({ can: () => true, canAny: () => true, ensureLoaded: () => Promise.resolve(), available: false, isStaff: true }),
+}));
 vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isPanelEnabled: (idx) => idx !== "pim" }) }));
 vi.mock("@/stores/user", () => ({ useUserStore: () => ({ user: { first_name: "Ada" } }) }));
 

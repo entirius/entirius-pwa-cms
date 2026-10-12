@@ -23,6 +23,7 @@ vi.mock("@/stores/pimChannel", () => ({
   usePimChannelStore: () => ({ activeChannelIdx: "default", channels: [], activeChannelLanguages: ["pl"] }),
 }));
 vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isPanelEnabled: () => false }) }));
+vi.mock("@/stores/access", () => ({ useAccessStore: () => ({ can: () => true }) }));
 vi.mock("@/composables/useUnsavedChanges", () => ({
   useUnsavedChanges: () => ({ isDirty: false, pendingNav: null, snapshot() {}, track() {} }),
 }));

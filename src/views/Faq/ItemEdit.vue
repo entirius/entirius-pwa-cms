@@ -197,7 +197,7 @@
             />
           </div>
           <div v-if="associationsDirty" class="flex jc-fe mt-5">
-            <BasicButton
+            <BasicButton mutates
               variant="secondary"
               @click="saveAssociations"
             >

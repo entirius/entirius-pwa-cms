@@ -88,6 +88,16 @@
         />
       </div>
     </CatalogueCell>
+
+    <h3 id="readonly-mode" class="fs-500 mb-4 mt-10">Read-only mode</h3>
+    <div class="actions-grid actions-grid--wide grid gap-3">
+      <CatalogueCell id="readonly-mode-off" label="writable page: every action, FAB, enabled field">
+        <ReadonlyDemo />
+      </CatalogueCell>
+      <CatalogueCell id="readonly-mode-on" label="read-only page: utility only, no FAB, disabled field">
+        <ReadonlyDemo initial />
+      </CatalogueCell>
+    </div>
   </CatalogueSection>
 </template>
 
@@ -97,6 +107,7 @@
 // transformed frame, which holds their `position: fixed` inside the cell.
 import CatalogueSection from "../CatalogueSection.vue";
 import CatalogueCell from "../CatalogueCell.vue";
+import ReadonlyDemo from "../ReadonlyDemo.vue";
 
 const BUTTONS = {
   primary: { text: "Zapisz i publikuj", icon: "publish" },

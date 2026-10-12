@@ -60,7 +60,7 @@
             >
               {{ $t("common.edit") }}
             </BasicButton>
-            <BasicButton
+            <BasicButton :mutates="false"
               size="sm"
               :data-testid="`mapping-validate-${profile.idx}`"
               @click="validateProfile(profile)"

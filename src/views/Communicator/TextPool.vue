@@ -28,7 +28,7 @@
           </template>
           <template v-else>
             <StatusBadge tone="neutral" size="sm" :dot="false" :label="$t('communicator.pool.inactive')" />
-            <BasicButton size="sm" data-testid="pool-text-restore" @click="restore(text)">{{ $t("communicator.pool.restore") }}</BasicButton>
+            <BasicButton mutates size="sm" data-testid="pool-text-restore" @click="restore(text)">{{ $t("communicator.pool.restore") }}</BasicButton>
           </template>
         </template>
       </li>

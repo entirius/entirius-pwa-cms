@@ -16,14 +16,16 @@
         </BasicButton>
         <label class="companies__search">
           <span class="visually-hidden">{{ $t("leads.board.search") }}</span>
-          <BasicInput
-            v-model="search"
-            type="search"
-            icon="search"
-            :placeholder="$t('leads.board.search')"
-            data-testid="companies-search"
-            @on-key-down="load()"
-          />
+          <ReadonlyOff>
+            <BasicInput
+              v-model="search"
+              type="search"
+              icon="search"
+              :placeholder="$t('leads.board.search')"
+              data-testid="companies-search"
+              @on-key-down="load()"
+            />
+          </ReadonlyOff>
         </label>
       </div>
       <EmptyState
@@ -62,6 +64,7 @@ import PageLayout from "@/boots/PageLayout/index.vue";
 import { t } from "@/i18n";
 import { GET_Companies } from "@/api/leads/api";
 import { formatTime } from "@/utils/leadsTime";
+import { ReadonlyOff } from "@/composables/useReadonly";
 
 // Company list that works below 1024 px: the Leads entry when communicator (the Inbox) is absent, else the
 // Companies side of the Inbox column (`embedded`), next to the card it opened.

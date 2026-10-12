@@ -1,12 +1,14 @@
 <template>
   <div class="flex ai-ct wrap gap-3">
-    <BasicSelect
-      :floating-label="$t('stock.warehouse')"
-      :model-value="warehouse?.code ?? null"
-      :options="options"
-      class="stock-picker__select"
-      @update:model-value="selectWarehouse"
-    />
+    <ReadonlyOff>
+      <BasicSelect
+        :floating-label="$t('stock.warehouse')"
+        :model-value="warehouse?.code ?? null"
+        :options="options"
+        class="stock-picker__select"
+        @update:model-value="selectWarehouse"
+      />
+    </ReadonlyOff>
     <StatusBadge
       v-if="warehouse"
       :label="isManual ? $t('stock.source_manual') : $t('stock.source_integration')"
@@ -19,10 +21,12 @@
 </template>
 
 <script>
+import { ReadonlyOff } from "@/composables/useReadonly";
 // The panel-wide warehouse choice (P5 page frame: a control for the whole panel leads the PageHeader actions row).
 // The Stock panel wrapper owns the warehouses and the active one; this picker only shows and changes them.
 export default {
   name: "StockWarehousePicker",
+  components: { ReadonlyOff },
   inject: ["activeWarehouse", "stockWarehouses", "selectWarehouse"],
   computed: {
     warehouse() {

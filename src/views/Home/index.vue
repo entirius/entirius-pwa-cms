@@ -5,6 +5,7 @@
       <template #header>
         <PageHeader :overline="greeting" :title="$t('panels.choose_panel')" />
       </template>
+      <AccessNotices />
       <div class="home__grid">
         <PanelCard
           v-for="(panel, index) in panels"
@@ -24,12 +25,14 @@
 
 <script setup>
 // Home (Figma S1/S2): the greeting overline and the title in PageHeader, then one PanelCard per panel of the nav
-// model (registry order × Munin; locked panels dimmed, or hidden by VUE_APP_HIDE_DISABLED_PANELS).
+// model (registry order × Munin; locked panels dimmed, or hidden by VUE_APP_HIDE_DISABLED_PANELS; panels the user
+// cannot read are not there). The access notices sit above the grid.
 import { computed } from "vue";
 import { useUserStore } from "@/stores/user";
 import { usePanels } from "@/composables/useNav";
 import { t } from "@/i18n";
 import HomeGlow from "./HomeGlow.vue";
+import AccessNotices from "@/components/Access/AccessNotices.vue";
 
 // Figma's panel-card landmark is the first card.
 const landmarkOf = (index) => (index === 0 ? "panel-card" : undefined);

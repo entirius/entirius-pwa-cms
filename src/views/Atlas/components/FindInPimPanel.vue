@@ -3,14 +3,16 @@
     class="find-in-pim-panel p-8 b-subtle bb-100"
     data-testid="find-in-pim-panel"
   >
-    <DedupSearchBox
-      :scope="['pim_product']"
-      :initial-query="initialQuery"
-      :image-url="imageUrl"
-      inline
-      data-testid="find-in-pim-box"
-      @results="onResults"
-    />
+    <ReadonlyOff>
+      <DedupSearchBox
+        :scope="['pim_product']"
+        :initial-query="initialQuery"
+        :image-url="imageUrl"
+        inline
+        data-testid="find-in-pim-box"
+        @results="onResults"
+      />
+    </ReadonlyOff>
 
     <div class="find-in-pim-panel__results mt-8">
       <CandidateRow
@@ -19,7 +21,7 @@
         :hit="hit"
       >
         <template #actions>
-          <IconButton
+          <IconButton mutates
             icon="link"
             size="sm"
             :disabled="linkingSku === hit.basic?.sku"
@@ -53,7 +55,7 @@
             :hit="hit"
           >
             <template #actions>
-              <IconButton
+              <IconButton mutates
                 icon="link"
                 size="sm"
                 :disabled="linkingSku === hit.basic?.sku"
@@ -76,10 +78,11 @@ import { extractApiMessage } from "@/composables/useFormErrors";
 import { useNotifyStore } from "@/stores/notify";
 import { POST_LinkToRealProduct } from "@/api/atlas/api";
 import { groupHits } from "@/utils/lookupMatch";
+import { ReadonlyOff } from "@/composables/useReadonly";
 
 export default {
   name: "FindInPimPanel",
-  components: { DedupSearchBox, CandidateRow },
+  components: { ReadonlyOff, DedupSearchBox, CandidateRow },
   props: {
     // The SourceProduct being matched — the link endpoint addresses it by pk.
     productId: { type: [Number, String], required: true },

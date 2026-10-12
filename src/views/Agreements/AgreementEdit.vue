@@ -118,7 +118,7 @@
               <BasicButton variant="secondary" @click="cancelVersionForm">
                 {{ $t('common.cancel') }}
               </BasicButton>
-              <BasicButton variant="secondary" @click="createVersion">
+              <BasicButton mutates variant="secondary" @click="createVersion">
                 {{ $t('agm.create_version') }}
               </BasicButton>
             </div>
@@ -132,7 +132,7 @@
           >
             <template #cell-version_number="{ value }">v{{ value }}</template>
             <template #cell-summary_en="{ value }">
-              <span v-html="value || '—'" />
+              <span v-html="sanitizeHtml(value) || '—'" />
             </template>
             <template #cell-published_at="{ value }">
               <StatusBadge
@@ -156,7 +156,7 @@
                 size="sm"
                 @click="startEditPublished(row)"
               />
-              <BasicButton
+              <BasicButton mutates
                 v-if="!row.published_at"
                 variant="secondary"
                 size="sm"
@@ -182,7 +182,7 @@
               <BasicButton variant="secondary" @click="cancelEditVersion">
                 {{ $t('common.cancel') }}
               </BasicButton>
-              <BasicButton variant="secondary" @click="saveDraftVersion(editingVersion.id)">
+              <BasicButton mutates variant="secondary" @click="saveDraftVersion(editingVersion.id)">
                 {{ $t('common.save') }}
               </BasicButton>
             </div>
@@ -242,7 +242,7 @@
                 />
               </template>
               <template #expand="{ row }">
-                <div class="legal-text-preview" v-html="row.text_html" />
+                <div class="legal-text-preview" v-html="sanitizeHtml(row.text_html)" />
               </template>
             </DataTable>
           </template>
@@ -291,6 +291,7 @@ import {
 } from "@/api/agreements/api";
 import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
 import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
+import { sanitizeHtml } from "@/utils/sanitizeHtml";
 
 export default {
   name: "AgreementEdit",
@@ -443,6 +444,7 @@ export default {
     },
   },
   methods: {
+    sanitizeHtml,
     fieldError(field) {
       return this.formErrors.getFieldError(field)?.msg || "";
     },

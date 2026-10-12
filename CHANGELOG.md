@@ -2,7 +2,124 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [3.2.0] (2026-10-12)
+
+### Added
+
+- django-access awareness: the CMS loads `GET /api/access/v2/me/` at login and on a cold load (memory only) and
+  hides panels and nav entries the user cannot read; a deep link to a refused panel goes to Home with a notice.
+  Routes carry `meta.area`, panels `areas` (`docs/panels-routing.md`). Without the access module nothing changes;
+  with it installed and `me` failing, area-gated panels stay hidden and Home offers Retry.
+- One standard toast for an access-gate 403 (one per burst) and one `me` refresh at most every 5 s.
+- A customer (non-staff) account sees "No access to the admin panel" with Log out instead of an empty shell.
+- Access managers see a Home warning while the gate is not in `enforce` mode.
+- Content create follows `content.pages:write` when django-access is installed.
+- Read-only mode: a page the user can read but not write shows no Save, Delete, create, FAB or bulk actions, its
+  form fields are disabled and one line says why. Decided once in `PageLayout` from the route's area; `BasicButton`
+  and `IconButton` take `mutates` for the other writing buttons. `scripts/audit/readonly.mjs` lists the writing
+  buttons the mode does not reach (Pages, PIM, FAQ, Pricing and Forms are clean).
+- The PIM product Delete shows only with `pim.product_delete:write`.
+- Access panel (munin key `access`, needs `access.manage` read): Roles lists the built-in and custom roles; a role
+  page edits a custom role's name, description and permissions, and opens a built-in read-only with Duplicate. A
+  custom role never offers `access.manage` (built-in Administrator only). New boot `PermissionMatrix` with a `/ui`
+  cell.
+- Access → Staff, Groups and Audit: staff accounts with their roles (direct and "via <group>"), grant and revoke a
+  role on a staff account or a group, and the access audit log with action, actor and date filters (superuser access
+  through the gate grouped per actor and day by default). A revoke refused by the lockout guard reads "At least one
+  person must keep access management". Staff accounts and groups are still created in Django admin.
+- Access → Applications: machine clients with their state, token count and legacy marker; an application page edits
+  its name, description and active state and manages its tokens — New token (scopes in two groups that never mix,
+  "reaches browsers" and "server-to-server only", an optional channel pin, an optional expiry — "No expiry" by
+  default for every token, no maximum lifetime: D31 replaced the 365-day cap), Rotate (0–168 hours of overlap), Set
+  expiry and Revoke (a publishable key warns that storefronts lose it at once). Legacy keys show their source and last
+  use and never expire by themselves; Set expiry gives them one. New boot `SecretReveal` shows a new token's value once (Copy, close after "I have stored
+  it", the value dropped on close and unmount) with a `/ui` cell.
+- Access → Applications: each token row shows its age and, when the API flags `rotation_due`, a "Rotation
+  recommended" badge whose tooltip names the catalogue's `token_rotation_days`; the New token dialog says tokens never
+  expire unless a date is set and how often to rotate.
+- Access strings complete in Polish and English, including a label for each of the 49 catalogue areas and 9 token
+  scopes (the role matrix and the token dialog no longer fall back to the catalogue's English); a unit test fails on
+  a missing key in either locale.
+- `docs/access.md`: the access store and `can()`, areas, the guard, 403 handling, read-only pages, the Access panel
+  and the SecretReveal rules.
+- e2e `access-users.spec.js` (admin, viewer, editor and customer each see what their roles allow; the gate refuses
+  the viewer's own write; three refusals on a page show one toast and refresh permissions once) and
+  `access-secret.spec.js` (a new token's value is in no console message, web storage, cookie, URL, page HTML or later
+  API response). Visual capture ids for six Access screens (baselines not approved yet).
+
+- AI actions follow the AI toolbox state from one place (`configHealth.aiState` / `aiUsable`): a toolbox switched
+  off on purpose (`disabled`) is a calm state, listed as "switched off" in the configuration-health panel with no
+  header warning; `disabled` and `unconfigured` turn off Rewrite in Review, Estimate in the translate dialog and an AI
+  template's model list and test generate; `unreachable` keeps them on and warns. One shared hint per state
+  (`AiToolboxHint`) on Review, the company card and thread, the Communicate dialog, an AI template and the translate
+  dialog. A user who cannot read configuration health gets the state from the public module registry
+  (`platform.toolbox.state`); against a django-munin without it nothing changes.
+- Docs capture project `tests/docs/`: documentation screenshots from the live, seeded stack in English and the dark
+  theme at 1280 × 800, as a page or an element crop with optional numbered callouts (`guide`, `goto`, `shot` in
+  `tests/docs/support/capture.js`, one spec per guide, `docs/testing.md` § Docs captures). The visual harness exports
+  `pinPreferences` and its read-only waits for it; its behaviour is unchanged.
+- Docs capture specs for five CMS guides (`sign-in`, `products`, `content-pages`, `blog-posts`, `navigation`):
+  23 screenshots, each list shot guarded against rows the seed did not create, every created record deleted again.
+- Docs capture specs for five more CMS guides (`attributes`, `categories`, `media`, `duplicates`, `orders`):
+  19 screenshots. `duplicates` never confirms a merge; `orders` places one guest order on the storefront per run.
+- Docs captures: the `leads` guide (a CSV import to an answered mail, seven shots) and the `translations` guide
+  (Translate Store, its estimate and the job list, three shots), with an IMAP append helper for the mail sandbox
+  (`docs/testing.md`).
+
+### Security
+
+- With `VUE_APP_DEBUG` on, the API client no longer logs the body of a request flagged `sensitive` or of its response
+  (`[redacted]`); every access token call carries the flag, so a created or rotated token's value never reaches the
+  console.
+- Stored HTML is cleaned where it is rendered: the page builder's rich-text previews and the legal texts of the
+  Agreements panel go through `sanitizeHtml` (`src/utils/sanitizeHtml.js`, DOMPurify with the allowlist of the
+  rich-text editor), so markup saved through the API cannot run script in a staff session. A unit test fails on a
+  `v-html` that skips the helper.
+- The session cookies (access and refresh token included) are set with `SameSite=Strict`, and with `Secure` when the
+  CMS is served over https.
+- A URL from the server (a supplier's product or image page, a meeting link, an enrichment subject, a
+  configuration-health fix link, a product video) is bound to `href` only as http, https or mailto (`safeHref`,
+  `src/utils/safeHref.js`); every link that opens a new tab carries `rel="noopener noreferrer"`.
+- A production build ships no source maps and fails when `VUE_APP_USERNAME` or `VUE_APP_PASSWORD` is set; the login
+  wall and the runtime env check read the pair in development only (before, debug mode prefilled it in production
+  too). Keep the pair in `.env.development.local`.
+- With `VUE_APP_DEBUG` on, the login call is logged as `[redacted]`: neither the password nor the answered token
+  pair reaches the console.
+- The visual and docs capture projects refuse a `CMS_BASE_URL` or `CMS_API_URL` that is not a loopback host unless
+  `CMS_ALLOW_REMOTE=1` is set: they log in with real credentials and the docs captures write (`docs/testing.md`).
+
+### Removed
+
+- The dead role filter of `src/configs/access.js` (`grantAccess`, `routes`, `builderTypes`, the `access` arrays).
+
+### Fixed
+
+- Page titles stay on one line everywhere: a title longer than its row ends with an ellipsis and keeps the full
+  text in its `title` attribute, and the chips beside it wrap under it. A long product name used to break inside
+  words in a narrow column.
+- Access → Audit: with "Group superuser access by day" on, the list shows one row per actor and day for the whole
+  log and the pager counts those rows. The rows were folded in the browser, page by page, so a superuser with many
+  writes filled every page with one row. The list now asks the API to fold (`fold_bypass`); a folded row loads its
+  requests when expanded (the first 50, with a "Showing 50 of N" line). Against an access version without the
+  parameter the rows show unfolded.
+- Dates and the date picker follow the UI language: order and promotion dates, the page list's "updated" column and
+  the calendar's month and weekday names were Polish (or a mix) in the English UI. `formatDate` formats in the
+  locale of the UI language (`uiLocale()` in `src/i18n`), no longer in the browser's.
+
+### Changed
+
+- Page builder: the section list reads like the page. A tile card previews its tile (image across the card, title,
+  text excerpt) and a few tiles share the section width; sections narrower than `full_width` are inset. A section
+  keeps its own zone (type, tile count and uid as a slim bar, its title as a heading, its other content) above the
+  tiles tray. Section and tile types show the names of the type picker. A click on a preview opens its editor.
+  Tiles are reordered by dragging them in their row, sections by dragging them up and down (the order kit stays);
+  "+" between two sections adds a section there, a dashed card at the end of a row adds a tile. A section that
+  takes no tiles says so. The tile row is no longer a Swiper.
+- Content list: a search box narrows every document list by name (`name=` of the content API).
+- Visual harness: `CMS_LANG` (default `PL`) and `CMS_LOCALE` (default `pl-PL`) select the pinned UI language and the
+  browser locale; unset, every committed baseline is unchanged. `lang.spec.js` (`@lang`) proves the mode that is set.
+- Text fields show focus on the field itself: an accent border and a soft 2 px glow instead of a 2 px outline at a
+  2 px offset; the sign-in screen's 8 px halo is gone. Buttons, tabs and links keep the outline.
 
 ## [3.1.1] (2026-10-01)
 

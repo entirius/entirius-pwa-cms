@@ -32,6 +32,7 @@
         <draggable
           v-else
           v-model="groups"
+          :disabled="readonly"
           item-key="id"
           handle=".drag-handle"
           ghost-class="bg-accent-subtle"
@@ -96,6 +97,7 @@
 
 <script>
 import draggable from "vuedraggable";
+import { usePageReadonly } from "@/composables/useReadonly";
 import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { useSearchDebounce } from "@/composables/useSearchDebounce";
@@ -113,7 +115,7 @@ export default {
     const loader = useLoaderStore();
     const notify = useNotifyStore();
     const { search, debouncedFetch } = useSearchDebounce();
-    return { loader, notify, search, debouncedFetch };
+    return { loader, notify, search, debouncedFetch, readonly: usePageReadonly() };
   },
   data() {
     return {

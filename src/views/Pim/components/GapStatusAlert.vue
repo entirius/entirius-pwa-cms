@@ -9,7 +9,7 @@
       <FontAwesomeIcon :icon="$icons.warning" class="gap-status-alert__icon" />
       <span>{{ $t("pim.gaps_rules_changed_alert", { date: changedAt }) }}</span>
     </div>
-    <BasicButton
+    <BasicButton mutates
       :disabled="recomputing"
       variant="primary"
       data-test="gap-recompute-btn"

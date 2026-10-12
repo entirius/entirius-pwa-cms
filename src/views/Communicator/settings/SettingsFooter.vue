@@ -4,14 +4,16 @@
       <p class="t-muted m-0">{{ $t("communicator.footer.help") }}</p>
       <p v-if="loadError" class="t-muted m-0" role="status" data-testid="footer-load-error">{{ $t("communicator.footer.load_error") }}</p>
       <!-- a save or remove in flight is bound to its language: the switch waits for it -->
-      <SegmentedControl
-        v-if="languages.length > 1"
-        :model-value="language"
-        :options="languageOptions"
-        :disabled="busy"
-        :aria-label="$t('communicator.template.language')"
-        @update:model-value="pickLanguage"
-      />
+      <ReadonlyOff>
+        <SegmentedControl
+          v-if="languages.length > 1"
+          :model-value="language"
+          :options="languageOptions"
+          :disabled="busy"
+          :aria-label="$t('communicator.template.language')"
+          @update:model-value="pickLanguage"
+        />
+      </ReadonlyOff>
       <FormField :label="$t('communicator.footer.html', { language: language.toUpperCase() })">
         <BasicTextarea v-model="html" :maxlength="20000" :rows="8" :placeholder="$t('communicator.footer.placeholder')" data-testid="footer-html" />
       </FormField>
@@ -58,6 +60,7 @@ import { t } from "@/i18n";
 import { DELETE_Footer, GET_Footers, GET_Templates, PUT_Footer } from "@/api/communicator/api";
 import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
 import { useNotifyStore } from "@/stores/notify";
+import { ReadonlyOff } from "@/composables/useReadonly";
 
 // One mail footer per language (UX-007): the channel's HTML block — signature, logo, company data — around the legal
 // text of the contact's legal basis, which agreements supply at send time as `{{ legal }}`. The server sanitises on

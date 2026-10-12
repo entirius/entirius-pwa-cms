@@ -26,6 +26,14 @@
           </div>
         </div>
         <div class="content-list__controls">
+          <BasicInput
+            v-model="search"
+            :placeholder="$t('builder.search_documents')"
+            icon="search"
+            class="content-list__search"
+            data-testid="content-list-search"
+            @input="debouncedFetch(() => init({}))"
+          />
           <BasicButton v-if="translatorAvailable" variant="secondary" @click="showTranslateModal = true">
             {{ $t("builder.translate_all") }}
           </BasicButton>
@@ -72,8 +80,7 @@
           </template>
 
           <template #cell-updated_at="{ value }">
-            {{ new Date(value).toLocaleDateString("en") }}
-            {{ new Date(value).toLocaleTimeString("pl") }}
+            {{ formatDate(value) }}
           </template>
 
           <template #cell-status="{ row }">
@@ -120,8 +127,8 @@
     <EmptyState
       v-if="contentTypes !== null && !hasVisibleContent"
       icon="empty"
-      :title="$t('builder.no_content_title')"
-      :message="$t('builder.no_content_msg')"
+      :title="searchName ? $t('builder.no_search_results') : $t('builder.no_content_title')"
+      :message="searchName ? '' : $t('builder.no_content_msg')"
     />
 
     <ConfirmDialog
@@ -161,6 +168,9 @@ import { useNotifyStore } from "@/stores/notify";
 import { useUserStore } from "@/stores/user";
 import { useContentDBChannelStore } from "@/stores/contentDBChannel";
 import { useMuninStore } from "@/stores/munin";
+import { useAccessStore } from "@/stores/access";
+import { AREAS } from "@/configs/areas";
+import { useSearchDebounce } from "@/composables/useSearchDebounce";
 import config_options from "@/../__client/configs/__config_options";
 
 const section_options = (value, look_for = null) => {
@@ -171,6 +181,7 @@ const section_options = (value, look_for = null) => {
 
 import TranslateDialog from "@/components/TranslateDialog/index.vue";
 import { contentTranslateFns } from "./translateFns";
+import { formatDate } from "@/utils/format";
 export default {
   setup() {
     const loader = useLoaderStore();
@@ -178,7 +189,8 @@ export default {
     const userStore = useUserStore();
     const contentDBChannel = useContentDBChannelStore();
     const munin = useMuninStore();
-    return { loader, notify, userStore, contentDBChannel, munin };
+    const access = useAccessStore();
+    return { loader, notify, userStore, contentDBChannel, munin, access, ...useSearchDebounce() };
   },
   data() {
     return {
@@ -210,7 +222,9 @@ export default {
     user() {
       return this.userStore.user;
     },
+    // django-access decides when it is there; without it, the contentdb content-permissions (today's logic).
     canCreate() {
+      if (this.access.available) return this.access.can(AREAS.CONTENT_PAGES, "write");
       return Boolean(this.user?.buildTypes?.some((type) => type.actions?.includes("create")));
     },
     availableLanguages() {
@@ -221,6 +235,10 @@ export default {
     },
     buildTypes() {
       return (this.user?.buildTypes || []).filter((bt) => bt._for === this.content_type);
+    },
+    // The document name the lists are narrowed to (the API matches a part of the name, any case).
+    searchName() {
+      return this.search.trim();
     },
     visibleDocs() {
       if (!this.activeFilters.length) return this.docs;
@@ -270,6 +288,7 @@ export default {
     },
   },
   methods: {
+    formatDate,
     setLanguage(value) {
       if (value.toLowerCase() === this.language) return;
       this.$router.replace({ query: { lg: value.toLowerCase() } }).catch(() => {});
@@ -305,6 +324,7 @@ export default {
           type: type,
           page: page,
           limit: limit,
+          ...(this.searchName ? { name: this.searchName } : {}),
         });
 
         this.docs = this.docs.map((doc) => {
@@ -395,6 +415,7 @@ export default {
             CDB_TYPE: content_type,
             type: type.slug,
             language: lg ? lg.toUpperCase() : null,
+            ...(this.searchName ? { name: this.searchName } : {}),
           });
         });
 
@@ -412,7 +433,8 @@ export default {
 
           arr.push({
             data: content,
-            count: content.length,
+            // A search narrows the rows, not the number of documents a type holds (the FAB's create cap reads it).
+            count: (this.searchName && this.docs.find((doc) => doc.type === content_type)?.count) || content.length,
             pagination,
             type: content_type,
             label: this.contentTypes.find((type) => type.slug === content_type)
@@ -512,6 +534,10 @@ export default {
   width: 180px;
 }
 
+.content-list__search {
+  width: 220px;
+}
+
 @include max-tablet {
   .content-list__chip-group,
   .content-list__controls {
@@ -523,6 +549,10 @@ export default {
 
   .content-list__chip-group {
     flex-wrap: nowrap;
+  }
+
+  .content-list__search {
+    width: 100%;
   }
 
   // The chips' 36 px touch area stays inside the scroll box.

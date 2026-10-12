@@ -3,6 +3,7 @@ import { useRoute, useRouter } from "vue-router";
 import { panels as REGISTRY } from "@/configs/access";
 import { buildNavRoutes, filterNavRoutes, isNavActive } from "@/components/Navigation/nav-routes";
 import { useMuninStore } from "@/stores/munin";
+import { useAccessStore } from "@/stores/access";
 import { useQualityStore } from "@/stores/quality";
 import { useIsDesktop } from "@/composables/useIsDesktop";
 import { t } from "@/i18n";
@@ -21,12 +22,18 @@ export function panelList(isPanelEnabled, hideDisabled = HIDE_DISABLED) {
   return hideDisabled ? all.filter((panel) => panel.isEnabled) : all;
 }
 
+// A panel the user cannot read (django-access) is always hidden — never dimmed like a module that is off.
 export function usePanels() {
   const munin = useMuninStore();
-  return computed(() => panelList(munin.isPanelEnabled));
+  const access = useAccessStore();
+  return computed(() => panelList(munin.isPanelEnabled).filter((panel) => access.canAny(panel.areas)));
 }
 
-// `{ [panelIdx]: entries[] }`; ctx = { qualityAvailable, isModuleEnabled, isDesktop }.
+// Each entry takes the `meta.area` of the route it opens (no router in a bare test: no area).
+export const withAreas = (routes, router) =>
+  routes.map((entry) => ({ ...entry, area: router?.resolve?.(entry.route).meta?.area }));
+
+// `{ [panelIdx]: entries[] }`; ctx = { qualityAvailable, isModuleEnabled, isDesktop, canRead }.
 export function navTree(ctx, routes = buildNavRoutes()) {
   return Object.fromEntries(
     REGISTRY.map((panel) => [panel.idx, filterNavRoutes(routes, { ...ctx, panel: panel.idx })])
@@ -35,11 +42,20 @@ export function navTree(ctx, routes = buildNavRoutes()) {
 
 export function useNavTree() {
   const munin = useMuninStore();
+  const access = useAccessStore();
   const quality = useQualityStore();
   const isDesktop = useIsDesktop();
-  const routes = buildNavRoutes();
+  const routes = withAreas(buildNavRoutes(), useRouter());
   return computed(() =>
-    navTree({ qualityAvailable: quality.available, isModuleEnabled: munin.isModuleEnabled, isDesktop: isDesktop.value }, routes)
+    navTree(
+      {
+        qualityAvailable: quality.available,
+        isModuleEnabled: munin.isModuleEnabled,
+        isDesktop: isDesktop.value,
+        canRead: access.can,
+      },
+      routes
+    )
   );
 }
 

@@ -45,7 +45,7 @@
         >
           {{ $t('atlas.duplicates.merge_modal.cancel') }}
         </BasicButton>
-        <BasicButton
+        <BasicButton mutates
           variant="primary"
           :disabled="!canConfirm"
           data-test="merge-confirm-submit"

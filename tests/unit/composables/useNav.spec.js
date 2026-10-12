@@ -3,6 +3,10 @@ import { defineComponent, h } from "vue";
 import { mount, flushPromises } from "@vue/test-utils";
 
 const modules = new Set(["leads", "communicator", "lookup", "checkout_voucher"]);
+// django-access is not under test here: allow-all, as without the module.
+vi.mock("@/stores/access", () => ({
+  useAccessStore: () => ({ can: () => true, canAny: () => true, ensureLoaded: () => Promise.resolve(), available: false, isStaff: true }),
+}));
 vi.mock("@/stores/munin", () => ({
   useMuninStore: () => ({
     loaded: true,

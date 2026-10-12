@@ -106,6 +106,7 @@ Traps:
 | text action · icon-only action · page or dialog actions | `BasicButton` · `IconButton` · `ActionBar` |
 | side panel · per-language editing | `SideDrawer` · `TranslationsDrawer` |
 | dialog · confirmation (yes/no, unsaved changes) | `BasicModal` · `ConfirmDialog` (`tone="danger"` for a delete) |
+| a secret shown once (a new API token) | `SecretReveal` (never a toast, a store, the router or a log) |
 | action menu or popover panel · a panel of text (configuration health) · floating action (+ labelled pill) | `BasicMenu` · `BasicMenu sheet` (a ≤ 32rem popover, a bottom sheet on a phone) · `FloatingActions` (`pill`) |
 | field hint next to a label · tooltip on a control | `FormField hint` + `hintLevel` (else `BasicTooltip variant="help"`) · `BasicTooltip` |
 
@@ -179,14 +180,36 @@ Traps:
   The primary fill is `bg-accent-fill t-on-accent-fill`.
 - **R9 Restyle before restructure.** A visual change keeps the structure and behaviour of a screen unless R1–R8
   require a change. Content-builder section blocks, tiles and `DataTable` internals change through tokens only.
+  The builder list mirrors the page on purpose: a section block has two zones that never mix — the section's own
+  (`surface-base`: type, tile count, uid, config and actions, then its title as a heading and its other content)
+  and the tiles tray (`surface-raised`) with bordered tile cards. A tile card previews its tile (image across the
+  card, title, text excerpt); a few tiles share the row, many scroll it. A section narrower than `full_width` is
+  inset. Types read by their `config_option` name, never the raw `core_type`. A click on a preview opens its edit
+  kit (the pencil stays the keyboard path). Order changes in place by the grip — tiles sideways in their row,
+  sections up and down with the trays folded while one is dragged; the order kit stays for keyboard and phone. A
+  new section goes in through the "+" between two sections, a new tile through the dashed card that ends the row.
 
 ## Page patterns
 
 - **Page frame.** Every view is one `PageLayout` (padding and scroll body): `#header` = the view's `PageHeader` (crumbs,
-  back, H1, `meta` chips, `actions`), a loader branch's condition on the slot; `#toolbar` = the search/filter row;
+  back, H1, `meta` chips, `actions`, `description` = the page's help line under the title row, never in `meta`), a
+  loader branch's condition on the slot; `#toolbar` = the search/filter row;
   `#footer` = the Pagination. Page actions are an `ActionBar` in PageHeader `actions` (R5); controls for the whole
   panel (a channel selector, „Tłumacz sklep”) sit in PageHeader `meta` or the ActionBar. A panel wrapper holds no
   toolbar strip and no teleport targets.
+- **Read-only page.** `PageLayout` decides it once (the route's `meta.area`, else the panel's first area, without
+  write in django-access `me`) and shows one notice line under the header. ActionBar keeps only its utilities (not a
+  `danger` one; an action's `mutates` true/false overrides its role), FloatingActions (but its back button) and
+  BulkActionBar are gone, and every control boot is disabled, in a FormField or not (a switch or select that saves on
+  change too). The PageLayout toolbar and the PageHeader `meta` (search, filters, the channel picker) stay enabled:
+  they read, never write. A control elsewhere that only reads or navigates (a search box in a card, a mode switch, a
+  list toggle) sits in `ReadonlyOff`. Any other button that creates, changes or deletes (a row's delete, an inline save) is a `BasicButton` or
+  `IconButton` with `mutates`; one whose POST only reads (a lookup, a preview, a validation) says `:mutates="false"`.
+  A `draggable`, a drop zone or a file input binds the flag itself (`:disabled="readonly"`, `v-if="!readonly"`; a view
+  reads its own page's flag with `usePageReadonly()`, a component inside the page with `useReadonly()`). A tab that
+  embeds another panel's screen (a product's prices, stock, supplier) sits in `ReadonlyArea :area` and is shown only
+  when that area is readable. `npm run audit:readonly` (part of `lint:ui`) fails on a write control the mode does not
+  reach. A view never checks write permission itself for this; `:readonly` on PageLayout forces it on, never off.
 - **Floating action.** `FloatingActions` sits 24 px from the bottom-right corner beside the sidebar (Figma S4) and
   16 px from the edge above the tab bar below 1024 px; a view never moves it. Bottom-pinned rows (the PageLayout
   footer, a sticky decision bar) keep the FAB's corner clear through `--fab-lane`.
@@ -217,7 +240,8 @@ Traps:
   which only `BasicCard` renders. A page is no card (R4). A view never sets its own card padding, border or radius.
 - **Dialogs.** Build on `BasicModal` (`size` sm · md · lg) or `ConfirmDialog`, never an overlay of the view's own:
   they trap focus, close on Esc and give focus back, and turn into a bottom sheet on a phone. Actions go in the
-  footer as an `ActionBar` (R5). A dialog with an async action closes on success and on error.
+  footer as an `ActionBar` (R5). A dialog with an async action closes on success and on error — but a refusal that
+  names one of its fields (a create dialog's 400 or 409) keeps it open with the error on that field.
 - **Locked / system entity.** Show a notice bar at the top. Pass `disabled` to each boot (or to the `FormField`), or
   show the value as `BasicInput readonly`. Disabled controls share one look (`--surface-disabled`, `--border-subtle`,
   muted text).
@@ -279,6 +303,9 @@ Traps:
   visual and takes the `touch-target` mixin (`utils/_touch-target.scss`): a transparent `::after` hit area, below
   tablet only. Hit areas never overlap: where a neighbour is closer, the area is the control plus half the gap on
   each side (the help "?" above its field, wrapped filter chips, table rows).
+- Focus is visible and calm. Buttons, tabs, links and other non-field controls get the global 2 px `--accent`
+  outline at a 2 px offset. Text fields (`input`, `textarea`, `select`) mark focus on the field: `--accent` border
+  plus a 2 px glow at 30 % (`utils/_reset.scss`), no outline, no extra halo — not even on the sign-in screen.
 - A control in a scrolling box (`BasicTabs`, `SegmentedControl`) draws its focus ring inside (`outline-offset:
   -2px`), so the box never clips it.
 - A button with icon + text drops its text on mobile via `icon-only-mobile`. It keeps an accessible label. The page's

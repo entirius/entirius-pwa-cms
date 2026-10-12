@@ -169,7 +169,7 @@
             </span>
             <div class="flex ai-ct gap-2">
               <IconButton icon="edit" :label="$t('promo.btn_edit')" size="sm" @click="editFilter(f)" />
-              <IconButton
+              <IconButton mutates
                 icon="delete"
                 :label="$t('promo.btn_delete')"
                 variant="danger"
@@ -215,7 +215,7 @@
               v-model="newFilter.take_common_part"
             />
             <div class="flex ai-ct gap-2">
-              <BasicButton
+              <BasicButton mutates
                 variant="secondary"
                 @click="saveFilter"
               >

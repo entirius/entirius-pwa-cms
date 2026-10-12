@@ -4,7 +4,7 @@
       <BasicInput v-model="search" type="search" icon="search" data-testid="test-generate-search" @update:model-value="find" />
     </FormField>
     <div v-if="companies.length" class="flex flex-wrap gap-3">
-      <BasicButton v-for="company in companies" :key="company.id" size="sm" data-testid="test-generate-company" @click="generate(company)">
+      <BasicButton :mutates="false" v-for="company in companies" :key="company.id" size="sm" data-testid="test-generate-company" @click="generate(company)">
         {{ company.domain }}
       </BasicButton>
     </div>

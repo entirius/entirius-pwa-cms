@@ -15,7 +15,7 @@
               data-test="spawn-rule-delete-btn"
               @click="showDeleteConfirm = true"
             />
-            <BasicButton
+            <BasicButton mutates
               v-if="!isCreate"
               variant="secondary"
               data-test="spawn-rule-run-btn"
@@ -23,7 +23,7 @@
             >
               {{ $t('enrichment.spawn_rules.run_now') }}
             </BasicButton>
-            <BasicButton
+            <BasicButton mutates
               variant="primary"
               data-test="spawn-rule-save-btn"
               @click="save"

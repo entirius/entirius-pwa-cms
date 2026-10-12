@@ -9,9 +9,20 @@
       <Breadcrumbs v-if="trail.length" class="page-header__crumbs" :items="trail" />
       <div class="page-header__title-row flex ai-ct gap-5" data-fid="page-title">
         <IconButton v-if="backTo" icon="back" :label="$t('common.back')" @click="goBack" />
-        <h1 class="page-header__title page-title" :class="{ 'page-header__title--after-back': backTo }">{{ title }}</h1>
-        <div v-if="$slots.meta" class="page-header__meta flex ai-ct gap-2"><slot name="meta" /></div>
+        <h1
+          class="page-header__title page-title"
+          :class="{ 'page-header__title--after-back': backTo }"
+          :title="title"
+        >
+          {{ title }}
+        </h1>
+        <div v-if="$slots.meta" class="page-header__meta flex ai-ct gap-2">
+          <ReadonlyOff><slot name="meta" /></ReadonlyOff>
+        </div>
       </div>
+      <p v-if="description" class="page-header__description t-muted fs-200" data-testid="page-description">
+        {{ description }}
+      </p>
     </div>
     <div v-if="$slots.actions" class="page-header__actions"><slot name="actions" /></div>
   </header>
@@ -21,8 +32,8 @@
 // The page's frame head (R2, R3, R5): `title` is the page's only <h1>; `overline` sits above it (Home);
 // `crumbs` ([{ label, to? }]) sit 24 px above the title row, and when omitted the shell's crumbs show (none without a
 // shell) with the shell's back arrow to the parent crumb; `back` (a route location, or a handler) puts a back
-// IconButton left of the H1 in any case. The title goes to the shell too: the last crumb and the browser tab name the
-// page by it. Slots: `meta` (chips beside the title) and `actions` (an ActionBar: in the title row on desktop, its
+// IconButton left of the H1 in any case; `description` is the page's help line under the title row (it wraps, never in
+// `meta`). The title goes to the shell too: the last crumb and the browser tab name the page by it. Slots: `meta` (chips beside the title) and `actions` (an ActionBar: in the title row on desktop, its
 // own row below 1024 px). `sticky` pins the head under the app header on a phone; the actions row scrolls away
 // (Figma S8). Mounting claims the shell's header slot; `claimShell` false keeps a demo instance (the UI catalogue) out
 // of it: no claim, no shell crumbs or back, the page keeps its own title. `data-fid="page-title"` marks the title row
@@ -32,10 +43,13 @@ import { useRouter } from "vue-router";
 import Breadcrumbs from "@/boots/Breadcrumbs/index.vue";
 import IconButton from "@/boots/IconButton/index.vue";
 import { usePageHeaderClaim } from "@/composables/pageHeader";
+// `meta` holds the panel's channel picker: it navigates, so a read-only page keeps it enabled.
+import { ReadonlyOff } from "@/composables/useReadonly";
 
 const props = defineProps({
   title: { type: String, required: true },
   overline: { type: String, default: "" },
+  description: { type: String, default: "" },
   crumbs: { type: Array, default: undefined },
   back: { type: [String, Object, Function], default: undefined },
   sticky: { type: Boolean, default: false },
@@ -81,14 +95,36 @@ function goBack() {
   margin-bottom: var(--space-6);
 }
 
-.page-header__title {
-  min-width: 0;
-  overflow-wrap: anywhere;
+// Chips that do not fit beside the whole title wrap under it: the title never shrinks for them.
+.page-header__title-row {
+  flex-wrap: wrap;
 }
 
-// The chips keep their width; the title gives way and wraps (on a phone the chips wrap under it instead).
+// One line at every width: a title longer than its row ends with an ellipsis (the full text is its `title`). The
+// block padding keeps descenders inside the clipped box without moving the line.
+.page-header__title {
+  min-width: 0;
+  max-width: 100%;
+  margin-block: -0.15em;
+  padding-block: 0.15em;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+// It stays on the back arrow's line: its width leaves room for the arrow and the gap.
+.page-header__title--after-back {
+  max-width: calc(100% - var(--elem-height) - var(--space-5));
+}
+
+// The chips keep their width.
 .page-header__meta {
   flex: none;
+}
+
+.page-header__description {
+  margin: var(--space-2) 0 0;
+  overflow-wrap: anywhere;
 }
 
 .page-header__actions {
@@ -103,19 +139,9 @@ function goBack() {
 }
 
 @include max-tablet {
-  // Chips that do not fit beside the whole title wrap under it: the title never shrinks for them.
-  .page-header__title-row {
-    flex-wrap: wrap;
-  }
-
   // A roomy PageLayout sets the larger phone title.
   .page-header__title {
     font-size: var(--page-header-title-size, var(--fs-500));
-  }
-
-  // It stays on the back arrow's line: its width leaves room for the arrow and the gap.
-  .page-header__title--after-back {
-    max-width: calc(100% - var(--elem-height) - var(--space-5));
   }
 
   // A sticky box cannot leave its parent: the header gives up its box, so the head pins against the scroll body

@@ -1,6 +1,6 @@
 <template>
   <div class="floating-actions" ref="rootRef">
-    <div v-show="isOpen" class="floating-actions__menu" role="menu">
+    <div v-if="!readonly" v-show="isOpen" class="floating-actions__menu" role="menu">
       <div
         v-for="(action, index) in actions"
         :key="index"
@@ -32,7 +32,7 @@
       <FontAwesomeIcon :icon="$icons.back" />
     </button>
 
-    <div class="floating-actions__row">
+    <div v-if="!readonly" class="floating-actions__row">
       <button
         v-if="pill"
         type="button"
@@ -65,6 +65,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import { ICONS } from "@/boots/Icons/icons";
+import { useReadonly } from "@/composables/useReadonly";
 
 /**
  * @typedef {Object} FloatingAction
@@ -76,7 +77,9 @@ import { ICONS } from "@/boots/Icons/icons";
  */
 
 // `pill` = { icon, label, handler, testid?, disabled? }: an important action with a visible label next to the FAB
-// (R7, Figma S6–S8 "Zarządzaj kolejnością"). `open` starts with the speed-dial open (catalogue state).
+// (R7, Figma S6–S8 "Zarządzaj kolejnością"). `open` starts with the speed-dial open (catalogue state). A read-only
+// page (useReadonly, plan 19) shows no FAB and no pill — every action of them creates or changes something; only the
+// back button (navigation) stays.
 const props = defineProps({
   actions: {
     type: Array,
@@ -96,6 +99,7 @@ const props = defineProps({
   },
 });
 
+const readonly = useReadonly();
 const isOpen = ref(props.open);
 const rootRef = ref(null);
 

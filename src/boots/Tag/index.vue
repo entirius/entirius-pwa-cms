@@ -7,6 +7,7 @@
       icon="close"
       size="sm"
       :label="`${$t('common.delete')}: ${label}`"
+      :mutates="mutates"
       @click="$emit('remove')"
     />
   </span>
@@ -15,12 +16,14 @@
 <script setup>
 // A value chip (a picked entity, a media tag), never a state (StatusBadge) or a number (CountBadge). `removable`
 // adds a close IconButton named "Usuń: <label>" that emits `remove`; `to` makes the label a link to the entity.
+// `mutates`: the remove changes a record (not a picked value) — a read-only page hides it (BasicButton's `mutates`).
 import IconButton from "@/boots/IconButton/index.vue";
 
 defineProps({
   label: { type: String, required: true },
   removable: { type: Boolean, default: false },
   to: { type: [String, Object], default: null },
+  mutates: { type: Boolean, default: false },
 });
 defineEmits(["remove"]);
 </script>

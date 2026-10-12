@@ -9,11 +9,11 @@ const SECTIONS = ["icons", "actions", "overlays", "display", "page-frame", "sele
 // Every component row of the catalogue spec (r02 tech-notes §6), the P4 shell rows included: one anchor each. The
 // icons.js registry row is the `icons` section.
 const COMPONENTS = [
-  "basic-button", "icon-button", "action-bar", "floating-actions", "bulk-action-bar",
+  "basic-button", "icon-button", "action-bar", "floating-actions", "bulk-action-bar", "readonly-mode",
   "form-field", "basic-input", "basic-textarea", "number-input", "basic-select", "entity-search-picker",
   "channel-multi-select", "basic-checkbox", "basic-radio-group", "basic-switch", "segmented-control", "filter-chip",
-  "basic-date-picker", "color-input", "basic-wysiwyg",
-  "basic-modal", "confirm-dialog", "side-drawer", "translations-drawer", "basic-menu", "basic-tooltip",
+  "basic-date-picker", "color-input", "basic-wysiwyg", "permission-matrix",
+  "basic-modal", "confirm-dialog", "secret-reveal", "side-drawer", "translations-drawer", "basic-menu", "basic-tooltip",
   "mobile-filter-panel", "status-badge", "count-badge", "tag", "basic-tabs", "basic-card", "panel-card", "media-tile",
   "empty-state", "loader", "pagination", "data-table", "page-header", "breadcrumbs", "page-layout", "basic-logo",
   "app-header", "sidebar-nav", "sidebar-nav-group", "sidebar-nav-item", "mobile-menu", "bottom-tab-bar", "user-menu",
@@ -39,8 +39,9 @@ function collectErrors(page) {
   return errors;
 }
 
-// The shell's own boot calls and polls, made on every screen (App.vue): Munin modules and health, the bell's count.
-const SHELL_CALLS = [/\/api\/munin\/v2\/(health\/)?$/, /\/notifications\/unread-count\/$/];
+// The shell's own boot calls and polls, made on every screen (App.vue): Munin modules and health, the access `me`,
+// the bell's count.
+const SHELL_CALLS = [/\/api\/munin\/v2\/(health\/)?$/, /\/api\/access\/v2\/me\/$/, /\/notifications\/unread-count\/$/];
 
 // API calls from before the first navigation, so the catalogue's mount counts too. The shell's are not its: a GET
 // matching SHELL_CALLS passes while the page boots, and afterwards only as a repeat (a poll) of one the shell made

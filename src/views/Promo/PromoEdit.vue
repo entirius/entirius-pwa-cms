@@ -266,14 +266,16 @@
             </BasicButton>
           </template>
 
-          <BasicInput
-            v-model="codesSearch"
-            :placeholder="$t('promo.codes_search_placeholder')"
-            :aria-label="$t('promo.codes_search_placeholder')"
-            icon="search"
-            class="codes-search"
-            @input="debouncedFetch(() => fetchCodes(true))"
-          />
+          <ReadonlyOff>
+            <BasicInput
+              v-model="codesSearch"
+              :placeholder="$t('promo.codes_search_placeholder')"
+              :aria-label="$t('promo.codes_search_placeholder')"
+              icon="search"
+              class="codes-search"
+              @input="debouncedFetch(() => fetchCodes(true))"
+            />
+          </ReadonlyOff>
 
           <DataTable
             :columns="codesColumns"
@@ -622,6 +624,8 @@ import {
 } from "@/api/promo/api";
 import FilterEditDrawer from "./FilterEditDrawer.vue";
 import { INT_MAX } from "@/utils/formats";
+import { formatDay } from "@/utils/format";
+import { ReadonlyOff } from "@/composables/useReadonly";
 
 const RULE_FORMATS = { min_order_amount: { format: "money" } };
 const CODE_FORMATS = { code: { format: "key" } };
@@ -670,7 +674,7 @@ function buildExtraValuePayload(form, extraValueKind) {
 
 export default {
   name: "PromoEdit",
-  components: { FilterEditDrawer, Pagination },
+  components: { ReadonlyOff, FilterEditDrawer, Pagination },
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();
@@ -1393,12 +1397,7 @@ export default {
       }
     },
     formatDate(d) {
-      if (!d) return "";
-      return new Date(d).toLocaleDateString("pl-PL", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      });
+      return d ? formatDay(d) : "";
     },
   },
 };

@@ -5,6 +5,10 @@ import { createPinia, setActivePinia } from "pinia";
 const mockIsPanelEnabled = vi.fn();
 const mockIsModuleEnabled = vi.fn();
 
+// django-access is not under test here: allow-all, as without the module.
+vi.mock("@/stores/access", () => ({
+  useAccessStore: () => ({ can: () => true, canAny: () => true, ensureLoaded: () => Promise.resolve(), available: false, isStaff: true }),
+}));
 vi.mock("@/stores/munin", () => ({
   useMuninStore: () => ({
     loaded: true,

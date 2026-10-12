@@ -264,7 +264,7 @@
         >
           {{ $t('common.cancel') }}
         </BasicButton>
-        <BasicButton
+        <BasicButton mutates
           variant="danger-solid"
           :disabled="deleting"
           data-testid="suppliers-delete-confirm"

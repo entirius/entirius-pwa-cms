@@ -46,7 +46,7 @@
       </template>
       <template #cell-actions="{ row }">
         <div class="flex ai-ct gap-2" @click.stop>
-          <IconButton
+          <IconButton mutates
             v-if="!isMonitoringSupplier && !row.is_primary"
             icon="primary"
             size="sm"
@@ -54,7 +54,7 @@
             :data-testid="`linked-set-preferred-${row.id}`"
             @click="setPrimary(row)"
           />
-          <IconButton
+          <IconButton mutates
             v-else-if="!isMonitoringSupplier"
             icon="primary"
             size="sm"

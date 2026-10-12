@@ -21,7 +21,7 @@
       :empty-text="$t('communicator.suppressions.empty')"
     >
       <template #cell-action="{ row }">
-        <IconButton
+        <IconButton mutates
           v-if="row.kind !== 'email_token'"
           icon="delete"
           variant="danger"

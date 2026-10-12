@@ -58,9 +58,6 @@ const length = computed(() => String(props.modelValue ?? "").length);
     color: var(--text-muted);
   }
 
-  &:focus {
-    border-color: var(--border-strong);
-  }
 
   &:read-only:not(:disabled) {
     background-color: var(--surface-raised);

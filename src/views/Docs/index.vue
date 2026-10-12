@@ -6,12 +6,14 @@
     <BasicTabs v-model="selected_view" :options="nav" class="mb-5" />
     <div v-if="selected_view === 'doc'">
       <div class="mb-5">
-        <BasicSelect
-          :floating-label="$t('docs.document')"
-          style="max-width: 10rem"
-          :options="docs_nav"
-          v-model="doc_prev"
-        />
+        <ReadonlyOff>
+          <BasicSelect
+            :floating-label="$t('docs.document')"
+            style="max-width: 10rem"
+            :options="docs_nav"
+            v-model="doc_prev"
+          />
+        </ReadonlyOff>
       </div>
 
       <div class="markdown-renderer-wrapper">
@@ -50,6 +52,7 @@ import core_config from "@/../__client/configs/__core_config";
 import optional_config from "@/../__client/configs/__optional_config";
 import core_properties from "@/../__client/props/__props";
 import props_handlers from "@/../__client/props/__props_handlers";
+import { ReadonlyOff } from "@/composables/useReadonly";
 
 const docs_nav = [
   { label: "__[type]_config", value: "config_docs" },
@@ -63,6 +66,7 @@ const sub_nav = [
   { label: "__props", value: "core_properties" },
 ];
 export default {
+  components: { ReadonlyOff },
   data() {
     return {
       fileContent: null,

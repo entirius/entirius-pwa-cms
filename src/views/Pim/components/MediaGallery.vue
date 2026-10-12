@@ -2,8 +2,10 @@
 import { ref, reactive, computed, watch, nextTick } from "vue";
 import { t } from "@/i18n";
 import { useNotifyStore } from "@/stores/notify";
+import { safeHref } from "@/utils/safeHref";
 import { usePimChannelStore } from "@/stores/pimChannel";
 import draggable from "vuedraggable";
+import { useReadonly } from "@/composables/useReadonly";
 import {
   POST_UploadPicture,
   GET_ProductPictures,
@@ -20,12 +22,13 @@ import { extractApiMessage } from "@/composables/useFormErrors";
 const props = defineProps({
   channelIdx: { type: String, required: true },
   sku: { type: String, required: true },
-  readonly: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(["media-changed"]);
 
 const notify = useNotifyStore();
+// The product page's read-only mode: no reorder, upload, drop or edit of the media.
+const readonly = useReadonly();
 const pimChannel = usePimChannelStore();
 const API_BASE = process.env.VUE_APP_API_URL || "";
 
@@ -273,7 +276,7 @@ function selectItem(index) {
 
 // --- Upload pictures ---
 function onDropZoneClick() {
-  if (props.readonly) return;
+  if (readonly.value) return;
   document.getElementById("picture-file-input").click();
 }
 
@@ -298,7 +301,7 @@ function onDragLeave() {
 function onDrop(event) {
   event.preventDefault();
   isDraggingOver.value = false;
-  if (props.readonly) return;
+  if (readonly.value) return;
   const files = event.dataTransfer.files;
   if (files?.length) {
     for (const file of files) {
@@ -372,7 +375,7 @@ async function addVideo() {
 const translatingAlt = ref(false);
 
 function openEdit(item) {
-  if (props.readonly) return;
+  if (readonly.value) return;
   editingItem.value = {
     ...item,
     editRole: item.role || "GENERAL",
@@ -440,7 +443,7 @@ async function saveEdit() {
 
 // --- Delete item ---
 async function deleteItem(item) {
-  if (props.readonly) return;
+  if (readonly.value) return;
   const key = itemKey(item);
   deletingKey.value = key;
   try {
@@ -532,6 +535,7 @@ watch(
             <a
               :href="selectedItem.imageUrl"
               target="_blank"
+              rel="noopener noreferrer"
               class="t-accent fs-200 mt-2"
             >
               {{ selectedItem.altText || selectedItem.imageUrl }}
@@ -551,8 +555,9 @@ watch(
                 class="t-muted fs-700"
               />
               <a
-                :href="selectedItem.videoUrl"
+                :href="safeHref(selectedItem.videoUrl)"
                 target="_blank"
+                rel="noopener noreferrer"
                 class="t-accent fs-200 mt-2"
               >
                 {{ selectedItem.videoUrl }}
@@ -620,7 +625,7 @@ watch(
           </div>
 
           <div class="media-gallery__edit-actions">
-            <BasicButton
+            <BasicButton mutates
               variant="primary"
               @click="saveEdit"
             >
@@ -718,7 +723,7 @@ watch(
             :placeholder="$t('pim.video_url_placeholder')"
             @on-key-down="addVideo"
           />
-          <BasicButton
+          <BasicButton mutates
             variant="secondary"
             class="media-gallery__video-submit"
             :disabled="addingVideo || !newVideoUrl.trim()"
@@ -734,6 +739,7 @@ watch(
         accept="image/*"
         multiple
         class="sr-only"
+        :disabled="readonly"
         @change="onFileInputChange"
       />
     </template>

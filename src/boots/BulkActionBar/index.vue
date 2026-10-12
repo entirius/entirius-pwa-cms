@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="!readonly"
     class="bulk-bar bg-accent-subtle flex ai-ct jc-sb pl-10 pr-10 pt-5 pb-5"
   >
     <div class="flex ai-ct gap-8">
@@ -29,7 +30,12 @@
 
 <script setup>
 // actions = [{ key, labelKey, variant?, options? }]: `variant` is a BasicButton variant (default secondary); an action
-// with `options` is an action picker (BasicSelect without a value of its own, `options` = [{ label, value }]).
+// with `options` is an action picker (BasicSelect without a value of its own, `options` = [{ label, value }]). Not
+// rendered on a read-only page (useReadonly, plan 19).
+import { useReadonly } from "@/composables/useReadonly";
+
+const readonly = useReadonly();
+
 defineProps({
   count: {
     type: Number,
