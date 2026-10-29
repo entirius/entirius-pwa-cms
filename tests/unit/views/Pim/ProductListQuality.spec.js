@@ -27,6 +27,10 @@ vi.mock("@/stores/notify", () => ({
 vi.mock("@/stores/pimChannel", () => ({
   usePimChannelStore: () => ({ activeChannelIdx: "default-europe" }),
 }));
+// The AI menu stays dormant here (enrichment module off).
+vi.mock("@/views/Pim/components/enrichment/useAiWorkers", () => ({
+  useAiWorkers: () => ({ workers: [], enabled: false, usable: false }),
+}));
 vi.mock("@/stores/munin", () => ({
   useMuninStore: () => ({ isPanelEnabled: () => false }),
 }));
@@ -54,7 +58,7 @@ const mountList = () =>
         Pagination: true,
         FloatingActions: true,
         BulkActionBar: true,
-        SpawnDialog: true, PimTranslateDialog: true,
+        PimTranslateDialog: true,
       },
     },
   });
@@ -109,7 +113,7 @@ describe("ProductList — quality column", () => {
           Pagination: true,
           FloatingActions: true,
           BulkActionBar: true,
-          SpawnDialog: true, PimTranslateDialog: true,
+          PimTranslateDialog: true,
         },
       },
     });

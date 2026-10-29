@@ -23,7 +23,8 @@ Notable ones for list/form views:
 
 - **`DataTable`** — see API below.
 - **`FormField`** — label/hint/required/error wrapper for form
-  inputs. Props: `label`, `hint`, `hintLevel`, `required`, `error`.
+  inputs. Props: `label`, `hint`, `hintLevel`, `required`, `error`. The `label` slot replaces the caps label with the
+  caller's markup (a numbered question) and keeps the label's `for` and id.
 - **`EmptyState`** — placeholder for empty lists and panels. Props: `title`, `message`,
   `icon`, `size` (`md` full block, default; `sm` one line); the default slot takes an action. `DataTable` renders it
   for `emptyText`, one line by default; a list screen whose only content is the table passes `empty-size="md"`.
@@ -41,7 +42,8 @@ Notable ones for list/form views:
   Filtering stays local; there is no remote-search mode.
 - **`BulkActionBar`** — sticky bar for bulk row actions. Props: `count`
   (required), `actions` (required: `variant` per action, `secondary` without one; an action with `options` is an
-  action picker, a BasicSelect), `selectedLabelKey`, `clearLabelKey`.
+  action picker, a BasicSelect), `selectedLabelKey`, `clearLabelKey`. One wrapping row (count, actions, "Clear
+  selection" at its end), so every action stays reachable on a phone; keep bulk actions `secondary`.
 - **`SegmentedControl`** — single-choice toggle group. Props: `options`
   (required), `modelValue`; emits `update:modelValue`.
 - **`StatusBadge`** — coloured status pill. Props: `label` (required),
@@ -148,14 +150,14 @@ and one meaning per glyph (unit test). A new meaning adds its glyph to `fa-icons
   (`--elem-height`) · `sm` (24 px) · `lg` (40 px at `radius-xl`, the sign-in screens; `primary` gets a soft top light on hover); label in the default slot; `icon` = a meaning of `icons.js`, drawn before the
   label (6 px gap); `loading` swaps the icon for a spinner, disables and sets `aria-busy`; `disabled`; `type`
   (`button` by default); without a `variant` it is `secondary`. The click stops at the button (`:stop="false"` lets
-  it through). `mutates`: the button creates, changes or deletes — a read-only page hides it (`docs/ui-rules.md` §
+  it through); `click` carries the native event (`@click="go($event)"`). `mutates`: the button creates, changes or deletes — a read-only page hides it (`docs/ui-rules.md` §
   Page patterns).
 - **`IconButton`** — every icon-only action: `icon` (meaning, required), `label` (required: `aria-label` + `title`),
   `variant` `ghost` · `outline` · `primary` · `danger`, `size` `sm` 24 · `md` `--elem-height` · `lg` 40 (header,
   mobile menu, `--radius-xl`), `pressed` (a toggle: `aria-pressed`, `surface-hover` fill), `disabled` (the glyph
   turns `text-disabled` in every variant but `primary`: a disabled `primary` keeps its `text-on-accent-fill` glyph
   and the whole button fades, `opacity: 0.5`, as FloatingActions). `danger` is
-  every icon-only delete or remove (C6). The click stops at the button by default (`:stop="false"` to opt out).
+  every icon-only delete or remove (C6). The click stops at the button by default (`:stop="false"` to opt out); `click` carries the native event.
   `mutates` (a row's delete, a remove): hidden on a read-only page; view and open actions leave it off.
   A back control: `<IconButton icon="back" :label="$t('common.back')" />`. On a phone
   the hit area grows to 40 × 40 around the box, the box keeps its size. `md` matches the text button, not Figma's
@@ -166,6 +168,7 @@ and one meaning per glyph (unit test). A new meaning adds its glyph to `fa-icons
   and Enter in a field presses it), `role` `utility` (an IconButton, `icon` required) · `secondary` · `danger` ·
   `primary` (one at most, a second warns in dev); extra controls go into the default slot, already in order.
   Right-aligned, gap 12 px (8 px on a phone); below 768 px it takes its own row: the label „Akcje” above the actions, left-aligned (Figma S7).
+  `labelled` false drops that label where the bar is already a footer of its own (BasicModal, ConfirmDialog).
   On a read-only page only the utilities stay, minus a `danger` one; `mutates` (true/false) overrides the role.
 - **`FloatingActions`** — FAB 44 px `accent-fill`, 24 px inset from 1024 px up; below it 16 px inset and 16 px above
   the tab bar, `data-fid="fab"`;
@@ -228,7 +231,8 @@ Catalogue: `#actions` (`#basic-button`, `#icon-button`, `#action-bar`, `#floatin
   trigger holding only a disabled control makes the wrapper the tab stop (disabled with a reason).
   `IconButton` shows its `label` through it (no `title`).
 - **`SideDrawer`** — focus trapped in `focused` mode (`role="dialog" aria-modal`, named by its title), Esc closes in
-  both modes (sticky: while focus is inside), close = `IconButton` (`side-drawer-close`). **`TranslationsDrawer`**
+  both modes (sticky: while focus is inside), close = `IconButton` (`side-drawer-close`). The header (title, close)
+  sticks to the top of the scrolling panel. **`TranslationsDrawer`**
   footer is an `ActionBar` (Save rightmost, `translations-save` / `translations-cancel`).
 - `inline` (BasicModal, ConfirmDialog, SideDrawer, TranslationsDrawer, BasicMenu) renders the open state in the page
   flow: no Teleport, no backdrop, no trap (catalogue).
@@ -322,7 +326,10 @@ Catalogue: `#display` (`#status-badge`, `#count-badge`, `#tag`, `#basic-tabs`, `
   actions row scrolls away. Slots `meta` (chips beside the title, they keep their width and wrap under a title they do not fit beside) and `actions` (an
   ActionBar): in the title row on desktop while both fit, otherwise wrapped under it right-aligned, and always its own
   row below 1024 px. The title stays on one line at every width: one longer than its row ends with an ellipsis and carries the full
-  text in its `title` attribute.
+  text in its `title` attribute; `wrapTitle` gives a long name (an article topic) two lines before the ellipsis. More
+  `meta` chips than the row holds wrap inside it. Slot `tabs` (a `RouteTabs`: the screen's sections) takes a full-width
+  row under the title row, and the `description` moves under it (it describes the tab); below 1024 px the actions row
+  follows them, so a phone reads title → tabs → description → actions.
 - **Shell claim** — `src/composables/pageHeader.js`: `PAGE_HEADER_CLAIM` (injection key) and
   `usePageHeaderClaim()`. The shell (P4) provides `{ claim, release, crumbs }` and hides its fallback header while a
   claim is held; claims overlap during a route change, so the provider counts them. PageHeader claims on mount,
@@ -345,7 +352,9 @@ Catalogue: `#page-frame` (`#page-header`, `#breadcrumbs`, `#page-layout`).
   `role="combobox"` button, `--elem-height`, `--radius-base`, `border-control`, 12 px Inter 500, `expand` caret;
   `multiple` shows the one label or „Wybrano: N”. The list opens in BasicMenu's panel (position, flip = drop-up,
   outside click, Esc, focus return) as a `listbox` driven by `aria-activedescendant`: arrows (wrap), Home / End,
-  type-ahead, Enter / Space; checkboxes when `multiple`, a check on the chosen option otherwise. Inside a FormField
+  type-ahead, Enter / Space; checkboxes when `multiple` (an unticked one is an empty `border-control` box, never a
+  filled glyph), a check on the chosen option otherwise. The list is at least as wide as the control (no 22rem cap),
+  so the filter input never runs past it. Inside a FormField
   it takes the field's id, `aria-describedby`, invalid, required and disabled (`useFormFieldControl()`); outside one,
   `aria-label` / `aria-labelledby` on the tag name the control. `placement` and `inline` go to BasicMenu.
   `floatingLabel` (plan 53) names a select that stands without a FormField (toolbar, filter row, card header): empty,
@@ -401,13 +410,16 @@ Catalogue: `#selects` (`#basic-select`, `#entity-search-picker`, `#channel-multi
   error (`reportError` of `FORM_FIELD`; the caller's `error` wins). `min` / `max` / `pattern` (the API regex of a
   `code` / `key`) are its rules. The save still checks the form: `useFormErrors().validateFormats`.
 - **`BasicTextarea`** — replaces `TextAreaBasic`: `v-model`, `rows` (4), `maxlength` (with an „n / max” counter),
-  `placeholder`, `disabled`, `readonly`.
+  `placeholder`, `disabled`, `readonly`, `autogrow` (grows with its text from `rows` up to the max height).
 - **`NumberInput`** — `disabled`; the value field reads the contract.
 - **`BasicCheckbox`** — one checkbox: a boolean `v-model`, its label in the default slot, `disabled`. A list of ids
   is `BasicSelect multiple`.
 - **`BasicRadioGroup`** — `options` `[{ label, value, disabled?, testid? }]`, `v-model`, `name`, `disabled`; native
   radios in a `role="radiogroup"` (one Tab stop, the arrow keys move and select), named by the FormField label. An
-  option's `testid` lands on its radio input.
+  option's `testid` lands on its radio input. `layout="tiles"` draws the options as a grid of square tiles from the
+  `option` slot (`{ option, checked }` — a thumbnail; keep `label` as its accessible name), the picked one in the
+  accent border (`PicturePicker`); `layout="cards"` the same as wider cards of any height, one per row on a phone (the
+  AI studio's cover variants: a 16:9 image and its title).
 - **`BasicSwitch`** — replaces `Switcher`: `v-model`, `label`, `hint` + `hintLevel` (the field-hint mark), `disabled`; a
   `role="switch"` button with `aria-checked`, styles scoped to it.
 - **`BasicDatePicker`** — an input-looking trigger with the `calendar` icon opens an inline flatpickr; `v-model` (the
@@ -416,7 +428,7 @@ Catalogue: `#selects` (`#basic-select`, `#entity-search-picker`, `#channel-multi
   room below), so a scrolling parent such as a wide table does not clip it. Its label is the FormField's. The trigger's click reaches the document, so other
   popovers close; a click inside the open calendar never closes it.
 - **`SegmentedControl`** — contract id and `disabled`, named by the FormField label, `aria-pressed` on the active
-  option. **`ColorInput`** — `disabled`, the text field reads the contract, the swatch is the native picker itself
+  option; an option's own `disabled` takes just that option out. **`ColorInput`** — `disabled`, the text field reads the contract, the swatch is the native picker itself
   (named by the FormField label, else „Wybierz kolor”).
 - Codemod `scripts/codemods/p3-inputs.mjs` (sweeps 17/18): `Switcher` → `BasicSwitch` (`:selected` + `@onSelect="x =
   !x"` → `v-model`, `prevent` → `disabled`), `TextAreaBasic` → `BasicTextarea` (`limit` → `maxlength`), `LockedField` →
@@ -509,8 +521,9 @@ the component recipe.
 
 - One `PageLayout` per view: `#header` = `PageHeader` (the only H1), `#toolbar` = the search and filter row, default
   slot = the content, `#footer` = `Pagination`. `roomy` only on the Figma frames (Home, content list, gallery).
-- Page actions: PageHeader `actions` → `ActionBar` (R5). Panel-wide controls (channel selector, „Tłumacz sklep”):
-  PageHeader `meta` or the ActionBar. No panel toolbar strip, no `<Teleport to="#…toolbar">`.
+- Page actions: PageHeader `actions` → `ActionBar` (R5). Panel-wide controls (channel selector): PageHeader `meta` or
+  the ActionBar. „Tłumacz sklep” is the Translation page's primary action, in no Pim view. No panel toolbar strip, no
+  `<Teleport to="#…toolbar">`.
 - A route without a PageHeader still gets one H1: the shell's fallback `PageHeader` (crumbs + the route's `titleKey`).
 - `FloatingActions` keeps its own inset (24 px desktop, 16 px above the tab bar); a view passes `actions` / `pill`,
   never a position. A view never overrides the frame from outside (`:deep(.page-header__title)`, PageLayout padding).

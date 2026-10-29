@@ -50,3 +50,37 @@ export function formatDate(iso, opts = {}) {
 export function formatDay(iso) {
   return formatDate(iso, { dateStyle: "short", timeStyle: undefined })
 }
+
+const RELATIVE_UNITS = [
+  ["day", 86400],
+  ["hour", 3600],
+  ["minute", 60],
+];
+
+/**
+ * "2 min ago" / "2 min temu" (UI language). Under a minute is "now"; null/invalid is "".
+ *
+ * @param {string|null|undefined} iso
+ * @param {number} now epoch ms (tests pin it)
+ */
+export function formatRelative(iso, now = Date.now()) {
+  const time = iso ? new Date(iso).getTime() : NaN
+  if (Number.isNaN(time)) return ""
+  const seconds = Math.round((time - now) / 1000)
+  const format = new Intl.RelativeTimeFormat(uiLocale(), { numeric: "auto", style: "short" })
+  const [unit, size] = RELATIVE_UNITS.find(([, s]) => Math.abs(seconds) >= s) || ["second", 1]
+  return unit === "second" ? format.format(0, "second") : format.format(Math.round(seconds / size), unit)
+}
+
+/**
+ * A cost in US dollars as people read it: "$0.04"; a cost under a cent "<$0.01". Unknown (null, "", NaN) is "".
+ *
+ * @param {string|number|null|undefined} amount - decimal-ish input ("0.0420")
+ */
+export function formatUsd(amount) {
+  const formatted = formatCost(amount)
+  if (!formatted) return ""
+  const num = Number(amount)
+  if (num > 0 && num < 0.01) return "<$0.01"
+  return `$${formatted}`
+}

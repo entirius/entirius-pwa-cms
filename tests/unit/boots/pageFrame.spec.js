@@ -116,6 +116,16 @@ describe("PageHeader", () => {
   it("is not sticky by default", () => {
     expect(header().find('[data-fid="sticky-header"]').exists()).toBe(false);
   });
+
+  it("tabs come after the title and the actions, the description under the tabs (a phone puts the actions last)", () => {
+    const slots = { actions: "<button class='act' />", tabs: "<div class='tabs' />" };
+    const wrapper = header({ description: "What the AI knows." }, { slots });
+    expect(wrapper.classes()).toContain("page-header--tabs");
+    const order = [...wrapper.element.children].map((child) => child.className.split(" ")[0]);
+    expect(order).toEqual(["page-header__head", "page-header__actions", "page-header__tabs", "page-header__description"]);
+    expect(wrapper.get(".page-header__head").find(".page-header__description").exists()).toBe(false);
+    expect(header({ description: "x" }).classes()).not.toContain("page-header--tabs");
+  });
 });
 
 describe("Breadcrumbs", () => {
@@ -152,5 +162,13 @@ describe("PageLayout", () => {
     const order = [...wrapper.element.children].map((child) => child.className || child.tagName);
     expect(order).toEqual(["H1", "page-layout__toolbar", "page-layout__body"]);
     expect(mount(PageLayout, { slots: { default: "<p />" } }).find(".page-layout__toolbar").exists()).toBe(false);
+  });
+});
+
+describe("PageHeader wrapTitle", () => {
+  it("lets a long title take two lines and keeps the full text in its title", () => {
+    const wrapper = header({ title: "A long topic", wrapTitle: true });
+    expect(wrapper.find("h1").classes()).toContain("page-header__title--wrap");
+    expect(header().find("h1").classes()).not.toContain("page-header__title--wrap");
   });
 });

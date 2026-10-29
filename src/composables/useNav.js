@@ -5,6 +5,7 @@ import { buildNavRoutes, filterNavRoutes, isNavActive } from "@/components/Navig
 import { useMuninStore } from "@/stores/munin";
 import { useAccessStore } from "@/stores/access";
 import { useQualityStore } from "@/stores/quality";
+import { useEnrichmentProfileStore } from "@/stores/enrichmentProfile";
 import { useIsDesktop } from "@/composables/useIsDesktop";
 import { t } from "@/i18n";
 
@@ -33,17 +34,31 @@ export function usePanels() {
 export const withAreas = (routes, router) =>
   routes.map((entry) => ({ ...entry, area: router?.resolve?.(entry.route).meta?.area }));
 
-// `{ [panelIdx]: entries[] }`; ctx = { qualityAvailable, isModuleEnabled, isDesktop, canRead }.
+// An entry with a `badge` key takes its number from `counts` (the Memory suggestions); 0 shows nothing.
+const withCount = (entry, counts) => (entry.badge ? { ...entry, count: counts?.[entry.badge] || 0 } : entry);
+
+// `{ [panelIdx]: entries[] }`; ctx = { qualityAvailable, isModuleEnabled, isDesktop, canRead, counts? }.
 export function navTree(ctx, routes = buildNavRoutes()) {
   return Object.fromEntries(
-    REGISTRY.map((panel) => [panel.idx, filterNavRoutes(routes, { ...ctx, panel: panel.idx })])
+    REGISTRY.map((panel) => [
+      panel.idx,
+      filterNavRoutes(routes, { ...ctx, panel: panel.idx }).map((entry) => withCount(entry, ctx.counts)),
+    ])
   );
 }
 
-export function useNavTree() {
+// The numbers of the `badge` keys (a nav entry's, a RouteTabs tab's): the Memory suggestions waiting for the operator.
+export function useNavCounts() {
+  const enrichmentProfile = useEnrichmentProfileStore();
+  return computed(() => ({ memorySuggestions: enrichmentProfile.pendingSuggestions }));
+}
+
+// `everyViewport`: the desktop entries on a phone too — where a page belongs does not change with the screen.
+export function useNavTree({ everyViewport = false } = {}) {
   const munin = useMuninStore();
   const access = useAccessStore();
   const quality = useQualityStore();
+  const counts = useNavCounts();
   const isDesktop = useIsDesktop();
   const routes = withAreas(buildNavRoutes(), useRouter());
   return computed(() =>
@@ -51,8 +66,9 @@ export function useNavTree() {
       {
         qualityAvailable: quality.available,
         isModuleEnabled: munin.isModuleEnabled,
-        isDesktop: isDesktop.value,
+        isDesktop: everyViewport || isDesktop.value,
         canRead: access.can,
+        counts: counts.value,
       },
       routes
     )
@@ -82,11 +98,14 @@ export const tabBarShown = (entries, route) => entries.length > 1 && !route.meta
 
 export const activePanelOf = (route) => (route.path === HOME_ROUTE ? HOME : route.meta?.panel ?? null);
 
+// `tree` is what this screen lists (the phone tab bar drops `desktopOnly` entries); `entry` is resolved among every
+// entry, so a desktop-only page opened on a phone lights nothing and keeps its own crumb instead of its neighbour's.
 export function useActiveNav() {
   const route = useRoute();
   const tree = useNavTree();
+  const everyEntry = useNavTree({ everyViewport: true });
   const panelIdx = computed(() => activePanelOf(route));
-  const entry = computed(() => resolveNavEntry(tree.value[panelIdx.value] ?? [], route));
+  const entry = computed(() => resolveNavEntry(everyEntry.value[panelIdx.value] ?? [], route));
   return { panelIdx, entry, tree };
 }
 

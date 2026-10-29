@@ -12,6 +12,9 @@
         <template #actions>
           <ActionBar :actions="pageActions" />
         </template>
+        <template #tabs>
+          <RouteTabs :tabs="ENRICHMENT_REVIEW_TABS" />
+        </template>
       </PageHeader>
     </template>
 
@@ -39,6 +42,29 @@
             {{ $t("enrichment.review.matching", { count: totalCount }) }}
           </span>
         </div>
+
+        <div
+          v-if="filters.task"
+          class="enrichment-review__task flex ai-ct flex-wrap gap-3 fs-300"
+          data-testid="enrichment-task-filter"
+        >
+          <span>
+            {{ $t("enrichment.review.task_filter_of") }}
+            <router-link :to="taskLink" class="t-accent fw-600" data-testid="enrichment-task-filter-link">
+              {{ runLabels[filters.task]?.title || $t("enrichment.tasks.generic") }}
+            </router-link>
+          </span>
+          <BasicButton variant="ghost" size="sm" data-testid="enrichment-task-filter-clear" @click="clearTask">
+            {{ $t("enrichment.ai.show_all") }}
+          </BasicButton>
+          <BatchCorrection class="ml-auto" :task-id="Number(filters.task)" @queued="fetchRows" />
+        </div>
+        <RunCorrections
+          v-else-if="filters.status === 'pending' && mode !== 'focus'"
+          :rows="rows"
+          :labels="runLabels"
+          @queued="fetchRows"
+        />
 
         <MobileFilterPanel
           :active-count="activeFilterCount"
@@ -76,14 +102,6 @@
             @update:model-value="(v) => onFilterChange('source', v)"
           />
           <BasicInput
-            v-model="filters.batch_id"
-            :placeholder="$t('enrichment.review.col.batch')"
-            :aria-label="$t('enrichment.review.col.batch')"
-            class="enrichment-review__batch"
-            data-testid="enrichment-batch-filter"
-            @input="onSearchChange"
-          />
-          <BasicInput
             v-model="filters.confidence_min"
             type="number"
             :placeholder="$t('enrichment.review.confidence_min')"
@@ -96,35 +114,69 @@
       </div>
     </template>
 
-    <ListMode
-      v-if="mode === 'list'"
-      :rows="rows"
-      :loading="loading"
-      :total-count="totalCount"
-      :busy="busy"
-      @accept="acceptOne"
-      @reject="rejectOne"
-      @bulk-accept="bulkAccept"
-      @bulk-reject="bulkReject"
-      @bulk-undo="bulkUndo"
-      @reconfirm="openDrift"
-      @row-focus="onRowFocus"
-      @preview-product="openProductPreview"
-    />
-    <FocusMode
-      v-else
-      :rows="rows"
-      :loading="loading"
-      :page="page"
-      :page-size="pageSize"
-      :total-count="totalCount"
-      :initial-index="focusIndex"
-      @need-more="loadNextPage"
-      @exit="exitFocus"
-    />
+    <div v-bind="tabPanel">
+      <ListMode
+        v-if="mode === 'list'"
+        :rows="rows"
+        :runs="runLabels"
+        :loading="loading"
+        :total-count="totalCount"
+        :busy="busy"
+        :bulk="!filters.task"
+        :status-filter="filters.status"
+        @accept="acceptOne"
+        @reject="rejectOne"
+        @bulk-accept="bulkAsk = 'accept'"
+        @bulk-reject="bulkAsk = 'reject'"
+        @bulk-undo="bulkAsk = 'undo'"
+        @reconfirm="openDrift"
+        @row-open="openDetail"
+        @preview-product="openProductPreview"
+      >
+        <template #empty>
+          <EmptyState icon="enrich" :title="$t('enrichment.review.empty')" :message="$t('enrichment.review.empty_message')" data-testid="review-empty">
+            <div class="flex jc-ct flex-wrap gap-3">
+              <BasicButton v-if="narrowed" data-testid="review-empty-clear" @click="clearFilters">
+                {{ $t("enrichment.review.clear_filters") }}
+              </BasicButton>
+              <BasicButton v-if="filters.status !== 'pending'" data-testid="review-empty-pending" @click="onFilterChange('status', 'pending')">
+                {{ $t("enrichment.review.show_pending") }}
+              </BasicButton>
+              <BasicButton v-else-if="filters.task" data-testid="review-empty-applied" @click="onFilterChange('status', 'applied')">
+                {{ $t("enrichment.review.show_applied") }}
+              </BasicButton>
+              <router-link v-if="!narrowed" to="/pim/products" class="enrichment-review__run-link t-accent fw-600" data-testid="review-empty-run">
+                {{ $t("enrichment.review.run_ai") }}
+              </router-link>
+            </div>
+          </EmptyState>
+        </template>
+      </ListMode>
+      <ProductMode
+        v-else-if="mode === 'product'"
+        :rows="rows"
+        :loading="loading"
+        :busy="busy"
+        @accept="acceptOne"
+        @reject="rejectOne"
+        @updated="patchRow"
+        @preview-product="openProductPreview"
+      />
+      <FocusMode
+        v-else
+        :rows="rows"
+        :loading="loading"
+        :page="page"
+        :page-size="pageSize"
+        :total-count="totalCount"
+        :status-filter="filters.status"
+        @need-more="loadNextPage"
+        @exit="exitFocus"
+      />
+    </div>
 
     <!-- Mounted while the list loads (no footer jump); a page change waits for the running fetch or action. -->
-    <template v-if="mode === 'list' && totalCount > pageSize" #footer>
+    <template v-if="mode !== 'focus' && totalCount > pageSize" #footer>
       <Pagination
         :page="page"
         :pages="Math.ceil(totalCount / pageSize)"
@@ -148,6 +200,36 @@
       @close="importVisible = false"
     />
 
+    <ConfirmDialog
+      :open="!!bulkAsk"
+      :tone="bulkAsk === 'reject' ? 'danger' : 'default'"
+      :title="bulkAsk ? $t(`enrichment.review.bulk.confirm_${bulkAsk}`, { count: totalCount }) : ''"
+      :message="bulkAsk ? $t(`enrichment.review.bulk.confirm_${bulkAsk}_message`) : ''"
+      :confirm-label="bulkAsk ? $t(`enrichment.review.bulk.${bulkAsk}_all`, { count: totalCount }) : ''"
+      confirm-testid="enrichment-bulk-confirm"
+      @confirm="runBulk"
+      @cancel="bulkAsk = null"
+    />
+
+    <SideDrawer
+      :visible="!!detail"
+      :title="detail ? detailTitle : ''"
+      width="720px"
+      @close="detail = null"
+    >
+      <ProposalPanel
+        v-if="detail"
+        :key="detail.id"
+        :proposal="detail"
+        :task="detailTask"
+        :busy="busy"
+        data-testid="enrichment-detail"
+        @accept="detailAccept"
+        @reject="detailReject"
+        @updated="detailUpdated"
+      />
+    </SideDrawer>
+
     <ProductPreviewDrawer
       :visible="previewVisible"
       :sku="previewSku"
@@ -162,13 +244,23 @@ import { defineAsyncComponent } from "vue";
 import { useNotifyStore } from "@/stores/notify";
 import { usePimChannelStore } from "@/stores/pimChannel";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import RouteTabs from "@/components/Navigation/RouteTabs.vue";
+import { ENRICHMENT_REVIEW_TABS, routeTabPanel } from "@/components/Navigation/nav-routes";
 import ListMode from "./ListMode.vue";
+import ProductMode from "./ProductMode.vue";
 import DriftModal from "./DriftModal.vue";
 import ImportCsvDialog from "./ImportCsvDialog.vue";
 import ProductPreviewDrawer from "./ProductPreviewDrawer.vue";
+import ProposalPanel from "./ProposalPanel.vue";
+import { acceptChosen } from "./applyMode";
+import BatchCorrection from "./BatchCorrection.vue";
+import RunCorrections from "./RunCorrections.vue";
+import { runUidOf, subjectName } from "./reviewLogic";
+import { noteProductNames } from "./runLabel";
+import { useRunLabels } from "./useRunLabels";
 import {
+  GET_Task,
   GET_Proposals,
-  POST_AcceptProposal,
   POST_RejectProposal,
   POST_BulkAcceptProposals,
   POST_BulkRejectProposals,
@@ -176,6 +268,9 @@ import {
 } from "@/api/enrichment/api";
 
 const FocusMode = defineAsyncComponent(() => import("./FocusMode.vue"));
+
+const MODES = ["list", "product", "focus"];
+const DEFAULT_NARROWING = { target_module: "__all", target_kind: "__all", source: "__all", confidence_min: "", search: "" };
 
 const STATUS_VALUES = [
   "pending",
@@ -188,21 +283,25 @@ const STATUS_VALUES = [
 
 export default {
   name: "EnrichmentReview",
-  components: { ListMode, FocusMode, DriftModal, ImportCsvDialog, ProductPreviewDrawer },
+  components: { ListMode, ProductMode, FocusMode, DriftModal, ImportCsvDialog, ProductPreviewDrawer, ProposalPanel, BatchCorrection, RunCorrections, RouteTabs },
   setup() {
-    return { notify: useNotifyStore(), pimChannel: usePimChannelStore() };
+    const { labels: runLabels, load: loadRuns } = useRunLabels();
+    return {
+      notify: useNotifyStore(), pimChannel: usePimChannelStore(), ENRICHMENT_REVIEW_TABS,
+      tabPanel: routeTabPanel(ENRICHMENT_REVIEW_TABS, "EnrichmentReview"), runLabels, loadRuns,
+    };
   },
   data() {
     return {
-      mode: this.$route.query.mode === "focus" ? "focus" : "list",
+      mode: MODES.includes(this.$route.query.mode) ? this.$route.query.mode : "list",
       filters: {
         status: this.$route.query.status || "pending",
         target_module: "__all",
         target_kind: "__all",
         source: "__all",
-        batch_id: "",
         confidence_min: "",
         search: "",
+        task: this.$route.query.task || "",
       },
       rows: [],
       page: 1,
@@ -212,14 +311,23 @@ export default {
       busy: false,
       searchTimer: null,
       driftVisible: false,
+      detail: null,
+      bulkAsk: null,
+      detailTask: null,
       driftProposal: null,
       importVisible: false,
-      focusIndex: 0,
       previewSku: null,
       previewVisible: false,
+      // Bumped by every list read and on leaving: only the latest read lands (a slow answer never undoes a filter).
+      fetchSeq: 0,
     };
   },
   computed: {
+    // A Studio step's proposal has no product: the drawer names its article.
+    detailTitle() {
+      if (runUidOf(this.detail)) return this.detail.subject_label || this.$t("enrichment.review.studio_article");
+      return subjectName(this.detail);
+    },
     // Count of the filters in the filter panel (status lives in its own always-visible
     // chip row, so it's excluded) — the badge on the panel's phone trigger.
     activeFilterCount() {
@@ -227,7 +335,6 @@ export default {
       if (this.filters.target_module !== "__all") n += 1;
       if (this.filters.target_kind !== "__all") n += 1;
       if (this.filters.source !== "__all") n += 1;
-      if (this.filters.batch_id) n += 1;
       if (this.filters.confidence_min !== "" && this.filters.confidence_min != null)
         n += 1;
       if (this.filters.search) n += 1;
@@ -247,11 +354,25 @@ export default {
           testid: "enrichment-mode-list",
         },
         {
+          value: "product",
+          label: this.$t("enrichment.review.modes.product"),
+          testid: "enrichment-mode-product",
+        },
+        {
           value: "focus",
           label: this.$t("enrichment.review.modes.focus"),
           testid: "enrichment-mode-focus",
         },
       ];
+    },
+    taskLink() {
+      return { name: "EnrichmentRuns", query: { task: String(this.filters.task) } };
+    },
+    // A filter beyond the status chips narrows the list: its empty state offers to clear them.
+    narrowed() {
+      const f = this.filters;
+      return [f.target_module, f.target_kind, f.source].some((v) => v !== "__all") ||
+        !!(f.search || f.task) || (f.confidence_min !== "" && f.confidence_min != null);
     },
     statusOptions() {
       return [
@@ -273,19 +394,31 @@ export default {
     },
   },
   watch: {
-    mode(val) {
-      // Only a row click picks the Focus row; back in List the next Focus starts at the top.
-      if (val === "list") this.focusIndex = 0;
+    // A run picked from the strip (a link to `?task=<id>`) narrows the list to its proposals; clearing it widens it.
+    // (Leaving the page changes the query too: only this route's own query counts.)
+    "$route.query.task"(task) {
+      if (this.$route.name !== "EnrichmentReview" || (task || "") === this.filters.task) return;
+      this.onFilterChange("task", task || "");
+    },
+    mode(val, old) {
       this.$router.replace({
         path: this.$route.path,
         query: { ...this.$route.query, mode: val },
       });
+      // Under "All" Focus reads the pending set only: entering or leaving it reloads from the first page.
+      if (this.filters.status === "__all" && (val === "focus") !== (old === "focus")) {
+        this.page = 1;
+        this.fetchRows();
+      }
     },
   },
   mounted() {
     this.fetchRows();
     // The import dialog needs the channel/language list; load it once (no-op if already cached).
     if (!this.pimChannel.channels.length) this.pimChannel.fetchChannels();
+  },
+  beforeUnmount() {
+    this.fetchSeq += 1;
   },
   methods: {
     onImported() {
@@ -311,14 +444,14 @@ export default {
         page_size: this.pageSize,
         ordering: "-created_at",
       };
-      if (this.filters.status && this.filters.status !== "__all")
-        params.status = this.filters.status;
+      // The "All" chip asks for every status (no status param would mean only pending); Focus walks what is to decide.
+      if (this.filters.status)
+        params.status = this.filters.status === "__all" ? (this.mode === "focus" ? "pending" : "all") : this.filters.status;
       if (this.filters.target_module !== "__all")
         params.target_module = this.filters.target_module;
       if (this.filters.target_kind !== "__all")
         params.target_kind = this.filters.target_kind;
       if (this.filters.source !== "__all") params.source = this.filters.source;
-      if (this.filters.batch_id) params.batch_id = this.filters.batch_id;
       if (
         this.filters.confidence_min !== "" &&
         this.filters.confidence_min != null
@@ -326,6 +459,7 @@ export default {
         params.confidence_min = this.filters.confidence_min;
       }
       if (this.filters.search) params.search = this.filters.search;
+      if (this.filters.task) params.task = this.filters.task;
       return params;
     },
     // Server-side filter payload (no pagination) reused by bulk accept/reject.
@@ -336,7 +470,6 @@ export default {
       if (this.filters.target_kind !== "__all")
         f.target_kind = this.filters.target_kind;
       if (this.filters.source !== "__all") f.source = this.filters.source;
-      if (this.filters.batch_id) f.batch_id = this.filters.batch_id;
       if (
         this.filters.confidence_min !== "" &&
         this.filters.confidence_min != null
@@ -347,14 +480,17 @@ export default {
       return f;
     },
     async fetchRows() {
-      // A reloaded list (page, filter, a row removed by an action) has other rows under the old index.
-      this.focusIndex = 0;
+      const mine = ++this.fetchSeq;
       this.loading = true;
       try {
         const { data } = await GET_Proposals(this.buildParams());
+        if (mine !== this.fetchSeq) return;
         this.rows = data.results || [];
         this.totalCount = data.count || 0;
+        noteProductNames(this.rows);
+        this.loadRuns([...this.rows.map((row) => row.task_id), this.filters.task]);
       } catch (err) {
+        if (mine !== this.fetchSeq) return;
         this.notify.spawnNotification({
           type: "negative",
           msg: extractApiMessage(err, this.$t("notifications.error")),
@@ -362,7 +498,7 @@ export default {
         this.rows = [];
         this.totalCount = 0;
       } finally {
-        this.loading = false;
+        if (mine === this.fetchSeq) this.loading = false;
       }
     },
     onFilterChange(field, value) {
@@ -375,6 +511,16 @@ export default {
         });
       }
       this.fetchRows();
+    },
+    clearFilters() {
+      Object.assign(this.filters, DEFAULT_NARROWING);
+      this.clearTask();
+    },
+    clearTask() {
+      const query = { ...this.$route.query };
+      delete query.task;
+      this.$router.replace({ path: this.$route.path, query });
+      this.onFilterChange("task", "");
     },
     onSearchChange() {
       clearTimeout(this.searchTimer);
@@ -404,12 +550,29 @@ export default {
       });
       this.fetchRows();
     },
-    onRowFocus(row) {
-      // List row click → open Focus on that exact proposal (same loaded page,
-      // so the list index maps straight to FocusMode's localIndex).
-      const idx = this.rows.indexOf(row);
-      this.focusIndex = idx >= 0 ? idx : 0;
-      this.mode = "focus";
+    // A list row opens its detail: the full card (preview, Apply / Edit / Reject) in a side panel.
+    async openDetail(row) {
+      this.detail = row;
+      this.detailTask = null;
+      if (row.task_id == null) return;
+      try {
+        const { data } = await GET_Task(row.task_id);
+        if (this.detail?.id === row.id) this.detailTask = data;
+      } catch {
+        // No task: a translation just shows no source text.
+      }
+    },
+    async detailAccept(proposal) {
+      await this.acceptOne(proposal);
+      if (!this.driftVisible) this.detail = null;
+    },
+    async detailReject(payload) {
+      await this.rejectOne(payload);
+      this.detail = null;
+    },
+    detailUpdated(proposal) {
+      this.patchRow(proposal);
+      this.detail = proposal;
     },
     openProductPreview(row) {
       this.previewSku = row.subject_ref;
@@ -422,7 +585,7 @@ export default {
       if (this.busy) return;
       this.busy = true;
       try {
-        const { data } = await POST_AcceptProposal(proposal.id);
+        const { data } = await acceptChosen(proposal);
         if (data.status === "drifted") {
           // Live value changed since the proposal — force a conscious re-confirm (D2).
           this.driftProposal = data;
@@ -462,6 +625,14 @@ export default {
       } finally {
         this.busy = false;
       }
+    },
+    // The confirmed bulk action: the dialog closes first, the toast reports what ran.
+    runBulk() {
+      const action = this.bulkAsk;
+      this.bulkAsk = null;
+      if (action === "accept") return this.bulkAccept();
+      if (action === "reject") return this.bulkReject("");
+      return this.bulkUndo();
     },
     async bulkAccept() {
       if (this.busy) return;
@@ -552,7 +723,7 @@ export default {
       if (this.busy) return;
       this.busy = true;
       try {
-        await POST_AcceptProposal(proposal.id);
+        await acceptChosen(proposal);
         this.notify.spawnNotification({
           type: "positive",
           msg: this.$t("enrichment.review.toast.accepted"),
@@ -585,11 +756,15 @@ export default {
   flex-shrink: 0;
   white-space: nowrap;
 }
+.enrichment-review__task {
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-base);
+  background: var(--surface-raised);
+}
 .enrichment-review__search {
   min-width: 180px;
   max-width: 260px;
 }
-.enrichment-review__batch,
 .enrichment-review__confidence {
   max-width: 140px;
 }

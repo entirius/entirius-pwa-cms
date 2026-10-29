@@ -72,3 +72,11 @@ describe("Leads nav (UX-002d: one panel, Settings instead of four entries)", () 
     expect(routesFor("leads", false, new Set(["communicator"]))).toEqual(["/leads/inbox", "/leads/settings"]);
   });
 });
+
+describe("Enricher nav", () => {
+  it("three entries on every screen: Review · Studio · Settings (runs and the setup screens are their tabs)", () => {
+    const entries = ["/enrichment", "/enrichment/studio", "/enrichment/settings"];
+    expect(routesFor("enricher", false)).toEqual(entries);
+    expect(routesFor("enricher", true)).toEqual(entries);
+  });
+});

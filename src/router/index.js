@@ -5,7 +5,7 @@ import { useMuninStore } from "@/stores/munin";
 import { useAccessStore } from "@/stores/access";
 import { panels } from "@/configs/access";
 import { AREAS } from "@/configs/areas";
-import { buildNavRoutes } from "@/components/Navigation/nav-routes";
+import { ENRICHMENT_SETTINGS_TABS, buildNavRoutes } from "@/components/Navigation/nav-routes";
 
 import Home from "../views/Home/index.vue";
 import rv_builds from "../views/Builder/index.vue";
@@ -815,6 +815,18 @@ const routes = [
           area: AREAS.FAQ_FAQ,
         },
       },
+      {
+        path: "duplicates",
+        name: "FaqDuplicates",
+        component: () =>
+          import(/* webpackChunkName: "faq" */ "../views/Faq/DuplicateReport.vue"),
+        meta: {
+          requiresAuth: true,
+          titleKey: "faq.duplicates",
+          panel: "faq",
+          area: AREAS.FAQ_FAQ,
+        },
+      },
     ],
   },
 
@@ -1137,7 +1149,7 @@ const routes = [
   { path: "/communicator/sequences", redirect: "/leads/settings/sequences" },
   { path: "/communicator/settings", redirect: "/leads/settings/sending" },
 
-  // Enrichment review panel (etap-06 / etap-06b)
+  // Enrichment review panel (etap-06 / etap-06b): Proposals | Runs, two tabs of one screen
   {
     path: "/enrichment",
     name: "EnrichmentReview",
@@ -1150,10 +1162,134 @@ const routes = [
       area: AREAS.ENRICHMENT_PROPOSALS,
     },
   },
-
-  // Enrichment spawn rules (etap-13)
   {
-    path: "/enrichment/spawn-rules",
+    path: "/enrichment/runs",
+    name: "EnrichmentRuns",
+    component: () =>
+      import(/* webpackChunkName: "enrichment" */ "../views/EnrichmentReview/RunsPage.vue"),
+    meta: {
+      requiresAuth: true,
+      titleKey: "enrichment.review.tabs.runs",
+      panel: "enricher",
+      area: AREAS.ENRICHMENT_PROPOSALS,
+    },
+  },
+
+  // Full-screen editor of one long text proposal (contract A3 § 1)
+  {
+    path: "/enrichment/edit/:proposalId",
+    name: "EnrichmentProposalEditor",
+    component: () =>
+      import(/* webpackChunkName: "enrichment" */ "../views/EnrichmentReview/ProposalEditor.vue"),
+    meta: {
+      requiresAuth: true,
+      titleKey: "enrichment.editor.title",
+      panel: "enricher",
+      area: AREAS.ENRICHMENT_PROPOSALS,
+    },
+  },
+
+  // AI Studio: workflow runs step by step (contract A4 § 6)
+  {
+    path: "/enrichment/studio",
+    name: "EnrichmentStudio",
+    component: () =>
+      import(/* webpackChunkName: "enrichment" */ "../views/EnrichmentStudio/RunList.vue"),
+    meta: {
+      requiresAuth: true,
+      titleKey: "enrichment.studio.title",
+      panel: "enricher",
+      area: AREAS.ENRICHMENT_PROPOSALS,
+    },
+  },
+  {
+    path: "/enrichment/studio/:uid",
+    name: "EnrichmentStudioRun",
+    component: () =>
+      import(/* webpackChunkName: "enrichment" */ "../views/EnrichmentStudio/RunView.vue"),
+    meta: {
+      requiresAuth: true,
+      titleKey: "enrichment.studio.title",
+      panel: "enricher",
+      area: AREAS.ENRICHMENT_PROPOSALS,
+    },
+  },
+
+  // Enricher → Settings: the company profile and memory (contract A4 § 2–§ 3), AI templates (contract A3 § 4) and
+  // spawn rules (etap-13), each a tab of one screen
+  // `/enrichment/settings` (the menu entry) opens the first tab the user can read: Profile needs the profile area,
+  // narrower than the proposals one. Never rendered: beforeEnter always moves on.
+  {
+    path: "/enrichment/settings",
+    component: () =>
+      import(/* webpackChunkName: "enrichment" */ "../views/EnrichmentProfile/ProfilePage.vue"),
+    meta: { requiresAuth: true, panel: "enricher" },
+    beforeEnter: firstSettingsTab,
+  },
+  {
+    path: "/enrichment/settings/profile",
+    name: "EnrichmentProfile",
+    component: () =>
+      import(/* webpackChunkName: "enrichment" */ "../views/EnrichmentProfile/ProfilePage.vue"),
+    meta: {
+      requiresAuth: true,
+      titleKey: "enrichment.profile.title",
+      panel: "enricher",
+      area: AREAS.ENRICHMENT_PROFILE,
+    },
+  },
+  {
+    path: "/enrichment/settings/memory",
+    name: "EnrichmentMemory",
+    component: () =>
+      import(/* webpackChunkName: "enrichment" */ "../views/EnrichmentMemory/MemoryList.vue"),
+    meta: {
+      requiresAuth: true,
+      titleKey: "enrichment.memory.title",
+      panel: "enricher",
+      area: AREAS.ENRICHMENT_PROFILE,
+    },
+  },
+  {
+    path: "/enrichment/settings/templates",
+    name: "EnrichmentTemplates",
+    component: () =>
+      import(/* webpackChunkName: "enrichment" */ "../views/EnrichmentTemplates/TemplateList.vue"),
+    meta: {
+      requiresAuth: true,
+      titleKey: "enrichment.templates.title",
+      panel: "enricher",
+      area: AREAS.ENRICHMENT_PROPOSALS,
+    },
+  },
+  {
+    path: "/enrichment/settings/templates/new",
+    name: "EnrichmentTemplateCreate",
+    component: () =>
+      import(/* webpackChunkName: "enrichment" */ "../views/EnrichmentTemplates/TemplateEdit.vue"),
+    meta: {
+      requiresAuth: true,
+      titleKey: "enrichment.templates.create",
+      panel: "enricher",
+      area: AREAS.ENRICHMENT_PROPOSALS,
+      crumbParent: "EnrichmentTemplates",
+    },
+  },
+  {
+    path: "/enrichment/settings/templates/:key",
+    name: "EnrichmentTemplateEdit",
+    component: () =>
+      import(/* webpackChunkName: "enrichment" */ "../views/EnrichmentTemplates/TemplateEdit.vue"),
+    meta: {
+      requiresAuth: true,
+      titleKey: "enrichment.templates.title",
+      panel: "enricher",
+      area: AREAS.ENRICHMENT_PROPOSALS,
+      crumbParent: "EnrichmentTemplates",
+    },
+  },
+  {
+    path: "/enrichment/settings/spawn-rules",
     name: "EnrichmentSpawnRules",
     component: () =>
       import(/* webpackChunkName: "enrichment" */ "../views/EnrichmentSpawnRules/SpawnRuleList.vue"),
@@ -1165,7 +1301,7 @@ const routes = [
     },
   },
   {
-    path: "/enrichment/spawn-rules/new",
+    path: "/enrichment/settings/spawn-rules/new",
     name: "EnrichmentSpawnRuleCreate",
     component: () =>
       import(/* webpackChunkName: "enrichment" */ "../views/EnrichmentSpawnRules/SpawnRuleEdit.vue"),
@@ -1174,10 +1310,11 @@ const routes = [
       titleKey: "enrichment.spawn_rules.create",
       panel: "enricher",
       area: AREAS.ENRICHMENT_RULES,
+      crumbParent: "EnrichmentSpawnRules",
     },
   },
   {
-    path: "/enrichment/spawn-rules/:key",
+    path: "/enrichment/settings/spawn-rules/:key",
     name: "EnrichmentSpawnRuleEdit",
     component: () =>
       import(/* webpackChunkName: "enrichment" */ "../views/EnrichmentSpawnRules/SpawnRuleEdit.vue"),
@@ -1186,22 +1323,21 @@ const routes = [
       titleKey: "enrichment.spawn_rules.title",
       panel: "enricher",
       area: AREAS.ENRICHMENT_RULES,
+      crumbParent: "EnrichmentSpawnRules",
     },
   },
 
-  // Enrichment tasks (read-only queue view)
-  {
-    path: "/enrichment/tasks",
-    name: "EnrichmentTasks",
-    component: () =>
-      import(/* webpackChunkName: "enrichment" */ "../views/EnrichmentTasks/TaskList.vue"),
-    meta: {
-      requiresAuth: true,
-      titleKey: "enrichment.tasks.title",
-      panel: "enricher",
-      area: AREAS.ENRICHMENT_PROPOSALS,
-    },
-  },
+  // The old Enricher menu (one entry per screen) became Review | Studio | Settings: old deep links land on the same
+  // screens, their query kept (`?task=` of a run, `?channel=` of a profile)
+  { path: "/enrichment/tasks", redirect: (to) => ({ name: "EnrichmentRuns", query: to.query }) },
+  { path: "/enrichment/profile", redirect: (to) => ({ name: "EnrichmentProfile", query: to.query }) },
+  { path: "/enrichment/memory", redirect: (to) => ({ name: "EnrichmentMemory", query: to.query }) },
+  { path: "/enrichment/templates", redirect: (to) => ({ name: "EnrichmentTemplates", query: to.query }) },
+  { path: "/enrichment/templates/new", redirect: (to) => ({ name: "EnrichmentTemplateCreate", query: to.query }) },
+  { path: "/enrichment/templates/:key", redirect: (to) => ({ name: "EnrichmentTemplateEdit", params: to.params, query: to.query }) },
+  { path: "/enrichment/spawn-rules", redirect: (to) => ({ name: "EnrichmentSpawnRules", query: to.query }) },
+  { path: "/enrichment/spawn-rules/new", redirect: (to) => ({ name: "EnrichmentSpawnRuleCreate", query: to.query }) },
+  { path: "/enrichment/spawn-rules/:key", redirect: (to) => ({ name: "EnrichmentSpawnRuleEdit", params: to.params, query: to.query }) },
 
   // Translation Jobs
   {
@@ -1520,6 +1656,14 @@ function accessFallback(to, panel) {
   if (landing) return { path: landing.route, query: landing.query };
   if (access.status !== "error") access.deniedPanel = panel;
   return "/";
+}
+
+// The Enricher Settings tab to open: the first one the user can read (the first one when none, the guard refuses it).
+async function firstSettingsTab() {
+  const access = useAccessStore();
+  await access.ensureLoaded();
+  const tabs = ENRICHMENT_SETTINGS_TABS.sections.map(({ route }) => ({ name: route }));
+  return tabs.find((tab) => access.can(router.resolve(tab).meta.area)) || tabs[0];
 }
 
 // django-access: read on the route's area, or on any area of its panel when the route carries none.

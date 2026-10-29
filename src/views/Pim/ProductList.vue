@@ -18,7 +18,7 @@
           @input="debouncedFetch(searchAndFetch)"
         />
         <MobileFilterPanel :active-count="dropdownFilterCount" :trigger-label="$t('pim.filters')">
-          <div class="product-list__filter-group">
+          <div class="product-list__filter-group product-list__filter-group--chips">
             <FilterChip
               v-for="tab in filterTabs"
               :key="tab.key"
@@ -111,6 +111,7 @@
         @action="handleBulkAction"
         @clear="clearSelection"
       />
+      <AiToolboxHint v-if="selectedProducts.length && aiWritable && !aiUsable" />
 
       <Loader block v-show="loading" />
 
@@ -239,12 +240,16 @@
       :entity-ids="translateEntityIds"
     />
 
-    <SpawnDialog
-      :visible="showSpawnDialog"
-      :skus="spawnSkus"
-      :filter-params="spawnFilterParams"
-      @close="showSpawnDialog = false"
-      @spawned="onSpawned"
+    <RunAiTaskDialog
+      v-if="aiWritable"
+      :open="aiDialogOpen"
+      :workers="aiWorkers"
+      :templates="aiTemplates"
+      :initial-template="aiTemplate"
+      :skus="aiSkus"
+      @close="aiDialogOpen = false"
+      @created="onSpawned"
+      @template-saved="reloadAiTemplates"
     />
 
   </PageLayout>
@@ -273,7 +278,10 @@ import {
   resolveGapLabel,
   findingsParams,
 } from "./quality";
-import SpawnDialog from "./components/enrichment/SpawnDialog.vue";
+import RunAiTaskDialog from "./components/enrichment/RunAiTaskDialog.vue";
+import { useAiWorkers } from "./components/enrichment/useAiWorkers";
+
+import AiToolboxHint from "@/components/ConfigHealth/AiToolboxHint.vue";
 import GapStatusAlert from "./components/GapStatusAlert.vue";
 import PimTranslateDialog from "./components/PimTranslateDialog.vue";
 import PimChannelSelect from "./components/PimChannelSelect.vue";
@@ -289,16 +297,29 @@ function readHideQualitySensor() {
   }
 }
 
+// The AI bulk action's "Custom…" entry (a worker picked in the dialog) beside the templates.
+const CUSTOM_RUN = "__custom";
+
 export default {
   name: "ProductList",
-  components: { SpawnDialog, GapStatusAlert, PimTranslateDialog, PimChannelSelect },
+  components: { RunAiTaskDialog, AiToolboxHint, GapStatusAlert, PimTranslateDialog, PimChannelSelect },
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();
     const pimChannel = usePimChannelStore();
     const munin = useMuninStore();
     const { search, debouncedFetch } = useSearchDebounce();
-    return { loader, notify, pimChannel, munin, search, debouncedFetch };
+    const {
+      workers: aiWorkers,
+      templates: aiTemplates,
+      writable: aiWritable,
+      usable: aiUsable,
+      reloadTemplates: reloadAiTemplates,
+    } = useAiWorkers();
+    return {
+      loader, notify, pimChannel, munin, search, debouncedFetch,
+      aiWorkers, aiTemplates, aiWritable, aiUsable, reloadAiTemplates,
+    };
   },
   data() {
     return {
@@ -324,9 +345,9 @@ export default {
       hideQualitySensor: readHideQualitySensor(),
       gapSeverityFilter: null,
       onlySourceGaps: false,
-      showSpawnDialog: false,
-      spawnSkus: [],
-      spawnFilterParams: {},
+      aiDialogOpen: false,
+      aiTemplate: "",
+      aiSkus: [],
     };
   },
   computed: {
@@ -338,9 +359,6 @@ export default {
     },
     hasSuppliersPanel() {
       return this.munin.isPanelEnabled("atlas");
-    },
-    hasEnricherPanel() {
-      return this.munin.isPanelEnabled("enricher");
     },
     showQualityColumn() {
       return this.hasQualityData && !this.hideQualitySensor;
@@ -372,7 +390,6 @@ export default {
         {
           key: "enable",
           labelKey: "pim.enable_all",
-          variant: "primary",
         },
         {
           key: "disable",
@@ -390,18 +407,20 @@ export default {
           ],
         },
       ];
-      if (this.hasEnricherPanel) {
+      if (this.aiWritable && this.aiUsable && this.aiWorkers.length) {
         actions.push({
-          key: "send_to_enrichment",
-          labelKey: "enrichment.spawn.send_selected",
-          variant: "secondary",
+          key: "ai_task",
+          labelKey: "enrichment.ai.menu",
+          options: [
+            ...this.aiTemplates.map((template) => ({ label: template.label, value: template.key })),
+            { label: this.$t("enrichment.run.custom"), value: CUSTOM_RUN },
+          ],
         });
       }
       if (this.translatorAvailable) {
         actions.push({
           key: "translate",
           labelKey: "pim.translate",
-          variant: "primary",
         });
       }
       return actions;
@@ -767,28 +786,12 @@ export default {
       if (actionKey === "enable") return this.doBulkUpdate({ is_enabled: true });
       if (actionKey === "disable") return this.doBulkUpdate({ is_enabled: false });
       if (actionKey === "visibility") return this.doBulkUpdate({ visibility: value });
-      if (actionKey === "send_to_enrichment") return this.openSpawnDialog();
+      if (actionKey === "ai_task") return this.openAiTask(value);
     },
-    // Filter snapshot mirrors fetchProducts() so the spawn dialog can offer a
-    // "send all matching current filter" scope (scope_spec mode:filter).
-    currentFilterParams() {
-      const params = {};
-      if (this.search) params.search = this.search;
-      if (this.activeFilter === "enabled") params.is_enabled = true;
-      else if (this.activeFilter === "disabled") params.is_enabled = false;
-      else if (this.activeFilter === "no_media") params.has_media = false;
-      if (this.visibilityFilter) params.visibility = this.visibilityFilter;
-      if (this.productClassFilter) params.product_class = this.productClassFilter;
-      if (this.categoryFilter) params.category = this.categoryFilter;
-      for (const [featureIdx, attrIdx] of Object.entries(this.attributeFilters)) {
-        params[`attr_${featureIdx}`] = attrIdx;
-      }
-      return params;
-    },
-    openSpawnDialog() {
-      this.spawnSkus = this.selectedProducts.map((p) => p.sku);
-      this.spawnFilterParams = this.currentFilterParams();
-      this.showSpawnDialog = true;
+    openAiTask(templateKey) {
+      this.aiTemplate = templateKey === CUSTOM_RUN ? "" : templateKey;
+      this.aiSkus = this.selectedProducts.map((p) => p.sku);
+      this.aiDialogOpen = true;
     },
     onSpawned() {
       this.selectedProducts = [];
@@ -862,9 +865,9 @@ export default {
   margin-right: var(--space-4);
 }
 
-// A select shows its label above the box only once it has one to show: the boxes share a baseline, not a centre.
-.product-list__filter-group:has(.product-list__filter-dropdown) {
-  align-items: flex-end;
+// The selects below carry floating labels: the chip row keeps clear of them when the toolbar wraps.
+.product-list__filter-group--chips {
+  margin-bottom: var(--space-6);
 }
 
 .product-list__filter-dropdown {

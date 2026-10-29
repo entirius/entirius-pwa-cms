@@ -55,14 +55,14 @@ path prefix and lazy-loaded (`() => import(...)`). Grouped by panel:
 | `/accounts/...` | CustomerList, CustomerDetail |
 | `/checkout-orders/...` | OrderList, OrderDetail |
 | `/emails/...` | EmailsDashboard, EmailChannelEdit, EmailLangConfigEdit, EmailTemplateList/Edit |
-| `/faq/...` | GroupList/Edit, ItemList/Edit |
+| `/faq/...` | GroupList/Edit, ItemList/Edit, DuplicateReport (`duplicates`) |
 | `/pricing/...` | PriceList/Detail, TaxClassList/Detail, ChannelList/Detail |
 | `/stock/...` | WarehouseStockTable |
 | `/translation-jobs` | TranslationDashboard |
 | `/access/...` | RoleList, RoleDetail (`roles/new`, `roles/:key`; a built-in role opens read-only, Duplicate = `roles/new?from=<key>`); StaffList (`staff`), StaffDetail (`staff/:id` — direct grants, group roles read-only), GroupList (`groups`), ApplicationList (`applications`), ApplicationDetail (`applications/new`, `applications/:id` — tokens: new, rotate, set expiry, revoke; the raw value only in `SecretReveal`), AuditList (`audit`) |
 | `/atlas/...`, `/suppliers/*` + `/supplier-review` (legacy redirects) | SupplierList/Detail, AutoMatched, Duplicates, SupplierReview (Review/) |
 | `/pricefighter/...` | GapTable, Strategies, DecisionHistory |
-| `/enrichment/...` | EnrichmentReview, EnrichmentSpawnRules List/Edit, EnrichmentTasks |
+| `/enrichment/...` | Review: EnrichmentReview (Proposals) and RunsPage (`runs`, `runs?task=<id>` = one run, its proposals in place) as tabs (`RouteTabs`); EnrichmentStudio RunList + RunView (`studio`, `studio/:uid?step=`); Settings (`settings/…`): Profile, Memory, EnrichmentTemplates List/Edit, EnrichmentSpawnRules List/Edit as tabs; the old `tasks`, `profile`, `memory`, `templates/…`, `spawn-rules/…` paths redirect with their query |
 | `/promo/...` | PromoList/Edit, VoucherDetail |
 | `/leads/...`, `/communicator/*` + `/leads/stages` (legacy redirects) | Inbox, Companies, Company, Review, Thread, Board, Import, Settings and its sections (communicator templates, sequences, sending, stages, lead types); every screen on PageLayout + PageHeader and the boots, with no panel stylesheet of its own |
 | `/change-password`, `/password-reset` | ChangePassword (authenticated), PasswordReset (unauthenticated, from email link) |
@@ -70,6 +70,19 @@ path prefix and lazy-loaded (`() => import(...)`). Grouped by panel:
 
 Details for every child route are in `src/router/index.js` — this table maps
 prefixes to view components, not individual paths.
+
+FAQ → Duplicate questions (`/faq/duplicates`) lists every question shown more than once in `VUE_APP_CHANNEL`: active
+FAQ items (and their translations) and the `faq_items` lists of contentdb drafts of every content type, so a repeat
+shows before it is published. A section counts by its data (`faq_items: [{ question, answer }]`), not by its type
+name, which each deployment configures in `__client/`. Questions match after `normalizeQuestion`
+(`src/utils/faqDuplicates.js`: no tags, case, punctuation or diacritics); similar wording is not matched. Both APIs
+scope by channel the way the storefront does (`src/views/Faq/duplicateSources.js`). Without the `contentdb` module
+or read on `content.pages` and `content.schema` the report compares FAQ items only. It reads, never writes: a repeat is fixed in the
+item or the page it links to.
+
+Studio "Open draft" builds a Builder route with the content type `blog-post` (`DOCUMENT_TYPE` in
+`src/views/EnrichmentStudio/studioLogic.js`), a copy of the backend setting `CONTENTDB_ENRICHMENT_DOCUMENT_TYPE`. A
+service that changes that setting opens the wrong Builder route until the run API carries its draft's content type.
 
 ## Gating Model
 
@@ -180,8 +193,15 @@ One model feeds every region of the shell (`src/composables/useNav.js`):
   `activeOn` → `meta.navParent` → the longest entry prefix. A detail or create
   page whose path does not nest under its list declares `meta.navParent: "<entry
   route>"` (points, forms, agreements, atlas and promo details / creates).
+- **Route tabs** — a screen whose sections are routes of their own (Enricher
+  Review: Proposals | Runs; Enricher Settings: profile, memory, templates, spawn
+  rules) has one entry (it lights by path prefix) and shows the sections as
+  `RouteTabs` in its `PageHeader` `tabs` slot (the tab sets live in `nav-routes.js`; a tab
+  whose route's area the user cannot read is left out). Each tabbed page passes
+  `:crumbs="[]"` and wraps its body in `routeTabPanel(<tabs>, <its route name>)`.
 - **Breadcrumbs** — `useBreadcrumbs()`: panel → entry → the `meta.crumbParent`
-  chain (route names; the email and communicator template editors) → the page.
+  chain (route names; the email and communicator template editors, the Enricher
+  template and spawn-rule editors) → the page.
   None on a panel's list itself (R3). The shell's page header
   (`src/components/Shell/ShellPageHeader.vue`) provides them to the view's
   `PageHeader` with a back action to the parent crumb, and renders a fallback

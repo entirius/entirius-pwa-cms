@@ -375,6 +375,20 @@ describe("BasicRadioGroup", () => {
     expect(wrapper.find("[role=radiogroup]").attributes("aria-labelledby")).toBe(label.attributes("id"));
     expect(wrapper.findAll("input").every((r) => r.attributes("disabled") !== undefined)).toBe(true);
   });
+
+  it("tiles: the option slot draws each tile, the radios stay the choice", async () => {
+    const wrapper = mount(BasicRadioGroup, {
+      props: { options, modelValue: 1, layout: "tiles" },
+      slots: { option: "<template #option='{ option, checked }'><img :alt='option.label' :data-checked='checked' /></template>" },
+    });
+    expect(wrapper.classes()).toContain("radio-group--tiles");
+    expect(wrapper.findAll("img").map((img) => [img.attributes("alt"), img.attributes("data-checked")])).toEqual([
+      ["One", "true"],
+      ["Two", "false"],
+    ]);
+    await wrapper.findAll("input[type=radio]")[1].trigger("change");
+    expect(wrapper.emitted("update:modelValue").at(-1)).toEqual([2]);
+  });
 });
 
 describe("BasicSwitch", () => {
@@ -562,5 +576,36 @@ describe("BasicWysiwyg", () => {
     await settle();
     const error = wrapper.find(".form-field__error");
     expect(wrapper.find(".ProseMirror").attributes("aria-describedby")).toBe(error.attributes("id"));
+  });
+});
+
+describe("Studio extensions (FormField label slot, SegmentedControl option, BasicTextarea autogrow)", () => {
+  it("a label slot names the control with the caller's markup, without the caps field label", () => {
+    const Host = defineComponent({
+      render: () => h(FormField, {}, { label: () => h("span", { class: "q" }, "Since when?"), default: () => h(BasicTextarea) }),
+    });
+    const wrapper = mount(Host, { global: GLOBAL });
+    const label = wrapper.find("label");
+    expect(label.find(".q").text()).toBe("Since when?");
+    expect(label.classes()).not.toContain("field-label");
+    expect(label.attributes("for")).toBe(wrapper.find("textarea").attributes("id"));
+  });
+
+  it("an option of a segmented control can be taken out alone", () => {
+    const options = [{ label: "Main", value: "a" }, { label: "Skip", value: "b", disabled: true }];
+    const wrapper = mount(SegmentedControl, { props: { options, modelValue: "a" }, global: GLOBAL });
+    const buttons = wrapper.findAll("button");
+    expect(buttons[0].attributes("disabled")).toBeUndefined();
+    expect(buttons[1].attributes("disabled")).toBeDefined();
+  });
+
+  it("an autogrow textarea takes the height of its text", async () => {
+    const wrapper = mount(BasicTextarea, { props: { autogrow: true, modelValue: "a" }, global: GLOBAL, attachTo: document.body });
+    const field = wrapper.find("textarea").element;
+    Object.defineProperty(field, "scrollHeight", { configurable: true, value: 120 });
+    await wrapper.setProps({ modelValue: "a\nb\nc" });
+    await nextTick();
+    expect(field.style.height).toBe("120px");
+    wrapper.unmount();
   });
 });

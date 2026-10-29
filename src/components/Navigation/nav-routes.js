@@ -19,6 +19,32 @@ export const LEADS_SETTINGS_SECTIONS = [
   { key: "sending", route: "CommunicatorSettings", labelKey: "nav.communicator_settings", icon: "paper-plane", module: "communicator" },
 ];
 
+// The tabs of Enricher → Review and Enricher → Settings (RouteTabs): each tab its own route, by name; `badge` as on a
+// nav entry. `idPrefix` names the tabs and the panel each one controls (routeTabPanel).
+export const ENRICHMENT_REVIEW_TABS = {
+  idPrefix: "enrichment-review",
+  sections: [
+    { route: "EnrichmentReview", labelKey: "enrichment.review.tabs.proposals", testid: "enrichment-tab-proposals" },
+    { route: "EnrichmentRuns", labelKey: "enrichment.review.tabs.runs", testid: "enrichment-tab-runs" },
+  ],
+};
+export const ENRICHMENT_SETTINGS_TABS = {
+  idPrefix: "enrichment-settings",
+  sections: [
+    { route: "EnrichmentProfile", labelKey: "nav.enrichment_profile", testid: "enrichment-tab-profile" },
+    { route: "EnrichmentMemory", labelKey: "nav.enrichment_memory", badge: "memorySuggestions", testid: "enrichment-tab-memory" },
+    { route: "EnrichmentTemplates", labelKey: "nav.enrichment_templates", testid: "enrichment-tab-templates" },
+    { route: "EnrichmentSpawnRules", labelKey: "nav.enrichment_spawn_rules", testid: "enrichment-tab-spawn-rules" },
+  ],
+};
+
+/** The attributes of the page body a RouteTabs tab controls (route = the page's route name). */
+export const routeTabPanel = ({ idPrefix }, route) => ({
+  role: "tabpanel",
+  id: `${idPrefix}-panel-${route}`,
+  "aria-labelledby": `${idPrefix}-tab-${route}`,
+});
+
 export function buildNavRoutes() {
   const defaultLang = (process.env.VUE_APP_LANG || "EN").toLowerCase();
   return [
@@ -207,6 +233,13 @@ export function buildNavRoutes() {
       app: ["faq"],
     },
     {
+      route: "/faq/duplicates",
+      labelKey: "nav.faq_duplicates",
+      icon: "copy",
+      query: {},
+      app: ["faq"],
+    },
+    {
       route: "/pricing/prices",
       labelKey: "nav.pm_prices",
       icon: "money-bill-wave",
@@ -338,18 +371,21 @@ export function buildNavRoutes() {
       app: ["enricher"],
     },
     {
-      route: "/enrichment/spawn-rules",
-      labelKey: "nav.enrichment_spawn_rules",
-      icon: "gears",
+      route: "/enrichment/studio",
+      labelKey: "nav.enrichment_studio",
+      icon: "pen-to-square",
       query: {},
       app: ["enricher"],
     },
     {
-      route: "/enrichment/tasks",
-      labelKey: "nav.enrichment_tasks",
-      icon: "list-check",
+      // Profile, Memory, AI templates and Spawn rules as tabs (ENRICHMENT_SETTINGS_TABS); `badge`: the pending
+      // suggestions count (useNav `counts`) — on the phone tab bar too
+      route: "/enrichment/settings",
+      labelKey: "nav.enrichment_settings",
+      icon: "gear",
       query: {},
       app: ["enricher"],
+      badge: "memorySuggestions",
     },
     {
       route: "/access/roles",

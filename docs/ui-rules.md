@@ -92,7 +92,7 @@ Traps:
 | multi-line text | `BasicTextarea` |
 | on/off · one boolean with a text · one of 2–5 choices, all visible | `BasicSwitch` · `BasicCheckbox` (boolean `v-model`, label in the slot) · `BasicRadioGroup` |
 | date / range | `BasicDatePicker` (`mode: "range"` in `config`) |
-| choice from a list · async entity search · channel scope | `BasicSelect` (`multiple`, `searchable`) · `EntitySearchPicker` · `ChannelMultiSelect`; a `BasicSelect` without a FormField label (a filter row, a toolbar, a card or page header) takes `floatingLabel`, its field name — except in a PageHeader `meta` row below 1024 px, where it is named by `aria-label` only (any label above it pushes the select off the line of the title and the buttons); the `ChannelMultiSelect` chip names itself („Kanały: Wszystkie”) |
+| choice from a list · async entity search · channel scope | `BasicSelect` (`multiple`, `searchable`) · `EntitySearchPicker` · `ChannelMultiSelect`; a `BasicSelect` without a FormField label (a filter row, a toolbar, a card or page header) takes `floatingLabel`, its field name (it hangs above the box without taking layout height, so the select stays level with unlabelled siblings — no per-view `align-items` fix) — except in a PageHeader `meta` row below 1024 px, where it is named by `aria-label` only (any label above it pushes the select off the line of the title and the buttons); the `ChannelMultiSelect` chip names itself („Kanały: Wszystkie”) |
 | action picker (a transition, "add an existing item") | `BasicSelect :model-value="null"`, the placeholder as the prompt, the handler on `@update:model-value` |
 | field label, hint, required, error, help | `FormField`, around every field |
 | status / category pill · value chip (picked entity, media tag) · number next to a title, tab or filter | `StatusBadge` (`tone`) · `Tag` · `CountBadge` |
@@ -192,11 +192,14 @@ Traps:
 ## Page patterns
 
 - **Page frame.** Every view is one `PageLayout` (padding and scroll body): `#header` = the view's `PageHeader` (crumbs,
-  back, H1, `meta` chips, `actions`, `description` = the page's help line under the title row, never in `meta`), a
+  back, H1, `meta` chips, `actions`, `description` = the page's help line under the title row, never in `meta`; `tabs`
+  = the screen's sections as `RouteTabs`, under the title, the description then under the tabs), a
   loader branch's condition on the slot; `#toolbar` = the search/filter row;
   `#footer` = the Pagination. Page actions are an `ActionBar` in PageHeader `actions` (R5); controls for the whole
-  panel (a channel selector, „Tłumacz sklep”) sit in PageHeader `meta` or the ActionBar. A panel wrapper holds no
-  toolbar strip and no teleport targets.
+  panel (a channel selector) sit in PageHeader `meta` or the ActionBar. An action on a whole store or channel („Tłumacz
+  sklep”) lives only in the panel built for it (Translation, as the primary action of its page); a view of one entity
+  or a list offers actions scoped to that entity or to the picked rows. A panel wrapper holds no toolbar strip and no
+  teleport targets.
 - **Read-only page.** `PageLayout` decides it once (the route's `meta.area`, else the panel's first area, without
   write in django-access `me`) and shows one notice line under the header. ActionBar keeps only its utilities (not a
   `danger` one; an action's `mutates` true/false overrides its role), FloatingActions (but its back button) and
@@ -269,7 +272,7 @@ Traps:
   under a field, no `description` / `tooltip` (removed, lint). The error replaces the hint in `aria-describedby`.
 - Hints are optional help: users can turn them off in the account menu. Never put information a user must see only
   in a hint — a state that blocks the form („brak języków”) or a live value is content, shown under the control.
-  A note that explains a disabled or empty control (TranslateDialog / SpawnDialog „no languages”) is visible, has an
+  A note that explains a disabled or empty control (TranslateDialog „no languages”) is visible, has an
   id and is linked from the control's `aria-describedby`, where it joins the field's own description (BasicSelect
   and BasicInput merge them: `"<field id> <caller id>"`).
 - One label style: `FormField` renders `.field-label` —
