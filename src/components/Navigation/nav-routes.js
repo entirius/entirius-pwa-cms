@@ -14,9 +14,12 @@
 export const LEADS_SETTINGS_SECTIONS = [
   { key: "stages", route: "LeadsStages", labelKey: "nav.leads_stages", icon: "list-ol", module: "leads" },
   { key: "lead-types", route: "LeadsLeadTypes", labelKey: "leads.lead_types.title", icon: "tags", module: "leads" },
+  { key: "rules", route: "LeadsRules", labelKey: "leads.rules.title", icon: "gears", module: "leads" },
+  { key: "profiles", route: "LeadsProfiles", labelKey: "leads.profiles.title", icon: "wand-magic-sparkles", module: "leads" },
   { key: "templates", route: "CommunicatorTemplates", labelKey: "nav.communicator_templates", icon: "file-lines", module: "communicator" },
   { key: "sequences", route: "CommunicatorSequences", labelKey: "nav.communicator_sequences", icon: "repeat", module: "communicator" },
   { key: "sending", route: "CommunicatorSettings", labelKey: "nav.communicator_settings", icon: "paper-plane", module: "communicator" },
+  { key: "mailbox", route: "CommunicatorMailbox", labelKey: "communicator.mailbox.title", icon: "envelope", module: "communicator" },
 ];
 
 // The tabs of Enricher → Review and Enricher → Settings (RouteTabs): each tab its own route, by name; `badge` as on a

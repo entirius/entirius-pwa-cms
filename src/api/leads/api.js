@@ -61,3 +61,22 @@ export const POST_LeadType = (body) => leadsApi.post(`${base()}/lead-types/`, bo
 export const PATCH_LeadType = (id, body) => leadsApi.patch(`${base()}/lead-types/${id}/`, body);
 
 export const DELETE_LeadType = (id) => leadsApi.delete(`${base()}/lead-types/${id}/`);
+
+// S5 — rules, analysis profiles and recipient-pick profiles of the channel (Leads → Settings). Lists never carry the
+// prompt: a profile's detail does.
+export const POST_Rule = (body) => leadsApi.post(`${base()}/rules/`, body);
+
+export const PATCH_Rule = (id, body) => leadsApi.patch(`${base()}/rules/${id}/`, body);
+
+export const DELETE_Rule = (id) => leadsApi.delete(`${base()}/rules/${id}/`);
+
+// kind: "analysis-profiles" | "recipient-profiles"
+export const GET_Profiles = (kind) => leadsApi.get(`${base()}/${kind}/`);
+
+export const GET_Profile = (kind, id) => leadsApi.get(`${base()}/${kind}/${id}/`);
+
+export const POST_Profile = (kind, body) => leadsApi.post(`${base()}/${kind}/`, body);
+
+export const PATCH_Profile = (kind, id, body) => leadsApi.patch(`${base()}/${kind}/${id}/`, body);
+
+export const DELETE_Profile = (kind, id) => leadsApi.delete(`${base()}/${kind}/${id}/`);

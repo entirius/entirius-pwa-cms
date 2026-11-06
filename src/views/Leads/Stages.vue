@@ -45,6 +45,15 @@
               />
             </span>
             <div class="stage__controls">
+              <BasicSwitch
+                class="stage__on-sent"
+                :model-value="Boolean(element.on_sent)"
+                :label="$t('leads.stages.on_sent')"
+                :title="$t('leads.stages.on_sent_help')"
+                :disabled="readonly"
+                data-testid="stage-on-sent"
+                @update:model-value="setOnSent(element, $event)"
+              />
               <IconButton mutates
                 icon="moveUp"
                 variant="outline"
@@ -198,6 +207,11 @@ async function rename(stage) {
   if (savedLabels[stage.id] === sent) savedLabels[stage.id] = previous;
 }
 
+// The stage that takes a company on its first send: one switch per row, the server keeps the first by order.
+async function setOnSent(stage, on_sent) {
+  if (await attempt(stage.id, () => PATCH_Stage(stage.id, { on_sent }))) await load();
+}
+
 async function remove(stage) {
   confirming.value = null;
   if (await attempt(stage.id, () => DELETE_Stage(stage.id))) await load();
@@ -247,7 +261,11 @@ onMounted(() => Promise.all([load(), loadRules().catch(() => {})]));
 }
 .stage__controls {
   display: flex;
+  align-items: center;
   gap: var(--space-5);
+}
+.stage__on-sent {
+  white-space: nowrap;
 }
 .stage__error {
   grid-column: 1 / -1;

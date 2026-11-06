@@ -5,8 +5,15 @@
     </template>
     <div class="flex-column gap-8">
       <BasicCard v-for="sequence in sequences" :key="sequence.id" :title="sequence.key" gap data-testid="sequence">
-        <template v-if="!sequence.is_active" #actions>
-          <StatusBadge tone="neutral" size="sm" :dot="false" :label="$t('communicator.sequences.inactive')" />
+        <template #actions>
+          <StatusBadge v-if="!sequence.is_active" tone="neutral" size="sm" :dot="false" :label="$t('communicator.sequences.inactive')" />
+          <BasicSwitch
+            :model-value="Boolean(sequence.autostart)"
+            :label="$t('communicator.sequences.autostart')"
+            :title="$t('communicator.sequences.autostart_help')"
+            data-testid="sequence-autostart"
+            @update:model-value="setAutostart(sequence, $event)"
+          />
         </template>
         <DataTable :columns="stepColumns" :rows="sequence.steps" row-key="id" />
         <h3 class="sequence__subtitle m-0">{{ $t("communicator.sequences.texts") }}</h3>
@@ -25,6 +32,7 @@
           <FormField class="sequence__key" :label="$t('communicator.template.key')" :error="keyError" required>
             <BasicInput v-model="draft.key" :maxlength="64" data-testid="sequence-key" />
           </FormField>
+          <BasicSwitch v-model="draft.autostart" :label="$t('communicator.sequences.autostart')" data-testid="sequence-new-autostart" />
           <div v-for="(step, i) in draft.steps" :key="i" class="flex ai-fe flex-wrap gap-5" data-testid="sequence-step">
             <span class="sequence__number">#{{ i + 1 }}</span>
             <FormField :label="$t('communicator.sequences.days')" required>
@@ -48,7 +56,7 @@
 <script setup>
 import { computed, onMounted, reactive, ref } from "vue";
 import { t } from "@/i18n";
-import { GET_SequenceTexts, GET_Sequences, POST_Sequence, POST_SequenceText } from "@/api/communicator/api";
+import { GET_SequenceTexts, GET_Sequences, PATCH_Sequence, POST_Sequence, POST_SequenceText } from "@/api/communicator/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import TextPool from "./TextPool.vue";
 
@@ -67,7 +75,7 @@ const errors = reactive({}); // sequence id → its add-text error; `add` → th
 const keyChecked = ref(false);
 const keyError = computed(() => (keyChecked.value && !KEY_PATTERN.test(draft.key) ? t("leads.stages.key_invalid") : ""));
 const emptyStep = () => ({ days_after_previous: 3, template_key: "" });
-const draft = reactive({ key: "", steps: [emptyStep()] });
+const draft = reactive({ key: "", autostart: false, steps: [emptyStep()] });
 
 async function load() {
   sequences.value = (await GET_Sequences()).data.results;
@@ -92,6 +100,11 @@ async function addText(id) {
   if (await attempt(id, () => POST_SequenceText(id, { body: newText[id] }))) newText[id] = "";
 }
 
+// One autostart sequence per channel: the API answers 409 for a second, and the card shows its message.
+async function setAutostart(sequence, autostart) {
+  await attempt(sequence.id, () => PATCH_Sequence(sequence.id, { autostart }));
+}
+
 async function addSequence() {
   keyChecked.value = true;
   if (keyError.value) {
@@ -99,8 +112,8 @@ async function addSequence() {
     return;
   }
   const steps = draft.steps.map((step, i) => ({ ...step, number: i + 1 }));
-  if (!(await attempt("add", () => POST_Sequence({ key: draft.key, steps })))) return;
-  Object.assign(draft, { key: "", steps: [emptyStep()] });
+  if (!(await attempt("add", () => POST_Sequence({ key: draft.key, autostart: draft.autostart, steps })))) return;
+  Object.assign(draft, { key: "", autostart: false, steps: [emptyStep()] });
   keyChecked.value = false;
 }
 
