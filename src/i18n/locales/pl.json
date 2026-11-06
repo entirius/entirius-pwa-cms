@@ -4341,6 +4341,8 @@
       "help": "Przeciągnij lub użyj strzałek, aby ułożyć etapy w kolejności tablicy. Nazwę etapu zmienisz w jego polu; znacznik pokazuje klucz i rodzaj etapu.",
       "key_help": "Klucz — stała nazwa używana przez reguły i importy; nie można jej później zmienić",
       "label_help": "Etykieta — nazwa widoczna na tablicy",
+      "on_sent": "Po pierwszej wysyłce",
+      "on_sent_help": "Firma trafia do tego etapu, gdy wyślemy do niej pierwszy mail (tylko do przodu).",
       "delete_busy_one": "Etap „{label}” zawiera 1 firmę. Najpierw przenieś ją do innego etapu — etapu, w którym są firmy, nie można usunąć.",
       "delete_busy_few": "Etap „{label}” zawiera {count} firmy. Najpierw przenieś je do innego etapu — etapu, w którym są firmy, nie można usunąć.",
       "delete_busy_many": "Etap „{label}” zawiera {count} firm. Najpierw przenieś je do innego etapu — etapu, w którym są firmy, nie można usunąć.",
@@ -4405,6 +4407,57 @@
       "unknown": "Typ nieznany",
       "code_invalid": "Kod może zawierać tylko litery, cyfry i „_”",
       "label_required": "Podaj nazwę"
+    },
+    "rules": {
+      "title": "Reguły",
+      "help": "Co kanał robi sam: gdy firma wchodzi do etapu lub jej wywiad jest gotowy, wysyła szablon albo zleca audyt. Reguły działają w podanej kolejności; firma nie dostaje ich dwa razy w czasie karencji.",
+      "empty": "Brak reguł",
+      "active": "Aktywna",
+      "edit": "Edytuj",
+      "add": "Dodaj",
+      "add_title": "Dodaj regułę",
+      "edit_title": "Edytuj regułę",
+      "trigger_label": "Wyzwalacz",
+      "trigger": {
+        "stage_entered": "Firma wchodzi do etapu",
+        "intel_ready": "Wywiad gotowy"
+      },
+      "stage": "Etap",
+      "action_label": "Akcja",
+      "action": {
+        "communicate": "Wyślij szablon",
+        "request_audit": "Zleć audyt"
+      },
+      "template": "Klucz szablonu",
+      "template_help": "Klucz szablonu komunikatora, np. lead.cold.b2b",
+      "strategy": "Kontakt",
+      "strategy_value": {
+        "primary": "Kontakt główny",
+        "ai_pick": "Wybrany przez AI"
+      },
+      "require_hooks": "Pomiń firmy bez zaczepów",
+      "require_email": "Pomiń firmy bez e-maila",
+      "cooldown": "Karencja (godziny)",
+      "order": "Kolejność",
+      "stage_required": "Wybierz etap",
+      "template_required": "Podaj klucz szablonu"
+    },
+    "profiles": {
+      "title": "Analiza i odbiorcy",
+      "help": "Prompty stojące za analizą firmy i wyborem odbiorcy. Prompt zachowuje swoje placeholdery; model to id modelu toolboxa.",
+      "analysis": "Profile analizy",
+      "recipient": "Profile odbiorcy",
+      "empty": "Brak profili",
+      "add_title": "Dodaj profil",
+      "edit_title": "Edytuj profil",
+      "key": "Klucz",
+      "model": "Model",
+      "prompt": "Prompt",
+      "prompt_help": "Z placeholderami",
+      "schema": "Schemat JSON wyniku",
+      "schema_help": "Obiekt JSON; {} gdy brak",
+      "required": "Klucz, model i prompt są wymagane",
+      "schema_invalid": "Schemat musi być poprawnym obiektem JSON"
     }
   },
   "notification_bar": {
@@ -4461,6 +4514,8 @@
       "days": "Dni po poprzedniej",
       "texts": "Pula tekstów follow-up",
       "texts_random": "Każdy follow-up dostaje losowy tekst, którego ten wątek jeszcze nie dostał — kolejność na liście nie ma znaczenia.",
+      "autostart": "Startuje sama po pierwszym mailu",
+      "autostart_help": "Pierwszy wysłany mail w wątku uruchamia tę sekwencję. Tylko jedna sekwencja w kanale może tak działać.",
       "new_text": "Nowy tekst follow-up",
       "add_text": "Dodaj tekst",
       "add": "Nowa sekwencja",
@@ -4548,6 +4603,23 @@
       "remove_message": "Maile w tym języku użyją wtedy stopki języka domyślnego, a bez niej samego tekstu prawnego.",
       "removed": "Stopka usunięta",
       "load_error": "Nie udało się wczytać zapisanych stopek — odśwież stronę przed edycją"
+    },
+    "mailbox": {
+      "title": "Skrzynka IMAP",
+      "help": "Skrzynka sprawdzana pod kątem odpowiedzi. Hasło jest zapisane szyfrowane i nigdy nie jest pokazywane.",
+      "empty": "Skrzynka nie jest jeszcze skonfigurowana",
+      "host": "Host IMAP",
+      "port": "Port",
+      "ssl": "TLS",
+      "user": "Login",
+      "password": "Hasło",
+      "password_kept": "Hasło jest zapisane; zostaw puste, aby je zachować",
+      "folder": "Folder",
+      "active": "Sprawdzana",
+      "last_polled": "Ostatnie sprawdzenie: {at}",
+      "never_polled": "Jeszcze nie sprawdzana",
+      "required": "Wymagane",
+      "port_invalid": "Podaj port od 1 do 65535"
     }
   },
   "ai_usage": {

@@ -1116,6 +1116,18 @@ const routes = [
         meta: { requiresAuth: true, titleKey: "leads.lead_types.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", page: true },
       },
       {
+        path: "settings/rules",
+        name: "LeadsRules",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Rules.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.rules.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", page: true },
+      },
+      {
+        path: "settings/profiles",
+        name: "LeadsProfiles",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Profiles.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.profiles.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", page: true },
+      },
+      {
         path: "settings/templates",
         name: "CommunicatorTemplates",
         component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/TemplateList.vue"),
@@ -1138,6 +1150,12 @@ const routes = [
         name: "CommunicatorSettings",
         component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/Settings.vue"),
         meta: { requiresAuth: true, titleKey: "communicator.settings.title", panel: "leads", area: AREAS.COMMUNICATOR_SETTINGS, module: "communicator", page: true },
+      },
+      {
+        path: "settings/mailbox",
+        name: "CommunicatorMailbox",
+        component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/Mailbox.vue"),
+        meta: { requiresAuth: true, titleKey: "communicator.mailbox.title", panel: "leads", area: AREAS.COMMUNICATOR_SETTINGS, module: "communicator", page: true },
       },
     ],
   },

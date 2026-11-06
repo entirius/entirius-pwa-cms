@@ -43,6 +43,22 @@ describe("Leads Stages", () => {
     expect(wrapper.find('[data-testid="stage-error"]').text()).toBe("move 3 companies first");
   });
 
+  // Outbound F3: the switch on a stage row marks the stage a first send moves companies to.
+  it("the on-sent switch patches the stage and reloads", async () => {
+    api.GET_Stages.mockImplementation(() =>
+      Promise.resolve({ data: { results: [{ id: 1, key: "new", label: "New", order: 0, kind: "open", on_sent: false }, { id: 2, key: "contacted", label: "Contacted", order: 10, kind: "open", on_sent: true }] } })
+    );
+    api.PATCH_Stage.mockResolvedValue({ data: {} });
+    const wrapper = mount(Stages, { global: { components: leadsFrame.components, stubs } });
+    await flushPromises();
+    const switches = wrapper.findAllComponents('[data-testid="stage-on-sent"]');
+    expect(switches.map((s) => s.props("modelValue"))).toEqual([false, true]);
+    switches[0].vm.$emit("update:modelValue", true);
+    await flushPromises();
+    expect(api.PATCH_Stage).toHaveBeenCalledWith(1, { on_sent: true });
+    expect(api.GET_Stages).toHaveBeenCalledTimes(2);
+  });
+
   // FIX-17 item 16: Delete asks first and says what happens to the companies of the stage.
   it("delete asks in a sheet naming the stage and its companies", async () => {
     const wrapper = mount(Stages, { global: { components: leadsFrame.components, stubs } });

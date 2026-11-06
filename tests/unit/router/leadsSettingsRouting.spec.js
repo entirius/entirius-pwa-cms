@@ -37,6 +37,9 @@ describe("Leads → Settings routing", () => {
     for (const [path, name] of [
       ["/leads/settings", "LeadsSettings"],
       ["/leads/settings/stages", "LeadsStages"],
+      ["/leads/settings/rules", "LeadsRules"],
+      ["/leads/settings/profiles", "LeadsProfiles"],
+      ["/leads/settings/mailbox", "CommunicatorMailbox"],
       ["/leads/settings/templates/3", "CommunicatorTemplateEdit"],
       ["/leads/settings/sending", "CommunicatorSettings"],
       ["/leads/board", "LeadsBoard"],
