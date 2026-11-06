@@ -83,6 +83,8 @@ export const GET_Sequences = () => communicatorApi.get(`${base()}/sequences/`);
 
 export const POST_Sequence = (body) => communicatorApi.post(`${base()}/sequences/`, body);
 
+export const PATCH_Sequence = (id, body) => communicatorApi.patch(`${base()}/sequences/${id}/`, body);
+
 export const GET_SequenceTexts = (id) => communicatorApi.get(`${base()}/sequences/${id}/texts/`);
 
 export const POST_SequenceText = (id, body) => communicatorApi.post(`${base()}/sequences/${id}/texts/`, body);
@@ -121,3 +123,9 @@ export const GET_Footers = () => communicatorApi.get(`${base()}/footers/`);
 export const PUT_Footer = (language, html) => communicatorApi.put(`${base()}/footers/${language}/`, { html });
 
 export const DELETE_Footer = (language) => communicatorApi.delete(`${base()}/footers/${language}/`);
+
+// S5 — the channel's IMAP mailbox (one per channel). GET is 404 until it is configured; the password is write-only
+// (`has_password` tells one is stored; omit `imap_password` to keep it).
+export const GET_Mailbox = () => communicatorApi.get(`${base()}/mailbox/`);
+
+export const PUT_Mailbox = (body) => communicatorApi.put(`${base()}/mailbox/`, body);

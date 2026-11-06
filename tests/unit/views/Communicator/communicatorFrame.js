@@ -17,6 +17,8 @@ export const communicatorFrame = {
     BasicInput,
     FormField,
     StatusBadge,
+    // The card renders its actions slot too (the sequence autostart switch lives there).
+    BasicCard: { name: "BasicCard", props: ["title", "gap"], template: '<section><slot name="actions" /><slot /></section>' },
     NumberInput: { name: "NumberInput", props: ["modelValue", "min", "max"], template: "<div />" },
     ConfirmDialog: {
       name: "ConfirmDialog",

@@ -4342,6 +4342,8 @@
       "help": "Drag or use the arrows to order the stages as the board shows them. Rename a stage in its field; the tag shows its key and kind.",
       "key_help": "Key — the fixed name rules and imports use; it cannot change later",
       "label_help": "Label — the name shown on the board",
+      "on_sent": "On first send",
+      "on_sent_help": "A company moves to this stage when the first mail to it is sent (forward only).",
       "delete_busy_one": "The stage “{label}” holds 1 company. Move it to another stage first — a stage that still holds companies cannot be deleted.",
       "delete_busy_few": "The stage “{label}” holds {count} companies. Move them to another stage first — a stage that still holds companies cannot be deleted.",
       "delete_busy_many": "The stage “{label}” holds {count} companies. Move them to another stage first — a stage that still holds companies cannot be deleted.",
@@ -4406,6 +4408,57 @@
       "unknown": "Type unknown",
       "code_invalid": "A code may hold only letters, digits and “_”",
       "label_required": "Enter a label"
+    },
+    "rules": {
+      "title": "Rules",
+      "help": "What the channel does by itself: when a company enters a stage or its intel is ready, send a template or request an audit. Rules run in the order below; a company is not hit twice within the cooldown.",
+      "empty": "No rules yet",
+      "active": "Active",
+      "edit": "Edit",
+      "add": "Add",
+      "add_title": "Add a rule",
+      "edit_title": "Edit the rule",
+      "trigger_label": "Trigger",
+      "trigger": {
+        "stage_entered": "Company enters stage",
+        "intel_ready": "Intel ready"
+      },
+      "stage": "Stage",
+      "action_label": "Action",
+      "action": {
+        "communicate": "Send template",
+        "request_audit": "Request audit"
+      },
+      "template": "Template key",
+      "template_help": "Key of a communicator template, e.g. lead.cold.b2b",
+      "strategy": "Contact",
+      "strategy_value": {
+        "primary": "Primary contact",
+        "ai_pick": "Picked by AI"
+      },
+      "require_hooks": "Skip companies without hooks",
+      "require_email": "Skip companies without an e-mail",
+      "cooldown": "Cooldown (hours)",
+      "order": "Order",
+      "stage_required": "Pick a stage",
+      "template_required": "Enter a template key"
+    },
+    "profiles": {
+      "title": "Analysis and recipients",
+      "help": "The prompts behind the company analysis and the recipient pick. A prompt keeps its placeholders; the model is a toolbox model id.",
+      "analysis": "Analysis profiles",
+      "recipient": "Recipient profiles",
+      "empty": "No profiles yet",
+      "add_title": "Add a profile",
+      "edit_title": "Edit the profile",
+      "key": "Key",
+      "model": "Model",
+      "prompt": "Prompt",
+      "prompt_help": "With placeholders",
+      "schema": "Output JSON schema",
+      "schema_help": "A JSON object; {} for none",
+      "required": "Key, model and prompt are required",
+      "schema_invalid": "The schema must be a valid JSON object"
     }
   },
   "notification_bar": {
@@ -4462,6 +4515,8 @@
       "days": "Days after previous",
       "texts": "Follow-up text pool",
       "texts_random": "Each follow-up gets a random text this thread has not had yet — the list order does not matter.",
+      "autostart": "Starts by itself after the first mail",
+      "autostart_help": "The first mail sent in a thread starts this sequence. Only one sequence per channel can do it.",
       "new_text": "New follow-up text",
       "add_text": "Add text",
       "add": "New sequence",
@@ -4549,6 +4604,23 @@
       "remove_message": "Mail in this language then uses the default language's footer, else the legal text alone.",
       "removed": "Footer removed",
       "load_error": "Could not load the saved footers — reload the page before editing"
+    },
+    "mailbox": {
+      "title": "IMAP mailbox",
+      "help": "The mailbox polled for replies. The password is stored encrypted and never shown.",
+      "empty": "No mailbox configured yet",
+      "host": "IMAP host",
+      "port": "Port",
+      "ssl": "TLS",
+      "user": "Login",
+      "password": "Password",
+      "password_kept": "A password is stored; leave empty to keep it",
+      "folder": "Folder",
+      "active": "Polled",
+      "last_polled": "Last polled: {at}",
+      "never_polled": "Not polled yet",
+      "required": "Required",
+      "port_invalid": "Enter a port from 1 to 65535"
     }
   },
   "ai_usage": {
