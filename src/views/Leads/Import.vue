@@ -17,6 +17,10 @@
       <BasicCard :title="$t('leads.import.after_title')" gap data-testid="import-after">
         <p class="m-0">{{ $t("leads.import.after") }}</p>
       </BasicCard>
+      <div v-if="routesAvailable" class="import__route" data-testid="import-route-box">
+        <BasicSelect v-model="senderRoute" :options="routeSelectOptions" :floating-label="$t('leads.import.route')" data-testid="import-route" />
+        <p class="t-muted fs-200 m-0">{{ $t("leads.import.route_help") }}</p>
+      </div>
       <div class="flex ai-ct flex-wrap gap-5">
         <!-- the native picker stays scriptable (a page object sets its files); the button opens it -->
         <input
@@ -58,11 +62,14 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { t } from "@/i18n";
 import { GET_Import, POST_Import } from "@/api/leads/api";
+import { GET_Routes } from "@/api/communicator/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { useMuninStore } from "@/stores/munin";
+import { routeOptions } from "@/utils/leadsOutbound";
 
 // CSV upload: the batch runs on the leads queue; the screen polls it until done or failed.
 const POLL_MS = 2000;
@@ -82,6 +89,25 @@ const batch = ref(null);
 const busy = ref(false);
 const error = ref("");
 let timer = null;
+
+// Q11: "the whole file goes through this route" — offered when communicator is on and has routes; "" = the channel
+// default decides (and the API never overwrites the route of a company that already has one).
+const munin = useMuninStore();
+const routes = ref([]);
+const senderRoute = ref("");
+const routesAvailable = computed(() => routes.value.length > 0);
+const routeSelectOptions = computed(() =>
+  routeOptions(routes.value, { defaultLabel: t("leads.import.route_default"), defaultKey: routes.value.find((route) => route.is_default)?.key || "" })
+);
+
+onMounted(async () => {
+  if (!munin.isModuleEnabled("communicator")) return;
+  try {
+    routes.value = ((await GET_Routes()).data.results || []).filter((route) => route.is_active);
+  } catch {
+    routes.value = []; // no list, no choice: the import still works with the channel default
+  }
+});
 
 // R5: the secondary ways in, then Upload — the one primary — rightmost.
 const actions = computed(() => [
@@ -136,7 +162,7 @@ async function upload() {
   error.value = "";
   busy.value = true;
   try {
-    batch.value = (await POST_Import(file.value)).data;
+    batch.value = (await POST_Import(file.value, senderRoute.value)).data;
   } catch (err) {
     return fail(err);
   }
@@ -147,6 +173,12 @@ onBeforeUnmount(() => clearTimeout(timer));
 </script>
 
 <style scoped>
+.import__route {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-width: 28rem;
+}
 .import__list {
   margin: 0;
   padding-left: var(--space-4);

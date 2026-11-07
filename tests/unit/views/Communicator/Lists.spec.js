@@ -7,6 +7,7 @@ const api = vi.hoisted(() => ({
   GET_Sequences: vi.fn(),
   GET_SequenceTexts: vi.fn(),
   POST_Sequence: vi.fn(),
+  PATCH_Sequence: vi.fn(),
   POST_SequenceText: vi.fn(),
   GET_Suppressions: vi.fn(),
   POST_Suppression: vi.fn(),
@@ -87,8 +88,39 @@ describe("Communicator lists", () => {
     await flushPromises();
     expect(api.POST_Sequence).toHaveBeenCalledWith({
       key: "follow_up-2",
+      autostart: false,
       steps: [{ days_after_previous: 3, template_key: "", number: 1 }],
     });
+  });
+
+  // Outbound F2: the switch on a sequence card makes it the one that starts after the first mail.
+  it("the autostart switch of a sequence card patches the sequence and shows a refusal on the card", async () => {
+    api.GET_Sequences.mockResolvedValue({
+      data: { results: [{ id: 7, key: "followup", is_active: true, autostart: false, steps: [] }] },
+    });
+    api.GET_SequenceTexts.mockResolvedValue({ data: { results: [] } });
+    api.PATCH_Sequence.mockResolvedValueOnce({ data: {} }).mockRejectedValueOnce({
+      response: { data: { detail: "the channel already has an autostart sequence" } },
+    });
+    const wrapper = await mountView(SequenceList);
+    const toggle = () => control(wrapper, "sequence-autostart");
+    expect(toggle().props("modelValue")).toBe(false);
+    toggle().vm.$emit("update:modelValue", true);
+    await flushPromises();
+    expect(api.PATCH_Sequence).toHaveBeenCalledWith(7, { autostart: true });
+    toggle().vm.$emit("update:modelValue", true);
+    await flushPromises();
+    expect(wrapper.text()).toContain("the channel already has an autostart sequence");
+  });
+
+  it("a new sequence can be created with autostart on", async () => {
+    api.POST_Sequence.mockResolvedValue({ data: {} });
+    const wrapper = await mountView(SequenceList);
+    await wrapper.get('[data-testid="sequence-key"] input').setValue("auto_seq");
+    control(wrapper, "sequence-new-autostart").vm.$emit("update:modelValue", true);
+    await wrapper.get('[data-testid="sequence-add"] form').trigger("submit");
+    await flushPromises();
+    expect(api.POST_Sequence).toHaveBeenCalledWith(expect.objectContaining({ key: "auto_seq", autostart: true }));
   });
 
   it("suppressions name their kind and an erased address cannot be removed", async () => {

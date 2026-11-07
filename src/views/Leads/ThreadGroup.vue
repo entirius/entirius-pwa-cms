@@ -31,6 +31,7 @@
       v-if="open && detail"
       :messages="detail.timeline || []"
       :optouts="detail.optouts"
+        :replies="detail.replies"
       :waiting="waiting"
       :busy="optoutBusy"
       @confirm-optout="confirmOptout"

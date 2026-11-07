@@ -3,7 +3,6 @@ import { mount } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 import { nextTick, reactive } from "vue";
 import { useLeadsReviewStore } from "@/stores/leadsReview";
-import SegmentedControl from "@/boots/SegmentedControl/index.vue";
 
 const route = vi.hoisted(() => ({ current: null }));
 const push = vi.hoisted(() => vi.fn());
@@ -19,7 +18,6 @@ import Layout from "@/views/Leads/index.vue";
 const mountLayout = () =>
   mount(Layout, {
     global: {
-      components: { SegmentedControl },
       stubs: {
         Inbox: { template: "<div data-testid='inbox' />" },
         Companies: { template: "<div data-testid='companies' />" },
@@ -28,7 +26,6 @@ const mountLayout = () =>
     },
   });
 const toggle = (wrapper) => wrapper.find('[data-testid="leads-list-toggle"]');
-const activeList = (wrapper) => toggle(wrapper).find(".segmented-control__option--active").attributes("data-testid");
 // the Inbox stays mounted behind v-show (its poll and scroll survive a trip to Companies)
 const shown = (wrapper, testid) => {
   const el = wrapper.find(`[data-testid="${testid}"]`);
@@ -108,18 +105,18 @@ describe("Leads layout", () => {
     route.current.meta = undefined;
   });
 
-  // UX-010: one Inbox entry, the list above the column is Conversations | Companies.
-  describe("Conversations | Companies toggle", () => {
+  // Inbox and Companies are separate nav entries: there is no toggle above the column, the route picks the list.
+  describe("Inbox and Companies lists", () => {
     it("the list routes pick the column's list and nothing opens on the right", () => {
       enable("leads", "communicator");
       const inbox = mountLayout();
-      expect(activeList(inbox)).toBe("leads-list-conversations");
+      expect(toggle(inbox).exists()).toBe(false);
       expect(shown(inbox, "inbox")).toBe(true);
       expect(inbox.find('[data-testid="companies"]').exists()).toBe(false);
 
       route.current.name = "LeadsCompanies";
       const companies = mountLayout();
-      expect(activeList(companies)).toBe("leads-list-companies");
+      expect(toggle(companies).exists()).toBe(false);
       expect(shown(companies, "companies")).toBe(true);
       expect(shown(companies, "inbox")).toBe(false);
       expect(companies.find('[data-testid="detail"]').exists()).toBe(false);
@@ -127,16 +124,15 @@ describe("Leads layout", () => {
       expect(companies.text()).toContain("leads.companies.pick");
     });
 
-    it("navigates both ways — the toggle only changes the route", async () => {
+    it("the route alone switches the column between the two lists", async () => {
       enable("leads", "communicator");
-      const wrapper = mountLayout();
-      await wrapper.find('[data-testid="leads-list-companies"]').trigger("click");
-      expect(push).toHaveBeenLastCalledWith({ name: "LeadsCompanies" });
       route.current.name = "LeadsCompanies";
+      const wrapper = mountLayout();
+      expect(shown(wrapper, "companies")).toBe(true);
+      route.current.name = "LeadsInbox";
       await nextTick();
-      expect(activeList(wrapper)).toBe("leads-list-companies");
-      await wrapper.find('[data-testid="leads-list-conversations"]').trigger("click");
-      expect(push).toHaveBeenLastCalledWith({ name: "LeadsInbox" });
+      expect(shown(wrapper, "inbox")).toBe(true);
+      expect(wrapper.find('[data-testid="companies"]').exists()).toBe(false);
     });
 
     it("a company card opened from the Companies list keeps that list in the column", async () => {

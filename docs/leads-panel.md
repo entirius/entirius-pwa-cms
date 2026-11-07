@@ -4,12 +4,10 @@ Salesperson screens for django-leads + django-communicator, mobile first (one th
 same screens in two columns (`src/views/Leads/index.vue`, CSS grid only). One panel for both backends (there is no
 Communicator panel): munin keys `leads` and `communicator` both map to it, and every nav entry, route and
 Settings section carries the module it needs (`requiresModule` / `meta.module` / the hub's filter) — a section of
-a module that is off is simply not there. Nav: Inbox · Pipeline (`/leads/board`) · Import (leads) · Settings; a phone gets Inbox · Settings in the bottom bar, which Review
-(`meta.noBottomBar`) keeps off its sticky actions. Inbox is one entry for two lists: the left column carries a
-`SegmentedControl` Conversations | Companies (`leads-list-toggle`, shown with both modules) that only navigates
-`/leads/inbox` ↔ `/leads/companies`; a card, draft or thread opened from a list keeps that list in the column, and
-the entry stays lit on all of them (`activeOn`). Without communicator there is no Inbox and no toggle: the
-Companies entry (`hiddenWithModule: "communicator"`) opens the company list full width. `siteintel` (intel card) and `notifications` (header bell, `src/components/NotificationBar/`)
+a module that is off is simply not there. Nav: Inbox · Companies (`/leads/companies`) · Approvals · Pipeline (`/leads/board`) · Reports · Import (leads) · Settings; a phone gets Inbox · Companies · Approvals · Settings in the bottom bar, which Review
+(`meta.noBottomBar`) keeps off its sticky actions. Inbox and Companies are separate entries (there is no toggle above the column): the route picks which list fills the left column
+(`/leads/inbox` conversations, `/leads/companies` the company list with the characteristics of every firm; imported leads land there), a card, draft or thread opened from a list keeps that list in the column, and a company card lights Companies (`activeOn`), Review and a thread without a company light Inbox. Without communicator there is no Inbox column: the
+Companies entry opens the company list full width. `siteintel` (intel card) and `notifications` (header bell, `src/components/NotificationBar/`)
 gate in-view with `isModuleEnabled` — never map them in `MODULE_TO_PANEL`. Every leads-family call takes the
 channel from `src/stores/leadsChannel.js` (`VUE_APP_LEADS_CHANNEL`, default `default-europe`), never
 `VUE_APP_CHANNEL`. Review has no detail endpoint: the view finds the draft in `review/?status=review_required`.
@@ -24,7 +22,7 @@ drag or the card's stage select → `companies/<id>/transition/`, refused move s
 Settings (`meta.page`: full width, one scroller, no DesktopOnly wall; every section on PageLayout + PageHeader, its tables DataTables):
 `/leads/settings` lists the sections, each its own route — `settings/stages` (reorder = `PATCH stages/<id>/ {order}`
 per moved stage — there is no bulk order endpoint; delete 409 inline), `settings/templates` (+ `/:id`),
-`settings/sequences`, `settings/sending`, `settings/lead-types` (the Stages pattern: rename, reorder by PATCH `order`, deactivate, delete 409 inline; the code is fixed after create); a section leads back to the hub (the PageHeader `back`; a template goes back to the template list). Lead types are one list for the whole panel — `src/stores/leadTypes.js` (loaded once — a failed load is retried, logout resets it in `App.vue` together with the Inbox company-name cache `src/utils/leadsCompanyNames.js` — `label(code)`, `UNKNOWN` built in): Board chips = the active types in order, the company card's type select, the add-lead form and the template Audience (list column + edit select, shown only with the `leads` module; an audience a communicator does not send is never sent back). `/communicator/*` and `/leads/stages`
+`settings/sequences`, `settings/sending`, `settings/lead-types` (the Stages pattern: rename, reorder by PATCH `order`, deactivate, delete 409 inline; the code is fixed after create), `settings/rules` (`rules/` CRUD: list with active switch + delete, one add/edit form; the stage select reads `GET stages/`), `settings/profiles` (analysis and recipient-pick prompt profiles, `ProfileSection.vue` once per kind; lists carry no prompt, Edit fetches the detail), `settings/mailbox` (the channel's IMAP mailbox, `GET`/`PUT mailbox/`: 404 = not configured yet, the password is write-only — empty keeps the stored one); a section leads back to the hub (the PageHeader `back`; a template goes back to the template list). Lead types are one list for the whole panel — `src/stores/leadTypes.js` (loaded once — a failed load is retried, logout resets it in `App.vue` together with the Inbox company-name cache `src/utils/leadsCompanyNames.js` — `label(code)`, `UNKNOWN` built in): Board chips = the active types in order, the company card's type select, the add-lead form and the template Audience (list column + edit select, shown only with the `leads` module; an audience a communicator does not send is never sent back). `/communicator/*` and `/leads/stages`
 redirect there; the route names (`CommunicatorTemplates`, `CommunicatorSettings`, `LeadsStages`, …) did not change. `/leads/companies/:id` on desktop is the company card (`Company.vue`, tabs via `?tab=`
 overview | intel | contacts | timeline; timeline = the thread view, which a phone still gets alone);
 notification jumps open `?tab=timeline`.
@@ -45,3 +43,14 @@ clock that slides: `sendState` (`src/utils/leadsTime.js`) names an hour only for
 else it says due / daily cap reached / waiting for the window with its hours; a used-up cap wins over any slot and
 a closed window (policy `windows`, channel time zone) never shows a clock. `next_slot` (outbox endpoint, `GET_WaitingMessages`)
 is the one slot the Inbox rows, the Review confirmation (looked up after accept), the thread bubbles and this table all read, so no two screens disagree. The waiting table (DataTable, the recipient under the company) keeps Send now inside the card at 1280 px with the sidebar open; `scheduled-row` + `data-message` sit on the row through DataTable `rowAttrs`. Sequences: create (no step edit API) + the text pool: add, edit in place through the row's edit square (future follow-ups only), remove — a text a thread already got is deactivated, not deleted (DELETE answers 200 with the row instead of 204), listed dimmed with Restore (`TextPool.vue`).
+
+## Sender routes, approvals, address checks, do not contact (Q11)
+
+- `/leads/approvals` (nav entry with the waiting count, `src/stores/approvals.js`, polled every 30 s): one list of every draft across
+  channels (`GET communicator/v2/admin/approvals/`, outside the channel prefix), filters channel / route / template key / age / search,
+  a `blocker` line per row (the server would refuse the approve: the row can only be rejected), bulk approve / reject (`approvals/bulk/`, ids sent in chunks of 100,
+  per-id failures shown), second view = the bulk log. Keys: j/k, x, Enter, a, r (`approvalKey` in `src/utils/leadsOutbound.js`).
+- Settings → Sender routes (`CommunicatorRoutes`): `routes/` CRUD, default route = `PATCH channel/` (the leads channel default is written with the same key).
+  Import takes an optional route for the whole file; the company list has a select mode that moves picked companies (`companies/bulk-sender-route/`).
+- Settings → Address checks (`LeadsAddresses`): verification report, bad-address list, Check now. Settings → Do not contact: the shared list (add only, no undo in the API).
+  The contact row of the company card has the address status, Check now, "Why not?" (send-check) and Do not contact (confirmation, address or domain).

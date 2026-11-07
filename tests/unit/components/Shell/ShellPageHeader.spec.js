@@ -15,6 +15,7 @@ vi.mock("@/stores/access", () => ({
 vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isPanelEnabled: () => true, isModuleEnabled: () => true }) }));
 vi.mock("@/stores/quality", () => ({ useQualityStore: () => ({ available: true }) }));
 vi.mock("@/stores/enrichmentProfile", () => ({ useEnrichmentProfileStore: () => ({ pendingSuggestions: 0 }) }));
+vi.mock("@/stores/approvals", () => ({ useApprovalsStore: () => ({ total: 0 }) }));
 
 import ShellPageHeader from "@/components/Shell/ShellPageHeader.vue";
 import PageHeader from "@/boots/PageHeader/index.vue";

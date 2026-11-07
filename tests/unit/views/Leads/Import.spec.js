@@ -1,8 +1,12 @@
-import { describe, it, expect, vi, afterEach } from "vitest";
+import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
 
 const api = vi.hoisted(() => ({ POST_Import: vi.fn(), GET_Import: vi.fn() }));
 vi.mock("@/api/leads/api", () => api);
+const comm = vi.hoisted(() => ({ GET_Routes: vi.fn() }));
+vi.mock("@/api/communicator/api", () => comm);
+const munin = vi.hoisted(() => ({ communicator: true }));
+vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isModuleEnabled: (key) => key !== "communicator" || munin.communicator }) }));
 const push = vi.hoisted(() => vi.fn());
 vi.mock("vue-router", () => ({ useRouter: () => ({ push }) }));
 
@@ -18,6 +22,11 @@ function mountWithFile() {
 }
 
 describe("Leads Import", () => {
+  beforeEach(() => {
+    munin.communicator = true;
+    comm.GET_Routes.mockReset();
+    comm.GET_Routes.mockResolvedValue({ data: { results: [] } });
+  });
   afterEach(() => vi.useRealTimers());
 
   it("a failing later poll shows the error, re-enables Upload and stops polling", async () => {
@@ -47,7 +56,7 @@ describe("Leads Import", () => {
     await input.trigger("change");
     await wrapper.find('[data-testid="import-upload"]').trigger("click");
     await flushPromises();
-    expect(api.POST_Import).toHaveBeenCalledWith(file);
+    expect(api.POST_Import).toHaveBeenCalledWith(file, "");
     expect(wrapper.find('[data-testid="import-status"]').text()).toBe("done");
     expect(wrapper.find('[data-testid="import-counts"]').text()).toContain('"created":2');
   });
@@ -66,5 +75,41 @@ describe("Leads Import", () => {
   it("naming the picked file replaces the bare browser control", async () => {
     const wrapper = await mountWithFile();
     expect(wrapper.get('[data-testid="import-file-name"]').text()).toBe("leads.csv");
+  });
+
+  // Q11: "the whole file goes through route X"
+  describe("sender route of the file", () => {
+    const routes = [
+      { key: "ecomhouse", name: "Ecom House", is_active: true, is_default: true },
+      { key: "old", name: "Old", is_active: false, is_default: false },
+      { key: "entirius", name: "", is_active: true, is_default: false },
+    ];
+
+    it("offers the active routes with the channel default first, and sends the chosen key with the file", async () => {
+      comm.GET_Routes.mockResolvedValue({ data: { results: routes } });
+      api.POST_Import.mockResolvedValue({ data: { id: 6, status: "done", created_count: 1, matched_count: 0, skipped_count: 0, report: [] } });
+      api.GET_Import.mockResolvedValue({ data: { id: 6, status: "done", created_count: 1, matched_count: 0, skipped_count: 0, report: [] } });
+      const wrapper = await mountWithFile();
+      await flushPromises();
+      const options = wrapper.getComponent('[data-testid="import-route"]').props("options");
+      expect(options.map((option) => option.value)).toEqual(["", "ecomhouse", "entirius"]);
+      expect(options[0].label).toContain("ecomhouse");
+      wrapper.getComponent('[data-testid="import-route"]').vm.$emit("update:modelValue", "entirius");
+      await wrapper.find('[data-testid="import-upload"]').trigger("click");
+      await flushPromises();
+      expect(api.POST_Import.mock.calls.at(-1)[1]).toBe("entirius");
+    });
+
+    it("shows no route choice without routes, or when communicator is off (the import works as before)", async () => {
+      let wrapper = await mountWithFile();
+      await flushPromises();
+      expect(wrapper.find('[data-testid="import-route-box"]').exists()).toBe(false);
+      munin.communicator = false;
+      comm.GET_Routes.mockClear();
+      wrapper = await mountWithFile();
+      await flushPromises();
+      expect(comm.GET_Routes).not.toHaveBeenCalled();
+      expect(wrapper.find('[data-testid="import-route-box"]').exists()).toBe(false);
+    });
   });
 });

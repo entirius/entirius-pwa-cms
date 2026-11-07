@@ -19,6 +19,15 @@
       <span class="inbox-row__state" data-testid="inbox-item-state">
         <FontAwesomeIcon v-if="marker === 'waiting'" :icon="$icons.scheduled" class="inbox-row__clock" />
         <strong v-if="marker !== 'none'" class="inbox-row__marker" :data-testid="`inbox-marker-${marker}`">{{ markerText }}</strong>
+        <StatusBadge
+          v-if="marker === 'replied' && reply"
+          class="inbox-row__intent"
+          size="sm"
+          :tone="INTENT_TONES[reply.intent] || 'neutral'"
+          :label="intentLabel(reply.intent)"
+          data-testid="inbox-intent"
+          :data-intent="reply.intent"
+        />
         <template v-else>{{ $t(`leads.thread.state.${row.status}`) }}</template><template v-if="detail"> · {{ detail }}</template>
       </span>
     </router-link>
@@ -35,7 +44,8 @@ import { computed, onMounted, ref } from "vue";
 import { t } from "@/i18n";
 import { useMuninStore } from "@/stores/munin";
 import { loadCompanyName } from "@/utils/leadsCompanyNames";
-import { sendStateSentence } from "@/utils/leadsLabels";
+import { INTENT_TONES } from "@/utils/leadsIntents";
+import { intentLabel, sendStateSentence } from "@/utils/leadsLabels";
 import { splitQuote } from "@/utils/leadsThread";
 import { canSendNow, formatTime, sendState } from "@/utils/leadsTime";
 import { pluralKey } from "@/utils/plural";
@@ -48,6 +58,8 @@ const props = defineProps({
   row: { type: Object, required: true }, // a `conversations/` row: thread + subject, last_text, draft, waiting, replied, thread_count
   filter: { type: String, default: "all" },
   active: { type: Boolean, default: false },
+  // the newest classified reply of the row's thread (T4), when there is one: its class shows next to the marker
+  reply: { type: Object, default: null },
 });
 defineEmits(["send-now"]);
 
@@ -127,6 +139,9 @@ onMounted(async () => {
 .inbox-row__time {
   font-size: var(--fs-200);
   color: var(--text-muted);
+}
+.inbox-row__intent {
+  margin-left: var(--space-2);
 }
 .inbox-row__threads {
   white-space: nowrap;

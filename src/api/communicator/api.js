@@ -46,10 +46,12 @@ export const GET_Conversations = (params) => communicatorApi.get(`${base()}/conv
 
 export const GET_Thread = (id) => communicatorApi.get(`${base()}/threads/${id}/`);
 
-// One thread with its timeline and its suspected opt-out replies (confirmed or not).
+// One thread with its timeline, its replies (they carry the intent class, T4: the timeline entries do not) and its
+// suspected opt-out replies (confirmed or not).
 export const GET_ThreadWithOptouts = async (id) => {
-  const [detail, replies] = await Promise.all([GET_Thread(id), GET_Replies({ thread: id, kind: "suspected_optout" })]);
-  return { ...detail.data, optouts: replies.data.results || [] };
+  const [detail, replies] = await Promise.all([GET_Thread(id), GET_Replies({ thread: id, page_size: 100 })]);
+  const all = replies.data.results || [];
+  return { ...detail.data, replies: all, optouts: all.filter((reply) => reply.kind === "suspected_optout") };
 };
 
 // Approved and scheduled messages — the mails waiting for the send beat. The outbox endpoint is the one source
@@ -82,6 +84,8 @@ export const GET_Models = () => communicatorApi.get(`${base()}/models/`);
 export const GET_Sequences = () => communicatorApi.get(`${base()}/sequences/`);
 
 export const POST_Sequence = (body) => communicatorApi.post(`${base()}/sequences/`, body);
+
+export const PATCH_Sequence = (id, body) => communicatorApi.patch(`${base()}/sequences/${id}/`, body);
 
 export const GET_SequenceTexts = (id) => communicatorApi.get(`${base()}/sequences/${id}/texts/`);
 
@@ -121,3 +125,42 @@ export const GET_Footers = () => communicatorApi.get(`${base()}/footers/`);
 export const PUT_Footer = (language, html) => communicatorApi.put(`${base()}/footers/${language}/`, { html });
 
 export const DELETE_Footer = (language) => communicatorApi.delete(`${base()}/footers/${language}/`);
+
+// S5 — the channel's IMAP mailbox (one per channel). GET is 404 until it is configured; the password is write-only
+// (`has_password` tells one is stored; omit `imap_password` to keep it).
+export const GET_Mailbox = () => communicatorApi.get(`${base()}/mailbox/`);
+
+export const PUT_Mailbox = (body) => communicatorApi.put(`${base()}/mailbox/`, body);
+
+// Q2 (T4) — the next step per reply intent class; a class without a stored row answers the code default (`is_default`).
+export const GET_ReplyActions = () => communicatorApi.get(`${base()}/reply-actions/`);
+
+export const PUT_ReplyAction = (intent, body) => communicatorApi.put(`${base()}/reply-actions/${intent}/`, body);
+
+export const DELETE_ReplyAction = (intent) => communicatorApi.delete(`${base()}/reply-actions/${intent}/`);
+
+// Q11 — sender routes (From + DW copy, daily cap, warm-up) and the one approval inbox across channels.
+// Backend: django-communicator feat/outbound-sender-routes. `approvals/` paths are NOT under the channel prefix.
+export const GET_Routes = () => communicatorApi.get(`${base()}/routes/`);
+
+export const POST_Route = (body) => communicatorApi.post(`${base()}/routes/`, body);
+
+// Replaces every field; the key is fixed.
+export const PUT_Route = (key, body) => communicatorApi.put(`${base()}/routes/${key}/`, body);
+
+// 409 ROUTE_IS_DEFAULT while the channel default points at it.
+export const DELETE_Route = (key) => communicatorApi.delete(`${base()}/routes/${key}/`);
+
+// "" = no default route (the channel's own From); 409 SENDER_ROUTE_UNKNOWN for a key that does not exist.
+export const PATCH_DefaultRoute = (key) => communicatorApi.patch(`${base()}/channel/`, { default_sender_route: key });
+
+const approvalsBase = "/api/communicator/v2/admin/approvals";
+
+// params: { channel, sender_route, template, q, min_age_hours, page, page_size } — oldest first
+export const GET_Approvals = (params) => communicatorApi.get(`${approvalsBase}/`, { params });
+
+// action: "approve" | "reject"; at most 100 ids. -> { done: [id], failed: { id: reason } }
+export const POST_ApprovalsBulk = (action, ids, reason = "") =>
+  communicatorApi.post(`${approvalsBase}/bulk/`, { action, ids, reason });
+
+export const GET_ApprovalsLog = (params) => communicatorApi.get(`${approvalsBase}/log/`, { params });

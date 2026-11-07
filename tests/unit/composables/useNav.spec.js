@@ -17,6 +17,7 @@ vi.mock("@/stores/munin", () => ({
 }));
 vi.mock("@/stores/quality", () => ({ useQualityStore: () => ({ available: true }) }));
 vi.mock("@/stores/enrichmentProfile", () => ({ useEnrichmentProfileStore: () => ({ pendingSuggestions: 0 }) }));
+vi.mock("@/stores/approvals", () => ({ useApprovalsStore: () => ({ total: 0 }) }));
 vi.mock("@/stores/user", () => ({ useUserStore: () => ({ isAuth: true }) }));
 
 import router from "@/router";
@@ -59,8 +60,8 @@ describe("navTree", () => {
   it("groups the filtered entries per panel, every panel of the registry present", () => {
     const desktop = tree();
     expect(Object.keys(desktop)).toEqual(panels.map((p) => p.idx));
-    expect(desktop.leads.map((e) => e.route)).toEqual(["/leads/inbox", "/leads/board", "/leads/import", "/leads/settings"]);
-    expect(tree(false).leads.map((e) => e.route)).toEqual(["/leads/inbox", "/leads/settings"]);
+    expect(desktop.leads.map((e) => e.route)).toEqual(["/leads/inbox", "/leads/companies", "/leads/approvals", "/leads/board", "/leads/reports", "/leads/import", "/leads/settings"]);
+    expect(tree(false).leads.map((e) => e.route)).toEqual(["/leads/inbox", "/leads/companies", "/leads/approvals", "/leads/settings"]);
   });
 
   it("single-entry panels have one entry (leaf links, decision 2)", () => {
@@ -82,7 +83,7 @@ describe("resolveNavEntry", () => {
     ["/emails/templates/order/5", "/emails"],
     ["/stock/manage", "/stock"],
     ["/pages/content/static-page", "/pages/content"],
-    ["/leads/companies/100", "/leads/inbox"],
+    ["/leads/companies/100", "/leads/companies"],
     ["/leads/settings/templates/3", "/leads/settings"],
   ])("%s lights %s", (path, entry) => {
     expect(litEntry(path)).toBe(entry);

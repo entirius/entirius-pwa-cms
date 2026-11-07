@@ -7,12 +7,21 @@ vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isModuleEnabled: (key
 vi.mock("@/stores/access", () => ({ useAccessStore: () => ({ can: (area) => readable.has(area) }) }));
 // The areas of the section routes (src/router/index.js).
 const AREA = {
+  LeadsReports: "leads.companies",
   LeadsStages: "leads.settings",
   LeadsLeadTypes: "leads.settings",
+  LeadsRules: "leads.settings",
+  LeadsProfiles: "leads.settings",
+  LeadsScoring: "leads.settings",
+  LeadsReplyRoutes: "leads.settings",
   CommunicatorTemplates: "communicator.content",
   CommunicatorSequences: "communicator.content",
   CommunicatorSettings: "communicator.settings",
+  CommunicatorReplyActions: "communicator.settings",
+  CommunicatorMailbox: "communicator.settings",
 };
+const LEADS = ["LeadsReports", "LeadsStages", "LeadsLeadTypes", "LeadsRules", "LeadsProfiles", "LeadsScoring", "LeadsReplyRoutes"];
+const COMMUNICATOR = ["CommunicatorTemplates", "CommunicatorSequences", "CommunicatorSettings", "CommunicatorReplyActions", "CommunicatorMailbox"];
 vi.mock("vue-router", () => ({ useRouter: () => ({ resolve: ({ name }) => ({ meta: { area: AREA[name] } }) }) }));
 
 import Settings from "@/views/Leads/Settings.vue";
@@ -29,12 +38,12 @@ describe("Leads → Settings hub", () => {
     Object.values(AREA).forEach((area) => readable.add(area));
     modules.clear();
     ["leads", "communicator"].forEach((key) => modules.add(key));
-    expect(sections()).toEqual(["LeadsStages", "LeadsLeadTypes", "CommunicatorTemplates", "CommunicatorSequences", "CommunicatorSettings"]);
+    expect(sections()).toEqual([...LEADS, ...COMMUNICATOR]);
     modules.delete("communicator");
-    expect(sections()).toEqual(["LeadsStages", "LeadsLeadTypes"]);
+    expect(sections()).toEqual(LEADS);
     modules.clear();
     modules.add("communicator");
-    expect(sections()).toEqual(["CommunicatorTemplates", "CommunicatorSequences", "CommunicatorSettings"]);
+    expect(sections()).toEqual(COMMUNICATOR);
   });
 
   // FIX-09 #17: a section the guard would refuse is not offered.
@@ -42,6 +51,6 @@ describe("Leads → Settings hub", () => {
     ["leads", "communicator"].forEach((key) => modules.add(key));
     readable.clear();
     ["leads.settings", "communicator.content"].forEach((area) => readable.add(area));
-    expect(sections()).toEqual(["LeadsStages", "LeadsLeadTypes", "CommunicatorTemplates", "CommunicatorSequences"]);
+    expect(sections()).toEqual([...LEADS.filter((name) => name !== "LeadsReports"), "CommunicatorTemplates", "CommunicatorSequences"]);
   });
 });

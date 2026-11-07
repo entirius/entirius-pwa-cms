@@ -1052,6 +1052,13 @@ const routes = [
           import(/* webpackChunkName: "leads" */ "../views/Leads/Review.vue"),
         meta: { requiresAuth: true, titleKey: "leads.review.title", panel: "leads", area: AREAS.COMMUNICATOR_REVIEW, module: "communicator", noBottomBar: true },
       },
+      // The approval inbox (Q11): every draft waiting for a yes, across channels and routes
+      {
+        path: "approvals",
+        name: "LeadsApprovals",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Approvals.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.approvals.title", panel: "leads", area: AREAS.COMMUNICATOR_REVIEW, module: "communicator", page: true },
+      },
       // A thread by id — the screen of a conversation that belongs to no company, reached from the Inbox and the bell
       { path: "conversations", redirect: "/leads/inbox" },
       {
@@ -1089,6 +1096,12 @@ const routes = [
         meta: { requiresAuth: true, titleKey: "leads.board.title", panel: "leads", area: AREAS.LEADS_COMPANIES, module: "leads", desktop: true },
       },
       {
+        path: "reports",
+        name: "LeadsReports",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Reports.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.reports.title", panel: "leads", area: AREAS.LEADS_COMPANIES, module: "leads", page: true },
+      },
+      {
         path: "import",
         name: "LeadsImport",
         component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Import.vue"),
@@ -1116,6 +1129,54 @@ const routes = [
         meta: { requiresAuth: true, titleKey: "leads.lead_types.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", page: true },
       },
       {
+        path: "settings/rules",
+        name: "LeadsRules",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Rules.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.rules.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", page: true },
+      },
+      {
+        path: "settings/profiles",
+        name: "LeadsProfiles",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Profiles.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.profiles.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", page: true },
+      },
+      {
+        path: "settings/scoring",
+        name: "LeadsScoring",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Scoring.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.scoring.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", page: true },
+      },
+      {
+        path: "settings/reply-routes",
+        name: "LeadsReplyRoutes",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/ReplyRoutes.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.reply_routes.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", page: true },
+      },
+      {
+        path: "settings/addresses",
+        name: "LeadsAddresses",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Addresses.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.addresses.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", page: true },
+      },
+      {
+        path: "settings/do-not-contact",
+        name: "LeadsDoNotContact",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/DoNotContact.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.dnc.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", page: true },
+      },
+      {
+        path: "settings/routes",
+        name: "CommunicatorRoutes",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Communicator/Routes.vue"),
+        meta: { requiresAuth: true, titleKey: "communicator.routes.title", panel: "leads", area: AREAS.COMMUNICATOR_SETTINGS, module: "communicator", page: true },
+      },
+      {
+        path: "settings/reply-actions",
+        name: "CommunicatorReplyActions",
+        component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/ReplyActions.vue"),
+        meta: { requiresAuth: true, titleKey: "communicator.reply_actions.title", panel: "leads", area: AREAS.COMMUNICATOR_SETTINGS, module: "communicator", page: true },
+      },
+      {
         path: "settings/templates",
         name: "CommunicatorTemplates",
         component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/TemplateList.vue"),
@@ -1138,6 +1199,12 @@ const routes = [
         name: "CommunicatorSettings",
         component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/Settings.vue"),
         meta: { requiresAuth: true, titleKey: "communicator.settings.title", panel: "leads", area: AREAS.COMMUNICATOR_SETTINGS, module: "communicator", page: true },
+      },
+      {
+        path: "settings/mailbox",
+        name: "CommunicatorMailbox",
+        component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/Mailbox.vue"),
+        meta: { requiresAuth: true, titleKey: "communicator.mailbox.title", panel: "leads", area: AREAS.COMMUNICATOR_SETTINGS, module: "communicator", page: true },
       },
     ],
   },

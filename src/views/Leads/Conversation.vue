@@ -19,6 +19,7 @@
           :busy="optoutBusy"
           :messages="thread.timeline || []"
           :optouts="thread.optouts || []"
+        :replies="thread.replies || []"
           :waiting="waitingOf(waiting, thread.id)"
           @confirm-optout="confirmOptout"
         />

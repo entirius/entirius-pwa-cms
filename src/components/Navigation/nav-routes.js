@@ -12,11 +12,21 @@
 // The sections of Leads → Settings (the hub behind the one "/leads/settings" entry): nav glyphs like the entries
 // below, not icons.js meanings; `module` hides a section whose backend is off.
 export const LEADS_SETTINGS_SECTIONS = [
+  { key: "reports", route: "LeadsReports", labelKey: "leads.reports.title", icon: "bullseye", module: "leads" },
   { key: "stages", route: "LeadsStages", labelKey: "nav.leads_stages", icon: "list-ol", module: "leads" },
   { key: "lead-types", route: "LeadsLeadTypes", labelKey: "leads.lead_types.title", icon: "tags", module: "leads" },
+  { key: "rules", route: "LeadsRules", labelKey: "leads.rules.title", icon: "gears", module: "leads" },
+  { key: "profiles", route: "LeadsProfiles", labelKey: "leads.profiles.title", icon: "wand-magic-sparkles", module: "leads" },
+  { key: "scoring", route: "LeadsScoring", labelKey: "leads.scoring.title", icon: "star", module: "leads" },
+  { key: "reply-routes", route: "LeadsReplyRoutes", labelKey: "leads.reply_routes.title", icon: "diagram-next", module: "leads" },
+  { key: "addresses", route: "LeadsAddresses", labelKey: "leads.addresses.title", icon: "circle-check", module: "leads" },
+  { key: "do-not-contact", route: "LeadsDoNotContact", labelKey: "leads.dnc.title", icon: "circle-xmark", module: "leads" },
   { key: "templates", route: "CommunicatorTemplates", labelKey: "nav.communicator_templates", icon: "file-lines", module: "communicator" },
   { key: "sequences", route: "CommunicatorSequences", labelKey: "nav.communicator_sequences", icon: "repeat", module: "communicator" },
   { key: "sending", route: "CommunicatorSettings", labelKey: "nav.communicator_settings", icon: "paper-plane", module: "communicator" },
+  { key: "routes", route: "CommunicatorRoutes", labelKey: "communicator.routes.title", icon: "at", module: "communicator" },
+  { key: "reply-actions", route: "CommunicatorReplyActions", labelKey: "communicator.reply_actions.title", icon: "list-check", module: "communicator" },
+  { key: "mailbox", route: "CommunicatorMailbox", labelKey: "communicator.mailbox.title", icon: "envelope", module: "communicator" },
 ];
 
 // The tabs of Enricher → Review and Enricher → Settings (RouteTabs): each tab its own route, by name; `badge` as on a
@@ -321,25 +331,46 @@ export function buildNavRoutes() {
       query: {},
       app: ["leads"],
       requiresModule: "communicator",
-      // One entry for both lists (UX-010): its Conversations | Companies toggle, Review, a thread without a company and
-      // a company card are all Inbox work, so the Inbox stays lit — the menu never jumps when a row opens a card
-      activeOn: ["/leads/inbox/", "/leads/conversations", "/leads/companies"],
+      // Review and a thread without a company are Inbox work, so the Inbox stays lit while one is open. Companies has
+      // its own entry below (a company card lights that one, not the Inbox)
+      activeOn: ["/leads/inbox/", "/leads/conversations"],
     },
     {
-      // Leads without communicator: no Inbox, no toggle — the company list is the entry (the panel fallback)
+      // Company list and the company card: the characteristics of every firm; imported leads land here
       route: "/leads/companies",
       labelKey: "nav.leads_companies",
       icon: "building",
       query: {},
       app: ["leads"],
       requiresModule: "leads",
-      hiddenWithModule: "communicator",
       activeOn: ["/leads/companies/"], // a company card
+    },
+    {
+      // The one approval inbox across channels (Q11). `badge`: the drafts waiting (nav counts); a phone keeps it in the
+      // bar too, it is the daily screen of whoever approves the mail
+      route: "/leads/approvals",
+      labelKey: "nav.leads_approvals",
+      icon: "clipboard-check",
+      query: {},
+      app: ["leads"],
+      requiresModule: "communicator",
+      badge: "approvals",
     },
     {
       route: "/leads/board",
       labelKey: "nav.leads_board",
       icon: "table-columns",
+      query: {},
+      app: ["leads"],
+      requiresModule: "leads",
+      desktopOnly: true,
+    },
+    {
+      // Funnel by origin and the pilot report (T3). The bar of a phone keeps Inbox · Settings: there the report is the
+      // first section of the Settings hub (the page itself works at any width, it has no desktop wall)
+      route: "/leads/reports",
+      labelKey: "nav.leads_reports",
+      icon: "bullseye",
       query: {},
       app: ["leads"],
       requiresModule: "leads",

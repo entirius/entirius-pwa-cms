@@ -59,6 +59,7 @@ import { AREAS } from "@/configs/areas";
 import { useNotificationsStore } from "@/stores/notifications";
 import { useConfigHealthStore } from "@/stores/configHealth";
 import { useEnrichmentProfileStore } from "@/stores/enrichmentProfile";
+import { useApprovalsStore } from "@/stores/approvals";
 import { useLeadTypesStore } from "@/stores/leadTypes";
 import { useIsDesktop } from "@/composables/useIsDesktop";
 import { tabBarShown, useActiveNav } from "@/composables/useNav";
@@ -94,10 +95,11 @@ export default {
     const configHealth = useConfigHealthStore();
     const leadTypes = useLeadTypesStore();
     const enrichmentProfile = useEnrichmentProfileStore();
+    const approvals = useApprovalsStore();
     const isDesktop = useIsDesktop();
     const { panelIdx, tree } = useActiveNav();
     return {
-      loader, userStore, handy, munin, access, notificationBar, configHealth, leadTypes, enrichmentProfile, isDesktop, panelIdx, tree,
+      loader, userStore, handy, munin, access, notificationBar, configHealth, leadTypes, enrichmentProfile, approvals, isDesktop, panelIdx, tree,
     };
   },
   data() {
@@ -128,6 +130,11 @@ export default {
     enrichmentProfileActive() {
       const allowed = this.access.loaded && this.access.can(AREAS.ENRICHMENT_PROFILE);
       return this.userStore.isAuth && this.access.isStaff && allowed && this.munin.isModuleEnabled("enrichment");
+    },
+    // The approvals badge (Q11): communicator on and the review area readable.
+    approvalsActive() {
+      const allowed = this.access.loaded && this.access.can(AREAS.COMMUNICATOR_REVIEW);
+      return this.userStore.isAuth && this.access.isStaff && allowed && this.munin.isModuleEnabled("communicator");
     },
     // A phone shows the tab bar for a panel with two or more entries, never on `meta.noBottomBar` (Leads Review keeps
     // its sticky actions); without it `--bottom-bar-height` is 0 (the FloatingActions offset).
@@ -162,6 +169,13 @@ export default {
       handler(active) {
         if (active) this.enrichmentProfile.start();
         else this.enrichmentProfile.stop();
+      },
+      immediate: true,
+    },
+    approvalsActive: {
+      handler(active) {
+        if (active) this.approvals.start();
+        else this.approvals.stop();
       },
       immediate: true,
     },
