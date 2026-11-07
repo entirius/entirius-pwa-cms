@@ -25,6 +25,16 @@
           </BasicButton>
           <p v-if="quotesOpen.has(i)" class="tl__body tl__quote" data-testid="timeline-quote">{{ entry.text.quoted }}</p>
         </template>
+        <p v-if="entry.intent" class="tl__intent" data-testid="timeline-intent" :data-intent="entry.intent.intent">
+          <StatusBadge size="sm" :tone="INTENT_TONES[entry.intent.intent] || 'neutral'" :label="intentLabel(entry.intent.intent)" />
+          <span v-if="entry.intent.intent_confidence != null" class="t-muted">
+            {{ $t("leads.intent.confidence", { percent: Math.round(entry.intent.intent_confidence * 100) }) }}
+          </span>
+          <span v-if="entry.intent.intent_return_date" class="t-muted" data-testid="timeline-intent-return">
+            {{ $t("leads.intent.back", { date: entry.intent.intent_return_date }) }}
+          </span>
+          <StatusBadge v-if="entry.intent.needs_review" size="sm" tone="warning" :label="$t('leads.intent.review')" data-testid="timeline-intent-review" />
+        </p>
         <p class="tl__meta">
           <span v-if="!entry.sendState" data-testid="timeline-time">{{ formatTime(entry.at) }}</span>
           <span v-if="entry.status" class="tl__status" :data-testid="`status-${entry.status}`">
@@ -48,7 +58,8 @@
 <script setup>
 import { computed, reactive } from "vue";
 import { t } from "@/i18n";
-import { sendStateLabel } from "@/utils/leadsLabels";
+import { INTENT_TONES, replyAt } from "@/utils/leadsIntents";
+import { intentLabel, sendStateLabel } from "@/utils/leadsLabels";
 import { splitQuote } from "@/utils/leadsThread";
 import { formatTime, sendState } from "@/utils/leadsTime";
 
@@ -56,6 +67,8 @@ import { formatTime, sendState } from "@/utils/leadsTime";
 const props = defineProps({
   messages: { type: Array, default: () => [] },
   optouts: { type: Array, default: () => [] },
+  // all replies of the thread: the class (intent) of a reply is read from here, matched by the time it arrived
+  replies: { type: Array, default: () => [] },
   // approved/scheduled messages of this thread — their `next_slot` is what a waiting bubble says, as in the Inbox
   waiting: { type: Array, default: () => [] },
   // an opt-out confirmation is in flight — the button stays disabled until it settles
@@ -76,6 +89,12 @@ function waitingState(item) {
   return sendStateLabel(sendState(waiting?.next_slot || ""));
 }
 
+// Only a classified reply carries an intent; a bounce, an auto reply or a thread without the toolbox shows none.
+function classified(at) {
+  const reply = replyAt(props.replies, at);
+  return reply?.intent ? reply : null;
+}
+
 function messageEntry(item, index, firstOut) {
   const out = item.direction === "out";
   const waiting = out && WAITING_STATUSES.includes(item.status);
@@ -87,6 +106,7 @@ function messageEntry(item, index, firstOut) {
     status: out ? item.status : "",
     sendState: waiting ? waitingState(item) : "",
     tag: out && index !== firstOut ? t("leads.thread.followup") : "",
+    intent: out ? null : classified(item.at),
     optout: out ? null : props.optouts.find((reply) => reply.received_at === item.at) || null,
   };
 }
@@ -140,6 +160,14 @@ const entries = computed(() => {
   display: flex;
   gap: var(--space-5);
   justify-content: flex-end;
+}
+.tl__intent {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-2) 0 0;
+  font-size: var(--fs-200);
 }
 .tl__status {
   font-weight: 600;

@@ -37,39 +37,43 @@ describe("Leads nav (UX-002d: one panel, Settings instead of four entries)", () 
   });
   afterEach(() => vi.unstubAllGlobals());
 
-  // UX-010: Companies is the other side of the Inbox toggle, not an entry of its own
-  it("desktop: Inbox · Board · Import · Settings; there is no Communicator panel nav", () => {
+  // Companies is its own entry between Inbox and Approvals (the Inbox toggle is gone)
+  it("desktop: Inbox · Companies · Approvals · Board · Import · Settings; there is no Communicator panel nav", () => {
     expect(routesFor("leads", true)).toEqual([
       "/leads/inbox",
+      "/leads/companies",
+      "/leads/approvals",
       "/leads/board",
+      "/leads/reports",
       "/leads/import",
       "/leads/settings",
     ]);
     expect(routesFor("communicator", true)).toEqual([]);
   });
 
-  it("phone: Inbox · Settings — Settings is reachable from the bottom tab bar", () => {
-    expect(routesFor("leads", false)).toEqual(["/leads/inbox", "/leads/settings"]);
+  it("phone: Inbox · Companies · Approvals · Settings — Settings is reachable from the bottom tab bar", () => {
+    expect(routesFor("leads", false)).toEqual(["/leads/inbox", "/leads/companies", "/leads/approvals", "/leads/settings"]);
     setViewport(false);
     const links = mountTabBar().findAll("a").map((a) => a.attributes("data-to"));
-    expect(links).toEqual(["/leads/inbox", "/leads/settings"]);
+    expect(links).toEqual(["/leads/inbox", "/leads/companies", "/leads/approvals", "/leads/settings"]);
   });
 
   it("desktop: Board and Import join the entries (the tab bar itself is the phone's)", () => {
     setViewport(true);
     const links = mountTabBar().findAll("a").map((a) => a.attributes("data-to"));
-    expect(links).toEqual(["/leads/inbox", "/leads/board", "/leads/import", "/leads/settings"]);
+    expect(links).toEqual(["/leads/inbox", "/leads/companies", "/leads/approvals", "/leads/board", "/leads/reports", "/leads/import", "/leads/settings"]);
   });
 
-  it("an entry whose backend module is off is not listed; without communicator Companies is the entry", () => {
+  it("an entry whose backend module is off is not listed; without communicator Companies is the only list entry", () => {
     expect(routesFor("leads", true, new Set(["leads"]))).toEqual([
       "/leads/companies",
       "/leads/board",
+      "/leads/reports",
       "/leads/import",
       "/leads/settings",
     ]);
     expect(routesFor("leads", false, new Set(["leads"]))).toEqual(["/leads/companies", "/leads/settings"]);
-    expect(routesFor("leads", false, new Set(["communicator"]))).toEqual(["/leads/inbox", "/leads/settings"]);
+    expect(routesFor("leads", false, new Set(["communicator"]))).toEqual(["/leads/inbox", "/leads/approvals", "/leads/settings"]);
   });
 });
 

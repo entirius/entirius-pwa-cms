@@ -9,6 +9,8 @@ export const stageKindLabel = (value) => label(`leads.stage_kind.${value}`, valu
 
 export const statusLabel = (value) => label(`leads.status.${value}`, value);
 
+export const intentLabel = (value) => label(`leads.intent.${value}`, value);
+
 export const templateKindLabel = (value) => label(`communicator.template.kinds.${value}`, value);
 
 export const suppressionKindLabel = (value) => label(`communicator.suppressions.kinds.${value}`, value);
@@ -24,6 +26,10 @@ export const sendStateSentence = (sendState) =>
 // A raw service word ("no_eligible_contact", "None") read as words: a label when there is one, else spaced out.
 const humanize = (value) => String(value).replace(/_/g, " ");
 const blockReasonLabel = (value) => label(`leads.block_reason.${value}`, humanize(value));
+// Q11: a gate reason code on its own (the send-check report lists them), an address status and why it got it.
+export const blockReasonText = blockReasonLabel;
+export const emailStatusLabel = (value) => label(`leads.addresses.status.${value}`, humanize(value));
+export const emailReasonLabel = (value) => (value ? label(`leads.addresses.reason.${value}`, humanize(value)) : "");
 const basisLabel = (value) => humanize(legalBasisLabel(value)).toLowerCase();
 const capitalize = (text) => text.charAt(0).toUpperCase() + text.slice(1);
 
@@ -34,6 +40,8 @@ const ACTIVITY_SHAPES = [
   [/^stage (\S+) -> (\S+)$/, ([from, to]) => t("leads.activity.stage", { from: humanize(from), to: humanize(to) })],
   [/^legal basis (None|) -> (\S+)$/, ([, to]) => t("leads.activity.legal_basis_set", { to: basisLabel(to) })],
   [/^legal basis (\S+) -> (\S+)$/, ([from, to]) => t("leads.activity.legal_basis_changed", { from: basisLabel(from), to: basisLabel(to) })],
+  [/^score (S[1-4]) \((-?\d+) points\)$/, ([segment, points]) => t("leads.activity.score", { segment, points })],
+  [/^reply received: (\w+)$/, ([intent]) => t("leads.activity.reply_intent", { intent: intentLabel(intent) })],
   [/^blocked: (\w+)$/, ([reason]) => t("leads.activity.blocked", { reason: blockReasonLabel(reason) })],
 ];
 

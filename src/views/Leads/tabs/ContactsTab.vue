@@ -54,6 +54,7 @@
           {{ row.first_name }} {{ row.last_name }}
           <span v-if="row.job_title" class="t-muted fs-200">{{ row.job_title }}</span>
           <span v-if="row.email" class="contacts__email fs-200">{{ row.email }}</span>
+          <AddressStatus v-if="row.email && !row.anonymised_at" :status="row.email_status" :reason="row.email_status_reason" />
         </span>
       </template>
       <template #cell-legal_basis="{ row }">
@@ -70,7 +71,16 @@
         </span>
       </template>
       <template #cell-actions="{ row }">
-        <div v-if="!row.anonymised_at" class="flex ai-ct gap-2">
+        <div v-if="!row.anonymised_at" class="flex ai-ct flex-wrap gap-2">
+          <BasicButton v-if="row.email" mutates variant="ghost" size="sm" :loading="verifying === row.id" :disabled="isFinal(row)" :data-contact="row.id" data-testid="contact-verify" @click="verify(row)">
+            {{ $t("leads.addresses.check_now") }}
+          </BasicButton>
+          <BasicButton v-if="row.email" variant="ghost" size="sm" :data-contact="row.id" data-testid="contact-why" @click="whyContact = row">
+            {{ $t("leads.sendcheck.open") }}
+          </BasicButton>
+          <BasicButton v-if="row.email" mutates variant="ghost" size="sm" :data-contact="row.id" data-testid="contact-dnc" @click="dncContact = row">
+            {{ $t("leads.dnc.open") }}
+          </BasicButton>
           <BasicButton variant="ghost" size="sm" :data-contact="row.id" data-testid="contact-edit" @click="open(row.id, row)">
             {{ $t("common.edit") }}
           </BasicButton>
@@ -97,6 +107,8 @@
       @confirm="remove(confirming)"
       @cancel="confirming = null"
     />
+    <SendCheckDialog :open="Boolean(whyContact)" :contact="whyContact" @close="whyContact = null" />
+    <DoNotContactDialog :open="Boolean(dncContact)" :contact="dncContact" @close="dncContact = null" @done="onDnc" />
   </div>
 </template>
 
@@ -104,10 +116,13 @@
 import { computed, onMounted, reactive, ref } from "vue";
 import { t } from "@/i18n";
 import { GET_Suppressions } from "@/api/communicator/api";
-import { DELETE_Contact, PATCH_Contact, POST_Contact } from "@/api/leads/api";
+import { DELETE_Contact, PATCH_Contact, POST_Contact, POST_VerifyContact } from "@/api/leads/api";
 import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
-import { legalBasisLabel } from "@/utils/leadsLabels";
+import { emailStatusLabel, legalBasisLabel } from "@/utils/leadsLabels";
 import ContactFields from "../ContactFields.vue";
+import AddressStatus from "../AddressStatus.vue";
+import SendCheckDialog from "../SendCheckDialog.vue";
+import DoNotContactDialog from "../DoNotContactDialog.vue";
 
 // Contacts of the company card (UX-011): add, edit, remove, primary star — one form open at a time, above the table.
 // Remove answers 204 (never used, deleted) or 200 (used, anonymised: the thread and timeline keep it), and the line
@@ -134,6 +149,11 @@ const confirming = ref(null);
 const busy = ref(false);
 const error = ref("");
 const status = ref("");
+// Q5/Q7 on a contact: check the address now, why it would not get mail, put it (or its domain) on the do-not-contact list
+const verifying = ref(null);
+const whyContact = ref(null);
+const dncContact = ref(null);
+const isFinal = (contact) => contact.email_status === "invalid" && contact.email_status_reason === "hard_bounce";
 
 const fieldError = (name) => getFieldError(name)?.msg || "";
 // The contact in edit (mode = its id), null while adding or closed.
@@ -257,6 +277,21 @@ function remove(contact) {
           : "leads.contacts.anonymised_done"
       )
   );
+}
+
+async function verify(contact) {
+  verifying.value = contact.id;
+  await run(
+    () => POST_VerifyContact(contact.id),
+    ({ data }) => t("leads.addresses.checked_now", { email: data.email, status: emailStatusLabel(data.email_status) })
+  );
+  verifying.value = null;
+}
+
+function onDnc(done) {
+  dncContact.value = null;
+  status.value = t("leads.dnc.done", { target: done.email || done.domain });
+  emit("changed");
 }
 
 onMounted(async () => {

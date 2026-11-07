@@ -6,6 +6,7 @@ import { useMuninStore } from "@/stores/munin";
 import { useAccessStore } from "@/stores/access";
 import { useQualityStore } from "@/stores/quality";
 import { useEnrichmentProfileStore } from "@/stores/enrichmentProfile";
+import { useApprovalsStore } from "@/stores/approvals";
 import { useIsDesktop } from "@/composables/useIsDesktop";
 import { t } from "@/i18n";
 
@@ -34,7 +35,7 @@ export function usePanels() {
 export const withAreas = (routes, router) =>
   routes.map((entry) => ({ ...entry, area: router?.resolve?.(entry.route).meta?.area }));
 
-// An entry with a `badge` key takes its number from `counts` (the Memory suggestions); 0 shows nothing.
+// An entry with a `badge` key takes its number from `counts` (the Memory suggestions, the drafts waiting for approval); 0 shows nothing.
 const withCount = (entry, counts) => (entry.badge ? { ...entry, count: counts?.[entry.badge] || 0 } : entry);
 
 // `{ [panelIdx]: entries[] }`; ctx = { qualityAvailable, isModuleEnabled, isDesktop, canRead, counts? }.
@@ -50,7 +51,8 @@ export function navTree(ctx, routes = buildNavRoutes()) {
 // The numbers of the `badge` keys (a nav entry's, a RouteTabs tab's): the Memory suggestions waiting for the operator.
 export function useNavCounts() {
   const enrichmentProfile = useEnrichmentProfileStore();
-  return computed(() => ({ memorySuggestions: enrichmentProfile.pendingSuggestions }));
+  const approvals = useApprovalsStore();
+  return computed(() => ({ memorySuggestions: enrichmentProfile.pendingSuggestions, approvals: approvals.total }));
 }
 
 // `everyViewport`: the desktop entries on a phone too — where a page belongs does not change with the screen.

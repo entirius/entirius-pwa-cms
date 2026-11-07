@@ -22,6 +22,7 @@ vi.mock("@/stores/user", () => ({ useUserStore: () => user }));
 vi.mock("@/stores/configHealth", () => ({ useConfigHealthStore: () => health }));
 vi.mock("@/stores/quality", () => ({ useQualityStore: () => ({ available: true }) }));
 vi.mock("@/stores/enrichmentProfile", () => ({ useEnrichmentProfileStore: () => ({ pendingSuggestions: 0 }) }));
+vi.mock("@/stores/approvals", () => ({ useApprovalsStore: () => ({ total: 0 }) }));
 // django-access is not under test here: allow-all, as without the module.
 vi.mock("@/stores/access", () => ({
   useAccessStore: () => ({ can: () => true, canAny: () => true, ensureLoaded: () => Promise.resolve(), available: false, isStaff: true }),
@@ -235,8 +236,8 @@ describe("BottomTabBar", () => {
     const nav = mountIt(BottomTabBar).get("nav");
     expect(nav.attributes("aria-label")).toBe("Leads");
     expect(nav.attributes("data-fid")).toBe("tab-bar");
-    expect(nav.findAll("a").map((a) => a.attributes("href"))).toEqual(["/leads/inbox", "/leads/settings"]);
-    expect(nav.get("[aria-current='page']").attributes("href")).toBe("/leads/inbox");
+    expect(nav.findAll("a").map((a) => a.attributes("href"))).toEqual(["/leads/inbox", "/leads/companies", "/leads/approvals", "/leads/settings"]);
+    expect(nav.get("[aria-current='page']").attributes("href")).toBe("/leads/companies");
   });
 
   it("is hidden with one entry and on meta.noBottomBar", async () => {

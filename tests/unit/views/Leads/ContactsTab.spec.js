@@ -7,6 +7,9 @@ const leads = vi.hoisted(() => ({
   ),
   PATCH_Contact: vi.fn(() => Promise.resolve({ status: 200, data: {} })),
   DELETE_Contact: vi.fn(() => Promise.resolve({ status: 204, data: "" })),
+  POST_VerifyContact: vi.fn(),
+  GET_SendCheck: vi.fn(() => Promise.resolve({ data: { eligible: true, reasons: [], legal_basis: {}, email: {}, retention: {} } })),
+  POST_DoNotContact: vi.fn(),
 }));
 vi.mock("@/api/leads/api", () => leads);
 vi.mock("@/api/communicator/api", () => ({
@@ -248,5 +251,47 @@ describe("Company card — Contacts tab", () => {
     expect(
       anonymised.findComponent({ name: "StatusBadge" }).attributes("label")
     ).toBe("leads.contacts.anonymised");
+  });
+
+  // Q5/Q7 on the contact: the address status, Check now, Why not?, Do not contact.
+  it("shows the address status of a contact with an email, and nothing for one without or anonymised", async () => {
+    const wrapper = await mountTab();
+    const rowsOf = wrapper.findAll('[data-testid="contact-row"]');
+    expect(rowsOf[0].find('[data-testid="address-status"]').exists()).toBe(true);
+    expect(rowsOf[1].find('[data-testid="address-status"]').exists()).toBe(false);
+    expect(rowsOf[2].find('[data-testid="address-status"]').exists()).toBe(false);
+    expect(rowsOf[1].find('[data-testid="contact-verify"]').exists()).toBe(false);
+  });
+
+  it("Check now verifies the address and the card is reloaded", async () => {
+    leads.POST_VerifyContact.mockResolvedValue({ data: { id: 1, email: "anna@shop.pl", email_status: "valid" } });
+    const wrapper = await mountTab();
+    await wrapper.get('[data-testid="contact-verify"]').trigger("click");
+    await flushPromises();
+    expect(leads.POST_VerifyContact).toHaveBeenCalledWith(1);
+    expect(wrapper.emitted("changed")).toHaveLength(1);
+    expect(wrapper.get('[data-testid="contact-status"]').text()).toContain("anna@shop.pl");
+  });
+
+  it("a hard-bounced address cannot be checked again", async () => {
+    const bounced = { ...company, contacts: [contact({ id: 9, email: "x@shop.pl", email_status: "invalid", email_status_reason: "hard_bounce" })] };
+    const wrapper = mount(ContactsTab, { props: { company: bounced }, global: leadsFrame });
+    await flushPromises();
+    expect(wrapper.get('[data-testid="contact-verify"]').attributes("disabled")).toBeDefined();
+  });
+
+  it("Why not? reads the send-check of that contact", async () => {
+    const wrapper = await mountTab();
+    await wrapper.get('[data-testid="contact-why"]').trigger("click");
+    await flushPromises();
+    expect(leads.GET_SendCheck).toHaveBeenCalledWith(1);
+  });
+
+  it("Do not contact opens the confirmation; nothing is sent until it is confirmed", async () => {
+    const wrapper = await mountTab();
+    await wrapper.get('[data-testid="contact-dnc"]').trigger("click");
+    expect(leads.POST_DoNotContact).not.toHaveBeenCalled();
+    const dialog = wrapper.findAllComponents({ name: "ConfirmDialog" }).find((item) => item.props("title") === "leads.dnc.confirm_title");
+    expect(dialog.props("open")).toBe(true);
   });
 });

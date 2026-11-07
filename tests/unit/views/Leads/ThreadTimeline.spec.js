@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { mount } from "@vue/test-utils";
 import { applyPolicy, channelTimeZone } from "@/utils/leadsTime";
+import StatusBadge from "@/boots/StatusBadge/index.vue";
 import ThreadTimeline from "@/views/Leads/ThreadTimeline.vue";
 
 const messages = [
@@ -67,5 +68,26 @@ describe("ThreadTimeline", () => {
     const wrapper = mount(ThreadTimeline, { props: { messages, optouts } });
     await wrapper.get('[data-testid="confirm-optout"]').trigger("click");
     expect(wrapper.emitted("confirm-optout")[0]).toEqual([3]);
+  });
+
+  // T4: a classified reply shows its class, how sure the classifier was, the return date and the review flag.
+  it("shows the intent class of a reply, found by the time it arrived", () => {
+    const replies = [
+      { id: 5, received_at: "2026-09-21T09:00:00Z", intent: "out_of_office", intent_confidence: 0.82, intent_return_date: "2026-10-02", needs_review: true },
+    ];
+    const wrapper = mount(ThreadTimeline, { props: { messages: [messages[1], messages[0]], replies }, global: { stubs: { StatusBadge } } });
+    const intent = wrapper.get('[data-testid="timeline-intent"]');
+    expect(intent.attributes("data-intent")).toBe("out_of_office");
+    expect(intent.text()).toContain("Out of office");
+    expect(intent.text()).toContain("82");
+    expect(wrapper.get('[data-testid="timeline-intent-return"]').text()).toContain("2026-10-02");
+    expect(wrapper.find('[data-testid="timeline-intent-review"]').exists()).toBe(true);
+    expect(wrapper.findAll('[data-testid="timeline-intent"]')).toHaveLength(1); // our own mail has none
+  });
+
+  it("shows no class for an unclassified reply (toolbox off, auto reply, bounce)", () => {
+    const replies = [{ id: 5, received_at: "2026-09-21T09:00:00Z", intent: "", intent_confidence: null }];
+    const wrapper = mount(ThreadTimeline, { props: { messages, replies }, global: { stubs: { StatusBadge } } });
+    expect(wrapper.find('[data-testid="timeline-intent"]').exists()).toBe(false);
   });
 });

@@ -51,15 +51,14 @@ describe("isNavActive — pages without an entry of their own", () => {
   it.each([
     ["/leads/conversations/23", "/leads/inbox"],
     ["/leads/inbox/51", "/leads/inbox"],
-    ["/leads/companies", "/leads/inbox"],
-    ["/leads/companies/new", "/leads/inbox"],
-    ["/leads/companies/100", "/leads/inbox"],
+    ["/leads/companies/new", "/leads/companies"],
+    ["/leads/companies/100", "/leads/companies"],
     ["/leads/settings/sending", "/leads/settings"],
   ])("leads + communicator: %s lights %s only", (path, entry) => {
     expect(lit(["leads", "communicator"], path)).toEqual([entry]);
   });
 
-  it("leads without communicator: a company card lights the Companies entry", () => {
+  it("leads without communicator: a company card lights the Companies entry too", () => {
     expect(lit(["leads"], "/leads/companies/100")).toEqual([
       "/leads/companies",
     ]);

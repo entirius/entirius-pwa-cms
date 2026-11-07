@@ -28,6 +28,7 @@
         :busy="optoutBusy"
         :messages="newest?.timeline || []"
         :optouts="newest?.optouts || []"
+        :replies="newest?.replies || []"
         :waiting="newest ? waitingOf(waiting, newest.id) : []"
         @confirm-optout="confirmOptout"
       />
@@ -48,7 +49,7 @@
         <summary>{{ $t("leads.thread.activity", { count: activities.length }) }}</summary>
         <ul>
           <li v-for="activity in activities" :key="activity.id">
-          {{ formatTime(activity.created_at) }} · {{ activityText(activity.message) }}
+          {{ formatTime(activity.created_at) }} · {{ activityText(activity.message) }}<ActivityDetail :activity="activity" />
         </li>
         </ul>
       </details>
@@ -76,6 +77,7 @@ import { threadSubject, waitingOf } from "@/utils/leadsThread";
 import { formatTime } from "@/utils/leadsTime";
 import PageLayout from "@/boots/PageLayout/index.vue";
 import AiToolboxHint from "@/components/ConfigHealth/AiToolboxHint.vue";
+import ActivityDetail from "./ActivityDetail.vue";
 import EarlierThreads from "./EarlierThreads.vue";
 import IntelCard from "./IntelCard.vue";
 import ThreadTimeline from "./ThreadTimeline.vue";

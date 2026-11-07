@@ -54,3 +54,11 @@ describe("leads labels", () => {
     expect([1, 2, 5, 12, 22, 25].map(pluralKey)).toEqual(["one", "few", "many", "many", "few", "many"]);
   });
 });
+
+describe("activity sentences of T3 and T4", () => {
+  it("reads a score and a classified reply as sentences", () => {
+    expect(activityText("score S2 (45 points)")).toBe("Score S2 (45 points)");
+    expect(activityText("reply received: not_now")).toBe("Reply received: Not now");
+    expect(activityText("reply received")).toBe("Reply received");
+  });
+});

@@ -19,12 +19,14 @@ const threadsFromServer = ({ state }) => {
 const GET_Conversations = vi.hoisted(() => vi.fn());
 const GET_WaitingMessages = vi.hoisted(() => vi.fn(() => Promise.resolve(server.waiting)));
 const POST_SendNow = vi.hoisted(() => vi.fn(() => Promise.resolve({ data: {} })));
-vi.mock("@/api/communicator/api", () => ({ GET_Conversations, GET_WaitingMessages, POST_SendNow }));
+const GET_Replies = vi.hoisted(() => vi.fn(() => Promise.resolve({ data: { results: [] } })));
+vi.mock("@/api/communicator/api", () => ({ GET_Conversations, GET_Replies, GET_WaitingMessages, POST_SendNow }));
 const GET_Company = vi.hoisted(() => vi.fn((id) => Promise.resolve({ data: { id, name: `Example Shop ${id}` } })));
 vi.mock("@/api/leads/api", () => ({ GET_Company }));
 const modules = vi.hoisted(() => new Set());
 vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isModuleEnabled: (key) => modules.has(key) }) }));
 
+import StatusBadge from "@/boots/StatusBadge/index.vue";
 import Inbox from "@/views/Leads/Inbox.vue";
 import { useLeadsReviewStore } from "@/stores/leadsReview";
 import { applyPolicy, formatTime } from "@/utils/leadsTime";
@@ -60,6 +62,7 @@ const mountInbox = () =>
         RouterLink,
         Loader: true,
         FontAwesomeIcon: true,
+        StatusBadge,
         FilterChip: { props: ["label", "count", "active"], emits: ["click"], template: "<button :class='{ on: active }' @click=\"$emit('click')\">{{ label }} {{ count }}</button>" },
         EmptyState: { props: ["title", "message"], template: "<div data-testid='inbox-empty'>{{ title }} {{ message }}<slot /></div>" },
       },
@@ -270,5 +273,35 @@ describe("Leads Inbox (one list: drafts, waiting mails, conversations)", () => {
     await flushPromises();
     expect(chip(wrapper, "all").classes()).toContain("on");
     expect(wrapper.get('[role="alert"]').text()).toBe("Could not load the inbox — it tries again on the next refresh");
+  });
+
+  // T4: the class of the newest classified reply of the row's thread shows beside the Replied marker.
+  it("shows the intent class of a replied conversation, read once from replies/", async () => {
+    server.rows = [waitingRow, repliedRow];
+    server.counts = { all: 2, draft: 0, waiting: 1, replied: 1 };
+    GET_Replies.mockResolvedValue({
+      data: { results: [{ id: 2, thread_id: 7, intent: "interested" }, { id: 1, thread_id: 7, intent: "not_now" }, { id: 3, thread_id: 6, intent: "unclear" }] },
+    });
+    const wrapper = mountInbox();
+    await flushPromises();
+    expect(GET_Replies).toHaveBeenCalledTimes(1);
+    const [waiting, replied] = wrapper.findAll('[data-testid="inbox-item"]');
+    expect(replied.get('[data-testid="inbox-intent"]').attributes("data-intent")).toBe("interested");
+    expect(waiting.find('[data-testid="inbox-intent"]').exists()).toBe(false); // not a replied marker
+  });
+
+  it("lists without a class when replies/ fails, and does not ask when no row has a reply", async () => {
+    GET_Replies.mockRejectedValueOnce({ status: 500 });
+    const wrapper = mountInbox();
+    await flushPromises();
+    expect(wrapper.find('[data-testid="inbox-intent"]').exists()).toBe(false);
+    expect(ids(wrapper).length).toBeGreaterThan(0);
+    GET_Replies.mockClear();
+    server.rows = [waitingRow];
+    server.counts = { all: 1, draft: 0, waiting: 1, replied: 0 };
+    const quiet = mountInbox();
+    await flushPromises();
+    expect(GET_Replies).not.toHaveBeenCalled();
+    expect(quiet.exists()).toBe(true);
   });
 });

@@ -4,6 +4,7 @@ import { createRouter, createMemoryHistory } from "vue-router";
 
 vi.mock("@/stores/access", () => ({ useAccessStore: () => ({ can: (area) => area !== "rules" }) }));
 vi.mock("@/stores/enrichmentProfile", () => ({ useEnrichmentProfileStore: () => ({ pendingSuggestions: 3 }) }));
+vi.mock("@/stores/approvals", () => ({ useApprovalsStore: () => ({ total: 0 }) }));
 
 import RouteTabs from "@/components/Navigation/RouteTabs.vue";
 import { routeTabPanel } from "@/components/Navigation/nav-routes";

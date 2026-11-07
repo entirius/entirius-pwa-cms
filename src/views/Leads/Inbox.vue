@@ -33,6 +33,7 @@
       :row="row"
       :filter="filter"
       :active="isActive(row)"
+      :reply="intents.get(row.id) || null"
       @send-now="sendNow"
     />
     <BasicButton v-if="next" class="as-s" :disabled="loading" data-testid="inbox-more" @click="loadPage(page + 1)">
@@ -46,10 +47,11 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { t } from "@/i18n";
-import { GET_Conversations, GET_WaitingMessages, POST_SendNow } from "@/api/communicator/api";
+import { GET_Conversations, GET_Replies, GET_WaitingMessages, POST_SendNow } from "@/api/communicator/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { useLeadsThreadStore } from "@/stores/leadsThread";
 import { useLeadsReviewStore } from "@/stores/leadsReview";
+import { intentByThread } from "@/utils/leadsIntents";
 import { sendStateSentence } from "@/utils/leadsLabels";
 import { sendState } from "@/utils/leadsTime";
 import InboxRow from "./InboxRow.vue";
@@ -73,6 +75,7 @@ const page = ref(1);
 const next = ref(false);
 const loading = ref(false);
 const error = ref("");
+const intents = ref(new Map()); // thread id → its newest classified reply (T4); the conversations list carries no class
 const waiting = ref([]); // the outbox — only the empty Drafts state reads it, for the next departure
 
 const firstSlot = computed(() => waiting.value.map((m) => m.next_slot).filter(Boolean).sort()[0] || "");
@@ -120,6 +123,17 @@ async function fetchList(number, count) {
   return drafts.counts.draft ? { state: "draft", data: drafts } : { state: "all", data: await fetchTop("all", count) };
 }
 
+// The class of a reply is on `replies/`, not on the conversation row: one extra read per list load, only while a row
+// shows a reply. Without it (older backend, a failure) the rows simply show no class.
+async function loadIntents(list) {
+  if (!list.some((row) => row.replied)) return;
+  try {
+    intents.value = intentByThread((await GET_Replies({ page_size: 100 })).data.results);
+  } catch {
+    intents.value = new Map();
+  }
+}
+
 // Poll, chip, Show more and the review signal race each other: only the latest request writes the list, and
 // `loading` follows that one.
 let latest = 0;
@@ -137,6 +151,8 @@ async function loadPage(number, count = 1) {
     page.value = number === 1 ? count : number;
     error.value = "";
     reviewQueue.setCount(data.counts.draft);
+    await loadIntents(rows.value);
+    if (request !== latest) return;
     if (state === "draft" && !data.counts.draft) waiting.value = await GET_WaitingMessages();
   } catch (err) {
     if (request !== latest) return;

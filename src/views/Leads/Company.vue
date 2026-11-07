@@ -47,6 +47,7 @@
         <OverviewTab v-if="tab === 'overview'" :company="company" />
         <IntelTab v-else-if="tab === 'intel'" :company="company" />
         <ContactsTab v-else-if="tab === 'contacts'" :company="company" @changed="reload" />
+        <PilotTab v-else-if="tab === 'pilot'" :company="company" />
         <Thread v-else />
       </div>
     </template>
@@ -68,10 +69,11 @@ import Thread from "./Thread.vue";
 import ContactsTab from "./tabs/ContactsTab.vue";
 import IntelTab from "./tabs/IntelTab.vue";
 import OverviewTab from "./tabs/OverviewTab.vue";
+import PilotTab from "./tabs/PilotTab.vue";
 
 // Company card: the plan-13 thread on a phone; from 1024 px the page frame (actions in the PageHeader), the card
 // header (name, domain, stage and lead-type selects) and the tabs.
-const TABS = ["overview", "intel", "contacts", "timeline"];
+const TABS = ["overview", "intel", "contacts", "pilot", "timeline"];
 const route = useRoute();
 const router = useRouter();
 const notify = useNotifyStore();
