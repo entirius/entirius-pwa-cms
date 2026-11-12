@@ -760,6 +760,36 @@
       "note": "a fresh seed has no checkout order"
     },
     {
+      "id": "stock-alerts-demand",
+      "route": "/stock-alerts",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "stock-alerts-demand__{vp}__{theme}.png"
+    },
+    {
+      "id": "stock-alerts-subscriptions",
+      "route": "/stock-alerts/subscriptions",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "stock-alerts-subscriptions__{vp}__{theme}.png"
+    },
+    {
       "id": "agreements-list",
       "route": "/agreements/list",
       "resolver": "fixed",

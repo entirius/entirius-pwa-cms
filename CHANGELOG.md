@@ -20,6 +20,11 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 - Order page: the item table's column labels are translated.
+- Stock alerts panel (django-stock-alerts, Munin module `stock_alerts`, area `stock_alerts.subscriptions`): Demand
+  lists the variants customers wait for — waiting requests, the oldest one, the stock now and the requests notified
+  in 30 days — and a row opens Requests filtered by its SKU. Requests shows the addresses with search (exact address
+  or SKU), a status filter, a removable SKU chip, Cancel request on waiting rows (hidden in read-only mode) and
+  Download CSV of the current filter.
 
 ## [3.7.0] (2026-11-11)
 

@@ -104,6 +104,7 @@ Fixture data: `tests/fixtures/`.
 | — | `access-staff-create.spec.js` | New staff member: `accessadmin` creates a Viewer with a generated password shown once, which signs the account in read-only; `manager` sees no Access panel (writes: one `e2e-staff-<run>` account per run until the next `make seed`) |
 | — | `access-catalogue.spec.js` | The live django-access catalogue equals `tests/fixtures/access-catalogue.json` and every area and scope has an EN and PL label (read-only) |
 | — | `access-roles-smoke.spec.js`, `access-staff-smoke.spec.js`, `access-applications-smoke.spec.js` | Access panel smokes (read-only) |
+| — | `stock-alerts-smoke.spec.js` | Stock alerts: Demand and Requests on desktop and phone, a Demand row opens its SKU's requests (read-only, never cancels) |
 | `test:comprehensive` | `03`, `04`, `05`, `06` | Combined run of the four core suites |
 | `test:build` | — | Production build check (`tests/build/build-test.js`) |
 

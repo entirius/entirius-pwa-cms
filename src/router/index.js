@@ -655,6 +655,38 @@ const routes = [
     ],
   },
 
+  // Stock alerts panel (django-stock-alerts): demand per variant, the requests
+  {
+    path: "/stock-alerts",
+    component: () => import(/* webpackChunkName: "stock-alerts" */ "../views/StockAlerts/index.vue"),
+    meta: { requiresAuth: true, panel: "stockAlerts" },
+    children: [
+      {
+        path: "",
+        name: "StockAlertsDemand",
+        component: () => import(/* webpackChunkName: "stock-alerts" */ "../views/StockAlerts/StockAlertsDemand.vue"),
+        meta: {
+          requiresAuth: true,
+          titleKey: "stock_alerts.demand",
+          panel: "stockAlerts",
+          area: AREAS.STOCK_ALERTS_SUBSCRIPTIONS,
+        },
+      },
+      {
+        path: "subscriptions",
+        name: "StockAlertsSubscriptions",
+        component: () =>
+          import(/* webpackChunkName: "stock-alerts" */ "../views/StockAlerts/StockAlertsSubscriptions.vue"),
+        meta: {
+          requiresAuth: true,
+          titleKey: "stock_alerts.subscriptions",
+          panel: "stockAlerts",
+          area: AREAS.STOCK_ALERTS_SUBSCRIPTIONS,
+        },
+      },
+    ],
+  },
+
   // Emails panel
   {
     path: "/emails",

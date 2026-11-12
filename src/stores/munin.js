@@ -18,6 +18,8 @@ const MODULE_TO_PANEL = {
   pricemanager: "pricing",
   pricefighter: "pricefighter",
   qms: "stock",
+  // Munin keys drop the app label's `django_` prefix: django_stock_alerts reports as `stock_alerts`.
+  stock_alerts: "stockAlerts",
   // Promo hosts Discounts (served by django-checkout) with Vouchers as an
   // optional sub-feature — the panel must not disappear when only the
   // voucher module is missing.

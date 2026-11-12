@@ -22,6 +22,7 @@ first area is the read-only default of a route without `meta.area`
 | `forms` | Forms | `/forms/list` | `envelope` | `contact_forms.submissions`, `contact_forms.leads`, `contact_forms.settings` |
 | `accounts` | Accounts | `/accounts/customers` | `users` | `accounts.customers` |
 | `checkout` | Orders | `/checkout-orders/orders` | `shopping-cart` | `checkout.orders` |
+| `stockAlerts` | Stock alerts | `/stock-alerts` | `hourglass-half` | `stock_alerts.subscriptions` (Munin module `stock_alerts`) |
 | `agreements` | Agreements | `/agreements/list` | `file-contract` | `agreements.definitions`, `agreements.consents` |
 | `emails` | Emails | `/emails` | `at` | `email.templates` |
 | `faq` | FAQ | `/faq/groups` | `circle-question` | `faq.faq` |
@@ -54,6 +55,7 @@ path prefix and lazy-loaded (`() => import(...)`). Grouped by panel:
 | `/agreements/...` | AgreementList/Edit, ConsentPeople, ConsentPersonDetail |
 | `/accounts/...` | CustomerList, CustomerDetail |
 | `/checkout-orders/...` | OrderList, OrderDetail |
+| `/stock-alerts/...` | StockAlertsDemand (`/stock-alerts`), StockAlertsSubscriptions (`subscriptions`, `?sku=`) |
 | `/emails/...` | EmailsDashboard, EmailChannelEdit, EmailLangConfigEdit, EmailTemplateList/Edit |
 | `/faq/...` | GroupList/Edit, ItemList/Edit, DuplicateReport (`duplicates`) |
 | `/pricing/...` | PriceList/Detail, TaxClassList/Detail, ChannelList/Detail |
