@@ -84,6 +84,12 @@ export default {
           slug: "checkout-virtual-product"
         },
         {
+          slug: "checkout-order-confirmation"
+        },
+        {
+          slug: "checkout-order-canceled"
+        },
+        {
           slug: "loyalty-coupon-confirmation"
         },
         {
