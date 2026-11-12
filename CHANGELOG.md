@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- Emails panel: the "Order confirmation" and "Order canceled" templates (`checkout-order-confirmation`,
+  `checkout-order-canceled`, django-email 4.4.0), each field with a hint. Their edit page shows a preview of the
+  saved wording next to the form (under it on a phone): sample order variants, desktop and phone width, the subject
+  and a "Text version" toggle. The e-mail renders in a sandboxed frame; while the form has unsaved changes a note
+  says to save to refresh it.
+- Order page: an "E-mails" section lists the order's e-mails (kind, status, recipient, language, attempts, sent
+  time, the last error of a failed one, the other orders a shared confirmation covers) with "Send again" behind a
+  confirmation; an order without a confirmation gets "Send confirmation" in the header (django-checkout 10.2.0).
+  Both need write on `checkout.orders` and an e-mail address on the order. The delivery card shows the pickup
+  point.
+
+### Changed
+
+- Order page: the item table's column labels are translated.
+
 ## [3.7.0] (2026-11-11)
 
 ### Changed
