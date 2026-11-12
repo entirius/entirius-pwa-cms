@@ -2,7 +2,7 @@
 
 `entirius-pwa-cms` — the admin CMS of Entirius: a Vue 3 SPA with a visual page builder and self-contained panels
 (Pages, PIM, Points, Forms, Accounts, Checkout, Agreements, Emails, FAQ, Pricing, Stock, Translation, Atlas,
-Enricher, Promo, PriceFighter, Leads — communicator included, Access), each enabled per backend by the django-munin
+Enricher, Promo, PriceFighter, Leads — communicator included, Stock alerts, Access), each enabled per backend by the django-munin
 module registry.
 
 ## Commands
