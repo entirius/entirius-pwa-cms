@@ -34,6 +34,7 @@
     "accounts.customers",
     "checkout.orders",
     "checkout.discounts",
+    "stock_alerts.subscriptions",
     "returns.attachments",
     "contact_forms.submissions",
     "contact_forms.leads",
@@ -60,6 +61,7 @@
     "returns.api",
     "reviews.moderate",
     "vault.api",
-    "agreements.subscribe"
+    "agreements.subscribe",
+    "stock_alerts.subscribe"
   ]
 }

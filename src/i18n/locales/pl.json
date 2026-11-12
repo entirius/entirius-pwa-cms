@@ -31,6 +31,8 @@
     "pm_currencies": "Waluty",
     "accounts_customers": "Klienci",
     "checkout_orders": "Zamówienia",
+    "stock_alerts_demand": "Zapotrzebowanie",
+    "stock_alerts_subscriptions": "Zgłoszenia",
     "atlas_list": "Źródła",
     "atlas_auto_matched": "Auto-połączone",
     "atlas_duplicates": "Duplikaty",
@@ -579,6 +581,8 @@
     "accounts_desc": "Konta klientów — profile, adresy, grupy",
     "checkout_orders": "Zamówienia",
     "checkout_orders_desc": "Zamówienia — przeglądanie, statusy, płatności",
+    "stock_alerts": "Powiadomienia o dostępności",
+    "stock_alerts_desc": "Prośby o powiadomienie o dostępności — na co czekają klienci, zgłoszenia, eksport",
     "atlas": "Atlas",
     "atlas_desc": "Źródła, feedy, mapowania, produkty i logi integracji",
     "enricher": "Wzbogacanie",
@@ -718,6 +722,43 @@
       "CANCELED": "Anulowane"
     },
     "external_id": "ID zewnętrzne"
+  },
+  "stock_alerts": {
+    "demand": "Zapotrzebowanie",
+    "demand_help": "Warianty, na które czekają klienci, i czy można je teraz kupić.",
+    "subscriptions": "Zgłoszenia",
+    "subscriptions_help": "Wszystkie prośby o powiadomienie: kto czeka na jaki wariant i co się z prośbą stało.",
+    "search_demand": "SKU lub nazwa produktu",
+    "search_subscriptions": "Dokładny adres lub SKU",
+    "product": "Produkt",
+    "sku": "SKU",
+    "waiting": "Czeka",
+    "oldest_request": "Najstarsza prośba",
+    "in_stock_now": "Dostępność teraz",
+    "notified_30d": "Powiadomieni w 30 dni",
+    "in_stock": "Dostępne: {count}",
+    "sold_out": "Wyprzedane",
+    "summary": "Oczekujące prośby: {waiting} · wariantów: {variants}",
+    "empty_title": "Nikt na nic nie czeka",
+    "empty_message": "Prośba pojawi się tutaj, gdy klient poprosi sklep o e-mail o wyprzedanym wariancie.",
+    "no_requests": "Brak zgłoszeń pasujących do filtrów",
+    "address": "Adres",
+    "language": "Język",
+    "status": "Status",
+    "created": "Utworzono",
+    "notified": "Powiadomiono",
+    "status_all": "Wszystkie statusy",
+    "status_waiting": "Oczekuje",
+    "status_notified": "Powiadomiono",
+    "status_cancelled": "Anulowano",
+    "status_expired": "Wygasło",
+    "sku_filter": "SKU: {sku}",
+    "cancel_request": "Anuluj prośbę",
+    "cancel_title": "Anulować tę prośbę?",
+    "cancel_message": "Klient nie dostanie e-maila, gdy {sku} wróci do sprzedaży.",
+    "keep": "Zostaw",
+    "cancelled": "Prośba anulowana",
+    "download_csv": "Pobierz CSV"
   },
   "pim": {
     "attribute_values_more": "Wczytaj więcej wartości…",
@@ -5093,6 +5134,9 @@
       },
       "platform": {
         "devtools": "Endpointy testowe (tylko środowisko deweloperskie)"
+      },
+      "stock_alerts": {
+        "subscriptions": "Prośby o powiadomienie o dostępności"
       }
     },
     "scopes": {
@@ -5118,6 +5162,9 @@
       },
       "agreements": {
         "subscribe": "Zapis do newslettera"
+      },
+      "stock_alerts": {
+        "subscribe": "Zapis na powiadomienie o dostępności"
       }
     }
   },

@@ -58,6 +58,15 @@ export const panels = [
     areas: [AREAS.CHECKOUT_ORDERS],
   },
   {
+    name: "Stock alerts",
+    idx: "stockAlerts",
+    icon: "hourglass-half",
+    root: "/stock-alerts",
+    labelKey: "panels.stock_alerts",
+    descriptionKey: "panels.stock_alerts_desc",
+    areas: [AREAS.STOCK_ALERTS_SUBSCRIPTIONS],
+  },
+  {
     name: "Agreements",
     idx: "agreements",
     icon: "file-contract",

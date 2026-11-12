@@ -191,6 +191,20 @@ export function buildNavRoutes() {
       app: ["checkout"],
     },
     {
+      route: "/stock-alerts",
+      labelKey: "nav.stock_alerts_demand",
+      icon: "hourglass-half",
+      query: {},
+      app: ["stockAlerts"],
+    },
+    {
+      route: "/stock-alerts/subscriptions",
+      labelKey: "nav.stock_alerts_subscriptions",
+      icon: "list-ul",
+      query: {},
+      app: ["stockAlerts"],
+    },
+    {
       route: "/promo/list",
       labelKey: "nav.promo_list",
       icon: "tags",
