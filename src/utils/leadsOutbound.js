@@ -57,3 +57,10 @@ export function apiErrorCode(err) {
   const detail = Array.isArray(body.details) ? body.details[0] : null;
   return String(detail?.code || detail?.issue || body.code || body.error || "").toLowerCase();
 }
+
+// Score segments and stage kinds as StatusBadge tones (`ux/copy.md`).
+export const SEGMENT_TONES = { S1: "positive", S2: "accent", S3: "info", S4: "neutral" };
+
+const STAGE_TONES = { open: "neutral", won: "positive", lost: "negative", unresponsive: "warning" };
+
+export const stageTone = (stage) => STAGE_TONES[stage?.kind] || "neutral";

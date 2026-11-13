@@ -16,10 +16,12 @@
       size="md"
       :title="$t('leads.fields.empty', { entity: $t(`leads.fields.tab.${entity}`) })"
       data-testid="fields-empty"
-    />
+    >
+      <ActionBar :actions="pageActions.map((action) => ({ ...action, role: 'secondary', testid: 'fields-empty-add' }))" />
+    </EmptyState>
     <DataTable v-else :columns="columns" :rows="rows" row-key="id" :row-attrs="rowAttrs" data-testid="fields-table">
       <template #cell-label="{ row }">
-        <span :class="{ 't-muted': !row.is_active }">{{ row.label }}</span>
+        <span :class="{ 't-muted': !row.is_active }" :title="row.is_active ? '' : $t('leads.fields.active') + ': ' + $t('leads.fields.no')">{{ row.label }}</span>
       </template>
       <template #cell-active="{ row }">
         <BasicSwitch :model-value="row.is_active" :disabled="readonly" :label="$t('leads.fields.active')" data-testid="field-active" @update:model-value="patch(row, { is_active: $event })" />
@@ -140,6 +142,7 @@ const openTab = (value) => router.replace({ query: { ...route.query, entity: val
 
 async function load() {
   error.value = "";
+  loading.value = true;
   try {
     list.value = (await GET_Attributes(entity.value)).data.results;
   } catch (err) {

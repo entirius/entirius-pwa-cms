@@ -16,7 +16,8 @@
             class="company__select"
             :model-value="company.stage.key"
             :options="stageOptions"
-            :floating-label="$t('leads.company.stage')"
+            :floating-label="isDesktop ? $t('leads.company.stage') : undefined"
+            :aria-label="$t('leads.company.stage')"
             :disabled="readonly"
             data-testid="company-stage"
             @update:model-value="transition"
@@ -25,7 +26,8 @@
             class="company__select"
             :model-value="company.lead_type"
             :options="typeOptions"
-            :floating-label="$t('leads.company.type')"
+            :floating-label="isDesktop ? $t('leads.company.type') : undefined"
+            :aria-label="$t('leads.company.type')"
             :disabled="readonly"
             data-testid="company-lead-type"
             @update:model-value="retype"
@@ -84,6 +86,8 @@ import { useMuninStore } from "@/stores/munin";
 import { activityText } from "@/utils/leadsLabels";
 import { outboundOn } from "@/utils/leadsOutbound";
 import { formatTime } from "@/utils/leadsTime";
+import { companySubjectRef } from "@/utils/subjectRef";
+import { GET_Tasks } from "@/api/todo/api";
 import { useLeadTypesStore } from "@/stores/leadTypes";
 import { useNotifyStore } from "@/stores/notify";
 import AiToolboxHint from "@/components/ConfigHealth/AiToolboxHint.vue";
@@ -161,6 +165,16 @@ async function load() {
   company.value = companyRes.data;
   stages.value = stageRes.data.results;
   if (crm.value) loadFields();
+  if (tasksOn.value) countTasks();
+}
+
+// The Tasks tab's badge: the open tasks of the company (one row asked, the count read).
+async function countTasks() {
+  try {
+    taskCount.value = (await GET_Tasks({ subject_ref: companySubjectRef(route.params.id), status: "open", page_size: 1 })).data.count;
+  } catch {
+    taskCount.value = null;
+  }
 }
 
 // Custom field definitions: without them the Details card shows owner and origin only.

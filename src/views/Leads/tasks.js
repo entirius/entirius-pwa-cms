@@ -13,6 +13,7 @@ const dayNumber = (date) => Date.parse(dayKey(date)) / 86400000;
 
 // { label, tone }: overdue (negative), today (info), later (neutral), no date (neutral).
 export function taskDue(task, now = new Date()) {
+  if (task.status === "done") return { label: t("leads.today.chip_done"), tone: "positive" };
   if (!task.due_at) return { label: t("leads.due.none"), tone: "neutral" };
   const due = new Date(task.due_at);
   const days = dayNumber(due) - dayNumber(now);

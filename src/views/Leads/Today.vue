@@ -266,7 +266,11 @@ async function reopen(task) {
   }
 }
 
-watch([chip, owner, page], load);
+watch(owner, () => (page.value = 1));
+watch([chip, owner, page], () => {
+  loading.value = true;
+  load();
+});
 watch(tasksOn, (on) => on && load());
 onMounted(() => Promise.all([load(), loadCounters()]));
 </script>

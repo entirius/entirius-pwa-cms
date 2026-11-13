@@ -1196,19 +1196,19 @@ const routes = [
         path: "settings/custom-fields",
         name: "LeadsCustomFields",
         component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/CustomFieldsSettings.vue"),
-        meta: { requiresAuth: true, titleKey: "leads.fields.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", moduleVersion: OUTBOUND, page: true },
+        meta: { requiresAuth: true, titleKey: "leads.fields.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", moduleVersion: OUTBOUND, page: true, crumbParent: "LeadsSettings" },
       },
       {
         path: "settings/scoring",
         name: "LeadsScoring",
         component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Scoring.vue"),
-        meta: { requiresAuth: true, titleKey: "leads.scoring.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", moduleVersion: OUTBOUND, page: true },
+        meta: { requiresAuth: true, titleKey: "leads.scoring.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", moduleVersion: OUTBOUND, page: true, crumbParent: "LeadsSettings" },
       },
       {
         path: "settings/rules",
         name: "LeadsRules",
         component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Rules.vue"),
-        meta: { requiresAuth: true, titleKey: "leads.rules.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", moduleVersion: OUTBOUND, page: true },
+        meta: { requiresAuth: true, titleKey: "leads.rules.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", moduleVersion: OUTBOUND, page: true, crumbParent: "LeadsSettings" },
       },
       {
         path: "settings/automatic-moves",

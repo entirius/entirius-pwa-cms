@@ -56,7 +56,7 @@
 
     <Loader v-if="loading && !companies.length" block />
     <EmptyState v-else-if="!companies.length && !filtered" icon="empty" size="md" :title="$t('leads.companies.empty_title')" data-testid="companies-empty">
-      <ActionBar :actions="pageActions" />
+      <ActionBar :actions="pageActions.map((action) => ({ ...action, role: 'secondary' }))" />
     </EmptyState>
     <EmptyState v-else-if="!companies.length" icon="empty" size="md" :title="$t('leads.companies.empty')" data-testid="companies-empty">
       <BasicButton data-testid="companies-clear-filters" @click="clearFilters">{{ $t("leads.companies.clear_filters") }}</BasicButton>
@@ -93,7 +93,7 @@
         </template>
         <template #cell-score="{ row }">
           <span v-if="row.score_segment" class="flex ai-ct jc-fe gap-2">
-            <StatusBadge tone="info" size="sm" :dot="false" :label="row.score_segment" />{{ row.score_points }}
+            <StatusBadge :tone="SEGMENT_TONES[row.score_segment]" size="sm" :dot="false" :label="row.score_segment" />{{ row.score_points }}
           </span>
         </template>
       </DataTable>
@@ -127,7 +127,7 @@ import { useLeadTypesStore } from "@/stores/leadTypes";
 import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
 import { formatRelative } from "@/utils/format";
-import { outboundOn } from "@/utils/leadsOutbound";
+import { SEGMENT_TONES, outboundOn, stageTone } from "@/utils/leadsOutbound";
 import { pluralKey } from "@/utils/plural";
 import { fieldsFromDefinitions, formatValue } from "./customFields";
 
@@ -214,8 +214,6 @@ const bulkActions = computed(() => [
   },
 ]);
 
-const STAGE_TONES = { won: "positive", lost: "negative" };
-const stageTone = (stage) => STAGE_TONES[stage?.kind] || "info";
 const ownerName = (owner) => (owner ? owner.name || owner.username : t("leads.companies.unassigned"));
 
 // The URL is the state: every change replaces the query (page back to 1 unless the page itself changed).

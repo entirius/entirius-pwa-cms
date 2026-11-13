@@ -39,7 +39,6 @@
     <ConfirmDialog
       :open="discarding"
       :title="$t('leads.compose.discard_title')"
-      :message="$t('leads.compose.discard_title')"
       :confirm-label="$t('leads.compose.discard')"
       :cancel-label="$t('leads.compose.keep')"
       confirm-testid="compose-discard-confirm"
@@ -103,6 +102,7 @@ function reset() {
   Object.keys(errors).forEach((key) => delete errors[key]);
   toError.value = "";
   quoteOpen.value = false;
+  check(form.contactId);
 }
 
 // The picked contact's gate answer: the first reason when blocked.

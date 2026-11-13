@@ -29,6 +29,7 @@ const siteintel = vi.hoisted(() => ({ GET_LatestAudit: vi.fn(), POST_AuditRerun:
 const munin = vi.hoisted(() => ({ isModuleInstalled: vi.fn(), isModuleEnabled: vi.fn(() => true), isModuleAtLeast: vi.fn(() => false) }));
 const notify = vi.hoisted(() => ({ spawnNotification: vi.fn() }));
 vi.mock("@/api/leads/api", () => leads);
+vi.mock("@/api/todo/api", () => ({ GET_Tasks: () => Promise.resolve({ data: { count: 2, results: [] } }) }));
 vi.mock("@/api/siteintel/api", () => siteintel);
 vi.mock("@/stores/munin", () => ({ useMuninStore: () => munin }));
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => notify }));
@@ -330,6 +331,7 @@ describe("Company card header", () => {
     it("leads 0.5.0 with todo: Details, Score and the Tasks tab", async () => {
       const wrapper = await mountCard();
       expect(tabValues(wrapper)).toEqual(["overview", "contacts", "timeline", "tasks", "intel"]);
+      expect(wrapper.findComponent({ name: "BasicTabs" }).props("options")[3].count).toBe(2);
       expect(wrapper.find("company-details-stub").exists()).toBe(true);
       expect(wrapper.find("score-card-stub").exists()).toBe(true);
       expect(leads.GET_Attributes).toHaveBeenCalledWith("company");

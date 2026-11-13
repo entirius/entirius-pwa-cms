@@ -21,11 +21,11 @@
       <p v-if="error" class="t-negative m-0" data-testid="contact-error">{{ error }}</p>
       <div class="flex ai-ct jc-fe gap-3">
         <BasicButton variant="ghost" data-testid="contact-cancel" @click="close">{{ $t("common.cancel") }}</BasicButton>
-        <BasicButton type="submit" :loading="busy" data-testid="contact-save">{{ $t("common.save") }}</BasicButton>
+        <BasicButton type="submit" mutates :loading="busy" data-testid="contact-save">{{ $t("common.save") }}</BasicButton>
       </div>
     </form>
     <div v-else class="flex jc-fe">
-      <BasicButton data-testid="contact-add" @click="open('add')">{{ $t("leads.contacts.add") }}</BasicButton>
+      <BasicButton mutates data-testid="contact-add" @click="open('add')">{{ $t("leads.contacts.add") }}</BasicButton>
     </div>
     <p v-if="status" class="t-muted m-0" role="status" data-testid="contact-status">{{ status }}</p>
 
@@ -75,10 +75,11 @@
           <BasicButton v-if="outbound" variant="ghost" size="sm" :data-contact="row.id" data-testid="contact-why" @click="why = row">
             {{ $t("leads.contact.why_no_mail") }}
           </BasicButton>
-          <BasicButton variant="ghost" size="sm" :data-contact="row.id" data-testid="contact-edit" @click="open(row.id, row)">
+          <BasicButton mutates variant="ghost" size="sm" :data-contact="row.id" data-testid="contact-edit" @click="open(row.id, row)">
             {{ $t("common.edit") }}
           </BasicButton>
           <IconButton
+            mutates
             icon="delete"
             variant="danger"
             size="sm"

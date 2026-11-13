@@ -12,7 +12,9 @@
     </template>
     <Loader v-if="loading" block />
     <p v-else-if="error" class="t-negative m-0" role="alert" data-testid="rule-error">{{ error }}</p>
-    <EmptyState v-else-if="!rules.length" icon="empty" size="md" :title="$t('leads.rules.empty')" data-testid="rules-empty" />
+    <EmptyState v-else-if="!rules.length" icon="empty" size="md" :title="$t('leads.rules.empty')" data-testid="rules-empty">
+      <ActionBar :actions="pageActions.map((action) => ({ ...action, role: 'secondary', testid: 'rules-empty-add' }))" />
+    </EmptyState>
     <DataTable v-else :columns="columns" :rows="rows" row-key="id" :row-attrs="rowAttrs" data-testid="rules-table">
       <template #cell-active="{ row }">
         <BasicSwitch :model-value="row.is_active" :disabled="readonly" :label="$t('leads.rules.active')" data-testid="rule-active" @update:model-value="toggle(row, $event)" />

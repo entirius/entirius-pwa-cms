@@ -7,11 +7,12 @@
       <div class="flex ai-fe flex-wrap gap-5">
         <BasicSelect v-model="origin" :floating-label="$t('leads.reports.origin')" :options="originOptions" data-testid="reports-origin" />
         <FormField class="reports__period" :label="$t('leads.reports.period')">
-          <BasicDatePicker v-model="period" :config="{ mode: 'range' }" data-testid="reports-period" />
+          <BasicDatePicker v-model="period" :config="{ mode: 'range', locale: { rangeSeparator: RANGE_SEPARATOR } }" data-testid="reports-period" />
         </FormField>
       </div>
     </template>
     <Loader v-if="loading && !report" block />
+    <p v-else-if="error && !report" class="t-negative m-0" role="alert" data-testid="reports-error">{{ error }}</p>
     <EmptyState v-else-if="!report || !hasCompanies" icon="empty" size="md" :title="$t('leads.reports.empty')" data-testid="reports-empty" />
     <div v-else class="flex-column gap-8">
       <BasicCard :title="$t('leads.reports.stages')">
@@ -38,13 +39,15 @@ import { durationLabel } from "./reports";
 // Reports (ux/screens/reports.md): the funnel as three tables — stages now / entered / left / mean time, the moves
 // between stages, companies per origin. Origin and period reload it; the default period is the last 30 days.
 const DAY_MS = 86400000;
+const RANGE_SEPARATOR = " – "; // fixed, so the Polish locale (" do ") never changes what is parsed
 const isoDay = (ms) => new Date(ms).toISOString().slice(0, 10);
 const notify = useNotifyStore();
 const report = ref(null);
 const loading = ref(true);
 const origin = ref("");
-const period = ref(`${isoDay(Date.now() - 30 * DAY_MS)} to ${isoDay(Date.now())}`);
+const period = ref(`${isoDay(Date.now() - 30 * DAY_MS)}${RANGE_SEPARATOR}${isoDay(Date.now())}`);
 const origins = ref([]);
+const error = ref("");
 
 const originOptions = computed(() => [
   { value: "", label: t("leads.reports.origin_all") },
@@ -84,7 +87,7 @@ const originRows = computed(() =>
 );
 
 function params() {
-  const [from, to] = (period.value || "").split(" to ");
+  const [from, to] = (period.value || "").split(RANGE_SEPARATOR);
   return { origin: origin.value, date_from: from || undefined, date_to: to || from || undefined };
 }
 
@@ -93,9 +96,11 @@ async function load() {
   loading.value = true;
   try {
     report.value = (await GET_Funnel(params())).data;
+    error.value = "";
     if (!origin.value) origins.value = report.value.origins.map((row) => row.origin);
   } catch (err) {
-    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.common.error")), type: "negative" });
+    error.value = extractApiMessage(err, t("leads.common.error"));
+    notify.spawnNotification({ msg: error.value, type: "negative" });
   } finally {
     loading.value = false;
   }

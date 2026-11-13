@@ -2,7 +2,7 @@
   <PageLayout data-testid="leads-scoring">
     <template #header>
       <PageHeader :title="$t('leads.scoring.title')" :back="{ name: 'LeadsSettings' }" :description="$t('leads.scoring.description')">
-        <template v-if="!loading" #actions>
+        <template v-if="!loading && !loadFailed" #actions>
           <ActionBar>
             <StatusBadge v-if="unsaved.isDirty.value" tone="warning" :label="$t('leads.scoring.unsaved')" />
             <BasicSwitch v-model="form.is_active" :label="$t('leads.scoring.active')" :disabled="readonly" data-testid="scoring-active" />
@@ -16,7 +16,7 @@
       <p v-if="error" class="t-negative m-0" role="alert" data-testid="scoring-error">{{ error }}</p>
       <BasicCard :title="$t('leads.scoring.segments')">
         <div class="flex ai-fe flex-wrap gap-5">
-          <FormField v-for="level in LEVELS" :key="level.key" :label="$t('leads.scoring.from', { segment: level.segment })" :error="orderError">
+          <FormField v-for="level in LEVELS" :key="level.key" :label="$t('leads.scoring.from', { segment: level.segment })" :error="level.key === 'L' ? orderError : ''">
             <NumberInput v-model="form.thresholds[level.key]" :min="0" :max="100000" :disabled="readonly" :data-testid="`scoring-threshold-${level.key.toLowerCase()}`" />
           </FormField>
           <span class="t-muted">{{ $t("leads.scoring.below") }}</span>
@@ -76,6 +76,7 @@ const { handleApiError, getFieldError, clearErrors } = useFormErrors();
 const loading = ref(true);
 const saving = ref(false);
 const error = ref("");
+const loadFailed = ref(false);
 const orderError = ref("");
 const fields = ref([]);
 const profileId = ref(null);
@@ -98,6 +99,7 @@ async function load() {
     fields.value = facts.data.results;
     fill(pick(profiles.data.results));
   } catch (err) {
+    loadFailed.value = true;
     error.value = extractApiMessage(err, t("leads.scoring.load_error"));
   } finally {
     loading.value = false;
@@ -130,7 +132,8 @@ async function save() {
     notify.spawnNotification({ msg: t("leads.scoring.saved"), type: "positive" });
   } catch (err) {
     handleApiError(err);
-    error.value = extractApiMessage(err, t("leads.common.error"));
+    const onRow = ["rules", "disqualifiers"].some((list) => form[list].some((_, index) => rowError(list, index)));
+    error.value = onRow ? "" : extractApiMessage(err, t("leads.common.error"));
   } finally {
     saving.value = false;
   }

@@ -30,11 +30,10 @@ import { AREAS } from "@/configs/areas";
 import { useAccessStore } from "@/stores/access";
 import { useNotifyStore } from "@/stores/notify";
 import { formatDay } from "@/utils/format";
-import { apiErrorCode } from "@/utils/leadsOutbound";
+import { SEGMENT_TONES, apiErrorCode } from "@/utils/leadsOutbound";
 
 // The company's score (segment, points, reasons) and Score now. The reasons are the last `score` activity's, or the
 // answer of Score now; a 409 `no_scoring_profile` turns the card into the "set up scoring" note.
-const SEGMENT_TONES = { S1: "positive", S2: "info", S3: "neutral", S4: "warning" };
 const props = defineProps({ company: { type: Object, required: true } });
 const notify = useNotifyStore();
 const canSetUp = computed(() => useAccessStore().can(AREAS.LEADS_SETTINGS));

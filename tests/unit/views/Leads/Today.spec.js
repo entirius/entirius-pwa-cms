@@ -70,6 +70,11 @@ describe("Leads → Today", () => {
     await byTestid(wrapper, "today-chip-done").trigger("click");
     await flushPromises();
     expect(todo.GET_Tasks).toHaveBeenLastCalledWith({ owner: "me", status: "done", page: 1, page_size: 20 });
+    todo.GET_Tasks.mockResolvedValue({ data: { count: 1, results: [task({ status: "done" })] } });
+    await byTestid(wrapper, "today-chip-upcoming").trigger("click");
+    await flushPromises();
+    expect(wrapper.findComponent('[data-testid="task-due"]').props("tone")).toBe("positive");
+    expect(byTestid(wrapper, "task-reopen").exists()).toBe(true);
     wrapper.findComponent('[data-testid="today-owner"]').vm.$emit("update:modelValue", "all");
     await flushPromises();
     expect(todo.GET_Tasks.mock.lastCall[0]).not.toHaveProperty("owner");
