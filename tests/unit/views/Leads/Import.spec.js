@@ -1,5 +1,6 @@
-import { describe, it, expect, vi, afterEach } from "vitest";
+import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
+import { createPinia, setActivePinia } from "pinia";
 
 const api = vi.hoisted(() => ({ POST_Import: vi.fn(), GET_Import: vi.fn() }));
 vi.mock("@/api/leads/api", () => api);
@@ -9,6 +10,7 @@ vi.mock("vue-router", () => ({ useRouter: () => ({ push }) }));
 import Import from "@/views/Leads/Import.vue";
 import { leadsFrame } from "./leadsFrame";
 import { t } from "@/i18n";
+import { useMuninStore } from "@/stores/munin";
 
 function mountWithFile() {
   const wrapper = mount(Import, { global: { components: leadsFrame.components, stubs: { ...leadsFrame.stubs, RouterLink: true } } });
@@ -16,6 +18,9 @@ function mountWithFile() {
   Object.defineProperty(input.element, "files", { value: [new File(["domain\n"], "leads.csv", { type: "text/csv" })] });
   return input.trigger("change").then(() => wrapper);
 }
+
+// The views read the munin store (the outbound guards): an empty one = an older backend.
+beforeEach(() => setActivePinia(createPinia()));
 
 describe("Leads Import", () => {
   afterEach(() => vi.useRealTimers());
@@ -47,7 +52,7 @@ describe("Leads Import", () => {
     await input.trigger("change");
     await wrapper.find('[data-testid="import-upload"]').trigger("click");
     await flushPromises();
-    expect(api.POST_Import).toHaveBeenCalledWith(file);
+    expect(api.POST_Import).toHaveBeenCalledWith(file, undefined);
     expect(wrapper.find('[data-testid="import-status"]').text()).toBe("done");
     expect(wrapper.find('[data-testid="import-counts"]').text()).toContain('"created":2');
   });
@@ -66,5 +71,23 @@ describe("Leads Import", () => {
   it("naming the picked file replaces the bare browser control", async () => {
     const wrapper = await mountWithFile();
     expect(wrapper.get('[data-testid="import-file-name"]').text()).toBe("leads.csv");
+  });
+
+  // Plan 14 (leads >= 0.5.0): the automation starts on new companies only when ticked, with its cost note in sight.
+  it("leads >= 0.5.0: the run-rules checkbox with its note goes with the upload", async () => {
+    Object.assign(useMuninStore(), { loaded: true, modules: [{ key: "leads", version: "0.5.0", enabled_in_cms: true }] });
+    api.POST_Import.mockResolvedValue({ data: { id: 4, status: "done", report: [] } });
+    api.GET_Import.mockResolvedValue({ data: { id: 4, status: "done", report: [] } });
+    const wrapper = await mountWithFile();
+    expect(wrapper.find('[data-testid="import-run-rules-note"]').text()).toBe("leads.import.run_rules_note");
+    wrapper.findComponent('[data-testid="import-run-rules"]').vm.$emit("update:modelValue", true);
+    await wrapper.find('[data-testid="import-upload"]').trigger("click");
+    await flushPromises();
+    expect(api.POST_Import.mock.calls.at(-1)[1]).toBe(true);
+  });
+
+  it("an older backend has no checkbox", async () => {
+    const wrapper = await mountWithFile();
+    expect(wrapper.find('[data-testid="import-run-rules"]').exists()).toBe(false);
   });
 });

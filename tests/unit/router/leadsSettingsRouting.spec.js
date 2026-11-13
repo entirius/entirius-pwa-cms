@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 const mockIsPanelEnabled = vi.fn();
 const mockIsModuleEnabled = vi.fn();
+const mockIsModuleAtLeast = vi.fn();
 
 // django-access is not under test here: allow-all, as without the module.
 vi.mock("@/stores/access", () => ({
@@ -12,6 +13,7 @@ vi.mock("@/stores/munin", () => ({
     loaded: true,
     isPanelEnabled: mockIsPanelEnabled,
     isModuleEnabled: mockIsModuleEnabled,
+    isModuleAtLeast: mockIsModuleAtLeast,
     ensureLoaded: vi.fn(),
   }),
 }));
@@ -26,6 +28,7 @@ describe("Leads → Settings routing", () => {
     vi.clearAllMocks();
     mockIsPanelEnabled.mockReturnValue(true);
     mockIsModuleEnabled.mockReturnValue(true);
+    mockIsModuleAtLeast.mockReturnValue(true);
   });
 
   it("registers no Communicator panel", () => {
@@ -65,5 +68,28 @@ describe("Leads → Settings routing", () => {
     mockIsModuleEnabled.mockImplementation((m) => m !== "communicator");
     await router.push("/leads/settings/sending");
     expect(router.currentRoute.value.name).not.toBe("CommunicatorSettings");
+  });
+
+  // Plan 14: the outbound screens need communicator / leads 0.5.0; an older backend never reaches them.
+  it("the outbound screens resolve on 0.5.0 and stay dormant on an older backend", async () => {
+    const screens = [
+      ["/leads/approvals", "LeadsApprovals"],
+      ["/leads/settings/mailboxes", "LeadsMailboxes"],
+      ["/leads/settings/mailboxes/new", "LeadsMailboxEdit"],
+      ["/leads/settings/sending-health", "LeadsSendingHealth"],
+      ["/leads/settings/do-not-contact", "LeadsDoNotContact"],
+      ["/leads/settings/reply-classification", "LeadsReplyClassification"],
+      ["/leads/settings/automatic-moves", "LeadsAutomaticMoves"],
+    ];
+    for (const [path, name] of screens) {
+      await router.push(path);
+      expect(router.currentRoute.value.name).toBe(name);
+    }
+    mockIsModuleAtLeast.mockReturnValue(false);
+    for (const [path, name] of screens) {
+      await router.push(path);
+      expect(router.currentRoute.value.name).not.toBe(name);
+    }
+    expect(mockIsModuleAtLeast).toHaveBeenCalledWith("communicator", "0.5.0");
   });
 });

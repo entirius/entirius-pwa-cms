@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
+import { createPinia, setActivePinia } from "pinia";
 
 const route = vi.hoisted(() => ({ name: "LeadsConversation", params: {} }));
 const back = vi.hoisted(() => vi.fn());
@@ -23,6 +24,9 @@ const timeline = [
   { at: "2026-09-21T08:00:00Z", direction: "out", status: "sent", subject: "Your shop audit", body_text: "Hi" },
   { at: "2026-09-22T08:00:00Z", direction: "in", body_text: "Yes, call me\n\nOn Mon Anna wrote:\n> Hi" },
 ];
+
+// The views read the munin store (the outbound guards): an empty one = an older backend.
+beforeEach(() => setActivePinia(createPinia()));
 
 describe("Leads Conversation (a thread by id)", () => {
   beforeEach(() => {

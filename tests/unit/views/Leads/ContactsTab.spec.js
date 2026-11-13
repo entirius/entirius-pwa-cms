@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
+import { createPinia, setActivePinia } from "pinia";
 
 const leads = vi.hoisted(() => ({
   POST_Contact: vi.fn(() =>
@@ -7,6 +8,7 @@ const leads = vi.hoisted(() => ({
   ),
   PATCH_Contact: vi.fn(() => Promise.resolve({ status: 200, data: {} })),
   DELETE_Contact: vi.fn(() => Promise.resolve({ status: 204, data: "" })),
+  GET_Mailable: vi.fn(() => Promise.resolve({ data: { eligible: false, reasons: ["suppressed"] } })),
 }));
 vi.mock("@/api/leads/api", () => leads);
 vi.mock("@/api/communicator/api", () => ({
@@ -14,6 +16,7 @@ vi.mock("@/api/communicator/api", () => ({
 }));
 
 import ContactsTab from "@/views/Leads/tabs/ContactsTab.vue";
+import { useMuninStore } from "@/stores/munin";
 import { fieldError, leadsFrame, setControl } from "./leadsFrame";
 
 const contact = (fields) => ({
@@ -65,6 +68,9 @@ const submit = async (wrapper, form) => {
 };
 
 // UX-011: contacts are managed in the company card — add, edit in place, remove, primary star.
+// The views read the munin store (the outbound guards): an empty one = an older backend.
+beforeEach(() => setActivePinia(createPinia()));
+
 describe("Company card — Contacts tab", () => {
   beforeEach(() => vi.clearAllMocks());
 
@@ -248,5 +254,15 @@ describe("Company card — Contacts tab", () => {
     expect(
       anonymised.findComponent({ name: "StatusBadge" }).attributes("label")
     ).toBe("leads.contacts.anonymised");
+  });
+
+  // Plan 14 (leads >= 0.5.0): "Why no mail?" on every contact opens the gate's answer.
+  it("leads >= 0.5.0: Why no mail? asks the gate for that contact; an older backend has no button", async () => {
+    expect((await mountTab()).find('[data-testid="contact-why"]').exists()).toBe(false);
+    Object.assign(useMuninStore(), { loaded: true, modules: [{ key: "leads", version: "0.5.0", enabled_in_cms: true }] });
+    const wrapper = await mountTab();
+    await wrapper.get('[data-testid="contact-why"][data-contact="1"]').trigger("click");
+    await flushPromises();
+    expect(leads.GET_Mailable).toHaveBeenCalledWith(7, 1);
   });
 });

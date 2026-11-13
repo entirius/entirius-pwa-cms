@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
+import { createPinia, setActivePinia } from "pinia";
 
 const api = vi.hoisted(() => ({ GET_ThreadWithOptouts: vi.fn(), POST_ConfirmOptout: vi.fn() }));
 vi.mock("@/api/communicator/api", () => api);
@@ -17,6 +18,9 @@ const scrolled = [];
 const scrollIntoView = Element.prototype.scrollIntoView;
 
 // FIX-17b item 2 / FIX-17c items 5 + 7: the thread holding the reply the bell announced.
+// The views read the munin store (the outbound guards): an empty one = an older backend.
+beforeEach(() => setActivePinia(createPinia()));
+
 describe("Leads ThreadGroup", () => {
   beforeEach(() => {
     scrolled.length = 0;

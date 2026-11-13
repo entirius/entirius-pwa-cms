@@ -17,9 +17,11 @@ const api = vi.hoisted(() => ({
   POST_ReviewRewrite: vi.fn(),
   POST_ReviewEdit: vi.fn(),
   GET_WaitingMessages: vi.fn(),
+  GET_Approvals: vi.fn(),
+  GET_Replies: vi.fn(),
 }));
 vi.mock("@/api/communicator/api", () => api);
-const munin = vi.hoisted(() => ({ isModuleEnabled: () => true }));
+const munin = vi.hoisted(() => ({ isModuleEnabled: () => true, isModuleAtLeast: () => false }));
 vi.mock("@/stores/munin", () => ({ useMuninStore: () => munin }));
 const spawnNotification = vi.fn();
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification }) }));
@@ -85,6 +87,7 @@ const mountReview = async () => {
 describe("Leads Review", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    munin.isModuleAtLeast = () => false;
     setActivePinia(createPinia());
     api.GET_ReviewMessage.mockResolvedValue(draft);
     api.GET_ReviewList.mockResolvedValue({ data: { results: [{ id: 5 }] } });
@@ -399,5 +402,37 @@ describe("Leads Review", () => {
     expect(submit.attributes("disabled")).toBeDefined();
     await submit.trigger("click");
     expect(api.POST_ReviewRewrite).not.toHaveBeenCalled();
+  });
+});
+
+// Plan 14 (communicator >= 0.5.0): a draft that cannot go out says why before Send; the thread's last reply type.
+describe("Leads Review — problem and last reply", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    setActivePinia(createPinia());
+    munin.isModuleAtLeast = () => true;
+    api.GET_ReviewMessage.mockResolvedValue({ ...draft, thread: { ...draft.thread, id: 9 } });
+    api.GET_ReviewList.mockResolvedValue({ data: { results: [{ id: 5 }] } });
+    api.GET_Replies.mockResolvedValue({ data: { results: [{ id: 1, intent: "not_now" }] } });
+  });
+
+  it("a blocked draft shows the problem and Send is disabled with the reason", async () => {
+    api.GET_Approvals.mockResolvedValue({ data: { results: [{ id: 5, blocker: "the mailbox anna@firma.test cannot send (paused)" }] } });
+    const wrapper = await mountReview();
+    expect(wrapper.get('[data-testid="review-problem"]').text()).toContain("leads.review.problem");
+    expect(wrapper.get('[data-testid="review-send"]').attributes("disabled")).toBeDefined();
+    expect(wrapper.get('[data-testid="review-last-reply"]').find('[data-testid="reply-type"]').exists()).toBe(true);
+    expect(api.GET_Replies).toHaveBeenCalledWith({ thread: 9 });
+  });
+
+  it("a draft that may go shows no problem line; an older backend asks nothing", async () => {
+    api.GET_Approvals.mockResolvedValue({ data: { results: [{ id: 5, blocker: null }] } });
+    const wrapper = await mountReview();
+    expect(wrapper.find('[data-testid="review-problem"]').exists()).toBe(false);
+    expect(wrapper.get('[data-testid="review-send"]').attributes("disabled")).toBeUndefined();
+    munin.isModuleAtLeast = () => false;
+    api.GET_Approvals.mockClear();
+    await mountReview();
+    expect(api.GET_Approvals).not.toHaveBeenCalled();
   });
 });

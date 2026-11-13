@@ -79,4 +79,19 @@ describe("Enricher nav", () => {
     expect(routesFor("enricher", false)).toEqual(entries);
     expect(routesFor("enricher", true)).toEqual(entries);
   });
+
+  // Plan 14: Approvals (desktop) needs communicator 0.5.0; an older backend never sees the entry.
+  it("Approvals shows on a desktop with communicator >= 0.5.0 and carries the approvals badge", () => {
+    const filter = (atLeast, isDesktop = true) =>
+      filterNavRoutes(buildNavRoutes(), {
+        panel: "leads",
+        isDesktop,
+        isModuleEnabled: (key) => LEADS_MODULES.has(key),
+        isModuleAtLeast: () => atLeast,
+      });
+    const approvals = filter(true).find((entry) => entry.route === "/leads/approvals");
+    expect(approvals).toMatchObject({ badge: "approvals", desktopOnly: true });
+    expect(filter(false).map((entry) => entry.route)).not.toContain("/leads/approvals");
+    expect(filter(true, false).map((entry) => entry.route)).not.toContain("/leads/approvals");
+  });
 });

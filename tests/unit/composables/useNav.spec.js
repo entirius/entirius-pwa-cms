@@ -17,6 +17,7 @@ vi.mock("@/stores/munin", () => ({
 }));
 vi.mock("@/stores/quality", () => ({ useQualityStore: () => ({ available: true }) }));
 vi.mock("@/stores/enrichmentProfile", () => ({ useEnrichmentProfileStore: () => ({ pendingSuggestions: 0 }) }));
+vi.mock("@/stores/approvals", () => ({ useApprovalsStore: () => ({ total: 0 }) }));
 vi.mock("@/stores/user", () => ({ useUserStore: () => ({ isAuth: true }) }));
 
 import router from "@/router";

@@ -11,10 +11,12 @@ const api = vi.hoisted(() => ({
   GET_Suppressions: vi.fn(),
   POST_Suppression: vi.fn(),
   DELETE_Suppression: vi.fn(),
+  PATCH_Sequence: vi.fn(),
 }));
 const router = vi.hoisted(() => ({ push: vi.fn() }));
 vi.mock("@/api/communicator/api", () => api);
-vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isModuleEnabled: () => false }) }));
+const backend = vi.hoisted(() => ({ outbound: false }));
+vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isModuleEnabled: () => false, isModuleAtLeast: () => backend.outbound }) }));
 vi.mock("vue-router", () => ({ useRouter: () => router }));
 
 import SequenceList from "@/views/Communicator/SequenceList.vue";
@@ -34,6 +36,7 @@ describe("Communicator lists", () => {
   beforeEach(() => {
     setActivePinia(createPinia());
     vi.clearAllMocks();
+    backend.outbound = false;
     api.GET_Sequences.mockResolvedValue({ data: { results: [] } });
   });
 
@@ -100,5 +103,37 @@ describe("Communicator lists", () => {
     expect(rows.map((row) => row.find('[data-column="kindText"]').text())).toEqual(["Domain", "Erased address"]);
     expect(rows.map((row) => row.findAll("button").length)).toEqual([1, 0]);
     expect(control(wrapper, "suppression-kind").props("options").map((option) => option.label)).toEqual(["Email", "Domain"]);
+  });
+
+  // Plan 14 (communicator >= 0.5.0): each sequence can be turned off and one can start automatically.
+  it("the switches save on change; a second autostart is refused and names the one that holds it", async () => {
+    backend.outbound = true;
+    const sequences = [
+      { id: 1, key: "follow-up", is_active: true, autostart: true, steps: [] },
+      { id: 2, key: "nurture", is_active: true, autostart: false, steps: [] },
+    ];
+    api.GET_Sequences.mockResolvedValue({ data: { results: sequences } });
+    api.GET_SequenceTexts.mockResolvedValue({ data: { results: [] } });
+    api.PATCH_Sequence.mockRejectedValueOnce({ message: "conflict" });
+    const BasicCard = { props: ["title", "gap"], template: '<section v-bind="$attrs"><slot name="actions" /><slot /></section>' };
+    const wrapper = mount(SequenceList, mountOptions({ RouterLink: true, TextPool: true, BasicCard }));
+    await flushPromises();
+    expect(wrapper.findAll('[data-testid="sequence-autostart-badge"]')).toHaveLength(1);
+    const cards = wrapper.findAll('[data-testid="sequence"]');
+    cards[1].findComponent('[data-testid="sequence-autostart"]').vm.$emit("update:modelValue", true);
+    await flushPromises();
+    expect(api.PATCH_Sequence).toHaveBeenCalledWith(2, { autostart: true });
+    expect(wrapper.get('[data-testid="sequence-autostart-error"]').text()).toContain("turn it off on follow-up first");
+    api.PATCH_Sequence.mockResolvedValueOnce({ data: {} });
+    cards[0].findComponent('[data-testid="sequence-active"]').vm.$emit("update:modelValue", false);
+    await flushPromises();
+    expect(api.PATCH_Sequence).toHaveBeenLastCalledWith(1, { is_active: false });
+  });
+
+  it("an older backend shows no switches", async () => {
+    api.GET_Sequences.mockResolvedValue({ data: { results: [{ id: 1, key: "a", is_active: true, steps: [] }] } });
+    api.GET_SequenceTexts.mockResolvedValue({ data: { results: [] } });
+    const wrapper = await mountView(SequenceList);
+    expect(wrapper.find('[data-testid="sequence-active"]').exists()).toBe(false);
   });
 });

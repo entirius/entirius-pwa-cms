@@ -1650,6 +1650,118 @@
       "file": "leads-settings__{vp}__{theme}.png"
     },
     {
+      "id": "leads-approvals",
+      "route": "/leads/approvals",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-approvals__{vp}__{theme}.png",
+      "note": "Leads CRM plan 14; needs communicator / leads >= 0.5.0"
+    },
+    {
+      "id": "leads-mailboxes",
+      "route": "/leads/settings/mailboxes",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-mailboxes__{vp}__{theme}.png",
+      "note": "Leads CRM plan 14; needs communicator / leads >= 0.5.0"
+    },
+    {
+      "id": "leads-mailbox-new",
+      "route": "/leads/settings/mailboxes/new",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-mailbox-new__{vp}__{theme}.png",
+      "note": "Leads CRM plan 14; needs communicator / leads >= 0.5.0"
+    },
+    {
+      "id": "leads-sending-health",
+      "route": "/leads/settings/sending-health",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-sending-health__{vp}__{theme}.png",
+      "note": "Leads CRM plan 14; needs communicator / leads >= 0.5.0"
+    },
+    {
+      "id": "leads-automatic-moves",
+      "route": "/leads/settings/automatic-moves",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-automatic-moves__{vp}__{theme}.png",
+      "note": "Leads CRM plan 14; needs communicator / leads >= 0.5.0"
+    },
+    {
+      "id": "leads-reply-classification",
+      "route": "/leads/settings/reply-classification",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-reply-classification__{vp}__{theme}.png",
+      "note": "Leads CRM plan 14; needs communicator / leads >= 0.5.0"
+    },
+    {
+      "id": "leads-do-not-contact",
+      "route": "/leads/settings/do-not-contact",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-do-not-contact__{vp}__{theme}.png",
+      "note": "Leads CRM plan 14; needs communicator / leads >= 0.5.0"
+    },
+    {
       "id": "leads-stages",
       "route": "/leads/settings/stages",
       "resolver": "fixed",

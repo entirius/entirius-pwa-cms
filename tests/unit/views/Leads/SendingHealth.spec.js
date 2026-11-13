@@ -1,0 +1,73 @@
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { flushPromises } from "@vue/test-utils";
+
+const api = vi.hoisted(() => ({
+  GET_Health: vi.fn(),
+  GET_HealthPolicy: vi.fn(),
+  PUT_HealthPolicy: vi.fn(),
+  GET_HealthLog: vi.fn(),
+  POST_MailboxPause: vi.fn(),
+  POST_MailboxResume: vi.fn(),
+}));
+vi.mock("@/api/communicator/api", () => api);
+
+import SendingHealth from "@/views/Leads/SendingHealth.vue";
+import { byTestid, mountOutbound } from "./outboundFrame";
+
+const metrics = (sent, bounces) => ({ sent, hard_bounces_pct: bounces, optouts_pct: 0.5, complaints_pct: 0 });
+const windows = (sent, bounces) => ({ last_24h: metrics(sent, bounces), last_7d: metrics(sent, bounces) });
+const report = {
+  channel: { windows: windows(412, 0.7) },
+  mailboxes: [
+    { id: 2, address: "anna@firma.test", state: "paused", paused_at: "2026-11-12T08:00:00Z", pause_reason: "bounces", sent_today: 0, cap_today: 40, windows: windows(120, 3.1) },
+    { id: 3, address: "new@firma.test", state: "active", paused_at: null, pause_reason: "", sent_today: 1, cap_today: 20, windows: windows(10, 10) },
+  ],
+};
+const policy = { enabled: true, window_hours: 168, min_sample: 50, max_bounce_pct: 2, max_optout_pct: 3, max_complaint_pct: 0.1 };
+const mounted = async (options) => {
+  const wrapper = mountOutbound(SendingHealth, options);
+  await flushPromises();
+  return wrapper;
+};
+
+// Plan 14: Settings → Sending health — rates per mailbox, the automatic-pause policy, the pause log.
+describe("Leads → Settings → Sending health", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    api.GET_Health.mockResolvedValue({ data: report });
+    api.GET_HealthPolicy.mockResolvedValue({ data: policy });
+    api.GET_HealthLog.mockResolvedValue({ data: { next: "p2", results: [{ id: 1, mailbox_id: 2, action: "pause", trigger: "bounce", reason: "3.1 %", user_id: null, created_at: "2026-11-12T08:00:00Z" }] } });
+  });
+
+  it("a rate over its limit says so; below the minimum sample it is never judged", async () => {
+    const wrapper = await mounted();
+    expect(byTestid(wrapper, "loader").exists()).toBe(false);
+    expect(wrapper.findAll('[data-testid="health-row"]')).toHaveLength(2);
+    const over = wrapper.findAll('[data-testid="health-over"]');
+    expect(over).toHaveLength(1);
+    expect(byTestid(wrapper, "health-resume").exists()).toBe(true);
+  });
+
+  it("saves the policy and loads more of the log", async () => {
+    api.PUT_HealthPolicy.mockResolvedValue({ data: { ...policy, min_sample: 80 } });
+    const wrapper = await mounted();
+    wrapper.findComponent('[data-testid="health-min-sample"]').vm.$emit("update:modelValue", 80);
+    await byTestid(wrapper, "health-save").trigger("click");
+    await flushPromises();
+    expect(api.PUT_HealthPolicy).toHaveBeenCalledWith({ enabled: true, window_hours: 168, min_sample: 80, max_bounce_pct: 2, max_optout_pct: 3, max_complaint_pct: 0.1 });
+    await byTestid(wrapper, "health-log-more").trigger("click");
+    await flushPromises();
+    expect(api.GET_HealthLog).toHaveBeenLastCalledWith({ page: 2 });
+    expect(wrapper.findAll('[data-testid="health-log-row"]')).toHaveLength(2);
+  });
+
+  it("an empty channel, a failed load and read-only", async () => {
+    api.GET_Health.mockResolvedValueOnce({ data: { channel: { windows: windows(0, null) }, mailboxes: [] } });
+    expect((await mounted()).text()).toContain("leads.health.no_mailbox");
+    api.GET_Health.mockRejectedValueOnce({ message: "down" });
+    expect(byTestid(await mounted(), "health-error").text()).toBe("down");
+    const readonly = await mounted({ write: false });
+    expect(byTestid(readonly, "health-save").exists()).toBe(false);
+    expect(byTestid(readonly, "health-resume").exists()).toBe(false);
+  });
+});

@@ -1,5 +1,6 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { mount } from "@vue/test-utils";
+import { createPinia, setActivePinia } from "pinia";
 import { applyPolicy, channelTimeZone } from "@/utils/leadsTime";
 import ThreadTimeline from "@/views/Leads/ThreadTimeline.vue";
 
@@ -8,6 +9,9 @@ const messages = [
   { kind: "message", at: "2026-09-21T08:00:00Z", direction: "out", status: "sent", subject: "Audit", body_text: "Hello" },
   { kind: "message", message_id: 7, at: "2026-09-24T08:00:00Z", direction: "out", status: "scheduled", subject: "Follow", body_text: "Ping" },
 ];
+
+// The views read the munin store (the outbound guards): an empty one = an older backend.
+beforeEach(() => setActivePinia(createPinia()));
 
 describe("ThreadTimeline", () => {
   it("renders the thread's messages and replies in the order the API gives", () => {
