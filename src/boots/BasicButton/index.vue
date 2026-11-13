@@ -208,8 +208,13 @@ button.button-basic {
       background-color: var(--accent-fill-hover);
     }
 
+    // Disabled, the primary drops its fill and takes the one disabled look (UI rules § Locked entity): a paused
+    // mailbox's Send must not look clickable (acceptance CM10).
     &[disabled] {
-      background-color: var(--accent-fill-hover);
+      color: var(--text-disabled);
+      background-color: var(--surface-disabled);
+      border-color: var(--border-subtle);
+      cursor: not-allowed;
     }
 
     // The sign-in button: a soft light from the top edge on hover.

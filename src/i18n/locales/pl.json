@@ -4312,7 +4312,8 @@
       "discard_keep": "Wróć do edycji",
       "discard_yes": "Odrzuć",
       "problem": "Problem: {detail}",
-      "last_reply": "Ostatnia odpowiedź"
+      "last_reply": "Ostatnia odpowiedź",
+      "send_blocked": "Nie można wysłać — zobacz problem powyżej"
     },
     "rewrite": {
       "title": "Przepisz z uwagą",

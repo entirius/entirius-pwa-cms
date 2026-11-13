@@ -297,6 +297,11 @@ function clear() {
   [aria-expanded="true"] > & {
     transform: rotate(180deg);
   }
+
+  // A disabled select reads as locked down to its caret (acceptance CM10): no live-looking chevron.
+  :disabled > & {
+    color: var(--text-disabled);
+  }
 }
 
 // The clear button sits over the control between the value and the caret; the value keeps room for it.

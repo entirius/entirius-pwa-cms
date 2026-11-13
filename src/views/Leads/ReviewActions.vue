@@ -2,6 +2,8 @@
   <div ref="bar" class="review-actions" data-testid="review-actions">
     <!-- R5 in the slot: the more menu (utility) · Not now · Send, the one primary, rightmost -->
     <ActionBar>
+      <!-- the disabled Send says why next to it too, not only in its tooltip (acceptance CM10) -->
+      <span v-if="blocked" class="t-secondary fs-200" data-testid="review-send-blocked">{{ $t("leads.review.send_blocked") }}</span>
       <BasicMenu :items="menuItems" :label="$t('leads.review.more')" placement="top-end" @select="emit($event.key)">
         <template #trigger>
           <IconButton icon="more" variant="outline" :label="$t('leads.review.more')" :disabled="busy" data-testid="review-more" />

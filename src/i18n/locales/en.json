@@ -4313,7 +4313,8 @@
       "discard_keep": "Keep editing",
       "discard_yes": "Discard",
       "problem": "Problem: {detail}",
-      "last_reply": "Last reply"
+      "last_reply": "Last reply",
+      "send_blocked": "Cannot be sent — see the problem above"
     },
     "rewrite": {
       "title": "Rewrite with a note",
