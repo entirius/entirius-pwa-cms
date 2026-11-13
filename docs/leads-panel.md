@@ -45,3 +45,22 @@ clock that slides: `sendState` (`src/utils/leadsTime.js`) names an hour only for
 else it says due / daily cap reached / waiting for the window with its hours; a used-up cap wins over any slot and
 a closed window (policy `windows`, channel time zone) never shows a clock. `next_slot` (outbox endpoint, `GET_WaitingMessages`)
 is the one slot the Inbox rows, the Review confirmation (looked up after accept), the thread bubbles and this table all read, so no two screens disagree. The waiting table (DataTable, the recipient under the company) keeps Send now inside the card at 1280 px with the sidebar open; `scheduled-row` + `data-message` sit on the row through DataTable `rowAttrs`. Sequences: create (no step edit API) + the text pool: add, edit in place through the row's edit square (future follow-ups only), remove — a text a thread already got is deactivated, not deleted (DELETE answers 200 with the row instead of 204), listed dimmed with Restore (`TextPool.vue`).
+
+## Outbound screens (django-communicator / django-leads 0.5.0)
+
+Every one is dormant on an older backend: the nav entry, the hub section and the route (`meta.moduleVersion`, checked
+by the guard with `isModuleAtLeast`) need 0.5.0; the in-view parts ask `outboundOn(munin, module)`
+(`src/utils/leadsOutbound.js`, also the reply-type tones, the mailbox states and `problemText` for a draft's
+`blocker`). `/leads/approvals` (desktop entry, nav `badge: "approvals"` from `src/stores/approvals.js`, a 30 s poll the
+panel wrapper starts with read on `communicator.review`) is the only cross-channel screen: the approval endpoints carry
+no channel; a row of the active channel opens Review, another channel's row a drawer with its own Approve / Reject;
+bulk calls go in chunks of 100. Settings sections (`LEADS_SETTINGS_SECTIONS`, one hub card per `group`):
+`settings/mailboxes` (+ `/:id`, `new` adds; passwords are write-only — the form never holds a stored one and never
+sends an empty one; the bell maps `communicator.Mailbox:<id>` there), `settings/sending-health`,
+`settings/automatic-moves` (leads `stage-events/` and communicator `reply-classes/plans/` on one Save, one request per
+changed card; the reply part sits in `ReadonlyArea` `communicator.settings`), `settings/reply-classification`,
+`settings/do-not-contact` (replaces the Send settings suppression card; keeps its test ids). The Inbox row and the
+thread bubble show the reply type (the row's class fields, else one `replies/` page), Review asks the approvals list for
+the draft's `blocker` and disables Send with it, a contact row opens `SendCheckDialog` (`mailable/`), Import sends
+`run_rules`, Sequences save `is_active` / `autostart` on change.
+

@@ -6,6 +6,18 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- Leads panel, outbound screens (django-communicator / django-leads 0.5.0; an older backend keeps today's panel):
+  Approvals (desktop nav entry with a badge of waiting drafts) lists the drafts of every channel oldest first with
+  their problem, approves or rejects them in bulk (a reason for a rejection, 100 ids per call, refused rows stay
+  selected with their reason) and keeps a log; Settings → Mailboxes (one per salesperson plus a default, write-only
+  passwords, Test login, Pause / Resume with a reason, daily cap and warm-up), Sending health (rates per mailbox over
+  24 h / 7 d, the automatic-pause policy, the pause log), Automatic moves (the stage per event and, per reply type,
+  the sequence, the alert and the review flag), Reply classification (AI profile) and Do not contact (reach, source,
+  add, remove, check an address). The Settings hub groups its sections (Sales process · Automation · Sending).
+- Leads panel: a reply shows its type (and "Needs review", the return date, the confidence and what happens next)
+  in the Inbox row and the conversation; Review says why a draft cannot go out before Send and the last reply's type;
+  a contact gets "Why no mail?"; Import can start the automation on new companies; a sequence can be turned off and
+  one can start automatically.
 - Emails panel: the "Order confirmation" and "Order canceled" templates (`checkout-order-confirmation`,
   `checkout-order-canceled`, django-email 4.4.0), each field with a hint. Their edit page shows a preview of the
   saved wording next to the form (under it on a phone): sample order variants, desktop and phone width, the subject
@@ -19,6 +31,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- Leads → Settings → Send settings: with communicator 0.5.0 the suppression list moved to Do not contact.
 - Order page: the item table's column labels are translated.
 - Stock alerts panel (django-stock-alerts, Munin module `stock_alerts`, area `stock_alerts.subscriptions`): Demand
   lists the variants customers wait for — waiting requests, the oldest one, the stock now and the requests notified

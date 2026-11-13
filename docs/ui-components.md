@@ -181,7 +181,7 @@ and one meaning per glyph (unit test). A new meaning adds its glyph to `fa-icons
   `{ icon, label, handler, testid? }`: an important action with a visible label left of the FAB (R7). `open`
   starts with the speed-dial open.
 - **`BulkActionBar`** — `actions[].variant` is a BasicButton variant (`secondary` without one); an action with
-  `options` is a BasicSelect action picker.
+  `options` is a BasicSelect action picker; `actions[].testid` lands on its button.
 - Codemod `scripts/codemods/p3-actions.mjs` (sweeps 17/18): colour classes → `variant`, `text` → slot,
   `isDisabled` → `disabled`, labelled buttons drop `icon`, icon-only → IconButton, `buttonClass` → `variant`;
   it flags the dark toggles, one-off colours, colours in `:class` and icon-only buttons it cannot name.
