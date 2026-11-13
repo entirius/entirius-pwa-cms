@@ -4519,7 +4519,7 @@
       "status": "Status",
       "counts": "{created} created, {matched} matched, {skipped} skipped",
       "row": "Row {row}",
-      "to_board": "Open companies",
+      "to_board": "Open the company list",
       "failed": "Upload failed",
       "columns_title": "Columns",
       "column_company": "company_name (optional) — the company name",
@@ -4737,7 +4737,7 @@
       "empty": "No mailbox yet — mail leaves through the channel's mail settings",
       "load_error": "The mailboxes could not be loaded — try again.",
       "today_of": "{sent} of {cap}",
-      "today_uncapped": "{sent}, no cap"
+      "today_uncapped": "{sent} (no cap)"
     },
     "mailbox_state": {
       "active": "Active",
@@ -5179,7 +5179,7 @@
         "fired": "Ran",
         "skipped": "Skipped",
         "blocked": "Blocked",
-        "cooldown": "Not run",
+        "cooldown": "Held back",
         "running": "Running"
       },
       "run": {
@@ -5219,7 +5219,7 @@
       "loading": "Loading the report…",
       "funnel": "Funnel",
       "funnel_help": "Where companies drop out: of the companies that entered the first stage in the period, the share that entered each next one.",
-      "col_reached": "Of the first stage"
+      "col_reached": "% of the first stage"
     },
     "deals": {
       "title": "Deals",

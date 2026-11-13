@@ -64,7 +64,8 @@ defineEmits(["action", "clear"]);
 <style lang="scss" scoped>
 @import "@/assets/scss/utils/media-query";
 
-// It sits above its list and sticks to the top of the page's scroll body: a tick far down the list shows it.
+// It sits above its list and sticks to the top of the page's scroll body: a tick far down the list shows it. (No page
+// with a bulk bar pins its PageHeader on a phone; one that does needs the bar's `top` below the pinned head.)
 .bulk-bar {
   position: sticky;
   top: 0;

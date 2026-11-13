@@ -4518,7 +4518,7 @@
       "status": "Status",
       "counts": "utworzone: {created}, dopasowane: {matched}, pominięte: {skipped}",
       "row": "Wiersz {row}",
-      "to_board": "Otwórz firmy",
+      "to_board": "Otwórz listę firm",
       "failed": "Wysyłka pliku nie powiodła się",
       "columns_title": "Kolumny",
       "column_company": "company_name (opcjonalna) — nazwa firmy",
@@ -4736,7 +4736,7 @@
       "empty": "Brak kont pocztowych — poczta wychodzi przez ustawienia poczty kanału",
       "load_error": "Nie udało się wczytać kont pocztowych — spróbuj ponownie.",
       "today_of": "{sent} z {cap}",
-      "today_uncapped": "{sent}, bez limitu"
+      "today_uncapped": "{sent} (bez limitu)"
     },
     "mailbox_state": {
       "active": "Aktywne",
@@ -5178,7 +5178,7 @@
         "fired": "Wykonana",
         "skipped": "Pominięta",
         "blocked": "Zablokowana",
-        "cooldown": "Niewykonana",
+        "cooldown": "Wstrzymana",
         "running": "W toku"
       },
       "run": {
@@ -5218,7 +5218,7 @@
       "loading": "Ładowanie raportu…",
       "funnel": "Lejek",
       "funnel_help": "Gdzie odpadają firmy: jaka część firm, które weszły w pierwszy etap w tym okresie, weszła w każdy kolejny.",
-      "col_reached": "Z pierwszego etapu"
+      "col_reached": "% pierwszego etapu"
     },
     "deals": {
       "title": "Transakcje",

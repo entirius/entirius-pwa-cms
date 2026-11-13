@@ -121,11 +121,11 @@ shown through `formatCost`). The bell maps `leads.Deal:<id>` to the deal card.
   A rule's Last runs read through `ruleRunText` (`src/utils/leadsLabels.js`): the result in words, the company by
   name as a link (one `GET companies/<id>/` per company of the last ten runs; the run carries only the id). The pause
   log's "By" is `user_name`, "Automatic" without a user, "—" from a backend that sends no name. Today's sending is
-  "11 of 40" / "11, no cap" (`sentToday`).
+  "11 of 40" / "11 (no cap)" (`sentToday`).
 - **Import** (leads ≥ 0.5.0): Owner (`owner_id`, pre-set to the caller, empty = no owner), the custom-field columns
   (`attr.<key>`, `contact.attr.<key>`), the report's `ignored_columns` and `automation_started_count` (each line only
   when the API sends it); the way back below 1024 px and the crumbs go to Companies.
-- **Reports**: the first card is the Funnel — per stage "Of the first stage" = entered ÷ the first stage's entered.
+- **Reports**: the first card is the Funnel — per stage "% of the first stage" = entered ÷ the first stage's entered.
 - **Sending health**: a rate over its limit carries the warning badge also below the minimum sample and on the
   channel line; the thresholds say "(%)".
 - **Read-only**: every Settings section hides its add forms, row writes and Save for a role without the write area

@@ -209,8 +209,12 @@ button.button-basic {
     }
 
     // Disabled, the primary drops its fill and takes the one disabled look (UI rules § Locked entity): a paused
-    // mailbox's Send must not look clickable (acceptance CM10).
-    &[disabled] {
+    // mailbox's Send must not look clickable (acceptance CM10). Busy (`loading`) keeps its fill under the spinner.
+    &[aria-busy="true"] {
+      background-color: var(--accent-fill-hover);
+    }
+
+    &[disabled]:not([aria-busy="true"]) {
       color: var(--text-disabled);
       background-color: var(--surface-disabled);
       border-color: var(--border-subtle);

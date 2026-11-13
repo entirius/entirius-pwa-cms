@@ -125,8 +125,11 @@ async function saveRow(stage) {
 async function saveAll() {
   saving.value = true;
   const results = [];
-  for (const stage of stages.value.filter(dirty)) results.push(await saveRow(stage));
-  saving.value = false;
+  try {
+    for (const stage of stages.value.filter(dirty)) results.push(await saveRow(stage));
+  } finally {
+    saving.value = false;
+  }
   if (results.every(Boolean)) notify.spawnNotification({ msg: t("leads.deal_stages.saved"), type: "positive" });
 }
 
