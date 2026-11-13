@@ -59,7 +59,7 @@
         </div>
       </div>
       <p v-if="errors.order" class="t-negative m-0" data-testid="lead-type-order-error">{{ errors.order }}</p>
-      <form class="flex ai-st flex-wrap gap-5" data-testid="lead-type-add" @submit.prevent="add">
+      <form v-if="!readonly" class="flex ai-st flex-wrap gap-5" data-testid="lead-type-add" @submit.prevent="add">
         <FormField :label="$t('leads.lead_types.code')" hint-level="important" :hint="$t('leads.lead_types.code_help')" required>
           <BasicInput
             :model-value="draft.code"
@@ -71,7 +71,7 @@
         <FormField :label="$t('leads.lead_types.label')" required :error="errors.label || ''">
           <BasicInput v-model="draft.label" :maxlength="128" data-testid="lead-type-new-label" />
         </FormField>
-        <BasicButton class="lead-type__submit" variant="primary" type="submit" data-testid="lead-type-save">
+        <BasicButton class="lead-type__submit" variant="primary" type="submit" mutates data-testid="lead-type-save">
           {{ $t("leads.lead_types.add") }}
         </BasicButton>
       </form>
@@ -85,6 +85,7 @@ import { onMounted, reactive, ref } from "vue";
 import { t } from "@/i18n";
 import { DELETE_LeadType, GET_LeadTypes, PATCH_LeadType, POST_LeadType } from "@/api/leads/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { usePageReadonly } from "@/composables/useReadonly";
 import { useLeadTypesStore } from "@/stores/leadTypes";
 
 // Leads → Settings → Lead types (UX-004), the Stages pattern: rename inline, reorder by PATCH `order` per moved
@@ -93,6 +94,7 @@ import { useLeadTypesStore } from "@/stores/leadTypes";
 const ORDER_STEP = 10;
 const CODE_PATTERN = /^[A-Za-z0-9_]+$/;
 const store = useLeadTypesStore();
+const readonly = usePageReadonly();
 const types = ref([]);
 const errors = reactive({});
 const draft = reactive({ code: "", label: "" });

@@ -4635,7 +4635,23 @@
         "automation": "Automatyzacja",
         "sending": "Wysyłka"
       },
-      "none": "Brak dostępnych ustawień"
+      "none": "Brak dostępnych ustawień",
+      "about": {
+        "stages": "Kolumny tablicy, przez które przechodzi firma",
+        "deal-stages": "Kroki transakcji aż do wygranej lub przegranej",
+        "lead-types": "Rodzaje firm, którym sprzedajesz; szablon może celować w jeden",
+        "custom-fields": "Własne pola firm, kontaktów i transakcji",
+        "scoring": "Jak punkty oceniają firmę i dzielą na segmenty S1–S4",
+        "rules": "Co się dzieje, gdy firma wchodzi w etap: szkic, audyt, ocena",
+        "automatic-moves": "Do jakiego etapu przechodzi firma po odpowiedzi lub rezygnacji",
+        "sequences": "Maile przypominające, gdy nikt nie odpowiada",
+        "templates": "Teksty, z których AI pisze szkice",
+        "reply-classification": "Jak AI dzieli odpowiedzi na typy",
+        "mailboxes": "Adresy, z których wychodzi poczta, ich logowanie i dzienne limity",
+        "sending-health": "Odbicia, rezygnacje i skargi; kiedy skrzynka wstrzymuje się sama",
+        "sending": "Godziny wysyłki, nadawca i stopka prawna",
+        "do-not-contact": "Adresy i domeny, które nigdy nie dostają poczty"
+      }
     },
     "reply_type": {
       "interested": "Zainteresowany",
@@ -5063,7 +5079,7 @@
       "key_hint": "Nie można zmienić po zapisie",
       "kind_locked": "Rodzaju nie można zmienić: są zapisane wartości",
       "empty": "Brak pól własnych: {entity}",
-      "delete_confirm": "Usunąć pole {label}?",
+      "delete_confirm": "Usunąć pole {label}? Usunąć można tylko pole, które nie ma jeszcze żadnej wartości i którego nie używa żadna reguła ani ocena. Aby przestać używać pola z wartościami, wyłącz „Aktywne”: wartości zostają zapisane.",
       "save": "Zapisz",
       "move_up": "Przesuń w górę",
       "move_down": "Przesuń w dół",
@@ -5098,7 +5114,8 @@
       "disqualifiers": "Dyskwalifikacje",
       "add_disqualifier": "Dodaj dyskwalifikację",
       "order_error": "S1 musi być wyżej niż S2, a S2 wyżej niż S3",
-      "load_error": "Nie udało się wczytać oceniania"
+      "load_error": "Nie udało się wczytać oceniania",
+      "segments_help": "Segment porządkuje firmy według punktów: S1 pasuje najlepiej, S4 najsłabiej (albo jest zdyskwalifikowana). Listę firm można filtrować po segmencie, a reguła może działać tylko dla segmentów, które wskazuje jej warunek."
     },
     "condition": {
       "field": "Pole",
@@ -5284,7 +5301,8 @@
       "kind": "Rodzaj",
       "in_use": "Ten etap ma transakcje — najpierw je przenieś",
       "empty": "Brak etapów transakcji — dodaj pierwszy poniżej",
-      "delete_confirm": "Usunąć etap {label}?"
+      "delete_confirm": "Usunąć etap {label}?",
+      "saved": "Etapy transakcji zapisane"
     }
   },
   "notification_bar": {

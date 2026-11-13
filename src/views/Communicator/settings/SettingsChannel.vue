@@ -12,7 +12,7 @@
       </p>
       <p v-if="error" class="t-negative m-0" role="alert" data-testid="channel-error">{{ error }}</p>
       <div class="flex jc-fe">
-        <BasicButton variant="primary" type="submit" data-testid="channel-save">{{ $t("communicator.template.save") }}</BasicButton>
+        <BasicButton variant="primary" type="submit" mutates data-testid="channel-save">{{ $t("communicator.template.save") }}</BasicButton>
       </div>
     </form>
   </BasicCard>

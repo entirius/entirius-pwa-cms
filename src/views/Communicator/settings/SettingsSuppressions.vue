@@ -10,7 +10,7 @@
       <FormField :label="$t('communicator.suppressions.reason')">
         <BasicInput v-model="draft.reason" :maxlength="255" data-testid="suppression-reason" />
       </FormField>
-      <BasicButton type="submit" data-testid="suppression-add">{{ $t("communicator.suppressions.add") }}</BasicButton>
+      <BasicButton type="submit" mutates data-testid="suppression-add">{{ $t("communicator.suppressions.add") }}</BasicButton>
     </form>
     <p v-if="error" class="t-negative m-0" role="alert">{{ error }}</p>
     <DataTable

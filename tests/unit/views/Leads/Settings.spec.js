@@ -22,6 +22,8 @@ const AREA = {
 vi.mock("vue-router", () => ({ useRouter: () => ({ resolve: ({ name }) => ({ meta: { area: AREA[name] } }) }) }));
 
 import Settings from "@/views/Leads/Settings.vue";
+import { LEADS_SETTINGS_SECTIONS } from "@/components/Navigation/nav-routes";
+import { t } from "@/i18n";
 
 const RouterLink = { props: ["to"], template: "<a :data-to='to.name'><slot /></a>" };
 const BasicCard = { props: ["title"], template: "<section v-bind='$attrs'><slot /></section>" };
@@ -63,5 +65,16 @@ describe("Leads → Settings hub", () => {
     expect(group("automation")).toEqual(["LeadsAutomaticMoves", "CommunicatorSequences", "CommunicatorTemplates", "LeadsReplyClassification"]);
     expect(group("sending")).toEqual(["LeadsMailboxes", "LeadsSendingHealth", "CommunicatorSettings", "LeadsDoNotContact"]);
     newer.on = false;
+  });
+
+  // Acceptance CM12: each section says in one line what it changes, in both languages.
+  it("one line under each section name", () => {
+    Object.values(AREA).forEach((area) => readable.add(area));
+    ["leads", "communicator"].forEach((key) => modules.add(key));
+    const wrapper = mount(Settings, { global: { stubs: { RouterLink, BasicCard, FontAwesomeIcon: true, EmptyState: true } } });
+    expect(wrapper.findAll('[data-testid="settings-section-about"]').map((line) => line.text())).toEqual(
+      LEADS_SETTINGS_SECTIONS.filter((section) => wrapper.find(`[data-testid="settings-${section.key}"]`).exists()).map((section) => `leads.settings.about.${section.key}`)
+    );
+    LEADS_SETTINGS_SECTIONS.forEach(({ key }) => expect(t(`leads.settings.about.${key}`)).not.toBe(`leads.settings.about.${key}`));
   });
 });

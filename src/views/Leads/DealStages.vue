@@ -1,27 +1,21 @@
 <template>
   <PageLayout data-testid="leads-deal-stages">
     <template #header>
-      <PageHeader :title="$t('leads.deal_stages.title')" :description="$t('leads.deal_stages.description')" :back="{ name: 'LeadsSettings' }" />
+      <PageHeader :title="$t('leads.deal_stages.title')" :description="$t('leads.deal_stages.description')" :back="{ name: 'LeadsSettings' }">
+        <template v-if="!loading && stages.length" #actions>
+          <StatusBadge v-if="anyDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" data-testid="deal-stages-unsaved" />
+          <ActionBar :actions="actions" />
+        </template>
+      </PageHeader>
     </template>
     <Loader v-if="loading" block />
     <div v-else class="flex-column gap-8">
       <p v-if="stages.length && !closable" class="t-warning m-0" data-testid="deal-stages-cannot-close">{{ $t("leads.deals.cannot_close") }}</p>
       <BasicCard :title="$t('leads.deal_stages.stages')">
         <EmptyState v-if="!stages.length" icon="empty" size="sm" :title="$t('leads.deal_stages.empty')" data-testid="deal-stages-empty" />
-        <draggable
-          v-else
-          :list="stages"
-          :disabled="readonly"
-          :force-fallback="true"
-          fallback-class="drag-ghost"
-          item-key="id"
-          handle=".stage__handle"
-          class="flex-column gap-3"
-          @end="saveOrder"
-        >
-          <template #item="{ element, index }">
+        <div v-else class="flex-column gap-3">
+          <template v-for="(element, index) in stages" :key="element.id">
             <div class="stage" :data-key="element.key" data-testid="deal-stage-row">
-              <FontAwesomeIcon :icon="$icons.drag" class="stage__handle" />
               <FormField :label="$t('leads.deal_stages.label')">
                 <BasicInput v-model="element.label" :maxlength="128" data-testid="deal-stage-label" />
               </FormField>
@@ -29,8 +23,6 @@
                 <BasicSelect v-model="element.kind" :options="kinds" data-testid="deal-stage-kind" />
               </FormField>
               <div class="stage__controls">
-                <StatusBadge :tone="dealKindTone(element.kind)" size="sm" :dot="false" :label="kindLabel(element.kind)" />
-                <BasicButton v-if="dirty(element)" mutates size="sm" data-testid="deal-stage-save" @click="saveRow(element)">{{ $t("leads.company.save") }}</BasicButton>
                 <IconButton mutates icon="moveUp" variant="outline" :label="$t('leads.stages.up')" :disabled="index === 0" data-testid="deal-stage-up" @click="shift(index, -1)" />
                 <IconButton mutates icon="moveDown" variant="outline" :label="$t('leads.stages.down')" :disabled="index === stages.length - 1" data-testid="deal-stage-down" @click="shift(index, 1)" />
                 <IconButton mutates icon="delete" variant="danger" :label="$t('leads.stages.delete')" data-testid="deal-stage-delete" @click="confirming = element" />
@@ -38,7 +30,7 @@
               <p v-if="errors[element.id]" class="stage__error t-negative m-0" data-testid="deal-stage-error">{{ errors[element.id] }}</p>
             </div>
           </template>
-        </draggable>
+        </div>
       </BasicCard>
       <BasicCard v-if="!readonly" :title="$t('leads.deal_stages.add_title')">
         <form class="flex ai-st flex-wrap gap-5" @submit.prevent="add">
@@ -72,16 +64,16 @@
 
 <script setup>
 import { computed, onMounted, reactive, ref } from "vue";
-import draggable from "vuedraggable";
 import { t } from "@/i18n";
 import { DELETE_DealStage, GET_DealStages, PATCH_DealStage, POST_DealStage } from "@/api/leads/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { usePageReadonly } from "@/composables/useReadonly";
 import { useNotifyStore } from "@/stores/notify";
-import { canClose, dealKindTone, stageKindOptions } from "./deals";
+import { canClose, stageKindOptions } from "./deals";
 
 // Settings → Deal stages (ux/screens/settings-deal-stages.md, modelled on Stages.vue): label and kind per row with a
-// Save while the row is dirty, order by drag or up/down (one PATCH per moved row), delete with the 409 inline.
+// one page Save for the changed rows (a toast says it landed), order by up/down (one PATCH per moved row), delete
+// with the 409 inline. Kind shows once (the select), order changes one way (the arrows).
 const ORDER_STEP = 10;
 const notify = useNotifyStore();
 const readonly = usePageReadonly();
@@ -90,17 +82,21 @@ const loading = ref(true);
 const errors = reactive({});
 const draft = reactive({ key: "", label: "", kind: "open" });
 const confirming = ref(null);
-let saved = {}; // id → { label, kind } as the server holds them
+const saved = ref({}); // id → { label, kind } as the server holds them
+const saving = ref(false);
 
 const kinds = stageKindOptions();
-const kindLabel = (kind) => kinds.find((option) => option.value === kind)?.label || kind;
 const closable = computed(() => canClose(stages.value));
-const dirty = (stage) => saved[stage.id] && (saved[stage.id].label !== stage.label || saved[stage.id].kind !== stage.kind);
+const dirty = (stage) => saved.value[stage.id] && (saved.value[stage.id].label !== stage.label || saved.value[stage.id].kind !== stage.kind);
+const anyDirty = computed(() => stages.value.some(dirty));
+const actions = computed(() => [
+  { key: "save", role: "primary", label: t("common.save"), disabled: !anyDirty.value, loading: saving.value, testid: "deal-stages-save", onClick: saveAll },
+]);
 
 async function load() {
   try {
     stages.value = (await GET_DealStages()).data.results;
-    saved = Object.fromEntries(stages.value.map(({ id, label, kind }) => [id, { label, kind }]));
+    saved.value = Object.fromEntries(stages.value.map(({ id, label, kind }) => [id, { label, kind }]));
   } finally {
     loading.value = false;
   }
@@ -120,7 +116,18 @@ async function attempt(errorKey, call, conflictKey = "") {
 
 async function saveRow(stage) {
   const body = { label: stage.label.trim(), kind: stage.kind };
-  if (await attempt(stage.id, () => PATCH_DealStage(stage.id, body))) saved[stage.id] = { ...body };
+  const ok = await attempt(stage.id, () => PATCH_DealStage(stage.id, body));
+  if (ok) saved.value = { ...saved.value, [stage.id]: { ...body } };
+  return ok;
+}
+
+// Every changed row, one PATCH each; a refused row keeps its error inline and the toast comes only when all landed.
+async function saveAll() {
+  saving.value = true;
+  const results = [];
+  for (const stage of stages.value.filter(dirty)) results.push(await saveRow(stage));
+  saving.value = false;
+  if (results.every(Boolean)) notify.spawnNotification({ msg: t("leads.deal_stages.saved"), type: "positive" });
 }
 
 // Renumbers in steps of 10, one PATCH at a time; the first refusal stops the run and reloads the server order.
@@ -170,13 +177,9 @@ onMounted(load);
 
 .stage {
   display: grid;
-  grid-template-columns: auto minmax(8rem, 1fr) minmax(0, 12rem) auto;
+  grid-template-columns: minmax(8rem, 1fr) minmax(0, 12rem) auto;
   align-items: end;
   gap: var(--space-5);
-}
-.stage__handle {
-  align-self: center;
-  cursor: grab;
 }
 .stage__controls {
   display: flex;
@@ -189,14 +192,11 @@ onMounted(load);
 .stage__error {
   grid-column: 1 / -1;
 }
-/* Below tablet: the fields stack beside the handle, the controls under them, right-aligned */
+/* Below tablet: the fields stack, the controls under them, right-aligned */
 @include max-tablet {
   .stage {
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
     row-gap: var(--space-2);
-  }
-  .stage > :not(.stage__handle) {
-    grid-column: 2;
   }
   .stage__controls {
     justify-content: flex-end;

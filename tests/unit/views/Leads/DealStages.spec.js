@@ -16,7 +16,8 @@ const regional = vi.hoisted(() => ({ GET_RegionalCurrencies: vi.fn() }));
 const router = vi.hoisted(() => ({ push: vi.fn() }));
 vi.mock("@/api/leads/api", () => leads);
 vi.mock("@/api/regional/api", () => regional);
-vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification: vi.fn() }) }));
+const notify = vi.hoisted(() => ({ spawnNotification: vi.fn() }));
+vi.mock("@/stores/notify", () => ({ useNotifyStore: () => notify }));
 vi.mock("vue-router", async (original) => ({ ...(await original()), useRouter: () => router }));
 
 import DealStages from "@/views/Leads/DealStages.vue";
@@ -53,15 +54,23 @@ describe("Leads → Settings → Deal stages", () => {
     expect(byTestid(wrapper, "deal-stage-error").text()).toBe("This stage holds deals — move them first");
   });
 
-  it("a row saves its label and kind while dirty; Add appends with the kind", async () => {
+  // Acceptance CM13: one page Save with the unsaved state and a toast when it landed; the kind shows once.
+  it("the page Save sends the changed rows and says so; Add appends with the kind", async () => {
     leads.PATCH_DealStage.mockResolvedValue({});
     leads.POST_DealStage.mockResolvedValue({});
     const wrapper = await mounted();
-    expect(byTestid(wrapper, "deal-stage-save").exists()).toBe(false);
+    expect(byTestid(wrapper, "deal-stages-unsaved").exists()).toBe(false);
+    expect(byTestid(wrapper, "deal-stages-save").attributes("disabled")).toBeDefined();
+    expect(wrapper.findAll('[data-testid="deal-stage-row"]')[0].findAllComponents({ name: "StatusBadge" })).toHaveLength(0);
     setControl(wrapper, "deal-stage-kind", "lost");
     await flushPromises();
-    await byTestid(wrapper, "deal-stage-save").trigger("click");
+    expect(byTestid(wrapper, "deal-stages-unsaved").exists()).toBe(true);
+    await byTestid(wrapper, "deal-stages-save").trigger("click");
+    await flushPromises();
+    expect(leads.PATCH_DealStage).toHaveBeenCalledTimes(1);
     expect(leads.PATCH_DealStage).toHaveBeenCalledWith(1, { label: "Qualified", kind: "lost" });
+    expect(notify.spawnNotification).toHaveBeenCalledWith({ msg: "Deal stages saved", type: "positive" });
+    expect(byTestid(wrapper, "deal-stages-unsaved").exists()).toBe(false);
     control(wrapper, "deal-stage-new-key").vm.$emit("update:modelValue", "lost");
     control(wrapper, "deal-stage-new-label").vm.$emit("update:modelValue", "Lost");
     setControl(wrapper, "deal-stage-new-kind", "lost");
@@ -69,10 +78,10 @@ describe("Leads → Settings → Deal stages", () => {
     expect(leads.POST_DealStage).toHaveBeenCalledWith({ key: "lost", label: "Lost", kind: "lost", order: 20 });
   });
 
-  it("read-only: no Add card, no drag", async () => {
+  it("read-only: no Add card, no Save, no row action", async () => {
     const wrapper = await mounted({ write: false });
-    expect(byTestid(wrapper, "deal-stage-add").exists()).toBe(false);
-    expect(wrapper.findComponent({ name: "draggable" }).vm.$attrs.disabled).toBe(true);
+    expect(byTestid(wrapper, "readonly-notice").exists()).toBe(true);
+    ["deal-stage-add", "deal-stages-save", "deal-stage-up", "deal-stage-delete"].forEach((id) => expect(byTestid(wrapper, id).exists()).toBe(false));
   });
 });
 

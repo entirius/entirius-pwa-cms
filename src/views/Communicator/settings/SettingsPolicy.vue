@@ -14,14 +14,14 @@
         <FormField :label="$t('communicator.policy.window_end')" :error="timeError(window.end_time)" required>
           <BasicInput v-model="window.end_time" :placeholder="$t('communicator.policy.time_format')" data-testid="policy-window-end" />
         </FormField>
-        <IconButton icon="delete" variant="danger" :label="$t('communicator.policy.remove_window')" @click="form.windows.splice(i, 1)" />
+        <IconButton mutates icon="delete" variant="danger" :label="$t('communicator.policy.remove_window')" @click="form.windows.splice(i, 1)" />
       </div>
       <p v-if="error" class="t-negative m-0" role="alert" data-testid="policy-error">{{ error }}</p>
       <div class="flex jc-fe flex-wrap gap-3">
-        <BasicButton @click="form.windows.push({ start_time: '08:00', end_time: '17:00' })">
+        <BasicButton mutates @click="form.windows.push({ start_time: '08:00', end_time: '17:00' })">
           {{ $t("communicator.policy.add_window") }}
         </BasicButton>
-        <BasicButton variant="primary" type="submit" data-testid="policy-save">{{ $t("communicator.template.save") }}</BasicButton>
+        <BasicButton variant="primary" type="submit" mutates data-testid="policy-save">{{ $t("communicator.template.save") }}</BasicButton>
       </div>
     </form>
   </BasicCard>

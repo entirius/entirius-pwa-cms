@@ -60,6 +60,7 @@
                 @click="shift(index, 1)"
               />
               <IconButton
+                mutates
                 icon="delete"
                 variant="danger"
                 :label="$t('leads.stages.delete')"
@@ -73,7 +74,7 @@
           </div>
         </template>
       </draggable>
-      <form class="flex ai-st flex-wrap gap-5" data-testid="stage-add" @submit.prevent="add">
+      <form v-if="!readonly" class="flex ai-st flex-wrap gap-5" data-testid="stage-add" @submit.prevent="add">
         <FormField :label="$t('leads.stages.key')" hint-level="important" :hint="$t('leads.stages.key_help')" required>
           <BasicInput v-model="draft.key" :maxlength="64" data-testid="stage-new-key" />
         </FormField>
@@ -85,7 +86,7 @@
         >
           <BasicInput v-model="draft.label" :maxlength="128" data-testid="stage-new-label" />
         </FormField>
-        <BasicButton class="stage__submit" variant="primary" type="submit" data-testid="stage-save">
+        <BasicButton class="stage__submit" variant="primary" type="submit" mutates data-testid="stage-save">
           {{ $t("leads.stages.add") }}
         </BasicButton>
       </form>

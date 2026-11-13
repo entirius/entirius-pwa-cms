@@ -19,7 +19,10 @@
             :data-testid="`settings-${section.key}`"
           >
             <FontAwesomeIcon :icon="section.icon" class="settings-row__icon" />
-            <span class="settings-row__label">{{ $t(section.labelKey) }}</span>
+            <span class="settings-row__text flex-column">
+              <span class="settings-row__label">{{ $t(section.labelKey) }}</span>
+              <span class="t-secondary fs-200" data-testid="settings-section-about">{{ $t(`leads.settings.about.${section.key}`) }}</span>
+            </span>
             <FontAwesomeIcon :icon="$icons.next" class="settings-row__go" />
           </router-link>
         </div>
@@ -40,7 +43,7 @@ import { useAccessStore } from "@/stores/access";
 // not listed — the backends stay separate (leads decides what and to whom, communicator how and when). The sections
 // and their glyphs come from the nav model. A section whose area (its route's `meta.area`) the user cannot read is not
 // listed either: the guard would refuse it, and neither is one that needs a newer backend (`minVersion`). The sections
-// sit in one card per group.
+// sit in one card per group; each says in one line what it changes.
 
 const munin = useMuninStore();
 const access = useAccessStore();
@@ -80,8 +83,12 @@ const groups = computed(() =>
   width: 1.25rem;
   color: var(--text-muted);
 }
-.settings-row__label {
+.settings-row__text {
   flex: 1;
+  gap: var(--space-1);
+  padding: var(--space-3) 0;
+}
+.settings-row__label {
   font-weight: 600;
 }
 .settings-row__go {

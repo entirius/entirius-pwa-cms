@@ -15,6 +15,7 @@
     <div v-else class="flex-column gap-8">
       <p v-if="error" class="t-negative m-0" role="alert" data-testid="scoring-error">{{ error }}</p>
       <BasicCard :title="$t('leads.scoring.segments')">
+        <p class="t-secondary m-0 mb-5" data-testid="scoring-segments-help">{{ $t("leads.scoring.segments_help") }}</p>
         <div class="flex ai-fe flex-wrap gap-5">
           <FormField v-for="level in LEVELS" :key="level.key" :label="$t('leads.scoring.from', { segment: level.segment })" :error="level.key === 'L' ? orderError : ''">
             <NumberInput v-model="form.thresholds[level.key]" :min="0" :max="100000" :disabled="readonly" :data-testid="`scoring-threshold-${level.key.toLowerCase()}`" />

@@ -20,10 +20,10 @@
       <p v-if="error" class="t-negative m-0" role="alert" data-testid="footer-error">{{ error }}</p>
       <p v-else-if="html && !hasPlaceholder" class="t-muted m-0" data-testid="footer-hint">{{ $t("communicator.footer.needs_legal") }}</p>
       <div class="flex jc-fe flex-wrap gap-3">
-        <BasicButton v-if="saved" variant="danger" :disabled="busy" data-testid="footer-remove" @click="removing = true">
+        <BasicButton v-if="saved" mutates variant="danger" :disabled="busy" data-testid="footer-remove" @click="removing = true">
           {{ $t("communicator.footer.remove") }}
         </BasicButton>
-        <BasicButton variant="primary" type="submit" :disabled="busy || !html.trim()" data-testid="footer-save">
+        <BasicButton variant="primary" type="submit" mutates :disabled="busy || !html.trim()" data-testid="footer-save">
           {{ $t("communicator.template.save") }}
         </BasicButton>
       </div>

@@ -49,15 +49,15 @@
         <h3 class="sequence__subtitle m-0">{{ $t("communicator.sequences.texts") }}</h3>
         <p class="t-muted m-0" data-testid="pool-random-hint">{{ $t("communicator.sequences.texts_random") }}</p>
         <TextPool :sequence-id="sequence.id" :texts="texts[sequence.id] || []" @changed="load" />
-        <form class="flex ai-fe flex-wrap gap-5" @submit.prevent="addText(sequence.id)">
+        <form v-if="!readonly" class="flex ai-fe flex-wrap gap-5" @submit.prevent="addText(sequence.id)">
           <FormField class="sequence__text" :label="$t('communicator.sequences.new_text')" required>
             <BasicTextarea v-model="newText[sequence.id]" :rows="2" :maxlength="4000" data-testid="sequence-new-text" />
           </FormField>
-          <BasicButton type="submit" data-testid="sequence-add-text">{{ $t("communicator.sequences.add_text") }}</BasicButton>
+          <BasicButton type="submit" mutates data-testid="sequence-add-text">{{ $t("communicator.sequences.add_text") }}</BasicButton>
         </form>
         <p v-if="errors[sequence.id]" class="t-negative m-0" role="alert">{{ errors[sequence.id] }}</p>
       </BasicCard>
-      <BasicCard :title="$t('communicator.sequences.add')" data-testid="sequence-add">
+      <BasicCard v-if="!readonly" :title="$t('communicator.sequences.add')" data-testid="sequence-add">
         <form class="flex-column gap-4" @submit.prevent="addSequence">
           <FormField class="sequence__key" :label="$t('communicator.template.key')" :error="keyError" required>
             <BasicInput v-model="draft.key" :maxlength="64" data-testid="sequence-key" />
@@ -74,8 +74,8 @@
           </div>
           <p v-if="errors.add" class="t-negative m-0" role="alert" data-testid="sequence-error">{{ errors.add }}</p>
           <div class="flex jc-fe flex-wrap gap-3">
-            <BasicButton @click="draft.steps.push(emptyStep())">{{ $t("communicator.sequences.add_step") }}</BasicButton>
-            <BasicButton variant="primary" type="submit" data-testid="sequence-save">{{ $t("communicator.sequences.save") }}</BasicButton>
+            <BasicButton mutates @click="draft.steps.push(emptyStep())">{{ $t("communicator.sequences.add_step") }}</BasicButton>
+            <BasicButton variant="primary" type="submit" mutates data-testid="sequence-save">{{ $t("communicator.sequences.save") }}</BasicButton>
           </div>
         </form>
       </BasicCard>
@@ -88,6 +88,7 @@ import { computed, onMounted, reactive, ref } from "vue";
 import { t } from "@/i18n";
 import { GET_SequenceTexts, GET_Sequences, PATCH_Sequence, POST_Sequence, POST_SequenceText } from "@/api/communicator/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { usePageReadonly } from "@/composables/useReadonly";
 import { useMuninStore } from "@/stores/munin";
 import { outboundOn } from "@/utils/leadsOutbound";
 import TextPool from "./TextPool.vue";
@@ -99,6 +100,7 @@ const stepColumns = [
   { key: "days_after_previous", label: t("communicator.sequences.days"), numeric: true },
   { key: "template_key", label: t("communicator.template.key"), width: "1fr" },
 ];
+const readonly = usePageReadonly();
 const sequences = ref([]);
 const texts = reactive({});
 const newText = reactive({});

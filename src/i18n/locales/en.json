@@ -4636,7 +4636,23 @@
         "automation": "Automation",
         "sending": "Sending"
       },
-      "none": "No settings available"
+      "none": "No settings available",
+      "about": {
+        "stages": "The columns of the board a company moves through",
+        "deal-stages": "The steps a deal goes through until it is won or lost",
+        "lead-types": "The kinds of company you sell to; templates can target one",
+        "custom-fields": "Your own fields on companies, contacts and deals",
+        "scoring": "How points rate a company into segments S1–S4",
+        "rules": "What runs when a company enters a stage: a draft, an audit, a score",
+        "automatic-moves": "Which stage a company moves to after a reply or an opt-out",
+        "sequences": "Follow-up mails sent when nobody answers",
+        "templates": "The texts the AI writes drafts from",
+        "reply-classification": "How the AI sorts replies into types",
+        "mailboxes": "The addresses mail leaves from, their logins and daily caps",
+        "sending-health": "Bounces, opt-outs and complaints; when a mailbox pauses itself",
+        "sending": "Sending hours, the sender and the legal footer",
+        "do-not-contact": "Addresses and domains that never get mail"
+      }
     },
     "reply_type": {
       "interested": "Interested",
@@ -5064,7 +5080,7 @@
       "key_hint": "Cannot change after save",
       "kind_locked": "Kind cannot change: values are stored",
       "empty": "No custom fields on {entity} yet",
-      "delete_confirm": "Delete the field {label}?",
+      "delete_confirm": "Delete the field {label}? Only a field that holds no value yet and that no rule or scoring names can be deleted. To stop using a field with values, switch Active off instead: its values stay stored.",
       "save": "Save",
       "move_up": "Move up",
       "move_down": "Move down",
@@ -5099,7 +5115,8 @@
       "disqualifiers": "Disqualifiers",
       "add_disqualifier": "Add disqualifier",
       "order_error": "S1 must be above S2, S2 above S3",
-      "load_error": "The scoring could not be loaded"
+      "load_error": "The scoring could not be loaded",
+      "segments_help": "A segment sorts companies by their points: S1 fits best, S4 least (or is disqualified). The company list filters by segment, and a rule can run only for the segments its condition names."
     },
     "condition": {
       "field": "Field",
@@ -5285,7 +5302,8 @@
       "kind": "Kind",
       "in_use": "This stage holds deals — move them first",
       "empty": "No deal stages yet — add the first one below",
-      "delete_confirm": "Delete the stage {label}?"
+      "delete_confirm": "Delete the stage {label}?",
+      "saved": "Deal stages saved"
     }
   },
   "notification_bar": {

@@ -35,6 +35,7 @@ vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isModuleEnabled: () =
 const route = vi.hoisted(() => ({ query: {} }));
 vi.mock("vue-router", async (original) => ({ ...(await original()), useRoute: () => route, useRouter: () => ({ replace: vi.fn(), push: vi.fn() }) }));
 
+import { t } from "@/i18n";
 import CustomFieldsSettings from "@/views/Leads/CustomFieldsSettings.vue";
 import Reports from "@/views/Leads/Reports.vue";
 import Rules from "@/views/Leads/Rules.vue";
@@ -96,6 +97,15 @@ describe("Leads → Settings → Custom fields", () => {
     expect(byTestid(wrapper, "field-kind-locked").exists()).toBe(true);
   });
 
+  // Acceptance CM15: the delete question says what happens to the values stored on companies.
+  it("delete asks and says what becomes of the stored values", async () => {
+    const wrapper = await mounted(CustomFieldsSettings);
+    await wrapper.findAll('[data-testid="field-delete"]')[0].trigger("click");
+    expect(wrapper.findComponent({ name: "ConfirmDialog" }).props("message")).toContain("leads.fields.delete_confirm");
+    expect(t("leads.fields.delete_confirm", { label: "Platform" })).toMatch(/holds no value yet.*switch Active off.*values stay stored/);
+    expect(leads.DELETE_Attribute).not.toHaveBeenCalled();
+  });
+
   it("read-only: no Add, edit or delete", async () => {
     const wrapper = await mounted(CustomFieldsSettings, { write: false });
     ["fields-add", "field-edit", "field-delete", "field-up"].forEach((id) => expect(byTestid(wrapper, id).exists()).toBe(false));
@@ -122,6 +132,17 @@ describe("Leads → Settings → Scoring", () => {
     setControl(wrapper, "scoring-threshold-s", "50");
     await byTestid(wrapper, "scoring-save").trigger("click");
     expect(leads.PATCH_ScoringProfile).not.toHaveBeenCalled();
+  });
+
+  // Acceptance CM14: the Segments card says what a segment is and what it causes; read-only offers no write.
+  it("says what a segment is; read-only has no Save and no Add", async () => {
+    leads.GET_ScoringProfiles.mockResolvedValue({ data: { results: [] } });
+    const wrapper = await mounted(Scoring);
+    expect(byTestid(wrapper, "scoring-segments-help").text()).toBe("leads.scoring.segments_help");
+    expect(t("leads.scoring.segments_help")).toMatch(/S1 fits best.*filters by segment.*a rule/);
+    const readonly = await mounted(Scoring, { write: false });
+    expect(byTestid(readonly, "readonly-notice").exists()).toBe(true);
+    ["scoring-save", "scoring-add-points", "scoring-add-disqualifier"].forEach((id) => expect(byTestid(readonly, id).exists()).toBe(false));
   });
 
   it("a condition row offers the ops of its field's kind and hides the value for 'is empty'", async () => {
