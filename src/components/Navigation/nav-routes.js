@@ -17,6 +17,9 @@ export const LEADS_SETTINGS_GROUPS = ["sales", "automation", "sending"];
 export const LEADS_SETTINGS_SECTIONS = [
   { key: "stages", route: "LeadsStages", labelKey: "nav.leads_stages", icon: "list-ol", module: "leads", group: "sales" },
   { key: "lead-types", route: "LeadsLeadTypes", labelKey: "leads.lead_types.title", icon: "tags", module: "leads", group: "sales" },
+  { key: "custom-fields", route: "LeadsCustomFields", labelKey: "leads.fields.title", icon: "list-check", module: "leads", minVersion: "0.5.0", group: "sales" },
+  { key: "scoring", route: "LeadsScoring", labelKey: "leads.scoring.title", icon: "ranking-star", module: "leads", minVersion: "0.5.0", group: "sales" },
+  { key: "rules", route: "LeadsRules", labelKey: "leads.rules.title", icon: "bolt", module: "leads", minVersion: "0.5.0", group: "automation" },
   { key: "automatic-moves", route: "LeadsAutomaticMoves", labelKey: "nav.leads_automatic_moves", icon: "diagram-next", module: "leads", minVersion: "0.5.0", group: "automation" },
   { key: "sequences", route: "CommunicatorSequences", labelKey: "nav.communicator_sequences", icon: "repeat", module: "communicator", group: "automation" },
   { key: "templates", route: "CommunicatorTemplates", labelKey: "nav.communicator_templates", icon: "file-lines", module: "communicator", group: "automation" },
@@ -337,44 +340,33 @@ export function buildNavRoutes() {
       requiresModule: "lookup",
     },
     {
+      // Leads CRM: the day's work (tasks, drafts and replies waiting) — the panel root
+      route: "/leads/today",
+      labelKey: "nav.leads_today",
+      icon: "calendar-day",
+      query: {},
+      app: ["leads"],
+      activeOn: ["/leads/today"],
+    },
+    {
       route: "/leads/inbox",
       labelKey: "nav.leads_inbox",
       icon: "inbox",
       query: {},
       app: ["leads"],
       requiresModule: "communicator",
-      // One entry for both lists (UX-010): its Conversations | Companies toggle, Review, a thread without a company and
-      // a company card are all Inbox work, so the Inbox stays lit — the menu never jumps when a row opens a card
-      activeOn: ["/leads/inbox/", "/leads/conversations", "/leads/companies"],
+      // Review and a thread without a company are Inbox work; a company card lights Companies
+      activeOn: ["/leads/inbox/", "/leads/conversations"],
     },
     {
-      // Leads without communicator: no Inbox, no toggle — the company list is the entry (the panel fallback)
+      // The full list; the board and the import open from its page actions and keep it lit
       route: "/leads/companies",
       labelKey: "nav.leads_companies",
       icon: "building",
       query: {},
       app: ["leads"],
       requiresModule: "leads",
-      hiddenWithModule: "communicator",
-      activeOn: ["/leads/companies/"], // a company card
-    },
-    {
-      route: "/leads/board",
-      labelKey: "nav.leads_board",
-      icon: "table-columns",
-      query: {},
-      app: ["leads"],
-      requiresModule: "leads",
-      desktopOnly: true,
-    },
-    {
-      route: "/leads/import",
-      labelKey: "nav.leads_import",
-      icon: "file-import",
-      query: {},
-      app: ["leads"],
-      requiresModule: "leads",
-      desktopOnly: true,
+      activeOn: ["/leads/companies/", "/leads/board", "/leads/import"],
     },
     {
       // Drafts of every channel, approved in bulk at the desk; the badge = drafts waiting (useNav `counts`)
@@ -389,12 +381,25 @@ export function buildNavRoutes() {
       badge: "approvals",
     },
     {
-      // Stages, templates, sequences and send settings live here as sections (UX-002d) — one entry fits a phone
+      // The funnel: tables of stage counts, moves and origins, desk work
+      route: "/leads/reports",
+      labelKey: "nav.leads_reports",
+      icon: "chart-line",
+      query: {},
+      app: ["leads"],
+      requiresModule: "leads",
+      minVersion: "0.5.0",
+      desktopOnly: true,
+    },
+    {
+      // Stages, templates, sequences and send settings live here as sections (UX-002d); desk work (Leads CRM) — a
+      // section still opens on a phone from a link
       route: "/leads/settings",
       labelKey: "nav.leads_settings",
       icon: "gear",
       query: {},
       app: ["leads"],
+      desktopOnly: true,
       activeOn: ["/leads/settings/"], // every section
     },
     {

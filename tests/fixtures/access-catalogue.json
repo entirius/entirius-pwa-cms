@@ -42,6 +42,7 @@
     "leads.companies",
     "leads.settings",
     "leads.gdpr",
+    "todo.tasks",
     "communicator.review",
     "communicator.content",
     "communicator.conversations",

@@ -1070,7 +1070,20 @@ const routes = [
       import(/* webpackChunkName: "leads" */ "../views/Leads/index.vue"),
     meta: { requiresAuth: true, panel: "leads" },
     children: [
-      { path: "", redirect: "/leads/inbox" },
+      { path: "", redirect: "/leads/today" },
+      // Leads CRM: the panel root — the day's tasks and what waits; its blocks gate themselves (no area, no module)
+      {
+        path: "today",
+        name: "LeadsToday",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Today.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.today.title", panel: "leads", page: true },
+      },
+      {
+        path: "reports",
+        name: "LeadsReports",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Reports.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.reports.title", panel: "leads", area: AREAS.LEADS_COMPANIES, module: "leads", moduleVersion: OUTBOUND, page: true, desktop: true },
+      },
       {
         path: "inbox",
         name: "LeadsInbox",
@@ -1093,12 +1106,12 @@ const routes = [
         component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Conversation.vue"),
         meta: { requiresAuth: true, titleKey: "leads.inbox.title", panel: "leads", area: AREAS.COMMUNICATOR_CONVERSATIONS, module: "communicator" },
       },
-      // Leads-only entry (the panel fallback): a company list that works on a phone
+      // The full company list (Leads CRM): a page; the narrow list stays the left column of a company card
       {
         path: "companies",
         name: "LeadsCompanies",
-        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Companies.vue"),
-        meta: { requiresAuth: true, titleKey: "leads.companies.title", panel: "leads", area: AREAS.LEADS_COMPANIES, module: "leads" },
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/CompanyList.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.companies.title", panel: "leads", area: AREAS.LEADS_COMPANIES, module: "leads", page: true },
       },
       // UX-006: one lead by hand — company + its contact, phone-usable
       {
@@ -1112,7 +1125,7 @@ const routes = [
         name: "LeadsThread",
         component: () =>
           import(/* webpackChunkName: "leads" */ "../views/Leads/Company.vue"),
-        meta: { requiresAuth: true, titleKey: "leads.company.title", panel: "leads", area: AREAS.LEADS_COMPANIES, module: "leads" },
+        meta: { requiresAuth: true, titleKey: "leads.company.title", panel: "leads", area: AREAS.LEADS_COMPANIES, module: "leads", crumbParent: "LeadsCompanies" },
       },
       // Plan 14 desktop screens: full width, "Open on a desktop" below 1024 px
       {
@@ -1178,6 +1191,24 @@ const routes = [
         name: "LeadsApprovals",
         component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Approvals.vue"),
         meta: { requiresAuth: true, titleKey: "leads.approvals.title", panel: "leads", area: AREAS.COMMUNICATOR_REVIEW, module: "communicator", moduleVersion: OUTBOUND, page: true },
+      },
+      {
+        path: "settings/custom-fields",
+        name: "LeadsCustomFields",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/CustomFieldsSettings.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.fields.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", moduleVersion: OUTBOUND, page: true },
+      },
+      {
+        path: "settings/scoring",
+        name: "LeadsScoring",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Scoring.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.scoring.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", moduleVersion: OUTBOUND, page: true },
+      },
+      {
+        path: "settings/rules",
+        name: "LeadsRules",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Rules.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.rules.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", moduleVersion: OUTBOUND, page: true },
       },
       {
         path: "settings/automatic-moves",
@@ -1672,7 +1703,7 @@ const router = createRouter({
   routes,
 });
 
-// A route whose module is absent goes to its panel root; the root itself (Leads inbox) goes to the panel
+// A route whose module is absent goes to its panel root; the root itself goes to the panel
 // fallback (Leads company list), and the fallback home — never a loop.
 function moduleFallback(panel, path) {
   if (path === panel?.root) return panel.fallback || "/";

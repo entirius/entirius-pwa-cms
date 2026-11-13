@@ -33,7 +33,7 @@ describe("Leads → Settings routing", () => {
 
   it("registers no Communicator panel", () => {
     expect(panels.find((p) => p.idx === "communicator")).toBeUndefined();
-    expect(panels.find((p) => p.idx === "leads")).toMatchObject({ root: "/leads/inbox" });
+    expect(panels.find((p) => p.idx === "leads")).toMatchObject({ root: "/leads/today" });
   });
 
   it("the settings hub and its sections resolve under /leads/settings", async () => {

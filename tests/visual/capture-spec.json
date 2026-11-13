@@ -1488,6 +1488,21 @@
       "file": "pf-history__{vp}__{theme}.png"
     },
     {
+      "id": "leads-today",
+      "route": "/leads/today",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-today__{vp}__{theme}.png"
+    },
+    {
       "id": "leads-inbox",
       "route": "/leads/inbox",
       "resolver": "fixed",
@@ -1854,6 +1869,65 @@
         "light"
       ],
       "file": "leads-sending__{vp}__{theme}.png"
+    },
+    {
+      "id": "leads-custom-fields",
+      "route": "/leads/settings/custom-fields",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-custom-fields__{vp}__{theme}.png"
+    },
+    {
+      "id": "leads-scoring",
+      "route": "/leads/settings/scoring",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-scoring__{vp}__{theme}.png"
+    },
+    {
+      "id": "leads-rules",
+      "route": "/leads/settings/rules",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-rules__{vp}__{theme}.png"
+    },
+    {
+      "id": "leads-reports",
+      "route": "/leads/reports",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-reports__{vp}__{theme}.png"
     },
     {
       "id": "access-roles-list",

@@ -163,13 +163,13 @@ describe("router.beforeEach", () => {
     it("a missing module sends a route to the root of its panel", async () => {
       state.moduleEnabled = (m) => m !== "leads";
       await router.push("/leads/companies/42");
-      expect(at().path).toBe("/leads/inbox");
+      expect(at().path).toBe("/leads/today");
     });
 
-    it("a missing module on the panel root goes to the panel fallback", async () => {
+    it("a missing module on a route that is not the root goes to the panel root", async () => {
       state.moduleEnabled = (m) => m !== "communicator";
       await router.push("/leads/inbox");
-      expect(at().path).toBe("/leads/companies");
+      expect(at().path).toBe("/leads/today");
     });
 
     it("a missing module on the fallback itself goes Home", async () => {
@@ -183,7 +183,7 @@ describe("router.beforeEach", () => {
       state.readable.add("communicator.conversations");
       state.moduleEnabled = (m) => m !== "leads";
       await router.push("/leads/companies/42");
-      expect(at().path).toBe("/leads/inbox");
+      expect(at().path).toBe("/leads/today");
       expect(access.deniedPanel).toBeNull();
     });
 
@@ -211,10 +211,10 @@ describe("router.beforeEach", () => {
     });
 
     it("a refused panel fallback also opens the first readable page", async () => {
-      state.readable.add("leads.companies");
+      state.readable.add("communicator.conversations");
       state.moduleEnabled = () => true;
-      await router.push("/leads/inbox");
-      expect(at().path).toBe("/leads/companies");
+      await router.push("/leads/companies");
+      expect(at().path).toBe("/leads/inbox");
     });
 
     it("a refused root with nothing readable in the panel goes Home and names the panel", async () => {

@@ -60,8 +60,8 @@ describe("navTree", () => {
   it("groups the filtered entries per panel, every panel of the registry present", () => {
     const desktop = tree();
     expect(Object.keys(desktop)).toEqual(panels.map((p) => p.idx));
-    expect(desktop.leads.map((e) => e.route)).toEqual(["/leads/inbox", "/leads/board", "/leads/import", "/leads/settings"]);
-    expect(tree(false).leads.map((e) => e.route)).toEqual(["/leads/inbox", "/leads/settings"]);
+    expect(desktop.leads.map((e) => e.route)).toEqual(["/leads/today", "/leads/inbox", "/leads/companies", "/leads/settings"]);
+    expect(tree(false).leads.map((e) => e.route)).toEqual(["/leads/today", "/leads/inbox", "/leads/companies"]);
   });
 
   it("single-entry panels have one entry (leaf links, decision 2)", () => {
@@ -83,7 +83,7 @@ describe("resolveNavEntry", () => {
     ["/emails/templates/order/5", "/emails"],
     ["/stock/manage", "/stock"],
     ["/pages/content/static-page", "/pages/content"],
-    ["/leads/companies/100", "/leads/inbox"],
+    ["/leads/companies/100", "/leads/companies"],
     ["/leads/settings/templates/3", "/leads/settings"],
   ])("%s lights %s", (path, entry) => {
     expect(litEntry(path)).toBe(entry);
@@ -186,7 +186,7 @@ describe("buildCrumbs", () => {
     });
     const template = crumbsAt("/leads/settings/templates/3");
     expect(template.map((c) => c.to)).toEqual([
-      "/leads/inbox",
+      "/leads/today",
       { path: "/leads/settings", query: {} },
       { name: "CommunicatorTemplates", params: {} },
       undefined,

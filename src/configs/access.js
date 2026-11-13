@@ -160,8 +160,8 @@ export const panels = [
     name: "Leads",
     idx: "leads",
     icon: "inbox",
-    root: "/leads/inbox",
-    // the Inbox needs django-communicator; a leads-only backend opens the company list (phone-usable)
+    // Today (Leads CRM): the day's work; a user who cannot read it lands on the first readable entry
+    root: "/leads/today",
     fallback: "/leads/companies",
     labelKey: "panels.leads",
     descriptionKey: "panels.leads_desc",
@@ -169,6 +169,7 @@ export const panels = [
       AREAS.LEADS_COMPANIES,
       AREAS.LEADS_SETTINGS,
       AREAS.LEADS_GDPR,
+      AREAS.TODO_TASKS,
       AREAS.COMMUNICATOR_REVIEW,
       AREAS.COMMUNICATOR_CONTENT,
       AREAS.COMMUNICATOR_CONVERSATIONS,

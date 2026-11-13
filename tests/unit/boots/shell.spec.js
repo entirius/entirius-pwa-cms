@@ -236,8 +236,8 @@ describe("BottomTabBar", () => {
     const nav = mountIt(BottomTabBar).get("nav");
     expect(nav.attributes("aria-label")).toBe("Leads");
     expect(nav.attributes("data-fid")).toBe("tab-bar");
-    expect(nav.findAll("a").map((a) => a.attributes("href"))).toEqual(["/leads/inbox", "/leads/settings"]);
-    expect(nav.get("[aria-current='page']").attributes("href")).toBe("/leads/inbox");
+    expect(nav.findAll("a").map((a) => a.attributes("href"))).toEqual(["/leads/today", "/leads/inbox", "/leads/companies"]);
+    expect(nav.get("[aria-current='page']").attributes("href")).toBe("/leads/companies");
   });
 
   it("is hidden with one entry and on meta.noBottomBar", async () => {
