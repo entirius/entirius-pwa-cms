@@ -33,7 +33,7 @@ first area is the read-only default of a route without `meta.area`
 | `pricefighter` | PriceFighter | `/pricefighter/gap` | `scale-balanced` | `pricefighter.decisions`, `pricefighter.rules` |
 | `enricher` | Enricher | `/enrichment` | `wand-magic-sparkles` | `enrichment.rules`, `enrichment.proposals` |
 | `promo` | Promo | `/promo/list` | `tags` | `checkout.discounts` |
-| `leads` | Leads | `/leads/inbox` (fallback `/leads/companies`) | `inbox` | `leads.companies`, `leads.settings`, `leads.gdpr`, `communicator.review`, `communicator.content`, `communicator.conversations`, `communicator.settings`, `siteintel.audits` |
+| `leads` | Leads | `/leads/today` (fallback `/leads/companies`) | `inbox` | `leads.companies`, `leads.settings`, `leads.gdpr`, `todo.tasks`, `communicator.review`, `communicator.content`, `communicator.conversations`, `communicator.settings`, `siteintel.audits` |
 | `access` | Access | `/access/roles` | `user-shield` | `access.manage` |
 
 This array is static metadata only. Whether a panel is *usable* is decided at

@@ -4,12 +4,13 @@ Salesperson screens for django-leads + django-communicator, mobile first (one th
 same screens in two columns (`src/views/Leads/index.vue`, CSS grid only). One panel for both backends (there is no
 Communicator panel): munin keys `leads` and `communicator` both map to it, and every nav entry, route and
 Settings section carries the module it needs (`requiresModule` / `meta.module` / the hub's filter) — a section of
-a module that is off is simply not there. Nav: Inbox · Pipeline (`/leads/board`) · Import (leads) · Settings; a phone gets Inbox · Settings in the bottom bar, which Review
-(`meta.noBottomBar`) keeps off its sticky actions. Inbox is one entry for two lists: the left column carries a
-`SegmentedControl` Conversations | Companies (`leads-list-toggle`, shown with both modules) that only navigates
-`/leads/inbox` ↔ `/leads/companies`; a card, draft or thread opened from a list keeps that list in the column, and
-the entry stays lit on all of them (`activeOn`). Without communicator there is no Inbox and no toggle: the
-Companies entry (`hiddenWithModule: "communicator"`) opens the company list full width. `siteintel` (intel card) and `notifications` (header bell, `src/components/NotificationBar/`)
+a module that is off is simply not there. Nav (Leads CRM): Today (the panel root) · Inbox · Companies · Approvals ·
+Reports · Settings; a phone gets Today · Inbox · Companies in the bottom bar (Approvals, Reports and Settings are
+`desktopOnly`; a Settings section still opens from a link), which Review (`meta.noBottomBar`) keeps off its sticky
+actions. The Inbox column carries a `SegmentedControl` Conversations | Companies (`leads-list-toggle`, shown with
+both modules); "Companies" opens the full list page. A company card keeps the list it came from in the left column
+on a desktop and lights Companies; the board and the import are Companies' page actions and light it too.
+`siteintel` (intel card) and `notifications` (header bell, `src/components/NotificationBar/`)
 gate in-view with `isModuleEnabled` — never map them in `MODULE_TO_PANEL`. Every leads-family call takes the
 channel from `src/stores/leadsChannel.js` (`VUE_APP_LEADS_CHANNEL`, default `default-europe`), never
 `VUE_APP_CHANNEL`. Review has no detail endpoint: the view finds the draft in `review/?status=review_required`.
@@ -25,9 +26,10 @@ Settings (`meta.page`: full width, one scroller, no DesktopOnly wall; every sect
 `/leads/settings` lists the sections, each its own route — `settings/stages` (reorder = `PATCH stages/<id>/ {order}`
 per moved stage — there is no bulk order endpoint; delete 409 inline), `settings/templates` (+ `/:id`),
 `settings/sequences`, `settings/sending`, `settings/lead-types` (the Stages pattern: rename, reorder by PATCH `order`, deactivate, delete 409 inline; the code is fixed after create); a section leads back to the hub (the PageHeader `back`; a template goes back to the template list). Lead types are one list for the whole panel — `src/stores/leadTypes.js` (loaded once — a failed load is retried, logout resets it in `App.vue` together with the Inbox company-name cache `src/utils/leadsCompanyNames.js` — `label(code)`, `UNKNOWN` built in): Board chips = the active types in order, the company card's type select, the add-lead form and the template Audience (list column + edit select, shown only with the `leads` module; an audience a communicator does not send is never sent back). `/communicator/*` and `/leads/stages`
-redirect there; the route names (`CommunicatorTemplates`, `CommunicatorSettings`, `LeadsStages`, …) did not change. `/leads/companies/:id` on desktop is the company card (`Company.vue`, tabs via `?tab=`
-overview | intel | contacts | timeline; timeline = the thread view, which a phone still gets alone);
-notification jumps open `?tab=timeline`.
+redirect there; the route names (`CommunicatorTemplates`, `CommunicatorSettings`, `LeadsStages`, …) did not change. `/leads/companies/:id` is the company card on every width (`Company.vue`, the name as H1, the domain and the stage /
+lead-type selects in the PageHeader meta; tabs via `?tab=` overview | contacts | timeline ("History": the thread view
+and the company's events) | tasks | intel; a phone opens History, a desktop Overview); notification jumps open
+`?tab=timeline`.
 The Contacts tab (`tabs/ContactsTab.vue`) adds, edits and removes contacts — one form at a time, above the
 contacts DataTable — with the primary star (one per company, server-side); the fields are `ContactFields.vue`, shared with the add-lead form. Remove
 answers 204 (never used, deleted) or 200 (used, anonymised) and the status line says which; anonymised rows are history only.
@@ -64,3 +66,25 @@ thread bubble show the reply type (the row's class fields, else one `replies/` p
 the draft's `blocker` and disables Send with it, a contact row opens `SendCheckDialog` (`mailable/`), Import sends
 `run_rules`, Sequences save `is_active` / `autostart` on change.
 
+
+## CRM screens (django-leads 0.5.0, django-todo)
+
+Every part is dormant on an older backend (`outboundOn(munin, "leads")`, routes `meta.moduleVersion`); tasks also
+need `isModuleInstalled("todo")` and read on `todo.tasks` (`src/api/todo/api.js`, the leads JWT client, `tz` = the
+channel's time zone). `/leads/today` (no area: its blocks gate themselves) lists the caller's tasks by chip (Due now
+= `today/` for "Mine", else `tasks/?due=overdue` + `?due=today`; Upcoming, No date, Done = `tasks/` pages) and the
+drafts / replies waiting (links to the Inbox chips, `?filter=draft|replied`). `/leads/companies` is a page: search,
+owner chips, every filter (`attr.<key>` for `show_in_list` attributes), the sort (allowlist: `last_activity_at`,
+`score_points`, `owner__username`) and the page live in the URL; the API pages (20) and filters; bulk "Assign owner"
+(`companies/assign/`). The card adds Details (owner from `assignable-users/`, origin, custom fields; a PATCH of what
+changed), Score (the last `score` activity's reasons, Score now; 409 `no_scoring_profile` → "Set up scoring"),
+Tasks (`subject_ref = leads.Company:<id>`, inside `ReadonlyArea` `todo.tasks`), Write mail (`ComposeDialog.vue`:
+the gate's `mailable/` answer disables Send with its reason; 409 `not_eligible` / `no_legal_basis` under To) and the
+contact custom fields. One task dialog (`TaskDialog.vue`) adds, edits, logs a call (a phone task created, then done)
+and closes a task with its outcome. Custom fields render through `CustomFields.vue` + `customFields.js`
+(`fieldsFromDefinitions`, `validateValues`, `changedValues`, `formatValue`: the boot per kind). Settings sections:
+`settings/custom-fields` (`?entity=` company | contact | deal; the key is fixed after create, a 409 on the kind locks
+it; reorder = one PATCH `order` per moved row), `settings/scoring` (one active profile; Save creates it) and
+`settings/rules` (conditions from `GET fields/`); Scoring and Rules share `ConditionRow.vue` (ops per kind, "is empty"
+hides the value). `/leads/reports` (desktop) is the funnel as three tables, origin and period filters. Never parse a
+`subject_ref` / `contact_ref` in a view: `src/utils/subjectRef.js` builds and reads them.

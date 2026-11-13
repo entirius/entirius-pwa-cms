@@ -6,6 +6,14 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- Leads panel, CRM screens (django-leads 0.5.0; tasks with django-todo): Today is the panel root — the caller's
+  tasks by chip (Due now, Upcoming, No date, Done) and owner, the drafts and replies waiting, Add task and Mark done
+  with an outcome. Companies is a full list page (filters, owner chips, custom-field columns, sort and page in the URL,
+  bulk "Assign owner"; Board and Import are its page actions). The company card is one card on a phone and a desk:
+  Details (owner, origin, custom fields), Score with Score now, a Tasks tab (add, log a call, mark done, edit,
+  cancel), Write mail (a hand-written mail; the gate's refusal is shown) and History (the mail thread and the
+  company's events). Settings gains Custom fields (company, contact, deal), Scoring and Rules (conditions); Reports
+  shows the funnel as tables. New access area `todo.tasks`.
 - Leads panel, outbound screens (django-communicator / django-leads 0.5.0; an older backend keeps today's panel):
   Approvals (desktop nav entry with a badge of waiting drafts) lists the drafts of every channel oldest first with
   their problem, approves or rejects them in bulk (a reason for a rejection, 100 ids per call, refused rows stay
