@@ -9,7 +9,7 @@ const route = vi.hoisted(() => ({ current: null }));
 const push = vi.hoisted(() => vi.fn());
 vi.mock("vue-router", () => ({ useRoute: () => route.current, useRouter: () => ({ push }) }));
 const modules = vi.hoisted(() => new Set());
-vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isModuleEnabled: (key) => modules.has(key) }) }));
+vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isModuleEnabled: (key) => modules.has(key), isModuleAtLeast: () => false }) }));
 
 const GET_Policy = vi.hoisted(() => vi.fn(() => Promise.resolve({ data: { timezone: "Europe/Warsaw" } })));
 vi.mock("@/api/communicator/api", () => ({ GET_Policy }));

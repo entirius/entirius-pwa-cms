@@ -4572,7 +4572,8 @@
     },
     "common": {
       "delete": "Delete",
-      "keep": "Keep"
+      "keep": "Keep",
+      "error": "That did not work — try again."
     },
     "settings": {
       "groups": {
@@ -4830,7 +4831,8 @@
       "check_on_list": "On the list: {why} ({reach})",
       "check_address": "Address: {status} — {reason}",
       "check_clear": "Nothing blocks this address",
-      "load_error": "The list could not be loaded — try again."
+      "load_error": "The list could not be loaded — try again.",
+      "filters": "Filters"
     },
     "address_status": {
       "valid": "Valid",

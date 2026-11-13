@@ -152,7 +152,8 @@ async function loadPage(number, count = 1) {
 }
 
 // The reply type of a row (communicator >= 0.5.0): the row's own class fields, else the newest classified reply of its
-// thread from one `replies/` page (rows of an older backend build carry no class fields).
+// thread from one `replies/` page (rows of an older backend build carry no class fields; a conversation whose newest
+// classified reply is older than that page shows no type — accepted until the rows carry the fields).
 const munin = useMuninStore();
 const replyTypes = ref(new Map());
 const replyOf = (row) => ("intent" in row ? row : replyTypes.value.get(row.id)) || null;

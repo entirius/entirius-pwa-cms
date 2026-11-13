@@ -15,7 +15,7 @@ import SendingHealth from "@/views/Leads/SendingHealth.vue";
 import { byTestid, mountOutbound } from "./outboundFrame";
 
 const metrics = (sent, bounces) => ({ sent, hard_bounces_pct: bounces, optouts_pct: 0.5, complaints_pct: 0 });
-const windows = (sent, bounces) => ({ last_24h: metrics(sent, bounces), last_7d: metrics(sent, bounces) });
+const windows = (sent, bounces) => ({ "24h": metrics(sent, bounces), "7d": metrics(sent, bounces) });
 const report = {
   channel: { windows: windows(412, 0.7) },
   mailboxes: [

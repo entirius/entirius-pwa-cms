@@ -50,7 +50,7 @@
           <FormField :label="$t('leads.mailbox.security')" :error="fieldError('smtp_security')">
             <BasicRadioGroup v-model="form.smtp_security" :options="securityOptions" data-testid="mailbox-smtp-security" />
           </FormField>
-          <FormField :label="$t('leads.mailbox.login_user')" :error="fieldError('smtp_user')">
+          <FormField :label="$t('leads.mailbox.login_user')" required :error="fieldError('smtp_user')">
             <BasicInput v-model="form.smtp_user" :maxlength="254" data-testid="mailbox-smtp-user" />
           </FormField>
           <FormField :label="$t('leads.mailbox.password')" :error="fieldError('smtp_password')">
@@ -83,7 +83,7 @@
 
       <BasicCard :title="$t('leads.mailbox.limits')">
         <div class="form-grid">
-          <FormField :label="$t('leads.mailbox.daily_cap')" required :hint="$t('leads.mailbox.cap_hint')" hint-level="important" :error="fieldError('daily_cap')">
+          <FormField :label="$t('leads.mailbox.daily_cap')" :hint="$t('leads.mailbox.cap_hint')" hint-level="important" :error="fieldError('daily_cap')">
             <NumberInput v-model="form.daily_cap" :min="0" data-testid="mailbox-daily-cap" />
           </FormField>
           <FormField :label="$t('leads.mailbox.warmup_start')" :error="fieldError('warmup_start_cap')">
@@ -107,7 +107,7 @@
       </BasicCard>
     </div>
 
-    <MailboxReasonDialog :mailbox="reasonFor" @close="reasonFor = null" @done="load" />
+    <MailboxReasonDialog :mailbox="reasonFor" @close="reasonFor = null" @done="refreshState" />
     <ConfirmDialog
       :open="deleting"
       :title="$t('leads.mailbox.delete')"
@@ -141,7 +141,7 @@ const EMPTY = {
   address: "", display_name: "", cc_address: "", user_id: null, is_default: false,
   send_enabled: true, smtp_host: "", smtp_port: 587, smtp_security: "starttls", smtp_user: "", smtp_password: "",
   receive_enabled: false, imap_host: "", imap_port: 993, imap_use_ssl: true, imap_user: "", imap_password: "", folder: "INBOX",
-  daily_cap: 0, warmup_start_cap: null, warmup_step: 0, warmup_started_on: null,
+  daily_cap: null, warmup_start_cap: null, warmup_step: 0, warmup_started_on: null,
 };
 const PASSWORDS = ["smtp_password", "imap_password"];
 const NULLABLE = ["user_id", "daily_cap", "warmup_start_cap", "warmup_started_on"];
@@ -232,6 +232,16 @@ async function load() {
   }
 }
 
+// After Pause / Resume: the stored state and today's numbers again; the fields being edited stay as typed.
+async function refreshState() {
+  try {
+    stored.value = (await GET_Mailbox(stored.value.id)).data;
+    await loadExtras(stored.value.id);
+  } catch (err) {
+    error.value = extractApiMessage(err, t("leads.mailboxes.load_error"));
+  }
+}
+
 async function save() {
   busy.value = "save";
   error.value = "";
@@ -239,10 +249,13 @@ async function save() {
   try {
     const { data } = isNew.value ? await POST_Mailbox(body()) : await PATCH_Mailbox(stored.value.id, body());
     fill(data);
-    if (isNew.value) router.replace({ name: "LeadsMailboxEdit", params: { id: data.id } });
+    if (isNew.value) {
+      router.replace({ name: "LeadsMailboxEdit", params: { id: data.id } });
+      await loadExtras(data.id);
+    }
   } catch (err) {
     formErrors.handleApiError(err);
-    error.value = extractApiMessage(err, t("leads.mailbox.save_error"));
+    if (!formErrors.hasErrors.value) error.value = extractApiMessage(err, t("leads.mailbox.save_error"));
   } finally {
     busy.value = "";
   }
@@ -253,7 +266,7 @@ async function runTest() {
   try {
     test.value = (await POST_MailboxTest(stored.value.id)).data;
   } catch (err) {
-    error.value = extractApiMessage(err, t("leads.mailbox.save_error"));
+    error.value = extractApiMessage(err, t("leads.common.error"));
   } finally {
     busy.value = "";
   }
@@ -266,7 +279,7 @@ async function remove() {
     snapshot(form);
     router.push({ name: "LeadsMailboxes" });
   } catch (err) {
-    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.mailbox.save_error")), type: "negative" });
+    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.common.error")), type: "negative" });
   }
 }
 

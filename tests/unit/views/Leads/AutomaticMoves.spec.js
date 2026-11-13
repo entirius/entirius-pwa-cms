@@ -54,13 +54,14 @@ describe("Leads → Settings → Automatic moves", () => {
     expect(comm.PUT_ReplyClassPlan).toHaveBeenCalledWith("interested", { sequence: "stop", notify: "low", needs_review: false });
   });
 
-  it("a failed card keeps its error and the toast counts it", async () => {
+  it("a failed card keeps its error and its edit, and the toast counts it", async () => {
     leads.PUT_StageEvent.mockRejectedValueOnce({ message: "stage gone" });
     const wrapper = await mounted();
     control(wrapper, "first_sent", "moves-target").vm.$emit("update:modelValue", "contacted");
     await byTestid(wrapper, "moves-save").trigger("click");
     await flushPromises();
     expect(card(wrapper, "first_sent").text()).toContain("stage gone");
+    expect(control(wrapper, "first_sent", "moves-target").props("modelValue")).toBe("contacted");
     expect(notify.spawnNotification).toHaveBeenCalledWith(expect.objectContaining({ type: "negative" }));
   });
 

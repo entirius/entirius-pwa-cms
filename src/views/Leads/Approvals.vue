@@ -25,7 +25,7 @@
       </div>
     </template>
 
-    <Loader v-if="loading" block />
+    <Loader v-if="loading && first" block />
     <p v-else-if="error" class="t-negative m-0" role="alert" data-testid="approvals-error">{{ error }}</p>
     <EmptyState v-else-if="!rows.length && !filtered" icon="success" size="md" :title="$t('leads.approvals.empty')" data-testid="approvals-empty" />
     <div v-else class="flex-column gap-5">
@@ -128,6 +128,8 @@ const { search, debouncedFetch } = useSearchDebounce();
 const filters = reactive({ channel: null, template_key: null, mailbox: null, min_age_hours: null });
 const list = ref({ results: [], count: 0, counts: { by_channel: {}, by_mailbox: {} } });
 const loading = ref(true);
+const first = ref(true); // later loads keep the table (and its selection) on screen
+const templates = ref(new Set()); // every template key seen: picking one must not shrink the choice
 const error = ref("");
 const page = ref(1);
 const selected = ref([]);
@@ -166,7 +168,7 @@ const channelOptions = computed(() => optionsOf(Object.keys(list.value.counts?.b
 const mailboxOptions = computed(() =>
   optionsOf(Object.keys(list.value.counts?.by_mailbox || {}).filter((key) => key !== "none"))
 );
-const templateOptions = computed(() => optionsOf([...new Set(rows.value.map((row) => row.template_key).filter(Boolean))]));
+const templateOptions = computed(() => optionsOf([...templates.value]));
 const ageOptions = AGES.map((hours, i) => ({ value: hours, label: t(`leads.approvals.age_${["1d", "3d", "7d"][i]}`) }));
 
 const recipientOf = (row) => [row.recipient_name || row.recipient_email, row.subject_ref].filter(Boolean).join(" · ");
@@ -200,20 +202,28 @@ function query() {
   return params;
 }
 
+let latest = 0; // only the newest answer lands (typing fires overlapping requests)
+
 async function load() {
+  const request = ++latest;
   loading.value = true;
   error.value = "";
   try {
-    list.value = (await GET_Approvals(query())).data;
+    const { data } = await GET_Approvals(query());
+    if (request !== latest) return;
+    list.value = data;
+    templates.value = new Set([...templates.value, ...rows.value.map((row) => row.template_key).filter(Boolean)]);
   } catch (err) {
-    error.value = extractApiMessage(err, t("leads.approvals.load_error"));
+    if (request === latest) error.value = extractApiMessage(err, t("leads.approvals.load_error"));
   } finally {
-    loading.value = false;
+    if (request === latest) loading.value = false;
+    first.value = false;
   }
 }
 
 function reload() {
   page.value = 1;
+  clearSelection();
   return load();
 }
 
@@ -255,7 +265,7 @@ async function sendChunks(action, ids, reason) {
       result.done.push(...data.done);
       Object.assign(result.failed, data.failed);
     } catch (err) {
-      const why = extractApiMessage(err, t("leads.approvals.load_error"));
+      const why = extractApiMessage(err, t("leads.common.error"));
       chunk.forEach((id) => (result.failed[id] = why));
     }
   }
@@ -271,7 +281,7 @@ async function run(action, ids, reason = "") {
   drawerRow.value = null;
   await load();
   approvalsStore.refresh();
-  // the refused rows stay selected (DataTable keeps their keys); the done ones left the list
+  // the refused rows stay selected (the table stays mounted and keeps their keys); the done ones left the list
   selected.value = Object.keys(refused).map(Number);
 }
 

@@ -14,6 +14,7 @@ vi.mock("@/stores/munin", () => ({
     loaded: true,
     isPanelEnabled: mockIsPanelEnabled,
     isModuleEnabled: mockIsModuleEnabled,
+    isModuleAtLeast: () => false,
     ensureLoaded: vi.fn(),
   }),
 }));

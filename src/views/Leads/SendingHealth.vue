@@ -64,10 +64,10 @@
             <StatusBadge :tone="row.action === 'pause' ? 'warning' : 'positive'" :label="$t(`leads.mailboxes.${row.action}`)" />
           </template>
         </DataTable>
-        <BasicButton v-if="logNext" class="mt-5" data-testid="health-log-more" @click="loadLog(logPage + 1)">{{ $t("leads.health.show_more") }}</BasicButton>
+        <BasicButton v-if="logNext" class="mt-5" data-testid="health-log-more" @click="moreLog">{{ $t("leads.health.show_more") }}</BasicButton>
       </BasicCard>
     </div>
-    <MailboxReasonDialog :mailbox="reasonFor" @close="reasonFor = null" @done="load" />
+    <MailboxReasonDialog :mailbox="reasonFor" @close="reasonFor = null" @done="refreshReport" />
   </PageLayout>
 </template>
 
@@ -97,9 +97,10 @@ const POLICY_FIELDS = [
   { key: "max_optout_pct", label: "leads.health.max_optout", testid: "health-max-optout" },
   { key: "max_complaint_pct", label: "leads.health.max_complaint", testid: "health-max-complaint" },
 ];
+// The report's windows are keyed by their alias: "24h", "7d".
 const ranges = [
-  { value: "last_24h", label: t("leads.health.window_24h") },
-  { value: "last_7d", label: t("leads.health.window_7d") },
+  { value: "24h", label: t("leads.health.window_24h") },
+  { value: "7d", label: t("leads.health.window_7d") },
 ];
 
 const formErrors = useFormErrors();
@@ -107,7 +108,7 @@ const { snapshot, track, isDirty } = useUnsavedChanges();
 const loading = ref(true);
 const error = ref("");
 const saving = ref(false);
-const range = ref("last_7d");
+const range = ref("7d");
 const report = ref({ channel: { windows: {} }, mailboxes: [] });
 const policy = reactive({});
 const logRows = ref([]);
@@ -164,6 +165,24 @@ async function loadLog(page = 1) {
   logRows.value = page === 1 ? entries : [...logRows.value, ...entries];
   logPage.value = page;
   logNext.value = Boolean(data.next);
+}
+
+async function moreLog() {
+  try {
+    await loadLog(logPage.value + 1);
+  } catch (err) {
+    error.value = extractApiMessage(err, t("leads.health.load_error"));
+  }
+}
+
+// After a Resume: the rates and the log again; the policy being edited stays as typed.
+async function refreshReport() {
+  try {
+    report.value = (await GET_Health()).data;
+    await loadLog();
+  } catch (err) {
+    error.value = extractApiMessage(err, t("leads.health.load_error"));
+  }
 }
 
 async function load() {

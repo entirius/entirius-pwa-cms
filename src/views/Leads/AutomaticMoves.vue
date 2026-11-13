@@ -55,6 +55,8 @@ import { DELETE_StageEvent, GET_StageEvents, GET_Stages, PUT_StageEvent } from "
 import { AREAS } from "@/configs/areas";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { ReadonlyArea } from "@/composables/useReadonly";
+import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
+import { resetReplyPlans } from "@/utils/leadsReplyPlans";
 import { useAccessStore } from "@/stores/access";
 import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
@@ -81,7 +83,8 @@ const cardErrors = reactive({});
 const savedCards = ref({});
 
 const withPlans = computed(() => outboundOn(munin, "communicator") && access.can(AREAS.COMMUNICATOR_SETTINGS));
-const isDirty = computed(() => changed(cards, savedCards.value) || changed(plans, planSnapshot()));
+const { snapshot, track, isDirty } = useUnsavedChanges();
+track(reactive({ cards, plans }));
 const actions = computed(() => [
   { key: "save", role: "primary", label: t("common.save"), loading: saving.value, testid: "moves-save", onClick: save },
 ]);
@@ -95,8 +98,19 @@ async function loadPlans() {
   return Object.fromEntries((data.results || []).map((plan) => [plan.intent, plan]));
 }
 
-async function load() {
+// The edits of the cards in `keep` survive the reload (a card whose save failed, the other cards on "Use default").
+const clone = (value) => (value === undefined ? undefined : JSON.parse(JSON.stringify(value)));
+
+function restore(kept) {
+  for (const { event, card, plan } of kept) {
+    cards[event] = card;
+    if (plan) plans[typeOf(event)] = plan;
+  }
+}
+
+async function load(keep = []) {
   error.value = "";
+  const kept = keep.map((event) => ({ event, card: clone(cards[event]), plan: clone(plans[typeOf(event)]) }));
   try {
     const [events, stageList, planMap] = await Promise.all([GET_StageEvents(), GET_Stages(), loadPlans()]);
     stages.value = stageList.data.results || [];
@@ -106,6 +120,8 @@ async function load() {
     storedPlans.value = planMap;
     Object.keys(plans).forEach((type) => delete plans[type]);
     Object.entries(planMap).forEach(([type, plan]) => (plans[type] = planBody(plan)));
+    snapshot({ cards: savedCards.value, plans: planSnapshot() });
+    restore(kept);
   } catch (err) {
     error.value = extractApiMessage(err, t("leads.moves.load_error"));
   } finally {
@@ -132,7 +148,7 @@ async function runCard(event, calls) {
     for (const call of calls) await call();
     return true;
   } catch (err) {
-    cardErrors[event] = extractApiMessage(err, t("leads.moves.load_error"));
+    cardErrors[event] = extractApiMessage(err, t("leads.common.error"));
     return false;
   }
 }
@@ -143,7 +159,8 @@ async function save() {
   const failed = results.filter((ok) => !ok).length;
   if (failed) notify.spawnNotification({ msg: t("leads.moves.partial", { n: failed }), type: "negative" });
   saving.value = false;
-  await load();
+  resetReplyPlans(); // the conversation's "Next" line reads the plans again
+  await load(EVENTS.filter((event, i) => !results[i]));
 }
 
 async function useDefault(event) {
@@ -151,7 +168,9 @@ async function useDefault(event) {
   const calls = [];
   if (entries.value[event]?.configured) calls.push(() => DELETE_StageEvent(event));
   if (storedPlans.value[type]?.is_default === false) calls.push(() => DELETE_ReplyClassPlan(type));
-  if (await runCard(event, calls)) await load();
+  if (!(await runCard(event, calls))) return;
+  resetReplyPlans();
+  await load(EVENTS.filter((other) => other !== event));
 }
 
 onMounted(load);

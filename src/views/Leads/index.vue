@@ -96,7 +96,6 @@ const openList = (value) => router.push({ name: value === "companies" ? "LeadsCo
 // Times read in the channel's zone (the send policy's); without it they stay in the browser's. The same
 // answer says whether today's cap is used up — what a waiting mail needs before it names an hour.
 onMounted(async () => {
-  startApprovals();
   if (!hasInbox.value) return;
   try {
     applyPolicy((await GET_Policy()).data);
@@ -108,9 +107,12 @@ onMounted(async () => {
 // The Approvals nav badge: drafts of every channel, polled while the panel is open.
 const approvals = useApprovalsStore();
 const access = useAccessStore();
-function startApprovals() {
-  if (outboundOn(munin, "communicator") && access.can(AREAS.COMMUNICATOR_REVIEW)) approvals.start();
-}
+// munin and access may still be loading at mount (a hard refresh): start once both say yes.
+watch(
+  () => outboundOn(munin, "communicator") && access.can(AREAS.COMMUNICATOR_REVIEW),
+  (on) => on && approvals.start(),
+  { immediate: true }
+);
 onUnmounted(() => approvals.stop());
 </script>
 

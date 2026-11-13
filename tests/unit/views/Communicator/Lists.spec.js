@@ -114,7 +114,7 @@ describe("Communicator lists", () => {
     ];
     api.GET_Sequences.mockResolvedValue({ data: { results: sequences } });
     api.GET_SequenceTexts.mockResolvedValue({ data: { results: [] } });
-    api.PATCH_Sequence.mockRejectedValueOnce({ message: "conflict" });
+    api.PATCH_Sequence.mockRejectedValueOnce({ httpStatus: 409, message: "conflict" });
     const BasicCard = { props: ["title", "gap"], template: '<section v-bind="$attrs"><slot name="actions" /><slot /></section>' };
     const wrapper = mount(SequenceList, mountOptions({ RouterLink: true, TextPool: true, BasicCard }));
     await flushPromises();

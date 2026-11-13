@@ -10,7 +10,7 @@
     <template #toolbar>
       <div class="flex ai-ct flex-wrap gap-5">
         <BasicInput v-model="search" icon="search" :placeholder="$t('leads.dnc.search')" data-testid="dnc-search" @input="debouncedFetch(reload)" />
-        <MobileFilterPanel :active-count="activeFilters" :trigger-label="$t('leads.approvals.filters')">
+        <MobileFilterPanel :active-count="activeFilters" :trigger-label="$t('leads.dnc.filters')">
           <BasicSelect v-model="filters.scope" :floating-label="$t('leads.dnc.reach')" clearable :options="scopeOptions" data-testid="dnc-reach" />
           <BasicSelect v-model="filters.source" :floating-label="$t('leads.dnc.why')" clearable :options="sourceOptions" data-testid="dnc-why" />
         </MobileFilterPanel>
@@ -157,13 +157,17 @@ const filtered = computed(() => activeFilters.value > 0 || Boolean(search.value)
 const reachLabel = (scope) => t(scope === "install" ? "leads.dnc.reach_all" : "leads.dnc.reach_channel");
 const rowAttrs = (row) => ({ "data-testid": "dnc-row", "data-suppression": row.id });
 
+let latest = 0; // only the newest answer lands (typing fires overlapping requests)
+
 async function load() {
+  const request = ++latest;
   error.value = "";
   try {
     const params = { search: search.value || undefined, scope: filters.scope ?? undefined, source: filters.source ?? undefined };
-    list.value = (await GET_Suppressions(params)).data.results || [];
+    const { data } = await GET_Suppressions(params);
+    if (request === latest) list.value = data.results || [];
   } catch (err) {
-    error.value = extractApiMessage(err, t("leads.dnc.load_error"));
+    if (request === latest) error.value = extractApiMessage(err, t("leads.dnc.load_error"));
   } finally {
     loading.value = false;
   }

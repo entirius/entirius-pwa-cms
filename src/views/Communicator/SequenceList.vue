@@ -137,7 +137,8 @@ async function toggle(sequence, body) {
     await PATCH_Sequence(sequence.id, body);
   } catch (err) {
     const holder = sequences.value.find((other) => other.autostart && other.id !== sequence.id);
-    switchErrors[sequence.id] = holder && body.autostart
+    const taken = (err?.httpStatus ?? err?.response?.status) === 409;
+    switchErrors[sequence.id] = taken && holder && body.autostart
       ? t("leads.sequences.autostart_taken", { name: holder.key })
       : extractApiMessage(err, t("leads.review.error"));
   }

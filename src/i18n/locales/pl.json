@@ -4571,7 +4571,8 @@
     },
     "common": {
       "delete": "Usuń",
-      "keep": "Zostaw"
+      "keep": "Zostaw",
+      "error": "Nie udało się — spróbuj ponownie."
     },
     "settings": {
       "groups": {
@@ -4829,7 +4830,8 @@
       "check_on_list": "Na liście: {why} ({reach})",
       "check_address": "Adres: {status} — {reason}",
       "check_clear": "Nic nie blokuje tego adresu",
-      "load_error": "Nie udało się wczytać listy — spróbuj ponownie."
+      "load_error": "Nie udało się wczytać listy — spróbuj ponownie.",
+      "filters": "Filtry"
     },
     "address_status": {
       "valid": "Poprawny",
