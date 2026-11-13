@@ -4708,7 +4708,7 @@
       "col_address": "Adres",
       "col_user": "Handlowiec",
       "col_state": "Stan",
-      "col_today": "Dziś",
+      "col_today": "Wysłane dziś",
       "default": "Domyślne",
       "pause": "Wstrzymaj",
       "resume": "Wznów",
@@ -4716,7 +4716,9 @@
       "resume_title": "Wznów {address}",
       "reason": "Powód",
       "empty": "Brak kont pocztowych — poczta wychodzi przez ustawienia poczty kanału",
-      "load_error": "Nie udało się wczytać kont pocztowych — spróbuj ponownie."
+      "load_error": "Nie udało się wczytać kont pocztowych — spróbuj ponownie.",
+      "today_of": "{sent} z {cap}",
+      "today_uncapped": "{sent}, bez limitu"
     },
     "mailbox_state": {
       "active": "Aktywne",
@@ -4753,17 +4755,30 @@
       "warmup_start": "Rozgrzewka: start",
       "warmup_step": "Rozgrzewka: przyrost dziennie",
       "warmup_from": "Rozgrzewka od",
-      "today": "Dziś: {sent} z {cap}",
+      "today": "Wysłane dziś",
       "test": "Sprawdź logowanie",
-      "test_ok": "OK",
-      "test_failed": "Logowanie odrzucone ({code})",
       "needs_login": "Logowanie się nie powiodło — wpisz hasło ponownie i sprawdź",
       "paused_by": "Wstrzymane: {reason}",
       "address_hint": "Nie można zmienić po wysłaniu z niego poczty",
       "cap_hint": "0 = bez wysyłki",
       "delete": "Usuń konto pocztowe",
       "delete_confirm": "Usunąć {address}? Tej operacji nie można cofnąć.",
-      "save_error": "Nie zapisano konta pocztowego — sprawdź pola i spróbuj ponownie."
+      "save_error": "Nie zapisano konta pocztowego — sprawdź pola i spróbuj ponownie.",
+      "test_result": {
+        "ok": "Logowanie działa",
+        "not_configured": "Nieskonfigurowane",
+        "no_password": "Brak hasła",
+        "auth_failed": "Zły użytkownik lub hasło",
+        "unreachable": "Serwer nie odpowiada",
+        "failed": "Logowanie nieudane"
+      },
+      "test_next": {
+        "not_configured": "Uzupełnij część {part} formularza (host, port i użytkownik), zapisz i przetestuj ponownie.",
+        "no_password": "Wpisz hasło {part}, zapisz i przetestuj ponownie.",
+        "auth_failed": "Serwer odrzucił logowanie: sprawdź użytkownika i hasło {part}, zapisz i przetestuj ponownie.",
+        "unreachable": "Serwer {part} nie odpowiedział: sprawdź host, port i zabezpieczenie połączenia, zapisz i przetestuj ponownie.",
+        "failed": "Sprawdź ustawienia {part}, zapisz i przetestuj ponownie."
+      }
     },
     "health": {
       "title": "Kondycja wysyłki",
@@ -4776,14 +4791,14 @@
       "col_bounces": "Twarde odbicia",
       "col_optouts": "Rezygnacje",
       "col_complaints": "Skargi",
-      "col_today": "Dziś",
+      "col_today": "Wysłane dziś",
       "policy": "Automatyczne wstrzymanie",
       "enabled": "Wstrzymuj konto automatycznie",
       "window_hours": "Okno (godziny)",
       "min_sample": "Minimum wysłanych",
-      "max_bounce": "Twarde odbicia powyżej",
-      "max_optout": "Rezygnacje powyżej",
-      "max_complaint": "Skargi powyżej",
+      "max_bounce": "Twarde odbicia powyżej (%)",
+      "max_optout": "Rezygnacje powyżej (%)",
+      "max_complaint": "Skargi powyżej (%)",
       "off": "Konta nigdy nie są wstrzymywane automatycznie",
       "too_few": "za mało wiadomości do oceny",
       "log": "Dziennik wstrzymań",
@@ -4793,7 +4808,7 @@
       "col_why": "Przyczyna",
       "col_reason": "Powód",
       "col_by": "Kto",
-      "by_system": "system",
+      "by_system": "Automatycznie",
       "trigger": {
         "bounce": "Twarde odbicia",
         "optout": "Rezygnacje",

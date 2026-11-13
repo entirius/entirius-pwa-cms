@@ -50,7 +50,7 @@ describe("Leads → Settings → Mailboxes", () => {
   it("lists every mailbox with its state, today's count and Pause or Resume", async () => {
     const wrapper = await mounted(Mailboxes);
     expect(wrapper.findAll('[data-testid="mailbox-row"]')).toHaveLength(2);
-    expect(byTestid(wrapper, "mailbox-today").text()).toBe("12 / 40");
+    expect(byTestid(wrapper, "mailbox-today").text()).toBe("12 of 40");
     expect(byTestid(wrapper, "mailbox-pause").exists()).toBe(true);
     expect(byTestid(wrapper, "mailbox-resume").exists()).toBe(true);
   });
@@ -91,6 +91,20 @@ describe("Leads → Settings → Mailboxes", () => {
     await byTestid(wrapper, "mailbox-save").trigger("click");
     await flushPromises();
     expect(api.PATCH_Mailbox.mock.calls[1][1].smtp_password).toBe("typed-value");
+  });
+
+  // Acceptance C1: every result code in words with the next step; no raw code, never "refused" for an unreached server.
+  it("test login says each result in words and what to do next", async () => {
+    api.POST_MailboxTest.mockResolvedValue({ data: { smtp: "unreachable", imap: "not_configured" } });
+    const wrapper = await mounted(MailboxEdit);
+    await byTestid(wrapper, "mailbox-test").trigger("click");
+    await flushPromises();
+    const smtp = wrapper.findComponent('[data-testid="mailbox-test-smtp"]');
+    expect([smtp.props("tone"), smtp.props("label")]).toEqual(["negative", "Server not reached"]);
+    expect(wrapper.findComponent('[data-testid="mailbox-test-imap"]').props("label")).toBe("Not set up");
+    expect(byTestid(wrapper, "mailbox-test-smtp-next").text()).toBe("The SMTP server did not answer: check the host, the port and the security setting, save, then test again.");
+    expect(byTestid(wrapper, "mailbox-test-imap-next").text()).toContain("Fill in the IMAP part");
+    expect(byTestid(wrapper, "mailbox-test-result").text()).not.toMatch(/unreachable|not_configured|refused/i);
   });
 
   it("test login shows both results; a 404 shows not found", async () => {

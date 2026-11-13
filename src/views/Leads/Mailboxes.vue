@@ -20,8 +20,8 @@
       @row-click="edit"
     >
       <template #cell-address="{ row }">
-        <span class="flex-column">
-          <span class="flex ai-ct gap-2">
+        <span class="mailboxes__address flex-column">
+          <span class="flex ai-ct flex-wrap gap-2">
             {{ row.address }}
             <StatusBadge v-if="row.is_default" tone="neutral" size="sm" :dot="false" :label="$t('leads.mailboxes.default')" />
           </span>
@@ -55,7 +55,7 @@ import { GET_Health, GET_Mailboxes } from "@/api/communicator/api";
 import { GET_AssignableUsers } from "@/api/leads/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { mailboxStateLabel } from "@/utils/leadsLabels";
-import { MAILBOX_TONES, mailboxState } from "@/utils/leadsOutbound";
+import { MAILBOX_TONES, mailboxState, sentToday } from "@/utils/leadsOutbound";
 import MailboxReasonDialog from "./MailboxReasonDialog.vue";
 
 // Settings → Mailboxes: the addresses mail leaves from, with today's count against today's cap (from the health
@@ -79,7 +79,7 @@ const actions = [
   { key: "add", role: "primary", label: t("leads.mailboxes.add"), testid: "mailboxes-add", onClick: () => edit({ id: "new" }) },
 ];
 
-const todayOf = (row) => (row ? `${row.sent_today} / ${row.cap_today ?? "—"}` : "—");
+const todayOf = (row) => (row ? sentToday(row.sent_today, row.cap_today) : "—");
 const rows = computed(() =>
   mailboxes.value.map((mailbox) => ({
     ...mailbox,
@@ -113,3 +113,11 @@ async function load() {
 
 onMounted(load);
 </script>
+
+<style scoped>
+/* An address breaks anywhere on a phone: the row keeps its Pause / Resume in sight, the table never scrolls sideways */
+.mailboxes__address {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+</style>

@@ -17,9 +17,12 @@
       </ReadonlyOff>
 
       <BasicCard :title="$t('leads.health.channel')" data-testid="health-channel">
-        <p class="m-0 flex flex-wrap gap-5">
+        <p class="m-0 flex flex-wrap ai-ct gap-5">
           <span>{{ $t("leads.health.col_sent") }}: {{ channel.sent }}</span>
-          <span v-for="rate in RATES" :key="rate.key">{{ $t(rate.label) }}: {{ pct(channel[rate.key]) }}</span>
+          <span v-for="rate in RATES" :key="rate.key" class="flex ai-ct gap-2">
+            {{ $t(rate.label) }}: {{ pct(channel[rate.key]) }}
+            <StatusBadge v-if="overLimit(channel[rate.key], rate)" tone="warning" size="sm" :label="$t('leads.health.over')" data-testid="health-channel-over" />
+          </span>
         </p>
       </BasicCard>
 
@@ -80,7 +83,7 @@ import { ReadonlyOff } from "@/composables/useReadonly";
 import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
 import { formatDate } from "@/utils/format";
 import { healthTriggerLabel, mailboxStateLabel } from "@/utils/leadsLabels";
-import { MAILBOX_TONES, mailboxState } from "@/utils/leadsOutbound";
+import { MAILBOX_TONES, mailboxState, sentToday } from "@/utils/leadsOutbound";
 import MailboxReasonDialog from "./MailboxReasonDialog.vue";
 
 // Is mail getting through: the channel and each mailbox over 24 h or 7 d, the automatic-pause policy (the page's one
@@ -120,7 +123,7 @@ const channel = computed(() => report.value.channel.windows[range.value] || {});
 const rows = computed(() =>
   report.value.mailboxes.map((mailbox) => {
     const metrics = mailbox.windows[range.value];
-    const today = `${mailbox.sent_today} / ${mailbox.cap_today ?? "—"}`;
+    const today = sentToday(mailbox.sent_today, mailbox.cap_today);
     const stateKey = mailboxState(mailbox, mailbox.cap_today);
     return { ...mailbox, metrics, today, stateKey, sent: metrics.sent, tooFew: metrics.sent < policy.min_sample };
   })
@@ -146,17 +149,23 @@ const actions = computed(() => [
 ]);
 
 const pct = (value) => (value === null || value === undefined ? "—" : `${value} %`);
-const over = (row, rate) => !row.tooFew && row.metrics[rate.key] !== null && row.metrics[rate.key] > Number(policy[rate.limit]);
+// A rate over its limit is flagged even below the minimum sample (the automatic pause waits for it, a person need not);
+// the muted figure and its title still say the sample is small.
+const overLimit = (value, rate) => value !== null && value !== undefined && value > Number(policy[rate.limit]);
+const over = (row, rate) => overLimit(row.metrics[rate.key], rate);
 const rowAttrs = (row) => ({ "data-testid": "health-row", "data-mailbox": row.id });
 const fieldError = (field) => formErrors.getFieldError(field)?.msg || "";
 const addressOf = (id) => report.value.mailboxes.find((mailbox) => mailbox.id === id)?.address || `#${id}`;
+
+// Who paused or resumed: the person's name; an automatic pause has no user. An older backend sends no name: "—".
+const byOf = (entry) => (entry.user_id ? entry.user_name || "—" : t("leads.health.by_system"));
 
 const logRow = (entry) => ({
   ...entry,
   when: formatDate(entry.created_at),
   mailbox: addressOf(entry.mailbox_id),
   why: healthTriggerLabel(entry.trigger),
-  by: entry.user_id ? `#${entry.user_id}` : t("leads.health.by_system"),
+  by: byOf(entry),
 });
 
 async function loadLog(page = 1) {

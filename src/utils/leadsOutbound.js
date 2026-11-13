@@ -42,6 +42,10 @@ export function mailboxState(mailbox, capToday = null) {
 const LEGAL_FOOTER = "the message requires a legal footer and has none";
 const MAILBOX = /^the mailbox (\S+) cannot send \((\w+)\)$/;
 
+// Today's sending of a mailbox in words: "11 of 40 sent", or "11 sent, no cap" when the mailbox has no daily cap.
+export const sentToday = (sent, cap) =>
+  cap === null || cap === undefined ? t("leads.mailboxes.today_uncapped", { sent }) : t("leads.mailboxes.today_of", { sent, cap });
+
 export function problemText(blocker) {
   if (blocker === LEGAL_FOOTER) return t("leads.problem.legal_footer");
   const match = MAILBOX.exec(blocker || "");

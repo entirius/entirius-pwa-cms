@@ -19,6 +19,16 @@
     <div v-else class="flex-column gap-8">
       <p v-if="stateKey === 'needs_login'" class="t-negative m-0" role="alert">{{ $t("leads.mailbox.needs_login") }}</p>
       <p v-if="error" class="t-negative m-0" role="alert" data-testid="mailbox-error">{{ error }}</p>
+      <!-- the test result opens the form: Test login sits in the header, its answer right under it -->
+      <BasicCard v-if="test" :title="$t('leads.mailbox.login_test')" data-testid="mailbox-test-result">
+        <ul class="mailbox-test m-0 flex-column gap-3">
+          <li v-for="part in TEST_PARTS" :key="part" class="flex ai-ct flex-wrap gap-3">
+            <span class="fw-600">{{ part.toUpperCase() }}</span>
+            <StatusBadge v-bind="testBadge(test[part])" :data-testid="`mailbox-test-${part}`" />
+            <span v-if="test[part] !== 'ok'" :data-testid="`mailbox-test-${part}-next`">{{ testAdvice(part, test[part]) }}</span>
+          </li>
+        </ul>
+      </BasicCard>
 
       <BasicCard :title="$t('leads.mailbox.sender')">
         <div class="form-grid">
@@ -99,12 +109,6 @@
         </div>
       </BasicCard>
 
-      <BasicCard v-if="test" :title="$t('leads.mailbox.login_test')">
-        <div class="flex ai-ct flex-wrap gap-5">
-          <span class="flex ai-ct gap-2">SMTP <StatusBadge v-bind="testBadge(test.smtp)" data-testid="mailbox-test-smtp" /></span>
-          <span class="flex ai-ct gap-2">IMAP <StatusBadge v-bind="testBadge(test.imap)" data-testid="mailbox-test-imap" /></span>
-        </div>
-      </BasicCard>
     </div>
 
     <MailboxReasonDialog :mailbox="reasonFor" @close="reasonFor = null" @done="refreshState" />
@@ -132,7 +136,7 @@ import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
 import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
 import { useNotifyStore } from "@/stores/notify";
 import { mailboxStateLabel } from "@/utils/leadsLabels";
-import { MAILBOX_TONES, mailboxState } from "@/utils/leadsOutbound";
+import { MAILBOX_TONES, mailboxState, sentToday } from "@/utils/leadsOutbound";
 import MailboxReasonDialog from "./MailboxReasonDialog.vue";
 
 // One mailbox (`:id` = "new" adds one): sender, SMTP, IMAP, caps and warm-up. Passwords are write-only: the API says
@@ -170,7 +174,7 @@ const stateKey = computed(() => (stored.value ? mailboxState(stored.value, healt
 const stateText = computed(() =>
   stored.value?.paused_at ? t("leads.mailbox.paused_by", { reason: stored.value.pause_reason }) : mailboxStateLabel(stateKey.value)
 );
-const today = computed(() => health.value && t("leads.mailbox.today", { sent: health.value.sent_today, cap: health.value.cap_today ?? "—" }));
+const today = computed(() => health.value && `${t("leads.mailbox.today")}: ${sentToday(health.value.sent_today, health.value.cap_today)}`);
 const securityOptions = [
   { value: "starttls", label: "STARTTLS" },
   { value: "ssl", label: "SSL" },
@@ -191,10 +195,16 @@ const actions = computed(() => {
 
 const fieldError = (field) => formErrors.getFieldError(field)?.msg || "";
 const savedHint = (kind) => (stored.value?.[`${kind}_password_set`] ? t("leads.mailbox.password_saved") : "");
-const testBadge = (code) =>
-  code === "ok"
-    ? { tone: "positive", label: t("leads.mailbox.test_ok") }
-    : { tone: "negative", label: t("leads.mailbox.test_failed", { code }) };
+// A login test answers per part: ok, not_configured, no_password, auth_failed or unreachable — each in words, with
+// what to do next; an unknown code reads as a failure with the generic advice.
+const TEST_PARTS = ["smtp", "imap"];
+const TEST_CODES = ["ok", "not_configured", "no_password", "auth_failed", "unreachable"];
+const testCode = (code) => (TEST_CODES.includes(code) ? code : "failed");
+const testBadge = (code) => ({
+  tone: { ok: "positive", not_configured: "neutral" }[testCode(code)] || "negative",
+  label: t(`leads.mailbox.test_result.${testCode(code)}`),
+});
+const testAdvice = (part, code) => t(`leads.mailbox.test_next.${testCode(code)}`, { part: part.toUpperCase() });
 
 function fill(mailbox) {
   stored.value = mailbox.id ? mailbox : null;
@@ -285,3 +295,10 @@ async function remove() {
 
 onMounted(load);
 </script>
+
+<style scoped>
+.mailbox-test {
+  padding: 0;
+  list-style: none;
+}
+</style>

@@ -4709,7 +4709,7 @@
       "col_address": "Address",
       "col_user": "Salesperson",
       "col_state": "State",
-      "col_today": "Today",
+      "col_today": "Sent today",
       "default": "Default",
       "pause": "Pause",
       "resume": "Resume",
@@ -4717,7 +4717,9 @@
       "resume_title": "Resume {address}",
       "reason": "Reason",
       "empty": "No mailbox yet — mail leaves through the channel's mail settings",
-      "load_error": "The mailboxes could not be loaded — try again."
+      "load_error": "The mailboxes could not be loaded — try again.",
+      "today_of": "{sent} of {cap}",
+      "today_uncapped": "{sent}, no cap"
     },
     "mailbox_state": {
       "active": "Active",
@@ -4754,17 +4756,30 @@
       "warmup_start": "Warm-up start",
       "warmup_step": "Warm-up step per day",
       "warmup_from": "Warm-up from",
-      "today": "Today: {sent} of {cap}",
+      "today": "Sent today",
       "test": "Test login",
-      "test_ok": "OK",
-      "test_failed": "Login refused ({code})",
       "needs_login": "The login failed — enter the password again and test it",
       "paused_by": "Paused: {reason}",
       "address_hint": "Cannot change after mails were sent from it",
       "cap_hint": "0 = no mail",
       "delete": "Delete mailbox",
       "delete_confirm": "Delete {address}? This cannot be undone.",
-      "save_error": "The mailbox was not saved — check the fields and try again."
+      "save_error": "The mailbox was not saved — check the fields and try again.",
+      "test_result": {
+        "ok": "Login works",
+        "not_configured": "Not set up",
+        "no_password": "No password",
+        "auth_failed": "Wrong user or password",
+        "unreachable": "Server not reached",
+        "failed": "Login failed"
+      },
+      "test_next": {
+        "not_configured": "Fill in the {part} part of the form (host, port and user), save, then test again.",
+        "no_password": "Enter the {part} password, save, then test again.",
+        "auth_failed": "The server refused the login: check the {part} user and password, save, then test again.",
+        "unreachable": "The {part} server did not answer: check the host, the port and the security setting, save, then test again.",
+        "failed": "Check the {part} settings, save, then test again."
+      }
     },
     "health": {
       "title": "Sending health",
@@ -4777,14 +4792,14 @@
       "col_bounces": "Hard bounces",
       "col_optouts": "Opt-outs",
       "col_complaints": "Complaints",
-      "col_today": "Today",
+      "col_today": "Sent today",
       "policy": "Automatic pause",
       "enabled": "Pause a mailbox automatically",
       "window_hours": "Window (hours)",
       "min_sample": "Minimum sent",
-      "max_bounce": "Hard bounces above",
-      "max_optout": "Opt-outs above",
-      "max_complaint": "Complaints above",
+      "max_bounce": "Hard bounces above (%)",
+      "max_optout": "Opt-outs above (%)",
+      "max_complaint": "Complaints above (%)",
       "off": "Mailboxes are never paused automatically",
       "too_few": "too few mails to judge",
       "log": "Pause log",
@@ -4794,7 +4809,7 @@
       "col_why": "Why",
       "col_reason": "Reason",
       "col_by": "By",
-      "by_system": "system",
+      "by_system": "Automatic",
       "trigger": {
         "bounce": "Hard bounces",
         "optout": "Opt-outs",

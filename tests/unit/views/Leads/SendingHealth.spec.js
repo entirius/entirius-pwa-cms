@@ -39,13 +39,29 @@ describe("Leads → Settings → Sending health", () => {
     api.GET_HealthLog.mockResolvedValue({ data: { next: "p2", results: [{ id: 1, mailbox_id: 2, action: "pause", trigger: "bounce", reason: "3.1 %", user_id: null, created_at: "2026-11-12T08:00:00Z" }] } });
   });
 
-  it("a rate over its limit says so; below the minimum sample it is never judged", async () => {
+  // Acceptance CM8: a rate over its limit is flagged, also below the minimum sample (muted, with the sample note).
+  it("a rate over its limit says so, also below the minimum sample; the channel too", async () => {
     const wrapper = await mounted();
     expect(byTestid(wrapper, "loader").exists()).toBe(false);
     expect(wrapper.findAll('[data-testid="health-row"]')).toHaveLength(2);
-    const over = wrapper.findAll('[data-testid="health-over"]');
-    expect(over).toHaveLength(1);
+    expect(wrapper.findAll('[data-testid="health-over"]')).toHaveLength(2);
+    expect(byTestid(wrapper, "health-channel-over").exists()).toBe(false);
     expect(byTestid(wrapper, "health-resume").exists()).toBe(true);
+    api.GET_Health.mockResolvedValueOnce({ data: { ...report, channel: { windows: windows(4, 25) } } });
+    expect((await mounted()).findAll('[data-testid="health-channel-over"]')).toHaveLength(1);
+  });
+
+  // Acceptance C2: the log names the person, "Automatic" for an automatic pause, "—" from a backend without names.
+  it("the pause log says who, never an id", async () => {
+    const entry = { mailbox_id: 2, action: "pause", trigger: "manual", reason: "list", created_at: "2026-11-12T08:00:00Z" };
+    api.GET_HealthLog.mockResolvedValue({
+      data: { next: null, results: [{ ...entry, id: 1, user_id: 9103, user_name: "Anna Kowalska" }, { ...entry, id: 2, user_id: null, user_name: "" }, { ...entry, id: 3, user_id: 9103 }] },
+    });
+    const rows = (await mounted()).findAll('[data-testid="health-log-row"]').map((row) => row.text());
+    expect(rows[0]).toContain("Anna Kowalska");
+    expect(rows[1]).toContain("Automatic");
+    expect(rows[2]).toContain("—");
+    expect(rows.join(" ")).not.toContain("9103");
   });
 
   it("saves the policy and loads more of the log", async () => {
