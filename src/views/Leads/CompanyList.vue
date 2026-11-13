@@ -184,16 +184,18 @@ const pageActions = computed(() =>
     { key: "add", label: t("leads.companies.add"), role: "primary", testid: "companies-add", onClick: () => router.push({ name: "LeadsCompanyNew" }) },
   ].filter(Boolean)
 );
+// A column nobody filled on this page is not drawn (a column of dashes names nothing).
+const filled = (read) => companies.value.some((company) => ![null, undefined, ""].includes(read(company)));
 const columns = computed(() =>
   [
     { key: "name", label: t("leads.companies.col_company"), width: "1fr", truncate: false },
     { key: "stage", label: t("leads.companies.stage"), width: "max-content" },
     crm.value && { key: "owner", label: t("leads.companies.col_owner"), priority: 2, sortable: true },
-    crm.value && { key: "score", label: t("leads.companies.col_score"), numeric: true, priority: 3, sortable: true },
+    crm.value && filled((company) => company.score_segment) && { key: "score", label: t("leads.companies.col_score"), numeric: true, priority: 3, sortable: true },
     { key: "last_activity", label: t("leads.companies.col_last_activity"), priority: 2, sortable: true },
-    crm.value && { key: "origin", label: t("leads.companies.origin"), priority: 3 },
+    crm.value && filled((company) => company.origin) && { key: "origin", label: t("leads.companies.origin"), priority: 3 },
     { key: "lead_type", label: t("leads.companies.lead_type"), priority: 3 },
-    ...(crm.value ? listFields.value.map((field) => ({ key: attrParam(field), label: field.label, priority: 3 })) : []),
+    ...(crm.value ? listFields.value.filter((field) => filled((company) => company.attributes?.[field.key])).map((field) => ({ key: attrParam(field), label: field.label, priority: 3 })) : []),
   ].filter(Boolean)
 );
 const rows = computed(() =>

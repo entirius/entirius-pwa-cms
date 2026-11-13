@@ -243,11 +243,12 @@ async function loadOutbound() {
   lastReply.value = reply.status === "fulfilled" ? reply.value : null;
 }
 
-// "Draft 2 of 3": after a send the next draft is visibly another one, not the same screen again.
+// "Draft 2 of 3" (as the Inbox lists them): after a send the next draft is visibly another one, not the same screen again.
 async function loadQueuePosition() {
   try {
     const { data } = await api.GET_ReviewList({ status: "review_required", page_size: 100 });
-    const ids = (data.results || []).map((item) => item.id);
+    // The Inbox lists the drafts newest first; the number counts the same way, so "Draft 1" is the top row.
+    const ids = (data.results || []).map((item) => item.id).reverse();
     queueTotal.value = ids.length;
     queueIndex.value = ids.indexOf(message.value.id) + 1;
   } catch {

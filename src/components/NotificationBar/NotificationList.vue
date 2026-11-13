@@ -115,6 +115,7 @@ const preview = (body) =>
 .notif-list__head {
   position: sticky;
   top: 0;
+  z-index: 1; /* the rows' buttons are positioned: without it they scroll over the header */
   display: flex;
   align-items: center;
   justify-content: space-between;

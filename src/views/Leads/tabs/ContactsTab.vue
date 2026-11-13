@@ -55,26 +55,30 @@
           {{ row.first_name }} {{ row.last_name }}
           <span v-if="row.job_title" class="t-muted fs-200">{{ row.job_title }}</span>
           <span v-if="row.email" class="contacts__email fs-200" :title="row.email">{{ row.email }}</span>
+          <span v-if="!row.anonymised_at" class="contacts__state flex ai-ct flex-wrap gap-2">
+            <StatusBadge
+              v-if="isBlocked(row)"
+              tone="warning"
+              :dot="false"
+              :label="$t('leads.contacts.suppressed')"
+              data-testid="contact-suppressed"
+            />
+            <StatusBadge v-else-if="!row.email" tone="neutral" :dot="false" :label="$t('leads.contacts.no_email')" data-testid="contact-no-email" />
+            <StatusBadge v-else tone="positive" :dot="false" :label="$t('leads.contacts.mailable')" data-testid="contact-mailable" />
+            <BasicButton v-if="outbound" variant="ghost" size="sm" :data-contact="row.id" data-testid="contact-why" @click="why = row">
+              {{ $t("leads.contact.why_no_mail") }}
+            </BasicButton>
+          </span>
         </span>
       </template>
       <template #cell-legal_basis="{ row }">
         <span class="flex flex-wrap gap-1">
           <StatusBadge v-if="row.anonymised_at" tone="neutral" :dot="false" :label="$t('leads.contacts.anonymised')" />
           <StatusBadge v-else-if="row.legal_basis" tone="info" :dot="false" :label="legalBasisLabel(row.legal_basis)" />
-          <StatusBadge
-            v-if="isSuppressed(row)"
-            tone="warning"
-            :dot="false"
-            :label="$t('leads.contacts.suppressed')"
-            data-testid="contact-suppressed"
-          />
         </span>
       </template>
       <template #cell-actions="{ row }">
         <div v-if="!row.anonymised_at" class="flex ai-ct gap-2">
-          <BasicButton v-if="outbound" variant="ghost" size="sm" :data-contact="row.id" data-testid="contact-why" @click="why = row">
-            {{ $t("leads.contact.why_no_mail") }}
-          </BasicButton>
           <BasicButton mutates variant="ghost" size="sm" :data-contact="row.id" data-testid="contact-edit" @click="open(row.id, row)">
             {{ $t("common.edit") }}
           </BasicButton>
@@ -154,7 +158,7 @@ const editing = computed(() => props.company.contacts.find((contact) => contact.
 const columns = computed(() => [
   { key: "is_primary", label: t("leads.contacts.primary"), width: "max-content" },
   { key: "name", label: t("leads.contacts.name"), width: "1fr" },
-  { key: "legal_basis", label: t("leads.contacts.legal_basis"), width: "max-content" },
+  { key: "legal_basis", label: t("leads.contacts.legal_basis"), width: "max-content", priority: 2 },
   { key: "actions", label: t("leads.contacts.actions"), actions: true },
 ]);
 // The row carries the test id, so a contact's star, Edit and Remove are found inside its row.
@@ -174,6 +178,9 @@ function isSuppressed(contact) {
     suppressed.value.has(props.company.domain)
   );
 }
+
+// Blocked = suppressed, or the company is do-not-contact; a contact without an e-mail has its own neutral state.
+const isBlocked = (contact) => isSuppressed(contact) || props.company.do_not_contact;
 
 // Leads CRM: the contact's custom fields under the built-in ones (definitions of entity `contact`).
 const contactFields = ref([]);
@@ -307,6 +314,10 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   min-width: 0;
+}
+/* the state and "Why no mail?" sit under the name: they stay on screen on a phone, where the table has no room for a column */
+.contacts__state {
+  margin-top: var(--space-1);
 }
 /* One line with an ellipsis (the full address in the title): a narrow card never breaks it letter by letter */
 .contacts__email {

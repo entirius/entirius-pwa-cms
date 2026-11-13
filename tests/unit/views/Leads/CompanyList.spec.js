@@ -94,4 +94,15 @@ describe("Leads → Companies", () => {
     expect(byTestid(old, "companies-owner-mine").exists()).toBe(false);
     expect(leads.GET_Companies).toHaveBeenLastCalledWith({ sort: "-last_activity_at", page: 1, page_size: 20 });
   });
+
+  // Acceptance m15: a column empty on every row of the page is not drawn.
+  it("hides Score and Origin when no row of the page has one", async () => {
+    const keys = (wrapper) => wrapper.findComponent('[data-testid="companies-table"]').props("columns").map((column) => column.key);
+    expect(keys(await mounted())).toContain("score");
+    leads.GET_Companies.mockResolvedValue({ data: { count: 1, results: [company(1, { score_segment: null, score_points: null, origin: "" })] } });
+    const empty = keys(await mounted());
+    expect(empty).not.toContain("score");
+    expect(empty).not.toContain("origin");
+    expect(empty).toContain("stage");
+  });
 });

@@ -2,7 +2,7 @@
   <!-- One card on a phone and at a desk (ux/screens/company-card.md); a phone opens it on History -->
   <PageLayout data-testid="company-card">
     <template #header>
-      <PageHeader :title="company?.name || $t('leads.company.title')" wrap-title :back="{ name: 'LeadsCompanies' }">
+      <PageHeader :title="company?.name || $t('leads.company.title')" wrap-title :back="goBack">
         <template v-if="company" #meta>
           <span class="t-muted" data-testid="company-domain">{{ company.domain }}</span>
           <span class="visually-hidden" data-testid="thread-company">{{ company.name }}</span>
@@ -11,26 +11,6 @@
             tone="negative"
             :label="$t('leads.company.do_not_contact')"
             data-testid="company-dnc-badge"
-          />
-          <BasicSelect
-            class="company__select"
-            :model-value="company.stage.key"
-            :options="stageOptions"
-            :floating-label="isDesktop ? $t('leads.company.stage') : undefined"
-            :aria-label="$t('leads.company.stage')"
-            :disabled="readonly"
-            data-testid="company-stage"
-            @update:model-value="transition"
-          />
-          <BasicSelect
-            class="company__select"
-            :model-value="company.lead_type"
-            :options="typeOptions"
-            :floating-label="isDesktop ? $t('leads.company.type') : undefined"
-            :aria-label="$t('leads.company.type')"
-            :disabled="readonly"
-            data-testid="company-lead-type"
-            @update:model-value="retype"
           />
         </template>
         <template v-if="company" #actions>
@@ -44,8 +24,31 @@
     <Loader v-else-if="!company" block />
     <template v-else>
       <AiToolboxHint />
-      <BasicTabs class="company__tabs" id-prefix="company" :options="tabOptions" :model-value="tab" @update:model-value="openTab" />
-      <div :id="`company-panel-${tab}`" role="tabpanel" :aria-labelledby="`company-tab-${tab}`">
+      <!-- below the title, not in its row: the labelled selects have their own line, so no label sits on the domain -->
+      <div class="company__selects" data-testid="company-selects">
+        <BasicSelect
+          class="company__select"
+          :model-value="company.stage.key"
+          :options="stageOptions"
+          :floating-label="$t('leads.company.stage')"
+          :aria-label="$t('leads.company.stage')"
+          :disabled="readonly"
+          data-testid="company-stage"
+          @update:model-value="transition"
+        />
+        <BasicSelect
+          class="company__select"
+          :model-value="company.lead_type"
+          :options="typeOptions"
+          :floating-label="$t('leads.company.type')"
+          :aria-label="$t('leads.company.type')"
+          :disabled="readonly"
+          data-testid="company-lead-type"
+          @update:model-value="retype"
+        />
+      </div>
+      <BasicTabs class="company__tabs" wrap id-prefix="company" :options="tabOptions" :model-value="tab" @update:model-value="openTab" />
+      <div :id="`company-panel-${tab}`" class="company__panel" role="tabpanel" :aria-labelledby="`company-tab-${tab}`">
         <section v-if="tab === 'overview'" class="flex-column gap-8">
           <template v-if="crm">
             <CompanyDetails :company="company" :fields="fields" @saved="company = $event" />
@@ -57,13 +60,13 @@
         <DealsTab v-else-if="tab === 'deals'" :key="company.id" :company="company" />
         <ContactsTab v-else-if="tab === 'contacts'" :company="company" @changed="reload" />
         <ReadonlyArea v-else-if="tab === 'tasks'" :area="AREAS.TODO_TASKS">
-          <TasksTab :key="company.id" :company="company" @count="taskCount = $event" />
+          <TasksTab :key="company.id" :company="company" @count="taskCount = $event" @changed="reload" />
         </ReadonlyArea>
         <section v-else class="flex-column gap-6">
-          <Thread />
+          <Thread :refresh="company" @changed="reload" />
           <ul v-if="company.activities.length" class="company__events flex-column gap-2 m-0" data-testid="company-events">
             <li v-for="activity in company.activities" :key="activity.id" data-testid="timeline-event">
-              <span class="t-muted">{{ formatTime(activity.created_at) }}</span> {{ activityText(activity.message) }}
+              <span class="t-muted">{{ formatTime(activity.created_at) }}</span> {{ activityText(activity) }}
             </li>
           </ul>
         </section>
@@ -152,6 +155,12 @@ const tabOptions = computed(() =>
     testid: `company-tab-${value}`,
   }))
 );
+
+// Back goes where the person came from (Today, an Inbox row, a deal); a card opened by URL has no such place.
+function goBack() {
+  if (typeof router.options?.history?.state?.back === "string") return router.back();
+  router.push({ name: "LeadsCompanies" });
+}
 
 function openTab(value) {
   router.replace({ query: { ...route.query, tab: value } });
@@ -250,11 +259,23 @@ watch(
 </script>
 
 <style scoped>
-.company__select {
-  width: 14rem;
+.company__selects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+  padding-top: var(--space-4);
+  margin-bottom: var(--space-4);
 }
+.company__select {
+  flex: 1 1 10rem;
+  max-width: 14rem;
+}
+/* The tabs wrap onto a second line instead of running past the edge (no hidden Deals / Intel) */
 .company__tabs {
   margin-bottom: var(--space-6);
+}
+.company__panel {
+  min-width: 0;
 }
 .company__events {
   padding-left: var(--space-4);

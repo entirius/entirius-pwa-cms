@@ -41,8 +41,13 @@
         data-testid="approvals-table"
         @select="selected = $event.map((row) => row.id)"
       >
-        <template #cell-recipient="{ row }">{{ recipientOf(row) }}</template>
-        <template #cell-channel="{ row }"><StatusBadge tone="neutral" :dot="false" :label="row.channel" /></template>
+        <template #cell-recipient="{ row }">
+          <router-link v-if="companyIdOf(row)" class="t-accent" :to="{ name: 'LeadsThread', params: { id: companyIdOf(row) } }" data-testid="approval-company">
+            {{ row.subject_label }}
+          </router-link>
+          <span v-if="companyIdOf(row)" class="t-muted"> · </span>{{ recipientName(row) }}
+        </template>
+        <template #cell-channel="{ row }"><StatusBadge tone="neutral" :dot="false" :label="channelName(row.channel)" /></template>
         <template #cell-age="{ row }">{{ ageOf(row) }}</template>
         <template #cell-problem="{ row }">
           <StatusBadge
@@ -80,10 +85,20 @@
       </FormField>
     </BasicModal>
 
+    <ConfirmDialog
+      :open="approving.open"
+      :title="approveTitle"
+      :message="$t('leads.approvals.approve_confirm')"
+      :confirm-label="$t('leads.approvals.approve')"
+      confirm-testid="approvals-approve-confirm"
+      @confirm="submitApprove"
+      @cancel="approving.open = false"
+    />
+
     <SideDrawer :visible="Boolean(drawerRow)" :title="drawerRow?.subject || ''" data-testid="approvals-drawer" @close="drawerRow = null">
       <div v-if="drawerRow" class="flex-column gap-5">
-        <p class="m-0">{{ $t("leads.approvals.other_channel", { channel: drawerRow.channel }) }}</p>
-        <p class="m-0 t-secondary">{{ recipientOf(drawerRow) }}</p>
+        <p class="m-0">{{ $t("leads.approvals.other_channel", { channel: channelName(drawerRow.channel) }) }}</p>
+        <p class="m-0 t-secondary">{{ [drawerRow.subject_label, recipientName(drawerRow)].filter(Boolean).join(" · ") }}</p>
         <p v-if="problemOf(drawerRow)" class="m-0 flex ai-ct flex-wrap gap-3">
           <StatusBadge tone="warning" :label="$t('leads.approvals.problem')" />
           <span>{{ problemOf(drawerRow) }}</span>
@@ -111,9 +126,11 @@ import { useSearchDebounce } from "@/composables/useSearchDebounce";
 import { useApprovalsStore } from "@/stores/approvals";
 import { useLeadsChannelStore } from "@/stores/leadsChannel";
 import { useNotifyStore } from "@/stores/notify";
+import { usePimChannelStore } from "@/stores/pimChannel";
 import { formatDate } from "@/utils/format";
 import { FROM_APPROVALS, problemText } from "@/utils/leadsOutbound";
 import { pluralKey } from "@/utils/plural";
+import { companyIdFromSubjectRef } from "@/utils/subjectRef";
 
 // Drafts of every channel, oldest first, each with its problem; approved or rejected in bulk (≤ 100 ids a call: a
 // larger selection goes in chunks and the answers sum into one toast). A row of the active channel opens Review; a row
@@ -128,6 +145,7 @@ const readonly = usePageReadonly();
 const notify = useNotifyStore();
 const approvalsStore = useApprovalsStore();
 const activeChannel = useLeadsChannelStore().activeChannelIdx;
+const pimChannels = usePimChannelStore();
 const { search, debouncedFetch } = useSearchDebounce();
 
 const filters = reactive({ channel: null, template_key: null, mailbox: null, min_age_hours: null });
@@ -142,6 +160,7 @@ const failed = ref({}); // id → why the last bulk call left it
 const table = ref(null);
 const drawerRow = ref(null);
 const rejecting = reactive({ open: false, ids: [], reason: "", error: "" });
+const approving = reactive({ open: false, ids: [] });
 const logOpen = ref(false);
 const logLoading = ref(false);
 const logRows = ref([]);
@@ -156,7 +175,7 @@ const columns = [
   { key: "recipient", label: t("leads.approvals.col_recipient"), width: "1fr" },
   { key: "subject", label: t("leads.approvals.col_subject"), width: "1fr", priority: 2 },
   { key: "channel", label: t("leads.approvals.channel"), width: "max-content", priority: 3 },
-  { key: "template_key", label: t("leads.approvals.template"), width: "max-content", priority: 3 },
+  { key: "template_key", label: t("leads.approvals.template"), width: "max-content", truncate: false, priority: 3 },
   { key: "age", label: t("leads.approvals.col_age"), numeric: true, priority: 2 },
   { key: "problem", label: t("leads.approvals.col_problem"), width: "max-content" },
   { key: "actions", label: "", actions: true },
@@ -169,14 +188,17 @@ const logColumns = [
 ];
 
 const optionsOf = (keys, label = (key) => key) => keys.map((value) => ({ value, label: label(value) }));
-const channelOptions = computed(() => optionsOf(Object.keys(list.value.counts?.by_channel || {})));
+const channelOptions = computed(() => optionsOf(Object.keys(list.value.counts?.by_channel || {}), channelName));
 const mailboxOptions = computed(() =>
   optionsOf(Object.keys(list.value.counts?.by_mailbox || {}).filter((key) => key !== "none"))
 );
 const templateOptions = computed(() => optionsOf([...templates.value]));
 const ageOptions = AGES.map((hours, i) => ({ value: hours, label: t(`leads.approvals.age_${["1d", "3d", "7d"][i]}`) }));
 
-const recipientOf = (row) => [row.recipient_name || row.recipient_email, row.subject_ref].filter(Boolean).join(" · ");
+const recipientName = (row) => row.recipient_name || row.recipient_email;
+// The company of the row (its card is one click away) comes from the thread's label and reference, never shown raw.
+const companyIdOf = (row) => (row.subject_label && companyIdFromSubjectRef(row.subject_ref)) || null;
+const channelName = (idx) => pimChannels.channels.find((channel) => channel.idx === idx)?.name || idx;
 const ageOf = (row) => t("leads.approvals.age_days", { n: Math.floor(row.age_hours / 24) });
 const problemOf = (row) => failed.value[row.id] || (row.blocker ? problemText(row.blocker) : "");
 const rowAttrs = (row) => ({ "data-testid": "approval-row", "data-approval": row.id, "data-channel": row.channel });
@@ -190,11 +212,15 @@ const bulkActions = [
 ];
 const drawerActions = computed(() => [
   { key: "reject", role: "danger", label: t("leads.approvals.reject"), mutates: true, testid: "approvals-drawer-reject", onClick: () => askReject([drawerRow.value.id]) },
-  { key: "approve", role: "primary", label: t("leads.approvals.approve"), mutates: true, testid: "approvals-drawer-approve", onClick: () => run("approve", [drawerRow.value.id]) },
+  { key: "approve", role: "primary", label: t("leads.approvals.approve"), mutates: true, testid: "approvals-drawer-approve", onClick: () => askApprove([drawerRow.value.id]) },
 ]);
 const rejectTitle = computed(() => {
   const count = rejecting.ids.length;
   return t(`leads.approvals.reject_title_${pluralKey(count)}`, { count });
+});
+const approveTitle = computed(() => {
+  const count = approving.ids.length;
+  return t(`leads.approvals.approve_title_${pluralKey(count)}`, { count });
 });
 const rejectActions = computed(() => [
   { key: "cancel", role: "secondary", label: t("common.cancel"), onClick: () => (rejecting.open = false) },
@@ -243,8 +269,17 @@ function clearSelection() {
 }
 
 function onBulk(key) {
-  if (key === "approve") return run("approve", selection.value);
+  if (key === "approve") return askApprove(selection.value);
   askReject(selection.value);
+}
+
+function askApprove(ids) {
+  Object.assign(approving, { open: true, ids });
+}
+
+function submitApprove() {
+  approving.open = false;
+  return run("approve", approving.ids);
 }
 
 function askReject(ids) {
@@ -277,11 +312,18 @@ async function sendChunks(action, ids, reason) {
   return result;
 }
 
+// Says only what happened: the failures join the message when there are any.
+function resultMessage(action, done, failedCount) {
+  const verb = action === "approve" ? "approved" : "rejected";
+  const doneText = t(`leads.approvals.${verb}_n_${pluralKey(done)}`, { count: done });
+  if (!failedCount) return doneText;
+  return `${doneText} ${t(`leads.approvals.not_${verb}`, { count: failedCount })}`;
+}
+
 async function run(action, ids, reason = "") {
   const { done, failed: refused } = await sendChunks(action, ids, reason);
   const count = Object.keys(refused).length;
-  const key = action === "approve" ? "leads.approvals.done" : "leads.approvals.rejected";
-  notify.spawnNotification({ msg: t(key, { done: done.length, failed: count }), type: count ? "warning" : "positive" });
+  notify.spawnNotification({ msg: resultMessage(action, done.length, count), type: count ? "warning" : "positive" });
   failed.value = refused;
   drawerRow.value = null;
   await load();
@@ -309,7 +351,10 @@ async function openLog() {
 }
 
 watch(filters, reload);
-onMounted(load);
+onMounted(() => {
+  load();
+  if (!pimChannels.channels.length) pimChannels.fetchChannels();
+});
 </script>
 
 <style scoped>

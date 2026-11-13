@@ -127,6 +127,16 @@ describe("Leads Inbox (one list: drafts, waiting mails, conversations)", () => {
     expect(wrapper.get('[data-thread="6"] [data-testid="inbox-item-name"]').text()).toBe("Example Shop 6");
   });
 
+  // M14: the latest text belongs to the newest mail (maybe one written by hand and sent), not to the draft
+  it("a draft row never shows the conversation's latest text as the draft's", async () => {
+    const wrapper = mountInbox();
+    await flushPromises();
+    await chip(wrapper, "all").trigger("click");
+    await flushPromises();
+    const [draft] = wrapper.findAll('[data-testid="inbox-item"]');
+    expect(draft.get('[data-testid="inbox-item-state"]').text()).not.toContain("Hello");
+  });
+
   it("a waiting mail says why it waits and offers Send now only while it can still move", async () => {
     applyPolicy({ sent_today: 5, daily_cap: 5 });
     server.rows = [waitingRow, base(8, { waiting: { id: 81, status: "approved", scheduled_at: inMinutes(-5), next_slot: inMinutes(-1) } })];
@@ -270,5 +280,21 @@ describe("Leads Inbox (one list: drafts, waiting mails, conversations)", () => {
     await flushPromises();
     expect(chip(wrapper, "all").classes()).toContain("on");
     expect(wrapper.get('[role="alert"]').text()).toBe("Could not load the inbox — it tries again on the next refresh");
+  });
+
+  // Acceptance M6: Today's "N replies need review" opens Replies with only the flagged conversations; a chip lifts it.
+  it("?review=1 on Replies lists only the conversations whose reply needs review", async () => {
+    const flagged = base(8, { status: "replied", replied: true, intent: "interested", needs_review: true });
+    server.rows = [repliedRow, flagged];
+    server.counts = { all: 2, draft: 0, waiting: 0, replied: 2 };
+    route.query = { filter: "replied", review: "1" };
+    const wrapper = mountInbox();
+    await flushPromises();
+    expect(ids(wrapper)).toEqual([8]);
+    await chip(wrapper, "all").trigger("click");
+    await chip(wrapper, "replied").trigger("click");
+    await flushPromises();
+    expect(ids(wrapper)).toEqual([7, 8]);
+    route.query = {};
   });
 });

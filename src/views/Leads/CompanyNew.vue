@@ -161,7 +161,7 @@ async function save() {
   try {
     if (!company.value && !(await createCompany())) return;
     if (hasContact() && !(await createContact())) return;
-    router.push(cardRoute(company.value.id));
+    router.replace(cardRoute(company.value.id)); // the card's Back skips the finished form
   } finally {
     busy.value = false;
   }

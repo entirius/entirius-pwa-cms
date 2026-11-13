@@ -25,10 +25,10 @@
     >
       <BasicButton data-testid="inbox-refresh" @click="reload">{{ $t("leads.inbox.refresh") }}</BasicButton>
     </EmptyState>
-    <p v-else-if="!loading && !rows.length" class="t-muted m-0" data-testid="inbox-empty">{{ emptySentence }}</p>
+    <p v-else-if="!loading && !shownRows.length" class="t-muted m-0" data-testid="inbox-empty">{{ emptySentence }}</p>
 
     <InboxRow
-      v-for="row in rows"
+      v-for="row in shownRows"
       :key="row.id"
       :row="row"
       :filter="filter"
@@ -72,6 +72,10 @@ const root = ref(null);
 // null until the first answer picks Drafts (when any wait) or All; Today's counters open it on a chip (`?filter=`)
 const filter = ref(FILTERS.includes(route.query?.filter) ? route.query.filter : null);
 const rows = ref([]);
+// Today's "N replies need review" opens Replies with `?review=1`: only the conversations whose newest reply is flagged.
+// Picking another chip (or Replies again) lifts it.
+const reviewOnly = ref(route.query?.review === "1");
+const shownRows = computed(() => (reviewOnly.value && filter.value === "replied" ? rows.value.filter((row) => replyOf(row)?.needs_review) : rows.value));
 const counts = ref({ all: 0, draft: 0, waiting: 0, replied: 0 });
 const page = ref(1);
 const next = ref(false);
@@ -175,6 +179,7 @@ const reload = () => loadPage(1);
 const refresh = () => loadPage(1, page.value); // the list as far as it is open, scroll untouched
 
 function setFilter(key) {
+  reviewOnly.value = false;
   if (key === filter.value) return;
   filter.value = key;
   rows.value = [];

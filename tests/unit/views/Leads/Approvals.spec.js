@@ -8,6 +8,7 @@ const api = vi.hoisted(() => ({
   GET_ApprovalsLog: vi.fn(() => Promise.resolve({ data: { results: [] } })),
 }));
 vi.mock("@/api/communicator/api", () => api);
+vi.mock("@/api/pim/api", () => ({ GET_Channels: vi.fn(() => Promise.resolve({ data: { results: [{ idx: "default-europe", name: "Europe shop" }] } })) }));
 const notify = vi.hoisted(() => ({ spawnNotification: vi.fn() }));
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => notify }));
 const push = vi.hoisted(() => vi.fn());
@@ -21,6 +22,7 @@ const row = (id, extra = {}) => ({
   channel: "default-europe",
   thread_id: id,
   subject_ref: "leads.Company:1",
+  subject_label: "Acme Ltd",
   recipient_email: `r${id}@acme.test`,
   recipient_name: "",
   template_key: "intro",
@@ -74,9 +76,10 @@ describe("Leads → Approvals", () => {
     await select(wrapper, [1, 2]);
     api.GET_Approvals.mockResolvedValue(page([row(2)]));
     await byTestid(wrapper, "approvals-approve").trigger("click");
+    await byTestid(wrapper, "approvals-approve-confirm").trigger("click");
     await flushPromises();
     expect(api.POST_ApprovalsBulk).toHaveBeenCalledWith({ action: "approve", ids: [1, 2], reason: "" });
-    expect(notify.spawnNotification).toHaveBeenCalledWith({ msg: "Approved: 1, not approved: 1", type: "warning" });
+    expect(notify.spawnNotification).toHaveBeenCalledWith({ msg: "1 draft approved. 1 not approved.", type: "warning" });
     expect(byTestid(wrapper, "approval-problem").attributes("title")).toBe("mailbox paused");
     expect(byTestid(wrapper, "approvals-bulk").exists()).toBe(true);
   });
@@ -88,8 +91,44 @@ describe("Leads → Approvals", () => {
     const wrapper = await mountApprovals();
     await select(wrapper, many.map((item) => item.id));
     await byTestid(wrapper, "approvals-approve").trigger("click");
+    await byTestid(wrapper, "approvals-approve-confirm").trigger("click");
     await flushPromises();
     expect(api.POST_ApprovalsBulk.mock.calls.map(([body]) => body.ids.length)).toEqual([100, 50]);
+  });
+
+  it("approve asks first (Approve N drafts?) and sends only after the confirm", async () => {
+    api.POST_ApprovalsBulk.mockResolvedValue({ data: { done: [1, 2], failed: {} } });
+    const wrapper = await mountApprovals();
+    await select(wrapper, [1, 2]);
+    await byTestid(wrapper, "approvals-approve").trigger("click");
+    expect(wrapper.text()).toContain("Approve 2 drafts?");
+    expect(api.POST_ApprovalsBulk).not.toHaveBeenCalled();
+    await byTestid(wrapper, "approvals-approve-confirm").trigger("click");
+    await flushPromises();
+    expect(api.POST_ApprovalsBulk).toHaveBeenCalledTimes(1);
+    expect(notify.spawnNotification).toHaveBeenCalledWith({ msg: "2 drafts approved.", type: "positive" });
+  });
+
+  it("the toast of a reject says only what happened", async () => {
+    api.POST_ApprovalsBulk.mockResolvedValue({ data: { done: [1], failed: {} } });
+    const wrapper = await mountApprovals();
+    await select(wrapper, [1]);
+    await byTestid(wrapper, "approvals-reject").trigger("click");
+    wrapper.findComponent('[data-testid="approvals-reject-reason"]').vm.$emit("update:modelValue", "no");
+    await byTestid(wrapper, "approvals-reject-submit").trigger("click");
+    await flushPromises();
+    expect(notify.spawnNotification).toHaveBeenCalledWith({ msg: "1 draft rejected.", type: "positive" });
+  });
+
+  it("shows the company as a link to its card and the channel by name, never the reference", async () => {
+    const wrapper = await mountApprovals();
+    const link = wrapper.find('[data-testid="approval-company"]');
+    expect(link.text()).toBe("Acme Ltd");
+    expect(wrapper.findComponent({ name: "RouterLink" }).props("to")).toEqual({ name: "LeadsThread", params: { id: 1 } });
+    const table = wrapper.find('[data-testid="approvals-table"]');
+    expect(table.text()).not.toContain("leads.Company");
+    expect(table.text()).toContain("Europe shop");
+    expect(table.text()).toContain("intro");
   });
 
   it("reject asks for a reason first", async () => {

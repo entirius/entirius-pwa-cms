@@ -13,10 +13,11 @@ const leads = vi.hoisted(() => ({
   GET_Attributes: vi.fn(() => Promise.resolve({ data: { results: [] } })),
 }));
 const route = vi.hoisted(() => ({ name: "LeadsThread", params: { id: "7" }, query: {} }));
+const router = vi.hoisted(() => ({ replace: vi.fn(), push: vi.fn(), back: vi.fn(), options: { history: { state: { back: null } } } }));
 vi.mock("vue-router", async () => {
   const { reactive } = await import("vue");
   const live = reactive(route); // a changed params.id reaches the card's watcher
-  return { useRoute: () => live, useRouter: () => ({ replace: vi.fn() }) };
+  return { useRoute: () => live, useRouter: () => router };
 });
 const desktop = vi.hoisted(() => ({ on: true }));
 vi.mock("@/composables/useIsDesktop", async () => {
@@ -178,6 +179,31 @@ describe("Company card header", () => {
     expect(type.props("floatingLabel")).toBe("leads.company.type");
     expect(type.props("options").map((option) => option.value)).toEqual(["UNKNOWN", "RETAILER"]);
     expect(wrapper.get('[data-testid="thread-company"]').text()).toBe("Shop");
+  });
+
+  // Acceptance M2: the selects are labelled on a phone too; B8: they sit under the title, never in the domain's row.
+  it("labels the selects on a phone and keeps them out of the header", async () => {
+    leads.GET_Company.mockResolvedValue({ data: { ...company(), name: "Shop", lead_type: "RETAILER", stage: { key: "new" }, activities: [] } });
+    desktop.on = false;
+    const wrapper = await mountCard();
+    desktop.on = true;
+    expect(control(wrapper, "company-stage").props("floatingLabel")).toBe("leads.company.stage");
+    expect(wrapper.find("header").find('[data-testid="company-stage"]').exists()).toBe(false);
+    expect(wrapper.get('[data-testid="company-selects"]').find('[data-testid="company-lead-type"]').exists()).toBe(true);
+    wrapper.unmount(); // a card left open would follow the route changes of the next specs
+  });
+
+  // Acceptance M4: Back returns to where the card was opened from; Companies when there is no such place.
+  it("Back goes to the previous place, else to Companies", async () => {
+    const wrapper = await mountCard();
+    const back = () => wrapper.findComponent({ name: "PageHeader" }).props("back")();
+    router.options.history.state.back = "/leads";
+    back();
+    expect(router.back).toHaveBeenCalledTimes(1);
+    expect(router.push).not.toHaveBeenCalled();
+    router.options.history.state.back = null;
+    back();
+    expect(router.push).toHaveBeenCalledWith({ name: "LeadsCompanies" });
   });
 
   it("a stage pick transitions, a type pick patches the company", async () => {
@@ -419,6 +445,8 @@ describe("Leads Communicate dialog", () => {
     await flushPromises();
     expect(leads.POST_Communicate).toHaveBeenCalledWith(7, { template_key: "cold", contact_id: 2 });
     expect(has(wrapper, "communicate-modal")).toBe(false);
+    // M13: the card reloads, so History shows the new draft line without a page reload
+    expect(wrapper.emitted("changed")).toHaveLength(1);
   });
 
   it("a failed template list shows its message in the dialog; every open starts with no list and no error", async () => {

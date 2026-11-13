@@ -405,10 +405,10 @@ describe("Leads Review", () => {
 
   // FIX-17 item 4: after a send the next draft is visibly another one.
   it("the draft header says where it sits in the review queue", async () => {
-    api.GET_ReviewList.mockResolvedValue({ data: { results: [{ id: 4 }, { id: 5 }, { id: 6 }] } });
+    api.GET_ReviewList.mockResolvedValue({ data: { results: [{ id: 4 }, { id: 6 }, { id: 5 }] } });
     const wrapper = await mountReview();
     expect(api.GET_ReviewList).toHaveBeenCalledWith({ status: "review_required", page_size: 100 });
-    expect(wrapper.get('[data-testid="review-position"]').text()).toContain('{"index":2,"count":3}');
+    expect(wrapper.get('[data-testid="review-position"]').text()).toContain('{"index":1,"count":3}'); // the API lists oldest first, the Inbox newest first: 5 is the newest
   });
 
   it("the disabled Rewrite button renders disabled", async () => {

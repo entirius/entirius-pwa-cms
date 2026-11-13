@@ -265,4 +265,16 @@ describe("Company card — Contacts tab", () => {
     await flushPromises();
     expect(leads.GET_Mailable).toHaveBeenCalledWith(7, 1);
   });
+
+  // Acceptance M11: every contact says whether it can be mailed; "Why no mail?" sits with the name (on screen at 390).
+  it("a contact shows Can be mailed or Blocked", async () => {
+    const wrapper = await mountTab();
+    const [anna, marek, anon] = rows(wrapper);
+    expect(anna.find('[data-testid="contact-mailable"]').exists()).toBe(true);
+    expect(marek.find('[data-testid="contact-no-email"]').exists()).toBe(true); // no email: a neutral state, not "Blocked"
+    expect(marek.find('[data-testid="contact-suppressed"]').exists()).toBe(false);
+    expect(anon.find('[data-testid="contact-mailable"]').exists()).toBe(false);
+    expect(anon.find('[data-testid="contact-suppressed"]').exists()).toBe(false);
+    expect(anna.find('[data-testid="contact-why"]').exists()).toBe(false); // not outbound here
+  });
 });
