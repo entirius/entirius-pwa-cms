@@ -541,7 +541,8 @@
     "no": "Nie",
     "selected_count": "Wybrano: {count}",
     "breadcrumb": "Ścieżka nawigacji",
-    "color_picker": "Wybierz kolor"
+    "color_picker": "Wybierz kolor",
+    "pick_date": "Wybierz datę"
   },
   "notifications": {
     "doc_saved": "Dokument zapisany!",
@@ -5182,7 +5183,6 @@
       "origin_all": "Wszystkie",
       "origin_none": "(brak)",
       "period": "Okres",
-      "stages": "Etapy",
       "col_stage": "Etap",
       "col_now": "Teraz",
       "col_entered": "Weszło",
@@ -5197,7 +5197,10 @@
       "empty": "Brak danych",
       "days": "{n} d",
       "hours": "{n} godz.",
-      "loading": "Ładowanie raportu…"
+      "loading": "Ładowanie raportu…",
+      "funnel": "Lejek",
+      "funnel_help": "Gdzie odpadają firmy: jaka część firm, które weszły w pierwszy etap w tym okresie, weszła w każdy kolejny.",
+      "col_reached": "Z pierwszego etapu"
     },
     "deals": {
       "title": "Transakcje",

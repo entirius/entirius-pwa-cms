@@ -39,7 +39,7 @@ import CustomFieldsSettings from "@/views/Leads/CustomFieldsSettings.vue";
 import Reports from "@/views/Leads/Reports.vue";
 import Rules from "@/views/Leads/Rules.vue";
 import Scoring from "@/views/Leads/Scoring.vue";
-import { durationLabel } from "@/views/Leads/reports";
+import { durationLabel, reachedLabel } from "@/views/Leads/reports";
 import { setControl } from "./leadsFrame";
 import { byTestid, mountOutbound } from "./outboundFrame";
 import { crmStubs } from "./crmFrame";
@@ -182,6 +182,9 @@ describe("Leads → Reports", () => {
     });
     const wrapper = await mounted(Reports, { area: "leads.companies" });
     expect(wrapper.findAll('[data-testid="reports-stage-row"]')).toHaveLength(2);
+    // Acceptance CM16: the funnel says how many of the first stage's companies reached each stage
+    expect(byTestid(wrapper, "reports-funnel").attributes("data-title")).toBe("leads.reports.funnel");
+    expect(wrapper.findAll('[data-testid="reports-stage-row"]')[1].text()).toContain("69 %");
     expect(byTestid(wrapper, "reports-move-row").text()).toContain("New → Contacted");
     expect(byTestid(wrapper, "reports-origins").text()).toContain("(none)");
     setControl(wrapper, "reports-origin", "fair");
@@ -194,5 +197,11 @@ describe("Leads → Reports", () => {
     expect(durationLabel(2.5 * 86400)).toBe("2.5 d");
     expect(durationLabel(12 * 86400)).toBe("12 d");
     expect(durationLabel(null)).toBe("—");
+  });
+
+  it("the funnel share: of the first stage, rounded; none in the first stage = —", () => {
+    expect(reachedLabel(55, 80)).toBe("69 %");
+    expect(reachedLabel(80, 80)).toBe("100 %");
+    expect(reachedLabel(3, 0)).toBe("—");
   });
 });

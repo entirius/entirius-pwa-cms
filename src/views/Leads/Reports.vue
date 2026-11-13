@@ -15,7 +15,8 @@
     <p v-else-if="error && !report" class="t-negative m-0" role="alert" data-testid="reports-error">{{ error }}</p>
     <EmptyState v-else-if="!report || !hasCompanies" icon="empty" size="md" :title="$t('leads.reports.empty')" data-testid="reports-empty" />
     <div v-else class="flex-column gap-8">
-      <BasicCard :title="$t('leads.reports.stages')">
+      <BasicCard :title="$t('leads.reports.funnel')" data-testid="reports-funnel">
+        <p class="t-secondary m-0">{{ $t("leads.reports.funnel_help") }}</p>
         <DataTable :columns="stageColumns" :rows="stageRows" row-key="key" :row-attrs="stageAttrs" data-testid="reports-stages" />
       </BasicCard>
       <BasicCard :title="$t('leads.reports.moves')">
@@ -34,9 +35,9 @@ import { t } from "@/i18n";
 import { GET_Funnel } from "@/api/leads/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { useNotifyStore } from "@/stores/notify";
-import { durationLabel } from "./reports";
+import { durationLabel, reachedLabel } from "./reports";
 
-// Reports (ux/screens/reports.md): the funnel as three tables — stages now / entered / left / mean time, the moves
+// Reports (ux/screens/reports.md): the funnel — stages now / entered / share of the first stage / left / mean time, the moves
 // between stages, companies per origin. Origin and period reload it; the default period is the last 30 days.
 const DAY_MS = 86400000;
 const RANGE_SEPARATOR = " – "; // fixed, so the Polish locale (" do ") never changes what is parsed
@@ -60,6 +61,7 @@ const stageColumns = [
   { key: "label", label: t("leads.reports.col_stage"), width: "1fr" },
   { key: "current", label: t("leads.reports.col_now"), numeric: true },
   { key: "entered", label: t("leads.reports.col_entered"), numeric: true },
+  { key: "reached", label: t("leads.reports.col_reached"), numeric: true },
   { key: "left", label: t("leads.reports.col_left"), numeric: true },
   { key: "mean", label: t("leads.reports.col_mean"), numeric: true },
 ];
@@ -72,7 +74,10 @@ const originColumns = [
   { key: "label", label: t("leads.reports.origin"), width: "1fr" },
   { key: "companies", label: t("leads.reports.col_companies"), numeric: true },
 ];
-const stageRows = computed(() => report.value.stages.map((stage) => ({ ...stage, mean: durationLabel(stage.mean_seconds) })));
+const stageRows = computed(() => {
+  const first = report.value.stages[0]?.entered;
+  return report.value.stages.map((stage) => ({ ...stage, reached: reachedLabel(stage.entered, first), mean: durationLabel(stage.mean_seconds) }));
+});
 const stageAttrs = (row) => ({ "data-testid": "reports-stage-row", "data-stage": row.key });
 const moveRows = computed(() =>
   report.value.transitions.map((move) => ({

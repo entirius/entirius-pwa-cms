@@ -541,7 +541,8 @@
     "no": "No",
     "selected_count": "Selected: {count}",
     "breadcrumb": "Breadcrumb",
-    "color_picker": "Pick a colour"
+    "color_picker": "Pick a colour",
+    "pick_date": "Pick a date"
   },
   "notifications": {
     "doc_saved": "Document saved!",
@@ -5183,7 +5184,6 @@
       "origin_all": "All",
       "origin_none": "(none)",
       "period": "Period",
-      "stages": "Stages",
       "col_stage": "Stage",
       "col_now": "Now",
       "col_entered": "Entered",
@@ -5198,7 +5198,10 @@
       "empty": "No data yet",
       "days": "{n} d",
       "hours": "{n} h",
-      "loading": "Loading the report…"
+      "loading": "Loading the report…",
+      "funnel": "Funnel",
+      "funnel_help": "Where companies drop out: of the companies that entered the first stage in the period, the share that entered each next one.",
+      "col_reached": "Of the first stage"
     },
     "deals": {
       "title": "Deals",

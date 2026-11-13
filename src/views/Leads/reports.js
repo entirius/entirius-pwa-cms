@@ -8,3 +8,10 @@ export function durationLabel(seconds) {
   const days = hours / 24;
   return t("leads.reports.days", { n: days < 10 ? Math.round(days * 10) / 10 : Math.round(days) });
 }
+
+// The funnel: the companies that entered a stage as a share of those that entered the first one ("40 %"); "—" when
+// the first stage had none in the period.
+export function reachedLabel(entered, first) {
+  if (!first) return "—";
+  return `${Math.round((entered / first) * 100)} %`;
+}

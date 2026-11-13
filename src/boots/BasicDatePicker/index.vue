@@ -10,7 +10,7 @@
         @click="visible ? close() : open()"
       >
         <FontAwesomeIcon :icon="ICONS.calendar" class="basic-date-picker__icon" aria-hidden="true" />
-        <span :class="{ 't-muted': !current }">{{ current || $t("routes.set_new") }}</span>
+        <span :class="{ 't-muted': !current }">{{ shown || $t("common.pick_date") }}</span>
       </button>
       <div v-show="visible" ref="wrapperEl" class="picker-wrapper bg-inherit bg-base" :style="fixedStyle">
         <!-- flatpickr's element: its inline calendar lands right after it, inside the wrapper -->
@@ -45,6 +45,7 @@ import flatpickr from "flatpickr";
 import { Polish } from "flatpickr/dist/l10n/pl.js";
 import { english } from "flatpickr/dist/l10n/default.js";
 import { getLang } from "@/i18n";
+import { formatDay } from "@/utils/format";
 import { ICONS } from "@/boots/Icons/icons";
 import { useControlAttrs } from "@/boots/FormField/useControlAttrs";
 
@@ -63,6 +64,10 @@ const triggerEl = ref(null);
 const wrapperEl = ref(null);
 const fixedStyle = ref(null);
 const current = computed(() => props.modelValue ?? "");
+// The trigger reads as people read dates (UI rules § Values): every ISO day of the value in the UI locale ("14.10.2026
+// – 13.11.2026", a time stays as it is); the model keeps flatpickr's string. The day is read as local midnight.
+const ISO_DAY = /\b(\d{4}-\d{2}-\d{2})\b/g;
+const shown = computed(() => current.value.replace(ISO_DAY, (day) => formatDay(`${day}T00:00`) || day));
 let instance = null;
 
 function onChange(dates, dateString) {
