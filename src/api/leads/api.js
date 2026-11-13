@@ -117,3 +117,39 @@ export const PATCH_Rule = (id, body) => leadsApi.patch(`${base()}/rules/${id}/`,
 export const DELETE_Rule = (id) => leadsApi.delete(`${base()}/rules/${id}/`);
 
 export const GET_RuleRuns = (rule) => leadsApi.get(`${base()}/rule-runs/`, { params: { rule } });
+
+// Leads CRM plan 16 (leads >= 0.5.0) — deals: stages of the sales pipeline, deals, the board, moves and history.
+// Amounts travel as decimal strings, the currency as an ISO 4217 code.
+export const GET_DealStages = () => leadsApi.get(`${base()}/deal-stages/`);
+
+export const POST_DealStage = (body) => leadsApi.post(`${base()}/deal-stages/`, body);
+
+export const PATCH_DealStage = (id, body) => leadsApi.patch(`${base()}/deal-stages/${id}/`, body);
+
+// 409 while the stage holds deals.
+export const DELETE_DealStage = (id) => leadsApi.delete(`${base()}/deal-stages/${id}/`);
+
+export const GET_Deals = (params) => leadsApi.get(`${base()}/deals/`, { params });
+
+// One column per stage in pipeline order: { stage, count, totals: [{ currency, one_off, recurring }], deals (first 25) }.
+export const GET_DealBoard = (params) => leadsApi.get(`${base()}/deals/board/`, { params });
+
+export const POST_Deal = (body) => leadsApi.post(`${base()}/deals/`, body);
+
+export const GET_Deal = (id) => leadsApi.get(`${base()}/deals/${id}/`);
+
+export const PATCH_Deal = (id, body) => leadsApi.patch(`${base()}/deals/${id}/`, body);
+
+// 409 for a won or lost deal.
+export const DELETE_Deal = (id) => leadsApi.delete(`${base()}/deals/${id}/`);
+
+// `lost_reason` is required by a lost stage; "" is not sent.
+export const POST_DealTransition = (id, stageKey, lostReason = "") =>
+  leadsApi.post(`${base()}/deals/${id}/transition/`, { stage_key: stageKey, ...(lostReason ? { lost_reason: lostReason } : {}) });
+
+export const GET_DealActivities = (id) => leadsApi.get(`${base()}/deals/${id}/activities/`, { params: { page_size: 100 } });
+
+export const GET_CompanyDeals = (id) => leadsApi.get(`${base()}/companies/${id}/deals/`, { params: { page_size: 100 } });
+
+// Channel settings (`leads.settings`): `default_currency` pre-fills a new deal.
+export const GET_LeadsChannel = () => leadsApi.get(`${base()}/channel/`);

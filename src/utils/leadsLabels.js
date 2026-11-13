@@ -47,6 +47,8 @@ const ACTIVITY_SHAPES = [
   [/^legal basis (None|) -> (\S+)$/, ([, to]) => t("leads.activity.legal_basis_set", { to: basisLabel(to) })],
   [/^legal basis (\S+) -> (\S+)$/, ([from, to]) => t("leads.activity.legal_basis_changed", { from: basisLabel(from), to: basisLabel(to) })],
   [/^blocked: (\w+)$/, ([reason]) => t("leads.activity.blocked", { reason: blockReasonLabel(reason) })],
+  [/^deal opened: (.+)$/, ([title]) => t("leads.history.event_deal_opened", { title })],
+  [/^deal deleted: (.+)$/, ([title]) => t("leads.history.event_deal_deleted", { title })],
 ];
 
 export function activityText(message) {
