@@ -20,16 +20,21 @@
       <p v-else-if="!loading && !newest" class="t-muted m-0">{{ $t("leads.thread.no_thread") }}</p>
       <p v-if="newest" class="thread__wrap m-0" data-testid="thread-subject">
         <strong>{{ threadSubject(newest.timeline) }}</strong>
-        <span class="t-secondary fs-200"> · {{ $t(`leads.thread.state.${newest.status}`) }}</span>
+        <StatusBadge class="thread__state" size="sm" :tone="threadTone(newest.status)" :label="$t(`leads.thread.state.${newest.status}`)" data-testid="thread-state" />
       </p>
       <p v-if="replyThreadId" class="t-muted m-0" data-testid="thread-reply-below">{{ $t("leads.thread.reply_below") }}</p>
       <ThreadTimeline
         v-if="!mailMissing && !loading"
         :busy="optoutBusy"
+        :contact="contactOf(newest)"
+        :company="replyCompany"
+        :thread-id="newest?.id ?? null"
+        :composed="composedIds"
         :messages="newest?.timeline || []"
         :optouts="newest?.optouts || []"
         :waiting="newest ? waitingOf(waiting, newest.id) : []"
         @confirm-optout="confirmOptout"
+        @sent="onSent"
       />
       <EarlierThreads
         v-if="older.count"
@@ -42,14 +47,17 @@
         :pending-threads="pendingThreads"
         :waiting="waiting"
         :open-thread-id="replyThreadId"
+        :company="replyCompany"
+        :composed="composedIds"
         @changed="loadPendingOptouts"
+        @sent="onSent"
       />
       <details v-if="desktopHint && activities.length" class="thread__activity" data-testid="thread-activity">
         <summary>{{ $t("leads.thread.activity", { count: activities.length }) }}</summary>
         <ul>
           <li v-for="activity in activities" :key="activity.id">
-          {{ formatTime(activity.created_at) }} · {{ activityText(activity.message) }}
-        </li>
+            {{ formatTime(activity.created_at) }} · {{ activityText(activity) }}
+          </li>
         </ul>
       </details>
     </div>
@@ -71,8 +79,9 @@ import {
 import { useMuninStore } from "@/stores/munin";
 import { useLeadsThreadStore } from "@/stores/leadsThread";
 import { useNotifyStore } from "@/stores/notify";
-import { activityText } from "@/utils/leadsLabels";
-import { threadSubject, waitingOf } from "@/utils/leadsThread";
+import { activityText, threadTone } from "@/utils/leadsLabels";
+import { outboundOn } from "@/utils/leadsOutbound";
+import { contactOf, threadSubject, waitingOf } from "@/utils/leadsThread";
 import { formatTime } from "@/utils/leadsTime";
 import PageLayout from "@/boots/PageLayout/index.vue";
 import AiToolboxHint from "@/components/ConfigHealth/AiToolboxHint.vue";
@@ -82,7 +91,12 @@ import ThreadTimeline from "./ThreadTimeline.vue";
 
 // The company thread: the newest conversation (closed or not); older ones sit behind one expander.
 // On a phone this is the whole company card — its activity log stays apart from the mail, collapsed below.
-const props = defineProps({ desktopHint: { type: Boolean, default: false } });
+const props = defineProps({
+  desktopHint: { type: Boolean, default: false },
+  // the card's company: a new object after the card reloaded (a mail sent, a call logged) — the thread reads again
+  refresh: { type: Object, default: null },
+});
+const emit = defineEmits(["changed"]);
 const PAGE_SIZE = 20;
 
 const route = useRoute();
@@ -101,6 +115,15 @@ const loading = ref(true);
 const companyMissing = ref(false);
 const mailMissing = ref(false);
 const optoutBusy = ref(false);
+
+// Messages written by hand (their `composed` activity names the message) — they carry no Follow-up tag.
+const composedIds = computed(() =>
+  activities.value.filter((activity) => activity.data?.event === "composed").map((activity) => activity.data.message_id)
+);
+// Reply is offered with the company's contacts at hand and the CRM on (the company may not be mailed otherwise).
+const replyCompany = computed(() =>
+  company.value && outboundOn(munin, "leads") && outboundOn(munin, "communicator") ? company.value : null
+);
 
 const subjectRef = computed(() => `leads.Company:${route.params.id}`);
 const pendingThreads = computed(
@@ -129,7 +152,6 @@ async function loadPendingOptouts() {
 }
 
 async function loadActivities(id) {
-  if (!props.desktopHint) return;
   activities.value = (await GET_CompanyActivities(id, { page_size: 100 })).data.results || [];
 }
 
@@ -156,11 +178,18 @@ async function load() {
   }
 }
 
+// Inside the card the card reloads and hands a new `refresh`, which reads the thread once; alone it reads itself.
+function onSent() {
+  emit("changed");
+  if (!props.refresh) load();
+}
+
 async function confirmOptout(replyId) {
   if (optoutBusy.value) return;
   optoutBusy.value = true;
   try {
     await POST_ConfirmOptout(replyId);
+    notify.spawnNotification({ msg: t("leads.thread.optout_done", { contact: contactOf(newest.value) }) });
     await load();
   } catch {
     notify.spawnNotification({ msg: t("leads.review.error"), type: "negative" });
@@ -176,11 +205,15 @@ function goBack() {
 
 onMounted(load);
 watch(() => route.params.id, (id) => id && load());
+watch(() => props.refresh, (card) => card && load());
 </script>
 
 <style scoped>
 .thread {
   overflow-x: clip;
+}
+.thread__state {
+  margin-left: var(--space-2);
 }
 .thread__wrap {
   overflow-wrap: anywhere;

@@ -64,3 +64,40 @@ describe("leads labels", () => {
     expect(ruleRunText({ outcome: "", detail: "claimed" })).toBe("Running");
   });
 });
+
+// B3 / B9: an activity is rendered from its `data.event` in the panel's own words; the stored message is the fallback.
+describe("activityText of an activity", () => {
+  const at = (event, data = {}, rest = {}) => activityText({ message: "stored English message", kind: "note", data: { event, ...data }, ...rest });
+
+  it("builds every known event from translations", () => {
+    expect(at("reply", { class: "interested" })).toBe("Reply received: Interested");
+    expect(at("reply")).toBe("Reply received");
+    expect(at("composed")).toBe("Mail written by hand");
+    expect(at("sequence_stopped")).toBe("Sequence stopped");
+    expect(at("sequence_paused")).toBe("Sequence paused");
+    expect(at("sequence_paused", { resume_at: "2026-12-01" })).toContain("Sequence paused until");
+    expect(at("task_created", { title: "Call" })).toBe("Task added: Call");
+    expect(at("task_done", { title: "Call", outcome: "agreed demo" })).toBe("Task done: Call — agreed demo");
+    expect(at("task_cancelled", { title: "Call", reason: "wrong date" })).toBe("Task cancelled: Call — wrong date");
+    expect(at("task_reopened", { title: "Call" })).toBe("Task reopened: Call");
+    expect(at("deal_opened", { title: "Shop" })).toBe("Deal opened: Shop");
+    expect(at("deal_moved", { title: "Shop", from_stage: "new", to_stage: "won_stage", to_label: "Proposal" })).toBe("Deal Shop: New → Proposal");
+    expect(at("deal_won", { title: "Shop" })).toBe("Deal won: Shop");
+    expect(at("deal_lost", { title: "Shop", reason: "price" })).toBe("Deal lost: Shop — price");
+    expect(at("deal_reopened", { title: "Shop" })).toBe("Deal reopened: Shop");
+    expect(at("deal_deleted", { title: "Shop" })).toBe("Deal deleted: Shop");
+    expect(at("owner_set", { owner_name: "Anna Kowalska" })).toBe("Owner: Anna Kowalska");
+    expect(at("owner_cleared")).toBe("Owner cleared");
+  });
+
+  it("a stage move uses the channel's stage labels, else the key's label", () => {
+    const stage = (data) => activityText({ kind: "stage", message: "stage new -> replied", data });
+    expect(stage({ from: "new", to: "replied", from_label: "New lead", to_label: "Replied" })).toBe("Stage: New lead → Replied");
+    expect(stage({ from: "new", to: "replied" })).toBe("Stage: New → Replied");
+  });
+
+  it("a line without a known event keeps its message", () => {
+    expect(activityText({ message: "blocked: no_email", data: { event: "unknown_thing" } })).toBe("Blocked: the contact has no email");
+    expect(activityText({ message: "Imported", data: {} })).toBe("Imported");
+  });
+});

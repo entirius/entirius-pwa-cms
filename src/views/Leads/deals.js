@@ -99,7 +99,7 @@ export function dealFormErrors(form, fallback = null) {
 // through the panel's activity sentences.
 export function dealHistoryText(activity, stages = []) {
   const { from, to } = activity.data || {};
-  if (!from || !to) return activityText(activity.message);
+  if (!from || !to) return activityText(activity);
   const label = (key) => stages.find((stage) => stage.key === key)?.label || key;
   return t("leads.activity.deal_moved", { from: label(from), to: label(to) });
 }

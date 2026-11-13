@@ -9,7 +9,7 @@
       :data-testid="`timeline-${entry.side}`"
     >
       <div class="tl__bubble">
-        <p v-if="entry.tag" class="tl__tag">{{ entry.tag }}</p>
+        <p v-if="entry.tag" class="tl__tag" data-testid="timeline-tag">{{ entry.tag }}</p>
         <p v-if="entry.subject" class="tl__subject">{{ entry.subject }}</p>
         <p v-if="entry.reply" class="tl__type">
           <StatusBadge :tone="replyTone(entry.reply.intent)" :label="replyTypeLabel(entry.reply.intent)" data-testid="reply-type" :data-type="entry.reply.intent" />
@@ -36,22 +36,40 @@
         <p class="tl__meta">
           <span v-if="!entry.sendState" data-testid="timeline-time">{{ formatTime(entry.at) }}</span>
           <span v-if="sureOf(entry)">{{ sureOf(entry) }}</span>
-          <span v-if="entry.status" class="tl__status" :data-testid="`status-${entry.status}`">
-            {{ $t(`leads.status.${entry.status}`) }}<template v-if="entry.sendState"> · {{ entry.sendState }}</template>
-          </span>
+          <StatusBadge
+            v-if="entry.status"
+            size="sm"
+            :tone="messageTone(entry.status)"
+            :label="statusText(entry)"
+            :data-testid="`status-${entry.status}`"
+          />
         </p>
         <div v-if="entry.optout" class="tl__optout">
           <span v-if="entry.optout.optout_confirmed_at">{{ $t("leads.thread.optout_confirmed") }}</span>
           <template v-else>
             <span>{{ $t("leads.thread.optout_suspected") }}</span>
-            <BasicButton variant="danger" :disabled="busy" data-testid="confirm-optout" @click="$emit('confirm-optout', entry.optout.id)">
+            <BasicButton variant="danger" :disabled="busy" data-testid="confirm-optout" @click="asking = entry.optout.id">
               {{ $t("leads.thread.confirm_optout") }}
             </BasicButton>
           </template>
         </div>
+        <BasicButton v-if="canReply && entry.side === 'in'" class="tl__reply" size="sm" mutates data-testid="reply-compose" @click="openReply(entry)">
+          {{ $t("leads.history.reply") }}
+        </BasicButton>
       </div>
     </li>
   </ol>
+  <ConfirmDialog
+    :open="asking !== null"
+    tone="danger"
+    :title="$t('leads.thread.confirm_optout')"
+    :message="$t('leads.thread.optout_confirm_message', { contact })"
+    :confirm-label="$t('leads.thread.confirm_optout')"
+    confirm-testid="confirm-optout-yes"
+    @confirm="confirmOptout"
+    @cancel="asking = null"
+  />
+  <ComposeDialog v-if="company" v-model:open="composeOpen" :company="company" :reply="replying" @sent="$emit('sent')" />
 </template>
 
 <script setup>
@@ -59,11 +77,14 @@ import { computed, onMounted, reactive, ref } from "vue";
 import { t } from "@/i18n";
 import { useMuninStore } from "@/stores/munin";
 import { formatDay } from "@/utils/format";
-import { replyTypeLabel, sendStateLabel } from "@/utils/leadsLabels";
+import { messageTone, replyTypeLabel, sendStateLabel, statusLabel } from "@/utils/leadsLabels";
 import { outboundOn, replyTone } from "@/utils/leadsOutbound";
+import { replyForCompose } from "@/utils/leadsReply";
 import { loadReplyPlans } from "@/utils/leadsReplyPlans";
 import { splitQuote } from "@/utils/leadsThread";
 import { formatTime, sendState } from "@/utils/leadsTime";
+import { useNotifyStore } from "@/stores/notify";
+import ComposeDialog from "./ComposeDialog.vue";
 
 // The chat timeline of ONE communicator thread: our messages and the replies, oldest first.
 const props = defineProps({
@@ -73,11 +94,38 @@ const props = defineProps({
   waiting: { type: Array, default: () => [] },
   // an opt-out confirmation is in flight — the button stays disabled until it settles
   busy: { type: Boolean, default: false },
+  // who the opt-out would block, named in its confirmation
+  contact: { type: String, default: "" },
+  // the company card: with it (and CRM on) an inbound bubble offers Reply, answered in Write mail
+  company: { type: Object, default: null },
+  threadId: { type: Number, default: null },
+  // message ids written by hand (`composed` activities): no "Follow-up" tag, they are not sequence mails
+  composed: { type: Array, default: () => [] },
 });
-defineEmits(["confirm-optout"]);
+const emit = defineEmits(["confirm-optout", "sent"]);
 
 const WAITING_STATUSES = ["approved", "scheduled"];
 const quotesOpen = reactive(new Set());
+const notify = useNotifyStore();
+const asking = ref(null);
+const composeOpen = ref(false);
+const replying = ref(null);
+
+function confirmOptout() {
+  emit("confirm-optout", asking.value);
+  asking.value = null;
+}
+
+async function openReply(entry) {
+  try {
+    replying.value = await replyForCompose(props.threadId, entry, props.company.contacts);
+    composeOpen.value = true;
+  } catch {
+    notify.spawnNotification({ msg: t("leads.compose.reply_unavailable"), type: "negative" });
+  }
+}
+
+const statusText = (entry) => [statusLabel(entry.status), entry.sendState].filter(Boolean).join(" · ");
 
 function toggleQuote(index) {
   if (!quotesOpen.delete(index)) quotesOpen.add(index);
@@ -99,10 +147,20 @@ function messageEntry(item, index, firstOut) {
     text: splitQuote(item.body_text),
     status: out ? item.status : "",
     sendState: waiting ? waitingState(item) : "",
-    tag: out && index !== firstOut ? t("leads.thread.followup") : "",
+    tag: tagOf(item, out, index, firstOut),
     optout: out ? null : props.optouts.find((reply) => reply.received_at === item.at) || null,
     reply: !out && item.intent ? item : null,
+    body: item.body_text,
+    from: item.from_email,
+    replyId: item.reply_id ?? null,
   };
+}
+
+// A hand-written mail is no sequence step: it says so instead of "Follow-up".
+function tagOf(item, out, index, firstOut) {
+  if (!out) return "";
+  if (props.composed.includes(item.message_id)) return t("leads.history.event_composed");
+  return index !== firstOut ? t("leads.thread.followup") : "";
 }
 
 // A classified reply says what happens next: the plan of its type for the sequence (communicator >= 0.5.0; the
@@ -131,6 +189,10 @@ function sureOf(entry) {
 onMounted(async () => {
   if (outboundOn(munin, "communicator")) plans.value = await loadReplyPlans();
 });
+
+const canReply = computed(
+  () => Boolean(props.company) && !props.company.do_not_contact && outboundOn(munin, "leads") && outboundOn(munin, "communicator")
+);
 
 const entries = computed(() => {
   const firstOut = props.messages.findIndex((message) => message.direction === "out");
@@ -194,9 +256,6 @@ const entries = computed(() => {
   gap: var(--space-5);
   justify-content: flex-end;
 }
-.tl__status {
-  font-weight: 600;
-}
 .tl__subject {
   margin: 0 0 var(--space-2);
   font-weight: 600;
@@ -220,6 +279,9 @@ const entries = computed(() => {
     max-width: 95%;
     padding: var(--space-5);
   }
+}
+.tl__reply {
+  margin-top: var(--space-2);
 }
 .tl__optout {
   display: flex;

@@ -14,8 +14,13 @@ const api = vi.hoisted(() => ({
   GET_ThreadWithOptouts: vi.fn(),
   GET_WaitingMessages: vi.fn(() => Promise.resolve([])),
   POST_ConfirmOptout: vi.fn(() => Promise.resolve({ data: {} })),
+  GET_ReplyClassPlans: vi.fn(() => Promise.resolve({ data: {} })),
 }));
 vi.mock("@/api/communicator/api", () => api);
+const leads = vi.hoisted(() => ({ GET_Company: vi.fn() }));
+vi.mock("@/api/leads/api", () => leads);
+const modules = vi.hoisted(() => ({ leads: false }));
+vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isModuleEnabled: () => modules.leads, isModuleAtLeast: () => modules.leads }) }));
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification: vi.fn() }) }));
 
 import Conversation from "@/views/Leads/Conversation.vue";
@@ -62,5 +67,25 @@ describe("Leads Conversation (a thread by id)", () => {
     expect(push).toHaveBeenCalledWith({ name: "LeadsInbox" });
     expect(back).not.toHaveBeenCalled();
     length.mockRestore();
+  });
+
+  // M10: an opt-out conversation of a company names it and links to its card
+  it("names the company of the thread and links to its card", async () => {
+    modules.leads = true;
+    leads.GET_Company.mockResolvedValue({ data: { id: 42, name: "Acme", contacts: [] } });
+    api.GET_ThreadWithOptouts.mockResolvedValue({ id: 23, status: "replied", subject_ref: "leads.Company:42", recipient_name: "Jan", recipient_email: "jan@shop.test", timeline, optouts: [] });
+    const wrapper = mount(Conversation, { global: { stubs: { Loader: true, "router-link": { props: ["to"], template: "<a :data-to=\"JSON.stringify(to)\"><slot /></a>" } } } });
+    await flushPromises();
+    const link = wrapper.get('[data-testid="conversation-company"]');
+    expect(link.text()).toBe("Acme");
+    expect(JSON.parse(link.attributes("data-to"))).toMatchObject({ name: "LeadsThread", params: { id: 42 } });
+    modules.leads = false;
+  });
+
+  it("a thread of no company shows no company link", async () => {
+    api.GET_ThreadWithOptouts.mockResolvedValue({ id: 23, status: "replied", subject_ref: "bdd:x", recipient_name: "Jan", recipient_email: "jan@shop.test", timeline, optouts: [] });
+    const wrapper = mount(Conversation, { global: { stubs: { Loader: true } } });
+    await flushPromises();
+    expect(wrapper.find('[data-testid="conversation-company"]').exists()).toBe(false);
   });
 });

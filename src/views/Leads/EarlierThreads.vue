@@ -20,7 +20,10 @@
         :pending="pendingThreads.has(thread.id)"
         :holds-reply="thread.id === openThreadId"
         :waiting="waitingOf(waiting, thread.id)"
+        :company="company"
+        :composed="composed"
         @changed="$emit('changed')"
+        @sent="$emit('sent')"
       />
       <BasicButton v-if="hasMore" class="as-s" :disabled="loading" data-testid="earlier-more" @click="loadMore">
         {{ $t("leads.thread.earlier_more") }}
@@ -45,8 +48,10 @@ const props = defineProps({
   pendingThreads: { type: Set, default: () => new Set() }, // thread ids with an undecided opt-out
   waiting: { type: Array, default: () => [] },
   openThreadId: { type: Number, default: null }, // the thread holding a reply — expanded and opened on arrival
+  company: { type: Object, default: null }, // set: Reply is offered in the threads
+  composed: { type: Array, default: () => [] },
 });
-defineEmits(["changed"]);
+defineEmits(["changed", "sent"]);
 
 const open = ref(false);
 const loading = ref(false);

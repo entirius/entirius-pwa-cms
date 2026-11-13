@@ -1,4 +1,5 @@
 import { t } from "@/i18n";
+import { formatLeadsDay } from "@/utils/leadsTime";
 
 // No raw enum value or backend status reaches the screen: each one has an i18n label, the raw value is the fallback.
 const label = (key, fallback) => (t(key) === key ? fallback : t(key));
@@ -51,7 +52,45 @@ const ACTIVITY_SHAPES = [
   [/^deal deleted: (.+)$/, ([title]) => t("leads.history.event_deal_deleted", { title })],
 ];
 
-export function activityText(message) {
+const stageName = (label, key) => label || capitalize(humanize(key || ""));
+const withDetail = (text, detail) => (detail ? `${text} — ${detail}` : text);
+const detailOf = (d) => d.outcome || d.reason || "";
+
+// Each known `data.event` of an activity (plan 21) is built from the panel's own translations; the stored English
+// `message` is only the fallback of a line without a known event.
+const EVENT_SENTENCES = {
+  reply: (d) => (d.class ? t("leads.history.event_reply", { type: replyTypeLabel(d.class) }) : t("leads.history.event_reply_plain")),
+  composed: () => t("leads.history.event_composed"),
+  sequence_stopped: () => t("leads.history.event_sequence_stopped"),
+  sequence_paused: (d) =>
+    d.resume_at ? t("leads.history.event_sequence_paused_until", { date: formatLeadsDay(d.resume_at) }) : t("leads.history.event_sequence_paused"),
+  task_created: (d) => t("leads.history.event_task_added", { title: d.title }),
+  task_done: (d) => withDetail(t("leads.history.event_task_done", { title: d.title }), detailOf(d)),
+  task_cancelled: (d) => withDetail(t("leads.history.event_task_cancelled", { title: d.title }), detailOf(d)),
+  task_reopened: (d) => t("leads.history.event_task_reopened", { title: d.title }),
+  deal_opened: (d) => t("leads.history.event_deal_opened", { title: d.title }),
+  deal_moved: (d) =>
+    t("leads.history.event_deal_moved", { title: d.title, from: stageName(d.from_label, d.from_stage), to: stageName(d.to_label, d.to_stage) }),
+  deal_won: (d) => t("leads.history.event_deal_won", { title: d.title }),
+  deal_lost: (d) => withDetail(t("leads.history.event_deal_lost", { title: d.title }), d.reason),
+  deal_reopened: (d) => t("leads.history.event_deal_reopened", { title: d.title }),
+  deal_deleted: (d) => t("leads.history.event_deal_deleted", { title: d.title }),
+  owner_set: (d) => t("leads.history.event_owner", { name: d.owner_name }),
+  owner_cleared: () => t("leads.history.event_owner_cleared"),
+};
+
+const stageLine = (d) => t("leads.activity.stage", { from: stageName(d.from_label, d.from), to: stageName(d.to_label, d.to) });
+
+// An activity (or just its stored message) as one line: by `data.event`, else a stage move with the channel's stage
+// labels, else the message through the known shapes.
+export function activityText(activity) {
+  const { message = "", data = {}, kind } = typeof activity === "string" ? { message: activity } : activity || {};
+  if (EVENT_SENTENCES[data.event]) return EVENT_SENTENCES[data.event](data);
+  if (kind === "stage" && (data.from || data.from_label)) return stageLine(data);
+  return messageText(message);
+}
+
+function messageText(message) {
   if (!message) return "";
   for (const [shape, sentence] of ACTIVITY_SHAPES) {
     const match = shape.exec(message);
@@ -59,6 +98,12 @@ export function activityText(message) {
   }
   return capitalize(humanize(message).replace(/ -> /g, " → "));
 }
+
+// Status words as badges: the same tone for a message everywhere it shows (bubble, list row, header).
+const MESSAGE_TONES = { sent: "positive", scheduled: "info", approved: "info", failed: "negative", review_required: "warning", skipped: "neutral", rejected: "neutral", suppressed: "negative" };
+export const messageTone = (status) => MESSAGE_TONES[status] || "neutral";
+const THREAD_TONES = { open: "info", replied: "accent", closed: "neutral" };
+export const threadTone = (status) => THREAD_TONES[status] || "neutral";
 
 // A rule run's detail as the service writes it ("skipped: no hooks", "message 60 review_required", "score S2 (40
 // points)") read as words, without ids; `fieldLabel` names a condition's field. An unknown detail adds nothing.

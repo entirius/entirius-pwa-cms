@@ -191,6 +191,7 @@ async function communicate() {
     await POST_Communicate(props.company.id, { template_key: templateKey.value, contact_id: contactId.value });
     notify.spawnNotification({ msg: t("leads.communicate.done") });
     communicating.value = false;
+    emit("changed");
   } catch (err) {
     communicateError.value = extractApiMessage(err, t("leads.review.error"));
   } finally {

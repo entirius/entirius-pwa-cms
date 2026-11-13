@@ -29,7 +29,7 @@
     </div>
     <template #footer>
       <ActionBar :labelled="false">
-        <BasicButton :disabled="sending" data-testid="compose-cancel" @click="askClose(false)">{{ $t("leads.compose.cancel") }}</BasicButton>
+        <BasicButton :disabled="sending" data-testid="compose-cancel" @click="askClose(false)">{{ $t("leads.task.close") }}</BasicButton>
         <BasicTooltip v-if="blocked || !recipients.length" :text="blocked ? blockReasonLabel(blocked) : $t('leads.compose.no_contact')">
           <BasicButton variant="primary" disabled data-testid="compose-send">{{ $t("leads.compose.send") }}</BasicButton>
         </BasicTooltip>

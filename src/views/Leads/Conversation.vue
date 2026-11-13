@@ -11,16 +11,23 @@
       </p>
       <template v-if="thread">
         <h2 class="conversation__wrap fs-400 fw-600 m-0" data-testid="conversation-recipient">{{ recipient }}</h2>
+        <router-link v-if="companyRoute" class="conversation__wrap t-accent" :to="companyRoute" data-testid="conversation-company">
+          {{ companyName }}
+        </router-link>
         <p class="conversation__wrap m-0" data-testid="thread-subject">
           <strong>{{ threadSubject(thread.timeline) }}</strong>
-          <span class="t-secondary fs-200"> · {{ $t(`leads.thread.state.${thread.status}`) }}</span>
+          <StatusBadge class="conversation__state" size="sm" :tone="threadTone(thread.status)" :label="$t(`leads.thread.state.${thread.status}`)" data-testid="thread-state" />
         </p>
         <ThreadTimeline
+          :company="replyCompany"
+          :thread-id="thread.id"
+          :contact="recipient"
           :busy="optoutBusy"
           :messages="thread.timeline || []"
           :optouts="thread.optouts || []"
           :waiting="waitingOf(waiting, thread.id)"
           @confirm-optout="confirmOptout"
+          @sent="load"
         />
       </template>
     </div>
@@ -32,15 +39,21 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { t } from "@/i18n";
 import { GET_ThreadWithOptouts, GET_WaitingMessages, POST_ConfirmOptout } from "@/api/communicator/api";
+import { GET_Company } from "@/api/leads/api";
 import { useIsDesktop } from "@/composables/useIsDesktop";
 import { useNotifyStore } from "@/stores/notify";
+import { useMuninStore } from "@/stores/munin";
+import { threadTone } from "@/utils/leadsLabels";
+import { outboundOn } from "@/utils/leadsOutbound";
 import { threadSubject, waitingOf } from "@/utils/leadsThread";
+import { companyIdFromSubjectRef, routeForSubjectRef } from "@/utils/subjectRef";
 import ThreadTimeline from "./ThreadTimeline.vue";
 
 // One thread by id — the screen of a conversation that belongs to no company, so every reply has a place.
 const route = useRoute();
 const router = useRouter();
 const notify = useNotifyStore();
+const munin = useMuninStore();
 const isDesktop = useIsDesktop();
 
 const thread = ref(null);
@@ -48,6 +61,24 @@ const waiting = ref([]);
 const loading = ref(true);
 const missing = ref(false);
 const optoutBusy = ref(false);
+
+// A conversation of a company names it and links to its card; Reply needs the company's contacts (CRM on).
+const company = ref(null);
+const companyName = computed(() => company.value?.name || thread.value?.subject_label || "");
+const companyRoute = computed(() => {
+  const ref = thread.value?.subject_ref;
+  return companyName.value && companyIdFromSubjectRef(ref) ? routeForSubjectRef(ref) : null;
+});
+const replyCompany = computed(() => (outboundOn(munin, "leads") && outboundOn(munin, "communicator") ? company.value : null));
+
+async function loadCompany() {
+  const id = munin.isModuleEnabled("leads") && companyIdFromSubjectRef(thread.value?.subject_ref);
+  try {
+    company.value = id ? (await GET_Company(id)).data : null;
+  } catch {
+    company.value = null;
+  }
+}
 
 const recipient = computed(() =>
   [thread.value?.recipient_name, thread.value?.recipient_email].filter(Boolean).join(" · ")
@@ -60,6 +91,7 @@ async function load() {
     thread.value = detail;
     waiting.value = mails;
     missing.value = false;
+    await loadCompany();
   } catch {
     thread.value = null;
     missing.value = true;
@@ -73,6 +105,7 @@ async function confirmOptout(replyId) {
   optoutBusy.value = true;
   try {
     await POST_ConfirmOptout(replyId);
+    notify.spawnNotification({ msg: t("leads.thread.optout_done", { contact: recipient.value }) });
     await load();
   } catch {
     notify.spawnNotification({ msg: t("leads.review.error"), type: "negative" });
@@ -93,6 +126,9 @@ watch(() => route.params.id, (id) => id && route.name === "LeadsConversation" &&
 <style scoped>
 .conversation {
   overflow-x: clip;
+}
+.conversation__state {
+  margin-left: var(--space-2);
 }
 .conversation__wrap {
   overflow-wrap: anywhere;

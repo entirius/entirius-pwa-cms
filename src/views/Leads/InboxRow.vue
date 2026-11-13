@@ -23,8 +23,10 @@
       </span>
       <span class="inbox-row__state" data-testid="inbox-item-state">
         <FontAwesomeIcon v-if="marker === 'waiting'" :icon="$icons.scheduled" class="inbox-row__clock" />
-        <strong v-if="marker !== 'none'" class="inbox-row__marker" :data-testid="`inbox-marker-${marker}`">{{ markerText }}</strong>
-        <template v-else>{{ $t(`leads.thread.state.${row.status}`) }}</template><template v-if="detail"> · {{ detail }}</template>
+        <StatusBadge v-if="MARKER_TONES[marker]" size="sm" :tone="MARKER_TONES[marker]" :label="markerText" :data-testid="`inbox-marker-${marker}`" />
+        <strong v-else-if="marker !== 'none'" class="inbox-row__marker" :data-testid="`inbox-marker-${marker}`">{{ markerText }}</strong>
+        <StatusBadge v-else size="sm" :tone="threadTone(row.status)" :label="$t(`leads.thread.state.${row.status}`)" data-testid="inbox-item-thread-state" />
+        <span v-if="detail" class="inbox-row__detail">{{ detail }}</span>
       </span>
     </router-link>
     <div v-if="marker === 'waiting' && canSendNow(row.waiting)" class="inbox-row__send">
@@ -41,7 +43,7 @@ import { t } from "@/i18n";
 import { useMuninStore } from "@/stores/munin";
 import { loadCompanyName } from "@/utils/leadsCompanyNames";
 import { formatDay } from "@/utils/format";
-import { replyTypeLabel, sendStateSentence } from "@/utils/leadsLabels";
+import { replyTypeLabel, sendStateSentence, threadTone } from "@/utils/leadsLabels";
 import { replyTone } from "@/utils/leadsOutbound";
 import { splitQuote } from "@/utils/leadsThread";
 import { canSendNow, formatTime, sendState } from "@/utils/leadsTime";
@@ -65,6 +67,7 @@ const companyName = ref("");
 
 // The chip the user looks through decides the marker of a conversation that is in several states at once.
 const MARKER_ORDER = { all: ["draft", "replied", "waiting"], draft: ["draft"], waiting: ["waiting"], replied: ["replied"] };
+const MARKER_TONES = { draft: "warning", replied: "accent" };
 const holds = {
   draft: (row) => Boolean(row.draft),
   waiting: (row) => Boolean(row.waiting),
@@ -82,7 +85,9 @@ const markerText = computed(
 );
 
 const firstLine = (text) => splitQuote(text).own.split("\n").find((line) => line.trim()) || "";
-const detail = computed(() => (marker.value === "waiting" ? "" : firstLine(props.row.last_text)));
+// The latest text is the newest mail of the conversation, not the draft's — a draft row shows its own subject only,
+// so a mail written by hand and sent never reads as "Draft · <its text>".
+const detail = computed(() => (["waiting", "draft"].includes(marker.value) ? "" : firstLine(props.row.last_text)));
 const subject = computed(() => (marker.value === "draft" ? props.row.draft.subject : props.row.subject) || t("leads.inbox.untitled"));
 const threads = computed(() => t(`leads.inbox.threads_${pluralKey(props.row.thread_count)}`, { count: props.row.thread_count }));
 const name = computed(() => companyName.value || props.row.recipient_name || props.row.recipient_email);
@@ -159,6 +164,9 @@ onMounted(async () => {
   align-items: center;
   gap: var(--space-2);
   font-size: var(--fs-200);
+}
+.inbox-row__detail {
+  margin-left: var(--space-2);
 }
 .inbox-row__marker {
   color: var(--text-accent);

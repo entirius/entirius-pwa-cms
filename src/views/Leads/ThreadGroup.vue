@@ -5,10 +5,8 @@
       <div class="tg__summary flex flex-wrap ai-ct pointer" data-testid="earlier-thread-summary" @click="onSummaryClick">
         <span class="tg__subject" data-testid="earlier-thread-subject">{{ title }}</span>
         <span class="tg__meta" data-testid="earlier-thread-to">{{ $t("leads.review.to") }}: {{ recipient }}</span>
-        <span class="tg__meta">
-          {{ $t(`leads.thread.state.${thread.status}`) }}<template v-if="thread.last_message_at">
-            · {{ formatTime(thread.last_message_at) }}</template>
-        </span>
+        <StatusBadge size="sm" :tone="threadTone(thread.status)" :label="$t(`leads.thread.state.${thread.status}`)" data-testid="earlier-thread-state" />
+        <span v-if="thread.last_message_at" class="tg__meta">{{ formatTime(thread.last_message_at) }}</span>
         <span v-if="holdsReply" class="tg__reply" data-testid="earlier-thread-reply">{{ $t("leads.thread.earlier_reply") }}</span>
         <StatusBadge
           v-if="pending"
@@ -33,7 +31,12 @@
       :optouts="detail.optouts"
       :waiting="waiting"
       :busy="optoutBusy"
+      :contact="contactOf(thread)"
+      :company="company"
+      :thread-id="thread.id"
+      :composed="composed"
       @confirm-optout="confirmOptout"
+      @sent="onSent"
     />
   </article>
 </template>
@@ -43,7 +46,8 @@ import { computed, onMounted, ref } from "vue";
 import { t } from "@/i18n";
 import { GET_ThreadWithOptouts, POST_ConfirmOptout } from "@/api/communicator/api";
 import { useNotifyStore } from "@/stores/notify";
-import { threadSubject } from "@/utils/leadsThread";
+import { threadTone } from "@/utils/leadsLabels";
+import { contactOf, threadSubject } from "@/utils/leadsThread";
 import { formatTime } from "@/utils/leadsTime";
 import ThreadTimeline from "./ThreadTimeline.vue";
 
@@ -56,8 +60,11 @@ const props = defineProps({
   // the thread holding the reply the bell announced: opened and marked on arrival, never scrolled to — the newest
   // thread above stays on screen (FIX-17c item 5)
   holdsReply: { type: Boolean, default: false },
+  // the company card (Reply is offered when set) and the message ids written by hand
+  company: { type: Object, default: null },
+  composed: { type: Array, default: () => [] },
 });
-const emit = defineEmits(["changed"]);
+const emit = defineEmits(["changed", "sent"]);
 const notify = useNotifyStore();
 
 const open = ref(props.holdsReply);
@@ -81,6 +88,11 @@ async function loadDetail() {
   }
 }
 
+async function onSent() {
+  await loadDetail();
+  emit("sent");
+}
+
 function toggle() {
   open.value = !open.value;
 }
@@ -101,6 +113,7 @@ async function confirmOptout(replyId) {
   optoutBusy.value = true;
   try {
     await POST_ConfirmOptout(replyId);
+    notify.spawnNotification({ msg: t("leads.thread.optout_done", { contact: contactOf(props.thread) }) });
     await loadDetail();
     emit("changed");
   } catch {

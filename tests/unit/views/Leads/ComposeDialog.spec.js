@@ -63,6 +63,16 @@ describe("Leads → Write mail", () => {
     expect(byTestid(wrapper, "compose-send").attributes("disabled")).toBeDefined();
   });
 
+  // M15 / m3: the disabled Send is a real `disabled` button (the boot drops its fill); the dismiss word is Close
+  it("the dismiss button says Close, and Send stays a disabled primary on a blocked contact", async () => {
+    leads.GET_Mailable.mockResolvedValue({ data: { eligible: false, reasons: ["suppressed"] } });
+    const wrapper = await opened();
+    expect(byTestid(wrapper, "compose-cancel").text()).toBe("leads.task.close");
+    const send = byTestid(wrapper, "compose-send");
+    expect(send.attributes("disabled")).toBeDefined();
+    expect(wrapper.findComponent('[data-testid="compose-send"]').props("variant")).toBe("primary");
+  });
+
   it("a 409 refusal shows its reason under To and keeps the dialog open", async () => {
     leads.POST_Compose.mockRejectedValue({ error: "not_eligible", message: "contact opted out" });
     const wrapper = await opened();
