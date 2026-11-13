@@ -80,3 +80,40 @@ export const GET_AssignableUsers = async (search = "") => {
   const { data } = await leadsApi.get(`${base()}/assignable-users/`, { params: { search } });
   return data.results ?? data;
 };
+
+// Leads CRM plan 15 (leads >= 0.5.0) — custom fields, scoring, owner, compose, funnel.
+export const GET_Attributes = (entity) => leadsApi.get(`${base()}/attributes/`, { params: { entity } });
+
+export const POST_Attribute = (body) => leadsApi.post(`${base()}/attributes/`, body);
+
+export const PATCH_Attribute = (id, body) => leadsApi.patch(`${base()}/attributes/${id}/`, body);
+
+export const DELETE_Attribute = (id) => leadsApi.delete(`${base()}/attributes/${id}/`);
+
+// Facts a condition may name: built-ins and `attr.<key>`, each { name, kind, label, options }.
+export const GET_Fields = () => leadsApi.get(`${base()}/fields/`);
+
+export const GET_ScoringProfiles = () => leadsApi.get(`${base()}/scoring-profiles/`);
+
+export const POST_ScoringProfile = (body) => leadsApi.post(`${base()}/scoring-profiles/`, body);
+
+export const PATCH_ScoringProfile = (id, body) => leadsApi.patch(`${base()}/scoring-profiles/${id}/`, body);
+
+// 409 NO_SCORING_PROFILE without an active profile.
+export const POST_Score = (id) => leadsApi.post(`${base()}/companies/${id}/score/`, {});
+
+export const POST_AssignOwner = (companyIds, ownerId) =>
+  leadsApi.post(`${base()}/companies/assign/`, { company_ids: companyIds, owner_id: ownerId });
+
+// 409 not_eligible / no_legal_basis / communicator_channel_missing.
+export const POST_Compose = (id, body) => leadsApi.post(`${base()}/companies/${id}/compose/`, body);
+
+export const GET_Funnel = (params) => leadsApi.get(`${base()}/reports/funnel/`, { params });
+
+export const POST_Rule = (body) => leadsApi.post(`${base()}/rules/`, body);
+
+export const PATCH_Rule = (id, body) => leadsApi.patch(`${base()}/rules/${id}/`, body);
+
+export const DELETE_Rule = (id) => leadsApi.delete(`${base()}/rules/${id}/`);
+
+export const GET_RuleRuns = (rule) => leadsApi.get(`${base()}/rule-runs/`, { params: { rule } });

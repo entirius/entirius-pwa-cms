@@ -17,3 +17,14 @@ export function companyIdFromSubjectRef(subjectRef) {
   const route = routeForSubjectRef(subjectRef);
   return route?.name === "LeadsThread" ? route.params.id : null;
 }
+
+// The ref of a company as todo and notifications store it (the reverse of the `leads.Company` route).
+export const companySubjectRef = (id) => `leads.Company:${id}`;
+
+// A task's `contact_ref` ("leads.Contact:<id>") both ways; another ref → null.
+export const contactSubjectRef = (id) => (id ? `leads.Contact:${id}` : "");
+
+export function contactIdFromRef(ref) {
+  const match = /^leads\.Contact:(\d+)$/.exec(ref || "");
+  return match ? Number(match[1]) : null;
+}

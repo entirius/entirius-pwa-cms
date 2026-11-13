@@ -49,3 +49,11 @@ export function problemText(blocker) {
   if (match) return t("leads.problem.mailbox", { address: match[1], state: t(`leads.mailbox_state.${state}`) });
   return t("leads.problem.other", { detail: blocker });
 }
+
+// The machine code of a refused leads call (409 `not_eligible`, `no_scoring_profile` …) in lower case, wherever the
+// v2 envelope carries it: `error`, `code` or the first detail's `code` / `issue`.
+export function apiErrorCode(err) {
+  const body = err?.response?.data || err || {};
+  const detail = Array.isArray(body.details) ? body.details[0] : null;
+  return String(detail?.code || detail?.issue || body.code || body.error || "").toLowerCase();
+}
