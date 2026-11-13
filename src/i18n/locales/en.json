@@ -4268,8 +4268,8 @@
       "untitled": "(no subject)",
       "pick": "Pick a draft to review",
       "detail_empty_title": "No drafts to review",
-      "detail_empty": "The pipeline shows every company and where it stands — open a card to write to it or re-audit it.",
-      "open_board": "Open the pipeline",
+      "detail_empty": "The board shows every company and where it stands — open a card to write to it or re-audit it.",
+      "open_board": "Open the board",
       "filter": {
         "all": "All",
         "draft": "Drafts",
@@ -4389,7 +4389,8 @@
       "title": "Open on a desktop",
       "message": "This screen needs at least 1024 px of width.",
       "back": "Back to the Inbox",
-      "back_deals": "Open the deal list"
+      "back_deals": "Open the deal list",
+      "back_companies": "Back to companies"
     },
     "companies": {
       "title": "Companies",
@@ -4516,7 +4517,7 @@
       "status": "Status",
       "counts": "{created} created, {matched} matched, {skipped} skipped",
       "row": "Row {row}",
-      "to_board": "Open the pipeline",
+      "to_board": "Open companies",
       "failed": "Upload failed",
       "columns_title": "Columns",
       "column_company": "company_name (optional) — the company name",
@@ -4530,7 +4531,13 @@
       "no_file": "No file chosen yet",
       "run_rules": "Start the automation on new companies",
       "run_rules_note": "Each new company enters its first stage and that stage's rules run — drafts and AI audits may start right away and cost AI credits.",
-      "after_rules": "Each company lands in the first stage. Its rules run only when \"Start the automation\" was ticked; otherwise move companies on the board or by hand."
+      "after_rules": "Each company lands in the first stage. Its rules run only when \"Start the automation\" was ticked; otherwise move companies on the board or by hand.",
+      "owner": "Owner",
+      "owner_hint": "The owner of every new company in the file; leave it empty for no owner. Companies already in Leads keep theirs.",
+      "no_owner": "No owner",
+      "column_attr": "{column} — {label} ({kind})",
+      "ignored": "Ignored columns: {list}",
+      "automation_started": "New companies with the automation started: {count}"
     },
     "stages": {
       "title": "Stages",
@@ -4585,9 +4592,9 @@
       "address_invalid": "address does not exist (bounced)"
     },
     "add": {
-      "title": "Add lead",
-      "open": "Add lead",
-      "one": "Add one lead by hand",
+      "title": "Add company",
+      "open": "Add company",
+      "one": "Add a company by hand",
       "company": "Company",
       "domain": "Domain",
       "domain_hint": "shop.com or https://shop.com",
@@ -4599,7 +4606,7 @@
       "basis_none": "Not set yet",
       "basis_hint": "Without a legal basis the contact gets no mail until one is set on the company card.",
       "consent_ref": "Where consent was given",
-      "save": "Add lead",
+      "save": "Add company",
       "save_contact": "Save contact",
       "exists": "Already in Leads:",
       "company_saved": "Company added — the contact was not saved yet:"

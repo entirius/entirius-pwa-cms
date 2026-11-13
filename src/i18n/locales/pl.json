@@ -4267,8 +4267,8 @@
       "untitled": "(bez tematu)",
       "pick": "Wybierz szkic do przejrzenia",
       "detail_empty_title": "Brak szkiców do przeglądu",
-      "detail_empty": "Pipeline pokazuje każdą firmę i jej etap — otwórz kartę, aby do niej napisać lub ponowić audyt.",
-      "open_board": "Otwórz pipeline",
+      "detail_empty": "Tablica pokazuje każdą firmę i jej etap — otwórz kartę, aby do niej napisać lub ponowić audyt.",
+      "open_board": "Otwórz tablicę",
       "filter": {
         "all": "Wszystkie",
         "draft": "Szkice",
@@ -4388,7 +4388,8 @@
       "title": "Otwórz na komputerze",
       "message": "Ten ekran wymaga co najmniej 1024 px szerokości.",
       "back": "Wróć do skrzynki",
-      "back_deals": "Otwórz listę transakcji"
+      "back_deals": "Otwórz listę transakcji",
+      "back_companies": "Wróć do firm"
     },
     "companies": {
       "title": "Firmy",
@@ -4515,7 +4516,7 @@
       "status": "Status",
       "counts": "utworzone: {created}, dopasowane: {matched}, pominięte: {skipped}",
       "row": "Wiersz {row}",
-      "to_board": "Otwórz pipeline",
+      "to_board": "Otwórz firmy",
       "failed": "Wysyłka pliku nie powiodła się",
       "columns_title": "Kolumny",
       "column_company": "company_name (opcjonalna) — nazwa firmy",
@@ -4529,7 +4530,13 @@
       "no_file": "Nie wybrano jeszcze pliku",
       "run_rules": "Uruchom automatyzację dla nowych firm",
       "run_rules_note": "Każda nowa firma wchodzi w pierwszy etap i działają reguły tego etapu — szkice i audyty AI mogą ruszyć od razu i zużyć środki AI.",
-      "after_rules": "Każda firma trafia do pierwszego etapu. Jego reguły działają tylko z zaznaczonym „Uruchom automatyzację”; w przeciwnym razie przenieś firmy na tablicy lub ręcznie."
+      "after_rules": "Każda firma trafia do pierwszego etapu. Jego reguły działają tylko z zaznaczonym „Uruchom automatyzację”; w przeciwnym razie przenieś firmy na tablicy lub ręcznie.",
+      "owner": "Opiekun",
+      "owner_hint": "Opiekun każdej nowej firmy z pliku; puste pole = bez opiekuna. Firmy, które już są w Leads, zachowują swojego.",
+      "no_owner": "Bez opiekuna",
+      "column_attr": "{column} — {label} ({kind})",
+      "ignored": "Pominięte kolumny: {list}",
+      "automation_started": "Nowe firmy z uruchomioną automatyzacją: {count}"
     },
     "stages": {
       "title": "Etapy",
@@ -4584,9 +4591,9 @@
       "address_invalid": "adres nie istnieje (odbicie)"
     },
     "add": {
-      "title": "Dodaj lead",
-      "open": "Dodaj lead",
-      "one": "Dodaj jeden lead ręcznie",
+      "title": "Dodaj firmę",
+      "open": "Dodaj firmę",
+      "one": "Dodaj firmę ręcznie",
       "company": "Firma",
       "domain": "Domena",
       "domain_hint": "sklep.pl lub https://sklep.pl",
@@ -4598,7 +4605,7 @@
       "basis_none": "Jeszcze nieustalona",
       "basis_hint": "Bez podstawy prawnej kontakt nie dostanie maila, dopóki nie ustawisz jej na karcie firmy.",
       "consent_ref": "Gdzie wyrażono zgodę",
-      "save": "Dodaj lead",
+      "save": "Dodaj firmę",
       "save_contact": "Zapisz kontakt",
       "exists": "Już jest w Leads:",
       "company_saved": "Firma dodana — kontakt jeszcze niezapisany:"

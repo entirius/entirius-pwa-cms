@@ -26,10 +26,12 @@ export const POST_CreateCustomer = (id) => leadsApi.post(`${base()}/companies/${
 
 // FormData without a Content-Type: axios sets the multipart boundary.
 // `runRules` (leads >= 0.5.0): new companies enter their first stage with its rules; undefined = not sent.
-export const POST_Import = (file, runRules) => {
+// `ownerId` (leads >= 0.5.0): the owner of the new companies; null or undefined = not sent (no owner).
+export const POST_Import = (file, runRules, ownerId) => {
   const form = new FormData();
   form.append("file", file);
   if (runRules !== undefined) form.append("run_rules", String(runRules));
+  if (ownerId !== undefined && ownerId !== null) form.append("owner_id", String(ownerId));
   return leadsApi.post(`${base()}/imports/`, form);
 };
 

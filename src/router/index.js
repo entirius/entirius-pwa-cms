@@ -1157,7 +1157,7 @@ const routes = [
         path: "import",
         name: "LeadsImport",
         component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Import.vue"),
-        meta: { requiresAuth: true, titleKey: "leads.import.title", panel: "leads", area: AREAS.LEADS_COMPANIES, module: "leads", desktop: true },
+        meta: { requiresAuth: true, titleKey: "leads.import.title", panel: "leads", area: AREAS.LEADS_COMPANIES, module: "leads", desktop: true, desktopBack: { name: "LeadsCompanies", labelKey: "leads.desktop_only.back_companies" }, crumbParent: "LeadsCompanies" },
       },
       // Settings (UX-002d): one hub for the configuration of leads and communicator — each section its own route,
       // shown only when its backend module is on; full width, reachable on a phone (`page`, no DesktopOnly wall)

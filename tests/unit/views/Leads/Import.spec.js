@@ -2,7 +2,7 @@ import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 
-const api = vi.hoisted(() => ({ POST_Import: vi.fn(), GET_Import: vi.fn() }));
+const api = vi.hoisted(() => ({ POST_Import: vi.fn(), GET_Import: vi.fn(), GET_AssignableUsers: vi.fn(), GET_Attributes: vi.fn() }));
 vi.mock("@/api/leads/api", () => api);
 const push = vi.hoisted(() => vi.fn());
 vi.mock("vue-router", () => ({ useRouter: () => ({ push }) }));
@@ -11,6 +11,7 @@ import Import from "@/views/Leads/Import.vue";
 import { leadsFrame } from "./leadsFrame";
 import { t } from "@/i18n";
 import { useMuninStore } from "@/stores/munin";
+import { useAccessStore } from "@/stores/access";
 
 function mountWithFile() {
   const wrapper = mount(Import, { global: { components: leadsFrame.components, stubs: { ...leadsFrame.stubs, RouterLink: true } } });
@@ -20,7 +21,15 @@ function mountWithFile() {
 }
 
 // The views read the munin store (the outbound guards): an empty one = an older backend.
-beforeEach(() => setActivePinia(createPinia()));
+beforeEach(() => {
+  setActivePinia(createPinia());
+  api.GET_AssignableUsers.mockResolvedValue([{ id: 7, username: "anna", name: "Anna Kowalska" }]);
+  api.GET_Attributes.mockImplementation((entity) =>
+    Promise.resolve({ data: { results: entity === "company" ? [{ key: "size", label: "Size", kind: "number" }, { key: "old", label: "Old", kind: "text", is_active: false }] : [{ key: "role", label: "Role", kind: "select" }] } })
+  );
+});
+
+const outboundOn = () => Object.assign(useMuninStore(), { loaded: true, modules: [{ key: "leads", version: "0.5.0", enabled_in_cms: true }] });
 
 describe("Leads Import", () => {
   afterEach(() => vi.useRealTimers());
@@ -52,7 +61,7 @@ describe("Leads Import", () => {
     await input.trigger("change");
     await wrapper.find('[data-testid="import-upload"]').trigger("click");
     await flushPromises();
-    expect(api.POST_Import).toHaveBeenCalledWith(file, undefined);
+    expect(api.POST_Import).toHaveBeenCalledWith(file);
     expect(wrapper.find('[data-testid="import-status"]').text()).toBe("done");
     expect(wrapper.find('[data-testid="import-counts"]').text()).toContain('"created":2');
   });
@@ -84,6 +93,43 @@ describe("Leads Import", () => {
     await wrapper.find('[data-testid="import-upload"]').trigger("click");
     await flushPromises();
     expect(api.POST_Import.mock.calls.at(-1)[1]).toBe(true);
+  });
+
+  // Acceptance CM1–CM3: the owner (me by default), the custom-field columns, the ignored columns and the automation count.
+  it("leads >= 0.5.0: owner pre-set to me and sent; custom-field columns listed", async () => {
+    outboundOn();
+    useAccessStore().me = { user: { id: 7 }, permissions: {} };
+    api.POST_Import.mockResolvedValue({ data: { id: 4, status: "done", report: [] } });
+    api.GET_Import.mockResolvedValue({ data: { id: 4, status: "done", report: [] } });
+    const wrapper = await mountWithFile();
+    await flushPromises();
+    expect(wrapper.findComponent('[data-testid="import-owner"]').props("modelValue")).toBe(7);
+    expect(wrapper.findAll('[data-testid="import-custom-column"]').map((li) => li.text())).toEqual([
+      'leads.import.column_attr::{"column":"attr.size","label":"Size","kind":"Number"}',
+      'leads.import.column_attr::{"column":"contact.attr.role","label":"Role","kind":"Choice"}',
+    ]);
+    await wrapper.find('[data-testid="import-upload"]').trigger("click");
+    await flushPromises();
+    expect(api.POST_Import.mock.calls.at(-1).slice(1)).toEqual([false, 7]);
+  });
+
+  it("the report names the ignored columns and the automation count; an older backend shows neither", async () => {
+    outboundOn();
+    const batch = { id: 4, status: "done", report: [], ignored_columns: ["phone", "notes"], automation_started_count: 2 };
+    api.POST_Import.mockResolvedValue({ data: batch });
+    api.GET_Import.mockResolvedValue({ data: batch });
+    const wrapper = await mountWithFile();
+    wrapper.findComponent('[data-testid="import-run-rules"]').vm.$emit("update:modelValue", true);
+    await wrapper.find('[data-testid="import-upload"]').trigger("click");
+    await flushPromises();
+    expect(wrapper.get('[data-testid="import-ignored"]').text()).toBe('leads.import.ignored::{"list":"phone, notes"}');
+    expect(wrapper.get('[data-testid="import-automation"]').text()).toBe('leads.import.automation_started::{"count":2}');
+    api.GET_Import.mockResolvedValue({ data: { id: 4, status: "done", report: [] } });
+    const older = await mountWithFile();
+    await older.find('[data-testid="import-upload"]').trigger("click");
+    await flushPromises();
+    expect(older.find('[data-testid="import-ignored"]').exists()).toBe(false);
+    expect(older.find('[data-testid="import-automation"]').exists()).toBe(false);
   });
 
   it("an older backend has no checkbox", async () => {
