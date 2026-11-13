@@ -82,6 +82,26 @@ describe("Leads → Deals list", () => {
     expect(leads.POST_DealTransition).toHaveBeenCalledWith(1, "lost", "Too expensive");
   });
 
+  it("says the stage once: a plain column header, no label in the rows, the value only in its own column", async () => {
+    const wrapper = await mounted();
+    expect(table(wrapper).props("columns").find((column) => column.key === "stage").label).toBe("Stage");
+    expect(table(wrapper).props("columns").find((column) => column.key === "owner").width).toBe("max-content");
+    const rowSelects = wrapper.findAllComponents({ name: "BasicSelect" }).filter((select) => select.attributes("data-testid") === "deal-row-stage");
+    expect(rowSelects.every((select) => !select.props("floatingLabel"))).toBe(true);
+    const summary = table(wrapper).props("rows")[0].summary;
+    expect(summary).toBe("Acme");
+    expect(table(wrapper).props("rows")[0].one_off).toContain("12400.00");
+  });
+
+  it("?view=board on a phone lands on the list and says the board is for a larger screen", async () => {
+    desktop.on = false;
+    route.query = { view: "board" };
+    const wrapper = await mounted();
+    expect(byTestid(wrapper, "deals-board-desktop-only").exists()).toBe(true);
+    desktop.on = true;
+    expect(byTestid(await mounted(), "deals-board-desktop-only").exists()).toBe(false);
+  });
+
   it("a won stage moves at once", async () => {
     const wrapper = await mounted();
     setControl(wrapper, "deal-row-stage", "won");

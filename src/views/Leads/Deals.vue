@@ -16,6 +16,7 @@
       <DealFilters :query="query" :stages="stages" @set="setFilter" />
     </template>
 
+    <p v-if="boardOnPhone" class="t-muted m-0" data-testid="deals-board-desktop-only">{{ $t("leads.deals.board_desktop_only") }}</p>
     <Loader v-if="loading && !deals.length" block />
     <EmptyState v-else-if="stagesLoaded && !stages.length" icon="empty" size="md" :title="$t('leads.deals.no_stages')" data-testid="deals-no-stages">
       <router-link v-if="canSetUp" class="t-accent" :to="{ name: 'LeadsDealStages' }">{{ $t("leads.deal_stages.title") }}</router-link>
@@ -42,7 +43,7 @@
             v-else
             :model-value="row.stage.key"
             :options="options"
-            :floating-label="$t('leads.deals.stage')"
+            :aria-label="$t('leads.deals.stage')"
             :disabled="readonly"
             data-testid="deal-row-stage"
             @click.stop
@@ -78,7 +79,7 @@ import { formatDay } from "@/utils/format";
 import DealDialog from "./DealDialog.vue";
 import DealFilters from "./DealFilters.vue";
 import LostReasonDialog from "./LostReasonDialog.vue";
-import { canClose, dealKindTone, dealValue, oneOffText, recurringValueText, stageOptions } from "./deals";
+import { canClose, dealKindTone, oneOffText, recurringValueText, stageOptions } from "./deals";
 import { useDealMove } from "./useDealMove";
 
 // Deals (ux/screens/deals.md): the list on every width — on a phone it is the screen (no drag and drop below
@@ -109,6 +110,8 @@ const pages = computed(() => Math.max(1, Math.ceil(count.value / PAGE_SIZE)));
 // The defaults (Mine, Open) are no filter: a channel without a deal of mine shows the first-run empty state.
 const filtered = computed(() => Object.keys(route.query).some((key) => FILTER_KEYS.includes(key)) || query.value.owner !== "me" || query.value.kind !== "open");
 const closedFilter = computed(() => ["won", "lost"].includes(query.value.kind));
+// The board is a desk screen: a link that asks for it on a phone lands on the list and says so.
+const boardOnPhone = computed(() => !isDesktop.value && route.query.view === "board");
 const closable = computed(() => canClose(stages.value));
 const options = computed(() => stageOptions(stages.value));
 const canSetUp = computed(() => access.can(AREAS.LEADS_SETTINGS));
@@ -123,11 +126,11 @@ const pageActions = computed(() =>
 const columns = computed(() =>
   [
     { key: "title", label: t("leads.deals.col_deal"), width: "1fr", truncate: false },
-    { key: "stage", label: t("leads.deals.stage"), width: "max-content" },
+    { key: "stage", label: t("leads.deals.col_stage"), width: "max-content" },
     { key: "one_off", label: t("leads.deals.col_one_off"), numeric: true, priority: 2, sortable: true },
     { key: "recurring", label: t("leads.deals.col_recurring"), numeric: true, priority: 3, sortable: true },
     { key: "close", label: t("leads.deals.expected_close"), priority: 2, sortable: true },
-    { key: "owner", label: t("leads.deals.col_owner"), priority: 3 },
+    { key: "owner", label: t("leads.deals.col_owner"), width: "max-content", priority: 3 },
     tasksOn.value && { key: "tasks", label: t("leads.deals.col_tasks"), priority: 3 },
   ].filter(Boolean)
 );
@@ -139,7 +142,7 @@ const closeText = (deal) => deal.expected_close_date && t("leads.deals.close_on"
 function toRow(deal) {
   return {
     ...deal,
-    summary: [deal.company.name || deal.company.domain, dealValue(deal), closeText(deal)].filter(Boolean).join(" · "),
+    summary: [deal.company.name || deal.company.domain, closeText(deal)].filter(Boolean).join(" · "),
     one_off: oneOffText(deal) || "—",
     recurring: recurringValueText(deal) || "—",
     close: deal.expected_close_date ? formatDay(deal.expected_close_date) : "—",

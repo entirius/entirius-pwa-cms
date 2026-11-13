@@ -11,7 +11,7 @@
       <BasicInput v-model="form.valueOneOff" format="money" :maxlength="15" data-testid="deal-value-one-off" />
     </FormField>
     <FormField :label="$t('leads.deal.currency')" :error="errors.currency || ''">
-      <BasicSelect v-model="form.currency" :options="currencies" searchable clearable data-testid="deal-currency" />
+      <BasicSelect v-model="form.currency" :options="currencies" searchable data-testid="deal-currency" />
     </FormField>
     <FormField :label="$t('leads.deal.value_recurring')" :error="errors.value_recurring || ''">
       <BasicInput v-model="form.valueRecurring" format="money" :maxlength="15" data-testid="deal-value-recurring" />

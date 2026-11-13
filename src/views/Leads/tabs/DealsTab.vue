@@ -4,7 +4,7 @@
       <ActionBar v-if="deals.length" :actions="actions" :labelled="false" />
     </template>
     <Loader v-if="loading" block />
-    <EmptyState v-else-if="!deals.length" icon="empty" size="sm" :title="$t('leads.deals.empty')">
+    <EmptyState v-else-if="!deals.length" icon="empty" size="md" :title="$t('leads.deals.empty')">
       <ActionBar :actions="actions" :labelled="false" />
     </EmptyState>
     <div v-else class="flex-column gap-4">

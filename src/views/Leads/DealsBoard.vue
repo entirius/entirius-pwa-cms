@@ -100,11 +100,14 @@ onMounted(load);
 </script>
 
 <style scoped>
+/* The stages share the width (up to six fit 1280 px beside the side nav); only a wider pipeline scrolls. */
 .board {
-  display: flex;
+  display: grid;
   padding-bottom: var(--space-5);
-  gap: var(--space-8);
-  align-items: flex-start;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(7rem, 1fr);
+  gap: var(--space-4);
+  align-items: stretch;
   overflow-x: auto;
 }
 </style>

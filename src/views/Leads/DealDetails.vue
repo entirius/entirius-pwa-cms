@@ -59,6 +59,8 @@ const attrLocal = ref({});
 
 const ownerName = (owner) => owner.name || owner.username;
 const currencies = computed(() => currencyOptions(codes.value, props.deal.currency));
+// A custom field nobody filled stays off the read view (Edit still lists it): "Licences — —" says nothing.
+const filledFields = computed(() => props.fields.filter((field) => formatValue(field, props.deal.attributes?.[field.key])));
 const rows = computed(() => [
   { key: "one_off", label: t("leads.deal.value_one_off"), value: oneOffText(props.deal), testid: "deal-value-one-off" },
   { key: "recurring", label: t("leads.deal.value_recurring"), value: recurringValueText(props.deal), testid: "deal-value-recurring" },
@@ -66,7 +68,7 @@ const rows = computed(() => [
   { key: "contact", label: t("leads.deal.contact"), value: props.deal.contact?.name, testid: "deal-contact" },
   { key: "owner", label: t("leads.deal.owner"), value: props.deal.owner ? ownerName(props.deal.owner) : t("leads.company.unassigned"), muted: !props.deal.owner, testid: "deal-owner" },
   { key: "since", label: t("leads.deal.in_stage_since"), value: formatDay(props.deal.stage_entered_at) },
-  ...props.fields.map((field) => ({ key: field.key, label: field.label, value: formatValue(field, props.deal.attributes?.[field.key]), testid: `custom-field-${field.key}` })),
+  ...filledFields.value.map((field) => ({ key: field.key, label: field.label, value: formatValue(field, props.deal.attributes?.[field.key]), testid: `custom-field-${field.key}` })),
 ]);
 const errors = computed(() => ({
   ...Object.fromEntries(API_FIELDS.map((name) => [name, getFieldError(name)?.msg]).filter(([, msg]) => msg)),

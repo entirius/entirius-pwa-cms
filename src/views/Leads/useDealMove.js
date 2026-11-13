@@ -4,8 +4,11 @@ import { POST_DealTransition } from "@/api/leads/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { useNotifyStore } from "@/stores/notify";
 
+const MOVED_TOASTS = { won: "leads.deal.won_toast", lost: "leads.deal.lost_toast" };
+
 // One way to move a deal for the list, the board and the deal card: a lost stage asks the reason first (the
 // lost-reason dialog reads `lost`), any other stage moves at once. `moved(data, deal)` takes the answer;
+// A move says so in a toast: Deal won, Deal lost, else Deal moved to <stage>.
 // `refused(deal, stageKey)` puts back what the screen already moved (a drag), after a refusal or a cancelled reason.
 export function useDealMove(stages, { moved, refused = () => {} }) {
   const notify = useNotifyStore();
@@ -15,6 +18,8 @@ export function useDealMove(stages, { moved, refused = () => {} }) {
     try {
       const { data } = await POST_DealTransition(deal.id, stageKey, reason);
       moved(data, deal);
+      const key = MOVED_TOASTS[data.stage?.kind] || "leads.deal.moved_toast";
+      notify.spawnNotification({ msg: t(key, { stage: data.stage?.label || stageKey }), type: "positive" });
       return true;
     } catch (err) {
       refused(deal, stageKey);

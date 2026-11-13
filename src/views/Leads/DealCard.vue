@@ -11,7 +11,7 @@
       class="card__stage"
       :model-value="deal.stage.key"
       :options="options"
-      :floating-label="$t('leads.deals.stage')"
+      :aria-label="$t('leads.deals.stage')"
       :disabled="readonly"
       data-testid="deal-card-stage"
       @update:model-value="$emit('move', deal, $event)"

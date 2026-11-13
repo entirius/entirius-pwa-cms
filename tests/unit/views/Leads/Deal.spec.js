@@ -63,6 +63,20 @@ describe("Leads → Deal card", () => {
     expect(byTestid(wrapper, "deal-kind").text()).toContain("Won");
   });
 
+  it("the action bar ends with the danger action, then the primary: Mark lost, Delete deal, Mark won", async () => {
+    const wrapper = await mounted();
+    const order = ["deal-mark-lost", "deal-delete", "deal-mark-won"].map((id) => wrapper.html().indexOf(`data-testid="${id}"`));
+    expect(order).toEqual([...order].sort((a, b) => a - b));
+    expect(order.every((index) => index > 0)).toBe(true);
+  });
+
+  it("the reason dialog closes with Close, like the task dialog", async () => {
+    const wrapper = await mounted();
+    await byTestid(wrapper, "deal-mark-lost").trigger("click");
+    const labels = wrapper.findComponent({ name: "LostReasonDialog" }).findComponent({ name: "BasicModal" }).props("actions").map((action) => action.label);
+    expect(labels[0]).toBe("Close");
+  });
+
   it("Mark lost asks the reason before any call", async () => {
     const wrapper = await mounted();
     await byTestid(wrapper, "deal-mark-lost").trigger("click");

@@ -108,9 +108,9 @@ function openActions() {
   const won = firstStage(stages.value, "won");
   const lostStage = firstStage(stages.value, "lost");
   return [
-    { key: "delete", label: t("leads.deal.delete"), role: "utility", icon: "delete", variant: "danger", mutates: true, testid: "deal-delete", onClick: () => (deleting.value = true) },
     lostStage && { key: "lost", label: t("leads.deal.mark_lost"), role: "secondary", mutates: true, testid: "deal-mark-lost", onClick: () => move(deal.value, lostStage.key) },
     won && { key: "won", label: t("leads.deal.mark_won"), role: "primary", mutates: true, testid: "deal-mark-won", onClick: () => move(deal.value, won.key) },
+    { key: "delete", label: t("leads.deal.delete"), role: "danger", icon: "delete", mutates: true, testid: "deal-delete", onClick: () => (deleting.value = true) },
   ].filter(Boolean);
 }
 
@@ -122,11 +122,8 @@ function closedAction() {
   return { key: "reopen", label: t("leads.deal.reopen"), role: "secondary", mutates: true, testid: "deal-reopen", onClick: reopen };
 }
 
-const KIND_TOASTS = { won: "leads.deal.won_toast", lost: "leads.deal.lost_toast" };
-
 function afterMove(data) {
   deal.value = data;
-  if (KIND_TOASTS[data.stage.kind]) notify.spawnNotification({ msg: t(KIND_TOASTS[data.stage.kind]), type: "positive" });
   loadHistory();
 }
 

@@ -57,6 +57,22 @@ describe("Leads → Deals board", () => {
     expect(byTestid(column(wrapper, "won"), "deals-column-all").exists()).toBe(false);
   });
 
+  it("an empty column keeps a body that takes a drop and says it is empty", async () => {
+    const wrapper = await mounted();
+    const won = column(wrapper, "won");
+    expect(won.findComponent({ name: "draggable" }).exists()).toBe(true);
+    expect(byTestid(won, "deals-column-empty").text()).toBe("leads.deals.column_empty");
+    expect(byTestid(column(wrapper, "qualified"), "deals-column-empty").exists()).toBe(false);
+  });
+
+  it("a move with the card's select says so in a toast", async () => {
+    leads.POST_DealTransition.mockResolvedValue({ data: { ...deal(1, stage("qualified", "open", 0)), stage: stage("negotiation", "open", 5) } });
+    const wrapper = await mounted();
+    column(wrapper, "qualified").findComponent({ name: "DealCard" }).vm.$emit("move", column(wrapper, "qualified").props("column").deals[0], "negotiation");
+    await flushPromises();
+    expect(notify.spawnNotification).toHaveBeenCalledWith({ msg: "Deal moved to negotiation", type: "positive" });
+  });
+
   it("a drop on a lost column asks the reason first; Cancel snaps the card back", async () => {
     const wrapper = await mounted();
     const card = column(wrapper, "qualified").props("column").deals[0];

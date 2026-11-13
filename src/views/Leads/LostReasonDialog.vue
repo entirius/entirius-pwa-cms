@@ -35,7 +35,7 @@ const stageKey = ref("");
 const error = ref("");
 const lostStages = computed(() => props.stages.filter((stage) => stage.kind === "lost"));
 const actions = computed(() => [
-  { key: "cancel", label: t("leads.common.cancel"), role: "secondary", onClick: () => emit("cancel") },
+  { key: "cancel", label: t("leads.task.close"), role: "secondary", onClick: () => emit("cancel") },
   { key: "submit", label: t("leads.deal.mark_lost"), role: "primary", mutates: true, testid: "deal-lost-submit", onClick: submit },
 ]);
 
