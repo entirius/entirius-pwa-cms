@@ -31,6 +31,8 @@
     "pm_currencies": "Waluty",
     "accounts_customers": "Klienci",
     "checkout_orders": "Zamówienia",
+    "stock_alerts_demand": "Zapotrzebowanie",
+    "stock_alerts_subscriptions": "Zgłoszenia",
     "atlas_list": "Źródła",
     "atlas_auto_matched": "Auto-połączone",
     "atlas_duplicates": "Duplikaty",
@@ -579,6 +581,8 @@
     "accounts_desc": "Konta klientów — profile, adresy, grupy",
     "checkout_orders": "Zamówienia",
     "checkout_orders_desc": "Zamówienia — przeglądanie, statusy, płatności",
+    "stock_alerts": "Powiadomienia o dostępności",
+    "stock_alerts_desc": "Prośby o powiadomienie o dostępności — na co czekają klienci, zgłoszenia, eksport",
     "atlas": "Atlas",
     "atlas_desc": "Źródła, feedy, mapowania, produkty i logi integracji",
     "enricher": "Wzbogacanie",
@@ -717,7 +721,80 @@
       "RETURNED": "Zwrócone",
       "CANCELED": "Anulowane"
     },
-    "external_id": "ID zewnętrzne"
+    "external_id": "ID zewnętrzne",
+    "col_sku": "SKU",
+    "col_qty": "Ilość",
+    "col_status": "Status",
+    "col_unit_price": "Cena jednostkowa",
+    "col_total": "Razem",
+    "col_tax": "Podatek",
+    "pickup_point": "Punkt odbioru",
+    "mails": {
+      "title": "E-maile",
+      "kind": "Rodzaj",
+      "status": "Status",
+      "recipient": "Odbiorca",
+      "language": "Język",
+      "attempts": "Próby",
+      "sent_at": "Wysłano",
+      "empty": "Do tego zamówienia nie wysłano żadnego e-maila",
+      "shared_with": "Wspólny z: {numbers}",
+      "kinds": {
+        "confirmation": "Potwierdzenie zamówienia",
+        "canceled": "Anulowanie zamówienia"
+      },
+      "statuses": {
+        "pending": "Oczekuje",
+        "sent": "Wysłany",
+        "failed": "Błąd",
+        "skipped": "Pominięty"
+      },
+      "send_again": "Wyślij ponownie",
+      "send_confirmation": "Wyślij potwierdzenie",
+      "confirm_title": "Wysłać e-mail ponownie?",
+      "confirm_message": "Wiadomość „{kind}” trafi na adres {recipient}.",
+      "queued": "E-mail czeka w kolejce do wysłania",
+      "too_many": "Zbyt wiele ponownych wysyłek, spróbuj później",
+      "no_address": "Zamówienie nie ma adresu e-mail",
+      "error": "Nie udało się wysłać e-maila"
+    }
+  },
+  "stock_alerts": {
+    "demand": "Zapotrzebowanie",
+    "demand_help": "Warianty, na które czekają klienci, i czy można je teraz kupić.",
+    "subscriptions": "Zgłoszenia",
+    "subscriptions_help": "Wszystkie prośby o powiadomienie: kto czeka na jaki wariant i co się z prośbą stało.",
+    "search_demand": "SKU lub nazwa produktu",
+    "search_subscriptions": "Dokładny adres lub SKU",
+    "product": "Produkt",
+    "sku": "SKU",
+    "waiting": "Czeka",
+    "oldest_request": "Najstarsza prośba",
+    "in_stock_now": "Dostępność teraz",
+    "notified_30d": "Powiadomieni w 30 dni",
+    "in_stock": "Dostępne: {count}",
+    "sold_out": "Wyprzedane",
+    "summary": "Oczekujące prośby: {waiting} · wariantów: {variants}",
+    "empty_title": "Nikt na nic nie czeka",
+    "empty_message": "Prośba pojawi się tutaj, gdy klient poprosi sklep o e-mail o wyprzedanym wariancie.",
+    "no_requests": "Brak zgłoszeń pasujących do filtrów",
+    "address": "Adres",
+    "language": "Język",
+    "status": "Status",
+    "created": "Utworzono",
+    "notified": "Powiadomiono",
+    "status_all": "Wszystkie statusy",
+    "status_waiting": "Oczekuje",
+    "status_notified": "Powiadomiono",
+    "status_cancelled": "Anulowano",
+    "status_expired": "Wygasło",
+    "sku_filter": "SKU: {sku}",
+    "cancel_request": "Anuluj prośbę",
+    "cancel_title": "Anulować tę prośbę?",
+    "cancel_message": "Klient nie dostanie e-maila, gdy {sku} wróci do sprzedaży.",
+    "keep": "Zostaw",
+    "cancelled": "Prośba anulowana",
+    "download_csv": "Pobierz CSV"
   },
   "pim": {
     "attribute_values_more": "Wczytaj więcej wartości…",
@@ -1653,7 +1730,9 @@
       "agreements-newsletter-signup": "Zapis do newslettera",
       "contact-forms-booking-confirmation": "Potwierdzenie rezerwacji",
       "contact-forms-booking-admin-notification": "Powiadomienie o rezerwacji",
-      "contact-forms-submission": "Zgłoszenie z formularza"
+      "contact-forms-submission": "Zgłoszenie z formularza",
+      "checkout-order-confirmation": "Potwierdzenie zamówienia",
+      "checkout-order-canceled": "Anulowanie zamówienia"
     },
     "type_desc": {
       "accounts-new-account": "E-mail potwierdzający rejestrację",
@@ -1665,7 +1744,9 @@
       "agreements-newsletter-signup": "E-mail potwierdzający zapis do newslettera",
       "contact-forms-booking-confirmation": "E-mail z potwierdzeniem dla rezerwującego",
       "contact-forms-booking-admin-notification": "Powiadomienie administratora o nowej rezerwacji",
-      "contact-forms-submission": "Powiadomienie administratora o zgłoszeniu z formularza"
+      "contact-forms-submission": "Powiadomienie administratora o zgłoszeniu z formularza",
+      "checkout-order-confirmation": "Wysyłany po złożeniu lub opłaceniu zamówienia",
+      "checkout-order-canceled": "Wysyłany po anulowaniu potwierdzonego zamówienia"
     },
     "fields": {
       "welcome": "Powitanie",
@@ -1699,7 +1780,16 @@
       "label_type": "Etykieta typu",
       "label_form": "Etykieta formularza",
       "label_code": "Etykieta kodu",
-      "label_body": "Etykieta treści"
+      "label_body": "Etykieta treści",
+      "preheader": "Tekst zapowiedzi",
+      "heading": "Nagłówek",
+      "intro": "Wstęp",
+      "split_note": "Informacja o podziale zakupu",
+      "transfer_heading": "Nagłówek przelewu",
+      "transfer_note": "Informacja o przelewie",
+      "cod_note": "Informacja o płatności za pobraniem",
+      "paid_note": "Informacja o płatności online",
+      "refund_note": "Informacja o zwrocie"
     },
     "field_hints": {
       "user_name": "Obsługuje znacznik |user_name|",
@@ -1710,7 +1800,36 @@
       "intro_booking": "Wyświetlany nad szczegółami rezerwacji. Puste = domyślny tekst.",
       "closing_booking": "Wyświetlany pod linkiem do spotkania. Puste = domyślny tekst.",
       "header_admin_booking": "Nagłówek H2. Puste = domyślny tekst „Nowa rezerwacja”.",
-      "header_submission": "Nagłówek H2. Puste = domyślny tekst „Nowe zgłoszenie z formularza kontaktowego”."
+      "header_submission": "Nagłówek H2. Puste = domyślny tekst „Nowe zgłoszenie z formularza kontaktowego”.",
+      "order_number": "Obsługuje znacznik <order_number>",
+      "preheader": "Wiersz, który skrzynka pokazuje po temacie. Puste = domyślny tekst.",
+      "heading": "Tytuł na górze wiadomości. Puste = domyślny tekst.",
+      "intro": "Akapit pod nagłówkiem. Puste = domyślny tekst.",
+      "split_note": "Wyświetlana tylko, gdy zakup podzielono na kilka zamówień.",
+      "transfer_heading": "Nagłówek ramki z danymi do przelewu.",
+      "transfer_note": "Wyświetlana pod danymi do przelewu.",
+      "cod_note": "Wyświetlana przy płatności za pobraniem, a po niej kwota do zapłaty.",
+      "paid_note": "Wyświetlana, gdy zamówienie jest już opłacone.",
+      "refund_note": "Wyświetlana tylko, gdy anulowane zamówienie było opłacone.",
+      "help_order": "Zdanie na końcu o kontakcie ze sklepem. Puste = domyślny tekst."
+    },
+    "preview": {
+      "title": "Podgląd",
+      "variant": "Przykładowe zamówienie",
+      "width": "Szerokość",
+      "desktop": "Komputer 600",
+      "phone": "Telefon 360",
+      "text_version": "Wersja tekstowa",
+      "save_to_refresh": "Zapisz, aby odświeżyć podgląd",
+      "unavailable": "Podgląd jest niedostępny",
+      "variants": {
+        "transfer": "Przelew",
+        "cod": "Za pobraniem",
+        "paid_online": "Opłacone online",
+        "split": "Zakup podzielony",
+        "unpaid": "Nieopłacone",
+        "paid": "Opłacone"
+      }
     }
   },
   "faq": {
@@ -5093,6 +5212,9 @@
       },
       "platform": {
         "devtools": "Endpointy testowe (tylko środowisko deweloperskie)"
+      },
+      "stock_alerts": {
+        "subscriptions": "Prośby o powiadomienie o dostępności"
       }
     },
     "scopes": {
@@ -5118,6 +5240,9 @@
       },
       "agreements": {
         "subscribe": "Zapis do newslettera"
+      },
+      "stock_alerts": {
+        "subscribe": "Zapis na powiadomienie o dostępności"
       }
     }
   },

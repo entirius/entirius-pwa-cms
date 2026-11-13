@@ -760,6 +760,36 @@
       "note": "a fresh seed has no checkout order"
     },
     {
+      "id": "stock-alerts-demand",
+      "route": "/stock-alerts",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "stock-alerts-demand__{vp}__{theme}.png"
+    },
+    {
+      "id": "stock-alerts-subscriptions",
+      "route": "/stock-alerts/subscriptions",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "stock-alerts-subscriptions__{vp}__{theme}.png"
+    },
+    {
       "id": "agreements-list",
       "route": "/agreements/list",
       "resolver": "fixed",
@@ -902,6 +932,44 @@
       ],
       "readySelector": ".ProseMirror",
       "file": "emails-template-edit__{vp}__{theme}.png"
+    },
+    {
+      "id": "emails-order-confirmation-edit",
+      "route": "/emails/templates/checkout-order-confirmation",
+      "resolver": "first-link",
+      "links": [
+        "[data-testid=\"emails-template-card\"]"
+      ],
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "readySelector": "[data-testid=\"email-preview-frame\"]",
+      "file": "emails-order-confirmation-edit__{vp}__{theme}.png"
+    },
+    {
+      "id": "emails-order-canceled-edit",
+      "route": "/emails/templates/checkout-order-canceled",
+      "resolver": "first-link",
+      "links": [
+        "[data-testid=\"emails-template-card\"]"
+      ],
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "readySelector": "[data-testid=\"email-preview-frame\"]",
+      "file": "emails-order-canceled-edit__{vp}__{theme}.png"
     },
     {
       "id": "emails-lang-config",

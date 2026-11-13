@@ -1,7 +1,11 @@
 <template>
   <PageLayout class="order-detail fs-300 t-body">
     <template #header>
-      <PageHeader :title="order.pretty_id || $t('checkout_orders.order_detail')" :back="goBack" />
+      <PageHeader :title="order.pretty_id || $t('checkout_orders.order_detail')" :back="goBack">
+        <template v-if="headerActions.length" #actions>
+          <ActionBar :actions="headerActions" />
+        </template>
+      </PageHeader>
     </template>
 
     <div v-if="loading" class="flex jc-ct p-12"><Loader /></div>
@@ -49,6 +53,14 @@
           <p class="fw-600 t-body">{{ body.shipping_method.name || body.shipping_method.code }}</p>
           <p class="t-muted fs-200">{{ body.shipping_method.code }}</p>
           <p v-if="shippingPrice" class="t-secondary mt-2">{{ shippingPrice }}</p>
+          <div v-if="deliveryPoint" class="mt-4" data-testid="order-pickup-point">
+            <div class="section-label mb-2">{{ $t("checkout_orders.pickup_point") }}</div>
+            <p class="fw-600 t-body">{{ deliveryPoint.name || deliveryPoint.code }}</p>
+            <p v-if="deliveryPoint.address" class="t-secondary fs-200">{{ deliveryPoint.address }}</p>
+            <p v-if="deliveryPoint.postcode || deliveryPoint.city" class="t-secondary fs-200">
+              {{ deliveryPoint.postcode }} {{ deliveryPoint.city }}
+            </p>
+          </div>
         </div>
         <div v-if="paymentMethods.length" class="order-detail__card">
           <div class="section-label mb-2">{{ $t("checkout_orders.payment_method") }}</div>
@@ -87,6 +99,14 @@
         <DataTable :columns="paymentIntentColumns" :rows="order.payment_intents" />
       </div>
 
+      <OrderMails
+        class="mb-10"
+        :mails="mails"
+        :order-number="order.pretty_id || ''"
+        :has-address="hasAddress"
+        @resend="askResend"
+      />
+
       <!-- Attachments (only if exists) -->
       <div v-if="order.attachments && order.attachments.length" class="mb-8">
         <div class="section-label mb-5">{{ $t("checkout_orders.attachments") }}</div>
@@ -95,14 +115,28 @@
         </div>
       </div>
     </template>
+
+    <ConfirmDialog
+      :open="Boolean(resending)"
+      :title="$t('checkout_orders.mails.confirm_title')"
+      :message="resendMessage"
+      :confirm-label="$t('checkout_orders.mails.send_again')"
+      :cancel-label="$t('common.cancel')"
+      :loading="resendBusy"
+      confirm-testid="order-mail-resend-confirm"
+      @confirm="resend"
+      @cancel="resending = null"
+    />
   </PageLayout>
 </template>
 
 <script>
-import { GET_Order } from "@/api/orders/api";
+import { GET_Order, POST_OrderMailResend } from "@/api/orders/api";
+import { isThrottled } from "@/api/createClient";
 import { useNotifyStore } from "@/stores/notify";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { formatDate } from "@/utils/format";
+import OrderMails from "./components/OrderMails.vue";
 
 const STATUS_VARIANTS = {
   UNPAID: "warning", NEW: "warning", CONFIRMED: "positive", HOLDED: "info",
@@ -111,6 +145,7 @@ const STATUS_VARIANTS = {
 
 export default {
   name: "OrderDetail",
+  components: { OrderMails },
   setup() {
     const notify = useNotifyStore();
     return { notify };
@@ -119,14 +154,8 @@ export default {
     return {
       order: {},
       loading: false,
-      itemColumns: [
-        { key: "sku", label: "SKU", width: "180px" },
-        { key: "quantity", label: "Qty", width: "60px" },
-        { key: "status", label: "Status", width: "90px" },
-        { key: "base_unit_price", label: "Unit Price", width: "110px" },
-        { key: "total_price", label: "Total", width: "110px" },
-        { key: "tax_rate", label: "Tax", width: "80px" },
-      ],
+      resending: null, // { kind, recipient } waiting for the confirmation
+      resendBusy: false,
       paymentIntentColumns: [
         { key: "code", label: "Method", width: "140px" },
         { key: "status", label: "Status", width: "120px" },
@@ -147,6 +176,35 @@ export default {
       if (Array.isArray(pm)) return pm.filter((entry) => entry && entry.code);
       return pm && pm.code ? [pm] : [];
     },
+    itemColumns() {
+      return [
+        { key: "sku", label: this.$t("checkout_orders.col_sku"), width: "180px" },
+        { key: "quantity", label: this.$t("checkout_orders.col_qty"), width: "60px" },
+        { key: "status", label: this.$t("checkout_orders.col_status"), width: "90px" },
+        { key: "base_unit_price", label: this.$t("checkout_orders.col_unit_price"), width: "110px" },
+        { key: "total_price", label: this.$t("checkout_orders.col_total"), width: "110px" },
+        { key: "tax_rate", label: this.$t("checkout_orders.col_tax"), width: "80px" },
+      ];
+    },
+    deliveryPoint() { return this.body.shipping_method?.delivery_point || null; },
+    mails() { return this.order.mails || []; },
+    orderEmail() { return this.order.billing_email || this.order.shipping_email || ""; },
+    hasAddress() { return Boolean(this.orderEmail); },
+    // An order without a confirmation row (placed before the e-mails, or never triggered) can still be sent one.
+    headerActions() {
+      if (!this.order.order_id || this.mails.some((row) => row.kind === "confirmation")) return [];
+      return [{
+        key: "send-confirmation", role: "secondary", mutates: true, disabled: !this.hasAddress,
+        label: this.$t("checkout_orders.mails.send_confirmation"), testid: "order-send-confirmation",
+        onClick: () => this.askResend({ kind: "confirmation", recipient: "" }),
+      }];
+    },
+    resendMessage() {
+      if (!this.resending) return "";
+      const { kind, recipient } = this.resending;
+      const kindLabel = this.$t(`checkout_orders.mails.kinds.${kind}`);
+      return this.$t("checkout_orders.mails.confirm_message", { kind: kindLabel, recipient: recipient || this.orderEmail });
+    },
     shippingPrice() {
       const sm = this.body.shipping_method;
       if (!sm) return null;
@@ -159,12 +217,33 @@ export default {
     async fetchOrder() {
       this.loading = true;
       try {
-        const { data } = await GET_Order(this.channel, this.$route.params.uid);
-        this.order = data;
+        await this.loadOrder();
       } catch (err) {
         this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
         this.$router.push({ name: "OrderList" });
       } finally { this.loading = false; }
+    },
+    async loadOrder() {
+      const { data } = await GET_Order(this.channel, this.$route.params.uid);
+      this.order = data;
+    },
+    askResend({ kind, recipient }) { this.resending = { kind, recipient }; },
+    async resend() {
+      this.resendBusy = true;
+      try {
+        await POST_OrderMailResend(this.channel, this.$route.params.uid, this.resending.kind);
+        this.notify.spawnNotification({ type: "positive", msg: this.$t("checkout_orders.mails.queued") });
+        await this.loadOrder().catch(() => {}); // sent either way: a failed reload keeps the old rows
+      } catch (err) {
+        this.notify.spawnNotification({ type: "negative", msg: this.resendError(err) });
+      } finally {
+        this.resendBusy = false;
+        this.resending = null;
+      }
+    },
+    resendError(err) {
+      if (isThrottled(err)) return this.$t("checkout_orders.mails.too_many");
+      return extractApiMessage(err, this.$t("checkout_orders.mails.error"));
     },
     goBack() { this.$router.push({ name: "OrderList" }); },
     statusVariant(status) { return STATUS_VARIANTS[(status || "").toUpperCase()] || "neutral"; },

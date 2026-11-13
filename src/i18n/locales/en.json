@@ -31,6 +31,8 @@
     "pm_currencies": "Currencies",
     "accounts_customers": "Customers",
     "checkout_orders": "Orders",
+    "stock_alerts_demand": "Demand",
+    "stock_alerts_subscriptions": "Requests",
     "atlas_list": "Sources",
     "atlas_auto_matched": "Auto-matched",
     "atlas_duplicates": "Duplicates",
@@ -579,6 +581,8 @@
     "accounts_desc": "Customer accounts — profiles, addresses, groups",
     "checkout_orders": "Orders",
     "checkout_orders_desc": "Checkout orders — view orders, statuses, payments",
+    "stock_alerts": "Stock alerts",
+    "stock_alerts_desc": "Back-in-stock requests — what customers wait for, the requests, export",
     "atlas": "Atlas",
     "atlas_desc": "Sources, feeds, mappings, products and integration logs",
     "enricher": "Enricher",
@@ -717,7 +721,80 @@
       "RETURNED": "Returned",
       "CANCELED": "Canceled"
     },
-    "external_id": "External ID"
+    "external_id": "External ID",
+    "col_sku": "SKU",
+    "col_qty": "Qty",
+    "col_status": "Status",
+    "col_unit_price": "Unit price",
+    "col_total": "Total",
+    "col_tax": "Tax",
+    "pickup_point": "Pickup point",
+    "mails": {
+      "title": "E-mails",
+      "kind": "Kind",
+      "status": "Status",
+      "recipient": "Recipient",
+      "language": "Language",
+      "attempts": "Attempts",
+      "sent_at": "Sent",
+      "empty": "No e-mail has been sent for this order",
+      "shared_with": "Shared with {numbers}",
+      "kinds": {
+        "confirmation": "Order confirmation",
+        "canceled": "Order canceled"
+      },
+      "statuses": {
+        "pending": "Pending",
+        "sent": "Sent",
+        "failed": "Failed",
+        "skipped": "Skipped"
+      },
+      "send_again": "Send again",
+      "send_confirmation": "Send confirmation",
+      "confirm_title": "Send the e-mail again?",
+      "confirm_message": "“{kind}” goes to {recipient}.",
+      "queued": "The e-mail is queued for sending",
+      "too_many": "Too many resends, try later",
+      "no_address": "The order has no e-mail address",
+      "error": "Could not send the e-mail"
+    }
+  },
+  "stock_alerts": {
+    "demand": "Demand",
+    "demand_help": "Variants customers wait for, and whether they can be bought now.",
+    "subscriptions": "Requests",
+    "subscriptions_help": "Every back-in-stock request: who waits for which variant, and what happened to it.",
+    "search_demand": "SKU or product name",
+    "search_subscriptions": "Exact address or SKU",
+    "product": "Product",
+    "sku": "SKU",
+    "waiting": "Waiting",
+    "oldest_request": "Oldest request",
+    "in_stock_now": "In stock now",
+    "notified_30d": "Notified in 30 days",
+    "in_stock": "In stock: {count}",
+    "sold_out": "Sold out",
+    "summary": "Waiting requests: {waiting} · variants waited for: {variants}",
+    "empty_title": "Nobody is waiting for anything",
+    "empty_message": "A request appears here when a customer asks the shop to email them about a sold-out variant.",
+    "no_requests": "No requests match the filters",
+    "address": "Address",
+    "language": "Language",
+    "status": "Status",
+    "created": "Created",
+    "notified": "Notified",
+    "status_all": "All statuses",
+    "status_waiting": "Waiting",
+    "status_notified": "Notified",
+    "status_cancelled": "Cancelled",
+    "status_expired": "Expired",
+    "sku_filter": "SKU: {sku}",
+    "cancel_request": "Cancel request",
+    "cancel_title": "Cancel this request?",
+    "cancel_message": "The customer will not be emailed when {sku} is back in stock.",
+    "keep": "Keep",
+    "cancelled": "Request cancelled",
+    "download_csv": "Download CSV"
   },
   "pim": {
     "attribute_values_more": "Load more values…",
@@ -1654,7 +1731,9 @@
       "agreements-newsletter-signup": "Newsletter Signup",
       "contact-forms-booking-confirmation": "Booking Confirmation",
       "contact-forms-booking-admin-notification": "Booking Admin Notification",
-      "contact-forms-submission": "Contact Form Submission"
+      "contact-forms-submission": "Contact Form Submission",
+      "checkout-order-confirmation": "Order confirmation",
+      "checkout-order-canceled": "Order canceled"
     },
     "type_desc": {
       "accounts-new-account": "Signup confirmation email",
@@ -1666,7 +1745,9 @@
       "agreements-newsletter-signup": "Newsletter confirmation email",
       "contact-forms-booking-confirmation": "Booker confirmation email",
       "contact-forms-booking-admin-notification": "Admin notification of new booking",
-      "contact-forms-submission": "Generic contact form admin notification"
+      "contact-forms-submission": "Generic contact form admin notification",
+      "checkout-order-confirmation": "Sent when an order is placed or paid",
+      "checkout-order-canceled": "Sent when a confirmed order is canceled"
     },
     "fields": {
       "welcome": "Welcome",
@@ -1700,7 +1781,16 @@
       "label_type": "Type label",
       "label_form": "Form label",
       "label_code": "Code label",
-      "label_body": "Body label"
+      "label_body": "Body label",
+      "preheader": "Preheader",
+      "heading": "Heading",
+      "intro": "Introduction",
+      "split_note": "Split purchase note",
+      "transfer_heading": "Bank transfer heading",
+      "transfer_note": "Bank transfer note",
+      "cod_note": "Cash on delivery note",
+      "paid_note": "Paid online note",
+      "refund_note": "Refund note"
     },
     "field_hints": {
       "user_name": "Supports |user_name| placeholder",
@@ -1711,7 +1801,36 @@
       "intro_booking": "Rendered above the booking facts. Empty = use translated default.",
       "closing_booking": "Rendered after the meet link. Empty = use translated default.",
       "header_admin_booking": "H2 heading. Empty = use translated default 'New booking'.",
-      "header_submission": "H2 heading. Empty = use translated default 'New contact form submission'."
+      "header_submission": "H2 heading. Empty = use translated default 'New contact form submission'.",
+      "order_number": "Supports the <order_number> placeholder",
+      "preheader": "The line an inbox shows after the subject. Empty = default text.",
+      "heading": "The title at the top of the e-mail. Empty = default text.",
+      "intro": "The paragraph under the heading. Empty = default text.",
+      "split_note": "Shown only when the purchase was split into several orders.",
+      "transfer_heading": "The heading of the box with the bank transfer details.",
+      "transfer_note": "Shown under the bank transfer details.",
+      "cod_note": "Shown for cash on delivery, followed by the amount due.",
+      "paid_note": "Shown when the order is already paid.",
+      "refund_note": "Shown only when the canceled order was paid.",
+      "help_order": "The closing line on how to contact the shop. Empty = default text."
+    },
+    "preview": {
+      "title": "Preview",
+      "variant": "Sample order",
+      "width": "Width",
+      "desktop": "Desktop 600",
+      "phone": "Phone 360",
+      "text_version": "Text version",
+      "save_to_refresh": "Save to refresh the preview",
+      "unavailable": "Preview is not available",
+      "variants": {
+        "transfer": "Bank transfer",
+        "cod": "Cash on delivery",
+        "paid_online": "Paid online",
+        "split": "Split purchase",
+        "unpaid": "Not paid",
+        "paid": "Paid"
+      }
     }
   },
   "faq": {
@@ -5094,6 +5213,9 @@
       },
       "platform": {
         "devtools": "Development-only test endpoints"
+      },
+      "stock_alerts": {
+        "subscriptions": "Back-in-stock requests"
       }
     },
     "scopes": {
@@ -5119,6 +5241,9 @@
       },
       "agreements": {
         "subscribe": "Newsletter subscription"
+      },
+      "stock_alerts": {
+        "subscribe": "Back-in-stock requests"
       }
     }
   },

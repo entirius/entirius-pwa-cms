@@ -36,6 +36,7 @@ export const AREAS = Object.freeze({
   ACCOUNTS_CUSTOMERS: "accounts.customers",
   CHECKOUT_ORDERS: "checkout.orders",
   CHECKOUT_DISCOUNTS: "checkout.discounts",
+  STOCK_ALERTS_SUBSCRIPTIONS: "stock_alerts.subscriptions",
   CONTACT_FORMS_SUBMISSIONS: "contact_forms.submissions",
   CONTACT_FORMS_LEADS: "contact_forms.leads",
   CONTACT_FORMS_SETTINGS: "contact_forms.settings",
