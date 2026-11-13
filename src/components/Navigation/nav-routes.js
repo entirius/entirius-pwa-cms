@@ -16,6 +16,7 @@ export const LEADS_SETTINGS_GROUPS = ["sales", "automation", "sending"];
 // `minVersion` (with `module`): the section needs that backend version (`isModuleAtLeast`); `group` = its hub card.
 export const LEADS_SETTINGS_SECTIONS = [
   { key: "stages", route: "LeadsStages", labelKey: "nav.leads_stages", icon: "list-ol", module: "leads", group: "sales" },
+  { key: "deal-stages", route: "LeadsDealStages", labelKey: "nav.leads_deal_stages", icon: "layer-group", module: "leads", minVersion: "0.5.0", group: "sales" },
   { key: "lead-types", route: "LeadsLeadTypes", labelKey: "leads.lead_types.title", icon: "tags", module: "leads", group: "sales" },
   { key: "custom-fields", route: "LeadsCustomFields", labelKey: "leads.fields.title", icon: "list-check", module: "leads", minVersion: "0.5.0", group: "sales" },
   { key: "scoring", route: "LeadsScoring", labelKey: "leads.scoring.title", icon: "ranking-star", module: "leads", minVersion: "0.5.0", group: "sales" },
@@ -367,6 +368,17 @@ export function buildNavRoutes() {
       app: ["leads"],
       requiresModule: "leads",
       activeOn: ["/leads/companies/", "/leads/board", "/leads/import"],
+    },
+    {
+      // Selling: the deal list (every width) and, through its List · Board switch, the board at a desk
+      route: "/leads/deals",
+      labelKey: "nav.leads_deals",
+      icon: "handshake",
+      query: {},
+      app: ["leads"],
+      requiresModule: "leads",
+      minVersion: "0.5.0",
+      activeOn: ["/leads/deals/"],
     },
     {
       // Drafts of every channel, approved in bulk at the desk; the badge = drafts waiting (useNav `counts`)

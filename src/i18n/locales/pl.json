@@ -74,7 +74,9 @@
     "leads_sending_health": "Kondycja wysyłki",
     "leads_do_not_contact": "Nie kontaktować",
     "leads_today": "Dziś",
-    "leads_reports": "Raporty"
+    "leads_reports": "Raporty",
+    "leads_deals": "Transakcje",
+    "leads_deal_stages": "Etapy transakcji"
   },
   "login": {
     "welcome": "Zaloguj się",
@@ -4385,7 +4387,8 @@
     "desktop_only": {
       "title": "Otwórz na komputerze",
       "message": "Ten ekran wymaga co najmniej 1024 px szerokości.",
-      "back": "Wróć do skrzynki"
+      "back": "Wróć do skrzynki",
+      "back_deals": "Otwórz listę transakcji"
     },
     "companies": {
       "title": "Firmy",
@@ -4450,7 +4453,8 @@
         "intel": "Wywiad",
         "contacts": "Kontakty",
         "timeline": "Historia",
-        "tasks": "Zadania"
+        "tasks": "Zadania",
+        "deals": "Transakcje"
       },
       "name": "Nazwa",
       "stage": "Etap",
@@ -4564,7 +4568,8 @@
       "stage": "Etap: {from} → {to}",
       "legal_basis_set": "Podstawa prawna ustawiona: {to}",
       "legal_basis_changed": "Podstawa prawna zmieniona z {from} na {to}",
-      "blocked": "Zablokowano: {reason}"
+      "blocked": "Zablokowano: {reason}",
+      "deal_moved": "{from} → {to}"
     },
     "block_reason": {
       "no_eligible_contact": "brak kontaktu, do którego można pisać",
@@ -4613,7 +4618,8 @@
     "common": {
       "delete": "Usuń",
       "keep": "Zostaw",
-      "error": "Nie udało się — spróbuj ponownie."
+      "error": "Nie udało się — spróbuj ponownie.",
+      "cancel": "Anuluj"
     },
     "settings": {
       "groups": {
@@ -4639,7 +4645,10 @@
       "seq_stopped": "sekwencja zatrzymana",
       "seq_paused": "sekwencja wstrzymana",
       "seq_paused_until": "sekwencja wstrzymana do {date}",
-      "confidence": "pewność {n} %"
+      "confidence": "pewność {n} %",
+      "event_deal_opened": "Otwarto transakcję: {title}",
+      "event_deal_moved": "Transakcja {title}: {from} → {to}",
+      "event_deal_deleted": "Usunięto transakcję: {title}"
     },
     "problem": {
       "legal_footer": "Wiadomość nie ma stopki prawnej — ustaw stopkę w Ustawieniach → Ustawienia wysyłki",
@@ -5147,6 +5156,88 @@
       "days": "{n} d",
       "hours": "{n} godz.",
       "loading": "Ładowanie raportu…"
+    },
+    "deals": {
+      "title": "Transakcje",
+      "open_deal": "Otwórz transakcję",
+      "search": "Szukaj transakcji lub firmy",
+      "status": "Status transakcji",
+      "stage": "Etap transakcji",
+      "expected_close": "Planowane zamknięcie",
+      "col_deal": "Transakcja",
+      "col_one_off": "Jednorazowo",
+      "col_recurring": "Cyklicznie",
+      "col_owner": "Opiekun",
+      "col_tasks": "Otwarte zadania",
+      "col_value": "Wartość",
+      "show_all": "Pokaż wszystkie ({count})",
+      "empty_title": "Brak transakcji",
+      "empty_message": "Otwórz ją z karty firmy",
+      "empty": "Brak transakcji",
+      "none_match": "Żadna transakcja nie pasuje",
+      "no_stages": "Najpierw ustaw etapy transakcji",
+      "cannot_close": "Transakcji nie da się zamknąć, dopóki nie ma etapu wygranej i przegranej",
+      "move_failed": "Nie przeniesiono transakcji",
+      "clear_filters": "Wyczyść filtry",
+      "loading": "Ładowanie transakcji…"
+    },
+    "deal": {
+      "title": "Transakcja",
+      "title_field": "Tytuł",
+      "company": "Firma",
+      "contact": "Kontakt",
+      "owner": "Opiekun",
+      "value_one_off": "Wartość jednorazowa",
+      "value_recurring": "Wartość cykliczna",
+      "period": "Okres",
+      "period_month": "Miesięcznie",
+      "period_year": "Rocznie",
+      "currency": "Waluta",
+      "expected_close": "Planowane zamknięcie",
+      "in_stage_since": "W etapie od",
+      "stage": "Etap transakcji",
+      "mark_won": "Oznacz jako wygraną",
+      "mark_lost": "Oznacz jako przegraną",
+      "reopen": "Otwórz ponownie",
+      "delete": "Usuń transakcję",
+      "delete_confirm": "Usunąć transakcję {title}? Tej operacji nie można cofnąć.",
+      "lost_reason_line": "Powód przegranej: {reason}",
+      "pick_currency": "Wybierz walutę",
+      "not_found": "Nie znaleziono transakcji",
+      "history": "Historia",
+      "open_title": "Otwórz transakcję",
+      "won_toast": "Transakcja wygrana",
+      "lost_toast": "Transakcja przegrana",
+      "lost_title": "Oznacz jako przegraną: {title}",
+      "lost_reason": "Powód przegranej",
+      "per_month": "{value} / mies.",
+      "per_year": "{value} / rok",
+      "reason_required": "Podaj powód",
+      "title_required": "Podaj tytuł transakcji",
+      "company_required": "Wybierz firmę"
+    },
+    "deal_kind": {
+      "open": "Otwarta",
+      "won": "Wygrana",
+      "lost": "Przegrana"
+    },
+    "deal_stage_kind": {
+      "open": "Otwarty",
+      "won": "Wygrany",
+      "lost": "Przegrany"
+    },
+    "deal_stages": {
+      "title": "Etapy transakcji",
+      "description": "Nowa transakcja zaczyna się w pierwszym otwartym etapie.",
+      "stages": "Etapy",
+      "add_title": "Dodaj etap",
+      "add": "Dodaj etap",
+      "key": "Klucz",
+      "label": "Etykieta",
+      "kind": "Rodzaj",
+      "in_use": "Ten etap ma transakcje — najpierw je przenieś",
+      "empty": "Brak etapów transakcji — dodaj pierwszy poniżej",
+      "delete_confirm": "Usunąć etap {label}?"
     }
   },
   "notification_bar": {

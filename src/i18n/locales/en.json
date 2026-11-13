@@ -74,7 +74,9 @@
     "leads_sending_health": "Sending health",
     "leads_do_not_contact": "Do not contact",
     "leads_today": "Today",
-    "leads_reports": "Reports"
+    "leads_reports": "Reports",
+    "leads_deals": "Deals",
+    "leads_deal_stages": "Deal stages"
   },
   "login": {
     "welcome": "Sign in",
@@ -4386,7 +4388,8 @@
     "desktop_only": {
       "title": "Open on a desktop",
       "message": "This screen needs at least 1024 px of width.",
-      "back": "Back to the Inbox"
+      "back": "Back to the Inbox",
+      "back_deals": "Open the deal list"
     },
     "companies": {
       "title": "Companies",
@@ -4451,7 +4454,8 @@
         "intel": "Intel",
         "contacts": "Contacts",
         "timeline": "History",
-        "tasks": "Tasks"
+        "tasks": "Tasks",
+        "deals": "Deals"
       },
       "name": "Name",
       "stage": "Stage",
@@ -4565,7 +4569,8 @@
       "stage": "Stage: {from} → {to}",
       "legal_basis_set": "Legal basis set to {to}",
       "legal_basis_changed": "Legal basis changed from {from} to {to}",
-      "blocked": "Blocked: {reason}"
+      "blocked": "Blocked: {reason}",
+      "deal_moved": "{from} → {to}"
     },
     "block_reason": {
       "no_eligible_contact": "no eligible contact",
@@ -4614,7 +4619,8 @@
     "common": {
       "delete": "Delete",
       "keep": "Keep",
-      "error": "That did not work — try again."
+      "error": "That did not work — try again.",
+      "cancel": "Cancel"
     },
     "settings": {
       "groups": {
@@ -4640,7 +4646,10 @@
       "seq_stopped": "sequence stopped",
       "seq_paused": "sequence paused",
       "seq_paused_until": "sequence paused until {date}",
-      "confidence": "{n} % sure"
+      "confidence": "{n} % sure",
+      "event_deal_opened": "Deal opened: {title}",
+      "event_deal_moved": "Deal {title}: {from} → {to}",
+      "event_deal_deleted": "Deal deleted: {title}"
     },
     "problem": {
       "legal_footer": "The mail has no legal footer — set the footer in Settings → Send settings",
@@ -5148,6 +5157,88 @@
       "days": "{n} d",
       "hours": "{n} h",
       "loading": "Loading the report…"
+    },
+    "deals": {
+      "title": "Deals",
+      "open_deal": "Open deal",
+      "search": "Search deal or company",
+      "status": "Deal status",
+      "stage": "Deal stage",
+      "expected_close": "Expected close",
+      "col_deal": "Deal",
+      "col_one_off": "One-off",
+      "col_recurring": "Recurring",
+      "col_owner": "Owner",
+      "col_tasks": "Open tasks",
+      "col_value": "Value",
+      "show_all": "Show all {count}",
+      "empty_title": "No deals yet",
+      "empty_message": "Open one from a company card",
+      "empty": "No deals yet",
+      "none_match": "No deal matches",
+      "no_stages": "Set up deal stages first",
+      "cannot_close": "Deals cannot be closed until there is a won and a lost stage",
+      "move_failed": "The deal was not moved",
+      "clear_filters": "Clear filters",
+      "loading": "Loading deals…"
+    },
+    "deal": {
+      "title": "Deal",
+      "title_field": "Title",
+      "company": "Company",
+      "contact": "Contact",
+      "owner": "Owner",
+      "value_one_off": "One-off value",
+      "value_recurring": "Recurring value",
+      "period": "Period",
+      "period_month": "Per month",
+      "period_year": "Per year",
+      "currency": "Currency",
+      "expected_close": "Expected close",
+      "in_stage_since": "In stage since",
+      "stage": "Deal stage",
+      "mark_won": "Mark won",
+      "mark_lost": "Mark lost",
+      "reopen": "Reopen",
+      "delete": "Delete deal",
+      "delete_confirm": "Delete the deal {title}? This cannot be undone.",
+      "lost_reason_line": "Lost reason: {reason}",
+      "pick_currency": "Pick a currency",
+      "not_found": "Deal not found",
+      "history": "History",
+      "open_title": "Open a deal",
+      "won_toast": "Deal won",
+      "lost_toast": "Deal lost",
+      "lost_title": "Mark lost: {title}",
+      "lost_reason": "Lost reason",
+      "per_month": "{value} / month",
+      "per_year": "{value} / year",
+      "reason_required": "Give the reason",
+      "title_required": "Give the deal a title",
+      "company_required": "Pick a company"
+    },
+    "deal_kind": {
+      "open": "Open",
+      "won": "Won",
+      "lost": "Lost"
+    },
+    "deal_stage_kind": {
+      "open": "Open",
+      "won": "Won",
+      "lost": "Lost"
+    },
+    "deal_stages": {
+      "title": "Deal stages",
+      "description": "A new deal starts in the first open stage.",
+      "stages": "Stages",
+      "add_title": "Add a stage",
+      "add": "Add stage",
+      "key": "Key",
+      "label": "Label",
+      "kind": "Kind",
+      "in_use": "This stage holds deals — move them first",
+      "empty": "No deal stages yet — add the first one below",
+      "delete_confirm": "Delete the stage {label}?"
     }
   },
   "notification_bar": {

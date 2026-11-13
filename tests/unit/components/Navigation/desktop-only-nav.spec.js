@@ -56,6 +56,13 @@ describe("Leads nav (UX-002d: one panel, Settings instead of four entries)", () 
     expect(links).toEqual(["/leads/today", "/leads/inbox", "/leads/companies", "/leads/settings"]);
   });
 
+  it("Leads CRM 0.5.0: Deals is the fourth entry, also in the phone bar; Approvals and Reports are desk only", () => {
+    const crm = (isDesktop) =>
+      filterNavRoutes(buildNavRoutes(), { panel: "leads", isDesktop, isModuleEnabled: () => true, isModuleAtLeast: () => true }).map((r) => r.route);
+    expect(crm(false)).toEqual(["/leads/today", "/leads/inbox", "/leads/companies", "/leads/deals"]);
+    expect(crm(true)).toEqual(["/leads/today", "/leads/inbox", "/leads/companies", "/leads/deals", "/leads/approvals", "/leads/reports", "/leads/settings"]);
+  });
+
   it("an entry whose backend module is off is not listed", () => {
     expect(routesFor("leads", true, new Set(["leads"]))).toEqual(["/leads/today", "/leads/companies", "/leads/settings"]);
     expect(routesFor("leads", false, new Set(["leads"]))).toEqual(["/leads/today", "/leads/companies"]);

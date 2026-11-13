@@ -1127,6 +1127,25 @@ const routes = [
           import(/* webpackChunkName: "leads" */ "../views/Leads/Company.vue"),
         meta: { requiresAuth: true, titleKey: "leads.company.title", panel: "leads", area: AREAS.LEADS_COMPANIES, module: "leads", crumbParent: "LeadsCompanies" },
       },
+      // Leads CRM plan 16 (leads >= 0.5.0): deals — the list on every width, the board at a desk, the deal card
+      {
+        path: "deals",
+        name: "LeadsDeals",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Deals.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.deals.title", panel: "leads", area: AREAS.LEADS_COMPANIES, module: "leads", moduleVersion: OUTBOUND, page: true },
+      },
+      {
+        path: "deals/board",
+        name: "LeadsDealsBoard",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/DealsBoard.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.deals.title", panel: "leads", area: AREAS.LEADS_COMPANIES, module: "leads", moduleVersion: OUTBOUND, page: true, desktop: true, desktopBack: "LeadsDeals", crumbParent: "LeadsDeals" },
+      },
+      {
+        path: "deals/:id(\\d+)",
+        name: "LeadsDeal",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Deal.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.deal.title", panel: "leads", area: AREAS.LEADS_COMPANIES, module: "leads", moduleVersion: OUTBOUND, page: true, crumbParent: "LeadsDeals" },
+      },
       // Plan 14 desktop screens: full width, "Open on a desktop" below 1024 px
       {
         path: "board",
@@ -1154,6 +1173,12 @@ const routes = [
         name: "LeadsStages",
         component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Stages.vue"),
         meta: { requiresAuth: true, titleKey: "leads.stages.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", page: true },
+      },
+      {
+        path: "settings/deal-stages",
+        name: "LeadsDealStages",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/DealStages.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.deal_stages.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", moduleVersion: OUTBOUND, page: true, crumbParent: "LeadsSettings" },
       },
       {
         path: "settings/lead-types",

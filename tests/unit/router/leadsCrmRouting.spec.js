@@ -61,3 +61,34 @@ describe("Leads CRM routing and access", () => {
     expect(contactSubjectRef(null)).toBe("");
   });
 });
+
+// Plan 16 (Leads CRM deals): the deal routes, the nav entry, the Deal stages section, the deal ref of the bell.
+describe("Leads CRM deals routing", () => {
+  beforeEach(() => mockIsModuleAtLeast.mockReturnValue(true));
+
+  it("Deals list, board and card ride leads.companies on leads 0.5.0; the board is a desk page", () => {
+    expect(router.resolve("/leads/deals").meta).toMatchObject({ page: true, area: AREAS.LEADS_COMPANIES, moduleVersion: "0.5.0" });
+    expect(router.resolve("/leads/deals").meta.desktop).toBeUndefined();
+    expect(router.resolve("/leads/deals/board").meta).toMatchObject({ desktop: true, crumbParent: "LeadsDeals", desktopBack: "LeadsDeals" });
+    expect(router.resolve("/leads/deals/5")).toMatchObject({ name: "LeadsDeal", meta: { crumbParent: "LeadsDeals", area: AREAS.LEADS_COMPANIES } });
+  });
+
+  it("an older backend: every deal route goes to the panel root", async () => {
+    mockIsModuleAtLeast.mockReturnValue(false);
+    await router.push("/leads/deals/5");
+    expect(router.currentRoute.value.path).toBe("/leads/today");
+  });
+
+  it("Deal stages is a Sales process section on leads.settings", () => {
+    const section = LEADS_SETTINGS_SECTIONS.find((s) => s.key === "deal-stages");
+    expect(section).toMatchObject({ group: "sales", module: "leads", minVersion: "0.5.0" });
+    expect(router.resolve({ name: section.route }).meta).toMatchObject({ area: AREAS.LEADS_SETTINGS, crumbParent: "LeadsSettings" });
+    expect(en.nav.leads_deal_stages).toBeTruthy();
+    expect(pl.nav.leads_deal_stages).toBeTruthy();
+  });
+
+  it("the bell opens a deal ref on the deal card", () => {
+    expect(routeForSubjectRef("leads.Deal:12")).toEqual({ name: "LeadsDeal", params: { id: 12 } });
+    expect(companyIdFromSubjectRef("leads.Deal:12")).toBeNull();
+  });
+});
