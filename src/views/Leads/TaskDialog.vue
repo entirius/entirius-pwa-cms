@@ -83,11 +83,13 @@ import { defaultDue, isoToPicker, kindOptions, pickerToIso } from "./tasks";
 
 // One dialog for every task action (ux/screens/task-dialog.md): add, edit, log a call, mark done. It never asks what
 // the page knows: `company` ({ id, name, contacts }) is the page's; without it (Today) a company picker shows.
+// `subject` ({ ref, label }) names what a new task is about when that is not the company itself (a deal).
 const props = defineProps({
   open: { type: Boolean, default: false },
   mode: { type: String, default: "add" }, // add | edit | call | done
   task: { type: Object, default: null },
   company: { type: Object, default: null },
+  subject: { type: Object, default: null },
 });
 const emit = defineEmits(["update:open", "saved"]);
 const notify = useNotifyStore();
@@ -190,8 +192,8 @@ const body = () => ({
 async function create() {
   const { data } = await POST_Task({
     ...body(),
-    subject_ref: companySubjectRef(subject.value.id),
-    subject_label: subject.value.name || "",
+    subject_ref: props.subject?.ref || companySubjectRef(subject.value.id),
+    subject_label: props.subject?.label ?? (subject.value.name || ""),
     contact_ref: contactSubjectRef(form.contactId),
   });
   if (form.alreadyDone) await POST_TaskDone(data.id, form.outcome);

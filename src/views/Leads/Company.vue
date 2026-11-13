@@ -54,6 +54,7 @@
           <OverviewTab :company="company" />
         </section>
         <IntelTab v-else-if="tab === 'intel'" :company="company" />
+        <DealsTab v-else-if="tab === 'deals'" :key="company.id" :company="company" />
         <ContactsTab v-else-if="tab === 'contacts'" :company="company" @changed="reload" />
         <ReadonlyArea v-else-if="tab === 'tasks'" :area="AREAS.TODO_TASKS">
           <TasksTab :key="company.id" :company="company" @count="taskCount = $event" />
@@ -96,6 +97,7 @@ import CompanyDetails from "./CompanyDetails.vue";
 import ComposeDialog from "./ComposeDialog.vue";
 import { fieldsFromDefinitions } from "./customFields";
 import ScoreCard from "./ScoreCard.vue";
+import DealsTab from "./tabs/DealsTab.vue";
 import TasksTab from "./tabs/TasksTab.vue";
 import Thread from "./Thread.vue";
 import ContactsTab from "./tabs/ContactsTab.vue";
@@ -104,8 +106,8 @@ import OverviewTab from "./tabs/OverviewTab.vue";
 
 // Company card: the page frame (name as H1, domain, stage and lead-type selects in the meta, actions), the tabs. Leads
 // CRM (leads >= 0.5.0): Details and Score on Overview, Tasks (django-todo), Write mail; History = the mail thread and
-// the company's events.
-const TABS = ["overview", "contacts", "timeline", "tasks", "intel"];
+// the company's events; Deals (its deals, Open deal).
+const TABS = ["overview", "contacts", "timeline", "tasks", "deals", "intel"];
 const route = useRoute();
 const router = useRouter();
 const notify = useNotifyStore();
@@ -135,7 +137,9 @@ const definitions = ref([]);
 const fields = computed(() => fieldsFromDefinitions(definitions.value));
 const composeOpen = ref(false);
 const taskCount = ref(null);
-const tabs = computed(() => TABS.filter((value) => value !== "tasks" || tasksOn.value));
+const TAB_GATES = { tasks: () => tasksOn.value, deals: () => crm.value };
+const tabs = computed(() => TABS.filter((value) => TAB_GATES[value]?.() ?? true));
+const tabCount = (value) => ({ tasks: taskCount.value, deals: company.value?.deals?.open ?? null })[value] ?? null;
 const tab = computed(() => {
   if (tabs.value.includes(route.query.tab)) return route.query.tab;
   return isDesktop.value ? "overview" : "timeline";
@@ -144,7 +148,7 @@ const tabOptions = computed(() =>
   tabs.value.map((value) => ({
     value,
     label: t(`leads.company.tabs.${value}`),
-    count: value === "tasks" ? taskCount.value : null,
+    count: tabCount(value),
     testid: `company-tab-${value}`,
   }))
 );

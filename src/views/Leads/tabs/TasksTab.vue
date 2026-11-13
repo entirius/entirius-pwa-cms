@@ -1,5 +1,5 @@
 <template>
-  <BasicCard :title="$t('leads.tasks.open_title')" data-testid="company-tasks">
+  <BasicCard :title="$t('leads.tasks.open_title')" :data-testid="`${prefix}-tasks`">
     <template #actions>
       <ActionBar :actions="actions" :labelled="false" />
     </template>
@@ -20,7 +20,7 @@
         <BasicButton mutates size="sm" data-testid="task-done" @click.stop="openDialog('done', row)">{{ $t("leads.task.mark_done") }}</BasicButton>
       </template>
     </DataTable>
-    <TaskDialog v-model:open="dialogOpen" :mode="dialogMode" :task="dialogTask" :company="company" @saved="load" />
+    <TaskDialog v-model:open="dialogOpen" :mode="dialogMode" :task="dialogTask" :company="company" :subject="subject" @saved="load" />
   </BasicCard>
 </template>
 
@@ -35,8 +35,12 @@ import TaskDialog from "../TaskDialog.vue";
 import { taskDue } from "../tasks";
 
 // Company card → Tasks (django-todo, `subject_ref = leads.Company:<id>`): the open tasks, Add task, Log call, Mark
-// done; a row opens the task to edit or cancel it. The card wraps this tab in `ReadonlyArea` `todo.tasks`.
-const props = defineProps({ company: { type: Object, required: true } });
+// done; a row opens the task to edit or cancel it. The card wraps this tab in `ReadonlyArea` `todo.tasks`. With a
+// `deal` it is the deal card's Tasks card (`subject_ref = leads.Deal:<id>`): Add task only.
+const props = defineProps({
+  company: { type: Object, required: true },
+  deal: { type: Object, default: null },
+});
 const emit = defineEmits(["count"]);
 const notify = useNotifyStore();
 const tasks = ref([]);
@@ -45,10 +49,16 @@ const dialogOpen = ref(false);
 const dialogMode = ref("add");
 const dialogTask = ref(null);
 
-const actions = computed(() => [
-  { key: "call", label: t("leads.task.log_call"), role: "secondary", mutates: true, testid: "company-log-call", onClick: () => openDialog("call", null) },
-  { key: "add", label: t("leads.task.add"), role: "secondary", mutates: true, testid: "company-add-task", onClick: () => openDialog("add", null) },
-]);
+const prefix = computed(() => (props.deal ? "deal" : "company"));
+const subject = computed(() =>
+  props.deal ? { ref: props.deal.subject_ref, label: props.deal.subject_label } : { ref: companySubjectRef(props.company.id), label: props.company.name || "" }
+);
+const actions = computed(() =>
+  [
+    !props.deal && { key: "call", label: t("leads.task.log_call"), role: "secondary", mutates: true, testid: "company-log-call", onClick: () => openDialog("call", null) },
+    { key: "add", label: t("leads.task.add"), role: "secondary", mutates: true, testid: `${prefix.value}-add-task`, onClick: () => openDialog("add", null) },
+  ].filter(Boolean)
+);
 const columns = computed(() => [
   { key: "due", label: t("leads.today.col_due"), width: "max-content" },
   { key: "title", label: t("leads.today.col_task"), width: "1fr" },
@@ -66,7 +76,7 @@ function openDialog(mode, task) {
 
 async function load() {
   try {
-    const { data } = await GET_Tasks({ subject_ref: companySubjectRef(props.company.id), status: "open", page_size: 100 });
+    const { data } = await GET_Tasks({ subject_ref: subject.value.ref, status: "open", page_size: 100 });
     tasks.value = data.results;
     emit("count", data.count);
   } catch (err) {
