@@ -54,7 +54,7 @@
         <span class="contacts__person" :class="{ 't-muted': row.anonymised_at }">
           {{ row.first_name }} {{ row.last_name }}
           <span v-if="row.job_title" class="t-muted fs-200">{{ row.job_title }}</span>
-          <span v-if="row.email" class="contacts__email fs-200">{{ row.email }}</span>
+          <span v-if="row.email" class="contacts__email fs-200" :title="row.email">{{ row.email }}</span>
         </span>
       </template>
       <template #cell-legal_basis="{ row }">
@@ -308,7 +308,10 @@ onMounted(async () => {
   flex-direction: column;
   min-width: 0;
 }
+/* One line with an ellipsis (the full address in the title): a narrow card never breaks it letter by letter */
 .contacts__email {
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>

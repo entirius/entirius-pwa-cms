@@ -4841,7 +4841,7 @@
     },
     "moves": {
       "title": "Automatyczne przejścia",
-      "description": "Automatyczne przejścia nigdy nie wyprowadzają z etapu wygranej ani przegranej.",
+      "description": "Automatyczne przejścia nigdy nie wyprowadzają z etapu wygranej ani przegranej. Odpowiedź „Wypisanie” to prośba kontaktu o koniec poczty; staje się rezygnacją, gdy człowiek ją potwierdzi.",
       "event": {
         "first_sent": "Wysłano pierwszą wiadomość",
         "reply": "Każda odpowiedź",
@@ -4852,7 +4852,7 @@
       "no_move": "Bez przejścia",
       "same_as_reply": "Jak przy każdej odpowiedzi",
       "keep_stage": "Zostaw etap",
-      "forward_only": "Tylko do przodu",
+      "forward_only": "Tylko do przodu — nigdy do wcześniejszego etapu",
       "sequence": "Sekwencja",
       "seq": {
         "stop": "Zatrzymaj",
@@ -4879,7 +4879,7 @@
       "model_card": "Model",
       "prompt_card": "Prompt",
       "model": "Model",
-      "min_confidence": "Pewność co najmniej",
+      "min_confidence": "Pewność co najmniej (%)",
       "min_confidence_hint": "Poniżej tej wartości odpowiedź jest „Niejasna”",
       "max_chars": "Czytaj najwyżej (znaków)",
       "prompt": "Prompt",
@@ -5364,7 +5364,8 @@
       "add_text": "Dodaj tekst",
       "add": "Nowa sekwencja",
       "add_step": "Dodaj krok",
-      "save": "Utwórz sekwencję"
+      "save": "Utwórz sekwencję",
+      "step_template": "Szablon"
     },
     "settings": {
       "title": "Ustawienia wysyłki"

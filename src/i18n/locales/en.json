@@ -4842,7 +4842,7 @@
     },
     "moves": {
       "title": "Automatic moves",
-      "description": "Stage moves never leave a won or lost stage.",
+      "description": "Stage moves never leave a won or lost stage. An Unsubscribe reply is how a contact asks to stop mail; it becomes an opt-out once a person confirms it.",
       "event": {
         "first_sent": "First mail sent",
         "reply": "Any reply",
@@ -4853,7 +4853,7 @@
       "no_move": "No move",
       "same_as_reply": "Same as any reply",
       "keep_stage": "Keep the stage",
-      "forward_only": "Only forward",
+      "forward_only": "Only forward — never back to an earlier stage",
       "sequence": "Sequence",
       "seq": {
         "stop": "Stop",
@@ -4880,7 +4880,7 @@
       "model_card": "Model",
       "prompt_card": "Prompt",
       "model": "Model",
-      "min_confidence": "Sure at least",
+      "min_confidence": "Sure at least (%)",
       "min_confidence_hint": "Below this the reply is \"Unclear\"",
       "max_chars": "Read at most (characters)",
       "prompt": "Prompt",
@@ -5365,7 +5365,8 @@
       "add_text": "Add text",
       "add": "New sequence",
       "add_step": "Add step",
-      "save": "Create sequence"
+      "save": "Create sequence",
+      "step_template": "Template"
     },
     "settings": {
       "title": "Send settings"

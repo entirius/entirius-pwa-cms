@@ -20,7 +20,8 @@
     <EmptyState v-else-if="stagesLoaded && !stages.length" icon="empty" size="md" :title="$t('leads.deals.no_stages')" data-testid="deals-no-stages">
       <router-link v-if="canSetUp" class="t-accent" :to="{ name: 'LeadsDealStages' }">{{ $t("leads.deal_stages.title") }}</router-link>
     </EmptyState>
-    <EmptyState v-else-if="!deals.length && !filtered" icon="empty" size="md" :title="$t('leads.deals.empty_title')" :message="$t('leads.deals.empty_message')" data-testid="deals-empty">
+    <!-- the next step ("open one from a company card") only for a role that may open one -->
+    <EmptyState v-else-if="!deals.length && !filtered" icon="empty" size="md" :title="$t('leads.deals.empty_title')" :message="readonly ? '' : $t('leads.deals.empty_message')" data-testid="deals-empty">
       <ActionBar :actions="pageActions.map((action) => ({ ...action, role: 'secondary' }))" />
     </EmptyState>
     <EmptyState v-else-if="!deals.length" icon="empty" size="md" :title="$t('leads.deals.none_match')" data-testid="deals-empty">

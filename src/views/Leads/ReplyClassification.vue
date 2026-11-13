@@ -3,7 +3,6 @@
     <template #header>
       <PageHeader :title="$t('leads.classify.title')" :back="{ name: 'LeadsSettings' }">
         <template v-if="!loading" #actions>
-          <BasicSwitch v-model="form.is_active" :label="$t('leads.classify.active')" data-testid="classify-active" />
           <StatusBadge v-if="isDirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" />
           <ActionBar :actions="actions" />
         </template>
@@ -22,6 +21,7 @@
       <p v-if="!form.is_active" class="m-0" data-testid="classify-inactive">{{ $t("leads.classify.inactive") }}</p>
       <BasicCard :title="$t('leads.classify.model_card')">
         <div class="form-grid">
+          <BasicSwitch v-model="form.is_active" class="form-grid__wide" :label="$t('leads.classify.active')" data-testid="classify-active" />
           <FormField :label="$t('leads.classify.model')" required :error="fieldError('model')">
             <BasicSelect v-model="form.model" :options="modelOptions" data-testid="classify-model" />
           </FormField>

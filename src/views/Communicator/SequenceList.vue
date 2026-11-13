@@ -98,7 +98,7 @@ const KEY_PATTERN = /^[-a-zA-Z0-9_]+$/;
 const stepColumns = [
   { key: "number", label: "#", numeric: true },
   { key: "days_after_previous", label: t("communicator.sequences.days"), numeric: true },
-  { key: "template_key", label: t("communicator.template.key"), width: "1fr" },
+  { key: "template_key", label: t("communicator.sequences.step_template"), width: "1fr" },
 ];
 const readonly = usePageReadonly();
 const sequences = ref([]);
