@@ -88,3 +88,27 @@ it; reorder = one PATCH `order` per moved row), `settings/scoring` (one active p
 `settings/rules` (conditions from `GET fields/`); Scoring and Rules share `ConditionRow.vue` (ops per kind, "is empty"
 hides the value). `/leads/reports` (desktop) is the funnel as three tables, origin and period filters. Never parse a
 `subject_ref` / `contact_ref` in a view: `src/utils/subjectRef.js` builds and reads them.
+
+## Deals (django-leads 0.5.0)
+
+Dormant on an older backend like the CRM screens (`meta.moduleVersion`, nav `minVersion`); deals ride
+`leads.companies`, deal stages `leads.settings` — no new area. `/leads/deals` (`Deals.vue`, every width, nav entry 4
+and the phone bar) lists `GET deals/`: search, owner chips (default Mine), status (default Open; cleared = `kind=all`),
+deal stage and the expected-close range (`close_from` / `close_to`, written as one change), the sort (allowlist:
+`expected_close_date`, `value_one_off`, `value_recurring`) and the page live in the URL; a phone shows deal and
+stage only (every other column has a `priority`). `/leads/deals/board` (`DealsBoard.vue`, `meta.desktop`; the wall
+links back to the list through `meta.desktopBack`) shows `GET deals/board/` columns (`DealBoardColumn.vue`,
+`DealCard.vue`): count, totals per currency (`deals.js` `totalLines` — one line per currency, never added across),
+the first 25 deals and "Show all" (the list filtered by the stage). Every move — row select, card select, drop, the
+deal card's Mark won / Mark lost / Reopen — goes through `useDealMove.js`: a lost stage opens `LostReasonDialog.vue`
+(a reason is required; the lost stage is picked only when the channel has more than one), a refusal or a cancelled
+reason snaps a dropped card back. `/leads/deals/:id` (`Deal.vue`) is the deal card: kind badge, company link and stage
+select in the header; Details (`DealDetails.vue`: values, currency, period, expected close, contact, owner, custom
+fields of entity `deal`; a value without a currency is refused on Currency); Tasks (`tabs/TasksTab.vue` with `deal`:
+`subject_ref` / `subject_label` from the deal); History (`GET deals/<id>/activities/`, moves in stage labels). The
+company card gains a Deals tab (`tabs/DealsTab.vue`, `GET companies/<id>/deals/`, chips with the card's `deals`
+counts); "Open deal" (`DealDialog.vue` + `DealForm.vue`) pre-fills the company, its name as the title, the primary
+contact and the channel's default currency (`GET channel/` — `leads.settings`; unreadable = the API fills it), owner
+and stage are the server's. Settings → Deal stages (`DealStages.vue`): label and kind per row (Save while dirty),
+reorder, delete (409 → "This stage holds deals") and Add. Amounts stay decimal strings (`BasicInput format="money"`,
+shown through `formatCost`). The bell maps `leads.Deal:<id>` to the deal card.

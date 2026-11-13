@@ -1930,6 +1930,72 @@
       "file": "leads-reports__{vp}__{theme}.png"
     },
     {
+      "id": "leads-deals",
+      "route": "/leads/deals",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-deals__{vp}__{theme}.png",
+      "note": "Leads CRM plan 16; needs leads >= 0.5.0"
+    },
+    {
+      "id": "leads-deals-board",
+      "route": "/leads/deals/board",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-deals-board__{vp}__{theme}.png",
+      "note": "Leads CRM plan 16; needs leads >= 0.5.0"
+    },
+    {
+      "id": "leads-deal",
+      "route": "/leads/deals",
+      "resolver": "first-link",
+      "links": [
+        "a[href^=\"/leads/deals/\"]:not([href=\"/leads/deals/board\"])"
+      ],
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-deal__{vp}__{theme}.png",
+      "note": "Leads CRM plan 16; needs leads >= 0.5.0"
+    },
+    {
+      "id": "leads-deal-stages",
+      "route": "/leads/settings/deal-stages",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-deal-stages__{vp}__{theme}.png",
+      "note": "Leads CRM plan 16; needs leads >= 0.5.0"
+    },
+    {
       "id": "access-roles-list",
       "route": "/access/roles",
       "resolver": "fixed",

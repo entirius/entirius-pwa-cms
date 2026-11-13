@@ -6,6 +6,12 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- Leads panel, deals (django-leads 0.5.0): Deals (nav entry, also in the phone bar) lists the deals with search, owner
+  chips, status, stage and expected-close filters and a stage select on every row; at a desk a board shows one column
+  per deal stage with its count and totals per currency and moves deals by drag and drop. A lost stage always asks
+  the reason first. The deal card shows the values, contact, owner, custom fields, tasks and history, with Mark won,
+  Mark lost, Reopen and delete. The company card gains a Deals tab and "Open deal"; Settings gains Deal stages
+  (open, won, lost). A bell alert about a deal opens its card.
 - Leads panel, CRM screens (django-leads 0.5.0; tasks with django-todo): Today is the panel root — the caller's
   tasks by chip (Due now, Upcoming, No date, Done) and owner, the drafts and replies waiting, Add task and Mark done
   with an outcome. Companies is a full list page (filters, owner chips, custom-field columns, sort and page in the URL,
