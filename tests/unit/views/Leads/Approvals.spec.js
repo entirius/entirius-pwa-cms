@@ -110,7 +110,7 @@ describe("Leads → Approvals", () => {
     const wrapper = await mountApprovals();
     const open = wrapper.findAll('[data-testid="approval-open"]');
     await open[0].trigger("click");
-    expect(push).toHaveBeenCalledWith({ name: "LeadsReview", params: { id: 1 } });
+    expect(push).toHaveBeenCalledWith({ name: "LeadsReview", params: { id: 1 }, query: { from: "approvals" } });
     await open[1].trigger("click");
     expect(byTestid(wrapper, "approvals-drawer-approve").exists()).toBe(true);
   });
