@@ -78,6 +78,21 @@ describe("Leads → Settings → Deal stages", () => {
     expect(leads.POST_DealStage).toHaveBeenCalledWith({ key: "lost", label: "Lost", kind: "lost", order: 20 });
   });
 
+  it("a move keeps the edits not saved yet; a saved label with spaces leaves the page clean", async () => {
+    leads.PATCH_DealStage.mockResolvedValue({});
+    const wrapper = await mounted();
+    setControl(wrapper, "deal-stage-label", "Qualified lead ");
+    await flushPromises();
+    await wrapper.findAll('[data-testid="deal-stage-down"]')[0].trigger("click");
+    await flushPromises();
+    expect(control(wrapper, "deal-stage-label").props("modelValue")).toBe("Qualified lead ");
+    expect(byTestid(wrapper, "deal-stages-unsaved").exists()).toBe(true);
+    await byTestid(wrapper, "deal-stages-save").trigger("click");
+    await flushPromises();
+    expect(leads.PATCH_DealStage).toHaveBeenLastCalledWith(1, { label: "Qualified lead", kind: "open" });
+    expect(byTestid(wrapper, "deal-stages-unsaved").exists()).toBe(false);
+  });
+
   it("read-only: no Add card, no Save, no row action", async () => {
     const wrapper = await mounted({ write: false });
     expect(byTestid(wrapper, "readonly-notice").exists()).toBe(true);

@@ -47,6 +47,9 @@ describe("Leads → Settings → Sending health", () => {
     expect(wrapper.findAll('[data-testid="health-over"]')).toHaveLength(2);
     expect(byTestid(wrapper, "health-channel-over").exists()).toBe(false);
     expect(byTestid(wrapper, "health-resume").exists()).toBe(true);
+    wrapper.findComponent('[data-testid="health-max-bounce"]').vm.$emit("update:modelValue", "");
+    await flushPromises();
+    expect(wrapper.findAll('[data-testid="health-over"]')).toHaveLength(2);
     api.GET_Health.mockResolvedValueOnce({ data: { ...report, channel: { windows: windows(4, 25) } } });
     expect((await mounted()).findAll('[data-testid="health-channel-over"]')).toHaveLength(1);
   });

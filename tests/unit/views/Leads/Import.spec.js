@@ -113,6 +113,19 @@ describe("Leads Import", () => {
     expect(api.POST_Import.mock.calls.at(-1).slice(1)).toEqual([false, 7]);
   });
 
+  it("a caller who cannot own companies starts with no owner, and none is sent", async () => {
+    outboundOn();
+    useAccessStore().me = { user: { id: 1 }, permissions: {} };
+    api.POST_Import.mockResolvedValue({ data: { id: 4, status: "done", report: [] } });
+    api.GET_Import.mockResolvedValue({ data: { id: 4, status: "done", report: [] } });
+    const wrapper = await mountWithFile();
+    await flushPromises();
+    expect(wrapper.findComponent('[data-testid="import-owner"]').props("modelValue")).toBe(null);
+    await wrapper.find('[data-testid="import-upload"]').trigger("click");
+    await flushPromises();
+    expect(api.POST_Import.mock.calls.at(-1).slice(1)).toEqual([false, null]);
+  });
+
   it("the report names the ignored columns and the automation count; an older backend shows neither", async () => {
     outboundOn();
     const batch = { id: 4, status: "done", report: [], ignored_columns: ["phone", "notes"], automation_started_count: 2 };

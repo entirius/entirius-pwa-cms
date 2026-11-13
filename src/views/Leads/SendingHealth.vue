@@ -114,6 +114,7 @@ const saving = ref(false);
 const range = ref("7d");
 const report = ref({ channel: { windows: {} }, mailboxes: [] });
 const policy = reactive({});
+const savedPolicy = ref({});
 const logRows = ref([]);
 const logPage = ref(1);
 const logNext = ref(false);
@@ -150,8 +151,8 @@ const actions = computed(() => [
 
 const pct = (value) => (value === null || value === undefined ? "—" : `${value} %`);
 // A rate over its limit is flagged even below the minimum sample (the automatic pause waits for it, a person need not);
-// the muted figure and its title still say the sample is small.
-const overLimit = (value, rate) => value !== null && value !== undefined && value > Number(policy[rate.limit]);
+// the muted figure and its title still say the sample is small. The limit is the saved one, not the field being typed.
+const overLimit = (value, rate) => value !== null && value !== undefined && value > Number(savedPolicy.value[rate.limit]);
 const over = (row, rate) => overLimit(row.metrics[rate.key], rate);
 const rowAttrs = (row) => ({ "data-testid": "health-row", "data-mailbox": row.id });
 const fieldError = (field) => formErrors.getFieldError(field)?.msg || "";
@@ -200,6 +201,7 @@ async function load() {
     const [health, rules] = await Promise.all([GET_Health(), GET_HealthPolicy()]);
     report.value = health.data;
     Object.assign(policy, rules.data);
+    savedPolicy.value = { ...rules.data };
     snapshot(policy);
     track(policy);
     await loadLog();
@@ -216,6 +218,7 @@ async function save() {
   try {
     const body = Object.fromEntries(POLICY_FIELDS.map(({ key }) => [key, Number(policy[key])]));
     Object.assign(policy, (await PUT_HealthPolicy({ enabled: policy.enabled, ...body })).data);
+    savedPolicy.value = { ...policy };
     snapshot(policy);
   } catch (err) {
     formErrors.handleApiError(err);

@@ -190,14 +190,19 @@ async function loadColumns() {
 
 const customColumn = (prefix, field) => ({ column: `${prefix}${field.key}`, label: field.label, kind: t(`leads.field_kind.${field.kind}`) });
 
+// Me by default only when I can own companies: otherwise the select would show nothing while an id is sent.
 async function loadOwners() {
   owners.value = (await GET_AssignableUsers()).map((user) => ({ value: user.id, label: user.name || user.username }));
+  if (!owners.value.some((owner) => owner.value === ownerId.value)) ownerId.value = null;
 }
 
 onMounted(() => {
   if (!outbound.value) return;
   loadColumns().catch(() => (customColumns.value = []));
-  loadOwners().catch(() => (owners.value = []));
+  loadOwners().catch(() => {
+    owners.value = [];
+    ownerId.value = null;
+  });
 });
 onBeforeUnmount(() => clearTimeout(timer));
 </script>

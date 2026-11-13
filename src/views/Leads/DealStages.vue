@@ -68,6 +68,7 @@ import { t } from "@/i18n";
 import { DELETE_DealStage, GET_DealStages, PATCH_DealStage, POST_DealStage } from "@/api/leads/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { usePageReadonly } from "@/composables/useReadonly";
+import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
 import { useNotifyStore } from "@/stores/notify";
 import { canClose, stageKindOptions } from "./deals";
 
@@ -88,15 +89,21 @@ const saving = ref(false);
 const kinds = stageKindOptions();
 const closable = computed(() => canClose(stages.value));
 const dirty = (stage) => saved.value[stage.id] && (saved.value[stage.id].label !== stage.label || saved.value[stage.id].kind !== stage.kind);
-const anyDirty = computed(() => stages.value.some(dirty));
+// The page's unsaved state (badge, Save, the browser's leave prompt) is the stage list against the server's.
+const { snapshot, track, isDirty: anyDirty } = useUnsavedChanges();
 const actions = computed(() => [
   { key: "save", role: "primary", label: t("common.save"), disabled: !anyDirty.value, loading: saving.value, testid: "deal-stages-save", onClick: saveAll },
 ]);
 
+// A reload (after a move, a delete or an add) keeps the label and kind edits not saved yet.
 async function load() {
+  const pending = Object.fromEntries(stages.value.filter(dirty).map(({ id, label, kind }) => [id, { label, kind }]));
   try {
-    stages.value = (await GET_DealStages()).data.results;
-    saved.value = Object.fromEntries(stages.value.map(({ id, label, kind }) => [id, { label, kind }]));
+    const fresh = (await GET_DealStages()).data.results;
+    saved.value = Object.fromEntries(fresh.map(({ id, label, kind }) => [id, { label, kind }]));
+    snapshot(fresh);
+    stages.value = fresh.map((stage) => ({ ...stage, ...pending[stage.id] }));
+    track(stages.value);
   } finally {
     loading.value = false;
   }
@@ -117,8 +124,10 @@ async function attempt(errorKey, call, conflictKey = "") {
 async function saveRow(stage) {
   const body = { label: stage.label.trim(), kind: stage.kind };
   const ok = await attempt(stage.id, () => PATCH_DealStage(stage.id, body));
-  if (ok) saved.value = { ...saved.value, [stage.id]: { ...body } };
-  return ok;
+  if (!ok) return false;
+  stage.label = body.label;
+  saved.value = { ...saved.value, [stage.id]: { ...body } };
+  return true;
 }
 
 // Every changed row, one PATCH each; a refused row keeps its error inline and the toast comes only when all landed.
@@ -130,7 +139,9 @@ async function saveAll() {
   } finally {
     saving.value = false;
   }
-  if (results.every(Boolean)) notify.spawnNotification({ msg: t("leads.deal_stages.saved"), type: "positive" });
+  if (!results.every(Boolean)) return;
+  snapshot(stages.value);
+  notify.spawnNotification({ msg: t("leads.deal_stages.saved"), type: "positive" });
 }
 
 // Renumbers in steps of 10, one PATCH at a time; the first refusal stops the run and reloads the server order.

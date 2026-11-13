@@ -29,16 +29,6 @@
     <p v-else-if="error" class="t-negative m-0" role="alert" data-testid="approvals-error">{{ error }}</p>
     <EmptyState v-else-if="!rows.length && !filtered" icon="success" size="md" :title="$t('leads.approvals.empty')" data-testid="approvals-empty" />
     <div v-else class="flex-column gap-5">
-      <BulkActionBar
-        v-if="selection.length"
-        :count="selection.length"
-        selected-label-key="leads.approvals.selected"
-        clear-label-key="leads.approvals.clear"
-        :actions="bulkActions"
-        data-testid="approvals-bulk"
-        @action="onBulk"
-        @clear="clearSelection"
-      />
       <DataTable
         ref="table"
         :columns="columns"
@@ -68,7 +58,19 @@
         </template>
       </DataTable>
     </div>
+    <!-- the bulk bar rides the pinned footer above the pager: in sight while the list scrolls, and the rows never
+         move when the first one is ticked (acceptance CM5) -->
     <template #footer>
+      <BulkActionBar
+        v-if="selection.length"
+        :count="selection.length"
+        selected-label-key="leads.approvals.selected"
+        clear-label-key="leads.approvals.clear"
+        :actions="bulkActions"
+        data-testid="approvals-bulk"
+        @action="onBulk"
+        @clear="clearSelection"
+      />
       <Pagination v-model:page="page" :pages="pages" :disabled="loading" @update:page="load" />
     </template>
 

@@ -129,11 +129,12 @@ shown through `formatCost`). The bell maps `leads.Deal:<id>` to the deal card.
 - **Sending health**: a rate over its limit carries the warning badge also below the minimum sample and on the
   channel line; the thresholds say "(%)".
 - **Read-only**: every Settings section hides its add forms, row writes and Save for a role without the write area
-  (`tests/unit/views/Leads/SettingsReadonly.spec.js` and each section's spec); Approvals has no row checkboxes then.
-- **Approvals**: the bulk bar sits above the list and sticks to the top of the scroll body (the boot); at a desk
+  (`tests/unit/views/Leads/SettingsReadonly.spec.js` and each section's spec).
+- **Approvals**: the bulk bar rides the PageLayout footer above the pager (pinned at the bottom, the rows never move
+  when the first one is ticked); no row checkboxes read-only; at a desk
   Today's drafts counter opens Approvals, and a draft opened from Approvals (`?from=approvals`, `FROM_APPROVALS`)
   keeps Approvals in its crumbs and as its way back.
 - **Hub**: each section has one line saying what it changes (`leads.settings.about.<key>`).
 - **Boots**: a `max-content` DataTable column no longer truncates by default; a disabled primary button and a
   disabled select take the one disabled look; BasicDatePicker shows its value in the UI locale ("Pick a date" when
-  empty); BulkActionBar is sticky; the crumbs drop a `crumbParent` that is the nav entry's own page.
+  empty); the crumbs drop a `crumbParent` that is the nav entry's own page.
