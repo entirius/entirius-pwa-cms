@@ -76,6 +76,7 @@
             <span v-else data-testid="task-subject">{{ row.subject_label }}</span>
           </template>
           <template #cell-actions="{ row }">
+            <IconButton mutates icon="edit" size="sm" :label="$t('leads.task.edit')" data-testid="task-edit" @click="openDialog('edit', row)" />
             <BasicButton v-if="row.status === 'done'" mutates size="sm" data-testid="task-reopen" @click="reopen(row)">
               {{ $t("leads.task.reopen") }}
             </BasicButton>
@@ -101,6 +102,7 @@
 
 <script setup>
 import { computed, onMounted, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { t } from "@/i18n";
 import { GET_Conversations, GET_Replies } from "@/api/communicator/api";
 import { GET_Tasks, GET_Today, POST_TaskReopen } from "@/api/todo/api";
@@ -138,7 +140,11 @@ const approvalsOn = computed(() => isDesktop.value && outboundOn(munin, "communi
 const countersOn = computed(() => commOn.value && (drafts.value !== null || replies.value !== null));
 const todayLabel = formatDay(new Date().toISOString());
 
-const chip = ref("due");
+// The active chip lives in the URL (`?chip=`, `due` = none), so Back from a company lands on the same chip.
+const route = useRoute();
+const router = useRouter();
+const chipFromQuery = () => (CHIPS.includes(route.query?.chip) ? route.query.chip : "due");
+const chip = ref(chipFromQuery());
 const owner = ref("me");
 const page = ref(1);
 const pages = ref(1);
@@ -165,7 +171,7 @@ const columns = computed(() =>
     { key: "due", label: t("leads.today.col_due"), width: "max-content" },
     { key: "title", label: t("leads.today.col_task"), width: "1fr" },
     { key: "subject", label: t("leads.today.col_subject"), priority: 2 },
-    { key: "kind", label: t("leads.today.col_kind"), priority: 3 },
+    { key: "kind", label: t("leads.today.col_kind"), width: "max-content", priority: 3 },
     owner.value !== "me" && { key: "owner", label: t("leads.today.col_owner"), priority: 3 },
     { key: "actions", label: "", actions: true },
   ].filter(Boolean)
@@ -202,7 +208,7 @@ const counters = computed(() => [
     count: replies.value,
     label: t(`leads.today.replies_${pluralKey(replies.value)}`, { count: replies.value }),
     empty: t("leads.today.no_replies"),
-    to: { name: "LeadsInbox", query: { filter: "replied" } },
+    to: { name: "LeadsInbox", query: { filter: "replied", review: "1" } },
     testid: "today-replies",
   },
 ]);
@@ -255,7 +261,13 @@ async function loadCounters() {
 function pick(key) {
   chip.value = key;
   page.value = 1;
+  router.replace({ query: { ...route.query, chip: key === "due" ? undefined : key } });
 }
+
+watch(
+  () => route.query?.chip,
+  () => route.name === "LeadsToday" && (chip.value = chipFromQuery())
+);
 
 function openDialog(mode, task) {
   dialogMode.value = mode;

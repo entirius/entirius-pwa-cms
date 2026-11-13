@@ -115,6 +115,15 @@ describe("Company card → Tasks", () => {
     expect(byTestid(wrapper, "company-log-call").exists()).toBe(true);
   });
 
+  it("the task text and Edit open the edit dialog", async () => {
+    todo.GET_Tasks.mockResolvedValue({ data: { count: 1, results: [{ id: 2, title: "Call", kind: "phone", due_at: null, status: "open" }] } });
+    const wrapper = await mount(TasksTab, { company: company() }, { area: "todo.tasks" });
+    expect(byTestid(wrapper, "task-title-link").text()).toBe("Call");
+    await byTestid(wrapper, "task-title-link").trigger("click");
+    expect(wrapper.findComponent({ name: "TaskDialog" }).props()).toMatchObject({ open: true, mode: "edit" });
+    expect(byTestid(wrapper, "task-edit").exists()).toBe(true);
+  });
+
   it("read-only tasks: no Add, Log call or Mark done", async () => {
     todo.GET_Tasks.mockResolvedValue({ data: { count: 1, results: [{ id: 2, title: "Call", kind: "phone", due_at: null, status: "open" }] } });
     const wrapper = await mount(inArea("todo.tasks", TasksTab), { company: company() }, { area: "todo.tasks", write: false });

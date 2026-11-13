@@ -1,6 +1,5 @@
 import { t } from "@/i18n";
-import { formatDay } from "@/utils/format";
-import { channelTimeZone, formatTime } from "@/utils/leadsTime";
+import { channelTimeZone, formatLeadsDay, formatTime } from "@/utils/leadsTime";
 import { pluralKey } from "@/utils/plural";
 
 // Tasks of the Leads CRM (django-todo): kinds, the relative due label of `ux/copy.md` on the channel's local day.
@@ -21,7 +20,7 @@ export function taskDue(task, now = new Date()) {
   if (days < 0) return { label: t(`leads.due.overdue_${pluralKey(-days)}`, { count: -days }), tone: "negative" };
   if (days === 0) return { label: t("leads.due.today", { time }), tone: "info" };
   if (days === 1) return { label: t("leads.due.tomorrow", { time }), tone: "neutral" };
-  return { label: t("leads.due.on", { date: formatDay(task.due_at) }), tone: "neutral" };
+  return { label: t("leads.due.on", { date: formatLeadsDay(task.due_at) }), tone: "neutral" };
 }
 
 // The date picker's "YYYY-MM-DD HH:MM" (browser time) ↔ ISO; the default due is today 17:00.

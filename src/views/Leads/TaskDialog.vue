@@ -9,7 +9,7 @@
     @update:open="close"
   >
     <div v-if="mode === 'done'" class="flex-column gap-4">
-      <FormField :label="$t('leads.task.outcome')">
+      <FormField :label="$t('leads.task.outcome')" :hint="$t('leads.task.outcome_hint')">
         <BasicTextarea v-model="form.outcome" :maxlength="2000" data-testid="task-outcome" />
       </FormField>
     </div>
@@ -17,7 +17,7 @@
       <FormField class="task-dialog__wide" :label="$t('leads.task.title_field')" required :error="errorOf('title')">
         <BasicInput v-model="form.title" :maxlength="255" data-testid="task-title" />
       </FormField>
-      <FormField v-if="mode === 'call' || form.alreadyDone" class="task-dialog__wide" :label="$t('leads.task.outcome')">
+      <FormField v-if="mode === 'call' || form.alreadyDone" class="task-dialog__wide" :label="$t('leads.task.outcome')" :hint="$t('leads.task.outcome_hint')">
         <BasicTextarea v-model="form.outcome" :maxlength="2000" data-testid="task-outcome" />
       </FormField>
       <FormField v-if="mode !== 'call'" class="task-dialog__wide" :label="$t('leads.task.kind')">
@@ -29,7 +29,7 @@
       <FormField :label="$t('leads.task.owner')" :error="errorOf('owner_id')">
         <BasicSelect v-model="form.ownerId" :options="owners" searchable clearable data-testid="task-owner" />
       </FormField>
-      <FormField v-if="!company" :label="$t('leads.task.company')" required :error="errorOf('subject_ref')">
+      <FormField v-if="!company && mode !== 'edit'" :label="$t('leads.task.company')" required :error="errorOf('subject_ref')">
         <EntitySearchPicker
           v-model="form.companyId"
           v-model:display-value="form.companyName"
@@ -42,7 +42,7 @@
       <FormField v-if="contacts.length" :label="$t('leads.task.contact')">
         <BasicSelect v-model="form.contactId" :options="contacts" clearable data-testid="task-contact" />
       </FormField>
-      <FormField class="task-dialog__wide" :label="$t('leads.task.note')">
+      <FormField class="task-dialog__wide" :label="$t('leads.task.note')" :hint="$t('leads.task.note_hint')">
         <BasicTextarea v-model="form.note" :maxlength="5000" data-testid="task-note" />
       </FormField>
       <BasicCheckbox v-if="mode === 'add'" v-model="form.alreadyDone" class="task-dialog__wide" data-testid="task-already-done">
@@ -110,7 +110,7 @@ const title = computed(() =>
 const SUBMIT = { add: "leads.task.add", edit: "leads.task.save", call: "leads.task.log_call", done: "leads.task.mark_done" };
 const actions = computed(() =>
   [
-    props.mode === "edit" && { key: "cancel-task", label: t("leads.task.cancel_task"), role: "danger", testid: "task-cancel-task", onClick: () => (cancelling.value = true) },
+    props.mode === "edit" && props.task?.status !== "done" && { key: "cancel-task", label: t("leads.task.cancel_task"), role: "danger", testid: "task-cancel-task", onClick: () => (cancelling.value = true) },
     { key: "close", label: t("leads.task.close"), role: "secondary", disabled: saving.value, testid: "task-close", onClick: () => close(false) },
     { key: "submit", label: t(SUBMIT[props.mode]), role: "primary", loading: saving.value, testid: "task-submit", onClick: submit },
   ].filter(Boolean)
@@ -156,10 +156,16 @@ watch(
   () => props.open,
   (open) => {
     if (!open) return;
+    dismissToasts();
     reset();
     if (props.mode !== "done") loadOwners();
   }
 );
+
+// A live success toast sits over a phone sheet's footer buttons: a sheet that opens takes it away.
+function dismissToasts() {
+  (notify.notifications || []).filter((toast) => toast.type === "positive").forEach((toast) => notify.hideNotification(toast.uuid));
+}
 
 const findCompanies = async (search) =>
   (await GET_Companies({ search, page: 1 })).data.results.map((row) => ({ value: String(row.id), label: row.name || row.domain, secondary: row.domain }));
@@ -177,7 +183,7 @@ function validate() {
   Object.keys(localErrors).forEach((key) => delete localErrors[key]);
   if (props.mode === "done") return true;
   if (!form.title.trim()) localErrors.title = t("leads.task.required");
-  if (!subject.value) localErrors.subject_ref = t("leads.task.required");
+  if (props.mode !== "edit" && !subject.value) localErrors.subject_ref = t("leads.task.required");
   return !Object.keys(localErrors).length;
 }
 
@@ -193,16 +199,19 @@ async function create() {
   const { data } = await POST_Task({
     ...body(),
     subject_ref: props.subject?.ref || companySubjectRef(subject.value.id),
-    subject_label: props.subject?.label ?? (subject.value.name || ""),
+    subject_label: props.subject?.label ?? (props.company ? props.company.name || "" : form.companyName),
     contact_ref: contactSubjectRef(form.contactId),
   });
   if (form.alreadyDone) await POST_TaskDone(data.id, form.outcome);
-  return props.mode === "call" ? "leads.task.call_logged_toast" : form.alreadyDone ? "leads.task.done_toast" : "leads.task.added_toast";
+  const toast = props.mode === "call" ? "leads.task.call_logged_toast" : form.alreadyDone ? "leads.task.done_toast" : "leads.task.added_toast";
+  return { toast, task: data };
 }
 
+const saved = (toast) => (response) => ({ toast, task: response.data });
+
 async function run() {
-  if (props.mode === "done") return POST_TaskDone(props.task.id, form.outcome).then(() => "leads.task.done_toast");
-  if (props.mode === "edit") return PATCH_Task(props.task.id, body()).then(() => "leads.task.saved_toast");
+  if (props.mode === "done") return POST_TaskDone(props.task.id, form.outcome).then(saved("leads.task.done_toast"));
+  if (props.mode === "edit") return PATCH_Task(props.task.id, body()).then(saved("leads.task.saved_toast"));
   return create();
 }
 
@@ -211,8 +220,9 @@ async function submit() {
   saving.value = true;
   clearErrors();
   try {
-    notify.spawnNotification({ msg: t(await run()), type: "positive" });
-    finish();
+    const { toast, task } = await run();
+    notify.spawnNotification({ msg: t(toast), type: "positive" });
+    finish(task);
   } catch (err) {
     fail(err);
   } finally {
@@ -220,8 +230,8 @@ async function submit() {
   }
 }
 
-function finish() {
-  emit("saved");
+function finish(task) {
+  emit("saved", task);
   emit("update:open", false);
 }
 
@@ -238,9 +248,9 @@ async function cancelTask() {
   cancelling.value = false;
   saving.value = true;
   try {
-    await POST_TaskCancel(props.task.id, form.reason);
+    const { data } = await POST_TaskCancel(props.task.id, form.reason);
     notify.spawnNotification({ msg: t("leads.task.cancelled_toast"), type: "positive" });
-    finish();
+    finish(data);
   } catch (err) {
     fail(err);
   } finally {
