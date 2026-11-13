@@ -71,6 +71,9 @@
       </template>
       <template #cell-actions="{ row }">
         <div v-if="!row.anonymised_at" class="flex ai-ct gap-2">
+          <BasicButton v-if="outbound" variant="ghost" size="sm" :data-contact="row.id" data-testid="contact-why" @click="why = row">
+            {{ $t("leads.contact.why_no_mail") }}
+          </BasicButton>
           <BasicButton variant="ghost" size="sm" :data-contact="row.id" data-testid="contact-edit" @click="open(row.id, row)">
             {{ $t("common.edit") }}
           </BasicButton>
@@ -87,6 +90,7 @@
       </template>
     </DataTable>
 
+    <SendCheckDialog :company-id="company.id" :contact="why" @close="why = null" />
     <ConfirmDialog
       :open="Boolean(confirming)"
       :title="confirming ? $t('leads.contacts.remove_title', { name: nameOf(confirming) }) : ''"
@@ -107,7 +111,10 @@ import { GET_Suppressions } from "@/api/communicator/api";
 import { DELETE_Contact, PATCH_Contact, POST_Contact } from "@/api/leads/api";
 import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
 import { legalBasisLabel } from "@/utils/leadsLabels";
+import { useMuninStore } from "@/stores/munin";
+import { outboundOn } from "@/utils/leadsOutbound";
 import ContactFields from "../ContactFields.vue";
+import SendCheckDialog from "../SendCheckDialog.vue";
 
 // Contacts of the company card (UX-011): add, edit, remove, primary star — one form open at a time, above the table.
 // Remove answers 204 (never used, deleted) or 200 (used, anonymised: the thread and timeline keep it), and the line
@@ -131,6 +138,8 @@ const suppressed = ref(new Set());
 const mode = ref(null); // null | "add" | the id of the contact in edit
 const draft = reactive({});
 const confirming = ref(null);
+const why = ref(null); // the contact whose "Why no mail?" is open (leads >= 0.5.0)
+const outbound = computed(() => outboundOn(useMuninStore(), "leads"));
 const busy = ref(false);
 const error = ref("");
 const status = ref("");

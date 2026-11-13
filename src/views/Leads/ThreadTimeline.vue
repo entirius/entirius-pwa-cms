@@ -11,6 +11,13 @@
       <div class="tl__bubble">
         <p v-if="entry.tag" class="tl__tag">{{ entry.tag }}</p>
         <p v-if="entry.subject" class="tl__subject">{{ entry.subject }}</p>
+        <p v-if="entry.reply" class="tl__type">
+          <StatusBadge :tone="replyTone(entry.reply.intent)" :label="replyTypeLabel(entry.reply.intent)" data-testid="reply-type" :data-type="entry.reply.intent" />
+          <StatusBadge v-if="entry.reply.needs_review" tone="neutral" :label="$t('leads.history.needs_review')" data-testid="reply-needs-review" />
+          <span v-if="entry.reply.intent_return_date" data-testid="reply-back-on">
+            {{ $t("leads.history.back_on", { date: formatDay(entry.reply.intent_return_date) }) }}
+          </span>
+        </p>
         <p class="tl__body">{{ entry.text.own }}</p>
         <template v-if="entry.text.quoted">
           <BasicButton
@@ -25,8 +32,10 @@
           </BasicButton>
           <p v-if="quotesOpen.has(i)" class="tl__body tl__quote" data-testid="timeline-quote">{{ entry.text.quoted }}</p>
         </template>
+        <p v-if="nextOf(entry)" class="tl__next" data-testid="reply-next">{{ nextOf(entry) }}</p>
         <p class="tl__meta">
           <span v-if="!entry.sendState" data-testid="timeline-time">{{ formatTime(entry.at) }}</span>
+          <span v-if="sureOf(entry)">{{ sureOf(entry) }}</span>
           <span v-if="entry.status" class="tl__status" :data-testid="`status-${entry.status}`">
             {{ $t(`leads.status.${entry.status}`) }}<template v-if="entry.sendState"> · {{ entry.sendState }}</template>
           </span>
@@ -46,9 +55,13 @@
 </template>
 
 <script setup>
-import { computed, reactive } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import { t } from "@/i18n";
-import { sendStateLabel } from "@/utils/leadsLabels";
+import { useMuninStore } from "@/stores/munin";
+import { formatDay } from "@/utils/format";
+import { replyTypeLabel, sendStateLabel } from "@/utils/leadsLabels";
+import { outboundOn, replyTone } from "@/utils/leadsOutbound";
+import { loadReplyPlans } from "@/utils/leadsReplyPlans";
 import { splitQuote } from "@/utils/leadsThread";
 import { formatTime, sendState } from "@/utils/leadsTime";
 
@@ -88,8 +101,36 @@ function messageEntry(item, index, firstOut) {
     sendState: waiting ? waitingState(item) : "",
     tag: out && index !== firstOut ? t("leads.thread.followup") : "",
     optout: out ? null : props.optouts.find((reply) => reply.received_at === item.at) || null,
+    reply: !out && item.intent ? item : null,
   };
 }
+
+// A classified reply says what happens next: the plan of its type for the sequence (communicator >= 0.5.0; the
+// plans are read once per channel, a refusal leaves the line out). Confidence shows below 100 % only.
+const munin = useMuninStore();
+const plans = ref({});
+const SEQUENCE_STEP = { stop: "leads.history.seq_stopped", pause: "leads.history.seq_paused" };
+
+function nextOf(entry) {
+  const plan = entry.reply && plans.value[entry.reply.intent];
+  if (!plan) return "";
+  const until = plan.sequence === "pause_until_return" && entry.reply.intent_return_date;
+  const step = until
+    ? t("leads.history.seq_paused_until", { date: formatDay(entry.reply.intent_return_date) })
+    : t(SEQUENCE_STEP[plan.sequence] || "leads.history.seq_paused");
+  return t("leads.history.next", { steps: step });
+}
+
+function sureOf(entry) {
+  const confidence = entry.reply?.intent_confidence;
+  return confidence !== null && confidence !== undefined && confidence < 1
+    ? t("leads.history.confidence", { n: Math.round(confidence * 100) })
+    : "";
+}
+
+onMounted(async () => {
+  if (outboundOn(munin, "communicator")) plans.value = await loadReplyPlans();
+});
 
 const entries = computed(() => {
   const firstOut = props.messages.findIndex((message) => message.direction === "out");
@@ -105,6 +146,18 @@ const entries = computed(() => {
   margin: 0;
   padding: 0;
   list-style: none;
+}
+.tl__type {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-2);
+}
+.tl__next {
+  margin: var(--space-2) 0 0;
+  font-size: var(--fs-200);
+  color: var(--text-secondary);
 }
 .tl__empty {
   color: var(--text-muted);

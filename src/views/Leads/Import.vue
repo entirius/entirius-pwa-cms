@@ -15,7 +15,7 @@
         </ul>
       </BasicCard>
       <BasicCard :title="$t('leads.import.after_title')" gap data-testid="import-after">
-        <p class="m-0">{{ $t("leads.import.after") }}</p>
+        <p class="m-0">{{ $t(outbound ? "leads.import.after_rules" : "leads.import.after") }}</p>
       </BasicCard>
       <div class="flex ai-ct flex-wrap gap-5">
         <!-- the native picker stays scriptable (a page object sets its files); the button opens it -->
@@ -30,6 +30,13 @@
         />
         <BasicButton data-testid="import-choose" @click="fileInput.click()">{{ $t("leads.import.choose") }}</BasicButton>
         <span data-testid="import-file-name">{{ file?.name || $t("leads.import.no_file") }}</span>
+      </div>
+      <!-- leads >= 0.5.0: the automation starts on new companies only when asked; the cost note stays visible -->
+      <div v-if="outbound" class="flex-column gap-2">
+        <BasicCheckbox v-model="runRules" aria-describedby="import-run-rules-note" data-testid="import-run-rules">
+          {{ $t("leads.import.run_rules") }}
+        </BasicCheckbox>
+        <p id="import-run-rules-note" class="t-secondary m-0" data-testid="import-run-rules-note">{{ $t("leads.import.run_rules_note") }}</p>
       </div>
       <p v-if="error" class="t-negative m-0" data-testid="import-error">{{ error }}</p>
       <BasicCard v-if="batch" data-testid="import-report">
@@ -63,9 +70,13 @@ import { useRouter } from "vue-router";
 import { t } from "@/i18n";
 import { GET_Import, POST_Import } from "@/api/leads/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { useMuninStore } from "@/stores/munin";
+import { outboundOn } from "@/utils/leadsOutbound";
 
 // CSV upload: the batch runs on the leads queue; the screen polls it until done or failed.
 const POLL_MS = 2000;
+const outbound = computed(() => outboundOn(useMuninStore(), "leads"));
+const runRules = ref(false);
 const COLUMN_KEYS = ["column_company", "column_domain", "column_contact", "column_legal_basis"];
 const SAMPLE_NAME = "leads-sample.csv";
 const SAMPLE_CSV = [
@@ -136,7 +147,7 @@ async function upload() {
   error.value = "";
   busy.value = true;
   try {
-    batch.value = (await POST_Import(file.value)).data;
+    batch.value = (await POST_Import(file.value, outbound.value ? runRules.value : undefined)).data;
   } catch (err) {
     return fail(err);
   }

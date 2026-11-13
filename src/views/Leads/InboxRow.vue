@@ -16,6 +16,11 @@
         {{ $t("leads.review.to") }}: {{ row.draft.recipient_email || row.recipient_email || row.recipient_name }}
       </span>
       <span class="inbox-row__subject" data-testid="inbox-item-subject">{{ subject }}</span>
+      <span v-if="marker === 'replied' && reply?.intent" class="inbox-row__type">
+        <StatusBadge size="sm" :tone="replyTone(reply.intent)" :label="replyTypeLabel(reply.intent)" data-testid="inbox-item-type" :data-type="reply.intent" />
+        <StatusBadge v-if="reply.needs_review" size="sm" tone="neutral" :label="$t('leads.history.needs_review')" data-testid="inbox-item-review" />
+        <span v-if="reply.intent_return_date" class="t-secondary">{{ $t("leads.history.back_on", { date: formatDay(reply.intent_return_date) }) }}</span>
+      </span>
       <span class="inbox-row__state" data-testid="inbox-item-state">
         <FontAwesomeIcon v-if="marker === 'waiting'" :icon="$icons.scheduled" class="inbox-row__clock" />
         <strong v-if="marker !== 'none'" class="inbox-row__marker" :data-testid="`inbox-marker-${marker}`">{{ markerText }}</strong>
@@ -35,7 +40,9 @@ import { computed, onMounted, ref } from "vue";
 import { t } from "@/i18n";
 import { useMuninStore } from "@/stores/munin";
 import { loadCompanyName } from "@/utils/leadsCompanyNames";
-import { sendStateSentence } from "@/utils/leadsLabels";
+import { formatDay } from "@/utils/format";
+import { replyTypeLabel, sendStateSentence } from "@/utils/leadsLabels";
+import { replyTone } from "@/utils/leadsOutbound";
 import { splitQuote } from "@/utils/leadsThread";
 import { canSendNow, formatTime, sendState } from "@/utils/leadsTime";
 import { pluralKey } from "@/utils/plural";
@@ -48,6 +55,8 @@ const props = defineProps({
   row: { type: Object, required: true }, // a `conversations/` row: thread + subject, last_text, draft, waiting, replied, thread_count
   filter: { type: String, default: "all" },
   active: { type: Boolean, default: false },
+  // the newest classified reply of the conversation ({ intent, needs_review, intent_return_date }), null = none
+  reply: { type: Object, default: null },
 });
 defineEmits(["send-now"]);
 
@@ -141,6 +150,14 @@ onMounted(async () => {
   color: var(--text-secondary);
 }
 .inbox-row__state {
+  font-size: var(--fs-200);
+}
+.inbox-row__type {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
   font-size: var(--fs-200);
 }
 .inbox-row__marker {

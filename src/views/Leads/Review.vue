@@ -33,6 +33,14 @@
           </router-link>
           <span v-else class="review__company">{{ companyName }}</span>
           <span class="review__meta">{{ $t("leads.review.to") }}: {{ message.thread?.recipient_email }}</span>
+          <span v-if="problem" class="review__meta flex ai-ct flex-wrap gap-2" data-testid="review-problem">
+            <StatusBadge tone="warning" :label="$t('leads.approvals.problem')" />
+            {{ $t("leads.review.problem", { detail: problem }) }}
+          </span>
+          <span v-if="lastReply" class="review__meta flex ai-ct flex-wrap gap-2" data-testid="review-last-reply">
+            {{ $t("leads.review.last_reply") }}:
+            <StatusBadge :tone="replyTone(lastReply.intent)" :label="replyTypeLabel(lastReply.intent)" data-testid="reply-type" :data-type="lastReply.intent" />
+          </span>
           <span v-if="queueTotal" class="review__meta" data-testid="review-position">
             {{ $t("leads.review.queue_position", { index: queueIndex, count: queueTotal }) }}
           </span>
@@ -84,6 +92,7 @@
         ref="reviewActions"
         :busy="busy"
         :ai-disabled="aiDisabled"
+        :blocked="problem"
         @send="accept"
         @skip="skip"
         @rewrite="openRewrite"
@@ -102,11 +111,13 @@ import { isConflict } from "@/api/createClient";
 import * as api from "@/api/communicator/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { useLeadsReviewStore } from "@/stores/leadsReview";
+import { useLeadsChannelStore } from "@/stores/leadsChannel";
 import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
 import { useSwipe } from "@/composables/useSwipe";
 import { companyIdFromSubjectRef } from "@/utils/subjectRef";
-import { sendStateSentence } from "@/utils/leadsLabels";
+import { replyTypeLabel, sendStateSentence } from "@/utils/leadsLabels";
+import { outboundOn, problemText, replyTone } from "@/utils/leadsOutbound";
 import { sendState } from "@/utils/leadsTime";
 import AiToolboxHint from "@/components/ConfigHealth/AiToolboxHint.vue";
 import ConfigBanner from "@/components/ConfigHealth/ConfigBanner.vue";
@@ -195,10 +206,38 @@ async function load() {
       notify.spawnNotification({ msg: t("leads.review.already_handled"), type: "warning" });
       return await goNext();
     }
-    await loadQueuePosition();
+    await Promise.all([loadQueuePosition(), loadOutbound()]);
   } finally {
     loading.value = false;
   }
+}
+
+// communicator >= 0.5.0: what would stop this draft (the Approvals row's `blocker`, said before Send) and the type of
+// the thread's newest classified reply. Neither blocks the screen when it cannot be read.
+const problem = ref("");
+const lastReply = ref(null);
+
+async function findBlocker(draft) {
+  const params = { search: draft.thread?.recipient_email, channel: useLeadsChannelStore().activeChannelIdx };
+  const { data } = await api.GET_Approvals(params);
+  const row = (data.results || []).find((item) => item.id === draft.id);
+  return row?.blocker ? problemText(row.blocker) : "";
+}
+
+async function findLastReply(draft) {
+  const { data } = await api.GET_Replies({ thread: draft.thread?.id });
+  return (data.results || []).find((reply) => reply.intent) || null;
+}
+
+async function loadOutbound() {
+  problem.value = "";
+  lastReply.value = null;
+  if (!outboundOn(munin, "communicator")) return;
+  const draft = message.value;
+  const [blocker, reply] = await Promise.allSettled([findBlocker(draft), findLastReply(draft)]);
+  if (message.value !== draft) return;
+  problem.value = blocker.status === "fulfilled" ? blocker.value : "";
+  lastReply.value = reply.status === "fulfilled" ? reply.value : null;
 }
 
 // "Draft 2 of 3": after a send the next draft is visibly another one, not the same screen again.
@@ -288,6 +327,7 @@ function openVersion(data) {
     return;
   }
   message.value = data;
+  loadOutbound();
   router.replace({ name: "LeadsReview", params: { id: data.id } });
 }
 

@@ -8,7 +8,11 @@
         </template>
       </BasicMenu>
       <BasicButton :disabled="busy" data-testid="review-skip" @click="emit('skip')">{{ $t("leads.review.not_now") }}</BasicButton>
-      <BasicButton variant="primary" :disabled="busy" data-testid="review-send" @click="emit('send')">
+      <!-- a draft with a problem cannot go out: Send is disabled with the reason (the disabled-button pattern) -->
+      <BasicTooltip v-if="blocked" :text="blocked">
+        <BasicButton variant="primary" disabled data-testid="review-send">{{ $t("leads.review.send") }}</BasicButton>
+      </BasicTooltip>
+      <BasicButton v-else variant="primary" :disabled="busy" data-testid="review-send" @click="emit('send')">
         {{ $t("leads.review.send") }}
       </BasicButton>
     </ActionBar>
@@ -22,6 +26,7 @@ import { t } from "@/i18n";
 const props = defineProps({
   busy: { type: Boolean, default: false },
   aiDisabled: { type: Boolean, default: false },
+  blocked: { type: String, default: "" }, // why the draft cannot go out; "" = it can
 });
 const emit = defineEmits(["send", "skip", "rewrite", "edit", "skip-company"]);
 const bar = ref(null);

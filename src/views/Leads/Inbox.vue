@@ -33,6 +33,7 @@
       :row="row"
       :filter="filter"
       :active="isActive(row)"
+      :reply="replyOf(row)"
       @send-now="sendNow"
     />
     <BasicButton v-if="next" class="as-s" :disabled="loading" data-testid="inbox-more" @click="loadPage(page + 1)">
@@ -46,10 +47,12 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { t } from "@/i18n";
-import { GET_Conversations, GET_WaitingMessages, POST_SendNow } from "@/api/communicator/api";
+import { GET_Conversations, GET_Replies, GET_WaitingMessages, POST_SendNow } from "@/api/communicator/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { useLeadsThreadStore } from "@/stores/leadsThread";
 import { useLeadsReviewStore } from "@/stores/leadsReview";
+import { useMuninStore } from "@/stores/munin";
+import { outboundOn } from "@/utils/leadsOutbound";
 import { sendStateSentence } from "@/utils/leadsLabels";
 import { sendState } from "@/utils/leadsTime";
 import InboxRow from "./InboxRow.vue";
@@ -138,12 +141,31 @@ async function loadPage(number, count = 1) {
     error.value = "";
     reviewQueue.setCount(data.counts.draft);
     if (state === "draft" && !data.counts.draft) waiting.value = await GET_WaitingMessages();
+    loadReplyTypes();
   } catch (err) {
     if (request !== latest) return;
     filter.value = filter.value || "all";
     error.value = extractApiMessage(err, t("leads.inbox.load_error"));
   } finally {
     if (request === latest) loading.value = false;
+  }
+}
+
+// The reply type of a row (communicator >= 0.5.0): the row's own class fields, else the newest classified reply of its
+// thread from one `replies/` page (rows of an older backend build carry no class fields).
+const munin = useMuninStore();
+const replyTypes = ref(new Map());
+const replyOf = (row) => ("intent" in row ? row : replyTypes.value.get(row.id)) || null;
+
+async function loadReplyTypes() {
+  if (!outboundOn(munin, "communicator") || rows.value.every((row) => "intent" in row)) return;
+  try {
+    const { data } = await GET_Replies({ page_size: 100 });
+    const map = new Map();
+    for (const reply of data.results || []) if (reply.intent && !map.has(reply.thread_id)) map.set(reply.thread_id, reply);
+    replyTypes.value = map;
+  } catch {
+    replyTypes.value = new Map(); // the rows stay as today
   }
 }
 
