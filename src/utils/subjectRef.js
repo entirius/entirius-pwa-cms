@@ -2,6 +2,8 @@
 const ROUTES = {
   // A notification is about the conversation: the company card opens on its timeline tab (desktop).
   "leads.Company": (id) => ({ name: "LeadsThread", params: { id: Number(id) }, query: { tab: "timeline" } }),
+  // A paused mailbox or a broken login: the mailbox form.
+  "communicator.Mailbox": (id) => ({ name: "LeadsMailboxEdit", params: { id: Number(id) } }),
 };
 
 export function routeForSubjectRef(subjectRef) {

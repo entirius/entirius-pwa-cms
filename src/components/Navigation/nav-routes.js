@@ -11,12 +11,20 @@
 
 // The sections of Leads → Settings (the hub behind the one "/leads/settings" entry): nav glyphs like the entries
 // below, not icons.js meanings; `module` hides a section whose backend is off.
+export const LEADS_SETTINGS_GROUPS = ["sales", "automation", "sending"];
+
+// `minVersion` (with `module`): the section needs that backend version (`isModuleAtLeast`); `group` = its hub card.
 export const LEADS_SETTINGS_SECTIONS = [
-  { key: "stages", route: "LeadsStages", labelKey: "nav.leads_stages", icon: "list-ol", module: "leads" },
-  { key: "lead-types", route: "LeadsLeadTypes", labelKey: "leads.lead_types.title", icon: "tags", module: "leads" },
-  { key: "templates", route: "CommunicatorTemplates", labelKey: "nav.communicator_templates", icon: "file-lines", module: "communicator" },
-  { key: "sequences", route: "CommunicatorSequences", labelKey: "nav.communicator_sequences", icon: "repeat", module: "communicator" },
-  { key: "sending", route: "CommunicatorSettings", labelKey: "nav.communicator_settings", icon: "paper-plane", module: "communicator" },
+  { key: "stages", route: "LeadsStages", labelKey: "nav.leads_stages", icon: "list-ol", module: "leads", group: "sales" },
+  { key: "lead-types", route: "LeadsLeadTypes", labelKey: "leads.lead_types.title", icon: "tags", module: "leads", group: "sales" },
+  { key: "automatic-moves", route: "LeadsAutomaticMoves", labelKey: "nav.leads_automatic_moves", icon: "diagram-next", module: "leads", minVersion: "0.5.0", group: "automation" },
+  { key: "sequences", route: "CommunicatorSequences", labelKey: "nav.communicator_sequences", icon: "repeat", module: "communicator", group: "automation" },
+  { key: "templates", route: "CommunicatorTemplates", labelKey: "nav.communicator_templates", icon: "file-lines", module: "communicator", group: "automation" },
+  { key: "reply-classification", route: "LeadsReplyClassification", labelKey: "nav.leads_reply_classification", icon: "wand-magic-sparkles", module: "communicator", minVersion: "0.5.0", group: "automation" },
+  { key: "mailboxes", route: "LeadsMailboxes", labelKey: "nav.leads_mailboxes", icon: "at", module: "communicator", minVersion: "0.5.0", group: "sending" },
+  { key: "sending-health", route: "LeadsSendingHealth", labelKey: "nav.leads_sending_health", icon: "heart-pulse", module: "communicator", minVersion: "0.5.0", group: "sending" },
+  { key: "sending", route: "CommunicatorSettings", labelKey: "nav.communicator_settings", icon: "paper-plane", module: "communicator", group: "sending" },
+  { key: "do-not-contact", route: "LeadsDoNotContact", labelKey: "nav.leads_do_not_contact", icon: "ban", module: "communicator", minVersion: "0.5.0", group: "sending" },
 ];
 
 // The tabs of Enricher → Review and Enricher → Settings (RouteTabs): each tab its own route, by name; `badge` as on a
@@ -369,6 +377,18 @@ export function buildNavRoutes() {
       desktopOnly: true,
     },
     {
+      // Drafts of every channel, approved in bulk at the desk; the badge = drafts waiting (useNav `counts`)
+      route: "/leads/approvals",
+      labelKey: "nav.leads_approvals",
+      icon: "circle-check",
+      query: {},
+      app: ["leads"],
+      requiresModule: "communicator",
+      minVersion: "0.5.0",
+      desktopOnly: true,
+      badge: "approvals",
+    },
+    {
       // Stages, templates, sequences and send settings live here as sections (UX-002d) — one entry fits a phone
       route: "/leads/settings",
       labelKey: "nav.leads_settings",
@@ -441,7 +461,8 @@ export function buildNavRoutes() {
 
 // The entries of one panel (`panel` = its idx). `requiresQuality` items are hidden until the backend's gaps
 // capability probe resolves true (old backends never see the quality-rules nav item).
-// `requiresModule` items are hidden until that optional django-munin module reports enabled
+// `requiresModule` items are hidden until that optional django-munin module reports enabled (and, with `minVersion`,
+// at least that version)
 // (mirrors the router guard's `meta.module` gate — see router/index.js); `hiddenWithModule` items give way
 // once that module is enabled (another entry covers their pages then).
 // `desktopOnly` items are hidden below the desktop breakpoint (useIsDesktop) — on a phone the
@@ -454,12 +475,13 @@ export function isNavActive(route, path = "") {
 
 export function filterNavRoutes(
   routes,
-  { panel, qualityAvailable, isModuleEnabled, isDesktop, canRead }
+  { panel, qualityAvailable, isModuleEnabled, isModuleAtLeast, isDesktop, canRead }
 ) {
   return routes.filter((r) => {
     if (r.app.indexOf(panel) === -1) return false;
     if (r.requiresQuality && qualityAvailable !== true) return false;
     if (r.requiresModule && !isModuleEnabled?.(r.requiresModule)) return false;
+    if (r.minVersion && !isModuleAtLeast?.(r.requiresModule, r.minVersion)) return false;
     if (r.hiddenWithModule && isModuleEnabled?.(r.hiddenWithModule)) return false;
     if (r.desktopOnly && !isDesktop) return false;
     if (r.area && canRead && !canRead(r.area)) return false;

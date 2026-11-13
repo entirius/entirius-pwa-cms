@@ -25,9 +25,11 @@ export const POST_RequestAudit = (id) => leadsApi.post(`${base()}/companies/${id
 export const POST_CreateCustomer = (id) => leadsApi.post(`${base()}/companies/${id}/create-customer/`, {});
 
 // FormData without a Content-Type: axios sets the multipart boundary.
-export const POST_Import = (file) => {
+// `runRules` (leads >= 0.5.0): new companies enter their first stage with its rules; undefined = not sent.
+export const POST_Import = (file, runRules) => {
   const form = new FormData();
   form.append("file", file);
+  if (runRules !== undefined) form.append("run_rules", String(runRules));
   return leadsApi.post(`${base()}/imports/`, form);
 };
 
@@ -61,3 +63,20 @@ export const POST_LeadType = (body) => leadsApi.post(`${base()}/lead-types/`, bo
 export const PATCH_LeadType = (id, body) => leadsApi.patch(`${base()}/lead-types/${id}/`, body);
 
 export const DELETE_LeadType = (id) => leadsApi.delete(`${base()}/lead-types/${id}/`);
+
+// Leads CRM plan 14 (leads >= 0.5.0) — event → stage map: first_sent, reply, reply:<type>, sequence_finished.
+export const GET_StageEvents = () => leadsApi.get(`${base()}/stage-events/`);
+
+export const PUT_StageEvent = (event, body) => leadsApi.put(`${base()}/stage-events/${event}/`, body);
+
+export const DELETE_StageEvent = (event) => leadsApi.delete(`${base()}/stage-events/${event}/`);
+
+// Why a contact gets no mail: { eligible, reasons } of the outreach gate.
+export const GET_Mailable = (companyId, contactId) =>
+  leadsApi.get(`${base()}/companies/${companyId}/contacts/${contactId}/mailable/`);
+
+// Active staff who can own a company or a mailbox: [{ id, username, name }], at most 50 (leads >= 0.5.0).
+export const GET_AssignableUsers = async (search = "") => {
+  const { data } = await leadsApi.get(`${base()}/assignable-users/`, { params: { search } });
+  return data.results ?? data;
+};

@@ -124,6 +124,8 @@ import {
   faFileWord,
   faFileImage,
   faFileVideo,
+  faBan,
+  faHeartPulse,
 } from "@fortawesome/free-solid-svg-icons";
 
 /* import font awesome icon component */
@@ -253,7 +255,9 @@ export default function registerFontAwesome(app) {
     faFilePdf,
     faFileWord,
     faFileImage,
-    faFileVideo
+    faFileVideo,
+    faBan,
+    faHeartPulse
   );
 
   /* add font awesome icon component */

@@ -13,6 +13,18 @@ export const templateKindLabel = (value) => label(`communicator.template.kinds.$
 
 export const suppressionKindLabel = (value) => label(`communicator.suppressions.kinds.${value}`, value);
 
+export const replyTypeLabel = (value) => label(`leads.reply_type.${value}`, value);
+
+export const mailboxStateLabel = (value) => label(`leads.mailbox_state.${value}`, value);
+
+export const dncSourceLabel = (value) => label(`leads.dnc.source.${value}`, value);
+
+export const dncKindLabel = (value) => label(`leads.dnc.kind.${value}`, value);
+
+export const addressStatusLabel = (value) => label(`leads.address_status.${value}`, value);
+
+export const healthTriggerLabel = (value) => label(`leads.health.trigger.${value}`, value);
+
 // One wording for a waiting mail's departure: Review, the Inbox summary, the waiting table and the thread say the same.
 export const sendStateLabel = ({ state, time, window }) =>
   t(`leads.send_state.${window ? "held_window" : state}`, { time, window });
@@ -23,7 +35,7 @@ export const sendStateSentence = (sendState) =>
 
 // A raw service word ("no_eligible_contact", "None") read as words: a label when there is one, else spaced out.
 const humanize = (value) => String(value).replace(/_/g, " ");
-const blockReasonLabel = (value) => label(`leads.block_reason.${value}`, humanize(value));
+export const blockReasonLabel = (value) => label(`leads.block_reason.${value}`, humanize(value));
 const basisLabel = (value) => humanize(legalBasisLabel(value)).toLowerCase();
 const capitalize = (text) => text.charAt(0).toUpperCase() + text.slice(1);
 

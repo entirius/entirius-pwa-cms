@@ -6,6 +6,7 @@ import { useAccessStore } from "@/stores/access";
 import { panels } from "@/configs/access";
 import { AREAS } from "@/configs/areas";
 import { ENRICHMENT_SETTINGS_TABS, buildNavRoutes } from "@/components/Navigation/nav-routes";
+import { OUTBOUND_VERSION as OUTBOUND } from "@/utils/leadsOutbound";
 
 import Home from "../views/Home/index.vue";
 import rv_builds from "../views/Builder/index.vue";
@@ -1171,6 +1172,49 @@ const routes = [
         component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/Settings.vue"),
         meta: { requiresAuth: true, titleKey: "communicator.settings.title", panel: "leads", area: AREAS.COMMUNICATOR_SETTINGS, module: "communicator", page: true },
       },
+      // Leads CRM plan 14 (backend >= 0.5.0, `meta.moduleVersion`): approvals and the outbound settings sections
+      {
+        path: "approvals",
+        name: "LeadsApprovals",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Approvals.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.approvals.title", panel: "leads", area: AREAS.COMMUNICATOR_REVIEW, module: "communicator", moduleVersion: OUTBOUND, page: true },
+      },
+      {
+        path: "settings/automatic-moves",
+        name: "LeadsAutomaticMoves",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/AutomaticMoves.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.moves.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", moduleVersion: OUTBOUND, page: true },
+      },
+      {
+        path: "settings/reply-classification",
+        name: "LeadsReplyClassification",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/ReplyClassification.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.classify.title", panel: "leads", area: AREAS.COMMUNICATOR_CONTENT, module: "communicator", moduleVersion: OUTBOUND, page: true },
+      },
+      {
+        path: "settings/mailboxes",
+        name: "LeadsMailboxes",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Mailboxes.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.mailboxes.title", panel: "leads", area: AREAS.COMMUNICATOR_SETTINGS, module: "communicator", moduleVersion: OUTBOUND, page: true },
+      },
+      {
+        path: "settings/mailboxes/:id",
+        name: "LeadsMailboxEdit",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/MailboxEdit.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.mailbox.title", panel: "leads", area: AREAS.COMMUNICATOR_SETTINGS, module: "communicator", moduleVersion: OUTBOUND, page: true, crumbParent: "LeadsMailboxes" },
+      },
+      {
+        path: "settings/sending-health",
+        name: "LeadsSendingHealth",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/SendingHealth.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.health.title", panel: "leads", area: AREAS.COMMUNICATOR_SETTINGS, module: "communicator", moduleVersion: OUTBOUND, page: true },
+      },
+      {
+        path: "settings/do-not-contact",
+        name: "LeadsDoNotContact",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/DoNotContact.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.dnc.title", panel: "leads", area: AREAS.COMMUNICATOR_SETTINGS, module: "communicator", moduleVersion: OUTBOUND, page: true },
+      },
     ],
   },
 
@@ -1658,7 +1702,8 @@ router.beforeEach(async (to) => {
     // Routes tied to an optional backend module (meta.module) stay dormant
     // when the module is absent, even if their panel is enabled.
     const module = to.meta?.module;
-    if (module && !munin.isModuleEnabled(module)) {
+    const version = to.meta?.moduleVersion;
+    if (module && (!munin.isModuleEnabled(module) || (version && !munin.isModuleAtLeast(module, version)))) {
       return moduleFallback(panels.find((p) => p.idx === panel), to.path);
     }
     if (signedIn && !(await canReadRoute(to, panel))) {

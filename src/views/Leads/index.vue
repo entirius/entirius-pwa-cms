@@ -50,14 +50,18 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { GET_Policy } from "@/api/communicator/api";
 import { useIsDesktop } from "@/composables/useIsDesktop";
+import { AREAS } from "@/configs/areas";
+import { useAccessStore } from "@/stores/access";
+import { useApprovalsStore } from "@/stores/approvals";
 import { useLeadsReviewStore } from "@/stores/leadsReview";
 import { useMuninStore } from "@/stores/munin";
 import { t } from "@/i18n";
 import { applyPolicy } from "@/utils/leadsTime";
+import { outboundOn } from "@/utils/leadsOutbound";
 import Companies from "./Companies.vue";
 import DesktopOnly from "./DesktopOnly.vue";
 import Inbox from "./Inbox.vue";
@@ -92,6 +96,7 @@ const openList = (value) => router.push({ name: value === "companies" ? "LeadsCo
 // Times read in the channel's zone (the send policy's); without it they stay in the browser's. The same
 // answer says whether today's cap is used up — what a waiting mail needs before it names an hour.
 onMounted(async () => {
+  startApprovals();
   if (!hasInbox.value) return;
   try {
     applyPolicy((await GET_Policy()).data);
@@ -99,6 +104,14 @@ onMounted(async () => {
     applyPolicy(null);
   }
 });
+
+// The Approvals nav badge: drafts of every channel, polled while the panel is open.
+const approvals = useApprovalsStore();
+const access = useAccessStore();
+function startApprovals() {
+  if (outboundOn(munin, "communicator") && access.can(AREAS.COMMUNICATOR_REVIEW)) approvals.start();
+}
+onUnmounted(() => approvals.stop());
 </script>
 
 <style scoped>

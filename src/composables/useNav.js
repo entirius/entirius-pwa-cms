@@ -6,6 +6,7 @@ import { useMuninStore } from "@/stores/munin";
 import { useAccessStore } from "@/stores/access";
 import { useQualityStore } from "@/stores/quality";
 import { useEnrichmentProfileStore } from "@/stores/enrichmentProfile";
+import { useApprovalsStore } from "@/stores/approvals";
 import { useIsDesktop } from "@/composables/useIsDesktop";
 import { t } from "@/i18n";
 
@@ -37,7 +38,7 @@ export const withAreas = (routes, router) =>
 // An entry with a `badge` key takes its number from `counts` (the Memory suggestions); 0 shows nothing.
 const withCount = (entry, counts) => (entry.badge ? { ...entry, count: counts?.[entry.badge] || 0 } : entry);
 
-// `{ [panelIdx]: entries[] }`; ctx = { qualityAvailable, isModuleEnabled, isDesktop, canRead, counts? }.
+// `{ [panelIdx]: entries[] }`; ctx = { qualityAvailable, isModuleEnabled, isModuleAtLeast?, isDesktop, canRead, counts? }.
 export function navTree(ctx, routes = buildNavRoutes()) {
   return Object.fromEntries(
     REGISTRY.map((panel) => [
@@ -47,10 +48,12 @@ export function navTree(ctx, routes = buildNavRoutes()) {
   );
 }
 
-// The numbers of the `badge` keys (a nav entry's, a RouteTabs tab's): the Memory suggestions waiting for the operator.
+// The numbers of the `badge` keys (a nav entry's, a RouteTabs tab's): the Memory suggestions waiting for the operator,
+// the drafts waiting for approval (Leads).
 export function useNavCounts() {
   const enrichmentProfile = useEnrichmentProfileStore();
-  return computed(() => ({ memorySuggestions: enrichmentProfile.pendingSuggestions }));
+  const approvals = useApprovalsStore();
+  return computed(() => ({ memorySuggestions: enrichmentProfile.pendingSuggestions, approvals: approvals.total }));
 }
 
 // `everyViewport`: the desktop entries on a phone too — where a page belongs does not change with the screen.
@@ -66,6 +69,7 @@ export function useNavTree({ everyViewport = false } = {}) {
       {
         qualityAvailable: quality.available,
         isModuleEnabled: munin.isModuleEnabled,
+        isModuleAtLeast: munin.isModuleAtLeast,
         isDesktop: everyViewport || isDesktop.value,
         canRead: access.can,
         counts: counts.value,
