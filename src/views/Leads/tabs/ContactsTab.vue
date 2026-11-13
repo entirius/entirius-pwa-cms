@@ -17,6 +17,7 @@
         :email-locked="Boolean(editing?.email)"
         :consent-recorded="editing?.legal_basis === 'consent'"
       />
+      <CustomFields v-if="contactFields.length" v-model="attributes" :fields="contactFields" :errors="attrErrors" />
       <p v-if="error" class="t-negative m-0" data-testid="contact-error">{{ error }}</p>
       <div class="flex ai-ct jc-fe gap-3">
         <BasicButton variant="ghost" data-testid="contact-cancel" @click="close">{{ $t("common.cancel") }}</BasicButton>
@@ -108,12 +109,14 @@
 import { computed, onMounted, reactive, ref } from "vue";
 import { t } from "@/i18n";
 import { GET_Suppressions } from "@/api/communicator/api";
-import { DELETE_Contact, PATCH_Contact, POST_Contact } from "@/api/leads/api";
+import { DELETE_Contact, GET_Attributes, PATCH_Contact, POST_Contact } from "@/api/leads/api";
 import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
 import { legalBasisLabel } from "@/utils/leadsLabels";
 import { useMuninStore } from "@/stores/munin";
 import { outboundOn } from "@/utils/leadsOutbound";
 import ContactFields from "../ContactFields.vue";
+import CustomFields from "../CustomFields.vue";
+import { changedValues, fieldsFromDefinitions, validateValues } from "../customFields";
 import SendCheckDialog from "../SendCheckDialog.vue";
 
 // Contacts of the company card (UX-011): add, edit, remove, primary star — one form open at a time, above the table.
@@ -171,8 +174,24 @@ function isSuppressed(contact) {
   );
 }
 
+// Leads CRM: the contact's custom fields under the built-in ones (definitions of entity `contact`).
+const contactFields = ref([]);
+const attributes = ref({});
+const attrErrors = ref({});
+
+async function loadContactFields() {
+  if (!outbound.value) return;
+  try {
+    contactFields.value = fieldsFromDefinitions((await GET_Attributes("contact")).data.results);
+  } catch {
+    contactFields.value = [];
+  }
+}
+
 function open(next, contact = null) {
   Object.assign(draft, valuesOf(contact));
+  attributes.value = { ...(contact?.attributes || {}) };
+  attrErrors.value = {};
   mode.value = next;
   error.value = "";
   status.value = "";
@@ -195,6 +214,8 @@ function bodyOf(contact) {
   if (draft.is_primary !== before.is_primary)
     body.is_primary = draft.is_primary;
   if (body.legal_basis === "consent") body.consent_ref = draft.consent_ref;
+  const attrs = changedValues(contactFields.value, attributes.value, contact?.attributes || {});
+  if (Object.keys(attrs).length) body.attributes = attrs;
   if (!contact)
     return Object.fromEntries(
       Object.entries(body).filter(
@@ -215,6 +236,8 @@ function showError(err) {
 
 async function save(contact) {
   if (busy.value) return;
+  attrErrors.value = validateValues(contactFields.value, attributes.value);
+  if (Object.keys(attrErrors.value).length) return;
   const body = bodyOf(contact);
   if (contact && !Object.keys(body).length) return close();
   busy.value = true;
@@ -269,6 +292,7 @@ function remove(contact) {
 }
 
 onMounted(async () => {
+  loadContactFields();
   const { data } = await GET_Suppressions();
   suppressed.value = new Set(data.results.map((row) => row.value));
 });

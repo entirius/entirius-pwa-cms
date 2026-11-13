@@ -10,12 +10,6 @@
         </span>
       </template>
     </DataTable>
-    <h3 class="fs-400 fw-600 m-0">{{ $t("leads.company.activities") }}</h3>
-    <ul class="overview__activities flex-column gap-2 m-0">
-      <li v-for="activity in company.activities" :key="activity.id">
-        <span class="t-muted">{{ formatDate(activity.created_at) }}</span> {{ activityText(activity.message) }}
-      </li>
-    </ul>
   </section>
 </template>
 
@@ -25,7 +19,6 @@ import { useRoute } from "vue-router";
 import { t } from "@/i18n";
 import { useMuninStore } from "@/stores/munin";
 import { useLeadTypesStore } from "@/stores/leadTypes";
-import { activityText } from "@/utils/leadsLabels";
 import { formatTime } from "@/utils/leadsTime";
 
 const props = defineProps({ company: { type: Object, required: true } });
@@ -60,9 +53,3 @@ const rows = computed(() => {
   ].filter(Boolean);
 });
 </script>
-
-<style scoped>
-.overview__activities {
-  padding-left: var(--space-4);
-}
-</style>

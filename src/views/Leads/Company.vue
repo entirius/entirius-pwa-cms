@@ -1,34 +1,23 @@
 <template>
-  <Thread v-if="!isDesktop" desktop-hint />
-  <PageLayout v-else data-testid="company-card">
+  <!-- One card on a phone and at a desk (ux/screens/company-card.md); a phone opens it on History -->
+  <PageLayout data-testid="company-card">
     <template #header>
-      <PageHeader :title="$t('leads.company.title')">
-        <template v-if="company" #actions>
-          <CompanyActions :company="company" @changed="reload" />
-        </template>
-      </PageHeader>
-    </template>
-    <p v-if="loadError" class="t-negative m-0" role="alert" data-testid="company-load-error">{{ loadError }}</p>
-    <Loader v-else-if="!company" block />
-    <template v-else>
-      <AiToolboxHint />
-      <header class="company__head flex ai-fe wrap gap-5">
-        <div class="company__name flex-column gap-1">
-          <h2 class="fs-500 fw-600 m-0" data-testid="thread-company">{{ company.name }}</h2>
-          <span class="t-muted fs-200" data-testid="company-domain">{{ company.domain }}</span>
-        </div>
-        <StatusBadge
-          v-if="company.do_not_contact"
-          tone="negative"
-          :label="$t('leads.company.do_not_contact')"
-          data-testid="company-dnc-badge"
-        />
-        <div class="company__selects flex ai-fe wrap gap-3">
+      <PageHeader :title="company?.name || $t('leads.company.title')" wrap-title :back="{ name: 'LeadsCompanies' }">
+        <template v-if="company" #meta>
+          <span class="t-muted" data-testid="company-domain">{{ company.domain }}</span>
+          <span class="visually-hidden" data-testid="thread-company">{{ company.name }}</span>
+          <StatusBadge
+            v-if="company.do_not_contact"
+            tone="negative"
+            :label="$t('leads.company.do_not_contact')"
+            data-testid="company-dnc-badge"
+          />
           <BasicSelect
             class="company__select"
             :model-value="company.stage.key"
             :options="stageOptions"
             :floating-label="$t('leads.company.stage')"
+            :disabled="readonly"
             data-testid="company-stage"
             @update:model-value="transition"
           />
@@ -37,18 +26,46 @@
             :model-value="company.lead_type"
             :options="typeOptions"
             :floating-label="$t('leads.company.type')"
+            :disabled="readonly"
             data-testid="company-lead-type"
             @update:model-value="retype"
           />
-        </div>
-      </header>
+        </template>
+        <template v-if="company" #actions>
+          <CompanyActions :company="company" @changed="reload" @compose="composeOpen = true" />
+        </template>
+      </PageHeader>
+    </template>
+    <EmptyState v-if="loadError" icon="empty" size="md" :title="loadError" data-testid="company-load-error">
+      <router-link class="t-accent" :to="{ name: 'LeadsCompanies' }">{{ $t("leads.companies.title") }}</router-link>
+    </EmptyState>
+    <Loader v-else-if="!company" block />
+    <template v-else>
+      <AiToolboxHint />
       <BasicTabs class="company__tabs" id-prefix="company" :options="tabOptions" :model-value="tab" @update:model-value="openTab" />
       <div :id="`company-panel-${tab}`" role="tabpanel" :aria-labelledby="`company-tab-${tab}`">
-        <OverviewTab v-if="tab === 'overview'" :company="company" />
+        <section v-if="tab === 'overview'" class="flex-column gap-8">
+          <template v-if="crm">
+            <CompanyDetails :company="company" :fields="fields" @saved="company = $event" />
+            <ScoreCard :key="company.id" :company="company" />
+          </template>
+          <OverviewTab :company="company" />
+        </section>
         <IntelTab v-else-if="tab === 'intel'" :company="company" />
         <ContactsTab v-else-if="tab === 'contacts'" :company="company" @changed="reload" />
-        <Thread v-else />
+        <ReadonlyArea v-else-if="tab === 'tasks'" :area="AREAS.TODO_TASKS">
+          <TasksTab :key="company.id" :company="company" @count="taskCount = $event" />
+        </ReadonlyArea>
+        <section v-else class="flex-column gap-6">
+          <Thread />
+          <ul v-if="company.activities.length" class="company__events flex-column gap-2 m-0" data-testid="company-events">
+            <li v-for="activity in company.activities" :key="activity.id" data-testid="timeline-event">
+              <span class="t-muted">{{ formatTime(activity.created_at) }}</span> {{ activityText(activity.message) }}
+            </li>
+          </ul>
+        </section>
       </div>
+      <ComposeDialog v-if="crm" v-model:open="composeOpen" :company="company" @sent="reload" />
     </template>
   </PageLayout>
 </template>
@@ -57,21 +74,34 @@
 import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { t } from "@/i18n";
-import { GET_Company, GET_Stages, PATCH_Company, POST_Transition } from "@/api/leads/api";
+import { GET_Attributes, GET_Company, GET_Stages, PATCH_Company, POST_Transition } from "@/api/leads/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { useIsDesktop } from "@/composables/useIsDesktop";
+import { ReadonlyArea, usePageReadonly } from "@/composables/useReadonly";
+import { AREAS } from "@/configs/areas";
+import { useAccessStore } from "@/stores/access";
+import { useMuninStore } from "@/stores/munin";
+import { activityText } from "@/utils/leadsLabels";
+import { outboundOn } from "@/utils/leadsOutbound";
+import { formatTime } from "@/utils/leadsTime";
 import { useLeadTypesStore } from "@/stores/leadTypes";
 import { useNotifyStore } from "@/stores/notify";
 import AiToolboxHint from "@/components/ConfigHealth/AiToolboxHint.vue";
 import CompanyActions from "./CompanyActions.vue";
+import CompanyDetails from "./CompanyDetails.vue";
+import ComposeDialog from "./ComposeDialog.vue";
+import { fieldsFromDefinitions } from "./customFields";
+import ScoreCard from "./ScoreCard.vue";
+import TasksTab from "./tabs/TasksTab.vue";
 import Thread from "./Thread.vue";
 import ContactsTab from "./tabs/ContactsTab.vue";
 import IntelTab from "./tabs/IntelTab.vue";
 import OverviewTab from "./tabs/OverviewTab.vue";
 
-// Company card: the plan-13 thread on a phone; from 1024 px the page frame (actions in the PageHeader), the card
-// header (name, domain, stage and lead-type selects) and the tabs.
-const TABS = ["overview", "intel", "contacts", "timeline"];
+// Company card: the page frame (name as H1, domain, stage and lead-type selects in the meta, actions), the tabs. Leads
+// CRM (leads >= 0.5.0): Details and Score on Overview, Tasks (django-todo), Write mail; History = the mail thread and
+// the company's events.
+const TABS = ["overview", "contacts", "timeline", "tasks", "intel"];
 const route = useRoute();
 const router = useRouter();
 const notify = useNotifyStore();
@@ -92,8 +122,28 @@ const typeOptions = computed(() => {
 });
 const stageOptions = computed(() => stages.value.map((stage) => ({ value: stage.key, label: stage.label })));
 
-const tab = computed(() => (TABS.includes(route.query.tab) ? route.query.tab : "overview"));
-const tabOptions = TABS.map((value) => ({ value, label: t(`leads.company.tabs.${value}`), testid: `company-tab-${value}` }));
+const munin = useMuninStore();
+const access = useAccessStore();
+const readonly = usePageReadonly();
+const crm = computed(() => outboundOn(munin, "leads"));
+const tasksOn = computed(() => crm.value && munin.isModuleInstalled("todo") && access.can(AREAS.TODO_TASKS));
+const definitions = ref([]);
+const fields = computed(() => fieldsFromDefinitions(definitions.value));
+const composeOpen = ref(false);
+const taskCount = ref(null);
+const tabs = computed(() => TABS.filter((value) => value !== "tasks" || tasksOn.value));
+const tab = computed(() => {
+  if (tabs.value.includes(route.query.tab)) return route.query.tab;
+  return isDesktop.value ? "overview" : "timeline";
+});
+const tabOptions = computed(() =>
+  tabs.value.map((value) => ({
+    value,
+    label: t(`leads.company.tabs.${value}`),
+    count: value === "tasks" ? taskCount.value : null,
+    testid: `company-tab-${value}`,
+  }))
+);
 
 function openTab(value) {
   router.replace({ query: { ...route.query, tab: value } });
@@ -110,6 +160,16 @@ async function load() {
   if (!isCurrent(opening)) return;
   company.value = companyRes.data;
   stages.value = stageRes.data.results;
+  if (crm.value) loadFields();
+}
+
+// Custom field definitions: without them the Details card shows owner and origin only.
+async function loadFields() {
+  try {
+    definitions.value = (await GET_Attributes("company")).data.results;
+  } catch {
+    definitions.value = [];
+  }
 }
 
 // A reload of the open card (after an action or a refused change): a failure leaves the card as it was and says the
@@ -156,30 +216,29 @@ async function open() {
   try {
     await load();
   } catch (err) {
-    if (isCurrent(opening)) loadError.value = extractApiMessage(err, t("leads.review.error"));
+    if (!isCurrent(opening)) return;
+    loadError.value = err?.httpStatus === 404 ? t("leads.company.not_found") : extractApiMessage(err, t("leads.review.error"));
   }
 }
 
 watch(
-  () => [isDesktop.value, route.params.id],
-  ([desktop, id]) => desktop && id && open(),
+  () => route.params.id,
+  (id) => {
+    taskCount.value = null;
+    if (id) open();
+  },
   { immediate: true }
 );
 </script>
 
 <style scoped>
-.company__head {
-  margin-bottom: var(--space-6);
-}
-.company__name {
-  flex: 1 1 16rem;
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
 .company__select {
   width: 14rem;
 }
 .company__tabs {
   margin-bottom: var(--space-6);
+}
+.company__events {
+  padding-left: var(--space-4);
 }
 </style>

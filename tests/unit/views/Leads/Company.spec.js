@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
 
 const leads = vi.hoisted(() => ({
@@ -10,6 +10,7 @@ const leads = vi.hoisted(() => ({
   GET_Stages: vi.fn(),
   GET_LeadTypes: vi.fn(),
   POST_Transition: vi.fn(),
+  GET_Attributes: vi.fn(() => Promise.resolve({ data: { results: [] } })),
 }));
 const route = vi.hoisted(() => ({ name: "LeadsThread", params: { id: "7" }, query: {} }));
 vi.mock("vue-router", async () => {
@@ -17,14 +18,15 @@ vi.mock("vue-router", async () => {
   const live = reactive(route); // a changed params.id reaches the card's watcher
   return { useRoute: () => live, useRouter: () => ({ replace: vi.fn() }) };
 });
+const desktop = vi.hoisted(() => ({ on: true }));
 vi.mock("@/composables/useIsDesktop", async () => {
   const { ref } = await import("vue");
-  return { useIsDesktop: () => ref(true) };
+  return { useIsDesktop: () => ref(desktop.on) };
 });
 const communicator = vi.hoisted(() => ({ GET_Templates: vi.fn() }));
 vi.mock("@/api/communicator/api", () => communicator);
 const siteintel = vi.hoisted(() => ({ GET_LatestAudit: vi.fn(), POST_AuditRerun: vi.fn() }));
-const munin = vi.hoisted(() => ({ isModuleInstalled: vi.fn() }));
+const munin = vi.hoisted(() => ({ isModuleInstalled: vi.fn(), isModuleEnabled: vi.fn(() => true), isModuleAtLeast: vi.fn(() => false) }));
 const notify = vi.hoisted(() => ({ spawnNotification: vi.fn() }));
 vi.mock("@/api/leads/api", () => leads);
 vi.mock("@/api/siteintel/api", () => siteintel);
@@ -155,7 +157,11 @@ describe("Company card header", () => {
   });
 
   const mountCard = async () => {
-    const stubs = { ...leadsFrame.stubs, CompanyActions: true, Thread: true, OverviewTab: true, IntelTab: true, ContactsTab: true };
+    const stubs = {
+      ...leadsFrame.stubs, CompanyActions: true, Thread: true, OverviewTab: true, IntelTab: true, ContactsTab: true,
+      CompanyDetails: true, ScoreCard: true, TasksTab: true, ComposeDialog: true,
+      EmptyState: { props: ["title"], template: "<div>{{ title }}<slot /></div>" }, RouterLink: true,
+    };
     const wrapper = mount(Company, { global: { components: leadsFrame.components, stubs } });
     await flushPromises();
     return wrapper;
@@ -306,6 +312,52 @@ describe("Company card header", () => {
     expect(leads.POST_Transition).not.toHaveBeenCalled();
     expect(leads.PATCH_Company).not.toHaveBeenCalled();
   });
+  // Plan 15 (Leads CRM): tabs by module, History with the events, a phone opens History, 404 says not found.
+  describe("Leads CRM", () => {
+    const tabValues = (wrapper) => wrapper.findComponent({ name: "BasicTabs" }).props("options").map((o) => o.value);
+    afterEach(() => {
+      desktop.on = true;
+      munin.isModuleAtLeast.mockReturnValue(false);
+      munin.isModuleInstalled.mockReset();
+    });
+    beforeEach(() => {
+      desktop.on = true;
+      route.query = {};
+      munin.isModuleAtLeast.mockReturnValue(true);
+      munin.isModuleInstalled.mockImplementation((key) => key === "todo");
+    });
+
+    it("leads 0.5.0 with todo: Details, Score and the Tasks tab", async () => {
+      const wrapper = await mountCard();
+      expect(tabValues(wrapper)).toEqual(["overview", "contacts", "timeline", "tasks", "intel"]);
+      expect(wrapper.find("company-details-stub").exists()).toBe(true);
+      expect(wrapper.find("score-card-stub").exists()).toBe(true);
+      expect(leads.GET_Attributes).toHaveBeenCalledWith("company");
+    });
+
+    it("an older backend or no todo: no Tasks tab, no Details or Score", async () => {
+      munin.isModuleAtLeast.mockReturnValue(false);
+      const wrapper = await mountCard();
+      expect(tabValues(wrapper)).toEqual(["overview", "contacts", "timeline", "intel"]);
+      expect(wrapper.find("company-details-stub").exists()).toBe(false);
+    });
+
+    it("a phone opens the card on History, the mail thread and the events as sentences", async () => {
+      desktop.on = false;
+      leads.GET_Company.mockResolvedValueOnce({ data: { ...company(), activities: [{ id: 1, created_at: null, message: "stage new -> replied" }] } });
+      const wrapper = await mountCard();
+      expect(wrapper.findComponent({ name: "BasicTabs" }).props("modelValue")).toBe("timeline");
+      expect(wrapper.find("thread-stub").exists()).toBe(true);
+      expect(wrapper.get('[data-testid="timeline-event"]').text()).toContain("Stage: new → replied");
+    });
+
+    it("a 404 says the company was not found", async () => {
+      leads.GET_Company.mockRejectedValueOnce(Object.defineProperty({ message: "x" }, "httpStatus", { value: 404 }));
+      const wrapper = await mountCard();
+      expect(wrapper.get('[data-testid="company-load-error"]').text()).toContain("Company not found");
+    });
+  });
+
 });
 
 // Plan 54: the dialog is a BasicModal; the stub renders its body and hands its actions out as props.
