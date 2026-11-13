@@ -6,6 +6,9 @@ export const OUTBOUND_VERSION = "0.5.0";
 
 export const outboundOn = (munin, module) => munin.isModuleAtLeast(module, OUTBOUND_VERSION);
 
+// `?from=approvals` on a draft opened from Approvals: the Review keeps Approvals as its way back.
+export const FROM_APPROVALS = "approvals";
+
 // Reply types in the glossary order (`ux/copy.md`) and their StatusBadge tones.
 export const REPLY_TYPES = ["interested", "not_now", "not_interested", "out_of_office", "wrong_person", "unsubscribe", "unclear"];
 

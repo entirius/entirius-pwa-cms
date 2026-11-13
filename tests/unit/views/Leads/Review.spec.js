@@ -148,6 +148,23 @@ describe("Leads Review", () => {
     expect(wrapper.get('[data-testid="review-scheduled"]').text()).toBe("Accepted — could not check when it goes out");
   });
 
+  // Acceptance CM18: a draft opened from Approvals keeps Approvals as its way back, also on the next draft.
+  it("from Approvals: Approvals in the crumbs and as the way back", async () => {
+    route.current.query = { from: "approvals" };
+    api.POST_ReviewSkip.mockReturnValue(ok());
+    api.GET_ReviewNext.mockResolvedValueOnce({ data: { id: 6 } }).mockRejectedValueOnce({ httpStatus: 404 });
+    const wrapper = await mountReview();
+    const crumbs = wrapper.findComponent({ name: "PageHeader" }).props("crumbs");
+    expect(crumbs.map((crumb) => crumb.to?.name)).toEqual(["LeadsToday", "LeadsApprovals", undefined]);
+    await wrapper.get('[data-testid="review-skip"]').trigger("click");
+    await flushPromises();
+    expect(replace).toHaveBeenCalledWith({ name: "LeadsReview", params: { id: 6 }, query: { from: "approvals" } });
+    await wrapper.get('[data-testid="review-skip"]').trigger("click");
+    await flushPromises();
+    expect(replace).toHaveBeenLastCalledWith({ name: "LeadsApprovals" });
+    delete route.current.query;
+  });
+
   it("Not now skips and moves to the next draft", async () => {
     api.POST_ReviewSkip.mockReturnValue(ok());
     api.GET_ReviewNext.mockResolvedValue({ data: { id: 6 } });

@@ -1,7 +1,7 @@
 <template>
   <PageLayout class="review" data-testid="leads-review">
     <template #header>
-      <PageHeader :title="$t('leads.review.title')" :back="goInbox" />
+      <PageHeader :title="$t('leads.review.title')" :crumbs="approvalsCrumbs" :back="goInbox" />
     </template>
     <div class="review__body flex-column gap-4">
       <Loader block v-show="loading" />
@@ -60,7 +60,7 @@
         <template v-else>
           <h2 class="review__subject fs-400 fw-600 m-0" data-testid="review-subject">{{ message.subject }}</h2>
           <p class="review__text m-0" data-testid="review-body">{{ message.body_text }}</p>
-          <p class="t-muted fs-200 m-0">{{ $t("leads.review.swipe_hint") }}</p>
+          <p v-if="!isDesktop" class="t-muted fs-200 m-0" data-testid="review-swipe-hint">{{ $t("leads.review.swipe_hint") }}</p>
         </template>
       </article>
     </div>
@@ -115,9 +115,10 @@ import { useLeadsChannelStore } from "@/stores/leadsChannel";
 import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
 import { useSwipe } from "@/composables/useSwipe";
+import { useIsDesktop } from "@/composables/useIsDesktop";
 import { companyIdFromSubjectRef } from "@/utils/subjectRef";
 import { replyTypeLabel, sendStateSentence } from "@/utils/leadsLabels";
-import { outboundOn, problemText, replyTone } from "@/utils/leadsOutbound";
+import { FROM_APPROVALS, outboundOn, problemText, replyTone } from "@/utils/leadsOutbound";
 import { sendState } from "@/utils/leadsTime";
 import AiToolboxHint from "@/components/ConfigHealth/AiToolboxHint.vue";
 import ConfigBanner from "@/components/ConfigHealth/ConfigBanner.vue";
@@ -150,6 +151,8 @@ let nextTimer = null;
 let settle = null;
 
 const { offset, handlers } = useSwipe({ onRight: accept, onLeft: skip });
+// The swipe hint is for a touch screen: a desk has the buttons (acceptance c6).
+const isDesktop = useIsDesktop();
 
 const companyId = computed(() => companyIdFromSubjectRef(message.value?.thread?.subject_ref));
 const companyName = computed(
@@ -255,14 +258,26 @@ async function loadQueuePosition() {
 async function goNext() {
   try {
     const { data } = await api.GET_ReviewNext();
-    router.replace({ name: "LeadsReview", params: { id: data.id } });
+    router.replace({ name: "LeadsReview", params: { id: data.id }, ...(fromApprovals.value && { query: route.query }) });
   } catch {
     goInbox();
   }
 }
 
+// A draft opened from Approvals keeps Approvals as its way back (crumbs and back); from anywhere else, the Inbox.
+const fromApprovals = computed(() => route.query?.from === FROM_APPROVALS);
+const approvalsCrumbs = computed(() =>
+  fromApprovals.value
+    ? [
+        { label: t("panels.leads"), to: { name: "LeadsToday" } },
+        { label: t("leads.approvals.title"), to: { name: "LeadsApprovals" } },
+        { label: t("leads.review.title") },
+      ]
+    : undefined
+);
+
 function goInbox() {
-  router.replace({ name: "LeadsInbox" });
+  router.replace({ name: fromApprovals.value ? "LeadsApprovals" : "LeadsInbox" });
 }
 
 // Runs one review call; a 409 is either "already handled" or a refused action (see onConflict).

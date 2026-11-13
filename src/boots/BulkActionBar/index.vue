@@ -64,7 +64,11 @@ defineEmits(["action", "clear"]);
 <style lang="scss" scoped>
 @import "@/assets/scss/utils/media-query";
 
+// It sits above its list and sticks to the top of the page's scroll body: a tick far down the list shows it.
 .bulk-bar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
   padding: var(--space-5) var(--space-10);
   border-radius: var(--radius-base);
   margin-bottom: var(--space-4);

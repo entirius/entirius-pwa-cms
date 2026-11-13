@@ -118,6 +118,8 @@ describe("Leads → Approvals", () => {
   it("read-only: no bulk bar and no drawer actions", async () => {
     api.GET_Approvals.mockResolvedValue(page([row(1, { channel: "other" })]));
     const wrapper = await mountApprovals({ write: false });
+    // Acceptance CM11: no bulk action, so no row checkboxes
+    expect(wrapper.findComponent('[data-testid="approvals-table"]').props("selectable")).toBe(false);
     await select(wrapper, [1]);
     expect(byTestid(wrapper, "approvals-bulk").exists()).toBe(false);
     await byTestid(wrapper, "approval-open").trigger("click");

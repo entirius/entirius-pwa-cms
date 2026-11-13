@@ -29,12 +29,22 @@
     <p v-else-if="error" class="t-negative m-0" role="alert" data-testid="approvals-error">{{ error }}</p>
     <EmptyState v-else-if="!rows.length && !filtered" icon="success" size="md" :title="$t('leads.approvals.empty')" data-testid="approvals-empty" />
     <div v-else class="flex-column gap-5">
+      <BulkActionBar
+        v-if="selection.length"
+        :count="selection.length"
+        selected-label-key="leads.approvals.selected"
+        clear-label-key="leads.approvals.clear"
+        :actions="bulkActions"
+        data-testid="approvals-bulk"
+        @action="onBulk"
+        @clear="clearSelection"
+      />
       <DataTable
         ref="table"
         :columns="columns"
         :rows="rows"
         row-key="id"
-        selectable
+        :selectable="!readonly"
         multi-select
         :row-attrs="rowAttrs"
         :empty-text="$t('leads.approvals.empty_filtered')"
@@ -57,16 +67,6 @@
           <IconButton icon="next" variant="ghost" size="sm" :label="$t('leads.approvals.open')" data-testid="approval-open" @click="open(row)" />
         </template>
       </DataTable>
-      <BulkActionBar
-        v-if="selection.length"
-        :count="selection.length"
-        selected-label-key="leads.approvals.selected"
-        clear-label-key="leads.approvals.clear"
-        :actions="bulkActions"
-        data-testid="approvals-bulk"
-        @action="onBulk"
-        @clear="clearSelection"
-      />
     </div>
     <template #footer>
       <Pagination v-model:page="page" :pages="pages" :disabled="loading" @update:page="load" />
@@ -104,12 +104,13 @@ import { useRouter } from "vue-router";
 import { t } from "@/i18n";
 import { GET_Approvals, GET_ApprovalsLog, POST_ApprovalsBulk } from "@/api/communicator/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { usePageReadonly } from "@/composables/useReadonly";
 import { useSearchDebounce } from "@/composables/useSearchDebounce";
 import { useApprovalsStore } from "@/stores/approvals";
 import { useLeadsChannelStore } from "@/stores/leadsChannel";
 import { useNotifyStore } from "@/stores/notify";
 import { formatDate } from "@/utils/format";
-import { problemText } from "@/utils/leadsOutbound";
+import { FROM_APPROVALS, problemText } from "@/utils/leadsOutbound";
 import { pluralKey } from "@/utils/plural";
 
 // Drafts of every channel, oldest first, each with its problem; approved or rejected in bulk (≤ 100 ids a call: a
@@ -120,6 +121,8 @@ const CHUNK = 100;
 const AGES = [24, 72, 168];
 
 const router = useRouter();
+// A role without the review write area has no bulk action, so no selection checkboxes either (acceptance CM11).
+const readonly = usePageReadonly();
 const notify = useNotifyStore();
 const approvalsStore = useApprovalsStore();
 const activeChannel = useLeadsChannelStore().activeChannelIdx;
@@ -228,7 +231,7 @@ function reload() {
 }
 
 function open(row) {
-  if (row.channel === activeChannel) router.push({ name: "LeadsReview", params: { id: row.id } });
+  if (row.channel === activeChannel) router.push({ name: "LeadsReview", params: { id: row.id }, query: { from: FROM_APPROVALS } });
   else drawerRow.value = row;
 }
 

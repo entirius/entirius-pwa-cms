@@ -105,12 +105,14 @@ import { t } from "@/i18n";
 import { GET_Conversations, GET_Replies } from "@/api/communicator/api";
 import { GET_Tasks, GET_Today, POST_TaskReopen } from "@/api/todo/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { useIsDesktop } from "@/composables/useIsDesktop";
 import { ReadonlyArea } from "@/composables/useReadonly";
 import { AREAS } from "@/configs/areas";
 import { useAccessStore } from "@/stores/access";
 import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
 import { formatDay } from "@/utils/format";
+import { outboundOn } from "@/utils/leadsOutbound";
 import { pluralKey } from "@/utils/plural";
 import { routeForSubjectRef } from "@/utils/subjectRef";
 import TaskDialog from "./TaskDialog.vue";
@@ -129,6 +131,10 @@ const notify = useNotifyStore();
 const tasksOn = computed(() => munin.isModuleInstalled("todo") && access.can(AREAS.TODO_TASKS));
 const leadsOn = computed(() => munin.isModuleEnabled("leads"));
 const commOn = computed(() => munin.isModuleEnabled("communicator"));
+// At a desk the drafts counter opens Approvals — the sidebar's place for that work; on a phone (no Approvals there)
+// and on an older backend it opens the Inbox's drafts.
+const isDesktop = useIsDesktop();
+const approvalsOn = computed(() => isDesktop.value && outboundOn(munin, "communicator") && access.can(AREAS.COMMUNICATOR_REVIEW));
 const countersOn = computed(() => commOn.value && (drafts.value !== null || replies.value !== null));
 const todayLabel = formatDay(new Date().toISOString());
 
@@ -188,7 +194,7 @@ const counters = computed(() => [
     count: drafts.value,
     label: t(`leads.today.drafts_${pluralKey(drafts.value)}`, { count: drafts.value }),
     empty: t("leads.today.no_drafts"),
-    to: { name: "LeadsInbox", query: { filter: "draft" } },
+    to: approvalsOn.value ? { name: "LeadsApprovals" } : { name: "LeadsInbox", query: { filter: "draft" } },
     testid: "today-drafts",
   },
   {

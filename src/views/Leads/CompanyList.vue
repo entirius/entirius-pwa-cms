@@ -62,6 +62,16 @@
       <BasicButton data-testid="companies-clear-filters" @click="clearFilters">{{ $t("leads.companies.clear_filters") }}</BasicButton>
     </EmptyState>
     <div v-else class="flex-column gap-4">
+      <BulkActionBar
+        v-if="selected.length"
+        :count="selected.length"
+        selected-label-key="leads.approvals.selected"
+        clear-label-key="leads.approvals.clear"
+        :actions="bulkActions"
+        data-testid="companies-bulk"
+        @action="assign"
+        @clear="clearSelection"
+      />
       <DataTable
         ref="table"
         :columns="columns"
@@ -97,16 +107,6 @@
           </span>
         </template>
       </DataTable>
-      <BulkActionBar
-        v-if="selected.length"
-        :count="selected.length"
-        selected-label-key="leads.approvals.selected"
-        clear-label-key="leads.approvals.clear"
-        :actions="bulkActions"
-        data-testid="companies-bulk"
-        @action="assign"
-        @clear="clearSelection"
-      />
     </div>
     <template #footer>
       <Pagination :page="page" :pages="pages" :disabled="loading" @update:page="setFilter('page', String($event))" />

@@ -19,6 +19,8 @@ vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification: 
 vi.mock("@/stores/munin", () => ({
   useMuninStore: () => ({ isModuleInstalled: (key) => modules[key], isModuleEnabled: (key) => modules[key], isModuleAtLeast: () => true }),
 }));
+const desk = vi.hoisted(() => ({ value: false }));
+vi.mock("@/composables/useIsDesktop", () => ({ useIsDesktop: () => desk }));
 vi.mock("@/stores/access", () => ({ useAccessStore: () => ({ can: () => true, me: { user: { id: 7 } } }) }));
 
 import Today from "@/views/Leads/Today.vue";
@@ -57,6 +59,15 @@ describe("Leads → Today", () => {
     const wrapper = await mounted();
     expect(byTestid(wrapper, "today-drafts").text()).toContain("4 drafts to approve");
     expect(byTestid(wrapper, "today-replies").text()).toBe("No replies to review");
+  });
+
+  // Acceptance CM18: at a desk the drafts counter opens Approvals, the sidebar's place for that work; a phone the Inbox
+  it("the drafts counter opens Approvals at a desk, the Inbox's drafts on a phone", async () => {
+    const link = (wrapper) => wrapper.findComponent('[data-testid="today-drafts"]').props("to");
+    expect(link(await mounted())).toEqual({ name: "LeadsInbox", query: { filter: "draft" } });
+    desk.value = true;
+    expect(link(await mounted())).toEqual({ name: "LeadsApprovals" });
+    desk.value = false;
   });
 
   it("zero tasks due: the empty state names the upcoming count", async () => {
