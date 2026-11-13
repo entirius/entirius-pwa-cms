@@ -1,7 +1,7 @@
 <template>
   <PageLayout data-testid="leads-deals-board">
     <template #header>
-      <PageHeader :title="$t('leads.deals.title')" :back="{ name: 'LeadsDeals' }">
+      <PageHeader :title="$t('leads.deals.board_title')" :back="{ name: 'LeadsDeals' }">
         <template #meta>
           <ReadonlyOff>
             <SegmentedControl :options="viewOptions" model-value="board" data-testid="deals-view" @update:model-value="openList" />

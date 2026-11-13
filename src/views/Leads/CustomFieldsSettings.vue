@@ -117,10 +117,10 @@ const pageActions = computed(() => [
 const columns = computed(() =>
   [
     { key: "label", label: t("leads.fields.label"), width: "1fr" },
-    { key: "key", label: t("leads.fields.key"), priority: 3 },
-    { key: "kindLabel", label: t("leads.fields.kind"), priority: 2 },
-    { key: "requiredLabel", label: t("leads.fields.required"), priority: 3 },
-    entity.value === "company" && { key: "inList", label: t("leads.fields.col_in_list"), priority: 3 },
+    { key: "key", label: t("leads.fields.key"), width: "max-content", priority: 3 },
+    { key: "kindLabel", label: t("leads.fields.kind"), width: "max-content", priority: 2 },
+    { key: "requiredLabel", label: t("leads.fields.required"), width: "max-content", priority: 3 },
+    entity.value === "company" && { key: "inList", label: t("leads.fields.col_in_list"), width: "max-content", priority: 3 },
     { key: "active", label: t("leads.fields.active"), width: "max-content" },
     { key: "actions", label: "", actions: true },
   ].filter(Boolean)

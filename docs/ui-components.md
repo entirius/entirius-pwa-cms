@@ -73,7 +73,8 @@ of each row element, the hooks a page object finds a row by)
 
 Column options (JSDoc in the component): `key`, `label`, `sortable`, `align`, `width` (a grid track; a px width
 never drops below the header or an untruncated cell, and on a phone shrinks to that content), `truncate` (one line, ellipsis, `title` from `title(row)`, else
-the value, or a slot cell's rendered text; on for cells without a slot; a truncated `fr` column is at least
+the value, or a slot cell's rendered text; on for cells without a slot and not `max-content` — a truncated
+`max-content` column would shrink to its header; a truncated `fr` column is at least
 max(120 px, its header)), `numeric` (right, tabular figures, no wrap), `actions` (right-aligned buttons,
 `max-content` track), `priority` (2 hidden at `max-tablet` ≤ 768 px, 3 below 1024 px). A status (badge) column never
 truncates: `width: "max-content"`. An empty value renders "—".

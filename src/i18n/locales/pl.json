@@ -5154,7 +5154,27 @@
       "no_profile": "Brak profilu oceniania — reguła zostanie pominięta",
       "needs_mail": "wymaga modułu poczty",
       "delete_confirm": "Usunąć tę regułę?",
-      "load_error": "Nie udało się wczytać reguł"
+      "load_error": "Nie udało się wczytać reguł",
+      "outcome": {
+        "fired": "Wykonana",
+        "skipped": "Pominięta",
+        "blocked": "Zablokowana",
+        "cooldown": "Niewykonana",
+        "running": "W toku"
+      },
+      "run": {
+        "company": "firma",
+        "condition": "warunek niespełniony: {field}",
+        "no_hooks": "audyt nie znalazł haczyków",
+        "no_email": "brak kontaktu z adresem e-mail",
+        "no_scoring": "brak aktywnej oceny",
+        "no_toolbox": "AI jest wyłączone",
+        "no_draft": "nie powstał szkic",
+        "cooldown": "działała niedawno dla tej firmy",
+        "audit": "zlecono audyt",
+        "draft": "szkic napisany, {status}",
+        "score": "segment {segment}, {points} pkt"
+      }
     },
     "reports": {
       "title": "Raporty",
@@ -5202,7 +5222,8 @@
       "move_failed": "Nie przeniesiono transakcji",
       "clear_filters": "Wyczyść filtry",
       "loading": "Ładowanie transakcji…",
-      "close_on": "zamknięcie {date}"
+      "close_on": "zamknięcie {date}",
+      "board_title": "Tablica transakcji"
     },
     "deal": {
       "title": "Transakcja",

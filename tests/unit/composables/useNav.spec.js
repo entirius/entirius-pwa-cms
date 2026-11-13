@@ -194,6 +194,23 @@ describe("buildCrumbs", () => {
   });
 });
 
+// Acceptance CM7 (plan 22): a crumbParent that is the nav entry's page is not repeated, on every Leads route.
+describe("buildCrumbs on the Leads routes", () => {
+  it("never repeats a level", () => {
+    const leadsPaths = router.getRoutes().filter((r) => r.meta?.panel === "leads" && r.name).map((r) => r.path.replace(/:(\w+)(\([^)]*\))?/g, "1"));
+    expect(leadsPaths.length).toBeGreaterThan(20);
+    for (const path of leadsPaths) {
+      // a record's page names itself (the view passes its title); a fixed page reads its titleKey
+      const labels = crumbsAt(path, path.endsWith("/1") ? "Record" : undefined).map((crumb) => crumb.label);
+      expect(new Set(labels).size, `${path}: ${labels.join(" / ")}`).toBe(labels.length);
+    }
+  });
+
+  it("Settings once above a settings section", () => {
+    expect(crumbsAt("/leads/settings/custom-fields").map((c) => c.label)).toEqual([t("panels.leads"), t("nav.leads_settings"), t("leads.fields.title")]);
+  });
+});
+
 describe("goBackTo", () => {
   const fakeRouter = () => ({ back: vi.fn(), push: vi.fn(), resolve: (to) => ({ path: to.path ?? to }) });
   afterEach(() => window.history.replaceState(null, ""));

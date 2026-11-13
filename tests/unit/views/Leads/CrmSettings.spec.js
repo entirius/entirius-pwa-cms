@@ -14,7 +14,17 @@ const leads = vi.hoisted(() => ({
   POST_Rule: vi.fn(() => Promise.resolve({ data: {} })),
   PATCH_Rule: vi.fn(() => Promise.resolve({ data: {} })),
   DELETE_Rule: vi.fn(),
-  GET_RuleRuns: vi.fn(() => Promise.resolve({ data: { results: [{ id: 1, company_id: 5, fired_at: null, outcome: "skipped", detail: "condition segment" }] } })),
+  GET_RuleRuns: vi.fn(() =>
+    Promise.resolve({
+      data: {
+        results: [
+          { id: 1, company_id: 5, fired_at: null, outcome: "skipped", detail: "skipped: condition segment" },
+          { id: 2, company_id: 200, fired_at: null, outcome: "fired", detail: "message 60 review_required" },
+        ],
+      },
+    })
+  ),
+  GET_Company: vi.fn((id) => (id === 5 ? Promise.resolve({ data: { id: 5, name: "Acme" } }) : Promise.reject(new Error("gone")))),
   GET_Stages: vi.fn(() => Promise.resolve({ data: { results: [{ id: 1, key: "new", label: "New" }] } })),
   GET_Funnel: vi.fn(),
 }));
@@ -137,7 +147,11 @@ describe("Leads → Settings → Rules", () => {
     expect(byTestid(wrapper, "rule-row").text()).toContain("Draft from template \"intro\"");
     await byTestid(wrapper, "rule-edit").trigger("click");
     await flushPromises();
-    expect(byTestid(wrapper, "rule-runs").text()).toContain("skipped: condition segment");
+    // Acceptance C3: the company by name, the result in words, no id, no doubled word
+    const runs = wrapper.findAll('[data-testid="rule-run"]').map((run) => run.text().replace(/\s+/g, " "));
+    expect(runs[0]).toContain("Acme · Skipped — a condition did not hold: Segment");
+    expect(runs[1]).toContain("leads.rules.run.company · Ran — draft written, to review");
+    expect(runs.join(" ")).not.toMatch(/#|\b(5|200|60)\b|review_required|skipped: skipped/);
     await byTestid(wrapper, "rule-add-condition").trigger("click");
     await byTestid(wrapper, "rule-save").trigger("click");
     await flushPromises();

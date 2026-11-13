@@ -5155,7 +5155,27 @@
       "no_profile": "No scoring profile yet — the rule will skip",
       "needs_mail": "needs the mail module",
       "delete_confirm": "Delete this rule?",
-      "load_error": "The rules could not be loaded"
+      "load_error": "The rules could not be loaded",
+      "outcome": {
+        "fired": "Ran",
+        "skipped": "Skipped",
+        "blocked": "Blocked",
+        "cooldown": "Not run",
+        "running": "Running"
+      },
+      "run": {
+        "company": "a company",
+        "condition": "a condition did not hold: {field}",
+        "no_hooks": "the audit found no hooks",
+        "no_email": "no contact with an e-mail address",
+        "no_scoring": "no active scoring",
+        "no_toolbox": "AI is switched off",
+        "no_draft": "no draft was written",
+        "cooldown": "it ran for this company recently",
+        "audit": "audit requested",
+        "draft": "draft written, {status}",
+        "score": "segment {segment}, {points} points"
+      }
     },
     "reports": {
       "title": "Reports",
@@ -5203,7 +5223,8 @@
       "move_failed": "The deal was not moved",
       "clear_filters": "Clear filters",
       "loading": "Loading deals…",
-      "close_on": "close {date}"
+      "close_on": "close {date}",
+      "board_title": "Deal board"
     },
     "deal": {
       "title": "Deal",

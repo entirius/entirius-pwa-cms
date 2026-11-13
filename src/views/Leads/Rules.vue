@@ -77,7 +77,11 @@
         </BasicCard>
         <BasicCard v-if="runs.length" :title="$t('leads.rules.last_runs')" data-testid="rule-runs">
           <ul class="m-0 flex-column gap-1 rules__runs">
-            <li v-for="run in runs" :key="run.id">{{ formatTime(run.fired_at) }} · #{{ run.company_id }} — {{ run.outcome }}<template v-if="run.detail">: {{ run.detail }}</template></li>
+            <li v-for="run in runs" :key="run.id" data-testid="rule-run">
+              {{ formatTime(run.fired_at) }} ·
+              <router-link :to="{ name: 'LeadsThread', params: { id: run.company_id } }" class="t-accent">{{ companyNames[run.company_id] || $t("leads.rules.run.company") }}</router-link>
+              · {{ ruleRunText(run, fieldLabel) }}
+            </li>
           </ul>
         </BasicCard>
       </div>
@@ -101,11 +105,12 @@
 import { computed, onMounted, reactive, ref } from "vue";
 import { t } from "@/i18n";
 import { GET_Templates } from "@/api/communicator/api";
-import { DELETE_Rule, GET_Fields, GET_RuleRuns, GET_Rules, GET_ScoringProfiles, GET_Stages, PATCH_Rule, POST_Rule } from "@/api/leads/api";
+import { DELETE_Rule, GET_Company, GET_Fields, GET_RuleRuns, GET_Rules, GET_ScoringProfiles, GET_Stages, PATCH_Rule, POST_Rule } from "@/api/leads/api";
 import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
 import { usePageReadonly } from "@/composables/useReadonly";
 import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
+import { ruleRunText } from "@/utils/leadsLabels";
 import { formatTime } from "@/utils/leadsTime";
 import ConditionRow from "./ConditionRow.vue";
 import { plainCopy } from "./customFields";
@@ -122,6 +127,7 @@ const stages = ref([]);
 const templates = ref([]);
 const fields = ref([]);
 const runs = ref([]);
+const companyNames = ref({});
 const hasProfile = ref(true);
 const loading = ref(true);
 const error = ref("");
@@ -140,8 +146,8 @@ const templateOptions = computed(() => templates.value.map((tpl) => ({ value: tp
 const pageActions = computed(() => [{ key: "add", label: t("leads.rules.add"), role: "primary", testid: "rules-add", onClick: () => openDialog(null) }]);
 const columns = computed(() => [
   { key: "stage", label: t("leads.rules.stage"), width: "1fr" },
-  { key: "when", label: t("leads.rules.when"), priority: 3 },
-  { key: "do", label: t("leads.rules.do"), priority: 2 },
+  { key: "when", label: t("leads.rules.when"), width: "max-content", priority: 3 },
+  { key: "do", label: t("leads.rules.do"), width: "max-content", priority: 2 },
   { key: "conditionCount", label: t("leads.rules.col_conditions"), numeric: true, priority: 3 },
   { key: "active", label: t("leads.rules.active"), width: "max-content" },
   { key: "actions", label: "", actions: true },
@@ -205,7 +211,19 @@ async function openDialog(rule) {
   clearErrors();
   dialogOpen.value = true;
   if (rule) runs.value = (await GET_RuleRuns(rule.id).catch(() => ({ data: { results: [] } }))).data.results.slice(0, 10);
+  await loadCompanyNames(runs.value);
 }
+
+// A run carries the company's id only: the names of the few companies of the last runs, one call each; a company
+// that does not answer keeps the generic link text.
+async function loadCompanyNames(list) {
+  const ids = [...new Set(list.map((run) => run.company_id))].filter((id) => !companyNames.value[id]);
+  const answers = await Promise.allSettled(ids.map((id) => GET_Company(id)));
+  const found = answers.flatMap((answer) => (answer.status === "fulfilled" ? [[answer.value.data.id, answer.value.data.name]] : []));
+  companyNames.value = { ...companyNames.value, ...Object.fromEntries(found) };
+}
+
+const fieldLabel = (name) => fields.value.find((field) => field.name === name)?.label || name;
 
 const body = () => Object.fromEntries(RULE_FIELDS.map((key) => [key, draft[key]]));
 

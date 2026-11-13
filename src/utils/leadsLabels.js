@@ -59,3 +59,26 @@ export function activityText(message) {
   }
   return capitalize(humanize(message).replace(/ -> /g, " → "));
 }
+
+// A rule run's detail as the service writes it ("skipped: no hooks", "message 60 review_required", "score S2 (40
+// points)") read as words, without ids; `fieldLabel` names a condition's field. An unknown detail adds nothing.
+const RULE_RUN_SHAPES = [
+  [/^skipped: condition (\S+)$/, ([field], fieldLabel) => t("leads.rules.run.condition", { field: fieldLabel(field) })],
+  [/^skipped: no hooks$/, () => t("leads.rules.run.no_hooks")],
+  [/^skipped: no email$/, () => t("leads.rules.run.no_email")],
+  [/^skipped: no scoring profile$/, () => t("leads.rules.run.no_scoring")],
+  [/^skipped: AI toolbox disabled$/, () => t("leads.rules.run.no_toolbox")],
+  [/^no draft$/, () => t("leads.rules.run.no_draft")],
+  [/^rule cooldown$/, () => t("leads.rules.run.cooldown")],
+  [/^audit requested$/, () => t("leads.rules.run.audit")],
+  [/^blocked: (\w+)$/, ([reason]) => blockReasonLabel(reason)],
+  [/^message \d+ (\w+)$/, ([status]) => t("leads.rules.run.draft", { status: statusLabel(status).toLowerCase() })],
+  [/^score (S\d) \((\d+) points\)$/, ([segment, points]) => t("leads.rules.run.score", { segment, points })],
+];
+
+export function ruleRunText(run, fieldLabel = (field) => field) {
+  const outcome = label(`leads.rules.outcome.${run.outcome || "running"}`, humanize(run.outcome));
+  const shape = RULE_RUN_SHAPES.find(([pattern]) => pattern.test(run.detail || ""));
+  if (!shape) return outcome;
+  return `${outcome} — ${shape[1](run.detail.match(shape[0]).slice(1), fieldLabel)}`;
+}

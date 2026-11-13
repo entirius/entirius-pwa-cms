@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { activityText, legalBasisLabel, sendStateLabel, sendStateSentence, stageKindLabel } from "@/utils/leadsLabels";
+import { activityText, legalBasisLabel, ruleRunText, sendStateLabel, sendStateSentence, stageKindLabel } from "@/utils/leadsLabels";
 import { pluralKey } from "@/utils/plural";
 
 // FIX-17 items 14-16: enum values, statuses and counts read as words on every leads screen.
@@ -52,5 +52,15 @@ describe("leads labels", () => {
 
   it("picks the plural form: one, few (2-4 outside the teens) and many", () => {
     expect([1, 2, 5, 12, 22, 25].map(pluralKey)).toEqual(["one", "few", "many", "many", "few", "many"]);
+  });
+
+  it("reads a rule run in words, without ids", () => {
+    expect(ruleRunText({ outcome: "skipped", detail: "skipped: no hooks" })).toBe("Skipped — the audit found no hooks");
+    expect(ruleRunText({ outcome: "fired", detail: "message 60 review_required" })).toBe("Ran — draft written, to review");
+    expect(ruleRunText({ outcome: "fired", detail: "score S2 (40 points)" })).toBe("Ran — segment S2, 40 points");
+    expect(ruleRunText({ outcome: "blocked", detail: "blocked: do_not_contact" })).toBe("Blocked — marked do not contact");
+    expect(ruleRunText({ outcome: "skipped", detail: "skipped: condition attr.size" }, () => "Size")).toBe("Skipped — a condition did not hold: Size");
+    expect(ruleRunText({ outcome: "fired", detail: "something new 7" })).toBe("Ran");
+    expect(ruleRunText({ outcome: "", detail: "claimed" })).toBe("Running");
   });
 });
