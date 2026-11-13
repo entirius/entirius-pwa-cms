@@ -87,10 +87,10 @@ describe("Leads → Settings → Mailboxes", () => {
     const body = api.PATCH_Mailbox.mock.calls[0][1];
     expect(body).not.toHaveProperty("smtp_password");
     expect(body).not.toHaveProperty("imap_password");
-    password.vm.$emit("update:modelValue", "s3cret");
+    password.vm.$emit("update:modelValue", "typed-value");
     await byTestid(wrapper, "mailbox-save").trigger("click");
     await flushPromises();
-    expect(api.PATCH_Mailbox.mock.calls[1][1].smtp_password).toBe("s3cret");
+    expect(api.PATCH_Mailbox.mock.calls[1][1].smtp_password).toBe("typed-value");
   });
 
   it("test login shows both results; a 404 shows not found", async () => {
