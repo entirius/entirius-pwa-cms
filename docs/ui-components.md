@@ -45,7 +45,8 @@ Notable ones for list/form views:
   open and its scroll position, and picks nothing. `search` emits the trimmed filter text on every change — the
   owner loads what the filter must reach (the PIM attribute values load the pages left on the first query, capped).
   Filtering stays local; there is no remote-search mode.
-- **`BulkActionBar`** — sticky bar for bulk row actions. Props: `count`
+- **`BulkActionBar`** — sticky bar for bulk row actions; it goes above its list and sticks to the top of the page's
+  scroll body. Props: `count`
   (required), `actions` (required: `variant` per action, `secondary` without one; an action with `options` is an
   action picker, a BasicSelect), `selectedLabelKey`, `clearLabelKey`. One wrapping row (count, actions, "Clear
   selection" at its end), so every action stays reachable on a phone; keep bulk actions `secondary`.
@@ -429,7 +430,8 @@ Catalogue: `#selects` (`#basic-select`, `#entity-search-picker`, `#channel-multi
 - **`BasicSwitch`** — replaces `Switcher`: `v-model`, `label`, `hint` + `hintLevel` (the field-hint mark), `disabled`; a
   `role="switch"` button with `aria-checked`, styles scoped to it.
 - **`BasicDatePicker`** — an input-looking trigger with the `calendar` icon opens an inline flatpickr; `v-model` (the
-  flatpickr date string), `config` (a single date by default, `mode: "range"` for a range), `disabled`; the instance
+  flatpickr date string), `config` (a single date by default, `mode: "range"` for a range), `disabled`; the trigger
+  shows every ISO day of the value in the UI locale ("Pick a date" when empty), the model keeps the string; the instance
   lives only while the calendar is open. `fixed` places the calendar against the viewport (upward when there is no
   room below), so a scrolling parent such as a wide table does not clip it. Its label is the FormField's. The trigger's click reaches the document, so other
   popovers close; a click inside the open calendar never closes it.

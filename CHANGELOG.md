@@ -45,6 +45,17 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- Leads panel, acceptance fixes for desk work and administration: Test login says each result in words with what
+  to do next; the pause log names the person ("Automatic" for an automatic pause); a rule's last runs show the
+  company by name and the result in words; Reports opens with the Funnel and shows dates in the UI language; Import
+  takes an owner, lists the custom-field columns and reports the ignored columns and the companies the automation
+  started for; Sending health flags every rate over its limit and gives the thresholds a unit; Deal stages has one
+  Save; every Settings section is read-only for a role without the write area; the hub says what each section changes;
+  Today's drafts counter and a draft opened from Approvals lead back to Approvals; one word for a company and the
+  board throughout.
+- Boots: a disabled primary button and a disabled select look locked; the date picker shows its value in the UI
+  locale; the bulk action bar stays in sight while the list scrolls; a `max-content` table column fits its values;
+  breadcrumbs never repeat a level.
 - Leads → Settings → Send settings: with communicator 0.5.0 the suppression list moved to Do not contact.
 - Order page: the item table's column labels are translated.
 - Stock alerts panel (django-stock-alerts, Munin module `stock_alerts`, area `stock_alerts.subscriptions`): Demand

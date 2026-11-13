@@ -109,6 +109,31 @@ fields of entity `deal`; a value without a currency is refused on Currency); Tas
 company card gains a Deals tab (`tabs/DealsTab.vue`, `GET companies/<id>/deals/`, chips with the card's `deals`
 counts); "Open deal" (`DealDialog.vue` + `DealForm.vue`) pre-fills the company, its name as the title, the primary
 contact and the channel's default currency (`GET channel/` — `leads.settings`; unreadable = the API fills it), owner
-and stage are the server's. Settings → Deal stages (`DealStages.vue`): label and kind per row (Save while dirty),
-reorder, delete (409 → "This stage holds deals") and Add. Amounts stay decimal strings (`BasicInput format="money"`,
+and stage are the server's. Settings → Deal stages (`DealStages.vue`): label and kind per row, one page Save for the
+changed rows (the unsaved state beside it, a toast when they landed), reorder by the arrows, delete (409 → "This stage
+holds deals") and Add. The deal board is titled "Deal board", so its crumbs never read "Deals / Deals". Amounts stay decimal strings (`BasicInput format="money"`,
 shown through `formatCost`). The bell maps `leads.Deal:<id>` to the deal card.
+
+## Acceptance fixes, desk work and administration (plan 22)
+
+- **Words, not codes.** Test login says each part (`ok`, `not_configured`, `no_password`, `auth_failed`,
+  `unreachable`) in words with the next step (`leads.mailbox.test_result.*` / `test_next.*`), right under the header.
+  A rule's Last runs read through `ruleRunText` (`src/utils/leadsLabels.js`): the result in words, the company by
+  name as a link (one `GET companies/<id>/` per company of the last ten runs; the run carries only the id). The pause
+  log's "By" is `user_name`, "Automatic" without a user, "—" from a backend that sends no name. Today's sending is
+  "11 of 40" / "11, no cap" (`sentToday`).
+- **Import** (leads ≥ 0.5.0): Owner (`owner_id`, pre-set to the caller, empty = no owner), the custom-field columns
+  (`attr.<key>`, `contact.attr.<key>`), the report's `ignored_columns` and `automation_started_count` (each line only
+  when the API sends it); the way back below 1024 px and the crumbs go to Companies.
+- **Reports**: the first card is the Funnel — per stage "Of the first stage" = entered ÷ the first stage's entered.
+- **Sending health**: a rate over its limit carries the warning badge also below the minimum sample and on the
+  channel line; the thresholds say "(%)".
+- **Read-only**: every Settings section hides its add forms, row writes and Save for a role without the write area
+  (`tests/unit/views/Leads/SettingsReadonly.spec.js` and each section's spec); Approvals has no row checkboxes then.
+- **Approvals**: the bulk bar sits above the list and sticks to the top of the scroll body (the boot); at a desk
+  Today's drafts counter opens Approvals, and a draft opened from Approvals (`?from=approvals`, `FROM_APPROVALS`)
+  keeps Approvals in its crumbs and as its way back.
+- **Hub**: each section has one line saying what it changes (`leads.settings.about.<key>`).
+- **Boots**: a `max-content` DataTable column no longer truncates by default; a disabled primary button and a
+  disabled select take the one disabled look; BasicDatePicker shows its value in the UI locale ("Pick a date" when
+  empty); BulkActionBar is sticky; the crumbs drop a `crumbParent` that is the nav entry's own page.
