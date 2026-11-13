@@ -23,7 +23,7 @@ vi.mock("@/api/communicator/api", () => ({ GET_Conversations, GET_WaitingMessage
 const GET_Company = vi.hoisted(() => vi.fn((id) => Promise.resolve({ data: { id, name: `Example Shop ${id}` } })));
 vi.mock("@/api/leads/api", () => ({ GET_Company }));
 const modules = vi.hoisted(() => new Set());
-vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isModuleEnabled: (key) => modules.has(key) }) }));
+vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isModuleEnabled: (key) => modules.has(key), isModuleAtLeast: () => false }) }));
 
 import Inbox from "@/views/Leads/Inbox.vue";
 import { useLeadsReviewStore } from "@/stores/leadsReview";
