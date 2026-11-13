@@ -16,7 +16,7 @@ vi.mock("@/api/leads/api", () => leads);
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification: vi.fn() }) }));
 vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isModuleInstalled: () => true }) }));
 vi.mock("@/stores/access", () => ({ useAccessStore: () => ({ can: () => true }) }));
-vi.mock("vue-router", async (original) => ({ ...(await original()), useRoute: () => ({ params: { id: "7" }, query: {} }), useRouter: () => router }));
+vi.mock("vue-router", async (original) => ({ ...(await original()), useRoute: () => ({ name: "LeadsDeal", params: { id: "7" }, query: {} }), useRouter: () => router }));
 
 import Deal from "@/views/Leads/Deal.vue";
 import { byTestid, mountOutbound } from "./outboundFrame";
@@ -95,9 +95,16 @@ describe("Leads → Deal card", () => {
     ["deal-mark-won", "deal-mark-lost", "deal-delete"].forEach((id) => expect(byTestid(wrapper, id).exists()).toBe(false));
   });
 
+  it("a closed deal without an open stage offers no Reopen", async () => {
+    leads.GET_Deal.mockResolvedValue({ data: deal(STAGES[2]) });
+    leads.GET_DealStages.mockResolvedValue({ data: { results: STAGES.slice(2) } });
+    const wrapper = await mounted();
+    expect(byTestid(wrapper, "deal-reopen").exists()).toBe(false);
+  });
+
   it("a 404 says the deal was not found", async () => {
     leads.GET_Deal.mockRejectedValue(Object.defineProperty({ message: "x" }, "httpStatus", { value: 404 }));
     const wrapper = await mounted();
-    expect(byTestid(wrapper, "deal-not-found").text()).toContain("leads.deal.not_found");
+    expect(byTestid(wrapper, "deal-not-found").text()).toContain("Deal not found");
   });
 });

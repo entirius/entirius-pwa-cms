@@ -7,9 +7,6 @@
     <FormField v-if="contacts.length" :label="$t('leads.deal.contact')" :error="errors.contact_id || ''">
       <BasicSelect v-model="form.contactId" :options="contacts" clearable data-testid="deal-contact" />
     </FormField>
-    <FormField :label="$t('leads.deal.expected_close')" :error="errors.expected_close_date || ''">
-      <BasicDatePicker v-model="form.expectedClose" data-testid="deal-expected-close" />
-    </FormField>
     <FormField :label="$t('leads.deal.value_one_off')" :error="errors.value_one_off || ''">
       <BasicInput v-model="form.valueOneOff" format="money" :maxlength="15" data-testid="deal-value-one-off" />
     </FormField>
@@ -21,6 +18,9 @@
     </FormField>
     <FormField :label="$t('leads.deal.period')">
       <BasicRadioGroup v-model="form.period" :options="periods" name="deal-period" data-testid="deal-period" />
+    </FormField>
+    <FormField :label="$t('leads.deal.expected_close')" :error="errors.expected_close_date || ''">
+      <BasicDatePicker v-model="form.expectedClose" data-testid="deal-expected-close" />
     </FormField>
     <slot />
   </div>

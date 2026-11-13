@@ -5179,7 +5179,8 @@
       "cannot_close": "Transakcji nie da się zamknąć, dopóki nie ma etapu wygranej i przegranej",
       "move_failed": "Nie przeniesiono transakcji",
       "clear_filters": "Wyczyść filtry",
-      "loading": "Ładowanie transakcji…"
+      "loading": "Ładowanie transakcji…",
+      "close_on": "zamknięcie {date}"
     },
     "deal": {
       "title": "Transakcja",

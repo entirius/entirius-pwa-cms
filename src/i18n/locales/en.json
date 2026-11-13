@@ -5180,7 +5180,8 @@
       "cannot_close": "Deals cannot be closed until there is a won and a lost stage",
       "move_failed": "The deal was not moved",
       "clear_filters": "Clear filters",
-      "loading": "Loading deals…"
+      "loading": "Loading deals…",
+      "close_on": "close {date}"
     },
     "deal": {
       "title": "Deal",

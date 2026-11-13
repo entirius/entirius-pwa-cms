@@ -12,6 +12,7 @@
       :model-value="deal.stage.key"
       :options="options"
       :floating-label="$t('leads.deals.stage')"
+      :disabled="readonly"
       data-testid="deal-card-stage"
       @update:model-value="$emit('move', deal, $event)"
     />
@@ -21,6 +22,7 @@
 <script setup>
 import { computed } from "vue";
 import { t } from "@/i18n";
+import { useReadonly } from "@/composables/useReadonly";
 import { formatDay } from "@/utils/format";
 import { dealValue, stageOptions } from "./deals";
 
@@ -31,6 +33,7 @@ const props = defineProps({
   stages: { type: Array, default: () => [] },
 });
 defineEmits(["move"]);
+const readonly = useReadonly();
 const options = computed(() => stageOptions(props.stages));
 const value = computed(() => dealValue(props.deal));
 const meta = computed(() => {

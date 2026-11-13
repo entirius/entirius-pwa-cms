@@ -105,6 +105,31 @@ describe("Leads → Deals list", () => {
     expect(byTestid(wrapper, "deal-row-stage").exists()).toBe(false);
   });
 
+  it("read-only: the row stage select is disabled", async () => {
+    const wrapper = await mounted({ write: false });
+    expect(wrapper.findComponent('[data-testid="deal-row-stage"]').props("disabled")).toBe(true);
+  });
+
+  it("the default list with no deal shows the first-run empty state, not Clear filters", async () => {
+    leads.GET_Deals.mockResolvedValue({ data: { count: 0, results: [] } });
+    const wrapper = await mounted();
+    expect(byTestid(wrapper, "deals-empty").exists()).toBe(true);
+    expect(byTestid(wrapper, "deals-clear-filters").exists()).toBe(false);
+  });
+
+  it("an older answer never replaces a newer one", async () => {
+    let first;
+    leads.GET_Deals.mockReturnValueOnce(new Promise((resolve) => (first = resolve)));
+    const wrapper = await mounted();
+    route.query = { owner: "all" };
+    leads.GET_Deals.mockResolvedValueOnce({ data: { count: 1, results: [deal(3)] } });
+    wrapper.vm.$.setupState.load?.();
+    await flushPromises();
+    first({ data: { count: 2, results: [deal(1), deal(2)] } });
+    await flushPromises();
+    expect(wrapper.findAll('[data-testid="deal-row"]').map((row) => row.attributes("data-deal"))).toEqual(["3"]);
+  });
+
   it("no deal stages: the set-up empty state", async () => {
     leads.GET_DealStages.mockResolvedValue({ data: { results: [] } });
     leads.GET_Deals.mockResolvedValue({ data: { count: 0, results: [] } });

@@ -42,6 +42,7 @@
             :model-value="row.stage.key"
             :options="options"
             :floating-label="$t('leads.deals.stage')"
+            :disabled="readonly"
             data-testid="deal-row-stage"
             @click.stop
             @update:model-value="move(row, $event)"
@@ -104,7 +105,8 @@ const { lost, move, submitLost, cancelLost } = useDealMove(stages, { moved: load
 const query = computed(() => ({ owner: "me", kind: "open", ...route.query }));
 const page = computed(() => Number(query.value.page) || 1);
 const pages = computed(() => Math.max(1, Math.ceil(count.value / PAGE_SIZE)));
-const filtered = computed(() => Object.keys(route.query).some((key) => FILTER_KEYS.includes(key)) || query.value.owner !== "all" || query.value.kind !== "all");
+// The defaults (Mine, Open) are no filter: a channel without a deal of mine shows the first-run empty state.
+const filtered = computed(() => Object.keys(route.query).some((key) => FILTER_KEYS.includes(key)) || query.value.owner !== "me" || query.value.kind !== "open");
 const closedFilter = computed(() => ["won", "lost"].includes(query.value.kind));
 const closable = computed(() => canClose(stages.value));
 const options = computed(() => stageOptions(stages.value));
@@ -131,10 +133,12 @@ const columns = computed(() =>
 const rows = computed(() => deals.value.map(toRow));
 const rowAttrs = (row) => ({ "data-testid": "deal-row", "data-deal": row.id });
 
+const closeText = (deal) => deal.expected_close_date && t("leads.deals.close_on", { date: formatDay(deal.expected_close_date) });
+
 function toRow(deal) {
   return {
     ...deal,
-    summary: [deal.company.name || deal.company.domain, dealValue(deal)].filter(Boolean).join(" · "),
+    summary: [deal.company.name || deal.company.domain, dealValue(deal), closeText(deal)].filter(Boolean).join(" · "),
     one_off: oneOffText(deal) || "—",
     recurring: recurringValueText(deal) || "—",
     close: deal.expected_close_date ? formatDay(deal.expected_close_date) : "—",
@@ -164,10 +168,15 @@ function params() {
   return { ...rest, ...scope, sort: rest.sort || DEFAULT_SORT, page: page.value, page_size: PAGE_SIZE };
 }
 
+// Every load numbers itself: the answer of an older query (a slower, earlier filter) is dropped.
+let latest = 0;
+
 async function load() {
+  const run = ++latest;
   loading.value = true;
   try {
     const { data } = await GET_Deals(params());
+    if (run !== latest) return;
     deals.value = data.results;
     count.value = data.count ?? data.results.length;
   } catch (err) {
@@ -177,12 +186,10 @@ async function load() {
   }
 }
 
+// A failed stages call leaves the set-up state off (it would replace the deals): the selects stay empty.
 async function loadStages() {
-  try {
-    stages.value = (await GET_DealStages()).data.results;
-  } finally {
-    stagesLoaded.value = true;
-  }
+  stages.value = (await GET_DealStages()).data.results;
+  stagesLoaded.value = true;
 }
 
 watch(() => route.query, () => route.name === "LeadsDeals" && load());

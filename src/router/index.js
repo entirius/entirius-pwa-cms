@@ -1138,7 +1138,7 @@ const routes = [
         path: "deals/board",
         name: "LeadsDealsBoard",
         component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/DealsBoard.vue"),
-        meta: { requiresAuth: true, titleKey: "leads.deals.title", panel: "leads", area: AREAS.LEADS_COMPANIES, module: "leads", moduleVersion: OUTBOUND, page: true, desktop: true, desktopBack: "LeadsDeals", crumbParent: "LeadsDeals" },
+        meta: { requiresAuth: true, titleKey: "leads.deals.title", panel: "leads", area: AREAS.LEADS_COMPANIES, module: "leads", moduleVersion: OUTBOUND, page: true, desktop: true, desktopBack: { name: "LeadsDeals", labelKey: "leads.desktop_only.back_deals" }, crumbParent: "LeadsDeals" },
       },
       {
         path: "deals/:id(\\d+)",

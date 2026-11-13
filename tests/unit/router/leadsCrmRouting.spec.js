@@ -69,7 +69,7 @@ describe("Leads CRM deals routing", () => {
   it("Deals list, board and card ride leads.companies on leads 0.5.0; the board is a desk page", () => {
     expect(router.resolve("/leads/deals").meta).toMatchObject({ page: true, area: AREAS.LEADS_COMPANIES, moduleVersion: "0.5.0" });
     expect(router.resolve("/leads/deals").meta.desktop).toBeUndefined();
-    expect(router.resolve("/leads/deals/board").meta).toMatchObject({ desktop: true, crumbParent: "LeadsDeals", desktopBack: "LeadsDeals" });
+    expect(router.resolve("/leads/deals/board").meta).toMatchObject({ desktop: true, crumbParent: "LeadsDeals", desktopBack: { name: "LeadsDeals", labelKey: "leads.desktop_only.back_deals" } });
     expect(router.resolve("/leads/deals/5")).toMatchObject({ name: "LeadsDeal", meta: { crumbParent: "LeadsDeals", area: AREAS.LEADS_COMPANIES } });
   });
 

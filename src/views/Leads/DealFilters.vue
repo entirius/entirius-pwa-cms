@@ -11,7 +11,7 @@
       @input="debouncedFetch(applySearch)"
     />
     <div class="flex ai-ct flex-wrap gap-5">
-      <div class="filter-chip-row">
+      <div class="filter-chip-row" role="group" :aria-label="$t('leads.deals.col_owner')">
         <FilterChip
           v-for="key in OWNERS"
           :key="key"
@@ -33,7 +33,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from "vue";
+import { computed, watch } from "vue";
 import { useSearchDebounce } from "@/composables/useSearchDebounce";
 import { DEAL_KINDS, dealKindLabel, stageOptions } from "./deals";
 
@@ -63,5 +63,6 @@ function setRange(value) {
   emit("set", { close_from: from, close_to: to });
 }
 
-onMounted(() => (search.value = props.query.search || ""));
+// The box follows the URL (Clear filters, back and forward), not only the first load.
+watch(() => props.query.search, (value) => (search.value = value || ""), { immediate: true });
 </script>

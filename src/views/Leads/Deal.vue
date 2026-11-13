@@ -23,7 +23,7 @@
         </template>
       </PageHeader>
     </template>
-    <EmptyState v-if="notFound" icon="empty" size="md" :title="$t('leads.deal.not_found')" data-testid="deal-not-found">
+    <EmptyState v-if="loadError" icon="empty" size="md" :title="loadError" data-testid="deal-not-found">
       <router-link class="t-accent" :to="{ name: 'LeadsDeals' }">{{ $t("leads.deals.title") }}</router-link>
     </EmptyState>
     <Loader v-else-if="!deal" block />
@@ -89,7 +89,7 @@ const access = useAccessStore();
 const isDesktop = useIsDesktop();
 const readonly = usePageReadonly();
 const deal = ref(null);
-const notFound = ref(false);
+const loadError = ref("");
 const stages = ref([]);
 const company = ref({ id: null, name: "", contacts: [] });
 const definitions = ref([]);
@@ -102,20 +102,23 @@ const fields = computed(() => fieldsFromDefinitions(definitions.value));
 const contacts = computed(() => contactOptions(company.value.contacts));
 const closable = computed(() => canClose(stages.value));
 const history = computed(() => activities.value.map((entry) => ({ ...entry, text: dealHistoryText(entry, stages.value) })));
-const actions = computed(() => (deal.value.stage.kind === "open" ? openActions() : [closedAction()]));
+const actions = computed(() => (deal.value.stage.kind === "open" ? openActions() : [closedAction()].filter(Boolean)));
 
 function openActions() {
   const won = firstStage(stages.value, "won");
   const lostStage = firstStage(stages.value, "lost");
   return [
-    { key: "delete", label: t("leads.deal.delete"), role: "utility", icon: "delete", variant: "danger", testid: "deal-delete", onClick: () => (deleting.value = true) },
+    { key: "delete", label: t("leads.deal.delete"), role: "utility", icon: "delete", variant: "danger", mutates: true, testid: "deal-delete", onClick: () => (deleting.value = true) },
     lostStage && { key: "lost", label: t("leads.deal.mark_lost"), role: "secondary", mutates: true, testid: "deal-mark-lost", onClick: () => move(deal.value, lostStage.key) },
     won && { key: "won", label: t("leads.deal.mark_won"), role: "primary", mutates: true, testid: "deal-mark-won", onClick: () => move(deal.value, won.key) },
   ].filter(Boolean);
 }
 
+// Reopen goes to the first open stage; without one (or without the stages) it is not offered.
 function closedAction() {
-  const reopen = () => move(deal.value, firstStage(stages.value, "open")?.key);
+  const target = firstStage(stages.value, "open");
+  if (!target) return null;
+  const reopen = () => move(deal.value, target.key);
   return { key: "reopen", label: t("leads.deal.reopen"), role: "secondary", mutates: true, testid: "deal-reopen", onClick: reopen };
 }
 
@@ -143,12 +146,11 @@ async function loadAround() {
 
 async function open(id) {
   deal.value = null;
-  notFound.value = false;
+  loadError.value = "";
   try {
     deal.value = (await GET_Deal(id)).data;
   } catch (err) {
-    notFound.value = true;
-    if (err?.httpStatus !== 404) notify.spawnNotification({ msg: extractApiMessage(err, t("leads.common.error")), type: "negative" });
+    loadError.value = err?.httpStatus === 404 ? t("leads.deal.not_found") : extractApiMessage(err, t("leads.common.error"));
     return;
   }
   await loadAround();
@@ -164,7 +166,8 @@ async function remove() {
   }
 }
 
-watch(() => route.params.id, (id) => id && open(id), { immediate: true });
+// Only this route's id: leaving for a company card (also `:id`) must not load a deal of that number.
+watch(() => route.params.id, (id) => route.name === "LeadsDeal" && id && open(id), { immediate: true });
 </script>
 
 <style scoped>

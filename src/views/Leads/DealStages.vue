@@ -33,7 +33,7 @@
                 <BasicButton v-if="dirty(element)" mutates size="sm" data-testid="deal-stage-save" @click="saveRow(element)">{{ $t("leads.company.save") }}</BasicButton>
                 <IconButton mutates icon="moveUp" variant="outline" :label="$t('leads.stages.up')" :disabled="index === 0" data-testid="deal-stage-up" @click="shift(index, -1)" />
                 <IconButton mutates icon="moveDown" variant="outline" :label="$t('leads.stages.down')" :disabled="index === stages.length - 1" data-testid="deal-stage-down" @click="shift(index, 1)" />
-                <IconButton icon="delete" variant="danger" :label="$t('leads.stages.delete')" data-testid="deal-stage-delete" @click="confirming = element" />
+                <IconButton mutates icon="delete" variant="danger" :label="$t('leads.stages.delete')" data-testid="deal-stage-delete" @click="confirming = element" />
               </div>
               <p v-if="errors[element.id]" class="stage__error t-negative m-0" data-testid="deal-stage-error">{{ errors[element.id] }}</p>
             </div>

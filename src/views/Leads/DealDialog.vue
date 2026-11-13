@@ -18,7 +18,7 @@
 </template>
 
 <script setup>
-import { computed, reactive, ref, watch } from "vue";
+import { computed, nextTick, reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { t } from "@/i18n";
 import { GET_Companies, GET_Company, POST_Deal } from "@/api/leads/api";
@@ -71,9 +71,11 @@ watch(() => props.open, (open) => open && reset());
 const findCompanies = async (search) =>
   (await GET_Companies({ search, page: 1 })).data.results.map((row) => ({ value: String(row.id), label: row.name || row.domain, secondary: row.domain }));
 
+// The picker sends the id before its label: the title is pre-filled after both arrived.
 async function pickCompany(id) {
   picked.contacts = [];
   if (!id) return;
+  await nextTick();
   if (!form.title) form.title = picked.name;
   picked.contacts = (await GET_Company(id)).data.contacts || [];
   form.contactId = contacts.value[0]?.value ?? null;

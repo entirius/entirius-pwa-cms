@@ -10,12 +10,12 @@
     :message="$t('leads.desktop_only.message')"
     data-testid="desktop-only"
   >
-    <router-link v-if="route.meta.desktopBack === 'LeadsDeals'" :to="{ name: 'LeadsDeals' }">{{ $t("leads.desktop_only.back_deals") }}</router-link>
-    <router-link v-else :to="{ name: 'LeadsInbox' }">{{ $t("leads.desktop_only.back") }}</router-link>
+    <router-link :to="{ name: back.name }">{{ $t(back.labelKey) }}</router-link>
   </EmptyState>
 </template>
 
 <script setup>
+import { computed } from "vue";
 import { useRoute } from "vue-router";
 import { useIsDesktop } from "@/composables/useIsDesktop";
 
@@ -23,4 +23,6 @@ import { useIsDesktop } from "@/composables/useIsDesktop";
 // screen) — never a broken layout.
 const isDesktop = useIsDesktop();
 const route = useRoute();
+// A route may name its phone screen (`meta.desktopBack` = { name, labelKey }); else the Inbox.
+const back = computed(() => route.meta.desktopBack || { name: "LeadsInbox", labelKey: "leads.desktop_only.back" });
 </script>

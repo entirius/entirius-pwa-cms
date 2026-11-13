@@ -1,7 +1,7 @@
 <template>
   <BasicCard :title="$t('leads.deals.title')" data-testid="company-deals">
     <template #actions>
-      <ActionBar :actions="actions" :labelled="false" />
+      <ActionBar v-if="deals.length" :actions="actions" :labelled="false" />
     </template>
     <Loader v-if="loading" block />
     <EmptyState v-else-if="!deals.length" icon="empty" size="sm" :title="$t('leads.deals.empty')">

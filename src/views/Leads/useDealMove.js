@@ -38,6 +38,7 @@ export function useDealMove(stages, { moved, refused = () => {} }) {
   }
 
   function cancelLost() {
+    if (!lost.value) return;
     const { deal, stageKey } = lost.value;
     lost.value = null;
     refused(deal, stageKey);
