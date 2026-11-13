@@ -138,3 +138,28 @@ shown through `formatCost`). The bell maps `leads.Deal:<id>` to the deal card.
 - **Boots**: a `max-content` DataTable column no longer truncates by default; a disabled primary button and a
   disabled select take the one disabled look; BasicDatePicker shows its value in the UI locale ("Pick a date" when
   empty); the crumbs drop a `crumbParent` that is the nav entry's own page.
+
+## Acceptance fixes, a salesperson's day (plan 18)
+
+- **History in words** (`activityText(activity)`, `src/utils/leadsLabels.js`): a line with a known `data.event`
+  (reply, task_created / done / cancelled / reopened, composed, sequence_stopped / paused, deal_opened / moved / won /
+  lost / reopened / deleted, owner_set / cleared, a stage move with `from_label` / `to_label`) renders from
+  `leads.history.event_*`; the stored `message` only for an unknown line. Message and thread states are StatusBadges
+  (`messageTone`, `threadTone`).
+- **Reply** (`reply-compose` on an inbound bubble, `src/utils/leadsReply.js`): ComposeDialog with the reply id, "Re:"
+  subject, the quoted reply and the sender's contact. The timeline carries no reply id: the reply is found among the
+  thread's replies by its time (as the opt-out lookup does). Confirm opt-out goes through a ConfirmDialog.
+- **Hand-written mail**: a `composed` activity (`data.message_id`) marks its message "Mail written by hand"; the card's
+  activities are the only source, so a conversation page without a company keeps the Follow-up tag.
+- **Refresh**: a sent mail, a draft request or a saved task reloads the card (`changed`); Thread reads itself again
+  when the card hands it a new `refresh` object.
+- **Tasks**: Edit (`task-edit`, the title link `task-title-link`) and Cancel task with a reason; the dialog takes away
+  a live success toast when it opens; Today's chip is `?chip=`. Dates: `formatLeadsDay` / `formatLeadsDateTime`
+  (`src/utils/leadsTime.js`).
+- **Approvals**: the company from `subject_label` + `subject_ref` as a link, the channel by its PIM name, an "Approve N
+  drafts?" step. **Inbox** `?review=1`: only the loaded conversations whose newest reply needs review (client-side).
+- **Company card**: `BasicTabs wrap`; stage and lead-type selects in their own labelled row; Back = `router.back()`
+  when the history has a previous entry, Companies otherwise (Add company replaces itself with the card).
+- **Deals**: the board is a grid of stage columns sharing the width (min 7 rem; a longer pipeline scrolls), each
+  column body a drop target with an empty line; `useDealMove` toasts every move.
+

@@ -54,6 +54,19 @@ All notable changes to this project will be documented in this file.
   Approvals keeps its bulk bar in sight above the pager; Today's drafts counter and a draft opened from Approvals lead
   back to Approvals; one word for a company and the
   board throughout.
+- Leads panel, acceptance fixes for a salesperson's day: History reads every event in the interface language (stage
+  moves in the channel's stage names, reply types in words) and refreshes after a mail, a call or a task; an inbound
+  reply has Reply (quoted, "Re:" subject, the sender as To); Confirm opt-out asks first; message and thread states are
+  badges; a hand-written mail is never labelled Follow-up. Tasks can be edited and cancelled with a reason from Today,
+  the Tasks tab and the task title; a task from Today keeps its company; Log call explains Outcome and Note; Today
+  keeps its chip in the URL. Approvals names the company (a link to its card) and the channel, shows the template in
+  full and asks before approving; toasts say what happened. The company card keeps every tab in sight, labels its
+  stage and lead-type selects, goes back where the person came from and shows each contact's state (Can be mailed,
+  Blocked, No e-mail); "N replies need review" opens only those replies. The deal board fits six stages at 1280 px,
+  an empty column takes a drop and says so, every move toasts; the Deals list says "Stage" once and the value once;
+  Delete deal comes after Mark lost. One date format across the Leads screens; "Refresh site audit" replaces
+  "Re-audit".
+- Boots: BasicTabs `wrap` breaks a long tab row onto a second line instead of scrolling it.
 - Boots: a disabled primary button and a disabled select look locked; the date picker shows its value in the UI
   locale; a `max-content` table column fits its values;
   breadcrumbs never repeat a level.
