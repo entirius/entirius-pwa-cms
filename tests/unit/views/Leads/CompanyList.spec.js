@@ -15,7 +15,7 @@ const crm = vi.hoisted(() => ({ on: true }));
 vi.mock("@/api/leads/api", () => leads);
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification: vi.fn() }) }));
 vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isModuleAtLeast: () => crm.on }) }));
-const route = vi.hoisted(() => ({ query: {} }));
+const route = vi.hoisted(() => ({ name: "LeadsCompanies", query: {} }));
 const router = vi.hoisted(() => ({ push: vi.fn(), replace: vi.fn() }));
 vi.mock("vue-router", async (original) => ({ ...(await original()), useRoute: () => route, useRouter: () => router }));
 

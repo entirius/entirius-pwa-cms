@@ -283,7 +283,8 @@ async function assign(key, value) {
   }
 }
 
-watch(() => route.query, load);
+// Only a query change of this page reloads it (a click to a card changes the route before the list unmounts).
+watch(() => route.query, () => route.name === "LeadsCompanies" && load());
 onMounted(() => {
   search.value = route.query.search || "";
   load();
