@@ -1,0 +1,116 @@
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { flushPromises } from "@vue/test-utils";
+import { createPinia, setActivePinia } from "pinia";
+
+const leads = vi.hoisted(() => ({
+  GET_Deals: vi.fn(),
+  GET_DealStages: vi.fn(),
+  POST_DealTransition: vi.fn(),
+}));
+const desktop = vi.hoisted(() => ({ on: true }));
+vi.mock("@/api/leads/api", () => leads);
+vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification: vi.fn() }) }));
+vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isModuleAtLeast: () => true, isModuleInstalled: () => true }) }));
+vi.mock("@/stores/access", () => ({ useAccessStore: () => ({ can: () => true }) }));
+vi.mock("@/composables/useIsDesktop", async () => {
+  const { ref } = await import("vue");
+  return { useIsDesktop: () => ref(desktop.on) };
+});
+const route = vi.hoisted(() => ({ name: "LeadsDeals", query: {} }));
+const router = vi.hoisted(() => ({ push: vi.fn(), replace: vi.fn() }));
+vi.mock("vue-router", async (original) => ({ ...(await original()), useRoute: () => route, useRouter: () => router }));
+
+import Deals from "@/views/Leads/Deals.vue";
+import { control, setControl } from "./leadsFrame";
+import { byTestid, mountOutbound } from "./outboundFrame";
+import { crmStubs } from "./crmFrame";
+
+const STAGES = [
+  { key: "qualified", label: "Qualified", kind: "open", order: 0 },
+  { key: "won", label: "Won", kind: "won", order: 10 },
+  { key: "lost", label: "Lost", kind: "lost", order: 20 },
+];
+const deal = (id, extra = {}) => ({
+  id, title: `Deal ${id}`, company: { id: 9, name: "Acme", domain: "acme.test" }, owner: null, stage: STAGES[0],
+  value_one_off: "12400.00", value_recurring: null, recurring_period: "month", currency: "PLN", expected_close_date: null, open_tasks: 1, ...extra,
+});
+const mounted = async (options = {}) => {
+  const wrapper = mountOutbound(Deals, { area: "leads.companies", stubs: { ...crmStubs, DealDialog: true }, ...options });
+  await flushPromises();
+  return wrapper;
+};
+
+// Plan 16: Deals — the list on every width, its state in the URL, the stage select on the row.
+describe("Leads → Deals list", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    setActivePinia(createPinia());
+    desktop.on = true;
+    route.query = {};
+    leads.GET_DealStages.mockResolvedValue({ data: { results: STAGES } });
+    leads.GET_Deals.mockResolvedValue({ data: { count: 45, results: [deal(1), deal(2)] } });
+    leads.POST_DealTransition.mockResolvedValue({ data: deal(1, { stage: STAGES[2] }) });
+  });
+
+  it("asks one server page of my open deals, soonest close first", async () => {
+    const wrapper = await mounted();
+    expect(leads.GET_Deals).toHaveBeenCalledWith({ owner: "me", kind: "open", sort: "expected_close_date", page: 1, page_size: 20 });
+    expect(wrapper.findAll('[data-testid="deal-row"]')).toHaveLength(2);
+    expect(wrapper.findComponent({ name: "Pagination" }).props("pages")).toBe(3);
+  });
+
+  it("reads the filters from the URL and writes a close range back as one change", async () => {
+    route.query = { owner: "all", kind: "all", stage: "qualified", page: "2" };
+    const wrapper = await mounted();
+    expect(leads.GET_Deals).toHaveBeenCalledWith({ stage: "qualified", sort: "expected_close_date", page: 2, page_size: 20 });
+    setControl(wrapper, "deals-filter-close", "2026-11-01 – 2026-11-30");
+    expect(router.replace).toHaveBeenLastCalledWith({ query: { owner: "all", kind: "all", stage: "qualified", close_from: "2026-11-01", close_to: "2026-11-30" } });
+    table(wrapper).vm.$emit("sort", { key: "one_off", direction: "desc" });
+    expect(router.replace.mock.lastCall[0].query.sort).toBe("-value_one_off");
+  });
+
+  it("a move to a lost stage is impossible without a reason", async () => {
+    const wrapper = await mounted();
+    setControl(wrapper, "deal-row-stage", "lost");
+    await flushPromises();
+    expect(byTestid(wrapper, "deal-lost-dialog").exists()).toBe(true);
+    await byTestid(wrapper, "deal-lost-submit").trigger("click");
+    expect(leads.POST_DealTransition).not.toHaveBeenCalled();
+    control(wrapper, "deal-lost-reason").vm.$emit("update:modelValue", "Too expensive");
+    await byTestid(wrapper, "deal-lost-submit").trigger("click");
+    await flushPromises();
+    expect(leads.POST_DealTransition).toHaveBeenCalledWith(1, "lost", "Too expensive");
+  });
+
+  it("a won stage moves at once", async () => {
+    const wrapper = await mounted();
+    setControl(wrapper, "deal-row-stage", "won");
+    await flushPromises();
+    expect(leads.POST_DealTransition).toHaveBeenCalledWith(1, "won", "");
+  });
+
+  it("at 390 px: no List · Board switch, every column but deal and stage gives way (no sideways scroll)", async () => {
+    desktop.on = false;
+    const wrapper = await mounted();
+    expect(byTestid(wrapper, "deals-view").exists()).toBe(false);
+    const columns = table(wrapper).props("columns");
+    expect(columns.filter((column) => !column.priority).map((column) => column.key)).toEqual(["title", "stage"]);
+    expect(columns.find((column) => column.key === "title").width).toBe("1fr");
+  });
+
+  it("read-only: no Open deal; won and lost filters show the kind badge, not the select", async () => {
+    route.query = { kind: "won" };
+    const wrapper = await mounted({ write: false });
+    expect(byTestid(wrapper, "deals-open").exists()).toBe(false);
+    expect(byTestid(wrapper, "deal-row-stage").exists()).toBe(false);
+  });
+
+  it("no deal stages: the set-up empty state", async () => {
+    leads.GET_DealStages.mockResolvedValue({ data: { results: [] } });
+    leads.GET_Deals.mockResolvedValue({ data: { count: 0, results: [] } });
+    const wrapper = await mounted();
+    expect(byTestid(wrapper, "deals-no-stages").exists()).toBe(true);
+  });
+});
+
+const table = (wrapper) => wrapper.findComponent('[data-testid="deals-table"]');
