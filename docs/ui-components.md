@@ -275,7 +275,8 @@ Catalogue: `#overlays` (`#basic-modal`, `#confirm-dialog`, `#secret-reveal`, `#s
   „Usuń: <label>” that emits `remove`, `to` makes the label a `router-link` to the entity (accent text).
 - **`BasicTabs`** — `options` `[{ label, value, count?, testid?, disabled? }]` + `v-model` (unchanged); a `tablist` with one
   Tab stop (the active tab, else the first enabled one — never a disabled tab), ←/→ (wrapping), Home and End select and
-  focus a tab, skipping disabled ones (a disabled tab takes no click either); active = accent text + 2 px accent underline.
+  focus a tab, skipping disabled ones (a disabled tab takes no click either); active = accent text + 2 px accent underline. `wrap`
+  breaks a row wider than its box onto a second line instead of scrolling it (the company card: every tab in sight).
   Tab `i` is `id="<idPrefix>-tab-<value>"` with `aria-controls="<idPrefix>-panel-<value>"`: the call site renders the
   panel as `<div role="tabpanel" :id="…-panel-<value>" :aria-labelledby="…-tab-<value>">`. Empty `options` render
   nothing. An option's `testid` lands on its tab.
