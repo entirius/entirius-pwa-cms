@@ -4902,7 +4902,8 @@
       "no_mailbox": "Brak kont pocztowych",
       "show_more": "Pokaż więcej",
       "over": "Powyżej progu",
-      "load_error": "Nie udało się wczytać kondycji wysyłki — spróbuj ponownie."
+      "load_error": "Nie udało się wczytać kondycji wysyłki — spróbuj ponownie.",
+      "reason_line": "{rate} z {sent} wysłanych"
     },
     "moves": {
       "title": "Automatyczne przejścia",

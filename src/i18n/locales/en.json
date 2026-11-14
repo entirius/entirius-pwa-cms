@@ -4903,7 +4903,8 @@
       "no_mailbox": "No mailbox yet",
       "show_more": "Show more",
       "over": "Over the limit",
-      "load_error": "Sending health could not be loaded — try again."
+      "load_error": "Sending health could not be loaded — try again.",
+      "reason_line": "{rate} of {sent} sent"
     },
     "moves": {
       "title": "Automatic moves",

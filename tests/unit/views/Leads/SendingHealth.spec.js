@@ -45,6 +45,10 @@ describe("Leads → Settings → Sending health", () => {
     expect(byTestid(wrapper, "loader").exists()).toBe(false);
     expect(wrapper.findAll('[data-testid="health-row"]')).toHaveLength(2);
     expect(wrapper.findAll('[data-testid="health-over"]')).toHaveLength(2);
+    // N22: the figure is the badge, the words are its tooltip — one item per cell
+    const badge = wrapper.findComponent('[data-testid="health-over"]');
+    expect(badge.props("label")).toMatch(/ %$/);
+    expect(badge.attributes("title")).toBe("leads.health.over");
     expect(byTestid(wrapper, "health-channel-over").exists()).toBe(false);
     expect(byTestid(wrapper, "health-resume").exists()).toBe(true);
     wrapper.findComponent('[data-testid="health-max-bounce"]').vm.$emit("update:modelValue", "");
@@ -88,5 +92,22 @@ describe("Leads → Settings → Sending health", () => {
     const readonly = await mounted({ write: false });
     expect(byTestid(readonly, "health-save").exists()).toBe(false);
     expect(byTestid(readonly, "health-resume").exists()).toBe(false);
+  });
+
+  // n3: the automatic pause's line from its trigger and metrics, the stored reason for a manual one
+  it("the log composes an automatic pause's reason from its metrics", async () => {
+    api.GET_HealthLog.mockResolvedValueOnce({
+      data: {
+        next: null,
+        results: [
+          { id: 1, mailbox_id: 1, action: "pause", trigger: "bounce", reason: "hard bounces 20.0% of 5 sent in 2160 h, limit 0.00%", metrics: { sent: 5, hard_bounces_pct: 20.0 }, user_id: null, created_at: "2026-11-14T08:00:00Z" },
+          { id: 2, mailbox_id: 1, action: "resume", trigger: "manual", reason: "fixed the DNS", metrics: {}, user_id: 3, user_name: "Anna", created_at: "2026-11-14T09:00:00Z" },
+        ],
+      },
+    });
+    const rows = (await mounted()).findAll('[data-testid="health-log-row"]').map((row) => row.text());
+    expect(rows[0]).toContain("20 % of 5 sent");
+    expect(rows[0]).not.toContain("2160");
+    expect(rows[1]).toContain("fixed the DNS");
   });
 });

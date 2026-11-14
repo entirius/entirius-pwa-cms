@@ -39,8 +39,9 @@
             <StatusBadge :tone="MAILBOX_TONES[row.stateKey]" :label="mailboxStateLabel(row.stateKey)" :title="row.pause_reason" />
           </template>
           <template v-for="rate in RATES" :key="rate.key" #[`cell-${rate.key}`]="{ row }">
-            <span :class="{ 't-muted': row.tooFew }" :title="row.tooFew ? $t('leads.health.too_few') : ''">{{ pct(row.metrics[rate.key]) }}</span>
-            <StatusBadge v-if="over(row, rate)" class="ml-2" tone="warning" size="sm" :label="$t('leads.health.over')" data-testid="health-over" />
+            <!-- over the limit, the figure is the warning badge itself: one item per cell keeps Resume on screen (N22) -->
+            <StatusBadge v-if="over(row, rate)" tone="warning" size="sm" :label="pct(row.metrics[rate.key])" :title="$t('leads.health.over')" data-testid="health-over" />
+            <span v-else :class="{ 't-muted': row.tooFew }" :title="row.tooFew ? $t('leads.health.too_few') : ''">{{ pct(row.metrics[rate.key]) }}</span>
           </template>
           <template #cell-actions="{ row }">
             <BasicButton v-if="row.paused_at" mutates size="sm" data-testid="health-resume" @click="reasonFor = row">
@@ -161,8 +162,18 @@ const addressOf = (id) => report.value.mailboxes.find((mailbox) => mailbox.id ==
 // Who paused or resumed: the person's name; an automatic pause has no user. An older backend sends no name: "—".
 const byOf = (entry) => (entry.user_id ? entry.user_name || "—" : t("leads.health.by_system"));
 
+// n3: an automatic pause reads "20 % of 5 sent" from its trigger's rate in the stored metrics (the Why column names
+// the trigger); a manual entry, or one without the figure, keeps the stored reason.
+const TRIGGER_RATES = { bounce: "hard_bounces_pct", optout: "optouts_pct", complaint: "complaints_pct" };
+function reasonOf(entry) {
+  const rate = entry.metrics?.[TRIGGER_RATES[entry.trigger]];
+  if (rate === null || rate === undefined) return entry.reason;
+  return t("leads.health.reason_line", { rate: pct(rate), sent: entry.metrics.sent });
+}
+
 const logRow = (entry) => ({
   ...entry,
+  reason: reasonOf(entry),
   when: formatDate(entry.created_at),
   mailbox: addressOf(entry.mailbox_id),
   why: healthTriggerLabel(entry.trigger),
