@@ -4377,7 +4377,8 @@
       "quote_hide": "Ukryj cytowany tekst",
       "skipped_by": "Szkic pominięty przez: {name} · {date}",
       "withdrawn": "Szkic wycofany · {reason}",
-      "skipped_reason": "Powód: {reason}"
+      "skipped_reason": "Powód: {reason}",
+      "suppressed_reason": "Do odbiorcy nie wolno pisać (zrezygnował lub jest na liście „Nie kontaktować”)"
     },
     "send_state": {
       "at": "wysyłka o {time}",
@@ -4396,7 +4397,7 @@
       "review_required": "Szkic",
       "skipped": "Pominięta",
       "rejected": "Pominięta",
-      "suppressed": "Zablokowana",
+      "suppressed": "Nie wysłano",
       "superseded": "Zastąpiona nową wersją",
       "sending": "Wysyłana",
       "would_send": "Wysłana w trybie testowym",
@@ -5156,7 +5157,8 @@
       "today_no_time": "Dziś",
       "tomorrow": "Jutro {time}",
       "on": "{date}",
-      "none": "Bez terminu"
+      "none": "Bez terminu",
+      "done_on": "Zrobione {date}"
     },
     "score": {
       "title": "Ocena",

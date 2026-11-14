@@ -4378,7 +4378,8 @@
       "quote_hide": "Hide quoted text",
       "skipped_by": "Draft skipped by {name} · {date}",
       "withdrawn": "Draft withdrawn · {reason}",
-      "skipped_reason": "Reason: {reason}"
+      "skipped_reason": "Reason: {reason}",
+      "suppressed_reason": "The recipient may not be mailed (opted out or on the do-not-contact list)"
     },
     "send_state": {
       "at": "goes out at {time}",
@@ -4397,7 +4398,7 @@
       "review_required": "Draft",
       "skipped": "Skipped",
       "rejected": "Skipped",
-      "suppressed": "Blocked",
+      "suppressed": "Not sent",
       "superseded": "Replaced by a new version",
       "sending": "Sending",
       "would_send": "Sent in test mode",
@@ -5157,7 +5158,8 @@
       "today_no_time": "Today",
       "tomorrow": "Tomorrow {time}",
       "on": "{date}",
-      "none": "No date"
+      "none": "No date",
+      "done_on": "Done {date}"
     },
     "score": {
       "title": "Score",

@@ -54,6 +54,14 @@ describe("ThreadTimeline", () => {
     expect(wrapper.findAll("details.tl__skipped")[0].text()).toContain("Ping");
   });
 
+  // m5 (walk 3): a message that may not go out is "Not sent" (Blocked is the word for a contact), the reason its tooltip
+  it("a suppressed message reads Not sent with the reason as its tooltip", () => {
+    const wrapper = mountTl({ props: { messages: [{ ...messages[1], status: "suppressed" }] } });
+    const badge = wrapper.get('[data-testid="status-suppressed"]');
+    expect(badge.text()).toBe("Not sent");
+    expect(badge.attributes("title")).toContain("may not be mailed");
+  });
+
   // FIX-17b item 15: a waiting bubble says what the Inbox says — the shared send state of its own `next_slot`.
   it("two waiting follow-ups with the same subject each state their own next_slot by message id", () => {
     channelTimeZone.value = "UTC";

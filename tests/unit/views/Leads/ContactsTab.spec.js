@@ -262,9 +262,11 @@ describe("Company card — Contacts tab", () => {
     expect((await mountTab()).find('[data-testid="contact-why"]').exists()).toBe(false);
     Object.assign(useMuninStore(), { loaded: true, modules: [{ key: "leads", version: "0.5.0", enabled_in_cms: true }] });
     const wrapper = await mountTab();
-    await wrapper.get('[data-testid="contact-why"][data-contact="1"]').trigger("click");
+    // m4 (walk 3): only beside a contact who cannot be mailed — never beside "Can be mailed"
+    expect(wrapper.find('[data-testid="contact-why"][data-contact="1"]').exists()).toBe(false);
+    await wrapper.get('[data-testid="contact-why"][data-contact="2"]').trigger("click");
     await flushPromises();
-    expect(leads.GET_Mailable).toHaveBeenCalledWith(7, 1);
+    expect(leads.GET_Mailable).toHaveBeenCalledWith(7, 2);
   });
 
   // Acceptance M11: every contact says whether it can be mailed; "Why no mail?" sits with the name (on screen at 390).

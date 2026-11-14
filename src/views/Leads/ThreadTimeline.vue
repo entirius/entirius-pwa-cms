@@ -48,7 +48,7 @@
             size="sm"
             :tone="messageTone(entry.status)"
             :label="statusLabel(entry.status)"
-            :title="entry.sendState || undefined"
+            :title="badgeTitle(entry)"
             :data-testid="`status-${entry.status}`"
           />
         </p>
@@ -137,6 +137,9 @@ async function openReply(entry) {
     notify.spawnNotification({ msg: t("leads.compose.reply_unavailable"), type: "negative" });
   }
 }
+
+// The badge's tooltip: when a waiting mail leaves, or why a message was not sent.
+const badgeTitle = (entry) => entry.sendState || (entry.status === "suppressed" ? t("leads.thread.suppressed_reason") : undefined);
 
 function toggleQuote(index) {
   if (!quotesOpen.delete(index)) quotesOpen.add(index);
