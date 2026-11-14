@@ -304,12 +304,14 @@ function clear() {
   }
 }
 
-// The clear button sits over the control between the value and the caret; the value keeps room for it.
+// The clear button sits over the control between the value and the caret; the value keeps room for it. IconButton
+// puts the class on its inner <button>, which carries no scope id of this file: the rule reaches it through :deep, or
+// the button falls onto a line of its own under the field (n1).
 .basic-select--clearable .basic-select__value {
   padding-right: var(--space-8);
 }
 
-.basic-select__clear {
+.basic-select :deep(.basic-select__clear) {
   position: absolute;
   bottom: calc(var(--elem-height) / 2);
   right: calc(var(--space-3) + var(--space-5));
