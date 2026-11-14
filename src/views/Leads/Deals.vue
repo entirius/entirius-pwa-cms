@@ -86,7 +86,7 @@ import { formatDay } from "@/utils/format";
 import DealDialog from "./DealDialog.vue";
 import DealFilters from "./DealFilters.vue";
 import LostReasonDialog from "./LostReasonDialog.vue";
-import { canClose, dealKindTone, dealValue, oneOffText, recurringValueText, stageOptions } from "./deals";
+import { DEFAULT_DEAL_KIND, canClose, dealKindTone, dealValue, oneOffText, recurringValueText, stageOptions } from "./deals";
 import { useDealMove } from "./useDealMove";
 
 // Deals (ux/screens/deals.md): the list on every width — on a phone it is the screen (no drag and drop below
@@ -111,11 +111,11 @@ const stagesLoaded = ref(false);
 const dialogOpen = ref(false);
 const { lost, move, submitLost, cancelLost } = useDealMove(stages, { moved: load });
 
-const query = computed(() => ({ owner: "me", kind: "open", ...route.query }));
+const query = computed(() => ({ owner: "me", kind: DEFAULT_DEAL_KIND, ...route.query }));
 const page = computed(() => Number(query.value.page) || 1);
 const pages = computed(() => Math.max(1, Math.ceil(count.value / PAGE_SIZE)));
 // The defaults (Mine, Open) are no filter: a channel without a deal of mine shows the first-run empty state.
-const filtered = computed(() => Object.keys(route.query).some((key) => FILTER_KEYS.includes(key)) || query.value.owner !== "me" || query.value.kind !== "open");
+const filtered = computed(() => Object.keys(route.query).some((key) => FILTER_KEYS.includes(key)) || query.value.owner !== "me" || query.value.kind !== DEFAULT_DEAL_KIND);
 const closedFilter = computed(() => ["won", "lost"].includes(query.value.kind));
 // The board is a desk screen: a link that asks for it on a phone lands on the list and says so.
 const boardOnPhone = computed(() => !isDesktop.value && route.query.view === "board");

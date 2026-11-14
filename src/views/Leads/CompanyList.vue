@@ -279,8 +279,8 @@ async function assign(key, value) {
   try {
     const { data } = await POST_AssignOwner(ids, owner);
     const name = owner ? ownerName(users.value.find((user) => user.id === owner)) : t("leads.companies.unassigned");
-    const refused = ids.length - data.updated;
-    notify.spawnNotification(bulkAnswer({ doneKey: "leads.companies.assigned", notKey: "leads.companies.not_assigned", done: data.updated, refused, params: { name } }));
+    // all or nothing: the API refuses the whole batch (409/400) or changes it; `updated` leaves out the unchanged owners
+    notify.spawnNotification(bulkAnswer({ doneKey: "leads.companies.assigned", done: data.updated, params: { name } }));
     clearSelection();
     await load();
   } catch (err) {

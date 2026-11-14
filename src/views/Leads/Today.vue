@@ -82,19 +82,17 @@
             <span v-else data-testid="task-subject">{{ row.subject_label }}</span>
           </template>
           <template #cell-actions="{ row }">
-            <!-- the row opens the company on a phone; its buttons keep their own tap -->
-            <span class="flex ai-ct gap-1" @click.stop>
-              <IconButton mutates icon="edit" size="sm" :label="$t('leads.task.edit')" data-testid="task-edit" @click="openDialog('edit', row)" />
-              <BasicButton v-if="row.status === 'done'" mutates size="sm" data-testid="task-reopen" @click="reopen(row)">
-                {{ $t("leads.task.reopen") }}
+            <!-- the row opens the company on a phone; the buttons stop their own click (C6) -->
+            <IconButton mutates icon="edit" size="sm" :label="$t('leads.task.edit')" data-testid="task-edit" @click="openDialog('edit', row)" />
+            <BasicButton v-if="row.status === 'done'" mutates size="sm" data-testid="task-reopen" @click="reopen(row)">
+              {{ $t("leads.task.reopen") }}
+            </BasicButton>
+            <template v-else>
+              <BasicButton class="hide-mobile" mutates size="sm" data-testid="task-done" @click="openDialog('done', row)">
+                {{ $t("leads.task.mark_done") }}
               </BasicButton>
-              <template v-else>
-                <BasicButton class="hide-mobile" mutates size="sm" data-testid="task-done" @click="openDialog('done', row)">
-                  {{ $t("leads.task.mark_done") }}
-                </BasicButton>
-                <IconButton class="show-mobile" mutates icon="check" size="sm" :label="$t('leads.task.mark_done')" data-testid="task-done-icon" @click="openDialog('done', row)" />
-              </template>
-            </span>
+              <IconButton class="show-mobile" mutates icon="check" size="sm" :label="$t('leads.task.mark_done')" data-testid="task-done-icon" @click="openDialog('done', row)" />
+            </template>
           </template>
         </DataTable>
       </ReadonlyArea>

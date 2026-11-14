@@ -50,7 +50,7 @@
         :open-thread-id="replyThreadId"
         :company="replyCompany"
         :composed="composedIds"
-        @changed="onSent"
+        @changed="onOptoutConfirmed"
         @sent="onSent"
       />
       <details v-if="desktopHint && activities.length" class="thread__activity" data-testid="thread-activity">
@@ -181,11 +181,17 @@ async function load() {
   }
 }
 
-// After a mail or a reply action (an opt-out confirmed) the card reloads its contacts, History and tasks and hands a
-// new `refresh`, which reads the thread once; alone it reads itself.
+// After a mail the card reloads and hands a new `refresh`, which reads the thread once; alone it reads itself.
 function onSent() {
   emit("changed");
   if (!props.refresh) load();
+}
+
+// An opt-out confirmed in an earlier conversation: the card reloads its contacts, History and tasks (`changed`); the
+// thread view itself only re-reads the pending opt-outs (the earlier conversation stays open).
+function onOptoutConfirmed() {
+  emit("changed");
+  loadPendingOptouts();
 }
 
 async function confirmOptout(replyId) {
@@ -194,7 +200,8 @@ async function confirmOptout(replyId) {
   try {
     await POST_ConfirmOptout(replyId);
     notify.spawnNotification({ msg: t("leads.thread.optout_done", { contact: contactOf(newest.value) }) });
-    onSent();
+    emit("changed");
+    await load();
   } catch {
     notify.spawnNotification({ msg: t("leads.review.error"), type: "negative" });
   } finally {

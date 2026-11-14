@@ -529,6 +529,12 @@ describe("BasicDatePicker", () => {
     await wrapper.find("button").trigger("keydown", { key: "Escape" });
     expect(wrapper.find(".picker-wrapper").isVisible()).toBe(false);
     expect(onDocument).not.toHaveBeenCalled();
+    // focus outside the picker (a click on the calendar's blank area leaves it on body): still the calendar only
+    await wrapper.find("button").trigger("click");
+    document.body.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    await nextTick();
+    expect(wrapper.find(".picker-wrapper").isVisible()).toBe(false);
+    expect(onDocument).not.toHaveBeenCalled();
     await wrapper.find("button").trigger("keydown", { key: "Escape" });
     expect(onDocument).toHaveBeenCalledTimes(1);
     document.removeEventListener("keydown", onDocument);

@@ -7,6 +7,8 @@ import { activityText } from "@/utils/leadsLabels";
 // Deals of the Leads CRM (plan 16): stage kinds, money lines, the stages a deal closes in. Amounts stay decimal
 // strings end to end; a total is one line per currency, never added across currencies (`ux/copy.md` § Money).
 export const DEAL_KINDS = ["open", "won", "lost"];
+// The status Deals opens on: the list's default, never counted as a filter the person set.
+export const DEFAULT_DEAL_KIND = "open";
 
 const KIND_TONES = { open: "info", won: "positive", lost: "negative" };
 

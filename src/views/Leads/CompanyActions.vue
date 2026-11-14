@@ -244,6 +244,7 @@ function createCustomer() {
   }
   .company-actions__customer {
     flex-basis: 100%;
+    min-height: 44px;
   }
 }
 </style>

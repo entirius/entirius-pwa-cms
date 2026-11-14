@@ -48,7 +48,7 @@ describe("Reply types and outbound helpers", () => {
   // m3 (walk 3): a reply without a class still says what was applied to the sequence (the newest reply only)
   it("an unclassified newest reply says the sequence stopped", async () => {
     outbound(true);
-    const sequence = { stopped_at: "2026-11-12T09:01:00Z", stop_reason: "replied" };
+    const sequence = { stopped_at: "2026-11-12T10:00:30Z", stop_reason: "replied" };
     const wrapper = mount(ThreadTimeline, { props: { messages: [reply, { ...reply, at: "2026-11-12T10:00:00Z" }], sequence }, global: { stubs } });
     await flushPromises();
     const lines = wrapper.findAll('[data-testid="reply-next"]');
@@ -57,6 +57,10 @@ describe("Reply types and outbound helpers", () => {
     const finished = mount(ThreadTimeline, { props: { messages: [reply], sequence: { ...sequence, stop_reason: "finished" } }, global: { stubs } });
     await flushPromises();
     expect(finished.find('[data-testid="reply-next"]').exists()).toBe(false);
+    // a stop before the reply is not its answer
+    const earlier = mount(ThreadTimeline, { props: { messages: [{ ...reply, at: "2026-11-12T11:00:00Z" }], sequence }, global: { stubs } });
+    await flushPromises();
+    expect(earlier.find('[data-testid="reply-next"]').exists()).toBe(false);
   });
 
   it("an unclassified reply and an older backend look as today", async () => {

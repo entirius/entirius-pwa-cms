@@ -66,8 +66,8 @@
               data-testid="contact-suppressed"
             />
             <StatusBadge v-else tone="positive" :dot="false" :label="$t('leads.contacts.mailable')" data-testid="contact-mailable" />
-            <!-- only beside a contact who cannot be mailed: beside "Can be mailed" the question has no answer -->
-            <BasicButton v-if="outbound && (!row.email || blockOf(row))" variant="ghost" size="sm" :data-contact="row.id" data-testid="contact-why" @click="why = row">
+            <!-- only beside a contact who cannot be mailed (an older backend without `mail_block` knows too little: always) -->
+            <BasicButton v-if="outbound && (!row.email || blockOf(row) || !hasMailBlock(row))" variant="ghost" size="sm" :data-contact="row.id" data-testid="contact-why" @click="why = row">
               {{ $t("leads.contact.why_no_mail") }}
             </BasicButton>
           </span>

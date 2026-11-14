@@ -1,6 +1,6 @@
 <template>
   <div class="basic-date-picker inline-block">
-    <div v-out="close" class="relative" @keydown.esc="onEscape">
+    <div v-out="close" class="relative">
       <button
         ref="triggerEl"
         v-bind="attrs"
@@ -82,6 +82,7 @@ async function open() {
   const locale = props.config.locale ? { ...language, ...props.config.locale } : language;
   const config = { ...DEFAULT_CONFIG, ...props.config, defaultDate: current.value, locale, onChange };
   instance = flatpickr(pickerEl.value, config);
+  window.addEventListener("keydown", onEscape, { capture: true });
   if (!props.fixed) return;
   await nextTick();
   place();
@@ -94,14 +95,15 @@ function close() {
   visible.value = false;
   instance?.destroy();
   instance = null;
+  window.removeEventListener("keydown", onEscape, { capture: true });
   window.removeEventListener("scroll", place, { capture: true });
   window.removeEventListener("resize", place);
 }
 
-// Escape with the calendar open closes the calendar and nothing else (a dialog around it stays, with its edits); focus
-// goes back to the trigger. With the calendar closed the key goes on (the dialog closes as usual).
+// Escape with the calendar open closes the calendar and nothing else (a dialog around it stays, with its edits), wherever
+// the focus is — the window hears it first; focus goes back to the trigger. Closed, the key goes on (the dialog closes).
 function onEscape(event) {
-  if (!visible.value) return;
+  if (event.key !== "Escape" || !visible.value) return;
   event.stopPropagation();
   close();
   triggerEl.value?.focus();

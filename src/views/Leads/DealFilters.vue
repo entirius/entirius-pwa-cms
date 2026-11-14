@@ -35,7 +35,7 @@
 <script setup>
 import { computed, watch } from "vue";
 import { useSearchDebounce } from "@/composables/useSearchDebounce";
-import { DEAL_KINDS, dealKindLabel, stageOptions } from "./deals";
+import { DEAL_KINDS, DEFAULT_DEAL_KIND, dealKindLabel, stageOptions } from "./deals";
 
 // `query` = the page's query with its defaults (owner me, status open); every change goes up as `set({ key: value })`.
 const props = defineProps({
@@ -53,10 +53,9 @@ const { search, debouncedFetch } = useSearchDebounce();
 const kindOptions = DEAL_KINDS.map((value) => ({ value, label: dealKindLabel(value) }));
 const kindValue = computed(() => (props.query.kind === "all" ? null : props.query.kind));
 const closeRange = computed(() => [props.query.close_from, props.query.close_to].filter(Boolean).join(RANGE_SEPARATOR));
-// The default status (open) is no filter the person set: the badge counts only what differs from it.
-const DEFAULT_KIND = "open";
+// The default status is no filter the person set: the badge counts only what differs from it.
 const activeCount = computed(
-  () => ["stage", "close_from"].filter((key) => props.query[key]).length + (kindValue.value && kindValue.value !== DEFAULT_KIND ? 1 : 0)
+  () => ["stage", "close_from"].filter((key) => props.query[key]).length + (kindValue.value && kindValue.value !== DEFAULT_DEAL_KIND ? 1 : 0)
 );
 
 const applySearch = () => emit("set", { search: search.value.trim() });

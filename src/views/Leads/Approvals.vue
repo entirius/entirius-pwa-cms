@@ -26,7 +26,7 @@
     </template>
 
     <!-- what the last bulk action did stays on screen until the next one (a toast can pass unseen) -->
-    <p v-if="answer" class="m-0 fw-600" role="status" data-testid="approvals-result">
+    <p v-if="answer" class="m-0 fw-600" :class="{ 't-warning': answer.type === 'warning' }" role="status" data-testid="approvals-result">
       {{ answer.msg }}
     </p>
     <Loader v-if="loading && first" block />

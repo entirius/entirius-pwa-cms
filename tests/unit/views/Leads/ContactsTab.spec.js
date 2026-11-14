@@ -261,8 +261,8 @@ describe("Company card — Contacts tab", () => {
   it("leads >= 0.5.0: Why no mail? asks the gate for that contact; an older backend has no button", async () => {
     expect((await mountTab()).find('[data-testid="contact-why"]').exists()).toBe(false);
     Object.assign(useMuninStore(), { loaded: true, modules: [{ key: "leads", version: "0.5.0", enabled_in_cms: true }] });
-    const wrapper = await mountTab();
-    // m4 (walk 3): only beside a contact who cannot be mailed — never beside "Can be mailed"
+    // m4 (walk 3): only beside a contact who cannot be mailed — never beside "Can be mailed" (`mail_block` "")
+    const wrapper = await mountTab({ contacts: company.contacts.map((item) => ({ ...item, mail_block: item.id === 1 ? "" : "suppressed" })) });
     expect(wrapper.find('[data-testid="contact-why"][data-contact="1"]').exists()).toBe(false);
     await wrapper.get('[data-testid="contact-why"][data-contact="2"]').trigger("click");
     await flushPromises();

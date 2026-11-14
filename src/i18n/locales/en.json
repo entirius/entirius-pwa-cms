@@ -4442,7 +4442,6 @@
       "import_list": "Import a list",
       "clear_filters": "Clear filters",
       "load_error": "The companies could not be loaded",
-      "not_assigned": "{count} not assigned.",
       "type_unknown": "Unknown"
     },
     "board": {
@@ -4673,7 +4672,10 @@
         "recipient_picked": "Recipient picked",
         "intel_analysed": "Site audit analysed",
         "skipped_by_reviewer": "Draft skipped",
-        "suppressed": "Mail blocked: the address is on the do-not-contact list"
+        "suppressed": "Mail blocked: the address is on the do-not-contact list",
+        "linked_customer": "Linked to a customer account",
+        "analysis_failed": "Site audit analysis failed ({code})",
+        "rule_error": "Stage rule failed ({error})"
       }
     },
     "block_reason": {

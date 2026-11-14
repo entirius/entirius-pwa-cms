@@ -204,7 +204,8 @@ const SEQUENCE_STEP = { stop: "leads.history.seq_stopped", pause: "leads.history
 function nextOf(entry) {
   const plan = entry.reply && plans.value[entry.reply.intent];
   if (plan) return t("leads.history.next", { steps: t(SEQUENCE_STEP[plan.sequence] || "leads.history.seq_paused") });
-  const step = entry === newestReply.value && props.sequence?.stopped_at && REPLY_STOPS[props.sequence.stop_reason];
+  const stopped = props.sequence?.stopped_at;
+  const step = entry === newestReply.value && stopped && new Date(stopped) >= new Date(entry.at) && REPLY_STOPS[props.sequence.stop_reason];
   return step ? t("leads.history.next", { steps: t(SEQUENCE_STEP[step]) }) : "";
 }
 

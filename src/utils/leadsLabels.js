@@ -73,6 +73,9 @@ const ACTIVITY_SHAPES = [
   [/^reply received(?:: (\w+))?$/, ([type]) => (type ? t("leads.history.event_reply", { type: replyTypeLabel(type) }) : t("leads.activity.msg.reply_received"))],
   [/^do not contact: (on|off)$/, ([state]) => t(`leads.activity.msg.dnc_${state}`)],
   [/^score (S\d) \((\d+) points\)$/, ([segment, points]) => t("leads.activity.msg.score", { segment, points })],
+  [/^linked customer \S+$/, () => t("leads.activity.msg.linked_customer")],
+  [/^analysis failed: (\w+)$/, ([code]) => t("leads.activity.msg.analysis_failed", { code })],
+  [/^rule error: (\w+)$/, ([error]) => t("leads.activity.msg.rule_error", { error })],
 ];
 
 // The fixed messages leads writes (django_leads services), each a sentence of the panel.

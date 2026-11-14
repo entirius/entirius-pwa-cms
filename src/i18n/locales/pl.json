@@ -4441,7 +4441,6 @@
       "import_list": "Zaimportuj listę",
       "clear_filters": "Wyczyść filtry",
       "load_error": "Nie udało się wczytać firm",
-      "not_assigned": "Nieprzypisane: {count}.",
       "type_unknown": "Nieznany"
     },
     "board": {
@@ -4636,8 +4635,8 @@
         "draft": "Napisano szkic",
         "sent": "Wysłano maila",
         "reply": "Otrzymano odpowiedź",
-        "bounce": "Mail został odrzucony przez serwer",
-        "optout": "Kontakt zrezygnował z kontaktu",
+        "bounce": "Mail odbity",
+        "optout": "Kontakt zrezygnował",
         "note": "Notatka",
         "anonymised": "Kontakt zanonimizowany",
         "blocked": "Mail zablokowany",
@@ -4662,8 +4661,8 @@
         "contact_removed": "Usunięto kontakt",
         "contact_anonymised": "Kontakt zanonimizowany",
         "wrong_person": "Kontakt oznaczony: niewłaściwa osoba",
-        "opted_out": "Kontakt zrezygnował z kontaktu",
-        "hard_bounce": "Adres nieprawidłowy: mail został odrzucony",
+        "opted_out": "Kontakt zrezygnował",
+        "hard_bounce": "Adres nieprawidłowy: mail odbity",
         "gdpr_erase": "Zażądano usunięcia danych (RODO)",
         "reply_received": "Otrzymano odpowiedź",
         "dnc_on": "Oznaczono „Nie kontaktować”",
@@ -4672,7 +4671,10 @@
         "recipient_picked": "Wybrano odbiorcę",
         "intel_analysed": "Przeanalizowano audyt strony",
         "skipped_by_reviewer": "Szkic pominięty",
-        "suppressed": "Mail zablokowany: adres jest na liście „Nie kontaktować”"
+        "suppressed": "Mail zablokowany: adres jest na liście „Nie kontaktować”",
+        "linked_customer": "Powiązano z kontem klienta",
+        "analysis_failed": "Analiza audytu strony nie powiodła się ({code})",
+        "rule_error": "Reguła etapu nie zadziałała ({error})"
       }
     },
     "block_reason": {
@@ -4833,7 +4835,7 @@
       "rejected_n_few": "Pominięto {count} szkice.",
       "rejected_n_many": "Pominięto {count} szkiców.",
       "not_approved": "Niezatwierdzone: {count}.",
-      "not_rejected": "Niepominięte: {count}.",
+      "not_rejected": "Nie pominięto: {count}.",
       "empty": "Brak szkiców do zatwierdzenia",
       "empty_filtered": "Żaden szkic nie pasuje do filtrów",
       "other_channel": "Kanał {channel} — edycja w panelu tego kanału",

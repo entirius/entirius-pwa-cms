@@ -15,7 +15,7 @@ describe("bulkAnswer", () => {
   });
 
   it("passes extra parameters to the sentence", () => {
-    const assign = { doneKey: "leads.companies.assigned", notKey: "leads.companies.not_assigned", params: { name: "Anna" } };
-    expect(bulkAnswer({ ...assign, done: 3, refused: 1 }).msg).toBe("3 companies assigned to Anna. 1 not assigned.");
+    const assign = { doneKey: "leads.companies.assigned", params: { name: "Anna" } };
+    expect(bulkAnswer({ ...assign, done: 3 })).toEqual({ msg: "3 companies assigned to Anna.", type: "positive" });
   });
 });
