@@ -64,7 +64,10 @@ describe("ThreadTimeline", () => {
       { id: 11, subject: "Follow", next_slot: new Date(Date.now() - 7 * 60000).toISOString() },
     ];
     const wrapper = mountTl({ props: { messages: [first, second], waiting } });
-    const states = wrapper.findAll('[data-testid="status-scheduled"]').map((node) => node.text());
+    // P8 (walk 3): the badge is "Scheduled"; the sentence is its tooltip and the phone's line under the bubble
+    expect(wrapper.findAll('[data-testid="status-scheduled"]').map((node) => node.text())).toEqual(["Scheduled", "Scheduled"]);
+    expect(wrapper.get('[data-testid="status-scheduled"]').attributes("title")).toContain("goes out within minutes");
+    const states = wrapper.findAll('[data-testid="timeline-send-state"]').map((node) => node.text());
     expect(states[0]).toContain("goes out within minutes — the send window is open");
     expect(states[1]).toContain("goes out at 02.01 08:00");
     expect(wrapper.find('[data-testid="timeline-time"]').exists()).toBe(false);
@@ -74,7 +77,7 @@ describe("ThreadTimeline", () => {
   it("a waiting mail with the cap used up says so, whatever its slot", () => {
     applyPolicy({ timezone: "UTC", sent_today: 5, daily_cap: 5 });
     const wrapper = mountTl({ props: { messages: [messages[2]], waiting: [{ id: 7, next_slot: "2099-01-02T08:00:00Z" }] } });
-    expect(wrapper.get('[data-testid="status-scheduled"]').text()).toContain("daily cap reached");
+    expect(wrapper.get('[data-testid="timeline-send-state"]').text()).toContain("daily cap reached");
     applyPolicy(null);
   });
 

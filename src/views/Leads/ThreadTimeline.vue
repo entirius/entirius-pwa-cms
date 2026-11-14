@@ -47,10 +47,13 @@
             v-if="entry.status"
             size="sm"
             :tone="messageTone(entry.status)"
-            :label="statusText(entry)"
+            :label="statusLabel(entry.status)"
+            :title="entry.sendState || undefined"
             :data-testid="`status-${entry.status}`"
           />
         </p>
+        <!-- when a waiting mail leaves: the badge's tooltip at a desk, a line of its own on a phone (never a cut badge) -->
+        <p v-if="entry.sendState" class="tl__meta show-mobile" data-testid="timeline-send-state">{{ entry.sendState }}</p>
         <div v-if="entry.optout" class="tl__optout">
           <span v-if="entry.optout.optout_confirmed_at">{{ $t("leads.thread.optout_confirmed") }}</span>
           <template v-else>
@@ -134,8 +137,6 @@ async function openReply(entry) {
     notify.spawnNotification({ msg: t("leads.compose.reply_unavailable"), type: "negative" });
   }
 }
-
-const statusText = (entry) => [statusLabel(entry.status), entry.sendState].filter(Boolean).join(" · ");
 
 function toggleQuote(index) {
   if (!quotesOpen.delete(index)) quotesOpen.add(index);
