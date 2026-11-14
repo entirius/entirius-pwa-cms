@@ -46,13 +46,20 @@ describe("Leads → task dialog", () => {
     expect(wrapper.emitted("saved")).toHaveLength(1);
   });
 
-  it("Log call creates a phone task without a due date and closes it with the outcome", async () => {
+  // Plan 33: Log call asks one thing — Outcome; the Note (and every other field) leaves it.
+  it("Log call has the Outcome field only, needs it, then creates a done phone task by the caller", async () => {
     const wrapper = await opened({ mode: "call", company });
-    setControl(wrapper, "task-title", "Intro call");
+    const fields = ["task-title", "task-note", "task-kind", "task-due-at", "task-owner", "task-contact", "task-already-done"];
+    fields.forEach((id) => expect(byTestid(wrapper, id).exists()).toBe(false));
+    expect(wrapper.findAll('[data-testid="task-outcome"]')).toHaveLength(1);
+    await byTestid(wrapper, "task-submit").trigger("click");
+    expect(todo.POST_Task).not.toHaveBeenCalled();
     setControl(wrapper, "task-outcome", "Interested");
     await byTestid(wrapper, "task-submit").trigger("click");
     await flushPromises();
-    expect(todo.POST_Task).toHaveBeenCalledWith(expect.objectContaining({ kind: "phone", due_at: null }));
+    expect(todo.POST_Task).toHaveBeenCalledWith(
+      expect.objectContaining({ title: "Call", kind: "phone", due_at: null, note: "", owner_id: 7, subject_ref: "leads.Company:5" })
+    );
     expect(todo.POST_TaskDone).toHaveBeenCalledWith(9, "Interested");
   });
 

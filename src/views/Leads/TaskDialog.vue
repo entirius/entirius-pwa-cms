@@ -8,8 +8,9 @@
     data-testid="task-dialog"
     @update:open="close"
   >
-    <div v-if="mode === 'done'" class="flex-column gap-4">
-      <FormField :label="$t('leads.task.outcome')" :hint="$t('leads.task.outcome_hint')">
+    <!-- Mark done and Log call ask one thing: what came of it (a logged call is a phone task created done) -->
+    <div v-if="outcomeOnly" class="flex-column gap-4">
+      <FormField :label="$t('leads.task.outcome')" :hint="$t('leads.task.outcome_hint')" :required="mode === 'call'" :error="errorOf('outcome')">
         <BasicTextarea v-model="form.outcome" :maxlength="2000" data-testid="task-outcome" />
       </FormField>
     </div>
@@ -17,13 +18,13 @@
       <FormField class="task-dialog__wide" :label="$t('leads.task.title_field')" required :error="errorOf('title')">
         <BasicInput v-model="form.title" :maxlength="255" data-testid="task-title" />
       </FormField>
-      <FormField v-if="mode === 'call' || form.alreadyDone" class="task-dialog__wide" :label="$t('leads.task.outcome')" :hint="$t('leads.task.outcome_hint')">
+      <FormField v-if="form.alreadyDone" class="task-dialog__wide" :label="$t('leads.task.outcome')" :hint="$t('leads.task.outcome_hint')">
         <BasicTextarea v-model="form.outcome" :maxlength="2000" data-testid="task-outcome" />
       </FormField>
-      <FormField v-if="mode !== 'call'" class="task-dialog__wide" :label="$t('leads.task.kind')">
+      <FormField class="task-dialog__wide" :label="$t('leads.task.kind')">
         <BasicRadioGroup v-model="form.kind" :options="kinds" name="task-kind" data-testid="task-kind" />
       </FormField>
-      <FormField v-if="mode !== 'call'" :label="$t('leads.task.due')" :error="errorOf('due_at')">
+      <FormField :label="$t('leads.task.due')" :error="errorOf('due_at')">
         <BasicDatePicker v-model="form.due" :config="{ enableTime: true, time_24hr: true }" fixed data-testid="task-due-at" />
       </FormField>
       <FormField :label="$t('leads.task.owner')" :error="errorOf('owner_id')">
@@ -116,6 +117,8 @@ const actions = computed(() =>
   ].filter(Boolean)
 );
 const subject = computed(() => props.company || picked.value);
+// Log call opens only on a company card (its company is the subject); its title is fixed, its owner the caller.
+const outcomeOnly = computed(() => props.mode === "done" || props.mode === "call");
 const contacts = computed(() =>
   (subject.value?.contacts || [])
     .filter((contact) => !contact.anonymised_at)
@@ -127,7 +130,7 @@ const ownerLabel = (owner) => owner.name || owner.username;
 function reset() {
   const task = props.task || {};
   Object.assign(form, {
-    title: task.title || "",
+    title: props.mode === "call" ? t("leads.task.call_title") : task.title || "",
     kind: props.mode === "call" ? "phone" : task.kind || "todo",
     due: props.mode === "call" ? "" : task.id ? isoToPicker(task.due_at) : defaultDue(),
     ownerId: task.id ? task.owner?.id ?? null : access.me?.user?.id ?? null,
@@ -158,7 +161,7 @@ watch(
     if (!open) return;
     dismissToasts();
     reset();
-    if (props.mode !== "done") loadOwners();
+    if (!outcomeOnly.value) loadOwners();
   }
 );
 
@@ -182,6 +185,7 @@ function close(value = false) {
 function validate() {
   Object.keys(localErrors).forEach((key) => delete localErrors[key]);
   if (props.mode === "done") return true;
+  if (props.mode === "call" && !form.outcome.trim()) localErrors.outcome = t("leads.task.required");
   if (!form.title.trim()) localErrors.title = t("leads.task.required");
   if (props.mode !== "edit" && !subject.value) localErrors.subject_ref = t("leads.task.required");
   return !Object.keys(localErrors).length;
