@@ -169,8 +169,9 @@ and one meaning per glyph (unit test). A new meaning adds its glyph to `fa-icons
   the hit area grows to 40 × 40 around the box, the box keeps its size. `md` matches the text button, not Figma's
   32 px (KD23).
 - **`ActionBar`** — page and dialog actions in R5 order: `actions` = `[{ key, label, role, onClick, icon?,
-  disabled?, loading?, expanded?, form?, mutates?, title?, testid? }]` (`title` = why a disabled button is disabled, e.g.
+  disabled?, loading?, expanded?, pressed?, form?, mutates?, title?, testid? }]` (`title` = why a disabled button is disabled, e.g.
   a settings page's Save "Nothing to save"; `expanded` = `aria-expanded` of a button that shows a section;
+  `pressed` = `aria-pressed` of a text button that is a toggle, drawn with the `surface-hover` fill;
   `form` = the id of a form the header button submits from outside it — native checks, the form's submit handler,
   and Enter in a field presses it), `role` `utility` (an IconButton, `icon` required) · `secondary` · `danger` ·
   `primary` (one at most, a second warns in dev); extra controls go into the default slot, already in order.

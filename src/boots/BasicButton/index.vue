@@ -240,6 +240,10 @@ button.button-basic {
     &.selected {
       border-bottom: 2px solid var(--border-strong);
     }
+    &[aria-pressed="true"] {
+      background-color: var(--surface-hover);
+      border-color: var(--border-strong);
+    }
   }
 
   &.button-basic--ghost {
