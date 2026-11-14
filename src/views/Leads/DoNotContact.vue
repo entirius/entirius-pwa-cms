@@ -56,6 +56,9 @@
         <FormField :label="$t('leads.dnc.value')" required :error="valueError">
           <BasicInput v-model="draft.value" :format="draft.kind === 'email' ? 'email' : undefined" :maxlength="254" data-testid="suppression-value" />
         </FormField>
+        <FormField v-if="scopeOffered" :label="$t('leads.dnc.reach')">
+          <BasicRadioGroup v-model="draft.scope" :options="scopeOptions" name="dnc-add-reach" data-testid="dnc-add-reach" />
+        </FormField>
         <FormField :label="$t('leads.dnc.note')">
           <BasicInput v-model="draft.reason" :maxlength="255" data-testid="suppression-reason" />
         </FormField>
@@ -113,7 +116,10 @@ const loading = ref(true);
 const error = ref("");
 const page = ref(1);
 const adding = ref(false);
-const draft = reactive({ kind: "email", value: "", reason: "" });
+const draft = reactive({ kind: "email", value: "", reason: "", scope: "channel" });
+// The reach of a new row (`scope`): an older backend refuses the field — the first refusal sends the entry again
+// without it and the choice is not offered any more.
+const scopeOffered = ref(true);
 const valueError = ref("");
 const checking = ref(false);
 const checkEmail = ref("");
@@ -180,7 +186,7 @@ function reload() {
 }
 
 function openAdd() {
-  Object.assign(draft, { kind: "email", value: "", reason: "" });
+  Object.assign(draft, { kind: "email", value: "", reason: "", scope: "channel" });
   valueError.value = "";
   adding.value = true;
 }
@@ -189,12 +195,24 @@ function openAdd() {
 async function add() {
   if (!draft.value.trim()) return (valueError.value = giveText("value"));
   try {
-    await POST_Suppression({ ...draft, value: draft.value.trim() });
+    await postEntry();
     adding.value = false;
     await load();
   } catch (err) {
     // a field error in words (T7); a refusal of the whole entry (a duplicate) in the API's sentence
     valueError.value = apiFieldErrors(err, ["value"]).value || extractApiMessage(err, t("leads.dnc.load_error"));
+  }
+}
+
+async function postEntry() {
+  const { scope, ...entry } = { ...draft, value: draft.value.trim() };
+  if (!scopeOffered.value) return POST_Suppression(entry);
+  try {
+    return await POST_Suppression({ ...entry, scope });
+  } catch (err) {
+    if (!apiFieldErrors(err, ["scope"]).scope) throw err;
+    scopeOffered.value = false;
+    return POST_Suppression(entry);
   }
 }
 

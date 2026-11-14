@@ -52,9 +52,45 @@ describe("Leads → Settings → Do not contact", () => {
     wrapper.findComponent('[data-testid="suppression-value"]').vm.$emit("update:modelValue", "jan@acme.test");
     await byTestid(wrapper, "dnc-add-submit").trigger("click");
     await flushPromises();
-    expect(api.POST_Suppression).toHaveBeenCalledWith({ kind: "email", value: "jan@acme.test", reason: "" });
+    expect(api.POST_Suppression).toHaveBeenCalledWith({ kind: "email", value: "jan@acme.test", reason: "", scope: "channel" });
     expect(byTestid(wrapper, "dnc-add-submit").exists()).toBe(true);
     expect(fieldError(wrapper, "leads.dnc.value")).toBe("already on the list");
+  });
+
+  // Plan 33: "Add to the list" offers the reach its list shows; This channel by default.
+  it("add offers Reach (This channel by default) and sends it as scope", async () => {
+    api.POST_Suppression.mockResolvedValue({ data: {} });
+    const wrapper = await mounted();
+    await byTestid(wrapper, "suppression-add").trigger("click");
+    const reach = wrapper.findComponent('[data-testid="dnc-add-reach"]');
+    expect(reach.props("modelValue")).toBe("channel");
+    expect(reach.props("options").map((option) => option.label)).toEqual(["This channel", "All channels"]);
+    reach.vm.$emit("update:modelValue", "install");
+    wrapper.findComponent('[data-testid="suppression-value"]').vm.$emit("update:modelValue", "spam.test");
+    await byTestid(wrapper, "dnc-add-submit").trigger("click");
+    await flushPromises();
+    expect(api.POST_Suppression).toHaveBeenCalledWith({ kind: "email", value: "spam.test", reason: "", scope: "install" });
+    expect(byTestid(wrapper, "dnc-add-modal").exists()).toBe(false);
+  });
+
+  it("an older backend refusing scope: the entry goes again without it and Reach is not offered any more", async () => {
+    const refusal = { response: { status: 400, data: { error: "validation_error", details: [{ field: "scope", issue: "extra_forbidden", description: "Extra inputs are not permitted" }] } } };
+    api.POST_Suppression.mockRejectedValueOnce(refusal).mockResolvedValue({ data: {} });
+    const wrapper = await mounted();
+    await byTestid(wrapper, "suppression-add").trigger("click");
+    wrapper.findComponent('[data-testid="suppression-value"]').vm.$emit("update:modelValue", "jan@acme.test");
+    await byTestid(wrapper, "dnc-add-submit").trigger("click");
+    await flushPromises();
+    expect(api.POST_Suppression).toHaveBeenNthCalledWith(1, expect.objectContaining({ scope: "channel" }));
+    expect(api.POST_Suppression).toHaveBeenNthCalledWith(2, { kind: "email", value: "jan@acme.test", reason: "" });
+    expect(byTestid(wrapper, "dnc-add-modal").exists()).toBe(false);
+    await byTestid(wrapper, "suppression-add").trigger("click");
+    expect(byTestid(wrapper, "dnc-add-reach").exists()).toBe(false);
+    wrapper.findComponent('[data-testid="suppression-value"]').vm.$emit("update:modelValue", "ewa@acme.test");
+    await byTestid(wrapper, "dnc-add-submit").trigger("click");
+    await flushPromises();
+    expect(api.POST_Suppression).toHaveBeenCalledTimes(3);
+    expect(api.POST_Suppression).toHaveBeenLastCalledWith({ kind: "email", value: "ewa@acme.test", reason: "" });
   });
 
   it("check explains a blocked address and a clear one", async () => {
