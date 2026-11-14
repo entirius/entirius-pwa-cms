@@ -119,6 +119,7 @@
 
 <script setup>
 import { computed, onMounted, ref, watch } from "vue";
+import { listBoardOptions } from "@/utils/leadsLabels";
 import { useRoute, useRouter } from "vue-router";
 import { t } from "@/i18n";
 import { GET_AssignableUsers, GET_Attributes, GET_Companies, GET_Funnel, GET_Stages, POST_AssignOwner } from "@/api/leads/api";
@@ -176,10 +177,7 @@ const listFields = computed(() => fieldsFromDefinitions(definitions.value.filter
 const stageOptions = computed(() => stages.value.map((stage) => ({ value: stage.key, label: stage.label })));
 const typeOptions = computed(() => leadTypes.active.map((type) => ({ value: type.code, label: type.label })));
 const originOptions = computed(() => origins.value.filter(Boolean).map((origin) => ({ value: origin, label: origin })));
-const viewOptions = [
-  { value: "list", label: t("leads.companies.view_list") },
-  { value: "board", label: t("leads.companies.view_board") },
-];
+const viewOptions = computed(listBoardOptions);
 
 const pageActions = computed(() =>
   [

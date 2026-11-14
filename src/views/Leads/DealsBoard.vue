@@ -33,6 +33,7 @@
 
 <script setup>
 import { computed, onMounted, ref, watch } from "vue";
+import { listBoardOptions } from "@/utils/leadsLabels";
 import { useRoute, useRouter } from "vue-router";
 import { t } from "@/i18n";
 import { GET_DealBoard } from "@/api/leads/api";
@@ -65,10 +66,7 @@ const query = computed(() => ({ owner: "me", ...route.query }));
 const version = ref(0);
 // A refused move or a closed reason dialog reads the board again: the card is back where the server has it.
 const { lost, move, submitLost, cancelLost } = useDealMove(stages, { moved: load, refused: load });
-const viewOptions = [
-  { value: "list", label: t("leads.companies.view_list") },
-  { value: "board", label: t("leads.companies.view_board") },
-];
+const viewOptions = computed(listBoardOptions);
 const pageActions = computed(() =>
   readonly.value ? [] : [{ key: "open", label: t("leads.deals.open_deal"), role: "primary", mutates: true, testid: "deals-open", onClick: () => (dialogOpen.value = true) }]
 );

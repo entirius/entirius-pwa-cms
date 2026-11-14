@@ -69,6 +69,7 @@
 
 <script setup>
 import { computed, onMounted, ref, watch } from "vue";
+import { listBoardOptions } from "@/utils/leadsLabels";
 import { useRoute, useRouter } from "vue-router";
 import { t } from "@/i18n";
 import { GET_DealStages, GET_Deals } from "@/api/leads/api";
@@ -122,10 +123,7 @@ const closable = computed(() => canClose(stages.value));
 const options = computed(() => stageOptions(stages.value));
 const canSetUp = computed(() => access.can(AREAS.LEADS_SETTINGS));
 const tasksOn = computed(() => munin.isModuleInstalled("todo"));
-const viewOptions = [
-  { value: "list", label: t("leads.companies.view_list") },
-  { value: "board", label: t("leads.companies.view_board") },
-];
+const viewOptions = computed(listBoardOptions);
 const pageActions = computed(() =>
   readonly.value ? [] : [{ key: "open", label: t("leads.deals.open_deal"), role: "primary", mutates: true, testid: "deals-open", onClick: () => (dialogOpen.value = true) }]
 );

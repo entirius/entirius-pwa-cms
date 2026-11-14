@@ -21,6 +21,7 @@ const router = vi.hoisted(() => ({ push: vi.fn(), replace: vi.fn() }));
 vi.mock("vue-router", async (original) => ({ ...(await original()), useRoute: () => route, useRouter: () => router }));
 
 import Deals from "@/views/Leads/Deals.vue";
+import { setLang } from "@/i18n";
 import { control, setControl } from "./leadsFrame";
 import { byTestid, mountOutbound } from "./outboundFrame";
 import { crmStubs } from "./crmFrame";
@@ -100,6 +101,18 @@ describe("Leads → Deals list", () => {
     expect(byTestid(wrapper, "deals-board-desktop-only").exists()).toBe(true);
     desktop.on = true;
     expect(byTestid(await mounted(), "deals-board-desktop-only").exists()).toBe(false);
+  });
+
+  // P9 (walk 3): the List / Board switch follows a language switch made while the page is open
+  it("the List / Board switch reads the current language", async () => {
+    desktop.on = true;
+    const wrapper = await mounted();
+    const labels = () => wrapper.findComponent('[data-testid="deals-view"]').props("options").map((option) => option.label);
+    expect(labels()).toEqual(["List", "Board"]);
+    setLang("PL");
+    await flushPromises();
+    expect(labels()).toEqual(["Lista", "Tablica"]);
+    setLang("EN");
   });
 
   it("a won stage moves at once", async () => {

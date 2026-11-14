@@ -11,6 +11,12 @@ export const stageKindLabel = (value) => label(`leads.stage_kind.${value}`, valu
 // The word beside a list row's on/off switch follows the switch (never a fixed "Active" beside a switch that is off).
 export const activeLabel = (on) => t(on ? "leads.common.switch_on" : "leads.common.switch_off");
 
+// The List / Board switch of Companies and Deals, read in the current language (wrap it in a computed).
+export const listBoardOptions = () => [
+  { value: "list", label: t("leads.companies.view_list") },
+  { value: "board", label: t("leads.companies.view_board") },
+];
+
 export const statusLabel = (value) => label(`leads.status.${value}`, value);
 
 export const templateKindLabel = (value) => label(`communicator.template.kinds.${value}`, value);
