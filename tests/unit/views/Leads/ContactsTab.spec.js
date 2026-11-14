@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
+import { createPinia, setActivePinia } from "pinia";
 
 const leads = vi.hoisted(() => ({
   POST_Contact: vi.fn(() =>
@@ -7,13 +8,16 @@ const leads = vi.hoisted(() => ({
   ),
   PATCH_Contact: vi.fn(() => Promise.resolve({ status: 200, data: {} })),
   DELETE_Contact: vi.fn(() => Promise.resolve({ status: 204, data: "" })),
+  GET_Mailable: vi.fn(() => Promise.resolve({ data: { eligible: false, reasons: ["suppressed"] } })),
 }));
 vi.mock("@/api/leads/api", () => leads);
-vi.mock("@/api/communicator/api", () => ({
+const communicator = vi.hoisted(() => ({
   GET_Suppressions: vi.fn(() => Promise.resolve({ data: { results: [] } })),
 }));
+vi.mock("@/api/communicator/api", () => communicator);
 
 import ContactsTab from "@/views/Leads/tabs/ContactsTab.vue";
+import { useMuninStore } from "@/stores/munin";
 import { fieldError, leadsFrame, setControl } from "./leadsFrame";
 
 const contact = (fields) => ({
@@ -49,8 +53,8 @@ const company = {
   ],
 };
 
-const mountTab = async () => {
-  const wrapper = mount(ContactsTab, { props: { company }, global: leadsFrame });
+const mountTab = async (extra = {}) => {
+  const wrapper = mount(ContactsTab, { props: { company: { ...company, ...extra } }, global: leadsFrame });
   await flushPromises();
   return wrapper;
 };
@@ -65,6 +69,9 @@ const submit = async (wrapper, form) => {
 };
 
 // UX-011: contacts are managed in the company card — add, edit in place, remove, primary star.
+// The views read the munin store (the outbound guards): an empty one = an older backend.
+beforeEach(() => setActivePinia(createPinia()));
+
 describe("Company card — Contacts tab", () => {
   beforeEach(() => vi.clearAllMocks());
 
@@ -248,5 +255,44 @@ describe("Company card — Contacts tab", () => {
     expect(
       anonymised.findComponent({ name: "StatusBadge" }).attributes("label")
     ).toBe("leads.contacts.anonymised");
+  });
+
+  // Plan 14 (leads >= 0.5.0): "Why no mail?" on every contact opens the gate's answer.
+  it("leads >= 0.5.0: Why no mail? asks the gate for that contact; an older backend has no button", async () => {
+    expect((await mountTab()).find('[data-testid="contact-why"]').exists()).toBe(false);
+    Object.assign(useMuninStore(), { loaded: true, modules: [{ key: "leads", version: "0.5.0", enabled_in_cms: true }] });
+    // m4 (walk 3): only beside a contact who cannot be mailed — never beside "Can be mailed" (`mail_block` "")
+    const wrapper = await mountTab({ contacts: company.contacts.map((item) => ({ ...item, mail_block: item.id === 1 ? "" : "suppressed" })) });
+    expect(wrapper.find('[data-testid="contact-why"][data-contact="1"]').exists()).toBe(false);
+    await wrapper.get('[data-testid="contact-why"][data-contact="2"]').trigger("click");
+    await flushPromises();
+    expect(leads.GET_Mailable).toHaveBeenCalledWith(7, 2);
+  });
+
+  // Acceptance M11: every contact says whether it can be mailed; "Why no mail?" sits with the name (on screen at 390).
+  it("a contact shows Can be mailed or Blocked", async () => {
+    const wrapper = await mountTab();
+    const [anna, marek, anon] = rows(wrapper);
+    expect(anna.find('[data-testid="contact-mailable"]').exists()).toBe(true);
+    expect(marek.find('[data-testid="contact-no-email"]').exists()).toBe(true); // no email: a neutral state, not "Blocked"
+    expect(marek.find('[data-testid="contact-suppressed"]').exists()).toBe(false);
+    expect(anon.find('[data-testid="contact-mailable"]').exists()).toBe(false);
+    expect(anon.find('[data-testid="contact-suppressed"]').exists()).toBe(false);
+    expect(anna.find('[data-testid="contact-why"]').exists()).toBe(false); // not outbound here
+  });
+
+  // R1: the badge, its colour and its tooltip come from `mail_block` alone — no suppression list is read for it
+  it("mail_block decides the badge: a wrong-person contact is Blocked with its reason", async () => {
+    const contacts = [
+      contact({ id: 1, first_name: "Anna", email: "anna@shop.test", mail_block: "wrong_person" }),
+      contact({ id: 2, first_name: "Jan", email: "jan@shop.test", mail_block: "" }),
+    ];
+    const wrapper = await mountTab({ contacts });
+    const [anna, jan] = rows(wrapper);
+    const badge = anna.getComponent('[data-testid="contact-suppressed"]');
+    expect(badge.attributes("tone")).toBe("negative");
+    expect(badge.attributes("title")).toBe("contact flagged as the wrong person");
+    expect(jan.find('[data-testid="contact-mailable"]').exists()).toBe(true);
+    expect(communicator.GET_Suppressions).not.toHaveBeenCalled();
   });
 });

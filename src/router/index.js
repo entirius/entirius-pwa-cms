@@ -6,6 +6,7 @@ import { useAccessStore } from "@/stores/access";
 import { panels } from "@/configs/access";
 import { AREAS } from "@/configs/areas";
 import { ENRICHMENT_SETTINGS_TABS, buildNavRoutes } from "@/components/Navigation/nav-routes";
+import { OUTBOUND_VERSION as OUTBOUND } from "@/utils/leadsOutbound";
 
 import Home from "../views/Home/index.vue";
 import rv_builds from "../views/Builder/index.vue";
@@ -655,6 +656,38 @@ const routes = [
     ],
   },
 
+  // Stock alerts panel (django-stock-alerts): demand per variant, the requests
+  {
+    path: "/stock-alerts",
+    component: () => import(/* webpackChunkName: "stock-alerts" */ "../views/StockAlerts/index.vue"),
+    meta: { requiresAuth: true, panel: "stockAlerts" },
+    children: [
+      {
+        path: "",
+        name: "StockAlertsDemand",
+        component: () => import(/* webpackChunkName: "stock-alerts" */ "../views/StockAlerts/StockAlertsDemand.vue"),
+        meta: {
+          requiresAuth: true,
+          titleKey: "stock_alerts.demand",
+          panel: "stockAlerts",
+          area: AREAS.STOCK_ALERTS_SUBSCRIPTIONS,
+        },
+      },
+      {
+        path: "subscriptions",
+        name: "StockAlertsSubscriptions",
+        component: () =>
+          import(/* webpackChunkName: "stock-alerts" */ "../views/StockAlerts/StockAlertsSubscriptions.vue"),
+        meta: {
+          requiresAuth: true,
+          titleKey: "stock_alerts.subscriptions",
+          panel: "stockAlerts",
+          area: AREAS.STOCK_ALERTS_SUBSCRIPTIONS,
+        },
+      },
+    ],
+  },
+
   // Emails panel
   {
     path: "/emails",
@@ -1037,7 +1070,20 @@ const routes = [
       import(/* webpackChunkName: "leads" */ "../views/Leads/index.vue"),
     meta: { requiresAuth: true, panel: "leads" },
     children: [
-      { path: "", redirect: "/leads/inbox" },
+      { path: "", redirect: "/leads/today" },
+      // Leads CRM: the panel root — the day's tasks and what waits; its blocks gate themselves (no area, no module)
+      {
+        path: "today",
+        name: "LeadsToday",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Today.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.today.title", panel: "leads", page: true },
+      },
+      {
+        path: "reports",
+        name: "LeadsReports",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Reports.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.reports.title", panel: "leads", area: AREAS.LEADS_COMPANIES, module: "leads", moduleVersion: OUTBOUND, page: true, desktop: true },
+      },
       {
         path: "inbox",
         name: "LeadsInbox",
@@ -1060,12 +1106,12 @@ const routes = [
         component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Conversation.vue"),
         meta: { requiresAuth: true, titleKey: "leads.inbox.title", panel: "leads", area: AREAS.COMMUNICATOR_CONVERSATIONS, module: "communicator" },
       },
-      // Leads-only entry (the panel fallback): a company list that works on a phone
+      // The full company list (Leads CRM): a page; the narrow list stays the left column of a company card
       {
         path: "companies",
         name: "LeadsCompanies",
-        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Companies.vue"),
-        meta: { requiresAuth: true, titleKey: "leads.companies.title", panel: "leads", area: AREAS.LEADS_COMPANIES, module: "leads" },
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/CompanyList.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.companies.title", panel: "leads", area: AREAS.LEADS_COMPANIES, module: "leads", page: true },
       },
       // UX-006: one lead by hand — company + its contact, phone-usable
       {
@@ -1079,7 +1125,26 @@ const routes = [
         name: "LeadsThread",
         component: () =>
           import(/* webpackChunkName: "leads" */ "../views/Leads/Company.vue"),
-        meta: { requiresAuth: true, titleKey: "leads.company.title", panel: "leads", area: AREAS.LEADS_COMPANIES, module: "leads" },
+        meta: { requiresAuth: true, titleKey: "leads.company.title", panel: "leads", area: AREAS.LEADS_COMPANIES, module: "leads", crumbParent: "LeadsCompanies" },
+      },
+      // Leads CRM plan 16 (leads >= 0.5.0): deals — the list on every width, the board at a desk, the deal card
+      {
+        path: "deals",
+        name: "LeadsDeals",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Deals.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.deals.title", panel: "leads", area: AREAS.LEADS_COMPANIES, module: "leads", moduleVersion: OUTBOUND, page: true },
+      },
+      {
+        path: "deals/board",
+        name: "LeadsDealsBoard",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/DealsBoard.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.deals.board_title", panel: "leads", area: AREAS.LEADS_COMPANIES, module: "leads", moduleVersion: OUTBOUND, page: true, desktop: true, desktopBack: { name: "LeadsDeals", labelKey: "leads.desktop_only.back_deals" }, crumbParent: "LeadsDeals" },
+      },
+      {
+        path: "deals/:id(\\d+)",
+        name: "LeadsDeal",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Deal.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.deal.title", panel: "leads", area: AREAS.LEADS_COMPANIES, module: "leads", moduleVersion: OUTBOUND, page: true, crumbParent: "LeadsDeals" },
       },
       // Plan 14 desktop screens: full width, "Open on a desktop" below 1024 px
       {
@@ -1092,7 +1157,7 @@ const routes = [
         path: "import",
         name: "LeadsImport",
         component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Import.vue"),
-        meta: { requiresAuth: true, titleKey: "leads.import.title", panel: "leads", area: AREAS.LEADS_COMPANIES, module: "leads", desktop: true },
+        meta: { requiresAuth: true, titleKey: "leads.import.title", panel: "leads", area: AREAS.LEADS_COMPANIES, module: "leads", desktop: true, desktopBack: { name: "LeadsCompanies", labelKey: "leads.desktop_only.back_companies" }, crumbParent: "LeadsCompanies" },
       },
       // Settings (UX-002d): one hub for the configuration of leads and communicator — each section its own route,
       // shown only when its backend module is on; full width, reachable on a phone (`page`, no DesktopOnly wall)
@@ -1110,7 +1175,14 @@ const routes = [
         meta: { requiresAuth: true, titleKey: "leads.stages.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", page: true },
       },
       {
-        path: "settings/lead-types",
+        path: "settings/deal-stages",
+        name: "LeadsDealStages",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/DealStages.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.deal_stages.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", moduleVersion: OUTBOUND, page: true, crumbParent: "LeadsSettings" },
+      },
+      { path: "settings/lead-types", redirect: "/leads/settings/company-types" },
+      {
+        path: "settings/company-types",
         name: "LeadsLeadTypes",
         component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/LeadTypes.vue"),
         meta: { requiresAuth: true, titleKey: "leads.lead_types.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", page: true },
@@ -1138,6 +1210,67 @@ const routes = [
         name: "CommunicatorSettings",
         component: () => import(/* webpackChunkName: "communicator" */ "../views/Communicator/Settings.vue"),
         meta: { requiresAuth: true, titleKey: "communicator.settings.title", panel: "leads", area: AREAS.COMMUNICATOR_SETTINGS, module: "communicator", page: true },
+      },
+      // Leads CRM plan 14 (backend >= 0.5.0, `meta.moduleVersion`): approvals and the outbound settings sections
+      {
+        path: "approvals",
+        name: "LeadsApprovals",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Approvals.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.approvals.title", panel: "leads", area: AREAS.COMMUNICATOR_REVIEW, module: "communicator", moduleVersion: OUTBOUND, page: true },
+      },
+      {
+        path: "settings/custom-fields",
+        name: "LeadsCustomFields",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/CustomFieldsSettings.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.fields.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", moduleVersion: OUTBOUND, page: true, crumbParent: "LeadsSettings" },
+      },
+      {
+        path: "settings/scoring",
+        name: "LeadsScoring",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Scoring.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.scoring.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", moduleVersion: OUTBOUND, page: true, crumbParent: "LeadsSettings" },
+      },
+      {
+        path: "settings/rules",
+        name: "LeadsRules",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Rules.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.rules.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", moduleVersion: OUTBOUND, page: true, crumbParent: "LeadsSettings" },
+      },
+      {
+        path: "settings/automatic-moves",
+        name: "LeadsAutomaticMoves",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/AutomaticMoves.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.moves.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", moduleVersion: OUTBOUND, page: true },
+      },
+      {
+        path: "settings/reply-classification",
+        name: "LeadsReplyClassification",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/ReplyClassification.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.classify.title", panel: "leads", area: AREAS.COMMUNICATOR_CONTENT, module: "communicator", moduleVersion: OUTBOUND, page: true },
+      },
+      {
+        path: "settings/mailboxes",
+        name: "LeadsMailboxes",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Mailboxes.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.mailboxes.title", panel: "leads", area: AREAS.COMMUNICATOR_SETTINGS, module: "communicator", moduleVersion: OUTBOUND, page: true },
+      },
+      {
+        path: "settings/mailboxes/:id",
+        name: "LeadsMailboxEdit",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/MailboxEdit.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.mailbox.title", panel: "leads", area: AREAS.COMMUNICATOR_SETTINGS, module: "communicator", moduleVersion: OUTBOUND, page: true, crumbParent: "LeadsMailboxes" },
+      },
+      {
+        path: "settings/sending-health",
+        name: "LeadsSendingHealth",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/SendingHealth.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.health.title", panel: "leads", area: AREAS.COMMUNICATOR_SETTINGS, module: "communicator", moduleVersion: OUTBOUND, page: true },
+      },
+      {
+        path: "settings/do-not-contact",
+        name: "LeadsDoNotContact",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/DoNotContact.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.dnc.title", panel: "leads", area: AREAS.COMMUNICATOR_SETTINGS, module: "communicator", moduleVersion: OUTBOUND, page: true },
       },
     ],
   },
@@ -1589,14 +1722,28 @@ const routes = [
   { path: "/docs", redirect: "/pages/doc" },
   { path: "/content", redirect: "/pages/content" },
   { path: "/layout-extender", redirect: "/pages/layout-extender" },
+
+  // Any unknown address: the not-found page inside the shell, with the side menu of the panel its first segment names.
+  {
+    path: "/:pathMatch(.*)*",
+    name: "NotFound",
+    component: () => import(/* webpackChunkName: "not-found" */ "../views/NotFound/NotFound.vue"),
+    meta: { requiresAuth: true, titleKey: "not_found.page_title" },
+  },
 ];
+
+// The panel whose root starts with the same first segment as `path` ("/leads/x" → leads), null outside every panel.
+function panelOfPath(path) {
+  const segment = (value) => value.split("/")[1];
+  return panels.find((panel) => segment(panel.root) === segment(path))?.idx ?? null;
+}
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
 });
 
-// A route whose module is absent goes to its panel root; the root itself (Leads inbox) goes to the panel
+// A route whose module is absent goes to its panel root; the root itself goes to the panel
 // fallback (Leads company list), and the fallback home — never a loop.
 function moduleFallback(panel, path) {
   if (path === panel?.root) return panel.fallback || "/";
@@ -1605,6 +1752,8 @@ function moduleFallback(panel, path) {
 }
 
 router.beforeEach(async (to) => {
+  // the not-found page takes the panel of its address (set on every navigation: the record is the same for all)
+  if (to.name === "NotFound") to.meta.panel = panelOfPath(to.path);
   // Allow unauthenticated routes (password reset)
   if (to.meta?.requiresAuth === false) return true;
 
@@ -1626,7 +1775,8 @@ router.beforeEach(async (to) => {
     // Routes tied to an optional backend module (meta.module) stay dormant
     // when the module is absent, even if their panel is enabled.
     const module = to.meta?.module;
-    if (module && !munin.isModuleEnabled(module)) {
+    const version = to.meta?.moduleVersion;
+    if (module && (!munin.isModuleEnabled(module) || (version && !munin.isModuleAtLeast(module, version)))) {
       return moduleFallback(panels.find((p) => p.idx === panel), to.path);
     }
     if (signedIn && !(await canReadRoute(to, panel))) {

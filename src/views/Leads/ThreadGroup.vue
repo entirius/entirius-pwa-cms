@@ -5,10 +5,8 @@
       <div class="tg__summary flex flex-wrap ai-ct pointer" data-testid="earlier-thread-summary" @click="onSummaryClick">
         <span class="tg__subject" data-testid="earlier-thread-subject">{{ title }}</span>
         <span class="tg__meta" data-testid="earlier-thread-to">{{ $t("leads.review.to") }}: {{ recipient }}</span>
-        <span class="tg__meta">
-          {{ $t(`leads.thread.state.${thread.status}`) }}<template v-if="thread.last_message_at">
-            · {{ formatTime(thread.last_message_at) }}</template>
-        </span>
+        <StatusBadge size="sm" :tone="threadTone(thread.status)" :label="$t(`leads.thread.state.${thread.status}`)" data-testid="earlier-thread-state" />
+        <span v-if="thread.last_message_at" class="tg__meta">{{ formatTime(thread.last_message_at) }}</span>
         <span v-if="holdsReply" class="tg__reply" data-testid="earlier-thread-reply">{{ $t("leads.thread.earlier_reply") }}</span>
         <StatusBadge
           v-if="pending"
@@ -30,10 +28,17 @@
     <ThreadTimeline
       v-if="open && detail"
       :messages="detail.timeline || []"
+      :sequence="detail.sequence"
       :optouts="detail.optouts"
       :waiting="waiting"
       :busy="optoutBusy"
+      :contact="contactOf(thread)"
+      :company="company"
+      :thread-id="thread.id"
+      :composed="composed"
       @confirm-optout="confirmOptout"
+      @dismiss-optout="dismissOptout"
+      @sent="onSent"
     />
   </article>
 </template>
@@ -41,14 +46,16 @@
 <script setup>
 import { computed, onMounted, ref } from "vue";
 import { t } from "@/i18n";
-import { GET_ThreadWithOptouts, POST_ConfirmOptout } from "@/api/communicator/api";
+import { GET_ThreadWithOptouts, POST_ConfirmOptout, POST_DismissOptout } from "@/api/communicator/api";
 import { useNotifyStore } from "@/stores/notify";
-import { threadSubject } from "@/utils/leadsThread";
+import { threadTone } from "@/utils/leadsLabels";
+import { contactOf, threadSubject } from "@/utils/leadsThread";
 import { formatTime } from "@/utils/leadsTime";
 import ThreadTimeline from "./ThreadTimeline.vue";
 
-// One older thread of the company, collapsed to its header. The conversation loads with the header: collapsed rows
-// of the same company are told apart by their subject and recipient, not by opening them one by one.
+// One older thread of the company, collapsed to its header. Collapsed rows of the same company are told apart by the
+// list row's subject and recipient, not by opening them one by one; the conversation loads when the row first opens
+// (at once for the thread holding the reply), so a card listing many earlier conversations reads none of them unasked.
 const props = defineProps({
   thread: { type: Object, required: true },
   pending: { type: Boolean, default: false },
@@ -56,8 +63,11 @@ const props = defineProps({
   // the thread holding the reply the bell announced: opened and marked on arrival, never scrolled to — the newest
   // thread above stays on screen (FIX-17c item 5)
   holdsReply: { type: Boolean, default: false },
+  // the company card (Reply is offered when set) and the message ids written by hand
+  company: { type: Object, default: null },
+  composed: { type: Array, default: () => [] },
 });
-const emit = defineEmits(["changed"]);
+const emit = defineEmits(["changed", "sent"]);
 const notify = useNotifyStore();
 
 const open = ref(props.holdsReply);
@@ -66,7 +76,8 @@ const detail = ref(null);
 const optoutBusy = ref(false);
 
 const title = computed(
-  () => threadSubject(detail.value?.timeline) || props.thread.recipient_name || props.thread.recipient_email
+  () =>
+    threadSubject(detail.value?.timeline) || props.thread.subject || props.thread.recipient_name || props.thread.recipient_email
 );
 const recipient = computed(() =>
   [props.thread.recipient_name, props.thread.recipient_email].filter(Boolean).join(" · ")
@@ -81,8 +92,14 @@ async function loadDetail() {
   }
 }
 
+async function onSent() {
+  await loadDetail();
+  emit("sent");
+}
+
 function toggle() {
   open.value = !open.value;
+  if (open.value && !detail.value) loadDetail();
 }
 
 // A drag that selects the subject or recipient to copy it is no tap: it leaves the thread as it is. Text selected
@@ -94,13 +111,18 @@ function onSummaryClick(event) {
   if (!selection?.toString() || !inSummary) toggle();
 }
 
-onMounted(loadDetail);
+onMounted(() => open.value && loadDetail());
 
-async function confirmOptout(replyId) {
+const confirmOptout = (replyId) => decideOptout(() => POST_ConfirmOptout(replyId), t("leads.thread.optout_done", { contact: contactOf(props.thread) }));
+const dismissOptout = (replyId) => decideOptout(() => POST_DismissOptout(replyId), t("leads.thread.optout_dismissed"));
+
+// Confirm or dismiss a possible opt-out, then reload like the other reply actions.
+async function decideOptout(post, message) {
   if (optoutBusy.value) return;
   optoutBusy.value = true;
   try {
-    await POST_ConfirmOptout(replyId);
+    await post();
+    notify.spawnNotification({ msg: message });
     await loadDetail();
     emit("changed");
   } catch {

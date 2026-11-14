@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
 
 const leads = vi.hoisted(() => ({
@@ -10,23 +10,27 @@ const leads = vi.hoisted(() => ({
   GET_Stages: vi.fn(),
   GET_LeadTypes: vi.fn(),
   POST_Transition: vi.fn(),
+  GET_Attributes: vi.fn(() => Promise.resolve({ data: { results: [] } })),
 }));
 const route = vi.hoisted(() => ({ name: "LeadsThread", params: { id: "7" }, query: {} }));
+const router = vi.hoisted(() => ({ replace: vi.fn(), push: vi.fn(), back: vi.fn(), options: { history: { state: { back: null } } } }));
 vi.mock("vue-router", async () => {
   const { reactive } = await import("vue");
   const live = reactive(route); // a changed params.id reaches the card's watcher
-  return { useRoute: () => live, useRouter: () => ({ replace: vi.fn() }) };
+  return { useRoute: () => live, useRouter: () => router };
 });
+const desktop = vi.hoisted(() => ({ on: true }));
 vi.mock("@/composables/useIsDesktop", async () => {
   const { ref } = await import("vue");
-  return { useIsDesktop: () => ref(true) };
+  return { useIsDesktop: () => ref(desktop.on) };
 });
 const communicator = vi.hoisted(() => ({ GET_Templates: vi.fn() }));
 vi.mock("@/api/communicator/api", () => communicator);
 const siteintel = vi.hoisted(() => ({ GET_LatestAudit: vi.fn(), POST_AuditRerun: vi.fn() }));
-const munin = vi.hoisted(() => ({ isModuleInstalled: vi.fn() }));
+const munin = vi.hoisted(() => ({ isModuleInstalled: vi.fn(), isModuleEnabled: vi.fn(() => true), isModuleAtLeast: vi.fn(() => false) }));
 const notify = vi.hoisted(() => ({ spawnNotification: vi.fn() }));
 vi.mock("@/api/leads/api", () => leads);
+vi.mock("@/api/todo/api", () => ({ GET_Tasks: () => Promise.resolve({ data: { count: 2, results: [] } }) }));
 vi.mock("@/api/siteintel/api", () => siteintel);
 vi.mock("@/stores/munin", () => ({ useMuninStore: () => munin }));
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => notify }));
@@ -155,7 +159,11 @@ describe("Company card header", () => {
   });
 
   const mountCard = async () => {
-    const stubs = { ...leadsFrame.stubs, CompanyActions: true, Thread: true, OverviewTab: true, IntelTab: true, ContactsTab: true };
+    const stubs = {
+      ...leadsFrame.stubs, CompanyActions: true, Thread: true, OverviewTab: true, IntelTab: true, ContactsTab: true,
+      CompanyDetails: true, ScoreCard: true, TasksTab: true, ComposeDialog: true,
+      EmptyState: { props: ["title"], template: "<div>{{ title }}<slot /></div>" }, RouterLink: true,
+    };
     const wrapper = mount(Company, { global: { components: leadsFrame.components, stubs } });
     await flushPromises();
     return wrapper;
@@ -171,6 +179,31 @@ describe("Company card header", () => {
     expect(type.props("floatingLabel")).toBe("leads.company.type");
     expect(type.props("options").map((option) => option.value)).toEqual(["UNKNOWN", "RETAILER"]);
     expect(wrapper.get('[data-testid="thread-company"]').text()).toBe("Shop");
+  });
+
+  // Acceptance M2: the selects are labelled on a phone too; B8: they sit under the title, never in the domain's row.
+  it("labels the selects on a phone and keeps them out of the header", async () => {
+    leads.GET_Company.mockResolvedValue({ data: { ...company(), name: "Shop", lead_type: "RETAILER", stage: { key: "new" }, activities: [] } });
+    desktop.on = false;
+    const wrapper = await mountCard();
+    desktop.on = true;
+    expect(control(wrapper, "company-stage").props("floatingLabel")).toBe("leads.company.stage");
+    expect(wrapper.find("header").find('[data-testid="company-stage"]').exists()).toBe(false);
+    expect(wrapper.get('[data-testid="company-selects"]').find('[data-testid="company-lead-type"]').exists()).toBe(true);
+    wrapper.unmount(); // a card left open would follow the route changes of the next specs
+  });
+
+  // Acceptance M4: Back returns to where the card was opened from; Companies when there is no such place.
+  it("Back goes to the previous place, else to Companies", async () => {
+    const wrapper = await mountCard();
+    const back = () => wrapper.findComponent({ name: "PageHeader" }).props("back")();
+    router.options.history.state.back = "/leads";
+    back();
+    expect(router.back).toHaveBeenCalledTimes(1);
+    expect(router.push).not.toHaveBeenCalled();
+    router.options.history.state.back = null;
+    back();
+    expect(router.push).toHaveBeenCalledWith({ name: "LeadsCompanies" });
   });
 
   it("a stage pick transitions, a type pick patches the company", async () => {
@@ -306,6 +339,55 @@ describe("Company card header", () => {
     expect(leads.POST_Transition).not.toHaveBeenCalled();
     expect(leads.PATCH_Company).not.toHaveBeenCalled();
   });
+  // Plan 15 (Leads CRM): tabs by module, History with the events, a phone opens History, 404 says not found.
+  describe("Leads CRM", () => {
+    const tabValues = (wrapper) => wrapper.findComponent({ name: "BasicTabs" }).props("options").map((o) => o.value);
+    afterEach(() => {
+      desktop.on = true;
+      munin.isModuleAtLeast.mockReturnValue(false);
+      munin.isModuleInstalled.mockReset();
+    });
+    beforeEach(() => {
+      desktop.on = true;
+      route.query = {};
+      munin.isModuleAtLeast.mockReturnValue(true);
+      munin.isModuleInstalled.mockImplementation((key) => key === "todo");
+    });
+
+    it("leads 0.5.0 with todo: Details, Score, the Tasks and the Deals tab with their counts", async () => {
+      leads.GET_Company.mockResolvedValueOnce({ data: { ...company(), deals: { open: 1, won: 0, lost: 2 } } });
+      const wrapper = await mountCard();
+      expect(tabValues(wrapper)).toEqual(["overview", "contacts", "timeline", "tasks", "deals", "intel"]);
+      expect(wrapper.findComponent({ name: "BasicTabs" }).props("options")[3].count).toBe(2);
+      expect(wrapper.findComponent({ name: "BasicTabs" }).props("options")[4].count).toBe(1);
+      expect(wrapper.find("company-details-stub").exists()).toBe(true);
+      expect(wrapper.find("score-card-stub").exists()).toBe(true);
+      expect(leads.GET_Attributes).toHaveBeenCalledWith("company");
+    });
+
+    it("an older backend or no todo: no Tasks tab, no Details or Score", async () => {
+      munin.isModuleAtLeast.mockReturnValue(false);
+      const wrapper = await mountCard();
+      expect(tabValues(wrapper)).toEqual(["overview", "contacts", "timeline", "intel"]);
+      expect(wrapper.find("company-details-stub").exists()).toBe(false);
+    });
+
+    it("a phone opens the card on History, the mail thread and the events as sentences", async () => {
+      desktop.on = false;
+      leads.GET_Company.mockResolvedValueOnce({ data: { ...company(), activities: [{ id: 1, created_at: null, message: "stage new -> replied" }] } });
+      const wrapper = await mountCard();
+      expect(wrapper.findComponent({ name: "BasicTabs" }).props("modelValue")).toBe("timeline");
+      expect(wrapper.find("thread-stub").exists()).toBe(true);
+      expect(wrapper.get('[data-testid="timeline-event"]').text()).toContain("Stage: new → replied");
+    });
+
+    it("a 404 says the company was not found", async () => {
+      leads.GET_Company.mockRejectedValueOnce(Object.defineProperty({ message: "x" }, "httpStatus", { value: 404 }));
+      const wrapper = await mountCard();
+      expect(wrapper.get('[data-testid="company-load-error"]').text()).toContain("Company not found");
+    });
+  });
+
 });
 
 // Plan 54: the dialog is a BasicModal; the stub renders its body and hands its actions out as props.
@@ -363,6 +445,8 @@ describe("Leads Communicate dialog", () => {
     await flushPromises();
     expect(leads.POST_Communicate).toHaveBeenCalledWith(7, { template_key: "cold", contact_id: 2 });
     expect(has(wrapper, "communicate-modal")).toBe(false);
+    // M13: the card reloads, so History shows the new draft line without a page reload
+    expect(wrapper.emitted("changed")).toHaveLength(1);
   });
 
   it("a failed template list shows its message in the dialog; every open starts with no list and no error", async () => {

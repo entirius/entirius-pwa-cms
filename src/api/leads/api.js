@@ -25,9 +25,13 @@ export const POST_RequestAudit = (id) => leadsApi.post(`${base()}/companies/${id
 export const POST_CreateCustomer = (id) => leadsApi.post(`${base()}/companies/${id}/create-customer/`, {});
 
 // FormData without a Content-Type: axios sets the multipart boundary.
-export const POST_Import = (file) => {
+// `runRules` (leads >= 0.5.0): new companies enter their first stage with its rules; undefined = not sent.
+// `ownerId` (leads >= 0.5.0): the owner of the new companies; null or undefined = not sent (no owner).
+export const POST_Import = (file, runRules, ownerId) => {
   const form = new FormData();
   form.append("file", file);
+  if (runRules !== undefined) form.append("run_rules", String(runRules));
+  if (ownerId !== undefined && ownerId !== null) form.append("owner_id", String(ownerId));
   return leadsApi.post(`${base()}/imports/`, form);
 };
 
@@ -61,3 +65,98 @@ export const POST_LeadType = (body) => leadsApi.post(`${base()}/lead-types/`, bo
 export const PATCH_LeadType = (id, body) => leadsApi.patch(`${base()}/lead-types/${id}/`, body);
 
 export const DELETE_LeadType = (id) => leadsApi.delete(`${base()}/lead-types/${id}/`);
+
+// Leads CRM plan 14 (leads >= 0.5.0) — event → stage map: first_sent, reply, reply:<type>, sequence_finished.
+export const GET_StageEvents = () => leadsApi.get(`${base()}/stage-events/`);
+
+export const PUT_StageEvent = (event, body) => leadsApi.put(`${base()}/stage-events/${event}/`, body);
+
+export const DELETE_StageEvent = (event) => leadsApi.delete(`${base()}/stage-events/${event}/`);
+
+// Why a contact gets no mail: { eligible, reasons } of the outreach gate.
+export const GET_Mailable = (companyId, contactId) =>
+  leadsApi.get(`${base()}/companies/${companyId}/contacts/${contactId}/mailable/`);
+
+// Active staff who can own a company or a mailbox: [{ id, username, name }], at most 50 (leads >= 0.5.0).
+export const GET_AssignableUsers = async (search = "") => {
+  const { data } = await leadsApi.get(`${base()}/assignable-users/`, { params: { search } });
+  return data.results ?? data;
+};
+
+// Leads CRM plan 15 (leads >= 0.5.0) — custom fields, scoring, owner, compose, funnel.
+export const GET_Attributes = (entity) => leadsApi.get(`${base()}/attributes/`, { params: { entity } });
+
+export const POST_Attribute = (body) => leadsApi.post(`${base()}/attributes/`, body);
+
+export const PATCH_Attribute = (id, body) => leadsApi.patch(`${base()}/attributes/${id}/`, body);
+
+export const DELETE_Attribute = (id) => leadsApi.delete(`${base()}/attributes/${id}/`);
+
+// Facts a condition may name: built-ins and `attr.<key>`, each { name, kind, label, options }.
+export const GET_Fields = () => leadsApi.get(`${base()}/fields/`);
+
+export const GET_ScoringProfiles = () => leadsApi.get(`${base()}/scoring-profiles/`);
+
+export const POST_ScoringProfile = (body) => leadsApi.post(`${base()}/scoring-profiles/`, body);
+
+export const PATCH_ScoringProfile = (id, body) => leadsApi.patch(`${base()}/scoring-profiles/${id}/`, body);
+
+// 409 NO_SCORING_PROFILE without an active profile.
+export const POST_Score = (id) => leadsApi.post(`${base()}/companies/${id}/score/`, {});
+
+export const POST_AssignOwner = (companyIds, ownerId) =>
+  leadsApi.post(`${base()}/companies/assign/`, { company_ids: companyIds, owner_id: ownerId });
+
+// 409 not_eligible / no_legal_basis / communicator_channel_missing.
+export const POST_Compose = (id, body) => leadsApi.post(`${base()}/companies/${id}/compose/`, body);
+
+export const GET_Funnel = (params) => leadsApi.get(`${base()}/reports/funnel/`, { params });
+
+export const POST_Rule = (body) => leadsApi.post(`${base()}/rules/`, body);
+
+export const PATCH_Rule = (id, body) => leadsApi.patch(`${base()}/rules/${id}/`, body);
+
+export const DELETE_Rule = (id) => leadsApi.delete(`${base()}/rules/${id}/`);
+
+export const GET_RuleRuns = (rule) => leadsApi.get(`${base()}/rule-runs/`, { params: { rule } });
+
+// Leads CRM plan 16 (leads >= 0.5.0) — deals: stages of the sales pipeline, deals, the board, moves and history.
+// Amounts travel as decimal strings, the currency as an ISO 4217 code.
+export const GET_DealStages = () => leadsApi.get(`${base()}/deal-stages/`);
+
+export const POST_DealStage = (body) => leadsApi.post(`${base()}/deal-stages/`, body);
+
+export const PATCH_DealStage = (id, body) => leadsApi.patch(`${base()}/deal-stages/${id}/`, body);
+
+// 409 while the stage holds deals.
+export const DELETE_DealStage = (id) => leadsApi.delete(`${base()}/deal-stages/${id}/`);
+
+export const GET_Deals = (params) => leadsApi.get(`${base()}/deals/`, { params });
+
+// One column per stage in pipeline order: { stage, count, totals: [{ currency, one_off, recurring }], deals (first 25) }.
+export const GET_DealBoard = (params) => leadsApi.get(`${base()}/deals/board/`, { params });
+
+export const POST_Deal = (body) => leadsApi.post(`${base()}/deals/`, body);
+
+export const GET_Deal = (id) => leadsApi.get(`${base()}/deals/${id}/`);
+
+export const PATCH_Deal = (id, body) => leadsApi.patch(`${base()}/deals/${id}/`, body);
+
+// 409 for a won or lost deal.
+export const DELETE_Deal = (id) => leadsApi.delete(`${base()}/deals/${id}/`);
+
+// `lost_reason` is required by a lost stage; "" is not sent.
+export const POST_DealTransition = (id, stageKey, lostReason = "") =>
+  leadsApi.post(`${base()}/deals/${id}/transition/`, { stage_key: stageKey, ...(lostReason ? { lost_reason: lostReason } : {}) });
+
+// Plan 27: a won or lost deal leaves the lists; 409 for an open deal. Restore brings it back; both return the deal.
+export const POST_DealArchive = (id) => leadsApi.post(`${base()}/deals/${id}/archive/`);
+
+export const POST_DealRestore = (id) => leadsApi.post(`${base()}/deals/${id}/restore/`);
+
+export const GET_DealActivities = (id) => leadsApi.get(`${base()}/deals/${id}/activities/`, { params: { page_size: 100 } });
+
+export const GET_CompanyDeals = (id) => leadsApi.get(`${base()}/companies/${id}/deals/`, { params: { page_size: 100 } });
+
+// Channel settings (`leads.settings`): `default_currency` pre-fills a new deal.
+export const GET_LeadsChannel = () => leadsApi.get(`${base()}/channel/`);

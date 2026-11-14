@@ -1,4 +1,5 @@
 import { ref } from "vue";
+import { formatDate } from "@/utils/format";
 
 // A slot this close to now is the send run's to take — no clock is promised for it.
 const SEND_RUN_GRACE_MS = 60 * 1000;
@@ -61,3 +62,8 @@ export function formatTime(iso, now = new Date()) {
   const day = dayKey(date, timeZone);
   return day === dayKey(now, timeZone) ? time : `${day.slice(8, 10)}.${day.slice(5, 7)} ${time}`;
 }
+
+// The one date and the one date-time of every Leads screen: the UI locale's short form (what BasicDatePicker shows,
+// "13/11/2026" EN, "13.11.2026" PL), on the channel's calendar; empty for a missing or invalid timestamp.
+export const formatLeadsDay = (iso) => formatDate(iso, { timeStyle: undefined, timeZone: channelTimeZone.value });
+export const formatLeadsDateTime = (iso) => formatDate(iso, { timeZone: channelTimeZone.value });

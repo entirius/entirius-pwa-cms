@@ -11,12 +11,24 @@
 
 // The sections of Leads → Settings (the hub behind the one "/leads/settings" entry): nav glyphs like the entries
 // below, not icons.js meanings; `module` hides a section whose backend is off.
+export const LEADS_SETTINGS_GROUPS = ["sales", "automation", "sending"];
+
+// `minVersion` (with `module`): the section needs that backend version (`isModuleAtLeast`); `group` = its hub card.
 export const LEADS_SETTINGS_SECTIONS = [
-  { key: "stages", route: "LeadsStages", labelKey: "nav.leads_stages", icon: "list-ol", module: "leads" },
-  { key: "lead-types", route: "LeadsLeadTypes", labelKey: "leads.lead_types.title", icon: "tags", module: "leads" },
-  { key: "templates", route: "CommunicatorTemplates", labelKey: "nav.communicator_templates", icon: "file-lines", module: "communicator" },
-  { key: "sequences", route: "CommunicatorSequences", labelKey: "nav.communicator_sequences", icon: "repeat", module: "communicator" },
-  { key: "sending", route: "CommunicatorSettings", labelKey: "nav.communicator_settings", icon: "paper-plane", module: "communicator" },
+  { key: "stages", route: "LeadsStages", labelKey: "nav.leads_stages", icon: "list-ol", module: "leads", group: "sales" },
+  { key: "deal-stages", route: "LeadsDealStages", labelKey: "nav.leads_deal_stages", icon: "layer-group", module: "leads", minVersion: "0.5.0", group: "sales" },
+  { key: "lead-types", route: "LeadsLeadTypes", labelKey: "leads.lead_types.title", icon: "tags", module: "leads", group: "sales" },
+  { key: "custom-fields", route: "LeadsCustomFields", labelKey: "leads.fields.title", icon: "list-check", module: "leads", minVersion: "0.5.0", group: "sales" },
+  { key: "scoring", route: "LeadsScoring", labelKey: "leads.scoring.title", icon: "ranking-star", module: "leads", minVersion: "0.5.0", group: "sales" },
+  { key: "rules", route: "LeadsRules", labelKey: "leads.rules.title", icon: "bolt", module: "leads", minVersion: "0.5.0", group: "automation" },
+  { key: "automatic-moves", route: "LeadsAutomaticMoves", labelKey: "nav.leads_automatic_moves", icon: "diagram-next", module: "leads", minVersion: "0.5.0", group: "automation" },
+  { key: "sequences", route: "CommunicatorSequences", labelKey: "nav.communicator_sequences", icon: "repeat", module: "communicator", group: "automation" },
+  { key: "templates", route: "CommunicatorTemplates", labelKey: "nav.communicator_templates", icon: "file-lines", module: "communicator", group: "automation" },
+  { key: "reply-classification", route: "LeadsReplyClassification", labelKey: "nav.leads_reply_classification", icon: "wand-magic-sparkles", module: "communicator", minVersion: "0.5.0", group: "automation" },
+  { key: "mailboxes", route: "LeadsMailboxes", labelKey: "nav.leads_mailboxes", icon: "at", module: "communicator", minVersion: "0.5.0", group: "sending" },
+  { key: "sending-health", route: "LeadsSendingHealth", labelKey: "nav.leads_sending_health", icon: "heart-pulse", module: "communicator", minVersion: "0.5.0", group: "sending" },
+  { key: "sending", route: "CommunicatorSettings", labelKey: "nav.communicator_settings", icon: "paper-plane", module: "communicator", group: "sending" },
+  { key: "do-not-contact", route: "LeadsDoNotContact", labelKey: "nav.leads_do_not_contact", icon: "ban", module: "communicator", minVersion: "0.5.0", group: "sending" },
 ];
 
 // The tabs of Enricher → Review and Enricher → Settings (RouteTabs): each tab its own route, by name; `badge` as on a
@@ -191,6 +203,20 @@ export function buildNavRoutes() {
       app: ["checkout"],
     },
     {
+      route: "/stock-alerts",
+      labelKey: "nav.stock_alerts_demand",
+      icon: "hourglass-half",
+      query: {},
+      app: ["stockAlerts"],
+    },
+    {
+      route: "/stock-alerts/subscriptions",
+      labelKey: "nav.stock_alerts_subscriptions",
+      icon: "list-ul",
+      query: {},
+      app: ["stockAlerts"],
+    },
+    {
       route: "/promo/list",
       labelKey: "nav.promo_list",
       icon: "tags",
@@ -315,52 +341,77 @@ export function buildNavRoutes() {
       requiresModule: "lookup",
     },
     {
+      // Leads CRM: the day's work (tasks, drafts and replies waiting) — the panel root
+      route: "/leads/today",
+      labelKey: "nav.leads_today",
+      icon: "calendar-day",
+      query: {},
+      app: ["leads"],
+      activeOn: ["/leads/today"],
+    },
+    {
       route: "/leads/inbox",
       labelKey: "nav.leads_inbox",
       icon: "inbox",
       query: {},
       app: ["leads"],
       requiresModule: "communicator",
-      // One entry for both lists (UX-010): its Conversations | Companies toggle, Review, a thread without a company and
-      // a company card are all Inbox work, so the Inbox stays lit — the menu never jumps when a row opens a card
-      activeOn: ["/leads/inbox/", "/leads/conversations", "/leads/companies"],
+      // Review and a thread without a company are Inbox work; a company card lights Companies
+      activeOn: ["/leads/inbox/", "/leads/conversations"],
     },
     {
-      // Leads without communicator: no Inbox, no toggle — the company list is the entry (the panel fallback)
+      // The full list; the board and the import open from its page actions and keep it lit
       route: "/leads/companies",
       labelKey: "nav.leads_companies",
       icon: "building",
       query: {},
       app: ["leads"],
       requiresModule: "leads",
-      hiddenWithModule: "communicator",
-      activeOn: ["/leads/companies/"], // a company card
+      activeOn: ["/leads/companies/", "/leads/board", "/leads/import"],
     },
     {
-      route: "/leads/board",
-      labelKey: "nav.leads_board",
-      icon: "table-columns",
+      // Selling: the deal list (every width) and, through its List · Board switch, the board at a desk
+      route: "/leads/deals",
+      labelKey: "nav.leads_deals",
+      icon: "handshake",
       query: {},
       app: ["leads"],
       requiresModule: "leads",
-      desktopOnly: true,
+      minVersion: "0.5.0",
+      activeOn: ["/leads/deals/"],
     },
     {
-      route: "/leads/import",
-      labelKey: "nav.leads_import",
-      icon: "file-import",
+      // Drafts of every channel, approved in bulk at the desk; the badge = drafts waiting (useNav `counts`)
+      route: "/leads/approvals",
+      labelKey: "nav.leads_approvals",
+      icon: "circle-check",
+      query: {},
+      app: ["leads"],
+      requiresModule: "communicator",
+      minVersion: "0.5.0",
+      desktopOnly: true,
+      badge: "approvals",
+    },
+    {
+      // The funnel: tables of stage counts, moves and origins, desk work
+      route: "/leads/reports",
+      labelKey: "nav.leads_reports",
+      icon: "chart-line",
       query: {},
       app: ["leads"],
       requiresModule: "leads",
+      minVersion: "0.5.0",
       desktopOnly: true,
     },
     {
-      // Stages, templates, sequences and send settings live here as sections (UX-002d) — one entry fits a phone
+      // Stages, templates, sequences and send settings live here as sections (UX-002d); desk work (Leads CRM) — a
+      // section still opens on a phone from a link
       route: "/leads/settings",
       labelKey: "nav.leads_settings",
       icon: "gear",
       query: {},
       app: ["leads"],
+      desktopOnly: true,
       activeOn: ["/leads/settings/"], // every section
     },
     {
@@ -427,7 +478,8 @@ export function buildNavRoutes() {
 
 // The entries of one panel (`panel` = its idx). `requiresQuality` items are hidden until the backend's gaps
 // capability probe resolves true (old backends never see the quality-rules nav item).
-// `requiresModule` items are hidden until that optional django-munin module reports enabled
+// `requiresModule` items are hidden until that optional django-munin module reports enabled (and, with `minVersion`,
+// at least that version)
 // (mirrors the router guard's `meta.module` gate — see router/index.js); `hiddenWithModule` items give way
 // once that module is enabled (another entry covers their pages then).
 // `desktopOnly` items are hidden below the desktop breakpoint (useIsDesktop) — on a phone the
@@ -440,12 +492,13 @@ export function isNavActive(route, path = "") {
 
 export function filterNavRoutes(
   routes,
-  { panel, qualityAvailable, isModuleEnabled, isDesktop, canRead }
+  { panel, qualityAvailable, isModuleEnabled, isModuleAtLeast, isDesktop, canRead }
 ) {
   return routes.filter((r) => {
     if (r.app.indexOf(panel) === -1) return false;
     if (r.requiresQuality && qualityAvailable !== true) return false;
     if (r.requiresModule && !isModuleEnabled?.(r.requiresModule)) return false;
+    if (r.minVersion && !isModuleAtLeast?.(r.requiresModule, r.minVersion)) return false;
     if (r.hiddenWithModule && isModuleEnabled?.(r.hiddenWithModule)) return false;
     if (r.desktopOnly && !isDesktop) return false;
     if (r.area && canRead && !canRead(r.area)) return false;

@@ -17,14 +17,15 @@
         :email-locked="Boolean(editing?.email)"
         :consent-recorded="editing?.legal_basis === 'consent'"
       />
+      <CustomFields v-if="contactFields.length" v-model="attributes" :fields="contactFields" :errors="attrErrors" />
       <p v-if="error" class="t-negative m-0" data-testid="contact-error">{{ error }}</p>
       <div class="flex ai-ct jc-fe gap-3">
         <BasicButton variant="ghost" data-testid="contact-cancel" @click="close">{{ $t("common.cancel") }}</BasicButton>
-        <BasicButton type="submit" :loading="busy" data-testid="contact-save">{{ $t("common.save") }}</BasicButton>
+        <BasicButton type="submit" mutates :loading="busy" data-testid="contact-save">{{ $t("common.save") }}</BasicButton>
       </div>
     </form>
     <div v-else class="flex jc-fe">
-      <BasicButton data-testid="contact-add" @click="open('add')">{{ $t("leads.contacts.add") }}</BasicButton>
+      <BasicButton mutates data-testid="contact-add" @click="open('add')">{{ $t("leads.contacts.add") }}</BasicButton>
     </div>
     <p v-if="status" class="t-muted m-0" role="status" data-testid="contact-status">{{ status }}</p>
 
@@ -53,28 +54,38 @@
         <span class="contacts__person" :class="{ 't-muted': row.anonymised_at }">
           {{ row.first_name }} {{ row.last_name }}
           <span v-if="row.job_title" class="t-muted fs-200">{{ row.job_title }}</span>
-          <span v-if="row.email" class="contacts__email fs-200">{{ row.email }}</span>
+          <span v-if="row.email" class="contacts__email fs-200" :title="row.email">{{ row.email }}</span>
+          <span v-if="!row.anonymised_at" class="contacts__state flex ai-ct flex-wrap gap-2">
+            <StatusBadge v-if="!row.email" tone="neutral" :dot="false" :label="$t('leads.contacts.no_email')" data-testid="contact-no-email" />
+            <StatusBadge
+              v-else-if="blockOf(row)"
+              tone="negative"
+              :dot="false"
+              :label="$t('leads.contacts.suppressed')"
+              :title="blockReasonLabel(blockOf(row))"
+              data-testid="contact-suppressed"
+            />
+            <StatusBadge v-else tone="positive" :dot="false" :label="$t('leads.contacts.mailable')" data-testid="contact-mailable" />
+            <!-- only beside a contact who cannot be mailed (an older backend without `mail_block` knows too little: always) -->
+            <BasicButton v-if="outbound && (!row.email || blockOf(row) || !hasMailBlock(row))" variant="ghost" size="sm" :data-contact="row.id" data-testid="contact-why" @click="why = row">
+              {{ $t("leads.contact.why_no_mail") }}
+            </BasicButton>
+          </span>
         </span>
       </template>
       <template #cell-legal_basis="{ row }">
         <span class="flex flex-wrap gap-1">
           <StatusBadge v-if="row.anonymised_at" tone="neutral" :dot="false" :label="$t('leads.contacts.anonymised')" />
           <StatusBadge v-else-if="row.legal_basis" tone="info" :dot="false" :label="legalBasisLabel(row.legal_basis)" />
-          <StatusBadge
-            v-if="isSuppressed(row)"
-            tone="warning"
-            :dot="false"
-            :label="$t('leads.contacts.suppressed')"
-            data-testid="contact-suppressed"
-          />
         </span>
       </template>
       <template #cell-actions="{ row }">
         <div v-if="!row.anonymised_at" class="flex ai-ct gap-2">
-          <BasicButton variant="ghost" size="sm" :data-contact="row.id" data-testid="contact-edit" @click="open(row.id, row)">
+          <BasicButton mutates variant="ghost" size="sm" :data-contact="row.id" data-testid="contact-edit" @click="open(row.id, row)">
             {{ $t("common.edit") }}
           </BasicButton>
           <IconButton
+            mutates
             icon="delete"
             variant="danger"
             size="sm"
@@ -87,6 +98,7 @@
       </template>
     </DataTable>
 
+    <SendCheckDialog :company-id="company.id" :contact="why" @close="why = null" />
     <ConfirmDialog
       :open="Boolean(confirming)"
       :title="confirming ? $t('leads.contacts.remove_title', { name: nameOf(confirming) }) : ''"
@@ -104,10 +116,15 @@
 import { computed, onMounted, reactive, ref } from "vue";
 import { t } from "@/i18n";
 import { GET_Suppressions } from "@/api/communicator/api";
-import { DELETE_Contact, PATCH_Contact, POST_Contact } from "@/api/leads/api";
+import { DELETE_Contact, GET_Attributes, PATCH_Contact, POST_Contact } from "@/api/leads/api";
 import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
-import { legalBasisLabel } from "@/utils/leadsLabels";
+import { blockReasonLabel, legalBasisLabel } from "@/utils/leadsLabels";
+import { useMuninStore } from "@/stores/munin";
+import { outboundOn } from "@/utils/leadsOutbound";
 import ContactFields from "../ContactFields.vue";
+import CustomFields from "../CustomFields.vue";
+import { changedValues, fieldsFromDefinitions, validateValues } from "../customFields";
+import SendCheckDialog from "../SendCheckDialog.vue";
 
 // Contacts of the company card (UX-011): add, edit, remove, primary star — one form open at a time, above the table.
 // Remove answers 204 (never used, deleted) or 200 (used, anonymised: the thread and timeline keep it), and the line
@@ -131,6 +148,8 @@ const suppressed = ref(new Set());
 const mode = ref(null); // null | "add" | the id of the contact in edit
 const draft = reactive({});
 const confirming = ref(null);
+const why = ref(null); // the contact whose "Why no mail?" is open (leads >= 0.5.0)
+const outbound = computed(() => outboundOn(useMuninStore(), "leads"));
 const busy = ref(false);
 const error = ref("");
 const status = ref("");
@@ -141,7 +160,7 @@ const editing = computed(() => props.company.contacts.find((contact) => contact.
 const columns = computed(() => [
   { key: "is_primary", label: t("leads.contacts.primary"), width: "max-content" },
   { key: "name", label: t("leads.contacts.name"), width: "1fr" },
-  { key: "legal_basis", label: t("leads.contacts.legal_basis"), width: "max-content" },
+  { key: "legal_basis", label: t("leads.contacts.legal_basis"), width: "max-content", priority: 2 },
   { key: "actions", label: t("leads.contacts.actions"), actions: true },
 ]);
 // The row carries the test id, so a contact's star, Edit and Remove are found inside its row.
@@ -162,8 +181,33 @@ function isSuppressed(contact) {
   );
 }
 
+// R1: the API's `mail_block` — the first reason of the very check behind "Why no mail?" ("" = can be mailed). A
+// response without the field (an older backend) falls back to the do-not-contact flag and the suppression list.
+const hasMailBlock = (contact) => "mail_block" in contact;
+function blockOf(contact) {
+  if (hasMailBlock(contact)) return contact.mail_block;
+  if (props.company.do_not_contact) return "do_not_contact";
+  return isSuppressed(contact) ? "suppressed" : "";
+}
+
+// Leads CRM: the contact's custom fields under the built-in ones (definitions of entity `contact`).
+const contactFields = ref([]);
+const attributes = ref({});
+const attrErrors = ref({});
+
+async function loadContactFields() {
+  if (!outbound.value) return;
+  try {
+    contactFields.value = fieldsFromDefinitions((await GET_Attributes("contact")).data.results);
+  } catch {
+    contactFields.value = [];
+  }
+}
+
 function open(next, contact = null) {
   Object.assign(draft, valuesOf(contact));
+  attributes.value = { ...(contact?.attributes || {}) };
+  attrErrors.value = {};
   mode.value = next;
   error.value = "";
   status.value = "";
@@ -186,6 +230,8 @@ function bodyOf(contact) {
   if (draft.is_primary !== before.is_primary)
     body.is_primary = draft.is_primary;
   if (body.legal_basis === "consent") body.consent_ref = draft.consent_ref;
+  const attrs = changedValues(contactFields.value, attributes.value, contact?.attributes || {});
+  if (Object.keys(attrs).length) body.attributes = attrs;
   if (!contact)
     return Object.fromEntries(
       Object.entries(body).filter(
@@ -206,6 +252,8 @@ function showError(err) {
 
 async function save(contact) {
   if (busy.value) return;
+  attrErrors.value = validateValues(contactFields.value, attributes.value);
+  if (Object.keys(attrErrors.value).length) return;
   const body = bodyOf(contact);
   if (contact && !Object.keys(body).length) return close();
   busy.value = true;
@@ -260,6 +308,8 @@ function remove(contact) {
 }
 
 onMounted(async () => {
+  loadContactFields();
+  if ((props.company.contacts || []).every(hasMailBlock)) return;
   const { data } = await GET_Suppressions();
   suppressed.value = new Set(data.results.map((row) => row.value));
 });
@@ -274,7 +324,14 @@ onMounted(async () => {
   flex-direction: column;
   min-width: 0;
 }
+/* the state and "Why no mail?" sit under the name: they stay on screen on a phone, where the table has no room for a column */
+.contacts__state {
+  margin-top: var(--space-1);
+}
+/* One line with an ellipsis (the full address in the title): a narrow card never breaks it letter by letter */
 .contacts__email {
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>

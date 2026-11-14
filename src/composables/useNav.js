@@ -6,6 +6,7 @@ import { useMuninStore } from "@/stores/munin";
 import { useAccessStore } from "@/stores/access";
 import { useQualityStore } from "@/stores/quality";
 import { useEnrichmentProfileStore } from "@/stores/enrichmentProfile";
+import { useApprovalsStore } from "@/stores/approvals";
 import { useIsDesktop } from "@/composables/useIsDesktop";
 import { t } from "@/i18n";
 
@@ -37,7 +38,7 @@ export const withAreas = (routes, router) =>
 // An entry with a `badge` key takes its number from `counts` (the Memory suggestions); 0 shows nothing.
 const withCount = (entry, counts) => (entry.badge ? { ...entry, count: counts?.[entry.badge] || 0 } : entry);
 
-// `{ [panelIdx]: entries[] }`; ctx = { qualityAvailable, isModuleEnabled, isDesktop, canRead, counts? }.
+// `{ [panelIdx]: entries[] }`; ctx = { qualityAvailable, isModuleEnabled, isModuleAtLeast?, isDesktop, canRead, counts? }.
 export function navTree(ctx, routes = buildNavRoutes()) {
   return Object.fromEntries(
     REGISTRY.map((panel) => [
@@ -47,10 +48,12 @@ export function navTree(ctx, routes = buildNavRoutes()) {
   );
 }
 
-// The numbers of the `badge` keys (a nav entry's, a RouteTabs tab's): the Memory suggestions waiting for the operator.
+// The numbers of the `badge` keys (a nav entry's, a RouteTabs tab's): the Memory suggestions waiting for the operator,
+// the drafts waiting for approval (Leads).
 export function useNavCounts() {
   const enrichmentProfile = useEnrichmentProfileStore();
-  return computed(() => ({ memorySuggestions: enrichmentProfile.pendingSuggestions }));
+  const approvals = useApprovalsStore();
+  return computed(() => ({ memorySuggestions: enrichmentProfile.pendingSuggestions, approvals: approvals.total }));
 }
 
 // `everyViewport`: the desktop entries on a phone too — where a page belongs does not change with the screen.
@@ -66,6 +69,7 @@ export function useNavTree({ everyViewport = false } = {}) {
       {
         qualityAvailable: quality.available,
         isModuleEnabled: munin.isModuleEnabled,
+        isModuleAtLeast: munin.isModuleAtLeast,
         isDesktop: everyViewport || isDesktop.value,
         canRead: access.can,
         counts: counts.value,
@@ -126,14 +130,17 @@ export function crumbParents(route, records) {
 // R3: panel → entry → crumbParent chain → current page; nothing on the panel's list itself (its entry or its root:
 // Stock's entry `/stock` redirects to the root `/stock/manage`) or outside a panel.
 // A panel whose root is the entry keeps both crumbs (Figma S6: "Pages / Lista treści / Product Showcase"), unless the
-// entry reads the same as the panel (Promo: "Promotions / Promotions / <rule>").
+// entry reads the same as the panel (Promo: "Promotions / Promotions / <rule>"). A crumbParent that is the entry's own
+// page is the entry crumb already ("Leads / Settings / Custom fields", never "… / Settings / Settings / …").
 export function buildCrumbs(route, { panel, entry, parents = [], title }) {
   if (!panel || route.path === panel.root || route.path === entry?.route) return [];
   const showEntry = entry && t(entry.labelKey) !== t(panel.labelKey);
   return [
     { label: t(panel.labelKey), to: panel.root },
     ...(showEntry ? [{ label: t(entry.labelKey), to: { path: entry.route, query: entry.query } }] : []),
-    ...parents.map(({ record, params }) => ({ label: t(record.meta.titleKey), to: { name: record.name, params } })),
+    ...parents
+      .filter(({ record }) => !(showEntry && record.path === entry.route))
+      .map(({ record, params }) => ({ label: t(record.meta.titleKey), to: { name: record.name, params } })),
     { label: title || t(route.meta?.titleKey) },
   ];
 }

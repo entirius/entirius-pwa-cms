@@ -1,80 +1,72 @@
 <template>
   <PageLayout data-testid="leads-stages">
     <template #header>
-      <PageHeader :title="$t('leads.stages.title')" :back="{ name: 'LeadsSettings' }" />
+      <PageHeader :title="$t('leads.stages.title')" :back="{ name: 'LeadsSettings' }">
+        <!-- one Save for renames and moves, as on Deal stages (N27) -->
+        <template #actions>
+          <StatusBadge v-if="dirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" data-testid="stages-unsaved" />
+          <ActionBar :actions="actions" />
+        </template>
+      </PageHeader>
     </template>
     <div class="flex-column gap-8">
       <p class="t-muted m-0" data-testid="stages-help">{{ $t("leads.stages.help") }}</p>
-      <draggable
-        :list="stages"
-        :disabled="readonly"
-        item-key="id"
-        handle=".stage__handle"
-        class="flex-column gap-3"
-        @end="saveOrder"
-      >
-        <template #item="{ element, index }">
-          <div class="stage" :data-stage="element.key" data-testid="stage-row">
-            <FontAwesomeIcon :icon="$icons.drag" class="stage__handle" />
-            <label>
-              <span class="visually-hidden">{{ $t("leads.stages.label") }}</span>
-              <BasicInput
-                v-model="element.label"
-                :maxlength="128"
-                data-testid="stage-label"
-                @on-focusout="rename(element)"
-                @on-key-down="rename(element)"
-              />
-            </label>
-            <span class="stage__tags">
-              <StatusBadge
-                tone="neutral"
-                size="sm"
-                :dot="false"
-                :label="`${element.key} · ${stageKindLabel(element.kind)}`"
-                :title="$t('leads.stages.key_help')"
-              />
-              <StatusBadge
-                v-if="rulesByStage[element.id]"
-                tone="info"
-                size="sm"
-                :dot="false"
-                :label="rulesLabel(rulesByStage[element.id])"
-                :title="rulesText(rulesByStage[element.id])"
-                data-testid="stage-rules"
-              />
-            </span>
-            <div class="stage__controls">
-              <IconButton mutates
-                icon="moveUp"
-                variant="outline"
-                :label="$t('leads.stages.up')"
-                :disabled="index === 0"
-                @click="shift(index, -1)"
-              />
-              <IconButton mutates
-                icon="moveDown"
-                variant="outline"
-                :label="$t('leads.stages.down')"
-                :disabled="index === stages.length - 1"
-                @click="shift(index, 1)"
-              />
-              <IconButton
-                icon="delete"
-                variant="danger"
-                :label="$t('leads.stages.delete')"
-                data-testid="stage-delete"
-                @click="askDelete(element)"
-              />
-            </div>
-            <p v-if="errors[element.id]" class="stage__error t-negative m-0" data-testid="stage-error">
-              {{ errors[element.id] }}
-            </p>
+      <!-- ordered by the arrows only, as Deal stages and Company types are -->
+      <div class="flex-column gap-3">
+        <div v-for="(element, index) in stages" :key="element.id" class="stage" :data-stage="element.key" data-testid="stage-row">
+          <label>
+            <span class="visually-hidden">{{ $t("leads.stages.label") }}</span>
+            <BasicInput v-model="element.label" :maxlength="128" data-testid="stage-label" />
+          </label>
+          <span class="stage__tags">
+            <StatusBadge
+              tone="neutral"
+              size="sm"
+              :dot="false"
+              :label="`${element.key} · ${stageKindLabel(element.kind)}`"
+              :title="$t('leads.stages.key_help')"
+            />
+            <StatusBadge
+              v-if="rulesByStage[element.id]"
+              tone="info"
+              size="sm"
+              :dot="false"
+              :label="rulesLabel(rulesByStage[element.id])"
+              :title="rulesText(rulesByStage[element.id])"
+              data-testid="stage-rules"
+            />
+          </span>
+          <div class="stage__controls">
+            <IconButton mutates
+              icon="moveUp"
+              variant="outline"
+              :label="$t('leads.stages.up')"
+              :disabled="index === 0"
+              @click="shift(index, -1)"
+            />
+            <IconButton mutates
+              icon="moveDown"
+              variant="outline"
+              :label="$t('leads.stages.down')"
+              :disabled="index === stages.length - 1"
+              @click="shift(index, 1)"
+            />
+            <IconButton
+              mutates
+              icon="delete"
+              variant="danger"
+              :label="$t('leads.stages.delete')"
+              data-testid="stage-delete"
+              @click="askDelete(element)"
+            />
           </div>
-        </template>
-      </draggable>
-      <form class="flex ai-st flex-wrap gap-5" data-testid="stage-add" @submit.prevent="add">
-        <FormField :label="$t('leads.stages.key')" hint-level="important" :hint="$t('leads.stages.key_help')" required>
+          <p v-if="errors[element.id]" class="stage__error t-negative m-0" data-testid="stage-error">
+            {{ errors[element.id] }}
+          </p>
+        </div>
+      </div>
+      <form v-if="!readonly" class="flex ai-st flex-wrap gap-5" data-testid="stage-add" @submit.prevent="add">
+        <FormField :label="$t('leads.stages.key')" hint-level="important" :hint="$t('leads.stages.key_help')" required :error="errors.key || ''">
           <BasicInput v-model="draft.key" :maxlength="64" data-testid="stage-new-key" />
         </FormField>
         <FormField
@@ -85,7 +77,7 @@
         >
           <BasicInput v-model="draft.label" :maxlength="128" data-testid="stage-new-label" />
         </FormField>
-        <BasicButton class="stage__submit" variant="primary" type="submit" data-testid="stage-save">
+        <BasicButton class="stage__submit" type="submit" mutates data-testid="stage-save">
           {{ $t("leads.stages.add") }}
         </BasicButton>
       </form>
@@ -108,17 +100,19 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from "vue";
-import draggable from "vuedraggable";
+import { computed, onMounted, reactive, ref } from "vue";
 import { t } from "@/i18n";
 import { DELETE_Stage, GET_Companies, GET_Rules, GET_Stages, PATCH_Stage, POST_Stage } from "@/api/leads/api";
+import { apiFieldErrors, missingFields } from "@/utils/leadsForm";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { useNotifyStore } from "@/stores/notify";
 import { usePageReadonly } from "@/composables/useReadonly";
 import { stageKindLabel } from "@/utils/leadsLabels";
 import { pluralKey } from "@/utils/plural";
+import { saveAction } from "./saveAction";
 
-// Stages admin: order by drag or up/down (PATCH `order` per moved stage), rename inline, delete with the 409 inline (L-18).
+// Stages admin: order by up/down and rename inline, both kept until the header's Save (PATCH the changed labels,
+// then `order` per moved stage); delete with the 409 inline (L-18).
 const ORDER_STEP = 10;
 const KEY_PATTERN = /^[-a-zA-Z0-9_]+$/;
 const notify = useNotifyStore();
@@ -128,11 +122,21 @@ const errors = reactive({});
 const draft = reactive({ key: "", label: "" });
 const confirming = ref(null); // { stage, message } while the delete sheet is open
 const rulesByStage = ref({});
-let savedLabels = {}; // id → the label the server holds: a blur without an edit sends nothing
+const savedLabels = ref({}); // id → the label the server holds
+const saving = ref(false);
+const renamed = () => stages.value.filter((stage) => stage.label !== savedLabels.value[stage.id]);
+const savedOrder = ref([]); // the ids in the order loaded: a gap in `order` (after a delete) is no move
+const moved = () => stages.value.map((stage) => stage.id).join() !== savedOrder.value.join();
+const dirty = computed(() => renamed().length > 0 || moved());
+const actions = computed(() => [saveAction({ dirty: dirty.value, saving: saving.value, testid: "stages-save", onClick: saveAll })]);
 
+// A reload (after an add, a delete or the order) keeps the renames not saved yet.
 async function load() {
+  const edits = Object.fromEntries(renamed().map((stage) => [stage.id, stage.label]));
   stages.value = (await GET_Stages()).data.results;
-  savedLabels = Object.fromEntries(stages.value.map((stage) => [stage.id, stage.label]));
+  savedLabels.value = Object.fromEntries(stages.value.map((stage) => [stage.id, stage.label]));
+  savedOrder.value = stages.value.map((stage) => stage.id);
+  stages.value.forEach((stage) => stage.id in edits && (stage.label = edits[stage.id]));
 }
 
 // The rules the Board badges, shown here too (the stages payload carries none).
@@ -183,19 +187,25 @@ async function saveOrder() {
 function shift(index, delta) {
   const [stage] = stages.value.splice(index, 1);
   stages.value.splice(index + delta, 0, stage);
-  return saveOrder();
 }
 
-// The label field commits on blur and Enter, as the native change did: only a changed label is sent. It counts as
-// saved while the PATCH runs (Enter then blur sends once) and is forgotten on a refusal, so blur or Enter retries —
-// unless a newer label was committed meanwhile: that one stays.
+// The changed labels first (a refusal stays on its row with what was typed), then the order — which reads the stages
+// again. Saved labels are remembered at once, so a refusal elsewhere does not send them twice.
+async function saveAll() {
+  saving.value = true;
+  try {
+    const results = await Promise.all(renamed().map((stage) => rename(stage)));
+    if (results.every(Boolean) && moved()) await saveOrder();
+  } finally {
+    saving.value = false;
+  }
+}
+
 async function rename(stage) {
-  const previous = savedLabels[stage.id];
   const sent = stage.label;
-  if (sent === previous) return;
-  savedLabels[stage.id] = sent;
-  if (await attempt(stage.id, () => PATCH_Stage(stage.id, { label: sent }))) return;
-  if (savedLabels[stage.id] === sent) savedLabels[stage.id] = previous;
+  const saved = await attempt(stage.id, () => PATCH_Stage(stage.id, { label: sent }));
+  if (saved) savedLabels.value = { ...savedLabels.value, [stage.id]: sent };
+  return saved;
 }
 
 async function remove(stage) {
@@ -203,21 +213,27 @@ async function remove(stage) {
   if (await attempt(stage.id, () => DELETE_Stage(stage.id))) await load();
 }
 
+// T7 (walk 4): an empty or malformed field is named on it before the request; a field error of the API stands on its
+// field in words, any other refusal under the form.
+function checkNew() {
+  ["add", "key", "label"].forEach((key) => delete errors[key]);
+  const missing = missingFields(draft, ["key", "label"]);
+  if (!missing.key && !KEY_PATTERN.test(draft.key)) missing.key = t("leads.stages.key_invalid");
+  Object.assign(errors, missing);
+  return !Object.keys(missing).length;
+}
+
 async function add() {
-  delete errors.add;
-  delete errors.label;
-  if (!KEY_PATTERN.test(draft.key)) {
-    errors.add = t("leads.stages.key_invalid");
-    return;
-  }
-  if (!draft.label.trim()) {
-    errors.label = t("leads.stages.label_required");
-    return;
-  }
+  if (!checkNew()) return;
   const order = Math.max(-ORDER_STEP, ...stages.value.map((stage) => stage.order)) + ORDER_STEP;
-  if (await attempt("add", () => POST_Stage({ key: draft.key, label: draft.label, order }))) {
+  try {
+    await POST_Stage({ key: draft.key, label: draft.label, order });
     Object.assign(draft, { key: "", label: "" });
     await load();
+  } catch (err) {
+    const fields = apiFieldErrors(err, ["key", "label"]);
+    Object.assign(errors, fields);
+    if (!Object.keys(fields).length) errors.add = extractApiMessage(err, t("leads.review.error"));
   }
 }
 
@@ -230,12 +246,9 @@ onMounted(() => Promise.all([load(), loadRules().catch(() => {})]));
 /* A grid, not a flex row: the controls line up down the list whatever the key tag is long. */
 .stage {
   display: grid;
-  grid-template-columns: auto minmax(8rem, 1fr) minmax(0, 20rem) auto;
+  grid-template-columns: minmax(8rem, 1fr) minmax(0, 20rem) auto;
   align-items: center;
   gap: var(--space-5);
-}
-.stage__handle {
-  cursor: grab;
 }
 .stage__tags {
   display: flex;
@@ -252,15 +265,11 @@ onMounted(() => Promise.all([load(), loadRules().catch(() => {})]));
 .stage__error {
   grid-column: 1 / -1;
 }
-/* Below tablet (as in LeadTypes): name beside the handle, then the tags, then the controls, right-aligned */
+/* Below tablet (as in LeadTypes): the name, then the tags, then the controls, right-aligned */
 @include max-tablet {
   .stage {
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
     row-gap: var(--space-2);
-  }
-  .stage__tags,
-  .stage__controls {
-    grid-column: 2;
   }
   .stage__tags {
     flex-wrap: wrap;

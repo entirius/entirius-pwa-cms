@@ -10,7 +10,7 @@
         @click="visible ? close() : open()"
       >
         <FontAwesomeIcon :icon="ICONS.calendar" class="basic-date-picker__icon" aria-hidden="true" />
-        <span :class="{ 't-muted': !current }">{{ current || $t("routes.set_new") }}</span>
+        <span :class="{ 't-muted': !current }">{{ shown || $t("common.pick_date") }}</span>
       </button>
       <div v-show="visible" ref="wrapperEl" class="picker-wrapper bg-inherit bg-base" :style="fixedStyle">
         <!-- flatpickr's element: its inline calendar lands right after it, inside the wrapper -->
@@ -35,7 +35,8 @@ const DEFAULT_CONFIG = {
 
 <script setup>
 // Date or date range (docs/ui-components.md § P3 inputs): an input-looking trigger with the calendar icon opens an
-// inline flatpickr below it. `v-model` (the flatpickr date string), `config` (flatpickr options; a single date by default, `mode: "range"` for a range),
+// inline flatpickr below it. `v-model` (the flatpickr date string), `config` (flatpickr options merged over the defaults — inline, wrapped, a single date; `mode: "range"` for a range;
+// its `locale` extends the UI language's),
 // `disabled`; inside a FormField the trigger takes the contract's id, label and state. The flatpickr instance lives only
 // while the calendar is open (a table of pickers carries one calendar, not one per cell). `fixed`: the calendar is placed
 // against the viewport, so a scrolling parent (a wide table) does not clip it; it opens upward when there is no room
@@ -45,12 +46,13 @@ import flatpickr from "flatpickr";
 import { Polish } from "flatpickr/dist/l10n/pl.js";
 import { english } from "flatpickr/dist/l10n/default.js";
 import { getLang } from "@/i18n";
+import { formatDay } from "@/utils/format";
 import { ICONS } from "@/boots/Icons/icons";
 import { useControlAttrs } from "@/boots/FormField/useControlAttrs";
 
 const props = defineProps({
   modelValue: { type: String, default: undefined },
-  config: { type: Object, default: () => DEFAULT_CONFIG },
+  config: { type: Object, default: () => ({}) },
   disabled: { type: Boolean, default: false },
   fixed: { type: Boolean, default: false },
 });
@@ -63,6 +65,10 @@ const triggerEl = ref(null);
 const wrapperEl = ref(null);
 const fixedStyle = ref(null);
 const current = computed(() => props.modelValue ?? "");
+// The trigger reads as people read dates (UI rules § Values): every ISO day of the value in the UI locale ("14.10.2026
+// – 13.11.2026", a time stays as it is); the model keeps flatpickr's string. The day is read as local midnight.
+const ISO_DAY = /\b(\d{4}-\d{2}-\d{2})\b/g;
+const shown = computed(() => current.value.replace(ISO_DAY, (day) => formatDay(`${day}T00:00`) || day));
 let instance = null;
 
 function onChange(dates, dateString) {
@@ -71,8 +77,12 @@ function onChange(dates, dateString) {
 
 async function open() {
   visible.value = true;
-  const locale = getLang() === "PL" ? Polish : english;
-  instance = flatpickr(pickerEl.value, { ...props.config, defaultDate: current.value, locale, onChange });
+  // the week starts on Monday in every language (flatpickr's English starts on Sunday)
+  const language = { ...(getLang() === "PL" ? Polish : english), firstDayOfWeek: 1 };
+  const locale = props.config.locale ? { ...language, ...props.config.locale } : language;
+  const config = { ...DEFAULT_CONFIG, ...props.config, defaultDate: current.value, locale, onChange };
+  instance = flatpickr(pickerEl.value, config);
+  window.addEventListener("keydown", onEscape, { capture: true });
   if (!props.fixed) return;
   await nextTick();
   place();
@@ -85,8 +95,18 @@ function close() {
   visible.value = false;
   instance?.destroy();
   instance = null;
+  window.removeEventListener("keydown", onEscape, { capture: true });
   window.removeEventListener("scroll", place, { capture: true });
   window.removeEventListener("resize", place);
+}
+
+// Escape with the calendar open closes the calendar and nothing else (a dialog around it stays, with its edits), wherever
+// the focus is — the window hears it first; focus goes back to the trigger. Closed, the key goes on (the dialog closes).
+function onEscape(event) {
+  if (event.key !== "Escape" || !visible.value) return;
+  event.stopPropagation();
+  close();
+  triggerEl.value?.focus();
 }
 
 // Below the trigger, or above it when the viewport has no room below and does above; never past the right edge (a

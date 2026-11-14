@@ -1,5 +1,5 @@
 <template>
-  <div class="flex ai-ct jc-fe wrap gap-3" data-testid="company-actions">
+  <div class="company-actions flex ai-ct jc-fe wrap gap-3" data-testid="company-actions">
     <router-link
       v-if="company.customer_uid && hasAccounts"
       class="company-actions__customer t-accent"
@@ -14,7 +14,18 @@
       :label="$t('leads.company.known_customer')"
       data-testid="company-known-customer"
     />
-    <ActionBar :actions="actions" />
+    <!-- leads >= 0.5.0: the more menu (every write but the mail) · Write mail, the one primary -->
+    <ActionBar v-if="crm">
+      <BasicMenu v-if="!readonly && menuItems.length" :items="menuItems" :label="$t('leads.company.more')" placement="bottom-end" @select="onMenu">
+        <template #trigger>
+          <IconButton icon="more" variant="outline" :label="$t('leads.company.more')" data-testid="company-more" />
+        </template>
+      </BasicMenu>
+      <BasicButton v-if="canCompose" variant="primary" mutates data-testid="company-compose" @click="emit('compose')">
+        {{ $t("leads.company.write_mail") }}
+      </BasicButton>
+    </ActionBar>
+    <ActionBar v-else :actions="actions" />
     <ConfirmDialog
       :open="confirming"
       tone="danger"
@@ -56,11 +67,13 @@ import { GET_Templates } from "@/api/communicator/api";
 import { GET_LatestAudit, POST_AuditRerun } from "@/api/siteintel/api";
 import AiToolboxHint from "@/components/ConfigHealth/AiToolboxHint.vue";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { usePageReadonly } from "@/composables/useReadonly";
 import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
+import { outboundOn } from "@/utils/leadsOutbound";
 
 const props = defineProps({ company: { type: Object, required: true } });
-const emit = defineEmits(["changed"]);
+const emit = defineEmits(["changed", "compose"]);
 const munin = useMuninStore();
 const notify = useNotifyStore();
 const communicating = ref(false);
@@ -72,6 +85,21 @@ const communicateError = ref("");
 const sending = ref(false);
 
 const hasAccounts = computed(() => munin.isModuleInstalled("accounts"));
+const readonly = usePageReadonly();
+// Leads CRM (ux/screens/company-card.md): the hand-written mail needs leads and communicator 0.5.0.
+const crm = computed(() => outboundOn(munin, "leads"));
+const hasMail = computed(() => munin.isModuleEnabled("communicator"));
+const canCompose = computed(() => hasMail.value && outboundOn(munin, "communicator") && !props.company.do_not_contact);
+const MENU_ACTIONS = { communicate: () => openCommunicate(), reaudit: () => reaudit(), customer: () => createCustomer(), dnc: () => (confirming.value = true) };
+const menuItems = computed(() =>
+  [
+    hasMail.value && !props.company.do_not_contact && { key: "communicate", label: t("leads.company.communicate"), testid: "company-communicate" },
+    { key: "reaudit", label: t("leads.company.reaudit"), testid: "company-reaudit" },
+    canCreateCustomer.value && { key: "customer", label: t("leads.company.create_customer"), testid: "company-create-customer" },
+    !props.company.do_not_contact && { key: "dnc", label: t("leads.company.mark_dnc"), danger: true, testid: "company-dnc" },
+  ].filter(Boolean)
+);
+const onMenu = (item) => MENU_ACTIONS[item.key]();
 
 // R5: secondary · danger · the one primary („Napisz”) rightmost; ActionBar orders them by role.
 const actions = computed(() =>
@@ -163,6 +191,7 @@ async function communicate() {
     await POST_Communicate(props.company.id, { template_key: templateKey.value, contact_id: contactId.value });
     notify.spawnNotification({ msg: t("leads.communicate.done") });
     communicating.value = false;
+    emit("changed");
   } catch (err) {
     communicateError.value = extractApiMessage(err, t("leads.review.error"));
   } finally {
@@ -198,12 +227,24 @@ function createCustomer() {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import "@/assets/scss/utils/media-query";
+
 /* C-43: the customer link reads at body size and keeps a 32 px target. */
 .company-actions__customer {
   display: inline-flex;
   align-items: center;
   min-height: 32px;
   text-decoration: underline;
+}
+/* A phone reads the header from the left: the customer link takes its own line there, never alone at the right edge */
+@include max-tablet {
+  .company-actions {
+    justify-content: flex-start;
+  }
+  .company-actions__customer {
+    flex-basis: 100%;
+    min-height: 44px;
+  }
 }
 </style>

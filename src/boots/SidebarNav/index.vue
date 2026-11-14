@@ -93,14 +93,15 @@ function toggleGroup(idx) {
 watch(panelIdx, (idx) => idx && open.add(idx), { immediate: true });
 
 // A deep link or a reload lands with the sidebar at its top: the current entry scrolls into view (a panel low in the
-// list would leave the operator's place and its sibling pages off-screen).
+// list would leave the operator's place and its sibling pages off-screen). A page of no entry (the not-found page of
+// a panel) brings its panel's group into view instead.
 const scroller = ref(null);
 watch(
-  () => entry.value?.route,
+  () => [entry.value?.route, panelIdx.value],
   async () => {
     await nextTick();
     const box = scroller.value;
-    const item = box?.querySelector("[aria-current]");
+    const item = box?.querySelector("[aria-current]") || box?.querySelector(".sidebar-nav-item--active");
     if (!item) return;
     // Centred in the sidebar's own scroll box (scrollIntoView would move the page too): its siblings show around it.
     const offset = item.getBoundingClientRect().top - box.getBoundingClientRect().top;

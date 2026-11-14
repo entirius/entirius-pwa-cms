@@ -17,3 +17,6 @@ export function splitQuote(text = "") {
   if (start > 0 && /:\s*$/.test(lines[start - 1])) start -= 1;
   return { own: lines.slice(0, start).join("\n").trimEnd(), quoted: lines.slice(start).join("\n") };
 }
+
+// Who a thread writes to, in words: the name, else the address.
+export const contactOf = (thread) => thread?.recipient_name || thread?.recipient_email || "";

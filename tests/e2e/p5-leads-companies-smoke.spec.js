@@ -109,7 +109,7 @@ test.describe('P5 Leads companies (desktop)', () => {
     await expect(page.getByTestId('stage-row').first()).toBeVisible();
     await expect(page.getByRole('button', { name: either((t) => t.common.back) }).first()).toBeVisible();
 
-    await openPage(page, '/leads/settings/lead-types');
+    await openPage(page, '/leads/settings/company-types');
     await expect(h1(page)).toHaveText(either((t) => t.leads.lead_types.title));
     await expect(page.getByTestId('lead-type-row').first()).toBeVisible();
     await expect(page.getByTestId('lead-type-save')).toBeVisible();

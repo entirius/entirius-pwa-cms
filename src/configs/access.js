@@ -58,6 +58,15 @@ export const panels = [
     areas: [AREAS.CHECKOUT_ORDERS],
   },
   {
+    name: "Stock alerts",
+    idx: "stockAlerts",
+    icon: "hourglass-half",
+    root: "/stock-alerts",
+    labelKey: "panels.stock_alerts",
+    descriptionKey: "panels.stock_alerts_desc",
+    areas: [AREAS.STOCK_ALERTS_SUBSCRIPTIONS],
+  },
+  {
     name: "Agreements",
     idx: "agreements",
     icon: "file-contract",
@@ -151,8 +160,8 @@ export const panels = [
     name: "Leads",
     idx: "leads",
     icon: "inbox",
-    root: "/leads/inbox",
-    // the Inbox needs django-communicator; a leads-only backend opens the company list (phone-usable)
+    // Today (Leads CRM): the day's work; a user who cannot read it lands on the first readable entry
+    root: "/leads/today",
     fallback: "/leads/companies",
     labelKey: "panels.leads",
     descriptionKey: "panels.leads_desc",
@@ -160,6 +169,7 @@ export const panels = [
       AREAS.LEADS_COMPANIES,
       AREAS.LEADS_SETTINGS,
       AREAS.LEADS_GDPR,
+      AREAS.TODO_TASKS,
       AREAS.COMMUNICATOR_REVIEW,
       AREAS.COMMUNICATOR_CONTENT,
       AREAS.COMMUNICATOR_CONVERSATIONS,

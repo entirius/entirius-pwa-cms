@@ -73,7 +73,8 @@ of each row element, the hooks a page object finds a row by)
 
 Column options (JSDoc in the component): `key`, `label`, `sortable`, `align`, `width` (a grid track; a px width
 never drops below the header or an untruncated cell, and on a phone shrinks to that content), `truncate` (one line, ellipsis, `title` from `title(row)`, else
-the value, or a slot cell's rendered text; on for cells without a slot; a truncated `fr` column is at least
+the value, or a slot cell's rendered text; on for cells without a slot and not `max-content` — a truncated
+`max-content` column would shrink to its header; a truncated `fr` column is at least
 max(120 px, its header)), `numeric` (right, tabular figures, no wrap), `actions` (right-aligned buttons,
 `max-content` track), `priority` (2 hidden at `max-tablet` ≤ 768 px, 3 below 1024 px). A status (badge) column never
 truncates: `width: "max-content"`. An empty value renders "—".
@@ -168,7 +169,9 @@ and one meaning per glyph (unit test). A new meaning adds its glyph to `fa-icons
   the hit area grows to 40 × 40 around the box, the box keeps its size. `md` matches the text button, not Figma's
   32 px (KD23).
 - **`ActionBar`** — page and dialog actions in R5 order: `actions` = `[{ key, label, role, onClick, icon?,
-  disabled?, loading?, expanded?, form?, mutates?, testid? }]` (`expanded` = `aria-expanded` of a button that shows a section;
+  disabled?, loading?, expanded?, pressed?, form?, mutates?, title?, testid? }]` (`title` = why a disabled button is disabled, e.g.
+  a settings page's Save "Nothing to save"; `expanded` = `aria-expanded` of a button that shows a section;
+  `pressed` = `aria-pressed` of a text button that is a toggle, drawn with the `surface-hover` fill;
   `form` = the id of a form the header button submits from outside it — native checks, the form's submit handler,
   and Enter in a field presses it), `role` `utility` (an IconButton, `icon` required) · `secondary` · `danger` ·
   `primary` (one at most, a second warns in dev); extra controls go into the default slot, already in order.
@@ -181,7 +184,7 @@ and one meaning per glyph (unit test). A new meaning adds its glyph to `fa-icons
   `{ icon, label, handler, testid? }`: an important action with a visible label left of the FAB (R7). `open`
   starts with the speed-dial open.
 - **`BulkActionBar`** — `actions[].variant` is a BasicButton variant (`secondary` without one); an action with
-  `options` is a BasicSelect action picker.
+  `options` is a BasicSelect action picker; `actions[].testid` lands on its button.
 - Codemod `scripts/codemods/p3-actions.mjs` (sweeps 17/18): colour classes → `variant`, `text` → slot,
   `isDisabled` → `disabled`, labelled buttons drop `icon`, icon-only → IconButton, `buttonClass` → `variant`;
   it flags the dark toggles, one-off colours, colours in `:class` and icon-only buttons it cannot name.
@@ -274,7 +277,8 @@ Catalogue: `#overlays` (`#basic-modal`, `#confirm-dialog`, `#secret-reveal`, `#s
   „Usuń: <label>” that emits `remove`, `to` makes the label a `router-link` to the entity (accent text).
 - **`BasicTabs`** — `options` `[{ label, value, count?, testid?, disabled? }]` + `v-model` (unchanged); a `tablist` with one
   Tab stop (the active tab, else the first enabled one — never a disabled tab), ←/→ (wrapping), Home and End select and
-  focus a tab, skipping disabled ones (a disabled tab takes no click either); active = accent text + 2 px accent underline.
+  focus a tab, skipping disabled ones (a disabled tab takes no click either); active = accent text + 2 px accent underline. `wrap`
+  breaks a row wider than its box onto a second line instead of scrolling it (the company card: every tab in sight).
   Tab `i` is `id="<idPrefix>-tab-<value>"` with `aria-controls="<idPrefix>-panel-<value>"`: the call site renders the
   panel as `<div role="tabpanel" :id="…-panel-<value>" :aria-labelledby="…-tab-<value>">`. Empty `options` render
   nothing. An option's `testid` lands on its tab.
@@ -428,10 +432,15 @@ Catalogue: `#selects` (`#basic-select`, `#entity-search-picker`, `#channel-multi
 - **`BasicSwitch`** — replaces `Switcher`: `v-model`, `label`, `hint` + `hintLevel` (the field-hint mark), `disabled`; a
   `role="switch"` button with `aria-checked`, styles scoped to it.
 - **`BasicDatePicker`** — an input-looking trigger with the `calendar` icon opens an inline flatpickr; `v-model` (the
-  flatpickr date string), `config` (a single date by default, `mode: "range"` for a range), `disabled`; the instance
+  flatpickr date string), `config` (merged over the defaults — inline, wrapped, a single date; `mode: "range"` for a
+  range; its `locale` extends the UI language's — so a screen never repeats `inline` / `wrap`), `disabled`; the trigger
+  shows every ISO day of the value in the UI locale ("Pick a date" when empty), the model keeps the string; the instance
   lives only while the calendar is open. `fixed` places the calendar against the viewport (upward when there is no
-  room below), so a scrolling parent such as a wide table does not clip it. Its label is the FormField's. The trigger's click reaches the document, so other
-  popovers close; a click inside the open calendar never closes it.
+  room below), so a scrolling parent such as a wide table does not clip it — use it for a picker at the bottom of a card
+  or in a dialog. Its label is the FormField's. The trigger's click reaches the document, so other
+  popovers close; a click inside the open calendar never closes it. Escape with the calendar open closes the calendar
+  only (a dialog around it stays, with its edits) and returns focus to the trigger; the week starts on Monday in every
+  language.
 - **`SegmentedControl`** — contract id and `disabled`, named by the FormField label, `aria-pressed` on the active
   option; an option's own `disabled` takes just that option out. **`ColorInput`** — `disabled`, the text field reads the contract, the swatch is the native picker itself
   (named by the FormField label, else „Wybierz kolor”).

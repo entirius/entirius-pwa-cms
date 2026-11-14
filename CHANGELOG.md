@@ -4,6 +4,125 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- Leads panel: a possible opt-out can be marked "Not an opt-out" beside Confirm opt-out (django-communicator
+  `dismiss-optout`, no confirm); the conversation, the card's contacts and History reload, and the reply loses its
+  opt-out mark. The Next line of a possible opt-out reads "nothing is sent until you confirm the opt-out or mark it as
+  not one".
+- Leads panel, deal archive (django-leads with deal archiving): a won or lost deal is archived from its card's more
+  menu and restored from the archived card (read-only, one Restore); the Deals list shows the archived deals behind its own
+  "Archived" button (a toggle kept in the address, `?archived=1`), the status filter stays Open / Won / Lost. The board
+  and the company card list no archived deal; History reads "Deal archived" and "Deal restored". An older backend
+  shows no Archive on the card.
+- `ActionBar`: an action's `pressed` makes its text button a toggle (`aria-pressed`, the `surface-hover` fill).
+- Leads panel, deals (django-leads 0.5.0): Deals (nav entry, also in the phone bar) lists the deals with search, owner
+  chips, status, stage and expected-close filters and a stage select on every row; at a desk a board shows one column
+  per deal stage with its count and totals per currency and moves deals by drag and drop. A lost stage always asks
+  the reason first. The deal card shows the values, contact, owner, custom fields, tasks and history, with Mark won,
+  Mark lost, Reopen and delete. The company card gains a Deals tab and "Open deal"; Settings gains Deal stages
+  (open, won, lost). A bell alert about a deal opens its card.
+- Leads panel, CRM screens (django-leads 0.5.0; tasks with django-todo): Today is the panel root — the caller's
+  tasks by chip (Due now, Upcoming, No date, Done) and owner, the drafts and replies waiting, Add task and Mark done
+  with an outcome. Companies is a full list page (filters, owner chips, custom-field columns, sort and page in the URL,
+  bulk "Assign owner"; Board and Import are its page actions). The company card is one card on a phone and a desk:
+  Details (owner, origin, custom fields), Score with Score now, a Tasks tab (add, log a call, mark done, edit,
+  cancel), Write mail (a hand-written mail; the gate's refusal is shown) and History (the mail thread and the
+  company's events). Settings gains Custom fields (company, contact, deal), Scoring and Rules (conditions); Reports
+  shows the funnel as tables. New access area `todo.tasks`.
+- Leads panel, outbound screens (django-communicator / django-leads 0.5.0; an older backend keeps today's panel):
+  Approvals (desktop nav entry with a badge of waiting drafts) lists the drafts of every channel oldest first with
+  their problem, approves or rejects them in bulk (a reason for a rejection, 100 ids per call, refused rows stay
+  selected with their reason) and keeps a log; Settings → Mailboxes (one per salesperson plus a default, write-only
+  passwords, Test login, Pause / Resume with a reason, daily cap and warm-up), Sending health (rates per mailbox over
+  24 h / 7 d, the automatic-pause policy, the pause log), Automatic moves (the stage per event and, per reply type,
+  the sequence, the alert and the review flag), Reply classification (AI profile) and Do not contact (reach, source,
+  add, remove, check an address). The Settings hub groups its sections (Sales process · Automation · Sending).
+- Leads panel: a reply shows its type (and "Needs review", the return date, the confidence and what happens next)
+  in the Inbox row and the conversation; Review says why a draft cannot go out before Send and the last reply's type;
+  a contact gets "Why no mail?"; Import can start the automation on new companies; a sequence can be turned off and
+  one can start automatically.
+- Emails panel: the "Order confirmation" and "Order canceled" templates (`checkout-order-confirmation`,
+  `checkout-order-canceled`, django-email 4.4.0), each field with a hint. Their edit page shows a preview of the
+  saved wording next to the form (under it on a phone): sample order variants, desktop and phone width, the subject
+  and a "Text version" toggle. The e-mail renders in a sandboxed frame; while the form has unsaved changes a note
+  says to save to refresh it.
+- Order page: an "E-mails" section lists the order's e-mails (kind, status, recipient, language, attempts, sent
+  time, the last error of a failed one, the other orders a shared confirmation covers) with "Send again" behind a
+  confirmation; an order without a confirmation gets "Send confirmation" in the header (django-checkout 10.2.0).
+  Both need write on `checkout.orders` and an e-mail address on the order. The delivery card shows the pickup
+  point.
+
+### Changed
+
+- Leads panel: the Deals list always shows the "Archived" button, also over an empty list. The button that leaves a
+  dialog with an action of its own reads "Cancel" (Log call, task dialogs, Open deal, the lost reason, Write mail,
+  Check an address); "Close" stays on dialogs with nothing to do. Confirm opt-out is hidden for a read-only role.
+- Leads panel, the owner's decisions after the fourth walk: every mail bubble says "From <address>" (the sender of a
+  reply, the mailbox our mail leaves from; also beside the recipient in Review; an older communicator shows no line);
+  Log call asks only for the Outcome; Do not contact's "Add to the list" offers Reach (This channel / All channels,
+  sent as `scope`; an older communicator that refuses the field gets the entry without it); the company card lists
+  every earlier conversation from the start, each opening in place, so it shows as many conversations as its Inbox row
+  counts.
+- Leads panel, acceptance fixes of the fourth walk: a reply's "Next:" line says what happens to the mail — no more
+  mail after a confirmed opt-out, nothing sent until a possible opt-out is decided, the sequence stopped, resuming on
+  a date, or paused until resumed; Review confirms Skip and Send with one line above the next draft (no toast, no
+  full-screen panel, the next draft opens at once) and counts its queue in the Inbox's order; Approvals puts a bulk
+  refusal in the Problem cell, says Skip's consequence and reads the age as today / 1 day / 3 days; the forms of the
+  Leads settings name an empty required field before the request and show an API field error on its field in words;
+  deleting a deal stage says up front how many deals stand in it; Templates says why there is no Add; smaller
+  wording and layout fixes (Today's Done chip, the Inbox's empty pane, Why no mail?, the company Overview, a
+  conversation without a company, Polish "wiadomość"). `MobileFilterPanel` gives a select's floating label room.
+- Leads panel, acceptance fixes of the third walk: Skip names the action that leaves a draft unsent (Review and
+  Approvals) and a skipped or withdrawn draft is one closed line in the conversation; every bulk action says how many
+  rows it changed and did not, refused rows keep their reason and their tick; a recipient who may not be mailed and a
+  refused server certificate read in words; one not-found page for every unknown address, inside the shell of its
+  panel, and Company types at `/leads/settings/company-types` (the old address redirects); a confirmed opt-out
+  reloads the company card; one phrase per date of a pause; History in one language; a waiting mail's badge reads
+  Scheduled; row switches read Active / Off; the date picker's Escape closes only the calendar and its week starts on
+  Monday; Today's rows open their company on a phone; smaller fixes on Inbox, Contacts, Stages, Rules, Deals,
+  Mailboxes and Sending health.
+- Leads panel, acceptance fixes of the second walk: a company card and a conversation take the full width below 1440 px
+  and the Inbox column keeps its chip; a contact's mail badge, Today's replies that need review, Reply, the
+  hand-written tag, the rule runs and the import report read the new leads and communicator fields; the deal board
+  takes every drop (also after a closed reason dialog), a card moves by "Move to…"; every date picker opens its
+  calendar inside the viewport; one Save in the header on every Leads settings page, greyed until something changed;
+  Review goes on to the next draft in the Inbox order and says what happened to a draft that left the queue; the words
+  Conversation, Company type and Later; tasks stacked on a phone; Sending health, Templates, Mailboxes, the read-only
+  notice and the select's clear button fixed.
+- Leads panel, acceptance fixes for desk work and administration: Test login says each result in words with what
+  to do next; the pause log names the person ("Automatic" for an automatic pause); a rule's last runs show the
+  company by name and the result in words; Reports opens with the Funnel and shows dates in the UI language; Import
+  takes an owner, lists the custom-field columns and reports the ignored columns and the companies the automation
+  started for; Sending health flags every rate over its limit and gives the thresholds a unit; Deal stages has one
+  Save; every Settings section is read-only for a role without the write area; the hub says what each section changes;
+  Approvals keeps its bulk bar in sight above the pager; Today's drafts counter and a draft opened from Approvals lead
+  back to Approvals; one word for a company and the
+  board throughout.
+- Leads panel, acceptance fixes for a salesperson's day: History reads every event in the interface language (stage
+  moves in the channel's stage names, reply types in words) and refreshes after a mail, a call or a task; an inbound
+  reply has Reply (quoted, "Re:" subject, the sender as To); Confirm opt-out asks first; message and thread states are
+  badges; a hand-written mail is never labelled Follow-up. Tasks can be edited and cancelled with a reason from Today,
+  the Tasks tab and the task title; a task from Today keeps its company; Log call explains Outcome and Note; Today
+  keeps its chip in the URL. Approvals names the company (a link to its card) and the channel, shows the template in
+  full and asks before approving; toasts say what happened. The company card keeps every tab in sight, labels its
+  stage and lead-type selects, goes back where the person came from and shows each contact's state (Can be mailed,
+  Blocked, No e-mail); "N replies need review" opens only those replies. The deal board fits six stages at 1280 px,
+  an empty column takes a drop and says so, every move toasts; the Deals list says "Stage" once and the value once;
+  Delete deal comes after Mark lost. One date format across the Leads screens; "Refresh site audit" replaces
+  "Re-audit".
+- Boots: BasicTabs `wrap` breaks a long tab row onto a second line instead of scrolling it.
+- Boots: a disabled primary button and a disabled select look locked; the date picker shows its value in the UI
+  locale; a `max-content` table column fits its values;
+  breadcrumbs never repeat a level.
+- Leads → Settings → Send settings: with communicator 0.5.0 the suppression list moved to Do not contact.
+- Order page: the item table's column labels are translated.
+- Stock alerts panel (django-stock-alerts, Munin module `stock_alerts`, area `stock_alerts.subscriptions`): Demand
+  lists the variants customers wait for — waiting requests, the oldest one, the stock now and the requests notified
+  in 30 days — and a row opens Requests filtered by its SKU. Requests shows the addresses with search (exact address
+  or SKU), a status filter, a removable SKU chip, Cancel request on waiting rows (hidden in read-only mode) and
+  Download CSV of the current filter.
+
 ## [3.7.0] (2026-11-11)
 
 ### Changed
@@ -30,6 +149,9 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- Leads panel: a card title no longer sits on the content under it — every titled card of the Leads views (Settings,
+  Reports, Sending health, Scoring, mailbox, deal and company cards, …) keeps 16 px between the title and its content,
+  with no doubled margins; the `BasicCard` boot is unchanged.
 - Deleting a route in the "Routes" window failed with a server error: the request went to an address without the
   closing slash, which the API refuses for DELETE and PUT. Every contentdb request built by `_METHOD_content` now ends
   in a slash (before the query string), which also covers deleting an attribute value, editing and deleting a

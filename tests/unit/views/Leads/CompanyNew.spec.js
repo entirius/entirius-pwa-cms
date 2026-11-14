@@ -3,7 +3,8 @@ import { mount, flushPromises } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 
 const push = vi.hoisted(() => vi.fn());
-vi.mock("vue-router", () => ({ useRouter: () => ({ push }) }));
+const replace = vi.hoisted(() => vi.fn());
+vi.mock("vue-router", () => ({ useRouter: () => ({ push, replace }) }));
 const api = vi.hoisted(() => ({
   GET_LeadTypes: vi.fn(() =>
     Promise.resolve({ data: { results: [{ code: "RETAILER", label: "Retailer", is_active: true }, { code: "OLD", label: "Old", is_active: false }] } })
@@ -49,7 +50,7 @@ describe("Leads — add one lead", () => {
     await submit(wrapper);
     expect(api.POST_Company).toHaveBeenCalledWith({ domain: "https://new-shop.test", lead_type: "RETAILER" });
     expect(api.POST_Contact).toHaveBeenCalledWith({ company_id: 200, email: "anna@new-shop.test", first_name: "Anna", legal_basis: "legitimate_interest" });
-    expect(push).toHaveBeenCalledWith({ name: "LeadsThread", params: { id: 200 } });
+    expect(replace).toHaveBeenCalledWith({ name: "LeadsThread", params: { id: 200 } });
   });
 
   it("a company without a contact skips the contact create", async () => {
@@ -58,7 +59,7 @@ describe("Leads — add one lead", () => {
     await fill(wrapper, { domain: "new-shop.test" });
     await submit(wrapper);
     expect(api.POST_Contact).not.toHaveBeenCalled();
-    expect(push).toHaveBeenCalledWith({ name: "LeadsThread", params: { id: 200 } });
+    expect(replace).toHaveBeenCalledWith({ name: "LeadsThread", params: { id: 200 } });
   });
 
   it("a domain already in Leads says so with a link to that company, never a toast", async () => {
@@ -71,7 +72,7 @@ describe("Leads — add one lead", () => {
     const exists = wrapper.get('[data-testid="add-lead-exists"]');
     expect(exists.text()).toContain("Example Shop 6");
     expect(JSON.parse(exists.get("a").attributes("data-to"))).toEqual({ name: "LeadsThread", params: { id: 104 } });
-    expect(push).not.toHaveBeenCalled();
+    expect(replace).not.toHaveBeenCalled();
   });
 
   it("a field error shows under its field", async () => {
@@ -91,12 +92,12 @@ describe("Leads — add one lead", () => {
     await submit(wrapper);
     expect(wrapper.get('[data-testid="add-lead-company-saved"]').text()).toContain("New Shop");
     expect(fieldError(wrapper, "leads.contacts.email")).toBe("Enter a valid email");
-    expect(push).not.toHaveBeenCalled();
+    expect(replace).not.toHaveBeenCalled();
     await fill(wrapper, { email: "anna@new-shop.test" });
     await submit(wrapper);
     expect(api.POST_Company).toHaveBeenCalledTimes(1);
     expect(api.POST_Contact).toHaveBeenLastCalledWith({ company_id: 200, email: "anna@new-shop.test" });
-    expect(push).toHaveBeenCalledWith({ name: "LeadsThread", params: { id: 200 } });
+    expect(replace).toHaveBeenCalledWith({ name: "LeadsThread", params: { id: 200 } });
   });
 
   // Plan 53: Save is the PageHeader's one primary — disabled until a domain is typed, the same save as the form's.
@@ -108,7 +109,7 @@ describe("Leads — add one lead", () => {
     expect(wrapper.get('[data-testid="add-lead-save"]').attributes("disabled")).toBe("false");
     await wrapper.get('[data-testid="add-lead-save"]').trigger("click");
     await flushPromises();
-    expect(push).toHaveBeenCalledWith({ name: "LeadsThread", params: { id: 200 } });
+    expect(replace).toHaveBeenCalledWith({ name: "LeadsThread", params: { id: 200 } });
   });
 
   it("Enter in a field saves once a domain is typed, never before", async () => {

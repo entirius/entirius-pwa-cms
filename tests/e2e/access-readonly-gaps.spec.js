@@ -96,7 +96,7 @@ test.describe('Access read-only gaps (desktop)', () => {
   test('viewer: lead type switches and labels, stage labels and both drag lists are disabled', async ({ page }) => {
     await login(page, ...USERS.viewer);
 
-    await openPage(page, '/leads/settings/lead-types');
+    await openPage(page, '/leads/settings/company-types');
     await expect(page.locator('[data-testid="readonly-notice"]')).toBeVisible();
     const switches = page.getByRole('switch');
     await expect(switches.first()).toBeVisible();

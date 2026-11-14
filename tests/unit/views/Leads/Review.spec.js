@@ -6,7 +6,7 @@ import { useConfigHealthStore } from "@/stores/configHealth";
 import { useLeadsReviewStore } from "@/stores/leadsReview";
 import { applyPolicy, channelTimeZone } from "@/utils/leadsTime";
 
-const draft = { id: 5, subject: "Audit", body_text: "Hello", thread: { subject_ref: "leads.Company:153", recipient_email: "anna@example-shop-1.test" }, render_context: { company_name: "Example Shop 1", hooks: [] } };
+const draft = { id: 5, status: "review_required", subject: "Audit", body_text: "Hello", thread: { subject_ref: "leads.Company:153", recipient_email: "anna@example-shop-1.test" }, render_context: { company_name: "Example Shop 1", hooks: [] } };
 const api = vi.hoisted(() => ({
   GET_ReviewList: vi.fn(),
   GET_ReviewMessage: vi.fn(),
@@ -17,9 +17,13 @@ const api = vi.hoisted(() => ({
   POST_ReviewRewrite: vi.fn(),
   POST_ReviewEdit: vi.fn(),
   GET_WaitingMessages: vi.fn(),
+  GET_Approvals: vi.fn(),
+  GET_Replies: vi.fn(),
+  GET_Conversations: vi.fn(),
+  GET_Thread: vi.fn(),
 }));
 vi.mock("@/api/communicator/api", () => api);
-const munin = vi.hoisted(() => ({ isModuleEnabled: () => true }));
+const munin = vi.hoisted(() => ({ isModuleEnabled: () => true, isModuleAtLeast: () => false }));
 vi.mock("@/stores/munin", () => ({ useMuninStore: () => munin }));
 const spawnNotification = vi.fn();
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification }) }));
@@ -74,6 +78,7 @@ const mountReview = async () => {
         BasicTextarea,
         BasicModal,
         IntelCard: true,
+        EmptyState: { props: ["title"], template: "<div><slot /></div>" },
         RouterLink: { template: "<a><slot /></a>" },
       },
     },
@@ -85,18 +90,21 @@ const mountReview = async () => {
 describe("Leads Review", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    munin.isModuleAtLeast = () => false;
     setActivePinia(createPinia());
     api.GET_ReviewMessage.mockResolvedValue(draft);
     api.GET_ReviewList.mockResolvedValue({ data: { results: [{ id: 5 }] } });
+    api.GET_Conversations.mockResolvedValue({ data: { results: [] } });
     api.GET_ReviewNext.mockRejectedValue({ response: { status: 404 } });
     api.GET_WaitingMessages.mockResolvedValue([]);
   });
   afterEach(() => vi.useRealTimers());
 
   // FIX-17 item 5: the confirmation stays readable (>= 4 s), it is not gone before the eye reaches it.
-  // FIX-17a item 2: it confirms the slot the send run will use — never a time that has already passed.
-  // FIX-17b item 13: that slot is the waiting list's `next_slot`, the one the Inbox reads, not `scheduled_at`.
-  it("after Send the screen confirms the send state for 4 s before it moves on", async () => {
+  // FIX-17b item 13: the slot is the waiting list's `next_slot`, the one the Inbox reads, not `scheduled_at`.
+  // T2/T4 (walk 4): no full-screen panel — the next draft opens at once, the line stands above it (or above the empty
+  // state when the queue is empty) for 4 s, in a status region.
+  it("after Send the next draft opens at once with one line above it for 4 s", async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-09-21T06:00:00Z"));
     channelTimeZone.value = "UTC";
@@ -106,15 +114,29 @@ describe("Leads Review", () => {
     await wrapper.get('[data-testid="review-send"]').trigger("click");
     await flushPromises();
     expect(api.POST_ReviewAccept).toHaveBeenCalledWith(5);
-    expect(wrapper.get('[data-testid="review-scheduled"]').text()).toBe("Accepted — goes out at 08:07");
-    vi.advanceTimersByTime(3900);
-    await flushPromises();
-    expect(api.GET_ReviewNext).not.toHaveBeenCalled();
-    expect(wrapper.find('[data-testid="review-scheduled"]').exists()).toBe(true);
-    vi.advanceTimersByTime(100);
-    await flushPromises();
     expect(api.GET_ReviewNext).toHaveBeenCalled();
-    expect(replace).toHaveBeenCalledWith({ name: "LeadsInbox" });
+    const line = wrapper.get('[data-testid="review-confirmation"]');
+    expect(line.attributes("role")).toBe("status");
+    expect(line.text()).toBe("Accepted — goes out at 08:07");
+    expect(wrapper.find('[data-testid="review-empty"]').exists()).toBe(true);
+    expect(replace).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(4000);
+    await flushPromises();
+    expect(wrapper.get('[data-testid="review-confirmation"]').text()).toBe("");
+  });
+
+  it("after Send in an open window the line says the mail goes out within minutes", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-09-21T06:00:00Z"));
+    api.POST_ReviewAccept.mockReturnValue(ok({ id: 5, status: "approved" }));
+    api.GET_WaitingMessages.mockResolvedValue([{ id: 5, next_slot: "2026-09-21T06:00:00Z" }]);
+    api.GET_ReviewNext.mockResolvedValue({ data: { id: 6 } });
+    const wrapper = await mountReview();
+    await wrapper.get('[data-testid="review-send"]').trigger("click");
+    await flushPromises();
+    expect(wrapper.get('[data-testid="review-confirmation"]').text()).toBe("Accepted — goes out within minutes");
+    expect(replace).toHaveBeenCalledWith({ name: "LeadsReview", params: { id: 6 } });
+    expect(spawnNotification).not.toHaveBeenCalled();
   });
 
   // FIX-17c item 1: a closed window says so with its hours and the real next slot, in one sentence.
@@ -126,7 +148,7 @@ describe("Leads Review", () => {
     const wrapper = await mountReview();
     await wrapper.get('[data-testid="review-send"]').trigger("click");
     await flushPromises();
-    expect(wrapper.get('[data-testid="review-scheduled"]').text()).toBe(
+    expect(wrapper.get('[data-testid="review-confirmation"]').text()).toBe(
       "Accepted — waiting for the send window (08:00–17:00), next slot 17.09 08:00"
     );
     applyPolicy(null);
@@ -142,16 +164,38 @@ describe("Leads Review", () => {
     const wrapper = await mountReview();
     await wrapper.get('[data-testid="review-send"]').trigger("click");
     await flushPromises();
-    expect(wrapper.get('[data-testid="review-scheduled"]').text()).toBe("Accepted — could not check when it goes out");
+    expect(wrapper.get('[data-testid="review-confirmation"]').text()).toBe("Accepted — could not check when it goes out");
   });
 
-  it("Not now skips and moves to the next draft", async () => {
+  // Acceptance CM18: a draft opened from Approvals keeps Approvals as its way back, also on the next draft.
+  it("from Approvals: Approvals in the crumbs and as the way back", async () => {
+    route.current.query = { from: "approvals" };
+    api.POST_ReviewSkip.mockReturnValue(ok());
+    api.GET_ReviewNext.mockResolvedValueOnce({ data: { id: 6 } }).mockRejectedValueOnce({ httpStatus: 404 });
+    const wrapper = await mountReview();
+    const crumbs = wrapper.findComponent({ name: "PageHeader" }).props("crumbs");
+    expect(crumbs.map((crumb) => crumb.to?.name)).toEqual(["LeadsToday", "LeadsApprovals", undefined]);
+    await wrapper.get('[data-testid="review-skip"]').trigger("click");
+    await flushPromises();
+    expect(replace).toHaveBeenCalledWith({ name: "LeadsReview", params: { id: 6 }, query: { from: "approvals" } });
+    await wrapper.get('[data-testid="review-skip"]').trigger("click");
+    await flushPromises();
+    // the queue is empty: the confirmation stands above the empty state, whose way on is Approvals
+    await wrapper.get('[data-testid="review-empty-inbox"]').trigger("click");
+    expect(replace).toHaveBeenLastCalledWith({ name: "LeadsApprovals" });
+    delete route.current.query;
+  });
+
+  it("Skip is named for what it does, says the mail will not be sent and moves to the next draft", async () => {
     api.POST_ReviewSkip.mockReturnValue(ok());
     api.GET_ReviewNext.mockResolvedValue({ data: { id: 6 } });
     const wrapper = await mountReview();
+    expect(wrapper.get('[data-testid="review-skip"]').text()).toBe("leads.review.skip");
     await wrapper.get('[data-testid="review-skip"]').trigger("click");
     await flushPromises();
     expect(api.POST_ReviewSkip).toHaveBeenCalledWith(5);
+    expect(spawnNotification).not.toHaveBeenCalled();
+    expect(wrapper.get('[data-testid="review-confirmation"]').text()).toBe("Skipped — this mail will not be sent");
     expect(replace).toHaveBeenCalledWith({ name: "LeadsReview", params: { id: 6 } });
   });
 
@@ -372,23 +416,67 @@ describe("Leads Review", () => {
     vi.unstubAllGlobals();
   });
 
-  // FIX-17 item 7: a draft that is already scheduled or sent says so instead of a silent redirect.
-  it("an already handled draft says so before the Inbox takes over", async () => {
-    api.GET_ReviewMessage.mockResolvedValue(null);
-    await mountReview();
-    expect(spawnNotification).toHaveBeenCalledWith({
-      msg: "That draft is already scheduled or sent.",
-      type: "warning",
-    });
-    expect(replace).toHaveBeenCalledWith({ name: "LeadsInbox" });
+  // N9: the address of a draft that left the queue says what happened to it and offers the next one — no other draft
+  // opens under it unasked.
+  it.each([
+    [{ ...draft, status: "approved" }, "This draft no longer waits for review: Scheduled."],
+    [{ ...draft, status: "rejected" }, "This draft was skipped — this mail will not be sent."],
+    [null, "This draft no longer exists."],
+  ])("a draft that left the queue says what happened to it (%#)", async (found, text) => {
+    api.GET_ReviewMessage.mockResolvedValue(found);
+    api.GET_ReviewNext.mockResolvedValue({ data: { id: 6 } });
+    const wrapper = await mountReview();
+    expect(wrapper.get('[data-testid="review-handled"]').text()).toContain(text);
+    expect(wrapper.find('[data-testid="review-draft"]').exists()).toBe(false);
+    expect(replace).not.toHaveBeenCalled();
+    await wrapper.get('[data-testid="review-handled-next"]').trigger("click");
+    await flushPromises();
+    expect(replace).toHaveBeenCalledWith({ name: "LeadsReview", params: { id: 6 } });
+  });
+
+  // Code review: the sent draft is never on screen (nor under Send) while the next one loads; a late answer is dropped
+  it("shows no draft while the next one loads, and an older answer never replaces a newer one", async () => {
+    const wrapper = await mountReview();
+    let slow;
+    api.GET_ReviewMessage.mockReturnValueOnce(new Promise((resolve) => (slow = resolve))).mockResolvedValueOnce({ ...draft, id: 7, subject: "Seven" });
+    route.current.params.id = "6";
+    await flushPromises();
+    expect(wrapper.find('[data-testid="review-draft"]').exists()).toBe(false);
+    route.current.params.id = "7";
+    await flushPromises();
+    slow({ ...draft, id: 6, subject: "Six" });
+    await flushPromises();
+    expect(wrapper.get('[data-testid="review-subject"]').text()).toBe("Seven");
+    route.current.params.id = "5";
+  });
+
+  // N7: after an action the next draft is the one below in the Inbox order, not the service's oldest
+  it("after Skip the next draft is the one below in the Inbox order", async () => {
+    api.GET_ReviewList.mockResolvedValue({ data: { results: [{ id: 3 }, { id: 4 }, { id: 5 }] } }); // Inbox: 5, 4, 3
+    api.POST_ReviewSkip.mockReturnValue(ok());
+    const wrapper = await mountReview();
+    await wrapper.get('[data-testid="review-skip"]').trigger("click");
+    await flushPromises();
+    expect(replace).toHaveBeenCalledWith({ name: "LeadsReview", params: { id: 4 } });
+    expect(api.GET_ReviewNext).not.toHaveBeenCalled();
   });
 
   // FIX-17 item 4: after a send the next draft is visibly another one.
-  it("the draft header says where it sits in the review queue", async () => {
+  // k6 (walk 4): the number counts in the Inbox's order — its Drafts rows first (newest activity), then the drafts no
+  // row shows
+  it("the queue position counts in the Inbox's order", async () => {
+    api.GET_Conversations.mockResolvedValue({ data: { results: [{ id: 30, draft: { id: 5 } }, { id: 31, draft: { id: 4 } }] } });
     api.GET_ReviewList.mockResolvedValue({ data: { results: [{ id: 4 }, { id: 5 }, { id: 6 }] } });
     const wrapper = await mountReview();
+    expect(api.GET_Conversations).toHaveBeenCalledWith({ state: "draft", page_size: 100 });
+    expect(wrapper.get('[data-testid="review-position"]').text()).toContain('{"index":1,"count":3}');
+  });
+
+  it("the draft header says where it sits in the review queue", async () => {
+    api.GET_ReviewList.mockResolvedValue({ data: { results: [{ id: 4 }, { id: 6 }, { id: 5 }] } });
+    const wrapper = await mountReview();
     expect(api.GET_ReviewList).toHaveBeenCalledWith({ status: "review_required", page_size: 100 });
-    expect(wrapper.get('[data-testid="review-position"]').text()).toContain('{"index":2,"count":3}');
+    expect(wrapper.get('[data-testid="review-position"]').text()).toContain('{"index":1,"count":3}'); // the API lists oldest first, the Inbox newest first: 5 is the newest
   });
 
   it("the disabled Rewrite button renders disabled", async () => {
@@ -399,5 +487,52 @@ describe("Leads Review", () => {
     expect(submit.attributes("disabled")).toBeDefined();
     await submit.trigger("click");
     expect(api.POST_ReviewRewrite).not.toHaveBeenCalled();
+  });
+});
+
+// Plan 14 (communicator >= 0.5.0): a draft that cannot go out says why before Send; the thread's last reply type.
+describe("Leads Review — problem and last reply", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    setActivePinia(createPinia());
+    munin.isModuleAtLeast = () => true;
+    api.GET_ReviewMessage.mockResolvedValue({ ...draft, thread: { ...draft.thread, id: 9 } });
+    api.GET_ReviewList.mockResolvedValue({ data: { results: [{ id: 5 }] } });
+    api.GET_Conversations.mockResolvedValue({ data: { results: [] } });
+    api.GET_Replies.mockResolvedValue({ data: { results: [{ id: 1, intent: "not_now" }] } });
+    api.GET_Thread.mockResolvedValue({ data: { timeline: [] } });
+  });
+
+  // Plan 33: the draft names the mailbox it will leave from beside its recipient, as its bubble does in History.
+  it("the draft says which mailbox it leaves from beside the recipient; an older backend leaves the line out", async () => {
+    api.GET_Thread.mockResolvedValue({ data: { timeline: [{ message_id: 4, from_email: "old@agency.test" }, { message_id: 5, from_email: "sales@agency.test" }] } });
+    const wrapper = await mountReview();
+    expect(api.GET_Thread).toHaveBeenCalledWith(9);
+    expect(wrapper.get('[data-testid="review-from"]').text()).toContain("sales@agency.test");
+    expect(wrapper.get('[data-testid="review-to"]').text()).toContain("anna@example-shop-1.test");
+    api.GET_Thread.mockResolvedValue({ data: { timeline: [{ message_id: 5, from_email: "" }] } });
+    expect((await mountReview()).find('[data-testid="review-from"]').exists()).toBe(false);
+    api.GET_Thread.mockRejectedValue(new Error("down"));
+    expect((await mountReview()).find('[data-testid="review-from"]').exists()).toBe(false);
+  });
+
+  it("a blocked draft shows the problem and Send is disabled with the reason", async () => {
+    api.GET_Approvals.mockResolvedValue({ data: { results: [{ id: 5, blocker: "the mailbox anna@firma.test cannot send (paused)" }] } });
+    const wrapper = await mountReview();
+    expect(wrapper.get('[data-testid="review-problem"]').text()).toContain("leads.review.problem");
+    expect(wrapper.get('[data-testid="review-send"]').attributes("disabled")).toBeDefined();
+    expect(wrapper.get('[data-testid="review-last-reply"]').find('[data-testid="reply-type"]').exists()).toBe(true);
+    expect(api.GET_Replies).toHaveBeenCalledWith({ thread: 9 });
+  });
+
+  it("a draft that may go shows no problem line; an older backend asks nothing", async () => {
+    api.GET_Approvals.mockResolvedValue({ data: { results: [{ id: 5, blocker: null }] } });
+    const wrapper = await mountReview();
+    expect(wrapper.find('[data-testid="review-problem"]').exists()).toBe(false);
+    expect(wrapper.get('[data-testid="review-send"]').attributes("disabled")).toBeUndefined();
+    munin.isModuleAtLeast = () => false;
+    api.GET_Approvals.mockClear();
+    await mountReview();
+    expect(api.GET_Approvals).not.toHaveBeenCalled();
   });
 });

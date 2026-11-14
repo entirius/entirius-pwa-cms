@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 const mockIsPanelEnabled = vi.fn();
 const mockIsModuleEnabled = vi.fn();
+const mockIsModuleAtLeast = vi.fn();
 
 // django-access is not under test here: allow-all, as without the module.
 vi.mock("@/stores/access", () => ({
@@ -12,6 +13,7 @@ vi.mock("@/stores/munin", () => ({
     loaded: true,
     isPanelEnabled: mockIsPanelEnabled,
     isModuleEnabled: mockIsModuleEnabled,
+    isModuleAtLeast: mockIsModuleAtLeast,
     ensureLoaded: vi.fn(),
   }),
 }));
@@ -26,11 +28,12 @@ describe("Leads → Settings routing", () => {
     vi.clearAllMocks();
     mockIsPanelEnabled.mockReturnValue(true);
     mockIsModuleEnabled.mockReturnValue(true);
+    mockIsModuleAtLeast.mockReturnValue(true);
   });
 
   it("registers no Communicator panel", () => {
     expect(panels.find((p) => p.idx === "communicator")).toBeUndefined();
-    expect(panels.find((p) => p.idx === "leads")).toMatchObject({ root: "/leads/inbox" });
+    expect(panels.find((p) => p.idx === "leads")).toMatchObject({ root: "/leads/today" });
   });
 
   it("the settings hub and its sections resolve under /leads/settings", async () => {
@@ -54,6 +57,7 @@ describe("Leads → Settings routing", () => {
       ["/communicator/sequences", "/leads/settings/sequences"],
       ["/communicator/settings", "/leads/settings/sending"],
       ["/leads/stages", "/leads/settings/stages"],
+      ["/leads/settings/lead-types", "/leads/settings/company-types"],
     ]) {
       await router.push(path);
       expect(router.currentRoute.value.path).toBe(target);
@@ -65,5 +69,38 @@ describe("Leads → Settings routing", () => {
     mockIsModuleEnabled.mockImplementation((m) => m !== "communicator");
     await router.push("/leads/settings/sending");
     expect(router.currentRoute.value.name).not.toBe("CommunicatorSettings");
+  });
+
+  // Plan 14: the outbound screens need communicator / leads 0.5.0; an older backend never reaches them.
+  it("the outbound screens resolve on 0.5.0 and stay dormant on an older backend", async () => {
+    const screens = [
+      ["/leads/approvals", "LeadsApprovals"],
+      ["/leads/settings/mailboxes", "LeadsMailboxes"],
+      ["/leads/settings/mailboxes/new", "LeadsMailboxEdit"],
+      ["/leads/settings/sending-health", "LeadsSendingHealth"],
+      ["/leads/settings/do-not-contact", "LeadsDoNotContact"],
+      ["/leads/settings/reply-classification", "LeadsReplyClassification"],
+      ["/leads/settings/automatic-moves", "LeadsAutomaticMoves"],
+    ];
+    for (const [path, name] of screens) {
+      await router.push(path);
+      expect(router.currentRoute.value.name).toBe(name);
+    }
+    mockIsModuleAtLeast.mockReturnValue(false);
+    for (const [path, name] of screens) {
+      await router.push(path);
+      expect(router.currentRoute.value.name).not.toBe(name);
+    }
+    expect(mockIsModuleAtLeast).toHaveBeenCalledWith("communicator", "0.5.0");
+  });
+
+  // S5 (walk 3): an unknown address is the not-found page inside the shell of the panel its first segment names.
+  it("an unknown address resolves to the not-found page of its panel, outside a panel to none", async () => {
+    await router.push("/leads/no-such-page/7");
+    expect(router.currentRoute.value.name).toBe("NotFound");
+    expect(router.currentRoute.value.meta.panel).toBe("leads");
+    await router.push("/no-such-panel");
+    expect(router.currentRoute.value.name).toBe("NotFound");
+    expect(router.currentRoute.value.meta.panel).toBeNull();
   });
 });

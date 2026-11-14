@@ -81,6 +81,7 @@ import {
   faFolder,
   faFolderTree,
   faLayerGroup,
+  faHandshake,
   faTags,
   faLocationDot,
   faTruck,
@@ -91,6 +92,7 @@ import {
   faAt,
   faClockRotateLeft,
   faClock,
+  faHourglassHalf,
   faBuilding,
   faKey,
   faEyeSlash,
@@ -109,6 +111,10 @@ import {
   faCoins,
   faCartShopping,
   faCalendarDays,
+  faCalendarDay,
+  faChartLine,
+  faRankingStar,
+  faBolt,
   faBullseye,
   faSquareCheck,
   faWandMagicSparkles,
@@ -123,6 +129,8 @@ import {
   faFileWord,
   faFileImage,
   faFileVideo,
+  faBan,
+  faHeartPulse,
 } from "@fortawesome/free-solid-svg-icons";
 
 /* import font awesome icon component */
@@ -210,6 +218,7 @@ export default function registerFontAwesome(app) {
     faFolder,
     faFolderTree,
     faLayerGroup,
+    faHandshake,
     faTags,
     faLocationDot,
     faTruck,
@@ -220,6 +229,7 @@ export default function registerFontAwesome(app) {
     faAt,
     faClockRotateLeft,
     faClock,
+    faHourglassHalf,
     faBuilding,
     faKey,
     faEyeSlash,
@@ -238,6 +248,10 @@ export default function registerFontAwesome(app) {
     faCoins,
     faCartShopping,
     faCalendarDays,
+    faCalendarDay,
+    faChartLine,
+    faRankingStar,
+    faBolt,
     faBullseye,
     faSquareCheck,
     faWandMagicSparkles,
@@ -251,7 +265,9 @@ export default function registerFontAwesome(app) {
     faFilePdf,
     faFileWord,
     faFileImage,
-    faFileVideo
+    faFileVideo,
+    faBan,
+    faHeartPulse
   );
 
   /* add font awesome icon component */

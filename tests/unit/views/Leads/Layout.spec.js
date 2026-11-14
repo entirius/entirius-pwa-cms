@@ -3,13 +3,14 @@ import { mount } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 import { nextTick, reactive } from "vue";
 import { useLeadsReviewStore } from "@/stores/leadsReview";
+import { useLeadsThreadStore } from "@/stores/leadsThread";
 import SegmentedControl from "@/boots/SegmentedControl/index.vue";
 
 const route = vi.hoisted(() => ({ current: null }));
 const push = vi.hoisted(() => vi.fn());
 vi.mock("vue-router", () => ({ useRoute: () => route.current, useRouter: () => ({ push }) }));
 const modules = vi.hoisted(() => new Set());
-vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isModuleEnabled: (key) => modules.has(key) }) }));
+vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isModuleEnabled: (key) => modules.has(key), isModuleAtLeast: () => false }) }));
 
 const GET_Policy = vi.hoisted(() => vi.fn(() => Promise.resolve({ data: { timezone: "Europe/Warsaw" } })));
 vi.mock("@/api/communicator/api", () => ({ GET_Policy }));
@@ -67,6 +68,16 @@ describe("Leads layout", () => {
     expect(waiting.find('[data-testid="leads-detail-empty"]').exists()).toBe(false);
   });
 
+  // k5 (walk 4): on the Replies chip the empty pane asks for a reply, never a draft
+  it("the empty pane speaks of the chip the column shows", () => {
+    enable("leads", "communicator");
+    route.current.name = "LeadsInbox";
+    useLeadsReviewStore().setCount(2);
+    useLeadsThreadStore().inboxFilter = "replied";
+    const wrapper = mountLayout();
+    expect(wrapper.get('[data-testid="leads-detail-pick"]').text()).toBe("leads.inbox.pick_replied");
+  });
+
   it("leads + communicator: a draft or thread open renders both columns and marks the detail state", () => {
     enable("leads", "communicator", "notifications");
     route.current.name = "LeadsReview";
@@ -74,6 +85,17 @@ describe("Leads layout", () => {
     expect(wrapper.find('[data-testid="inbox"]').exists()).toBe(true);
     expect(wrapper.find('[data-testid="detail"]').exists()).toBe(true);
     expect(wrapper.classes()).toContain("leads--detail");
+  });
+
+  // N21: below 1440 px a company card and a conversation hide the column (CSS); a draft keeps it
+  it("a company card and a conversation are focus screens, a draft is not", () => {
+    enable("leads", "communicator");
+    for (const [name, focus] of [["LeadsThread", true], ["LeadsConversation", true], ["LeadsReview", false]]) {
+      route.current.name = name;
+      const wrapper = mountLayout();
+      expect(wrapper.classes().includes("leads--focus")).toBe(focus);
+      expect(wrapper.find('[data-testid="inbox"]').exists()).toBe(true); // mounted: its chip survives
+    }
   });
 
   it("leads-only: the company thread takes the whole width and no Inbox mounts", () => {

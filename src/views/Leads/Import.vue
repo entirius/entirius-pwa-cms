@@ -12,10 +12,13 @@
       <BasicCard :title="$t('leads.import.columns_title')" gap data-testid="import-columns">
         <ul class="import__list">
           <li v-for="key in COLUMN_KEYS" :key="key">{{ $t(`leads.import.${key}`) }}</li>
+          <li v-for="column in customColumns" :key="column.column" data-testid="import-custom-column">
+            {{ $t("leads.import.column_attr", column) }}
+          </li>
         </ul>
       </BasicCard>
       <BasicCard :title="$t('leads.import.after_title')" gap data-testid="import-after">
-        <p class="m-0">{{ $t("leads.import.after") }}</p>
+        <p class="m-0">{{ $t(outbound ? "leads.import.after_rules" : "leads.import.after") }}</p>
       </BasicCard>
       <div class="flex ai-ct flex-wrap gap-5">
         <!-- the native picker stays scriptable (a page object sets its files); the button opens it -->
@@ -31,22 +34,42 @@
         <BasicButton data-testid="import-choose" @click="fileInput.click()">{{ $t("leads.import.choose") }}</BasicButton>
         <span data-testid="import-file-name">{{ file?.name || $t("leads.import.no_file") }}</span>
       </div>
+      <!-- leads >= 0.5.0: the owner of the new companies (me by default); the automation starts on them only when
+           asked, the cost note stays visible -->
+      <FormField v-if="outbound" class="import__owner" :label="$t('leads.import.owner')" :hint="$t('leads.import.owner_hint')">
+        <BasicSelect v-model="ownerId" :options="owners" :placeholder="$t('leads.import.no_owner')" searchable clearable data-testid="import-owner" />
+      </FormField>
+      <div v-if="outbound" class="flex-column gap-2">
+        <BasicCheckbox v-model="runRules" aria-describedby="import-run-rules-note" data-testid="import-run-rules">
+          {{ $t("leads.import.run_rules") }}
+        </BasicCheckbox>
+        <p id="import-run-rules-note" class="t-secondary m-0" data-testid="import-run-rules-note">{{ $t("leads.import.run_rules_note") }}</p>
+      </div>
       <p v-if="error" class="t-negative m-0" data-testid="import-error">{{ error }}</p>
       <BasicCard v-if="batch" data-testid="import-report">
         <div class="flex-column gap-3">
-          <p class="m-0">{{ $t("leads.import.status") }}: <strong data-testid="import-status">{{ batch.status }}</strong></p>
+          <p class="flex ai-ct gap-2 m-0">
+            {{ $t("leads.import.status") }}:
+            <StatusBadge :tone="STATUS_TONES[batch.status]" :label="importStatusLabel(batch.status)" data-testid="import-status" />
+          </p>
           <p class="m-0" data-testid="import-counts">
             {{ $t("leads.import.counts", { created: batch.created_count, matched: batch.matched_count, skipped: batch.skipped_count }) }}
           </p>
-          <ul v-if="batch.report?.length" class="import__list">
-            <li v-for="entry in batch.report" :key="`${entry.row}-${entry.reason}`">
-              {{ $t("leads.import.row", { row: entry.row }) }}: {{ entry.reason }}
+          <p v-if="batch.ignored_columns?.length" class="m-0" data-testid="import-ignored">
+            {{ $t("leads.import.ignored", { list: batch.ignored_columns.join(", ") }) }}
+          </p>
+          <p v-if="batch.automation_started_count !== undefined && sentRunRules" class="m-0" data-testid="import-automation">
+            {{ $t("leads.import.automation_started", { count: batch.automation_started_count }) }}
+          </p>
+          <ul v-if="rowReasons.length" class="import__list" data-testid="import-rows">
+            <li v-for="entry in rowReasons" :key="`${entry.row}-${entry.reason}`">
+              {{ entry.row ? $t("leads.import.row", { row: entry.row }) : $t("leads.import.file") }}: {{ importReasonLabel(entry.reason) }}
             </li>
           </ul>
           <router-link
             v-if="batch.status === 'done'"
             class="t-accent"
-            :to="{ name: 'LeadsBoard' }"
+            :to="{ name: 'LeadsCompanies' }"
             data-testid="import-to-board"
           >
             {{ $t("leads.import.to_board") }}
@@ -58,15 +81,29 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { t } from "@/i18n";
-import { GET_Import, POST_Import } from "@/api/leads/api";
+import { GET_AssignableUsers, GET_Attributes, GET_Import, POST_Import } from "@/api/leads/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { useAccessStore } from "@/stores/access";
+import { useMuninStore } from "@/stores/munin";
+import { importReasonLabel, importStatusLabel } from "@/utils/leadsLabels";
+import { outboundOn } from "@/utils/leadsOutbound";
 
 // CSV upload: the batch runs on the leads queue; the screen polls it until done or failed.
 const POLL_MS = 2000;
+const outbound = computed(() => outboundOn(useMuninStore(), "leads"));
+const runRules = ref(false);
+const sentRunRules = ref(false);
+const ownerId = ref(useAccessStore().me?.user?.id ?? null);
+const owners = ref([]);
+const customColumns = ref([]);
 const COLUMN_KEYS = ["column_company", "column_domain", "column_contact", "column_legal_basis"];
+const ATTRIBUTE_PREFIXES = [
+  ["company", "attr."],
+  ["contact", "contact.attr."],
+];
 const SAMPLE_NAME = "leads-sample.csv";
 const SAMPLE_CSV = [
   "company_name,domain,first_name,last_name,email,legal_basis",
@@ -75,6 +112,7 @@ const SAMPLE_CSV = [
   "",
 ].join("\n");
 const FINISHED = ["done", "failed"];
+const STATUS_TONES = { pending: "neutral", running: "info", done: "positive", failed: "negative" };
 const router = useRouter();
 const fileInput = ref(null);
 const file = ref(null);
@@ -82,6 +120,8 @@ const batch = ref(null);
 const busy = ref(false);
 const error = ref("");
 let timer = null;
+// Ignored columns are one sentence above; an older backend also lists them as rows (`ignored_column:<name>`).
+const rowReasons = computed(() => (batch.value?.report || []).filter((entry) => !String(entry.reason).startsWith("ignored_column:")));
 
 // R5: the secondary ways in, then Upload — the one primary — rightmost.
 const actions = computed(() => [
@@ -136,17 +176,48 @@ async function upload() {
   error.value = "";
   busy.value = true;
   try {
-    batch.value = (await POST_Import(file.value)).data;
+    sentRunRules.value = outbound.value && runRules.value;
+    const extras = outbound.value ? [runRules.value, ownerId.value] : [];
+    batch.value = (await POST_Import(file.value, ...extras)).data;
   } catch (err) {
     return fail(err);
   }
   await poll();
 }
 
+// The custom-field columns a file may carry: `attr.<key>` for a company field, `contact.attr.<key>` for a contact one.
+async function loadColumns() {
+  const lists = await Promise.all(
+    ATTRIBUTE_PREFIXES.map(([entity, prefix]) =>
+      GET_Attributes(entity).then(({ data }) => (data.results || []).filter((field) => field.is_active !== false).map((field) => customColumn(prefix, field)))
+    )
+  );
+  customColumns.value = lists.flat();
+}
+
+const customColumn = (prefix, field) => ({ column: `${prefix}${field.key}`, label: field.label, kind: t(`leads.field_kind.${field.kind}`) });
+
+// Me by default only when I can own companies: otherwise the select would show nothing while an id is sent.
+async function loadOwners() {
+  owners.value = (await GET_AssignableUsers()).map((user) => ({ value: user.id, label: user.name || user.username }));
+  if (!owners.value.some((owner) => owner.value === ownerId.value)) ownerId.value = null;
+}
+
+onMounted(() => {
+  if (!outbound.value) return;
+  loadColumns().catch(() => (customColumns.value = []));
+  loadOwners().catch(() => {
+    owners.value = [];
+    ownerId.value = null;
+  });
+});
 onBeforeUnmount(() => clearTimeout(timer));
 </script>
 
 <style scoped>
+.import__owner {
+  max-width: 24rem;
+}
 .import__list {
   margin: 0;
   padding-left: var(--space-4);

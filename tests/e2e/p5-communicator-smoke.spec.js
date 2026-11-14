@@ -125,7 +125,7 @@ test.describe('P5 Communicator settings', () => {
     for (const section of ['policy', 'channel', 'footer', 'scheduled', 'suppressions']) {
       await expect(page.getByTestId(`settings-${section}`)).toBeVisible();
     }
-    await expect(page.getByTestId('policy-save')).toBeVisible();
+    await expect(page.getByTestId('settings-save')).toBeVisible();
     await expect(page.getByTestId('footer-preview')).toBeVisible();
 
     // The sidebar is open (300 px) and the row's Send now ends inside the viewport, unscrolled.

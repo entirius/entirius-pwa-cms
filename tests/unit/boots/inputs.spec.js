@@ -12,6 +12,7 @@ import BasicSwitch from "@/boots/BasicSwitch/index.vue";
 import SegmentedControl from "@/boots/SegmentedControl/index.vue";
 import ColorInput from "@/boots/ColorInput/index.vue";
 import BasicDatePicker from "@/boots/BasicDatePicker/index.vue";
+import { formatDay } from "@/utils/format";
 import BasicWysiwyg from "@/boots/BasicWysiwyg/index.vue";
 import { hintsOn } from "@/composables/fieldHints";
 import { setLang } from "@/i18n";
@@ -456,7 +457,18 @@ describe("BasicDatePicker", () => {
     const wrapper = mountPicker();
     setLang(lang);
     await wrapper.find("button").trigger("click");
-    expect(flatpickr.mock.calls.at(-1)[1].locale).toBe(locale);
+    expect(flatpickr.mock.calls.at(-1)[1].locale).toEqual({ ...locale, firstDayOfWeek: 1 });
+    wrapper.unmount();
+  });
+
+  // R2: a screen's config extends the defaults — a range still opens inline, wrapped, in the UI language
+  it("merges a given config over its defaults", async () => {
+    setLang("PL");
+    const wrapper = mountPicker({ config: { mode: "range", locale: { rangeSeparator: " – " } } });
+    await wrapper.find("button").trigger("click");
+    const config = flatpickr.mock.calls.at(-1)[1];
+    expect(config).toMatchObject({ mode: "range", inline: true, wrap: true });
+    expect(config.locale).toMatchObject({ ...Polish, rangeSeparator: " – " });
     wrapper.unmount();
   });
 
@@ -507,6 +519,34 @@ describe("BasicDatePicker", () => {
     expect(Object.keys(wrapper.emitted())).not.toContain("onChange");
   });
 
+  // P11 (acceptance walk 3): Escape closes the calendar only — a dialog around it keeps its edits — and the week starts
+  // on Monday in both languages.
+  it("Escape with the calendar open closes the calendar and stops there; closed, the key goes on", async () => {
+    const onDocument = vi.fn();
+    document.addEventListener("keydown", onDocument);
+    const wrapper = mount(BasicDatePicker, { global: GLOBAL, attachTo: document.body });
+    await wrapper.find("button").trigger("click");
+    await wrapper.find("button").trigger("keydown", { key: "Escape" });
+    expect(wrapper.find(".picker-wrapper").isVisible()).toBe(false);
+    expect(onDocument).not.toHaveBeenCalled();
+    // focus outside the picker (a click on the calendar's blank area leaves it on body): still the calendar only
+    await wrapper.find("button").trigger("click");
+    document.body.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    await nextTick();
+    expect(wrapper.find(".picker-wrapper").isVisible()).toBe(false);
+    expect(onDocument).not.toHaveBeenCalled();
+    await wrapper.find("button").trigger("keydown", { key: "Escape" });
+    expect(onDocument).toHaveBeenCalledTimes(1);
+    document.removeEventListener("keydown", onDocument);
+    wrapper.unmount();
+  });
+
+  it("starts the week on Monday in English and in Polish", async () => {
+    const wrapper = mountPicker();
+    await wrapper.find("button").trigger("click");
+    expect(flatpickr.mock.calls.at(-1)[1].locale.firstDayOfWeek).toBe(1);
+  });
+
   it("is named by its FormField label", () => {
     const wrapper = inField(BasicDatePicker, { label: "Data" });
     expect(wrapper.find("label").attributes("for")).toBe(wrapper.find("button").attributes("id"));
@@ -524,9 +564,14 @@ describe("BasicDatePicker", () => {
   });
 
   it("shows the value on an input-like trigger with the calendar icon", () => {
-    expect(mountPicker({ modelValue: "2026-09-01" }).find("button").text()).toBe("2026-09-01");
+    // Acceptance C4 (plan 22): never a raw ISO day — a day, a range and a time read in the UI locale
+    const day = formatDay("2026-09-01T00:00");
+    expect(day).not.toBe("2026-09-01");
+    expect(mountPicker({ modelValue: "2026-09-01" }).find("button").text()).toBe(day);
+    expect(mountPicker({ modelValue: "2026-09-01 – 2026-09-30" }).find("button").text()).toBe(`${day} – ${formatDay("2026-09-30T00:00")}`);
+    expect(mountPicker({ modelValue: "2026-09-01 14:30" }).find("button").text()).toBe(`${day} 14:30`);
     const empty = mountPicker();
-    expect(empty.find("button").text()).toBe("routes.set_new");
+    expect(empty.find("button").text()).toBe("common.pick_date");
     expect(iconOf(empty)).toBe(ICONS.calendar);
   });
 
