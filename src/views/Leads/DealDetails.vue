@@ -7,7 +7,8 @@
         </BasicButton>
         <BasicButton variant="secondary" mutates :loading="saving" data-testid="deal-details-save" @click="save">{{ $t("leads.company.save") }}</BasicButton>
       </ActionBar>
-      <BasicButton v-else mutates size="sm" data-testid="deal-details-edit" @click="edit">{{ $t("leads.company.edit") }}</BasicButton>
+      <!-- an archived deal is read-only until Restore -->
+      <BasicButton v-else-if="!deal.archived_at" mutates size="sm" data-testid="deal-details-edit" @click="edit">{{ $t("leads.company.edit") }}</BasicButton>
     </template>
     <div v-if="editing" class="flex-column gap-5">
       <DealForm :form="form" :contacts="contacts" :currencies="currencies" :errors="errors">

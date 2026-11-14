@@ -118,6 +118,8 @@ const EVENT_SENTENCES = {
   deal_lost: (d) => withDetail(t("leads.history.event_deal_lost", { title: d.title }), d.reason),
   deal_reopened: (d) => t("leads.history.event_deal_reopened", { title: d.title }),
   deal_deleted: (d) => t("leads.history.event_deal_deleted", { title: d.title }),
+  deal_archived: (d) => t("leads.history.event_deal_archived", { title: d.title }),
+  deal_restored: (d) => t("leads.history.event_deal_restored", { title: d.title }),
   owner_set: (d) => t("leads.history.event_owner", { name: d.owner_name }),
   owner_cleared: () => t("leads.history.event_owner_cleared"),
 };

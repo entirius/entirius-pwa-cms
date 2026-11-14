@@ -4787,7 +4787,9 @@
       "event_deal_lost": "Deal lost: {title}",
       "event_deal_reopened": "Deal reopened: {title}",
       "event_owner": "Owner: {name}",
-      "event_owner_cleared": "Owner cleared"
+      "event_owner_cleared": "Owner cleared",
+      "event_deal_archived": "Deal archived: {title}",
+      "event_deal_restored": "Deal restored: {title}"
     },
     "problem": {
       "legal_footer": "The mail has no legal footer — set the footer in Settings → Send settings",
@@ -5394,7 +5396,8 @@
       "board_desktop_only": "The board is for a larger screen; here are the deals as a list.",
       "move_to": "Move to…",
       "none_mine": "No open deals of yours",
-      "show_all_deals": "Show all deals"
+      "show_all_deals": "Show all deals",
+      "none_archived": "No archived deals"
     },
     "deal": {
       "title": "Deal",
@@ -5430,12 +5433,18 @@
       "per_year": "{value} / year",
       "reason_required": "Give the reason",
       "title_required": "Give the deal a title",
-      "company_required": "Pick a company"
+      "company_required": "Pick a company",
+      "archive": "Archive",
+      "restore": "Restore",
+      "archived": "Archived",
+      "archived_toast": "Deal archived",
+      "restored_toast": "Deal restored"
     },
     "deal_kind": {
       "open": "Open",
       "won": "Won",
-      "lost": "Lost"
+      "lost": "Lost",
+      "archived": "Archived"
     },
     "deal_stage_kind": {
       "open": "Open",

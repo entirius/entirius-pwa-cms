@@ -149,6 +149,11 @@ export const DELETE_Deal = (id) => leadsApi.delete(`${base()}/deals/${id}/`);
 export const POST_DealTransition = (id, stageKey, lostReason = "") =>
   leadsApi.post(`${base()}/deals/${id}/transition/`, { stage_key: stageKey, ...(lostReason ? { lost_reason: lostReason } : {}) });
 
+// Plan 27: a won or lost deal leaves the lists; 409 for an open deal. Restore brings it back; both return the deal.
+export const POST_DealArchive = (id) => leadsApi.post(`${base()}/deals/${id}/archive/`);
+
+export const POST_DealRestore = (id) => leadsApi.post(`${base()}/deals/${id}/restore/`);
+
 export const GET_DealActivities = (id) => leadsApi.get(`${base()}/deals/${id}/activities/`, { params: { page_size: 100 } });
 
 export const GET_CompanyDeals = (id) => leadsApi.get(`${base()}/companies/${id}/deals/`, { params: { page_size: 100 } });

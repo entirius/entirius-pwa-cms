@@ -92,6 +92,8 @@ describe("activityText of an activity", () => {
     expect(at("deal_lost", { title: "Shop", reason: "price" })).toBe("Deal lost: Shop — price");
     expect(at("deal_reopened", { title: "Shop" })).toBe("Deal reopened: Shop");
     expect(at("deal_deleted", { title: "Shop" })).toBe("Deal deleted: Shop");
+    expect(at("deal_archived", { title: "Shop" })).toBe("Deal archived: Shop");
+    expect(at("deal_restored", { title: "Shop" })).toBe("Deal restored: Shop");
     expect(at("owner_set", { owner_name: "Anna Kowalska" })).toBe("Owner: Anna Kowalska");
     expect(at("owner_cleared")).toBe("Owner cleared");
   });

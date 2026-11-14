@@ -13,7 +13,7 @@
       </PageHeader>
     </template>
     <template #toolbar>
-      <DealFilters :query="query" :stages="stages" @set="setFilter" />
+      <DealFilters :query="query" :stages="stages" :archivable="archivable" @set="setFilter" />
     </template>
 
     <p v-if="boardOnPhone" class="t-muted m-0" data-testid="deals-board-desktop-only">{{ $t("leads.deals.board_desktop_only") }}</p>
@@ -21,6 +21,7 @@
     <EmptyState v-else-if="stagesLoaded && !stages.length" icon="empty" size="md" :title="$t('leads.deals.no_stages')" data-testid="deals-no-stages">
       <router-link v-if="canSetUp" class="t-accent" :to="{ name: 'LeadsDealStages' }">{{ $t("leads.deal_stages.title") }}</router-link>
     </EmptyState>
+    <EmptyState v-else-if="!deals.length && archivedFilter" icon="empty" size="md" :title="$t('leads.deals.none_archived')" data-testid="deals-empty-archived" />
     <!-- Mine is empty while the channel has deals: say so and offer them all (N18) -->
     <EmptyState v-else-if="!deals.length && !filtered && othersExist" icon="empty" size="md" :title="$t('leads.deals.none_mine')" data-testid="deals-empty-mine">
       <BasicButton data-testid="deals-show-all" @click="setFilter({ owner: 'all' })">{{ $t("leads.deals.show_all_deals") }}</BasicButton>
@@ -86,7 +87,7 @@ import { formatDay } from "@/utils/format";
 import DealDialog from "./DealDialog.vue";
 import DealFilters from "./DealFilters.vue";
 import LostReasonDialog from "./LostReasonDialog.vue";
-import { DEFAULT_DEAL_KIND, canClose, dealKindTone, dealValue, oneOffText, recurringValueText, stageOptions } from "./deals";
+import { ARCHIVED_KIND, DEFAULT_DEAL_KIND, canClose, dealKindTone, dealValue, oneOffText, recurringValueText, stageOptions } from "./deals";
 import { useDealMove } from "./useDealMove";
 
 // Deals (ux/screens/deals.md): the list on every width — on a phone it is the screen (no drag and drop below
@@ -116,7 +117,11 @@ const page = computed(() => Number(query.value.page) || 1);
 const pages = computed(() => Math.max(1, Math.ceil(count.value / PAGE_SIZE)));
 // The defaults (Mine, Open) are no filter: a channel without a deal of mine shows the first-run empty state.
 const filtered = computed(() => Object.keys(route.query).some((key) => FILTER_KEYS.includes(key)) || query.value.owner !== "me" || query.value.kind !== DEFAULT_DEAL_KIND);
-const closedFilter = computed(() => ["won", "lost"].includes(query.value.kind));
+const archivedFilter = computed(() => query.value.kind === ARCHIVED_KIND);
+const closedFilter = computed(() => ["won", "lost", ARCHIVED_KIND].includes(query.value.kind));
+// An older backend sends no `archived_at`: no Archived option until a deal of the list shows the field.
+const archiveSeen = ref(false);
+const archivable = computed(() => archiveSeen.value || archivedFilter.value);
 // The board is a desk screen: a link that asks for it on a phone lands on the list and says so.
 const boardOnPhone = computed(() => !isDesktop.value && route.query.view === "board");
 const closable = computed(() => canClose(stages.value));
@@ -173,9 +178,14 @@ function sortBy({ key, direction }) {
   setFilter({ sort: field && direction ? `${direction === "desc" ? "-" : ""}${field}` : undefined });
 }
 
+const kindScope = (kind) => {
+  if (kind === ARCHIVED_KIND) return { archived: true };
+  return kind === "all" ? {} : { kind };
+};
+
 function params() {
   const { owner, kind, ...rest } = query.value;
-  const scope = { ...(owner === "all" ? {} : { owner }), ...(kind === "all" ? {} : { kind }) };
+  const scope = { ...(owner === "all" ? {} : { owner }), ...kindScope(kind) };
   return { ...rest, ...scope, sort: rest.sort || DEFAULT_SORT, page: page.value, page_size: PAGE_SIZE };
 }
 
@@ -192,6 +202,7 @@ async function load() {
     deals.value = data.results;
     count.value = data.count ?? data.results.length;
     othersExist.value = others;
+    archiveSeen.value ||= data.results.some((deal) => "archived_at" in deal);
   } catch (err) {
     notify.spawnNotification({ msg: extractApiMessage(err, t("leads.common.error")), type: "negative" });
   } finally {

@@ -4786,7 +4786,9 @@
       "event_deal_lost": "Transakcja przegrana: {title}",
       "event_deal_reopened": "Wznowiono transakcję: {title}",
       "event_owner": "Opiekun: {name}",
-      "event_owner_cleared": "Usunięto opiekuna"
+      "event_owner_cleared": "Usunięto opiekuna",
+      "event_deal_archived": "Transakcja zarchiwizowana: {title}",
+      "event_deal_restored": "Transakcja przywrócona: {title}"
     },
     "problem": {
       "legal_footer": "Wiadomość nie ma stopki prawnej — ustaw stopkę w Ustawieniach → Ustawienia wysyłki",
@@ -5393,7 +5395,8 @@
       "board_desktop_only": "Tablica jest na większy ekran; oto transakcje jako lista.",
       "move_to": "Przenieś do…",
       "none_mine": "Nie masz otwartych transakcji",
-      "show_all_deals": "Pokaż wszystkie transakcje"
+      "show_all_deals": "Pokaż wszystkie transakcje",
+      "none_archived": "Brak zarchiwizowanych transakcji"
     },
     "deal": {
       "title": "Transakcja",
@@ -5429,12 +5432,18 @@
       "per_year": "{value} / rok",
       "reason_required": "Podaj powód",
       "title_required": "Podaj tytuł transakcji",
-      "company_required": "Wybierz firmę"
+      "company_required": "Wybierz firmę",
+      "archive": "Archiwizuj",
+      "restore": "Przywróć",
+      "archived": "Zarchiwizowane",
+      "archived_toast": "Transakcja zarchiwizowana",
+      "restored_toast": "Transakcja przywrócona"
     },
     "deal_kind": {
       "open": "Otwarta",
       "won": "Wygrana",
-      "lost": "Przegrana"
+      "lost": "Przegrana",
+      "archived": "Zarchiwizowane"
     },
     "deal_stage_kind": {
       "open": "Otwarty",

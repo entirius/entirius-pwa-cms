@@ -138,6 +138,30 @@ describe("Leads → Deals list", () => {
     expect(byTestid(wrapper, "deal-row-stage").exists()).toBe(false);
   });
 
+  it("Archived asks the list with archived=true; its rows show Won or Lost as a badge", async () => {
+    route.query = { kind: "archived" };
+    leads.GET_Deals.mockResolvedValue({ data: { count: 1, results: [deal(1, { stage: STAGES[1], archived_at: "2026-11-14T10:00:00Z" })] } });
+    const wrapper = await mounted();
+    expect(leads.GET_Deals).toHaveBeenCalledWith({ owner: "me", archived: true, sort: "expected_close_date", page: 1, page_size: 20 });
+    expect(byTestid(wrapper, "deal-row-stage").exists()).toBe(false);
+    expect(byTestid(wrapper, "deal-row").text()).toContain("Won");
+  });
+
+  it("an empty Archived says there is no archived deal", async () => {
+    route.query = { kind: "archived" };
+    leads.GET_Deals.mockResolvedValue({ data: { count: 0, results: [] } });
+    const wrapper = await mounted();
+    expect(byTestid(wrapper, "deals-empty-archived").exists()).toBe(true);
+  });
+
+  it("the Archived option only once the backend sends archived_at (an older one does not)", async () => {
+    const older = await mounted();
+    expect(older.findComponent({ name: "DealFilters" }).props("archivable")).toBe(false);
+    leads.GET_Deals.mockResolvedValue({ data: { count: 1, results: [deal(1, { archived_at: null })] } });
+    const newer = await mounted();
+    expect(newer.findComponent({ name: "DealFilters" }).props("archivable")).toBe(true);
+  });
+
   it("read-only: the row stage select is disabled", async () => {
     const wrapper = await mounted({ write: false });
     expect(wrapper.findComponent('[data-testid="deal-row-stage"]').props("disabled")).toBe(true);

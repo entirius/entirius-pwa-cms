@@ -10,10 +10,13 @@ const leads = vi.hoisted(() => ({
   GET_DealActivities: vi.fn(),
   POST_DealTransition: vi.fn(),
   DELETE_Deal: vi.fn(),
+  POST_DealArchive: vi.fn(),
+  POST_DealRestore: vi.fn(),
 }));
+const notify = vi.hoisted(() => ({ spawnNotification: vi.fn() }));
 const router = vi.hoisted(() => ({ push: vi.fn(), replace: vi.fn() }));
 vi.mock("@/api/leads/api", () => leads);
-vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification: vi.fn() }) }));
+vi.mock("@/stores/notify", () => ({ useNotifyStore: () => notify }));
 vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isModuleInstalled: () => true }) }));
 vi.mock("@/stores/access", () => ({ useAccessStore: () => ({ can: () => true }) }));
 vi.mock("vue-router", async (original) => ({ ...(await original()), useRoute: () => ({ name: "LeadsDeal", params: { id: "7" }, query: {} }), useRouter: () => router }));
@@ -87,7 +90,62 @@ describe("Leads → Deal card", () => {
     expect(leads.POST_DealTransition).not.toHaveBeenCalled();
   });
 
-  it("a closed deal: Reopen to the first open stage only, its lost reason, no delete", async () => {
+  // Plan 28: archive a closed deal, restore an archived one.
+  it("a closed deal: the more menu holds Archive only; Archive turns the card into the archived one", async () => {
+    leads.GET_Deal.mockResolvedValue({ data: deal(STAGES[2], { archived_at: null }) });
+    leads.POST_DealArchive.mockResolvedValue({ data: deal(STAGES[2], { archived_at: "2026-11-14T10:00:00Z" }) });
+    const wrapper = await mounted();
+    expect(byTestid(wrapper, "deal-reopen").exists()).toBe(true);
+    const menu = wrapper.findComponent({ name: "BasicMenu" });
+    expect(menu.props("items").map((item) => item.key)).toEqual(["archive"]);
+    menu.vm.$emit("select", { key: "archive" });
+    await flushPromises();
+    expect(leads.POST_DealArchive).toHaveBeenCalledWith(7);
+    expect(notify.spawnNotification).toHaveBeenCalledWith({ msg: "Deal archived", type: "positive" });
+    expect(byTestid(wrapper, "deal-archived").exists()).toBe(true);
+    expect(byTestid(wrapper, "deal-restore").exists()).toBe(true);
+  });
+
+  it("an open deal of a backend that archives: no Archive, Delete deal as before", async () => {
+    leads.GET_Deal.mockResolvedValue({ data: deal(STAGES[1], { archived_at: null }) });
+    const wrapper = await mounted();
+    expect(wrapper.findComponent({ name: "BasicMenu" }).props("items").map((item) => item.key)).toEqual(["delete"]);
+  });
+
+  it("an archived deal: Won and Archived badges, only Restore, the stage and the details read-only", async () => {
+    leads.GET_Deal.mockResolvedValue({ data: deal(STAGES[2], { archived_at: "2026-11-14T10:00:00Z" }) });
+    leads.POST_DealRestore.mockResolvedValue({ data: deal(STAGES[2], { archived_at: null }) });
+    const wrapper = await mounted();
+    expect(byTestid(wrapper, "deal-kind").text()).toContain("Won");
+    ["deal-more", "deal-reopen", "deal-mark-won", "deal-mark-lost"].forEach((id) => expect(byTestid(wrapper, id).exists()).toBe(false));
+    expect(wrapper.findComponent('[data-testid="deal-move-stage"]').props("disabled")).toBe(true);
+    expect(byTestid(wrapper, "deal-history").exists()).toBe(true);
+    await byTestid(wrapper, "deal-restore").trigger("click");
+    await flushPromises();
+    expect(leads.POST_DealRestore).toHaveBeenCalledWith(7);
+    expect(byTestid(wrapper, "deal-archived").exists()).toBe(false);
+    expect(byTestid(wrapper, "deal-reopen").exists()).toBe(true);
+  });
+
+  it("a refused archive is said as the API's sentence", async () => {
+    leads.GET_Deal.mockResolvedValue({ data: deal(STAGES[3], { archived_at: null }) });
+    leads.POST_DealArchive.mockRejectedValue({ httpStatus: 409, response: { status: 409, data: { detail: "Only a won or lost deal can be archived" } } });
+    const wrapper = await mounted();
+    wrapper.findComponent({ name: "BasicMenu" }).vm.$emit("select", { key: "archive" });
+    await flushPromises();
+    expect(notify.spawnNotification).toHaveBeenCalledWith({ msg: "Only a won or lost deal can be archived", type: "negative" });
+  });
+
+  it("read-only: neither Archive nor Restore", async () => {
+    leads.GET_Deal.mockResolvedValue({ data: deal(STAGES[2], { archived_at: null }) });
+    const closed = await mounted({ write: false });
+    expect(byTestid(closed, "deal-more").exists()).toBe(false);
+    leads.GET_Deal.mockResolvedValue({ data: deal(STAGES[2], { archived_at: "2026-11-14T10:00:00Z" }) });
+    const archived = await mounted({ write: false });
+    expect(byTestid(archived, "deal-restore").exists()).toBe(false);
+  });
+
+  it("a closed deal: Reopen to the first open stage only, its lost reason, no delete; an older backend (no archived_at) no Archive", async () => {
     leads.GET_Deal.mockResolvedValue({ data: deal(STAGES[3], { lost_reason: "Too expensive" }) });
     const wrapper = await mounted();
     expect(byTestid(wrapper, "deal-lost-line").text()).toContain("Too expensive");

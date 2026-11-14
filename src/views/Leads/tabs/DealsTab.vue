@@ -58,7 +58,8 @@ const columns = computed(() => [
   { key: "stage", label: t("leads.deals.stage"), width: "max-content" },
   { key: "value", label: t("leads.deals.col_value"), numeric: true, priority: 2 },
 ]);
-const rows = computed(() => deals.value.filter((deal) => deal.stage.kind === kind.value).map((deal) => ({ ...deal, value: dealValue(deal) })));
+// An archived deal is not listed here (the API leaves it out; a stale answer must not show it): Deals → Archived.
+const rows = computed(() => deals.value.filter((deal) => deal.stage.kind === kind.value && !deal.archived_at).map((deal) => ({ ...deal, value: dealValue(deal) })));
 const rowAttrs = (row) => ({ "data-testid": "deal-row", "data-deal": row.id });
 const openDeal = (row) => router.push({ name: "LeadsDeal", params: { id: row.id } });
 

@@ -31,6 +31,13 @@ describe("Leads → company card → Deals", () => {
     expect(wrapper.findAll('[data-testid="deal-row"]').map((row) => row.attributes("data-deal"))).toEqual(["2"]);
   });
 
+  it("an archived deal is not listed", async () => {
+    leads.GET_CompanyDeals.mockResolvedValue({ data: { results: [deal(1, "open"), { ...deal(2, "lost"), archived_at: "2026-11-14T10:00:00Z" }] } });
+    const wrapper = await mounted();
+    await byTestid(wrapper, "company-deals-chip-lost").trigger("click");
+    expect(wrapper.findAll('[data-testid="deal-row"]')).toHaveLength(0);
+  });
+
   it("Open deal hands the company to the dialog", async () => {
     const wrapper = await mounted();
     await byTestid(wrapper, "company-open-deal").trigger("click");

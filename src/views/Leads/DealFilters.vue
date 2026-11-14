@@ -35,13 +35,15 @@
 <script setup>
 import { computed, watch } from "vue";
 import { useSearchDebounce } from "@/composables/useSearchDebounce";
-import { DEAL_KINDS, DEFAULT_DEAL_KIND, dealKindLabel, stageOptions } from "./deals";
+import { ARCHIVED_KIND, DEAL_KINDS, DEFAULT_DEAL_KIND, dealKindLabel, stageOptions } from "./deals";
 
 // `query` = the page's query with its defaults (owner me, status open); every change goes up as `set({ key: value })`.
 const props = defineProps({
   query: { type: Object, required: true },
   stages: { type: Array, default: () => [] },
   full: { type: Boolean, default: true },
+  // the backend archives deals (plan 27): Archived is the status select's last option
+  archivable: { type: Boolean, default: false },
 });
 const emit = defineEmits(["set"]);
 const OWNERS = ["me", "none", "all"];
@@ -50,7 +52,7 @@ const OWNER_TESTIDS = { me: "mine", none: "none", all: "all" };
 const RANGE_SEPARATOR = " – "; // fixed, so the Polish locale never changes what is parsed
 const { search, debouncedFetch } = useSearchDebounce();
 
-const kindOptions = DEAL_KINDS.map((value) => ({ value, label: dealKindLabel(value) }));
+const kindOptions = computed(() => [...DEAL_KINDS, ...(props.archivable ? [ARCHIVED_KIND] : [])].map((value) => ({ value, label: dealKindLabel(value) })));
 const kindValue = computed(() => (props.query.kind === "all" ? null : props.query.kind));
 const closeRange = computed(() => [props.query.close_from, props.query.close_to].filter(Boolean).join(RANGE_SEPARATOR));
 // The default status is no filter the person set: the badge counts only what differs from it.
