@@ -59,6 +59,15 @@ describe("Leads → Companies", () => {
     expect(router.replace.mock.lastCall[0].query.owner).toBe("none");
   });
 
+  // P4 (walk 3): the Company type column names the type; a company without one reads "Unknown", muted, never clipped
+  it("a company without a type reads Unknown, muted", async () => {
+    leads.GET_Companies.mockResolvedValue({ data: { count: 1, results: [company(1, { lead_type: "UNKNOWN" })] } });
+    const wrapper = await mounted();
+    const table = wrapper.findComponent('[data-testid="companies-table"]');
+    expect(table.props("rows")[0].lead_type).toBe("Unknown");
+    expect(table.props("columns").find((column) => column.key === "lead_type")).toMatchObject({ width: "max-content", truncate: false });
+  });
+
   it("sorts only by the allowlisted keys", async () => {
     const wrapper = await mounted();
     const table = wrapper.findComponent('[data-testid="companies-table"]');

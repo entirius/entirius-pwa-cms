@@ -88,6 +88,9 @@
         <template #cell-stage="{ row }">
           <StatusBadge :tone="stageTone(row.stage)" :label="row.stage?.label" />
         </template>
+        <template #cell-lead_type="{ row }">
+          <span :class="{ 't-muted': !knownType(row.lead_type_code) }">{{ row.lead_type }}</span>
+        </template>
         <template #cell-owner="{ row }">
           <span :class="{ 't-muted': !row.owner }">{{ ownerName(row.owner) }}</span>
         </template>
@@ -123,7 +126,7 @@ import { extractApiMessage } from "@/composables/useFormErrors";
 import { useIsDesktop } from "@/composables/useIsDesktop";
 import { usePageReadonly } from "@/composables/useReadonly";
 import { useSearchDebounce } from "@/composables/useSearchDebounce";
-import { useLeadTypesStore } from "@/stores/leadTypes";
+import { UNKNOWN_LEAD_TYPE, useLeadTypesStore } from "@/stores/leadTypes";
 import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
 import { formatRelative } from "@/utils/format";
@@ -194,7 +197,7 @@ const columns = computed(() =>
     crm.value && filled((company) => company.score_segment) && { key: "score", label: t("leads.companies.col_score"), numeric: true, priority: 3, sortable: true },
     { key: "last_activity", label: t("leads.companies.col_last_activity"), priority: 2, sortable: true },
     crm.value && filled((company) => company.origin) && { key: "origin", label: t("leads.companies.origin"), priority: 3 },
-    { key: "lead_type", label: t("leads.companies.lead_type"), priority: 3 },
+    { key: "lead_type", label: t("leads.companies.lead_type"), width: "max-content", truncate: false, priority: 3 },
     ...(crm.value ? listFields.value.filter((field) => filled((company) => company.attributes?.[field.key])).map((field) => ({ key: attrParam(field), label: field.label, priority: 3 })) : []),
   ].filter(Boolean)
 );
@@ -202,7 +205,9 @@ const rows = computed(() =>
   companies.value.map((company) => ({
     ...company,
     last_activity: formatRelative(company.last_activity_at),
-    lead_type: leadTypes.label(company.lead_type),
+    lead_type_code: company.lead_type,
+    // the column names the type already: a company without one reads "Unknown", muted
+    lead_type: knownType(company.lead_type) ? leadTypes.label(company.lead_type) : t("leads.companies.type_unknown"),
     ...Object.fromEntries(listFields.value.map((field) => [attrParam(field), formatValue(field, company.attributes?.[field.key])])),
   }))
 );
@@ -216,6 +221,7 @@ const bulkActions = computed(() => [
   },
 ]);
 
+const knownType = (code) => Boolean(code) && code !== UNKNOWN_LEAD_TYPE;
 const ownerName = (owner) => (owner ? owner.name || owner.username : t("leads.companies.unassigned"));
 
 // The URL is the state: every change replaces the query (page back to 1 unless the page itself changed).

@@ -4441,7 +4441,8 @@
       "import_list": "Import a list",
       "clear_filters": "Clear filters",
       "load_error": "The companies could not be loaded",
-      "not_assigned": "{count} not assigned."
+      "not_assigned": "{count} not assigned.",
+      "type_unknown": "Unknown"
     },
     "board": {
       "title": "Board",

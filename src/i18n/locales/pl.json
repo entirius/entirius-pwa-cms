@@ -4440,7 +4440,8 @@
       "import_list": "Zaimportuj listę",
       "clear_filters": "Wyczyść filtry",
       "load_error": "Nie udało się wczytać firm",
-      "not_assigned": "Nieprzypisane: {count}."
+      "not_assigned": "Nieprzypisane: {count}.",
+      "type_unknown": "Nieznany"
     },
     "board": {
       "title": "Tablica",
