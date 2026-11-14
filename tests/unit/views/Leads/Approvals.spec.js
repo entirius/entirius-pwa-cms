@@ -70,7 +70,7 @@ describe("Leads → Approvals", () => {
     expect(byTestid(await mountApprovals(), "approvals-error").text()).toBe("boom");
   });
 
-  it("bulk approve: one id refused stays selected with its reason, the toast sums both", async () => {
+  it("bulk approve: one id refused stays selected with its reason on the row, the result line sums both", async () => {
     api.POST_ApprovalsBulk.mockResolvedValue({ data: { done: [1], failed: { 2: "mailbox paused" } } });
     const wrapper = await mountApprovals();
     await select(wrapper, [1, 2]);
@@ -79,8 +79,9 @@ describe("Leads → Approvals", () => {
     await byTestid(wrapper, "approvals-approve-confirm").trigger("click");
     await flushPromises();
     expect(api.POST_ApprovalsBulk).toHaveBeenCalledWith({ action: "approve", ids: [1, 2], reason: "" });
-    expect(notify.spawnNotification).toHaveBeenCalledWith({ msg: "1 draft approved. 1 not approved.", type: "warning" });
+    expect(byTestid(wrapper, "approvals-result").text()).toBe("1 draft approved. 1 not approved.");
     expect(byTestid(wrapper, "approval-problem").attributes("title")).toBe("mailbox paused");
+    expect(byTestid(wrapper, "approval-refused").text()).toBe("mailbox paused");
     expect(byTestid(wrapper, "approvals-bulk").exists()).toBe(true);
   });
 
@@ -121,10 +122,10 @@ describe("Leads → Approvals", () => {
     await byTestid(wrapper, "approvals-approve-confirm").trigger("click");
     await flushPromises();
     expect(api.POST_ApprovalsBulk).toHaveBeenCalledTimes(1);
-    expect(notify.spawnNotification).toHaveBeenCalledWith({ msg: "2 drafts approved.", type: "positive" });
+    expect(byTestid(wrapper, "approvals-result").text()).toBe("2 drafts approved.");
   });
 
-  it("the toast of a reject says only what happened", async () => {
+  it("the result of a skip says only what happened", async () => {
     api.POST_ApprovalsBulk.mockResolvedValue({ data: { done: [1], failed: {} } });
     const wrapper = await mountApprovals();
     await select(wrapper, [1]);
@@ -132,7 +133,7 @@ describe("Leads → Approvals", () => {
     wrapper.findComponent('[data-testid="approvals-reject-reason"]').vm.$emit("update:modelValue", "no");
     await byTestid(wrapper, "approvals-reject-submit").trigger("click");
     await flushPromises();
-    expect(notify.spawnNotification).toHaveBeenCalledWith({ msg: "1 draft rejected.", type: "positive" });
+    expect(byTestid(wrapper, "approvals-result").text()).toBe("1 draft skipped.");
   });
 
   it("shows the company as a link to its card and the channel by name, never the reference", async () => {

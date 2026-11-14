@@ -25,6 +25,10 @@
       </div>
     </template>
 
+    <!-- what the last bulk action did stays on screen until the next one (a toast can pass unseen) -->
+    <p v-if="answer" class="m-0 fw-600" role="status" data-testid="approvals-result">
+      {{ answer.msg }}
+    </p>
     <Loader v-if="loading && first" block />
     <p v-else-if="error" class="t-negative m-0" role="alert" data-testid="approvals-error">{{ error }}</p>
     <EmptyState v-else-if="!rows.length && !filtered" icon="success" size="md" :title="$t('leads.approvals.empty')" :message="$t('leads.approvals.empty_message')" data-testid="approvals-empty" />
@@ -46,6 +50,7 @@
             {{ row.subject_label }}
           </router-link>
           <span v-if="companyIdOf(row)" class="t-muted"> · </span>{{ recipientName(row) }}
+          <span v-if="failed[row.id]" class="approvals__refused fs-200" data-testid="approval-refused">{{ failed[row.id] }}</span>
         </template>
         <template #cell-channel="{ row }"><StatusBadge tone="neutral" :dot="false" :label="channelName(row.channel)" /></template>
         <template #cell-age="{ row }">{{ ageOf(row) }}</template>
@@ -129,6 +134,7 @@ import { useNotifyStore } from "@/stores/notify";
 import { usePimChannelStore } from "@/stores/pimChannel";
 import { formatDate } from "@/utils/format";
 import { FROM_APPROVALS, problemText } from "@/utils/leadsOutbound";
+import { bulkAnswer } from "@/utils/leadsBulk";
 import { pluralKey } from "@/utils/plural";
 import { companyIdFromSubjectRef } from "@/utils/subjectRef";
 
@@ -157,6 +163,7 @@ const error = ref("");
 const page = ref(1);
 const selected = ref([]);
 const failed = ref({}); // id → why the last bulk call left it
+const answer = ref(null); // what the last bulk call did ({ msg, type }), on screen until the list is filtered again
 const table = ref(null);
 const drawerRow = ref(null);
 const rejecting = reactive({ open: false, ids: [], reason: "", error: "" });
@@ -254,6 +261,7 @@ async function load() {
 
 function reload() {
   page.value = 1;
+  answer.value = null;
   clearSelection();
   return load();
 }
@@ -312,18 +320,15 @@ async function sendChunks(action, ids, reason) {
   return result;
 }
 
-// Says only what happened: the failures join the message when there are any.
-function resultMessage(action, done, failedCount) {
+// Says only what happened: the refusals join the sentence when there are any; each refused row carries its reason.
+function answerOf(action, done, refused) {
   const verb = action === "approve" ? "approved" : "rejected";
-  const doneText = t(`leads.approvals.${verb}_n_${pluralKey(done)}`, { count: done });
-  if (!failedCount) return doneText;
-  return `${doneText} ${t(`leads.approvals.not_${verb}`, { count: failedCount })}`;
+  return bulkAnswer({ doneKey: `leads.approvals.${verb}_n`, notKey: `leads.approvals.not_${verb}`, done, refused });
 }
 
 async function run(action, ids, reason = "") {
   const { done, failed: refused } = await sendChunks(action, ids, reason);
-  const count = Object.keys(refused).length;
-  notify.spawnNotification({ msg: resultMessage(action, done.length, count), type: count ? "warning" : "positive" });
+  answer.value = answerOf(action, done.length, Object.keys(refused).length);
   failed.value = refused;
   drawerRow.value = null;
   await load();
@@ -360,6 +365,10 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.approvals__refused {
+  display: block;
+  color: var(--negative);
+}
 .approvals__preview {
   white-space: pre-wrap;
   color: var(--text-secondary);

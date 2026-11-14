@@ -8,7 +8,14 @@
       :class="`tl__entry--${entry.side}`"
       :data-testid="`timeline-${entry.side}`"
     >
-      <div class="tl__bubble">
+      <!-- a skipped or withdrawn draft never went out: one closed line that opens to its text, never a bubble -->
+      <details v-if="entry.side === 'skipped'" class="tl__skipped">
+        <summary data-testid="timeline-skipped-line">{{ entry.skipped }}</summary>
+        <p v-if="entry.reason" class="tl__body">{{ entry.reason }}</p>
+        <p v-if="entry.subject" class="tl__subject">{{ entry.subject }}</p>
+        <p class="tl__body">{{ entry.body }}</p>
+      </details>
+      <div v-else class="tl__bubble">
         <p v-if="entry.tag" class="tl__tag" data-testid="timeline-tag">{{ entry.tag }}</p>
         <p v-if="entry.subject" class="tl__subject">{{ entry.subject }}</p>
         <p v-if="entry.reply" class="tl__type">
@@ -140,8 +147,18 @@ function waitingState(item) {
   return sendStateLabel(sendState(waiting?.next_slot || ""));
 }
 
+// A rejected draft (communicator >= plan 25): skipped by a person, or withdrawn by the service with its reason.
+function skippedEntry(item) {
+  const date = formatTime(item.at);
+  const skipped = item.rejected_by
+    ? t("leads.thread.skipped_by", { name: item.rejected_by, date })
+    : t("leads.thread.withdrawn", { reason: item.reject_reason || date });
+  return { at: item.at, side: "skipped", skipped, reason: item.rejected_by && item.reject_reason ? t("leads.thread.skipped_reason", { reason: item.reject_reason }) : "", subject: item.subject, body: item.body_text };
+}
+
 function messageEntry(item, index, firstOut) {
   const out = item.direction === "out";
+  if (out && item.status === "rejected") return skippedEntry(item);
   const waiting = out && WAITING_STATUSES.includes(item.status);
   return {
     at: item.at,
@@ -198,7 +215,8 @@ const canReply = computed(
 );
 
 const entries = computed(() => {
-  const firstOut = props.messages.findIndex((message) => message.direction === "out");
+  // the first mail that went out (a skipped draft before it is no step of the sequence)
+  const firstOut = props.messages.findIndex((message) => message.direction === "out" && message.status !== "rejected");
   return props.messages.map((message, i) => messageEntry(message, i, firstOut));
 });
 </script>
@@ -244,6 +262,17 @@ const entries = computed(() => {
 .tl__entry--out .tl__bubble {
   background: var(--accent-subtle);
   border-bottom-right-radius: var(--radius-base);
+}
+.tl__skipped {
+  flex: 1;
+  font-size: var(--fs-200);
+  color: var(--text-secondary);
+}
+.tl__skipped summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
 }
 .tl__entry--in .tl__bubble {
   border-bottom-left-radius: var(--radius-base);

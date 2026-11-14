@@ -210,8 +210,10 @@ onBeforeRouteUpdate(confirmDiscard);
 // N9: a draft still in review opens itself; one that left the queue (sent, scheduled, skipped, gone) says so.
 const REVIEW_STATUS = "review_required";
 const handled = ref(null); // the status of a draft that left the queue, "gone" when it is not there at all
+// A skipped draft says it will not be sent, in the word of the action (Skip), never only a status.
+const HANDLED_SENTENCES = { gone: "leads.review.gone", rejected: "leads.review.handled_rejected" };
 const handledText = computed(() =>
-  handled.value === "gone" ? t("leads.review.gone") : t("leads.review.handled", { state: statusLabel(handled.value) })
+  t(HANDLED_SENTENCES[handled.value] || "leads.review.handled", { state: statusLabel(handled.value) })
 );
 
 // Only the latest read writes the screen (Next, a conflict and the accept timer may change the draft quickly); a failed
@@ -357,8 +359,15 @@ function accept() {
   );
 }
 
+// Skip: this mail is not sent (a skipped follow-up lets the sequence write the next one when it is due).
 function skip() {
-  return act(() => api.POST_ReviewSkip(message.value.id), goNext);
+  return act(
+    () => api.POST_ReviewSkip(message.value.id),
+    () => {
+      notify.spawnNotification({ msg: t("leads.review.skipped") });
+      return goNext();
+    }
+  );
 }
 
 function skipCompany() {

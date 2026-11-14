@@ -1,6 +1,6 @@
 <template>
   <div ref="bar" class="review-actions" data-testid="review-actions">
-    <!-- R5 in the slot: the more menu (utility) · Later · Send, the one primary, rightmost -->
+    <!-- R5 in the slot: the more menu (utility) · Skip · Send, the one primary, rightmost -->
     <ActionBar>
       <!-- the disabled Send says why next to it too, not only in its tooltip (acceptance CM10) -->
       <span v-if="blocked" class="t-secondary fs-200" data-testid="review-send-blocked">{{ $t("leads.review.send_blocked") }}</span>
@@ -9,7 +9,7 @@
           <IconButton icon="more" variant="outline" :label="$t('leads.review.more')" :disabled="busy" data-testid="review-more" />
         </template>
       </BasicMenu>
-      <BasicButton :disabled="busy" data-testid="review-skip" @click="emit('skip')">{{ $t("leads.review.not_now") }}</BasicButton>
+      <BasicButton :disabled="busy" data-testid="review-skip" @click="emit('skip')">{{ $t("leads.review.skip") }}</BasicButton>
       <!-- a draft with a problem cannot go out: Send is disabled with the reason (the disabled-button pattern) -->
       <BasicTooltip v-if="blocked" :text="blocked">
         <BasicButton variant="primary" disabled data-testid="review-send">{{ $t("leads.review.send") }}</BasicButton>
@@ -43,7 +43,7 @@ const menuItems = computed(() => [
 // Where focus returns after a dialog opened from the more menu closes (the menu item is gone by then).
 defineExpose({ focusMore: () => bar.value?.querySelector('[data-testid="review-more"]')?.focus() });
 
-// A phone toast sits above this bar (Notifications.vue), so Send / Later stay reachable while one is on screen.
+// A phone toast sits above this bar (Notifications.vue), so Send / Skip stay reachable while one is on screen.
 const root = document.documentElement.style;
 // Re-measured on every resize: orientation, text wrap, a late web font or a language switch change the bar's height.
 const measure = () => root.setProperty("--action-bar-height", `${bar.value.offsetHeight}px`);

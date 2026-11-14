@@ -127,8 +127,8 @@ import { useLeadTypesStore } from "@/stores/leadTypes";
 import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
 import { formatRelative } from "@/utils/format";
+import { bulkAnswer } from "@/utils/leadsBulk";
 import { SEGMENT_TONES, outboundOn, stageTone } from "@/utils/leadsOutbound";
-import { pluralKey } from "@/utils/plural";
 import { fieldsFromDefinitions, formatValue } from "./customFields";
 
 // Companies (ux/screens/companies.md): the full list, every filter, the sort and the page in the URL, served by the
@@ -275,7 +275,8 @@ async function assign(key, value) {
   try {
     const { data } = await POST_AssignOwner(ids, owner);
     const name = owner ? ownerName(users.value.find((user) => user.id === owner)) : t("leads.companies.unassigned");
-    notify.spawnNotification({ msg: t(`leads.companies.assigned_${pluralKey(data.updated)}`, { count: data.updated, name }), type: "positive" });
+    const refused = ids.length - data.updated;
+    notify.spawnNotification(bulkAnswer({ doneKey: "leads.companies.assigned", notKey: "leads.companies.not_assigned", done: data.updated, refused, params: { name } }));
     clearSelection();
     await load();
   } catch (err) {

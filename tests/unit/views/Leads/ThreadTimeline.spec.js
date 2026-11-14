@@ -40,6 +40,20 @@ describe("ThreadTimeline", () => {
     expect(wrapper.findAll(".tl__tag")).toHaveLength(1);
   });
 
+  // S2 (walk 3): a skipped or withdrawn draft is one closed line that opens to its text, never a bubble that looks sent.
+  it("a skipped draft is one closed line with who skipped it; a withdrawn one names the reason", () => {
+    const skipped = { ...messages[2], status: "rejected", rejected_by: "Maria Manager", reject_reason: "too early" };
+    const withdrawn = { ...messages[2], status: "rejected", rejected_by: "", reject_reason: "the recipient opted out" };
+    const wrapper = mountTl({ props: { messages: [messages[1], skipped, withdrawn] } });
+    const lines = wrapper.findAll('[data-testid="timeline-skipped-line"]').map((node) => node.text());
+    expect(lines[0]).toMatch(/^Draft skipped by Maria Manager · /);
+    expect(lines[1]).toBe("Draft withdrawn · the recipient opted out");
+    expect(wrapper.findAll(".tl__bubble")).toHaveLength(1);
+    expect(wrapper.find('[data-testid="status-rejected"]').exists()).toBe(false);
+    expect(wrapper.findAll("details.tl__skipped")[0].text()).toContain("Reason: too early");
+    expect(wrapper.findAll("details.tl__skipped")[0].text()).toContain("Ping");
+  });
+
   // FIX-17b item 15: a waiting bubble says what the Inbox says — the shared send state of its own `next_slot`.
   it("two waiting follow-ups with the same subject each state their own next_slot by message id", () => {
     channelTimeZone.value = "UTC";

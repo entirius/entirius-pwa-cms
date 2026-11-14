@@ -165,13 +165,15 @@ describe("Leads Review", () => {
     delete route.current.query;
   });
 
-  it("Later skips and moves to the next draft", async () => {
+  it("Skip is named for what it does, says the mail will not be sent and moves to the next draft", async () => {
     api.POST_ReviewSkip.mockReturnValue(ok());
     api.GET_ReviewNext.mockResolvedValue({ data: { id: 6 } });
     const wrapper = await mountReview();
+    expect(wrapper.get('[data-testid="review-skip"]').text()).toBe("leads.review.skip");
     await wrapper.get('[data-testid="review-skip"]').trigger("click");
     await flushPromises();
     expect(api.POST_ReviewSkip).toHaveBeenCalledWith(5);
+    expect(spawnNotification).toHaveBeenCalledWith({ msg: "Skipped — this mail will not be sent" });
     expect(replace).toHaveBeenCalledWith({ name: "LeadsReview", params: { id: 6 } });
   });
 
@@ -396,7 +398,7 @@ describe("Leads Review", () => {
   // opens under it unasked.
   it.each([
     [{ ...draft, status: "approved" }, "This draft no longer waits for review: Scheduled."],
-    [{ ...draft, status: "rejected" }, "This draft no longer waits for review: Skipped."],
+    [{ ...draft, status: "rejected" }, "This draft was skipped — this mail will not be sent."],
     [null, "This draft no longer exists."],
   ])("a draft that left the queue says what happened to it (%#)", async (found, text) => {
     api.GET_ReviewMessage.mockResolvedValue(found);
@@ -427,7 +429,7 @@ describe("Leads Review", () => {
   });
 
   // N7: after an action the next draft is the one below in the Inbox order, not the service's oldest
-  it("after Later the next draft is the one below in the Inbox order", async () => {
+  it("after Skip the next draft is the one below in the Inbox order", async () => {
     api.GET_ReviewList.mockResolvedValue({ data: { results: [{ id: 3 }, { id: 4 }, { id: 5 }] } }); // Inbox: 5, 4, 3
     api.POST_ReviewSkip.mockReturnValue(ok());
     const wrapper = await mountReview();
