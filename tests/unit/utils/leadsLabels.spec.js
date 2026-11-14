@@ -81,7 +81,7 @@ describe("activityText of an activity", () => {
     expect(at("composed")).toBe("Mail written by hand");
     expect(at("sequence_stopped")).toBe("Sequence stopped");
     expect(at("sequence_paused")).toBe("Sequence paused");
-    expect(at("sequence_paused", { resume_at: "2026-12-01" })).toContain("Sequence paused until");
+    expect(at("sequence_paused", { resume_at: "2026-12-01" })).toMatch(/^The sequence resumes on /);
     expect(at("task_created", { title: "Call" })).toBe("Task added: Call");
     expect(at("task_done", { title: "Call", outcome: "agreed demo" })).toBe("Task done: Call — agreed demo");
     expect(at("task_cancelled", { title: "Call", reason: "wrong date" })).toBe("Task cancelled: Call — wrong date");

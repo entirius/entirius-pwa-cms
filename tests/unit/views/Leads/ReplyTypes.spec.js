@@ -41,7 +41,8 @@ describe("Reply types and outbound helpers", () => {
     expect(wrapper.find('[data-testid="reply-needs-review"]').exists()).toBe(true);
     expect(wrapper.find('[data-testid="reply-back-on"]').exists()).toBe(true);
     expect(wrapper.text()).toContain("80 % sure");
-    expect(wrapper.get('[data-testid="reply-next"]').text()).toContain("sequence paused until");
+    // P5 (walk 3): one date, one phrase — the return date is "Back on", the Next line repeats no date
+    expect(wrapper.get('[data-testid="reply-next"]').text()).toBe("Next: sequence paused");
   });
 
   it("an unclassified reply and an older backend look as today", async () => {

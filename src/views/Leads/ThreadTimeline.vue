@@ -189,14 +189,12 @@ const munin = useMuninStore();
 const plans = ref({});
 const SEQUENCE_STEP = { stop: "leads.history.seq_stopped", pause: "leads.history.seq_paused" };
 
+// One phrase per date of a pause: the bubble says "Back on <return date>"; the date the sequence resumes is History's
+// ("The sequence resumes on <date>"), so the Next line names the step without a date.
 function nextOf(entry) {
   const plan = entry.reply && plans.value[entry.reply.intent];
   if (!plan) return "";
-  const until = plan.sequence === "pause_until_return" && entry.reply.intent_return_date;
-  const step = until
-    ? t("leads.history.seq_paused_until", { date: formatDay(entry.reply.intent_return_date) })
-    : t(SEQUENCE_STEP[plan.sequence] || "leads.history.seq_paused");
-  return t("leads.history.next", { steps: step });
+  return t("leads.history.next", { steps: t(SEQUENCE_STEP[plan.sequence] || "leads.history.seq_paused") });
 }
 
 function sureOf(entry) {
