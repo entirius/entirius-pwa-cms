@@ -6,11 +6,15 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- Leads panel: a possible opt-out can be marked "Not an opt-out" beside Confirm opt-out (django-communicator
+  `dismiss-optout`, no confirm); the conversation, the card's contacts and History reload, and the reply loses its
+  opt-out mark. The Next line of a possible opt-out reads "nothing is sent until you confirm the opt-out or mark it as
+  not one".
 - Leads panel, deal archive (django-leads with deal archiving): a won or lost deal is archived from its card's more
   menu and restored from the archived card (read-only, one Restore); the Deals list shows the archived deals behind its own
   "Archived" button (a toggle kept in the address, `?archived=1`), the status filter stays Open / Won / Lost. The board
   and the company card list no archived deal; History reads "Deal archived" and "Deal restored". An older backend
-  shows neither.
+  shows no Archive on the card.
 - `ActionBar`: an action's `pressed` makes its text button a toggle (`aria-pressed`, the `surface-hover` fill).
 - Leads panel, deals (django-leads 0.5.0): Deals (nav entry, also in the phone bar) lists the deals with search, owner
   chips, status, stage and expected-close filters and a stage select on every row; at a desk a board shows one column
@@ -51,6 +55,9 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- Leads panel: the Deals list always shows the "Archived" button, also over an empty list. The button that leaves a
+  dialog with an action of its own reads "Cancel" (Log call, task dialogs, Open deal, the lost reason, Write mail,
+  Check an address); "Close" stays on dialogs with nothing to do. Confirm opt-out is hidden for a read-only role.
 - Leads panel, the owner's decisions after the fourth walk: every mail bubble says "From <address>" (the sender of a
   reply, the mailbox our mail leaves from; also beside the recipient in Review; an older communicator shows no line);
   Log call asks only for the Outcome; Do not contact's "Add to the list" offers Reach (This channel / All channels,

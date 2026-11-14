@@ -122,9 +122,24 @@ board) has a secondary toggle "Archived" in its `ActionBar` (`pressed` → `aria
 pressed, the URL carries `?archived=1`, the list asks `archived=true`, the title reads "Archived deals", the status
 select is hidden (search, owner and stage stay), rows show the Won / Lost badge and the empty state is "No archived
 deals"; pressing it again drops `archived` and the list is as it was. The status filter is Open / Won / Lost. The
-button and the menu appear only once a deal carries `archived_at` (an older backend shows neither). The board and
+button is always on the list, on every filter and over an empty list (archiving ships with the module version the
+panel requires); the card's menu appears only once the deal carries `archived_at`. The board and
 the company card's Deals tab list no archived deal. History reads `deal_archived` / `deal_restored`.
 A read-only role sees neither Archive nor Restore (`mutates`).
+
+## Supervisor's walk before the owner's acceptance (plan 34)
+
+- **Archived on the Deals list**: always there, also for a salesperson whose Mine list is empty; no detection of
+  `archived_at`.
+- **Not an opt-out**: beside Confirm opt-out, the secondary "Not an opt-out" (`dismiss-optout`) posts
+  `replies/<id>/dismiss-optout/` (`POST_DismissOptout`), no confirm — nothing is blocked by it; then the conversation,
+  the card's contacts and History reload (`changed`) like Confirm opt-out. The dismissed reply is a plain reply
+  (`reply_kind` `reply`): no opt-out mark, its Next line follows the plan of its class. A read-only role sees neither
+  button (`mutates`).
+- **Cancel**: the button that leaves a Leads dialog or sheet with an action of its own reads "Cancel" (Log call and
+  every task dialog, Open deal, the lost reason, Write mail, Check an address); "Close" stays only where the dialog
+  has nothing to do ("Why no mail?", a stage that still holds deals). A ConfirmDialog names what is kept ("Keep task"
+  beside "Cancel task"). `tests/unit/views/Leads/dialogLabels.spec.js` walks the panel's files.
 
 ## Owner's decisions after walk 4 (plan 33)
 
@@ -152,7 +167,8 @@ One rule: the same thing looks the same everywhere.
 - **Next line of a reply** (`replyNextLine`, `src/utils/leadsLabels.js`): one function, five phrases — a confirmed
   opt-out (the reply's opt-out row confirmed, or the thread's sequence stopped as `optout`) "no more mail to this
   contact"; a possible opt-out (an unconfirmed opt-out row, `reply_kind` `suspected_optout` or the class
-  `unsubscribe`) "nothing is sent until you confirm or dismiss the opt-out"; `stop` "the sequence is stopped";
+  `unsubscribe` when the timeline carries no `reply_kind`) "nothing is sent until you confirm the opt-out or mark it
+  as not one"; `stop` "the sequence is stopped";
   `pause_until_return` with a return date "the sequence resumes on <the day after it>"; any other pause "the sequence
   is paused until you resume it". The newest reply takes what was applied to the thread's sequence, an older one
   the plan of its class. "Back on <date>" stays beside it.
@@ -221,7 +237,7 @@ One rule: the same thing looks the same everywhere.
   draft row of the Inbox; the desktop History tab reads no activities when the entries carry it), rule run
   `company_name` ("Last runs"), and an import report without `ignored_column:` rows (an older one's are dropped).
 - **Words**: Conversation (never thread), Company type (never Lead type; API names stay), Later for the defer button of
-  Review, Close for every dismiss, message states as capitalised badges with Draft for a draft. Import reasons and
+  Review, Close for every dismiss (plan 34: Cancel on a dialog with an action), message states as capitalised badges with Draft for a draft. Import reasons and
   statuses: `importReasonLabel` / `importStatusLabel` (`src/utils/leadsLabels.js`).
 - **Review** goes on to the draft below in the Inbox order (else above); a draft address that left the queue says what
   happened to it and offers "Next draft" (`GET_ReviewMessage` returns the draft in any status, `null` on 404).
