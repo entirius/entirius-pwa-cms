@@ -49,7 +49,7 @@ describe("leads activity kinds", () => {
   it("a message the panel does not know reads as its kind in Polish, never in the service's English", () => {
     setLang("PL");
     expect(activityText({ kind: "rotation", message: "rotated to the next contact" })).toBe("Wybrano kolejny kontakt");
-    expect(activityText({ kind: "sent", message: "message sent" })).toBe("Wysłano maila");
+    expect(activityText({ kind: "sent", message: "message sent" })).toBe("Wysłano wiadomość");
     expect(activityText({ kind: "note", message: "contact flagged: wrong person" })).toBe("Kontakt oznaczony: niewłaściwa osoba");
     expect(activityText({ kind: "import", message: "import created" })).toBe("Utworzono przez import");
   });
