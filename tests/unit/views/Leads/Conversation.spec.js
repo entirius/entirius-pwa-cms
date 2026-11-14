@@ -43,7 +43,8 @@ describe("Leads Conversation (a thread by id)", () => {
     const wrapper = mount(Conversation, { global: { stubs: { Loader: true } } });
     await flushPromises();
     expect(api.GET_ThreadWithOptouts).toHaveBeenCalledWith("23");
-    expect(wrapper.get('[data-testid="conversation-recipient"]').text()).toBe("Jan · jan@shop.test");
+    // k11 (walk 4): no company — the heading names the other side, the address stands once
+    expect(wrapper.find('[data-testid="conversation-recipient"]').exists()).toBe(false);
     expect(wrapper.get('[data-testid="thread-subject"]').text()).toContain("Your shop audit");
     expect(wrapper.findAll('[data-testid="timeline-in"]')).toHaveLength(1);
   });

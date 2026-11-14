@@ -10,7 +10,8 @@
         {{ $t("leads.thread.mail_unavailable") }}
       </p>
       <template v-if="thread">
-        <h2 class="conversation__wrap fs-400 fw-600 m-0" data-testid="conversation-recipient">{{ recipient }}</h2>
+        <!-- k11 (walk 4): without a company the heading is the other side already — the address stands once -->
+        <h2 v-if="companyName" class="conversation__wrap fs-400 fw-600 m-0" data-testid="conversation-recipient">{{ recipient }}</h2>
         <router-link v-if="companyRoute" class="conversation__wrap t-accent" :to="companyRoute" data-testid="conversation-company">
           {{ $t("leads.thread.open_company", { name: companyName }) }}
         </router-link>
@@ -67,7 +68,7 @@ const companyRoute = computed(() => {
   const ref = thread.value?.subject_ref;
   return companyName.value && companyIdFromSubjectRef(ref) ? routeForSubjectRef(ref) : null;
 });
-const heading = computed(() => companyName.value || thread.value?.recipient_email || t("leads.thread.conversation"));
+const heading = computed(() => companyName.value || recipient.value || t("leads.thread.conversation"));
 const replyCompany = computed(() => (outboundOn(munin, "leads") && outboundOn(munin, "communicator") ? company.value : null));
 
 async function loadCompany() {
