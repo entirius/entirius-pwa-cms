@@ -174,7 +174,8 @@ describe("Leads Stages", () => {
     await wrapper.find('[data-testid="stage-add"]').trigger("submit");
     await flushPromises();
     expect(api.POST_Stage).not.toHaveBeenCalled();
-    expect(wrapper.get('[data-testid="stage-add-error"]').text()).toBe(t("leads.stages.key_invalid"));
+    // T7 (walk 4): on the Key field, not under the form
+    expect(fieldError(wrapper, "leads.stages.key")).toBe(t("leads.stages.key_invalid"));
   });
 
   // A refused rename stays on its row with what was typed; the next Save sends it again.
@@ -199,7 +200,7 @@ describe("Leads Stages", () => {
     await wrapper.find('[data-testid="stage-add"]').trigger("submit");
     await flushPromises();
     expect(api.POST_Stage).not.toHaveBeenCalled();
-    expect(fieldError(wrapper, "leads.stages.label")).toBe(t("leads.stages.label_required"));
+    expect(fieldError(wrapper, "leads.stages.label")).toBe("Give the label");
   });
 
   // m7 (walk 3): Stages orders by the arrows only, as Deal stages do — no drag handle

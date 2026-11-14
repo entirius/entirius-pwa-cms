@@ -79,6 +79,7 @@
 import { computed, onMounted, reactive, ref } from "vue";
 import { t } from "@/i18n";
 import { GET_Health, GET_HealthLog, GET_HealthPolicy, PUT_HealthPolicy } from "@/api/communicator/api";
+import { fieldText } from "@/utils/leadsForm";
 import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
 import { ReadonlyOff } from "@/composables/useReadonly";
 import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
@@ -158,7 +159,7 @@ const pct = (value) => (value === null || value === undefined ? "—" : `${value
 const overLimit = (value, rate) => value !== null && value !== undefined && value > Number(savedPolicy.value[rate.limit]);
 const over = (row, rate) => overLimit(row.metrics[rate.key], rate);
 const rowAttrs = (row) => ({ "data-testid": "health-row", "data-mailbox": row.id });
-const fieldError = (field) => formErrors.getFieldError(field)?.msg || "";
+const fieldError = (field) => fieldText(formErrors.getFieldError(field)?.msg, field);
 const addressOf = (id) => report.value.mailboxes.find((mailbox) => mailbox.id === id)?.address || `#${id}`;
 
 // Who paused or resumed: the person's name; an automatic pause has no user. An older backend sends no name: "—".

@@ -132,6 +132,7 @@ import { useRoute, useRouter } from "vue-router";
 import { t } from "@/i18n";
 import { DELETE_Mailbox, GET_Health, GET_Mailbox, PATCH_Mailbox, POST_Mailbox, POST_MailboxTest } from "@/api/communicator/api";
 import { GET_AssignableUsers } from "@/api/leads/api";
+import { fieldText, missingFields } from "@/utils/leadsForm";
 import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
 import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
 import { useNotifyStore } from "@/stores/notify";
@@ -193,7 +194,8 @@ const actions = computed(() => {
   ];
 });
 
-const fieldError = (field) => formErrors.getFieldError(field)?.msg || "";
+const missing = ref({}); // required fields left empty, caught before the request (T7)
+const fieldError = (field) => missing.value[field] || fieldText(formErrors.getFieldError(field)?.msg, field);
 const savedHint = (kind) => (stored.value?.[`${kind}_password_set`] ? t("leads.mailbox.password_saved") : "");
 // A login test answers per part: ok, not_configured, no_password, auth_failed, certificate or unreachable — each in
 // words, with what to do next; an unknown code reads as a failure with the generic advice.
@@ -253,9 +255,11 @@ async function refreshState() {
 }
 
 async function save() {
-  busy.value = "save";
   error.value = "";
   formErrors.clearErrors();
+  missing.value = missingFields(form, ["address", "smtp_host", "smtp_port"]);
+  if (Object.keys(missing.value).length) return;
+  busy.value = "save";
   try {
     const { data } = isNew.value ? await POST_Mailbox(body()) : await PATCH_Mailbox(stored.value.id, body());
     fill(data);

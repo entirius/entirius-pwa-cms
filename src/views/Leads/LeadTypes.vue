@@ -55,7 +55,7 @@
       </div>
       <p v-if="errors.order" class="t-negative m-0" data-testid="lead-type-order-error">{{ errors.order }}</p>
       <form v-if="!readonly" class="flex ai-st flex-wrap gap-5" data-testid="lead-type-add" @submit.prevent="add">
-        <FormField :label="$t('leads.lead_types.code')" hint-level="important" :hint="$t('leads.lead_types.code_help')" required>
+        <FormField :label="$t('leads.lead_types.code')" hint-level="important" :hint="$t('leads.lead_types.code_help')" required :error="errors.code || ''">
           <BasicInput
             :model-value="draft.code"
             :maxlength="32"
@@ -80,6 +80,7 @@ import { activeLabel } from "@/utils/leadsLabels";
 import { computed, onMounted, reactive, ref } from "vue";
 import { t } from "@/i18n";
 import { DELETE_LeadType, GET_LeadTypes, PATCH_LeadType, POST_LeadType } from "@/api/leads/api";
+import { apiFieldErrors, missingFields } from "@/utils/leadsForm";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { usePageReadonly } from "@/composables/useReadonly";
 import { useLeadTypesStore } from "@/stores/leadTypes";
@@ -165,21 +166,27 @@ async function remove(type) {
   if (await attempt(type.id, () => DELETE_LeadType(type.id))) await load();
 }
 
+// T7 (walk 4): an empty or malformed field is named on it before the request; a field error of the API stands on its
+// field in words, any other refusal under the form.
+function checkNew() {
+  ["add", "code", "label"].forEach((key) => delete errors[key]);
+  const missing = missingFields(draft, ["code", "label"]);
+  if (!missing.code && !CODE_PATTERN.test(draft.code)) missing.code = t("leads.lead_types.code_invalid");
+  Object.assign(errors, missing);
+  return !Object.keys(missing).length;
+}
+
 async function add() {
-  delete errors.add;
-  delete errors.label;
-  if (!CODE_PATTERN.test(draft.code)) {
-    errors.add = t("leads.lead_types.code_invalid");
-    return;
-  }
-  if (!draft.label.trim()) {
-    errors.label = t("leads.lead_types.label_required");
-    return;
-  }
+  if (!checkNew()) return;
   const order = Math.max(-ORDER_STEP, ...types.value.map((type) => type.order)) + ORDER_STEP;
-  if (await attempt("add", () => POST_LeadType({ code: draft.code, label: draft.label, order }))) {
+  try {
+    await POST_LeadType({ code: draft.code, label: draft.label, order });
     Object.assign(draft, { code: "", label: "" });
     await load();
+  } catch (err) {
+    const fields = apiFieldErrors(err, ["code", "label"]);
+    Object.assign(errors, fields);
+    if (!Object.keys(fields).length) errors.add = extractApiMessage(err, t("leads.review.error"));
   }
 }
 

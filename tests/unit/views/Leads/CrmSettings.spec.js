@@ -87,6 +87,25 @@ describe("Leads → Settings → Custom fields", () => {
     expect(leads.POST_Attribute).toHaveBeenCalledWith({ entity: "contact", key: "role", kind: "select", label: "Role", options: [{ value: "cto", label: "CTO" }], required: false, show_in_list: false, order: 2 });
   });
 
+  // T7 (walk 4): a required field left empty is named before any request; an API field error reads in words
+  it("an empty key is named before the request; the API's raw text never shows", async () => {
+    const wrapper = await mounted(CustomFieldsSettings);
+    const errorOf = (label) => wrapper.findAllComponents({ name: "FormField" }).find((field) => field.props("label") === label).props("error");
+    await byTestid(wrapper, "fields-add").trigger("click");
+    setControl(wrapper, "field-label", "Role");
+    await byTestid(wrapper, "field-save").trigger("click");
+    await flushPromises();
+    expect(leads.POST_Attribute).not.toHaveBeenCalled();
+    expect(errorOf("leads.fields.key")).toBe("Give the key");
+    const details = [{ field: "key", description: "String should match pattern '^[a-z_]+$'" }, { field: "label", description: "Odd internal text" }];
+    leads.POST_Attribute.mockRejectedValueOnce({ response: { status: 400, data: { error: "validation_error", message: "Invalid", details } } });
+    setControl(wrapper, "field-key", "Role");
+    await byTestid(wrapper, "field-save").trigger("click");
+    await flushPromises();
+    expect(errorOf("leads.fields.key")).toBe("Use lower-case letters, digits and underscores");
+    expect(errorOf("leads.fields.label")).toBe("Check this field");
+  });
+
   it("a 409 on the kind locks it with its note", async () => {
     leads.PATCH_Attribute.mockRejectedValueOnce(Object.defineProperty({ error: "conflict" }, "httpStatus", { value: 409 }));
     const wrapper = await mounted(CustomFieldsSettings);

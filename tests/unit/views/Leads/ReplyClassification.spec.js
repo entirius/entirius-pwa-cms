@@ -56,7 +56,8 @@ describe("Leads → Settings → Reply classification", () => {
     await flushPromises();
     await byTestid(wrapper, "classify-save").trigger("click");
     await flushPromises();
-    expect(fieldError(wrapper, "leads.classify.model")).toBe("unknown model");
+    // T7 (walk 4): an API message outside the known ones never prints raw
+    expect(fieldError(wrapper, "leads.classify.model")).toBe("Check this field");
     expect(byTestid(await mounted({ write: false }), "classify-save").exists()).toBe(false);
   });
 });

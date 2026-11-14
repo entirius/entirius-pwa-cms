@@ -136,6 +136,14 @@ describe("Leads → Settings → Mailboxes", () => {
     api.POST_Mailbox.mockResolvedValue({ data: mailbox({ id: 9 }) });
     const wrapper = await mounted(MailboxEdit);
     expect(api.GET_Mailbox).not.toHaveBeenCalled();
+    // T7 (walk 4): an empty required field is named before the request
+    await byTestid(wrapper, "mailbox-save").trigger("click");
+    await flushPromises();
+    expect(api.POST_Mailbox).not.toHaveBeenCalled();
+    const errorOf = (label) => wrapper.findAllComponents({ name: "FormField" }).find((field) => field.props("label") === label).props("error");
+    expect(errorOf("leads.mailbox.address")).toBe("Give the address");
+    wrapper.findComponent('[data-testid="mailbox-address"]').vm.$emit("update:modelValue", "anna@firma.test");
+    wrapper.findComponent('[data-testid="mailbox-smtp-host"]').vm.$emit("update:modelValue", "smtp.test");
     await byTestid(wrapper, "mailbox-save").trigger("click");
     await flushPromises();
     expect(router.replace).toHaveBeenCalledWith({ name: "LeadsMailboxEdit", params: { id: 9 } });

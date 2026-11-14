@@ -4605,8 +4605,7 @@
       "delete_busy_one": "Etap „{label}” zawiera 1 firmę. Najpierw przenieś ją do innego etapu — etapu, w którym są firmy, nie można usunąć.",
       "delete_busy_few": "Etap „{label}” zawiera {count} firmy. Najpierw przenieś je do innego etapu — etapu, w którym są firmy, nie można usunąć.",
       "delete_busy_many": "Etap „{label}” zawiera {count} firm. Najpierw przenieś je do innego etapu — etapu, w którym są firmy, nie można usunąć.",
-      "key_invalid": "Klucz może zawierać tylko litery, cyfry, „-” i „_”",
-      "label_required": "Podaj etykietę"
+      "key_invalid": "Klucz może zawierać tylko litery, cyfry, „-” i „_”"
     },
     "legal_basis": {
       "consent": "Zgoda",
@@ -4718,8 +4717,7 @@
       "code_help": "Wielkimi literami, np. RETAILER — po dodaniu nie można go zmienić",
       "add": "Dodaj typ",
       "unknown": "Nieznany typ firmy",
-      "code_invalid": "Kod może zawierać tylko litery, cyfry i „_”",
-      "label_required": "Podaj nazwę"
+      "code_invalid": "Kod może zawierać tylko litery, cyfry i „_”"
     },
     "common": {
       "delete": "Usuń",
@@ -5472,6 +5470,37 @@
       "empty": "Brak etapów transakcji — dodaj pierwszy poniżej",
       "delete_confirm": "Usunąć etap {label}?",
       "saved": "Etapy transakcji zapisane"
+    },
+    "form": {
+      "give": {
+        "key": "Podaj klucz",
+        "label": "Podaj etykietę",
+        "name": "Podaj nazwę",
+        "code": "Podaj kod",
+        "options": "Podaj co najmniej jedną opcję",
+        "model": "Podaj model",
+        "prompt_text": "Podaj prompt",
+        "address": "Podaj adres",
+        "smtp_host": "Podaj serwer",
+        "smtp_port": "Podaj port",
+        "smtp_user": "Podaj login",
+        "value": "Podaj wartość",
+        "email": "Podaj adres e-mail",
+        "reason": "Podaj powód",
+        "template_key": "Wybierz szablon",
+        "stage_id": "Wybierz etap",
+        "action": "Wybierz, co zrobić",
+        "field": "Wybierz pole"
+      },
+      "give_value": "Wypełnij to pole",
+      "check": "Sprawdź to pole",
+      "api": {
+        "too_long": "Za długie — skróć",
+        "taken": "Już zajęte — wybierz inne",
+        "email": "Podaj poprawny adres e-mail",
+        "format": "Użyj małych liter, cyfr i podkreśleń",
+        "number": "Podaj liczbę z dozwolonego zakresu"
+      }
     }
   },
   "notification_bar": {

@@ -97,7 +97,8 @@ it("a code outside letters, digits and _ is refused before the request", async (
   await wrapper.get('[data-testid="lead-type-add"]').trigger("submit");
   await flushPromises();
   expect(api.POST_LeadType).not.toHaveBeenCalled();
-  expect(wrapper.get('[data-testid="lead-type-add-error"]').text()).toBe(t("leads.lead_types.code_invalid"));
+  // T7 (walk 4): on the Code field, not under the form
+  expect(fieldError(wrapper, "leads.lead_types.code")).toBe(t("leads.lead_types.code_invalid"));
 });
 
 // A refused rename stays on its row with the edit; the next Save sends it again.
@@ -122,7 +123,7 @@ it("an empty label is a field error before the request", async () => {
   await wrapper.get('[data-testid="lead-type-add"]').trigger("submit");
   await flushPromises();
   expect(api.POST_LeadType).not.toHaveBeenCalled();
-  expect(fieldError(wrapper, "leads.lead_types.label")).toBe(t("leads.lead_types.label_required"));
+  expect(fieldError(wrapper, "leads.lead_types.label")).toBe("Give the label");
 });
 
 describe("lead types store", () => {

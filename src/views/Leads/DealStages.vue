@@ -66,6 +66,7 @@
 import { computed, onMounted, reactive, ref } from "vue";
 import { t } from "@/i18n";
 import { DELETE_DealStage, GET_DealStages, PATCH_DealStage, POST_DealStage } from "@/api/leads/api";
+import { apiFieldErrors, missingFields } from "@/utils/leadsForm";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { usePageReadonly } from "@/composables/useReadonly";
 import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
@@ -167,11 +168,11 @@ async function remove(stage) {
   if (await attempt(stage.id, () => DELETE_DealStage(stage.id), "leads.deal_stages.in_use")) await load();
 }
 
-// A refused key (taken: 409, malformed: 400) shows on Key; any other refusal under the card.
+// T7 (walk 4): an empty field is named before the request. A taken key (409) shows on Key; a field error of the API on
+// its field in words; any other refusal under the card.
 async function add() {
   ["key", "label", "add"].forEach((key) => delete errors[key]);
-  if (!draft.key) errors.key = t("leads.stages.key_invalid");
-  if (!draft.label.trim()) errors.label = t("leads.stages.label_required");
+  Object.assign(errors, missingFields(draft, ["key", "label"]));
   if (errors.key || errors.label) return;
   const order = Math.max(-ORDER_STEP, ...stages.value.map((stage) => stage.order)) + ORDER_STEP;
   try {
@@ -179,9 +180,14 @@ async function add() {
     Object.assign(draft, { key: "", label: "", kind: "open" });
     await load();
   } catch (err) {
-    const onKey = [400, 409].includes(err?.httpStatus);
-    errors[onKey ? "key" : "add"] = extractApiMessage(err, t("leads.common.error"));
+    refusedNew(err);
   }
+}
+
+function refusedNew(err) {
+  const fields = err?.httpStatus === 409 ? { key: t("leads.form.api.taken") } : apiFieldErrors(err, ["key", "label"]);
+  Object.assign(errors, fields);
+  if (!Object.keys(fields).length) errors.add = extractApiMessage(err, t("leads.common.error"));
 }
 
 onMounted(load);

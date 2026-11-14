@@ -66,7 +66,7 @@
         </div>
       </div>
       <form v-if="!readonly" class="flex ai-st flex-wrap gap-5" data-testid="stage-add" @submit.prevent="add">
-        <FormField :label="$t('leads.stages.key')" hint-level="important" :hint="$t('leads.stages.key_help')" required>
+        <FormField :label="$t('leads.stages.key')" hint-level="important" :hint="$t('leads.stages.key_help')" required :error="errors.key || ''">
           <BasicInput v-model="draft.key" :maxlength="64" data-testid="stage-new-key" />
         </FormField>
         <FormField
@@ -103,6 +103,7 @@
 import { computed, onMounted, reactive, ref } from "vue";
 import { t } from "@/i18n";
 import { DELETE_Stage, GET_Companies, GET_Rules, GET_Stages, PATCH_Stage, POST_Stage } from "@/api/leads/api";
+import { apiFieldErrors, missingFields } from "@/utils/leadsForm";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { useNotifyStore } from "@/stores/notify";
 import { usePageReadonly } from "@/composables/useReadonly";
@@ -212,21 +213,27 @@ async function remove(stage) {
   if (await attempt(stage.id, () => DELETE_Stage(stage.id))) await load();
 }
 
+// T7 (walk 4): an empty or malformed field is named on it before the request; a field error of the API stands on its
+// field in words, any other refusal under the form.
+function checkNew() {
+  ["add", "key", "label"].forEach((key) => delete errors[key]);
+  const missing = missingFields(draft, ["key", "label"]);
+  if (!missing.key && !KEY_PATTERN.test(draft.key)) missing.key = t("leads.stages.key_invalid");
+  Object.assign(errors, missing);
+  return !Object.keys(missing).length;
+}
+
 async function add() {
-  delete errors.add;
-  delete errors.label;
-  if (!KEY_PATTERN.test(draft.key)) {
-    errors.add = t("leads.stages.key_invalid");
-    return;
-  }
-  if (!draft.label.trim()) {
-    errors.label = t("leads.stages.label_required");
-    return;
-  }
+  if (!checkNew()) return;
   const order = Math.max(-ORDER_STEP, ...stages.value.map((stage) => stage.order)) + ORDER_STEP;
-  if (await attempt("add", () => POST_Stage({ key: draft.key, label: draft.label, order }))) {
+  try {
+    await POST_Stage({ key: draft.key, label: draft.label, order });
     Object.assign(draft, { key: "", label: "" });
     await load();
+  } catch (err) {
+    const fields = apiFieldErrors(err, ["key", "label"]);
+    Object.assign(errors, fields);
+    if (!Object.keys(fields).length) errors.add = extractApiMessage(err, t("leads.review.error"));
   }
 }
 

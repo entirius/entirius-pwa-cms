@@ -111,6 +111,7 @@ import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
 import { usePageReadonly } from "@/composables/useReadonly";
 import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
+import { fieldText, missingFields } from "@/utils/leadsForm";
 import { activeLabel, ruleRunText } from "@/utils/leadsLabels";
 import { formatTime } from "@/utils/leadsTime";
 import ConditionRow from "./ConditionRow.vue";
@@ -122,7 +123,7 @@ const RULE_FIELDS = ["trigger", "stage_id", "action", "template_key", "contact_s
 const notify = useNotifyStore();
 const readonly = usePageReadonly();
 const hasMail = useMuninStore().isModuleEnabled("communicator");
-const { handleApiError, getFieldError, clearErrors } = useFormErrors();
+const { handleApiError, getFieldError, clearErrors, hasErrors } = useFormErrors();
 const rules = ref([]);
 const stages = ref([]);
 const templates = ref([]);
@@ -171,7 +172,9 @@ const rows = computed(() =>
     }))
 );
 const rowAttrs = (row) => ({ "data-testid": "rule-row", "data-rule": row.id });
-const errorOf = (name) => getFieldError(name)?.msg || "";
+const missing = ref({}); // required fields left empty, caught before the request (T7)
+const errorOf = (name) => missing.value[name] || fieldText(getFieldError(name)?.msg, name);
+const requiredFields = () => ["action", draft.trigger === "stage_entered" && "stage_id", draft.action === "communicate" && "template_key"].filter(Boolean);
 const dialogActions = computed(() =>
   [
     { key: "close", label: t("leads.rules.cancel"), role: "secondary", disabled: saving.value, onClick: () => (dialogOpen.value = false) },
@@ -208,6 +211,7 @@ async function openDialog(rule) {
   const base = { id: null, trigger: "stage_entered", stage_id: stageFilter.value, action: hasMail ? "communicate" : "score", template_key: "", contact_strategy: "primary", require_hooks: false, require_email: false, conditions: [], is_active: true };
   Object.assign(draft, base, rule ? plainCopy({ ...rule, conditions: rule.conditions || [] }) : {});
   dialogError.value = "";
+  missing.value = {};
   runs.value = [];
   clearErrors();
   dialogOpen.value = true;
@@ -230,16 +234,19 @@ const fieldLabel = (name) => fields.value.find((field) => field.name === name)?.
 const body = () => Object.fromEntries(RULE_FIELDS.map((key) => [key, draft[key]]));
 
 async function save() {
-  saving.value = true;
   dialogError.value = "";
   clearErrors();
+  missing.value = missingFields(draft, requiredFields());
+  if (Object.keys(missing.value).length) return;
+  saving.value = true;
   try {
     await (draft.id ? PATCH_Rule(draft.id, body()) : POST_Rule(body()));
     dialogOpen.value = false;
     await loadRules();
   } catch (err) {
     handleApiError(err);
-    dialogError.value = extractApiMessage(err, t("leads.common.error"));
+    // a field error stands on its field in words; only a message about the whole rule stands above the form
+    if (!hasErrors.value) dialogError.value = extractApiMessage(err, t("leads.common.error"));
   } finally {
     saving.value = false;
   }

@@ -4606,8 +4606,7 @@
       "delete_busy_one": "The stage “{label}” holds 1 company. Move it to another stage first — a stage that still holds companies cannot be deleted.",
       "delete_busy_few": "The stage “{label}” holds {count} companies. Move them to another stage first — a stage that still holds companies cannot be deleted.",
       "delete_busy_many": "The stage “{label}” holds {count} companies. Move them to another stage first — a stage that still holds companies cannot be deleted.",
-      "key_invalid": "A key may hold only letters, digits, “-” and “_”",
-      "label_required": "Enter a label"
+      "key_invalid": "A key may hold only letters, digits, “-” and “_”"
     },
     "legal_basis": {
       "consent": "Consent",
@@ -4719,8 +4718,7 @@
       "code_help": "Upper-case, e.g. RETAILER — fixed after it is added",
       "add": "Add type",
       "unknown": "Company type unknown",
-      "code_invalid": "A code may hold only letters, digits and “_”",
-      "label_required": "Enter a label"
+      "code_invalid": "A code may hold only letters, digits and “_”"
     },
     "common": {
       "delete": "Delete",
@@ -5473,6 +5471,37 @@
       "empty": "No deal stages yet — add the first one below",
       "delete_confirm": "Delete the stage {label}?",
       "saved": "Deal stages saved"
+    },
+    "form": {
+      "give": {
+        "key": "Give the key",
+        "label": "Give the label",
+        "name": "Give the name",
+        "code": "Give the code",
+        "options": "Give at least one option",
+        "model": "Give the model",
+        "prompt_text": "Give the prompt",
+        "address": "Give the address",
+        "smtp_host": "Give the server",
+        "smtp_port": "Give the port",
+        "smtp_user": "Give the login",
+        "value": "Give the value",
+        "email": "Give the e-mail address",
+        "reason": "Give the reason",
+        "template_key": "Pick a template",
+        "stage_id": "Pick a stage",
+        "action": "Pick what to do",
+        "field": "Pick a field"
+      },
+      "give_value": "Fill in this field",
+      "check": "Check this field",
+      "api": {
+        "too_long": "Too long — shorten it",
+        "taken": "Already in use — pick another",
+        "email": "Give a valid e-mail address",
+        "format": "Use lower-case letters, digits and underscores",
+        "number": "Give a number in the allowed range"
+      }
     }
   },
   "notification_bar": {

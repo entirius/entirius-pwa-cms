@@ -46,6 +46,7 @@
 import { computed, onMounted, reactive, ref } from "vue";
 import { t } from "@/i18n";
 import { GET_Models, GET_ReplyClassProfile, PUT_ReplyClassProfile } from "@/api/communicator/api";
+import { fieldText, missingFields } from "@/utils/leadsForm";
 import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
 import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
 import { useConfigHealthStore } from "@/stores/configHealth";
@@ -73,7 +74,8 @@ const modelOptions = computed(() =>
 const actions = computed(() => [
   saveAction({ dirty: isDirty.value, saving: saving.value, testid: "classify-save", onClick: save }),
 ]);
-const fieldError = (field) => formErrors.getFieldError(field)?.msg || "";
+const missing = ref({}); // required fields left empty, caught before the request (T7)
+const fieldError = (field) => missing.value[field] || fieldText(formErrors.getFieldError(field)?.msg, field);
 const isNotFound = (err) => (err?.httpStatus ?? err?.response?.status) === 404;
 
 function fill(profile) {
@@ -105,8 +107,10 @@ async function load() {
 }
 
 async function save() {
-  saving.value = true;
   formErrors.clearErrors();
+  missing.value = missingFields(form, ["model", "prompt_text"]);
+  if (Object.keys(missing.value).length) return;
+  saving.value = true;
   try {
     const body = { ...form, min_confidence: Number(form.min_confidence) / 100, max_chars: Number(form.max_chars) };
     fill((await PUT_ReplyClassProfile(body)).data);

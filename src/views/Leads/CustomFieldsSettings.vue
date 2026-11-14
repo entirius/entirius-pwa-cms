@@ -80,6 +80,7 @@
 
 <script setup>
 import { activeLabel } from "@/utils/leadsLabels";
+import { fieldText, missingFields } from "@/utils/leadsForm";
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { t } from "@/i18n";
@@ -107,6 +108,7 @@ const saving = ref(false);
 const kindLocked = ref(false);
 const removing = ref(null);
 const draft = reactive({});
+const missing = ref({}); // required fields left empty, caught before the request
 
 const entity = computed(() => (ENTITIES.includes(route.query.entity) ? route.query.entity : "company"));
 const tabOptions = ENTITIES.map((value) => ({ value, label: t(`leads.fields.tab.${value}`), testid: `fields-tab-${value}` }));
@@ -133,7 +135,7 @@ const rows = computed(() =>
     .map((row) => ({ ...row, kindLabel: t(`leads.field_kind.${row.kind}`), requiredLabel: mark(row.required), inList: mark(row.show_in_list) }))
 );
 const rowAttrs = (row) => ({ "data-testid": "field-row", "data-key": row.key });
-const errorOf = (name) => getFieldError(name)?.msg || "";
+const errorOf = (name) => missing.value[name] || fieldText(getFieldError(name)?.msg, name);
 const dialogActions = computed(() => [
   { key: "close", label: t("leads.task.close"), role: "secondary", disabled: saving.value, onClick: () => (dialogOpen.value = false) },
   { key: "save", label: t("leads.fields.save"), role: "primary", loading: saving.value, testid: "field-save", onClick: save },
@@ -158,6 +160,7 @@ function openDialog(row) {
   Object.assign(draft, base, row ? plainCopy({ ...row }) : {});
   kindLocked.value = false;
   dialogError.value = "";
+  missing.value = {};
   clearErrors();
   dialogOpen.value = true;
 }
@@ -169,10 +172,18 @@ function body() {
   return { ...common, entity: entity.value, key: draft.key.trim(), kind: draft.kind, order: list.value.length };
 }
 
+// label and key always; a choice field needs at least one option with a value
+function checkRequired() {
+  const options = hasOptions.value ? draft.options.filter((option) => option.value.trim()) : [true];
+  missing.value = missingFields({ ...draft, options }, ["label", "key", "options"]);
+  return !Object.keys(missing.value).length;
+}
+
 async function save() {
+  clearErrors();
+  if (!checkRequired()) return;
   saving.value = true;
   dialogError.value = "";
-  clearErrors();
   try {
     await (draft.id ? PATCH_Attribute(draft.id, body()) : POST_Attribute(body()));
     dialogOpen.value = false;

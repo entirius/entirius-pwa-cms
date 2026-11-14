@@ -138,6 +138,7 @@ import { usePimChannelStore } from "@/stores/pimChannel";
 import { formatDate } from "@/utils/format";
 import { FROM_APPROVALS, problemText } from "@/utils/leadsOutbound";
 import { bulkAnswer } from "@/utils/leadsBulk";
+import { giveText } from "@/utils/leadsForm";
 import { pluralKey } from "@/utils/plural";
 import { companyIdFromSubjectRef } from "@/utils/subjectRef";
 
@@ -306,7 +307,7 @@ function askReject(ids) {
 
 function submitReject() {
   if (!rejecting.reason.trim()) {
-    rejecting.error = t("common.required");
+    rejecting.error = giveText("reason");
     return;
   }
   rejecting.open = false;

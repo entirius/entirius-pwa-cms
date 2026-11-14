@@ -92,6 +92,7 @@
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { t } from "@/i18n";
 import { DELETE_Suppression, GET_AddressStatus, GET_Suppressions, POST_Suppression } from "@/api/communicator/api";
+import { apiFieldErrors, giveText } from "@/utils/leadsForm";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { useSearchDebounce } from "@/composables/useSearchDebounce";
 import { useNotifyStore } from "@/stores/notify";
@@ -186,13 +187,14 @@ function openAdd() {
 
 // A refusal (400, 409 duplicate) names the value: the dialog stays open with the error on that field.
 async function add() {
-  if (!draft.value.trim()) return (valueError.value = t("common.required"));
+  if (!draft.value.trim()) return (valueError.value = giveText("value"));
   try {
     await POST_Suppression({ ...draft, value: draft.value.trim() });
     adding.value = false;
     await load();
   } catch (err) {
-    valueError.value = extractApiMessage(err, t("leads.dnc.load_error"));
+    // a field error in words (T7); a refusal of the whole entry (a duplicate) in the API's sentence
+    valueError.value = apiFieldErrors(err, ["value"]).value || extractApiMessage(err, t("leads.dnc.load_error"));
   }
 }
 
@@ -225,11 +227,11 @@ function explain(data) {
 
 async function check() {
   checkError.value = "";
-  if (!checkEmail.value.trim()) return (checkError.value = t("common.required"));
+  if (!checkEmail.value.trim()) return (checkError.value = giveText("email"));
   try {
     checkLines.value = explain((await GET_AddressStatus(checkEmail.value.trim())).data);
   } catch (err) {
-    checkError.value = extractApiMessage(err, t("leads.dnc.load_error"));
+    checkError.value = apiFieldErrors(err, ["email"]).email || extractApiMessage(err, t("leads.dnc.load_error"));
   }
 }
 
