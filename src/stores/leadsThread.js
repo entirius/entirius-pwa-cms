@@ -1,8 +1,8 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
-// The thread the company card is showing (its newest) — the Inbox marks exactly that row as active.
+// The Inbox column's chip outlives a remount (Today or a settings page in between): the column comes back on it.
 export const useLeadsThreadStore = defineStore("leadsThread", () => {
-  const shownId = ref(null);
-  return { shownId };
+  const inboxFilter = ref(null);
+  return { inboxFilter };
 });

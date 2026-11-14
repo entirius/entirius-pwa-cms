@@ -1,8 +1,8 @@
 <template>
   <PageLayout data-testid="leads-conversation">
     <template #header>
-      <!-- a phone shows the conversation alone: back to the list; the desktop keeps the list beside it -->
-      <PageHeader :title="$t('leads.thread.conversation')" :back="isDesktop ? undefined : goBack" />
+      <!-- headed by its company, else the other side's address; below 1440 px it stands alone: back to the list -->
+      <PageHeader :title="heading" wrap-title :back="goBack" />
     </template>
     <div class="conversation flex-column gap-4">
       <Loader block v-show="loading" />
@@ -12,7 +12,7 @@
       <template v-if="thread">
         <h2 class="conversation__wrap fs-400 fw-600 m-0" data-testid="conversation-recipient">{{ recipient }}</h2>
         <router-link v-if="companyRoute" class="conversation__wrap t-accent" :to="companyRoute" data-testid="conversation-company">
-          {{ companyName }}
+          {{ $t("leads.thread.open_company", { name: companyName }) }}
         </router-link>
         <p class="conversation__wrap m-0" data-testid="thread-subject">
           <strong>{{ threadSubject(thread.timeline) }}</strong>
@@ -40,7 +40,6 @@ import { useRoute, useRouter } from "vue-router";
 import { t } from "@/i18n";
 import { GET_ThreadWithOptouts, GET_WaitingMessages, POST_ConfirmOptout } from "@/api/communicator/api";
 import { GET_Company } from "@/api/leads/api";
-import { useIsDesktop } from "@/composables/useIsDesktop";
 import { useNotifyStore } from "@/stores/notify";
 import { useMuninStore } from "@/stores/munin";
 import { threadTone } from "@/utils/leadsLabels";
@@ -54,7 +53,6 @@ const route = useRoute();
 const router = useRouter();
 const notify = useNotifyStore();
 const munin = useMuninStore();
-const isDesktop = useIsDesktop();
 
 const thread = ref(null);
 const waiting = ref([]);
@@ -69,6 +67,7 @@ const companyRoute = computed(() => {
   const ref = thread.value?.subject_ref;
   return companyName.value && companyIdFromSubjectRef(ref) ? routeForSubjectRef(ref) : null;
 });
+const heading = computed(() => companyName.value || thread.value?.recipient_email || t("leads.thread.conversation"));
 const replyCompany = computed(() => (outboundOn(munin, "leads") && outboundOn(munin, "communicator") ? company.value : null));
 
 async function loadCompany() {

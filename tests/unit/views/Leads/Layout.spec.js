@@ -76,6 +76,17 @@ describe("Leads layout", () => {
     expect(wrapper.classes()).toContain("leads--detail");
   });
 
+  // N21: below 1440 px a company card and a conversation hide the column (CSS); a draft keeps it
+  it("a company card and a conversation are focus screens, a draft is not", () => {
+    enable("leads", "communicator");
+    for (const [name, focus] of [["LeadsThread", true], ["LeadsConversation", true], ["LeadsReview", false]]) {
+      route.current.name = name;
+      const wrapper = mountLayout();
+      expect(wrapper.classes().includes("leads--focus")).toBe(focus);
+      expect(wrapper.find('[data-testid="inbox"]').exists()).toBe(true); // mounted: its chip survives
+    }
+  });
+
   it("leads-only: the company thread takes the whole width and no Inbox mounts", () => {
     enable("leads", "notifications");
     route.current.name = "LeadsThread";

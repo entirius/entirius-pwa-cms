@@ -203,7 +203,6 @@ describe("Leads Inbox (one list: drafts, waiting mails, conversations)", () => {
     server.counts = { all: 2, draft: 0, waiting: 0, replied: 2 };
     route.name = "LeadsThread";
     route.params = { id: "9" };
-    useLeadsThreadStore().shownId = 21; // the card shows the company's newest thread — the row's thread
     const wrapper = mountInbox();
     await flushPromises();
     expect(ids(wrapper)).toEqual([21, 7]);
@@ -213,6 +212,20 @@ describe("Leads Inbox (one list: drafts, waiting mails, conversations)", () => {
     expect(row.find('[data-testid="inbox-marker-replied"]').exists()).toBe(true); // a reply in an older thread counts
     expect(JSON.parse(row.get("a").attributes("data-to"))).toEqual({ name: "LeadsThread", params: { id: 9 }, query: { tab: "timeline" } });
     expect(wrapper.find('[data-thread="7"] [data-testid="inbox-item-threads"]').exists()).toBe(false);
+  });
+
+  // N21: Today (a page) in between remounts the column — it comes back on the chip it had, not on Drafts
+  it("a remounted column keeps its chip", async () => {
+    const first = mountInbox();
+    await flushPromises();
+    await chip(first, "replied").trigger("click");
+    await flushPromises();
+    first.unmount();
+    expect(useLeadsThreadStore().inboxFilter).toBe("replied");
+    GET_Conversations.mockClear();
+    mountInbox();
+    await flushPromises();
+    expect(GET_Conversations.mock.calls.every(([params]) => params.state === "replied")).toBe(true);
   });
 
   it("a draft that sits in an older thread opens Review with that draft and names its own recipient", async () => {

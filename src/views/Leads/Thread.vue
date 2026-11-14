@@ -77,7 +77,6 @@ import {
   POST_ConfirmOptout,
 } from "@/api/communicator/api";
 import { useMuninStore } from "@/stores/munin";
-import { useLeadsThreadStore } from "@/stores/leadsThread";
 import { useNotifyStore } from "@/stores/notify";
 import { activityText, threadTone } from "@/utils/leadsLabels";
 import { outboundOn } from "@/utils/leadsOutbound";
@@ -106,7 +105,6 @@ const notify = useNotifyStore();
 
 const company = ref(null);
 const newest = ref(null);
-const shownThread = useLeadsThreadStore();
 const older = ref({ threads: [], count: 0, next: false });
 const pendingOptouts = ref([]);
 const waiting = ref([]);
@@ -138,12 +136,10 @@ const replyThreadId = computed(() => {
 });
 
 async function loadThreads() {
-  shownThread.shownId = null; // another company: no stale row stays marked while this one loads
   const { data } = await GET_Threads({ subject_ref: subjectRef.value, page_size: PAGE_SIZE });
   const [first, ...rest] = data.results || [];
   older.value = { threads: rest, count: Math.max((data.count || 0) - 1, 0), next: Boolean(data.next) };
   newest.value = first ? await GET_ThreadWithOptouts(first.id) : null;
-  shownThread.shownId = newest.value?.id ?? null;
 }
 
 async function loadPendingOptouts() {

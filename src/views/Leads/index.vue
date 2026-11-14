@@ -6,7 +6,7 @@
   <div v-else-if="route.meta?.page" class="leads-page h-100 ovy-auto" data-testid="leads-page">
     <router-view />
   </div>
-  <div v-else class="leads" :class="{ 'leads--detail': hasDetail, 'leads--solo': !hasInbox }" data-testid="leads-layout">
+  <div v-else class="leads" :class="{ 'leads--detail': hasDetail, 'leads--solo': !hasInbox, 'leads--focus': isFocus }" data-testid="leads-layout">
     <aside v-if="hasInbox" class="leads__inbox">
       <!-- Conversations | Companies: one nav entry, the toggle navigates between the two list routes -->
       <SegmentedControl
@@ -67,7 +67,8 @@ import DesktopOnly from "./DesktopOnly.vue";
 import Inbox from "./Inbox.vue";
 
 // Desktop-only screens (board, import, stages) take the full width.
-// Mobile stacks the screens (Inbox, or the open draft/thread); >= 1024 px shows both as columns.
+// Mobile stacks the screens (Inbox, or the open draft/thread); >= 1024 px shows both as columns, a company card and a
+// conversation only from 1440 px.
 // The Inbox is communicator data — without that module the detail takes the whole width.
 const route = useRoute();
 const router = useRouter();
@@ -87,6 +88,10 @@ watch(
   (name) => LIST_ROUTES[name] && (list.value = LIST_ROUTES[name])
 );
 const hasDetail = computed(() => !hasInbox.value || !LIST_ROUTES[route.name]);
+// A company card and a conversation need the width: below 1440 px they hide the column (it stays mounted, so its chip
+// and scroll survive); from 1440 px the column stays beside them.
+const FOCUS_ROUTES = ["LeadsThread", "LeadsConversation"];
+const isFocus = computed(() => FOCUS_ROUTES.includes(route.name));
 const listOptions = computed(() => [
   { value: "conversations", label: t("leads.inbox.conversations"), testid: "leads-list-conversations" },
   { value: "companies", label: t("leads.companies.title"), testid: "leads-list-companies" },
@@ -156,6 +161,16 @@ onUnmounted(() => approvals.stop());
   .leads--solo {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .leads--focus {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .leads--focus .leads__inbox {
+    display: none;
+  }
+}
+@media (min-width: 1024px) {
   .leads__inbox {
     border-right: 1px solid var(--border-subtle);
   }

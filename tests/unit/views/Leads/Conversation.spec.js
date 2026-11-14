@@ -6,10 +6,6 @@ const route = vi.hoisted(() => ({ name: "LeadsConversation", params: {} }));
 const back = vi.hoisted(() => vi.fn());
 const push = vi.hoisted(() => vi.fn());
 vi.mock("vue-router", () => ({ useRoute: () => route, useRouter: () => ({ back, push }) }));
-vi.mock("@/composables/useIsDesktop", async () => {
-  const { ref } = await import("vue");
-  return { useIsDesktop: () => ref(false) }; // a phone: the Back bar shows
-});
 const api = vi.hoisted(() => ({
   GET_ThreadWithOptouts: vi.fn(),
   GET_WaitingMessages: vi.fn(() => Promise.resolve([])),
@@ -29,6 +25,8 @@ const timeline = [
   { at: "2026-09-21T08:00:00Z", direction: "out", status: "sent", subject: "Your shop audit", body_text: "Hi" },
   { at: "2026-09-22T08:00:00Z", direction: "in", body_text: "Yes, call me\n\nOn Mon Anna wrote:\n> Hi" },
 ];
+
+const Header = { props: ["title", "back"], template: "<h1>{{ title }}</h1>" };
 
 // The views read the munin store (the outbound guards): an empty one = an older backend.
 beforeEach(() => setActivePinia(createPinia()));
@@ -74,10 +72,11 @@ describe("Leads Conversation (a thread by id)", () => {
     modules.leads = true;
     leads.GET_Company.mockResolvedValue({ data: { id: 42, name: "Acme", contacts: [] } });
     api.GET_ThreadWithOptouts.mockResolvedValue({ id: 23, status: "replied", subject_ref: "leads.Company:42", recipient_name: "Jan", recipient_email: "jan@shop.test", timeline, optouts: [] });
-    const wrapper = mount(Conversation, { global: { stubs: { Loader: true, "router-link": { props: ["to"], template: "<a :data-to=\"JSON.stringify(to)\"><slot /></a>" } } } });
+    const wrapper = mount(Conversation, { global: { stubs: { Loader: true, PageHeader: Header, "router-link": { props: ["to"], template: "<a :data-to=\"JSON.stringify(to)\"><slot /></a>" } } } });
     await flushPromises();
     const link = wrapper.get('[data-testid="conversation-company"]');
-    expect(link.text()).toBe("Acme");
+    expect(link.text()).toContain("leads.thread.open_company");
+    expect(wrapper.get("h1").text()).toBe("Acme");
     expect(JSON.parse(link.attributes("data-to"))).toMatchObject({ name: "LeadsThread", params: { id: 42 } });
     modules.leads = false;
   });
@@ -87,5 +86,17 @@ describe("Leads Conversation (a thread by id)", () => {
     const wrapper = mount(Conversation, { global: { stubs: { Loader: true } } });
     await flushPromises();
     expect(wrapper.find('[data-testid="conversation-company"]').exists()).toBe(false);
+  });
+
+  // N5: the plan-23 `subject_label` heads a conversation without a company card; else the other side's address
+  it("is headed by the subject label, else by the other side's address", async () => {
+    api.GET_ThreadWithOptouts.mockResolvedValue({ id: 23, status: "replied", subject_ref: "bdd:x", subject_label: "Example Shop", recipient_email: "jan@shop.test", timeline, optouts: [] });
+    const labelled = mount(Conversation, { global: { stubs: { Loader: true, PageHeader: Header } } });
+    await flushPromises();
+    expect(labelled.get("h1").text()).toBe("Example Shop");
+    api.GET_ThreadWithOptouts.mockResolvedValue({ id: 23, status: "replied", subject_ref: "bdd:x", subject_label: "", recipient_email: "jan@shop.test", timeline, optouts: [] });
+    const bare = mount(Conversation, { global: { stubs: { Loader: true, PageHeader: Header } } });
+    await flushPromises();
+    expect(bare.get("h1").text()).toBe("jan@shop.test");
   });
 });

@@ -54,6 +54,7 @@ import { useLeadsReviewStore } from "@/stores/leadsReview";
 import { useMuninStore } from "@/stores/munin";
 import { outboundOn } from "@/utils/leadsOutbound";
 import { sendStateSentence } from "@/utils/leadsLabels";
+import { companyIdFromSubjectRef } from "@/utils/subjectRef";
 import { sendState } from "@/utils/leadsTime";
 import InboxRow from "./InboxRow.vue";
 
@@ -67,10 +68,12 @@ const POLL_MS = 30000; // the bell's cadence: a new reply shows up under Replies
 
 const route = useRoute();
 const reviewQueue = useLeadsReviewStore();
-const shownThread = useLeadsThreadStore();
+const column = useLeadsThreadStore();
 const root = ref(null);
-// null until the first answer picks Drafts (when any wait) or All; Today's counters open it on a chip (`?filter=`)
-const filter = ref(FILTERS.includes(route.query?.filter) ? route.query.filter : null);
+// null until the first answer picks Drafts (when any wait) or All; Today's counters open it on a chip (`?filter=`);
+// a remounted column comes back on the chip it had.
+const filter = ref(FILTERS.includes(route.query?.filter) ? route.query.filter : column.inboxFilter);
+watch(filter, (key) => (column.inboxFilter = key));
 const rows = ref([]);
 // Today's "N replies need review" opens Replies with `?review=1`: only the conversations whose newest reply is flagged.
 // Picking another chip (or Replies again) lifts it.
@@ -102,8 +105,8 @@ function isActive(row) {
   const id = String(route.params.id);
   if (route.name === "LeadsReview") return String(row.draft?.id) === id;
   if (route.name === "LeadsConversation") return String(row.id) === id;
-  // A company card shows its newest thread — the thread a company's row stands for.
-  return route.name === "LeadsThread" && row.id === shownThread.shownId;
+  // One row per company: the open company card marks its row.
+  return route.name === "LeadsThread" && String(companyIdFromSubjectRef(row.subject_ref)) === id;
 }
 
 async function fetchPage(state, number) {
