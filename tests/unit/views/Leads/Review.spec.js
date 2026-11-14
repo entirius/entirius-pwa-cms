@@ -6,7 +6,7 @@ import { useConfigHealthStore } from "@/stores/configHealth";
 import { useLeadsReviewStore } from "@/stores/leadsReview";
 import { applyPolicy, channelTimeZone } from "@/utils/leadsTime";
 
-const draft = { id: 5, subject: "Audit", body_text: "Hello", thread: { subject_ref: "leads.Company:153", recipient_email: "anna@example-shop-1.test" }, render_context: { company_name: "Example Shop 1", hooks: [] } };
+const draft = { id: 5, status: "review_required", subject: "Audit", body_text: "Hello", thread: { subject_ref: "leads.Company:153", recipient_email: "anna@example-shop-1.test" }, render_context: { company_name: "Example Shop 1", hooks: [] } };
 const api = vi.hoisted(() => ({
   GET_ReviewList: vi.fn(),
   GET_ReviewMessage: vi.fn(),
@@ -165,7 +165,7 @@ describe("Leads Review", () => {
     delete route.current.query;
   });
 
-  it("Not now skips and moves to the next draft", async () => {
+  it("Later skips and moves to the next draft", async () => {
     api.POST_ReviewSkip.mockReturnValue(ok());
     api.GET_ReviewNext.mockResolvedValue({ data: { id: 6 } });
     const wrapper = await mountReview();
@@ -392,15 +392,33 @@ describe("Leads Review", () => {
     vi.unstubAllGlobals();
   });
 
-  // FIX-17 item 7: a draft that is already scheduled or sent says so instead of a silent redirect.
-  it("an already handled draft says so before the Inbox takes over", async () => {
-    api.GET_ReviewMessage.mockResolvedValue(null);
-    await mountReview();
-    expect(spawnNotification).toHaveBeenCalledWith({
-      msg: "That draft is already scheduled or sent.",
-      type: "warning",
-    });
-    expect(replace).toHaveBeenCalledWith({ name: "LeadsInbox" });
+  // N9: the address of a draft that left the queue says what happened to it and offers the next one — no other draft
+  // opens under it unasked.
+  it.each([
+    [{ ...draft, status: "approved" }, "This draft no longer waits for review: Scheduled."],
+    [{ ...draft, status: "rejected" }, "This draft no longer waits for review: Skipped."],
+    [null, "This draft no longer exists."],
+  ])("a draft that left the queue says what happened to it (%#)", async (found, text) => {
+    api.GET_ReviewMessage.mockResolvedValue(found);
+    api.GET_ReviewNext.mockResolvedValue({ data: { id: 6 } });
+    const wrapper = await mountReview();
+    expect(wrapper.get('[data-testid="review-handled"]').text()).toContain(text);
+    expect(wrapper.find('[data-testid="review-draft"]').exists()).toBe(false);
+    expect(replace).not.toHaveBeenCalled();
+    await wrapper.get('[data-testid="review-handled-next"]').trigger("click");
+    await flushPromises();
+    expect(replace).toHaveBeenCalledWith({ name: "LeadsReview", params: { id: 6 } });
+  });
+
+  // N7: after an action the next draft is the one below in the Inbox order, not the service's oldest
+  it("after Later the next draft is the one below in the Inbox order", async () => {
+    api.GET_ReviewList.mockResolvedValue({ data: { results: [{ id: 3 }, { id: 4 }, { id: 5 }] } }); // Inbox: 5, 4, 3
+    api.POST_ReviewSkip.mockReturnValue(ok());
+    const wrapper = await mountReview();
+    await wrapper.get('[data-testid="review-skip"]').trigger("click");
+    await flushPromises();
+    expect(replace).toHaveBeenCalledWith({ name: "LeadsReview", params: { id: 4 } });
+    expect(api.GET_ReviewNext).not.toHaveBeenCalled();
   });
 
   // FIX-17 item 4: after a send the next draft is visibly another one.

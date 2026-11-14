@@ -4288,7 +4288,7 @@
       "back": "Skrzynka",
       "to": "Do",
       "send": "Wyślij",
-      "not_now": "Nie teraz",
+      "not_now": "Później",
       "more": "Więcej akcji",
       "rewrite": "Przepisz z uwagą",
       "edit": "Edytuj",
@@ -4308,13 +4308,15 @@
       "retry": "Spróbuj ponownie",
       "not_found": "Nie znaleziono szkicu",
       "queue_position": "Szkic {index} z {count}",
-      "already_handled": "Ten szkic jest już zaplanowany lub wysłany.",
       "discard_title": "Odrzucić niezapisane zmiany?",
       "discard_keep": "Wróć do edycji",
       "discard_yes": "Odrzuć",
       "problem": "Problem: {detail}",
       "last_reply": "Ostatnia odpowiedź",
-      "send_blocked": "Nie można wysłać — zobacz problem powyżej"
+      "send_blocked": "Nie można wysłać — zobacz problem powyżej",
+      "handled": "Ten szkic nie czeka już na przegląd: {state}.",
+      "gone": "Tego szkicu już nie ma.",
+      "next_draft": "Następny szkic"
     },
     "rewrite": {
       "title": "Przepisz z uwagą",
@@ -4388,7 +4390,11 @@
       "review_required": "Szkic",
       "skipped": "Pominięta",
       "rejected": "Pominięta",
-      "suppressed": "Zablokowana"
+      "suppressed": "Zablokowana",
+      "superseded": "Zastąpiona nową wersją",
+      "sending": "Wysyłana",
+      "would_send": "Wysłana w trybie testowym",
+      "draft": "Szkic"
     },
     "desktop_only": {
       "title": "Otwórz na komputerze",

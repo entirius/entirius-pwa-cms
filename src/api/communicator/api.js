@@ -11,11 +11,11 @@ export const GET_ReviewNext = () => communicatorApi.get(`${base()}/review/next/`
 export const GET_ReviewList = (params) =>
   communicatorApi.get(`${base()}/review/`, { params });
 
-// A draft waiting for review, by id (one request); null once it left the queue or is not on this channel (404).
+// A draft of the review queue by id, in whatever status it is now (one request); null when it is not on this channel (404).
 export const GET_ReviewMessage = async (id) => {
   try {
     const { data } = await communicatorApi.get(`${base()}/review/${id}/`);
-    return data.status === "review_required" ? data : null;
+    return data;
   } catch (err) {
     if ((err?.httpStatus ?? err?.response?.status) === 404) return null;
     throw err;

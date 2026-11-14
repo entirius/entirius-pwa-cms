@@ -10,6 +10,12 @@
         {{ scheduledLabel }}
       </p>
 
+      <!-- the address of a draft that left the queue: what happened to it, and the way on (never another draft unasked) -->
+      <div v-if="handled" class="flex-column gap-4" role="status" data-testid="review-handled">
+        <p class="m-0">{{ handledText }}</p>
+        <BasicButton class="as-s" variant="primary" data-testid="review-handled-next" @click="goNext">{{ $t("leads.review.next_draft") }}</BasicButton>
+      </div>
+
       <AiToolboxHint />
       <ConfigBanner code="communicator.smtp" />
 
@@ -117,7 +123,7 @@ import { useNotifyStore } from "@/stores/notify";
 import { useSwipe } from "@/composables/useSwipe";
 import { useIsDesktop } from "@/composables/useIsDesktop";
 import { companyIdFromSubjectRef } from "@/utils/subjectRef";
-import { replyTypeLabel, sendStateSentence } from "@/utils/leadsLabels";
+import { replyTypeLabel, sendStateSentence, statusLabel } from "@/utils/leadsLabels";
 import { FROM_APPROVALS, outboundOn, problemText, replyTone } from "@/utils/leadsOutbound";
 import { sendState } from "@/utils/leadsTime";
 import AiToolboxHint from "@/components/ConfigHealth/AiToolboxHint.vue";
@@ -201,14 +207,20 @@ function settleDiscard(discard) {
 onBeforeRouteLeave(confirmDiscard);
 onBeforeRouteUpdate(confirmDiscard);
 
+// N9: a draft still in review opens itself; one that left the queue (sent, scheduled, skipped, gone) says so.
+const REVIEW_STATUS = "review_required";
+const handled = ref(null); // the status of a draft that left the queue, "gone" when it is not there at all
+const handledText = computed(() =>
+  handled.value === "gone" ? t("leads.review.gone") : t("leads.review.handled", { state: statusLabel(handled.value) })
+);
+
 async function load() {
   loading.value = true;
   try {
-    message.value = await api.GET_ReviewMessage(route.params.id);
-    if (!message.value) {
-      notify.spawnNotification({ msg: t("leads.review.already_handled"), type: "warning" });
-      return await goNext();
-    }
+    const found = await api.GET_ReviewMessage(route.params.id);
+    handled.value = found?.status === REVIEW_STATUS ? null : found?.status || "gone";
+    message.value = handled.value ? null : found;
+    if (handled.value) return;
     await Promise.all([loadQueuePosition(), loadOutbound()]);
   } finally {
     loading.value = false;
@@ -248,15 +260,25 @@ async function loadQueuePosition() {
   try {
     const { data } = await api.GET_ReviewList({ status: "review_required", page_size: 100 });
     // The Inbox lists the drafts newest first; the number counts the same way, so "Draft 1" is the top row.
-    const ids = (data.results || []).map((item) => item.id).reverse();
-    queueTotal.value = ids.length;
-    queueIndex.value = ids.indexOf(message.value.id) + 1;
+    queue.value = (data.results || []).map((item) => item.id).reverse();
+    queueTotal.value = queue.value.length;
+    queueIndex.value = queue.value.indexOf(message.value.id) + 1;
   } catch {
     queueTotal.value = 0;
   }
 }
 
+// N7: the next draft is the one below in the Inbox order (else the one above) — "Draft 1 of 19" goes on to the new
+// "Draft 1 of 18"; the service's next only when this draft is not in the list read.
+const queue = ref([]);
+function followingId() {
+  const at = queue.value.indexOf(message.value?.id);
+  return at < 0 ? null : queue.value[at + 1] ?? queue.value[at - 1] ?? null;
+}
+
 async function goNext() {
+  const id = followingId();
+  if (id) return router.replace({ name: "LeadsReview", params: { id }, ...(fromApprovals.value && { query: route.query }) });
   try {
     const { data } = await api.GET_ReviewNext();
     router.replace({ name: "LeadsReview", params: { id: data.id }, ...(fromApprovals.value && { query: route.query }) });

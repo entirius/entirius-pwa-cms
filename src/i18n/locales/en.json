@@ -4289,7 +4289,7 @@
       "back": "Inbox",
       "to": "To",
       "send": "Send",
-      "not_now": "Not now",
+      "not_now": "Later",
       "more": "More actions",
       "rewrite": "Rewrite with a note",
       "edit": "Edit",
@@ -4309,13 +4309,15 @@
       "retry": "Retry",
       "not_found": "Draft not found",
       "queue_position": "Draft {index} of {count}",
-      "already_handled": "That draft is already scheduled or sent.",
       "discard_title": "Discard unsaved changes?",
       "discard_keep": "Keep editing",
       "discard_yes": "Discard",
       "problem": "Problem: {detail}",
       "last_reply": "Last reply",
-      "send_blocked": "Cannot be sent — see the problem above"
+      "send_blocked": "Cannot be sent — see the problem above",
+      "handled": "This draft no longer waits for review: {state}.",
+      "gone": "This draft no longer exists.",
+      "next_draft": "Next draft"
     },
     "rewrite": {
       "title": "Rewrite with a note",
@@ -4389,7 +4391,11 @@
       "review_required": "Draft",
       "skipped": "Skipped",
       "rejected": "Skipped",
-      "suppressed": "Blocked"
+      "suppressed": "Blocked",
+      "superseded": "Replaced by a new version",
+      "sending": "Sending",
+      "would_send": "Sent in test mode",
+      "draft": "Draft"
     },
     "desktop_only": {
       "title": "Open on a desktop",
