@@ -180,7 +180,7 @@ const filtered = computed(() => activeFilters.value > 0 || Boolean(search.value)
 
 const columns = [
   { key: "recipient", label: t("leads.approvals.col_recipient"), width: "1fr" },
-  { key: "subject", label: t("leads.approvals.col_subject"), width: "1fr", priority: 2 },
+  { key: "subject", label: t("leads.approvals.col_subject"), width: "1fr", truncate: false, priority: 2 },
   { key: "channel", label: t("leads.approvals.channel"), width: "max-content", priority: 3 },
   { key: "template_key", label: t("leads.approvals.template"), width: "max-content", truncate: false, priority: 3 },
   { key: "age", label: t("leads.approvals.col_age"), numeric: true, priority: 2 },
