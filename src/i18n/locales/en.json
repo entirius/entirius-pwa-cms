@@ -4420,7 +4420,7 @@
       "stage": "Stage",
       "segment": "Segment",
       "origin": "Origin",
-      "lead_type": "Lead type",
+      "lead_type": "Company type",
       "with_reply": "With reply",
       "do_not_contact": "Do not contact",
       "filters": "Filters",
@@ -4473,7 +4473,7 @@
       },
       "name": "Name",
       "stage": "Stage",
-      "type": "Lead type",
+      "type": "Company type",
       "last_activity": "Last activity",
       "customer": "Customer",
       "activities": "Recent activity",
@@ -4641,7 +4641,7 @@
       "domain": "Domain",
       "domain_hint": "shop.com or https://shop.com",
       "name": "Name",
-      "lead_type": "Lead type",
+      "lead_type": "Company type",
       "contact": "Contact",
       "first_name": "First name",
       "last_name": "Last name",
@@ -4654,14 +4654,14 @@
       "company_saved": "Company added — the contact was not saved yet:"
     },
     "lead_types": {
-      "title": "Lead types",
-      "help": "The kinds of lead this channel works with. Board chips, the company card and template audiences read this list. A type in use can be deactivated, not deleted.",
+      "title": "Company types",
+      "help": "The kinds of company you sell to. Board chips, the company card and template audiences read this list. A type in use can be deactivated, not deleted.",
       "label": "Label",
       "code": "Code",
       "code_help": "Upper-case, e.g. RETAILER — fixed after it is added",
       "active": "Active",
       "add": "Add type",
-      "unknown": "Type unknown",
+      "unknown": "Company type unknown",
       "code_invalid": "A code may hold only letters, digits and “_”",
       "label_required": "Enter a label"
     },
@@ -5423,7 +5423,7 @@
       "schema_invalid": "Invalid JSON",
       "audience": "Audience",
       "audience_all": "All types",
-      "audience_help": "The lead type this variant is for; the other types get the “All types” template.",
+      "audience_help": "The company type this variant is for; the other types get the “All types” template.",
       "kinds": {
         "static": "Static text",
         "ai_prompt": "AI prompt"
@@ -6019,7 +6019,7 @@
       },
       "leads": {
         "companies": "Companies, contacts and imports",
-        "settings": "Pipeline stages, lead types, rules and profiles",
+        "settings": "Pipeline stages, company types, rules and profiles",
         "gdpr": "GDPR export and erasure"
       },
       "communicator": {

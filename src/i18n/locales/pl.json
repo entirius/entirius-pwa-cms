@@ -4419,7 +4419,7 @@
       "stage": "Etap",
       "segment": "Segment",
       "origin": "Źródło",
-      "lead_type": "Typ leada",
+      "lead_type": "Typ firmy",
       "with_reply": "Z odpowiedzią",
       "do_not_contact": "Nie kontaktować",
       "filters": "Filtry",
@@ -4472,7 +4472,7 @@
       },
       "name": "Nazwa",
       "stage": "Etap",
-      "type": "Typ leada",
+      "type": "Typ firmy",
       "last_activity": "Ostatnia aktywność",
       "customer": "Klient",
       "activities": "Ostatnie zdarzenia",
@@ -4640,7 +4640,7 @@
       "domain": "Domena",
       "domain_hint": "sklep.pl lub https://sklep.pl",
       "name": "Nazwa",
-      "lead_type": "Typ leada",
+      "lead_type": "Typ firmy",
       "contact": "Kontakt",
       "first_name": "Imię",
       "last_name": "Nazwisko",
@@ -4653,14 +4653,14 @@
       "company_saved": "Firma dodana — kontakt jeszcze niezapisany:"
     },
     "lead_types": {
-      "title": "Typy leadów",
-      "help": "Rodzaje leadów, z którymi pracuje ten kanał. Z tej listy korzystają chipy tablicy, karta firmy i odbiorcy szablonów. Typ w użyciu można wyłączyć, ale nie usunąć.",
+      "title": "Typy firm",
+      "help": "Rodzaje firm, którym sprzedajesz. Z tej listy korzystają chipy tablicy, karta firmy i odbiorcy szablonów. Typ w użyciu można wyłączyć, ale nie usunąć.",
       "label": "Nazwa",
       "code": "Kod",
       "code_help": "Wielkimi literami, np. RETAILER — po dodaniu nie można go zmienić",
       "active": "Aktywny",
       "add": "Dodaj typ",
-      "unknown": "Typ nieznany",
+      "unknown": "Typ firmy nieznany",
       "code_invalid": "Kod może zawierać tylko litery, cyfry i „_”",
       "label_required": "Podaj nazwę"
     },
@@ -5422,7 +5422,7 @@
       "schema_invalid": "Niepoprawny JSON",
       "audience": "Odbiorcy",
       "audience_all": "Wszystkie typy",
-      "audience_help": "Typ leada, dla którego jest ten wariant; pozostałe typy dostają szablon „Wszystkie typy”.",
+      "audience_help": "Typ firmy, dla którego jest ten wariant; pozostałe typy dostają szablon „Wszystkie typy”.",
       "kinds": {
         "static": "Stały tekst",
         "ai_prompt": "Prompt AI"
@@ -6018,7 +6018,7 @@
       },
       "leads": {
         "companies": "Firmy, kontakty i importy",
-        "settings": "Etapy lejka, typy leadów, reguły i profile",
+        "settings": "Etapy lejka, typy firm, reguły i profile",
         "gdpr": "Eksport i usuwanie danych (RODO)"
       },
       "communicator": {
