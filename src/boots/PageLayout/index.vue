@@ -1,11 +1,10 @@
 <template>
   <div class="page-layout h-100 ovy-auto" :class="{ 'page-layout--roomy': roomy }">
     <slot name="header" />
-    <NoticeMe v-if="readonly" class="page-layout__readonly" stroke_color_class="t-warning">
-      <p class="page-layout__readonly-text fs-200" role="status" data-testid="readonly-notice">
-        {{ $t("access.readonly_notice") }}
-      </p>
-    </NoticeMe>
+    <!-- drawn as the other notices of the CMS (ConfigBanner, the AI hint): a flat warning bar, no animated frame -->
+    <p v-if="readonly" class="page-layout__readonly fs-200" role="status" data-testid="readonly-notice">
+      {{ $t("access.readonly_notice") }}
+    </p>
     <div v-if="$slots.toolbar" class="page-layout__toolbar"><ReadonlyOff><slot name="toolbar" /></ReadonlyOff></div>
     <div class="page-layout__body"><slot /></div>
     <div v-if="hasFooter()" class="page-layout__footer"><slot name="footer" /></div>
@@ -24,7 +23,6 @@
 import { useSlots } from "vue";
 import { hasSlotContent } from "@/composables/useSlotContent";
 import { ReadonlyOff, provideReadonly, usePageReadonly } from "@/composables/useReadonly";
-import NoticeMe from "@/boots/NoticeMe/index.vue";
 
 const props = defineProps({
   roomy: { type: Boolean, default: false },
@@ -78,9 +76,11 @@ const hasFooter = () => hasSlotContent(slots.footer?.());
   }
 }
 
-.page-layout__readonly-text {
+.page-layout__readonly {
   margin: 0;
   padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--warning-subtle);
   color: var(--text-body);
 }
 

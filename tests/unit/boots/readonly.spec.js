@@ -109,6 +109,8 @@ describe("PageLayout read-only decision", () => {
     expect(wrapper.find(".probe").text()).toBe("true");
     expect(wrapper.findAll('[data-testid="readonly-notice"]')).toHaveLength(1);
     expect(wrapper.text()).toContain("access.readonly_notice");
+    // N23 (Leads walk 2): a flat notice bar like the CMS's other notices, no animated dashed frame
+    expect(wrapper.find(".notice-me").exists()).toBe(false);
   });
 
   it("is not read-only with write on the route's area", () => {
