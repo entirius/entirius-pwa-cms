@@ -63,6 +63,16 @@ describe("Leads → task dialog", () => {
     expect(todo.POST_TaskDone).toHaveBeenCalledWith(9, "Interested");
   });
 
+  it("Log call refused on a field it does not show closes with the API's message, never stuck open", async () => {
+    todo.POST_Task.mockRejectedValueOnce({ response: { status: 400, data: { error: "validation_error", message: "Owner cannot take tasks", details: [{ field: "owner_id", description: "not assignable" }] } } });
+    const wrapper = await opened({ mode: "call", company });
+    setControl(wrapper, "task-outcome", "Interested");
+    await byTestid(wrapper, "task-submit").trigger("click");
+    await flushPromises();
+    expect(notify.spawnNotification).toHaveBeenCalledWith(expect.objectContaining({ type: "negative" }));
+    expect(wrapper.emitted("update:open")?.at(-1)).toEqual([false]);
+  });
+
   it("from Today a company must be picked", async () => {
     const wrapper = await opened({ mode: "add" });
     setControl(wrapper, "task-title", "Call back");

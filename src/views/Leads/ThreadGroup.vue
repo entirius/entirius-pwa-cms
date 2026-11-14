@@ -52,8 +52,9 @@ import { contactOf, threadSubject } from "@/utils/leadsThread";
 import { formatTime } from "@/utils/leadsTime";
 import ThreadTimeline from "./ThreadTimeline.vue";
 
-// One older thread of the company, collapsed to its header. The conversation loads with the header: collapsed rows
-// of the same company are told apart by their subject and recipient, not by opening them one by one.
+// One older thread of the company, collapsed to its header. Collapsed rows of the same company are told apart by the
+// list row's subject and recipient, not by opening them one by one; the conversation loads when the row first opens
+// (at once for the thread holding the reply), so a card listing many earlier conversations reads none of them unasked.
 const props = defineProps({
   thread: { type: Object, required: true },
   pending: { type: Boolean, default: false },
@@ -74,7 +75,8 @@ const detail = ref(null);
 const optoutBusy = ref(false);
 
 const title = computed(
-  () => threadSubject(detail.value?.timeline) || props.thread.recipient_name || props.thread.recipient_email
+  () =>
+    threadSubject(detail.value?.timeline) || props.thread.subject || props.thread.recipient_name || props.thread.recipient_email
 );
 const recipient = computed(() =>
   [props.thread.recipient_name, props.thread.recipient_email].filter(Boolean).join(" · ")
@@ -96,6 +98,7 @@ async function onSent() {
 
 function toggle() {
   open.value = !open.value;
+  if (open.value && !detail.value) loadDetail();
 }
 
 // A drag that selects the subject or recipient to copy it is no tap: it leaves the thread as it is. Text selected
@@ -107,7 +110,7 @@ function onSummaryClick(event) {
   if (!selection?.toString() || !inSummary) toggle();
 }
 
-onMounted(loadDetail);
+onMounted(() => open.value && loadDetail());
 
 async function confirmOptout(replyId) {
   if (optoutBusy.value) return;

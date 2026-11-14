@@ -4,9 +4,9 @@ import { mount, flushPromises } from "@vue/test-utils";
 
 // Three threads of the company, newest first (the list order of the API).
 const summaries = [
-  { id: 9, status: "open", recipient_name: "Anna", recipient_email: "anna@shop.test", last_message_at: "2026-09-23T08:00:00Z" },
-  { id: 8, status: "closed", recipient_name: "Anna", recipient_email: "jan@shop.test", last_message_at: "2026-09-22T08:00:00Z" },
-  { id: 7, status: "closed", recipient_name: "Anna", recipient_email: "jan@shop.test", last_message_at: "2026-09-21T08:00:00Z" },
+  { id: 9, status: "open", subject: "Subject 9", recipient_name: "Anna", recipient_email: "anna@shop.test", last_message_at: "2026-09-23T08:00:00Z" },
+  { id: 8, status: "closed", subject: "Subject 8", recipient_name: "Anna", recipient_email: "jan@shop.test", last_message_at: "2026-09-22T08:00:00Z" },
+  { id: 7, status: "closed", subject: "Subject 7", recipient_name: "Anna", recipient_email: "jan@shop.test", last_message_at: "2026-09-21T08:00:00Z" },
 ];
 const detail = (id) => ({
   id,
@@ -100,12 +100,15 @@ describe("Leads Thread", () => {
     await flushPromises();
     const groups = wrapper.findAll('[data-testid="earlier-thread"]');
     expect(groups).toHaveLength(2);
-    expect(api.GET_ThreadWithOptouts.mock.calls.map(([id]) => id)).toEqual([9, 8, 7]);
+    // the rows say their subject from the list; a conversation is read when its row first opens
+    expect(api.GET_ThreadWithOptouts.mock.calls.map(([id]) => id)).toEqual([9]);
     expect(groups[1].get('[data-testid="earlier-thread-subject"]').text()).toBe("Subject 7");
     expect(groups[1].get('[data-testid="earlier-thread-to"]').text()).toContain("jan@shop.test");
     expect(groups[1].find('[data-testid="thread-timeline"]').exists()).toBe(false);
 
     await groups[1].get('[data-testid="earlier-thread-toggle"]').trigger("click");
+    await flushPromises();
+    expect(api.GET_ThreadWithOptouts.mock.calls.map(([id]) => id)).toEqual([9, 7]);
     expect(groups[1].findAll('[data-testid="timeline-out"]')).toHaveLength(1);
     expect(groups[0].find('[data-testid="thread-timeline"]').exists()).toBe(false);
   });

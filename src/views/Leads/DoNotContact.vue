@@ -56,7 +56,7 @@
         <FormField :label="$t('leads.dnc.value')" required :error="valueError">
           <BasicInput v-model="draft.value" :format="draft.kind === 'email' ? 'email' : undefined" :maxlength="254" data-testid="suppression-value" />
         </FormField>
-        <FormField v-if="scopeOffered" :label="$t('leads.dnc.reach')">
+        <FormField v-if="scopeOffered" :label="$t('leads.dnc.reach')" :error="reachError">
           <BasicRadioGroup v-model="draft.scope" :options="scopeOptions" name="dnc-add-reach" data-testid="dnc-add-reach" />
         </FormField>
         <FormField :label="$t('leads.dnc.note')">
@@ -117,10 +117,12 @@ const error = ref("");
 const page = ref(1);
 const adding = ref(false);
 const draft = reactive({ kind: "email", value: "", reason: "", scope: "channel" });
-// The reach of a new row (`scope`): an older backend refuses the field — the first refusal sends the entry again
-// without it and the choice is not offered any more.
+// The reach of a new row (`scope`): an older backend refuses the field. Refused with This channel (what an older
+// backend does anyway) the entry goes again without it and the choice is not offered any more; refused with All
+// channels the error stands on Reach — never a narrower entry than the one asked for.
 const scopeOffered = ref(true);
 const valueError = ref("");
+const reachError = ref("");
 const checking = ref(false);
 const checkEmail = ref("");
 const checkError = ref("");
@@ -188,6 +190,7 @@ function reload() {
 function openAdd() {
   Object.assign(draft, { kind: "email", value: "", reason: "", scope: "channel" });
   valueError.value = "";
+  reachError.value = "";
   adding.value = true;
 }
 
@@ -200,7 +203,9 @@ async function add() {
     await load();
   } catch (err) {
     // a field error in words (T7); a refusal of the whole entry (a duplicate) in the API's sentence
-    valueError.value = apiFieldErrors(err, ["value"]).value || extractApiMessage(err, t("leads.dnc.load_error"));
+    const fields = apiFieldErrors(err, ["value", "scope"]);
+    reachError.value = fields.scope || "";
+    valueError.value = fields.value || (fields.scope ? "" : extractApiMessage(err, t("leads.dnc.load_error")));
   }
 }
 
@@ -210,7 +215,7 @@ async function postEntry() {
   try {
     return await POST_Suppression({ ...entry, scope });
   } catch (err) {
-    if (!apiFieldErrors(err, ["scope"]).scope) throw err;
+    if (scope !== "channel" || !apiFieldErrors(err, ["scope"]).scope) throw err;
     scopeOffered.value = false;
     return POST_Suppression(entry);
   }

@@ -242,7 +242,9 @@ function finish(task) {
 // A 400 on a field keeps the dialog open with the error under the field; any other failure closes it with a toast.
 function fail(err) {
   handleApiError(err);
-  const onField = ["title", "due_at", "owner_id", "subject_ref"].some((name) => getFieldError(name));
+  // only a field on screen holds the error (Log call and Mark done show Outcome alone)
+  const shown = outcomeOnly.value ? [] : ["title", "due_at", "owner_id", "subject_ref"];
+  const onField = shown.some((name) => getFieldError(name));
   if (onField) return;
   notify.spawnNotification({ msg: extractApiMessage(err, t("leads.task.error")), type: "negative" });
   emit("update:open", false);

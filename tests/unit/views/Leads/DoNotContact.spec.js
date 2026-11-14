@@ -93,6 +93,21 @@ describe("Leads → Settings → Do not contact", () => {
     expect(api.POST_Suppression).toHaveBeenLastCalledWith({ kind: "email", value: "ewa@acme.test", reason: "" });
   });
 
+  it("All channels refused by an older backend stands as an error on Reach — never saved for this channel only", async () => {
+    const refusal = { response: { status: 400, data: { error: "validation_error", details: [{ field: "scope", issue: "extra_forbidden", description: "Extra inputs are not permitted" }] } } };
+    api.POST_Suppression.mockRejectedValueOnce(refusal);
+    const wrapper = await mounted();
+    await byTestid(wrapper, "suppression-add").trigger("click");
+    wrapper.findComponent('[data-testid="dnc-add-reach"]').vm.$emit("update:modelValue", "install");
+    wrapper.findComponent('[data-testid="suppression-value"]').vm.$emit("update:modelValue", "jan@acme.test");
+    await byTestid(wrapper, "dnc-add-submit").trigger("click");
+    await flushPromises();
+    expect(api.POST_Suppression).toHaveBeenCalledTimes(1);
+    expect(byTestid(wrapper, "dnc-add-modal").exists()).toBe(true);
+    expect(fieldError(wrapper, "leads.dnc.reach")).toBeTruthy();
+    expect(fieldError(wrapper, "leads.dnc.value")).toBeFalsy();
+  });
+
   it("check explains a blocked address and a clear one", async () => {
     api.GET_AddressStatus.mockResolvedValueOnce({ data: { refusal: "suppressed", suppressions: [{ source: "bounce", scope: "channel" }], address_status: { status: "invalid", reason: "hard_bounce" } } });
     const wrapper = await mounted();

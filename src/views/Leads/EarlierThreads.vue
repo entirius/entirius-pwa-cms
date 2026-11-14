@@ -65,8 +65,8 @@ const allThreads = computed(() => [...props.threads, ...extra.value]);
 const hasMore = computed(() => (extraNext.value === null ? props.next : extraNext.value));
 const pendingCount = computed(() => allThreads.value.filter((thread) => props.pendingThreads.has(thread.id)).length);
 
-// The list arrives after this component is created — a reply thread expands the section whenever it shows up.
-watch(() => props.openThreadId, (id) => id && (open.value = true), { immediate: true });
+// The list starts open; a reload that brings a reply thread opens it again after the user folded it.
+watch(() => props.openThreadId, (id) => id && (open.value = true));
 
 async function loadMore() {
   loading.value = true;

@@ -8,7 +8,7 @@ vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification: 
 
 import ThreadGroup from "@/views/Leads/ThreadGroup.vue";
 
-const thread = { id: 8, status: "replied", recipient_name: "Anna", recipient_email: "anna@shop.test", last_message_at: "2026-09-22T08:00:00Z" };
+const thread = { id: 8, status: "replied", subject: "Your shop audit", recipient_name: "Anna", recipient_email: "anna@shop.test", last_message_at: "2026-09-22T08:00:00Z" };
 const timeline = [
   { at: "2026-09-21T08:00:00Z", direction: "out", status: "sent", subject: "Your shop audit", body_text: "Hi" },
   { at: "2026-09-22T08:00:00Z", direction: "in", body_text: "Yes, call me" },
@@ -27,7 +27,7 @@ describe("Leads ThreadGroup", () => {
     Element.prototype.scrollIntoView = function () {
       scrolled.push(this);
     };
-    api.GET_ThreadWithOptouts.mockResolvedValue({ id: 8, timeline, optouts: [] });
+    api.GET_ThreadWithOptouts.mockReset().mockResolvedValue({ id: 8, timeline, optouts: [] });
   });
   afterEach(() => {
     Element.prototype.scrollIntoView = scrollIntoView;
@@ -48,6 +48,7 @@ describe("Leads ThreadGroup", () => {
     expect(wrapper.find('[data-testid="earlier-thread-reply"]').exists()).toBe(false);
     expect(wrapper.find('[data-testid="thread-timeline"]').exists()).toBe(false);
     expect(wrapper.get('[data-testid="earlier-thread-subject"]').text()).toBe("Your shop audit");
+    expect(api.GET_ThreadWithOptouts).not.toHaveBeenCalled();
   });
 
   // Plan 56b: a phone tap on the subject opens the thread; the IconButton keeps its state for the keyboard.
@@ -56,6 +57,7 @@ describe("Leads ThreadGroup", () => {
     const wrapper = mount(ThreadGroup, { props: { thread }, global: { stubs: { Loader: true, IconButton } } });
     await flushPromises();
     await wrapper.get('[data-testid="earlier-thread-subject"]').trigger("click");
+    await flushPromises();
     expect(wrapper.find('[data-testid="thread-timeline"]').exists()).toBe(true);
     expect(wrapper.get('[data-testid="earlier-thread-toggle"]').attributes("aria-expanded")).toBe("true");
     await wrapper.get('[data-testid="earlier-thread-toggle"]').trigger("click");
