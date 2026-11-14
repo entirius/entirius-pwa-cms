@@ -128,4 +128,12 @@ describe("Leads → task dialog", () => {
     await flushPromises();
     expect(todo.POST_TaskCancel).toHaveBeenCalledWith(4, "");
   });
+
+  // Plan 34: the button that leaves without doing anything is Cancel in every mode; Keep task stays beside Cancel task
+  it.each(["add", "edit", "call", "done"])("the %s dialog leaves with Cancel", async (mode) => {
+    const task = { id: 4, title: "Old", kind: "mail", note: "", due_at: null, owner: { id: 7 }, contact_ref: "", status: "open" };
+    const wrapper = await opened({ mode, company, task });
+    const actions = wrapper.findComponent({ name: "BasicModal" }).props("actions");
+    expect(actions.find((action) => action.testid === "task-close").label).toBe("Cancel");
+  });
 });

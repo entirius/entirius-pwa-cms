@@ -5156,7 +5156,6 @@
       "saved_toast": "Task saved",
       "cancelled_toast": "Task cancelled",
       "call_logged_toast": "Call logged",
-      "close": "Close",
       "keep": "Keep task",
       "required": "Required",
       "error": "The task could not be saved"

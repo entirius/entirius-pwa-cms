@@ -112,7 +112,7 @@ const SUBMIT = { add: "leads.task.add", edit: "leads.task.save", call: "leads.ta
 const actions = computed(() =>
   [
     props.mode === "edit" && props.task?.status !== "done" && { key: "cancel-task", label: t("leads.task.cancel_task"), role: "danger", testid: "task-cancel-task", onClick: () => (cancelling.value = true) },
-    { key: "close", label: t("leads.task.close"), role: "secondary", disabled: saving.value, testid: "task-close", onClick: () => close(false) },
+    { key: "cancel", label: t("common.cancel"), role: "secondary", disabled: saving.value, testid: "task-close", onClick: () => close(false) },
     { key: "submit", label: t(SUBMIT[props.mode]), role: "primary", loading: saving.value, testid: "task-submit", onClick: submit },
   ].filter(Boolean)
 );

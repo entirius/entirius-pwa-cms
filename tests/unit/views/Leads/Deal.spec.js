@@ -76,11 +76,11 @@ describe("Leads → Deal card", () => {
     expect(wrapper.findComponent({ name: "BasicMenu" }).props("items").map((item) => item.key)).toEqual(["delete"]);
   });
 
-  it("the reason dialog closes with Close, like the task dialog", async () => {
+  it("the reason dialog leaves with Cancel, like the task dialog", async () => {
     const wrapper = await mounted();
     await byTestid(wrapper, "deal-mark-lost").trigger("click");
     const labels = wrapper.findComponent({ name: "LostReasonDialog" }).findComponent({ name: "BasicModal" }).props("actions").map((action) => action.label);
-    expect(labels[0]).toBe("Close");
+    expect(labels[0]).toBe("Cancel");
   });
 
   it("Mark lost asks the reason before any call", async () => {

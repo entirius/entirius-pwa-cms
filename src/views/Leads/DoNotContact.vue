@@ -153,7 +153,7 @@ const addActions = computed(() => [
   { key: "submit", role: "primary", label: t("leads.dnc.add"), testid: "dnc-add-submit", onClick: add },
 ]);
 const checkActions = computed(() => [
-  { key: "close", role: "secondary", label: t("common.close"), onClick: () => (checking.value = false) },
+  { key: "cancel", role: "secondary", label: t("common.cancel"), onClick: () => (checking.value = false) },
   { key: "submit", role: "primary", label: t("leads.dnc.check"), mutates: false, testid: "dnc-check-submit", onClick: check },
 ]);
 

@@ -69,11 +69,11 @@ describe("Leads → Write mail", () => {
     expect(byTestid(wrapper, "compose-send").attributes("disabled")).toBeDefined();
   });
 
-  // M15 / m3: the disabled Send is a real `disabled` button (the boot drops its fill); the dismiss word is Close
-  it("the dismiss button says Close, and Send stays a disabled primary on a blocked contact", async () => {
+  // M15 / m3: the disabled Send is a real `disabled` button (the boot drops its fill); plan 34: the dismiss word is Cancel
+  it("the dismiss button says Cancel, and Send stays a disabled primary on a blocked contact", async () => {
     leads.GET_Mailable.mockResolvedValue({ data: { eligible: false, reasons: ["suppressed"] } });
     const wrapper = await opened();
-    expect(byTestid(wrapper, "compose-cancel").text()).toBe("leads.task.close");
+    expect(byTestid(wrapper, "compose-cancel").text()).toBe("common.cancel");
     const send = byTestid(wrapper, "compose-send");
     expect(send.attributes("disabled")).toBeDefined();
     expect(wrapper.findComponent('[data-testid="compose-send"]').props("variant")).toBe("primary");
