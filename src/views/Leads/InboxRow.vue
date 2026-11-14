@@ -22,9 +22,16 @@
         <span v-if="reply.intent_return_date" class="t-secondary">{{ $t("leads.history.back_on", { date: formatDay(reply.intent_return_date) }) }}</span>
       </span>
       <span class="inbox-row__state" data-testid="inbox-item-state">
-        <FontAwesomeIcon v-if="marker === 'waiting'" :icon="$icons.scheduled" class="inbox-row__clock" />
-        <StatusBadge v-if="MARKER_TONES[marker]" size="sm" :tone="MARKER_TONES[marker]" :label="markerText" :data-testid="`inbox-marker-${marker}`" />
-        <strong v-else-if="marker !== 'none'" class="inbox-row__marker" :data-testid="`inbox-marker-${marker}`">{{ markerText }}</strong>
+        <!-- a waiting mail is a badge like every other state; when it leaves is the badge's tooltip -->
+        <StatusBadge
+          v-if="MARKER_TONES[marker]"
+          size="sm"
+          :tone="MARKER_TONES[marker]"
+          :label="markerText"
+          :title="marker === 'waiting' ? departure : markerText"
+          :data-testid="`inbox-marker-${marker}`"
+        />
+        <StatusBadge v-if="marker === 'draft' && row.draft.composed" size="sm" tone="neutral" :label="$t('leads.history.event_composed')" data-testid="inbox-item-composed" />
         <StatusBadge v-else size="sm" :tone="threadTone(row.status)" :label="$t(`leads.thread.state.${row.status}`)" data-testid="inbox-item-thread-state" />
         <span v-if="detail" class="inbox-row__detail">{{ detail }}</span>
       </span>
@@ -67,7 +74,7 @@ const companyName = ref("");
 
 // The chip the user looks through decides the marker of a conversation that is in several states at once.
 const MARKER_ORDER = { all: ["draft", "replied", "waiting"], draft: ["draft"], waiting: ["waiting"], replied: ["replied"] };
-const MARKER_TONES = { draft: "warning", replied: "accent" };
+const MARKER_TONES = { draft: "warning", replied: "accent", waiting: "info" };
 const holds = {
   draft: (row) => Boolean(row.draft),
   waiting: (row) => Boolean(row.waiting),
@@ -80,9 +87,10 @@ const markerText = computed(
     ({
       draft: t("leads.inbox.marker_draft"),
       replied: t("leads.thread.state.replied"),
-      waiting: sendStateSentence(sendState(props.row.waiting?.next_slot)),
+      waiting: t("leads.inbox.marker_waiting"),
     })[marker.value]
 );
+const departure = computed(() => sendStateSentence(sendState(props.row.waiting?.next_slot)));
 
 const firstLine = (text) => splitQuote(text).own.split("\n").find((line) => line.trim()) || "";
 // The latest text is the newest mail of the conversation, not the draft's — a draft row shows its own subject only,
@@ -167,17 +175,6 @@ onMounted(async () => {
 }
 .inbox-row__detail {
   margin-left: var(--space-2);
-}
-.inbox-row__marker {
-  color: var(--text-accent);
-}
-.inbox-row--waiting .inbox-row__marker {
-  font-weight: 400;
-  color: var(--text-secondary);
-}
-.inbox-row__clock {
-  margin-right: var(--space-1);
-  color: var(--text-muted);
 }
 .inbox-row__send {
   padding: 0 var(--space-8) var(--space-5);

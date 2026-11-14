@@ -56,6 +56,12 @@ describe("Leads → Write mail", () => {
     expect(leads.POST_Compose.mock.lastCall[1]).toMatchObject({ reply_id: 21, contact_id: 4 });
   });
 
+  // N3: one prefix, whatever the case of the one already there
+  it.each(["Re: Offer", "RE: re:Offer", "Offer"])("answering %s is headed Re: Offer", async (subject) => {
+    const wrapper = await opened({ reply: { id: 21, subject, body: "Call me", contact_id: 4 } });
+    expect(wrapper.findComponent('[data-testid="compose-subject"]').props("modelValue")).toBe("Re: Offer");
+  });
+
   it("a blocked contact disables Send with the gate's reason", async () => {
     leads.GET_Mailable.mockResolvedValue({ data: { eligible: false, reasons: ["suppressed"] } });
     const wrapper = await opened();

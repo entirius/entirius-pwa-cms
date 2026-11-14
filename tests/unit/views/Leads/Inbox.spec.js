@@ -118,7 +118,10 @@ describe("Leads Inbox (one list: drafts, waiting mails, conversations)", () => {
     expect(draft.get('[data-testid="inbox-item-subject"]').text()).toBe("Draft for shop 5");
     expect(draft.get('[data-testid="inbox-item-to"]').text()).toContain("anna@example-shop-5.test");
     expect(JSON.parse(draft.get("a").attributes("data-to"))).toEqual({ name: "LeadsReview", params: { id: 51 } });
-    expect(waiting.get('[data-testid="inbox-marker-waiting"]').text()).toContain(`goes out at ${formatTime(waitingAt)}`);
+    // N10: a badge like every other state, the departure as its tooltip
+    const badge = waiting.get('[data-testid="inbox-marker-waiting"]');
+    expect(badge.attributes("label")).toBe("Scheduled");
+    expect(badge.attributes("title")).toContain(`goes out at ${formatTime(waitingAt)}`);
     expect(JSON.parse(waiting.get("a").attributes("data-to"))).toEqual({ name: "LeadsThread", params: { id: 6 }, query: { tab: "timeline" } });
     expect(replied.get('[data-testid="inbox-item-state"]').text()).toContain("Yes, call me");
     expect(replied.text()).not.toContain("> Hi");
@@ -144,7 +147,7 @@ describe("Leads Inbox (one list: drafts, waiting mails, conversations)", () => {
     const wrapper = mountInbox();
     await flushPromises();
     const rows = wrapper.findAll('[data-testid="inbox-item"]');
-    expect(rows[0].text()).toContain("daily cap reached");
+    expect(rows[0].get('[data-testid="inbox-marker-waiting"]').attributes("title")).toContain("daily cap reached");
     expect(rows[1].find('[data-testid="inbox-item-send-now"]').exists()).toBe(false);
     await rows[0].get('[data-testid="inbox-item-send-now"]').trigger("click");
     await flushPromises();

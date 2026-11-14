@@ -58,6 +58,7 @@ import { extractApiMessage } from "@/composables/useFormErrors";
 import { useNotifyStore } from "@/stores/notify";
 import { blockReasonLabel, sendStateSentence } from "@/utils/leadsLabels";
 import { apiErrorCode } from "@/utils/leadsOutbound";
+import { replySubject } from "@/utils/leadsReply";
 import { sendState } from "@/utils/leadsTime";
 import SendCheckDialog from "./SendCheckDialog.vue";
 
@@ -96,7 +97,7 @@ function reset() {
   const primary = mailable.value.find((contact) => contact.is_primary) || mailable.value[0];
   Object.assign(form, {
     contactId: props.reply?.contact_id ?? primary?.id ?? null,
-    subject: props.reply?.subject ? `Re: ${props.reply.subject}` : "",
+    subject: replySubject(props.reply?.subject),
     body: "",
   });
   Object.keys(errors).forEach((key) => delete errors[key]);

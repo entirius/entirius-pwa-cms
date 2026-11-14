@@ -4281,7 +4281,8 @@
       "empty_replied": "No replies yet",
       "load_error": "Could not load the inbox — it tries again on the next refresh",
       "threads_few": "{count} conversations",
-      "threads_many": "{count} conversations"
+      "threads_many": "{count} conversations",
+      "marker_waiting": "Scheduled"
     },
     "review": {
       "title": "Review",
@@ -4381,14 +4382,14 @@
       "held_window": "waiting for the send window ({window})"
     },
     "status": {
-      "sent": "sent",
-      "scheduled": "scheduled",
-      "failed": "failed",
-      "approved": "scheduled",
-      "review_required": "to review",
-      "skipped": "skipped",
-      "rejected": "skipped",
-      "suppressed": "blocked"
+      "sent": "Sent",
+      "scheduled": "Scheduled",
+      "failed": "Failed",
+      "approved": "Scheduled",
+      "review_required": "Draft",
+      "skipped": "Skipped",
+      "rejected": "Skipped",
+      "suppressed": "Blocked"
     },
     "desktop_only": {
       "title": "Open on a desktop",
@@ -4610,7 +4611,8 @@
       "legal_basis_set": "Legal basis set to {to}",
       "legal_basis_changed": "Legal basis changed from {from} to {to}",
       "blocked": "Blocked: {reason}",
-      "deal_moved": "{from} → {to}"
+      "deal_moved": "{from} → {to}",
+      "draft_review": "Draft waiting for review"
     },
     "block_reason": {
       "no_eligible_contact": "no eligible contact",
@@ -5253,7 +5255,8 @@
         "cooldown": "it ran for this company recently",
         "audit": "audit requested",
         "draft": "draft written, {status}",
-        "score": "segment {segment}, {points} points"
+        "score": "segment {segment}, {points} points",
+        "draft_review": "draft written, waiting for review"
       }
     },
     "reports": {

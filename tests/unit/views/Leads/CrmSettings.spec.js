@@ -171,8 +171,15 @@ describe("Leads → Settings → Rules", () => {
     // Acceptance C3: the company by name, the result in words, no id, no doubled word
     const runs = wrapper.findAll('[data-testid="rule-run"]').map((run) => run.text().replace(/\s+/g, " "));
     expect(runs[0]).toContain("Acme · Skipped — a condition did not hold: Segment");
-    expect(runs[1]).toContain("leads.rules.run.company · Ran — draft written, to review");
+    expect(runs[1]).toContain("leads.rules.run.company · Ran — draft written, waiting for review");
     expect(runs.join(" ")).not.toMatch(/#|\b(5|200|60)\b|review_required|skipped: skipped/);
+    // a run of plan 23 names its company itself — no company call for it
+    leads.GET_Company.mockClear();
+    leads.GET_RuleRuns.mockResolvedValueOnce({ data: { results: [{ id: 9, company_id: 77, company_name: "Named Shop", outcome: "ran", detail: "audit requested", fired_at: "2026-09-26T08:00:00Z" }] } });
+    await byTestid(wrapper, "rule-edit").trigger("click");
+    await flushPromises();
+    expect(wrapper.get('[data-testid="rule-run"]').text()).toContain("Named Shop");
+    expect(leads.GET_Company).not.toHaveBeenCalled();
     await byTestid(wrapper, "rule-add-condition").trigger("click");
     await byTestid(wrapper, "rule-save").trigger("click");
     await flushPromises();

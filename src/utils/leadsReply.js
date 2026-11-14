@@ -16,3 +16,6 @@ async function findReplyId(threadId, at) {
   if (!found) throw new Error("reply not found");
   return found.id;
 }
+
+// N3: one "Re:" whatever the case and count of the prefixes already there ("RE: re: Offer" → "Re: Offer").
+export const replySubject = (subject) => (subject ? `Re: ${subject.replace(/^(\s*re\s*:\s*)+/i, "")}` : "");

@@ -79,7 +79,7 @@
           <ul class="m-0 flex-column gap-1 rules__runs">
             <li v-for="run in runs" :key="run.id" data-testid="rule-run">
               {{ formatTime(run.fired_at) }} ·
-              <router-link :to="{ name: 'LeadsThread', params: { id: run.company_id } }" class="t-accent">{{ companyNames[run.company_id] || $t("leads.rules.run.company") }}</router-link>
+              <router-link :to="{ name: 'LeadsThread', params: { id: run.company_id } }" class="t-accent">{{ run.company_name || companyNames[run.company_id] || $t("leads.rules.run.company") }}</router-link>
               · {{ ruleRunText(run, fieldLabel) }}
             </li>
           </ul>
@@ -214,10 +214,11 @@ async function openDialog(rule) {
   await loadCompanyNames(runs.value);
 }
 
-// A run carries the company's id only: the names of the few companies of the last runs, one call each; a company
-// that does not answer keeps the generic link text.
+// A run names its company (`company_name`, "" when the company is gone). A run of an older backend carries the id only:
+// the names of the few companies of the last runs, one call each; a company that does not answer keeps the generic text.
 async function loadCompanyNames(list) {
-  const ids = [...new Set(list.map((run) => run.company_id))].filter((id) => !companyNames.value[id]);
+  const unnamed = list.filter((run) => !("company_name" in run));
+  const ids = [...new Set(unnamed.map((run) => run.company_id))].filter((id) => !companyNames.value[id]);
   const answers = await Promise.allSettled(ids.map((id) => GET_Company(id)));
   const found = answers.flatMap((answer) => (answer.status === "fulfilled" ? [[answer.value.data.id, answer.value.data.name]] : []));
   companyNames.value = { ...companyNames.value, ...Object.fromEntries(found) };

@@ -99,7 +99,8 @@ const props = defineProps({
   // the company card: with it (and CRM on) an inbound bubble offers Reply, answered in Write mail
   company: { type: Object, default: null },
   threadId: { type: Number, default: null },
-  // message ids written by hand (`composed` activities): no "Follow-up" tag, they are not sequence mails
+  // message ids written by hand (`composed` activities) for a timeline without the entries' own `composed` (an older
+  // backend): no "Follow-up" tag, they are not sequence mails
   composed: { type: Array, default: () => [] },
   // the company card turns it off while earlier conversations hold the mail: one empty state, only when there is none
   showEmpty: { type: Boolean, default: true },
@@ -161,7 +162,7 @@ function messageEntry(item, index, firstOut) {
 // A hand-written mail is no sequence step: it says so instead of "Follow-up".
 function tagOf(item, out, index, firstOut) {
   if (!out) return "";
-  if (props.composed.includes(item.message_id)) return t("leads.history.event_composed");
+  if (item.composed || props.composed.includes(item.message_id)) return t("leads.history.event_composed");
   return index !== firstOut ? t("leads.thread.followup") : "";
 }
 

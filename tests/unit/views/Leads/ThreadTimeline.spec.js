@@ -100,12 +100,19 @@ describe("ThreadTimeline", () => {
     expect(wrapper.emitted("confirm-optout")).toBeUndefined();
   });
 
+  // plan 23: a timeline entry says `composed` itself
+  it("tags an entry composed by hand without the activity list", () => {
+    const own = { ...messages[1], message_id: 77, composed: true };
+    const wrapper = mountTl({ props: { messages: [messages[1], own] } });
+    expect(wrapper.text()).toContain("Mail written by hand");
+  });
+
   // M17: a status word is a badge with its tone
   it("renders the message status as a StatusBadge with the tone of its kind", () => {
     const wrapper = mountTl({ props: { messages: [messages[1]] } });
     const badge = wrapper.getComponent('[data-testid="status-sent"]');
     expect(badge.props("tone")).toBe("positive");
-    expect(badge.props("label")).toBe("sent");
+    expect(badge.props("label")).toBe("Sent");
   });
 
   // M14: a mail written by hand is no follow-up

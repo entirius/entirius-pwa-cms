@@ -4280,7 +4280,8 @@
       "empty_replied": "Brak odpowiedzi",
       "load_error": "Nie udało się wczytać skrzynki — spróbujemy ponownie przy następnym odświeżeniu",
       "threads_few": "{count} rozmowy",
-      "threads_many": "{count} rozmów"
+      "threads_many": "{count} rozmów",
+      "marker_waiting": "Zaplanowana"
     },
     "review": {
       "title": "Przegląd",
@@ -4380,14 +4381,14 @@
       "held_window": "czeka na okno wysyłki ({window})"
     },
     "status": {
-      "sent": "wysłana",
-      "scheduled": "zaplanowana",
-      "failed": "błąd",
-      "approved": "zaplanowana",
-      "review_required": "do przejrzenia",
-      "skipped": "pominięta",
-      "rejected": "pominięta",
-      "suppressed": "zablokowana"
+      "sent": "Wysłana",
+      "scheduled": "Zaplanowana",
+      "failed": "Błąd",
+      "approved": "Zaplanowana",
+      "review_required": "Szkic",
+      "skipped": "Pominięta",
+      "rejected": "Pominięta",
+      "suppressed": "Zablokowana"
     },
     "desktop_only": {
       "title": "Otwórz na komputerze",
@@ -4609,7 +4610,8 @@
       "legal_basis_set": "Podstawa prawna ustawiona: {to}",
       "legal_basis_changed": "Podstawa prawna zmieniona z {from} na {to}",
       "blocked": "Zablokowano: {reason}",
-      "deal_moved": "{from} → {to}"
+      "deal_moved": "{from} → {to}",
+      "draft_review": "Szkic czeka na przegląd"
     },
     "block_reason": {
       "no_eligible_contact": "brak kontaktu, do którego można pisać",
@@ -5252,7 +5254,8 @@
         "cooldown": "działała niedawno dla tej firmy",
         "audit": "zlecono audyt",
         "draft": "szkic napisany, {status}",
-        "score": "segment {segment}, {points} pkt"
+        "score": "segment {segment}, {points} pkt",
+        "draft_review": "szkic napisany, czeka na przegląd"
       }
     },
     "reports": {

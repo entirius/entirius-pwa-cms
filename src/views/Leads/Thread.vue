@@ -147,7 +147,12 @@ async function loadPendingOptouts() {
   pendingOptouts.value = data.results || [];
 }
 
-async function loadActivities(id) {
+// The phone card lists the activities; the desktop tab reads them only for a timeline whose entries do not say
+// `composed` themselves (an older backend).
+const saysComposed = () => (newest.value?.timeline || []).every((entry) => "composed" in entry);
+async function loadActivities(id, mail) {
+  await mail.catch(() => null);
+  if (!props.desktopHint && saysComposed()) return (activities.value = []);
   activities.value = (await GET_CompanyActivities(id, { page_size: 100 })).data.results || [];
 }
 
@@ -166,7 +171,8 @@ async function load() {
   const id = route.params.id;
   loading.value = true;
   try {
-    const [companyResult, mailResult] = await Promise.allSettled([loadCompany(id), loadMail(), loadActivities(id)]);
+    const mail = loadMail();
+    const [companyResult, mailResult] = await Promise.allSettled([loadCompany(id), mail, loadActivities(id, mail)]);
     companyMissing.value = companyResult.status === "rejected";
     mailMissing.value = mailResult.status === "rejected";
   } finally {

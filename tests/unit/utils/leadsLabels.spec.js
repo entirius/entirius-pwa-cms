@@ -14,7 +14,7 @@ describe("leads labels", () => {
   });
 
   it("translates the status of a draft activity", () => {
-    expect(activityText("draft review_required")).toBe("Draft — to review");
+    expect(activityText("draft review_required")).toBe("Draft waiting for review");
     expect(activityText("")).toBe("");
   });
 
@@ -56,7 +56,7 @@ describe("leads labels", () => {
 
   it("reads a rule run in words, without ids", () => {
     expect(ruleRunText({ outcome: "skipped", detail: "skipped: no hooks" })).toBe("Skipped — the audit found no hooks");
-    expect(ruleRunText({ outcome: "fired", detail: "message 60 review_required" })).toBe("Ran — draft written, to review");
+    expect(ruleRunText({ outcome: "fired", detail: "message 60 review_required" })).toBe("Ran — draft written, waiting for review");
     expect(ruleRunText({ outcome: "fired", detail: "score S2 (40 points)" })).toBe("Ran — segment S2, 40 points");
     expect(ruleRunText({ outcome: "blocked", detail: "blocked: do_not_contact" })).toBe("Blocked — marked do not contact");
     expect(ruleRunText({ outcome: "skipped", detail: "skipped: condition attr.size" }, () => "Size")).toBe("Skipped — a condition did not hold: Size");

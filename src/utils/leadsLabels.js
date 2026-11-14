@@ -52,7 +52,8 @@ const capitalize = (text) => text.charAt(0).toUpperCase() + text.slice(1);
 // Activity messages are written by the service ("stage new -> replied"): each known shape becomes a sentence built
 // from labels; anything else keeps its words without snake_case or ASCII arrows. The raw value stays in the API.
 const ACTIVITY_SHAPES = [
-  [/^draft (\w+)$/, ([status]) => t("leads.activity.draft", { status: statusLabel(status) })],
+  [/^draft review_required$/, () => t("leads.activity.draft_review")],
+  [/^draft (\w+)$/, ([status]) => t("leads.activity.draft", { status: statusLabel(status).toLowerCase() })],
   [/^stage (\S+) -> (\S+)$/, ([from, to]) => t("leads.activity.stage", { from: humanize(from), to: humanize(to) })],
   [/^legal basis (None|) -> (\S+)$/, ([, to]) => t("leads.activity.legal_basis_set", { to: basisLabel(to) })],
   [/^legal basis (\S+) -> (\S+)$/, ([from, to]) => t("leads.activity.legal_basis_changed", { from: basisLabel(from), to: basisLabel(to) })],
@@ -126,6 +127,7 @@ const RULE_RUN_SHAPES = [
   [/^rule cooldown$/, () => t("leads.rules.run.cooldown")],
   [/^audit requested$/, () => t("leads.rules.run.audit")],
   [/^blocked: (\w+)$/, ([reason]) => blockReasonLabel(reason)],
+  [/^message \d+ review_required$/, () => t("leads.rules.run.draft_review")],
   [/^message \d+ (\w+)$/, ([status]) => t("leads.rules.run.draft", { status: statusLabel(status).toLowerCase() })],
   [/^score (S\d) \((\d+) points\)$/, ([segment, points]) => t("leads.rules.run.score", { segment, points })],
 ];

@@ -26,10 +26,13 @@ const api = vi.hoisted(() => ({
 }));
 vi.mock("@/api/communicator/api", () => api);
 const stageActivity = { id: 1, kind: "stage", created_at: "2026-09-21T08:00:00Z", message: "stage new -> contacted", data: {} };
-const leadsApi = vi.hoisted(() => ({ GET_Company: vi.fn(), activities: [] }));
+const leadsApi = vi.hoisted(() => ({ GET_Company: vi.fn(), activities: [], GET_CompanyActivities: vi.fn() }));
 vi.mock("@/api/leads/api", () => ({
   GET_Company: leadsApi.GET_Company,
-  GET_CompanyActivities: () => Promise.resolve({ data: { results: leadsApi.activities } }),
+  GET_CompanyActivities: (...args) => {
+    leadsApi.GET_CompanyActivities(...args);
+    return Promise.resolve({ data: { results: leadsApi.activities } });
+  },
 }));
 const modules = vi.hoisted(() => new Set());
 vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isModuleEnabled: (key) => modules.has(key), isModuleAtLeast: () => false }) }));
@@ -152,6 +155,16 @@ describe("Leads Thread", () => {
     await flushPromises();
     expect(none.findAll('[data-testid="thread-empty"]')).toHaveLength(1);
     expect(none.text()).not.toContain("leads.thread.no_thread");
+  });
+
+  // plan 23: entries that say `composed` themselves — the desktop tab reads no activities for it
+  it("the desktop tab reads no activities when the timeline says composed itself", async () => {
+    api.GET_ThreadWithOptouts.mockImplementation((id) =>
+      Promise.resolve({ ...detail(id), timeline: [{ at: "2026-09-23T08:00:00Z", direction: "out", status: "sent", body_text: "hi", composed: true }] })
+    );
+    mountThread();
+    await flushPromises();
+    expect(leadsApi.GET_CompanyActivities).not.toHaveBeenCalled();
   });
 
   it("further older threads load with one request for the next list page", async () => {
