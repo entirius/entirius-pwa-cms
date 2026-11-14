@@ -5317,7 +5317,8 @@
       "board_title": "Deal board",
       "col_stage": "Stage",
       "column_empty": "Nothing here yet",
-      "board_desktop_only": "The board is for a larger screen; here are the deals as a list."
+      "board_desktop_only": "The board is for a larger screen; here are the deals as a list.",
+      "move_to": "Move to…"
     },
     "deal": {
       "title": "Deal",

@@ -25,8 +25,9 @@ function board() {
     { stage: lost, count: 0, totals: [], deals: [] },
   ];
 }
+const BasicMenu = { name: "BasicMenu", props: ["items", "label", "placement"], emits: ["select"], template: "<div><slot name='trigger' /></div>" };
 const mounted = async (options = {}) => {
-  const wrapper = mountOutbound(DealsBoard, { area: "leads.companies", stubs: { ...crmStubs, DealDialog: true }, ...options });
+  const wrapper = mountOutbound(DealsBoard, { area: "leads.companies", stubs: { ...crmStubs, BasicMenu, DealDialog: true }, ...options });
   await flushPromises();
   return wrapper;
 };
@@ -63,6 +64,17 @@ describe("Leads → Deals board", () => {
     expect(won.findComponent({ name: "draggable" }).exists()).toBe(true);
     expect(byTestid(won, "deals-column-empty").text()).toBe("leads.deals.column_empty");
     expect(byTestid(column(wrapper, "qualified"), "deals-column-empty").exists()).toBe(false);
+  });
+
+  // N16: a card moves by "Move to…", a menu of the other stages — no select with a cut stage name
+  it("the card's Move to menu lists the other stages and moves the deal", async () => {
+    leads.POST_DealTransition.mockResolvedValue({ data: { ...deal(1, stage("qualified", "open", 0)), stage: stage("won", "won", 10) } });
+    const wrapper = await mounted();
+    const menu = column(wrapper, "qualified").findComponent({ name: "BasicMenu" });
+    expect(menu.props("items").map((item) => item.key)).toEqual(["won", "lost"]);
+    menu.vm.$emit("select", { key: "won" });
+    await flushPromises();
+    expect(leads.POST_DealTransition).toHaveBeenCalledWith(1, "won", "");
   });
 
   it("a move with the card's select says so in a toast", async () => {

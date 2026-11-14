@@ -5316,7 +5316,8 @@
       "board_title": "Tablica transakcji",
       "col_stage": "Etap",
       "column_empty": "Nic tu jeszcze nie ma",
-      "board_desktop_only": "Tablica jest na większy ekran; oto transakcje jako lista."
+      "board_desktop_only": "Tablica jest na większy ekran; oto transakcje jako lista.",
+      "move_to": "Przenieś do…"
     },
     "deal": {
       "title": "Transakcja",
