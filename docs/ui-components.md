@@ -169,7 +169,8 @@ and one meaning per glyph (unit test). A new meaning adds its glyph to `fa-icons
   the hit area grows to 40 × 40 around the box, the box keeps its size. `md` matches the text button, not Figma's
   32 px (KD23).
 - **`ActionBar`** — page and dialog actions in R5 order: `actions` = `[{ key, label, role, onClick, icon?,
-  disabled?, loading?, expanded?, form?, mutates?, testid? }]` (`expanded` = `aria-expanded` of a button that shows a section;
+  disabled?, loading?, expanded?, form?, mutates?, title?, testid? }]` (`title` = why a disabled button is disabled, e.g.
+  a settings page's Save "Nothing to save"; `expanded` = `aria-expanded` of a button that shows a section;
   `form` = the id of a form the header button submits from outside it — native checks, the form's submit handler,
   and Enter in a field presses it), `role` `utility` (an IconButton, `icon` required) · `secondary` · `danger` ·
   `primary` (one at most, a second warns in dev); extra controls go into the default slot, already in order.
@@ -430,10 +431,12 @@ Catalogue: `#selects` (`#basic-select`, `#entity-search-picker`, `#channel-multi
 - **`BasicSwitch`** — replaces `Switcher`: `v-model`, `label`, `hint` + `hintLevel` (the field-hint mark), `disabled`; a
   `role="switch"` button with `aria-checked`, styles scoped to it.
 - **`BasicDatePicker`** — an input-looking trigger with the `calendar` icon opens an inline flatpickr; `v-model` (the
-  flatpickr date string), `config` (a single date by default, `mode: "range"` for a range), `disabled`; the trigger
+  flatpickr date string), `config` (merged over the defaults — inline, wrapped, a single date; `mode: "range"` for a
+  range; its `locale` extends the UI language's — so a screen never repeats `inline` / `wrap`), `disabled`; the trigger
   shows every ISO day of the value in the UI locale ("Pick a date" when empty), the model keeps the string; the instance
   lives only while the calendar is open. `fixed` places the calendar against the viewport (upward when there is no
-  room below), so a scrolling parent such as a wide table does not clip it. Its label is the FormField's. The trigger's click reaches the document, so other
+  room below), so a scrolling parent such as a wide table does not clip it — use it for a picker at the bottom of a card
+  or in a dialog. Its label is the FormField's. The trigger's click reaches the document, so other
   popovers close; a click inside the open calendar never closes it.
 - **`SegmentedControl`** — contract id and `disabled`, named by the FormField label, `aria-pressed` on the active
   option; an option's own `disabled` takes just that option out. **`ColorInput`** — `disabled`, the text field reads the contract, the swatch is the native picker itself

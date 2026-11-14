@@ -302,12 +302,14 @@ watch(tasksOn, (on) => on && load());
 onMounted(() => Promise.all([load(), loadCounters()]));
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import "@/assets/scss/utils/media-query";
+
 .today__counters {
   row-gap: var(--space-3);
 }
 /* The chips wrap on a phone too: a sideways scroll hid the last one in Polish (N13). */
-@media (max-width: 768px) {
+@include max-tablet {
   .filter-chip-row.today__chips {
     flex-wrap: wrap;
     overflow-x: visible;

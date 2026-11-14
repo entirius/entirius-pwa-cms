@@ -9,12 +9,12 @@ Reports · Settings; a phone gets Today · Inbox · Companies in the bottom bar 
 `desktopOnly`; a Settings section still opens from a link), which Review (`meta.noBottomBar`) keeps off its sticky
 actions. The Inbox column carries a `SegmentedControl` Conversations | Companies (`leads-list-toggle`, shown with
 both modules); "Companies" opens the full list page. A company card keeps the list it came from in the left column
-on a desktop and lights Companies; the board and the import are Companies' page actions and light it too.
+from 1440 px (below that it takes the full width) and lights Companies; the board and the import are Companies' page actions and light it too.
 `siteintel` (intel card) and `notifications` (header bell, `src/components/NotificationBar/`)
 gate in-view with `isModuleEnabled` — never map them in `MODULE_TO_PANEL`. Every leads-family call takes the
 channel from `src/stores/leadsChannel.js` (`VUE_APP_LEADS_CHANNEL`, default `default-europe`), never
-`VUE_APP_CHANNEL`. Review has no detail endpoint: the view finds the draft in `review/?status=review_required`.
-The thread view opens the newest thread of `leads.Company:<id>` (closed or not); older threads sit behind one "Earlier threads" expander (first `threads/` page, more pages on demand, a row's detail loads with the row so its subject and recipient are readable collapsed) that badges an undecided opt-out; a reply that landed before our newest mail expands that section and opens its thread. A reply that sits in an older thread is marked ("The reply is in this thread") and scrolled into view on arrival (the bell carries only `subject_ref`). A waiting bubble shows no clock of its own: it states `sendState(next_slot)` like the Inbox (`src/utils/leadsTime.js`); a reply's quoted history (from its first `>` line) folds behind a toggle. `/leads/inbox` is one list of every conversation of the channel — one row per `subject_ref` (a company, or any other ref), never one per technical thread (`conversations/`: the newest thread's row, state/draft/waiting/reply from any of its threads, `thread_count > 1` as a quiet "N threads" hint; 20 per page, a 30 s poll like the bell) behind four `FilterChip`s whose counts come with the list (`counts`): All · Drafts · Waiting · Replies — Drafts is the default while drafts wait. A row keeps one layout and one marker (`InboxRow.vue`; the chip decides it for a conversation in several states): a draft opens Review (the row's draft, even from an older thread, "To:" its own recipient), a waiting mail shows a clock + `sendState(next_slot)` and Send now while `canSendNow`, a reply its first own line. Other rows open the company card, and a conversation without a company opens its newest thread at `/leads/conversations/:id`. The bell falls back to that view for an unmapped `subject_ref`. The empty Drafts filter keeps the old empty state ("N scheduled, <state>", `inbox-empty`), and the chip bar is `inbox-summary` — both are the emporium `InboxPage` contract. Activity messages are service strings — `activityText` (`src/utils/leadsLabels.js`) turns the known shapes into sentences. Config problems of the screen
+`VUE_APP_CHANNEL`. Review reads its draft by id (`review/<id>/`, any status).
+The thread view opens the newest thread of `leads.Company:<id>` (closed or not); older threads sit behind one "Earlier conversations" expander (first `threads/` page, more pages on demand, a row's detail loads with the row so its subject and recipient are readable collapsed) that badges an undecided opt-out; a reply that landed before our newest mail expands that section and opens its thread. A reply that sits in an older thread is marked ("The reply is in this thread") and scrolled into view on arrival (the bell carries only `subject_ref`). A waiting bubble shows no clock of its own: it states `sendState(next_slot)` like the Inbox (`src/utils/leadsTime.js`); a reply's quoted history (from its first `>` line) folds behind a toggle. `/leads/inbox` is one list of every conversation of the channel — one row per `subject_ref` (a company, or any other ref), never one per technical thread (`conversations/`: the newest thread's row, state/draft/waiting/reply from any of its threads, `thread_count > 1` as a quiet "N conversations" hint; 20 per page, a 30 s poll like the bell) behind four `FilterChip`s whose counts come with the list (`counts`): All · Drafts · Waiting · Replies — Drafts is the default while drafts wait. A row keeps one layout and one marker (`InboxRow.vue`; the chip decides it for a conversation in several states): a draft opens Review (the row's draft, even from an older thread, "To:" its own recipient), a waiting mail shows a "Scheduled" badge with `sendState(next_slot)` as its tooltip and Send now while `canSendNow`, a reply its first own line. Other rows open the company card, and a conversation without a company opens its newest thread at `/leads/conversations/:id`. The bell falls back to that view for an unmapped `subject_ref`. The empty Drafts filter keeps the old empty state ("N scheduled, <state>", `inbox-empty`), and the chip bar is `inbox-summary` — both are the emporium `InboxPage` contract. Activity messages are service strings — `activityText` (`src/utils/leadsLabels.js`) turns the known shapes into sentences. Config problems of the screen
 (outgoing SMTP) show as `ConfigBanner code="…"` and the AI toolbox state as `AiToolboxHint` (`src/components/ConfigHealth/`),
 both fed by the store `configHealth` — see `docs/config-health.md`. `data-testid`s are the contract of the
 emporium page objects (`src/entirius_tests/cms_pages/`) — rename both together.
@@ -23,9 +23,9 @@ Desktop screens (≥ 1024 px; below that `DesktopOnly.vue` shows "Open on a desk
 drag or the card's stage select → `companies/<id>/transition/`, refused move snaps back; rule badges from
 `GET rules/` — the stages payload carries none), `/leads/import` (`POST imports/`, polls the batch).
 Settings (`meta.page`: full width, one scroller, no DesktopOnly wall; every section on PageLayout + PageHeader, its tables DataTables):
-`/leads/settings` lists the sections, each its own route — `settings/stages` (reorder = `PATCH stages/<id>/ {order}`
+`/leads/settings` lists the sections, each its own route — `settings/stages` (renames and moves wait for the header Save; reorder = `PATCH stages/<id>/ {order}`
 per moved stage — there is no bulk order endpoint; delete 409 inline), `settings/templates` (+ `/:id`),
-`settings/sequences`, `settings/sending`, `settings/lead-types` (the Stages pattern: rename, reorder by PATCH `order`, deactivate, delete 409 inline; the code is fixed after create); a section leads back to the hub (the PageHeader `back`; a template goes back to the template list). Lead types are one list for the whole panel — `src/stores/leadTypes.js` (loaded once — a failed load is retried, logout resets it in `App.vue` together with the Inbox company-name cache `src/utils/leadsCompanyNames.js` — `label(code)`, `UNKNOWN` built in): Board chips = the active types in order, the company card's type select, the add-lead form and the template Audience (list column + edit select, shown only with the `leads` module; an audience a communicator does not send is never sent back). `/communicator/*` and `/leads/stages`
+`settings/sequences`, `settings/sending`, `settings/lead-types` ("Company types"; the Stages pattern: rename, reorder by PATCH `order`, deactivate — all on the header Save — delete 409 inline; the code is fixed after create); a section leads back to the hub (the PageHeader `back`; a template goes back to the template list). Lead types are one list for the whole panel — `src/stores/leadTypes.js` (loaded once — a failed load is retried, logout resets it in `App.vue` together with the Inbox company-name cache `src/utils/leadsCompanyNames.js` — `label(code)`, `UNKNOWN` built in): Board chips = the active types in order, the company card's type select, the add-lead form and the template Audience (list column + edit select, shown only with the `leads` module; an audience a communicator does not send is never sent back). `/communicator/*` and `/leads/stages`
 redirect there; the route names (`CommunicatorTemplates`, `CommunicatorSettings`, `LeadsStages`, …) did not change. `/leads/companies/:id` is the company card on every width (`Company.vue`, the name as H1, the domain and the stage /
 lead-type selects in the PageHeader meta; tabs via `?tab=` overview | contacts | timeline ("History": the thread view
 and the company's events) | tasks | intel; a phone opens History, a desktop Overview); notification jumps open
@@ -113,6 +113,37 @@ and stage are the server's. Settings → Deal stages (`DealStages.vue`): label a
 changed rows (the unsaved state beside it, a toast when they landed), reorder by the arrows, delete (409 → "This stage
 holds deals") and Add. The deal board is titled "Deal board", so its crumbs never read "Deals / Deals". Amounts stay decimal strings (`BasicInput format="money"`,
 shown through `formatCost`). The bell maps `leads.Deal:<id>` to the deal card.
+
+## Acceptance fixes, walk 2 (plan 24)
+
+- **Layout**: below 1440 px a company card and a conversation take the full width (`leads--focus` in
+  `src/views/Leads/index.vue`, CSS only; the column stays mounted, hidden); from 1440 px the column stays beside them
+  and marks the open company's row by its `subject_ref`. The Inbox chip lives in the `leadsThread` store, so a remount
+  (Today in between) comes back on it. A Conversation is headed by its company (`subject_label`), else the other
+  side's address, and has Back on every width.
+- **API fields of plan 23**, each with the first round's workaround only for a response without it: contact
+  `mail_block` (the badge, red "Blocked" with the reason as its tooltip), conversation list `needs_review=true` (Today's
+  "N replies need review"), timeline `reply_id` (Reply) and `composed` (the "Mail written by hand" tag, also on a
+  draft row of the Inbox; the desktop History tab reads no activities when the entries carry it), rule run
+  `company_name` ("Last runs"), and an import report without `ignored_column:` rows (an older one's are dropped).
+- **Words**: Conversation (never thread), Company type (never Lead type; API names stay), Later for the defer button of
+  Review, Close for every dismiss, message states as capitalised badges with Draft for a draft. Import reasons and
+  statuses: `importReasonLabel` / `importStatusLabel` (`src/utils/leadsLabels.js`).
+- **Review** goes on to the draft below in the Inbox order (else above); a draft address that left the queue says what
+  happened to it and offers "Next draft" (`GET_ReviewMessage` returns the draft in any status, `null` on 404).
+- **Deals**: a board card moves by "Move to…" (BasicMenu of the other stages, `deal-card-stage`); a refused move or a
+  closed reason dialog reads the board again and every read remounts the columns (`version` key) — the next drag
+  starts on fresh lists. The deal card: the stage select on its own labelled line; more menu (Delete deal) · Mark lost
+  · Mark won. An empty Mine offers "Show all deals" when the channel has open deals; a phone row carries the value.
+- **One Save** (`src/views/Leads/saveAction.js`): every Leads settings page saves from one Save in the header, greyed
+  with "Nothing to save" (`ActionBar` action `title`) until something changed. Send settings: the cards expose
+  `{ dirty, save }` and the page saves only the changed ones (each card keeps its own error); Stages and Company types
+  keep renames, switches and moves until Save.
+- **Tasks**: the dialog gets the stored task (Today's row shows kind and owner as words); on a phone a task is stacked
+  lines with Mark done as an icon, Today's chips wrap.
+- **Administration**: the read-only notice is a flat warning bar (`PageLayout`); read-only Rules offer "View rule";
+  Templates show the language by name; a mailbox address is a link; Sending health shows an over-limit rate as one
+  warning badge and an automatic pause as "<rate> of <n> sent".
 
 ## Acceptance fixes, desk work and administration (plan 22)
 

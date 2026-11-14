@@ -45,6 +45,14 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- Leads panel, acceptance fixes of the second walk: a company card and a conversation take the full width below 1440 px
+  and the Inbox column keeps its chip; a contact's mail badge, Today's replies that need review, Reply, the
+  hand-written tag, the rule runs and the import report read the new leads and communicator fields; the deal board
+  takes every drop (also after a closed reason dialog), a card moves by "Move to…"; every date picker opens its
+  calendar inside the viewport; one Save in the header on every Leads settings page, greyed until something changed;
+  Review goes on to the next draft in the Inbox order and says what happened to a draft that left the queue; the words
+  Conversation, Company type and Later; tasks stacked on a phone; Sending health, Templates, Mailboxes, the read-only
+  notice and the select's clear button fixed.
 - Leads panel, acceptance fixes for desk work and administration: Test login says each result in words with what
   to do next; the pause log names the person ("Automatic" for an automatic pause); a rule's last runs show the
   company by name and the result in words; Reports opens with the Funnel and shows dates in the UI language; Import

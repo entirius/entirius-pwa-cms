@@ -162,6 +162,7 @@ onUnmounted(() => approvals.stop());
     grid-template-columns: minmax(0, 1fr);
   }
 }
+/* 1440 px has no breakpoint mixin: the range is written out (N21) */
 @media (min-width: 1024px) and (max-width: 1439px) {
   .leads--focus {
     grid-template-columns: minmax(0, 1fr);

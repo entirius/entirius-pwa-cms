@@ -4660,7 +4660,7 @@
       "code_help": "Wielkimi literami, np. RETAILER — po dodaniu nie można go zmienić",
       "active": "Aktywny",
       "add": "Dodaj typ",
-      "unknown": "Typ firmy nieznany",
+      "unknown": "Nieznany typ firmy",
       "code_invalid": "Kod może zawierać tylko litery, cyfry i „_”",
       "label_required": "Podaj nazwę"
     },
