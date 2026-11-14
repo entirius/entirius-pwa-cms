@@ -271,7 +271,8 @@ watch(
 
 function openDialog(mode, task) {
   dialogMode.value = mode;
-  dialogTask.value = task;
+  // The row shows kind and owner as words: the dialog gets the stored task (N11).
+  dialogTask.value = task && tasks.value.find((item) => item.id === task.id);
   dialogOpen.value = true;
 }
 

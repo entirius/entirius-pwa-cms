@@ -121,6 +121,8 @@ describe("Leads → Today", () => {
     await byTestid(wrapper, "task-edit").trigger("click");
     await flushPromises();
     expect(byTestid(wrapper, "task-cancel-task").exists()).toBe(true);
+    // N11: the dialog shows what is stored — the kind, not the row's word for it
+    expect(wrapper.findComponent({ name: "TaskDialog" }).props("task")).toMatchObject({ kind: "phone", owner: null });
   });
 
   it("Mark done asks for the outcome, then closes the task", async () => {

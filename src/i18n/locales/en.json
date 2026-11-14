@@ -5064,7 +5064,7 @@
       "save": "Save",
       "cancel_task": "Cancel task",
       "cancel_confirm": "Cancel this task? It stays in the history.",
-      "cancel_reason": "Reason",
+      "cancel_reason": "Reason (optional)",
       "done_toast": "Task done",
       "added_toast": "Task added",
       "saved_toast": "Task saved",

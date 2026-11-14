@@ -5063,7 +5063,7 @@
       "save": "Zapisz",
       "cancel_task": "Anuluj zadanie",
       "cancel_confirm": "Anulować to zadanie? Zostanie w historii.",
-      "cancel_reason": "Powód",
+      "cancel_reason": "Powód (opcjonalnie)",
       "done_toast": "Zadanie zrobione",
       "added_toast": "Zadanie dodane",
       "saved_toast": "Zadanie zapisane",
