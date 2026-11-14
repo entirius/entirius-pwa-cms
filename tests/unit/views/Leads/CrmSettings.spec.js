@@ -196,6 +196,16 @@ describe("Leads → Settings → Rules", () => {
     expect(leads.PATCH_Rule).toHaveBeenCalledWith(4, expect.objectContaining({ conditions: [{ field: "segment", op: "in", value: ["S1"] }, { field: "", op: "eq", value: null }] }));
   });
 
+  // m9 (walk 3): an empty Conditions box says what that means
+  it("a rule without conditions says it runs for every company", async () => {
+    const wrapper = await mounted(Rules);
+    await byTestid(wrapper, "rules-add").trigger("click");
+    await flushPromises();
+    expect(byTestid(wrapper, "rule-no-conditions").exists()).toBe(true);
+    await byTestid(wrapper, "rule-add-condition").trigger("click");
+    expect(byTestid(wrapper, "rule-no-conditions").exists()).toBe(false);
+  });
+
   it("the active switch saves on change; read-only hides Add and delete", async () => {
     const wrapper = await mounted(Rules);
     setControl(wrapper, "rule-active", false);

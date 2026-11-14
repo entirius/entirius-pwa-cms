@@ -5334,7 +5334,8 @@
         "draft_review": "draft written, waiting for review"
       },
       "view": "View rule",
-      "rule": "Rule"
+      "rule": "Rule",
+      "no_conditions": "No conditions: the rule runs for every company"
     },
     "reports": {
       "title": "Reports",

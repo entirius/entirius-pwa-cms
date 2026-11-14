@@ -63,6 +63,7 @@
             </BasicButton>
           </template>
           <div class="flex-column gap-5">
+            <p v-if="!draft.conditions.length" class="t-muted m-0" data-testid="rule-no-conditions">{{ $t("leads.rules.no_conditions") }}</p>
             <ConditionRow
               v-for="(condition, index) in draft.conditions"
               :key="index"
