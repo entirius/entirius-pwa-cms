@@ -26,8 +26,8 @@
     <section v-else-if="list === 'companies'" class="leads__placeholder">
       <p>{{ $t("leads.companies.pick") }}</p>
     </section>
-    <section v-else-if="reviewQueue.count" class="leads__placeholder">
-      <p>{{ $t("leads.inbox.pick") }}</p>
+    <section v-else-if="pickKey" class="leads__placeholder" data-testid="leads-detail-pick">
+      <p>{{ $t(pickKey) }}</p>
     </section>
     <!-- desktop, empty queue: the right pane says why it is empty and where the work is -->
     <section v-else class="leads__placeholder" data-testid="leads-detail-empty">
@@ -58,6 +58,7 @@ import { AREAS } from "@/configs/areas";
 import { useAccessStore } from "@/stores/access";
 import { useApprovalsStore } from "@/stores/approvals";
 import { useLeadsReviewStore } from "@/stores/leadsReview";
+import { useLeadsThreadStore } from "@/stores/leadsThread";
 import { useMuninStore } from "@/stores/munin";
 import { t } from "@/i18n";
 import { applyPolicy } from "@/utils/leadsTime";
@@ -74,6 +75,10 @@ const route = useRoute();
 const router = useRouter();
 const munin = useMuninStore();
 const reviewQueue = useLeadsReviewStore();
+// k5 (walk 4): the empty detail pane speaks of the chip the column shows; Drafts asks for a draft only while any wait.
+const PICK_KEYS = { all: "leads.inbox.pick_all", waiting: "leads.inbox.pick_waiting", replied: "leads.inbox.pick_replied" };
+const threadColumn = useLeadsThreadStore();
+const pickKey = computed(() => PICK_KEYS[threadColumn.inboxFilter] || (reviewQueue.count ? "leads.inbox.pick" : ""));
 const isDesktop = useIsDesktop();
 const hasInbox = computed(() => munin.isModuleEnabled("communicator"));
 const hasCompanies = computed(() => munin.isModuleEnabled("leads"));

@@ -3,6 +3,7 @@ import { mount } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 import { nextTick, reactive } from "vue";
 import { useLeadsReviewStore } from "@/stores/leadsReview";
+import { useLeadsThreadStore } from "@/stores/leadsThread";
 import SegmentedControl from "@/boots/SegmentedControl/index.vue";
 
 const route = vi.hoisted(() => ({ current: null }));
@@ -65,6 +66,16 @@ describe("Leads layout", () => {
     const waiting = mountLayout();
     expect(waiting.text()).toContain("leads.inbox.pick");
     expect(waiting.find('[data-testid="leads-detail-empty"]').exists()).toBe(false);
+  });
+
+  // k5 (walk 4): on the Replies chip the empty pane asks for a reply, never a draft
+  it("the empty pane speaks of the chip the column shows", () => {
+    enable("leads", "communicator");
+    route.current.name = "LeadsInbox";
+    useLeadsReviewStore().setCount(2);
+    useLeadsThreadStore().inboxFilter = "replied";
+    const wrapper = mountLayout();
+    expect(wrapper.get('[data-testid="leads-detail-pick"]').text()).toBe("leads.inbox.pick_replied");
   });
 
   it("leads + communicator: a draft or thread open renders both columns and marks the detail state", () => {

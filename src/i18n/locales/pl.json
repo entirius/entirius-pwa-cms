@@ -4282,7 +4282,10 @@
       "load_error": "Nie udało się wczytać skrzynki — spróbujemy ponownie przy następnym odświeżeniu",
       "threads_few": "{count} rozmowy",
       "threads_many": "{count} rozmów",
-      "marker_waiting": "Zaplanowana"
+      "marker_waiting": "Zaplanowana",
+      "pick_all": "Wybierz rozmowę, aby ją otworzyć",
+      "pick_waiting": "Wybierz czekającą wiadomość, aby zobaczyć, kiedy wyjdzie",
+      "pick_replied": "Wybierz odpowiedź, aby ją przeczytać"
     },
     "review": {
       "title": "Przegląd",

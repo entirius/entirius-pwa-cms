@@ -4283,7 +4283,10 @@
       "load_error": "Could not load the inbox — it tries again on the next refresh",
       "threads_few": "{count} conversations",
       "threads_many": "{count} conversations",
-      "marker_waiting": "Scheduled"
+      "marker_waiting": "Scheduled",
+      "pick_all": "Pick a conversation to open it",
+      "pick_waiting": "Pick a waiting mail to see when it goes",
+      "pick_replied": "Pick a reply to read it"
     },
     "review": {
       "title": "Review",
