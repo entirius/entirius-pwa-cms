@@ -137,7 +137,7 @@ const rows = computed(() =>
 const rowAttrs = (row) => ({ "data-testid": "field-row", "data-key": row.key });
 const errorOf = (name) => missing.value[name] || fieldText(getFieldError(name)?.msg, name);
 const dialogActions = computed(() => [
-  { key: "close", label: t("leads.task.close"), role: "secondary", disabled: saving.value, onClick: () => (dialogOpen.value = false) },
+  { key: "cancel", label: t("common.cancel"), role: "secondary", disabled: saving.value, onClick: () => (dialogOpen.value = false) },
   { key: "save", label: t("leads.fields.save"), role: "primary", loading: saving.value, testid: "field-save", onClick: save },
 ]);
 

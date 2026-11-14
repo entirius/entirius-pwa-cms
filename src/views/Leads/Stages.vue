@@ -77,7 +77,7 @@
         >
           <BasicInput v-model="draft.label" :maxlength="128" data-testid="stage-new-label" />
         </FormField>
-        <BasicButton class="stage__submit" variant="primary" type="submit" mutates data-testid="stage-save">
+        <BasicButton class="stage__submit" type="submit" mutates data-testid="stage-save">
           {{ $t("leads.stages.add") }}
         </BasicButton>
       </form>
