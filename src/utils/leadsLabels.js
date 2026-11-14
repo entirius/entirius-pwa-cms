@@ -179,3 +179,22 @@ export function ruleRunText(run, fieldLabel = (field) => field) {
   if (!shape) return outcome;
   return `${outcome} — ${shape[1](run.detail.match(shape[0]).slice(1), fieldLabel)}`;
 }
+
+// What happens to the mail after a reply — the "Next:" line of its bubble. An opt-out decides first (confirmed: no
+// more mail; possible: nothing goes until a person decides), then the sequence step applied to the reply: `stop`, a
+// pause until the return date (the sequence resumes the day after it) or a pause until a person resumes it. "Paused"
+// only ever names something that resumes. No step known = no line.
+const NEXT_BY_STEP = { stop: "leads.history.next_stopped", pause: "leads.history.next_paused", pause_until_return: "leads.history.next_paused" };
+
+export function replyNextLine({ optout = null, possibleOptout = false, step = "", returnDate = "" }) {
+  if (optout?.optout_confirmed_at || step === "optout") return t("leads.history.next_optout_confirmed");
+  if (optout || possibleOptout) return t("leads.history.next_optout_possible");
+  if (step === "pause_until_return" && returnDate) return t("leads.history.next_resumes", { date: formatLeadsDay(dayAfter(returnDate)) });
+  return NEXT_BY_STEP[step] ? t(NEXT_BY_STEP[step]) : "";
+}
+
+function dayAfter(date) {
+  const day = new Date(`${date}T12:00:00Z`);
+  day.setUTCDate(day.getUTCDate() + 1);
+  return day.toISOString();
+}

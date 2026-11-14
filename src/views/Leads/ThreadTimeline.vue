@@ -87,7 +87,7 @@ import { computed, onMounted, reactive, ref } from "vue";
 import { t } from "@/i18n";
 import { useMuninStore } from "@/stores/munin";
 import { formatDay } from "@/utils/format";
-import { messageTone, replyTypeLabel, sendStateLabel, statusLabel } from "@/utils/leadsLabels";
+import { messageTone, replyNextLine, replyTypeLabel, sendStateLabel, statusLabel } from "@/utils/leadsLabels";
 import { outboundOn, replyTone } from "@/utils/leadsOutbound";
 import { replyForCompose } from "@/utils/leadsReply";
 import { loadReplyPlans } from "@/utils/leadsReplyPlans";
@@ -179,6 +179,7 @@ function messageEntry(item, index, firstOut) {
     body: item.body_text,
     from: item.from_email,
     replyId: item.reply_id ?? null,
+    kind: item.reply_kind || "",
   };
 }
 
@@ -190,23 +191,28 @@ function tagOf(item, out, index, firstOut) {
 }
 
 // A classified reply says what happens next: the plan of its type for the sequence (communicator >= 0.5.0; the
-// plans are read once per channel, a refusal leaves the line out). Confidence shows below 100 % only.
+// plans are read once per channel, a refusal leaves the plan out). Confidence shows below 100 % only.
 const munin = useMuninStore();
 const plans = ref({});
 // The sequence stops a reply caused (a finished or bounced sequence is no answer to a reply).
-const REPLY_STOPS = { replied: "stop", optout: "stop", paused: "pause" };
-const SEQUENCE_STEP = { stop: "leads.history.seq_stopped", pause: "leads.history.seq_paused" };
+const REPLY_STOPS = { replied: "stop", optout: "optout", paused: "pause" };
 
-// One phrase per date of a pause: the bubble says "Back on <return date>"; the date the sequence resumes is History's
-// ("The sequence resumes on <date>"), so the Next line names the step without a date.
-// A reply without a class (or without a plan for it) says what was applied to the sequence: the newest reply only, from
-// the thread's sequence state.
+// The "Next:" line (`replyNextLine`): an opt-out of the reply first; for the newest reply what was applied to the
+// thread's sequence (a pause keeps the plan's kind of pause), else the plan of its class.
 function nextOf(entry) {
-  const plan = entry.reply && plans.value[entry.reply.intent];
-  if (plan) return t("leads.history.next", { steps: t(SEQUENCE_STEP[plan.sequence] || "leads.history.seq_paused") });
+  if (entry.side !== "in") return "";
+  const reply = entry.reply || {};
+  const possibleOptout = entry.kind === "suspected_optout" || reply.intent === "unsubscribe";
+  const planned = plans.value[reply.intent]?.sequence || "";
+  const applied = appliedStep(entry);
+  const step = applied === "pause" && planned.startsWith("pause") ? planned : applied || planned;
+  return replyNextLine({ optout: entry.optout, possibleOptout, step, returnDate: reply.intent_return_date || "" });
+}
+
+function appliedStep(entry) {
   const stopped = props.sequence?.stopped_at;
-  const step = entry === newestReply.value && stopped && new Date(stopped) >= new Date(entry.at) && REPLY_STOPS[props.sequence.stop_reason];
-  return step ? t("leads.history.next", { steps: t(SEQUENCE_STEP[step]) }) : "";
+  if (entry !== newestReply.value || !stopped || new Date(stopped) < new Date(entry.at)) return "";
+  return REPLY_STOPS[props.sequence.stop_reason] || "";
 }
 
 function sureOf(entry) {

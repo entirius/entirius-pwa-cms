@@ -4764,9 +4764,6 @@
     "history": {
       "needs_review": "Do sprawdzenia",
       "back_on": "Wraca {date}",
-      "next": "Dalej: {steps}",
-      "seq_stopped": "sekwencja zatrzymana",
-      "seq_paused": "sekwencja wstrzymana",
       "confidence": "pewność {n} %",
       "event_deal_opened": "Otwarto transakcję: {title}",
       "event_deal_moved": "Transakcja {title}: {from} → {to}",
@@ -4788,7 +4785,12 @@
       "event_owner": "Opiekun: {name}",
       "event_owner_cleared": "Usunięto opiekuna",
       "event_deal_archived": "Transakcja zarchiwizowana: {title}",
-      "event_deal_restored": "Transakcja przywrócona: {title}"
+      "event_deal_restored": "Transakcja przywrócona: {title}",
+      "next_optout_confirmed": "Dalej: do tego kontaktu nie wyjdzie już żadna wiadomość",
+      "next_optout_possible": "Dalej: nic nie zostanie wysłane, dopóki nie potwierdzisz lub nie odrzucisz rezygnacji",
+      "next_stopped": "Dalej: sekwencja jest zatrzymana",
+      "next_resumes": "Dalej: sekwencja wznowi się {date}",
+      "next_paused": "Dalej: sekwencja jest wstrzymana, dopóki jej nie wznowisz"
     },
     "problem": {
       "legal_footer": "Wiadomość nie ma stopki prawnej — ustaw stopkę w Ustawieniach → Ustawienia wysyłki",

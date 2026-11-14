@@ -4765,9 +4765,6 @@
     "history": {
       "needs_review": "Needs review",
       "back_on": "Back on {date}",
-      "next": "Next: {steps}",
-      "seq_stopped": "sequence stopped",
-      "seq_paused": "sequence paused",
       "confidence": "{n} % sure",
       "event_deal_opened": "Deal opened: {title}",
       "event_deal_moved": "Deal {title}: {from} → {to}",
@@ -4789,7 +4786,12 @@
       "event_owner": "Owner: {name}",
       "event_owner_cleared": "Owner cleared",
       "event_deal_archived": "Deal archived: {title}",
-      "event_deal_restored": "Deal restored: {title}"
+      "event_deal_restored": "Deal restored: {title}",
+      "next_optout_confirmed": "Next: no more mail to this contact",
+      "next_optout_possible": "Next: nothing is sent until you confirm or dismiss the opt-out",
+      "next_stopped": "Next: the sequence is stopped",
+      "next_resumes": "Next: the sequence resumes on {date}",
+      "next_paused": "Next: the sequence is paused until you resume it"
     },
     "problem": {
       "legal_footer": "The mail has no legal footer — set the footer in Settings → Send settings",

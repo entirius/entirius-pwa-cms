@@ -41,8 +41,9 @@ describe("Reply types and outbound helpers", () => {
     expect(wrapper.find('[data-testid="reply-needs-review"]').exists()).toBe(true);
     expect(wrapper.find('[data-testid="reply-back-on"]').exists()).toBe(true);
     expect(wrapper.text()).toContain("80 % sure");
-    // P5 (walk 3): one date, one phrase — the return date is "Back on", the Next line repeats no date
-    expect(wrapper.get('[data-testid="reply-next"]').text()).toBe("Next: sequence paused");
+    // T3 (walk 4): "Back on" is the return date, the Next line the day the sequence resumes
+    expect(wrapper.get('[data-testid="reply-back-on"]').text()).toContain("20/11/2026");
+    expect(wrapper.get('[data-testid="reply-next"]').text()).toBe("Next: the sequence resumes on 21/11/2026");
   });
 
   // m3 (walk 3): a reply without a class still says what was applied to the sequence (the newest reply only)
@@ -53,7 +54,7 @@ describe("Reply types and outbound helpers", () => {
     await flushPromises();
     const lines = wrapper.findAll('[data-testid="reply-next"]');
     expect(lines).toHaveLength(1);
-    expect(lines[0].text()).toBe("Next: sequence stopped");
+    expect(lines[0].text()).toBe("Next: the sequence is stopped");
     const finished = mount(ThreadTimeline, { props: { messages: [reply], sequence: { ...sequence, stop_reason: "finished" } }, global: { stubs } });
     await flushPromises();
     expect(finished.find('[data-testid="reply-next"]').exists()).toBe(false);
@@ -61,6 +62,22 @@ describe("Reply types and outbound helpers", () => {
     const earlier = mount(ThreadTimeline, { props: { messages: [{ ...reply, at: "2026-11-12T11:00:00Z" }], sequence }, global: { stubs } });
     await flushPromises();
     expect(earlier.find('[data-testid="reply-next"]').exists()).toBe(false);
+  });
+
+  // T1 (walk 4): an opt-out reply never reads "paused" — confirmed: no more mail; possible: nothing until a person decides
+  it("an opt-out reply says what happens to the mail, never paused", async () => {
+    outbound(true);
+    comm.GET_ReplyClassPlans.mockResolvedValue({ data: { results: [{ intent: "unsubscribe", sequence: "pause" }] } });
+    const item = { ...reply, intent: "unsubscribe", reply_kind: "suspected_optout" };
+    const optout = { id: 7, received_at: reply.at, optout_confirmed_at: null };
+    const possible = mount(ThreadTimeline, { props: { messages: [item], optouts: [optout] }, global: { stubs } });
+    await flushPromises();
+    expect(possible.get('[data-testid="reply-next"]').text()).toBe("Next: nothing is sent until you confirm or dismiss the opt-out");
+    const confirmed = { ...optout, optout_confirmed_at: "2026-11-12T09:30:00Z" };
+    const sequence = { stopped_at: "2026-11-12T09:30:00Z", stop_reason: "optout" };
+    const done = mount(ThreadTimeline, { props: { messages: [item], optouts: [confirmed], sequence }, global: { stubs } });
+    await flushPromises();
+    expect(done.get('[data-testid="reply-next"]').text()).toBe("Next: no more mail to this contact");
   });
 
   it("an unclassified reply and an older backend look as today", async () => {

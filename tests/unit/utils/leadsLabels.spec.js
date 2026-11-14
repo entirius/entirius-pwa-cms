@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { activeLabel, activityText, legalBasisLabel, ruleRunText, sendStateLabel, sendStateSentence, stageKindLabel } from "@/utils/leadsLabels";
+import { activeLabel, activityText, legalBasisLabel, replyNextLine, ruleRunText, sendStateLabel, sendStateSentence, stageKindLabel } from "@/utils/leadsLabels";
 import { pluralKey } from "@/utils/plural";
 
 // FIX-17 items 14-16: enum values, statuses and counts read as words on every leads screen.
@@ -107,5 +107,32 @@ describe("activityText of an activity", () => {
   it("a line without a known event keeps its message", () => {
     expect(activityText({ message: "blocked: no_email", data: { event: "unknown_thing" } })).toBe("Blocked: the contact has no email");
     expect(activityText({ message: "Imported", data: {} })).toBe("Imported");
+  });
+
+  // T1, T3 (walk 4): one function, five phrases — "paused" only for something that resumes
+  describe("replyNextLine", () => {
+    it("a confirmed opt-out: no more mail", () => {
+      expect(replyNextLine({ optout: { optout_confirmed_at: "2026-11-12T09:00:00Z" }, step: "pause" })).toBe("Next: no more mail to this contact");
+      expect(replyNextLine({ step: "optout" })).toBe("Next: no more mail to this contact");
+    });
+    it("a possible opt-out: nothing is sent until a person decides", () => {
+      const text = "Next: nothing is sent until you confirm or dismiss the opt-out";
+      expect(replyNextLine({ optout: { optout_confirmed_at: null }, step: "pause" })).toBe(text);
+      expect(replyNextLine({ possibleOptout: true, step: "pause" })).toBe(text);
+    });
+    it("a stopped sequence", () => {
+      expect(replyNextLine({ step: "stop" })).toBe("Next: the sequence is stopped");
+    });
+    it("a pause with a return date resumes the day after it", () => {
+      expect(replyNextLine({ step: "pause_until_return", returnDate: "2026-10-05" })).toBe("Next: the sequence resumes on 06/10/2026");
+    });
+    it("a pause without a date waits for a person", () => {
+      const text = "Next: the sequence is paused until you resume it";
+      expect(replyNextLine({ step: "pause" })).toBe(text);
+      expect(replyNextLine({ step: "pause_until_return" })).toBe(text);
+    });
+    it("no known step: no line", () => {
+      expect(replyNextLine({})).toBe("");
+    });
   });
 });
