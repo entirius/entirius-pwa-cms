@@ -4717,7 +4717,7 @@
       "code": "Code",
       "code_help": "Upper-case, e.g. RETAILER — fixed after it is added",
       "add": "Add type",
-      "unknown": "Company type unknown",
+      "unknown": "Unknown",
       "code_invalid": "A code may hold only letters, digits and “_”"
     },
     "common": {

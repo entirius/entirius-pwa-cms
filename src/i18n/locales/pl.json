@@ -4716,7 +4716,7 @@
       "code": "Kod",
       "code_help": "Wielkimi literami, np. RETAILER — po dodaniu nie można go zmienić",
       "add": "Dodaj typ",
-      "unknown": "Nieznany typ firmy",
+      "unknown": "Nieznany",
       "code_invalid": "Kod może zawierać tylko litery, cyfry i „_”"
     },
     "common": {

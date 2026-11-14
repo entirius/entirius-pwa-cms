@@ -31,11 +31,12 @@ const company = {
 describe("Company overview tab", () => {
   beforeEach(() => setActivePinia(createPinia()));
 
-  it("names the customer, the company type and the activity status", () => {
+  // k13 (walk 4): name, stage and company type stand in the header, not again in this table
+  it("names the customer and leaves out what the header shows", () => {
     const text = mount(OverviewTab, { props: { company }, global: { components } }).text();
     expect(text).toContain("Jan Kowalski");
     expect(text).not.toContain("91010000");
-    expect(text).toContain("Company type unknown");
+    expect(text).not.toContain("Unknown");
   });
 
   it("falls back to the uid while the name is unknown", () => {
