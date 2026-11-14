@@ -12,8 +12,8 @@ const todo = vi.hoisted(() => ({
 }));
 const comm = vi.hoisted(() => ({ GET_Conversations: vi.fn(), GET_Replies: vi.fn() }));
 const modules = vi.hoisted(() => ({ todo: true, communicator: true, leads: true }));
-const nav = vi.hoisted(() => ({ route: { query: {} }, replace: vi.fn() }));
-vi.mock("vue-router", async (importOriginal) => ({ ...(await importOriginal()), useRoute: () => nav.route, useRouter: () => ({ replace: nav.replace }) }));
+const nav = vi.hoisted(() => ({ route: { query: {} }, replace: vi.fn(), push: vi.fn() }));
+vi.mock("vue-router", async (importOriginal) => ({ ...(await importOriginal()), useRoute: () => nav.route, useRouter: () => ({ replace: nav.replace, push: nav.push }) }));
 vi.mock("@/api/todo/api", () => todo);
 vi.mock("@/api/communicator/api", () => comm);
 vi.mock("@/api/leads/api", () => ({ GET_AssignableUsers: () => Promise.resolve([]), GET_Companies: vi.fn(), GET_Company: vi.fn() }));
@@ -47,6 +47,18 @@ describe("Leads → Today", () => {
     todo.GET_Tasks.mockResolvedValue({ data: { count: 0, results: [] } });
     comm.GET_Conversations.mockResolvedValue({ data: { counts: { draft: 4 } } });
     comm.GET_Replies.mockResolvedValue({ data: { count: 0 } });
+  });
+
+  // P7 (walk 3): on a phone the whole row opens the task's company; at a desk the row is no target
+  it("a phone row opens the task's company, a desk row does not", async () => {
+    desk.value = false;
+    const wrapper = await mounted();
+    wrapper.findComponent('[data-testid="today-tasks"]').vm.$emit("row-click", wrapper.findComponent('[data-testid="today-tasks"]').props("rows")[0]);
+    expect(nav.push).toHaveBeenCalledWith({ name: "LeadsThread", params: { id: 5 }, query: { tab: "tasks" } });
+    nav.push.mockClear();
+    desk.value = true;
+    wrapper.findComponent('[data-testid="today-tasks"]').vm.$emit("row-click", wrapper.findComponent('[data-testid="today-tasks"]').props("rows")[0]);
+    expect(nav.push).not.toHaveBeenCalled();
   });
 
   it("an overdue task: the red relative due, a link to its company's Tasks tab, Mark done", async () => {

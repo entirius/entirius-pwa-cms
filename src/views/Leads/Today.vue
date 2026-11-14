@@ -35,7 +35,7 @@
       <BasicCard v-if="countersOn" :title="$t('leads.today.waiting')" data-testid="today-waiting">
         <div class="today__counters flex flex-wrap gap-6">
           <template v-for="counter in counters" :key="counter.key">
-            <router-link v-if="counter.count" class="t-accent flex ai-ct gap-2" :to="counter.to" :data-testid="counter.testid">
+            <router-link v-if="counter.count" class="today__counter t-accent flex ai-ct gap-2" :to="counter.to" :data-testid="counter.testid">
               {{ counter.label }} <CountBadge :count="counter.count" />
             </router-link>
             <span v-else-if="counter.count === 0" class="t-muted" :data-testid="counter.testid">{{ counter.empty }}</span>
@@ -63,6 +63,7 @@
           :row-attrs="rowAttrs"
           :empty-text="$t('leads.today.empty_list')"
           data-testid="today-tasks"
+          @row-click="openRow"
         >
           <template #cell-due="{ row }">
             <StatusBadge :tone="row.due.tone" :label="row.due.label" data-testid="task-due" />
@@ -70,27 +71,30 @@
           <!-- a phone stacks the task: title, its company, the due badge; Mark done is an icon in reach (N13) -->
           <template #cell-title="{ row }">
             <span class="flex-column gap-1">
-              <router-link v-if="row.to" class="t-accent" :to="row.to" :title="row.title">{{ row.title }}</router-link>
+              <router-link v-if="row.to" class="t-accent" :to="row.to" :title="row.title" @click.stop>{{ row.title }}</router-link>
               <span v-else :title="row.title">{{ row.title }}</span>
               <span class="show-mobile t-secondary fs-200">{{ row.subject_label }}</span>
               <StatusBadge class="show-mobile as-s" :tone="row.due.tone" :label="row.due.label" data-testid="task-due-inline" />
             </span>
           </template>
           <template #cell-subject="{ row }">
-            <router-link v-if="row.to" :to="row.to" data-testid="task-subject">{{ row.subject_label }}</router-link>
+            <router-link v-if="row.to" :to="row.to" data-testid="task-subject" @click.stop>{{ row.subject_label }}</router-link>
             <span v-else data-testid="task-subject">{{ row.subject_label }}</span>
           </template>
           <template #cell-actions="{ row }">
-            <IconButton mutates icon="edit" size="sm" :label="$t('leads.task.edit')" data-testid="task-edit" @click="openDialog('edit', row)" />
-            <BasicButton v-if="row.status === 'done'" mutates size="sm" data-testid="task-reopen" @click="reopen(row)">
-              {{ $t("leads.task.reopen") }}
-            </BasicButton>
-            <template v-else>
-              <BasicButton class="hide-mobile" mutates size="sm" data-testid="task-done" @click="openDialog('done', row)">
-                {{ $t("leads.task.mark_done") }}
+            <!-- the row opens the company on a phone; its buttons keep their own tap -->
+            <span class="flex ai-ct gap-1" @click.stop>
+              <IconButton mutates icon="edit" size="sm" :label="$t('leads.task.edit')" data-testid="task-edit" @click="openDialog('edit', row)" />
+              <BasicButton v-if="row.status === 'done'" mutates size="sm" data-testid="task-reopen" @click="reopen(row)">
+                {{ $t("leads.task.reopen") }}
               </BasicButton>
-              <IconButton class="show-mobile" mutates icon="check" size="sm" :label="$t('leads.task.mark_done')" data-testid="task-done-icon" @click="openDialog('done', row)" />
-            </template>
+              <template v-else>
+                <BasicButton class="hide-mobile" mutates size="sm" data-testid="task-done" @click="openDialog('done', row)">
+                  {{ $t("leads.task.mark_done") }}
+                </BasicButton>
+                <IconButton class="show-mobile" mutates icon="check" size="sm" :label="$t('leads.task.mark_done')" data-testid="task-done-icon" @click="openDialog('done', row)" />
+              </template>
+            </span>
           </template>
         </DataTable>
       </ReadonlyArea>
@@ -201,6 +205,8 @@ const rows = computed(() =>
   }))
 );
 const rowAttrs = (row) => ({ "data-testid": "task-row", "data-task": row.id });
+// On a phone the whole row opens the task's company (the title alone was too small a target); a desk has the links.
+const openRow = (row) => !isDesktop.value && row.to && router.push(row.to);
 
 const counters = computed(() => [
   {
@@ -307,6 +313,10 @@ onMounted(() => Promise.all([load(), loadCounters()]));
 
 .today__counters {
   row-gap: var(--space-3);
+}
+/* every Waiting link is a full touch target */
+.today__counter {
+  min-height: 44px;
 }
 /* The chips wrap on a phone too: a sideways scroll hid the last one in Polish (N13). */
 @include max-tablet {
