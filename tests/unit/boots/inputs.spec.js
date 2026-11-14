@@ -457,7 +457,7 @@ describe("BasicDatePicker", () => {
     const wrapper = mountPicker();
     setLang(lang);
     await wrapper.find("button").trigger("click");
-    expect(flatpickr.mock.calls.at(-1)[1].locale).toBe(locale);
+    expect(flatpickr.mock.calls.at(-1)[1].locale).toEqual({ ...locale, firstDayOfWeek: 1 });
     wrapper.unmount();
   });
 
@@ -517,6 +517,28 @@ describe("BasicDatePicker", () => {
     onChange([], "2026-09-01");
     expect(wrapper.emitted("update:modelValue")).toEqual([["2026-09-01"]]);
     expect(Object.keys(wrapper.emitted())).not.toContain("onChange");
+  });
+
+  // P11 (acceptance walk 3): Escape closes the calendar only — a dialog around it keeps its edits — and the week starts
+  // on Monday in both languages.
+  it("Escape with the calendar open closes the calendar and stops there; closed, the key goes on", async () => {
+    const onDocument = vi.fn();
+    document.addEventListener("keydown", onDocument);
+    const wrapper = mount(BasicDatePicker, { global: GLOBAL, attachTo: document.body });
+    await wrapper.find("button").trigger("click");
+    await wrapper.find("button").trigger("keydown", { key: "Escape" });
+    expect(wrapper.find(".picker-wrapper").isVisible()).toBe(false);
+    expect(onDocument).not.toHaveBeenCalled();
+    await wrapper.find("button").trigger("keydown", { key: "Escape" });
+    expect(onDocument).toHaveBeenCalledTimes(1);
+    document.removeEventListener("keydown", onDocument);
+    wrapper.unmount();
+  });
+
+  it("starts the week on Monday in English and in Polish", async () => {
+    const wrapper = mountPicker();
+    await wrapper.find("button").trigger("click");
+    expect(flatpickr.mock.calls.at(-1)[1].locale.firstDayOfWeek).toBe(1);
   });
 
   it("is named by its FormField label", () => {

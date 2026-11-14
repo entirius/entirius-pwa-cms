@@ -437,7 +437,9 @@ Catalogue: `#selects` (`#basic-select`, `#entity-search-picker`, `#channel-multi
   lives only while the calendar is open. `fixed` places the calendar against the viewport (upward when there is no
   room below), so a scrolling parent such as a wide table does not clip it — use it for a picker at the bottom of a card
   or in a dialog. Its label is the FormField's. The trigger's click reaches the document, so other
-  popovers close; a click inside the open calendar never closes it.
+  popovers close; a click inside the open calendar never closes it. Escape with the calendar open closes the calendar
+  only (a dialog around it stays, with its edits) and returns focus to the trigger; the week starts on Monday in every
+  language.
 - **`SegmentedControl`** — contract id and `disabled`, named by the FormField label, `aria-pressed` on the active
   option; an option's own `disabled` takes just that option out. **`ColorInput`** — `disabled`, the text field reads the contract, the swatch is the native picker itself
   (named by the FormField label, else „Wybierz kolor”).

@@ -1,6 +1,6 @@
 <template>
   <div class="basic-date-picker inline-block">
-    <div v-out="close" class="relative">
+    <div v-out="close" class="relative" @keydown.esc="onEscape">
       <button
         ref="triggerEl"
         v-bind="attrs"
@@ -77,7 +77,8 @@ function onChange(dates, dateString) {
 
 async function open() {
   visible.value = true;
-  const language = getLang() === "PL" ? Polish : english;
+  // the week starts on Monday in every language (flatpickr's English starts on Sunday)
+  const language = { ...(getLang() === "PL" ? Polish : english), firstDayOfWeek: 1 };
   const locale = props.config.locale ? { ...language, ...props.config.locale } : language;
   const config = { ...DEFAULT_CONFIG, ...props.config, defaultDate: current.value, locale, onChange };
   instance = flatpickr(pickerEl.value, config);
@@ -95,6 +96,15 @@ function close() {
   instance = null;
   window.removeEventListener("scroll", place, { capture: true });
   window.removeEventListener("resize", place);
+}
+
+// Escape with the calendar open closes the calendar and nothing else (a dialog around it stays, with its edits); focus
+// goes back to the trigger. With the calendar closed the key goes on (the dialog closes as usual).
+function onEscape(event) {
+  if (!visible.value) return;
+  event.stopPropagation();
+  close();
+  triggerEl.value?.focus();
 }
 
 // Below the trigger, or above it when the viewport has no room below and does above; never past the right edge (a
