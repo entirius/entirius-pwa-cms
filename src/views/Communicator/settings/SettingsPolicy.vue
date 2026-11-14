@@ -81,7 +81,8 @@ onMounted(async () => {
   try {
     apply((await GET_Policy()).data);
   } catch {
-    // 404: the channel has no policy yet — the defaults above create one on save.
+    // 404: the channel has no policy yet — the defaults above create one on save, so they count as a change.
+    stored.value = "";
   }
 });
 </script>

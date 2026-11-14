@@ -103,13 +103,18 @@ const bodyOf = (type) => {
   return Object.fromEntries(["label", "is_active"].filter((key) => type[key] !== was[key]).map((key) => [key, type[key]]));
 };
 const edited = () => types.value.filter((type) => Object.keys(bodyOf(type)).length);
-const moved = () => types.value.filter((type, index) => type.order !== index * ORDER_STEP);
-const dirty = computed(() => edited().length > 0 || moved().length > 0);
+const savedOrder = ref([]); // the ids in the order loaded: a gap in `order` (after a delete) is no move
+const reordered = () => types.value.map((type) => type.id).join() !== savedOrder.value.join();
+const dirty = computed(() => edited().length > 0 || reordered());
 const actions = computed(() => [saveAction({ dirty: dirty.value, saving: saving.value, testid: "lead-types-save", onClick: saveAll })]);
 
+// A reload (after an add, a delete or the order) keeps the edits not saved yet.
 async function load() {
+  const edits = Object.fromEntries(edited().map((type) => [type.id, bodyOf(type)]));
   types.value = (await GET_LeadTypes()).data.results || [];
   saved.value = Object.fromEntries(types.value.map((type) => [type.id, { label: type.label, is_active: type.is_active }]));
+  savedOrder.value = types.value.map((type) => type.id);
+  types.value.forEach((type) => Object.assign(type, edits[type.id]));
   store.load(true); // the chips, selects and labels elsewhere read the new list
 }
 
@@ -134,13 +139,16 @@ async function update(type) {
 // The changed types first (a refusal stays on its row with the edit), then the order — which reads the list again.
 async function saveAll() {
   saving.value = true;
-  const results = await Promise.all(edited().map(update));
-  if (results.every(Boolean)) await saveOrder();
-  saving.value = false;
+  try {
+    const results = await Promise.all(edited().map(update));
+    if (results.every(Boolean) && reordered()) await saveOrder();
+  } finally {
+    saving.value = false;
+  }
 }
 
 async function saveOrder() {
-  const changed = moved().map((type) => ({ type, order: types.value.indexOf(type) * ORDER_STEP }));
+  const changed = types.value.map((type, index) => ({ type, order: index * ORDER_STEP })).filter(({ type, order }) => type.order !== order);
   await attempt("order", async () => {
     for (const { type, order } of changed) await PATCH_LeadType(type.id, { order });
   });

@@ -184,9 +184,11 @@ async function loadReplyTypes() {
 const reload = () => loadPage(1);
 const refresh = () => loadPage(1, page.value); // the list as far as it is open, scroll untouched
 
+// Replies again lifts "need review" too: the list is read again without the flag.
 function setFilter(key) {
+  const lifted = reviewOnly.value;
   reviewOnly.value = false;
-  if (key === filter.value) return;
+  if (key === filter.value && !lifted) return;
   filter.value = key;
   rows.value = [];
   reload();

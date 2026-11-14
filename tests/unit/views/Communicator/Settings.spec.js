@@ -101,6 +101,18 @@ describe("Communicator settings", () => {
     expect(api.PUT_Policy.mock.calls[0][0].windows[0]).toEqual({ start_time: "08:00", end_time: value, order: 0 });
   });
 
+  // N27: the page's one Save sees a card as changed only after an edit — and a channel without a policy at once
+  it("the policy card is unchanged after load, changed after an edit, and changed when no policy exists yet", async () => {
+    const wrapper = await mountPolicy();
+    expect(wrapper.vm.dirty).toBe(false);
+    await timeField(wrapper, "end").setValue("18:00");
+    expect(wrapper.vm.dirty).toBe(true);
+    api.GET_Policy.mockRejectedValueOnce({ httpStatus: 404 });
+    const fresh = mount(SettingsPolicy, mountOptions());
+    await flushPromises();
+    expect(fresh.vm.dirty).toBe(true);
+  });
+
   it("sandbox without a mailbox is refused in the form (C-30)", async () => {
     const wrapper = await mountChannel();
     wrapper.findComponent(stubs.SegmentedControl).vm.$emit("update:modelValue", "sandbox");

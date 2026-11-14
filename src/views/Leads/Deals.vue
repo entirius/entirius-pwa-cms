@@ -189,14 +189,15 @@ async function load() {
   loading.value = true;
   try {
     const { data } = await GET_Deals(params());
+    const others = !data.results.length && !filtered.value && (await anyOpenDeal().catch(() => false));
     if (run !== latest) return;
     deals.value = data.results;
     count.value = data.count ?? data.results.length;
-    othersExist.value = !data.results.length && !filtered.value && (await anyOpenDeal());
+    othersExist.value = others;
   } catch (err) {
     notify.spawnNotification({ msg: extractApiMessage(err, t("leads.common.error")), type: "negative" });
   } finally {
-    loading.value = false;
+    if (run === latest) loading.value = false;
   }
 }
 

@@ -152,6 +152,20 @@ describe("Leads Stages", () => {
     expect(api.PATCH_Stage.mock.calls).toEqual([[1, { label: "Fresh" }]]);
   });
 
+  it("adding a stage keeps a rename not saved yet", async () => {
+    api.POST_Stage.mockResolvedValue({ data: {} });
+    const wrapper = mount(Stages, { global: { components: leadsFrame.components, stubs } });
+    await flushPromises();
+    wrapper.findAllComponents('[data-testid="stage-label"]')[0].vm.$emit("update:modelValue", "Fresh");
+    await setControl(wrapper, "stage-new-key", "lost");
+    await setControl(wrapper, "stage-new-label", "Lost");
+    await wrapper.find('[data-testid="stage-add"]').trigger("submit");
+    await flushPromises();
+    api.PATCH_Stage.mockResolvedValue({ data: {} });
+    await save(wrapper);
+    expect(api.PATCH_Stage).toHaveBeenCalledWith(1, { label: "Fresh" });
+  });
+
   it("a key outside letters, digits, - and _ is refused before the request", async () => {
     const wrapper = mount(Stages, { global: { components: leadsFrame.components, stubs } });
     await flushPromises();

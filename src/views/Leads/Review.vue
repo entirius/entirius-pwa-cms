@@ -214,16 +214,24 @@ const handledText = computed(() =>
   handled.value === "gone" ? t("leads.review.gone") : t("leads.review.handled", { state: statusLabel(handled.value) })
 );
 
+// Only the latest read writes the screen (Next, a conflict and the accept timer may change the draft quickly); a failed
+// read shows no draft rather than the previous one under the new address.
+let latestRead = 0;
+
 async function load() {
+  const read = ++latestRead;
+  message.value = null; // the old draft is never on screen (or under Send) while the next one loads
   loading.value = true;
   try {
-    const found = await api.GET_ReviewMessage(route.params.id);
+    const found = await api.GET_ReviewMessage(route.params.id).catch(() => undefined);
+    if (read !== latestRead) return;
+    if (found === undefined) return notify.spawnNotification({ msg: t("leads.review.error"), type: "negative" });
     handled.value = found?.status === REVIEW_STATUS ? null : found?.status || "gone";
     message.value = handled.value ? null : found;
     if (handled.value) return;
     await Promise.all([loadQueuePosition(), loadOutbound()]);
   } finally {
-    loading.value = false;
+    if (read === latestRead) loading.value = false;
   }
 }
 
@@ -364,9 +372,11 @@ function openVersion(data) {
     failedVersion.value = data;
     return;
   }
+  // the new version takes the old one's place in the Inbox order; the way back (Approvals) stays
+  queue.value = queue.value.map((id) => (id === message.value.id ? data.id : id));
   message.value = data;
   loadOutbound();
-  router.replace({ name: "LeadsReview", params: { id: data.id } });
+  router.replace({ name: "LeadsReview", params: { id: data.id }, ...(fromApprovals.value && { query: route.query }) });
 }
 
 function openRewrite() {

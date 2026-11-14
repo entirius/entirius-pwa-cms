@@ -410,6 +410,22 @@ describe("Leads Review", () => {
     expect(replace).toHaveBeenCalledWith({ name: "LeadsReview", params: { id: 6 } });
   });
 
+  // Code review: the sent draft is never on screen (nor under Send) while the next one loads; a late answer is dropped
+  it("shows no draft while the next one loads, and an older answer never replaces a newer one", async () => {
+    const wrapper = await mountReview();
+    let slow;
+    api.GET_ReviewMessage.mockReturnValueOnce(new Promise((resolve) => (slow = resolve))).mockResolvedValueOnce({ ...draft, id: 7, subject: "Seven" });
+    route.current.params.id = "6";
+    await flushPromises();
+    expect(wrapper.find('[data-testid="review-draft"]').exists()).toBe(false);
+    route.current.params.id = "7";
+    await flushPromises();
+    slow({ ...draft, id: 6, subject: "Six" });
+    await flushPromises();
+    expect(wrapper.get('[data-testid="review-subject"]').text()).toBe("Seven");
+    route.current.params.id = "5";
+  });
+
   // N7: after an action the next draft is the one below in the Inbox order, not the service's oldest
   it("after Later the next draft is the one below in the Inbox order", async () => {
     api.GET_ReviewList.mockResolvedValue({ data: { results: [{ id: 3 }, { id: 4 }, { id: 5 }] } }); // Inbox: 5, 4, 3

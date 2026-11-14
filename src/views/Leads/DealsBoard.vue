@@ -76,16 +76,24 @@ const pageActions = computed(() =>
 const setFilter = (changes) => router.replace({ query: { ...route.query, ...changes } });
 const openList = (value) => value === "list" && router.push({ name: "LeadsDeals", query: { owner: query.value.owner } });
 
+// Only the latest read writes the board (a move and a filter change may overlap); the columns remount after every
+// read, a failed one too, so a refused card never stays where it was dropped.
+let latest = 0;
+
 async function load() {
+  const run = ++latest;
   loading.value = true;
   try {
     const owner = query.value.owner === "all" ? undefined : query.value.owner;
-    columns.value = (await GET_DealBoard({ owner })).data.results;
-    version.value += 1;
+    const results = (await GET_DealBoard({ owner })).data.results;
+    if (run === latest) columns.value = results;
   } catch (err) {
     notify.spawnNotification({ msg: extractApiMessage(err, t("leads.common.error")), type: "negative" });
   } finally {
-    loading.value = false;
+    if (run === latest) {
+      loading.value = false;
+      version.value += 1;
+    }
   }
 }
 

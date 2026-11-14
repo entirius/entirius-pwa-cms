@@ -37,9 +37,9 @@ const stored = ref({ mode: "dry_run", sandbox_mailbox: "" });
 const dirty = computed(() => mode.value !== stored.value.mode || mailbox.value.trim() !== stored.value.sandbox_mailbox);
 
 function apply(data) {
-  stored.value = data;
+  stored.value = { ...data, sandbox_mailbox: data.sandbox_mailbox || "" };
   mode.value = data.mode;
-  mailbox.value = data.sandbox_mailbox;
+  mailbox.value = data.sandbox_mailbox || "";
   liveEnabled.value = data.live_enabled;
 }
 

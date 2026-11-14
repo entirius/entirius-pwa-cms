@@ -133,13 +133,18 @@ const rulesByStage = ref({});
 const savedLabels = ref({}); // id → the label the server holds
 const saving = ref(false);
 const renamed = () => stages.value.filter((stage) => stage.label !== savedLabels.value[stage.id]);
-const moved = () => stages.value.some((stage, index) => stage.order !== index * ORDER_STEP);
+const savedOrder = ref([]); // the ids in the order loaded: a gap in `order` (after a delete) is no move
+const moved = () => stages.value.map((stage) => stage.id).join() !== savedOrder.value.join();
 const dirty = computed(() => renamed().length > 0 || moved());
 const actions = computed(() => [saveAction({ dirty: dirty.value, saving: saving.value, testid: "stages-save", onClick: saveAll })]);
 
+// A reload (after an add, a delete or the order) keeps the renames not saved yet.
 async function load() {
+  const edits = Object.fromEntries(renamed().map((stage) => [stage.id, stage.label]));
   stages.value = (await GET_Stages()).data.results;
   savedLabels.value = Object.fromEntries(stages.value.map((stage) => [stage.id, stage.label]));
+  savedOrder.value = stages.value.map((stage) => stage.id);
+  stages.value.forEach((stage) => stage.id in edits && (stage.label = edits[stage.id]));
 }
 
 // The rules the Board badges, shown here too (the stages payload carries none).
@@ -196,9 +201,12 @@ function shift(index, delta) {
 // again. Saved labels are remembered at once, so a refusal elsewhere does not send them twice.
 async function saveAll() {
   saving.value = true;
-  const results = await Promise.all(renamed().map((stage) => rename(stage)));
-  if (results.every(Boolean)) await saveOrder();
-  saving.value = false;
+  try {
+    const results = await Promise.all(renamed().map((stage) => rename(stage)));
+    if (results.every(Boolean) && moved()) await saveOrder();
+  } finally {
+    saving.value = false;
+  }
 }
 
 async function rename(stage) {
