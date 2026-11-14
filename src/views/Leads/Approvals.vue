@@ -379,6 +379,7 @@ onMounted(() => {
 .approvals__refused {
   display: block;
   color: var(--negative);
+  overflow-wrap: anywhere;
 }
 .approvals__preview {
   white-space: pre-wrap;

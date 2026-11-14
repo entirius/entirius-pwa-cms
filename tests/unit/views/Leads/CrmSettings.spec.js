@@ -102,7 +102,7 @@ describe("Leads → Settings → Custom fields", () => {
     setControl(wrapper, "field-key", "Role");
     await byTestid(wrapper, "field-save").trigger("click");
     await flushPromises();
-    expect(errorOf("leads.fields.key")).toBe("Use lower-case letters, digits and underscores");
+    expect(errorOf("leads.fields.key")).toBe("Use only the characters the hint names");
     expect(errorOf("leads.fields.label")).toBe("Check this field");
   });
 

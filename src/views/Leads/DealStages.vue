@@ -183,8 +183,16 @@ async function dealsIn(stage) {
   return Promise.all([count(false), count(true)]).then(([open, archived]) => open + archived, () => null);
 }
 
+// One count at a time: a second click while the first is read opens nothing more.
+let counting = false;
 async function askDelete(stage) {
-  confirming.value = { stage, count: await dealsIn(stage) };
+  if (counting) return;
+  counting = true;
+  try {
+    confirming.value = { stage, count: await dealsIn(stage) };
+  } finally {
+    counting = false;
+  }
 }
 
 async function remove() {

@@ -5508,7 +5508,7 @@
         "too_long": "Za długie — skróć",
         "taken": "Już zajęte — wybierz inne",
         "email": "Podaj poprawny adres e-mail",
-        "format": "Użyj małych liter, cyfr i podkreśleń",
+        "format": "Użyj tylko znaków podanych w podpowiedzi",
         "number": "Podaj liczbę z dozwolonego zakresu"
       }
     }

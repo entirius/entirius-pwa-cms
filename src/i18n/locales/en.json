@@ -5509,7 +5509,7 @@
         "too_long": "Too long — shorten it",
         "taken": "Already in use — pick another",
         "email": "Give a valid e-mail address",
-        "format": "Use lower-case letters, digits and underscores",
+        "format": "Use only the characters the hint names",
         "number": "Give a number in the allowed range"
       }
     }
