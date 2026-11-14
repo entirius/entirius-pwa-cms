@@ -1,5 +1,5 @@
 <template>
-  <div class="flex ai-ct jc-fe wrap gap-3" data-testid="company-actions">
+  <div class="company-actions flex ai-ct jc-fe wrap gap-3" data-testid="company-actions">
     <router-link
       v-if="company.customer_uid && hasAccounts"
       class="company-actions__customer t-accent"
@@ -227,12 +227,23 @@ function createCustomer() {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import "@/assets/scss/utils/media-query";
+
 /* C-43: the customer link reads at body size and keeps a 32 px target. */
 .company-actions__customer {
   display: inline-flex;
   align-items: center;
   min-height: 32px;
   text-decoration: underline;
+}
+/* A phone reads the header from the left: the customer link takes its own line there, never alone at the right edge */
+@include max-tablet {
+  .company-actions {
+    justify-content: flex-start;
+  }
+  .company-actions__customer {
+    flex-basis: 100%;
+  }
 }
 </style>
