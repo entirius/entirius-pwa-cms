@@ -29,7 +29,7 @@
 <script setup>
 import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import { t } from "@/i18n";
+import { t, uiLocale } from "@/i18n";
 import { GET_Templates } from "@/api/communicator/api";
 import { useLeadTypesStore } from "@/stores/leadTypes";
 import { useMuninStore } from "@/stores/munin";
@@ -38,16 +38,21 @@ import { templateKindLabel } from "@/utils/leadsLabels";
 const columns = [
   { key: "key", label: t("communicator.template.key"), width: "1.5fr", truncate: true },
   { key: "kindText", label: t("communicator.template.kind"), width: "max-content" },
-  { key: "language", label: t("communicator.template.language"), width: "max-content" },
+  { key: "languageText", label: t("communicator.template.language"), width: "max-content" },
   { key: "audience", label: t("communicator.template.audience"), width: "1fr", truncate: true, priority: 2 },
-  { key: "current_version_id", label: t("communicator.template.version"), numeric: true, priority: 3 },
   { key: "is_active", label: t("communicator.template.is_active"), width: "max-content" },
 ];
 
 const router = useRouter();
 const templates = ref([]);
 const leadTypes = useLeadTypesStore();
-const rows = computed(() => templates.value.map((tpl) => ({ ...tpl, kindText: templateKindLabel(tpl.kind) })));
+// N25: the language by its name in the UI language ("Polish" / "Polski"), the code when the browser has no name for it.
+const languageNames = new Intl.DisplayNames([uiLocale()], { type: "language" });
+const languageText = (code) => {
+  const name = (code && languageNames.of(code)) || code || "";
+  return name.charAt(0).toUpperCase() + name.slice(1);
+};
+const rows = computed(() => templates.value.map((tpl) => ({ ...tpl, kindText: templateKindLabel(tpl.kind), languageText: languageText(tpl.language) })));
 
 const editRoute = (row) => ({ name: "CommunicatorTemplateEdit", params: { id: row.id } });
 const open = (row) => router.push(editRoute(row));

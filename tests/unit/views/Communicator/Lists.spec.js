@@ -41,10 +41,13 @@ describe("Communicator lists", () => {
   });
 
   it("a template row opens the template and names its kind", async () => {
-    api.GET_Templates.mockResolvedValue({ data: { results: [{ id: 3, key: "cold", kind: "ai_prompt", language: "pl", is_active: true }] } });
+    api.GET_Templates.mockResolvedValue({ data: { results: [{ id: 3, key: "cold", kind: "ai_prompt", language: "pl", current_version_id: 4127, is_active: true }] } });
     const wrapper = await mountView(TemplateList);
     const row = wrapper.get('[data-testid="template-row"]');
     expect(row.text()).toContain("AI prompt");
+    // N25: the language by its name, no version id column
+    expect(row.text()).toContain("Polish");
+    expect(row.text()).not.toContain("4127");
     await row.trigger("click");
     expect(router.push).toHaveBeenCalledWith({ name: "CommunicatorTemplateEdit", params: { id: 3 } });
   });
