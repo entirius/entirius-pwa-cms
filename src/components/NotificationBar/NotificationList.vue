@@ -55,7 +55,7 @@ const router = useRouter();
 const companyNames = ref({});
 const EMAIL = /\S+@\S+/;
 
-// A leads notification names its company, never a bare address ("Possible opt-out · Example Shop 6").
+// A leads notification names its company, never a bare address ("Reply from Example Shop 6 — Possible opt-out").
 function rowTitle(item) {
   const name = companyNames.value[companyIdFromSubjectRef(item.subject_ref)];
   if (!name || item.title.includes(name)) return item.title;
