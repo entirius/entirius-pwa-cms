@@ -137,6 +137,24 @@ describe("Leads → Deals list", () => {
     expect(byTestid(wrapper, "deals-clear-filters").exists()).toBe(false);
   });
 
+  // N18: Mine empty while others have deals — say so, offer them all
+  it("an empty Mine with deals under All offers Show all", async () => {
+    leads.GET_Deals.mockResolvedValueOnce({ data: { count: 0, results: [] } }).mockResolvedValueOnce({ data: { count: 9, results: [deal(1)] } });
+    const wrapper = await mounted();
+    expect(leads.GET_Deals).toHaveBeenLastCalledWith({ kind: "open", page_size: 1 });
+    expect(byTestid(wrapper, "deals-empty").exists()).toBe(false);
+    await byTestid(wrapper, "deals-show-all").trigger("click");
+    expect(router.replace).toHaveBeenCalledWith({ query: { owner: "all" } });
+  });
+
+  // N20: a phone has no value column — the value is on the row's second line
+  it("on a phone the row's second line carries the value", async () => {
+    const matchMedia = vi.spyOn(window, "matchMedia").mockImplementation((query) => ({ matches: query.includes("max-width"), addEventListener() {}, removeEventListener() {} }));
+    const wrapper = await mounted();
+    expect(wrapper.get('[data-testid="deal-row"]').text()).toContain("Acme · 12400.00 PLN");
+    matchMedia.mockRestore();
+  });
+
   it("an older answer never replaces a newer one", async () => {
     let first;
     leads.GET_Deals.mockReturnValueOnce(new Promise((resolve) => (first = resolve)));

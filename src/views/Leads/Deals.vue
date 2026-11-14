@@ -21,6 +21,10 @@
     <EmptyState v-else-if="stagesLoaded && !stages.length" icon="empty" size="md" :title="$t('leads.deals.no_stages')" data-testid="deals-no-stages">
       <router-link v-if="canSetUp" class="t-accent" :to="{ name: 'LeadsDealStages' }">{{ $t("leads.deal_stages.title") }}</router-link>
     </EmptyState>
+    <!-- Mine is empty while the channel has deals: say so and offer them all (N18) -->
+    <EmptyState v-else-if="!deals.length && !filtered && othersExist" icon="empty" size="md" :title="$t('leads.deals.none_mine')" data-testid="deals-empty-mine">
+      <BasicButton data-testid="deals-show-all" @click="setFilter({ owner: 'all' })">{{ $t("leads.deals.show_all_deals") }}</BasicButton>
+    </EmptyState>
     <!-- the next step ("open one from a company card") only for a role that may open one -->
     <EmptyState v-else-if="!deals.length && !filtered" icon="empty" size="md" :title="$t('leads.deals.empty_title')" :message="readonly ? '' : $t('leads.deals.empty_message')" data-testid="deals-empty">
       <ActionBar :actions="pageActions.map((action) => ({ ...action, role: 'secondary' }))" />
@@ -70,16 +74,18 @@ import { t } from "@/i18n";
 import { GET_DealStages, GET_Deals } from "@/api/leads/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { useIsDesktop } from "@/composables/useIsDesktop";
+import { useMediaQuery } from "@/composables/useMediaQuery";
 import { ReadonlyOff, usePageReadonly } from "@/composables/useReadonly";
 import { AREAS } from "@/configs/areas";
 import { useAccessStore } from "@/stores/access";
 import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
+import { MAX_TABLET_QUERY } from "@/utils/breakpoints";
 import { formatDay } from "@/utils/format";
 import DealDialog from "./DealDialog.vue";
 import DealFilters from "./DealFilters.vue";
 import LostReasonDialog from "./LostReasonDialog.vue";
-import { canClose, dealKindTone, oneOffText, recurringValueText, stageOptions } from "./deals";
+import { canClose, dealKindTone, dealValue, oneOffText, recurringValueText, stageOptions } from "./deals";
 import { useDealMove } from "./useDealMove";
 
 // Deals (ux/screens/deals.md): the list on every width — on a phone it is the screen (no drag and drop below
@@ -139,10 +145,13 @@ const rowAttrs = (row) => ({ "data-testid": "deal-row", "data-deal": row.id });
 
 const closeText = (deal) => deal.expected_close_date && t("leads.deals.close_on", { date: formatDay(deal.expected_close_date) });
 
+// A phone has no value column: the value rides on the row's second line, as the design draws it (N20).
+const isPhone = useMediaQuery(MAX_TABLET_QUERY);
+
 function toRow(deal) {
   return {
     ...deal,
-    summary: [deal.company.name || deal.company.domain, closeText(deal)].filter(Boolean).join(" · "),
+    summary: [deal.company.name || deal.company.domain, isPhone.value && dealValue(deal), closeText(deal)].filter(Boolean).join(" · "),
     one_off: oneOffText(deal) || "—",
     recurring: recurringValueText(deal) || "—",
     close: deal.expected_close_date ? formatDay(deal.expected_close_date) : "—",
@@ -183,11 +192,19 @@ async function load() {
     if (run !== latest) return;
     deals.value = data.results;
     count.value = data.count ?? data.results.length;
+    othersExist.value = !data.results.length && !filtered.value && (await anyOpenDeal());
   } catch (err) {
     notify.spawnNotification({ msg: extractApiMessage(err, t("leads.common.error")), type: "negative" });
   } finally {
     loading.value = false;
   }
+}
+
+// Whether any open deal of anybody exists — asked only when Mine came back empty.
+const othersExist = ref(false);
+async function anyOpenDeal() {
+  const { data } = await GET_Deals({ kind: "open", page_size: 1 });
+  return Boolean(data.count ?? data.results.length);
 }
 
 // A failed stages call leaves the set-up state off (it would replace the deals): the selects stay empty.

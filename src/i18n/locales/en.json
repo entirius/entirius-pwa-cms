@@ -5318,7 +5318,9 @@
       "col_stage": "Stage",
       "column_empty": "Nothing here yet",
       "board_desktop_only": "The board is for a larger screen; here are the deals as a list.",
-      "move_to": "Move to…"
+      "move_to": "Move to…",
+      "none_mine": "No open deals of yours",
+      "show_all_deals": "Show all deals"
     },
     "deal": {
       "title": "Deal",

@@ -5317,7 +5317,9 @@
       "col_stage": "Etap",
       "column_empty": "Nic tu jeszcze nie ma",
       "board_desktop_only": "Tablica jest na większy ekran; oto transakcje jako lista.",
-      "move_to": "Przenieś do…"
+      "move_to": "Przenieś do…",
+      "none_mine": "Nie masz otwartych transakcji",
+      "show_all_deals": "Pokaż wszystkie transakcje"
     },
     "deal": {
       "title": "Transakcja",
