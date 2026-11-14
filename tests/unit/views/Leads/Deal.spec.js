@@ -33,8 +33,9 @@ const deal = (stage = STAGES[1], extra = {}) => ({
   stage_entered_at: "2026-11-02T10:00:00Z", value_one_off: "12400.00", value_recurring: null, recurring_period: "month", currency: "PLN",
   expected_close_date: null, lost_reason: "", attributes: {}, subject_ref: "leads.Deal:7", subject_label: "Acme — Shop rebuild", ...extra,
 });
+const BasicMenu = { name: "BasicMenu", props: ["items", "label", "placement"], emits: ["select"], template: "<div><slot name='trigger' /></div>" };
 const mounted = async (options = {}) => {
-  const wrapper = mountOutbound(Deal, { area: "leads.companies", stubs: { ...crmStubs, TasksTab: true, DealDetails: true, ReadonlyArea: { template: "<div><slot /></div>" } }, ...options });
+  const wrapper = mountOutbound(Deal, { area: "leads.companies", stubs: { ...crmStubs, BasicMenu, TasksTab: true, DealDetails: true, ReadonlyArea: { template: "<div><slot /></div>" } }, ...options });
   await flushPromises();
   return wrapper;
 };
@@ -54,7 +55,7 @@ describe("Leads → Deal card", () => {
 
   it("an open deal: Mark won moves it to the first won stage; History reads the stage labels", async () => {
     const wrapper = await mounted();
-    expect(byTestid(wrapper, "deal-delete").exists()).toBe(true);
+    expect(byTestid(wrapper, "deal-more").exists()).toBe(true);
     expect(byTestid(wrapper, "deal-reopen").exists()).toBe(false);
     expect(byTestid(wrapper, "timeline-event").text()).toContain("Qualified → Proposal");
     await byTestid(wrapper, "deal-mark-won").trigger("click");
@@ -63,11 +64,13 @@ describe("Leads → Deal card", () => {
     expect(byTestid(wrapper, "deal-kind").text()).toContain("Won");
   });
 
-  it("the action bar ends with the danger action, then the primary: Mark lost, Delete deal, Mark won", async () => {
+  // N19: the more menu (Delete deal), Mark lost, Mark won — the primary rightmost, no red button in the row
+  it("the action bar: the more menu holds Delete deal, then Mark lost, then Mark won", async () => {
     const wrapper = await mounted();
-    const order = ["deal-mark-lost", "deal-delete", "deal-mark-won"].map((id) => wrapper.html().indexOf(`data-testid="${id}"`));
+    const order = ["deal-more", "deal-mark-lost", "deal-mark-won"].map((id) => wrapper.html().indexOf(`data-testid="${id}"`));
     expect(order).toEqual([...order].sort((a, b) => a - b));
     expect(order.every((index) => index > 0)).toBe(true);
+    expect(wrapper.findComponent({ name: "BasicMenu" }).props("items").map((item) => item.key)).toEqual(["delete"]);
   });
 
   it("the reason dialog closes with Close, like the task dialog", async () => {
@@ -88,7 +91,7 @@ describe("Leads → Deal card", () => {
     leads.GET_Deal.mockResolvedValue({ data: deal(STAGES[3], { lost_reason: "Too expensive" }) });
     const wrapper = await mounted();
     expect(byTestid(wrapper, "deal-lost-line").text()).toContain("Too expensive");
-    expect(byTestid(wrapper, "deal-delete").exists()).toBe(false);
+    expect(byTestid(wrapper, "deal-more").exists()).toBe(false);
     expect(byTestid(wrapper, "deal-mark-won").exists()).toBe(false);
     await byTestid(wrapper, "deal-reopen").trigger("click");
     expect(leads.POST_DealTransition).toHaveBeenCalledWith(7, "qualified", "");
@@ -97,7 +100,8 @@ describe("Leads → Deal card", () => {
   it("delete asks first, then goes back to Deals", async () => {
     leads.DELETE_Deal.mockResolvedValue({});
     const wrapper = await mounted();
-    await byTestid(wrapper, "deal-delete").trigger("click");
+    wrapper.findComponent({ name: "BasicMenu" }).vm.$emit("select", { key: "delete" });
+    await flushPromises();
     await byTestid(wrapper, "deal-delete-confirm").trigger("click");
     await flushPromises();
     expect(leads.DELETE_Deal).toHaveBeenCalledWith(7);
@@ -106,7 +110,7 @@ describe("Leads → Deal card", () => {
 
   it("read-only: no action", async () => {
     const wrapper = await mounted({ write: false });
-    ["deal-mark-won", "deal-mark-lost", "deal-delete"].forEach((id) => expect(byTestid(wrapper, id).exists()).toBe(false));
+    ["deal-mark-won", "deal-mark-lost", "deal-more"].forEach((id) => expect(byTestid(wrapper, id).exists()).toBe(false));
   });
 
   it("a closed deal without an open stage offers no Reopen", async () => {

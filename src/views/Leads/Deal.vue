@@ -7,19 +7,21 @@
           <router-link class="t-accent" :to="{ name: 'LeadsThread', params: { id: deal.company.id } }" data-testid="deal-company">
             {{ deal.company.name || deal.company.domain }}
           </router-link>
-          <BasicSelect
-            class="deal__stage"
-            :model-value="deal.stage.key"
-            :options="stageOptions(stages)"
-            :floating-label="isDesktop ? $t('leads.deal.stage') : undefined"
-            :aria-label="$t('leads.deal.stage')"
-            :disabled="readonly"
-            data-testid="deal-move-stage"
-            @update:model-value="move(deal, $event)"
-          />
         </template>
+        <!-- the more menu (Delete deal) · Mark lost · Mark won, the one primary (N19) -->
         <template v-if="deal" #actions>
-          <ActionBar :actions="actions" />
+          <ActionBar v-if="deal.stage.kind === 'open'">
+            <BasicMenu v-if="!readonly" :items="moreItems" :label="$t('leads.company.more')" placement="bottom-end" @select="deleting = true">
+              <template #trigger>
+                <IconButton icon="more" variant="outline" :label="$t('leads.company.more')" data-testid="deal-more" />
+              </template>
+            </BasicMenu>
+            <BasicButton v-if="lostStage" mutates data-testid="deal-mark-lost" @click="move(deal, lostStage.key)">{{ $t("leads.deal.mark_lost") }}</BasicButton>
+            <BasicButton v-if="wonStage" variant="primary" mutates data-testid="deal-mark-won" @click="move(deal, wonStage.key)">
+              {{ $t("leads.deal.mark_won") }}
+            </BasicButton>
+          </ActionBar>
+          <ActionBar v-else :actions="[closedAction()].filter(Boolean)" />
         </template>
       </PageHeader>
     </template>
@@ -28,6 +30,17 @@
     </EmptyState>
     <Loader v-else-if="!deal" block />
     <div v-else class="flex-column gap-8">
+      <!-- its own labelled line under the title: no label is drawn over the kind badge (N17) -->
+      <BasicSelect
+        class="deal__stage"
+        :model-value="deal.stage.key"
+        :options="stageOptions(stages)"
+        :floating-label="$t('leads.deal.stage')"
+        :aria-label="$t('leads.deal.stage')"
+        :disabled="readonly"
+        data-testid="deal-move-stage"
+        @update:model-value="move(deal, $event)"
+      />
       <p v-if="deal.stage.kind === 'lost' && deal.lost_reason" class="m-0" data-testid="deal-lost-line">
         {{ $t("leads.deal.lost_reason_line", { reason: deal.lost_reason }) }}
       </p>
@@ -65,7 +78,6 @@ import { useRoute, useRouter } from "vue-router";
 import { t } from "@/i18n";
 import { DELETE_Deal, GET_Attributes, GET_Company, GET_Deal, GET_DealActivities, GET_DealStages } from "@/api/leads/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
-import { useIsDesktop } from "@/composables/useIsDesktop";
 import { ReadonlyArea, usePageReadonly } from "@/composables/useReadonly";
 import { AREAS } from "@/configs/areas";
 import { useAccessStore } from "@/stores/access";
@@ -86,7 +98,6 @@ const router = useRouter();
 const notify = useNotifyStore();
 const munin = useMuninStore();
 const access = useAccessStore();
-const isDesktop = useIsDesktop();
 const readonly = usePageReadonly();
 const deal = ref(null);
 const loadError = ref("");
@@ -102,17 +113,9 @@ const fields = computed(() => fieldsFromDefinitions(definitions.value));
 const contacts = computed(() => contactOptions(company.value.contacts));
 const closable = computed(() => canClose(stages.value));
 const history = computed(() => activities.value.map((entry) => ({ ...entry, text: dealHistoryText(entry, stages.value) })));
-const actions = computed(() => (deal.value.stage.kind === "open" ? openActions() : [closedAction()].filter(Boolean)));
-
-function openActions() {
-  const won = firstStage(stages.value, "won");
-  const lostStage = firstStage(stages.value, "lost");
-  return [
-    lostStage && { key: "lost", label: t("leads.deal.mark_lost"), role: "secondary", mutates: true, testid: "deal-mark-lost", onClick: () => move(deal.value, lostStage.key) },
-    won && { key: "won", label: t("leads.deal.mark_won"), role: "primary", mutates: true, testid: "deal-mark-won", onClick: () => move(deal.value, won.key) },
-    { key: "delete", label: t("leads.deal.delete"), role: "danger", icon: "delete", mutates: true, testid: "deal-delete", onClick: () => (deleting.value = true) },
-  ].filter(Boolean);
-}
+const wonStage = computed(() => firstStage(stages.value, "won"));
+const lostStage = computed(() => firstStage(stages.value, "lost"));
+const moreItems = [{ key: "delete", label: t("leads.deal.delete"), danger: true, testid: "deal-delete" }];
 
 // Reopen goes to the first open stage; without one (or without the stages) it is not offered.
 function closedAction() {
@@ -169,7 +172,7 @@ watch(() => route.params.id, (id) => route.name === "LeadsDeal" && id && open(id
 
 <style scoped>
 .deal__stage {
-  width: 14rem;
+  max-width: 14rem;
 }
 .deal__events {
   padding-left: var(--space-4);
