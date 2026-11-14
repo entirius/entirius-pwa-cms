@@ -22,7 +22,8 @@
     <div v-else class="flex-column gap-4">
       <p v-if="!closable" class="t-warning m-0" data-testid="deals-cannot-close">{{ $t("leads.deals.cannot_close") }}</p>
       <div class="board" data-testid="deals-board-columns">
-        <DealBoardColumn v-for="column in columns" :key="column.stage.key" :column="column" :stages="stages" :owner="query.owner" @move="move" />
+        <!-- every load remounts the columns: a drag after a refused move or a closed reason dialog starts on fresh lists (N15) -->
+        <DealBoardColumn v-for="column in columns" :key="`${column.stage.key}:${version}`" :column="column" :stages="stages" :owner="query.owner" @move="move" />
       </div>
     </div>
     <LostReasonDialog :move="lost" :stages="stages" @submit="submitLost" @cancel="cancelLost" />
@@ -61,7 +62,9 @@ const stages = computed(() => columns.value.map((column) => column.stage));
 const closable = computed(() => canClose(stages.value));
 const canSetUp = computed(() => access.can(AREAS.LEADS_SETTINGS));
 const query = computed(() => ({ owner: "me", ...route.query }));
-const { lost, move, submitLost, cancelLost } = useDealMove(stages, { moved: load, refused: snapBack });
+const version = ref(0);
+// A refused move or a closed reason dialog reads the board again: the card is back where the server has it.
+const { lost, move, submitLost, cancelLost } = useDealMove(stages, { moved: load, refused: load });
 const viewOptions = [
   { value: "list", label: t("leads.companies.view_list") },
   { value: "board", label: t("leads.companies.view_board") },
@@ -72,22 +75,13 @@ const pageActions = computed(() =>
 
 const setFilter = (changes) => router.replace({ query: { ...route.query, ...changes } });
 const openList = (value) => value === "list" && router.push({ name: "LeadsDeals", query: { owner: query.value.owner } });
-const columnOf = (key) => columns.value.find((column) => column.stage.key === key);
-
-// A dragged card sits in the target column already: back to the column of its stage. A select move moved nothing.
-function snapBack(deal, stageKey) {
-  const target = columnOf(stageKey)?.deals;
-  const index = target ? target.findIndex((row) => row.id === deal.id) : -1;
-  if (index < 0) return;
-  target.splice(index, 1);
-  columnOf(deal.stage.key)?.deals.unshift(deal);
-}
 
 async function load() {
   loading.value = true;
   try {
     const owner = query.value.owner === "all" ? undefined : query.value.owner;
     columns.value = (await GET_DealBoard({ owner })).data.results;
+    version.value += 1;
   } catch (err) {
     notify.spawnNotification({ msg: extractApiMessage(err, t("leads.common.error")), type: "negative" });
   } finally {

@@ -20,7 +20,7 @@
       <BasicRadioGroup v-model="form.period" :options="periods" name="deal-period" data-testid="deal-period" />
     </FormField>
     <FormField :label="$t('leads.deal.expected_close')" :error="errors.expected_close_date || ''">
-      <BasicDatePicker v-model="form.expectedClose" data-testid="deal-expected-close" />
+      <BasicDatePicker v-model="form.expectedClose" fixed data-testid="deal-expected-close" />
     </FormField>
     <slot />
   </div>

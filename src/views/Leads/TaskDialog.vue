@@ -24,7 +24,7 @@
         <BasicRadioGroup v-model="form.kind" :options="kinds" name="task-kind" data-testid="task-kind" />
       </FormField>
       <FormField v-if="mode !== 'call'" :label="$t('leads.task.due')" :error="errorOf('due_at')">
-        <BasicDatePicker v-model="form.due" :config="{ enableTime: true, time_24hr: true }" data-testid="task-due-at" />
+        <BasicDatePicker v-model="form.due" :config="{ enableTime: true, time_24hr: true }" fixed data-testid="task-due-at" />
       </FormField>
       <FormField :label="$t('leads.task.owner')" :error="errorOf('owner_id')">
         <BasicSelect v-model="form.ownerId" :options="owners" searchable clearable data-testid="task-owner" />

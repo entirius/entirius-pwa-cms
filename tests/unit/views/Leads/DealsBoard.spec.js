@@ -46,7 +46,7 @@ describe("Leads → Deals board", () => {
     vi.clearAllMocks();
     setActivePinia(createPinia());
     route.query = {};
-    leads.GET_DealBoard.mockResolvedValue({ data: { results: board() } });
+    leads.GET_DealBoard.mockImplementation(() => Promise.resolve({ data: { results: board() } })); // the server's truth, fresh each read
   });
 
   it("one totals line per currency, never added across; Show all past the first 25", async () => {
@@ -94,6 +94,8 @@ describe("Leads → Deals board", () => {
     expect(leads.POST_DealTransition).not.toHaveBeenCalled();
     wrapper.findComponent({ name: "LostReasonDialog" }).vm.$emit("cancel");
     await flushPromises();
+    // N15: the board reads itself again — the card is where the server has it, on freshly mounted lists
+    expect(leads.GET_DealBoard).toHaveBeenCalledTimes(2);
     expect(column(wrapper, "lost").props("column").deals).toHaveLength(0);
     expect(column(wrapper, "qualified").props("column").deals.map((row) => row.id)).toEqual([1]);
   });
