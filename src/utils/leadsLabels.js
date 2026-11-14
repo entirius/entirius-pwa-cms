@@ -69,7 +69,28 @@ const ACTIVITY_SHAPES = [
   [/^blocked: (\w+)$/, ([reason]) => t("leads.activity.blocked", { reason: blockReasonLabel(reason) })],
   [/^deal opened: (.+)$/, ([title]) => t("leads.history.event_deal_opened", { title })],
   [/^deal deleted: (.+)$/, ([title]) => t("leads.history.event_deal_deleted", { title })],
+  [/^import (created|matched)$/, ([how]) => t(`leads.activity.msg.import_${how}`)],
+  [/^reply received(?:: (\w+))?$/, ([type]) => (type ? t("leads.history.event_reply", { type: replyTypeLabel(type) }) : t("leads.activity.msg.reply_received"))],
+  [/^do not contact: (on|off)$/, ([state]) => t(`leads.activity.msg.dnc_${state}`)],
+  [/^score (S\d) \((\d+) points\)$/, ([segment, points]) => t("leads.activity.msg.score", { segment, points })],
 ];
+
+// The fixed messages leads writes (django_leads services), each a sentence of the panel.
+const FIXED_MESSAGES = {
+  "message sent": "message_sent",
+  "company created": "company_created",
+  "contact created": "contact_created",
+  "contact removed": "contact_removed",
+  "contact anonymised": "contact_anonymised",
+  "contact flagged: wrong person": "wrong_person",
+  "opted out": "opted_out",
+  "address invalid: hard bounce": "hard_bounce",
+  "gdpr erase requested": "gdpr_erase",
+  "recipient picked": "recipient_picked",
+  "intel analysed": "intel_analysed",
+  "skipped by reviewer": "skipped_by_reviewer",
+  "suppressed by communicator": "suppressed",
+};
 
 const stageName = (label, key) => label || capitalize(humanize(key || ""));
 const withDetail = (text, detail) => (detail ? `${text} — ${detail}` : text);
@@ -106,15 +127,21 @@ export function activityText(activity) {
   const { message = "", data = {}, kind } = typeof activity === "string" ? { message: activity } : activity || {};
   if (EVENT_SENTENCES[data.event]) return EVENT_SENTENCES[data.event](data);
   if (kind === "stage" && (data.from || data.from_label)) return stageLine(data);
-  return messageText(message);
+  return messageText(message, kind);
 }
 
-function messageText(message) {
-  if (!message) return "";
+// A message in the panel's words: a known shape, a fixed message, a rule-run detail; else, for an activity of a known
+// kind, the kind's own line (History never mixes in the service's English); else the message spaced out.
+function messageText(message, kind) {
+  if (!message && !kind) return "";
   for (const [shape, sentence] of ACTIVITY_SHAPES) {
     const match = shape.exec(message);
     if (match) return sentence(match.slice(1));
   }
+  if (FIXED_MESSAGES[message]) return t(`leads.activity.msg.${FIXED_MESSAGES[message]}`);
+  const run = RULE_RUN_SHAPES.find(([pattern]) => pattern.test(message));
+  if (run) return capitalize(run[1](message.match(run[0]).slice(1), humanize));
+  if (kind) return label(`leads.activity.kind.${kind}`, capitalize(humanize(message || kind)));
   return capitalize(humanize(message).replace(/ -> /g, " → "));
 }
 
