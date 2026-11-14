@@ -1,6 +1,6 @@
 <template>
   <ol class="tl" data-testid="thread-timeline">
-    <li v-if="!entries.length" class="tl__empty">{{ $t("leads.thread.empty") }}</li>
+    <li v-if="!entries.length && showEmpty" class="tl__empty" data-testid="thread-empty">{{ $t("leads.thread.empty") }}</li>
     <li
       v-for="(entry, i) in entries"
       :key="i"
@@ -101,6 +101,8 @@ const props = defineProps({
   threadId: { type: Number, default: null },
   // message ids written by hand (`composed` activities): no "Follow-up" tag, they are not sequence mails
   composed: { type: Array, default: () => [] },
+  // the company card turns it off while earlier conversations hold the mail: one empty state, only when there is none
+  showEmpty: { type: Boolean, default: true },
 });
 const emit = defineEmits(["confirm-optout", "sent"]);
 

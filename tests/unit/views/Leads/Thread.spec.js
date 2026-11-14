@@ -141,6 +141,19 @@ describe("Leads Thread", () => {
     expect(wrapper.find('[data-testid="thread-timeline"]').exists()).toBe(true);
   });
 
+  // N2: no "No messages" above earlier conversations that hold them; with nothing at all, one empty state
+  it("shows one empty state, and only when no conversation holds a mail", async () => {
+    api.GET_ThreadWithOptouts.mockImplementation((id) => Promise.resolve({ ...detail(id), timeline: [] }));
+    const withOlder = mountThread();
+    await flushPromises();
+    expect(withOlder.find('[data-testid="thread-empty"]').exists()).toBe(false);
+    api.GET_Threads.mockResolvedValue({ data: { count: 0, next: null, results: [] } });
+    const none = mountThread();
+    await flushPromises();
+    expect(none.findAll('[data-testid="thread-empty"]')).toHaveLength(1);
+    expect(none.text()).not.toContain("leads.thread.no_thread");
+  });
+
   it("further older threads load with one request for the next list page", async () => {
     api.GET_Threads.mockResolvedValueOnce({ data: { count: 23, next: "page2", results: summaries } });
     api.GET_Threads.mockResolvedValueOnce({ data: { count: 23, next: null, results: [{ ...summaries[2], id: 30 }] } });

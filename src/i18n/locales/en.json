@@ -4344,7 +4344,7 @@
       "conversation": "Conversation",
       "show_thread": "Show the conversation",
       "hide_thread": "Hide the conversation",
-      "empty": "No messages with this company yet",
+      "empty": "No mail with this company yet — Write mail starts the conversation, and a draft from a stage rule waits in the Inbox.",
       "note": "Note",
       "followup": "Follow-up",
       "optout_suspected": "Looks like an opt-out",

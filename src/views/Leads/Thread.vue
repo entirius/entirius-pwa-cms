@@ -17,7 +17,6 @@
       <p v-if="mailMissing" class="t-muted m-0" role="status" data-testid="thread-mail-missing">
         {{ $t("leads.thread.mail_unavailable") }}
       </p>
-      <p v-else-if="!loading && !newest" class="t-muted m-0">{{ $t("leads.thread.no_thread") }}</p>
       <p v-if="newest" class="thread__wrap m-0" data-testid="thread-subject">
         <strong>{{ threadSubject(newest.timeline) }}</strong>
         <StatusBadge class="thread__state" size="sm" :tone="threadTone(newest.status)" :label="$t(`leads.thread.state.${newest.status}`)" data-testid="thread-state" />
@@ -30,6 +29,7 @@
         :company="replyCompany"
         :thread-id="newest?.id ?? null"
         :composed="composedIds"
+        :show-empty="!older.count"
         :messages="newest?.timeline || []"
         :optouts="newest?.optouts || []"
         :waiting="newest ? waitingOf(waiting, newest.id) : []"
