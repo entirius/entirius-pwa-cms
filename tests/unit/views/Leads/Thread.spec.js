@@ -250,6 +250,8 @@ describe("Leads Thread", () => {
     await flushPromises();
     expect(wrapper.get('[data-testid="confirm-optout"]').attributes("disabled")).toBeUndefined();
     expect(spawnNotification).toHaveBeenCalledWith({ msg: "Opt-out confirmed — Anna will not be mailed" });
+    // P6 (walk 3): the card reloads its contacts, History and tasks — no tab shows what was true before
+    expect(wrapper.emitted("changed")).toHaveLength(1);
   });
 
   // M13: the card reloaded (a mail sent, a call logged) — the thread reads again, no page reload
