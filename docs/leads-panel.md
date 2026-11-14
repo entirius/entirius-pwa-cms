@@ -110,8 +110,8 @@ company card gains a Deals tab (`tabs/DealsTab.vue`, `GET companies/<id>/deals/`
 counts); "Open deal" (`DealDialog.vue` + `DealForm.vue`) pre-fills the company, its name as the title, the primary
 contact and the channel's default currency (`GET channel/` — `leads.settings`; unreadable = the API fills it), owner
 and stage are the server's. Settings → Deal stages (`DealStages.vue`): label and kind per row, one page Save for the
-changed rows (the unsaved state beside it, a toast when they landed), reorder by the arrows, delete (409 → "This stage
-holds deals") and Add. The deal board is titled "Deal board", so its crumbs never read "Deals / Deals". Amounts stay decimal strings (`BasicInput format="money"`,
+changed rows (the unsaved state beside it, a toast when they landed), reorder by the arrows, delete (the dialog counts
+the stage's deals first; a 409 → "This stage holds deals") and Add. The deal board is titled "Deal board", so its crumbs never read "Deals / Deals". Amounts stay decimal strings (`BasicInput format="money"`,
 shown through `formatCost`). The bell maps `leads.Deal:<id>` to the deal card.
 
 **Deal archive (django-leads with `archived_at`).** A won or lost deal's card has a more menu with Archive
@@ -125,6 +125,37 @@ deals"; pressing it again drops `archived` and the list is as it was. The status
 button and the menu appear only once a deal carries `archived_at` (an older backend shows neither). The board and
 the company card's Deals tab list no archived deal. History reads `deal_archived` / `deal_restored`.
 A read-only role sees neither Archive nor Restore (`mutates`).
+
+## Acceptance fixes, walk 4 (plan 31)
+
+- **Next line of a reply** (`replyNextLine`, `src/utils/leadsLabels.js`): one function, five phrases — a confirmed
+  opt-out (the reply's opt-out row confirmed, or the thread's sequence stopped as `optout`) "no more mail to this
+  contact"; a possible opt-out (an unconfirmed opt-out row, `reply_kind` `suspected_optout` or the class
+  `unsubscribe`) "nothing is sent until you confirm or dismiss the opt-out"; `stop` "the sequence is stopped";
+  `pause_until_return` with a return date "the sequence resumes on <the day after it>"; any other pause "the sequence
+  is paused until you resume it". The newest reply takes what was applied to the thread's sequence, an older one
+  the plan of its class. "Back on <date>" stays beside it.
+- **Review confirms in place**: after Skip and Send the next draft opens at once with one line above it
+  (`review-confirmation`, `role="status"`, 4 s; out of the flow while empty): "Skipped — this mail will not be sent",
+  "Accepted — goes out within minutes" (an open window) or the send-state sentence. No toast, no full-screen panel;
+  an empty queue keeps the screen with the line above an empty state whose button goes back (Inbox or Approvals).
+  "Draft N of M" counts in the Inbox's order (`conversations/?state=draft` rows, then the drafts no row shows).
+- **Approvals**: a bulk refusal stands in the Problem cell (`fit-content(20rem)`, it wraps; the table keeps its width);
+  the Skip dialog says "These mails will not be sent."; Age reads today / 1 day / N days.
+- **Settings forms** (`src/utils/leadsForm.js`): `missingFields` names an empty required field before the request
+  ("Give the key"); `fieldText` / `apiFieldErrors` put an API field error on its field from a map of known messages,
+  anything else "Check this field" — the raw text never shows. Custom fields, Rules, Reply classification, Mailbox,
+  Do not contact, Stages, Company types, Deal stages, Sending health and the Approvals skip reason use them.
+- **Deal stage delete** reads `deals/?stage=<key>` (archived and not, `page_size=1`) first: with deals "N deals
+  stand in this stage. Move them first." and only Close; without "No deal stands in this stage." and Delete; an
+  unreadable count asks as before (the 409 stays inline).
+- **Templates** say under the heading that they come with the mail module and are changed, not added, here.
+- **Smaller**: "Skip and do not contact the company"; Today's Done chip says how it fills and Reopen refreshes Due now;
+  the empty Inbox pane speaks of the active chip; Why no mail? reasons start upper-case, the badge keeps its width;
+  the company Overview leaves out name, stage and type (the header has them), an unknown type reads "Unknown"; a
+  conversation without a company is headed by the other side once; an empty deal chip names what the others hold;
+  Stages and Deal stages order by the arrows with a secondary Add; Cancel on the field dialog; Polish uses
+  "wiadomość" for a mail; `MobileFilterPanel` leaves room above a select's floating label.
 
 ## Acceptance fixes, walk 3 (plan 26)
 

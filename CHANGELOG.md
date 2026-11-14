@@ -51,6 +51,15 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- Leads panel, acceptance fixes of the fourth walk: a reply's "Next:" line says what happens to the mail — no more
+  mail after a confirmed opt-out, nothing sent until a possible opt-out is decided, the sequence stopped, resuming on
+  a date, or paused until resumed; Review confirms Skip and Send with one line above the next draft (no toast, no
+  full-screen panel, the next draft opens at once) and counts its queue in the Inbox's order; Approvals puts a bulk
+  refusal in the Problem cell, says Skip's consequence and reads the age as today / 1 day / 3 days; the forms of the
+  Leads settings name an empty required field before the request and show an API field error on its field in words;
+  deleting a deal stage says up front how many deals stand in it; Templates says why there is no Add; smaller
+  wording and layout fixes (Today's Done chip, the Inbox's empty pane, Why no mail?, the company Overview, a
+  conversation without a company, Polish "wiadomość"). `MobileFilterPanel` gives a select's floating label room.
 - Leads panel, acceptance fixes of the third walk: Skip names the action that leaves a draft unsent (Review and
   Approvals) and a skipped or withdrawn draft is one closed line in the conversation; every bulk action says how many
   rows it changed and did not, refused rows keep their reason and their tick; a recipient who may not be mailed and a
