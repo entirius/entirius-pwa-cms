@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
+import { computed } from "vue";
 
 const api = vi.hoisted(() => ({ GET_Replies: vi.fn() }));
 vi.mock("@/api/communicator/api", () => ({ ...api, GET_ReplyClassPlans: () => Promise.resolve({ data: {} }), GET_WaitingMessages: () => Promise.resolve([]) }));
@@ -9,10 +10,12 @@ const modules = vi.hoisted(() => ({ crm: false }));
 vi.mock("@/stores/munin", () => ({
   useMuninStore: () => ({ isModuleAtLeast: () => modules.crm, isModuleEnabled: () => modules.crm }),
 }));
+import BasicButton from "@/boots/BasicButton/index.vue";
 import StatusBadge from "@/boots/StatusBadge/index.vue";
 import { leadsFrame } from "./leadsFrame";
 import { applyPolicy, channelTimeZone } from "@/utils/leadsTime";
 import ThreadTimeline from "@/views/Leads/ThreadTimeline.vue";
+import { READONLY } from "@/composables/useReadonly";
 
 const components = { StatusBadge, ConfirmDialog: leadsFrame.stubs.ConfirmDialog };
 const stubs = { StatusBadge: false, ComposeDialog: { name: "ComposeDialog", props: ["open", "company", "reply"], template: "<div />" } };
@@ -131,6 +134,19 @@ describe("ThreadTimeline", () => {
     expect(wrapper.emitted("confirm-optout")).toBeUndefined();
     await wrapper.get('[data-testid="confirm-optout-yes"]').trigger("click");
     expect(wrapper.emitted("confirm-optout")[0]).toEqual([3]);
+  });
+
+  // Plan 34: a possible opt-out can be marked as not one — no dialog, nothing is blocked by it
+  it("Not an opt-out asks nothing and emits the reply; a read-only role sees neither action", async () => {
+    const optouts = [{ id: 3, received_at: "2026-09-21T09:00:00Z", optout_confirmed_at: null }];
+    const wrapper = mountTl({ props: { messages, optouts } });
+    await wrapper.get('[data-testid="dismiss-optout"]').trigger("click");
+    expect(wrapper.emitted("dismiss-optout")[0]).toEqual([3]);
+    expect(wrapper.find('[data-testid="confirm-optout-yes"]').exists()).toBe(false);
+    const global = { components, stubs: { ...stubs, BasicButton }, provide: { [READONLY]: computed(() => true) } };
+    const readonly = mount(ThreadTimeline, { props: { messages, optouts }, global });
+    expect(readonly.find('[data-testid="dismiss-optout"]').exists()).toBe(false);
+    expect(readonly.find('[data-testid="confirm-optout"]').exists()).toBe(false);
   });
 
   // M9: the opt-out waits for a confirmation that names the action and the contact.

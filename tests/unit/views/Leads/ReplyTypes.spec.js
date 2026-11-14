@@ -72,12 +72,16 @@ describe("Reply types and outbound helpers", () => {
     const optout = { id: 7, received_at: reply.at, optout_confirmed_at: null };
     const possible = mount(ThreadTimeline, { props: { messages: [item], optouts: [optout] }, global: { stubs } });
     await flushPromises();
-    expect(possible.get('[data-testid="reply-next"]').text()).toBe("Next: nothing is sent until you confirm or dismiss the opt-out");
+    expect(possible.get('[data-testid="reply-next"]').text()).toBe("Next: nothing is sent until you confirm the opt-out or mark it as not one");
     const confirmed = { ...optout, optout_confirmed_at: "2026-11-12T09:30:00Z" };
     const sequence = { stopped_at: "2026-11-12T09:30:00Z", stop_reason: "optout" };
     const done = mount(ThreadTimeline, { props: { messages: [item], optouts: [confirmed], sequence }, global: { stubs } });
     await flushPromises();
     expect(done.get('[data-testid="reply-next"]').text()).toBe("Next: no more mail to this contact");
+    // plan 34: marked as not an opt-out — a plain reply, its Next line follows the plan of its class
+    const dismissed = mount(ThreadTimeline, { props: { messages: [{ ...item, reply_kind: "reply" }] }, global: { stubs } });
+    await flushPromises();
+    expect(dismissed.get('[data-testid="reply-next"]').text()).toBe("Next: the sequence is paused until you resume it");
   });
 
   it("an unclassified reply and an older backend look as today", async () => {

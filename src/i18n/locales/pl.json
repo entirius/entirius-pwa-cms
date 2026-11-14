@@ -4359,6 +4359,8 @@
       "from": "Od {address}",
       "optout_suspected": "Wygląda na rezygnację",
       "confirm_optout": "Potwierdź rezygnację",
+      "not_optout": "To nie rezygnacja",
+      "optout_dismissed": "Oznaczono: to nie rezygnacja",
       "optout_confirm_message": "Zablokować wysyłkę do {contact}? Tego nie da się cofnąć.",
       "optout_done": "Rezygnacja potwierdzona — nie piszemy do {contact}",
       "open_company": "Otwórz firmę: {name}",
@@ -4790,7 +4792,7 @@
       "event_deal_archived": "Transakcja zarchiwizowana: {title}",
       "event_deal_restored": "Transakcja przywrócona: {title}",
       "next_optout_confirmed": "Dalej: do tego kontaktu nie wyjdzie już żadna wiadomość",
-      "next_optout_possible": "Dalej: nic nie zostanie wysłane, dopóki nie potwierdzisz lub nie odrzucisz rezygnacji",
+      "next_optout_possible": "Dalej: nic nie zostanie wysłane, dopóki nie potwierdzisz rezygnacji lub nie oznaczysz, że to nie rezygnacja",
       "next_stopped": "Dalej: sekwencja jest zatrzymana",
       "next_resumes": "Dalej: sekwencja wznowi się {date}",
       "next_paused": "Dalej: sekwencja jest wstrzymana, dopóki jej nie wznowisz"

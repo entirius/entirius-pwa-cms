@@ -61,8 +61,12 @@
           <span v-if="entry.optout.optout_confirmed_at">{{ $t("leads.thread.optout_confirmed") }}</span>
           <template v-else>
             <span>{{ $t("leads.thread.optout_suspected") }}</span>
-            <BasicButton variant="danger" :disabled="busy" data-testid="confirm-optout" @click="asking = entry.optout.id">
+            <BasicButton variant="danger" :disabled="busy" mutates data-testid="confirm-optout" @click="asking = entry.optout.id">
               {{ $t("leads.thread.confirm_optout") }}
+            </BasicButton>
+            <!-- nothing is blocked by it: no confirmation -->
+            <BasicButton :disabled="busy" mutates data-testid="dismiss-optout" @click="$emit('dismiss-optout', entry.optout.id)">
+              {{ $t("leads.thread.not_optout") }}
             </BasicButton>
           </template>
         </div>
@@ -105,7 +109,7 @@ const props = defineProps({
   optouts: { type: Array, default: () => [] },
   // approved/scheduled messages of this thread — their `next_slot` is what a waiting bubble says, as in the Inbox
   waiting: { type: Array, default: () => [] },
-  // an opt-out confirmation is in flight — the button stays disabled until it settles
+  // an opt-out decision is in flight — the button stays disabled until it settles
   busy: { type: Boolean, default: false },
   // who the opt-out would block, named in its confirmation
   contact: { type: String, default: "" },
@@ -120,7 +124,7 @@ const props = defineProps({
   // the thread's follow-up sequence state (`stopped_at`, `stop_reason`): what was applied after its newest reply
   sequence: { type: Object, default: null },
 });
-const emit = defineEmits(["confirm-optout", "sent"]);
+const emit = defineEmits(["confirm-optout", "dismiss-optout", "sent"]);
 
 const WAITING_STATUSES = ["approved", "scheduled"];
 const quotesOpen = reactive(new Set());
@@ -209,7 +213,8 @@ const REPLY_STOPS = { replied: "stop", optout: "optout", paused: "pause" };
 function nextOf(entry) {
   if (entry.side !== "in") return "";
   const reply = entry.reply || {};
-  const possibleOptout = entry.kind === "suspected_optout" || reply.intent === "unsubscribe";
+  // the reply's kind decides (a dismissed opt-out is a plain reply); a timeline without it falls back to the class
+  const possibleOptout = entry.kind ? entry.kind === "suspected_optout" : reply.intent === "unsubscribe";
   const planned = plans.value[reply.intent]?.sequence || "";
   const applied = appliedStep(entry);
   const step = applied === "pause" && planned.startsWith("pause") ? planned : applied || planned;

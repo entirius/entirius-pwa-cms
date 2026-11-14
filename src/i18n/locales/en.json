@@ -4360,6 +4360,8 @@
       "from": "From {address}",
       "optout_suspected": "Looks like an opt-out",
       "confirm_optout": "Confirm opt-out",
+      "not_optout": "Not an opt-out",
+      "optout_dismissed": "Marked as not an opt-out",
       "optout_confirm_message": "Block {contact} from any further mail? This cannot be undone.",
       "optout_done": "Opt-out confirmed — {contact} will not be mailed",
       "open_company": "Open the company: {name}",
@@ -4791,7 +4793,7 @@
       "event_deal_archived": "Deal archived: {title}",
       "event_deal_restored": "Deal restored: {title}",
       "next_optout_confirmed": "Next: no more mail to this contact",
-      "next_optout_possible": "Next: nothing is sent until you confirm or dismiss the opt-out",
+      "next_optout_possible": "Next: nothing is sent until you confirm the opt-out or mark it as not one",
       "next_stopped": "Next: the sequence is stopped",
       "next_resumes": "Next: the sequence resumes on {date}",
       "next_paused": "Next: the sequence is paused until you resume it"

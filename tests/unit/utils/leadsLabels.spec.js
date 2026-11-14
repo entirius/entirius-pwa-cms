@@ -116,7 +116,7 @@ describe("activityText of an activity", () => {
       expect(replyNextLine({ step: "optout" })).toBe("Next: no more mail to this contact");
     });
     it("a possible opt-out: nothing is sent until a person decides", () => {
-      const text = "Next: nothing is sent until you confirm or dismiss the opt-out";
+      const text = "Next: nothing is sent until you confirm the opt-out or mark it as not one";
       expect(replyNextLine({ optout: { optout_confirmed_at: null }, step: "pause" })).toBe(text);
       expect(replyNextLine({ possibleOptout: true, step: "pause" })).toBe(text);
     });

@@ -35,6 +35,7 @@
         :optouts="newest?.optouts || []"
         :waiting="newest ? waitingOf(waiting, newest.id) : []"
         @confirm-optout="confirmOptout"
+        @dismiss-optout="dismissOptout"
         @sent="onSent"
       />
       <EarlierThreads
@@ -76,6 +77,7 @@ import {
   GET_Threads,
   GET_WaitingMessages,
   POST_ConfirmOptout,
+  POST_DismissOptout,
 } from "@/api/communicator/api";
 import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
@@ -196,12 +198,16 @@ function onOptoutConfirmed() {
   loadPendingOptouts();
 }
 
-async function confirmOptout(replyId) {
+const confirmOptout = (replyId) => decideOptout(() => POST_ConfirmOptout(replyId), t("leads.thread.optout_done", { contact: contactOf(newest.value) }));
+const dismissOptout = (replyId) => decideOptout(() => POST_DismissOptout(replyId), t("leads.thread.optout_dismissed"));
+
+// Confirm or dismiss a possible opt-out, then reload like the other reply actions.
+async function decideOptout(post, message) {
   if (optoutBusy.value) return;
   optoutBusy.value = true;
   try {
-    await POST_ConfirmOptout(replyId);
-    notify.spawnNotification({ msg: t("leads.thread.optout_done", { contact: contactOf(newest.value) }) });
+    await post();
+    notify.spawnNotification({ msg: message });
     emit("changed");
     await load();
   } catch {

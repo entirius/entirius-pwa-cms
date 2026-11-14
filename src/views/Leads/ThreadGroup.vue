@@ -37,6 +37,7 @@
       :thread-id="thread.id"
       :composed="composed"
       @confirm-optout="confirmOptout"
+      @dismiss-optout="dismissOptout"
       @sent="onSent"
     />
   </article>
@@ -45,7 +46,7 @@
 <script setup>
 import { computed, onMounted, ref } from "vue";
 import { t } from "@/i18n";
-import { GET_ThreadWithOptouts, POST_ConfirmOptout } from "@/api/communicator/api";
+import { GET_ThreadWithOptouts, POST_ConfirmOptout, POST_DismissOptout } from "@/api/communicator/api";
 import { useNotifyStore } from "@/stores/notify";
 import { threadTone } from "@/utils/leadsLabels";
 import { contactOf, threadSubject } from "@/utils/leadsThread";
@@ -112,12 +113,16 @@ function onSummaryClick(event) {
 
 onMounted(() => open.value && loadDetail());
 
-async function confirmOptout(replyId) {
+const confirmOptout = (replyId) => decideOptout(() => POST_ConfirmOptout(replyId), t("leads.thread.optout_done", { contact: contactOf(props.thread) }));
+const dismissOptout = (replyId) => decideOptout(() => POST_DismissOptout(replyId), t("leads.thread.optout_dismissed"));
+
+// Confirm or dismiss a possible opt-out, then reload like the other reply actions.
+async function decideOptout(post, message) {
   if (optoutBusy.value) return;
   optoutBusy.value = true;
   try {
-    await POST_ConfirmOptout(replyId);
-    notify.spawnNotification({ msg: t("leads.thread.optout_done", { contact: contactOf(props.thread) }) });
+    await post();
+    notify.spawnNotification({ msg: message });
     await loadDetail();
     emit("changed");
   } catch {

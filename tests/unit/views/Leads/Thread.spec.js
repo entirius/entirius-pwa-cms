@@ -23,6 +23,7 @@ const api = vi.hoisted(() => ({
   GET_Replies: vi.fn(),
   GET_WaitingMessages: vi.fn(),
   POST_ConfirmOptout: vi.fn(),
+  POST_DismissOptout: vi.fn(),
 }));
 vi.mock("@/api/communicator/api", () => api);
 const stageActivity = { id: 1, kind: "stage", created_at: "2026-09-21T08:00:00Z", message: "stage new -> contacted", data: {} };
@@ -263,6 +264,27 @@ describe("Leads Thread", () => {
     expect(spawnNotification).toHaveBeenCalledWith({ msg: "Opt-out confirmed — Anna will not be mailed" });
     // P6 (walk 3): the card reloads its contacts, History and tasks — no tab shows what was true before
     expect(wrapper.emitted("changed")).toHaveLength(1);
+  });
+
+  // Plan 34: Not an opt-out posts the dismissal, then the thread and the card read again; the mark is gone
+  it("Not an opt-out dismisses the reply and reloads the conversation and the card", async () => {
+    api.POST_DismissOptout.mockResolvedValue({ data: {} });
+    const optout = { id: 3, received_at: "2026-09-22T08:00:00Z", optout_confirmed_at: null };
+    const timeline = [{ at: "2026-09-22T08:00:00Z", direction: "in", body_text: "stop", reply_kind: "suspected_optout" }];
+    api.GET_ThreadWithOptouts.mockImplementation((id) => Promise.resolve({ ...detail(id), timeline, optouts: [optout] }));
+    const wrapper = mountThread();
+    await flushPromises();
+    const reads = api.GET_ThreadWithOptouts.mock.calls.length;
+    api.GET_ThreadWithOptouts.mockImplementation((id) => Promise.resolve({ ...detail(id), timeline: [{ ...timeline[0], reply_kind: "reply" }], optouts: [] }));
+    await wrapper.get('[data-testid="dismiss-optout"]').trigger("click");
+    await flushPromises();
+    expect(api.POST_DismissOptout).toHaveBeenCalledWith(3);
+    expect(api.POST_ConfirmOptout).not.toHaveBeenCalled();
+    expect(api.GET_ThreadWithOptouts.mock.calls.length).toBeGreaterThan(reads);
+    expect(wrapper.emitted("changed")).toHaveLength(1);
+    expect(spawnNotification).toHaveBeenCalledWith({ msg: "Marked as not an opt-out" });
+    expect(wrapper.find('[data-testid="dismiss-optout"]').exists()).toBe(false);
+    expect(wrapper.find('[data-testid="reply-next"]').exists()).toBe(false);
   });
 
   // M13: the card reloaded (a mail sent, a call logged) — the thread reads again, no page reload

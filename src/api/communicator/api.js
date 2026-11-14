@@ -65,6 +65,10 @@ export const GET_Replies = (params) =>
 export const POST_ConfirmOptout = (replyId) =>
   communicatorApi.post(`${base()}/replies/${replyId}/confirm-optout/`, {});
 
+// Not an opt-out after all: the reply becomes a plain reply (the sequence stays paused).
+export const POST_DismissOptout = (replyId) =>
+  communicatorApi.post(`${base()}/replies/${replyId}/dismiss-optout/`, {});
+
 // Plan 14 — templates, sequences, send settings.
 export const GET_Templates = () => communicatorApi.get(`${base()}/templates/`);
 
