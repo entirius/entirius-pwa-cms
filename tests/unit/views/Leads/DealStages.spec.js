@@ -11,6 +11,7 @@ const leads = vi.hoisted(() => ({
   GET_Company: vi.fn(),
   GET_Companies: vi.fn(),
   GET_LeadsChannel: vi.fn(),
+  GET_Deals: vi.fn(),
 }));
 const regional = vi.hoisted(() => ({ GET_RegionalCurrencies: vi.fn() }));
 const router = vi.hoisted(() => ({ push: vi.fn() }));
@@ -37,6 +38,7 @@ describe("Leads → Settings → Deal stages", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     leads.GET_DealStages.mockResolvedValue({ data: { results: STAGES.map((stage) => ({ ...stage })) } });
+    leads.GET_Deals.mockResolvedValue({ data: { count: 0 } });
   });
   const mounted = async (options = {}) => {
     const wrapper = mountOutbound(DealStages, { area: "leads.settings", stubs: crmStubs, ...options });
@@ -49,9 +51,30 @@ describe("Leads → Settings → Deal stages", () => {
     const wrapper = await mounted();
     expect(byTestid(wrapper, "deal-stages-cannot-close").exists()).toBe(true);
     await wrapper.findAll('[data-testid="deal-stage-delete"]')[0].trigger("click");
+    await flushPromises();
     await byTestid(wrapper, "deal-stage-delete-confirm").trigger("click");
     await flushPromises();
     expect(byTestid(wrapper, "deal-stage-error").text()).toBe("This stage holds deals — move them first");
+  });
+
+  // T8 (walk 4): the dialog counts the deals of the stage (archived ones too) before it offers Delete
+  it("a stage with deals says so and offers only Close; an empty one says so and deletes", async () => {
+    leads.GET_Deals.mockImplementation(({ archived }) => Promise.resolve({ data: { count: archived ? 1 : 2 } }));
+    const wrapper = await mounted();
+    await wrapper.findAll('[data-testid="deal-stage-delete"]')[0].trigger("click");
+    await flushPromises();
+    expect(leads.GET_Deals).toHaveBeenCalledWith({ stage: "qualified", archived: true, page_size: 1 });
+    expect(byTestid(wrapper, "deal-stage-delete-message").text()).toBe("3 deals stand in this stage. Move them first.");
+    expect(byTestid(wrapper, "deal-stage-delete-confirm").exists()).toBe(false);
+    await byTestid(wrapper, "deal-stage-delete-close").trigger("click");
+    leads.GET_Deals.mockResolvedValue({ data: { count: 0 } });
+    leads.DELETE_DealStage.mockResolvedValue({});
+    await wrapper.findAll('[data-testid="deal-stage-delete"]')[1].trigger("click");
+    await flushPromises();
+    expect(byTestid(wrapper, "deal-stage-delete-message").text()).toBe("No deal stands in this stage.");
+    await byTestid(wrapper, "deal-stage-delete-confirm").trigger("click");
+    await flushPromises();
+    expect(leads.DELETE_DealStage).toHaveBeenCalledWith(2);
   });
 
   // Acceptance CM13: one page Save with the unsaved state and a toast when it landed; the kind shows once.

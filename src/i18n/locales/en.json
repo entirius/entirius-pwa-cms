@@ -5470,7 +5470,11 @@
       "in_use": "This stage holds deals — move them first",
       "empty": "No deal stages yet — add the first one below",
       "delete_confirm": "Delete the stage {label}?",
-      "saved": "Deal stages saved"
+      "saved": "Deal stages saved",
+      "delete_busy_one": "{count} deal stands in this stage. Move it first.",
+      "delete_busy_few": "{count} deals stand in this stage. Move them first.",
+      "delete_busy_many": "{count} deals stand in this stage. Move them first.",
+      "delete_empty": "No deal stands in this stage."
     },
     "form": {
       "give": {

@@ -5469,7 +5469,11 @@
       "in_use": "Ten etap ma transakcje — najpierw je przenieś",
       "empty": "Brak etapów transakcji — dodaj pierwszy poniżej",
       "delete_confirm": "Usunąć etap {label}?",
-      "saved": "Etapy transakcji zapisane"
+      "saved": "Etapy transakcji zapisane",
+      "delete_busy_one": "W tym etapie stoi {count} transakcja. Najpierw ją przenieś.",
+      "delete_busy_few": "W tym etapie stoją {count} transakcje. Najpierw je przenieś.",
+      "delete_busy_many": "W tym etapie stoi {count} transakcji. Najpierw je przenieś.",
+      "delete_empty": "W tym etapie nie stoi żadna transakcja."
     },
     "form": {
       "give": {

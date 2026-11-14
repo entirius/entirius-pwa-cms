@@ -25,7 +25,7 @@
               <div class="stage__controls">
                 <IconButton mutates icon="moveUp" variant="outline" :label="$t('leads.stages.up')" :disabled="index === 0" data-testid="deal-stage-up" @click="shift(index, -1)" />
                 <IconButton mutates icon="moveDown" variant="outline" :label="$t('leads.stages.down')" :disabled="index === stages.length - 1" data-testid="deal-stage-down" @click="shift(index, 1)" />
-                <IconButton mutates icon="delete" variant="danger" :label="$t('leads.stages.delete')" data-testid="deal-stage-delete" @click="confirming = element" />
+                <IconButton mutates icon="delete" variant="danger" :label="$t('leads.stages.delete')" data-testid="deal-stage-delete" @click="askDelete(element)" />
               </div>
               <p v-if="errors[element.id]" class="stage__error t-negative m-0" data-testid="deal-stage-error">{{ errors[element.id] }}</p>
             </div>
@@ -48,30 +48,31 @@
         <p v-if="errors.add" class="t-negative m-0" data-testid="deal-stage-add-error">{{ errors.add }}</p>
       </BasicCard>
     </div>
-    <ConfirmDialog
+    <!-- T8 (walk 4): the dialog says up front whether the stage can go — with deals only Close -->
+    <BasicModal
       :open="Boolean(confirming)"
-      tone="danger"
       :title="$t('leads.stages.delete')"
-      :message="$t('leads.deal_stages.delete_confirm', { label: confirming?.label || '' })"
-      :confirm-label="$t('leads.common.delete')"
-      :cancel-label="$t('leads.common.keep')"
-      confirm-testid="deal-stage-delete-confirm"
-      @confirm="remove(confirming)"
-      @cancel="confirming = null"
-    />
+      size="sm"
+      :actions="deleteActions"
+      data-testid="deal-stage-delete-dialog"
+      @update:open="confirming = null"
+    >
+      <p class="m-0" data-testid="deal-stage-delete-message">{{ deleteMessage }}</p>
+    </BasicModal>
   </PageLayout>
 </template>
 
 <script setup>
 import { computed, onMounted, reactive, ref } from "vue";
 import { t } from "@/i18n";
-import { DELETE_DealStage, GET_DealStages, PATCH_DealStage, POST_DealStage } from "@/api/leads/api";
+import { DELETE_DealStage, GET_Deals, GET_DealStages, PATCH_DealStage, POST_DealStage } from "@/api/leads/api";
 import { apiFieldErrors, missingFields } from "@/utils/leadsForm";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { usePageReadonly } from "@/composables/useReadonly";
 import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
 import { useNotifyStore } from "@/stores/notify";
 import { canClose, stageKindOptions } from "./deals";
+import { pluralKey } from "@/utils/plural";
 import { saveAction } from "./saveAction";
 
 // Settings → Deal stages (ux/screens/settings-deal-stages.md, modelled on Stages.vue): label and kind per row with a
@@ -89,6 +90,19 @@ const saved = ref({}); // id → { label, kind } as the server holds them
 const saving = ref(false);
 
 const kinds = stageKindOptions();
+const deleteMessage = computed(() => {
+  const { stage, count } = confirming.value || {};
+  if (count === null) return t("leads.deal_stages.delete_confirm", { label: stage?.label || "" });
+  return count ? t(`leads.deal_stages.delete_busy_${pluralKey(count)}`, { count }) : t("leads.deal_stages.delete_empty");
+});
+const deleteActions = computed(() =>
+  confirming.value?.count
+    ? [{ key: "close", label: t("common.close"), role: "secondary", testid: "deal-stage-delete-close", onClick: () => (confirming.value = null) }]
+    : [
+        { key: "keep", label: t("leads.common.keep"), role: "secondary", onClick: () => (confirming.value = null) },
+        { key: "delete", label: t("leads.common.delete"), role: "danger", mutates: true, testid: "deal-stage-delete-confirm", onClick: remove },
+      ]
+);
 const closable = computed(() => canClose(stages.value));
 const dirty = (stage) => saved.value[stage.id] && (saved.value[stage.id].label !== stage.label || saved.value[stage.id].kind !== stage.kind);
 // The page's unsaved state (badge, Save, the browser's leave prompt) is the stage list against the server's.
@@ -163,7 +177,18 @@ function shift(index, delta) {
   return saveOrder();
 }
 
-async function remove(stage) {
+// The deals of the stage, archived ones too (the API refuses while any stands there); null = could not count.
+async function dealsIn(stage) {
+  const count = (archived) => GET_Deals({ stage: stage.key, archived, page_size: 1 }).then(({ data }) => data.count || 0);
+  return Promise.all([count(false), count(true)]).then(([open, archived]) => open + archived, () => null);
+}
+
+async function askDelete(stage) {
+  confirming.value = { stage, count: await dealsIn(stage) };
+}
+
+async function remove() {
+  const { stage } = confirming.value;
   confirming.value = null;
   if (await attempt(stage.id, () => DELETE_DealStage(stage.id), "leads.deal_stages.in_use")) await load();
 }
