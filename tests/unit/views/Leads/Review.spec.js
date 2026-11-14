@@ -20,6 +20,7 @@ const api = vi.hoisted(() => ({
   GET_Approvals: vi.fn(),
   GET_Replies: vi.fn(),
   GET_Conversations: vi.fn(),
+  GET_Thread: vi.fn(),
 }));
 vi.mock("@/api/communicator/api", () => api);
 const munin = vi.hoisted(() => ({ isModuleEnabled: () => true, isModuleAtLeast: () => false }));
@@ -499,6 +500,20 @@ describe("Leads Review — problem and last reply", () => {
     api.GET_ReviewList.mockResolvedValue({ data: { results: [{ id: 5 }] } });
     api.GET_Conversations.mockResolvedValue({ data: { results: [] } });
     api.GET_Replies.mockResolvedValue({ data: { results: [{ id: 1, intent: "not_now" }] } });
+    api.GET_Thread.mockResolvedValue({ data: { timeline: [] } });
+  });
+
+  // Plan 33: the draft names the mailbox it will leave from beside its recipient, as its bubble does in History.
+  it("the draft says which mailbox it leaves from beside the recipient; an older backend leaves the line out", async () => {
+    api.GET_Thread.mockResolvedValue({ data: { timeline: [{ message_id: 4, from_email: "old@agency.test" }, { message_id: 5, from_email: "sales@agency.test" }] } });
+    const wrapper = await mountReview();
+    expect(api.GET_Thread).toHaveBeenCalledWith(9);
+    expect(wrapper.get('[data-testid="review-from"]').text()).toContain("sales@agency.test");
+    expect(wrapper.get('[data-testid="review-to"]').text()).toContain("anna@example-shop-1.test");
+    api.GET_Thread.mockResolvedValue({ data: { timeline: [{ message_id: 5, from_email: "" }] } });
+    expect((await mountReview()).find('[data-testid="review-from"]').exists()).toBe(false);
+    api.GET_Thread.mockRejectedValue(new Error("down"));
+    expect((await mountReview()).find('[data-testid="review-from"]').exists()).toBe(false);
   });
 
   it("a blocked draft shows the problem and Send is disabled with the reason", async () => {

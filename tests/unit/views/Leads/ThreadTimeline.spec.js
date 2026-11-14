@@ -54,6 +54,25 @@ describe("ThreadTimeline", () => {
     expect(wrapper.findAll("details.tl__skipped")[0].text()).toContain("Ping");
   });
 
+  // Plan 33: a mail says which mailbox it left from — every outbound bubble (sent, scheduled, draft, skipped) in the
+  // place a reply names its sender; an older backend (empty `from_email`) leaves the line out.
+  it("every mail names its sender: our mailbox on outbound bubbles and skipped drafts, the sender on a reply", () => {
+    const from = (item, from_email) => ({ ...item, from_email });
+    const draft = { ...messages[2], status: "review_required" };
+    const skipped = { ...messages[2], status: "rejected", rejected_by: "Maria Manager" };
+    const props = { messages: [from(messages[1], "sales@agency.test"), from(messages[0], "jan@acme.test"), from(messages[2], "sales@agency.test"), from(draft, "sales@agency.test"), from(skipped, "sales@agency.test")] };
+    const wrapper = mountTl({ props });
+    const lines = wrapper.findAll('[data-testid="timeline-from"]').map((node) => node.text());
+    expect(lines).toEqual(["From sales@agency.test", "From jan@acme.test", "From sales@agency.test", "From sales@agency.test", "From sales@agency.test"]);
+    expect(wrapper.find(".tl__entry--out .tl__bubble > :first-child").classes()).toContain("tl__from");
+    expect(wrapper.find(".tl__entry--in .tl__bubble > :first-child").classes()).toContain("tl__from");
+  });
+
+  it("an older backend without from_email shows no From line", () => {
+    const wrapper = mountTl({ props: { messages } });
+    expect(wrapper.find('[data-testid="timeline-from"]').exists()).toBe(false);
+  });
+
   // m5 (walk 3): a message that may not go out is "Not sent" (Blocked is the word for a contact), the reason its tooltip
   it("a suppressed message reads Not sent with the reason as its tooltip", () => {
     const wrapper = mountTl({ props: { messages: [{ ...messages[1], status: "suppressed" }] } });

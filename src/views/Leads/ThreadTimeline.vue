@@ -11,11 +11,14 @@
       <!-- a skipped or withdrawn draft never went out: one closed line that opens to its text, never a bubble -->
       <details v-if="entry.side === 'skipped'" class="tl__skipped">
         <summary data-testid="timeline-skipped-line">{{ entry.skipped }}</summary>
+        <p v-if="entry.fromLine" class="tl__from" data-testid="timeline-from">{{ entry.fromLine }}</p>
         <p v-if="entry.reason" class="tl__body">{{ entry.reason }}</p>
         <p v-if="entry.subject" class="tl__subject">{{ entry.subject }}</p>
         <p class="tl__body">{{ entry.body }}</p>
       </details>
       <div v-else class="tl__bubble">
+        <!-- who a mail is from, on both sides: the sender of a reply, the mailbox our mail left (or will leave) from -->
+        <p v-if="entry.fromLine" class="tl__from" data-testid="timeline-from">{{ entry.fromLine }}</p>
         <p v-if="entry.tag" class="tl__tag" data-testid="timeline-tag">{{ entry.tag }}</p>
         <p v-if="entry.subject" class="tl__subject">{{ entry.subject }}</p>
         <p v-if="entry.reply" class="tl__type">
@@ -159,8 +162,11 @@ function skippedEntry(item) {
   const skipped = item.rejected_by
     ? t("leads.thread.skipped_by", { name: item.rejected_by, date })
     : t("leads.thread.withdrawn", { reason: item.reject_reason || date });
-  return { at: item.at, side: "skipped", skipped, reason: item.rejected_by && item.reject_reason ? t("leads.thread.skipped_reason", { reason: item.reject_reason }) : "", subject: item.subject, body: item.body_text };
+  return { at: item.at, side: "skipped", skipped, fromLine: fromLine(item), reason: item.rejected_by && item.reject_reason ? t("leads.thread.skipped_reason", { reason: item.reject_reason }) : "", subject: item.subject, body: item.body_text };
 }
+
+// "From <address>": the sender of a reply, the mailbox our mail left or will leave from; none from an older backend.
+const fromLine = (item) => (item.from_email ? t("leads.thread.from", { address: item.from_email }) : "");
 
 function messageEntry(item, index, firstOut) {
   const out = item.direction === "out";
@@ -178,6 +184,7 @@ function messageEntry(item, index, firstOut) {
     reply: !out && item.intent ? item : null,
     body: item.body_text,
     from: item.from_email,
+    fromLine: fromLine(item),
     replyId: item.reply_id ?? null,
     kind: item.reply_kind || "",
   };
@@ -295,6 +302,7 @@ const entries = computed(() => {
 .tl__entry--in .tl__bubble {
   border-bottom-left-radius: var(--radius-base);
 }
+.tl__from,
 .tl__tag,
 .tl__meta {
   margin: 0;
@@ -305,6 +313,9 @@ const entries = computed(() => {
   display: flex;
   gap: var(--space-5);
   justify-content: flex-end;
+}
+.tl__from {
+  overflow-wrap: anywhere;
 }
 .tl__subject {
   margin: 0 0 var(--space-2);

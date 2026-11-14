@@ -43,7 +43,10 @@
             {{ companyName }}
           </router-link>
           <span v-else class="review__company">{{ companyName }}</span>
-          <span class="review__meta">{{ $t("leads.review.to") }}: {{ message.thread?.recipient_email }}</span>
+          <span class="review__meta" data-testid="review-to">
+            <template v-if="sender"><span data-testid="review-from">{{ $t("leads.thread.from", { address: sender }) }}</span> · </template>
+            {{ $t("leads.review.to") }}: {{ message.thread?.recipient_email }}
+          </span>
           <span v-if="problem" class="review__meta flex ai-ct flex-wrap gap-2" data-testid="review-problem">
             <StatusBadge tone="warning" :label="$t('leads.approvals.problem')" />
             {{ $t("leads.review.problem", { detail: problem }) }}
@@ -243,10 +246,12 @@ async function load() {
   }
 }
 
-// communicator >= 0.5.0: what would stop this draft (the Approvals row's `blocker`, said before Send) and the type of
-// the thread's newest classified reply. Neither blocks the screen when it cannot be read.
+// communicator >= 0.5.0: what would stop this draft (the Approvals row's `blocker`, said before Send), the type of
+// the thread's newest classified reply and the mailbox the draft will leave from (its timeline entry's `from_email`,
+// empty from an older backend). None blocks the screen when it cannot be read.
 const problem = ref("");
 const lastReply = ref(null);
+const sender = ref("");
 
 async function findBlocker(draft) {
   const params = { search: draft.thread?.recipient_email, channel: useLeadsChannelStore().activeChannelIdx };
@@ -260,15 +265,22 @@ async function findLastReply(draft) {
   return (data.results || []).find((reply) => reply.intent) || null;
 }
 
+async function findSender(draft) {
+  const { data } = await api.GET_Thread(draft.thread?.id);
+  return (data.timeline || []).find((entry) => entry.message_id === draft.id)?.from_email || "";
+}
+
 async function loadOutbound() {
   problem.value = "";
   lastReply.value = null;
+  sender.value = "";
   if (!outboundOn(munin, "communicator")) return;
   const draft = message.value;
-  const [blocker, reply] = await Promise.allSettled([findBlocker(draft), findLastReply(draft)]);
+  const [blocker, reply, from] = await Promise.allSettled([findBlocker(draft), findLastReply(draft), findSender(draft)]);
   if (message.value !== draft) return;
   problem.value = blocker.status === "fulfilled" ? blocker.value : "";
   lastReply.value = reply.status === "fulfilled" ? reply.value : null;
+  sender.value = from.status === "fulfilled" ? from.value : "";
 }
 
 // "Draft 2 of 3" (as the Inbox lists them): after a send the next draft is visibly another one, not the same screen again.
