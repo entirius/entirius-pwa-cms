@@ -120,9 +120,6 @@ const filtered = computed(() => Object.keys(route.query).some((key) => FILTER_KE
 // The Archived button lists the archived deals (`?archived=1`): won or lost, so no status filter applies.
 const archivedView = computed(() => query.value.archived === "1");
 const closedFilter = computed(() => archivedView.value || ["won", "lost"].includes(query.value.kind));
-// An older backend sends no `archived_at`: no Archived button until a deal of the list shows the field.
-const archiveSeen = ref(false);
-const archivable = computed(() => archiveSeen.value || archivedView.value);
 // The board is a desk screen: a link that asks for it on a phone lands on the list and says so.
 const boardOnPhone = computed(() => !isDesktop.value && route.query.view === "board");
 const closable = computed(() => canClose(stages.value));
@@ -136,7 +133,7 @@ const archivedAction = () => ({
   key: "archived", label: t("leads.deals.archived"), role: "secondary", mutates: false, pressed: archivedView.value, testid: "deals-archived",
   onClick: () => setFilter({ archived: archivedView.value ? undefined : "1" }),
 });
-const pageActions = computed(() => [archivable.value && archivedAction(), !readonly.value && openAction()].filter(Boolean));
+const pageActions = computed(() => [archivedAction(), !readonly.value && openAction()].filter(Boolean));
 const columns = computed(() =>
   [
     { key: "title", label: t("leads.deals.col_deal"), width: "1fr", truncate: false },
@@ -207,7 +204,6 @@ async function load() {
     deals.value = data.results;
     count.value = data.count ?? data.results.length;
     othersExist.value = others;
-    archiveSeen.value ||= data.results.some((deal) => "archived_at" in deal);
   } catch (err) {
     notify.spawnNotification({ msg: extractApiMessage(err, t("leads.common.error")), type: "negative" });
   } finally {

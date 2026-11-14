@@ -175,9 +175,13 @@ describe("Leads → Deals list", () => {
     expect(leads.GET_Deals).toHaveBeenCalledTimes(1);
   });
 
-  it("the Archived button only once the backend sends archived_at; a read-only role sees it", async () => {
-    expect(byTestid(await mounted(), "deals-archived").exists()).toBe(false);
-    leads.GET_Deals.mockResolvedValue({ data: { count: 1, results: [deal(1, { archived_at: null })] } });
+  // Plan 34: the button is there whatever the list holds — a salesperson's empty Mine list shows it too
+  it("the Archived button over an empty list, on every filter; a read-only role sees it", async () => {
+    leads.GET_Deals.mockResolvedValue({ data: { count: 0, results: [] } });
+    const empty = await mounted();
+    expect(byTestid(empty, "deals-empty").exists() || byTestid(empty, "deals-empty-mine").exists()).toBe(true);
+    expect(byTestid(empty, "deals-archived").exists()).toBe(true);
+    route.query = { owner: "all", kind: "won", search: "nothing" };
     expect(byTestid(await mounted(), "deals-archived").exists()).toBe(true);
     expect(byTestid(await mounted({ write: false }), "deals-archived").exists()).toBe(true);
   });
