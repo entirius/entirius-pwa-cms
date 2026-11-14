@@ -19,7 +19,7 @@
           @click="kind = value"
         />
       </div>
-      <DataTable :columns="columns" :rows="rows" row-key="id" :row-attrs="rowAttrs" :empty-text="$t('leads.deals.none_match')" @row-click="openDeal">
+      <DataTable :columns="columns" :rows="rows" row-key="id" :row-attrs="rowAttrs" :empty-text="emptyText" @row-click="openDeal">
         <template #cell-stage="{ row }">
           <StatusBadge :tone="dealKindTone(row.stage.kind)" :label="row.stage.label" />
         </template>
@@ -60,6 +60,14 @@ const columns = computed(() => [
 ]);
 // An archived deal is not listed here (the API leaves it out; a stale answer must not show it): Deals → Archived.
 const rows = computed(() => deals.value.filter((deal) => deal.stage.kind === kind.value && !deal.archived_at).map((deal) => ({ ...deal, value: dealValue(deal) })));
+// k4 (walk 4): an empty chip names what the other chips hold ("No deals under Open — Lost: 1").
+const emptyText = computed(() => {
+  const others = DEAL_KINDS.filter((value) => value !== kind.value && counts.value[value]);
+  const label = dealKindLabel(kind.value);
+  if (!others.length) return t("leads.deals.none_in_chip", { kind: label });
+  const held = others.map((value) => `${dealKindLabel(value)}: ${counts.value[value]}`).join(", ");
+  return t("leads.deals.none_in_chip_others", { kind: label, others: held });
+});
 const rowAttrs = (row) => ({ "data-testid": "deal-row", "data-deal": row.id });
 const openDeal = (row) => router.push({ name: "LeadsDeal", params: { id: row.id } });
 

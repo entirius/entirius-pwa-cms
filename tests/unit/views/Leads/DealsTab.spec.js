@@ -31,6 +31,13 @@ describe("Leads → company card → Deals", () => {
     expect(wrapper.findAll('[data-testid="deal-row"]').map((row) => row.attributes("data-deal"))).toEqual(["2"]);
   });
 
+  // k4 (walk 4): an empty chip names what the other chips hold
+  it("an empty chip says what the other chips hold", async () => {
+    leads.GET_CompanyDeals.mockResolvedValue({ data: { results: [deal(2, "lost")] } });
+    const wrapper = await mounted({ props: { company: { ...company, deals: { open: 0, won: 0, lost: 1 } } } });
+    expect(wrapper.html()).toContain("No deals under Open — Lost: 1");
+  });
+
   it("an archived deal is not listed", async () => {
     leads.GET_CompanyDeals.mockResolvedValue({ data: { results: [deal(1, "open"), { ...deal(2, "lost"), archived_at: "2026-11-14T10:00:00Z" }] } });
     const wrapper = await mounted();

@@ -5407,7 +5407,9 @@
       "show_all_deals": "Pokaż wszystkie transakcje",
       "none_archived": "Brak zarchiwizowanych transakcji",
       "archived": "Zarchiwizowane",
-      "archived_title": "Zarchiwizowane transakcje"
+      "archived_title": "Zarchiwizowane transakcje",
+      "none_in_chip": "Brak transakcji w „{kind}”",
+      "none_in_chip_others": "Brak transakcji w „{kind}” — {others}"
     },
     "deal": {
       "title": "Transakcja",

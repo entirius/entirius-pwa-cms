@@ -5408,7 +5408,9 @@
       "show_all_deals": "Show all deals",
       "none_archived": "No archived deals",
       "archived": "Archived",
-      "archived_title": "Archived deals"
+      "archived_title": "Archived deals",
+      "none_in_chip": "No deals under {kind}",
+      "none_in_chip_others": "No deals under {kind} — {others}"
     },
     "deal": {
       "title": "Deal",
