@@ -14,7 +14,7 @@
     </template>
     <template v-if="tasksOn" #toolbar>
       <div class="flex ai-ct flex-wrap gap-5">
-        <div class="filter-chip-row">
+        <div class="filter-chip-row today__chips">
           <FilterChip
             v-for="key in CHIPS"
             :key="key"
@@ -67,9 +67,14 @@
           <template #cell-due="{ row }">
             <StatusBadge :tone="row.due.tone" :label="row.due.label" data-testid="task-due" />
           </template>
+          <!-- a phone stacks the task: title, its company, the due badge; Mark done is an icon in reach (N13) -->
           <template #cell-title="{ row }">
-            <router-link v-if="row.to" class="t-accent" :to="row.to" :title="row.title">{{ row.title }}</router-link>
-            <span v-else :title="row.title">{{ row.title }}</span>
+            <span class="flex-column gap-1">
+              <router-link v-if="row.to" class="t-accent" :to="row.to" :title="row.title">{{ row.title }}</router-link>
+              <span v-else :title="row.title">{{ row.title }}</span>
+              <span class="show-mobile t-secondary fs-200">{{ row.subject_label }}</span>
+              <StatusBadge class="show-mobile as-s" :tone="row.due.tone" :label="row.due.label" data-testid="task-due-inline" />
+            </span>
           </template>
           <template #cell-subject="{ row }">
             <router-link v-if="row.to" :to="row.to" data-testid="task-subject">{{ row.subject_label }}</router-link>
@@ -80,9 +85,12 @@
             <BasicButton v-if="row.status === 'done'" mutates size="sm" data-testid="task-reopen" @click="reopen(row)">
               {{ $t("leads.task.reopen") }}
             </BasicButton>
-            <BasicButton v-else mutates size="sm" data-testid="task-done" @click="openDialog('done', row)">
-              {{ $t("leads.task.mark_done") }}
-            </BasicButton>
+            <template v-else>
+              <BasicButton class="hide-mobile" mutates size="sm" data-testid="task-done" @click="openDialog('done', row)">
+                {{ $t("leads.task.mark_done") }}
+              </BasicButton>
+              <IconButton class="show-mobile" mutates icon="check" size="sm" :label="$t('leads.task.mark_done')" data-testid="task-done-icon" @click="openDialog('done', row)" />
+            </template>
           </template>
         </DataTable>
       </ReadonlyArea>
@@ -168,7 +176,7 @@ const headerActions = computed(() => [
 ]);
 const columns = computed(() =>
   [
-    { key: "due", label: t("leads.today.col_due"), width: "max-content" },
+    { key: "due", label: t("leads.today.col_due"), width: "max-content", priority: 2 },
     { key: "title", label: t("leads.today.col_task"), width: "1fr" },
     { key: "subject", label: t("leads.today.col_subject"), priority: 2 },
     { key: "kind", label: t("leads.today.col_kind"), width: "max-content", priority: 3 },
@@ -297,5 +305,12 @@ onMounted(() => Promise.all([load(), loadCounters()]));
 <style scoped>
 .today__counters {
   row-gap: var(--space-3);
+}
+/* The chips wrap on a phone too: a sideways scroll hid the last one in Polish (N13). */
+@media (max-width: 768px) {
+  .filter-chip-row.today__chips {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
 }
 </style>

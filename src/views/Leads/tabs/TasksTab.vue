@@ -17,8 +17,11 @@
         <StatusBadge :tone="row.due.tone" :label="row.due.label" data-testid="task-due" />
       </template>
       <template #cell-title="{ row }">
-        <a class="t-accent pointer" role="button" tabindex="0" :title="row.title" data-testid="task-title-link" @click.stop="openDialog('edit', row)" @keydown.enter.stop="openDialog('edit', row)">{{ row.title }}</a>
-        <StatusBadge class="show-mobile" :tone="row.due.tone" :label="row.due.label" data-testid="task-due-inline" />
+        <span class="flex-column gap-1">
+          <a class="t-accent pointer" role="button" tabindex="0" :title="row.title" data-testid="task-title-link" @click.stop="openDialog('edit', row)" @keydown.enter.stop="openDialog('edit', row)">{{ row.title }}</a>
+          <!-- under the title on a phone, whole: it never shares the line with the title (N13) -->
+          <StatusBadge class="show-mobile as-s" :tone="row.due.tone" :label="row.due.label" data-testid="task-due-inline" />
+        </span>
       </template>
       <template #cell-actions="{ row }">
         <IconButton mutates icon="edit" size="sm" :label="$t('leads.task.edit')" data-testid="task-edit" @click="openDialog('edit', row)" />
