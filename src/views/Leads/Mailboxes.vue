@@ -22,8 +22,8 @@
       <template #cell-address="{ row }">
         <span class="mailboxes__address flex-column">
           <span class="flex ai-ct flex-wrap gap-2">
-            <!-- the row opens on a click; the address is the keyboard's way in (N26) -->
-            <router-link :to="{ name: 'LeadsMailboxEdit', params: { id: row.id } }" class="t-accent" data-testid="mailbox-link" @click.stop>{{ row.address }}</router-link>
+            <!-- the row opens on a click; the address is the keyboard's way in (N26); a narrow row breaks it after its "@" -->
+            <router-link :to="{ name: 'LeadsMailboxEdit', params: { id: row.id } }" class="t-accent" data-testid="mailbox-link" @click.stop>{{ addressParts(row.address)[0] }}<wbr />{{ addressParts(row.address)[1] }}</router-link>
             <StatusBadge v-if="row.is_default" tone="neutral" size="sm" :dot="false" :label="$t('leads.mailboxes.default')" />
           </span>
           <span v-if="row.display_name" class="t-muted fs-200">{{ row.display_name }}</span>
@@ -69,6 +69,11 @@ const health = ref({});
 const users = ref({});
 const reasonFor = ref(null);
 
+// "name@" and "domain": the line may break between them.
+const addressParts = (address) => {
+  const at = address.indexOf("@") + 1;
+  return [address.slice(0, at), address.slice(at)];
+};
 const columns = [
   { key: "address", label: t("leads.mailboxes.col_address"), width: "1fr" },
   { key: "user", label: t("leads.mailboxes.col_user"), width: "max-content", priority: 2 },

@@ -140,7 +140,8 @@ const columns = [
   { key: "actions", label: "", actions: true },
 ];
 const logColumns = [
-  { key: "when", label: t("leads.health.col_when"), width: "max-content" },
+  // the date and the time may take two lines: on a phone the row keeps its Action inside the card
+  { key: "when", label: t("leads.health.col_when"), width: "min-content", truncate: false },
   { key: "mailbox", label: t("leads.health.col_mailbox"), width: "1fr" },
   { key: "action", label: t("leads.health.col_action"), width: "max-content" },
   { key: "why", label: t("leads.health.col_why"), width: "max-content", priority: 2 },
