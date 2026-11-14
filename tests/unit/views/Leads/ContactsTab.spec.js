@@ -11,9 +11,10 @@ const leads = vi.hoisted(() => ({
   GET_Mailable: vi.fn(() => Promise.resolve({ data: { eligible: false, reasons: ["suppressed"] } })),
 }));
 vi.mock("@/api/leads/api", () => leads);
-vi.mock("@/api/communicator/api", () => ({
+const communicator = vi.hoisted(() => ({
   GET_Suppressions: vi.fn(() => Promise.resolve({ data: { results: [] } })),
 }));
+vi.mock("@/api/communicator/api", () => communicator);
 
 import ContactsTab from "@/views/Leads/tabs/ContactsTab.vue";
 import { useMuninStore } from "@/stores/munin";
@@ -52,8 +53,8 @@ const company = {
   ],
 };
 
-const mountTab = async () => {
-  const wrapper = mount(ContactsTab, { props: { company }, global: leadsFrame });
+const mountTab = async (extra = {}) => {
+  const wrapper = mount(ContactsTab, { props: { company: { ...company, ...extra } }, global: leadsFrame });
   await flushPromises();
   return wrapper;
 };
@@ -276,5 +277,20 @@ describe("Company card — Contacts tab", () => {
     expect(anon.find('[data-testid="contact-mailable"]').exists()).toBe(false);
     expect(anon.find('[data-testid="contact-suppressed"]').exists()).toBe(false);
     expect(anna.find('[data-testid="contact-why"]').exists()).toBe(false); // not outbound here
+  });
+
+  // R1: the badge, its colour and its tooltip come from `mail_block` alone — no suppression list is read for it
+  it("mail_block decides the badge: a wrong-person contact is Blocked with its reason", async () => {
+    const contacts = [
+      contact({ id: 1, first_name: "Anna", email: "anna@shop.test", mail_block: "wrong_person" }),
+      contact({ id: 2, first_name: "Jan", email: "jan@shop.test", mail_block: "" }),
+    ];
+    const wrapper = await mountTab({ contacts });
+    const [anna, jan] = rows(wrapper);
+    const badge = anna.getComponent('[data-testid="contact-suppressed"]');
+    expect(badge.attributes("tone")).toBe("negative");
+    expect(badge.attributes("title")).toBe("contact flagged as the wrong person");
+    expect(jan.find('[data-testid="contact-mailable"]').exists()).toBe(true);
+    expect(communicator.GET_Suppressions).not.toHaveBeenCalled();
   });
 });

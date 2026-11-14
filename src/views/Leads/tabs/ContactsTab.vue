@@ -56,14 +56,15 @@
           <span v-if="row.job_title" class="t-muted fs-200">{{ row.job_title }}</span>
           <span v-if="row.email" class="contacts__email fs-200" :title="row.email">{{ row.email }}</span>
           <span v-if="!row.anonymised_at" class="contacts__state flex ai-ct flex-wrap gap-2">
+            <StatusBadge v-if="!row.email" tone="neutral" :dot="false" :label="$t('leads.contacts.no_email')" data-testid="contact-no-email" />
             <StatusBadge
-              v-if="isBlocked(row)"
-              tone="warning"
+              v-else-if="blockOf(row)"
+              tone="negative"
               :dot="false"
               :label="$t('leads.contacts.suppressed')"
+              :title="blockReasonLabel(blockOf(row))"
               data-testid="contact-suppressed"
             />
-            <StatusBadge v-else-if="!row.email" tone="neutral" :dot="false" :label="$t('leads.contacts.no_email')" data-testid="contact-no-email" />
             <StatusBadge v-else tone="positive" :dot="false" :label="$t('leads.contacts.mailable')" data-testid="contact-mailable" />
             <BasicButton v-if="outbound" variant="ghost" size="sm" :data-contact="row.id" data-testid="contact-why" @click="why = row">
               {{ $t("leads.contact.why_no_mail") }}
@@ -116,7 +117,7 @@ import { t } from "@/i18n";
 import { GET_Suppressions } from "@/api/communicator/api";
 import { DELETE_Contact, GET_Attributes, PATCH_Contact, POST_Contact } from "@/api/leads/api";
 import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
-import { legalBasisLabel } from "@/utils/leadsLabels";
+import { blockReasonLabel, legalBasisLabel } from "@/utils/leadsLabels";
 import { useMuninStore } from "@/stores/munin";
 import { outboundOn } from "@/utils/leadsOutbound";
 import ContactFields from "../ContactFields.vue";
@@ -179,8 +180,14 @@ function isSuppressed(contact) {
   );
 }
 
-// Blocked = suppressed, or the company is do-not-contact; a contact without an e-mail has its own neutral state.
-const isBlocked = (contact) => isSuppressed(contact) || props.company.do_not_contact;
+// R1: the API's `mail_block` — the first reason of the very check behind "Why no mail?" ("" = can be mailed). A
+// response without the field (an older backend) falls back to the do-not-contact flag and the suppression list.
+const hasMailBlock = (contact) => "mail_block" in contact;
+function blockOf(contact) {
+  if (hasMailBlock(contact)) return contact.mail_block;
+  if (props.company.do_not_contact) return "do_not_contact";
+  return isSuppressed(contact) ? "suppressed" : "";
+}
 
 // Leads CRM: the contact's custom fields under the built-in ones (definitions of entity `contact`).
 const contactFields = ref([]);
@@ -301,6 +308,7 @@ function remove(contact) {
 
 onMounted(async () => {
   loadContactFields();
+  if ((props.company.contacts || []).every(hasMailBlock)) return;
   const { data } = await GET_Suppressions();
   suppressed.value = new Set(data.results.map((row) => row.value));
 });
