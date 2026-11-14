@@ -4320,7 +4320,8 @@
       "next_draft": "Next draft",
       "skip": "Skip",
       "skipped": "Skipped — this mail will not be sent",
-      "handled_rejected": "This draft was skipped — this mail will not be sent."
+      "handled_rejected": "This draft was skipped — this mail will not be sent.",
+      "goes_soon": "goes out within minutes"
     },
     "rewrite": {
       "title": "Rewrite with a note",

@@ -4319,7 +4319,8 @@
       "next_draft": "Następny szkic",
       "skip": "Pomiń",
       "skipped": "Pominięto — ten mail nie zostanie wysłany",
-      "handled_rejected": "Ten szkic pominięto — ten mail nie zostanie wysłany."
+      "handled_rejected": "Ten szkic pominięto — ten mail nie zostanie wysłany.",
+      "goes_soon": "wyjdzie w ciągu kilku minut"
     },
     "rewrite": {
       "title": "Przepisz z uwagą",

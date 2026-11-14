@@ -6,14 +6,19 @@
     <div class="review__body flex-column gap-4">
       <Loader block v-show="loading" />
 
-      <p v-if="scheduledLabel" class="review__scheduled" role="status" data-testid="review-scheduled">
-        {{ scheduledLabel }}
+      <!-- T2/T4 (walk 4): Skip and Send confirm in place — one line above the next draft for 4 s, read out, never a toast
+           over the action row; the region stays in the page so a screen reader announces its change -->
+      <p class="review__confirm" :class="{ 'review__confirm--shown': confirmation }" role="status" data-testid="review-confirmation">
+        {{ confirmation }}
       </p>
+      <EmptyState v-if="queueEmpty" :title="$t('leads.inbox.empty_title')" icon="success" size="md" data-testid="review-empty">
+        <BasicButton variant="primary" data-testid="review-empty-inbox" @click="goInbox">{{ $t("leads.review.back") }}</BasicButton>
+      </EmptyState>
 
       <!-- the address of a draft that left the queue: what happened to it, and the way on (never another draft unasked) -->
       <div v-if="handled" class="flex-column gap-4" role="status" data-testid="review-handled">
         <p class="m-0">{{ handledText }}</p>
-        <BasicButton class="as-s" variant="primary" data-testid="review-handled-next" @click="goNext">{{ $t("leads.review.next_draft") }}</BasicButton>
+        <BasicButton class="as-s" variant="primary" data-testid="review-handled-next" @click="goNext()">{{ $t("leads.review.next_draft") }}</BasicButton>
       </div>
 
       <AiToolboxHint />
@@ -27,7 +32,7 @@
       </div>
 
       <article
-        v-else-if="message && !scheduledLabel"
+        v-else-if="message"
         class="review__draft flex-column gap-4"
         :style="{ transform: `translateX(${offset}px)` }"
         data-testid="review-draft"
@@ -93,7 +98,7 @@
     />
 
     <!-- pinned to the bottom of the scroll body on every size; Review keeps the phone tab bar off (meta.noBottomBar) -->
-    <template v-if="message && !editing && !scheduledLabel && !failedVersion" #footer>
+    <template v-if="message && !editing && !failedVersion" #footer>
       <ReviewActions
         ref="reviewActions"
         :busy="busy"
@@ -132,7 +137,7 @@ import { useConfigHealthStore } from "@/stores/configHealth";
 import IntelCard from "./IntelCard.vue";
 import ReviewActions from "./ReviewActions.vue";
 
-const SCHEDULED_MS = 4000;
+const CONFIRMATION_MS = 4000;
 
 const route = useRoute();
 const router = useRouter();
@@ -147,13 +152,14 @@ const busy = ref(false);
 const editing = ref(false);
 const rewriteOpen = ref(false);
 const rewriteNotes = ref("");
-const scheduledLabel = ref("");
+const confirmation = ref("");
+const queueEmpty = ref(false);
 const failedVersion = ref(null);
 const draft = ref({ subject: "", body_text: "" });
 const queueIndex = ref(0);
 const queueTotal = ref(0);
 const discarding = ref(false);
-let nextTimer = null;
+let confirmationTimer = null;
 let settle = null;
 
 const { offset, handlers } = useSwipe({ onRight: accept, onLeft: skip });
@@ -268,14 +274,24 @@ async function loadOutbound() {
 // "Draft 2 of 3" (as the Inbox lists them): after a send the next draft is visibly another one, not the same screen again.
 async function loadQueuePosition() {
   try {
-    const { data } = await api.GET_ReviewList({ status: "review_required", page_size: 100 });
-    // The Inbox lists the drafts newest first; the number counts the same way, so "Draft 1" is the top row.
-    queue.value = (data.results || []).map((item) => item.id).reverse();
+    queue.value = await readQueue();
     queueTotal.value = queue.value.length;
     queueIndex.value = queue.value.indexOf(message.value.id) + 1;
   } catch {
     queueTotal.value = 0;
   }
+}
+
+// k6 (walk 4): the queue in the Inbox's order — its Drafts rows (one per company, newest activity first), then the drafts
+// no row shows (a second draft to one company), newest first — so "Draft 1" is the top row of the list.
+async function readQueue() {
+  const [rows, drafts] = await Promise.all([
+    api.GET_Conversations({ state: "draft", page_size: 100 }),
+    api.GET_ReviewList({ status: REVIEW_STATUS, page_size: 100 }),
+  ]);
+  const listed = (rows.data.results || []).map((row) => row.draft?.id).filter(Boolean);
+  const rest = (drafts.data.results || []).map((item) => item.id).filter((id) => !listed.includes(id));
+  return [...listed, ...rest.reverse()];
 }
 
 // N7: the next draft is the one below in the Inbox order (else the one above) — "Draft 1 of 19" goes on to the new
@@ -286,15 +302,24 @@ function followingId() {
   return at < 0 ? null : queue.value[at + 1] ?? queue.value[at - 1] ?? null;
 }
 
-async function goNext() {
+// After Skip or Send (`afterAction`) an empty queue keeps the screen; otherwise it is the way back.
+async function goNext(afterAction = false) {
   const id = followingId();
   if (id) return router.replace({ name: "LeadsReview", params: { id }, ...(fromApprovals.value && { query: route.query }) });
   try {
     const { data } = await api.GET_ReviewNext();
     router.replace({ name: "LeadsReview", params: { id: data.id }, ...(fromApprovals.value && { query: route.query }) });
   } catch {
-    goInbox();
+    if (!afterAction) return goInbox();
+    message.value = null; // the confirmation stands above the empty state
+    queueEmpty.value = true;
   }
+}
+
+function confirm(text) {
+  clearTimeout(confirmationTimer);
+  confirmation.value = text;
+  confirmationTimer = setTimeout(() => (confirmation.value = ""), CONFIRMATION_MS);
 }
 
 // A draft opened from Approvals keeps Approvals as its way back (crumbs and back); from anywhere else, the Inbox.
@@ -346,15 +371,18 @@ async function onConflict(err) {
 async function acceptedState(accepted) {
   const waiting = await api.GET_WaitingMessages().catch(() => []);
   const mail = waiting.find((item) => item.id === accepted.id);
-  return mail ? sendStateSentence(sendState(mail.next_slot)) : t("leads.send_state.unknown");
+  if (!mail) return t("leads.send_state.unknown");
+  const state = sendState(mail.next_slot);
+  return state.state === "due" ? t("leads.review.goes_soon") : sendStateSentence(state);
 }
 
+// Send: the next draft opens at once; the line above it says when this mail goes.
 function accept() {
   return act(
     () => api.POST_ReviewAccept(message.value.id),
     async (data) => {
-      scheduledLabel.value = t("leads.review.accepted", { state: await acceptedState(data) });
-      nextTimer = setTimeout(goNext, SCHEDULED_MS);
+      const [state] = await Promise.all([acceptedState(data), goNext(true)]);
+      confirm(t("leads.review.accepted", { state }));
     }
   );
 }
@@ -364,14 +392,14 @@ function skip() {
   return act(
     () => api.POST_ReviewSkip(message.value.id),
     () => {
-      notify.spawnNotification({ msg: t("leads.review.skipped") });
-      return goNext();
+      confirm(t("leads.review.skipped"));
+      return goNext(true);
     }
   );
 }
 
 function skipCompany() {
-  return act(() => api.POST_ReviewSkipCompany(message.value.id), goNext);
+  return act(() => api.POST_ReviewSkipCompany(message.value.id), () => goNext());
 }
 
 // The action answers with the new version itself — show it directly (it may sit beyond the first review page);
@@ -428,15 +456,14 @@ watch(
   () => route.params.id,
   (id) => {
     if (!id) return;
-    clearTimeout(nextTimer);
-    scheduledLabel.value = "";
+    queueEmpty.value = false;
     failedVersion.value = null;
     editing.value = false;
     if (message.value?.id !== Number(id)) load();
   },
   { immediate: true }
 );
-onBeforeUnmount(() => clearTimeout(nextTimer));
+onBeforeUnmount(() => clearTimeout(confirmationTimer));
 </script>
 
 <style scoped>
@@ -444,15 +471,26 @@ onBeforeUnmount(() => clearTimeout(nextTimer));
 .review__body {
   overflow-x: clip;
 }
-.review__scheduled {
-  margin: var(--space-10) 0;
-  padding: var(--space-8);
+/* empty, the region is out of the flow (no gap) but still in the page for the screen reader */
+.review__confirm {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.review__confirm--shown {
+  position: static;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip-path: none;
+  padding: var(--space-5) var(--space-8);
   border-radius: var(--radius-lg);
   background: var(--positive-subtle);
   color: var(--text-body);
-  font-size: var(--fs-400);
   font-weight: 600;
-  text-align: center;
 }
 .review__failed {
   padding: var(--space-8);

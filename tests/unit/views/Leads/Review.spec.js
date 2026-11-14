@@ -19,6 +19,7 @@ const api = vi.hoisted(() => ({
   GET_WaitingMessages: vi.fn(),
   GET_Approvals: vi.fn(),
   GET_Replies: vi.fn(),
+  GET_Conversations: vi.fn(),
 }));
 vi.mock("@/api/communicator/api", () => api);
 const munin = vi.hoisted(() => ({ isModuleEnabled: () => true, isModuleAtLeast: () => false }));
@@ -76,6 +77,7 @@ const mountReview = async () => {
         BasicTextarea,
         BasicModal,
         IntelCard: true,
+        EmptyState: { props: ["title"], template: "<div><slot /></div>" },
         RouterLink: { template: "<a><slot /></a>" },
       },
     },
@@ -91,15 +93,17 @@ describe("Leads Review", () => {
     setActivePinia(createPinia());
     api.GET_ReviewMessage.mockResolvedValue(draft);
     api.GET_ReviewList.mockResolvedValue({ data: { results: [{ id: 5 }] } });
+    api.GET_Conversations.mockResolvedValue({ data: { results: [] } });
     api.GET_ReviewNext.mockRejectedValue({ response: { status: 404 } });
     api.GET_WaitingMessages.mockResolvedValue([]);
   });
   afterEach(() => vi.useRealTimers());
 
   // FIX-17 item 5: the confirmation stays readable (>= 4 s), it is not gone before the eye reaches it.
-  // FIX-17a item 2: it confirms the slot the send run will use — never a time that has already passed.
-  // FIX-17b item 13: that slot is the waiting list's `next_slot`, the one the Inbox reads, not `scheduled_at`.
-  it("after Send the screen confirms the send state for 4 s before it moves on", async () => {
+  // FIX-17b item 13: the slot is the waiting list's `next_slot`, the one the Inbox reads, not `scheduled_at`.
+  // T2/T4 (walk 4): no full-screen panel — the next draft opens at once, the line stands above it (or above the empty
+  // state when the queue is empty) for 4 s, in a status region.
+  it("after Send the next draft opens at once with one line above it for 4 s", async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-09-21T06:00:00Z"));
     channelTimeZone.value = "UTC";
@@ -109,15 +113,29 @@ describe("Leads Review", () => {
     await wrapper.get('[data-testid="review-send"]').trigger("click");
     await flushPromises();
     expect(api.POST_ReviewAccept).toHaveBeenCalledWith(5);
-    expect(wrapper.get('[data-testid="review-scheduled"]').text()).toBe("Accepted — goes out at 08:07");
-    vi.advanceTimersByTime(3900);
-    await flushPromises();
-    expect(api.GET_ReviewNext).not.toHaveBeenCalled();
-    expect(wrapper.find('[data-testid="review-scheduled"]').exists()).toBe(true);
-    vi.advanceTimersByTime(100);
-    await flushPromises();
     expect(api.GET_ReviewNext).toHaveBeenCalled();
-    expect(replace).toHaveBeenCalledWith({ name: "LeadsInbox" });
+    const line = wrapper.get('[data-testid="review-confirmation"]');
+    expect(line.attributes("role")).toBe("status");
+    expect(line.text()).toBe("Accepted — goes out at 08:07");
+    expect(wrapper.find('[data-testid="review-empty"]').exists()).toBe(true);
+    expect(replace).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(4000);
+    await flushPromises();
+    expect(wrapper.get('[data-testid="review-confirmation"]').text()).toBe("");
+  });
+
+  it("after Send in an open window the line says the mail goes out within minutes", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-09-21T06:00:00Z"));
+    api.POST_ReviewAccept.mockReturnValue(ok({ id: 5, status: "approved" }));
+    api.GET_WaitingMessages.mockResolvedValue([{ id: 5, next_slot: "2026-09-21T06:00:00Z" }]);
+    api.GET_ReviewNext.mockResolvedValue({ data: { id: 6 } });
+    const wrapper = await mountReview();
+    await wrapper.get('[data-testid="review-send"]').trigger("click");
+    await flushPromises();
+    expect(wrapper.get('[data-testid="review-confirmation"]').text()).toBe("Accepted — goes out within minutes");
+    expect(replace).toHaveBeenCalledWith({ name: "LeadsReview", params: { id: 6 } });
+    expect(spawnNotification).not.toHaveBeenCalled();
   });
 
   // FIX-17c item 1: a closed window says so with its hours and the real next slot, in one sentence.
@@ -129,7 +147,7 @@ describe("Leads Review", () => {
     const wrapper = await mountReview();
     await wrapper.get('[data-testid="review-send"]').trigger("click");
     await flushPromises();
-    expect(wrapper.get('[data-testid="review-scheduled"]').text()).toBe(
+    expect(wrapper.get('[data-testid="review-confirmation"]').text()).toBe(
       "Accepted — waiting for the send window (08:00–17:00), next slot 17.09 08:00"
     );
     applyPolicy(null);
@@ -145,7 +163,7 @@ describe("Leads Review", () => {
     const wrapper = await mountReview();
     await wrapper.get('[data-testid="review-send"]').trigger("click");
     await flushPromises();
-    expect(wrapper.get('[data-testid="review-scheduled"]').text()).toBe("Accepted — could not check when it goes out");
+    expect(wrapper.get('[data-testid="review-confirmation"]').text()).toBe("Accepted — could not check when it goes out");
   });
 
   // Acceptance CM18: a draft opened from Approvals keeps Approvals as its way back, also on the next draft.
@@ -161,6 +179,8 @@ describe("Leads Review", () => {
     expect(replace).toHaveBeenCalledWith({ name: "LeadsReview", params: { id: 6 }, query: { from: "approvals" } });
     await wrapper.get('[data-testid="review-skip"]').trigger("click");
     await flushPromises();
+    // the queue is empty: the confirmation stands above the empty state, whose way on is Approvals
+    await wrapper.get('[data-testid="review-empty-inbox"]').trigger("click");
     expect(replace).toHaveBeenLastCalledWith({ name: "LeadsApprovals" });
     delete route.current.query;
   });
@@ -173,7 +193,8 @@ describe("Leads Review", () => {
     await wrapper.get('[data-testid="review-skip"]').trigger("click");
     await flushPromises();
     expect(api.POST_ReviewSkip).toHaveBeenCalledWith(5);
-    expect(spawnNotification).toHaveBeenCalledWith({ msg: "Skipped — this mail will not be sent" });
+    expect(spawnNotification).not.toHaveBeenCalled();
+    expect(wrapper.get('[data-testid="review-confirmation"]').text()).toBe("Skipped — this mail will not be sent");
     expect(replace).toHaveBeenCalledWith({ name: "LeadsReview", params: { id: 6 } });
   });
 
@@ -440,6 +461,16 @@ describe("Leads Review", () => {
   });
 
   // FIX-17 item 4: after a send the next draft is visibly another one.
+  // k6 (walk 4): the number counts in the Inbox's order — its Drafts rows first (newest activity), then the drafts no
+  // row shows
+  it("the queue position counts in the Inbox's order", async () => {
+    api.GET_Conversations.mockResolvedValue({ data: { results: [{ id: 30, draft: { id: 5 } }, { id: 31, draft: { id: 4 } }] } });
+    api.GET_ReviewList.mockResolvedValue({ data: { results: [{ id: 4 }, { id: 5 }, { id: 6 }] } });
+    const wrapper = await mountReview();
+    expect(api.GET_Conversations).toHaveBeenCalledWith({ state: "draft", page_size: 100 });
+    expect(wrapper.get('[data-testid="review-position"]').text()).toContain('{"index":1,"count":3}');
+  });
+
   it("the draft header says where it sits in the review queue", async () => {
     api.GET_ReviewList.mockResolvedValue({ data: { results: [{ id: 4 }, { id: 6 }, { id: 5 }] } });
     const wrapper = await mountReview();
@@ -466,6 +497,7 @@ describe("Leads Review — problem and last reply", () => {
     munin.isModuleAtLeast = () => true;
     api.GET_ReviewMessage.mockResolvedValue({ ...draft, thread: { ...draft.thread, id: 9 } });
     api.GET_ReviewList.mockResolvedValue({ data: { results: [{ id: 5 }] } });
+    api.GET_Conversations.mockResolvedValue({ data: { results: [] } });
     api.GET_Replies.mockResolvedValue({ data: { results: [{ id: 1, intent: "not_now" }] } });
   });
 
