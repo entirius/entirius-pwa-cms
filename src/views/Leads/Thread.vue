@@ -139,8 +139,10 @@ const replyThreadId = computed(() => {
 async function loadThreads() {
   const { data } = await GET_Threads({ subject_ref: subjectRef.value, page_size: PAGE_SIZE });
   const [first, ...rest] = data.results || [];
+  // both at once: the earlier list renders open, and its rows must know at mount which one holds the reply
+  const thread = first ? await GET_ThreadWithOptouts(first.id) : null;
   older.value = { threads: rest, count: Math.max((data.count || 0) - 1, 0), next: Boolean(data.next) };
-  newest.value = first ? await GET_ThreadWithOptouts(first.id) : null;
+  newest.value = thread;
 }
 
 async function loadPendingOptouts() {

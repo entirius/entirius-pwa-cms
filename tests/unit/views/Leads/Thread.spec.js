@@ -75,19 +75,28 @@ describe("Leads Thread", () => {
     const wrapper = mountThread();
     await flushPromises();
     expect(api.GET_Threads).toHaveBeenCalledWith({ subject_ref: "leads.Company:42", page_size: 20 });
-    expect(api.GET_ThreadWithOptouts).toHaveBeenCalledTimes(1);
-    expect(api.GET_ThreadWithOptouts).toHaveBeenCalledWith(9);
+    expect(api.GET_ThreadWithOptouts.mock.calls[0]).toEqual([9]);
     expect(wrapper.get('[data-testid="thread-subject"]').text()).toContain("Subject 9");
     expect(wrapper.findAll('[data-testid="timeline-out"]')).toHaveLength(1);
     expect(wrapper.get('[data-testid="earlier-toggle"]').text()).toContain('leads.thread.earlier::{"count":2}');
-    expect(wrapper.find('[data-testid="earlier-thread"]').exists()).toBe(false);
+  });
+
+  // Plan 33: the card shows every conversation the Inbox row counts — the newest open, the other N−1 listed under
+  // "Earlier conversations (N−1)" from the start, each closed until opened in place; the heading folds the list.
+  it("lists every earlier conversation from the start, each closed, the count of the threads list minus the newest", async () => {
+    const wrapper = mountThread();
+    await flushPromises();
+    expect(wrapper.get('[data-testid="earlier-toggle"]').attributes("aria-expanded")).toBe("true");
+    const groups = wrapper.findAll('[data-testid="earlier-thread"]');
+    expect(groups).toHaveLength(2);
+    groups.forEach((group) => expect(group.find('[data-testid="thread-timeline"]').exists()).toBe(false));
+    await wrapper.get('[data-testid="earlier-toggle"]').trigger("click");
+    expect(wrapper.findAll('[data-testid="earlier-thread"]')).toHaveLength(0);
   });
 
   // FIX-17 item 2: a collapsed row is told apart by its subject and recipient, without opening it.
   it("the expander lists older threads by subject and recipient; opening one shows its conversation", async () => {
     const wrapper = mountThread();
-    await flushPromises();
-    await wrapper.get('[data-testid="earlier-toggle"]').trigger("click");
     await flushPromises();
     const groups = wrapper.findAll('[data-testid="earlier-thread"]');
     expect(groups).toHaveLength(2);
@@ -123,7 +132,7 @@ describe("Leads Thread", () => {
     expect(wrapper.get('[data-testid="thread-reply-below"]').exists()).toBe(true);
   });
 
-  it("the older threads stay collapsed when the newest one holds the reply itself", async () => {
+  it("the older threads stay closed when the newest one holds the reply itself", async () => {
     const replied = summaries.map((thread) => (thread.id === 8 ? { ...thread, status: "replied" } : thread));
     api.GET_Threads.mockResolvedValue({ data: { count: 3, next: null, results: replied } });
     api.GET_ThreadWithOptouts.mockImplementation((id) =>
@@ -131,7 +140,7 @@ describe("Leads Thread", () => {
     );
     const wrapper = mountThread();
     await flushPromises();
-    expect(wrapper.findAll('[data-testid="earlier-thread"]')).toHaveLength(0);
+    expect(wrapper.findAll('[data-testid="earlier-thread"] [data-testid="thread-timeline"]')).toHaveLength(0);
     expect(wrapper.find('[data-testid="thread-reply-below"]').exists()).toBe(false);
   });
 
@@ -172,7 +181,6 @@ describe("Leads Thread", () => {
     api.GET_Threads.mockResolvedValueOnce({ data: { count: 23, next: null, results: [{ ...summaries[2], id: 30 }] } });
     const wrapper = mountThread();
     await flushPromises();
-    await wrapper.get('[data-testid="earlier-toggle"]').trigger("click");
     await wrapper.get('[data-testid="earlier-more"]').trigger("click");
     await flushPromises();
     expect(api.GET_Threads).toHaveBeenCalledTimes(2);

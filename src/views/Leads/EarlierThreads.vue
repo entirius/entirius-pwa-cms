@@ -38,7 +38,9 @@ import { GET_Threads } from "@/api/communicator/api";
 import { waitingOf } from "@/utils/leadsThread";
 import ThreadGroup from "./ThreadGroup.vue";
 
-// Every thread older than the newest one, behind one expander; further pages load like the list.
+// Every thread older than the newest one under "Earlier conversations (N−1)": the list is open from the start, so the
+// card shows every conversation the Inbox row counts (both read the threads of one `subject_ref`), each row opening in
+// place; the heading still folds the list. Further pages load like the list.
 const props = defineProps({
   subjectRef: { type: String, required: true },
   threads: { type: Array, default: () => [] }, // older threads of the first list page
@@ -53,7 +55,7 @@ const props = defineProps({
 });
 defineEmits(["changed", "sent"]);
 
-const open = ref(false);
+const open = ref(true);
 const loading = ref(false);
 const extra = ref([]);
 const page = ref(1);
