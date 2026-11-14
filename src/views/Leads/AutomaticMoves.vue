@@ -64,6 +64,7 @@ import { outboundOn, replyTone } from "@/utils/leadsOutbound";
 import {
   EVENTS, alertOptions, changed, eventTitle, planBody, sequenceOptions, stageBody, stagePart, targetOptions, typeOf,
 } from "./automaticMoves";
+import { saveAction } from "./saveAction";
 
 // What happens on its own: the stage a company moves to per event (leads), and per reply type what happens to the
 // sequence, the alert and the review flag (communicator, shown only with communicator >= 0.5.0 and read on its
@@ -86,7 +87,7 @@ const withPlans = computed(() => outboundOn(munin, "communicator") && access.can
 const { snapshot, track, isDirty } = useUnsavedChanges();
 track(reactive({ cards, plans }));
 const actions = computed(() => [
-  { key: "save", role: "primary", label: t("common.save"), loading: saving.value, testid: "moves-save", onClick: save },
+  saveAction({ dirty: isDirty.value, saving: saving.value, testid: "moves-save", onClick: save }),
 ]);
 
 const planSnapshot = () => Object.fromEntries(Object.entries(storedPlans.value).map(([type, plan]) => [type, planBody(plan)]));

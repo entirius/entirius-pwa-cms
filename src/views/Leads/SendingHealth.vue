@@ -86,6 +86,7 @@ import { formatDate } from "@/utils/format";
 import { healthTriggerLabel, mailboxStateLabel } from "@/utils/leadsLabels";
 import { MAILBOX_TONES, mailboxState, sentToday } from "@/utils/leadsOutbound";
 import MailboxReasonDialog from "./MailboxReasonDialog.vue";
+import { saveAction } from "./saveAction";
 
 // Is mail getting through: the channel and each mailbox over 24 h or 7 d, the automatic-pause policy (the page's one
 // Save) and the log of every pause and resume. A rate over its limit says so; below the minimum sample it is muted.
@@ -147,7 +148,7 @@ const logColumns = [
   { key: "by", label: t("leads.health.col_by"), width: "max-content", priority: 3 },
 ];
 const actions = computed(() => [
-  { key: "save", role: "primary", label: t("common.save"), loading: saving.value, testid: "health-save", onClick: save },
+  saveAction({ dirty: isDirty.value, saving: saving.value, testid: "health-save", onClick: save }),
 ]);
 
 const pct = (value) => (value === null || value === undefined ? "—" : `${value} %`);

@@ -48,6 +48,7 @@ describe("Leads → Settings → Automatic moves", () => {
     expect(wrapper.findAll('[data-testid="moves-card"]')).toHaveLength(10);
     control(wrapper, "first_sent", "moves-target").vm.$emit("update:modelValue", "contacted");
     control(wrapper, "reply:interested", "moves-alert").vm.$emit("update:modelValue", "low");
+    await flushPromises();
     await byTestid(wrapper, "moves-save").trigger("click");
     await flushPromises();
     expect(leads.PUT_StageEvent.mock.calls).toEqual([["first_sent", { target_stage_key: "contacted", forward_only: true }]]);
@@ -58,6 +59,7 @@ describe("Leads → Settings → Automatic moves", () => {
     leads.PUT_StageEvent.mockRejectedValueOnce({ message: "stage gone" });
     const wrapper = await mounted();
     control(wrapper, "first_sent", "moves-target").vm.$emit("update:modelValue", "contacted");
+    await flushPromises();
     await byTestid(wrapper, "moves-save").trigger("click");
     await flushPromises();
     expect(card(wrapper, "first_sent").text()).toContain("stage gone");

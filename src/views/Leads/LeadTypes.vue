@@ -1,7 +1,13 @@
 <template>
   <PageLayout data-testid="leads-lead-types">
     <template #header>
-      <PageHeader :title="$t('leads.lead_types.title')" :back="{ name: 'LeadsSettings' }" />
+      <PageHeader :title="$t('leads.lead_types.title')" :back="{ name: 'LeadsSettings' }">
+        <!-- one Save for renames, switches and moves, as on every settings page (N27) -->
+        <template #actions>
+          <StatusBadge v-if="dirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" data-testid="lead-types-unsaved" />
+          <ActionBar :actions="actions" />
+        </template>
+      </PageHeader>
     </template>
     <div class="lead-types flex-column gap-8">
       <p class="t-muted m-0">{{ $t("leads.lead_types.help") }}</p>
@@ -15,34 +21,23 @@
         >
           <label class="lead-type__label">
             <span class="visually-hidden">{{ $t("leads.lead_types.label") }}</span>
-            <BasicInput
-              v-model="type.label"
-              :maxlength="128"
-              data-testid="lead-type-label"
-              @on-focusout="rename(type)"
-              @on-key-down="rename(type)"
-            />
+            <BasicInput v-model="type.label" :maxlength="128" data-testid="lead-type-label" />
           </label>
           <StatusBadge class="lead-type__code" tone="neutral" size="sm" :dot="false" :label="type.code" />
-          <BasicSwitch
-            :model-value="type.is_active"
-            :label="$t('leads.lead_types.active')"
-            data-testid="lead-type-active"
-            @update:model-value="save(type, { is_active: $event })"
-          />
+          <BasicSwitch v-model="type.is_active" :label="$t('leads.lead_types.active')" data-testid="lead-type-active" />
           <div class="lead-type__controls">
             <IconButton mutates
               icon="moveUp"
               variant="outline"
               :label="$t('leads.stages.up')"
-              :disabled="shifting || index === 0"
+              :disabled="index === 0"
               @click="shift(index, -1)"
             />
             <IconButton mutates
               icon="moveDown"
               variant="outline"
               :label="$t('leads.stages.down')"
-              :disabled="shifting || index === types.length - 1"
+              :disabled="index === types.length - 1"
               @click="shift(index, 1)"
             />
             <IconButton mutates
@@ -81,16 +76,18 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import { t } from "@/i18n";
 import { DELETE_LeadType, GET_LeadTypes, PATCH_LeadType, POST_LeadType } from "@/api/leads/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { usePageReadonly } from "@/composables/useReadonly";
 import { useLeadTypesStore } from "@/stores/leadTypes";
+import { saveAction } from "./saveAction";
 
-// Leads → Settings → Lead types (UX-004), the Stages pattern: rename inline, reorder by PATCH `order` per moved
-// row, deactivate (a type in use stays on its companies), delete refused inline while companies carry the code.
-// The code is fixed after create — companies and template audiences hold it.
+// Leads → Settings → Lead types (UX-004), the Stages pattern: rename, (de)activate and reorder inline, all kept until
+// the header's Save (one PATCH per changed type, then `order` per moved row); deactivate (a type in use stays on its
+// companies), delete refused inline while companies carry the code. The code is fixed after create — companies and
+// template audiences hold it.
 const ORDER_STEP = 10;
 const CODE_PATTERN = /^[A-Za-z0-9_]+$/;
 const store = useLeadTypesStore();
@@ -98,12 +95,21 @@ const readonly = usePageReadonly();
 const types = ref([]);
 const errors = reactive({});
 const draft = reactive({ code: "", label: "" });
-const shifting = ref(false); // one move at a time: the PATCHes of a move run one after another
-let savedLabels = {}; // id → the label the server holds: a blur without an edit sends nothing
+const saved = ref({}); // id → { label, is_active } as the server holds them
+const saving = ref(false);
+
+const bodyOf = (type) => {
+  const was = saved.value[type.id] || {};
+  return Object.fromEntries(["label", "is_active"].filter((key) => type[key] !== was[key]).map((key) => [key, type[key]]));
+};
+const edited = () => types.value.filter((type) => Object.keys(bodyOf(type)).length);
+const moved = () => types.value.filter((type, index) => type.order !== index * ORDER_STEP);
+const dirty = computed(() => edited().length > 0 || moved().length > 0);
+const actions = computed(() => [saveAction({ dirty: dirty.value, saving: saving.value, testid: "lead-types-save", onClick: saveAll })]);
 
 async function load() {
   types.value = (await GET_LeadTypes()).data.results || [];
-  savedLabels = Object.fromEntries(types.value.map((type) => [type.id, type.label]));
+  saved.value = Object.fromEntries(types.value.map((type) => [type.id, { label: type.label, is_active: type.is_active }]));
   store.load(true); // the chips, selects and labels elsewhere read the new list
 }
 
@@ -118,36 +124,32 @@ async function attempt(key, call) {
   }
 }
 
-async function save(type, body) {
-  if (await attempt(type.id, () => PATCH_LeadType(type.id, body))) await load();
+async function update(type) {
+  const body = bodyOf(type);
+  const ok = await attempt(type.id, () => PATCH_LeadType(type.id, body));
+  if (ok) saved.value = { ...saved.value, [type.id]: { ...saved.value[type.id], ...body } };
+  return ok;
 }
 
-// The label field commits on blur and Enter, as the native change did: only a changed label is sent. It counts as
-// saved while the PATCH runs (Enter then blur sends once) and is forgotten on a refusal, so blur or Enter retries —
-// unless a newer label was committed meanwhile: that one stays.
-async function rename(type) {
-  const previous = savedLabels[type.id];
-  const sent = type.label;
-  if (sent === previous) return;
-  savedLabels[type.id] = sent;
-  if (await attempt(type.id, () => PATCH_LeadType(type.id, { label: sent }))) await load();
-  else if (savedLabels[type.id] === sent) savedLabels[type.id] = previous;
+// The changed types first (a refusal stays on its row with the edit), then the order — which reads the list again.
+async function saveAll() {
+  saving.value = true;
+  const results = await Promise.all(edited().map(update));
+  if (results.every(Boolean)) await saveOrder();
+  saving.value = false;
 }
 
-async function shift(index, delta) {
-  if (shifting.value) return;
-  shifting.value = true;
-  const [moved] = types.value.splice(index, 1);
-  types.value.splice(index + delta, 0, moved);
-  const changed = types.value.map((type, i) => ({ type, order: i * ORDER_STEP })).filter(({ type, order }) => type.order !== order);
+async function saveOrder() {
+  const changed = moved().map((type) => ({ type, order: types.value.indexOf(type) * ORDER_STEP }));
   await attempt("order", async () => {
     for (const { type, order } of changed) await PATCH_LeadType(type.id, { order });
   });
-  try {
-    await load();
-  } finally {
-    shifting.value = false;
-  }
+  await load();
+}
+
+function shift(index, delta) {
+  const [type] = types.value.splice(index, 1);
+  types.value.splice(index + delta, 0, type);
 }
 
 async function remove(type) {

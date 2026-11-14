@@ -71,6 +71,7 @@ import { usePageReadonly } from "@/composables/useReadonly";
 import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
 import { useNotifyStore } from "@/stores/notify";
 import { canClose, stageKindOptions } from "./deals";
+import { saveAction } from "./saveAction";
 
 // Settings → Deal stages (ux/screens/settings-deal-stages.md, modelled on Stages.vue): label and kind per row with a
 // one page Save for the changed rows (a toast says it landed), order by up/down (one PATCH per moved row), delete
@@ -92,7 +93,7 @@ const dirty = (stage) => saved.value[stage.id] && (saved.value[stage.id].label !
 // The page's unsaved state (badge, Save, the browser's leave prompt) is the stage list against the server's.
 const { snapshot, track, isDirty: anyDirty } = useUnsavedChanges();
 const actions = computed(() => [
-  { key: "save", role: "primary", label: t("common.save"), disabled: !anyDirty.value, loading: saving.value, testid: "deal-stages-save", onClick: saveAll },
+  saveAction({ dirty: anyDirty.value, saving: saving.value, testid: "deal-stages-save", onClick: saveAll }),
 ]);
 
 // A reload (after a move, a delete or an add) keeps the label and kind edits not saved yet.

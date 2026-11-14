@@ -1,7 +1,13 @@
 <template>
   <PageLayout data-testid="leads-stages">
     <template #header>
-      <PageHeader :title="$t('leads.stages.title')" :back="{ name: 'LeadsSettings' }" />
+      <PageHeader :title="$t('leads.stages.title')" :back="{ name: 'LeadsSettings' }">
+        <!-- one Save for renames and moves, as on Deal stages (N27) -->
+        <template #actions>
+          <StatusBadge v-if="dirty" tone="warning" :dot="false" :label="$t('unsaved.changes')" data-testid="stages-unsaved" />
+          <ActionBar :actions="actions" />
+        </template>
+      </PageHeader>
     </template>
     <div class="flex-column gap-8">
       <p class="t-muted m-0" data-testid="stages-help">{{ $t("leads.stages.help") }}</p>
@@ -11,20 +17,13 @@
         item-key="id"
         handle=".stage__handle"
         class="flex-column gap-3"
-        @end="saveOrder"
       >
         <template #item="{ element, index }">
           <div class="stage" :data-stage="element.key" data-testid="stage-row">
             <FontAwesomeIcon :icon="$icons.drag" class="stage__handle" />
             <label>
               <span class="visually-hidden">{{ $t("leads.stages.label") }}</span>
-              <BasicInput
-                v-model="element.label"
-                :maxlength="128"
-                data-testid="stage-label"
-                @on-focusout="rename(element)"
-                @on-key-down="rename(element)"
-              />
+              <BasicInput v-model="element.label" :maxlength="128" data-testid="stage-label" />
             </label>
             <span class="stage__tags">
               <StatusBadge
@@ -109,7 +108,7 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import draggable from "vuedraggable";
 import { t } from "@/i18n";
 import { DELETE_Stage, GET_Companies, GET_Rules, GET_Stages, PATCH_Stage, POST_Stage } from "@/api/leads/api";
@@ -118,8 +117,10 @@ import { useNotifyStore } from "@/stores/notify";
 import { usePageReadonly } from "@/composables/useReadonly";
 import { stageKindLabel } from "@/utils/leadsLabels";
 import { pluralKey } from "@/utils/plural";
+import { saveAction } from "./saveAction";
 
-// Stages admin: order by drag or up/down (PATCH `order` per moved stage), rename inline, delete with the 409 inline (L-18).
+// Stages admin: order by drag or up/down and rename inline, both kept until the header's Save (PATCH the changed labels,
+// then `order` per moved stage); delete with the 409 inline (L-18).
 const ORDER_STEP = 10;
 const KEY_PATTERN = /^[-a-zA-Z0-9_]+$/;
 const notify = useNotifyStore();
@@ -129,11 +130,16 @@ const errors = reactive({});
 const draft = reactive({ key: "", label: "" });
 const confirming = ref(null); // { stage, message } while the delete sheet is open
 const rulesByStage = ref({});
-let savedLabels = {}; // id → the label the server holds: a blur without an edit sends nothing
+const savedLabels = ref({}); // id → the label the server holds
+const saving = ref(false);
+const renamed = () => stages.value.filter((stage) => stage.label !== savedLabels.value[stage.id]);
+const moved = () => stages.value.some((stage, index) => stage.order !== index * ORDER_STEP);
+const dirty = computed(() => renamed().length > 0 || moved());
+const actions = computed(() => [saveAction({ dirty: dirty.value, saving: saving.value, testid: "stages-save", onClick: saveAll })]);
 
 async function load() {
   stages.value = (await GET_Stages()).data.results;
-  savedLabels = Object.fromEntries(stages.value.map((stage) => [stage.id, stage.label]));
+  savedLabels.value = Object.fromEntries(stages.value.map((stage) => [stage.id, stage.label]));
 }
 
 // The rules the Board badges, shown here too (the stages payload carries none).
@@ -184,19 +190,22 @@ async function saveOrder() {
 function shift(index, delta) {
   const [stage] = stages.value.splice(index, 1);
   stages.value.splice(index + delta, 0, stage);
-  return saveOrder();
 }
 
-// The label field commits on blur and Enter, as the native change did: only a changed label is sent. It counts as
-// saved while the PATCH runs (Enter then blur sends once) and is forgotten on a refusal, so blur or Enter retries —
-// unless a newer label was committed meanwhile: that one stays.
+// The changed labels first (a refusal stays on its row with what was typed), then the order — which reads the stages
+// again. Saved labels are remembered at once, so a refusal elsewhere does not send them twice.
+async function saveAll() {
+  saving.value = true;
+  const results = await Promise.all(renamed().map((stage) => rename(stage)));
+  if (results.every(Boolean)) await saveOrder();
+  saving.value = false;
+}
+
 async function rename(stage) {
-  const previous = savedLabels[stage.id];
   const sent = stage.label;
-  if (sent === previous) return;
-  savedLabels[stage.id] = sent;
-  if (await attempt(stage.id, () => PATCH_Stage(stage.id, { label: sent }))) return;
-  if (savedLabels[stage.id] === sent) savedLabels[stage.id] = previous;
+  const saved = await attempt(stage.id, () => PATCH_Stage(stage.id, { label: sent }));
+  if (saved) savedLabels.value = { ...savedLabels.value, [stage.id]: sent };
+  return saved;
 }
 
 async function remove(stage) {

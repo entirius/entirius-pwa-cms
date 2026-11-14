@@ -51,6 +51,7 @@ import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
 import { useConfigHealthStore } from "@/stores/configHealth";
 import { withStoredOption } from "@/utils/options";
 import AiToolboxHint from "@/components/ConfigHealth/AiToolboxHint.vue";
+import { saveAction } from "./saveAction";
 
 // The AI sorting of replies into types: prompt, model, how sure it must be. No profile yet = an empty form, Active
 // off; Save creates it. The confidence shows in percent and is stored as a fraction.
@@ -70,7 +71,7 @@ const modelOptions = computed(() =>
   )
 );
 const actions = computed(() => [
-  { key: "save", role: "primary", label: t("common.save"), loading: saving.value, testid: "classify-save", onClick: save },
+  saveAction({ dirty: isDirty.value, saving: saving.value, testid: "classify-save", onClick: save }),
 ]);
 const fieldError = (field) => formErrors.getFieldError(field)?.msg || "";
 const isNotFound = (err) => (err?.httpStatus ?? err?.response?.status) === 404;

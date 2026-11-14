@@ -6,7 +6,17 @@
           <ActionBar>
             <StatusBadge v-if="unsaved.isDirty.value" tone="warning" :label="$t('leads.scoring.unsaved')" />
             <BasicSwitch v-model="form.is_active" :label="$t('leads.scoring.active')" :disabled="readonly" data-testid="scoring-active" />
-            <BasicButton variant="primary" mutates :loading="saving" data-testid="scoring-save" @click="save">{{ $t("leads.scoring.save") }}</BasicButton>
+            <BasicButton
+              variant="primary"
+              mutates
+              :loading="saving"
+              :disabled="!unsaved.isDirty.value"
+              :title="unsaved.isDirty.value ? undefined : $t('unsaved.nothing')"
+              data-testid="scoring-save"
+              @click="save"
+            >
+              {{ $t("leads.scoring.save") }}
+            </BasicButton>
           </ActionBar>
         </template>
       </PageHeader>

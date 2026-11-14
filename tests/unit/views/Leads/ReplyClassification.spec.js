@@ -30,7 +30,9 @@ describe("Leads → Settings → Reply classification", () => {
   it("shows the confidence in percent and saves it as a fraction", async () => {
     const wrapper = await mounted();
     expect(wrapper.findComponent('[data-testid="classify-min-confidence"]').props("modelValue")).toBe("70");
+    expect(byTestid(wrapper, "classify-save").attributes("disabled")).toBeDefined(); // N27: nothing to save yet
     wrapper.findComponent('[data-testid="classify-min-confidence"]').vm.$emit("update:modelValue", "85");
+    await flushPromises();
     await byTestid(wrapper, "classify-save").trigger("click");
     await flushPromises();
     expect(api.PUT_ReplyClassProfile).toHaveBeenCalledWith({ ...profile, min_confidence: 0.85 });
@@ -50,6 +52,8 @@ describe("Leads → Settings → Reply classification", () => {
     expect(byTestid(await mounted(), "classify-error").text()).toBe("down");
     api.PUT_ReplyClassProfile.mockRejectedValueOnce({ response: { data: { error: "VALIDATION", message: "bad", details: [{ field: "model", description: "unknown model" }] } } });
     const wrapper = await mounted();
+    wrapper.findComponent('[data-testid="classify-min-confidence"]').vm.$emit("update:modelValue", "85");
+    await flushPromises();
     await byTestid(wrapper, "classify-save").trigger("click");
     await flushPromises();
     expect(fieldError(wrapper, "leads.classify.model")).toBe("unknown model");

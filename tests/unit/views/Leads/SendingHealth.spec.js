@@ -75,6 +75,7 @@ describe("Leads → Settings → Sending health", () => {
     api.PUT_HealthPolicy.mockResolvedValue({ data: { ...policy, min_sample: 80 } });
     const wrapper = await mounted();
     wrapper.findComponent('[data-testid="health-min-sample"]').vm.$emit("update:modelValue", 80);
+    await flushPromises();
     await byTestid(wrapper, "health-save").trigger("click");
     await flushPromises();
     expect(api.PUT_HealthPolicy).toHaveBeenCalledWith({ enabled: true, window_hours: 168, min_sample: 80, max_bounce_pct: 2, max_optout_pct: 3, max_complaint_pct: 0.1 });
