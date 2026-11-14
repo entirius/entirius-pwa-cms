@@ -45,6 +45,15 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- Leads panel, acceptance fixes of the third walk: Skip names the action that leaves a draft unsent (Review and
+  Approvals) and a skipped or withdrawn draft is one closed line in the conversation; every bulk action says how many
+  rows it changed and did not, refused rows keep their reason and their tick; a recipient who may not be mailed and a
+  refused server certificate read in words; one not-found page for every unknown address, inside the shell of its
+  panel, and Company types at `/leads/settings/company-types` (the old address redirects); a confirmed opt-out
+  reloads the company card; one phrase per date of a pause; History in one language; a waiting mail's badge reads
+  Scheduled; row switches read Active / Off; the date picker's Escape closes only the calendar and its week starts on
+  Monday; Today's rows open their company on a phone; smaller fixes on Inbox, Contacts, Stages, Rules, Deals,
+  Mailboxes and Sending health.
 - Leads panel, acceptance fixes of the second walk: a company card and a conversation take the full width below 1440 px
   and the Inbox column keeps its chip; a contact's mail badge, Today's replies that need review, Reply, the
   hand-written tag, the rule runs and the import report read the new leads and communicator fields; the deal board

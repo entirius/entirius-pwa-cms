@@ -114,6 +114,36 @@ changed rows (the unsaved state beside it, a toast when they landed), reorder by
 holds deals") and Add. The deal board is titled "Deal board", so its crumbs never read "Deals / Deals". Amounts stay decimal strings (`BasicInput format="money"`,
 shown through `formatCost`). The bell maps `leads.Deal:<id>` to the deal card.
 
+## Acceptance fixes, walk 3 (plan 26)
+
+- **Skip** (never Later) is the action that leaves a draft unsent, in Review (button, swipe hint, the toast "Skipped —
+  this mail will not be sent", the page of a skipped draft's address) and Approvals (bulk bar and drawer; still the
+  `reject` action of the API). A rejected draft on the timeline (communicator's `rejected_by`, `reject_reason`) is one
+  closed `<details>` line in the conversation and in History: "Draft skipped by <name> · <date>", or for a draft the
+  service withdrew "Draft withdrawn · <reason>"; it opens to the text (`ThreadTimeline.vue`).
+- **Bulk answers**: `bulkAnswer` (`src/utils/leadsBulk.js`) words the answer of every bulk action of the panel (Approvals
+  approve and skip, Companies' assign owner). Approvals keeps it on screen (`approvals-result`) until the list is
+  filtered again; a refused row stays ticked with its reason under the recipient (`approval-refused`).
+- **Recipient problems**: the `blocker` sentences of a recipient who may not be mailed (communicator's address check,
+  the leads outreach gate) read as the panel's words (`problemText`, `src/utils/leadsOutbound.js`); the login test's
+  `certificate` answer has its sentence and its next step.
+- **Unknown address**: one catch-all route (`NotFound`, `src/views/NotFound/NotFound.vue`) for the whole CMS; the global
+  guard gives it the panel its first path segment names (the shell's side menu and crumbs follow), and the page links
+  to that panel's start (for `/leads/…`: Today). Company types live at `settings/company-types`; `settings/lead-types`
+  redirects (route name `LeadsLeadTypes` and the API names stay).
+- **Fresh card**: a confirmed opt-out (newest or earlier conversation) emits `changed`; the card reloads its contacts,
+  History and tasks.
+- **Words and dates**: "Back on <date>" is a reply's return date, "The sequence resumes on <date>" History's
+  `resume_at`; the Next line repeats no date and, for the newest reply without a class, reads the thread's sequence
+  state. A waiting mail's badge is "Scheduled" (the departure its tooltip, a line under the bubble on a phone); a
+  suppressed message is "Not sent". A row switch reads Active / Off (`activeLabel`); Companies' Company type reads
+  "Unknown" (muted) for none; the List / Board switch follows a language switch (`listBoardOptions`). History: every
+  activity kind of leads has `leads.activity.kind.<kind>` in both locales and the fixed service messages
+  `leads.activity.msg.*`; an unknown message reads as its kind, never the service's English.
+- **Smaller**: Today's task row opens its company on a phone; an Inbox reply row carries Replied once; Why no mail?
+  only beside a blocked contact; a done task's Due says when; Stages order by the arrows only; an empty rule says it
+  runs for every company; the Deals filter badge ignores the default status; mailbox addresses break after the "@".
+
 ## Acceptance fixes, walk 2 (plan 24)
 
 - **Layout**: below 1440 px a company card and a conversation take the full width (`leads--focus` in
