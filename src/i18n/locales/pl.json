@@ -4543,7 +4543,33 @@
       "no_owner": "Bez opiekuna",
       "column_attr": "{column} — {label} ({kind})",
       "ignored": "Pominięte kolumny: {list}",
-      "automation_started": "Nowe firmy z uruchomioną automatyzacją: {count}"
+      "automation_started": "Nowe firmy z uruchomioną automatyzacją: {count}",
+      "state": {
+        "pending": "Czeka",
+        "running": "Trwa import",
+        "done": "Gotowe",
+        "failed": "Nieudany"
+      },
+      "reason": {
+        "invalid_legal_basis": "podstawa prawna nie jest żadną z: consent, legitimate_interest, contract",
+        "bad_attribute": "wartość kolumny {name} nie pasuje do jej pola",
+        "invalid_email": "adres e-mail jest niepoprawny",
+        "no_domain_no_email": "brak domeny i adresu e-mail",
+        "invalid_domain": "domena jest niepoprawna",
+        "freemail_no_domain": "adres z darmowej poczty i brak domeny — nie wiadomo, która to firma",
+        "too_long": "wartość kolumny {name} jest za długa",
+        "invalid_value": "wartość, której baza danych nie przyjmuje",
+        "conflict": "koliduje z firmą lub kontaktem zapisanym w tej samej chwili",
+        "erased_address": "adres usunięto na żądanie tej osoby",
+        "missing_header": "plik nie ma wiersza nagłówka",
+        "missing_file": "pliku już nie ma — wyślij go ponownie",
+        "legacy_message": "starszej wysyłki nie da się wznowić — wyślij plik ponownie",
+        "csv_error": "plik nie jest czytelnym CSV",
+        "encoding_error": "plik nie jest tekstem UTF-8",
+        "no_stages": "kanał nie ma etapów — dodaj je w Ustawieniach → Etapy",
+        "internal_error": "błąd po stronie serwera — spróbuj ponownie albo zapytaj administratora"
+      },
+      "file": "Plik"
     },
     "stages": {
       "title": "Etapy",

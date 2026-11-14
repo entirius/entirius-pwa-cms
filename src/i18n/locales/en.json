@@ -4544,7 +4544,33 @@
       "no_owner": "No owner",
       "column_attr": "{column} — {label} ({kind})",
       "ignored": "Ignored columns: {list}",
-      "automation_started": "New companies with the automation started: {count}"
+      "automation_started": "New companies with the automation started: {count}",
+      "state": {
+        "pending": "Waiting",
+        "running": "Importing",
+        "done": "Done",
+        "failed": "Failed"
+      },
+      "reason": {
+        "invalid_legal_basis": "the legal basis is not one of consent, legitimate_interest, contract",
+        "bad_attribute": "the value of the column {name} does not fit its field",
+        "invalid_email": "the e-mail address is not valid",
+        "no_domain_no_email": "neither a domain nor an e-mail address",
+        "invalid_domain": "the domain is not valid",
+        "freemail_no_domain": "a free mail address and no domain — the company cannot be told",
+        "too_long": "the value of the column {name} is too long",
+        "invalid_value": "a value the database does not accept",
+        "conflict": "it clashes with a company or contact saved at the same time",
+        "erased_address": "the address was erased at the person's request",
+        "missing_header": "the file has no header row",
+        "missing_file": "the file is no longer there — upload it again",
+        "legacy_message": "an older upload that cannot be resumed — upload the file again",
+        "csv_error": "the file is not a readable CSV",
+        "encoding_error": "the file is not UTF-8 text",
+        "no_stages": "the channel has no stages — add one in Settings → Stages",
+        "internal_error": "an error on the server — try again or ask the administrator"
+      },
+      "file": "File"
     },
     "stages": {
       "title": "Stages",

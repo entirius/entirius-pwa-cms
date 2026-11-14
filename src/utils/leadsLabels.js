@@ -24,6 +24,15 @@ export const dncKindLabel = (value) => label(`leads.dnc.kind.${value}`, value);
 
 export const addressStatusLabel = (value) => label(`leads.address_status.${value}`, value);
 
+export const importStatusLabel = (value) => label(`leads.import.state.${value}`, value);
+
+// An import report reason ("invalid_email", "too_long:name"): a sentence naming the column, the code as the fallback.
+export function importReasonLabel(reason) {
+  const [code, name = ""] = String(reason).split(":");
+  const key = `leads.import.reason.${code}`;
+  return t(key) === key ? String(reason) : t(key, { name });
+}
+
 export const healthTriggerLabel = (value) => label(`leads.health.trigger.${value}`, value);
 
 // One wording for a waiting mail's departure: Review, the Inbox summary, the waiting table and the thread say the same.

@@ -62,7 +62,7 @@ describe("Leads Import", () => {
     await wrapper.find('[data-testid="import-upload"]').trigger("click");
     await flushPromises();
     expect(api.POST_Import).toHaveBeenCalledWith(file);
-    expect(wrapper.find('[data-testid="import-status"]').text()).toBe("done");
+    expect(wrapper.findComponent('[data-testid="import-status"]').attributes("label")).toBe("Done");
     expect(wrapper.find('[data-testid="import-counts"]').text()).toContain('"created":2');
   });
 
@@ -143,6 +143,30 @@ describe("Leads Import", () => {
     await flushPromises();
     expect(older.find('[data-testid="import-ignored"]').exists()).toBe(false);
     expect(older.find('[data-testid="import-automation"]').exists()).toBe(false);
+  });
+
+  // R3: every row reason a sentence, the code only as the fallback; an older backend's ignored-column rows are dropped
+  it("the row reasons read as sentences, the file-level one as File", async () => {
+    const report = [
+      { row: 1, reason: "ignored_column:sales_region" },
+      { row: 2, reason: "invalid_email" },
+      { row: 3, reason: "too_long:company_name" },
+      { row: 4, reason: "brand_new_code" },
+      { row: 0, reason: "csv_error" },
+    ];
+    api.POST_Import.mockResolvedValue({ data: { id: 4, status: "failed", report } });
+    api.GET_Import.mockResolvedValue({ data: { id: 4, status: "failed", report } });
+    const wrapper = await mountWithFile();
+    await wrapper.find('[data-testid="import-upload"]').trigger("click");
+    await flushPromises();
+    const lines = wrapper.findAll('[data-testid="import-rows"] li').map((li) => li.text());
+    expect(lines).toEqual([
+      'leads.import.row::{"row":2}: the e-mail address is not valid',
+      'leads.import.row::{"row":3}: the value of the column company_name is too long',
+      'leads.import.row::{"row":4}: brand_new_code',
+      "leads.import.file: the file is not a readable CSV",
+    ]);
+    expect(wrapper.findComponent('[data-testid="import-status"]').attributes("label")).toBe("Failed");
   });
 
   it("an older backend has no checkbox", async () => {

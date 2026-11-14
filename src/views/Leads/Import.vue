@@ -48,7 +48,10 @@
       <p v-if="error" class="t-negative m-0" data-testid="import-error">{{ error }}</p>
       <BasicCard v-if="batch" data-testid="import-report">
         <div class="flex-column gap-3">
-          <p class="m-0">{{ $t("leads.import.status") }}: <strong data-testid="import-status">{{ batch.status }}</strong></p>
+          <p class="flex ai-ct gap-2 m-0">
+            {{ $t("leads.import.status") }}:
+            <StatusBadge :tone="STATUS_TONES[batch.status]" :label="importStatusLabel(batch.status)" data-testid="import-status" />
+          </p>
           <p class="m-0" data-testid="import-counts">
             {{ $t("leads.import.counts", { created: batch.created_count, matched: batch.matched_count, skipped: batch.skipped_count }) }}
           </p>
@@ -58,9 +61,9 @@
           <p v-if="batch.automation_started_count !== undefined && sentRunRules" class="m-0" data-testid="import-automation">
             {{ $t("leads.import.automation_started", { count: batch.automation_started_count }) }}
           </p>
-          <ul v-if="batch.report?.length" class="import__list">
-            <li v-for="entry in batch.report" :key="`${entry.row}-${entry.reason}`">
-              {{ $t("leads.import.row", { row: entry.row }) }}: {{ entry.reason }}
+          <ul v-if="rowReasons.length" class="import__list" data-testid="import-rows">
+            <li v-for="entry in rowReasons" :key="`${entry.row}-${entry.reason}`">
+              {{ entry.row ? $t("leads.import.row", { row: entry.row }) : $t("leads.import.file") }}: {{ importReasonLabel(entry.reason) }}
             </li>
           </ul>
           <router-link
@@ -85,6 +88,7 @@ import { GET_AssignableUsers, GET_Attributes, GET_Import, POST_Import } from "@/
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { useAccessStore } from "@/stores/access";
 import { useMuninStore } from "@/stores/munin";
+import { importReasonLabel, importStatusLabel } from "@/utils/leadsLabels";
 import { outboundOn } from "@/utils/leadsOutbound";
 
 // CSV upload: the batch runs on the leads queue; the screen polls it until done or failed.
@@ -108,6 +112,7 @@ const SAMPLE_CSV = [
   "",
 ].join("\n");
 const FINISHED = ["done", "failed"];
+const STATUS_TONES = { pending: "neutral", running: "info", done: "positive", failed: "negative" };
 const router = useRouter();
 const fileInput = ref(null);
 const file = ref(null);
@@ -115,6 +120,8 @@ const batch = ref(null);
 const busy = ref(false);
 const error = ref("");
 let timer = null;
+// Ignored columns are one sentence above; an older backend also lists them as rows (`ignored_column:<name>`).
+const rowReasons = computed(() => (batch.value?.report || []).filter((entry) => !String(entry.reason).startsWith("ignored_column:")));
 
 // R5: the secondary ways in, then Upload — the one primary — rightmost.
 const actions = computed(() => [
