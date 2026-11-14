@@ -23,9 +23,9 @@
             <dt>{{ $t('pricefighter.margin') }}</dt>
             <dd>{{ row.margin != null ? `${row.margin}%` : '—' }}</dd>
             <dt>{{ $t('pricefighter.reason') }}</dt>
-            <dd>{{ row.reason }}</dd>
+            <dd>{{ pfLabel(t, 'reason', row.reason) }}</dd>
             <dt>{{ $t('pricefighter.strategy') }} / {{ $t('pricefighter.mode') }}</dt>
-            <dd>{{ row.strategy }} / {{ row.mode }}<span v-if="row.price_war" class="t-negative"> · {{ $t('pricefighter.price_war') }}</span></dd>
+            <dd>{{ pfLabel(t, 'recommendation', row.strategy) }} / {{ pfLabel(t, 'mode', row.mode) }}<span v-if="row.price_war" class="t-negative"> · {{ $t('pricefighter.price_war') }}</span></dd>
           </dl>
         </div>
 
@@ -48,7 +48,7 @@ import { ref, computed, onMounted } from 'vue'
 import { t } from '@/i18n'
 import { GET_PfDecisionDetail, GET_PfBounds } from '@/api/pricefighter/api'
 import { extractApiMessage } from '@/composables/useFormErrors'
-import { pfFormat } from '../constants'
+import { pfFormat, pfLabel } from '../constants'
 import ObservationsTable from './ObservationsTable.vue'
 
 const props = defineProps({

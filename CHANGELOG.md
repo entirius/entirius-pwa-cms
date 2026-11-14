@@ -123,6 +123,14 @@ All notable changes to this project will be documented in this file.
   or SKU), a status filter, a removable SKU chip, Cancel request on waiting rows (hidden in read-only mode) and
   Download CSV of the current filter.
 
+### Fixed
+
+- PriceFighter: the Gap Table shows the product name in its own Product column (it was a small grey line under the
+  SKU that wrapped); the row detail names the decision reason, the strategy and the mode in words instead of the
+  engine codes (`in_band`, `compete / suggestion`; an unknown code stays raw); Strategies shows the mode in words;
+  the history's date column reads Applied at (it read Observed at); the apply preview prints our price with two
+  decimals.
+
 ## [3.7.0] (2026-11-11)
 
 ### Changed

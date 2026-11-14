@@ -43,7 +43,7 @@
             <span v-else class="t-muted">—</span>
           </template>
           <template #cell-mode="{ row }">
-            {{ row.mode }}
+            {{ pfLabel($t, 'mode', row.mode) }}
           </template>
         </DataTable>
       </template>
@@ -158,7 +158,7 @@ import { usePfChannels } from '@/composables/usePfChannels'
 import { useProductFetch, useCategoryFetch } from '@/composables/useEntityFetch'
 import { useMuninStore } from '@/stores/munin'
 import { GET_PfRules, POST_PfRule, PATCH_PfRule, DELETE_PfRule } from '@/api/pricefighter/api'
-import { STRATEGIES, RECOMMENDATION_VARIANTS } from './constants'
+import { STRATEGIES, RECOMMENDATION_VARIANTS, pfLabel } from './constants'
 
 const SCOPE_TYPES = ['sku', 'category_idx', 'channel']
 
@@ -235,6 +235,7 @@ export default {
     await Promise.all([this.fetchRules(), this.fetchChannels()])
   },
   methods: {
+    pfLabel,
     strategyVariant(strategy) {
       return RECOMMENDATION_VARIANTS[strategy] || 'neutral'
     },

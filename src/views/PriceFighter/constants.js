@@ -23,6 +23,21 @@ export const RECOMMENDATIONS = Object.keys(RECOMMENDATION_VARIANTS)
 // PricingRule.strategy values (3) — a subset of RECOMMENDATION_VARIANTS' keys/colors.
 export const STRATEGIES = ['hold', 'compete', 'raise']
 
+// Engine codes shown to the operator: the decision reason, the rule mode. A code without a label stays raw, so a new
+// engine reason is still visible before the CMS learns its words.
+export const REASONS = [
+  'ok', 'in_band', 'strategy_scope', 'clamped_floor', 'clamped_step', 'price_war', 'price_war_no_floor', 'no_cost',
+  'no_baseline', 'no_quote_config', 'no_competitor', 'stale', 'untrusted', 'oos', 'currency_mismatch',
+]
+export const MODES = ['suggestion', 'authoritative']
+
+export function pfLabel(t, prefix, code) {
+  if (!code) return '—'
+  const key = `pricefighter.${prefix}_${code}`
+  const label = t(key)
+  return label === key ? code : label
+}
+
 // Money/gap formatter shared by every PriceFighter view — an em dash for missing
 // values, two decimals for numbers, the raw value for anything non-numeric.
 export function pfFormat(val) {
