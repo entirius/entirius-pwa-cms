@@ -208,7 +208,7 @@ describe("Leads Inbox (one list: drafts, waiting mails, conversations)", () => {
     expect(ids(wrapper)).toEqual([21, 7]);
     const row = wrapper.get('[data-thread="21"]');
     expect(row.classes()).toContain("inbox-row--active");
-    expect(row.get('[data-testid="inbox-item-threads"]').text()).toBe("3 threads ·");
+    expect(row.get('[data-testid="inbox-item-threads"]').text()).toBe("3 conversations ·");
     expect(row.find('[data-testid="inbox-marker-replied"]').exists()).toBe(true); // a reply in an older thread counts
     expect(JSON.parse(row.get("a").attributes("data-to"))).toEqual({ name: "LeadsThread", params: { id: 9 }, query: { tab: "timeline" } });
     expect(wrapper.find('[data-thread="7"] [data-testid="inbox-item-threads"]').exists()).toBe(false);
