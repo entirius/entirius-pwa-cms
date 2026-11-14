@@ -9,13 +9,15 @@
     <Loader v-if="loading" />
     <p v-else-if="error" class="t-negative m-0" role="alert" data-testid="sendcheck-error">{{ error }}</p>
     <div v-else-if="report" class="flex-column gap-4">
+      <!-- k8 (walk 4): the badge keeps its own width; each reason is a sentence -->
       <StatusBadge
+        class="as-s"
         :tone="report.eligible ? 'positive' : 'negative'"
         :label="$t(report.eligible ? 'leads.contact.can_mail' : 'leads.contact.blocked')"
         data-testid="contact-mail-state"
       />
       <ul v-if="report.reasons.length" class="sendcheck__reasons m-0" data-testid="sendcheck-reasons">
-        <li v-for="code in report.reasons" :key="code" :data-reason="code">{{ blockReasonLabel(code) }}</li>
+        <li v-for="code in report.reasons" :key="code" :data-reason="code">{{ sentence(blockReasonLabel(code)) }}</li>
       </ul>
     </div>
     <template #footer>
@@ -44,6 +46,7 @@ defineEmits(["close"]);
 const report = ref(null);
 const loading = ref(false);
 const error = ref("");
+const sentence = (text) => text.charAt(0).toUpperCase() + text.slice(1);
 const nameOf = (contact) => [contact?.first_name, contact?.last_name].filter(Boolean).join(" ") || contact?.email || "";
 
 watch(

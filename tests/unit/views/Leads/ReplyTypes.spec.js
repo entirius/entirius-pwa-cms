@@ -116,6 +116,8 @@ describe("Reply types and outbound helpers", () => {
     expect(leads.GET_Mailable).toHaveBeenCalledWith(4, 8);
     expect(wrapper.findAll('[data-testid="sendcheck-reasons"] li')).toHaveLength(2);
     expect(wrapper.findComponent('[data-testid="contact-mail-state"]').props("tone")).toBe("negative");
+    // k8 (walk 4): each reason starts as a sentence
+    wrapper.findAll('[data-testid="sendcheck-reasons"] li').forEach((li) => expect(li.text()).toMatch(/^[A-Z]/));
   });
 
   it("names the problem and the mailbox state in the panel's words", () => {
