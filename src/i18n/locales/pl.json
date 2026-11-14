@@ -4740,7 +4740,16 @@
     "problem": {
       "legal_footer": "Wiadomość nie ma stopki prawnej — ustaw stopkę w Ustawieniach → Ustawienia wysyłki",
       "mailbox": "Konto pocztowe {address} nie może wysyłać ({state})",
-      "other": "{detail}"
+      "other": "{detail}",
+      "recipient": {
+        "suppressed": "Odbiorca zrezygnował z kontaktu lub jest na liście „Nie kontaktować”",
+        "address_invalid": "Adres odbiorcy jest nieprawidłowy",
+        "do_not_contact": "Firma jest oznaczona „Nie kontaktować”",
+        "opted_out": "Kontakt zrezygnował z kontaktu",
+        "anonymised": "Kontakt został zanonimizowany",
+        "wrong_person": "Kontakt jest oznaczony jako niewłaściwa osoba",
+        "no_legal_basis": "Kontakt nie ma podstawy prawnej do maili — najpierw ustaw ją przy kontakcie"
+      }
     },
     "approvals": {
       "title": "Do zatwierdzenia",
@@ -4861,14 +4870,16 @@
         "no_password": "Brak hasła",
         "auth_failed": "Zły użytkownik lub hasło",
         "unreachable": "Serwer nie odpowiada",
-        "failed": "Logowanie nieudane"
+        "failed": "Logowanie nieudane",
+        "certificate": "Certyfikat serwera nie został zaakceptowany"
       },
       "test_next": {
         "not_configured": "Uzupełnij część {part} formularza (host, port i użytkownik), zapisz i przetestuj ponownie.",
         "no_password": "Wpisz hasło {part}, zapisz i przetestuj ponownie.",
         "auth_failed": "Serwer odrzucił logowanie: sprawdź użytkownika i hasło {part}, zapisz i przetestuj ponownie.",
         "unreachable": "Serwer {part} nie odpowiedział: sprawdź host, port i zabezpieczenie połączenia, zapisz i przetestuj ponownie.",
-        "failed": "Sprawdź ustawienia {part}, zapisz i przetestuj ponownie."
+        "failed": "Sprawdź ustawienia {part}, zapisz i przetestuj ponownie.",
+        "certificate": "Serwer {part} przedstawił certyfikat, któremu ten host nie ufa: sprawdź, czy nazwa hosta zgadza się z certyfikatem (lub zapytaj dostawcę poczty o właściwy host), zapisz i przetestuj ponownie."
       }
     },
     "health": {

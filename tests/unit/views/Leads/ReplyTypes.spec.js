@@ -76,6 +76,9 @@ describe("Reply types and outbound helpers", () => {
     expect(problemText("the message requires a legal footer and has none")).toContain("legal footer");
     expect(problemText("the mailbox a@b.test cannot send (disabled)")).toBe("The mailbox a@b.test cannot send (Sending off)");
     expect(problemText("something else")).toBe("something else");
+    // S1 (walk 3): the recipient refusals of the approval check get the panel's words
+    expect(problemText("the contact is flagged as the wrong person")).toBe("The contact is flagged as the wrong person");
+    expect(problemText("the recipient opted out or is on the do-not-contact list")).toContain("do-not-contact list");
     expect(mailboxState({ state: "active", warmup_started_on: "2026-11-01", daily_cap: 40 }, 20)).toBe("warming_up");
     expect(mailboxState({ state: "active", send_enabled: false })).toBe("send_off");
     expect(mailboxState({ state: "needs_login" })).toBe("needs_login");

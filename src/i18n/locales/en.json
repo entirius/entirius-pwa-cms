@@ -4741,7 +4741,16 @@
     "problem": {
       "legal_footer": "The mail has no legal footer — set the footer in Settings → Send settings",
       "mailbox": "The mailbox {address} cannot send ({state})",
-      "other": "{detail}"
+      "other": "{detail}",
+      "recipient": {
+        "suppressed": "The recipient opted out or is on the do-not-contact list",
+        "address_invalid": "The recipient's address is not valid",
+        "do_not_contact": "The company is marked do not contact",
+        "opted_out": "The contact opted out",
+        "anonymised": "The contact was anonymised",
+        "wrong_person": "The contact is flagged as the wrong person",
+        "no_legal_basis": "The contact has no legal basis for mail — set one on the contact first"
+      }
     },
     "approvals": {
       "title": "Approvals",
@@ -4862,14 +4871,16 @@
         "no_password": "No password",
         "auth_failed": "Wrong user or password",
         "unreachable": "Server not reached",
-        "failed": "Login failed"
+        "failed": "Login failed",
+        "certificate": "The server's certificate was not accepted"
       },
       "test_next": {
         "not_configured": "Fill in the {part} part of the form (host, port and user), save, then test again.",
         "no_password": "Enter the {part} password, save, then test again.",
         "auth_failed": "The server refused the login: check the {part} user and password, save, then test again.",
         "unreachable": "The {part} server did not answer: check the host, the port and the security setting, save, then test again.",
-        "failed": "Check the {part} settings, save, then test again."
+        "failed": "Check the {part} settings, save, then test again.",
+        "certificate": "The {part} server answered with a certificate this host does not trust: check the host name matches the certificate (or ask the mail provider for the right host), save, then test again."
       }
     },
     "health": {

@@ -195,10 +195,10 @@ const actions = computed(() => {
 
 const fieldError = (field) => formErrors.getFieldError(field)?.msg || "";
 const savedHint = (kind) => (stored.value?.[`${kind}_password_set`] ? t("leads.mailbox.password_saved") : "");
-// A login test answers per part: ok, not_configured, no_password, auth_failed or unreachable — each in words, with
-// what to do next; an unknown code reads as a failure with the generic advice.
+// A login test answers per part: ok, not_configured, no_password, auth_failed, certificate or unreachable — each in
+// words, with what to do next; an unknown code reads as a failure with the generic advice.
 const TEST_PARTS = ["smtp", "imap"];
-const TEST_CODES = ["ok", "not_configured", "no_password", "auth_failed", "unreachable"];
+const TEST_CODES = ["ok", "not_configured", "no_password", "auth_failed", "certificate", "unreachable"];
 const testCode = (code) => (TEST_CODES.includes(code) ? code : "failed");
 const testBadge = (code) => ({
   tone: { ok: "positive", not_configured: "neutral" }[testCode(code)] || "negative",

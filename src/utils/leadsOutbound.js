@@ -41,9 +41,19 @@ export function mailboxState(mailbox, capToday = null) {
   return warming ? "warming_up" : "active";
 }
 
-// The `blocker` of an approval row is the service's English detail; the two known shapes get the panel's words.
+// The `blocker` of an approval row is the service's English detail; the known shapes get the panel's words.
 const LEGAL_FOOTER = "the message requires a legal footer and has none";
 const MAILBOX = /^the mailbox (\S+) cannot send \((\w+)\)$/;
+// A recipient who may not be mailed (communicator's address check and the leads outreach gate): sentence → label key.
+const RECIPIENT = {
+  "the recipient opted out or is on the do-not-contact list": "suppressed",
+  "the recipient's address is not valid": "address_invalid",
+  "the company is marked do not contact": "do_not_contact",
+  "the contact opted out": "opted_out",
+  "the contact was anonymised": "anonymised",
+  "the contact is flagged as the wrong person": "wrong_person",
+  "the contact has no legal basis for mail": "no_legal_basis",
+};
 
 // Today's sending of a mailbox in words: "11 of 40 sent", or "11 sent, no cap" when the mailbox has no daily cap.
 export const sentToday = (sent, cap) =>
@@ -51,6 +61,7 @@ export const sentToday = (sent, cap) =>
 
 export function problemText(blocker) {
   if (blocker === LEGAL_FOOTER) return t("leads.problem.legal_footer");
+  if (RECIPIENT[blocker]) return t(`leads.problem.recipient.${RECIPIENT[blocker]}`);
   const match = MAILBOX.exec(blocker || "");
   const state = match?.[2] === "disabled" ? "send_off" : match?.[2];
   if (match) return t("leads.problem.mailbox", { address: match[1], state: t(`leads.mailbox_state.${state}`) });

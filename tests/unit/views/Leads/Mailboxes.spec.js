@@ -109,6 +109,17 @@ describe("Leads → Settings → Mailboxes", () => {
     expect(byTestid(wrapper, "mailbox-test-result").text()).not.toMatch(/unreachable|not_configured|refused/i);
   });
 
+  // S4 (walk 3): a certificate the host does not accept is its own answer, never "Server not reached".
+  it("test login names a refused certificate with what to do", async () => {
+    api.POST_MailboxTest.mockResolvedValue({ data: { smtp: "certificate", imap: "ok" } });
+    const wrapper = await mounted(MailboxEdit);
+    await byTestid(wrapper, "mailbox-test").trigger("click");
+    await flushPromises();
+    const smtp = wrapper.findComponent('[data-testid="mailbox-test-smtp"]');
+    expect([smtp.props("tone"), smtp.props("label")]).toEqual(["negative", "The server's certificate was not accepted"]);
+    expect(byTestid(wrapper, "mailbox-test-smtp-next").text()).toContain("certificate this host does not trust");
+  });
+
   it("test login shows both results; a 404 shows not found", async () => {
     api.POST_MailboxTest.mockResolvedValue({ data: { smtp: "ok", imap: "auth_failed" } });
     const wrapper = await mounted(MailboxEdit);
