@@ -163,6 +163,16 @@ describe("Leads → Settings → Rules", () => {
     leads.GET_Rules.mockResolvedValue({ data: { results: [{ id: 4, trigger: "stage_entered", stage_id: 1, action: "communicate", template_key: "intro", contact_strategy: "primary", require_hooks: true, require_email: true, conditions: [{ field: "segment", op: "in", value: ["S1"] }], is_active: true }] } });
   });
 
+  // N24: read-only, a row opens its rule to view — "View rule", headed "Rule", never "Edit"
+  it("read-only: the row action is View and the dialog is headed Rule", async () => {
+    const wrapper = await mounted(Rules, { write: false });
+    const action = byTestid(wrapper, "rule-edit");
+    expect(action.attributes("aria-label")).toBe("leads.rules.view");
+    await action.trigger("click");
+    await flushPromises();
+    expect(wrapper.find('[data-title="leads.rules.rule"]').exists()).toBe(true);
+  });
+
   it("lists the rules with their summary and saves the conditions", async () => {
     const wrapper = await mounted(Rules);
     expect(byTestid(wrapper, "rule-row").text()).toContain("Draft from template \"intro\"");

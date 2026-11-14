@@ -21,13 +21,13 @@
       </template>
       <template #cell-actions="{ row }">
         <span class="flex gap-1">
-          <IconButton :mutates="false" icon="edit" size="sm" :label="$t('leads.rules.edit')" data-testid="rule-edit" @click="openDialog(row)" />
+          <IconButton :mutates="false" :icon="readonly ? 'preview' : 'edit'" size="sm" :label="$t(readonly ? 'leads.rules.view' : 'leads.rules.edit')" data-testid="rule-edit" @click="openDialog(row)" />
           <IconButton mutates icon="delete" variant="danger" size="sm" :label="$t('leads.common.delete')" data-testid="rule-delete" @click="removing = row" />
         </span>
       </template>
     </DataTable>
 
-    <BasicModal v-model:open="dialogOpen" :title="$t(draft.id ? 'leads.rules.edit' : 'leads.rules.add')" size="lg" :persistent="saving" :actions="dialogActions" data-testid="rule-dialog">
+    <BasicModal v-model:open="dialogOpen" :title="$t(draft.id ? (readonly ? 'leads.rules.rule' : 'leads.rules.edit') : 'leads.rules.add')" size="lg" :persistent="saving" :actions="dialogActions" data-testid="rule-dialog">
       <div class="flex-column gap-5">
         <p v-if="dialogError" class="t-negative m-0" role="alert" data-testid="rule-error">{{ dialogError }}</p>
         <div class="form-grid">

@@ -5264,7 +5264,9 @@
         "draft": "draft written, {status}",
         "score": "segment {segment}, {points} points",
         "draft_review": "draft written, waiting for review"
-      }
+      },
+      "view": "View rule",
+      "rule": "Rule"
     },
     "reports": {
       "title": "Reports",

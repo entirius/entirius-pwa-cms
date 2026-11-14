@@ -5263,7 +5263,9 @@
         "draft": "szkic napisany, {status}",
         "score": "segment {segment}, {points} pkt",
         "draft_review": "szkic napisany, czeka na przegląd"
-      }
+      },
+      "view": "Pokaż regułę",
+      "rule": "Reguła"
     },
     "reports": {
       "title": "Raporty",
