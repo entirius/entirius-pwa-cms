@@ -103,7 +103,7 @@
             <NumberInput v-model="form.warmup_step" :min="0" data-testid="mailbox-warmup-step" />
           </FormField>
           <FormField :label="$t('leads.mailbox.warmup_from')" :error="fieldError('warmup_started_on')">
-            <BasicDatePicker v-model="form.warmup_started_on" data-testid="mailbox-warmup-from" />
+            <BasicDatePicker v-model="form.warmup_started_on" fixed data-testid="mailbox-warmup-from" />
           </FormField>
           <p v-if="today" class="form-grid__wide m-0" data-testid="mailbox-today">{{ today }}</p>
         </div>

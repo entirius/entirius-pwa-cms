@@ -461,6 +461,17 @@ describe("BasicDatePicker", () => {
     wrapper.unmount();
   });
 
+  // R2: a screen's config extends the defaults — a range still opens inline, wrapped, in the UI language
+  it("merges a given config over its defaults", async () => {
+    setLang("PL");
+    const wrapper = mountPicker({ config: { mode: "range", locale: { rangeSeparator: " – " } } });
+    await wrapper.find("button").trigger("click");
+    const config = flatpickr.mock.calls.at(-1)[1];
+    expect(config).toMatchObject({ mode: "range", inline: true, wrap: true });
+    expect(config.locale).toMatchObject({ ...Polish, rangeSeparator: " – " });
+    wrapper.unmount();
+  });
+
   it("mounts its flatpickr instance only while open, destroyed on close and on unmount", async () => {
     flatpickr.mockClear();
     flatpickrInstance.destroy.mockClear();

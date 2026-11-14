@@ -35,7 +35,8 @@ const DEFAULT_CONFIG = {
 
 <script setup>
 // Date or date range (docs/ui-components.md § P3 inputs): an input-looking trigger with the calendar icon opens an
-// inline flatpickr below it. `v-model` (the flatpickr date string), `config` (flatpickr options; a single date by default, `mode: "range"` for a range),
+// inline flatpickr below it. `v-model` (the flatpickr date string), `config` (flatpickr options merged over the defaults — inline, wrapped, a single date; `mode: "range"` for a range;
+// its `locale` extends the UI language's),
 // `disabled`; inside a FormField the trigger takes the contract's id, label and state. The flatpickr instance lives only
 // while the calendar is open (a table of pickers carries one calendar, not one per cell). `fixed`: the calendar is placed
 // against the viewport, so a scrolling parent (a wide table) does not clip it; it opens upward when there is no room
@@ -51,7 +52,7 @@ import { useControlAttrs } from "@/boots/FormField/useControlAttrs";
 
 const props = defineProps({
   modelValue: { type: String, default: undefined },
-  config: { type: Object, default: () => DEFAULT_CONFIG },
+  config: { type: Object, default: () => ({}) },
   disabled: { type: Boolean, default: false },
   fixed: { type: Boolean, default: false },
 });
@@ -76,8 +77,10 @@ function onChange(dates, dateString) {
 
 async function open() {
   visible.value = true;
-  const locale = getLang() === "PL" ? Polish : english;
-  instance = flatpickr(pickerEl.value, { ...props.config, defaultDate: current.value, locale, onChange });
+  const language = getLang() === "PL" ? Polish : english;
+  const locale = props.config.locale ? { ...language, ...props.config.locale } : language;
+  const config = { ...DEFAULT_CONFIG, ...props.config, defaultDate: current.value, locale, onChange };
+  instance = flatpickr(pickerEl.value, config);
   if (!props.fixed) return;
   await nextTick();
   place();
