@@ -52,7 +52,7 @@ const errors = computed(() => ({
   ...localErrors.value,
 }));
 const actions = computed(() => [
-  { key: "cancel", label: t("leads.common.cancel"), role: "secondary", disabled: saving.value, onClick: () => close(false) },
+  { key: "cancel", label: t("leads.task.close"), role: "secondary", disabled: saving.value, onClick: () => close(false) },
   { key: "submit", label: t("leads.deals.open_deal"), role: "primary", mutates: true, loading: saving.value, testid: "deal-dialog-submit", onClick: submit },
 ]);
 

@@ -4771,7 +4771,7 @@
       "rejected_n_many": "{count} drafts rejected.",
       "not_approved": "{count} not approved.",
       "not_rejected": "{count} not rejected.",
-      "empty": "Nothing to approve",
+      "empty": "No drafts to approve",
       "empty_filtered": "No drafts match the filters",
       "other_channel": "Channel {channel} — open it in that channel's panel to edit",
       "log": "Show log",
@@ -4785,7 +4785,8 @@
       "selected": "selected",
       "clear": "Clear selection",
       "loading": "Loading drafts…",
-      "load_error": "The drafts could not be loaded — try again."
+      "load_error": "The drafts could not be loaded — try again.",
+      "empty_message": "A draft lands here when a stage rule writes a mail to a company and the mail waits for a person."
     },
     "mailboxes": {
       "title": "Mailboxes",
@@ -5319,7 +5320,7 @@
       "loading": "Loading deals…",
       "close_on": "close {date}",
       "board_title": "Deal board",
-      "col_stage": "Stage",
+      "col_stage": "Deal stage",
       "column_empty": "Nothing here yet",
       "board_desktop_only": "The board is for a larger screen; here are the deals as a list.",
       "move_to": "Move to…",
@@ -5350,7 +5351,7 @@
       "pick_currency": "Pick a currency",
       "not_found": "Deal not found",
       "history": "History",
-      "open_title": "Open a deal",
+      "open_title": "Open deal",
       "won_toast": "Deal won",
       "moved_toast": "Deal moved to {stage}",
       "lost_toast": "Deal lost",

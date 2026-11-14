@@ -27,7 +27,7 @@
 
     <Loader v-if="loading && first" block />
     <p v-else-if="error" class="t-negative m-0" role="alert" data-testid="approvals-error">{{ error }}</p>
-    <EmptyState v-else-if="!rows.length && !filtered" icon="success" size="md" :title="$t('leads.approvals.empty')" data-testid="approvals-empty" />
+    <EmptyState v-else-if="!rows.length && !filtered" icon="success" size="md" :title="$t('leads.approvals.empty')" :message="$t('leads.approvals.empty_message')" data-testid="approvals-empty" />
     <div v-else class="flex-column gap-5">
       <DataTable
         ref="table"

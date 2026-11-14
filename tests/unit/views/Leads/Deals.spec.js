@@ -84,7 +84,7 @@ describe("Leads → Deals list", () => {
 
   it("says the stage once: a plain column header, no label in the rows, the value only in its own column", async () => {
     const wrapper = await mounted();
-    expect(table(wrapper).props("columns").find((column) => column.key === "stage").label).toBe("Stage");
+    expect(table(wrapper).props("columns").find((column) => column.key === "stage").label).toBe("Deal stage") // n2: one name for it;
     expect(table(wrapper).props("columns").find((column) => column.key === "owner").width).toBe("max-content");
     const rowSelects = wrapper.findAllComponents({ name: "BasicSelect" }).filter((select) => select.attributes("data-testid") === "deal-row-stage");
     expect(rowSelects.every((select) => !select.props("floatingLabel"))).toBe(true);

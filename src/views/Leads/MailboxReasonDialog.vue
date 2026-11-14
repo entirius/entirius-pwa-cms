@@ -54,7 +54,7 @@ watch(
 
 async function submit() {
   if (!reason.value.trim()) {
-    error.value = t("common.required");
+    error.value = t("leads.deal.reason_required");
     return;
   }
   const call = resuming.value ? POST_MailboxResume : POST_MailboxPause;

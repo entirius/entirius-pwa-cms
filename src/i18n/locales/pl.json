@@ -4770,7 +4770,7 @@
       "rejected_n_many": "Odrzucono {count} szkiców.",
       "not_approved": "Niezatwierdzone: {count}.",
       "not_rejected": "Nieodrzucone: {count}.",
-      "empty": "Nie ma nic do zatwierdzenia",
+      "empty": "Brak szkiców do zatwierdzenia",
       "empty_filtered": "Żaden szkic nie pasuje do filtrów",
       "other_channel": "Kanał {channel} — edycja w panelu tego kanału",
       "log": "Pokaż dziennik",
@@ -4784,7 +4784,8 @@
       "selected": "zaznaczone",
       "clear": "Wyczyść zaznaczenie",
       "loading": "Ładowanie szkiców…",
-      "load_error": "Nie udało się wczytać szkiców — spróbuj ponownie."
+      "load_error": "Nie udało się wczytać szkiców — spróbuj ponownie.",
+      "empty_message": "Szkic trafia tutaj, gdy reguła etapu napisze mail do firmy, a mail czeka na człowieka."
     },
     "mailboxes": {
       "title": "Konta pocztowe",
@@ -5318,7 +5319,7 @@
       "loading": "Ładowanie transakcji…",
       "close_on": "zamknięcie {date}",
       "board_title": "Tablica transakcji",
-      "col_stage": "Etap",
+      "col_stage": "Etap transakcji",
       "column_empty": "Nic tu jeszcze nie ma",
       "board_desktop_only": "Tablica jest na większy ekran; oto transakcje jako lista.",
       "move_to": "Przenieś do…",
