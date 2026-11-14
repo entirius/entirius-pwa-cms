@@ -63,6 +63,16 @@ describe("Reply types and outbound helpers", () => {
     expect(plain.find('[data-testid="inbox-item-type"]').exists()).toBe(false);
   });
 
+  // P12 (walk 3): one "Replied" per row — the thread's state is left out when it says what the marker says
+  it("a replied conversation carries Replied once", () => {
+    const row = { id: 3, subject_ref: "x:1", subject: "Offer", replied: true, status: "replied", last_text: "Thanks", activity_at: "2026-11-12T09:00:00Z" };
+    const wrapper = mount(InboxRow, { props: { row }, global: { stubs } });
+    expect(wrapper.find('[data-testid="inbox-marker-replied"]').exists()).toBe(true);
+    expect(wrapper.find('[data-testid="inbox-item-thread-state"]').exists()).toBe(false);
+    const closed = mount(InboxRow, { props: { row: { ...row, status: "closed" } }, global: { stubs } });
+    expect(closed.find('[data-testid="inbox-item-thread-state"]').exists()).toBe(true);
+  });
+
   it("Why no mail? lists every reason of the gate", async () => {
     leads.GET_Mailable.mockResolvedValue({ data: { eligible: false, reasons: ["suppressed", "no_legal_basis"] } });
     const wrapper = mount(SendCheckDialog, { props: { companyId: 4, contact: null }, global: { stubs: { ...outboundStubs } } });

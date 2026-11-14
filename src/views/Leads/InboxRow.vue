@@ -32,7 +32,8 @@
           :data-testid="`inbox-marker-${marker}`"
         />
         <StatusBadge v-if="marker === 'draft' && row.draft.composed" size="sm" tone="neutral" :label="$t('leads.history.event_composed')" data-testid="inbox-item-composed" />
-        <StatusBadge v-else size="sm" :tone="threadTone(row.status)" :label="$t(`leads.thread.state.${row.status}`)" data-testid="inbox-item-thread-state" />
+        <!-- one badge per word: the thread's state only when it says something the marker does not -->
+        <StatusBadge v-else-if="threadState !== markerText" size="sm" :tone="threadTone(row.status)" :label="threadState" data-testid="inbox-item-thread-state" />
         <span v-if="detail" class="inbox-row__detail">{{ detail }}</span>
       </span>
     </router-link>
@@ -90,6 +91,7 @@ const markerText = computed(
       waiting: t("leads.inbox.marker_waiting"),
     })[marker.value]
 );
+const threadState = computed(() => t(`leads.thread.state.${props.row.status}`));
 const departure = computed(() => sendStateSentence(sendState(props.row.waiting?.next_slot)));
 
 const firstLine = (text) => splitQuote(text).own.split("\n").find((line) => line.trim()) || "";
