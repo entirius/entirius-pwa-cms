@@ -17,7 +17,7 @@ vi.mock("@/stores/notify", () => ({ useNotifyStore: () => notify }));
 import Stages from "@/views/Leads/Stages.vue";
 import { fieldError, leadsFrame, setControl } from "./leadsFrame";
 
-const stubs = { ...leadsFrame.stubs, draggable: { props: ["list"], template: "<div><slot v-for='(el, i) in list' name='item' :element='el' :index='i' /></div>" } };
+const stubs = leadsFrame.stubs;
 const stages = () => [{ id: 1, key: "new", label: "New", order: 0, kind: "open" }, { id: 2, key: "won", label: "Won", order: 10, kind: "won" }];
 
 describe("Leads Stages", () => {
@@ -200,5 +200,13 @@ describe("Leads Stages", () => {
     await flushPromises();
     expect(api.POST_Stage).not.toHaveBeenCalled();
     expect(fieldError(wrapper, "leads.stages.label")).toBe(t("leads.stages.label_required"));
+  });
+
+  // m7 (walk 3): Stages orders by the arrows only, as Deal stages do — no drag handle
+  it("has no drag handle", async () => {
+    const wrapper = mount(Stages, { global: { components: leadsFrame.components, stubs } });
+    await flushPromises();
+    expect(wrapper.find(".stage__handle").exists()).toBe(false);
+    expect(wrapper.findAll('[data-testid="stage-row"]').length).toBeGreaterThan(0);
   });
 });

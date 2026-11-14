@@ -11,68 +11,60 @@
     </template>
     <div class="flex-column gap-8">
       <p class="t-muted m-0" data-testid="stages-help">{{ $t("leads.stages.help") }}</p>
-      <draggable
-        :list="stages"
-        :disabled="readonly"
-        item-key="id"
-        handle=".stage__handle"
-        class="flex-column gap-3"
-      >
-        <template #item="{ element, index }">
-          <div class="stage" :data-stage="element.key" data-testid="stage-row">
-            <FontAwesomeIcon :icon="$icons.drag" class="stage__handle" />
-            <label>
-              <span class="visually-hidden">{{ $t("leads.stages.label") }}</span>
-              <BasicInput v-model="element.label" :maxlength="128" data-testid="stage-label" />
-            </label>
-            <span class="stage__tags">
-              <StatusBadge
-                tone="neutral"
-                size="sm"
-                :dot="false"
-                :label="`${element.key} · ${stageKindLabel(element.kind)}`"
-                :title="$t('leads.stages.key_help')"
-              />
-              <StatusBadge
-                v-if="rulesByStage[element.id]"
-                tone="info"
-                size="sm"
-                :dot="false"
-                :label="rulesLabel(rulesByStage[element.id])"
-                :title="rulesText(rulesByStage[element.id])"
-                data-testid="stage-rules"
-              />
-            </span>
-            <div class="stage__controls">
-              <IconButton mutates
-                icon="moveUp"
-                variant="outline"
-                :label="$t('leads.stages.up')"
-                :disabled="index === 0"
-                @click="shift(index, -1)"
-              />
-              <IconButton mutates
-                icon="moveDown"
-                variant="outline"
-                :label="$t('leads.stages.down')"
-                :disabled="index === stages.length - 1"
-                @click="shift(index, 1)"
-              />
-              <IconButton
-                mutates
-                icon="delete"
-                variant="danger"
-                :label="$t('leads.stages.delete')"
-                data-testid="stage-delete"
-                @click="askDelete(element)"
-              />
-            </div>
-            <p v-if="errors[element.id]" class="stage__error t-negative m-0" data-testid="stage-error">
-              {{ errors[element.id] }}
-            </p>
+      <!-- ordered by the arrows only, as Deal stages and Company types are -->
+      <div class="flex-column gap-3">
+        <div v-for="(element, index) in stages" :key="element.id" class="stage" :data-stage="element.key" data-testid="stage-row">
+          <label>
+            <span class="visually-hidden">{{ $t("leads.stages.label") }}</span>
+            <BasicInput v-model="element.label" :maxlength="128" data-testid="stage-label" />
+          </label>
+          <span class="stage__tags">
+            <StatusBadge
+              tone="neutral"
+              size="sm"
+              :dot="false"
+              :label="`${element.key} · ${stageKindLabel(element.kind)}`"
+              :title="$t('leads.stages.key_help')"
+            />
+            <StatusBadge
+              v-if="rulesByStage[element.id]"
+              tone="info"
+              size="sm"
+              :dot="false"
+              :label="rulesLabel(rulesByStage[element.id])"
+              :title="rulesText(rulesByStage[element.id])"
+              data-testid="stage-rules"
+            />
+          </span>
+          <div class="stage__controls">
+            <IconButton mutates
+              icon="moveUp"
+              variant="outline"
+              :label="$t('leads.stages.up')"
+              :disabled="index === 0"
+              @click="shift(index, -1)"
+            />
+            <IconButton mutates
+              icon="moveDown"
+              variant="outline"
+              :label="$t('leads.stages.down')"
+              :disabled="index === stages.length - 1"
+              @click="shift(index, 1)"
+            />
+            <IconButton
+              mutates
+              icon="delete"
+              variant="danger"
+              :label="$t('leads.stages.delete')"
+              data-testid="stage-delete"
+              @click="askDelete(element)"
+            />
           </div>
-        </template>
-      </draggable>
+          <p v-if="errors[element.id]" class="stage__error t-negative m-0" data-testid="stage-error">
+            {{ errors[element.id] }}
+          </p>
+        </div>
+      </div>
       <form v-if="!readonly" class="flex ai-st flex-wrap gap-5" data-testid="stage-add" @submit.prevent="add">
         <FormField :label="$t('leads.stages.key')" hint-level="important" :hint="$t('leads.stages.key_help')" required>
           <BasicInput v-model="draft.key" :maxlength="64" data-testid="stage-new-key" />
@@ -109,7 +101,6 @@
 
 <script setup>
 import { computed, onMounted, reactive, ref } from "vue";
-import draggable from "vuedraggable";
 import { t } from "@/i18n";
 import { DELETE_Stage, GET_Companies, GET_Rules, GET_Stages, PATCH_Stage, POST_Stage } from "@/api/leads/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
@@ -119,7 +110,7 @@ import { stageKindLabel } from "@/utils/leadsLabels";
 import { pluralKey } from "@/utils/plural";
 import { saveAction } from "./saveAction";
 
-// Stages admin: order by drag or up/down and rename inline, both kept until the header's Save (PATCH the changed labels,
+// Stages admin: order by up/down and rename inline, both kept until the header's Save (PATCH the changed labels,
 // then `order` per moved stage); delete with the 409 inline (L-18).
 const ORDER_STEP = 10;
 const KEY_PATTERN = /^[-a-zA-Z0-9_]+$/;
@@ -248,12 +239,9 @@ onMounted(() => Promise.all([load(), loadRules().catch(() => {})]));
 /* A grid, not a flex row: the controls line up down the list whatever the key tag is long. */
 .stage {
   display: grid;
-  grid-template-columns: auto minmax(8rem, 1fr) minmax(0, 20rem) auto;
+  grid-template-columns: minmax(8rem, 1fr) minmax(0, 20rem) auto;
   align-items: center;
   gap: var(--space-5);
-}
-.stage__handle {
-  cursor: grab;
 }
 .stage__tags {
   display: flex;
@@ -270,15 +258,11 @@ onMounted(() => Promise.all([load(), loadRules().catch(() => {})]));
 .stage__error {
   grid-column: 1 / -1;
 }
-/* Below tablet (as in LeadTypes): name beside the handle, then the tags, then the controls, right-aligned */
+/* Below tablet (as in LeadTypes): the name, then the tags, then the controls, right-aligned */
 @include max-tablet {
   .stage {
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
     row-gap: var(--space-2);
-  }
-  .stage__tags,
-  .stage__controls {
-    grid-column: 2;
   }
   .stage__tags {
     flex-wrap: wrap;
