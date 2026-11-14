@@ -5521,7 +5521,8 @@
     "templates": {
       "title": "Templates",
       "back": "Templates",
-      "empty": "No templates"
+      "empty": "No templates",
+      "description": "Templates come with the mail module. Open one to change its text; new ones are not added here."
     },
     "template": {
       "title": "Template",

@@ -1,7 +1,8 @@
 <template>
   <PageLayout data-testid="communicator-templates">
     <template #header>
-      <PageHeader :title="$t('communicator.templates.title')" :back="{ name: 'LeadsSettings' }" />
+      <!-- T9 (walk 4): why there is no Add -->
+      <PageHeader :title="$t('communicator.templates.title')" :description="$t('communicator.templates.description')" :back="{ name: 'LeadsSettings' }" />
     </template>
     <!-- C-13: the whole row opens the template; the key stays a link for the keyboard -->
     <DataTable

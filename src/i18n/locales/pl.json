@@ -5520,7 +5520,8 @@
     "templates": {
       "title": "Szablony",
       "back": "Szablony",
-      "empty": "Brak szablonów"
+      "empty": "Brak szablonów",
+      "description": "Szablony przychodzą z modułem poczty. Otwórz szablon, aby zmienić jego treść; nowych nie dodaje się tutaj."
     },
     "template": {
       "title": "Szablon",

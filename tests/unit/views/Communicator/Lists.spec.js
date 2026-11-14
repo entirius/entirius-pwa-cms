@@ -52,6 +52,13 @@ describe("Communicator lists", () => {
     expect(router.push).toHaveBeenCalledWith({ name: "CommunicatorTemplateEdit", params: { id: 3 } });
   });
 
+  // T9 (walk 4): one line under the heading says why there is no Add
+  it("templates say they come with the mail module and are changed, not added, here", async () => {
+    api.GET_Templates.mockResolvedValue({ data: { results: [] } });
+    const wrapper = await mountView(TemplateList);
+    expect(wrapper.get("header").attributes("description")).toBe("communicator.templates.description");
+  });
+
   it("a sequence key outside letters, digits, - and _ is refused before the create", async () => {
     const wrapper = await mountView(SequenceList);
     await wrapper.get('[data-testid="sequence-key"] input').setValue("bad key");
