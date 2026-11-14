@@ -58,6 +58,11 @@ describe("Leads → Deals board", () => {
     expect(byTestid(column(wrapper, "won"), "deals-column-all").exists()).toBe(false);
   });
 
+  it("the board has no Archived button, even when the backend archives deals", async () => {
+    leads.GET_DealBoard.mockResolvedValue({ data: { results: board().map((col) => ({ ...col, deals: col.deals.map((d) => ({ ...d, archived_at: null })) })) } });
+    expect(byTestid(await mounted(), "deals-archived").exists()).toBe(false);
+  });
+
   it("an empty column keeps a body that takes a drop and says it is empty", async () => {
     const wrapper = await mounted();
     const won = column(wrapper, "won");

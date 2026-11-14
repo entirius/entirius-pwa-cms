@@ -5396,7 +5396,9 @@
       "move_to": "Przenieś do…",
       "none_mine": "Nie masz otwartych transakcji",
       "show_all_deals": "Pokaż wszystkie transakcje",
-      "none_archived": "Brak zarchiwizowanych transakcji"
+      "none_archived": "Brak zarchiwizowanych transakcji",
+      "archived": "Zarchiwizowane",
+      "archived_title": "Zarchiwizowane transakcje"
     },
     "deal": {
       "title": "Transakcja",
@@ -5442,8 +5444,7 @@
     "deal_kind": {
       "open": "Otwarta",
       "won": "Wygrana",
-      "lost": "Przegrana",
-      "archived": "Zarchiwizowane"
+      "lost": "Przegrana"
     },
     "deal_stage_kind": {
       "open": "Otwarty",

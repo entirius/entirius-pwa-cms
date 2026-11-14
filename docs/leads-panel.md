@@ -117,11 +117,14 @@ shown through `formatCost`). The bell maps `leads.Deal:<id>` to the deal card.
 **Deal archive (django-leads with `archived_at`).** A won or lost deal's card has a more menu with Archive
 (`POST deals/<id>/archive/`, no confirm); the archived card shows a `neutral` "Archived" badge beside the kind, one
 primary Restore (`POST deals/<id>/restore/`), the stage select disabled and no Edit; History stays. Both calls return
-the deal, the card turns into its other state and toasts; a 409 is the API's sentence. Deals → Deal status gains
-"Archived" as its last option (`ARCHIVED_KIND` in `deals.js`, asked as `archived=true`, rows with the Won / Lost
-badge, empty "No archived deals"); the option and the menu appear only once a deal carries `archived_at` (an older
-backend shows neither). The board and the company card's Deals tab list no archived deal. History reads
-`deal_archived` / `deal_restored`. A read-only role sees neither Archive nor Restore (`mutates`).
+the deal, the card turns into its other state and toasts; a 409 is the API's sentence. The Deals list (not the
+board) has a secondary toggle "Archived" in its `ActionBar` (`pressed` → `aria-pressed`, also for a read-only role):
+pressed, the URL carries `?archived=1`, the list asks `archived=true`, the title reads "Archived deals", the status
+select is hidden (search, owner and stage stay), rows show the Won / Lost badge and the empty state is "No archived
+deals"; pressing it again drops `archived` and the list is as it was. The status filter is Open / Won / Lost. The
+button and the menu appear only once a deal carries `archived_at` (an older backend shows neither). The board and
+the company card's Deals tab list no archived deal. History reads `deal_archived` / `deal_restored`.
+A read-only role sees neither Archive nor Restore (`mutates`).
 
 ## Acceptance fixes, walk 3 (plan 26)
 

@@ -9,8 +9,6 @@ import { activityText } from "@/utils/leadsLabels";
 export const DEAL_KINDS = ["open", "won", "lost"];
 // The status Deals opens on: the list's default, never counted as a filter the person set.
 export const DEFAULT_DEAL_KIND = "open";
-// The Deals list's status value for archived deals (won or lost, out of every other list): asked as `archived=true`.
-export const ARCHIVED_KIND = "archived";
 
 const KIND_TONES = { open: "info", won: "positive", lost: "negative" };
 

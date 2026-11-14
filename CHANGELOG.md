@@ -7,9 +7,11 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - Leads panel, deal archive (django-leads with deal archiving): a won or lost deal is archived from its card's more
-  menu and restored from the archived card (read-only, one Restore); Deals → Deal status gains "Archived". The board
+  menu and restored from the archived card (read-only, one Restore); the Deals list shows the archived deals behind its own
+  "Archived" button (a toggle kept in the address, `?archived=1`), the status filter stays Open / Won / Lost. The board
   and the company card list no archived deal; History reads "Deal archived" and "Deal restored". An older backend
   shows neither.
+- `ActionBar`: an action's `pressed` makes its text button a toggle (`aria-pressed`, the `surface-hover` fill).
 - Leads panel, deals (django-leads 0.5.0): Deals (nav entry, also in the phone bar) lists the deals with search, owner
   chips, status, stage and expected-close filters and a stage select on every row; at a desk a board shows one column
   per deal stage with its count and totals per currency and moves deals by drag and drop. A lost stage always asks

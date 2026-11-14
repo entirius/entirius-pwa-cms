@@ -5397,7 +5397,9 @@
       "move_to": "Move to…",
       "none_mine": "No open deals of yours",
       "show_all_deals": "Show all deals",
-      "none_archived": "No archived deals"
+      "none_archived": "No archived deals",
+      "archived": "Archived",
+      "archived_title": "Archived deals"
     },
     "deal": {
       "title": "Deal",
@@ -5443,8 +5445,7 @@
     "deal_kind": {
       "open": "Open",
       "won": "Won",
-      "lost": "Lost",
-      "archived": "Archived"
+      "lost": "Lost"
     },
     "deal_stage_kind": {
       "open": "Open",
