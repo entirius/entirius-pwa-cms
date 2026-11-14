@@ -6091,5 +6091,11 @@
     "stored": "Mam ją zapisaną",
     "copied": "Skopiowano do schowka",
     "copy_manually": "Wartość jest zaznaczona — skopiuj ją przez Ctrl+C (⌘C na Macu)"
+  },
+  "not_found": {
+    "page_title": "Nie znaleziono strony",
+    "title": "Ta strona nie istnieje",
+    "go_to": "Przejdź do: {page}",
+    "home": "Przejdź do strony startowej"
   }
 }

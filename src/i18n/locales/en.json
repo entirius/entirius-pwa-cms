@@ -6092,5 +6092,11 @@
     "stored": "I have stored it",
     "copied": "Copied to the clipboard",
     "copy_manually": "The value is selected — copy it with Ctrl+C (⌘C on a Mac)"
+  },
+  "not_found": {
+    "page_title": "Page not found",
+    "title": "This page does not exist",
+    "go_to": "Go to {page}",
+    "home": "Go to the start page"
   }
 }

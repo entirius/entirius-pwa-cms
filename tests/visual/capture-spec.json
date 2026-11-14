@@ -1793,7 +1793,7 @@
     },
     {
       "id": "leads-lead-types",
-      "route": "/leads/settings/lead-types",
+      "route": "/leads/settings/company-types",
       "resolver": "fixed",
       "state": "default",
       "viewports": [

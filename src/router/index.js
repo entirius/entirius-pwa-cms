@@ -1180,8 +1180,9 @@ const routes = [
         component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/DealStages.vue"),
         meta: { requiresAuth: true, titleKey: "leads.deal_stages.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", moduleVersion: OUTBOUND, page: true, crumbParent: "LeadsSettings" },
       },
+      { path: "settings/lead-types", redirect: "/leads/settings/company-types" },
       {
-        path: "settings/lead-types",
+        path: "settings/company-types",
         name: "LeadsLeadTypes",
         component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/LeadTypes.vue"),
         meta: { requiresAuth: true, titleKey: "leads.lead_types.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", page: true },
@@ -1721,7 +1722,21 @@ const routes = [
   { path: "/docs", redirect: "/pages/doc" },
   { path: "/content", redirect: "/pages/content" },
   { path: "/layout-extender", redirect: "/pages/layout-extender" },
+
+  // Any unknown address: the not-found page inside the shell, with the side menu of the panel its first segment names.
+  {
+    path: "/:pathMatch(.*)*",
+    name: "NotFound",
+    component: () => import(/* webpackChunkName: "not-found" */ "../views/NotFound/NotFound.vue"),
+    meta: { requiresAuth: true, titleKey: "not_found.page_title" },
+  },
 ];
+
+// The panel whose root starts with the same first segment as `path` ("/leads/x" → leads), null outside every panel.
+function panelOfPath(path) {
+  const segment = (value) => value.split("/")[1];
+  return panels.find((panel) => segment(panel.root) === segment(path))?.idx ?? null;
+}
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
@@ -1737,6 +1752,8 @@ function moduleFallback(panel, path) {
 }
 
 router.beforeEach(async (to) => {
+  // the not-found page takes the panel of its address (set on every navigation: the record is the same for all)
+  if (to.name === "NotFound") to.meta.panel = panelOfPath(to.path);
   // Allow unauthenticated routes (password reset)
   if (to.meta?.requiresAuth === false) return true;
 

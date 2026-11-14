@@ -57,6 +57,7 @@ describe("Leads → Settings routing", () => {
       ["/communicator/sequences", "/leads/settings/sequences"],
       ["/communicator/settings", "/leads/settings/sending"],
       ["/leads/stages", "/leads/settings/stages"],
+      ["/leads/settings/lead-types", "/leads/settings/company-types"],
     ]) {
       await router.push(path);
       expect(router.currentRoute.value.path).toBe(target);
@@ -91,5 +92,15 @@ describe("Leads → Settings routing", () => {
       expect(router.currentRoute.value.name).not.toBe(name);
     }
     expect(mockIsModuleAtLeast).toHaveBeenCalledWith("communicator", "0.5.0");
+  });
+
+  // S5 (walk 3): an unknown address is the not-found page inside the shell of the panel its first segment names.
+  it("an unknown address resolves to the not-found page of its panel, outside a panel to none", async () => {
+    await router.push("/leads/no-such-page/7");
+    expect(router.currentRoute.value.name).toBe("NotFound");
+    expect(router.currentRoute.value.meta.panel).toBe("leads");
+    await router.push("/no-such-panel");
+    expect(router.currentRoute.value.name).toBe("NotFound");
+    expect(router.currentRoute.value.meta.panel).toBeNull();
   });
 });
