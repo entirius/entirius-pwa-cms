@@ -50,6 +50,8 @@ describe("Leads → Settings → Mailboxes", () => {
   it("lists every mailbox with its state, today's count and Pause or Resume", async () => {
     const wrapper = await mounted(Mailboxes);
     expect(wrapper.findAll('[data-testid="mailbox-row"]')).toHaveLength(2);
+    // N26: the address is a link — the keyboard's way into the form
+    expect(wrapper.findComponent('[data-testid="mailbox-link"]').props("to")).toMatchObject({ name: "LeadsMailboxEdit" });
     expect(byTestid(wrapper, "mailbox-today").text()).toBe("12 of 40");
     expect(byTestid(wrapper, "mailbox-pause").exists()).toBe(true);
     expect(byTestid(wrapper, "mailbox-resume").exists()).toBe(true);

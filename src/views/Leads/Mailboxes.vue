@@ -22,7 +22,8 @@
       <template #cell-address="{ row }">
         <span class="mailboxes__address flex-column">
           <span class="flex ai-ct flex-wrap gap-2">
-            {{ row.address }}
+            <!-- the row opens on a click; the address is the keyboard's way in (N26) -->
+            <router-link :to="{ name: 'LeadsMailboxEdit', params: { id: row.id } }" class="t-accent" data-testid="mailbox-link" @click.stop>{{ row.address }}</router-link>
             <StatusBadge v-if="row.is_default" tone="neutral" size="sm" :dot="false" :label="$t('leads.mailboxes.default')" />
           </span>
           <span v-if="row.display_name" class="t-muted fs-200">{{ row.display_name }}</span>

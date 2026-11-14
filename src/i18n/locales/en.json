@@ -5406,7 +5406,6 @@
       "key": "Key",
       "kind": "Kind",
       "language": "Language",
-      "version": "Current version id",
       "is_active": "Active",
       "versions": "Versions",
       "test_generate": "Test generate",

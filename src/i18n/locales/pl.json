@@ -5405,7 +5405,6 @@
       "key": "Klucz",
       "kind": "Rodzaj",
       "language": "Język",
-      "version": "Bieżąca wersja",
       "is_active": "Aktywny",
       "versions": "Wersje",
       "test_generate": "Testowe generowanie",
