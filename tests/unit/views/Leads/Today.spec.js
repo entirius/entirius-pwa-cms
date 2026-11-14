@@ -59,6 +59,7 @@ describe("Leads → Today", () => {
     desk.value = true;
     wrapper.findComponent('[data-testid="today-tasks"]').vm.$emit("row-click", wrapper.findComponent('[data-testid="today-tasks"]').props("rows")[0]);
     expect(nav.push).not.toHaveBeenCalled();
+    desk.value = false;
   });
 
   it("an overdue task: the red relative due, a link to its company's Tasks tab, Mark done", async () => {
