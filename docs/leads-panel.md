@@ -114,6 +114,15 @@ changed rows (the unsaved state beside it, a toast when they landed), reorder by
 holds deals") and Add. The deal board is titled "Deal board", so its crumbs never read "Deals / Deals". Amounts stay decimal strings (`BasicInput format="money"`,
 shown through `formatCost`). The bell maps `leads.Deal:<id>` to the deal card.
 
+**Deal archive (django-leads with `archived_at`).** A won or lost deal's card has a more menu with Archive
+(`POST deals/<id>/archive/`, no confirm); the archived card shows a `neutral` "Archived" badge beside the kind, one
+primary Restore (`POST deals/<id>/restore/`), the stage select disabled and no Edit; History stays. Both calls return
+the deal, the card turns into its other state and toasts; a 409 is the API's sentence. Deals → Deal status gains
+"Archived" as its last option (`ARCHIVED_KIND` in `deals.js`, asked as `archived=true`, rows with the Won / Lost
+badge, empty "No archived deals"); the option and the menu appear only once a deal carries `archived_at` (an older
+backend shows neither). The board and the company card's Deals tab list no archived deal. History reads
+`deal_archived` / `deal_restored`. A read-only role sees neither Archive nor Restore (`mutates`).
+
 ## Acceptance fixes, walk 3 (plan 26)
 
 - **Skip** (never Later) is the action that leaves a draft unsent, in Review (button, swipe hint, the toast "Skipped —
@@ -204,7 +213,7 @@ shown through `formatCost`). The bell maps `leads.Deal:<id>` to the deal card.
 
 - **History in words** (`activityText(activity)`, `src/utils/leadsLabels.js`): a line with a known `data.event`
   (reply, task_created / done / cancelled / reopened, composed, sequence_stopped / paused, deal_opened / moved / won /
-  lost / reopened / deleted, owner_set / cleared, a stage move with `from_label` / `to_label`) renders from
+  lost / reopened / deleted / archived / restored, owner_set / cleared, a stage move with `from_label` / `to_label`) renders from
   `leads.history.event_*`; the stored `message` only for an unknown line. Message and thread states are StatusBadges
   (`messageTone`, `threadTone`).
 - **Reply** (`reply-compose` on an inbound bubble, `src/utils/leadsReply.js`): ComposeDialog with the reply id, "Re:"
