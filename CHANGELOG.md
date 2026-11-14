@@ -149,6 +149,9 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- Leads panel: a card title no longer sits on the content under it — every titled card of the Leads views (Settings,
+  Reports, Sending health, Scoring, mailbox, deal and company cards, …) keeps 16 px between the title and its content,
+  with no doubled margins; the `BasicCard` boot is unchanged.
 - Deleting a route in the "Routes" window failed with a server error: the request went to an address without the
   closing slash, which the API refuses for DELETE and PUT. Every contentdb request built by `_METHOD_content` now ends
   in a slash (before the query string), which also covers deleting an attribute value, editing and deleting a

@@ -1,5 +1,5 @@
 <template>
-  <BasicCard :title="$t('leads.deals.title')" data-testid="company-deals">
+  <BasicCard :title="$t('leads.deals.title')" gap data-testid="company-deals">
     <template #actions>
       <ActionBar v-if="deals.length" :actions="actions" :labelled="false" />
     </template>

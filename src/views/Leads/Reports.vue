@@ -15,14 +15,14 @@
     <p v-else-if="error && !report" class="t-negative m-0" role="alert" data-testid="reports-error">{{ error }}</p>
     <EmptyState v-else-if="!report || !hasCompanies" icon="empty" size="md" :title="$t('leads.reports.empty')" data-testid="reports-empty" />
     <div v-else class="flex-column gap-8">
-      <BasicCard :title="$t('leads.reports.funnel')" data-testid="reports-funnel">
+      <BasicCard :title="$t('leads.reports.funnel')" gap data-testid="reports-funnel">
         <p class="t-secondary m-0">{{ $t("leads.reports.funnel_help") }}</p>
         <DataTable :columns="stageColumns" :rows="stageRows" row-key="key" :row-attrs="stageAttrs" data-testid="reports-stages" />
       </BasicCard>
-      <BasicCard :title="$t('leads.reports.moves')">
+      <BasicCard :title="$t('leads.reports.moves')" gap>
         <DataTable :columns="moveColumns" :rows="moveRows" row-key="pair" :row-attrs="() => ({ 'data-testid': 'reports-move-row' })" :empty-text="$t('leads.reports.no_moves')" data-testid="reports-moves" />
       </BasicCard>
-      <BasicCard :title="$t('leads.reports.origins')">
+      <BasicCard :title="$t('leads.reports.origins')" gap>
         <DataTable :columns="originColumns" :rows="originRows" row-key="key" data-testid="reports-origins" />
       </BasicCard>
     </div>

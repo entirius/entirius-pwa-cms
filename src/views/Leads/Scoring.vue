@@ -24,8 +24,8 @@
     <Loader v-if="loading" block />
     <div v-else class="flex-column gap-8">
       <p v-if="error" class="t-negative m-0" role="alert" data-testid="scoring-error">{{ error }}</p>
-      <BasicCard :title="$t('leads.scoring.segments')">
-        <p class="t-secondary m-0 mb-5" data-testid="scoring-segments-help">{{ $t("leads.scoring.segments_help") }}</p>
+      <BasicCard :title="$t('leads.scoring.segments')" gap>
+        <p class="t-secondary m-0" data-testid="scoring-segments-help">{{ $t("leads.scoring.segments_help") }}</p>
         <div class="flex ai-fe flex-wrap gap-5">
           <FormField v-for="level in LEVELS" :key="level.key" :label="$t('leads.scoring.from', { segment: level.segment })" :error="level.key === 'L' ? orderError : ''">
             <NumberInput v-model="form.thresholds[level.key]" :min="0" :max="100000" :disabled="readonly" :data-testid="`scoring-threshold-${level.key.toLowerCase()}`" />
@@ -33,7 +33,7 @@
           <span class="t-muted">{{ $t("leads.scoring.below") }}</span>
         </div>
       </BasicCard>
-      <BasicCard v-for="list in LISTS" :key="list.key" :title="$t(list.title)" :data-testid="list.testid">
+      <BasicCard v-for="list in LISTS" :key="list.key" :title="$t(list.title)" gap :data-testid="list.testid">
         <template v-if="!readonly" #actions>
           <BasicButton size="sm" :data-testid="list.addTestid" @click="add(list.key)">{{ $t(list.add) }}</BasicButton>
         </template>

@@ -1,5 +1,5 @@
 <template>
-  <BasicCard :title="$t('leads.score.title')" data-testid="company-score">
+  <BasicCard :title="$t('leads.score.title')" gap data-testid="company-score">
     <template v-if="!noProfile" #actions>
       <BasicButton mutates size="sm" :loading="busy" data-testid="company-score-now" @click="scoreNow">{{ $t("leads.score.score_now") }}</BasicButton>
     </template>

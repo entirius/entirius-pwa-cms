@@ -11,7 +11,7 @@
     <Loader v-if="loading" block />
     <div v-else class="flex-column gap-8">
       <p v-if="stages.length && !closable" class="t-warning m-0" data-testid="deal-stages-cannot-close">{{ $t("leads.deals.cannot_close") }}</p>
-      <BasicCard :title="$t('leads.deal_stages.stages')">
+      <BasicCard :title="$t('leads.deal_stages.stages')" gap>
         <EmptyState v-if="!stages.length" icon="empty" size="sm" :title="$t('leads.deal_stages.empty')" data-testid="deal-stages-empty" />
         <div v-else class="flex-column gap-3">
           <template v-for="(element, index) in stages" :key="element.id">
@@ -32,7 +32,7 @@
           </template>
         </div>
       </BasicCard>
-      <BasicCard v-if="!readonly" :title="$t('leads.deal_stages.add_title')">
+      <BasicCard v-if="!readonly" :title="$t('leads.deal_stages.add_title')" gap>
         <form class="flex ai-st flex-wrap gap-5" @submit.prevent="add">
           <FormField :label="$t('leads.deal_stages.key')" required :error="errors.key || ''">
             <BasicInput v-model="draft.key" format="key" :maxlength="64" data-testid="deal-stage-new-key" />

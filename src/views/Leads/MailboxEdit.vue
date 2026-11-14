@@ -20,7 +20,7 @@
       <p v-if="stateKey === 'needs_login'" class="t-negative m-0" role="alert">{{ $t("leads.mailbox.needs_login") }}</p>
       <p v-if="error" class="t-negative m-0" role="alert" data-testid="mailbox-error">{{ error }}</p>
       <!-- the test result opens the form: Test login sits in the header, its answer right under it -->
-      <BasicCard v-if="test" :title="$t('leads.mailbox.login_test')" data-testid="mailbox-test-result">
+      <BasicCard v-if="test" :title="$t('leads.mailbox.login_test')" gap data-testid="mailbox-test-result">
         <ul class="mailbox-test m-0 flex-column gap-3">
           <li v-for="part in TEST_PARTS" :key="part" class="flex ai-ct flex-wrap gap-3">
             <span class="fw-600">{{ part.toUpperCase() }}</span>
@@ -30,7 +30,7 @@
         </ul>
       </BasicCard>
 
-      <BasicCard :title="$t('leads.mailbox.sender')">
+      <BasicCard :title="$t('leads.mailbox.sender')" gap>
         <div class="form-grid">
           <FormField :label="$t('leads.mailbox.address')" required :hint="$t('leads.mailbox.address_hint')" hint-level="important" :error="fieldError('address')">
             <BasicInput v-model="form.address" format="email" :maxlength="254" data-testid="mailbox-address" />
@@ -48,7 +48,7 @@
         </div>
       </BasicCard>
 
-      <BasicCard :title="$t('leads.mailbox.sending')">
+      <BasicCard :title="$t('leads.mailbox.sending')" gap>
         <div class="form-grid">
           <BasicSwitch v-model="form.send_enabled" class="form-grid__wide" :label="$t('leads.mailbox.send_enabled')" data-testid="mailbox-send-enabled" />
           <FormField :label="$t('leads.mailbox.smtp_host')" required :error="fieldError('smtp_host')">
@@ -69,7 +69,7 @@
         </div>
       </BasicCard>
 
-      <BasicCard :title="$t('leads.mailbox.replies')">
+      <BasicCard :title="$t('leads.mailbox.replies')" gap>
         <div class="form-grid">
           <BasicSwitch v-model="form.receive_enabled" class="form-grid__wide" :label="$t('leads.mailbox.receive_enabled')" data-testid="mailbox-receive-enabled" />
           <FormField :label="$t('leads.mailbox.imap_host')" :error="fieldError('imap_host')">
@@ -91,7 +91,7 @@
         </div>
       </BasicCard>
 
-      <BasicCard :title="$t('leads.mailbox.limits')">
+      <BasicCard :title="$t('leads.mailbox.limits')" gap>
         <div class="form-grid">
           <FormField :label="$t('leads.mailbox.daily_cap')" :hint="$t('leads.mailbox.cap_hint')" hint-level="important" :error="fieldError('daily_cap')">
             <NumberInput v-model="form.daily_cap" :min="0" data-testid="mailbox-daily-cap" />

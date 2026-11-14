@@ -16,7 +16,7 @@
         {{ $t("leads.moves.no_stages") }} ·
         <router-link :to="{ name: 'LeadsStages' }" class="t-accent">{{ $t("nav.leads_stages") }}</router-link>
       </p>
-      <BasicCard v-for="event in EVENTS" :key="event" :title="eventTitle(event)" data-testid="moves-card" :data-event="event">
+      <BasicCard v-for="event in EVENTS" :key="event" :title="eventTitle(event)" gap data-testid="moves-card" :data-event="event">
         <template v-if="typeOf(event) || canReset(event)" #actions>
           <div class="flex ai-ct gap-3">
             <StatusBadge v-if="typeOf(event)" :tone="replyTone(typeOf(event))" :label="$t(`leads.reply_type.${typeOf(event)}`)" />

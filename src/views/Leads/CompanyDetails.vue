@@ -1,5 +1,5 @@
 <template>
-  <BasicCard :title="$t('leads.company.details')" data-testid="company-details">
+  <BasicCard :title="$t('leads.company.details')" gap data-testid="company-details">
     <template #actions>
       <ActionBar v-if="editing" :labelled="false">
         <BasicButton variant="secondary" :disabled="saving" data-testid="company-details-cancel" @click="editing = false">

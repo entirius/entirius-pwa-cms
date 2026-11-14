@@ -56,7 +56,7 @@
           <BasicCheckbox v-model="draft.require_email" :disabled="readonly" data-testid="rule-require-email">{{ $t("leads.rules.require_email") }}</BasicCheckbox>
           <BasicSwitch v-model="draft.is_active" :label="$t('leads.rules.active')" :disabled="readonly" />
         </div>
-        <BasicCard :title="$t('leads.rules.conditions')">
+        <BasicCard :title="$t('leads.rules.conditions')" gap>
           <template v-if="!readonly" #actions>
             <BasicButton size="sm" data-testid="rule-add-condition" @click="draft.conditions.push({ field: '', op: 'eq', value: null })">
               {{ $t("leads.rules.add_condition") }}
@@ -76,7 +76,7 @@
             />
           </div>
         </BasicCard>
-        <BasicCard v-if="runs.length" :title="$t('leads.rules.last_runs')" data-testid="rule-runs">
+        <BasicCard v-if="runs.length" :title="$t('leads.rules.last_runs')" gap data-testid="rule-runs">
           <ul class="m-0 flex-column gap-1 rules__runs">
             <li v-for="run in runs" :key="run.id" data-testid="rule-run">
               {{ formatTime(run.fired_at) }} ·

@@ -16,7 +16,7 @@
         <SegmentedControl v-model="range" :options="ranges" :aria-label="$t('leads.health.range')" data-testid="health-range" />
       </ReadonlyOff>
 
-      <BasicCard :title="$t('leads.health.channel')" data-testid="health-channel">
+      <BasicCard :title="$t('leads.health.channel')" gap data-testid="health-channel">
         <p class="m-0 flex flex-wrap ai-ct gap-5">
           <span>{{ $t("leads.health.col_sent") }}: {{ channel.sent }}</span>
           <span v-for="rate in RATES" :key="rate.key" class="flex ai-ct gap-2">
@@ -26,7 +26,7 @@
         </p>
       </BasicCard>
 
-      <BasicCard :title="$t('leads.health.mailboxes')" data-testid="health-mailboxes">
+      <BasicCard :title="$t('leads.health.mailboxes')" gap data-testid="health-mailboxes">
         <p v-if="!rows.length" class="m-0">
           {{ $t("leads.health.no_mailbox") }} ·
           <router-link :to="{ name: 'LeadsMailboxes' }" class="t-accent">{{ $t("leads.mailboxes.title") }}</router-link>
@@ -51,7 +51,7 @@
         </DataTable>
       </BasicCard>
 
-      <BasicCard :title="$t('leads.health.policy')" data-testid="health-policy">
+      <BasicCard :title="$t('leads.health.policy')" gap data-testid="health-policy">
         <div class="form-grid">
           <BasicSwitch v-model="policy.enabled" class="form-grid__wide" :label="$t('leads.health.enabled')" data-testid="health-enabled" />
           <p v-if="!policy.enabled" class="form-grid__wide t-muted m-0">{{ $t("leads.health.off") }}</p>
@@ -62,13 +62,13 @@
         </div>
       </BasicCard>
 
-      <BasicCard :title="$t('leads.health.log')" data-testid="health-log">
+      <BasicCard :title="$t('leads.health.log')" gap data-testid="health-log">
         <DataTable :columns="logColumns" :rows="logRows" row-key="id" :row-attrs="() => ({ 'data-testid': 'health-log-row' })" :empty-text="$t('leads.health.log_empty')">
           <template #cell-action="{ row }">
             <StatusBadge :tone="row.action === 'pause' ? 'warning' : 'positive'" :label="$t(`leads.mailboxes.${row.action}`)" />
           </template>
         </DataTable>
-        <BasicButton v-if="logNext" class="mt-5" data-testid="health-log-more" @click="moreLog">{{ $t("leads.health.show_more") }}</BasicButton>
+        <BasicButton v-if="logNext" data-testid="health-log-more" @click="moreLog">{{ $t("leads.health.show_more") }}</BasicButton>
       </BasicCard>
     </div>
     <MailboxReasonDialog :mailbox="reasonFor" @close="reasonFor = null" @done="refreshReport" />

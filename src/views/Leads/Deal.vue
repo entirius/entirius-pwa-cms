@@ -55,7 +55,7 @@
       <ReadonlyArea v-if="tasksOn" :area="AREAS.TODO_TASKS">
         <TasksTab :key="deal.id" :company="company" :deal="deal" />
       </ReadonlyArea>
-      <BasicCard :title="$t('leads.deal.history')" data-testid="deal-history">
+      <BasicCard :title="$t('leads.deal.history')" gap data-testid="deal-history">
         <ul class="deal__events flex-column gap-2 m-0">
           <li v-for="entry in history" :key="entry.id" data-testid="timeline-event">
             <span class="t-muted">{{ formatTime(entry.created_at) }}</span> {{ entry.text }}

@@ -32,7 +32,7 @@
     </template>
 
     <div class="flex-column gap-8">
-      <BasicCard v-if="countersOn" :title="$t('leads.today.waiting')" data-testid="today-waiting">
+      <BasicCard v-if="countersOn" :title="$t('leads.today.waiting')" gap data-testid="today-waiting">
         <div class="today__counters flex flex-wrap gap-6">
           <template v-for="counter in counters" :key="counter.key">
             <router-link v-if="counter.count" class="today__counter t-accent flex ai-ct gap-2" :to="counter.to" :data-testid="counter.testid">

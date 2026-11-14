@@ -19,7 +19,7 @@
         <p class="m-0" data-testid="classify-toolbox-off">{{ $t("leads.classify.toolbox_off") }}</p>
       </template>
       <p v-if="!form.is_active" class="m-0" data-testid="classify-inactive">{{ $t("leads.classify.inactive") }}</p>
-      <BasicCard :title="$t('leads.classify.model_card')">
+      <BasicCard :title="$t('leads.classify.model_card')" gap>
         <div class="form-grid">
           <BasicSwitch v-model="form.is_active" class="form-grid__wide" :label="$t('leads.classify.active')" data-testid="classify-active" />
           <FormField :label="$t('leads.classify.model')" required :error="fieldError('model')">
@@ -33,7 +33,7 @@
           </FormField>
         </div>
       </BasicCard>
-      <BasicCard :title="$t('leads.classify.prompt_card')">
+      <BasicCard :title="$t('leads.classify.prompt_card')" gap>
         <FormField :label="$t('leads.classify.prompt')" required :error="fieldError('prompt_text')">
           <BasicTextarea v-model="form.prompt_text" :rows="14" data-testid="classify-prompt" />
         </FormField>

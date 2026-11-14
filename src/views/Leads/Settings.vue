@@ -7,7 +7,7 @@
       <BasicCard
         v-for="group in groups"
         :key="group.key"
-        :title="$t(`leads.settings.groups.${group.key}`)"
+        :title="$t(`leads.settings.groups.${group.key}`)" gap
         :data-testid="`settings-group-${group.key}`"
       >
         <div class="flex-column gap-3">
