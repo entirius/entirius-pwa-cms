@@ -114,6 +114,8 @@ const props = defineProps({
   composed: { type: Array, default: () => [] },
   // the company card turns it off while earlier conversations hold the mail: one empty state, only when there is none
   showEmpty: { type: Boolean, default: true },
+  // the thread's follow-up sequence state (`stopped_at`, `stop_reason`): what was applied after its newest reply
+  sequence: { type: Object, default: null },
 });
 const emit = defineEmits(["confirm-optout", "sent"]);
 
@@ -191,14 +193,19 @@ function tagOf(item, out, index, firstOut) {
 // plans are read once per channel, a refusal leaves the line out). Confidence shows below 100 % only.
 const munin = useMuninStore();
 const plans = ref({});
+// The sequence stops a reply caused (a finished or bounced sequence is no answer to a reply).
+const REPLY_STOPS = { replied: "stop", optout: "stop", paused: "pause" };
 const SEQUENCE_STEP = { stop: "leads.history.seq_stopped", pause: "leads.history.seq_paused" };
 
 // One phrase per date of a pause: the bubble says "Back on <return date>"; the date the sequence resumes is History's
 // ("The sequence resumes on <date>"), so the Next line names the step without a date.
+// A reply without a class (or without a plan for it) says what was applied to the sequence: the newest reply only, from
+// the thread's sequence state.
 function nextOf(entry) {
   const plan = entry.reply && plans.value[entry.reply.intent];
-  if (!plan) return "";
-  return t("leads.history.next", { steps: t(SEQUENCE_STEP[plan.sequence] || "leads.history.seq_paused") });
+  if (plan) return t("leads.history.next", { steps: t(SEQUENCE_STEP[plan.sequence] || "leads.history.seq_paused") });
+  const step = entry === newestReply.value && props.sequence?.stopped_at && REPLY_STOPS[props.sequence.stop_reason];
+  return step ? t("leads.history.next", { steps: t(SEQUENCE_STEP[step]) }) : "";
 }
 
 function sureOf(entry) {
@@ -215,6 +222,8 @@ onMounted(async () => {
 const canReply = computed(
   () => Boolean(props.company) && !props.company.do_not_contact && outboundOn(munin, "leads") && outboundOn(munin, "communicator")
 );
+
+const newestReply = computed(() => entries.value.findLast((entry) => entry.side === "in") || null);
 
 const entries = computed(() => {
   // the first mail that went out (a skipped draft before it is no step of the sequence)

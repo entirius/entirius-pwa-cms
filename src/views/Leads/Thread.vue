@@ -31,6 +31,7 @@
         :composed="composedIds"
         :show-empty="!older.count"
         :messages="newest?.timeline || []"
+        :sequence="newest?.sequence"
         :optouts="newest?.optouts || []"
         :waiting="newest ? waitingOf(waiting, newest.id) : []"
         @confirm-optout="confirmOptout"

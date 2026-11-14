@@ -28,6 +28,7 @@
     <ThreadTimeline
       v-if="open && detail"
       :messages="detail.timeline || []"
+      :sequence="detail.sequence"
       :optouts="detail.optouts"
       :waiting="waiting"
       :busy="optoutBusy"
