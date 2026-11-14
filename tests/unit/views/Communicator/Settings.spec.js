@@ -74,7 +74,7 @@ describe("Communicator settings", () => {
   it.each(["5:00 PM", "24:00", "08:60", "8:00"])("a window hour %s is refused before the save", async (value) => {
     const wrapper = await mountPolicy();
     await timeField(wrapper, "end").setValue(value);
-    await wrapper.get("form").trigger("submit");
+    await wrapper.vm.save();
     expect(api.PUT_Policy).not.toHaveBeenCalled();
     expect(fieldError(wrapper, "end")).toBe(t("communicator.policy.time_invalid"));
     expect(timeField(wrapper, "end").attributes("aria-invalid")).toBe("true");
@@ -86,7 +86,7 @@ describe("Communicator settings", () => {
   it("a corrected hour clears its field error", async () => {
     const wrapper = await mountPolicy();
     await timeField(wrapper, "start").setValue("8:00");
-    await wrapper.get("form").trigger("submit");
+    await wrapper.vm.save();
     expect(fieldError(wrapper, "start")).toBe(t("communicator.policy.time_invalid"));
     await timeField(wrapper, "start").setValue("08:00");
     expect(fieldError(wrapper, "start")).toBeNull();
@@ -96,7 +96,7 @@ describe("Communicator settings", () => {
     api.PUT_Policy.mockResolvedValue({ data: POLICY });
     const wrapper = await mountPolicy();
     await timeField(wrapper, "end").setValue(value);
-    await wrapper.get("form").trigger("submit");
+    await wrapper.vm.save();
     await flushPromises();
     expect(api.PUT_Policy.mock.calls[0][0].windows[0]).toEqual({ start_time: "08:00", end_time: value, order: 0 });
   });
@@ -104,7 +104,7 @@ describe("Communicator settings", () => {
   it("sandbox without a mailbox is refused in the form (C-30)", async () => {
     const wrapper = await mountChannel();
     wrapper.findComponent(stubs.SegmentedControl).vm.$emit("update:modelValue", "sandbox");
-    await wrapper.find("form").trigger("submit");
+    await wrapper.vm.save();
     expect(api.PATCH_Channel).not.toHaveBeenCalled();
     expect(wrapper.find('[data-testid="channel-error"]').text()).toBe("Sandbox mode needs a sandbox mailbox");
   });
@@ -115,7 +115,7 @@ describe("Communicator settings", () => {
     wrapper.findComponent(stubs.SegmentedControl).vm.$emit("update:modelValue", "live");
     await flushPromises();
     expect(wrapper.find('[data-testid="channel-live-gate"]').text()).toBe("communicator.channel.live_gate");
-    await wrapper.find("form").trigger("submit");
+    await wrapper.vm.save();
     await flushPromises();
     expect(api.PATCH_Channel).toHaveBeenCalledWith({ mode: "live", sandbox_mailbox: "" });
     expect(wrapper.find('[data-testid="channel-error"]').text()).toBe("live mode needs live_enabled");

@@ -1,6 +1,6 @@
 <template>
   <BasicCard :title="$t('communicator.footer.title')" data-testid="settings-footer">
-    <form class="flex-column gap-4" @submit.prevent="save">
+    <div class="flex-column gap-4">
       <p class="t-muted m-0">{{ $t("communicator.footer.help") }}</p>
       <p v-if="loadError" class="t-muted m-0" role="status" data-testid="footer-load-error">{{ $t("communicator.footer.load_error") }}</p>
       <!-- a save or remove in flight is bound to its language: the switch waits for it -->
@@ -19,18 +19,15 @@
       </FormField>
       <p v-if="error" class="t-negative m-0" role="alert" data-testid="footer-error">{{ error }}</p>
       <p v-else-if="html && !hasPlaceholder" class="t-muted m-0" data-testid="footer-hint">{{ $t("communicator.footer.needs_legal") }}</p>
-      <div class="flex jc-fe flex-wrap gap-3">
-        <BasicButton v-if="saved" mutates variant="danger" :disabled="busy" data-testid="footer-remove" @click="removing = true">
+      <div v-if="saved" class="flex jc-fe flex-wrap gap-3">
+        <BasicButton mutates variant="danger" :disabled="busy" data-testid="footer-remove" @click="removing = true">
           {{ $t("communicator.footer.remove") }}
-        </BasicButton>
-        <BasicButton variant="primary" type="submit" mutates :disabled="busy || !html.trim()" data-testid="footer-save">
-          {{ $t("communicator.template.save") }}
         </BasicButton>
       </div>
       <p class="footer__preview-title m-0">{{ $t("communicator.footer.preview") }}</p>
       <!-- unsaved HTML is not sanitised yet: the preview runs in an empty sandbox (no scripts, no same origin) -->
       <iframe class="footer__preview" sandbox="" :srcdoc="previewDoc" :title="$t('communicator.footer.preview')" data-testid="footer-preview"></iframe>
-    </form>
+    </div>
     <ConfirmDialog
       :open="Boolean(switchTo)"
       :title="$t('leads.review.discard_title')"
@@ -116,14 +113,19 @@ async function save() {
     const { data } = await PUT_Footer(code, html.value);
     footers.value = { ...footers.value, [code]: data.html };
     if (language.value === code) html.value = data.html;
-    notify.spawnNotification({ msg: t("communicator.footer.saved") });
+    return true;
   } catch (err) {
     handleApiError(err);
     error.value = getFieldError("html")?.msg || extractApiMessage(err, t("leads.review.error"));
+    return false;
   } finally {
     busy.value = false;
   }
 }
+
+// The page's one Save (N27): an emptied field is no save (Remove footer clears one), so it does not count as a change.
+const changed = computed(() => dirty.value && Boolean(html.value.trim()));
+defineExpose({ dirty: changed, save });
 
 // No footer = the default language's footer, else the legal text alone (the server's fallback).
 async function remove() {

@@ -56,11 +56,10 @@ describe("Send settings — mail footer", () => {
     const wrapper = await mountFooter();
     await wrapper.get('[data-testid="footer-lang-pl"]').trigger("click");
     await wrapper.get('[data-testid="footer-html"] textarea').setValue("<p onclick='x()'>Clean</p>{{ legal }}");
-    await wrapper.get("form").trigger("submit");
+    wrapper.vm.save();
     await flushPromises();
     expect(api.PUT_Footer).toHaveBeenCalledWith("pl", "<p onclick='x()'>Clean</p>{{ legal }}");
     expect(wrapper.get('[data-testid="footer-html"] textarea').element.value).toBe("<p>Clean</p>{{ legal }}");
-    expect(notify.spawnNotification).toHaveBeenCalled();
   });
 
   it("a footer without {{ legal }} gets a hint, and the server's refusal shows inline", async () => {
@@ -72,7 +71,7 @@ describe("Send settings — mail footer", () => {
     const wrapper = await mountFooter();
     await wrapper.get('[data-testid="footer-html"] textarea').setValue("<p>No legal</p>");
     expect(wrapper.find('[data-testid="footer-hint"]').exists()).toBe(true);
-    await wrapper.get("form").trigger("submit");
+    wrapper.vm.save();
     await flushPromises();
     expect(wrapper.get('[data-testid="footer-error"]').text()).toBe("The footer must contain {{ legal }} exactly once.");
   });
@@ -83,7 +82,8 @@ describe("Send settings — mail footer", () => {
     const wrapper = await mountFooter();
     await wrapper.get('[data-testid="footer-lang-pl"]').trigger("click");
     await wrapper.get('[data-testid="footer-html"] textarea').setValue("<p>Nowa</p>{{ legal }}");
-    await wrapper.get("form").trigger("submit");
+    wrapper.vm.save();
+    await wrapper.vm.$nextTick();
     expect(wrapper.get('[data-testid="footer-lang-en"]').element.disabled).toBe(true);
     answer({ data: { language: "pl", html: "<p>Nowa</p>{{ legal }}" } });
     await flushPromises();
@@ -118,7 +118,6 @@ describe("Send settings — mail footer", () => {
     expect(api.DELETE_Footer).toHaveBeenCalledWith("pl");
     expect(wrapper.get('[data-testid="footer-html"] textarea').element.value).toBe("");
     expect(wrapper.find('[data-testid="footer-remove"]').exists()).toBe(false);
-    expect(notify.spawnNotification).toHaveBeenCalled();
   });
 
   // C-29: an empty field previews the mail without a footer — the sample legal text alone, never a blank page.

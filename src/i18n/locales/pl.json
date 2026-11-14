@@ -1638,7 +1638,8 @@
     "title": "Niezapisane zmiany",
     "message": "Masz niezapisane zmiany. Co chcesz zrobić?",
     "save_and_leave": "Zapisz i opuść",
-    "discard": "Odrzuć zmiany"
+    "discard": "Odrzuć zmiany",
+    "nothing": "Nie ma nic do zapisania"
   },
   "authors": {
     "title": "Autorzy",
@@ -5518,7 +5519,6 @@
       "placeholder": "<p>Anna Nowak · Przykładowa sp. z o.o.</p>\n{{ legal }}",
       "needs_legal": "Dodaj {{ legal }} w miejscu tekstu prawnego — bez niego stopka nie zostanie zapisana.",
       "preview": "Podgląd (przykładowy tekst prawny)",
-      "saved": "Stopka zapisana — użyje jej następny mail",
       "sample_legal": "Administratorem Twoich danych jest Przykładowa sp. z o.o. Piszemy na podstawie prawnie uzasadnionego interesu.\n\nOdpisz „nie”, a nie napiszemy ponownie.",
       "discard_confirm": "Zmiana języka odrzuci niezapisane zmiany w tej stopce.",
       "remove": "Usuń stopkę",

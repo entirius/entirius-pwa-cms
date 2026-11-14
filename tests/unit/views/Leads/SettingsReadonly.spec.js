@@ -124,7 +124,7 @@ describe("Leads settings sections, read-only", () => {
 
   it("Sending: no Save of the hours, the sender or the footer, no footer removal", async () => {
     backend.outbound = true;
-    expectReadonly(await both(CommunicatorSettings, "communicator.settings"), ["policy-save", "channel-save", "footer-save", "footer-remove"]);
+    expectReadonly(await both(CommunicatorSettings, "communicator.settings"), ["settings-save", "policy-add-window", "footer-remove"]);
     backend.outbound = false;
   });
 });

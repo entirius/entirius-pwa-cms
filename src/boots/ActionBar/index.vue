@@ -19,6 +19,7 @@
           :form="action.form"
           :icon="action.icon"
           :disabled="action.disabled"
+          :title="action.title"
           :loading="action.loading"
           :aria-expanded="action.expanded === undefined ? undefined : String(action.expanded)"
           :data-testid="action.testid"
@@ -40,8 +41,9 @@ const ROLES = ["utility", "secondary", "danger", "primary"];
 <script setup>
 // Page and dialog actions in R5 order (docs/ui-rules.md): icon utilities · secondary · danger · primary, right-aligned,
 // the one primary rightmost. `actions` = [{ key, label, role, onClick?, form?, icon?, variant?, disabled?, loading?,
-// expanded?, testid? }] (`onClick` or `form`) (`variant` = the IconButton variant of a utility, `outline` by default; `danger` for an icon-only delete;
-// `expanded` = aria-expanded of a text button that shows or hides a section; `form` = the id of a form the button
+// expanded?, title?, testid? }] (`onClick` or `form`) (`variant` = the IconButton variant of a utility, `outline` by default; `danger` for an icon-only delete;
+// `expanded` = aria-expanded of a text button that shows or hides a section; `title` = why a disabled button is
+// disabled ("Nothing to save"); `form` = the id of a form the button
 // submits from outside it — native checks, the form's own submit handler, and Enter in a field presses it); a
 // caller with its own controls passes them in the default slot, already in R5 order. Below the shell breakpoint the
 // bar takes its own row with the visible label "Akcje" (Figma S7). On a read-only page (useReadonly, plan 19) only the

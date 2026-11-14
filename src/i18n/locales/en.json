@@ -1639,7 +1639,8 @@
     "title": "Unsaved changes",
     "message": "You have unsaved changes. What would you like to do?",
     "save_and_leave": "Save & leave",
-    "discard": "Discard changes"
+    "discard": "Discard changes",
+    "nothing": "Nothing to save"
   },
   "authors": {
     "title": "Authors",
@@ -5519,7 +5520,6 @@
       "placeholder": "<p>Anna Nowak · Example Ltd</p>\n{{ legal }}",
       "needs_legal": "Add {{ legal }} where the legal text goes — the footer is refused without it.",
       "preview": "Preview (sample legal text)",
-      "saved": "Footer saved — the next mail uses it",
       "sample_legal": "The controller of your data is Example Ltd. We write under legitimate interest.\n\nReply “no” and we will not write again.",
       "discard_confirm": "Switching the language discards your unsaved changes to this footer.",
       "remove": "Remove footer",
