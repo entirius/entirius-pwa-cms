@@ -5120,7 +5120,8 @@
       "empty_message": "Upcoming: {count}",
       "empty_list": "No tasks here",
       "no_tasks_module": "Tasks are not available on this installation",
-      "nothing": "Nothing to show here"
+      "nothing": "Nothing to show here",
+      "empty_done": "Nothing done yet — a task lands here when you mark it done"
     },
     "task": {
       "add": "Add task",

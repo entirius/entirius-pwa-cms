@@ -116,6 +116,22 @@ describe("Leads → Today", () => {
     expect(todo.GET_Tasks.mock.lastCall[0]).not.toHaveProperty("owner");
   });
 
+  // k2 (walk 4): the Done chip says how it fills; a reopened task counts under Due now at once
+  it("Done says how it fills; Reopen refreshes the Due now count", async () => {
+    const wrapper = await mounted();
+    await byTestid(wrapper, "today-chip-done").trigger("click");
+    await flushPromises();
+    expect(wrapper.findComponent('[data-testid="today-tasks"]').props("emptyText")).toBe("leads.today.empty_done");
+    todo.GET_Tasks.mockResolvedValue({ data: { count: 1, results: [task({ status: "done" })] } });
+    await byTestid(wrapper, "today-chip-upcoming").trigger("click");
+    await byTestid(wrapper, "today-chip-done").trigger("click");
+    await flushPromises();
+    todo.GET_Today.mockResolvedValue({ data: { overdue: 2, today: 0, upcoming_7d: 3, results: [] } });
+    await byTestid(wrapper, "task-reopen").trigger("click");
+    await flushPromises();
+    expect(wrapper.findComponent('[data-testid="today-chip-due"]').props("count")).toBe(2);
+  });
+
   it("the active chip goes into the URL and is read back from it", async () => {
     const wrapper = await mounted();
     await byTestid(wrapper, "today-chip-done").trigger("click");

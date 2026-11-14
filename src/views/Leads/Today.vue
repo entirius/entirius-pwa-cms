@@ -61,7 +61,7 @@
           :rows="rows"
           row-key="id"
           :row-attrs="rowAttrs"
-          :empty-text="$t('leads.today.empty_list')"
+          :empty-text="$t(chip === 'done' ? 'leads.today.empty_done' : 'leads.today.empty_list')"
           data-testid="today-tasks"
           @row-click="openRow"
         >
@@ -291,7 +291,8 @@ function openDialog(mode, task) {
 async function reopen(task) {
   try {
     await POST_TaskReopen(task.id);
-    await load();
+    // k2 (walk 4): a reopened task counts under Due now again — the counter is read with the list
+    await Promise.all([load(), chip.value === "due" ? null : loadDue()]);
   } catch (err) {
     notify.spawnNotification({ msg: extractApiMessage(err, t("leads.task.error")), type: "negative" });
   }

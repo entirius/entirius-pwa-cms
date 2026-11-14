@@ -5119,7 +5119,8 @@
       "empty_message": "Nadchodzące: {count}",
       "empty_list": "Brak zadań",
       "no_tasks_module": "Zadania nie są dostępne w tej instalacji",
-      "nothing": "Nie ma tu nic do pokazania"
+      "nothing": "Nie ma tu nic do pokazania",
+      "empty_done": "Nic jeszcze nie zrobiono — zadanie trafia tutaj, gdy oznaczysz je jako zrobione"
     },
     "task": {
       "add": "Dodaj zadanie",
