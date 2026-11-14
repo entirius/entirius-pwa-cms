@@ -8,6 +8,9 @@ export const legalBasisLabel = (value) => label(`leads.legal_basis.${value}`, va
 
 export const stageKindLabel = (value) => label(`leads.stage_kind.${value}`, value);
 
+// The word beside a list row's on/off switch follows the switch (never a fixed "Active" beside a switch that is off).
+export const activeLabel = (on) => t(on ? "leads.common.switch_on" : "leads.common.switch_off");
+
 export const statusLabel = (value) => label(`leads.status.${value}`, value);
 
 export const templateKindLabel = (value) => label(`communicator.template.kinds.${value}`, value);

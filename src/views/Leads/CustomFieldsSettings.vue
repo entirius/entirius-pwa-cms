@@ -24,7 +24,7 @@
         <span :class="{ 't-muted': !row.is_active }" :title="row.is_active ? '' : $t('leads.fields.active') + ': ' + $t('leads.fields.no')">{{ row.label }}</span>
       </template>
       <template #cell-active="{ row }">
-        <BasicSwitch :model-value="row.is_active" :disabled="readonly" :label="$t('leads.fields.active')" data-testid="field-active" @update:model-value="patch(row, { is_active: $event })" />
+        <BasicSwitch :model-value="row.is_active" :disabled="readonly" :label="activeLabel(row.is_active)" data-testid="field-active" @update:model-value="patch(row, { is_active: $event })" />
       </template>
       <template #cell-actions="{ row, index }">
         <span class="flex gap-1">
@@ -79,6 +79,7 @@
 </template>
 
 <script setup>
+import { activeLabel } from "@/utils/leadsLabels";
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { t } from "@/i18n";

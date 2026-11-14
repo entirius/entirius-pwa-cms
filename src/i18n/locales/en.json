@@ -4665,7 +4665,6 @@
       "label": "Label",
       "code": "Code",
       "code_help": "Upper-case, e.g. RETAILER — fixed after it is added",
-      "active": "Active",
       "add": "Add type",
       "unknown": "Company type unknown",
       "code_invalid": "A code may hold only letters, digits and “_”",
@@ -4675,7 +4674,9 @@
       "delete": "Delete",
       "keep": "Keep",
       "error": "That did not work — try again.",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "switch_on": "Active",
+      "switch_off": "Off"
     },
     "settings": {
       "groups": {
@@ -5017,7 +5018,6 @@
     },
     "sequences": {
       "description": "Only one sequence can start automatically.",
-      "active": "Active",
       "autostart": "Starts automatically",
       "autostart_taken": "Only one sequence can start automatically — turn it off on {name} first"
     },

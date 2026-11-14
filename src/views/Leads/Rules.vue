@@ -17,7 +17,7 @@
     </EmptyState>
     <DataTable v-else :columns="columns" :rows="rows" row-key="id" :row-attrs="rowAttrs" data-testid="rules-table">
       <template #cell-active="{ row }">
-        <BasicSwitch :model-value="row.is_active" :disabled="readonly" :label="$t('leads.rules.active')" data-testid="rule-active" @update:model-value="toggle(row, $event)" />
+        <BasicSwitch :model-value="row.is_active" :disabled="readonly" :label="activeLabel(row.is_active)" data-testid="rule-active" @update:model-value="toggle(row, $event)" />
       </template>
       <template #cell-actions="{ row }">
         <span class="flex gap-1">
@@ -110,7 +110,7 @@ import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
 import { usePageReadonly } from "@/composables/useReadonly";
 import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
-import { ruleRunText } from "@/utils/leadsLabels";
+import { activeLabel, ruleRunText } from "@/utils/leadsLabels";
 import { formatTime } from "@/utils/leadsTime";
 import ConditionRow from "./ConditionRow.vue";
 import { plainCopy } from "./customFields";

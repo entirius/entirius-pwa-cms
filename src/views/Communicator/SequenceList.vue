@@ -30,7 +30,7 @@
         <div v-if="outbound" class="flex ai-ct flex-wrap gap-8">
           <BasicSwitch
             :model-value="sequence.is_active"
-            :label="$t('leads.sequences.active')"
+            :label="activeLabel(sequence.is_active)"
             data-testid="sequence-active"
             @update:model-value="toggle(sequence, { is_active: $event })"
           />
@@ -84,6 +84,7 @@
 </template>
 
 <script setup>
+import { activeLabel } from "@/utils/leadsLabels";
 import { computed, onMounted, reactive, ref } from "vue";
 import { t } from "@/i18n";
 import { GET_SequenceTexts, GET_Sequences, PATCH_Sequence, POST_Sequence, POST_SequenceText } from "@/api/communicator/api";

@@ -4664,7 +4664,6 @@
       "label": "Nazwa",
       "code": "Kod",
       "code_help": "Wielkimi literami, np. RETAILER — po dodaniu nie można go zmienić",
-      "active": "Aktywny",
       "add": "Dodaj typ",
       "unknown": "Nieznany typ firmy",
       "code_invalid": "Kod może zawierać tylko litery, cyfry i „_”",
@@ -4674,7 +4673,9 @@
       "delete": "Usuń",
       "keep": "Zostaw",
       "error": "Nie udało się — spróbuj ponownie.",
-      "cancel": "Anuluj"
+      "cancel": "Anuluj",
+      "switch_on": "Aktywne",
+      "switch_off": "Wyłączone"
     },
     "settings": {
       "groups": {
@@ -5016,7 +5017,6 @@
     },
     "sequences": {
       "description": "Tylko jedna sekwencja może startować automatycznie.",
-      "active": "Aktywna",
       "autostart": "Startuje automatycznie",
       "autostart_taken": "Tylko jedna sekwencja może startować automatycznie — najpierw wyłącz to w {name}"
     },

@@ -24,7 +24,7 @@
             <BasicInput v-model="type.label" :maxlength="128" data-testid="lead-type-label" />
           </label>
           <StatusBadge class="lead-type__code" tone="neutral" size="sm" :dot="false" :label="type.code" />
-          <BasicSwitch v-model="type.is_active" :label="$t('leads.lead_types.active')" data-testid="lead-type-active" />
+          <BasicSwitch v-model="type.is_active" :label="activeLabel(type.is_active)" data-testid="lead-type-active" />
           <div class="lead-type__controls">
             <IconButton mutates
               icon="moveUp"
@@ -76,6 +76,7 @@
 </template>
 
 <script setup>
+import { activeLabel } from "@/utils/leadsLabels";
 import { computed, onMounted, reactive, ref } from "vue";
 import { t } from "@/i18n";
 import { DELETE_LeadType, GET_LeadTypes, PATCH_LeadType, POST_LeadType } from "@/api/leads/api";

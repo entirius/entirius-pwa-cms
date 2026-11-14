@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { activityText, legalBasisLabel, ruleRunText, sendStateLabel, sendStateSentence, stageKindLabel } from "@/utils/leadsLabels";
+import { activeLabel, activityText, legalBasisLabel, ruleRunText, sendStateLabel, sendStateSentence, stageKindLabel } from "@/utils/leadsLabels";
 import { pluralKey } from "@/utils/plural";
 
 // FIX-17 items 14-16: enum values, statuses and counts read as words on every leads screen.
@@ -7,6 +7,12 @@ describe("leads labels", () => {
   it("names legal bases and stage kinds", () => {
     expect(legalBasisLabel("legitimate_interest")).toBe("Legitimate interest");
     expect(stageKindLabel("won")).toBe("won");
+  });
+
+  // P3 (walk 3): the word beside a row's switch follows the switch
+  it("names a switch by its state", () => {
+    expect(activeLabel(true)).toBe("Active");
+    expect(activeLabel(false)).toBe("Off");
   });
 
   it("falls back to the raw value for a value it does not know", () => {
