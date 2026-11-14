@@ -84,6 +84,21 @@ describe("Leads → Approvals", () => {
     expect(byTestid(wrapper, "approvals-bulk").exists()).toBe(true);
   });
 
+  // n6: everything approved — no tick stays behind on a remaining row without its selection bar
+  it("an approve with nothing refused clears the table's ticks", async () => {
+    api.POST_ApprovalsBulk.mockResolvedValue({ data: { done: [1], failed: {} } });
+    const wrapper = await mountApprovals();
+    const table = wrapper.findComponent('[data-testid="approvals-table"]');
+    const clearSelection = vi.spyOn(table.vm.$.exposed, "clearSelection");
+    await select(wrapper, [1]);
+    api.GET_Approvals.mockResolvedValue(page([row(2)]));
+    await byTestid(wrapper, "approvals-approve").trigger("click");
+    await byTestid(wrapper, "approvals-approve-confirm").trigger("click");
+    await flushPromises();
+    expect(clearSelection).toHaveBeenCalled();
+    expect(byTestid(wrapper, "approvals-bulk").exists()).toBe(false);
+  });
+
   it("sends more than 100 ids in chunks of 100", async () => {
     const many = Array.from({ length: 150 }, (_, i) => row(i + 1));
     api.GET_Approvals.mockResolvedValue(page(many));

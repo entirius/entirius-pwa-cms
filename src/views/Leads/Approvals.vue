@@ -328,8 +328,10 @@ async function run(action, ids, reason = "") {
   drawerRow.value = null;
   await load();
   approvalsStore.refresh();
-  // the refused rows stay selected (the table stays mounted and keeps their keys); the done ones left the list
+  // the refused rows stay selected (the table stays mounted and keeps their keys); the done ones left the list. With
+  // nothing refused no tick stays behind without its selection bar (n6).
   selected.value = Object.keys(refused).map(Number);
+  if (!selected.value.length) clearSelection();
 }
 
 async function openLog() {
