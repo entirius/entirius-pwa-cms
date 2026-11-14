@@ -307,10 +307,12 @@ describe("Leads Inbox (one list: drafts, waiting mails, conversations)", () => {
     const wrapper = mountInbox();
     await flushPromises();
     expect(ids(wrapper)).toEqual([8]);
+    expect(GET_Conversations).toHaveBeenCalledWith(expect.objectContaining({ state: "replied", needs_review: true }));
     await chip(wrapper, "all").trigger("click");
     await chip(wrapper, "replied").trigger("click");
     await flushPromises();
     expect(ids(wrapper)).toEqual([7, 8]);
+    expect(GET_Conversations.mock.lastCall[0]).not.toHaveProperty("needs_review");
     route.query = {};
   });
 });

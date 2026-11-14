@@ -109,8 +109,11 @@ function isActive(row) {
   return route.name === "LeadsThread" && String(companyIdFromSubjectRef(row.subject_ref)) === id;
 }
 
+// "N replies need review" asks the API for the flagged conversations (`needs_review`); the page filter below stays only
+// for an older backend that ignores the parameter.
 async function fetchPage(state, number) {
-  const params = { page: number, page_size: PAGE_SIZE, ...(state === "all" ? {} : { state }) };
+  const review = reviewOnly.value && state === "replied" ? { needs_review: true } : {};
+  const params = { page: number, page_size: PAGE_SIZE, ...(state === "all" ? {} : { state }), ...review };
   return (await GET_Conversations(params)).data;
 }
 
