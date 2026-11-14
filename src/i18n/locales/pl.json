@@ -4818,7 +4818,6 @@
       "age_1d": "1 dzień",
       "age_3d": "3 dni",
       "age_7d": "7 dni",
-      "age_days": "{n} d",
       "col_recipient": "Odbiorca",
       "col_subject": "Temat",
       "col_age": "Wiek",
@@ -4856,7 +4855,13 @@
       "clear": "Wyczyść zaznaczenie",
       "loading": "Ładowanie szkiców…",
       "load_error": "Nie udało się wczytać szkiców — spróbuj ponownie.",
-      "empty_message": "Szkic trafia tutaj, gdy reguła etapu napisze mail do firmy, a mail czeka na człowieka."
+      "empty_message": "Szkic trafia tutaj, gdy reguła etapu napisze mail do firmy, a mail czeka na człowieka.",
+      "age_today": "dziś",
+      "age_days_one": "{n} dzień",
+      "age_days_few": "{n} dni",
+      "age_days_many": "{n} dni",
+      "reject_consequence_one": "Ta wiadomość nie zostanie wysłana.",
+      "reject_consequence": "Te wiadomości nie zostaną wysłane."
     },
     "mailboxes": {
       "title": "Konta pocztowe",

@@ -50,7 +50,6 @@
             {{ row.subject_label }}
           </router-link>
           <span v-if="companyIdOf(row)" class="t-muted"> · </span>{{ recipientName(row) }}
-          <span v-if="failed[row.id]" class="approvals__refused fs-200" data-testid="approval-refused">{{ failed[row.id] }}</span>
         </template>
         <template #cell-channel="{ row }"><StatusBadge tone="neutral" :dot="false" :label="channelName(row.channel)" /></template>
         <template #cell-age="{ row }">{{ ageOf(row) }}</template>
@@ -62,6 +61,8 @@
             :title="problemOf(row)"
             data-testid="approval-problem"
           />
+          <!-- T5 (walk 4): why the last bulk call refused the row, in the Problem cell; the column wraps, the table keeps its width -->
+          <span v-if="failed[row.id]" class="approvals__refused fs-200" data-testid="approval-refused">{{ failed[row.id] }}</span>
         </template>
         <template #cell-actions="{ row }">
           <IconButton icon="next" variant="ghost" size="sm" :label="$t('leads.approvals.open')" data-testid="approval-open" @click="open(row)" />
@@ -85,6 +86,8 @@
     </template>
 
     <BasicModal v-model:open="rejecting.open" :title="rejectTitle" size="sm" :actions="rejectActions" data-testid="approvals-reject-modal">
+      <!-- k7 (walk 4): the consequence, as its twin Approve says it -->
+      <p class="m-0" data-testid="approvals-reject-consequence">{{ rejectConsequence }}</p>
       <FormField :label="$t('leads.approvals.reason')" required :error="rejecting.error">
         <BasicTextarea v-model="rejecting.reason" :rows="3" :maxlength="255" data-testid="approvals-reject-reason" />
       </FormField>
@@ -184,7 +187,7 @@ const columns = [
   { key: "channel", label: t("leads.approvals.channel"), width: "max-content", priority: 3 },
   { key: "template_key", label: t("leads.approvals.template"), width: "max-content", truncate: false, priority: 3 },
   { key: "age", label: t("leads.approvals.col_age"), numeric: true, priority: 2 },
-  { key: "problem", label: t("leads.approvals.col_problem"), width: "max-content" },
+  { key: "problem", label: t("leads.approvals.col_problem"), width: "fit-content(20rem)" },
   { key: "actions", label: "", actions: true },
 ];
 const logColumns = [
@@ -206,7 +209,11 @@ const recipientName = (row) => row.recipient_name || row.recipient_email;
 // The company of the row (its card is one click away) comes from the thread's label and reference, never shown raw.
 const companyIdOf = (row) => (row.subject_label && companyIdFromSubjectRef(row.subject_ref)) || null;
 const channelName = (idx) => pimChannels.channels.find((channel) => channel.idx === idx)?.name || idx;
-const ageOf = (row) => t("leads.approvals.age_days", { n: Math.floor(row.age_hours / 24) });
+// k9 (walk 4): "today", "1 day", "3 days"
+function ageOf(row) {
+  const n = Math.floor(row.age_hours / 24);
+  return n ? t(`leads.approvals.age_days_${pluralKey(n)}`, { n }) : t("leads.approvals.age_today");
+}
 const problemOf = (row) => failed.value[row.id] || (row.blocker ? problemText(row.blocker) : "");
 const rowAttrs = (row) => ({ "data-testid": "approval-row", "data-approval": row.id, "data-channel": row.channel });
 
@@ -225,6 +232,9 @@ const rejectTitle = computed(() => {
   const count = rejecting.ids.length;
   return t(`leads.approvals.reject_title_${pluralKey(count)}`, { count });
 });
+const rejectConsequence = computed(() =>
+  t(rejecting.ids.length === 1 ? "leads.approvals.reject_consequence_one" : "leads.approvals.reject_consequence")
+);
 const approveTitle = computed(() => {
   const count = approving.ids.length;
   return t(`leads.approvals.approve_title_${pluralKey(count)}`, { count });

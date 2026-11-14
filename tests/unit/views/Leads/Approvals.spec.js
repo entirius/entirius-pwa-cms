@@ -81,7 +81,9 @@ describe("Leads → Approvals", () => {
     expect(api.POST_ApprovalsBulk).toHaveBeenCalledWith({ action: "approve", ids: [1, 2], reason: "" });
     expect(byTestid(wrapper, "approvals-result").text()).toBe("1 draft approved. 1 not approved.");
     expect(byTestid(wrapper, "approval-problem").attributes("title")).toBe("mailbox paused");
+    // T5 (walk 4): the refusal sentence stands in the Problem cell, not under the recipient
     expect(byTestid(wrapper, "approval-refused").text()).toBe("mailbox paused");
+    expect(byTestid(wrapper, "approval-refused").element.closest("[data-column]").dataset.column).toBe("problem");
     expect(byTestid(wrapper, "approvals-bulk").exists()).toBe(true);
   });
 
@@ -147,11 +149,23 @@ describe("Leads → Approvals", () => {
     expect(table.text()).toContain("intro");
   });
 
+  // k9 (walk 4): the age in words
+  it("the Age column reads today, 1 day, 3 days", async () => {
+    api.GET_Approvals.mockResolvedValue(page([row(1, { age_hours: 5 }), row(2, { age_hours: 30 }), row(3, { age_hours: 80 })]));
+    const wrapper = await mountApprovals();
+    const text = wrapper.get('[data-testid="approvals-table"]').text();
+    expect(text).toContain("today");
+    expect(text).toContain("1 day");
+    expect(text).toContain("3 days");
+  });
+
   it("reject asks for a reason first", async () => {
     api.POST_ApprovalsBulk.mockResolvedValue({ data: { done: [1], failed: {} } });
     const wrapper = await mountApprovals();
     await select(wrapper, [1]);
     await byTestid(wrapper, "approvals-reject").trigger("click");
+    // k7 (walk 4): the dialog says the consequence, as Approve does
+    expect(byTestid(wrapper, "approvals-reject-consequence").text()).toBe("This mail will not be sent.");
     await byTestid(wrapper, "approvals-reject-submit").trigger("click");
     expect(api.POST_ApprovalsBulk).not.toHaveBeenCalled();
     wrapper.findComponent('[data-testid="approvals-reject-reason"]').vm.$emit("update:modelValue", "wrong tone");

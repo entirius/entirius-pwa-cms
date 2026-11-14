@@ -4819,7 +4819,6 @@
       "age_1d": "1 day",
       "age_3d": "3 days",
       "age_7d": "7 days",
-      "age_days": "{n} d",
       "col_recipient": "Recipient",
       "col_subject": "Subject",
       "col_age": "Age",
@@ -4857,7 +4856,13 @@
       "clear": "Clear selection",
       "loading": "Loading drafts…",
       "load_error": "The drafts could not be loaded — try again.",
-      "empty_message": "A draft lands here when a stage rule writes a mail to a company and the mail waits for a person."
+      "empty_message": "A draft lands here when a stage rule writes a mail to a company and the mail waits for a person.",
+      "age_today": "today",
+      "age_days_one": "{n} day",
+      "age_days_few": "{n} days",
+      "age_days_many": "{n} days",
+      "reject_consequence_one": "This mail will not be sent.",
+      "reject_consequence": "These mails will not be sent."
     },
     "mailboxes": {
       "title": "Mailboxes",
