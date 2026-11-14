@@ -66,10 +66,7 @@
             @select="selectedRows = $event"
           >
             <template #cell-sku="{ row }">
-              <div class="flex flex-column">
-                <span class="fw-600 t-accent">{{ row.sku }}</span>
-                <span class="t-muted fs-200">{{ row.name }}</span>
-              </div>
+              <span class="fw-600 t-accent">{{ row.sku }}</span>
             </template>
             <template #cell-market="{ row }">
               <MarketCell :channel="row.channel_idx" :country="row.country" :currency="row.currency" />
@@ -198,7 +195,8 @@ export default {
     },
     columns() {
       return [
-        { key: 'sku', label: this.$t('pricefighter.sku'), sortable: true, width: '1.5fr' },
+        { key: 'sku', label: this.$t('pricefighter.sku'), sortable: true, width: '1fr' },
+        { key: 'name', label: this.$t('pricefighter.product'), sortable: false, width: '1.5fr' },
         { key: 'market', label: this.$t('pricefighter.market'), sortable: false, width: '1fr' },
         { key: 'current_price', label: this.$t('pricefighter.current_price'), sortable: true, width: '0.8fr', numeric: true, priority: 2 },
         { key: 'cost', label: this.$t('pricefighter.cost'), sortable: false, width: '0.7fr', numeric: true, priority: 2 },

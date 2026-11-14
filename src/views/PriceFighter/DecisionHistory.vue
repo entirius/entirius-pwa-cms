@@ -147,7 +147,7 @@ export default {
         { key: 'change', label: this.$t('pricefighter.price_change'), sortable: false, width: '1fr' },
         { key: 'strategy', label: this.$t('pricefighter.strategy'), sortable: false, width: 'max-content', priority: 2 },
         { key: 'applied_by', label: this.$t('pricefighter.applied_by'), sortable: false, width: '1.2fr', priority: 2 },
-        { key: 'created_at', label: this.$t('pricefighter.observed_at'), sortable: false, width: '1.2fr', priority: 2 },
+        { key: 'created_at', label: this.$t('pricefighter.applied_at'), sortable: false, width: '1.2fr', priority: 2 },
       ]
     },
     paginationState() {
