@@ -9,6 +9,8 @@ const { SUPERUSER } = require('./helpers/users');
  * one closed line in its company's History. The spec makes its own company (run-unique domain), task and draft through
  * the API; the task is cancelled at the end (the todo API deletes none), the draft is skipped by the test itself, and
  * the API deletes no company, so every run leaves one `e2e-shell-<run>….test` company until the next `make seed`.
+ * On a phone (plan 31, walk 4): Review confirms Skip in place — no toast over the action row — so the next draft's Send
+ * can be clicked at once; the spec's two drafts end skipped.
  */
 
 test.use({ viewport: { width: 1440, height: 900 } });
@@ -30,6 +32,17 @@ async function api(page, method, url, data) {
   const response = await page.request.fetch(url, { method, headers: await authHeaders(page), data });
   expect(response.ok(), `${method} ${url}: ${response.status()} ${await response.text()}`).toBe(true);
   return response.status() === 204 ? null : response.json();
+}
+
+async function createDraft(page, company, tag) {
+  return api(page, 'POST', `${COMMUNICATOR}/test/communicate/`, {
+    template_key: 'reply.thanks',
+    subject_ref: `leads.Company:${company.id}`,
+    subject_label: company.name,
+    requires_review: true,
+    recipient: { email: `${tag}@e2e-shell-${RUN}.test`, language: 'en', legal_footer: LEGAL_FOOTER },
+    context: { company_name: company.name, body: `E2E shell draft ${tag}.` },
+  });
 }
 
 async function createCompany(page, tag) {
@@ -106,5 +119,37 @@ test.describe('Leads shell (desktop)', () => {
     await expect(line).toContainText('Draft skipped by');
     await line.click();
     await expect(page.locator('details.tl__skipped')).toHaveAttribute('open', '');
+  });
+});
+
+test.describe('Leads shell (phone)', () => {
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  test.beforeEach(async ({ page }) => {
+    await login(page, ...SUPERUSER);
+  });
+
+  test('Review: after Skip the next draft opens at once and its Send can be clicked, the line above it', async ({ page }, testInfo) => {
+    const company = await createCompany(page, `phone-${testInfo.retry}`);
+    const first = await createDraft(page, company, `first-${testInfo.retry}`);
+    const second = await createDraft(page, company, `second-${testInfo.retry}`);
+    try {
+      await page.goto(`/leads/inbox/${first.id}`);
+      await expect(page.getByTestId('review-draft')).toBeVisible();
+      await page.getByTestId('review-skip').click();
+      await expect(page.getByTestId('review-confirmation')).toHaveText('Skipped — this mail will not be sent');
+      await expect(page).not.toHaveURL(new RegExp(`/leads/inbox/${first.id}$`));
+      await expect(page.getByTestId('review-draft')).toBeVisible();
+      // nothing lies over the action row: a trial click passes Playwright's hit test at once, well inside the 4 s line
+      // (the next draft is the queue's; a seed draft with a problem has Send disabled by design — then its Skip)
+      const send = page.getByTestId('review-send');
+      const action = (await send.isEnabled()) ? send : page.getByTestId('review-skip');
+      await action.click({ trial: true, timeout: 1500 });
+      await expect(page.getByTestId('review-confirmation')).toBeVisible();
+    } finally {
+      for (const draft of [first, second]) {
+        await page.request.post(`${COMMUNICATOR}/review/${draft.id}/skip/`, { headers: await authHeaders(page), data: { reason: 'e2e cleanup' } });
+      }
+    }
   });
 });
