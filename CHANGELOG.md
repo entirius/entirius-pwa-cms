@@ -51,6 +51,12 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- Leads panel, the owner's decisions after the fourth walk: every mail bubble says "From <address>" (the sender of a
+  reply, the mailbox our mail leaves from; also beside the recipient in Review; an older communicator shows no line);
+  Log call asks only for the Outcome; Do not contact's "Add to the list" offers Reach (This channel / All channels,
+  sent as `scope`; an older communicator that refuses the field gets the entry without it); the company card lists
+  every earlier conversation from the start, each opening in place, so it shows as many conversations as its Inbox row
+  counts.
 - Leads panel, acceptance fixes of the fourth walk: a reply's "Next:" line says what happens to the mail — no more
   mail after a confirmed opt-out, nothing sent until a possible opt-out is decided, the sequence stopped, resuming on
   a date, or paused until resumed; Review confirms Skip and Send with one line above the next draft (no toast, no

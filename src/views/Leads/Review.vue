@@ -43,9 +43,10 @@
             {{ companyName }}
           </router-link>
           <span v-else class="review__company">{{ companyName }}</span>
-          <span class="review__meta" data-testid="review-to">
-            <template v-if="sender"><span data-testid="review-from">{{ $t("leads.thread.from", { address: sender }) }}</span> · </template>
-            {{ $t("leads.review.to") }}: {{ message.thread?.recipient_email }}
+          <!-- sender and recipient side by side; on a phone the line wraps between them, never inside an address -->
+          <span class="review__meta flex flex-wrap gap-2" data-testid="review-to">
+            <span v-if="sender" data-testid="review-from">{{ $t("leads.thread.from", { address: sender }) }} ·</span>
+            <span>{{ $t("leads.review.to") }}: {{ message.thread?.recipient_email }}</span>
           </span>
           <span v-if="problem" class="review__meta flex ai-ct flex-wrap gap-2" data-testid="review-problem">
             <StatusBadge tone="warning" :label="$t('leads.approvals.problem')" />

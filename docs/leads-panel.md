@@ -126,6 +126,27 @@ button and the menu appear only once a deal carries `archived_at` (an older back
 the company card's Deals tab list no archived deal. History reads `deal_archived` / `deal_restored`.
 A read-only role sees neither Archive nor Restore (`mutates`).
 
+## Owner's decisions after walk 4 (plan 33)
+
+One rule: the same thing looks the same everywhere.
+
+- **A mail names its mailbox**: every bubble of `ThreadTimeline` starts with "From <address>" (`timeline-from`) from
+  the timeline entry's `from_email` — the sender of a reply, the mailbox our mail left or will leave from (sent,
+  scheduled, draft, and inside a skipped draft's closed line). Review says it beside the recipient
+  ("From … · To: …", `review-from`), read from the draft's entry in `threads/<id>/`. An empty `from_email` (an older
+  communicator) or a failed read: no line.
+- **Log call asks one thing**: `TaskDialog` in `call` mode has one field, Outcome (required), on every width; it
+  creates the phone task "Call" about the card's company, owned by the caller, and closes it with the outcome.
+- **Reach in Do not contact**: Add to the list offers Reach — This channel (default) / All channels — sent as `scope`
+  (`channel` / `install`). An older communicator refuses the field: the first refusal (a field error on `scope`)
+  sends the entry again without it and the page stops offering Reach.
+- **Every conversation on the card**: History shows the newest conversation open and lists the other N−1 under
+  "Earlier conversations (N−1)" from the start, each opening in place; the heading still folds the list. The count is
+  `threads/?subject_ref=` minus the newest — the same threads the Inbox row's `thread_count` counts. The fourth walk
+  saw one conversation because the list sat folded behind its heading.
+- The bell's reply titles have one shape, "Reply from <sender> — <type>" (a suspected opt-out "… — Possible
+  opt-out"); the bell swaps the address for the company name and matches no title by its beginning.
+
 ## Acceptance fixes, walk 4 (plan 31)
 
 - **Next line of a reply** (`replyNextLine`, `src/utils/leadsLabels.js`): one function, five phrases — a confirmed
