@@ -381,6 +381,18 @@ describe("Company card header", () => {
       expect(wrapper.get('[data-testid="timeline-event"]').text()).toContain("Stage: new → replied");
     });
 
+    // U5: every History line names who did it — "Task cancelled: {title} — {reason} · {who}"
+    it("every History line names its author", async () => {
+      desktop.on = false;
+      const cancelled = { id: 2, created_at: null, kind: "task", actor: "manager", message: "cancelled: Call", data: { event: "task_cancelled", title: "Call", reason: "urgent" } };
+      const system = { id: 1, created_at: null, kind: "stage", actor: "system", message: "stage new -> replied" };
+      leads.GET_Company.mockResolvedValueOnce({ data: { ...company(), activities: [cancelled, system] } });
+      const wrapper = await mountCard();
+      const lines = wrapper.findAll('[data-testid="timeline-event"]').map((line) => line.text().replace(/\s+/g, " "));
+      expect(lines[0]).toContain("Task cancelled: Call — urgent · manager");
+      expect(lines[1]).toContain("· system");
+    });
+
     it("a 404 says the company was not found", async () => {
       leads.GET_Company.mockRejectedValueOnce(Object.defineProperty({ message: "x" }, "httpStatus", { value: 404 }));
       const wrapper = await mountCard();

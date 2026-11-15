@@ -115,6 +115,23 @@ describe("Company card → Tasks", () => {
     expect(byTestid(wrapper, "company-log-call").exists()).toBe(true);
   });
 
+  // U5: the cancelled tasks of the company under the open ones, with who, when and why
+  it("lists the cancelled tasks under the open ones", async () => {
+    todo.GET_Tasks.mockImplementation(({ status }) =>
+      Promise.resolve({
+        data:
+          status === "cancelled"
+            ? { count: 1, results: [{ id: 3, title: "Demo", kind: "meeting", status: "cancelled", done_by: "editor", done_at: null, outcome: "duplicate" }] }
+            : { count: 0, results: [] },
+      })
+    );
+    const wrapper = await mount(TasksTab, { company: company() }, { area: "todo.tasks" });
+    expect(todo.GET_Tasks).toHaveBeenCalledWith({ subject_ref: "leads.Company:5", status: "cancelled", page_size: 20 });
+    expect(byTestid(wrapper, "task-cancelled-row").text()).toContain("Demo");
+    expect(byTestid(wrapper, "task-cancelled-line").text()).toBe("Cancelled by editor — duplicate");
+    expect(wrapper.emitted("count")[0]).toEqual([0]);
+  });
+
   it("the task text and Edit open the edit dialog", async () => {
     todo.GET_Tasks.mockResolvedValue({ data: { count: 1, results: [{ id: 2, title: "Call", kind: "phone", due_at: null, status: "open" }] } });
     const wrapper = await mount(TasksTab, { company: company() }, { area: "todo.tasks" });
