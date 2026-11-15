@@ -4718,7 +4718,7 @@
         "intel_empty": "Audyt strony niczego nie znalazł",
         "score": "Zaktualizowano ocenę",
         "task": "Zadanie",
-        "deal": "Szansa sprzedaży",
+        "deal": "Transakcja",
         "settings": "Zmiana ustawień"
       },
       "msg": {
@@ -4824,9 +4824,9 @@
     "potential": {
       "title": "Potencjał",
       "legend": "Co znaczą kropki",
-      "legend_green": "idziemy dalej: zainteresowanie albo deal",
-      "legend_orange": "w toku: czekamy, nie teraz, pominięty draft, szukamy innej osoby",
-      "legend_red": "wróć później: odmowa, cisza, przegrane deale",
+      "legend_green": "idziemy dalej: zainteresowanie albo transakcja",
+      "legend_orange": "w toku: czekamy, nie teraz, pominięty szkic, szukamy innej osoby",
+      "legend_red": "wróć później: odmowa, cisza, przegrane transakcje",
       "none": "Jeszcze nie pisaliśmy",
       "colour": {
         "green": "Zielony",
@@ -4839,14 +4839,14 @@
       "reason": {
         "do_not_contact": "Nie kontaktować się",
         "complaint": "Skarga na spam",
-        "deal_open": "Otwarty deal",
-        "deal_won": "Wygrany deal",
-        "deals_lost": "Wszystkie deale przegrane",
+        "deal_open": "Otwarta transakcja",
+        "deal_won": "Wygrana transakcja",
+        "deals_lost": "Wszystkie transakcje przegrane",
         "reply_class": "Odpowiedź: {class}",
         "reply": "Odpowiedź",
         "looking_for_person": "Szukamy innej osoby",
         "silence": "Brak odpowiedzi na ostatni mail",
-        "draft_skipped": "Draft pominięty",
+        "draft_skipped": "Szkic pominięty",
         "came_back": "Wróć do firmy",
         "awaiting_reply": "Mail wysłany, czekamy na odpowiedź",
         "manual": "Ustawione ręcznie"
@@ -4870,7 +4870,7 @@
       "replies_card": "Kolor odpowiedzi",
       "silence_days": "Cisza do czerwonego",
       "silence_days_hint": "Dni bez odpowiedzi po ostatnim mailu",
-      "skip_return_days": "Pominięty draft wraca po",
+      "skip_return_days": "Pominięty szkic wraca po",
       "skip_return_days_hint": "Dni, po których firma wraca do kolejki",
       "red_return_days": "Czerwony wraca po",
       "red_return_days_hint": "Dni, po których czerwony zmienia się na pomarańczowy i trafia na Today",
@@ -4887,7 +4887,7 @@
     },
     "history": {
       "event_potential": "Potencjał: {colour}",
-      "event_draft_skipped": "Draft pominięty",
+      "event_draft_skipped": "Szkic pominięty",
       "needs_review": "Do sprawdzenia",
       "back_on": "Wraca {date}",
       "confidence": "pewność {n} %",
@@ -5222,7 +5222,7 @@
       "plan_empty": "Na dziś nic na Ciebie nie czeka",
       "overdue": "Zaległe",
       "today": "Dziś",
-      "item_drafts": "Przejrzyj drafty do akceptu: {count}",
+      "item_drafts": "Przejrzyj szkice do akceptu: {count}",
       "item_replies": "Obsłuż odpowiedzi: {count}",
       "chat_title": "Rozmowa",
       "hint": "Napisz, co zrobiłeś, np. „zrobione 1: dzwoniłem, zainteresowani” albo „notatka 2: prosi o ofertę”. Wpisz „plan”, żeby zobaczyć listę.",
@@ -5337,7 +5337,7 @@
       "open_title": "Otwarte zadania",
       "empty": "Brak otwartych zadań",
       "cancelled_title": "Anulowane",
-      "cancelled_by": "Anulował(a) {who} · {date}"
+      "cancelled_by": "Anulowane przez {who} · {date}"
     },
     "compose": {
       "reply_unavailable": "Nie udało się otworzyć odpowiedzi — spróbuj ponownie.",
@@ -5683,7 +5683,7 @@
       "channel": "Ustawienia",
       "setting": {
         "resume_days": "dni do ponownego kontaktu",
-        "default_currency": "waluta deali",
+        "default_currency": "waluta transakcji",
         "history_months": "okres przechowywania historii"
       },
       "reason": {
