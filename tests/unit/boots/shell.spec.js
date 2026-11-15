@@ -234,7 +234,7 @@ describe("BottomTabBar", () => {
     setViewport(false);
     await goTo("/leads/companies/7", { panel: "leads" });
     const nav = mountIt(BottomTabBar).get("nav");
-    expect(nav.attributes("aria-label")).toBe("Leads");
+    expect(nav.attributes("aria-label")).toBe("Sales CRM");
     expect(nav.attributes("data-fid")).toBe("tab-bar");
     expect(nav.findAll("a").map((a) => a.attributes("href"))).toEqual(["/leads/today", "/leads/inbox", "/leads/companies"]);
     expect(nav.get("[aria-current='page']").attributes("href")).toBe("/leads/companies");
