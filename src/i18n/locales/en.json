@@ -5435,6 +5435,7 @@
       "none_mine": "No open deals of yours",
       "show_all_deals": "Show all deals",
       "none_archived": "No archived deals",
+      "tab_active": "Active",
       "archived": "Archived",
       "archived_title": "Archived deals",
       "none_in_chip": "No deals under {kind}",
