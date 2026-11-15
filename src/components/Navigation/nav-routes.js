@@ -404,6 +404,17 @@ export function buildNavRoutes() {
       desktopOnly: true,
     },
     {
+      // U3: new people to contact (People) and the placeholder for new companies (Companies), the prospecting app of django-leads
+      route: "/leads/prospecting",
+      labelKey: "nav.leads_prospecting",
+      icon: "users",
+      query: {},
+      app: ["leads"],
+      requiresModule: "prospecting",
+      desktopOnly: true,
+      activeOn: ["/leads/prospecting/"],
+    },
+    {
       // Stages, templates, sequences and send settings live here as sections (UX-002d); desk work (Leads CRM) — a
       // section still opens on a phone from a link
       route: "/leads/settings",

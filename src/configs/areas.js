@@ -44,6 +44,8 @@ export const AREAS = Object.freeze({
   LEADS_SETTINGS: "leads.settings",
   LEADS_GDPR: "leads.gdpr",
   TODO_TASKS: "todo.tasks",
+  PROSPECTING_PEOPLE: "prospecting.people",
+  PROSPECTING_COMPANIES: "prospecting.companies",
   COMMUNICATOR_REVIEW: "communicator.review",
   COMMUNICATOR_CONTENT: "communicator.content",
   COMMUNICATOR_CONVERSATIONS: "communicator.conversations",
