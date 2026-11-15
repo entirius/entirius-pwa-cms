@@ -19,6 +19,7 @@ export const LEADS_SETTINGS_SECTIONS = [
   { key: "deal-stages", route: "LeadsDealStages", labelKey: "nav.leads_deal_stages", icon: "layer-group", module: "leads", minVersion: "0.5.0", group: "sales" },
   { key: "lead-types", route: "LeadsLeadTypes", labelKey: "leads.lead_types.title", icon: "tags", module: "leads", group: "sales" },
   { key: "custom-fields", route: "LeadsCustomFields", labelKey: "leads.fields.title", icon: "list-check", module: "leads", minVersion: "0.5.0", group: "sales" },
+  { key: "potential", route: "LeadsPotential", labelKey: "leads.potential.settings_title", icon: "circle-half-stroke", module: "leads", minVersion: "0.5.0", group: "sales" },
   { key: "scoring", route: "LeadsScoring", labelKey: "leads.scoring.title", icon: "ranking-star", module: "leads", minVersion: "0.5.0", group: "sales" },
   { key: "rules", route: "LeadsRules", labelKey: "leads.rules.title", icon: "bolt", module: "leads", minVersion: "0.5.0", group: "automation" },
   { key: "automatic-moves", route: "LeadsAutomaticMoves", labelKey: "nav.leads_automatic_moves", icon: "diagram-next", module: "leads", minVersion: "0.5.0", group: "automation" },

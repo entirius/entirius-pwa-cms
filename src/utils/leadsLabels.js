@@ -122,6 +122,10 @@ const EVENT_SENTENCES = {
   deal_restored: (d) => t("leads.history.event_deal_restored", { title: d.title }),
   owner_set: (d) => t("leads.history.event_owner", { name: d.owner_name }),
   owner_cleared: () => t("leads.history.event_owner_cleared"),
+  // U2: a change of the potential dot; a manual one says the salesperson's comment
+  potential: (d) =>
+    withDetail(t("leads.history.event_potential", { colour: t(`leads.potential.colour.${d.to || "none"}`) }), d.manual ? d.comment : ""),
+  draft_skipped: () => t("leads.history.event_draft_skipped"),
 };
 
 const stageLine = (d) => t("leads.activity.stage", { from: stageName(d.from_label, d.from), to: stageName(d.to_label, d.to) });

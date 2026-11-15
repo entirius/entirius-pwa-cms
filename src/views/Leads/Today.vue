@@ -128,6 +128,7 @@ import { outboundOn } from "@/utils/leadsOutbound";
 import { pluralKey } from "@/utils/plural";
 import { routeForSubjectRef } from "@/utils/subjectRef";
 import TaskDialog from "./TaskDialog.vue";
+import { taskTitle } from "./potential";
 import { taskDue } from "./tasks";
 
 // Today (ux/screens/today.md): the panel root. The caller's tasks by chip and owner (django-todo), and the drafts and
@@ -196,6 +197,8 @@ function subjectRoute(ref) {
 const rows = computed(() =>
   tasks.value.map((task) => ({
     ...task,
+    // U2: "Come back to <company>" when a red (or a skipped draft) comes back, in the user's language
+    title: taskTitle(task),
     due: taskDue(task),
     to: subjectRoute(task.subject_ref),
     kind: t(`leads.task_kind.${task.kind}`),

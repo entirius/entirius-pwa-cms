@@ -1237,6 +1237,12 @@ const routes = [
         meta: { requiresAuth: true, titleKey: "leads.rules.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", moduleVersion: OUTBOUND, page: true, crumbParent: "LeadsSettings" },
       },
       {
+        path: "settings/potential",
+        name: "LeadsPotential",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/PotentialSettings.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.potential.settings_title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", moduleVersion: OUTBOUND, page: true, crumbParent: "LeadsSettings" },
+      },
+      {
         path: "settings/automatic-moves",
         name: "LeadsAutomaticMoves",
         component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/AutomaticMoves.vue"),
