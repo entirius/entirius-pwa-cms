@@ -11,6 +11,8 @@
       <p class="review__confirm" :class="{ 'review__confirm--shown': confirmation }" role="status" data-testid="review-confirmation">
         {{ confirmation }}
       </p>
+      <!-- U1: a Skip waits UNDO_MS before it reaches the service; Undo in that time brings the draft back -->
+      <BasicButton v-if="pendingSkip" class="as-s" variant="secondary" data-testid="review-undo" @click="undoSkip">{{ $t("leads.review.undo") }}</BasicButton>
       <EmptyState v-if="queueEmpty" :title="$t('leads.inbox.empty_title')" icon="success" size="md" data-testid="review-empty">
         <BasicButton variant="primary" data-testid="review-empty-inbox" @click="goInbox">{{ $t("leads.review.back") }}</BasicButton>
       </EmptyState>
@@ -142,6 +144,8 @@ import IntelCard from "./IntelCard.vue";
 import ReviewActions from "./ReviewActions.vue";
 
 const CONFIRMATION_MS = 4000;
+// U1: how long a Skip can be undone — the confirmation line stands as long.
+const UNDO_MS = CONFIRMATION_MS;
 
 const route = useRoute();
 const router = useRouter();
@@ -321,6 +325,8 @@ async function goNext(afterAction = false) {
   if (id) return router.replace({ name: "LeadsReview", params: { id }, ...(fromApprovals.value && { query: route.query }) });
   try {
     const { data } = await api.GET_ReviewNext();
+    // the draft whose skip still waits is in the queue until then: it is not the next one
+    if (data.id === pendingSkip.value?.id) throw new Error("only the skipped draft left");
     router.replace({ name: "LeadsReview", params: { id: data.id }, ...(fromApprovals.value && { query: route.query }) });
   } catch {
     if (!afterAction) return goInbox();
@@ -390,7 +396,8 @@ async function acceptedState(accepted) {
 }
 
 // Send: the next draft opens at once; the line above it says when this mail goes.
-function accept() {
+async function accept() {
+  await flushSkip();
   return act(
     () => api.POST_ReviewAccept(message.value.id),
     async (data) => {
@@ -401,14 +408,51 @@ function accept() {
 }
 
 // Skip: this mail is not sent (a skipped follow-up lets the sequence write the next one when it is due).
-function skip() {
-  return act(
-    () => api.POST_ReviewSkip(message.value.id),
-    () => {
-      confirm(t("leads.review.skipped"));
-      return goNext(true);
-    }
-  );
+// U1: the next draft opens at once, but the skip itself is sent only after UNDO_MS (or when the page closes, or at
+// the next Skip or Send); Undo before that cancels it and reopens the draft, which never left the queue. A page the
+// browser closes in that time sends nothing: the draft simply stays to review.
+const pendingSkip = ref(null);
+let skipTimer = null;
+
+async function sendSkip(id) {
+  try {
+    await api.POST_ReviewSkip(id);
+    reviewQueue.queueChanged();
+  } catch (err) {
+    if (isConflict(err) && err.error === "ALREADY_REVIEWED") return;
+    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.review.error")), type: "negative" });
+  }
+}
+
+function flushSkip() {
+  if (!pendingSkip.value) return null;
+  clearTimeout(skipTimer);
+  const { id } = pendingSkip.value;
+  pendingSkip.value = null;
+  return sendSkip(id);
+}
+
+async function skip() {
+  if (busy.value || !message.value) return;
+  await flushSkip();
+  const id = message.value.id;
+  pendingSkip.value = { id };
+  skipTimer = setTimeout(flushSkip, UNDO_MS);
+  confirm(t("leads.review.skipped"));
+  return goNext(true);
+}
+
+function undoSkip() {
+  if (!pendingSkip.value) return;
+  clearTimeout(skipTimer);
+  const { id } = pendingSkip.value;
+  pendingSkip.value = null;
+  clearTimeout(confirmationTimer);
+  confirmation.value = "";
+  queueEmpty.value = false;
+  // the last draft skipped kept its own address (nothing came next): read it again in place
+  if (String(route.params.id) === String(id)) return load();
+  router.replace({ name: "LeadsReview", params: { id }, ...(fromApprovals.value && { query: route.query }) });
 }
 
 function skipCompany() {
@@ -476,7 +520,10 @@ watch(
   },
   { immediate: true }
 );
-onBeforeUnmount(() => clearTimeout(confirmationTimer));
+onBeforeUnmount(() => {
+  clearTimeout(confirmationTimer);
+  flushSkip();
+});
 </script>
 
 <style scoped>

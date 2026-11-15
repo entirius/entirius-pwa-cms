@@ -112,6 +112,8 @@ test.describe('Leads shell (desktop)', () => {
     await expect(page.getByTestId('review-draft')).toBeVisible();
     await page.getByTestId('review-skip').click();
     await expect(page.getByText('Skipped — this mail will not be sent')).toBeVisible();
+    // U1: the skip reaches the service when its Undo time (4 s) is over; a full page load before that cancels it
+    await expect(page.getByTestId('review-undo')).toBeHidden({ timeout: 10_000 });
 
     await page.goto(`/leads/companies/${company.id}?tab=timeline`);
     const line = page.getByTestId('timeline-skipped-line');

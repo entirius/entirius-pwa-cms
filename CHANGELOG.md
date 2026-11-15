@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- Leads panel, Review: Skip can be undone — an Undo button beside "Skipped — this mail will not be sent" for 4 s
+  (en + pl); the skip reaches communicator only after that (or at the next Skip or Send, or on leaving the screen), so
+  Undo simply reopens the draft. No API change.
 - Leads panel: a possible opt-out can be marked "Not an opt-out" beside Confirm opt-out (django-communicator
   `dismiss-optout`, no confirm); the conversation, the card's contacts and History reload, and the reply loses its
   opt-out mark. The Next line of a possible opt-out reads "nothing is sent until you confirm the opt-out or mark it as

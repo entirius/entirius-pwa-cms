@@ -4342,6 +4342,7 @@
       "next_draft": "Next draft",
       "skip": "Skip",
       "skipped": "Skipped — this mail will not be sent",
+      "undo": "Undo",
       "handled_rejected": "This draft was skipped — this mail will not be sent.",
       "goes_soon": "goes out within minutes"
     },

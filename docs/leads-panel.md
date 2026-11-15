@@ -176,6 +176,10 @@ One rule: the same thing looks the same everywhere.
   (`review-confirmation`, `role="status"`, 4 s; out of the flow while empty): "Skipped — this mail will not be sent",
   "Accepted — goes out within minutes" (an open window) or the send-state sentence. No toast, no full-screen panel;
   an empty queue keeps the screen with the line above an empty state whose button goes back (Inbox or Approvals).
+  Skip can be undone (U1): beside its line an Undo button (`review-undo`) stands for the same 4 s, and the
+  `skip/` call waits until then (sent at once by the next Skip or Send and on leaving the screen; a browser closed
+  in that time sends nothing, the draft stays to review). Undo reopens the skipped draft — it never left the queue;
+  a `review/next/` answer naming that draft reads as an empty queue.
   "Draft N of M" counts in the Inbox's order (`conversations/?state=draft` rows, then the drafts no row shows).
 - **Approvals**: a bulk refusal stands in the Problem cell (`fit-content(20rem)`, it wraps; the table keeps its width);
   the Skip dialog says "These mails will not be sent."; Age reads today / 1 day / N days.
