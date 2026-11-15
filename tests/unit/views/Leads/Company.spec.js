@@ -197,11 +197,11 @@ describe("Company card header", () => {
   it("Back goes to the previous place, else to Companies", async () => {
     const wrapper = await mountCard();
     const back = () => wrapper.findComponent({ name: "PageHeader" }).props("back")();
-    router.options.history.state.back = "/leads";
+    window.history.replaceState({ back: "/leads" }, "");
     back();
     expect(router.back).toHaveBeenCalledTimes(1);
     expect(router.push).not.toHaveBeenCalled();
-    router.options.history.state.back = null;
+    window.history.replaceState({}, "");
     back();
     expect(router.push).toHaveBeenCalledWith({ name: "LeadsCompanies" });
   });

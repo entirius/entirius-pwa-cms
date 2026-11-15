@@ -86,6 +86,7 @@
 import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { t } from "@/i18n";
+import { goBackTo } from "@/composables/useNav";
 import { GET_Attributes, GET_Company, GET_Stages, PATCH_Company, POST_Transition } from "@/api/leads/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { useIsDesktop } from "@/composables/useIsDesktop";
@@ -178,8 +179,7 @@ const tabOptions = computed(() =>
 
 // Back goes where the person came from (Today, an Inbox row, a deal); a card opened by URL has no such place.
 function goBack() {
-  if (typeof router.options?.history?.state?.back === "string") return router.back();
-  router.push({ name: "LeadsCompanies" });
+  goBackTo(router, { name: "LeadsCompanies" }, { fromAnywhere: true });
 }
 
 function openTab(value) {

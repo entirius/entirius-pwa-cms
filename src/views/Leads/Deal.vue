@@ -86,6 +86,7 @@
 import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { t } from "@/i18n";
+import { goBackTo } from "@/composables/useNav";
 import { DELETE_Deal, GET_Attributes, GET_Company, GET_Deal, GET_DealActivities, GET_DealStages, POST_DealArchive, POST_DealRestore } from "@/api/leads/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { ReadonlyArea, usePageReadonly } from "@/composables/useReadonly";
@@ -145,8 +146,7 @@ function onMore() {
 // Back goes where the person came from (the Deals list with its tab and filters, a company card, the board); a card
 // opened by URL goes to the list.
 function goBack() {
-  if (typeof router.options?.history?.state?.back === "string") return router.back();
-  router.push({ name: "LeadsDeals" });
+  goBackTo(router, { name: "LeadsDeals" }, { fromAnywhere: true });
 }
 
 // Archive and Restore answer with the deal: the card stays and turns into its other state; a 409 is said as its sentence.

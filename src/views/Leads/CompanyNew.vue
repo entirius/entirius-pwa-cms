@@ -58,6 +58,7 @@
 import { computed, onMounted, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { t } from "@/i18n";
+import { goBackTo } from "@/composables/useNav";
 import { GET_Companies, POST_Company, POST_Contact } from "@/api/leads/api";
 import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
 import { useLeadTypesStore } from "@/stores/leadTypes";
@@ -80,8 +81,7 @@ const busy = ref(false);
 const cardRoute = (id) => ({ name: "LeadsThread", params: { id } });
 // U7: Back goes where the person came from (Companies with its filters, Import); a page opened by URL goes to Companies.
 function goBack() {
-  if (typeof router.options?.history?.state?.back === "string") return router.back();
-  router.push({ name: "LeadsCompanies" });
+  goBackTo(router, { name: "LeadsCompanies" }, { fromAnywhere: true });
 }
 const typeOptions = computed(() => [
   { value: "UNKNOWN", label: t("leads.lead_types.unknown") },

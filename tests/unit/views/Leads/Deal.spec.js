@@ -163,16 +163,15 @@ describe("Leads → Deal card", () => {
   // U7: Back returns to the list as it was left (its tab and filters live in the address the history keeps).
   it("Back goes back in the history when the card was opened from a page, else to Deals", async () => {
     router.back = vi.fn();
-    router.options = { history: { state: { back: "/leads/deals?archived=1&owner=all" } } };
+    window.history.replaceState({ back: "/leads/deals?archived=1&owner=all" }, "");
     const opened = await mounted();
     opened.findComponent({ name: "PageHeader" }).props("back")();
     expect(router.back).toHaveBeenCalledTimes(1);
     expect(router.push).not.toHaveBeenCalled();
-    router.options = { history: { state: {} } };
+    window.history.replaceState({}, "");
     const direct = await mounted();
     direct.findComponent({ name: "PageHeader" }).props("back")();
     expect(router.push).toHaveBeenCalledWith({ name: "LeadsDeals" });
-    delete router.options;
   });
 
   it("delete asks first, then goes back to Deals", async () => {
