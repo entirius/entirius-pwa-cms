@@ -70,7 +70,7 @@ button.potential-dot {
   width: 10px;
   height: 10px;
   flex: none;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   border: 1px solid var(--border-subtle);
   background: transparent;
 }
