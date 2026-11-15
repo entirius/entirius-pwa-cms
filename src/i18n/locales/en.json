@@ -5558,6 +5558,12 @@
         "resume_days": "days until a follow-up",
         "default_currency": "deal currency",
         "history_months": "history kept"
+      },
+      "reason": {
+        "reply_class": "Reply: {class}",
+        "wrong_person": "Wrong person",
+        "opted_out": "Contact opted out",
+        "optout_confirmed": "Opt-out confirmed"
       }
     }
   },

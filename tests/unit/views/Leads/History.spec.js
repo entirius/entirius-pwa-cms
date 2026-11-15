@@ -37,7 +37,7 @@ describe("Leads → History", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     leads.GET_History.mockResolvedValue({ data: { count: 1, results: [entry()] } });
-    leads.GET_HistoryActors.mockResolvedValue({ data: { results: ["manager", "system"] } });
+    leads.GET_HistoryActors.mockResolvedValue({ data: { results: ["import:", "manager", "system"] } });
   });
 
   it("shows when, who, what, on what and why for every entry", async () => {
@@ -54,6 +54,7 @@ describe("Leads → History", () => {
   it("the person filter lists the actors and reloads from page one", async () => {
     const wrapper = await mounted();
     expect(control(wrapper, "history-actor").props("options")).toEqual([
+      { value: "import:", label: "Import" },
       { value: "manager", label: "manager" },
       { value: "system", label: "System" },
     ]);
@@ -92,5 +93,16 @@ describe("history rows", () => {
     expect(actorLabel("system")).toBe("System");
     expect(actorLabel("import:12")).toBe("Import");
     expect(actorLabel("")).toBe("System");
+  });
+
+  // A coded reason reads as words; a reason a person typed stays as typed.
+  it("a coded reason is a label, a typed one stays", () => {
+    const reason = (kind, data) => historyRow(entry({ kind, data })).reason;
+    expect(reason("potential", { reason: "reply:not_now" })).toBe("Reply: Not now");
+    expect(reason("note", { reason: "wrong_person" })).toBe("Wrong person");
+    expect(reason("optout", { reason: "optout_confirmed" })).toBe("Opt-out confirmed");
+    expect(reason("potential", { reason: "some_new_code" })).toBe("some_new_code");
+    expect(reason("task", { reason: "wrong_person" })).toBe("wrong_person");
+    expect(reason("deal", { reason: "chose another vendor" })).toBe("chose another vendor");
   });
 });

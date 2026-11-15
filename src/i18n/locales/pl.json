@@ -5557,6 +5557,12 @@
         "resume_days": "dni do ponownego kontaktu",
         "default_currency": "waluta deali",
         "history_months": "okres przechowywania historii"
+      },
+      "reason": {
+        "reply_class": "Odpowiedź: {class}",
+        "wrong_person": "Niewłaściwa osoba",
+        "opted_out": "Kontakt się wypisał",
+        "optout_confirmed": "Wypisanie potwierdzone"
       }
     }
   },

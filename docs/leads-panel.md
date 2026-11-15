@@ -88,7 +88,9 @@ it; reorder = one PATCH `order` per moved row), `settings/scoring` (one active p
 `settings/rules` (conditions from `GET fields/`); Scoring and Rules share `ConditionRow.vue` (ops per kind, "is empty"
 hides the value). `/leads/reports` (desktop) is the funnel as three tables, origin and period filters. `/leads/history` (desktop, U11) is
 the channel journal (`GET activities/`, server-paged): when, who, what, on what (company link · deal), reason in its own
-column (left out of the sentence); filters person (`activities/actors/`), kind, period, company (`views/Leads/history.js`). Never parse a
+column (left out of the sentence; a coded one — `reply:not_now`, `manual`, `wrong_person` — as its label, a typed one as
+typed); filters person (`activities/actors/`: one entry per person, whose "<person> via ai-crm (…)" entries come with
+it, and one Import for every batch), kind, period, company (`views/Leads/history.js`). Never parse a
 `subject_ref` / `contact_ref` in a view: `src/utils/subjectRef.js` builds and reads them.
 
 ## Deals (django-leads 0.5.0)
