@@ -53,6 +53,24 @@ describe("Leads → AI CRM", () => {
     expect(items[1].text()).toContain("Review the drafts waiting: 4");
   });
 
+  it("a failed plan is an error with a retry, not 'nothing today'", async () => {
+    api.GET_AiCrmPlan.mockRejectedValueOnce(new Error("down"));
+    const wrapper = await mounted();
+    expect(byTestid(wrapper, "ai-crm-plan-error").exists()).toBe(true);
+    expect(byTestid(wrapper, "ai-crm-plan-empty").exists()).toBe(false);
+    await byTestid(wrapper, "ai-crm-plan-retry").trigger("click");
+    await flushPromises();
+    expect(byTestid(wrapper, "ai-crm-plan-error").exists()).toBe(false);
+    expect(wrapper.findAll('[data-testid="ai-crm-item"]')).toHaveLength(2);
+  });
+
+  it("a failed proposals list does not hide the plan", async () => {
+    api.GET_AiCrmProposals.mockRejectedValue(new Error("down"));
+    const wrapper = await mounted();
+    expect(wrapper.findAll('[data-testid="ai-crm-item"]')).toHaveLength(2);
+    expect(byTestid(wrapper, "ai-crm-plan-error").exists()).toBe(false);
+  });
+
   it("says when nothing waits", async () => {
     api.GET_AiCrmPlan.mockResolvedValue(plan([]));
     const wrapper = await mounted();

@@ -5241,7 +5241,9 @@
       "confirm_question": "Confirm: {summary}",
       "confirm": "Confirm",
       "reject": "Cancel",
-      "error": "The AI CRM agent did not answer"
+      "error": "The AI CRM agent did not answer",
+      "load_error": "The plan for today could not be loaded",
+      "retry": "Try again"
     },
     "today": {
       "title": "Today",

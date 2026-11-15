@@ -5240,7 +5240,9 @@
       "confirm_question": "Potwierdź: {summary}",
       "confirm": "Potwierdź",
       "reject": "Anuluj",
-      "error": "Agent AI CRM nie odpowiedział"
+      "error": "Agent AI CRM nie odpowiedział",
+      "load_error": "Nie udało się wczytać planu na dziś",
+      "retry": "Spróbuj ponownie"
     },
     "today": {
       "title": "Dziś",

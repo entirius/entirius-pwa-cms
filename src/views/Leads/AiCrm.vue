@@ -16,6 +16,22 @@
       >
         <Loader v-if="loading" block />
         <EmptyState
+          v-else-if="loadError"
+          icon="warning"
+          size="sm"
+          :title="$t('leads.ai_crm.load_error')"
+          data-testid="ai-crm-plan-error"
+        >
+          <BasicButton
+            :mutates="false"
+            size="sm"
+            data-testid="ai-crm-plan-retry"
+            @click="load"
+          >
+            {{ $t("leads.ai_crm.retry") }}
+          </BasicButton>
+        </EmptyState>
+        <EmptyState
           v-else-if="!items.length"
           icon="success"
           size="sm"
@@ -162,6 +178,7 @@ const proposals = ref([]);
 const messages = ref([]);
 const draft = ref("");
 const loading = ref(true);
+const loadError = ref(false);
 const busy = ref(false);
 
 const items = computed(() =>
@@ -184,19 +201,24 @@ const failed = (err) =>
     type: "negative",
   });
 
+// The plan and the proposals load apart: a failed plan is an error state with a retry, never "nothing for today", and
+// a failed proposals list does not hide the plan.
 async function load() {
-  try {
-    const [planAnswer, proposalAnswer] = await Promise.all([
-      GET_AiCrmPlan(),
-      GET_AiCrmProposals(),
-    ]);
-    plan.value = planAnswer.data;
-    proposals.value = proposalAnswer.data.results || [];
-  } catch (err) {
-    failed(err);
-  } finally {
-    loading.value = false;
+  loading.value = true;
+  loadError.value = false;
+  const [planAnswer, proposalAnswer] = await Promise.allSettled([
+    GET_AiCrmPlan(),
+    GET_AiCrmProposals(),
+  ]);
+  if (planAnswer.status === "fulfilled") plan.value = planAnswer.value.data;
+  else {
+    loadError.value = true;
+    failed(planAnswer.reason);
   }
+  if (proposalAnswer.status === "fulfilled")
+    proposals.value = proposalAnswer.value.data.results || [];
+  else if (planAnswer.status === "fulfilled") failed(proposalAnswer.reason);
+  loading.value = false;
 }
 
 // One answer of the agent: its words in the conversation, the plan and the proposals as the server sees them now.
