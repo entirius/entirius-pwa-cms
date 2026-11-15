@@ -32,6 +32,7 @@ const ACTIVITY_KINDS = [
   "score",
   "task",
   "deal",
+  "settings",
 ];
 
 describe("leads activity kinds", () => {

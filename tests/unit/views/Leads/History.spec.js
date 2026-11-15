@@ -1,0 +1,96 @@
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { flushPromises } from "@vue/test-utils";
+
+const leads = vi.hoisted(() => ({ GET_History: vi.fn(), GET_HistoryActors: vi.fn(), GET_Companies: vi.fn() }));
+vi.mock("@/api/leads/api", () => leads);
+vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification: vi.fn() }) }));
+
+import History from "@/views/Leads/History.vue";
+import { historyRow, actorLabel } from "@/views/Leads/history";
+import { mountOutbound, byTestid } from "./outboundFrame";
+import { control, setControl } from "./leadsFrame";
+
+const entry = (extra = {}) => ({
+  id: 1,
+  company_id: 5,
+  company_name: "Acme Ltd",
+  contact_id: null,
+  deal_id: null,
+  deal_title: null,
+  kind: "task",
+  message: "cancelled: Call back",
+  data: { event: "task_cancelled", title: "Call back", reason: "duplicate" },
+  actor: "manager",
+  created_at: "2026-11-15T10:00:00Z",
+  ...extra,
+});
+const stubs = { EntitySearchPicker: { name: "EntitySearchPicker", props: ["modelValue", "fetchFn"], template: "<div />" } };
+const mounted = async () => {
+  const wrapper = mountOutbound(History, { area: "leads.companies", stubs });
+  await flushPromises();
+  return wrapper;
+};
+const lastParams = () => leads.GET_History.mock.calls.at(-1)[0];
+
+// U11: History — the journal of every change in the CRM.
+describe("Leads → History", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    leads.GET_History.mockResolvedValue({ data: { count: 1, results: [entry()] } });
+    leads.GET_HistoryActors.mockResolvedValue({ data: { results: ["manager", "system"] } });
+  });
+
+  it("shows when, who, what, on what and why for every entry", async () => {
+    const wrapper = await mounted();
+    const row = byTestid(wrapper, "history-row");
+    expect(row.text()).toContain("manager");
+    expect(row.text()).toContain("Task cancelled: Call back");
+    expect(row.text()).toContain("Acme Ltd");
+    expect(row.text()).toContain("duplicate");
+    expect(row.text()).not.toContain("Call back — duplicate");
+    expect(lastParams()).toMatchObject({ page: 1, page_size: 50 });
+  });
+
+  it("the person filter lists the actors and reloads from page one", async () => {
+    const wrapper = await mounted();
+    expect(control(wrapper, "history-actor").props("options")).toEqual([
+      { value: "manager", label: "manager" },
+      { value: "system", label: "System" },
+    ]);
+    setControl(wrapper, "history-actor", "manager");
+    await flushPromises();
+    expect(lastParams()).toMatchObject({ actor: "manager", page: 1 });
+  });
+
+  it("kind, company and period go to the API; one day is both ends", async () => {
+    const wrapper = await mounted();
+    setControl(wrapper, "history-kind", "task");
+    setControl(wrapper, "history-company", "5");
+    setControl(wrapper, "history-period", "2026-11-14");
+    await flushPromises();
+    expect(lastParams()).toMatchObject({ kind: "task", company: "5", date_from: "2026-11-14", date_to: "2026-11-14" });
+    setControl(wrapper, "history-period", "2026-11-01 – 2026-11-14");
+    await flushPromises();
+    expect(lastParams()).toMatchObject({ date_from: "2026-11-01", date_to: "2026-11-14" });
+  });
+
+  it("an empty journal says so", async () => {
+    leads.GET_History.mockResolvedValue({ data: { count: 0, results: [] } });
+    const wrapper = await mounted();
+    expect(control(wrapper, "history-table").props("emptyText")).toBe("Nothing has happened in the CRM yet");
+  });
+});
+
+describe("history rows", () => {
+  it("a settings entry is about the channel, a deal entry names the deal", () => {
+    const settings = historyRow(entry({ company_id: null, company_name: null, kind: "settings", actor: "anna", data: { event: "channel_settings", changes: { history_months: { from: 24, to: 12 } } } }));
+    expect(settings).toMatchObject({ who: "anna", on: "Settings", what: "Settings changed: history kept", companyId: null });
+    expect(historyRow(entry({ deal_title: "Pilot" })).on).toBe("Acme Ltd · Pilot");
+  });
+
+  it("system and an import read as words", () => {
+    expect(actorLabel("system")).toBe("System");
+    expect(actorLabel("import:12")).toBe("Import");
+    expect(actorLabel("")).toBe("System");
+  });
+});
