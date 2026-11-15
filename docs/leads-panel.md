@@ -127,6 +127,22 @@ panel requires); the card's menu appears only once the deal carries `archived_at
 the company card's Deals tab list no archived deal. History reads `deal_archived` / `deal_restored`.
 A read-only role sees neither Archive nor Restore (`mutates`).
 
+## Prospecting (django-leads app `prospecting`, U3)
+
+New people to contact at a company whose only person was the wrong one or opted out. Gated by the module
+(`requiresModule: "prospecting"`, route `meta.module`) and the areas `prospecting.people` / `prospecting.companies`.
+
+- Nav entry **Prospecting** (`/leads/prospecting`, desk only) with two route tabs: **People**
+  (`LeadsProspectingPeople`: candidates of every company, status filter, waiting first) and **Companies**
+  (`LeadsProspectingCompanies`: placeholder — an empty state that says finding companies is coming, and the companies
+  added by hand).
+- Company card tab **People** (`tabs/PeopleTab.vue`, shown with the module and `prospecting.people`): the candidates
+  of this company, the badge counts the waiting ones.
+- `prospecting/CandidateList.vue` (both places): name, job title, address, the four checks (role, address known,
+  still works there, address works) each `OK` or `No information` with source and date or the number of tries, the
+  missing confirmations in one line, Accept (a contact in leads; disabled without an address) and Reject.
+- Client: `src/api/prospecting/api.js` (the leads JWT client, the Leads channel).
+
 ## Supervisor's walk before the owner's acceptance (plan 34)
 
 - **Archived on the Deals list**: always there, also for a salesperson whose Mine list is empty; no detection of
