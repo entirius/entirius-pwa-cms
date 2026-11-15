@@ -24,6 +24,18 @@
       <AiToolboxHint />
       <ConfigBanner code="communicator.smtp" />
 
+      <!-- U8: on a phone the first draft says once, plainly, that the card moves; gone after "Got it" or the first swipe -->
+      <div v-if="showSwipeIntro" class="review__swipe-intro flex-column gap-2" role="note" data-testid="review-swipe-intro">
+        <p class="fw-600 m-0">{{ $t("leads.review.swipe_intro_title") }}</p>
+        <div class="flex jc-sb gap-4">
+          <span data-testid="review-swipe-intro-left"><span aria-hidden="true">←</span> {{ $t("leads.review.swipe_intro_left") }}</span>
+          <span data-testid="review-swipe-intro-right">{{ $t("leads.review.swipe_intro_right") }} <span aria-hidden="true">→</span></span>
+        </div>
+        <BasicButton class="as-s" variant="secondary" data-testid="review-swipe-intro-ok" @click="dismissSwipeIntro">
+          {{ $t("leads.review.swipe_intro_ok") }}
+        </BasicButton>
+      </div>
+
       <div v-if="failedVersion" class="review__failed flex-column gap-4" role="alert" data-testid="review-failed">
         <p class="review__failed-text m-0">
           {{ $t("leads.review.rewrite_failed", { reason: failedVersion.failure_detail || failedVersion.failure_code }) }}
@@ -166,9 +178,36 @@ const discarding = ref(false);
 let confirmationTimer = null;
 let settle = null;
 
-const { offset, handlers } = useSwipe({ onRight: accept, onLeft: skip });
 // The swipe hint is for a touch screen: a desk has the buttons (acceptance c6).
 const isDesktop = useIsDesktop();
+// U8: the one-time swipe intro; remembered in this browser only (a lost value shows it once more, nothing worse).
+const SWIPE_INTRO_KEY = "cms_leads_swipe_intro_seen";
+const swipeIntroSeen = ref((() => {
+  try {
+    return localStorage.getItem(SWIPE_INTRO_KEY) === "1";
+  } catch {
+    return false;
+  }
+})());
+const dismissSwipeIntro = () => {
+  swipeIntroSeen.value = true;
+  try {
+    localStorage.setItem(SWIPE_INTRO_KEY, "1");
+  } catch {
+    // storage blocked: the intro is gone for this visit
+  }
+};
+const showSwipeIntro = computed(() => !isDesktop.value && !!message.value && !editing.value && !failedVersion.value && !swipeIntroSeen.value);
+const { offset, handlers } = useSwipe({
+  onRight: () => {
+    dismissSwipeIntro();
+    return accept();
+  },
+  onLeft: () => {
+    dismissSwipeIntro();
+    return skip();
+  },
+});
 
 const companyId = computed(() => companyIdFromSubjectRef(message.value?.thread?.subject_ref));
 const companyName = computed(
@@ -504,6 +543,12 @@ onBeforeUnmount(() => clearTimeout(confirmationTimer));
   background: var(--positive-subtle);
   color: var(--text-body);
   font-weight: 600;
+}
+.review__swipe-intro {
+  padding: var(--space-8);
+  border-radius: var(--radius-lg);
+  background: var(--info-subtle);
+  color: var(--text-body);
 }
 .review__failed {
   padding: var(--space-8);

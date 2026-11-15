@@ -177,6 +177,10 @@ One rule: the same thing looks the same everywhere.
   "Accepted — goes out within minutes" (an open window) or the send-state sentence. No toast, no full-screen panel;
   an empty queue keeps the screen with the line above an empty state whose button goes back (Inbox or Approvals).
   "Draft N of M" counts in the Inbox's order (`conversations/?state=draft` rows, then the drafts no row shows).
+- **Swipe intro (U8)**: on a phone the first draft carries a one-time note above it (`review-swipe-intro`,
+  `role="note"`): "← Skip · Send →" with Got it. Got it or the first swipe hides it for good in that browser
+  (`localStorage` `cms_leads_swipe_intro_seen`; blocked storage = shown again next visit). The small muted
+  `review-swipe-hint` under the draft stays. A desk never shows either.
 - **Approvals**: a bulk refusal stands in the Problem cell (`fit-content(20rem)`, it wraps; the table keeps its width);
   the Skip dialog says "These mails will not be sent."; Age reads today / 1 day / N days.
 - **Settings forms** (`src/utils/leadsForm.js`): `missingFields` names an empty required field before the request
