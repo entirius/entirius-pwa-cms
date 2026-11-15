@@ -1098,7 +1098,7 @@ const routes = [
         component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/History.vue"),
         meta: { requiresAuth: true, titleKey: "leads.journal.title", panel: "leads", area: AREAS.LEADS_COMPANIES, module: "leads", moduleVersion: OUTBOUND, page: true, desktop: true },
       },
-      // U3 (prospecting app of django-leads, munin key prospecting): People = candidates with their checks, Companies = placeholder
+      // U3 (prospecting app of django-leads, munin key prospecting): People = candidates with their checks
       {
         path: "prospecting",
         redirect: { name: "LeadsProspectingPeople" },
@@ -1108,12 +1108,6 @@ const routes = [
         name: "LeadsProspectingPeople",
         component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Prospecting.vue"),
         meta: { requiresAuth: true, titleKey: "leads.prospecting.title", panel: "leads", area: AREAS.PROSPECTING_PEOPLE, module: "prospecting", page: true },
-      },
-      {
-        path: "prospecting/companies",
-        name: "LeadsProspectingCompanies",
-        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Prospecting.vue"),
-        meta: { requiresAuth: true, titleKey: "leads.prospecting.title", panel: "leads", area: AREAS.PROSPECTING_COMPANIES, module: "prospecting", page: true },
       },
       {
         path: "inbox",

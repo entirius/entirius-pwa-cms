@@ -24,7 +24,7 @@ describe("cancelledLine", () => {
   });
 
   it("without a reason or a date it says only who; any other task has no line", () => {
-    expect(cancelledLine({ status: "cancelled", done_by: "", done_at: null, outcome: "" })).toBe("Cancelled by system");
+    expect(cancelledLine({ status: "cancelled", done_by: "", done_at: null, outcome: "" })).toBe("Cancelled by System");
     expect(cancelledLine({ status: "done", done_by: "manager", outcome: "ok" })).toBe("");
   });
 });

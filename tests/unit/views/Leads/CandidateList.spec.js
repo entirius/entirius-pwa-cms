@@ -102,6 +102,25 @@ describe("Prospecting candidate list (U3)", () => {
     expect(notify.spawnNotification).toHaveBeenCalledWith(expect.objectContaining({ type: "negative" }));
   });
 
+  it("an erased address and a company that left the channel are said in words", async () => {
+    const wrapper = await mountList();
+    api.POST_CandidateAccept.mockRejectedValueOnce({ response: { status: 400, data: { message: "erased_address" } } });
+    await byId(wrapper, "candidate-accept").trigger("click");
+    await flushPromises();
+    expect(notify.spawnNotification).toHaveBeenLastCalledWith({ msg: t("leads.prospecting.erased_address"), type: "negative" });
+    api.POST_CandidateAccept.mockRejectedValueOnce({ response: { status: 400, data: { message: "no company leads.Company:7 in this channel" } } });
+    await byId(wrapper, "candidate-accept").trigger("click");
+    await flushPromises();
+    expect(notify.spawnNotification).toHaveBeenLastCalledWith({ msg: t("leads.prospecting.no_company"), type: "negative" });
+  });
+
+  it("pages a long list", async () => {
+    const many = Array.from({ length: 45 }, (_, i) => candidate({ id: i + 1 }));
+    const wrapper = await mountList({}, many);
+    expect(wrapper.findAll('[data-testid="candidate"]')).toHaveLength(20);
+    expect(wrapper.find('[data-testid="candidates-pages"]').exists()).toBe(true);
+  });
+
   it("a candidate without an address cannot be accepted", async () => {
     const wrapper = await mountList({}, [candidate({ email: "" })]);
     expect(byId(wrapper, "candidate-accept").attributes("disabled")).toBeDefined();

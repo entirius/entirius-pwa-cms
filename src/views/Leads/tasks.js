@@ -1,4 +1,5 @@
 import { t } from "@/i18n";
+import { activityActor } from "@/utils/leadsLabels";
 import { channelTimeZone, formatLeadsDay, formatTime } from "@/utils/leadsTime";
 import { pluralKey } from "@/utils/plural";
 
@@ -46,7 +47,7 @@ export const defaultDue = (now = new Date()) => `${isoToPicker(now.toISOString()
 // U5: who cancelled a task, when, and why — "Cancelled by anna · 15 Nov 2026 — duplicate"; empty for any other task.
 export function cancelledLine(task) {
   if (task.status !== "cancelled") return "";
-  const who = task.done_by || t("leads.history.actor_system");
+  const who = activityActor(task.done_by);
   const line = t("leads.tasks.cancelled_by", { who, date: task.done_at ? formatLeadsDay(task.done_at) : "" }).replace(/ · $/, "");
   return task.outcome ? `${line} — ${task.outcome}` : line;
 }

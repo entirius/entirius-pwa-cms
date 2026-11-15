@@ -190,8 +190,6 @@ const items = computed(() =>
 
 function itemLabel(item) {
   if (item.type === "task") return item.title;
-  if (item.type === "return")
-    return t("leads.ai_crm.item_return", { company: item.subject_label });
   return t(`leads.ai_crm.item_${item.type}`, { count: item.count });
 }
 

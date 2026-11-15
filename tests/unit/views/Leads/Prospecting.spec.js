@@ -6,7 +6,6 @@ import pl from "@/i18n/locales/pl.json";
 
 const api = vi.hoisted(() => ({
   GET_Candidates: vi.fn(() => Promise.resolve({ data: { results: [] } })),
-  GET_ProspectCompanies: vi.fn(),
   POST_CandidateAccept: vi.fn(),
   POST_CandidateReject: vi.fn(),
 }));
@@ -39,20 +38,12 @@ describe("Prospecting page (U3)", () => {
     const wrapper = await mountPage("LeadsProspectingPeople");
     expect(wrapper.find('[data-testid="prospecting-people"]').exists()).toBe(true);
     expect(api.GET_Candidates).toHaveBeenCalledWith({ subject_ref: undefined, status: "pending" });
-    expect(api.GET_ProspectCompanies).not.toHaveBeenCalled();
   });
 
-  it("Companies is a placeholder with the companies added by hand", async () => {
-    api.GET_ProspectCompanies.mockResolvedValue({ data: { description: "x", results: [{ id: 1, name: "New Shop", domain: "new.test" }] } });
-    const wrapper = await mountPage("LeadsProspectingCompanies");
-    expect(wrapper.find('[data-testid="prospecting-companies-placeholder"]').exists()).toBe(true);
-    expect(wrapper.find('[data-testid="prospecting-companies-table"]').text()).toContain("New Shop");
-  });
-
-  it("the tabs switch routes", async () => {
+  it("has no Companies tab: finding companies is not built", async () => {
     const wrapper = await mountPage("LeadsProspectingPeople");
-    wrapper.findComponent('[data-testid="prospecting-tabs"]').vm.$emit("update:modelValue", "companies");
-    expect(router.push).toHaveBeenCalledWith({ name: "LeadsProspectingCompanies" });
+    expect(wrapper.find('[data-testid="prospecting-tabs"]').exists()).toBe(false);
+    expect(wrapper.find('[data-testid="prospecting-companies-placeholder"]').exists()).toBe(false);
   });
 
   it("the areas belong to the Leads panel and are named in both languages", () => {

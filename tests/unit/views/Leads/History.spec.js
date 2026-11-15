@@ -6,7 +6,8 @@ vi.mock("@/api/leads/api", () => leads);
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification: vi.fn() }) }));
 
 import History from "@/views/Leads/History.vue";
-import { historyRow, actorLabel } from "@/views/Leads/history";
+import { historyRow } from "@/views/Leads/history";
+import { activityActor as actorLabel } from "@/utils/leadsLabels";
 import { mountOutbound, byTestid } from "./outboundFrame";
 import { control, setControl } from "./leadsFrame";
 

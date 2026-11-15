@@ -4,7 +4,7 @@
     <p v-else-if="error && !rows.length" class="t-negative m-0" role="alert" data-testid="candidates-error">{{ error }}</p>
     <EmptyState v-else-if="!rows.length" icon="empty" size="sm" :title="$t('leads.prospecting.empty')" data-testid="candidates-empty" />
     <BasicCard
-      v-for="row in rows"
+      v-for="row in pageRows"
       :key="row.id"
       :title="`${row.first_name} ${row.last_name}`"
       gap
@@ -45,15 +45,17 @@
         data-testid="candidate-status"
       />
     </BasicCard>
+    <Pagination v-if="pages > 1" v-model:page="page" :pages="pages" data-testid="candidates-pages" />
   </section>
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { t } from "@/i18n";
 import { GET_Candidates, POST_CandidateAccept, POST_CandidateReject } from "@/api/prospecting/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { useNotifyStore } from "@/stores/notify";
+import { formatLeadsDay } from "@/utils/leadsTime";
 
 // U3: candidates for a company (the company card's People tab, `subjectRef`) or of every company (Prospecting →
 // People). Every check shows its result — "No information" when it is still missing after every try — with source
@@ -68,8 +70,13 @@ const rows = ref([]);
 const loading = ref(true);
 const error = ref("");
 const busy = ref(null);
+// The service sends up to 200 candidates in one answer (no server paging): the list pages them here.
+const PAGE_SIZE = 20;
+const page = ref(1);
+const pages = computed(() => Math.ceil(rows.value.length / PAGE_SIZE));
+const pageRows = computed(() => rows.value.slice((page.value - 1) * PAGE_SIZE, page.value * PAGE_SIZE));
 
-const dateText = (value) => (value ? new Date(value).toLocaleDateString() : "—");
+const dateText = (value) => (value ? formatLeadsDay(value) : "—");
 const sourceText = (check) =>
   check.result === "ok"
     ? t("leads.prospecting.checked", { source: check.source || "—", date: dateText(check.checked_at) })
@@ -80,6 +87,7 @@ async function load() {
   try {
     const params = { subject_ref: props.subjectRef || undefined, status: props.status || undefined };
     rows.value = (await GET_Candidates(params)).data.results;
+    page.value = 1;
     error.value = "";
     emit("count", rows.value.filter((row) => row.status === "pending").length);
   } catch (err) {
@@ -87,6 +95,15 @@ async function load() {
   } finally {
     loading.value = false;
   }
+}
+
+// Accept can be refused for two reasons the person can act on: the address was erased (GDPR), or the company is not
+// in this channel any more.
+function refusalText(err) {
+  const message = extractApiMessage(err, "");
+  if (/erased_address/.test(message)) return t("leads.prospecting.erased_address");
+  if (/no company/.test(message)) return t("leads.prospecting.no_company");
+  return message || t("leads.common.error");
 }
 
 async function decide(row, call, messageKey) {
@@ -98,7 +115,7 @@ async function decide(row, call, messageKey) {
     emit("count", rows.value.filter((item) => item.status === "pending").length);
     emit("changed");
   } catch (err) {
-    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.common.error")), type: "negative" });
+    notify.spawnNotification({ msg: refusalText(err), type: "negative" });
   } finally {
     busy.value = null;
   }

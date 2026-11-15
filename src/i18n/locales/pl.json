@@ -4282,15 +4282,11 @@
   "leads": {
     "prospecting": {
       "title": "Prospecting",
-      "tabs": {
-        "people": "Osoby",
-        "companies": "Firmy"
-      },
       "people_help": "Nowe osoby do kontaktu w firmach, w których jedyna osoba okazała się niewłaściwa albo wypisała się. Tylko zaakceptowana osoba zostaje kontaktem i może dostać maila.",
       "company_help": "Osoby znalezione dla tej firmy. Zaakceptuj osobę, żeby dodać ją jako kontakt; brakujące potwierdzenia są oznaczone.",
-      "companies_title": "Szukanie nowych firm wkrótce",
-      "companies_help": "Tu pojawią się nowe firmy z publicznych rejestrów. Na razie lista pokazuje tylko firmy dodane ręcznie.",
       "empty": "Brak kandydatów",
+      "erased_address": "Ten adres został usunięty na prośbę osoby i nie można go dodać jako kontaktu",
+      "no_company": "Firmy tego kandydata nie ma w tym kanale",
       "no_title": "Brak stanowiska",
       "no_email": "Brak adresu",
       "check": {
@@ -4317,9 +4313,7 @@
         "accepted": "Zaakceptowane",
         "rejected": "Odrzucone",
         "all": "Wszystkie"
-      },
-      "col_name": "Firma",
-      "col_domain": "Domena"
+      }
     },
     "inbox": {
       "title": "Skrzynka",
@@ -4923,9 +4917,7 @@
       "next_stopped": "Dalej: sekwencja jest zatrzymana",
       "next_resumes": "Dalej: sekwencja wznowi się {date}",
       "next_paused": "Dalej: sekwencja jest wstrzymana, dopóki jej nie wznowisz",
-      "event_settings": "Zmiana ustawień: {fields}",
-      "actor_system": "system",
-      "actor_import": "import"
+      "event_settings": "Zmiana ustawień: {fields}"
     },
     "problem": {
       "legal_footer": "Wiadomość nie ma stopki prawnej — ustaw stopkę w Ustawieniach → Ustawienia wysyłki",
@@ -5232,7 +5224,6 @@
       "today": "Dziś",
       "item_drafts": "Przejrzyj drafty do akceptu: {count}",
       "item_replies": "Obsłuż odpowiedzi: {count}",
-      "item_return": "Wróć do firmy {company}",
       "chat_title": "Rozmowa",
       "hint": "Napisz, co zrobiłeś, np. „zrobione 1: dzwoniłem, zainteresowani” albo „notatka 2: prosi o ofertę”. Wpisz „plan”, żeby zobaczyć listę.",
       "placeholder": "Co zrobiłeś?",

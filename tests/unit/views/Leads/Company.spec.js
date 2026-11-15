@@ -396,7 +396,7 @@ describe("Company card header", () => {
       const wrapper = await mountCard();
       const lines = wrapper.findAll('[data-testid="timeline-event"]').map((line) => line.text().replace(/\s+/g, " "));
       expect(lines[0]).toContain("Task cancelled: Call — urgent · manager");
-      expect(lines[1]).toContain("· system");
+      expect(lines[1]).toContain("· System");
     });
 
     it("a 404 says the company was not found", async () => {

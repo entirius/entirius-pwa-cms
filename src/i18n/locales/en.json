@@ -4283,15 +4283,11 @@
   "leads": {
     "prospecting": {
       "title": "Prospecting",
-      "tabs": {
-        "people": "People",
-        "companies": "Companies"
-      },
       "people_help": "New people to contact at companies whose only person was the wrong one or opted out. Only an accepted person becomes a contact and can be mailed.",
       "company_help": "People found for this company. Accept one to add it as a contact; missing confirmations are marked.",
-      "companies_title": "Finding new companies is coming",
-      "companies_help": "This list will hold new companies found in public registers. For now it only shows companies added by hand.",
       "empty": "No candidates",
+      "erased_address": "This address was erased at the person's request and cannot be added as a contact",
+      "no_company": "The company of this candidate is not in this channel",
       "no_title": "No job title",
       "no_email": "No address",
       "check": {
@@ -4318,9 +4314,7 @@
         "accepted": "Accepted",
         "rejected": "Rejected",
         "all": "All"
-      },
-      "col_name": "Company",
-      "col_domain": "Domain"
+      }
     },
     "inbox": {
       "title": "Inbox",
@@ -4924,9 +4918,7 @@
       "next_stopped": "Next: the sequence is stopped",
       "next_resumes": "Next: the sequence resumes on {date}",
       "next_paused": "Next: the sequence is paused until you resume it",
-      "event_settings": "Settings changed: {fields}",
-      "actor_system": "system",
-      "actor_import": "import"
+      "event_settings": "Settings changed: {fields}"
     },
     "problem": {
       "legal_footer": "The mail has no legal footer — set the footer in Settings → Send settings",
@@ -5233,7 +5225,6 @@
       "today": "Today",
       "item_drafts": "Review the drafts waiting: {count}",
       "item_replies": "Answer the replies waiting: {count}",
-      "item_return": "Come back to {company}",
       "chat_title": "Conversation",
       "hint": "Tell me what you did, e.g. “done 1: called, interested” or “note 2: asked for a quote”. Type “plan” for the list.",
       "placeholder": "What did you do?",

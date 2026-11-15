@@ -1,5 +1,5 @@
 import { t } from "@/i18n";
-import { activityKindLabel, activityText, replyTypeLabel } from "@/utils/leadsLabels";
+import { activityActor, activityKindLabel, activityText, replyTypeLabel } from "@/utils/leadsLabels";
 
 // History (U11): one activity of the channel as a journal row — who, what, on what, why.
 // The kinds the person filter offers, in the order of the leads timeline.
@@ -9,14 +9,6 @@ export const HISTORY_KINDS = [
 ];
 
 export const kindLabel = (kind) => activityKindLabel(kind);
-
-// `system` and an import batch read as words; a person is their username. `import:` is the person filter's entry
-// for every import batch (leads `activities/actors/`).
-export function actorLabel(actor = "") {
-  if (!actor || actor === "system") return t("leads.journal.system");
-  if (actor.startsWith("import:")) return t("leads.journal.import");
-  return actor;
-}
 
 // The kinds whose reason a person typed (a cancelled task, a lost deal, a skipped draft): shown as typed.
 const TYPED_REASON_KINDS = new Set(["task", "deal", "skipped", "rule"]);
@@ -41,5 +33,5 @@ export function historyRow(activity) {
   const on = activity.company_id
     ? [activity.company_name, activity.deal_title].filter(Boolean).join(" · ")
     : t("leads.journal.channel");
-  return { id: activity.id, who: actorLabel(activity.actor), what, on, reason: reasonLabel(activity), companyId: activity.company_id || null };
+  return { id: activity.id, who: activityActor(activity.actor), what, on, reason: reasonLabel(activity), companyId: activity.company_id || null };
 }

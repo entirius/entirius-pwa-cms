@@ -159,10 +159,10 @@ function messageText(message, kind) {
 // The kind of an activity as a word (History's kind filter).
 export const activityKindLabel = (kind) => label(`leads.activity.kind.${kind}`, capitalize(humanize(kind)));
 
-// Who wrote an activity (U5): a person by username, `system` and an import batch as words.
+// Who wrote an activity (U5, the History journal, a cancelled task): a person by username, `system` and an import batch as words.
 export function activityActor(actor = "") {
-  if (!actor || actor === "system") return t("leads.history.actor_system");
-  if (actor.startsWith("import:")) return t("leads.history.actor_import");
+  if (!actor || actor === "system") return t("leads.journal.system");
+  if (actor.startsWith("import:")) return t("leads.journal.import");
   return actor;
 }
 
