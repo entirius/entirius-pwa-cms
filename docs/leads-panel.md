@@ -127,6 +127,15 @@ panel requires); the card's menu appears only once the deal carries `archived_at
 the company card's Deals tab list no archived deal. History reads `deal_archived` / `deal_restored`.
 A read-only role sees neither Archive nor Restore (`mutates`).
 
+## Potential dot (django-leads with `potential`, U2)
+
+`PotentialDot.vue` (colour, ★ for a manual colour, the reason from `potential.js` as its title) on the company list
+(`CompanyList.vue`: dot, legend, filter `potential`) and on the card (`Company.vue`, with the reason). A click opens
+`PotentialDialog.vue` (`POST companies/<id>/potential/` with a required `comment`, `DELETE` = back to the rules).
+`PotentialSettings.vue` (route `LeadsPotential`, Settings → Sales process) reads and PATCHes `channel/` `potential`.
+Today shows the task of source `leads.potential.came_back` as "Come back to <company>". Every piece hides itself
+while the company rows carry no `potential` field (an older leads).
+
 ## Supervisor's walk before the owner's acceptance (plan 34)
 
 - **Archived on the Deals list**: always there, also for a salesperson whose Mine list is empty; no detection of

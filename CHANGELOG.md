@@ -6,6 +6,14 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- Leads panel, potential dot (django-leads with `potential`, U2): a green / orange / red dot beside every company on
+  Companies, with a three-line legend and a "Potential" filter (green, orange, red, no dot; `?potential=` in the
+  address); the dot's hover says why ("Reply: Not now · back 15.02.2027"), ★ marks a colour set by hand. A click on the
+  dot, on the list or on the company card (dot with its reason under the title), opens the manual dialog: three
+  colours, a required Reason (Save stays greyed until it is written), an optional come-back day and "Back to
+  automatic". Settings → Potential edits the thresholds (silence until red, skipped draft and red come-back days, the
+  colour of each reply type). Today names the come-back task "Come back to <company>"; History reads the dot's changes
+  and a skipped draft. Hidden while leads sends no `potential`.
 - Leads panel: a possible opt-out can be marked "Not an opt-out" beside Confirm opt-out (django-communicator
   `dismiss-optout`, no confirm); the conversation, the card's contacts and History reload, and the reply loses its
   opt-out mark. The Next line of a possible opt-out reads "nothing is sent until you confirm the opt-out or mark it as
