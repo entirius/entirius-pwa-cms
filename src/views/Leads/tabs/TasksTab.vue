@@ -29,6 +29,16 @@
         <IconButton class="show-mobile" mutates icon="check" size="sm" :label="$t('leads.task.mark_done')" data-testid="task-done-icon" @click.stop="openDialog('done', row)" />
       </template>
     </DataTable>
+    <!-- U5: the company's cancelled tasks — who, when and why; the API's newest first -->
+    <section v-if="cancelled.length" class="flex-column gap-2" :data-testid="`${prefix}-tasks-cancelled`">
+      <h3 class="fs-300 m-0">{{ $t("leads.tasks.cancelled_title") }}</h3>
+      <ul class="flex-column gap-2 m-0 tasks-tab__cancelled">
+        <li v-for="task in cancelled" :key="task.id" class="flex-column gap-1" data-testid="task-cancelled-row">
+          <span class="t-strike">{{ task.title }}</span>
+          <span class="t-secondary fs-200" data-testid="task-cancelled-line">{{ cancelledLine(task) }}</span>
+        </li>
+      </ul>
+    </section>
     <TaskDialog v-model:open="dialogOpen" :mode="dialogMode" :task="dialogTask" :company="company" :subject="subject" @saved="onSaved" />
   </BasicCard>
 </template>
@@ -41,7 +51,7 @@ import { extractApiMessage } from "@/composables/useFormErrors";
 import { useNotifyStore } from "@/stores/notify";
 import { companySubjectRef } from "@/utils/subjectRef";
 import TaskDialog from "../TaskDialog.vue";
-import { taskDue } from "../tasks";
+import { cancelledLine, taskDue } from "../tasks";
 
 // On a phone the due badge rides under the title and Mark done is an icon: the table fits 390 px (acceptance M3).
 // Company card → Tasks (django-todo, `subject_ref = leads.Company:<id>`): the open tasks, Add task, Log call, Mark
@@ -54,10 +64,13 @@ const props = defineProps({
 const emit = defineEmits(["count", "changed"]);
 const notify = useNotifyStore();
 const tasks = ref([]);
+const cancelled = ref([]);
 const loading = ref(true);
 const dialogOpen = ref(false);
 const dialogMode = ref("add");
 const dialogTask = ref(null);
+
+const CANCELLED_SHOWN = 20;
 
 const prefix = computed(() => (props.deal ? "deal" : "company"));
 const subject = computed(() =>
@@ -92,9 +105,13 @@ function onSaved() {
 
 async function load() {
   try {
-    const { data } = await GET_Tasks({ subject_ref: subject.value.ref, status: "open", page_size: 100 });
-    tasks.value = data.results;
-    emit("count", data.count);
+    const [open, gone] = await Promise.all([
+      GET_Tasks({ subject_ref: subject.value.ref, status: "open", page_size: 100 }),
+      GET_Tasks({ subject_ref: subject.value.ref, status: "cancelled", page_size: CANCELLED_SHOWN }),
+    ]);
+    tasks.value = open.data.results;
+    cancelled.value = gone.data.results || [];
+    emit("count", open.data.count);
   } catch (err) {
     notify.spawnNotification({ msg: extractApiMessage(err, t("leads.task.error")), type: "negative" });
   } finally {
@@ -104,3 +121,14 @@ async function load() {
 
 onMounted(load);
 </script>
+
+<style scoped>
+.tasks-tab__cancelled {
+  list-style: none;
+  padding: 0;
+}
+
+.t-strike {
+  text-decoration: line-through;
+}
+</style>

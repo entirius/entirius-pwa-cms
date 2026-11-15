@@ -12,6 +12,10 @@ const dayNumber = (date) => Date.parse(dayKey(date)) / 86400000;
 
 // { label, tone }: overdue (negative), today (info), later (neutral), no date (neutral).
 export function taskDue(task, now = new Date()) {
+  if (task.status === "cancelled") {
+    const label = task.done_at ? t("leads.due.cancelled_on", { date: formatLeadsDay(task.done_at) }) : t("leads.today.chip_cancelled");
+    return { label, tone: "neutral" };
+  }
   if (task.status === "done") {
     const label = task.done_at ? t("leads.due.done_on", { date: formatLeadsDay(task.done_at) }) : t("leads.today.chip_done");
     return { label, tone: "positive" };
@@ -38,3 +42,11 @@ export function isoToPicker(iso) {
 }
 
 export const defaultDue = (now = new Date()) => `${isoToPicker(now.toISOString()).slice(0, 10)} 17:00`;
+
+// U5: who cancelled a task, when, and why — "Cancelled by anna · 15 Nov 2026 — duplicate"; empty for any other task.
+export function cancelledLine(task) {
+  if (task.status !== "cancelled") return "";
+  const who = task.done_by || t("leads.history.actor_system");
+  const line = t("leads.tasks.cancelled_by", { who, date: task.done_at ? formatLeadsDay(task.done_at) : "" }).replace(/ · $/, "");
+  return task.outcome ? `${line} — ${task.outcome}` : line;
+}

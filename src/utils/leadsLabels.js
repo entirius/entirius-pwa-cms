@@ -150,6 +150,13 @@ function messageText(message, kind) {
   return capitalize(humanize(message).replace(/ -> /g, " → "));
 }
 
+// Who wrote an activity (U5): a person by username, `system` and an import batch as words.
+export function activityActor(actor = "") {
+  if (!actor || actor === "system") return t("leads.history.actor_system");
+  if (actor.startsWith("import:")) return t("leads.history.actor_import");
+  return actor;
+}
+
 // Status words as badges: the same tone for a message everywhere it shows (bubble, list row, header).
 const MESSAGE_TONES = { sent: "positive", scheduled: "info", approved: "info", failed: "negative", review_required: "warning", skipped: "neutral", rejected: "neutral", suppressed: "negative" };
 export const messageTone = (status) => MESSAGE_TONES[status] || "neutral";

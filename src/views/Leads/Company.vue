@@ -67,6 +67,7 @@
           <ul v-if="company.activities.length" class="company__events flex-column gap-2 m-0" data-testid="company-events">
             <li v-for="activity in company.activities" :key="activity.id" data-testid="timeline-event">
               <span class="t-muted">{{ formatTime(activity.created_at) }}</span> {{ activityText(activity) }}
+              <span class="t-muted" data-testid="timeline-actor">· {{ activityActor(activity.actor) }}</span>
             </li>
           </ul>
         </section>
@@ -87,7 +88,7 @@ import { ReadonlyArea, usePageReadonly } from "@/composables/useReadonly";
 import { AREAS } from "@/configs/areas";
 import { useAccessStore } from "@/stores/access";
 import { useMuninStore } from "@/stores/munin";
-import { activityText } from "@/utils/leadsLabels";
+import { activityActor, activityText } from "@/utils/leadsLabels";
 import { outboundOn } from "@/utils/leadsOutbound";
 import { formatTime } from "@/utils/leadsTime";
 import { companySubjectRef } from "@/utils/subjectRef";

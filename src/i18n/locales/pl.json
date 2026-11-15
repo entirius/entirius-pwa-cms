@@ -4213,7 +4213,7 @@
     "product": "Produkt",
     "applied_at": "Zastosowano",
     "mode_suggestion": "Sugestia",
-    "mode_authoritative": "Autorytatywny",
+    "mode_authoritative": "Tryb autorytatywny",
     "reason_ok": "Zgodnie ze strategią",
     "reason_in_band": "W paśmie tolerancji",
     "reason_strategy_scope": "Strategia nie pozwala na ten ruch",
@@ -4255,7 +4255,6 @@
     "scope_category_idx": "Kategoria",
     "scope_channel": "Kanał",
     "category": "Kategoria",
-    "mode_authoritative": "Tryb autorytatywny",
     "mode_v2_note": "Wymaga trybu autopilota",
     "confirm_delete_title": "Usuń regułę",
     "confirm_delete_rule": "Ta reguła cenowa zostanie trwale usunięta.",
@@ -4814,7 +4813,9 @@
       "next_optout_possible": "Dalej: nic nie zostanie wysłane, dopóki nie potwierdzisz rezygnacji lub nie oznaczysz, że to nie rezygnacja",
       "next_stopped": "Dalej: sekwencja jest zatrzymana",
       "next_resumes": "Dalej: sekwencja wznowi się {date}",
-      "next_paused": "Dalej: sekwencja jest wstrzymana, dopóki jej nie wznowisz"
+      "next_paused": "Dalej: sekwencja jest wstrzymana, dopóki jej nie wznowisz",
+      "actor_system": "system",
+      "actor_import": "import"
     },
     "problem": {
       "legal_footer": "Wiadomość nie ma stopki prawnej — ustaw stopkę w Ustawieniach → Ustawienia wysyłki",
@@ -5127,6 +5128,7 @@
       "chip_upcoming": "Nadchodzące",
       "chip_none": "Bez terminu",
       "chip_done": "Zrobione",
+      "chip_cancelled": "Anulowane",
       "owner": "Opiekun",
       "owner_me": "Moje",
       "owner_none": "Bez opiekuna",
@@ -5142,7 +5144,8 @@
       "empty_list": "Brak zadań",
       "no_tasks_module": "Zadania nie są dostępne w tej instalacji",
       "nothing": "Nie ma tu nic do pokazania",
-      "empty_done": "Nic jeszcze nie zrobiono — zadanie trafia tutaj, gdy oznaczysz je jako zrobione"
+      "empty_done": "Nic jeszcze nie zrobiono — zadanie trafia tutaj, gdy oznaczysz je jako zrobione",
+      "empty_cancelled": "Nic nie anulowano — zadanie trafia tutaj, gdy je anulujesz"
     },
     "task": {
       "add": "Dodaj zadanie",
@@ -5194,7 +5197,8 @@
       "tomorrow": "Jutro {time}",
       "on": "{date}",
       "none": "Bez terminu",
-      "done_on": "Zrobione {date}"
+      "done_on": "Zrobione {date}",
+      "cancelled_on": "Anulowane {date}"
     },
     "score": {
       "title": "Ocena",
@@ -5208,7 +5212,9 @@
     },
     "tasks": {
       "open_title": "Otwarte zadania",
-      "empty": "Brak otwartych zadań"
+      "empty": "Brak otwartych zadań",
+      "cancelled_title": "Anulowane",
+      "cancelled_by": "Anulował(a) {who} · {date}"
     },
     "compose": {
       "reply_unavailable": "Nie udało się otworzyć odpowiedzi — spróbuj ponownie.",
