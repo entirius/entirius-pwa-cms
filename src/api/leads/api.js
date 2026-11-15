@@ -110,6 +110,10 @@ export const POST_AssignOwner = (companyIds, ownerId) =>
 // 409 not_eligible / no_legal_basis / communicator_channel_missing.
 export const POST_Compose = (id, body) => leadsApi.post(`${base()}/companies/${id}/compose/`, body);
 
+// U11: the channel history — every activity; filters actor, kind (comma-separated), company, date_from/date_to, paging.
+export const GET_History = (params) => leadsApi.get(`${base()}/activities/`, { params });
+export const GET_HistoryActors = () => leadsApi.get(`${base()}/activities/actors/`);
+
 export const GET_Funnel = (params) => leadsApi.get(`${base()}/reports/funnel/`, { params });
 
 export const POST_Rule = (body) => leadsApi.post(`${base()}/rules/`, body);

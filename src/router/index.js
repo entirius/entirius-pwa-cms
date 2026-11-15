@@ -1084,6 +1084,13 @@ const routes = [
         component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Reports.vue"),
         meta: { requiresAuth: true, titleKey: "leads.reports.title", panel: "leads", area: AREAS.LEADS_COMPANIES, module: "leads", moduleVersion: OUTBOUND, page: true, desktop: true },
       },
+      // U11: the journal of every change in the CRM
+      {
+        path: "history",
+        name: "LeadsHistory",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/History.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.journal.title", panel: "leads", area: AREAS.LEADS_COMPANIES, module: "leads", moduleVersion: OUTBOUND, page: true, desktop: true },
+      },
       {
         path: "inbox",
         name: "LeadsInbox",

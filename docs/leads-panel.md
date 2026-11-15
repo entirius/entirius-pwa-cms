@@ -5,7 +5,7 @@ same screens in two columns (`src/views/Leads/index.vue`, CSS grid only). One pa
 Communicator panel): munin keys `leads` and `communicator` both map to it, and every nav entry, route and
 Settings section carries the module it needs (`requiresModule` / `meta.module` / the hub's filter) — a section of
 a module that is off is simply not there. Nav (Leads CRM): Today (the panel root) · Inbox · Companies · Approvals ·
-Reports · Settings; a phone gets Today · Inbox · Companies in the bottom bar (Approvals, Reports and Settings are
+Reports · History · Settings; a phone gets Today · Inbox · Companies in the bottom bar (Approvals, Reports, History and Settings are
 `desktopOnly`; a Settings section still opens from a link), which Review (`meta.noBottomBar`) keeps off its sticky
 actions. The Inbox column carries a `SegmentedControl` Conversations | Companies (`leads-list-toggle`, shown with
 both modules); "Companies" opens the full list page. A company card keeps the list it came from in the left column
@@ -86,7 +86,11 @@ and closes a task with its outcome. Custom fields render through `CustomFields.v
 `settings/custom-fields` (`?entity=` company | contact | deal; the key is fixed after create, a 409 on the kind locks
 it; reorder = one PATCH `order` per moved row), `settings/scoring` (one active profile; Save creates it) and
 `settings/rules` (conditions from `GET fields/`); Scoring and Rules share `ConditionRow.vue` (ops per kind, "is empty"
-hides the value). `/leads/reports` (desktop) is the funnel as three tables, origin and period filters. Never parse a
+hides the value). `/leads/reports` (desktop) is the funnel as three tables, origin and period filters. `/leads/history` (desktop, U11) is
+the channel journal (`GET activities/`, server-paged): when, who, what, on what (company link · deal), reason in its own
+column (left out of the sentence; a coded one — `reply:not_now`, `manual`, `wrong_person` — as its label, a typed one as
+typed); filters person (`activities/actors/`: one entry per person, whose "<person> via ai-crm (…)" entries come with
+it, and one Import for every batch), kind, period, company (`views/Leads/history.js`). Never parse a
 `subject_ref` / `contact_ref` in a view: `src/utils/subjectRef.js` builds and reads them.
 
 ## Deals (django-leads 0.5.0)

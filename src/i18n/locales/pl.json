@@ -75,6 +75,7 @@
     "leads_do_not_contact": "Nie kontaktować",
     "leads_today": "Dziś",
     "leads_reports": "Raporty",
+    "leads_history": "Historia",
     "leads_deals": "Transakcje",
     "leads_deal_stages": "Etapy transakcji"
   },
@@ -4213,7 +4214,7 @@
     "product": "Produkt",
     "applied_at": "Zastosowano",
     "mode_suggestion": "Sugestia",
-    "mode_authoritative": "Autorytatywny",
+    "mode_authoritative": "Tryb autorytatywny",
     "reason_ok": "Zgodnie ze strategią",
     "reason_in_band": "W paśmie tolerancji",
     "reason_strategy_scope": "Strategia nie pozwala na ten ruch",
@@ -4255,7 +4256,6 @@
     "scope_category_idx": "Kategoria",
     "scope_channel": "Kanał",
     "category": "Kategoria",
-    "mode_authoritative": "Tryb autorytatywny",
     "mode_v2_note": "Wymaga trybu autopilota",
     "confirm_delete_title": "Usuń regułę",
     "confirm_delete_rule": "Ta reguła cenowa zostanie trwale usunięta.",
@@ -4680,7 +4680,8 @@
         "intel_empty": "Audyt strony niczego nie znalazł",
         "score": "Zaktualizowano ocenę",
         "task": "Zadanie",
-        "deal": "Szansa sprzedaży"
+        "deal": "Szansa sprzedaży",
+        "settings": "Zmiana ustawień"
       },
       "msg": {
         "message_sent": "Wysłano wiadomość",
@@ -4819,7 +4820,8 @@
       "next_optout_possible": "Dalej: nic nie zostanie wysłane, dopóki nie potwierdzisz rezygnacji lub nie oznaczysz, że to nie rezygnacja",
       "next_stopped": "Dalej: sekwencja jest zatrzymana",
       "next_resumes": "Dalej: sekwencja wznowi się {date}",
-      "next_paused": "Dalej: sekwencja jest wstrzymana, dopóki jej nie wznowisz"
+      "next_paused": "Dalej: sekwencja jest wstrzymana, dopóki jej nie wznowisz",
+      "event_settings": "Zmiana ustawień: {fields}"
     },
     "problem": {
       "legal_footer": "Wiadomość nie ma stopki prawnej — ustaw stopkę w Ustawieniach → Ustawienia wysyłki",
@@ -5538,6 +5540,35 @@
         "email": "Podaj poprawny adres e-mail",
         "format": "Użyj tylko znaków podanych w podpowiedzi",
         "number": "Podaj liczbę z dozwolonego zakresu"
+      }
+    },
+    "journal": {
+      "title": "Historia",
+      "person": "Osoba",
+      "kind": "Rodzaj",
+      "period": "Okres",
+      "company": "Firma",
+      "company_search": "Szukaj firmy",
+      "col_time": "Kiedy",
+      "col_who": "Kto",
+      "col_what": "Co",
+      "col_on": "Na czym",
+      "col_reason": "Powód",
+      "empty": "W CRM nic się jeszcze nie wydarzyło",
+      "none_match": "Żaden wpis nie pasuje do filtrów",
+      "system": "System",
+      "import": "Import",
+      "channel": "Ustawienia",
+      "setting": {
+        "resume_days": "dni do ponownego kontaktu",
+        "default_currency": "waluta deali",
+        "history_months": "okres przechowywania historii"
+      },
+      "reason": {
+        "reply_class": "Odpowiedź: {class}",
+        "wrong_person": "Niewłaściwa osoba",
+        "opted_out": "Kontakt się wypisał",
+        "optout_confirmed": "Wypisanie potwierdzone"
       }
     }
   },

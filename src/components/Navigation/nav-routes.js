@@ -404,6 +404,17 @@ export function buildNavRoutes() {
       desktopOnly: true,
     },
     {
+      // U11: every change of the CRM — when, who, what, on what, why; desk work
+      route: "/leads/history",
+      labelKey: "nav.leads_history",
+      icon: "clock-rotate-left",
+      query: {},
+      app: ["leads"],
+      requiresModule: "leads",
+      minVersion: "0.5.0",
+      desktopOnly: true,
+    },
+    {
       // Stages, templates, sequences and send settings live here as sections (UX-002d); desk work (Leads CRM) — a
       // section still opens on a phone from a link
       route: "/leads/settings",
