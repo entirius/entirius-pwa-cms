@@ -30,7 +30,7 @@
       <FormField :label="$t('leads.task.owner')" :error="errorOf('owner_id')">
         <BasicSelect v-model="form.ownerId" :options="owners" searchable clearable data-testid="task-owner" />
       </FormField>
-      <FormField v-if="!company && mode !== 'edit'" :label="$t('leads.task.company')" :hint="companyHint" required :error="errorOf('subject_ref')">
+      <FormField v-if="!company && mode !== 'edit'" :label="$t('leads.task.company')" required :error="errorOf('subject_ref')">
         <EntitySearchPicker
           v-model="form.companyId"
           v-model:display-value="form.companyName"
@@ -39,6 +39,7 @@
           data-testid="task-company"
           @update:model-value="loadContacts"
         />
+        <p v-if="companyCount" class="task-dialog__count t-muted m-0" data-testid="task-company-count">{{ companyCount }}</p>
       </FormField>
       <FormField v-if="contacts.length" :label="$t('leads.task.contact')">
         <BasicSelect v-model="form.contactId" :options="contacts" clearable data-testid="task-contact" />
@@ -171,12 +172,13 @@ function dismissToasts() {
 }
 
 // U6: the caller's companies first (`mine_first`, ignored by an older leads); with nothing typed the hint says how
-// many of how many are shown, so a missing name reads as "type to search", not as "not there".
-const companyHint = ref("");
+// many of how many are shown, so a missing name reads as "type to search", not as "not there". A live value, so it is
+// a line under the picker, never a hint (docs/ui-rules.md: hints can be turned off).
+const companyCount = ref("");
 async function findCompanies(search) {
   const { data } = await GET_Companies({ search, page: 1, mine_first: true });
   const shown = data.results.length;
-  companyHint.value = !search && data.count > shown ? t("leads.task.company_hint", { shown, total: data.count }) : "";
+  companyCount.value = !search && data.count > shown ? t("leads.task.company_hint", { shown, total: data.count }) : "";
   return data.results.map((row) => ({ value: String(row.id), label: row.name || row.domain, secondary: row.domain }));
 }
 
@@ -275,5 +277,9 @@ async function cancelTask() {
 <style scoped>
 .task-dialog__wide {
   grid-column: 1 / -1;
+}
+.task-dialog__count {
+  margin-top: var(--space-1);
+  font-size: var(--fs-200);
 }
 </style>

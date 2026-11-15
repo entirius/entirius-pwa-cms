@@ -82,7 +82,7 @@ Tasks (`subject_ref = leads.Company:<id>`, inside `ReadonlyArea` `todo.tasks`), 
 the gate's `mailable/` answer disables Send with its reason; 409 `not_eligible` / `no_legal_basis` under To) and the
 contact custom fields. One task dialog (`TaskDialog.vue`) adds, edits, logs a call (a phone task created, then done)
 and closes a task with its outcome; its company picker (Add task from Today) asks `companies/?mine_first=true` and,
-with nothing typed, hints "showing X of Y" (U6). Custom fields render through `CustomFields.vue` + `customFields.js`
+with nothing typed, says "showing X of Y" in a line under the picker (U6; a live value, never a hint). Custom fields render through `CustomFields.vue` + `customFields.js`
 (`fieldsFromDefinitions`, `validateValues`, `changedValues`, `formatValue`: the boot per kind). Settings sections:
 `settings/custom-fields` (`?entity=` company | contact | deal; the key is fixed after create, a 409 on the kind locks
 it; reorder = one PATCH `order` per moved row), `settings/scoring` (one active profile; Save creates it) and
