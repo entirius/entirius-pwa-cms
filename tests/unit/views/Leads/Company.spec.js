@@ -365,6 +365,12 @@ describe("Company card header", () => {
       expect(leads.GET_Attributes).toHaveBeenCalledWith("company");
     });
 
+    it("the People tab sits in the read-only area of prospecting.people, like Tasks in todo.tasks", async () => {
+      route.query = { tab: "people" };
+      const wrapper = await mountCard();
+      expect(wrapper.findComponent({ name: "ReadonlyArea" }).props("area")).toBe("prospecting.people");
+    });
+
     it("an older backend or no todo: no Tasks tab, no Details or Score", async () => {
       munin.isModuleAtLeast.mockReturnValue(false);
       const wrapper = await mountCard();

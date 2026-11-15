@@ -60,7 +60,7 @@ describe("Leads nav (UX-002d: one panel, Settings instead of four entries)", () 
     const crm = (isDesktop) =>
       filterNavRoutes(buildNavRoutes(), { panel: "leads", isDesktop, isModuleEnabled: () => true, isModuleAtLeast: () => true }).map((r) => r.route);
     expect(crm(false)).toEqual(["/leads/today", "/leads/inbox", "/leads/companies", "/leads/deals"]);
-    expect(crm(true)).toEqual(["/leads/ai-crm", "/leads/today", "/leads/inbox", "/leads/companies", "/leads/deals", "/leads/approvals", "/leads/reports", "/leads/history", "/leads/prospecting", "/leads/settings"]);
+    expect(crm(true)).toEqual(["/leads/ai-crm", "/leads/today", "/leads/inbox", "/leads/companies", "/leads/deals", "/leads/approvals", "/leads/reports", "/leads/history", "/leads/prospecting/people", "/leads/settings"]);
   });
 
   it("an entry whose backend module is off is not listed", () => {

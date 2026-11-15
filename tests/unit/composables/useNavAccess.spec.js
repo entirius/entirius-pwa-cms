@@ -51,6 +51,11 @@ describe("nav × django-access", () => {
     expect(pim).not.toContain("/pim/categories");
   });
 
+  it("the Prospecting entry opens a route with an area, so a role without prospecting.people does not see it", () => {
+    const entry = withAreas(buildNavRoutes(), router).find((item) => item.labelKey === "nav.leads_prospecting");
+    expect(entry.area).toBe("prospecting.people");
+  });
+
   it("keeps an entry without an area (its panel decides)", () => {
     expect(entriesOf("translation")).toEqual(["/translation-jobs"]);
   });

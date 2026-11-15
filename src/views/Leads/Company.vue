@@ -60,7 +60,9 @@
         <IntelTab v-else-if="tab === 'intel'" :company="company" />
         <DealsTab v-else-if="tab === 'deals'" :key="company.id" :company="company" />
         <ContactsTab v-else-if="tab === 'contacts'" :company="company" @changed="reload" />
-        <PeopleTab v-else-if="tab === 'people'" :key="company.id" :company="company" @count="peopleCount = $event" @changed="reload" />
+        <ReadonlyArea v-else-if="tab === 'people'" :area="AREAS.PROSPECTING_PEOPLE">
+          <PeopleTab :key="company.id" :company="company" @count="peopleCount = $event" @changed="reload" />
+        </ReadonlyArea>
         <ReadonlyArea v-else-if="tab === 'tasks'" :area="AREAS.TODO_TASKS">
           <TasksTab :key="company.id" :company="company" @count="taskCount = $event" @changed="reload" />
         </ReadonlyArea>

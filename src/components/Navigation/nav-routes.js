@@ -430,7 +430,7 @@ export function buildNavRoutes() {
     },
     {
       // U3: new people to contact (People) and the placeholder for new companies (Companies), the prospecting app of django-leads
-      route: "/leads/prospecting",
+      route: "/leads/prospecting/people", // a route with an area: a role without prospecting.people does not see the entry
       labelKey: "nav.leads_prospecting",
       icon: "users",
       query: {},
