@@ -5321,8 +5321,7 @@
       "tomorrow": "Tomorrow {time}",
       "on": "{date}",
       "none": "No date",
-      "done_on": "Done {date}",
-      "cancelled_on": "Cancelled {date}"
+      "done_on": "Done {date}"
     },
     "score": {
       "title": "Score",

@@ -71,8 +71,8 @@
           <!-- a phone stacks the task: title, its company, the due badge; Mark done is an icon in reach (N13) -->
           <template #cell-title="{ row }">
             <span class="flex-column gap-1">
-              <router-link v-if="row.to" class="t-accent" :to="row.to" :title="row.title" @click.stop>{{ row.title }}</router-link>
-              <span v-else :title="row.title">{{ row.title }}</span>
+              <router-link v-if="row.to" class="t-accent" :class="{ 'line-through': row.status === 'cancelled' }" :to="row.to" :title="row.title" @click.stop>{{ row.title }}</router-link>
+              <span v-else :class="{ 'line-through': row.status === 'cancelled' }" :title="row.title">{{ row.title }}</span>
               <span class="show-mobile t-secondary fs-200">{{ row.subject_label }}</span>
               <span v-if="row.cancelled" class="t-secondary fs-200" data-testid="task-cancelled-line">{{ row.cancelled }}</span>
               <StatusBadge class="show-mobile as-s" :tone="row.due.tone" :label="row.due.label" data-testid="task-due-inline" />

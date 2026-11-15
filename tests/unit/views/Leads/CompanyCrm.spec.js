@@ -6,7 +6,7 @@ const leads = vi.hoisted(() => ({
   PATCH_Company: vi.fn(),
   POST_Score: vi.fn(),
 }));
-const todo = vi.hoisted(() => ({ GET_Tasks: vi.fn() }));
+const todo = vi.hoisted(() => ({ GET_Tasks: vi.fn(), POST_TaskReopen: vi.fn() }));
 vi.mock("@/api/leads/api", () => leads);
 vi.mock("@/api/todo/api", () => todo);
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification: vi.fn() }) }));
@@ -130,6 +130,11 @@ describe("Company card → Tasks", () => {
     expect(byTestid(wrapper, "task-cancelled-row").text()).toContain("Demo");
     expect(byTestid(wrapper, "task-cancelled-line").text()).toBe("Cancelled by editor — duplicate");
     expect(wrapper.emitted("count")[0]).toEqual([0]);
+    // the same shape as Today's Cancelled chip: struck title, Reopen
+    expect(byTestid(wrapper, "task-cancelled-row").find(".line-through").exists()).toBe(true);
+    todo.POST_TaskReopen.mockResolvedValue({});
+    await byTestid(wrapper, "task-reopen").trigger("click");
+    expect(todo.POST_TaskReopen).toHaveBeenCalledWith(3);
   });
 
   it("the task text and Edit open the edit dialog", async () => {

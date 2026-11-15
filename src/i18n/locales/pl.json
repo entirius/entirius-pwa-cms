@@ -5320,8 +5320,7 @@
       "tomorrow": "Jutro {time}",
       "on": "{date}",
       "none": "Bez terminu",
-      "done_on": "Zrobione {date}",
-      "cancelled_on": "Anulowane {date}"
+      "done_on": "Zrobione {date}"
     },
     "score": {
       "title": "Ocena",

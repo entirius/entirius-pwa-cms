@@ -20,7 +20,7 @@ describe("cancelledLine", () => {
   it("names who, when and the reason", () => {
     const task = { status: "cancelled", done_by: "manager", done_at, outcome: "urgent" };
     expect(cancelledLine(task)).toBe(`Cancelled by manager · ${formatLeadsDay(done_at)} — urgent`);
-    expect(taskDue(task)).toEqual({ label: `Cancelled ${formatLeadsDay(done_at)}`, tone: "neutral" });
+    expect(taskDue(task)).toEqual({ label: "Cancelled", tone: "neutral" }); // the date stands once, in the line
   });
 
   it("without a reason or a date it says only who; any other task has no line", () => {

@@ -14,8 +14,7 @@ const dayNumber = (date) => Date.parse(dayKey(date)) / 86400000;
 // { label, tone }: overdue (negative), today (info), later (neutral), no date (neutral).
 export function taskDue(task, now = new Date()) {
   if (task.status === "cancelled") {
-    const label = task.done_at ? t("leads.due.cancelled_on", { date: formatLeadsDay(task.done_at) }) : t("leads.today.chip_cancelled");
-    return { label, tone: "neutral" };
+    return { label: t("leads.today.chip_cancelled"), tone: "neutral" }; // who and when stand in `cancelledLine`
   }
   if (task.status === "done") {
     const label = task.done_at ? t("leads.due.done_on", { date: formatLeadsDay(task.done_at) }) : t("leads.today.chip_done");
