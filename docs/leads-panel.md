@@ -114,16 +114,18 @@ changed rows (the unsaved state beside it, a toast when they landed), reorder by
 the stage's deals first; a 409 → "This stage holds deals") and Add. The deal board is titled "Deal board", so its crumbs never read "Deals / Deals". Amounts stay decimal strings (`BasicInput format="money"`,
 shown through `formatCost`). The bell maps `leads.Deal:<id>` to the deal card.
 
-**Deal archive (django-leads with `archived_at`).** A won or lost deal's card has a more menu with Archive
-(`POST deals/<id>/archive/`, no confirm); the archived card shows a `neutral` "Archived" badge beside the kind, one
-primary Restore (`POST deals/<id>/restore/`), the stage select disabled and no Edit; History stays. Both calls return
-the deal, the card turns into its other state and toasts; a 409 is the API's sentence. The Deals list (not the
-board) has a secondary toggle "Archived" in its `ActionBar` (`pressed` → `aria-pressed`, also for a read-only role):
-pressed, the URL carries `?archived=1`, the list asks `archived=true`, the title reads "Archived deals", the status
-select is hidden (search, owner and stage stay), rows show the Won / Lost badge and the empty state is "No archived
-deals"; pressing it again drops `archived` and the list is as it was. The status filter is Open / Won / Lost. The
-button is always on the list, on every filter and over an empty list (archiving ships with the module version the
-panel requires); the card's menu appears only once the deal carries `archived_at`. The board and
+**Deal archive (django-leads with `archived_at`).** A won or lost deal's card shows Archive beside Reopen, both in
+sight (U7; `POST deals/<id>/archive/`, no confirm, no more menu on a closed deal); the archived card shows a `neutral`
+"Archived" badge beside the kind, one primary Restore (`POST deals/<id>/restore/`), the stage select disabled and no
+Edit; History stays. Both calls return the deal, the card turns into its other state and toasts; a 409 is the API's
+sentence. The Deals list (not the board) has two tabs under its header, Active · Archived (`BasicTabs`
+`deals-tab-*`, also for a read-only role; U7): Archived puts `?archived=1` in the URL, the list asks `archived=true`,
+the title reads "Archived deals", the status select is hidden (search, owner and stage stay), rows show the Won / Lost
+badge and the empty state is "No archived deals"; Active drops `archived` and the list is as it was. The status filter
+is Open / Won / Lost. The tabs are always on the list, on every filter and over an empty list (archiving ships with
+the module version the panel requires); the card's Archive appears only once the deal carries `archived_at`. Back on
+the deal card and on Add company goes back in the history (the list with its tab and filters), else to Deals /
+Companies, as the company card does. The board and
 the company card's Deals tab list no archived deal. History reads `deal_archived` / `deal_restored`.
 A read-only role sees neither Archive nor Restore (`mutates`).
 
@@ -243,8 +245,8 @@ One rule: the same thing looks the same everywhere.
   happened to it and offers "Next draft" (`GET_ReviewMessage` returns the draft in any status, `null` on 404).
 - **Deals**: a board card moves by "Move to…" (BasicMenu of the other stages, `deal-card-stage`); a refused move or a
   closed reason dialog reads the board again and every read remounts the columns (`version` key) — the next drag
-  starts on fresh lists. The deal card: the stage select on its own labelled line; more menu (Delete deal) · Mark lost
-  · Mark won. An empty Mine offers "Show all deals" when the channel has open deals; a phone row carries the value.
+  starts on fresh lists. The deal card: the stage select on its own labelled line; open: more menu (Delete deal) · Mark lost
+  · Mark won; closed: Archive · Reopen. An empty Mine offers "Show all deals" when the channel has open deals; a phone row carries the value.
 - **One Save** (`src/views/Leads/saveAction.js`): every Leads settings page saves from one Save in the header, greyed
   with "Nothing to save" (`ActionBar` action `title`) until something changed. Send settings: the cards expose
   `{ dirty, save }` and the page saves only the changed ones (each card keeps its own error); Stages and Company types

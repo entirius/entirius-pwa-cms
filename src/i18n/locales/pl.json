@@ -5429,6 +5429,7 @@
       "none_mine": "Nie masz otwartych transakcji",
       "show_all_deals": "Pokaż wszystkie transakcje",
       "none_archived": "Brak zarchiwizowanych transakcji",
+      "tab_active": "Aktywne",
       "archived": "Zarchiwizowane",
       "archived_title": "Zarchiwizowane transakcje",
       "none_in_chip": "Brak transakcji w „{kind}”",

@@ -4,7 +4,9 @@ import { createPinia, setActivePinia } from "pinia";
 
 const push = vi.hoisted(() => vi.fn());
 const replace = vi.hoisted(() => vi.fn());
-vi.mock("vue-router", () => ({ useRouter: () => ({ push, replace }) }));
+const back = vi.hoisted(() => vi.fn());
+const history = vi.hoisted(() => ({ state: {} }));
+vi.mock("vue-router", () => ({ useRouter: () => ({ push, replace, back, options: { history } }) }));
 const api = vi.hoisted(() => ({
   GET_LeadTypes: vi.fn(() =>
     Promise.resolve({ data: { results: [{ code: "RETAILER", label: "Retailer", is_active: true }, { code: "OLD", label: "Old", is_active: false }] } })
@@ -34,6 +36,16 @@ describe("Leads — add one lead", () => {
   beforeEach(() => {
     setActivePinia(createPinia());
     vi.clearAllMocks();
+  });
+
+  // U7: Back on every page entered from a list — here back to where the person came from, else Companies.
+  it("Back goes back in the history, or to Companies when opened by URL", async () => {
+    history.state = { back: "/leads/companies?owner=all" };
+    mountForm().findComponent({ name: "PageHeader" }).props("back")();
+    expect(back).toHaveBeenCalledTimes(1);
+    history.state = {};
+    mountForm().findComponent({ name: "PageHeader" }).props("back")();
+    expect(push).toHaveBeenCalledWith({ name: "LeadsCompanies" });
   });
 
   it("offers the channel's active lead types and Unknown", async () => {

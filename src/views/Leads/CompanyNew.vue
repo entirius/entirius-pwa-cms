@@ -1,7 +1,7 @@
 <template>
   <PageLayout>
     <template #header>
-      <PageHeader :title="$t('leads.add.title')">
+      <PageHeader :title="$t('leads.add.title')" :back="goBack">
         <template #actions>
           <ActionBar :actions="actions" />
         </template>
@@ -78,6 +78,11 @@ const error = ref("");
 const busy = ref(false);
 
 const cardRoute = (id) => ({ name: "LeadsThread", params: { id } });
+// U7: Back goes where the person came from (Companies with its filters, Import); a page opened by URL goes to Companies.
+function goBack() {
+  if (typeof router.options?.history?.state?.back === "string") return router.back();
+  router.push({ name: "LeadsCompanies" });
+}
 const typeOptions = computed(() => [
   { value: "UNKNOWN", label: t("leads.lead_types.unknown") },
   ...leadTypes.active.map((type) => ({ value: type.code, label: type.label })),

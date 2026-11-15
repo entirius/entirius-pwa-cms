@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- Leads panel, deals: the list has Active and Archived tabs under its header instead of the "Archived" toggle
+  button; a won or lost deal shows Archive beside Reopen instead of under the more menu; Back on the deal card and on
+  Add company returns to where the person came from (the list with its tab and filters), as the company card does.
+- Tests: the Deals list suite moves to `tests/unit/views/Leads/DealsList.spec.js` — `Deals.spec.js` and `deals.spec.js`
+  were one file on a case-insensitive file system (macOS).
+
 ### Added
 
 - Leads panel: a possible opt-out can be marked "Not an opt-out" beside Confirm opt-out (django-communicator
