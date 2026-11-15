@@ -75,6 +75,7 @@
     "leads_do_not_contact": "Nie kontaktować",
     "leads_today": "Dziś",
     "leads_reports": "Raporty",
+    "leads_prospecting": "Prospecting",
     "leads_deals": "Transakcje",
     "leads_deal_stages": "Etapy transakcji"
   },
@@ -4278,6 +4279,47 @@
     "channel": "Kanał"
   },
   "leads": {
+    "prospecting": {
+      "title": "Prospecting",
+      "tabs": {
+        "people": "Osoby",
+        "companies": "Firmy"
+      },
+      "people_help": "Nowe osoby do kontaktu w firmach, w których jedyna osoba okazała się niewłaściwa albo wypisała się. Tylko zaakceptowana osoba zostaje kontaktem i może dostać maila.",
+      "company_help": "Osoby znalezione dla tej firmy. Zaakceptuj osobę, żeby dodać ją jako kontakt; brakujące potwierdzenia są oznaczone.",
+      "companies_title": "Szukanie nowych firm wkrótce",
+      "companies_help": "Tu pojawią się nowe firmy z publicznych rejestrów. Na razie lista pokazuje tylko firmy dodane ręcznie.",
+      "empty": "Brak kandydatów",
+      "no_title": "Brak stanowiska",
+      "no_email": "Brak adresu",
+      "check": {
+        "role": "Stanowisko pasuje do oferty",
+        "email": "Znany adres e-mail",
+        "employed": "Dalej tam pracuje",
+        "mailbox": "Adres działa"
+      },
+      "result": {
+        "ok": "OK",
+        "no_info": "Brak informacji"
+      },
+      "missing": "Brak potwierdzenia: {list}",
+      "checked": "{source}, {date}",
+      "tries": "brak informacji po {n} próbach",
+      "found": "Znaleziono: {source}, {date}",
+      "accept": "Akceptuj",
+      "reject": "Odrzuć",
+      "accepted": "{name} dodano jako kontakt",
+      "rejected": "{name} odrzucono",
+      "status_filter": "Status",
+      "status": {
+        "pending": "Czekają",
+        "accepted": "Zaakceptowane",
+        "rejected": "Odrzucone",
+        "all": "Wszystkie"
+      },
+      "col_name": "Firma",
+      "col_domain": "Domena"
+    },
     "inbox": {
       "title": "Skrzynka",
       "conversations": "Rozmowy",
@@ -4500,6 +4542,7 @@
         "intel": "Wywiad",
         "contacts": "Kontakty",
         "timeline": "Historia",
+        "people": "Osoby",
         "tasks": "Zadania",
         "deals": "Transakcje"
       },
@@ -6194,6 +6237,10 @@
       },
       "stock_alerts": {
         "subscriptions": "Prośby o powiadomienie o dostępności"
+      },
+      "prospecting": {
+        "people": "Prospecting: osoby do kontaktu",
+        "companies": "Prospecting: nowe firmy"
       },
       "todo": {
         "tasks": "Zadania i przypomnienia sprzedaży"

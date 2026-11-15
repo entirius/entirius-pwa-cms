@@ -75,6 +75,7 @@
     "leads_do_not_contact": "Do not contact",
     "leads_today": "Today",
     "leads_reports": "Reports",
+    "leads_prospecting": "Prospecting",
     "leads_deals": "Deals",
     "leads_deal_stages": "Deal stages"
   },
@@ -4279,6 +4280,47 @@
     "channel": "Channel"
   },
   "leads": {
+    "prospecting": {
+      "title": "Prospecting",
+      "tabs": {
+        "people": "People",
+        "companies": "Companies"
+      },
+      "people_help": "New people to contact at companies whose only person was the wrong one or opted out. Only an accepted person becomes a contact and can be mailed.",
+      "company_help": "People found for this company. Accept one to add it as a contact; missing confirmations are marked.",
+      "companies_title": "Finding new companies is coming",
+      "companies_help": "This list will hold new companies found in public registers. For now it only shows companies added by hand.",
+      "empty": "No candidates",
+      "no_title": "No job title",
+      "no_email": "No address",
+      "check": {
+        "role": "Role fits the offer",
+        "email": "E-mail address known",
+        "employed": "Still works there",
+        "mailbox": "Address works"
+      },
+      "result": {
+        "ok": "OK",
+        "no_info": "No information"
+      },
+      "missing": "Missing confirmation: {list}",
+      "checked": "{source}, {date}",
+      "tries": "no information after {n} tries",
+      "found": "Found: {source}, {date}",
+      "accept": "Accept",
+      "reject": "Reject",
+      "accepted": "{name} added as a contact",
+      "rejected": "{name} rejected",
+      "status_filter": "Status",
+      "status": {
+        "pending": "Waiting",
+        "accepted": "Accepted",
+        "rejected": "Rejected",
+        "all": "All"
+      },
+      "col_name": "Company",
+      "col_domain": "Domain"
+    },
     "inbox": {
       "title": "Inbox",
       "conversations": "Conversations",
@@ -4501,6 +4543,7 @@
         "intel": "Intel",
         "contacts": "Contacts",
         "timeline": "History",
+        "people": "People",
         "tasks": "Tasks",
         "deals": "Deals"
       },
@@ -6195,6 +6238,10 @@
       },
       "stock_alerts": {
         "subscriptions": "Back-in-stock requests"
+      },
+      "prospecting": {
+        "people": "Prospecting: people to contact",
+        "companies": "Prospecting: new companies"
       },
       "todo": {
         "tasks": "Sales tasks and reminders"
