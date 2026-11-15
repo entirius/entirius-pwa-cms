@@ -1071,6 +1071,13 @@ const routes = [
     meta: { requiresAuth: true, panel: "leads" },
     children: [
       { path: "", redirect: "/leads/today" },
+      // AI CRM (U10): the day plan and the conversation with the agent — optional ai_crm app of django-leads (munin key ai_crm)
+      {
+        path: "ai-crm",
+        name: "LeadsAiCrm",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/AiCrm.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.ai_crm.title", panel: "leads", area: AREAS.AI_CRM_AGENT, module: "ai_crm", page: true },
+      },
       // Leads CRM: the panel root — the day's tasks and what waits; its blocks gate themselves (no area, no module)
       {
         path: "today",
@@ -1090,6 +1097,23 @@ const routes = [
         name: "LeadsHistory",
         component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/History.vue"),
         meta: { requiresAuth: true, titleKey: "leads.journal.title", panel: "leads", area: AREAS.LEADS_COMPANIES, module: "leads", moduleVersion: OUTBOUND, page: true, desktop: true },
+      },
+      // U3 (prospecting app of django-leads, munin key prospecting): People = candidates with their checks, Companies = placeholder
+      {
+        path: "prospecting",
+        redirect: { name: "LeadsProspectingPeople" },
+      },
+      {
+        path: "prospecting/people",
+        name: "LeadsProspectingPeople",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Prospecting.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.prospecting.title", panel: "leads", area: AREAS.PROSPECTING_PEOPLE, module: "prospecting", page: true },
+      },
+      {
+        path: "prospecting/companies",
+        name: "LeadsProspectingCompanies",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Prospecting.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.prospecting.title", panel: "leads", area: AREAS.PROSPECTING_COMPANIES, module: "prospecting", page: true },
       },
       {
         path: "inbox",

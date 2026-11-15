@@ -43,6 +43,8 @@
     "leads.settings",
     "leads.gdpr",
     "todo.tasks",
+    "prospecting.people",
+    "prospecting.companies",
     "communicator.review",
     "communicator.content",
     "communicator.conversations",

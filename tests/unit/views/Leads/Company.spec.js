@@ -357,9 +357,9 @@ describe("Company card header", () => {
     it("leads 0.5.0 with todo: Details, Score, the Tasks and the Deals tab with their counts", async () => {
       leads.GET_Company.mockResolvedValueOnce({ data: { ...company(), deals: { open: 1, won: 0, lost: 2 } } });
       const wrapper = await mountCard();
-      expect(tabValues(wrapper)).toEqual(["overview", "contacts", "timeline", "tasks", "deals", "intel"]);
-      expect(wrapper.findComponent({ name: "BasicTabs" }).props("options")[3].count).toBe(2);
-      expect(wrapper.findComponent({ name: "BasicTabs" }).props("options")[4].count).toBe(1);
+      expect(tabValues(wrapper)).toEqual(["overview", "contacts", "people", "timeline", "tasks", "deals", "intel"]);
+      expect(wrapper.findComponent({ name: "BasicTabs" }).props("options")[4].count).toBe(2);
+      expect(wrapper.findComponent({ name: "BasicTabs" }).props("options")[5].count).toBe(1);
       expect(wrapper.find("company-details-stub").exists()).toBe(true);
       expect(wrapper.find("score-card-stub").exists()).toBe(true);
       expect(leads.GET_Attributes).toHaveBeenCalledWith("company");
@@ -368,7 +368,7 @@ describe("Company card header", () => {
     it("an older backend or no todo: no Tasks tab, no Details or Score", async () => {
       munin.isModuleAtLeast.mockReturnValue(false);
       const wrapper = await mountCard();
-      expect(tabValues(wrapper)).toEqual(["overview", "contacts", "timeline", "intel"]);
+      expect(tabValues(wrapper)).toEqual(["overview", "contacts", "people", "timeline", "intel"]);
       expect(wrapper.find("company-details-stub").exists()).toBe(false);
     });
 

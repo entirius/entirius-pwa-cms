@@ -60,6 +60,7 @@
         <IntelTab v-else-if="tab === 'intel'" :company="company" />
         <DealsTab v-else-if="tab === 'deals'" :key="company.id" :company="company" />
         <ContactsTab v-else-if="tab === 'contacts'" :company="company" @changed="reload" />
+        <PeopleTab v-else-if="tab === 'people'" :key="company.id" :company="company" @count="peopleCount = $event" @changed="reload" />
         <ReadonlyArea v-else-if="tab === 'tasks'" :area="AREAS.TODO_TASKS">
           <TasksTab :key="company.id" :company="company" @count="taskCount = $event" @changed="reload" />
         </ReadonlyArea>
@@ -110,13 +111,14 @@ import DealsTab from "./tabs/DealsTab.vue";
 import TasksTab from "./tabs/TasksTab.vue";
 import Thread from "./Thread.vue";
 import ContactsTab from "./tabs/ContactsTab.vue";
+import PeopleTab from "./tabs/PeopleTab.vue";
 import IntelTab from "./tabs/IntelTab.vue";
 import OverviewTab from "./tabs/OverviewTab.vue";
 
 // Company card: the page frame (name as H1, domain, stage and lead-type selects in the meta, actions), the tabs. Leads
 // CRM (leads >= 0.5.0): Details and Score on Overview, Tasks (django-todo), Write mail; History = the mail thread and
 // the company's events; Deals (its deals, Open deal).
-const TABS = ["overview", "contacts", "timeline", "tasks", "deals", "intel"];
+const TABS = ["overview", "contacts", "people", "timeline", "tasks", "deals", "intel"];
 const route = useRoute();
 const router = useRouter();
 const notify = useNotifyStore();
@@ -152,9 +154,13 @@ const definitions = ref([]);
 const fields = computed(() => fieldsFromDefinitions(definitions.value));
 const composeOpen = ref(false);
 const taskCount = ref(null);
-const TAB_GATES = { tasks: () => tasksOn.value, deals: () => crm.value };
+// U3: People — candidates found by prospecting (django-leads) for this company.
+const peopleOn = computed(() => munin.isModuleEnabled("prospecting") && access.can(AREAS.PROSPECTING_PEOPLE));
+const peopleCount = ref(null);
+const TAB_GATES = { tasks: () => tasksOn.value, deals: () => crm.value, people: () => peopleOn.value };
 const tabs = computed(() => TABS.filter((value) => TAB_GATES[value]?.() ?? true));
-const tabCount = (value) => ({ tasks: taskCount.value, deals: company.value?.deals?.open ?? null })[value] ?? null;
+const tabCount = (value) =>
+  ({ tasks: taskCount.value, deals: company.value?.deals?.open ?? null, people: peopleCount.value || null })[value] ?? null;
 const tab = computed(() => {
   if (tabs.value.includes(route.query.tab)) return route.query.tab;
   return isDesktop.value ? "overview" : "timeline";

@@ -96,6 +96,16 @@ typed); filters person (`activities/actors/`: one entry per person, whose "<pers
 it, and one Import for every batch), kind, period, company (`views/Leads/history.js`). Never parse a
 `subject_ref` / `contact_ref` in a view: `src/utils/subjectRef.js` builds and reads them.
 
+## AI CRM (django-leads app `ai_crm`, U10)
+
+`/leads/ai-crm` (`AiCrm.vue`, nav entry above Today, desk only; route `meta.module: "ai_crm"`, area `ai_crm.agent`):
+the day plan of `GET api/ai-crm/v2/admin/<channel>/plan/` (the caller's overdue and today tasks, the drafts and
+replies waiting — the same work as Today, numbered) and a conversation through `POST chat/` (`source: "cms"`, the UI
+language, the last 10 turns as `history`). The agent answers with its reply, the fresh plan and the open proposals; a
+proposal (lost deal, Do not contact, sending a draft) shows Confirm / Cancel, which call `tools/confirm_proposal/` or
+`tools/reject_proposal/`. The conversation lives in the page only. Every change is recorded by the backend as
+"<user> via ai-crm (cms)". Client: `src/api/aiCrm/api.js`.
+
 ## Deals (django-leads 0.5.0)
 
 Dormant on an older backend like the CRM screens (`meta.moduleVersion`, nav `minVersion`); deals ride
@@ -144,6 +154,21 @@ A read-only role sees neither Archive nor Restore (`mutates`).
 `PotentialSettings.vue` (route `LeadsPotential`, Settings → Sales process) reads and PATCHes `channel/` `potential`.
 Today shows the task of source `leads.potential.came_back` as "Come back to <company>". Every piece hides itself
 while the company rows carry no `potential` field (an older leads).
+## Prospecting (django-leads app `prospecting`, U3)
+
+New people to contact at a company whose only person was the wrong one or opted out. Gated by the module
+(`requiresModule: "prospecting"`, route `meta.module`) and the areas `prospecting.people` / `prospecting.companies`.
+
+- Nav entry **Prospecting** (`/leads/prospecting`, desk only) with two route tabs: **People**
+  (`LeadsProspectingPeople`: candidates of every company, status filter, waiting first) and **Companies**
+  (`LeadsProspectingCompanies`: placeholder — an empty state that says finding companies is coming, and the companies
+  added by hand).
+- Company card tab **People** (`tabs/PeopleTab.vue`, shown with the module and `prospecting.people`): the candidates
+  of this company, the badge counts the waiting ones.
+- `prospecting/CandidateList.vue` (both places): name, job title, address, the four checks (role, address known,
+  still works there, address works) each `OK` or `No information` with source and date or the number of tries, the
+  missing confirmations in one line, Accept (a contact in leads; disabled without an address) and Reject.
+- Client: `src/api/prospecting/api.js` (the leads JWT client, the Leads channel).
 
 ## Supervisor's walk before the owner's acceptance (plan 34)
 
