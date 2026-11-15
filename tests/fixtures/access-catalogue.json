@@ -45,6 +45,7 @@
     "todo.tasks",
     "prospecting.people",
     "prospecting.companies",
+    "ai_crm.agent",
     "communicator.review",
     "communicator.content",
     "communicator.conversations",
