@@ -164,3 +164,10 @@ export const GET_CompanyDeals = (id) => leadsApi.get(`${base()}/companies/${id}/
 
 // Channel settings (`leads.settings`): `default_currency` pre-fills a new deal.
 export const GET_LeadsChannel = () => leadsApi.get(`${base()}/channel/`);
+
+// U2 (leads potential dot): `potential` thresholds of the channel; a PATCH recomputes every non-manual company.
+export const PATCH_LeadsChannel = (body) => leadsApi.patch(`${base()}/channel/`, body);
+
+// U2: a salesperson's colour of a company (`comment` required) and back to the rules.
+export const POST_CompanyPotential = (id, body) => leadsApi.post(`${base()}/companies/${id}/potential/`, body);
+export const DELETE_CompanyPotential = (id) => leadsApi.delete(`${base()}/companies/${id}/potential/`);

@@ -12,6 +12,7 @@
             :label="$t('leads.company.do_not_contact')"
             data-testid="company-dnc-badge"
           />
+          <PotentialDot v-if="potentialOn(company)" :company="company" :editable="!readonly" with-reason testid="company-potential" @edit="potentialCompany = $event" />
         </template>
         <template v-if="company" #actions>
           <CompanyActions :company="company" @changed="reload" @compose="composeOpen = true" />
@@ -72,6 +73,7 @@
           </ul>
         </section>
       </div>
+      <PotentialDialog :company="potentialCompany" @close="potentialCompany = null" @saved="potentialSaved" />
       <ComposeDialog v-if="crm" v-model:open="composeOpen" :company="company" @sent="reload" />
     </template>
   </PageLayout>
@@ -97,6 +99,9 @@ import { useLeadTypesStore } from "@/stores/leadTypes";
 import { useNotifyStore } from "@/stores/notify";
 import AiToolboxHint from "@/components/ConfigHealth/AiToolboxHint.vue";
 import CompanyActions from "./CompanyActions.vue";
+import { potentialOn } from "./potential";
+import PotentialDialog from "./PotentialDialog.vue";
+import PotentialDot from "./PotentialDot.vue";
 import CompanyDetails from "./CompanyDetails.vue";
 import ComposeDialog from "./ComposeDialog.vue";
 import { fieldsFromDefinitions } from "./customFields";
@@ -118,6 +123,12 @@ const notify = useNotifyStore();
 const isDesktop = useIsDesktop();
 const company = ref(null);
 const loadError = ref("");
+// U2: the potential dialog; the API answers the whole card
+const potentialCompany = ref(null);
+function potentialSaved(card) {
+  potentialCompany.value = null;
+  company.value = card;
+}
 const stages = ref([]);
 const leadTypes = useLeadTypesStore();
 // The active types, plus the company's own type when it was deactivated since (it still reads, it is not offered).
