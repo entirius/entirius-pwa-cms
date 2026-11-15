@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- The Leads panel is called "Sales CRM" wherever people read it (menu, phone bar, headings, module list, import
+  texts; en + pl). The `leads` panel id, the `/leads/...` addresses and the i18n keys stay, so old links keep working;
+  the contact-form leads (Forms → Leads) keep their name.
+
 ### Added
 
 - Leads panel: a possible opt-out can be marked "Not an opt-out" beside Confirm opt-out (django-communicator
