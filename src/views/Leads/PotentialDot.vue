@@ -12,7 +12,8 @@
     :data-potential="company.potential || 'none'"
     v-on="editable ? { click: onClick } : {}"
   >
-    <span class="potential-dot__mark" aria-hidden="true" />
+    <!-- the dot of StatusBadge (one dot, one size): its tone class sets the colour -->
+    <span class="potential-dot__mark status-badge--dot" :class="`status-badge--${tone}`" aria-hidden="true" />
     <span
       v-if="company.potential_manual"
       class="potential-dot__star"
@@ -47,6 +48,8 @@ const reason = computed(() =>
     ? potentialLabel(props.company.potential)
     : potentialReason(props.company)
 );
+const TONES = { green: "positive", orange: "warning", red: "negative" };
+const tone = computed(() => TONES[props.company.potential] || "neutral");
 const label = computed(() => potentialLabel(props.company.potential));
 
 function onClick(event) {
@@ -67,24 +70,7 @@ button.potential-dot {
   cursor: pointer;
 }
 .potential-dot__mark {
-  width: 10px;
-  height: 10px;
-  flex: none;
-  border-radius: var(--radius-full);
-  border: 1px solid var(--border-subtle);
-  background: transparent;
-}
-.potential-dot--green .potential-dot__mark {
-  background: var(--positive);
-  border-color: var(--positive);
-}
-.potential-dot--orange .potential-dot__mark {
-  background: var(--warning);
-  border-color: var(--warning);
-}
-.potential-dot--red .potential-dot__mark {
-  background: var(--negative);
-  border-color: var(--negative);
+  display: inline-flex;
 }
 .potential-dot__star {
   font-size: var(--fs-200);

@@ -1,9 +1,21 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { flushPromises } from "@vue/test-utils";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { enableAutoUnmount, flushPromises } from "@vue/test-utils";
+
+enableAutoUnmount(afterEach);
 
 const leads = vi.hoisted(() => ({ GET_History: vi.fn(), GET_HistoryActors: vi.fn(), GET_Companies: vi.fn() }));
 vi.mock("@/api/leads/api", () => leads);
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification: vi.fn() }) }));
+
+// The router replaces the query at once, as the address bar would.
+const route = vi.hoisted(() => ({ current: null }));
+const router = vi.hoisted(() => ({ replace: vi.fn() }));
+vi.mock("vue-router", async (original) => {
+  const { reactive } = await import("vue");
+  route.current = reactive({ query: {} });
+  router.replace.mockImplementation(({ query }) => (route.current.query = query));
+  return { ...(await original()), useRoute: () => route.current, useRouter: () => router };
+});
 
 import History from "@/views/Leads/History.vue";
 import { historyRow } from "@/views/Leads/history";
@@ -37,6 +49,7 @@ const lastParams = () => leads.GET_History.mock.calls.at(-1)[0];
 describe("Leads → History", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    route.current.query = {};
     leads.GET_History.mockResolvedValue({ data: { count: 1, results: [entry()] } });
     leads.GET_HistoryActors.mockResolvedValue({ data: { results: ["import:", "manager", "system"] } });
   });
@@ -74,6 +87,32 @@ describe("Leads → History", () => {
     setControl(wrapper, "history-period", "2026-11-01 – 2026-11-14");
     await flushPromises();
     expect(lastParams()).toMatchObject({ date_from: "2026-11-01", date_to: "2026-11-14" });
+  });
+
+  it("the filters and the page live in the URL and are read back from it", async () => {
+    const wrapper = await mounted();
+    setControl(wrapper, "history-actor", "manager");
+    setControl(wrapper, "history-kind", "task");
+    await flushPromises();
+    expect(route.current.query).toEqual({ actor: "manager", kind: "task" });
+    expect(router.replace).toHaveBeenCalledTimes(1);
+    const back = mountOutbound(History, { area: "leads.companies", stubs });
+    await flushPromises();
+    expect(control(back, "history-actor").props("modelValue")).toBe("manager");
+    expect(lastParams()).toMatchObject({ actor: "manager", kind: "task", page: 1 });
+  });
+
+  it("an older answer never replaces a newer one", async () => {
+    let slow;
+    leads.GET_History.mockReturnValueOnce(new Promise((resolve) => (slow = resolve)));
+    const wrapper = mountOutbound(History, { area: "leads.companies", stubs });
+    leads.GET_History.mockResolvedValueOnce({ data: { count: 1, results: [entry({ id: 2, company_name: "Newer Ltd" })] } });
+    setControl(wrapper, "history-actor", "manager");
+    await flushPromises();
+    slow({ data: { count: 1, results: [entry({ id: 1, company_name: "Older Ltd" })] } });
+    await flushPromises();
+    expect(wrapper.text()).toContain("Newer Ltd");
+    expect(wrapper.text()).not.toContain("Older Ltd");
   });
 
   it("an empty journal says so", async () => {

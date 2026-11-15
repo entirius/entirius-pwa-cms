@@ -35,12 +35,12 @@ import { t } from "@/i18n";
 import { GET_Funnel } from "@/api/leads/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { useNotifyStore } from "@/stores/notify";
+import { RANGE_SEPARATOR } from "@/utils/leadsTime";
 import { durationLabel, reachedLabel } from "./reports";
 
 // Reports (ux/screens/reports.md): the funnel — stages now / entered / share of the first stage / left / mean time, the moves
 // between stages, companies per origin. Origin and period reload it; the default period is the last 30 days.
 const DAY_MS = 86400000;
-const RANGE_SEPARATOR = " – "; // fixed, so the Polish locale (" do ") never changes what is parsed
 const isoDay = (ms) => new Date(ms).toISOString().slice(0, 10);
 const notify = useNotifyStore();
 const report = ref(null);

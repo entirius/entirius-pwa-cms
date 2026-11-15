@@ -35,6 +35,7 @@
 <script setup>
 import { computed, watch } from "vue";
 import { useSearchDebounce } from "@/composables/useSearchDebounce";
+import { RANGE_SEPARATOR } from "@/utils/leadsTime";
 import { DEAL_KINDS, DEFAULT_DEAL_KIND, dealKindLabel, stageOptions } from "./deals";
 
 // `query` = the page's query with its defaults (owner me, status open); every change goes up as `set({ key: value })`.
@@ -49,7 +50,6 @@ const emit = defineEmits(["set"]);
 const OWNERS = ["me", "none", "all"];
 const OWNER_LABELS = { me: "mine", none: "unassigned", all: "all" };
 const OWNER_TESTIDS = { me: "mine", none: "none", all: "all" };
-const RANGE_SEPARATOR = " – "; // fixed, so the Polish locale never changes what is parsed
 const { search, debouncedFetch } = useSearchDebounce();
 
 const kindOptions = DEAL_KINDS.map((value) => ({ value, label: dealKindLabel(value) }));
