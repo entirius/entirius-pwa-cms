@@ -341,6 +341,19 @@ export function buildNavRoutes() {
       requiresModule: "lookup",
     },
     {
+      // AI CRM (U10): the agent that leads the salesperson through the day — above Today, only with the ai_crm app of django-leads
+      route: "/leads/ai-crm",
+      labelKey: "nav.leads_ai_crm",
+      icon: "wand-magic-sparkles",
+      query: {},
+      app: ["leads"],
+      requiresModule: "ai_crm",
+      area: "ai_crm.agent",
+      // the phone bar keeps its four entries; on a phone the screen opens from its address
+      desktopOnly: true,
+      activeOn: ["/leads/ai-crm"],
+    },
+    {
       // Leads CRM: the day's work (tasks, drafts and replies waiting) — the panel root
       route: "/leads/today",
       labelKey: "nav.leads_today",

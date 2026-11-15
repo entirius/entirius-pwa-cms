@@ -44,6 +44,7 @@ export const AREAS = Object.freeze({
   LEADS_SETTINGS: "leads.settings",
   LEADS_GDPR: "leads.gdpr",
   TODO_TASKS: "todo.tasks",
+  AI_CRM_AGENT: "ai_crm.agent",
   COMMUNICATOR_REVIEW: "communicator.review",
   COMMUNICATOR_CONTENT: "communicator.content",
   COMMUNICATOR_CONVERSATIONS: "communicator.conversations",

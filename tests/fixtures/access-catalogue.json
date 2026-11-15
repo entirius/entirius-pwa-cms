@@ -43,6 +43,7 @@
     "leads.settings",
     "leads.gdpr",
     "todo.tasks",
+    "ai_crm.agent",
     "communicator.review",
     "communicator.content",
     "communicator.conversations",

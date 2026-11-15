@@ -73,6 +73,7 @@
     "leads_mailboxes": "Konta pocztowe",
     "leads_sending_health": "Kondycja wysyłki",
     "leads_do_not_contact": "Nie kontaktować",
+    "leads_ai_crm": "AI CRM",
     "leads_today": "Dziś",
     "leads_reports": "Raporty",
     "leads_deals": "Transakcje",
@@ -5112,6 +5113,25 @@
       "mail_state": "Poczta",
       "custom_fields": "Pola własne"
     },
+    "ai_crm": {
+      "title": "AI CRM",
+      "subtitle": "Twój dzień krok po kroku — napisz agentowi, co zrobiłeś",
+      "plan_title": "Plan na dziś",
+      "plan_empty": "Na dziś nic na Ciebie nie czeka",
+      "overdue": "Zaległe",
+      "today": "Dziś",
+      "item_drafts": "Przejrzyj drafty do akceptu: {count}",
+      "item_replies": "Obsłuż odpowiedzi: {count}",
+      "item_return": "Wróć do firmy {company}",
+      "chat_title": "Rozmowa",
+      "hint": "Napisz, co zrobiłeś, np. „zrobione 1: dzwoniłem, zainteresowani” albo „notatka 2: prosi o ofertę”. Wpisz „plan”, żeby zobaczyć listę.",
+      "placeholder": "Co zrobiłeś?",
+      "send": "Wyślij",
+      "confirm_question": "Potwierdź: {summary}",
+      "confirm": "Potwierdź",
+      "reject": "Anuluj",
+      "error": "Agent AI CRM nie odpowiedział"
+    },
     "today": {
       "title": "Dziś",
       "waiting": "Czeka",
@@ -6197,6 +6217,9 @@
       },
       "todo": {
         "tasks": "Zadania i przypomnienia sprzedaży"
+      },
+      "ai_crm": {
+        "agent": "Agent AI CRM (plan dnia, rozmowa, MCP)"
       }
     },
     "scopes": {

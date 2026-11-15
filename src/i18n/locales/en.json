@@ -73,6 +73,7 @@
     "leads_mailboxes": "Mailboxes",
     "leads_sending_health": "Sending health",
     "leads_do_not_contact": "Do not contact",
+    "leads_ai_crm": "AI CRM",
     "leads_today": "Today",
     "leads_reports": "Reports",
     "leads_deals": "Deals",
@@ -5113,6 +5114,25 @@
       "mail_state": "Mail",
       "custom_fields": "Custom fields"
     },
+    "ai_crm": {
+      "title": "AI CRM",
+      "subtitle": "Your day, step by step — tell the agent what you did",
+      "plan_title": "Plan for today",
+      "plan_empty": "Nothing is waiting for you today",
+      "overdue": "Overdue",
+      "today": "Today",
+      "item_drafts": "Review the drafts waiting: {count}",
+      "item_replies": "Answer the replies waiting: {count}",
+      "item_return": "Come back to {company}",
+      "chat_title": "Conversation",
+      "hint": "Tell me what you did, e.g. “done 1: called, interested” or “note 2: asked for a quote”. Type “plan” for the list.",
+      "placeholder": "What did you do?",
+      "send": "Send",
+      "confirm_question": "Confirm: {summary}",
+      "confirm": "Confirm",
+      "reject": "Cancel",
+      "error": "The AI CRM agent did not answer"
+    },
     "today": {
       "title": "Today",
       "waiting": "Waiting",
@@ -6198,6 +6218,9 @@
       },
       "todo": {
         "tasks": "Sales tasks and reminders"
+      },
+      "ai_crm": {
+        "agent": "AI CRM agent (day plan, chat, MCP)"
       }
     },
     "scopes": {

@@ -1071,6 +1071,13 @@ const routes = [
     meta: { requiresAuth: true, panel: "leads" },
     children: [
       { path: "", redirect: "/leads/today" },
+      // AI CRM (U10): the day plan and the conversation with the agent — optional ai_crm app of django-leads (munin key ai_crm)
+      {
+        path: "ai-crm",
+        name: "LeadsAiCrm",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/AiCrm.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.ai_crm.title", panel: "leads", area: AREAS.AI_CRM_AGENT, module: "ai_crm", page: true },
+      },
       // Leads CRM: the panel root — the day's tasks and what waits; its blocks gate themselves (no area, no module)
       {
         path: "today",
