@@ -73,7 +73,8 @@ Every part is dormant on an older backend (`outboundOn(munin, "leads")`, routes 
 need `isModuleInstalled("todo")` and read on `todo.tasks` (`src/api/todo/api.js`, the leads JWT client, `tz` = the
 channel's time zone). `/leads/today` (no area: its blocks gate themselves) lists the caller's tasks by chip (Due now
 = `today/` for "Mine", else `tasks/?due=overdue` + `?due=today`; Upcoming, No date, Done, Cancelled = `tasks/` pages;
-a cancelled row says who, when and why (`cancelledLine`, `views/Leads/tasks.js`), reopens, never edits) and the
+a cancelled row says who, when and why (`cancelledLine`, `views/Leads/tasks.js`; the date stands once, the due badge
+just says "Cancelled"), reopens, never edits; the company card's Cancelled tasks are the same row) and the
 drafts / replies waiting (links to the Inbox chips, `?filter=draft|replied`). The company card's Tasks tab lists the 20
 newest cancelled tasks under the open ones (U5); every History line of the card ends with its author (`activityActor`). `/leads/companies` is a page: search,
 owner chips, every filter (`attr.<key>` for `show_in_list` attributes), the sort (allowlist: `last_activity_at`,
@@ -93,7 +94,8 @@ hides the value). `/leads/reports` (desktop) is the funnel as three tables, orig
 the channel journal (`GET activities/`, server-paged): when, who, what, on what (company link · deal), reason in its own
 column (left out of the sentence; a coded one — `reply:not_now`, `manual`, `wrong_person` — as its label, a typed one as
 typed); filters person (`activities/actors/`: one entry per person, whose "<person> via ai-crm (…)" entries come with
-it, and one Import for every batch), kind, period, company (`views/Leads/history.js`). Never parse a
+it, and one Import for every batch), kind, period, company (`views/Leads/history.js`); the filters and the page live in the URL (Back from a company card
+keeps them) and an older answer never replaces a newer one. Never parse a
 `subject_ref` / `contact_ref` in a view: `src/utils/subjectRef.js` builds and reads them.
 
 ## AI CRM (django-leads app `ai_crm`, U10)
@@ -104,7 +106,9 @@ replies waiting — the same work as Today, numbered) and a conversation through
 language, the last 10 turns as `history`). The agent answers with its reply, the fresh plan and the open proposals; a
 proposal (lost deal, Do not contact, sending a draft) shows Confirm / Cancel, which call `tools/confirm_proposal/` or
 `tools/reject_proposal/`. The conversation lives in the page only. Every change is recorded by the backend as
-"<user> via ai-crm (cms)". Client: `src/api/aiCrm/api.js`.
+"<user> via ai-crm (cms)". Plan items are `task`, `drafts` or `replies`; a plan that fails to load is an error state
+with Try again (never "nothing for today"), and the proposals load apart, so their failure keeps the plan. Client:
+`src/api/aiCrm/api.js`.
 
 ## Deals (django-leads 0.5.0)
 
@@ -141,8 +145,8 @@ the title reads "Archived deals", the status select is hidden (search, owner and
 badge and the empty state is "No archived deals"; Active drops `archived` and the list is as it was. The status filter
 is Open / Won / Lost. The tabs are always on the list, on every filter and over an empty list (archiving ships with
 the module version the panel requires); the card's Archive appears only once the deal carries `archived_at`. Back on
-the deal card and on Add company goes back in the history (the list with its tab and filters), else to Deals /
-Companies, as the company card does. The board and
+the deal card, on Add company and on the company card is `goBackTo(router, fallback, { fromAnywhere: true })`
+(`composables/useNav.js`): back in the history (the list with its tab and filters), else the fallback. The board and
 the company card's Deals tab list no archived deal. History reads `deal_archived` / `deal_restored`.
 A read-only role sees neither Archive nor Restore (`mutates`).
 
@@ -159,16 +163,18 @@ while the company rows carry no `potential` field (an older leads).
 New people to contact at a company whose only person was the wrong one or opted out. Gated by the module
 (`requiresModule: "prospecting"`, route `meta.module`) and the areas `prospecting.people` / `prospecting.companies`.
 
-- Nav entry **Prospecting** (`/leads/prospecting`, desk only) with two route tabs: **People**
-  (`LeadsProspectingPeople`: candidates of every company, status filter, waiting first) and **Companies**
-  (`LeadsProspectingCompanies`: placeholder — an empty state that says finding companies is coming, and the companies
-  added by hand).
-- Company card tab **People** (`tabs/PeopleTab.vue`, shown with the module and `prospecting.people`): the candidates
-  of this company, the badge counts the waiting ones.
+- Nav entry **Prospecting** (desk only) opens `/leads/prospecting/people` — a route with an area, so a role without
+  `prospecting.people` does not see the entry. The page is People (`LeadsProspectingPeople`: candidates of every
+  company, status filter, waiting first, 20 per page — the service sends up to 200 in one answer). There is no
+  Companies tab: finding new companies is not built.
+- Company card tab **People** (`tabs/PeopleTab.vue`, shown with the module and `prospecting.people`, inside
+  `ReadonlyArea` of that area, like Tasks): the candidates of this company, the badge counts the waiting ones.
 - `prospecting/CandidateList.vue` (both places): name, job title, address, the four checks (role, address known,
   still works there, address works) each `OK` or `No information` with source and date or the number of tries, the
-  missing confirmations in one line, Accept (a contact in leads; disabled without an address) and Reject.
-- Client: `src/api/prospecting/api.js` (the leads JWT client, the Leads channel).
+  missing confirmations in one line, Accept (a contact in leads; disabled without an address) and Reject. An Accept the
+  service refuses because the address was erased, or the company is not in this channel, says so in words.
+- Client: `src/api/prospecting/api.js` (the leads JWT client, the Leads channel). `POST_Search(subjectRef)` sends
+  `{ subject_ref }` only.
 
 ## Supervisor's walk before the owner's acceptance (plan 34)
 

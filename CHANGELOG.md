@@ -12,8 +12,26 @@ All notable changes to this project will be documented in this file.
 - Leads panel, deals: the list has Active and Archived tabs under its header instead of the "Archived" toggle
   button; a won or lost deal shows Archive beside Reopen instead of under the more menu; Back on the deal card and on
   Add company returns to where the person came from (the list with its tab and filters), as the company card does.
+- Leads panel, one shape for one thing: a single actor label ("System", "Import") for History, the company card and
+  cancelled tasks; the potential dot uses the StatusBadge dot; cancelled tasks are the same row on Today and on the
+  company card (struck title, who / when / why, Reopen); Back on the company card, Add company and the deal card is
+  `goBackTo`; Prospecting loses its "Companies — coming soon" tab; the candidate list pages at 20.
 - Tests: the Deals list suite moves to `tests/unit/views/Leads/DealsList.spec.js` — `Deals.spec.js` and `deals.spec.js`
   were one file on a case-insensitive file system (macOS).
+
+### Fixed
+
+- Leads panel, Review: Undo after Skip no longer returns to the skipped draft (a skipped draft is never the next one
+  and is not counted in "Draft n of m"); a second Skip before the next draft opens is ignored.
+- Leads panel, AI CRM: a plan that fails to load shows an error with Try again instead of "Nothing is waiting for you
+  today"; a failed proposals list no longer hides the plan.
+- Leads panel: the Prospecting menu entry follows `prospecting.people`, and the company card's People tab is
+  read-only without write access to it.
+- Leads panel, History: filters and page are in the address (Back from a company card keeps them), and a slower older
+  answer no longer replaces a newer one.
+- Leads panel, Prospecting: Accept names an erased address or a company missing from the channel; a search sends only
+  `subject_ref`; the AI CRM no longer handles a `return` plan item.
+- Polish: transaction / szkic everywhere in the Leads panel (no "deal", "draft", "Szansa sprzedaży").
 
 ### Added
 
