@@ -9,11 +9,31 @@ All notable changes to this project will be documented in this file.
 - The Leads panel is called "Sales CRM" wherever people read it (menu, phone bar, headings, module list, import
   texts; en + pl). The `leads` panel id, the `/leads/...` addresses and the i18n keys stay, so old links keep working;
   the contact-form leads (Forms → Leads) keep their name.
+- Leads panel, deals: the list has Active and Archived tabs under its header instead of the "Archived" toggle
+  button; a won or lost deal shows Archive beside Reopen instead of under the more menu; Back on the deal card and on
+  Add company returns to where the person came from (the list with its tab and filters), as the company card does.
+- Tests: the Deals list suite moves to `tests/unit/views/Leads/DealsList.spec.js` — `Deals.spec.js` and `deals.spec.js`
+  were one file on a case-insensitive file system (macOS).
 
 ### Added
 
 - Leads panel, Review on a phone: the first draft says once, above the card, that it can be swiped — "← Skip" and
   "Send →" with Got it (en + pl). Got it or the first swipe hides it for good in that browser; a desk never shows it.
+- Leads panel, Review: Skip can be undone — an Undo button beside "Skipped — this mail will not be sent" for 4 s
+  (en + pl); the skip reaches communicator only after that (or at the next Skip or Send, or on leaving the screen), so
+  Undo simply reopens the draft. No API change.
+- Leads panel, potential dot (django-leads with `potential`, U2): a green / orange / red dot beside every company on
+  Companies, with a three-line legend and a "Potential" filter (green, orange, red, no dot; `?potential=` in the
+  address); the dot's hover says why ("Reply: Not now · back 15.02.2027"), ★ marks a colour set by hand. A click on the
+  dot, on the list or on the company card (dot with its reason under the title), opens the manual dialog: three
+  colours, a required Reason (Save stays greyed until it is written), an optional come-back day and "Back to
+  automatic". Settings → Potential edits the thresholds (silence until red, skipped draft and red come-back days, the
+  colour of each reply type). Today names the come-back task "Come back to <company>"; History reads the dot's changes
+  and a skipped draft. Hidden while leads sends no `potential`.
+- Leads panel, AI CRM (the `ai_crm` app of django-leads): a nav entry above Today (desk only, shown when munin reports `ai_crm` and the
+  `ai_crm.agent` area is readable) with the day plan and a conversation with the agent — "done 1: called" closes the
+  task, notes, next tasks and deal stages are written by the agent; a lost deal, Do not contact or sending a draft is
+  confirmed with Confirm / Cancel first. English and Polish.
 - Leads panel: a possible opt-out can be marked "Not an opt-out" beside Confirm opt-out (django-communicator
   `dismiss-optout`, no confirm); the conversation, the card's contacts and History reload, and the reply loses its
   opt-out mark. The Next line of a possible opt-out reads "nothing is sent until you confirm the opt-out or mark it as

@@ -4345,6 +4345,7 @@
       "next_draft": "Następny szkic",
       "skip": "Pomiń",
       "skipped": "Pominięto — ta wiadomość nie zostanie wysłana",
+      "undo": "Cofnij",
       "handled_rejected": "Ten szkic pominięto — ta wiadomość nie zostanie wysłana.",
       "goes_soon": "wyjdzie w ciągu kilku minut"
     },
