@@ -89,6 +89,16 @@ it; reorder = one PATCH `order` per moved row), `settings/scoring` (one active p
 hides the value). `/leads/reports` (desktop) is the funnel as three tables, origin and period filters. Never parse a
 `subject_ref` / `contact_ref` in a view: `src/utils/subjectRef.js` builds and reads them.
 
+## AI CRM (django-leads app `ai_crm`, U10)
+
+`/leads/ai-crm` (`AiCrm.vue`, nav entry above Today, desk only; route `meta.module: "ai_crm"`, area `ai_crm.agent`):
+the day plan of `GET api/ai-crm/v2/admin/<channel>/plan/` (the caller's overdue and today tasks, the drafts and
+replies waiting — the same work as Today, numbered) and a conversation through `POST chat/` (`source: "cms"`, the UI
+language, the last 10 turns as `history`). The agent answers with its reply, the fresh plan and the open proposals; a
+proposal (lost deal, Do not contact, sending a draft) shows Confirm / Cancel, which call `tools/confirm_proposal/` or
+`tools/reject_proposal/`. The conversation lives in the page only. Every change is recorded by the backend as
+"<user> via ai-crm (cms)". Client: `src/api/aiCrm/api.js`.
+
 ## Deals (django-leads 0.5.0)
 
 Dormant on an older backend like the CRM screens (`meta.moduleVersion`, nav `minVersion`); deals ride

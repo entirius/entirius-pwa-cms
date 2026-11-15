@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- Leads panel, AI CRM (the `ai_crm` app of django-leads): a nav entry above Today (desk only, shown when munin reports `ai_crm` and the
+  `ai_crm.agent` area is readable) with the day plan and a conversation with the agent — "done 1: called" closes the
+  task, notes, next tasks and deal stages are written by the agent; a lost deal, Do not contact or sending a draft is
+  confirmed with Confirm / Cancel first. English and Polish.
 - Leads panel: a possible opt-out can be marked "Not an opt-out" beside Confirm opt-out (django-communicator
   `dismiss-optout`, no confirm); the conversation, the card's contacts and History reload, and the reply loses its
   opt-out mark. The Next line of a possible opt-out reads "nothing is sent until you confirm the opt-out or mark it as
