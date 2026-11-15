@@ -12,6 +12,8 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- Leads panel, Review on a phone: the first draft says once, above the card, that it can be swiped — "← Skip" and
+  "Send →" with Got it (en + pl). Got it or the first swipe hides it for good in that browser; a desk never shows it.
 - Leads panel: a possible opt-out can be marked "Not an opt-out" beside Confirm opt-out (django-communicator
   `dismiss-optout`, no confirm); the conversation, the card's contacts and History reload, and the reply loses its
   opt-out mark. The Next line of a possible opt-out reads "nothing is sent until you confirm the opt-out or mark it as
