@@ -61,7 +61,7 @@
           :rows="rows"
           row-key="id"
           :row-attrs="rowAttrs"
-          :empty-text="$t(chip === 'done' ? 'leads.today.empty_done' : 'leads.today.empty_list')"
+          :empty-text="$t(EMPTY_TEXT[chip] || 'leads.today.empty_list')"
           data-testid="today-tasks"
           @row-click="openRow"
         >
@@ -74,6 +74,7 @@
               <router-link v-if="row.to" class="t-accent" :to="row.to" :title="row.title" @click.stop>{{ row.title }}</router-link>
               <span v-else :title="row.title">{{ row.title }}</span>
               <span class="show-mobile t-secondary fs-200">{{ row.subject_label }}</span>
+              <span v-if="row.cancelled" class="t-secondary fs-200" data-testid="task-cancelled-line">{{ row.cancelled }}</span>
               <StatusBadge class="show-mobile as-s" :tone="row.due.tone" :label="row.due.label" data-testid="task-due-inline" />
             </span>
           </template>
@@ -83,8 +84,8 @@
           </template>
           <template #cell-actions="{ row }">
             <!-- the row opens the company on a phone; the buttons stop their own click (C6) -->
-            <IconButton mutates icon="edit" size="sm" :label="$t('leads.task.edit')" data-testid="task-edit" @click="openDialog('edit', row)" />
-            <BasicButton v-if="row.status === 'done'" mutates size="sm" data-testid="task-reopen" @click="reopen(row)">
+            <IconButton v-if="row.status !== 'cancelled'" mutates icon="edit" size="sm" :label="$t('leads.task.edit')" data-testid="task-edit" @click="openDialog('edit', row)" />
+            <BasicButton v-if="row.status !== 'open'" mutates size="sm" data-testid="task-reopen" @click="reopen(row)">
               {{ $t("leads.task.reopen") }}
             </BasicButton>
             <template v-else>
@@ -128,14 +129,15 @@ import { outboundOn } from "@/utils/leadsOutbound";
 import { pluralKey } from "@/utils/plural";
 import { routeForSubjectRef } from "@/utils/subjectRef";
 import TaskDialog from "./TaskDialog.vue";
-import { taskDue } from "./tasks";
+import { cancelledLine, taskDue } from "./tasks";
 
 // Today (ux/screens/today.md): the panel root. The caller's tasks by chip and owner (django-todo), and the drafts and
 // replies that wait (communicator). Every block gates itself: no todo → the counters only; no communicator → no
 // counters; neither → a link to Companies.
-const CHIPS = ["due", "upcoming", "none", "done"];
+const CHIPS = ["due", "upcoming", "none", "done", "cancelled"];
 const PAGE_SIZE = 20;
-const CHIP_QUERY = { upcoming: { status: "open", due: "upcoming" }, none: { status: "open", due: "none" }, done: { status: "done" } };
+const EMPTY_TEXT = { done: "leads.today.empty_done", cancelled: "leads.today.empty_cancelled" };
+const CHIP_QUERY = { upcoming: { status: "open", due: "upcoming" }, none: { status: "open", due: "none" }, done: { status: "done" }, cancelled: { status: "cancelled" } };
 
 const munin = useMuninStore();
 const access = useAccessStore();
@@ -197,6 +199,7 @@ const rows = computed(() =>
   tasks.value.map((task) => ({
     ...task,
     due: taskDue(task),
+    cancelled: cancelledLine(task),
     to: subjectRoute(task.subject_ref),
     kind: t(`leads.task_kind.${task.kind}`),
     owner: task.owner ? task.owner.name || task.owner.username : t("leads.today.owner_none"),

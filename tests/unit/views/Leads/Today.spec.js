@@ -116,6 +116,21 @@ describe("Leads → Today", () => {
     expect(todo.GET_Tasks.mock.lastCall[0]).not.toHaveProperty("owner");
   });
 
+  // U5: the Cancelled chip lists cancelled tasks with who, when and why; they reopen, never edit
+  it("Cancelled lists cancelled tasks with who, when and why", async () => {
+    const wrapper = await mounted();
+    todo.GET_Tasks.mockResolvedValue({
+      data: { count: 1, results: [task({ status: "cancelled", done_by: "manager", done_at: past, outcome: "urgent" })] },
+    });
+    await byTestid(wrapper, "today-chip-cancelled").trigger("click");
+    await flushPromises();
+    expect(todo.GET_Tasks).toHaveBeenLastCalledWith({ owner: "me", status: "cancelled", page: 1, page_size: 20 });
+    expect(byTestid(wrapper, "task-cancelled-line").text()).toMatch(/^Cancelled by manager · .+ — urgent$/);
+    expect(byTestid(wrapper, "task-reopen").exists()).toBe(true);
+    expect(byTestid(wrapper, "task-edit").exists()).toBe(false);
+    expect(byTestid(wrapper, "task-done").exists()).toBe(false);
+  });
+
   // k2 (walk 4): the Done chip says how it fills; a reopened task counts under Due now at once
   it("Done says how it fills; Reopen refreshes the Due now count", async () => {
     const wrapper = await mounted();

@@ -124,6 +124,10 @@ const EVENT_SENTENCES = {
   owner_cleared: () => t("leads.history.event_owner_cleared"),
   channel_settings: (d) =>
     t("leads.history.event_settings", { fields: Object.keys(d.changes || {}).map((field) => label(`leads.journal.setting.${field}`, field)).join(", ") }),
+  // U2: a change of the potential dot; a manual one says the salesperson's comment
+  potential: (d) =>
+    withDetail(t("leads.history.event_potential", { colour: t(`leads.potential.colour.${d.to || "none"}`) }), d.manual ? d.comment : ""),
+  draft_skipped: () => t("leads.history.event_draft_skipped"),
 };
 
 const stageLine = (d) => t("leads.activity.stage", { from: stageName(d.from_label, d.from), to: stageName(d.to_label, d.to) });
@@ -154,6 +158,13 @@ function messageText(message, kind) {
 
 // The kind of an activity as a word (History's kind filter).
 export const activityKindLabel = (kind) => label(`leads.activity.kind.${kind}`, capitalize(humanize(kind)));
+
+// Who wrote an activity (U5): a person by username, `system` and an import batch as words.
+export function activityActor(actor = "") {
+  if (!actor || actor === "system") return t("leads.history.actor_system");
+  if (actor.startsWith("import:")) return t("leads.history.actor_import");
+  return actor;
+}
 
 // Status words as badges: the same tone for a message everywhere it shows (bubble, list row, header).
 const MESSAGE_TONES = { sent: "positive", scheduled: "info", approved: "info", failed: "negative", review_required: "warning", skipped: "neutral", rejected: "neutral", suppressed: "negative" };

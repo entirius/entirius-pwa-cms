@@ -72,8 +72,10 @@ the draft's `blocker` and disables Send with it, a contact row opens `SendCheckD
 Every part is dormant on an older backend (`outboundOn(munin, "leads")`, routes `meta.moduleVersion`); tasks also
 need `isModuleInstalled("todo")` and read on `todo.tasks` (`src/api/todo/api.js`, the leads JWT client, `tz` = the
 channel's time zone). `/leads/today` (no area: its blocks gate themselves) lists the caller's tasks by chip (Due now
-= `today/` for "Mine", else `tasks/?due=overdue` + `?due=today`; Upcoming, No date, Done = `tasks/` pages) and the
-drafts / replies waiting (links to the Inbox chips, `?filter=draft|replied`). `/leads/companies` is a page: search,
+= `today/` for "Mine", else `tasks/?due=overdue` + `?due=today`; Upcoming, No date, Done, Cancelled = `tasks/` pages;
+a cancelled row says who, when and why (`cancelledLine`, `views/Leads/tasks.js`), reopens, never edits) and the
+drafts / replies waiting (links to the Inbox chips, `?filter=draft|replied`). The company card's Tasks tab lists the 20
+newest cancelled tasks under the open ones (U5); every History line of the card ends with its author (`activityActor`). `/leads/companies` is a page: search,
 owner chips, every filter (`attr.<key>` for `show_in_list` attributes), the sort (allowlist: `last_activity_at`,
 `score_points`, `owner__username`) and the page live in the URL; the API pages (20) and filters; bulk "Assign owner"
 (`companies/assign/`). The card adds Details (owner from `assignable-users/`, origin, custom fields; a PATCH of what
