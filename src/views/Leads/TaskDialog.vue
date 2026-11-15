@@ -30,7 +30,7 @@
       <FormField :label="$t('leads.task.owner')" :error="errorOf('owner_id')">
         <BasicSelect v-model="form.ownerId" :options="owners" searchable clearable data-testid="task-owner" />
       </FormField>
-      <FormField v-if="!company && mode !== 'edit'" :label="$t('leads.task.company')" required :error="errorOf('subject_ref')">
+      <FormField v-if="!company && mode !== 'edit'" :label="$t('leads.task.company')" :hint="companyHint" required :error="errorOf('subject_ref')">
         <EntitySearchPicker
           v-model="form.companyId"
           v-model:display-value="form.companyName"
@@ -170,8 +170,15 @@ function dismissToasts() {
   (notify.notifications || []).filter((toast) => toast.type === "positive").forEach((toast) => notify.hideNotification(toast.uuid));
 }
 
-const findCompanies = async (search) =>
-  (await GET_Companies({ search, page: 1 })).data.results.map((row) => ({ value: String(row.id), label: row.name || row.domain, secondary: row.domain }));
+// U6: the caller's companies first (`mine_first`, ignored by an older leads); with nothing typed the hint says how
+// many of how many are shown, so a missing name reads as "type to search", not as "not there".
+const companyHint = ref("");
+async function findCompanies(search) {
+  const { data } = await GET_Companies({ search, page: 1, mine_first: true });
+  const shown = data.results.length;
+  companyHint.value = !search && data.count > shown ? t("leads.task.company_hint", { shown, total: data.count }) : "";
+  return data.results.map((row) => ({ value: String(row.id), label: row.name || row.domain, secondary: row.domain }));
+}
 
 async function loadContacts(id) {
   picked.value = id ? { id: Number(id), name: form.companyName, contacts: [] } : null;

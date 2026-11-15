@@ -107,6 +107,24 @@ describe("Leads → task dialog", () => {
     expect(byTestid(done, "task-cancel-task").exists()).toBe(false);
   });
 
+  // U6: Add task from Today — the caller's companies first, and with nothing typed how many of how many are shown
+  it("the company picker asks for my companies first and says how many it shows", async () => {
+    const rows = Array.from({ length: 20 }, (_, n) => ({ id: n + 1, name: `Shop ${n + 1}`, domain: `shop${n + 1}.test` }));
+    leads.GET_Companies.mockResolvedValue({ data: { count: 131, results: rows } });
+    const wrapper = await opened({ mode: "add" });
+    const picker = wrapper.findComponent('[data-testid="task-company"]');
+    const options = await picker.props("fetchFn")("");
+    await flushPromises();
+    expect(leads.GET_Companies).toHaveBeenLastCalledWith({ search: "", page: 1, mine_first: true });
+    expect(options[0]).toEqual({ value: "1", label: "Shop 1", secondary: "shop1.test" });
+    const field = () => wrapper.findAllComponents({ name: "FormField" }).find((f) => f.props("label") === "leads.task.company");
+    expect(field().attributes("hint")).toBe("Type a name to search — showing 20 of 131");
+    leads.GET_Companies.mockResolvedValue({ data: { count: 9, results: rows.slice(0, 9) } });
+    await picker.props("fetchFn")("Shop");
+    await flushPromises();
+    expect(field().attributes("hint")).toBeFalsy();
+  });
+
   it("opening takes away a live success toast, not an error one", async () => {
     notify.notifications = [{ uuid: "a", type: "positive" }, { uuid: "b", type: "negative" }];
     await opened({ mode: "done", task: { id: 4, title: "Old" } });
