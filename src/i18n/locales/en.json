@@ -75,6 +75,7 @@
     "leads_do_not_contact": "Do not contact",
     "leads_today": "Today",
     "leads_reports": "Reports",
+    "leads_history": "History",
     "leads_deals": "Deals",
     "leads_deal_stages": "Deal stages"
   },
@@ -4214,7 +4215,7 @@
     "product": "Product",
     "applied_at": "Applied at",
     "mode_suggestion": "Suggestion",
-    "mode_authoritative": "Authoritative",
+    "mode_authoritative": "Authoritative mode",
     "reason_ok": "Within the strategy",
     "reason_in_band": "Within the tolerance band",
     "reason_strategy_scope": "The strategy does not allow this move",
@@ -4256,7 +4257,6 @@
     "scope_category_idx": "Category",
     "scope_channel": "Channel",
     "category": "Category",
-    "mode_authoritative": "Authoritative mode",
     "mode_v2_note": "Requires autopilot mode",
     "confirm_delete_title": "Delete rule",
     "confirm_delete_rule": "This pricing rule will be permanently deleted.",
@@ -4676,7 +4676,8 @@
         "intel_empty": "Site audit found nothing",
         "score": "Score updated",
         "task": "Task",
-        "deal": "Deal"
+        "deal": "Deal",
+        "settings": "Settings changed"
       },
       "msg": {
         "message_sent": "Mail sent",
@@ -4815,7 +4816,8 @@
       "next_optout_possible": "Next: nothing is sent until you confirm the opt-out or mark it as not one",
       "next_stopped": "Next: the sequence is stopped",
       "next_resumes": "Next: the sequence resumes on {date}",
-      "next_paused": "Next: the sequence is paused until you resume it"
+      "next_paused": "Next: the sequence is paused until you resume it",
+      "event_settings": "Settings changed: {fields}"
     },
     "problem": {
       "legal_footer": "The mail has no legal footer — set the footer in Settings → Send settings",
@@ -5533,6 +5535,29 @@
         "email": "Give a valid e-mail address",
         "format": "Use only the characters the hint names",
         "number": "Give a number in the allowed range"
+      }
+    },
+    "journal": {
+      "title": "History",
+      "person": "Person",
+      "kind": "Kind",
+      "period": "Period",
+      "company": "Company",
+      "company_search": "Search a company",
+      "col_time": "When",
+      "col_who": "Who",
+      "col_what": "What",
+      "col_on": "On",
+      "col_reason": "Reason",
+      "empty": "Nothing has happened in the CRM yet",
+      "none_match": "No entries match the filters",
+      "system": "System",
+      "import": "Import",
+      "channel": "Settings",
+      "setting": {
+        "resume_days": "days until a follow-up",
+        "default_currency": "deal currency",
+        "history_months": "history kept"
       }
     }
   },

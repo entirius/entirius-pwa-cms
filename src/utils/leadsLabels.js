@@ -122,6 +122,8 @@ const EVENT_SENTENCES = {
   deal_restored: (d) => t("leads.history.event_deal_restored", { title: d.title }),
   owner_set: (d) => t("leads.history.event_owner", { name: d.owner_name }),
   owner_cleared: () => t("leads.history.event_owner_cleared"),
+  channel_settings: (d) =>
+    t("leads.history.event_settings", { fields: Object.keys(d.changes || {}).map((field) => label(`leads.journal.setting.${field}`, field)).join(", ") }),
 };
 
 const stageLine = (d) => t("leads.activity.stage", { from: stageName(d.from_label, d.from), to: stageName(d.to_label, d.to) });
@@ -149,6 +151,9 @@ function messageText(message, kind) {
   if (kind) return label(`leads.activity.kind.${kind}`, capitalize(humanize(message || kind)));
   return capitalize(humanize(message).replace(/ -> /g, " → "));
 }
+
+// The kind of an activity as a word (History's kind filter).
+export const activityKindLabel = (kind) => label(`leads.activity.kind.${kind}`, capitalize(humanize(kind)));
 
 // Status words as badges: the same tone for a message everywhere it shows (bubble, list row, header).
 const MESSAGE_TONES = { sent: "positive", scheduled: "info", approved: "info", failed: "negative", review_required: "warning", skipped: "neutral", rejected: "neutral", suppressed: "negative" };
