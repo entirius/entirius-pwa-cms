@@ -178,12 +178,18 @@ describe("Leads Review", () => {
     await wrapper.get('[data-testid="review-skip"]').trigger("click");
     await flushPromises();
     expect(replace).toHaveBeenCalledWith({ name: "LeadsReview", params: { id: 6 }, query: { from: "approvals" } });
+    // the router opens draft 6
+    api.GET_ReviewMessage.mockResolvedValue({ ...draft, id: 6 });
+    route.current.params.id = "6";
+    await flushPromises();
     await wrapper.get('[data-testid="review-skip"]').trigger("click");
     await flushPromises();
     // the queue is empty: the confirmation stands above the empty state, whose way on is Approvals
     await wrapper.get('[data-testid="review-empty-inbox"]').trigger("click");
     expect(replace).toHaveBeenLastCalledWith({ name: "LeadsApprovals" });
     delete route.current.query;
+    route.current.params.id = "5";
+    api.GET_ReviewMessage.mockResolvedValue(draft);
   });
 
   it("Skip is named for what it does, says the mail will not be sent and moves to the next draft", async () => {
@@ -427,6 +433,39 @@ describe("Leads Review", () => {
     vi.advanceTimersByTime(10000);
     await flushPromises();
     expect(api.POST_ReviewSkip).toHaveBeenCalledTimes(1);
+  });
+
+  it("Skip A then Send the last draft B: the skipped A is not the next draft, the queue is empty", async () => {
+    vi.useFakeTimers();
+    api.GET_ReviewList.mockResolvedValue({ data: { results: [{ id: 5 }, { id: 6 }] } });
+    api.POST_ReviewSkip.mockReturnValue(ok());
+    api.POST_ReviewAccept.mockReturnValue(ok({ id: 6 }));
+    const wrapper = await mountReview();
+    await wrapper.get('[data-testid="review-skip"]').trigger("click");
+    await flushPromises();
+    expect(replace).toHaveBeenLastCalledWith({ name: "LeadsReview", params: { id: 6 } });
+    api.GET_ReviewMessage.mockResolvedValue({ ...draft, id: 6 });
+    route.current.params.id = "6";
+    await flushPromises();
+    expect(wrapper.text()).toContain('"index":1,"count":1');
+    await wrapper.get('[data-testid="review-send"]').trigger("click");
+    await flushPromises();
+    expect(replace).toHaveBeenCalledTimes(1);
+    expect(wrapper.find('[data-testid="review-empty"]').exists()).toBe(true);
+    route.current.params.id = "5";
+    api.GET_ReviewMessage.mockResolvedValue(draft);
+  });
+
+  it("a second Skip before the router moves on does not skip the same draft twice", async () => {
+    vi.useFakeTimers();
+    api.POST_ReviewSkip.mockReturnValue(ok());
+    api.GET_ReviewNext.mockResolvedValue({ data: { id: 6 } });
+    const wrapper = await mountReview();
+    await wrapper.get('[data-testid="review-skip"]').trigger("click");
+    await wrapper.get('[data-testid="review-skip"]').trigger("click");
+    await flushPromises();
+    expect(api.POST_ReviewSkip).not.toHaveBeenCalled();
+    expect(api.GET_ReviewNext).toHaveBeenCalledTimes(1);
   });
 
   it("leaving the screen sends a skip that still waits", async () => {

@@ -177,6 +177,7 @@ const queueEmpty = ref(false);
 const failedVersion = ref(null);
 const draft = ref({ subject: "", body_text: "" });
 const queueIndex = ref(0);
+const skippedIds = new Set();
 const queueTotal = ref(0);
 const discarding = ref(false);
 let confirmationTimer = null;
@@ -331,8 +332,9 @@ async function loadOutbound() {
 async function loadQueuePosition() {
   try {
     queue.value = await readQueue();
-    queueTotal.value = queue.value.length;
-    queueIndex.value = queue.value.indexOf(message.value.id) + 1;
+    const open = queue.value.filter((id) => !skippedIds.has(id));
+    queueTotal.value = open.length;
+    queueIndex.value = open.indexOf(message.value.id) + 1;
   } catch {
     queueTotal.value = 0;
   }
@@ -352,10 +354,13 @@ async function readQueue() {
 
 // N7: the next draft is the one below in the Inbox order (else the one above) — "Draft 1 of 19" goes on to the new
 // "Draft 1 of 18"; the service's next only when this draft is not in the list read.
+// Skipped drafts (waiting for their delayed skip, or already skipped in this session) stay in the read queue: never next.
 const queue = ref([]);
 function followingId() {
   const at = queue.value.indexOf(message.value?.id);
-  return at < 0 ? null : queue.value[at + 1] ?? queue.value[at - 1] ?? null;
+  if (at < 0) return null;
+  const open = (id) => !skippedIds.has(id);
+  return queue.value.slice(at + 1).find(open) ?? queue.value.slice(0, at).reverse().find(open) ?? null;
 }
 
 // After Skip or Send (`afterAction`) an empty queue keeps the screen; otherwise it is the way back.
@@ -473,8 +478,10 @@ function flushSkip() {
 
 async function skip() {
   if (busy.value || !message.value) return;
+  if (pendingSkip.value?.id === message.value.id) return; // this draft is already skipped, the router has not moved on yet
   await flushSkip();
   const id = message.value.id;
+  skippedIds.add(id);
   pendingSkip.value = { id };
   skipTimer = setTimeout(flushSkip, UNDO_MS);
   confirm(t("leads.review.skipped"));
@@ -486,6 +493,7 @@ function undoSkip() {
   clearTimeout(skipTimer);
   const { id } = pendingSkip.value;
   pendingSkip.value = null;
+  skippedIds.delete(id);
   clearTimeout(confirmationTimer);
   confirmation.value = "";
   queueEmpty.value = false;
