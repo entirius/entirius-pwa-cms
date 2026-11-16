@@ -444,9 +444,11 @@ async function acceptedState(accepted) {
 
 // Send: the next draft opens at once; the line above it says when this mail goes.
 async function accept() {
-  await flushSkip();
+  if (busy.value || !message.value) return;
+  const id = message.value.id;
+  if (!(await settleSkip(id))) return;
   return act(
-    () => api.POST_ReviewAccept(message.value.id),
+    () => api.POST_ReviewAccept(id),
     async (data) => {
       const [state] = await Promise.all([acceptedState(data), goNext(true)]);
       confirm(t("leads.review.accepted", { state }));
@@ -479,11 +481,24 @@ function flushSkip() {
   return sendSkip(id);
 }
 
+// Sends the skip that still waits, holding `busy` so no second action starts meanwhile. False when the screen moved
+// to another draft in that time: the action the user meant was for `id`, never for the draft that is open now.
+async function settleSkip(id) {
+  if (!pendingSkip.value) return true;
+  busy.value = true;
+  try {
+    await flushSkip();
+  } finally {
+    busy.value = false;
+  }
+  return message.value?.id === id;
+}
+
 async function skip() {
   if (busy.value || !message.value) return;
   if (pendingSkip.value?.id === message.value.id) return; // this draft is already skipped, the router has not moved on yet
-  await flushSkip();
   const id = message.value.id;
+  if (!(await settleSkip(id))) return;
   skippedIds.add(id);
   pendingSkip.value = { id };
   skipTimer = setTimeout(flushSkip, UNDO_MS);
