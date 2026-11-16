@@ -37,17 +37,22 @@
         <span v-if="detail" class="inbox-row__detail">{{ detail }}</span>
       </span>
     </router-link>
-    <div v-if="marker === 'waiting' && canSendNow(row.waiting)" class="inbox-row__send">
-      <BasicButton size="sm" data-testid="inbox-item-send-now" @click="$emit('send-now', row.waiting.id)">
-        {{ $t("communicator.scheduled.send_now") }}
-      </BasicButton>
-    </div>
+    <!-- U19: the Inbox column has no PageLayout — Send now reads the area its endpoint writes (conversations) -->
+    <ReadonlyArea v-if="marker === 'waiting' && canSendNow(row.waiting)" :area="AREAS.COMMUNICATOR_CONVERSATIONS">
+      <div class="inbox-row__send">
+        <BasicButton size="sm" mutates data-testid="inbox-item-send-now" @click="$emit('send-now', row.waiting.id)">
+          {{ $t("communicator.scheduled.send_now") }}
+        </BasicButton>
+      </div>
+    </ReadonlyArea>
   </article>
 </template>
 
 <script setup>
 import { computed, onMounted, ref } from "vue";
 import { t } from "@/i18n";
+import { ReadonlyArea } from "@/composables/useReadonly";
+import { AREAS } from "@/configs/areas";
 import { useMuninStore } from "@/stores/munin";
 import { loadCompanyName } from "@/utils/leadsCompanyNames";
 import { formatDay } from "@/utils/format";
