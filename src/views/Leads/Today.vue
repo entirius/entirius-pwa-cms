@@ -85,7 +85,7 @@
           <template #cell-actions="{ row }">
             <!-- the row opens the company on a phone; the buttons stop their own click (C6) -->
             <IconButton v-if="row.status !== 'cancelled'" mutates icon="edit" size="sm" :label="$t('leads.task.edit')" data-testid="task-edit" @click="openDialog('edit', row)" />
-            <BasicButton v-if="row.status !== 'open'" mutates size="sm" data-testid="task-reopen" @click="reopen(row)">
+            <BasicButton v-if="row.status !== 'open'" mutates size="sm" :loading="reopening === row.id" data-testid="task-reopen" @click="reopen(row)">
               {{ $t("leads.task.reopen") }}
             </BasicButton>
             <template v-else>
@@ -295,13 +295,19 @@ function openDialog(mode, task) {
   dialogOpen.value = true;
 }
 
+// One Reopen at a time, as on the company card: a second click on the same row would meet "already open".
+const reopening = ref(null);
 async function reopen(task) {
+  if (reopening.value === task.id) return;
+  reopening.value = task.id;
   try {
     await POST_TaskReopen(task.id);
     // k2 (walk 4): a reopened task counts under Due now again — the counter is read with the list
     await Promise.all([load(), chip.value === "due" ? null : loadDue()]);
   } catch (err) {
     notify.spawnNotification({ msg: extractApiMessage(err, t("leads.task.error")), type: "negative" });
+  } finally {
+    reopening.value = null;
   }
 }
 
