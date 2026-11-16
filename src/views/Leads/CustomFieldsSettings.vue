@@ -43,7 +43,7 @@
           <BasicInput v-model="draft.label" :maxlength="128" data-testid="field-label" />
         </FormField>
         <FormField :label="$t('leads.fields.key')" required :hint="$t('leads.fields.key_hint')" hint-level="important" :error="errorOf('key')">
-          <BasicInput v-model="draft.key" format="key" :maxlength="48" :readonly="Boolean(draft.id)" data-testid="field-key" />
+          <BasicInput v-model="draft.key" format="key" :maxlength="KEY_MAX" :readonly="Boolean(draft.id)" data-testid="field-key" @update:model-value="keyTyped" />
         </FormField>
         <FormField :label="$t('leads.fields.kind')" required :error="errorOf('kind')">
           <BasicSelect v-model="draft.kind" :options="kindOptions" :disabled="kindLocked" data-testid="field-kind" />
@@ -88,7 +88,7 @@ import { DELETE_Attribute, GET_Attributes, PATCH_Attribute, POST_Attribute } fro
 import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
 import { usePageReadonly } from "@/composables/useReadonly";
 import { useNotifyStore } from "@/stores/notify";
-import { FIELD_KINDS, plainCopy } from "./customFields";
+import { FIELD_KINDS, KEY_MAX, keyFromLabel, plainCopy } from "./customFields";
 
 // Settings → Custom fields (ux/screens/settings-custom-fields.md): the definitions of one entity (`?entity=`), in
 // order. The key is fixed after create; the kind is fixed once a value is stored (the API refuses with 409). Reorder
@@ -109,6 +109,17 @@ const kindLocked = ref(false);
 const removing = ref(null);
 const draft = reactive({});
 const missing = ref({}); // required fields left empty, caught before the request
+// U16: a new field's key follows its label until the person types a key of their own; emptying the key hands it back
+// to the label. The key of a saved field never changes (read-only input).
+const keyEdited = ref(false);
+const keyTyped = (value) => (keyEdited.value = Boolean(value));
+watch(
+  () => draft.label,
+  (label) => {
+    if (!draft.id && !keyEdited.value) draft.key = keyFromLabel(label);
+  },
+  { flush: "sync" }
+);
 
 const entity = computed(() => (ENTITIES.includes(route.query.entity) ? route.query.entity : "company"));
 const tabOptions = ENTITIES.map((value) => ({ value, label: t(`leads.fields.tab.${value}`), testid: `fields-tab-${value}` }));
@@ -159,6 +170,7 @@ function openDialog(row) {
   const base = { id: null, label: "", key: "", kind: "text", options: [], required: false, show_in_list: false };
   Object.assign(draft, base, row ? plainCopy({ ...row }) : {});
   kindLocked.value = false;
+  keyEdited.value = false;
   dialogError.value = "";
   missing.value = {};
   clearErrors();

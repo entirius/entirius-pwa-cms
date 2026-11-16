@@ -87,12 +87,49 @@ describe("Leads → Settings → Custom fields", () => {
     expect(leads.POST_Attribute).toHaveBeenCalledWith({ entity: "contact", key: "role", kind: "select", label: "Role", options: [{ value: "cto", label: "CTO" }], required: false, show_in_list: false, order: 2 });
   });
 
+  // U16 (test C6): the key follows the label (Polish letters spelled plain, lower case, `_`) until typed by hand
+  it("a new field's key is filled from its label; a key typed by hand stays", async () => {
+    const wrapper = await mounted(CustomFieldsSettings);
+    const key = async () => {
+      await flushPromises();
+      return wrapper.findComponent('[data-testid="field-key"]').props("modelValue");
+    };
+    await byTestid(wrapper, "fields-add").trigger("click");
+    setControl(wrapper, "field-label", "Pole testowe");
+    expect(await key()).toBe("pole_testowe");
+    setControl(wrapper, "field-label", "Źródło łącza (główne)");
+    expect(await key()).toBe("zrodlo_lacza_glowne");
+    setControl(wrapper, "field-key", "source");
+    setControl(wrapper, "field-label", "Źródło leadu");
+    expect(await key()).toBe("source");
+    await byTestid(wrapper, "field-save").trigger("click");
+    await flushPromises();
+    expect(leads.POST_Attribute).toHaveBeenCalledWith(expect.objectContaining({ key: "source", label: "Źródło leadu" }));
+  });
+
+  it("an emptied key follows the label again; a saved field's key never moves", async () => {
+    const wrapper = await mounted(CustomFieldsSettings);
+    const key = async () => {
+      await flushPromises();
+      return wrapper.findComponent('[data-testid="field-key"]').props("modelValue");
+    };
+    await byTestid(wrapper, "fields-add").trigger("click");
+    setControl(wrapper, "field-key", "mine");
+    setControl(wrapper, "field-key", "");
+    setControl(wrapper, "field-label", "2025 budget");
+    expect(await key()).toBe("field_2025_budget");
+    await wrapper.findAll('[data-testid="field-edit"]')[0].trigger("click");
+    setControl(wrapper, "field-label", "Shop platform");
+    expect(await key()).toBe("platform");
+  });
+
   // T7 (walk 4): a required field left empty is named before any request; an API field error reads in words
   it("an empty key is named before the request; the API's raw text never shows", async () => {
     const wrapper = await mounted(CustomFieldsSettings);
     const errorOf = (label) => wrapper.findAllComponents({ name: "FormField" }).find((field) => field.props("label") === label).props("error");
     await byTestid(wrapper, "fields-add").trigger("click");
     setControl(wrapper, "field-label", "Role");
+    setControl(wrapper, "field-key", ""); // U16: the label filled it; emptied by hand
     await byTestid(wrapper, "field-save").trigger("click");
     await flushPromises();
     expect(leads.POST_Attribute).not.toHaveBeenCalled();

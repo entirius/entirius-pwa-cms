@@ -5400,7 +5400,7 @@
       "option_label": "Label",
       "add_option": "Add option",
       "remove_option": "Remove option",
-      "key_hint": "Cannot change after save",
+      "key_hint": "Filled in from the label: lowercase letters, digits and _. Cannot change after save",
       "kind_locked": "Kind cannot change: values are stored",
       "empty": "No custom fields on {entity} yet",
       "delete_confirm": "Delete the field {label}? Only a field that holds no value yet and that no rule or scoring names can be deleted. To stop using a field with values, switch Active off instead: its values stay stored.",

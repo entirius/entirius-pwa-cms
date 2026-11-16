@@ -5399,7 +5399,7 @@
       "option_label": "Etykieta",
       "add_option": "Dodaj opcję",
       "remove_option": "Usuń opcję",
-      "key_hint": "Nie można zmienić po zapisie",
+      "key_hint": "Wypełnia się z etykiety: małe litery, cyfry i _. Nie można zmienić po zapisie",
       "kind_locked": "Rodzaju nie można zmienić: są zapisane wartości",
       "empty": "Brak pól własnych: {entity}",
       "delete_confirm": "Usunąć pole {label}? Usunąć można tylko pole, które nie ma jeszcze żadnej wartości i którego nie używa żadna reguła ani ocena. Aby przestać używać pola z wartościami, wyłącz „Aktywne”: wartości zostają zapisane.",
