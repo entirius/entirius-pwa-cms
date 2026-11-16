@@ -6,6 +6,12 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- Sales CRM, Settings → Custom fields, U16: Add field fills the key from the label as it is typed ("Pole testowe" →
+  `pole_testowe`: Polish letters spelled plain, lower case, `_` between words, `field_` in front of a leading digit,
+  48 characters at most). The key stays editable; a key typed by hand is never overwritten (emptying it hands it back
+  to the label). The key of a saved field stays fixed; the key check and the "Give the key" message are unchanged.
+  The key hint says so (en + pl).
+
 - The Leads panel is called "Sales CRM" wherever people read it (menu, phone bar, headings, module list, import
   texts; en + pl). The `leads` panel id, the `/leads/...` addresses and the i18n keys stay, so old links keep working;
   the contact-form leads (Forms → Leads) keep their name.

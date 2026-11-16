@@ -52,3 +52,21 @@ export function formatValue(field, value) {
 
 // A deep copy of API data held in reactive state (structuredClone refuses Vue proxies).
 export const plainCopy = (value) => JSON.parse(JSON.stringify(value));
+
+// U16: the API's attribute key — `^[a-z][a-z0-9_]*$`, at most 48 characters.
+export const KEY_MAX = 48;
+const PL_LETTERS = { ł: "l", Ł: "l" }; // the one Polish letter NFD does not split into a base letter and a mark
+
+/** "Pole testowe" → "pole_testowe", "Źródło leadu" → "zrodlo_leadu": the key a new field's label suggests ("" for no
+ * letter or digit). A key that would start with a digit gets `field_` in front, as the API wants a letter first. */
+export function keyFromLabel(label) {
+  const base = (label || "")
+    .replace(/[łŁ]/g, (letter) => PL_LETTERS[letter])
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+  const key = /^[0-9]/.test(base) ? `field_${base}` : base;
+  return key.slice(0, KEY_MAX).replace(/_+$/, "");
+}
