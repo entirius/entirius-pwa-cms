@@ -187,6 +187,36 @@ describe("Leads → Approvals", () => {
     expect(reasonError()).toBe("");
   });
 
+  it("U13: the Mailbox filter shows each mailbox by address and owner; picking one narrows the list", async () => {
+    const counts = {
+      total: 3,
+      by_channel: { "default-europe": 3 },
+      by_mailbox: { 1: 2, 2: 1, none: 0 },
+      mailboxes: [
+        { id: 1, address: "sales1@greenmail.test", user_name: "manager", hold: null },
+        { id: 2, address: "sales2@greenmail.test", user_name: "", hold: "paused" },
+      ],
+    };
+    api.GET_Approvals.mockResolvedValue({ data: { count: 1, next: null, results: [row(1, { mailbox_id: 1 })], counts } });
+    const wrapper = await mountApprovals();
+    const filter = wrapper.findComponent('[data-testid="approvals-mailbox"]');
+    expect(filter.props("options")).toEqual([
+      { value: "1", label: "sales1@greenmail.test (manager)" },
+      { value: "2", label: "sales2@greenmail.test" },
+    ]);
+    filter.vm.$emit("update:modelValue", "2");
+    await flushPromises();
+    expect(api.GET_Approvals).toHaveBeenLastCalledWith(expect.objectContaining({ mailbox: "2" }));
+  });
+
+  it("U13: without `counts.mailboxes` (an older communicator) the filter falls back to the ids", async () => {
+    api.GET_Approvals.mockResolvedValue({
+      data: { count: 1, next: null, results: [row(1)], counts: { total: 1, by_channel: {}, by_mailbox: { 4: 1, none: 0 } } },
+    });
+    const wrapper = await mountApprovals();
+    expect(wrapper.findComponent('[data-testid="approvals-mailbox"]').props("options")).toEqual([{ value: "4", label: "4" }]);
+  });
+
   it("a row of the active channel opens Review; another channel's opens the drawer", async () => {
     api.GET_Approvals.mockResolvedValue(page([row(1), row(2, { channel: "other" })]));
     const wrapper = await mountApprovals();

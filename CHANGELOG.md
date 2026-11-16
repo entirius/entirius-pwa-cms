@@ -14,6 +14,9 @@ All notable changes to this project will be documented in this file.
   Add company returns to where the person came from (the list with its tab and filters), as the company card does.
 - Tests: the Deals list suite moves to `tests/unit/views/Leads/DealsList.spec.js` — `Deals.spec.js` and `deals.spec.js`
   were one file on a case-insensitive file system (macOS).
+- Leads panel, Approvals (U13): the Mailbox filter shows each mailbox by its address and owner ("sales1@shop.test
+  (Anna Nowak)") instead of its number, from communicator's `counts.mailboxes` (django-communicator with
+  `feature/mailbox-filter-labels`); an older communicator keeps the numbers.
 
 ### Added
 
