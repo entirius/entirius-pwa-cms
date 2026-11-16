@@ -200,8 +200,15 @@ const logColumns = [
 
 const optionsOf = (keys, label = (key) => key) => keys.map((value) => ({ value, label: label(value) }));
 const channelOptions = computed(() => optionsOf(Object.keys(list.value.counts?.by_channel || {}), channelName));
+// U13: a mailbox reads as its address and owner (communicator `counts.mailboxes`); an older communicator gives ids only
+const mailboxOf = (id) => (list.value.counts?.mailboxes || []).find((mailbox) => String(mailbox.id) === String(id));
+const mailboxLabel = (id) => {
+  const mailbox = mailboxOf(id);
+  if (!mailbox) return id;
+  return mailbox.user_name ? `${mailbox.address} (${mailbox.user_name})` : mailbox.address;
+};
 const mailboxOptions = computed(() =>
-  optionsOf(Object.keys(list.value.counts?.by_mailbox || {}).filter((key) => key !== "none"))
+  optionsOf(Object.keys(list.value.counts?.by_mailbox || {}).filter((key) => key !== "none"), mailboxLabel)
 );
 const templateOptions = computed(() => optionsOf([...templates.value]));
 const ageOptions = AGES.map((hours, i) => ({ value: hours, label: t(`leads.approvals.age_${["1d", "3d", "7d"][i]}`) }));
