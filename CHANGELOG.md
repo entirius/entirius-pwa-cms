@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- Sales CRM, Settings → Sending health (U15): every count says its period — "Sent (last 24 h)" / "Sent (last 7
+  days)" rolls back from now, "Sent today (since 00:00)" is the channel's calendar day, with a note naming the channel
+  timezone (communicator's `timezone` in `GET health/`; an older backend: the note without it). The pause log loads
+  the newest 10 entries, "Show more" adds 10 (was 20).
 - The Leads panel is called "Sales CRM" wherever people read it (menu, phone bar, headings, module list, import
   texts; en + pl). The `leads` panel id, the `/leads/...` addresses and the i18n keys stay, so old links keep working;
   the contact-form leads (Forms → Leads) keep their name.
