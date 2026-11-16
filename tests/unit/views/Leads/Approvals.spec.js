@@ -127,6 +127,62 @@ describe("Leads → Approvals", () => {
     expect(byTestid(wrapper, "approvals-result").text()).toBe("2 drafts approved.");
   });
 
+  describe("U14: a draft of a mailbox on hold", () => {
+    const counts = (hold) => ({
+      total: 3,
+      by_channel: { "default-europe": 3 },
+      by_mailbox: { 1: 2, 2: 1 },
+      mailboxes: [
+        { id: 1, address: "sales1@greenmail.test", user_name: "manager", hold },
+        { id: 2, address: "sales2@greenmail.test", user_name: "editor", hold: null },
+      ],
+    });
+    const held = (hold = "paused") =>
+      api.GET_Approvals.mockResolvedValue({
+        data: { count: 3, next: null, results: [row(1, { mailbox_id: 1 }), row(2, { mailbox_id: 1 }), row(3, { mailbox_id: 2 })], counts: counts(hold) },
+      });
+    const dialog = (wrapper) => wrapper.findComponent({ name: "ConfirmDialog" });
+
+    it("the dialog says up front how many will not go out and from which mailbox; the others still go", async () => {
+      held();
+      const wrapper = await mountApprovals();
+      await select(wrapper, [1, 3]);
+      await byTestid(wrapper, "approvals-approve").trigger("click");
+      expect(dialog(wrapper).props("message")).toBe(
+        "The mailbox sales1@greenmail.test is paused: 1 selected draft will not go out. The other 1 goes out at once."
+      );
+      expect(byTestid(wrapper, "approvals-approve-confirm").attributes("disabled")).toBeUndefined();
+    });
+
+    it("all of them on hold: Approve is off", async () => {
+      held();
+      const wrapper = await mountApprovals();
+      await select(wrapper, [1, 2]);
+      await byTestid(wrapper, "approvals-approve").trigger("click");
+      expect(dialog(wrapper).props("message")).toBe(
+        "The mailbox sales1@greenmail.test is paused: 2 selected drafts will not go out. " +
+          "Nothing selected can go out: Approve is off until the mailbox sends again."
+      );
+      expect(dialog(wrapper).props("confirmDisabled")).toBe(true);
+      await byTestid(wrapper, "approvals-approve-confirm").trigger("click");
+      expect(api.POST_ApprovalsBulk).not.toHaveBeenCalled();
+    });
+
+    it("a mailbox that can send changes nothing; another hold is named in its words", async () => {
+      held(null);
+      const wrapper = await mountApprovals();
+      await select(wrapper, [1, 3]);
+      await byTestid(wrapper, "approvals-approve").trigger("click");
+      expect(dialog(wrapper).props("message")).toBe("The mail goes out at once.");
+      expect(dialog(wrapper).props("confirmDisabled")).toBe(false);
+      held("needs_login");
+      const other = await mountApprovals();
+      await select(other, [1]);
+      await byTestid(other, "approvals-approve").trigger("click");
+      expect(dialog(other).props("message")).toContain("The mailbox sales1@greenmail.test needs a login");
+    });
+  });
+
   it("the result of a skip says only what happened", async () => {
     api.POST_ApprovalsBulk.mockResolvedValue({ data: { done: [1], failed: {} } });
     const wrapper = await mountApprovals();
