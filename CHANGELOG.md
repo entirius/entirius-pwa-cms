@@ -153,6 +153,8 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- Leads panel: the "Give the reason" error of a reason dialog (Approvals Skip, mailbox pause / resume, lost deal,
+  potential colour) goes as soon as a reason is typed instead of staying on screen until the next submit (U12).
 - PriceFighter: the Gap Table shows the product name in its own Product column (it was a small grey line under the
   SKU that wrapped); the row detail names the decision reason, the strategy and the mode in words instead of the
   engine codes (`in_band`, `compete / suggestion`; an unknown code stays raw); Strategies shows the mode in words;

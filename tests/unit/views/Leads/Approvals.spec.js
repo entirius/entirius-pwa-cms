@@ -174,6 +174,19 @@ describe("Leads → Approvals", () => {
     expect(api.POST_ApprovalsBulk).toHaveBeenCalledWith({ action: "reject", ids: [1], reason: "wrong tone" });
   });
 
+  it("U12: the missing-reason error goes as soon as one character is typed", async () => {
+    const wrapper = await mountApprovals();
+    await select(wrapper, [1]);
+    await byTestid(wrapper, "approvals-reject").trigger("click");
+    const reasonError = () =>
+      wrapper.findAllComponents({ name: "FormField" }).find((field) => field.props("label") === "leads.approvals.reason").props("error");
+    await byTestid(wrapper, "approvals-reject-submit").trigger("click");
+    expect(reasonError()).toBe("Give the reason");
+    wrapper.findComponent('[data-testid="approvals-reject-reason"]').vm.$emit("update:modelValue", "w");
+    await flushPromises();
+    expect(reasonError()).toBe("");
+  });
+
   it("a row of the active channel opens Review; another channel's opens the drawer", async () => {
     api.GET_Approvals.mockResolvedValue(page([row(1), row(2, { channel: "other" })]));
     const wrapper = await mountApprovals();

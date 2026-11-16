@@ -124,6 +124,11 @@ watch(
   { immediate: true }
 );
 
+// U12: the "Give the reason" error goes as soon as the reason is typed
+watch(comment, (text) => {
+  if (text?.trim()) error.value = "";
+});
+
 async function send(request) {
   saving.value = true;
   try {

@@ -78,6 +78,17 @@ describe("Leads → Settings → Mailboxes", () => {
     expect(api.POST_MailboxPause).toHaveBeenCalledWith(2, "list import");
   });
 
+  it("U12: the missing-reason error goes as soon as one character is typed", async () => {
+    const wrapper = await mounted(Mailboxes);
+    await byTestid(wrapper, "mailbox-pause").trigger("click");
+    const reasonError = () => wrapper.findComponent({ name: "MailboxReasonDialog" }).findComponent({ name: "FormField" }).props("error");
+    await byTestid(wrapper, "mailbox-reason-submit").trigger("click");
+    expect(reasonError()).toBe("Give the reason");
+    wrapper.findComponent('[data-testid="mailbox-reason"]').vm.$emit("update:modelValue", "l");
+    await flushPromises();
+    expect(reasonError()).toBe("");
+  });
+
   it("the form never shows a stored password and never sends an empty one", async () => {
     api.PATCH_Mailbox.mockResolvedValue({ data: mailbox() });
     const wrapper = await mounted(MailboxEdit);
