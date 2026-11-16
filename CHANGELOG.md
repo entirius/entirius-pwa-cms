@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- Sales CRM, U18: a role that cannot write the screen's area (viewer) opens Companies, Deals (list and board) and
+  Today on the owner filter "All" instead of an empty "Mine"; an owner chosen in the address or the select still
+  wins, as before. Other roles keep "Mine".
+
 - The Leads panel is called "Sales CRM" wherever people read it (menu, phone bar, headings, module list, import
   texts; en + pl). The `leads` panel id, the `/leads/...` addresses and the i18n keys stay, so old links keep working;
   the contact-form leads (Forms → Leads) keep their name.
