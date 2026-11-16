@@ -301,6 +301,14 @@ function submitApprove() {
   return run("approve", approving.ids);
 }
 
+// U12: the "Give the reason" error goes as soon as the reason is typed
+watch(
+  () => rejecting.reason,
+  (reason) => {
+    if (reason.trim()) rejecting.error = "";
+  }
+);
+
 function askReject(ids) {
   Object.assign(rejecting, { open: true, ids, reason: "", error: "" });
 }
