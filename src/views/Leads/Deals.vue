@@ -24,7 +24,7 @@
       <EmptyState v-else-if="stagesLoaded && !stages.length" icon="empty" size="md" :title="$t('leads.deals.no_stages')" data-testid="deals-no-stages">
         <router-link v-if="canSetUp" class="t-accent" :to="{ name: 'LeadsDealStages' }">{{ $t("leads.deal_stages.title") }}</router-link>
       </EmptyState>
-      <EmptyState v-else-if="!deals.length && archivedView" icon="empty" size="md" :title="$t('leads.deals.none_archived')" data-testid="deals-empty-archived" />
+      <EmptyState v-else-if="!deals.length && archivedView && !filtered" icon="empty" size="md" :title="$t('leads.deals.none_archived')" data-testid="deals-empty-archived" />
       <!-- Mine is empty while the channel has deals: say so and offer them all (N18) -->
       <EmptyState v-else-if="!deals.length && !filtered && othersExist" icon="empty" size="md" :title="$t('leads.deals.none_mine')" data-testid="deals-empty-mine">
         <BasicButton data-testid="deals-show-all" @click="setFilter({ owner: 'all' })">{{ $t("leads.deals.show_all_deals") }}</BasicButton>

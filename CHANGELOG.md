@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- CRM, Review: Skip or Send pressed while the previous skip is still being sent no longer acts on the next draft, which nobody has read.
+- CRM, Import: another file cannot be picked while the import is on its way to the server; a late preview no longer clears an import error; row, column and size limits have texts in English and Polish.
+- CRM: old `/leads/...` addresses keep encoded characters; an empty Archived tab under a search says nothing matches; Reopen on a task ignores a second click; History does not load when the screen is being left.
 - CRM, Import column mapping: picking another file while a batch is polled no longer leaves Check disabled or shows
   the old file's report; a preview answer for a file that was replaced is dropped; a full name chosen together with a
   first or last name keeps Import disabled with its own message (the server refuses the pair); the preview table scrolls
@@ -17,6 +20,21 @@ All notable changes to this project will be documented in this file.
   buttons do. A read-only role (viewer) no longer sees "Add company" in the Companies side panel of a company card
   (companies area), "Send now" on a waiting Inbox row (conversations area), or Skip, Send and the more menu on Review
   (review area); Review also stops taking swipes and hides the swipe hint for that role.
+
+
+- CRM, Review: Undo after Skip no longer returns to the skipped draft (a skipped draft is never the next one
+  and is not counted in "Draft n of m"); a second Skip before the next draft opens is ignored.
+- CRM, History: filters and page are in the address (Back from a company card keeps them), and a slower older
+  answer no longer replaces a newer one.
+- Polish: transaction / szkic everywhere in the CRM (no "deal", "draft", "Szansa sprzedaży").
+
+
+- CRM: the "Give the reason" error of a reason dialog (Approvals Skip, mailbox pause / resume, lost deal) goes as soon as a reason is typed instead of staying on screen until the next submit (U12).
+- PriceFighter: the Gap Table shows the product name in its own Product column (it was a small grey line under the
+  SKU that wrapped); the row detail names the decision reason, the strategy and the mode in words instead of the
+  engine codes (`in_band`, `compete / suggestion`; an unknown code stays raw); Strategies shows the mode in words;
+  the history's date column reads Applied at (it read Observed at); the apply preview prints our price with two
+  decimals.
 
 ### Changed
 
@@ -56,76 +74,6 @@ All notable changes to this project will be documented in this file.
   `mailbox_id` and `counts.mailboxes[].hold` of communicator's approvals list (`feature/mailbox-filter-labels`).
   `ConfirmDialog` takes `confirmDisabled`.
 
-### Fixed
-
-- CRM, Review: Undo after Skip no longer returns to the skipped draft (a skipped draft is never the next one
-  and is not counted in "Draft n of m"); a second Skip before the next draft opens is ignored.
-- CRM, History: filters and page are in the address (Back from a company card keeps them), and a slower older
-  answer no longer replaces a newer one.
-- Polish: transaction / szkic everywhere in the CRM (no "deal", "draft", "Szansa sprzedaży").
-
-### Added
-
-- CRM, Review on a phone: the first draft says once, above the card, that it can be swiped — "← Skip" and
-- CRM, Import (U17, django-leads with `imports/preview/`): a check step between the file and the import —
-  every column of the file with the CRM field it goes to, how sure the proposal is (Sure / Check it / Not
-  recognised, with why), sample values and the first rows as the CRM would store them; each field can be changed or
-  the column skipped, and Import sends the approved mapping. Two columns on one field or no domain / website / e-mail
-  column keep Import disabled. The report says where each column went. `.xlsx` files are accepted beside `.csv`; file
-  errors read in words (en + pl). An older backend imports straight away, as before.
-- CRM, Review on a phone: the first draft says once, above the card, that it can be swiped — "← Skip" and
-  "Send →" with Got it (en + pl). Got it or the first swipe hides it for good in that browser; a desk never shows it.
-- CRM, Review: Skip can be undone — an Undo button beside "Skipped — this mail will not be sent" for 4 s
-  (en + pl); the skip reaches communicator only after that (or at the next Skip or Send, or on leaving the screen), so
-  Undo simply reopens the draft. No API change.
-- CRM: a possible opt-out can be marked "Not an opt-out" beside Confirm opt-out (django-communicator
-  `dismiss-optout`, no confirm); the conversation, the card's contacts and History reload, and the reply loses its
-  opt-out mark. The Next line of a possible opt-out reads "nothing is sent until you confirm the opt-out or mark it as
-  not one".
-- CRM, deal archive (django-leads with deal archiving): a won or lost deal is archived from its card's more
-  menu and restored from the archived card (read-only, one Restore); the Deals list shows the archived deals behind its own
-  "Archived" button (a toggle kept in the address, `?archived=1`), the status filter stays Open / Won / Lost. The board
-  and the company card list no archived deal; History reads "Deal archived" and "Deal restored". An older backend
-  shows no Archive on the card.
-- `ActionBar`: an action's `pressed` makes its text button a toggle (`aria-pressed`, the `surface-hover` fill).
-- CRM, deals (django-leads 0.5.0): Deals (nav entry, also in the phone bar) lists the deals with search, owner
-  chips, status, stage and expected-close filters and a stage select on every row; at a desk a board shows one column
-  per deal stage with its count and totals per currency and moves deals by drag and drop. A lost stage always asks
-  the reason first. The deal card shows the values, contact, owner, custom fields, tasks and history, with Mark won,
-  Mark lost, Reopen and delete. The company card gains a Deals tab and "Open deal"; Settings gains Deal stages
-  (open, won, lost). A bell alert about a deal opens its card.
-- CRM, CRM screens (django-leads 0.5.0; tasks with django-todo): Today is the panel root — the caller's
-  tasks by chip (Due now, Upcoming, No date, Done) and owner, the drafts and replies waiting, Add task and Mark done
-  with an outcome. Companies is a full list page (filters, owner chips, custom-field columns, sort and page in the URL,
-  bulk "Assign owner"; Board and Import are its page actions). The company card is one card on a phone and a desk:
-  Details (owner, origin, custom fields), Score with Score now, a Tasks tab (add, log a call, mark done, edit,
-  cancel), Write mail (a hand-written mail; the gate's refusal is shown) and History (the mail thread and the
-  company's events). Settings gains Custom fields (company, contact, deal), Scoring and Rules (conditions); Reports
-  shows the funnel as tables. New access area `todo.tasks`.
-- CRM, outbound screens (django-communicator / django-leads 0.5.0; an older backend keeps today's panel):
-  Approvals (desktop nav entry with a badge of waiting drafts) lists the drafts of every channel oldest first with
-  their problem, approves or rejects them in bulk (a reason for a rejection, 100 ids per call, refused rows stay
-  selected with their reason) and keeps a log; Settings → Mailboxes (one per salesperson plus a default, write-only
-  passwords, Test login, Pause / Resume with a reason, daily cap and warm-up), Sending health (rates per mailbox over
-  24 h / 7 d, the automatic-pause policy, the pause log), Automatic moves (the stage per event and, per reply type,
-  the sequence, the alert and the review flag), Reply classification (AI profile) and Do not contact (reach, source,
-  add, remove, check an address). The Settings hub groups its sections (Sales process · Automation · Sending).
-- CRM: a reply shows its type (and "Needs review", the return date, the confidence and what happens next)
-  in the Inbox row and the conversation; Review says why a draft cannot go out before Send and the last reply's type;
-  a contact gets "Why no mail?"; Import can start the automation on new companies; a sequence can be turned off and
-  one can start automatically.
-- Emails panel: the "Order confirmation" and "Order canceled" templates (`checkout-order-confirmation`,
-  `checkout-order-canceled`, django-email 4.4.0), each field with a hint. Their edit page shows a preview of the
-  saved wording next to the form (under it on a phone): sample order variants, desktop and phone width, the subject
-  and a "Text version" toggle. The e-mail renders in a sandboxed frame; while the form has unsaved changes a note
-  says to save to refresh it.
-- Order page: an "E-mails" section lists the order's e-mails (kind, status, recipient, language, attempts, sent
-  time, the last error of a failed one, the other orders a shared confirmation covers) with "Send again" behind a
-  confirmation; an order without a confirmation gets "Send confirmation" in the header (django-checkout 10.2.0).
-  Both need write on `checkout.orders` and an e-mail address on the order. The delivery card shows the pickup
-  point.
-
-### Changed
 
 - CRM: the Deals list always shows the "Archived" button, also over an empty list. The button that leaves a
   dialog with an action of its own reads "Cancel" (Log call, task dialogs, Open deal, the lost reason, Write mail,
@@ -195,14 +143,66 @@ All notable changes to this project will be documented in this file.
   or SKU), a status filter, a removable SKU chip, Cancel request on waiting rows (hidden in read-only mode) and
   Download CSV of the current filter.
 
-### Fixed
+### Added
 
-- CRM: the "Give the reason" error of a reason dialog (Approvals Skip, mailbox pause / resume, lost deal) goes as soon as a reason is typed instead of staying on screen until the next submit (U12).
-- PriceFighter: the Gap Table shows the product name in its own Product column (it was a small grey line under the
-  SKU that wrapped); the row detail names the decision reason, the strategy and the mode in words instead of the
-  engine codes (`in_band`, `compete / suggestion`; an unknown code stays raw); Strategies shows the mode in words;
-  the history's date column reads Applied at (it read Observed at); the apply preview prints our price with two
-  decimals.
+- CRM, Review on a phone: the first draft says once, above the card, that it can be swiped — "← Skip" and
+- CRM, Import (U17, django-leads with `imports/preview/`): a check step between the file and the import —
+  every column of the file with the CRM field it goes to, how sure the proposal is (Sure / Check it / Not
+  recognised, with why), sample values and the first rows as the CRM would store them; each field can be changed or
+  the column skipped, and Import sends the approved mapping. Two columns on one field or no domain / website / e-mail
+  column keep Import disabled. The report says where each column went. `.xlsx` files are accepted beside `.csv`; file
+  errors read in words (en + pl). An older backend imports straight away, as before.
+- CRM, Review on a phone: the first draft says once, above the card, that it can be swiped — "← Skip" and
+  "Send →" with Got it (en + pl). Got it or the first swipe hides it for good in that browser; a desk never shows it.
+- CRM, Review: Skip can be undone — an Undo button beside "Skipped — this mail will not be sent" for 4 s
+  (en + pl); the skip reaches communicator only after that (or at the next Skip or Send, or on leaving the screen), so
+  Undo simply reopens the draft. No API change.
+- CRM: a possible opt-out can be marked "Not an opt-out" beside Confirm opt-out (django-communicator
+  `dismiss-optout`, no confirm); the conversation, the card's contacts and History reload, and the reply loses its
+  opt-out mark. The Next line of a possible opt-out reads "nothing is sent until you confirm the opt-out or mark it as
+  not one".
+- CRM, deal archive (django-leads with deal archiving): a won or lost deal is archived from its card's more
+  menu and restored from the archived card (read-only, one Restore); the Deals list shows the archived deals behind its own
+  "Archived" button (a toggle kept in the address, `?archived=1`), the status filter stays Open / Won / Lost. The board
+  and the company card list no archived deal; History reads "Deal archived" and "Deal restored". An older backend
+  shows no Archive on the card.
+- `ActionBar`: an action's `pressed` makes its text button a toggle (`aria-pressed`, the `surface-hover` fill).
+- CRM, deals (django-leads 0.5.0): Deals (nav entry, also in the phone bar) lists the deals with search, owner
+  chips, status, stage and expected-close filters and a stage select on every row; at a desk a board shows one column
+  per deal stage with its count and totals per currency and moves deals by drag and drop. A lost stage always asks
+  the reason first. The deal card shows the values, contact, owner, custom fields, tasks and history, with Mark won,
+  Mark lost, Reopen and delete. The company card gains a Deals tab and "Open deal"; Settings gains Deal stages
+  (open, won, lost). A bell alert about a deal opens its card.
+- CRM, CRM screens (django-leads 0.5.0; tasks with django-todo): Today is the panel root — the caller's
+  tasks by chip (Due now, Upcoming, No date, Done) and owner, the drafts and replies waiting, Add task and Mark done
+  with an outcome. Companies is a full list page (filters, owner chips, custom-field columns, sort and page in the URL,
+  bulk "Assign owner"; Board and Import are its page actions). The company card is one card on a phone and a desk:
+  Details (owner, origin, custom fields), Score with Score now, a Tasks tab (add, log a call, mark done, edit,
+  cancel), Write mail (a hand-written mail; the gate's refusal is shown) and History (the mail thread and the
+  company's events). Settings gains Custom fields (company, contact, deal), Scoring and Rules (conditions); Reports
+  shows the funnel as tables. New access area `todo.tasks`.
+- CRM, outbound screens (django-communicator / django-leads 0.5.0; an older backend keeps today's panel):
+  Approvals (desktop nav entry with a badge of waiting drafts) lists the drafts of every channel oldest first with
+  their problem, approves or rejects them in bulk (a reason for a rejection, 100 ids per call, refused rows stay
+  selected with their reason) and keeps a log; Settings → Mailboxes (one per salesperson plus a default, write-only
+  passwords, Test login, Pause / Resume with a reason, daily cap and warm-up), Sending health (rates per mailbox over
+  24 h / 7 d, the automatic-pause policy, the pause log), Automatic moves (the stage per event and, per reply type,
+  the sequence, the alert and the review flag), Reply classification (AI profile) and Do not contact (reach, source,
+  add, remove, check an address). The Settings hub groups its sections (Sales process · Automation · Sending).
+- CRM: a reply shows its type (and "Needs review", the return date, the confidence and what happens next)
+  in the Inbox row and the conversation; Review says why a draft cannot go out before Send and the last reply's type;
+  a contact gets "Why no mail?"; Import can start the automation on new companies; a sequence can be turned off and
+  one can start automatically.
+- Emails panel: the "Order confirmation" and "Order canceled" templates (`checkout-order-confirmation`,
+  `checkout-order-canceled`, django-email 4.4.0), each field with a hint. Their edit page shows a preview of the
+  saved wording next to the form (under it on a phone): sample order variants, desktop and phone width, the subject
+  and a "Text version" toggle. The e-mail renders in a sandboxed frame; while the form has unsaved changes a note
+  says to save to refresh it.
+- Order page: an "E-mails" section lists the order's e-mails (kind, status, recipient, language, attempts, sent
+  time, the last error of a failed one, the other orders a shared confirmation covers) with "Send again" behind a
+  confirmation; an order without a confirmation gets "Send confirmation" in the header (django-checkout 10.2.0).
+  Both need write on `checkout.orders` and an e-mail address on the order. The delivery card shows the pickup
+  point.
 
 ## [3.7.0] (2026-11-11)
 

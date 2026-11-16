@@ -78,11 +78,9 @@
       >
         <template #cell-name="{ row }">
           <span class="flex-column gap-1">
-            <span class="flex ai-ct gap-2">
-              <router-link class="fw-600 t-accent" :to="{ name: 'LeadsThread', params: { id: row.id } }" :title="row.name" @click.stop>
+            <router-link class="fw-600 t-accent" :to="{ name: 'LeadsThread', params: { id: row.id } }" :title="row.name" @click.stop>
               {{ row.name || row.domain }}
-              </router-link>
-            </span>
+            </router-link>
             <span class="t-muted fs-200">{{ row.domain }}</span>
             <StatusBadge v-if="row.do_not_contact" tone="negative" size="sm" :label="$t('leads.companies.do_not_contact')" />
           </span>

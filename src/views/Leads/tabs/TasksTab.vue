@@ -43,7 +43,7 @@
           </span>
         </template>
         <template #cell-actions="{ row }">
-          <BasicButton mutates size="sm" data-testid="task-reopen" @click.stop="reopen(row)">{{ $t("leads.task.reopen") }}</BasicButton>
+          <BasicButton mutates size="sm" :loading="reopening === row.id" data-testid="task-reopen" @click.stop="reopen(row)">{{ $t("leads.task.reopen") }}</BasicButton>
         </template>
       </DataTable>
     </section>
@@ -111,12 +111,18 @@ function openDialog(mode, task) {
   dialogOpen.value = true;
 }
 
+// One Reopen at a time: a second click on the same row would meet "already open" and show an error after a success.
+const reopening = ref(null);
 async function reopen(task) {
+  if (reopening.value === task.id) return;
+  reopening.value = task.id;
   try {
     await POST_TaskReopen(task.id);
     onSaved();
   } catch (err) {
     notify.spawnNotification({ msg: extractApiMessage(err, t("leads.task.error")), type: "negative" });
+  } finally {
+    reopening.value = null;
   }
 }
 

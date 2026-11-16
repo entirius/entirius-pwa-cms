@@ -159,7 +159,8 @@ async function loadActors() {
   }
 }
 
-watch([actor, kind, period, company, page], load);
+// leaving for a company card changes the query too: nothing to load for a screen that is going away
+watch([actor, kind, period, company, page], () => route.name === "LeadsHistory" && load());
 onMounted(() => {
   load();
   loadActors();

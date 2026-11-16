@@ -95,7 +95,7 @@ test.describe('P5 Leads companies (desktop)', () => {
 
     await expect(h1(page)).toHaveText(either((t) => t.leads.import.title));
     await expect(page.getByTestId('import-columns')).toBeVisible();
-    await expect(page.getByTestId('import-upload')).toBeDisabled();
+    await expect(page.getByTestId('import-check')).toBeDisabled();
     await expect(page.getByTestId('import-sample')).toBeVisible();
 
     collector.assertNoErrors(expect, 'Import');

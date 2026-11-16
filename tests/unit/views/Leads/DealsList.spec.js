@@ -191,13 +191,20 @@ describe("Leads → Deals list", () => {
     expect(leads.GET_Deals).toHaveBeenCalledTimes(1);
   });
 
+  it("an empty archive under a search says nothing matches, with Clear filters", async () => {
+    route.query = { archived: "1", search: "nothing" };
+    leads.GET_Deals.mockResolvedValue({ data: { count: 0, results: [] } });
+    const wrapper = await mounted();
+    expect(byTestid(wrapper, "deals-empty-archived").exists()).toBe(false);
+    expect(byTestid(wrapper, "deals-clear-filters").exists()).toBe(true);
+  });
+
   // Plan 34: the tabs are there whatever the list holds — a salesperson's empty Mine list shows them too
-  it("the tabs over an empty list, on every filter; a read-only role sees them; no Archived button any more", async () => {
+  it("the tabs over an empty list, on every filter; a read-only role sees them", async () => {
     leads.GET_Deals.mockResolvedValue({ data: { count: 0, results: [] } });
     const empty = await mounted();
     expect(byTestid(empty, "deals-empty").exists() || byTestid(empty, "deals-empty-mine").exists()).toBe(true);
     expect(tabs(empty).exists()).toBe(true);
-    expect(byTestid(empty, "deals-archived").exists()).toBe(false);
     route.query = { owner: "all", kind: "won", search: "nothing" };
     expect(tabs(await mounted()).exists()).toBe(true);
     expect(tabs(await mounted({ write: false })).exists()).toBe(true);

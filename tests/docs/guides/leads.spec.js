@@ -136,8 +136,9 @@ const reveal = (page, selector) =>
 
 async function importCompany(page) {
   await page.route("**/imports/", importNow);
-  await goto(page, "/crm/import", { ready: tid("import-upload") });
+  await goto(page, "/crm/import", { ready: tid("import-check") });
   await page.getByTestId("import-file").setInputFiles(writeCsv());
+  await page.getByTestId("import-check").click();
   await page.getByTestId("import-upload").click();
   await expect(page.getByTestId("import-status")).toHaveText("done", { timeout: READY_MS });
   await reveal(page, tid("import-report"));

@@ -5684,8 +5684,8 @@
       "reason": {
         "reply_class": "Odpowiedź: {class}",
         "wrong_person": "Niewłaściwa osoba",
-        "opted_out": "Kontakt się wypisał",
-        "optout_confirmed": "Wypisanie potwierdzone"
+        "opted_out": "Kontakt zrezygnował",
+        "optout_confirmed": "Rezygnacja potwierdzona"
       }
     }
   },

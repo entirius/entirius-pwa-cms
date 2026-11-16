@@ -12,7 +12,7 @@ const route = vi.hoisted(() => ({ current: null }));
 const router = vi.hoisted(() => ({ replace: vi.fn() }));
 vi.mock("vue-router", async (original) => {
   const { reactive } = await import("vue");
-  route.current = reactive({ query: {} });
+  route.current = reactive({ query: {}, name: "LeadsHistory" });
   router.replace.mockImplementation(({ query }) => (route.current.query = query));
   return { ...(await original()), useRoute: () => route.current, useRouter: () => router };
 });
@@ -113,6 +113,17 @@ describe("Leads → History", () => {
     await flushPromises();
     expect(wrapper.text()).toContain("Newer Ltd");
     expect(wrapper.text()).not.toContain("Older Ltd");
+  });
+
+  it("a query change while another screen is open loads nothing", async () => {
+    const wrapper = await mounted();
+    leads.GET_History.mockClear();
+    route.current.name = "LeadsCompany";
+    route.current.query = { tab: "tasks" };
+    await flushPromises();
+    expect(leads.GET_History).not.toHaveBeenCalled();
+    route.current.name = "LeadsHistory";
+    wrapper.unmount();
   });
 
   it("an empty journal says so", async () => {

@@ -137,6 +137,21 @@ describe("Company card → Tasks", () => {
     expect(todo.POST_TaskReopen).toHaveBeenCalledWith(3);
   });
 
+  it("a double click on Reopen asks the server once", async () => {
+    todo.GET_Tasks.mockImplementation(({ status }) =>
+      Promise.resolve({ data: status === "cancelled" ? { count: 1, results: [{ id: 3, title: "Demo", kind: "meeting", status: "cancelled", done_by: "editor", done_at: null, outcome: "duplicate" }] } : { count: 0, results: [] } })
+    );
+    const wrapper = await mount(TasksTab, { company: company() }, { area: "todo.tasks" });
+    let done;
+    todo.POST_TaskReopen.mockClear();
+    todo.POST_TaskReopen.mockReturnValue(new Promise((resolve) => (done = resolve)));
+    await byTestid(wrapper, "task-reopen").trigger("click");
+    await byTestid(wrapper, "task-reopen").trigger("click");
+    expect(todo.POST_TaskReopen).toHaveBeenCalledTimes(1);
+    done({});
+    await flushPromises();
+  });
+
   it("the task text and Edit open the edit dialog", async () => {
     todo.GET_Tasks.mockResolvedValue({ data: { count: 1, results: [{ id: 2, title: "Call", kind: "phone", due_at: null, status: "open" }] } });
     const wrapper = await mount(TasksTab, { company: company() }, { area: "todo.tasks" });
