@@ -25,7 +25,7 @@
             @click="pick(key)"
           />
         </div>
-        <MobileFilterPanel :active-count="owner === 'me' ? 0 : 1" :trigger-label="$t('leads.today.filters')">
+        <MobileFilterPanel :active-count="owner === ownerDefault ? 0 : 1" :trigger-label="$t('leads.today.filters')">
           <BasicSelect v-model="owner" :floating-label="$t('leads.today.owner')" :options="ownerOptions" data-testid="today-owner" />
         </MobileFilterPanel>
       </div>
@@ -112,20 +112,20 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, inject, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { t } from "@/i18n";
 import { GET_Conversations, GET_Replies } from "@/api/communicator/api";
 import { GET_Tasks, GET_Today, POST_TaskReopen } from "@/api/todo/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { useIsDesktop } from "@/composables/useIsDesktop";
-import { ReadonlyArea } from "@/composables/useReadonly";
+import { ACCESS_STORE, ReadonlyArea, isAreaReadonly } from "@/composables/useReadonly";
 import { AREAS } from "@/configs/areas";
 import { useAccessStore } from "@/stores/access";
 import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
 import { formatDay } from "@/utils/format";
-import { outboundOn } from "@/utils/leadsOutbound";
+import { defaultOwner, outboundOn } from "@/utils/leadsOutbound";
 import { pluralKey } from "@/utils/plural";
 import { routeForSubjectRef } from "@/utils/subjectRef";
 import TaskDialog from "./TaskDialog.vue";
@@ -158,7 +158,11 @@ const route = useRoute();
 const router = useRouter();
 const chipFromQuery = () => (CHIPS.includes(route.query?.chip) ? route.query.chip : "due");
 const chip = ref(chipFromQuery());
-const owner = ref("me");
+// U18: a role that cannot write tasks opens on All (it owns none); the person's pick holds while the screen is open.
+const accessGate = inject(ACCESS_STORE, null);
+const ownerDefault = computed(() => defaultOwner(!!accessGate && isAreaReadonly(accessGate, AREAS.TODO_TASKS)));
+const ownerPicked = ref(null);
+const owner = computed({ get: () => ownerPicked.value ?? ownerDefault.value, set: (value) => (ownerPicked.value = value) });
 const page = ref(1);
 const pages = ref(1);
 const tasks = ref([]);

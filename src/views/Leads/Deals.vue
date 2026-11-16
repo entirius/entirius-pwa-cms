@@ -82,6 +82,7 @@ import { extractApiMessage } from "@/composables/useFormErrors";
 import { useIsDesktop } from "@/composables/useIsDesktop";
 import { useMediaQuery } from "@/composables/useMediaQuery";
 import { ReadonlyOff, usePageReadonly } from "@/composables/useReadonly";
+import { defaultOwner } from "@/utils/leadsOutbound";
 import { AREAS } from "@/configs/areas";
 import { useAccessStore } from "@/stores/access";
 import { useMuninStore } from "@/stores/munin";
@@ -116,11 +117,12 @@ const stagesLoaded = ref(false);
 const dialogOpen = ref(false);
 const { lost, move, submitLost, cancelLost } = useDealMove(stages, { moved: load });
 
-const query = computed(() => ({ owner: "me", kind: DEFAULT_DEAL_KIND, ...route.query }));
+const ownerDefault = computed(() => defaultOwner(readonly.value));
+const query = computed(() => ({ owner: ownerDefault.value, kind: DEFAULT_DEAL_KIND, ...route.query }));
 const page = computed(() => Number(query.value.page) || 1);
 const pages = computed(() => Math.max(1, Math.ceil(count.value / PAGE_SIZE)));
-// The defaults (Mine, Open) are no filter: a channel without a deal of mine shows the first-run empty state.
-const filtered = computed(() => Object.keys(route.query).some((key) => FILTER_KEYS.includes(key)) || query.value.owner !== "me" || query.value.kind !== DEFAULT_DEAL_KIND);
+// The defaults (Mine, or All for a read-only role; Open) are no filter: a channel without a deal of mine shows the first-run empty state.
+const filtered = computed(() => Object.keys(route.query).some((key) => FILTER_KEYS.includes(key)) || query.value.owner !== ownerDefault.value || query.value.kind !== DEFAULT_DEAL_KIND);
 // The Archived button lists the archived deals (`?archived=1`): won or lost, so no status filter applies.
 const archivedView = computed(() => query.value.archived === "1");
 const closedFilter = computed(() => archivedView.value || ["won", "lost"].includes(query.value.kind));
@@ -204,7 +206,7 @@ async function load() {
   loading.value = true;
   try {
     const { data } = await GET_Deals(params());
-    const others = !data.results.length && !filtered.value && (await anyOpenDeal().catch(() => false));
+    const others = !data.results.length && !filtered.value && query.value.owner === "me" && (await anyOpenDeal().catch(() => false));
     if (run !== latest) return;
     deals.value = data.results;
     count.value = data.count ?? data.results.length;
