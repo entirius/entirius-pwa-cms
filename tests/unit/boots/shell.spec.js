@@ -232,18 +232,18 @@ describe("MobileMenu", () => {
 describe("BottomTabBar", () => {
   it("lists the current panel's entries on a phone, named by the panel, the lit one aria-current", async () => {
     setViewport(false);
-    await goTo("/leads/companies/7", { panel: "leads" });
+    await goTo("/crm/companies/7", { panel: "leads" });
     const nav = mountIt(BottomTabBar).get("nav");
-    expect(nav.attributes("aria-label")).toBe("Sales CRM");
+    expect(nav.attributes("aria-label")).toBe("CRM");
     expect(nav.attributes("data-fid")).toBe("tab-bar");
-    expect(nav.findAll("a").map((a) => a.attributes("href"))).toEqual(["/leads/today", "/leads/inbox", "/leads/companies"]);
-    expect(nav.get("[aria-current='page']").attributes("href")).toBe("/leads/companies");
+    expect(nav.findAll("a").map((a) => a.attributes("href"))).toEqual(["/crm/today", "/crm/inbox", "/crm/companies"]);
+    expect(nav.get("[aria-current='page']").attributes("href")).toBe("/crm/companies");
   });
 
   it("is hidden with one entry and on meta.noBottomBar", async () => {
     await goTo("/checkout-orders/orders", { panel: "checkout" });
     expect(mountIt(BottomTabBar).find("nav").exists()).toBe(false);
-    await goTo("/leads/inbox/3", { panel: "leads", noBottomBar: true });
+    await goTo("/crm/inbox/3", { panel: "leads", noBottomBar: true });
     expect(mountIt(BottomTabBar).find("nav").exists()).toBe(false);
   });
 });

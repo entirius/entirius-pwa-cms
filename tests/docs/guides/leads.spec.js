@@ -136,7 +136,7 @@ const reveal = (page, selector) =>
 
 async function importCompany(page) {
   await page.route("**/imports/", importNow);
-  await goto(page, "/leads/import", { ready: tid("import-upload") });
+  await goto(page, "/crm/import", { ready: tid("import-upload") });
   await page.getByTestId("import-file").setInputFiles(writeCsv());
   await page.getByTestId("import-upload").click();
   await expect(page.getByTestId("import-status")).toHaveText("done", { timeout: READY_MS });
@@ -145,7 +145,7 @@ async function importCompany(page) {
 }
 
 async function showPipeline(page) {
-  await goto(page, "/leads/board", { ready: tid("board-column") });
+  await goto(page, "/crm/board", { ready: tid("board-column") });
   await page.getByTestId("board-search").fill(DOMAIN);
   await page.getByTestId("board-search").press("Enter");
   await page.locator(CARD).waitFor();
@@ -154,7 +154,7 @@ async function showPipeline(page) {
 
 async function draftInInbox(page, company) {
   const draft = await api(page, "POST", COMMUNICATE, draftBody(company));
-  await goto(page, "/leads/inbox", { ready: INBOX_ROW });
+  await goto(page, "/crm/inbox", { ready: INBOX_ROW });
   await shot(page, "03-inbox-drafts", { callouts: [{ target: INBOX_ROW, label: "1" }] });
   return draft;
 }
@@ -170,7 +170,7 @@ async function reviewDraft(page) {
   });
 }
 
-const thread = (company) => `/leads/companies/${company.id}?tab=timeline`;
+const thread = (company) => `/crm/companies/${company.id}?tab=timeline`;
 
 async function sendAndShowThread(page, company, draft) {
   await page.getByTestId("review-send").click();
@@ -185,7 +185,7 @@ async function sendAndShowThread(page, company, draft) {
 async function replyInInbox(page, sent) {
   await appendMail(replyMail(sent));
   await api(page, "POST", POLL_NOW, {});
-  await goto(page, "/leads/inbox", { ready: tid("inbox-summary") });
+  await goto(page, "/crm/inbox", { ready: tid("inbox-summary") });
   await page.getByTestId("inbox-filter-replied").click();
   await page.locator(INBOX_ROW).first().waitFor();
   await shot(page, "06-inbox-replies", { callouts: [{ target: INBOX_ROW, label: "1" }] });

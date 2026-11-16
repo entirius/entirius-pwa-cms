@@ -21,20 +21,31 @@ import { companyIdFromSubjectRef, companySubjectRef, contactIdFromRef, contactSu
 describe("Leads CRM routing and access", () => {
   beforeEach(() => mockIsModuleAtLeast.mockReturnValue(true));
 
+  it.each([
+    ["/leads", "/crm/today"],
+    ["/leads/today", "/crm/today"],
+    ["/leads/companies/7?tab=tasks", "/crm/companies/7?tab=tasks"],
+    ["/leads/companies?stage=won&page=2", "/crm/companies?stage=won&page=2"],
+    ["/leads/settings/templates/3", "/crm/settings/templates/3"],
+  ])("the old address %s redirects to %s, path and query kept", async (from, to) => {
+    await router.push(from);
+    expect(router.currentRoute.value.fullPath).toBe(to);
+  });
+
   it("Today is the panel root; its blocks gate themselves (no area, no module)", async () => {
     const leads = panels.find((p) => p.idx === "leads");
-    expect(leads.root).toBe("/leads/today");
+    expect(leads.root).toBe("/crm/today");
     expect(leads.areas).toContain(AREAS.TODO_TASKS);
-    await router.push("/leads");
+    await router.push("/crm");
     expect(router.currentRoute.value.name).toBe("LeadsToday");
-    expect(router.resolve("/leads/today").meta).toMatchObject({ page: true, panel: "leads" });
-    expect(router.resolve("/leads/today").meta.area).toBeUndefined();
+    expect(router.resolve("/crm/today").meta).toMatchObject({ page: true, panel: "leads" });
+    expect(router.resolve("/crm/today").meta.area).toBeUndefined();
   });
 
   it("Companies is a full-width page; Reports a desk page on leads 0.5.0", () => {
-    expect(router.resolve("/leads/companies").meta).toMatchObject({ page: true, area: AREAS.LEADS_COMPANIES });
-    expect(router.resolve("/leads/reports").meta).toMatchObject({ desktop: true, moduleVersion: "0.5.0", area: AREAS.LEADS_COMPANIES });
-    expect(router.resolve("/leads/companies/5").meta.crumbParent).toBe("LeadsCompanies");
+    expect(router.resolve("/crm/companies").meta).toMatchObject({ page: true, area: AREAS.LEADS_COMPANIES });
+    expect(router.resolve("/crm/reports").meta).toMatchObject({ desktop: true, moduleVersion: "0.5.0", area: AREAS.LEADS_COMPANIES });
+    expect(router.resolve("/crm/companies/5").meta.crumbParent).toBe("LeadsCompanies");
   });
 
   it("Custom fields, Scoring and Rules are sections of Settings on leads 0.5.0", async () => {
@@ -44,8 +55,8 @@ describe("Leads CRM routing and access", () => {
       expect(router.resolve({ name: section.route }).meta).toMatchObject({ area: AREAS.LEADS_SETTINGS, moduleVersion: "0.5.0" });
     });
     mockIsModuleAtLeast.mockReturnValue(false);
-    await router.push("/leads/settings/scoring");
-    expect(router.currentRoute.value.path).toBe("/leads/today");
+    await router.push("/crm/settings/scoring");
+    expect(router.currentRoute.value.path).toBe("/crm/today");
   });
 
   it("the todo.tasks area is named in both languages", () => {
@@ -67,16 +78,16 @@ describe("Leads CRM deals routing", () => {
   beforeEach(() => mockIsModuleAtLeast.mockReturnValue(true));
 
   it("Deals list, board and card ride leads.companies on leads 0.5.0; the board is a desk page", () => {
-    expect(router.resolve("/leads/deals").meta).toMatchObject({ page: true, area: AREAS.LEADS_COMPANIES, moduleVersion: "0.5.0" });
-    expect(router.resolve("/leads/deals").meta.desktop).toBeUndefined();
-    expect(router.resolve("/leads/deals/board").meta).toMatchObject({ desktop: true, crumbParent: "LeadsDeals", desktopBack: { name: "LeadsDeals", labelKey: "leads.desktop_only.back_deals" } });
-    expect(router.resolve("/leads/deals/5")).toMatchObject({ name: "LeadsDeal", meta: { crumbParent: "LeadsDeals", area: AREAS.LEADS_COMPANIES } });
+    expect(router.resolve("/crm/deals").meta).toMatchObject({ page: true, area: AREAS.LEADS_COMPANIES, moduleVersion: "0.5.0" });
+    expect(router.resolve("/crm/deals").meta.desktop).toBeUndefined();
+    expect(router.resolve("/crm/deals/board").meta).toMatchObject({ desktop: true, crumbParent: "LeadsDeals", desktopBack: { name: "LeadsDeals", labelKey: "leads.desktop_only.back_deals" } });
+    expect(router.resolve("/crm/deals/5")).toMatchObject({ name: "LeadsDeal", meta: { crumbParent: "LeadsDeals", area: AREAS.LEADS_COMPANIES } });
   });
 
   it("an older backend: every deal route goes to the panel root", async () => {
     mockIsModuleAtLeast.mockReturnValue(false);
-    await router.push("/leads/deals/5");
-    expect(router.currentRoute.value.path).toBe("/leads/today");
+    await router.push("/crm/deals/5");
+    expect(router.currentRoute.value.path).toBe("/crm/today");
   });
 
   it("Deal stages is a Sales process section on leads.settings", () => {

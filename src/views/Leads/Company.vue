@@ -12,7 +12,6 @@
             :label="$t('leads.company.do_not_contact')"
             data-testid="company-dnc-badge"
           />
-          <PotentialDot v-if="potentialOn(company)" :company="company" :editable="!readonly" with-reason testid="company-potential" @edit="potentialCompany = $event" />
         </template>
         <template v-if="company" #actions>
           <CompanyActions :company="company" @changed="reload" @compose="composeOpen = true" />
@@ -60,9 +59,6 @@
         <IntelTab v-else-if="tab === 'intel'" :company="company" />
         <DealsTab v-else-if="tab === 'deals'" :key="company.id" :company="company" />
         <ContactsTab v-else-if="tab === 'contacts'" :company="company" @changed="reload" />
-        <ReadonlyArea v-else-if="tab === 'people'" :area="AREAS.PROSPECTING_PEOPLE">
-          <PeopleTab :key="company.id" :company="company" @count="peopleCount = $event" @changed="reload" />
-        </ReadonlyArea>
         <ReadonlyArea v-else-if="tab === 'tasks'" :area="AREAS.TODO_TASKS">
           <TasksTab :key="company.id" :company="company" @count="taskCount = $event" @changed="reload" />
         </ReadonlyArea>
@@ -76,7 +72,6 @@
           </ul>
         </section>
       </div>
-      <PotentialDialog :company="potentialCompany" @close="potentialCompany = null" @saved="potentialSaved" />
       <ComposeDialog v-if="crm" v-model:open="composeOpen" :company="company" @sent="reload" />
     </template>
   </PageLayout>
@@ -103,9 +98,6 @@ import { useLeadTypesStore } from "@/stores/leadTypes";
 import { useNotifyStore } from "@/stores/notify";
 import AiToolboxHint from "@/components/ConfigHealth/AiToolboxHint.vue";
 import CompanyActions from "./CompanyActions.vue";
-import { potentialOn } from "./potential";
-import PotentialDialog from "./PotentialDialog.vue";
-import PotentialDot from "./PotentialDot.vue";
 import CompanyDetails from "./CompanyDetails.vue";
 import ComposeDialog from "./ComposeDialog.vue";
 import { fieldsFromDefinitions } from "./customFields";
@@ -114,26 +106,19 @@ import DealsTab from "./tabs/DealsTab.vue";
 import TasksTab from "./tabs/TasksTab.vue";
 import Thread from "./Thread.vue";
 import ContactsTab from "./tabs/ContactsTab.vue";
-import PeopleTab from "./tabs/PeopleTab.vue";
 import IntelTab from "./tabs/IntelTab.vue";
 import OverviewTab from "./tabs/OverviewTab.vue";
 
 // Company card: the page frame (name as H1, domain, stage and lead-type selects in the meta, actions), the tabs. Leads
 // CRM (leads >= 0.5.0): Details and Score on Overview, Tasks (django-todo), Write mail; History = the mail thread and
 // the company's events; Deals (its deals, Open deal).
-const TABS = ["overview", "contacts", "people", "timeline", "tasks", "deals", "intel"];
+const TABS = ["overview", "contacts", "timeline", "tasks", "deals", "intel"];
 const route = useRoute();
 const router = useRouter();
 const notify = useNotifyStore();
 const isDesktop = useIsDesktop();
 const company = ref(null);
 const loadError = ref("");
-// U2: the potential dialog; the API answers the whole card
-const potentialCompany = ref(null);
-function potentialSaved(card) {
-  potentialCompany.value = null;
-  company.value = card;
-}
 const stages = ref([]);
 const leadTypes = useLeadTypesStore();
 // The active types, plus the company's own type when it was deactivated since (it still reads, it is not offered).
@@ -157,13 +142,10 @@ const definitions = ref([]);
 const fields = computed(() => fieldsFromDefinitions(definitions.value));
 const composeOpen = ref(false);
 const taskCount = ref(null);
-// U3: People — candidates found by prospecting (django-leads) for this company.
-const peopleOn = computed(() => munin.isModuleEnabled("prospecting") && access.can(AREAS.PROSPECTING_PEOPLE));
-const peopleCount = ref(null);
-const TAB_GATES = { tasks: () => tasksOn.value, deals: () => crm.value, people: () => peopleOn.value };
+const TAB_GATES = { tasks: () => tasksOn.value, deals: () => crm.value };
 const tabs = computed(() => TABS.filter((value) => TAB_GATES[value]?.() ?? true));
 const tabCount = (value) =>
-  ({ tasks: taskCount.value, deals: company.value?.deals?.open ?? null, people: peopleCount.value || null })[value] ?? null;
+  ({ tasks: taskCount.value, deals: company.value?.deals?.open ?? null })[value] ?? null;
 const tab = computed(() => {
   if (tabs.value.includes(route.query.tab)) return route.query.tab;
   return isDesktop.value ? "overview" : "timeline";

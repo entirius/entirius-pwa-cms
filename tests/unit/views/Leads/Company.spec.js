@@ -129,13 +129,13 @@ describe("Company card actions", () => {
     const link = mount(CompanyActions, {
       props: { company: linked },
       global: {
-        mocks: { $route: { fullPath: "/leads/companies/7" } },
+        mocks: { $route: { fullPath: "/crm/companies/7" } },
         components: leadsFrame.components,
         stubs: { ...leadsFrame.stubs, RouterLink: { props: ["to"], template: "<a :data-back='to.query.back'><slot /></a>" } },
       },
     }).get('[data-testid="company-known-customer"]');
     expect(link.classes()).toContain("t-accent");
-    expect(link.attributes("data-back")).toBe("/leads/companies/7");
+    expect(link.attributes("data-back")).toBe("/crm/companies/7");
     expect(link.text()).toContain("Jan Kowalski");
     expect(link.text()).not.toContain("91010000");
   });
@@ -197,7 +197,7 @@ describe("Company card header", () => {
   it("Back goes to the previous place, else to Companies", async () => {
     const wrapper = await mountCard();
     const back = () => wrapper.findComponent({ name: "PageHeader" }).props("back")();
-    window.history.replaceState({ back: "/leads" }, "");
+    window.history.replaceState({ back: "/crm" }, "");
     back();
     expect(router.back).toHaveBeenCalledTimes(1);
     expect(router.push).not.toHaveBeenCalled();
@@ -357,24 +357,18 @@ describe("Company card header", () => {
     it("leads 0.5.0 with todo: Details, Score, the Tasks and the Deals tab with their counts", async () => {
       leads.GET_Company.mockResolvedValueOnce({ data: { ...company(), deals: { open: 1, won: 0, lost: 2 } } });
       const wrapper = await mountCard();
-      expect(tabValues(wrapper)).toEqual(["overview", "contacts", "people", "timeline", "tasks", "deals", "intel"]);
-      expect(wrapper.findComponent({ name: "BasicTabs" }).props("options")[4].count).toBe(2);
-      expect(wrapper.findComponent({ name: "BasicTabs" }).props("options")[5].count).toBe(1);
+      expect(tabValues(wrapper)).toEqual(["overview", "contacts", "timeline", "tasks", "deals", "intel"]);
+      expect(wrapper.findComponent({ name: "BasicTabs" }).props("options")[3].count).toBe(2);
+      expect(wrapper.findComponent({ name: "BasicTabs" }).props("options")[4].count).toBe(1);
       expect(wrapper.find("company-details-stub").exists()).toBe(true);
       expect(wrapper.find("score-card-stub").exists()).toBe(true);
       expect(leads.GET_Attributes).toHaveBeenCalledWith("company");
     });
 
-    it("the People tab sits in the read-only area of prospecting.people, like Tasks in todo.tasks", async () => {
-      route.query = { tab: "people" };
-      const wrapper = await mountCard();
-      expect(wrapper.findComponent({ name: "ReadonlyArea" }).props("area")).toBe("prospecting.people");
-    });
-
     it("an older backend or no todo: no Tasks tab, no Details or Score", async () => {
       munin.isModuleAtLeast.mockReturnValue(false);
       const wrapper = await mountCard();
-      expect(tabValues(wrapper)).toEqual(["overview", "contacts", "people", "timeline", "intel"]);
+      expect(tabValues(wrapper)).toEqual(["overview", "contacts", "timeline", "intel"]);
       expect(wrapper.find("company-details-stub").exists()).toBe(false);
     });
 

@@ -57,7 +57,7 @@ const card = (page, deal) => page.locator(`[data-testid="deal-card"][data-deal="
 const column = (page, key) => page.locator(`[data-testid="deals-column"][data-stage="${key}"]`);
 
 async function openBoard(page) {
-  await page.goto('/leads/deals/board?owner=none');
+  await page.goto('/crm/deals/board?owner=none');
   await expect(page.getByTestId('deals-board-columns')).toBeVisible();
   await expect(card(page, created.deals[0])).toBeVisible();
 }
@@ -142,7 +142,7 @@ test.describe('Leads deals board (desktop, real pointer)', () => {
   });
 
   test('every calendar of the Leads panel opens inside the viewport', async ({ page }) => {
-    await page.goto('/leads/reports');
+    await page.goto('/crm/reports');
     await expectCalendar(page, page.getByTestId('reports-period'));
 
     await openBoard(page);
@@ -150,14 +150,14 @@ test.describe('Leads deals board (desktop, real pointer)', () => {
     await expectCalendar(page, page.getByTestId('deal-expected-close'));
     await page.keyboard.press('Escape');
 
-    await page.goto('/leads/today');
+    await page.goto('/crm/today');
     await page.getByTestId('today-add-task').click();
     await expectCalendar(page, page.getByTestId('task-due-at'));
     await page.keyboard.press('Escape');
 
     const mailbox = (await api(page, 'GET', `${COMMUNICATOR}/mailboxes/`)).results[0];
     expect(mailbox, 'INFRA: no mailbox (run make seed)').toBeTruthy();
-    await page.goto(`/leads/settings/mailboxes/${mailbox.id}`);
+    await page.goto(`/crm/settings/mailboxes/${mailbox.id}`);
     await expectCalendar(page, page.getByTestId('mailbox-warmup-from'));
   });
 });

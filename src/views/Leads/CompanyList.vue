@@ -35,7 +35,6 @@
             <BasicSelect :model-value="query.stage || null" :floating-label="$t('leads.companies.stage')" :options="stageOptions" clearable data-testid="companies-filter-stage" @update:model-value="setFilter('stage', $event)" />
             <BasicSelect v-if="crm" :model-value="query.segment || null" :floating-label="$t('leads.companies.segment')" :options="SEGMENTS" clearable data-testid="companies-filter-segment" @update:model-value="setFilter('segment', $event)" />
             <BasicSelect v-if="crm" :model-value="query.origin || null" :floating-label="$t('leads.companies.origin')" :options="originOptions" clearable data-testid="companies-filter-origin" @update:model-value="setFilter('origin', $event)" />
-            <BasicSelect v-if="potentialShown" :model-value="query.potential || null" :floating-label="$t('leads.potential.title')" :options="potentialOptions" clearable data-testid="companies-filter-potential" @update:model-value="setFilter('potential', $event)" />
             <BasicSelect :model-value="query.lead_type || null" :floating-label="$t('leads.companies.lead_type')" :options="typeOptions" clearable data-testid="companies-filter-type" @update:model-value="setFilter('lead_type', $event)" />
             <BasicCheckbox :model-value="query.has_reply === 'true'" data-testid="companies-filter-reply" @update:model-value="setFlag('has_reply', $event)">
               {{ $t("leads.companies.with_reply") }}
@@ -63,12 +62,6 @@
       <BasicButton data-testid="companies-clear-filters" @click="clearFilters">{{ $t("leads.companies.clear_filters") }}</BasicButton>
     </EmptyState>
     <div v-else class="flex-column gap-4">
-      <ul v-if="potentialShown" class="potential-legend flex flex-wrap gap-6 m-0 p-0 fs-200 t-secondary" :aria-label="$t('leads.potential.legend')" data-testid="potential-legend">
-        <li v-for="colour in POTENTIAL_COLOURS" :key="colour" class="flex ai-ct gap-2">
-          <PotentialDot :company="{ potential: colour }" plain :testid="`potential-legend-${colour}`" />
-          <span><strong>{{ potentialLabel(colour) }}</strong> — {{ $t(`leads.potential.legend_${colour}`) }}</span>
-        </li>
-      </ul>
       <DataTable
         ref="table"
         :columns="columns"
@@ -86,7 +79,6 @@
         <template #cell-name="{ row }">
           <span class="flex-column gap-1">
             <span class="flex ai-ct gap-2">
-              <PotentialDot v-if="potentialShown" :company="row" :editable="!readonly" @edit="editPotential" />
               <router-link class="fw-600 t-accent" :to="{ name: 'LeadsThread', params: { id: row.id } }" :title="row.name" @click.stop>
               {{ row.name || row.domain }}
               </router-link>
@@ -121,7 +113,6 @@
         @clear="clearSelection"
       />
     </div>
-    <PotentialDialog :company="potentialCompany" @close="potentialCompany = null" @saved="potentialSaved" />
     <template #footer>
       <Pagination :page="page" :pages="pages" :disabled="loading" @update:page="setFilter('page', String($event))" />
     </template>
@@ -145,9 +136,6 @@ import { formatRelative } from "@/utils/format";
 import { bulkAnswer } from "@/utils/leadsBulk";
 import { SEGMENT_TONES, outboundOn, stageTone } from "@/utils/leadsOutbound";
 import { fieldsFromDefinitions, formatValue } from "./customFields";
-import { POTENTIAL_COLOURS, POTENTIAL_FILTERS, potentialLabel, potentialOn } from "./potential";
-import PotentialDialog from "./PotentialDialog.vue";
-import PotentialDot from "./PotentialDot.vue";
 
 // Companies (ux/screens/companies.md): the full list, every filter, the sort and the page in the URL, served by the
 // API page by page. leads >= 0.5.0 adds owner, score, origin, custom-field columns and filters, and bulk assign.
@@ -182,7 +170,7 @@ const definitions = ref([]);
 const query = computed(() => ({ owner: crm.value ? "me" : "all", ...route.query }));
 const page = computed(() => Number(query.value.page) || 1);
 const pages = computed(() => Math.max(1, Math.ceil(count.value / PAGE_SIZE)));
-const FILTER_KEYS = ["stage", "segment", "origin", "lead_type", "has_reply", "do_not_contact", "search", "potential"];
+const FILTER_KEYS = ["stage", "segment", "origin", "lead_type", "has_reply", "do_not_contact", "search"];
 const filtered = computed(() => Object.keys(route.query).some((key) => FILTER_KEYS.includes(key) || key.startsWith("attr.")) || query.value.owner !== "all");
 const activeFilters = computed(() => Object.keys(route.query).filter((key) => key !== "owner" && key !== "page" && key !== "sort" && key !== "search").length);
 
@@ -192,15 +180,6 @@ const stageOptions = computed(() => stages.value.map((stage) => ({ value: stage.
 const typeOptions = computed(() => leadTypes.active.map((type) => ({ value: type.code, label: type.label })));
 const originOptions = computed(() => origins.value.filter(Boolean).map((origin) => ({ value: origin, label: origin })));
 const viewOptions = computed(listBoardOptions);
-// U2: the dot, its legend and its filter once leads sends `potential` (a filter keeps the select when a page is empty).
-const potentialShown = computed(() => companies.value.some(potentialOn) || Boolean(route.query.potential));
-const potentialOptions = computed(() => POTENTIAL_FILTERS.map((value) => ({ value, label: potentialLabel(value === "none" ? "" : value) })));
-const potentialCompany = ref(null);
-const editPotential = (company) => (potentialCompany.value = company);
-function potentialSaved(company) {
-  potentialCompany.value = null;
-  companies.value = companies.value.map((row) => (row.id === company.id ? { ...row, ...company } : row));
-}
 
 const pageActions = computed(() =>
   [

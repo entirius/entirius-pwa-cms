@@ -73,11 +73,9 @@
     "leads_mailboxes": "Konta pocztowe",
     "leads_sending_health": "Kondycja wysyłki",
     "leads_do_not_contact": "Nie kontaktować",
-    "leads_ai_crm": "AI CRM",
     "leads_today": "Dziś",
     "leads_reports": "Raporty",
     "leads_history": "Historia",
-    "leads_prospecting": "Prospecting",
     "leads_deals": "Transakcje",
     "leads_deal_stages": "Etapy transakcji"
   },
@@ -607,7 +605,7 @@
     "promo_desc": "Kampanie promocyjne i zarządzanie rabatami",
     "pricefighter": "PriceFighter",
     "pricefighter_desc": "Konkurencyjne ceny — analiza luk, strategie, wsadowe zastosowanie",
-    "leads": "Sales CRM",
+    "leads": "CRM",
     "leads_desc": "Skrzynka sprzedaży — przegląd szkiców, odpowiedzi, rozmowy z firmami",
     "communicator": "Communicator",
     "communicator_desc": "Szablony wiadomości, sekwencje follow-upów, polityka wysyłki i tryb kanału",
@@ -4280,41 +4278,6 @@
     "channel": "Kanał"
   },
   "leads": {
-    "prospecting": {
-      "title": "Prospecting",
-      "people_help": "Nowe osoby do kontaktu w firmach, w których jedyna osoba okazała się niewłaściwa albo wypisała się. Tylko zaakceptowana osoba zostaje kontaktem i może dostać maila.",
-      "company_help": "Osoby znalezione dla tej firmy. Zaakceptuj osobę, żeby dodać ją jako kontakt; brakujące potwierdzenia są oznaczone.",
-      "empty": "Brak kandydatów",
-      "erased_address": "Ten adres został usunięty na prośbę osoby i nie można go dodać jako kontaktu",
-      "no_company": "Firmy tego kandydata nie ma w tym kanale",
-      "no_title": "Brak stanowiska",
-      "no_email": "Brak adresu",
-      "check": {
-        "role": "Stanowisko pasuje do oferty",
-        "email": "Znany adres e-mail",
-        "employed": "Dalej tam pracuje",
-        "mailbox": "Adres działa"
-      },
-      "result": {
-        "ok": "OK",
-        "no_info": "Brak informacji"
-      },
-      "missing": "Brak potwierdzenia: {list}",
-      "checked": "{source}, {date}",
-      "tries": "brak informacji po {n} próbach",
-      "found": "Znaleziono: {source}, {date}",
-      "accept": "Akceptuj",
-      "reject": "Odrzuć",
-      "accepted": "{name} dodano jako kontakt",
-      "rejected": "{name} odrzucono",
-      "status_filter": "Status",
-      "status": {
-        "pending": "Czekają",
-        "accepted": "Zaakceptowane",
-        "rejected": "Odrzucone",
-        "all": "Wszystkie"
-      }
-    },
     "inbox": {
       "title": "Skrzynka",
       "conversations": "Rozmowy",
@@ -4542,7 +4505,6 @@
         "intel": "Wywiad",
         "contacts": "Kontakty",
         "timeline": "Historia",
-        "people": "Osoby",
         "tasks": "Zadania",
         "deals": "Transakcje"
       },
@@ -4623,7 +4585,7 @@
       "run_rules_note": "Każda nowa firma wchodzi w pierwszy etap i działają reguły tego etapu — szkice i audyty AI mogą ruszyć od razu i zużyć środki AI.",
       "after_rules": "Każda firma trafia do pierwszego etapu. Jego reguły działają tylko z zaznaczonym „Uruchom automatyzację”; w przeciwnym razie przenieś firmy na tablicy lub ręcznie.",
       "owner": "Opiekun",
-      "owner_hint": "Opiekun każdej nowej firmy z pliku; puste pole = bez opiekuna. Firmy, które już są w Sales CRM, zachowują swojego.",
+      "owner_hint": "Opiekun każdej nowej firmy z pliku; puste pole = bez opiekuna. Firmy, które już są w CRM, zachowują swojego.",
       "no_owner": "Bez opiekuna",
       "column_attr": "{column} — {label} ({kind})",
       "ignored": "Pominięte kolumny: {list}",
@@ -4775,7 +4737,7 @@
       "consent_ref": "Gdzie wyrażono zgodę",
       "save": "Dodaj firmę",
       "save_contact": "Zapisz kontakt",
-      "exists": "Już jest w Sales CRM:",
+      "exists": "Już jest w CRM:",
       "company_saved": "Firma dodana — kontakt jeszcze niezapisany:"
     },
     "lead_types": {
@@ -4808,7 +4770,6 @@
         "deal-stages": "Kroki transakcji aż do wygranej lub przegranej",
         "lead-types": "Rodzaje firm, którym sprzedajesz; szablon może celować w jeden",
         "custom-fields": "Własne pola firm, kontaktów i transakcji",
-        "potential": "Dni i odpowiedzi, od których zależy kolor kropki firmy",
         "scoring": "Jak punkty oceniają firmę i dzielą na segmenty S1–S4",
         "rules": "Co się dzieje, gdy firma wchodzi w etap: szkic, audyt, ocena",
         "automatic-moves": "Do jakiego etapu przechodzi firma po odpowiedzi lub rezygnacji",
@@ -4821,61 +4782,6 @@
         "do-not-contact": "Adresy i domeny, które nigdy nie dostają poczty"
       }
     },
-    "potential": {
-      "title": "Potencjał",
-      "legend": "Co znaczą kropki",
-      "legend_green": "idziemy dalej: zainteresowanie albo transakcja",
-      "legend_orange": "w toku: czekamy, nie teraz, pominięty szkic, szukamy innej osoby",
-      "legend_red": "wróć później: odmowa, cisza, przegrane transakcje",
-      "none": "Jeszcze nie pisaliśmy",
-      "colour": {
-        "green": "Zielony",
-        "orange": "Pomarańczowy",
-        "red": "Czerwony",
-        "none": "Bez kropki"
-      },
-      "manual": "Ustawione ręcznie: {comment}",
-      "back_on": "wróć {day}",
-      "reason": {
-        "do_not_contact": "Nie kontaktować się",
-        "complaint": "Skarga na spam",
-        "deal_open": "Otwarta transakcja",
-        "deal_won": "Wygrana transakcja",
-        "deals_lost": "Wszystkie transakcje przegrane",
-        "reply_class": "Odpowiedź: {class}",
-        "reply": "Odpowiedź",
-        "looking_for_person": "Szukamy innej osoby",
-        "silence": "Brak odpowiedzi na ostatni mail",
-        "draft_skipped": "Szkic pominięty",
-        "came_back": "Wróć do firmy",
-        "awaiting_reply": "Mail wysłany, czekamy na odpowiedź",
-        "manual": "Ustawione ręcznie"
-      },
-      "dialog_title": "Potencjał: {name}",
-      "colour_label": "Kolor",
-      "reason_label": "Powód",
-      "reason_placeholder": "Dlaczego inaczej niż reguły",
-      "reason_required": "Wpisz powód",
-      "return_label": "Wróć dnia (opcjonalnie)",
-      "back_to_auto": "Wróć do automatu",
-      "save_error": "Kolor nie został zapisany — spróbuj ponownie.",
-      "come_back_task": "Wróć do firmy {name}",
-      "settings_title": "Potencjał",
-      "settings_about": "Kropka przy firmie mówi, jak idzie rozmowa. Liczy się według tych progów; zmiana przelicza wszystkie firmy poza kolorami ustawionymi ręcznie.",
-      "settings_manual": "Kolor jednej firmy ustawiasz klikiem w jej kropkę:",
-      "settings_saved": "Progi zapisane — kolory są przeliczane",
-      "settings_load_error": "Nie udało się wczytać progów.",
-      "settings_unsupported": "Ta wersja leads nie ma kropki potencjału.",
-      "days_card": "Dni",
-      "replies_card": "Kolor odpowiedzi",
-      "silence_days": "Cisza do czerwonego",
-      "silence_days_hint": "Dni bez odpowiedzi po ostatnim mailu",
-      "skip_return_days": "Pominięty szkic wraca po",
-      "skip_return_days_hint": "Dni, po których firma wraca do kolejki",
-      "red_return_days": "Czerwony wraca po",
-      "red_return_days_hint": "Dni, po których czerwony zmienia się na pomarańczowy i trafia na Today",
-      "days_required": "Co najmniej 1 dzień"
-    },
     "reply_type": {
       "interested": "Zainteresowany",
       "not_now": "Nie teraz",
@@ -4886,7 +4792,6 @@
       "unclear": "Niejasna"
     },
     "history": {
-      "event_potential": "Potencjał: {colour}",
       "event_draft_skipped": "Szkic pominięty",
       "needs_review": "Do sprawdzenia",
       "back_on": "Wraca {date}",
@@ -5214,26 +5119,6 @@
       "why_failed": "Nie udało się odczytać stanu poczty — spróbuj ponownie.",
       "mail_state": "Poczta",
       "custom_fields": "Pola własne"
-    },
-    "ai_crm": {
-      "title": "AI CRM",
-      "subtitle": "Twój dzień krok po kroku — napisz agentowi, co zrobiłeś",
-      "plan_title": "Plan na dziś",
-      "plan_empty": "Na dziś nic na Ciebie nie czeka",
-      "overdue": "Zaległe",
-      "today": "Dziś",
-      "item_drafts": "Przejrzyj szkice do akceptu: {count}",
-      "item_replies": "Obsłuż odpowiedzi: {count}",
-      "chat_title": "Rozmowa",
-      "hint": "Napisz, co zrobiłeś, np. „zrobione 1: dzwoniłem, zainteresowani” albo „notatka 2: prosi o ofertę”. Wpisz „plan”, żeby zobaczyć listę.",
-      "placeholder": "Co zrobiłeś?",
-      "send": "Wyślij",
-      "confirm_question": "Potwierdź: {summary}",
-      "confirm": "Potwierdź",
-      "reject": "Anuluj",
-      "error": "Agent AI CRM nie odpowiedział",
-      "load_error": "Nie udało się wczytać planu na dziś",
-      "retry": "Spróbuj ponownie"
     },
     "today": {
       "title": "Dziś",
@@ -5682,8 +5567,7 @@
       "channel": "Ustawienia",
       "setting": {
         "resume_days": "dni do ponownego kontaktu",
-        "default_currency": "waluta transakcji",
-        "history_months": "okres przechowywania historii"
+        "default_currency": "waluta transakcji"
       },
       "reason": {
         "reply_class": "Odpowiedź: {class}",
@@ -6073,7 +5957,7 @@
       "django_checkout": "Zamówienia i koszyk",
       "django_returns": "Zwroty",
       "django_contact_forms": "Formularze",
-      "django_leads": "Sales CRM",
+      "django_leads": "CRM",
       "django_communicator": "Komunikator",
       "django_siteintel": "Analiza stron",
       "django_notifications": "Powiadomienia",
@@ -6353,15 +6237,8 @@
       "stock_alerts": {
         "subscriptions": "Prośby o powiadomienie o dostępności"
       },
-      "prospecting": {
-        "people": "Prospecting: osoby do kontaktu",
-        "companies": "Prospecting: nowe firmy"
-      },
       "todo": {
         "tasks": "Zadania i przypomnienia sprzedaży"
-      },
-      "ai_crm": {
-        "agent": "Agent AI CRM (plan dnia, rozmowa, MCP)"
       }
     },
     "scopes": {

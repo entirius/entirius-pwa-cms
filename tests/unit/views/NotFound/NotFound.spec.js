@@ -4,7 +4,7 @@ import { mount } from "@vue/test-utils";
 const route = vi.hoisted(() => ({ meta: {} }));
 vi.mock("vue-router", () => ({
   useRoute: () => route,
-  useRouter: () => ({ resolve: (path) => ({ meta: path === "/leads/today" ? { titleKey: "leads.today.title" } : {} }) }),
+  useRouter: () => ({ resolve: (path) => ({ meta: path === "/crm/today" ? { titleKey: "leads.today.title" } : {} }) }),
 }));
 import EmptyState from "@/boots/EmptyState/index.vue";
 import NotFound from "@/views/NotFound/NotFound.vue";
@@ -17,7 +17,7 @@ describe("NotFound", () => {
   it("links to the start page of the address's panel", () => {
     route.meta = { panel: "leads" };
     const link = mountView().get('[data-testid="not-found-start"]');
-    expect(link.attributes("href")).toBe("/leads/today");
+    expect(link.attributes("href")).toBe("/crm/today");
     expect(link.text()).toBe("Go to Today");
   });
 

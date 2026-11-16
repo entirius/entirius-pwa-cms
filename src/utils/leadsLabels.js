@@ -124,9 +124,6 @@ const EVENT_SENTENCES = {
   owner_cleared: () => t("leads.history.event_owner_cleared"),
   channel_settings: (d) =>
     t("leads.history.event_settings", { fields: Object.keys(d.changes || {}).map((field) => label(`leads.journal.setting.${field}`, field)).join(", ") }),
-  // U2: a change of the potential dot; a manual one says the salesperson's comment
-  potential: (d) =>
-    withDetail(t("leads.history.event_potential", { colour: t(`leads.potential.colour.${d.to || "none"}`) }), d.manual ? d.comment : ""),
   draft_skipped: () => t("leads.history.event_draft_skipped"),
 };
 

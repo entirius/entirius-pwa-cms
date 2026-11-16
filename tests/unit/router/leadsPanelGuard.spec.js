@@ -40,31 +40,31 @@ describe("Leads panel routing", () => {
   });
 
   it("registers the Leads panel with Today as root", () => {
-    expect(panels.find((p) => p.idx === "leads")).toMatchObject({ root: "/leads/today", icon: "inbox" });
+    expect(panels.find((p) => p.idx === "leads")).toMatchObject({ root: "/crm/today", icon: "inbox" });
   });
 
   it("resolves the inbox, review and thread routes when modules are enabled", async () => {
-    await router.push("/leads/inbox/7");
+    await router.push("/crm/inbox/7");
     expect(router.currentRoute.value.name).toBe("LeadsReview");
-    await router.push("/leads/companies/42");
+    await router.push("/crm/companies/42");
     expect(router.currentRoute.value.name).toBe("LeadsThread");
     expect(mockIsModuleEnabled).toHaveBeenCalledWith("leads");
   });
 
   it("sends a disabled panel home", async () => {
     mockIsPanelEnabled.mockReturnValue(false);
-    await router.push("/leads/inbox/8");
+    await router.push("/crm/inbox/8");
     expect(router.currentRoute.value.path).toBe("/");
   });
 
   it("leads-only: the review route stays dormant and the panel opens Today, not home", async () => {
     mockIsModuleEnabled.mockImplementation((m) => m !== "communicator");
-    await router.push("/leads/companies/43");
-    await router.push("/leads/inbox/9");
+    await router.push("/crm/companies/43");
+    await router.push("/crm/inbox/9");
     expect(mockIsModuleEnabled).toHaveBeenCalledWith("communicator");
     expect(router.currentRoute.value.name).toBe("LeadsToday");
-    await router.push("/leads/companies/44");
-    await router.push("/leads");
+    await router.push("/crm/companies/44");
+    await router.push("/crm");
     expect(router.currentRoute.value.name).toBe("LeadsToday");
   });
 
@@ -72,8 +72,8 @@ describe("Leads panel routing", () => {
     vi.stubGlobal("matchMedia", (query) => ({ matches: query === "(max-width: 390px)", addEventListener() {}, removeEventListener() {} }));
     mockIsModuleEnabled.mockImplementation((m) => m !== "communicator");
     GET_Companies.mockResolvedValue({ data: { count: 1, results: [{ id: 46, name: "Shop", domain: "shop.test", stage: { label: "New" } }], next: null } });
-    await router.push("/leads/companies/46");
-    await router.push("/leads/companies");
+    await router.push("/crm/companies/46");
+    await router.push("/crm/companies");
     const wrapper = mount({ template: "<router-view />" }, { global: { plugins: [router] } });
     await flushPromises();
     expect(router.currentRoute.value.meta.desktop).toBeFalsy();
@@ -85,9 +85,9 @@ describe("Leads panel routing", () => {
   });
 
   it("without leads and communicator a module route lands on Today (it gates its own blocks), never a loop", async () => {
-    await router.push("/leads/companies/45");
+    await router.push("/crm/companies/45");
     mockIsModuleEnabled.mockReturnValue(false);
-    await router.push("/leads/inbox");
-    expect(router.currentRoute.value.path).toBe("/leads/today");
+    await router.push("/crm/inbox");
+    expect(router.currentRoute.value.path).toBe("/crm/today");
   });
 });

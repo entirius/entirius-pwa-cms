@@ -1489,7 +1489,7 @@
     },
     {
       "id": "leads-today",
-      "route": "/leads/today",
+      "route": "/crm/today",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1504,7 +1504,7 @@
     },
     {
       "id": "leads-inbox",
-      "route": "/leads/inbox",
+      "route": "/crm/inbox",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1524,10 +1524,10 @@
     },
     {
       "id": "leads-conversation",
-      "route": "/leads/inbox",
+      "route": "/crm/inbox",
       "resolver": "first-link",
       "links": [
-        "a[href^=\"/leads/conversations/\"]"
+        "a[href^=\"/crm/conversations/\"]"
       ],
       "state": "default",
       "viewports": [
@@ -1550,10 +1550,10 @@
     },
     {
       "id": "leads-review",
-      "route": "/leads/inbox",
+      "route": "/crm/inbox",
       "resolver": "first-link",
       "links": [
-        "a[href^=\"/leads/inbox/\"]"
+        "a[href^=\"/crm/inbox/\"]"
       ],
       "state": "default",
       "viewports": [
@@ -1570,7 +1570,7 @@
     },
     {
       "id": "leads-companies",
-      "route": "/leads/companies",
+      "route": "/crm/companies",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1585,10 +1585,10 @@
     },
     {
       "id": "leads-company",
-      "route": "/leads/companies",
+      "route": "/crm/companies",
       "resolver": "first-link",
       "links": [
-        "a[href^=\"/leads/companies/\"]:not([href=\"/leads/companies/new\"])"
+        "a[href^=\"/crm/companies/\"]:not([href=\"/crm/companies/new\"])"
       ],
       "state": "default",
       "viewports": [
@@ -1603,7 +1603,7 @@
     },
     {
       "id": "leads-company-new",
-      "route": "/leads/companies/new",
+      "route": "/crm/companies/new",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1623,7 +1623,7 @@
     },
     {
       "id": "leads-board",
-      "route": "/leads/board",
+      "route": "/crm/board",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1637,7 +1637,7 @@
     },
     {
       "id": "leads-import",
-      "route": "/leads/import",
+      "route": "/crm/import",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1651,7 +1651,7 @@
     },
     {
       "id": "leads-settings",
-      "route": "/leads/settings",
+      "route": "/crm/settings",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1666,7 +1666,7 @@
     },
     {
       "id": "leads-approvals",
-      "route": "/leads/approvals",
+      "route": "/crm/approvals",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1682,7 +1682,7 @@
     },
     {
       "id": "leads-mailboxes",
-      "route": "/leads/settings/mailboxes",
+      "route": "/crm/settings/mailboxes",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1698,7 +1698,7 @@
     },
     {
       "id": "leads-mailbox-new",
-      "route": "/leads/settings/mailboxes/new",
+      "route": "/crm/settings/mailboxes/new",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1714,7 +1714,7 @@
     },
     {
       "id": "leads-sending-health",
-      "route": "/leads/settings/sending-health",
+      "route": "/crm/settings/sending-health",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1730,7 +1730,7 @@
     },
     {
       "id": "leads-automatic-moves",
-      "route": "/leads/settings/automatic-moves",
+      "route": "/crm/settings/automatic-moves",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1746,7 +1746,7 @@
     },
     {
       "id": "leads-reply-classification",
-      "route": "/leads/settings/reply-classification",
+      "route": "/crm/settings/reply-classification",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1762,7 +1762,7 @@
     },
     {
       "id": "leads-do-not-contact",
-      "route": "/leads/settings/do-not-contact",
+      "route": "/crm/settings/do-not-contact",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1778,7 +1778,7 @@
     },
     {
       "id": "leads-stages",
-      "route": "/leads/settings/stages",
+      "route": "/crm/settings/stages",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1793,7 +1793,7 @@
     },
     {
       "id": "leads-lead-types",
-      "route": "/leads/settings/company-types",
+      "route": "/crm/settings/company-types",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1808,7 +1808,7 @@
     },
     {
       "id": "leads-templates",
-      "route": "/leads/settings/templates",
+      "route": "/crm/settings/templates",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1823,10 +1823,10 @@
     },
     {
       "id": "leads-template-edit",
-      "route": "/leads/settings/templates",
+      "route": "/crm/settings/templates",
       "resolver": "first-link",
       "links": [
-        "a[href^=\"/leads/settings/templates/\"]"
+        "a[href^=\"/crm/settings/templates/\"]"
       ],
       "fallbackRow": true,
       "state": "default",
@@ -1842,7 +1842,7 @@
     },
     {
       "id": "leads-sequences",
-      "route": "/leads/settings/sequences",
+      "route": "/crm/settings/sequences",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1857,7 +1857,7 @@
     },
     {
       "id": "leads-sending",
-      "route": "/leads/settings/sending",
+      "route": "/crm/settings/sending",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1872,7 +1872,7 @@
     },
     {
       "id": "leads-custom-fields",
-      "route": "/leads/settings/custom-fields",
+      "route": "/crm/settings/custom-fields",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1887,7 +1887,7 @@
     },
     {
       "id": "leads-scoring",
-      "route": "/leads/settings/scoring",
+      "route": "/crm/settings/scoring",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1902,7 +1902,7 @@
     },
     {
       "id": "leads-rules",
-      "route": "/leads/settings/rules",
+      "route": "/crm/settings/rules",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1917,7 +1917,7 @@
     },
     {
       "id": "leads-reports",
-      "route": "/leads/reports",
+      "route": "/crm/reports",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1931,7 +1931,7 @@
     },
     {
       "id": "leads-deals",
-      "route": "/leads/deals",
+      "route": "/crm/deals",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1947,7 +1947,7 @@
     },
     {
       "id": "leads-deals-board",
-      "route": "/leads/deals/board",
+      "route": "/crm/deals/board",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1962,10 +1962,10 @@
     },
     {
       "id": "leads-deal",
-      "route": "/leads/deals",
+      "route": "/crm/deals",
       "resolver": "first-link",
       "links": [
-        "a[href^=\"/leads/deals/\"]:not([href=\"/leads/deals/board\"])"
+        "a[href^=\"/crm/deals/\"]:not([href=\"/crm/deals/board\"])"
       ],
       "state": "default",
       "viewports": [
@@ -1981,7 +1981,7 @@
     },
     {
       "id": "leads-deal-stages",
-      "route": "/leads/settings/deal-stages",
+      "route": "/crm/settings/deal-stages",
       "resolver": "fixed",
       "state": "default",
       "viewports": [

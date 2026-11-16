@@ -161,8 +161,8 @@ export const panels = [
     idx: "leads",
     icon: "inbox",
     // Today (Leads CRM): the day's work; a user who cannot read it lands on the first readable entry
-    root: "/leads/today",
-    fallback: "/leads/companies",
+    root: "/crm/today",
+    fallback: "/crm/companies",
     labelKey: "panels.leads",
     descriptionKey: "panels.leads_desc",
     areas: [
@@ -170,9 +170,6 @@ export const panels = [
       AREAS.LEADS_SETTINGS,
       AREAS.LEADS_GDPR,
       AREAS.TODO_TASKS,
-      AREAS.PROSPECTING_PEOPLE,
-      AREAS.PROSPECTING_COMPANIES,
-      AREAS.AI_CRM_AGENT,
       AREAS.COMMUNICATOR_REVIEW,
       AREAS.COMMUNICATOR_CONTENT,
       AREAS.COMMUNICATOR_CONVERSATIONS,

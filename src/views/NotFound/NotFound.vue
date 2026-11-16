@@ -11,7 +11,7 @@ import { t } from "@/i18n";
 import { panels } from "@/configs/access";
 
 // An unknown address inside the shell: the H1 comes from the route, the way on from the panel the address names.
-// The start of the panel the address belongs to (its root page by name, for /leads/…: Today), else Home.
+// The start of the panel the address belongs to (its root page by name, for /crm/…: Today), else Home.
 const route = useRoute();
 const router = useRouter();
 const start = computed(() => {

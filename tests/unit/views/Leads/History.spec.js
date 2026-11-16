@@ -124,8 +124,8 @@ describe("Leads → History", () => {
 
 describe("history rows", () => {
   it("a settings entry is about the channel, a deal entry names the deal", () => {
-    const settings = historyRow(entry({ company_id: null, company_name: null, kind: "settings", actor: "anna", data: { event: "channel_settings", changes: { history_months: { from: 24, to: 12 } } } }));
-    expect(settings).toMatchObject({ who: "anna", on: "Settings", what: "Settings changed: history kept", companyId: null });
+    const settings = historyRow(entry({ company_id: null, company_name: null, kind: "settings", actor: "anna", data: { event: "channel_settings", changes: { default_currency: { from: "PLN", to: "EUR" } } } }));
+    expect(settings).toMatchObject({ who: "anna", on: "Settings", what: "Settings changed: deal currency", companyId: null });
     expect(historyRow(entry({ deal_title: "Pilot" })).on).toBe("Acme Ltd · Pilot");
   });
 
@@ -138,10 +138,10 @@ describe("history rows", () => {
   // A coded reason reads as words; a reason a person typed stays as typed.
   it("a coded reason is a label, a typed one stays", () => {
     const reason = (kind, data) => historyRow(entry({ kind, data })).reason;
-    expect(reason("potential", { reason: "reply:not_now" })).toBe("Reply: Not now");
+    expect(reason("reply", { reason: "reply:not_now" })).toBe("Reply: Not now");
     expect(reason("note", { reason: "wrong_person" })).toBe("Wrong person");
     expect(reason("optout", { reason: "optout_confirmed" })).toBe("Opt-out confirmed");
-    expect(reason("potential", { reason: "some_new_code" })).toBe("some_new_code");
+    expect(reason("note", { reason: "some_new_code" })).toBe("some_new_code");
     expect(reason("task", { reason: "wrong_person" })).toBe("wrong_person");
     expect(reason("deal", { reason: "chose another vendor" })).toBe("chose another vendor");
   });

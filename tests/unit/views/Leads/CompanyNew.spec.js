@@ -40,7 +40,7 @@ describe("Leads — add one lead", () => {
 
   // U7: Back on every page entered from a list — here back to where the person came from, else Companies.
   it("Back goes back in the history, or to Companies when opened by URL", async () => {
-    window.history.replaceState({ back: "/leads/companies?owner=all" }, "");
+    window.history.replaceState({ back: "/crm/companies?owner=all" }, "");
     mountForm().findComponent({ name: "PageHeader" }).props("back")();
     expect(back).toHaveBeenCalledTimes(1);
     window.history.replaceState({}, "");

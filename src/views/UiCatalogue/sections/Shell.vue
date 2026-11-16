@@ -65,7 +65,7 @@
     <h3 id="bottom-tab-bar" class="fs-500 mb-4">BottomTabBar</h3>
     <div class="flex-column gap-3 mb-10">
       <CatalogueCell id="bottom-tab-bar-2-items" label="2 entries, the first active" mobile interact="focus">
-        <BottomTabBar :entries="LEADS_ENTRIES" label="Leads" current="/leads/inbox" />
+        <BottomTabBar :entries="LEADS_ENTRIES" label="CRM" current="/crm/inbox" />
       </CatalogueCell>
       <CatalogueCell id="bottom-tab-bar-5-items" label="5 entries (the most any panel has), long labels truncate" mobile>
         <BottomTabBar :entries="PAGES_ENTRIES" label="Pages" current="/pages/gallery" />
@@ -114,7 +114,7 @@ const PAGES_ENTRIES = [
   entry("/pages/authors", "authors.title", "user-pen"),
 ];
 const ORDERS_ENTRIES = [entry("/checkout-orders/orders", "nav.checkout_orders", "cart-shopping")];
-const LEADS_ENTRIES = [entry("/leads/inbox", "nav.leads_inbox", "inbox"), entry("/leads/settings", "nav.leads_settings", "gear")];
+const LEADS_ENTRIES = [entry("/crm/inbox", "nav.leads_inbox", "inbox"), entry("/crm/settings", "nav.leads_settings", "gear")];
 
 const L1 = { label: "Pages", icon: "file-code", to: "/pages/content" };
 const L2 = { label: "Content list", icon: "file-code", to: "/pages/content", level: 2 };

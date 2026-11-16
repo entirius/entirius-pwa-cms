@@ -14,16 +14,14 @@ export const kindLabel = (kind) => activityKindLabel(kind);
 const TYPED_REASON_KINDS = new Set(["task", "deal", "skipped", "rule"]);
 const has = (key) => t(key) !== key;
 
-// A coded reason ("reply:not_now", "manual", "wrong_person") as words: the potential dot's labels when the CMS has
-// them, else the journal's own; a code without a label stays as it is.
+// A coded reason ("reply:not_now", "wrong_person") as words from the journal's labels; a code without a label stays as it is.
 export function reasonLabel(activity) {
   const data = activity.data || {};
   const reason = data.reason || data.outcome || data.lost_reason || "";
   if (!reason || TYPED_REASON_KINDS.has(activity.kind)) return reason;
-  if (reason === "manual" && data.comment && has("leads.potential.manual")) return t("leads.potential.manual", { comment: data.comment });
   if (reason.startsWith("reply:")) return t("leads.journal.reason.reply_class", { class: replyTypeLabel(reason.slice(6)) });
-  const key = [`leads.potential.reason.${reason}`, `leads.journal.reason.${reason}`].find(has);
-  return key ? t(key) : reason;
+  const key = `leads.journal.reason.${reason}`;
+  return has(key) ? t(key) : reason;
 }
 
 // The reason sits in its own column, so the sentence leaves it out.

@@ -73,11 +73,9 @@
     "leads_mailboxes": "Mailboxes",
     "leads_sending_health": "Sending health",
     "leads_do_not_contact": "Do not contact",
-    "leads_ai_crm": "AI CRM",
     "leads_today": "Today",
     "leads_reports": "Reports",
     "leads_history": "History",
-    "leads_prospecting": "Prospecting",
     "leads_deals": "Deals",
     "leads_deal_stages": "Deal stages"
   },
@@ -607,7 +605,7 @@
     "promo_desc": "Discount rules and promotion management",
     "pricefighter": "PriceFighter",
     "pricefighter_desc": "Competitive pricing — gap analysis, strategies, batch apply",
-    "leads": "Sales CRM",
+    "leads": "CRM",
     "leads_desc": "Sales inbox — review drafts, read replies, company conversations",
     "communicator": "Communicator",
     "communicator_desc": "Outreach templates, follow-up sequences, send policy and channel mode",
@@ -4281,41 +4279,6 @@
     "channel": "Channel"
   },
   "leads": {
-    "prospecting": {
-      "title": "Prospecting",
-      "people_help": "New people to contact at companies whose only person was the wrong one or opted out. Only an accepted person becomes a contact and can be mailed.",
-      "company_help": "People found for this company. Accept one to add it as a contact; missing confirmations are marked.",
-      "empty": "No candidates",
-      "erased_address": "This address was erased at the person's request and cannot be added as a contact",
-      "no_company": "The company of this candidate is not in this channel",
-      "no_title": "No job title",
-      "no_email": "No address",
-      "check": {
-        "role": "Role fits the offer",
-        "email": "E-mail address known",
-        "employed": "Still works there",
-        "mailbox": "Address works"
-      },
-      "result": {
-        "ok": "OK",
-        "no_info": "No information"
-      },
-      "missing": "Missing confirmation: {list}",
-      "checked": "{source}, {date}",
-      "tries": "no information after {n} tries",
-      "found": "Found: {source}, {date}",
-      "accept": "Accept",
-      "reject": "Reject",
-      "accepted": "{name} added as a contact",
-      "rejected": "{name} rejected",
-      "status_filter": "Status",
-      "status": {
-        "pending": "Waiting",
-        "accepted": "Accepted",
-        "rejected": "Rejected",
-        "all": "All"
-      }
-    },
     "inbox": {
       "title": "Inbox",
       "conversations": "Conversations",
@@ -4543,7 +4506,6 @@
         "intel": "Intel",
         "contacts": "Contacts",
         "timeline": "History",
-        "people": "People",
         "tasks": "Tasks",
         "deals": "Deals"
       },
@@ -4624,7 +4586,7 @@
       "run_rules_note": "Each new company enters its first stage and that stage's rules run — drafts and AI audits may start right away and cost AI credits.",
       "after_rules": "Each company lands in the first stage. Its rules run only when \"Start the automation\" was ticked; otherwise move companies on the board or by hand.",
       "owner": "Owner",
-      "owner_hint": "The owner of every new company in the file; leave it empty for no owner. Companies already in Sales CRM keep theirs.",
+      "owner_hint": "The owner of every new company in the file; leave it empty for no owner. Companies already in CRM keep theirs.",
       "no_owner": "No owner",
       "column_attr": "{column} — {label} ({kind})",
       "ignored": "Ignored columns: {list}",
@@ -4776,7 +4738,7 @@
       "consent_ref": "Where consent was given",
       "save": "Add company",
       "save_contact": "Save contact",
-      "exists": "Already in Sales CRM:",
+      "exists": "Already in CRM:",
       "company_saved": "Company added — the contact was not saved yet:"
     },
     "lead_types": {
@@ -4809,7 +4771,6 @@
         "deal-stages": "The steps a deal goes through until it is won or lost",
         "lead-types": "The kinds of company you sell to; templates can target one",
         "custom-fields": "Your own fields on companies, contacts and deals",
-        "potential": "The days and replies that colour the dot of a company",
         "scoring": "How points rate a company into segments S1–S4",
         "rules": "What runs when a company enters a stage: a draft, an audit, a score",
         "automatic-moves": "Which stage a company moves to after a reply or an opt-out",
@@ -4822,61 +4783,6 @@
         "do-not-contact": "Addresses and domains that never get mail"
       }
     },
-    "potential": {
-      "title": "Potential",
-      "legend": "What the dots mean",
-      "legend_green": "going on: interested or a deal",
-      "legend_orange": "in progress: waiting, not now, skipped, looking for another person",
-      "legend_red": "come back later: refused, silence, deals lost",
-      "none": "Not written to yet",
-      "colour": {
-        "green": "Green",
-        "orange": "Orange",
-        "red": "Red",
-        "none": "No dot"
-      },
-      "manual": "Set by hand: {comment}",
-      "back_on": "back {day}",
-      "reason": {
-        "do_not_contact": "Do not contact",
-        "complaint": "Spam complaint",
-        "deal_open": "Open deal",
-        "deal_won": "Deal won",
-        "deals_lost": "Every deal lost",
-        "reply_class": "Reply: {class}",
-        "reply": "Reply",
-        "looking_for_person": "Looking for another person",
-        "silence": "No reply to the last mail",
-        "draft_skipped": "Draft skipped",
-        "came_back": "Come back",
-        "awaiting_reply": "Mail sent, waiting for a reply",
-        "manual": "Set by hand"
-      },
-      "dialog_title": "Potential of {name}",
-      "colour_label": "Colour",
-      "reason_label": "Reason",
-      "reason_placeholder": "Why differently from the rules",
-      "reason_required": "Write a reason",
-      "return_label": "Come back on (optional)",
-      "back_to_auto": "Back to automatic",
-      "save_error": "The colour was not saved — try again.",
-      "come_back_task": "Come back to {name}",
-      "settings_title": "Potential",
-      "settings_about": "The dot next to a company says how the conversation goes. It follows these thresholds; a change recomputes every company except colours set by hand.",
-      "settings_manual": "A colour of one company is set by a click on its dot:",
-      "settings_saved": "Thresholds saved — the colours are being recomputed",
-      "settings_load_error": "The thresholds could not be loaded.",
-      "settings_unsupported": "This leads version has no potential dot.",
-      "days_card": "Days",
-      "replies_card": "Colour of a reply",
-      "silence_days": "Silence until red",
-      "silence_days_hint": "Days without a reply after the last mail",
-      "skip_return_days": "Skipped draft comes back after",
-      "skip_return_days_hint": "Days until the company is back in the queue",
-      "red_return_days": "Red comes back after",
-      "red_return_days_hint": "Days until a red turns orange and shows on Today",
-      "days_required": "At least 1 day"
-    },
     "reply_type": {
       "interested": "Interested",
       "not_now": "Not now",
@@ -4887,7 +4793,6 @@
       "unclear": "Unclear"
     },
     "history": {
-      "event_potential": "Potential: {colour}",
       "event_draft_skipped": "Draft skipped",
       "needs_review": "Needs review",
       "back_on": "Back on {date}",
@@ -5215,26 +5120,6 @@
       "why_failed": "The mail state could not be read — try again.",
       "mail_state": "Mail",
       "custom_fields": "Custom fields"
-    },
-    "ai_crm": {
-      "title": "AI CRM",
-      "subtitle": "Your day, step by step — tell the agent what you did",
-      "plan_title": "Plan for today",
-      "plan_empty": "Nothing is waiting for you today",
-      "overdue": "Overdue",
-      "today": "Today",
-      "item_drafts": "Review the drafts waiting: {count}",
-      "item_replies": "Answer the replies waiting: {count}",
-      "chat_title": "Conversation",
-      "hint": "Tell me what you did, e.g. “done 1: called, interested” or “note 2: asked for a quote”. Type “plan” for the list.",
-      "placeholder": "What did you do?",
-      "send": "Send",
-      "confirm_question": "Confirm: {summary}",
-      "confirm": "Confirm",
-      "reject": "Cancel",
-      "error": "The AI CRM agent did not answer",
-      "load_error": "The plan for today could not be loaded",
-      "retry": "Try again"
     },
     "today": {
       "title": "Today",
@@ -5683,8 +5568,7 @@
       "channel": "Settings",
       "setting": {
         "resume_days": "days until a follow-up",
-        "default_currency": "deal currency",
-        "history_months": "history kept"
+        "default_currency": "deal currency"
       },
       "reason": {
         "reply_class": "Reply: {class}",
@@ -6074,7 +5958,7 @@
       "django_checkout": "Orders and checkout",
       "django_returns": "Returns",
       "django_contact_forms": "Forms",
-      "django_leads": "Sales CRM",
+      "django_leads": "CRM",
       "django_communicator": "Communicator",
       "django_siteintel": "Site intelligence",
       "django_notifications": "Notifications",
@@ -6354,15 +6238,8 @@
       "stock_alerts": {
         "subscriptions": "Back-in-stock requests"
       },
-      "prospecting": {
-        "people": "Prospecting: people to contact",
-        "companies": "Prospecting: new companies"
-      },
       "todo": {
         "tasks": "Sales tasks and reminders"
-      },
-      "ai_crm": {
-        "agent": "AI CRM agent (day plan, chat, MCP)"
       }
     },
     "scopes": {
