@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- Sales CRM, U19: write buttons outside a page's read-only reach now follow the role's write right like the page
+  buttons do. A read-only role (viewer) no longer sees "Add company" in the Companies side panel of a company card
+  (companies area), "Send now" on a waiting Inbox row (conversations area), or Skip, Send and the more menu on Review
+  (review area); Review also stops taking swipes and hides the swipe hint for that role.
+
 ### Changed
 
 - The Leads panel is called "Sales CRM" wherever people read it (menu, phone bar, headings, module list, import
