@@ -39,6 +39,7 @@ import { t } from "@/i18n";
 import { GET_DealBoard } from "@/api/leads/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { ReadonlyOff, usePageReadonly } from "@/composables/useReadonly";
+import { defaultOwner } from "@/utils/leadsOutbound";
 import { AREAS } from "@/configs/areas";
 import { useAccessStore } from "@/stores/access";
 import { useNotifyStore } from "@/stores/notify";
@@ -62,7 +63,7 @@ const dialogOpen = ref(false);
 const stages = computed(() => columns.value.map((column) => column.stage));
 const closable = computed(() => canClose(stages.value));
 const canSetUp = computed(() => access.can(AREAS.LEADS_SETTINGS));
-const query = computed(() => ({ owner: "me", ...route.query }));
+const query = computed(() => ({ owner: defaultOwner(readonly.value), ...route.query }));
 const version = ref(0);
 // A refused move or a closed reason dialog reads the board again: the card is back where the server has it.
 const { lost, move, submitLost, cancelLost } = useDealMove(stages, { moved: load, refused: load });

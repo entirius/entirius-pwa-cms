@@ -4,12 +4,33 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- CRM, U19: write buttons outside a page's read-only reach now follow the role's write right like the page
+  buttons do. A read-only role (viewer) no longer sees "Add company" in the Companies side panel of a company card
+  (companies area), "Send now" on a waiting Inbox row (conversations area), or Skip, Send and the more menu on Review
+  (review area); Review also stops taking swipes and hides the swipe hint for that role.
+
 ### Changed
 
 - The Leads panel is called "CRM" wherever people read it (menu, phone bar, headings, breadcrumbs, module list,
   import texts; en + pl), and its screens live at `/crm/...`: every old `/leads/...` address redirects, with the rest
   of the path and the query. The `leads` panel id, the route names, the i18n keys and the API stay; the contact-form
   leads (Forms → Leads) keep their name.
+- CRM, deals: the list has Active and Archived tabs under its header instead of the "Archived" toggle
+- CRM, Settings → Sending health (U15): every count says its period — "Sent (last 24 h)" / "Sent (last 7
+  days)" rolls back from now, "Sent today (since 00:00)" is the channel's calendar day, with a note naming the channel
+  timezone (communicator's `timezone` in `GET health/`; an older backend: the note without it). The pause log loads
+  the newest 10 entries, "Show more" adds 10 (was 20).
+- CRM, U18: a role that cannot write the screen's area (viewer) opens Companies, Deals (list and board) and
+  Today on the owner filter "All" instead of an empty "Mine"; an owner chosen in the address or the select still
+  wins, as before. Other roles keep "Mine".
+- CRM, Settings → Custom fields, U16: Add field fills the key from the label as it is typed ("Pole testowe" →
+  `pole_testowe`: Polish letters spelled plain, lower case, `_` between words, `field_` in front of a leading digit,
+  48 characters at most). The key stays editable; a key typed by hand is never overwritten (emptying it hands it back
+  to the label). The key of a saved field stays fixed; the key check and the "Give the key" message are unchanged.
+  The key hint says so (en + pl).
+
 - CRM, deals: the list has Active and Archived tabs under its header instead of the "Archived" toggle
   button; a won or lost deal shows Archive beside Reopen instead of under the more menu; Back on the deal card and on
   Add company returns to where the person came from (the list with its tab and filters), as the company card does.
@@ -19,6 +40,14 @@ All notable changes to this project will be documented in this file.
   `goBackTo`.
 - Tests: the Deals list suite moves to `tests/unit/views/Leads/DealsList.spec.js` — `Deals.spec.js` and `deals.spec.js`
   were one file on a case-insensitive file system (macOS).
+- CRM, Approvals (U13): the Mailbox filter shows each mailbox by its address and owner ("sales1@shop.test
+  (Anna Nowak)") instead of its number, from communicator's `counts.mailboxes` (django-communicator with
+  `feature/mailbox-filter-labels`); an older communicator keeps the numbers.
+- CRM, Approvals (U14): the Approve dialog says up front which selected drafts will not go out because their
+  mailbox is paused, switched off or needs a login ("The mailbox sales1@shop.test is paused: 1 selected draft will not
+  go out. The other 1 goes out at once.", en + pl); when none of them could go out, Approve is off. Reads
+  `mailbox_id` and `counts.mailboxes[].hold` of communicator's approvals list (`feature/mailbox-filter-labels`).
+  `ConfirmDialog` takes `confirmDisabled`.
 
 ### Fixed
 
@@ -26,10 +55,17 @@ All notable changes to this project will be documented in this file.
   and is not counted in "Draft n of m"); a second Skip before the next draft opens is ignored.
 - CRM, History: filters and page are in the address (Back from a company card keeps them), and a slower older
   answer no longer replaces a newer one.
-- Polish: transaction / szkic everywhere in the Leads panel (no "deal", "draft", "Szansa sprzedaży").
+- Polish: transaction / szkic everywhere in the CRM (no "deal", "draft", "Szansa sprzedaży").
 
 ### Added
 
+- CRM, Review on a phone: the first draft says once, above the card, that it can be swiped — "← Skip" and
+- CRM, Import (U17, django-leads with `imports/preview/`): a check step between the file and the import —
+  every column of the file with the CRM field it goes to, how sure the proposal is (Sure / Check it / Not
+  recognised, with why), sample values and the first rows as the CRM would store them; each field can be changed or
+  the column skipped, and Import sends the approved mapping. Two columns on one field or no domain / website / e-mail
+  column keep Import disabled. The report says where each column went. `.xlsx` files are accepted beside `.csv`; file
+  errors read in words (en + pl). An older backend imports straight away, as before.
 - CRM, Review on a phone: the first draft says once, above the card, that it can be swiped — "← Skip" and
   "Send →" with Got it (en + pl). Got it or the first swipe hides it for good in that browser; a desk never shows it.
 - CRM, Review: Skip can be undone — an Undo button beside "Skipped — this mail will not be sent" for 4 s
@@ -154,6 +190,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- CRM: the "Give the reason" error of a reason dialog (Approvals Skip, mailbox pause / resume, lost deal) goes as soon as a reason is typed instead of staying on screen until the next submit (U12).
 - PriceFighter: the Gap Table shows the product name in its own Product column (it was a small grey line under the
   SKU that wrapped); the row detail names the decision reason, the strategy and the mode in words instead of the
   engine codes (`in_band`, `compete / suggestion`; an unknown code stays raw); Strategies shows the mode in words;

@@ -116,6 +116,18 @@ describe("Leads → Today", () => {
     expect(todo.GET_Tasks.mock.lastCall[0]).not.toHaveProperty("owner");
   });
 
+  // U18: a role that cannot write tasks (viewer) owns none — Today opens on All; its pick holds
+  it("read-only tasks: the owner filter starts on All and keeps the pick", async () => {
+    const wrapper = await mounted({ write: false });
+    expect(wrapper.findComponent('[data-testid="today-owner"]').props("modelValue")).toBe("all");
+    expect(todo.GET_Today).not.toHaveBeenCalled();
+    expect(todo.GET_Tasks.mock.calls.every(([query]) => !("owner" in query))).toBe(true);
+    wrapper.findComponent('[data-testid="today-owner"]').vm.$emit("update:modelValue", "me");
+    await flushPromises();
+    expect(wrapper.findComponent('[data-testid="today-owner"]').props("modelValue")).toBe("me");
+    expect(todo.GET_Today).toHaveBeenCalled();
+  });
+
   // U5: the Cancelled chip lists cancelled tasks with who, when and why; they reopen, never edit
   it("Cancelled lists cancelled tasks with who, when and why", async () => {
     const wrapper = await mounted();

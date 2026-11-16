@@ -29,7 +29,7 @@
         <BasicButton
           :variant="tone === 'danger' ? 'danger-solid' : 'primary'"
           :loading="loading"
-          :disabled="remaining > 0"
+          :disabled="remaining > 0 || confirmDisabled"
           :data-testid="confirmTestid"
           @click="emit('confirm')"
         >
@@ -47,7 +47,8 @@
 // `cancel` (Cancel, close, Esc, backdrop); the caller closes it. `discardLabel` adds a third action, `discard` (unsaved changes: stay · discard ·
 // save). The confirm button's test id is `confirmTestid` (`confirm-dialog-confirm`; a page-object contract may name
 // another); other attributes (`data-testid`) land on the dialog element. `holdSeconds` keeps the confirm disabled
-// for that many seconds after each opening, counting down on the button (irreversible bulk actions).
+// for that many seconds after each opening, counting down on the button (irreversible bulk actions);
+// `confirmDisabled` keeps it off while set (nothing the confirm could do).
 import { ref, watch, onBeforeUnmount } from "vue";
 import BasicModal from "@/boots/BasicModal/index.vue";
 import ActionBar from "@/boots/ActionBar/index.vue";
@@ -65,6 +66,7 @@ const props = defineProps({
   inline: { type: Boolean, default: false },
   confirmTestid: { type: String, default: "confirm-dialog-confirm" },
   holdSeconds: { type: Number, default: 0 },
+  confirmDisabled: { type: Boolean, default: false },
 });
 const emit = defineEmits(["update:open", "confirm", "cancel", "discard"]);
 

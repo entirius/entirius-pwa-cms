@@ -18,7 +18,7 @@
 
       <BasicCard :title="$t('leads.health.channel')" gap data-testid="health-channel">
         <p class="m-0 flex flex-wrap ai-ct gap-5">
-          <span>{{ $t("leads.health.col_sent") }}: {{ channel.sent }}</span>
+          <span data-testid="health-channel-sent">{{ sentLabel }}: {{ channel.sent }}</span>
           <span v-for="rate in RATES" :key="rate.key" class="flex ai-ct gap-2">
             {{ $t(rate.label) }}: {{ pct(channel[rate.key]) }}
             <StatusBadge v-if="overLimit(channel[rate.key], rate)" tone="warning" size="sm" :label="$t('leads.health.over')" data-testid="health-channel-over" />
@@ -49,6 +49,7 @@
             </BasicButton>
           </template>
         </DataTable>
+        <p class="m-0 t-muted" data-testid="health-windows-note">{{ windowsNote }}</p>
       </BasicCard>
 
       <BasicCard :title="$t('leads.health.policy')" gap data-testid="health-policy">
@@ -132,14 +133,22 @@ const rows = computed(() =>
     return { ...mailbox, metrics, today, stateKey, sent: metrics.sent, tooFew: metrics.sent < policy.min_sample };
   })
 );
-const columns = [
+// U15: "Sent" rolls back from now over the chosen range, "Sent today" is the channel's calendar day from 00:00 —
+// two different periods, so each label says which (the timezone from the report; an older backend sends none).
+const sentLabel = computed(() => t(`leads.health.col_sent_${range.value}`));
+const windowsNote = computed(() => {
+  const timezone = report.value.timezone;
+  const key = timezone ? "leads.health.windows_note" : "leads.health.windows_note_no_tz";
+  return t(key, { sent: sentLabel.value, timezone });
+});
+const columns = computed(() => [
   { key: "address", label: t("leads.health.col_mailbox"), width: "1fr" },
   { key: "state", label: t("leads.mailboxes.col_state"), width: "max-content" },
-  { key: "sent", label: t("leads.health.col_sent"), numeric: true, priority: 2 },
+  { key: "sent", label: sentLabel.value, numeric: true, priority: 2 },
   ...RATES.map((rate) => ({ key: rate.key, label: t(rate.label), width: "max-content", priority: 3 })),
   { key: "today", label: t("leads.health.col_today"), numeric: true, priority: 2 },
   { key: "actions", label: "", actions: true },
-];
+]);
 const logColumns = [
   // the date and the time may take two lines: on a phone the row keeps its Action inside the card
   { key: "when", label: t("leads.health.col_when"), width: "min-content", truncate: false },
@@ -183,8 +192,11 @@ const logRow = (entry) => ({
   by: byOf(entry),
 });
 
+// The log grows with every pause and resume (dozens after a BDD run): the newest 10 first, "Show more" adds 10.
+const LOG_PAGE_SIZE = 10;
+
 async function loadLog(page = 1) {
-  const { data } = await GET_HealthLog({ page });
+  const { data } = await GET_HealthLog({ page, page_size: LOG_PAGE_SIZE });
   const entries = (data.results || []).map(logRow);
   logRows.value = page === 1 ? entries : [...logRows.value, ...entries];
   logPage.value = page;

@@ -134,7 +134,7 @@ import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
 import { formatRelative } from "@/utils/format";
 import { bulkAnswer } from "@/utils/leadsBulk";
-import { SEGMENT_TONES, outboundOn, stageTone } from "@/utils/leadsOutbound";
+import { SEGMENT_TONES, defaultOwner, outboundOn, stageTone } from "@/utils/leadsOutbound";
 import { fieldsFromDefinitions, formatValue } from "./customFields";
 
 // Companies (ux/screens/companies.md): the full list, every filter, the sort and the page in the URL, served by the
@@ -167,7 +167,7 @@ const origins = ref([]);
 const users = ref([]);
 const definitions = ref([]);
 
-const query = computed(() => ({ owner: crm.value ? "me" : "all", ...route.query }));
+const query = computed(() => ({ owner: crm.value ? defaultOwner(readonly.value) : "all", ...route.query }));
 const page = computed(() => Number(query.value.page) || 1);
 const pages = computed(() => Math.max(1, Math.ceil(count.value / PAGE_SIZE)));
 const FILTER_KEYS = ["stage", "segment", "origin", "lead_type", "has_reply", "do_not_contact", "search"];

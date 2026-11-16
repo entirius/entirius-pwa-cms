@@ -17,6 +17,9 @@ import { byTestid, mountOutbound } from "./outboundFrame";
 const metrics = (sent, bounces) => ({ sent, hard_bounces_pct: bounces, optouts_pct: 0.5, complaints_pct: 0 });
 const windows = (sent, bounces) => ({ "24h": metrics(sent, bounces), "7d": metrics(sent, bounces) });
 const report = {
+  timezone: "Europe/Warsaw",
+  now: "2026-11-16T14:30:00+01:00",
+  today_since: "2026-11-16T00:00:00+01:00",
   channel: { windows: windows(412, 0.7) },
   mailboxes: [
     { id: 2, address: "anna@firma.test", state: "paused", paused_at: "2026-11-12T08:00:00Z", pause_reason: "bounces", sent_today: 0, cap_today: 40, windows: windows(120, 3.1) },
@@ -81,8 +84,28 @@ describe("Leads → Settings → Sending health", () => {
     expect(api.PUT_HealthPolicy).toHaveBeenCalledWith({ enabled: true, window_hours: 168, min_sample: 80, max_bounce_pct: 2, max_optout_pct: 3, max_complaint_pct: 0.1 });
     await byTestid(wrapper, "health-log-more").trigger("click");
     await flushPromises();
-    expect(api.GET_HealthLog).toHaveBeenLastCalledWith({ page: 2 });
+    expect(api.GET_HealthLog).toHaveBeenNthCalledWith(1, { page: 1, page_size: 10 });
+    expect(api.GET_HealthLog).toHaveBeenLastCalledWith({ page: 2, page_size: 10 });
     expect(wrapper.findAll('[data-testid="health-log-row"]')).toHaveLength(2);
+  });
+
+  // U15: "Sent" rolls back from now, "Sent today" is the calendar day from 00:00 — each label says which period.
+  it("labels say which period each count covers, with the channel timezone", async () => {
+    const wrapper = await mounted();
+    expect(byTestid(wrapper, "health-channel-sent").text()).toBe("Sent (last 7 days): 412");
+    expect(wrapper.text()).toContain("Sent (last 7 days)");
+    expect(wrapper.text()).toContain("Sent today (since 00:00)");
+    expect(byTestid(wrapper, "health-windows-note").text()).toContain("Europe/Warsaw");
+    wrapper.findComponent('[data-testid="health-range"]').vm.$emit("update:modelValue", "24h");
+    await flushPromises();
+    expect(byTestid(wrapper, "health-channel-sent").text()).toBe("Sent (last 24 h): 412");
+    expect(wrapper.text()).toContain("Sent (last 24 h)");
+    expect(byTestid(wrapper, "health-windows-note").text()).toMatch(/^“Sent \(last 24 h\)” counts back from now/);
+    // an older backend sends no timezone: the note keeps the periods, without a zone
+    api.GET_Health.mockResolvedValueOnce({ data: { ...report, timezone: undefined } });
+    const note = byTestid(await mounted(), "health-windows-note").text();
+    expect(note).toContain("from 00:00.");
+    expect(note).not.toContain("time.");
   });
 
   it("an empty channel, a failed load and read-only", async () => {

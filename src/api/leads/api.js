@@ -27,12 +27,23 @@ export const POST_CreateCustomer = (id) => leadsApi.post(`${base()}/companies/${
 // FormData without a Content-Type: axios sets the multipart boundary.
 // `runRules` (leads >= 0.5.0): new companies enter their first stage with its rules; undefined = not sent.
 // `ownerId` (leads >= 0.5.0): the owner of the new companies; null or undefined = not sent (no owner).
-export const POST_Import = (file, runRules, ownerId) => {
+// `mapping` (U17): the approved {file column: field | "ignore"}, sent as JSON; undefined = the exact column names.
+export const POST_Import = (file, runRules, ownerId, mapping) => {
   const form = new FormData();
   form.append("file", file);
   if (runRules !== undefined) form.append("run_rules", String(runRules));
   if (ownerId !== undefined && ownerId !== null) form.append("owner_id", String(ownerId));
+  if (mapping !== undefined) form.append("mapping", JSON.stringify(mapping));
   return leadsApi.post(`${base()}/imports/`, form);
+};
+
+// U17: the proposed column mapping of a file (.csv or .xlsx) and its first five rows; reads only, nothing is saved.
+// `mapping` = the user's {column: field | "ignore"} (the rows recomputed under it); undefined = the server's proposal.
+export const POST_ImportPreview = (file, mapping) => {
+  const form = new FormData();
+  form.append("file", file);
+  if (mapping !== undefined) form.append("mapping", JSON.stringify(mapping));
+  return leadsApi.post(`${base()}/imports/preview/`, form);
 };
 
 export const GET_Import = (id) => leadsApi.get(`${base()}/imports/${id}/`);

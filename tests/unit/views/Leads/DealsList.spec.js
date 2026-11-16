@@ -60,6 +60,17 @@ describe("Leads → Deals list", () => {
     expect(wrapper.findComponent({ name: "Pagination" }).props("pages")).toBe(3);
   });
 
+  // U18: a read-only role (viewer) owns no deal — the list opens on All, and All is no filter there
+  it("read-only: the default owner is All, an owner in the URL still wins", async () => {
+    const wrapper = await mounted({ write: false });
+    expect(leads.GET_Deals).toHaveBeenCalledWith({ kind: "open", sort: "expected_close_date", page: 1, page_size: 20 });
+    expect(byTestid(wrapper, "deals-owner-all").attributes("data-active")).toBe("true");
+    route.query = { owner: "me" };
+    leads.GET_Deals.mockClear();
+    await mounted({ write: false });
+    expect(leads.GET_Deals).toHaveBeenCalledWith({ owner: "me", kind: "open", sort: "expected_close_date", page: 1, page_size: 20 });
+  });
+
   it("reads the filters from the URL and writes a close range back as one change", async () => {
     route.query = { owner: "all", kind: "all", stage: "qualified", page: "2" };
     const wrapper = await mounted();

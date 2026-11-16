@@ -122,6 +122,8 @@ describe("Leads → Deals board", () => {
     expect(lists.length).toBe(3);
     lists.forEach((list) => expect(list.vm.$attrs.disabled).toBe(true));
     expect(byTestid(wrapper, "deals-open").exists()).toBe(false);
+    // U18: a read-only role owns no deal — the board reads them all
+    expect(leads.GET_DealBoard).toHaveBeenCalledWith({ owner: undefined });
   });
 
   it("without a won or a lost stage the board says deals cannot be closed", async () => {

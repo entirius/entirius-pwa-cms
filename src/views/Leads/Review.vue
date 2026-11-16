@@ -50,7 +50,7 @@
         class="review__draft flex-column gap-4"
         :style="{ transform: `translateX(${offset}px)` }"
         data-testid="review-draft"
-        v-on="editing ? {} : handlers"
+        v-on="editing || readonly ? {} : handlers"
       >
         <header class="flex-column">
           <router-link v-if="companyId" :to="{ name: 'LeadsThread', params: { id: companyId } }" class="review__company">
@@ -89,7 +89,7 @@
         <template v-else>
           <h2 class="review__subject fs-400 fw-600 m-0" data-testid="review-subject">{{ message.subject }}</h2>
           <p class="review__text m-0" data-testid="review-body">{{ message.body_text }}</p>
-          <p v-if="!isDesktop" class="t-muted fs-200 m-0" data-testid="review-swipe-hint">{{ $t("leads.review.swipe_hint") }}</p>
+          <p v-if="!isDesktop && !readonly" class="t-muted fs-200 m-0" data-testid="review-swipe-hint">{{ $t("leads.review.swipe_hint") }}</p>
         </template>
       </article>
     </div>
@@ -145,6 +145,7 @@ import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
 import { useSwipe } from "@/composables/useSwipe";
 import { useIsDesktop } from "@/composables/useIsDesktop";
+import { usePageReadonly } from "@/composables/useReadonly";
 import { companyIdFromSubjectRef } from "@/utils/subjectRef";
 import { replyTypeLabel, sendStateSentence, statusLabel } from "@/utils/leadsLabels";
 import { FROM_APPROVALS, outboundOn, problemText, replyTone } from "@/utils/leadsOutbound";
@@ -185,6 +186,8 @@ let settle = null;
 
 // The swipe hint is for a touch screen: a desk has the buttons (acceptance c6).
 const isDesktop = useIsDesktop();
+// U19: a read-only role (review area) cannot send or skip — no swipe, no swipe hint or intro.
+const readonly = usePageReadonly();
 // U8: the one-time swipe intro; remembered in this browser only (a lost value shows it once more, nothing worse).
 const SWIPE_INTRO_KEY = "cms_leads_swipe_intro_seen";
 const swipeIntroSeen = ref((() => {
@@ -202,7 +205,7 @@ const dismissSwipeIntro = () => {
     // storage blocked: the intro is gone for this visit
   }
 };
-const showSwipeIntro = computed(() => !isDesktop.value && !!message.value && !editing.value && !failedVersion.value && !swipeIntroSeen.value);
+const showSwipeIntro = computed(() => !isDesktop.value && !readonly.value && !!message.value && !editing.value && !failedVersion.value && !swipeIntroSeen.value);
 const { offset, handlers } = useSwipe({
   onRight: () => {
     dismissSwipeIntro();

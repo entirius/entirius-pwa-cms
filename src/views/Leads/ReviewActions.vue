@@ -3,18 +3,18 @@
     <!-- R5 in the slot: the more menu (utility) · Skip · Send, the one primary, rightmost -->
     <ActionBar>
       <!-- the disabled Send says why next to it too, not only in its tooltip (acceptance CM10) -->
-      <span v-if="blocked" class="t-secondary fs-200" data-testid="review-send-blocked">{{ $t("leads.review.send_blocked") }}</span>
-      <BasicMenu :items="menuItems" :label="$t('leads.review.more')" placement="top-end" @select="emit($event.key)">
+      <span v-if="blocked && !readonly" class="t-secondary fs-200" data-testid="review-send-blocked">{{ $t("leads.review.send_blocked") }}</span>
+      <BasicMenu v-if="!readonly" :items="menuItems" :label="$t('leads.review.more')" placement="top-end" @select="emit($event.key)">
         <template #trigger>
           <IconButton icon="more" variant="outline" :label="$t('leads.review.more')" :disabled="busy" data-testid="review-more" />
         </template>
       </BasicMenu>
-      <BasicButton :disabled="busy" data-testid="review-skip" @click="emit('skip')">{{ $t("leads.review.skip") }}</BasicButton>
+      <BasicButton :disabled="busy" mutates data-testid="review-skip" @click="emit('skip')">{{ $t("leads.review.skip") }}</BasicButton>
       <!-- a draft with a problem cannot go out: Send is disabled with the reason (the disabled-button pattern) -->
       <BasicTooltip v-if="blocked" :text="blocked">
-        <BasicButton variant="primary" disabled data-testid="review-send">{{ $t("leads.review.send") }}</BasicButton>
+        <BasicButton variant="primary" disabled mutates data-testid="review-send">{{ $t("leads.review.send") }}</BasicButton>
       </BasicTooltip>
-      <BasicButton v-else variant="primary" :disabled="busy" data-testid="review-send" @click="emit('send')">
+      <BasicButton v-else variant="primary" :disabled="busy" mutates data-testid="review-send" @click="emit('send')">
         {{ $t("leads.review.send") }}
       </BasicButton>
     </ActionBar>
@@ -24,6 +24,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { t } from "@/i18n";
+import { useReadonly } from "@/composables/useReadonly";
 
 const props = defineProps({
   busy: { type: Boolean, default: false },
@@ -32,6 +33,8 @@ const props = defineProps({
 });
 const emit = defineEmits(["send", "skip", "rewrite", "edit", "skip-company"]);
 const bar = ref(null);
+// U19: a read-only role (review area) gets no Skip, Send or more menu — all three write.
+const readonly = useReadonly();
 
 // An item's key is the event it emits.
 const menuItems = computed(() => [

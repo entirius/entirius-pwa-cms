@@ -6,6 +6,10 @@ export const OUTBOUND_VERSION = "0.5.0";
 
 export const outboundOn = (munin, module) => munin.isModuleAtLeast(module, OUTBOUND_VERSION);
 
+// U18: the owner filter's default on Companies, Deals and Today. A role that cannot write the screen's area (viewer)
+// owns no record there, so it opens on All instead of an empty Mine; a choice in the URL (or the select) still wins.
+export const defaultOwner = (readonly) => (readonly ? "all" : "me");
+
 // `?from=approvals` on a draft opened from Approvals: the Review keeps Approvals as its way back.
 export const FROM_APPROVALS = "approvals";
 
