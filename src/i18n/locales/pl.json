@@ -4608,7 +4608,7 @@
     },
     "import": {
       "title": "Import firm",
-      "hint": "Jeden wiersz na firmę, pierwszy wiersz nazywa kolumny. Istniejące domeny są dopasowywane, nie duplikowane; nieznane kolumny są pomijane.",
+      "hint": "Jeden wiersz na firmę, pierwszy wiersz nazywa kolumny. Po wybraniu pliku Sales CRM proponuje, dokąd trafia każda kolumna, a Ty sprawdzasz to przed importem. Istniejące domeny są dopasowywane, nie duplikowane.",
       "upload": "Wyślij",
       "status": "Status",
       "counts": "utworzone: {created}, dopasowane: {matched}, pominięte: {skipped}",
@@ -4623,7 +4623,7 @@
       "after_title": "Po wysłaniu pliku",
       "after": "Każda firma trafia do pierwszego etapu tablicy. Dalej działają reguły etapu — audyt strony albo szkic czekający w skrzynce. Nic nie wychodzi bez Twojego przeglądu.",
       "sample": "Pobierz przykładowy plik CSV",
-      "choose": "Wybierz plik CSV",
+      "choose": "Wybierz plik (.xlsx lub .csv)",
       "no_file": "Nie wybrano jeszcze pliku",
       "run_rules": "Uruchom automatyzację dla nowych firm",
       "run_rules_note": "Każda nowa firma wchodzi w pierwszy etap i działają reguły tego etapu — szkice i audyty AI mogą ruszyć od razu i zużyć środki AI.",
@@ -4659,7 +4659,100 @@
         "no_stages": "kanał nie ma etapów — dodaj je w Ustawieniach → Etapy",
         "internal_error": "błąd po stronie serwera — spróbuj ponownie albo zapytaj administratora"
       },
-      "file": "Plik"
+      "file": "Plik",
+      "mapping": {
+        "title": "Sprawdź kolumny",
+        "hint": "Każda kolumna pliku trafia do jednego pola w Sales CRM. Sprawdź propozycję, zmień pole, jeśli jest złe, albo pomiń kolumnę. Nic się nie zapisze, dopóki nie klikniesz Importuj.",
+        "col_column": "Kolumna w pliku",
+        "col_samples": "Przykładowe wartości",
+        "col_field": "Pole w Sales CRM",
+        "col_confidence": "Propozycja",
+        "field_for": "Pole w Sales CRM dla kolumny {column}",
+        "skip": "Pomiń tę kolumnę",
+        "group": {
+          "company": "Firma",
+          "contact": "Kontakt",
+          "company_custom": "Pole własne firmy",
+          "contact_custom": "Pole własne kontaktu"
+        },
+        "confidence": {
+          "sure": "Pewne",
+          "check": "Do sprawdzenia",
+          "unknown": "Nierozpoznane"
+        },
+        "conflict": "wybrane też dla: {columns}",
+        "conflicts": "Pola wybrane dla więcej niż jednej kolumny: {count}. Wybierz jedną kolumnę na pole, pozostałe pomiń.",
+        "preview_empty": "Żadna kolumna nie trafia jeszcze do Sales CRM.",
+        "check": "Sprawdź kolumny",
+        "import": "Importuj",
+        "other_file": "Wybierz inny plik",
+        "result_title": "Gdzie poszły kolumny",
+        "went": "{column} → {field}",
+        "went_skipped": "{column} → pominięta",
+        "failed": "Nie udało się odczytać pliku",
+        "file_summary": "{name}: wiersze {rows}, kolumny {columns}",
+        "col_row": "Wiersz",
+        "col_skip": "Uwaga importu",
+        "preview_title": "Pierwsze wiersze po mapowaniu",
+        "no_identity": "Wybierz kolumnę z domeną, stroną www albo adresem e-mail — bez niej nie da się rozróżnić firm.",
+        "no_name": "Żadna kolumna nie idzie do nazwy firmy: firmy dostaną nazwę od domeny.",
+        "field": {
+          "company_name": "Nazwa firmy",
+          "domain": "Domena",
+          "website": "Strona www",
+          "industry": "Branża",
+          "lead_type": "Typ firmy",
+          "origin": "Źródło",
+          "description": "Uwagi",
+          "full_name": "Imię i nazwisko (rozdzielane)",
+          "first_name": "Imię",
+          "last_name": "Nazwisko",
+          "email": "E-mail",
+          "phone": "Telefon",
+          "job_title": "Stanowisko",
+          "language": "Język",
+          "legal_basis": "Podstawa prawna"
+        },
+        "source": {
+          "exact": "dokładna nazwa kolumny",
+          "header": "rozpoznane po nazwie kolumny",
+          "custom_field": "pasuje do pola własnego",
+          "content": "rozpoznane po wartościach",
+          "ai": "podpowiedź AI — sprawdź",
+          "user": "Twój wybór"
+        },
+        "reason": {
+          "unrecognised": "ani nazwa, ani wartości nie mówią, co to jest",
+          "duplicate_field": "pominięta: {column} lepiej pasuje do tego pola",
+          "no_crm_field": "wygląda na {concept}, ale Sales CRM nie ma takiego pola — dodaj pole własne w Ustawieniach, żeby je zachować",
+          "empty_column": "kolumna jest pusta",
+          "user": "pominięta przez Ciebie"
+        },
+        "concept": {
+          "tax_id": "numer podatkowy (NIP / VAT)",
+          "regon": "numer REGON",
+          "krs": "numer KRS",
+          "street": "ulicę",
+          "city": "miasto",
+          "postal_code": "kod pocztowy",
+          "country": "kraj",
+          "employees": "liczbę pracowników",
+          "address": "adres"
+        },
+        "issue": {
+          "REQUIRED": "Najpierw wybierz plik.",
+          "TOO_LARGE": "Plik jest większy niż 20 MB.",
+          "UNSUPPORTED_FORMAT": "Ten typ pliku nie jest obsługiwany — zapisz go jako .xlsx lub .csv (stary .xls też trzeba zapisać jako .xlsx).",
+          "ENCODING": "Nie rozpoznano kodowania tekstu — zapisz plik jako CSV UTF-8 albo .xlsx.",
+          "UNREADABLE": "Nie da się odczytać pliku — może być uszkodzony.",
+          "NO_HEADER": "Plik jest pusty albo nie ma wiersza nagłówka.",
+          "INVALID_JSON": "Nie udało się wysłać mapowania kolumn — sprawdź kolumny jeszcze raz.",
+          "UNKNOWN_COLUMN": "Plik nie pasuje do sprawdzonych kolumn — sprawdź kolumny jeszcze raz.",
+          "UNKNOWN_FIELD": "Wybrane pole już nie istnieje — sprawdź kolumny jeszcze raz.",
+          "DUPLICATE_FIELD": "Dwie kolumny idą do tego samego pola — zostaw jedną.",
+          "NO_COMPANY_KEY": "Wybierz kolumnę z domeną, stroną www albo adresem e-mail."
+        }
+      }
     },
     "stages": {
       "title": "Etapy",

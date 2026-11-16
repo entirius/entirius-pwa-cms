@@ -9,7 +9,7 @@
     </template>
     <div class="import flex-column gap-8">
       <p class="m-0">{{ $t("leads.import.hint") }}</p>
-      <BasicCard :title="$t('leads.import.columns_title')" gap data-testid="import-columns">
+      <BasicCard v-if="!preview" :title="$t('leads.import.columns_title')" gap data-testid="import-columns">
         <ul class="import__list">
           <li v-for="key in COLUMN_KEYS" :key="key">{{ $t(`leads.import.${key}`) }}</li>
           <li v-for="column in customColumns" :key="column.column" data-testid="import-custom-column">
@@ -26,7 +26,7 @@
           ref="fileInput"
           class="visually-hidden"
           type="file"
-          accept=".csv,text/csv"
+          :accept="ACCEPT"
           tabindex="-1"
           data-testid="import-file"
           @change="pick"
@@ -45,6 +45,7 @@
         </BasicCheckbox>
         <p id="import-run-rules-note" class="t-secondary m-0" data-testid="import-run-rules-note">{{ $t("leads.import.run_rules_note") }}</p>
       </div>
+      <ImportMapping v-if="preview && !batch" v-model="mapping" :preview="preview" :fields="preview.fields || []" />
       <p v-if="error" class="t-negative m-0" data-testid="import-error">{{ error }}</p>
       <BasicCard v-if="batch" data-testid="import-report">
         <div class="flex-column gap-3">
@@ -55,12 +56,18 @@
           <p class="m-0" data-testid="import-counts">
             {{ $t("leads.import.counts", { created: batch.created_count, matched: batch.matched_count, skipped: batch.skipped_count }) }}
           </p>
-          <p v-if="batch.ignored_columns?.length" class="m-0" data-testid="import-ignored">
+          <p v-if="batch.ignored_columns?.length && !went.length" class="m-0" data-testid="import-ignored">
             {{ $t("leads.import.ignored", { list: batch.ignored_columns.join(", ") }) }}
           </p>
           <p v-if="batch.automation_started_count !== undefined && sentRunRules" class="m-0" data-testid="import-automation">
             {{ $t("leads.import.automation_started", { count: batch.automation_started_count }) }}
           </p>
+          <div v-if="went.length" class="flex-column gap-2" data-testid="import-went">
+            <p class="m-0 t-strong">{{ $t("leads.import.mapping.result_title") }}</p>
+            <ul class="import__list">
+              <li v-for="line in went" :key="line">{{ line }}</li>
+            </ul>
+          </div>
           <ul v-if="rowReasons.length" class="import__list" data-testid="import-rows">
             <li v-for="entry in rowReasons" :key="`${entry.row}-${entry.reason}`">
               {{ entry.row ? $t("leads.import.row", { row: entry.row }) : $t("leads.import.file") }}: {{ importReasonLabel(entry.reason) }}
@@ -81,17 +88,26 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { t } from "@/i18n";
-import { GET_AssignableUsers, GET_Attributes, GET_Import, POST_Import } from "@/api/leads/api";
+import { GET_AssignableUsers, GET_Attributes, GET_Import, POST_Import, POST_ImportPreview } from "@/api/leads/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { useAccessStore } from "@/stores/access";
 import { useMuninStore } from "@/stores/munin";
 import { importReasonLabel, importStatusLabel } from "@/utils/leadsLabels";
 import { outboundOn } from "@/utils/leadsOutbound";
+import ImportMapping from "./ImportMapping.vue";
+import { conflicts, hasIdentity, importErrorText, mappingPayload, proposedMapping, wentLines } from "./columnMapping";
 
-// CSV upload: the batch runs on the leads queue; the screen polls it until done or failed.
+// U17: the file (.csv or .xlsx) is read first — the server proposes a field for every column, the user checks and
+// corrects it — and only then imported with the approved mapping. The batch runs on the leads queue; the screen polls
+// it until done or failed. A backend without the preview (404 / 405) imports the file straight away, as before.
+const ACCEPT = ".csv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+const NO_PREVIEW = [404, 405];
+// The rows under a changed mapping come from the server (it splits a full name, checks e-mails), a moment after the
+// last change; a reply that a later change overtook is dropped.
+const REFRESH_MS = 400;
 const POLL_MS = 2000;
 const outbound = computed(() => outboundOn(useMuninStore(), "leads"));
 const runRules = ref(false);
@@ -119,33 +135,107 @@ const file = ref(null);
 const batch = ref(null);
 const busy = ref(false);
 const error = ref("");
+const preview = ref(null);
+const mapping = ref({});
+const sentMapping = ref(null);
 let timer = null;
+let refreshTimer = null;
+let refreshSeq = 0;
+const mappingReady = computed(() => !Object.keys(conflicts(mapping.value)).length && hasIdentity(mapping.value));
+// Where each column went: the batch says it (`column_mapping`), else the mapping this screen sent.
+const applied = computed(() =>
+  batch.value?.column_mapping?.length ? batch.value.column_mapping : Object.entries(sentMapping.value || {}).map(([column, field]) => ({ column, field }))
+);
+const went = computed(() => (preview.value && batch.value ? wentLines(applied.value, preview.value.fields || []) : []));
 // Ignored columns are one sentence above; an older backend also lists them as rows (`ignored_column:<name>`).
 const rowReasons = computed(() => (batch.value?.report || []).filter((entry) => !String(entry.reason).startsWith("ignored_column:")));
 
-// R5: the secondary ways in, then Upload — the one primary — rightmost.
-const actions = computed(() => [
-  { key: "sample", label: t("leads.import.sample"), role: "secondary", testid: "import-sample", onClick: downloadSample },
-  {
-    key: "one",
-    label: t("leads.add.one"),
-    role: "secondary",
-    testid: "import-add-one",
-    onClick: () => router.push({ name: "LeadsCompanyNew" }),
-  },
-  {
-    key: "upload",
-    label: t("leads.import.upload"),
-    role: "primary",
-    testid: "import-upload",
-    disabled: !file.value || busy.value,
-    onClick: upload,
-  },
-]);
+// R5: the secondary ways in, then the one primary rightmost: Check the columns, then Import once they are checked.
+const actions = computed(() =>
+  [
+    { key: "sample", label: t("leads.import.sample"), role: "secondary", testid: "import-sample", onClick: downloadSample },
+    {
+      key: "one",
+      label: t("leads.add.one"),
+      role: "secondary",
+      testid: "import-add-one",
+      onClick: () => router.push({ name: "LeadsCompanyNew" }),
+    },
+    preview.value && !batch.value
+      ? { key: "other", label: t("leads.import.mapping.other_file"), role: "secondary", mutates: false, testid: "import-other-file", onClick: chooseAgain }
+      : null,
+    preview.value
+      ? {
+          key: "upload",
+          label: t("leads.import.mapping.import"),
+          role: "primary",
+          testid: "import-upload",
+          disabled: busy.value || Boolean(batch.value) || !mappingReady.value,
+          onClick: upload,
+        }
+      : { key: "check", label: t("leads.import.mapping.check"), role: "primary", testid: "import-check", disabled: !file.value || busy.value, onClick: check },
+  ].filter(Boolean)
+);
+
+function reset() {
+  clearTimeout(timer);
+  clearTimeout(refreshTimer);
+  refreshSeq += 1;
+  preview.value = null;
+  mapping.value = {};
+  sentMapping.value = null;
+  batch.value = null;
+  error.value = "";
+}
 
 function pick(event) {
+  reset();
   file.value = event.target.files?.[0] || null;
 }
+
+function chooseAgain() {
+  reset();
+  file.value = null;
+  if (fileInput.value) fileInput.value.value = "";
+  fileInput.value?.click();
+}
+
+const errorText = (err, fallbackKey) => importErrorText(err, t(fallbackKey)) || extractApiMessage(err, t(fallbackKey));
+
+async function check() {
+  error.value = "";
+  busy.value = true;
+  try {
+    const { data } = await POST_ImportPreview(file.value);
+    preview.value = { ...data, columns: data.columns || [], rows: data.rows || [] };
+    mapping.value = proposedMapping(preview.value.columns);
+  } catch (err) {
+    if (NO_PREVIEW.includes(err?.response?.status)) return upload();
+    error.value = errorText(err, "leads.import.mapping.failed");
+  }
+  busy.value = false;
+}
+
+// A changed mapping: the five rows again, under the user's mapping (not while two columns share a field — the user
+// is mid-change, and the server would settle the clash its own way).
+async function refresh() {
+  const seq = ++refreshSeq;
+  try {
+    const { data } = await POST_ImportPreview(file.value, mappingPayload(preview.value.columns, mapping.value));
+    if (seq !== refreshSeq || !preview.value) return;
+    preview.value = { ...preview.value, rows: data.rows || [] };
+    error.value = "";
+  } catch (err) {
+    if (seq === refreshSeq) error.value = errorText(err, "leads.import.mapping.failed");
+  }
+}
+
+watch(mapping, (next, previous) => {
+  if (!preview.value || !Object.keys(previous || {}).length) return;
+  clearTimeout(refreshTimer);
+  if (Object.keys(conflicts(next)).length) return;
+  refreshTimer = setTimeout(refresh, REFRESH_MS);
+});
 
 function downloadSample() {
   const url = URL.createObjectURL(new Blob([SAMPLE_CSV], { type: "text/csv" }));
@@ -158,7 +248,7 @@ function downloadSample() {
 function fail(err) {
   clearTimeout(timer);
   busy.value = false;
-  error.value = extractApiMessage(err, t("leads.import.failed"));
+  error.value = errorText(err, "leads.import.failed");
 }
 
 // Every poll handles its own failure: a later poll runs from the timer, outside upload()'s try.
@@ -178,7 +268,10 @@ async function upload() {
   try {
     sentRunRules.value = outbound.value && runRules.value;
     const extras = outbound.value ? [runRules.value, ownerId.value] : [];
-    batch.value = (await POST_Import(file.value, ...extras)).data;
+    if (preview.value) {
+      sentMapping.value = mappingPayload(preview.value.columns, mapping.value);
+      batch.value = (await POST_Import(file.value, extras[0], extras[1], sentMapping.value)).data;
+    } else batch.value = (await POST_Import(file.value, ...extras)).data;
   } catch (err) {
     return fail(err);
   }
@@ -211,7 +304,10 @@ onMounted(() => {
     ownerId.value = null;
   });
 });
-onBeforeUnmount(() => clearTimeout(timer));
+onBeforeUnmount(() => {
+  clearTimeout(timer);
+  clearTimeout(refreshTimer);
+});
 </script>
 
 <style scoped>

@@ -45,6 +45,12 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- Leads panel, Import (U17, django-leads with `imports/preview/`): a check step between the file and the import —
+  every column of the file with the Sales CRM field it goes to, how sure the proposal is (Sure / Check it / Not
+  recognised, with why), sample values and the first rows as the CRM would store them; each field can be changed or
+  the column skipped, and Import sends the approved mapping. Two columns on one field or no domain / website / e-mail
+  column keep Import disabled. The report says where each column went. `.xlsx` files are accepted beside `.csv`; file
+  errors read in words (en + pl). An older backend imports straight away, as before.
 - Leads panel, Review on a phone: the first draft says once, above the card, that it can be swiped — "← Skip" and
   "Send →" with Got it (en + pl). Got it or the first swipe hides it for good in that browser; a desk never shows it.
 - Leads panel, Review: Skip can be undone — an Undo button beside "Skipped — this mail will not be sent" for 4 s

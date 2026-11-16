@@ -21,7 +21,7 @@ emporium page objects (`src/entirius_tests/cms_pages/`) — rename both together
 
 Desktop screens (≥ 1024 px; below that `DesktopOnly.vue` shows "Open on a desktop"): `/leads/board` (stage columns,
 drag or the card's stage select → `companies/<id>/transition/`, refused move snaps back; rule badges from
-`GET rules/` — the stages payload carries none), `/leads/import` (`POST imports/`, polls the batch).
+`GET rules/` — the stages payload carries none), `/leads/import` (U17: `POST imports/preview/` → the column mapping, then `POST imports/` with `mapping`; polls the batch).
 Settings (`meta.page`: full width, one scroller, no DesktopOnly wall; every section on PageLayout + PageHeader, its tables DataTables):
 `/leads/settings` lists the sections, each its own route — `settings/stages` (renames and moves wait for the header Save; reorder = `PATCH stages/<id>/ {order}`
 per moved stage — there is no bulk order endpoint; delete 409 inline), `settings/templates` (+ `/:id`),
@@ -317,6 +317,17 @@ One rule: the same thing looks the same everywhere.
 - **Import** (leads ≥ 0.5.0): Owner (`owner_id`, pre-set to the caller, empty = no owner), the custom-field columns
   (`attr.<key>`, `contact.attr.<key>`), the report's `ignored_columns` and `automation_started_count` (each line only
   when the API sends it); the way back below 1024 px and the crumbs go to Companies.
+- **Import, column mapping** (U17, django-leads with `imports/preview/`): the file (`.xlsx` or `.csv`) goes to
+  `POST imports/preview/` first; `ImportMapping.vue` shows one row per file column — name, up to three samples, the
+  field select (Skip, then the company, contact and custom fields from the response's `fields`; built-in fields named
+  in the UI language by key, custom ones by their label) and the server's `level` as Sure / Check it / Not recognised
+  with its reason or source (`views/Leads/columnMapping.js`). A changed field is the user's (Sure); 400 ms after a
+  change the rows come again from `POST imports/preview/` with `mapping` (not while two columns share a field). Two
+  columns on one field, or no column for the domain, website or e-mail, keep Import disabled and say why. Import =
+  `POST imports/` with the same file and the mapping of every column (`{column: field | "ignore"}`); the report adds
+  "Where the columns went" from the batch's `column_mapping`. A 400 reads by its `details[0].issue`. A backend without
+  the preview (404 / 405) imports the file straight away, as before. Read-only (viewer): no Check / Import, the field
+  selects disabled.
 - **Reports**: the first card is the Funnel — per stage "% of the first stage" = entered ÷ the first stage's entered.
 - **Sending health**: a rate over its limit carries the warning badge also below the minimum sample and on the
   channel line; the thresholds say "(%)".
