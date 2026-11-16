@@ -27,6 +27,7 @@ describe("Leads CRM routing and access", () => {
     ["/leads/companies/7?tab=tasks", "/crm/companies/7?tab=tasks"],
     ["/leads/companies?stage=won&page=2", "/crm/companies?stage=won&page=2"],
     ["/leads/settings/templates/3", "/crm/settings/templates/3"],
+    ["/leads/companies/a%20b%3Fc?tab=tasks#notes", "/crm/companies/a%20b%3Fc?tab=tasks#notes"],
   ])("the old address %s redirects to %s, path and query kept", async (from, to) => {
     await router.push(from);
     expect(router.currentRoute.value.fullPath).toBe(to);

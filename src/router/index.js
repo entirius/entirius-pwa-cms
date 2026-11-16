@@ -1286,7 +1286,7 @@ const routes = [
   // The panel was /leads/… before it was called CRM: every old address keeps working (path, query and hash carry over)
   {
     path: "/leads/:rest(.*)?",
-    redirect: (to) => ({ path: `/crm/${to.params.rest || ""}`, query: to.query, hash: to.hash }),
+    redirect: (to) => ({ path: to.path.replace(/^\/leads/, "/crm"), query: to.query, hash: to.hash }),
   },
   { path: "/communicator", redirect: "/crm/settings" },
   { path: "/communicator/templates", redirect: "/crm/settings/templates" },
