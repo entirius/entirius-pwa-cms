@@ -29,6 +29,24 @@
         <IconButton class="show-mobile" mutates icon="check" size="sm" :label="$t('leads.task.mark_done')" data-testid="task-done-icon" @click.stop="openDialog('done', row)" />
       </template>
     </DataTable>
+    <!-- U5: the company's cancelled tasks, in the shape of Today's Cancelled chip: who, when and why, and Reopen -->
+    <section v-if="cancelled.length" class="flex-column gap-2" :data-testid="`${prefix}-tasks-cancelled`">
+      <h3 class="fs-300 m-0">{{ $t("leads.tasks.cancelled_title") }}</h3>
+      <DataTable :columns="cancelledColumns" :rows="cancelledRows" row-key="id" :row-attrs="() => ({ 'data-testid': 'task-cancelled-row' })">
+        <template #cell-due="{ row }">
+          <StatusBadge :tone="row.due.tone" :label="row.due.label" />
+        </template>
+        <template #cell-title="{ row }">
+          <span class="flex-column gap-1">
+            <span class="line-through" :title="row.title">{{ row.title }}</span>
+            <span class="t-secondary fs-200" data-testid="task-cancelled-line">{{ row.cancelledLine }}</span>
+          </span>
+        </template>
+        <template #cell-actions="{ row }">
+          <BasicButton mutates size="sm" :loading="reopening === row.id" data-testid="task-reopen" @click.stop="reopen(row)">{{ $t("leads.task.reopen") }}</BasicButton>
+        </template>
+      </DataTable>
+    </section>
     <TaskDialog v-model:open="dialogOpen" :mode="dialogMode" :task="dialogTask" :company="company" :subject="subject" @saved="onSaved" />
   </BasicCard>
 </template>
@@ -36,12 +54,12 @@
 <script setup>
 import { computed, onMounted, ref } from "vue";
 import { t } from "@/i18n";
-import { GET_Tasks } from "@/api/todo/api";
+import { GET_Tasks, POST_TaskReopen } from "@/api/todo/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { useNotifyStore } from "@/stores/notify";
 import { companySubjectRef } from "@/utils/subjectRef";
 import TaskDialog from "../TaskDialog.vue";
-import { taskDue } from "../tasks";
+import { cancelledLine, taskDue } from "../tasks";
 
 // On a phone the due badge rides under the title and Mark done is an icon: the table fits 390 px (acceptance M3).
 // Company card → Tasks (django-todo, `subject_ref = leads.Company:<id>`): the open tasks, Add task, Log call, Mark
@@ -54,10 +72,13 @@ const props = defineProps({
 const emit = defineEmits(["count", "changed"]);
 const notify = useNotifyStore();
 const tasks = ref([]);
+const cancelled = ref([]);
 const loading = ref(true);
 const dialogOpen = ref(false);
 const dialogMode = ref("add");
 const dialogTask = ref(null);
+
+const CANCELLED_SHOWN = 20;
 
 const prefix = computed(() => (props.deal ? "deal" : "company"));
 const subject = computed(() =>
@@ -76,12 +97,33 @@ const columns = computed(() => [
   { key: "actions", label: "", actions: true },
 ]);
 const rows = computed(() => tasks.value.map((task) => ({ ...task, due: taskDue(task), kind: t(`leads.task_kind.${task.kind}`) })));
+const cancelledColumns = computed(() => [
+  { key: "due", label: t("leads.today.col_due"), width: "max-content", priority: 2 },
+  { key: "title", label: t("leads.today.col_task"), width: "1fr" },
+  { key: "actions", label: "", actions: true },
+]);
+const cancelledRows = computed(() => cancelled.value.map((task) => ({ ...task, due: taskDue(task), cancelledLine: cancelledLine(task) })));
 const rowAttrs = (row) => ({ "data-testid": "task-row", "data-task": row.id });
 
 function openDialog(mode, task) {
   dialogMode.value = mode;
   dialogTask.value = task && tasks.value.find((row) => row.id === task.id);
   dialogOpen.value = true;
+}
+
+// One Reopen at a time: a second click on the same row would meet "already open" and show an error after a success.
+const reopening = ref(null);
+async function reopen(task) {
+  if (reopening.value === task.id) return;
+  reopening.value = task.id;
+  try {
+    await POST_TaskReopen(task.id);
+    onSaved();
+  } catch (err) {
+    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.task.error")), type: "negative" });
+  } finally {
+    reopening.value = null;
+  }
 }
 
 // A task added, logged or closed is a History line: the card reads itself again (acceptance M13).
@@ -92,9 +134,13 @@ function onSaved() {
 
 async function load() {
   try {
-    const { data } = await GET_Tasks({ subject_ref: subject.value.ref, status: "open", page_size: 100 });
-    tasks.value = data.results;
-    emit("count", data.count);
+    const [open, gone] = await Promise.all([
+      GET_Tasks({ subject_ref: subject.value.ref, status: "open", page_size: 100 }),
+      GET_Tasks({ subject_ref: subject.value.ref, status: "cancelled", page_size: CANCELLED_SHOWN }),
+    ]);
+    tasks.value = open.data.results;
+    cancelled.value = gone.data.results || [];
+    emit("count", open.data.count);
   } catch (err) {
     notify.spawnNotification({ msg: extractApiMessage(err, t("leads.task.error")), type: "negative" });
   } finally {

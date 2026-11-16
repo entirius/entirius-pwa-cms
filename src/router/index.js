@@ -1065,12 +1065,12 @@ const routes = [
 
   // Leads panel (plan 13): Inbox as the left column, Review/Thread on the right at >= 1024 px
   {
-    path: "/leads",
+    path: "/crm",
     component: () =>
       import(/* webpackChunkName: "leads" */ "../views/Leads/index.vue"),
     meta: { requiresAuth: true, panel: "leads" },
     children: [
-      { path: "", redirect: "/leads/today" },
+      { path: "", redirect: "/crm/today" },
       // Leads CRM: the panel root — the day's tasks and what waits; its blocks gate themselves (no area, no module)
       {
         path: "today",
@@ -1083,6 +1083,13 @@ const routes = [
         name: "LeadsReports",
         component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/Reports.vue"),
         meta: { requiresAuth: true, titleKey: "leads.reports.title", panel: "leads", area: AREAS.LEADS_COMPANIES, module: "leads", moduleVersion: OUTBOUND, page: true, desktop: true },
+      },
+      // U11: the journal of every change in the CRM
+      {
+        path: "history",
+        name: "LeadsHistory",
+        component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/History.vue"),
+        meta: { requiresAuth: true, titleKey: "leads.journal.title", panel: "leads", area: AREAS.LEADS_COMPANIES, module: "leads", moduleVersion: OUTBOUND, page: true, desktop: true },
       },
       {
         path: "inbox",
@@ -1099,7 +1106,7 @@ const routes = [
         meta: { requiresAuth: true, titleKey: "leads.review.title", panel: "leads", area: AREAS.COMMUNICATOR_REVIEW, module: "communicator", noBottomBar: true },
       },
       // A thread by id — the screen of a conversation that belongs to no company, reached from the Inbox and the bell
-      { path: "conversations", redirect: "/leads/inbox" },
+      { path: "conversations", redirect: "/crm/inbox" },
       {
         path: "conversations/:id",
         name: "LeadsConversation",
@@ -1161,7 +1168,7 @@ const routes = [
       },
       // Settings (UX-002d): one hub for the configuration of leads and communicator — each section its own route,
       // shown only when its backend module is on; full width, reachable on a phone (`page`, no DesktopOnly wall)
-      { path: "stages", redirect: "/leads/settings/stages" },
+      { path: "stages", redirect: "/crm/settings/stages" },
       {
         path: "settings",
         name: "LeadsSettings",
@@ -1180,7 +1187,7 @@ const routes = [
         component: () => import(/* webpackChunkName: "leads" */ "../views/Leads/DealStages.vue"),
         meta: { requiresAuth: true, titleKey: "leads.deal_stages.title", panel: "leads", area: AREAS.LEADS_SETTINGS, module: "leads", moduleVersion: OUTBOUND, page: true, crumbParent: "LeadsSettings" },
       },
-      { path: "settings/lead-types", redirect: "/leads/settings/company-types" },
+      { path: "settings/lead-types", redirect: "/crm/settings/company-types" },
       {
         path: "settings/company-types",
         name: "LeadsLeadTypes",
@@ -1276,11 +1283,16 @@ const routes = [
   },
 
   // The Communicator panel became Leads → Settings (UX-002d): old deep links land on the same screens
-  { path: "/communicator", redirect: "/leads/settings" },
-  { path: "/communicator/templates", redirect: "/leads/settings/templates" },
-  { path: "/communicator/templates/:id", redirect: (to) => `/leads/settings/templates/${to.params.id}` },
-  { path: "/communicator/sequences", redirect: "/leads/settings/sequences" },
-  { path: "/communicator/settings", redirect: "/leads/settings/sending" },
+  // The panel was /leads/… before it was called CRM: every old address keeps working (path, query and hash carry over)
+  {
+    path: "/leads/:rest(.*)?",
+    redirect: (to) => ({ path: to.path.replace(/^\/leads/, "/crm"), query: to.query, hash: to.hash }),
+  },
+  { path: "/communicator", redirect: "/crm/settings" },
+  { path: "/communicator/templates", redirect: "/crm/settings/templates" },
+  { path: "/communicator/templates/:id", redirect: (to) => `/crm/settings/templates/${to.params.id}` },
+  { path: "/communicator/sequences", redirect: "/crm/settings/sequences" },
+  { path: "/communicator/settings", redirect: "/crm/settings/sending" },
 
   // Enrichment review panel (etap-06 / etap-06b): Proposals | Runs, two tabs of one screen
   {
@@ -1732,7 +1744,7 @@ const routes = [
   },
 ];
 
-// The panel whose root starts with the same first segment as `path` ("/leads/x" → leads), null outside every panel.
+// The panel whose root starts with the same first segment as `path` ("/crm/x" → leads), null outside every panel.
 function panelOfPath(path) {
   const segment = (value) => value.split("/")[1];
   return panels.find((panel) => segment(panel.root) === segment(path))?.idx ?? null;

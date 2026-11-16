@@ -11,9 +11,12 @@
     <div class="companies__body">
       <!-- C-18: the search takes its own full-width row, so its placeholder is never cut -->
       <div class="flex ai-ct jc-fe flex-wrap gap-3">
-        <BasicButton v-if="embedded" variant="primary" data-testid="companies-add" @click="addAction.onClick">
-          {{ addAction.label }}
-        </BasicButton>
+        <!-- U19: the Inbox column has no PageLayout — the button reads the companies area itself, as the list does -->
+        <ReadonlyArea v-if="embedded" :area="AREAS.LEADS_COMPANIES">
+          <BasicButton variant="primary" mutates data-testid="companies-add" @click="addAction.onClick">
+            {{ addAction.label }}
+          </BasicButton>
+        </ReadonlyArea>
         <label class="companies__search">
           <span class="visually-hidden">{{ $t("leads.board.search") }}</span>
           <ReadonlyOff>
@@ -64,7 +67,8 @@ import PageLayout from "@/boots/PageLayout/index.vue";
 import { t } from "@/i18n";
 import { GET_Companies } from "@/api/leads/api";
 import { formatTime } from "@/utils/leadsTime";
-import { ReadonlyOff } from "@/composables/useReadonly";
+import { ReadonlyArea, ReadonlyOff } from "@/composables/useReadonly";
+import { AREAS } from "@/configs/areas";
 
 // Company list that works below 1024 px: the Leads entry when communicator (the Inbox) is absent, else the
 // Companies side of the Inbox column (`embedded`), next to the card it opened.
@@ -75,6 +79,7 @@ const addAction = computed(() => ({
   key: "add",
   label: t("leads.add.open"),
   role: "primary",
+  mutates: true,
   testid: "companies-add",
   onClick: () => router.push({ name: "LeadsCompanyNew" }),
 }));

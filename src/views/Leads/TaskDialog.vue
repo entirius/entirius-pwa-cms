@@ -39,6 +39,7 @@
           data-testid="task-company"
           @update:model-value="loadContacts"
         />
+        <p v-if="companyCount" class="task-dialog__count t-muted m-0" data-testid="task-company-count">{{ companyCount }}</p>
       </FormField>
       <FormField v-if="contacts.length" :label="$t('leads.task.contact')">
         <BasicSelect v-model="form.contactId" :options="contacts" clearable data-testid="task-contact" />
@@ -170,8 +171,16 @@ function dismissToasts() {
   (notify.notifications || []).filter((toast) => toast.type === "positive").forEach((toast) => notify.hideNotification(toast.uuid));
 }
 
-const findCompanies = async (search) =>
-  (await GET_Companies({ search, page: 1 })).data.results.map((row) => ({ value: String(row.id), label: row.name || row.domain, secondary: row.domain }));
+// U6: the caller's companies first (`mine_first`, ignored by an older leads); with nothing typed the hint says how
+// many of how many are shown, so a missing name reads as "type to search", not as "not there". A live value, so it is
+// a line under the picker, never a hint (docs/ui-rules.md: hints can be turned off).
+const companyCount = ref("");
+async function findCompanies(search) {
+  const { data } = await GET_Companies({ search, page: 1, mine_first: true });
+  const shown = data.results.length;
+  companyCount.value = !search && data.count > shown ? t("leads.task.company_hint", { shown, total: data.count }) : "";
+  return data.results.map((row) => ({ value: String(row.id), label: row.name || row.domain, secondary: row.domain }));
+}
 
 async function loadContacts(id) {
   picked.value = id ? { id: Number(id), name: form.companyName, contacts: [] } : null;
@@ -268,5 +277,9 @@ async function cancelTask() {
 <style scoped>
 .task-dialog__wide {
   grid-column: 1 / -1;
+}
+.task-dialog__count {
+  margin-top: var(--space-1);
+  font-size: var(--fs-200);
 }
 </style>

@@ -100,6 +100,15 @@ describe("ConfirmDialog holdSeconds", () => {
     document.body.innerHTML = "";
   });
 
+  it("confirmDisabled keeps the confirm off while it is set", async () => {
+    const wrapper = mount(ConfirmDialog, { props: { open: true, title: "t", confirmDisabled: true }, attachTo: document.body, global });
+    await nextTick();
+    expect(byTestId("confirm-dialog-confirm").disabled).toBe(true);
+    await wrapper.setProps({ confirmDisabled: false });
+    expect(byTestId("confirm-dialog-confirm").disabled).toBe(false);
+    wrapper.unmount();
+  });
+
   it("keeps the confirm disabled and counting down for holdSeconds after it opens", async () => {
     vi.useFakeTimers();
     const wrapper = mount(ConfirmDialog, {

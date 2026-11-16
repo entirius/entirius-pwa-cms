@@ -96,8 +96,9 @@
     <ConfirmDialog
       :open="approving.open"
       :title="approveTitle"
-      :message="$t('leads.approvals.approve_confirm')"
+      :message="approveMessage"
       :confirm-label="$t('leads.approvals.approve')"
+      :confirm-disabled="approveHeld.held === approving.ids.length"
       confirm-testid="approvals-approve-confirm"
       @confirm="submitApprove"
       @cancel="approving.open = false"
@@ -200,8 +201,15 @@ const logColumns = [
 
 const optionsOf = (keys, label = (key) => key) => keys.map((value) => ({ value, label: label(value) }));
 const channelOptions = computed(() => optionsOf(Object.keys(list.value.counts?.by_channel || {}), channelName));
+// U13: a mailbox reads as its address and owner (communicator `counts.mailboxes`); an older communicator gives ids only
+const mailboxOf = (id) => (list.value.counts?.mailboxes || []).find((mailbox) => String(mailbox.id) === String(id));
+const mailboxLabel = (id) => {
+  const mailbox = mailboxOf(id);
+  if (!mailbox) return id;
+  return mailbox.user_name ? `${mailbox.address} (${mailbox.user_name})` : mailbox.address;
+};
 const mailboxOptions = computed(() =>
-  optionsOf(Object.keys(list.value.counts?.by_mailbox || {}).filter((key) => key !== "none"))
+  optionsOf(Object.keys(list.value.counts?.by_mailbox || {}).filter((key) => key !== "none"), mailboxLabel)
 );
 const templateOptions = computed(() => optionsOf([...templates.value]));
 const ageOptions = AGES.map((hours, i) => ({ value: hours, label: t(`leads.approvals.age_${["1d", "3d", "7d"][i]}`) }));
@@ -239,6 +247,29 @@ const rejectConsequence = computed(() =>
 const approveTitle = computed(() => {
   const count = approving.ids.length;
   return t(`leads.approvals.approve_title_${pluralKey(count)}`, { count });
+});
+// U14: the drafts of a mailbox on hold (paused, switched off, needing a login) are refused at approval — the dialog
+// says so up front, per mailbox, and Approve is off when none of the drafts could go out.
+const approveHeld = computed(() => {
+  const byMailbox = new Map();
+  for (const id of approving.ids) {
+    const mailbox = mailboxOf(rows.value.find((row) => row.id === id)?.mailbox_id);
+    if (mailbox?.hold) byMailbox.set(mailbox, (byMailbox.get(mailbox) || 0) + 1);
+  }
+  const lines = [...byMailbox].map(([mailbox, count]) =>
+    t(`leads.approvals.held_line_${pluralKey(count)}`, {
+      mailbox: t(`leads.approvals.held_${mailbox.hold}`, { address: mailbox.address }),
+      count,
+    })
+  );
+  return { held: [...byMailbox.values()].reduce((sum, count) => sum + count, 0), lines };
+});
+const approveMessage = computed(() => {
+  const { held, lines } = approveHeld.value;
+  if (!held) return t("leads.approvals.approve_confirm");
+  const rest = approving.ids.length - held;
+  const tail = rest ? t(`leads.approvals.held_rest_${pluralKey(rest)}`, { count: rest }) : t("leads.approvals.held_all");
+  return [...lines, tail].join(" ");
 });
 const rejectActions = computed(() => [
   { key: "cancel", role: "secondary", label: t("common.cancel"), onClick: () => (rejecting.open = false) },
@@ -300,6 +331,14 @@ function submitApprove() {
   approving.open = false;
   return run("approve", approving.ids);
 }
+
+// U12: the "Give the reason" error goes as soon as the reason is typed
+watch(
+  () => rejecting.reason,
+  (reason) => {
+    if (reason.trim()) rejecting.error = "";
+  }
+);
 
 function askReject(ids) {
   Object.assign(rejecting, { open: true, ids, reason: "", error: "" });

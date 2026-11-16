@@ -91,14 +91,17 @@ describe("Leads → Deal card", () => {
   });
 
   // Plan 28: archive a closed deal, restore an archived one.
-  it("a closed deal: the more menu holds Archive only; Archive turns the card into the archived one", async () => {
+  // U7: Archive stands beside Reopen, no more menu on a closed deal.
+  it("a closed deal: Archive in sight before Reopen; Archive turns the card into the archived one", async () => {
     leads.GET_Deal.mockResolvedValue({ data: deal(STAGES[2], { archived_at: null }) });
     leads.POST_DealArchive.mockResolvedValue({ data: deal(STAGES[2], { archived_at: "2026-11-14T10:00:00Z" }) });
     const wrapper = await mounted();
     expect(byTestid(wrapper, "deal-reopen").exists()).toBe(true);
-    const menu = wrapper.findComponent({ name: "BasicMenu" });
-    expect(menu.props("items").map((item) => item.key)).toEqual(["archive"]);
-    menu.vm.$emit("select", { key: "archive" });
+    expect(byTestid(wrapper, "deal-more").exists()).toBe(false);
+    const html = wrapper.html();
+    expect(html.indexOf('data-testid="deal-archive"')).toBeGreaterThan(-1);
+    expect(html.indexOf('data-testid="deal-archive"')).toBeLessThan(html.indexOf('data-testid="deal-reopen"'));
+    await byTestid(wrapper, "deal-archive").trigger("click");
     await flushPromises();
     expect(leads.POST_DealArchive).toHaveBeenCalledWith(7);
     expect(notify.spawnNotification).toHaveBeenCalledWith({ msg: "Deal archived", type: "positive" });
@@ -131,7 +134,7 @@ describe("Leads → Deal card", () => {
     leads.GET_Deal.mockResolvedValue({ data: deal(STAGES[3], { archived_at: null }) });
     leads.POST_DealArchive.mockRejectedValue({ httpStatus: 409, response: { status: 409, data: { detail: "Only a won or lost deal can be archived" } } });
     const wrapper = await mounted();
-    wrapper.findComponent({ name: "BasicMenu" }).vm.$emit("select", { key: "archive" });
+    await byTestid(wrapper, "deal-archive").trigger("click");
     await flushPromises();
     expect(notify.spawnNotification).toHaveBeenCalledWith({ msg: "Only a won or lost deal can be archived", type: "negative" });
   });
@@ -140,6 +143,7 @@ describe("Leads → Deal card", () => {
     leads.GET_Deal.mockResolvedValue({ data: deal(STAGES[2], { archived_at: null }) });
     const closed = await mounted({ write: false });
     expect(byTestid(closed, "deal-more").exists()).toBe(false);
+    expect(byTestid(closed, "deal-archive").exists()).toBe(false);
     leads.GET_Deal.mockResolvedValue({ data: deal(STAGES[2], { archived_at: "2026-11-14T10:00:00Z" }) });
     const archived = await mounted({ write: false });
     expect(byTestid(archived, "deal-restore").exists()).toBe(false);
@@ -150,9 +154,24 @@ describe("Leads → Deal card", () => {
     const wrapper = await mounted();
     expect(byTestid(wrapper, "deal-lost-line").text()).toContain("Too expensive");
     expect(byTestid(wrapper, "deal-more").exists()).toBe(false);
+    expect(byTestid(wrapper, "deal-archive").exists()).toBe(false);
     expect(byTestid(wrapper, "deal-mark-won").exists()).toBe(false);
     await byTestid(wrapper, "deal-reopen").trigger("click");
     expect(leads.POST_DealTransition).toHaveBeenCalledWith(7, "qualified", "");
+  });
+
+  // U7: Back returns to the list as it was left (its tab and filters live in the address the history keeps).
+  it("Back goes back in the history when the card was opened from a page, else to Deals", async () => {
+    router.back = vi.fn();
+    window.history.replaceState({ back: "/crm/deals?archived=1&owner=all" }, "");
+    const opened = await mounted();
+    opened.findComponent({ name: "PageHeader" }).props("back")();
+    expect(router.back).toHaveBeenCalledTimes(1);
+    expect(router.push).not.toHaveBeenCalled();
+    window.history.replaceState({}, "");
+    const direct = await mounted();
+    direct.findComponent({ name: "PageHeader" }).props("back")();
+    expect(router.push).toHaveBeenCalledWith({ name: "LeadsDeals" });
   });
 
   it("delete asks first, then goes back to Deals", async () => {

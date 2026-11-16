@@ -67,6 +67,7 @@
           <ul v-if="company.activities.length" class="company__events flex-column gap-2 m-0" data-testid="company-events">
             <li v-for="activity in company.activities" :key="activity.id" data-testid="timeline-event">
               <span class="t-muted">{{ formatTime(activity.created_at) }}</span> {{ activityText(activity) }}
+              <span class="t-muted" data-testid="timeline-actor">· {{ activityActor(activity.actor) }}</span>
             </li>
           </ul>
         </section>
@@ -80,6 +81,7 @@
 import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { t } from "@/i18n";
+import { goBackTo } from "@/composables/useNav";
 import { GET_Attributes, GET_Company, GET_Stages, PATCH_Company, POST_Transition } from "@/api/leads/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { useIsDesktop } from "@/composables/useIsDesktop";
@@ -87,7 +89,7 @@ import { ReadonlyArea, usePageReadonly } from "@/composables/useReadonly";
 import { AREAS } from "@/configs/areas";
 import { useAccessStore } from "@/stores/access";
 import { useMuninStore } from "@/stores/munin";
-import { activityText } from "@/utils/leadsLabels";
+import { activityActor, activityText } from "@/utils/leadsLabels";
 import { outboundOn } from "@/utils/leadsOutbound";
 import { formatTime } from "@/utils/leadsTime";
 import { companySubjectRef } from "@/utils/subjectRef";
@@ -142,7 +144,8 @@ const composeOpen = ref(false);
 const taskCount = ref(null);
 const TAB_GATES = { tasks: () => tasksOn.value, deals: () => crm.value };
 const tabs = computed(() => TABS.filter((value) => TAB_GATES[value]?.() ?? true));
-const tabCount = (value) => ({ tasks: taskCount.value, deals: company.value?.deals?.open ?? null })[value] ?? null;
+const tabCount = (value) =>
+  ({ tasks: taskCount.value, deals: company.value?.deals?.open ?? null })[value] ?? null;
 const tab = computed(() => {
   if (tabs.value.includes(route.query.tab)) return route.query.tab;
   return isDesktop.value ? "overview" : "timeline";
@@ -158,8 +161,7 @@ const tabOptions = computed(() =>
 
 // Back goes where the person came from (Today, an Inbox row, a deal); a card opened by URL has no such place.
 function goBack() {
-  if (typeof router.options?.history?.state?.back === "string") return router.back();
-  router.push({ name: "LeadsCompanies" });
+  goBackTo(router, { name: "LeadsCompanies" }, { fromAnywhere: true });
 }
 
 function openTab(value) {

@@ -146,10 +146,11 @@ export function buildCrumbs(route, { panel, entry, parents = [], title }) {
 }
 
 // The back arrow goes to the last linked crumb: history back when that is where the user came from (keeps list
-// filters and paging), else a push (a deep link never leaves the app).
-export function goBackTo(router, target) {
+// filters and paging), else a push (a deep link never leaves the app). `fromAnywhere`: a card reached from several
+// places (Today, an Inbox row, a deal) goes back to whichever one the person came from.
+export function goBackTo(router, target, { fromAnywhere = false } = {}) {
   const back = window.history.state?.back;
-  if (back && back.split("?")[0] === router.resolve(target).path) router.back();
+  if (back && (fromAnywhere || back.split("?")[0] === router.resolve(target).path)) router.back();
   else router.push(target);
 }
 

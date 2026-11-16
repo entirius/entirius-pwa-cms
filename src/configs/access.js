@@ -161,8 +161,8 @@ export const panels = [
     idx: "leads",
     icon: "inbox",
     // Today (Leads CRM): the day's work; a user who cannot read it lands on the first readable entry
-    root: "/leads/today",
-    fallback: "/leads/companies",
+    root: "/crm/today",
+    fallback: "/crm/companies",
     labelKey: "panels.leads",
     descriptionKey: "panels.leads_desc",
     areas: [

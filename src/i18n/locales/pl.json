@@ -75,6 +75,7 @@
     "leads_do_not_contact": "Nie kontaktować",
     "leads_today": "Dziś",
     "leads_reports": "Raporty",
+    "leads_history": "Historia",
     "leads_deals": "Transakcje",
     "leads_deal_stages": "Etapy transakcji"
   },
@@ -604,7 +605,7 @@
     "promo_desc": "Kampanie promocyjne i zarządzanie rabatami",
     "pricefighter": "PriceFighter",
     "pricefighter_desc": "Konkurencyjne ceny — analiza luk, strategie, wsadowe zastosowanie",
-    "leads": "Leady",
+    "leads": "CRM",
     "leads_desc": "Skrzynka sprzedaży — przegląd szkiców, odpowiedzi, rozmowy z firmami",
     "communicator": "Communicator",
     "communicator_desc": "Szablony wiadomości, sekwencje follow-upów, polityka wysyłki i tryb kanału",
@@ -4213,7 +4214,7 @@
     "product": "Produkt",
     "applied_at": "Zastosowano",
     "mode_suggestion": "Sugestia",
-    "mode_authoritative": "Autorytatywny",
+    "mode_authoritative": "Tryb autorytatywny",
     "reason_ok": "Zgodnie ze strategią",
     "reason_in_band": "W paśmie tolerancji",
     "reason_strategy_scope": "Strategia nie pozwala na ten ruch",
@@ -4255,7 +4256,6 @@
     "scope_category_idx": "Kategoria",
     "scope_channel": "Kanał",
     "category": "Kategoria",
-    "mode_authoritative": "Tryb autorytatywny",
     "mode_v2_note": "Wymaga trybu autopilota",
     "confirm_delete_title": "Usuń regułę",
     "confirm_delete_rule": "Ta reguła cenowa zostanie trwale usunięta.",
@@ -4322,6 +4322,10 @@
       "accepted": "Zaakceptowano — {state}",
       "open_thread": "Rozmowa z firmą",
       "swipe_hint": "Przeciągnij w prawo, aby wysłać, w lewo — aby pominąć",
+      "swipe_intro_title": "Przesuń szkic, aby zdecydować",
+      "swipe_intro_left": "Pomiń",
+      "swipe_intro_right": "Wyślij",
+      "swipe_intro_ok": "Rozumiem",
       "error": "Akcja nie powiodła się — spróbuj ponownie",
       "conflict": "Ten szkic został już obsłużony — wczytuję kolejny",
       "refused": "Ta akcja nie dotyczy tego szkicu — pozostaje do przeglądu",
@@ -4341,6 +4345,7 @@
       "next_draft": "Następny szkic",
       "skip": "Pomiń",
       "skipped": "Pominięto — ta wiadomość nie zostanie wysłana",
+      "undo": "Cofnij",
       "handled_rejected": "Ten szkic pominięto — ta wiadomość nie zostanie wysłana.",
       "goes_soon": "wyjdzie w ciągu kilku minut"
     },
@@ -4559,7 +4564,7 @@
     },
     "import": {
       "title": "Import firm",
-      "hint": "Jeden wiersz na firmę, pierwszy wiersz nazywa kolumny. Istniejące domeny są dopasowywane, nie duplikowane; nieznane kolumny są pomijane.",
+      "hint": "Jeden wiersz na firmę, pierwszy wiersz nazywa kolumny. Po wybraniu pliku CRM proponuje, dokąd trafia każda kolumna, a Ty sprawdzasz to przed importem. Istniejące domeny są dopasowywane, nie duplikowane.",
       "upload": "Wyślij",
       "status": "Status",
       "counts": "utworzone: {created}, dopasowane: {matched}, pominięte: {skipped}",
@@ -4574,13 +4579,13 @@
       "after_title": "Po wysłaniu pliku",
       "after": "Każda firma trafia do pierwszego etapu tablicy. Dalej działają reguły etapu — audyt strony albo szkic czekający w skrzynce. Nic nie wychodzi bez Twojego przeglądu.",
       "sample": "Pobierz przykładowy plik CSV",
-      "choose": "Wybierz plik CSV",
+      "choose": "Wybierz plik (.xlsx lub .csv)",
       "no_file": "Nie wybrano jeszcze pliku",
       "run_rules": "Uruchom automatyzację dla nowych firm",
       "run_rules_note": "Każda nowa firma wchodzi w pierwszy etap i działają reguły tego etapu — szkice i audyty AI mogą ruszyć od razu i zużyć środki AI.",
       "after_rules": "Każda firma trafia do pierwszego etapu. Jego reguły działają tylko z zaznaczonym „Uruchom automatyzację”; w przeciwnym razie przenieś firmy na tablicy lub ręcznie.",
       "owner": "Opiekun",
-      "owner_hint": "Opiekun każdej nowej firmy z pliku; puste pole = bez opiekuna. Firmy, które już są w Leads, zachowują swojego.",
+      "owner_hint": "Opiekun każdej nowej firmy z pliku; puste pole = bez opiekuna. Firmy, które już są w CRM, zachowują swojego.",
       "no_owner": "Bez opiekuna",
       "column_attr": "{column} — {label} ({kind})",
       "ignored": "Pominięte kolumny: {list}",
@@ -4610,7 +4615,106 @@
         "no_stages": "kanał nie ma etapów — dodaj je w Ustawieniach → Etapy",
         "internal_error": "błąd po stronie serwera — spróbuj ponownie albo zapytaj administratora"
       },
-      "file": "Plik"
+      "file": "Plik",
+      "mapping": {
+        "title": "Sprawdź kolumny",
+        "hint": "Każda kolumna pliku trafia do jednego pola w CRM. Sprawdź propozycję, zmień pole, jeśli jest złe, albo pomiń kolumnę. Nic się nie zapisze, dopóki nie klikniesz Importuj.",
+        "col_column": "Kolumna w pliku",
+        "col_samples": "Przykładowe wartości",
+        "col_field": "Pole w CRM",
+        "col_confidence": "Propozycja",
+        "field_for": "Pole w CRM dla kolumny {column}",
+        "skip": "Pomiń tę kolumnę",
+        "group": {
+          "company": "Firma",
+          "contact": "Kontakt",
+          "company_custom": "Pole własne firmy",
+          "contact_custom": "Pole własne kontaktu"
+        },
+        "confidence": {
+          "sure": "Pewne",
+          "check": "Do sprawdzenia",
+          "unknown": "Nierozpoznane",
+          "skipped": "Pominięta"
+        },
+        "conflict": "wybrane też dla: {columns}",
+        "name_conflict": "Imię i nazwisko albo osobno imię i nazwisko: wybierz jedno.",
+        "conflicts": "Pola wybrane dla więcej niż jednej kolumny: {count}. Wybierz jedną kolumnę na pole, pozostałe pomiń.",
+        "preview_empty": "Żadna kolumna nie trafia jeszcze do CRM.",
+        "check": "Sprawdź kolumny",
+        "import": "Importuj",
+        "other_file": "Wybierz inny plik",
+        "result_title": "Dokąd trafiły kolumny",
+        "went": "{column} → {field}",
+        "went_skipped": "{column} → pominięta",
+        "failed": "Nie udało się odczytać pliku",
+        "file_summary": "{name}: wiersze {rows}, kolumny {columns}",
+        "col_row": "Wiersz",
+        "col_skip": "Co zrobi import",
+        "preview_title": "Pierwsze wiersze po mapowaniu",
+        "no_identity": "Wybierz kolumnę z domeną, stroną www albo adresem e-mail — bez niej nie da się rozróżnić firm.",
+        "no_name": "Żadna kolumna nie trafia do nazwy firmy: firmy dostaną nazwę od domeny.",
+        "field": {
+          "company_name": "Nazwa firmy",
+          "domain": "Domena",
+          "website": "Strona www",
+          "industry": "Branża",
+          "lead_type": "Typ firmy",
+          "origin": "Źródło",
+          "description": "Uwagi",
+          "full_name": "Imię i nazwisko (rozdzielane)",
+          "first_name": "Imię",
+          "last_name": "Nazwisko",
+          "email": "E-mail",
+          "phone": "Telefon",
+          "job_title": "Stanowisko",
+          "language": "Język",
+          "legal_basis": "Podstawa prawna"
+        },
+        "source": {
+          "exact": "dokładna nazwa kolumny",
+          "header": "rozpoznane po nazwie kolumny",
+          "custom_field": "pasuje do pola własnego",
+          "content": "rozpoznane po wartościach",
+          "user": "Twój wybór"
+        },
+        "reason": {
+          "unrecognised": "ani nazwa, ani wartości nie mówią, co to jest",
+          "duplicate_field": "pominięta: {column} lepiej pasuje do tego pola",
+          "no_crm_field": "wygląda na {concept}, ale CRM nie ma takiego pola — dodaj pole własne w Ustawieniach, żeby je zachować",
+          "empty_column": "kolumna jest pusta",
+          "user": "pominięta przez Ciebie"
+        },
+        "concept": {
+          "tax_id": "numer podatkowy (NIP / VAT)",
+          "regon": "numer REGON",
+          "krs": "numer KRS",
+          "street": "ulicę",
+          "city": "miasto",
+          "postal_code": "kod pocztowy",
+          "country": "kraj",
+          "employees": "liczbę pracowników",
+          "address": "adres",
+          "region": "region",
+          "revenue": "przychód",
+          "linkedin": "profil LinkedIn"
+        },
+        "issue": {
+          "REQUIRED": "Najpierw wybierz plik.",
+          "TOO_LARGE": "Plik jest za duży (limit to 20 MB; dla .xlsx liczy się też rozmiar po rozpakowaniu).",
+          "TOO_MANY_ROWS": "Plik ma więcej niż 100 000 wierszy — podziel go na mniejsze.",
+          "TOO_MANY_COLUMNS": "Plik ma za dużo kolumn — usuń te, których nie potrzebujesz.",
+          "UNSUPPORTED_FORMAT": "Ten typ pliku nie jest obsługiwany — zapisz go jako .xlsx lub .csv (stary .xls też trzeba zapisać jako .xlsx).",
+          "ENCODING": "Nie rozpoznano kodowania tekstu — zapisz plik jako CSV UTF-8 albo .xlsx.",
+          "UNREADABLE": "Nie da się odczytać pliku — może być uszkodzony.",
+          "NO_HEADER": "Plik jest pusty albo nie ma wiersza nagłówka.",
+          "INVALID_JSON": "Nie udało się wysłać mapowania kolumn — sprawdź kolumny jeszcze raz.",
+          "UNKNOWN_COLUMN": "Plik nie pasuje do sprawdzonych kolumn — sprawdź kolumny jeszcze raz.",
+          "UNKNOWN_FIELD": "Wybrane pole już nie istnieje — sprawdź kolumny jeszcze raz.",
+          "DUPLICATE_FIELD": "Dwie kolumny trafiają do tego samego pola — zostaw jedną.",
+          "NO_COMPANY_KEY": "Wybierz kolumnę z domeną, stroną www albo adresem e-mail."
+        }
+      }
     },
     "stages": {
       "title": "Etapy",
@@ -4675,7 +4779,8 @@
         "intel_empty": "Audyt strony niczego nie znalazł",
         "score": "Zaktualizowano ocenę",
         "task": "Zadanie",
-        "deal": "Szansa sprzedaży"
+        "deal": "Transakcja",
+        "settings": "Zmiana ustawień"
       },
       "msg": {
         "message_sent": "Wysłano wiadomość",
@@ -4731,7 +4836,7 @@
       "consent_ref": "Gdzie wyrażono zgodę",
       "save": "Dodaj firmę",
       "save_contact": "Zapisz kontakt",
-      "exists": "Już jest w Leads:",
+      "exists": "Już jest w CRM:",
       "company_saved": "Firma dodana — kontakt jeszcze niezapisany:"
     },
     "lead_types": {
@@ -4786,6 +4891,7 @@
       "unclear": "Niejasna"
     },
     "history": {
+      "event_draft_skipped": "Szkic pominięty",
       "needs_review": "Do sprawdzenia",
       "back_on": "Wraca {date}",
       "confidence": "pewność {n} %",
@@ -4814,7 +4920,8 @@
       "next_optout_possible": "Dalej: nic nie zostanie wysłane, dopóki nie potwierdzisz rezygnacji lub nie oznaczysz, że to nie rezygnacja",
       "next_stopped": "Dalej: sekwencja jest zatrzymana",
       "next_resumes": "Dalej: sekwencja wznowi się {date}",
-      "next_paused": "Dalej: sekwencja jest wstrzymana, dopóki jej nie wznowisz"
+      "next_paused": "Dalej: sekwencja jest wstrzymana, dopóki jej nie wznowisz",
+      "event_settings": "Zmiana ustawień: {fields}"
     },
     "problem": {
       "legal_footer": "Wiadomość nie ma stopki prawnej — ustaw stopkę w Ustawieniach → Ustawienia wysyłki",
@@ -4855,6 +4962,16 @@
       "approve_title_few": "Zatwierdzić {count} szkice?",
       "approve_title_many": "Zatwierdzić {count} szkiców?",
       "approve_confirm": "Wiadomość zostanie wysłana od razu.",
+      "held_paused": "Skrzynka {address} jest wstrzymana",
+      "held_disabled": "Skrzynka {address} jest wyłączona",
+      "held_needs_login": "Skrzynka {address} wymaga ponownego logowania",
+      "held_line_one": "{mailbox}: {count} zaznaczony szkic nie wyjdzie.",
+      "held_line_few": "{mailbox}: {count} zaznaczone szkice nie wyjdą.",
+      "held_line_many": "{mailbox}: {count} zaznaczonych szkiców nie wyjdzie.",
+      "held_rest_one": "Pozostały {count} wyjdzie od razu.",
+      "held_rest_few": "Pozostałe {count} wyjdą od razu.",
+      "held_rest_many": "Pozostałych {count} wyjdzie od razu.",
+      "held_all": "Nic z zaznaczonych nie wyjdzie: Zatwierdź jest nieaktywne, dopóki skrzynka nie zacznie wysyłać.",
       "approved_n_one": "Zatwierdzono {count} szkic.",
       "approved_n_few": "Zatwierdzono {count} szkice.",
       "approved_n_many": "Zatwierdzono {count} szkiców.",
@@ -4973,11 +5090,14 @@
       "window_7d": "7 dni",
       "channel": "Kanał",
       "mailboxes": "Konta pocztowe",
-      "col_sent": "Wysłane",
+      "col_sent_24h": "Wysłane (ostatnie 24 h)",
+      "col_sent_7d": "Wysłane (ostatnie 7 dni)",
       "col_bounces": "Twarde odbicia",
       "col_optouts": "Rezygnacje",
       "col_complaints": "Skargi",
-      "col_today": "Wysłane dziś",
+      "col_today": "Wysłane dziś (od 00:00)",
+      "windows_note": "„{sent}” liczy wstecz od teraz; „Wysłane dziś” liczy dzień kalendarzowy kanału od 00:00 (strefa {timezone}).",
+      "windows_note_no_tz": "„{sent}” liczy wstecz od teraz; „Wysłane dziś” liczy dzień kalendarzowy kanału od 00:00.",
       "policy": "Automatyczne wstrzymanie",
       "enabled": "Wstrzymuj konto automatycznie",
       "window_hours": "Okno (godziny)",
@@ -5127,6 +5247,7 @@
       "chip_upcoming": "Nadchodzące",
       "chip_none": "Bez terminu",
       "chip_done": "Zrobione",
+      "chip_cancelled": "Anulowane",
       "owner": "Opiekun",
       "owner_me": "Moje",
       "owner_none": "Bez opiekuna",
@@ -5142,7 +5263,8 @@
       "empty_list": "Brak zadań",
       "no_tasks_module": "Zadania nie są dostępne w tej instalacji",
       "nothing": "Nie ma tu nic do pokazania",
-      "empty_done": "Nic jeszcze nie zrobiono — zadanie trafia tutaj, gdy oznaczysz je jako zrobione"
+      "empty_done": "Nic jeszcze nie zrobiono — zadanie trafia tutaj, gdy oznaczysz je jako zrobione",
+      "empty_cancelled": "Nic nie anulowano — zadanie trafia tutaj, gdy je anulujesz"
     },
     "task": {
       "add": "Dodaj zadanie",
@@ -5158,6 +5280,7 @@
       "due": "Termin",
       "company": "Firma",
       "company_search": "Szukaj firmy",
+      "company_hint": "Wpisz nazwę, aby wyszukać — pokazano {shown} z {total}",
       "contact": "Kontakt",
       "owner": "Opiekun",
       "note": "Notatka",
@@ -5208,7 +5331,9 @@
     },
     "tasks": {
       "open_title": "Otwarte zadania",
-      "empty": "Brak otwartych zadań"
+      "empty": "Brak otwartych zadań",
+      "cancelled_title": "Anulowane",
+      "cancelled_by": "Anulowane przez {who} · {date}"
     },
     "compose": {
       "reply_unavailable": "Nie udało się otworzyć odpowiedzi — spróbuj ponownie.",
@@ -5250,7 +5375,7 @@
       "option_label": "Etykieta",
       "add_option": "Dodaj opcję",
       "remove_option": "Usuń opcję",
-      "key_hint": "Nie można zmienić po zapisie",
+      "key_hint": "Wypełnia się z etykiety: małe litery, cyfry i _. Nie można zmienić po zapisie",
       "kind_locked": "Rodzaju nie można zmienić: są zapisane wartości",
       "empty": "Brak pól własnych: {entity}",
       "delete_confirm": "Usunąć pole {label}? Usunąć można tylko pole, które nie ma jeszcze żadnej wartości i którego nie używa żadna reguła ani ocena. Aby przestać używać pola z wartościami, wyłącz „Aktywne”: wartości zostają zapisane.",
@@ -5429,6 +5554,7 @@
       "none_mine": "Nie masz otwartych transakcji",
       "show_all_deals": "Pokaż wszystkie transakcje",
       "none_archived": "Brak zarchiwizowanych transakcji",
+      "tab_active": "Aktywne",
       "archived": "Zarchiwizowane",
       "archived_title": "Zarchiwizowane transakcje",
       "none_in_chip": "Brak transakcji w „{kind}”",
@@ -5532,6 +5658,34 @@
         "email": "Podaj poprawny adres e-mail",
         "format": "Użyj tylko znaków podanych w podpowiedzi",
         "number": "Podaj liczbę z dozwolonego zakresu"
+      }
+    },
+    "journal": {
+      "title": "Historia",
+      "person": "Osoba",
+      "kind": "Rodzaj",
+      "period": "Okres",
+      "company": "Firma",
+      "company_search": "Szukaj firmy",
+      "col_time": "Kiedy",
+      "col_who": "Kto",
+      "col_what": "Co",
+      "col_on": "Na czym",
+      "col_reason": "Powód",
+      "empty": "W CRM nic się jeszcze nie wydarzyło",
+      "none_match": "Żaden wpis nie pasuje do filtrów",
+      "system": "System",
+      "import": "Import",
+      "channel": "Ustawienia",
+      "setting": {
+        "resume_days": "dni do ponownego kontaktu",
+        "default_currency": "waluta transakcji"
+      },
+      "reason": {
+        "reply_class": "Odpowiedź: {class}",
+        "wrong_person": "Niewłaściwa osoba",
+        "opted_out": "Kontakt zrezygnował",
+        "optout_confirmed": "Rezygnacja potwierdzona"
       }
     }
   },
@@ -5915,7 +6069,7 @@
       "django_checkout": "Zamówienia i koszyk",
       "django_returns": "Zwroty",
       "django_contact_forms": "Formularze",
-      "django_leads": "Leady",
+      "django_leads": "CRM",
       "django_communicator": "Komunikator",
       "django_siteintel": "Analiza stron",
       "django_notifications": "Powiadomienia",

@@ -2,7 +2,7 @@ import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 
-const api = vi.hoisted(() => ({ POST_Import: vi.fn(), GET_Import: vi.fn(), GET_AssignableUsers: vi.fn(), GET_Attributes: vi.fn() }));
+const api = vi.hoisted(() => ({ POST_Import: vi.fn(), POST_ImportPreview: vi.fn(), GET_Import: vi.fn(), GET_AssignableUsers: vi.fn(), GET_Attributes: vi.fn() }));
 vi.mock("@/api/leads/api", () => api);
 const push = vi.hoisted(() => vi.fn());
 vi.mock("vue-router", () => ({ useRouter: () => ({ push }) }));
@@ -23,6 +23,9 @@ function mountWithFile() {
 // The views read the munin store (the outbound guards): an empty one = an older backend.
 beforeEach(() => {
   setActivePinia(createPinia());
+  // An older backend has no preview (404): the file goes straight to the import, as before U17.
+  api.POST_ImportPreview.mockReset();
+  api.POST_ImportPreview.mockRejectedValue({ response: { status: 404 } });
   api.GET_AssignableUsers.mockResolvedValue([{ id: 7, username: "anna", name: "Anna Kowalska" }]);
   api.GET_Attributes.mockImplementation((entity) =>
     Promise.resolve({ data: { results: entity === "company" ? [{ key: "size", label: "Size", kind: "number" }, { key: "old", label: "Old", kind: "text", is_active: false }] : [{ key: "role", label: "Role", kind: "select" }] } })
@@ -40,12 +43,12 @@ describe("Leads Import", () => {
     api.GET_Import.mockReset();
     api.GET_Import.mockResolvedValueOnce({ data: { id: 5, status: "running" } }).mockRejectedValue({ response: { data: { detail: "gone" } } });
     const wrapper = await mountWithFile();
-    await wrapper.find('[data-testid="import-upload"]').trigger("click");
+    await wrapper.find('[data-testid="import-check"]').trigger("click");
     await flushPromises();
     await vi.advanceTimersByTimeAsync(2000);
     await flushPromises();
     expect(wrapper.find('[data-testid="import-error"]').text()).toBe("gone");
-    expect(wrapper.find('[data-testid="import-upload"]').attributes("disabled")).toBe("false");
+    expect(wrapper.find('[data-testid="import-check"]').attributes("disabled")).toBe("false");
     await vi.advanceTimersByTimeAsync(10000);
     expect(api.GET_Import).toHaveBeenCalledTimes(2);
   });
@@ -59,7 +62,7 @@ describe("Leads Import", () => {
     const input = wrapper.find('[data-testid="import-file"]');
     Object.defineProperty(input.element, "files", { value: [file] });
     await input.trigger("change");
-    await wrapper.find('[data-testid="import-upload"]').trigger("click");
+    await wrapper.find('[data-testid="import-check"]').trigger("click");
     await flushPromises();
     expect(api.POST_Import).toHaveBeenCalledWith(file);
     expect(wrapper.findComponent('[data-testid="import-status"]').attributes("label")).toBe("Done");
@@ -90,7 +93,7 @@ describe("Leads Import", () => {
     const wrapper = await mountWithFile();
     expect(wrapper.find('[data-testid="import-run-rules-note"]').text()).toBe("leads.import.run_rules_note");
     wrapper.findComponent('[data-testid="import-run-rules"]').vm.$emit("update:modelValue", true);
-    await wrapper.find('[data-testid="import-upload"]').trigger("click");
+    await wrapper.find('[data-testid="import-check"]').trigger("click");
     await flushPromises();
     expect(api.POST_Import.mock.calls.at(-1)[1]).toBe(true);
   });
@@ -108,7 +111,7 @@ describe("Leads Import", () => {
       'leads.import.column_attr::{"column":"attr.size","label":"Size","kind":"Number"}',
       'leads.import.column_attr::{"column":"contact.attr.role","label":"Role","kind":"Choice"}',
     ]);
-    await wrapper.find('[data-testid="import-upload"]').trigger("click");
+    await wrapper.find('[data-testid="import-check"]').trigger("click");
     await flushPromises();
     expect(api.POST_Import.mock.calls.at(-1).slice(1)).toEqual([false, 7]);
   });
@@ -121,7 +124,7 @@ describe("Leads Import", () => {
     const wrapper = await mountWithFile();
     await flushPromises();
     expect(wrapper.findComponent('[data-testid="import-owner"]').props("modelValue")).toBe(null);
-    await wrapper.find('[data-testid="import-upload"]').trigger("click");
+    await wrapper.find('[data-testid="import-check"]').trigger("click");
     await flushPromises();
     expect(api.POST_Import.mock.calls.at(-1).slice(1)).toEqual([false, null]);
   });
@@ -133,13 +136,13 @@ describe("Leads Import", () => {
     api.GET_Import.mockResolvedValue({ data: batch });
     const wrapper = await mountWithFile();
     wrapper.findComponent('[data-testid="import-run-rules"]').vm.$emit("update:modelValue", true);
-    await wrapper.find('[data-testid="import-upload"]').trigger("click");
+    await wrapper.find('[data-testid="import-check"]').trigger("click");
     await flushPromises();
     expect(wrapper.get('[data-testid="import-ignored"]').text()).toBe('leads.import.ignored::{"list":"phone, notes"}');
     expect(wrapper.get('[data-testid="import-automation"]').text()).toBe('leads.import.automation_started::{"count":2}');
     api.GET_Import.mockResolvedValue({ data: { id: 4, status: "done", report: [] } });
     const older = await mountWithFile();
-    await older.find('[data-testid="import-upload"]').trigger("click");
+    await older.find('[data-testid="import-check"]').trigger("click");
     await flushPromises();
     expect(older.find('[data-testid="import-ignored"]').exists()).toBe(false);
     expect(older.find('[data-testid="import-automation"]').exists()).toBe(false);
@@ -157,7 +160,7 @@ describe("Leads Import", () => {
     api.POST_Import.mockResolvedValue({ data: { id: 4, status: "failed", report } });
     api.GET_Import.mockResolvedValue({ data: { id: 4, status: "failed", report } });
     const wrapper = await mountWithFile();
-    await wrapper.find('[data-testid="import-upload"]').trigger("click");
+    await wrapper.find('[data-testid="import-check"]').trigger("click");
     await flushPromises();
     const lines = wrapper.findAll('[data-testid="import-rows"] li').map((li) => li.text());
     expect(lines).toEqual([

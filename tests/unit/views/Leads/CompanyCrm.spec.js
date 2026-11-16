@@ -6,7 +6,7 @@ const leads = vi.hoisted(() => ({
   PATCH_Company: vi.fn(),
   POST_Score: vi.fn(),
 }));
-const todo = vi.hoisted(() => ({ GET_Tasks: vi.fn() }));
+const todo = vi.hoisted(() => ({ GET_Tasks: vi.fn(), POST_TaskReopen: vi.fn() }));
 vi.mock("@/api/leads/api", () => leads);
 vi.mock("@/api/todo/api", () => todo);
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification: vi.fn() }) }));
@@ -113,6 +113,43 @@ describe("Company card → Tasks", () => {
     expect(wrapper.emitted("count")[0]).toEqual([1]);
     expect(byTestid(wrapper, "company-add-task").exists()).toBe(true);
     expect(byTestid(wrapper, "company-log-call").exists()).toBe(true);
+  });
+
+  // U5: the cancelled tasks of the company under the open ones, with who, when and why
+  it("lists the cancelled tasks under the open ones", async () => {
+    todo.GET_Tasks.mockImplementation(({ status }) =>
+      Promise.resolve({
+        data:
+          status === "cancelled"
+            ? { count: 1, results: [{ id: 3, title: "Demo", kind: "meeting", status: "cancelled", done_by: "editor", done_at: null, outcome: "duplicate" }] }
+            : { count: 0, results: [] },
+      })
+    );
+    const wrapper = await mount(TasksTab, { company: company() }, { area: "todo.tasks" });
+    expect(todo.GET_Tasks).toHaveBeenCalledWith({ subject_ref: "leads.Company:5", status: "cancelled", page_size: 20 });
+    expect(byTestid(wrapper, "task-cancelled-row").text()).toContain("Demo");
+    expect(byTestid(wrapper, "task-cancelled-line").text()).toBe("Cancelled by editor — duplicate");
+    expect(wrapper.emitted("count")[0]).toEqual([0]);
+    // the same shape as Today's Cancelled chip: struck title, Reopen
+    expect(byTestid(wrapper, "task-cancelled-row").find(".line-through").exists()).toBe(true);
+    todo.POST_TaskReopen.mockResolvedValue({});
+    await byTestid(wrapper, "task-reopen").trigger("click");
+    expect(todo.POST_TaskReopen).toHaveBeenCalledWith(3);
+  });
+
+  it("a double click on Reopen asks the server once", async () => {
+    todo.GET_Tasks.mockImplementation(({ status }) =>
+      Promise.resolve({ data: status === "cancelled" ? { count: 1, results: [{ id: 3, title: "Demo", kind: "meeting", status: "cancelled", done_by: "editor", done_at: null, outcome: "duplicate" }] } : { count: 0, results: [] } })
+    );
+    const wrapper = await mount(TasksTab, { company: company() }, { area: "todo.tasks" });
+    let done;
+    todo.POST_TaskReopen.mockClear();
+    todo.POST_TaskReopen.mockReturnValue(new Promise((resolve) => (done = resolve)));
+    await byTestid(wrapper, "task-reopen").trigger("click");
+    await byTestid(wrapper, "task-reopen").trigger("click");
+    expect(todo.POST_TaskReopen).toHaveBeenCalledTimes(1);
+    done({});
+    await flushPromises();
   });
 
   it("the task text and Edit open the edit dialog", async () => {

@@ -63,6 +63,9 @@ export function formatTime(iso, now = new Date()) {
   return day === dayKey(now, timeZone) ? time : `${day.slice(8, 10)}.${day.slice(5, 7)} ${time}`;
 }
 
+// A date picker range as text: fixed, so the Polish locale (" do ") never changes what is parsed.
+export const RANGE_SEPARATOR = " – ";
+
 // The one date and the one date-time of every Leads screen: the UI locale's short form (what BasicDatePicker shows,
 // "13/11/2026" EN, "13.11.2026" PL), on the channel's calendar; empty for a missing or invalid timestamp.
 export const formatLeadsDay = (iso) => formatDate(iso, { timeStyle: undefined, timeZone: channelTimeZone.value });

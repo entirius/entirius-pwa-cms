@@ -207,7 +207,7 @@ Catalogue: `#actions` (`#basic-button`, `#icon-button`, `#action-bar`, `#floatin
   Other attributes (`data-testid`) land on the `role="dialog"` element.
 - **`ConfirmDialog`** — on BasicModal `sm`: `v-model:open`, `title` (or slot), `message` (or the default slot),
   `confirmLabel` / `cancelLabel` (default „Akceptuj” / „Anuluj”), `tone` `default` (primary confirm) · `danger`
-  (`danger-solid`), `loading` (spinner, Esc blocked), `discardLabel` (a third `danger` action for unsaved changes);
+  (`danger-solid`), `loading` (spinner, Esc blocked), `confirmDisabled` (the confirm button stays off while the dialog explains why, e.g. the Approvals dialog when no selected draft could go out), `discardLabel` (a third `danger` action for unsaved changes);
   emits `confirm`, `cancel` (Cancel, close, Esc, backdrop), `discard`. The caller closes it. Test ids
   `confirm-dialog-confirm` / `-cancel` / `-discard`; `confirmTestid` renames the confirm one (a page-object contract).
 - **`BasicMenu`** — `trigger` slot (the menu sets the control's `aria-haspopup`, `aria-expanded`, `aria-controls`

@@ -6,7 +6,7 @@ import { useMuninStore } from "@/stores/munin";
 import BottomTabBar from "@/boots/BottomTabBar/index.vue";
 
 vi.mock("vue-router", () => ({
-  useRoute: () => ({ path: "/leads/inbox", meta: { panel: "leads" }, params: {}, query: {} }),
+  useRoute: () => ({ path: "/crm/inbox", meta: { panel: "leads" }, params: {}, query: {} }),
   useRouter: () => null,
 }));
 
@@ -39,34 +39,34 @@ describe("Leads nav (UX-002d: one panel, Settings instead of four entries)", () 
 
   // Leads CRM: Today · Inbox · Companies always; Approvals and Reports need 0.5.0; Settings is desk work
   it("desktop: Today · Inbox · Companies · Settings; there is no Communicator panel nav", () => {
-    expect(routesFor("leads", true)).toEqual(["/leads/today", "/leads/inbox", "/leads/companies", "/leads/settings"]);
+    expect(routesFor("leads", true)).toEqual(["/crm/today", "/crm/inbox", "/crm/companies", "/crm/settings"]);
     expect(routesFor("communicator", true)).toEqual([]);
   });
 
   it("phone: Today · Inbox · Companies in the bottom tab bar, Settings is not there", () => {
-    expect(routesFor("leads", false)).toEqual(["/leads/today", "/leads/inbox", "/leads/companies"]);
+    expect(routesFor("leads", false)).toEqual(["/crm/today", "/crm/inbox", "/crm/companies"]);
     setViewport(false);
     const links = mountTabBar().findAll("a").map((a) => a.attributes("data-to"));
-    expect(links).toEqual(["/leads/today", "/leads/inbox", "/leads/companies"]);
+    expect(links).toEqual(["/crm/today", "/crm/inbox", "/crm/companies"]);
   });
 
   it("desktop: Settings joins the entries; Board and Import are Companies' page actions, not entries", () => {
     setViewport(true);
     const links = mountTabBar().findAll("a").map((a) => a.attributes("data-to"));
-    expect(links).toEqual(["/leads/today", "/leads/inbox", "/leads/companies", "/leads/settings"]);
+    expect(links).toEqual(["/crm/today", "/crm/inbox", "/crm/companies", "/crm/settings"]);
   });
 
-  it("Leads CRM 0.5.0: Deals is the fourth entry, also in the phone bar; Approvals and Reports are desk only", () => {
+  it("Leads CRM 0.5.0: Deals is the fourth entry, also in the phone bar; Approvals, Reports and History are desk only", () => {
     const crm = (isDesktop) =>
       filterNavRoutes(buildNavRoutes(), { panel: "leads", isDesktop, isModuleEnabled: () => true, isModuleAtLeast: () => true }).map((r) => r.route);
-    expect(crm(false)).toEqual(["/leads/today", "/leads/inbox", "/leads/companies", "/leads/deals"]);
-    expect(crm(true)).toEqual(["/leads/today", "/leads/inbox", "/leads/companies", "/leads/deals", "/leads/approvals", "/leads/reports", "/leads/settings"]);
+    expect(crm(false)).toEqual(["/crm/today", "/crm/inbox", "/crm/companies", "/crm/deals"]);
+    expect(crm(true)).toEqual(["/crm/today", "/crm/inbox", "/crm/companies", "/crm/deals", "/crm/approvals", "/crm/reports", "/crm/history", "/crm/settings"]);
   });
 
   it("an entry whose backend module is off is not listed", () => {
-    expect(routesFor("leads", true, new Set(["leads"]))).toEqual(["/leads/today", "/leads/companies", "/leads/settings"]);
-    expect(routesFor("leads", false, new Set(["leads"]))).toEqual(["/leads/today", "/leads/companies"]);
-    expect(routesFor("leads", false, new Set(["communicator"]))).toEqual(["/leads/today", "/leads/inbox"]);
+    expect(routesFor("leads", true, new Set(["leads"]))).toEqual(["/crm/today", "/crm/companies", "/crm/settings"]);
+    expect(routesFor("leads", false, new Set(["leads"]))).toEqual(["/crm/today", "/crm/companies"]);
+    expect(routesFor("leads", false, new Set(["communicator"]))).toEqual(["/crm/today", "/crm/inbox"]);
   });
 });
 
@@ -86,9 +86,9 @@ describe("Enricher nav", () => {
         isModuleEnabled: (key) => LEADS_MODULES.has(key),
         isModuleAtLeast: () => atLeast,
       });
-    const approvals = filter(true).find((entry) => entry.route === "/leads/approvals");
+    const approvals = filter(true).find((entry) => entry.route === "/crm/approvals");
     expect(approvals).toMatchObject({ badge: "approvals", desktopOnly: true });
-    expect(filter(false).map((entry) => entry.route)).not.toContain("/leads/approvals");
-    expect(filter(true, false).map((entry) => entry.route)).not.toContain("/leads/approvals");
+    expect(filter(false).map((entry) => entry.route)).not.toContain("/crm/approvals");
+    expect(filter(true, false).map((entry) => entry.route)).not.toContain("/crm/approvals");
   });
 });

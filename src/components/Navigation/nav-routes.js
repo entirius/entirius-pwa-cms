@@ -9,7 +9,7 @@
 // Keeping the list here (not inline in Navigation) lets both consumers agree on the count without
 // duplicating the route table.
 
-// The sections of Leads → Settings (the hub behind the one "/leads/settings" entry): nav glyphs like the entries
+// The sections of Leads → Settings (the hub behind the one "/crm/settings" entry): nav glyphs like the entries
 // below, not icons.js meanings; `module` hides a section whose backend is off.
 export const LEADS_SETTINGS_GROUPS = ["sales", "automation", "sending"];
 
@@ -342,47 +342,47 @@ export function buildNavRoutes() {
     },
     {
       // Leads CRM: the day's work (tasks, drafts and replies waiting) — the panel root
-      route: "/leads/today",
+      route: "/crm/today",
       labelKey: "nav.leads_today",
       icon: "calendar-day",
       query: {},
       app: ["leads"],
-      activeOn: ["/leads/today"],
+      activeOn: ["/crm/today"],
     },
     {
-      route: "/leads/inbox",
+      route: "/crm/inbox",
       labelKey: "nav.leads_inbox",
       icon: "inbox",
       query: {},
       app: ["leads"],
       requiresModule: "communicator",
       // Review and a thread without a company are Inbox work; a company card lights Companies
-      activeOn: ["/leads/inbox/", "/leads/conversations"],
+      activeOn: ["/crm/inbox/", "/crm/conversations"],
     },
     {
       // The full list; the board and the import open from its page actions and keep it lit
-      route: "/leads/companies",
+      route: "/crm/companies",
       labelKey: "nav.leads_companies",
       icon: "building",
       query: {},
       app: ["leads"],
       requiresModule: "leads",
-      activeOn: ["/leads/companies/", "/leads/board", "/leads/import"],
+      activeOn: ["/crm/companies/", "/crm/board", "/crm/import"],
     },
     {
       // Selling: the deal list (every width) and, through its List · Board switch, the board at a desk
-      route: "/leads/deals",
+      route: "/crm/deals",
       labelKey: "nav.leads_deals",
       icon: "handshake",
       query: {},
       app: ["leads"],
       requiresModule: "leads",
       minVersion: "0.5.0",
-      activeOn: ["/leads/deals/"],
+      activeOn: ["/crm/deals/"],
     },
     {
       // Drafts of every channel, approved in bulk at the desk; the badge = drafts waiting (useNav `counts`)
-      route: "/leads/approvals",
+      route: "/crm/approvals",
       labelKey: "nav.leads_approvals",
       icon: "circle-check",
       query: {},
@@ -394,7 +394,7 @@ export function buildNavRoutes() {
     },
     {
       // The funnel: tables of stage counts, moves and origins, desk work
-      route: "/leads/reports",
+      route: "/crm/reports",
       labelKey: "nav.leads_reports",
       icon: "chart-line",
       query: {},
@@ -404,15 +404,26 @@ export function buildNavRoutes() {
       desktopOnly: true,
     },
     {
+      // U11: every change of the CRM — when, who, what, on what, why; desk work
+      route: "/crm/history",
+      labelKey: "nav.leads_history",
+      icon: "clock-rotate-left",
+      query: {},
+      app: ["leads"],
+      requiresModule: "leads",
+      minVersion: "0.5.0",
+      desktopOnly: true,
+    },
+    {
       // Stages, templates, sequences and send settings live here as sections (UX-002d); desk work (Leads CRM) — a
       // section still opens on a phone from a link
-      route: "/leads/settings",
+      route: "/crm/settings",
       labelKey: "nav.leads_settings",
       icon: "gear",
       query: {},
       app: ["leads"],
       desktopOnly: true,
-      activeOn: ["/leads/settings/"], // every section
+      activeOn: ["/crm/settings/"], // every section
     },
     {
       route: "/enrichment",

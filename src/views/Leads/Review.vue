@@ -11,6 +11,8 @@
       <p class="review__confirm" :class="{ 'review__confirm--shown': confirmation }" role="status" data-testid="review-confirmation">
         {{ confirmation }}
       </p>
+      <!-- U1: a Skip waits UNDO_MS before it reaches the service; Undo in that time brings the draft back -->
+      <BasicButton v-if="pendingSkip" class="as-s" variant="secondary" data-testid="review-undo" @click="undoSkip">{{ $t("leads.review.undo") }}</BasicButton>
       <EmptyState v-if="queueEmpty" :title="$t('leads.inbox.empty_title')" icon="success" size="md" data-testid="review-empty">
         <BasicButton variant="primary" data-testid="review-empty-inbox" @click="goInbox">{{ $t("leads.review.back") }}</BasicButton>
       </EmptyState>
@@ -24,6 +26,18 @@
       <AiToolboxHint />
       <ConfigBanner code="communicator.smtp" />
 
+      <!-- U8: on a phone the first draft says once, plainly, that the card moves; gone after "Got it" or the first swipe -->
+      <div v-if="showSwipeIntro" class="review__swipe-intro flex-column gap-2" role="note" data-testid="review-swipe-intro">
+        <p class="fw-600 m-0">{{ $t("leads.review.swipe_intro_title") }}</p>
+        <div class="flex jc-sb gap-4">
+          <span data-testid="review-swipe-intro-left"><span aria-hidden="true">←</span> {{ $t("leads.review.swipe_intro_left") }}</span>
+          <span data-testid="review-swipe-intro-right">{{ $t("leads.review.swipe_intro_right") }} <span aria-hidden="true">→</span></span>
+        </div>
+        <BasicButton class="as-s" variant="secondary" data-testid="review-swipe-intro-ok" @click="dismissSwipeIntro">
+          {{ $t("leads.review.swipe_intro_ok") }}
+        </BasicButton>
+      </div>
+
       <div v-if="failedVersion" class="review__failed flex-column gap-4" role="alert" data-testid="review-failed">
         <p class="review__failed-text m-0">
           {{ $t("leads.review.rewrite_failed", { reason: failedVersion.failure_detail || failedVersion.failure_code }) }}
@@ -36,7 +50,7 @@
         class="review__draft flex-column gap-4"
         :style="{ transform: `translateX(${offset}px)` }"
         data-testid="review-draft"
-        v-on="editing ? {} : handlers"
+        v-on="editing || readonly ? {} : handlers"
       >
         <header class="flex-column">
           <router-link v-if="companyId" :to="{ name: 'LeadsThread', params: { id: companyId } }" class="review__company">
@@ -75,7 +89,7 @@
         <template v-else>
           <h2 class="review__subject fs-400 fw-600 m-0" data-testid="review-subject">{{ message.subject }}</h2>
           <p class="review__text m-0" data-testid="review-body">{{ message.body_text }}</p>
-          <p v-if="!isDesktop" class="t-muted fs-200 m-0" data-testid="review-swipe-hint">{{ $t("leads.review.swipe_hint") }}</p>
+          <p v-if="!isDesktop && !readonly" class="t-muted fs-200 m-0" data-testid="review-swipe-hint">{{ $t("leads.review.swipe_hint") }}</p>
         </template>
       </article>
     </div>
@@ -131,6 +145,7 @@ import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
 import { useSwipe } from "@/composables/useSwipe";
 import { useIsDesktop } from "@/composables/useIsDesktop";
+import { usePageReadonly } from "@/composables/useReadonly";
 import { companyIdFromSubjectRef } from "@/utils/subjectRef";
 import { replyTypeLabel, sendStateSentence, statusLabel } from "@/utils/leadsLabels";
 import { FROM_APPROVALS, outboundOn, problemText, replyTone } from "@/utils/leadsOutbound";
@@ -142,6 +157,8 @@ import IntelCard from "./IntelCard.vue";
 import ReviewActions from "./ReviewActions.vue";
 
 const CONFIRMATION_MS = 4000;
+// U1: how long a Skip can be undone — the confirmation line stands as long.
+const UNDO_MS = CONFIRMATION_MS;
 
 const route = useRoute();
 const router = useRouter();
@@ -161,14 +178,44 @@ const queueEmpty = ref(false);
 const failedVersion = ref(null);
 const draft = ref({ subject: "", body_text: "" });
 const queueIndex = ref(0);
+const skippedIds = new Set();
 const queueTotal = ref(0);
 const discarding = ref(false);
 let confirmationTimer = null;
 let settle = null;
 
-const { offset, handlers } = useSwipe({ onRight: accept, onLeft: skip });
 // The swipe hint is for a touch screen: a desk has the buttons (acceptance c6).
 const isDesktop = useIsDesktop();
+// U19: a read-only role (review area) cannot send or skip — no swipe, no swipe hint or intro.
+const readonly = usePageReadonly();
+// U8: the one-time swipe intro; remembered in this browser only (a lost value shows it once more, nothing worse).
+const SWIPE_INTRO_KEY = "cms_leads_swipe_intro_seen";
+const swipeIntroSeen = ref((() => {
+  try {
+    return localStorage.getItem(SWIPE_INTRO_KEY) === "1";
+  } catch {
+    return false;
+  }
+})());
+const dismissSwipeIntro = () => {
+  swipeIntroSeen.value = true;
+  try {
+    localStorage.setItem(SWIPE_INTRO_KEY, "1");
+  } catch {
+    // storage blocked: the intro is gone for this visit
+  }
+};
+const showSwipeIntro = computed(() => !isDesktop.value && !readonly.value && !!message.value && !editing.value && !failedVersion.value && !swipeIntroSeen.value);
+const { offset, handlers } = useSwipe({
+  onRight: () => {
+    dismissSwipeIntro();
+    return accept();
+  },
+  onLeft: () => {
+    dismissSwipeIntro();
+    return skip();
+  },
+});
 
 const companyId = computed(() => companyIdFromSubjectRef(message.value?.thread?.subject_ref));
 const companyName = computed(
@@ -288,8 +335,9 @@ async function loadOutbound() {
 async function loadQueuePosition() {
   try {
     queue.value = await readQueue();
-    queueTotal.value = queue.value.length;
-    queueIndex.value = queue.value.indexOf(message.value.id) + 1;
+    const open = queue.value.filter((id) => !skippedIds.has(id));
+    queueTotal.value = open.length;
+    queueIndex.value = open.indexOf(message.value.id) + 1;
   } catch {
     queueTotal.value = 0;
   }
@@ -309,10 +357,13 @@ async function readQueue() {
 
 // N7: the next draft is the one below in the Inbox order (else the one above) — "Draft 1 of 19" goes on to the new
 // "Draft 1 of 18"; the service's next only when this draft is not in the list read.
+// Skipped drafts (waiting for their delayed skip, or already skipped in this session) stay in the read queue: never next.
 const queue = ref([]);
 function followingId() {
   const at = queue.value.indexOf(message.value?.id);
-  return at < 0 ? null : queue.value[at + 1] ?? queue.value[at - 1] ?? null;
+  if (at < 0) return null;
+  const open = (id) => !skippedIds.has(id);
+  return queue.value.slice(at + 1).find(open) ?? queue.value.slice(0, at).reverse().find(open) ?? null;
 }
 
 // After Skip or Send (`afterAction`) an empty queue keeps the screen; otherwise it is the way back.
@@ -321,6 +372,8 @@ async function goNext(afterAction = false) {
   if (id) return router.replace({ name: "LeadsReview", params: { id }, ...(fromApprovals.value && { query: route.query }) });
   try {
     const { data } = await api.GET_ReviewNext();
+    // the draft whose skip still waits is in the queue until then: it is not the next one
+    if (data.id === pendingSkip.value?.id) throw new Error("only the skipped draft left");
     router.replace({ name: "LeadsReview", params: { id: data.id }, ...(fromApprovals.value && { query: route.query }) });
   } catch {
     if (!afterAction) return goInbox();
@@ -390,9 +443,12 @@ async function acceptedState(accepted) {
 }
 
 // Send: the next draft opens at once; the line above it says when this mail goes.
-function accept() {
+async function accept() {
+  if (busy.value || !message.value) return;
+  const id = message.value.id;
+  if (!(await settleSkip(id))) return;
   return act(
-    () => api.POST_ReviewAccept(message.value.id),
+    () => api.POST_ReviewAccept(id),
     async (data) => {
       const [state] = await Promise.all([acceptedState(data), goNext(true)]);
       confirm(t("leads.review.accepted", { state }));
@@ -401,14 +457,67 @@ function accept() {
 }
 
 // Skip: this mail is not sent (a skipped follow-up lets the sequence write the next one when it is due).
-function skip() {
-  return act(
-    () => api.POST_ReviewSkip(message.value.id),
-    () => {
-      confirm(t("leads.review.skipped"));
-      return goNext(true);
-    }
-  );
+// U1: the next draft opens at once, but the skip itself is sent only after UNDO_MS (or when the page closes, or at
+// the next Skip or Send); Undo before that cancels it and reopens the draft, which never left the queue. A page the
+// browser closes in that time sends nothing: the draft simply stays to review.
+const pendingSkip = ref(null);
+let skipTimer = null;
+
+async function sendSkip(id) {
+  try {
+    await api.POST_ReviewSkip(id);
+    reviewQueue.queueChanged();
+  } catch (err) {
+    if (isConflict(err) && err.error === "ALREADY_REVIEWED") return;
+    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.review.error")), type: "negative" });
+  }
+}
+
+function flushSkip() {
+  if (!pendingSkip.value) return null;
+  clearTimeout(skipTimer);
+  const { id } = pendingSkip.value;
+  pendingSkip.value = null;
+  return sendSkip(id);
+}
+
+// Sends the skip that still waits, holding `busy` so no second action starts meanwhile. False when the screen moved
+// to another draft in that time: the action the user meant was for `id`, never for the draft that is open now.
+async function settleSkip(id) {
+  if (!pendingSkip.value) return true;
+  busy.value = true;
+  try {
+    await flushSkip();
+  } finally {
+    busy.value = false;
+  }
+  return message.value?.id === id;
+}
+
+async function skip() {
+  if (busy.value || !message.value) return;
+  if (pendingSkip.value?.id === message.value.id) return; // this draft is already skipped, the router has not moved on yet
+  const id = message.value.id;
+  if (!(await settleSkip(id))) return;
+  skippedIds.add(id);
+  pendingSkip.value = { id };
+  skipTimer = setTimeout(flushSkip, UNDO_MS);
+  confirm(t("leads.review.skipped"));
+  return goNext(true);
+}
+
+function undoSkip() {
+  if (!pendingSkip.value) return;
+  clearTimeout(skipTimer);
+  const { id } = pendingSkip.value;
+  pendingSkip.value = null;
+  skippedIds.delete(id);
+  clearTimeout(confirmationTimer);
+  confirmation.value = "";
+  queueEmpty.value = false;
+  // the last draft skipped kept its own address (nothing came next): read it again in place
+  if (String(route.params.id) === String(id)) return load();
+  router.replace({ name: "LeadsReview", params: { id }, ...(fromApprovals.value && { query: route.query }) });
 }
 
 function skipCompany() {
@@ -476,7 +585,10 @@ watch(
   },
   { immediate: true }
 );
-onBeforeUnmount(() => clearTimeout(confirmationTimer));
+onBeforeUnmount(() => {
+  clearTimeout(confirmationTimer);
+  flushSkip();
+});
 </script>
 
 <style scoped>
@@ -504,6 +616,12 @@ onBeforeUnmount(() => clearTimeout(confirmationTimer));
   background: var(--positive-subtle);
   color: var(--text-body);
   font-weight: 600;
+}
+.review__swipe-intro {
+  padding: var(--space-8);
+  border-radius: var(--radius-lg);
+  background: var(--info-subtle);
+  color: var(--text-body);
 }
 .review__failed {
   padding: var(--space-8);

@@ -49,6 +49,11 @@ watch(
   }
 );
 
+// U12: the "Give the reason" error goes as soon as the reason is typed
+watch(reason, (text) => {
+  if (text.trim()) error.value = "";
+});
+
 function submit() {
   const text = reason.value.trim();
   error.value = text ? "" : t("leads.deal.reason_required");

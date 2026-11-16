@@ -13,52 +13,56 @@
       </PageHeader>
     </template>
     <template #toolbar>
+      <!-- U7: Active and Archived as tabs under the header, as on the company card (`?archived=1` stays the state) -->
+      <BasicTabs id-prefix="deals" :options="tabOptions" :model-value="archivedView ? 'archived' : 'active'" data-testid="deals-tabs" @update:model-value="openTab" />
       <DealFilters :query="query" :stages="stages" :archived="archivedView" @set="setFilter" />
     </template>
 
-    <p v-if="boardOnPhone" class="t-muted m-0" data-testid="deals-board-desktop-only">{{ $t("leads.deals.board_desktop_only") }}</p>
-    <Loader v-if="loading && !deals.length" block />
-    <EmptyState v-else-if="stagesLoaded && !stages.length" icon="empty" size="md" :title="$t('leads.deals.no_stages')" data-testid="deals-no-stages">
-      <router-link v-if="canSetUp" class="t-accent" :to="{ name: 'LeadsDealStages' }">{{ $t("leads.deal_stages.title") }}</router-link>
-    </EmptyState>
-    <EmptyState v-else-if="!deals.length && archivedView" icon="empty" size="md" :title="$t('leads.deals.none_archived')" data-testid="deals-empty-archived" />
-    <!-- Mine is empty while the channel has deals: say so and offer them all (N18) -->
-    <EmptyState v-else-if="!deals.length && !filtered && othersExist" icon="empty" size="md" :title="$t('leads.deals.none_mine')" data-testid="deals-empty-mine">
-      <BasicButton data-testid="deals-show-all" @click="setFilter({ owner: 'all' })">{{ $t("leads.deals.show_all_deals") }}</BasicButton>
-    </EmptyState>
-    <!-- the next step ("open one from a company card") only for a role that may open one -->
-    <EmptyState v-else-if="!deals.length && !filtered" icon="empty" size="md" :title="$t('leads.deals.empty_title')" :message="readonly ? '' : $t('leads.deals.empty_message')" data-testid="deals-empty">
-      <ActionBar :actions="pageActions.filter((action) => action.key === 'open').map((action) => ({ ...action, role: 'secondary' }))" />
-    </EmptyState>
-    <EmptyState v-else-if="!deals.length" icon="empty" size="md" :title="$t('leads.deals.none_match')" data-testid="deals-empty">
-      <BasicButton data-testid="deals-clear-filters" @click="clearFilters">{{ $t("leads.deals.clear_filters") }}</BasicButton>
-    </EmptyState>
-    <div v-else class="flex-column gap-4">
-      <p v-if="stagesLoaded && !closable" class="t-warning m-0" data-testid="deals-cannot-close">{{ $t("leads.deals.cannot_close") }}</p>
-      <DataTable :columns="columns" :rows="rows" row-key="id" :row-attrs="rowAttrs" sortable data-testid="deals-table" @sort="sortBy" @row-click="openDeal">
-        <template #cell-title="{ row }">
-          <span class="flex-column gap-1">
-            <router-link class="fw-600 t-accent" :to="{ name: 'LeadsDeal', params: { id: row.id } }" :title="row.title" @click.stop>{{ row.title }}</router-link>
-            <span class="t-muted fs-200">{{ row.summary }}</span>
-          </span>
-        </template>
-        <template #cell-stage="{ row }">
-          <StatusBadge v-if="closedFilter" :tone="dealKindTone(row.stage.kind)" :label="row.stage.label" />
-          <BasicSelect
-            v-else
-            :model-value="row.stage.key"
-            :options="options"
-            :aria-label="$t('leads.deals.stage')"
-            :disabled="readonly"
-            data-testid="deal-row-stage"
-            @click.stop
-            @update:model-value="move(row, $event)"
-          />
-        </template>
-        <template #cell-tasks="{ row }">
-          <CountBadge :count="row.open_tasks" />
-        </template>
-      </DataTable>
+    <div :id="`deals-panel-${archivedView ? 'archived' : 'active'}`" class="flex-column gap-4" role="tabpanel" :aria-labelledby="`deals-tab-${archivedView ? 'archived' : 'active'}`">
+      <p v-if="boardOnPhone" class="t-muted m-0" data-testid="deals-board-desktop-only">{{ $t("leads.deals.board_desktop_only") }}</p>
+      <Loader v-if="loading && !deals.length" block />
+      <EmptyState v-else-if="stagesLoaded && !stages.length" icon="empty" size="md" :title="$t('leads.deals.no_stages')" data-testid="deals-no-stages">
+        <router-link v-if="canSetUp" class="t-accent" :to="{ name: 'LeadsDealStages' }">{{ $t("leads.deal_stages.title") }}</router-link>
+      </EmptyState>
+      <EmptyState v-else-if="!deals.length && archivedView && !narrowed" icon="empty" size="md" :title="$t('leads.deals.none_archived')" data-testid="deals-empty-archived" />
+      <!-- Mine is empty while the channel has deals: say so and offer them all (N18) -->
+      <EmptyState v-else-if="!deals.length && !filtered && othersExist" icon="empty" size="md" :title="$t('leads.deals.none_mine')" data-testid="deals-empty-mine">
+        <BasicButton data-testid="deals-show-all" @click="setFilter({ owner: 'all' })">{{ $t("leads.deals.show_all_deals") }}</BasicButton>
+      </EmptyState>
+      <!-- the next step ("open one from a company card") only for a role that may open one -->
+      <EmptyState v-else-if="!deals.length && !filtered" icon="empty" size="md" :title="$t('leads.deals.empty_title')" :message="readonly ? '' : $t('leads.deals.empty_message')" data-testid="deals-empty">
+        <ActionBar :actions="pageActions.filter((action) => action.key === 'open').map((action) => ({ ...action, role: 'secondary' }))" />
+      </EmptyState>
+      <EmptyState v-else-if="!deals.length" icon="empty" size="md" :title="$t('leads.deals.none_match')" data-testid="deals-empty">
+        <BasicButton data-testid="deals-clear-filters" @click="clearFilters">{{ $t("leads.deals.clear_filters") }}</BasicButton>
+      </EmptyState>
+      <div v-else class="flex-column gap-4">
+        <p v-if="stagesLoaded && !closable" class="t-warning m-0" data-testid="deals-cannot-close">{{ $t("leads.deals.cannot_close") }}</p>
+        <DataTable :columns="columns" :rows="rows" row-key="id" :row-attrs="rowAttrs" sortable data-testid="deals-table" @sort="sortBy" @row-click="openDeal">
+          <template #cell-title="{ row }">
+            <span class="flex-column gap-1">
+              <router-link class="fw-600 t-accent" :to="{ name: 'LeadsDeal', params: { id: row.id } }" :title="row.title" @click.stop>{{ row.title }}</router-link>
+              <span class="t-muted fs-200">{{ row.summary }}</span>
+            </span>
+          </template>
+          <template #cell-stage="{ row }">
+            <StatusBadge v-if="closedFilter" :tone="dealKindTone(row.stage.kind)" :label="row.stage.label" />
+            <BasicSelect
+              v-else
+              :model-value="row.stage.key"
+              :options="options"
+              :aria-label="$t('leads.deals.stage')"
+              :disabled="readonly"
+              data-testid="deal-row-stage"
+              @click.stop
+              @update:model-value="move(row, $event)"
+            />
+          </template>
+          <template #cell-tasks="{ row }">
+            <CountBadge :count="row.open_tasks" />
+          </template>
+        </DataTable>
+      </div>
     </div>
     <LostReasonDialog :move="lost" :stages="stages" @submit="submitLost" @cancel="cancelLost" />
     <DealDialog v-model:open="dialogOpen" />
@@ -78,6 +82,7 @@ import { extractApiMessage } from "@/composables/useFormErrors";
 import { useIsDesktop } from "@/composables/useIsDesktop";
 import { useMediaQuery } from "@/composables/useMediaQuery";
 import { ReadonlyOff, usePageReadonly } from "@/composables/useReadonly";
+import { defaultOwner } from "@/utils/leadsOutbound";
 import { AREAS } from "@/configs/areas";
 import { useAccessStore } from "@/stores/access";
 import { useMuninStore } from "@/stores/munin";
@@ -112,12 +117,15 @@ const stagesLoaded = ref(false);
 const dialogOpen = ref(false);
 const { lost, move, submitLost, cancelLost } = useDealMove(stages, { moved: load });
 
-const query = computed(() => ({ owner: "me", kind: DEFAULT_DEAL_KIND, ...route.query }));
+const ownerDefault = computed(() => defaultOwner(readonly.value));
+const query = computed(() => ({ owner: ownerDefault.value, kind: DEFAULT_DEAL_KIND, ...route.query }));
 const page = computed(() => Number(query.value.page) || 1);
 const pages = computed(() => Math.max(1, Math.ceil(count.value / PAGE_SIZE)));
-// The defaults (Mine, Open) are no filter: a channel without a deal of mine shows the first-run empty state.
-const filtered = computed(() => Object.keys(route.query).some((key) => FILTER_KEYS.includes(key)) || query.value.owner !== "me" || query.value.kind !== DEFAULT_DEAL_KIND);
+// The defaults (Mine, or All for a read-only role; Open) are no filter: a channel without a deal of mine shows the first-run empty state.
+const filtered = computed(() => Object.keys(route.query).some((key) => FILTER_KEYS.includes(key)) || query.value.owner !== ownerDefault.value || query.value.kind !== DEFAULT_DEAL_KIND);
 // The Archived button lists the archived deals (`?archived=1`): won or lost, so no status filter applies.
+// a search, stage or dates on top of the archive: an empty answer is "nothing matches", not "no archived deal"
+const narrowed = computed(() => Object.keys(route.query).some((key) => key !== "archived" && FILTER_KEYS.includes(key)));
 const archivedView = computed(() => query.value.archived === "1");
 const closedFilter = computed(() => archivedView.value || ["won", "lost"].includes(query.value.kind));
 // The board is a desk screen: a link that asks for it on a phone lands on the list and says so.
@@ -128,12 +136,13 @@ const canSetUp = computed(() => access.can(AREAS.LEADS_SETTINGS));
 const tasksOn = computed(() => munin.isModuleInstalled("todo"));
 const viewOptions = computed(listBoardOptions);
 const openAction = () => ({ key: "open", label: t("leads.deals.open_deal"), role: "primary", mutates: true, testid: "deals-open", onClick: () => (dialogOpen.value = true) });
-// A toggle that only reads: a read-only role sees it too. Pressing it again brings the list back as it was.
-const archivedAction = () => ({
-  key: "archived", label: t("leads.deals.archived"), role: "secondary", mutates: false, pressed: archivedView.value, testid: "deals-archived",
-  onClick: () => setFilter({ archived: archivedView.value ? undefined : "1" }),
-});
-const pageActions = computed(() => [archivedAction(), !readonly.value && openAction()].filter(Boolean));
+// The tabs only read: a read-only role sees them too. Active brings the list back with its filters as they were.
+const tabOptions = computed(() => [
+  { value: "active", label: t("leads.deals.tab_active"), testid: "deals-tab-active" },
+  { value: "archived", label: t("leads.deals.archived"), testid: "deals-tab-archived" },
+]);
+const openTab = (value) => setFilter({ archived: value === "archived" ? "1" : undefined });
+const pageActions = computed(() => [!readonly.value && openAction()].filter(Boolean));
 const columns = computed(() =>
   [
     { key: "title", label: t("leads.deals.col_deal"), width: "1fr", truncate: false },
@@ -171,7 +180,7 @@ function setFilter(changes) {
   router.replace({ query: next });
 }
 
-const clearFilters = () => router.replace({ query: { owner: "all", kind: "all" } });
+const clearFilters = () => router.replace({ query: { owner: "all", kind: "all", ...(archivedView.value && { archived: "1" }) } });
 const openBoard = (value) => value === "board" && router.push({ name: "LeadsDealsBoard", query: { owner: query.value.owner } });
 const openDeal = (row) => router.push({ name: "LeadsDeal", params: { id: row.id } });
 
@@ -199,7 +208,7 @@ async function load() {
   loading.value = true;
   try {
     const { data } = await GET_Deals(params());
-    const others = !data.results.length && !filtered.value && (await anyOpenDeal().catch(() => false));
+    const others = !data.results.length && !filtered.value && query.value.owner === "me" && (await anyOpenDeal().catch(() => false));
     if (run !== latest) return;
     deals.value = data.results;
     count.value = data.count ?? data.results.length;

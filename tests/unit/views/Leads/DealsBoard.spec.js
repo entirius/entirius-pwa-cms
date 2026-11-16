@@ -60,7 +60,7 @@ describe("Leads → Deals board", () => {
 
   it("the board has no Archived button, even when the backend archives deals", async () => {
     leads.GET_DealBoard.mockResolvedValue({ data: { results: board().map((col) => ({ ...col, deals: col.deals.map((d) => ({ ...d, archived_at: null })) })) } });
-    expect(byTestid(await mounted(), "deals-archived").exists()).toBe(false);
+    expect(byTestid(await mounted(), "deals-tabs").exists()).toBe(false);
   });
 
   it("an empty column keeps a body that takes a drop and says it is empty", async () => {
@@ -122,6 +122,8 @@ describe("Leads → Deals board", () => {
     expect(lists.length).toBe(3);
     lists.forEach((list) => expect(list.vm.$attrs.disabled).toBe(true));
     expect(byTestid(wrapper, "deals-open").exists()).toBe(false);
+    // U18: a read-only role owns no deal — the board reads them all
+    expect(leads.GET_DealBoard).toHaveBeenCalledWith({ owner: undefined });
   });
 
   it("without a won or a lost stage the board says deals cannot be closed", async () => {

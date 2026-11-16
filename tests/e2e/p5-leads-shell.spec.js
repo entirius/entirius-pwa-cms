@@ -55,14 +55,14 @@ test.describe('Leads shell (desktop)', () => {
   });
 
   test('an unknown Leads address is the not-found page with a way to Today; the old Company types address redirects', async ({ page }) => {
-    await page.goto('/leads/no-such-page/7');
+    await page.goto('/crm/no-such-page/7');
     await expect(page.getByTestId('not-found')).toContainText('This page does not exist');
     await page.getByTestId('not-found-start').click();
-    await expect(page).toHaveURL(/\/leads\/today$/);
+    await expect(page).toHaveURL(/\/crm\/today$/);
     await expect(page.getByTestId('leads-today')).toBeVisible();
 
-    await page.goto('/leads/settings/lead-types');
-    await expect(page).toHaveURL(/\/leads\/settings\/company-types$/);
+    await page.goto('/crm/settings/lead-types');
+    await expect(page).toHaveURL(/\/crm\/settings\/company-types$/);
     await expect(page.getByTestId('leads-lead-types')).toBeVisible();
   });
 
@@ -74,7 +74,7 @@ test.describe('Leads shell (desktop)', () => {
       title: `E2E task ${RUN}`,
     });
     try {
-      await page.goto(`/leads/companies/${company.id}?tab=tasks`);
+      await page.goto(`/crm/companies/${company.id}?tab=tasks`);
       await page.locator(`[data-testid="task-row"][data-task="${task.id}"] [data-testid="task-edit"]`).click();
       const dialog = page.getByTestId('task-dialog');
       await expect(dialog).toBeVisible();
@@ -108,12 +108,14 @@ test.describe('Leads shell (desktop)', () => {
     });
     expect(draft.status, 'the draft waits for review').toBe('review_required');
 
-    await page.goto(`/leads/inbox/${draft.id}`);
+    await page.goto(`/crm/inbox/${draft.id}`);
     await expect(page.getByTestId('review-draft')).toBeVisible();
     await page.getByTestId('review-skip').click();
     await expect(page.getByText('Skipped — this mail will not be sent')).toBeVisible();
+    // U1: the skip reaches the service when its Undo time (4 s) is over; a full page load before that cancels it
+    await expect(page.getByTestId('review-undo')).toBeHidden({ timeout: 10_000 });
 
-    await page.goto(`/leads/companies/${company.id}?tab=timeline`);
+    await page.goto(`/crm/companies/${company.id}?tab=timeline`);
     const line = page.getByTestId('timeline-skipped-line');
     await expect(line).toHaveCount(1);
     await expect(line).toContainText('Draft skipped by');
@@ -134,11 +136,11 @@ test.describe('Leads shell (phone)', () => {
     const first = await createDraft(page, company, `first-${testInfo.retry}`);
     const second = await createDraft(page, company, `second-${testInfo.retry}`);
     try {
-      await page.goto(`/leads/inbox/${first.id}`);
+      await page.goto(`/crm/inbox/${first.id}`);
       await expect(page.getByTestId('review-draft')).toBeVisible();
       await page.getByTestId('review-skip').click();
       await expect(page.getByTestId('review-confirmation')).toHaveText('Skipped — this mail will not be sent');
-      await expect(page).not.toHaveURL(new RegExp(`/leads/inbox/${first.id}$`));
+      await expect(page).not.toHaveURL(new RegExp(`/crm/inbox/${first.id}$`));
       await expect(page.getByTestId('review-draft')).toBeVisible();
       // nothing lies over the action row: a trial click passes Playwright's hit test at once, well inside the 4 s line
       // (the next draft is the queue's; a seed draft with a problem has Send disabled by design — then its Skip)

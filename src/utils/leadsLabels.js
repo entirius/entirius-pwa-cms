@@ -122,6 +122,9 @@ const EVENT_SENTENCES = {
   deal_restored: (d) => t("leads.history.event_deal_restored", { title: d.title }),
   owner_set: (d) => t("leads.history.event_owner", { name: d.owner_name }),
   owner_cleared: () => t("leads.history.event_owner_cleared"),
+  channel_settings: (d) =>
+    t("leads.history.event_settings", { fields: Object.keys(d.changes || {}).map((field) => label(`leads.journal.setting.${field}`, field)).join(", ") }),
+  draft_skipped: () => t("leads.history.event_draft_skipped"),
 };
 
 const stageLine = (d) => t("leads.activity.stage", { from: stageName(d.from_label, d.from), to: stageName(d.to_label, d.to) });
@@ -148,6 +151,16 @@ function messageText(message, kind) {
   if (run) return capitalize(run[1](message.match(run[0]).slice(1), humanize));
   if (kind) return label(`leads.activity.kind.${kind}`, capitalize(humanize(message || kind)));
   return capitalize(humanize(message).replace(/ -> /g, " → "));
+}
+
+// The kind of an activity as a word (History's kind filter).
+export const activityKindLabel = (kind) => label(`leads.activity.kind.${kind}`, capitalize(humanize(kind)));
+
+// Who wrote an activity (U5, the History journal, a cancelled task): a person by username, `system` and an import batch as words.
+export function activityActor(actor = "") {
+  if (!actor || actor === "system") return t("leads.journal.system");
+  if (actor.startsWith("import:")) return t("leads.journal.import");
+  return actor;
 }
 
 // Status words as badges: the same tone for a message everywhere it shows (bubble, list row, header).

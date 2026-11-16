@@ -75,6 +75,7 @@
     "leads_do_not_contact": "Do not contact",
     "leads_today": "Today",
     "leads_reports": "Reports",
+    "leads_history": "History",
     "leads_deals": "Deals",
     "leads_deal_stages": "Deal stages"
   },
@@ -604,7 +605,7 @@
     "promo_desc": "Discount rules and promotion management",
     "pricefighter": "PriceFighter",
     "pricefighter_desc": "Competitive pricing — gap analysis, strategies, batch apply",
-    "leads": "Leads",
+    "leads": "CRM",
     "leads_desc": "Sales inbox — review drafts, read replies, company conversations",
     "communicator": "Communicator",
     "communicator_desc": "Outreach templates, follow-up sequences, send policy and channel mode",
@@ -4214,7 +4215,7 @@
     "product": "Product",
     "applied_at": "Applied at",
     "mode_suggestion": "Suggestion",
-    "mode_authoritative": "Authoritative",
+    "mode_authoritative": "Authoritative mode",
     "reason_ok": "Within the strategy",
     "reason_in_band": "Within the tolerance band",
     "reason_strategy_scope": "The strategy does not allow this move",
@@ -4256,7 +4257,6 @@
     "scope_category_idx": "Category",
     "scope_channel": "Channel",
     "category": "Category",
-    "mode_authoritative": "Authoritative mode",
     "mode_v2_note": "Requires autopilot mode",
     "confirm_delete_title": "Delete rule",
     "confirm_delete_rule": "This pricing rule will be permanently deleted.",
@@ -4323,6 +4323,10 @@
       "accepted": "Accepted — {state}",
       "open_thread": "Company conversation",
       "swipe_hint": "Swipe right to send, left to skip",
+      "swipe_intro_title": "Swipe the draft to decide",
+      "swipe_intro_left": "Skip",
+      "swipe_intro_right": "Send",
+      "swipe_intro_ok": "Got it",
       "error": "Action failed — try again",
       "conflict": "This draft was already handled — loading the next one",
       "refused": "This action does not apply to this draft — it stays in review",
@@ -4342,6 +4346,7 @@
       "next_draft": "Next draft",
       "skip": "Skip",
       "skipped": "Skipped — this mail will not be sent",
+      "undo": "Undo",
       "handled_rejected": "This draft was skipped — this mail will not be sent.",
       "goes_soon": "goes out within minutes"
     },
@@ -4560,7 +4565,7 @@
     },
     "import": {
       "title": "Import companies",
-      "hint": "One row per company, a header row naming the columns. Existing domains are matched, not duplicated; unknown columns are ignored.",
+      "hint": "One row per company, a header row naming the columns. After you pick the file, CRM proposes where each column goes and you check it before the import. Existing domains are matched, not duplicated.",
       "upload": "Upload",
       "status": "Status",
       "counts": "{created} created, {matched} matched, {skipped} skipped",
@@ -4575,13 +4580,13 @@
       "after_title": "After the upload",
       "after": "Every company lands in the first stage of the board. Stage rules take it from there — a site audit, or a draft that waits for you in the Inbox. Nothing is sent without your review.",
       "sample": "Download a sample CSV",
-      "choose": "Choose a CSV file",
+      "choose": "Choose a file (.xlsx or .csv)",
       "no_file": "No file chosen yet",
       "run_rules": "Start the automation on new companies",
       "run_rules_note": "Each new company enters its first stage and that stage's rules run — drafts and AI audits may start right away and cost AI credits.",
       "after_rules": "Each company lands in the first stage. Its rules run only when \"Start the automation\" was ticked; otherwise move companies on the board or by hand.",
       "owner": "Owner",
-      "owner_hint": "The owner of every new company in the file; leave it empty for no owner. Companies already in Leads keep theirs.",
+      "owner_hint": "The owner of every new company in the file; leave it empty for no owner. Companies already in CRM keep theirs.",
       "no_owner": "No owner",
       "column_attr": "{column} — {label} ({kind})",
       "ignored": "Ignored columns: {list}",
@@ -4611,7 +4616,106 @@
         "no_stages": "the channel has no stages — add one in Settings → Stages",
         "internal_error": "an error on the server — try again or ask the administrator"
       },
-      "file": "File"
+      "file": "File",
+      "mapping": {
+        "title": "Check the columns",
+        "hint": "Each column of the file goes to one field in CRM. Check the proposal, change a field where it is wrong, or skip a column. Nothing is saved until you click Import.",
+        "col_column": "Column in the file",
+        "col_samples": "Sample values",
+        "col_field": "Field in CRM",
+        "col_confidence": "Proposal",
+        "field_for": "Field in CRM for the column {column}",
+        "skip": "Skip this column",
+        "group": {
+          "company": "Company",
+          "contact": "Contact",
+          "company_custom": "Company custom field",
+          "contact_custom": "Contact custom field"
+        },
+        "confidence": {
+          "sure": "Sure",
+          "check": "Check it",
+          "unknown": "Not recognised",
+          "skipped": "Skipped"
+        },
+        "conflict": "also chosen for: {columns}",
+        "name_conflict": "Full name, or first and last name separately: choose one.",
+        "conflicts": "Fields chosen for more than one column: {count}. Pick one column per field, or skip the others.",
+        "preview_empty": "No column goes to CRM yet.",
+        "check": "Check the columns",
+        "import": "Import",
+        "other_file": "Choose another file",
+        "result_title": "Where the columns went",
+        "went": "{column} → {field}",
+        "went_skipped": "{column} → skipped",
+        "failed": "The file could not be read",
+        "file_summary": "{name}: {rows} rows, {columns} columns",
+        "col_row": "Row",
+        "col_skip": "What the import does",
+        "preview_title": "The first rows after the mapping",
+        "no_identity": "Choose a column for the domain, the website or the e-mail address — without one the companies cannot be told apart.",
+        "no_name": "No column goes to the company name: the companies will be named after their domain.",
+        "field": {
+          "company_name": "Company name",
+          "domain": "Domain",
+          "website": "Website",
+          "industry": "Industry",
+          "lead_type": "Company type",
+          "origin": "Origin",
+          "description": "Notes",
+          "full_name": "Full name (split into first and last name)",
+          "first_name": "First name",
+          "last_name": "Last name",
+          "email": "E-mail",
+          "phone": "Phone",
+          "job_title": "Job title",
+          "language": "Language",
+          "legal_basis": "Legal basis"
+        },
+        "source": {
+          "exact": "the exact column name",
+          "header": "recognised by the column name",
+          "custom_field": "matches a custom field",
+          "content": "recognised by the values",
+          "user": "your choice"
+        },
+        "reason": {
+          "unrecognised": "neither the name nor the values tell what it is",
+          "duplicate_field": "skipped: {column} fits this field better",
+          "no_crm_field": "looks like {concept}, but CRM has no such field — add a custom field in Settings to keep it",
+          "empty_column": "the column is empty",
+          "user": "you skipped it"
+        },
+        "concept": {
+          "tax_id": "a tax number (NIP / VAT)",
+          "regon": "a REGON number",
+          "krs": "a KRS number",
+          "street": "a street",
+          "city": "a city",
+          "postal_code": "a postal code",
+          "country": "a country",
+          "employees": "the number of employees",
+          "address": "an address",
+          "region": "a region",
+          "revenue": "the revenue",
+          "linkedin": "a LinkedIn profile"
+        },
+        "issue": {
+          "REQUIRED": "Choose a file first.",
+          "TOO_LARGE": "The file is too large (the limit is 20 MB; for .xlsx the size after unpacking counts too).",
+          "TOO_MANY_ROWS": "The file has more than 100,000 rows — split it into smaller files.",
+          "TOO_MANY_COLUMNS": "The file has too many columns — remove the ones you do not need.",
+          "UNSUPPORTED_FORMAT": "This file type is not supported — save it as .xlsx or .csv (an old .xls also needs saving as .xlsx).",
+          "ENCODING": "The text encoding of the file is not recognised — save it as UTF-8 CSV or .xlsx.",
+          "UNREADABLE": "The file cannot be read — it may be damaged.",
+          "NO_HEADER": "The file is empty or has no header row.",
+          "INVALID_JSON": "The column mapping could not be sent — check the columns again.",
+          "UNKNOWN_COLUMN": "The file does not match the checked columns — check the columns again.",
+          "UNKNOWN_FIELD": "A chosen field no longer exists — check the columns again.",
+          "DUPLICATE_FIELD": "Two columns go to the same field — keep one of them.",
+          "NO_COMPANY_KEY": "Choose a column for the domain, the website or the e-mail address."
+        }
+      }
     },
     "stages": {
       "title": "Stages",
@@ -4676,7 +4780,8 @@
         "intel_empty": "Site audit found nothing",
         "score": "Score updated",
         "task": "Task",
-        "deal": "Deal"
+        "deal": "Deal",
+        "settings": "Settings changed"
       },
       "msg": {
         "message_sent": "Mail sent",
@@ -4732,7 +4837,7 @@
       "consent_ref": "Where consent was given",
       "save": "Add company",
       "save_contact": "Save contact",
-      "exists": "Already in Leads:",
+      "exists": "Already in CRM:",
       "company_saved": "Company added — the contact was not saved yet:"
     },
     "lead_types": {
@@ -4787,6 +4892,7 @@
       "unclear": "Unclear"
     },
     "history": {
+      "event_draft_skipped": "Draft skipped",
       "needs_review": "Needs review",
       "back_on": "Back on {date}",
       "confidence": "{n} % sure",
@@ -4815,7 +4921,8 @@
       "next_optout_possible": "Next: nothing is sent until you confirm the opt-out or mark it as not one",
       "next_stopped": "Next: the sequence is stopped",
       "next_resumes": "Next: the sequence resumes on {date}",
-      "next_paused": "Next: the sequence is paused until you resume it"
+      "next_paused": "Next: the sequence is paused until you resume it",
+      "event_settings": "Settings changed: {fields}"
     },
     "problem": {
       "legal_footer": "The mail has no legal footer — set the footer in Settings → Send settings",
@@ -4856,6 +4963,16 @@
       "approve_title_few": "Approve {count} drafts?",
       "approve_title_many": "Approve {count} drafts?",
       "approve_confirm": "The mail goes out at once.",
+      "held_paused": "The mailbox {address} is paused",
+      "held_disabled": "The mailbox {address} is switched off",
+      "held_needs_login": "The mailbox {address} needs a login",
+      "held_line_one": "{mailbox}: {count} selected draft will not go out.",
+      "held_line_few": "{mailbox}: {count} selected drafts will not go out.",
+      "held_line_many": "{mailbox}: {count} selected drafts will not go out.",
+      "held_rest_one": "The other {count} goes out at once.",
+      "held_rest_few": "The other {count} go out at once.",
+      "held_rest_many": "The other {count} go out at once.",
+      "held_all": "Nothing selected can go out: Approve is off until the mailbox sends again.",
       "approved_n_one": "{count} draft approved.",
       "approved_n_few": "{count} drafts approved.",
       "approved_n_many": "{count} drafts approved.",
@@ -4974,11 +5091,14 @@
       "window_7d": "7 days",
       "channel": "Channel",
       "mailboxes": "Mailboxes",
-      "col_sent": "Sent",
+      "col_sent_24h": "Sent (last 24 h)",
+      "col_sent_7d": "Sent (last 7 days)",
       "col_bounces": "Hard bounces",
       "col_optouts": "Opt-outs",
       "col_complaints": "Complaints",
-      "col_today": "Sent today",
+      "col_today": "Sent today (since 00:00)",
+      "windows_note": "“{sent}” counts back from now; “Sent today” counts the channel's calendar day from 00:00, {timezone} time.",
+      "windows_note_no_tz": "“{sent}” counts back from now; “Sent today” counts the channel's calendar day from 00:00.",
       "policy": "Automatic pause",
       "enabled": "Pause a mailbox automatically",
       "window_hours": "Window (hours)",
@@ -5128,6 +5248,7 @@
       "chip_upcoming": "Upcoming",
       "chip_none": "No date",
       "chip_done": "Done",
+      "chip_cancelled": "Cancelled",
       "owner": "Owner",
       "owner_me": "Mine",
       "owner_none": "Unassigned",
@@ -5143,7 +5264,8 @@
       "empty_list": "No tasks here",
       "no_tasks_module": "Tasks are not available on this installation",
       "nothing": "Nothing to show here",
-      "empty_done": "Nothing done yet — a task lands here when you mark it done"
+      "empty_done": "Nothing done yet — a task lands here when you mark it done",
+      "empty_cancelled": "Nothing cancelled — a task lands here when you cancel it"
     },
     "task": {
       "add": "Add task",
@@ -5159,6 +5281,7 @@
       "due": "Due",
       "company": "Company",
       "company_search": "Search a company",
+      "company_hint": "Type a name to search — showing {shown} of {total}",
       "contact": "Contact",
       "owner": "Owner",
       "note": "Note",
@@ -5209,7 +5332,9 @@
     },
     "tasks": {
       "open_title": "Open tasks",
-      "empty": "No open tasks"
+      "empty": "No open tasks",
+      "cancelled_title": "Cancelled",
+      "cancelled_by": "Cancelled by {who} · {date}"
     },
     "compose": {
       "reply_unavailable": "The reply could not be opened — try again.",
@@ -5251,7 +5376,7 @@
       "option_label": "Label",
       "add_option": "Add option",
       "remove_option": "Remove option",
-      "key_hint": "Cannot change after save",
+      "key_hint": "Filled in from the label: lowercase letters, digits and _. Cannot change after save",
       "kind_locked": "Kind cannot change: values are stored",
       "empty": "No custom fields on {entity} yet",
       "delete_confirm": "Delete the field {label}? Only a field that holds no value yet and that no rule or scoring names can be deleted. To stop using a field with values, switch Active off instead: its values stay stored.",
@@ -5430,6 +5555,7 @@
       "none_mine": "No open deals of yours",
       "show_all_deals": "Show all deals",
       "none_archived": "No archived deals",
+      "tab_active": "Active",
       "archived": "Archived",
       "archived_title": "Archived deals",
       "none_in_chip": "No deals under {kind}",
@@ -5533,6 +5659,34 @@
         "email": "Give a valid e-mail address",
         "format": "Use only the characters the hint names",
         "number": "Give a number in the allowed range"
+      }
+    },
+    "journal": {
+      "title": "History",
+      "person": "Person",
+      "kind": "Kind",
+      "period": "Period",
+      "company": "Company",
+      "company_search": "Search a company",
+      "col_time": "When",
+      "col_who": "Who",
+      "col_what": "What",
+      "col_on": "On",
+      "col_reason": "Reason",
+      "empty": "Nothing has happened in the CRM yet",
+      "none_match": "No entries match the filters",
+      "system": "System",
+      "import": "Import",
+      "channel": "Settings",
+      "setting": {
+        "resume_days": "days until a follow-up",
+        "default_currency": "deal currency"
+      },
+      "reason": {
+        "reply_class": "Reply: {class}",
+        "wrong_person": "Wrong person",
+        "opted_out": "Contact opted out",
+        "optout_confirmed": "Opt-out confirmed"
       }
     }
   },
@@ -5916,7 +6070,7 @@
       "django_checkout": "Orders and checkout",
       "django_returns": "Returns",
       "django_contact_forms": "Forms",
-      "django_leads": "Leads",
+      "django_leads": "CRM",
       "django_communicator": "Communicator",
       "django_siteintel": "Site intelligence",
       "django_notifications": "Notifications",

@@ -60,6 +60,17 @@ describe("Leads → Deals list", () => {
     expect(wrapper.findComponent({ name: "Pagination" }).props("pages")).toBe(3);
   });
 
+  // U18: a read-only role (viewer) owns no deal — the list opens on All, and All is no filter there
+  it("read-only: the default owner is All, an owner in the URL still wins", async () => {
+    const wrapper = await mounted({ write: false });
+    expect(leads.GET_Deals).toHaveBeenCalledWith({ kind: "open", sort: "expected_close_date", page: 1, page_size: 20 });
+    expect(byTestid(wrapper, "deals-owner-all").attributes("data-active")).toBe("true");
+    route.query = { owner: "me" };
+    leads.GET_Deals.mockClear();
+    await mounted({ write: false });
+    expect(leads.GET_Deals).toHaveBeenCalledWith({ owner: "me", kind: "open", sort: "expected_close_date", page: 1, page_size: 20 });
+  });
+
   it("reads the filters from the URL and writes a close range back as one change", async () => {
     route.query = { owner: "all", kind: "all", stage: "qualified", page: "2" };
     const wrapper = await mounted();
@@ -138,32 +149,37 @@ describe("Leads → Deals list", () => {
     expect(byTestid(wrapper, "deal-row-stage").exists()).toBe(false);
   });
 
-  // Plan 29: the archive is its own button on the list, not a status
+  // Plan 29 + U7: the archive is its own tab under the header (Active · Archived), not a status
   const archivedDeal = deal(1, { stage: STAGES[1], archived_at: "2026-11-14T10:00:00Z" });
+  const tabs = (wrapper) => wrapper.findComponent({ name: "BasicTabs" });
 
-  it("the Archived button asks with archived=true, its title names the archive, the status filter is gone", async () => {
+  it("the Archived tab asks with archived=true, its title names the archive, the status filter is gone", async () => {
     route.query = { kind: "won", archived: "1", search: "acme" };
     leads.GET_Deals.mockResolvedValue({ data: { count: 1, results: [archivedDeal] } });
     const wrapper = await mounted();
     expect(leads.GET_Deals).toHaveBeenCalledWith({ owner: "me", archived: true, search: "acme", sort: "expected_close_date", page: 1, page_size: 20 });
-    expect(byTestid(wrapper, "deals-archived").attributes("aria-pressed")).toBe("true");
+    expect(tabs(wrapper).props("modelValue")).toBe("archived");
     expect(wrapper.findComponent({ name: "PageHeader" }).props("title")).toBe("leads.deals.archived_title");
     expect(byTestid(wrapper, "deals-filter-kind").exists()).toBe(false);
     expect(byTestid(wrapper, "deal-row-stage").exists()).toBe(false);
     expect(byTestid(wrapper, "deal-row").text()).toContain("Won");
   });
 
-  it("pressing Archived keeps the query; pressing it again restores the list as it was", async () => {
+  it("the Archived tab keeps the query; the Active tab restores the list as it was", async () => {
     route.query = { owner: "all", kind: "lost", page: "2" };
     leads.GET_Deals.mockResolvedValue({ data: { count: 1, results: [deal(1, { archived_at: null })] } });
     const wrapper = await mounted();
-    expect(byTestid(wrapper, "deals-archived").attributes("aria-pressed")).toBe("false");
+    expect(tabs(wrapper).props("options").map((option) => [option.value, option.label])).toEqual([
+      ["active", "Active"],
+      ["archived", "Archived"],
+    ]);
+    expect(tabs(wrapper).props("modelValue")).toBe("active");
     expect(byTestid(wrapper, "deals-filter-kind").exists()).toBe(true);
-    await byTestid(wrapper, "deals-archived").trigger("click");
+    tabs(wrapper).vm.$emit("update:modelValue", "archived");
     expect(router.replace).toHaveBeenLastCalledWith({ query: { owner: "all", kind: "lost", archived: "1" } });
     route.query = { owner: "all", kind: "lost", archived: "1" };
-    const pressed = await mounted();
-    await byTestid(pressed, "deals-archived").trigger("click");
+    const archived = await mounted();
+    tabs(archived).vm.$emit("update:modelValue", "active");
     expect(router.replace).toHaveBeenLastCalledWith({ query: { owner: "all", kind: "lost" } });
   });
 
@@ -175,15 +191,23 @@ describe("Leads → Deals list", () => {
     expect(leads.GET_Deals).toHaveBeenCalledTimes(1);
   });
 
-  // Plan 34: the button is there whatever the list holds — a salesperson's empty Mine list shows it too
-  it("the Archived button over an empty list, on every filter; a read-only role sees it", async () => {
+  it("an empty archive under a search says nothing matches, with Clear filters", async () => {
+    route.query = { archived: "1", search: "nothing" };
+    leads.GET_Deals.mockResolvedValue({ data: { count: 0, results: [] } });
+    const wrapper = await mounted();
+    expect(byTestid(wrapper, "deals-empty-archived").exists()).toBe(false);
+    expect(byTestid(wrapper, "deals-clear-filters").exists()).toBe(true);
+  });
+
+  // Plan 34: the tabs are there whatever the list holds — a salesperson's empty Mine list shows them too
+  it("the tabs over an empty list, on every filter; a read-only role sees them", async () => {
     leads.GET_Deals.mockResolvedValue({ data: { count: 0, results: [] } });
     const empty = await mounted();
     expect(byTestid(empty, "deals-empty").exists() || byTestid(empty, "deals-empty-mine").exists()).toBe(true);
-    expect(byTestid(empty, "deals-archived").exists()).toBe(true);
+    expect(tabs(empty).exists()).toBe(true);
     route.query = { owner: "all", kind: "won", search: "nothing" };
-    expect(byTestid(await mounted(), "deals-archived").exists()).toBe(true);
-    expect(byTestid(await mounted({ write: false }), "deals-archived").exists()).toBe(true);
+    expect(tabs(await mounted()).exists()).toBe(true);
+    expect(tabs(await mounted({ write: false })).exists()).toBe(true);
   });
 
   it("read-only: the row stage select is disabled", async () => {

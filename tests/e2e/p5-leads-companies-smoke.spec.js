@@ -29,13 +29,13 @@ test.describe('P5 Leads companies (desktop)', () => {
 
   test('companies list opens the first company card with its tabs and header selects', async ({ page }) => {
     const collector = createErrorCollector(page);
-    await openPage(page, '/leads/companies');
+    await openPage(page, '/crm/companies');
 
     await expect(page.getByTestId('companies-add')).toBeVisible();
     await expect(page.getByTestId('companies-item').or(page.getByTestId('companies-empty')).first()).toBeVisible();
     if (await page.getByTestId('companies-item').count()) {
       await page.getByTestId('companies-item').first().click();
-      await page.waitForURL(/\/leads\/companies\/\d+/);
+      await page.waitForURL(/\/crm\/companies\/\d+/);
       await expect(page.getByTestId('company-card')).toBeVisible();
       await expect(h1(page)).toHaveText(either((t) => t.leads.company.title));
       await expect(page.getByTestId('thread-company')).not.toBeEmpty();
@@ -68,7 +68,7 @@ test.describe('P5 Leads companies (desktop)', () => {
 
   test('add lead: the page title and a Save that waits for a domain', async ({ page }) => {
     const collector = createErrorCollector(page);
-    await openPage(page, '/leads/companies/new');
+    await openPage(page, '/crm/companies/new');
 
     await expect(h1(page)).toHaveText(either((t) => t.leads.add.title));
     await expect(page.getByTestId('add-lead-save')).toBeDisabled();
@@ -79,7 +79,7 @@ test.describe('P5 Leads companies (desktop)', () => {
 
   test('board: title, search, chips and the stage columns', async ({ page }) => {
     const collector = createErrorCollector(page);
-    await openPage(page, '/leads/board');
+    await openPage(page, '/crm/board');
 
     await expect(h1(page)).toHaveText(either((t) => t.leads.board.title));
     await expect(page.getByTestId('board-column').first()).toBeVisible();
@@ -91,11 +91,11 @@ test.describe('P5 Leads companies (desktop)', () => {
 
   test('import: title, sections and an Upload that waits for a file', async ({ page }) => {
     const collector = createErrorCollector(page);
-    await openPage(page, '/leads/import');
+    await openPage(page, '/crm/import');
 
     await expect(h1(page)).toHaveText(either((t) => t.leads.import.title));
     await expect(page.getByTestId('import-columns')).toBeVisible();
-    await expect(page.getByTestId('import-upload')).toBeDisabled();
+    await expect(page.getByTestId('import-check')).toBeDisabled();
     await expect(page.getByTestId('import-sample')).toBeVisible();
 
     collector.assertNoErrors(expect, 'Import');
@@ -103,13 +103,13 @@ test.describe('P5 Leads companies (desktop)', () => {
 
   test('stages and lead types: title, rows and the way back to Settings', async ({ page }) => {
     const collector = createErrorCollector(page);
-    await openPage(page, '/leads/settings/stages');
+    await openPage(page, '/crm/settings/stages');
 
     await expect(h1(page)).toHaveText(either((t) => t.leads.stages.title));
     await expect(page.getByTestId('stage-row').first()).toBeVisible();
     await expect(page.getByRole('button', { name: either((t) => t.common.back) }).first()).toBeVisible();
 
-    await openPage(page, '/leads/settings/company-types');
+    await openPage(page, '/crm/settings/company-types');
     await expect(h1(page)).toHaveText(either((t) => t.leads.lead_types.title));
     await expect(page.getByTestId('lead-type-row').first()).toBeVisible();
     await expect(page.getByTestId('lead-type-save')).toBeVisible();

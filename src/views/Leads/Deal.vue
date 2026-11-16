@@ -1,7 +1,7 @@
 <template>
   <PageLayout data-testid="leads-deal">
     <template #header>
-      <PageHeader :title="deal?.title || $t('leads.deals.title')" wrap-title :back="{ name: 'LeadsDeals' }">
+      <PageHeader :title="deal?.title || $t('leads.deals.title')" wrap-title :back="goBack">
         <template v-if="deal" #meta>
           <StatusBadge :tone="dealKindTone(deal.stage.kind)" :label="dealKindLabel(deal.stage.kind)" data-testid="deal-kind" />
           <StatusBadge v-if="deal.archived_at" tone="neutral" :label="$t('leads.deal.archived')" data-testid="deal-archived" />
@@ -9,8 +9,8 @@
             {{ deal.company.name || deal.company.domain }}
           </router-link>
         </template>
-        <!-- open: the more menu (Delete deal) · Mark lost · Mark won, the one primary (N19); closed: the more menu
-             (Archive) · Reopen; archived: Restore only -->
+        <!-- open: the more menu (Delete deal) · Mark lost · Mark won, the one primary (N19); closed: Archive · Reopen,
+             both in sight (U7); archived: Restore only -->
         <template v-if="deal" #actions>
           <ActionBar v-if="deal.archived_at" :actions="archivedActions" />
           <ActionBar v-else>
@@ -25,8 +25,12 @@
                 {{ $t("leads.deal.mark_won") }}
               </BasicButton>
             </template>
-            <!-- Reopen goes to the first open stage; without one (or without the stages) it is not offered -->
-            <BasicButton v-else-if="openStage" mutates data-testid="deal-reopen" @click="move(deal, openStage.key)">{{ $t("leads.deal.reopen") }}</BasicButton>
+            <template v-else>
+              <!-- an older backend (no `archived_at` in the deal) archives nothing -->
+              <BasicButton v-if="'archived_at' in deal" mutates :loading="archiving" data-testid="deal-archive" @click="archive">{{ $t("leads.deal.archive") }}</BasicButton>
+              <!-- Reopen goes to the first open stage; without one (or without the stages) it is not offered -->
+              <BasicButton v-if="openStage" mutates data-testid="deal-reopen" @click="move(deal, openStage.key)">{{ $t("leads.deal.reopen") }}</BasicButton>
+            </template>
           </ActionBar>
         </template>
       </PageHeader>
@@ -82,6 +86,7 @@
 import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { t } from "@/i18n";
+import { goBackTo } from "@/composables/useNav";
 import { DELETE_Deal, GET_Attributes, GET_Company, GET_Deal, GET_DealActivities, GET_DealStages, POST_DealArchive, POST_DealRestore } from "@/api/leads/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { ReadonlyArea, usePageReadonly } from "@/composables/useReadonly";
@@ -124,19 +129,24 @@ const wonStage = computed(() => firstStage(stages.value, "won"));
 const lostStage = computed(() => firstStage(stages.value, "lost"));
 const openStage = computed(() => firstStage(stages.value, "open"));
 const archiving = ref(false);
-// An older backend (no `archived_at` in the deal) archives nothing: a closed deal then has no more menu.
-const moreItems = computed(() => {
-  if (deal.value.stage.kind === "open") return [{ key: "delete", label: t("leads.deal.delete"), danger: true, testid: "deal-delete" }];
-  return "archived_at" in deal.value ? [{ key: "archive", label: t("leads.deal.archive"), testid: "deal-archive" }] : [];
-});
+// A closed deal has no more menu: Archive stands beside Reopen (U7).
+const moreItems = computed(() =>
+  deal.value.stage.kind === "open" ? [{ key: "delete", label: t("leads.deal.delete"), danger: true, testid: "deal-delete" }] : []
+);
+const archive = () => setArchived(POST_DealArchive, "leads.deal.archived_toast");
 const restore = () => setArchived(POST_DealRestore, "leads.deal.restored_toast");
 const archivedActions = computed(() => [
   { key: "restore", label: t("leads.deal.restore"), role: "primary", mutates: true, loading: archiving.value, testid: "deal-restore", onClick: restore },
 ]);
 
-function onMore({ key }) {
-  if (key === "archive") setArchived(POST_DealArchive, "leads.deal.archived_toast");
-  else deleting.value = true;
+function onMore() {
+  deleting.value = true;
+}
+
+// Back goes where the person came from (the Deals list with its tab and filters, a company card, the board); a card
+// opened by URL goes to the list.
+function goBack() {
+  goBackTo(router, { name: "LeadsDeals" }, { fromAnywhere: true });
 }
 
 // Archive and Restore answer with the deal: the card stays and turns into its other state; a 409 is said as its sentence.

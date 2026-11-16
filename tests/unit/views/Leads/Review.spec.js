@@ -178,25 +178,36 @@ describe("Leads Review", () => {
     await wrapper.get('[data-testid="review-skip"]').trigger("click");
     await flushPromises();
     expect(replace).toHaveBeenCalledWith({ name: "LeadsReview", params: { id: 6 }, query: { from: "approvals" } });
+    // the router opens draft 6
+    api.GET_ReviewMessage.mockResolvedValue({ ...draft, id: 6 });
+    route.current.params.id = "6";
+    await flushPromises();
     await wrapper.get('[data-testid="review-skip"]').trigger("click");
     await flushPromises();
     // the queue is empty: the confirmation stands above the empty state, whose way on is Approvals
     await wrapper.get('[data-testid="review-empty-inbox"]').trigger("click");
     expect(replace).toHaveBeenLastCalledWith({ name: "LeadsApprovals" });
     delete route.current.query;
+    route.current.params.id = "5";
+    api.GET_ReviewMessage.mockResolvedValue(draft);
   });
 
   it("Skip is named for what it does, says the mail will not be sent and moves to the next draft", async () => {
+    vi.useFakeTimers();
     api.POST_ReviewSkip.mockReturnValue(ok());
     api.GET_ReviewNext.mockResolvedValue({ data: { id: 6 } });
     const wrapper = await mountReview();
     expect(wrapper.get('[data-testid="review-skip"]').text()).toBe("leads.review.skip");
     await wrapper.get('[data-testid="review-skip"]').trigger("click");
     await flushPromises();
-    expect(api.POST_ReviewSkip).toHaveBeenCalledWith(5);
-    expect(spawnNotification).not.toHaveBeenCalled();
     expect(wrapper.get('[data-testid="review-confirmation"]').text()).toBe("Skipped — this mail will not be sent");
     expect(replace).toHaveBeenCalledWith({ name: "LeadsReview", params: { id: 6 } });
+    // U1: the skip reaches the service once its Undo time is over
+    expect(api.POST_ReviewSkip).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(4000);
+    await flushPromises();
+    expect(api.POST_ReviewSkip).toHaveBeenCalledWith(5);
+    expect(spawnNotification).not.toHaveBeenCalled();
   });
 
   it("rewrite with a note calls rewrite/ and opens the new version", async () => {
@@ -361,14 +372,167 @@ describe("Leads Review", () => {
 
   it("the action buttons are disabled while a request is in flight", async () => {
     let resolve;
-    api.POST_ReviewSkip.mockReturnValue(new Promise((r) => (resolve = r)));
+    api.POST_ReviewAccept.mockReturnValue(new Promise((r) => (resolve = r)));
     const wrapper = await mountReview();
-    await wrapper.get('[data-testid="review-skip"]').trigger("click");
-    expect(wrapper.get('[data-testid="review-send"]').attributes("disabled")).toBeDefined();
-    await wrapper.get('[data-testid="review-skip"]').trigger("click");
-    expect(api.POST_ReviewSkip).toHaveBeenCalledTimes(1);
+    await wrapper.get('[data-testid="review-send"]').trigger("click");
+    await flushPromises();
+    expect(wrapper.get('[data-testid="review-skip"]').attributes("disabled")).toBeDefined();
+    await wrapper.get('[data-testid="review-send"]').trigger("click");
+    expect(api.POST_ReviewAccept).toHaveBeenCalledTimes(1);
     resolve({ data: {} });
     await flushPromises();
+  });
+
+  // U1: Skip → Undo for a few seconds; after Undo the draft is back and nothing was sent to the service.
+  it("Undo after Skip cancels the skip and reopens the draft", async () => {
+    vi.useFakeTimers();
+    api.GET_ReviewNext.mockResolvedValue({ data: { id: 6 } });
+    const wrapper = await mountReview();
+    await wrapper.get('[data-testid="review-skip"]').trigger("click");
+    await flushPromises();
+    expect(replace).toHaveBeenLastCalledWith({ name: "LeadsReview", params: { id: 6 } });
+    const undo = wrapper.get('[data-testid="review-undo"]');
+    expect(undo.text()).toBe("leads.review.undo");
+    await undo.trigger("click");
+    // the address never changed in this test (replace is a mock): the draft is read again in place
+    expect(api.GET_ReviewMessage).toHaveBeenLastCalledWith("5");
+    vi.advanceTimersByTime(10000);
+    await flushPromises();
+    expect(api.POST_ReviewSkip).not.toHaveBeenCalled();
+    expect(wrapper.find('[data-testid="review-undo"]').exists()).toBe(false);
+    expect(wrapper.get('[data-testid="review-confirmation"]').text()).toBe("");
+  });
+
+  it("Undo goes back to the skipped draft's address once the next draft is open", async () => {
+    vi.useFakeTimers();
+    api.GET_ReviewNext.mockResolvedValue({ data: { id: 6 } });
+    const wrapper = await mountReview();
+    await wrapper.get('[data-testid="review-skip"]').trigger("click");
+    await flushPromises();
+    route.current.params.id = "6";
+    await flushPromises();
+    await wrapper.get('[data-testid="review-undo"]').trigger("click");
+    expect(replace).toHaveBeenLastCalledWith({ name: "LeadsReview", params: { id: 5 } });
+    route.current.params.id = "5";
+    await flushPromises();
+  });
+
+  it("the Undo time over, the skip is sent and Undo is gone; a Send meanwhile sends the skip first", async () => {
+    vi.useFakeTimers();
+    api.POST_ReviewSkip.mockReturnValue(ok());
+    api.POST_ReviewAccept.mockReturnValue(ok({ id: 5 }));
+    api.GET_ReviewNext.mockResolvedValue({ data: { id: 6 } });
+    const wrapper = await mountReview();
+    await wrapper.get('[data-testid="review-skip"]').trigger("click");
+    await flushPromises();
+    await wrapper.get('[data-testid="review-send"]').trigger("click");
+    await flushPromises();
+    expect(api.POST_ReviewSkip).toHaveBeenCalledWith(5);
+    expect(api.POST_ReviewSkip.mock.invocationCallOrder[0]).toBeLessThan(api.POST_ReviewAccept.mock.invocationCallOrder[0]);
+    expect(wrapper.find('[data-testid="review-undo"]').exists()).toBe(false);
+    vi.advanceTimersByTime(10000);
+    await flushPromises();
+    expect(api.POST_ReviewSkip).toHaveBeenCalledTimes(1);
+  });
+
+  it("Skip A then Send the last draft B: the skipped A is not the next draft, the queue is empty", async () => {
+    vi.useFakeTimers();
+    api.GET_ReviewList.mockResolvedValue({ data: { results: [{ id: 5 }, { id: 6 }] } });
+    api.POST_ReviewSkip.mockReturnValue(ok());
+    api.POST_ReviewAccept.mockReturnValue(ok({ id: 6 }));
+    const wrapper = await mountReview();
+    await wrapper.get('[data-testid="review-skip"]').trigger("click");
+    await flushPromises();
+    expect(replace).toHaveBeenLastCalledWith({ name: "LeadsReview", params: { id: 6 } });
+    api.GET_ReviewMessage.mockResolvedValue({ ...draft, id: 6 });
+    route.current.params.id = "6";
+    await flushPromises();
+    expect(wrapper.text()).toContain('"index":1,"count":1');
+    await wrapper.get('[data-testid="review-send"]').trigger("click");
+    await flushPromises();
+    expect(replace).toHaveBeenCalledTimes(1);
+    expect(wrapper.find('[data-testid="review-empty"]').exists()).toBe(true);
+    route.current.params.id = "5";
+    api.GET_ReviewMessage.mockResolvedValue(draft);
+  });
+
+  it("a second Skip before the router moves on does not skip the same draft twice", async () => {
+    vi.useFakeTimers();
+    api.POST_ReviewSkip.mockReturnValue(ok());
+    api.GET_ReviewNext.mockResolvedValue({ data: { id: 6 } });
+    const wrapper = await mountReview();
+    await wrapper.get('[data-testid="review-skip"]').trigger("click");
+    await wrapper.get('[data-testid="review-skip"]').trigger("click");
+    await flushPromises();
+    expect(api.POST_ReviewSkip).not.toHaveBeenCalled();
+    expect(api.GET_ReviewNext).toHaveBeenCalledTimes(1);
+  });
+
+  // Skip 5 waits; the next action on draft 6 sends it first. While that POST is in flight a second action must not
+  // run: the screen moves on to 7 meanwhile, and a late action would hit a draft nobody has read.
+  const openSixAfterSkippingFive = async () => {
+    vi.useFakeTimers();
+    api.GET_ReviewList.mockResolvedValue({ data: { results: [{ id: 5 }, { id: 6 }, { id: 7 }, { id: 8 }] } });
+    api.POST_ReviewAccept.mockReturnValue(ok({ id: 6 }));
+    const wrapper = await mountReview();
+    await wrapper.get('[data-testid="review-skip"]').trigger("click");
+    api.GET_ReviewMessage.mockResolvedValue({ ...draft, id: 6 });
+    route.current.params.id = "6";
+    await flushPromises();
+    let release;
+    api.POST_ReviewSkip.mockReturnValue(new Promise((resolve) => (release = () => resolve({ data: {} }))));
+    const moveToSeven = async () => {
+      api.GET_ReviewMessage.mockResolvedValue({ ...draft, id: 7 });
+      route.current.params.id = "7";
+      await flushPromises();
+    };
+    return { wrapper, release: () => release(), moveToSeven };
+  };
+
+  it("a second Skip while the previous skip is still being sent does not skip the next, unread draft", async () => {
+    const { wrapper, release, moveToSeven } = await openSixAfterSkippingFive();
+    await wrapper.get('[data-testid="review-skip"]').trigger("click");
+    await wrapper.get('[data-testid="review-skip"]').trigger("click");
+    await moveToSeven();
+    release();
+    await flushPromises();
+    vi.advanceTimersByTime(60000);
+    await flushPromises();
+    expect(api.POST_ReviewSkip.mock.calls.map(([id]) => id)).toEqual([5]);
+    route.current.params.id = "5";
+    api.GET_ReviewMessage.mockResolvedValue(draft);
+  });
+
+  it("Skip while a Send waits for the previous skip does not send the next, unread draft", async () => {
+    const { wrapper, release, moveToSeven } = await openSixAfterSkippingFive();
+    await wrapper.get('[data-testid="review-send"]').trigger("click");
+    await wrapper.get('[data-testid="review-skip"]').trigger("click");
+    await moveToSeven();
+    release();
+    await flushPromises();
+    expect(api.POST_ReviewAccept).not.toHaveBeenCalledWith(7);
+    route.current.params.id = "5";
+    api.GET_ReviewMessage.mockResolvedValue(draft);
+  });
+
+  it("leaving the screen sends a skip that still waits", async () => {
+    api.POST_ReviewSkip.mockReturnValue(ok());
+    api.GET_ReviewNext.mockResolvedValue({ data: { id: 6 } });
+    const wrapper = await mountReview();
+    await wrapper.get('[data-testid="review-skip"]').trigger("click");
+    await flushPromises();
+    wrapper.unmount();
+    expect(api.POST_ReviewSkip).toHaveBeenCalledWith(5);
+  });
+
+  it("the last draft skipped: the next one asked is that draft, so the queue reads as empty", async () => {
+    api.GET_ReviewNext.mockResolvedValue({ data: { id: 5 } });
+    const wrapper = await mountReview();
+    await wrapper.get('[data-testid="review-skip"]').trigger("click");
+    await flushPromises();
+    expect(replace).not.toHaveBeenCalled();
+    expect(wrapper.find('[data-testid="review-empty"]').exists()).toBe(true);
+    expect(wrapper.find('[data-testid="review-undo"]').exists()).toBe(true);
   });
 
   it("swipe right on the draft sends", async () => {

@@ -4,7 +4,7 @@ import { createPinia, setActivePinia } from "pinia";
 
 const munin = vi.hoisted(() => ({ isModuleInstalled: vi.fn(() => false) }));
 vi.mock("@/stores/munin", () => ({ useMuninStore: () => munin }));
-vi.mock("vue-router", () => ({ useRoute: () => ({ fullPath: "/leads/companies/100" }) }));
+vi.mock("vue-router", () => ({ useRoute: () => ({ fullPath: "/crm/companies/100" }) }));
 
 import OverviewTab from "@/views/Leads/tabs/OverviewTab.vue";
 import { leadsFrame } from "./leadsFrame";
@@ -51,7 +51,7 @@ describe("Company overview tab", () => {
     const RouterLink = { props: ["to"], template: "<a :data-uid='to.params.uid' :data-back='to.query.back'><slot /></a>" };
     const link = mount(OverviewTab, { props: { company }, global: { components, stubs: { RouterLink } } }).get('[data-testid="overview-customer"] a');
     expect(link.attributes("data-uid")).toBe(company.customer_uid);
-    expect(link.attributes("data-back")).toBe("/leads/companies/100");
+    expect(link.attributes("data-back")).toBe("/crm/companies/100");
     expect(link.text()).toBe("Jan Kowalski");
     munin.isModuleInstalled.mockReturnValue(false);
   });

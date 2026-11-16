@@ -2,7 +2,7 @@
 
 `entirius-pwa-cms` — the admin CMS of Entirius: a Vue 3 SPA with a visual page builder and self-contained panels
 (Pages, PIM, Points, Forms, Accounts, Checkout, Agreements, Emails, FAQ, Pricing, Stock, Translation, Atlas,
-Enricher, Promo, PriceFighter, Leads — communicator included, Stock alerts, Access), each enabled per backend by the django-munin
+Enricher, Promo, PriceFighter, CRM (panel id `leads`) — communicator included, Stock alerts, Access), each enabled per backend by the django-munin
 module registry.
 
 ## Commands
@@ -78,7 +78,7 @@ tests/            # unit/ (Vitest) + e2e/ (Playwright) + helpers/
 | operator guide: rich content building | `docs/rich-content-building.md` |
 | Environment files, variables reference, deployment modes | `docs/deployment.md` |
 | Product lookup ("Find product"): route, gating, client code | `docs/product-lookup.md` |
-| Leads panel: inbox, board, settings, communicator sections | `docs/leads-panel.md` |
+| CRM panel (id `leads`, `/crm/...`): inbox, board, settings, communicator sections | `docs/leads-panel.md` |
 | Configuration health: the store, the header icon, AI action state | `docs/config-health.md` |
 
 ## Settings

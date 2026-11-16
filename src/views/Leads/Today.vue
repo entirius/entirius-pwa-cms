@@ -25,7 +25,7 @@
             @click="pick(key)"
           />
         </div>
-        <MobileFilterPanel :active-count="owner === 'me' ? 0 : 1" :trigger-label="$t('leads.today.filters')">
+        <MobileFilterPanel :active-count="owner === ownerDefault ? 0 : 1" :trigger-label="$t('leads.today.filters')">
           <BasicSelect v-model="owner" :floating-label="$t('leads.today.owner')" :options="ownerOptions" data-testid="today-owner" />
         </MobileFilterPanel>
       </div>
@@ -61,7 +61,7 @@
           :rows="rows"
           row-key="id"
           :row-attrs="rowAttrs"
-          :empty-text="$t(chip === 'done' ? 'leads.today.empty_done' : 'leads.today.empty_list')"
+          :empty-text="$t(EMPTY_TEXT[chip] || 'leads.today.empty_list')"
           data-testid="today-tasks"
           @row-click="openRow"
         >
@@ -71,9 +71,10 @@
           <!-- a phone stacks the task: title, its company, the due badge; Mark done is an icon in reach (N13) -->
           <template #cell-title="{ row }">
             <span class="flex-column gap-1">
-              <router-link v-if="row.to" class="t-accent" :to="row.to" :title="row.title" @click.stop>{{ row.title }}</router-link>
-              <span v-else :title="row.title">{{ row.title }}</span>
+              <router-link v-if="row.to" class="t-accent" :class="{ 'line-through': row.status === 'cancelled' }" :to="row.to" :title="row.title" @click.stop>{{ row.title }}</router-link>
+              <span v-else :class="{ 'line-through': row.status === 'cancelled' }" :title="row.title">{{ row.title }}</span>
               <span class="show-mobile t-secondary fs-200">{{ row.subject_label }}</span>
+              <span v-if="row.cancelled" class="t-secondary fs-200" data-testid="task-cancelled-line">{{ row.cancelled }}</span>
               <StatusBadge class="show-mobile as-s" :tone="row.due.tone" :label="row.due.label" data-testid="task-due-inline" />
             </span>
           </template>
@@ -83,8 +84,8 @@
           </template>
           <template #cell-actions="{ row }">
             <!-- the row opens the company on a phone; the buttons stop their own click (C6) -->
-            <IconButton mutates icon="edit" size="sm" :label="$t('leads.task.edit')" data-testid="task-edit" @click="openDialog('edit', row)" />
-            <BasicButton v-if="row.status === 'done'" mutates size="sm" data-testid="task-reopen" @click="reopen(row)">
+            <IconButton v-if="row.status !== 'cancelled'" mutates icon="edit" size="sm" :label="$t('leads.task.edit')" data-testid="task-edit" @click="openDialog('edit', row)" />
+            <BasicButton v-if="row.status !== 'open'" mutates size="sm" :loading="reopening === row.id" data-testid="task-reopen" @click="reopen(row)">
               {{ $t("leads.task.reopen") }}
             </BasicButton>
             <template v-else>
@@ -111,31 +112,32 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, inject, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { t } from "@/i18n";
 import { GET_Conversations, GET_Replies } from "@/api/communicator/api";
 import { GET_Tasks, GET_Today, POST_TaskReopen } from "@/api/todo/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { useIsDesktop } from "@/composables/useIsDesktop";
-import { ReadonlyArea } from "@/composables/useReadonly";
+import { ACCESS_STORE, ReadonlyArea, isAreaReadonly } from "@/composables/useReadonly";
 import { AREAS } from "@/configs/areas";
 import { useAccessStore } from "@/stores/access";
 import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
 import { formatDay } from "@/utils/format";
-import { outboundOn } from "@/utils/leadsOutbound";
+import { defaultOwner, outboundOn } from "@/utils/leadsOutbound";
 import { pluralKey } from "@/utils/plural";
 import { routeForSubjectRef } from "@/utils/subjectRef";
 import TaskDialog from "./TaskDialog.vue";
-import { taskDue } from "./tasks";
+import { cancelledLine, taskDue } from "./tasks";
 
 // Today (ux/screens/today.md): the panel root. The caller's tasks by chip and owner (django-todo), and the drafts and
 // replies that wait (communicator). Every block gates itself: no todo → the counters only; no communicator → no
 // counters; neither → a link to Companies.
-const CHIPS = ["due", "upcoming", "none", "done"];
+const CHIPS = ["due", "upcoming", "none", "done", "cancelled"];
 const PAGE_SIZE = 20;
-const CHIP_QUERY = { upcoming: { status: "open", due: "upcoming" }, none: { status: "open", due: "none" }, done: { status: "done" } };
+const EMPTY_TEXT = { done: "leads.today.empty_done", cancelled: "leads.today.empty_cancelled" };
+const CHIP_QUERY = { upcoming: { status: "open", due: "upcoming" }, none: { status: "open", due: "none" }, done: { status: "done" }, cancelled: { status: "cancelled" } };
 
 const munin = useMuninStore();
 const access = useAccessStore();
@@ -155,7 +157,11 @@ const route = useRoute();
 const router = useRouter();
 const chipFromQuery = () => (CHIPS.includes(route.query?.chip) ? route.query.chip : "due");
 const chip = ref(chipFromQuery());
-const owner = ref("me");
+// U18: a role that cannot write tasks opens on All (it owns none); the person's pick holds while the screen is open.
+const accessGate = inject(ACCESS_STORE, null);
+const ownerDefault = computed(() => defaultOwner(!!accessGate && isAreaReadonly(accessGate, AREAS.TODO_TASKS)));
+const ownerPicked = ref(null);
+const owner = computed({ get: () => ownerPicked.value ?? ownerDefault.value, set: (value) => (ownerPicked.value = value) });
 const page = ref(1);
 const pages = ref(1);
 const tasks = ref([]);
@@ -197,6 +203,7 @@ const rows = computed(() =>
   tasks.value.map((task) => ({
     ...task,
     due: taskDue(task),
+    cancelled: cancelledLine(task),
     to: subjectRoute(task.subject_ref),
     kind: t(`leads.task_kind.${task.kind}`),
     owner: task.owner ? task.owner.name || task.owner.username : t("leads.today.owner_none"),
@@ -288,13 +295,19 @@ function openDialog(mode, task) {
   dialogOpen.value = true;
 }
 
+// One Reopen at a time, as on the company card: a second click on the same row would meet "already open".
+const reopening = ref(null);
 async function reopen(task) {
+  if (reopening.value === task.id) return;
+  reopening.value = task.id;
   try {
     await POST_TaskReopen(task.id);
     // k2 (walk 4): a reopened task counts under Due now again — the counter is read with the list
     await Promise.all([load(), chip.value === "due" ? null : loadDue()]);
   } catch (err) {
     notify.spawnNotification({ msg: extractApiMessage(err, t("leads.task.error")), type: "negative" });
+  } finally {
+    reopening.value = null;
   }
 }
 

@@ -1,7 +1,7 @@
 <template>
   <PageLayout>
     <template #header>
-      <PageHeader :title="$t('leads.add.title')">
+      <PageHeader :title="$t('leads.add.title')" :back="goBack">
         <template #actions>
           <ActionBar :actions="actions" />
         </template>
@@ -58,6 +58,7 @@
 import { computed, onMounted, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { t } from "@/i18n";
+import { goBackTo } from "@/composables/useNav";
 import { GET_Companies, POST_Company, POST_Contact } from "@/api/leads/api";
 import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
 import { useLeadTypesStore } from "@/stores/leadTypes";
@@ -78,6 +79,10 @@ const error = ref("");
 const busy = ref(false);
 
 const cardRoute = (id) => ({ name: "LeadsThread", params: { id } });
+// U7: Back goes where the person came from (Companies with its filters, Import); a page opened by URL goes to Companies.
+function goBack() {
+  goBackTo(router, { name: "LeadsCompanies" }, { fromAnywhere: true });
+}
 const typeOptions = computed(() => [
   { value: "UNKNOWN", label: t("leads.lead_types.unknown") },
   ...leadTypes.active.map((type) => ({ value: type.code, label: type.label })),

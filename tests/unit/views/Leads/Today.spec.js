@@ -116,6 +116,33 @@ describe("Leads → Today", () => {
     expect(todo.GET_Tasks.mock.lastCall[0]).not.toHaveProperty("owner");
   });
 
+  // U18: a role that cannot write tasks (viewer) owns none — Today opens on All; its pick holds
+  it("read-only tasks: the owner filter starts on All and keeps the pick", async () => {
+    const wrapper = await mounted({ write: false });
+    expect(wrapper.findComponent('[data-testid="today-owner"]').props("modelValue")).toBe("all");
+    expect(todo.GET_Today).not.toHaveBeenCalled();
+    expect(todo.GET_Tasks.mock.calls.every(([query]) => !("owner" in query))).toBe(true);
+    wrapper.findComponent('[data-testid="today-owner"]').vm.$emit("update:modelValue", "me");
+    await flushPromises();
+    expect(wrapper.findComponent('[data-testid="today-owner"]').props("modelValue")).toBe("me");
+    expect(todo.GET_Today).toHaveBeenCalled();
+  });
+
+  // U5: the Cancelled chip lists cancelled tasks with who, when and why; they reopen, never edit
+  it("Cancelled lists cancelled tasks with who, when and why", async () => {
+    const wrapper = await mounted();
+    todo.GET_Tasks.mockResolvedValue({
+      data: { count: 1, results: [task({ status: "cancelled", done_by: "manager", done_at: past, outcome: "urgent" })] },
+    });
+    await byTestid(wrapper, "today-chip-cancelled").trigger("click");
+    await flushPromises();
+    expect(todo.GET_Tasks).toHaveBeenLastCalledWith({ owner: "me", status: "cancelled", page: 1, page_size: 20 });
+    expect(byTestid(wrapper, "task-cancelled-line").text()).toMatch(/^Cancelled by manager · .+ — urgent$/);
+    expect(byTestid(wrapper, "task-reopen").exists()).toBe(true);
+    expect(byTestid(wrapper, "task-edit").exists()).toBe(false);
+    expect(byTestid(wrapper, "task-done").exists()).toBe(false);
+  });
+
   // k2 (walk 4): the Done chip says how it fills; a reopened task counts under Due now at once
   it("Done says how it fills; Reopen refreshes the Due now count", async () => {
     const wrapper = await mounted();

@@ -129,13 +129,13 @@ describe("Company card actions", () => {
     const link = mount(CompanyActions, {
       props: { company: linked },
       global: {
-        mocks: { $route: { fullPath: "/leads/companies/7" } },
+        mocks: { $route: { fullPath: "/crm/companies/7" } },
         components: leadsFrame.components,
         stubs: { ...leadsFrame.stubs, RouterLink: { props: ["to"], template: "<a :data-back='to.query.back'><slot /></a>" } },
       },
     }).get('[data-testid="company-known-customer"]');
     expect(link.classes()).toContain("t-accent");
-    expect(link.attributes("data-back")).toBe("/leads/companies/7");
+    expect(link.attributes("data-back")).toBe("/crm/companies/7");
     expect(link.text()).toContain("Jan Kowalski");
     expect(link.text()).not.toContain("91010000");
   });
@@ -197,11 +197,11 @@ describe("Company card header", () => {
   it("Back goes to the previous place, else to Companies", async () => {
     const wrapper = await mountCard();
     const back = () => wrapper.findComponent({ name: "PageHeader" }).props("back")();
-    router.options.history.state.back = "/leads";
+    window.history.replaceState({ back: "/crm" }, "");
     back();
     expect(router.back).toHaveBeenCalledTimes(1);
     expect(router.push).not.toHaveBeenCalled();
-    router.options.history.state.back = null;
+    window.history.replaceState({}, "");
     back();
     expect(router.push).toHaveBeenCalledWith({ name: "LeadsCompanies" });
   });
@@ -379,6 +379,18 @@ describe("Company card header", () => {
       expect(wrapper.findComponent({ name: "BasicTabs" }).props("modelValue")).toBe("timeline");
       expect(wrapper.find("thread-stub").exists()).toBe(true);
       expect(wrapper.get('[data-testid="timeline-event"]').text()).toContain("Stage: new → replied");
+    });
+
+    // U5: every History line names who did it — "Task cancelled: {title} — {reason} · {who}"
+    it("every History line names its author", async () => {
+      desktop.on = false;
+      const cancelled = { id: 2, created_at: null, kind: "task", actor: "manager", message: "cancelled: Call", data: { event: "task_cancelled", title: "Call", reason: "urgent" } };
+      const system = { id: 1, created_at: null, kind: "stage", actor: "system", message: "stage new -> replied" };
+      leads.GET_Company.mockResolvedValueOnce({ data: { ...company(), activities: [cancelled, system] } });
+      const wrapper = await mountCard();
+      const lines = wrapper.findAll('[data-testid="timeline-event"]').map((line) => line.text().replace(/\s+/g, " "));
+      expect(lines[0]).toContain("Task cancelled: Call — urgent · manager");
+      expect(lines[1]).toContain("· System");
     });
 
     it("a 404 says the company was not found", async () => {
