@@ -71,7 +71,7 @@
           </div>
           <ul v-if="rowReasons.length" class="import__list" data-testid="import-rows">
             <li v-for="entry in rowReasons" :key="`${entry.row}-${entry.reason}`">
-              {{ entry.row ? $t("leads.import.row", { row: entry.row }) : $t("leads.import.file") }}: {{ importReasonLabel(entry.reason) }}
+              {{ entry.row ? $t("leads.import.row", { row: entry.row }) : $t("leads.import.file") }}: {{ importReasonLabel(entry.reason, reasonName) }}
             </li>
           </ul>
           <router-link
@@ -99,7 +99,7 @@ import { useMuninStore } from "@/stores/munin";
 import { importReasonLabel, importStatusLabel } from "@/utils/leadsLabels";
 import { outboundOn } from "@/utils/leadsOutbound";
 import ImportMapping from "./ImportMapping.vue";
-import { conflicts, hasIdentity, nameConflict, importErrorText, mappingPayload, proposedMapping, wentLines } from "./columnMapping";
+import { conflicts, errorStatus, hasIdentity, nameConflict, importErrorText, reasonFieldName, mappingPayload, proposedMapping, wentLines } from "./columnMapping";
 
 // U17: the file (.csv or .xlsx) is read first — the server proposes a field for every column, the user checks and
 // corrects it — and only then imported with the approved mapping. The batch runs on the leads queue; the screen polls
@@ -152,6 +152,7 @@ const applied = computed(() =>
 );
 const went = computed(() => (preview.value && batch.value ? wentLines(applied.value, preview.value.fields || []) : []));
 // Ignored columns are one sentence above; an older backend also lists them as rows (`ignored_column:<name>`).
+const reasonName = (key) => reasonFieldName(key, preview.value?.fields, applied.value);
 const rowReasons = computed(() => (batch.value?.report || []).filter((entry) => !String(entry.reason).startsWith("ignored_column:")));
 
 // R5: the secondary ways in, then the one primary rightmost: Check the columns, then Import once they are checked.
@@ -219,7 +220,7 @@ async function check() {
     mapping.value = proposedMapping(preview.value.columns);
   } catch (err) {
     if (run !== runId) return;
-    if (NO_PREVIEW.includes(err?.response?.status)) return upload();
+    if (NO_PREVIEW.includes(errorStatus(err))) return upload();
     error.value = errorText(err, "leads.import.mapping.failed");
   }
   busy.value = false;

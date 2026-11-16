@@ -18,6 +18,7 @@ import ImportMapping from "@/views/Leads/ImportMapping.vue";
 import { READONLY } from "@/composables/useReadonly";
 import { leadsFrame, setControl } from "./leadsFrame";
 import { COLUMNS, FIELDS } from "./importFixtures";
+import { clientError } from "../../helpers/clientError";
 
 // U17: the file is read first, its columns checked and corrected, and only then imported with that mapping.
 const PREVIEW = {
@@ -195,13 +196,50 @@ describe("Leads Import — column mapping (U17)", () => {
   });
 
   it("a file the server cannot read says why in words, from the error's issue", async () => {
-    api.POST_ImportPreview.mockRejectedValue({
-      response: { status: 400, data: { error: "VALIDATION_ERROR", details: [{ field: "file", issue: "UNSUPPORTED_FORMAT", description: "x" }] } },
-    });
+    api.POST_ImportPreview.mockRejectedValue(
+      await clientError(400, { error: "VALIDATION_ERROR", message: "Request validation failed.", details: [{ field: "file", issue: "UNSUPPORTED_FORMAT", description: "x" }] })
+    );
     const wrapper = await mountChecked();
     expect(wrapper.get(sel("import-error")).text()).toContain(".xlsx");
     expect(wrapper.find(sel("import-mapping")).exists()).toBe(false);
     expect(api.POST_Import).not.toHaveBeenCalled();
+  });
+
+  it("a file with too many columns says so, not the generic validation text", async () => {
+    api.POST_ImportPreview.mockRejectedValue(
+      await clientError(400, { error: "VALIDATION_ERROR", message: "Request validation failed.", details: [{ field: "file", issue: "TOO_MANY_COLUMNS", description: "x" }] })
+    );
+    const wrapper = await mountChecked();
+    expect(wrapper.get(sel("import-error")).text()).toContain("too many columns");
+    expect(wrapper.get(sel("import-error")).text()).not.toContain("Request validation failed");
+  });
+
+  it("an older backend without the preview (404) goes straight to the import", async () => {
+    api.POST_ImportPreview.mockRejectedValue(await clientError(404, { error: "NOT_FOUND" }));
+    api.POST_Import.mockResolvedValue({ data: { id: 9, status: "done", report: [] } });
+    await mountChecked();
+    expect(api.POST_Import).toHaveBeenCalled();
+  });
+
+  it("a refused row names the CRM field and the file's column", async () => {
+    const batch = {
+      id: 42,
+      status: "done",
+      created_count: 0,
+      matched_count: 0,
+      skipped_count: 1,
+      report: [{ row: 3, reason: "bad_attribute:segment_size" }],
+      column_mapping: [{ column: "Wielkość", field: "attr.segment_size" }],
+    };
+    api.POST_ImportPreview.mockResolvedValue({ data: { ...PREVIEW, fields: [...FIELDS, { key: "attr.segment_size", label: "Company size", entity: "company", custom: true }] } });
+    api.POST_Import.mockResolvedValue({ data: batch });
+    api.GET_Import.mockResolvedValue({ data: batch });
+    const wrapper = await mountChecked();
+    await wrapper.find(sel("import-upload")).trigger("click");
+    await flushPromises();
+    const text = wrapper.get(sel("import-rows")).text();
+    expect(text).toContain('Company size (file column "Wielkość")');
+    expect(text).not.toContain("segment_size");
   });
 
   it("another file starts over: the mapping of the first one is gone", async () => {
@@ -268,7 +306,7 @@ describe("Leads Import — column mapping (U17)", () => {
     const wrapper = await mountChecked();
     let answer;
     api.POST_ImportPreview.mockReturnValue(new Promise((resolve) => (answer = resolve)));
-    api.POST_Import.mockRejectedValue({ response: { status: 400, data: { detail: "Import refused" } } });
+    api.POST_Import.mockRejectedValue(await clientError(400, { detail: "Import refused" }));
     setControl(wrapper, "mapping-field-5", "phone");
     await vi.advanceTimersByTimeAsync(500);
     await wrapper.find(sel("import-upload")).trigger("click");

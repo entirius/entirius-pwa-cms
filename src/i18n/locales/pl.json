@@ -4596,14 +4596,15 @@
         "done": "Gotowe",
         "failed": "Nieudany"
       },
+      "reason_named": "{field} (kolumna pliku „{column}”)",
       "reason": {
         "invalid_legal_basis": "podstawa prawna nie jest żadną z: consent, legitimate_interest, contract",
-        "bad_attribute": "wartość kolumny {name} nie pasuje do jej pola",
+        "bad_attribute": "wartość pola {name} nie pasuje do niego",
         "invalid_email": "adres e-mail jest niepoprawny",
         "no_domain_no_email": "brak domeny i adresu e-mail",
         "invalid_domain": "domena jest niepoprawna",
         "freemail_no_domain": "adres z darmowej poczty i brak domeny — nie wiadomo, która to firma",
-        "too_long": "wartość kolumny {name} jest za długa",
+        "too_long": "wartość pola {name} jest za długa",
         "invalid_value": "wartość, której baza danych nie przyjmuje",
         "conflict": "koliduje z firmą lub kontaktem zapisanym w tej samej chwili",
         "erased_address": "adres usunięto na żądanie tej osoby",

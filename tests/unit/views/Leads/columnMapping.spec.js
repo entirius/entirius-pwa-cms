@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { clientError } from "../../helpers/clientError";
 import {
   IGNORE,
   confidenceLevel,
@@ -6,7 +7,9 @@ import {
   fieldLabel,
   fieldOptions,
   hasIdentity,
+  errorStatus,
   importErrorText,
+  reasonFieldName,
   mappingPayload,
   nameConflict,
   previewFields,
@@ -119,10 +122,24 @@ describe("import mapping helpers (U17)", () => {
     expect(wentLines(applied, FIELDS)).toEqual(["Nazwa firmy → Company name", "xyz → skipped", "Tel → Phone"]);
   });
 
-  it("a 400 reads by its issue; an unknown issue by the server's description; none = not ours", () => {
-    const err = (issue, description) => ({ response: { status: 400, data: { details: [{ field: "file", issue, description }] } } });
-    expect(importErrorText(err("UNSUPPORTED_FORMAT"), "x")).toContain(".xlsx");
-    expect(importErrorText(err("BRAND_NEW", "Brand new problem."), "x")).toBe("Brand new problem.");
-    expect(importErrorText({ response: { status: 500 } }, "x")).toBe(null);
+  it("a 400 reads by its issue; an unknown issue by the server's description; none = not ours", async () => {
+    const err = (issue, description) => clientError(400, { error: "VALIDATION_ERROR", details: [{ field: "file", issue, description }] });
+    expect(importErrorText(await err("UNSUPPORTED_FORMAT"), "x")).toContain(".xlsx");
+    expect(importErrorText(await err("TOO_MANY_COLUMNS"), "x")).toContain("too many columns");
+    expect(importErrorText(await err("BRAND_NEW", "Brand new problem."), "x")).toBe("Brand new problem.");
+    expect(importErrorText(await clientError(500, { error: "INTERNAL" }), "x")).toBe(null);
+  });
+
+  it("the status comes from the client's httpStatus", async () => {
+    expect(errorStatus(await clientError(404, { error: "NOT_FOUND" }))).toBe(404);
+    expect(errorStatus(await clientError(405, undefined))).toBe(405);
+  });
+
+  it("a refused value names the CRM field and the file's column, not the key", () => {
+    const fields = [...FIELDS, { key: "attr.segment_size", label: "Company size", entity: "company", custom: true }];
+    const applied = [{ column: "Wielkość", field: "attr.segment_size" }];
+    expect(reasonFieldName("segment_size", fields, applied)).toBe('Company size (file column "Wielkość")');
+    expect(reasonFieldName("segment_size", fields, [])).toBe("Company size");
+    expect(reasonFieldName("gone", fields, applied)).toBe("gone");
   });
 });

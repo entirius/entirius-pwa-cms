@@ -243,7 +243,7 @@ function bodyOf(contact) {
 
 function showError(err) {
   handleApiError(err);
-  const code = (err?.response?.data || err)?.error;
+  const code = err?.error;
   if (code === "CONTACT_EXISTS")
     errors.email = { status: "error", msg: t("leads.contacts.exists") };
   const onField = Object.keys(errors).some((field) => field in draft);

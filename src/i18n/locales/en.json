@@ -4597,14 +4597,15 @@
         "done": "Done",
         "failed": "Failed"
       },
+      "reason_named": "{field} (file column \"{column}\")",
       "reason": {
         "invalid_legal_basis": "the legal basis is not one of consent, legitimate_interest, contract",
-        "bad_attribute": "the value of the column {name} does not fit its field",
+        "bad_attribute": "the value of {name} does not fit its field",
         "invalid_email": "the e-mail address is not valid",
         "no_domain_no_email": "neither a domain nor an e-mail address",
         "invalid_domain": "the domain is not valid",
         "freemail_no_domain": "a free mail address and no domain — the company cannot be told",
-        "too_long": "the value of the column {name} is too long",
+        "too_long": "the value of {name} is too long",
         "invalid_value": "a value the database does not accept",
         "conflict": "it clashes with a company or contact saved at the same time",
         "erased_address": "the address was erased at the person's request",

@@ -36,7 +36,7 @@ function sessionExpiredRedirect() {
 
 // The unwrapped v2 body carries no HTTP status (a 409 reads INVALID_REQUEST) — keep it as a
 // non-enumerable `httpStatus` so callers can tell a conflict apart (isConflict).
-function rejectWithBody(err) {
+export function rejectWithBody(err) {
   const body = err.response.data
   if (body && typeof body === 'object') {
     Object.defineProperty(body, 'httpStatus', { value: err.response.status, configurable: true })
