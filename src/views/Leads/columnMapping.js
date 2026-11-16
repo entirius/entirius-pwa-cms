@@ -99,7 +99,25 @@ export function wentLines(applied, fields) {
 
 /** A 400 of the preview or the import in words, by its `issue`; the server's description, else `fallback`. */
 export function importErrorText(err, fallback) {
-  const detail = err?.response?.data?.details?.[0];
+  // The API client rejects with the response body itself (`rejectWithBody`), so `details` sits on the error.
+  const detail = err?.details?.[0];
   if (detail?.issue) return label(`leads.import.mapping.issue.${detail.issue}`, detail.description || fallback);
   return null;
+}
+
+/** The HTTP status of a failed request: the client keeps it as `httpStatus` on the body it rejects with. */
+export const errorStatus = (err) => err?.httpStatus ?? err?.response?.status;
+
+/**
+ * The name of a refused value's field in a report reason ("bad_attribute:segment_size"): the CRM field's label as the
+ * mapping step shows it, and the file's column when the mapping says which one went there; the key itself when the
+ * field is unknown.
+ */
+export function reasonFieldName(key, fields, applied) {
+  // The report names a custom attribute by its bare key; the mapping step knows it as `attr.<key>` / `contact.attr.<key>`.
+  const keys = [key, `attr.${key}`, `contact.attr.${key}`];
+  const field = (fields || []).find((item) => keys.includes(item.key));
+  if (!field) return key;
+  const column = (applied || []).find((item) => item.field === field.key)?.column;
+  return column ? t("leads.import.reason_named", { field: fieldLabel(field), column }) : fieldLabel(field);
 }

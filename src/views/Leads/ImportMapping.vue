@@ -5,45 +5,50 @@
       <p v-if="summary" class="m-0 t-secondary" data-testid="mapping-file">
         {{ summary }}
       </p>
-      <DataTable :columns="tableColumns" :rows="columns" row-key="name" :row-attrs="(row) => ({ 'data-testid': `mapping-row-${row.index}` })">
-        <template #cell-name="{ row }">
-          <span class="t-strong" data-testid="mapping-column">{{ row.name }}</span>
-        </template>
-        <template #cell-samples="{ row }">
-          <span class="t-secondary" data-testid="mapping-samples">{{ (row.samples || []).slice(0, 3).join(", ") || "—" }}</span>
-        </template>
-        <template #cell-field="{ row }">
-          <BasicSelect
-            :model-value="modelValue[row.name] || IGNORE"
-            :options="options"
-            :disabled="readonly"
-            :aria-label="$t('leads.import.mapping.field_for', { column: row.name })"
-            searchable
-            :data-testid="`mapping-field-${row.index}`"
-            @update:model-value="(field) => emit('update:modelValue', withField(modelValue, row.name, field))"
-          />
-        </template>
-        <template #cell-confidence="{ row }">
-          <div class="flex-column gap-1">
-            <StatusBadge
-              :tone="CONFIDENCE_TONES[level(row)]"
-              :label="$t(`leads.import.mapping.confidence.${level(row)}`)"
-              :data-testid="`mapping-confidence-${row.index}`"
-            />
-            <span v-if="clash(row)" class="t-negative" :data-testid="`mapping-conflict-${row.index}`">
-              {{
-                $t("leads.import.mapping.conflict", {
-                  columns: clash(row).join(", "),
-                })
-              }}
-            </span>
-            <span v-else-if="nameClash.includes(row.name)" class="t-negative" :data-testid="`mapping-name-conflict-${row.index}`">
-              {{ $t("leads.import.mapping.name_conflict") }}
-            </span>
-            <span v-else-if="note(row)" class="t-secondary" :data-testid="`mapping-note-${row.index}`">{{ note(row) }}</span>
-          </div>
-        </template>
-      </DataTable>
+      <!-- the four columns keep the width they need and scroll sideways inside the card, never the page -->
+      <div class="table-scroll" data-testid="mapping-table-scroll">
+        <div style="min-width: 48rem">
+          <DataTable :columns="tableColumns" :rows="columns" row-key="name" :row-attrs="(row) => ({ 'data-testid': `mapping-row-${row.index}` })">
+            <template #cell-name="{ row }">
+              <span class="t-strong" data-testid="mapping-column">{{ row.name }}</span>
+            </template>
+            <template #cell-samples="{ row }">
+              <span class="t-secondary" data-testid="mapping-samples">{{ (row.samples || []).slice(0, 3).join(", ") || "—" }}</span>
+            </template>
+            <template #cell-field="{ row }">
+              <BasicSelect
+                :model-value="modelValue[row.name] || IGNORE"
+                :options="options"
+                :disabled="readonly"
+                :aria-label="$t('leads.import.mapping.field_for', { column: row.name })"
+                searchable
+                :data-testid="`mapping-field-${row.index}`"
+                @update:model-value="(field) => emit('update:modelValue', withField(modelValue, row.name, field))"
+              />
+            </template>
+            <template #cell-confidence="{ row }">
+              <div class="flex-column gap-1">
+                <StatusBadge
+                  :tone="CONFIDENCE_TONES[level(row)]"
+                  :label="$t(`leads.import.mapping.confidence.${level(row)}`)"
+                  :data-testid="`mapping-confidence-${row.index}`"
+                />
+                <span v-if="clash(row)" class="t-negative" :data-testid="`mapping-conflict-${row.index}`">
+                  {{
+                    $t("leads.import.mapping.conflict", {
+                      columns: clash(row).join(", "),
+                    })
+                  }}
+                </span>
+                <span v-else-if="nameClash.includes(row.name)" class="t-negative" :data-testid="`mapping-name-conflict-${row.index}`">
+                  {{ $t("leads.import.mapping.name_conflict") }}
+                </span>
+                <span v-else-if="note(row)" class="t-secondary" :data-testid="`mapping-note-${row.index}`">{{ note(row) }}</span>
+              </div>
+            </template>
+          </DataTable>
+        </div>
+      </div>
       <p v-if="conflictCount" class="t-negative m-0" data-testid="mapping-conflicts">
         {{ $t("leads.import.mapping.conflicts", { count: conflictCount }) }}
       </p>

@@ -109,7 +109,7 @@ const actions = computed(() =>
   ].filter(Boolean)
 );
 const fieldError = (name) => getFieldError(name)?.msg || "";
-const errorCode = (err) => (err?.response?.data || err)?.error || "";
+const errorCode = (err) => err?.error || "";
 const hasContact = () => ["email", "first_name", "last_name"].some((field) => form[field]);
 
 // The host a user typed ("https://www.shop.pl/x" → "shop.pl") — enough to find the company that already holds it.

@@ -9,6 +9,7 @@ vi.mock("vue-router", () => ({ useRouter: () => ({ push }) }));
 
 import Import from "@/views/Leads/Import.vue";
 import { leadsFrame } from "./leadsFrame";
+import { clientError } from "../../helpers/clientError";
 import { t } from "@/i18n";
 import { useMuninStore } from "@/stores/munin";
 import { useAccessStore } from "@/stores/access";
@@ -25,7 +26,7 @@ beforeEach(() => {
   setActivePinia(createPinia());
   // An older backend has no preview (404): the file goes straight to the import, as before U17.
   api.POST_ImportPreview.mockReset();
-  api.POST_ImportPreview.mockRejectedValue({ response: { status: 404 } });
+  api.POST_ImportPreview.mockImplementation(() => clientError(404, { error: "NOT_FOUND" }).then((e) => Promise.reject(e)));
   api.GET_AssignableUsers.mockResolvedValue([{ id: 7, username: "anna", name: "Anna Kowalska" }]);
   api.GET_Attributes.mockImplementation((entity) =>
     Promise.resolve({ data: { results: entity === "company" ? [{ key: "size", label: "Size", kind: "number" }, { key: "old", label: "Old", kind: "text", is_active: false }] : [{ key: "role", label: "Role", kind: "select" }] } })
@@ -41,7 +42,7 @@ describe("Leads Import", () => {
     vi.useFakeTimers();
     api.POST_Import.mockResolvedValue({ data: { id: 5, status: "pending" } });
     api.GET_Import.mockReset();
-    api.GET_Import.mockResolvedValueOnce({ data: { id: 5, status: "running" } }).mockRejectedValue({ response: { data: { detail: "gone" } } });
+    api.GET_Import.mockResolvedValueOnce({ data: { id: 5, status: "running" } }).mockImplementation(() => clientError(500, { detail: "gone" }).then((e) => Promise.reject(e)));
     const wrapper = await mountWithFile();
     await wrapper.find('[data-testid="import-check"]').trigger("click");
     await flushPromises();
@@ -165,7 +166,7 @@ describe("Leads Import", () => {
     const lines = wrapper.findAll('[data-testid="import-rows"] li').map((li) => li.text());
     expect(lines).toEqual([
       'leads.import.row::{"row":2}: the e-mail address is not valid',
-      'leads.import.row::{"row":3}: the value of the column company_name is too long',
+      'leads.import.row::{"row":3}: the value of company_name is too long',
       'leads.import.row::{"row":4}: brand_new_code',
       "leads.import.file: the file is not a readable CSV",
     ]);

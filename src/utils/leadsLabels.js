@@ -36,10 +36,11 @@ export const addressStatusLabel = (value) => label(`leads.address_status.${value
 export const importStatusLabel = (value) => label(`leads.import.state.${value}`, value);
 
 // An import report reason ("invalid_email", "too_long:name"): a sentence naming the column, the code as the fallback.
-export function importReasonLabel(reason) {
+// `nameOf` turns the column key into the words shown (a field label); the key itself without it.
+export function importReasonLabel(reason, nameOf = (key) => key) {
   const [code, name = ""] = String(reason).split(":");
   const key = `leads.import.reason.${code}`;
-  return t(key) === key ? String(reason) : t(key, { name });
+  return t(key) === key ? String(reason) : t(key, { name: name && nameOf(name) });
 }
 
 export const healthTriggerLabel = (value) => label(`leads.health.trigger.${value}`, value);
