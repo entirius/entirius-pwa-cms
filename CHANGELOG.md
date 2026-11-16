@@ -17,6 +17,11 @@ All notable changes to this project will be documented in this file.
 - Leads panel, Approvals (U13): the Mailbox filter shows each mailbox by its address and owner ("sales1@shop.test
   (Anna Nowak)") instead of its number, from communicator's `counts.mailboxes` (django-communicator with
   `feature/mailbox-filter-labels`); an older communicator keeps the numbers.
+- Leads panel, Approvals (U14): the Approve dialog says up front which selected drafts will not go out because their
+  mailbox is paused, switched off or needs a login ("The mailbox sales1@shop.test is paused: 1 selected draft will not
+  go out. The other 1 goes out at once.", en + pl); when none of them could go out, Approve is off. Reads
+  `mailbox_id` and `counts.mailboxes[].hold` of communicator's approvals list (`feature/mailbox-filter-labels`).
+  `ConfirmDialog` takes `confirmDisabled`.
 
 ### Added
 

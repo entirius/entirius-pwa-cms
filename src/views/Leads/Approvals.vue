@@ -96,8 +96,9 @@
     <ConfirmDialog
       :open="approving.open"
       :title="approveTitle"
-      :message="$t('leads.approvals.approve_confirm')"
+      :message="approveMessage"
       :confirm-label="$t('leads.approvals.approve')"
+      :confirm-disabled="approveHeld.held === approving.ids.length"
       confirm-testid="approvals-approve-confirm"
       @confirm="submitApprove"
       @cancel="approving.open = false"
@@ -246,6 +247,29 @@ const rejectConsequence = computed(() =>
 const approveTitle = computed(() => {
   const count = approving.ids.length;
   return t(`leads.approvals.approve_title_${pluralKey(count)}`, { count });
+});
+// U14: the drafts of a mailbox on hold (paused, switched off, needing a login) are refused at approval — the dialog
+// says so up front, per mailbox, and Approve is off when none of the drafts could go out.
+const approveHeld = computed(() => {
+  const byMailbox = new Map();
+  for (const id of approving.ids) {
+    const mailbox = mailboxOf(rows.value.find((row) => row.id === id)?.mailbox_id);
+    if (mailbox?.hold) byMailbox.set(mailbox, (byMailbox.get(mailbox) || 0) + 1);
+  }
+  const lines = [...byMailbox].map(([mailbox, count]) =>
+    t(`leads.approvals.held_line_${pluralKey(count)}`, {
+      mailbox: t(`leads.approvals.held_${mailbox.hold}`, { address: mailbox.address }),
+      count,
+    })
+  );
+  return { held: [...byMailbox.values()].reduce((sum, count) => sum + count, 0), lines };
+});
+const approveMessage = computed(() => {
+  const { held, lines } = approveHeld.value;
+  if (!held) return t("leads.approvals.approve_confirm");
+  const rest = approving.ids.length - held;
+  const tail = rest ? t(`leads.approvals.held_rest_${pluralKey(rest)}`, { count: rest }) : t("leads.approvals.held_all");
+  return [...lines, tail].join(" ");
 });
 const rejectActions = computed(() => [
   { key: "cancel", role: "secondary", label: t("common.cancel"), onClick: () => (rejecting.open = false) },
