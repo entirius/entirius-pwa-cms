@@ -24,7 +24,7 @@
       <EmptyState v-else-if="stagesLoaded && !stages.length" icon="empty" size="md" :title="$t('leads.deals.no_stages')" data-testid="deals-no-stages">
         <router-link v-if="canSetUp" class="t-accent" :to="{ name: 'LeadsDealStages' }">{{ $t("leads.deal_stages.title") }}</router-link>
       </EmptyState>
-      <EmptyState v-else-if="!deals.length && archivedView && !filtered" icon="empty" size="md" :title="$t('leads.deals.none_archived')" data-testid="deals-empty-archived" />
+      <EmptyState v-else-if="!deals.length && archivedView && !narrowed" icon="empty" size="md" :title="$t('leads.deals.none_archived')" data-testid="deals-empty-archived" />
       <!-- Mine is empty while the channel has deals: say so and offer them all (N18) -->
       <EmptyState v-else-if="!deals.length && !filtered && othersExist" icon="empty" size="md" :title="$t('leads.deals.none_mine')" data-testid="deals-empty-mine">
         <BasicButton data-testid="deals-show-all" @click="setFilter({ owner: 'all' })">{{ $t("leads.deals.show_all_deals") }}</BasicButton>
@@ -124,6 +124,8 @@ const pages = computed(() => Math.max(1, Math.ceil(count.value / PAGE_SIZE)));
 // The defaults (Mine, or All for a read-only role; Open) are no filter: a channel without a deal of mine shows the first-run empty state.
 const filtered = computed(() => Object.keys(route.query).some((key) => FILTER_KEYS.includes(key)) || query.value.owner !== ownerDefault.value || query.value.kind !== DEFAULT_DEAL_KIND);
 // The Archived button lists the archived deals (`?archived=1`): won or lost, so no status filter applies.
+// a search, stage or dates on top of the archive: an empty answer is "nothing matches", not "no archived deal"
+const narrowed = computed(() => Object.keys(route.query).some((key) => key !== "archived" && FILTER_KEYS.includes(key)));
 const archivedView = computed(() => query.value.archived === "1");
 const closedFilter = computed(() => archivedView.value || ["won", "lost"].includes(query.value.kind));
 // The board is a desk screen: a link that asks for it on a phone lands on the list and says so.
@@ -178,7 +180,7 @@ function setFilter(changes) {
   router.replace({ query: next });
 }
 
-const clearFilters = () => router.replace({ query: { owner: "all", kind: "all" } });
+const clearFilters = () => router.replace({ query: { owner: "all", kind: "all", ...(archivedView.value && { archived: "1" }) } });
 const openBoard = (value) => value === "board" && router.push({ name: "LeadsDealsBoard", query: { owner: query.value.owner } });
 const openDeal = (row) => router.push({ name: "LeadsDeal", params: { id: row.id } });
 
