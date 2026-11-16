@@ -6,6 +6,13 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- CRM, Import column mapping: picking another file while a batch is polled no longer leaves Check disabled or shows
+  the old file's report; a preview answer for a file that was replaced is dropped; a full name chosen together with a
+  first or last name keeps Import disabled with its own message (the server refuses the pair); the preview table scrolls
+  sideways inside its card when many fields are mapped; a proposal the user skipped reads "Skipped" and a column CRM has
+  no field for (NIP, REGON) reads "Check it" instead of "Not recognised"; `region`, `revenue` and `linkedin` have their
+  words; Polish wording of the step made consistent ("trafia"). `ConfirmDialog` `confirmDisabled` is in
+  `docs/ui-components.md`.
 - CRM, U19: write buttons outside a page's read-only reach now follow the role's write right like the page
   buttons do. A read-only role (viewer) no longer sees "Add company" in the Companies side panel of a company card
   (companies area), "Send now" on a waiting Inbox row (conversations area), or Skip, Send and the more menu on Review

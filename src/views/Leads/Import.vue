@@ -98,7 +98,7 @@ import { useMuninStore } from "@/stores/munin";
 import { importReasonLabel, importStatusLabel } from "@/utils/leadsLabels";
 import { outboundOn } from "@/utils/leadsOutbound";
 import ImportMapping from "./ImportMapping.vue";
-import { conflicts, hasIdentity, importErrorText, mappingPayload, proposedMapping, wentLines } from "./columnMapping";
+import { conflicts, hasIdentity, nameConflict, importErrorText, mappingPayload, proposedMapping, wentLines } from "./columnMapping";
 
 // U17: the file (.csv or .xlsx) is read first — the server proposes a field for every column, the user checks and
 // corrects it — and only then imported with the approved mapping. The batch runs on the leads queue; the screen polls
@@ -141,7 +141,10 @@ const sentMapping = ref(null);
 let timer = null;
 let refreshTimer = null;
 let refreshSeq = 0;
-const mappingReady = computed(() => !Object.keys(conflicts(mapping.value)).length && hasIdentity(mapping.value));
+// One number per file: picking another file (reset) moves it on, and an answer for the old file is dropped.
+let runId = 0;
+const clashing = (current) => Object.keys(conflicts(current)).length > 0 || nameConflict(current).length > 0;
+const mappingReady = computed(() => !clashing(mapping.value) && hasIdentity(mapping.value));
 // Where each column went: the batch says it (`column_mapping`), else the mapping this screen sent.
 const applied = computed(() =>
   batch.value?.column_mapping?.length ? batch.value.column_mapping : Object.entries(sentMapping.value || {}).map(([column, field]) => ({ column, field }))
@@ -181,6 +184,8 @@ function reset() {
   clearTimeout(timer);
   clearTimeout(refreshTimer);
   refreshSeq += 1;
+  runId += 1;
+  busy.value = false;
   preview.value = null;
   mapping.value = {};
   sentMapping.value = null;
@@ -203,13 +208,16 @@ function chooseAgain() {
 const errorText = (err, fallbackKey) => importErrorText(err, t(fallbackKey)) || extractApiMessage(err, t(fallbackKey));
 
 async function check() {
+  const run = runId;
   error.value = "";
   busy.value = true;
   try {
     const { data } = await POST_ImportPreview(file.value);
+    if (run !== runId) return;
     preview.value = { ...data, columns: data.columns || [], rows: data.rows || [] };
     mapping.value = proposedMapping(preview.value.columns);
   } catch (err) {
+    if (run !== runId) return;
     if (NO_PREVIEW.includes(err?.response?.status)) return upload();
     error.value = errorText(err, "leads.import.mapping.failed");
   }
@@ -233,7 +241,7 @@ async function refresh() {
 watch(mapping, (next, previous) => {
   if (!preview.value || !Object.keys(previous || {}).length) return;
   clearTimeout(refreshTimer);
-  if (Object.keys(conflicts(next)).length) return;
+  if (clashing(next)) return;
   refreshTimer = setTimeout(refresh, REFRESH_MS);
 });
 
@@ -252,30 +260,35 @@ function fail(err) {
 }
 
 // Every poll handles its own failure: a later poll runs from the timer, outside upload()'s try.
-async function poll() {
+async function poll(run) {
+  let data;
   try {
-    batch.value = (await GET_Import(batch.value.id)).data;
+    data = (await GET_Import(batch.value.id)).data;
   } catch (err) {
-    return fail(err);
+    return run === runId ? fail(err) : undefined;
   }
-  if (FINISHED.includes(batch.value.status)) busy.value = false;
-  else timer = setTimeout(poll, POLL_MS);
+  if (run !== runId) return;
+  batch.value = data;
+  if (FINISHED.includes(data.status)) busy.value = false;
+  else timer = setTimeout(() => poll(run), POLL_MS);
 }
 
 async function upload() {
+  const run = runId;
   error.value = "";
   busy.value = true;
   try {
     sentRunRules.value = outbound.value && runRules.value;
     const extras = outbound.value ? [runRules.value, ownerId.value] : [];
-    if (preview.value) {
-      sentMapping.value = mappingPayload(preview.value.columns, mapping.value);
-      batch.value = (await POST_Import(file.value, extras[0], extras[1], sentMapping.value)).data;
-    } else batch.value = (await POST_Import(file.value, ...extras)).data;
+    const sent = preview.value ? mappingPayload(preview.value.columns, mapping.value) : null;
+    const { data } = sent ? await POST_Import(file.value, extras[0], extras[1], sent) : await POST_Import(file.value, ...extras);
+    if (run !== runId) return;
+    sentMapping.value = sent;
+    batch.value = data;
   } catch (err) {
-    return fail(err);
+    return run === runId ? fail(err) : undefined;
   }
-  await poll();
+  await poll(run);
 }
 
 // The custom-field columns a file may carry: `attr.<key>` for a company field, `contact.attr.<key>` for a contact one.

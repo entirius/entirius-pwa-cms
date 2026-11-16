@@ -8,6 +8,7 @@ import {
   hasIdentity,
   importErrorText,
   mappingPayload,
+  nameConflict,
   previewFields,
   proposalNote,
   proposedMapping,
@@ -18,13 +19,24 @@ import { COLUMNS, FIELDS } from "./importFixtures";
 
 describe("import mapping helpers (U17)", () => {
   it("names the server's level in three words: sure, check it, not recognised", () => {
-    expect(COLUMNS.map((column) => confidenceLevel(column))).toEqual(["sure", "sure", "check", "unknown", "check", "unknown"]);
+    expect(COLUMNS.map((column) => confidenceLevel(column))).toEqual(["sure", "sure", "check", "check", "check", "unknown"]);
   });
 
-  it("a field the user picked is sure; a column the user skipped is not recognised", () => {
+  it("a field the user picked is sure; a proposal the user skipped is skipped, not unrecognised", () => {
     expect(confidenceLevel(COLUMNS[5], "phone")).toBe("sure");
-    expect(confidenceLevel(COLUMNS[2], IGNORE)).toBe("unknown");
+    expect(confidenceLevel(COLUMNS[2], IGNORE)).toBe("skipped");
+    expect(confidenceLevel(COLUMNS[0], IGNORE)).toBe("skipped");
+    expect(confidenceLevel(COLUMNS[5], IGNORE)).toBe("unknown");
     expect(confidenceLevel(COLUMNS[2], "email")).toBe("check");
+  });
+
+  it("a full name together with a first or last name is a conflict of its own", () => {
+    const base = { A: "full_name", B: "email" };
+    expect(nameConflict(base)).toEqual([]);
+    expect(nameConflict({ ...base, C: "first_name" })).toEqual(["A", "C"]);
+    expect(nameConflict({ ...base, C: "last_name" })).toEqual(["A", "C"]);
+    expect(nameConflict({ B: "email", C: "first_name", D: "last_name" })).toEqual([]);
+    expect(conflicts({ ...base, C: "first_name" })).toEqual({});
   });
 
   it("starts from the proposal, keyed by the column name", () => {

@@ -294,10 +294,12 @@ One rule: the same thing looks the same everywhere.
   `POST imports/preview/` first; `ImportMapping.vue` shows one row per file column — name, up to three samples, the
   field select (Skip, then the company, contact and custom fields from the response's `fields`; built-in fields named
   in the UI language by key, custom ones by their label) and the server's `level` as Sure / Check it / Not recognised
-  with its reason or source (`views/Leads/columnMapping.js`). A changed field is the user's (Sure); 400 ms after a
-  change the rows come again from `POST imports/preview/` with `mapping` (not while two columns share a field). Two
-  columns on one field, or no column for the domain, website or e-mail, keep Import disabled
-  and say why. Import =
+  with its reason or source (`views/Leads/columnMapping.js`). A changed field is the user's (Sure); a proposal the user
+  skipped reads Skipped. 400 ms after a change the rows come again from `POST imports/preview/` with `mapping` (not
+  while two columns share a field). Two columns on one field, a full name together with a first or last name
+  (`nameConflict`; the server refuses that pair), or no column for the domain, website or e-mail, keep Import disabled
+  and say why. Picking another file drops whatever the previous one still has in flight (`runId`). The preview table
+  scrolls sideways inside its card when many fields are mapped. Import =
   `POST imports/` with the same file and the mapping of every column (`{column: field | "ignore"}`); the report adds
   "Where the columns went" from the batch's `column_mapping`. A 400 reads by its `details[0].issue`. A backend without
   the preview (404 / 405) imports the file straight away, as before. Read-only (viewer): no Check / Import, the field

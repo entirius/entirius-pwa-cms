@@ -4635,9 +4635,11 @@
         "confidence": {
           "sure": "Sure",
           "check": "Check it",
-          "unknown": "Not recognised"
+          "unknown": "Not recognised",
+          "skipped": "Skipped"
         },
         "conflict": "also chosen for: {columns}",
+        "name_conflict": "Full name, or first and last name separately: choose one.",
         "conflicts": "Fields chosen for more than one column: {count}. Pick one column per field, or skip the others.",
         "preview_empty": "No column goes to CRM yet.",
         "check": "Check the columns",
@@ -4649,7 +4651,7 @@
         "failed": "The file could not be read",
         "file_summary": "{name}: {rows} rows, {columns} columns",
         "col_row": "Row",
-        "col_skip": "Import says",
+        "col_skip": "What the import does",
         "preview_title": "The first rows after the mapping",
         "no_identity": "Choose a column for the domain, the website or the e-mail address — without one the companies cannot be told apart.",
         "no_name": "No column goes to the company name: the companies will be named after their domain.",
@@ -4694,7 +4696,10 @@
           "postal_code": "a postal code",
           "country": "a country",
           "employees": "the number of employees",
-          "address": "an address"
+          "address": "an address",
+          "region": "a region",
+          "revenue": "the revenue",
+          "linkedin": "a LinkedIn profile"
         },
         "issue": {
           "REQUIRED": "Choose a file first.",

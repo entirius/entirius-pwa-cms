@@ -4634,24 +4634,26 @@
         "confidence": {
           "sure": "Pewne",
           "check": "Do sprawdzenia",
-          "unknown": "Nierozpoznane"
+          "unknown": "Nierozpoznane",
+          "skipped": "Pominięta"
         },
         "conflict": "wybrane też dla: {columns}",
+        "name_conflict": "Imię i nazwisko albo osobno imię i nazwisko: wybierz jedno.",
         "conflicts": "Pola wybrane dla więcej niż jednej kolumny: {count}. Wybierz jedną kolumnę na pole, pozostałe pomiń.",
         "preview_empty": "Żadna kolumna nie trafia jeszcze do CRM.",
         "check": "Sprawdź kolumny",
         "import": "Importuj",
         "other_file": "Wybierz inny plik",
-        "result_title": "Gdzie poszły kolumny",
+        "result_title": "Dokąd trafiły kolumny",
         "went": "{column} → {field}",
         "went_skipped": "{column} → pominięta",
         "failed": "Nie udało się odczytać pliku",
         "file_summary": "{name}: wiersze {rows}, kolumny {columns}",
         "col_row": "Wiersz",
-        "col_skip": "Uwaga importu",
+        "col_skip": "Co zrobi import",
         "preview_title": "Pierwsze wiersze po mapowaniu",
         "no_identity": "Wybierz kolumnę z domeną, stroną www albo adresem e-mail — bez niej nie da się rozróżnić firm.",
-        "no_name": "Żadna kolumna nie idzie do nazwy firmy: firmy dostaną nazwę od domeny.",
+        "no_name": "Żadna kolumna nie trafia do nazwy firmy: firmy dostaną nazwę od domeny.",
         "field": {
           "company_name": "Nazwa firmy",
           "domain": "Domena",
@@ -4693,7 +4695,10 @@
           "postal_code": "kod pocztowy",
           "country": "kraj",
           "employees": "liczbę pracowników",
-          "address": "adres"
+          "address": "adres",
+          "region": "region",
+          "revenue": "przychód",
+          "linkedin": "profil LinkedIn"
         },
         "issue": {
           "REQUIRED": "Najpierw wybierz plik.",
@@ -4705,7 +4710,7 @@
           "INVALID_JSON": "Nie udało się wysłać mapowania kolumn — sprawdź kolumny jeszcze raz.",
           "UNKNOWN_COLUMN": "Plik nie pasuje do sprawdzonych kolumn — sprawdź kolumny jeszcze raz.",
           "UNKNOWN_FIELD": "Wybrane pole już nie istnieje — sprawdź kolumny jeszcze raz.",
-          "DUPLICATE_FIELD": "Dwie kolumny idą do tego samego pola — zostaw jedną.",
+          "DUPLICATE_FIELD": "Dwie kolumny trafiają do tego samego pola — zostaw jedną.",
           "NO_COMPANY_KEY": "Wybierz kolumnę z domeną, stroną www albo adresem e-mail."
         }
       }
@@ -5090,7 +5095,7 @@
       "col_optouts": "Rezygnacje",
       "col_complaints": "Skargi",
       "col_today": "Wysłane dziś (od 00:00)",
-      "windows_note": "„{sent}” liczy wstecz od teraz; „Wysłane dziś” liczy dzień kalendarzowy kanału od 00:00, czas {timezone}.",
+      "windows_note": "„{sent}” liczy wstecz od teraz; „Wysłane dziś” liczy dzień kalendarzowy kanału od 00:00 (strefa {timezone}).",
       "windows_note_no_tz": "„{sent}” liczy wstecz od teraz; „Wysłane dziś” liczy dzień kalendarzowy kanału od 00:00.",
       "policy": "Automatyczne wstrzymanie",
       "enabled": "Wstrzymuj konto automatycznie",

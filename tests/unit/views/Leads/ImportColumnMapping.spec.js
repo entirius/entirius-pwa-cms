@@ -35,6 +35,12 @@ const PREVIEW = {
 const global = { components: leadsFrame.components, stubs: { ...leadsFrame.stubs, RouterLink: true } };
 const sel = (id) => `[data-testid="${id}"]`;
 
+function pickFile(wrapper, name) {
+  const input = wrapper.find(sel("import-file"));
+  Object.defineProperty(input.element, "files", { value: [new File(["x"], name)], configurable: true });
+  return input.trigger("change");
+}
+
 async function mountChecked() {
   const wrapper = mount(Import, { global });
   const input = wrapper.find(sel("import-file"));
@@ -79,7 +85,7 @@ describe("Leads Import — column mapping (U17)", () => {
       "leads.import.mapping.confidence.sure",
       "leads.import.mapping.confidence.sure",
       "leads.import.mapping.confidence.check",
-      "leads.import.mapping.confidence.unknown",
+      "leads.import.mapping.confidence.check",
       "leads.import.mapping.confidence.check",
       "leads.import.mapping.confidence.unknown",
     ]);
@@ -205,6 +211,60 @@ describe("Leads Import — column mapping (U17)", () => {
     await input.trigger("change");
     expect(wrapper.find(sel("import-mapping")).exists()).toBe(false);
     expect(wrapper.find(sel("import-check")).exists()).toBe(true);
+  });
+
+  it("another file picked while the import is polled: Check works again and the old report never shows", async () => {
+    vi.useFakeTimers();
+    const running = { id: 41, status: "running", created_count: 0, matched_count: 0, skipped_count: 0, report: [] };
+    let answer;
+    api.POST_Import.mockResolvedValue({ data: { ...running, status: "pending" } });
+    api.GET_Import.mockReturnValue(new Promise((resolve) => (answer = resolve)));
+    const wrapper = await mountChecked();
+    await wrapper.find(sel("import-upload")).trigger("click");
+    await flushPromises();
+    expect(wrapper.find(sel("import-report")).exists()).toBe(true);
+    pickFile(wrapper, "inna.csv");
+    await flushPromises();
+    expect(wrapper.find(sel("import-report")).exists()).toBe(false);
+    expect(wrapper.find(sel("import-check")).attributes("disabled")).toBe("false");
+    answer({ data: { ...running, status: "done" } });
+    await vi.advanceTimersByTimeAsync(3000);
+    await flushPromises();
+    expect(wrapper.find(sel("import-report")).exists()).toBe(false);
+    expect(api.GET_Import).toHaveBeenCalledTimes(1);
+    expect(wrapper.find(sel("import-check")).attributes("disabled")).toBe("false");
+  });
+
+  it("the preview of the first file arriving after another file was picked is dropped", async () => {
+    let answer;
+    api.POST_ImportPreview.mockReturnValueOnce(new Promise((resolve) => (answer = resolve)));
+    const wrapper = mount(Import, { global });
+    pickFile(wrapper, "baza.xlsx");
+    await wrapper.find(sel("import-check")).trigger("click");
+    pickFile(wrapper, "inna.csv");
+    answer({ data: PREVIEW });
+    await flushPromises();
+    expect(wrapper.find(sel("import-mapping")).exists()).toBe(false);
+    expect(wrapper.get(sel("import-file-name")).text()).toBe("inna.csv");
+    expect(wrapper.find(sel("import-check")).attributes("disabled")).toBe("false");
+  });
+
+  it("a full name chosen with a first or last name: both rows say so, Import waits, no refresh is asked", async () => {
+    vi.useFakeTimers();
+    const wrapper = await mountChecked();
+    setControl(wrapper, "mapping-field-2", "full_name");
+    await flushPromises();
+    setControl(wrapper, "mapping-field-5", "first_name");
+    await flushPromises();
+    expect(wrapper.get(sel("mapping-name-conflict-2")).text()).toBe("leads.import.mapping.name_conflict");
+    expect(wrapper.get(sel("mapping-name-conflict-5")).text()).toBe("leads.import.mapping.name_conflict");
+    expect(wrapper.find(sel("mapping-name-conflicts")).exists()).toBe(true);
+    expect(wrapper.find(sel("import-upload")).attributes("disabled")).toBe("true");
+    await vi.advanceTimersByTimeAsync(500);
+    expect(api.POST_ImportPreview).toHaveBeenCalledTimes(1);
+    setControl(wrapper, "mapping-field-5", "ignore");
+    await flushPromises();
+    expect(wrapper.find(sel("mapping-name-conflicts")).exists()).toBe(false);
   });
 
   it("read-only (viewer): the fields cannot be changed", () => {

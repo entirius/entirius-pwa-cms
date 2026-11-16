@@ -37,12 +37,18 @@
                 })
               }}
             </span>
+            <span v-else-if="nameClash.includes(row.name)" class="t-negative" :data-testid="`mapping-name-conflict-${row.index}`">
+              {{ $t("leads.import.mapping.name_conflict") }}
+            </span>
             <span v-else-if="note(row)" class="t-secondary" :data-testid="`mapping-note-${row.index}`">{{ note(row) }}</span>
           </div>
         </template>
       </DataTable>
       <p v-if="conflictCount" class="t-negative m-0" data-testid="mapping-conflicts">
         {{ $t("leads.import.mapping.conflicts", { count: conflictCount }) }}
+      </p>
+      <p v-if="nameClash.length" class="t-negative m-0" data-testid="mapping-name-conflicts">
+        {{ $t("leads.import.mapping.name_conflict") }}
       </p>
       <p v-if="!identity" class="t-negative m-0" data-testid="mapping-no-identity">
         {{ $t("leads.import.mapping.no_identity") }}
@@ -52,7 +58,12 @@
       </p>
     </BasicCard>
     <BasicCard :title="$t('leads.import.mapping.preview_title')" gap data-testid="mapping-preview">
-      <DataTable v-if="previewColumns.length" :columns="previewColumns" :rows="previewTable" row-key="row" />
+      <!-- many mapped fields: the table keeps the width its columns need and scrolls sideways inside the card -->
+      <div v-if="previewColumns.length" class="table-scroll" data-testid="mapping-preview-scroll">
+        <div :style="{ minWidth: previewMinWidth }">
+          <DataTable :columns="previewColumns" :rows="previewTable" row-key="row" />
+        </div>
+      </div>
       <p v-else class="m-0 t-secondary">
         {{ $t("leads.import.mapping.preview_empty") }}
       </p>
@@ -73,6 +84,7 @@ import {
   fieldLabel,
   fieldOptions,
   hasIdentity,
+  nameConflict,
   previewFields,
   proposalNote,
   withField,
@@ -125,6 +137,7 @@ const summary = computed(() =>
       })
 );
 const clashes = computed(() => conflicts(props.modelValue));
+const nameClash = computed(() => nameConflict(props.modelValue));
 const conflictCount = computed(() => Object.keys(clashes.value).length);
 const identity = computed(() => hasIdentity(props.modelValue));
 const named = computed(() => Object.values(props.modelValue).includes("company_name"));
@@ -156,6 +169,8 @@ const previewColumns = computed(() => [
     width: "minmax(10rem, 1fr)",
   },
 ]);
+// The row number (4rem) + a track per field (8rem) + the "What the import does" column (10rem).
+const previewMinWidth = computed(() => `${4 + shownFields.value.length * 8 + 10}rem`);
 const previewTable = computed(() =>
   (props.preview.rows || []).map((row) => ({
     ...row.values,

@@ -7,15 +7,22 @@ import { t } from "@/i18n";
 export const IGNORE = "ignore";
 // The server's level in the three words of the screen: sure, check it, not recognised.
 const LEVELS = { certain: "sure", check: "check", unrecognised: "unknown" };
-export const CONFIDENCE_TONES = { sure: "positive", check: "warning", unknown: "neutral" };
+export const CONFIDENCE_TONES = { sure: "positive", check: "warning", unknown: "neutral", skipped: "neutral" };
 // A company is told by its domain, its website or its contact's e-mail host: the import needs one of them.
 export const IDENTITY_FIELDS = ["domain", "website", "email"];
 
 const label = (key, fallback) => (t(key) === key ? fallback : t(key));
 
-/** The confidence of a column under `field`: the server's level while the proposal stands, a user's pick is sure. */
+/**
+ * The confidence of a column under `field`: the server's level while the proposal stands, a user's pick is sure, a
+ * column the user took out of a proposal is "skipped" (their decision, not a failure to recognise it). A column the
+ * server recognised but CRM has no field for (`no_crm_field`) is "check", not "not recognised".
+ */
 export function confidenceLevel(column, field = column.field) {
-  if (!field || field === IGNORE) return field === (column.field || IGNORE) && column.level === "check" ? "check" : "unknown";
+  if (!field || field === IGNORE) {
+    if ((column.field || IGNORE) !== IGNORE) return "skipped";
+    return column.level === "check" || column.reason === "no_crm_field" ? "check" : "unknown";
+  }
   if (field !== column.field) return "sure";
   return LEVELS[column.level] || "check";
 }
@@ -44,6 +51,16 @@ export function conflicts(mapping) {
     if (field && field !== IGNORE) (byField[field] ||= []).push(column);
   }
   return Object.fromEntries(Object.entries(byField).filter(([, columns]) => columns.length > 1));
+}
+
+const NAME_PARTS = ["first_name", "last_name"];
+const columnsOn = (mapping, fields) => Object.keys(mapping).filter((column) => fields.includes(mapping[column]));
+
+/** The columns of a full name chosen together with a first or last name: the server refuses that pair (DUPLICATE_FIELD). */
+export function nameConflict(mapping) {
+  const full = columnsOn(mapping, ["full_name"]);
+  const parts = columnsOn(mapping, NAME_PARTS);
+  return full.length && parts.length ? [...full, ...parts] : [];
 }
 
 /** The mapping with one column moved to `field`. A user's pick is never undone behind their back: a clash shows. */
